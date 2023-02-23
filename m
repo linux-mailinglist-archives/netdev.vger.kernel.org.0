@@ -2,167 +2,262 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFA0B6A06E0
-	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 12:00:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F6976A06EC
+	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 12:02:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233674AbjBWLAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Feb 2023 06:00:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37380 "EHLO
+        id S233927AbjBWLCW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Feb 2023 06:02:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbjBWLAe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 06:00:34 -0500
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2044.outbound.protection.outlook.com [40.107.7.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D980F52DE8;
-        Thu, 23 Feb 2023 03:00:32 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bqt4vn9fWKHj44FweVLGtyGldPI3POUPRmdmxxCSppIDvAqdthg4eUMcSyZKCGSN3vf7Bn081gd3aaFR7CE3fI2J7TqYOEPJOq6pVLxVnLcbwdX+1W4Wtvj9JyckqzDGpbkVIFImU8DCxmD1jZ4m4LSVoolU2e7eOom6Bppg/Eo2BAEbEA9eJz3UosiMjin2uyAq8+MSKxnwaJY27b2Y2xjcePXNs+DKAXx2qyScnow6JsTzwxtFnDqmLU0/RVDcirUvVjBcPc9yP2ZWN5SHVXs8XdvUXzg0cTuM/UB8gC9Wk/D9sl7Kse8MgWX3LtjmJXafWLKJjq+rZDxs6ptZ2A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SNx9OEPJZeS7/UbORf4IqDnYFFtv2haRDKc5PGTDB1Q=;
- b=l6PgiO0x+kXOP8GtoOUE5nTBKaQtJ41Dlr+l9oeeCj0IcKb4Ft7uCXhwVCK8JLsI911JgEbSyM+GKd23c6oOtNPkO3jft6XDyBb3AYgjTdlRwgXbYB+K6hZO3vMxzMSZzZUWH4iWEHo0WS98qIevbyDfGfL1uW4wwQoS+FVCZ6Y+qL20fjzdSn/yCBd43a6/k/fUn2L1kHzTWWniLbeniBXz3zOqL98vYmQiCAjqHuBgW5zSN3/gEWmT2qIskI7slG/bv0YMUk9HpGoQQ51AWPdmi1gNPmISIeCh49u9LDCdfqquimM3MigcKrQTkRMxLnHqM/VM3GdJB8GiIpGIRQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SNx9OEPJZeS7/UbORf4IqDnYFFtv2haRDKc5PGTDB1Q=;
- b=sNFDnyv8LvrRc5t/0Ev+r9CjoWtDwwtBuOsSgXw3dYGYTY+LFdz+1sudbrUL3RrCtNXPpLgGS62sAh7QlWEE7kYjHOb+YD9lssNLjg9v7hf36eg3xHraBHJrORa8pprc5C4yHHXTKsmr3k5OiTdom+LNxeZAiEwugojuMaOaK/8=
-Received: from AM9PR04MB8603.eurprd04.prod.outlook.com (2603:10a6:20b:43a::10)
- by AM9PR04MB8793.eurprd04.prod.outlook.com (2603:10a6:20b:408::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.21; Thu, 23 Feb
- 2023 11:00:30 +0000
-Received: from AM9PR04MB8603.eurprd04.prod.outlook.com
- ([fe80::f8fe:ab7c:ef5d:9189]) by AM9PR04MB8603.eurprd04.prod.outlook.com
- ([fe80::f8fe:ab7c:ef5d:9189%9]) with mapi id 15.20.6134.021; Thu, 23 Feb 2023
- 11:00:30 +0000
-From:   Neeraj sanjay kale <neeraj.sanjaykale@nxp.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "marcel@holtmann.org" <marcel@holtmann.org>,
-        "johan.hedberg@gmail.com" <johan.hedberg@gmail.com>,
-        "luiz.dentz@gmail.com" <luiz.dentz@gmail.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "alok.a.tiwari@oracle.com" <alok.a.tiwari@oracle.com>,
-        "hdanton@sina.com" <hdanton@sina.com>,
-        "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
-        "leon@kernel.org" <leon@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Amitkumar Karwar <amitkumar.karwar@nxp.com>,
-        Rohit Fule <rohit.fule@nxp.com>,
-        Sherry Sun <sherry.sun@nxp.com>
-Subject: Re: [PATCH v4 2/3] dt-bindings: net: bluetooth: Add NXP bluetooth
- support
-Thread-Topic: [PATCH v4 2/3] dt-bindings: net: bluetooth: Add NXP bluetooth
- support
-Thread-Index: AQHZR3YLu/OL7KREHk+ciGqO0e7Ycw==
-Date:   Thu, 23 Feb 2023 11:00:30 +0000
-Message-ID: <AM9PR04MB86032C020C9C7DCB5D84B6E7E7AB9@AM9PR04MB8603.eurprd04.prod.outlook.com>
-References: <20230221162541.3039992-1-neeraj.sanjaykale@nxp.com>
- <20230221162541.3039992-3-neeraj.sanjaykale@nxp.com>
- <ef019382-61a8-c663-773b-21791413889d@linaro.org>
-In-Reply-To: <ef019382-61a8-c663-773b-21791413889d@linaro.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: AM9PR04MB8603:EE_|AM9PR04MB8793:EE_
-x-ms-office365-filtering-correlation-id: d3350c04-6c68-4442-1e95-08db158d2d94
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: HSPpNxXVy/OMVO5HzHikVoeOvmfTx+Wav+LVtc0mhjnzyIocYoR0IP/ZAOmH9gbJZl2QLSd2bTCXQFK29lfWG07Tl0sp6GqAZbK2oY2RUjQIc3EAysp9tW2D3qQyWaG/ObvjTpl9jVwrmY33sV5S0Pu+81qb6TPg613QYvr5WyAJXV6YybxwwXEHMN8lRbV+rNNJE1pIwE8XpG8Y2Yr7N+jla+Gs8AKEyU4UkrEjtyJSOhC3qJUb5z9TFbxxWbkwwN+/Tu3wRetQwwDw9Y/lSXUxblZjVRAOXvCZcKhs1QVUoqNm8AwiffyyYVGiT6iB2vzPhOYb4aJuaQrsMbParBFFVmfOIGb5d+excovqplXpMTqWeDy7YwyM/ZB2oac0KOf4Xuko39MCvZCxd9y1KkRxlfB7+/zjucZbBgQ86UZslQOiKaB4ot3/na4ODgUafWY5AYBaQW8LeKDiV9FFcmYaFiFmmmypE1B16PvQZbW5KpWcNn99G9c0sP0zReNP7OsP0v7k0PTYNWELL0N/+AgsbZeQAu4G/E/153fXSSIPiERChXI6ivsflvTfAYeNe5rdXkEpbJEKqbhTEj/FPkCMTvaEEC1LYdWqOABQypBhU575Eng4GABqsv4e1xpy041ZkYfTSUMav4vmfAT3ju58VEG29VBhLBVIRtsZmsLFvyrHvBgSrFMPMHGgDcqWd7IjOifphE2FXJooJjNMfW7RzcXtImalgRwg/9PSnls=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8603.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(39860400002)(366004)(396003)(136003)(346002)(451199018)(921005)(478600001)(7696005)(54906003)(316002)(71200400001)(86362001)(33656002)(122000001)(38100700002)(38070700005)(110136005)(6506007)(2906002)(66446008)(66476007)(4326008)(76116006)(41300700001)(8676002)(66946007)(64756008)(55016003)(66556008)(52536014)(8936002)(26005)(4744005)(7416002)(5660300002)(9686003)(186003)(83380400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?3waX7u1Qbi+s40F8uy9w29qqhYkzTIuD2o4sIAHjwKBVLPCRKeg/V8biPYsQ?=
- =?us-ascii?Q?o+9F9iId3HDxbI2WZdGrmvaC8IQPLVoPXmKt7KnMSd3lLBhJBh094J9EE0Dv?=
- =?us-ascii?Q?LRM4MRN/yU+oTdfeZfmHI3kjAhafkDSjNeKGdxv6j0G9gz13tZVy3KzOfvJe?=
- =?us-ascii?Q?TcsI9ZV7NuAMIJJ/wgXF05fUK3TuSNhwvJBjWCBiaWkVoOeV6XRK/SzPAqv3?=
- =?us-ascii?Q?ubRFHNMj3alf8Pt+2M0tHZo14HMBm4HRPSvjWM9TwQoR22hEdW19JXS1n1k5?=
- =?us-ascii?Q?BfafuP2RREIZz4TWcWzsrv+P05h2ayOl88YpdMwvD6C11SlC1xJCiP1LCbNS?=
- =?us-ascii?Q?r47MSZjY7BGpFXCml4othXXfKTHB337cPwHuaLnkxxIocuPuVLH1y9F6yB7A?=
- =?us-ascii?Q?8XLhJ4SDm6iTuCn7BjD/G2nbnJC5e0hEaAydWklhgsx0hkp3EDGCSkZBNQli?=
- =?us-ascii?Q?+kjxF+bcmY84vSyrPz41NJm+LLmWMRCm4iX/GsK/ZQ0QmljR0D6qgDFEfqbe?=
- =?us-ascii?Q?alwkgcl5XG4li2z3FZFgWlPOrq9hr2BKOhbmR3pYZguva/ZXvx/hXemaCi84?=
- =?us-ascii?Q?NjJVDL6A4as+yGVcWVewM4OsdtO9RvhSM+MpvBszWUe2tPgAHQT8OYHMw8f0?=
- =?us-ascii?Q?tgt3o6DQzQ0ZDF4y70mYfbepXAKV9r+bLpnw6hxrYMBTPde13I5iQyyy90yA?=
- =?us-ascii?Q?aoiGQY9EvKQEHmF7QcEouq5Vzb+stoeHOjxDDJNYA1eOwRKLcB31P9Y6ZUW6?=
- =?us-ascii?Q?tIrT1rj+T79/37u4FhUxfFBV2YZbLIgetXG/RVHrBF+k+k3h1BTuDMmA/RWA?=
- =?us-ascii?Q?b46OtBTxUIiyPr5y9XuVdb5FnrLh1Ce9W7U15PDEZ5oz+B2arV4yvFeHBLo+?=
- =?us-ascii?Q?DFSoaqt2XkM+8/Di8Q7znyodMkjjc9orEYoW6GiMtRac9GQEolF9eNxl8iyC?=
- =?us-ascii?Q?F4HuNQm4UOxcTSnAbsl3p+Q0tWvEYrgsF/P/ihONYgLUyrylV5jVGNF0E9CW?=
- =?us-ascii?Q?8sH8GHnE9l6HZtGKtLpZauhlkDSV+XfDgpY9GJ8AQtzI6tCLbi+tTi5FxlIO?=
- =?us-ascii?Q?KJl11Bjo+LrUcIwOgp87iGB6IpVH6xkB/wWhR1h1YPOBK50lsyMBCqR2L9qQ?=
- =?us-ascii?Q?ow4vWVh8LjzdCq/usrnyFKirvBrIZFwJxHbXhIhDRV+ey1JOoe4neoJScwGl?=
- =?us-ascii?Q?LhkVUVm8tYuNF1rlhQ6xq54wgtsco/qyGXC4zCpA/L6lYyTNKWxQZMGjYqrd?=
- =?us-ascii?Q?VmaQaWvHnaWOFe9CWcTAkAWpoWYhfFBza0OQlFQVWlupb2rYy9F5RQmdzUwe?=
- =?us-ascii?Q?fPdc0ss4xVCd2TcA4RLFaH4+oMhA3eGubnLLU0XtUDrCOfjt7hMUBcaSx/qF?=
- =?us-ascii?Q?6Gsy1xZwXcpcB8phFXIRq/W3mMhE4SW9bqwWT3SuIKWNHZc6Aa8DnvdfN5b+?=
- =?us-ascii?Q?+pJfjs5UTOaEr9G6NtL/anUD1I0mE4WKcP0jte3u8tF+U8H193K2NfKhqsAq?=
- =?us-ascii?Q?hcyZDYKa2gnOSzI+RRAS23mi1C85jtpjD4qhvWXJidqoOCeejAHLYJprrrvR?=
- =?us-ascii?Q?fqdHvgD2mUH2HYzpIWYKZmTwUz2J2ILfYSEWRGY9U26azcSLR0IQYO7XYgNf?=
- =?us-ascii?Q?Sw=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S233884AbjBWLCV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 06:02:21 -0500
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E12E452DFA;
+        Thu, 23 Feb 2023 03:02:15 -0800 (PST)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31N59T5f014615;
+        Thu, 23 Feb 2023 03:02:03 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=ik0KcgV6/3GkGJVQma3iwe0ejipVXLYn5K9mlYYxP8E=;
+ b=IshJ7xSD3Hw/WTFl/GHwtfLNQKHnUAgXKQyTmAko9xNIHG2BIsaHn5qfN1beYEHa2V1B
+ 0cNuU6HADxCOVLoKGkOsBofhn6H9xwFK+LN5yeJXuZfCE5ExV9aTUu3tYc9FL9mSKZyD
+ uIzlEhw83N8azOXV4EK4U5OphLFirXqglyfrGsDkyypfldxQC83xNH+qC/00kQirC9Vg
+ K3rx2rF5MQPLNy38itFFL58Ih2w+4dYl3DnXw7JUtSy9K1OBWhXMgAIv69vKXCXdY8my
+ cp6u82XJlWgmmcrnSWMusgGE9Qu5GHS6t3dlfZu6XUeCZDSaU0j2OX/jOrpeZCglz7Ju zw== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3nwy8qhv16-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 23 Feb 2023 03:02:00 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Thu, 23 Feb
+ 2023 03:01:34 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.42 via Frontend
+ Transport; Thu, 23 Feb 2023 03:01:34 -0800
+Received: from hyd1425.marvell.com (unknown [10.29.37.83])
+        by maili.marvell.com (Postfix) with ESMTP id 178443F7065;
+        Thu, 23 Feb 2023 03:01:31 -0800 (PST)
+From:   Sai Krishna <saikrishnag@marvell.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <sgoutham@marvell.com>,
+        <sumang@marvell.com>
+CC:     Sai Krishna <saikrishnag@marvell.com>
+Subject: [net PATCH v2] octeontx2-af: Unlock contexts in the queue context cache in case of fault detection
+Date:   Thu, 23 Feb 2023 16:31:25 +0530
+Message-ID: <20230223110125.2172509-1-saikrishnag@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8603.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d3350c04-6c68-4442-1e95-08db158d2d94
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Feb 2023 11:00:30.1686
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: z/MawPt1QrdSii77vyFIWvOjsmiMJjg4UJdrsZH/I42cD4F04AJ3Bk7AV8TCtOaU6iwNbEKZusKJH8NRHMHnCzZayHLXnci/sATqb6PwABU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8793
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: Tppm2fF23nQWKliEq2C6QUQduxqyxrWu
+X-Proofpoint-ORIG-GUID: Tppm2fF23nQWKliEq2C6QUQduxqyxrWu
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
+ definitions=2023-02-23_06,2023-02-23_01,2023-02-09_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Krzysztof,
+From: Suman Ghosh <sumang@marvell.com>
 
-Thank you for reviewing this patch.
+NDC caches contexts of frequently used queue's (Rx and Tx queues)
+contexts. Due to a HW errata when NDC detects fault/poision while
+accessing contexts it could go into an illegal state where a cache
+line could get locked forever. To makesure all cache lines in NDC
+are available for optimum performance upon fault/lockerror/posion
+errors scan through all cache lines in NDC and clear the lock bit.
 
->=20
-> I think list of compatibles changed... now they are nxp,88w8987-bt, so
-> shouldn't the filename be "nxp,88w8987-bt.yaml"?
-Updated file name.
+Fixes: 4a3581cd5995 ("octeontx2-af: NPA AQ instruction enqueue support")
+Signed-off-by: Suman Ghosh <sumang@marvell.com>
+Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+Signed-off-by: Sai Krishna <saikrishnag@marvell.com>
+---
+v2:
+    - Rebased to latest net tree after net-next merge as suggested by Paolo
 
-> > +examples:
-> > +  - |
-> > +    uart2 {
->=20
-> This is a friendly reminder during the review process.
->=20
-> It seems my previous comments were not fully addressed. Maybe my
-> feedback got lost between the quotes, maybe you just forgot to apply it.
-> Please go back to the previous discussion and either implement all reques=
-ted
-> changes or keep discussing them.
->=20
-Changed "uart2" to "serial" in v5 patch.
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |  8 +++
+ .../marvell/octeontx2/af/rvu_debugfs.c        |  3 -
+ .../ethernet/marvell/octeontx2/af/rvu_nix.c   | 16 +++++-
+ .../ethernet/marvell/octeontx2/af/rvu_npa.c   | 55 ++++++++++++++++++-
+ .../ethernet/marvell/octeontx2/af/rvu_reg.h   |  3 +
+ 5 files changed, 80 insertions(+), 5 deletions(-)
 
-Thanks,
-Neeraj
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+index 389663a13d1d..6508f25b2b37 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+@@ -884,6 +884,12 @@ int rvu_cpt_lf_teardown(struct rvu *rvu, u16 pcifunc, int blkaddr, int lf,
+ int rvu_cpt_ctx_flush(struct rvu *rvu, u16 pcifunc);
+ int rvu_cpt_init(struct rvu *rvu);
+ 
++/* NDC APIs */
++#define NDC_MAX_BANK(rvu, blk_addr) (rvu_read64(rvu, \
++					blk_addr, NDC_AF_CONST) & 0xFF)
++#define NDC_MAX_LINE_PER_BANK(rvu, blk_addr) ((rvu_read64(rvu, \
++					blk_addr, NDC_AF_CONST) & 0xFFFF0000) >> 16)
++
+ /* CN10K RVU */
+ int rvu_set_channels_base(struct rvu *rvu);
+ void rvu_program_channels(struct rvu *rvu);
+@@ -902,6 +908,8 @@ static inline void rvu_dbg_init(struct rvu *rvu) {}
+ static inline void rvu_dbg_exit(struct rvu *rvu) {}
+ #endif
+ 
++int rvu_ndc_fix_locked_cacheline(struct rvu *rvu, int blkaddr);
++
+ /* RVU Switch */
+ void rvu_switch_enable(struct rvu *rvu);
+ void rvu_switch_disable(struct rvu *rvu);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+index fa280ebd3052..fad83d1f84b0 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+@@ -198,9 +198,6 @@ enum cpt_eng_type {
+ 	CPT_IE_TYPE = 3,
+ };
+ 
+-#define NDC_MAX_BANK(rvu, blk_addr) (rvu_read64(rvu, \
+-						blk_addr, NDC_AF_CONST) & 0xFF)
+-
+ #define rvu_dbg_NULL NULL
+ #define rvu_dbg_open_NULL NULL
+ 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+index 26e639e57dae..4ad707e758b9 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+@@ -790,6 +790,7 @@ static int nix_aq_enqueue_wait(struct rvu *rvu, struct rvu_block *block,
+ 	struct nix_aq_res_s *result;
+ 	int timeout = 1000;
+ 	u64 reg, head;
++	int ret;
+ 
+ 	result = (struct nix_aq_res_s *)aq->res->base;
+ 
+@@ -813,9 +814,22 @@ static int nix_aq_enqueue_wait(struct rvu *rvu, struct rvu_block *block,
+ 			return -EBUSY;
+ 	}
+ 
+-	if (result->compcode != NIX_AQ_COMP_GOOD)
++	if (result->compcode != NIX_AQ_COMP_GOOD) {
+ 		/* TODO: Replace this with some error code */
++		if (result->compcode == NIX_AQ_COMP_CTX_FAULT ||
++		    result->compcode == NIX_AQ_COMP_LOCKERR ||
++		    result->compcode == NIX_AQ_COMP_CTX_POISON) {
++			ret = rvu_ndc_fix_locked_cacheline(rvu, BLKADDR_NDC_NIX0_RX);
++			ret |= rvu_ndc_fix_locked_cacheline(rvu, BLKADDR_NDC_NIX0_TX);
++			ret |= rvu_ndc_fix_locked_cacheline(rvu, BLKADDR_NDC_NIX1_RX);
++			ret |= rvu_ndc_fix_locked_cacheline(rvu, BLKADDR_NDC_NIX1_TX);
++			if (ret)
++				dev_err(rvu->dev,
++					"%s: Not able to unlock cachelines\n", __func__);
++		}
++
+ 		return -EBUSY;
++	}
+ 
+ 	return 0;
+ }
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npa.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npa.c
+index 70bd036ed76e..6cd8cc8f3488 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npa.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npa.c
+@@ -42,9 +42,18 @@ static int npa_aq_enqueue_wait(struct rvu *rvu, struct rvu_block *block,
+ 			return -EBUSY;
+ 	}
+ 
+-	if (result->compcode != NPA_AQ_COMP_GOOD)
++	if (result->compcode != NPA_AQ_COMP_GOOD) {
+ 		/* TODO: Replace this with some error code */
++		if (result->compcode == NPA_AQ_COMP_CTX_FAULT ||
++		    result->compcode == NPA_AQ_COMP_LOCKERR ||
++		    result->compcode == NPA_AQ_COMP_CTX_POISON) {
++			if (rvu_ndc_fix_locked_cacheline(rvu, BLKADDR_NDC_NPA0))
++				dev_err(rvu->dev,
++					"%s: Not able to unlock cachelines\n", __func__);
++		}
++
+ 		return -EBUSY;
++	}
+ 
+ 	return 0;
+ }
+@@ -545,3 +554,47 @@ void rvu_npa_lf_teardown(struct rvu *rvu, u16 pcifunc, int npalf)
+ 
+ 	npa_ctx_free(rvu, pfvf);
+ }
++
++/* Due to an Hardware errata, in some corner cases, AQ context lock
++ * operations can result in a NDC way getting into an illegal state
++ * of not valid but locked.
++ *
++ * This API solves the problem by clearing the lock bit of the NDC block.
++ * The operation needs to be done for each line of all the NDC banks.
++ */
++int rvu_ndc_fix_locked_cacheline(struct rvu *rvu, int blkaddr)
++{
++	int bank, max_bank, line, max_line, err;
++	u64 reg;
++
++	/* Set the ENABLE bit(63) to '0' */
++	reg = rvu_read64(rvu, blkaddr, NDC_AF_CAMS_RD_INTERVAL);
++	rvu_write64(rvu, blkaddr, NDC_AF_CAMS_RD_INTERVAL, reg & GENMASK_ULL(62, 0));
++
++	/* Poll until the BUSY bits(47:32) are set to '0' */
++	err = rvu_poll_reg(rvu, blkaddr, NDC_AF_CAMS_RD_INTERVAL, GENMASK_ULL(47, 32), true);
++	if (err) {
++		dev_err(rvu->dev, "Timed out while polling for NDC CAM busy bits.\n");
++		return err;
++	}
++
++	max_bank = NDC_MAX_BANK(rvu, blkaddr);
++	max_line = NDC_MAX_LINE_PER_BANK(rvu, blkaddr);
++	for (bank = 0; bank < max_bank; bank++) {
++		for (line = 0; line < max_line; line++) {
++			/* Check if 'cache line valid bit(63)' is not set
++			 * but 'cache line lock bit(60)' is set and on
++			 * success, reset the lock bit(60).
++			 */
++			reg = rvu_read64(rvu, blkaddr,
++					 NDC_AF_BANKX_LINEX_METADATA(bank, line));
++			if (!(reg & BIT_ULL(63)) && (reg & BIT_ULL(60))) {
++				rvu_write64(rvu, blkaddr,
++					    NDC_AF_BANKX_LINEX_METADATA(bank, line),
++					    reg & ~BIT_ULL(60));
++			}
++		}
++	}
++
++	return 0;
++}
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
+index 1729b22580ce..bc6ca5ccc1ff 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
+@@ -694,6 +694,7 @@
+ #define NDC_AF_INTR_ENA_W1S		(0x00068)
+ #define NDC_AF_INTR_ENA_W1C		(0x00070)
+ #define NDC_AF_ACTIVE_PC		(0x00078)
++#define NDC_AF_CAMS_RD_INTERVAL		(0x00080)
+ #define NDC_AF_BP_TEST_ENABLE		(0x001F8)
+ #define NDC_AF_BP_TEST(a)		(0x00200 | (a) << 3)
+ #define NDC_AF_BLK_RST			(0x002F0)
+@@ -709,6 +710,8 @@
+ 		(0x00F00 | (a) << 5 | (b) << 4)
+ #define NDC_AF_BANKX_HIT_PC(a)		(0x01000 | (a) << 3)
+ #define NDC_AF_BANKX_MISS_PC(a)		(0x01100 | (a) << 3)
++#define NDC_AF_BANKX_LINEX_METADATA(a, b) \
++		(0x10000 | (a) << 3 | (b) << 3)
+ 
+ /* LBK */
+ #define LBK_CONST			(0x10ull)
+-- 
+2.25.1
+
