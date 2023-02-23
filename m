@@ -2,154 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A903E6A0CD2
-	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 16:24:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECE1F6A0CEC
+	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 16:29:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233306AbjBWPY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Feb 2023 10:24:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36052 "EHLO
+        id S233393AbjBWP3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Feb 2023 10:29:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbjBWPY4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 10:24:56 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F2BD3A853
-        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 07:24:55 -0800 (PST)
+        with ESMTP id S233218AbjBWP3g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 10:29:36 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1A023403A
+        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 07:29:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677165895; x=1708701895;
+  t=1677166151; x=1708702151;
   h=message-id:date:subject:to:cc:references:from:
    in-reply-to:content-transfer-encoding:mime-version;
-  bh=EqnQPyZtfKEdhHyrdVfMi8l/jclsw6cGm+VzHmSjezQ=;
-  b=CY70UdqlYxuKR2Owdaj1hH4NjlvxYC2NnwqDCDU4vvI8QnzQlQ/9HdVp
-   8z8N2pDMIAlo6QilTcwCbHXRbvRzQteBqUtQOWqJomkTSSVZ6xjIyLqrX
-   no6lqhl/MCKuWdfzVZ35ng7x5uTr1cYf7DhSqNny7O3k1o0DZGUsaoAih
-   gPgAGWS7Fl9/X2UcXXhdsB5MQojviMhZSKOLfC3sKW7KctZYEkDNUCf4y
-   GShYI5dm8Ld2o5FyPooS055G5sFlFKwJmQViBMMAfzMyg80+sasa3oksR
-   cONvMWV02rlc3RvRf3UI7SRZesvQzKOZ3j+GPaXOHsPT07bMRJFJRePnx
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10630"; a="335465985"
-X-IronPort-AV: E=Sophos;i="5.97,320,1669104000"; 
-   d="scan'208";a="335465985"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2023 07:23:15 -0800
+  bh=yHe52OoZf0bK8bkMzm79jOfKKHGGwrNodwlVvniM10E=;
+  b=Fk3xSI3NHrFGhol0C5U+51d6one6l5HhsNyA4Zl27A3UAUWEcSD6HOJK
+   5Ryoxyl73XBP7yc/9nnpjzmqTQGurhFiS0odpE8pq8jwk2yttD9U69u2e
+   SkZAnRocPXLXbhEao35Ir0fyGkEk4yc/0emXv3xC8dd+uYYNwY6a6Fql9
+   Ejm8BBIuFu8DfY1D0mMXm7e1M0vPCrg8VppFbBcj1CrQXSjrh2Z7sG5QT
+   3Zs/LBQF++3tz7UEtWM+2v67uTE9pgfSx5SSMYUiyUt8hUF+kF/tKiRUL
+   dFkW5GAtSlPlTkrsk1OtCUpXPTbLNHrTT3zith0hqO/2RqQroa+cfa/k/
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10630"; a="419465827"
+X-IronPort-AV: E=Sophos;i="5.97,322,1669104000"; 
+   d="scan'208";a="419465827"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2023 07:28:52 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10630"; a="665802670"
-X-IronPort-AV: E=Sophos;i="5.97,320,1669104000"; 
-   d="scan'208";a="665802670"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orsmga007.jf.intel.com with ESMTP; 23 Feb 2023 07:23:14 -0800
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+X-IronPort-AV: E=McAfee;i="6500,9779,10630"; a="736406921"
+X-IronPort-AV: E=Sophos;i="5.97,322,1669104000"; 
+   d="scan'208";a="736406921"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga008.fm.intel.com with ESMTP; 23 Feb 2023 07:28:52 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Thu, 23 Feb 2023 07:23:14 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ 15.1.2507.16; Thu, 23 Feb 2023 07:28:51 -0800
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Thu, 23 Feb 2023 07:23:14 -0800
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.44) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ 15.1.2507.16 via Frontend Transport; Thu, 23 Feb 2023 07:28:51 -0800
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.175)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Thu, 23 Feb 2023 07:23:14 -0800
+ 15.1.2507.16; Thu, 23 Feb 2023 07:28:51 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lUjzVc0gC2rC/yPwdDX9B2E0t0lUpOI72qCSfPWi7GX5/C6hFyuXvRbQVCJWUEbUUyPpcAoW1zB18i3/o7g42uj2y0hRz6HYzuZ/tisjxcmnddnA11BwCqU+e5Rr3AdolE4U5CPyI1hGVgnIYKZ4cu3eDGgATDiSpUpQ5EtL5KdRjA7zwT93gukwSfmsZl0l3iwv4SH0RRky2sl68T9hMMB+ZmmTrT1+Em4liqnPuoPnCiS7un3rbZTQt2dkeZ1aQnHZnIySNrLxB35CX2Fhg86YNMGlbFfvayevFFTQRaZN6DluNDsnBGi4XbItBxWRlVjg4MExZ8ljlVP9uzDF8g==
+ b=oGfk3qrw3bl2PxLSaY37AGCval1ZDzfTl9gsGlnXhc9bqR2J3ArF2N4epwBmVJrlPKf1JepsRA0mhEATWux/hR7AvIpyEOPcOCHpcMoyhOo9BQib7EBQXNOM47mHpG/Fniw7wS8Wat3mh3QBjpnSpaKxdAtD82zkMq9JvP96T7Yx4a/3wyZkcdEtkJmNzTl3FtirULof4xBw4XZ/z0SGzIPF2GEbwK5apnfIuKQI2OipWrRLMeQZ1wUBCWGFxBV9ThkBFtFBl3b+1/QZNQ8ejlh7I9zSUHyaVWW4IQszyo1LrYLPTMknb0mI1AY3VgeSdQzlj8VVPHJydjT14Qj9Fw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wH0kcIje/fVj1DxVAg8VWUmfO21NrhOAKgNmA8FKY08=;
- b=aMROY4JEy/oROYZ9s9kX60qNyEaD+9nLg56hlFk6cHu+DG7UlE47gLtwALy0LtlDxlHhBepuopWnNfV7VJdMZYOn0FP4MxL5QixHZYrvfoJWCHxixGsEwkaEX5tCctkzzlpG9sRcwnanApSfbpXkIxhYzPIVjJOYv7TL+AzHBice48qhYfPaDDkYsYJdY+1jd1hh1GSPKHwvvDxTgUthwScrSQ3cNerekWkTgqixup7RHXD04DQSn8UvInb/RvwaedqFgPZjMV6LZ/eIhu5RqCf3MRV2mPXnkp5RppYZXWtGT8wld//hzzkuy5ybImaf3Btoxd/+JWdHpat2+fdHuA==
+ bh=YdYGzdis6+V/EYxqCIz5jE5lSZuwkSO7GE3zrwBrhWc=;
+ b=VtnQLKD1TSudyvARbunYU+62ovloqcSmBT/SfxRQLDyZFLLDicqrFBLXROwP93H6VtiFxXLVrflGY1evqjEPceoUkBA9+iBd/5Lp6xAiY33kCEBXXKZB+kExH//aFyBahLZGOtDEh2tPZQNkQaAS0xv1NC0gxihg3QYGlbRak8ekOCdLQUeoaj4c1BqITZDjupwbzcYWpHABLeXl5DVYrGIwi/xcubn9YMXkZJkYMSXr7U3DFcqL7lKefA+j49a4ZjBi+QkbgcygSK7txcdg9+kVQtaGJ0hP6ljysYqdPsByLvcJzaQoZoVXZHS4iKEn97pa2IkCryDcWHAjvna/eg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from DM6PR11MB3625.namprd11.prod.outlook.com (2603:10b6:5:13a::21)
- by CH0PR11MB5476.namprd11.prod.outlook.com (2603:10b6:610:d7::23) with
+ by BL1PR11MB5317.namprd11.prod.outlook.com (2603:10b6:208:309::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.21; Thu, 23 Feb
- 2023 15:23:10 +0000
+ 2023 15:28:50 +0000
 Received: from DM6PR11MB3625.namprd11.prod.outlook.com
  ([fe80::3ff6:ca60:f9fe:6934]) by DM6PR11MB3625.namprd11.prod.outlook.com
  ([fe80::3ff6:ca60:f9fe:6934%4]) with mapi id 15.20.6134.019; Thu, 23 Feb 2023
- 15:23:10 +0000
-Message-ID: <103076c8-12df-7ef6-2660-280301754e01@intel.com>
-Date:   Thu, 23 Feb 2023 16:22:19 +0100
+ 15:28:50 +0000
+Message-ID: <d97892e9-6fcb-248c-db27-5e34ee5dff11@intel.com>
+Date:   Thu, 23 Feb 2023 16:27:57 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
-Subject: Re: [RFC PATCH net-next v17] vmxnet3: Add XDP support.
+Subject: Re: [PATCH net-next 1/2] net: flower: add support for matching cfm
+ fields
 Content-Language: en-US
-To:     William Tu <u9012063@gmail.com>
-CC:     <netdev@vger.kernel.org>, <jsankararama@vmware.com>,
-        <gyang@vmware.com>, <doshir@vmware.com>,
-        <alexander.duyck@gmail.com>, <alexandr.lobakin@intel.com>,
-        <bang@vmware.com>, <maciej.fijalkowski@intel.com>,
-        <witu@nvidia.com>, Yifeng Sun <yifengs@vmware.com>,
-        Alexander Duyck <alexanderduyck@fb.com>
-References: <20230221043547.21147-1-u9012063@gmail.com>
+To:     Zahari Doychev <zahari.doychev@linux.com>
+CC:     <netdev@vger.kernel.org>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <hmehrtens@maxlinear.com>,
+        "Zahari Doychev" <zdoychev@maxlinear.com>
+References: <20230215192554.3126010-1-zahari.doychev@linux.com>
+ <20230215192554.3126010-2-zahari.doychev@linux.com>
+ <e4863729-4ddc-f6cc-85f2-333bd996fc6a@intel.com>
+ <20230217161920.gs3b2fbc5k73fput@tycho>
 From:   Alexander Lobakin <aleksander.lobakin@intel.com>
-In-Reply-To: <20230221043547.21147-1-u9012063@gmail.com>
+In-Reply-To: <20230217161920.gs3b2fbc5k73fput@tycho>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P123CA0186.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:1a4::11) To DM6PR11MB3625.namprd11.prod.outlook.com
+X-ClientProxiedBy: LO4P123CA0363.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:18e::8) To DM6PR11MB3625.namprd11.prod.outlook.com
  (2603:10b6:5:13a::21)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR11MB3625:EE_|CH0PR11MB5476:EE_
-X-MS-Office365-Filtering-Correlation-Id: c31033bc-0120-4505-bb55-08db15b1df6c
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-TrafficTypeDiagnostic: DM6PR11MB3625:EE_|BL1PR11MB5317:EE_
+X-MS-Office365-Filtering-Correlation-Id: d3307414-4ab0-41dc-46c1-08db15b2a97f
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vq55sK+TcZcXIR0ZbBwANchO9NwHuPlSi/UXJgORBRghLfnKFxcmUfMtW0hi0SxzgAHYVIb4fdCi0IQJZQG5MbhaOQJZOw9AP9ja2CQZGX3E5DPQ6xnF4lbkvTOsqxI1AFGcDGn8nmV7ypZD/BM9qv5cttolG04oXkDw/wESjOdA9z3xSFrYVMKf4NGl5+ZnTKHUNKT3G78UZaglOmZiTBSfMZRxPg9xZrc7/M9YEUUUsea37lqYTSIfQGq1QTboD8fKBPQdCuAJRD8/T5IC3PX8BxayYOt6d1RfsgCVCNKV2PQV1YQXDWbTpHttEt8tJs8YpfHAv91QgEZiKHVCXviw1qMQT6YdyFUh60w+abRkXhK90saIRsfU1ofR5Hr4kw6gfd1LcjDd9ccYgeejwgheAvgUfBf7tlUOdQtPQ1vjka41h/JdzqtRGqqa9QGqunnDgT+3WQu1vd/UILbuo63yzc/XcdSg46Yv6YIoIq4zHnGuJDrQGK9URPMY/QwLul3H2CRsqoa+kORq4qvX6dkFH/LGDQkbWp5WC0LdF2hkOKtvXCtwV14PQwt62OzTDwkb6JO4TI8lA8Zslw0k3qQjY7QGyARGfdC+VO9w1hvbCmk8Y65Epc8toPvuU8kVEK7f2wm7cJKv8+kdR+PlITyL7VVhCQr+2e0Lres6JZofUcWWhQsMoyMfXK+UkFPOSp/PX9YJexCDjDh+9xTI0xjtZ1GisF/57TaEyLfCCz0/cH+rsB24h4sL9ygsjnvd
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3625.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(396003)(366004)(39860400002)(376002)(346002)(136003)(451199018)(7416002)(2906002)(31696002)(86362001)(82960400001)(38100700002)(31686004)(478600001)(6486002)(6512007)(26005)(186003)(36756003)(66556008)(66476007)(66946007)(54906003)(83380400001)(41300700001)(4326008)(6916009)(2616005)(6506007)(8936002)(8676002)(316002)(5660300002)(45980500001)(43740500002)(309714004);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: e9EjO5LPq5Zeu6plbI1wfeOtWLOFbvbKfoWMzrnDqqETtayEIc7Up9R3kcOZs/cYzAqam8RvY9M+Va7VkdWhpVu9MQIDIkWwB+Pgf4TLx2U9ck/oEOUVFpp2yddfYnnFxoD9SJaNQa9wwmgOXbDZyiz0SeTd4YUwirLvclXAc3sLWQ/NsaFdcIiKGuWGHsYt5hA7NQCXRYwSW0hjRVyJPLxA2P9APldYEbRxhiil/1OpNPf/SHu41ODeeyASm/nlAsC54Ts22XEoWF4fzMjziWyBSlJOVLo1dV+XhmD1OumEkDIwzM/cCH/GdMe1S1tTDtKPOYOLDcYM39/BIyR8LUiXC+H6oGnWx5uY/dCBDEwfsccSslxGBJmo2dGknZXov8wNldhKVB+TvsdobxDwIQq1nMHpxVg8NcZVgR1hz8FvOFwR3QSS/wTGwl3irVLHZT9uUTwBb0WmOA+DZnToiGbDByAwIbNTlpviqDFo4y0BSX8G+vNp+Bw9jmYyuxbBKd/hcETvp7jdTwDZONwoB1e4X3R070d4DPaA/pyCWbsHCZAreawLNC/dWARBuLEdl0Y7KKH50ArgVZ6szD5sPoEuuF+a3ezEy872V9BQmizXkAnYZDtzErzVAIu7gwtRAJOeR0yQZK2yRALZUUyczrT+7ZvzFr8qaqZNFbhznW2244rO+DVPdYRTD61F3dtrnUG2NQXAyAmwAiQq7e8c18EudrHVrhXMmmyJI1ead+g=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3625.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(376002)(136003)(346002)(396003)(39860400002)(366004)(451199018)(478600001)(6506007)(6512007)(26005)(186003)(66946007)(41300700001)(66556008)(66476007)(316002)(6486002)(6916009)(4326008)(8676002)(83380400001)(8936002)(5660300002)(2906002)(82960400001)(38100700002)(7416002)(86362001)(31696002)(31686004)(2616005)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dHNMTDFhRXVJMklHaG5BNWc3NlBPYkpYUWVDT1ZscDFPRTNQeGZlRnEzN3lv?=
- =?utf-8?B?ZHFXS0x2ejlTV2MvYTNVQm5CMFFIWTQ3V0o0SXNuYzJvNEp6VHhaREVSb1cr?=
- =?utf-8?B?R3R5am5KTUFoTFpSM1Fab09obEJ1S1ErNFl4V2x5MnRLMnNEQkVKbmNxb0Zx?=
- =?utf-8?B?WFN6eW84K0dEQ1hGRUdOUEowdGRDbFdjelhScDhhZmQybE93dmtNOEFsWnI2?=
- =?utf-8?B?TWloeVZadHp1MXBGWXl5YmhNWm5Lb2JDWGF3NC9idFFoK0J4OXNiRCtMSzVs?=
- =?utf-8?B?ckx4MWc3Ny9tTEsyV1drZWpKWnd4K1Npdk92WkRxRFdBRUtHWDFvTFBLNXRx?=
- =?utf-8?B?VHdHSDJ2amkweVZMdTJCRXErV2NCLzhjdUt2amZpaUl6YVBNM1YzZFNoUStE?=
- =?utf-8?B?TFh4ZGZTWFBpVTZ0NVg0MzBQRzVZalpOYlhXbmo2c0Y4NzBvTGVab1RJWm1n?=
- =?utf-8?B?VUZ4SWg3THpCdFN6amYzanhVKzlQbTJNODNsdkNHSVgxZnlZVmlJeFhweWsy?=
- =?utf-8?B?bGtyb0ZycmVML3pGeTVaQ1AwMk9DSXU0bTVXcVhqQzNVeHovMnQrczczcXo3?=
- =?utf-8?B?bGZEZ1JKcklZNFFCa0NqL3pyVDZ3SkU2WHl2ZFZoNjZPb29JSkNwL053Y2M5?=
- =?utf-8?B?enM0alFPQnU3Zmw4UGZTbG1WbnE5RTJwMTQrZXpVV2hTWkdQczl1dmtOeGRD?=
- =?utf-8?B?WGFIWitDR05QMHo5Y25aQmQxSGcvWkpuWGt1VWtoZkN4akM1WkJUYzkvWS9x?=
- =?utf-8?B?bkFMQjJGMVdKa1lrWnl0Nk53dE44cmhFNXhSeVNPMWlQS3lZdng1citEY0J6?=
- =?utf-8?B?Nzg5bFhYL1VtWjc4TzMycTVodnZKVTg3MW5CMGUxRFlubTFhaHF1V1RXblJN?=
- =?utf-8?B?cXlJdkV4Z01zUjJmcCttRVlLZlQ5Z2ZqbnE0MG93YXA1U3U0STFtVTB6TTU2?=
- =?utf-8?B?LzFIc1drWnY5SHNOakMxeTQ3bkZtN3k5WG9IOENYdy8xUzlkbm5uUjI2WWtP?=
- =?utf-8?B?MnhjZFBpMHhHeWRiMkJtYjN0NVNTbGNrMlQrVW56M3c1Zk9RdG11VmVnbXMw?=
- =?utf-8?B?NUVJMVNBZERWSVRNdmVaMURiclk5Y2dqQkNET0RURnFpZ2JUL2xuM0pYY3Ja?=
- =?utf-8?B?WnBucGpjUE0yUFB1ai9YazNBTjV5K2gzTkxhTmtlMlhjMVdPcDcvRlMxUTNX?=
- =?utf-8?B?aUNmWDFRTTEzc2xkYmRWOHptSEk1czEyUnc3Zmxvd3ZtSmhqcm5hdU5ucTdN?=
- =?utf-8?B?WTd6bG5kcGhGNFBEMHNkV1gwdWhoa2MwK0dzM2l2RE9uR1p5Mk1NcFpHRjF5?=
- =?utf-8?B?TnJ4aGxpTVpGelpMT0VmNnJlVEZYTXRZS1ZKV2YyV3JKL1NxNFZLMTNBRWVT?=
- =?utf-8?B?a0prUk92YkRGUWVLZTJwWGZaRXJwVW93Y1F5c29XU3JRWjNkem9oS2RKUlN2?=
- =?utf-8?B?TjNFU3UzTHZRZ0tSSnYybGZEWlFhTjg2bjI1UVluWXBIK1UrN2hUaVRsZ1kx?=
- =?utf-8?B?eUswTXcyeWJoUmtPRm1DajZIcCtGeEh2Y0F0MmFHTHEyNWdwMVhzWmxqcUtI?=
- =?utf-8?B?eThoZit3UFlVZjVwZE5FcHk1RGdiRXdQZGZyV2kvT1hrUjgrZkZ3ZElMQmpl?=
- =?utf-8?B?N1BMV1g4T0F3ZlZST1M0d1ViVklTZDVTODl6b0ZKSVBrNDJhVllVVm5SUXVn?=
- =?utf-8?B?ODJ5emFQSG9XSHhSMnBRNVBST01CeHd6MGFZYkpFTmlLalN4Y2N0NVFmVDFm?=
- =?utf-8?B?VWFZRFJndzc3UGZQMTJNVk8xcXZuYVZQblpTaGthNEFQU0hwUnVEa25seFFS?=
- =?utf-8?B?VjdUWnZqSTBIQzV0KzdRVW5ZVTc0d3ZidmwxWWtFdWNaeUZSdUZQejR3WUwr?=
- =?utf-8?B?aTJoNk9WMmFQSytWMHhDWS8xcXlUdUdRbzA2VFdaOXJ2bnZjeHJMY1RySWM2?=
- =?utf-8?B?OXVNNDR1ODg2UUR0Kzc1R3ZPYjhxQ0ZIWENjVzBRK1laV0xPa0RnK1RQckRa?=
- =?utf-8?B?eDFZUlVKSWhvdkpzY0xiUFlnZ0dNRGp1V0lBM1pUanExQVFlN2F6RUx3ZENU?=
- =?utf-8?B?ZGVYTE02QUF2d0doV2dMcnJvNmNCaTRuWnpMS2p0alZBdFlnbVJjQk9RRHls?=
- =?utf-8?B?eENIRTJjOEJPejZyYkZBQkVMdFFZdzI0UUloa0VOOFMrOUtVOTlmS2E5VWgz?=
- =?utf-8?Q?nPAVrcEt7mmPCvU2P4IP/5s=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: c31033bc-0120-4505-bb55-08db15b1df6c
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?WFFBbk5MazFFb0oxN0FPMkdPVVJSZTNKWkNBSzJGYlQwSzdwNTIvOTBYa1Ur?=
+ =?utf-8?B?MHZtczV4NE9QWVNaVzltYXQvMlgrM1VKdVNBK2NQUlRoMjA0eXBSQXZKVGxq?=
+ =?utf-8?B?MDNxek9SY2RvNlgyMUJhN3U5UDFMaEtQQlZEOXl6MHNSVjVHSCswRXZOeUJC?=
+ =?utf-8?B?ZjhxWHR3b1JBc2RweUh2SFgxVFBDZWl2SDBkZW1mK3hLVTlJVTliVFF2enNV?=
+ =?utf-8?B?eGZrV2NIY0kvY2tIcFozK1cxOExnR0hvaHNETzJWVWo0QXl4N3JqMTR4Yzdp?=
+ =?utf-8?B?ZWdVZU41UlgyVndPWTB1UXZ5Q2VGMm5kWi91MUwzdU5uSUNIT0xwS0IxNWRG?=
+ =?utf-8?B?MkNzdUdRQVhXZlVaTS9HMWFQTWZWcnVSOHdUVWEyc0Z3SnN5Q211ai8yWEU0?=
+ =?utf-8?B?Q3FvTXBCNlpSajdZUEVkZlUwMytKays0cG4xYS9KSzJqNDZpVXdRaFFDQ2Z1?=
+ =?utf-8?B?RHp1L0F6Tld1aWRkdlhPOEdiQ1pFeG0wOHl6cHJLdEp4WFkvU3U5YkRkVGNB?=
+ =?utf-8?B?bUNHRWNHV3Y2OTNSWmVCSVllUllrbVRreVlVK1IwNXZDVE9RVWhNY1NxR0No?=
+ =?utf-8?B?S2ZIenkxOTAwMWJNbFE1c0xJeGlxVzFESWlqSjRjdzk1WnFiQWJ1clBiVjgx?=
+ =?utf-8?B?eXVpeldacGZYUjhQejlrb3ovTjBQTnVyZkhzby9ZSXZNckw0dy9SUVB0TkVN?=
+ =?utf-8?B?TFd0RW5TQ0RGYVN5dWV2UmNEWTF1YkxJZFlrcUUyaDZPclBCcURRVjhTanNF?=
+ =?utf-8?B?a0lhNDdMdEFTVUZnYm5nYkgxQWRMT2xOdldzMzNGR3Z4TUhRa2xWRlRQQS81?=
+ =?utf-8?B?SW5vcmU5TTg0dTlrSUR5b1hXTUthZGhNdHM0TG9YWGFhKzlOUzhlc05YWWNn?=
+ =?utf-8?B?V3VjRTY2SnVYTzR4Wk9selU1Z3FKR3hKcGdtZGtaaWhCS2owY0ErTlNCSEtj?=
+ =?utf-8?B?b0ZMcitiSHltbXZuUHBUbjhmME1MYVBSd0dnaGZSS0U1TWJvZTI1R1VOcklQ?=
+ =?utf-8?B?RHlUVEkvTlBQZFh4b3FiSWMrOHpua0JxY1lzVmVaeXBlVFZRUVFJNk9IZks4?=
+ =?utf-8?B?K2xNWHNqMG12c25NWHhnQUpwa3ZGUTd3YTVJTGNrL1FDOGRRRU1YRmg0Tkdn?=
+ =?utf-8?B?NDFadlBpVURSMzREK0xKOWlwTzJRMEdFY1htZ1VvN1UyWkZndTBWUzQ2L3Rh?=
+ =?utf-8?B?QnNuRFJlbk9zUkZXdmVzRDF3SkFEOFo0emJZMUpWUU0zd0lMS0lyNERwblN3?=
+ =?utf-8?B?VWg0T0N1NmhTVWpZWnpsOVVBZjJCWStLc2UzSEkzR3QvZGZwWThmK0JXOVhZ?=
+ =?utf-8?B?TG9HTjhBUDVVSWJEaGR1VUpjZTRzMFFEK0d5WXkzWTdPT21HdjdaRnhtK2c5?=
+ =?utf-8?B?U0dxVlZONndNWGw4WHBYUFZ3Zk5VUVNBcDkzY3JXRGs2V00vS1JjNmJYb2xX?=
+ =?utf-8?B?cXI4WG9IOVJZNkJpOCtrN2tWQ3VyeS9MMklHeGtEUGdmcEFlVzFCelFkcTRq?=
+ =?utf-8?B?RzY4OFN2SXhRVExYTnV3cmt1d0ZDZGRPMFk1d3ZnTmVFVVMxTldFbU9JdW9O?=
+ =?utf-8?B?Q1krMnBsWGpCT2NxNFVxcGpVUy9QY29hb1o3bSs5Y2ZZOFBzYmlhU0x0QmR4?=
+ =?utf-8?B?UEtVTDdIdlNuVGV4KzBxNkpmOGN6VzUvSDFNUURva091aWdXNUN5MFU2MVYv?=
+ =?utf-8?B?WVlCM21yVmt6Q2tXYlVZSEcxRnpwaGt0S1AxY1JUMkxBcW8yMlVHSkdxblJY?=
+ =?utf-8?B?cERJcXpUK2hsQ2R3cTNsZHlDOGpXTmJPVHJrWDhTM09zN0Jicm5vamVYdFVr?=
+ =?utf-8?B?WlIzNVVodkEycU84VlE3T3p1WEtZRjd0ZGdGMmxFNXk0MElEUnVjUzUyMXJL?=
+ =?utf-8?B?djdpWXRRSE5KRVcrUG04ZlNaeERVdEp2VEMrRFo3SGtkWHRtYkdFV2RXdWdM?=
+ =?utf-8?B?WkR6ZXNoc2JBalRyenNYYTJ2Y2F6MmZpSGJsc0dPdUttWVNyc1B0MlJidTR0?=
+ =?utf-8?B?N3R1cjdseDZCMTVSYU1KUGFqL0ZDaXlPQUNyN3BpaG44U0pOR2lYSzRpWUFa?=
+ =?utf-8?B?c01UekZTV3lkeENoTkEyendMQVVFWTcwZ3FLaFd5UWVMd0tLeE5HMmdyR3ZT?=
+ =?utf-8?B?Unl6Qkxndi9hMExYVGF1Q3RiSjd0U0FTYkNHRTdpZDQvWGhpYUxhUnBYZm9j?=
+ =?utf-8?Q?hGvKWc1cVJBAqhgX+lY3W50=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: d3307414-4ab0-41dc-46c1-08db15b2a97f
 X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3625.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Feb 2023 15:23:10.6927
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Feb 2023 15:28:49.7922
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UEbDHZBCxPc34iBypNjh5Vte1gWqL3WiEF8hZu9wA20Kvi/ecklKxlWTUdh1u7EZmRL+u2Ka1DN7Xm4tzduJsTmJY7YJEXIKr0QItq//4x4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR11MB5476
+X-MS-Exchange-CrossTenant-UserPrincipalName: oyxDaHRPXQWOjbV1Wx6jWmp86t/isd4EoOfx/MfuAV/r0uWe03DFWu0e5qMmm53py8rsaxSahBfKNb2i485euhsDUY6WtC7raay5N7Rtbuw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5317
 X-OriginatorOrg: intel.com
 X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
@@ -161,96 +163,131 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: William Tu <u9012063@gmail.com>
-Date: Mon, 20 Feb 2023 20:35:47 -0800
+From: Zahari Doychev <zahari.doychev@linux.com>
+Date: Fri, 17 Feb 2023 17:19:20 +0100
 
-> The patch adds native-mode XDP support: XDP DROP, PASS, TX, and REDIRECT.
+> 
+> [...]
+> 
+>>> +/**
+>>> + * struct flow_dissector_key_cfm
+>>> + *
+>>> + */
+>>
+>> ???
+>>
+>> Without a proper kernel-doc, this makes no sense. So either remove this
+>> comment or make a kernel-doc from it, describing the structure and each
+>> its member (I'd go for kernel-doc :P).
+>>
+> 
+> I will fix this.
+> 
+>>> +struct flow_dissector_key_cfm {
+>>> +	u8	mdl:3,
+>>> +		ver:5;
+>>> +	u8	opcode;
+>>> +};
+>>> +
+>>>  enum flow_dissector_key_id {
+>>>  	FLOW_DISSECTOR_KEY_CONTROL, /* struct flow_dissector_key_control */
+>>>  	FLOW_DISSECTOR_KEY_BASIC, /* struct flow_dissector_key_basic */
+>>> @@ -329,6 +339,7 @@ enum flow_dissector_key_id {
+>>>  	FLOW_DISSECTOR_KEY_NUM_OF_VLANS, /* struct flow_dissector_key_num_of_vlans */
+>>>  	FLOW_DISSECTOR_KEY_PPPOE, /* struct flow_dissector_key_pppoe */
+>>>  	FLOW_DISSECTOR_KEY_L2TPV3, /* struct flow_dissector_key_l2tpv3 */
+>>> +	FLOW_DISSECTOR_KEY_CFM, /* struct flow_dissector_key_cfm */
+>>>  
+>>>  	FLOW_DISSECTOR_KEY_MAX,
+>>>  };
+>>> diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
+>>> index 648a82f32666..d55f70ccfe3c 100644
+>>> --- a/include/uapi/linux/pkt_cls.h
+>>> +++ b/include/uapi/linux/pkt_cls.h
+>>> @@ -594,6 +594,8 @@ enum {
+>>>  
+>>>  	TCA_FLOWER_KEY_L2TPV3_SID,	/* be32 */
+>>>  
+>>> +	TCA_FLOWER_KEY_CFM,
+>>
+>> Each existing definitions within this enum have a comment mentioning the
+>> corresponding type (__be32, __u8 and so on), why doesn't this one?
+>>
+> 
+> I was following the other nest option attributes which don't have
+> a comment but sure I can add one or probably change the name to
+> include the opts prefix.
+
+Ah it's nested. You can put a comment with the single word "nested" there.
+
+> 
+>>> +
+>>>  	__TCA_FLOWER_MAX,
+>>>  };
+>>>  
+>>> @@ -702,6 +704,16 @@ enum {
+>>>  	TCA_FLOWER_KEY_FLAGS_FRAG_IS_FIRST = (1 << 1),
+>>>  };
+>>>  
+>>> +enum {
+>>> +	TCA_FLOWER_KEY_CFM_OPT_UNSPEC,
+>>> +	TCA_FLOWER_KEY_CFM_MD_LEVEL,
+>>> +	TCA_FLOWER_KEY_CFM_OPCODE,
+>>> +	__TCA_FLOWER_KEY_CFM_OPT_MAX,
+>>> +};
+>>> +
+>>> +#define TCA_FLOWER_KEY_CFM_OPT_MAX \
+>>> +		(__TCA_FLOWER_KEY_CFM_OPT_MAX - 1)
+>>
+>> This fits into one line...
+>> Can't we put it into the enum itself?
+>>
+> 
+> I can fix this but putting it into the enum makes it different from the 
+> other defintions. So I am not quire sure on that.
+
+Nothing present in the kernel automatically means it's good or approved
+or you should go only that route. Write the code the way you feel it
+looks the best and will see what others think.
+
+> 
+>>> +
+>>>  #define TCA_FLOWER_MASK_FLAGS_RANGE	(1 << 0) /* Range-based match */
 
 [...]
 
-> +static int
-> +vmxnet3_xdp_set(struct net_device *netdev, struct netdev_bpf *bpf,
-> +		struct netlink_ext_ack *extack)
-> +{
-> +	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
-> +	struct bpf_prog *new_bpf_prog = bpf->prog;
-> +	struct bpf_prog *old_bpf_prog;
-> +	bool need_update;
-> +	bool running;
-> +	int err;
-> +
-> +	if (new_bpf_prog && netdev->mtu > VMXNET3_XDP_MAX_MTU) {
-> +		NL_SET_ERR_MSG_MOD(extack, "MTU too large for XDP");
+>>> +	key_cfm = skb_flow_dissector_target(flow_dissector,
+>>> +					    FLOW_DISSECTOR_KEY_CFM,
+>>> +					    target_container);
+>>> +
+>>> +	key_cfm->mdl = hdr->mdlevel_version >> CFM_MD_LEVEL_SHIFT;
+>>> +	key_cfm->ver = hdr->mdlevel_version & CFM_MD_VERSION_MASK;
+>>
+>> I'd highly recommend using FIELD_GET() here.
+>>
+>> Or wait, why can't you just use one structure for both FD and the actual
+>> header? You only need two fields going next to each other, so you could
+>> save some cycles by just directly assigning them (I mean, just define
+>> the fields you need, not the whole header since you use only first two
+>> fields).
+>>
+> 
+> I am not sure if get this completely. I understand we can reduce the
+> struct size be removing the not needed fields but we still need to
+> use the FIELD_GET here. Please correct me if my understanding is wrong.
 
-Minor: we now have NL_SET_ERR_MSG_FMT_MOD(), so you could even print to
-user what the maximum MTU you support for XDP is.
+If both packet header and kernel-side container will have the same
+layout, you could assign the fields directly.
 
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	if (adapter->netdev->features & NETIF_F_LRO) {
-> +		NL_SET_ERR_MSG_MOD(extack, "LRO is not supported with XDP");
-> +		adapter->netdev->features &= ~NETIF_F_LRO;
-> +	}
-> +
-> +	old_bpf_prog = rcu_dereference(adapter->xdp_bpf_prog);
-> +	if (!new_bpf_prog && !old_bpf_prog)
-> +		return 0;
-> +
-> +	running = netif_running(netdev);
-> +	need_update = !!old_bpf_prog != !!new_bpf_prog;
-> +
-> +	if (running && need_update)
-> +		vmxnet3_quiesce_dev(adapter);
+	key_cfm->mdlevel_version = hdr->mdlevel_version;
+	key_cfm->opcode = hdr->opcode;
 
+> 
+>>> +	key_cfm->opcode = hdr->opcode;
+>>> +
+>>> +	return  FLOW_DISSECT_RET_OUT_GOOD;
+>>> +}
 [...]
 
-> +		bpf_warn_invalid_xdp_action(rq->adapter->netdev, prog, act);
-> +		fallthrough;
-> +	case XDP_ABORTED:
-> +		trace_xdp_exception(rq->adapter->netdev, prog, act);
-> +		rq->stats.xdp_aborted++;
-> +		break;
-> +	case XDP_DROP:
-> +		rq->stats.xdp_drops++;
-> +		break;
-> +	}
-> +
-> +	page_pool_recycle_direct(rq->page_pool, page);
-
-You can speed up stuff a bit here. recycle_direct() takes ->max_len to
-sync DMA for device when recycling. You can use page_pool_put_page() and
-specify the actual length which needs to be synced. This is a bit
-tricky, but some systems have incredibly expensive DMA synchronization
-and every byte counts there.
-"Tricky" because you can't specify the original frame size here and ATST
-can't specify the current xdp.data_end - xdp.data. As xdp.data may grow
-to both left and right, the same with .data_end. So what you basically
-need is the following:
-
-sync_len = max(orig_len,
-	       xdp.data_end - xdp.data_hard_start - page_pool->p.offset)
-
-Because we don't care about the data between data_hard_start and
-p.offset -- hardware doesn't touch it. But we care about the whole area
-that might've been touched to the right of it.
-
-Anyway, up to you. On server x86_64 platforms DMA sync is usually a noop.
-
-> +
-> +	return act;
-> +}
-
-[...]
-
-> +static inline bool vmxnet3_xdp_enabled(struct vmxnet3_adapter *adapter)
-> +{
-> +	return !!rcu_access_pointer(adapter->xdp_bpf_prog);
-> +}
-> +
-> +#endif
-
-I feel good with the rest of the patch, thanks! Glad to see all the
-feedback addressed when applicable.
-
+Thanks,
 Olek
