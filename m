@@ -2,100 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66EC06A09D5
-	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 14:10:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FBC76A09DA
+	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 14:10:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234418AbjBWNKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Feb 2023 08:10:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38896 "EHLO
+        id S234413AbjBWNK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Feb 2023 08:10:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234429AbjBWNKR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 08:10:17 -0500
-Received: from out-37.mta0.migadu.com (out-37.mta0.migadu.com [IPv6:2001:41d0:1004:224b::25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F43567A7
-        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 05:10:12 -0800 (PST)
-Message-ID: <611f1770-982a-e09f-bd1e-616dcc2303d4@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1677157809;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ymmkMOcLF7AW+Hx15KTLNa7RDkkDpBqEAX76cQN74JE=;
-        b=RlbqgkJgPNVZVp7+tB2+oQ0VwYRrg8NqqLBkMQHZA/ik9cDMKQwWQ7vg7D1WozXibClZsO
-        p1Q1yE0eaI3l51zUfqKz9+8CdIYgX06y0q6Qcn7Y0+hz0bG5MntFbksXCwuvbdFAVvx06j
-        n6Dimlf4/GWYuTe0iYPveMzc1iaKqsE=
-Date:   Thu, 23 Feb 2023 21:10:01 +0800
+        with ESMTP id S234419AbjBWNK0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 08:10:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 740C051FBD;
+        Thu, 23 Feb 2023 05:10:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 545DE616E3;
+        Thu, 23 Feb 2023 13:10:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6A588C4339C;
+        Thu, 23 Feb 2023 13:10:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1677157817;
+        bh=2eLky8gBvHxAxv06XlZQKw9omFNkrqf9K6xgZWiZpM0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=XV5Yz+SRsb6OBSPA2u49bIAcK6tGukmivybif/mEFu0I6AG3ANjs7isBmWND/bZFc
+         BkcgrGI7+vPj/for8w2IVf/Vy8sfljY2YPMRLhi/qu36n71W1haq3Clnqv8xK2zSWF
+         O+1YanUj5NqKa86EdPDB/rjINoQYPKAtwaxZQG3lvK3mL4WA5Bp4Wv5C915m7WRryA
+         wkFhRZdLHBI+XoHXIV0OwsVdOZdl0JDP0wifo9gWM4+4Eia6FkYWWWgLbAp9/17oGC
+         CiCjXr7iyIxHcRDM211GnAIasFdS8FSwr3XcCGW03rL96hLbqAXzYi6Booio2/Rsja
+         b9dW9lEntoS9A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 446AAC395E0;
+        Thu, 23 Feb 2023 13:10:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Subject: Re: [PATCHv3 1/8] RDMA/rxe: Creating listening sock in newlink
- function
-To:     Zhu Yanjun <yanjun.zhu@intel.com>, jgg@ziepe.ca, leon@kernel.org,
-        zyjzyj2000@gmail.com, linux-rdma@vger.kernel.org, parav@nvidia.com,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     Zhu Yanjun <yanjun.zhu@linux.dev>
-References: <20230214060634.427162-1-yanjun.zhu@intel.com>
- <20230214060634.427162-2-yanjun.zhu@intel.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Zhu Yanjun <yanjun.zhu@linux.dev>
-In-Reply-To: <20230214060634.427162-2-yanjun.zhu@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Subject: Re: [net PATCH v2] octeontx2-pf: Recalculate UDP checksum for ptp 1-step
+ sync packet
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167715781727.23818.4267546312113969730.git-patchwork-notify@kernel.org>
+Date:   Thu, 23 Feb 2023 13:10:17 +0000
+References: <20230222113600.1965116-1-saikrishnag@marvell.com>
+In-Reply-To: <20230222113600.1965116-1-saikrishnag@marvell.com>
+To:     Sai Krishna <saikrishnag@marvell.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, sgoutham@marvell.com,
+        gakula@marvell.com, richardcochran@gmail.com, hkelam@marvell.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-在 2023/2/14 14:06, Zhu Yanjun 写道:
-> From: Zhu Yanjun <yanjun.zhu@linux.dev>
-> 
-> Originally when the module rdma_rxe is loaded, the sock listening on udp
-> port 4791 is created. Currently moving the creating listening port to
-> newlink function.
-> 
-> So when running "rdma link add" command, the sock listening on udp port
-> 4791 is created.
-> 
-> Signed-off-by: Zhu Yanjun <yanjun.zhu@linux.dev>
+Hello:
 
-Add netdev@vger.kernel.org.
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-Zhu Yanjun
-
-> ---
->   drivers/infiniband/sw/rxe/rxe.c | 10 ++++------
->   1 file changed, 4 insertions(+), 6 deletions(-)
+On Wed, 22 Feb 2023 17:06:00 +0530 you wrote:
+> From: Geetha sowjanya <gakula@marvell.com>
 > 
-> diff --git a/drivers/infiniband/sw/rxe/rxe.c b/drivers/infiniband/sw/rxe/rxe.c
-> index 136c2efe3466..64644cb0bb38 100644
-> --- a/drivers/infiniband/sw/rxe/rxe.c
-> +++ b/drivers/infiniband/sw/rxe/rxe.c
-> @@ -192,6 +192,10 @@ static int rxe_newlink(const char *ibdev_name, struct net_device *ndev)
->   		goto err;
->   	}
->   
-> +	err = rxe_net_init();
-> +	if (err)
-> +		return err;
-> +
->   	err = rxe_net_add(ibdev_name, ndev);
->   	if (err) {
->   		rxe_dbg(exists, "failed to add %s\n", ndev->name);
-> @@ -208,12 +212,6 @@ static struct rdma_link_ops rxe_link_ops = {
->   
->   static int __init rxe_module_init(void)
->   {
-> -	int err;
-> -
-> -	err = rxe_net_init();
-> -	if (err)
-> -		return err;
-> -
->   	rdma_link_register(&rxe_link_ops);
->   	pr_info("loaded\n");
->   	return 0;
+> When checksum offload is disabled in the driver via ethtool,
+> the PTP 1-step sync packets contain incorrect checksum, since
+> the stack calculates the checksum before driver updates
+> PTP timestamp field in the packet. This results in PTP packets
+> getting dropped at the other end. This patch fixes the issue by
+> re-calculating the UDP checksum after updating PTP
+> timestamp field in the driver.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,v2] octeontx2-pf: Recalculate UDP checksum for ptp 1-step sync packet
+    https://git.kernel.org/netdev/net/c/edea0c5a994b
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
