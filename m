@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0A386A1315
-	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 23:53:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69CDC6A1317
+	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 23:53:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229660AbjBWWxS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Feb 2023 17:53:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51550 "EHLO
+        id S229682AbjBWWxT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Feb 2023 17:53:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229652AbjBWWxG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 17:53:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E747515C89
-        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 14:53:04 -0800 (PST)
+        with ESMTP id S229663AbjBWWxI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 17:53:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C0E14228
+        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 14:53:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5BD2B81A93
-        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 22:53:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 483C4C4339E;
-        Thu, 23 Feb 2023 22:53:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 94356B81B5E
+        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 22:53:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46D83C433D2;
+        Thu, 23 Feb 2023 22:53:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677192782;
-        bh=f9ZHLIeeMOuFE6mbpLGDLQEC0ReZHO5ys0oQefXP0aY=;
+        s=k20201202; t=1677192783;
+        bh=pw/Ogl/eq/epEKvlQV+TB9F4B7AhAw8FNQIxAtfBasw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JDeyDV5hjSJ0xP5aDa12K/izik0uOgyw9BxZk8LuVHR1+25tL97tr7MYnRSBBRx9J
-         rl+o1YM8VDhOnuoAKxj4w5s8ziHaHjtY91etPozOKtlQbz9D3RdLqYQMUsUYjABBdm
-         sEy3txbQCWaxg9nTI4anQrr0AaqRR+D0VCNJsnM+IXQfcLZIhgIH3K6XbOimmz0oqO
-         DEGhP6in/nUXnDt3Ga4s4QPXor0Qdod5wovS1L9jGew8vhQolEImxw1WH4OCRHKCjD
-         8fPNrSpEi9UlPn0USOK4ngo6scjfYJEXrsaHf95WnJUGmSSONvsCOvHo6NCyvm9b7F
-         ID4UTujU7qZ+Q==
+        b=JjhlvLi3GY6Nr5WuPBzwKtv+td5iDbbz+k9HBuV+8BefTBll1+pGWzGsHGhZvvXa9
+         njyazvAJCMQpAesNEC/YuWf0ViuQFfpGWkgMVuekR1N4pCkvCiKCbItF7q9t7U18sA
+         sPpE+nkiEDvdw7JNhkxmp61cZ9TxTqQrshfL9co3OBWFdE3EFDMTMPrhTjtfI6W7Ts
+         s+1suzLtLHHMm0pccRbLFK+nyi/m/fe+wmCPZkTnYXioMaVG2ECnG4LzDiLbL64I1h
+         pIKO6ivMANOFe0lN1gfXJ+kohZLh3dO9LnlOab1yjXKQp70mnWJmqDHjqYjXDU+vAg
+         DzzrhgVcE8N8Q==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -38,17 +38,18 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
-        Rahul Rameshbabu <rrameshbabu@nvidia.com>
-Subject: [net 07/10] net/mlx5e: Correct SKB room check to use all room in the fifo
-Date:   Thu, 23 Feb 2023 14:52:44 -0800
-Message-Id: <20230223225247.586552-8-saeed@kernel.org>
+        Maher Sanalla <msanalla@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>
+Subject: [net 08/10] net/mlx5: ECPF, wait for VF pages only after disabling host PFs
+Date:   Thu, 23 Feb 2023 14:52:45 -0800
+Message-Id: <20230223225247.586552-9-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230223225247.586552-1-saeed@kernel.org>
 References: <20230223225247.586552-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,33 +57,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rahul Rameshbabu <rrameshbabu@nvidia.com>
+From: Maher Sanalla <msanalla@nvidia.com>
 
-Previous check was comparing against the fifo mask. The mask is size of the
-fifo (power of two) minus one, so a less than or equal comparator should be
-used for checking if the fifo has room for the SKB.
+Currently,  during the early stages of their unloading, particularly
+during SRIOV disablement, PFs/ECPFs wait on the release of all of
+their VFs memory pages. Furthermore, ECPFs are considered the page
+supplier for host VFs, hence the host VFs memory pages are freed only
+during ECPF cleanup when host interfaces get disabled.
 
-Fixes: 19b43a432e3e ("net/mlx5e: Extend SKB room check to include PTP-SQ")
-Signed-off-by: Rahul Rameshbabu <rrameshbabu@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Thus, disabling SRIOV early in unload timeline causes the DPU ECPF
+to stall on driver unload while waiting on the release of host VF pages
+that won't be freed before host interfaces get disabled later on.
+
+Therefore, for ECPFs, wait on the release of VFs pages only after the
+disablement of host PFs during ECPF cleanup flow. Then, host PFs and VFs
+are disabled and their memory shall be freed accordingly.
+
+Fixes: 143a41d7623d ("net/mlx5: Disable SRIOV before PF removal")
+Signed-off-by: Maher Sanalla <msanalla@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/ecpf.c  | 4 ++++
+ drivers/net/ethernet/mellanox/mlx5/core/sriov.c | 4 ++++
+ 2 files changed, 8 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-index b9c2f67d3794..816ea83e6413 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-@@ -86,7 +86,7 @@ void mlx5e_free_txqsq_descs(struct mlx5e_txqsq *sq);
- static inline bool
- mlx5e_skb_fifo_has_room(struct mlx5e_skb_fifo *fifo)
- {
--	return (u16)(*fifo->pc - *fifo->cc) < fifo->mask;
-+	return (u16)(*fifo->pc - *fifo->cc) <= fifo->mask;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/ecpf.c b/drivers/net/ethernet/mellanox/mlx5/core/ecpf.c
+index 9a3878f9e582..7c9c4e40c019 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/ecpf.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/ecpf.c
+@@ -98,4 +98,8 @@ void mlx5_ec_cleanup(struct mlx5_core_dev *dev)
+ 	err = mlx5_wait_for_pages(dev, &dev->priv.page_counters[MLX5_HOST_PF]);
+ 	if (err)
+ 		mlx5_core_warn(dev, "Timeout reclaiming external host PF pages err(%d)\n", err);
++
++	err = mlx5_wait_for_pages(dev, &dev->priv.page_counters[MLX5_VF]);
++	if (err)
++		mlx5_core_warn(dev, "Timeout reclaiming external host VFs pages err(%d)\n", err);
  }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sriov.c b/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
+index 3008e9ce2bbf..20d7662c10fb 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
+@@ -147,6 +147,10 @@ mlx5_device_disable_sriov(struct mlx5_core_dev *dev, int num_vfs, bool clear_vf)
  
- static inline bool
+ 	mlx5_eswitch_disable_sriov(dev->priv.eswitch, clear_vf);
+ 
++	/* For ECPFs, skip waiting for host VF pages until ECPF is destroyed */
++	if (mlx5_core_is_ecpf(dev))
++		return;
++
+ 	if (mlx5_wait_for_pages(dev, &dev->priv.page_counters[MLX5_VF]))
+ 		mlx5_core_warn(dev, "timeout reclaiming VFs pages\n");
+ }
 -- 
 2.39.1
 
