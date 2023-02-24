@@ -2,150 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 99AF16A1D19
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 14:49:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66A9A6A1D2B
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 14:58:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229633AbjBXNtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 08:49:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41154 "EHLO
+        id S229639AbjBXN6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 08:58:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbjBXNtD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 08:49:03 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42BA217144;
-        Fri, 24 Feb 2023 05:49:02 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id s22so17868830lfi.9;
-        Fri, 24 Feb 2023 05:49:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=AZ7jweNDhv008P7BIGu/FPSGXOhE2NT82NyplwI7uuc=;
-        b=YRsJJnFWlhBaEXBTYsJd3PDs2dzzwY5B6Dmhu4XdX601mMeC3C4zToqkc9yFjUe6Di
-         WR8g3pORJ85vE1sjJT7pEZqpr9T+kW+okfNSFnBh70y41GtENoLjf0uxNjDsnEIrMMPO
-         MkMNuId037ESU3qyfcWkkJYlZlJahnIbAcvPf40wxbQVQV5bEG/dFtDyjyGgPJrl6B/C
-         aQyCp2o1KAyI/mutNEMhqVmmusv+wkrPNAe8CaVLR7fknEVkrHoMoryM45kBnE0hiO8O
-         Q9KALeGm0ekko4jp3oRJwtUaXV3Yg30NzU5Cw83lcCk5h80EryximKSJn4oPHYt8yaPh
-         bkxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=AZ7jweNDhv008P7BIGu/FPSGXOhE2NT82NyplwI7uuc=;
-        b=BM97STfaF1/TGSn6+lMigFtpwYKip6YkSzMlzXgt+wobNtZ5Ng4iAuk225szOir+uI
-         LQkvm3vaBXezDIXR0RJSCMhBlsAX0bq4DKlMOR5H0nqGJreUnoQtPyYvih5CxSJT6oYy
-         6YmxcP5gMANeUYS44/AAc7kA6nTIRcFoRYJfidP92zLE7G82H4FQQBQbpwlnkt7rdRe+
-         8Wc31ybLmkjPfSqAw+JFKUcnxWvwUKTlEpDJTgWSy64N7AuPnkyFSVUl/tgr6dmTlMoT
-         0mOiHLse9X6CrDXJMwAM83zt46ylaHyPSaEqWB3DcHkEXB0M6MBNRedwMFrxgt6QT8Xa
-         o65w==
-X-Gm-Message-State: AO0yUKUjJd4E8yIYQNj0aqpxaKAllSwVlpwCPL0m79Qs/1dQdSAkAF35
-        7KtF8/yocAXbeQp2uvj93Uo=
-X-Google-Smtp-Source: AK7set/gz1Tdhd4R6zPgD14Fh2WPnT0raS0/qH0xWprMLeHlkO3QVxxsbyonhGuoYbzrrmmtIFIp8g==
-X-Received: by 2002:a05:6512:66:b0:4a4:7be4:9baf with SMTP id i6-20020a056512006600b004a47be49bafmr5239540lfo.59.1677246540444;
-        Fri, 24 Feb 2023 05:49:00 -0800 (PST)
-Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id 1-20020ac25681000000b004d594481d0asm1582928lfr.34.2023.02.24.05.48.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Feb 2023 05:48:59 -0800 (PST)
-From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229488AbjBXN6D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 08:58:03 -0500
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E82D193D3;
+        Fri, 24 Feb 2023 05:58:01 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id C57D040003;
+        Fri, 24 Feb 2023 13:57:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1677247079;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VoPzW7n5a+mXABqnPHMAAB9/qWEnlbkkwf/8DgTN3FU=;
+        b=XdCbTgT372HdJ3JHLYf2HkanE6+aO7f0ytg/Q+lUid4cg1mTGtxvC3in+G9nEfONx3f1Ii
+        ojqkHxeaWRMAhmUfGkiPHa+nayznc5NSGFW0Axn6MC5lcLz22ZJIMfaG3CaevnkGoITzsb
+        jteh+SyF7T148q8xbhw/14y/Pp6PS7n2Paj3xCeqjhCjqd0kz6QpYP+BbeEoX/NmFhbhj2
+        Kb3FxjheW474N18VPwcJ7AO3MMFUXVVzKq2KOB46EXHM1ZV+/veC9PL6i9bi8UtPl66/VJ
+        WJ+tLkuxrFnfnszzkCyPE4TZ6B6OWR2L6o5qMgLnKzL/pdR5a6znrKfhyXJnCQ==
+Date:   Fri, 24 Feb 2023 14:57:56 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH RFC Vb] bgmac: fix *initial* chip reset to support BCM5358
-Date:   Fri, 24 Feb 2023 14:48:51 +0100
-Message-Id: <20230224134851.18028-1-zajec5@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH wpan-next 1/6] ieee802154: Add support for user scanning
+ requests
+Message-ID: <20230224145756.39349d29@xps-13>
+In-Reply-To: <CAK-6q+ikVP2eWpT5xRkiJn_JoenmD6D5+xcc2RwwXTfC-zsobw@mail.gmail.com>
+References: <20221129160046.538864-1-miquel.raynal@bootlin.com>
+        <20221129160046.538864-2-miquel.raynal@bootlin.com>
+        <CAK-6q+iwqVx+6qQ-ctynykdrbN+SHxzk91gQCSdYCUD-FornZA@mail.gmail.com>
+        <20230206101235.0371da87@xps-13>
+        <CAK-6q+jav4yJD3MsOssyBobg1zGqKC5sm-xCRYX1SCkH9GhmHw@mail.gmail.com>
+        <20230210182129.77c1084d@xps-13>
+        <CAK-6q+jLKo1bLBie_xYZyZdyjNB_M8JvxDfr77RQAY9WYcQY8w@mail.gmail.com>
+        <20230213111553.0dcce5c2@xps-13>
+        <CAK-6q+jP55MaB-_ZbRHKESgEb-AW+kN3bU2SMWMtkozvoyfAwA@mail.gmail.com>
+        <20230214152849.5c3d196b@xps-13>
+        <CAK-6q+i-QiDpFptFPwDv05mwURGVHzmABcEn2z2L9xakQwgw+w@mail.gmail.com>
+        <20230217095251.59c324d0@xps-13>
+        <CAK-6q+ikVP2eWpT5xRkiJn_JoenmD6D5+xcc2RwwXTfC-zsobw@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While bringing hardware up we should perform a full reset including the
-switch bit (BGMAC_BCMA_IOCTL_SW_RESET aka SICF_SWRST). It's what
-specification says and what reference driver does.
+Hi Alexander,
 
-This seems to be critical for the BCM5358. Without this hardware doesn't
-get initialized properly and doesn't seem to transmit or receive any
-packets.
+aahringo@redhat.com wrote on Mon, 20 Feb 2023 21:54:41 -0500:
 
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
----
-RFC: This is alternative solutionto the
-[PATCH RFC] bgmac: fix *initial* chip reset to support BCM5358
-https://lore.kernel.org/lkml/20230207225327.27534-1-zajec5@gmail.com/T/
+> Hi,
+>=20
+> On Fri, Feb 17, 2023 at 3:53 AM Miquel Raynal <miquel.raynal@bootlin.com>=
+ wrote:
+> ...
+> > >
+> > > ok, I am curious. Probably it is very driver/device specific but yea,
+> > > HardMAC needs to at least support what 802.15.4 says, the rest is
+> > > optional and result in -ENOTSUPP? =20
+> >
+> > TBH this is still a gray area in my mental model. I'm not sure what
+> > these devices will really offer in terms of interfaces. =20
+>=20
+> ca8210 is one. They use those SAP-commands (MCPS-SAP and MLME-SAP)
+> which are described by 802.15.4 spec... there is this cfg802154_ops
+> structure which will redirect netlink to either SoftMAC or HardMAC it
+> should somehow conform to this...
 
-Any comments on the prefered solution? Parameter vs. flag?
----
- drivers/net/ethernet/broadcom/bgmac.c | 8 ++++++--
- drivers/net/ethernet/broadcom/bgmac.h | 2 ++
- 2 files changed, 8 insertions(+), 2 deletions(-)
+Absolutely.
 
-diff --git a/drivers/net/ethernet/broadcom/bgmac.c b/drivers/net/ethernet/broadcom/bgmac.c
-index 3038386a5afd..1761df8fb7f9 100644
---- a/drivers/net/ethernet/broadcom/bgmac.c
-+++ b/drivers/net/ethernet/broadcom/bgmac.c
-@@ -890,13 +890,13 @@ static void bgmac_chip_reset_idm_config(struct bgmac *bgmac)
- 
- 		if (iost & BGMAC_BCMA_IOST_ATTACHED) {
- 			flags = BGMAC_BCMA_IOCTL_SW_CLKEN;
--			if (!bgmac->has_robosw)
-+			if (bgmac->in_init || !bgmac->has_robosw)
- 				flags |= BGMAC_BCMA_IOCTL_SW_RESET;
- 		}
- 		bgmac_clk_enable(bgmac, flags);
- 	}
- 
--	if (iost & BGMAC_BCMA_IOST_ATTACHED && !bgmac->has_robosw)
-+	if (iost & BGMAC_BCMA_IOST_ATTACHED && (bgmac->in_init || !bgmac->has_robosw))
- 		bgmac_idm_write(bgmac, BCMA_IOCTL,
- 				bgmac_idm_read(bgmac, BCMA_IOCTL) &
- 				~BGMAC_BCMA_IOCTL_SW_RESET);
-@@ -1490,6 +1490,8 @@ int bgmac_enet_probe(struct bgmac *bgmac)
- 	struct net_device *net_dev = bgmac->net_dev;
- 	int err;
- 
-+	bgmac->in_init = true;
-+
- 	bgmac_chip_intrs_off(bgmac);
- 
- 	net_dev->irq = bgmac->irq;
-@@ -1542,6 +1544,8 @@ int bgmac_enet_probe(struct bgmac *bgmac)
- 	/* Omit FCS from max MTU size */
- 	net_dev->max_mtu = BGMAC_RX_MAX_FRAME_SIZE - ETH_FCS_LEN;
- 
-+	bgmac->in_init = false;
-+
- 	err = register_netdev(bgmac->net_dev);
- 	if (err) {
- 		dev_err(bgmac->dev, "Cannot register net device\n");
-diff --git a/drivers/net/ethernet/broadcom/bgmac.h b/drivers/net/ethernet/broadcom/bgmac.h
-index e05ac92c0650..d73ef262991d 100644
---- a/drivers/net/ethernet/broadcom/bgmac.h
-+++ b/drivers/net/ethernet/broadcom/bgmac.h
-@@ -472,6 +472,8 @@ struct bgmac {
- 	int irq;
- 	u32 int_mask;
- 
-+	bool in_init;
-+
- 	/* Current MAC state */
- 	int mac_speed;
- 	int mac_duplex;
--- 
-2.34.1
+> However I think it should be the minimum functionality inside of this,
+> there might be a lot of optional things which only SoftMAC supports.
+> Also nl802154 should be oriented to this.
+>=20
+> Are you agreeing here?
 
+Yes. That support can also be improved if we ever have to support
+advanced functionalities with "new" and compatible HardMAC devices.
+
+Thanks,
+Miqu=C3=A8l
