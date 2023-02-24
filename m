@@ -2,219 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 442046A1877
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 10:05:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 485E46A187B
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 10:07:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229627AbjBXJF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 04:05:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49486 "EHLO
+        id S229608AbjBXJHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 04:07:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229618AbjBXJF2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 04:05:28 -0500
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2070f.outbound.protection.outlook.com [IPv6:2a01:111:f400:7ea9::70f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10AC9F76F
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 01:05:26 -0800 (PST)
+        with ESMTP id S229477AbjBXJHg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 04:07:36 -0500
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2102.outbound.protection.outlook.com [40.107.96.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43B4F1499F;
+        Fri, 24 Feb 2023 01:07:35 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=f0gW6FT1ztGJ3DOFIIuuyUBmZy/0Z8X6v0mZrgPd/doK6Mgf23269PPM0kzkBRZv/vdWDpxjy9nSyIT2vathLLiyTZL2VWL82aaN6iRRdrgiWF2lsaSrvd030mEuPk68FzV0cwOTFeV8fk5GCbXMPC9SkRT++RDMDjMzppBlH5AzUhRMWU90tboA9G9ty7puVF6u356Yq5Fs8jDyPwIK7OEnc/lt6GgHXBszBSAgNyT3iB3yeCaRul3QMCKva2HDQCPDOV0PHjZFt96mOVPQyzwIdOjf/6kaWPcx0dijauli+vCirU5gOx4SZsbizO0nh+06Xaqso58CMvTRF5s2Pw==
+ b=SU+Bz1dSi+AfhNnaXaaWQfCiiLjBCvLawBmNfoYE+IGbIPc9zCeOp+A+0FEqB90p8DxcCynPY00svPyFZdoOo/T2DysPIFjvZdlh5L+hMb6z9FCgRbXsvf7miYRUdCwcNiqtKn1doI5+Uzgl4/1Je9qi0AKATFGqZDPDUxp0Cdw2/2ERDl+DM2Bo1NtpS/3rCph1MZq2cNO+QLbyWG9wzUxQMcJnOJJ44UsQrQCTb4k5IBZgIq77K5rYoiBl9j6NPdYo/Rf9SqapUBUo1MIR0iAdON1jw3yxaJz4Z4u1FSpPmNZ7woUPgnxzataCaZkso+WYwqzH3tB8uejCk9d0jA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vd8BLItk5i1ZZpS1f8kQSjk3kk6YwFExeohacCCyjaU=;
- b=OY+rvSAg0kECXuu+TbgeYu3sFCoH6xYNaEA8wXmWO2VG2jNhFCJtBi4NZyWp14ndwVwfRWkIBbvSlHJGj6/PzQH/7WpPpDPVUFI7roiD6eYdktPRE2ai93ZZFsWqcVYWX6RqUycDg2N5gxE407VUhrabbIY2BKnOKi97NqBQirIv+H/yzYJozqM0aQzdf4L7WsEsXHaAIgfz+EWOLjPEr35pPYQ8nJ360SUmLrYI9BaHkrfCoSoIoD39Ptg4QKoD4Glf+49CjnxNNTK3iiABeFvZHbdPawVtoKoR0ih3cgp07WI6/z7OTI7tgUsk0dm7/smcWOcyISpCjmYC3r3M4A==
+ bh=6yqcFNEPFeY5nqxDCvwNkFK7ESiXQ3ahFty2grtiU/0=;
+ b=chNA+SmVZXNHx0keOMLoRKNVNFoQIPOHFqkNmi9JxfEIAtFsnDasbpPLfKr83Fk5G+PHC+murTdspt9TDs3nFQtN8SvAXE/9fd6B4qEGMTefpnhXLSFv+SF4KfpFGn06iPUoFtVTUwkbIACWzLyxNW4s0FhY6KVc2qd/J+B7wszuzm33m5MYyx2kY/EKBNh/ecx0v2vQ0PC22RozTC9CAp97NUs1A5/XPtzzf7kyhdTV1K2IwNNZUUIsoAH8Sdr0TZESgpzNvtwOv5RUY7WZAoeXWpfFVxoyCWxK1VWeqHdW/LSophhHbXyFLG/fW3xn2uv4N1ZHGn5Ep/W7Kor6oQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vd8BLItk5i1ZZpS1f8kQSjk3kk6YwFExeohacCCyjaU=;
- b=taNyw2/0uiyqOoZaK9IZBbnVR1jJPXG8s4x5ovtCcBq4c54xVhsZSg6AgMj/pE7ZZv5JSqHqgHWv8GKB5gil/rcH8ecadFcDTplwskJqRiQtQGjFKK6nCTCeeN6ppOnz6CW4Rt8AVyrWmH8z+/TKrAAZgn/sCuqbkv/0ZnZWwZY=
+ bh=6yqcFNEPFeY5nqxDCvwNkFK7ESiXQ3ahFty2grtiU/0=;
+ b=P9TuUMKPNpdvfYvGsMTVmcbtJjtvEDXooAJT5NP+kEDCccQs21xjbH7ssbCMCLRPvz9+THoQnNktMMMiu5xHekshYI7XwUQ2XlBkIFvmc7in4OB9aoRHdI7+XUFa3Y0NDWEED+6h6bFaksK7BvLCYq6ov6laBr6Sx0W4zTWvOTY=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BY5PR13MB3746.namprd13.prod.outlook.com (2603:10b6:a03:227::13) with
+ by CH2PR13MB3717.namprd13.prod.outlook.com (2603:10b6:610:9d::23) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.19; Fri, 24 Feb
- 2023 09:05:19 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.24; Fri, 24 Feb
+ 2023 09:07:31 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::85f5:bdb:fb9e:294c%9]) with mapi id 15.20.6134.024; Fri, 24 Feb 2023
- 09:05:18 +0000
-Date:   Fri, 24 Feb 2023 10:05:11 +0100
+ 09:07:31 +0000
+Date:   Fri, 24 Feb 2023 10:07:24 +0100
 From:   Simon Horman <simon.horman@corigine.com>
-To:     Pedro Tammela <pctammela@mojatatu.com>
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, error27@gmail.com
-Subject: Re: [PATCH net] net/sched: act_connmark: handle errno on
- tcf_idr_check_alloc
-Message-ID: <Y/h9x8c/XdJeT7e0@corigine.com>
-References: <20230223141639.13491-1-pctammela@mojatatu.com>
+To:     Sai Krishna Gajula <saikrishnag@marvell.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Suman Ghosh <sumang@marvell.com>
+Subject: Re: [net PATCH v2] octeontx2-af: Unlock contexts in the queue
+ context cache in case of fault detection
+Message-ID: <Y/h+TH9WTWOVaSHj@corigine.com>
+References: <20230223110125.2172509-1-saikrishnag@marvell.com>
+ <Y/dnNRD4Gpl0n2GQ@corigine.com>
+ <BY3PR18MB470774ABED5E4E22DAA4535EA0A89@BY3PR18MB4707.namprd18.prod.outlook.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230223141639.13491-1-pctammela@mojatatu.com>
-Organisation: Horms Solutions BV
-X-ClientProxiedBy: AM0PR10CA0041.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:150::21) To PH0PR13MB4842.namprd13.prod.outlook.com
+In-Reply-To: <BY3PR18MB470774ABED5E4E22DAA4535EA0A89@BY3PR18MB4707.namprd18.prod.outlook.com>
+X-ClientProxiedBy: AM0PR04CA0002.eurprd04.prod.outlook.com
+ (2603:10a6:208:122::15) To PH0PR13MB4842.namprd13.prod.outlook.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BY5PR13MB3746:EE_
-X-MS-Office365-Filtering-Correlation-Id: 54be9c75-8bfd-49fb-c268-08db16463ff2
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CH2PR13MB3717:EE_
+X-MS-Office365-Filtering-Correlation-Id: 507b284d-5af1-4b27-64bb-08db16468f18
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LZTzpA7BUOhjvn0ain4FTxpRDtwqc74W7PUogCDjRYv/wAncPO8ihquQ3Z2eZf1X5yG9iLlbUIiW/ThLOP8JZ81fzSyhe0wkOnk7A0DsedwY2VU/Q4ZnNtxe6o70vJZIvVBWozNjuRB8Byb2HHRgAsg5dttsE+jyeBlHSl4E7ImQV1rzoTcbufMFJJVM0j22x5r9YNzPAxeZbxdl4B0O2aSz0bAEf2GtR/Hzn1jt53R+YUSTW71sev7l3hB7aMPmV0sMJsNcYZJJLC/8bBGGYl01yNVxo86FB0oLmX7BnHYikJO7xj7XdI5khm1+fdzVtLIAHLJNbPZRJD8NNNyl68EeHRdhjSysHhK6pHeYIxPTqJk4Ms0N5RBmw5VzasGj2+8/u6oK9zB6eaLQa4xQJTbiHSbuPiyU72hBzGJ2yfGkW98TfOGij+xh4e1FCD5vWpTp8FkXbxGW2o5CrZVuNHIqxBaloih3D9m9Uk7LrmuSOKugarYpYf8DhS/TilNeX2mOY3rvyBSqli0iFqPt2AC0iQI5fIMTF2H03KPDTRLOPJFwT86S76odWA95DFmMzPvXjW399fE7vNF+smvKQKKajOnK9S1UL4pW7EFj88zsTLv+Z1bHJ0fYXObZcwmJZzvhqNABCGi15HEUo4+Raw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(346002)(376002)(39830400003)(136003)(396003)(451199018)(186003)(41300700001)(316002)(8936002)(6512007)(4326008)(86362001)(6916009)(38100700002)(8676002)(66946007)(6486002)(6506007)(66476007)(478600001)(6666004)(36756003)(83380400001)(2906002)(44832011)(2616005)(7416002)(66556008)(5660300002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: byRa6iV/5R39QzEa6fyTHrWuA9XUcOKKAlMVHtD/Z+d22MgHAvYXenYoGBpxVV48txVbx4C00o7sCYbo1s1I2G/qjMU8YX7Tp3kCqhtn5j8sNbLFdNK7uPFjbnFv8vxq/b6ytWVwMuHGaNjCug0ii6ZNH3EV5pzMAhKbZ/qaoXhKAZepsq4K9+uZP5pt5CmGCYyo1+4TwR/KkNmw8Mbza57VxXMqHYC7Y7pSBJAz5KrSTiwkv9U7oB1uxGgFTZ1OTacfpJ5AJp5n/H+1dRjaydD7dmk2ku36dkw/E5uQgkWFninUUKQympliaAeboXO78F7CoaFiKifmBqjJpf5GsA9JcMUPf2SUZZYi55xY7D9QvP1Q45K4lWYK728ZESH+kVjcAMOblL/RdPZSIF+eiSVDcfc5elDfv98WIV5+wwq9+L6igDJcP5yJIH6lRxe1Y9UpNcc/kAsZQSfDgXgsHzPFf+We5/oSaH6ejQWacm+dX27YllGqcKYEZrlCpXnZJDxJ3CMJvFRDc07IKPmq0o0BumlASpfx3hMd1o/NY5or3lX63HkE2CdR/8U22F4HRwmb1LJSSw04ROQW2QTUarS9q8dmIXacJivubgSPc31ZQHzdu9r01qeoy2Wb92Y8RLbUvWQkdgYcBE0L4bAXd8PZtoj3+4ZPYjv1MdwqgbSkrBz1Lo9ROKbe/zIWLKYP
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(366004)(376002)(396003)(39840400004)(346002)(451199018)(2906002)(36756003)(38100700002)(316002)(54906003)(8676002)(6916009)(66556008)(4326008)(66946007)(66476007)(83380400001)(6666004)(6512007)(6506007)(53546011)(186003)(2616005)(478600001)(86362001)(6486002)(5660300002)(44832011)(8936002)(41300700001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?f9XPG9wOcS6wT1IowQWF/uE0zqp4vd+PPfOBkd66EPFwmZ9DJ4xq5RN7okXW?=
- =?us-ascii?Q?k1qLhsZf+qXDEYhV54HQySiodYrVO6qVRbS80i9PwnqtjZWDgL/T7t/2BOIB?=
- =?us-ascii?Q?7pQa5wcYVgJ+Twee65wrll2XvTQudaKs3P+xl5bpo887NmzyaxVpoRKKDOlA?=
- =?us-ascii?Q?B7AZkkH7tW0tmg8JGLgvNQ0Y1WwFWG1ZAHQYAlGlbHwq9FRMEscZePXGyw79?=
- =?us-ascii?Q?S7ZFucsf1RrhSloVHaRWpNVGSGsIZvK5lsOozP2+MjYF3yjHDB+cYp563vHo?=
- =?us-ascii?Q?iVXibTPXRAAS9zcgWqe6m70u+CpQi6Gxgxk4MZnmu3F00IihqtvHVqw4kc+M?=
- =?us-ascii?Q?0NaJyiO+KrJMW1Cglb/xGnSZyr7Pn98gedrX/ltKoYzbHXRmiNgZxeBJPnK5?=
- =?us-ascii?Q?YA54KF2sIYJhs/S7Dea7Kpacp0UbMMRRz19o0IWN0a+C9S5yWHaPT9IXZBMS?=
- =?us-ascii?Q?1+jzj2nO3V+gBczYp/bnn8DkDi1ii81s8YXuohgDEroEuNECWPGVfVUoZpUF?=
- =?us-ascii?Q?pE1KAgLhxcGKoPEjUrZCvoA+n4RdGMycXnVtLPuzHlb0vjtPEUQGepc74Pia?=
- =?us-ascii?Q?evCtRgqYK+xJI3wQPImIJHpUx0HW9YU3eOQN4/lA3ZLAtQ8WNCqv1LfobVdA?=
- =?us-ascii?Q?vOrW38ydNVXE9TqHToL11kxFhUFHSWBbKKninZWp4w2F/kWw3Q+b2JPppWNc?=
- =?us-ascii?Q?rtnWAOF1FICw2q7TxMApvxVclGQtEyAMJWT+GEaIYZP1QXnYhhhEGuBJsUi7?=
- =?us-ascii?Q?XxiC1ePFKmZh5qidrHvoDXomhSHYZjaqn/vKQ17CfS87WFzpQ6CXp6TYqWXk?=
- =?us-ascii?Q?pSDcJJ6zi8jmW1kLXIYpDWcbq14bNrOjBRC3mQRkEgWmRd8Zr214S2//g6yp?=
- =?us-ascii?Q?MrMaFwqIvUktFKKDALU/P6Uu2K5UCkGbZ8kF4gGu0c2WGvMuEfFkD1B4uiE7?=
- =?us-ascii?Q?0buvOEzIQ72aePs9P5gxXmzD5sRw83yRycEgRc0tf+FlRREz7EEgn6kPWY5x?=
- =?us-ascii?Q?7MF0tWACs2+Kz1Q/kIAG55ekptzs9YJEEm8Rf+BkRQRL9aAuokQ9/1/tHstV?=
- =?us-ascii?Q?LWphgbdAn5/x0k7M7V99li+AFKSxBuAZNVsZruQg/CvNrnOpW6jijJEjEOJq?=
- =?us-ascii?Q?UI6NavdOZ4yozQQCQC7RkoTAyOFcJWRXRNLRxwgHIJU6ouVeURzNfgE599D3?=
- =?us-ascii?Q?2Osz5u2M5/I95UnJK6PF3ikwtSfli6Ssu0p2KjJDKEWFm40ehMv0bQZ7z/rE?=
- =?us-ascii?Q?wmq5wTORrw3hlTBYHVj61Vy0KxKgRZW1rOFAaK5gVzv7rGtaq8JAA/zkdr7m?=
- =?us-ascii?Q?18Df5VVhABAuay7bwRUJvvtzsI2+FoSESziBR0p2x4N9doOBX+GxMD0Gu316?=
- =?us-ascii?Q?cZObXhuaqW3Qo8aXxwG8th2d5Jxd8dNa+Ft2lIODxLW+1EurmzigkGDs1+wc?=
- =?us-ascii?Q?zvPKpZnyIoTFnHMEmbmS4vi7cSeG6qoBruy9DCANfAg5oBFzo0xeqDoKcGSf?=
- =?us-ascii?Q?Di3XK8E4z4LLRisThCqZSM3AC1GkVgJSI0byW+9qzYfbNQ8vzo+ttJ6WiJRZ?=
- =?us-ascii?Q?X5/QKC2BnvwcFeHZdta+sCKyCRk5cPScXTDE3rFVBc842EYjFxFmF6dJlzY9?=
- =?us-ascii?Q?puXF40aM9PiAMCQqL0/t+pm7sC9InvY7E17TGAU3vvlQHW8zPgyc4uymheW5?=
- =?us-ascii?Q?8V0rHQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4Ey7Kddp6tSESfr7NxPawKSYDJoosOcCoBcJKa3GGpcFfkc2M7jiOuAom0+C?=
+ =?us-ascii?Q?hDVdMgHN7aNZwqzefoYrx5AuhVwjOAXFAmzfK4GdT5gogjD7gIYUzjjw9+4m?=
+ =?us-ascii?Q?+35LSKcO+iN24m79GHrVTE1psq9Oi3MPCmWCrUSE2TDo60vfNqKU+nfG47Kx?=
+ =?us-ascii?Q?RlmxoUEyLZR7RjNuVsc3IuVbrbNw5P/o6LtRFKDWJsGH4tRUsFbJDHG653UY?=
+ =?us-ascii?Q?OxWSTb2QPNTYBQ5NK1bMIEkhHLLBCVieqgl0YqA2yd7PRELTABtq6S7/4Z6D?=
+ =?us-ascii?Q?ShW9ay/7NHnyj5M+qUu3JL9yLSAmDKCYDmP3lo+y3Om/E0ZexklNGBpE5t95?=
+ =?us-ascii?Q?5MXXiCOKKacgiCqqDn/5ydBng5+RXrjqD82wepXR6o4aY5RP+U6ZSXXqGoLZ?=
+ =?us-ascii?Q?JtyRtaSpcM5wnbOYXM23cbn7z+7RlmXiz9I/DyXgxTL1xKxINBG2GPLUwutY?=
+ =?us-ascii?Q?hyTMaHkUtqTFL4K1IN22FCXXuvtXjp3cddg64b8EkfOI+9Q0xKz29tCQ3ULk?=
+ =?us-ascii?Q?4FjkLPq9xzLGSQn6rodOGu8bDr0vqyCeRQQYLRTAs7R2j21NTPMgm1DZ3tLZ?=
+ =?us-ascii?Q?psMYV1TrDfflds2mOiY6lbqpgris8JdTv32U1g52Ig8dRXlyIzMHivupIQyw?=
+ =?us-ascii?Q?OTnJ9YvFzVk2xKrybCgv5JIakoLGaNG/VRO7KbYZIsP33U6Muhil5KKc5M2T?=
+ =?us-ascii?Q?twJpiFCLpwU5jo6Tu4aGP99afYWD0+9fA7ZfuX48f1XzFB0kIHiOWuQEMbvD?=
+ =?us-ascii?Q?Y+sqAr1KALc8J3qw5mgldKhTDwkGgzW7MEvuqvi1+LWuD94RhW05c9o9l8UD?=
+ =?us-ascii?Q?6qiOvaEOZ73WkPSMRFT2BSksnpPuFg3bM96vy9IgGNZRV++QDgLY1tC395jj?=
+ =?us-ascii?Q?4OB2QG9aCBbvMNmM802WcYIVolygLmgLn2ua/64VOoXwiwLGLIvieQ3wsX5o?=
+ =?us-ascii?Q?xZjDjQC4bNjNrJ42HIHZRjWocUb9V969MoilAfqoT7tC/HVCVFc1Lu2zqs3Z?=
+ =?us-ascii?Q?G4RMAEMSNXYqa8HxndC2kRCOb/QpX87txmdxq4qFIFCo6BXXzv0GtNukO1Lx?=
+ =?us-ascii?Q?tWZQbpreX9X4XrfGxQ6v3/LMAZNG49yIJFAKOynqey+LszWewxHgPm/EI1PC?=
+ =?us-ascii?Q?dyPBhBxptAfbqJcWa/JrQOYSYHFYIJaJ3Jy0TU+wOEJsyySF/dLcwwFlaERU?=
+ =?us-ascii?Q?jmzE9aEhufM4wUCu7aHv1A97OrFwckUpbt2dxsZizIcPfcHaLmqqhnJyU1l3?=
+ =?us-ascii?Q?E5C3XX+s/Gvv9GRd7PQuUQoCkDEx5YL9usBIZ5FgW/fUx7Pt0mIJLjDH0XIB?=
+ =?us-ascii?Q?tQ8RS8vpNOpoF5DMnGCoDYrYamOtv2mZs6pBzsHJA07u0CHNGn8OCaM4HuAn?=
+ =?us-ascii?Q?06iRYGc2tXxoy+Kerr/Oi0X9klc/W9C5qaQGcMBR/AkT3TEPcepVZbyM5jZi?=
+ =?us-ascii?Q?0ecW/8vzeBob7v5oDE8Q63acAmaeArvr3IX4RozWB9bx+MmZSMEj6J2hqhk4?=
+ =?us-ascii?Q?JaU8U/Ndk3wOfNl4LUOaB0eIT3kvkllugYcXOpMGwfCHuc7pFOaNwVrsVJiM?=
+ =?us-ascii?Q?251np4G1Uu36YSnIl3kdJNeKXlEhwREKAtmhWM++XDeTiO285GSEWzIo2E+K?=
+ =?us-ascii?Q?wS0R3/niT9Wm0aMpMed86lBsLsX4EKJ7FABW7HVzYLRA/yDPIWo4OpibdpvF?=
+ =?us-ascii?Q?G0/A7A=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 54be9c75-8bfd-49fb-c268-08db16463ff2
+X-MS-Exchange-CrossTenant-Network-Message-Id: 507b284d-5af1-4b27-64bb-08db16468f18
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2023 09:05:18.2108
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2023 09:07:30.9194
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: B62bcwGfO7B1sts3DAOxcRZ8RJj8+L+fpbaMFGFuNHJIJs7zVYrGzwckqBNhA0qj2UhV1NV7IkPTzddSbKf0hwpE6GCXsBiuy19VSvYVMhk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR13MB3746
+X-MS-Exchange-CrossTenant-UserPrincipalName: KBSya8vgZ2147TY4lCuN/PHmalNYSUKj+MXsSsmWmNU8ZhoOWIT+CSyJms35RlbuxTUygbNyc+Mz/BsoEjm8DcMQ6chiv9L/chq28tmYO08=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR13MB3717
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 23, 2023 at 11:16:39AM -0300, Pedro Tammela wrote:
-> Smatch reports that 'ci' can be used uninitialized.
-> The current code ignores errno coming from tcf_idr_check_alloc, which
-> will lead to the incorrect usage of 'ci'. Handle the errno as it should.
+On Fri, Feb 24, 2023 at 08:39:20AM +0000, Sai Krishna Gajula wrote:
+> Hi Simon,
 > 
-> Fixes: 288864effe33 ("net/sched: act_connmark: transition to percpu stats and rcu")
-> Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
-> ---
->  net/sched/act_connmark.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
+> > -----Original Message-----
+> > From: Simon Horman <simon.horman@corigine.com>
+> > Sent: Thursday, February 23, 2023 6:47 PM
+> > To: Sai Krishna Gajula <saikrishnag@marvell.com>
+> > Cc: davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
+> > pabeni@redhat.com; netdev@vger.kernel.org; linux-kernel@vger.kernel.org;
+> > Sunil Kovvuri Goutham <sgoutham@marvell.com>; Suman Ghosh
+> > <sumang@marvell.com>
+> > Subject: Re: [net PATCH v2] octeontx2-af: Unlock contexts in the queue
+> > context cache in case of fault detection
+> > 
+> > 
+> > ----------------------------------------------------------------------
+> > On Thu, Feb 23, 2023 at 04:31:25PM +0530, Sai Krishna wrote:
+> > > From: Suman Ghosh <sumang@marvell.com>
+> > >
+> > > NDC caches contexts of frequently used queue's (Rx and Tx queues)
+> > > contexts. Due to a HW errata when NDC detects fault/poision while
+> > > accessing contexts it could go into an illegal state where a cache
+> > > line could get locked forever. To makesure all cache lines in NDC are
+> > > available for optimum performance upon fault/lockerror/posion errors
+> > > scan through all cache lines in NDC and clear the lock bit.
+> > >
+> > > Fixes: 4a3581cd5995 ("octeontx2-af: NPA AQ instruction enqueue
+> > > support")
+> > > Signed-off-by: Suman Ghosh <sumang@marvell.com>
+> > > Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+> > > Signed-off-by: Sai Krishna <saikrishnag@marvell.com>
+> > 
+> > ...
+> > 
+> > > diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+> > > b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+> > > index 389663a13d1d..6508f25b2b37 100644
+> > > --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+> > > +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+> > > @@ -884,6 +884,12 @@ int rvu_cpt_lf_teardown(struct rvu *rvu, u16
+> > > pcifunc, int blkaddr, int lf,  int rvu_cpt_ctx_flush(struct rvu *rvu,
+> > > u16 pcifunc);  int rvu_cpt_init(struct rvu *rvu);
+> > >
+> > > +/* NDC APIs */
+> > > +#define NDC_MAX_BANK(rvu, blk_addr) (rvu_read64(rvu, \
+> > > +					blk_addr, NDC_AF_CONST) & 0xFF)
+> > > +#define NDC_MAX_LINE_PER_BANK(rvu, blk_addr) ((rvu_read64(rvu, \
+> > > +					blk_addr, NDC_AF_CONST) &
+> > 0xFFFF0000) >> 16)
+> > 
+> > Perhaps not appropriate to include as part of a fix, as NDC_MAX_BANK is
+> > being moved from elsewhere, but I wonder if this might be more cleanly
+> > implemented using FIELD_GET().
 > 
-> diff --git a/net/sched/act_connmark.c b/net/sched/act_connmark.c
-> index 8dabfb52ea3d..cf4086a9e3c0 100644
-> --- a/net/sched/act_connmark.c
-> +++ b/net/sched/act_connmark.c
-> @@ -125,6 +125,7 @@ static int tcf_connmark_init(struct net *net, struct nlattr *nla,
->  	if (!nparms)
->  		return -ENOMEM;
->  
-> +	ci = to_connmark(*a);
->  	parm = nla_data(tb[TCA_CONNMARK_PARMS]);
->  	index = parm->index;
->  	ret = tcf_idr_check_alloc(tn, &index, a, bind);
-> @@ -137,14 +138,11 @@ static int tcf_connmark_init(struct net *net, struct nlattr *nla,
->  			goto out_free;
->  		}
->  
-> -		ci = to_connmark(*a);
-> -
->  		nparms->net = net;
->  		nparms->zone = parm->zone;
->  
->  		ret = ACT_P_CREATED;
->  	} else if (ret > 0) {
-> -		ci = to_connmark(*a);
->  		if (bind) {
->  			err = 0;
->  			goto out_free;
+> We will modify and send a separate patch for all the possible macros that can be replaced by FIELD_GET(). 
 
-Hi Pedro,
+Thanks, much appreciated.
 
-I think the issue here isn't so much that there may be incorrect usage of
-ci - although that can happen - but rather that an error condition - the
-failure of tcf_idr_check_alloc is ignored.
-
-Viewed through this lens I think it becomes clear that the hunk
-below fixes the problem. While the hunks above are cleanups.
-A nice cleanup. But still a cleanup.
-
-I think that as a fix for 'net' a minimal approach is best and thus
-the patch below.
-
-I'd also like to comment that the usual style for kernel code is to handle
-error cases in conditions - typically immediately after the condition
-arises. While non-error cases follow, outside of condtions.
-
-F.e.
-
-	err = do_something(with_something);
-	if (err) {
-		/* handle error */
-		...
-	}
-
-	/* proceed with non-error case here */
-	...
-
-In the code at hand this is complicate by there being two non-error cases,
-and it thus being logical to treat them conditionally.
-
-Even so, i do wonder if there is value in treating the error case first,
-right next to the code that might cause the error, in order to make it
-clearer that the error is being handled (as normal).
-
-And in saying so, I do realise it contradicts my statement
-about minimal changes to some extent.
-
-i.e. (*completely untested*)
-
-	ret = tcf_idr_check_alloc(tn, &index, a, bind);
-	if (ret < 0) {
-		err = ret;
-		goto out_free;
-	} else if (!ret) {
-		...
-	} else {
-		...
-	}
-
-> @@ -158,6 +156,9 @@ static int tcf_connmark_init(struct net *net, struct nlattr *nla,
->  		nparms->zone = parm->zone;
->  
->  		ret = 0;
-> +	} else {
-> +		err = ret;
-> +		goto out_free;
->  	}
->  
->  	err = tcf_action_check_ctrlact(parm->action, tp, &goto_ch, extack);
-> -- 
-> 2.34.1
+> > ...
+> > 
+> > > diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
+> > > b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
+> > > index 1729b22580ce..bc6ca5ccc1ff 100644
+> > > --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
+> > > +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
+> > > @@ -694,6 +694,7 @@
+> > >  #define NDC_AF_INTR_ENA_W1S		(0x00068)
+> > >  #define NDC_AF_INTR_ENA_W1C		(0x00070)
+> > >  #define NDC_AF_ACTIVE_PC		(0x00078)
+> > > +#define NDC_AF_CAMS_RD_INTERVAL		(0x00080)
+> > >  #define NDC_AF_BP_TEST_ENABLE		(0x001F8)
+> > >  #define NDC_AF_BP_TEST(a)		(0x00200 | (a) << 3)
+> > >  #define NDC_AF_BLK_RST			(0x002F0)
+> > > @@ -709,6 +710,8 @@
+> > >  		(0x00F00 | (a) << 5 | (b) << 4)
+> > >  #define NDC_AF_BANKX_HIT_PC(a)		(0x01000 | (a) << 3)
+> > >  #define NDC_AF_BANKX_MISS_PC(a)		(0x01100 | (a) << 3)
+> > > +#define NDC_AF_BANKX_LINEX_METADATA(a, b) \
+> > > +		(0x10000 | (a) << 3 | (b) << 3)
+> > 
+> > It looks a little odd that both a and b are shifted by 3 bits.
+> > If it's intended then perhaps it would be clearer to write this as:
+> > 
+> > #define NDC_AF_BANKX_LINEX_METADATA(a, b) \
+> > 		(0x10000 | ((a) | (b)) << 3)
 > 
+> will send v3 patch.
+
+Likewise, thanks.
