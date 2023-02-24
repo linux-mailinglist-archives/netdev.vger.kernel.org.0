@@ -2,77 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D67BB6A21B2
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 19:44:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02E916A21BA
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 19:49:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229476AbjBXSof (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 13:44:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42716 "EHLO
+        id S229574AbjBXStw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 13:49:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbjBXSoe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 13:44:34 -0500
-Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD862515E7
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 10:44:33 -0800 (PST)
-Received: by mail-qk1-x72e.google.com with SMTP id x17so3873991qkp.12
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 10:44:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=z/v5y8HucApiwArrniNSdAAxFsXvoFPe9o+Sj0andQA=;
-        b=oV/xlHtIcbO2ewCH9LhB0fzAxAAteTaZ4Rt5zGk5dRL/orxLDYd685kPA8cxapRZcq
-         VEGfhngvYPmm1faxqyo0tgigzJB3DQBQTVLBuM625aeLb0YIRHk7wcpE9VBv/YRBUjb4
-         Tb5jCg6/084GXzsEVXKv8sR4NcosDvWWfq4aZmVXgsf+2wOVlWfjwRGG9VHFEqwnvLRQ
-         G/lbsqoZbV/FxX5pF/6UKd8434okXbYcf7bjPgBMnSAfNTispYoiAywq3orZmAFE4xjt
-         l/F1uQx29cJ+aTKkvQuX7+NAuop27blZDxgSCTYszkEb5qRH8+GUoUZRQT3j1vZnuJZ7
-         uiBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=z/v5y8HucApiwArrniNSdAAxFsXvoFPe9o+Sj0andQA=;
-        b=kgc/SHo6zGhO/VSvhrhOilbDXDNrKlw0ERe6xBeGFaSk6Ol+IrwhC0+etUUm2Q9CzU
-         czJVdaDFWusRKcnUpQ9oRIyq/HqMXWNpqqdzXiOUsqBKDMwxFHsSgUmDbmfro/la3r8e
-         rnNMZVDP5CGdg7FMoR/4xNbEgoC6THWxb7qonmyJE2ybqmuBZ67TfxTrLt42h/Imsa0M
-         rYMBJgRzC8rZ+9GeG9IRecdrT2j3lkKP6e/7ev6oEq8y+wuW6dmU/7fHCM1uIz3e3+AG
-         mjodIQ8dmjHP9K/0VqTsl5sbJg4n9y0y8U4wbB+cO8rzFB8WNLTPOa0bm8Fq87SR1cGe
-         nkYQ==
-X-Gm-Message-State: AO0yUKXPN2T8YPEXoyyhVu2PsoMcUzSwDXWQ0hw06RGhzuuZLjH3ApGx
-        UFVsGx7TW/CROrGQqCwJF2mT9z6d+fbK9HXD8nmakEbT/fs=
-X-Google-Smtp-Source: AK7set9vr8skB/FD7/9EsqsxDZd4dMkSNAP3Q7ttmGAOsfjqwassp1x+/1ewGO5O6YkJG+dgiHBBTbQyjAnl5PtSW5I=
-X-Received: by 2002:a05:620a:831a:b0:742:3e52:f855 with SMTP id
- pa26-20020a05620a831a00b007423e52f855mr2043010qkn.2.1677264272610; Fri, 24
- Feb 2023 10:44:32 -0800 (PST)
-MIME-Version: 1.0
-From:   Satyavani Namala <vani.namala@gmail.com>
-Date:   Sat, 25 Feb 2023 00:14:21 +0530
-Message-ID: <CAAycz1m+AszZCS-1eaKZiAAXRUVSEE4a_Z3X3j4Rjyvmce4zvA@mail.gmail.com>
-Subject: Issue with ipv6 icmp reply after dnat over ipsec
+        with ESMTP id S229532AbjBXStv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 13:49:51 -0500
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:237:300::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6AC76A7A6
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 10:49:49 -0800 (PST)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1pVd8c-0007pZ-34; Fri, 24 Feb 2023 19:49:46 +0100
+From:   Florian Westphal <fw@strlen.de>
 To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, shakeelb@google.com, soheil@google.com,
+        Florian Westphal <fw@strlen.de>
+Subject: [PATCH net] net: avoid indirect memory pressure calls
+Date:   Fri, 24 Feb 2023 19:46:06 +0100
+Message-Id: <20230224184606.7101-1-fw@strlen.de>
+X-Mailer: git-send-email 2.39.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We are facing an issue while testing ICMP v6 (NAT) with ipsec tunnel,
-where ping was not working , as policy is not matching (returning with
-LINUX_MIB_XFRMINNOPOLS).
+There is a noticeable tcp performance regression (loopback or cross-netns),
+seen with iperf3 -Z (sendfile mode) when generic retpolines are needed.
 
-When we investigated and compared with IPv4 , it was found that,
-nf_reset is happening before xfrm6_policy_check in case of IPV6
-compared to IPV4 in which nf_reset is done after xfrm4_policy_check.
+With SK_RECLAIM_THRESHOLD checks gone number of calls to enter/leave
+memory pressure happen much more often. For TCP indirect calls are
+used.
 
-Due to nf_reset, skb->_nfct is  NULL and __xfrm_policy_check is returning e=
-rror.
+We can't remove the if-set-return short-circuit check in
+tcp_enter_memory_pressure because there are callers other than
+sk_enter_memory_pressure.  Doing a check in the sk wrapper too
+reduces the indirect calls enough to recover some performance.
 
-Can we know if there is any fix in this area, and why it=E2=80=99s differen=
-t from IPv4.
+Before,
+0.00-60.00  sec   322 GBytes  46.1 Gbits/sec                  receiver
+
+After:
+0.00-60.04  sec   359 GBytes  51.4 Gbits/sec                  receiver
+
+"iperf3 -c $peer -t 60 -Z -f g", connected via veth in another netns.
+
+Fixes: 4890b686f408 ("net: keep sk->sk_forward_alloc as small as possible")
+Signed-off-by: Florian Westphal <fw@strlen.de>
+---
+ net/core/sock.c | 22 +++++++++++++---------
+ 1 file changed, 13 insertions(+), 9 deletions(-)
+
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 341c565dbc26..45d247112aa5 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2809,22 +2809,26 @@ EXPORT_SYMBOL(sock_cmsg_send);
+ 
+ static void sk_enter_memory_pressure(struct sock *sk)
+ {
+-	if (!sk->sk_prot->enter_memory_pressure)
++	unsigned long *memory_pressure = sk->sk_prot->memory_pressure;
++
++	if (!memory_pressure || READ_ONCE(*memory_pressure))
+ 		return;
+ 
+-	sk->sk_prot->enter_memory_pressure(sk);
++	if (sk->sk_prot->enter_memory_pressure)
++		sk->sk_prot->enter_memory_pressure(sk);
+ }
+ 
+ static void sk_leave_memory_pressure(struct sock *sk)
+ {
+-	if (sk->sk_prot->leave_memory_pressure) {
+-		sk->sk_prot->leave_memory_pressure(sk);
+-	} else {
+-		unsigned long *memory_pressure = sk->sk_prot->memory_pressure;
++	unsigned long *memory_pressure = sk->sk_prot->memory_pressure;
+ 
+-		if (memory_pressure && READ_ONCE(*memory_pressure))
+-			WRITE_ONCE(*memory_pressure, 0);
+-	}
++	if (!memory_pressure || READ_ONCE(*memory_pressure) == 0)
++		return;
++
++	if (sk->sk_prot->leave_memory_pressure)
++		sk->sk_prot->leave_memory_pressure(sk);
++	else
++		WRITE_ONCE(*memory_pressure, 0);
+ }
+ 
+ DEFINE_STATIC_KEY_FALSE(net_high_order_alloc_disable_key);
+-- 
+2.39.2
+
