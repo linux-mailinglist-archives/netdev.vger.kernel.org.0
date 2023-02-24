@@ -2,125 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 690406A16A4
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 07:32:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E1476A16AB
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 07:39:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229737AbjBXGcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 01:32:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59876 "EHLO
+        id S229718AbjBXGjJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 01:39:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbjBXGcS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 01:32:18 -0500
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6FA3251E;
-        Thu, 23 Feb 2023 22:32:17 -0800 (PST)
-Received: by mail-lf1-x12a.google.com with SMTP id s20so16393974lfb.11;
-        Thu, 23 Feb 2023 22:32:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0CI8dGZhMqbOB7JbzbHObrywPoWru1EeEJHklBtAPx4=;
-        b=FYRvPQN6koR/pf2uAiJqkboYOkQBsPde2ErImXMdwpi5uTIg/Clk9Q8YzBfS5uAT4e
-         xZRrF3jFZB6ggKvxdaDJl/2LdoHuxxlRfaoW72joacdua1/cSVnWG8HfZIqKOGE2XdWL
-         TDl1ipiIW5/soeLh2oB8sI8DJtXr0A0QASnH/EjRctZgsbSm5RBNHYbaAC4FwaFnL140
-         nu7flqdSykdG7ISz4E2uEmQjCaNlap3pQVUDRrIm0YQfA+S2utokQ8KPlt8B7Yt8niZL
-         LVeGimLNmmJDLBKZ0Swhehw99+5rTHCBKj11TDGf0MtZp6N/HxBJ2E8OCraigqcEOG6h
-         cHlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=0CI8dGZhMqbOB7JbzbHObrywPoWru1EeEJHklBtAPx4=;
-        b=Jz8L7h4HTwSAXZqCmF6t5ycAml9Usmpy7x2CsIutxdSJMejAgQHN5qcAhE723Baofi
-         sa1/nIACjS7fQoYNnk9hw03MQzJ9vatZVT6BQLVCM3/mM7MfQxqLNle9PHZ6Hl6uYtTz
-         Y4bABl3nriTYyYL0BY8RpCDqa+GBFHQh7gJky0ovvt59tP2lwIVknbJbDh5kVlQDZmrQ
-         FQOIQc1Xn7O6V1nCwMMmADgZja0U+xSRjRWXx7GmwWHMtdgo48rm3M6O9hYcEJeIPp1w
-         igJ5VVOCOS77JWoxxUyQHFUItGRl2vEBmcwD7P8+Qir7q6wn3bLZnvwEHKlRAM0CZQL3
-         m85w==
-X-Gm-Message-State: AO0yUKVk/FhPQANR5LWhGSwyfPJltOafJCR9h3WxpY55jQ0hIYtGyUAN
-        U5BtI8q6sVCVT6mQWmk/1qo=
-X-Google-Smtp-Source: AK7set8KX1DgE590Q4FrYY9hOWLG4Aw/fpHD8/H6A6ZT2lxj0Ui+EhzK8Ieaud5ylOD9pryMjBfNMA==
-X-Received: by 2002:ac2:4904:0:b0:4d2:a821:5f1c with SMTP id n4-20020ac24904000000b004d2a8215f1cmr5416189lfi.3.1677220335813;
-        Thu, 23 Feb 2023 22:32:15 -0800 (PST)
-Received: from [192.168.0.101] (89-109-49-189.dynamic.mts-nn.ru. [89.109.49.189])
-        by smtp.gmail.com with ESMTPSA id x23-20020ac24897000000b004b564e1a4e0sm783142lfc.76.2023.02.23.22.32.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Feb 2023 22:32:15 -0800 (PST)
-Message-ID: <195983bd-f3ab-f281-de4e-756ccda15b8c@gmail.com>
-Date:   Fri, 24 Feb 2023 09:32:15 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v2] bnxt: avoid overflow in bnxt_get_nvram_directory()
-To:     Paolo Abeni <pabeni@redhat.com>,
-        Simon Horman <simon.horman@corigine.com>
-Cc:     Michael Chan <michael.chan@broadcom.com>,
-        Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
-References: <20230219084656.17926-1-korotkov.maxim.s@gmail.com>
- <Y/Iuu9SiAxh7qhJM@corigine.com>
- <5ad788427171d3c0374f24d4714ba0b429cbcfdf.camel@redhat.com>
- <9a2c3c1ef2e879911a1c62a1e8de0ae612727aae.camel@redhat.com>
-From:   Maxim Korotkov <korotkov.maxim.s@gmail.com>
-In-Reply-To: <9a2c3c1ef2e879911a1c62a1e8de0ae612727aae.camel@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229462AbjBXGjH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 01:39:07 -0500
+Received: from mxct.zte.com.cn (mxct.zte.com.cn [183.62.165.209])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C50A60D78;
+        Thu, 23 Feb 2023 22:39:05 -0800 (PST)
+Received: from mse-fl1.zte.com.cn (unknown [10.5.228.132])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mxct.zte.com.cn (FangMail) with ESMTPS id 4PNKx26CWfz501RX;
+        Fri, 24 Feb 2023 14:39:02 +0800 (CST)
+Received: from szxlzmapp03.zte.com.cn ([10.5.231.207])
+        by mse-fl1.zte.com.cn with SMTP id 31O6cpsx044681;
+        Fri, 24 Feb 2023 14:38:51 +0800 (+08)
+        (envelope-from yang.yang29@zte.com.cn)
+Received: from mapi (szxlzmapp01[null])
+        by mapi (Zmail) with MAPI id mid14;
+        Fri, 24 Feb 2023 14:38:53 +0800 (CST)
+Date:   Fri, 24 Feb 2023 14:38:53 +0800 (CST)
+X-Zmail-TransId: 2b0363f85b7d4e2e0d35
+X-Mailer: Zmail v1.0
+Message-ID: <202302241438536013777@zte.com.cn>
+Mime-Version: 1.0
+From:   <yang.yang29@zte.com.cn>
+To:     <davem@davemloft.net>
+Cc:     <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <shuah@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <zhang.yunkai@zte.com.cn>, <xu.xin16@zte.com.cn>,
+        <jiang.xuexin@zte.com.cn>
+Subject: =?UTF-8?B?W1BBVENIIGxpbnV4LW5leHRdIHNlbGZ0ZXN0czogbmV0OiB1ZHBnc29fYmVuY2hfdHg6IEFkZCB0ZXN0IGZvciBJUCBmcmFnbWVudGF0aW9uIG9mIFVEUCBwYWNrZXRz?=
+Content-Type: text/plain;
+        charset="UTF-8"
+X-MAIL: mse-fl1.zte.com.cn 31O6cpsx044681
+X-Fangmail-Gw-Spam-Type: 0
+X-Fangmail-Anti-Spam-Filtered: true
+X-Fangmail-MID-QID: 63F85B86.002/4PNKx26CWfz501RX
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-23.02.2023 11:01, Paolo Abeni wrote:
-> On Tue, 2023-02-21 at 10:34 +0100, Paolo Abeni wrote:
->> On Sun, 2023-02-19 at 15:14 +0100, Simon Horman wrote:
->>> On Sun, Feb 19, 2023 at 11:46:56AM +0300, Maxim Korotkov wrote:
->>>> The value of an arithmetic expression is subject
->>>> of possible overflow due to a failure to cast operands to a larger data
->>>> type before performing arithmetic. Used macro for multiplication instead
->>>> operator for avoiding overflow.
->>>>
->>>> Found by Security Code and Linux Verification
->>>> Center (linuxtesting.org) with SVACE.
->>>>
->>>> Fixes: c0c050c58d84 ("bnxt_en: New Broadcom ethernet driver.")
->>>> Signed-off-by: Maxim Korotkov <korotkov.maxim.s@gmail.com>
->>>> Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
->>>
->>> I agree that it is correct to use mul_u32_u32() for multiplication
->>> of two u32 entities where the result is 64bit, avoiding overflow.
->>>
->>> And I agree that the fixes tag indicates the commit where the code
->>> in question was introduced.
->>>
->>> However, it is not clear to me if this is a theoretical bug
->>> or one that can manifest in practice - I think it implies that
->>> buflen really can be > 4Gbytes.
->>>
->>> And thus it is not clear to me if this patch should be for 'net' or
->>> 'net-next'.
->>
->> ... especially considered that both 'dir_entries' and 'entry_length'
->> are copied back to the user-space using a single byte each.
-> 
-> To be clear: if this is really a bug you should update the commit
-> message stating how the bug could happen. Otherwise you could repost
-> for net-next stripping the fixes tag.
-> 
-> Thanks,
-> 
-> Paolo
-> 
-This is more of a hypothetical issue in my opinion. At least I don't 
-have proof of concept. I'll resend this patch when net-next tree be open.
-Best regards, Max
+From: zhang yunkai (CGEL ZTE) <zhang.yunkai@zte.com.cn>
+
+The UDP GSO bench only tests the performance of userspace payload splitting
+and UDP GSO. But we are also concerned about the performance comparing
+with IP fragmentation and UDP GSO. In other words comparing IP fragmentation 
+and segmentation.
+
+So we add testcase of IP fragmentation of UDP packets, then user would easy
+to get to know the performance promotion of UDP GSO compared with IP 
+fragmentation. We add a new option "-f", which is to send big data using 
+IP fragmentation instead of using UDP GSO or userspace payload splitting.
+
+In the QEMU environment we could see obvious promotion of UDP GSO.
+The first test is to get the performance of userspace payload splitting.
+bash# udpgso_bench_tx -l 4 -4 -D "$DST"
+udp tx:     10 MB/s     7812 calls/s    186 msg/s
+udp tx:     10 MB/s     7392 calls/s    176 msg/s
+udp tx:     11 MB/s     7938 calls/s    189 msg/s
+udp tx:     11 MB/s     7854 calls/s    187 msg/s
+
+The second test is to get the performance of IP fragmentation.
+bash# udpgso_bench_tx -l 4 -4 -D "$DST" -f
+udp tx:     33 MB/s      572 calls/s    572 msg/s
+udp tx:     33 MB/s      563 calls/s    563 msg/s
+udp tx:     31 MB/s      540 calls/s    540 msg/s
+udp tx:     33 MB/s      571 calls/s    571 msg/s
+
+The third test is to get the performance of UDP GSO.
+bash# udpgso_bench_tx -l 4 -4 -D "$DST" -S 0
+udp tx:     46 MB/s      795 calls/s    795 msg/s
+udp tx:     49 MB/s      845 calls/s    845 msg/s
+udp tx:     49 MB/s      847 calls/s    847 msg/s
+udp tx:     45 MB/s      774 calls/s    774 msg/s
+
+Signed-off-by: zhang yunkai (CGEL ZTE) <zhang.yunkai@zte.com.cn>
+Reviewed-by: xu xin (CGEL ZTE) <xu.xin16@zte.com.cn>
+Reviewed-by: Yang Yang (CGEL ZTE) <yang.yang29@zte.com.cn>
+Cc: Xuexin Jiang (CGEL ZTE) <jiang.xuexin@zte.com.cn>
+---
+ tools/testing/selftests/net/udpgso_bench_tx.c | 33 ++++++++++++++++++++++-----
+ 1 file changed, 27 insertions(+), 6 deletions(-)
+
+diff --git a/tools/testing/selftests/net/udpgso_bench_tx.c b/tools/testing/selftests/net/udpgso_bench_tx.c
+index 477392715a9a..025e706b594b 100644
+--- a/tools/testing/selftests/net/udpgso_bench_tx.c
++++ b/tools/testing/selftests/net/udpgso_bench_tx.c
+@@ -64,6 +64,7 @@ static int	cfg_runtime_ms	= -1;
+ static bool	cfg_poll;
+ static int	cfg_poll_loop_timeout_ms = 2000;
+ static bool	cfg_segment;
++static bool	cfg_fragment;
+ static bool	cfg_sendmmsg;
+ static bool	cfg_tcp;
+ static uint32_t	cfg_tx_ts = SOF_TIMESTAMPING_TX_SOFTWARE;
+@@ -375,6 +376,21 @@ static int send_udp_sendmmsg(int fd, char *data)
+ 	return ret;
+ }
+
++static int send_udp_fragment(int fd, char *data)
++{
++	int ret;
++
++	ret = sendto(fd, data, cfg_payload_len, cfg_zerocopy ? MSG_ZEROCOPY : 0,
++			cfg_connected ? NULL : (void *)&cfg_dst_addr,
++			cfg_connected ? 0 : cfg_alen);
++	if (ret == -1)
++		error(1, errno, "write");
++	if (ret != cfg_payload_len)
++		error(1, errno, "write: %uB != %uB\n", ret, cfg_payload_len);
++
++	return 1;
++}
++
+ static void send_udp_segment_cmsg(struct cmsghdr *cm)
+ {
+ 	uint16_t *valp;
+@@ -429,7 +445,7 @@ static int send_udp_segment(int fd, char *data)
+
+ static void usage(const char *filepath)
+ {
+-	error(1, 0, "Usage: %s [-46acmHPtTuvz] [-C cpu] [-D dst ip] [-l secs] "
++	error(1, 0, "Usage: %s [-46acfmHPtTuvz] [-C cpu] [-D dst ip] [-l secs] "
+ 		    "[-L secs] [-M messagenr] [-p port] [-s sendsize] [-S gsosize]",
+ 		    filepath);
+ }
+@@ -440,7 +456,7 @@ static void parse_opts(int argc, char **argv)
+ 	int max_len, hdrlen;
+ 	int c;
+
+-	while ((c = getopt(argc, argv, "46acC:D:Hl:L:mM:p:s:PS:tTuvz")) != -1) {
++	while ((c = getopt(argc, argv, "46acC:D:fHl:L:mM:p:s:PS:tTuvz")) != -1) {
+ 		switch (c) {
+ 		case '4':
+ 			if (cfg_family != PF_UNSPEC)
+@@ -469,6 +485,9 @@ static void parse_opts(int argc, char **argv)
+ 		case 'l':
+ 			cfg_runtime_ms = strtoul(optarg, NULL, 10) * 1000;
+ 			break;
++		case 'f':
++			cfg_fragment = true;
++			break;
+ 		case 'L':
+ 			cfg_poll_loop_timeout_ms = strtoul(optarg, NULL, 10) * 1000;
+ 			break;
+@@ -527,10 +546,10 @@ static void parse_opts(int argc, char **argv)
+ 		error(1, 0, "must pass one of -4 or -6");
+ 	if (cfg_tcp && !cfg_connected)
+ 		error(1, 0, "connectionless tcp makes no sense");
+-	if (cfg_segment && cfg_sendmmsg)
+-		error(1, 0, "cannot combine segment offload and sendmmsg");
+-	if (cfg_tx_tstamp && !(cfg_segment || cfg_sendmmsg))
+-		error(1, 0, "Options -T and -H require either -S or -m option");
++	if ((cfg_segment + cfg_sendmmsg + cfg_fragment) > 1)
++		error(1, 0, "cannot combine segment offload , fragment and sendmmsg");
++	if (cfg_tx_tstamp && !(cfg_segment || cfg_sendmmsg || cfg_fragment))
++		error(1, 0, "Options -T and -H require either -S or -m or -f option");
+
+ 	if (cfg_family == PF_INET)
+ 		hdrlen = sizeof(struct iphdr) + sizeof(struct udphdr);
+@@ -695,6 +714,8 @@ int main(int argc, char **argv)
+ 			num_sends += send_udp_segment(fd, buf[i]);
+ 		else if (cfg_sendmmsg)
+ 			num_sends += send_udp_sendmmsg(fd, buf[i]);
++		else if (cfg_fragment)
++			num_sends += send_udp_fragment(fd, buf[i]);
+ 		else
+ 			num_sends += send_udp(fd, buf[i]);
+ 		num_msgs++;
+-- 
+2.15.2
