@@ -2,141 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BAA6C6A1A1C
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 11:24:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E258B6A1A47
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 11:28:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230249AbjBXKYB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 05:24:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45864 "EHLO
+        id S230306AbjBXK17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 05:27:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230268AbjBXKXp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 05:23:45 -0500
-Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDBB35245;
-        Fri, 24 Feb 2023 02:23:13 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R711e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=kaishen@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VcO6Ra-_1677234188;
-Received: from localhost(mailfrom:KaiShen@linux.alibaba.com fp:SMTPD_---0VcO6Ra-_1677234188)
-          by smtp.aliyun-inc.com;
-          Fri, 24 Feb 2023 18:23:09 +0800
-From:   Kai <KaiShen@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        chengyou@linux.alibaba.com, guangguan.wang@linux.alibaba.com
-Cc:     Kai <KaiShen@linux.alibaba.com>
-Subject: [PATCH] Use percpu ref for wr tx reference
-Date:   Fri, 24 Feb 2023 10:23:06 +0000
-Message-Id: <20230224102306.5613-1-KaiShen@linux.alibaba.com>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S230313AbjBXK1y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 05:27:54 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ED123801F
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 02:27:13 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id ay29-20020a05600c1e1d00b003e9f4c2b623so1776897wmb.3
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 02:27:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=97K9PyfBtWtLazTWKQyq2GhNL30Sd18gLmfofEOQCyg=;
+        b=QiMbP8GIPp4u0+i2e7HZj++OjBP78CJlG83yPRWiy1/ImnLmyrn2PvN7NmTCJo5P0t
+         taWlXWjA13XS1S6jBbnnlmor8A6aeaBZpaHMK9ktlKTqYaLCogzeEJTalOaUB0ZQNJGr
+         hklsLQMzS9HJzdlSAoM20VxB9mNRr+pFHgKqrDbc4IWf1vXZ+IQB6lp/J5zqfUQQI+pM
+         4rIbPYuCUmar8esbTjglSlyb8m3trtQCYz0rVw23bh5CPw6DvU9RoWiPOXXyJ6Kjmvww
+         Ywqu7XTv9gsnAvyJ5ttmRF6vw7nEAN6w4VN5SRjuEWqAWWUfwZ1Qm1H6PJS8amArPFkO
+         bjfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=97K9PyfBtWtLazTWKQyq2GhNL30Sd18gLmfofEOQCyg=;
+        b=NjCLRuimwJjShL+qzZYZSGFqEisQUZZ85/DJNpmfZvc4lm6x2F8s288E5+xaWZ8ufG
+         ZdYOk5kAis6yJP3AGourH7xjCPPnQpE7Mdolg/sc8c6ZXb+xAnsj9XmzOmELLyj1yTTG
+         IKSO7ORLtfu76hP13HF21U2TTPJBla3+FhfnVcIvjP/LBF66uzRwBgD4F3mlXH05YwHc
+         qs3SskeCk4j3e8/D7mLH5K+aiXAc+r5hV5C2u5XNvJseDkMAG1mQsAtosS3kqzhDy4hw
+         Ry3eM/o1IZPqwHwok9cbBJ5Tgc+uViMBetC3XNgmFa68m7xXd4STN4Wr3KlubvXcASHY
+         69jA==
+X-Gm-Message-State: AO0yUKXYB/q4LfVDvpQxwX9iSuG1WvmLkY4McOy5EN7mFg1rMHRU9j5i
+        Bzh7Dyp29J2yKGX2Eyc3SVOvJ5ETLfeF16P+nzBfdScjB0SiMYCh60M=
+X-Google-Smtp-Source: AK7set9u4s1V/096+eUajvb7H6WjvekcV72VyuPnA4GeV2QM4isiyDsDd/OjQB28zLJHn2P6hhM2ecFs2IvIn9Zosug=
+X-Received: by 2002:a05:600c:1d8a:b0:3df:97de:8bad with SMTP id
+ p10-20020a05600c1d8a00b003df97de8badmr1083002wms.6.1677234399297; Fri, 24 Feb
+ 2023 02:26:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+References: <20230224071745.20717-1-equinox@diac24.net>
+In-Reply-To: <20230224071745.20717-1-equinox@diac24.net>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 24 Feb 2023 11:26:27 +0100
+Message-ID: <CANn89iL5EEMwO0cvHkm+V5+qJjmWqmnD_0=G6q7TGW0RC_tkUg@mail.gmail.com>
+Subject: Re: [PATCH net-next] packet: allow MSG_NOSIGNAL in recvmsg
+To:     David Lamparter <equinox@diac24.net>, Jens Axboe <axboe@kernel.dk>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
-The refcount wr_tx_refcnt may cause cache thrashing problems among
-cores and we can use percpu ref to mitigate this issue here. We
-gain some performance improvement with percpu ref here on our
-customized smc-r verion. Applying cache alignment may also mitigate
-this problem but it seem more reasonable to use percpu ref here.
+On Fri, Feb 24, 2023 at 8:18=E2=80=AFAM David Lamparter <equinox@diac24.net=
+> wrote:
+>
+> packet_recvmsg() whitelists a bunch of MSG_* flags, which notably does
+> not include MSG_NOSIGNAL.  Unfortunately, io_uring always sets
+> MSG_NOSIGNAL, meaning AF_PACKET sockets can't be used in io_uring
+> recvmsg().
+>
+> As AF_PACKET sockets never generate SIGPIPE to begin with, MSG_NOSIGNAL
+> is a no-op and can simply be ignored.
+>
+> Signed-off-by: David Lamparter <equinox@diac24.net>
+> Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> ---
+>  net/packet/af_packet.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
 
-Thanks.
+This is odd... I think MSG_NOSIGNAL flag has a meaning for sendmsg()
+(or write sides in general)
 
-Signed-off-by: Kai <KaiShen@linux.alibaba.com>
----
- net/smc/smc_core.h |  5 ++++-
- net/smc/smc_wr.c   | 18 ++++++++++++++++--
- net/smc/smc_wr.h   |  5 ++---
- 3 files changed, 22 insertions(+), 6 deletions(-)
+EPIPE is not supposed to be generated at the receiving side ?
 
-diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
-index 08b457c2d294..0705e33e2d68 100644
---- a/net/smc/smc_core.h
-+++ b/net/smc/smc_core.h
-@@ -106,7 +106,10 @@ struct smc_link {
- 	unsigned long		*wr_tx_mask;	/* bit mask of used indexes */
- 	u32			wr_tx_cnt;	/* number of WR send buffers */
- 	wait_queue_head_t	wr_tx_wait;	/* wait for free WR send buf */
--	atomic_t		wr_tx_refcnt;	/* tx refs to link */
-+	struct {
-+		struct percpu_ref	wr_tx_refs;
-+	} ____cacheline_aligned_in_smp;
-+	struct completion	ref_comp;
- 
- 	struct smc_wr_buf	*wr_rx_bufs;	/* WR recv payload buffers */
- 	struct ib_recv_wr	*wr_rx_ibs;	/* WR recv meta data */
-diff --git a/net/smc/smc_wr.c b/net/smc/smc_wr.c
-index b0678a417e09..dd923e76139f 100644
---- a/net/smc/smc_wr.c
-+++ b/net/smc/smc_wr.c
-@@ -648,7 +648,8 @@ void smc_wr_free_link(struct smc_link *lnk)
- 
- 	smc_wr_tx_wait_no_pending_sends(lnk);
- 	wait_event(lnk->wr_reg_wait, (!atomic_read(&lnk->wr_reg_refcnt)));
--	wait_event(lnk->wr_tx_wait, (!atomic_read(&lnk->wr_tx_refcnt)));
-+	percpu_ref_kill(&lnk->wr_tx_refs);
-+	wait_for_completion(&lnk->ref_comp);
- 
- 	if (lnk->wr_rx_dma_addr) {
- 		ib_dma_unmap_single(ibdev, lnk->wr_rx_dma_addr,
-@@ -847,6 +848,13 @@ void smc_wr_add_dev(struct smc_ib_device *smcibdev)
- 	tasklet_setup(&smcibdev->send_tasklet, smc_wr_tx_tasklet_fn);
- }
- 
-+static void smcr_wr_tx_refs_free(struct percpu_ref *ref)
-+{
-+	struct smc_link *lnk = container_of(ref, struct smc_link, wr_tx_refs);
-+
-+	complete(&lnk->ref_comp);
-+}
-+
- int smc_wr_create_link(struct smc_link *lnk)
- {
- 	struct ib_device *ibdev = lnk->smcibdev->ibdev;
-@@ -890,7 +898,13 @@ int smc_wr_create_link(struct smc_link *lnk)
- 	smc_wr_init_sge(lnk);
- 	bitmap_zero(lnk->wr_tx_mask, SMC_WR_BUF_CNT);
- 	init_waitqueue_head(&lnk->wr_tx_wait);
--	atomic_set(&lnk->wr_tx_refcnt, 0);
-+
-+	rc = percpu_ref_init(&lnk->wr_tx_refs, smcr_wr_tx_refs_free,
-+			     PERCPU_REF_ALLOW_REINIT, GFP_KERNEL);
-+	if (rc)
-+		goto dma_unmap;
-+	init_completion(&lnk->ref_comp);
-+
- 	init_waitqueue_head(&lnk->wr_reg_wait);
- 	atomic_set(&lnk->wr_reg_refcnt, 0);
- 	init_waitqueue_head(&lnk->wr_rx_empty_wait);
-diff --git a/net/smc/smc_wr.h b/net/smc/smc_wr.h
-index 45e9b894d3f8..f3008dda222a 100644
---- a/net/smc/smc_wr.h
-+++ b/net/smc/smc_wr.h
-@@ -63,14 +63,13 @@ static inline bool smc_wr_tx_link_hold(struct smc_link *link)
- {
- 	if (!smc_link_sendable(link))
- 		return false;
--	atomic_inc(&link->wr_tx_refcnt);
-+	percpu_ref_get(&link->wr_tx_refs);
- 	return true;
- }
- 
- static inline void smc_wr_tx_link_put(struct smc_link *link)
- {
--	if (atomic_dec_and_test(&link->wr_tx_refcnt))
--		wake_up_all(&link->wr_tx_wait);
-+	percpu_ref_put(&link->wr_tx_refs);
- }
- 
- static inline void smc_wr_drain_cq(struct smc_link *lnk)
--- 
-2.31.1
+So I would rather make io_uring slightly faster :
 
+
+diff --git a/io_uring/net.c b/io_uring/net.c
+index cbd4b725f58c98e5bc5bf88d5707db5c8302e071..b7f190ca528e6e259eb2b072d7a=
+16aaba98848cb
+100644
+--- a/io_uring/net.c
++++ b/io_uring/net.c
+@@ -567,7 +567,7 @@ int io_recvmsg_prep(struct io_kiocb *req, const
+struct io_uring_sqe *sqe)
+        sr->flags =3D READ_ONCE(sqe->ioprio);
+        if (sr->flags & ~(RECVMSG_FLAGS))
+                return -EINVAL;
+-       sr->msg_flags =3D READ_ONCE(sqe->msg_flags) | MSG_NOSIGNAL;
++       sr->msg_flags =3D READ_ONCE(sqe->msg_flags);
+        if (sr->msg_flags & MSG_DONTWAIT)
+                req->flags |=3D REQ_F_NOWAIT;
+        if (sr->msg_flags & MSG_ERRQUEUE)
