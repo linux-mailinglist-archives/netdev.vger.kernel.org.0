@@ -2,110 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 230776A1FEF
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 17:45:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA5DC6A1FF3
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 17:46:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229822AbjBXQpk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 11:45:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45750 "EHLO
+        id S229757AbjBXQqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 11:46:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229662AbjBXQpi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 11:45:38 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A6E61A66B
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 08:45:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=gizQFLDWlqeEi6mqdoGc8Xu4jnp/ZZcn0OLQphwdT4M=; b=1COMSNpk1qZQT8dWd0kKm+sXh+
-        FCdNyVep40+MnqH17Xb+67QcFKV14jbytm822P1n8DMsomDjU02qI32zpEyey9mi8yzr9kYTFyTR2
-        ubBpZATaABIILqao5fXP8ME/6SmhGlPjZXdcgV44icvg/7ur0bj8NgC8bREltAKlyfWG6xdPa7MQG
-        OQPFM5P5YrnmoamaB3gL/VeCiDWFiiHb1wqod8WQgjeBQbgy7xMWJ7SEwAKxcyOoPFDThryEeZULg
-        T2JyD8W1Jru6C6S+WjVfs+ZMgvEjO+Zo8RJ9N3OuNqjNa4MBJLvu0+zelezX55Z4jNxGxlltq+PsY
-        ATbci5bA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44976)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pVbCR-0000vr-3N; Fri, 24 Feb 2023 16:45:35 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pVbCP-0005ZN-5C; Fri, 24 Feb 2023 16:45:33 +0000
-Date:   Fri, 24 Feb 2023 16:45:33 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
+        with ESMTP id S229662AbjBXQqV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 11:46:21 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB1F02BF17
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 08:46:20 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id u14so81086ple.7
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 08:46:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=zFHKgmov83yJl95cSLR3AMRl1I5n8rJYMMIEWny8aB0=;
+        b=Gu6xSyl/tPLw9XqYtCMhx0bY35SKkXrOxpE+eL+O5x9XUUgrj9iloPQ2MKxfcNBZ8Q
+         sWHtFrNbGCU529xiziOidFA4ku/02fM1wLVnzmg9D2yCb/7t7HwXLqZbclpoKsWkfzuF
+         5E/dzu8O8Paqjf805bqGInqN6aV1DO3LvHMo9l6dN5Px9kf8S+KN2V6pD35Wyk5kqDew
+         keZ94DeMRK581zWt2mNbuCaxv2rmUqfSeVSBqiHCRiL+ub8xPUH2dfuolY1tGxySTja7
+         ydRKzonv3V5cmF6RvYJ2Bz8930XfKhAefGp+i58c9PXTESelc0/cPhj59PHYp2M6/A7D
+         zK5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=zFHKgmov83yJl95cSLR3AMRl1I5n8rJYMMIEWny8aB0=;
+        b=td0FdLm0P18Pb7j/F1NEadCustFvjoxXp0+qiEWVJSgE9tQgl8VtSM01RBqa/DXc+j
+         mFMk+fnX7SNmu7CQExu4vzqc9XO77NHk4mKNk6pF4CvhzPonfTTgzZ6nL1lu/eD7MCQ/
+         psvEkZRlkpUhhHuFKbRfd95K92/zL0F37QCUZh6HiCg8ar0jjfdhFMWsU8qeBDp4AWST
+         fh14+refMZ48xWVRoqOdanH2ATpFgj8XcPUEGh3QC3bd7VbmHdYWjOrNP6QoxTHUdi5O
+         3uKOC+vUO0VZ2UgGUVfa1YZuHj1UamzsaocoDYm4qpKczX4Di7UwL5U4OhkhyN5ZOJ3O
+         OmLQ==
+X-Gm-Message-State: AO0yUKWpPWihJuzCrsya6xpnZE1OQqGX1XKRBjJP+ERoPsaMWElaDxVh
+        2mGJCSxo1XkqNZBv9KuIS1rtSNaQBns=
+X-Google-Smtp-Source: AK7set8Jfn4woSU/Qh5YUtTj7oR8HwyX4eB9ijT+ZbhcM2wL2VEUicbAnJbhcCsTCTr9lphsvPiWgg==
+X-Received: by 2002:a17:90a:194c:b0:237:47b0:3ea8 with SMTP id 12-20020a17090a194c00b0023747b03ea8mr9589223pjh.41.1677257180092;
+        Fri, 24 Feb 2023 08:46:20 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id h1-20020a17090adb8100b002341ae23ad7sm6699993pjv.1.2023.02.24.08.46.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Feb 2023 08:46:19 -0800 (PST)
+Message-ID: <98baf6c1-957e-f422-5033-8a5ccfcde451@gmail.com>
+Date:   Fri, 24 Feb 2023 08:46:16 -0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH net] net: dsa: ocelot_ext: remove unnecessary phylink.h
+ include
+Content-Language: en-US
+To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Lee Jones <lee@kernel.org>,
-        Maksim Kiselev <bigunclemax@gmail.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net 3/3] net: mscc: ocelot: fix duplicate driver name
- error
-Message-ID: <Y/jprbUJseOEDsHe@shell.armlinux.org.uk>
-References: <20230224155235.512695-1-vladimir.oltean@nxp.com>
- <20230224155235.512695-4-vladimir.oltean@nxp.com>
- <Y/jel+aPo4PkWc1g@shell.armlinux.org.uk>
- <20230224160920.cjia4n7zn3jm4nyd@skbuf>
- <Y/jiYdNjaeqPAfO9@shell.armlinux.org.uk>
- <20230224161629.w7onocrzlokqmglh@skbuf>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230224161629.w7onocrzlokqmglh@skbuf>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        UNGLinuxDriver@microchip.com
+Cc:     Colin Foster <colin.foster@in-advantage.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+References: <E1pVbBE-00CiJn-NK@rmk-PC.armlinux.org.uk>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <E1pVbBE-00CiJn-NK@rmk-PC.armlinux.org.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 24, 2023 at 06:16:29PM +0200, Vladimir Oltean wrote:
-> On Fri, Feb 24, 2023 at 04:14:25PM +0000, Russell King (Oracle) wrote:
-> > On Fri, Feb 24, 2023 at 06:09:20PM +0200, Vladimir Oltean wrote:
-> > > On Fri, Feb 24, 2023 at 03:58:15PM +0000, Russell King (Oracle) wrote:
-> > > > I'll also send another patch to delete linux/phylink.h from
-> > > > ocelot_ext.c - seems that wasn't removed when the phylink instance
-> > > > was removed during review.
-> > > 
-> > > Good point. I suppose that would be on net-next, after the 6th of March?
-> > > I just hope we'll remember by then.
-> > 
-> > Yep - however, I'm facing challenges to build-testing it at the moment
-> > as net-next is broken:
-> > 
-> > kernel/bpf/core.c: In function '___bpf_prog_run':
-> > kernel/bpf/core.c:1914:3: error: implicit declaration of function 'barrier_nospec' [-Werror=implicit-function-declaration]
-> >  1914 |   barrier_nospec();
-> >       |   ^~~~~~~~~~~~~~
-> > cc1: some warnings being treated as errors
-> > 
-> > ... so I'm going to send the patch as untested.
-> > 
-> > -- 
-> > RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> > FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+On 2/24/23 08:44, Russell King (Oracle) wrote:
+> During review of ocelot_ext, it created a private phylink instance
+> that wasn't necessary. This was removed for subsequent postings,
+> but the include file seems to have been left behind. Remove it.
 > 
-> https://github.com/torvalds/linux/commit/f3dd0c53370e70c0f9b7e931bbec12916f3bb8cc
-> 
-> Can't deny it would be great to have this on net.git ASAP :)
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-Agreed, and thanks for the patch, my build-test on net.git succeeded
-with that.
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Florian
+
