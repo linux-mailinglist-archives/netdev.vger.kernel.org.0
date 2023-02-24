@@ -2,121 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EABBC6A2241
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 20:19:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 066056A2246
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 20:19:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229647AbjBXTTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 14:19:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47240 "EHLO
+        id S230027AbjBXTTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 14:19:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbjBXTTJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 14:19:09 -0500
-Received: from mail-vs1-xe31.google.com (mail-vs1-xe31.google.com [IPv6:2607:f8b0:4864:20::e31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3864A10C8
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 11:19:08 -0800 (PST)
-Received: by mail-vs1-xe31.google.com with SMTP id o2so930834vss.8
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 11:19:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=uci-edu.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=beKhMtsCTaM5oM3Mze5dnKYHOlzx1cDOTU11CiVmTd8=;
-        b=H3SEpbzsD7PRyycSfaIJTHQITmlJgkO7Io7xHoUfh6iiCZVz9xOrTv1LV5ScXsGbej
-         M3JGKkz9ieE3+sdM+rX5Y49Yz5gd+cYX/v0ssXiXxWX4jF+LyGDKdjYOZyoHyZ7M6Hj8
-         Fjanq3xvT7H3csTgbOkTU6NCKQRA91J8J+5gTpS/aCv/4DTD22moW91JBqYzHOOB2pzm
-         Ebke5bzH9WteMh+0aqP+q3oNr61B5MppI/LEvWcOeI2AvTZuq9P5IQTQW0boFKrEbLB7
-         7GVXbJurw3Hpq1Pu0Rii7SqEW3ZxpAErRkHGUYlomFpzjepes0z6uzV2TVE5ux+ASXT0
-         roaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=beKhMtsCTaM5oM3Mze5dnKYHOlzx1cDOTU11CiVmTd8=;
-        b=8L73Wp3iDRQMVaSXSVkqJcRuzoUHUwbHMmZw8gn9nvf1rxm9sd5PF+7EQ1L3dQiehv
-         XysHr/EsuxeAPLd4o0RBUu33aMEreMjSZldNFoqfHs/v/Ul+0+S6Wt+7a0ObHG8DE5xw
-         Ah10bZNubfdqktcwI2YEsg1McL8P9DfG00tn76Irkj7ESIBwEG2N463gBdNTX1y0/d6V
-         Ahclxj8mAe0LWwZX6SCxRf/rdtLAq4V1BLCR4Ejah6GfLhB5a0wvtpXpgFGJX7IFVGyz
-         es0t953NxyfpwURPUBNBer/B/jgj3OUvdAOfAILL5zZYjHFxktdgGl09DtNPPE8DAR6t
-         EVdA==
-X-Gm-Message-State: AO0yUKVidKI4bA5BGxEG/5tnV49qFxNGSL/qRb74yld0Py0eI6QFr+OB
-        otkj4jQH/4Pmf3p8+AubR/uhy53QhTuw9u7GOumrRQ==
-X-Google-Smtp-Source: AK7set8lCRfbdrWNN0pLqcJuTWrdGmQzu4KmlBszfB3kfSMl8UPsYGuSJPDt8W5Ix1Vhgy16L8mKJ8WCEEKd5v8PayQ=
-X-Received: by 2002:a67:db0a:0:b0:414:2344:c353 with SMTP id
- z10-20020a67db0a000000b004142344c353mr3075359vsj.5.1677266347284; Fri, 24 Feb
- 2023 11:19:07 -0800 (PST)
+        with ESMTP id S229869AbjBXTTR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 14:19:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C79664E0D
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 11:19:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 98D4161968
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 19:19:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99E63C4339C;
+        Fri, 24 Feb 2023 19:19:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1677266354;
+        bh=WfkQh6PGzxmfTGhMOK+PEzZMnjbWA71u59ymcVEZhZc=;
+        h=Subject:From:To:Cc:Date:From;
+        b=MOsJx8j8YqrWtOHB20giuULOFlyrRyDQ1WO5WKo/kYJsBOEkMuOCTHuq2kI4tWNHS
+         VmroqNVb0+PMK96fTPxuA5TU/R9bFYvH6ovSOo8KLpQOaOoh3ytfRVtMhIrGscAY//
+         BZMCOtkcYLb0yBIUWaUQxEkmbA2QZbRv9Ab1CrD2i8c/txXoC0aBHrJfUCZSGsI5pq
+         Wuya+sFPt1Mk33ZjlPIV3LT2mLCv1LCNcO83JB8fRJrRiMaGf98r3OoM5QJuHkl5nV
+         CDNhOEyNgHLL3kDK2yqg7H8dny/JJ18zg3+q4xaDAvnztr1RoQxxaqFuAERu16cj11
+         BnlfJ51PurMcw==
+Subject: [PATCH v5 0/2] Another crack at a handshake upcall mechanism
+From:   Chuck Lever <cel@kernel.org>
+To:     kuba@kernel.org, pabeni@redhat.com, edumazet@google.com
+Cc:     netdev@vger.kernel.org, kernel-tls-handshake@lists.linux.dev
+Date:   Fri, 24 Feb 2023 14:19:12 -0500
+Message-ID: <167726551328.5428.13732817493891677975.stgit@91.116.238.104.host.secureserver.net>
+User-Agent: StGit/1.5
 MIME-Version: 1.0
-References: <CABcoxUayum5oOqFMMqAeWuS8+EzojquSOSyDA3J_2omY=2EeAg@mail.gmail.com>
- <87a614h62a.fsf@cloudflare.com> <CABcoxUYiRUBkhzsbvsux8=zjgs7KKWYUobjoKrM+JYpeyfNw8g@mail.gmail.com>
-In-Reply-To: <CABcoxUYiRUBkhzsbvsux8=zjgs7KKWYUobjoKrM+JYpeyfNw8g@mail.gmail.com>
-From:   Hsin-Wei Hung <hsinweih@uci.edu>
-Date:   Fri, 24 Feb 2023 13:18:31 -0600
-Message-ID: <CABcoxUY=k8_aM0YE3_e_FaMTLiBmo-Yc4UMyBVuRNggj4ivA-Q@mail.gmail.com>
-Subject: Re: A potential deadlock in sockhash map
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hi-
 
-Just a quick update. I can still trigger the lockdep warning on bpf
-tree (5b7c4cabbb65).
+Here is v5 of a series to add generic support for transport layer
+security handshake on behalf of kernel socket consumers (user space
+consumers use a security library directly, of course). A summary of
+the purpose of these patches is archived here:
 
-Thanks,
-Hsin-Wei
+https://lore.kernel.org/netdev/1DE06BB1-6BA9-4DB4-B2AA-07DE532963D6@oracle.com/
 
-On Fri, Feb 24, 2023 at 9:58 AM Hsin-Wei Hung <hsinweih@uci.edu> wrote:
->
-> Hi Jakub,
->
-> Thanks for following up. Sorry that I did not receive the previous reply.
->
-> The latest version I tested is 5.19 (3d7cb6b04c3f) and we can reproduce the
-> issue with the BPF PoC included. Since we modified Syzkaller, we do not
-> have a Syzkaller reproducer.
->
-> I will follow John's suggestion to test the latest kernel and bpf
-> tree. I will follow
-> up if the issue still reproduces.
->
-> Thanks,
-> Hsin-Wei
->
->
->
->
-> On Fri, Feb 24, 2023 at 8:51 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
-> >
-> > Hi,
-> >
-> > On Mon, Feb 20, 2023 at 07:39 AM -06, Hsin-Wei Hung wrote:
-> > > I think my previous report got blocked since it contained HTML
-> > > subparts so I am sending it again. Our bpf runtime fuzzer (a
-> > > customized syzkaller) triggered a lockdep warning in the bpf subsystem
-> > > indicating a potential deadlock. We are able to trigger this bug on
-> > > v5.15.25 and v5.19. The following code is a BPF PoC, and the lockdep
-> > > warning is attached at the end.
-> >
-> > Not sure if you've seen John's reply to the previous report:
-> >
-> > https://urldefense.com/v3/__https://lore.kernel.org/all/63dddcc92fc31_6bb15208e9@john.notmuch/__;!!CzAuKJ42GuquVTTmVmPViYEvSg!PU-LFxMnx4b-GmTXGI0hYjBiq8vkwrFrlf_b0N5uzy8do5kPFiNcuZJbby-19TtOH2rJoY9UwOvzFArd$
-> >
-> > Are you also fuzzing any newer kernel versions? Or was v5.19 the latest?
-> >
-> > Did syzkaller find a reproducer?
-> >
-> > Thanks,
-> > Jakub
+For v5, I've created a YAML spec that describes the HANDSHAKE
+netlink protocol. Some simplifications were necessary to make the
+protocol fit within the YAML schema. I was not able to get
+multi-attr working for the remote-peerid attribute, so that has been
+postponed to v6.
+
+The socket "accept" mechanism has been replaced with something more
+like "dup(2)", and we no longer rely on the DONE operation to close
+the accepted file descriptor. Hopefully this clarifies error and
+timeout handling as well as handshake_req lifetime.
+
+The full patch set to support SunRPC with TLSv1.3 is available in
+the topic-rpc-with-tls-upcall branch here, based on net-next/main:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/cel/linux.git
+
+A user space handshake agent for TLSv1.3 to go along with the kernel
+patches is available in the "netlink" branch here:
+
+  https://github.com/oracle/ktls-utils
+
+Enjoy your weekend!
+
+---
+
+Changes since v4:
+- Rebased onto net-next/main
+- Replaced req reference counting with ->sk_destruct
+- CMD_ACCEPT now does the equivalent of a dup(2) rather than an
+  accept(2)
+- CMD_DONE no longer closes the user space socket endpoint
+- handshake_req_cancel is now tested and working
+- Added a YAML specification for the netlink upcall protocol, and
+  simplified the protocol to fit the YAML schema
+- Added an initial set of tracepoints
+
+Changes since v3:
+- Converted all netlink code to use Generic Netlink
+- Reworked handshake request lifetime logic throughout
+- Global pending list is now per-net
+- On completion, return the remote's identity to the consumer
+
+Changes since v2:
+- PF_HANDSHAKE replaced with NETLINK_HANDSHAKE
+- Replaced listen(2) / poll(2) with a multicast notification service
+- Replaced accept(2) with a netlink operation that can return an
+  open fd and handshake parameters
+- Replaced close(2) with a netlink operation that can take arguments
+
+Changes since RFC:
+- Generic upcall support split away from kTLS
+- Added support for TLS ServerHello
+- Documentation has been temporarily removed while API churns
+
+---
+
+Chuck Lever (2):
+      net/handshake: Create a NETLINK service for handling handshake requests
+      net/tls: Add kernel APIs for requesting a TLSv1.3 handshake
+
+
+ Documentation/netlink/specs/handshake.yaml | 136 +++++++
+ Documentation/networking/index.rst         |   1 +
+ Documentation/networking/tls-handshake.rst | 146 +++++++
+ include/net/handshake.h                    |  45 +++
+ include/net/net_namespace.h                |   5 +
+ include/net/sock.h                         |   1 +
+ include/net/tls.h                          |  27 ++
+ include/trace/events/handshake.h           | 159 ++++++++
+ include/uapi/linux/handshake.h             |  65 ++++
+ net/Makefile                               |   1 +
+ net/handshake/Makefile                     |  11 +
+ net/handshake/handshake.h                  |  41 ++
+ net/handshake/netlink.c                    | 341 +++++++++++++++++
+ net/handshake/request.c                    | 246 ++++++++++++
+ net/handshake/trace.c                      |  17 +
+ net/tls/Makefile                           |   2 +-
+ net/tls/tls_handshake.c                    | 423 +++++++++++++++++++++
+ 17 files changed, 1666 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/netlink/specs/handshake.yaml
+ create mode 100644 Documentation/networking/tls-handshake.rst
+ create mode 100644 include/net/handshake.h
+ create mode 100644 include/trace/events/handshake.h
+ create mode 100644 include/uapi/linux/handshake.h
+ create mode 100644 net/handshake/Makefile
+ create mode 100644 net/handshake/handshake.h
+ create mode 100644 net/handshake/netlink.c
+ create mode 100644 net/handshake/request.c
+ create mode 100644 net/handshake/trace.c
+ create mode 100644 net/tls/tls_handshake.c
+
+--
+Chuck Lever
+
