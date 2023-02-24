@@ -2,54 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C12286A23F5
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 22:49:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D13B16A23F9
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 22:54:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229604AbjBXVtT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 16:49:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38966 "EHLO
+        id S229630AbjBXVx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 16:53:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbjBXVtT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 16:49:19 -0500
-Received: from us-smtp-delivery-44.mimecast.com (unknown [207.211.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23632570B6
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 13:49:17 -0800 (PST)
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-661-Fwx6xZaDNR-lR9FMMiqsvw-1; Fri, 24 Feb 2023 16:49:00 -0500
-X-MC-Unique: Fwx6xZaDNR-lR9FMMiqsvw-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 191F287B2A2;
-        Fri, 24 Feb 2023 21:49:00 +0000 (UTC)
-Received: from hog (unknown [10.39.192.255])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 59310492B07;
-        Fri, 24 Feb 2023 21:48:58 +0000 (UTC)
-Date:   Fri, 24 Feb 2023 22:48:57 +0100
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Hangyu Hua <hbh25y@gmail.com>, Florian Westphal <fw@strlen.de>,
-        borisp@nvidia.com, john.fastabend@gmail.com, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, davejwatson@fb.com,
-        aviadye@mellanox.com, ilyal@mellanox.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: tls: fix possible race condition between
- do_tls_getsockopt_conf() and do_tls_setsockopt_conf()
-Message-ID: <Y/kwyS2n4uLn8eD0@hog>
-References: <20230224105811.27467-1-hbh25y@gmail.com>
- <20230224120606.GI26596@breakpoint.cc>
- <20230224105508.4892901f@kernel.org>
- <Y/kck0/+NB+Akpoy@hog>
- <20230224130625.6b5261b4@kernel.org>
+        with ESMTP id S229488AbjBXVxz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 16:53:55 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32D9F1040B;
+        Fri, 24 Feb 2023 13:53:54 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id ee7so2891502edb.2;
+        Fri, 24 Feb 2023 13:53:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=+5eSywMvV2ug+ZtsNbQkPbN0xmm97do2TILmiHXrX+8=;
+        b=G+CJc7sIUwjc38V/esuyG+zjarKvIyr5/Ftov6HBUcrQ8cwpibx4Nb7UYgsYBJpyfg
+         uLUuF3evXdITmGdk1LN8Wen/KjyBNqb3yDAxGQFmrlHZAobeA4IDLMr3EATS1LdnQ+21
+         GnJiBRU+EJ4IxfEGI/26dOm9LDnkHeuL24fIInw1jo8CW29AvNIcZZtyCAhJ9HxPsBOE
+         eYi4/bgxWZqOwFMY76P6bKZ/6S4t9CaGumPnCb/Az7q14GRrzrQ+voljxPka7ZtCJe5d
+         xwb9840i1MUUvWErIuYmkAjg11DbF0/4kW+KOAsz5wp1Zkb+k56snjiCCkie8HAi4IcR
+         MKwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+5eSywMvV2ug+ZtsNbQkPbN0xmm97do2TILmiHXrX+8=;
+        b=hYnM88HeYi9vftogdlEda+giwHnap7Y9mr6w2ValE62tDsgQYe8n0OJktiOk2kfYN6
+         6/5H1kYJHmGsxzB1LH/k1c6XabixGWPJC/fcfG/o/cQGUyDs6SdmO7jBXbF3GmEqngE+
+         TZEo+5enIKowqkhAZS9eheIaj8u4u1Jzpdei3EPn0YWTHC2iACdk8m3rgpyVDk6ZHmFJ
+         LAKzzG/m0Va9M+Bgp6lx2u5NxD+oQWC17b2h/gdkny9lD7uWRiKYF7i53fExYWzfI9vt
+         rCsrj9j0OFLeJlmsjlFnrTgQetpr9BhvNZWuyKdxfQpMgQnf+0yUi09JkIt5E32PmTxJ
+         8UjQ==
+X-Gm-Message-State: AO0yUKUacFs1sXqiTrZiXK55sY8VqUGgrqY48o9q3+7pS/HKVuSbzUIz
+        Ul2EgY4sm8yACCvW6F/f0sg=
+X-Google-Smtp-Source: AK7set/R6z2ukq5j2KI3aOOQekMtWn24eajeyvRltqab/706R0jM5AVjF5p3+1ajfmn5P5oNVR4tGQ==
+X-Received: by 2002:a17:906:e253:b0:85d:dd20:60a4 with SMTP id gq19-20020a170906e25300b0085ddd2060a4mr25171818ejb.40.1677275632606;
+        Fri, 24 Feb 2023 13:53:52 -0800 (PST)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id og42-20020a1709071dea00b008e8e9859905sm31799ejc.184.2023.02.24.13.53.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Feb 2023 13:53:52 -0800 (PST)
+Date:   Fri, 24 Feb 2023 23:53:49 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Alexander Lobakin <aleksander.lobakin@intel.com>
+Cc:     Rakesh Sankaranarayanan <rakesh.sankaranarayanan@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, f.fainelli@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Subject: Re: [PATCH v2 net-next 3/5] net: dsa: microchip: add eth mac
+ grouping for ethtool statistics
+Message-ID: <20230224215349.umzw46xvzccjdndd@skbuf>
+References: <20230217110211.433505-1-rakesh.sankaranarayanan@microchip.com>
+ <20230217110211.433505-4-rakesh.sankaranarayanan@microchip.com>
+ <84835bee-a074-eb46-f1e4-03e53cd7f9ec@intel.com>
+ <20230217164227.mw2cyp22bsnvuh6t@skbuf>
+ <47a67799-27d9-094e-11c3-a18efcf281e2@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230224130625.6b5261b4@kernel.org>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
-X-Spam-Status: No, score=-0.5 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_VALIDITY_RPBL,RDNS_NONE,SPF_HELO_NONE,SPF_NONE autolearn=no
+In-Reply-To: <47a67799-27d9-094e-11c3-a18efcf281e2@intel.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,44 +78,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2023-02-24, 13:06:25 -0800, Jakub Kicinski wrote:
-> On Fri, 24 Feb 2023 21:22:43 +0100 Sabrina Dubroca wrote:
-> > > Right, the bug and the fix seem completely bogus.
-> > > Please make sure the bugs are real and the fixes you sent actually 
-> > > fix them.  
-> > 
-> > I suggested a change of locking in do_tls_getsockopt_conf this
-> > morning [1]. The issue reported last seemed valid, but this patch is not
-> > at all what I had in mind.
-> > [1] https://lore.kernel.org/all/Y/ht6gQL+u6fj3dG@hog/
-> 
-> Ack, I read the messages out of order, sorry.
-> 
-> > do_tls_setsockopt_conf fills crypto_info immediately from what
-> > userspace gives us (and clears it on exit in case of failure), which
-> > getsockopt could see since it's not locking the socket when it checks
-> > TLS_CRYPTO_INFO_READY. So getsockopt would progress up to the point it
-> > finally locks the socket, but if setsockopt failed, we could have
-> > cleared TLS_CRYPTO_INFO_READY and freed iv/rec_seq.
-> 
-> Makes sense. We should just take the socket lock around all of
-> do_tls_getsockopt(), then? 
+On Fri, Feb 24, 2023 at 05:07:01PM +0100, Alexander Lobakin wrote:
+> It's not so common for people to show up back in the thread after you
+> ask them to show godbolt / asm code comparison.
 
-That would make things simple and consistent. My idea was just taking
-the existing lock_sock in do_tls_getsockopt_conf out of the switch and
-put it just above TLS_CRYPTO_INFO_READY.
+idk what godbolt is, but if it's some sort of online compiler, then I
+suppose it's of limited usefulness for the Linux kernel.
 
-While we're at it, should we move the
+Easiest way to see a disassembly (also has C code interleaved) would be
+this:
 
-    ctx->prot_info.version != TLS_1_3_VERSION
+make drivers/net/dsa/microchip/ksz_ethtool.lst
 
-check in do_tls_setsockopt_no_pad under lock_sock?  I don't think that
-can do anything wrong (we'd have to get past this check just before a
-failing setsockopt clears crypto_info, and even then we're just
-reading a bit from the context), it just looks a bit strange. Or just
-lock the socket around all of do_tls_setsockopt_no_pad, like the other
-options we have.
-
--- 
-Sabrina
-
+This is also useful to see precisely which instruction went boom in case
+there's a NULL pointer dereference or something like that.
