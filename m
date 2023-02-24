@@ -2,85 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E9FA6A2147
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 19:16:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15E7C6A214D
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 19:18:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229456AbjBXSQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 13:16:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42618 "EHLO
+        id S229683AbjBXSSh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 13:18:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbjBXSQ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 13:16:28 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 321E16C51B
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 10:16:26 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id ck15so949866edb.0
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 10:16:26 -0800 (PST)
+        with ESMTP id S229577AbjBXSSg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 13:18:36 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4742B42BC1
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 10:18:32 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id cb13so8406102pfb.5
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 10:18:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Gak9Zz54oLK2DF9YpUqRiFQ6ukYGvkDO0C2i7WdaOeY=;
-        b=gdLTnb38YYKn4MongG0BubSyl0hpHUqBWZR94WcoZMFIiHwVWIDD7y2ZiZCESfynlE
-         4TSdc20lTzPizkraAGX6Xn7nAGEUU/rqzLXjirwNG4GRRcBB+RkoYfEQP4btQJ/g9b4n
-         g9zUE/MWLubgePon7GIO3QIabn+bE5eIK0T8K0lVnFOkWUGpucJpEoK6JPlUSsjuq5uW
-         IDVuwTQ/7dqehDYhZHZK9ZdnacK7/VM6/fMFRZ601LQrZmn2rVAOBW1Trdm0j+7ZYvTP
-         gaDQs6kzVe+eWlIapXdU6XE+YIrwmZEc/uSH48dp0c3s46twtwisZH8afgcmQdv8KZEc
-         7afw==
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=a72daFQJ3SSSzThy7egxDJOvu4mJ7r6EJfLJC/7O1xM=;
+        b=fF7RwIjGaeoEN16yD1Ci2ghGZyQD5MAb5p91MOo2ZWjkkbvGFouGVnCqfVG7+qMas3
+         ydS1QxvHIdJQHuMAafIOHDqqT0R4PW5aBytX8silGKLSm4MKk+1LL2Qu1tggqNsvpEb7
+         sdFUBVQpAFxhQ/S4HSCMj7CWvkqgnQ1BGmr3C3te9u76cJCe0GtAU17lkc4KCk1xZH1J
+         nMODixkRSrSqDj80E1gTA9bAza4N6M42lwrbVbZiH8h24N0kGWRt7Pz7zeqMdwb37Jig
+         3RWe+RmQVzKofZvmMatQIsL6cmyZDsmDGHGvNUvrUAOHQZxIsAWpxNLL83B0eR9OAF5f
+         6OJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Gak9Zz54oLK2DF9YpUqRiFQ6ukYGvkDO0C2i7WdaOeY=;
-        b=GEY0fwIBIEb/c/Oi4ydXfl5eUS8wj0No3TGkECPDBtGfx07wke3hapO18lEkKQ/YBo
-         Eb4671GFl/NZCJhDvhi1Quju9OYIjD3KJcLQpXQSqsDVCEsho4pw++tcGr27asCCnqa0
-         dkC09B4DReFaulC18kpUYE0xRwdvBpd4MEDaDXWQxVLlgHrST0mICqS4tgw19jRZWUDG
-         8xI8lrsYYId8hH1xcBuDvpfktS57x4Hy8jsEDMXPScQO9gmLDE2NvgFFWTPnESldlRQJ
-         1CC0bzvtyGXuyWPr+4frl7Xk1ldbfF2yujwL4Wm6EpFKv84tn6VwIcU7QjDcgImnf75C
-         vayQ==
-X-Gm-Message-State: AO0yUKXP298+E73htPnX3jRUOH9oZl6+qQxsb+waJ7jxKjKAfSJwpDeP
-        nQz7KLRlaXa+DZagdSfd0kw=
-X-Google-Smtp-Source: AK7set8jAvGyMs/tPbD6rDql0jkDWTgwnU8tO9QM38LyHAZxJYKMVQsKQRDgKDr17LK6rRm6mVzDUQ==
-X-Received: by 2002:a17:906:694f:b0:872:84dd:8903 with SMTP id c15-20020a170906694f00b0087284dd8903mr25378672ejs.59.1677262584543;
-        Fri, 24 Feb 2023 10:16:24 -0800 (PST)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id ay14-20020a170906d28e00b008d2d2d617ccsm6811606ejb.17.2023.02.24.10.16.23
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=a72daFQJ3SSSzThy7egxDJOvu4mJ7r6EJfLJC/7O1xM=;
+        b=AKoxsDeRcA2nwTFFE+C79w6h+KidH8qclch3Mx/6gKg34PcVq1MHZfBFCzSwickPnG
+         NoiDHCLBljnabBojIGt8nXcKUFGa66yBhL2z24f0wcEcgLJ3cl5ALkdbheD5jxCSy4k2
+         PB3a3Fpgxwox0wYPcDklr7Lypv39VuRGnJiuTWkN+diE9aMLUl9C35zzzjac8BdgtH2w
+         yeArGgAo7u3vuSPEt+ERiMZwIy48IO1rUAF+RR9LczKCXwJDxcUH4T5hOt5NmcwKa2oF
+         ZS22Kb7aOroRNrLt5Q/aKW2fZTy8xNeOncUOPBcS5M6aXkISZPu8AF2DUpsnJhDPbcT3
+         MEzQ==
+X-Gm-Message-State: AO0yUKWrHURHtEMy/btv7eGq7vgGy00YLPzw9ZLXH/z+nvsN18eXUnm4
+        Z5ohYR6mvvb21OXJlDR4v5e54nr0D2Pm3ZNmjfg=
+X-Google-Smtp-Source: AK7set+Dq0P+sgfzv8IEMJYO7VB/hF2a5d21DdrkykTHMI3lpnGCwVfGEAfwiRSh7olL6uQmp2e64g==
+X-Received: by 2002:a62:840e:0:b0:5a9:cb6b:7839 with SMTP id k14-20020a62840e000000b005a9cb6b7839mr16466263pfd.1.1677262711557;
+        Fri, 24 Feb 2023 10:18:31 -0800 (PST)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id f15-20020aa78b0f000000b005ac419804d3sm8964137pfd.186.2023.02.24.10.18.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Feb 2023 10:16:24 -0800 (PST)
-Date:   Fri, 24 Feb 2023 20:16:21 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        netdev <netdev@vger.kernel.org>, erkin.bozoglu@xeront.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>
-Subject: Re: Choose a default DSA CPU port
-Message-ID: <20230224181621.gri7vlqh44tpjkot@skbuf>
-References: <a4936eb8-dfaa-e2f8-b956-75e86546fbf3@arinc9.com>
- <trinity-4025f060-3bb8-4260-99b7-e25cbdcf9c27-1676800164589@3c-app-gmx-bs35>
- <20230221002713.qdsabxy7y74jpbm4@skbuf>
- <trinity-105e0c2e-38e7-4f44-affd-0bc41d0a426b-1677086262623@3c-app-gmx-bs54>
- <20230222180623.cct2kbhyqulofzad@skbuf>
- <9c9ab755-9b5e-4e76-0e3c-119d567fc39d@arinc9.com>
- <20230222193440.c2vzg7j7r32xwr5l@skbuf>
- <e89af7bd-2f4c-3865-afa5-276a6acbc16f@arinc9.com>
- <trinity-c58a37c3-aa55-48b3-9d6c-71520ad2a81d-1677262043715@3c-app-gmx-bap70>
- <20230224181326.5lbph42bs566t2ci@skbuf>
+        Fri, 24 Feb 2023 10:18:31 -0800 (PST)
+Date:   Fri, 24 Feb 2023 10:18:29 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Pedro Tammela <pctammela@mojatatu.com>
+Cc:     netdev@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>
+Subject: Re: [PATCH iproute2 1/3] tc: m_csum: parse index argument correctly
+Message-ID: <20230224101829.58c5e6e5@hermes.local>
+In-Reply-To: <20230224181130.187328-2-pctammela@mojatatu.com>
+References: <20230224181130.187328-1-pctammela@mojatatu.com>
+        <20230224181130.187328-2-pctammela@mojatatu.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230224181326.5lbph42bs566t2ci@skbuf>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -88,45 +70,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 24, 2023 at 08:13:26PM +0200, Vladimir Oltean wrote:
-> On Fri, Feb 24, 2023 at 07:07:23PM +0100, Frank Wunderlich wrote:
-> > root@bpi-r2:~# ethtool -S eth0 | grep -v ': 0'
-> > NIC statistics:
-> >      tx_bytes: 1643364546
-> >      tx_packets: 1121377
-> >      rx_bytes: 1270088499
-> >      rx_packets: 1338400
-> >      p06_TxUnicast: 1338274
-> >      p06_TxMulticast: 120
-> >      p06_TxBroadcast: 6
-> >      p06_TxPktSz65To127: 525948
-> >      p06_TxPktSz128To255: 5
-> >      p06_TxPktSz256To511: 16
-> >      p06_TxPktSz512To1023: 4
-> >      p06_Tx1024ToMax: 812427
-> >      p06_TxBytes: 1275442099
-> >      p06_RxFiltering: 16
-> >      p06_RxUnicast: 1121339
-> >      p06_RxMulticast: 37
-> >      p06_RxBroadcast: 1
-> >      p06_RxPktSz64: 3
-> >      p06_RxPktSz65To127: 43757
-> >      p06_RxPktSz128To255: 3
-> >      p06_RxPktSz256To511: 3
-> >      p06_RxPktSz1024ToMax: 1077611
-> >      p06_RxBytes: 1643364546
-> 
-> Looking at the drivers, I see pause frames aren't counted in ethtool -S,
-> so we wouldn't know this. However the slowdown *is* lossless, so the
-> hypothesis is still not disproved.
-> 
-> Could you please test after removing the "pause" property from the
-> switch's port@6 device tree node?
+On Fri, 24 Feb 2023 15:11:28 -0300
+Pedro Tammela <pctammela@mojatatu.com> wrote:
 
-ah, it is..
+> +			if (matches(*argv, "index") == 0) {
+> +				goto skip_args;
 
-static const struct mt7530_mib_desc mt7530_mib[] = {
-	MIB_DESC(1, 0x2c, "TxPause"),
-};
-
-however it's still good to retest with this variable eliminated.
+No new uses of matches allowed in iproute2 commands.
