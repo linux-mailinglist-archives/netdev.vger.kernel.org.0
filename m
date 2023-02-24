@@ -2,66 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E258B6A1A47
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 11:28:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 549696A1A50
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 11:30:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230306AbjBXK17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 05:27:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53696 "EHLO
+        id S229699AbjBXKaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 05:30:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230313AbjBXK1y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 05:27:54 -0500
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ED123801F
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 02:27:13 -0800 (PST)
-Received: by mail-wm1-x32d.google.com with SMTP id ay29-20020a05600c1e1d00b003e9f4c2b623so1776897wmb.3
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 02:27:13 -0800 (PST)
+        with ESMTP id S230410AbjBXKaL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 05:30:11 -0500
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9572A35256;
+        Fri, 24 Feb 2023 02:29:49 -0800 (PST)
+Received: by mail-pg1-x543.google.com with SMTP id 130so4812297pgg.3;
+        Fri, 24 Feb 2023 02:29:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=97K9PyfBtWtLazTWKQyq2GhNL30Sd18gLmfofEOQCyg=;
-        b=QiMbP8GIPp4u0+i2e7HZj++OjBP78CJlG83yPRWiy1/ImnLmyrn2PvN7NmTCJo5P0t
-         taWlXWjA13XS1S6jBbnnlmor8A6aeaBZpaHMK9ktlKTqYaLCogzeEJTalOaUB0ZQNJGr
-         hklsLQMzS9HJzdlSAoM20VxB9mNRr+pFHgKqrDbc4IWf1vXZ+IQB6lp/J5zqfUQQI+pM
-         4rIbPYuCUmar8esbTjglSlyb8m3trtQCYz0rVw23bh5CPw6DvU9RoWiPOXXyJ6Kjmvww
-         Ywqu7XTv9gsnAvyJ5ttmRF6vw7nEAN6w4VN5SRjuEWqAWWUfwZ1Qm1H6PJS8amArPFkO
-         bjfg==
+        d=gmail.com; s=20210112; t=1677234539;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=U3NcJ5Mt2cgzkRxYS86zUoSp3TVBMfDr+z01Tq5U/yI=;
+        b=Xyx1/Zr4PfXGhUX2zcoJv2rzEvCNS6t/0nlsxJEp5tHzmewgvIQfVnzhX1JjNlrmAq
+         CD7C1P43MhE5SHbNvaqf49yYM2ylIvQmHnSEZqPlQm4ZdpG43ofnQZfEIE+FsC4KwWmm
+         SRy0KaQLhOAR72g8fnfYI/J19pQFC7+7i2YuZonwMKfu9N0oaSoDJu8QLxbuQQCHUXCk
+         av9WRcR0BTBFlY6r/Jen6diN6Ze9sPMv4qmj/ieTc80wOXhdGUEKI/au1v3I1FClYNz6
+         DqL22Bvw1RZFSTpQlUaOB86NWieHTUEQJhzwYkYSYLyJD/A3YxkVLVCp3c7TLc/2+cNI
+         P5CQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=97K9PyfBtWtLazTWKQyq2GhNL30Sd18gLmfofEOQCyg=;
-        b=NjCLRuimwJjShL+qzZYZSGFqEisQUZZ85/DJNpmfZvc4lm6x2F8s288E5+xaWZ8ufG
-         ZdYOk5kAis6yJP3AGourH7xjCPPnQpE7Mdolg/sc8c6ZXb+xAnsj9XmzOmELLyj1yTTG
-         IKSO7ORLtfu76hP13HF21U2TTPJBla3+FhfnVcIvjP/LBF66uzRwBgD4F3mlXH05YwHc
-         qs3SskeCk4j3e8/D7mLH5K+aiXAc+r5hV5C2u5XNvJseDkMAG1mQsAtosS3kqzhDy4hw
-         Ry3eM/o1IZPqwHwok9cbBJ5Tgc+uViMBetC3XNgmFa68m7xXd4STN4Wr3KlubvXcASHY
-         69jA==
-X-Gm-Message-State: AO0yUKXYB/q4LfVDvpQxwX9iSuG1WvmLkY4McOy5EN7mFg1rMHRU9j5i
-        Bzh7Dyp29J2yKGX2Eyc3SVOvJ5ETLfeF16P+nzBfdScjB0SiMYCh60M=
-X-Google-Smtp-Source: AK7set9u4s1V/096+eUajvb7H6WjvekcV72VyuPnA4GeV2QM4isiyDsDd/OjQB28zLJHn2P6hhM2ecFs2IvIn9Zosug=
-X-Received: by 2002:a05:600c:1d8a:b0:3df:97de:8bad with SMTP id
- p10-20020a05600c1d8a00b003df97de8badmr1083002wms.6.1677234399297; Fri, 24 Feb
- 2023 02:26:39 -0800 (PST)
+        d=1e100.net; s=20210112; t=1677234539;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=U3NcJ5Mt2cgzkRxYS86zUoSp3TVBMfDr+z01Tq5U/yI=;
+        b=L3+Sw8Q3CdMBX7g1vFfZDOaTO3gw23naideKd7bkAclDqjE6jy3dLCisbJGa7G3mLC
+         l6L6yYrzysePneMawpcB8T4XQ2GkenLHlVl0b4lGDZpPqVkwdxGUht8eBXQOKK/t9x8k
+         oPi9VArgxqYLtq7ITv8L0hSLpsH9EeyQQmvyafieHjirZsIh9vJFqDt5R2JakG6+fFMC
+         oEol7WZVJ/wROJQB95hdAkSdPTNHl311KjZZ6amYbOdAehGiAuyNr/HaTcWSWJoBMb5v
+         sQrnfp/dARObYWOdJZMLawfVAaLZey51ztvq45x54BRYToQ+G8p3844EsZhSAfM17RCS
+         uBnA==
+X-Gm-Message-State: AO0yUKW1omI2P1hmxB6QsT/IvXV9J+Y9nxGghZRDlGhMJSAsgRCTDbEN
+        WpKOf8ExbGGIicBetOIvz/g=
+X-Google-Smtp-Source: AK7set81e9zNL+wgZAHpGhIG/9HaIV5A3qX2rx+LdlpMyl6e4oTIDLaCZjb5jT1ANBONskAP0RgyzQ==
+X-Received: by 2002:a05:6a00:23c3:b0:5a8:c179:7b02 with SMTP id g3-20020a056a0023c300b005a8c1797b02mr15302936pfc.1.1677234538733;
+        Fri, 24 Feb 2023 02:28:58 -0800 (PST)
+Received: from hbh25y.. ([129.227.150.140])
+        by smtp.gmail.com with ESMTPSA id g4-20020a62e304000000b005cdbd9c8825sm6618848pfh.195.2023.02.24.02.28.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Feb 2023 02:28:58 -0800 (PST)
+From:   Hangyu Hua <hbh25y@gmail.com>
+To:     borisp@nvidia.com, john.fastabend@gmail.com, kuba@kernel.org,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        ilyal@mellanox.com, aviadye@mellanox.com, sd@queasysnail.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH v2] net: tls: fix possible info leak in tls_set_device_offload()
+Date:   Fri, 24 Feb 2023 18:28:39 +0800
+Message-Id: <20230224102839.26538-1-hbh25y@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20230224071745.20717-1-equinox@diac24.net>
-In-Reply-To: <20230224071745.20717-1-equinox@diac24.net>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 24 Feb 2023 11:26:27 +0100
-Message-ID: <CANn89iL5EEMwO0cvHkm+V5+qJjmWqmnD_0=G6q7TGW0RC_tkUg@mail.gmail.com>
-Subject: Re: [PATCH net-next] packet: allow MSG_NOSIGNAL in recvmsg
-To:     David Lamparter <equinox@diac24.net>, Jens Axboe <axboe@kernel.dk>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,45 +70,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 24, 2023 at 8:18=E2=80=AFAM David Lamparter <equinox@diac24.net=
-> wrote:
->
-> packet_recvmsg() whitelists a bunch of MSG_* flags, which notably does
-> not include MSG_NOSIGNAL.  Unfortunately, io_uring always sets
-> MSG_NOSIGNAL, meaning AF_PACKET sockets can't be used in io_uring
-> recvmsg().
->
-> As AF_PACKET sockets never generate SIGPIPE to begin with, MSG_NOSIGNAL
-> is a no-op and can simply be ignored.
->
-> Signed-off-by: David Lamparter <equinox@diac24.net>
-> Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-> ---
->  net/packet/af_packet.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
+After tls_set_device_offload() fails, we enter tls_set_sw_offload(). But
+tls_set_sw_offload can't set cctx->iv and cctx->rec_seq to NULL if it fails
+before kmalloc cctx->iv. It is better to Set them to NULL to avoid any
+potential info leak.
 
-This is odd... I think MSG_NOSIGNAL flag has a meaning for sendmsg()
-(or write sides in general)
+Fixes: e8f69799810c ("net/tls: Add generic NIC offload infrastructure")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+---
 
-EPIPE is not supposed to be generated at the receiving side ?
+	v2: change commit log. The original issue will be fixed in another patch.
 
-So I would rather make io_uring slightly faster :
+ net/tls/tls_device.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
+diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+index 6c593788dc25..a63f6f727f58 100644
+--- a/net/tls/tls_device.c
++++ b/net/tls/tls_device.c
+@@ -1241,8 +1241,10 @@ int tls_set_device_offload(struct sock *sk, struct tls_context *ctx)
+ 	kfree(start_marker_record);
+ free_rec_seq:
+ 	kfree(ctx->tx.rec_seq);
++	ctx->tx.rec_seq = NULL;
+ free_iv:
+ 	kfree(ctx->tx.iv);
++	ctx->tx.iv = NULL;
+ release_netdev:
+ 	dev_put(netdev);
+ 	return rc;
+-- 
+2.34.1
 
-diff --git a/io_uring/net.c b/io_uring/net.c
-index cbd4b725f58c98e5bc5bf88d5707db5c8302e071..b7f190ca528e6e259eb2b072d7a=
-16aaba98848cb
-100644
---- a/io_uring/net.c
-+++ b/io_uring/net.c
-@@ -567,7 +567,7 @@ int io_recvmsg_prep(struct io_kiocb *req, const
-struct io_uring_sqe *sqe)
-        sr->flags =3D READ_ONCE(sqe->ioprio);
-        if (sr->flags & ~(RECVMSG_FLAGS))
-                return -EINVAL;
--       sr->msg_flags =3D READ_ONCE(sqe->msg_flags) | MSG_NOSIGNAL;
-+       sr->msg_flags =3D READ_ONCE(sqe->msg_flags);
-        if (sr->msg_flags & MSG_DONTWAIT)
-                req->flags |=3D REQ_F_NOWAIT;
-        if (sr->msg_flags & MSG_ERRQUEUE)
