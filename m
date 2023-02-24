@@ -2,158 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A9B866A17E7
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 09:26:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C11F46A1806
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 09:34:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229735AbjBXI0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 03:26:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42062 "EHLO
+        id S229771AbjBXId6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 03:33:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229684AbjBXI0I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 03:26:08 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BF1363A2B
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 00:25:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1677227118;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=j1W3jI18Ol3sw6DqC+LMvzH80d9+CkyCSgdVYfhjlHU=;
-        b=DxSGJuZTSW5kN1Gi6loX5NgfpvamZUmfhuFpf5Hn1esGxwW8DavjoGrl9mYTcjv4laqCdN
-        IL4TwK48SrfhbvM1Tk72qKaE82oymoM6epQQIkXdZ8G38GvkBE84WCdByn5UziIVrFii+d
-        EdUC+6c0J6f39ihWUZE4rkdqH9g8xJ0=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-199-U6AoGg7hME6-EvfFIP8TTQ-1; Fri, 24 Feb 2023 03:25:17 -0500
-X-MC-Unique: U6AoGg7hME6-EvfFIP8TTQ-1
-Received: by mail-wm1-f69.google.com with SMTP id bi27-20020a05600c3d9b00b003e9d0925341so2741495wmb.8
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 00:25:16 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=j1W3jI18Ol3sw6DqC+LMvzH80d9+CkyCSgdVYfhjlHU=;
-        b=vF7dVKpJqj57XFS5/5mczQLBVYHfZ2dTMaRz/+tYpKvpoEFR+lXyDWdav4rhuvG96j
-         sQFKrMlX/cs/HIROHx8koJKjFwRXJs91su5OTQlk0liQE8UPHPQIUs0RQA6X2MD/WsZ+
-         mLH7XmZxkcrkoDg+S2esQRzbgPIzF/3v5W5lJ6Y3AzFwcSfpeZCOTApVkAWaKBNv2Rvr
-         4rGyJxIknyJd+7f7L23/pC90qv6gYOc+sO7uFzHRQIrENrtbgbG+zqwZNCe6g3UBnonN
-         xIxm6jTvq2R2d/k/w+CsTwRmNtknZpwPWy5BTvvenSCWrrFwoHIkc0vkegnog6ukcqGj
-         rLBw==
-X-Gm-Message-State: AO0yUKUaHTpTt53bqszEAkaakF7iTuN0FfCh6Fuhu6z7SFK7AO1vv+EW
-        MmwjEU6/SbL6/mYIvGEiJoTiWRuhlx8ZCBv+siWnDX+myCGZSoAfKJgO4UcLjgrbqvZj67EIYPq
-        4agXHHxZCM6LpDTNx
-X-Received: by 2002:adf:ee4f:0:b0:2c7:1c08:1224 with SMTP id w15-20020adfee4f000000b002c71c081224mr1628709wro.29.1677227115947;
-        Fri, 24 Feb 2023 00:25:15 -0800 (PST)
-X-Google-Smtp-Source: AK7set+h0Q7ERAnJwpkJ6HirjyyhDbxWWMeG9atCKfDjQQWWffqd+OeTYMlx9rmh9c2GF8h0QSmFvw==
-X-Received: by 2002:adf:ee4f:0:b0:2c7:1c08:1224 with SMTP id w15-20020adfee4f000000b002c71c081224mr1628686wro.29.1677227115641;
-        Fri, 24 Feb 2023 00:25:15 -0800 (PST)
-Received: from redhat.com ([2a02:14f:1f0:a3e9:76f3:3a96:2a:eb18])
-        by smtp.gmail.com with ESMTPSA id g11-20020a5d698b000000b002c5a1bd5280sm13137905wru.95.2023.02.24.00.25.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Feb 2023 00:25:15 -0800 (PST)
-Date:   Fri, 24 Feb 2023 03:25:10 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     rbradford@rivosinc.com
-Cc:     Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] virtio-net: Fix probe of virtio-net on kvmtool
-Message-ID: <20230224031932-mutt-send-email-mst@kernel.org>
-References: <20230223-virtio-net-kvmtool-v2-1-8ec93511e67f@rivosinc.com>
+        with ESMTP id S229695AbjBXId5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 03:33:57 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D1101815D
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 00:33:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=ZK9mb1BumPRhN4JrwwlTevrrDrgRdzsIgS67pEF4zjs=;
+        t=1677227636; x=1678437236; b=jYexD+gaQuJhY+O0K1L+0Zutj9k3MuFalj64tQH/c3AMAK0
+        rzddn5+g4KfdAMDVdYa9jpqyy2SqzlaCfym5ydrns6DqWa8Gqz6wPk5NdonvR7EKk1zHMZNF+arVi
+        fvm9qcznsC7JJRHICYc2ilfXF0GjLtgDkJPEGofijoWOGV2SikmydsCGOEb8XPsnESLdWME6RJRjU
+        caML9HgAF7DdKoBXPxJ50dDpTXyqM3fXTCslX/HRaz45bMaCye0e4rQGHjaqSZanMekXAva9959fl
+        dvquOrpKZdZ0Pye4DpIUHFshHUupDE5dljvUjEBYfHwXX7M+wY6Y5G7l/IBSgbuw==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1pVTWa-0046lu-06;
+        Fri, 24 Feb 2023 09:33:52 +0100
+Message-ID: <0ae995dd47329e1422cb0e99b7960615c58d37fe.camel@sipsolutions.net>
+Subject: Re: [PATCH iproute2] genl: print caps for all families
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>, stephen@networkplumber.org
+Cc:     dsahern@gmail.com, jhs@mojatatu.com, netdev@vger.kernel.org
+Date:   Fri, 24 Feb 2023 09:33:51 +0100
+In-Reply-To: <20230223175708.51e593f0@kernel.org>
+References: <20230224015234.1626025-1-kuba@kernel.org>
+         <20230223175708.51e593f0@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230223-virtio-net-kvmtool-v2-1-8ec93511e67f@rivosinc.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-malware-bazaar: not-scanned
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 23, 2023 at 07:38:25PM +0000, Rob Bradford via B4 Relay wrote:
-> From: Rob Bradford <rbradford@rivosinc.com>
-> 
-> kvmtool does not support the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature
-> but does advertise the VIRTIO_NET_F_GUEST_TSO{4,6} features. Check that
-> the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature is present before setting
-> the NETIF_F_GRO_HW feature bit as otherwise an attempt will be made to
-> program the virtio-net device using the ctrl queue which will fail.
-> 
-> This resolves the following error when running on kvmtool:
-> 
-> [    1.865992] net eth0: Fail to set guest offload.
-> [    1.872491] virtio_net virtio2 eth0: set_features() failed (-22); wanted 0x0000000000134829, left 0x0080000000134829
-> 
-> Signed-off-by: Rob Bradford <rbradford@rivosinc.com>
-> ---
-> Changes in v2:
-> - Use parentheses to group logical OR of features 
-> - Link to v1:
->   https://lore.kernel.org/r/20230223-virtio-net-kvmtool-v1-1-fc23d29b9d7a@rivosinc.com
-> ---
->  drivers/net/virtio_net.c | 7 +++----
->  1 file changed, 3 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 61e33e4dd0cd..f8341d1a4ccd 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -3780,10 +3780,9 @@ static int virtnet_probe(struct virtio_device *vdev)
->  	}
->  	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_CSUM))
->  		dev->features |= NETIF_F_RXCSUM;
-> -	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
-> -	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6))
-> -		dev->features |= NETIF_F_GRO_HW;
-> -	if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
-> +	if ((virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
-> +	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6)) &&
-> +	    virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
->  		dev->hw_features |= NETIF_F_GRO_HW;
+On Thu, 2023-02-23 at 17:57 -0800, Jakub Kicinski wrote:
+> On Thu, 23 Feb 2023 17:52:34 -0800 Jakub Kicinski wrote:
+> > Back in 2006 kernel commit 334c29a64507 ("[GENETLINK]: Move
+> > command capabilities to flags.") removed some attributes and
+> > moved the capabilities to flags. Corresponding iproute2
+> > commit 26328fc3933f ("Add controller support for new features
+> > exposed") added the ability to print those caps.
+> >=20
+> > Printing is gated on version of the family, but we're checking
+> > the version of each individual family rather than the control
+> > family. The format of attributes in the control family
+> > is dictated by the version of the control family alone.
+> >=20
+> > Families can't use flags for random things, anyway,
+> > because kernel core has a fixed interpretation.
+> >=20
+> > Thanks to this change caps will be shown for all families
+> > (assuming kernel newer than 2.6.19), not just those which
+> > by coincidence have their local version >=3D 2.
+> >=20
+> > For instance devlink, before:
+> >=20
+> >   $ genl ctrl get name devlink
+> >   Name: devlink
+> > 	ID: 0x15  Version: 0x1  header size: 0  max attribs: 179
+> > 	commands supported:
+> > 		#1:  ID-0x1
+> > 		#2:  ID-0x5
+> > 		#3:  ID-0x6
+> > 		...
+> >=20
+> > after:
+> >=20
+> >   $ genl ctrl get name devlink
+> >   Name: devlink
+> > 	ID: 0x15  Version: 0x1  header size: 0  max attribs: 179
+> > 	commands supported:
+> > 		#1:  ID-0x1
+> > 		Capabilities (0xe):
+> >  		  can doit; can dumpit; has policy
+> >=20
+> > 		#2:  ID-0x5
+> > 		Capabilities (0xe):
+> >  		  can doit; can dumpit; has policy
+> >=20
+> > 		#3:  ID-0x6
+> > 		Capabilities (0xb):
+> >  		  requires admin permission; can doit; has policy
+> >=20
+> > Leave ctrl_v as 0 if we fail to read the version. Old code used 1
+> > as the default, but 0 or 1 - does not matter, checks are for >=3D 2.
+> >=20
+> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> > ---
+> > Not really sure if this is a fix or not..
+>=20
+> Adding Johannes, that's probably everyone who ever used this=20
+> command on CC? ;)
 
-This will disable GRO/LRO on kvmtool completely causing a significant
-performance regression.
+Hehe. I'm not even sure I use(d) that part of it frequently ;-)
 
-Jason, isn't this what
-	commit dbcf24d153884439dad30484a0e3f02350692e4c
-	Author: Jason Wang <jasowang@redhat.com>
-	Date:   Tue Aug 17 16:06:59 2021 +0800
+> > --- a/genl/ctrl.c
+> > +++ b/genl/ctrl.c
+> > @@ -21,6 +21,8 @@
+> >  #define GENL_MAX_FAM_OPS	256
+> >  #define GENL_MAX_FAM_GRPS	256
+> > =20
+> > +static unsigned int ctrl_v;
 
-	    virtio-net: use NETIF_F_GRO_HW instead of NETIF_F_LRO
+You know I looked at this on my phone this morning and missed the fact
+that it's iproute2, and was wondering what you're doing with a global
+variable in the kernel ;-)
 
-was supposed to address?
+There's this code also:
+
+> static int print_ctrl_cmds(FILE *fp, struct rtattr *arg, __u32 ctrl_ver)
+> ...
+> static int print_ctrl_grp(FILE *fp, struct rtattr *arg, __u32 ctrl_ver)
+
+and it feels a bit pointless to pass a now global ctrl_v to the function
+arguments?
+
+> > @@ -264,6 +313,9 @@ static int ctrl_list(int cmd, int argc, char **argv=
+)
+> >  		exit(1);
+> >  	}
+> > =20
+> > +	if (!ctrl_v)
+> > +		ctrl_load_ctrl_version(&rth);
+
+You call this here, but what about this:
+
+> struct genl_util ctrl_genl_util =3D {
+>         .name =3D "ctrl",
+>         .parse_genlopt =3D parse_ctrl,
+>         .print_genlopt =3D print_ctrl2,
+> };
+
+where print_ctrl2 and hence all the above will be called with a now zero
+ctrl_v, whereas before it would've been - at least in some cases? -
+initialized by ctrl_list() itself?
 
 
-And apropos this:
-    
-    Fix this by using NETIF_F_GRO_HW instead. Though the spec does not
-    guarantee packets to be re-segmented as the original ones,
-    we can add that to the spec, possibly with a flag for devices to
-    differentiate between GRO and LRO.
+Oh. I see now. The issue was which version we use - the family version
+vs. the controller version. How did I miss that until here ...
 
-this never happened. What's the plan exactly?
+Still it seems it should be always initialized in print_ctrl rather than
+in ctrl_list, to capture the case of print_ctrl2? Or maybe in there, but
+that's called inside ctrl_list(), so maybe have parse_ctrl() already
+initialize it, rather than ctrl_list()?
 
-
-
-
->  	dev->vlan_features = dev->features;
-> 
-> ---
-> base-commit: c39cea6f38eefe356d64d0bc1e1f2267e282cdd3
-> change-id: 20230223-virtio-net-kvmtool-87f37515be22
-> 
-> Best regards,
-> -- 
-> Rob Bradford <rbradford@rivosinc.com>
-
+johannes
