@@ -2,71 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D81776A158B
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 04:41:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EC836A15A8
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 04:56:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229694AbjBXDlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Feb 2023 22:41:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41286 "EHLO
+        id S229638AbjBXDz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Feb 2023 22:55:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbjBXDlF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 22:41:05 -0500
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9C0D5EEC7
-        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 19:40:48 -0800 (PST)
-Received: by mail-pl1-x649.google.com with SMTP id l10-20020a17090270ca00b0019caa6e6bd1so3051050plt.2
-        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 19:40:48 -0800 (PST)
+        with ESMTP id S229463AbjBXDz5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 22:55:57 -0500
+Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 649A229E34;
+        Thu, 23 Feb 2023 19:55:56 -0800 (PST)
+Received: by mail-il1-x129.google.com with SMTP id b16so6699179iln.3;
+        Thu, 23 Feb 2023 19:55:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=R3iBhiHTRJXOrBGrqzDxss6bg8LHug+SM3RBUwYxANE=;
-        b=J6+YN9IGP6MwLPZckWbo5E/Xk82MfTw13Lhg5Ll7egHVE9N1Gz17NrAEoEi5jefz8h
-         s5ZPFOX/8PJLvK8IZCoKa2hDIiAlP345R3P0/QmKYhzYHJiNlawUTL+V6gPo//gkOR/M
-         mOuBhSmC9tdwpYZQpoGvgsscg2IxTOllCkHlB3kujyatWQlAuhKf1miS4RZdd2850qO4
-         +qtC2AkdlCtVdHThYkZIvoiVdrWWzeUE+eYrgb8yTUigK6VC6a9NjY0qTRfItPHTBl0v
-         EtzRt4Z3mQqbuTjbxi5VNiZOEUoFEnKXp3uQgeDAlkBFgJmGLxIpVMkMBLKZI3M9gPxw
-         Ie5A==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=VbTIKtcCZdin9kdNkGWxLRdhhzQ58YxCqZNgWHIeK+M=;
+        b=j9WNzsxPEAJgAqXDoMy075+EgPAgJp89uQP9MxMWsPO3//E+mz6kf9+dYCoqMXlTQZ
+         YqKJolI4RECVlNEPNTZiUfiBt57c5zp9XVGxaZTet6fMiQbkmvBHE4gz7zQQUa1XdsIZ
+         UsfYNANSOC4tNmW9TwDTLwLKypTwNoIwuNGFW/LpZctBOMZLI8jl/HbKVenXYYV7/xCO
+         T7xYL2jV2UIYYC9uy5AmBMJZEdKChIVVc6ym5TwFnI2fhyzgtTbNHakevBYvdKD5Ez2B
+         +l5ntghH/yUuGsxjmnpML3zigGrSRQMUUFUbEZOOCu0wVI1FWYTG3c+v9EosDBUv68D6
+         BPaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=R3iBhiHTRJXOrBGrqzDxss6bg8LHug+SM3RBUwYxANE=;
-        b=H/dCm2IB3AQ8GGRR/VygdF5TT4PjFlfpLZIe9JipKo+BFrcAOYp7W/fnIPCwl+dEOA
-         bSTg0cm7X/X/J01u6h58iXCVXAkF5BD+Cbjwq+abktM6DVQYzWH3gSa10stFWWI3qBTc
-         U37pgDMDukCcmqTNfMA5YBzHjRIpDjS6hK/qAXixR0zoOGvkP7xjZ7fIUFY36c7S63Co
-         2irhjq8AhlIZDMMFsPTmXgGCl4vlwWrCyXUKwku92QreGt9CQE+WpaJDycHuAodxDt4U
-         E3NGtTUUCEs75uNGIhbKb+syVbKBJTe2ucnn2wYRt60D7qKZeRWuuIUOCBnEEkwZ79+u
-         j5Bw==
-X-Gm-Message-State: AO0yUKUg3Hn4ihAk3kHpRwnU3BhoyXjiOrKv9AFl08vKBvSaZuMHXOy4
-        QHZhYDF7U+RZKCoZk2G/IFiXMWfJbp0=
-X-Google-Smtp-Source: AK7set8E3MEPhXV1/45uWmz2lxMH5cm58fZ0faRvczxB9TFOAlLdrNUle4su/XjXkfOaSWJtLZDQpa/gB4k=
-X-Received: from edliaw.c.googlers.com ([fda3:e722:ac3:cc00:24:72f4:c0a8:305d])
- (user=edliaw job=sendgmr) by 2002:a17:90a:f82:b0:237:29b1:188f with SMTP id
- 2-20020a17090a0f8200b0023729b1188fmr1158374pjz.8.1677210048093; Thu, 23 Feb
- 2023 19:40:48 -0800 (PST)
-Date:   Fri, 24 Feb 2023 03:40:19 +0000
-In-Reply-To: <20230224034020.2080637-1-edliaw@google.com>
-Mime-Version: 1.0
-References: <20230224034020.2080637-1-edliaw@google.com>
-X-Mailer: git-send-email 2.39.2.637.g21b0678d19-goog
-Message-ID: <20230224034020.2080637-5-edliaw@google.com>
-Subject: [PATCH 4.14 v3 4/4] bpf: Fix truncation handling for mod32 dst reg
- wrt zero
-From:   Edward Liaw <edliaw@google.com>
-To:     stable@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     bpf@vger.kernel.org, kernel-team@android.com,
-        Edward Liaw <edliaw@google.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        John Fastabend <john.fastabend@gmail.com>,
-        Salvatore Bonaccorso <carnil@debian.org>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=VbTIKtcCZdin9kdNkGWxLRdhhzQ58YxCqZNgWHIeK+M=;
+        b=nPABUQyyo24MVbL1dTsLA+TwBPkzF6wFvF+PILnLhociH8hX6r2MjpBkxrpAdKdpsR
+         FYZ2ruiDXLJq4XfCPN0MnxRD+zm/HWNP7evPGrYIUzR/D/6cW0nb9GcW3rYmBstZuVIF
+         jAV6JnF12t8a2Ercha66Dhk6CZnaPkYL1bOnEPhgIpU8oZKVUTaCQtAdXXNzd1Z6Mfn/
+         duJJOMIvj9PJyj5kwdbhPwhj0odtfnZ6c/T8acdrgLesxcat8upH1nsl8f4ASdn3KvvH
+         v83Euw1ag+WkM4GyoD/pw1yYCY3Z/lN4xvaXU+2ex5rvlXfuVr8hFPcaNXWiK2A6368V
+         7z+A==
+X-Gm-Message-State: AO0yUKW6INZ9URI7oezSbfWeXPkd2S/jqbP+Ogvdgu+LHHRN1r84ZOpv
+        WHvQhBBFx/1h/Qxw60/tMrA=
+X-Google-Smtp-Source: AK7set/N5OHlH+ID7f/i44cM7KsoiPH+D6zoLglAmPxwwIIfQbf5S+gfQa3/BMuryaakq5+soNTdMw==
+X-Received: by 2002:a05:6e02:1b81:b0:317:f50:383b with SMTP id h1-20020a056e021b8100b003170f50383bmr874477ili.27.1677210955711;
+        Thu, 23 Feb 2023 19:55:55 -0800 (PST)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id k13-20020a02cb4d000000b003a60e5a2638sm4001581jap.94.2023.02.23.19.55.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Feb 2023 19:55:54 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Thu, 23 Feb 2023 19:55:53 -0800
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Wei Fang <wei.fang@nxp.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Arun.Ramadoss@microchip.com, intel-wired-lan@lists.osuosl.org
+Subject: Re: [PATCH net-next v8 6/9] net: phy: c22: migrate to
+ genphy_c45_write_eee_adv()
+Message-ID: <20230224035553.GA1089605@roeck-us.net>
+References: <20230211074113.2782508-1-o.rempel@pengutronix.de>
+ <20230211074113.2782508-7-o.rempel@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230211074113.2782508-7-o.rempel@pengutronix.de>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,130 +85,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Daniel Borkmann <daniel@iogearbox.net>
+On Sat, Feb 11, 2023 at 08:41:10AM +0100, Oleksij Rempel wrote:
+> Migrate from genphy_config_eee_advert() to genphy_c45_write_eee_adv().
+> 
+> It should work as before except write operation to the EEE adv registers
+> will be done only if some EEE abilities was detected.
+> 
+> If some driver will have a regression, related driver should provide own
+> .get_features callback. See micrel.c:ksz9477_get_features() as example.
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Commit 9b00f1b78809309163dda2d044d9e94a3c0248a3 upstream.
+This patch causes network interface failures with all my xtensa qemu
+emulations. Reverting it fixes the problem. Bisect log is attached
+for reference.
 
-Recently noticed that when mod32 with a known src reg of 0 is performed,
-then the dst register is 32-bit truncated in verifier:
+Guenter
 
-  0: R1=ctx(id=0,off=0,imm=0) R10=fp0
-  0: (b7) r0 = 0
-  1: R0_w=inv0 R1=ctx(id=0,off=0,imm=0) R10=fp0
-  1: (b7) r1 = -1
-  2: R0_w=inv0 R1_w=inv-1 R10=fp0
-  2: (b4) w2 = -1
-  3: R0_w=inv0 R1_w=inv-1 R2_w=inv4294967295 R10=fp0
-  3: (9c) w1 %= w0
-  4: R0_w=inv0 R1_w=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R2_w=inv4294967295 R10=fp0
-  4: (b7) r0 = 1
-  5: R0_w=inv1 R1_w=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R2_w=inv4294967295 R10=fp0
-  5: (1d) if r1 == r2 goto pc+1
-   R0_w=inv1 R1_w=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R2_w=inv4294967295 R10=fp0
-  6: R0_w=inv1 R1_w=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R2_w=inv4294967295 R10=fp0
-  6: (b7) r0 = 2
-  7: R0_w=inv2 R1_w=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R2_w=inv4294967295 R10=fp0
-  7: (95) exit
-  7: R0=inv1 R1=inv(id=0,umin_value=4294967295,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R2=inv4294967295 R10=fp0
-  7: (95) exit
-
-However, as a runtime result, we get 2 instead of 1, meaning the dst
-register does not contain (u32)-1 in this case. The reason is fairly
-straight forward given the 0 test leaves the dst register as-is:
-
-  # ./bpftool p d x i 23
-   0: (b7) r0 = 0
-   1: (b7) r1 = -1
-   2: (b4) w2 = -1
-   3: (16) if w0 == 0x0 goto pc+1
-   4: (9c) w1 %= w0
-   5: (b7) r0 = 1
-   6: (1d) if r1 == r2 goto pc+1
-   7: (b7) r0 = 2
-   8: (95) exit
-
-This was originally not an issue given the dst register was marked as
-completely unknown (aka 64 bit unknown). However, after 468f6eafa6c4
-("bpf: fix 32-bit ALU op verification") the verifier casts the register
-output to 32 bit, and hence it becomes 32 bit unknown. Note that for
-the case where the src register is unknown, the dst register is marked
-64 bit unknown. After the fix, the register is truncated by the runtime
-and the test passes:
-
-  # ./bpftool p d x i 23
-   0: (b7) r0 = 0
-   1: (b7) r1 = -1
-   2: (b4) w2 = -1
-   3: (16) if w0 == 0x0 goto pc+2
-   4: (9c) w1 %= w0
-   5: (05) goto pc+1
-   6: (bc) w1 = w1
-   7: (b7) r0 = 1
-   8: (1d) if r1 == r2 goto pc+1
-   9: (b7) r0 = 2
-  10: (95) exit
-
-Semantics also match with {R,W}x mod{64,32} 0 -> {R,W}x. Invalid div
-has always been {R,W}x div{64,32} 0 -> 0. Rewrites are as follows:
-
-  mod32:                            mod64:
-
-  (16) if w0 == 0x0 goto pc+2       (15) if r0 == 0x0 goto pc+1
-  (9c) w1 %= w0                     (9f) r1 %= r0
-  (05) goto pc+1
-  (bc) w1 = w1
-
-[Salvatore Bonaccorso: This is an earlier version based on work by
-Daniel and John which does not rely on availability of the BPF_JMP32
-instruction class. This means it is not even strictly a backport of the
-upstream commit mentioned but based on Daniel's and John's work to
-address the issue and was finalized by Thadeu Lima de Souza Cascardo.]
-
-Fixes: 468f6eafa6c4 ("bpf: fix 32-bit ALU op verification")
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Reviewed-by: John Fastabend <john.fastabend@gmail.com>
-Tested-by: Salvatore Bonaccorso <carnil@debian.org>
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Signed-off-by: Edward Liaw <edliaw@google.com>
 ---
- kernel/bpf/verifier.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
-
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 9f04d413df92..a55e264cdb54 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -4846,7 +4846,7 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
- 			bool is64 = BPF_CLASS(insn->code) == BPF_ALU64;
- 			struct bpf_insn mask_and_div[] = {
- 				BPF_MOV_REG(BPF_CLASS(insn->code), BPF_REG_AX, insn->src_reg),
--				/* Rx div 0 -> 0 */
-+				/* [R,W]x div 0 -> 0 */
- 				BPF_JMP_IMM(BPF_JEQ, BPF_REG_AX, 0, 2),
- 				BPF_RAW_REG(*insn, insn->dst_reg, BPF_REG_AX),
- 				BPF_JMP_IMM(BPF_JA, 0, 0, 1),
-@@ -4854,9 +4854,10 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
- 			};
- 			struct bpf_insn mask_and_mod[] = {
- 				BPF_MOV_REG(BPF_CLASS(insn->code), BPF_REG_AX, insn->src_reg),
--				/* Rx mod 0 -> Rx */
--				BPF_JMP_IMM(BPF_JEQ, BPF_REG_AX, 0, 1),
-+				BPF_JMP_IMM(BPF_JEQ, BPF_REG_AX, 0, 1 + (is64 ? 0 : 1)),
- 				BPF_RAW_REG(*insn, insn->dst_reg, BPF_REG_AX),
-+				BPF_JMP_IMM(BPF_JA, 0, 0, 1),
-+				BPF_MOV32_REG(insn->dst_reg, insn->dst_reg),
- 			};
- 			struct bpf_insn *patchlet;
- 
-@@ -4866,7 +4867,7 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
- 				cnt = ARRAY_SIZE(mask_and_div);
- 			} else {
- 				patchlet = mask_and_mod;
--				cnt = ARRAY_SIZE(mask_and_mod);
-+				cnt = ARRAY_SIZE(mask_and_mod) - (is64 ? 2 : 0);
- 			}
- 
- 			new_prog = bpf_patch_insn_data(env, i + delta, patchlet, cnt);
--- 
-2.39.2.637.g21b0678d19-goog
-
+# bad: [e4bc15889506723d7b93c053ad4a75cd58248d74] Merge tag 'leds-next-6.3' of git://git.kernel.org/pub/scm/linux/kernel/git/lee/leds
+# good: [c9c3395d5e3dcc6daee66c6908354d47bf98cb0c] Linux 6.2
+git bisect start 'HEAD' 'c9c3395d5e3d'
+# bad: [5b7c4cabbb65f5c469464da6c5f614cbd7f730f2] Merge tag 'net-next-6.3' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next
+git bisect bad 5b7c4cabbb65f5c469464da6c5f614cbd7f730f2
+# good: [877934769e5b91798d304d4641647900ee614ce8] Merge tag 'x86_cpu_for_v6.3_rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip
+git bisect good 877934769e5b91798d304d4641647900ee614ce8
+# good: [c5ebba75c7625e5cb62cb5423883cc3764779420] net: ipa: use bitmasks for GSI IRQ values
+git bisect good c5ebba75c7625e5cb62cb5423883cc3764779420
+# bad: [871489dd01b67483248edc8873c389a66e469f30] Merge tag 'ieee802154-for-net-next-2023-02-20' of git://git.kernel.org/pub/scm/linux/kernel/git/sschmidt/wpan-next
+git bisect bad 871489dd01b67483248edc8873c389a66e469f30
+# good: [986e43b19ae9176093da35e0a844e65c8bf9ede7] wifi: mac80211: fix receiving A-MSDU frames on mesh interfaces
+git bisect good 986e43b19ae9176093da35e0a844e65c8bf9ede7
+# bad: [ca0df43d211039dded5a8f8553356414c9a74731] Merge tag 'wireless-next-2023-03-16' of git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next
+git bisect bad ca0df43d211039dded5a8f8553356414c9a74731
+# bad: [388a9c907a51489bf566165c72e4e8aa4d62ab49] Merge branch 'devlink-cleanups-and-move-devlink-health-functionality-to-separate-file'
+git bisect bad 388a9c907a51489bf566165c72e4e8aa4d62ab49
+# bad: [1a940b00013a468c0c9dd79dbb485c3ad273939e] net: stmmac: dwc-qos: Make struct dwc_eth_dwmac_data::remove return void
+git bisect bad 1a940b00013a468c0c9dd79dbb485c3ad273939e
+# good: [8024edf3590c83f467374857d7c3082d4b3bf079] Merge branch 'net-ipa-GSI-regs'
+git bisect good 8024edf3590c83f467374857d7c3082d4b3bf079
+# bad: [9b01c885be364526d8c05794f8358b3e563b7ff8] net: phy: c22: migrate to genphy_c45_write_eee_adv()
+git bisect bad 9b01c885be364526d8c05794f8358b3e563b7ff8
+# good: [79cdf17e5131ccdee0792f6f25d3db0e34861998] Merge branch 'ionic-on-chip-desc'
+git bisect good 79cdf17e5131ccdee0792f6f25d3db0e34861998
+# good: [48fb19940f2ba6b50dfea70f671be9340fb63d60] net: phy: micrel: add ksz9477_get_features()
+git bisect good 48fb19940f2ba6b50dfea70f671be9340fb63d60
+# good: [022c3f87f88e2d68e90be7687d981c9cb893a3b1] net: phy: add genphy_c45_ethtool_get/set_eee() support
+git bisect good 022c3f87f88e2d68e90be7687d981c9cb893a3b1
+# first bad commit: [9b01c885be364526d8c05794f8358b3e563b7ff8] net: phy: c22: migrate to genphy_c45_write_eee_adv()
