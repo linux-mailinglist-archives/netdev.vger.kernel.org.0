@@ -2,212 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 485E46A187B
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 10:07:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86BB16A1890
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 10:14:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229608AbjBXJHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 04:07:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50470 "EHLO
+        id S229643AbjBXJOa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 04:14:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbjBXJHg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 04:07:36 -0500
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2102.outbound.protection.outlook.com [40.107.96.102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43B4F1499F;
-        Fri, 24 Feb 2023 01:07:35 -0800 (PST)
+        with ESMTP id S229515AbjBXJO3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 04:14:29 -0500
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 954B42723
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 01:14:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1677230068; x=1708766068;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=sBWxBtp6TiGOnllZTuEh0NFZD3Y8bo0yns0lIVTfg7c=;
+  b=ChxrjWHNQIyAKIJK+9NmT0CUh4rmKPNZfDfe1XaA/vo04uYx3tj9N/xr
+   KsyItdGKjatGV97OMdRZ1wGSPgQxaJv5qflre/hLJ3wkv2rmT+RGLFSs6
+   /aiEyO+b3K1spX6U/ltWPCR6OxK+dURqDpOLcththci5DzOJ8z9+CZGB7
+   iLsHkcgqj+g71qil0IJM1nN28D8BYNqOhs8HtJivuYxLBRF/XB7jy4Hv/
+   lIghh+5oculVuLmZaInC9f6H9fAtWV5xTfWtuB9a4RjcFeULTZZDwSk0Y
+   Ohf0cGBfoKGbB70FixA3axyqZ7bw8cyNe217afr6gqtDMuuebDvt72KV7
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10630"; a="395944455"
+X-IronPort-AV: E=Sophos;i="5.97,324,1669104000"; 
+   d="scan'208";a="395944455"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2023 01:14:23 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10630"; a="703125054"
+X-IronPort-AV: E=Sophos;i="5.97,324,1669104000"; 
+   d="scan'208";a="703125054"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga008.jf.intel.com with ESMTP; 24 Feb 2023 01:14:22 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Fri, 24 Feb 2023 01:14:22 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Fri, 24 Feb 2023 01:14:22 -0800
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.42) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Fri, 24 Feb 2023 01:14:22 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SU+Bz1dSi+AfhNnaXaaWQfCiiLjBCvLawBmNfoYE+IGbIPc9zCeOp+A+0FEqB90p8DxcCynPY00svPyFZdoOo/T2DysPIFjvZdlh5L+hMb6z9FCgRbXsvf7miYRUdCwcNiqtKn1doI5+Uzgl4/1Je9qi0AKATFGqZDPDUxp0Cdw2/2ERDl+DM2Bo1NtpS/3rCph1MZq2cNO+QLbyWG9wzUxQMcJnOJJ44UsQrQCTb4k5IBZgIq77K5rYoiBl9j6NPdYo/Rf9SqapUBUo1MIR0iAdON1jw3yxaJz4Z4u1FSpPmNZ7woUPgnxzataCaZkso+WYwqzH3tB8uejCk9d0jA==
+ b=jh4peVJ/bEy7txJTBeT+E6Nx9Io4esvCwR0utoFe3tdkFKEoPUaPpPEabyGVWaY5DY6N30UqPTnbxihj3lkprPvoRdP+HR8YYeowdFhL/JZLrFpbBVecCGfqLZMUUMNMjpHuXpdP2j6YT3hteFTiCpqCgUMC+WJPoR8wbriFdQRHNZT3b9u4Ks7JP53+stFObC5bI9A/8TaZ+wctqRyoqvNWIUDLKgQsGjEJtxhhH1hpStjtnX6fcY2apEDibmZ0tQpCCqrgvT+ynxyGpJJDXP/jUAQ4LAu2f+FQqYOhs3XmVr8icgYtRyNxf2hm6Z1ZE0P/OuVaHv6v+xzgGT0ykQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6yqcFNEPFeY5nqxDCvwNkFK7ESiXQ3ahFty2grtiU/0=;
- b=chNA+SmVZXNHx0keOMLoRKNVNFoQIPOHFqkNmi9JxfEIAtFsnDasbpPLfKr83Fk5G+PHC+murTdspt9TDs3nFQtN8SvAXE/9fd6B4qEGMTefpnhXLSFv+SF4KfpFGn06iPUoFtVTUwkbIACWzLyxNW4s0FhY6KVc2qd/J+B7wszuzm33m5MYyx2kY/EKBNh/ecx0v2vQ0PC22RozTC9CAp97NUs1A5/XPtzzf7kyhdTV1K2IwNNZUUIsoAH8Sdr0TZESgpzNvtwOv5RUY7WZAoeXWpfFVxoyCWxK1VWeqHdW/LSophhHbXyFLG/fW3xn2uv4N1ZHGn5Ep/W7Kor6oQ==
+ bh=ZKhwUjiww2XbUqAqxjn2weDwGFPTFauXd+oU+lhRWcQ=;
+ b=MBieO1a7Dj3R9xB0RMP+i3IJCJG2a45EvWyP/JjaQ1M30MfIkrtRVifcVz/4PwZ8zRPAY3YHQj9X5g4aO+GAeWTA7wZY2z42R4rDQNflKmCiSxOcoei+f/IgmqRzlaXe8kxLlj6+p/SakMxFHWtE3uszfN/eW914klDF4dT9tbl98pzuDegPaLbct9Wxetvp8T+tMuIVuAqqDjJWlBRNVSH3TCVeStD+TlORGQa7CSJWKzf/d7F3smb/Uglxs6r91kUI1k2OGViXf5DX3wrMBtGohLKKakzabORX4+ij/rhAEjnn5cGjPB1QuzZHThSv++bHLo6FzLLnO8L2GDk0/w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6yqcFNEPFeY5nqxDCvwNkFK7ESiXQ3ahFty2grtiU/0=;
- b=P9TuUMKPNpdvfYvGsMTVmcbtJjtvEDXooAJT5NP+kEDCccQs21xjbH7ssbCMCLRPvz9+THoQnNktMMMiu5xHekshYI7XwUQ2XlBkIFvmc7in4OB9aoRHdI7+XUFa3Y0NDWEED+6h6bFaksK7BvLCYq6ov6laBr6Sx0W4zTWvOTY=
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by CH2PR13MB3717.namprd13.prod.outlook.com (2603:10b6:610:9d::23) with
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from MWHPR11MB1293.namprd11.prod.outlook.com (2603:10b6:300:1e::8)
+ by DS0PR11MB7903.namprd11.prod.outlook.com (2603:10b6:8:f7::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.24; Fri, 24 Feb
- 2023 09:07:31 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%9]) with mapi id 15.20.6134.024; Fri, 24 Feb 2023
- 09:07:31 +0000
-Date:   Fri, 24 Feb 2023 10:07:24 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Sai Krishna Gajula <saikrishnag@marvell.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        Suman Ghosh <sumang@marvell.com>
-Subject: Re: [net PATCH v2] octeontx2-af: Unlock contexts in the queue
- context cache in case of fault detection
-Message-ID: <Y/h+TH9WTWOVaSHj@corigine.com>
-References: <20230223110125.2172509-1-saikrishnag@marvell.com>
- <Y/dnNRD4Gpl0n2GQ@corigine.com>
- <BY3PR18MB470774ABED5E4E22DAA4535EA0A89@BY3PR18MB4707.namprd18.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BY3PR18MB470774ABED5E4E22DAA4535EA0A89@BY3PR18MB4707.namprd18.prod.outlook.com>
-X-ClientProxiedBy: AM0PR04CA0002.eurprd04.prod.outlook.com
- (2603:10a6:208:122::15) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+ 2023 09:14:19 +0000
+Received: from MWHPR11MB1293.namprd11.prod.outlook.com
+ ([fe80::bcfd:de61:e82d:a51f]) by MWHPR11MB1293.namprd11.prod.outlook.com
+ ([fe80::bcfd:de61:e82d:a51f%12]) with mapi id 15.20.6134.021; Fri, 24 Feb
+ 2023 09:14:19 +0000
+Message-ID: <34993e14-2c33-8eaf-67a9-e3412778e6f0@intel.com>
+Date:   Fri, 24 Feb 2023 01:14:15 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.8.0
+Subject: Re: Kernel interface to configure queue-group parameters
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Alexander H Duyck <alexander.duyck@gmail.com>,
+        <netdev@vger.kernel.org>, <davem@davemloft.net>,
+        <edumazet@google.com>, <pabeni@redhat.com>,
+        "Saeed Mahameed" <saeed@kernel.org>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+References: <e4deec35-d028-c185-bf39-6ba674f3a42e@intel.com>
+ <c8476530638a5f4381d64db0e024ed49c2db3b02.camel@gmail.com>
+ <893f1f98-7f64-4f66-3f08-75865a6916c3@intel.com>
+ <20230216093222.18f9cefe@kernel.org>
+From:   "Nambiar, Amritha" <amritha.nambiar@intel.com>
+In-Reply-To: <20230216093222.18f9cefe@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR03CA0119.namprd03.prod.outlook.com
+ (2603:10b6:a03:333::34) To MWHPR11MB1293.namprd11.prod.outlook.com
+ (2603:10b6:300:1e::8)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CH2PR13MB3717:EE_
-X-MS-Office365-Filtering-Correlation-Id: 507b284d-5af1-4b27-64bb-08db16468f18
+X-MS-TrafficTypeDiagnostic: MWHPR11MB1293:EE_|DS0PR11MB7903:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9bb4a919-74c9-43d2-a3c1-08db1647822e
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: byRa6iV/5R39QzEa6fyTHrWuA9XUcOKKAlMVHtD/Z+d22MgHAvYXenYoGBpxVV48txVbx4C00o7sCYbo1s1I2G/qjMU8YX7Tp3kCqhtn5j8sNbLFdNK7uPFjbnFv8vxq/b6ytWVwMuHGaNjCug0ii6ZNH3EV5pzMAhKbZ/qaoXhKAZepsq4K9+uZP5pt5CmGCYyo1+4TwR/KkNmw8Mbza57VxXMqHYC7Y7pSBJAz5KrSTiwkv9U7oB1uxGgFTZ1OTacfpJ5AJp5n/H+1dRjaydD7dmk2ku36dkw/E5uQgkWFninUUKQympliaAeboXO78F7CoaFiKifmBqjJpf5GsA9JcMUPf2SUZZYi55xY7D9QvP1Q45K4lWYK728ZESH+kVjcAMOblL/RdPZSIF+eiSVDcfc5elDfv98WIV5+wwq9+L6igDJcP5yJIH6lRxe1Y9UpNcc/kAsZQSfDgXgsHzPFf+We5/oSaH6ejQWacm+dX27YllGqcKYEZrlCpXnZJDxJ3CMJvFRDc07IKPmq0o0BumlASpfx3hMd1o/NY5or3lX63HkE2CdR/8U22F4HRwmb1LJSSw04ROQW2QTUarS9q8dmIXacJivubgSPc31ZQHzdu9r01qeoy2Wb92Y8RLbUvWQkdgYcBE0L4bAXd8PZtoj3+4ZPYjv1MdwqgbSkrBz1Lo9ROKbe/zIWLKYP
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(366004)(376002)(396003)(39840400004)(346002)(451199018)(2906002)(36756003)(38100700002)(316002)(54906003)(8676002)(6916009)(66556008)(4326008)(66946007)(66476007)(83380400001)(6666004)(6512007)(6506007)(53546011)(186003)(2616005)(478600001)(86362001)(6486002)(5660300002)(44832011)(8936002)(41300700001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: uHN7n3cltDJbgmYS4vtI7mPBHD72avX3V6v+QbsGB/TbwE40MAGq/9ky9BqzyGQTA3AaD6vUhrW07l72y+bjhpSj/aauaX/JMkAqq3Ob9Lqrza+ZQLrH5ViXOzuMb2zAbHl5WnkxyhctA3MS9lQaXAgtbUKWeki3kpd5TZPDo7ZymIQbnMbdCTD6a4PCQUYsgArVSHWaWFEQxo+/cFVyh3K3ahnNKl9N1Mn6RMPZpeskLcnDlEVE//tPBZDY1NsajAiGaSbOtarUNGgAYb8CxedV92QsKUPBfGaJvre2PumwzOkjHiVjlEgZ/r3wxIDw8nq2y8X6Geci6mphCEyNQ1k7owsgmc5Q+HtXWtIWusIt4tpA9Ag51NeFe0QCE86MQ/IYqcmauAbfNfKJKlqWNgQsPgllkbiaqwv05zNwSqiNQMKoINANkgxNU9E6RPoLCHvJeQQcFeBqalYjgfKoWPS+bk8teBGQeojR35hVR8a5e5u1Z7uXdNTOsex64x7gBXMrN1VpGmUCsRBtNNgCWFx+5n61vM/sTCvXZij7JjMoI8UFNjdkChKP0BS0/Sny2iCwb0ScZJ0eCXpeUhryjS5CsWLEqOoPvCDvk68V1Fb4wZnfJsA0MQYYsmi6dreY9UrY6U2DCrROPan5u6OgcpC1sM007lltUspUzfcTlYe3OmBWDKbz2akl/ZIN/hkGRsTlOtDk7HyHAV3MgOnxhf3vjEc1tgTnFwHNWq8RyUQ=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR11MB1293.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(376002)(39860400002)(396003)(366004)(136003)(346002)(451199018)(6666004)(66476007)(66556008)(66946007)(4326008)(6916009)(8676002)(6506007)(186003)(107886003)(6512007)(36756003)(53546011)(26005)(478600001)(6486002)(2616005)(316002)(86362001)(31696002)(54906003)(82960400001)(8936002)(31686004)(38100700002)(5660300002)(2906002)(41300700001)(83380400001)(43740500002)(45980500001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4Ey7Kddp6tSESfr7NxPawKSYDJoosOcCoBcJKa3GGpcFfkc2M7jiOuAom0+C?=
- =?us-ascii?Q?hDVdMgHN7aNZwqzefoYrx5AuhVwjOAXFAmzfK4GdT5gogjD7gIYUzjjw9+4m?=
- =?us-ascii?Q?+35LSKcO+iN24m79GHrVTE1psq9Oi3MPCmWCrUSE2TDo60vfNqKU+nfG47Kx?=
- =?us-ascii?Q?RlmxoUEyLZR7RjNuVsc3IuVbrbNw5P/o6LtRFKDWJsGH4tRUsFbJDHG653UY?=
- =?us-ascii?Q?OxWSTb2QPNTYBQ5NK1bMIEkhHLLBCVieqgl0YqA2yd7PRELTABtq6S7/4Z6D?=
- =?us-ascii?Q?ShW9ay/7NHnyj5M+qUu3JL9yLSAmDKCYDmP3lo+y3Om/E0ZexklNGBpE5t95?=
- =?us-ascii?Q?5MXXiCOKKacgiCqqDn/5ydBng5+RXrjqD82wepXR6o4aY5RP+U6ZSXXqGoLZ?=
- =?us-ascii?Q?JtyRtaSpcM5wnbOYXM23cbn7z+7RlmXiz9I/DyXgxTL1xKxINBG2GPLUwutY?=
- =?us-ascii?Q?hyTMaHkUtqTFL4K1IN22FCXXuvtXjp3cddg64b8EkfOI+9Q0xKz29tCQ3ULk?=
- =?us-ascii?Q?4FjkLPq9xzLGSQn6rodOGu8bDr0vqyCeRQQYLRTAs7R2j21NTPMgm1DZ3tLZ?=
- =?us-ascii?Q?psMYV1TrDfflds2mOiY6lbqpgris8JdTv32U1g52Ig8dRXlyIzMHivupIQyw?=
- =?us-ascii?Q?OTnJ9YvFzVk2xKrybCgv5JIakoLGaNG/VRO7KbYZIsP33U6Muhil5KKc5M2T?=
- =?us-ascii?Q?twJpiFCLpwU5jo6Tu4aGP99afYWD0+9fA7ZfuX48f1XzFB0kIHiOWuQEMbvD?=
- =?us-ascii?Q?Y+sqAr1KALc8J3qw5mgldKhTDwkGgzW7MEvuqvi1+LWuD94RhW05c9o9l8UD?=
- =?us-ascii?Q?6qiOvaEOZ73WkPSMRFT2BSksnpPuFg3bM96vy9IgGNZRV++QDgLY1tC395jj?=
- =?us-ascii?Q?4OB2QG9aCBbvMNmM802WcYIVolygLmgLn2ua/64VOoXwiwLGLIvieQ3wsX5o?=
- =?us-ascii?Q?xZjDjQC4bNjNrJ42HIHZRjWocUb9V969MoilAfqoT7tC/HVCVFc1Lu2zqs3Z?=
- =?us-ascii?Q?G4RMAEMSNXYqa8HxndC2kRCOb/QpX87txmdxq4qFIFCo6BXXzv0GtNukO1Lx?=
- =?us-ascii?Q?tWZQbpreX9X4XrfGxQ6v3/LMAZNG49yIJFAKOynqey+LszWewxHgPm/EI1PC?=
- =?us-ascii?Q?dyPBhBxptAfbqJcWa/JrQOYSYHFYIJaJ3Jy0TU+wOEJsyySF/dLcwwFlaERU?=
- =?us-ascii?Q?jmzE9aEhufM4wUCu7aHv1A97OrFwckUpbt2dxsZizIcPfcHaLmqqhnJyU1l3?=
- =?us-ascii?Q?E5C3XX+s/Gvv9GRd7PQuUQoCkDEx5YL9usBIZ5FgW/fUx7Pt0mIJLjDH0XIB?=
- =?us-ascii?Q?tQ8RS8vpNOpoF5DMnGCoDYrYamOtv2mZs6pBzsHJA07u0CHNGn8OCaM4HuAn?=
- =?us-ascii?Q?06iRYGc2tXxoy+Kerr/Oi0X9klc/W9C5qaQGcMBR/AkT3TEPcepVZbyM5jZi?=
- =?us-ascii?Q?0ecW/8vzeBob7v5oDE8Q63acAmaeArvr3IX4RozWB9bx+MmZSMEj6J2hqhk4?=
- =?us-ascii?Q?JaU8U/Ndk3wOfNl4LUOaB0eIT3kvkllugYcXOpMGwfCHuc7pFOaNwVrsVJiM?=
- =?us-ascii?Q?251np4G1Uu36YSnIl3kdJNeKXlEhwREKAtmhWM++XDeTiO285GSEWzIo2E+K?=
- =?us-ascii?Q?wS0R3/niT9Wm0aMpMed86lBsLsX4EKJ7FABW7HVzYLRA/yDPIWo4OpibdpvF?=
- =?us-ascii?Q?G0/A7A=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 507b284d-5af1-4b27-64bb-08db16468f18
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?a0ZxZFc0cjFIdEoyMEErL1JpRk4veFpuUmNQWFNaVXNRcGMyekxSckJkRS9V?=
+ =?utf-8?B?Z3p6Vy9GR04vcG5WT2JLTHgrT0luSi9PMWFaWFBFYys1UEJqazY4eHIvY1JS?=
+ =?utf-8?B?Z2pwUDZ5VDNxYlU3UThUb3JvZlFPL2R4bSs2bDBIVW1uSXd3bGlVdVNoZlQv?=
+ =?utf-8?B?NXozQSthbk5xcVpZUWcxV2JjcXBrZ05pVnlib2YxcmhNOXprdzBtSVZPWlg5?=
+ =?utf-8?B?R1hmOFlvdG0ySDJrMGtFZHduWFVXaWlWQUJkSlFsOGd6OFU0L0szTFU5UnhE?=
+ =?utf-8?B?VGl1ZllPOXE5U2prK29aeVMyMEh0M0trVU9FVUdXWHVPTTFLSHVuaTVMVUd2?=
+ =?utf-8?B?d2JaM1J5NHFOeGhJNVVaSTFjdFFYbmNmTmp6WGduVjR3MmR1aG93OFpjTm15?=
+ =?utf-8?B?Y3d1T2tRL3JyeDI4bkQ5ejh0MmFEK1ZIL2FHMm1zQ01ISEdBWkhsVnFsYUFP?=
+ =?utf-8?B?K3ZpZHViQkViVFBwT1dvZlZaWnhGTFY4NlBVZGtqWjlmNHNVS2l6U1NhYkNh?=
+ =?utf-8?B?K1NaZ1JtWXZkeDMvaFRYdkptUGpPdlRiQ3dTVFcxQnY3ckt6bzNYRkhIdTNN?=
+ =?utf-8?B?VEZOYnFjNFBmZnZNanUwd2xiUHcybzlUTGRURjgvYjVORWxudUU0MTR0OHpk?=
+ =?utf-8?B?REl3U2xxTDVBTFJMdnF0Y3RuTFFBUENqRUFiV0s2N3Q0Ukd2bXlnQVY0ZUxM?=
+ =?utf-8?B?WjRDSXZENi9qN3ZRblF2RThOdDdESUJIcGJrMWhmaGZzV0VFSDR6VHE4eFA3?=
+ =?utf-8?B?SGVjKzMrQ0NQTUFsTVVHdVJzS1Rtc0xTOFZHVzBuNVVsaTl2RERGemhqQUwx?=
+ =?utf-8?B?WDNhd2YrSy9lcEZRdUJoWktJMUF0VlV3alNzMjEzeW5SNk0vL0R0aW5IQys4?=
+ =?utf-8?B?WC8rSzlXZmRuU2VCNjhhby9zRThUa0VkTUYxbitjVVZ2RlByVVozRFV3b2dR?=
+ =?utf-8?B?QjNLV3Q3d0w3bkpSUHpXU0tLb1R2NCtWc3ZqcVlhU0g2ZWxvYXVUTldQdHd4?=
+ =?utf-8?B?ZmUreWIrOHJLVG85cjR4SCtkb2w5VjB0cEZTSFhEVFpMbTBwV0k0UkxGMTM2?=
+ =?utf-8?B?cFNiK3kwVnl5N1IyeFc5RlMxei94U0FvemFyZFB5anNxUGx1QzdJRC9iZkNS?=
+ =?utf-8?B?U1pEbkJxYVdQdmNDVU1OUStUQzN5THNLYUpqUVd1MUl5K2VLMTRVS3ZGVWJR?=
+ =?utf-8?B?REVvckJXRk9EWllDb3g2amllVnBwbzcwOGZXdEkzUDRWa1ZDS1g5aVhBWklH?=
+ =?utf-8?B?RmE5VTBOZkdkeXNGWWZDWlF6VUFaVHkyN3AzK3R4cU56QWtpa3l5b1A1TWZ1?=
+ =?utf-8?B?L2RxUnNKcEI1U3RCUmpKN2RIK2tOMzYyL2V3a3hsdTRJbkQxTDdEUkVEMDRB?=
+ =?utf-8?B?dE9CaFZiNmFSbnZ6R0txSTlnTzZSN240MmNTMXVra1g1TVBNcE5yWldYVUha?=
+ =?utf-8?B?SjBzREVDbkxvVDE5T2RCMWlnQU9LdmYwMkNqdzl2M0dzb3JkRFdaRjdqQW9R?=
+ =?utf-8?B?QkI3K3A1MlJVQ25MazcvMGYwczkwWklOWjVoaGlrWGpZTlhDODJEUktoVys4?=
+ =?utf-8?B?dnVFNzIvU0ZrN3dHUTQrTVYxSXJVTzNUVlFMa2xsbXV5NVhwTzlVZ0thT2ZT?=
+ =?utf-8?B?Tk1pSUNaZTNrK1pWK2I4UGc0VjExdDNNemoxbjZydFlPWUhFL1NRajZFYTIy?=
+ =?utf-8?B?VUU1Q0Y0K0laZm9sTHRKT2VPWTZMNEtFRWYzWnVvSFo0Q25Gd0NLelphdkF3?=
+ =?utf-8?B?cEhmZnc0UG1hdmR4dkprT0dQY25MbWp5aVBZVzRFSGZwTjEvbUwvN3ZaUXNU?=
+ =?utf-8?B?SXlLYUpPZWV0aEVxSlk1YmVORE5LZGRnVnhTVzBuZ2RYbE52UjdiUXdQVzFK?=
+ =?utf-8?B?dDhIUTNQSHB0ZzZHekphU2pWclVKcHZlengxaUkzbkowRmI5SktCV3lubjBo?=
+ =?utf-8?B?aUN3N3JIVGM1bEJLM0JaTlRjMWFPWDVJVFlGcEV0WDNoMEFmZEhHQzNsaHdP?=
+ =?utf-8?B?QWFJNVkyR2dxQVBMMlNEQVFZWmtSWUFsNVpkMHhGZXhZNHBSZmRFSTJrTXdV?=
+ =?utf-8?B?ZDljVitUdG9KQ25yeGdhSjhWbEt3SlZncDVvcDZJQkdGdldVZDFUb0xBaHVt?=
+ =?utf-8?B?N1EwRTlabjBleXN3YVpBZEhhTEFxOE5SVmNXT2dpODdTUlJmOGpOem9aWUdF?=
+ =?utf-8?B?RHc9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9bb4a919-74c9-43d2-a3c1-08db1647822e
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR11MB1293.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2023 09:07:30.9194
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2023 09:14:18.9703
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KBSya8vgZ2147TY4lCuN/PHmalNYSUKj+MXsSsmWmNU8ZhoOWIT+CSyJms35RlbuxTUygbNyc+Mz/BsoEjm8DcMQ6chiv9L/chq28tmYO08=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR13MB3717
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: PXL0IYsUrS6xyZFCqyTG0GtYswklEIYok3JXJlsyeNigUJaHVJG6m47pCUvfQ+OG3W17te2dSPBlp53SYlR0EgtR31z2Wr0muKuWZcz9Znw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB7903
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 24, 2023 at 08:39:20AM +0000, Sai Krishna Gajula wrote:
-> Hi Simon,
+On 2/16/2023 9:32 AM, Jakub Kicinski wrote:
+> On Thu, 16 Feb 2023 02:35:35 -0800 Nambiar, Amritha wrote:
+>>> The biggest issue I see is that there isn't any sort of sysfs interface
+>>> exposed for NAPI which is what you would essentially need to justify
+>>> something like this since that is what you are modifying.
+>>
+>> Right. Something like /sys/class/net/<iface>/napis/napi<0-N>
+>> Maybe, initially there would be as many napis as queues due to 1:1
+>> association, but as the queues bitmap is tuned for the napi, only those
+>> napis that have queue[s] associated with it would be exposed.
 > 
-> > -----Original Message-----
-> > From: Simon Horman <simon.horman@corigine.com>
-> > Sent: Thursday, February 23, 2023 6:47 PM
-> > To: Sai Krishna Gajula <saikrishnag@marvell.com>
-> > Cc: davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
-> > pabeni@redhat.com; netdev@vger.kernel.org; linux-kernel@vger.kernel.org;
-> > Sunil Kovvuri Goutham <sgoutham@marvell.com>; Suman Ghosh
-> > <sumang@marvell.com>
-> > Subject: Re: [net PATCH v2] octeontx2-af: Unlock contexts in the queue
-> > context cache in case of fault detection
-> > 
-> > 
-> > ----------------------------------------------------------------------
-> > On Thu, Feb 23, 2023 at 04:31:25PM +0530, Sai Krishna wrote:
-> > > From: Suman Ghosh <sumang@marvell.com>
-> > >
-> > > NDC caches contexts of frequently used queue's (Rx and Tx queues)
-> > > contexts. Due to a HW errata when NDC detects fault/poision while
-> > > accessing contexts it could go into an illegal state where a cache
-> > > line could get locked forever. To makesure all cache lines in NDC are
-> > > available for optimum performance upon fault/lockerror/posion errors
-> > > scan through all cache lines in NDC and clear the lock bit.
-> > >
-> > > Fixes: 4a3581cd5995 ("octeontx2-af: NPA AQ instruction enqueue
-> > > support")
-> > > Signed-off-by: Suman Ghosh <sumang@marvell.com>
-> > > Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
-> > > Signed-off-by: Sai Krishna <saikrishnag@marvell.com>
-> > 
-> > ...
-> > 
-> > > diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-> > > b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-> > > index 389663a13d1d..6508f25b2b37 100644
-> > > --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-> > > +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-> > > @@ -884,6 +884,12 @@ int rvu_cpt_lf_teardown(struct rvu *rvu, u16
-> > > pcifunc, int blkaddr, int lf,  int rvu_cpt_ctx_flush(struct rvu *rvu,
-> > > u16 pcifunc);  int rvu_cpt_init(struct rvu *rvu);
-> > >
-> > > +/* NDC APIs */
-> > > +#define NDC_MAX_BANK(rvu, blk_addr) (rvu_read64(rvu, \
-> > > +					blk_addr, NDC_AF_CONST) & 0xFF)
-> > > +#define NDC_MAX_LINE_PER_BANK(rvu, blk_addr) ((rvu_read64(rvu, \
-> > > +					blk_addr, NDC_AF_CONST) &
-> > 0xFFFF0000) >> 16)
-> > 
-> > Perhaps not appropriate to include as part of a fix, as NDC_MAX_BANK is
-> > being moved from elsewhere, but I wonder if this might be more cleanly
-> > implemented using FIELD_GET().
-> 
-> We will modify and send a separate patch for all the possible macros that can be replaced by FIELD_GET(). 
+> Forget about using sysfs, please. We've been talking about making
+> "queues first class citizen", mapping to pollers is part of that
+> problem space. And it's complex enough to be better suited for netlink.
 
-Thanks, much appreciated.
+Okay. Can ethtool netlink be an option for this? For example,
 
-> > ...
-> > 
-> > > diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
-> > > b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
-> > > index 1729b22580ce..bc6ca5ccc1ff 100644
-> > > --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
-> > > +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
-> > > @@ -694,6 +694,7 @@
-> > >  #define NDC_AF_INTR_ENA_W1S		(0x00068)
-> > >  #define NDC_AF_INTR_ENA_W1C		(0x00070)
-> > >  #define NDC_AF_ACTIVE_PC		(0x00078)
-> > > +#define NDC_AF_CAMS_RD_INTERVAL		(0x00080)
-> > >  #define NDC_AF_BP_TEST_ENABLE		(0x001F8)
-> > >  #define NDC_AF_BP_TEST(a)		(0x00200 | (a) << 3)
-> > >  #define NDC_AF_BLK_RST			(0x002F0)
-> > > @@ -709,6 +710,8 @@
-> > >  		(0x00F00 | (a) << 5 | (b) << 4)
-> > >  #define NDC_AF_BANKX_HIT_PC(a)		(0x01000 | (a) << 3)
-> > >  #define NDC_AF_BANKX_MISS_PC(a)		(0x01100 | (a) << 3)
-> > > +#define NDC_AF_BANKX_LINEX_METADATA(a, b) \
-> > > +		(0x10000 | (a) << 3 | (b) << 3)
-> > 
-> > It looks a little odd that both a and b are shifted by 3 bits.
-> > If it's intended then perhaps it would be clearer to write this as:
-> > 
-> > #define NDC_AF_BANKX_LINEX_METADATA(a, b) \
-> > 		(0x10000 | ((a) | (b)) << 3)
-> 
-> will send v3 patch.
+ethtool --show-napis
+	Lists all the napi instances and associated queue[s] list for each napi 
+for the specified network device.
 
-Likewise, thanks.
+ethtool --set-napi
+	Configure the attributes (say, queue[s] list) for each napi
+	
+	napi <napi_id>
+		The napi instance to configure
+	
+	queues <q_id1, q_id2, ...>
+		The queue[s] that are to be serviced by the napi instance.
+	
+Example:	
+ethtool --set-napi eth0 napi 1477 queues 1,2,5
+
+The 'set-napi' command for the napi<->queue[s] association would have 
+the following affect :
+1. If multiple napis are impacted due to an update, remove the queue[s] 
+from the existing napi instance it is associated with.
+2. Driver updates queue[s]<->vector mapping and associates with new napi 
+instance.
+3. Report the impacted napis and its new queue[s] list back to the stack.
+
+The 'show-napi' command should now list all the napis and the updated 
+queue[s] list.
+This could also be extended for other napi attributes beyond queue[s] list.
