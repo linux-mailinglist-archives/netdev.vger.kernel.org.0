@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BDB126A1587
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 04:41:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D81776A158B
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 04:41:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229650AbjBXDlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Feb 2023 22:41:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41290 "EHLO
+        id S229694AbjBXDlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Feb 2023 22:41:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229606AbjBXDk4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 22:40:56 -0500
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC29960D41
-        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 19:40:46 -0800 (PST)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-536d63d17dbso146952887b3.22
-        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 19:40:46 -0800 (PST)
+        with ESMTP id S229537AbjBXDlF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 22:41:05 -0500
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9C0D5EEC7
+        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 19:40:48 -0800 (PST)
+Received: by mail-pl1-x649.google.com with SMTP id l10-20020a17090270ca00b0019caa6e6bd1so3051050plt.2
+        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 19:40:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=COcCL1RuPlrtQv/M0zJqPpXpZtIWKGOdSOSaIpnmqc0=;
-        b=S9et4NA2Y+3yjx/zHug2YBeKwTYCZ5F+tL0oL5SIvF2HoOgkNjF0xtkFU+3wKsh77Y
-         1h60CG/8UI7gvLOmOwrIszIT24M+nOxaGT/6Ib8vXoUFIIOedcB1bPL04yusXokHbf/w
-         uOFwamGNfM418dktZcmao1FqB0W1+UjpUaLCekhZTfIfqc1xLiVpg4LbT0fjwEtTj9Dm
-         d4g0wZHLVup+y+rWNfzIIGavXDyvJt2kD0Nc+nwjY4EHXAvsVKdHrzH/2S3Quwc2b4FD
-         C7w2akalMpmyAksccQ5ULx7iEGbvvEQUobZskx5uLsayQWgRaJXxsTLAie1rV9O79Vtj
-         y/DQ==
+        bh=R3iBhiHTRJXOrBGrqzDxss6bg8LHug+SM3RBUwYxANE=;
+        b=J6+YN9IGP6MwLPZckWbo5E/Xk82MfTw13Lhg5Ll7egHVE9N1Gz17NrAEoEi5jefz8h
+         s5ZPFOX/8PJLvK8IZCoKa2hDIiAlP345R3P0/QmKYhzYHJiNlawUTL+V6gPo//gkOR/M
+         mOuBhSmC9tdwpYZQpoGvgsscg2IxTOllCkHlB3kujyatWQlAuhKf1miS4RZdd2850qO4
+         +qtC2AkdlCtVdHThYkZIvoiVdrWWzeUE+eYrgb8yTUigK6VC6a9NjY0qTRfItPHTBl0v
+         EtzRt4Z3mQqbuTjbxi5VNiZOEUoFEnKXp3uQgeDAlkBFgJmGLxIpVMkMBLKZI3M9gPxw
+         Ie5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=COcCL1RuPlrtQv/M0zJqPpXpZtIWKGOdSOSaIpnmqc0=;
-        b=dyKVpqv2yhwTK12FtfSfNRp49ha8VDblwyhGyy22ge22xMXkcR0XUFU22/g1jgyrys
-         vl+GYiXy7mneSLc5yIVvhnaj6maeaOWbCCkwf3TgzeqwVE2eEK4tn3v+DECVbCRv+hCg
-         1c1bVWLf82/ZRmIpl8iwa4ylBRett6UqWddWMe+8Hq7x9/BMGbPD2/vT3o/y4/urGOtm
-         r4qL7pmgkfRA+MT0hD4ijYqHFH+7YE7Y95wJIiW3uEir9ST0XL2JxWZ6Y/ra9O9PzuPp
-         hTquI9/Qf1P14cId2rn477IC1gpz33iPiRaQ3j75o+Hi1KbOsCOvmiAxQhUd9XOBtXDr
-         6ueg==
-X-Gm-Message-State: AO0yUKWVK48MPRDZIgcvWBVLDXioUgf0u+KJ7Hlu6cAjimCeYYsYo0a/
-        zWKQ1c75QkVq3ARXEiE+JLpaLGDrsw8=
-X-Google-Smtp-Source: AK7set9sQBImjSEw6hSMkC77Qx+4gfNnWsGaQCSGqCOwenwD3YlIWJP/B0BW4UIYXRhCtD+q2ir2G4nO9PQ=
+        bh=R3iBhiHTRJXOrBGrqzDxss6bg8LHug+SM3RBUwYxANE=;
+        b=H/dCm2IB3AQ8GGRR/VygdF5TT4PjFlfpLZIe9JipKo+BFrcAOYp7W/fnIPCwl+dEOA
+         bSTg0cm7X/X/J01u6h58iXCVXAkF5BD+Cbjwq+abktM6DVQYzWH3gSa10stFWWI3qBTc
+         U37pgDMDukCcmqTNfMA5YBzHjRIpDjS6hK/qAXixR0zoOGvkP7xjZ7fIUFY36c7S63Co
+         2irhjq8AhlIZDMMFsPTmXgGCl4vlwWrCyXUKwku92QreGt9CQE+WpaJDycHuAodxDt4U
+         E3NGtTUUCEs75uNGIhbKb+syVbKBJTe2ucnn2wYRt60D7qKZeRWuuIUOCBnEEkwZ79+u
+         j5Bw==
+X-Gm-Message-State: AO0yUKUg3Hn4ihAk3kHpRwnU3BhoyXjiOrKv9AFl08vKBvSaZuMHXOy4
+        QHZhYDF7U+RZKCoZk2G/IFiXMWfJbp0=
+X-Google-Smtp-Source: AK7set8E3MEPhXV1/45uWmz2lxMH5cm58fZ0faRvczxB9TFOAlLdrNUle4su/XjXkfOaSWJtLZDQpa/gB4k=
 X-Received: from edliaw.c.googlers.com ([fda3:e722:ac3:cc00:24:72f4:c0a8:305d])
- (user=edliaw job=sendgmr) by 2002:a5b:cc:0:b0:966:a047:4ce4 with SMTP id
- d12-20020a5b00cc000000b00966a0474ce4mr3005056ybp.10.1677210046078; Thu, 23
- Feb 2023 19:40:46 -0800 (PST)
-Date:   Fri, 24 Feb 2023 03:40:18 +0000
+ (user=edliaw job=sendgmr) by 2002:a17:90a:f82:b0:237:29b1:188f with SMTP id
+ 2-20020a17090a0f8200b0023729b1188fmr1158374pjz.8.1677210048093; Thu, 23 Feb
+ 2023 19:40:48 -0800 (PST)
+Date:   Fri, 24 Feb 2023 03:40:19 +0000
 In-Reply-To: <20230224034020.2080637-1-edliaw@google.com>
 Mime-Version: 1.0
 References: <20230224034020.2080637-1-edliaw@google.com>
 X-Mailer: git-send-email 2.39.2.637.g21b0678d19-goog
-Message-ID: <20230224034020.2080637-4-edliaw@google.com>
-Subject: [PATCH 4.14 v3 3/4] bpf: Fix 32 bit src register truncation on div/mod
+Message-ID: <20230224034020.2080637-5-edliaw@google.com>
+Subject: [PATCH 4.14 v3 4/4] bpf: Fix truncation handling for mod32 dst reg
+ wrt zero
 From:   Edward Liaw <edliaw@google.com>
 To:     stable@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -75,179 +76,125 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Daniel Borkmann <daniel@iogearbox.net>
 
-Commit e88b2c6e5a4d9ce30d75391e4d950da74bb2bd90 upstream.
+Commit 9b00f1b78809309163dda2d044d9e94a3c0248a3 upstream.
 
-While reviewing a different fix, John and I noticed an oddity in one of the
-BPF program dumps that stood out, for example:
-
-  # bpftool p d x i 13
-   0: (b7) r0 = 808464450
-   1: (b4) w4 = 808464432
-   2: (bc) w0 = w0
-   3: (15) if r0 == 0x0 goto pc+1
-   4: (9c) w4 %= w0
-  [...]
-
-In line 2 we noticed that the mov32 would 32 bit truncate the original src
-register for the div/mod operation. While for the two operations the dst
-register is typically marked unknown e.g. from adjust_scalar_min_max_vals()
-the src register is not, and thus verifier keeps tracking original bounds,
-simplified:
+Recently noticed that when mod32 with a known src reg of 0 is performed,
+then the dst register is 32-bit truncated in verifier:
 
   0: R1=ctx(id=0,off=0,imm=0) R10=fp0
-  0: (b7) r0 = -1
-  1: R0_w=invP-1 R1=ctx(id=0,off=0,imm=0) R10=fp0
+  0: (b7) r0 = 0
+  1: R0_w=inv0 R1=ctx(id=0,off=0,imm=0) R10=fp0
   1: (b7) r1 = -1
-  2: R0_w=invP-1 R1_w=invP-1 R10=fp0
-  2: (3c) w0 /= w1
-  3: R0_w=invP(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R1_w=invP-1 R10=fp0
-  3: (77) r1 >>= 32
-  4: R0_w=invP(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R1_w=invP4294967295 R10=fp0
-  4: (bf) r0 = r1
-  5: R0_w=invP4294967295 R1_w=invP4294967295 R10=fp0
-  5: (95) exit
-  processed 6 insns (limit 1000000) max_states_per_insn 0 total_states 0 peak_states 0 mark_read 0
+  2: R0_w=inv0 R1_w=inv-1 R10=fp0
+  2: (b4) w2 = -1
+  3: R0_w=inv0 R1_w=inv-1 R2_w=inv4294967295 R10=fp0
+  3: (9c) w1 %= w0
+  4: R0_w=inv0 R1_w=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R2_w=inv4294967295 R10=fp0
+  4: (b7) r0 = 1
+  5: R0_w=inv1 R1_w=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R2_w=inv4294967295 R10=fp0
+  5: (1d) if r1 == r2 goto pc+1
+   R0_w=inv1 R1_w=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R2_w=inv4294967295 R10=fp0
+  6: R0_w=inv1 R1_w=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R2_w=inv4294967295 R10=fp0
+  6: (b7) r0 = 2
+  7: R0_w=inv2 R1_w=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R2_w=inv4294967295 R10=fp0
+  7: (95) exit
+  7: R0=inv1 R1=inv(id=0,umin_value=4294967295,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R2=inv4294967295 R10=fp0
+  7: (95) exit
 
-Runtime result of r0 at exit is 0 instead of expected -1. Remove the
-verifier mov32 src rewrite in div/mod and replace it with a jmp32 test
-instead. After the fix, we result in the following code generation when
-having dividend r1 and divisor r6:
+However, as a runtime result, we get 2 instead of 1, meaning the dst
+register does not contain (u32)-1 in this case. The reason is fairly
+straight forward given the 0 test leaves the dst register as-is:
 
-  div, 64 bit:                             div, 32 bit:
+  # ./bpftool p d x i 23
+   0: (b7) r0 = 0
+   1: (b7) r1 = -1
+   2: (b4) w2 = -1
+   3: (16) if w0 == 0x0 goto pc+1
+   4: (9c) w1 %= w0
+   5: (b7) r0 = 1
+   6: (1d) if r1 == r2 goto pc+1
+   7: (b7) r0 = 2
+   8: (95) exit
 
-   0: (b7) r6 = 8                           0: (b7) r6 = 8
-   1: (b7) r1 = 8                           1: (b7) r1 = 8
-   2: (55) if r6 != 0x0 goto pc+2           2: (56) if w6 != 0x0 goto pc+2
-   3: (ac) w1 ^= w1                         3: (ac) w1 ^= w1
-   4: (05) goto pc+1                        4: (05) goto pc+1
-   5: (3f) r1 /= r6                         5: (3c) w1 /= w6
-   6: (b7) r0 = 0                           6: (b7) r0 = 0
-   7: (95) exit                             7: (95) exit
+This was originally not an issue given the dst register was marked as
+completely unknown (aka 64 bit unknown). However, after 468f6eafa6c4
+("bpf: fix 32-bit ALU op verification") the verifier casts the register
+output to 32 bit, and hence it becomes 32 bit unknown. Note that for
+the case where the src register is unknown, the dst register is marked
+64 bit unknown. After the fix, the register is truncated by the runtime
+and the test passes:
 
-  mod, 64 bit:                             mod, 32 bit:
+  # ./bpftool p d x i 23
+   0: (b7) r0 = 0
+   1: (b7) r1 = -1
+   2: (b4) w2 = -1
+   3: (16) if w0 == 0x0 goto pc+2
+   4: (9c) w1 %= w0
+   5: (05) goto pc+1
+   6: (bc) w1 = w1
+   7: (b7) r0 = 1
+   8: (1d) if r1 == r2 goto pc+1
+   9: (b7) r0 = 2
+  10: (95) exit
 
-   0: (b7) r6 = 8                           0: (b7) r6 = 8
-   1: (b7) r1 = 8                           1: (b7) r1 = 8
-   2: (15) if r6 == 0x0 goto pc+1           2: (16) if w6 == 0x0 goto pc+1
-   3: (9f) r1 %= r6                         3: (9c) w1 %= w6
-   4: (b7) r0 = 0                           4: (b7) r0 = 0
-   5: (95) exit                             5: (95) exit
+Semantics also match with {R,W}x mod{64,32} 0 -> {R,W}x. Invalid div
+has always been {R,W}x div{64,32} 0 -> 0. Rewrites are as follows:
 
-x86 in particular can throw a 'divide error' exception for div
-instruction not only for divisor being zero, but also for the case
-when the quotient is too large for the designated register. For the
-edx:eax and rdx:rax dividend pair it is not an issue in x86 BPF JIT
-since we always zero edx (rdx). Hence really the only protection
-needed is against divisor being zero.
+  mod32:                            mod64:
 
-[Salvatore Bonaccorso: This is an earlier version of the patch provided
-by Daniel Borkmann which does not rely on availability of the BPF_JMP32
+  (16) if w0 == 0x0 goto pc+2       (15) if r0 == 0x0 goto pc+1
+  (9c) w1 %= w0                     (9f) r1 %= r0
+  (05) goto pc+1
+  (bc) w1 = w1
+
+[Salvatore Bonaccorso: This is an earlier version based on work by
+Daniel and John which does not rely on availability of the BPF_JMP32
 instruction class. This means it is not even strictly a backport of the
 upstream commit mentioned but based on Daniel's and John's work to
-address the issue.]
+address the issue and was finalized by Thadeu Lima de Souza Cascardo.]
 
-Fixes: 68fda450a7df ("bpf: fix 32-bit divide by zero")
-Co-developed-by: John Fastabend <john.fastabend@gmail.com>
-Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+Fixes: 468f6eafa6c4 ("bpf: fix 32-bit ALU op verification")
 Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Reviewed-by: John Fastabend <john.fastabend@gmail.com>
 Tested-by: Salvatore Bonaccorso <carnil@debian.org>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Edward Liaw <edliaw@google.com>
 ---
- include/linux/filter.h | 24 ++++++++++++++++++++++++
- kernel/bpf/verifier.c  | 22 +++++++++++-----------
- 2 files changed, 35 insertions(+), 11 deletions(-)
+ kernel/bpf/verifier.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index 7c0e616362f0..55a639609070 100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -67,6 +67,14 @@ struct bpf_prog_aux;
- 
- /* ALU ops on registers, bpf_add|sub|...: dst_reg += src_reg */
- 
-+#define BPF_ALU_REG(CLASS, OP, DST, SRC)			\
-+	((struct bpf_insn) {					\
-+		.code  = CLASS | BPF_OP(OP) | BPF_X,		\
-+		.dst_reg = DST,					\
-+		.src_reg = SRC,					\
-+		.off   = 0,					\
-+		.imm   = 0 })
-+
- #define BPF_ALU64_REG(OP, DST, SRC)				\
- 	((struct bpf_insn) {					\
- 		.code  = BPF_ALU64 | BPF_OP(OP) | BPF_X,	\
-@@ -113,6 +121,14 @@ struct bpf_prog_aux;
- 
- /* Short form of mov, dst_reg = src_reg */
- 
-+#define BPF_MOV_REG(CLASS, DST, SRC)				\
-+	((struct bpf_insn) {					\
-+		.code  = CLASS | BPF_MOV | BPF_X,		\
-+		.dst_reg = DST,					\
-+		.src_reg = SRC,					\
-+		.off   = 0,					\
-+		.imm   = 0 })
-+
- #define BPF_MOV64_REG(DST, SRC)					\
- 	((struct bpf_insn) {					\
- 		.code  = BPF_ALU64 | BPF_MOV | BPF_X,		\
-@@ -147,6 +163,14 @@ struct bpf_prog_aux;
- 		.off   = 0,					\
- 		.imm   = IMM })
- 
-+#define BPF_RAW_REG(insn, DST, SRC)				\
-+	((struct bpf_insn) {					\
-+		.code  = (insn).code,				\
-+		.dst_reg = DST,					\
-+		.src_reg = SRC,					\
-+		.off   = (insn).off,				\
-+		.imm   = (insn).imm })
-+
- /* BPF_LD_IMM64 macro encodes single 'load 64-bit immediate' insn */
- #define BPF_LD_IMM64(DST, IMM)					\
- 	BPF_LD_IMM64_RAW(DST, 0, IMM)
 diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 836791403129..9f04d413df92 100644
+index 9f04d413df92..a55e264cdb54 100644
 --- a/kernel/bpf/verifier.c
 +++ b/kernel/bpf/verifier.c
-@@ -4845,28 +4845,28 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
- 		    insn->code == (BPF_ALU | BPF_DIV | BPF_X)) {
+@@ -4846,7 +4846,7 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
  			bool is64 = BPF_CLASS(insn->code) == BPF_ALU64;
  			struct bpf_insn mask_and_div[] = {
--				BPF_MOV32_REG(insn->src_reg, insn->src_reg),
-+				BPF_MOV_REG(BPF_CLASS(insn->code), BPF_REG_AX, insn->src_reg),
- 				/* Rx div 0 -> 0 */
--				BPF_JMP_IMM(BPF_JNE, insn->src_reg, 0, 2),
--				BPF_ALU32_REG(BPF_XOR, insn->dst_reg, insn->dst_reg),
-+				BPF_JMP_IMM(BPF_JEQ, BPF_REG_AX, 0, 2),
-+				BPF_RAW_REG(*insn, insn->dst_reg, BPF_REG_AX),
+ 				BPF_MOV_REG(BPF_CLASS(insn->code), BPF_REG_AX, insn->src_reg),
+-				/* Rx div 0 -> 0 */
++				/* [R,W]x div 0 -> 0 */
+ 				BPF_JMP_IMM(BPF_JEQ, BPF_REG_AX, 0, 2),
+ 				BPF_RAW_REG(*insn, insn->dst_reg, BPF_REG_AX),
  				BPF_JMP_IMM(BPF_JA, 0, 0, 1),
--				*insn,
-+				BPF_ALU_REG(BPF_CLASS(insn->code), BPF_XOR, insn->dst_reg, insn->dst_reg),
+@@ -4854,9 +4854,10 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
  			};
  			struct bpf_insn mask_and_mod[] = {
--				BPF_MOV32_REG(insn->src_reg, insn->src_reg),
-+				BPF_MOV_REG(BPF_CLASS(insn->code), BPF_REG_AX, insn->src_reg),
- 				/* Rx mod 0 -> Rx */
--				BPF_JMP_IMM(BPF_JEQ, insn->src_reg, 0, 1),
--				*insn,
-+				BPF_JMP_IMM(BPF_JEQ, BPF_REG_AX, 0, 1),
-+				BPF_RAW_REG(*insn, insn->dst_reg, BPF_REG_AX),
+ 				BPF_MOV_REG(BPF_CLASS(insn->code), BPF_REG_AX, insn->src_reg),
+-				/* Rx mod 0 -> Rx */
+-				BPF_JMP_IMM(BPF_JEQ, BPF_REG_AX, 0, 1),
++				BPF_JMP_IMM(BPF_JEQ, BPF_REG_AX, 0, 1 + (is64 ? 0 : 1)),
+ 				BPF_RAW_REG(*insn, insn->dst_reg, BPF_REG_AX),
++				BPF_JMP_IMM(BPF_JA, 0, 0, 1),
++				BPF_MOV32_REG(insn->dst_reg, insn->dst_reg),
  			};
  			struct bpf_insn *patchlet;
  
- 			if (insn->code == (BPF_ALU64 | BPF_DIV | BPF_X) ||
- 			    insn->code == (BPF_ALU | BPF_DIV | BPF_X)) {
--				patchlet = mask_and_div + (is64 ? 1 : 0);
--				cnt = ARRAY_SIZE(mask_and_div) - (is64 ? 1 : 0);
-+				patchlet = mask_and_div;
-+				cnt = ARRAY_SIZE(mask_and_div);
+@@ -4866,7 +4867,7 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
+ 				cnt = ARRAY_SIZE(mask_and_div);
  			} else {
--				patchlet = mask_and_mod + (is64 ? 1 : 0);
--				cnt = ARRAY_SIZE(mask_and_mod) - (is64 ? 1 : 0);
-+				patchlet = mask_and_mod;
-+				cnt = ARRAY_SIZE(mask_and_mod);
+ 				patchlet = mask_and_mod;
+-				cnt = ARRAY_SIZE(mask_and_mod);
++				cnt = ARRAY_SIZE(mask_and_mod) - (is64 ? 2 : 0);
  			}
  
  			new_prog = bpf_patch_insn_data(env, i + delta, patchlet, cnt);
