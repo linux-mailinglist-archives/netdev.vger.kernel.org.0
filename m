@@ -2,84 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 820A36A237D
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 22:09:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 660E96A23D4
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 22:33:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229479AbjBXVJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 16:09:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54944 "EHLO
+        id S229454AbjBXVdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 16:33:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229961AbjBXVJC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 16:09:02 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 374356F000
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 13:08:57 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id cq23so2517538edb.1
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 13:08:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=wMNxsXkojw1967LyQO1wRe4xX5h8cb+WzivMMM/wqjE=;
-        b=bM2ff5Cy7yQWUh9Gbzwsm4VTTZkAT9YQgEI37wFOYyvFpbXhIXz8HsbLNkETamjT05
-         JnBcAqYvogS2oRH/OiI/kESAypMSq5jdOGwXaY4ZBIUhqk3VadTQztVsfg4Y4YfPkx0q
-         gDe9QUXwwL+1JEQ0T1asDyPOkHnBY4IxkC8nybtaDQQhWwUT6hGzJ1EQItU54PxoAZzp
-         7qBGWCg//TSg0kDYBwIVw6QvPi8lAdr5SOyUpnLS4fzrtEvwccfav9UbAYHu7lTEOZcg
-         4JOoch4K3CFVCzkbJwbbU3d3LwgStnObh7ZBHFE10NEVe3BTIB3BC3iPv5eCxjusPVNC
-         Gw4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wMNxsXkojw1967LyQO1wRe4xX5h8cb+WzivMMM/wqjE=;
-        b=ldm/phwhU+P0//uRRvPcK3q1oztm+PSD7fJ3RYvm9c7hxPFr87f2avbIQLcTEod3WY
-         LbUU8kE15f1ORR1mVbwg0NUGRrT87GTi3VeQH4Lr8YbRtnbgztS6KcaBigTCSaR0RaTJ
-         Vm80qObB02eT1QjXypkdfnQ6Vr2Knw0ZpExmihDlbeVpLzKx2Ji5YCB0XnHyOD3Rjj+U
-         fLP7BBmlq/TBfjJpHpaucbeA3ttv++IpqlUbLNxjvL3LqaRWyJeqU8OUL58h+Q3tfehg
-         +fAkLjWFzvObIgZhPtROOl1jupjJOejcan/9aDpJ3f71uQysoNDkSxiBaT60YnL/M/BG
-         qMcg==
-X-Gm-Message-State: AO0yUKULiDME73IY4II5T85rQt9HVo+89aDvM90cgTZsmB4cHmjLFWl3
-        YIFf7V4WZErf7K/xLMM+x8k=
-X-Google-Smtp-Source: AK7set9jnAO9pj6CSfKAA6rEL+RfBn4gLzjweB8851+3AdyrfasjQ6KNk1e+dQSdZ2hGMLYR6t4wUQ==
-X-Received: by 2002:a05:6402:40ce:b0:4af:51b6:fe49 with SMTP id z14-20020a05640240ce00b004af51b6fe49mr1267891edb.13.1677272935498;
-        Fri, 24 Feb 2023 13:08:55 -0800 (PST)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id a98-20020a509eeb000000b004ad601533a3sm153085edf.55.2023.02.24.13.08.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Feb 2023 13:08:55 -0800 (PST)
-Date:   Fri, 24 Feb 2023 23:08:52 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        netdev <netdev@vger.kernel.org>, erkin.bozoglu@xeront.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>
-Subject: Re: Choose a default DSA CPU port
-Message-ID: <20230224210852.np3kduoqhrbzuqg3@skbuf>
-References: <trinity-4ef08653-c2e7-4da8-8572-4081dca0e2f7-1677271483935@3c-app-gmx-bap70>
+        with ESMTP id S229445AbjBXVdt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 16:33:49 -0500
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0302712BC4
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 13:33:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1677274428; x=1708810428;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=AD/S1XjQklpEF2VtkX81cvL+Mz0Uw/wmMN6rECGBG90=;
+  b=jlLljvoUdpMntNKrm+auxz2/+y+JOxw8gLlUrvoaqDnvIFBhbIvs+L8I
+   PWGKtw9YvVD+U6urgctnm5wBJOvU/1RYGcmpg+oEPHWmHdVvW2t9tl2XL
+   AzjdBC9qzeGJutLqoa6y+ehqOT6ZQjE7P9GRMgOjLLz5jesj2rIrc9yo0
+   afWnYqq3OJHZz7lG+XCj2WWI4duzuXEjU3OFWSVezUteUOzPpQPIzQrto
+   T5wkaYIPoBGwvAcNAw2VjlxYW+MXDTLgVzepcVXuXBQxbUWmcaXKq7fT6
+   +5rJncFdowzuX7DhZwzg1YS0FuYqVCvYVhzAraeaVR2FiOTzEPjiDKBn/
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10631"; a="396095871"
+X-IronPort-AV: E=Sophos;i="5.97,325,1669104000"; 
+   d="scan'208";a="396095871"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2023 13:33:47 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10631"; a="736947449"
+X-IronPort-AV: E=Sophos;i="5.97,325,1669104000"; 
+   d="scan'208";a="736947449"
+Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
+  by fmsmga008.fm.intel.com with ESMTP; 24 Feb 2023 13:33:46 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, netdev@vger.kernel.org
+Cc:     Jacob Keller <jacob.e.keller@intel.com>,
+        anthony.l.nguyen@intel.com,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>
+Subject: [PATCH net 1/1] ice: remove unnecessary CONFIG_ICE_GNSS
+Date:   Fri, 24 Feb 2023 13:32:41 -0800
+Message-Id: <20230224213241.4025978-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <trinity-4ef08653-c2e7-4da8-8572-4081dca0e2f7-1677271483935@3c-app-gmx-bap70>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 24, 2023 at 09:44:43PM +0100, Frank Wunderlich wrote:
-> 6.1.12 is clean and i get 940 Mbit/s over gmac0/port6
+From: Jacob Keller <jacob.e.keller@intel.com>
 
-Sounds like something which could be bisected?
+CONFIG_ICE_GNSS was added by commit c7ef8221ca7d ("ice: use GNSS subsystem
+instead of TTY") as a way to allow the ice driver to optionally support
+GNSS features without forcing a dependency on CONFIG_GNSS.
+
+The original implementation of that commit at [1] used IS_REACHABLE. This
+was rejected by Olek at [2] with the suggested implementation of
+CONFIG_ICE_GNSS.
+
+Eventually after merging, Linus reported a .config which had
+CONFIG_ICE_GNSS = y when both GNSS = n and ICE = n. This confused him and
+he felt that the config option was not useful, and commented about it at
+[3].
+
+CONFIG_ICE_GNSS is defined to y whenever GNSS = ICE. This results in it
+being set in cases where both options are not enabled.
+
+The goal of CONFIG_ICE_GNSS is to ensure that the GNSS support in the ice
+driver is enabled when GNSS is enabled.
+
+The complaint from Olek about the original IS_REACHABLE was due to the
+required IS_REACHABLE checks throughout the ice driver code and the fact
+that ice_gnss.c was compiled regardless of GNSS support.
+
+This can be fixed in the Makefile by using ice-$(CONFIG_GNSS) += ice_gnss.o
+
+In this case, if GNSS = m and ICE = y, we can result in some confusing
+behavior where GNSS support is not enabled because its not built in. See
+[4].
+
+To disallow this, have CONFIG_ICE depend on GNSS || GNSS = n. This ensures
+that we cannot enable CONFIG_ICE as builtin while GNSS is a module.
+
+Drop CONFIG_ICE_GNSS, and replace the IS_ENABLED checks for it with
+checks for GNSS. Update the Makefile to add the ice_gnss.o object based on
+CONFIG_GNSS.
+
+This works to ensure that GNSS support can optionally be enabled, doesn't
+have an unnnecessary extra config option, and has Kbuild enforce the
+dependency such that you can't accidentally enable GNSS as a module and ICE
+as a builtin.
+
+[1] https://lore.kernel.org/intel-wired-lan/20221019095603.44825-1-arkadiusz.kubalewski@intel.com/
+[2] https://lore.kernel.org/intel-wired-lan/20221028165706.96849-1-alexandr.lobakin@intel.com/
+[3] https://lore.kernel.org/all/CAHk-=wi_410KZqHwF-WL5U7QYxnpHHHNP-3xL=g_y89XnKc-uw@mail.gmail.com/
+[4] https://lore.kernel.org/netdev/20230223161309.0e439c5f@kernel.org/
+
+Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Fixes: c7ef8221ca7d ("ice: use GNSS subsystem instead of TTY")
+Cc: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Anthony Nguyen <anthony.l.nguyen@intel.com>
+Acked-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+Previous discussions:
+IWL v2: https://lore.kernel.org/all/20230224004627.2281371-1-jacob.e.keller@intel.com/
+IWL v1: https://lore.kernel.org/all/20230222223558.2328428-1-jacob.e.keller@intel.com/
+
+ drivers/net/ethernet/intel/Kconfig        | 4 +---
+ drivers/net/ethernet/intel/ice/Makefile   | 2 +-
+ drivers/net/ethernet/intel/ice/ice_gnss.h | 4 ++--
+ 3 files changed, 4 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/Kconfig b/drivers/net/ethernet/intel/Kconfig
+index a3c84bf05e44..c18c3b373846 100644
+--- a/drivers/net/ethernet/intel/Kconfig
++++ b/drivers/net/ethernet/intel/Kconfig
+@@ -296,6 +296,7 @@ config ICE
+ 	default n
+ 	depends on PCI_MSI
+ 	depends on PTP_1588_CLOCK_OPTIONAL
++	depends on GNSS || GNSS = n
+ 	select AUXILIARY_BUS
+ 	select DIMLIB
+ 	select NET_DEVLINK
+@@ -337,9 +338,6 @@ config ICE_HWTS
+ 	  the PTP clock driver precise cross-timestamp ioctl
+ 	  (PTP_SYS_OFFSET_PRECISE).
+ 
+-config ICE_GNSS
+-	def_bool GNSS = y || GNSS = ICE
+-
+ config FM10K
+ 	tristate "Intel(R) FM10000 Ethernet Switch Host Interface Support"
+ 	default n
+diff --git a/drivers/net/ethernet/intel/ice/Makefile b/drivers/net/ethernet/intel/ice/Makefile
+index f269952d207d..5d89392f969b 100644
+--- a/drivers/net/ethernet/intel/ice/Makefile
++++ b/drivers/net/ethernet/intel/ice/Makefile
+@@ -47,4 +47,4 @@ ice-$(CONFIG_DCB) += ice_dcb.o ice_dcb_nl.o ice_dcb_lib.o
+ ice-$(CONFIG_RFS_ACCEL) += ice_arfs.o
+ ice-$(CONFIG_XDP_SOCKETS) += ice_xsk.o
+ ice-$(CONFIG_ICE_SWITCHDEV) += ice_eswitch.o
+-ice-$(CONFIG_ICE_GNSS) += ice_gnss.o
++ice-$(CONFIG_GNSS) += ice_gnss.o
+diff --git a/drivers/net/ethernet/intel/ice/ice_gnss.h b/drivers/net/ethernet/intel/ice/ice_gnss.h
+index 31db0701d13f..4d49e5b0b4b8 100644
+--- a/drivers/net/ethernet/intel/ice/ice_gnss.h
++++ b/drivers/net/ethernet/intel/ice/ice_gnss.h
+@@ -45,7 +45,7 @@ struct gnss_serial {
+ 	struct list_head queue;
+ };
+ 
+-#if IS_ENABLED(CONFIG_ICE_GNSS)
++#if IS_ENABLED(CONFIG_GNSS)
+ void ice_gnss_init(struct ice_pf *pf);
+ void ice_gnss_exit(struct ice_pf *pf);
+ bool ice_gnss_is_gps_present(struct ice_hw *hw);
+@@ -56,5 +56,5 @@ static inline bool ice_gnss_is_gps_present(struct ice_hw *hw)
+ {
+ 	return false;
+ }
+-#endif /* IS_ENABLED(CONFIG_ICE_GNSS) */
++#endif /* IS_ENABLED(CONFIG_GNSS) */
+ #endif /* _ICE_GNSS_H_ */
+-- 
+2.38.1
+
