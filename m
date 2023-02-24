@@ -2,100 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 94C316A1F12
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 16:58:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA0996A1F1D
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 16:59:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229598AbjBXP6Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 10:58:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52426 "EHLO
+        id S229830AbjBXP7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 10:59:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbjBXP6X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 10:58:23 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0A0D233CE
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 07:58:22 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id m8-20020a17090a4d8800b002377bced051so3367305pjh.0
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 07:58:22 -0800 (PST)
+        with ESMTP id S229836AbjBXP7Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 10:59:16 -0500
+Received: from mail-vs1-xe30.google.com (mail-vs1-xe30.google.com [IPv6:2607:f8b0:4864:20::e30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0893943468
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 07:59:14 -0800 (PST)
+Received: by mail-vs1-xe30.google.com with SMTP id v27so14544495vsa.7
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 07:59:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1677254302;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=iUKHyOkCKni8K/OLg6hPvzXdi4yxOtONVOJAf/lrexo=;
-        b=Sw68hUHynQI0NfyM5XKXFpEsqAR1Vq/bCymbjlB7wczpDsP5r0M/izpUs6bzxB2aut
-         TPYVccx6aMcr9SS8QFAyBqQrTjWu88ykeqetHTfsCOs8MdIiQzAEo+fe7vuEofYDKrDz
-         smWNBU5ZzOpUviZk4s1DZXfoFlU2bmZQ3iIZdp5JOzvoabx3TyPY36UC+dH5NXhJsj1W
-         60hp2dm5lLnIxKvLNKH7acTCWPb2jI5bRBIpc3GkRap6cGvRqIrITZItUD7Qy+k6uhAC
-         ILCgYEgYbWU94mskUdniA+34Cuy7BS5J/Al+B3xyCX0CdwSzZ6eZ9Dwo2BAUpRHHxW6s
-         L5lg==
+        d=uci-edu.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Gd69EcZCaUWq2XBOql8CdtpydmZmAMMmEq6g8NUqXt8=;
+        b=tGDiDpZtZ3IlXb3hdHUpdMGN6Mc2ceiOUNHQeVQ6wOs1kUEu9JO9BJnNVrFqoKS40H
+         5SWk4a13Ax4TMwWcm28c5XTIAZ4cI5rorOw33Gs4JbfQq9Oa4QUEIZP8HC5HtyqvW1iv
+         ToyjrmHlDdgs1Kq5pVqeTyp+Mj120KojhqqnFn83RP3jBtjdjKf5Og0erGu5iQ4rmuhQ
+         +Yt/wGhcpBGQdcEXFwUFgSuRVGP0EnCi6Xm+qNaG+d9NsbgQDnyN5xeyNaTvvjq1lfvH
+         2FimKaHzPi3cG8oywOsh5dwrMmQFLz28+OOPc86Ba3fnR+NLNxZ7VpttdPRyRQay/qKf
+         saig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677254302;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=iUKHyOkCKni8K/OLg6hPvzXdi4yxOtONVOJAf/lrexo=;
-        b=UTiP9Xi8THiAiGJjvkdwT9gsmRJUS3EP2diaYsGPyqfVLZFdKoTsW257x/nnTxG8bM
-         5Z4nn3uwDZe9RurclDG5cXjPcdgbCKZiCHdVMa3OItLtc+qzr69Ga+tca8g6fhk0G07h
-         silPcL2liASHJkmxMGs9ZYSpaVjnG6j7b+taerE/SPnZk8aWsE9dEva8TRkTmdnGnrzb
-         +eYCEsVTlNSVLoYLIw5pK9RE4amNhCavLCVtGtMSWZnQ6WfYJ1DkBLDjTAvSkAiNlLHE
-         Zo/YlU2M9hELNwjMacj/Qn2/p7D0uHSVmKfAi8d4vGpV/HEDyA4/gKu9EDyt3dUWEYO9
-         +qAw==
-X-Gm-Message-State: AO0yUKVgp8eCi9vgbhHWfmPR2JYauiMMbr1Ww/IewvffcTl7G3omJ1z7
-        NMiRoZcl1A9yU8bCAXJftl0=
-X-Google-Smtp-Source: AK7set+8Enzv5Rtm8qXY82mfiX12tAZTT9IcXHNcHwia6xBCh0M1h//sjB288Q6Ne180OTICnzGTaw==
-X-Received: by 2002:a05:6a20:3d24:b0:cb:692e:6314 with SMTP id y36-20020a056a203d2400b000cb692e6314mr14733338pzi.6.1677254302319;
-        Fri, 24 Feb 2023 07:58:22 -0800 (PST)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id j23-20020aa783d7000000b0058d8f23af26sm5233853pfn.157.2023.02.24.07.58.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Feb 2023 07:58:21 -0800 (PST)
-Date:   Fri, 24 Feb 2023 07:58:19 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>,
-        Vadim Fedorenko <vadim.fedorenko@linux.dev>,
-        ecree.xilinx@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        Yalin Li <yalli@redhat.com>, habetsm.xilinx@gmail.com
-Subject: Re: [PATCH net-next v4 3/4] sfc: support unicast PTP
-Message-ID: <Y/jem/Z+AxDEScK8@hoboy.vegasvil.org>
-References: <20230221125217.20775-1-ihuguet@redhat.com>
- <20230221125217.20775-4-ihuguet@redhat.com>
- <c5e64811-ba8a-58d3-77f6-6fd6d2ea7901@linux.dev>
- <CACT4oudpiNkdrhzq4fHgnNgNJf1dOpA7w5DfZqo6OX1kgNpcmQ@mail.gmail.com>
- <Y/ZIXRf1LEMBsV9r@hoboy.vegasvil.org>
- <Y/h8w80liiVmw3Ap@gmail.com>
- <Y/jbJ2lMShKZHh6Q@hoboy.vegasvil.org>
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Gd69EcZCaUWq2XBOql8CdtpydmZmAMMmEq6g8NUqXt8=;
+        b=AncUuBpTXjbqJnhi/JoeMwRNZtFr/kjyN1AlOISD//5qaDQd7HNQ/vzfp6Q6F805Ek
+         Y1nd3b6JvTQ61CPcCIS3G5FIjC+xQj7PxK6t8vVg5YAGDrkzqhh5HjoQ6QXQ6Xgq762W
+         bBV9G6XOGyC0t/YTVQ6P1QpPr8lj7irbptzTjQ5BeRGNzfemvlnetD40h0dERRSljkFx
+         eA+l34AL25w/SKD9guTdq6xA5p93YUjINxE+rDBj4SsIWSJ5q99iVAE4mk0UMlgAIZWZ
+         Ej84pyeU2n7MFIModPHPjTPPEVn1O0kAYqs2HcJP9KHmFjfq8ucFkOvOhUiOMcQUmROl
+         /+Ng==
+X-Gm-Message-State: AO0yUKVoRa2w7Gg+mr8+Lhl/DJKk1MNOuINLt81PXFoP8BymWNFzEs4n
+        7qRmJWq0Yli+X7NA2tgPB+++5CkiCP0Bj8g4C8wZSQ==
+X-Google-Smtp-Source: AK7set/KI+iUwduWO9CjC/25Tn1VECwdWc9hn6tyIYx7PJjaFLuC3ooyBXaLcnwEOpXlC5KI3HZYLILzctcW0ReEpz8=
+X-Received: by 2002:a67:e3cb:0:b0:415:5ec3:e507 with SMTP id
+ k11-20020a67e3cb000000b004155ec3e507mr2851813vsm.5.1677254353140; Fri, 24 Feb
+ 2023 07:59:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y/jbJ2lMShKZHh6Q@hoboy.vegasvil.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <CABcoxUayum5oOqFMMqAeWuS8+EzojquSOSyDA3J_2omY=2EeAg@mail.gmail.com>
+ <87a614h62a.fsf@cloudflare.com>
+In-Reply-To: <87a614h62a.fsf@cloudflare.com>
+From:   Hsin-Wei Hung <hsinweih@uci.edu>
+Date:   Fri, 24 Feb 2023 09:58:37 -0600
+Message-ID: <CABcoxUYiRUBkhzsbvsux8=zjgs7KKWYUobjoKrM+JYpeyfNw8g@mail.gmail.com>
+Subject: Re: A potential deadlock in sockhash map
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 24, 2023 at 07:43:35AM -0800, Richard Cochran wrote:
-> On Fri, Feb 24, 2023 at 09:01:59AM +0000, Martin Habets wrote:
-> > On Wed, Feb 22, 2023 at 08:52:45AM -0800, Richard Cochran wrote:
-> > > The user space PTP stack must be handle out of order messages correct
-> > > (which ptp4l does do BTW).
-> > 
-> > This takes CPU time. If it can be avoided that is a good thing, as
-> > it puts less pressure on the host. It is not just about CPU load, it
-> > is also about latency.
-> 
-> It neither takes more CPU nor induces additional latency to handle
-> messages out of order.  The stack simply uses an event based state
-> machine.  In between events, the stack is sleeping on input.
+Hi Jakub,
 
-If you are talking about CPU cycles and latency *in the driver* then,
-by all means, choose your queues to implement the best solution.
+Thanks for following up. Sorry that I did not receive the previous reply.
 
-But that wasn't the argument given in the original post.
+The latest version I tested is 5.19 (3d7cb6b04c3f) and we can reproduce the
+issue with the BPF PoC included. Since we modified Syzkaller, we do not
+have a Syzkaller reproducer.
+
+I will follow John's suggestion to test the latest kernel and bpf
+tree. I will follow
+up if the issue still reproduces.
 
 Thanks,
-Richard
+Hsin-Wei
+
+
+
+
+On Fri, Feb 24, 2023 at 8:51 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>
+> Hi,
+>
+> On Mon, Feb 20, 2023 at 07:39 AM -06, Hsin-Wei Hung wrote:
+> > I think my previous report got blocked since it contained HTML
+> > subparts so I am sending it again. Our bpf runtime fuzzer (a
+> > customized syzkaller) triggered a lockdep warning in the bpf subsystem
+> > indicating a potential deadlock. We are able to trigger this bug on
+> > v5.15.25 and v5.19. The following code is a BPF PoC, and the lockdep
+> > warning is attached at the end.
+>
+> Not sure if you've seen John's reply to the previous report:
+>
+> https://urldefense.com/v3/__https://lore.kernel.org/all/63dddcc92fc31_6bb15208e9@john.notmuch/__;!!CzAuKJ42GuquVTTmVmPViYEvSg!PU-LFxMnx4b-GmTXGI0hYjBiq8vkwrFrlf_b0N5uzy8do5kPFiNcuZJbby-19TtOH2rJoY9UwOvzFArd$
+>
+> Are you also fuzzing any newer kernel versions? Or was v5.19 the latest?
+>
+> Did syzkaller find a reproducer?
+>
+> Thanks,
+> Jakub
