@@ -2,208 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA64C6A22E8
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 21:02:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9F696A231D
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 21:21:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229999AbjBXUCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 15:02:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55476 "EHLO
+        id S229656AbjBXUVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 15:21:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229952AbjBXUC3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 15:02:29 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BAB7231EF
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 12:02:17 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pVeGi-0001Dl-MA; Fri, 24 Feb 2023 21:02:12 +0100
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pVeGd-0007PE-Tp; Fri, 24 Feb 2023 21:02:07 +0100
-Date:   Fri, 24 Feb 2023 21:02:07 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>, Arun.Ramadoss@microchip.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Wei Fang <wei.fang@nxp.com>,
-        kernel@pengutronix.de, intel-wired-lan@lists.osuosl.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next v8 6/9] net: phy: c22: migrate to
- genphy_c45_write_eee_adv()
-Message-ID: <20230224200207.GA8437@pengutronix.de>
-References: <20230211074113.2782508-1-o.rempel@pengutronix.de>
- <20230211074113.2782508-7-o.rempel@pengutronix.de>
- <20230224035553.GA1089605@roeck-us.net>
- <20230224041604.GA1353778@roeck-us.net>
- <20230224045340.GN19238@pengutronix.de>
- <363517fc-d16e-5bcd-763d-fc0e32c2301a@roeck-us.net>
- <20230224165213.GO19238@pengutronix.de>
- <20230224174132.GA1224969@roeck-us.net>
- <20230224183646.GA26307@pengutronix.de>
- <b0af4518-3c07-726e-79a0-19c53f799204@roeck-us.net>
+        with ESMTP id S229446AbjBXUVi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 15:21:38 -0500
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C397E16AE8
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 12:21:35 -0800 (PST)
+Received: by mail-wm1-x330.google.com with SMTP id p3-20020a05600c358300b003e206711347so239110wmq.0
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 12:21:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=VhAihSXcGDe4OQNObCH0G3hSQytsdW3S/qs8PDbZK7E=;
+        b=YOBtANwWoOg4Ev7XAKQzG6ckLFyIyWvtYDGX04F0RjpLCJIgOjkZjYB8aNfXl6Ia9J
+         0nBo6bAvpqFd+T5e1y/uJmYCb6YA7updYNHD8vOmzDPMlwlDOrwtdfTcpBwwjgPAnaF2
+         75mCUlrSjsnj1ODfGlObFdNqlMY2x6/lyNoM+nkPhWY8Jq+6LPZe2A4/maE68BZn8w1N
+         CP/t7DqzEbnaA+pg2dxjYV6pXOXHRfhewSqIueCkiByq4NFMvj+0Je8DqeURs42sU7Nr
+         Wz4uKhVDZisnde5V/Yk2zN0dzTZlf6wl2vcQ0/6/G1d7728rOAB5j8HcY2H92A8v7icV
+         8QbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=VhAihSXcGDe4OQNObCH0G3hSQytsdW3S/qs8PDbZK7E=;
+        b=lKdMjG8ObT7nSmZp0fHXxGz1KRlbaPXR2zcvqyuc+p72Mt4z3PvCbZN6eXpRlLxn4x
+         Q2Uwz72sI62CdxWJRDoQS4n2beeM52+FaTNrohljZ2/xqKSwY3IJnkAdEcrIx3hnKzTx
+         ysioA1InpdYdnUVeJkRxce/S0Ke/RLnxHHuRlrpvaRC8CxBTJLNfbZSdraBg4wAYemIx
+         DSwWC+9gP5+O1lCiNn2jOycXffVU8TcRwx7hyZl5iZ3rG0zQTZVr2eSrqrV/y9XnozzI
+         PTb7c710TwZfy2xW/WOraHdLW9wi0KonPR7gQa16DDDtE6x6W0uHMLTvOWHfA3GXIofv
+         eqvg==
+X-Gm-Message-State: AO0yUKX2OPgfBUw5ZlJMLT19RUMiwnhZGPPT8yGKRrD5CMNN5nE1ASq5
+        z7Gtsh7u14gJRiJQpGJ4cfM=
+X-Google-Smtp-Source: AK7set931ehdQ+jrqNZFOJNqacCsl11YrSc1OKub1viMnb6Ph9AW4xPEIwynir4PLUxJgdGdXIG53Q==
+X-Received: by 2002:a05:600c:491f:b0:3ea:bc08:42ad with SMTP id f31-20020a05600c491f00b003eabc0842admr4799224wmp.2.1677270094004;
+        Fri, 24 Feb 2023 12:21:34 -0800 (PST)
+Received: from ?IPV6:2a01:c23:b8b4:b000:4112:2010:ca46:c1a4? (dynamic-2a01-0c23-b8b4-b000-4112-2010-ca46-c1a4.c23.pool.telefonica.de. [2a01:c23:b8b4:b000:4112:2010:ca46:c1a4])
+        by smtp.googlemail.com with ESMTPSA id p13-20020a1c544d000000b003e208cec49bsm9302130wmi.3.2023.02.24.12.21.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Feb 2023 12:21:33 -0800 (PST)
+Message-ID: <92181e0e-3ca0-b19c-71f3-607fbfdc40a3@gmail.com>
+Date:   Fri, 24 Feb 2023 21:21:32 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <b0af4518-3c07-726e-79a0-19c53f799204@roeck-us.net>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: 4-port ASMedia/RealTek RTL8125 2.5Gbps NIC freezes whole system
+Content-Language: en-US
+To:     fk1xdcio@duck.com, netdev@vger.kernel.org
+References: <AF9C0500-2909-4FF4-8E4E-3BAD8FD8AA14.1@smtp-inbound1.duck.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+In-Reply-To: <AF9C0500-2909-4FF4-8E4E-3BAD8FD8AA14.1@smtp-inbound1.duck.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 24, 2023 at 11:17:24AM -0800, Guenter Roeck wrote:
-> On 2/24/23 10:36, Oleksij Rempel wrote:
-> > On Fri, Feb 24, 2023 at 09:41:32AM -0800, Guenter Roeck wrote:
-> > > On Fri, Feb 24, 2023 at 05:52:13PM +0100, Oleksij Rempel wrote:
-> > > > On Fri, Feb 24, 2023 at 08:00:57AM -0800, Guenter Roeck wrote:
-> > > > > On 2/23/23 20:53, Oleksij Rempel wrote:
-> > > > > > Hallo Guenter,
-> > > > > > 
-> > > > > > On Thu, Feb 23, 2023 at 08:16:04PM -0800, Guenter Roeck wrote:
-> > > > > > > On Thu, Feb 23, 2023 at 07:55:55PM -0800, Guenter Roeck wrote:
-> > > > > > > > On Sat, Feb 11, 2023 at 08:41:10AM +0100, Oleksij Rempel wrote:
-> > > > > > > > > Migrate from genphy_config_eee_advert() to genphy_c45_write_eee_adv().
-> > > > > > > > > 
-> > > > > > > > > It should work as before except write operation to the EEE adv registers
-> > > > > > > > > will be done only if some EEE abilities was detected.
-> > > > > > > > > 
-> > > > > > > > > If some driver will have a regression, related driver should provide own
-> > > > > > > > > .get_features callback. See micrel.c:ksz9477_get_features() as example.
-> > > > > > > > > 
-> > > > > > > > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > > > > > > > > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> > > > > > > > 
-> > > > > > > > This patch causes network interface failures with all my xtensa qemu
-> > > > > > > > emulations. Reverting it fixes the problem. Bisect log is attached
-> > > > > > > > for reference.
-> > > > > > > > 
-> > > > > > > 
-> > > > > > > Also affected are arm:cubieboard emulations, with same symptom.
-> > > > > > > arm:bletchley-bmc emulations crash. In both cases, reverting this patch
-> > > > > > > fixes the problem.
-> > > > > > 
-> > > > > > Please test this fixes:
-> > > > > > https://lore.kernel.org/all/167715661799.11159.2057121677394149658.git-patchwork-notify@kernel.org/
-> > > > > > 
-> > > > > 
-> > > > > Applied and tested
-> > > > > 
-> > > > > 77c39beb5efa (HEAD -> master) net: phy: c45: genphy_c45_ethtool_set_eee: validate EEE link modes
-> > > > > 068a35a8d62c net: phy: do not force EEE support
-> > > > > 66d358a5fac6 net: phy: c45: add genphy_c45_an_config_eee_aneg() function
-> > > > > ecea1bf8b04c net: phy: c45: use "supported_eee" instead of supported for access validation
-> > > > > 
-> > > > > on top of
-> > > > > 
-> > > > > d2980d8d8265 (upstream/master, origin/master, origin/HEAD, local/master) Merge tag 'mm-nonmm-stable-2023-02-20-15-29' of git://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm
-> > > > > 
-> > > > > No change for xtensa and arm:cubieboard; network interfaces still fail.
-> > > > 
-> > > > Huh, interesting.
-> > > > 
-> > > > can you please send me the kernel logs.
-> > > > 
-> > > There is nothing useful there, or at least I don't see anything useful.
-> > > The Ethernet interfaces (sun4i-emac for cubieboard and ethoc for xtensa)
-> > > just don't come up.
-> > > 
-> > > Sample logs:
-> > > 
-> > > cubieboard:
-> > > 
-> > > https://kerneltests.org/builders/qemu-arm-v7-master/builds/531/steps/qemubuildcommand/logs/stdio
-> > > 
-> > > xtensa:
-> > > 
-> > > https://kerneltests.org/builders/qemu-xtensa-master/builds/2177/steps/qemubuildcommand/logs/stdio
-> > > 
-> > > and, for completeness, bletchley-bmc:
-> > > 
-> > > https://kerneltests.org/builders/qemu-arm-aspeed-master/builds/531/steps/qemubuildcommand/logs/stdio
-> > > 
-> > > Those logs are without the above set of patches, but I don't see a
-> > > difference with the patches applied for cubieboard and xtensa. I
-> > > started a complete test run (for all emulations) with the patches
-> > > applied; that should take about an hour to complete.
-> > > I could also add some debug logging, but you'd have to give me
-> > > some hints about what to add and where.
-> > 
-> > OK, interesting. These are emulated PHYs. QEMU seems to return 0 or
-> > 0xFFFF on unsupported registers. May be I'm wrong.
-> > All EEE read/write accesses depend on initial capability read
-> > genphy_c45_read_eee_cap1()
-> > 
-> > Can you please add this trace:
-> > 
-> > diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
-> > index f595acd0a895..67dac9f0e71d 100644
-> > --- a/drivers/net/phy/phy-c45.c
-> > +++ b/drivers/net/phy/phy-c45.c
-> > @@ -799,6 +799,7 @@ static int genphy_c45_read_eee_cap1(struct phy_device *phydev)
-> >           * (Register 3.20)
-> >           */
-> >          val = phy_read_mmd(phydev, MDIO_MMD_PCS, MDIO_PCS_EEE_ABLE);
-> > +       printk("MDIO_PCS_EEE_ABLE = 0x%04x", val);
-> >          if (val < 0)
-> >                  return val;
-> > 
+On 24.02.2023 15:37, fk1xdcio@duck.com wrote:
+> I hope this is the correct place to ask this(?). I'm not sure if my large attachments will come through; this is my first attempt.
 > 
-> For cubieboard:
+> I'm having problems getting this 4-port 2.5Gbps NIC to be stable. I have tried on multiple different physical systems both with Xeon server and i7 workstation chipsets and it behaves the same way on everything. Testing with latest Arch Linux and kernels 6.1, 6.2, and 5.15. I'm using the kernel default r8169 driver.
 > 
-> MDIO_PCS_EEE_ABLE = 0x0000
+> The higher the load on the NIC the more likely the whole system freezes hard. Everything freezes including my serial console, SysRq doesn't work, even the motherboard hardware reset switch doesn't work(!). I have to cut power to the system to reset it.
 > 
-> qemu reports attempts to access unsupported registers.
+> Disabling IOMMU is more stable but doesn't fix the issue. ASPM doesn't work correctly on this card either despite the ASMedia 1812 supposedly supporting it (lots of corrected PCIe errors). Enabling or disabling ASPM makes no difference.
 > 
-> I had a look at the Allwinner mdio driver. There is no indication suggesting
-> what the real hardware would return when trying to access unsupported registers,
-> and the Ethernet controller datasheet is not public.
-
-These are PHY accesses over MDIO bus. Ethernet controller should not
-care about content of this operations. But on qemu side, it is implemented as
-part of Ethernet controller emulation...
-
-Since MDIO_PCS_EEE_ABLE == 0x0000, phydev->supported_eee should prevent
-other EEE related operations. But may be actual phy_read_mmd() went
-wrong. It is a combination of simple phy_read/write to different
-registers.
-
-> For xtensa:
+> "SSU-TECH" (generic/counterfeit?) 4-port 2.5Gbps PCIe x4 card
+>   ASMedia ASM1812 PCIe switch (driver: pcieport)
+>   RTL8125BG x4 (driver: r8169)
 > 
-> MDIO_PCS_EEE_ABLE = 0x0014
+> I have tested with a normal network configuration consisting of multiple machines and also with lookback cables plugging the card ports in to itself.
 > 
-> I didn't try to find out what that means.
+> I have attached the scripts I use with the loopback cables (crashsys.sh), lspci, and dmesg.
+> 
+> System freezes almost immediately with:
+>   3,1266,4284361895,-;pcieport 0000:04:02.0: Unable to change power state from D3hot to D0, device inaccessible
+>    SUBSYSTEM=pci
+>    DEVICE=+pci:0000:04:02.0
+> 
+> If I set permanent D0 mode (power/control=on) then the error is different when the system freezes:
+>   r8169 0000:0d:00.0 enp13s0: rtl_chipcmd_cond == 1 (loop: 100, delay: 100).
+> 
+> Is there anything I can do to get more debugging information? The system locks so hard that I haven't gotten much so far. It's unclear if the problem is happening in the pcieport driver, r8169, or somewhere else.
 
-These will be interpreted as the PHY supports 1000KX and 1000T EEE modes.
-Starting from this point all EEE read write operations will be allowed.
-
-> qemu did not report attempts to access unsupported registers.
-
-Hm. What is the best way to proceed? Remove genphy_c45_read_eee_abilities()
-out of genphy_read_abilities() and let add it to PHYs known to support
-it? Or go deeper and fix QEMU if needed?
-
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+The network driver shouldn't be able to freeze the system. You can test whether vendor driver r8125 makes a difference.
+This should provide us with an idea whether the root cause is at a lower level.
