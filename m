@@ -2,95 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 748496A1796
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 08:57:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC1D56A17AE
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 09:04:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229589AbjBXH5m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 02:57:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47206 "EHLO
+        id S229668AbjBXIEy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 03:04:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbjBXH5l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 02:57:41 -0500
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ECE715543
-        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 23:57:37 -0800 (PST)
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-604-eVmjo_9qMACmN271Yc8nEQ-1; Fri, 24 Feb 2023 02:57:33 -0500
-X-MC-Unique: eVmjo_9qMACmN271Yc8nEQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S229545AbjBXIEx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 03:04:53 -0500
+Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0CCC28D2F;
+        Fri, 24 Feb 2023 00:04:51 -0800 (PST)
+Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 84CB11C05AF9;
-        Fri, 24 Feb 2023 07:57:32 +0000 (UTC)
-Received: from hog (unknown [10.39.192.255])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 37E5F140EBF4;
-        Fri, 24 Feb 2023 07:57:31 +0000 (UTC)
-Date:   Fri, 24 Feb 2023 08:57:30 +0100
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Hangyu Hua <hbh25y@gmail.com>
-Cc:     borisp@nvidia.com, john.fastabend@gmail.com, kuba@kernel.org,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: tls: fix possible info leak in
- tls_set_device_offload()
-Message-ID: <Y/ht6gQL+u6fj3dG@hog>
-References: <20230223090508.443157-1-hbh25y@gmail.com>
- <Y/dK6OoNpYswIqrD@hog>
- <310391ea-7c71-395e-5dcb-b0a983e6fc93@gmail.com>
- <04c4d6ee-f893-5248-26cf-2c6d1c9b3aa5@gmail.com>
+        by mail.3ffe.de (Postfix) with ESMTPSA id EDC0F61;
+        Fri, 24 Feb 2023 09:04:49 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
+        t=1677225890;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8hYTIIbNhdLYsQYh/XYIycPjz/USIz6gl+igSUCQP2Y=;
+        b=BorI/xn6hRTyGYBqmeLOtYz69IP1ZRg2y01401Tyw4jzXtO+WCLUXnM5cHQoASvXPMbILC
+        5pDAlz9y0YXM+qKGjfOtDQLSTaxGhp1TBC0RjET8rJ0mf1WwtFKIYAge0fOq9bXj305o6N
+        h2JEZemB1FY0RHC/SX5GU0tp7nbnvdf4Ux4hr3p5KEn0zXemGSlQ8I6Up/4vD8FTCadkqh
+        L6wb3vr+2BGJxCMXmDiukVTuep7AmDgUgMT50OzoCjeyTxNAJZUdlABmTnmNtEXCMPlOSJ
+        dmoQ5d1daQwBBH2mqIfS06OZFsLW3YX8Y+LXZzkrLUuIIR/ix9ISD+dDL+laAw==
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <04c4d6ee-f893-5248-26cf-2c6d1c9b3aa5@gmail.com>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Date:   Fri, 24 Feb 2023 09:04:49 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Martin Schiller <ms@dev.tdt.de>
+Cc:     tharvey@gateworks.com, andrew@lunn.ch, davem@davemloft.net,
+        f.fainelli@gmail.com, hauke@hauke-m.de, hkallweit1@gmail.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux@armlinux.org.uk, martin.blumenstingl@googlemail.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v6] net: phy: intel-xway: Add RGMII internal
+ delay configuration
+In-Reply-To: <8aa26f417c99761cdf1b6b7082fdec14@dev.tdt.de>
+References: <CAJ+vNU3_8Gk8Mj_uCudMz0=MdN3B9T9pUOvYtP7H_B0fnTfZmg@mail.gmail.com>
+ <20230222160425.4040683-1-michael@walle.cc>
+ <8aa26f417c99761cdf1b6b7082fdec14@dev.tdt.de>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <df9a0b6e59d27d5898a9021915ca333a@walle.cc>
+X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2023-02-24, 11:33:29 +0800, Hangyu Hua wrote:
-> On 24/2/2023 11:07, Hangyu Hua wrote:
-> > On 23/2/2023 19:15, Sabrina Dubroca wrote:
-> > > 2023-02-23, 17:05:08 +0800, Hangyu Hua wrote:
-> > > > After tls_set_device_offload() fails, we enter tls_set_sw_offload(). But
-> > > > tls_set_sw_offload can't set cctx->iv and cctx->rec_seq to NULL
-> > > > if it fails
-> > > > before kmalloc cctx->iv. This may cause info leak when we call
-> > > > do_tls_getsockopt_conf().
-> > > 
-> > > Is there really an issue here?
-> > > 
-> > > If both tls_set_device_offload and tls_set_sw_offload fail,
-> > > do_tls_setsockopt_conf will clear crypto_{send,recv} from the context.
-> > > Then the TLS_CRYPTO_INFO_READY in do_tls_getsockopt_conf will fail, so
-> > > we won't try to access iv or rec_seq.
-> > > 
-> > 
-> > My bad. I forget memzero_explicit. Then this is harmless. But I still
-> > think it is better to set them to NULL like tls_set_sw_offload's error
-> > path because we don't know there are another way to do this(I will
-> > change the commit log). What do you think?
+Hi Martin,
 
-Yes, I guess for consistency between functions it would be ok.
+Am 2023-02-24 07:25, schrieb Martin Schiller:
+> On 2023-02-22 17:04, Michael Walle wrote:
+>> Hi Tim, Hi Martin,
+>> 
+>>> I've got some boards with the GPY111 phy on them and I'm finding that
+>>> modifying XWAY_MDIO_MIICTRL to change the skew has no effect unless I
+>>> do a soft reset (BCMR_RESET) first. I don't see anything in the
+>>> datasheet which specifies this to be the case so I'm interested it
+>>> what you have found. Are you sure adjusting the skews like this
+>>> without a soft (or hard pin based) reset actually works?
+>> 
+>> I do have the same PHY and I'm puzzled with the delay settings. Do
+>> you have an EEPROM attached to the PHY? According to my datasheet,
+>> that seems to make a difference. Apparently, only if there is an
+>> EEPROM, you can change the value (the value is then also written to
+>> the EEPROM according the datasheet).
+>> If you don't have one, the values will get overwritten by the
+>> external strappings on a soft reset. Therefore, it seems they cannot
+>> be set. (FWIW there is also a sticky bit, but that doesn't seem to
+>> help in this case).
+>> 
+>> -michael
+> 
+> Yes, you are right. The datasheet says: "In no-EEPROM mode, writing to
+> this register has no impact on operation of the device".
+> 
+> But changing this settings without an EEPROM indeed has an impact.
+> 
+> We don't use an EEPROM and without tuning this values some boards are
+> unable to communicate on the ethernet port(s).
 
-> Like a rare case, there is a race condition between
-> do_tls_getsockopt_conf and do_tls_setsockopt_conf while the previous
-> condition is met. TLS_CRYPTO_INFO_READY(crypto_info) is not
-> protected by lock_sock in do_tls_getsockopt_conf. It's just too
-> difficult to satisfy both conditions at the same time.
+Thanks for confirming! Could you share your PHYID1/PHYID2 register and
+firmware version (FWV, 0x1E) contents?
 
-Ugh, thanks for noticing this. We should move the lock_sock in
-getsockopt before TLS_CRYPTO_INFO_READY. Do you want to write that
-patch?
+In our case, any changes in MIICTRL are lost after a soft reset.
 
-Thanks.
+> I varied these values during operation in the uboot and was able to 
+> test
+> the limits very nicely.
 
--- 
-Sabrina
+So I guess, the value you write into MIICTRL are retained on a soft 
+reset.
+I.e.
 
+mii write <phyad> 0x17 0xffff
+mii write <phyad> 0x00 0x8000
+mii read <phyad> 0x17
+
+will still return 0xffff?
+
+> 
+> I wouldn't have introduced this feature if it hasn't got any impact.
+
+Sure, I'm just trying to figure out the differences ;)
+
+Thanks,
+Michael
