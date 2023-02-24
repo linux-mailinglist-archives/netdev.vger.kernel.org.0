@@ -2,95 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A9E2A6A1F68
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 17:14:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63CA36A1F6B
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 17:15:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229640AbjBXQOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 11:14:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41654 "EHLO
+        id S229735AbjBXQPB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 11:15:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229793AbjBXQOg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 11:14:36 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13DCC241E7
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 08:14:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=6OPrqPp5ae6CNtfIkBJp8i915DJMVfOsGjxCltCKuKg=; b=PLFRdhNFx+w35nkS4j9cv+to65
-        PDneu2ny9Ru8fJ8+F943fecljXS55qUUHgBYcrWp7Uz8hWy5VeTil34/KRANwGg0ijPcClk4vxSO3
-        C/KogXYDhen0jwLcqsjnfb2d2MOte3Kh2zu2TdHzsP2xsPDLMwmdyV37LYPN/K+py+R28rV6HiBgz
-        MBk4pwev6Emrsy9vsb/J45GPgVzIvkH7/pVFiwMWwFWpo+wlQn/Z0ItyBLbwqfcVCuQDzYzauUQ9S
-        3G7yK0puzBjwyO0RP49jGtMsvGY0RYWcpsZVZmc7pbRPYP8DIVdh2dgxyy7oSkzxUTonsVM4AWDUw
-        pYXUp3vg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36432)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pVaiI-0000qq-Tf; Fri, 24 Feb 2023 16:14:28 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pVaiH-0005Y4-H8; Fri, 24 Feb 2023 16:14:25 +0000
-Date:   Fri, 24 Feb 2023 16:14:25 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Lee Jones <lee@kernel.org>,
-        Maksim Kiselev <bigunclemax@gmail.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net 3/3] net: mscc: ocelot: fix duplicate driver name
- error
-Message-ID: <Y/jiYdNjaeqPAfO9@shell.armlinux.org.uk>
-References: <20230224155235.512695-1-vladimir.oltean@nxp.com>
- <20230224155235.512695-4-vladimir.oltean@nxp.com>
- <Y/jel+aPo4PkWc1g@shell.armlinux.org.uk>
- <20230224160920.cjia4n7zn3jm4nyd@skbuf>
+        with ESMTP id S229702AbjBXQPA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 11:15:00 -0500
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46DBF1F91C
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 08:14:59 -0800 (PST)
+Received: by mail-wr1-x431.google.com with SMTP id j2so14278554wrh.9
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 08:14:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=wqctOt0Z9Z4oI79oBbfnBf5nVakOpUKrrJaXQvs3lDA=;
+        b=eMn43wEeRu6kCrDb8soTKv4oBUddYu2GcC/dmfld+GvMJeR/DByh+FI0jgjFEU9XMC
+         trxHOZJ+z3CX1Ys7kFb+M7ZHtbJVmpBxKJ0u0PZj5kzJzQOGh4DcOzezEAgGazLd/zte
+         j+JXLR6KJ8EEubKU0clja+9LWSGRXdGosCRM1bY7xtRPnZNpnkGhP/mjDlQIDR/m3KDz
+         oPhYuPTRoeITEpzHyFMMdkZrud8Z7rSAG7Ymsp6qonm4CKkr7DKufYdqFm2R/l3zWq5R
+         tVeBb0U6Dn+b13kxn7lJsdTn8yw9cmdjMgRQjzsHp59OyusIXXsbAoBLo1ToOu3nBoCP
+         w1yA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=wqctOt0Z9Z4oI79oBbfnBf5nVakOpUKrrJaXQvs3lDA=;
+        b=adRVFLHkxM4LF++zbJ8U+2wyTmZnZPB+NFKdcl12EOB+hRltgp2yQAO0fZH5QOqYL+
+         SNd/zBUP5YwESIsjo9SgOJVfmcaxsGQ6UyLf694P9T20QnYmfs06U3GjeDSF69W0bIlt
+         Thd2MGfGPD4kgXurFD2X2f7fsl8p6lff6C/bLGrNiUVjySXHGqVq0UpOp+vnTsHwZZjn
+         lqxrBWaPu/I27vN/HPDYtQkRzwfPvDx9Fp+Bu3tkglgUjT/H5PGvoD7fywcZM1vuGL5v
+         3283QBcBe2j71d5c0Ofd9YAITll2uX0oll1rQYPRiASOtGCESSmgElean2K/8zUzHAAW
+         eItw==
+X-Gm-Message-State: AO0yUKVPsQ+fCTpIVpu69ziasozsI+y/ewR0IcXOFhoKcsXLunxQZqhk
+        FO6Q+5GyT440olChudE7xaNA2LYe5y/Eg4K7WLC1Fw==
+X-Google-Smtp-Source: AK7set9tn8+uVIVmP/VkpI+R+yeCwNyOdPrjXWzx2RWUr3qkYE62TTdIkuPoaSVWdp34H5M7jW4uJ0GdeA3U7TaqghM=
+X-Received: by 2002:a5d:49cd:0:b0:2c3:be6a:d7d4 with SMTP id
+ t13-20020a5d49cd000000b002c3be6ad7d4mr1070400wrs.11.1677255297637; Fri, 24
+ Feb 2023 08:14:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230224160920.cjia4n7zn3jm4nyd@skbuf>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <CANn89iJE6SpB2bfXEc=73km6B2xtBSWHj==WsYFnH089WPKtSA@mail.gmail.com>
+ <20230224150123.128346-1-equinox@diac24.net>
+In-Reply-To: <20230224150123.128346-1-equinox@diac24.net>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 24 Feb 2023 17:14:45 +0100
+Message-ID: <CANn89iL1q6vs5MVt9SUNJ6uzPwg738vKKOFvyXQD3K3m7BAd8g@mail.gmail.com>
+Subject: Re: [PATCH] io_uring: remove MSG_NOSIGNAL from recvmsg
+To:     David Lamparter <equinox@diac24.net>
+Cc:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
+        Jens Axboe <axboe@kernel.dk>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 24, 2023 at 06:09:20PM +0200, Vladimir Oltean wrote:
-> On Fri, Feb 24, 2023 at 03:58:15PM +0000, Russell King (Oracle) wrote:
-> > I'll also send another patch to delete linux/phylink.h from
-> > ocelot_ext.c - seems that wasn't removed when the phylink instance
-> > was removed during review.
-> 
-> Good point. I suppose that would be on net-next, after the 6th of March?
-> I just hope we'll remember by then.
+On Fri, Feb 24, 2023 at 4:04=E2=80=AFPM David Lamparter <equinox@diac24.net=
+> wrote:
+>
+> MSG_NOSIGNAL is not applicable for the receiving side, SIGPIPE is
+> generated when trying to write to a "broken pipe".  AF_PACKET's
+> packet_recvmsg() does enforce this, giving back EINVAL when MSG_NOSIGNAL
+> is set - making it unuseable in io_uring's recvmsg.
+>
+> Remove MSG_NOSIGNAL from io_recvmsg_prep().
+>
+> Signed-off-by: David Lamparter <equinox@diac24.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jens Axboe <axboe@kernel.dk>
+> ---
+>
+> > Sure, or perhaps David wanted to take care of this.
+>
+> Here you go.  But maybe give me a few hours to test/confirm...
+>
 
-Yep - however, I'm facing challenges to build-testing it at the moment
-as net-next is broken:
+Reviewed-by: Eric Dumazet <edumazet@google.com>
 
-kernel/bpf/core.c: In function '___bpf_prog_run':
-kernel/bpf/core.c:1914:3: error: implicit declaration of function 'barrier_nospec' [-Werror=implicit-function-declaration]
- 1914 |   barrier_nospec();
-      |   ^~~~~~~~~~~~~~
-cc1: some warnings being treated as errors
-
-... so I'm going to send the patch as untested.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Thanks !
