@@ -2,75 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CEE36A18E1
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 10:35:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EB006A1993
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 11:08:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229697AbjBXJfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 04:35:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46130 "EHLO
+        id S230130AbjBXKIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 05:08:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229843AbjBXJfU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 04:35:20 -0500
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E03265CD6;
-        Fri, 24 Feb 2023 01:35:09 -0800 (PST)
-Received: by mail-qt1-x843.google.com with SMTP id c18so358246qte.5;
-        Fri, 24 Feb 2023 01:35:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=8s6o4CkNEdFG6GmMR0ELLlfRZdxakWUBLhovBwvl3eY=;
-        b=LUVLB0d+18NvWtkYDtpkdc6YZWqSjg+9mGVsbd57ILSRQ/tGIzOR8YaC7gZqbbU6Gz
-         O+P68Sl1ccTMLo9jh/fKEDEdFiQ6CLbpOrWRGkTEo5gwJbhEulfYILn/UGy0YFYxCeMq
-         Mq029BpRyIlVhGufGwXtKT96IHg7VcMgT12bxftUV2VY19JfnuomrzKCQQgBCwDeMGK0
-         PyzGNSaIEW3/p/bhAYcA43BUDd++XZ37WPDa4S32ala4lTuvZ+hrLcepxWQauZ5t/5Sc
-         y2hzKrASCKsN+HhuWArbgac/EZdr9UBPlX2uAXnLLH6RqigZ9Q/7DeknkNRSvek7UlHj
-         f6dg==
+        with ESMTP id S230000AbjBXKII (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 05:08:08 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 168D61689E
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 02:07:09 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id i9so17070070lfc.6
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 02:07:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=8s6o4CkNEdFG6GmMR0ELLlfRZdxakWUBLhovBwvl3eY=;
-        b=ZVAp/PTYKg9j24IKY+IU7R+ZcDCqjCwZQxYX8oGcApIm+rXkOAB4IOK0YrmB0/rd3v
-         CCqHu396GqOmBs1cyBb8jko3FWnJv7ON5tKsNb/shx9LFrHqG0pPn03XS0UR7bQ2bL+Y
-         fBFHx5uezMkSVH6LDpaNxipjMdzwP7kifLnlcX9dDz2Wbp1SrzamX0csN/wSv2/MZFzR
-         EOvqqZiFwmDj4VhXr/UtV8/T1Ck6XaeVq+mR6GuxkUj9nEmnfYGO5eavbOeeFjZmxDYo
-         FkQuMl2lMkPh9ckB2osCjKAOzTGIWLsu6jzwsCCtc3hBjfXPKzRn0lC/UG/LMnEshS+V
-         eD6A==
-X-Gm-Message-State: AO0yUKXd3g4ok8gpp382E0s4AsObRnKdAm+YZMefgyF8nYsPxduJAM5d
-        44FtWLxszD0jm2tL4YTU0fA=
-X-Google-Smtp-Source: AK7set9zwJ3jd7pkf4NjfrtUgcWrmJbWmuQrD6SmZV2krTqnjJ2WbrvwojVMNguHhoWdya2ov5xm2w==
-X-Received: by 2002:ac8:7e94:0:b0:3b9:fc92:a6 with SMTP id w20-20020ac87e94000000b003b9fc9200a6mr32012483qtj.6.1677231308597;
-        Fri, 24 Feb 2023 01:35:08 -0800 (PST)
-Received: from [127.0.0.1] ([103.152.220.17])
-        by smtp.gmail.com with ESMTPSA id t18-20020a37aa12000000b006bb82221013sm5719992qke.0.2023.02.24.01.35.04
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=3ai7hQAOVjAqJd8L3s9WkXNCaqYXI3lU2xYmmJfxsJg=;
+        b=a0CNAgTKQJ0vNcGcf1C79BBGqObQr08UeM4yNof2EHvCQqfz6ehPDWZW8GLcGEls/z
+         7Gnu0dw7szYhm1iRn2jGy0qvQZRRbAkNE9McYwouAhCNjba9+Aw/pVRz3vf+h0oWMbMX
+         IurdaqNWqDLyQrmAfrOCBcJ63Al00R8K3TyOFx2eR4lYy6Xtdn0VLBIVjzhulgFuIqPM
+         OkuHLF4ARQOWOC6iAxwzuUaajxGsUTbOlVRw6WsSVqmoz1twr9mk35ol/Kh64LdgrdlT
+         5QmmT85co5qedjMgoOtS8wq2Sc54l/ZgMXnqbO9ApX89ajvuFv2KbfajHrcGiGXVzRUY
+         Pijw==
+X-Gm-Message-State: AO0yUKW9MobGbKsHoYSasWYw4DS3TRGppkVnJgsMblKY4f+WeTJDhJUn
+        E9BEstzyk09R45NTN3pTiOjNGI3r4lxjh6oJ
+X-Google-Smtp-Source: AK7set/TWEyxqFz/yCxR5FZsrNxxe+g6cJy3QAqqbJWAHGqq27LaVd70e23+3a4QWa+kcwa2C2jMag==
+X-Received: by 2002:a19:700d:0:b0:4dc:554b:d27e with SMTP id h13-20020a19700d000000b004dc554bd27emr4723042lfc.65.1677233155377;
+        Fri, 24 Feb 2023 02:05:55 -0800 (PST)
+Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com. [209.85.167.49])
+        by smtp.gmail.com with ESMTPSA id i8-20020ac25228000000b004dcfee9e4a9sm1316406lfl.247.2023.02.24.02.05.54
+        for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Feb 2023 01:35:07 -0800 (PST)
-Message-ID: <22948c58-d9df-1326-a849-4278d14f76b5@gmail.com>
-Date:   Fri, 24 Feb 2023 17:35:01 +0800
+        Fri, 24 Feb 2023 02:05:54 -0800 (PST)
+Received: by mail-lf1-f49.google.com with SMTP id f41so17209189lfv.13
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 02:05:54 -0800 (PST)
+X-Received: by 2002:a19:7610:0:b0:4dd:ab9a:24a4 with SMTP id
+ c16-20020a197610000000b004ddab9a24a4mr459802lff.5.1677233154479; Fri, 24 Feb
+ 2023 02:05:54 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH] net: tls: fix possible info leak in
- tls_set_device_offload()
-To:     Sabrina Dubroca <sd@queasysnail.net>
-Cc:     borisp@nvidia.com, john.fastabend@gmail.com, kuba@kernel.org,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20230223090508.443157-1-hbh25y@gmail.com> <Y/dK6OoNpYswIqrD@hog>
- <310391ea-7c71-395e-5dcb-b0a983e6fc93@gmail.com>
- <04c4d6ee-f893-5248-26cf-2c6d1c9b3aa5@gmail.com> <Y/ht6gQL+u6fj3dG@hog>
-Content-Language: en-US
-From:   Hangyu Hua <hbh25y@gmail.com>
-In-Reply-To: <Y/ht6gQL+u6fj3dG@hog>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <CACXRmJiuDeBW4in51_TUG5guLHLc7HZqfCTxCwMr6y_xGdUR5g@mail.gmail.com>
+ <20230223211735.v62yutmzmwx3awb2@lion.mk-sys.cz>
+In-Reply-To: <20230223211735.v62yutmzmwx3awb2@lion.mk-sys.cz>
+From:   Thomas Devoogdt <thomas@devoogdt.com>
+Date:   Fri, 24 Feb 2023 11:05:43 +0100
+X-Gmail-Original-Message-ID: <CACXRmJj8hkni1NdKHvutCQw3An-uwu0MJkHFDS14d+OiwzDHZA@mail.gmail.com>
+Message-ID: <CACXRmJj8hkni1NdKHvutCQw3An-uwu0MJkHFDS14d+OiwzDHZA@mail.gmail.com>
+Subject: Re: [PATCH ethtool] uapi: if.h: fix linux/libc-compat.h include on
+ Linux < 3.12
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org, Thomas Devoogdt <thomas.devoogdt@barco.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,46 +66,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24/2/2023 15:57, Sabrina Dubroca wrote:
-> 2023-02-24, 11:33:29 +0800, Hangyu Hua wrote:
->> On 24/2/2023 11:07, Hangyu Hua wrote:
->>> On 23/2/2023 19:15, Sabrina Dubroca wrote:
->>>> 2023-02-23, 17:05:08 +0800, Hangyu Hua wrote:
->>>>> After tls_set_device_offload() fails, we enter tls_set_sw_offload(). But
->>>>> tls_set_sw_offload can't set cctx->iv and cctx->rec_seq to NULL
->>>>> if it fails
->>>>> before kmalloc cctx->iv. This may cause info leak when we call
->>>>> do_tls_getsockopt_conf().
->>>>
->>>> Is there really an issue here?
->>>>
->>>> If both tls_set_device_offload and tls_set_sw_offload fail,
->>>> do_tls_setsockopt_conf will clear crypto_{send,recv} from the context.
->>>> Then the TLS_CRYPTO_INFO_READY in do_tls_getsockopt_conf will fail, so
->>>> we won't try to access iv or rec_seq.
->>>>
->>>
->>> My bad. I forget memzero_explicit. Then this is harmless. But I still
->>> think it is better to set them to NULL like tls_set_sw_offload's error
->>> path because we don't know there are another way to do this(I will
->>> change the commit log). What do you think?
-> 
-> Yes, I guess for consistency between functions it would be ok.
-> 
->> Like a rare case, there is a race condition between
->> do_tls_getsockopt_conf and do_tls_setsockopt_conf while the previous
->> condition is met. TLS_CRYPTO_INFO_READY(crypto_info) is not
->> protected by lock_sock in do_tls_getsockopt_conf. It's just too
->> difficult to satisfy both conditions at the same time.
-> 
-> Ugh, thanks for noticing this. We should move the lock_sock in
-> getsockopt before TLS_CRYPTO_INFO_READY. Do you want to write that
-> patch?
-> 
-> Thanks.
-> 
+Hi,
 
-I see. I will make a new patch to fix the race and send v2 of this.
+I now remember (while looking at the other patches I had to add) that
+I'm also missing __kernel_sa_family_t from /uapi/linux/socket.h (for
+Linux < 3.7). So it's indeed not just libc-compat.h which is causing
+problems. So perhaps take that one along while at it.
 
-Thanks,
-Hangyu
+Thx in advance,
+
+Thomas Devoogdt
+
+Op do 23 feb. 2023 om 22:17 schreef Michal Kubecek <mkubecek@suse.cz>:
+>
+> On Thu, Feb 23, 2023 at 09:38:41PM +0100, Thomas Devoogdt wrote:
+> > Hi,
+> >
+> > I now see that these headers are simply synced with (and even
+> > committed to) the upstream kernel. So having a kernel version check
+> > there is probably not something we want to do. Better would be to
+> > incorporate the "libc-compat.h" header as well to fix compilation on
+> > Linux < 3.12. This is similar to the added "if.h" header itself in
+> > commit https://git.kernel.org/pub/scm/network/ethtool/ethtool.git/commit/uapi/linux/if.h?id=0b09751eb84178d19e4f92543b7fb1e4f162c236,
+> > which added support for Linux < 4.11.
+> >
+> > Let me know what you think, and if further action is needed from my
+>
+> Yes, adding libc-compat.h would be a cleaner solution than having
+> a modified version of one header file. The easiest way should be
+> creating a bogus header file (e.g. "touch uapi/linux/libc-compat.h") and
+> running the ethtool-import-uapi script.
+>
+> Seeing that this is not the first problem of this type - and likely not the
+> last either - I'm considering if we shouldn't go all the way and prevent
+> mixing potentially incompatible kernel header versions by pulling every
+> kernel header included in the source (and every kernel header included
+> by those etc.). That's something that could be scripted easily so I'm
+> going to try it and see how big the full set would be.
+>
+> Michal
