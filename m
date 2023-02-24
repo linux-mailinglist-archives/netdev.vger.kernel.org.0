@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4D106A1DE8
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 16:01:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D312D6A1DE9
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 16:01:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230113AbjBXPBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 10:01:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48038 "EHLO
+        id S230021AbjBXPBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 10:01:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230093AbjBXPBi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 10:01:38 -0500
-Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0646F658FC
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 07:01:35 -0800 (PST)
-Received: by mail-ot1-x32f.google.com with SMTP id f19-20020a9d5f13000000b00693ce5a2f3eso2531764oti.8
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 07:01:34 -0800 (PST)
+        with ESMTP id S229651AbjBXPBl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 10:01:41 -0500
+Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55555474C5
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 07:01:39 -0800 (PST)
+Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-172afa7bee2so1314514fac.6
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 07:01:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=vr8HUnK9ZYpB3p3q28yDk07xjKSLv6VjHPmveMV+ncw=;
-        b=EFgCyM1oc3bevQB5/asphnLsK062lVcdn50v4uvVdoeY3ku2PXlst1hfw02xiVTLXC
-         MpPxhbS8X51e2jN7FWhzDgR6DDHf3pUc9db4mbYJvE03t13FyrOHKOSSkQrlsMX2H9rT
-         5VjWY0EUJjaC4xz6DM7JvqzZZ2PH1S3BhvhaC6tZp6ZpeegkE78BJmoi9JL3clGzdMse
-         /K3vKLlYaAVJVNJoVJDa0bLyfcl0wl+l+xrtmm2RzS4QrAr8ShRiX1kShgvkRa4RMDNu
-         BJCmrRDd2q+0T11IFVx7stl9cq5z15C+OSmIJU/RAt0QywEMXlwCRhUQAHgfMiDcSgAI
-         x5ag==
+        bh=GOa5xnOOd9PjALfabLcWeCVK0bEhID3EBTcw31yNd4Q=;
+        b=WNVL6Y+NTJepshggfOYJfYQo4vbAt/Ee3/HQHtCKbjs7LUCyIrDTn4r1IT0p81QK4Y
+         POYxrSKdPyxmn8P4MU/zQafVnQazEJ1h2jtv1hjone3DjqN2IyJlNSI9dn/dk+uuhUpn
+         C275I5FUt80WC7+oWhONUrle+m1RmNPlEcYWbZ9QgE3XS0Lg9WMxwl4m5QD/z0Dxt1Ks
+         ANUdKPjyUYTm2O8GRs3ab689rsLtFSg9j2obkbnk4TjrG4lRGvNlmEPzqzGIlNSJwSu3
+         9cfH//K2kzweImdHPVCx+CWqngepOKx5JUdMvSPTaVL7H+aofIfK76NPHC0marcSCsw7
+         KZrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=vr8HUnK9ZYpB3p3q28yDk07xjKSLv6VjHPmveMV+ncw=;
-        b=Igq2xVH8r1AfaJJjH5H2x2UQj5//9MznQrFUv1oFHmQDW2zJQ1/GwB8y6wk8wlgTW/
-         yDEmKW8wbQF3Vc2FOm3qSyCYOEQsMkG2u0/JfL5qY17rt34fBBKILbAw92ezMG6I9XZR
-         teO71vBVg5Z9bkhDobMw3HqOvmyV9Hv8++E6FIOHvsAFdplFQjsZFrnYhfw/s/J2F5QE
-         qhNivwsHLG0SzJHHcXBBbGhrGusKl9kEYm+xtIk03e6TfxasO5P2GGjiqgAmz3ocSDUB
-         6X1bfqjPkhX5KODCtLpZvSX8rVs7Hn4Klyk8EaxRYuhWIRNAUjarUKPWMga6SZWYrYv9
-         TJKA==
-X-Gm-Message-State: AO0yUKVifv7ZLdTHci0z4Un8oW1KtshGaDAx/XtSTOA94wju/MkkYAB3
-        tjbyjod9JXcpY3U2utix8yFIkdooCVSi7nS/
-X-Google-Smtp-Source: AK7set8W2JEqhFnvhv60dGxAVTawvWZhT1AjmGbzazFDC14YGXSmYs0xAHrJe31KJocurqFOZq8Yew==
-X-Received: by 2002:a9d:4a99:0:b0:684:e31a:79fa with SMTP id i25-20020a9d4a99000000b00684e31a79famr4201529otf.5.1677250893406;
-        Fri, 24 Feb 2023 07:01:33 -0800 (PST)
+        bh=GOa5xnOOd9PjALfabLcWeCVK0bEhID3EBTcw31yNd4Q=;
+        b=KHl2mcb548Vuzv1OjFbWacYgbfq36vpkfORgnIBuw3MjucVkpz62jsSYPsLAcHTYMh
+         QUjBnrrt+Sb7BQizc256NEOZAkp/ruLuvq+1CwAhEmnzmYEZIONVeaTszRk5oBrAquTK
+         9rXhWm6McyxgXr9vIVfrxHLRHgHav5vpJr6SMmqtzixZ7XozvOD20n99O7VjA4WuGjEg
+         0atQXvkt5qcs+HbiRgTOI5xMtm6nAh9hlvQp/UJ23DGShKEhi1rZ0O65KbuXtchoviZd
+         l0Yfy0rnM0DVqO2Rn9a01Q+SXqcqcTUZB/t/6Q5urCmJZehkAcqx3vhrJf+CQtAMlDFm
+         fr5Q==
+X-Gm-Message-State: AO0yUKXVGPd0li29AF3VQmjj+3v58B90O2NROfJ2rDlXfSa0+rk8nn1/
+        b0Eo6yR8YH4ei5uqt6xqgGxRu2lR2e5SpBEZ
+X-Google-Smtp-Source: AK7set+f7lgehYa8h+1+i1UGNiCpfxLo2yByNw9+LCR9OY9aK+E0NpFGR206GUMNdRcn/+thFmLPoQ==
+X-Received: by 2002:a05:6870:f717:b0:172:36bf:e281 with SMTP id ej23-20020a056870f71700b0017236bfe281mr5844930oab.23.1677250898421;
+        Fri, 24 Feb 2023 07:01:38 -0800 (PST)
 Received: from localhost.localdomain ([2804:14d:5c5e:4698:aecd:86a3:8e0c:a9df])
-        by smtp.gmail.com with ESMTPSA id r28-20020a05683002fc00b00686a19ffef1sm3237636ote.80.2023.02.24.07.01.29
+        by smtp.gmail.com with ESMTPSA id r28-20020a05683002fc00b00686a19ffef1sm3237636ote.80.2023.02.24.07.01.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Feb 2023 07:01:33 -0800 (PST)
+        Fri, 24 Feb 2023 07:01:38 -0800 (PST)
 From:   Pedro Tammela <pctammela@mojatatu.com>
 To:     netdev@vger.kernel.org
 Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
@@ -57,9 +57,9 @@ Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
         willemb@google.com, simon.horman@netronome.com,
         john.hurley@netronome.com, yotamg@mellanox.com, ozsh@nvidia.com,
         paulb@nvidia.com, Pedro Tammela <pctammela@mojatatu.com>
-Subject: [PATCH net 1/3] net/sched: act_pedit: fix action bind logic
-Date:   Fri, 24 Feb 2023 12:00:56 -0300
-Message-Id: <20230224150058.149505-2-pctammela@mojatatu.com>
+Subject: [PATCH net 2/3] net/sched: act_mpls: fix action bind logic
+Date:   Fri, 24 Feb 2023 12:00:57 -0300
+Message-Id: <20230224150058.149505-3-pctammela@mojatatu.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230224150058.149505-1-pctammela@mojatatu.com>
 References: <20230224150058.149505-1-pctammela@mojatatu.com>
@@ -76,194 +76,192 @@ X-Mailing-List: netdev@vger.kernel.org
 
 The TC architecture allows filters and actions to be created independently.
 In filters the user can reference action objects using:
-tc action add action pedit ... index 1
-tc filter add ... action pedit index 1
+tc action add action mpls ... index 1
+tc filter add ... action mpls index 1
 
-In the current code for act_pedit this is broken as it checks netlink
+In the current code for act_mpls this is broken as it checks netlink
 attributes for create/update before actually checking if we are binding to an
 existing action.
 
 tdc results:
-1..69
-ok 1 319a - Add pedit action that mangles IP TTL
-ok 2 7e67 - Replace pedit action with invalid goto chain
-ok 3 377e - Add pedit action with RAW_OP offset u32
-ok 4 a0ca - Add pedit action with RAW_OP offset u32 (INVALID)
-ok 5 dd8a - Add pedit action with RAW_OP offset u16 u16
-ok 6 53db - Add pedit action with RAW_OP offset u16 (INVALID)
-ok 7 5c7e - Add pedit action with RAW_OP offset u8 add value
-ok 8 2893 - Add pedit action with RAW_OP offset u8 quad
-ok 9 3a07 - Add pedit action with RAW_OP offset u8-u16-u8
-ok 10 ab0f - Add pedit action with RAW_OP offset u16-u8-u8
-ok 11 9d12 - Add pedit action with RAW_OP offset u32 set u16 clear u8 invert
-ok 12 ebfa - Add pedit action with RAW_OP offset overflow u32 (INVALID)
-ok 13 f512 - Add pedit action with RAW_OP offset u16 at offmask shift set
-ok 14 c2cb - Add pedit action with RAW_OP offset u32 retain value
-ok 15 1762 - Add pedit action with RAW_OP offset u8 clear value
-ok 16 bcee - Add pedit action with RAW_OP offset u8 retain value
-ok 17 e89f - Add pedit action with RAW_OP offset u16 retain value
-ok 18 c282 - Add pedit action with RAW_OP offset u32 clear value
-ok 19 c422 - Add pedit action with RAW_OP offset u16 invert value
-ok 20 d3d3 - Add pedit action with RAW_OP offset u32 invert value
-ok 21 57e5 - Add pedit action with RAW_OP offset u8 preserve value
-ok 22 99e0 - Add pedit action with RAW_OP offset u16 preserve value
-ok 23 1892 - Add pedit action with RAW_OP offset u32 preserve value
-ok 24 4b60 - Add pedit action with RAW_OP negative offset u16/u32 set value
-ok 25 a5a7 - Add pedit action with LAYERED_OP eth set src
-ok 26 86d4 - Add pedit action with LAYERED_OP eth set src & dst
-ok 27 f8a9 - Add pedit action with LAYERED_OP eth set dst
-ok 28 c715 - Add pedit action with LAYERED_OP eth set src (INVALID)
-ok 29 8131 - Add pedit action with LAYERED_OP eth set dst (INVALID)
-ok 30 ba22 - Add pedit action with LAYERED_OP eth type set/clear sequence
-ok 31 dec4 - Add pedit action with LAYERED_OP eth set type (INVALID)
-ok 32 ab06 - Add pedit action with LAYERED_OP eth add type
-ok 33 918d - Add pedit action with LAYERED_OP eth invert src
-ok 34 a8d4 - Add pedit action with LAYERED_OP eth invert dst
-ok 35 ee13 - Add pedit action with LAYERED_OP eth invert type
-ok 36 7588 - Add pedit action with LAYERED_OP ip set src
-ok 37 0fa7 - Add pedit action with LAYERED_OP ip set dst
-ok 38 5810 - Add pedit action with LAYERED_OP ip set src & dst
-ok 39 1092 - Add pedit action with LAYERED_OP ip set ihl & dsfield
-ok 40 02d8 - Add pedit action with LAYERED_OP ip set ttl & protocol
-ok 41 3e2d - Add pedit action with LAYERED_OP ip set ttl (INVALID)
-ok 42 31ae - Add pedit action with LAYERED_OP ip ttl clear/set
-ok 43 486f - Add pedit action with LAYERED_OP ip set duplicate fields
-ok 44 e790 - Add pedit action with LAYERED_OP ip set ce, df, mf, firstfrag, nofrag fields
-ok 45 cc8a - Add pedit action with LAYERED_OP ip set tos
-ok 46 7a17 - Add pedit action with LAYERED_OP ip set precedence
-ok 47 c3b6 - Add pedit action with LAYERED_OP ip add tos
-ok 48 43d3 - Add pedit action with LAYERED_OP ip add precedence
-ok 49 438e - Add pedit action with LAYERED_OP ip clear tos
-ok 50 6b1b - Add pedit action with LAYERED_OP ip clear precedence
-ok 51 824a - Add pedit action with LAYERED_OP ip invert tos
-ok 52 106f - Add pedit action with LAYERED_OP ip invert precedence
-ok 53 6829 - Add pedit action with LAYERED_OP beyond ip set dport & sport
-ok 54 afd8 - Add pedit action with LAYERED_OP beyond ip set icmp_type & icmp_code
-ok 55 3143 - Add pedit action with LAYERED_OP beyond ip set dport (INVALID)
-ok 56 815c - Add pedit action with LAYERED_OP ip6 set src
-ok 57 4dae - Add pedit action with LAYERED_OP ip6 set dst
-ok 58 fc1f - Add pedit action with LAYERED_OP ip6 set src & dst
-ok 59 6d34 - Add pedit action with LAYERED_OP ip6 dst retain value (INVALID)
-ok 60 94bb - Add pedit action with LAYERED_OP ip6 traffic_class
-ok 61 6f5e - Add pedit action with LAYERED_OP ip6 flow_lbl
-ok 62 6795 - Add pedit action with LAYERED_OP ip6 set payload_len, nexthdr, hoplimit
-ok 63 1442 - Add pedit action with LAYERED_OP tcp set dport & sport
-ok 64 b7ac - Add pedit action with LAYERED_OP tcp sport set (INVALID)
-ok 65 cfcc - Add pedit action with LAYERED_OP tcp flags set
-ok 66 3bc4 - Add pedit action with LAYERED_OP tcp set dport, sport & flags fields
-ok 67 f1c8 - Add pedit action with LAYERED_OP udp set dport & sport
-ok 68 d784 - Add pedit action with mixed RAW/LAYERED_OP #1
-ok 69 70ca - Add pedit action with mixed RAW/LAYERED_OP #2
+1..53
+ok 1 a933 - Add MPLS dec_ttl action with pipe opcode
+ok 2 08d1 - Add mpls dec_ttl action with pass opcode
+ok 3 d786 - Add mpls dec_ttl action with drop opcode
+ok 4 f334 - Add mpls dec_ttl action with reclassify opcode
+ok 5 29bd - Add mpls dec_ttl action with continue opcode
+ok 6 48df - Add mpls dec_ttl action with jump opcode
+ok 7 62eb - Add mpls dec_ttl action with trap opcode
+ok 8 09d2 - Add mpls dec_ttl action with opcode and cookie
+ok 9 c170 - Add mpls dec_ttl action with opcode and cookie of max length
+ok 10 9118 - Add mpls dec_ttl action with invalid opcode
+ok 11 6ce1 - Add mpls dec_ttl action with label (invalid)
+ok 12 352f - Add mpls dec_ttl action with tc (invalid)
+ok 13 fa1c - Add mpls dec_ttl action with ttl (invalid)
+ok 14 6b79 - Add mpls dec_ttl action with bos (invalid)
+ok 15 d4c4 - Add mpls pop action with ip proto
+ok 16 91fb - Add mpls pop action with ip proto and cookie
+ok 17 92fe - Add mpls pop action with mpls proto
+ok 18 7e23 - Add mpls pop action with no protocol (invalid)
+ok 19 6182 - Add mpls pop action with label (invalid)
+ok 20 6475 - Add mpls pop action with tc (invalid)
+ok 21 067b - Add mpls pop action with ttl (invalid)
+ok 22 7316 - Add mpls pop action with bos (invalid)
+ok 23 38cc - Add mpls push action with label
+ok 24 c281 - Add mpls push action with mpls_mc protocol
+ok 25 5db4 - Add mpls push action with label, tc and ttl
+ok 26 7c34 - Add mpls push action with label, tc ttl and cookie of max length
+ok 27 16eb - Add mpls push action with label and bos
+ok 28 d69d - Add mpls push action with no label (invalid)
+ok 29 e8e4 - Add mpls push action with ipv4 protocol (invalid)
+ok 30 ecd0 - Add mpls push action with out of range label (invalid)
+ok 31 d303 - Add mpls push action with out of range tc (invalid)
+ok 32 fd6e - Add mpls push action with ttl of 0 (invalid)
+ok 33 19e9 - Add mpls mod action with mpls label
+ok 34 1fde - Add mpls mod action with max mpls label
+ok 35 0c50 - Add mpls mod action with mpls label exceeding max (invalid)
+ok 36 10b6 - Add mpls mod action with mpls label of MPLS_LABEL_IMPLNULL (invalid)
+ok 37 57c9 - Add mpls mod action with mpls min tc
+ok 38 6872 - Add mpls mod action with mpls max tc
+ok 39 a70a - Add mpls mod action with mpls tc exceeding max (invalid)
+ok 40 6ed5 - Add mpls mod action with mpls ttl
+ok 41 77c1 - Add mpls mod action with mpls ttl and cookie
+ok 42 b80f - Add mpls mod action with mpls max ttl
+ok 43 8864 - Add mpls mod action with mpls min ttl
+ok 44 6c06 - Add mpls mod action with mpls ttl of 0 (invalid)
+ok 45 b5d8 - Add mpls mod action with mpls ttl exceeding max (invalid)
+ok 46 451f - Add mpls mod action with mpls max bos
+ok 47 a1ed - Add mpls mod action with mpls min bos
+ok 48 3dcf - Add mpls mod action with mpls bos exceeding max (invalid)
+ok 49 db7c - Add mpls mod action with protocol (invalid)
+ok 50 b070 - Replace existing mpls push action with new ID
+ok 51 95a9 - Replace existing mpls push action with new label, tc, ttl and cookie
+ok 52 6cce - Delete mpls pop action
+ok 53 d138 - Flush mpls actions
 
-Fixes: 71d0ed7079df ("net/act_pedit: Support using offset relative to the conventional network headers")
-Fixes: f67169fef8db ("net/sched: act_pedit: fix WARN() in the traffic path")
+Fixes: 2a2ea50870ba ("net: sched: add mpls manipulation actions to TC")
 Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
 Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
 ---
- net/sched/act_pedit.c | 58 +++++++++++++++++++++++--------------------
- 1 file changed, 31 insertions(+), 27 deletions(-)
+ net/sched/act_mpls.c | 66 +++++++++++++++++++++++++-------------------
+ 1 file changed, 37 insertions(+), 29 deletions(-)
 
-diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
-index 77d288d384ae..4559a1507ea5 100644
---- a/net/sched/act_pedit.c
-+++ b/net/sched/act_pedit.c
-@@ -181,26 +181,6 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
- 	}
- 
- 	parm = nla_data(pattr);
--	if (!parm->nkeys) {
--		NL_SET_ERR_MSG_MOD(extack, "Pedit requires keys to be passed");
--		return -EINVAL;
--	}
--	ksize = parm->nkeys * sizeof(struct tc_pedit_key);
--	if (nla_len(pattr) < sizeof(*parm) + ksize) {
--		NL_SET_ERR_MSG_ATTR(extack, pattr, "Length of TCA_PEDIT_PARMS or TCA_PEDIT_PARMS_EX pedit attribute is invalid");
--		return -EINVAL;
--	}
--
--	nparms = kzalloc(sizeof(*nparms), GFP_KERNEL);
--	if (!nparms)
--		return -ENOMEM;
--
--	nparms->tcfp_keys_ex =
--		tcf_pedit_keys_ex_parse(tb[TCA_PEDIT_KEYS_EX], parm->nkeys);
--	if (IS_ERR(nparms->tcfp_keys_ex)) {
--		ret = PTR_ERR(nparms->tcfp_keys_ex);
--		goto out_free;
--	}
- 
+diff --git a/net/sched/act_mpls.c b/net/sched/act_mpls.c
+index 6b26bdb999d7..809f7928a1be 100644
+--- a/net/sched/act_mpls.c
++++ b/net/sched/act_mpls.c
+@@ -190,40 +190,67 @@ static int tcf_mpls_init(struct net *net, struct nlattr *nla,
+ 	parm = nla_data(tb[TCA_MPLS_PARMS]);
  	index = parm->index;
- 	err = tcf_idr_check_alloc(tn, &index, a, bind);
-@@ -209,25 +189,49 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
- 						&act_pedit_ops, bind, flags);
- 		if (ret) {
- 			tcf_idr_cleanup(tn, index);
--			goto out_free_ex;
-+			return ret;
- 		}
- 		ret = ACT_P_CREATED;
- 	} else if (err > 0) {
- 		if (bind)
--			goto out_free;
-+			return 0;
- 		if (!(flags & TCA_ACT_FLAGS_REPLACE)) {
- 			ret = -EEXIST;
- 			goto out_release;
- 		}
- 	} else {
--		ret = err;
--		goto out_free_ex;
+ 
++	err = tcf_idr_check_alloc(tn, &index, a, bind);
++	if (err < 0)
 +		return err;
++	exists = err;
++	if (exists && bind)
++		return 0;
++
++	if (!exists) {
++		ret = tcf_idr_create(tn, index, est, a, &act_mpls_ops, bind,
++				     true, flags);
++		if (ret) {
++			tcf_idr_cleanup(tn, index);
++			return ret;
++		}
++
++		ret = ACT_P_CREATED;
++	} else if (!(flags & TCA_ACT_FLAGS_REPLACE)) {
++		tcf_idr_release(*a, bind);
++		return -EEXIST;
 +	}
 +
-+	if (!parm->nkeys) {
-+		NL_SET_ERR_MSG_MOD(extack, "Pedit requires keys to be passed");
-+		ret = -EINVAL;
-+		goto out_release;
-+	}
-+	ksize = parm->nkeys * sizeof(struct tc_pedit_key);
-+	if (nla_len(pattr) < sizeof(*parm) + ksize) {
-+		NL_SET_ERR_MSG_ATTR(extack, pattr, "Length of TCA_PEDIT_PARMS or TCA_PEDIT_PARMS_EX pedit attribute is invalid");
-+		ret = -EINVAL;
-+		goto out_release;
-+	}
-+
-+	nparms = kzalloc(sizeof(*nparms), GFP_KERNEL);
-+	if (!nparms) {
-+		ret = -ENOMEM;
-+		goto out_release;
-+	}
-+
-+	nparms->tcfp_keys_ex =
-+		tcf_pedit_keys_ex_parse(tb[TCA_PEDIT_KEYS_EX], parm->nkeys);
-+	if (IS_ERR(nparms->tcfp_keys_ex)) {
-+		ret = PTR_ERR(nparms->tcfp_keys_ex);
-+		goto out_free;
+ 	/* Verify parameters against action type. */
+ 	switch (parm->m_action) {
+ 	case TCA_MPLS_ACT_POP:
+ 		if (!tb[TCA_MPLS_PROTO]) {
+ 			NL_SET_ERR_MSG_MOD(extack, "Protocol must be set for MPLS pop");
+-			return -EINVAL;
++			err = -EINVAL;
++			goto release_idr;
+ 		}
+ 		if (!eth_proto_is_802_3(nla_get_be16(tb[TCA_MPLS_PROTO]))) {
+ 			NL_SET_ERR_MSG_MOD(extack, "Invalid protocol type for MPLS pop");
+-			return -EINVAL;
++			err = -EINVAL;
++			goto release_idr;
+ 		}
+ 		if (tb[TCA_MPLS_LABEL] || tb[TCA_MPLS_TTL] || tb[TCA_MPLS_TC] ||
+ 		    tb[TCA_MPLS_BOS]) {
+ 			NL_SET_ERR_MSG_MOD(extack, "Label, TTL, TC or BOS cannot be used with MPLS pop");
+-			return -EINVAL;
++			err = -EINVAL;
++			goto release_idr;
+ 		}
+ 		break;
+ 	case TCA_MPLS_ACT_DEC_TTL:
+ 		if (tb[TCA_MPLS_PROTO] || tb[TCA_MPLS_LABEL] ||
+ 		    tb[TCA_MPLS_TTL] || tb[TCA_MPLS_TC] || tb[TCA_MPLS_BOS]) {
+ 			NL_SET_ERR_MSG_MOD(extack, "Label, TTL, TC, BOS or protocol cannot be used with MPLS dec_ttl");
+-			return -EINVAL;
++			err = -EINVAL;
++			goto release_idr;
+ 		}
+ 		break;
+ 	case TCA_MPLS_ACT_PUSH:
+ 	case TCA_MPLS_ACT_MAC_PUSH:
+ 		if (!tb[TCA_MPLS_LABEL]) {
+ 			NL_SET_ERR_MSG_MOD(extack, "Label is required for MPLS push");
+-			return -EINVAL;
++			err = -EINVAL;
++			goto release_idr;
+ 		}
+ 		if (tb[TCA_MPLS_PROTO] &&
+ 		    !eth_p_mpls(nla_get_be16(tb[TCA_MPLS_PROTO]))) {
+ 			NL_SET_ERR_MSG_MOD(extack, "Protocol must be an MPLS type for MPLS push");
+-			return -EPROTONOSUPPORT;
++			err = -EPROTONOSUPPORT;
++			goto release_idr;
+ 		}
+ 		/* Push needs a TTL - if not specified, set a default value. */
+ 		if (!tb[TCA_MPLS_TTL]) {
+@@ -238,33 +265,14 @@ static int tcf_mpls_init(struct net *net, struct nlattr *nla,
+ 	case TCA_MPLS_ACT_MODIFY:
+ 		if (tb[TCA_MPLS_PROTO]) {
+ 			NL_SET_ERR_MSG_MOD(extack, "Protocol cannot be used with MPLS modify");
+-			return -EINVAL;
++			err = -EINVAL;
++			goto release_idr;
+ 		}
+ 		break;
+ 	default:
+ 		NL_SET_ERR_MSG_MOD(extack, "Unknown MPLS action");
+-		return -EINVAL;
+-	}
+-
+-	err = tcf_idr_check_alloc(tn, &index, a, bind);
+-	if (err < 0)
+-		return err;
+-	exists = err;
+-	if (exists && bind)
+-		return 0;
+-
+-	if (!exists) {
+-		ret = tcf_idr_create(tn, index, est, a,
+-				     &act_mpls_ops, bind, true, flags);
+-		if (ret) {
+-			tcf_idr_cleanup(tn, index);
+-			return ret;
+-		}
+-
+-		ret = ACT_P_CREATED;
+-	} else if (!(flags & TCA_ACT_FLAGS_REPLACE)) {
+-		tcf_idr_release(*a, bind);
+-		return -EEXIST;
++		err = -EINVAL;
++		goto release_idr;
  	}
  
  	err = tcf_action_check_ctrlact(parm->action, tp, &goto_ch, extack);
- 	if (err < 0) {
- 		ret = err;
--		goto out_release;
-+		goto out_free_ex;
- 	}
- 
- 	nparms->tcfp_off_max_hint = 0;
-@@ -278,12 +282,12 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
- put_chain:
- 	if (goto_ch)
- 		tcf_chain_put_by_act(goto_ch);
--out_release:
--	tcf_idr_release(*a, bind);
- out_free_ex:
- 	kfree(nparms->tcfp_keys_ex);
- out_free:
- 	kfree(nparms);
-+out_release:
-+	tcf_idr_release(*a, bind);
- 	return ret;
- }
- 
 -- 
 2.34.1
 
