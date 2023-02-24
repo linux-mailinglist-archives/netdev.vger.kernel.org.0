@@ -2,101 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DDE46A160A
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 05:53:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62B896A161B
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 06:08:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229572AbjBXEx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Feb 2023 23:53:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60656 "EHLO
+        id S229566AbjBXFHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 00:07:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbjBXExz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 23:53:55 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3DDE15151
-        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 20:53:53 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pVQ5Z-0004YH-D7; Fri, 24 Feb 2023 05:53:45 +0100
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pVQ5U-0000bk-F6; Fri, 24 Feb 2023 05:53:40 +0100
-Date:   Fri, 24 Feb 2023 05:53:40 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>, Arun.Ramadoss@microchip.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Wei Fang <wei.fang@nxp.com>,
-        kernel@pengutronix.de, intel-wired-lan@lists.osuosl.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next v8 6/9] net: phy: c22: migrate to
- genphy_c45_write_eee_adv()
-Message-ID: <20230224045340.GN19238@pengutronix.de>
-References: <20230211074113.2782508-1-o.rempel@pengutronix.de>
- <20230211074113.2782508-7-o.rempel@pengutronix.de>
- <20230224035553.GA1089605@roeck-us.net>
- <20230224041604.GA1353778@roeck-us.net>
+        with ESMTP id S229477AbjBXFHw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 00:07:52 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F771BCE
+        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 21:07:49 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id l15so16705970pls.1
+        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 21:07:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1677215268;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=GQL45KXPeb0/uPIrg1yhBySVA1m+53QPBetngtE0hcg=;
+        b=iYu+yffEkJzAtJbaVdf8jB6YzV43NK7fkYlHyCtvOuD5q2LkRvSOqr2ORSe8nof4uv
+         abYab2ocwgmXknT+8J4NxvtNTQJWfgrSLZ0hzKB12//jd368UnUAtOajvyas50oaSyVI
+         OgKL7lNjaPjxujnigMTvZSKZgPRbtAmrp23cSQO+Ur4UeyqiP+phsYgtljIkfKNgwtLJ
+         g9D53XuhoRrH+p/HlCyFB7SQ3SRuJNn8T2DuINQvNd9mBbC4txy3a/PK12qczWm+xZHA
+         63sFeFY1tg9c60SLE+pljFBTkj2sC4blXqZoZ7UsU4tSUrqaczX4TXmc7oP1RmgtjXnI
+         UEpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1677215268;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=GQL45KXPeb0/uPIrg1yhBySVA1m+53QPBetngtE0hcg=;
+        b=Jxt83IepRNIad24boJfxFf9GzMlWzskwpcPTGzjMi196m3zGfmnYbwX9uJyoFt8IeM
+         wuk7sYhrNJgL6H822K9WSGwv3ZrqMDmuUDITxx6e04MD56EkegpV8Wd+kCUDVYAw48vu
+         gSvywwBXAZAYEfdXH2o1/CPHUMQwjjsrgn3yg+Ss8VnkL7U8s1rJ+s8iSM5Y5KjWEpdi
+         VrVQGBqUfIG17fqzp5RLx3Ovm9KTRbbm+JP0hqquJFY4rHHM4eDITKS2rQT8ihxm7sgZ
+         lWzYnw7YxvLLJ6l9MACF93wANK/0NfgA/bwsYSMY+/iriYeygczStq/NBcdYi25lIcO9
+         9wzg==
+X-Gm-Message-State: AO0yUKVHzrE0J1IOXrmrnUtKWnAnvXsjd8+OwUtq9UjXCliYuZR0cnWV
+        Moxw7peHkF84XFzpoVD6aSg=
+X-Google-Smtp-Source: AK7set88pS7xZxydfvpD4iyTpy/voXwl96evPz3QfmNQZgsZfB5GEVDfcpqlI8v/guKLFSNOQq+07w==
+X-Received: by 2002:a17:90a:bf0d:b0:233:a836:15f4 with SMTP id c13-20020a17090abf0d00b00233a83615f4mr14216121pjs.1.1677215268359;
+        Thu, 23 Feb 2023 21:07:48 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id ju20-20020a170903429400b001948af092d0sm234926plb.152.2023.02.23.21.07.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Feb 2023 21:07:47 -0800 (PST)
+Date:   Thu, 23 Feb 2023 21:07:45 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Matt Corallo <ntp-lists@mattcorallo.com>
+Cc:     Miroslav Lichvar <mlichvar@redhat.com>,
+        chrony-dev@chrony.tuxfamily.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [chrony-dev] Support for Multiple PPS Inputs on single PHC
+Message-ID: <Y/hGIQzT7E48o3Hz@hoboy.vegasvil.org>
+References: <72ac9741-27f5-36a5-f64c-7d81008eebbc@bluematt.me>
+ <Y+3m/PpzkBN9kxJY@localhost>
+ <0fb552f0-b069-4641-a5c1-48529b56cdbf@bluematt.me>
+ <Y+60JfLyQIXpSirG@hoboy.vegasvil.org>
+ <Y/NGl06m04eR2PII@localhost>
+ <Y/OQkNJQ6CP+FaIT@hoboy.vegasvil.org>
+ <5bfd4360-2bee-80c1-2b46-84b97f5a039c@bluematt.me>
+ <Y/gCottQVlJTKUlg@hoboy.vegasvil.org>
+ <5d694706-1383-85ae-5a7e-2a32e4694df0@bluematt.me>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230224041604.GA1353778@roeck-us.net>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <5d694706-1383-85ae-5a7e-2a32e4694df0@bluematt.me>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hallo Guenter,
+On Thu, Feb 23, 2023 at 05:18:06PM -0800, Matt Corallo wrote:
 
-On Thu, Feb 23, 2023 at 08:16:04PM -0800, Guenter Roeck wrote:
-> On Thu, Feb 23, 2023 at 07:55:55PM -0800, Guenter Roeck wrote:
-> > On Sat, Feb 11, 2023 at 08:41:10AM +0100, Oleksij Rempel wrote:
-> > > Migrate from genphy_config_eee_advert() to genphy_c45_write_eee_adv().
-> > > 
-> > > It should work as before except write operation to the EEE adv registers
-> > > will be done only if some EEE abilities was detected.
-> > > 
-> > > If some driver will have a regression, related driver should provide own
-> > > .get_features callback. See micrel.c:ksz9477_get_features() as example.
-> > > 
-> > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> > 
-> > This patch causes network interface failures with all my xtensa qemu
-> > emulations. Reverting it fixes the problem. Bisect log is attached
-> > for reference.
-> > 
-> 
-> Also affected are arm:cubieboard emulations, with same symptom.
-> arm:bletchley-bmc emulations crash. In both cases, reverting this patch
-> fixes the problem.
+> It sounds like I should go replace the extts queue with a circular buffer,
+> have every reader socket store an index in the buffer, and new sockets read
+> only futures pulses?
 
-Please test this fixes:
-https://lore.kernel.org/all/167715661799.11159.2057121677394149658.git-patchwork-notify@kernel.org/
+Single circular buffer with multiple heads will be complex.
 
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+It might be simpler to allocate one queue per reader.
+
+If there are few readers, cost of allocation and en-queuing won't matter.
+
+Thanks,
+Richard
+
