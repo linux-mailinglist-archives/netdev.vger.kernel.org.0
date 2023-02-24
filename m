@@ -2,121 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 26EF86A1FEB
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 17:45:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E6766A1FE9
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 17:44:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229998AbjBXQpH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 11:45:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44906 "EHLO
+        id S229991AbjBXQod (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 11:44:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229757AbjBXQpH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 11:45:07 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A475F1A66B;
-        Fri, 24 Feb 2023 08:45:05 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id da10so58354266edb.3;
-        Fri, 24 Feb 2023 08:45:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=qhsCvsTQigHaRbJBtRfG3MI7vuMgumhn+WwEAc/wh38=;
-        b=KfxTUqrPaM/JFBgLjle39E08GF3YQnUun22/P74B0AWc1lMfJglKCVpq+igWeLLccw
-         eVt3KKQE9brNzCZWJLP1A2xZOjTt7q16eJxe4p99vHxmvLgkECg51StdGqXKolE4YOyn
-         g5oK4hYxY/OjU6GfJNekO54scJiE88CX84XBb9KiI4992tnCT/gLQ8Lr4Myo6f8d8zfV
-         1nIwREah3PkGpMwp16uyj8EpXEaJYby9vU00NLG/1ig0+fUtah223DuH/f1vcIdMM/E4
-         Bz4VSxfy6remH3BjpBhfH09td1V3mIA5/mAaoi31WF0HpWX2HSANAaeVPNAvoEPaXwF5
-         BGPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=qhsCvsTQigHaRbJBtRfG3MI7vuMgumhn+WwEAc/wh38=;
-        b=L72f5VYbID+RofKuINqkAvpAZ2LmgW+yNIKbTzXpGUx44tB4buI6O+yqKnOCfhta84
-         X6BDT4aShHZ5sUQhvcmA6SOzdWB9GkX9+P356zl2NvIEH3J11Ebk67TJgrNzM/1qaczX
-         Oj9JH4Lm2NL9Svsnu8dcgEDVzyoyCVTWh6EH74QHCwdtbVxg0jkC2TO7GpRx3zXlbyua
-         R8b3LtxHHX5JBIcVP24nLtFTSFPgTZVkfU9RKTrzWmPPsQhq5WSNoAWNKyx92+ynlYCq
-         OxmmBMJgtpM2uyE5fIKKIZslWd3wQniwZU9gOk5CsCIkxHeVexnOZDQ3Id5SC73Wnbpb
-         AfHg==
-X-Gm-Message-State: AO0yUKURCR+FCi2smqEStDqE8mxtZRqvSYbtLeGqEhWt7jUivdRbhxk7
-        8TzQuNhxJSvuTIFYSVvg25Y=
-X-Google-Smtp-Source: AK7set/4ePRxdLx3BL4tvb//3n2ehhz8lNKdTJxXQszTAbDdd+iv6YtOmXPPufJI0gn1001tbhEj2Q==
-X-Received: by 2002:a17:907:d403:b0:8ae:fa9f:d58e with SMTP id vi3-20020a170907d40300b008aefa9fd58emr30424961ejc.53.1677257104079;
-        Fri, 24 Feb 2023 08:45:04 -0800 (PST)
-Received: from [192.168.1.50] ([79.119.240.25])
-        by smtp.gmail.com with ESMTPSA id kq9-20020a170906abc900b008d9c518a318sm5844996ejb.142.2023.02.24.08.45.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Feb 2023 08:45:03 -0800 (PST)
-Message-ID: <5c024519-3c5c-dd83-6b71-14b2747084fd@gmail.com>
-Date:   Fri, 24 Feb 2023 18:44:19 +0200
+        with ESMTP id S229990AbjBXQo3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 11:44:29 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 513622ED54
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 08:44:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=nXSfiipuTd+Fnhrm3YCd4qbd27V7OVFGbx29QEQMM8M=; b=YP5s9YLKRegYocR9Wsneaak36i
+        f228YGwu+zlRNbZRDUD1fXUbXuFuauM2rkSswyyMUoRL9/mDSsM5za3s8BcgGHBpp8GatPxDXDEHA
+        9OmZ62ozrljl9oVRX14N8o4j5WAhahtNcqJSp45adlXoDgXlUHCe6I74BmNFB69fOw/f5m8VSumnZ
+        LIVevyjPxaEAcIJlfEsD1OQ34kaQaWHkNmMl/qPcdoLL9XlrlM1Z2+wKfHDpUYhARceWuIrGF26i2
+        xeTFl0jJpX6+Fk+ihzo/OUX3pfTGE1VvP4scbU4VuVv67Qny/tQErD9o73VSZ6+kMcSa+D4VQX4Fw
+        g+9Svqjg==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:33252 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1pVbBG-0000vV-8e; Fri, 24 Feb 2023 16:44:22 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
+        id 1pVbBE-00CiJn-NK; Fri, 24 Feb 2023 16:44:21 +0000
+From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com
+Cc:     Colin Foster <colin.foster@in-advantage.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Subject: [PATCH net] net: dsa: ocelot_ext: remove unnecessary phylink.h
+ include
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.2
-Subject: Re: [PATCH] wifi: rtl8xxxu: fixing transmisison failure for rtl8192eu
-From:   Bitterblue Smith <rtl8821cerfe2@gmail.com>
-To:     Jun ASAKA <JunASAKA@zzy040330.moe>, Jes.Sorensen@gmail.com
-Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20221217030659.12577-1-JunASAKA@zzy040330.moe>
- <18907e6b-93b4-d850-8a17-95ad43501136@gmail.com>
- <56a335f1-3558-e496-4b0b-b024a935f881@zzy040330.moe>
- <4ce57d51-0b53-6258-d003-ebb4a2eb4b82@gmail.com>
-Content-Language: en-US
-In-Reply-To: <4ce57d51-0b53-6258-d003-ebb4a2eb4b82@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1pVbBE-00CiJn-NK@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date:   Fri, 24 Feb 2023 16:44:20 +0000
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/01/2023 14:49, Bitterblue Smith wrote:
-> On 08/01/2023 11:29, Jun ASAKA wrote:
->> On 07/01/2023 22:17, Bitterblue Smith wrote:
->>
->>> On 17/12/2022 05:06, Jun ASAKA wrote:
->>>> Fixing transmission failure which results in
->>>> "authentication with ... timed out". This can be
->>>> fixed by disable the REG_TXPAUSE.
->>>>
->>>> Signed-off-by: Jun ASAKA <JunASAKA@zzy040330.moe>
->>>> ---
->>>>   drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c | 5 +++++
->>>>   1 file changed, 5 insertions(+)
->>>>
->>>> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
->>>> index a7d76693c02d..9d0ed6760cb6 100644
->>>> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
->>>> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
->>>> @@ -1744,6 +1744,11 @@ static void rtl8192e_enable_rf(struct rtl8xxxu_priv *priv)
->>>>       val8 = rtl8xxxu_read8(priv, REG_PAD_CTRL1);
->>>>       val8 &= ~BIT(0);
->>>>       rtl8xxxu_write8(priv, REG_PAD_CTRL1, val8);
->>>> +
->>>> +    /*
->>>> +     * Fix transmission failure of rtl8192e.
->>>> +     */
->>>> +    rtl8xxxu_write8(priv, REG_TXPAUSE, 0x00);
->>>>   }
->>>>     static s8 rtl8192e_cck_rssi(struct rtl8xxxu_priv *priv, u8 cck_agc_rpt)
->>> By the way, you should get this into the stable kernels too:
->>> https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
->>
->> I see.
->>
->> But since this patch has not been merged into Linus' tree yet, so should I wait until this patch is merged or I should issue a v2 patch here and Cc it to "table@vger.kernel.org"?
->>
->>
->> Jun ASAKA.
->>
-> Ah, yeah. Wait then.
+During review of ocelot_ext, it created a private phylink instance
+that wasn't necessary. This was removed for subsequent postings,
+but the include file seems to have been left behind. Remove it.
 
-It should be fine to send it now.
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/dsa/ocelot/ocelot_ext.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/net/dsa/ocelot/ocelot_ext.c b/drivers/net/dsa/ocelot/ocelot_ext.c
+index 14efa6387bd7..9b66d66ab0a9 100644
+--- a/drivers/net/dsa/ocelot/ocelot_ext.c
++++ b/drivers/net/dsa/ocelot/ocelot_ext.c
+@@ -4,7 +4,6 @@
+  */
+ 
+ #include <linux/mfd/ocelot.h>
+-#include <linux/phylink.h>
+ #include <linux/platform_device.h>
+ #include <linux/regmap.h>
+ #include <soc/mscc/ocelot.h>
+-- 
+2.30.2
+
