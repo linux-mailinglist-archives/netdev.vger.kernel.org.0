@@ -2,55 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B31B6A2264
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 20:41:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E5996A2272
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 20:41:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229593AbjBXTlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 14:41:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34600 "EHLO
+        id S229668AbjBXTlp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 14:41:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbjBXTlG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 14:41:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 640DC61EF7
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 11:41:03 -0800 (PST)
+        with ESMTP id S229496AbjBXTlo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 14:41:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 744146F02D
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 11:41:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E6DF0B81D05
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 19:41:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D513C433EF;
-        Fri, 24 Feb 2023 19:41:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C13AB6191D
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 19:41:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA343C433EF;
+        Fri, 24 Feb 2023 19:41:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677267660;
-        bh=KmXIc42AYpw+udQMKFDgDAjRIXQTyiBVIgNBXGrst8k=;
+        s=k20201202; t=1677267686;
+        bh=3VXWaBlf+nsaLvyR3SYbryjYm/GCVhKIuk84UVUkCBk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PCISu0R+Fl/u4UWNacOULrdUAkKRXzw8Tn8Npaj/TXPCPVYP84E296SDv/X8CGBYJ
-         Bc1+1hViPB1IGq10aITV9EFNZL6B2tnATgqI0KfeJlnTPFsuPWbhrgM/jbZ5zFWXos
-         pFeLHOLzgGySAyZuQ0CHxZCwMxHsZClffOcksga6yAp9ChBUk/VhfsLBaooSNFjuHN
-         5BcjuO2aDKe5GI/YTdcW6znqR7um3JmxR/tnHvFzxD0c2K812b7Fdp1i65PDAsdH3u
-         Wfw1XgtwdduQWsNl/2TsSw7Tpc+2oJ2PQR5Gzs5+JfagqHaX6+nalLXqGAdXiNkU3x
-         VnYGdEtdgOrvw==
-Date:   Fri, 24 Feb 2023 11:40:59 -0800
+        b=gpX61g1DlYIb8OOEaUmranXL1gfTK7I3VDg5aWuV4qp0UoaRR3m2sD3UBoME+0VZI
+         P6sPYGqNItfDh/nOEb5xYVexzxXnEPDQML6bncv3KsHTPlPtGAg9M7aA28a/Rig/QN
+         rEJ5dzGLeltKnsbNheUJN7CSeZj3zPhTFgOpe4QQejpU0r9tK8KaVDgpxvR8fNQxs2
+         tbk70z4PC7DcIc3KjQuF/ZajUItd/JhaRkEUhVBzjpYekKC9v7KNrNVkzIqGjVlLo2
+         qiWm4zAraR7yxH5+tCYKhll2i15u1dIRR8m4hAchKaNc1AGhltdjTfCRPlUFgIY1ob
+         mZcFhdKl7xwMA==
+Date:   Fri, 24 Feb 2023 11:41:24 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tariq Toukan <tariqt@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        <netdev@vger.kernel.org>, Saeed Mahameed <saeedm@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>
-Subject: Re: [PATCH net] netdev-genl: fix repeated typo oflloading ->
- offloading
-Message-ID: <20230224114059.41a9db82@kernel.org>
-In-Reply-To: <20230223072656.1525196-1-tariqt@nvidia.com>
-References: <20230223072656.1525196-1-tariqt@nvidia.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        eric.dumazet@gmail.com, Yunsheng Lin <linyunsheng@huawei.com>
+Subject: Re: [PATCH v2 net] net: fix __dev_kfree_skb_any() vs drop monitor
+Message-ID: <20230224114124.66f65713@kernel.org>
+In-Reply-To: <20230223083845.1555914-1-edumazet@google.com>
+References: <20230223083845.1555914-1-edumazet@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,10 +53,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 23 Feb 2023 09:26:56 +0200 Tariq Toukan wrote:
-> Fix a repeated copy/paste typo.
+On Thu, 23 Feb 2023 08:38:45 +0000 Eric Dumazet wrote:
+> dev_kfree_skb() is aliased to consume_skb().
 > 
-> Fixes: d3d854fd6a1d ("netdev-genl: create a simple family for netdev stuff")
-> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+> When a driver is dropping a packet by calling dev_kfree_skb_any()
+> we should propagate the drop reason instead of pretending
+> the packet was consumed.
+> 
+> Note: Now we have enum skb_drop_reason we could remove
+> enum skb_free_reason (for linux-6.4)
+> 
+> v2: added an unlikely(), suggested by Yunsheng Lin.
 
 Applied, thanks!
