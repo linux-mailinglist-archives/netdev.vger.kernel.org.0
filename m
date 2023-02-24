@@ -2,95 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62B896A161B
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 06:08:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 575516A162A
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 06:14:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229566AbjBXFHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 00:07:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39734 "EHLO
+        id S229525AbjBXFOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 00:14:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbjBXFHw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 00:07:52 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F771BCE
-        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 21:07:49 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id l15so16705970pls.1
-        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 21:07:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1677215268;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=GQL45KXPeb0/uPIrg1yhBySVA1m+53QPBetngtE0hcg=;
-        b=iYu+yffEkJzAtJbaVdf8jB6YzV43NK7fkYlHyCtvOuD5q2LkRvSOqr2ORSe8nof4uv
-         abYab2ocwgmXknT+8J4NxvtNTQJWfgrSLZ0hzKB12//jd368UnUAtOajvyas50oaSyVI
-         OgKL7lNjaPjxujnigMTvZSKZgPRbtAmrp23cSQO+Ur4UeyqiP+phsYgtljIkfKNgwtLJ
-         g9D53XuhoRrH+p/HlCyFB7SQ3SRuJNn8T2DuINQvNd9mBbC4txy3a/PK12qczWm+xZHA
-         63sFeFY1tg9c60SLE+pljFBTkj2sC4blXqZoZ7UsU4tSUrqaczX4TXmc7oP1RmgtjXnI
-         UEpg==
+        with ESMTP id S229657AbjBXFOE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 00:14:04 -0500
+Received: from mail-il1-f205.google.com (mail-il1-f205.google.com [209.85.166.205])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D97D426CC3
+        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 21:14:02 -0800 (PST)
+Received: by mail-il1-f205.google.com with SMTP id q7-20020a92d407000000b00316e14800eeso5634898ilm.20
+        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 21:14:02 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677215268;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GQL45KXPeb0/uPIrg1yhBySVA1m+53QPBetngtE0hcg=;
-        b=Jxt83IepRNIad24boJfxFf9GzMlWzskwpcPTGzjMi196m3zGfmnYbwX9uJyoFt8IeM
-         wuk7sYhrNJgL6H822K9WSGwv3ZrqMDmuUDITxx6e04MD56EkegpV8Wd+kCUDVYAw48vu
-         gSvywwBXAZAYEfdXH2o1/CPHUMQwjjsrgn3yg+Ss8VnkL7U8s1rJ+s8iSM5Y5KjWEpdi
-         VrVQGBqUfIG17fqzp5RLx3Ovm9KTRbbm+JP0hqquJFY4rHHM4eDITKS2rQT8ihxm7sgZ
-         lWzYnw7YxvLLJ6l9MACF93wANK/0NfgA/bwsYSMY+/iriYeygczStq/NBcdYi25lIcO9
-         9wzg==
-X-Gm-Message-State: AO0yUKVHzrE0J1IOXrmrnUtKWnAnvXsjd8+OwUtq9UjXCliYuZR0cnWV
-        Moxw7peHkF84XFzpoVD6aSg=
-X-Google-Smtp-Source: AK7set88pS7xZxydfvpD4iyTpy/voXwl96evPz3QfmNQZgsZfB5GEVDfcpqlI8v/guKLFSNOQq+07w==
-X-Received: by 2002:a17:90a:bf0d:b0:233:a836:15f4 with SMTP id c13-20020a17090abf0d00b00233a83615f4mr14216121pjs.1.1677215268359;
-        Thu, 23 Feb 2023 21:07:48 -0800 (PST)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id ju20-20020a170903429400b001948af092d0sm234926plb.152.2023.02.23.21.07.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Feb 2023 21:07:47 -0800 (PST)
-Date:   Thu, 23 Feb 2023 21:07:45 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Matt Corallo <ntp-lists@mattcorallo.com>
-Cc:     Miroslav Lichvar <mlichvar@redhat.com>,
-        chrony-dev@chrony.tuxfamily.org,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [chrony-dev] Support for Multiple PPS Inputs on single PHC
-Message-ID: <Y/hGIQzT7E48o3Hz@hoboy.vegasvil.org>
-References: <72ac9741-27f5-36a5-f64c-7d81008eebbc@bluematt.me>
- <Y+3m/PpzkBN9kxJY@localhost>
- <0fb552f0-b069-4641-a5c1-48529b56cdbf@bluematt.me>
- <Y+60JfLyQIXpSirG@hoboy.vegasvil.org>
- <Y/NGl06m04eR2PII@localhost>
- <Y/OQkNJQ6CP+FaIT@hoboy.vegasvil.org>
- <5bfd4360-2bee-80c1-2b46-84b97f5a039c@bluematt.me>
- <Y/gCottQVlJTKUlg@hoboy.vegasvil.org>
- <5d694706-1383-85ae-5a7e-2a32e4694df0@bluematt.me>
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=kqZ7XneuRntTCBB1DZi7ITesqdwZnc0FmX8gi2f8IgI=;
+        b=XaOKAQ8ZXApms/B8kqkFjV8Y8nvz9u2CVSCFSV/suHMsm3UXvIqF7vzOkD03c4otWS
+         1yvFwJoILgjRzT3ax2k7GwWTuQw8ULErXy9pc+pbqDtbFMeQbIf4alN9Zgf2sZuBLVUt
+         t3XC3QLx3Lmls1aqb7GW10aD6OJUbsAeBzjIbqaNp7f3Iw7XQgUXc01CaN7vlSQ3yWKa
+         K6zmmyfu0Vbu6xNIzYU3HKD66zjltj8LD6I3lvi4srPKYHbTIRYEjgWqSkcUFCdjTY82
+         vWuYbJRecTyXoZnpTgcy02ugwWzorU9QIUVI4xDDcj/JxRQQdZiRHrVTcPnvtglfGKWa
+         U39g==
+X-Gm-Message-State: AO0yUKWq+YmSgSZColcMdhbKvnfjnO3hNShM1YVrw/JxKqBqzdFSWAvb
+        Na+ZLCHiWaBH9Xn8ls88mc+68li0r9RLoY+vPgjcw7ZvcljA
+X-Google-Smtp-Source: AK7set+rWLsS+TAbBoMMXe2k+M/IiKXhTtVcO1gk5OOQLBp1vCNKZVNA+/uatAbgYnSCZvRDeHyQ+MNo9ypzYhjjVTROj1dMwJdK
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5d694706-1383-85ae-5a7e-2a32e4694df0@bluematt.me>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Received: by 2002:a6b:c8ce:0:b0:745:451b:1280 with SMTP id
+ y197-20020a6bc8ce000000b00745451b1280mr1575714iof.4.1677215640961; Thu, 23
+ Feb 2023 21:14:00 -0800 (PST)
+Date:   Thu, 23 Feb 2023 21:14:00 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000007dceb405f56b32dc@google.com>
+Subject: [syzbot] [wireless?] memory leak in htc_connect_service
+From:   syzbot <syzbot+b68fbebe56d8362907e8@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        kvalo@kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com, toke@toke.dk
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 23, 2023 at 05:18:06PM -0800, Matt Corallo wrote:
+Hello,
 
-> It sounds like I should go replace the extts queue with a circular buffer,
-> have every reader socket store an index in the buffer, and new sockets read
-> only futures pulses?
+syzbot found the following issue on:
 
-Single circular buffer with multiple heads will be complex.
+HEAD commit:    c9c3395d5e3d Linux 6.2
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=16d3dd78c80000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=eeb87d4dfcdb4cc0
+dashboard link: https://syzkaller.appspot.com/bug?extid=b68fbebe56d8362907e8
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16523630c80000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13a3de27480000
 
-It might be simpler to allocate one queue per reader.
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/54c384e0e6b1/disk-c9c3395d.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/c963b4b4fee5/vmlinux-c9c3395d.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/fc3ecf1163b5/bzImage-c9c3395d.xz
 
-If there are few readers, cost of allocation and en-queuing won't matter.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+b68fbebe56d8362907e8@syzkaller.appspotmail.com
 
-Thanks,
-Richard
+BUG: memory leak
+unreferenced object 0xffff88810a980800 (size 240):
+  comm "kworker/1:1", pid 24, jiffies 4294947427 (age 16.220s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff83b971c6>] __alloc_skb+0x206/0x270 net/core/skbuff.c:552
+    [<ffffffff82eb3731>] alloc_skb include/linux/skbuff.h:1270 [inline]
+    [<ffffffff82eb3731>] htc_connect_service+0x121/0x230 drivers/net/wireless/ath/ath9k/htc_hst.c:259
+    [<ffffffff82ec03a5>] ath9k_htc_connect_svc drivers/net/wireless/ath/ath9k/htc_drv_init.c:137 [inline]
+    [<ffffffff82ec03a5>] ath9k_init_htc_services.constprop.0+0xe5/0x390 drivers/net/wireless/ath/ath9k/htc_drv_init.c:157
+    [<ffffffff82ec0747>] ath9k_htc_probe_device+0xf7/0x8a0 drivers/net/wireless/ath/ath9k/htc_drv_init.c:959
+    [<ffffffff82eb3ef5>] ath9k_htc_hw_init+0x35/0x60 drivers/net/wireless/ath/ath9k/htc_hst.c:521
+    [<ffffffff82eb68dd>] ath9k_hif_usb_firmware_cb+0xcd/0x1f0 drivers/net/wireless/ath/ath9k/hif_usb.c:1243
+    [<ffffffff82aa835b>] request_firmware_work_func+0x4b/0x90 drivers/base/firmware_loader/main.c:1107
+    [<ffffffff8129a35a>] process_one_work+0x2ba/0x5f0 kernel/workqueue.c:2289
+    [<ffffffff8129ac7d>] worker_thread+0x5d/0x5b0 kernel/workqueue.c:2436
+    [<ffffffff812a4fa9>] kthread+0x129/0x170 kernel/kthread.c:376
+    [<ffffffff81002dcf>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
 
+BUG: memory leak
+unreferenced object 0xffff888100b81a00 (size 512):
+  comm "kworker/1:1", pid 24, jiffies 4294947427 (age 16.220s)
+  hex dump (first 32 bytes):
+    00 00 00 0a 00 00 00 00 00 02 01 02 00 00 02 01  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff81514fab>] __do_kmalloc_node mm/slab_common.c:967 [inline]
+    [<ffffffff81514fab>] __kmalloc_node_track_caller+0x4b/0x120 mm/slab_common.c:988
+    [<ffffffff83b970a5>] kmalloc_reserve net/core/skbuff.c:492 [inline]
+    [<ffffffff83b970a5>] __alloc_skb+0xe5/0x270 net/core/skbuff.c:565
+    [<ffffffff82eb3731>] alloc_skb include/linux/skbuff.h:1270 [inline]
+    [<ffffffff82eb3731>] htc_connect_service+0x121/0x230 drivers/net/wireless/ath/ath9k/htc_hst.c:259
+    [<ffffffff82ec03a5>] ath9k_htc_connect_svc drivers/net/wireless/ath/ath9k/htc_drv_init.c:137 [inline]
+    [<ffffffff82ec03a5>] ath9k_init_htc_services.constprop.0+0xe5/0x390 drivers/net/wireless/ath/ath9k/htc_drv_init.c:157
+    [<ffffffff82ec0747>] ath9k_htc_probe_device+0xf7/0x8a0 drivers/net/wireless/ath/ath9k/htc_drv_init.c:959
+    [<ffffffff82eb3ef5>] ath9k_htc_hw_init+0x35/0x60 drivers/net/wireless/ath/ath9k/htc_hst.c:521
+    [<ffffffff82eb68dd>] ath9k_hif_usb_firmware_cb+0xcd/0x1f0 drivers/net/wireless/ath/ath9k/hif_usb.c:1243
+    [<ffffffff82aa835b>] request_firmware_work_func+0x4b/0x90 drivers/base/firmware_loader/main.c:1107
+    [<ffffffff8129a35a>] process_one_work+0x2ba/0x5f0 kernel/workqueue.c:2289
+    [<ffffffff8129ac7d>] worker_thread+0x5d/0x5b0 kernel/workqueue.c:2436
+    [<ffffffff812a4fa9>] kthread+0x129/0x170 kernel/kthread.c:376
+    [<ffffffff81002dcf>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
+
+BUG: memory leak
+unreferenced object 0xffff88810a88d100 (size 240):
+  comm "kworker/0:2", pid 2491, jiffies 4294948230 (age 8.190s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff83b971c6>] __alloc_skb+0x206/0x270 net/core/skbuff.c:552
+    [<ffffffff82eb3731>] alloc_skb include/linux/skbuff.h:1270 [inline]
+    [<ffffffff82eb3731>] htc_connect_service+0x121/0x230 drivers/net/wireless/ath/ath9k/htc_hst.c:259
+    [<ffffffff82ec03a5>] ath9k_htc_connect_svc drivers/net/wireless/ath/ath9k/htc_drv_init.c:137 [inline]
+    [<ffffffff82ec03a5>] ath9k_init_htc_services.constprop.0+0xe5/0x390 drivers/net/wireless/ath/ath9k/htc_drv_init.c:157
+    [<ffffffff82ec0747>] ath9k_htc_probe_device+0xf7/0x8a0 drivers/net/wireless/ath/ath9k/htc_drv_init.c:959
+    [<ffffffff82eb3ef5>] ath9k_htc_hw_init+0x35/0x60 drivers/net/wireless/ath/ath9k/htc_hst.c:521
+    [<ffffffff82eb68dd>] ath9k_hif_usb_firmware_cb+0xcd/0x1f0 drivers/net/wireless/ath/ath9k/hif_usb.c:1243
+    [<ffffffff82aa835b>] request_firmware_work_func+0x4b/0x90 drivers/base/firmware_loader/main.c:1107
+    [<ffffffff8129a35a>] process_one_work+0x2ba/0x5f0 kernel/workqueue.c:2289
+    [<ffffffff8129ac7d>] worker_thread+0x5d/0x5b0 kernel/workqueue.c:2436
+    [<ffffffff812a4fa9>] kthread+0x129/0x170 kernel/kthread.c:376
+    [<ffffffff81002dcf>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
+
+BUG: memory leak
+unreferenced object 0xffff88810646b200 (size 512):
+  comm "kworker/0:2", pid 2491, jiffies 4294948230 (age 8.190s)
+  hex dump (first 32 bytes):
+    00 00 00 0a 00 00 00 00 00 02 01 02 00 00 02 01  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff81514fab>] __do_kmalloc_node mm/slab_common.c:967 [inline]
+    [<ffffffff81514fab>] __kmalloc_node_track_caller+0x4b/0x120 mm/slab_common.c:988
+    [<ffffffff83b970a5>] kmalloc_reserve net/core/skbuff.c:492 [inline]
+    [<ffffffff83b970a5>] __alloc_skb+0xe5/0x270 net/core/skbuff.c:565
+    [<ffffffff82eb3731>] alloc_skb include/linux/skbuff.h:1270 [inline]
+    [<ffffffff82eb3731>] htc_connect_service+0x121/0x230 drivers/net/wireless/ath/ath9k/htc_hst.c:259
+    [<ffffffff82ec03a5>] ath9k_htc_connect_svc drivers/net/wireless/ath/ath9k/htc_drv_init.c:137 [inline]
+    [<ffffffff82ec03a5>] ath9k_init_htc_services.constprop.0+0xe5/0x390 drivers/net/wireless/ath/ath9k/htc_drv_init.c:157
+    [<ffffffff82ec0747>] ath9k_htc_probe_device+0xf7/0x8a0 drivers/net/wireless/ath/ath9k/htc_drv_init.c:959
+    [<ffffffff82eb3ef5>] ath9k_htc_hw_init+0x35/0x60 drivers/net/wireless/ath/ath9k/htc_hst.c:521
+    [<ffffffff82eb68dd>] ath9k_hif_usb_firmware_cb+0xcd/0x1f0 drivers/net/wireless/ath/ath9k/hif_usb.c:1243
+    [<ffffffff82aa835b>] request_firmware_work_func+0x4b/0x90 drivers/base/firmware_loader/main.c:1107
+    [<ffffffff8129a35a>] process_one_work+0x2ba/0x5f0 kernel/workqueue.c:2289
+    [<ffffffff8129ac7d>] worker_thread+0x5d/0x5b0 kernel/workqueue.c:2436
+    [<ffffffff812a4fa9>] kthread+0x129/0x170 kernel/kthread.c:376
+    [<ffffffff81002dcf>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
+
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
