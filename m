@@ -2,51 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 16DFE6A2159
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 19:19:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D2FE6A215D
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 19:20:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229822AbjBXSTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 13:19:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46074 "EHLO
+        id S229379AbjBXSUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 13:20:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229880AbjBXSTc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 13:19:32 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A0BF15CA9
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 10:19:20 -0800 (PST)
+        with ESMTP id S229619AbjBXSUn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 13:20:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32E00688E8
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 10:20:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1E766195E
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 18:19:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B79AC433D2;
-        Fri, 24 Feb 2023 18:19:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C50C16195E
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 18:20:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3847DC4339C;
+        Fri, 24 Feb 2023 18:20:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677262759;
-        bh=WKP6ruUbcNyu8tZohOWu+hFnIbAbyBrqkPI+HAxSAag=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PVaht458ALYzl2wMcZ8T/KyaurwD4K17p+DhpupVNj/QLYbopd1Y0HxMVMAS93pIv
-         rcDFR9/zaKekYg8QEybaL+WtGz71xFLa2ebrXJ3bXoRIoYFddqHVs3lfapUe7FcrBY
-         S6ll+Wq8fn1nXC5IACkqim0Kk9SqV594kDZQG7VExbXC0Zxegxo+O8iql8xTD+2MFm
-         6JxX60c8ktg/I49bIHjH7tm8t+vzV43H2Wt2TtoX41s2TJUs4lm5p9cqkm6wy46PQX
-         IOrLM+GuszN1qPj436L1dgRhTpnqfEvGOrEDIdnrC5qUTCbPWc/C54WTmKYj0G+XA/
-         /AI4aV0KJFqlA==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Maor Dickman <maord@nvidia.com>, Raed Salem <raeds@nvidia.com>
-Subject: [net V2 7/7] net/mlx5: Geneve, Fix handling of Geneve object id as error code
-Date:   Fri, 24 Feb 2023 10:19:04 -0800
-Message-Id: <20230224181904.671473-8-saeed@kernel.org>
-X-Mailer: git-send-email 2.39.1
-In-Reply-To: <20230224181904.671473-1-saeed@kernel.org>
-References: <20230224181904.671473-1-saeed@kernel.org>
+        s=k20201202; t=1677262817;
+        bh=G1VxZHzlG5GBCQk1j7GOVxuIX7Pn2r5CS46EJaCtpRA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ZkIXYBufiednlG0/txefSOfuehpWEfU98T+bKSSTQF1A+4UqifB3Kb707LuMEM/X/
+         yFfIHnGmFAmqMt/WU5yyicfUQ+W1kJrkSdA6wWvQUXMavYByaBT+NTIQUeNOQbTEqP
+         rnbr5RFngCOQU77saGqfAA5dLviVlszGGQL5EbvxF8KasKXkTisBfzic0uLkxCJrSY
+         XfiX/KFPnUGHWUDaB09rbjoqvchm5BvhCeDjB5eop4V52v4S3Ruhcu9xuFkZjKrng5
+         GRoeVe2J6hc2hwcMMPtIxQ3aPL1F9KUukfmfvsxzX38xsBf1TNzrBe4tuTfZ/vy6hK
+         SRndj6Ah+ussA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 11E91E68D36;
+        Fri, 24 Feb 2023 18:20:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 1/1] tc: add missing separator
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167726281707.23174.11231039333199498754.git-patchwork-notify@kernel.org>
+Date:   Fri, 24 Feb 2023 18:20:17 +0000
+References: <20230223101503.52222-1-list@eworm.de>
+In-Reply-To: <20230223101503.52222-1-list@eworm.de>
+To:     Christian Hesse <list@eworm.de>
+Cc:     netdev@vger.kernel.org, mail@eworm.de
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -56,36 +54,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maor Dickman <maord@nvidia.com>
+Hello:
 
-On success, mlx5_geneve_tlv_option_create returns non negative
-Geneve object id. In case the object id is positive value the
-caller functions will handle it as an error (non zero) and
-will fail to offload the Geneve rule.
+This patch was applied to iproute2/iproute2.git (main)
+by Stephen Hemminger <stephen@networkplumber.org>:
 
-Fix this by changing caller function ,mlx5_geneve_tlv_option_add,
-to return 0 in case valid non negative object id was provided.
+On Thu, 23 Feb 2023 11:15:03 +0100 you wrote:
+> From: Christian Hesse <mail@eworm.de>
+> 
+> This is missing a separator, that was removed in commit
+> 010a8388aea11e767ba3a2506728b9ad9760df0e. Let's add it back.
+> 
+> Signed-off-by: Christian Hesse <mail@eworm.de>
+> 
+> [...]
 
-Fixes: 0ccc171ea6a2 ("net/mlx5: Geneve, Manage Geneve TLV options")
-Signed-off-by: Maor Dickman <maord@nvidia.com>
-Reviewed-by: Raed Salem <raeds@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/lib/geneve.c | 1 +
- 1 file changed, 1 insertion(+)
+Here is the summary with links:
+  - [1/1] tc: add missing separator
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=4e0e56e0ef05
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/geneve.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/geneve.c
-index 23361a9ae4fa..6dc83e871cd7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/geneve.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/geneve.c
-@@ -105,6 +105,7 @@ int mlx5_geneve_tlv_option_add(struct mlx5_geneve *geneve, struct geneve_opt *op
- 		geneve->opt_type = opt->type;
- 		geneve->obj_id = res;
- 		geneve->refcount++;
-+		res = 0;
- 	}
- 
- unlock:
+You are awesome, thank you!
 -- 
-2.39.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
