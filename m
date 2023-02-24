@@ -2,111 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 716086A1873
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 10:02:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF5096A1880
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 10:08:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229505AbjBXJCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 04:02:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45598 "EHLO
+        id S229762AbjBXJId (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 04:08:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229929AbjBXJCE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 04:02:04 -0500
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5FB65327
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 01:02:03 -0800 (PST)
-Received: by mail-wm1-x330.google.com with SMTP id t25-20020a1c7719000000b003eb052cc5ccso1172689wmi.4
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 01:02:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:mail-followup-to:message-id:subject:cc:to
-         :from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Af6WgvNmT0NBYX8KqecaHyOsDyRmwtzc0PE54IF/OYI=;
-        b=V0FMUdyBn05OpoYB9M0WT7jUMm6YDMR9tpu4gkUIB2PGrJx7geBF6sbCWM7zr/MviE
-         xOqz43FV0el3YD12ZcdQ1yYcE76+pjWy3psYDazlwK5hLk3ONGZLqpO9g6cgyWTcIKna
-         YGfDRMgDROC28MkxDllCZejshz8ih69ouSsWvBozLIsFObR/j5IcIwIkbSFfYLZUDRW5
-         hxvOGoy9cKHPv22fShrncm4BKUaGvcuyA48qtnY//7o2O2nFL9JDHCRDKKzBWYcdOYnJ
-         dBJjEJd07LHP3Rb0XZSsme4dsEz43fX+GC8acpyQINoAbqsGW8Ck12vpgv5LbvzdYonr
-         w0Xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:mail-followup-to:message-id:subject:cc:to
-         :from:date:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Af6WgvNmT0NBYX8KqecaHyOsDyRmwtzc0PE54IF/OYI=;
-        b=XGjjbN/ZIxYxJRLSOO5TgM8m5TgUeP9v086r2wmD/Ey4G0v+m4m9nyMz91deS9FA1t
-         n5MexdN2hlEhgC/VMavSETklZ8DfTtVU1iiJZm2sRVP6ss94MyyqBZ9OxyQIQn8oetEL
-         aM5yOAy+4zYZ8RvVLd2vwfi2P/wpuaBrDWVdG9SgcXuBiqff3Ezsy95K4TOB3Y1Tdwqe
-         nb/lWqa1G9X6Pskoke+7iwih3HGqL6isJ1+dSyO98ZK/MI7wPsNxN04/S9Il/yWEyxpr
-         gRfrQJ/W3tEnxTR+k9xfQ78pu4AiiozoDKPVQHY3GjiUjUDuLhtb2ZEqybZodCuh909W
-         6uiQ==
-X-Gm-Message-State: AO0yUKXxRuXYHCnJDrKcRai3zPpurjrTqdyURnmvYKtMTUzo9ozSIJ/n
-        4+zimemxku6pdrZIcfFPyvQ0Q718B3Y=
-X-Google-Smtp-Source: AK7set+hjS9d8bl6+iqpQCZuz71UZdHk3zuYXOVw+26opVrBQe2wQaJuE+0srI8UYIi4zmMr3LFdzA==
-X-Received: by 2002:a1c:4c14:0:b0:3de:1d31:1042 with SMTP id z20-20020a1c4c14000000b003de1d311042mr11988835wmf.23.1677229321571;
-        Fri, 24 Feb 2023 01:02:01 -0800 (PST)
-Received: from gmail.com ([81.168.73.77])
-        by smtp.gmail.com with ESMTPSA id ay31-20020a05600c1e1f00b003e209186c07sm2099367wmb.19.2023.02.24.01.02.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Feb 2023 01:02:01 -0800 (PST)
-Date:   Fri, 24 Feb 2023 09:01:59 +0000
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>,
-        Vadim Fedorenko <vadim.fedorenko@linux.dev>,
-        ecree.xilinx@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        Yalin Li <yalli@redhat.com>
-Subject: Re: [PATCH net-next v4 3/4] sfc: support unicast PTP
-Message-ID: <Y/h8w80liiVmw3Ap@gmail.com>
-Mail-Followup-To: Richard Cochran <richardcochran@gmail.com>,
-        =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>,
-        Vadim Fedorenko <vadim.fedorenko@linux.dev>, ecree.xilinx@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        Yalin Li <yalli@redhat.com>
-References: <20230221125217.20775-1-ihuguet@redhat.com>
- <20230221125217.20775-4-ihuguet@redhat.com>
- <c5e64811-ba8a-58d3-77f6-6fd6d2ea7901@linux.dev>
- <CACT4oudpiNkdrhzq4fHgnNgNJf1dOpA7w5DfZqo6OX1kgNpcmQ@mail.gmail.com>
- <Y/ZIXRf1LEMBsV9r@hoboy.vegasvil.org>
+        with ESMTP id S229810AbjBXJIc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 04:08:32 -0500
+X-Greylist: delayed 1218 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 24 Feb 2023 01:08:27 PST
+Received: from mxout70.expurgate.net (mxout70.expurgate.net [91.198.224.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B73275243
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 01:08:27 -0800 (PST)
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <prvs=9433889ceb=ms@dev.tdt.de>)
+        id 1pVTkN-0005Ji-TG; Fri, 24 Feb 2023 09:48:07 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1pVTkN-000NGc-G0; Fri, 24 Feb 2023 09:48:07 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 39008240049;
+        Fri, 24 Feb 2023 09:48:07 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id DF262240040;
+        Fri, 24 Feb 2023 09:48:06 +0100 (CET)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id 8F9972D463;
+        Fri, 24 Feb 2023 09:48:06 +0100 (CET)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Y/ZIXRf1LEMBsV9r@hoboy.vegasvil.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Fri, 24 Feb 2023 09:48:06 +0100
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     Michael Walle <michael@walle.cc>
+Cc:     tharvey@gateworks.com, andrew@lunn.ch, davem@davemloft.net,
+        f.fainelli@gmail.com, hauke@hauke-m.de, hkallweit1@gmail.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux@armlinux.org.uk, martin.blumenstingl@googlemail.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v6] net: phy: intel-xway: Add RGMII internal
+ delay configuration
+Organization: TDT AG
+In-Reply-To: <df9a0b6e59d27d5898a9021915ca333a@walle.cc>
+References: <CAJ+vNU3_8Gk8Mj_uCudMz0=MdN3B9T9pUOvYtP7H_B0fnTfZmg@mail.gmail.com>
+ <20230222160425.4040683-1-michael@walle.cc>
+ <8aa26f417c99761cdf1b6b7082fdec14@dev.tdt.de>
+ <df9a0b6e59d27d5898a9021915ca333a@walle.cc>
+Message-ID: <adb55f7dc3b4be01317cf7766e389874@dev.tdt.de>
+X-Sender: ms@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.17
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_PASS,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-purgate-type: clean
+X-purgate: clean
+X-purgate-ID: 151534::1677228487-5128C51F-D4FACCC0/0/0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 22, 2023 at 08:52:45AM -0800, Richard Cochran wrote:
-> On Wed, Feb 22, 2023 at 03:41:51PM +0100, Íñigo Huguet wrote:
+On 2023-02-24 09:04, Michael Walle wrote:
+> Hi Martin,
 > 
-> > The reason is explained in a comment in efx_ptp_insert_multicast filters:
-> >    Must filter on both event and general ports to ensure
-> >    that there is no packet re-ordering
+> Am 2023-02-24 07:25, schrieb Martin Schiller:
+>> On 2023-02-22 17:04, Michael Walle wrote:
+>>> Hi Tim, Hi Martin,
+>>> 
+>>>> I've got some boards with the GPY111 phy on them and I'm finding 
+>>>> that
+>>>> modifying XWAY_MDIO_MIICTRL to change the skew has no effect unless 
+>>>> I
+>>>> do a soft reset (BCMR_RESET) first. I don't see anything in the
+>>>> datasheet which specifies this to be the case so I'm interested it
+>>>> what you have found. Are you sure adjusting the skews like this
+>>>> without a soft (or hard pin based) reset actually works?
+>>> 
+>>> I do have the same PHY and I'm puzzled with the delay settings. Do
+>>> you have an EEPROM attached to the PHY? According to my datasheet,
+>>> that seems to make a difference. Apparently, only if there is an
+>>> EEPROM, you can change the value (the value is then also written to
+>>> the EEPROM according the datasheet).
+>>> If you don't have one, the values will get overwritten by the
+>>> external strappings on a soft reset. Therefore, it seems they cannot
+>>> be set. (FWIW there is also a sticky bit, but that doesn't seem to
+>>> help in this case).
+>>> 
+>>> -michael
+>> 
+>> Yes, you are right. The datasheet says: "In no-EEPROM mode, writing to
+>> this register has no impact on operation of the device".
+>> 
+>> But changing this settings without an EEPROM indeed has an impact.
+>> 
+>> We don't use an EEPROM and without tuning this values some boards are
+>> unable to communicate on the ethernet port(s).
 > 
-> There is nothing wrong with re-ordering.
+> Thanks for confirming! Could you share your PHYID1/PHYID2 register and
+> firmware version (FWV, 0x1E) contents?
 
-I disagree. If re-ordering can be avoided that is a good thing.
+I've 2 PHYs integrated into the VR268 SoC which shows this values:
 
-> Nothing guarantees that
-> datagrams are received in the order they are sent.
+STD_PHYID1(reg 0x02): 0xd565
+STD_PHYID2(reg 0x03): 0xa409
+PHY_FWV   (reg 0x1E): 0x8435
 
-True, but they usually are.
+And then there are 2 external GPY111 with this values:
 
-> The user space PTP stack must be handle out of order messages correct
-> (which ptp4l does do BTW).
+STD_PHYID1(reg 0x02): 0xd565
+STD_PHYID2(reg 0x03): 0xa401
+PHY_FWV   (reg 0x1E): 0x8435
 
-This takes CPU time. If it can be avoided that is a good thing, as
-it puts less pressure on the host. It is not just about CPU load, it
-is also about latency.
+And one external GPY112 with this values:
 
-Martin
+STD_PHYID1(reg 0x02): 0xd565
+STD_PHYID2(reg 0x03): 0xa401
+PHY_FWV   (reg 0x1E): 0x8435
+
+> 
+> In our case, any changes in MIICTRL are lost after a soft reset.
+> 
+>> I varied these values during operation in the uboot and was able to 
+>> test
+>> the limits very nicely.
+> 
+> So I guess, the value you write into MIICTRL are retained on a soft 
+> reset.
+
+No, the value I write into MIICTRL are not retained on a soft reset.
+
+> I.e.
+> 
+> mii write <phyad> 0x17 0xffff
+> mii write <phyad> 0x00 0x8000
+> mii read <phyad> 0x17
+> 
+> will still return 0xffff?
+
+In my tests I always set the skew values in register 0x17 first and
+then triggered a restart of the ANEG via register 0x0. This then led to
+the new values being adopted.
+
+> 
+>> 
+>> I wouldn't have introduced this feature if it hasn't got any impact.
+> 
+> Sure, I'm just trying to figure out the differences ;)
+> 
+> Thanks,
+> Michael
+
+- Martin
