@@ -2,244 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EC766A2186
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 19:31:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D436F6A219A
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 19:36:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229714AbjBXSbk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 13:31:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58854 "EHLO
+        id S229887AbjBXSg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 13:36:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229454AbjBXSbj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 13:31:39 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58816C18D
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 10:31:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=public-files.de;
-        s=s31663417; t=1677263479; i=frank-w@public-files.de;
-        bh=z1EHbkHFxM5DnVsMo7G9jTiEB77goAtRJl9cheaMZq8=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=HkZ5QEsdi7op8moZoNz3bGLi+MVlQAc1OaIL2Z6bLixx07cy1I2/DN804CgQAGfp1
-         Hw6WNGq6hOQHgdECPDU1wjR65xRkIMQftJ/NmO5wSeuv0Hhqv5QOZTv4O2tjT7MJ4Z
-         HQv/vWYzTg/lCKfgkVEYlx9mQ1T9q4MYcWhPa+sYbvf4fU2Gq+xLlHwZ+byqOjcPu5
-         mV7irbz2BIOrvcjuT/fKODJ/oxJQCMjwv1zDhE6DtP5rjfOh/YpivDunTDG1fg2MzO
-         w4AO0a9l4z28DujNrQxmloODh/f27QOuc2ULqo4G1/SQUb8eRf8gaNgcaCPG2JbQxQ
-         /hpmGz+6Qc3rQ==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [157.180.225.28] ([157.180.225.28]) by web-mail.gmx.net
- (3c-app-gmx-bap70.server.lan [172.19.172.170]) (via HTTP); Fri, 24 Feb 2023
- 19:31:19 +0100
-MIME-Version: 1.0
-Message-ID: <trinity-ed99385e-32eb-4be6-bbff-91211a38b8fb-1677263479464@3c-app-gmx-bap70>
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     =?UTF-8?Q?Ar=C4=B1n=C3=A7_=C3=9CNAL?= <arinc.unal@arinc9.com>,
-        netdev <netdev@vger.kernel.org>, erkin.bozoglu@xeront.com,
-        Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S229652AbjBXSgz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 13:36:55 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4302B6C526
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 10:36:54 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pVcw4-0007fI-Up; Fri, 24 Feb 2023 19:36:48 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pVcw2-0002Aa-OS; Fri, 24 Feb 2023 19:36:46 +0100
+Date:   Fri, 24 Feb 2023 19:36:46 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>, Arun.Ramadoss@microchip.com,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>
-Subject: Aw: Re: Choose a default DSA CPU port
-Content-Type: text/plain; charset=UTF-8
-Date:   Fri, 24 Feb 2023 19:31:19 +0100
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <20230224181326.5lbph42bs566t2ci@skbuf>
-References: <20230218205204.ie6lxey65pv3mgyh@skbuf>
- <a4936eb8-dfaa-e2f8-b956-75e86546fbf3@arinc9.com>
- <trinity-4025f060-3bb8-4260-99b7-e25cbdcf9c27-1676800164589@3c-app-gmx-bs35>
- <20230221002713.qdsabxy7y74jpbm4@skbuf>
- <trinity-105e0c2e-38e7-4f44-affd-0bc41d0a426b-1677086262623@3c-app-gmx-bs54>
- <20230222180623.cct2kbhyqulofzad@skbuf>
- <9c9ab755-9b5e-4e76-0e3c-119d567fc39d@arinc9.com>
- <20230222193440.c2vzg7j7r32xwr5l@skbuf>
- <e89af7bd-2f4c-3865-afa5-276a6acbc16f@arinc9.com>
- <trinity-c58a37c3-aa55-48b3-9d6c-71520ad2a81d-1677262043715@3c-app-gmx-bap70>
- <20230224181326.5lbph42bs566t2ci@skbuf>
-Content-Transfer-Encoding: quoted-printable
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:+AEd48sf0SM/8Bw4TuoNx8EiYPnQv6YDeH4aeG7ag9BwKD/M6yDAh4Li3db4qqODReSj8
- 2zplecEQuSPXKBidfW/mAkA8E9mu7tvPtjBfKIjH77qB7eLOszBWzcfkpuTXczaq69vPRHLL2C1g
- 2w0DaqVWUnyN6aBc/uDi4cypwHSoh9Y+j5fBD1ar1Nsph855RQZBaNKvE0oUYKv4CjpFRhs06o1V
- ftDVZ9Gn9++slmIk4XRyNAbwlTckGw6ZoAxa18qVJQCzortuXDdGUmqgf6axn7gVQYV2/3PH3ef4
- 04=
-UI-OutboundReport: notjunk:1;M01:P0:IGI3mAXdU4s=;oGeWXhZA2/OCg538i7GGZCwuq/B
- RuEuApCVhSgIlIwFmaiaD91LzkmPLRGcimocbiQtjacE5DBn0/ivdx1YlzXTaU8SuW6Z7tHfP
- q4QO/thzn2nIPCGPky3U2UbWp/+6T37uWTSvLDXNzo7nrE6+2uCYQlJmNdygOj9pl9ICdXj5b
- nr37sTogilmzEJsI13F13ujyi9IXKECMs2TTXs00jQIJut3NkSI8mKBht4sQvPWk9qaWlixB8
- uFkR56axcuorrpVVjW7Xx0HH9QEFemHYhWbRdqPdlwxmwIbHDFhyW8NB6uufMbm8HXVlCMCML
- O7EAsl8bYxoYsIG0eprZTZCgfaUN/JpXnnNrfPfZE5NBTVwD7bmG0wYpy/famudOYPm7M/Hmf
- hbSzG1NuUkhwIWTRtVFRGg3odv/2YW7otwue8usS6hJvGEJLCSQZvJLr7Bb7nxa/zJ7qMG96O
- slUms8i4bx0cmqBKqRHy/w0YG7KIaGeLPMDn7sR+NE1/+yJvKRyRSW/3NjlBl+OPyKyq/ur2X
- XphJ+JMX8Kyeskc5NK8VZqnwXUGhQxpvRo6fcmOs1bBoHaYr8+R/QtPmlUAtI+aDbGIW0LLHz
- 4jUemdeAkLxlxG80urnYiOdSUXwbhPFDYePtXN4eculDVjj78AXK3ug+cSTmlpnFT3jofXeNU
- FpfCTwZ7I/f6fbH7UjL0iGGmIIEyavMAW6ezeuBTFBZAH6x/JuWUPa82FYM7+ZoLJXuPyAbUF
- vTnd/1mPTOv+VaiuDIBdzuKVZUIq6NCJVo73DsBYxmDAxtcSeSeNv8MaOO6T4bQkB1WFyjxR+
- uzZYOuRL3j0qwgcWinrvC+fQ==
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Wei Fang <wei.fang@nxp.com>,
+        kernel@pengutronix.de, intel-wired-lan@lists.osuosl.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next v8 6/9] net: phy: c22: migrate to
+ genphy_c45_write_eee_adv()
+Message-ID: <20230224183646.GA26307@pengutronix.de>
+References: <20230211074113.2782508-1-o.rempel@pengutronix.de>
+ <20230211074113.2782508-7-o.rempel@pengutronix.de>
+ <20230224035553.GA1089605@roeck-us.net>
+ <20230224041604.GA1353778@roeck-us.net>
+ <20230224045340.GN19238@pengutronix.de>
+ <363517fc-d16e-5bcd-763d-fc0e32c2301a@roeck-us.net>
+ <20230224165213.GO19238@pengutronix.de>
+ <20230224174132.GA1224969@roeck-us.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20230224174132.GA1224969@roeck-us.net>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-result is same
+On Fri, Feb 24, 2023 at 09:41:32AM -0800, Guenter Roeck wrote:
+> On Fri, Feb 24, 2023 at 05:52:13PM +0100, Oleksij Rempel wrote:
+> > On Fri, Feb 24, 2023 at 08:00:57AM -0800, Guenter Roeck wrote:
+> > > On 2/23/23 20:53, Oleksij Rempel wrote:
+> > > > Hallo Guenter,
+> > > > 
+> > > > On Thu, Feb 23, 2023 at 08:16:04PM -0800, Guenter Roeck wrote:
+> > > > > On Thu, Feb 23, 2023 at 07:55:55PM -0800, Guenter Roeck wrote:
+> > > > > > On Sat, Feb 11, 2023 at 08:41:10AM +0100, Oleksij Rempel wrote:
+> > > > > > > Migrate from genphy_config_eee_advert() to genphy_c45_write_eee_adv().
+> > > > > > > 
+> > > > > > > It should work as before except write operation to the EEE adv registers
+> > > > > > > will be done only if some EEE abilities was detected.
+> > > > > > > 
+> > > > > > > If some driver will have a regression, related driver should provide own
+> > > > > > > .get_features callback. See micrel.c:ksz9477_get_features() as example.
+> > > > > > > 
+> > > > > > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> > > > > > > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> > > > > > 
+> > > > > > This patch causes network interface failures with all my xtensa qemu
+> > > > > > emulations. Reverting it fixes the problem. Bisect log is attached
+> > > > > > for reference.
+> > > > > > 
+> > > > > 
+> > > > > Also affected are arm:cubieboard emulations, with same symptom.
+> > > > > arm:bletchley-bmc emulations crash. In both cases, reverting this patch
+> > > > > fixes the problem.
+> > > > 
+> > > > Please test this fixes:
+> > > > https://lore.kernel.org/all/167715661799.11159.2057121677394149658.git-patchwork-notify@kernel.org/
+> > > > 
+> > > 
+> > > Applied and tested
+> > > 
+> > > 77c39beb5efa (HEAD -> master) net: phy: c45: genphy_c45_ethtool_set_eee: validate EEE link modes
+> > > 068a35a8d62c net: phy: do not force EEE support
+> > > 66d358a5fac6 net: phy: c45: add genphy_c45_an_config_eee_aneg() function
+> > > ecea1bf8b04c net: phy: c45: use "supported_eee" instead of supported for access validation
+> > > 
+> > > on top of
+> > > 
+> > > d2980d8d8265 (upstream/master, origin/master, origin/HEAD, local/master) Merge tag 'mm-nonmm-stable-2023-02-20-15-29' of git://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm
+> > > 
+> > > No change for xtensa and arm:cubieboard; network interfaces still fail.
+> > 
+> > Huh, interesting.
+> > 
+> > can you please send me the kernel logs.
+> > 
+> There is nothing useful there, or at least I don't see anything useful.
+> The Ethernet interfaces (sun4i-emac for cubieboard and ethoc for xtensa)
+> just don't come up.
+> 
+> Sample logs:
+> 
+> cubieboard:
+> 
+> https://kerneltests.org/builders/qemu-arm-v7-master/builds/531/steps/qemubuildcommand/logs/stdio
+> 
+> xtensa:
+> 
+> https://kerneltests.org/builders/qemu-xtensa-master/builds/2177/steps/qemubuildcommand/logs/stdio
+> 
+> and, for completeness, bletchley-bmc:
+> 
+> https://kerneltests.org/builders/qemu-arm-aspeed-master/builds/531/steps/qemubuildcommand/logs/stdio
+> 
+> Those logs are without the above set of patches, but I don't see a
+> difference with the patches applied for cubieboard and xtensa. I
+> started a complete test run (for all emulations) with the patches
+> applied; that should take about an hour to complete. 
+> I could also add some debug logging, but you'd have to give me
+> some hints about what to add and where.
 
-root@bpi-r2:~# iperf3 -c 192=2E168=2E0=2E21                               =
-           =20
-Connecting to host 192=2E168=2E0=2E21, port 5201                          =
-           =20
-[  5] local 192=2E168=2E0=2E11 port 48882 connected to 192=2E168=2E0=2E21 =
-port 5201        =20
-[ ID] Interval           Transfer     Bitrate         Retr  Cwnd          =
-     =20
-[  5]   0=2E00-1=2E00   sec  75=2E3 MBytes   632 Mbits/sec    0    396 KBy=
-tes        =20
-[  5]   1=2E00-2=2E00   sec  74=2E3 MBytes   623 Mbits/sec    0    396 KBy=
-tes        =20
-[  5]   2=2E00-3=2E00   sec  74=2E6 MBytes   625 Mbits/sec    0    396 KBy=
-tes        =20
-[  5]   3=2E00-4=2E00   sec  73=2E9 MBytes   620 Mbits/sec    0    396 KBy=
-tes        =20
-[  5]   4=2E00-5=2E00   sec  74=2E6 MBytes   626 Mbits/sec    0    396 KBy=
-tes        =20
-[  5]   5=2E00-6=2E00   sec  74=2E4 MBytes   624 Mbits/sec    0    396 KBy=
-tes        =20
-[  5]   6=2E00-7=2E00   sec  74=2E4 MBytes   624 Mbits/sec    0    396 KBy=
-tes        =20
-[  5]   7=2E00-8=2E00   sec  74=2E4 MBytes   624 Mbits/sec    0    396 KBy=
-tes        =20
-[  5]   8=2E00-9=2E00   sec  73=2E9 MBytes   620 Mbits/sec    0    396 KBy=
-tes        =20
-[  5]   9=2E00-10=2E00  sec  74=2E6 MBytes   626 Mbits/sec    0    396 KBy=
-tes        =20
-- - - - - - - - - - - - - - - - - - - - - - - - -                         =
-     =20
-[ ID] Interval           Transfer     Bitrate         Retr                =
-     =20
-[  5]   0=2E00-10=2E00  sec   745 MBytes   625 Mbits/sec    0             =
-sender   =20
-[  5]   0=2E00-10=2E05  sec   744 MBytes   621 Mbits/sec                  =
-receiver =20
-                                                                          =
-     =20
-iperf Done=2E                                                             =
-       =20
-root@bpi-r2:~# ethtool -S eth0 | grep -v ': 0'                            =
-     =20
-NIC statistics:                                                           =
-     =20
-     tx_bytes: 819999267                                                  =
-     =20
-     tx_packets: 538815                                                   =
-     =20
-     rx_bytes: 18338089                                                   =
-     =20
-     rx_packets: 261984                                                   =
-     =20
-     p06_TxUnicast: 261974                                                =
-     =20
-     p06_TxMulticast: 10                                                  =
-     =20
-     p06_TxPktSz65To127: 261983                                           =
-     =20
-     p06_TxPktSz256To511: 1                                               =
-     =20
-     p06_TxBytes: 19386025                                                =
-     =20
-     p06_RxFiltering: 13                                                  =
-     =20
-     p06_RxUnicast: 538783                                                =
-     =20
-     p06_RxMulticast: 31                                                  =
-     =20
-     p06_RxBroadcast: 1                                                   =
-     =20
-     p06_RxPktSz64: 3                                                     =
-     =20
-     p06_RxPktSz65To127: 47                                               =
-     =20
-     p06_RxPktSz128To255: 2                                               =
-     =20
-     p06_RxPktSz256To511: 1                                               =
-     =20
-     p06_RxPktSz512To1023: 2                                              =
-     =20
-     p06_RxPktSz1024ToMax: 538760                                         =
-     =20
-     p06_RxBytes: 819999267
+OK, interesting. These are emulated PHYs. QEMU seems to return 0 or
+0xFFFF on unsupported registers. May be I'm wrong.
+All EEE read/write accesses depend on initial capability read
+genphy_c45_read_eee_cap1()
 
-just to verify no pause is set (which is working without p5 enabled)
+Can you please add this trace:
 
-root@bpi-r2:~# ls /sys/firmware/devicetree/base/ethernet\@1b100000/mdio-bu=
-s/switch\@1f/ports/port\@6/fixed-link/
-full-duplex  name  speed
-root@bpi-r2:~# ls /sys/firmware/devicetree/base/ethernet\@1b100000/mac\@0/=
-fixed-link/
-full-duplex  name  speed
+diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+index f595acd0a895..67dac9f0e71d 100644
+--- a/drivers/net/phy/phy-c45.c
++++ b/drivers/net/phy/phy-c45.c
+@@ -799,6 +799,7 @@ static int genphy_c45_read_eee_cap1(struct phy_device *phydev)
+         * (Register 3.20)
+         */
+        val = phy_read_mmd(phydev, MDIO_MMD_PCS, MDIO_PCS_EEE_ABLE);
++       printk("MDIO_PCS_EEE_ABLE = 0x%04x", val);
+        if (val < 0)
+                return val;
 
-as speed is lower than gmac speed i guess there is no need for pause frame=
-s, but yes they can slow down=2E=2E=2E=20
-
-mhm=2E=2E=2Etried again with port5 disabled (pause enabled again) and got =
-same result, so this seems not to be the cause as i thought (but have now o=
-ther patches in like core-clock dropped and RX fix)=2E
-
-regards Frank
-
-
-> Gesendet: Freitag, 24=2E Februar 2023 um 19:13 Uhr
-> Von: "Vladimir Oltean" <olteanv@gmail=2Ecom>
-> An: "Frank Wunderlich" <frank-w@public-files=2Ede>
-> Cc: "Ar=C4=B1n=C3=A7 =C3=9CNAL" <arinc=2Eunal@arinc9=2Ecom>, "netdev" <n=
-etdev@vger=2Ekernel=2Eorg>, erkin=2Ebozoglu@xeront=2Ecom, "Andrew Lunn" <an=
-drew@lunn=2Ech>, "Florian Fainelli" <f=2Efainelli@gmail=2Ecom>, "Felix Fiet=
-kau" <nbd@nbd=2Ename>, "John Crispin" <john@phrozen=2Eorg>, "Mark Lee" <Mar=
-k-MC=2ELee@mediatek=2Ecom>, "Lorenzo Bianconi" <lorenzo@kernel=2Eorg>, "Mat=
-thias Brugger" <matthias=2Ebgg@gmail=2Ecom>, "Landen Chao" <Landen=2EChao@m=
-ediatek=2Ecom>, "Sean Wang" <sean=2Ewang@mediatek=2Ecom>, "DENG Qingfang" <=
-dqfext@gmail=2Ecom>
-> Betreff: Re: Choose a default DSA CPU port
->
-> On Fri, Feb 24, 2023 at 07:07:23PM +0100, Frank Wunderlich wrote:
-> > root@bpi-r2:~# ethtool -S eth0 | grep -v ': 0'
-> > NIC statistics:
-> >      tx_bytes: 1643364546
-> >      tx_packets: 1121377
-> >      rx_bytes: 1270088499
-> >      rx_packets: 1338400
-> >      p06_TxUnicast: 1338274
-> >      p06_TxMulticast: 120
-> >      p06_TxBroadcast: 6
-> >      p06_TxPktSz65To127: 525948
-> >      p06_TxPktSz128To255: 5
-> >      p06_TxPktSz256To511: 16
-> >      p06_TxPktSz512To1023: 4
-> >      p06_Tx1024ToMax: 812427
-> >      p06_TxBytes: 1275442099
-> >      p06_RxFiltering: 16
-> >      p06_RxUnicast: 1121339
-> >      p06_RxMulticast: 37
-> >      p06_RxBroadcast: 1
-> >      p06_RxPktSz64: 3
-> >      p06_RxPktSz65To127: 43757
-> >      p06_RxPktSz128To255: 3
-> >      p06_RxPktSz256To511: 3
-> >      p06_RxPktSz1024ToMax: 1077611
-> >      p06_RxBytes: 1643364546
->=20
-> Looking at the drivers, I see pause frames aren't counted in ethtool -S,
-> so we wouldn't know this=2E However the slowdown *is* lossless, so the
-> hypothesis is still not disproved=2E
->=20
-> Could you please test after removing the "pause" property from the
-> switch's port@6 device tree node?
->
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
