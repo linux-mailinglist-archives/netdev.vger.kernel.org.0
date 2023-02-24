@@ -2,107 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 855796A14EA
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 03:29:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BE766A1524
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 04:02:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229538AbjBXC3Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Feb 2023 21:29:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46254 "EHLO
+        id S229861AbjBXDCp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Feb 2023 22:02:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbjBXC3X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 21:29:23 -0500
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A260A1554F
-        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 18:29:21 -0800 (PST)
-Received: by mail-qt1-x834.google.com with SMTP id z6so1570657qtv.0
-        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 18:29:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=enaTQCm/lX2y+BlizaBS9gVaM0OUH5yxhTzHn8mIf1Y=;
-        b=qUs9/rKeBAG3nj8ZnIc2QNek60TN9Jdm4DHj/eX+J5k7pgVFONl1OatUXqbb2Jw2Qz
-         TMsaYjy/G3XJJXBVkKFJ1aSxlPJiUYXt3P2SVAfbvOLZlT/iImRIdgp+8ewLzkRdEqIa
-         QL76Srmc82loXrTxaIOqhuemlGnGyDu2B8u58dt/6yIvcaE8jEq/XNerNFG9i7XH5EJ8
-         EgMZc1n4hxRtDWuM6zFrGuQ7llVIocy089CLso2vSXKBg22BC2iUennpdaDPsw6n69A4
-         GjayR1ubsEECozU7fyyWZR8j2vjfzlR4lbHKcF72+S/boTVrVR9zVZe/eHFuejC2Q1k7
-         zKvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=enaTQCm/lX2y+BlizaBS9gVaM0OUH5yxhTzHn8mIf1Y=;
-        b=J1RZP96IzFcqliabX5V7xdzRxcN7AwAxhDnISsVida9f6oi9471G8BuimWNI89XYOn
-         HmFCkLooJTSohSHXhobXMXJLqM1SB5jd95eL96elewkuHbzf7xvvxvt9MCO+PEC7MbY9
-         DsTIDhg6CTQ4gYlabjjqbG/A8D+THAASvphFr732PhF4Vn5pPd3qmGvbtSjDCEgN13yx
-         CJyfZFEx6V01cmJ8jEt+C3LC3cbuzXQP/+wzHksS+p9/Yely8knC2actrnZga232kC2a
-         DVMcFlUGgt4GESraVNmjeMnwVu9tKuTaWJjNVlDDlS1yindIh31Jdq6Icoql/u/uVu9S
-         3MTw==
-X-Gm-Message-State: AO0yUKXkdJpsbexM2Ioaj6STiujkVVnr2Whj0MEtp4YVN8loyFfzAs77
-        2nRieX2A+1080qD4rq7imDs=
-X-Google-Smtp-Source: AK7set9EjaJ6fdhQEiadKxZ7//cqwL14JMUXhRkyMEbkK0W5XvvfCOR1YkcRhUHSfC6UvDWXepYgrw==
-X-Received: by 2002:a05:622a:1009:b0:3b9:bc8c:c1ff with SMTP id d9-20020a05622a100900b003b9bc8cc1ffmr24203560qte.10.1677205760664;
-        Thu, 23 Feb 2023 18:29:20 -0800 (PST)
-Received: from vps.qemfd.net (vps.qemfd.net. [173.230.130.29])
-        by smtp.gmail.com with ESMTPSA id ff23-20020a05622a4d9700b003b64f1b1f40sm5787075qtb.40.2023.02.23.18.29.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Feb 2023 18:29:18 -0800 (PST)
-Received: from schwarzgerat.orthanc (schwarzgerat.danknet [192.168.128.2])
-        by vps.qemfd.net (Postfix) with ESMTP id E94232BAE6;
-        Thu, 23 Feb 2023 21:29:16 -0500 (EST)
-Received: by schwarzgerat.orthanc (Postfix, from userid 1000)
-        id C1A6F600143; Thu, 23 Feb 2023 21:29:16 -0500 (EST)
-Date:   Thu, 23 Feb 2023 21:29:16 -0500
-From:   nick black <dankamongmen@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Willem de Bruijn <willemb@google.com>
-Subject: [PATCH] [net] fix inaccuracies in msg_zerocopy.rst
-Message-ID: <Y/gg/EhIIjugLdd3@schwarzgerat.orthanc>
+        with ESMTP id S229849AbjBXDCo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 22:02:44 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4601C5943D;
+        Thu, 23 Feb 2023 19:02:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2022B81B2F;
+        Fri, 24 Feb 2023 03:02:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24872C433D2;
+        Fri, 24 Feb 2023 03:02:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1677207760;
+        bh=SLACJiADnJA60C4afvJCIsYCAdCHLyLjDB26A1FkA0E=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dysVAZ8e+s4uJnmbTuvP4VsiWCPH+fSTceJgsKdAMF9neQcKOjUp4cCZ7DsPJ8Qhv
+         rQ759XyBfsfLsO2gfr3f5uaBGqEzoTmYBggafQZKnZ8SxFUbPov0YScNSrymJdWES3
+         6ps93wqHQDS2TiZ89fakN1q91H3ncrUkKBUTQNXywLjDF+IeIHnGWlpLQyIKMa5alU
+         cDQacj1WfftkkA+f22glgYhgekxTxgj9lTefHRt3A4zNZCYqtvEKsh3Cq0oEtaazrp
+         B7wBdh6vsMVtYzykXOJLb8DzWraJajRovGYUDqEgan6g1g5JrEna1NvOPhF24CbL7c
+         Yshk5hauWB1TA==
+Date:   Thu, 23 Feb 2023 19:02:39 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        davem@davemloft.net, Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Zhengchao Shao <shaozhengchao@huawei.com>
+Subject: Re: [PATCHv2 net] sctp: add a refcnt in sctp_stream_priorities to
+ avoid a nested loop
+Message-ID: <20230223190239.34932117@kernel.org>
+In-Reply-To: <825eb0c905cb864991eba335f4a2b780e543f06b.1677085641.git.lucien.xin@gmail.com>
+References: <825eb0c905cb864991eba335f4a2b780e543f06b.1677085641.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace "sendpage" with "sendfile". Remove comment about
-ENOBUFS when the sockopt hasn't been set; experimentation
-indicates that this is not true.
+On Wed, 22 Feb 2023 12:07:21 -0500 Xin Long wrote:
+> With this refcnt added in sctp_stream_priorities, we don't need to
+> traverse all streams to check if the prio is used by other streams
+> when freeing one stream's prio in sctp_sched_prio_free_sid(). This
+> can avoid a nested loop (up to 65535 * 65535), which may cause a
+> stuck as Ying reported:
+> 
+>     watchdog: BUG: soft lockup - CPU#23 stuck for 26s! [ksoftirqd/23:136]
+>     Call Trace:
+>      <TASK>
+>      sctp_sched_prio_free_sid+0xab/0x100 [sctp]
+>      sctp_stream_free_ext+0x64/0xa0 [sctp]
+>      sctp_stream_free+0x31/0x50 [sctp]
+>      sctp_association_free+0xa5/0x200 [sctp]
+> 
+> Note that it doesn't need to use refcount_t type for this counter,
+> as its accessing is always protected under the sock lock.
+> 
+> v1->v2:
+>  - add a check in sctp_sched_prio_set to avoid the possible prio_head
+>    refcnt overflow.
+> 
+> Fixes: 9ed7bfc79542 ("sctp: fix memory leak in sctp_stream_outq_migrate()")
+> Reported-by: Ying Xu <yinxu@redhat.com>
+> Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 
-Signed-off-by: nick black <dankamongmen@gmail.com>
----
- Documentation/networking/msg_zerocopy.rst | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git Documentation/networking/msg_zerocopy.rst Documentation/networking/msg_zerocopy.rst
-index 15920db8d35d..b3ea96af9b49 100644
---- Documentation/networking/msg_zerocopy.rst
-+++ Documentation/networking/msg_zerocopy.rst
-@@ -15,7 +15,7 @@ Opportunity and Caveats
- 
- Copying large buffers between user process and kernel can be
- expensive. Linux supports various interfaces that eschew copying,
--such as sendpage and splice. The MSG_ZEROCOPY flag extends the
-+such as sendfile and splice. The MSG_ZEROCOPY flag extends the
- underlying copy avoidance mechanism to common socket send calls.
- 
- Copy avoidance is not a free lunch. As implemented, with page pinning,
-@@ -83,8 +83,8 @@ Pass the new flag.
- 	ret = send(fd, buf, sizeof(buf), MSG_ZEROCOPY);
- 
- A zerocopy failure will return -1 with errno ENOBUFS. This happens if
--the socket option was not set, the socket exceeds its optmem limit or
--the user exceeds its ulimit on locked pages.
-+the socket exceeds its optmem limit or the user exceeds their ulimit on
-+locked pages.
- 
- 
- Mixing copy avoidance and copying
--- 
-2.39.1
+Applied, thanks!
