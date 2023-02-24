@@ -2,74 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D13B16A23F9
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 22:54:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56ABA6A23FE
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 22:58:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229630AbjBXVx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 16:53:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41940 "EHLO
+        id S229562AbjBXV64 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 24 Feb 2023 16:58:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229488AbjBXVxz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 16:53:55 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32D9F1040B;
-        Fri, 24 Feb 2023 13:53:54 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id ee7so2891502edb.2;
-        Fri, 24 Feb 2023 13:53:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+5eSywMvV2ug+ZtsNbQkPbN0xmm97do2TILmiHXrX+8=;
-        b=G+CJc7sIUwjc38V/esuyG+zjarKvIyr5/Ftov6HBUcrQ8cwpibx4Nb7UYgsYBJpyfg
-         uLUuF3evXdITmGdk1LN8Wen/KjyBNqb3yDAxGQFmrlHZAobeA4IDLMr3EATS1LdnQ+21
-         GnJiBRU+EJ4IxfEGI/26dOm9LDnkHeuL24fIInw1jo8CW29AvNIcZZtyCAhJ9HxPsBOE
-         eYi4/bgxWZqOwFMY76P6bKZ/6S4t9CaGumPnCb/Az7q14GRrzrQ+voljxPka7ZtCJe5d
-         xwb9840i1MUUvWErIuYmkAjg11DbF0/4kW+KOAsz5wp1Zkb+k56snjiCCkie8HAi4IcR
-         MKwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+5eSywMvV2ug+ZtsNbQkPbN0xmm97do2TILmiHXrX+8=;
-        b=hYnM88HeYi9vftogdlEda+giwHnap7Y9mr6w2ValE62tDsgQYe8n0OJktiOk2kfYN6
-         6/5H1kYJHmGsxzB1LH/k1c6XabixGWPJC/fcfG/o/cQGUyDs6SdmO7jBXbF3GmEqngE+
-         TZEo+5enIKowqkhAZS9eheIaj8u4u1Jzpdei3EPn0YWTHC2iACdk8m3rgpyVDk6ZHmFJ
-         LAKzzG/m0Va9M+Bgp6lx2u5NxD+oQWC17b2h/gdkny9lD7uWRiKYF7i53fExYWzfI9vt
-         rCsrj9j0OFLeJlmsjlFnrTgQetpr9BhvNZWuyKdxfQpMgQnf+0yUi09JkIt5E32PmTxJ
-         8UjQ==
-X-Gm-Message-State: AO0yUKUacFs1sXqiTrZiXK55sY8VqUGgrqY48o9q3+7pS/HKVuSbzUIz
-        Ul2EgY4sm8yACCvW6F/f0sg=
-X-Google-Smtp-Source: AK7set/R6z2ukq5j2KI3aOOQekMtWn24eajeyvRltqab/706R0jM5AVjF5p3+1ajfmn5P5oNVR4tGQ==
-X-Received: by 2002:a17:906:e253:b0:85d:dd20:60a4 with SMTP id gq19-20020a170906e25300b0085ddd2060a4mr25171818ejb.40.1677275632606;
-        Fri, 24 Feb 2023 13:53:52 -0800 (PST)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id og42-20020a1709071dea00b008e8e9859905sm31799ejc.184.2023.02.24.13.53.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Feb 2023 13:53:52 -0800 (PST)
-Date:   Fri, 24 Feb 2023 23:53:49 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Alexander Lobakin <aleksander.lobakin@intel.com>
-Cc:     Rakesh Sankaranarayanan <rakesh.sankaranarayanan@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, f.fainelli@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Subject: Re: [PATCH v2 net-next 3/5] net: dsa: microchip: add eth mac
- grouping for ethtool statistics
-Message-ID: <20230224215349.umzw46xvzccjdndd@skbuf>
-References: <20230217110211.433505-1-rakesh.sankaranarayanan@microchip.com>
- <20230217110211.433505-4-rakesh.sankaranarayanan@microchip.com>
- <84835bee-a074-eb46-f1e4-03e53cd7f9ec@intel.com>
- <20230217164227.mw2cyp22bsnvuh6t@skbuf>
- <47a67799-27d9-094e-11c3-a18efcf281e2@intel.com>
+        with ESMTP id S229446AbjBXV6z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 16:58:55 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D983617CD9
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 13:58:52 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-220-6Epjr51tPVCho_ubGcioOg-1; Fri, 24 Feb 2023 21:58:49 +0000
+X-MC-Unique: 6Epjr51tPVCho_ubGcioOg-1
+Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
+ (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.47; Fri, 24 Feb
+ 2023 21:58:48 +0000
+Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
+ id 15.00.1497.047; Fri, 24 Feb 2023 21:58:48 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Jakub Kicinski' <kuba@kernel.org>,
+        Saeed Mahameed <saeed@kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Rahul Rameshbabu <rrameshbabu@nvidia.com>
+Subject: RE: [net 07/10] net/mlx5e: Correct SKB room check to use all room in
+ the fifo
+Thread-Topic: [net 07/10] net/mlx5e: Correct SKB room check to use all room in
+ the fifo
+Thread-Index: AQHZR+hZhb5WHqB4FkmQODJmKZivMq7epLig
+Date:   Fri, 24 Feb 2023 21:58:47 +0000
+Message-ID: <07806a76504b49dbb2deb71702d5c008@AcuMS.aculab.com>
+References: <20230223225247.586552-1-saeed@kernel.org>
+        <20230223225247.586552-8-saeed@kernel.org>
+ <20230223163836.546bbc76@kernel.org>
+In-Reply-To: <20230223163836.546bbc76@kernel.org>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <47a67799-27d9-094e-11c3-a18efcf281e2@intel.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,PDS_BAD_THREAD_QP_64,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -78,17 +65,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 24, 2023 at 05:07:01PM +0100, Alexander Lobakin wrote:
-> It's not so common for people to show up back in the thread after you
-> ask them to show godbolt / asm code comparison.
+From: Jakub Kicinski
+> Sent: 24 February 2023 00:39
+> 
+> On Thu, 23 Feb 2023 14:52:44 -0800 Saeed Mahameed wrote:
+> > From: Rahul Rameshbabu <rrameshbabu@nvidia.com>
+> >
+> > Previous check was comparing against the fifo mask. The mask is size of the
+> > fifo (power of two) minus one, so a less than or equal comparator should be
+> > used for checking if the fifo has room for the SKB.
+> >
+> > Fixes: 19b43a432e3e ("net/mlx5e: Extend SKB room check to include PTP-SQ")
+> 
+> How big is the fifo? Not utilizing a single entry is not really worth
+> calling a bug if the fifo has at least 32 entries..
 
-idk what godbolt is, but if it's some sort of online compiler, then I
-suppose it's of limited usefulness for the Linux kernel.
+There is also the question of how 'fifo full' and 'fifo empty'
+are differentiated if they both have the same index values.
+I've not looked at the code in question, but not using the
+last slot is less likely to be buggy.
 
-Easiest way to see a disassembly (also has C code interleaved) would be
-this:
+I've taken to using array[index++ & mask] and just letting
+the index wrap at 2**32 (or even (not) wrap an 2**64).
+Then the full and empty conditions are trivially separated.
 
-make drivers/net/dsa/microchip/ksz_ethtool.lst
+	David
 
-This is also useful to see precisely which instruction went boom in case
-there's a NULL pointer dereference or something like that.
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
