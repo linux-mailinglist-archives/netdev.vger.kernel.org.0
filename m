@@ -2,73 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E2F5D6A152E
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 04:08:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E1436A1539
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 04:12:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229721AbjBXDIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Feb 2023 22:08:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46902 "EHLO
+        id S229919AbjBXDMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Feb 2023 22:12:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229563AbjBXDIE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 22:08:04 -0500
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48DBC1422D;
-        Thu, 23 Feb 2023 19:08:03 -0800 (PST)
-Received: by mail-qv1-xf43.google.com with SMTP id y12so12664495qvt.8;
-        Thu, 23 Feb 2023 19:08:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1677208082;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=rrZOBgrLfanVHU8gvu8PaQc3hE0+RhVJQiShU2zGgBU=;
-        b=fCoewdt5wLUzD+6NJMY/p4tubiW1XCBMZ6uuqtfm2SIMFSBovxOXB2GZFogz348WkZ
-         o4BFJHmKiO6+IMvRR6o39cXl1EoNX8WFXbIih2sGcD4O3Zbw2/cEdareC6HbulKIo3l6
-         M1CyIx8W6OfKWoB5vSIiNN/6IQfE379JsoN+haV0dKMeHTQUO/H0+E+wKOD86RjEVazl
-         Ytmw5/JwpUO1kSKzyLDJ7w33YGzarT88CFJXRDJtBvAXw2iBzbyO6oSaHKjL/JfSdLse
-         pvxJV7R95EleV4suYLqzUQbw6bx90ny/PGBoqD5ytYelJvgofFhOZ5pTNQ09ZItvJ2uZ
-         FtYg==
+        with ESMTP id S229916AbjBXDMk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 22:12:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06F5F5EEFD
+        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 19:11:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1677208311;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ce5tfl2n/EssbKt11AP0PiIJ95ywSk+f7JnIMaHI1Wk=;
+        b=Bq2S3V4dzEu83xOgYWzZr+zlld+eFtAlNrMtccxw4QQSt9bTCR9/UYBTrJtlo6Ovau8sr2
+        unWoMfbOYlDDU7vdejsOV5NCWe0akXUgtiaZMyNdjC1rAvqi8Y+NzNSGfMAq2bjGgv6SBe
+        Sm3ArBiFSk5xiRE3i5PXBGjzPJD610Q=
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com
+ [209.85.210.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-467-KnkBscS8Pc6kjGFXL6huOQ-1; Thu, 23 Feb 2023 22:11:49 -0500
+X-MC-Unique: KnkBscS8Pc6kjGFXL6huOQ-1
+Received: by mail-ot1-f70.google.com with SMTP id c12-20020a9d684c000000b00693d5c2d242so1268714oto.23
+        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 19:11:49 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677208082;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=rrZOBgrLfanVHU8gvu8PaQc3hE0+RhVJQiShU2zGgBU=;
-        b=Itf3wMcfeCZWArF68kafHs3BajA17JyZ0RbvI/NxY/xJCeiLSqVlUm9WRID02Bo7Rn
-         tAukK7OT1aecMSZkD6MhwKt22cdBXlFNCXjggskM0i1XGpieZ7SZK8HaauWr9uEyUDoV
-         /BU0i9MOIFthuEmycr3vE2IDMgaWd2BcPRyI5B57y2IuiQd7I+SUJVCxW/zmoulAzCIW
-         yqA45DCC/LNW3tAqM4+NyNDWZcOYTgVL9kdTR0z1WHBODcXwsW9vtLlLXx+Wd4KGJRKk
-         upyVvIzyVUIKmp9WPv6Py2onCzWzVIIHrJYJhsMU2LkIF452iqvUcn2saYjSQRKv/qoQ
-         GvRA==
-X-Gm-Message-State: AO0yUKWav3RboUyJAUew4rPKKdVpZJsDpa8GKH3CWs48FDqxU1wtM5yy
-        ZbCYFb8rEK3Yxp36fN+Hwho=
-X-Google-Smtp-Source: AK7set80XqGL8tpwQapQOq5jTup96zyKCKKut8ZL9cRg3OS2a0Hm9cbVze7QmfZD6QfL8GcBezDa2w==
-X-Received: by 2002:a0c:f310:0:b0:56e:f89c:b0d9 with SMTP id j16-20020a0cf310000000b0056ef89cb0d9mr23195366qvl.4.1677208082461;
-        Thu, 23 Feb 2023 19:08:02 -0800 (PST)
-Received: from [127.0.0.1] ([103.152.220.17])
-        by smtp.gmail.com with ESMTPSA id r196-20020a3744cd000000b00706bc44fda8sm5335955qka.79.2023.02.23.19.07.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Feb 2023 19:08:01 -0800 (PST)
-Message-ID: <310391ea-7c71-395e-5dcb-b0a983e6fc93@gmail.com>
-Date:   Fri, 24 Feb 2023 11:07:54 +0800
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ce5tfl2n/EssbKt11AP0PiIJ95ywSk+f7JnIMaHI1Wk=;
+        b=lF8Ue8mswHsUO8p7QxJCy4sbqAoCh6mVaFliBRil/HNZJCIi8nSPanQ3HIFzOuPQ1A
+         /QuGheJO4t+l8xW9+rpldVPx/sqRV3+LYD1kdyWc5vGc8toMl9+SO7T3uSXVmbTBAKgP
+         1PGSpd7nAZVBeH+xw68LLLWArA1v5fx1ldz6WdkNNQIL+zdkuX1dSIXcm+KKVrjcBHQO
+         Sb/8n5YioaR0UDcpik3isusQYedHp1lSs3QNgpw88Cuotb/lsoEfNG0i+rPb+nzZ1meN
+         IcAYJbVz+O3fM7AEXpBZJyzPu28X+3lO/pFPsmKdLFdedZI/j8Ap41ssQJpYU280TYHP
+         ItYw==
+X-Gm-Message-State: AO0yUKXLtkay8euh09ZOAkfqyb2ODZGxuaF7cNIWeTio/wgeR+hftO4y
+        j+LnWbatoLx5wjykxYN8kkqcu19V3S3gClu7u9XDTwZc37NgHKGJ2qRaK0Dky6QhoLgiIa/NveJ
+        7Fr4WgJ/8HxFlzIdzZV7gHCdcXYUeg9sw
+X-Received: by 2002:a05:6808:6c9:b0:383:c688:a8e0 with SMTP id m9-20020a05680806c900b00383c688a8e0mr725790oih.9.1677208309041;
+        Thu, 23 Feb 2023 19:11:49 -0800 (PST)
+X-Google-Smtp-Source: AK7set+gu9v2kcBbZccH/ZaJz3PndJ8R+g8ZrRudTxgfmD3x81zCiyAktZ0EKcq2Yuereo2Z41aHL/7pYEkRPXgsh0s=
+X-Received: by 2002:a05:6808:6c9:b0:383:c688:a8e0 with SMTP id
+ m9-20020a05680806c900b00383c688a8e0mr725779oih.9.1677208308153; Thu, 23 Feb
+ 2023 19:11:48 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH] net: tls: fix possible info leak in
- tls_set_device_offload()
-To:     Sabrina Dubroca <sd@queasysnail.net>
-Cc:     borisp@nvidia.com, john.fastabend@gmail.com, kuba@kernel.org,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20230223090508.443157-1-hbh25y@gmail.com> <Y/dK6OoNpYswIqrD@hog>
-Content-Language: en-US
-From:   Hangyu Hua <hbh25y@gmail.com>
-In-Reply-To: <Y/dK6OoNpYswIqrD@hog>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20230223-virtio-net-kvmtool-v2-1-8ec93511e67f@rivosinc.com>
+In-Reply-To: <20230223-virtio-net-kvmtool-v2-1-8ec93511e67f@rivosinc.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Fri, 24 Feb 2023 11:11:37 +0800
+Message-ID: <CACGkMEu8JtT9_0YcbmfWCGxbrB1GHnesnspFYgaeVrb2x3o3oQ@mail.gmail.com>
+Subject: Re: [PATCH v2] virtio-net: Fix probe of virtio-net on kvmtool
+To:     rbradford@rivosinc.com
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,22 +77,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23/2/2023 19:15, Sabrina Dubroca wrote:
-> 2023-02-23, 17:05:08 +0800, Hangyu Hua wrote:
->> After tls_set_device_offload() fails, we enter tls_set_sw_offload(). But
->> tls_set_sw_offload can't set cctx->iv and cctx->rec_seq to NULL if it fails
->> before kmalloc cctx->iv. This may cause info leak when we call
->> do_tls_getsockopt_conf().
-> 
-> Is there really an issue here?
-> 
-> If both tls_set_device_offload and tls_set_sw_offload fail,
-> do_tls_setsockopt_conf will clear crypto_{send,recv} from the context.
-> Then the TLS_CRYPTO_INFO_READY in do_tls_getsockopt_conf will fail, so
-> we won't try to access iv or rec_seq.
-> 
+On Fri, Feb 24, 2023 at 3:38 AM Rob Bradford via B4 Relay
+<devnull+rbradford.rivosinc.com@kernel.org> wrote:
+>
+> From: Rob Bradford <rbradford@rivosinc.com>
+>
+> kvmtool does not support the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature
+> but does advertise the VIRTIO_NET_F_GUEST_TSO{4,6} features. Check that
+> the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature is present before setting
+> the NETIF_F_GRO_HW feature bit as otherwise an attempt will be made to
+> program the virtio-net device using the ctrl queue which will fail.
+>
+> This resolves the following error when running on kvmtool:
+>
+> [    1.865992] net eth0: Fail to set guest offload.
+> [    1.872491] virtio_net virtio2 eth0: set_features() failed (-22); wanted 0x0000000000134829, left 0x0080000000134829
+>
+> Signed-off-by: Rob Bradford <rbradford@rivosinc.com>
+> ---
+> Changes in v2:
+> - Use parentheses to group logical OR of features
+> - Link to v1:
+>   https://lore.kernel.org/r/20230223-virtio-net-kvmtool-v1-1-fc23d29b9d7a@rivosinc.com
+> ---
+>  drivers/net/virtio_net.c | 7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 61e33e4dd0cd..f8341d1a4ccd 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -3780,10 +3780,9 @@ static int virtnet_probe(struct virtio_device *vdev)
+>         }
+>         if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_CSUM))
+>                 dev->features |= NETIF_F_RXCSUM;
+> -       if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
+> -           virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6))
+> -               dev->features |= NETIF_F_GRO_HW;
+> -       if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
+> +       if ((virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
+> +           virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6)) &&
+> +           virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
+>                 dev->hw_features |= NETIF_F_GRO_HW;
 
-My bad. I forget memzero_explicit. Then this is harmless. But I still 
-think it is better to set them to NULL like tls_set_sw_offload's error 
-path because we don't know there are another way to do this(I will 
-change the commit log). What do you think?
+Does this mean we won't have NETIF_F_GRO_HW when only TSO4/TSO6 are
+supported but not GUEST_OFFLOADS?
+
+Is this intended?
+
+Thanks
+
+>
+>         dev->vlan_features = dev->features;
+>
+> ---
+> base-commit: c39cea6f38eefe356d64d0bc1e1f2267e282cdd3
+> change-id: 20230223-virtio-net-kvmtool-87f37515be22
+>
+> Best regards,
+> --
+> Rob Bradford <rbradford@rivosinc.com>
+>
+
