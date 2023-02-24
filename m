@@ -2,128 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 922E26A1BF6
-	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 13:11:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B3EE6A1C08
+	for <lists+netdev@lfdr.de>; Fri, 24 Feb 2023 13:18:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229758AbjBXML3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 07:11:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41622 "EHLO
+        id S229538AbjBXMSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 07:18:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229838AbjBXML2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 07:11:28 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B73515D469
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 04:11:07 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 2825A38C22;
-        Fri, 24 Feb 2023 12:10:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1677240652; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
+        with ESMTP id S229778AbjBXMSv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 07:18:51 -0500
+Received: from out-22.mta0.migadu.com (out-22.mta0.migadu.com [IPv6:2001:41d0:1004:224b::16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FDE4679A8
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 04:18:38 -0800 (PST)
+Message-ID: <28ccadd6-7c79-2a18-315e-3eabb14db80e@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1677241114;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=hqDliG01w5FWWjrW1HlTSGgLUD8gyej3e3gtyjKg+Ig=;
-        b=zG806qYyEE0wywcnZ4iQuGFuL17FqPFUAe0lnmQaNGitY4JnSUAWN/9lRc3n2e6wV9IFAT
-        307I4GnHkLuoy9uHQpOOmZ+NROKUkhMCSvOMlHuOuy5TdYE24GWzU8ikWAhNWPYiN7BPDc
-        kptPUurTRatelUqkcPgrT00fWBdiLx4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1677240652;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hqDliG01w5FWWjrW1HlTSGgLUD8gyej3e3gtyjKg+Ig=;
-        b=Bn6XNVopyIGSkcPm3H/cxZCnSrCNn+ee4pN9Og2AM6lRppWI7b2hrxSGhCShKSeGzyN7WO
-        dRP9n/RtE3yILoAA==
-Received: from unicorn.suse.cz (unicorn.suse.cz [10.100.12.242])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 1700C2C141;
-        Fri, 24 Feb 2023 12:10:52 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id E1F2FE03CF; Fri, 24 Feb 2023 13:10:51 +0100 (CET)
-Date:   Fri, 24 Feb 2023 13:10:51 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Thomas Devoogdt <thomas@devoogdt.com>
-Cc:     netdev@vger.kernel.org, Thomas Devoogdt <thomas.devoogdt@barco.com>
-Subject: Re: [PATCH ethtool] uapi: if.h: fix linux/libc-compat.h include on
- Linux < 3.12
-Message-ID: <20230224121051.GA7007@unicorn.suse.cz>
-References: <CACXRmJiuDeBW4in51_TUG5guLHLc7HZqfCTxCwMr6y_xGdUR5g@mail.gmail.com>
- <20230223211735.v62yutmzmwx3awb2@lion.mk-sys.cz>
- <CACXRmJj8hkni1NdKHvutCQw3An-uwu0MJkHFDS14d+OiwzDHZA@mail.gmail.com>
+        bh=lUfxqG7lqXq7n4rbertvs+ZhiP2BgCFlJCmIgP+KpgQ=;
+        b=mMBRSZMcY++kd/lhO5t4LLyiP2XzsdJ8IYjDJM80q3nRLRSSZUbAfnxUweXpslSrvB7qcg
+        5V4WEibSwCwp8JaTaaNvmGFdarxAYOq6l1GiINOhiF4r9PE4B8+PHXAT427Tw4S0qvYkHY
+        FeGecQK1t+c1sT58AYZBgOu/OcRaoQc=
+Date:   Fri, 24 Feb 2023 12:18:32 +0000
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="yrj/dFKFPuw6o+aM"
-Content-Disposition: inline
-In-Reply-To: <CACXRmJj8hkni1NdKHvutCQw3An-uwu0MJkHFDS14d+OiwzDHZA@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [net 07/10] net/mlx5e: Correct SKB room check to use all room in
+ the fifo
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>, Saeed Mahameed <saeed@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Rahul Rameshbabu <rrameshbabu@nvidia.com>
+References: <20230223225247.586552-1-saeed@kernel.org>
+ <20230223225247.586552-8-saeed@kernel.org>
+ <20230223163836.546bbc76@kernel.org>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Vadim Fedorenko <vadim.fedorenko@linux.dev>
+In-Reply-To: <20230223163836.546bbc76@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 24/02/2023 00:38, Jakub Kicinski wrote:
+> On Thu, 23 Feb 2023 14:52:44 -0800 Saeed Mahameed wrote:
+>> From: Rahul Rameshbabu <rrameshbabu@nvidia.com>
+>>
+>> Previous check was comparing against the fifo mask. The mask is size of the
+>> fifo (power of two) minus one, so a less than or equal comparator should be
+>> used for checking if the fifo has room for the SKB.
+>>
+>> Fixes: 19b43a432e3e ("net/mlx5e: Extend SKB room check to include PTP-SQ")
+> 
+> How big is the fifo? Not utilizing a single entry is not really worth
+> calling a bug if the fifo has at least 32 entries..
 
---yrj/dFKFPuw6o+aM
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, Feb 24, 2023 at 11:05:43AM +0100, Thomas Devoogdt wrote:
->=20
-> I now remember (while looking at the other patches I had to add) that
-> I'm also missing __kernel_sa_family_t from /uapi/linux/socket.h (for
-> Linux < 3.7). So it's indeed not just libc-compat.h which is causing
-> problems. So perhaps take that one along while at it.
-
-At the moment, the full set to add would be
-
-    linux/const.h
-    linux/if_addr.h
-    linux/if_ether.h
-    linux/libc-compat.h
-    linux/neighbour.h
-    linux/posix_types.h
-    linux/socket.h
-    linux/stddef.h
-    linux/types.h
-
-It looks like a lot but maintaining the whole uapi subdirectory can be
-fully scripted. Then I realized that there can be more than just linux/*
-and updated the script to pull in everything found in exported kernel
-headers. That added few more files:
-
-    asm-generic/bitsperlong.h
-    asm-generic/int-ll64.h
-    asm-generic/types.h
-    asm/bitsperlong.h
-    asm/posix_types.h
-    asm/types.h
-
-This is a bit more tricky as asm/* are architecture dependent. I suppose
-just taking x86_64 versions everywhere would be a bad idea for headers
-defining types. So I guess we may either omit asm/ or both asm-generic/
-and asm/. Neither is perfect and I'm not completely sure which option is
-safer.
-
-Michal
-
---yrj/dFKFPuw6o+aM
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmP4qUEACgkQ538sG/LR
-dpUd9Af/bXYmPSCiiWqhknjqVvbl3271MD84mgRLlsd7g+ZxIYDRHnnlNRhz3anF
-jp+qA/eyiex51rwue/c2Uou2BwI4RZKCtRWyZaQDI9u16uQLQ461D4Nmg5bGu+bl
-mmX6ZdazbsJQFIb8GVA9JJPdpBh+TOVOAZ0a5vPzaDNT/nYu9LBkCHrvyPnyZxTi
-iciYo5DfCKpk41dRbZggusJMlhMrk94GYZddZ7vSqNMtv+yX3mu0jNyQ8rAbR6+u
-lC9z7IjxSwok4Vh9p0Rx1E6qNXrxbXC3MGt2rwOQRVFkkgyETatnvx6jv1YruQ4b
-hOb5A/ylflFULdXlT7Gxj+AZPUXh6w==
-=rKYa
------END PGP SIGNATURE-----
-
---yrj/dFKFPuw6o+aM--
+AFAIK, it has the same size that any other SQ queue, up to 8192 entries 
+for now.
