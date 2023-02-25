@@ -2,80 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B11886A2842
-	for <lists+netdev@lfdr.de>; Sat, 25 Feb 2023 10:22:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E5116A292B
+	for <lists+netdev@lfdr.de>; Sat, 25 Feb 2023 11:58:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229520AbjBYJWX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Feb 2023 04:22:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36702 "EHLO
+        id S229539AbjBYK6Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Feb 2023 05:58:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbjBYJWW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Feb 2023 04:22:22 -0500
-Received: from smtp-outbound2.duck.com (smtp-outbound2.duck.com [20.67.223.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31F0FA254
-        for <netdev@vger.kernel.org>; Sat, 25 Feb 2023 01:22:21 -0800 (PST)
+        with ESMTP id S229445AbjBYK6P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Feb 2023 05:58:15 -0500
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 018AD1204A;
+        Sat, 25 Feb 2023 02:58:13 -0800 (PST)
+Received: from fpc.intra.ispras.ru (unknown [10.10.165.2])
+        by mail.ispras.ru (Postfix) with ESMTPSA id AE78640737BF;
+        Sat, 25 Feb 2023 10:58:10 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru AE78640737BF
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
+        s=default; t=1677322690;
+        bh=rGjdhJvb7X6dTiZDmK5NuegmyCAEIhgb0sexbGd+X04=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Q4UH0r35Vt4GBSQhMqcNn41zqoi+Grwhvvav7b4fMQ8hTH2msdIFeYXiH1oq/OSHq
+         kHRWjA1EpygIs6ot+rYkWcN95heLl5vqo7qm/b7HTaHv6HPjdy8dCRa5gwjzaTr0ZZ
+         rbsLkuqmwHjH3mqbV4WaiCpXBn7MCjRwDoaX5PJQ=
+From:   Fedor Pchelkin <pchelkin@ispras.ru>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Fedor Pchelkin <pchelkin@ispras.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Guenter Roeck <groeck@google.com>,
+        Martin Faltesek <mfaltesek@google.com>,
+        Duoming Zhou <duoming@zju.edu.cn>,
+        Samuel Ortiz <sameo@linux.intel.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        lvc-project@linuxtesting.org,
+        syzbot+df64c0a2e8d68e78a4fa@syzkaller.appspotmail.com
+Subject: [PATCH] nfc: fix memory leak of se_io context in nfc_genl_se_io
+Date:   Sat, 25 Feb 2023 13:56:14 +0300
+Message-Id: <20230225105614.379382-1-pchelkin@ispras.ru>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Subject: Re: 4-port ASMedia/RealTek RTL8125 2.5Gbps NIC freezes whole system
-References: <AF9C0500-2909-4FF4-8E4E-3BAD8FD8AA14.1@smtp-inbound1.duck.com>
- <92181e0e-3ca0-b19c-71f3-607fbfdc40a3@gmail.com>
- <00F8F608-C2C6-454E-8CA4-F963BC9D7005.1@smtp-inbound1.duck.com>
- <0EC01861-B6F5-40C9-AAD0-6B4ACC1EA13A.1@smtp-inbound1.duck.com>
- <cc8e02fd-53d4-6156-8728-262462958c64@gmail.com>
- <F65B5EFE-9DA8-4725-8DE4-28E02327C239.1@smtp-inbound1.duck.com>
-Content-Type: text/plain;
-        charset=UTF-8;
-        format=flowed
 Content-Transfer-Encoding: 8bit
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Received: by smtp-inbound1.duck.com; Sat, 25 Feb 2023 04:22:19 -0500
-Message-ID: <4181032B-BA7D-408B-ACCC-0A380FC8BB43.1@smtp-inbound1.duck.com>
-Date:   Sat, 25 Feb 2023 04:22:19 -0500
-From:   fk1xdcio@duck.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=duck.com; h=From:
- Date: Message-ID: Cc: To: Content-Transfer-Encoding: Content-Type:
- References: Subject: MIME-Version; q=dns/txt; s=postal-KpyQVw;
- t=1677316939; bh=2ePMkdMKtG95J+eHqEpMRHryJWRsVhz7LaoscIj4cWE=;
- b=HsA/RjhUZME6nfP9C2KLnq5DmPnGebqEmYhJ2OyT+ay1FEUt+ppOnlTVioxDa8nOb2y+g+tGR
- svk9S8j1TkViCItDw27oSP8QfWgmI9ntCh0HE4YXAdg+BG96dvVFeJ6RCyJI6f194ClehaYyOD1
- tKbjQDp0xs4Db2P4kzXAsWM=
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023-02-25 03:04, Heiner Kallweit wrote:
-> On 25.02.2023 00:52, fk1xdcio@duck.com wrote:
->> On 2023-02-24 15:21, Heiner Kallweit wrote:
->>> On 24.02.2023 15:37, fk1xdcio@duck.com wrote:
->>>> I'm having problems getting this 4-port 2.5Gbps NIC to be stable. I 
->>>> have tried on multiple different physical systems both with Xeon 
->>>> server and i7 workstation chipsets and it behaves the same way on 
->>>> everything. Testing with latest Arch Linux and kernels 6.1, 6.2, and 
->>>> 5.15. I'm using the kernel default r8169 driver.
->> ...
->>>> "SSU-TECH" (generic/counterfeit?) 4-port 2.5Gbps PCIe x4 card
->>>>   ASMedia ASM1812 PCIe switch (driver: pcieport)
->>>>   RTL8125BG x4 (driver: r8169)
->> ...
->>> The network driver shouldn't be able to freeze the system. You can 
->>> test whether vendor driver r8125 makes a difference.
->>> This should provide us with an idea whether the root cause is at a 
->>> lower level.
-...
->> I don't know what "cmd = 0xff" is referring to. Is this a command 
->> directly to the Ethernet chipset?
-> 
-> cmd is a chipset register and value 0xff indicates that it's not 
-> accessible.
-> To me it looks like the issue is somewhere on PCIe level.
+The callback context for sending/receiving APDUs to/from the selected
+secure element is allocated inside nfc_genl_se_io and supposed to be
+eventually freed in se_io_cb callback function. However, there are several
+error paths where the bwi_timer is not charged to call se_io_cb later, and
+the cb_context is leaked.
 
+The patch proposes to free the cb_context explicitly on those error paths.
 
-I think you're right. I'm putting my efforts in to debugging the PCIe 
-port and I'll take this to linux-pci.
+At the moment we can't simply check 'dev->ops->se_io()' return value as it
+may be negative in both cases: when the timer was charged and was not.
 
-Thanks again
+Fixes: 5ce3f32b5264 ("NFC: netlink: SE API implementation")
+Reported-by: syzbot+df64c0a2e8d68e78a4fa@syzkaller.appspotmail.com
+Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+---
+ drivers/nfc/st-nci/se.c   | 6 ++++++
+ drivers/nfc/st21nfca/se.c | 6 ++++++
+ net/nfc/netlink.c         | 4 ++++
+ 3 files changed, 16 insertions(+)
+
+diff --git a/drivers/nfc/st-nci/se.c b/drivers/nfc/st-nci/se.c
+index ec87dd21e054..b2f1ced8e6dd 100644
+--- a/drivers/nfc/st-nci/se.c
++++ b/drivers/nfc/st-nci/se.c
+@@ -672,6 +672,12 @@ int st_nci_se_io(struct nci_dev *ndev, u32 se_idx,
+ 					ST_NCI_EVT_TRANSMIT_DATA, apdu,
+ 					apdu_length);
+ 	default:
++		/* Need to free cb_context here as at the moment we can't
++		 * clearly indicate to the caller if the callback function
++		 * would be called (and free it) or not. In both cases a
++		 * negative value may be returned to the caller.
++		 */
++		kfree(cb_context);
+ 		return -ENODEV;
+ 	}
+ }
+diff --git a/drivers/nfc/st21nfca/se.c b/drivers/nfc/st21nfca/se.c
+index df8d27cf2956..dae288bebcb5 100644
+--- a/drivers/nfc/st21nfca/se.c
++++ b/drivers/nfc/st21nfca/se.c
+@@ -236,6 +236,12 @@ int st21nfca_hci_se_io(struct nfc_hci_dev *hdev, u32 se_idx,
+ 					ST21NFCA_EVT_TRANSMIT_DATA,
+ 					apdu, apdu_length);
+ 	default:
++		/* Need to free cb_context here as at the moment we can't
++		 * clearly indicate to the caller if the callback function
++		 * would be called (and free it) or not. In both cases a
++		 * negative value may be returned to the caller.
++		 */
++		kfree(cb_context);
+ 		return -ENODEV;
+ 	}
+ }
+diff --git a/net/nfc/netlink.c b/net/nfc/netlink.c
+index 1fc339084d89..348bf561bc9f 100644
+--- a/net/nfc/netlink.c
++++ b/net/nfc/netlink.c
+@@ -1442,7 +1442,11 @@ static int nfc_se_io(struct nfc_dev *dev, u32 se_idx,
+ 	rc = dev->ops->se_io(dev, se_idx, apdu,
+ 			apdu_length, cb, cb_context);
+ 
++	device_unlock(&dev->dev);
++	return rc;
++
+ error:
++	kfree(cb_context);
+ 	device_unlock(&dev->dev);
+ 	return rc;
+ }
+-- 
+2.34.1
+
