@@ -2,54 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2642F6A2725
-	for <lists+netdev@lfdr.de>; Sat, 25 Feb 2023 04:48:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 884BB6A274A
+	for <lists+netdev@lfdr.de>; Sat, 25 Feb 2023 05:54:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229676AbjBYDsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 22:48:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59808 "EHLO
+        id S229554AbjBYEyZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 23:54:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229673AbjBYDs2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 22:48:28 -0500
-Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16B92168AB;
-        Fri, 24 Feb 2023 19:48:04 -0800 (PST)
-Received: from localhost.localdomain (unknown [10.101.196.174])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        with ESMTP id S229468AbjBYEyY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 23:54:24 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF3F5126C0;
+        Fri, 24 Feb 2023 20:54:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id BD6834218A;
-        Sat, 25 Feb 2023 03:47:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1677296883;
-        bh=D9MK5fXeWpCA3lyK/IWtP54/AY1TUkcE/66hZyuxvaM=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=uuhdtV/ABQExKT/89UnqXYvRRx8j3dMGgqz5ZcwvP2DOnB5rvV9ZKC7RBKylbgGkp
-         5MrdoF84FrdRXHfK02utmO+IIXXpdxlxhzY+/aRis2T5kz9+mUkK38HzRhFiSkU1Ul
-         L2St724XjGpBGvGAqv8OGEVzBfLt/kgfUZ6VhyijWINDVJa7ShisT/BewKLKdIoQHz
-         S/gKD/iCuK0Q2qJDtVia1Zu9H409iFk/mNCxqQ5m7esBqvWJRBMz417r7+ClCLfHAt
-         iFo55j7aFwQrzlWbUeIHpUSXXHzJ+Iw6CYXoPX+UMKDZtVRv7gEesFPdO+OZS9WZju
-         rM2RZZICuZQbA==
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     hkallweit1@gmail.com, nic_swsd@realtek.com, bhelgaas@google.com
-Cc:     koba.ko@canonical.com, acelan.kao@canonical.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, sathyanarayanan.kuppuswamy@linux.intel.com,
-        vidyas@nvidia.com, rafael.j.wysocki@intel.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pci@vger.kernel.org,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>
-Subject: [PATCH net-next v9 5/5] r8169: Disable ASPM while doing NAPI poll
-Date:   Sat, 25 Feb 2023 11:46:35 +0800
-Message-Id: <20230225034635.2220386-6-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230225034635.2220386-1-kai.heng.feng@canonical.com>
-References: <20230225034635.2220386-1-kai.heng.feng@canonical.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B19DB81CF7;
+        Sat, 25 Feb 2023 04:54:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12895C433D2;
+        Sat, 25 Feb 2023 04:54:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1677300860;
+        bh=rOEc26RCcLfUjD9Zty2t2zc49it4UokaAcduKqPAXcM=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=n+qyRAGPb0GljWF1eoKJab1z3bKsk21DI2WxNs3XpzB3ExwWOSLJDVhlXbTJH2/6Z
+         GGpLxi8O7FLiD10AGHukiom5FZdA6MjYp/ElpAxytB2S6DjML7p4BzUuWajHnue8C5
+         IRMmsP6wWRbnib4lnlEnsP13s/H0VJe1o+uIPVbUO1xNIs0T/G4p6N3vOEdniZBWWe
+         EWQvL/fpHPLjgG6+arvXaj1Zhtxdy7HhVFcBDm/nIe649185Idq44lWe5zAkodZRAZ
+         2QaRsBikLPMcvoHpBBosBm8mcc6kKd4cy01NYrQVLek6xn0lMJVvWFPDM9pz//hPr+
+         g0pwDL7Qxmo0g==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        linux-wireless@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        netdev@vger.kernel.org, Larry Finger <Larry.Finger@lwfinger.net>,
+        Nicolas Cavallari <Nicolas.Cavallari@green-communications.fr>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH] wifi: wext: warn about usage only once
+References: <20230224135933.94104aeda1a0.Ie771c6a66d7d6c3cf67da5f3b0c66cea66fd514c@changeid>
+        <87lekn2jhx.fsf@kernel.org> <20230224114747.1b676862@kernel.org>
+Date:   Sat, 25 Feb 2023 06:54:16 +0200
+In-Reply-To: <20230224114747.1b676862@kernel.org> (Jakub Kicinski's message of
+        "Fri, 24 Feb 2023 11:47:47 -0800")
+Message-ID: <874jra2vlz.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,71 +59,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-NAPI poll of Realtek NICs don't seem to perform well ASPM is enabled.
-The vendor driver uses a mechanism called "dynamic ASPM" to toggle ASPM
-based on the packet number in given time period.
+Jakub Kicinski <kuba@kernel.org> writes:
 
-Instead of implementing "dynamic ASPM", use a more straightforward way
-by disabling ASPM during NAPI poll, as a similar approach was
-implemented to solve slow performance on Realtek wireless NIC, see
-commit 24f5e38a13b5 ("rtw88: Disable PCIe ASPM while doing NAPI poll on
-8821CE").
+> On Fri, 24 Feb 2023 17:03:38 +0200 Kalle Valo wrote:
+>> Linus, do you want to apply this directly or should we send this
+>> normally via the wireless tree? For the latter I would assume you would
+>> get it sometime next week.
+>
+> FWIW the net PR will likely be on Monday afternoon, pending this fix
+> and the Kconfig fix from Intel.
 
-Since NAPI poll should be handled as fast as possible, also remove the
-delay in rtl_hw_aspm_clkreq_enable() which was added by commit
-94235460f9eaef ("r8169: Align ASPM/CLKREQ setting function with vendor
-driver").
+Ok, I'll try to send a pull request before that. I also have other
+pending fixes in the queue.
 
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
-v9:
- - No change.
-
-v8:
- - New patch.
-
- drivers/net/ethernet/realtek/r8169_main.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index fb73b5386701f..4e874fa661852 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -2711,8 +2711,6 @@ static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
- 		RTL_W8(tp, Config2, RTL_R8(tp, Config2) & ~ClkReqEn);
- 		RTL_W8(tp, Config5, RTL_R8(tp, Config5) & ~ASPM_en);
- 	}
--
--	udelay(10);
- }
- 
- static void rtl_set_fifo_size(struct rtl8169_private *tp, u16 rx_stat,
-@@ -4577,6 +4575,12 @@ static int rtl8169_poll(struct napi_struct *napi, int budget)
- 	struct net_device *dev = tp->dev;
- 	int work_done;
- 
-+	if (tp->aspm_manageable) {
-+		rtl_unlock_config_regs(tp);
-+		rtl_hw_aspm_clkreq_enable(tp, false);
-+		rtl_lock_config_regs(tp);
-+	}
-+
- 	rtl_tx(dev, tp, budget);
- 
- 	work_done = rtl_rx(dev, tp, budget);
-@@ -4584,6 +4588,12 @@ static int rtl8169_poll(struct napi_struct *napi, int budget)
- 	if (work_done < budget && napi_complete_done(napi, work_done))
- 		rtl_irq_enable(tp);
- 
-+	if (tp->aspm_manageable) {
-+		rtl_unlock_config_regs(tp);
-+		rtl_hw_aspm_clkreq_enable(tp, true);
-+		rtl_lock_config_regs(tp);
-+	}
-+
- 	return work_done;
- }
- 
 -- 
-2.34.1
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
