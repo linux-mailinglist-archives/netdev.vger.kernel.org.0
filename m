@@ -2,47 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AB536A2776
-	for <lists+netdev@lfdr.de>; Sat, 25 Feb 2023 07:11:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81E7E6A2779
+	for <lists+netdev@lfdr.de>; Sat, 25 Feb 2023 07:13:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229574AbjBYGK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Feb 2023 01:10:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48002 "EHLO
+        id S229581AbjBYGNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Feb 2023 01:13:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbjBYGK4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Feb 2023 01:10:56 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E11F57D33;
-        Fri, 24 Feb 2023 22:10:55 -0800 (PST)
+        with ESMTP id S229379AbjBYGNP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Feb 2023 01:13:15 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AA5272B2;
+        Fri, 24 Feb 2023 22:13:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677305455; x=1708841455;
+  t=1677305594; x=1708841594;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=qs8TowkeaJTOr+OC7UE5rISgjUgqB6IL5jioaVAOZ3s=;
-  b=OWCdSPVkz6HorEgN+oCMpzbF7jcLKf2wjZnSTstnJJ4DlBvuFOU2ld9z
-   zeSTMTBSOqs6/8UwcbdHi2MOsmAyB3rXqMQupEaocwnTa83e5td5yp44m
-   WFyE59wfRlo3YpfGlkrgI+W+faTMEmidBNAmXPoEqaW428jZN6b8nQ27d
-   5D68eQauLX5fkrw83EMKw0GLHz+QjEwYUDK5ypdsCnDQDmSL68KmbzXT1
-   MQrWKsaeC0GzhYgjVk1X7NpI7RTYbU99dNYQvhoTleevVGZcu4ROqghLz
-   uai9wHmd2ghvxALRFznA+FkRGuzKjmfyB7n6ePKI4vSlDHMVupl6fWJJc
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10631"; a="332326565"
+  bh=ky27VsTDRNahF/4AEiY/YZMORSp+j0g+w7RIpvQrRUY=;
+  b=NYtvdhWpv+9Dkm2bjNPRrrnAhRBP/g7S0QqSEHWqoEvNTscFDY55af0/
+   Z1dB7DGZcryS1H/QBUTvG+oYiNZ3v9JIogGbkR4Wo4EeR/b1lcWAwT/6E
+   ttSgQ4lcJiqqYI6ISe6CbrMSnEpSUkk1ZlTLP6VCLyE9fN5nNZbIdlMl2
+   aIySY9rYM79o3dErfc40+UoVfxuFn6gTtptuWdZPYAcJSLrFeO67AUYg2
+   krsrmwmCnXuWiVAK2u+kd1ry302XHCnJznC/gTVD7yVLjtuTkJmhJCnLM
+   +tAMaAXxW/3pgs0olretCiGBEnmQYPHHlc+JdtwWkO/NiGndIWiitAGow
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10631"; a="317395794"
 X-IronPort-AV: E=Sophos;i="5.97,327,1669104000"; 
-   d="scan'208";a="332326565"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2023 22:10:54 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10631"; a="650584082"
+   d="scan'208";a="317395794"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2023 22:13:13 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10631"; a="666385264"
 X-IronPort-AV: E=Sophos;i="5.97,327,1669104000"; 
-   d="scan'208";a="650584082"
+   d="scan'208";a="666385264"
 Received: from soniyas1-mobl.amr.corp.intel.com (HELO [10.212.244.166]) ([10.212.244.166])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2023 22:10:54 -0800
-Message-ID: <33930e67-d2fb-1aa9-ba72-9ae61892e0fc@linux.intel.com>
-Date:   Fri, 24 Feb 2023 22:10:53 -0800
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2023 22:13:13 -0800
+Message-ID: <247ba0d1-12e6-f21b-fbb9-9906a5197e03@linux.intel.com>
+Date:   Fri, 24 Feb 2023 22:13:13 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Firefox/102.0 Thunderbird/102.4.2
-Subject: Re: [PATCH net-next v9 2/5] PCI/ASPM: Add pcie_aspm_capable() helper
+Subject: Re: [PATCH net-next v9 3/5] r8169: Consider chip-specific ASPM can be
+ enabled on more cases
 Content-Language: en-US
 To:     Kai-Heng Feng <kai.heng.feng@canonical.com>, hkallweit1@gmail.com,
         nic_swsd@realtek.com, bhelgaas@google.com
@@ -52,15 +53,15 @@ Cc:     koba.ko@canonical.com, acelan.kao@canonical.com,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-pci@vger.kernel.org
 References: <20230225034635.2220386-1-kai.heng.feng@canonical.com>
- <20230225034635.2220386-3-kai.heng.feng@canonical.com>
+ <20230225034635.2220386-4-kai.heng.feng@canonical.com>
 From:   Sathyanarayanan Kuppuswamy 
         <sathyanarayanan.kuppuswamy@linux.intel.com>
-In-Reply-To: <20230225034635.2220386-3-kai.heng.feng@canonical.com>
+In-Reply-To: <20230225034635.2220386-4-kai.heng.feng@canonical.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -70,83 +71,103 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 2/24/23 7:46 PM, Kai-Heng Feng wrote:
-> Introduce a new helper, pcie_aspm_capable(), to report ASPM capability.
+> To really enable ASPM on r8169 NICs, both standard PCIe ASPM and
+> chip-specific ASPM have to be enabled at the same time.
 > 
-> The user will be introduced by next patch.
+> Before enabling ASPM at chip side, make sure the following conditions
+> are met:
+> 1) Use pcie_aspm_support_enabled() to check if ASPM is disabled by
+>    kernel parameter.
+> 2) Use pcie_aspm_capable() to see if the device is capable to perform
+>    PCIe ASPM.
 
-Instead of just saying next patch, just say which driver or use case is
-going to use it.
+Why not club the support check within pcie_aspm_capable()?
 
+> 3) Check the return value of pci_disable_link_state(). If it's -EPERM,
+>    it means BIOS doesn't grant ASPM control to OS, and device should use
+>    the ASPM setting as is.
 > 
-> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-> Suggested-by: Bjorn Helgaas <bhelgaas@google.com>
+> Consider ASPM is manageable when those conditions are met.
+> 
+> While at it, disable ASPM at chip-side for TX timeout reset, since
+> pci_disable_link_state() doesn't have any effect when OS isn't granted
+> with ASPM control.
+> 
 > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 > ---
 > v9:
-> v8:
 >  - No change.
+> 
+> v8:
+>  - Enable chip-side ASPM only when PCIe ASPM is already available.
+>  - Wording.
 > 
 > v7:
->  - Change subject.
+>  - No change.
 > 
 > v6:
->  - No change.
+>  - Unconditionally enable chip-specific ASPM.
 > 
 > v5:
->  - No change.
+>  - New patch.
 > 
-> v4:
->  - Report aspm_capable instead.
+>  drivers/net/ethernet/realtek/r8169_main.c | 22 ++++++++++++++++++----
+>  1 file changed, 18 insertions(+), 4 deletions(-)
 > 
-> v3:
->  - This is a new patch
-> 
->  drivers/pci/pcie/aspm.c | 11 +++++++++++
->  include/linux/pci.h     |  2 ++
->  2 files changed, 13 insertions(+)
-> 
-> diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
-> index 692d6953f0970..d96bf0a362aa2 100644
-> --- a/drivers/pci/pcie/aspm.c
-> +++ b/drivers/pci/pcie/aspm.c
-> @@ -1199,6 +1199,17 @@ bool pcie_aspm_enabled(struct pci_dev *pdev)
->  }
->  EXPORT_SYMBOL_GPL(pcie_aspm_enabled);
+> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> index 45147a1016bec..a857650c2e82b 100644
+> --- a/drivers/net/ethernet/realtek/r8169_main.c
+> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> @@ -2675,8 +2675,11 @@ static void rtl_disable_exit_l1(struct rtl8169_private *tp)
 >  
-> +bool pcie_aspm_capable(struct pci_dev *pdev)
-> +{
-> +	struct pcie_link_state *link = pcie_aspm_get_link(pdev);
+>  static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
+>  {
+> -	/* Don't enable ASPM in the chip if OS can't control ASPM */
+> -	if (enable && tp->aspm_manageable) {
+> +	/* Skip if PCIe ASPM isn't possible */
+> +	if (!tp->aspm_manageable)
+> +		return;
 > +
-> +	if (!link)
-> +		return false;
-> +
-> +	return link->aspm_capable;
-> +}
-> +EXPORT_SYMBOL_GPL(pcie_aspm_capable);
-> +
->  static ssize_t aspm_attr_show_common(struct device *dev,
->  				     struct device_attribute *attr,
->  				     char *buf, u8 state)
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index adffd65e84b4e..fd56872883e14 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -1692,6 +1692,7 @@ int pci_disable_link_state_locked(struct pci_dev *pdev, int state);
->  void pcie_no_aspm(void);
->  bool pcie_aspm_support_enabled(void);
->  bool pcie_aspm_enabled(struct pci_dev *pdev);
-> +bool pcie_aspm_capable(struct pci_dev *pdev);
->  #else
->  static inline int pci_disable_link_state(struct pci_dev *pdev, int state)
->  { return 0; }
-> @@ -1700,6 +1701,7 @@ static inline int pci_disable_link_state_locked(struct pci_dev *pdev, int state)
->  static inline void pcie_no_aspm(void) { }
->  static inline bool pcie_aspm_support_enabled(void) { return false; }
->  static inline bool pcie_aspm_enabled(struct pci_dev *pdev) { return false; }
-> +static inline bool pcie_aspm_capable(struct pci_dev *pdev) { return false; }
->  #endif
+> +	if (enable) {
+>  		RTL_W8(tp, Config5, RTL_R8(tp, Config5) | ASPM_en);
+>  		RTL_W8(tp, Config2, RTL_R8(tp, Config2) | ClkReqEn);
 >  
->  #ifdef CONFIG_PCIEAER
+> @@ -4545,8 +4548,13 @@ static void rtl_task(struct work_struct *work)
+>  		/* ASPM compatibility issues are a typical reason for tx timeouts */
+>  		ret = pci_disable_link_state(tp->pci_dev, PCIE_LINK_STATE_L1 |
+>  							  PCIE_LINK_STATE_L0S);
+> +
+> +		/* OS may not be granted to control PCIe ASPM, prevent the driver from using it */
+> +		tp->aspm_manageable = 0;
+> +
+>  		if (!ret)
+>  			netdev_warn_once(tp->dev, "ASPM disabled on Tx timeout\n");
+> +
+>  		goto reset;
+>  	}
+>  
+> @@ -5227,13 +5235,19 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  	 * Chips from RTL8168h partially have issues with L1.2, but seem
+>  	 * to work fine with L1 and L1.1.
+>  	 */
+> -	if (rtl_aspm_is_safe(tp))
+> +	if (!pcie_aspm_support_enabled() || !pcie_aspm_capable(pdev))
+> +		rc = -EINVAL;
+> +	else if (rtl_aspm_is_safe(tp))
+>  		rc = 0;
+>  	else if (tp->mac_version >= RTL_GIGA_MAC_VER_46)
+>  		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1_2);
+>  	else
+>  		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
+> -	tp->aspm_manageable = !rc;
+> +
+> +	/* -EPERM means BIOS doesn't grant OS ASPM control, ASPM should be use
+> +	 * as is. Honor it.
+> +	 */
+> +	tp->aspm_manageable = (rc == -EPERM) ? 1 : !rc;
+>  
+>  	tp->dash_type = rtl_check_dash(tp);
+>  
 
 -- 
 Sathyanarayanan Kuppuswamy
