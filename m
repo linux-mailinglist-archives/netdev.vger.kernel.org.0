@@ -2,58 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B469A6A269D
-	for <lists+netdev@lfdr.de>; Sat, 25 Feb 2023 02:40:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 216056A26D1
+	for <lists+netdev@lfdr.de>; Sat, 25 Feb 2023 03:33:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229874AbjBYBk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 20:40:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41016 "EHLO
+        id S229547AbjBYCdg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 21:33:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229889AbjBYBkZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 20:40:25 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D343E515E8;
-        Fri, 24 Feb 2023 17:40:20 -0800 (PST)
+        with ESMTP id S229452AbjBYCdf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 21:33:35 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF3EA1B2DD
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 18:33:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5231CB81D78;
-        Sat, 25 Feb 2023 01:40:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0FD02C433EF;
-        Sat, 25 Feb 2023 01:40:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8AA0861828
+        for <netdev@vger.kernel.org>; Sat, 25 Feb 2023 02:33:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF520C433D2;
+        Sat, 25 Feb 2023 02:33:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677289218;
-        bh=QIlJNRK7O/fYSQ2XdQDu6fwQR/yjiyEw+lpxtMVbZ2E=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=BF1y+1f62G6yk/Rm4r1YNqO7D7vgoHNZ8Vy7yt+5V38n+jSgJk95uyZiZ6e6hGXQZ
-         uZ07mxQCqBkVGDg6YHjCHpcS0i8tmd06NFj62J2sjsBSYGQR5dy9EbvYS+DNhlBSv3
-         fUYADk1gDkwG08Sp1ueLJSncSKs1GWQaVfK37ioEyy8+oHLPQCKy9e7iIxlbkDHazV
-         NqS339HPwzJALVjS8wu+SWmmgpFsEfabSRiCfYuFZpr7+IXTFk5XQLeoz0i2UWf6CP
-         Fqv5W9wrhNbkqm2XGtFWfNPbcKMfY4QkQ0kp8+d8RCiGVywroSZwiuglUzdK/mKkHw
-         2e46RyndGeeUg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E8F9BE68D2D;
-        Sat, 25 Feb 2023 01:40:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1677292412;
+        bh=UhyIwoNpscRi1ghMnP5h2kWcFOXiCqhjXQY3+Hob3Sk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=H6vL0YCmIgOvXo1cGm1tadvi5ZSWXc6nMJpRtLEtubXynPlq49o1MTr/dVWVQJMrh
+         6F1RuNpwzpeLmpJbs4sTVSthk5xsanEGWMSzDCRMhB6U0vx4EGckBWjLE6lSYHVqc4
+         9CYsrayOwiVQQDB7vDKPtB4/0KMfYKtxziIkNN4QS44nboxIBcO3oRqAhQ29TfyrWK
+         MEHOLGfXuEtzk04lCgnQ0z/mGVdwvkWCXBYO/KkG68vkNp1pnwycJoDOXumVh4uDxo
+         vYgL7X0z7YOt+xCYYD7OHA7clBhEp9DxzSEtfpYE00cJsvvAfoxv3hyyTuDtm4gssc
+         zzoRnuK2C0X1w==
+Date:   Fri, 24 Feb 2023 18:33:31 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     nick black <dankamongmen@gmail.com>, netdev@vger.kernel.org,
+        Willem de Bruijn <willemb@google.com>
+Subject: Re: [PATCH] [net] fix inaccuracies in msg_zerocopy.rst
+Message-ID: <20230224183331.60980adc@kernel.org>
+In-Reply-To: <63f8cbc36988_78f6320819@willemb.c.googlers.com.notmuch>
+References: <Y/gg/EhIIjugLdd3@schwarzgerat.orthanc>
+        <63f8cbc36988_78f6320819@willemb.c.googlers.com.notmuch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCHv3 bpf-next 0/2] move SYS() macro to test_progs.h and run mptcp
- in a dedicated netns
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167728921795.31034.7569688658636917497.git-patchwork-notify@kernel.org>
-Date:   Sat, 25 Feb 2023 01:40:17 +0000
-References: <20230224061343.506571-1-liuhangbin@gmail.com>
-In-Reply-To: <20230224061343.506571-1-liuhangbin@gmail.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, bpf@vger.kernel.org, kuba@kernel.org,
-        davem@davemloft.net, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
-        sdf@google.com, haoluo@google.com, jolsa@kernel.org,
-        mykolal@fb.com, fmaurer@redhat.com, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,30 +53,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to bpf/bpf-next.git (master)
-by Martin KaFai Lau <martin.lau@kernel.org>:
-
-On Fri, 24 Feb 2023 14:13:41 +0800 you wrote:
-> As Martin suggested, let's move the SYS() macro to test_progs.h since
-> a lot of programs are using it. After that, let's run mptcp in a dedicated
-> netns to avoid user config influence.
+On Fri, 24 Feb 2023 09:37:55 -0500 Willem de Bruijn wrote:
+> nick black wrote:
+> > Replace "sendpage" with "sendfile". Remove comment about
+> > ENOBUFS when the sockopt hasn't been set; experimentation
+> > indicates that this is not true.
+> > 
+> > Signed-off-by: nick black <dankamongmen@gmail.com>  
 > 
-> v3: fix fd redirect typo. Move SYS() macro into the test_progs.h
-> v2: remove unneed close_cgroup_fd goto label.
+> Reviewed-by: Willem de Bruijn <willemb@google.com>
 > 
-> [...]
+> The first error was there from the start. The second is an
+> inconsistency introduced with commit 5cf4a8532c99
+> ("tcp: really ignore MSG_ZEROCOPY if no SO_ZEROCOPY")
+> 
+> If Documentation fixes go to net, I suggest that as Fixes tag.
 
-Here is the summary with links:
-  - [PATCHv3,bpf-next,1/2] selftests/bpf: move SYS() macro into the test_progs.h
-    https://git.kernel.org/bpf/bpf-next/c/b61987d37cbe
-  - [PATCHv3,bpf-next,2/2] selftests/bpf: run mptcp in a dedicated netns
-    https://git.kernel.org/bpf/bpf-next/c/02d6a057c7be
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Applied, thanks!
