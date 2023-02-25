@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FE876A271A
-	for <lists+netdev@lfdr.de>; Sat, 25 Feb 2023 04:47:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2F446A271D
+	for <lists+netdev@lfdr.de>; Sat, 25 Feb 2023 04:48:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229635AbjBYDri (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 22:47:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57762 "EHLO
+        id S229643AbjBYDr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Feb 2023 22:47:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229628AbjBYDrg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 22:47:36 -0500
+        with ESMTP id S229598AbjBYDr6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 22:47:58 -0500
 Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFD0446170;
-        Fri, 24 Feb 2023 19:47:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 649DE46174;
+        Fri, 24 Feb 2023 19:47:46 -0800 (PST)
 Received: from localhost.localdomain (unknown [10.101.196.174])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 3239C42188;
-        Sat, 25 Feb 2023 03:47:28 +0000 (UTC)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 102183FD9B;
+        Sat, 25 Feb 2023 03:47:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1677296854;
-        bh=9w6bfsuULjah3KOP3rBjhmCazbuLV8pgKwfm04IQKjM=;
+        s=20210705; t=1677296861;
+        bh=FIo8POnb+lvnkz6JRqx93RRjQHuBp7vbw79esPyEjA0=;
         h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=Fw7HJlgNyg150FU4HGATAfTdrRbwFOtxDjQlVD9KudOhktca4jMZlEw0Q+j7JH+rj
-         lwgSfkv1cLbDw89xCfyP4V3YjWn/7c6ZZSjRKtj9o8XZL/9Wc5byKKKABMT8ATyhoq
-         9YYVZafs96WzciID87L29gsrPW+6jLlyPFVpKbaJcN45YVKPiYTqElZ2h9G7R2mkeV
-         uBCrzxkSUEDKypSTx+gA4kGumHsiS8zYWKInhReY4TRAG7rWkAMeztx1EF0HaU5Gb2
-         TnIHcWr4hKRZ/AGoCeYPF3S+mH398HoTLr7eRTcomSoXjE3ZgN0ORk+npMjj/jneHR
-         2TSdff3r6c4eg==
+        b=Los2piUAEP9gWQoxuIV40dDO8Cg6XERp1hkvm7aFj6mfArHStfZXr0nnMUYw2dzID
+         iLSxaP8K+JEGYoVcqUCs+Fs+ujaaTFMqkm077Qn6VKg6Uos2lsIbuNVW79qRUIYJ1G
+         hJFjHrPD65VTjDlARqEPJxtIXBoQ9XteoEGWtcSmHvtmtaSMVjWVJZUe13tVf3OsCF
+         67MyfEUtEcsdQ5iCnEM6ZwqTtE9WS/j6MI0aw3ziymSVrr4sbrjeQAtW2JY0XGWrGf
+         qMMwEa13lIpq2D6Tjj2+jZ7b4moCFvd+I+EoQk6u2D3DkeeT3ICDeQ7wAhXkEMXsQZ
+         exups1dTu2QHA==
 From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
 To:     hkallweit1@gmail.com, nic_swsd@realtek.com, bhelgaas@google.com
 Cc:     koba.ko@canonical.com, acelan.kao@canonical.com,
@@ -40,9 +40,9 @@ Cc:     koba.ko@canonical.com, acelan.kao@canonical.com,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-pci@vger.kernel.org,
         Kai-Heng Feng <kai.heng.feng@canonical.com>
-Subject: [PATCH net-next v9 1/5] Revert "PCI/ASPM: Unexport pcie_aspm_support_enabled()"
-Date:   Sat, 25 Feb 2023 11:46:31 +0800
-Message-Id: <20230225034635.2220386-2-kai.heng.feng@canonical.com>
+Subject: [PATCH net-next v9 2/5] PCI/ASPM: Add pcie_aspm_capable() helper
+Date:   Sat, 25 Feb 2023 11:46:32 +0800
+Message-Id: <20230225034635.2220386-3-kai.heng.feng@canonical.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230225034635.2220386-1-kai.heng.feng@canonical.com>
 References: <20230225034635.2220386-1-kai.heng.feng@canonical.com>
@@ -57,30 +57,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit ba13d4575da5e656a3cbc18583e0da5c5d865417.
+Introduce a new helper, pcie_aspm_capable(), to report ASPM capability.
 
-This will be used by module once again.
+The user will be introduced by next patch.
 
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+Suggested-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 ---
 v9:
+v8:
  - No change.
 
-v8:
- - New patch.
+v7:
+ - Change subject.
 
- drivers/pci/pcie/aspm.c | 1 +
- 1 file changed, 1 insertion(+)
+v6:
+ - No change.
+
+v5:
+ - No change.
+
+v4:
+ - Report aspm_capable instead.
+
+v3:
+ - This is a new patch
+
+ drivers/pci/pcie/aspm.c | 11 +++++++++++
+ include/linux/pci.h     |  2 ++
+ 2 files changed, 13 insertions(+)
 
 diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
-index 4b4184563a927..692d6953f0970 100644
+index 692d6953f0970..d96bf0a362aa2 100644
 --- a/drivers/pci/pcie/aspm.c
 +++ b/drivers/pci/pcie/aspm.c
-@@ -1372,3 +1372,4 @@ bool pcie_aspm_support_enabled(void)
- {
- 	return aspm_support_enabled;
+@@ -1199,6 +1199,17 @@ bool pcie_aspm_enabled(struct pci_dev *pdev)
  }
-+EXPORT_SYMBOL(pcie_aspm_support_enabled);
+ EXPORT_SYMBOL_GPL(pcie_aspm_enabled);
+ 
++bool pcie_aspm_capable(struct pci_dev *pdev)
++{
++	struct pcie_link_state *link = pcie_aspm_get_link(pdev);
++
++	if (!link)
++		return false;
++
++	return link->aspm_capable;
++}
++EXPORT_SYMBOL_GPL(pcie_aspm_capable);
++
+ static ssize_t aspm_attr_show_common(struct device *dev,
+ 				     struct device_attribute *attr,
+ 				     char *buf, u8 state)
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index adffd65e84b4e..fd56872883e14 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -1692,6 +1692,7 @@ int pci_disable_link_state_locked(struct pci_dev *pdev, int state);
+ void pcie_no_aspm(void);
+ bool pcie_aspm_support_enabled(void);
+ bool pcie_aspm_enabled(struct pci_dev *pdev);
++bool pcie_aspm_capable(struct pci_dev *pdev);
+ #else
+ static inline int pci_disable_link_state(struct pci_dev *pdev, int state)
+ { return 0; }
+@@ -1700,6 +1701,7 @@ static inline int pci_disable_link_state_locked(struct pci_dev *pdev, int state)
+ static inline void pcie_no_aspm(void) { }
+ static inline bool pcie_aspm_support_enabled(void) { return false; }
+ static inline bool pcie_aspm_enabled(struct pci_dev *pdev) { return false; }
++static inline bool pcie_aspm_capable(struct pci_dev *pdev) { return false; }
+ #endif
+ 
+ #ifdef CONFIG_PCIEAER
 -- 
 2.34.1
 
