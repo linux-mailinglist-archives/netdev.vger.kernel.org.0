@@ -2,133 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F06FE6A276F
-	for <lists+netdev@lfdr.de>; Sat, 25 Feb 2023 07:08:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11C666A2773
+	for <lists+netdev@lfdr.de>; Sat, 25 Feb 2023 07:09:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229538AbjBYGI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Feb 2023 01:08:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45730 "EHLO
+        id S229558AbjBYGJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Feb 2023 01:09:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbjBYGIZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Feb 2023 01:08:25 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 470EC12F18
-        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 22:08:23 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pVnjF-0004Xf-D3; Sat, 25 Feb 2023 07:08:17 +0100
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pVnjA-0007Vf-9X; Sat, 25 Feb 2023 07:08:12 +0100
-Date:   Sat, 25 Feb 2023 07:08:12 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>, Arun.Ramadoss@microchip.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Wei Fang <wei.fang@nxp.com>,
-        kernel@pengutronix.de, intel-wired-lan@lists.osuosl.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next v8 6/9] net: phy: c22: migrate to
- genphy_c45_write_eee_adv()
-Message-ID: <20230225060812.GB8437@pengutronix.de>
-References: <20230224035553.GA1089605@roeck-us.net>
- <20230224041604.GA1353778@roeck-us.net>
- <20230224045340.GN19238@pengutronix.de>
- <363517fc-d16e-5bcd-763d-fc0e32c2301a@roeck-us.net>
- <20230224165213.GO19238@pengutronix.de>
- <20230224174132.GA1224969@roeck-us.net>
- <20230224183646.GA26307@pengutronix.de>
- <b0af4518-3c07-726e-79a0-19c53f799204@roeck-us.net>
- <20230224200207.GA8437@pengutronix.de>
- <52f8bb78-0913-6e9a-7816-f32cdad688f2@roeck-us.net>
+        with ESMTP id S229379AbjBYGJN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Feb 2023 01:09:13 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6448A13517;
+        Fri, 24 Feb 2023 22:09:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1677305352; x=1708841352;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ydnpuafRMywrMChE/DopyAUD95oiDpGr2V78Qp96dkI=;
+  b=oHGIadDx8fchoa88qi8yIymk2ze9isoDtHlyEJf9C5FgzCbY6bMTsSrB
+   NmAv1IlYlsPqPXuAMVjyjmvOXqUE6403X7p7+NLCeWxx0sropZFch+2n/
+   jsP31+DUmMOorKEYFAEpMt+1pMs8MmhHgHl3bY5cH/QywhbDswo0eXUrJ
+   KYebWw4xsYsX+HzrDI6WqXtaWMDyYpQFD0QmoSOKyhkwZxZAacHvk6kfR
+   pO3UqiiJ4BpP1aS8zHn1KeSnSiZmbPqCddnFGyzAA6PwR+Tmg5kqOrnxX
+   YnzzA/DtHJ+KuYXL6SMrpwryYuvYIEAo4P8GMPojfs8DSA7W2XUC049G0
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10631"; a="332326455"
+X-IronPort-AV: E=Sophos;i="5.97,327,1669104000"; 
+   d="scan'208";a="332326455"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2023 22:09:11 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10631"; a="650583556"
+X-IronPort-AV: E=Sophos;i="5.97,327,1669104000"; 
+   d="scan'208";a="650583556"
+Received: from soniyas1-mobl.amr.corp.intel.com (HELO [10.212.244.166]) ([10.212.244.166])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2023 22:09:11 -0800
+Message-ID: <afcdeff6-e47e-6291-fa10-4919a50276c5@linux.intel.com>
+Date:   Fri, 24 Feb 2023 22:09:10 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <52f8bb78-0913-6e9a-7816-f32cdad688f2@roeck-us.net>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.4.2
+Subject: Re: [PATCH net-next v9 1/5] Revert "PCI/ASPM: Unexport
+ pcie_aspm_support_enabled()"
+Content-Language: en-US
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>, hkallweit1@gmail.com,
+        nic_swsd@realtek.com, bhelgaas@google.com
+Cc:     koba.ko@canonical.com, acelan.kao@canonical.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, vidyas@nvidia.com, rafael.j.wysocki@intel.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pci@vger.kernel.org
+References: <20230225034635.2220386-1-kai.heng.feng@canonical.com>
+ <20230225034635.2220386-2-kai.heng.feng@canonical.com>
+From:   Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <20230225034635.2220386-2-kai.heng.feng@canonical.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 24, 2023 at 04:09:40PM -0800, Guenter Roeck wrote:
-> On 2/24/23 12:02, Oleksij Rempel wrote:
-> [ ... ]
-> > > 
-> > > For cubieboard:
-> > > 
-> > > MDIO_PCS_EEE_ABLE = 0x0000
-> > > 
-> > > qemu reports attempts to access unsupported registers.
-> > > 
-> > > I had a look at the Allwinner mdio driver. There is no indication suggesting
-> > > what the real hardware would return when trying to access unsupported registers,
-> > > and the Ethernet controller datasheet is not public.
-> > 
-> > These are PHY accesses over MDIO bus. Ethernet controller should not
-> > care about content of this operations. But on qemu side, it is implemented as
-> > part of Ethernet controller emulation...
-> > 
-> > Since MDIO_PCS_EEE_ABLE == 0x0000, phydev->supported_eee should prevent
-> > other EEE related operations. But may be actual phy_read_mmd() went
-> > wrong. It is a combination of simple phy_read/write to different
-> > registers.
-> > 
+
+
+On 2/24/23 7:46 PM, Kai-Heng Feng wrote:
+> This reverts commit ba13d4575da5e656a3cbc18583e0da5c5d865417.
 > 
-> Adding MDD read/write support in qemu doesn't help. Something else in your patch
-> prevents the PHY from coming up. After reverting your patch, I see
+> This will be used by module once again.
+
+Since this is a single line change, why revert it? It should be simpler
+to export it in the patch that needs it right?
+
 > 
-> sun4i-emac 1c0b000.ethernet eth0: Link is Up - 100Mbps/Full - flow control off
-> IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> ---
+> v9:
+>  - No change.
 > 
-> in the log. This is missing with your patch in place.
+> v8:
+>  - New patch.
 > 
-> Anyway, the key difference is not really the qemu emulation, but the added
-> unconditional call to genphy_c45_write_eee_adv() in your patch. If you look
-> closely into that function, you may notice that the 'changed' variable is
-> never set to 0.
+>  drivers/pci/pcie/aspm.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
-> index 3813b86689d0..fee514b96ab1 100644
-> --- a/drivers/net/phy/phy-c45.c
-> +++ b/drivers/net/phy/phy-c45.c
-> @@ -672,7 +672,7 @@ EXPORT_SYMBOL_GPL(genphy_c45_read_mdix);
->   */
->  int genphy_c45_write_eee_adv(struct phy_device *phydev, unsigned long *adv)
+> diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
+> index 4b4184563a927..692d6953f0970 100644
+> --- a/drivers/pci/pcie/aspm.c
+> +++ b/drivers/pci/pcie/aspm.c
+> @@ -1372,3 +1372,4 @@ bool pcie_aspm_support_enabled(void)
 >  {
-> -       int val, changed;
-> +       int val, changed = 0;
-> 
->         if (linkmode_intersects(phydev->supported_eee, PHY_EEE_CAP1_FEATURES)) {
->                 val = linkmode_to_mii_eee_cap1_t(adv);
-> 
-> fixes the problem, both for cubieboard and xtensa.
+>  	return aspm_support_enabled;
+>  }
+> +EXPORT_SYMBOL(pcie_aspm_support_enabled);
 
-Good point! Thx for finding it!
-
-Do you wont to send the fix against net?
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
