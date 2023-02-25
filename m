@@ -2,56 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 884BB6A274A
-	for <lists+netdev@lfdr.de>; Sat, 25 Feb 2023 05:54:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F06FE6A276F
+	for <lists+netdev@lfdr.de>; Sat, 25 Feb 2023 07:08:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229554AbjBYEyZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Feb 2023 23:54:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37966 "EHLO
+        id S229538AbjBYGI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Feb 2023 01:08:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbjBYEyY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Feb 2023 23:54:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF3F5126C0;
-        Fri, 24 Feb 2023 20:54:23 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5B19DB81CF7;
-        Sat, 25 Feb 2023 04:54:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12895C433D2;
-        Sat, 25 Feb 2023 04:54:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677300860;
-        bh=rOEc26RCcLfUjD9Zty2t2zc49it4UokaAcduKqPAXcM=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=n+qyRAGPb0GljWF1eoKJab1z3bKsk21DI2WxNs3XpzB3ExwWOSLJDVhlXbTJH2/6Z
-         GGpLxi8O7FLiD10AGHukiom5FZdA6MjYp/ElpAxytB2S6DjML7p4BzUuWajHnue8C5
-         IRMmsP6wWRbnib4lnlEnsP13s/H0VJe1o+uIPVbUO1xNIs0T/G4p6N3vOEdniZBWWe
-         EWQvL/fpHPLjgG6+arvXaj1Zhtxdy7HhVFcBDm/nIe649185Idq44lWe5zAkodZRAZ
-         2QaRsBikLPMcvoHpBBosBm8mcc6kKd4cy01NYrQVLek6xn0lMJVvWFPDM9pz//hPr+
-         g0pwDL7Qxmo0g==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        linux-wireless@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        netdev@vger.kernel.org, Larry Finger <Larry.Finger@lwfinger.net>,
-        Nicolas Cavallari <Nicolas.Cavallari@green-communications.fr>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH] wifi: wext: warn about usage only once
-References: <20230224135933.94104aeda1a0.Ie771c6a66d7d6c3cf67da5f3b0c66cea66fd514c@changeid>
-        <87lekn2jhx.fsf@kernel.org> <20230224114747.1b676862@kernel.org>
-Date:   Sat, 25 Feb 2023 06:54:16 +0200
-In-Reply-To: <20230224114747.1b676862@kernel.org> (Jakub Kicinski's message of
-        "Fri, 24 Feb 2023 11:47:47 -0800")
-Message-ID: <874jra2vlz.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S229379AbjBYGIZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Feb 2023 01:08:25 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 470EC12F18
+        for <netdev@vger.kernel.org>; Fri, 24 Feb 2023 22:08:23 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pVnjF-0004Xf-D3; Sat, 25 Feb 2023 07:08:17 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pVnjA-0007Vf-9X; Sat, 25 Feb 2023 07:08:12 +0100
+Date:   Sat, 25 Feb 2023 07:08:12 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>, Arun.Ramadoss@microchip.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Wei Fang <wei.fang@nxp.com>,
+        kernel@pengutronix.de, intel-wired-lan@lists.osuosl.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next v8 6/9] net: phy: c22: migrate to
+ genphy_c45_write_eee_adv()
+Message-ID: <20230225060812.GB8437@pengutronix.de>
+References: <20230224035553.GA1089605@roeck-us.net>
+ <20230224041604.GA1353778@roeck-us.net>
+ <20230224045340.GN19238@pengutronix.de>
+ <363517fc-d16e-5bcd-763d-fc0e32c2301a@roeck-us.net>
+ <20230224165213.GO19238@pengutronix.de>
+ <20230224174132.GA1224969@roeck-us.net>
+ <20230224183646.GA26307@pengutronix.de>
+ <b0af4518-3c07-726e-79a0-19c53f799204@roeck-us.net>
+ <20230224200207.GA8437@pengutronix.de>
+ <52f8bb78-0913-6e9a-7816-f32cdad688f2@roeck-us.net>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <52f8bb78-0913-6e9a-7816-f32cdad688f2@roeck-us.net>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,20 +71,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> writes:
+On Fri, Feb 24, 2023 at 04:09:40PM -0800, Guenter Roeck wrote:
+> On 2/24/23 12:02, Oleksij Rempel wrote:
+> [ ... ]
+> > > 
+> > > For cubieboard:
+> > > 
+> > > MDIO_PCS_EEE_ABLE = 0x0000
+> > > 
+> > > qemu reports attempts to access unsupported registers.
+> > > 
+> > > I had a look at the Allwinner mdio driver. There is no indication suggesting
+> > > what the real hardware would return when trying to access unsupported registers,
+> > > and the Ethernet controller datasheet is not public.
+> > 
+> > These are PHY accesses over MDIO bus. Ethernet controller should not
+> > care about content of this operations. But on qemu side, it is implemented as
+> > part of Ethernet controller emulation...
+> > 
+> > Since MDIO_PCS_EEE_ABLE == 0x0000, phydev->supported_eee should prevent
+> > other EEE related operations. But may be actual phy_read_mmd() went
+> > wrong. It is a combination of simple phy_read/write to different
+> > registers.
+> > 
+> 
+> Adding MDD read/write support in qemu doesn't help. Something else in your patch
+> prevents the PHY from coming up. After reverting your patch, I see
+> 
+> sun4i-emac 1c0b000.ethernet eth0: Link is Up - 100Mbps/Full - flow control off
+> IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+> 
+> in the log. This is missing with your patch in place.
+> 
+> Anyway, the key difference is not really the qemu emulation, but the added
+> unconditional call to genphy_c45_write_eee_adv() in your patch. If you look
+> closely into that function, you may notice that the 'changed' variable is
+> never set to 0.
+> 
+> diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+> index 3813b86689d0..fee514b96ab1 100644
+> --- a/drivers/net/phy/phy-c45.c
+> +++ b/drivers/net/phy/phy-c45.c
+> @@ -672,7 +672,7 @@ EXPORT_SYMBOL_GPL(genphy_c45_read_mdix);
+>   */
+>  int genphy_c45_write_eee_adv(struct phy_device *phydev, unsigned long *adv)
+>  {
+> -       int val, changed;
+> +       int val, changed = 0;
+> 
+>         if (linkmode_intersects(phydev->supported_eee, PHY_EEE_CAP1_FEATURES)) {
+>                 val = linkmode_to_mii_eee_cap1_t(adv);
+> 
+> fixes the problem, both for cubieboard and xtensa.
 
-> On Fri, 24 Feb 2023 17:03:38 +0200 Kalle Valo wrote:
->> Linus, do you want to apply this directly or should we send this
->> normally via the wireless tree? For the latter I would assume you would
->> get it sometime next week.
->
-> FWIW the net PR will likely be on Monday afternoon, pending this fix
-> and the Kconfig fix from Intel.
+Good point! Thx for finding it!
 
-Ok, I'll try to send a pull request before that. I also have other
-pending fixes in the queue.
-
+Do you wont to send the fix against net?
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
