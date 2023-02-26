@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AFB56A31EC
-	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 16:10:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 586BB6A3239
+	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 16:28:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229632AbjBZPKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Feb 2023 10:10:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59226 "EHLO
+        id S230205AbjBZP2w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Feb 2023 10:28:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231741AbjBZPJo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 10:09:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 730FA23877;
-        Sun, 26 Feb 2023 06:59:51 -0800 (PST)
+        with ESMTP id S229729AbjBZP2j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 10:28:39 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 177521C32E;
+        Sun, 26 Feb 2023 07:24:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E72F5B80C76;
-        Sun, 26 Feb 2023 14:50:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80120C433D2;
-        Sun, 26 Feb 2023 14:50:48 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 32273CE0E89;
+        Sun, 26 Feb 2023 14:50:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87613C4339C;
+        Sun, 26 Feb 2023 14:50:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677423049;
-        bh=J8tvAYnnNh+qGP626LZlPmvKvW6/UOO8wDJOxvrNXPw=;
+        s=k20201202; t=1677423057;
+        bh=drOd08qg67tPd76QOrY4JCFJ/FOIzF+WzPq/SRUHWU0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lQQNOCZuRxUktEcpbT9nzUkb4FSOjIShsiDtT02s2exwA9l7JhbZJ8dV090oaeRZA
-         3JZxp7khbn2m4dIxuhVrlaP6iMUQ1mt9JZIGYytL7TPfEvz+xEiUCdZMANubHmjIYG
-         gft5u66LStKpQbLhZUGbHj5lWsUmIdz8G1sNuNFg3EpA4uEfd+NZGvNWzTeQXDz0Pw
-         faIuZHiswPzQ92teM8ICSIGQ58a6zjXMmfiFbA0Ga2vfQDG5l16ojYUL69mA6NpqOl
-         6y7jjohqnOKTcDP60gJ6aD1mHYvPcs62NZH20NAeigkTZbiLiLdlRquNym9DvWliOj
-         uobu49W32kyOA==
+        b=nw/l8bYbNN/DAB6c0AqZT114xaiTmkTRnNBJwON6uYXcWQ9Vd545x4q0EiZJUdwhb
+         /GgXULZ/N5iQrwm5eXHMHU+tnkZ9d0h3YmO2qMhLixYEiL+QsSqvRcNR+GnZIq3vO4
+         4R+DCyN2xL7h0rH6ETMUVUpbUYc0royNanTiyanlPNUi89pEaZD61V4/75Ipw6zDLC
+         5gcGYQImxUtgLFmkFRjr852NFHIw8ntWmrTanOVymNvrbYWmZNRn2vQNlXRFLAjvEx
+         vr4h1yHAhxWVNtFbnNVy5r/hzhd2eDCwhGUYB9STzsvS3/7EhIi1olufUsGkruOExB
+         TVdhWyQaB/RMw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Gurucharan G <gurucharanx.g@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+Cc:     Breno Leitao <leitao@debian.org>,
+        Michael van der Westhuizen <rmikey@meta.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 13/27] ice: add missing checks for PF vsi type
-Date:   Sun, 26 Feb 2023 09:50:00 -0500
-Message-Id: <20230226145014.828855-13-sashal@kernel.org>
+        edumazet@google.com, pabeni@redhat.com,
+        wsa+renesas@sang-engineering.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 17/27] netpoll: Remove 4s sleep during carrier detection
+Date:   Sun, 26 Feb 2023 09:50:04 -0500
+Message-Id: <20230226145014.828855-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230226145014.828855-1-sashal@kernel.org>
 References: <20230226145014.828855-1-sashal@kernel.org>
@@ -58,70 +58,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesse Brandeburg <jesse.brandeburg@intel.com>
+From: Breno Leitao <leitao@debian.org>
 
-[ Upstream commit 6a8d013e904ad9a66706fcc926ec9993bed7d190 ]
+[ Upstream commit d8afe2f8a92d2aac3df645772f6ee61b0b2fc147 ]
 
-There were a few places we had missed checking the VSI type to make sure
-it was definitely a PF VSI, before calling setup functions intended only
-for the PF VSI.
+This patch removes the msleep(4s) during netpoll_setup() if the carrier
+appears instantly.
 
-This doesn't fix any explicit bugs but cleans up the code in a few
-places and removes one explicit != vsi->type check that can be
-superseded by this code (it's a super set)
+Here are some scenarios where this workaround is counter-productive in
+modern ages:
 
-Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Servers which have BMC communicating over NC-SI via the same NIC as gets
+used for netconsole. BMC will keep the PHY up, hence the carrier
+appearing instantly.
+
+The link is fibre, SERDES getting sync could happen within 0.1Hz, and
+the carrier also appears instantly.
+
+Other than that, if a driver is reporting instant carrier and then
+losing it, this is probably a driver bug.
+
+Reported-by: Michael van der Westhuizen <rmikey@meta.com>
+Signed-off-by: Breno Leitao <leitao@debian.org>
+Link: https://lore.kernel.org/r/20230125185230.3574681-1-leitao@debian.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+ net/core/netpoll.c | 12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index c1465096239b6..4f0d63fa5709b 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -5200,15 +5200,12 @@ int ice_vsi_cfg(struct ice_vsi *vsi)
- {
- 	int err;
- 
--	if (vsi->netdev) {
-+	if (vsi->netdev && vsi->type == ICE_VSI_PF) {
- 		ice_set_rx_mode(vsi->netdev);
- 
--		if (vsi->type != ICE_VSI_LB) {
--			err = ice_vsi_vlan_setup(vsi);
--
--			if (err)
--				return err;
--		}
-+		err = ice_vsi_vlan_setup(vsi);
-+		if (err)
-+			return err;
+diff --git a/net/core/netpoll.c b/net/core/netpoll.c
+index 960948290001e..ee2022b9616bf 100644
+--- a/net/core/netpoll.c
++++ b/net/core/netpoll.c
+@@ -694,7 +694,7 @@ int netpoll_setup(struct netpoll *np)
  	}
- 	ice_vsi_cfg_dcb_rings(vsi);
  
-@@ -5267,7 +5264,7 @@ static int ice_up_complete(struct ice_vsi *vsi)
+ 	if (!netif_running(ndev)) {
+-		unsigned long atmost, atleast;
++		unsigned long atmost;
  
- 	if (vsi->port_info &&
- 	    (vsi->port_info->phy.link_info.link_info & ICE_AQ_LINK_UP) &&
--	    vsi->netdev) {
-+	    vsi->netdev && vsi->type == ICE_VSI_PF) {
- 		ice_print_link_msg(vsi, true);
- 		netif_tx_start_all_queues(vsi->netdev);
- 		netif_carrier_on(vsi->netdev);
-@@ -5277,7 +5274,9 @@ static int ice_up_complete(struct ice_vsi *vsi)
- 	 * set the baseline so counters are ready when interface is up
- 	 */
- 	ice_update_eth_stats(vsi);
--	ice_service_task_schedule(pf);
-+
-+	if (vsi->type == ICE_VSI_PF)
-+		ice_service_task_schedule(pf);
+ 		np_info(np, "device %s not up yet, forcing it\n", np->dev_name);
  
- 	return 0;
- }
+@@ -706,7 +706,6 @@ int netpoll_setup(struct netpoll *np)
+ 		}
+ 
+ 		rtnl_unlock();
+-		atleast = jiffies + HZ/10;
+ 		atmost = jiffies + carrier_timeout * HZ;
+ 		while (!netif_carrier_ok(ndev)) {
+ 			if (time_after(jiffies, atmost)) {
+@@ -716,15 +715,6 @@ int netpoll_setup(struct netpoll *np)
+ 			msleep(1);
+ 		}
+ 
+-		/* If carrier appears to come up instantly, we don't
+-		 * trust it and pause so that we don't pump all our
+-		 * queued console messages into the bitbucket.
+-		 */
+-
+-		if (time_before(jiffies, atleast)) {
+-			np_notice(np, "carrier detect appears untrustworthy, waiting 4 seconds\n");
+-			msleep(4000);
+-		}
+ 		rtnl_lock();
+ 	}
+ 
 -- 
 2.39.0
 
