@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76F096A3056
-	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 15:48:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 367616A30B8
+	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 15:52:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230023AbjBZOsZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Feb 2023 09:48:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44824 "EHLO
+        id S230266AbjBZOwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Feb 2023 09:52:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229941AbjBZOsF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 09:48:05 -0500
+        with ESMTP id S230168AbjBZOwA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 09:52:00 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00177126CF;
-        Sun, 26 Feb 2023 06:47:30 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CF391968E;
+        Sun, 26 Feb 2023 06:49:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8AF81B80BFF;
-        Sun, 26 Feb 2023 14:46:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC6EEC433AF;
-        Sun, 26 Feb 2023 14:46:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 621BFB80C04;
+        Sun, 26 Feb 2023 14:46:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C183EC4339C;
+        Sun, 26 Feb 2023 14:46:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677422813;
-        bh=Q3vF9Ai2gvQnymAbxhhD7PWJAfPQldv0RJ8iD8V7PSQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Sa8Vz+nB1e1IW0Tg/aywA0QFrQEcHDRm1y9Ik1fWdRpYuEJ6ANtaT1uCm6wJnhQUT
-         sgtextrE0610PKNYL4gTjPJWQx8rfGUZqrlArHVQ/+OCsjJ5tjyjNS48qei/lWexOC
-         9IsA6DS1l+ECONJdvbv1GDGwrY2yIlpJKd67oz9ON6XqEwE0DzHSoP6sXh9qP9isu/
-         6r0rqAe52UtnQbGlydCwRvwFMQp1OaLGmar0SQOn1FVAigYPfhKWhim5BFQZlnYnsi
-         4rNvKS3kM7NUi/BW55GE4fIaxRtwVGr/UiWdKRtRg6WFYlVzlepNTUyXvepwpmgpgO
-         o2esFDNVDaIUA==
+        s=k20201202; t=1677422815;
+        bh=+u7jStlcUUUltunC9OISuObdw424NUJH1LgK4IVaQHE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=bkcc9hKD2TpmR9c7Eu99Y+PAH10v/WXKernkXkEgJfjCqw1WH7ICLES/WXDQsLxPM
+         qNJnYWB4Tlp5KTPwb/VMfwwNs3nz0ysWd9jCLmtTSGmaTRbg39cUybmQifl5PQTyAQ
+         8rgiY5RSPJEMNK3GxrBs5bM8ySvNur0YDcA5uRNDNCykeCj/24/A78kKkgP9FkuovW
+         RdnY2WiTZ9++i4cHaUsF5GNLqwRUyKvkMjdzCzfA6hG3cP09/oHP9xjr4la+roiLGn
+         6MrYFys/bisQB1RSPGMUc9Wuk9YFc8hSr54FHkjUaSR83my2vSB4DOir9sPmbHgHpu
+         xLHvw9WkD7DgQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Minsuk Kang <linuxlovemin@yonsei.ac.kr>,
-        Dokyung Song <dokyungs@yonsei.ac.kr>,
-        Jisoo Jang <jisoo.jang@yonsei.ac.kr>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+Cc:     Nagarajan Maran <quic_nmaran@quicinc.com>,
+        Florian Schmidt <florian@fls.name>,
         Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
         davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.1 01/49] wifi: ath9k: Fix use-after-free in ath9k_hif_usb_disconnect()
-Date:   Sun, 26 Feb 2023 09:46:01 -0500
-Message-Id: <20230226144650.826470-1-sashal@kernel.org>
+        pabeni@redhat.com, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.1 02/49] wifi: ath11k: fix monitor mode bringup crash
+Date:   Sun, 26 Feb 2023 09:46:02 -0500
+Message-Id: <20230226144650.826470-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.0
+In-Reply-To: <20230226144650.826470-1-sashal@kernel.org>
+References: <20230226144650.826470-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -60,157 +59,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Minsuk Kang <linuxlovemin@yonsei.ac.kr>
+From: Nagarajan Maran <quic_nmaran@quicinc.com>
 
-[ Upstream commit f099c5c9e2ba08a379bd354a82e05ef839ae29ac ]
+[ Upstream commit 950b43f8bd8a4d476d2da6d2a083a89bcd3c90d7 ]
 
-This patch fixes a use-after-free in ath9k that occurs in
-ath9k_hif_usb_disconnect() when ath9k_destroy_wmi() is trying to access
-'drv_priv' that has already been freed by ieee80211_free_hw(), called by
-ath9k_htc_hw_deinit(). The patch moves ath9k_destroy_wmi() before
-ieee80211_free_hw(). Note that urbs from the driver should be killed
-before freeing 'wmi' with ath9k_destroy_wmi() as their callbacks will
-access 'wmi'.
+When the interface is brought up in monitor mode, it leads
+to NULL pointer dereference crash. This crash happens when
+the packet type is extracted for a SKB. This extraction
+which is present in the received msdu delivery path,is
+not needed for the monitor ring packets since they are
+all RAW packets. Hence appending the flags with
+"RX_FLAG_ONLY_MONITOR" to skip that extraction.
 
-Found by a modified version of syzkaller.
+Observed calltrace:
 
-==================================================================
-BUG: KASAN: use-after-free in ath9k_destroy_wmi+0x38/0x40
-Read of size 8 at addr ffff8881069132a0 by task kworker/0:1/7
+Unable to handle kernel NULL pointer dereference at virtual address
+0000000000000064
+Mem abort info:
+  ESR = 0x0000000096000004
+  EC = 0x25: DABT (current EL), IL = 32 bits
+  SET = 0, FnV = 0
+  EA = 0, S1PTW = 0
+  FSC = 0x04: level 0 translation fault
+Data abort info:
+  ISV = 0, ISS = 0x00000004
+  CM = 0, WnR = 0
+user pgtable: 4k pages, 48-bit VAs, pgdp=0000000048517000
+[0000000000000064] pgd=0000000000000000, p4d=0000000000000000
+Internal error: Oops: 0000000096000004 [#1] PREEMPT SMP
+Modules linked in: ath11k_pci ath11k qmi_helpers
+CPU: 2 PID: 1781 Comm: napi/-271 Not tainted
+6.1.0-rc5-wt-ath-656295-gef907406320c-dirty #6
+Hardware name: Qualcomm Technologies, Inc. IPQ8074/AP-HK10-C2 (DT)
+pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+pc : ath11k_hw_qcn9074_rx_desc_get_decap_type+0x34/0x60 [ath11k]
+lr : ath11k_hw_qcn9074_rx_desc_get_decap_type+0x5c/0x60 [ath11k]
+sp : ffff80000ef5bb10
+x29: ffff80000ef5bb10 x28: 0000000000000000 x27: ffff000007baafa0
+x26: ffff000014a91ed0 x25: 0000000000000000 x24: 0000000000000000
+x23: ffff800002b77378 x22: ffff000014a91ec0 x21: ffff000006c8d600
+x20: 0000000000000000 x19: ffff800002b77740 x18: 0000000000000006
+x17: 736564203634343a x16: 656e694c20657079 x15: 0000000000000143
+x14: 00000000ffffffea x13: ffff80000ef5b8b8 x12: ffff80000ef5b8c8
+x11: ffff80000a591d30 x10: ffff80000a579d40 x9 : c0000000ffffefff
+x8 : 0000000000000003 x7 : 0000000000017fe8 x6 : ffff80000a579ce8
+x5 : 0000000000000000 x4 : 0000000000000000 x3 : 0000000000000000
+x2 : 3a35ec12ed7f8900 x1 : 0000000000000000 x0 : 0000000000000052
+Call trace:
+ ath11k_hw_qcn9074_rx_desc_get_decap_type+0x34/0x60 [ath11k]
+ ath11k_dp_rx_deliver_msdu.isra.42+0xa4/0x3d0 [ath11k]
+ ath11k_dp_rx_mon_deliver.isra.43+0x2f8/0x458 [ath11k]
+ ath11k_dp_rx_process_mon_rings+0x310/0x4c0 [ath11k]
+ ath11k_dp_service_srng+0x234/0x338 [ath11k]
+ ath11k_pcic_ext_grp_napi_poll+0x30/0xb8 [ath11k]
+ __napi_poll+0x5c/0x190
+ napi_threaded_poll+0xf0/0x118
+ kthread+0xf4/0x110
+ ret_from_fork+0x10/0x20
 
-CPU: 0 PID: 7 Comm: kworker/0:1 Tainted: G O 5.14.0+ #131
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
-Workqueue: usb_hub_wq hub_event
-Call Trace:
- dump_stack_lvl+0x8e/0xd1
- print_address_description.constprop.0.cold+0x93/0x334
- ? ath9k_destroy_wmi+0x38/0x40
- ? ath9k_destroy_wmi+0x38/0x40
- kasan_report.cold+0x83/0xdf
- ? ath9k_destroy_wmi+0x38/0x40
- ath9k_destroy_wmi+0x38/0x40
- ath9k_hif_usb_disconnect+0x329/0x3f0
- ? ath9k_hif_usb_suspend+0x120/0x120
- ? usb_disable_interface+0xfc/0x180
- usb_unbind_interface+0x19b/0x7e0
- ? usb_autoresume_device+0x50/0x50
- device_release_driver_internal+0x44d/0x520
- bus_remove_device+0x2e5/0x5a0
- device_del+0x5b2/0xe30
- ? __device_link_del+0x370/0x370
- ? usb_remove_ep_devs+0x43/0x80
- ? remove_intf_ep_devs+0x112/0x1a0
- usb_disable_device+0x1e3/0x5a0
- usb_disconnect+0x267/0x870
- hub_event+0x168d/0x3950
- ? rcu_read_lock_sched_held+0xa1/0xd0
- ? hub_port_debounce+0x2e0/0x2e0
- ? check_irq_usage+0x860/0xf20
- ? drain_workqueue+0x281/0x360
- ? lock_release+0x640/0x640
- ? rcu_read_lock_sched_held+0xa1/0xd0
- ? rcu_read_lock_bh_held+0xb0/0xb0
- ? lockdep_hardirqs_on_prepare+0x273/0x3e0
- process_one_work+0x92b/0x1460
- ? pwq_dec_nr_in_flight+0x330/0x330
- ? rwlock_bug.part.0+0x90/0x90
- worker_thread+0x95/0xe00
- ? __kthread_parkme+0x115/0x1e0
- ? process_one_work+0x1460/0x1460
- kthread+0x3a1/0x480
- ? set_kthread_struct+0x120/0x120
- ret_from_fork+0x1f/0x30
-
-The buggy address belongs to the page:
-page:ffffea00041a44c0 refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x106913
-flags: 0x200000000000000(node=0|zone=2)
-raw: 0200000000000000 0000000000000000 dead000000000122 0000000000000000
-raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as freed
-page last allocated via order 3, migratetype Unmovable, gfp_mask 0x40dc0(GFP_KERNEL|__GFP_COMP|__GFP_ZERO), pid 7, ts 38347963444, free_ts 41399957635
- prep_new_page+0x1aa/0x240
- get_page_from_freelist+0x159a/0x27c0
- __alloc_pages+0x2da/0x6a0
- alloc_pages+0xec/0x1e0
- kmalloc_order+0x39/0xf0
- kmalloc_order_trace+0x19/0x120
- __kmalloc+0x308/0x390
- wiphy_new_nm+0x6f5/0x1dd0
- ieee80211_alloc_hw_nm+0x36d/0x2230
- ath9k_htc_probe_device+0x9d/0x1e10
- ath9k_htc_hw_init+0x34/0x50
- ath9k_hif_usb_firmware_cb+0x25f/0x4e0
- request_firmware_work_func+0x131/0x240
- process_one_work+0x92b/0x1460
- worker_thread+0x95/0xe00
- kthread+0x3a1/0x480
-page last free stack trace:
- free_pcp_prepare+0x3d3/0x7f0
- free_unref_page+0x1e/0x3d0
- device_release+0xa4/0x240
- kobject_put+0x186/0x4c0
- put_device+0x20/0x30
- ath9k_htc_disconnect_device+0x1cf/0x2c0
- ath9k_htc_hw_deinit+0x26/0x30
- ath9k_hif_usb_disconnect+0x2d9/0x3f0
- usb_unbind_interface+0x19b/0x7e0
- device_release_driver_internal+0x44d/0x520
- bus_remove_device+0x2e5/0x5a0
- device_del+0x5b2/0xe30
- usb_disable_device+0x1e3/0x5a0
- usb_disconnect+0x267/0x870
- hub_event+0x168d/0x3950
- process_one_work+0x92b/0x1460
-
-Memory state around the buggy address:
- ffff888106913180: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff888106913200: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
->ffff888106913280: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-                               ^
- ffff888106913300: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff888106913380: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-==================================================================
-
-Reported-by: Dokyung Song <dokyungs@yonsei.ac.kr>
-Reported-by: Jisoo Jang <jisoo.jang@yonsei.ac.kr>
-Reported-by: Minsuk Kang <linuxlovemin@yonsei.ac.kr>
-Signed-off-by: Minsuk Kang <linuxlovemin@yonsei.ac.kr>
-Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
+Tested-on: QCN9074 hw1.0 PCI WLAN.HK.2.7.0.1-01744-QCAHKSWPL_SILICONZ-1
+Reported-by: Florian Schmidt <florian@fls.name>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216573
+Signed-off-by: Nagarajan Maran <quic_nmaran@quicinc.com>
 Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20221205014308.1617597-1-linuxlovemin@yonsei.ac.kr
+Link: https://lore.kernel.org/r/20221129142532.23421-1-quic_nmaran@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/hif_usb.c      | 2 --
- drivers/net/wireless/ath/ath9k/htc_drv_init.c | 2 ++
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/ath/ath11k/dp_rx.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
-index 1a2e0c7eeb023..86ede591dafaf 100644
---- a/drivers/net/wireless/ath/ath9k/hif_usb.c
-+++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
-@@ -1411,8 +1411,6 @@ static void ath9k_hif_usb_disconnect(struct usb_interface *interface)
+diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
+index c5a4c34d77499..2c2b9da37b3f0 100644
+--- a/drivers/net/wireless/ath/ath11k/dp_rx.c
++++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
+@@ -5022,6 +5022,7 @@ static int ath11k_dp_rx_mon_deliver(struct ath11k *ar, u32 mac_id,
+ 		} else {
+ 			rxs->flag |= RX_FLAG_ALLOW_SAME_PN;
+ 		}
++		rxs->flag |= RX_FLAG_ONLY_MONITOR;
+ 		ath11k_update_radiotap(ar, ppduinfo, mon_skb, rxs);
  
- 	if (hif_dev->flags & HIF_USB_READY) {
- 		ath9k_htc_hw_deinit(hif_dev->htc_handle, unplugged);
--		ath9k_hif_usb_dev_deinit(hif_dev);
--		ath9k_destroy_wmi(hif_dev->htc_handle->drv_priv);
- 		ath9k_htc_hw_free(hif_dev->htc_handle);
- 	}
- 
-diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_init.c b/drivers/net/wireless/ath/ath9k/htc_drv_init.c
-index 07ac88fb1c577..96a3185a96d75 100644
---- a/drivers/net/wireless/ath/ath9k/htc_drv_init.c
-+++ b/drivers/net/wireless/ath/ath9k/htc_drv_init.c
-@@ -988,6 +988,8 @@ void ath9k_htc_disconnect_device(struct htc_target *htc_handle, bool hotunplug)
- 
- 		ath9k_deinit_device(htc_handle->drv_priv);
- 		ath9k_stop_wmi(htc_handle->drv_priv);
-+		ath9k_hif_usb_dealloc_urbs((struct hif_device_usb *)htc_handle->hif_dev);
-+		ath9k_destroy_wmi(htc_handle->drv_priv);
- 		ieee80211_free_hw(htc_handle->drv_priv->hw);
- 	}
- }
+ 		ath11k_dp_rx_deliver_msdu(ar, napi, mon_skb, rxs);
 -- 
 2.39.0
 
