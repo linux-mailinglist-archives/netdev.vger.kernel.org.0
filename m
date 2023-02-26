@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 544406A304A
-	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 15:48:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 013646A30A0
+	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 15:51:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229981AbjBZOsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Feb 2023 09:48:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44036 "EHLO
+        id S230242AbjBZOvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Feb 2023 09:51:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229885AbjBZOsC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 09:48:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C08313DF2;
-        Sun, 26 Feb 2023 06:47:18 -0800 (PST)
+        with ESMTP id S230197AbjBZOuo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 09:50:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6273913DF2;
+        Sun, 26 Feb 2023 06:48:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63777B80BA8;
-        Sun, 26 Feb 2023 14:46:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 256ECC433EF;
-        Sun, 26 Feb 2023 14:46:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EBC160C38;
+        Sun, 26 Feb 2023 14:46:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 742E1C4339E;
+        Sun, 26 Feb 2023 14:46:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677422764;
-        bh=lgMByjNARYrLIqZM9HrSpx05mNEpzqawg8FJtKZXzXQ=;
+        s=k20201202; t=1677422766;
+        bh=SsLC3DuoRr7IIjgp4V6ByD7OU4nl/phwXVPN1WE/Y/s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PALv+B1AQ+okM4UG0pimCNQIGW2fm53j2akL5zapEF4xbiuE1n8YNNdleF7wtRJ3z
-         nhjH4UqtALPHtNPnIwf0qjAJ+ei0lLybHPZ6KERx63rVH7C27CZNK4Oh2uvHSfQlWc
-         7dxt+8FQrBC+n6A7kQ7WSDg5gihTcmMoSSgQMgKV/V2h+LmsOVAyFBQFLHhWDg5165
-         0FXpve77icv2RQxkmvnRdgTteobAvIgh8rZ8XvpQZpW7x0AHyvJYr8ICk9v3yvH1F+
-         Ato1/KQQYBBVRu38NcEWFGvRJ9vfCIQ4z9c0TegjYrhBjiejAxzJaD8G5cF5WdC6eZ
-         sHW8uhWXTAxyg==
+        b=DrX8P/PRPoWAvSGoF3qklTkvpRPK4bHdZ2u9A/hlCquD4EfqXic0f9pV36faN2vAx
+         aBZmWtvzECsqOSi329jTBAyaZCMW3fnu36YncTa4t7NUR8g0sN2swjsFwo7WGrxFtj
+         Ck8niKb/APSxvDAGO5D/ybmPnWmmvmticsWafRV0Em5YmpMMACkK4j1xwbfIBcyDNZ
+         H4Q4o3vYcY6Bb/8I5xzUN+2tL1j6LNbGqatTJNoM0bjV8t2XqYvz4LpfDyDLDKnz7r
+         bsqvbFOLxhgF5X+ZjdNZTuTeVr+m7MAjN0UborbrvmKIKM9j/wKJDW4e0VtYchulH9
+         773R9Grat1mow==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Brian Haley <haleyb.dev@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        syzbot+5aed6c3aaba661f5b917@syzkaller.appspotmail.com,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, corbet@lwn.net,
-        den@openvz.org, razor@blackwall.org, ulf.hansson@linaro.org,
-        Jason@zx2c4.com, wangyuweihx@gmail.com, daniel@iogearbox.net,
-        thomas.zeitlhofer+lkml@ze-it.at, alexander@mihalicyn.com,
-        ja@ssi.bg, netdev@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.2 31/53] neighbor: fix proxy_delay usage when it is zero
-Date:   Sun, 26 Feb 2023 09:44:23 -0500
-Message-Id: <20230226144446.824580-31-sashal@kernel.org>
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
+        john.fastabend@gmail.com, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.2 32/53] can: isotp: check CAN address family in isotp_bind()
+Date:   Sun, 26 Feb 2023 09:44:24 -0500
+Message-Id: <20230226144446.824580-32-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230226144446.824580-1-sashal@kernel.org>
 References: <20230226144446.824580-1-sashal@kernel.org>
@@ -60,89 +60,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Brian Haley <haleyb.dev@gmail.com>
+From: Oliver Hartkopp <socketcan@hartkopp.net>
 
-[ Upstream commit 62e395f82d04510b0f86e5e603e29412be88596f ]
+[ Upstream commit c6adf659a8ba85913e16a571d5a9bcd17d3d1234 ]
 
-When set to zero, the neighbor sysctl proxy_delay value
-does not cause an immediate reply for ARP/ND requests
-as expected, it instead causes a random delay between
-[0, U32_MAX). Looking at this comment from
-__get_random_u32_below() explains the reason:
+Add missing check to block non-AF_CAN binds.
 
-/*
- * This function is technically undefined for ceil == 0, and in fact
- * for the non-underscored constant version in the header, we build bug
- * on that. But for the non-constant case, it's convenient to have that
- * evaluate to being a straight call to get_random_u32(), so that
- * get_random_u32_inclusive() can work over its whole range without
- * undefined behavior.
- */
+Syzbot created some code which matched the right sockaddr struct size
+but used AF_XDP (0x2C) instead of AF_CAN (0x1D) in the address family
+field:
 
-Added helper function that does not call get_random_u32_below()
-if proxy_delay is zero and just uses the current value of
-jiffies instead, causing pneigh_enqueue() to respond
-immediately.
+bind$xdp(r2, &(0x7f0000000540)={0x2c, 0x0, r4, 0x0, r2}, 0x10)
+                                ^^^^
+This has no funtional impact but the userspace should be notified about
+the wrong address family field content.
 
-Also added definition of proxy_delay to ip-sysctl.txt since
-it was missing.
-
-Signed-off-by: Brian Haley <haleyb.dev@gmail.com>
-Link: https://lore.kernel.org/r/20230130171428.367111-1-haleyb.dev@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Link: https://syzkaller.appspot.com/text?tag=CrashLog&x=11ff9d8c480000
+Reported-by: syzbot+5aed6c3aaba661f5b917@syzkaller.appspotmail.com
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Link: https://lore.kernel.org/all/20230104201844.13168-1-socketcan@hartkopp.net
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/networking/ip-sysctl.rst |  8 ++++++++
- net/core/neighbour.c                   | 14 ++++++++++++--
- 2 files changed, 20 insertions(+), 2 deletions(-)
+ net/can/isotp.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index 7fbd060d60470..f0bf509d2321b 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -1589,6 +1589,14 @@ proxy_arp_pvlan - BOOLEAN
- 	  Hewlett-Packard call it Source-Port filtering or port-isolation.
- 	  Ericsson call it MAC-Forced Forwarding (RFC Draft).
+diff --git a/net/can/isotp.c b/net/can/isotp.c
+index fc81d77724a13..9bc344851704e 100644
+--- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@ -1220,6 +1220,9 @@ static int isotp_bind(struct socket *sock, struct sockaddr *uaddr, int len)
+ 	if (len < ISOTP_MIN_NAMELEN)
+ 		return -EINVAL;
  
-+proxy_delay - INTEGER
-+	Delay proxy response.
++	if (addr->can_family != AF_CAN)
++		return -EINVAL;
 +
-+	Delay response to a neighbor solicitation when proxy_arp
-+	or proxy_ndp is enabled. A random value between [0, proxy_delay)
-+	will be chosen, setting to zero means reply with no delay.
-+	Value in jiffies. Defaults to 80.
-+
- shared_media - BOOLEAN
- 	Send(router) or accept(host) RFC1620 shared media redirects.
- 	Overrides secure_redirects.
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index 4edd2176e2385..6798f6d2423b9 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -1674,11 +1674,21 @@ static void neigh_proxy_process(struct timer_list *t)
- 	spin_unlock(&tbl->proxy_queue.lock);
- }
- 
-+static unsigned long neigh_proxy_delay(struct neigh_parms *p)
-+{
-+	/* If proxy_delay is zero, do not call get_random_u32_below()
-+	 * as it is undefined behavior.
-+	 */
-+	unsigned long proxy_delay = NEIGH_VAR(p, PROXY_DELAY);
-+
-+	return proxy_delay ?
-+	       jiffies + get_random_u32_below(proxy_delay) : jiffies;
-+}
-+
- void pneigh_enqueue(struct neigh_table *tbl, struct neigh_parms *p,
- 		    struct sk_buff *skb)
- {
--	unsigned long sched_next = jiffies +
--			get_random_u32_below(NEIGH_VAR(p, PROXY_DELAY));
-+	unsigned long sched_next = neigh_proxy_delay(p);
- 
- 	if (p->qlen > NEIGH_VAR(p, PROXY_QLEN)) {
- 		kfree_skb(skb);
+ 	/* sanitize tx CAN identifier */
+ 	if (tx_id & CAN_EFF_FLAG)
+ 		tx_id &= (CAN_EFF_FLAG | CAN_EFF_MASK);
 -- 
 2.39.0
 
