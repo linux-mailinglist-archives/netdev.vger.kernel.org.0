@@ -2,46 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DA5D6A3212
-	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 16:15:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DEA46A320F
+	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 16:15:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231827AbjBZPPe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Feb 2023 10:15:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40366 "EHLO
+        id S231787AbjBZPP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Feb 2023 10:15:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232167AbjBZPO6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 10:14:58 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC4B1C306;
-        Sun, 26 Feb 2023 07:05:43 -0800 (PST)
+        with ESMTP id S232137AbjBZPOz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 10:14:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5712211E8;
+        Sun, 26 Feb 2023 07:05:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B1C8B80C01;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C6E0E60C56;
         Sun, 26 Feb 2023 14:53:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1704C433D2;
-        Sun, 26 Feb 2023 14:53:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45629C4339E;
+        Sun, 26 Feb 2023 14:53:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677423196;
-        bh=Fj/4uNQqHMgEfrsqJTR7NelhlItSAiXEdJdKCbd07aY=;
+        s=k20201202; t=1677423198;
+        bh=w0jT552YvAWF7UhHjSZqkYejdE0wfz0l6a+XUcBY6Ew=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=peY7y+hmJkNaAgKyqSCR3GUVHPoiR/LcY5m6PvSmA6wbVk6biLlcHV62SiB/L0KMK
-         Hgi9cXxapnWNswaxVP1WAMYVq2QXGw6b07pSaFjMfvaBCJLe/zc+7CWspfKfJ/s82q
-         8lOD/lsqUhqzoCEHCGBoXY/m9EaJxxtWYAbQqbIjFusIfc1wZMspsHtJF2u0HAWulH
-         xa0ssx0xZKYj9s2ClnxNxda2BpFUg0f9srpXTwEWzFQ2GHPnthzRxL6M0JjwoAjLvC
-         oUf79bmZwIfD8V91E4/OXadNRw8ocxm8xDVEobIz74bGR6TkEhYJ9bVwE4HfId9cwI
-         bhc4F0LuBFfzw==
+        b=PPOhByYhAYEXsI/ABlFX4mkqJHWvQZF/LkSiEbxxFEKYV56n0whlrxr4GxCwiYY7E
+         utpanHuPEXcNPxUUvUB3G3fRCxFSByGfYiw0EBf3nys+29OpGl2Umfxo8VO6dNm8GK
+         a9Cq4WuaftANoYFf9eKl1dIaa00ZqaU9aITugoxhOFpIzZ+wecGqyaMbf1T0O4LHB4
+         yL7aFZb+kiCIKjF5W6s4ZZ5RD7XkXfPn9Kz01ifEcKnz/Pohj7PyzzAM5sOvivlVkM
+         +2priwWQQ/ytAEMbV2cDD+Gl57BaKxzWlkdp3I6Nm+aO+BBKHrrCYJIP1g856eVs0T
+         qn+CXkxbbJxrw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Breno Leitao <leitao@debian.org>,
-        Michael van der Westhuizen <rmikey@meta.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com,
-        wsa+renesas@sang-engineering.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 08/11] netpoll: Remove 4s sleep during carrier detection
-Date:   Sun, 26 Feb 2023 09:52:50 -0500
-Message-Id: <20230226145255.829660-8-sashal@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, opendmb@gmail.com,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 09/11] net: bcmgenet: Add a check for oversized packets
+Date:   Sun, 26 Feb 2023 09:52:51 -0500
+Message-Id: <20230226145255.829660-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230226145255.829660-1-sashal@kernel.org>
 References: <20230226145255.829660-1-sashal@kernel.org>
@@ -58,72 +57,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Breno Leitao <leitao@debian.org>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-[ Upstream commit d8afe2f8a92d2aac3df645772f6ee61b0b2fc147 ]
+[ Upstream commit 5c0862c2c962052ed5055220a00ac1cefb92fbcd ]
 
-This patch removes the msleep(4s) during netpoll_setup() if the carrier
-appears instantly.
+Occasionnaly we may get oversized packets from the hardware which
+exceed the nomimal 2KiB buffer size we allocate SKBs with. Add an early
+check which drops the packet to avoid invoking skb_over_panic() and move
+on to processing the next packet.
 
-Here are some scenarios where this workaround is counter-productive in
-modern ages:
-
-Servers which have BMC communicating over NC-SI via the same NIC as gets
-used for netconsole. BMC will keep the PHY up, hence the carrier
-appearing instantly.
-
-The link is fibre, SERDES getting sync could happen within 0.1Hz, and
-the carrier also appears instantly.
-
-Other than that, if a driver is reporting instant carrier and then
-losing it, this is probably a driver bug.
-
-Reported-by: Michael van der Westhuizen <rmikey@meta.com>
-Signed-off-by: Breno Leitao <leitao@debian.org>
-Link: https://lore.kernel.org/r/20230125185230.3574681-1-leitao@debian.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/netpoll.c | 12 +-----------
- 1 file changed, 1 insertion(+), 11 deletions(-)
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/net/core/netpoll.c b/net/core/netpoll.c
-index 09a8dec1160a5..c71f20ba9109c 100644
---- a/net/core/netpoll.c
-+++ b/net/core/netpoll.c
-@@ -698,7 +698,7 @@ int netpoll_setup(struct netpoll *np)
- 	}
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index 9bb398d058379..e5e52c0c39a55 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -1799,6 +1799,14 @@ static unsigned int bcmgenet_desc_rx(struct bcmgenet_rx_ring *ring,
+ 			  __func__, p_index, ring->c_index,
+ 			  ring->read_ptr, dma_length_status);
  
- 	if (!netif_running(ndev)) {
--		unsigned long atmost, atleast;
-+		unsigned long atmost;
- 
- 		np_info(np, "device %s not up yet, forcing it\n", np->dev_name);
- 
-@@ -710,7 +710,6 @@ int netpoll_setup(struct netpoll *np)
- 		}
- 
- 		rtnl_unlock();
--		atleast = jiffies + HZ/10;
- 		atmost = jiffies + carrier_timeout * HZ;
- 		while (!netif_carrier_ok(ndev)) {
- 			if (time_after(jiffies, atmost)) {
-@@ -720,15 +719,6 @@ int netpoll_setup(struct netpoll *np)
- 			msleep(1);
- 		}
- 
--		/* If carrier appears to come up instantly, we don't
--		 * trust it and pause so that we don't pump all our
--		 * queued console messages into the bitbucket.
--		 */
--
--		if (time_before(jiffies, atleast)) {
--			np_notice(np, "carrier detect appears untrustworthy, waiting 4 seconds\n");
--			msleep(4000);
--		}
- 		rtnl_lock();
- 	}
- 
++		if (unlikely(len > RX_BUF_LENGTH)) {
++			netif_err(priv, rx_status, dev, "oversized packet\n");
++			dev->stats.rx_length_errors++;
++			dev->stats.rx_errors++;
++			dev_kfree_skb_any(skb);
++			goto next;
++		}
++
+ 		if (unlikely(!(dma_flag & DMA_EOP) || !(dma_flag & DMA_SOP))) {
+ 			netif_err(priv, rx_status, dev,
+ 				  "dropping fragmented packet!\n");
 -- 
 2.39.0
 
