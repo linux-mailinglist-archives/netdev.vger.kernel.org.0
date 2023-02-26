@@ -2,315 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B47856A3227
-	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 16:24:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EA5C6A325F
+	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 16:35:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231206AbjBZPYH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Feb 2023 10:24:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49406 "EHLO
+        id S230362AbjBZPfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Feb 2023 10:35:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230006AbjBZPXy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 10:23:54 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DF8C18A8A
-        for <netdev@vger.kernel.org>; Sun, 26 Feb 2023 07:16:58 -0800 (PST)
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com [209.85.219.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 5D38C3F72B
-        for <netdev@vger.kernel.org>; Sun, 26 Feb 2023 15:15:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1677424552;
-        bh=wIBy6U41Dj5n4ITVB/Mns+jjmQ4eaV8djJQzjN4oRmU=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=YY1lYwftwx/w5BIGEbceF++jawqPgcS/hKW8hstBlR7F1kAt2uBs2/8Y13xmLAWyj
-         XoRlPBktBtg+/EHvTQMCz0lh44fKKk/c8aFHE162+JY2eay3nX0zfdi0vELW5ovj5u
-         zsQ2h+l1jkpo4jKaO++OSGJ0+fwFk+NoCtDKxMa5q6p/AjP2PECFSdfqPUBDvt532w
-         1FlEl7gjX2u3JSX+1Q4C57sPQKuyEpNim9d9Pi1TIls/wNo9xxslGsPbvhyYdjhV3H
-         PI4yfF5p4V1fRflj6BKQp7ZHoZCecgcq0hnJlD3vnQvaZf/47J2MIbDHrJFRlH/gyV
-         0L9Nqjq2bC3zw==
-Received: by mail-qv1-f69.google.com with SMTP id y6-20020ad457c6000000b00535261af1b1so2118095qvx.13
-        for <netdev@vger.kernel.org>; Sun, 26 Feb 2023 07:15:52 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=wIBy6U41Dj5n4ITVB/Mns+jjmQ4eaV8djJQzjN4oRmU=;
-        b=clML4iiBeIzPkzjdezBbPMDpxk0xcwXi0fa+eggtBMwU0jv8bJr8vX67JwHofrDG6J
-         zZ8cw1mdxlmVYlpCTzDiwjbTpqt43G1VbOQW+1oJWzytqBOvqQ3STiknsrhQwWYKvJHG
-         FyayhHwIyfBpLYsqQe9DMnYDqtbjErQERtU6Mn/AZ+atXT8oxsalpT72WxfVAzngwJQ2
-         ZeDdvkaYFQ4hsT3hB3trrK+NF8OJvScQpshUDSiAfgGfkvi3aQSh5YYstpjSP2OM6Ldl
-         QURCc8YD/IY9ZaygUGqIfY/twGZsK+89N9+NMxkZXDWjOLG0x5SQb//nH4tNjhGeST9R
-         +KzQ==
-X-Gm-Message-State: AO0yUKV0m7gcwk5mgQiGrWbjfakr8e5wWVZ7Wi8jdpj3I2xT7pvhzg0g
-        OVx5Ma9qpgUr3N7zfGrbEAoASKNWuWP96Vc111evXqZXO9lnf9TBL8aVQO52bEmZKtI9Lyg6HIe
-        G60Rz59e9tsX69dwNbqnny0pvT8PFstsIIlRbrl7jlxXDa95nZw==
-X-Received: by 2002:a05:620a:a07:b0:73b:a941:7206 with SMTP id i7-20020a05620a0a0700b0073ba9417206mr4398865qka.7.1677424551260;
-        Sun, 26 Feb 2023 07:15:51 -0800 (PST)
-X-Google-Smtp-Source: AK7set8kQriIg1Y8SjWJC50nqEv7gKjengpifGiOd7lR5AGwmNGEmtjmOyntTOaSQCXjHHlWUCWd3sZxCSc6ihPh31c=
-X-Received: by 2002:a05:620a:a07:b0:73b:a941:7206 with SMTP id
- i7-20020a05620a0a0700b0073ba9417206mr4398863qka.7.1677424550956; Sun, 26 Feb
- 2023 07:15:50 -0800 (PST)
+        with ESMTP id S231245AbjBZPfA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 10:35:00 -0500
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on20722.outbound.protection.outlook.com [IPv6:2a01:111:f400:7ea9::722])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B2F07DAB;
+        Sun, 26 Feb 2023 07:34:27 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FChEeT6rl6n6GYhfIhdzKdITee0YsfBTPtpHvI95hPyVHK2eBg4cDAsheuLfh/VP+Wm41qp+vNi0uECBFO/cOCNeDdoLv4L1atBmbUOdmSg3b6GF6TGMlWJDZkTUD8TXWz9SiIiLrx5kuGIvcVV1BC9HNQoxRON68iltEgs2/N4yEAqMcRxgUGTNs2GLorWHAFbm3DtatPPYs1pIds3RFkck1Miccic245OF+CNVgDo7iuXnZN7ntwQfEXIvci5uA3iXvrL+InfCPSHxfJr2MAs4PJsKlR/SyFVCRiTZfXFdsauxNd0MbChZj0+P18qka8HoZpi3DILONp/KavqSCA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3/doHwLvY68yEd3hKA2nppMoLMapHuz+pcOycyFQ7nA=;
+ b=hbu5W7AQlotzP348pBJZEMbs0QtceVl6cH6NHkKgaCUjRXqx9gkkwiQCAibvI60AtiiB/Vylsz5dnked+FcpRobVNPfK6nHtcMciOOAHwTMgTgJa7vWftPIcdEIvcUvJq2NTKHxcXR2UTSVcBuWlJSx+Ifxe2b/9iIe6UN1BAQAnFA1JIEYprwAxMsXcd7aE+1Wb19ASPL3BeKlOGwbVEUbAPYG3+0RwP1+XSWHnWeJXOpCp4Z3JjYBka9fFm5qOpi77eWR1oT9fG2oJGAhp+GL3B9rSklS6rVqEvXDLFNF2ZU9fsZKBXgwtRVAyuMVR94M0lgkL9/TKFO/NFzPnyg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3/doHwLvY68yEd3hKA2nppMoLMapHuz+pcOycyFQ7nA=;
+ b=c7b0rPGYa1tKfwBft65Ic4X6t0mst7u13aLSdR9Cvjc/ek0fP4YGzY97aIr+NHV188LK0eef72p4vL0zqTFVDd6vuFtJWyc2A7ARcCRn4IjR3iwxDpd61TUmCEqD5WkMklvHHljRGYEfQVfiyGobCO9wY7c5hauYvs5QIsXwLpc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by CO3PR13MB5768.namprd13.prod.outlook.com (2603:10b6:303:167::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.27; Sun, 26 Feb
+ 2023 15:33:54 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6134.027; Sun, 26 Feb 2023
+ 15:33:53 +0000
+Date:   Sun, 26 Feb 2023 16:33:47 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Kang Chen <void0red@gmail.com>
+Cc:     krzysztof.kozlowski@linaro.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] nfc: fdp: add null check of devm_kmalloc_array in
+ fdp_nci_i2c_read_device_properties
+Message-ID: <Y/t729AIYjxuP6X6@corigine.com>
+References: <20230226095933.3286710-1-void0red@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230226095933.3286710-1-void0red@gmail.com>
+X-ClientProxiedBy: AM0PR06CA0114.eurprd06.prod.outlook.com
+ (2603:10a6:208:ab::19) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-References: <20230118061701.30047-1-yanhong.wang@starfivetech.com>
- <20230118061701.30047-6-yanhong.wang@starfivetech.com> <CAJM55Z-zvb5CJq4PU4c=YKvY0xPY216MAALFsmWTcVFjSd=wEA@mail.gmail.com>
- <dfddde90-ddce-d0e5-d31c-bbbbecaf7323@starfivetech.com>
-In-Reply-To: <dfddde90-ddce-d0e5-d31c-bbbbecaf7323@starfivetech.com>
-From:   Emil Renner Berthing <emil.renner.berthing@canonical.com>
-Date:   Sun, 26 Feb 2023 16:15:34 +0100
-Message-ID: <CAJM55Z-Pkd5+GBi4NYEuRSHezvJ_vUYiWLdQCpY2D2RqLa-btw@mail.gmail.com>
-Subject: Re: [PATCH v4 5/7] net: stmmac: Add glue layer for StarFive JH7110 SoCs
-To:     yanhong wang <yanhong.wang@starfivetech.com>
-Cc:     linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>, samin.guo@starfivetech.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CO3PR13MB5768:EE_
+X-MS-Office365-Filtering-Correlation-Id: e642ee17-0110-4687-dbe0-08db180edd6e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: VcWaPKhJxBWujTD/i+CKbIa1z78mJu7vct4DnyEhaG5ZwsZGdG4IFusxvo7PRy803IzDWodMRWKkPg6LJPLQD9NeV05ENQDvKxz5OQenYCRFOe0CabDL5zsPVwZVAhIsqR6NP+utfycXLfbPtKlQrrbGXCQYlbNkHc88tFN6+0Eu5aDctBaMol63pKsMbzQIBh4VV5ZiMCCRcykXDMHO10H+ykKqvRVg4uSYTYoNgNwdP+dKvHDtqdjQEw3V9IHnJJsn14p+2yW+fjqcgU7+jeccgJZ+YmpHCbUAg0k2u8K4aO9z/fklS8wltKhjDL7/2LtUR7Jre3PEJzabCXQpovPHM+X8xfRf8/0mw6+NBVx8dOIjcktY26jUJLp/ujE9CXWMGwNUq4OdeNKJOtlF6JxD1qHxB0Z/kUM8QtbsYxMEtrZRbe/w91siu/c1dh3AFKCsKKKyRS9syLm8COmvWPJ55Ow/+8jsi4nfm+iammwozyBckgPHQlyITpxQKeZKPJIIXS2LHc5vtKl6/4MIFOXfGOPiVA9+nPmKAE0twD5BxjpwvlotaTkVkSOyniW+XTvR3Kue8TR1QhnsqLHLsgwQrV5itFew6yzhO1YCp5kXGBr7DekNClvGOTFGM2C1H3D3sAPiw/LCBFGvZiClMRfr19+gMKTjsoVHehPIcENVO766GPV/Gaevg17B09l6XUmyY8syGNj3MAJI0lWt6A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39830400003)(346002)(376002)(396003)(136003)(366004)(451199018)(86362001)(36756003)(38100700002)(8936002)(2906002)(5660300002)(44832011)(66946007)(4326008)(6916009)(66556008)(66476007)(8676002)(41300700001)(316002)(186003)(6512007)(2616005)(478600001)(6486002)(6506007)(6666004)(70780200001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QAVCO1jc1C8ge0q34cuJUQu8gPFMFmvaUdrSaMs11pKKwzEbR+nIygr34Vn7?=
+ =?us-ascii?Q?2TwkjAsXJVeyVsu6qmR+gU5c/mqdXs6MgPsF2ya03lEPRhPUroWEVeFaEnJx?=
+ =?us-ascii?Q?GRQKYrKokIHuaBRC9Tl4/yXlp863kRqLF/mxfUuZ0IR5mTWaSq6koT3gBv0V?=
+ =?us-ascii?Q?9e4pvlzqMhgKfFM13ohenkr470E0wDMv/qrLr83oB/kIZArLaP4zWR9XS2Tz?=
+ =?us-ascii?Q?MOhBlUWJTUN1fgHJixaUvlEZ53GOkBw+5W+apE8iWPMCxjCk8LGmxRKls+vf?=
+ =?us-ascii?Q?SHZp3wZ8JDYJkzPZ+BiF/C6+SIPEnLxQJuwGsrRQbJ+GQ4xlfBDKVmhCl0Pn?=
+ =?us-ascii?Q?HS0J8NhnCEZNW54/zIKBTO1gFbAi0VFtcjKMievcc5E1N+1oVl8D1YTk1Vso?=
+ =?us-ascii?Q?YJ0lvKm7C30QR+GiNfc/EjCu3+4oyDLFtitP5iRPSEFLrklzKPldFJnR/uMQ?=
+ =?us-ascii?Q?fwxP2PIN3IMzF0EgI+AZRpB7vqjzZXOQ1J/1LoBaoWKVp8EqXFYgZMZfMzZo?=
+ =?us-ascii?Q?JWxtnN9S0v7T6rHZxz/9LGDsMqNAggLy8Cr4NUG0yGPmrAUp59Y16FDbQEX3?=
+ =?us-ascii?Q?9pvHwqvSezomYOyeDBsFHO+daGR9uQgDpYvZGb0UaolNRSWA3DR5NCx+raa/?=
+ =?us-ascii?Q?Jv6xm04C1fpyAKexRZi5Y5wdBcIS7iEXh8+jcwDGMn08TAmJH4xSY1sxLu1L?=
+ =?us-ascii?Q?t8Buxcs/4h17DhC/jqsYr5JHx5gJCsf7EvTgNwjKwsCKY7r7p04NCCq1IBPy?=
+ =?us-ascii?Q?LG44FHFeKhPrPR/9uuHdniPIWH5BMPwtYN2E7sZihXGjhe5N31aQyTUbs1K0?=
+ =?us-ascii?Q?k+xG2Oo0ul7oULdl2qCNlgZLzxepavR0G47ma1pUZdxyl1Ph5DYJlhdQsuwe?=
+ =?us-ascii?Q?O4LeUhVDCKeVq5VdCBJxb4yA1NBcG74cljnyaR+0c5aCZWtxCdAozcErwH+s?=
+ =?us-ascii?Q?C1PVlE+tql18yaTxRo9t5r7G6b13EbOwjjqsCb/UlmhdFcu4awOjztX9bTMM?=
+ =?us-ascii?Q?+GhuCu00gzlxXfWKGvj1P/ZrGNC3dqdLO/SzUfbpkuOzcdzlaAEpeToBzz24?=
+ =?us-ascii?Q?VpM9WIeLivLI5iX8fo1hKXFIgoEN12vBoV1jHmpsNmmKbesk0dcj7RQH06IQ?=
+ =?us-ascii?Q?zq6LYLwT3DFpU7AwhsPImhjAePUuExK5ghEcXYpURYcKWPaK87pUx6HdQ44X?=
+ =?us-ascii?Q?5onJYFXAc3sQVHok5qGtsOa5Ztw5qsEWb15WreBhHaofjrkg9m2pLC7/8WcJ?=
+ =?us-ascii?Q?lTlsyw92klHYKgUYfeXyFJyg/9i3rT8rRy9hwcP9/8UpKIoaGnPa7uw8D8my?=
+ =?us-ascii?Q?fBpfcWB/FKaHo57SOL23dvWSOdI2tCDz6rwXH2PLjwQJJHkPLgjKlt6+o8K3?=
+ =?us-ascii?Q?RulWz9ueWUkt7SV/HhrhIxT9ufFx7eCZfQD2emgafgS6mtQHBLuDSvoEZ/uO?=
+ =?us-ascii?Q?Co8CxhP86kfR55/8sJDXfsX5rCLjd6ZyJPVsg0AV2lggiqnQFoaCijUiUNyO?=
+ =?us-ascii?Q?ufKg2LSA22MmO5OQXF93+bm/+88+La+KcD8AIdBkVwoVLVgBuT3wbkIEoxEZ?=
+ =?us-ascii?Q?26FqPQXbYMBZE/MjBYfXFK8THW7aVE9PIwB9PsxF5NHtp+P1NfC69xcd4Wpc?=
+ =?us-ascii?Q?UFfTggKCvn2xwDwoIOew7XzzldNwH2uiW/tfZeDGbxl8uIvmw7qggNVR4JuJ?=
+ =?us-ascii?Q?Gztp2Q=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e642ee17-0110-4687-dbe0-08db180edd6e
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Feb 2023 15:33:53.4496
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: OGz6+axOiDWQ4WOt7RIr+oRT5dfrVndldrnpYTPJe09j3a7PTJO0c1rfadIBX8Hy3ljpg1+FKH1nIBR9kmekeQi2KKe8xYq5fZMXqUrSVDs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO3PR13MB5768
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 21 Feb 2023 at 03:27, yanhong wang
-<yanhong.wang@starfivetech.com> wrote:
->
-> add  samin.guo@starfivetech.com  to loop.
->
-> On 2023/2/16 18:53, Emil Renner Berthing wrote:
-> > On Wed, 18 Jan 2023 at 07:20, Yanhong Wang
-> > <yanhong.wang@starfivetech.com> wrote:
-> >>
-> >> This adds StarFive dwmac driver support on the StarFive JH7110 SoCs.
-> >>
-> >> Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
-> >> Co-developed-by: Emil Renner Berthing <kernel@esmil.dk>
-> >> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
-> >> ---
-> >>  MAINTAINERS                                   |   1 +
-> >>  drivers/net/ethernet/stmicro/stmmac/Kconfig   |  12 ++
-> >>  drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
-> >>  .../stmicro/stmmac/dwmac-starfive-plat.c      | 118 ++++++++++++++++++
-> >>  4 files changed, 132 insertions(+)
-> >>  create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-starfive-plat.c
-> >>
-> >> diff --git a/MAINTAINERS b/MAINTAINERS
-> >> index 56be59bb09f7..5b50b52d3dbb 100644
-> >> --- a/MAINTAINERS
-> >> +++ b/MAINTAINERS
-> >> @@ -19609,6 +19609,7 @@ F:      include/dt-bindings/clock/starfive*
-> >>  STARFIVE DWMAC GLUE LAYER
-> >>  M:     Yanhong Wang <yanhong.wang@starfivetech.com>
-> >>  S:     Maintained
-> >> +F:     Documentation/devicetree/bindings/net/dwmac-starfive-plat.c
-> >>  F:     Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml
-> >>
-> >>  STARFIVE PINCTRL DRIVER
-> >> diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-> >> index 31ff35174034..f9a4ad4abd54 100644
-> >> --- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
-> >> +++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-> >> @@ -235,6 +235,18 @@ config DWMAC_INTEL_PLAT
-> >>           the stmmac device driver. This driver is used for the Intel Keem Bay
-> >>           SoC.
-> >>
-> >> +config DWMAC_STARFIVE_PLAT
-> >> +       tristate "StarFive dwmac support"
-> >> +       depends on OF && COMMON_CLK
-> >> +       depends on STMMAC_ETH
-> >> +       default SOC_STARFIVE
-> >> +       help
-> >> +         Support for ethernet controllers on StarFive RISC-V SoCs
-> >> +
-> >> +         This selects the StarFive platform specific glue layer support for
-> >> +         the stmmac device driver. This driver is used for StarFive JH7110
-> >> +         ethernet controller.
-> >> +
-> >>  config DWMAC_VISCONTI
-> >>         tristate "Toshiba Visconti DWMAC support"
-> >>         default ARCH_VISCONTI
-> >> diff --git a/drivers/net/ethernet/stmicro/stmmac/Makefile b/drivers/net/ethernet/stmicro/stmmac/Makefile
-> >> index d4e12e9ace4f..a63ab0ab5071 100644
-> >> --- a/drivers/net/ethernet/stmicro/stmmac/Makefile
-> >> +++ b/drivers/net/ethernet/stmicro/stmmac/Makefile
-> >> @@ -31,6 +31,7 @@ obj-$(CONFIG_DWMAC_DWC_QOS_ETH)       += dwmac-dwc-qos-eth.o
-> >>  obj-$(CONFIG_DWMAC_INTEL_PLAT) += dwmac-intel-plat.o
-> >>  obj-$(CONFIG_DWMAC_GENERIC)    += dwmac-generic.o
-> >>  obj-$(CONFIG_DWMAC_IMX8)       += dwmac-imx.o
-> >> +obj-$(CONFIG_DWMAC_STARFIVE_PLAT)      += dwmac-starfive-plat.o
-> >
-> > Hi Yanhong,
-> >
-> > For the next version could you please drop the _PLAT from the config
-> > symbol and -plat from filename. I know the intel wrapper does the
-> > same, but it's the only one, so lets do like the majority of other
-> > wrappers and not add more different ways of doing things.
-> >
->
-> Thanks. I will fix.
->
-> >>  obj-$(CONFIG_DWMAC_VISCONTI)   += dwmac-visconti.o
-> >>  stmmac-platform-objs:= stmmac_platform.o
-> >>  dwmac-altr-socfpga-objs := altr_tse_pcs.o dwmac-socfpga.o
-> >> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive-plat.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive-plat.c
-> >> new file mode 100644
-> >> index 000000000000..e441d920933a
-> >> --- /dev/null
-> >> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive-plat.c
-> >> @@ -0,0 +1,118 @@
-> >> +// SPDX-License-Identifier: GPL-2.0+
-> >> +/*
-> >> + * StarFive DWMAC platform driver
-> >> + *
-> >> + * Copyright(C) 2022 StarFive Technology Co., Ltd.
-> >> + *
-> >> + */
-> >> +
-> >> +#include <linux/of_device.h>
-> >> +
-> >> +#include "stmmac_platform.h"
-> >> +
-> >> +struct starfive_dwmac {
-> >> +       struct device *dev;
-> >> +       struct clk *clk_tx;
-> >> +       struct clk *clk_gtx;
-> >> +       struct clk *clk_gtxc;
-> >> +};
-> >
-> > I like this name. For the next version could you also
-> > s/starfive_eth_plat_/starfive_dwmac_/ on the function/struct names
-> > below for consistency.
-> >
->
-> I will fix.
->
-> >> +
-> >> +static void starfive_eth_plat_fix_mac_speed(void *priv, unsigned int speed)
-> >> +{
-> >> +       struct starfive_dwmac *dwmac = priv;
-> >> +       unsigned long rate;
-> >> +       int err;
-> >> +
-> >> +       rate = clk_get_rate(dwmac->clk_gtx);
-> >> +
-> >> +       switch (speed) {
-> >> +       case SPEED_1000:
-> >> +               rate = 125000000;
-> >> +               break;
-> >> +       case SPEED_100:
-> >> +               rate = 25000000;
-> >> +               break;
-> >> +       case SPEED_10:
-> >> +               rate = 2500000;
-> >> +               break;
-> >> +       default:
-> >> +               dev_err(dwmac->dev, "invalid speed %u\n", speed);
-> >> +               break;
-> >> +       }
-> >> +
-> >> +       err = clk_set_rate(dwmac->clk_gtx, rate);
-> >> +       if (err)
-> >> +               dev_err(dwmac->dev, "failed to set tx rate %lu\n", rate);
-> >> +}
-> >> +
-> >> +static int starfive_eth_plat_probe(struct platform_device *pdev)
-> >> +{
-> >> +       struct plat_stmmacenet_data *plat_dat;
-> >> +       struct stmmac_resources stmmac_res;
-> >> +       struct starfive_dwmac *dwmac;
-> >> +       int err;
-> >> +
-> >> +       err = stmmac_get_platform_resources(pdev, &stmmac_res);
-> >> +       if (err)
-> >> +               return err;
-> >> +
-> >> +       plat_dat = stmmac_probe_config_dt(pdev, stmmac_res.mac);
-> >> +       if (IS_ERR(plat_dat)) {
-> >> +               dev_err(&pdev->dev, "dt configuration failed\n");
-> >> +               return PTR_ERR(plat_dat);
-> >> +       }
-> >> +
-> >> +       dwmac = devm_kzalloc(&pdev->dev, sizeof(*dwmac), GFP_KERNEL);
-> >> +       if (!dwmac)
-> >> +               return -ENOMEM;
-> >> +
-> >> +       dwmac->clk_tx = devm_clk_get_enabled(&pdev->dev, "tx");
-> >> +       if (IS_ERR(dwmac->clk_tx))
-> >> +               return dev_err_probe(&pdev->dev, PTR_ERR(dwmac->clk_tx),
-> >> +                                               "error getting tx clock\n");
-> >> +
-> >> +       dwmac->clk_gtx = devm_clk_get_enabled(&pdev->dev, "gtx");
-> >> +       if (IS_ERR(dwmac->clk_gtx))
-> >> +               return dev_err_probe(&pdev->dev, PTR_ERR(dwmac->clk_gtx),
-> >> +                                               "error getting gtx clock\n");
-> >> +
-> >> +       dwmac->clk_gtxc = devm_clk_get_enabled(&pdev->dev, "gtxc");
-> >> +       if (IS_ERR(dwmac->clk_gtxc))
-> >> +               return dev_err_probe(&pdev->dev, PTR_ERR(dwmac->clk_gtxc),
-> >> +                                               "error getting gtxc clock\n");
-> >> +
-> >> +       dwmac->dev = &pdev->dev;
-> >> +       plat_dat->fix_mac_speed = starfive_eth_plat_fix_mac_speed;
-> >> +       plat_dat->init = NULL;
-> >> +       plat_dat->bsp_priv = dwmac;
-> >> +       plat_dat->dma_cfg->dche = true;
-> >> +
-> >> +       err = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
-> >> +       if (err) {
-> >> +               stmmac_remove_config_dt(pdev, plat_dat);
-> >> +               return err;
-> >> +       }
-> >> +
-> >> +       return 0;
-> >> +}
-> >> +
-> >> +static const struct of_device_id starfive_eth_plat_match[] = {
-> >> +       { .compatible = "starfive,jh7110-dwmac" },
-> >> +       { }
-> >> +};
+On Sun, Feb 26, 2023 at 05:59:33PM +0800, Kang Chen wrote:
+> devm_kmalloc_array may fails, *fw_vsc_cfg might be null and cause
+> out-of-bounds write in device_property_read_u8_array later.
+> 
+> Signed-off-by: Kang Chen <void0red@gmail.com>
 
-I noticed you're missing a
-MODULE_DEVICE_TABLE(of, starfive_dwmac_match);
-here, so udev will load the module automatically.
+I'm not sure if this is a bug-fix (for stable).
+But if so, I think the following is the appropriate fixes tag.
 
-While you're at it I also like the idiom of using { /* sentinel */ }
-for the last entry here.
+Fixes: a06347c04c13 ("NFC: Add Intel Fields Peak NFC solution driver")
 
-> >> +static struct platform_driver starfive_eth_plat_driver = {
-> >> +       .probe  = starfive_eth_plat_probe,
-> >> +       .remove = stmmac_pltfr_remove,
-> >> +       .driver = {
-> >> +               .name = "starfive-eth-plat",
-> >> +               .pm = &stmmac_pltfr_pm_ops,
-> >> +               .of_match_table = starfive_eth_plat_match,
-> >> +       },
-> >> +};
-> >> +
-> >> +module_platform_driver(starfive_eth_plat_driver);
-> >> +
-> >> +MODULE_LICENSE("GPL");
-> >> +MODULE_DESCRIPTION("StarFive DWMAC platform driver");
-> >> +MODULE_AUTHOR("Yanhong Wang <yanhong.wang@starfivetech.com>");
-> >> --
-> >> 2.17.1
-> >>
-> >>
-> >> _______________________________________________
-> >> linux-riscv mailing list
-> >> linux-riscv@lists.infradead.org
-> >> http://lists.infradead.org/mailman/listinfo/linux-riscv
+> ---
+>  drivers/nfc/fdp/i2c.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/nfc/fdp/i2c.c b/drivers/nfc/fdp/i2c.c
+> index 2d53e0f88..d95d20efa 100644
+> --- a/drivers/nfc/fdp/i2c.c
+> +++ b/drivers/nfc/fdp/i2c.c
+> @@ -247,6 +247,9 @@ static void fdp_nci_i2c_read_device_properties(struct device *dev,
+>  					   len, sizeof(**fw_vsc_cfg),
+>  					   GFP_KERNEL);
+>  
+> +		if (!*fw_vsc_cfg)
+> +			goto vsc_read_err;
+
+This leads to:
+
+	dev_dbg(dev, "FW vendor specific commands not present\n");
+
+Which seems a little misleading for this error condition.
+
+> +
+>  		r = device_property_read_u8_array(dev, FDP_DP_FW_VSC_CFG_NAME,
+>  						  *fw_vsc_cfg, len);
+>  
+> -- 
+> 2.34.1
+> 
