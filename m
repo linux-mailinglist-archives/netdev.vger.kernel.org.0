@@ -2,47 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D9E26A31B6
-	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 16:02:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AC586A317B
+	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 15:58:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231681AbjBZPC4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Feb 2023 10:02:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37970 "EHLO
+        id S231230AbjBZO63 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Feb 2023 09:58:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231680AbjBZPCY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 10:02:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42ED219F18;
-        Sun, 26 Feb 2023 06:53:23 -0800 (PST)
+        with ESMTP id S231278AbjBZO5B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 09:57:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C2BE18B39;
+        Sun, 26 Feb 2023 06:52:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8926B80C82;
-        Sun, 26 Feb 2023 14:51:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D44DC433A0;
-        Sun, 26 Feb 2023 14:51:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CCF07B80C6A;
+        Sun, 26 Feb 2023 14:51:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A756C433A0;
+        Sun, 26 Feb 2023 14:51:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677423106;
-        bh=KPCyFstw9exQqQKr55mQv4a0MH+XQcDbin9adazcQOY=;
+        s=k20201202; t=1677423109;
+        bh=oceXxxscX+4MDgIRYkEMhZNb9lXuPefmon11MmeEie4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UkQZxIVW7ppF75PJ5Pbjt430pRfor45r2LTB+004hWrT2gLa7vQBDFmXd6Q/aC4Nu
-         E69UW3iw8JoR1c0c3eptZdBInFojY6/cyOoJG5aainy6JtWnAbkFY9objSUGOvVtbG
-         0DtDjxTBje70FeP0PXjB3avo8CIMiQ9+A+4zJzmahSx8F3lOHy/dgQuCP/hleYpwlL
-         Zhk8JhBCUL0RVm43crg4RVTohM6zf3ng6xcrDQWsw7geONVs14in3+xWrZr+DRKtnD
-         fDNwVk9ydJU5qQzoXw7INg96Wkw3G9AaRqeqgw3F0D/Iy7kIjjGtwgvLRAKgQwpi3y
-         a2zQWOYup8rDw==
+        b=FTMf8CdwlidZ5+2ntQxkfekVQKLKde7Eey20PXYAh8xK09TIvhhFoZyTa0jjIxb9B
+         P2dL9OJqH2xtUbr4sVPvnTanWPDcAT+Ys8AtqNHXSkpIp88hzxOVGxLTXpDIuuTJBu
+         AXWcUoFWS415UkNQfhzf0Bt5qzr//7JLhzhVdbCPPsSRnbNmRskXUChas5RUPhJxgE
+         a/qdBnDH5ZkJHenQ9YEvRRJdLLz8vJNKH+oNl+X1e7OsnJuqQfgzeGiBzX9jYUpPqu
+         8Gt4kCKzgF5aIQlzQZGoeIn6jG1/Vql73PzQirn/ylmv5oyQliMk/G/RucCB5pUBVO
+         59VXNU9547b9g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jisoo Jang <jisoo.jang@yonsei.ac.kr>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        matthias.bgg@gmail.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 07/19] wifi: mt7601u: fix an integer underflow
-Date:   Sun, 26 Feb 2023 09:51:09 -0500
-Message-Id: <20230226145123.829229-7-sashal@kernel.org>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Gurucharan G <gurucharanx.g@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 09/19] ice: add missing checks for PF vsi type
+Date:   Sun, 26 Feb 2023 09:51:11 -0500
+Message-Id: <20230226145123.829229-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230226145123.829229-1-sashal@kernel.org>
 References: <20230226145123.829229-1-sashal@kernel.org>
@@ -50,8 +49,8 @@ MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,100 +58,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jisoo Jang <jisoo.jang@yonsei.ac.kr>
+From: Jesse Brandeburg <jesse.brandeburg@intel.com>
 
-[ Upstream commit 803f3176c5df3b5582c27ea690f204abb60b19b9 ]
+[ Upstream commit 6a8d013e904ad9a66706fcc926ec9993bed7d190 ]
 
-Fix an integer underflow that leads to a null pointer dereference in
-'mt7601u_rx_skb_from_seg()'. The variable 'dma_len' in the URB packet
-could be manipulated, which could trigger an integer underflow of
-'seg_len' in 'mt7601u_rx_process_seg()'. This underflow subsequently
-causes the 'bad_frame' checks in 'mt7601u_rx_skb_from_seg()' to be
-bypassed, eventually leading to a dereference of the pointer 'p', which
-is a null pointer.
+There were a few places we had missed checking the VSI type to make sure
+it was definitely a PF VSI, before calling setup functions intended only
+for the PF VSI.
 
-Ensure that 'dma_len' is greater than 'min_seg_len'.
+This doesn't fix any explicit bugs but cleans up the code in a few
+places and removes one explicit != vsi->type check that can be
+superseded by this code (it's a super set)
 
-Found by a modified version of syzkaller.
-
-KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-CPU: 0 PID: 12 Comm: ksoftirqd/0 Tainted: G        W  O      5.14.0+
-#139
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
-RIP: 0010:skb_add_rx_frag+0x143/0x370
-Code: e2 07 83 c2 03 38 ca 7c 08 84 c9 0f 85 86 01 00 00 4c 8d 7d 08 44
-89 68 08 48 b8 00 00 00 00 00 fc ff df 4c 89 fa 48 c1 ea 03 <80> 3c 02
-00 0f 85 cd 01 00 00 48 8b 45 08 a8 01 0f 85 3d 01 00 00
-RSP: 0018:ffffc900000cfc90 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: ffff888115520dc0 RCX: 0000000000000000
-RDX: 0000000000000001 RSI: ffff8881118430c0 RDI: ffff8881118430f8
-RBP: 0000000000000000 R08: 0000000000000e09 R09: 0000000000000010
-R10: ffff888111843017 R11: ffffed1022308602 R12: 0000000000000000
-R13: 0000000000000e09 R14: 0000000000000010 R15: 0000000000000008
-FS:  0000000000000000(0000) GS:ffff88811a800000(0000)
-knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000004035af40 CR3: 00000001157f2000 CR4: 0000000000750ef0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-PKRU: 55555554
-Call Trace:
- mt7601u_rx_tasklet+0xc73/0x1270
- ? mt7601u_submit_rx_buf.isra.0+0x510/0x510
- ? tasklet_action_common.isra.0+0x79/0x2f0
- tasklet_action_common.isra.0+0x206/0x2f0
- __do_softirq+0x1b5/0x880
- ? tasklet_unlock+0x30/0x30
- run_ksoftirqd+0x26/0x50
- smpboot_thread_fn+0x34f/0x7d0
- ? smpboot_register_percpu_thread+0x370/0x370
- kthread+0x3a1/0x480
- ? set_kthread_struct+0x120/0x120
- ret_from_fork+0x1f/0x30
-Modules linked in: 88XXau(O) 88x2bu(O)
----[ end trace 57f34f93b4da0f9b ]---
-RIP: 0010:skb_add_rx_frag+0x143/0x370
-Code: e2 07 83 c2 03 38 ca 7c 08 84 c9 0f 85 86 01 00 00 4c 8d 7d 08 44
-89 68 08 48 b8 00 00 00 00 00 fc ff df 4c 89 fa 48 c1 ea 03 <80> 3c 02
-00 0f 85 cd 01 00 00 48 8b 45 08 a8 01 0f 85 3d 01 00 00
-RSP: 0018:ffffc900000cfc90 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: ffff888115520dc0 RCX: 0000000000000000
-RDX: 0000000000000001 RSI: ffff8881118430c0 RDI: ffff8881118430f8
-RBP: 0000000000000000 R08: 0000000000000e09 R09: 0000000000000010
-R10: ffff888111843017 R11: ffffed1022308602 R12: 0000000000000000
-R13: 0000000000000e09 R14: 0000000000000010 R15: 0000000000000008
-FS:  0000000000000000(0000) GS:ffff88811a800000(0000)
-knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000004035af40 CR3: 00000001157f2000 CR4: 0000000000750ef0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-PKRU: 55555554
-
-Signed-off-by: Jisoo Jang <jisoo.jang@yonsei.ac.kr>
-Acked-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20221229092906.2328282-1-jisoo.jang@yonsei.ac.kr
+Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt7601u/dma.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_main.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt7601u/dma.c b/drivers/net/wireless/mediatek/mt7601u/dma.c
-index 6f2172be7b66a..072888072b0db 100644
---- a/drivers/net/wireless/mediatek/mt7601u/dma.c
-+++ b/drivers/net/wireless/mediatek/mt7601u/dma.c
-@@ -118,7 +118,8 @@ static u16 mt7601u_rx_next_seg_len(u8 *data, u32 data_len)
- 	if (data_len < min_seg_len ||
- 	    WARN_ON_ONCE(!dma_len) ||
- 	    WARN_ON_ONCE(dma_len + MT_DMA_HDRS > data_len) ||
--	    WARN_ON_ONCE(dma_len & 0x3))
-+	    WARN_ON_ONCE(dma_len & 0x3) ||
-+	    WARN_ON_ONCE(dma_len < min_seg_len))
- 		return 0;
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index ae1d305672259..209ae96875849 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -3492,15 +3492,12 @@ int ice_vsi_cfg(struct ice_vsi *vsi)
+ {
+ 	int err;
  
- 	return MT_DMA_HDRS + dma_len;
+-	if (vsi->netdev) {
++	if (vsi->netdev && vsi->type == ICE_VSI_PF) {
+ 		ice_set_rx_mode(vsi->netdev);
+ 
+-		if (vsi->type != ICE_VSI_LB) {
+-			err = ice_vsi_vlan_setup(vsi);
+-
+-			if (err)
+-				return err;
+-		}
++		err = ice_vsi_vlan_setup(vsi);
++		if (err)
++			return err;
+ 	}
+ 	ice_vsi_cfg_dcb_rings(vsi);
+ 
+@@ -3557,7 +3554,7 @@ static int ice_up_complete(struct ice_vsi *vsi)
+ 
+ 	if (vsi->port_info &&
+ 	    (vsi->port_info->phy.link_info.link_info & ICE_AQ_LINK_UP) &&
+-	    vsi->netdev) {
++	    vsi->netdev && vsi->type == ICE_VSI_PF) {
+ 		ice_print_link_msg(vsi, true);
+ 		netif_tx_start_all_queues(vsi->netdev);
+ 		netif_carrier_on(vsi->netdev);
+@@ -3567,7 +3564,9 @@ static int ice_up_complete(struct ice_vsi *vsi)
+ 	 * set the baseline so counters are ready when interface is up
+ 	 */
+ 	ice_update_eth_stats(vsi);
+-	ice_service_task_schedule(pf);
++
++	if (vsi->type == ICE_VSI_PF)
++		ice_service_task_schedule(pf);
+ 
+ 	return 0;
+ }
 -- 
 2.39.0
 
