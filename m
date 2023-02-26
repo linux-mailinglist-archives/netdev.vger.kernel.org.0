@@ -2,52 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B19166A3004
-	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 15:45:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F7D76A3012
+	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 15:45:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229684AbjBZOo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Feb 2023 09:44:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39812 "EHLO
+        id S229847AbjBZOpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Feb 2023 09:45:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229717AbjBZOo6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 09:44:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F6A112064;
-        Sun, 26 Feb 2023 06:44:57 -0800 (PST)
+        with ESMTP id S229643AbjBZOp2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 09:45:28 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54E7513DC9;
+        Sun, 26 Feb 2023 06:45:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D272060B93;
-        Sun, 26 Feb 2023 14:44:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 110E3C433EF;
-        Sun, 26 Feb 2023 14:44:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DDE97B80BE9;
+        Sun, 26 Feb 2023 14:45:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53922C4339E;
+        Sun, 26 Feb 2023 14:45:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677422696;
-        bh=6fzWgDWQ4p+uyINHgwwSerILSu/DzgZZyfaRcyYnI90=;
+        s=k20201202; t=1677422705;
+        bh=iHCjk8zL0JXwsFlanSXQ/+uDgS83Gl8uIHKMFQIHQtE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=idoSk+jJYEaxt33x5foHcYgMZJBj4WK2ZVSPdbaTjLQhuzxxwGrSRj0BNp64n/ppH
-         oyZ9ZbSThgb4pJzKODzJCSULW8P5WSS/sBTAODAKjMPo5uS6MbRxI34KtZ8gyyVgCy
-         5vylv3OjA6TIeKbd/bAVeN4ga94bHBzQKYKomnl0KyUz7oPBlfoSW/tlpQ7cFOxBKk
-         OMSRbnlytMVOhz9exylG1SKMQohv6ktOL5Y/2qByeDiosdivMED3bQVxg63h/VX/kd
-         kuR+zrF0ZssCYmXS4VeGRtWGq5Mlr2/z13E+/4+KsCqIjM2WvX6N0BpeFz6S8qyZxB
-         n7fPSQpLCa0FQ==
+        b=o6OiPCLS0Snhz9xuyCVwn1shUgKdMYUdp29uRQDxyJN8+OcTbrBQagBrSVZDddegm
+         Zux8FkMtr+96RW4bsAXDiHT35rIHqjKm2fEK8zZGkZ1/fn2bskJ+izZwPBUffoeG16
+         Rd/rgUt0zVTAmEpC+2PYmP9RahhKnDlE/nKL9F18sjbYcCIYgJRvo30ioJohql4xAc
+         DjXFQ+cf82mAXdO2YEavc6YCUpl7n3wy4O003J2vL/octLYeUQ7/Iok7YOJSQd7U9k
+         Xbq1XPp5CrDS+wNlvlOjwucibSBlJ0y0zz2VZfibXQGHH7r59sJzjHmGwUW2q7dXVg
+         HK4Mn6emdN5mA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jisoo Jang <jisoo.jang@yonsei.ac.kr>,
-        Dokyung Song <dokyungs@yonsei.ac.kr>,
-        Minsuk Kang <linuxlovemin@yonsei.ac.kr>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        aspriel@gmail.com, franky.lin@broadcom.com,
-        hante.meuleman@broadcom.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        gustavoars@kernel.org, hdegoede@redhat.com, marcan@marcan.st,
-        wsa+renesas@sang-engineering.com, pavel@loebl.cz,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.2 03/53] wifi: brcmfmac: Fix potential stack-out-of-bounds in brcmf_c_preinit_dcmds()
-Date:   Sun, 26 Feb 2023 09:43:55 -0500
-Message-Id: <20230226144446.824580-3-sashal@kernel.org>
+Cc:     Kalle Valo <quic_kvalo@quicinc.com>,
+        Robert Marko <robert.marko@sartura.hr>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.2 09/53] wifi: ath11k: debugfs: fix to work with multiple PCI devices
+Date:   Sun, 26 Feb 2023 09:44:01 -0500
+Message-Id: <20230226144446.824580-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230226144446.824580-1-sashal@kernel.org>
 References: <20230226144446.824580-1-sashal@kernel.org>
@@ -55,8 +49,8 @@ MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -64,156 +58,148 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jisoo Jang <jisoo.jang@yonsei.ac.kr>
+From: Kalle Valo <quic_kvalo@quicinc.com>
 
-[ Upstream commit 0a06cadcc2a0044e4a117cc0e61436fc3a0dad69 ]
+[ Upstream commit 323d91d4684d238f6bc3693fed93caf795378fe0 ]
 
-This patch fixes a stack-out-of-bounds read in brcmfmac that occurs
-when 'buf' that is not null-terminated is passed as an argument of
-strsep() in brcmf_c_preinit_dcmds(). This buffer is filled with a firmware
-version string by memcpy() in brcmf_fil_iovar_data_get().
-The patch ensures buf is null-terminated.
+ath11k fails to load if there are multiple ath11k PCI devices with same name:
 
-Found by a modified version of syzkaller.
+ ath11k_pci 0000:01:00.0: Hardware name qcn9074 hw1.0
+ debugfs: Directory 'ath11k' with parent '/' already present!
+ ath11k_pci 0000:01:00.0: failed to create ath11k debugfs
+ ath11k_pci 0000:01:00.0: failed to create soc core: -17
+ ath11k_pci 0000:01:00.0: failed to init core: -17
+ ath11k_pci: probe of 0000:01:00.0 failed with error -17
 
-[   47.569679][ T1897] brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac43236b for chip BCM43236/3
-[   47.582839][ T1897] brcmfmac: brcmf_c_process_clm_blob: no clm_blob available (err=-2), device may have limited channels available
-[   47.601565][ T1897] ==================================================================
-[   47.602574][ T1897] BUG: KASAN: stack-out-of-bounds in strsep+0x1b2/0x1f0
-[   47.603447][ T1897] Read of size 1 at addr ffffc90001f6f000 by task kworker/0:2/1897
-[   47.604336][ T1897]
-[   47.604621][ T1897] CPU: 0 PID: 1897 Comm: kworker/0:2 Tainted: G           O      5.14.0+ #131
-[   47.605617][ T1897] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
-[   47.606907][ T1897] Workqueue: usb_hub_wq hub_event
-[   47.607453][ T1897] Call Trace:
-[   47.607801][ T1897]  dump_stack_lvl+0x8e/0xd1
-[   47.608295][ T1897]  print_address_description.constprop.0.cold+0xf/0x334
-[   47.609009][ T1897]  ? strsep+0x1b2/0x1f0
-[   47.609434][ T1897]  ? strsep+0x1b2/0x1f0
-[   47.609863][ T1897]  kasan_report.cold+0x83/0xdf
-[   47.610366][ T1897]  ? strsep+0x1b2/0x1f0
-[   47.610882][ T1897]  strsep+0x1b2/0x1f0
-[   47.611300][ T1897]  ? brcmf_fil_iovar_data_get+0x3a/0xf0
-[   47.611883][ T1897]  brcmf_c_preinit_dcmds+0x995/0xc40
-[   47.612434][ T1897]  ? brcmf_c_set_joinpref_default+0x100/0x100
-[   47.613078][ T1897]  ? rcu_read_lock_sched_held+0xa1/0xd0
-[   47.613662][ T1897]  ? rcu_read_lock_bh_held+0xb0/0xb0
-[   47.614208][ T1897]  ? lock_acquire+0x19d/0x4e0
-[   47.614704][ T1897]  ? find_held_lock+0x2d/0x110
-[   47.615236][ T1897]  ? brcmf_usb_deq+0x1a7/0x260
-[   47.615741][ T1897]  ? brcmf_usb_rx_fill_all+0x5a/0xf0
-[   47.616288][ T1897]  brcmf_attach+0x246/0xd40
-[   47.616758][ T1897]  ? wiphy_new_nm+0x1703/0x1dd0
-[   47.617280][ T1897]  ? kmemdup+0x43/0x50
-[   47.617720][ T1897]  brcmf_usb_probe+0x12de/0x1690
-[   47.618244][ T1897]  ? brcmf_usbdev_qinit.constprop.0+0x470/0x470
-[   47.618901][ T1897]  usb_probe_interface+0x2aa/0x760
-[   47.619429][ T1897]  ? usb_probe_device+0x250/0x250
-[   47.619950][ T1897]  really_probe+0x205/0xb70
-[   47.620435][ T1897]  ? driver_allows_async_probing+0x130/0x130
-[   47.621048][ T1897]  __driver_probe_device+0x311/0x4b0
-[   47.621595][ T1897]  ? driver_allows_async_probing+0x130/0x130
-[   47.622209][ T1897]  driver_probe_device+0x4e/0x150
-[   47.622739][ T1897]  __device_attach_driver+0x1cc/0x2a0
-[   47.623287][ T1897]  bus_for_each_drv+0x156/0x1d0
-[   47.623796][ T1897]  ? bus_rescan_devices+0x30/0x30
-[   47.624309][ T1897]  ? lockdep_hardirqs_on_prepare+0x273/0x3e0
-[   47.624907][ T1897]  ? trace_hardirqs_on+0x46/0x160
-[   47.625437][ T1897]  __device_attach+0x23f/0x3a0
-[   47.625924][ T1897]  ? device_bind_driver+0xd0/0xd0
-[   47.626433][ T1897]  ? kobject_uevent_env+0x287/0x14b0
-[   47.627057][ T1897]  bus_probe_device+0x1da/0x290
-[   47.627557][ T1897]  device_add+0xb7b/0x1eb0
-[   47.628027][ T1897]  ? wait_for_completion+0x290/0x290
-[   47.628593][ T1897]  ? __fw_devlink_link_to_suppliers+0x5a0/0x5a0
-[   47.629249][ T1897]  usb_set_configuration+0xf59/0x16f0
-[   47.629829][ T1897]  usb_generic_driver_probe+0x82/0xa0
-[   47.630385][ T1897]  usb_probe_device+0xbb/0x250
-[   47.630927][ T1897]  ? usb_suspend+0x590/0x590
-[   47.631397][ T1897]  really_probe+0x205/0xb70
-[   47.631855][ T1897]  ? driver_allows_async_probing+0x130/0x130
-[   47.632469][ T1897]  __driver_probe_device+0x311/0x4b0
-[   47.633002][ T1897]  ? usb_generic_driver_match+0x75/0x90
-[   47.633573][ T1897]  ? driver_allows_async_probing+0x130/0x130
-[   47.634170][ T1897]  driver_probe_device+0x4e/0x150
-[   47.634703][ T1897]  __device_attach_driver+0x1cc/0x2a0
-[   47.635248][ T1897]  bus_for_each_drv+0x156/0x1d0
-[   47.635748][ T1897]  ? bus_rescan_devices+0x30/0x30
-[   47.636271][ T1897]  ? lockdep_hardirqs_on_prepare+0x273/0x3e0
-[   47.636881][ T1897]  ? trace_hardirqs_on+0x46/0x160
-[   47.637396][ T1897]  __device_attach+0x23f/0x3a0
-[   47.637904][ T1897]  ? device_bind_driver+0xd0/0xd0
-[   47.638426][ T1897]  ? kobject_uevent_env+0x287/0x14b0
-[   47.638985][ T1897]  bus_probe_device+0x1da/0x290
-[   47.639512][ T1897]  device_add+0xb7b/0x1eb0
-[   47.639977][ T1897]  ? __fw_devlink_link_to_suppliers+0x5a0/0x5a0
-[   47.640612][ T1897]  ? kfree+0x14a/0x6b0
-[   47.641055][ T1897]  ? __usb_get_extra_descriptor+0x116/0x160
-[   47.641679][ T1897]  usb_new_device.cold+0x49c/0x1029
-[   47.642245][ T1897]  ? hub_disconnect+0x450/0x450
-[   47.642756][ T1897]  ? rwlock_bug.part.0+0x90/0x90
-[   47.643273][ T1897]  ? _raw_spin_unlock_irq+0x24/0x30
-[   47.643822][ T1897]  ? lockdep_hardirqs_on_prepare+0x273/0x3e0
-[   47.644445][ T1897]  hub_event+0x1c98/0x3950
-[   47.644939][ T1897]  ? hub_port_debounce+0x2e0/0x2e0
-[   47.645467][ T1897]  ? check_irq_usage+0x861/0xf20
-[   47.645975][ T1897]  ? drain_workqueue+0x280/0x360
-[   47.646506][ T1897]  ? lock_release+0x640/0x640
-[   47.646994][ T1897]  ? rcu_read_lock_sched_held+0xa1/0xd0
-[   47.647572][ T1897]  ? rcu_read_lock_bh_held+0xb0/0xb0
-[   47.648111][ T1897]  ? lockdep_hardirqs_on_prepare+0x273/0x3e0
-[   47.648735][ T1897]  process_one_work+0x92b/0x1460
-[   47.649262][ T1897]  ? pwq_dec_nr_in_flight+0x330/0x330
-[   47.649816][ T1897]  ? rwlock_bug.part.0+0x90/0x90
-[   47.650336][ T1897]  worker_thread+0x95/0xe00
-[   47.650830][ T1897]  ? __kthread_parkme+0x115/0x1e0
-[   47.651361][ T1897]  ? process_one_work+0x1460/0x1460
-[   47.651904][ T1897]  kthread+0x3a1/0x480
-[   47.652329][ T1897]  ? set_kthread_struct+0x120/0x120
-[   47.652878][ T1897]  ret_from_fork+0x1f/0x30
-[   47.653370][ T1897]
-[   47.653608][ T1897]
-[   47.653848][ T1897] addr ffffc90001f6f000 is located in stack of task kworker/0:2/1897 at offset 512 in frame:
-[   47.654891][ T1897]  brcmf_c_preinit_dcmds+0x0/0xc40
-[   47.655442][ T1897]
-[   47.655690][ T1897] this frame has 4 objects:
-[   47.656151][ T1897]  [48, 56) 'ptr'
-[   47.656159][ T1897]  [80, 148) 'revinfo'
-[   47.656534][ T1897]  [192, 210) 'eventmask'
-[   47.656953][ T1897]  [256, 512) 'buf'
-[   47.657410][ T1897]
-[   47.658035][ T1897] Memory state around the buggy address:
-[   47.658743][ T1897]  ffffc90001f6ef00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-[   47.659577][ T1897]  ffffc90001f6ef80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-[   47.660394][ T1897] >ffffc90001f6f000: f3 f3 f3 f3 f3 f3 f3 f3 00 00 00 00 00 00 00 00
-[   47.661199][ T1897]                    ^
-[   47.661625][ T1897]  ffffc90001f6f080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-[   47.662455][ T1897]  ffffc90001f6f100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 f1 f1
-[   47.663318][ T1897] ==================================================================
-[   47.664147][ T1897] Disabling lock debugging due to kernel taint
+Fix this by creating a directory for each ath11k device using schema
+<bus>-<devname>, for example "pci-0000:06:00.0". This directory created under
+the top-level ath11k directory, for example /sys/kernel/debug/ath11k.
 
-Reported-by: Dokyung Song <dokyungs@yonsei.ac.kr>
-Reported-by: Jisoo Jang <jisoo.jang@yonsei.ac.kr>
-Reported-by: Minsuk Kang <linuxlovemin@yonsei.ac.kr>
-Signed-off-by: Jisoo Jang <jisoo.jang@yonsei.ac.kr>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20221115043458.37562-1-jisoo.jang@yonsei.ac.kr
+The reference to the toplevel ath11k directory is not stored anymore within ath11k, instead
+it's retrieved using debugfs_lookup(). If the directory does not exist it will
+be created. After the last directory from the ath11k directory is removed, for
+example when doing rmmod ath11k, the empty ath11k directory is left in place,
+it's a minor cosmetic issue anyway.
+
+Here's an example hierarchy with one WCN6855:
+
+ath11k
+`-- pci-0000:06:00.0
+    |-- mac0
+    |   |-- dfs_block_radar_events
+    |   |-- dfs_simulate_radar
+    |   |-- ext_rx_stats
+    |   |-- ext_tx_stats
+    |   |-- fw_dbglog_config
+    |   |-- fw_stats
+    |   |   |-- beacon_stats
+    |   |   |-- pdev_stats
+    |   |   `-- vdev_stats
+    |   |-- htt_stats
+    |   |-- htt_stats_reset
+    |   |-- htt_stats_type
+    |   `-- pktlog_filter
+    |-- simulate_fw_crash
+    `-- soc_dp_stats
+
+I didn't have a test setup where I could connect multiple ath11k devices to the
+same the host, so I have only tested this with one device.
+
+Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03125-QCAHSPSWPL_V1_V2_SILICONZ_LITE-3.6510.9
+Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.5.0.1-01208-QCAHKSWPL_SILICONZ-1
+Tested-on: QCN9074 hw1.0 PCI WLAN.HK.2.5.0.1-01208-QCAHKSWPL_SILICONZ-1
+
+Tested-by: Robert Marko <robert.marko@sartura.hr>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20221220121231.20120-1-kvalo@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/ath/ath11k/core.h    |  1 -
+ drivers/net/wireless/ath/ath11k/debugfs.c | 48 +++++++++++++++++++----
+ 2 files changed, 40 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
-index 4a309e5a5707b..5b484bbac8a79 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
-@@ -299,6 +299,7 @@ int brcmf_c_preinit_dcmds(struct brcmf_if *ifp)
- 			 err);
- 		goto done;
- 	}
-+	buf[sizeof(buf) - 1] = '\0';
- 	ptr = (char *)buf;
- 	strsep(&ptr, "\n");
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index 22460b0abf037..ac34c57e4bc69 100644
+--- a/drivers/net/wireless/ath/ath11k/core.h
++++ b/drivers/net/wireless/ath/ath11k/core.h
+@@ -912,7 +912,6 @@ struct ath11k_base {
+ 	enum ath11k_dfs_region dfs_region;
+ #ifdef CONFIG_ATH11K_DEBUGFS
+ 	struct dentry *debugfs_soc;
+-	struct dentry *debugfs_ath11k;
+ #endif
+ 	struct ath11k_soc_dp_stats soc_stats;
+ 
+diff --git a/drivers/net/wireless/ath/ath11k/debugfs.c b/drivers/net/wireless/ath/ath11k/debugfs.c
+index ccdf3d5ba1ab6..5bb6fd17fdf6f 100644
+--- a/drivers/net/wireless/ath/ath11k/debugfs.c
++++ b/drivers/net/wireless/ath/ath11k/debugfs.c
+@@ -976,10 +976,6 @@ int ath11k_debugfs_pdev_create(struct ath11k_base *ab)
+ 	if (test_bit(ATH11K_FLAG_REGISTERED, &ab->dev_flags))
+ 		return 0;
+ 
+-	ab->debugfs_soc = debugfs_create_dir(ab->hw_params.name, ab->debugfs_ath11k);
+-	if (IS_ERR(ab->debugfs_soc))
+-		return PTR_ERR(ab->debugfs_soc);
+-
+ 	debugfs_create_file("simulate_fw_crash", 0600, ab->debugfs_soc, ab,
+ 			    &fops_simulate_fw_crash);
+ 
+@@ -1001,15 +997,51 @@ void ath11k_debugfs_pdev_destroy(struct ath11k_base *ab)
+ 
+ int ath11k_debugfs_soc_create(struct ath11k_base *ab)
+ {
+-	ab->debugfs_ath11k = debugfs_create_dir("ath11k", NULL);
++	struct dentry *root;
++	bool dput_needed;
++	char name[64];
++	int ret;
++
++	root = debugfs_lookup("ath11k", NULL);
++	if (!root) {
++		root = debugfs_create_dir("ath11k", NULL);
++		if (IS_ERR_OR_NULL(root))
++			return PTR_ERR(root);
++
++		dput_needed = false;
++	} else {
++		/* a dentry from lookup() needs dput() after we don't use it */
++		dput_needed = true;
++	}
++
++	scnprintf(name, sizeof(name), "%s-%s", ath11k_bus_str(ab->hif.bus),
++		  dev_name(ab->dev));
++
++	ab->debugfs_soc = debugfs_create_dir(name, root);
++	if (IS_ERR_OR_NULL(ab->debugfs_soc)) {
++		ret = PTR_ERR(ab->debugfs_soc);
++		goto out;
++	}
++
++	ret = 0;
+ 
+-	return PTR_ERR_OR_ZERO(ab->debugfs_ath11k);
++out:
++	if (dput_needed)
++		dput(root);
++
++	return ret;
+ }
+ 
+ void ath11k_debugfs_soc_destroy(struct ath11k_base *ab)
+ {
+-	debugfs_remove_recursive(ab->debugfs_ath11k);
+-	ab->debugfs_ath11k = NULL;
++	debugfs_remove_recursive(ab->debugfs_soc);
++	ab->debugfs_soc = NULL;
++
++	/* We are not removing ath11k directory on purpose, even if it
++	 * would be empty. This simplifies the directory handling and it's
++	 * a minor cosmetic issue to leave an empty ath11k directory to
++	 * debugfs.
++	 */
+ }
+ EXPORT_SYMBOL(ath11k_debugfs_soc_destroy);
  
 -- 
 2.39.0
