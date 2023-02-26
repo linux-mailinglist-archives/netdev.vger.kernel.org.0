@@ -2,47 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A75B26A2CCB
-	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 01:16:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 750506A2CCD
+	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 01:17:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229660AbjBZAQt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Feb 2023 19:16:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40722 "EHLO
+        id S229652AbjBZAQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Feb 2023 19:16:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229562AbjBZAQq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Feb 2023 19:16:46 -0500
+        with ESMTP id S229562AbjBZAQ5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Feb 2023 19:16:57 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35CAA15572
-        for <netdev@vger.kernel.org>; Sat, 25 Feb 2023 16:16:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF6BD166EA
+        for <netdev@vger.kernel.org>; Sat, 25 Feb 2023 16:16:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
         In-Reply-To:References:Cc:To:Subject:From:MIME-Version:Date:Message-ID:Sender
         :Reply-To:Content-ID:Content-Description;
-        bh=rxiJV5VgIIKM/V/bsazfK4vZaElzfa1ELcYdf+J2YiM=; b=lqrZhG2fhQ76VeuBH9/rMGm6ns
-        J+v1oIyakIBjJ3oM5eGhqeGZImzROVvkL9IbA3EoHXwy7qlrGNIItRCorA6uwqZw0ki3+8yNEYwyN
-        0kyVqZrmySjQ4ukJUI/5CLmeS3Gz8rT6u+YfQ72jIr8SPfV03KYusD7mBpekIzh7epSbdAAstt2qe
-        mLW+uH+lJXG+HDSDmwbeyg/CNUqz+Aya/ErmbCX5Bor+YQ8TYZI3X/MlwokIbJ9YMsxBIpimVCHO7
-        TQHCnSCabvtnMwUxtlPkG07dKNEgHJq7V5EQU/ZLOstyDVuNRxtYDrQpGepUTGSqK1pCIfkKJ/CLv
-        LzdxjAPg==;
+        bh=foqnmGpMs1C0a7QA/AM97kddjLA6Tlygtuea7Mxtn80=; b=ZzVOhEBInortY0kuo3YJlpcVdd
+        yfY0vS/d5ZOphTUbS689sYHhze4GjFwfRKznxTMVuLtxmspN4PZFISGQYx78wg33xc8SDOpZCwKlF
+        ATMk+Qpno058XXqH4tO9SlXRmocmQKarrIw9JdZRv1L0uNkdQrEut9ErcuK2Rx0EyMPLhJHZzXu3a
+        rwNals9C5/zwcjjJ/y7zJJxYJVWem9zBlwXRCF1/fdpf95sN+J0+v3uCZiOnQGLmWndOAZVmdx+6U
+        vJMWA8hgrSCqHMBPZtxorV/BvQh+9JFIHD7OkEOWhbE+/mYCGVjp+WOwXDI/7YrS5rmw0EtjYFoqu
+        johhSwOw==;
 Received: from 108-90-42-56.lightspeed.sntcca.sbcglobal.net ([108.90.42.56] helo=[192.168.1.80])
         by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pW4iV-00GUJv-Vf; Sun, 26 Feb 2023 00:16:40 +0000
-Message-ID: <7d6676f7-c695-a9a7-f64d-798755b2d519@infradead.org>
-Date:   Sat, 25 Feb 2023 16:16:38 -0800
+        id 1pW4id-00GUKJ-6O; Sun, 26 Feb 2023 00:16:47 +0000
+Message-ID: <7e8798e6-36ac-4f26-0a12-c9d6fb302bac@infradead.org>
+Date:   Sat, 25 Feb 2023 16:16:45 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
 From:   Geoff Levand <geoff@infradead.org>
-Subject: Re: [PATCH net v5 1/2] net/ps3_gelic_net: Fix RX sk_buff length
-To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Alexander Duyck <alexander.duyck@gmail.com>
+Subject: Re: [PATCH net v5 2/2] net/ps3_gelic_net: Use dma_mapping_error
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
 References: <cover.1676221818.git.geoff@infradead.org>
- <de8eacb3bb238f40ce69882e425bd83c6180d671.1676221818.git.geoff@infradead.org>
- <d18b70fc097d475ca6e4a5b9349b971eda1f853d.camel@redhat.com>
+ <ea17b44b48e4dad6c97e3f1e61266fcf9f0ad2d5.1676221818.git.geoff@infradead.org>
+ <f04caea6-128c-2852-bd25-3d01a803f664@intel.com>
 Content-Language: en-US
-In-Reply-To: <d18b70fc097d475ca6e4a5b9349b971eda1f853d.camel@redhat.com>
+In-Reply-To: <f04caea6-128c-2852-bd25-3d01a803f664@intel.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -56,49 +55,47 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi,
 
-On 2/14/23 02:46, Paolo Abeni wrote:
-> +Alex
-> On Sun, 2023-02-12 at 18:00 +0000, Geoff Levand wrote:
->> The Gelic Ethernet device needs to have the RX sk_buffs aligned to
->> GELIC_NET_RXBUF_ALIGN and the length of the RX sk_buffs must be a
->> multiple of GELIC_NET_RXBUF_ALIGN.
+On 2/14/23 09:28, Alexander Lobakin wrote:
+> From: Geoff Levand <geoff@infradead.org>
+> Date: Sun, 12 Feb 2023 18:00:58 +0000
+> 
+>> The current Gelic Etherenet driver was checking the return value of its
+>> dma_map_single call, and not using the dma_mapping_error() routine.
 >>
->> The current Gelic Ethernet driver was not allocating sk_buffs large
->> enough to allow for this alignment.
+>> Fixes runtime problems like these:
 >>
->> Fixes various randomly occurring runtime network errors.
+>>   DMA-API: ps3_gelic_driver sb_05: device driver failed to check map error
+>>   WARNING: CPU: 0 PID: 0 at kernel/dma/debug.c:1027 .check_unmap+0x888/0x8dc
 >>
 >> Fixes: 02c1889166b4 (ps3: gigabit ethernet driver for PS3, take3)
+>> Signed-off-by: Geoff Levand <geoff@infradead.org>
+>> ---
+>>  drivers/net/ethernet/toshiba/ps3_gelic_net.c | 41 ++++++++++----------
+>>  1 file changed, 20 insertions(+), 21 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_net.c b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
+>> index 2bb68e60d0d5..0e52bb99e344 100644
+>> --- a/drivers/net/ethernet/toshiba/ps3_gelic_net.c
+>> +++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
+
+>> -		if (!descr->bus_addr)
+>> -			goto iommu_error;
+>> +		if (unlikely(dma_mapping_error(dev, descr->bus_addr))) {
 > 
-> Please use the correct format for the Fixes tag: <hash> ("<msg>"). Note
-> the missing quotes.
+> dma_mapping_error() already has unlikely() inside.
 
-I'll add those.
- 
->> -	/* io-mmu-map the skb */
->> -	descr->buf_addr = cpu_to_be32(dma_map_single(ctodev(card),
->> -						     descr->skb->data,
->> -						     GELIC_NET_MAX_MTU,
->> -						     DMA_FROM_DEVICE));
->> +	skb_reserve(descr->skb, aligned_buf.offset);
->> +
->> +	descr->buf_addr = dma_map_single(dev, descr->skb->data, descr->buf_size,
->> +		DMA_FROM_DEVICE);
-> 
-> As already noted by Alex, you should preserve the cpu_to_be32(). If the
-> running arch is be32, it has 0 performance and/or code size overhead,
-> and it helps readability and maintainability.
+OK, I'll remove that in the next patch set.
 
-I'll add those in for the next patch set.
+>> +			dev_err(dev, "%s:%d: dma_mapping_error\n", __func__,
+>> +				__LINE__);
 
-> Please be sure to check the indentation of new code with checkpatch.
+> It is fast path. You're not allowed to use plain printk on fast path,
+> since you may generate then thousands of messages per second.
+> Consider looking at _ratelimit family of functions.
 
-checkpatch reports a CHECK for my indentation. As is discussed in
-the kernel's coding style guide, coding style is about
-maintainability, and as the maintainer of this driver I think
-the indentation I have used is more readable and hence easier to
-maintain.
+OK, I'll fix that.
 
 Thanks for the review.
 
 -Geoff
+
