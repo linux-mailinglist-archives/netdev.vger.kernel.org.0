@@ -2,231 +2,248 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 08CB06A335E
-	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 19:07:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BAAC96A3367
+	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 19:21:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229725AbjBZSHC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Feb 2023 13:07:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49894 "EHLO
+        id S229590AbjBZSVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Feb 2023 13:21:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbjBZSHB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 13:07:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81D51EB5D;
-        Sun, 26 Feb 2023 10:06:58 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 41C92B80B46;
-        Sun, 26 Feb 2023 18:06:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 780EEC433EF;
-        Sun, 26 Feb 2023 18:06:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677434815;
-        bh=Kg+gYcfpIk7Nt4ziTYJzcIX74yPknW+88qVZ6L234IM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TQ6z14/Zw5UgyYqvy+Ixfip3pdiNZJdngIwjFwAWrcqtdkN2/gjm8olPrvNkLzPg7
-         pVw4pLJXCPpxsJLBzQzmO0kxKvtqcPFupdFPxT1UR+bsTh9BfQpkDoMTsxKzXiWDhV
-         z6oEFaeE/pG17rUJNAFzTGSMdMBfTv88pEsxmEU+P0ZozdTLz4qm8AF76zAgFG/ZpW
-         TFfc9IJhZzf1nzsy0ljQawVSt5lMo2VYucMTSkcorCbtPo4LzhFbTnRq78QK5aTBrr
-         KmnTiMAIPk95d8YP6RI2eV0MzUKkqmPtfya9HQAmLG/OnGMcCBA25lc+YYViTN2x1y
-         u5g5zw+D09vAg==
-Date:   Sun, 26 Feb 2023 18:06:48 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Wei Fang <wei.fang@nxp.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Arun.Ramadoss@microchip.com, intel-wired-lan@lists.osuosl.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org,
-        Jose Abreu <joabreu@synopsys.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Subject: Re: [PATCH net-next v8 5/9] net: phy: add
- genphy_c45_ethtool_get/set_eee() support
-Message-ID: <Y/ufuLJdMcxc6f47@sirena.org.uk>
-References: <20230211074113.2782508-1-o.rempel@pengutronix.de>
- <20230211074113.2782508-6-o.rempel@pengutronix.de>
+        with ESMTP id S229495AbjBZSVE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 13:21:04 -0500
+Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40B1AEC42;
+        Sun, 26 Feb 2023 10:21:03 -0800 (PST)
+Received: by mail-qt1-f169.google.com with SMTP id d7so4493779qtr.12;
+        Sun, 26 Feb 2023 10:21:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=jWb7q6a1sjSV59Lcz+2CiIFUSCE7SfdoeaOuYsGveyU=;
+        b=GvkUsQq2FDXukScYPSpxWhP/2VajK3bAhZAMaaJis4UQ7qq9YkA6vaHxot74Nn+UzG
+         J+ap2GuEMDKHXUEE+KVRP50NB9Qf3FyHTKWVXgdoensXr15TWoVWlGM09dDbAju9eKK6
+         X0Kn5BRAaAasq/jSRp+EEowHH5bbpWk1P/DIry3i71/b6oh7jogyIZjNu3dQRumfxYiW
+         ISOzxMb0WjKO/pJMXI/cn0lurm9Ct906d1a6llh7Cotp7QG+JTATwhW4YcDa54pVASQ2
+         EGaG3CaLv3XGfUB/VGQbHU/kniA3Y0nH63zu1MSnx7hoZ/9SGqORe5J4521jqSxlQLhm
+         GDpg==
+X-Gm-Message-State: AO0yUKVpRBfTwl+07xd/s1LG7DF/lssZ6J0tTAwdEbZ82Wjba27zf7l8
+        5jGU8Sf2QHGrC4HyjeYeAw==
+X-Google-Smtp-Source: AK7set/8RjhCS8uCEoAy2xabB8INjsVI7tWDO1zL4yi2RCkP+y0VVyQsRNeK/ts3oz3nVdnhGmvCXg==
+X-Received: by 2002:a05:622a:10b:b0:3bf:d4c3:3659 with SMTP id u11-20020a05622a010b00b003bfd4c33659mr2820971qtw.66.1677435662247;
+        Sun, 26 Feb 2023 10:21:02 -0800 (PST)
+Received: from robh_at_kernel.org ([2605:ef80:8069:8ddf:ff6b:c94c:94fd:4442])
+        by smtp.gmail.com with ESMTPSA id i25-20020ac84899000000b003b9a6d54b6csm3251099qtq.59.2023.02.26.10.20.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 26 Feb 2023 10:21:01 -0800 (PST)
+Received: (nullmailer pid 126949 invoked by uid 1000);
+        Sun, 26 Feb 2023 18:20:58 -0000
+Date:   Sun, 26 Feb 2023 12:20:58 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, krzysztof.kozlowski+dt@linaro.org,
+        michal.simek@xilinx.com, radhey.shyam.pandey@xilinx.com,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        anirudha.sarangi@amd.com, harini.katakam@amd.com, git@amd.com
+Subject: Re: [PATCH net-next V6] dt-bindings: net: xlnx,axi-ethernet: convert
+ bindings document to yaml
+Message-ID: <20230226182058.GA108914-robh@kernel.org>
+References: <20230220122252.3575380-1-sarath.babu.naidu.gaddam@amd.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="lWNhffqPlhkr2Cm1"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230211074113.2782508-6-o.rempel@pengutronix.de>
-X-Cookie: A watched clock never boils.
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230220122252.3575380-1-sarath.babu.naidu.gaddam@amd.com>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Feb 20, 2023 at 05:52:52PM +0530, Sarath Babu Naidu Gaddam wrote:
+> From: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+> 
+> Convert the bindings document for Xilinx AXI Ethernet Subsystem
+> from txt to yaml. No changes to existing binding description.
+> 
+> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+> Signed-off-by: Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>
+> ---
+> Changes in V6:
+> 1) Addressed below review comments.
+> 	a)add a $ref to ethernet-controller.yaml for pcs-handle.
+> 	b)Drop unused labels(axi_ethernetlite_0_mdio).
+> 	c)Not relevant to the binding(interrupt-parent).
+> 
+> Changes in V5:
+> 1) Removed .txt file which was missed in V4
+> 
+> Changes in V4:
+> 1)Changed the interrupts property and add allOf:if:then for it.
+> 
+> Changes in V3:
+> 1) Moved RFC to PATCH.
+> 2) Addressed below review comments
+> 	a) Indentation.
+> 	b) maxItems:3 does not match your description.
+> 	c) Filename matching compatibles.
+> 
+> Changes in V2:
+> 1) remove .txt and change the name of file to xlnx,axiethernet.yaml.
+> 2) Fix DT check warning('device_type' does not match any of the regexes:
+>    'pinctrl-[0-9]+' From schema: Documentation/devicetree/bindings/net
+>     /xilinx_axienet.yaml).
+> ---
+>  .../bindings/net/xilinx_axienet.txt           | 101 -----------
+>  .../bindings/net/xlnx,axi-ethernet.yaml       | 165 ++++++++++++++++++
+>  MAINTAINERS                                   |   1 +
+>  3 files changed, 166 insertions(+), 101 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/net/xilinx_axienet.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/xlnx,axi-ethernet.yaml
 
---lWNhffqPlhkr2Cm1
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+[...]
 
-On Sat, Feb 11, 2023 at 08:41:09AM +0100, Oleksij Rempel wrote:
-> Add replacement for phy_ethtool_get/set_eee() functions.
->=20
-> Current phy_ethtool_get/set_eee() implementation is great and it is
-> possible to make it even better:
-> - this functionality is for devices implementing parts of IEEE 802.3
->   specification beyond Clause 22. The better place for this code is
->   phy-c45.c
+> +++ b/Documentation/devicetree/bindings/net/xlnx,axi-ethernet.yaml
+> @@ -0,0 +1,165 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/xlnx,axi-ethernet.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: AXI 1G/2.5G Ethernet Subsystem
+> +
+> +description: |
+> +  Also called  AXI 1G/2.5G Ethernet Subsystem, the xilinx axi ethernet IP core
+> +  provides connectivity to an external ethernet PHY supporting different
+> +  interfaces: MII, GMII, RGMII, SGMII, 1000BaseX. It also includes two
+> +  segments of memory for buffering TX and RX, as well as the capability of
+> +  offloading TX/RX checksum calculation off the processor.
+> +
+> +  Management configuration is done through the AXI interface, while payload is
+> +  sent and received through means of an AXI DMA controller. This driver
+> +  includes the DMA driver code, so this driver is incompatible with AXI DMA
+> +  driver.
+> +
+> +maintainers:
+> +  - Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - xlnx,axi-ethernet-1.00.a
+> +      - xlnx,axi-ethernet-1.01.a
+> +      - xlnx,axi-ethernet-2.01.a
+> +
+> +  reg:
+> +    description:
+> +      Address and length of the IO space, as well as the address
+> +      and length of the AXI DMA controller IO space, unless
+> +      axistream-connected is specified, in which case the reg
+> +      attribute of the node referenced by it is used.
+> +    maxItems: 2
+> +
+> +  interrupts:
+> +    items:
+> +      - description: Ethernet core interrupt
+> +      - description: Tx DMA interrupt
+> +      - description: Rx DMA interrupt
+> +    description:
+> +      Ethernet core interrupt is optional. If axistream-connected property is
+> +      present DMA node should contains TX/RX DMA interrupts else DMA interrupt
+> +      resources are mentioned on ethernet node.
+> +    minItems: 1
+> +
+> +  phy-handle: true
+> +
+> +  xlnx,rxmem:
+> +    description:
+> +      Set to allocated memory buffer for Rx/Tx in the hardware.
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +
+> +  phy-mode: true
 
-Currently mainline is failing to bring up networking on the Libre
-Computer AML-S905X-CC, with a bisect pointing at this commit,
-022c3f87f88 upstream (although I'm not 100% sure I trust the bisect it
-seems to be in roughly the right place).  I've not dug into what's going
-on more than running the bisect yet.
+I'd assume only a subset of modes are supported by this h/w. If so, list 
+them.
 
-The boot dies with:
+> +
+> +  xlnx,phy-type:
+> +    description:
+> +      Do not use, but still accepted in preference to phy-mode.
+> +    deprecated: true
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +
+> +  xlnx,txcsum:
+> +    description:
+> +      TX checksum offload. 0 or empty for disabling TX checksum offload,
+> +      1 to enable partial TX checksum offload and 2 to enable full TX
+> +      checksum offload.
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    enum: [0, 1, 2]
+> +
+> +  xlnx,rxcsum:
+> +    description:
+> +      RX checksum offload. 0 or empty for disabling RX checksum offload,
+> +      1 to enable partial RX checksum offload and 2 to enable full RX
+> +      checksum offload.
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    enum: [0, 1, 2]
+> +
+> +  xlnx,switch-x-sgmii:
+> +    type: boolean
+> +    description:
+> +      Indicate the Ethernet core is configured to support both 1000BaseX and
+> +      SGMII modes. If set, the phy-mode should be set to match the mode
+> +      selected on core reset (i.e. by the basex_or_sgmii core input line).
+> +
+> +  clocks:
+> +    items:
+> +      - description: Clock for AXI register slave interface.
+> +      - description: AXI4-Stream clock for TXD RXD TXC and RXS interfaces.
+> +      - description: Ethernet reference clock, used by signal delay primitives
+> +                     and transceivers.
+> +      - description: MGT reference clock (used by optional internal PCS/PMA PHY)
+> +
+> +  clock-names:
+> +    items:
+> +      - const: s_axi_lite_clk
+> +      - const: axis_clk
+> +      - const: ref_clk
+> +      - const: mgt_clk
+> +
+> +  axistream-connected:
+> +    type: object
+> +    description: Reference to another node which contains the resources
 
-[   15.532108] meson8b-dwmac c9410000.ethernet end0: Register
-M the information provided will be safe.
-[   15.569305] meson8b-dwmac c9410000.ethernet end0: PHY [mdio_mux-0.e40908=
-ff:08] driver [Meson GXL Internal PHY] (irq=3D45)
-[   15.585168] meson8b-dwmac c9410000.ethernet end0: No Safety Features sup=
-port found
-[   15.587169] meson8b-dwmac c9410000.ethernet end0: PTP not supported by HW
-[   15.594673] meson8b-dwmac c9410000.ethernet end0: configuring for phy/rm=
-ii link mode
-[   15.601802] ------------[ cut here ]---------that are being provided
---- [   15.606093] WARNING: CPU: 1 PID: 57 at drivers/net/phy/phy.c:1168
-phy_error+0x14/0x60 [   15.613854] Modules linked in: snd_soc_hdmi_codec
-dw_hdmi_i2s_audio meson_gxl dwmac_generic meson_drm lima
-drm_shmem_helper gpu_sched dwmac_meson8b stmmac_platform crct10dif_ce
-stmmac amlogic_gxl_crypto pcs_xpcs drm_dma_helper crypto_engine
-meson_canvas meson_gxbb_wdt meson_rng meson_dw_hdmi rng_core dw_hdmi cec
-drm_display_helper meson_ir rc_core snd_soc_meson_aiu
-snd_soc_meson_codec_glue snd_soc_meson_t9015 snd_soc_meson_gx_sound_card
-snd_soc_meson_card_utils snd_soc_simple_amplifier display_conne
-drm_kms_helper drm nvmem_meson_efuse [   15.661291] CPU: 1 PID: 57 Comm:
-kworker/u8:2 Not tainted 6.2.0-rc7-01626-g8b68710a3121 #10
-[   15.669568] Hardware name: Libre Computer AML-S905X-CC (DT)
-[   15.675090] Workqueue: events_power_efficient phy_state_machine
-[   15.680954] pstate: 80000005 (Nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=
-=3D--)
-[   15.687853] pc : phy_error+0x14/0x60
-[   15.691389] lr : phy_state_machine+0xa0/0x280
-[   15.695701] sp : ffff80000a8a3d40
-[   15.698979] x29: ffff80000a8a3d40 x28: 0000000000000000 x27: 00000000000=
-00000
-[   15.706051] x26: ffff80000a170000 x25: ffff00007ba884b0 x24: ffff0000010=
-09105
-[   15.713124] x23: 00000000ffffffa1 x22: ffff00007ba884a8 x21: ffff00007ba=
-88500
-[   15.720196] x20: 0000000000000003 x19: ffff00007ba88000 x18: 00000000000=
-00000
-[   15.727269] x17: 0000000000000000 x16: 0000000000000000 x15: 00000000000=
-00000
-[   15.734341] x14: 00000000000001d6 x13: 00000000000001d6 x12: 00000000000=
-00001
-[   15.741414] x11: 0000000000000001 x10: ffff00007ba88420 x9 : ffff00007ba=
-88418
-[   15.748487] x8 : 0000000000000000 x7 : 0000000000000020 x6 : 00000000000=
-00040
-[   15.755559] x5 : 0000000000000000 x4 : 0000000000000000 x3 : ffff00007ba=
-88500
-[   15.762631] x2 : 0000000000000000 x1 : ffff000001105700 x0 : ffff00007ba=
-88000
-[   15.769705] Call trace:
-[   15.772120]  phy_error+0x14/.  It didn't really cross my mind that
-something would be hard coded like this.
-[   15.786868]  kthread+0x108/0x10c
-[   15.790059]  ret_from_fork+0x10/0x20
-[   15.793596] ---[ end trace 0000000000000000 ]---
+Reference? Meaning a phandle? Or this is a node because that's what 
+'type: object' says.
 
-followed by there being no network so no NFS root.  Bisect log:
+> +      for the AXI DMA controller used by this device. If this is specified,
+> +      the DMA-related resources from that device (DMA registers and DMA
+> +      TX/RX interrupts) rather than this one will be used.
+> +
+> +  mdio: true
 
-git bisect start
-# good: [c9c3395d5e3dcc6daee66c6908354d47bf98cb0c] Linux 6.2
-git bisect good c9c3395d5e3dcc6daee66c6908354d47bf98cb0c
-# bad: [2fcd07b7ccd5fd10b2120d298363e4e6c53ccf9c] mm/mprotect: Fix successf=
-ul vma_merge() of next in do_mprotect_pkey()
-git bisect bad 2fcd07b7ccd5fd10b2120d298363e4e6c53ccf9c
-# bad: [d5176cdbf64ce7d4eebfbec23118e9f72] Merge tag 'pinctrl-v6.3-1' of
-# git://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-pinctrl
-git bisect bad d5176cdbf64ce7d4eebf339205f17c23118e9f72
-# skip: [69308402ca6f5b80a5a090ade0b13bd146891420] Merge tag
-# 'platform-drivers-x86-v6.3-1' of
-# git://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86
-git bisect skip 69308402ca6f5b80a5a090ade0b13bd146891420
-# good: [bc61761394ce0f0cc35c6fc60426f08d83d0d488] ipv6: ICMPV6: Use
-# swap() instead of open coding it
-git bisect good bc61761394ce0f0cc35c6fc60426f08d83d0d488
-# good: [1b72607d7321e66829e11148712b3a2ba1dc83e7] Merge tag 'thermal-6.3-r=
-c1' of git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm
-git bisect good 1b72607d7321e66829e11148712b3a2ba1dc83e7
-# bad: [d1fabc68f8e0541d41657096dc713cb01775652d] Merge git://git.kernel.or=
-g/pub/scm/linux/kernel/git/netdev/net
-git bisect bad d1fabc68f8e0541d41657096dc713cb01775652d
-# good: [31de4105f00d64570139bc5494a20 after figuring out what system
-# it's on1b0bdf] bpf: Add BPF_FIB_LOOKUP_SKIP_NEIGH for bpf_fib_lookup
-git bisect good 31de4105f00d64570139bc5494a201b0bd57349f
-# good: [1a30a6b25f263686dbf2028d56041ac012b10dcb] wifi: brcmfmac: p2p:.
-git bisect good 1a30a6b25f263686dbf2028d56041ac012b10dcb
-# bad: [14743ddd2495c96caa18e382625c034e49a812e2] sfc: add devlink info sup=
-port for ef100
-git bisect bad 14743ddd2495c96caa18e382625c034e49a812e2
-# bad: [1daa8e25ed971eca8cd8c8dfd4d6d6541b1d62a2] Merge branch 'net-make-ko=
-bj_type-structures-constant'
-git bisect bad 1daa8e25ed971eca8cd8c8dfd4d6d6541b1d62a2
-# bad: [1daa8e25ed971eca8cd8c8dfd4d6d6541b1d62a2] Merge branch 'net-make-ko=
-bj_type-structures-constant'
-git bisect bad 1daa8e25ed971eca8cd8c8dfd4d6d6541b1d62a2
-# good: [75da437a2f172759b227309 (or whatever)1a938772e687242d0] Merge
-# branch '40GbE' of
-# git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue
-git bisect good 75da437a2f172759b2273091a938772e687242d0
-# bad: [8b68710a3121e0475b123a20c4220f66a728770e] net: phy: start using gen=
-phy_c45_ethtool_get/set_eee()
-git bisect bad 8b68710a3121e0475b123a20c4220f66a728770e
-# good: [d1ce6395d4648b41cf762714934e34ae57f0d1a4] net: ipa: define IPA v3.=
-1 GSI event ring register offsets
-git bisect good d1ce6395d4648b41cf762714934e34ae57f0d1a4
-# good: [79cdf17e5131ccdee0792f6f25d3db0e34861998] Merge branch 'ionic-on-c=
-hip-desc'
-git bisect good 79cdf17e5131ccdee0792f6f25d3db0e34861998
-# bad: [ when the device is
-# registered022c3f87f88e2d68e90be7687d981c9cb893a3b1] net: phy: add
-# genphy_c45_ethtool_get/set_eee() support
-git bisect bad 022c3f87f88e2d68e90be7687d981c9cb893a3b1
-# good: [14e47d1fb8f9596acc90a06a66808657a9c512b5] net: phy: add
-# genphy_c45_read_eee_abilities() function
-git bisect good 14e47d1fb8f9596acc90a06a66808657a9c512b5
-# good: [48fb19940f2ba6b50dfea70f671be9340fb63d60] net: phy: micrel: add ks=
-z9477_get_features()
-git bisect good cf9f6079696840093aa6ea3c0ee405a553afe2fb
-# first bad commit: [022c3f87f88e2d68e90be7687d981c9cb893a3b1] net: phy: ad=
-d genphy_c45_ethtool_get/set_eee() support
-=20
+type: object
 
---lWNhffqPlhkr2Cm1
-Content-Type: application/pgp-signature; name="signature.asc"
+> +
+> +  pcs-handle:
+> +    description: Phandle to the internal PCS/PMA PHY in SGMII or 1000Base-X
+> +      modes, where "pcs-handle" should be used to point to the PCS/PMA PHY,
+> +      and "phy-handle" should point to an external PHY if exists.
+> +    $ref: /schemas/net/ethernet-controller.yaml#
 
------BEGIN PGP SIGNATURE-----
+The reference applies to nodes, but 'pcs-handle' is a property. It needs 
+to be at the top-level:
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmP7n7cACgkQJNaLcl1U
-h9CmIwf/a0wgHyuYNhXCytU+4OpEAgJjJ9LJOxlb7jZqK0SdM20sh2/TLFQ43RSr
-DFkeGFEORz/BCjPizy15ix+QpBzNfYjJmIxbyH5BY4dZSLZrRtSlz6m6U4jhZquC
-ZW6F/7bXqDJL7/dflizLk4bkADFEcAppcUCn0l43HuGALn85OSoJWOQ+9rEyTTi3
-XFrn3gqjeGQNsCjTCeaiPA4S7tXNRQ4JNuowJRa1OXmsfteF7iUpIo/Y8E93F2t6
-EQT9c1SdrrEXtvywAEx1w5EB3OAMQ0pnCGsH5blWvu2v+3KRDp2wITnFnp7jBxf5
-2YmAfcJz4M6ZwR7Wr5FsUfGqQrG+xg==
-=AOKL
------END PGP SIGNATURE-----
+allOf:
+  - $ref: /schemas/net/ethernet-controller.yaml#
 
---lWNhffqPlhkr2Cm1--
+Rob
