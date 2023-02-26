@@ -2,165 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3A336A2F5C
-	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 13:01:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B5226A2F62
+	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 13:17:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229570AbjBZMBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Feb 2023 07:01:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39252 "EHLO
+        id S229536AbjBZMM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Feb 2023 07:12:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbjBZMBw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 07:01:52 -0500
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2125.outbound.protection.outlook.com [40.107.220.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB383D31E;
-        Sun, 26 Feb 2023 04:01:50 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=J4JDWbcfYTvjG/Z4eP41RWxkqBkw/baRzyOhiiMiJzST3eKwrn/mcdHTotGCpdJyU1lYk2kCZ57wiOHMM4zGRgqGHfVwloDv3uVh0RbqlfESr+6AYbXMcgFjlcCUHHi2wqkSP9EG9E9msfoJ6m73tdtaXjLTclSGbTa1RfgOWZdtR+t521qds0ACys5LsaMTWnyXBFLPO+a32HCwAJHS404Pon3YLjDctRLgxjQLkL+2c1XHUIiZ0WkCZFK2EejvxeO9FFsW2oUB4qYJ0OVWoBd1wZ4g+EMU0Gt/hejd53Sy7miQYLP04TseefQG8tjrHoiCi4fw5g4/bt+lcvUQDQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hVMBYBtoAKLp1mvb5GeR/ct0yAzhGQP7M1kG+imBbWs=;
- b=MtgJ5VHeEqQ37DkTPhzjDP/X63mgo5as0ACeqgkYTO7foxPTQPJBkJkQTQAj1Ga2tlkOXWctwAB0blXzr9NxwpzuBo57c+okb6YGFNI/wcYSLFvgIRVUj2Lb4XiYCehky1MhA15IqiezeTpJFAqQkTWByDkT6W/akAIkNOQ2oRkc21DR0RcOBOxil6FnZMltHv1P/+XSq4D88f3lUEiU3m1h+exNziPIeAfQMr6Wlo5a2vSE7BwHG/mOCbZ/I74e8i2zGK6qqGLkY9VTaNfHzu50snzBexqxdoY6mdkxOyH8zjwFBpebnBkYF49xx98uiDSZFwZVmwyfxuDmxkjwvQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hVMBYBtoAKLp1mvb5GeR/ct0yAzhGQP7M1kG+imBbWs=;
- b=t7lPgOUrbBw7n/KDCiv0+xct7RjyfZ3yAkYF5h6sD8lLlYvjYpUAd6jR+IEKnxFrnYLSxlXJ6+Of/+D17rOqzb0OUaURsBYGS+sJTq3DEMSFV80lIZLjRdeV35Yu9DamelS5OEp4Espe2XbQFPmPYR0wpmNoel6b8OcYMEh5EDs=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH0PR13MB6020.namprd13.prod.outlook.com (2603:10b6:510:fd::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.27; Sun, 26 Feb
- 2023 12:01:45 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6134.027; Sun, 26 Feb 2023
- 12:01:45 +0000
-Date:   Sun, 26 Feb 2023 13:01:36 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, paulb@nvidia.com, marcelo.leitner@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net/sched: cls_api: Move call to
- tcf_exts_miss_cookie_base_destroy()
-Message-ID: <Y/tKIKrR0ucIQ5mI@corigine.com>
-References: <20230224-cls_api-wunused-function-v1-1-12c77986dc2d@kernel.org>
- <Y/oycX7fMP8yJAdd@corigine.com>
- <Y/p6b4rGiUqGHSsW@dev-arch.thelio-3990X>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y/p6b4rGiUqGHSsW@dev-arch.thelio-3990X>
-X-ClientProxiedBy: AM0P190CA0016.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:208:190::26) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        with ESMTP id S229470AbjBZMM2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 07:12:28 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91EADB47F
+        for <netdev@vger.kernel.org>; Sun, 26 Feb 2023 04:12:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=public-files.de;
+        s=s31663417; t=1677413524; i=frank-w@public-files.de;
+        bh=msrOUDb4gb/DHCW8OcEO9EJqNFQKh0I/nti6VFjZJW8=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=Bo/FdTbb7GKy/gaDZKlYVmC2Rnpsr3Hsnkyrfs73eYRI8NdDG1yjFhrO0Y6L4leRs
+         +WapmeLrtaaPqvamXpy9TvKmbotQ/ZrDXfuGW0OEcDYLRbPEygecxvkfakPVFvEDCE
+         wvVZeMNzYlWvwZQGeuNI+ShZzga0KmRov3OC0iIyoC6HKxZDvNcuOnhSKF0uj5Aa8q
+         Bk+z2IbpvqaNPGofNwrkiyA29jiM4sJDUcyUHSpHzi2759WfW+/i1gptVgHZFyWIOi
+         +4lus021pekLVx0fPR1A1VnFqr9VUZ5qeGzD8iewtou+s1YYOlQ1CquvGFDYV32+GA
+         H4PZkPPF1bp+g==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [80.245.74.252] ([80.245.74.252]) by web-mail.gmx.net
+ (3c-app-gmx-bs15.server.lan [172.19.170.67]) (via HTTP); Sun, 26 Feb 2023
+ 13:12:04 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH0PR13MB6020:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4da836b9-eaad-467f-23fb-08db17f13ade
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: eckwUk8PaY+Rk1o39YMLZ+N19mqpdEmR2wqgYBxxes/i5dxJeMhK0LVDO94oBPHLMkxD9I8x5YJHJLZYF6cTCNMqdZgL/NOpejFksDgDIYx+2JIZlXZzNMl4iDPagvn5iq9IUyOvhbVZSrtPmcR8Twbin0sKkIAUucceLx9i1EgMIaXesXY8/5tTDyk7R55Svrbj8f7OhdvfRpV0s+wBzTADGZZ9E6LKcZRRIYlSyBPf5CdMgMkXtu0Fxn+h12K27FVSnPmZGVC7JctXdPEBAxMKD16wQ1ljftmb9CI4/FcguyaR2gHUIHeo9CJXYFD2VaMxI0wZFoaeuCJq8VIe+Rjx77CCfuiVQ0sIDePlN/GbUWxknrs5J1l/lnmOd/fBsgoukz+Ur5mOdK6G944G3803K6IxObx30h3N1pGiqcieJW3h2j2HeYmk+HTdY/GQPPEO7Etpl02Wqz0huIn3CkbErdEKMSncWWIyL7pr84Q2U++lHZLSGBdn1xXKS8OyqczCqFbni0QPtpcr1NjX+m9upSiQ19odO29Tjb3WqRliOz/TimRM/mqHLlg5E9M/HwfZEk5a4DRZxcVqCZQvE3Ga0Z8yqBpxmlyri1zke5iy6lFSH+kJ5iGpkaDvu0jfaFFeV3XHqEawIxiM+XEUHQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(396003)(366004)(39840400004)(376002)(136003)(451199018)(4326008)(83380400001)(66946007)(66476007)(6916009)(66556008)(41300700001)(316002)(6512007)(36756003)(8676002)(8936002)(38100700002)(5660300002)(7416002)(44832011)(86362001)(478600001)(186003)(2906002)(2616005)(6486002)(6506007)(6666004);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?oK5fugVCO3ORhA4QljhYnmEAKgU+FJEYm1QQB0OdphSe1skaHXYjlXgqlsgg?=
- =?us-ascii?Q?h+zEmVGN75qk+lI9koKsgsSep5z8kAVvbM2Kzd6C0W6cbGy/2fQkREihDk6h?=
- =?us-ascii?Q?I4n/mYpIndMjPVwdtS/jWi7ZRd85vyZukSpeVAjan3dJJn1uvhXAIMrheWfJ?=
- =?us-ascii?Q?uVT9PshCNi4L/6f65cqU3hOBC31T3ITtsKBqwemOLSQQmd9aiCk/177HdA3o?=
- =?us-ascii?Q?bogSvcK9OV3sJrqa7PhIQCleEhfHNEIwA3tfRwiRLN/TZvdM4Qrq6vFIFbgi?=
- =?us-ascii?Q?jfcwL+MoRJ61lC4fVby6vf7VQfwRHo/jmI1vpqgaCS+JxrJ1Z6mDxLqDLDB4?=
- =?us-ascii?Q?9kd+LJiB12rxFg7EhjWC7/LyD6l7ZMPCFbQkgh83FsKgXqDc6mizXkbcHNS0?=
- =?us-ascii?Q?JCW9wjiXf4cPAWoTf8wz7g8IBhbzbq56eXTVdzccaTEMFcZp04j56zeYkliy?=
- =?us-ascii?Q?ch45vue4pKMJcEODJ346EbZVFALNHKMvoaMuGYvnDCLvqMwH1dxm8Y/zlSf1?=
- =?us-ascii?Q?H2uoKhiMHHMXPxH9LhnycqJSSNk73V5ZXd7Zol2I3sle7/OiQzs++8Is2Y7Q?=
- =?us-ascii?Q?qSY1tkxkKKchqokFYfDwS4GDu9oaV+musoEroQuCbUYdGpWBghV5WLgiV/fp?=
- =?us-ascii?Q?lLe45seYLNi8FUthiWiEVnzpJ6xIPfnU9ySqdpnJEOEu1ZvcMpW2LZYguS1r?=
- =?us-ascii?Q?eoFILQs5M5D6NS5sPHtoztgrSBPO3SDvF/lZO/+S8cAgGYs+8suX+U72eney?=
- =?us-ascii?Q?vgY2a8djI0DggeG8/Ag9YNPkXulVJL1xfz+zlSXCB5yr0uUpGqxwUzyTxNcn?=
- =?us-ascii?Q?g5OqBWiQtv+bcq1vdzb7jl+Ii2ro/8yqBGIdyLUya7sYEoVnHsj6LRk/IxvB?=
- =?us-ascii?Q?filqjjBqqQkyZgJO3XmXbhM41dJ11Q+JC7JCt3fG4eMbFCiI2ubTcfBaR8W6?=
- =?us-ascii?Q?O4He3TYcauY/BZ1Q644G3YRl43RerPR+uEdSIaVfYeenMprjKXtyXgbdXHGM?=
- =?us-ascii?Q?NGgKowa/Z2ieDVzU9WcVKk1/5ZAU2BG8z6l2bHiWwiReQBJVa9ZWEdHIlLni?=
- =?us-ascii?Q?U7DkjkpNTf3jxtXTIkf7F8FU+ziwZb7qREGmeg11SYfbDHvl40cg4VVuYNhU?=
- =?us-ascii?Q?XwaqGmJLWkVw84lKo8BO2Rh0xYb9WkOEOSCynS+woKnnp1eFHCHgr+uwNliq?=
- =?us-ascii?Q?XS2DDj1y4rs3kNfF4xKO2ofgD3N1jpokqbgVlItw7t69WS3YpOMkWMLJPfV2?=
- =?us-ascii?Q?f4kByQcHNYhRX8EBR4FzAe3iC0vNIAbltbDYuaJEX8tMbG7ruBvZyTwkP3Tv?=
- =?us-ascii?Q?M5uHoM/rFrZ2ukQMEt8LfUB8kRBwFcooj7IjxInIuBRq79m7g2CdSpQop4l+?=
- =?us-ascii?Q?3i1jLgqSGuiLnVBr7qEPhljTtLdsgQYEycw+MiJp9Oz3Fk4y6j3ptAPGnbxi?=
- =?us-ascii?Q?3fNHIIeCkyLFpmYJgxam7AlwaV+Z/wFRyjPqlyHABbHDYcLl3imMsiqqeaAg?=
- =?us-ascii?Q?W9w8Tcs42pxKBNcR3OVgGseeYK5YfBgHIqXjPPGDYWeonvXEpFbcjT+FBpKc?=
- =?us-ascii?Q?ZcDyDDxbZ+D9NOhhJR/QAB426li46pRJc0xQ97TDyLame2UgUkO9z6+fowsU?=
- =?us-ascii?Q?psLWlQmbNuVnKh3kG2FJ4DuQZRl/aX3vYHBi7dhr/MZaa6jESOmCJBu6bMdL?=
- =?us-ascii?Q?Ohi4tg=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4da836b9-eaad-467f-23fb-08db17f13ade
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Feb 2023 12:01:44.8375
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ExpNiev3wJ1QwUwoLxCchW5ObGZsJB5HJMpkS3qveh4FWHcaATD/uFgdGVe+40gjYSGmhWIUgRe22gsvxMXZMo4o8bDy3DIgm8Rrqyc8WOQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB6020
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Message-ID: <trinity-6ad483d2-5c50-4f38-b386-f4941c85c1fd-1677413524438@3c-app-gmx-bs15>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     =?UTF-8?Q?Ar=C4=B1n=C3=A7_=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        Felix Fietkau <nbd@nbd.name>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        netdev <netdev@vger.kernel.org>, erkin.bozoglu@xeront.com,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>
+Subject: Aw: Re:  Re: Choose a default DSA CPU port
+Content-Type: text/plain; charset=UTF-8
+Date:   Sun, 26 Feb 2023 13:12:04 +0100
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <6383a98a-1b00-913d-0db1-fe33685a8410@arinc9.com>
+References: <trinity-4ef08653-c2e7-4da8-8572-4081dca0e2f7-1677271483935@3c-app-gmx-bap70>
+ <20230224210852.np3kduoqhrbzuqg3@skbuf>
+ <trinity-5a3fbd85-79ce-4021-957f-aea9617bb320-1677333013552@3c-app-gmx-bap06>
+ <f9fcf74b-7e30-9b51-776b-6a3537236bf6@arinc9.com>
+ <6383a98a-1b00-913d-0db1-fe33685a8410@arinc9.com>
+Content-Transfer-Encoding: quoted-printable
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:50TQ+f/GBhxvRh/Hoy2KFRJ604SmREVgB8Y39DVznTvamTTQ3QTwCloPI/KHZoPPQzg9Y
+ 3B42brjI0QVYjEDmMNoTwRs59JpzvcFgyNNI2gM1D+FLoV6AGAlv8oD+QFxEwmfCLd9ftXMsnSXC
+ pWiGfMQA3OXsrOQ94mZj+HP+M2GQJPEFhNLDBDvT6ORgJgAjetd5X596IXIzA/CQTeRfUsohS1AQ
+ aE2AqghObYmFCTsxLhgwjkn2b9QrOqMvQ1kqvZL/eXGIECg4SvbhwIbMnnHJSc3MG7YR23ONvoki
+ lU=
+UI-OutboundReport: notjunk:1;M01:P0:/G3GC/4q/DI=;xxUfhp+zqWap437kJW8+pSOO7Ia
+ Vh46Oj/AtnyI52hMTFeNzC9OUfhmgwkQ/a+j6y5aUpp5BjwAYZAoDCG4zDu/1r15nkRHAA5IK
+ gj4V81it+IJBMZzuWmjvPoTgdpzGviH7ZkADduVr/INdRNEEJXYG5R0c/eOsSIXczq7QYQWVO
+ BPQ1qzpuvSHwUeX5sIhDMyxWfCuco/rrpIKwzgRkRgk1F1xy7pBaYFgdV01bepVvULaOAPNG7
+ mMzt9rc7Rqv6yoK1VxL26b2B7Yk4S7NZe8BGYj09rUdwcyXrzM3UlS7A6zDM4Enktk3uJEHGw
+ U99253RJDUnEN1uqYPfeqMlSTpCIDnZ5/yLLIBqmiEp0xfKbeh52+ejSD7NDbKHN+g1sJ9cyc
+ QZ+tF+5/mpyClmtihFApxjO4Hi0qhZ0pdx8mdEWQ2K4h/HAAuos7oombVqJ2MPGG8BvVeLzeK
+ F2X1jlVs1nDTjhpx5rfo8adh+bGqIvjFoi0MptT5C3qTtijCXcB1UhM2aKC1oVJQtdv05vn6B
+ zpDgJL4vEpGvFp8ftfus8qdkT4a6Ojbo6YL55M7ppIVn9BChGc/7eKA8aVWyIketMyQFOyRxb
+ wzsdhMX87fB+sXrBhvE5GqNMX4hTuMI1dwzJ3ZBCibvXlTXs4sPZg/eamoyjT0t8DSonZ/GW3
+ VkVcpBIXw39QFx06sm9/nTllouFMpKr/WusxYHb7ZZa5PK0gJV1/glyhx5Wj5AGOAxBYXiqBE
+ POOJj+IF9/G7O2F4Y8DpOUvazfMCTKX43D0zD3tWLH1kDFPsb3UnRhOzO5O0/e8VgcbptTYDS
+ sdTiHHGn22RNDe6XcFa0z8bPRZbLAwFM0Veh37evzyT9k=
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 25, 2023 at 02:15:27PM -0700, Nathan Chancellor wrote:
-> On Sat, Feb 25, 2023 at 05:08:17PM +0100, Simon Horman wrote:
-> > On Fri, Feb 24, 2023 at 11:18:49AM -0700, Nathan Chancellor wrote:
-> > > When CONFIG_NET_CLS_ACT is disabled:
-> > > 
-> > >   ../net/sched/cls_api.c:141:13: warning: 'tcf_exts_miss_cookie_base_destroy' defined but not used [-Wunused-function]
-> > >     141 | static void tcf_exts_miss_cookie_base_destroy(struct tcf_exts *exts)
-> > >         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > > 
-> > > Due to the way the code is structured, it is possible for a definition
-> > > of tcf_exts_miss_cookie_base_destroy() to be present without actually
-> > > being used. Its single callsite is in an '#ifdef CONFIG_NET_CLS_ACT'
-> > > block but a definition will always be present in the file. The version
-> > > of tcf_exts_miss_cookie_base_destroy() that actually does something
-> > > depends on CONFIG_NET_TC_SKB_EXT, so the stub function is used in both
-> > > CONFIG_NET_CLS_ACT=n and CONFIG_NET_CLS_ACT=y + CONFIG_NET_TC_SKB_EXT=n
-> > > configurations.
-> > > 
-> > > Move the call to tcf_exts_miss_cookie_base_destroy() in
-> > > tcf_exts_destroy() out of the '#ifdef CONFIG_NET_CLS_ACT', so that it
-> > > always appears used to the compiler, while not changing any behavior
-> > > with any of the various configuration combinations.
-> > > 
-> > > Fixes: 80cd22c35c90 ("net/sched: cls_api: Support hardware miss to tc action")
-> > > Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-> > 
-> > Thanks Nathan,
-> > 
-> > I think the #ifdefs in this file could do with some work.
-> 
-> Yes, it is definitely an eye sore. I thought about cleaning it up but it
-> felt like net-next material to me, plus I have no other interest in this
-> code other than making the warning in my builds go away, if I am being
-> honest :)
+Hi,
+> Gesendet: Samstag, 25=2E Februar 2023 um 20:56 Uhr
+> Von: "Ar=C4=B1n=C3=A7 =C3=9CNAL" <arinc=2Eunal@arinc9=2Ecom>
 
-Yes, of course (x2) :)
+> On 25=2E02=2E2023 19:11, Ar=C4=B1n=C3=A7 =C3=9CNAL wrote:
+> > On 25=2E02=2E2023 16:50, Frank Wunderlich wrote:
 
-> > But as a fix this looks good to me.
-> > 
-> > Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> 
-> Thanks for the quick review!
-> 
-> Cheers,
-> Nathan
-> 
+> >> f63959c7eec3151c30a2ee0d351827b62e742dcb is the first bad commit
+> >=20
+> > Thanks a lot for finding this=2E I can confirm reverting this fixes th=
+e=20
+> > low throughput on my Bananapi BPI-R2 as well=2E
+
+> Just tested on an MT7621 Unielec U7621-06 board=2E MT7621 is not affecte=
+d=2E
+
+do you have full 1G (940 Mbit/s) on mt7621 device in 6=2E1??
+
+if you look at the commit you see a special handling for mt7621
+
+if (IS_ENABLED(CONFIG_SOC_MT7621)) {
+=2E=2E=2E
+}else{
+//all others go there including mt7623, out (t)rgmii should be here (inter=
+nally SPEED_100 afair, but higher clock for trgmii):
+               case SPEED_1000:
+                       val |=3D MTK_QTX_SCH_MAX_RATE_EN |
+                              FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, 10) |
+                              FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, 5) |
+                              FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 10);
+                       break;
+}
+
+but i do not understand the full code as it looks like it changes the full=
+ packet-handling ;)
+
+imho reverting is good for test, but dropping the full change is not the r=
+ight way=2E=2E=2Ewe should wait for felix here
+
+but back to topic=2E=2E=2Ewe have a patch from vladuimir which allows sett=
+ing the preferred cpu-port=2E=2E=2Ehow do we handle mt7531 here correctly (=
+which still sets port5 if defined and then break)?
+
+https://git=2Ekernel=2Eorg/pub/scm/linux/kernel/git/netdev/net-next=2Egit/=
+tree/drivers/net/dsa/mt7530=2Ec#n2383
+
+	/* BPDU to CPU port */
+	dsa_switch_for_each_cpu_port(cpu_dp, ds) {
+		mt7530_rmw(priv, MT7531_CFC, MT7531_CPU_PMAP_MASK,
+			   BIT(cpu_dp->index));
+		break; //<<< should we drop this break only to set all "cpu-bits"? what =
+happens then (flooding both ports with packets?)
+	}
+
+as dsa only handles only 1 cpu-port we want the real cpu-port (preferred |=
+ first)=2E is this bit set also if the master is changed with your follow-u=
+p patch?
+
+regards Frank
