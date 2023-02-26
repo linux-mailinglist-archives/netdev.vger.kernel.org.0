@@ -2,46 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA1AF6A30F4
-	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 15:56:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2A146A3132
+	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 15:56:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230440AbjBZOz5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Feb 2023 09:55:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55646 "EHLO
+        id S231166AbjBZO4B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Feb 2023 09:56:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231177AbjBZOzD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 09:55:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76FCC14231;
-        Sun, 26 Feb 2023 06:50:44 -0800 (PST)
+        with ESMTP id S231277AbjBZOzO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 09:55:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 577F512F1B;
+        Sun, 26 Feb 2023 06:50:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 56C8460BEB;
-        Sun, 26 Feb 2023 14:50:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56EC3C433EF;
-        Sun, 26 Feb 2023 14:50:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3E55B80C71;
+        Sun, 26 Feb 2023 14:50:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA589C433D2;
+        Sun, 26 Feb 2023 14:50:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677423010;
-        bh=/3tuq5hfpUfwzKc9ybsHZUlj1ZHe8xoP4Rfx6VseX0o=;
+        s=k20201202; t=1677423013;
+        bh=Ov297IfQkyRAzBny+6tsDT3S7ysVEojlYlRPxBhLAF0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PGN3JBSvvJzBna/ZLBQn773C9x6ykRi2TlKc6DnQhgc0M0/v2HfP/J3ZBYaO/7W6o
-         lLfxbSVQ+KUmnYD2jq7OF4Cl2c0/DYihC1XK41/i7i1fLzNpJi45ZbKrggxcSD/NTp
-         Y0UeG6Ragkn/m2rM9E9EAjd98MWRN6c9Nj7LoS8Ew/TomcUYLYvagvT/z0qDoNfztR
-         pRCbDLdS6Ue5u0BgSrKq04Up+sYTpdd15Mx0ADtRNfS6e2sMt2393W6HPOURT7uUbB
-         UBLBLDYxqQVt55gcjfIHFu+lCDcJNkClNiqA3MG7GFagVvjK9rXHO2oAJERyfoATwY
-         iYR1oTaE4gcAQ==
+        b=ERzPslgcSRrcvlVLhXyw51cnpm1J5UEeqZfnJX9o9xwMEV83k9zmitMCU3HPAcX4H
+         ghnOCbgygB/hlg+FhSOZ6Zh4/Gac0udiC7Lb54P69F0/kv6x/Rw2HhhtwjMaJ6FGvR
+         zbm3ucRlIJuNNoaOj79ulwpGew32UAa2LdV7DPSPe74Og+/ec5UT5gu6rBuxmY1pqC
+         1iQvBfs6yyMESZ7mQdcwzAVXioqPAJxVkteMqFlGyrM5NaAR/9mt2C26qSfaFh8iy6
+         D/pMc364CK8U3IUj2ni1Rf9xbRDxM4YUywOAinGWZu04OJ3nZvQNEVlTPJykaqK/J8
+         D3f3Qko79FFvQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Moshe Shemesh <moshe@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, idosch@nvidia.com,
-        jacob.e.keller@intel.com, michal.wilczynski@intel.com,
-        vikas.gupta@broadcom.com, shayd@nvidia.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 35/36] devlink: health: Fix nla_nest_end in error flow
-Date:   Sun, 26 Feb 2023 09:48:43 -0500
-Message-Id: <20230226144845.827893-35-sashal@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 36/36] scm: add user copy checks to put_cmsg()
+Date:   Sun, 26 Feb 2023 09:48:44 -0500
+Message-Id: <20230226144845.827893-36-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230226144845.827893-1-sashal@kernel.org>
 References: <20230226144845.827893-1-sashal@kernel.org>
@@ -49,8 +48,8 @@ MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,38 +57,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Moshe Shemesh <moshe@nvidia.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit bfd4e6a5dbbc12f77620602e764ac940ccb159de ]
+[ Upstream commit 5f1eb1ff58ea122e24adf0bc940f268ed2227462 ]
 
-devlink_nl_health_reporter_fill() error flow calls nla_nest_end(). Fix
-it to call nla_nest_cancel() instead.
+This is a followup of commit 2558b8039d05 ("net: use a bounce
+buffer for copying skb->mark")
 
-Note the bug is harmless as genlmsg_cancel() cancel the entire message,
-so no fixes tag added.
+x86 and powerpc define user_access_begin, meaning
+that they are not able to perform user copy checks
+when using user_write_access_begin() / unsafe_copy_to_user()
+and friends [1]
 
-Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Instead of waiting bugs to trigger on other arches,
+add a check_object_size() in put_cmsg() to make sure
+that new code tested on x86 with CONFIG_HARDENED_USERCOPY=y
+will perform more security checks.
+
+[1] We can not generically call check_object_size() from
+unsafe_copy_to_user() because UACCESS is enabled at this point.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Kees Cook <keescook@chromium.org>
+Acked-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/devlink.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/core/scm.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index b4d7a7f749c18..e51a484087dab 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -6914,7 +6914,7 @@ devlink_nl_health_reporter_fill(struct sk_buff *msg,
- 	return 0;
+diff --git a/net/core/scm.c b/net/core/scm.c
+index 5c356f0dee30c..acb7d776fa6ec 100644
+--- a/net/core/scm.c
++++ b/net/core/scm.c
+@@ -229,6 +229,8 @@ int put_cmsg(struct msghdr * msg, int level, int type, int len, void *data)
+ 	if (msg->msg_control_is_user) {
+ 		struct cmsghdr __user *cm = msg->msg_control_user;
  
- reporter_nest_cancel:
--	nla_nest_end(msg, reporter_attr);
-+	nla_nest_cancel(msg, reporter_attr);
- genlmsg_cancel:
- 	genlmsg_cancel(msg, hdr);
- 	return -EMSGSIZE;
++		check_object_size(data, cmlen - sizeof(*cm), true);
++
+ 		if (!user_write_access_begin(cm, cmlen))
+ 			goto efault;
+ 
 -- 
 2.39.0
 
