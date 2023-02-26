@@ -2,120 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74ADE6A32DC
-	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 17:35:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACD466A32E0
+	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 17:42:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229715AbjBZQf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Feb 2023 11:35:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51258 "EHLO
+        id S229601AbjBZQmV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Feb 2023 11:42:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbjBZQfZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 11:35:25 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8909F16335
-        for <netdev@vger.kernel.org>; Sun, 26 Feb 2023 08:34:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1677429274;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=AORosMQj3A7DS3Nk/fBRbnzvD4PblGqGAWvsizAa8P8=;
-        b=YGm/6kgWz96USy3U4u6R1DAy+r5k4X5KptyHlfg4RMRhII/dzqs6SNm0VR/B/Rki6vnul2
-        qCi+AHD8bAncyzpTn1FLa4qEv0Y3iBZQD6zPvf86/7qXdYfebqb7uyIvP+pZuGUUkkubLb
-        sciEHqg04dMuTm2T8ZrM+IBrw3mVO0Y=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-502-pEJgx40UPhaCRjHtfXrS8Q-1; Sun, 26 Feb 2023 11:34:33 -0500
-X-MC-Unique: pEJgx40UPhaCRjHtfXrS8Q-1
-Received: by mail-qv1-f71.google.com with SMTP id lt7-20020a056214570700b0057290f3623eso2174078qvb.3
-        for <netdev@vger.kernel.org>; Sun, 26 Feb 2023 08:34:33 -0800 (PST)
+        with ESMTP id S229562AbjBZQmU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 11:42:20 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1378410AA6;
+        Sun, 26 Feb 2023 08:42:19 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id s26so16386867edw.11;
+        Sun, 26 Feb 2023 08:42:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:subject:from:content-language
+         :references:cc:to:user-agent:mime-version:date:message-id:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=GFVrRwJiceJX6p3MtGyVAnzQ7b5nsJUgQ+NNlDERCOI=;
+        b=bXW6FnwAz+6fEyfqxdgUnQr8YdiYse615NWFGzlE8V8nVqJWXk6GYZ6lt10PQftFRQ
+         WSw3kLEowuQkCi9PJMs6IK7dcForHdLc0hS+K8C7btNGIUU7SexsDTgvj5ltPl6qZzpV
+         3/jELW/vAKSDnqwn6BeyswI/ONmlKejt9hZyIRF8asmG1PxU3ccNzSk5jk1KnqQa1kEX
+         PAkRjWlMmnjnrWItLUtv5d2UIC7IzBwCsa/6a+Y6iMOBz+DaTBdBfCrTLKLXikhPELET
+         Syds8pdOhjKGuci4X46c0Os4xk3a6y2vhYAre0w3PzGPJi1ovEjEuEdHI6EfNoBtarlq
+         ddMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=AORosMQj3A7DS3Nk/fBRbnzvD4PblGqGAWvsizAa8P8=;
-        b=i+N6ti9FUGDsrOeOe0ZPK/Z52z9XaefMlUbiu7U9OUHo782dL09D6G5i8lgeAmC0C5
-         MJ/fWIr+CiBoyLr5Qe+ivEoR7eo/g2sCE4j243Zfw7UQiYX6muE26cb9zCZUYiz/MHDL
-         E9vn+eSaF4hVHZ8kGoE5HZgbaF+tzGZ38ncwGekgVRUfaHodZ5mCSEdCkq/0TMJwsy98
-         hFhYIeIvCfVwfxjqkziXuiaTImV6lTQ0cA0QPnNBdIM+uUXV/kRDO06KJrzDou62GSWr
-         7l7p1KInU2gU8Qea3Ks9/wfyqBHJbsifFyUnxYk4cft68Lha5L074e3/LGFVTtLXcLDX
-         ZU0w==
-X-Gm-Message-State: AO0yUKXWfRZ9lG9SQQhv9iJ4O8/PMkpg5FxFrpQLANffP2wtL56L39e8
-        X6o8onyaIM9jKXYdqOwaY/D6B8kRCzl+9gOZce48KcYnhANGXKd8qwp3ImScVfIt6CZMSpSK/FJ
-        mEbjIwZxgA2Ztdnsj
-X-Received: by 2002:ac8:4e84:0:b0:3bf:d9a9:25fb with SMTP id 4-20020ac84e84000000b003bfd9a925fbmr876273qtp.10.1677429272648;
-        Sun, 26 Feb 2023 08:34:32 -0800 (PST)
-X-Google-Smtp-Source: AK7set87gS29lQpRvxFPSHfdfKAfctYcKloYbTI3zUudY16bh9F5kOGQv9rhoki2m/9HRW6el0/hNQ==
-X-Received: by 2002:ac8:4e84:0:b0:3bf:d9a9:25fb with SMTP id 4-20020ac84e84000000b003bfd9a925fbmr876253qtp.10.1677429272361;
-        Sun, 26 Feb 2023 08:34:32 -0800 (PST)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id g2-20020ac870c2000000b003b868cdc689sm3171728qtp.5.2023.02.26.08.34.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Feb 2023 08:34:31 -0800 (PST)
-From:   Tom Rix <trix@redhat.com>
-To:     wei.liu@kernel.org, paul@xen.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] xen-netback: remove unused variables pending_idx and index
-Date:   Sun, 26 Feb 2023 11:34:29 -0500
-Message-Id: <20230226163429.2351600-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        h=content-transfer-encoding:in-reply-to:subject:from:content-language
+         :references:cc:to:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=GFVrRwJiceJX6p3MtGyVAnzQ7b5nsJUgQ+NNlDERCOI=;
+        b=VFeOSav7uPWu0X7PsyZxObyphdtA2DODapjqJop77si+NzO2ppsYaD16g2Amu08O40
+         oLnpzlNORJ8Fmx7krO09zpaGzJnzVXKa8UFP0xbFK1OkQ0ZBZ0hX7Z1tEb4NJluhCea4
+         aklarKVeRMVK6Ism6zhl67wctDHnU+xEq1dv4NPCYBxBxRXfqH5J/L6hXXLvLHJMhmC5
+         rZzOPk+R/V/ni8PKquQ7Xdyx3mMFGqW5pg47bpBZWTOyp9ejWwnMJMwCTL34l/8Crhhq
+         tcP0jsWTaOPQ5x6HslFLLyFT0bTphqG3Sq0anzLL+mBKhAVHCaGCaQloeM6iVhfNLSyF
+         bMJQ==
+X-Gm-Message-State: AO0yUKWd2Ei34L1dElCd76uqhjEqcZXvYyYnMYMUu4bTSJxSTRThZUVX
+        jeDNVvUowhp1VvEpTwqEQ9o=
+X-Google-Smtp-Source: AK7set+b/aldD90B2+Z55MQrbjcjojOBwZ9aZPldbarWWGd6jE2Zyr+ZF9BmaBnuJyyNniUIqipPmw==
+X-Received: by 2002:a05:6402:35cb:b0:4aa:a280:55b5 with SMTP id z11-20020a05640235cb00b004aaa28055b5mr6184728edc.20.1677429736560;
+        Sun, 26 Feb 2023 08:42:16 -0800 (PST)
+Received: from ?IPV6:2a01:c22:7af0:2200:c0b0:beb3:eda8:5ddf? (dynamic-2a01-0c22-7af0-2200-c0b0-beb3-eda8-5ddf.c22.pool.telefonica.de. [2a01:c22:7af0:2200:c0b0:beb3:eda8:5ddf])
+        by smtp.googlemail.com with ESMTPSA id g10-20020a50d0ca000000b004acc123cd94sm2135809edf.30.2023.02.26.08.42.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 26 Feb 2023 08:42:16 -0800 (PST)
+Message-ID: <92332a2e-8e87-567d-7b4c-6ca779c866aa@gmail.com>
+Date:   Sun, 26 Feb 2023 17:42:10 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        linux-renesas-soc@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>, Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20230223070519.2211-1-wsa+renesas@sang-engineering.com>
+Content-Language: en-US
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [REGRESSION PATCH RFC] net: phy: don't resume PHY via MDIO when
+ iface is not up
+In-Reply-To: <20230223070519.2211-1-wsa+renesas@sang-engineering.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-building with gcc and W=1 reports
-drivers/net/xen-netback/netback.c:886:21: error: variable
-  ‘pending_idx’ set but not used [-Werror=unused-but-set-variable]
-  886 |                 u16 pending_idx;
-      |                     ^~~~~~~~~~~
+On 23.02.2023 08:05, Wolfram Sang wrote:
+> TLDR; Commit 96fb2077a517 ("net: phy: consider that suspend2ram may cut
+> off PHY power") caused regressions for us when resuming an interface
+> which is not up. It turns out the problem is another one, the above
+> commit only makes it visible. The attached patch is probably not the
+> right fix, but at least is proving my assumptions AFAICS.
+> 
+> Setup: I used Renesas boards for my tests, namely Salvator-XS and Ebisu.
+> They both use RAVB driver (drivers/net/ethernet/renesas/ravb_main.c) and
+> a Micrel KSZ9031 PHY (drivers/net/phy/micrel.c). I think the problems
+> are generic, though.
+> 
+> Long text: After the above commit, we could see various resume failures
+> on our boards, like timeouts when resetting the MDIO bus, or warning
+> about skew values in non-RGMII mode, although RGMII was used. All of
+> these happened, because phy_init_hw() was now called in
+> mdio_bus_phy_resume() which wasn't the case before. But the interface
+> was not up yet, e.g. phydev->interface was still the default and not
+> RGMII, so the initialization didn't work properly. phy_attach_direct()
+> pays attention to this:
+> 
+> 1504         /* Do initial configuration here, now that
+> 1505          * we have certain key parameters
+> 1506          * (dev_flags and interface)
+> 1507          */
+> 1508         err = phy_init_hw(phydev);
+> 
+> But phy_init_hw() doesn't if the interface is not up, AFAICS.
+> 
+> This may be a problem in itself, but I then wondered why
+> mdio_bus_phy_resume() gets called anyhow because the RAVB driver sets
+> 'phydev->mac_managed_pm = true' so once the interface is up
+> mdio_bus_phy_resume() never gets called. But again, the interface was
+> not up yet, so mac_managed_pm was not set yet.
+> 
+Setting phydev->mac_managed_pm in the open() callback is too late.
+It should be set as soon as the phydev is created. That's in
+ravb_mdio_init() after the call to of_mdiobus_register().
 
-pending_idx is not used so remove it.  Since index was only
-used to set pending_idx, remove index as well.
+It should be possible to get the phydev with:
+pn = of_parse_phandle(np, "phy-handle", 0);
+phy = of_phy_find_device(pn);
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/net/xen-netback/netback.c | 5 -----
- 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/net/xen-netback/netback.c b/drivers/net/xen-netback/netback.c
-index bf627af723bf..1b42676ca141 100644
---- a/drivers/net/xen-netback/netback.c
-+++ b/drivers/net/xen-netback/netback.c
-@@ -883,11 +883,9 @@ static void xenvif_tx_build_gops(struct xenvif_queue *queue,
- 		struct xen_netif_tx_request txfrags[XEN_NETBK_LEGACY_SLOTS_MAX];
- 		struct xen_netif_extra_info extras[XEN_NETIF_EXTRA_TYPE_MAX-1];
- 		unsigned int extra_count;
--		u16 pending_idx;
- 		RING_IDX idx;
- 		int work_to_do;
- 		unsigned int data_len;
--		pending_ring_idx_t index;
- 
- 		if (queue->tx.sring->req_prod - queue->tx.req_cons >
- 		    XEN_NETIF_TX_RING_SIZE) {
-@@ -983,9 +981,6 @@ static void xenvif_tx_build_gops(struct xenvif_queue *queue,
- 			break;
- 		}
- 
--		index = pending_index(queue->pending_cons);
--		pending_idx = queue->pending_ring[index];
--
- 		if (ret >= XEN_NETBK_LEGACY_SLOTS_MAX - 1 && data_len < txreq.size)
- 			data_len = txreq.size;
- 
--- 
-2.27.0
+> So, in my quest to avoid mdio_bus_phy_resume() being called, I tried
+> this patch declaring the PHY being in suspend state when being probed.
+> The KSZ9031 has a soft_reset() callback, so phy_init_hw() will reset the
+> suspended flag when the PHY is attached. It works for me(tm),
+> suspend/resume now works independently of the interface being up or not.
+> 
+> I don't think this is the proper solution, though. It will e.g. fail if
+> some PHY is not using the soft_reset() callback. And I am missing the
+> experience in this subsystem to decide if we can clear the resume flag
+> in phy_init_hw() unconditionally. My gut feeling is that we can't.
+> 
+> So, this patch mostly demonstrates the issues we have and the things I
+> found out. I'd be happy if someone could point me to a proper solution,
+> or more information that I am missing here. Thank you in advance and
+> happy hacking!
+> 
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> ---
+>  drivers/net/phy/phy_device.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> index 8cff61dbc4b5..5cbb471700a8 100644
+> --- a/drivers/net/phy/phy_device.c
+> +++ b/drivers/net/phy/phy_device.c
+> @@ -3108,6 +3108,7 @@ static int phy_probe(struct device *dev)
+>  
+>  	/* Set the state to READY by default */
+>  	phydev->state = PHY_READY;
+> +	phydev->suspended = 1;
+>  
+>  out:
+>  	/* Assert the reset signal */
 
