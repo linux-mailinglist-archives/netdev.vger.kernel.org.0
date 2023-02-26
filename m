@@ -2,46 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D4E86A311A
-	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 15:56:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3E3D6A3155
+	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 15:57:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231301AbjBZO4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Feb 2023 09:56:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55348 "EHLO
+        id S231162AbjBZO46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Feb 2023 09:56:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231436AbjBZOza (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 09:55:30 -0500
+        with ESMTP id S231510AbjBZOzl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 09:55:41 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0EC51A977;
-        Sun, 26 Feb 2023 06:51:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 001CD1C309;
+        Sun, 26 Feb 2023 06:51:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D361B80C6A;
-        Sun, 26 Feb 2023 14:50:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0796BC433EF;
-        Sun, 26 Feb 2023 14:50:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 64B53B80BAB;
+        Sun, 26 Feb 2023 14:51:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ADB0C4339E;
+        Sun, 26 Feb 2023 14:50:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677423048;
-        bh=d3cDs7XqLjrpSVJfMBJKv8xq5suEpunQwrdY/6Rw0ZA=;
+        s=k20201202; t=1677423059;
+        bh=sm2Rsig9PMFfrBwVkcXC8jvrayY+sfWPSnfHW/G6DXI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cTvtyYC2rHs+y43RIOAGh/I+FWk6fXhv4g8bnu4OPI1WXsM5qZbCZ711wy8vis6PV
-         kB5zaGpBVJtZQNtI1X4nineJ/IyMgxJHlau4OHUphwwcho/NWmRLO2As5rBQO/7sXk
-         dm8VtaUkrlH69U7zd3dX2O/8lBuUX+rrkhHZIQFPIl0wiyp/u3QFXp8sgsGWef+3VR
-         M57vEOvxNWmLZmQtaANqqkdY87uJQXeNyAFE2Y06EI7EoP0PRJpScnSNByb91AKmPa
-         QzEO7L9JzwpbG5DThUAMfXxHMpF3yBQnKZQQ3wPNCEai3BWLd7+88Zyzc58eOWfmr1
-         pi3qdiA6J0Okg==
+        b=n3nyhFiwYre0D4/12cN0Jn51K53vIVscldLGCgJff4XTO9os2s8Kv7+vPt1bd8hpx
+         o+zYpLq6lEuL1W1QIWsdnfGbpQyuRv3fJ4XvmmSOxXv0szRArPxkzXze0imOWdhIwj
+         Sk7qf6MdXe/Gzz41kkTMkumCppG7VIWFlX5GYTLQKRsyztQO4XR7Xx0RCuLMb/8lne
+         kb5Z8MvNwt4OhOX1pFRGT8+w8SWr9FIk2v78tjcgeM+88GrgPS1XDXjoDoKB/ztMmT
+         PsxwCc6Jnk5tPq7jTIzUVv0nMfXQPD0awAJ04ZlhA49LvYfZ6jr6UK4n/yPnNXFA64
+         4d6IV2g2gSzlA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pietro Borrello <borrello@diag.uniroma1.it>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        dsahern@kernel.org, kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 12/27] inet: fix fast path in __inet_hash_connect()
-Date:   Sun, 26 Feb 2023 09:49:59 -0500
-Message-Id: <20230226145014.828855-12-sashal@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, opendmb@gmail.com,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 18/27] net: bcmgenet: Add a check for oversized packets
+Date:   Sun, 26 Feb 2023 09:50:05 -0500
+Message-Id: <20230226145014.828855-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230226145014.828855-1-sashal@kernel.org>
 References: <20230226145014.828855-1-sashal@kernel.org>
@@ -58,54 +57,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pietro Borrello <borrello@diag.uniroma1.it>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-[ Upstream commit 21cbd90a6fab7123905386985e3e4a80236b8714 ]
+[ Upstream commit 5c0862c2c962052ed5055220a00ac1cefb92fbcd ]
 
-__inet_hash_connect() has a fast path taken if sk_head(&tb->owners) is
-equal to the sk parameter.
-sk_head() returns the hlist_entry() with respect to the sk_node field.
-However entries in the tb->owners list are inserted with respect to the
-sk_bind_node field with sk_add_bind_node().
-Thus the check would never pass and the fast path never execute.
+Occasionnaly we may get oversized packets from the hardware which
+exceed the nomimal 2KiB buffer size we allocate SKBs with. Add an early
+check which drops the packet to avoid invoking skb_over_panic() and move
+on to processing the next packet.
 
-This fast path has never been executed or tested as this bug seems
-to be present since commit 1da177e4c3f4 ("Linux-2.6.12-rc2"), thus
-remove it to reduce code complexity.
-
-Signed-off-by: Pietro Borrello <borrello@diag.uniroma1.it>
-Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/20230112-inet_hash_connect_bind_head-v3-1-b591fd212b93@diag.uniroma1.it
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/inet_hashtables.c | 12 +-----------
- 1 file changed, 1 insertion(+), 11 deletions(-)
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index 2615b72118d1f..79bf550c9dfc5 100644
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -760,17 +760,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
- 	u32 index;
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index e0a6a2e62d23b..7667cbb5adfd6 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -2263,6 +2263,14 @@ static unsigned int bcmgenet_desc_rx(struct bcmgenet_rx_ring *ring,
+ 			  __func__, p_index, ring->c_index,
+ 			  ring->read_ptr, dma_length_status);
  
- 	if (port) {
--		head = &hinfo->bhash[inet_bhashfn(net, port,
--						  hinfo->bhash_size)];
--		tb = inet_csk(sk)->icsk_bind_hash;
--		spin_lock_bh(&head->lock);
--		if (sk_head(&tb->owners) == sk && !sk->sk_bind_node.next) {
--			inet_ehash_nolisten(sk, NULL, NULL);
--			spin_unlock_bh(&head->lock);
--			return 0;
--		}
--		spin_unlock(&head->lock);
--		/* No definite answer... Walk to established hash table */
-+		local_bh_disable();
- 		ret = check_established(death_row, sk, port, NULL);
- 		local_bh_enable();
- 		return ret;
++		if (unlikely(len > RX_BUF_LENGTH)) {
++			netif_err(priv, rx_status, dev, "oversized packet\n");
++			dev->stats.rx_length_errors++;
++			dev->stats.rx_errors++;
++			dev_kfree_skb_any(skb);
++			goto next;
++		}
++
+ 		if (unlikely(!(dma_flag & DMA_EOP) || !(dma_flag & DMA_SOP))) {
+ 			netif_err(priv, rx_status, dev,
+ 				  "dropping fragmented packet!\n");
 -- 
 2.39.0
 
