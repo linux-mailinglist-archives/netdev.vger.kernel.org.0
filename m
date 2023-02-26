@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7436E6A31C9
-	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 16:04:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A56C6A31C3
+	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 16:03:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230367AbjBZPEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Feb 2023 10:04:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38694 "EHLO
+        id S231750AbjBZPDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Feb 2023 10:03:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231726AbjBZPDk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 10:03:40 -0500
+        with ESMTP id S231705AbjBZPDd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 10:03:33 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B89B51F4AF;
-        Sun, 26 Feb 2023 06:54:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E9D39EC7;
+        Sun, 26 Feb 2023 06:54:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FB6D60C3D;
-        Sun, 26 Feb 2023 14:52:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53E4DC433D2;
-        Sun, 26 Feb 2023 14:52:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 384DE60C41;
+        Sun, 26 Feb 2023 14:52:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48CD5C433D2;
+        Sun, 26 Feb 2023 14:52:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677423163;
-        bh=4mc+jEkALuG+p/mOYzT2iFSpeyPvYx+oc3U5EmxsRcY=;
+        s=k20201202; t=1677423172;
+        bh=H5qQtPQraXVrRYOrS3GKBgnyOo2ecO5HI/VgcC2jAE8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fHhdVrL2qIBj6bnB1kzPSbZYBGSOmFyMoRbhIRjMmXyjmx3XBUvxcZOQuI4EFu410
-         G3tyk88ugMTn06RnMX8UfTbcMQJLDWi0PZ81z41+LU1UhT0M2LV8DH91NPDMXN8452
-         gd019nsUmVrWiNt6vu7TnNzBd+VEbsD6DPITOpINecMwfEImV8pD2D6/c3qJ2FBCHk
-         7cdrfTW90BilJbRxhfpOluv4P2Z3cs39YNVxLOtM4JNe1eM8XGm9eqNcThxtmNU3yq
-         yhFmz5p4TNlO/ZFqunOjGKgfm9jqCQr9ct77X486TV+qyalT3Sq4RfupwDo3SHpzGt
-         HIX+rLDt1CTug==
+        b=AZP4GlTnsMZ6ggtOjcI49sIp0shCcSIvNW9xgSmJZS9i2PBjY8E/X6OlLFwghlnJn
+         ictrR/Xy+lGKCMlbcPcelgPrcp5ij1dIYmwY8ZS+B9L/+cvFTJNd0tAaASl614r/IF
+         sDSRHiXx7DV7aH8a+u5XhUHLFn3ZUI6cZ3IXJFDOlP4cIebsE8wuK3Q9bK/a4sV72k
+         JGF9NZUy0lNWPxwU0MqpsiSa77B0xhdMu1kDaOZdXY94SNy+HIofo7Ham46B6RULv+
+         FmZq58Iu7zZTTy0MOrNtVEqw1TRw7fb+qccbjpR1sMXU3EcuBZ7AuIKBbH0VkeepKc
+         RHwewSQ/bOpGw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Breno Leitao <leitao@debian.org>,
-        Michael van der Westhuizen <rmikey@meta.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+Cc:     Shay Drory <shayd@nvidia.com>, Moshe Shemesh <moshe@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com,
-        wsa+renesas@sang-engineering.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 09/13] netpoll: Remove 4s sleep during carrier detection
-Date:   Sun, 26 Feb 2023 09:52:11 -0500
-Message-Id: <20230226145217.829485-9-sashal@kernel.org>
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        ferasda@nvidia.com, royno@nvidia.com, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 13/13] net/mlx5: fw_tracer: Fix debug print
+Date:   Sun, 26 Feb 2023 09:52:15 -0500
+Message-Id: <20230226145217.829485-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230226145217.829485-1-sashal@kernel.org>
 References: <20230226145217.829485-1-sashal@kernel.org>
@@ -58,72 +58,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Breno Leitao <leitao@debian.org>
+From: Shay Drory <shayd@nvidia.com>
 
-[ Upstream commit d8afe2f8a92d2aac3df645772f6ee61b0b2fc147 ]
+[ Upstream commit 988c2352273997a242f15c4fc3711773515006a2 ]
 
-This patch removes the msleep(4s) during netpoll_setup() if the carrier
-appears instantly.
+The debug message specify tdsn, but takes as an argument the
+tmsn. The correct argument is tmsn, hence, fix the print.
 
-Here are some scenarios where this workaround is counter-productive in
-modern ages:
-
-Servers which have BMC communicating over NC-SI via the same NIC as gets
-used for netconsole. BMC will keep the PHY up, hence the carrier
-appearing instantly.
-
-The link is fibre, SERDES getting sync could happen within 0.1Hz, and
-the carrier also appears instantly.
-
-Other than that, if a driver is reporting instant carrier and then
-losing it, this is probably a driver bug.
-
-Reported-by: Michael van der Westhuizen <rmikey@meta.com>
-Signed-off-by: Breno Leitao <leitao@debian.org>
-Link: https://lore.kernel.org/r/20230125185230.3574681-1-leitao@debian.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Shay Drory <shayd@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/netpoll.c | 12 +-----------
- 1 file changed, 1 insertion(+), 11 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/netpoll.c b/net/core/netpoll.c
-index 41e32a958d08d..87a1b7e74a65c 100644
---- a/net/core/netpoll.c
-+++ b/net/core/netpoll.c
-@@ -675,7 +675,7 @@ int netpoll_setup(struct netpoll *np)
- 	}
- 
- 	if (!netif_running(ndev)) {
--		unsigned long atmost, atleast;
-+		unsigned long atmost;
- 
- 		np_info(np, "device %s not up yet, forcing it\n", np->dev_name);
- 
-@@ -687,7 +687,6 @@ int netpoll_setup(struct netpoll *np)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
+index ef9f932f02263..5a2feadd80f08 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
+@@ -564,7 +564,7 @@ static int mlx5_tracer_handle_string_trace(struct mlx5_fw_tracer *tracer,
+ 	} else {
+ 		cur_string = mlx5_tracer_message_get(tracer, tracer_event);
+ 		if (!cur_string) {
+-			pr_debug("%s Got string event for unknown string tdsm: %d\n",
++			pr_debug("%s Got string event for unknown string tmsn: %d\n",
+ 				 __func__, tracer_event->string_event.tmsn);
+ 			return -1;
  		}
- 
- 		rtnl_unlock();
--		atleast = jiffies + HZ/10;
- 		atmost = jiffies + carrier_timeout * HZ;
- 		while (!netif_carrier_ok(ndev)) {
- 			if (time_after(jiffies, atmost)) {
-@@ -697,15 +696,6 @@ int netpoll_setup(struct netpoll *np)
- 			msleep(1);
- 		}
- 
--		/* If carrier appears to come up instantly, we don't
--		 * trust it and pause so that we don't pump all our
--		 * queued console messages into the bitbucket.
--		 */
--
--		if (time_before(jiffies, atleast)) {
--			np_notice(np, "carrier detect appears untrustworthy, waiting 4 seconds\n");
--			msleep(4000);
--		}
- 		rtnl_lock();
- 	}
- 
 -- 
 2.39.0
 
