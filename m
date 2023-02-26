@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D61B6A310A
-	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 15:56:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 117926A306E
+	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 15:49:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231302AbjBZO4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Feb 2023 09:56:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55226 "EHLO
+        id S230006AbjBZOtk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Feb 2023 09:49:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231274AbjBZOzO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 09:55:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A77D1B578;
-        Sun, 26 Feb 2023 06:50:56 -0800 (PST)
+        with ESMTP id S229999AbjBZOsU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 09:48:20 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00DC513D7B;
+        Sun, 26 Feb 2023 06:47:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D4C860C55;
-        Sun, 26 Feb 2023 14:47:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6173BC433D2;
-        Sun, 26 Feb 2023 14:47:07 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1828DCE0E92;
+        Sun, 26 Feb 2023 14:47:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4F13C4339B;
+        Sun, 26 Feb 2023 14:47:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677422828;
-        bh=+IZm/Y9Q8YaKVptA90+UMpRMxDZL6vo0jghGN5xXlHw=;
+        s=k20201202; t=1677422853;
+        bh=XUK47YBM9rMPfxxEjuBimIL6djaUFTCviZ1xCgBUaP8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cOBB9O3JOATPdHbglICmKp5Kwfwp4wh+fg4NSzGkU/vwBg2x0HVo5NHe+VR9oOR3I
-         cxiDvdTguXstGk/sHEQ9M4dcEPRTBb7UyHsrZfP1Ij0izpsarl7/84e2zBebJCC7pw
-         93nE6lWLz+1mZqFd5oYqytagMPRKoEzwmV3CogZODWlXdkL8zob7NVmDtYMBmYmTNW
-         EceIwAcT/nRMjiLv6Q3wxOLIQLNsGLRLGtgs+O7ng1v5fd/o8jsPz4y2FqY7LzRB3a
-         wjzVTB92gxhSDUDY9QE9G4rCJ5MB5MYfzBJ0oiCTA0WWfdL2HGhDHlGw1kBjpB6IaE
-         7iZjPdN2ug1hQ==
+        b=nDdkU7ThhP7Uwr+Ehbdzp4VSnUK0S+UmzhKeTrFnPkYS102y46Q7f7RATfNoJoJAw
+         ZWKZlqKiXLdCOkUFWyz02gTLhL7WsUMhZ9kr2PnXIkYEtpidfV88GfrMilbhImH+Pv
+         Ft5i3dxui8CU6EVJMm8btYWvjP3k4wIdvzTXDGxrzPWQ+D9SkXsVCNI4RQCPQDuDgR
+         Iii5Fze8DM0p6FK9b0vBqRqUsm2Xu2g+tXvlQL40kDsl1hWi4IJAaX2F5lGcAEAAxX
+         TNZ0TEANhvZdmXlJEnCpOSTt0nqRl/Fois8NtjZgbvFLDLgzD4N5FwYFnjcyyr8eDH
+         K9dr2DpHU44gg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kalle Valo <quic_kvalo@quicinc.com>,
-        Robert Marko <robert.marko@sartura.hr>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+Cc:     Siddaraju DH <siddaraju.dh@intel.com>,
+        Gurucharan G <gurucharanx.g@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>, jesse.brandeburg@intel.com,
         davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.1 09/49] wifi: ath11k: debugfs: fix to work with multiple PCI devices
-Date:   Sun, 26 Feb 2023 09:46:09 -0500
-Message-Id: <20230226144650.826470-9-sashal@kernel.org>
+        pabeni@redhat.com, richardcochran@gmail.com,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.1 17/49] ice: restrict PTP HW clock freq adjustments to 100, 000, 000 PPB
+Date:   Sun, 26 Feb 2023 09:46:17 -0500
+Message-Id: <20230226144650.826470-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230226144650.826470-1-sashal@kernel.org>
 References: <20230226144650.826470-1-sashal@kernel.org>
@@ -49,8 +50,8 @@ MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,149 +59,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kalle Valo <quic_kvalo@quicinc.com>
+From: Siddaraju DH <siddaraju.dh@intel.com>
 
-[ Upstream commit 323d91d4684d238f6bc3693fed93caf795378fe0 ]
+[ Upstream commit 8aa4318c3a122b8670bc09af142de3872ca63b88 ]
 
-ath11k fails to load if there are multiple ath11k PCI devices with same name:
+The PHY provides only 39b timestamp. With current timing
+implementation, we discard lower 7b, leaving 32b timestamp.
+The driver reconstructs the full 64b timestamp by correlating the
+32b timestamp with cached_time for performance. The reconstruction
+algorithm does both forward & backward interpolation.
 
- ath11k_pci 0000:01:00.0: Hardware name qcn9074 hw1.0
- debugfs: Directory 'ath11k' with parent '/' already present!
- ath11k_pci 0000:01:00.0: failed to create ath11k debugfs
- ath11k_pci 0000:01:00.0: failed to create soc core: -17
- ath11k_pci 0000:01:00.0: failed to init core: -17
- ath11k_pci: probe of 0000:01:00.0 failed with error -17
+The 32b timeval has overflow duration of 2^32 counts ~= 4.23 second.
+Due to interpolation in both direction, its now ~= 2.125 second
+IIRC, going with at least half a duration, the cached_time is updated
+with periodic thread of 1 second (worst-case) periodicity.
 
-Fix this by creating a directory for each ath11k device using schema
-<bus>-<devname>, for example "pci-0000:06:00.0". This directory created under
-the top-level ath11k directory, for example /sys/kernel/debug/ath11k.
+But the 1 second periodicity is based on System-timer.
+With PPB adjustments, if the 1588 timers increments at say
+double the rate, (2s in-place of 1s), the Nyquist rate/half duration
+sampling/update of cached_time with 1 second periodic thread will
+lead to incorrect interpolations.
 
-The reference to the toplevel ath11k directory is not stored anymore within ath11k, instead
-it's retrieved using debugfs_lookup(). If the directory does not exist it will
-be created. After the last directory from the ath11k directory is removed, for
-example when doing rmmod ath11k, the empty ath11k directory is left in place,
-it's a minor cosmetic issue anyway.
+Hence we should restrict the PPB adjustments to at least half duration
+of cached_time update which translates to 500,000,000 PPB.
 
-Here's an example hierarchy with one WCN6855:
+Since the periodicity of the cached-time system thread can vary,
+it is good to have some buffer time and considering practicality of
+PPB adjustments, limiting the max_adj to 100,000,000.
 
-ath11k
-`-- pci-0000:06:00.0
-    |-- mac0
-    |   |-- dfs_block_radar_events
-    |   |-- dfs_simulate_radar
-    |   |-- ext_rx_stats
-    |   |-- ext_tx_stats
-    |   |-- fw_dbglog_config
-    |   |-- fw_stats
-    |   |   |-- beacon_stats
-    |   |   |-- pdev_stats
-    |   |   `-- vdev_stats
-    |   |-- htt_stats
-    |   |-- htt_stats_reset
-    |   |-- htt_stats_type
-    |   `-- pktlog_filter
-    |-- simulate_fw_crash
-    `-- soc_dp_stats
-
-I didn't have a test setup where I could connect multiple ath11k devices to the
-same the host, so I have only tested this with one device.
-
-Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03125-QCAHSPSWPL_V1_V2_SILICONZ_LITE-3.6510.9
-Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.5.0.1-01208-QCAHKSWPL_SILICONZ-1
-Tested-on: QCN9074 hw1.0 PCI WLAN.HK.2.5.0.1-01208-QCAHKSWPL_SILICONZ-1
-
-Tested-by: Robert Marko <robert.marko@sartura.hr>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20221220121231.20120-1-kvalo@kernel.org
+Signed-off-by: Siddaraju DH <siddaraju.dh@intel.com>
+Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/core.h    |  1 -
- drivers/net/wireless/ath/ath11k/debugfs.c | 48 +++++++++++++++++++----
- 2 files changed, 40 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_ptp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
-index c20e84e031fad..bd06536f82a64 100644
---- a/drivers/net/wireless/ath/ath11k/core.h
-+++ b/drivers/net/wireless/ath/ath11k/core.h
-@@ -912,7 +912,6 @@ struct ath11k_base {
- 	enum ath11k_dfs_region dfs_region;
- #ifdef CONFIG_ATH11K_DEBUGFS
- 	struct dentry *debugfs_soc;
--	struct dentry *debugfs_ath11k;
- #endif
- 	struct ath11k_soc_dp_stats soc_stats;
- 
-diff --git a/drivers/net/wireless/ath/ath11k/debugfs.c b/drivers/net/wireless/ath/ath11k/debugfs.c
-index ccdf3d5ba1ab6..5bb6fd17fdf6f 100644
---- a/drivers/net/wireless/ath/ath11k/debugfs.c
-+++ b/drivers/net/wireless/ath/ath11k/debugfs.c
-@@ -976,10 +976,6 @@ int ath11k_debugfs_pdev_create(struct ath11k_base *ab)
- 	if (test_bit(ATH11K_FLAG_REGISTERED, &ab->dev_flags))
- 		return 0;
- 
--	ab->debugfs_soc = debugfs_create_dir(ab->hw_params.name, ab->debugfs_ath11k);
--	if (IS_ERR(ab->debugfs_soc))
--		return PTR_ERR(ab->debugfs_soc);
--
- 	debugfs_create_file("simulate_fw_crash", 0600, ab->debugfs_soc, ab,
- 			    &fops_simulate_fw_crash);
- 
-@@ -1001,15 +997,51 @@ void ath11k_debugfs_pdev_destroy(struct ath11k_base *ab)
- 
- int ath11k_debugfs_soc_create(struct ath11k_base *ab)
- {
--	ab->debugfs_ath11k = debugfs_create_dir("ath11k", NULL);
-+	struct dentry *root;
-+	bool dput_needed;
-+	char name[64];
-+	int ret;
-+
-+	root = debugfs_lookup("ath11k", NULL);
-+	if (!root) {
-+		root = debugfs_create_dir("ath11k", NULL);
-+		if (IS_ERR_OR_NULL(root))
-+			return PTR_ERR(root);
-+
-+		dput_needed = false;
-+	} else {
-+		/* a dentry from lookup() needs dput() after we don't use it */
-+		dput_needed = true;
-+	}
-+
-+	scnprintf(name, sizeof(name), "%s-%s", ath11k_bus_str(ab->hif.bus),
-+		  dev_name(ab->dev));
-+
-+	ab->debugfs_soc = debugfs_create_dir(name, root);
-+	if (IS_ERR_OR_NULL(ab->debugfs_soc)) {
-+		ret = PTR_ERR(ab->debugfs_soc);
-+		goto out;
-+	}
-+
-+	ret = 0;
- 
--	return PTR_ERR_OR_ZERO(ab->debugfs_ath11k);
-+out:
-+	if (dput_needed)
-+		dput(root);
-+
-+	return ret;
- }
- 
- void ath11k_debugfs_soc_destroy(struct ath11k_base *ab)
- {
--	debugfs_remove_recursive(ab->debugfs_ath11k);
--	ab->debugfs_ath11k = NULL;
-+	debugfs_remove_recursive(ab->debugfs_soc);
-+	ab->debugfs_soc = NULL;
-+
-+	/* We are not removing ath11k directory on purpose, even if it
-+	 * would be empty. This simplifies the directory handling and it's
-+	 * a minor cosmetic issue to leave an empty ath11k directory to
-+	 * debugfs.
-+	 */
- }
- EXPORT_SYMBOL(ath11k_debugfs_soc_destroy);
- 
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
+index 53fec5bbe6e00..a3585ede829bb 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp.c
++++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
+@@ -2293,7 +2293,7 @@ static void ice_ptp_set_caps(struct ice_pf *pf)
+ 	snprintf(info->name, sizeof(info->name) - 1, "%s-%s-clk",
+ 		 dev_driver_string(dev), dev_name(dev));
+ 	info->owner = THIS_MODULE;
+-	info->max_adj = 999999999;
++	info->max_adj = 100000000;
+ 	info->adjtime = ice_ptp_adjtime;
+ 	info->adjfine = ice_ptp_adjfine;
+ 	info->gettimex64 = ice_ptp_gettimex64;
 -- 
 2.39.0
 
