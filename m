@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AB366A320A
-	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 16:15:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98C3A6A31E7
+	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 16:09:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230145AbjBZPPE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Feb 2023 10:15:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33514 "EHLO
+        id S231573AbjBZPJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Feb 2023 10:09:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231868AbjBZPOB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 10:14:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 370157ED0;
-        Sun, 26 Feb 2023 07:04:25 -0800 (PST)
+        with ESMTP id S231814AbjBZPJO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 10:09:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFC3C1C333;
+        Sun, 26 Feb 2023 06:59:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2438F60C49;
-        Sun, 26 Feb 2023 14:52:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DD90C433D2;
-        Sun, 26 Feb 2023 14:52:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1589EB80B48;
+        Sun, 26 Feb 2023 14:52:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0F78C4339B;
+        Sun, 26 Feb 2023 14:52:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677423141;
-        bh=+yaI5KvXQ+J1Xbf7LwKAJOFij69plcltlYPvsXBeiPE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=HAI/+Firh5BjEGbAiA5XOQ6pmDiJXMEzKoa+GVY5bjmkiwswFPF4PDLmOyr5ecE0H
-         NhyS//AeBBne12Y92kRy6hSjCvtCAe7Wepoq1CEJjrIuzerBccJ5uKo39bqp4Hup6o
-         fODtE4NvGHENMC5zq59bN0SYivotCK1jB/sIehatUcrDaxf69u4CXZA25fKFcBJcav
-         ZnA+DNexa420/uUT+uvLiXbfddaXG4LUDQ8hrYlbKJHcz0Tg1ZA/u8dJhdw+OpJpP5
-         zIWHzsmn03I8yiSzqDqNQ76AUkjrG0H4aGnDCVT359eDEu05EkwsQYa3VBVQv6ztcV
-         aUXJm5C/0V0zQ==
+        s=k20201202; t=1677423156;
+        bh=tXF1ojF0NnK3iM+B/31cH/34zahf9v9UjRTpOCw3QKM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qdEnNIHhGoPRIsIVznOWk9Yn9pv8Qe3qJSs3UUnNmTAowf+bPXtaBgl3aiGnYYIQ6
+         5CT5UXU2J4jaiMp+jbGC3ljlgJX2SndE5RMnVGZBcIHtyC+Atc8+pPipVpY9HIfdIg
+         BKpWfxdZcgguStHSM5lTNeff9D5YMKHgI+r1fAZHDxs5weCN3/qr9XdMFB1m/meR6d
+         S4mpweS58Tne3LKPWwM7pFQUWKd2ZQu0pzCwZGrSnhvprmEjVkSNMwe2lDlQuFSByz
+         ZXa5yoN96fdGFqbiS6bY2B0HZR04Z0LKcv8oYN4kAZpHWP1cf+y0MT1YWCSZV4h6W4
+         /fvlHa998Dryg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Jisoo Jang <jisoo.jang@yonsei.ac.kr>,
-        Dokyung Song <dokyungs@yonsei.ac.kr>,
-        Minsuk Kang <linuxlovemin@yonsei.ac.kr>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
         Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
         aspriel@gmail.com, franky.lin@broadcom.com,
         hante.meuleman@broadcom.com, davem@davemloft.net,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        hdegoede@redhat.com, gustavoars@kernel.org, marcan@marcan.st,
-        pavel@loebl.cz, wsa+renesas@sang-engineering.com,
+        keescook@chromium.org, gustavoars@kernel.org, hdegoede@redhat.com,
+        pavel@loebl.cz, wsa+renesas@sang-engineering.com, marcan@marcan.st,
         linux-wireless@vger.kernel.org,
         brcm80211-dev-list.pdl@broadcom.com,
         SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 01/13] wifi: brcmfmac: Fix potential stack-out-of-bounds in brcmf_c_preinit_dcmds()
-Date:   Sun, 26 Feb 2023 09:52:03 -0500
-Message-Id: <20230226145217.829485-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 06/13] wifi: brcmfmac: ensure CLM version is null-terminated to prevent stack-out-of-bounds
+Date:   Sun, 26 Feb 2023 09:52:08 -0500
+Message-Id: <20230226145217.829485-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.0
+In-Reply-To: <20230226145217.829485-1-sashal@kernel.org>
+References: <20230226145217.829485-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HEXHASH_WORD,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -65,154 +65,159 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jisoo Jang <jisoo.jang@yonsei.ac.kr>
 
-[ Upstream commit 0a06cadcc2a0044e4a117cc0e61436fc3a0dad69 ]
+[ Upstream commit 660145d708be52f946a82e5b633c020f58f996de ]
 
-This patch fixes a stack-out-of-bounds read in brcmfmac that occurs
+Fix a stack-out-of-bounds read in brcmfmac that occurs
 when 'buf' that is not null-terminated is passed as an argument of
-strsep() in brcmf_c_preinit_dcmds(). This buffer is filled with a firmware
-version string by memcpy() in brcmf_fil_iovar_data_get().
-The patch ensures buf is null-terminated.
+strreplace() in brcmf_c_preinit_dcmds(). This buffer is filled with
+a CLM version string by memcpy() in brcmf_fil_iovar_data_get().
+Ensure buf is null-terminated.
 
 Found by a modified version of syzkaller.
 
-[   47.569679][ T1897] brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac43236b for chip BCM43236/3
-[   47.582839][ T1897] brcmfmac: brcmf_c_process_clm_blob: no clm_blob available (err=-2), device may have limited channels available
-[   47.601565][ T1897] ==================================================================
-[   47.602574][ T1897] BUG: KASAN: stack-out-of-bounds in strsep+0x1b2/0x1f0
-[   47.603447][ T1897] Read of size 1 at addr ffffc90001f6f000 by task kworker/0:2/1897
-[   47.604336][ T1897]
-[   47.604621][ T1897] CPU: 0 PID: 1897 Comm: kworker/0:2 Tainted: G           O      5.14.0+ #131
-[   47.605617][ T1897] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
-[   47.606907][ T1897] Workqueue: usb_hub_wq hub_event
-[   47.607453][ T1897] Call Trace:
-[   47.607801][ T1897]  dump_stack_lvl+0x8e/0xd1
-[   47.608295][ T1897]  print_address_description.constprop.0.cold+0xf/0x334
-[   47.609009][ T1897]  ? strsep+0x1b2/0x1f0
-[   47.609434][ T1897]  ? strsep+0x1b2/0x1f0
-[   47.609863][ T1897]  kasan_report.cold+0x83/0xdf
-[   47.610366][ T1897]  ? strsep+0x1b2/0x1f0
-[   47.610882][ T1897]  strsep+0x1b2/0x1f0
-[   47.611300][ T1897]  ? brcmf_fil_iovar_data_get+0x3a/0xf0
-[   47.611883][ T1897]  brcmf_c_preinit_dcmds+0x995/0xc40
-[   47.612434][ T1897]  ? brcmf_c_set_joinpref_default+0x100/0x100
-[   47.613078][ T1897]  ? rcu_read_lock_sched_held+0xa1/0xd0
-[   47.613662][ T1897]  ? rcu_read_lock_bh_held+0xb0/0xb0
-[   47.614208][ T1897]  ? lock_acquire+0x19d/0x4e0
-[   47.614704][ T1897]  ? find_held_lock+0x2d/0x110
-[   47.615236][ T1897]  ? brcmf_usb_deq+0x1a7/0x260
-[   47.615741][ T1897]  ? brcmf_usb_rx_fill_all+0x5a/0xf0
-[   47.616288][ T1897]  brcmf_attach+0x246/0xd40
-[   47.616758][ T1897]  ? wiphy_new_nm+0x1703/0x1dd0
-[   47.617280][ T1897]  ? kmemdup+0x43/0x50
-[   47.617720][ T1897]  brcmf_usb_probe+0x12de/0x1690
-[   47.618244][ T1897]  ? brcmf_usbdev_qinit.constprop.0+0x470/0x470
-[   47.618901][ T1897]  usb_probe_interface+0x2aa/0x760
-[   47.619429][ T1897]  ? usb_probe_device+0x250/0x250
-[   47.619950][ T1897]  really_probe+0x205/0xb70
-[   47.620435][ T1897]  ? driver_allows_async_probing+0x130/0x130
-[   47.621048][ T1897]  __driver_probe_device+0x311/0x4b0
-[   47.621595][ T1897]  ? driver_allows_async_probing+0x130/0x130
-[   47.622209][ T1897]  driver_probe_device+0x4e/0x150
-[   47.622739][ T1897]  __device_attach_driver+0x1cc/0x2a0
-[   47.623287][ T1897]  bus_for_each_drv+0x156/0x1d0
-[   47.623796][ T1897]  ? bus_rescan_devices+0x30/0x30
-[   47.624309][ T1897]  ? lockdep_hardirqs_on_prepare+0x273/0x3e0
-[   47.624907][ T1897]  ? trace_hardirqs_on+0x46/0x160
-[   47.625437][ T1897]  __device_attach+0x23f/0x3a0
-[   47.625924][ T1897]  ? device_bind_driver+0xd0/0xd0
-[   47.626433][ T1897]  ? kobject_uevent_env+0x287/0x14b0
-[   47.627057][ T1897]  bus_probe_device+0x1da/0x290
-[   47.627557][ T1897]  device_add+0xb7b/0x1eb0
-[   47.628027][ T1897]  ? wait_for_completion+0x290/0x290
-[   47.628593][ T1897]  ? __fw_devlink_link_to_suppliers+0x5a0/0x5a0
-[   47.629249][ T1897]  usb_set_configuration+0xf59/0x16f0
-[   47.629829][ T1897]  usb_generic_driver_probe+0x82/0xa0
-[   47.630385][ T1897]  usb_probe_device+0xbb/0x250
-[   47.630927][ T1897]  ? usb_suspend+0x590/0x590
-[   47.631397][ T1897]  really_probe+0x205/0xb70
-[   47.631855][ T1897]  ? driver_allows_async_probing+0x130/0x130
-[   47.632469][ T1897]  __driver_probe_device+0x311/0x4b0
-[   47.633002][ T1897]  ? usb_generic_driver_match+0x75/0x90
-[   47.633573][ T1897]  ? driver_allows_async_probing+0x130/0x130
-[   47.634170][ T1897]  driver_probe_device+0x4e/0x150
-[   47.634703][ T1897]  __device_attach_driver+0x1cc/0x2a0
-[   47.635248][ T1897]  bus_for_each_drv+0x156/0x1d0
-[   47.635748][ T1897]  ? bus_rescan_devices+0x30/0x30
-[   47.636271][ T1897]  ? lockdep_hardirqs_on_prepare+0x273/0x3e0
-[   47.636881][ T1897]  ? trace_hardirqs_on+0x46/0x160
-[   47.637396][ T1897]  __device_attach+0x23f/0x3a0
-[   47.637904][ T1897]  ? device_bind_driver+0xd0/0xd0
-[   47.638426][ T1897]  ? kobject_uevent_env+0x287/0x14b0
-[   47.638985][ T1897]  bus_probe_device+0x1da/0x290
-[   47.639512][ T1897]  device_add+0xb7b/0x1eb0
-[   47.639977][ T1897]  ? __fw_devlink_link_to_suppliers+0x5a0/0x5a0
-[   47.640612][ T1897]  ? kfree+0x14a/0x6b0
-[   47.641055][ T1897]  ? __usb_get_extra_descriptor+0x116/0x160
-[   47.641679][ T1897]  usb_new_device.cold+0x49c/0x1029
-[   47.642245][ T1897]  ? hub_disconnect+0x450/0x450
-[   47.642756][ T1897]  ? rwlock_bug.part.0+0x90/0x90
-[   47.643273][ T1897]  ? _raw_spin_unlock_irq+0x24/0x30
-[   47.643822][ T1897]  ? lockdep_hardirqs_on_prepare+0x273/0x3e0
-[   47.644445][ T1897]  hub_event+0x1c98/0x3950
-[   47.644939][ T1897]  ? hub_port_debounce+0x2e0/0x2e0
-[   47.645467][ T1897]  ? check_irq_usage+0x861/0xf20
-[   47.645975][ T1897]  ? drain_workqueue+0x280/0x360
-[   47.646506][ T1897]  ? lock_release+0x640/0x640
-[   47.646994][ T1897]  ? rcu_read_lock_sched_held+0xa1/0xd0
-[   47.647572][ T1897]  ? rcu_read_lock_bh_held+0xb0/0xb0
-[   47.648111][ T1897]  ? lockdep_hardirqs_on_prepare+0x273/0x3e0
-[   47.648735][ T1897]  process_one_work+0x92b/0x1460
-[   47.649262][ T1897]  ? pwq_dec_nr_in_flight+0x330/0x330
-[   47.649816][ T1897]  ? rwlock_bug.part.0+0x90/0x90
-[   47.650336][ T1897]  worker_thread+0x95/0xe00
-[   47.650830][ T1897]  ? __kthread_parkme+0x115/0x1e0
-[   47.651361][ T1897]  ? process_one_work+0x1460/0x1460
-[   47.651904][ T1897]  kthread+0x3a1/0x480
-[   47.652329][ T1897]  ? set_kthread_struct+0x120/0x120
-[   47.652878][ T1897]  ret_from_fork+0x1f/0x30
-[   47.653370][ T1897]
-[   47.653608][ T1897]
-[   47.653848][ T1897] addr ffffc90001f6f000 is located in stack of task kworker/0:2/1897 at offset 512 in frame:
-[   47.654891][ T1897]  brcmf_c_preinit_dcmds+0x0/0xc40
-[   47.655442][ T1897]
-[   47.655690][ T1897] this frame has 4 objects:
-[   47.656151][ T1897]  [48, 56) 'ptr'
-[   47.656159][ T1897]  [80, 148) 'revinfo'
-[   47.656534][ T1897]  [192, 210) 'eventmask'
-[   47.656953][ T1897]  [256, 512) 'buf'
-[   47.657410][ T1897]
-[   47.658035][ T1897] Memory state around the buggy address:
-[   47.658743][ T1897]  ffffc90001f6ef00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-[   47.659577][ T1897]  ffffc90001f6ef80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-[   47.660394][ T1897] >ffffc90001f6f000: f3 f3 f3 f3 f3 f3 f3 f3 00 00 00 00 00 00 00 00
-[   47.661199][ T1897]                    ^
-[   47.661625][ T1897]  ffffc90001f6f080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-[   47.662455][ T1897]  ffffc90001f6f100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 f1 f1
-[   47.663318][ T1897] ==================================================================
-[   47.664147][ T1897] Disabling lock debugging due to kernel taint
+[   33.004414][ T1896] brcmfmac: brcmf_c_process_clm_blob: no clm_blob available (err=-2), device may have limited channels available
+[   33.013486][ T1896] brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM43236/3 wl0: Nov 30 2011 17:33:42 version 5.90.188.22
+[   33.021554][ T1896] ==================================================================
+[   33.022379][ T1896] BUG: KASAN: stack-out-of-bounds in strreplace+0xf2/0x110
+[   33.023122][ T1896] Read of size 1 at addr ffffc90001d6efc8 by task kworker/0:2/1896
+[   33.023852][ T1896]
+[   33.024096][ T1896] CPU: 0 PID: 1896 Comm: kworker/0:2 Tainted: G           O      5.14.0+ #132
+[   33.024927][ T1896] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
+[   33.026065][ T1896] Workqueue: usb_hub_wq hub_event
+[   33.026581][ T1896] Call Trace:
+[   33.026896][ T1896]  dump_stack_lvl+0x57/0x7d
+[   33.027372][ T1896]  print_address_description.constprop.0.cold+0xf/0x334
+[   33.028037][ T1896]  ? strreplace+0xf2/0x110
+[   33.028403][ T1896]  ? strreplace+0xf2/0x110
+[   33.028807][ T1896]  kasan_report.cold+0x83/0xdf
+[   33.029283][ T1896]  ? strreplace+0xf2/0x110
+[   33.029666][ T1896]  strreplace+0xf2/0x110
+[   33.029966][ T1896]  brcmf_c_preinit_dcmds+0xab1/0xc40
+[   33.030351][ T1896]  ? brcmf_c_set_joinpref_default+0x100/0x100
+[   33.030787][ T1896]  ? rcu_read_lock_sched_held+0xa1/0xd0
+[   33.031223][ T1896]  ? rcu_read_lock_bh_held+0xb0/0xb0
+[   33.031661][ T1896]  ? lock_acquire+0x19d/0x4e0
+[   33.032091][ T1896]  ? find_held_lock+0x2d/0x110
+[   33.032605][ T1896]  ? brcmf_usb_deq+0x1a7/0x260
+[   33.033087][ T1896]  ? brcmf_usb_rx_fill_all+0x5a/0xf0
+[   33.033582][ T1896]  brcmf_attach+0x246/0xd40
+[   33.034022][ T1896]  ? wiphy_new_nm+0x1476/0x1d50
+[   33.034383][ T1896]  ? kmemdup+0x30/0x40
+[   33.034722][ T1896]  brcmf_usb_probe+0x12de/0x1690
+[   33.035223][ T1896]  ? brcmf_usbdev_qinit.constprop.0+0x470/0x470
+[   33.035833][ T1896]  usb_probe_interface+0x25f/0x710
+[   33.036315][ T1896]  really_probe+0x1be/0xa90
+[   33.036656][ T1896]  __driver_probe_device+0x2ab/0x460
+[   33.037026][ T1896]  ? usb_match_id.part.0+0x88/0xc0
+[   33.037383][ T1896]  driver_probe_device+0x49/0x120
+[   33.037790][ T1896]  __device_attach_driver+0x18a/0x250
+[   33.038300][ T1896]  ? driver_allows_async_probing+0x120/0x120
+[   33.038986][ T1896]  bus_for_each_drv+0x123/0x1a0
+[   33.039906][ T1896]  ? bus_rescan_devices+0x20/0x20
+[   33.041412][ T1896]  ? lockdep_hardirqs_on_prepare+0x273/0x3e0
+[   33.041861][ T1896]  ? trace_hardirqs_on+0x1c/0x120
+[   33.042330][ T1896]  __device_attach+0x207/0x330
+[   33.042664][ T1896]  ? device_bind_driver+0xb0/0xb0
+[   33.043026][ T1896]  ? kobject_uevent_env+0x230/0x12c0
+[   33.043515][ T1896]  bus_probe_device+0x1a2/0x260
+[   33.043914][ T1896]  device_add+0xa61/0x1ce0
+[   33.044227][ T1896]  ? __mutex_unlock_slowpath+0xe7/0x660
+[   33.044891][ T1896]  ? __fw_devlink_link_to_suppliers+0x550/0x550
+[   33.045531][ T1896]  usb_set_configuration+0x984/0x1770
+[   33.046051][ T1896]  ? kernfs_create_link+0x175/0x230
+[   33.046548][ T1896]  usb_generic_driver_probe+0x69/0x90
+[   33.046931][ T1896]  usb_probe_device+0x9c/0x220
+[   33.047434][ T1896]  really_probe+0x1be/0xa90
+[   33.047760][ T1896]  __driver_probe_device+0x2ab/0x460
+[   33.048134][ T1896]  driver_probe_device+0x49/0x120
+[   33.048516][ T1896]  __device_attach_driver+0x18a/0x250
+[   33.048910][ T1896]  ? driver_allows_async_probing+0x120/0x120
+[   33.049437][ T1896]  bus_for_each_drv+0x123/0x1a0
+[   33.049814][ T1896]  ? bus_rescan_devices+0x20/0x20
+[   33.050164][ T1896]  ? lockdep_hardirqs_on_prepare+0x273/0x3e0
+[   33.050579][ T1896]  ? trace_hardirqs_on+0x1c/0x120
+[   33.050936][ T1896]  __device_attach+0x207/0x330
+[   33.051399][ T1896]  ? device_bind_driver+0xb0/0xb0
+[   33.051888][ T1896]  ? kobject_uevent_env+0x230/0x12c0
+[   33.052314][ T1896]  bus_probe_device+0x1a2/0x260
+[   33.052688][ T1896]  device_add+0xa61/0x1ce0
+[   33.053121][ T1896]  ? __fw_devlink_link_to_suppliers+0x550/0x550
+[   33.053568][ T1896]  usb_new_device.cold+0x463/0xf66
+[   33.053953][ T1896]  ? hub_disconnect+0x400/0x400
+[   33.054313][ T1896]  ? rwlock_bug.part.0+0x90/0x90
+[   33.054661][ T1896]  ? lockdep_hardirqs_on_prepare+0x273/0x3e0
+[   33.055094][ T1896]  hub_event+0x10d5/0x3330
+[   33.055530][ T1896]  ? hub_port_debounce+0x280/0x280
+[   33.055934][ T1896]  ? __lock_acquire+0x1671/0x5790
+[   33.056387][ T1896]  ? wq_calc_node_cpumask+0x170/0x2a0
+[   33.056924][ T1896]  ? lock_release+0x640/0x640
+[   33.057383][ T1896]  ? rcu_read_lock_sched_held+0xa1/0xd0
+[   33.057916][ T1896]  ? rcu_read_lock_bh_held+0xb0/0xb0
+[   33.058402][ T1896]  ? lockdep_hardirqs_on_prepare+0x273/0x3e0
+[   33.059019][ T1896]  process_one_work+0x873/0x13e0
+[   33.059488][ T1896]  ? lock_release+0x640/0x640
+[   33.059932][ T1896]  ? pwq_dec_nr_in_flight+0x320/0x320
+[   33.060446][ T1896]  ? rwlock_bug.part.0+0x90/0x90
+[   33.060898][ T1896]  worker_thread+0x8b/0xd10
+[   33.061348][ T1896]  ? __kthread_parkme+0xd9/0x1d0
+[   33.061810][ T1896]  ? process_one_work+0x13e0/0x13e0
+[   33.062288][ T1896]  kthread+0x379/0x450
+[   33.062660][ T1896]  ? _raw_spin_unlock_irq+0x24/0x30
+[   33.063148][ T1896]  ? set_kthread_struct+0x100/0x100
+[   33.063606][ T1896]  ret_from_fork+0x1f/0x30
+[   33.064070][ T1896]
+[   33.064313][ T1896]
+[   33.064545][ T1896] addr ffffc90001d6efc8 is located in stack of task kworker/0:2/1896 at offset 512 in frame:
+[   33.065478][ T1896]  brcmf_c_preinit_dcmds+0x0/0xc40
+[   33.065973][ T1896]
+[   33.066191][ T1896] this frame has 4 objects:
+[   33.066614][ T1896]  [48, 56) 'ptr'
+[   33.066618][ T1896]  [80, 148) 'revinfo'
+[   33.066957][ T1896]  [192, 210) 'eventmask'
+[   33.067338][ T1896]  [256, 512) 'buf'
+[   33.067742][ T1896]
+[   33.068304][ T1896] Memory state around the buggy address:
+[   33.068838][ T1896]  ffffc90001d6ee80: f2 00 00 02 f2 f2 f2 f2 f2 00 00 00 00 00 00 00
+[   33.069545][ T1896]  ffffc90001d6ef00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+[   33.070626][ T1896] >ffffc90001d6ef80: 00 00 00 00 00 00 00 00 00 f3 f3 f3 f3 f3 f3 f3
+[   33.072052][ T1896]                                               ^
+[   33.073043][ T1896]  ffffc90001d6f000: f3 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+[   33.074230][ T1896]  ffffc90001d6f080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+[   33.074914][ T1896] ==================================================================
+[   33.075713][ T1896] Disabling lock debugging due to kernel taint
 
-Reported-by: Dokyung Song <dokyungs@yonsei.ac.kr>
-Reported-by: Jisoo Jang <jisoo.jang@yonsei.ac.kr>
-Reported-by: Minsuk Kang <linuxlovemin@yonsei.ac.kr>
+Reviewed-by: Arend van Spriel<arend.vanspriel@broadcom.com>
 Signed-off-by: Jisoo Jang <jisoo.jang@yonsei.ac.kr>
 Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20221115043458.37562-1-jisoo.jang@yonsei.ac.kr
+Link: https://lore.kernel.org/r/20221230075139.56591-1-jisoo.jang@yonsei.ac.kr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
-index 8510d207ee87d..b4e8957840020 100644
+index b4e8957840020..3626ea9be92af 100644
 --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
 +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
-@@ -273,6 +273,7 @@ int brcmf_c_preinit_dcmds(struct brcmf_if *ifp)
- 			  err);
- 		goto done;
+@@ -290,15 +290,17 @@ int brcmf_c_preinit_dcmds(struct brcmf_if *ifp)
+ 	if (err) {
+ 		brcmf_dbg(TRACE, "retrieving clmver failed, %d\n", err);
+ 	} else {
++		buf[sizeof(buf) - 1] = '\0';
+ 		clmver = (char *)buf;
+-		/* store CLM version for adding it to revinfo debugfs file */
+-		memcpy(ifp->drvr->clmver, clmver, sizeof(ifp->drvr->clmver));
+ 
+ 		/* Replace all newline/linefeed characters with space
+ 		 * character
+ 		 */
+ 		strreplace(clmver, '\n', ' ');
+ 
++		/* store CLM version for adding it to revinfo debugfs file */
++		memcpy(ifp->drvr->clmver, clmver, sizeof(ifp->drvr->clmver));
++
+ 		brcmf_dbg(INFO, "CLM version = %s\n", clmver);
  	}
-+	buf[sizeof(buf) - 1] = '\0';
- 	ptr = (char *)buf;
- 	strsep(&ptr, "\n");
  
 -- 
 2.39.0
