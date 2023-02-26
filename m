@@ -2,45 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F3E3D6A3155
-	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 15:57:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BCA2C6A3150
+	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 15:56:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231162AbjBZO46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Feb 2023 09:56:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54892 "EHLO
+        id S231161AbjBZO4u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Feb 2023 09:56:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231510AbjBZOzl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 09:55:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 001CD1C309;
-        Sun, 26 Feb 2023 06:51:34 -0800 (PST)
+        with ESMTP id S231579AbjBZOzs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 09:55:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42E441C329;
+        Sun, 26 Feb 2023 06:51:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 64B53B80BAB;
-        Sun, 26 Feb 2023 14:51:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ADB0C4339E;
-        Sun, 26 Feb 2023 14:50:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 55D32B80C80;
+        Sun, 26 Feb 2023 14:51:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80D5AC4339B;
+        Sun, 26 Feb 2023 14:51:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677423059;
-        bh=sm2Rsig9PMFfrBwVkcXC8jvrayY+sfWPSnfHW/G6DXI=;
+        s=k20201202; t=1677423064;
+        bh=KVZfZ1EbBp3smIQ787Xf21f+cLlIL7mhSnvQMJfeGvU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n3nyhFiwYre0D4/12cN0Jn51K53vIVscldLGCgJff4XTO9os2s8Kv7+vPt1bd8hpx
-         o+zYpLq6lEuL1W1QIWsdnfGbpQyuRv3fJ4XvmmSOxXv0szRArPxkzXze0imOWdhIwj
-         Sk7qf6MdXe/Gzz41kkTMkumCppG7VIWFlX5GYTLQKRsyztQO4XR7Xx0RCuLMb/8lne
-         kb5Z8MvNwt4OhOX1pFRGT8+w8SWr9FIk2v78tjcgeM+88GrgPS1XDXjoDoKB/ztMmT
-         PsxwCc6Jnk5tPq7jTIzUVv0nMfXQPD0awAJ04ZlhA49LvYfZ6jr6UK4n/yPnNXFA64
-         4d6IV2g2gSzlA==
+        b=The/XZC38eemNA5wYmCGvDq87EPx90/v88Xz3Kamk/dUsReZM5yHA0PwaeXhaTRS1
+         nnSVQ685bz+nv1ZXwaJTigGir42MBM/1ziQUUanv/SxeUc3A0DdRLqTiaK6k4MclN3
+         1af+ykkfJ15XRtRVvwERWiPnVVbIbrjBoVYb+po6UkHHQoM8yweBeS6CuPXL1+vxSc
+         l5oVfAfl6h9PfVVAytYyCPj0cfK4N2MjkcpfBAUjZ9f/TfEc3nMNHbj56TCZGwDdyf
+         e+Ty/KCHlT6k6WtPnPVHvBQHHAJrMHJwsTscDari9lo3yIim6F5SHgMIb+XJedCpFM
+         w9MYr86W2qeTA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, opendmb@gmail.com,
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
+        ryder.lee@mediatek.com, kvalo@kernel.org, davem@davemloft.net,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 18/27] net: bcmgenet: Add a check for oversized packets
-Date:   Sun, 26 Feb 2023 09:50:05 -0500
-Message-Id: <20230226145014.828855-18-sashal@kernel.org>
+        matthias.bgg@gmail.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 20/27] wifi: mt76: dma: free rx_head in mt76_dma_rx_cleanup
+Date:   Sun, 26 Feb 2023 09:50:07 -0500
+Message-Id: <20230226145014.828855-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230226145014.828855-1-sashal@kernel.org>
 References: <20230226145014.828855-1-sashal@kernel.org>
@@ -48,8 +50,8 @@ MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,41 +59,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit 5c0862c2c962052ed5055220a00ac1cefb92fbcd ]
+[ Upstream commit 1b88b47e898edef0e56e3a2f4e49f052a136153d ]
 
-Occasionnaly we may get oversized packets from the hardware which
-exceed the nomimal 2KiB buffer size we allocate SKBs with. Add an early
-check which drops the packet to avoid invoking skb_over_panic() and move
-on to processing the next packet.
+Free rx_head skb in mt76_dma_rx_cleanup routine in order to avoid
+possible memory leak at module unload.
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/genet/bcmgenet.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/net/wireless/mediatek/mt76/dma.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-index e0a6a2e62d23b..7667cbb5adfd6 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -2263,6 +2263,14 @@ static unsigned int bcmgenet_desc_rx(struct bcmgenet_rx_ring *ring,
- 			  __func__, p_index, ring->c_index,
- 			  ring->read_ptr, dma_length_status);
+diff --git a/drivers/net/wireless/mediatek/mt76/dma.c b/drivers/net/wireless/mediatek/mt76/dma.c
+index f01b455783b23..7991705e9d134 100644
+--- a/drivers/net/wireless/mediatek/mt76/dma.c
++++ b/drivers/net/wireless/mediatek/mt76/dma.c
+@@ -476,6 +476,7 @@ mt76_dma_rx_cleanup(struct mt76_dev *dev, struct mt76_queue *q)
+ 	bool more;
  
-+		if (unlikely(len > RX_BUF_LENGTH)) {
-+			netif_err(priv, rx_status, dev, "oversized packet\n");
-+			dev->stats.rx_length_errors++;
-+			dev->stats.rx_errors++;
-+			dev_kfree_skb_any(skb);
-+			goto next;
-+		}
+ 	spin_lock_bh(&q->lock);
 +
- 		if (unlikely(!(dma_flag & DMA_EOP) || !(dma_flag & DMA_SOP))) {
- 			netif_err(priv, rx_status, dev,
- 				  "dropping fragmented packet!\n");
+ 	do {
+ 		buf = mt76_dma_dequeue(dev, q, true, NULL, NULL, &more);
+ 		if (!buf)
+@@ -483,6 +484,12 @@ mt76_dma_rx_cleanup(struct mt76_dev *dev, struct mt76_queue *q)
+ 
+ 		skb_free_frag(buf);
+ 	} while (1);
++
++	if (q->rx_head) {
++		dev_kfree_skb(q->rx_head);
++		q->rx_head = NULL;
++	}
++
+ 	spin_unlock_bh(&q->lock);
+ 
+ 	if (!q->rx_page.va)
+@@ -505,12 +512,6 @@ mt76_dma_rx_reset(struct mt76_dev *dev, enum mt76_rxq_id qid)
+ 	mt76_dma_rx_cleanup(dev, q);
+ 	mt76_dma_sync_idx(dev, q);
+ 	mt76_dma_rx_fill(dev, q);
+-
+-	if (!q->rx_head)
+-		return;
+-
+-	dev_kfree_skb(q->rx_head);
+-	q->rx_head = NULL;
+ }
+ 
+ static void
 -- 
 2.39.0
 
