@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0066D6A301E
-	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 15:46:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A17756A3157
+	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 15:57:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229829AbjBZOqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Feb 2023 09:46:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41662 "EHLO
+        id S231133AbjBZO47 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Feb 2023 09:56:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229795AbjBZOqD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 09:46:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98DA713D79;
-        Sun, 26 Feb 2023 06:45:32 -0800 (PST)
+        with ESMTP id S231164AbjBZO4A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 09:56:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886491C7E6;
+        Sun, 26 Feb 2023 06:51:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8ED77B80BE9;
-        Sun, 26 Feb 2023 14:45:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E36EFC433A0;
-        Sun, 26 Feb 2023 14:45:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EA0A60C41;
+        Sun, 26 Feb 2023 14:45:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B172C433EF;
+        Sun, 26 Feb 2023 14:45:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677422727;
-        bh=6m2TmILGqIjxl3+mDXlrPO4M+DUAGyTJ1HZNICXWLrk=;
+        s=k20201202; t=1677422730;
+        bh=ZrZh0ffHod44Z2tfuYGnD78a9b3uoNILJV5wnbaMdzA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qhw4UYiAJ4TAdVeOBCNTJYspyzfcfqrwKUzWlEUoM4QDyLXKSZJG+4wMnpnPElL7m
-         T4y0Yxv0BIv/X1ozys9SQf7/dgJUYQ28roloOgEqhJ39N4bQ248hbj45jLQa45nyIY
-         fSpQ41+iZ6261Oozhcjg+FOdiN5zwiOp33oZ7MJeoOHuMCexUpGCgbiMhbWvmi3/L6
-         mAkUij0MvND061u1ZlHoHEBUj7CuqDZNp85RHiAHiW0AKCm+hx87TiMc8rSJOFFs9s
-         Ub/Rx9Kyq+7e1KvdLKe4cGA5xE+N3Z2zYqo7mtRYB/drtod0qQikWvH5LmzC2+iJnF
-         yV/5t6xtOF0Nw==
+        b=kyYQZnG5QQJYDOgyj1mfMqle/w0CzSLCqc713x2gbtRSco7V3aV3whLZD9SvGiutM
+         WcgPYcuD69HXp30y/pHNUUaxIADr3MnfQIkGm0isouNpt2ZcgpjnFdccb/ZJ73GAj/
+         7564M6AH4SHzFGTsTRaQ4ScMfobAjbQmGajyDYrSsa5u2IAg2EcIbxGg2onMUqLBJ8
+         3LwP/2TwavHXAlQ1k7WVl8i2eghQYVz+5Ont7urHbkwG8M2wwZfGca5UkKlFtgzZXe
+         uZQcSwwkUXmg8tOAs5eszflcKKK4+NaEbDy1ytpD2hswc2/lwXL+eH+mPwACX7UWM9
+         A4j7zNEhwWweg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jisoo Jang <jisoo.jang@yonsei.ac.kr>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        matthias.bgg@gmail.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 6.2 16/53] wifi: mt7601u: fix an integer underflow
-Date:   Sun, 26 Feb 2023 09:44:08 -0500
-Message-Id: <20230226144446.824580-16-sashal@kernel.org>
+Cc:     Siddaraju DH <siddaraju.dh@intel.com>,
+        Gurucharan G <gurucharanx.g@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>, jesse.brandeburg@intel.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, richardcochran@gmail.com,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.2 18/53] ice: restrict PTP HW clock freq adjustments to 100, 000, 000 PPB
+Date:   Sun, 26 Feb 2023 09:44:10 -0500
+Message-Id: <20230226144446.824580-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230226144446.824580-1-sashal@kernel.org>
 References: <20230226144446.824580-1-sashal@kernel.org>
@@ -59,100 +59,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jisoo Jang <jisoo.jang@yonsei.ac.kr>
+From: Siddaraju DH <siddaraju.dh@intel.com>
 
-[ Upstream commit 803f3176c5df3b5582c27ea690f204abb60b19b9 ]
+[ Upstream commit 8aa4318c3a122b8670bc09af142de3872ca63b88 ]
 
-Fix an integer underflow that leads to a null pointer dereference in
-'mt7601u_rx_skb_from_seg()'. The variable 'dma_len' in the URB packet
-could be manipulated, which could trigger an integer underflow of
-'seg_len' in 'mt7601u_rx_process_seg()'. This underflow subsequently
-causes the 'bad_frame' checks in 'mt7601u_rx_skb_from_seg()' to be
-bypassed, eventually leading to a dereference of the pointer 'p', which
-is a null pointer.
+The PHY provides only 39b timestamp. With current timing
+implementation, we discard lower 7b, leaving 32b timestamp.
+The driver reconstructs the full 64b timestamp by correlating the
+32b timestamp with cached_time for performance. The reconstruction
+algorithm does both forward & backward interpolation.
 
-Ensure that 'dma_len' is greater than 'min_seg_len'.
+The 32b timeval has overflow duration of 2^32 counts ~= 4.23 second.
+Due to interpolation in both direction, its now ~= 2.125 second
+IIRC, going with at least half a duration, the cached_time is updated
+with periodic thread of 1 second (worst-case) periodicity.
 
-Found by a modified version of syzkaller.
+But the 1 second periodicity is based on System-timer.
+With PPB adjustments, if the 1588 timers increments at say
+double the rate, (2s in-place of 1s), the Nyquist rate/half duration
+sampling/update of cached_time with 1 second periodic thread will
+lead to incorrect interpolations.
 
-KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-CPU: 0 PID: 12 Comm: ksoftirqd/0 Tainted: G        W  O      5.14.0+
-#139
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
-RIP: 0010:skb_add_rx_frag+0x143/0x370
-Code: e2 07 83 c2 03 38 ca 7c 08 84 c9 0f 85 86 01 00 00 4c 8d 7d 08 44
-89 68 08 48 b8 00 00 00 00 00 fc ff df 4c 89 fa 48 c1 ea 03 <80> 3c 02
-00 0f 85 cd 01 00 00 48 8b 45 08 a8 01 0f 85 3d 01 00 00
-RSP: 0018:ffffc900000cfc90 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: ffff888115520dc0 RCX: 0000000000000000
-RDX: 0000000000000001 RSI: ffff8881118430c0 RDI: ffff8881118430f8
-RBP: 0000000000000000 R08: 0000000000000e09 R09: 0000000000000010
-R10: ffff888111843017 R11: ffffed1022308602 R12: 0000000000000000
-R13: 0000000000000e09 R14: 0000000000000010 R15: 0000000000000008
-FS:  0000000000000000(0000) GS:ffff88811a800000(0000)
-knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000004035af40 CR3: 00000001157f2000 CR4: 0000000000750ef0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-PKRU: 55555554
-Call Trace:
- mt7601u_rx_tasklet+0xc73/0x1270
- ? mt7601u_submit_rx_buf.isra.0+0x510/0x510
- ? tasklet_action_common.isra.0+0x79/0x2f0
- tasklet_action_common.isra.0+0x206/0x2f0
- __do_softirq+0x1b5/0x880
- ? tasklet_unlock+0x30/0x30
- run_ksoftirqd+0x26/0x50
- smpboot_thread_fn+0x34f/0x7d0
- ? smpboot_register_percpu_thread+0x370/0x370
- kthread+0x3a1/0x480
- ? set_kthread_struct+0x120/0x120
- ret_from_fork+0x1f/0x30
-Modules linked in: 88XXau(O) 88x2bu(O)
----[ end trace 57f34f93b4da0f9b ]---
-RIP: 0010:skb_add_rx_frag+0x143/0x370
-Code: e2 07 83 c2 03 38 ca 7c 08 84 c9 0f 85 86 01 00 00 4c 8d 7d 08 44
-89 68 08 48 b8 00 00 00 00 00 fc ff df 4c 89 fa 48 c1 ea 03 <80> 3c 02
-00 0f 85 cd 01 00 00 48 8b 45 08 a8 01 0f 85 3d 01 00 00
-RSP: 0018:ffffc900000cfc90 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: ffff888115520dc0 RCX: 0000000000000000
-RDX: 0000000000000001 RSI: ffff8881118430c0 RDI: ffff8881118430f8
-RBP: 0000000000000000 R08: 0000000000000e09 R09: 0000000000000010
-R10: ffff888111843017 R11: ffffed1022308602 R12: 0000000000000000
-R13: 0000000000000e09 R14: 0000000000000010 R15: 0000000000000008
-FS:  0000000000000000(0000) GS:ffff88811a800000(0000)
-knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000004035af40 CR3: 00000001157f2000 CR4: 0000000000750ef0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-PKRU: 55555554
+Hence we should restrict the PPB adjustments to at least half duration
+of cached_time update which translates to 500,000,000 PPB.
 
-Signed-off-by: Jisoo Jang <jisoo.jang@yonsei.ac.kr>
-Acked-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20221229092906.2328282-1-jisoo.jang@yonsei.ac.kr
+Since the periodicity of the cached-time system thread can vary,
+it is good to have some buffer time and considering practicality of
+PPB adjustments, limiting the max_adj to 100,000,000.
+
+Signed-off-by: Siddaraju DH <siddaraju.dh@intel.com>
+Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt7601u/dma.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_ptp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt7601u/dma.c b/drivers/net/wireless/mediatek/mt7601u/dma.c
-index 457147394edc4..773a1cc2f8520 100644
---- a/drivers/net/wireless/mediatek/mt7601u/dma.c
-+++ b/drivers/net/wireless/mediatek/mt7601u/dma.c
-@@ -123,7 +123,8 @@ static u16 mt7601u_rx_next_seg_len(u8 *data, u32 data_len)
- 	if (data_len < min_seg_len ||
- 	    WARN_ON_ONCE(!dma_len) ||
- 	    WARN_ON_ONCE(dma_len + MT_DMA_HDRS > data_len) ||
--	    WARN_ON_ONCE(dma_len & 0x3))
-+	    WARN_ON_ONCE(dma_len & 0x3) ||
-+	    WARN_ON_ONCE(dma_len < min_seg_len))
- 		return 0;
- 
- 	return MT_DMA_HDRS + dma_len;
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
+index d63161d73eb16..3abc8db1d0659 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp.c
++++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
+@@ -2269,7 +2269,7 @@ static void ice_ptp_set_caps(struct ice_pf *pf)
+ 	snprintf(info->name, sizeof(info->name) - 1, "%s-%s-clk",
+ 		 dev_driver_string(dev), dev_name(dev));
+ 	info->owner = THIS_MODULE;
+-	info->max_adj = 999999999;
++	info->max_adj = 100000000;
+ 	info->adjtime = ice_ptp_adjtime;
+ 	info->adjfine = ice_ptp_adjfine;
+ 	info->gettimex64 = ice_ptp_gettimex64;
 -- 
 2.39.0
 
