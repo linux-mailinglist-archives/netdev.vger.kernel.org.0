@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 335E26A2F0B
-	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 11:04:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CF146A2F12
+	for <lists+netdev@lfdr.de>; Sun, 26 Feb 2023 11:15:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229577AbjBZKEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Feb 2023 05:04:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36494 "EHLO
+        id S229582AbjBZKPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Feb 2023 05:15:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229504AbjBZKEB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 05:04:01 -0500
+        with ESMTP id S229445AbjBZKO7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Feb 2023 05:14:59 -0500
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E434E1BFB;
-        Sun, 26 Feb 2023 02:03:58 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D782A5DC;
+        Sun, 26 Feb 2023 02:14:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677405838; x=1708941838;
+  t=1677406497; x=1708942497;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=QwTEK0J6utcQTtPjH6/V0c2fY4joL6RNddLp51Dy5WA=;
-  b=XzMovi17oWFPi6oAf3G/+5G5D4yXVqQV1VuC03v81ZfgOvhxn9c+95ZI
-   Ch4yCcGk0FnKd2UCjBy7oIWM9aMpMJQQl2BtC84ihpGSFs1ZTF1hoteef
-   qkMfwHy1CN+QNqF3jKUeyb7ZYei+9jFuNsUWs+k12Nmeg1nE+DyIxBd6k
-   n0Zuh5ebHDumajVqAg81V9912jo/ZVNq26jGnxGtr6fnZg+uW8WPYboc1
-   tiOjJoEEe6aWPb0CfBAMTgY93u1Q/Q6vjlw6/4FErTd/cio0WJWO/aNrN
-   KuUHcr5FnBMgCZgjEIpM3WVEiQMb05/n5gmzG+EEeMMdOVP4ArQqIbPn0
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10632"; a="314125937"
+  bh=mOwQYjCLcCBtnUHfK+19Aed5go30rPohmT8xDTerS/c=;
+  b=M934xevgWng3Md82eaOr32vZQAq4j8fwsTECbln2++NwLMcLJTuI5RO0
+   AEv+bBdOIrNuL/xI1VTeLvfbP1zSo5pAzISECf84xPQRxex6V7AbK84Sc
+   +lYRgdLQFZEVAkJEiu+vtyE0/RfkQ1O4ZJ0+5/fXqMehq58QSzZRhgNYt
+   ovAvbLvFY3r+9q7Wfkte5oLvCyJVpvj2T1qkZNZ0fry1Ok50hPG0QiqEN
+   8Z/oc2C8SutA9ZBR/K9/EFZhcTcjvPO5qhBCCazqE1cidE4l/si2ImyuG
+   sowG9dEhn36dXDy9tUSxMW3Y5wNLJBVgA651vC6QCQPUyzgWSwcY52urQ
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10632"; a="314126993"
 X-IronPort-AV: E=Sophos;i="5.97,329,1669104000"; 
-   d="scan'208";a="314125937"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2023 02:03:56 -0800
+   d="scan'208";a="314126993"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2023 02:14:57 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10632"; a="918939627"
+X-IronPort-AV: E=McAfee;i="6500,9779,10632"; a="673390133"
 X-IronPort-AV: E=Sophos;i="5.97,329,1669104000"; 
-   d="scan'208";a="918939627"
+   d="scan'208";a="673390133"
 Received: from lkp-server01.sh.intel.com (HELO 3895f5c55ead) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 26 Feb 2023 02:03:54 -0800
+  by orsmga002.jf.intel.com with ESMTP; 26 Feb 2023 02:14:54 -0800
 Received: from kbuild by 3895f5c55ead with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1pWDsn-0003gn-14;
-        Sun, 26 Feb 2023 10:03:53 +0000
-Date:   Sun, 26 Feb 2023 18:03:25 +0800
+        id 1pWE3R-0003h1-1W;
+        Sun, 26 Feb 2023 10:14:53 +0000
+Date:   Sun, 26 Feb 2023 18:14:16 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Joanne Koong <joannelkoong@gmail.com>, bpf@vger.kernel.org
 Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
@@ -51,7 +51,7 @@ Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
         toke@kernel.org, Joanne Koong <joannelkoong@gmail.com>
 Subject: Re: [PATCH v12 bpf-next 09/10] bpf: Add bpf_dynptr_slice and
  bpf_dynptr_slice_rdwr
-Message-ID: <202302261742.iOSFw9wm-lkp@intel.com>
+Message-ID: <202302261844.BdMQvIkw-lkp@intel.com>
 References: <20230226085120.3907863-10-joannelkoong@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -76,8 +76,8 @@ url:    https://github.com/intel-lab-lkp/linux/commits/Joanne-Koong/bpf-Support-
 base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
 patch link:    https://lore.kernel.org/r/20230226085120.3907863-10-joannelkoong%40gmail.com
 patch subject: [PATCH v12 bpf-next 09/10] bpf: Add bpf_dynptr_slice and bpf_dynptr_slice_rdwr
-config: hexagon-randconfig-r026-20230226 (https://download.01.org/0day-ci/archive/20230226/202302261742.iOSFw9wm-lkp@intel.com/config)
-compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project db89896bbbd2251fff457699635acbbedeead27f)
+config: i386-randconfig-a002 (https://download.01.org/0day-ci/archive/20230226/202302261844.BdMQvIkw-lkp@intel.com/config)
+compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
@@ -87,78 +87,15 @@ reproduce (this is a W=1 build):
         git checkout bc5a61c43c72539ef11e6435a168bf240a186ac1
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash kernel/bpf/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash kernel/bpf/
 
 If you fix the issue, kindly add following tag where applicable
 | Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202302261742.iOSFw9wm-lkp@intel.com/
+| Link: https://lore.kernel.org/oe-kbuild-all/202302261844.BdMQvIkw-lkp@intel.com/
 
 All warnings (new ones prefixed by >>):
 
-   In file included from kernel/bpf/verifier.c:7:
-   In file included from include/linux/bpf-cgroup.h:5:
-   In file included from include/linux/bpf.h:31:
-   In file included from include/linux/memcontrol.h:13:
-   In file included from include/linux/cgroup.h:26:
-   In file included from include/linux/kernel_stat.h:9:
-   In file included from include/linux/interrupt.h:11:
-   In file included from include/linux/hardirq.h:11:
-   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
-   In file included from include/asm-generic/hardirq.h:17:
-   In file included from include/linux/irq.h:20:
-   In file included from include/linux/io.h:13:
-   In file included from arch/hexagon/include/asm/io.h:334:
-   include/asm-generic/io.h:547:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __raw_readb(PCI_IOBASE + addr);
-                             ~~~~~~~~~~ ^
-   include/asm-generic/io.h:560:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/little_endian.h:37:51: note: expanded from macro '__le16_to_cpu'
-   #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
-                                                     ^
-   In file included from kernel/bpf/verifier.c:7:
-   In file included from include/linux/bpf-cgroup.h:5:
-   In file included from include/linux/bpf.h:31:
-   In file included from include/linux/memcontrol.h:13:
-   In file included from include/linux/cgroup.h:26:
-   In file included from include/linux/kernel_stat.h:9:
-   In file included from include/linux/interrupt.h:11:
-   In file included from include/linux/hardirq.h:11:
-   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
-   In file included from include/asm-generic/hardirq.h:17:
-   In file included from include/linux/irq.h:20:
-   In file included from include/linux/io.h:13:
-   In file included from arch/hexagon/include/asm/io.h:334:
-   include/asm-generic/io.h:573:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/little_endian.h:35:51: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) ((__force __u32)(__le32)(x))
-                                                     ^
-   In file included from kernel/bpf/verifier.c:7:
-   In file included from include/linux/bpf-cgroup.h:5:
-   In file included from include/linux/bpf.h:31:
-   In file included from include/linux/memcontrol.h:13:
-   In file included from include/linux/cgroup.h:26:
-   In file included from include/linux/kernel_stat.h:9:
-   In file included from include/linux/interrupt.h:11:
-   In file included from include/linux/hardirq.h:11:
-   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
-   In file included from include/asm-generic/hardirq.h:17:
-   In file included from include/linux/irq.h:20:
-   In file included from include/linux/io.h:13:
-   In file included from arch/hexagon/include/asm/io.h:334:
-   include/asm-generic/io.h:584:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writeb(value, PCI_IOBASE + addr);
-                               ~~~~~~~~~~ ^
-   include/asm-generic/io.h:594:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:604:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
    kernel/bpf/verifier.c:6253:5: warning: no previous prototype for function 'process_dynptr_func' [-Wmissing-prototypes]
    int process_dynptr_func(struct bpf_verifier_env *env, int regno, int insn_idx,
        ^
@@ -192,7 +129,16 @@ All warnings (new ones prefixed by >>):
 >> kernel/bpf/verifier.c:9908:28: warning: mixing declarations and code is incompatible with standards before C99 [-Wdeclaration-after-statement]
                            const struct btf_param *size_arg = &args[i + 1];
                                                    ^
-   8 warnings and 5 errors generated.
+   kernel/bpf/verifier.c:10167:24: warning: array index 16 is past the end of the array (which contains 16 elements) [-Warray-bounds]
+                                      meta.func_id == special_kfunc_list[KF_bpf_dynptr_slice_rdwr]) {
+                                                      ^                  ~~~~~~~~~~~~~~~~~~~~~~~~
+   kernel/bpf/verifier.c:9017:1: note: array 'special_kfunc_list' declared here
+   BTF_ID_LIST(special_kfunc_list)
+   ^
+   include/linux/btf_ids.h:207:27: note: expanded from macro 'BTF_ID_LIST'
+   #define BTF_ID_LIST(name) static u32 __maybe_unused name[16];
+                             ^
+   3 warnings and 5 errors generated.
 
 
 vim +9908 kernel/bpf/verifier.c
