@@ -2,65 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 862B06A3E58
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 10:30:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 004D06A3E61
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 10:32:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229836AbjB0Jao (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 04:30:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42736 "EHLO
+        id S229840AbjB0JcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 04:32:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229757AbjB0Jan (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 04:30:43 -0500
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3369006;
-        Mon, 27 Feb 2023 01:30:42 -0800 (PST)
-Received: by mail-pl1-x62e.google.com with SMTP id bh1so6025239plb.11;
-        Mon, 27 Feb 2023 01:30:42 -0800 (PST)
+        with ESMTP id S229530AbjB0JcF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 04:32:05 -0500
+Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C57E39EE2;
+        Mon, 27 Feb 2023 01:32:04 -0800 (PST)
+Received: by mail-vs1-xe34.google.com with SMTP id s1so9956941vsk.5;
+        Mon, 27 Feb 2023 01:32:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=GqlhBQG3ZY7WEZg8vyYycu2rPcnKBeaUa5frdq7cInQ=;
-        b=jXERK1s9N/8LGgd/1Y+ETYcOeuxwTovePN1UNH+ZHrm/k1D03s+Uw6kX6Bt33SovRk
-         K7aUbQVY1tSMt1A84T1up61LjyQFIbbgsRsXCTsXUM/z0uuJ7PyuywuqgUhs74fdQp5P
-         I/gKl25c64uQNLsHvyg2LZ+rgvddVVDvyHquYSb3heAyFSVYpqaIB1Zw4w+mek964Ose
-         hQ2w3qBpHP+OsxIaXRU7Ruh5/AjphUBR1VG5eP3xb9nPvhUgos744y6S1XdOnxUFsKJ+
-         NUDpFOx9eeJgwlbTkFJv7QvagcH0z58rHi+iok6nlqHBYL5rH0+Ew3Ovhy+ahRTy9PVx
-         2Fhg==
+        bh=jx8ppxvsllfoE8OaQDtiDMUsuJo7Lm5MwuLPe8/67Fo=;
+        b=QF9updo/N1vMgQ/PwZMkHQobEY+culvS/JV/e1NrZiFROWYkgOfu3DlFCmV3SfR+P7
+         40X5oqZjDzdDe9EhomhRX4VjgPpZyYOnJcdyhOKNlo9oOx40Wvt6sjwwi4eHu4RYjMqg
+         xzuEimNYZew+vDo8ZgQFLhy9JH5HR0I4cT7pJrvrzEXNT3mGyjIMSCQr1qxkzrjn+b82
+         AuwIIDtKXLU6RPihBshk/QJF9xYjuxunku9BbU3qh5WduTb6OCvzPFCJdFt5w4EZlbu1
+         BsuJzaXxW4ahOTNmczq2630ZmN6Owfxd845fGvyMvhjFx8BH0Hp345golcv69iI+UMoP
+         WbUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=GqlhBQG3ZY7WEZg8vyYycu2rPcnKBeaUa5frdq7cInQ=;
-        b=wrWg4RL8jxTelO+Ai5V30O2wTW2Tpq9XNTbKhe6Gyop1Js27isytP2vIUDCiGDcDMx
-         VAX7svsIkJelmsn5GrTcrNFgZBwhpcMax4oUs6E3I8vTJ1wxOcV5QwUB+7TSOKwxr/hn
-         VlyNznPoLWQf085t3+Z9HT4KIuw7DRAL1Lm2aiAsT0Yis6UlwHGBQo+mXObky59rn3wd
-         d1uvB2X8aMNwwUd/LbvUWkBFl2Qttjoap4N3taa4D0pZyu6o6H+/XVSKmSOprHjNQTut
-         0cuTL5zSqsPL1k8mm4PfuChU6vC9/6vl6UO7KU2GYluuQx+gCN9s01451JmH2wRY2bka
-         gSGQ==
-X-Gm-Message-State: AO0yUKWjIugfMjchd7FcRsA9VP+cdOlbSL6b70AKYF5MfrVW5OXd1/c2
-        5cssEo64eoKUz4voQBEQLaA=
-X-Google-Smtp-Source: AK7set8S9BDm2zTu42tCFyIj8lLiEzDlHuqIJByJk0mtgSwXXKu13p6bqzvcRbiAojcJOxm6MouX1g==
-X-Received: by 2002:a05:6a20:6999:b0:cb:8e4c:6e4d with SMTP id t25-20020a056a20699900b000cb8e4c6e4dmr24369888pzk.47.1677490241750;
-        Mon, 27 Feb 2023 01:30:41 -0800 (PST)
-Received: from localhost.localdomain ([103.116.245.58])
-        by smtp.gmail.com with ESMTPSA id c9-20020a637249000000b00502f20aa4desm3615865pgn.70.2023.02.27.01.30.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Feb 2023 01:30:41 -0800 (PST)
-From:   void0red <void0red@gmail.com>
-To:     krzysztof.kozlowski@linaro.org
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        simon.horman@corigine.com, void0red@gmail.com
-Subject: [PATCH v3] nfc: fdp: add null check of devm_kmalloc_array in fdp_nci_i2c_read_device_properties
-Date:   Mon, 27 Feb 2023 17:30:37 +0800
-Message-Id: <20230227093037.907654-1-void0red@gmail.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <35ddd789-4dd9-3b87-3128-268905ec9a13@linaro.org>
-References: <35ddd789-4dd9-3b87-3128-268905ec9a13@linaro.org>
+        bh=jx8ppxvsllfoE8OaQDtiDMUsuJo7Lm5MwuLPe8/67Fo=;
+        b=tr5+ImU3qQ2QF7vlzqXz9hUCFLZodyKvc4dYE00yvFTz/UWt0DyX3E4dj2BbjuaxhG
+         U4dz2FA9LhdRt2Lo52fFFr5jx9zV0LcB9rZUjdvIm4wR6UAUOCZX7pmBXZGM24+Jhqia
+         yseToSeZ9IT3r3/gHX7cfWkJGgb7khivTixb6PV3K5z9DTUWRJU1u8CXdkp8GZF9UmXr
+         OFszcfutNYscBtbIsSqyQrZs+w8DD7tbg8+bCtgRaD197Te+P4fnCbwf1IJMLiXUU2e0
+         Rm+UW7loU4Gc8ynZ6OTiutKgYe8DbPiBJe+cKtY4g4TJ6E/qxnzFNSVYKWI2wgu8ptVn
+         wSXw==
+X-Gm-Message-State: AO0yUKU8/IEZwXaGRQPcl5PcoqKcTJZrASNbz6B6BMOTxcCmIIxHOv7q
+        cJYf2otRmSrWI+dmaN5JvVvMqs2GT+S9+B1Bt5s=
+X-Google-Smtp-Source: AK7set/8q3HifJOXHO3kWgxksBr8ggA4em390UtYQzEkPIL2rtmzYiY5KLjitHRZI6tYj9dWrBJYYuUuX9Vx7NgJZ2U=
+X-Received: by 2002:a05:6102:30b3:b0:412:27f7:491b with SMTP id
+ y19-20020a05610230b300b0041227f7491bmr6886274vsd.2.1677490323783; Mon, 27 Feb
+ 2023 01:32:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20230227074104.42153-1-josef@miegl.cz> <20230227074104.42153-2-josef@miegl.cz>
+In-Reply-To: <20230227074104.42153-2-josef@miegl.cz>
+From:   Eyal Birger <eyal.birger@gmail.com>
+Date:   Mon, 27 Feb 2023 11:31:51 +0200
+Message-ID: <CAHsH6GvCecnq6Cte=ktRB+BxdZMo4Mi0z-hBDD3kFkENeWUfdQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/1] net: geneve: accept every ethertype
+To:     Josef Miegl <josef@miegl.cz>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -71,42 +71,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kang Chen <void0red@gmail.com>
+On Mon, Feb 27, 2023 at 10:14=E2=80=AFAM Josef Miegl <josef@miegl.cz> wrote=
+:
+>
+> This patch removes a restriction that prohibited receiving encapsulated
+> ethertypes other than IPv4, IPv6 and Ethernet.
+>
+> With IFLA_GENEVE_INNER_PROTO_INHERIT flag set, GENEVE interface can now
+> receive ethertypes such as MPLS.
+>
+> Signed-off-by: Josef Miegl <josef@miegl.cz>
+> ---
+>  drivers/net/geneve.c | 15 ++++-----------
+>  1 file changed, 4 insertions(+), 11 deletions(-)
+>
+> diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
+> index 89ff7f8e8c7e..7973659a891f 100644
+> --- a/drivers/net/geneve.c
+> +++ b/drivers/net/geneve.c
+> @@ -353,7 +353,6 @@ static int geneve_udp_encap_recv(struct sock *sk, str=
+uct sk_buff *skb)
+>         struct genevehdr *geneveh;
+>         struct geneve_dev *geneve;
+>         struct geneve_sock *gs;
+> -       __be16 inner_proto;
 
-devm_kmalloc_array may fails, *fw_vsc_cfg might be null and cause
-out-of-bounds write in device_property_read_u8_array later.
+nit: why remove the variable? - it's still used in two places and this
+change just makes the patch longer.
 
-Fixes: a06347c04c13 ("NFC: Add Intel Fields Peak NFC solution driver")
-Signed-off-by: Kang Chen <void0red@gmail.com>
----
-v3 -> v2: remove useless prompt and blank lines between tags.
-v2 -> v1: add debug prompt and Fixes tag
-
- drivers/nfc/fdp/i2c.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/nfc/fdp/i2c.c b/drivers/nfc/fdp/i2c.c
-index 2d53e0f88..1e0f2297f 100644
---- a/drivers/nfc/fdp/i2c.c
-+++ b/drivers/nfc/fdp/i2c.c
-@@ -247,6 +247,9 @@ static void fdp_nci_i2c_read_device_properties(struct device *dev,
- 					   len, sizeof(**fw_vsc_cfg),
- 					   GFP_KERNEL);
- 
-+		if (!*fw_vsc_cfg)
-+			goto alloc_err;
-+
- 		r = device_property_read_u8_array(dev, FDP_DP_FW_VSC_CFG_NAME,
- 						  *fw_vsc_cfg, len);
- 
-@@ -260,6 +263,7 @@ static void fdp_nci_i2c_read_device_properties(struct device *dev,
- 		*fw_vsc_cfg = NULL;
- 	}
- 
-+alloc_err:
- 	dev_dbg(dev, "Clock type: %d, clock frequency: %d, VSC: %s",
- 		*clock_type, *clock_freq, *fw_vsc_cfg != NULL ? "yes" : "no");
- }
--- 
-2.34.1
-
+>         int opts_len;
+>
+>         /* Need UDP and Geneve header to be present */
+> @@ -365,13 +364,6 @@ static int geneve_udp_encap_recv(struct sock *sk, st=
+ruct sk_buff *skb)
+>         if (unlikely(geneveh->ver !=3D GENEVE_VER))
+>                 goto drop;
+>
+> -       inner_proto =3D geneveh->proto_type;
+> -
+> -       if (unlikely((inner_proto !=3D htons(ETH_P_TEB) &&
+> -                     inner_proto !=3D htons(ETH_P_IP) &&
+> -                     inner_proto !=3D htons(ETH_P_IPV6))))
+> -               goto drop;
+> -
+>         gs =3D rcu_dereference_sk_user_data(sk);
+>         if (!gs)
+>                 goto drop;
+> @@ -381,14 +373,15 @@ static int geneve_udp_encap_recv(struct sock *sk, s=
+truct sk_buff *skb)
+>                 goto drop;
+>
+>         if (unlikely((!geneve->cfg.inner_proto_inherit &&
+> -                     inner_proto !=3D htons(ETH_P_TEB)))) {
+> +                     geneveh->proto_type !=3D htons(ETH_P_TEB)))) {
+>                 geneve->dev->stats.rx_dropped++;
+>                 goto drop;
+>         }
+>
+>         opts_len =3D geneveh->opt_len * 4;
+> -       if (iptunnel_pull_header(skb, GENEVE_BASE_HLEN + opts_len, inner_=
+proto,
+> -                                !net_eq(geneve->net, dev_net(geneve->dev=
+)))) {
+> +       if (iptunnel_pull_header(skb, GENEVE_BASE_HLEN + opts_len,
+> +                                geneveh->proto_type, !net_eq(geneve->net=
+,
+> +                                dev_net(geneve->dev)))) {
+>                 geneve->dev->stats.rx_dropped++;
+>                 goto drop;
+>         }
+> --
+> 2.37.1
+>
