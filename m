@@ -2,71 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BAA566A3F15
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 11:03:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05DF26A3F16
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 11:06:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229900AbjB0KDx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 05:03:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45478 "EHLO
+        id S229760AbjB0KGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 05:06:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbjB0KDv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 05:03:51 -0500
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37FAF76A7;
-        Mon, 27 Feb 2023 02:03:31 -0800 (PST)
-Received: by mail-wr1-x431.google.com with SMTP id j2so5537902wrh.9;
-        Mon, 27 Feb 2023 02:03:31 -0800 (PST)
+        with ESMTP id S229595AbjB0KGG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 05:06:06 -0500
+Received: from mail-vs1-xe2b.google.com (mail-vs1-xe2b.google.com [IPv6:2607:f8b0:4864:20::e2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 367EF1D900;
+        Mon, 27 Feb 2023 02:06:05 -0800 (PST)
+Received: by mail-vs1-xe2b.google.com with SMTP id a3so10208543vsi.0;
+        Mon, 27 Feb 2023 02:06:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=4kWm37Ixl905qbNIzKjmoOPdiZM9qfGzX7zoFG4LKFs=;
-        b=nGuceni+LvNZpQjYuwGLrsqUz9oolJ7gyVYKUj3vd8/kJXwrTDdfapCTfwAeVIvP0L
-         tFKMXfqaTNFnms2aB8p7OElqogKZhpc8ASyRNEYbGvpb4dq4COkVWovqb3HGpV5LaZZ3
-         0FNHd0wGvmkFP5frzjF9YsbYrKE0rR4BIoiI2l3pg0QJ0k2k/UxlhA7vmh71D+uqbNIb
-         zya82D1JxYJnCQ64Nu3NYIy0CeDE3Gk4/L3srfyP+xQVN64tLXV3dIGJZIMVoU1+7PP/
-         4beVnfceIWzhL5trofCLdkuHCGyXBEGsu7pyPNfzCMpsGe6RLu4uvb99d6Okt7DUTVCP
-         BI0w==
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ysEyAXQpei8iW7Vd296eL75+Ws0ZY2kgID4wiDvkbwI=;
+        b=KviBkJMDBICmCLO7t8ZFhp7rB6+DKGaCz6qFXlTkrfraVPfRBU9V0jiTm+QkpvMY3C
+         MOjSAbjZGUsUHFtNTnckmHDCRYbrbY2ogiq3XBAVf18JK72XfPi6Zhd+YLQWeSnS62Ke
+         SCee/dCxH7p6tm/b2fwc40+QAVNoBeoSivEmCTYfPSl9xz79/Xj93sK2mgJIV18YVpIL
+         4YCS58JOeVbcA4takQ26EgzlKHg4caeMQv0xV1Mxg1fOXKvbXYH9t1d+4n0jQqYTh57J
+         k9sJ7EXxruGlOrfCrCMXQ2YK4OBbRqYAdCoKEvEyO0vQ4f7MKc8deLiA2xg7MeO7j9wL
+         cG5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=4kWm37Ixl905qbNIzKjmoOPdiZM9qfGzX7zoFG4LKFs=;
-        b=VVmW+IAkz2iP0jQRp0Xe62LklbP4adA2i9NtqXqgHiATdfbUw4oEeNbCOrJurXTTYj
-         srGRzUboVc4leKN+B1gead9d6XBgvrU/jLzVg6NvEgY3OVcLWb4geIf3QgRqCNgxnF67
-         4nVCgSrlv2METZfmkJqIvpjCPBM0XBUceJgXsYL8xWHlxMK01DFf3YUPYTCBQilKBnfn
-         Qfz66t0a+5pf95mmqODv5hv4TbD9gjCpX1BeJkHSclhBuSSCNWoB68Jl+daJyrN5bdpr
-         4ovol8oH/PGdZpW4Stqd5+dvITJ6oYVyKekjtDu4lhCMggCwI7fJlEBuONHbf4IiJmfJ
-         zaug==
-X-Gm-Message-State: AO0yUKWKxDDuNLWswBTUh1RoSWyGLyuR26G0le21T4b3e0iiIezMwwuM
-        qqCwpcG0ngrgNqWAbashblU=
-X-Google-Smtp-Source: AK7set+4nIYPmwmJ/R4nDrRJ13s//9CahcGEUYiZZQyNeCoA1RWY2zXaWtsdLjvS3318MLcA0jBzWg==
-X-Received: by 2002:adf:ce08:0:b0:2c5:5b9d:70ee with SMTP id p8-20020adfce08000000b002c55b9d70eemr19500975wrn.22.1677492209582;
-        Mon, 27 Feb 2023 02:03:29 -0800 (PST)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id e15-20020a5d594f000000b002c5d3f0f737sm6613343wri.30.2023.02.27.02.03.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Feb 2023 02:03:28 -0800 (PST)
-Date:   Mon, 27 Feb 2023 13:03:22 +0300
-From:   Dan Carpenter <error27@gmail.com>
-To:     Oleksij Rempel <linux@rempel-privat.de>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ysEyAXQpei8iW7Vd296eL75+Ws0ZY2kgID4wiDvkbwI=;
+        b=LP0BE9nXgQaHQvxH9gJx1ucVqmjhExTC3YyfnENJNL5mjZYIW5MYj5Z5dPeI7sHZUu
+         izryn3rvDw3kgt5OrMsXHYpqVqbePAsIKkIXcojDG70Q+P5XMROzn2Y+XyTPbhn0viD/
+         4GfKxq93trduwB7Uv5njXlyvl/lHhdDOlkJMiAHbw4eSkYqysAbzho6MHeIWggARRAia
+         XfnV1ipCi7APC+Tvi8bdmxweVl/to2JFx4CBfDyMR7aI8VeQmTlQKnPm4zV/aPquVeGp
+         PdFy33ofaZhdAlokmpSJADkTDz/rmaU2jZeNMGatVfZlxXwqy1pvNZIs1Q+9X3BBUvpy
+         bEnw==
+X-Gm-Message-State: AO0yUKUYPiCYzLGjdDoTbWRAPiG3SCzz+xkG2kRaKMvK7yXk3w2injih
+        PcoaG0QXnKfNRESc4dEUhw0YriAKkctDwlFEE1Y=
+X-Google-Smtp-Source: AK7set8LVuHd1GqAaqkiA6TzNRPvdd9ETv0m0QcJFvuTU2W4fifoxCa/1CZO7VHr2SeEC3udsu2mYPvYjyede5Bjo84=
+X-Received: by 2002:ac5:cdd5:0:b0:401:42e5:6d2e with SMTP id
+ u21-20020ac5cdd5000000b0040142e56d2emr7414717vkn.1.1677492364189; Mon, 27 Feb
+ 2023 02:06:04 -0800 (PST)
+MIME-Version: 1.0
+References: <20230227074104.42153-1-josef@miegl.cz> <CAHsH6GtArNCyA3UAJbSYYD86fb2QxskbSoNQo2RVHQzKC643zg@mail.gmail.com>
+ <79dee14b9b96d5916a8652456b78c7a5@miegl.cz>
+In-Reply-To: <79dee14b9b96d5916a8652456b78c7a5@miegl.cz>
+From:   Eyal Birger <eyal.birger@gmail.com>
+Date:   Mon, 27 Feb 2023 12:05:51 +0200
+Message-ID: <CAHsH6GuHiRDgY+_Epu=ejTAWONuXgzHk326SUuAeRp6pGaTEpA@mail.gmail.com>
+Subject: Re: [PATCH v2 0/1] net: geneve: accept every ethertype
+To:     Josef Miegl <josef@miegl.cz>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH net] net: phy: unlock on error in phy_probe()
-Message-ID: <Y/x/6kHCjnQHqOpF@kili>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,28 +72,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If genphy_c45_read_eee_adv() fails then we need to do a reset and unlock
-the &phydev->lock mutex before returning.
+On Mon, Feb 27, 2023 at 11:57=E2=80=AFAM Josef Miegl <josef@miegl.cz> wrote=
+:
+>
+> February 27, 2023 10:30 AM, "Eyal Birger" <eyal.birger@gmail.com> wrote:
+>
+> > Hi,
+> >
+> > On Mon, Feb 27, 2023 at 10:19 AM Josef Miegl <josef@miegl.cz> wrote:
+> >
+> >> The Geneve encapsulation, as defined in RFC 8926, has a Protocol Type
+> >> field, which states the Ethertype of the payload appearing after the
+> >> Geneve header.
+> >>
+> >> Commit 435fe1c0c1f7 ("net: geneve: support IPv4/IPv6 as inner protocol=
+")
+> >> introduced a new IFLA_GENEVE_INNER_PROTO_INHERIT flag that allowed the
+> >> use of other Ethertypes than Ethernet. However, for a reason not known
+> >> to me, it imposed a restriction that prohibits receiving payloads othe=
+r
+> >> than IPv4, IPv6 and Ethernet.
+> >
+> > FWIW I added support for IPv4/IPv6 because these are the use cases I ha=
+d
+> > and could validate. I don't know what problems could arise from support=
+ing
+> > all possible ethertypes and can't test that.
+>
+> Yeah, I am hoping someone knowledgeable will tell whether this is a good
+> or bad idea. However I think that if any problem could arise, this is not
+> the place to artificially restrict payload types and potentional safeguar=
+ding
+> should be done somewhere down the packet chain.
+>
+> I can't imagine adding a payload Ethertype every time someone needs a
+> specific use-case would be a good idea.
 
-Fixes: 3eeca4e199ce ("net: phy: do not force EEE support")
-Signed-off-by: Dan Carpenter <error27@gmail.com>
----
- drivers/net/phy/phy_device.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I guess it's just a matter of practicality - which decision imposes more
+burden on future maintenance.
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 3f8a64fb9d71..9e9fd8ff00f6 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -3146,7 +3146,7 @@ static int phy_probe(struct device *dev)
- 	 */
- 	err = genphy_c45_read_eee_adv(phydev, phydev->advertising_eee);
- 	if (err)
--		return err;
-+		goto out;
- 
- 	/* There is no "enabled" flag. If PHY is advertising, assume it is
- 	 * kind of enabled.
--- 
-2.39.1
+>
+> >> This patch removes this restriction, making it possible to receive any
+> >> Ethertype as a payload, if the IFLA_GENEVE_INNER_PROTO_INHERIT flag is
+> >> set.
+> >
+> > This seems like an addition not a bugfix so personally seems like it sh=
+ould
+> > be targeting net-next (which is currently closed afaik).
+>
+> One could say the receive function should have behaved like that, the
+> transmit function already encapsulates every possible Ethertype and
+> IFLA_GENEVE_INNER_PROTO_INHERIT doesn't sound like it should be limited t=
+o
+> IPv4 and IPv6.
 
+Indeed the flag is intentionally generic to allow for future extensions
+without having to rename. But both in the commit message, and in the iprout=
+e2
+man page I noted support for IPv4/IPv6.
+
+>
+> If no further modifications down the packet chain are required, I'd say i=
+t's
+> 50/50. However I haven't contributed to the Linux kernel ever before, so =
+I
+> really have no clue as to how things go.
+>
+> > Eyal.
+> >
+> >> This is especially useful if one wants to encapsulate MPLS, because wi=
+th
+> >> this patch the control-plane traffic (IP, LLC) and the data-plane
+> >> traffic (MPLS) can be encapsulated without an Ethernet frame, making
+> >> lightweight overlay networks a possibility.
+> >>
+> >> Changes in v2:
+> >> - added a cover letter
+> >> - lines no longer exceed 80 columns
+> >>
+> >> Josef Miegl (1):
+> >> net: geneve: accept every ethertype
+> >>
+> >> drivers/net/geneve.c | 15 ++++-----------
+> >> 1 file changed, 4 insertions(+), 11 deletions(-)
+> >>
+> >> --
+> >> 2.37.1
