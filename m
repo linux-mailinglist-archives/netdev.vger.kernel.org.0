@@ -2,160 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6916D6A4C35
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 21:24:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA38E6A4C5B
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 21:39:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229886AbjB0UYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 15:24:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41440 "EHLO
+        id S229974AbjB0Ui7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 15:38:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229589AbjB0UYE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 15:24:04 -0500
-Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E332384E;
-        Mon, 27 Feb 2023 12:23:59 -0800 (PST)
-Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-17227cba608so8709748fac.3;
-        Mon, 27 Feb 2023 12:23:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :sender:from:to:cc:subject:date:message-id:reply-to;
-        bh=4AFZ9m2Uo0roC/no8Q0t3rsuUCj3YEMdleppwDbbZ0w=;
-        b=CM81SwPHmyUGm/GQeR7qj5jBPrjlR+voIRtCrsnzbrB4S20f1QYqkhPw6wlD4rwCee
-         hu0lwmWD5nd99ACC1pmn9zD7Sz0IeJQOk5GdvT3PZHusQX0/DaBdqhh5Ha+5r2P7rMdQ
-         C6dNkblhacfdvZ2GNYFNXECQaN0Gnoaqxe8v3nWeIKTeO+gCZThGpwP0SoMb46KV793v
-         jzX0FLmtQihCk2wA2R78iRiTOm6LahWIe8mNvreRl++twD2KOsG04rqG/bC6kI47lg8+
-         /am2Yf4zMI/Hj1fGNrlO0WRJtn7wT/wUeY0vodFe+nu3S8SLz0twBzrL5KJNaZ2N3rQX
-         HpHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :sender:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=4AFZ9m2Uo0roC/no8Q0t3rsuUCj3YEMdleppwDbbZ0w=;
-        b=5kIXtEUmbqx9Xe9gWgLWPJVdznCVvX+7RLKFN+DILHkBJc7gCpbj/NzCFxbk0W255q
-         Z5gsu7TZdvNz3gdkHtpgXZnIpcTxQZExIQZi+O+5PpnkWE6qtCZNulB7koeyAMKIYy7Y
-         akTdRXf5+WiYc7Hdo5sNdk6SK7LN1adcZnxEFyJb8zS45lFNjy4/jtXcy5kg0tnxR1ub
-         DicieuwPd48cmRH40RBZO38wxA3CCufq6/eJ3RLvbZTupJ3mjkOR7WfghheMCQTzXD23
-         uaFBpzZoiaY8WE3o0vH29B6kLLQSXeAiH6GQ1uujAlfQfPO1OYjfX5gIaJhaC73Wic5X
-         17DA==
-X-Gm-Message-State: AO0yUKWsP5yKtVJYqArIWsJCKC69aQFDiJCGmk5TgeLlRlbR9TW8bFqI
-        ffwmfvf39hFjvVCBtySDvi4=
-X-Google-Smtp-Source: AK7set9W6WLCz+dx+ySEZpPGkbpRb5svOjsSEklcRriG8mHuhdKSqyX27vGIsZtNpEXNGPsvKAnRWQ==
-X-Received: by 2002:a05:6870:a116:b0:16e:87f:424 with SMTP id m22-20020a056870a11600b0016e087f0424mr19167088oae.47.1677529439164;
-        Mon, 27 Feb 2023 12:23:59 -0800 (PST)
-Received: from [192.168.1.135] ([216.130.59.33])
-        by smtp.gmail.com with ESMTPSA id h9-20020a4aa289000000b005253a5cc3cfsm3002535ool.29.2023.02.27.12.23.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Feb 2023 12:23:58 -0800 (PST)
-Sender: Larry Finger <larry.finger@gmail.com>
-Message-ID: <3d8f28d7-78df-5276-612c-85b5262a987a@lwfinger.net>
-Date:   Mon, 27 Feb 2023 14:23:56 -0600
+        with ESMTP id S229590AbjB0Ui5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 15:38:57 -0500
+X-Greylist: delayed 340 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 27 Feb 2023 12:38:53 PST
+Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [85.215.255.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A76761CACC;
+        Mon, 27 Feb 2023 12:38:53 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1677529967; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=IhyRK/LCSLXFmhDRD/Dr1guGh+7yYw8ILz5Ya6JLhCqlTkilCKeq4ncdICStUDhptw
+    Hs4vULkR/DB4Y9gGUeqRvlebAIPE67RCnultI+PybtWhvnCAd7AB/87MTsS/grvxsj8Q
+    D6Ofi5q7iLe8mnRWThJpKV2DW6HDpVf0Be173esQuB/XxVvD1G4lszA0s89P4rtFO1wR
+    isfwGJUkcSklnAhtXGBWt0zLKltshyrVHSax4r3/Hsg3Er5l55MDFq+Qve9Evjb6/IOM
+    fffjRyT5an+h+A5SmTTymMsj23sFeyDocdZ91WZkaGmTIlg//pfbM5LQmjJ3rNNK0xTZ
+    bqhA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1677529967;
+    s=strato-dkim-0002; d=strato.com;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=wKj3foVIx8l1HkzeDENrj553SI1e2euuTmuWcuQpxeY=;
+    b=OHxih5nm72pjhM4dgaSVeDPtcaCAMbMJ80B2QCiJI/M3zwrTno8j0i6bLvlJDLGEDB
+    78ZEM7jt3erWHSf71KqTp3UzHx/kGHsCSPKyV8FyYcRQGLROxE90T1Kv/dG8Uo+JIAMa
+    MqcQdzdvrRr1S9+xAGo2hSDaUP7xvadSWIWTBLm4391Lk7I/iskkISLjGrIdm222q6pQ
+    d/R3fsrxC8pNIEODz1k3dVZCpFqprMaIDBqRIpUwFf50QaZynCFxdHAKacikLBg5TJDc
+    7D78wRDiCRxQYPJ2VKFU3TVujCgkO344Qcr0j4Benw9LjB7vBxdQJGQekSDZdG1HVjUB
+    aSrw==
+ARC-Authentication-Results: i=1; strato.com;
+    arc=none;
+    dkim=none
+X-RZG-CLASS-ID: mo02
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1677529967;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=wKj3foVIx8l1HkzeDENrj553SI1e2euuTmuWcuQpxeY=;
+    b=Xb4ZTrw8FighxuOGDkFoVS7BNHKs0YJZMEPPef9v7rb110Sbl2r4w09XRLtX/5OfQ6
+    UHaaGtZi+el4xG0O1+hdd5vMnh7XyM0mMpUNZxjbGDxbtlWoVV9deQpwoxTOZi6HVMtT
+    SfQzC5QhthQrVrbJvKp+aYTF/tbZOCKTmJvvNZIal/Wfjs5cl8UAEuCBDJUS66jByUq1
+    JraL6Ta7PJ11tuWQCyO6U/fc4c+qINyk/5WVgRQaQWz8i5nrcxpUOHdJcytSIANTXeGH
+    XhZ/Ts3yj5ASLikVxUL4Pen0SSTa3OmdfLyCu8CV5uf6QIy/DALxigwWiTiJILvv5FJP
+    LRkw==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusl129OHEdFq0USEbDUQnQ=="
+Received: from [IPV6:2a00:6020:4a8e:5000::923]
+    by smtp.strato.de (RZmta 49.3.0 AUTH)
+    with ESMTPSA id x84a76z1RKWkrhm
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Mon, 27 Feb 2023 21:32:46 +0100 (CET)
+Message-ID: <c5f1e652-b7e7-ff79-11e3-8c5c91011b83@hartkopp.net>
+Date:   Mon, 27 Feb 2023 21:32:40 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.8.0
 Subject: Re: [RFC 0/6] pcmcia: separate 16-bit support from cardbus
-To:     Arnd Bergmann <arnd@kernel.org>,
+To:     Arnd Bergmann <arnd@arndb.de>, Arnd Bergmann <arnd@kernel.org>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
-        linux-kernel@vger.kernel.org
-Cc:     Arnd Bergmann <arnd@arndb.de>, Bjorn Helgaas <bhelgaas@google.com>,
+        linux-kernel@vger.kernel.org,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        H Hartley Sweeten <hsweeten@visionengravers.com>,
+        Hartley Sweeten <hsweeten@visionengravers.com>,
         Ian Abbott <abbotti@mev.co.uk>,
         Jakub Kicinski <kuba@kernel.org>,
         Kevin Cernekee <cernekee@gmail.com>,
         Lukas Wunner <lukas@wunner.de>,
         Manuel Lauss <manuel.lauss@gmail.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
         Olof Johansson <olof@lixom.net>,
         Robert Jarzmik <robert.jarzmik@free.fr>,
         YOKOTA Hiroshi <yokota@netlab.is.tsukuba.ac.jp>,
         bcm-kernel-feedback-list@broadcom.com,
         linux-arm-kernel@lists.infradead.org, linux-can@vger.kernel.org,
         linux-mips@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+        linux-wireless@vger.kernel.org, Netdev <netdev@vger.kernel.org>
 References: <20230227133457.431729-1-arnd@kernel.org>
+ <1daa9f1f-6a68-273f-0866-72a4496cd0db@hartkopp.net>
+ <c5ea695e-8693-4033-9941-c582f1c6f6be@app.fastmail.com>
 Content-Language: en-US
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-In-Reply-To: <20230227133457.431729-1-arnd@kernel.org>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <c5ea695e-8693-4033-9941-c582f1c6f6be@app.fastmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/27/23 07:34, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
+On 27.02.23 20:53, Arnd Bergmann wrote:
+> On Mon, Feb 27, 2023, at 20:07, Oliver Hartkopp wrote:
+
+>> I assume these CAN bus PCMCIA interfaces won't work after your patch
+>> set, right?
 > 
-> Based on some recent discussions [1][2][3], I experimented wtih what
-> drivers/pcmcia would look like if we completely removed 16-bit support,
-> which was one of the options that Dominik suggested for winding down
-> pcmcia maintenance.
+> Correct, the patch series in its current form breaks this since
+> your laptop is cardbus compatible. The options I can see are:
 > 
-> The remaining cardbus/yenta support is essentially a PCI hotplug driver
-> with a slightly unusual sysfs interface, and it would still support all
-> 32-bit cardbus hosts and cards, but no longer work with the even older
-> 16-bit cards that require the pcmcia_driver infrastructure.
+> - abandon my series and keep everything unchanged, possibly removing
+>    some of the pcmcia drivers that Dominik identified as candidates
 > 
-> I don't expect this to be a problem normal laptop support, as the last
-> PC models that predate Cardbus support (e.g. 1997 ThinkPad 380ED) are
-> all limited to i586MMX CPUs and 80MB of RAM. This is barely enough to
-> boot Tiny Core Linux but not a regular distro.
+> - decide on a future timeline for when you are comfortable with
+>    discontinuing this setup and require any CAN users with cardbus
+>    laptops to move to USB or cardbus CAN adapters, apply the series
+>    then
 > 
-> Support for device drivers is somewhat less clear. Losing support for
-> 16-bit cards in cardbus sockets is obviously a limiting factor for
-> anyone who still has those cards, but there is also a good chance that
-> the only reason to keep the cards around is for using them in pre-cardbus
-> machines that cannot be upgrade to 32-bit devices.
+> - duplicate the yenta_socket driver to have two variants of that,
+>    require the user to choose between the cardbus and the pcmcia
+>    variant depending on what card is going to be used.
 > 
-> Completely removing the 16-bit PCMCIA support would however break some
-> 20+ year old embedded machines that rely on CompactFlash cards as their
-> mass-storage device (extension), this notably includes early PocketPC
-> models and the reference implementations for OMAP1, StrongARM1100,
-> Alchemy and PA-Semi. All of these are still maintained, though most
-> of the PocketPC machines got removed in the 6.3 merge window and the
-> PA-Semi Electra board is the only one that was introduced after
-> 2003.
-> 
-> The approach that I take in this series is to split drivers/pcmcia
-> into two mutually incompatible parts: the Cardbus support contains
-> all the code that is relevant for post-1997 laptops and gets moved
-> to drivers/pci/hotplug, while the drivers/pcmcia/ subsystem is
-> retained for both the older laptops and the embedded systems but no
-> longer works with the yenta socket host driver. The BCM63xx
-> PCMCIA/Cardbus host driver appears to be unused and conflicts with
-> this series, so it is removed in the process.
-> 
-> My series does not touch any of the pcmcia_driver instances, but
-> if there is consensus about splitting out the cardbus support,
-> a lot of them can probably get removed as a follow-up.
+> Can you give more background on who is using the EMS PCMCIA card?
+> I.e. are there reasons to use this device on modern kernels with
+> machines that could also support the USB, expresscard or cardbus
+> variants, or are you likely the only one doing this for the
+> purpose of maintaining the driver?
 
-Arnd,
+Haha, good point.
 
-Your patch set also breaks my PowerBook G4. The output of 'lspci -nn | grep 
-Network' shows the following before your patch is applied:
+In fact the EMS PCMCIA, the PEAK PCMCIA (PCAN PC Card) and the supported 
+Softing PCMCIA cards are nearly 20 year old designs and they are all 
+discontinued for some time now. Today you can easily get a high 
+performance Classical CAN USB adapter with an excellent OSS firmware for 
+~13 EUR.
 
-0001:10:12.0 Network controller [0280]: Broadcom Inc. and subsidiaries BCM4306 
-802.11b/g Wireless LAN Controller [14e4:4320] (rev 03)
-0001:11:00.0 Network controller [0280]: Broadcom Inc. and subsidiaries BCM4318 
-[AirForce One 54g] 802.11g Wireless LAN Controller [14e4:4318] (rev 02)
+The only other laptop CAN "Cards" I'm aware of are PCIe "ExpressCard" 
+34/54 from PEAK System which use the PCI subsystem.
 
-The first of these is broken and built into the laptop. The second is plugged 
-into a PCMCIA slot, and uses yenta-socket as a driver.
+Maybe you are right and we should simply drop the support for those old 
+PCMCIA drivers which will still be supported for the LTS 6.1 lifetime then.
 
-When your patches are applied, the second entry vanishes.
+@Marc Kleine-Budde: What do you think about removing these three drivers?
 
-Yes, this hardware is ancient, but I would prefer having this wifi interface 
-work. I can provide any output you need.
-
-Larry
-
-
+Best regards,
+Oliver
