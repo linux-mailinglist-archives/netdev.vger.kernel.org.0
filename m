@@ -2,130 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4D7C6A4C66
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 21:39:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA9E06A4C71
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 21:42:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229862AbjB0Uj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 15:39:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53870 "EHLO
+        id S229515AbjB0UmH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 15:42:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229629AbjB0Uj0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 15:39:26 -0500
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4A6C241DD;
-        Mon, 27 Feb 2023 12:39:20 -0800 (PST)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-        by mailout.nyi.internal (Postfix) with ESMTP id E63645C012F;
-        Mon, 27 Feb 2023 15:39:19 -0500 (EST)
-Received: from imap51 ([10.202.2.101])
-  by compute6.internal (MEProxy); Mon, 27 Feb 2023 15:39:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; t=1677530359; x=1677616759; bh=S1e3ePYKPA
-        RVzg5R0A+d2tPWsFwcVvoNQZq9oGxMJlk=; b=AM0evC64PkAurLIav8Kvp5pRWz
-        rrJUXArt/YaCrSSTBXPkOap91I1/GoSj9jD5tLmokjU+dAK2AAKGghYSKg2L898x
-        5NV4W92OvLTmEI62WFINDwBjhGiFwIrVcg/fEOFO7ZTQbIGG9H2K6/zOiEFad4Mu
-        vrSSyOtZX5rSqqFHvWSvJR0cGOJ7zym/dvH1MRXVAba4xcUIaZnqoKp9vsS1MzI5
-        a1BVImUD1rwnFf5m7UiXSePDfToc9Y/MxOTPYGKAFxv6WpEgdJEo5YiYuZXczPgv
-        RM1sLOqIjT/9vPNPcvVb+DN6gjVz2As+gT3blIsj/+tg2V/p5rUIoABkcjEg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1677530359; x=1677616759; bh=S1e3ePYKPARVzg5R0A+d2tPWsFwc
-        VvoNQZq9oGxMJlk=; b=RCWu7QtK9uPN/g1Pss5r3EAsnZLvd9r9wXX0v8xYZiMV
-        lj5mDFj1gR69ANKaBudSuQ1upTyEYtmZOanh1bwBTtwcNhw+d97WS0qjNZxDFs0i
-        BB1rbtGi6JjV/ontuqVRpo0H8zNk5MBq4NSv0T3JhHo9LA6U80RNFBu1bcYyjlwT
-        WTS59/kNS8pkhIPazPaE5ynoWNFo34Dy/jrPOzzmVqoRK+QLolJziYbTowLJKkhR
-        SlydfJR7i2UufWwf+8apkjxqj0HzZc5isyI9P9Ud9FHfecJ8mAa4vmf4sSLaquMY
-        pUNzklG9MbRFPiYowvwcu4q7hSXn6waFs+SQR1BuOQ==
-X-ME-Sender: <xms:9xT9Y5oIUNzx0xP9NUq-9ER4s7qWMn-oyleahK4fJ5sXY_k9-RYBdw>
-    <xme:9xT9Y7ohvHc1zphjIfVI0OqEGTEHYoLswWPAOtqumQnj7EmkWvzLAGQSFq77GdfiV
-    0GSCYlyIJaSx4vlbDI>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudeltddgudefiecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdet
-    rhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrg
-    htthgvrhhnpeffheeugeetiefhgeethfejgfdtuefggeejleehjeeutefhfeeggefhkedt
-    keetffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    grrhhnugesrghrnhgusgdruggv
-X-ME-Proxy: <xmx:9xT9Y2PQP1we4fnztxFZDGJ7oi0C8hxrVtFpGyQEWRyK8nhYF0_yVg>
-    <xmx:9xT9Y04YjNZnx1v967R6eTqh6uvjLEB8eZzupR317raNQ3b7GO1-aA>
-    <xmx:9xT9Y44xqH9MS-EREdaaa4DCmQPj3HO_ES_YIQfKn2UHcCyxbCCpDw>
-    <xmx:9xT9Y-7rwHi_mMxi8Xq_-Vt-0PIIyO3hZwzEkgq54JOYzY6Csy0AsA>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 887CEB60086; Mon, 27 Feb 2023 15:39:19 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.9.0-alpha0-183-gbf7d00f500-fm-20230220.001-gbf7d00f5
-Mime-Version: 1.0
-Message-Id: <c17bff4e-031e-4101-8564-51f6298b1c68@app.fastmail.com>
-In-Reply-To: <3d8f28d7-78df-5276-612c-85b5262a987a@lwfinger.net>
-References: <20230227133457.431729-1-arnd@kernel.org>
- <3d8f28d7-78df-5276-612c-85b5262a987a@lwfinger.net>
-Date:   Mon, 27 Feb 2023 21:38:54 +0100
-From:   "Arnd Bergmann" <arnd@arndb.de>
-To:     "Larry Finger" <Larry.Finger@lwfinger.net>,
-        "Arnd Bergmann" <arnd@kernel.org>,
-        "Dominik Brodowski" <linux@dominikbrodowski.net>,
-        linux-kernel@vger.kernel.org
-Cc:     "Bjorn Helgaas" <bhelgaas@google.com>,
-        "Florian Fainelli" <f.fainelli@gmail.com>,
-        "Hartley Sweeten" <hsweeten@visionengravers.com>,
-        "Ian Abbott" <abbotti@mev.co.uk>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Kevin Cernekee" <cernekee@gmail.com>,
-        "Lukas Wunner" <lukas@wunner.de>,
-        "Manuel Lauss" <manuel.lauss@gmail.com>,
-        "Oliver Hartkopp" <socketcan@hartkopp.net>,
-        "Olof Johansson" <olof@lixom.net>,
-        "Robert Jarzmik" <robert.jarzmik@free.fr>,
-        "YOKOTA Hiroshi" <yokota@netlab.is.tsukuba.ac.jp>,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-arm-kernel@lists.infradead.org, linux-can@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-wireless@vger.kernel.org, Netdev <netdev@vger.kernel.org>
-Subject: Re: [RFC 0/6] pcmcia: separate 16-bit support from cardbus
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229451AbjB0UmE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 15:42:04 -0500
+Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83A11C145
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 12:42:03 -0800 (PST)
+Received: by mail-il1-x132.google.com with SMTP id 4so4742599ilz.6
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 12:42:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=v5xcEx/bCDxZ7j88RRMfb6Jr3dQiB/Tjcos9TqbJygE=;
+        b=oOEnZyYJFzA4fHnCL1DtEPPtFqBmP2+ERCH1+eZQz4Gbok5M4Kma95GdyqTlyOoSuR
+         5xsTqQOYZqn+n9hr4GULMlKtSMtJEzCZYyTGwEoOWHH3BVK5h8NSgpudnr93kHto1ij/
+         0E5rZ1oz96pWVKEJWJ4+MgXz3UbFEjYH/CAb/YqnAp9oilcHlZxJuEbAtXfjnGBFTf5K
+         pSKIu5Vgc5vCUbHbNgMh7K/qmhHaQb48XGYlx+NLRoQHFPaPyDLkaIdGfjCJ6FmWdGtT
+         71SBgo5QBYv82xKnMAnrHl/FHi5LkrTafTu69RY+XXqyhL0kQF/53+hxUaKscdOWXf2j
+         7TgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=v5xcEx/bCDxZ7j88RRMfb6Jr3dQiB/Tjcos9TqbJygE=;
+        b=pXpMOPnacCis1UVIR1DcdMf2CJvK2jBxiLodEIuocw6owVCH30AxhaytJjge9TcOQa
+         pVzlX+VUmd0O/40i71lTVHkRKi6Axw0KKvpI+izonHbB6yYcLBlcMaBTzruyTrEzrmH/
+         kcg8AVhxewLYnQIh5wBUm0t2/iBzHUzdgOmYul2MFBRbrAqBA1yA3tbUS4VueP71Gd8c
+         MRkz4wY+Ia2DtYK3p2WOOm6tZ0KsCSMLR5S0Orc79LrPBkeVHAP+jcZZP8S7O/xDdHTw
+         sz0BhW/lVv5Pe7OCqJzH+SdVKiruVxBAXSypLzW96ycjThVrAvtFBKrNyg53HbP+hSNT
+         nRyg==
+X-Gm-Message-State: AO0yUKV2/fbKFD30cG5nbbBiH8gwLRIuyBI1ntbdzIeLw0R2b9BZg1KO
+        hSSHHjPiqkNKl80YJbmVHWLNN1XHvkIgUvr9+hSZCQ==
+X-Google-Smtp-Source: AK7set9L6tEYB6JebZDylx3TrJruacUJPhnlIjBX6boeXOexwsp8Oif/3mCfnf09VJdNV7v6ULSEcVRYe4qGBBj9zsk=
+X-Received: by 2002:a92:750b:0:b0:315:50a4:c5e5 with SMTP id
+ q11-20020a92750b000000b0031550a4c5e5mr405192ilc.2.1677530522648; Mon, 27 Feb
+ 2023 12:42:02 -0800 (PST)
+MIME-Version: 1.0
+References: <20230214135035.1202471-1-miquel.raynal@bootlin.com> <20230214135035.1202471-3-miquel.raynal@bootlin.com>
+In-Reply-To: <20230214135035.1202471-3-miquel.raynal@bootlin.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 27 Feb 2023 21:41:51 +0100
+Message-ID: <CANn89iLGLcQKYCTi7Vu3fm7n6v3mgeedeG4sE0MR2WG-dOWsXw@mail.gmail.com>
+Subject: Re: [PATCH wpan v2 2/6] ieee802154: Convert scan error messages to extack
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 27, 2023, at 21:23, Larry Finger wrote:
-> On 2/27/23 07:34, Arnd Bergmann wrote:
+On Tue, Feb 14, 2023 at 2:50=E2=80=AFPM Miquel Raynal <miquel.raynal@bootli=
+n.com> wrote:
+>
+> Instead of printing error messages in the kernel log, let's use extack.
+> When there is a netlink error returned that could be further specified
+> with a string, use extack as well.
+>
+> Apply this logic to the very recent scan/beacon infrastructure.
+>
+> Fixes: ed3557c947e1 ("ieee802154: Add support for user scanning requests"=
+)
+> Fixes: 9bc114504b07 ("ieee802154: Add support for user beaconing requests=
+")
+> Suggested-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> ---
+>  net/ieee802154/nl802154.c | 19 +++++++++++++------
+>  1 file changed, 13 insertions(+), 6 deletions(-)
+>
+> diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
+> index 64fa811e1f0b..d3b6e9e80941 100644
+> --- a/net/ieee802154/nl802154.c
+> +++ b/net/ieee802154/nl802154.c
+> @@ -1407,9 +1407,15 @@ static int nl802154_trigger_scan(struct sk_buff *s=
+kb, struct genl_info *info)
+>         u8 type;
+>         int err;
+>
+> -       /* Monitors are not allowed to perform scans */
+> -       if (wpan_dev->iftype =3D=3D NL802154_IFTYPE_MONITOR)
+> +       if (wpan_dev->iftype =3D=3D NL802154_IFTYPE_MONITOR) {
+> +               NL_SET_ERR_MSG(info->extack, "Monitors are not allowed to=
+ perform scans");
+>                 return -EPERM;
+> +       }
+> +
+> +       if (!nla_get_u8(info->attrs[NL802154_ATTR_SCAN_TYPE])) {
 
->
-> Your patch set also breaks my PowerBook G4. The output of 'lspci -nn | grep 
-> Network' shows the following before your patch is applied:
->
-> 0001:10:12.0 Network controller [0280]: Broadcom Inc. and subsidiaries BCM4306 
-> 802.11b/g Wireless LAN Controller [14e4:4320] (rev 03)
-> 0001:11:00.0 Network controller [0280]: Broadcom Inc. and subsidiaries BCM4318 
-> [AirForce One 54g] 802.11g Wireless LAN Controller [14e4:4318] (rev 02)
->
-> The first of these is broken and built into the laptop. The second is plugged 
-> into a PCMCIA slot, and uses yenta-socket as a driver.
->
-> When your patches are applied, the second entry vanishes.
->
-> Yes, this hardware is ancient, but I would prefer having this wifi interface 
-> work. I can provide any output you need.
+syzbot crashes hosts by _not_ adding NL802154_ATTR_SCAN_TYPE attribute.
 
-Is this the Cardbus or the PCMCIA version of the BCM4306 device? As far
-as I understand this particular chip can be wired up either way inside
-of the card, and the PowerBook G4 supports both types of devices.
+Did you mean to write :
 
-If it's the PCMCIA version, then dropping support for it was the idea
-of the patch series that we can debate, but if it was the Cardbus version
-that broke, then this was likely a bug I introduced by accident.
+diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
+index 2215f576ee3788f74ea175b046d05d285bac752d..d8f4379d4fa68b5b07bb2c45cd7=
+4d4b73213c107
+100644
+--- a/net/ieee802154/nl802154.c
++++ b/net/ieee802154/nl802154.c
+@@ -1412,7 +1412,7 @@ static int nl802154_trigger_scan(struct sk_buff
+*skb, struct genl_info *info)
+                return -EOPNOTSUPP;
+        }
 
-      Arnd
+-       if (!nla_get_u8(info->attrs[NL802154_ATTR_SCAN_TYPE])) {
++       if (!info->attrs[NL802154_ATTR_SCAN_TYPE]) {
+                NL_SET_ERR_MSG(info->extack, "Malformed request,
+missing scan type");
+                return -EINVAL;
+        }
+
+
+> +               NL_SET_ERR_MSG(info->extack, "Malformed request, missing =
+scan type");
+> +               return -EINVAL;
+> +       }
+>
+>         request =3D kzalloc(sizeof(*request), GFP_KERNEL);
+>         if (!request)
+> @@ -1424,7 +1430,7 @@ static int nl802154_trigger_scan(struct sk_buff *sk=
+b, struct genl_info *info)
+>                 request->type =3D type;
+>                 break;
+>         default:
+> -               pr_err("Unsupported scan type: %d\n", type);
+> +               NL_SET_ERR_MSG_FMT(info->extack, "Unsupported scan type: =
+%d", type);
+>                 err =3D -EINVAL;
+>                 goto free_request;
+>         }
+> @@ -1576,12 +1582,13 @@ nl802154_send_beacons(struct sk_buff *skb, struct=
+ genl_info *info)
+>         struct cfg802154_beacon_request *request;
+>         int err;
+>
+> -       /* Only coordinators can send beacons */
+> -       if (wpan_dev->iftype !=3D NL802154_IFTYPE_COORD)
+> +       if (wpan_dev->iftype !=3D NL802154_IFTYPE_COORD) {
+> +               NL_SET_ERR_MSG(info->extack, "Only coordinators can send =
+beacons");
+>                 return -EOPNOTSUPP;
+> +       }
+>
+>         if (wpan_dev->pan_id =3D=3D cpu_to_le16(IEEE802154_PANID_BROADCAS=
+T)) {
+> -               pr_err("Device is not part of any PAN\n");
+> +               NL_SET_ERR_MSG(info->extack, "Device is not part of any P=
+AN");
+>                 return -EPERM;
+>         }
+>
+> --
+> 2.34.1
+>
