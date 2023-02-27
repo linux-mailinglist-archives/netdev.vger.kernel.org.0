@@ -2,145 +2,274 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B578B6A4DB4
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 23:04:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FF166A4DBB
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 23:06:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230127AbjB0WEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 17:04:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42308 "EHLO
+        id S230174AbjB0WF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 17:05:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230039AbjB0WEK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 17:04:10 -0500
-Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C66C326857;
-        Mon, 27 Feb 2023 14:04:09 -0800 (PST)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id EA43332009A2;
-        Mon, 27 Feb 2023 17:04:08 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 27 Feb 2023 17:04:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; t=1677535448; x=1677621848; bh=BH7D1uVe+U
-        vXxR2ch7fmh4n2whiW+tHnGTL+k/yaf4k=; b=ia2r8Ur9f4UChidSH9WsvSJC8f
-        McuH62e6yJszVW7lU5TuvZ4wouqBMnydIoU1+Jqx7r/MGzD1hEV1gcstDOXsF8uL
-        RYHSaSIwN1j/yULFJpC3UiUr1CpiV8gtxpc1vRh0iXt+gw9OfnoXk9VBxpfMIktN
-        ipBPFO2Gy95ckscu+48IBTV2zW2JAqvSy48egtVkmJYdSNNqB1KghZQ2AwdGQilC
-        ESYsPiMDByJDvT/qi5/ItGlW7Tf/KvAMtiqMG6oPP1Z0QYaPD+6NTcZydsNphhJK
-        DupgWZvxytH124UQEieOs1aS6D+xg5YTaCZ4D1QDhjpU6v9hvG+GEIYx34rQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1677535448; x=1677621848; bh=BH7D1uVe+UvXxR2ch7fmh4n2whiW
-        +tHnGTL+k/yaf4k=; b=CctWlY8a8UTVKyYFiF22Kwg9kr79rdbggh1333KcSlPx
-        m/hJGLKTrt1+bM0oanS3aMZciOCiL+JudiO9G8u6xQqQG3M48mWVPG26HGI626qW
-        bksoUtiijiWTRrIwHHlMOaTVlX0hgV1BMWkoXinkvZBYlMndFV9L15xONjeK79rB
-        HsjJt0szDTpMEG3FIS0CV0kCjzDalNN7dc/VUFWJRPJUQAZfvOoJ0ViziEJ6NPGp
-        PPOCCEV7DlQKGZijtVO+YYczzHk8Sm2/BdPZPJlyiAieXeAm0Fk6vgoI0J4+dCqY
-        Zkf8ZKCGRkQfqyZuYGuGSF5ATe62R/Qkd4NCzK1lVw==
-X-ME-Sender: <xms:2Cj9Yz1CB0es4Kv3rPybFqO0kTfP652fR9bCBhqRFPu6UO2bTxuDsg>
-    <xme:2Cj9YyEezAFpxERaGtfwIcAWjQ99SZia54F6y5XFiFlnGevhq2AG6xKpEaJwvFMTI
-    Urx_36url7HVGTogQ>
-X-ME-Received: <xmr:2Cj9Yz7SxoLXnawA_clG6n6BzZ0zkqbCfOnc9dXWNhZkhFrj7qvbfyhUux2RbUYY6IIechcxtS1WsJWwJ_5ikVqY8Mp3m2fez1n1TMc>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudeltddgudehvdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdejtddmnecujfgurhepff
-    fhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepffgrnhhivghlucgiuhcu
-    oegugihusegugihuuhhurdighiiiqeenucggtffrrghtthgvrhhnpeevuddugeeihfdtff
-    ehgffgudeggeegheetgfevhfekkeeileeuieejleekiedvgfenucevlhhushhtvghrufhi
-    iigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegugihusegugihuuhhurdighiii
-X-ME-Proxy: <xmx:2Cj9Y42klikwa-jznNgKW_MBKnkM_LoLfcWpmrDFSdOxA8NvYUAeAQ>
-    <xmx:2Cj9Y2GCOkGvIX49d1B3nIJwhs-T701Qf0CXh1BjmWOCNf6Am8bdqg>
-    <xmx:2Cj9Y59FXyfXkKZFM6-ih1vWL3XVIxa4iyWG1pm1HDo5DZzZFmtnyA>
-    <xmx:2Cj9YygNc_gARHIahPExwCt3fh3IHobAg1L3360sjATyPp0tiVWqRw>
-Feedback-ID: i6a694271:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 27 Feb 2023 17:04:07 -0500 (EST)
-Date:   Mon, 27 Feb 2023 15:04:06 -0700
-From:   Daniel Xu <dxu@dxuuu.xyz>
-To:     Edward Cree <ecree.xilinx@gmail.com>
-Cc:     bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 0/8] Support defragmenting IPv(4|6) packets
- in BPF
-Message-ID: <20230227220406.4x45jcigpnjjpdfy@kashmir.localdomain>
-References: <cover.1677526810.git.dxu@dxuuu.xyz>
- <cf49a091-9b14-05b8-6a79-00e56f3019e1@gmail.com>
+        with ESMTP id S229926AbjB0WFy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 17:05:54 -0500
+Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6509298F8;
+        Mon, 27 Feb 2023 14:05:43 -0800 (PST)
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31RHYiaR011998;
+        Mon, 27 Feb 2023 14:05:28 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=s2048-2021-q4;
+ bh=b4L65mn6sAPTAVDfZ7m580ofyVU/f092/iX4wEW1CO8=;
+ b=P4tXXZWILRZlKcmNQb6WtjE9vu/ZjkOb2G5Y25Fg6F1WcFZEtkStHUhUW/Cr8mDPuIJa
+ pIA/0MF/tpvBh4RycCCPeh/la7rTpjnLDwHeimH3khzRZ5NfYp0+RrDklYp1OLe5Q8pp
+ NF1rwJrm6CekyiWNpXEPi9wRvLACn+IemZAz79BK8SRCYvPXS9VGnRsriDtRmaY40ayM
+ 9dpage+4dKbc57G/IGS7ezyF3E7oTIU3NFollvI7/HfpEJ17PT1NjlCS1ENY3chI7auL
+ p4glfzxqMK9rmY3gfsr++gL9c6PoTY8V6FaeiCcCR2dUIorSfltbA+sRc3hmZ2oMWr9S mg== 
+Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2102.outbound.protection.outlook.com [104.47.58.102])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3p109djja1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 27 Feb 2023 14:05:28 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DEobAL8ZCR7zU8irnH/1ys+vSYWe7C5RicKOarhpCAi9GThGBy6Ky4aQ94KWGnMh6pPinvs3sPFkPXzcRyCe1mU2Chdp/NkooYkiTHcs8JIDPYGxEXcLV5cLx7Lti+NCiEueAVs0G0mFRD3wPZhR3nKMm8Qdt46vN2BW1ZXpT9z2JWcR9ZB4p23MthcyiQSdXges1xjMWI4ekpp2MC94WWfW52p+49oh/bKeY7P2mco9AYE7qfCErkvnCjf9m1u+yJxSGMrIljezjL9Qwr7ehMhSn6W44OhsXG7bl0JXUznhJ2CvoJ69sT4Cr8D/6uW0li+Y5mewVAia5u2RBW+7jw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=b4L65mn6sAPTAVDfZ7m580ofyVU/f092/iX4wEW1CO8=;
+ b=WVAiC48V2GREcMg+pMjaqYibuchQ4KCGlc9MveJklq1oDjl4+zDkaRLlh2Bogc1RLtAVKI2UiIvesbEibDaLpFBhAwbFDG/zuUG3O97FnZBXF3frVv+68X3wWbhAV3KGgdfrxivLWWuJQzcdoK3dgKZ1ihCbuBqykg8K7Uo8JXAQqYWDBCDtbJZROFp6zOiD3z6chRyDdt3fuzsUcljhZm3I1PqhS25NDq4q03Jp3GTZz2jVweAPSvUgZsSIY8DjNKEStKxFDWhGupuwz5DDXOWbY+mXpDHpetzVJKmahlBGzIR6cqn1iUBZjsD2Q5DhyAposgnB750LqD3ZgXvNsQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=meta.com; dmarc=pass action=none header.from=meta.com;
+ dkim=pass header.d=meta.com; arc=none
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
+ by CH3PR15MB5891.namprd15.prod.outlook.com (2603:10b6:610:12a::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.26; Mon, 27 Feb
+ 2023 22:05:25 +0000
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::a595:5e4d:d501:dc18]) by SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::a595:5e4d:d501:dc18%4]) with mapi id 15.20.6134.029; Mon, 27 Feb 2023
+ 22:05:25 +0000
+Message-ID: <6b008033-9c97-7f46-310f-1b1ad74a8af6@meta.com>
+Date:   Mon, 27 Feb 2023 14:05:21 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.8.0
+Subject: Re: [PATCH v5 bpf-next 5/8] libbpf: add API to get XDP/XSK supported
+ features
+Content-Language: en-US
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kuba@kernel.org,
+        Martin KaFai Lau <martin.lau@kernel.org>
+References: <cover.1675245257.git.lorenzo@kernel.org>
+ <a72609ef4f0de7fee5376c40dbf54ad7f13bfb8d.1675245258.git.lorenzo@kernel.org>
+ <e519f15d-cdd0-9362-34f3-3e6b8c8a4762@meta.com>
+ <CAEf4BzY0sHqEXaY8no0VgwEbNoPEaQz0h53Gav=T1DCsjsjo8A@mail.gmail.com>
+From:   Yonghong Song <yhs@meta.com>
+In-Reply-To: <CAEf4BzY0sHqEXaY8no0VgwEbNoPEaQz0h53Gav=T1DCsjsjo8A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-ClientProxiedBy: BYAPR05CA0073.namprd05.prod.outlook.com
+ (2603:10b6:a03:e0::14) To SN6PR1501MB2064.namprd15.prod.outlook.com
+ (2603:10b6:805:d::27)
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN6PR1501MB2064:EE_|CH3PR15MB5891:EE_
+X-MS-Office365-Filtering-Correlation-Id: a04c3a34-5ab5-4179-c70b-08db190eba93
+X-FB-Source: Internal
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: SfrkqxuBPXdhumu29IHkh4YITb6tecH4AaY3tssiKfs5KW8qqiTDBbYAqeGWYLyAHuBaKzSaoFBWljBJ/hxFKIo6vWTjfWxHiwtmHw7wYyASCVQmw0uM6UT4eiaWfy9rxW/zHCw1OYWGrEJVUg+4i87pdxdVUeAlBHxJBb+H9gUgoLTs3aZutQ95hnDEF4ax52PU/dNhfcuS47YO0JvjnyRu8j+RDJzCiISmp44JHHTWD7LZ8XyChLIrO5FXOq9zwk4gKACu4MUGYyRnriSqgJ0JSX8eZfqkKfV0gSJD8BIV+C3NSRZNrDyK+WUy6upTJ7SVgGmAUEv2+Im1TVnhr3cAZbaeLk+G9ukIAydrkxLgEht94i/w1Bv/+ABKpaE3LbFftV2nEccS+c6RMQLfx/HLy2mA661reVT2pgylMwJ4mqa9v8GKbx296BH03fRLkmCDu1XH+jsW6s3cOMTtM0w8Xdeg4R+WPXUPX6TKRtokG3wj9o4aTjUDJPDkVUd4UM8HfaCQubJZWbsIa72DiqPYQ9pxLf/GGHlsxKpTS9SQYkhEePpdQzHi3EKMgkIhbqp2DnJkeIPedkEpvsqfl2f4jAGyZSxl5uBRa3MZl0jwymOUaDOo7LTqisQXycocItsltpOwbc4tobdleP/tf+qZeJqilFk7JbufeIWPWL6MWUI93EmAfA/txlP2/zfH2mwf7PVneunjsZaMEayDf4lTnSi7N2q/HMOafvH4aWo=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(39860400002)(366004)(396003)(346002)(136003)(451199018)(31686004)(478600001)(66946007)(4326008)(66556008)(41300700001)(6916009)(8936002)(66476007)(8676002)(36756003)(31696002)(86362001)(6506007)(186003)(6486002)(53546011)(6512007)(38100700002)(6666004)(2616005)(83380400001)(2906002)(5660300002)(316002)(54906003)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?R2gyV1E0ZkhzVkhyYXdVQWdtY0xtRmpoSGFWN1lBRmdsSVJXUmY1cngrR2ZF?=
+ =?utf-8?B?QU42cStyVmtxK3N0TnM2eFRnV29ESzJxNHpSb3ErTWY3a0xuaVQyQXB1SEtr?=
+ =?utf-8?B?L1JLM21JK3pidHRKbm45NTE2dzJlZGhZRE5FbDdldXFqT1dNd0tiTVBBYUxV?=
+ =?utf-8?B?SDBFa2xsbjZxcWpkelA0SXVGTWlJT3Jya0FrTmE3dDBBMGh4dFZMYnlxRi96?=
+ =?utf-8?B?VXIzQWFuQk5raDFvQjZrZ3A5Y0N6NEFIOEwwWXY1cGRnSUJuTzlkdGNjRDNE?=
+ =?utf-8?B?QlJSQmM0b3U0WEs2YlhMZ1lvdVI0dFh0eHk4REdLeHVUTXVpb3orQUZ6SG51?=
+ =?utf-8?B?bThzMlhhNS92TGVIdFJraTVVemdDdCtCMUNyNDhEUlpicnpBUi9SYThnL0JD?=
+ =?utf-8?B?dlVQVlFMZE5xNGNQcGNlQTF1QzM3cEpRaitBVzZwTXJINFNKRFY0N1paL21L?=
+ =?utf-8?B?VnZJRlZjWDF4aE5rbFdwV3ZqUmNpYXJFVjMxdUxaKzdiTDN2VXFnWDhtaFhr?=
+ =?utf-8?B?QVR0aUtwMWhia2ZUcXA2QmxuNExSK3YyYXVac0I1c3NYSnRIcE5SdU5acVlE?=
+ =?utf-8?B?OTVBVU5kUkJoZzZkQnZoc3NnNHlIWk13VjcwRllqYWdLV3dWOC9NWWlHTXU3?=
+ =?utf-8?B?dUV1NVZLdnVuZDZPdUdtMm1HNkNNNy9YUXRQYlh1dGx2WFdwTURDSDdSSGxO?=
+ =?utf-8?B?Ynd0UVROTFJLQTNmZW13Y2E4eGNiVURlQmZlek1kc3BjcGxBSjJ6V2FYWUI4?=
+ =?utf-8?B?YzlTaDBqQlNyWUJmZHdWa1RHZ3JjekNlZlk5RFpaQzdqcHRzdnpSR2RJaGxM?=
+ =?utf-8?B?OGdBWEQ1SWZGSEVEMktRTFlkU3o2RS9KL3Q5MXN5U3BlWldUNlgyYnlUSkdR?=
+ =?utf-8?B?cFQvM0F2L3NIVlVBNElZSEdsZElXNmdrU3d1ZXpsdXNvNmFNREphbXBIVTB0?=
+ =?utf-8?B?YmgwbkFNVFRiUWR3NlNqVWd2WkhMMHc2QnVzcjlvOEl0a0RaaXZ3UlZFc2d1?=
+ =?utf-8?B?SXc2TVRUM1RlODl4MHhPNlpMZ0hHLzluQ0xqNlNwdlNRUWVmTTYweU5KWk4w?=
+ =?utf-8?B?Q2l2LzVXOHhnVi9aK3lkK2F5VkJYaWh0MXA2VnZ3c253OUVybkN4dDdRM2pK?=
+ =?utf-8?B?cDhlbjE5LzZjUDYyUHBSbmw5dXBoQm5BVndBamswRU82TmxvZUk5eXVKaElM?=
+ =?utf-8?B?QlNJck9DVnpxMU90TWNaanZMNnEyZlVpbXF4VWFWNERMU29HSGthUGFZRFYw?=
+ =?utf-8?B?cy9yRElnOE0rSXc2U0dSYTd3RGEwcE1ld0t2QVVoK3ByN1ZDUkxjMmlKUDQx?=
+ =?utf-8?B?Zmw5R3BKNDRKK1NweXEvcHVFOFhVcnRtb3N1VFlBVzhzTFpnSUdYbi85aVVM?=
+ =?utf-8?B?RHovbjgzNE03YmVFNGNheFc0VXJxNGFycThqOU1kT092dzhybHdtTHpMSDhv?=
+ =?utf-8?B?c3VySGZCaVpGVWFBL3BTNUpTRVZZeGEyblE1cmVrUzdLeFdtbDlIVyt5eEJ0?=
+ =?utf-8?B?UUdZZWlLNFU3R1p2VVp3a2ZQcEdNSmZuVzlsaTBlUDY1amdIN3RIek9zOXQz?=
+ =?utf-8?B?cEl5UzVOUUFxN3VZTnlUWlZRN2RUbW1NRkphNW4vcXN6aC9BN1J5VGFzR01E?=
+ =?utf-8?B?UlFKcDBlelk3cWhXdTRianFmT0xGY0hmNmVWM3AvT0phZnRtQ2I4dVBieWtW?=
+ =?utf-8?B?d1ZHWWhlUW1PcHYzSS9xaUo2R0hhM3hxVkY0bVNnbkF0clpBUk9sc3ZSeHF4?=
+ =?utf-8?B?aVJBblpJZlRWNU9Bd0dKR0JkQUlEbHRtbXozQUpURnF4U01pd3RCNE96S2kr?=
+ =?utf-8?B?VElqdzRJSzVSaDhzVDNUODk3Q0tzQyt3VW5qenhxMEg0N21DUTlmckVWUGt6?=
+ =?utf-8?B?TDhMSmxqUFdtZ0U0TEhCZU91LzFjR2wrMHNrZkNqcjQ5OExRVG1MZGFpTzFy?=
+ =?utf-8?B?VGFCZU4rVDUwVWJ6M2ZyT1dXSkFudWtqVXV4RHhsYzNXM1YwOTgrOVZNdjhR?=
+ =?utf-8?B?bjJkbW84UVJ0M3lRa0l0T3UrMXl3QmhBelhuaGlzdlV2OWlXV2cyUzc4bTZo?=
+ =?utf-8?B?ZitLZ0lCMVR6djgvaHZaS2lqZE5iQnhvaEV1L0l4UUtONEhoY2pkY0oxVE9w?=
+ =?utf-8?B?S0NiV0l6dEx4WXJiLy9qTlNqQUZJWkRMd1pHZHFxT3oyTjFXcllMWmw5eTFH?=
+ =?utf-8?B?eEE9PQ==?=
+X-OriginatorOrg: meta.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a04c3a34-5ab5-4179-c70b-08db190eba93
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Feb 2023 22:05:25.4790
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: R//Wr2jJvgL1SO06zl3pvgl8t20gl9FxnhhGIduWQFP8IBbuF2XXW89sCwOKxAbI
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR15MB5891
+X-Proofpoint-GUID: yI_UoP1wKYUFht5cJ28RkcR1Q4HUYcAq
+X-Proofpoint-ORIG-GUID: yI_UoP1wKYUFht5cJ28RkcR1Q4HUYcAq
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cf49a091-9b14-05b8-6a79-00e56f3019e1@gmail.com>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
+ definitions=2023-02-27_17,2023-02-27_01,2023-02-09_01
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ed,
 
-Thanks for giving this a look.
 
-On Mon, Feb 27, 2023 at 08:38:41PM +0000, Edward Cree wrote:
-> On 27/02/2023 19:51, Daniel Xu wrote:
-> > However, when policy is enforced through BPF, the prog is run before the
-> > kernel reassembles fragmented packets. This leaves BPF developers in a
-> > awkward place: implement reassembly (possibly poorly) or use a stateless
-> > method as described above.
+On 2/27/23 1:01 PM, Andrii Nakryiko wrote:
+> On Mon, Feb 27, 2023 at 12:39 PM Yonghong Song <yhs@meta.com> wrote:
+>>
+>>
+>>
+>> On 2/1/23 2:24 AM, Lorenzo Bianconi wrote:
+>>> Extend bpf_xdp_query routine in order to get XDP/XSK supported features
+>>> of netdev over route netlink interface.
+>>> Extend libbpf netlink implementation in order to support netlink_generic
+>>> protocol.
+>>>
+>>> Co-developed-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+>>> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+>>> Co-developed-by: Marek Majtyka <alardam@gmail.com>
+>>> Signed-off-by: Marek Majtyka <alardam@gmail.com>
+>>> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+>>> ---
+>>>    tools/lib/bpf/libbpf.h  |  3 +-
+>>>    tools/lib/bpf/netlink.c | 96 +++++++++++++++++++++++++++++++++++++++++
+>>>    tools/lib/bpf/nlattr.h  | 12 ++++++
+>>>    3 files changed, 110 insertions(+), 1 deletion(-)
+>>>
+>> [...]
+>>> +
+>>>    int bpf_xdp_query(int ifindex, int xdp_flags, struct bpf_xdp_query_opts *opts)
+>>>    {
+>>>        struct libbpf_nla_req req = {
+>>> @@ -366,6 +433,10 @@ int bpf_xdp_query(int ifindex, int xdp_flags, struct bpf_xdp_query_opts *opts)
+>>>                .ifinfo.ifi_family = AF_PACKET,
+>>>        };
+>>>        struct xdp_id_md xdp_id = {};
+>>> +     struct xdp_features_md md = {
+>>> +             .ifindex = ifindex,
+>>> +     };
+>>> +     __u16 id;
+>>>        int err;
+>>>
+>>>        if (!OPTS_VALID(opts, bpf_xdp_query_opts))
+>>> @@ -393,6 +464,31 @@ int bpf_xdp_query(int ifindex, int xdp_flags, struct bpf_xdp_query_opts *opts)
+>>>        OPTS_SET(opts, skb_prog_id, xdp_id.info.skb_prog_id);
+>>>        OPTS_SET(opts, attach_mode, xdp_id.info.attach_mode);
+>>>
+>>> +     if (!OPTS_HAS(opts, feature_flags))
+>>> +             return 0;
+>>> +
+>>> +     err = libbpf_netlink_resolve_genl_family_id("netdev", sizeof("netdev"), &id);
+>>> +     if (err < 0)
+>>> +             return libbpf_err(err);
+>>
+>> Hi, Lorenzo,
+>>
+>> Using latest libbpf repo (https://github.com/libbpf/libbpf, sync'ed from
+>> source), looks like the above change won't work if the program is
+>> running on an old kernel, e.g., 5.12 kernel.
+>>
+>> In this particular combination, in user space, bpf_xdp_query_opts does
+>> have 'feature_flags' member, so the control can reach
+>> libbpf_netlink_resolve_genl_family_id(). However, the family 'netdev'
+>> is only available in latest kernel (after this patch set). So
+>> the error will return in the above.
+>>
+>> This breaks backward compatibility since old working application won't
+>> work any more with a refresh of libbpf.
+>>
+>> I could not come up with an easy solution for this. One thing we could
+>> do is to treat 'libbpf_netlink_resolve_genl_family_id()' as a probe, so
+>> return 0 if probe fails.
+>>
+>>     err = libbpf_netlink_resolve_genl_family_id("netdev",
+>> sizeof("netdev"), &id);
+>>     if (err < 0)
+>>          return 0;
+>>
+>> Please let me know whether my suggestion makes sense or there could be a
+>> better solution.
+>>
 > 
-> Just out of curiosity - what stops BPF progs using the middle ground of
->  stateful validation?  I'm thinking of something like:
-> First-frag: run the usual checks on L4 headers etc, if we PASS then save
->  IPID and maybe expected next frag-offset into a map.  But don't try to
->  stash the packet contents anywhere for later reassembly, just PASS it.
-> Subsequent frags: look up the IPID in the map.  If we find it, validate
->  and update the frag-offset in the map; if this is the last fragment then
->  delete the map entry.  If the frag-offset was bogus or the IPID wasn't
->  found in the map, DROP; otherwise PASS.
-> (If re-ordering is prevalent then use something more sophisticated than
->  just expected next frag-offset, but the principle is the same. And of
->  course you might want to put in timers for expiry etc.)
-> So this avoids the need to stash the packet data and modify/consume SKBs,
->  because you're not actually doing reassembly; the down-side is that the
->  BPF program can't so easily make decisions about the application-layer
->  contents of the fragmented datagram, but for the common case (we just
->  care about the 5-tuple) it's simple enough.
-> But I haven't actually tried it, so maybe there's some obvious reason why
->  it can't work this way.
+> feature_flags is an output parameter and if the "netdev" family
+> doesn't exist then there are no feature flags to return, right?
+> 
+> Is there a specific error code that's returned when such a family
+> doesn't exist? If yes, we should check for it and return 0 for
+> feature_flags. If not, we'll have to do a generic < 0 check as
+> Yonghong proposes.
 
-I don't believe full L4 headers are required in the first fragment.
-Sufficiently sneaky attackers can, I think, send a byte at a time to
-subvert your proposed algorithm. Storing skb data seems inevitable here.
-Someone can correct me if I'm wrong here.
+We can check -ENOENT.
 
-Reordering like you mentioned is another attack vector. Perhaps there
-are more sophisticated semi-stateful algorithms that can solve the
-problem, but it leads me to my next point.
+         err = libbpf_netlink_resolve_genl_family_id("netdev", 
+sizeof("netdev"), &id);
+-       if (err < 0)
++       if (err < 0) {
++               if (err == -ENOENT)
++                       return 0;
+                 return libbpf_err(err);
++       }
 
-A semi-stateful method like you are proposing is concerning to me from a
-reliability and correctness stand point. Such a method can suffer from
-impedance mismatches with the rest of the system. For example, whatever
-map sizes you choose should probably be aligned with sysfs conntrack
-values otherwise you may get some very interesting and unexpected pkt
-drops. I think cilium had a talk about debugging a related conntrack
-issue in the same vein a while ago. Furthermore, the debugging and
-troubleshooting facilities will be different (counters, logs, etc).
+Let me propose a patch for this.
 
-Unless someone has had lots of experience writing an ip stack from
-the ground up, I suspect there are quite a few more unknown-unknowns
-here. What I find valuable about this patch series is that we can
-leverage the well understood and battle hardened kernel facilities. So
-avoid all the correctness and security issues that the kernel has spent
-20+ years fixing. And make it trivial for the next person that comes
-along to do the right thing.
-
-Hopefully this all makes sense.
-
-Thanks,
-Daniel
+> 
+> 
+>>
+>>> +
+>>> +     memset(&req, 0, sizeof(req));
+>>> +     req.nh.nlmsg_len = NLMSG_LENGTH(GENL_HDRLEN);
+>>> +     req.nh.nlmsg_flags = NLM_F_REQUEST;
+>>> +     req.nh.nlmsg_type = id;
+>>> +     req.gnl.cmd = NETDEV_CMD_DEV_GET;
+>>> +     req.gnl.version = 2;
+>>> +
+>>> +     err = nlattr_add(&req, NETDEV_A_DEV_IFINDEX, &ifindex, sizeof(ifindex));
+>>> +     if (err < 0)
+>>> +             return err;
+>>> +
+>>> +     err = libbpf_netlink_send_recv(&req, NETLINK_GENERIC,
+>>> +                                    parse_xdp_features, NULL, &md);
+>>> +     if (err)
+>>> +             return libbpf_err(err);
+>>> +
+>>> +     opts->feature_flags = md.flags;
+>>> +
+>>>        return 0;
+>>>    }
+>>>
+>> [...]
