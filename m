@@ -2,65 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6091E6A3D8F
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 09:56:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8C396A3D85
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 09:55:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230303AbjB0I4O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 03:56:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44804 "EHLO
+        id S230296AbjB0IzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 03:55:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231209AbjB0Izv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 03:55:51 -0500
-Received: from mail-qk1-x749.google.com (mail-qk1-x749.google.com [IPv6:2607:f8b0:4864:20::749])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74C8C24C9A
-        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 00:47:48 -0800 (PST)
-Received: by mail-qk1-x749.google.com with SMTP id dm13-20020a05620a1d4d00b00742a22c4239so1797174qkb.1
-        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 00:47:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=Gna1tUQYFW7zRTE4gcawgARSxL9rzP2DoPN5c6INbs0=;
-        b=S8Tf6CjdX/Ad5uPyod0miF6R9QdMiEceIj7UiH/kzm0zFsbgBShEN2pJXo5ylJfazW
-         ZIK+VJ+TCp0N8T4Yu6k0kiDcto65vKW7AsCVB4c5ZHxAKtm1REZk+i75yTOF62ot98Oo
-         qQNKWaBymcptNGLG3YfqpRrut6D3YN/3dRiLW/TkwyDR39k7zNbJofbr73qVHnC3/Xhs
-         Gs1QSfmskITaMa16XWCGgWE0k7cIsCEIjHA7sQd+DHT2ej1sS0teFrku9vbUpUGyTOOU
-         TYMDEbpODCNpxLtRa9qCZb3gL6WBYCtl1yYe/62FVshg1xp0vNZphXF6s89DhmmsEV4U
-         NN/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Gna1tUQYFW7zRTE4gcawgARSxL9rzP2DoPN5c6INbs0=;
-        b=EwWZGf3LcZMjAiveEzNhuazP14LksS+D5ipgXa/+xmH8qazaY6dHIdrRHQxl9Lg6ei
-         8NeVfzjPMC6+GV2av7PbhCS9W60rELSCeyxZeSobxbq97BBvrHWQgJyKd1RI7eeEixfC
-         LNiNOuc4u0EoFk1nRKBDtUwHeC88wYBHDOAA5lSifjGQafh1nJ7Pjwm05m2+YyyOYDAO
-         8pr0w/siW3sfN+b78jy52/YpvQX86SQkk52CeEEpsCTDD9FC4XUccPz7kKJDWmgPWy3X
-         t5Prg4cgHY39O3jXR4MHmZYLu2z08PTdPGf+Nvp6G6QRS8FG0q72fc4u1lABgGo5XwxC
-         AF+Q==
-X-Gm-Message-State: AO0yUKXvY6S1TfsRqYVier0ETLmTSkAOXJicvWj9eoErSrFbLLXa1aBp
-        PsJKLo+A0bXAZ65elU9J/oeZQd4TEMcAMA==
-X-Google-Smtp-Source: AK7set9Xci0mFglDfsocvIwb0GH4RljlWRpoIESBYFHFCvpvuSDWcQUw5Xn7Ep3k8ghVzP2u0xCWcUznGmEllw==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a5b:cc:0:b0:966:1e3e:5259 with SMTP id
- d12-20020a5b00cc000000b009661e3e5259mr7002739ybp.4.1677486818974; Mon, 27 Feb
- 2023 00:33:38 -0800 (PST)
-Date:   Mon, 27 Feb 2023 08:33:36 +0000
+        with ESMTP id S229923AbjB0Iyf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 03:54:35 -0500
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77117244BF;
+        Mon, 27 Feb 2023 00:47:00 -0800 (PST)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+        by mailout.nyi.internal (Postfix) with ESMTP id 5F6835C0097;
+        Mon, 27 Feb 2023 03:37:31 -0500 (EST)
+Received: from imap51 ([10.202.2.101])
+  by compute6.internal (MEProxy); Mon, 27 Feb 2023 03:37:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1677487051; x=1677573451; bh=g9r9vd6/Le
+        bwP6b/3KMuSXY3MGtskFDgCJPE8mZ9wWQ=; b=cYd/THi1GEsGQbZSXqBAUX+fVa
+        o5kNbsi0otx8q8jrkPuCMH67QiXIH936Suj0L3OMfYKHWH3ajSNXYcQbIbIhI2WP
+        diReo5S97blbQYXu2jZzfczx6GbWJgQxMbBqcIofN4Ues19x2sMl88nVG+IhlTTo
+        8fNz4jwFGPoL771mQUhaONN6UUVkg8EJmeKBVxO75/ha5fkpL/sic5QkQJtQisSB
+        epw3pRz6zv/0qS1QuwvC3bRTKWr+vJYj25soKew7Ke4EWJRlxnvHZPNO4jZSIklX
+        LuXd7AhVkw9BW8+eHztR2VJ9qg/V0rdZ3B81Ojb5VCxkgl6QkjSXdHoQd83Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1677487051; x=1677573451; bh=g9r9vd6/LebwP6b/3KMuSXY3MGts
+        kFDgCJPE8mZ9wWQ=; b=YEnqEQkyyeo8rcRi8TQsF044IIoNeJocJiy4T3vi/Nlr
+        sf9pOPxmN4FFBGzc5vr66r6Lis4a5Rv4yz47kPguWBpgPzuoGXJDjUr9+tcAERdd
+        cEBdmG3oWS+5Ui3nD1ykNu9Un1+P1/gDTUAnpE98G4nai6fDebbveRKgUpjWRnRh
+        ZQgCVQUa2Xfbpny0XoKmA8SCstSbJIkCu4nlWibyUUWMolMBViNBxCZ8WZYpNCjA
+        FxoYKZa+EHF8oo7Lmlo+twcMz/INp57ugaSH2/FBr2kDYeUU6diK9r+zTCR7bIXw
+        dOBCofYupUpICvm6G0RLCuOjYg+2e0xl2IYzsnWjqA==
+X-ME-Sender: <xms:ymv8YygRUKmJmReynlRKFbZkfZFvxFuaq3A3jysS7bTjHLCXSz1lww>
+    <xme:ymv8YzBaV8885jc6fubbGWv5GoWydSbPXfHQA9B2gsdnxU0K_zlqCYFihWUxVfa3A
+    pOcFNEpkOl_LE4RJbI>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudekledguddukecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdet
+    rhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrg
+    htthgvrhhnpeffheeugeetiefhgeethfejgfdtuefggeejleehjeeutefhfeeggefhkedt
+    keetffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    grrhhnugesrghrnhgusgdruggv
+X-ME-Proxy: <xmx:ymv8Y6He2H7lZCXXRAS9FgTenJU2GpdLuhs6LdLYbe7eex9i_CHuqg>
+    <xmx:ymv8Y7TcqvkBMVWseaGn0MyJKOkCwYZ6eaaKkzLkCb-h427OnLO-0Q>
+    <xmx:ymv8Y_x0PZqJylU36Vj2YcvYt6fJtNRZRjpWwDtwXMOKk3mjgPTBpg>
+    <xmx:y2v8Y2zQCyRtpeICrVwDTnJEMiRYLIM527AXjAzy-gQtP0M5llv5nA>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id D2D36B60086; Mon, 27 Feb 2023 03:37:30 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-172-g9a2dae1853-fm-20230213.001-g9a2dae18
 Mime-Version: 1.0
-X-Mailer: git-send-email 2.39.2.637.g21b0678d19-goog
-Message-ID: <20230227083336.4153089-1-edumazet@google.com>
-Subject: [PATCH net] tcp: tcp_check_req() can be called from process context
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        Eric Dumazet <edumazet@google.com>,
-        Frederick Lawler <fred@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+Message-Id: <d888d651-0ea6-4d0e-9e34-c27acbc7388a@app.fastmail.com>
+In-Reply-To: <04374e51-c7e5-b1d9-d617-d1abf47ec44b@redhat.com>
+References: <20230219150321.2683358-1-trix@redhat.com>
+ <Y/JnZwUEXycgp8QJ@corigine.com> <Y/LKpsjteUAXVIb0@lunn.ch>
+ <Y/MXNWKrrI3aRju+@corigine.com> <Y/QskwGx+A1jACB2@lunn.ch>
+ <Y/TvS+D76/N0WyWc@corigine.com>
+ <04374e51-c7e5-b1d9-d617-d1abf47ec44b@redhat.com>
+Date:   Mon, 27 Feb 2023 09:37:07 +0100
+From:   "Arnd Bergmann" <arnd@arndb.de>
+To:     "Tom Rix" <trix@redhat.com>,
+        "Simon Horman" <simon.horman@corigine.com>,
+        "Andrew Lunn" <andrew@lunn.ch>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>, steen.hegelund@microchip.com,
+        Netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: lan743x: LAN743X selects FIXED_PHY to resolve a link error
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,59 +91,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a follow up of commit 0a375c822497 ("tcp: tcp_rtx_synack()
-can be called from process context").
+On Sun, Feb 26, 2023, at 16:15, Tom Rix wrote:
+> On 2/21/23 8:20 AM, Simon Horman wrote:
+>> On Tue, Feb 21, 2023 at 03:29:39AM +0100, Andrew Lunn wrote:
+>>> On Mon, Feb 20, 2023 at 07:46:13AM +0100, Simon Horman wrote:
+>>>>
+>>>> LAN743X=y and FIXED_PHY=m does indeed produce the problem that Tom
+>>>> describes. And his patch does appear to resolve the problem.
+>>> O.K. So the commit message needs updating to describe the actual
+>>> problem.
+>> Yes, that would be a good improvement.
+>>
+>> Perhaps a fixes tag too?
+>>
+>>>> Unfortunately your proposed solution seems to run foul of a complex
+>>>> dependency situation.
+>>> I was never any good at Kconfig. Arnd is the expert at solving
+>>> problems like this.
+>>>
+>>> You want either everything built in, or FIXED_PHY built in and LAN743X
+>>> modular, or both modular.
+>> I _think_ the patch, which uses select FIXED_PHY for LAN743X,
+>> achieves that.
+>>
+>> I CCed Arnd in case he has any input. Though I think I read
+>> in an recent email from him that he is out most of this week.
 
-Frederick Lawler reported another "__this_cpu_add() in preemptible"
-warning caused by the same reason.
+FWIW, the original patch looks good to me,
 
-In my former patch I took care of tcp_rtx_synack()
-but forgot that tcp_check_req() also contained some SNMP updates.
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
 
-Note that some parts of tcp_check_req() always run in BH context,
-I added a comment to clarify this.
+I'm not sure if the #else path in include/linux/phy_fixed.h
+is actually helpful, as it does not avoid a link failure but
+just makes it less common. Maybe we should just drop that
+from the header and require all users of fixed_phy to
+'select' that symbol even when they are built-in?
 
-Fixes: 8336886f786f ("tcp: TCP Fast Open Server - support TFO listeners")
-Link: https://lore.kernel.org/netdev/8cd33923-a21d-397c-e46b-2a068c287b03@cloudflare.com/T/
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Frederick Lawler <fred@cloudflare.com>
-Tested-by: Frederick Lawler <fred@cloudflare.com>
----
- net/ipv4/tcp_minisocks.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index e002f2e1d4f2de0397f2cc7ec0a14a05efbd802b..9a7ef7732c24c94d4a01d5911ebe51f21371a457 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -597,6 +597,9 @@ EXPORT_SYMBOL(tcp_create_openreq_child);
-  * validation and inside tcp_v4_reqsk_send_ack(). Can we do better?
-  *
-  * We don't need to initialize tmp_opt.sack_ok as we don't use the results
-+ *
-+ * Note: If @fastopen is true, this can be called from process context.
-+ *       Otherwise, this is from BH context.
-  */
- 
- struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
-@@ -748,7 +751,7 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
- 					  &tcp_rsk(req)->last_oow_ack_time))
- 			req->rsk_ops->send_ack(sk, skb, req);
- 		if (paws_reject)
--			__NET_INC_STATS(sock_net(sk), LINUX_MIB_PAWSESTABREJECTED);
-+			NET_INC_STATS(sock_net(sk), LINUX_MIB_PAWSESTABREJECTED);
- 		return NULL;
- 	}
- 
-@@ -767,7 +770,7 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
- 	 *	   "fourth, check the SYN bit"
- 	 */
- 	if (flg & (TCP_FLAG_RST|TCP_FLAG_SYN)) {
--		__TCP_INC_STATS(sock_net(sk), TCP_MIB_ATTEMPTFAILS);
-+		TCP_INC_STATS(sock_net(sk), TCP_MIB_ATTEMPTFAILS);
- 		goto embryonic_reset;
- 	}
- 
--- 
-2.39.2.637.g21b0678d19-goog
-
+       Arnd
