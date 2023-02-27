@@ -2,63 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D9AE16A3F74
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 11:29:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01D536A3F98
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 11:42:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229737AbjB0K3R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 05:29:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39210 "EHLO
+        id S229938AbjB0Kl7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 05:41:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230124AbjB0K3L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 05:29:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF82E93E8;
-        Mon, 27 Feb 2023 02:29:09 -0800 (PST)
+        with ESMTP id S229773AbjB0Kl6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 05:41:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38B558A52;
+        Mon, 27 Feb 2023 02:41:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9DE52B80BE8;
-        Mon, 27 Feb 2023 10:29:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C2ECC433EF;
-        Mon, 27 Feb 2023 10:29:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB59E60DC1;
+        Mon, 27 Feb 2023 10:41:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64E9EC433D2;
+        Mon, 27 Feb 2023 10:41:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677493747;
-        bh=pENnWtPDvVEta8mXe3BDFlQ4zbEkcs9MwowNNbN6XF0=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=qU39AJE2gHd+JSE1r0TZvJiK5xcKvtXGjKrkIzkY6p1VwwANSPcJvAf3/stfPtSNr
-         q1InqFHv5IUNcOpZB2X6qwHFY42jFVdQUUiOFIeRNX+A/IOD1lOXyNczo8dAICFQUL
-         cmd/gxnT7EWBvpT1fgwv35XIjOBrqtVA/708vUHiNmwyTA3qxsiIWeRJ/ZJK7rksel
-         zh7EBGLTZ3V90GF/81ze7VQ83hsAqItul53CYQD/dVkXpTcnCnodwDAjV/aD/wLso8
-         zOyVgpdxqL/WkbB3ClT0PIDPKq+GgITMw+1goIXAFaR3EoAU3+kz1/3sTiKWyMvHPJ
-         4YZz6GKdxbuVw==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Ganapathi Kondraju <ganapathi.kondraju@silabs.com>
-Cc:     linux-wireless@vger.kernel.org,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Amol Hanwate <amol.hanwate@silabs.com>,
-        Angus Ainslie <angus@akkea.ca>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jerome Pouiller <Jerome.Pouiller@silabs.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Marek Vasut <marex@denx.de>,
-        Martin Fuzzey <martin.fuzzey@flowbird.group>,
-        Martin Kepplinger <martink@posteo.de>,
-        Narasimha Anumolu <narasimha.anumolu@silabs.com>,
-        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
-        Shivanadam Gude <shivanadam.gude@silabs.com>,
-        Siva Rebbagondla <siva8118@gmail.com>,
-        Srinivas Chappidi <srinivas.chappidi@silabs.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v3] MAINTAINERS: Add new maintainers to Redpine driver
-References: <1675433281-6132-1-git-send-email-ganapathi.kondraju@silabs.com>
-Date:   Mon, 27 Feb 2023 12:28:57 +0200
-In-Reply-To: <1675433281-6132-1-git-send-email-ganapathi.kondraju@silabs.com>
-        (Ganapathi Kondraju's message of "Fri, 3 Feb 2023 19:38:01 +0530")
-Message-ID: <87lekj1jx2.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        s=k20201202; t=1677494511;
+        bh=fqFYfDSyI09CKubLgEnSqmlaeFQFyaCajSXo34qA4mk=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=m1vx/6CLkn6REKzEJC2/1LPmJdb5rkClliVA7VugXf5YC4Q/ORYI3moD6xFmWxY1n
+         elwLxuu8gYrupt+uWdrjXdQXHHdTcw19pRdAdtcrXp0SY03d1CFv17j4A0lDpigbvN
+         Dy1QqemzlPIDPklHGpp+iQuk447/9eNmtehIbHnU8IGjIa0gdJ51+NaxycoAZTmWlE
+         Bkzst+TNFZ3mxz8tHhzdwcnhZb7Lj4dYgbfxuOhe887EQAK0ydiy+ym2/yQ7ZPa/JI
+         samCxAKFclJTN09ou0psQicGs+v2DOJoWzr2Rya+o/KKWKgp0jHQJnGiZl5UmSRQ6y
+         C10xMRROkggPw==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+Subject: Re: [1/2] wifi: brcmfmac: acpi: Add support for fetching Apple ACPI
+ properties
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20230214080034.3828-2-marcan@marcan.st>
+References: <20230214080034.3828-2-marcan@marcan.st>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        asahi@lists.linux.dev, linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>
+User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <167749450230.25422.12402282199427388164.kvalo@kernel.org>
+Date:   Mon, 27 Feb 2023 10:41:47 +0000 (UTC)
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -68,57 +66,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ganapathi Kondraju <ganapathi.kondraju@silabs.com> writes:
+Hector Martin <marcan@marcan.st> wrote:
 
-> Silicon Labs acquired Redpine Signals recently. It needs to continue
-> giving support to the existing REDPINE WIRELESS DRIVER. This patch adds
-> new Maintainers for it.
->
-> Signed-off-by: Ganapathi Kondraju <ganapathi.kondraju@silabs.com>
-> ---
-> V2:
-> - Add proper prefix for patch subject.
-> - Reorder the maintainers list alphabetically.
-> - Add a new member to the list.
-> ---
-> V3:
-> - Fix sentence formation in the patch subject and description.
-> ---
->
->  MAINTAINERS | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
->
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index ea941dc..04a08c7 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -17709,8 +17709,14 @@ S:	Maintained
->  F:	drivers/net/wireless/realtek/rtw89/
->=20=20
->  REDPINE WIRELESS DRIVER
-> +M:	Amol Hanwate <amol.hanwate@silabs.com>
-> +M:	Ganapathi Kondraju <ganapathi.kondraju@silabs.com>
-> +M:	J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
-> +M:	Narasimha Anumolu <narasimha.anumolu@silabs.com>
-> +M:	Shivanadam Gude <shivanadam.gude@silabs.com>
-> +M:	Srinivas Chappidi <srinivas.chappidi@silabs.com>
->  L:	linux-wireless@vger.kernel.org
-> -S:	Orphan
-> +S:	Maintained
->  F:	drivers/net/wireless/rsi/
+> On DT platforms, the module-instance and antenna-sku-info properties
+> are passed in the DT. On ACPI platforms, module-instance is passed via
+> the analogous Apple device property mechanism, while the antenna SKU
+> info is instead obtained via an ACPI method that grabs it from
+> non-volatile storage.
+> 
+> Add support for this, to allow proper firmware selection on Apple
+> platforms.
+> 
+> Signed-off-by: Hector Martin <marcan@marcan.st>
+> Reviewed-by: Julian Calaby <julian.calaby@gmail.com>
+> Acked-by: Linus Walleij <linus.walleij@linaro.org>
 
-For me six maintainers is way too much. Just last November I marked this
-driver as orphan, I really do not want to add all these people to
-MAINTAINERS and never hear from them again.
+2 patches applied to wireless-next.git, thanks.
 
-Ideally I would prefer to have one or two maintainers who would be
-actively working with the drivers. And also I would like to see some
-proof (read: reviewing patches and providing feedback) that the
-maintainers are really parciticiping in upstream before changing the
-status.
+0f485805d008 wifi: brcmfmac: acpi: Add support for fetching Apple ACPI properties
+91918ce88d9f wifi: brcmfmac: pcie: Provide a buffer of random bytes to the device
 
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20230214080034.3828-2-marcan@marcan.st/
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
