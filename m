@@ -2,159 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 05DF26A3F16
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 11:06:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41FAE6A3F32
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 11:09:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229760AbjB0KGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 05:06:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47158 "EHLO
+        id S229904AbjB0KJA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 05:09:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbjB0KGG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 05:06:06 -0500
-Received: from mail-vs1-xe2b.google.com (mail-vs1-xe2b.google.com [IPv6:2607:f8b0:4864:20::e2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 367EF1D900;
-        Mon, 27 Feb 2023 02:06:05 -0800 (PST)
-Received: by mail-vs1-xe2b.google.com with SMTP id a3so10208543vsi.0;
-        Mon, 27 Feb 2023 02:06:05 -0800 (PST)
+        with ESMTP id S229663AbjB0KI6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 05:08:58 -0500
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E52EB7E
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 02:08:57 -0800 (PST)
+Received: by mail-wm1-x32f.google.com with SMTP id r19-20020a05600c459300b003eb3e2a5e7bso1823943wmo.0
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 02:08:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ysEyAXQpei8iW7Vd296eL75+Ws0ZY2kgID4wiDvkbwI=;
-        b=KviBkJMDBICmCLO7t8ZFhp7rB6+DKGaCz6qFXlTkrfraVPfRBU9V0jiTm+QkpvMY3C
-         MOjSAbjZGUsUHFtNTnckmHDCRYbrbY2ogiq3XBAVf18JK72XfPi6Zhd+YLQWeSnS62Ke
-         SCee/dCxH7p6tm/b2fwc40+QAVNoBeoSivEmCTYfPSl9xz79/Xj93sK2mgJIV18YVpIL
-         4YCS58JOeVbcA4takQ26EgzlKHg4caeMQv0xV1Mxg1fOXKvbXYH9t1d+4n0jQqYTh57J
-         k9sJ7EXxruGlOrfCrCMXQ2YK4OBbRqYAdCoKEvEyO0vQ4f7MKc8deLiA2xg7MeO7j9wL
-         cG5Q==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=QRfiLd5rrqWzJQUNw1VX4OHWPixKqTocsZUdDpiD0zY=;
+        b=K3U7HQaNCs0P2CGtzeLm6s/1V6zu7f2bWgm4qdGmcI9BLszneckhWMoBshxQuV9vao
+         rlZ1dBEXo65irhCXVOBdl3QaCVcBj5OyalDVvJdv2MXAxMGFoYEZEl/N7HD0Rf0KNu8R
+         TSXiuItfbU+Pa312Slz4zYX8xV9MerracaG+Z1FiKk0P+QjvfujfWeSAxfpIGn1xkpHI
+         8/NzM9/SXR0bjwLg5kvGb3jTmudj+WsvI+M2TV9Opvur0dhGUtcDw8vmq8LGGAymH4Ba
+         X1yuZFE6J9XttttdP0DuKAr7bV3sY/4LcU/5bvCFzLZeD0sqx1uNfNoCwIV6VhOR/Ejd
+         7w3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ysEyAXQpei8iW7Vd296eL75+Ws0ZY2kgID4wiDvkbwI=;
-        b=LP0BE9nXgQaHQvxH9gJx1ucVqmjhExTC3YyfnENJNL5mjZYIW5MYj5Z5dPeI7sHZUu
-         izryn3rvDw3kgt5OrMsXHYpqVqbePAsIKkIXcojDG70Q+P5XMROzn2Y+XyTPbhn0viD/
-         4GfKxq93trduwB7Uv5njXlyvl/lHhdDOlkJMiAHbw4eSkYqysAbzho6MHeIWggARRAia
-         XfnV1ipCi7APC+Tvi8bdmxweVl/to2JFx4CBfDyMR7aI8VeQmTlQKnPm4zV/aPquVeGp
-         PdFy33ofaZhdAlokmpSJADkTDz/rmaU2jZeNMGatVfZlxXwqy1pvNZIs1Q+9X3BBUvpy
-         bEnw==
-X-Gm-Message-State: AO0yUKUYPiCYzLGjdDoTbWRAPiG3SCzz+xkG2kRaKMvK7yXk3w2injih
-        PcoaG0QXnKfNRESc4dEUhw0YriAKkctDwlFEE1Y=
-X-Google-Smtp-Source: AK7set8LVuHd1GqAaqkiA6TzNRPvdd9ETv0m0QcJFvuTU2W4fifoxCa/1CZO7VHr2SeEC3udsu2mYPvYjyede5Bjo84=
-X-Received: by 2002:ac5:cdd5:0:b0:401:42e5:6d2e with SMTP id
- u21-20020ac5cdd5000000b0040142e56d2emr7414717vkn.1.1677492364189; Mon, 27 Feb
- 2023 02:06:04 -0800 (PST)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=QRfiLd5rrqWzJQUNw1VX4OHWPixKqTocsZUdDpiD0zY=;
+        b=l9xoMGKaf+fAIGqJnsptIya+h76b9rIsYlGeXqD0++U5b/SHHR2nsqDO4UK9kfwuTt
+         MUYZ5lAPyFjzA+morqXW0AtLHHZ64qzFswm/EsCTlnQMSW3naz+1rgt1ALHLCUYvAjPb
+         O8jrv9WzznAftamC0iHcMm1ZppHuF4FkpJcAzGqqUi+79uaYeHv7FNh3HUPRHDfVjXun
+         FZfyL4UD24QIey9OmQWyODbbIbZu19FWOemzzSkgXnmROCG/GRNnzNtAhxUOkA/TqlYh
+         rkfqUTFcmTwDAQnKjYaAbYTEj0V75pzhSciT8+LYJqCl27gGkh5DZkdaKt0kJ3pYfmZ7
+         SXHw==
+X-Gm-Message-State: AO0yUKW0YdQ/gZKjSSiloBLrKX9QwEuAVi2EnKeeFB3oWi17H8YjtLJ1
+        zsl0KJQ8zfHgQQBe5JRUl5Q4LQ==
+X-Google-Smtp-Source: AK7set9zM/062j1o5buNm0Bzw0iHceTIMbQqNSQny5nzqeB3OAlk7lw2smia9JgQhANsDJSo/SjWmw==
+X-Received: by 2002:a05:600c:43d6:b0:3eb:3fea:a2ac with SMTP id f22-20020a05600c43d600b003eb3feaa2acmr2928243wmn.22.1677492535716;
+        Mon, 27 Feb 2023 02:08:55 -0800 (PST)
+Received: from [192.168.1.20] ([178.197.216.144])
+        by smtp.gmail.com with ESMTPSA id d24-20020a1c7318000000b003dc522dd25esm8433699wmb.30.2023.02.27.02.08.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Feb 2023 02:08:55 -0800 (PST)
+Message-ID: <b0f65aaa-37aa-378f-fbbf-57d107f29f5f@linaro.org>
+Date:   Mon, 27 Feb 2023 11:08:54 +0100
 MIME-Version: 1.0
-References: <20230227074104.42153-1-josef@miegl.cz> <CAHsH6GtArNCyA3UAJbSYYD86fb2QxskbSoNQo2RVHQzKC643zg@mail.gmail.com>
- <79dee14b9b96d5916a8652456b78c7a5@miegl.cz>
-In-Reply-To: <79dee14b9b96d5916a8652456b78c7a5@miegl.cz>
-From:   Eyal Birger <eyal.birger@gmail.com>
-Date:   Mon, 27 Feb 2023 12:05:51 +0200
-Message-ID: <CAHsH6GuHiRDgY+_Epu=ejTAWONuXgzHk326SUuAeRp6pGaTEpA@mail.gmail.com>
-Subject: Re: [PATCH v2 0/1] net: geneve: accept every ethertype
-To:     Josef Miegl <josef@miegl.cz>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH] nfc: fix memory leak of se_io context in nfc_genl_se_io
+Content-Language: en-US
+To:     Fedor Pchelkin <pchelkin@ispras.ru>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Guenter Roeck <groeck@google.com>,
+        Martin Faltesek <mfaltesek@google.com>,
+        Duoming Zhou <duoming@zju.edu.cn>,
+        Samuel Ortiz <sameo@linux.intel.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        lvc-project@linuxtesting.org,
+        syzbot+df64c0a2e8d68e78a4fa@syzkaller.appspotmail.com
+References: <20230225105614.379382-1-pchelkin@ispras.ru>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230225105614.379382-1-pchelkin@ispras.ru>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 27, 2023 at 11:57=E2=80=AFAM Josef Miegl <josef@miegl.cz> wrote=
-:
->
-> February 27, 2023 10:30 AM, "Eyal Birger" <eyal.birger@gmail.com> wrote:
->
-> > Hi,
-> >
-> > On Mon, Feb 27, 2023 at 10:19 AM Josef Miegl <josef@miegl.cz> wrote:
-> >
-> >> The Geneve encapsulation, as defined in RFC 8926, has a Protocol Type
-> >> field, which states the Ethertype of the payload appearing after the
-> >> Geneve header.
-> >>
-> >> Commit 435fe1c0c1f7 ("net: geneve: support IPv4/IPv6 as inner protocol=
-")
-> >> introduced a new IFLA_GENEVE_INNER_PROTO_INHERIT flag that allowed the
-> >> use of other Ethertypes than Ethernet. However, for a reason not known
-> >> to me, it imposed a restriction that prohibits receiving payloads othe=
-r
-> >> than IPv4, IPv6 and Ethernet.
-> >
-> > FWIW I added support for IPv4/IPv6 because these are the use cases I ha=
-d
-> > and could validate. I don't know what problems could arise from support=
-ing
-> > all possible ethertypes and can't test that.
->
-> Yeah, I am hoping someone knowledgeable will tell whether this is a good
-> or bad idea. However I think that if any problem could arise, this is not
-> the place to artificially restrict payload types and potentional safeguar=
-ding
-> should be done somewhere down the packet chain.
->
-> I can't imagine adding a payload Ethertype every time someone needs a
-> specific use-case would be a good idea.
+On 25/02/2023 11:56, Fedor Pchelkin wrote:
+> The callback context for sending/receiving APDUs to/from the selected
+> secure element is allocated inside nfc_genl_se_io and supposed to be
+> eventually freed in se_io_cb callback function. However, there are several
+> error paths where the bwi_timer is not charged to call se_io_cb later, and
+> the cb_context is leaked.
+> 
+> The patch proposes to free the cb_context explicitly on those error paths.
 
-I guess it's just a matter of practicality - which decision imposes more
-burden on future maintenance.
+Do not use "This commit/patch".
+https://elixir.bootlin.com/linux/v5.17.1/source/Documentation/process/submitting-patches.rst#L95
 
->
-> >> This patch removes this restriction, making it possible to receive any
-> >> Ethertype as a payload, if the IFLA_GENEVE_INNER_PROTO_INHERIT flag is
-> >> set.
-> >
-> > This seems like an addition not a bugfix so personally seems like it sh=
-ould
-> > be targeting net-next (which is currently closed afaik).
->
-> One could say the receive function should have behaved like that, the
-> transmit function already encapsulates every possible Ethertype and
-> IFLA_GENEVE_INNER_PROTO_INHERIT doesn't sound like it should be limited t=
-o
-> IPv4 and IPv6.
+> 
+> At the moment we can't simply check 'dev->ops->se_io()' return value as it
+> may be negative in both cases: when the timer was charged and was not.
+> 
+> Fixes: 5ce3f32b5264 ("NFC: netlink: SE API implementation")
+> Reported-by: syzbot+df64c0a2e8d68e78a4fa@syzkaller.appspotmail.com
+> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
+> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
 
-Indeed the flag is intentionally generic to allow for future extensions
-without having to rename. But both in the commit message, and in the iprout=
-e2
-man page I noted support for IPv4/IPv6.
+SoB order is a bit odd. Who is the author?
 
->
-> If no further modifications down the packet chain are required, I'd say i=
-t's
-> 50/50. However I haven't contributed to the Linux kernel ever before, so =
-I
-> really have no clue as to how things go.
->
-> > Eyal.
-> >
-> >> This is especially useful if one wants to encapsulate MPLS, because wi=
-th
-> >> this patch the control-plane traffic (IP, LLC) and the data-plane
-> >> traffic (MPLS) can be encapsulated without an Ethernet frame, making
-> >> lightweight overlay networks a possibility.
-> >>
-> >> Changes in v2:
-> >> - added a cover letter
-> >> - lines no longer exceed 80 columns
-> >>
-> >> Josef Miegl (1):
-> >> net: geneve: accept every ethertype
-> >>
-> >> drivers/net/geneve.c | 15 ++++-----------
-> >> 1 file changed, 4 insertions(+), 11 deletions(-)
-> >>
-> >> --
-> >> 2.37.1
+> ---
+>  drivers/nfc/st-nci/se.c   | 6 ++++++
+>  drivers/nfc/st21nfca/se.c | 6 ++++++
+>  net/nfc/netlink.c         | 4 ++++
+>  3 files changed, 16 insertions(+)
+> 
+> diff --git a/drivers/nfc/st-nci/se.c b/drivers/nfc/st-nci/se.c
+> index ec87dd21e054..b2f1ced8e6dd 100644
+> --- a/drivers/nfc/st-nci/se.c
+> +++ b/drivers/nfc/st-nci/se.c
+> @@ -672,6 +672,12 @@ int st_nci_se_io(struct nci_dev *ndev, u32 se_idx,
+>  					ST_NCI_EVT_TRANSMIT_DATA, apdu,
+>  					apdu_length)
+nci_hci_send_event() should also free it in its error paths.
+nci_data_exchange_complete() as well? Who eventually frees it? These
+might be separate patches.
+
+
+>  	default:
+> +		/* Need to free cb_context here as at the moment we can't
+> +		 * clearly indicate to the caller if the callback function
+> +		 * would be called (and free it) or not. In both cases a
+> +		 * negative value may be returned to the caller.
+> +		 */
+> +		kfree(cb_context);
+>  		return -ENODEV;
+>  	}
+>  }
+> diff --git a/drivers/nfc/st21nfca/se.c b/drivers/nfc/st21nfca/se.c
+> index df8d27cf2956..dae288bebcb5 100644
+> --- a/drivers/nfc/st21nfca/se.c
+> +++ b/drivers/nfc/st21nfca/se.c
+> @@ -236,6 +236,12 @@ int st21nfca_hci_se_io(struct nfc_hci_dev *hdev, u32 se_idx,
+>  					ST21NFCA_EVT_TRANSMIT_DATA,
+>  					apdu, apdu_length);
+>  	default:
+> +		/* Need to free cb_context here as at the moment we can't
+> +		 * clearly indicate to the caller if the callback function
+> +		 * would be called (and free it) or not. In both cases a
+> +		 * negative value may be returned to the caller.
+> +		 */
+> +		kfree(cb_context);
+>  		return -ENODEV;
+>  	}
+>  }
+> diff --git a/net/nfc/netlink.c b/net/nfc/netlink.c
+> index 1fc339084d89..348bf561bc9f 100644
+> --- a/net/nfc/netlink.c
+> +++ b/net/nfc/netlink.c
+> @@ -1442,7 +1442,11 @@ static int nfc_se_io(struct nfc_dev *dev, u32 se_idx,
+>  	rc = dev->ops->se_io(dev, se_idx, apdu,
+>  			apdu_length, cb, cb_context);
+>  
+> +	device_unlock(&dev->dev);
+> +	return rc;
+> +
+>  error:
+> +	kfree(cb_context);
+
+kfree could be after device_unlock. Although se_io() will free it with
+lock held, but error paths usually unwind everything in reverse order
+LIFO, so first unlock then kfree.
+
+>  	device_unlock(&dev->dev);
+>  	return rc;
+>  }
+
+Best regards,
+Krzysztof
+
