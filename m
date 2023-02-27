@@ -2,78 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 689DD6A4BF0
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 21:04:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 79DEB6A4C04
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 21:09:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230286AbjB0UE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 15:04:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53010 "EHLO
+        id S230174AbjB0UJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 15:09:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbjB0UEZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 15:04:25 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DDB81E9E0
-        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 12:04:25 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A9DE8B80C94
-        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 20:04:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7BECC433EF;
-        Mon, 27 Feb 2023 20:04:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677528262;
-        bh=UfNe+l1xTkSwmksrM0KXRGqemXoJq5vd5+jjeK57JtU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=eCfJbgRROjKGbd5ftjznDS4ZJ8PPWqCoTZlvC58YL30IWMFi0nUXWpVqgEsEyQD7l
-         UVZYfTLv204I9HFeWYp8RFLPlcPR/Y4ig8+ue8O8Yg1hDuYhTkk61/8/8gg3hkqk+P
-         To85H5UaEyvgCFHKI+F8RnQbBxcX9aH+utfxeomAg32TojBExUjtr8MeN+E+tKKsfO
-         zhovOhUnsr4XjwIu6aOR7kqtT7Au3NUk0hEVAHeqPTXdGE8wPC3SMgPKGyDFp8QA6R
-         lIk09lTMM+6J3HIsiQR+6l2IK2cC8pZ4md3Ftwli6HAK51v++BF7N3NuhaUO8LUEwr
-         08haWzS0jRxsg==
-Date:   Mon, 27 Feb 2023 12:04:20 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     Simon Horman <simon.horman@corigine.com>,
-        Pedro Tammela <pctammela@mojatatu.com>, netdev@vger.kernel.org,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, amir@vadai.me,
-        dcaratti@redhat.com, willemb@google.com, ozsh@nvidia.com,
-        paulb@nvidia.com
-Subject: Re: [PATCH net 1/3] net/sched: act_pedit: fix action bind logic
-Message-ID: <20230227120420.152a9b32@kernel.org>
-In-Reply-To: <CAM0EoMmx7As2RL4hnuH8ja_B7Dpx86DWL3JmPQKjB+2B+XYQww@mail.gmail.com>
-References: <20230224150058.149505-1-pctammela@mojatatu.com>
-        <20230224150058.149505-2-pctammela@mojatatu.com>
-        <Y/oIWNU5ryYmPPO1@corigine.com>
-        <a15d21c6-8a88-6c9a-ca7e-77a31ecfbe28@mojatatu.com>
-        <Y/o0BDsoepfkakiG@corigine.com>
-        <20230227113641.574dd3bf@kernel.org>
-        <CAM0EoMmx7As2RL4hnuH8ja_B7Dpx86DWL3JmPQKjB+2B+XYQww@mail.gmail.com>
+        with ESMTP id S230113AbjB0UJO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 15:09:14 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB84DD33B
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 12:09:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ewu8QX7fVwAVN9WbRyQYyrP39kYMgqtzZU51aHdCV4g=; b=erXUIv5gBVThZ+PsOABvyptnJh
+        pR0YTd/G6yNilNuoQXslZabJpt7bhUuMxk1Ol0rVhMD10khECwEb2JVmPAJ9+5b7R08Pd2X4E2okt
+        KgK0LzPlk47+6LvUVi8nbbfAqZHZ03ABxuhW8rUwcrWkJiQMgxalC+tZqBmAOVBhzaMLM9XhXqX7R
+        5WUscU9mnclyXwU9tKPWnC2D3LdPbtUnk77xZLzFA9pqv8EhDqoHoX9/nWblY2KJUPyuDAAubAMY8
+        sTFLj7agYw2rTazL6GTYmuSgmf3TA+Ni1MkAvK23Af4bajr1ThXymTIYQAyt651PUMJS1xNiuuCYo
+        4vMOSAOg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33154)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pWjo4-0003dC-2T; Mon, 27 Feb 2023 20:09:08 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pWjo2-0001wc-0c; Mon, 27 Feb 2023 20:09:06 +0000
+Date:   Mon, 27 Feb 2023 20:09:05 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     =?iso-8859-1?Q?K=F6ry?= Maincent <kory.maincent@bootlin.com>,
+        andrew@lunn.ch, davem@davemloft.net, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, kuba@kernel.org, netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>
+Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support
+ [multicast/DSA issues]
+Message-ID: <Y/0N4ZcUl8pG7awc@shell.armlinux.org.uk>
+References: <20200730124730.GY1605@shell.armlinux.org.uk>
+ <20230227154037.7c775d4c@kmaincent-XPS-13-7390>
+ <Y/zKJUHUhEgXjKFG@shell.armlinux.org.uk>
+ <Y/0Idkhy27TObawi@hoboy.vegasvil.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y/0Idkhy27TObawi@hoboy.vegasvil.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 27 Feb 2023 14:51:58 -0500 Jamal Hadi Salim wrote:
-> > > I agree that shouldn't be the case.
-> > > For me that doesn't make it a bug, but I don't feel strongly about it.  
-> >
-> > I'm with Simon - this is a long standing problem, and we weren't getting
-> > any user complaints about this. So I also prefer to route this via
-> > net-next, without the Fixes tags.  
+On Mon, Feb 27, 2023 at 11:45:58AM -0800, Richard Cochran wrote:
+> On Mon, Feb 27, 2023 at 03:20:05PM +0000, Russell King (Oracle) wrote:
 > 
-> At minimum the pedit is a fix.
+> > Attempting to fix this problem was basically rejected by the PTP
+> > maintainer, and thus we're at a deadlock over the issue, and Marvell
+> > PHY PTP support can never be merged into mainline.
+> 
+> FWIW, here was my attempt to solve the issue by making the PHY/MAC
+> layer selectable at run time, while preserving PHY as the default.
+> 
+> https://lore.kernel.org/netdev/20220103232555.19791-1-richardcochran@gmail.com/
 
-How come? What makes pedit different?
-It's kinda hard to parse from the diff and the commit messages
-look copy/pasted.
+Hi Richard,
 
-> The rest is toss-a-coin and put in net-next or net.
+Looking at that link, I'm only seeing that message, with none of
+the patches nor the discussion. Digging back in my mailbox, I
+find that the patches weren't threaded to the cover message, which
+makes it quite difficult to go back and review the discussion.
+
+Patch 1 (no comments)
+https://lore.kernel.org/netdev/20220103232555.19791-2-richardcochran@gmail.com
+Patch 2 (one comment from me suggesting moving a variable)
+https://lore.kernel.org/netdev/20220103232555.19791-3-richardcochran@gmail.com
+Patch 3 (lots of comments)
+https://lore.kernel.org/netdev/20220103232555.19791-4-richardcochran@gmail.com
+Patch 4 (no comments)
+https://lore.kernel.org/netdev/20220103232555.19791-5-richardcochran@gmail.com
+
+Looking back briefly at the discussion on patch 3, was the reason
+this approach died due to the request to have something more flexible,
+supporting multiple hardware timestamps per packet?
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
