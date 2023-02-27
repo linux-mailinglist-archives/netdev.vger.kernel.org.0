@@ -2,126 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 489926A3BED
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 09:02:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6091E6A3D8F
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 09:56:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229740AbjB0ICd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 03:02:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37058 "EHLO
+        id S230303AbjB0I4O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 03:56:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229511AbjB0ICc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 03:02:32 -0500
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABC0F1027A
-        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 00:02:30 -0800 (PST)
-Received: by mail-wr1-x431.google.com with SMTP id j2so5170211wrh.9
-        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 00:02:30 -0800 (PST)
+        with ESMTP id S231209AbjB0Izv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 03:55:51 -0500
+Received: from mail-qk1-x749.google.com (mail-qk1-x749.google.com [IPv6:2607:f8b0:4864:20::749])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74C8C24C9A
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 00:47:48 -0800 (PST)
+Received: by mail-qk1-x749.google.com with SMTP id dm13-20020a05620a1d4d00b00742a22c4239so1797174qkb.1
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 00:47:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=vfziqb8YksBosxbn3K0pIcuXigp7qU5wKoiZkbxkiDg=;
-        b=yOlNJenzkYYnKk8n6E3S2GLZAQIwpz++zn1jYc82ndkv0N5idZQfiS9pBgejEMkBao
-         1pHu8vgq5nry5galU20LKtE7B4ySaycDfEnqYBQJawifOkV4mauFenQVS+irPhr8wkI6
-         NZJy1v3JOtn5Oha6JK/KrkYeBaAslfDg80UNBwtlDEE2X06XWsWojg+75DszZVjQZlge
-         wbXiySg0L1V0hPTmS/lPYTlpoLeNTq1qQLsqAw+rc7Dimz/TJ2wbNWLJ6EaTWwSHJ4zg
-         LkEq3oFuZVKlVW0D+XRAOU6S4EibY2NAQ1yDHQzkd2q5ByYsPVQSCVxYSTSnM6QFacMQ
-         /Jcw==
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=Gna1tUQYFW7zRTE4gcawgARSxL9rzP2DoPN5c6INbs0=;
+        b=S8Tf6CjdX/Ad5uPyod0miF6R9QdMiEceIj7UiH/kzm0zFsbgBShEN2pJXo5ylJfazW
+         ZIK+VJ+TCp0N8T4Yu6k0kiDcto65vKW7AsCVB4c5ZHxAKtm1REZk+i75yTOF62ot98Oo
+         qQNKWaBymcptNGLG3YfqpRrut6D3YN/3dRiLW/TkwyDR39k7zNbJofbr73qVHnC3/Xhs
+         Gs1QSfmskITaMa16XWCGgWE0k7cIsCEIjHA7sQd+DHT2ej1sS0teFrku9vbUpUGyTOOU
+         TYMDEbpODCNpxLtRa9qCZb3gL6WBYCtl1yYe/62FVshg1xp0vNZphXF6s89DhmmsEV4U
+         NN/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=vfziqb8YksBosxbn3K0pIcuXigp7qU5wKoiZkbxkiDg=;
-        b=5xDy1ku3NTKx69WoP8Q0Z029nMVjCklfuhSfVt/nDDBPUy39PzZfrAIZA8V7zrhY7E
-         FF04n2UZomxPF6RkptOrFOi16ijIQTvb39/0dMhh7PZTCf1A/t2R9VlKnh0FBoRjoPPT
-         r/vtGi12AnCtJRiiwqMrV02XBxxSvDoh1Rajv9txgff1RkBATV/V4M/FCTOObI9wZeAP
-         8tXXYu7tFyI7s4rhM7DL8scYzwnPe9PWwqGQKPCuETEbejqWZvNrit0ff779hItUhjhz
-         TZKPIGzErQ11G5ii8m4b9PrcrBt0R8QSZfBiAjAJFMNFSZ3S2fiZj6EF7BqjgVAPpR/K
-         Hvyw==
-X-Gm-Message-State: AO0yUKVSNHOjj+vGnzBCdF8N5oMtR0tO9D5JGl2VWrdLJdb0AqKcYYDI
-        MwHZ12w/MXuqh5DnzP+4s7tTTg==
-X-Google-Smtp-Source: AK7set+y7rgcS0Yor/fhOZ2XgFF/YWcH+WLOGtlxUX4URNezF1NGkg5ut3i6aNa2gFiveQNe6M8xCQ==
-X-Received: by 2002:a05:6000:1b8f:b0:2cc:459b:8bc7 with SMTP id r15-20020a0560001b8f00b002cc459b8bc7mr573961wru.2.1677484949033;
-        Mon, 27 Feb 2023 00:02:29 -0800 (PST)
-Received: from [192.168.1.20] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id w15-20020adfee4f000000b002be5bdbe40csm6312729wro.27.2023.02.27.00.02.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Feb 2023 00:02:28 -0800 (PST)
-Message-ID: <35ddd789-4dd9-3b87-3128-268905ec9a13@linaro.org>
-Date:   Mon, 27 Feb 2023 09:02:27 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v2] nfc: fdp: add null check of devm_kmalloc_array in
- fdp_nci_i2c_read_device_properties
-Content-Language: en-US
-To:     Kang Chen <void0red@gmail.com>, simon.horman@corigine.com
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-References: <Y/t729AIYjxuP6X6@corigine.com>
- <20230227014144.1466102-1-void0red@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230227014144.1466102-1-void0red@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Gna1tUQYFW7zRTE4gcawgARSxL9rzP2DoPN5c6INbs0=;
+        b=EwWZGf3LcZMjAiveEzNhuazP14LksS+D5ipgXa/+xmH8qazaY6dHIdrRHQxl9Lg6ei
+         8NeVfzjPMC6+GV2av7PbhCS9W60rELSCeyxZeSobxbq97BBvrHWQgJyKd1RI7eeEixfC
+         LNiNOuc4u0EoFk1nRKBDtUwHeC88wYBHDOAA5lSifjGQafh1nJ7Pjwm05m2+YyyOYDAO
+         8pr0w/siW3sfN+b78jy52/YpvQX86SQkk52CeEEpsCTDD9FC4XUccPz7kKJDWmgPWy3X
+         t5Prg4cgHY39O3jXR4MHmZYLu2z08PTdPGf+Nvp6G6QRS8FG0q72fc4u1lABgGo5XwxC
+         AF+Q==
+X-Gm-Message-State: AO0yUKXvY6S1TfsRqYVier0ETLmTSkAOXJicvWj9eoErSrFbLLXa1aBp
+        PsJKLo+A0bXAZ65elU9J/oeZQd4TEMcAMA==
+X-Google-Smtp-Source: AK7set9Xci0mFglDfsocvIwb0GH4RljlWRpoIESBYFHFCvpvuSDWcQUw5Xn7Ep3k8ghVzP2u0xCWcUznGmEllw==
+X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
+ (user=edumazet job=sendgmr) by 2002:a5b:cc:0:b0:966:1e3e:5259 with SMTP id
+ d12-20020a5b00cc000000b009661e3e5259mr7002739ybp.4.1677486818974; Mon, 27 Feb
+ 2023 00:33:38 -0800 (PST)
+Date:   Mon, 27 Feb 2023 08:33:36 +0000
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.39.2.637.g21b0678d19-goog
+Message-ID: <20230227083336.4153089-1-edumazet@google.com>
+Subject: [PATCH net] tcp: tcp_check_req() can be called from process context
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        Eric Dumazet <edumazet@google.com>,
+        Frederick Lawler <fred@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27/02/2023 02:41, Kang Chen wrote:
-> devm_kmalloc_array may fails, *fw_vsc_cfg might be null and cause
-> out-of-bounds write in device_property_read_u8_array later.
-> 
-> Fixes: a06347c04c13 ("NFC: Add Intel Fields Peak NFC solution driver")
-> 
-No blank lines between tags.
+This is a follow up of commit 0a375c822497 ("tcp: tcp_rtx_synack()
+can be called from process context").
 
-> Signed-off-by: Kang Chen <void0red@gmail.com>
-> ---
-> v2 -> v1: add debug prompt and Fixes tag
-> 
->  drivers/nfc/fdp/i2c.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/nfc/fdp/i2c.c b/drivers/nfc/fdp/i2c.c
-> index 2d53e0f88..d3272a54b 100644
-> --- a/drivers/nfc/fdp/i2c.c
-> +++ b/drivers/nfc/fdp/i2c.c
-> @@ -247,6 +247,11 @@ static void fdp_nci_i2c_read_device_properties(struct device *dev,
->  					   len, sizeof(**fw_vsc_cfg),
->  					   GFP_KERNEL);
->  
-> +		if (!*fw_vsc_cfg) {
-> +			dev_dbg(dev, "Not enough memory\n");
+Frederick Lawler reported another "__this_cpu_add() in preemptible"
+warning caused by the same reason.
 
-No prints for memory allocation errors. Core prints it. Just go to
-err_kmalloc.
+In my former patch I took care of tcp_rtx_synack()
+but forgot that tcp_check_req() also contained some SNMP updates.
 
-> +			goto out;
-> +		}
-> +
->  		r = device_property_read_u8_array(dev, FDP_DP_FW_VSC_CFG_NAME,
->  						  *fw_vsc_cfg, len);
->  
-> @@ -259,7 +264,7 @@ static void fdp_nci_i2c_read_device_properties(struct device *dev,
->  		dev_dbg(dev, "FW vendor specific commands not present\n");
->  		*fw_vsc_cfg = NULL;
->  	}
-> -
+Note that some parts of tcp_check_req() always run in BH context,
+I added a comment to clarify this.
 
-Why? Line break seems nice here.
+Fixes: 8336886f786f ("tcp: TCP Fast Open Server - support TFO listeners")
+Link: https://lore.kernel.org/netdev/8cd33923-a21d-397c-e46b-2a068c287b03@cloudflare.com/T/
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Frederick Lawler <fred@cloudflare.com>
+Tested-by: Frederick Lawler <fred@cloudflare.com>
+---
+ net/ipv4/tcp_minisocks.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-> +out:
->  	dev_dbg(dev, "Clock type: %d, clock frequency: %d, VSC: %s",
->  		*clock_type, *clock_freq, *fw_vsc_cfg != NULL ? "yes" : "no");
->  }
-
-Best regards,
-Krzysztof
+diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
+index e002f2e1d4f2de0397f2cc7ec0a14a05efbd802b..9a7ef7732c24c94d4a01d5911ebe51f21371a457 100644
+--- a/net/ipv4/tcp_minisocks.c
++++ b/net/ipv4/tcp_minisocks.c
+@@ -597,6 +597,9 @@ EXPORT_SYMBOL(tcp_create_openreq_child);
+  * validation and inside tcp_v4_reqsk_send_ack(). Can we do better?
+  *
+  * We don't need to initialize tmp_opt.sack_ok as we don't use the results
++ *
++ * Note: If @fastopen is true, this can be called from process context.
++ *       Otherwise, this is from BH context.
+  */
+ 
+ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
+@@ -748,7 +751,7 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
+ 					  &tcp_rsk(req)->last_oow_ack_time))
+ 			req->rsk_ops->send_ack(sk, skb, req);
+ 		if (paws_reject)
+-			__NET_INC_STATS(sock_net(sk), LINUX_MIB_PAWSESTABREJECTED);
++			NET_INC_STATS(sock_net(sk), LINUX_MIB_PAWSESTABREJECTED);
+ 		return NULL;
+ 	}
+ 
+@@ -767,7 +770,7 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
+ 	 *	   "fourth, check the SYN bit"
+ 	 */
+ 	if (flg & (TCP_FLAG_RST|TCP_FLAG_SYN)) {
+-		__TCP_INC_STATS(sock_net(sk), TCP_MIB_ATTEMPTFAILS);
++		TCP_INC_STATS(sock_net(sk), TCP_MIB_ATTEMPTFAILS);
+ 		goto embryonic_reset;
+ 	}
+ 
+-- 
+2.39.2.637.g21b0678d19-goog
 
