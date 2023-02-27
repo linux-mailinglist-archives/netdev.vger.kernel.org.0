@@ -2,106 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A72CB6A4479
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 15:34:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEF676A44D4
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 15:40:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229671AbjB0Oec (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 09:34:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44570 "EHLO
+        id S230049AbjB0Oku (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 09:40:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbjB0Oea (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 09:34:30 -0500
-Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45EEBE399;
-        Mon, 27 Feb 2023 06:34:27 -0800 (PST)
-Received: from [141.14.220.45] (g45.guest.molgen.mpg.de [141.14.220.45])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id C090B61CC40F9;
-        Mon, 27 Feb 2023 15:34:25 +0100 (CET)
-Message-ID: <939a51b6-25f7-2cb1-d86e-0bcead931876@molgen.mpg.de>
-Date:   Mon, 27 Feb 2023 15:34:25 +0100
+        with ESMTP id S229748AbjB0Oku (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 09:40:50 -0500
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A34D520564
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 06:40:48 -0800 (PST)
+Received: (Authenticated sender: kory.maincent@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 54B97240003;
+        Mon, 27 Feb 2023 14:40:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1677508847;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:in-reply-to;
+        bh=Pw7fRpmGbqPXeKE6xKCSencNTawjDYDKm/L3pxtxJWc=;
+        b=VtjhT6qx7j+7EBb0yBi8TtR3D8QKabA9fQuFdB+BVtBKxvA2IW2wG38PmE5oImRgL6m/SR
+        kdEvUDuyX/GzuhDsrcrv0zZxgUhul6cPYJH0l6wa9rdbhGh9Xd4Kz/+zQMH/Mm5sEt4MN3
+        rvahui3leNXmSF9SRMr89JBxzGsTuVVq0t7F/rYMgVnVi4q/PQwq7ZwZIVGrd+esvMb3JI
+        m+0OLQq+meh0TTgL6+BldUNiGAes+BBWsnXRYtECwgT59unUWeWkkeMax7aJFtePflgcii
+        BtS5ExnqdQuSGwY6byimDyVxwuR6jl2gzYlWCkR6xpK9R1ZdZlENot/6+syaOA==
+Date:   Mon, 27 Feb 2023 15:40:37 +0100
+From:   =?UTF-8?B?S8O2cnk=?= Maincent <kory.maincent@bootlin.com>
+To:     linux@armlinux.org.uk
+Cc:     andrew@lunn.ch, davem@davemloft.net, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, kuba@kernel.org, netdev@vger.kernel.org,
+        richardcochran@gmail.com,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>
+Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support
+ [multicast/DSA issues]
+Message-ID: <20230227154037.7c775d4c@kmaincent-XPS-13-7390>
+In-Reply-To: <20200730124730.GY1605@shell.armlinux.org.uk>
+Organization: bootlin
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+In-Reply-To: <20200730124730.GY1605@shell.armlinux.org.uk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Content-Language: en-US
-To:     Gregory Greenman <gregory.greenman@intel.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-Subject: What to do about warnings: `WRT: Overriding region id X`
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Linux folks,
+Hello RMK,
+
+> Hence why I'm at the point of giving up; I don't see that PTP will be
+> of very limited benefit on my network with all these issues, and in
+> any case, NTP has been "good enough" for the last 20+ years.  Given
+> that only a limited number of machines will be able to implement PTP
+> support anyway, NTP will have to run along side it.
+
+I see this patch has been abandoned.
+I am testing it with a ZynqMP board (macb ethernet) and it seems to more or
+less work. It got tx timestamp timeout at initialization but after some tim=
+es
+(~20 seconds) ptp4l manages to set it working. Also the IEEE 802.3
+network PTP mode is not working, it constantly throw rx timestamp overrun
+errors.
+I will aim at fixing these issues and adding support to interrupts. It woul=
+d be
+good to have it accepted mainline. What do you think is missing for that? I=
+ see
+you faced issues with few Armada SOM and IP_MULTICAST, is it still the case?
+
+I am new to the PTP and Ethernet APIs I will try to not speak nonsense but
+please correct me if I do.
 
 
-On a Dell Precision 3540, BIOS 1.23.0 12/19/2022, with Debian 
-sid/unstable, Linux 6.1.12 logs the warnings below.
-
-```
-$ lspci -nn -s 00:14.3 -kv
-00:14.3 Network controller [0280]: Intel Corporation Cannon Point-LP 
-CNVi [Wireless-AC] [8086:9df0] (rev 30)
-	DeviceName: Onboard - Ethernet
-	Subsystem: Intel Corporation Cannon Point-LP CNVi [Wireless-AC] [8086:4030]
-	Flags: bus master, fast devsel, latency 0, IRQ 16, IOMMU group 6
-	Memory at ec43c000 (64-bit, non-prefetchable) [size=16K]
-	Capabilities: <access denied>
-	Kernel driver in use: iwlwifi
-	Kernel modules: iwlwifi
-```
-
-```
-$ dmesg
-[…]
-[   20.753295] iwlwifi 0000:00:14.3: firmware: direct-loading firmware 
-iwlwifi-9000-pu-b0-jf-b0-46.ucode
-[   20.753313] iwlwifi 0000:00:14.3: WRT: Overriding region id 0
-[   20.753314] iwlwifi 0000:00:14.3: WRT: Overriding region id 1
-[   20.753315] iwlwifi 0000:00:14.3: WRT: Overriding region id 2
-[   20.753316] iwlwifi 0000:00:14.3: WRT: Overriding region id 3
-[   20.753317] iwlwifi 0000:00:14.3: WRT: Overriding region id 4
-[   20.753318] iwlwifi 0000:00:14.3: WRT: Overriding region id 6
-[   20.753319] iwlwifi 0000:00:14.3: WRT: Overriding region id 8
-[   20.753320] iwlwifi 0000:00:14.3: WRT: Overriding region id 9
-[   20.753320] iwlwifi 0000:00:14.3: WRT: Overriding region id 10
-[   20.753321] iwlwifi 0000:00:14.3: WRT: Overriding region id 11
-[   20.753322] iwlwifi 0000:00:14.3: WRT: Overriding region id 15
-[   20.753323] iwlwifi 0000:00:14.3: WRT: Overriding region id 16
-[   20.753324] iwlwifi 0000:00:14.3: WRT: Overriding region id 18
-[   20.753325] iwlwifi 0000:00:14.3: WRT: Overriding region id 19
-[   20.753326] iwlwifi 0000:00:14.3: WRT: Overriding region id 20
-[   20.753326] iwlwifi 0000:00:14.3: WRT: Overriding region id 21
-[   20.753327] iwlwifi 0000:00:14.3: WRT: Overriding region id 28
-[   20.753642] iwlwifi 0000:00:14.3: firmware: failed to load 
-iwl-debug-yoyo.bin (-2)
-[   20.753643] firmware_class: See https://wiki.debian.org/Firmware for 
-information about missing firmware
-[   20.753651] iwlwifi 0000:00:14.3: firmware: failed to load 
-iwl-debug-yoyo.bin (-2)
-[   20.753653] iwlwifi 0000:00:14.3: loaded firmware version 
-46.6b541b68.0 9000-pu-b0-jf-b0-46.ucode op_mode iwlmvm
-[…]
-```
-
-What can a user do about these warnings?
-
-
-Kind regards,
-
-Paul
+K=C3=B6ry
