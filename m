@@ -2,261 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4528D6A4886
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 18:47:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BE8E6A489A
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 18:52:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229981AbjB0Rrz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 12:47:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36534 "EHLO
+        id S229932AbjB0RwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 12:52:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229817AbjB0Rrx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 12:47:53 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 320F946B0
-        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 09:47:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1677520026;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TUTPKohYh39XQkWqq/QAD4rVTubtKhnsL/KMG+gfHz8=;
-        b=aNf6ik+6lQcmb2t69BhMhrjPXhsF7jQks/7nHYYKYgY7WxQLMtRRZJ6IReMbh58iG/G9Y6
-        NsA6dARKx2VH71Sg4UP8TEPFmZCNzetm0c9NwAd9zceBCHHDSUefPnaPGFfsvfQpQWbeoR
-        Gbf949IO3HxfHhvSzqc18/GrQmRI5zU=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-224-So_RwGb3OyK8M6C1tRdtWw-1; Mon, 27 Feb 2023 12:47:05 -0500
-X-MC-Unique: So_RwGb3OyK8M6C1tRdtWw-1
-Received: by mail-ed1-f70.google.com with SMTP id ec13-20020a0564020d4d00b004a621e993a8so9784900edb.13
-        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 09:47:04 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=TUTPKohYh39XQkWqq/QAD4rVTubtKhnsL/KMG+gfHz8=;
-        b=2vFBr8mHT6g+g7nnbxfsOhglIpLUqEyLjLkFKjwVqvs+51EgTVClVlPcYXzUmUhCDs
-         IrLYW2vv3mm9YDRoj0CkLhk7xUiMpMbIRGiDtfyAD5lHU60HgxX3atd48D6hld7bIbzu
-         X72LLOvYRCFPjLksBoIK4N/QqlRylawxNsNZuBgkRAJt06arjmzTVyn9HSKiUVzo8Gpa
-         InFVr1sAEo+Iiu54kV3Sxq3rVgXi5uFIWg9uA+tCEAFolCEv9uwNvn7XL5rQjnOFOzTh
-         JGzIQKtQyRT4Tlr0xJTAS6caEBgg47nfGLgENFU/LpWv7e1lkiVQAhs4w2653PRqBGbr
-         ebOA==
-X-Gm-Message-State: AO0yUKWHWmNhfo5rGN3K9pM8nLpaq+4Ywe2NR6T3PIrttx+oLL8x3hfG
-        nPjibmQ+4E2pJ5QGN31Tt66fRu/0x3KDfBJidRxysftPVI/xdOCjx44GfU9sI43BU2ayAA4vjCf
-        AjE2w9IGBoMbkxb4D0v4U+w==
-X-Received: by 2002:a50:ef08:0:b0:4ac:b559:4730 with SMTP id m8-20020a50ef08000000b004acb5594730mr388100eds.25.1677520023511;
-        Mon, 27 Feb 2023 09:47:03 -0800 (PST)
-X-Google-Smtp-Source: AK7set8WzOLBRzIyTJbDWdyzOaUVUKqxYzzJ4RMP2QlEID77FeD11dpYYOTOH1ruwho5LhOU6Ug/vw==
-X-Received: by 2002:a50:ef08:0:b0:4ac:b559:4730 with SMTP id m8-20020a50ef08000000b004acb5594730mr388084eds.25.1677520023217;
-        Mon, 27 Feb 2023 09:47:03 -0800 (PST)
-Received: from redhat.com ([2.52.141.194])
-        by smtp.gmail.com with ESMTPSA id x2-20020a50d602000000b004acd14ab4dfsm3403200edi.41.2023.02.27.09.47.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Feb 2023 09:47:02 -0800 (PST)
-Date:   Mon, 27 Feb 2023 12:46:58 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     =?utf-8?B?5rKI5a6J55CqKOWHm+eOpSk=?= <amy.saq@antgroup.com>,
-        netdev@vger.kernel.org, davem@davemloft.net, jasowang@redhat.com,
-        =?utf-8?B?6LCI6Ym06ZSL?= <henry.tjf@antgroup.com>
-Subject: Re: [PATCH v2] net/packet: support mergeable feautre of virtio
-Message-ID: <20230227124131-mutt-send-email-mst@kernel.org>
-References: <1677497625-351024-1-git-send-email-amy.saq@antgroup.com>
- <63fcdaf7e3e9d_1684422084b@willemb.c.googlers.com.notmuch>
+        with ESMTP id S229542AbjB0RwU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 12:52:20 -0500
+Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33B7E23121;
+        Mon, 27 Feb 2023 09:52:18 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 991C741A42;
+        Mon, 27 Feb 2023 17:52:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
+        t=1677520336; bh=TyiSSdv8IGxdjz2utLKhWhCBuUwQHg47VZsc94zgZcw=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=lFwzbz1lMl2mgUL8NMvLooNx9YligRkut+5/Iq991BfswLpk+aSlCgQpBFpw8Gvji
+         H8bPnmw1MtNyS3y7CaA7I36J7x+aq8MzP3fWYUtHoWtj62wHZHtmiMOeaj76Vlti9x
+         NfOO3VVKzhSDC7dzz8s9EI6vM1a8nspxntvC9LH0lidWpGCp6IUAozrvy3TLH1bC+f
+         yXhP7uC0uRNbduoZwmYWCAkP3siUwz3sKcKysv5Uxjfb9xpgtxCoU0FNgpxERHxv1K
+         m21qp+J3UiZxkteZvpdZxsY65jiwwDOQz7lBWRfxsyb66FdcUFiD8UCJChpHEGM7dN
+         a+R8t5Ub+C7QA==
+Message-ID: <181af6e9-799d-b730-dc14-ee2de2541f35@marcan.st>
+Date:   Tue, 28 Feb 2023 02:52:08 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <63fcdaf7e3e9d_1684422084b@willemb.c.googlers.com.notmuch>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] brcmfmac: cfg80211: Use WSEC to set SAE password
+Content-Language: en-US
+To:     Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Double Lo <double.lo@infineon.com>
+Cc:     Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        asahi@lists.linux.dev, linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20230214093319.21077-1-marcan@marcan.st>
+ <edcabef3-f440-9c15-e69f-845eb6a4de1b@broadcom.com>
+ <65548ce6-d2d8-c913-a494-5ac044af2e35@marcan.st>
+ <b4489e24-e226-4f99-1322-cab6c1269f09@broadcom.com>
+From:   Hector Martin <marcan@marcan.st>
+In-Reply-To: <b4489e24-e226-4f99-1322-cab6c1269f09@broadcom.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-typo in $subj
-
-On Mon, Feb 27, 2023 at 11:31:51AM -0500, Willem de Bruijn wrote:
-> 沈安琪(凛玥) wrote:
-> > From: Jianfeng Tan <henry.tjf@antgroup.com>
-> > 
-> > Packet sockets, like tap, can be used as the backend for kernel vhost.
-> > In packet sockets, virtio net header size is currently hardcoded to be
-> > the size of struct virtio_net_hdr, which is 10 bytes; however, it is not
-> > always the case: some virtio features, such as mrg_rxbuf, need virtio
-> > net header to be 12-byte long.
-> > 
-> > Mergeable buffers, as a virtio feature, is worthy to support: packets
-
-worthy of
-
-> > that larger than one-mbuf size will be dropped in vhost worker's
-
-are larger
-
-> > handle_rx if mrg_rxbuf feature is not used, but large packets
-> > cannot be avoided and increasing mbuf's size is not economical.
-> > 
-> > With this virtio feature enabled, packet sockets with hardcoded 10-byte
-
-you mean with this feature enabled in guest but without support in tap
-
-
-> > virtio net header will parse mac head incorrectly in packet_snd by taking
-> > the last two bytes of virtio net header as part of mac header as well.
-
-as well as what?
-
-> > This incorrect mac header parsing will cause packet be dropped due to
-
-to be dropped
-
-> > invalid ether head checking in later under-layer device packet receiving.
-> > 
-> > By adding extra field vnet_hdr_sz with utilizing holes in struct
-> > packet_sock to record current using virtio net header size and supporting
-
-currently used
-
-> > extra sockopt PACKET_VNET_HDR_SZ to set specified vnet_hdr_sz, packet
-> > sockets can know the exact length of virtio net header that virtio user
-> > gives.
-> > In packet_snd, tpacket_snd and packet_recvmsg, instead of using hardcode
-
-hardcoded
-
-> > virtio net header size, it can get the exact vnet_hdr_sz from corresponding
-> > packet_sock, and parse mac header correctly based on this information to
-> > avoid the packets being mistakenly dropped.
-> > 
-> > Signed-off-by: Jianfeng Tan <henry.tjf@antgroup.com>
-> > Co-developed-by: Anqi Shen <amy.saq@antgroup.com>
-> > Signed-off-by: Anqi Shen <amy.saq@antgroup.com>
+On 14/02/2023 19.38, Arend van Spriel wrote:
 > 
-> net-next is closed
+> 
+> On 2/14/2023 11:30 AM, Hector Martin wrote:
+>> On 14/02/2023 19.07, Arend van Spriel wrote:
+>>> + Double Lo
+>>>
+>>> On 2/14/2023 10:33 AM, Hector Martin wrote:
+>>>> Using the WSEC command instead of sae_password seems to be the supported
+>>>> mechanism on newer firmware, and also how the brcmdhd driver does it.
+>>>
+>>> The SAE code in brcmfmac was added by Cypress/Infineon. For my BCA
+>>> devices that did not work, but this change should be verified on Cypress
+>>> hardware.
+>>
+>> Do you mean the existing SAE code does not work on BCA, or this version
+>> doesn't?
+> 
+> I meant the existing SAE code. I will give your patches a spin on the 
+> devices I have.
+> 
+>> I assume/hope this version works for WCC in general, since that is what
+>> the Apple-relevant chips are tagged as. If so it sounds like we need a
+>> firmware type conditional on this, if CYW needs the existing behavior.
+> 
+> Right. Let's hope we get some feedback from them.
 
+Any news on this? Nothing from the Cypress guys (nor to any of my
+previous emails about other stuff, for that matter), so if you can
+confirm this works on your chips I'd rather just blindly add the CYW/not
+firmware variant check and call it a day.
 
-> > @@ -2311,7 +2312,7 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
-> >  				       (maclen < 16 ? 16 : maclen)) +
-> >  				       po->tp_reserve;
-> >  		if (po->has_vnet_hdr) {
-> > -			netoff += sizeof(struct virtio_net_hdr);
-> > +			netoff += po->vnet_hdr_sz;
-> >  			do_vnet = true;
-> >  		}
-> >  		macoff = netoff - maclen;
-> > @@ -2552,16 +2553,23 @@ static int __packet_snd_vnet_parse(struct virtio_net_hdr *vnet_hdr, size_t len)
-> >  }
-> >  
-> >  static int packet_snd_vnet_parse(struct msghdr *msg, size_t *len,
-> > -				 struct virtio_net_hdr *vnet_hdr)
-> > +				 struct virtio_net_hdr *vnet_hdr, int vnet_hdr_sz)
-> >  {
-> > -	if (*len < sizeof(*vnet_hdr))
-> > +	int ret;
-> > +
-> > +	if (*len < vnet_hdr_sz)
-> >  		return -EINVAL;
-> > -	*len -= sizeof(*vnet_hdr);
-> > +	*len -= vnet_hdr_sz;
-> >  
-> >  	if (!copy_from_iter_full(vnet_hdr, sizeof(*vnet_hdr), &msg->msg_iter))
-> >  		return -EFAULT;
-> >  
-> > -	return __packet_snd_vnet_parse(vnet_hdr, *len);
-> > +	ret = __packet_snd_vnet_parse(vnet_hdr, *len);
-> > +
-> > +	/* move iter to point to the start of mac header */
-> > +	if (ret == 0)
-> > +		iov_iter_advance(&msg->msg_iter, vnet_hdr_sz - sizeof(struct virtio_net_hdr));
-> > +	return ret;
-> 
-> Let's make the error path the exception
-> 
->         if (ret)
->                 return ret;
-> 
-> And maybe avoid calling iov_iter_advance if vnet_hdr_sz == sizeof(*vnet_hdr)
-> 
-> >  	case PACKET_VNET_HDR:
-> > +	case PACKET_VNET_HDR_SZ:
-> >  	{
-> >  		int val;
-> > +		int hdr_len = 0;
-> >  
-> >  		if (sock->type != SOCK_RAW)
-> >  			return -EINVAL;
-> > @@ -3931,11 +3945,23 @@ static void packet_flush_mclist(struct sock *sk)
-> >  		if (copy_from_sockptr(&val, optval, sizeof(val)))
-> >  			return -EFAULT;
-> >  
-> > +		if (optname == PACKET_VNET_HDR_SZ) {
-> > +			if (val != sizeof(struct virtio_net_hdr) &&
-> > +			    val != sizeof(struct virtio_net_hdr_mrg_rxbuf))
-> > +				return -EINVAL;
-> > +			hdr_len = val;
-> > +		}
-> > +
-> 
->     } else {
->             hdr_len = sizeof(struct virtio_net_hdr);
->     }
-> 
-> >  		lock_sock(sk);
-> >  		if (po->rx_ring.pg_vec || po->tx_ring.pg_vec) {
-> >  			ret = -EBUSY;
-> >  		} else {
-> > -			po->has_vnet_hdr = !!val;
-> > +			if (optname == PACKET_VNET_HDR) {
-> > +				po->has_vnet_hdr = !!val;
-> > +				if (po->has_vnet_hdr)
-> > +					hdr_len = sizeof(struct virtio_net_hdr);
-> > +			}
-> > +			po->vnet_hdr_sz = hdr_len;
-> 
-> then this is not needed
-> >  			ret = 0;
-> >  		}
-> >  		release_sock(sk);
-> > @@ -4070,6 +4096,9 @@ static int packet_getsockopt(struct socket *sock, int level, int optname,
-> >  	case PACKET_VNET_HDR:
-> >  		val = po->has_vnet_hdr;
-> >  		break;
-> > +	case PACKET_VNET_HDR_SZ:
-> > +		val = po->vnet_hdr_sz;
-> > +		break;
-> >  	case PACKET_VERSION:
-> >  		val = po->tp_version;
-> >  		break;
-> > diff --git a/net/packet/internal.h b/net/packet/internal.h
-> > index 48af35b..e27b47d 100644
-> > --- a/net/packet/internal.h
-> > +++ b/net/packet/internal.h
-> > @@ -121,7 +121,8 @@ struct packet_sock {
-> >  				origdev:1,
-> >  				has_vnet_hdr:1,
-> >  				tp_loss:1,
-> > -				tp_tx_has_off:1;
-> > +				tp_tx_has_off:1,
-> > +				vnet_hdr_sz:8;	/* vnet header size should use */
-> 
-> has_vnet_hdr is no longer needed when adding vnet_hdr_sz. removing that simplifies the code
-> 
-> drop the comment. That is quite self explanatory from the variable name.
+We can't wait forever for them to show up. If they expect their chips to
+continue work with mainline they need to actually interact on the MLs,
+otherwise they should expect us to possibly accidentally break things
+even if we try not to. As far as I can tell they seem completely
+disinterested in talking about anything, and we can't let that block
+progress for everyone else.
 
-besides, it's agrammatical :)
-
-> >  	int			pressure;
-> >  	int			ifindex;	/* bound device		*/
-> >  	__be16			num;
-> > -- 
-> > 1.8.3.1
-> > 
-> 
-
+- Hector
