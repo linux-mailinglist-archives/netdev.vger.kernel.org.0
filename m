@@ -2,68 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 37C136A4EE8
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 23:50:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A2576A4F0C
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 23:58:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229744AbjB0WuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 17:50:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36326 "EHLO
+        id S229850AbjB0W6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 17:58:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229653AbjB0WuF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 17:50:05 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9145F28D1E;
-        Mon, 27 Feb 2023 14:49:45 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id s26so32197515edw.11;
-        Mon, 27 Feb 2023 14:49:45 -0800 (PST)
+        with ESMTP id S229486AbjB0W6w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 17:58:52 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD7765B4;
+        Mon, 27 Feb 2023 14:58:50 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id j19-20020a05600c1c1300b003e9b564fae9so8315091wms.2;
+        Mon, 27 Feb 2023 14:58:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9MUet1JhhQs4KY3/dY7MXiCmPNwf83GCMCfxm1tO1yU=;
-        b=kVOYe+caSdUTsLJxQdZuB5EdnCxnRHVz/b8I6Gw91rdAXFoK0U+NNE7OEZ0QZieapx
-         urpu3JIQZvmAA6bfQI/KF/xlkjLifCh0EgRnjVEMgb4nHwdaf6tvRKuA+hyVFm4y9W8t
-         Hee1JUBiB7ehwN76q/xOZmkOLc46vD20QRAaRMBUlKnIR6g/WeAxG1JJNfayMavSK8bp
-         YvUcr/ulYSjHZJO52AiFhpBlFcpyLRlv/Drh+5uu4HglzOWdqIrct/6Np4o9rDSkT6/n
-         UNL0VDPLEuv97UpWE3zd7KkUsqxl4EQ+3ijFzC3Mn4mfcFkTCXjryiDkkyGUgxnvyp+w
-         eIEg==
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=H6xWs38kFFRDAh0TFymIbiQKfi/uzaXf1tagUWDeIW0=;
+        b=Dq6vHEXxVniMMEpmWwFKAkW+Zc2x83TVWydAdMc3glHrI0mwLUgp5yzfANsu0QEKnG
+         0ZJJB7b3+19u/s77805CpMG5TsShphc7wFKJT/uLFtdr+rLRcn5vPShcCUMl8BtQa6h0
+         wh3KHNSIR3xfINBdaKRCRkFdAl3FwskI63Ce4H5ctJ2IN9CHLiW6zcDo+Nsl8yxlvbIX
+         rfmGaWz118gk//ZxJH61pp3BJavGZqsOaIIsP3ULVvPl6vKXrrrXzp4CuzUp75AlP8Qp
+         FD8xHmsXNDy5M2Vv1It+2zuUFcry8wOmxxXcKeneRJmMIEatx+qeDSJO92on4CEDbNPT
+         dpTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=9MUet1JhhQs4KY3/dY7MXiCmPNwf83GCMCfxm1tO1yU=;
-        b=x72jfmKkhKgwlHubWr/srhcdIEjtPqCyKDXW+OOEH/30mDvOqSxv4zfVezZZXQm/pd
-         qhhM+Aj1kXyr2y8LWYxqcw/ZJJlPEjtLDIKkR12qh7jCbKPbYcPMVL7vG4+KKIgevYKa
-         xxzPnJikdHD+EzPg/cFz/0Ds6YTyG1F16M0GN/0BDith3aOowCduw1zoQKCT1ZFV8/a9
-         PbBGOFFMQ73icI4GzJUc+R5T5S2munGemUfkupCyIe3VyHAuYtYmGmaAHs8fXsC8ry3C
-         oLbnsbzMhPdP54eYa42F8gfpM/68gQIPk37gnpuUmoTj7rque8VxvcEn1wFhtGW+YCO8
-         oQbw==
-X-Gm-Message-State: AO0yUKW/yLWbqPcYqFBkFsOcjN5qVEoio9unAyz8tdOzNE5HrrU9W02l
-        VAxJ+QbLYy9Fqsv4Z79TCXQ0dl9UIEYb3L7ihK665R2r
-X-Google-Smtp-Source: AK7set/PvuFAgmieogvOB2Q+RpfJEnR6S0rZitaqQHUdN1plKWB3mB7rhWMEq5dYZlEZfaQYnWFwbruaHmER+K9oEhg=
-X-Received: by 2002:a17:907:60cd:b0:8b1:3540:7632 with SMTP id
- hv13-20020a17090760cd00b008b135407632mr7267277ejc.2.1677538183915; Mon, 27
- Feb 2023 14:49:43 -0800 (PST)
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=H6xWs38kFFRDAh0TFymIbiQKfi/uzaXf1tagUWDeIW0=;
+        b=CLet/afrIdZN5qn3YzDUNjk1kqhq8Ak6kDNQWTrcc2qg7L6xCuVl6SpQJ1pZyl6fcB
+         Xr8FCKrVGNKq1h8b4EzGWNJxGKbTO0vL+/cXl9APRwGoUJLPZ5iyBnQKilKUoDXBkQY0
+         RvGul4cDVj5QwxyKkp72UHtFQlVmMZ9MKdLTSACW6DJYRNGHuSeRw/v2FgqM9ngdc0on
+         zH+nLMoAZ/AEZQ+6zqdbZSJgWyMeAg16gZUN60vtV90A+qtkAyNL2MhWPAfY2orGKYbw
+         mAvTScJbKQRvnmhLAgqpnj+Yd5WIxSu0pywzNpzicMpO7rCMHHNSPq0ra45gLv8IPgTk
+         h1Og==
+X-Gm-Message-State: AO0yUKVfimPOzmZf5RVNVIrxezY+0xkUxEfcQu7kZJwdDLK3R0/WLokf
+        g/lTVtPR7uNScw8A+b9aEEhhVopwmq4=
+X-Google-Smtp-Source: AK7set8xecthH7WDnyqAS2Sx3sy62KG6JBF5aaG2pGLKBeVULhlH0EvAwOxFgOkVbSAZcaYZav/yQQ==
+X-Received: by 2002:a05:600c:3b28:b0:3eb:3104:efe7 with SMTP id m40-20020a05600c3b2800b003eb3104efe7mr606906wms.23.1677538728724;
+        Mon, 27 Feb 2023 14:58:48 -0800 (PST)
+Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
+        by smtp.gmail.com with ESMTPSA id u17-20020adff891000000b002c553e061fdsm8115016wrp.112.2023.02.27.14.58.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Feb 2023 14:58:48 -0800 (PST)
+Subject: Re: [PATCH bpf-next v2 0/8] Support defragmenting IPv(4|6) packets in
+ BPF
+To:     Daniel Xu <dxu@dxuuu.xyz>
+Cc:     bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <cover.1677526810.git.dxu@dxuuu.xyz>
+ <cf49a091-9b14-05b8-6a79-00e56f3019e1@gmail.com>
+ <20230227220406.4x45jcigpnjjpdfy@kashmir.localdomain>
+From:   Edward Cree <ecree.xilinx@gmail.com>
+Message-ID: <cc4712f7-c723-89fc-dc9c-c8db3ff8c760@gmail.com>
+Date:   Mon, 27 Feb 2023 22:58:47 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <cover.1675245257.git.lorenzo@kernel.org> <a72609ef4f0de7fee5376c40dbf54ad7f13bfb8d.1675245258.git.lorenzo@kernel.org>
- <e519f15d-cdd0-9362-34f3-3e6b8c8a4762@meta.com> <CAEf4BzY0sHqEXaY8no0VgwEbNoPEaQz0h53Gav=T1DCsjsjo8A@mail.gmail.com>
- <6b008033-9c97-7f46-310f-1b1ad74a8af6@meta.com>
-In-Reply-To: <6b008033-9c97-7f46-310f-1b1ad74a8af6@meta.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 27 Feb 2023 14:49:31 -0800
-Message-ID: <CAEf4BzbMKVj8bEfk_VnqcKOOd51-nqYGxfCMdGQA9LkZ0GNhSA@mail.gmail.com>
-Subject: Re: [PATCH v5 bpf-next 5/8] libbpf: add API to get XDP/XSK supported features
-To:     Yonghong Song <yhs@meta.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kuba@kernel.org,
-        Martin KaFai Lau <martin.lau@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+In-Reply-To: <20230227220406.4x45jcigpnjjpdfy@kashmir.localdomain>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -72,146 +78,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 27, 2023 at 2:05=E2=80=AFPM Yonghong Song <yhs@meta.com> wrote:
->
->
->
-> On 2/27/23 1:01 PM, Andrii Nakryiko wrote:
-> > On Mon, Feb 27, 2023 at 12:39 PM Yonghong Song <yhs@meta.com> wrote:
-> >>
-> >>
-> >>
-> >> On 2/1/23 2:24 AM, Lorenzo Bianconi wrote:
-> >>> Extend bpf_xdp_query routine in order to get XDP/XSK supported featur=
-es
-> >>> of netdev over route netlink interface.
-> >>> Extend libbpf netlink implementation in order to support netlink_gene=
-ric
-> >>> protocol.
-> >>>
-> >>> Co-developed-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> >>> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> >>> Co-developed-by: Marek Majtyka <alardam@gmail.com>
-> >>> Signed-off-by: Marek Majtyka <alardam@gmail.com>
-> >>> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> >>> ---
-> >>>    tools/lib/bpf/libbpf.h  |  3 +-
-> >>>    tools/lib/bpf/netlink.c | 96 +++++++++++++++++++++++++++++++++++++=
-++++
-> >>>    tools/lib/bpf/nlattr.h  | 12 ++++++
-> >>>    3 files changed, 110 insertions(+), 1 deletion(-)
-> >>>
-> >> [...]
-> >>> +
-> >>>    int bpf_xdp_query(int ifindex, int xdp_flags, struct bpf_xdp_query=
-_opts *opts)
-> >>>    {
-> >>>        struct libbpf_nla_req req =3D {
-> >>> @@ -366,6 +433,10 @@ int bpf_xdp_query(int ifindex, int xdp_flags, st=
-ruct bpf_xdp_query_opts *opts)
-> >>>                .ifinfo.ifi_family =3D AF_PACKET,
-> >>>        };
-> >>>        struct xdp_id_md xdp_id =3D {};
-> >>> +     struct xdp_features_md md =3D {
-> >>> +             .ifindex =3D ifindex,
-> >>> +     };
-> >>> +     __u16 id;
-> >>>        int err;
-> >>>
-> >>>        if (!OPTS_VALID(opts, bpf_xdp_query_opts))
-> >>> @@ -393,6 +464,31 @@ int bpf_xdp_query(int ifindex, int xdp_flags, st=
-ruct bpf_xdp_query_opts *opts)
-> >>>        OPTS_SET(opts, skb_prog_id, xdp_id.info.skb_prog_id);
-> >>>        OPTS_SET(opts, attach_mode, xdp_id.info.attach_mode);
-> >>>
-> >>> +     if (!OPTS_HAS(opts, feature_flags))
-> >>> +             return 0;
-> >>> +
-> >>> +     err =3D libbpf_netlink_resolve_genl_family_id("netdev", sizeof(=
-"netdev"), &id);
-> >>> +     if (err < 0)
-> >>> +             return libbpf_err(err);
-> >>
-> >> Hi, Lorenzo,
-> >>
-> >> Using latest libbpf repo (https://github.com/libbpf/libbpf, sync'ed fr=
-om
-> >> source), looks like the above change won't work if the program is
-> >> running on an old kernel, e.g., 5.12 kernel.
-> >>
-> >> In this particular combination, in user space, bpf_xdp_query_opts does
-> >> have 'feature_flags' member, so the control can reach
-> >> libbpf_netlink_resolve_genl_family_id(). However, the family 'netdev'
-> >> is only available in latest kernel (after this patch set). So
-> >> the error will return in the above.
-> >>
-> >> This breaks backward compatibility since old working application won't
-> >> work any more with a refresh of libbpf.
-> >>
-> >> I could not come up with an easy solution for this. One thing we could
-> >> do is to treat 'libbpf_netlink_resolve_genl_family_id()' as a probe, s=
-o
-> >> return 0 if probe fails.
-> >>
-> >>     err =3D libbpf_netlink_resolve_genl_family_id("netdev",
-> >> sizeof("netdev"), &id);
-> >>     if (err < 0)
-> >>          return 0;
-> >>
-> >> Please let me know whether my suggestion makes sense or there could be=
- a
-> >> better solution.
-> >>
-> >
-> > feature_flags is an output parameter and if the "netdev" family
-> > doesn't exist then there are no feature flags to return, right?
-> >
-> > Is there a specific error code that's returned when such a family
-> > doesn't exist? If yes, we should check for it and return 0 for
-> > feature_flags. If not, we'll have to do a generic < 0 check as
-> > Yonghong proposes.
->
-> We can check -ENOENT.
->
->          err =3D libbpf_netlink_resolve_genl_family_id("netdev",
-> sizeof("netdev"), &id);
-> -       if (err < 0)
-> +       if (err < 0) {
-> +               if (err =3D=3D -ENOENT)
-> +                       return 0;
->                  return libbpf_err(err);
-> +       }
->
-> Let me propose a patch for this.
+On 27/02/2023 22:04, Daniel Xu wrote:
+> I don't believe full L4 headers are required in the first fragment.
+> Sufficiently sneaky attackers can, I think, send a byte at a time to
+> subvert your proposed algorithm. Storing skb data seems inevitable here.
+> Someone can correct me if I'm wrong here.
 
-we might add more options beyond feature_flags, so these early returns
-are a bit error-prone, let's convert this code to if () { } else?
+My thinking was that legitimate traffic would never do this and thus if
+ your first fragment doesn't have enough data to make a determination
+ then you just DROP the packet.
 
->
-> >
-> >
-> >>
-> >>> +
-> >>> +     memset(&req, 0, sizeof(req));
-> >>> +     req.nh.nlmsg_len =3D NLMSG_LENGTH(GENL_HDRLEN);
-> >>> +     req.nh.nlmsg_flags =3D NLM_F_REQUEST;
-> >>> +     req.nh.nlmsg_type =3D id;
-> >>> +     req.gnl.cmd =3D NETDEV_CMD_DEV_GET;
-> >>> +     req.gnl.version =3D 2;
-> >>> +
-> >>> +     err =3D nlattr_add(&req, NETDEV_A_DEV_IFINDEX, &ifindex, sizeof=
-(ifindex));
-> >>> +     if (err < 0)
-> >>> +             return err;
-> >>> +
-> >>> +     err =3D libbpf_netlink_send_recv(&req, NETLINK_GENERIC,
-> >>> +                                    parse_xdp_features, NULL, &md);
-> >>> +     if (err)
-> >>> +             return libbpf_err(err);
-> >>> +
-> >>> +     opts->feature_flags =3D md.flags;
-> >>> +
-> >>>        return 0;
-> >>>    }
-> >>>
-> >> [...]
+> What I find valuable about this patch series is that we can
+> leverage the well understood and battle hardened kernel facilities. So
+> avoid all the correctness and security issues that the kernel has spent
+> 20+ years fixing.
+
+I can certainly see the argument here.  I guess it's a question of are
+ you more worried about the DoS from tricking the validator into thinking
+ good fragments are bad (the reverse is irrelevant because if you can
+ trick a validator into thinking your bad fragment belongs to a previously
+ seen good packet, then you can equally trick a reassembler into stitching
+ your bad fragment into that packet), or are you more worried about the
+ DoS from tying lots of memory down in the reassembly cache.
+Even with reordering handling, a data structure to record which ranges of
+ a packet have been seen takes much less memory than storing the complete
+ fragment bodies.  (Just a simple bitmap of 8-byte blocks — the resolution
+ of iph->frag_off — reduces size by a factor of 64, not counting all the
+ overhead of a struct sk_buff for each fragment in the queue.  Or you
+ could re-use the rbtree-based code from the reassembler, just with a
+ freshly allocated node containing only offset & length, instead of the
+ whole SKB.)
+And having a BPF helper effectively consume the skb is awkward, as you
+ noted; someone is likely to decide that skb_copy() is too slow, try to
+ add ctx invalidation, and thereby create a whole new swathe of potential
+ correctness and security issues.
+Plus, imagine trying to support this in a hardware-offload XDP device.
+ They'd have to reimplement the entire frag cache, which is a much bigger
+ attack surface than just a frag validator, and they couldn't leverage
+ the battle-hardened kernel implementation.
+
+> And make it trivial for the next person that comes
+> along to do the right thing.
+
+Fwiw the validator approach could *also* be a helper, it doesn't have to
+ be something the BPF developer writes for themselves.
+
+But if after thinking about the possibility you still prefer your way, I
+ won't try to stop you — I just wanted to ensure it had been considered.
+
+-ed
