@@ -2,112 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C53F26A468E
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 16:56:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC2A46A4690
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 16:58:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229893AbjB0P4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 10:56:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43014 "EHLO
+        id S229916AbjB0P62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 10:58:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229627AbjB0P4k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 10:56:40 -0500
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2122.outbound.protection.outlook.com [40.107.94.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3ACE20682
-        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 07:56:38 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XXFYLpfVE1Z5TF2sh3+nuojrAkn7GTcH/yA/DV7GyGMgWzgfu59uJa01EbZs+jc5gkb2cQbUK1Ywri5UoNaW8W0aX/c8VDXFoQxGpuZd98NlNWEQdh4UFGsV1SUN27k5GxrOBiWfeh/VOGF5yf+v6Fifopi3cQKYRCxreLnkmGh3TsYYZxbVV4U41EiOo1Ng/lBvGWkOj46ieVh6H8kT1OXGzE1KBMy7YzNuARMLB3DDqvVQRo4x+649KIQBSaPh4iaLecouCpQ2fj6KtfQWfnZlJ+0KKl2WB3iE6OigyPlil4PAsi1+4xRJLTZCVdzkePKywRStbD8CnBNhtN95Ig==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yFSmcoExTwNTc70Jzp8Dq7QoY5S4oligP/vNKDNMK1I=;
- b=JnHx7yCTdGHbQ1zL2Bh5k3IOsPoIGVXaRgsd0rWBo+E3xVe6PO7ZSx8FTvdE0VDiw9SHzXAXiTpN5FHj2g85y1q+H/qKcp+21G7JhVywrWqF9R47o8qpR7ZqMTg+Pr+PUx1BJ3RG1ASzeUO1jKNUOBQSLeni3fYhRLGbVPRItIKGwn238bHl8cSoJ6ioVujq6ucNd1TL2GU68DLo7LiUToVLcYwTPrtacUltwBzPb1POKz18ImcRsqm4PwdyW3Mm6P+oSbZDWx9KU+OgwNLCw8LvXgYmxOV98Dd4VCZfHgBmghqyLIH/bKfATElttLVFA5b+CoHZKOPVTO3rEgnAyw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yFSmcoExTwNTc70Jzp8Dq7QoY5S4oligP/vNKDNMK1I=;
- b=FnYYlye4OHeqH7WWHyMZbMiizg1z6t4OmgSCeDmE8oMQQz5cbBVSPuMCVjajhVw8mv+fZdgZHJzpZZ3jd9ZS8GVS4qsqAXCifJqJ7O4Zf+gVZT0NrLWb6zMX3oKA5uxgSfLarV4ZAtPwuh/hhhiR2eJApzqfzggvNHowLYPb1ys=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by SA0PR13MB4159.namprd13.prod.outlook.com (2603:10b6:806:95::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.29; Mon, 27 Feb
- 2023 15:56:37 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6134.029; Mon, 27 Feb 2023
- 15:56:37 +0000
-Date:   Mon, 27 Feb 2023 16:56:30 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Pedro Tammela <pctammela@mojatatu.com>
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, error27@gmail.com
-Subject: Re: [PATCH net v2] net/sched: act_connmark: handle errno on
- tcf_idr_check_alloc
-Message-ID: <Y/zSriFDhaywcFPZ@corigine.com>
-References: <20230227152352.266109-1-pctammela@mojatatu.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230227152352.266109-1-pctammela@mojatatu.com>
-X-ClientProxiedBy: AM0PR01CA0141.eurprd01.prod.exchangelabs.com
- (2603:10a6:208:168::46) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        with ESMTP id S229627AbjB0P61 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 10:58:27 -0500
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6C42BC650;
+        Mon, 27 Feb 2023 07:58:26 -0800 (PST)
+Received: from vm02.corp.microsoft.com (unknown [167.220.196.155])
+        by linux.microsoft.com (Postfix) with ESMTPSA id D645120B9C3D;
+        Mon, 27 Feb 2023 07:58:24 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com D645120B9C3D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1677513505;
+        bh=QkPW0b4JKJYOY+ydGniGfxGyfybl9ASnRP6QMnV+APc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ReoGEb0YejI7BbllZ2zw2bgsG40mwb/lF5JSczDoerStgUBqz/iFs0u85iEH3BYb5
+         1GVZP0TYZ8frZaWAev7Ub7iRdzuz0lL81hOYmT94IP7qipas90N28Qxs6A1+GzMAeD
+         nROj2gV1OIDcmHokmO55jJSOPeCKECk43fvbYbio=
+From:   Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>,
+        netdev@vger.kernel.org, Richard Cochran <richardcochran@gmail.com>,
+        Christoph Hellwig <hch@lst.de>
+Subject: [PATCH v2] ptp: kvm: Use decrypted memory in confidential guest on x86
+Date:   Mon, 27 Feb 2023 15:58:19 +0000
+Message-Id: <20230227155819.1189863-1-jpiotrowski@linux.microsoft.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SA0PR13MB4159:EE_
-X-MS-Office365-Filtering-Correlation-Id: 115a63a4-b095-4499-4a5e-08db18db3514
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dmc6g9+ZGmUPBjvznuCecaPpr58e76rLxph9H4NxfQ4wV/1bMIjiIl45hUk42W8goWPp6l3iIAkGtHureBT5MwNL4I8ABIajQMIoOqHzjafC4PjD9W8siSWuvyioQG+0pXLBc+w+YZTxMBV1fIFq3ov08mZQQiePfI9OoS6nTAoDbh/56NnTmEYbjZB5imfIUMK0Ioi+rbL5F6whhf65svqgx2yGssqWWWOmUts0l7936Cd64CXJWiv+ZGIyH6WyZSs/fHA+y9UoMEMqgrWUKyvSMVMUba9E0E76zGj8LAuZo7sUyhPlznG5wuF1fWDs9WbE9+vXyMCokSERQUA8EGCEGT55DDQWgzKm5a8JeZDnxn9cluX5qWn2hyW/grR/hPKp3T78IjV/Me4GrnCAzVL3E35i348lpAMl8EXDLs2y+61e+km1vPL/aoEHNenlXLXlPBCj0p8nZi9z5Y5X0x+0DWYVDI7bxy9Eyfu7ae047be7I8un68j3RmyyQjf+xVP/VoPWfakAX8YHhKpIFtbtQQ/59SpdUpaspxBS8amFbgnXq1FRicsJmfEm6TnQ6fapGvJAnBfnvPvFQa69hUJglBc3QtQAuK2kQvMRqQ2jagSubzfT07YW6b0rRbuxvv+/bj3fRPCuZULbisYwF9xJnd8H1g+N/XxVbvy+BzlLXJwxbtzKVFLrsvOO7TXX
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(39840400004)(366004)(136003)(376002)(396003)(451199018)(2906002)(44832011)(7416002)(8936002)(4744005)(5660300002)(36756003)(41300700001)(66556008)(66476007)(66946007)(316002)(4326008)(6486002)(86362001)(6916009)(8676002)(478600001)(6666004)(38100700002)(6506007)(6512007)(186003)(2616005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+qkNi+YZsA32Rq2ejkf+Jd5HVdeh6OXwPZJy0xP2925kZ1S/M0EA+tmvi1IU?=
- =?us-ascii?Q?DjZcEl5MLSTKn4aSgltpH5udpblPFBGkKueh94/sF7KpjxClqGsUly/CyEDW?=
- =?us-ascii?Q?1KmkTuoBnZggKe/PrK2cXm7VOs24eQnPFp9f6jI8wK9Lf8OUTfM744nhxaVf?=
- =?us-ascii?Q?6xBUBykAs9Jm5bIKq+ThTpddvlU1SpXO+pS+n/ACaZSlmsDCvhFormzscxLb?=
- =?us-ascii?Q?0L+fWzomrNJRtuwSVJ7KqcdTd8tMAiRzcjmmekqnr8uK1iC+sL7KICRLg7yo?=
- =?us-ascii?Q?l24ICpRCrbPULn91fZtiw4R7s0/hYNkecWOySX/5zFwM8KQhVxzCwdXX/AA6?=
- =?us-ascii?Q?v3vAA1yziFobfRaemOBdJo7lZyHMZ1UwzGfmJ61P1weUomMHa03xFuk12WFT?=
- =?us-ascii?Q?RLU4JhciaFw5KVzGBgTlDWSVHogZJg03voB/ptthaDdLWI3ZH8krGq1kTIDH?=
- =?us-ascii?Q?AJqFiXcHd/jwb5nfvu8jBSO5PSkBM9PvsBB/k19MDO7V/gtv6AGANCuK81OY?=
- =?us-ascii?Q?r5NUCfqcK4jVpfm9LI3S/51xcDb+WdDzk/PtyMPiYWmqa8bBsfMlWWFrdo8f?=
- =?us-ascii?Q?OjQNrS6KtTFMPhCOUGdGmUfDN32DOwkU4ZJ8OMiRgd8VDCYDnImgY3Hn0akx?=
- =?us-ascii?Q?aDA7CLChCVzPfTFThkB/dYuwEvioEwUh0IG9r6+gexfwOuc7uN5HctM7thNw?=
- =?us-ascii?Q?D+TsvZn5maOpssV1BAtgPw5Z05Lsfg2SOKrANytwk0nmmVzBP8bOuKZw8d2B?=
- =?us-ascii?Q?cLesI+dMpmMiQtowR5ZyXCzOEiQFzGlij0bVb75dMdPNRJwgX31ywIumm/mQ?=
- =?us-ascii?Q?k2JPj0Klf8nIHdsyltfWltNUrEOgR4Eaw+WLVolumlKQPgpNMHFbNwFmsKbV?=
- =?us-ascii?Q?Mj6woVUWvvOMqo7qtq/s/jcKHGye2zM6ofQeXdkgrtxBpYGsOJ53e5cv71uT?=
- =?us-ascii?Q?PrAfwXcM34KpDmEnGs5ltHfi5BPHg5XndDkbLI23qHWtpBnaIVNrhH7/vcv7?=
- =?us-ascii?Q?fCbGfUkHBZfNvDThJnz+qFm1tIN7dV40+uLQY+NlLtWiuaxpI34oZ+RrGNxT?=
- =?us-ascii?Q?TXEmG1eV/WbmsrDmMPKzuweSuhX/ZbAC6qW1qAuoSxbMm8TFBr0aaKCB+ASs?=
- =?us-ascii?Q?HlcV4l3OV04M7yM5lrJ8CdyVFGfGOrt8F7HuJ0E2paPlsWSf9ffTpG/ed1sU?=
- =?us-ascii?Q?iujxErcP0iz7O4vyGN5W0zZTMArCYsuoyeqxafOjarmxuIqXsZszRgBcIzqK?=
- =?us-ascii?Q?jW3jJu36UT+vMhwOG3MSNd3Y5NUnaOQLPi9GjEdauxVEDdJ6bewCSGvZjoWX?=
- =?us-ascii?Q?Lhi37CspLw+d8gw0npC/t2phWj15YowEVYiQbKmEnN3ooRGyYb9ECq1yqMjH?=
- =?us-ascii?Q?HL4fmJAl23IJsp8fnIjUVa+DFoKlal8zPpQgvfOXFSOUJP1YTzl5ef/j4USe?=
- =?us-ascii?Q?/18/yuEy+yKUNGdp/aOlb9CihiFkbA1BntQ5f9P43pdjE9yh77ZjbJvX2Xm5?=
- =?us-ascii?Q?+rIVEiTEzYZJXpj0plbb1G//Z7hg3Z5ML9o1ve/7G3ONWKSd+YFnOX7ItASO?=
- =?us-ascii?Q?Yq5BctK926Ac30js5abWIczVT/y/NFsesiQFQQzl1R7XV+sNBR6XQteN558p?=
- =?us-ascii?Q?YhKdzSLoeQsJOC3LdBvYbPB0IvukiP2JkECsXT1jO/e138fCnDls19xnPQuX?=
- =?us-ascii?Q?SB7LWg=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 115a63a4-b095-4499-4a5e-08db18db3514
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Feb 2023 15:56:37.1929
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hY1BMjKu0N+Sc7ZyHjTjizu5RskEEOLed/OLIVG79j+KKUgO7u36TM8OCKjq1lBjWC3WrY9liFF+Cy3igD85LMYt3rOEdwSIwQW3ZyjXuPA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR13MB4159
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -115,17 +46,174 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 27, 2023 at 12:23:52PM -0300, Pedro Tammela wrote:
-> Smatch reports that 'ci' can be used uninitialized.
-> The current code ignores errno coming from tcf_idr_check_alloc, which
-> will lead to the incorrect usage of 'ci'. Handle the errno as it should.
-> 
-> Fixes: 288864effe33 ("net/sched: act_connmark: transition to percpu stats and rcu")
-> Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
-> Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
+KVM_HC_CLOCK_PAIRING currently fails inside SEV-SNP guests because the
+guest passes an address to static data to the host. In confidential
+computing the host can't access arbitrary guest memory so handling the
+hypercall runs into an "rmpfault". To make the hypercall work, the guest
+needs to explicitly mark the memory as decrypted. Do that in
+kvm_arch_ptp_init(), but retain the previous behavior for
+non-confidential guests to save us from having to allocate memory.
 
-Thanks Pedro,
+Add a new arch-specific function (kvm_arch_ptp_exit()) to free the
+allocation and mark the memory as encrypted again.
 
-looks good to me.
+Signed-off-by: Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
+---
+Hi,
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+I would love to not allocate a whole page just for this driver, swiotlb is
+decrypted but I don't have access to a 'struct device' here. Does anyone have
+any suggestion?
+
+Jeremi
+
+Changes since v1:
+- forgot to commit include/linux/ptp_kvm.h
+
+ drivers/ptp/ptp_kvm_arm.c    |  4 +++
+ drivers/ptp/ptp_kvm_common.c |  1 +
+ drivers/ptp/ptp_kvm_x86.c    | 59 +++++++++++++++++++++++++++++-------
+ include/linux/ptp_kvm.h      |  1 +
+ 4 files changed, 54 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/ptp/ptp_kvm_arm.c b/drivers/ptp/ptp_kvm_arm.c
+index b7d28c8dfb84..e68e6943167b 100644
+--- a/drivers/ptp/ptp_kvm_arm.c
++++ b/drivers/ptp/ptp_kvm_arm.c
+@@ -22,6 +22,10 @@ int kvm_arch_ptp_init(void)
+ 	return 0;
+ }
+ 
++void kvm_arch_ptp_exit(void)
++{
++}
++
+ int kvm_arch_ptp_get_clock(struct timespec64 *ts)
+ {
+ 	return kvm_arch_ptp_get_crosststamp(NULL, ts, NULL);
+diff --git a/drivers/ptp/ptp_kvm_common.c b/drivers/ptp/ptp_kvm_common.c
+index 9141162c4237..2418977989be 100644
+--- a/drivers/ptp/ptp_kvm_common.c
++++ b/drivers/ptp/ptp_kvm_common.c
+@@ -130,6 +130,7 @@ static struct kvm_ptp_clock kvm_ptp_clock;
+ static void __exit ptp_kvm_exit(void)
+ {
+ 	ptp_clock_unregister(kvm_ptp_clock.ptp_clock);
++	kvm_arch_ptp_exit();
+ }
+ 
+ static int __init ptp_kvm_init(void)
+diff --git a/drivers/ptp/ptp_kvm_x86.c b/drivers/ptp/ptp_kvm_x86.c
+index 4991054a2135..902844cc1a17 100644
+--- a/drivers/ptp/ptp_kvm_x86.c
++++ b/drivers/ptp/ptp_kvm_x86.c
+@@ -14,27 +14,64 @@
+ #include <uapi/linux/kvm_para.h>
+ #include <linux/ptp_clock_kernel.h>
+ #include <linux/ptp_kvm.h>
++#include <linux/set_memory.h>
+ 
+ static phys_addr_t clock_pair_gpa;
+-static struct kvm_clock_pairing clock_pair;
++static struct kvm_clock_pairing clock_pair_glbl;
++static struct kvm_clock_pairing *clock_pair;
+ 
+ int kvm_arch_ptp_init(void)
+ {
++	struct page *p;
+ 	long ret;
+ 
+ 	if (!kvm_para_available())
+ 		return -ENODEV;
+ 
+-	clock_pair_gpa = slow_virt_to_phys(&clock_pair);
+-	if (!pvclock_get_pvti_cpu0_va())
+-		return -ENODEV;
++	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT)) {
++		p = alloc_page(GFP_KERNEL | __GFP_ZERO);
++		if (!p)
++			return -ENOMEM;
++
++		clock_pair = page_address(p);
++		ret = set_memory_decrypted((unsigned long)clock_pair, 1);
++		if (ret) {
++			__free_page(p);
++			clock_pair = NULL;
++			goto nofree;
++		}
++	} else {
++		clock_pair = &clock_pair_glbl;
++	}
++
++	clock_pair_gpa = slow_virt_to_phys(clock_pair);
++	if (!pvclock_get_pvti_cpu0_va()) {
++		ret = -ENODEV;
++		goto err;
++	}
+ 
+ 	ret = kvm_hypercall2(KVM_HC_CLOCK_PAIRING, clock_pair_gpa,
+ 			     KVM_CLOCK_PAIRING_WALLCLOCK);
+-	if (ret == -KVM_ENOSYS)
+-		return -ENODEV;
++	if (ret == -KVM_ENOSYS) {
++		ret = -ENODEV;
++		goto err;
++	}
+ 
+ 	return ret;
++
++err:
++	kvm_arch_ptp_exit();
++nofree:
++	return ret;
++}
++
++void kvm_arch_ptp_exit(void)
++{
++	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT)) {
++		WARN_ON(set_memory_encrypted((unsigned long)clock_pair, 1));
++		free_page((unsigned long)clock_pair);
++		clock_pair = NULL;
++	}
+ }
+ 
+ int kvm_arch_ptp_get_clock(struct timespec64 *ts)
+@@ -49,8 +86,8 @@ int kvm_arch_ptp_get_clock(struct timespec64 *ts)
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+-	ts->tv_sec = clock_pair.sec;
+-	ts->tv_nsec = clock_pair.nsec;
++	ts->tv_sec = clock_pair->sec;
++	ts->tv_nsec = clock_pair->nsec;
+ 
+ 	return 0;
+ }
+@@ -81,9 +118,9 @@ int kvm_arch_ptp_get_crosststamp(u64 *cycle, struct timespec64 *tspec,
+ 			pr_err_ratelimited("clock pairing hypercall ret %lu\n", ret);
+ 			return -EOPNOTSUPP;
+ 		}
+-		tspec->tv_sec = clock_pair.sec;
+-		tspec->tv_nsec = clock_pair.nsec;
+-		*cycle = __pvclock_read_cycles(src, clock_pair.tsc);
++		tspec->tv_sec = clock_pair->sec;
++		tspec->tv_nsec = clock_pair->nsec;
++		*cycle = __pvclock_read_cycles(src, clock_pair->tsc);
+ 	} while (pvclock_read_retry(src, version));
+ 
+ 	*cs = &kvm_clock;
+diff --git a/include/linux/ptp_kvm.h b/include/linux/ptp_kvm.h
+index c2e28deef33a..746fd67c3480 100644
+--- a/include/linux/ptp_kvm.h
++++ b/include/linux/ptp_kvm.h
+@@ -14,6 +14,7 @@ struct timespec64;
+ struct clocksource;
+ 
+ int kvm_arch_ptp_init(void);
++void kvm_arch_ptp_exit(void);
+ int kvm_arch_ptp_get_clock(struct timespec64 *ts);
+ int kvm_arch_ptp_get_crosststamp(u64 *cycle,
+ 		struct timespec64 *tspec, struct clocksource **cs);
+-- 
+2.25.1
+
