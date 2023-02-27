@@ -2,100 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7CDB6A3AF0
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 06:53:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 251D76A3AF4
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 06:53:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229796AbjB0FxJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 00:53:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41810 "EHLO
+        id S229572AbjB0Fxx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 00:53:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbjB0FxH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 00:53:07 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8E0EE042
-        for <netdev@vger.kernel.org>; Sun, 26 Feb 2023 21:52:58 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pWWRK-0008Db-1o; Mon, 27 Feb 2023 06:52:46 +0100
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pWWRF-00059C-Aw; Mon, 27 Feb 2023 06:52:41 +0100
-Date:   Mon, 27 Feb 2023 06:52:41 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Wei Fang <wei.fang@nxp.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Arun.Ramadoss@microchip.com, intel-wired-lan@lists.osuosl.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org,
-        Jose Abreu <joabreu@synopsys.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Subject: Re: [PATCH net-next v8 5/9] net: phy: add
- genphy_c45_ethtool_get/set_eee() support
-Message-ID: <20230227055241.GC8437@pengutronix.de>
-References: <20230211074113.2782508-1-o.rempel@pengutronix.de>
- <20230211074113.2782508-6-o.rempel@pengutronix.de>
- <Y/ufuLJdMcxc6f47@sirena.org.uk>
+        with ESMTP id S229470AbjB0Fxw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 00:53:52 -0500
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 307471ABD1;
+        Sun, 26 Feb 2023 21:53:51 -0800 (PST)
+Received: by mail-pl1-x642.google.com with SMTP id n6so4194086plf.5;
+        Sun, 26 Feb 2023 21:53:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1677477230;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ODNLBG8M5X8mMUUDwFCZQTKOfTWqKb2FCLXCroiP7Hk=;
+        b=M7BjLHi0Q54gFdJigkLrJvp/ksDnU5aMpR8ngrvSeuxkV59/BWcrKhm2fltejC0w38
+         X2O3p0t+C2QxctLR/b56MVpbcRaeaFqCPcsPnKuJ7kIxvQ1H3DsHa9+bgRZMZZFvlyck
+         6JqsdHIIZO9HTm2ba3mL2lLQptapX7Im+rsD4FOrcBB46/BALDkLnZaVb5g/b3xsTMuw
+         nGg3ERhtqVNuG317KNU8VW71HDNsckO0ENsSqpew3N29UXZ6AnmP5at2vUDhKparTE6v
+         Xv5ITw2SIKhb3ReTd4+d7K+BlPgDjOajCMAJH5ylKboigUzuEsGOOZqI3erRTCRhBARg
+         5/uA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1677477230;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ODNLBG8M5X8mMUUDwFCZQTKOfTWqKb2FCLXCroiP7Hk=;
+        b=s0Hgp9Gl/gaqmTNt8K9gBl7zZP91+C4TqmuKTAMq1pt+eWWlxEFsnLRN9q8d1v491I
+         Z8PjQa4jjxWiQVH5yPH7WnlweMy9wOyBQqwZeLUxieq++N0DmkIiVYWhOdwyeU24R+Zq
+         IT9FpBCJwga2TGQNkWAI163LsSq6AqeC2yaIIbPVcti9oaBD5M6QAfpzSjhQdr+hJoOa
+         CcLd+2iW0AhDPKjoDz/yRE3pTaplws5Y12r0MNPHCPWgaPvnThcoBXLrzGASVZgBcIS8
+         DH6MFUf6F9BSpaO6Dled0MF7FfvPvo15ovMh2VASmXW99tXyt/xXMmlyV0QlmlYgYqWL
+         ngkg==
+X-Gm-Message-State: AO0yUKWguVcI2pnPP0hFkoEHIg7SrCG5pPBU82Clm1NbX2EjvBXqgmh9
+        HNJwHQjMWgFvQqVGEBcsHPo=
+X-Google-Smtp-Source: AK7set9rAfIWeS0K/+8DXZ+q/KxJUaEq6RUmToxHaqhq8ew/Al1LJ6OT0W1DKrsbsmMinyZ9Ki5RSA==
+X-Received: by 2002:a17:902:e80d:b0:19a:a2e7:64de with SMTP id u13-20020a170902e80d00b0019aa2e764demr25363407plg.0.1677477230686;
+        Sun, 26 Feb 2023 21:53:50 -0800 (PST)
+Received: from [127.0.0.1] ([103.152.220.17])
+        by smtp.gmail.com with ESMTPSA id p7-20020a1709028a8700b00198ef93d556sm3617450plo.147.2023.02.26.21.53.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 26 Feb 2023 21:53:50 -0800 (PST)
+Message-ID: <9a4d11c7-390a-519f-ef04-d5de55b27f29@gmail.com>
+Date:   Mon, 27 Feb 2023 13:53:43 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Y/ufuLJdMcxc6f47@sirena.org.uk>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v2] net: tls: fix possible info leak in
+ tls_set_device_offload()
+Content-Language: en-US
+To:     Sabrina Dubroca <sd@queasysnail.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     borisp@nvidia.com, john.fastabend@gmail.com, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, ilyal@mellanox.com,
+        aviadye@mellanox.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20230224102839.26538-1-hbh25y@gmail.com>
+ <20230224105729.5f420511@kernel.org> <Y/kcfM5jWrQhdYFR@hog>
+From:   Hangyu Hua <hbh25y@gmail.com>
+In-Reply-To: <Y/kcfM5jWrQhdYFR@hog>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mark,
-
-On Sun, Feb 26, 2023 at 06:06:48PM +0000, Mark Brown wrote:
-> On Sat, Feb 11, 2023 at 08:41:09AM +0100, Oleksij Rempel wrote:
-> > Add replacement for phy_ethtool_get/set_eee() functions.
-> > 
-> > Current phy_ethtool_get/set_eee() implementation is great and it is
-> > possible to make it even better:
-> > - this functionality is for devices implementing parts of IEEE 802.3
-> >   specification beyond Clause 22. The better place for this code is
-> >   phy-c45.c
+On 25/2/2023 04:22, Sabrina Dubroca wrote:
+> 2023-02-24, 10:57:29 -0800, Jakub Kicinski wrote:
+>> On Fri, 24 Feb 2023 18:28:39 +0800 Hangyu Hua wrote:
+>>> After tls_set_device_offload() fails, we enter tls_set_sw_offload(). But
+>>> tls_set_sw_offload can't set cctx->iv and cctx->rec_seq to NULL if it fails
+>>> before kmalloc cctx->iv. It is better to Set them to NULL to avoid any
+>>> potential info leak.
+>>
+>> Please show clear chain of events which can lead to a use-after-free
+>> or info leak. And if you can't please don't send the patch.
 > 
-> Currently mainline is failing to bring up networking on the Libre
-> Computer AML-S905X-CC, with a bisect pointing at this commit,
-> 022c3f87f88 upstream (although I'm not 100% sure I trust the bisect it
-> seems to be in roughly the right place).  I've not dug into what's going
-> on more than running the bisect yet.
+> Sorry, I thought in this morning's discussion Hangyu had agreed to
+> remove all mentions of possible info leak while sending v2, since we
+> agreed [1] that this patch didn't fix any issue, just that it looked
+> more consistent, as tls_set_sw_offload NULLs iv and rec_seq on
+> failure. We can also drop the patch completely. Anyway since net-next
+> is closed, I should have told Hangyu to wait for 2 weeks.
+> 
+> [1] https://lore.kernel.org/all/310391ea-7c71-395e-5dcb-b0a983e6fc93@gmail.com/
+>
 
-Can you please test following fixes:
-https://lore.kernel.org/all/167715661799.11159.2057121677394149658.git-patchwork-notify@kernel.org/
-https://lore.kernel.org/all/20230225071644.2754893-1-o.rempel@pengutronix.de/
-
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Oops. I will make a whole new patch without mentions of info leak in a 
+few weeks. Please ignore this patch.
