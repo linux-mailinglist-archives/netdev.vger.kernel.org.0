@@ -2,119 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B04506A4F75
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 00:03:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0C446A4FA5
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 00:27:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230029AbjB0XDw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 18:03:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51154 "EHLO
+        id S229682AbjB0X1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 18:27:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229823AbjB0XDv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 18:03:51 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 428AB15177;
-        Mon, 27 Feb 2023 15:03:42 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id m3-20020a17090ade0300b00229eec90a7fso305408pjv.0;
-        Mon, 27 Feb 2023 15:03:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=U5BrsfedqjmcNewid3MjJRJMLrBkItr7J+vimPIv1pY=;
-        b=V/LtQcsdtnwLA3l1X7Sdb/bUYGoRaqPEWOOnRpbxO8W0mqIJ3lp1UgHXkxS9fbVw5i
-         j7aVefIdFw/NOAFs8Xp3RwleoABcucy2UaxE2tV5lYAZ2t7336Xbpe4yGYKtbVgIr7dp
-         Dc2c5Ca7J0BJF5c6VwAJVG/PWen77oiV9IONT+qggSUwAon9zNKvApMJxlJDa1pkAV3q
-         8fOAnaqQGGq1Culmq7DkKUF0ziTmDxko7bhsXj0jXUzwGU98pSiR65easXpMeeF8iQwS
-         wAYY3E6Uox3dZ5fCPxzjrDT32kmSoCWqFb43niD0ith/h6C6bcFGXWglm2uMQerCAdIn
-         7zIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=U5BrsfedqjmcNewid3MjJRJMLrBkItr7J+vimPIv1pY=;
-        b=HM7wVjNLvLLQjwirObHUbRfxGLORMRNRt6D8fWs4GLzC9VC1ARspj4xDaflcTQmkme
-         /BzvwJs72F7PkNfwVuJVsIEqKa51OMgzb6b4sZkbVIponUW+QDp2k62dd126LO8tXBqn
-         k/5ZBGkJ/C3YED0s/riiZdlylNwJh7CP/QRQ/YBrIrHKCHiUUX7m6vfrtagRakhtplHp
-         vFtTHShivqD5gbdn53k7QzaZUeGZDYddFAj3M14Ef4B2RREDQRvKYbkfCLxOyJiZSlnS
-         2gShFbreHKP/Akuwn3v6C+EsmsA4cLYWBA2KkmQq1APTQumBXGT39enakaQIFWhzwXNY
-         vptQ==
-X-Gm-Message-State: AO0yUKVAqHwqPUIYm9p8LFn8CoO2w9HJm7Vq6Dh4bwS0F7nYAZtuw7xE
-        70ENL+GLviePOzLGf9ZCa1dZ71qEZkI=
-X-Google-Smtp-Source: AK7set/YQVhyFkanAp+++PRcsHvqrcIDF3t+kktsniJCQQU91v5eweHfCGPjixWj04TDVueYehbweg==
-X-Received: by 2002:a17:902:e741:b0:19c:f1f7:681f with SMTP id p1-20020a170902e74100b0019cf1f7681fmr787393plf.9.1677539021449;
-        Mon, 27 Feb 2023 15:03:41 -0800 (PST)
-Received: from MacBook-Pro-6.local ([2620:10d:c090:400::5:6245])
-        by smtp.gmail.com with ESMTPSA id p12-20020a170902eacc00b0019896d29197sm5082714pld.46.2023.02.27.15.03.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Feb 2023 15:03:40 -0800 (PST)
-Date:   Mon, 27 Feb 2023 15:03:38 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Daniel Xu <dxu@dxuuu.xyz>
-Cc:     bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 0/8] Support defragmenting IPv(4|6) packets
- in BPF
-Message-ID: <20230227230338.awdzw57e4uzh4u7n@MacBook-Pro-6.local>
-References: <cover.1677526810.git.dxu@dxuuu.xyz>
+        with ESMTP id S229485AbjB0X1o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 18:27:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FDE021299
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 15:27:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 05D4C60A48
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 23:27:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15746C433D2;
+        Mon, 27 Feb 2023 23:27:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1677540462;
+        bh=6/TbNA+lMB9z0/5W1jUdCiw4uuIhRwRC3dSa+niFppI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WNjrVVf1TqG8qvre8/ZA/P92egCLguCC8xLJTkhcepnfY+YazgI6slpdfxBYAHp2P
+         bvMkLh6vTIy3qA4L7+DXanPCraFhLxbnYm9I5uUzlL9FkTSUXVUJIY5yolYfhdZkoq
+         C5zfjSCeyxIceOgU3BoLQT6k7S97d6OTxp3ErB6Rb/dqO9hMrM00wyS1u5lmtzL+SH
+         3bF9r3yVoQYUmCTeSRCv0gy/VNzzsrRCvWtH9dJ6J+dOYR7prspZyyLdoEOkJydP64
+         QtQwIhaT2w3QSVN1v84qb6rtkbGNOIG2cvEjlsbcyj3yXljnEVxq9uvLURBd6/TeP9
+         F5ZZLdoLE1qSg==
+Date:   Mon, 27 Feb 2023 15:27:41 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     edumazet@google.com
+Cc:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
+        davem@davemloft.net, pabeni@redhat.com, shakeelb@google.com,
+        soheil@google.com
+Subject: Re: [PATCH net] net: avoid indirect memory pressure calls
+Message-ID: <20230227152741.4a53634b@kernel.org>
+In-Reply-To: <20230224184606.7101-1-fw@strlen.de>
+References: <20230224184606.7101-1-fw@strlen.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1677526810.git.dxu@dxuuu.xyz>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 27, 2023 at 12:51:02PM -0700, Daniel Xu wrote:
-> === Context ===
+On Fri, 24 Feb 2023 19:46:06 +0100 Florian Westphal wrote:
+> There is a noticeable tcp performance regression (loopback or cross-netns),
+> seen with iperf3 -Z (sendfile mode) when generic retpolines are needed.
 > 
-> In the context of a middlebox, fragmented packets are tricky to handle.
-> The full 5-tuple of a packet is often only available in the first
-> fragment which makes enforcing consistent policy difficult. There are
-> really only two stateless options, neither of which are very nice:
+> With SK_RECLAIM_THRESHOLD checks gone number of calls to enter/leave
+> memory pressure happen much more often. For TCP indirect calls are
+> used.
 > 
-> 1. Enforce policy on first fragment and accept all subsequent fragments.
->    This works but may let in certain attacks or allow data exfiltration.
+> We can't remove the if-set-return short-circuit check in
+> tcp_enter_memory_pressure because there are callers other than
+> sk_enter_memory_pressure.  Doing a check in the sk wrapper too
+> reduces the indirect calls enough to recover some performance.
 > 
-> 2. Enforce policy on first fragment and drop all subsequent fragments.
->    This does not really work b/c some protocols may rely on
->    fragmentation. For example, DNS may rely on oversized UDP packets for
->    large responses.
+> Before,
+> 0.00-60.00  sec   322 GBytes  46.1 Gbits/sec                  receiver
 > 
-> So stateful tracking is the only sane option. RFC 8900 [0] calls this
-> out as well in section 6.3:
+> After:
+> 0.00-60.04  sec   359 GBytes  51.4 Gbits/sec                  receiver
 > 
->     Middleboxes [...] should process IP fragments in a manner that is
->     consistent with [RFC0791] and [RFC8200]. In many cases, middleboxes
->     must maintain state in order to achieve this goal.
+> "iperf3 -c $peer -t 60 -Z -f g", connected via veth in another netns.
 > 
-> === BPF related bits ===
-> 
-> However, when policy is enforced through BPF, the prog is run before the
-> kernel reassembles fragmented packets. This leaves BPF developers in a
-> awkward place: implement reassembly (possibly poorly) or use a stateless
-> method as described above.
-> 
-> Fortunately, the kernel has robust support for fragmented IP packets.
-> This patchset wraps the existing defragmentation facilities in kfuncs so
-> that BPF progs running on middleboxes can reassemble fragmented packets
-> before applying policy.
-> 
-> === Patchset details ===
-> 
-> This patchset is (hopefully) relatively straightforward from BPF perspective.
-> One thing I'd like to call out is the skb_copy()ing of the prog skb. I
-> did this to maintain the invariant that the ctx remains valid after prog
-> has run. This is relevant b/c ip_defrag() and ip_check_defrag() may
-> consume the skb if the skb is a fragment.
+> Fixes: 4890b686f408 ("net: keep sk->sk_forward_alloc as small as possible")
+> Signed-off-by: Florian Westphal <fw@strlen.de>
 
-Instead of doing all that with extra skb copy can you hook bpf prog after
-the networking stack already handled ip defrag?
-What kind of middle box are you doing? Why does it have to run at TC layer?
+Looks acceptable, Eric?
