@@ -2,88 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B1996A3F08
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 11:01:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A52A6A3F11
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 11:02:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229592AbjB0KBt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 05:01:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42648 "EHLO
+        id S230124AbjB0KCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 05:02:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229734AbjB0KBl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 05:01:41 -0500
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C981E1E5
-        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 02:01:40 -0800 (PST)
-Received: by mail-il1-x12c.google.com with SMTP id u6so3647038ilk.12
-        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 02:01:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tjSKiZHKJ5T04w9B2upLy8IC+MrE7la7MpUEWGjZE4w=;
-        b=Eagzuw893kj/fz52E8xza+xhv21D+E4wgZBNXA3XCQpuuX/g+8gcJnqoGa2BHyOlVQ
-         x5rmZbCEJPj8DjktDmbL+fgIVjTqVEzee1MjekaeUu6t69lUmD0d3dFCP5Z6Z0hlPOOa
-         8L3duVEMeaxCvN6Ypsh9LYOwGwALKl+o9unACocIZeJQizaWqVudcuqURkIpy3znZuAM
-         8hug6z46ayjgz9yVV/1K9YOs2OBWxAxNXGJBTJRFiUgQ+hYH4A+zvmQy4qK6FQOmfJgu
-         Pu7F1FCzQ7t3QLCDjWPPnskf0+33cdKqFwhY94OPPRJ2drQNw9aW/4sTcnCHqsdGWi4v
-         ihoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tjSKiZHKJ5T04w9B2upLy8IC+MrE7la7MpUEWGjZE4w=;
-        b=w3HK1GmmFhrTcKNpRzEAnR6gX4WJdzEu7eKlKZ6OtvuSdC8QKsLZ68VQJCwuNEjV0+
-         A6e5pSbqWGp+Kb06OeAEBJnfSskSLTk/wjdRijwGpoIXuvuGvhOPxAzAGg/1RrMME/W1
-         I2E3NvATuu6faQXYUo+31omjJeLn4rZp2nm39bAaqIOn399BwBPbM8AtvntX62qQPsV8
-         6gb2SkUC+DbbT4dMktKKd+x1USLM4Mso6MXJTjja6oYq6toBPo7plzwu0As6JgEDVOtM
-         lQVSegKVSxDVC7+srXbsU+JJ2BSR9DQgRweKveZY1Dy2E/uUw2n/ufFnIiEjCQpAPQJq
-         jGJA==
-X-Gm-Message-State: AO0yUKX9vvVAwkyXqtfcw2yzLDWPzTVaVCD2ZC9LBdbBpGK3tbsUfSqO
-        ZRg75kqZauxUIl5MWap3PEscXspQKbTqJ9LcPEfoeQ==
-X-Google-Smtp-Source: AK7set9xv4jdStzzQ7RhuKXpAtjkmh74ju4jd85phKJTuBHikJWfagtZlc5gbmWjqJ8nrA5+rLiqF+xtjED+6OZ/WNE=
-X-Received: by 2002:a92:c5a1:0:b0:314:e9b:d58f with SMTP id
- r1-20020a92c5a1000000b003140e9bd58fmr7657292ilt.2.1677492099155; Mon, 27 Feb
- 2023 02:01:39 -0800 (PST)
+        with ESMTP id S230118AbjB0KC1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 05:02:27 -0500
+Received: from ocelot.miegl.cz (ocelot.miegl.cz [195.201.216.236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0EE81F487;
+        Mon, 27 Feb 2023 02:02:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=miegl.cz; s=dkim;
+        t=1677492143;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BfRBS7YggZB0NOcMmXuVi9vO2zadv+Ccq7H9EPZFHXA=;
+        b=Qj1XePcxCyZ490KrojW9DPHDz8I2VdVD5DE+YTiGXBp9OZ3KfaCJx1OoJ7fo1SpuXn2LJ2
+        WdvdvOBrWaHNHwGSOGW+bzpBFJGR4JDdS23kmfoNlIFOuF9dPQ+AdvXZqiaAvg7PYk5VNq
+        J3+3PCdLulnjTLJBsegkGaG6vHDTJlbVHmrmMhxl7h5Y9Sh3zgG7gMVL6BPvb8d8J5zs95
+        +IUJ4Za89A3gxG2IumiC+X0qcX1D30D/CmvSJEZW62zYoypuZtxmBUPxlhc1HbnXyBAHs+
+        /St0UBAER9XLo3FLO4O4zb8AtbUGpcBpeyPn9kEGiNvJbCdkqMpa7Ut6HxdaYQ==
 MIME-Version: 1.0
-References: <20230226201730.515449-1-aleksandr.mikhalitsyn@canonical.com>
-In-Reply-To: <20230226201730.515449-1-aleksandr.mikhalitsyn@canonical.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 27 Feb 2023 11:01:27 +0100
-Message-ID: <CANn89iKtiwF6AwBT3CgMUVvtA7pGON5O-aOUG4aQSSgmxDMVbg@mail.gmail.com>
-Subject: Re: [PATCH net-next] scm: fix MSG_CTRUNC setting condition for SO_PASSSEC
-To:     Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
-Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Date:   Mon, 27 Feb 2023 10:02:23 +0000
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Mailer: RainLoop/1.16.0
+From:   "Josef Miegl" <josef@miegl.cz>
+Message-ID: <0abab84afdaa4817522b7ee2bd2879f9@miegl.cz>
+Subject: Re: [PATCH v2 1/1] net: geneve: accept every ethertype
+To:     "Eyal Birger" <eyal.birger@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <CAHsH6GvCecnq6Cte=ktRB+BxdZMo4Mi0z-hBDD3kFkENeWUfdQ@mail.gmail.com>
+References: <CAHsH6GvCecnq6Cte=ktRB+BxdZMo4Mi0z-hBDD3kFkENeWUfdQ@mail.gmail.com>
+ <20230227074104.42153-1-josef@miegl.cz>
+ <20230227074104.42153-2-josef@miegl.cz>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 26, 2023 at 9:17=E2=80=AFPM Alexander Mikhalitsyn
-<aleksandr.mikhalitsyn@canonical.com> wrote:
->
-> Currently, we set MSG_CTRUNC flag is we have no
-> msg_control buffer provided and SO_PASSCRED is set
-> or if we have pending SCM_RIGHTS.
->
-> For some reason we have no corresponding check for
-> SO_PASSSEC.
+February 27, 2023 10:31 AM, "Eyal Birger" <eyal.birger@gmail.com> wrote:
 
-Can you describe what side effects this patch has ?
+> On Mon, Feb 27, 2023 at 10:14 AM Josef Miegl <josef@miegl.cz> wrote:
+>=20
+>>=20This patch removes a restriction that prohibited receiving encapsula=
+ted
+>> ethertypes other than IPv4, IPv6 and Ethernet.
+>>=20
+>>=20With IFLA_GENEVE_INNER_PROTO_INHERIT flag set, GENEVE interface can =
+now
+>> receive ethertypes such as MPLS.
+>>=20
+>>=20Signed-off-by: Josef Miegl <josef@miegl.cz>
+>> ---
+>> drivers/net/geneve.c | 15 ++++-----------
+>> 1 file changed, 4 insertions(+), 11 deletions(-)
+>>=20
+>>=20diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
+>> index 89ff7f8e8c7e..7973659a891f 100644
+>> --- a/drivers/net/geneve.c
+>> +++ b/drivers/net/geneve.c
+>> @@ -353,7 +353,6 @@ static int geneve_udp_encap_recv(struct sock *sk, =
+struct sk_buff *skb)
+>> struct genevehdr *geneveh;
+>> struct geneve_dev *geneve;
+>> struct geneve_sock *gs;
+>> - __be16 inner_proto;
+>=20
+>=20nit: why remove the variable? - it's still used in two places and thi=
+s
+> change just makes the patch longer.
 
-I think it could break some applications, who might not be able to
-recover from MSG_CTRUNC in this case.
-This should be documented, in order to avoid a future revert.
+I thought making the code shorter would be a better option, usage in two
+places doesn't justify a dedicated variable in my mind.
 
-In any case, net-next is currently closed.
+>> int opts_len;
+>>=20
+>>=20/* Need UDP and Geneve header to be present */
+>> @@ -365,13 +364,6 @@ static int geneve_udp_encap_recv(struct sock *sk,=
+ struct sk_buff *skb)
+>> if (unlikely(geneveh->ver !=3D GENEVE_VER))
+>> goto drop;
+>>=20
+>>=20- inner_proto =3D geneveh->proto_type;
+>> -
+>> - if (unlikely((inner_proto !=3D htons(ETH_P_TEB) &&
+>> - inner_proto !=3D htons(ETH_P_IP) &&
+>> - inner_proto !=3D htons(ETH_P_IPV6))))
+>> - goto drop;
+>> -
+>> gs =3D rcu_dereference_sk_user_data(sk);
+>> if (!gs)
+>> goto drop;
+>> @@ -381,14 +373,15 @@ static int geneve_udp_encap_recv(struct sock *sk=
+, struct sk_buff *skb)
+>> goto drop;
+>>=20
+>>=20if (unlikely((!geneve->cfg.inner_proto_inherit &&
+>> - inner_proto !=3D htons(ETH_P_TEB)))) {
+>> + geneveh->proto_type !=3D htons(ETH_P_TEB)))) {
+>> geneve->dev->stats.rx_dropped++;
+>> goto drop;
+>> }
+>>=20
+>>=20opts_len =3D geneveh->opt_len * 4;
+>> - if (iptunnel_pull_header(skb, GENEVE_BASE_HLEN + opts_len, inner_pro=
+to,
+>> - !net_eq(geneve->net, dev_net(geneve->dev)))) {
+>> + if (iptunnel_pull_header(skb, GENEVE_BASE_HLEN + opts_len,
+>> + geneveh->proto_type, !net_eq(geneve->net,
+>> + dev_net(geneve->dev)))) {
+>> geneve->dev->stats.rx_dropped++;
+>> goto drop;
+>> }
+>> --
+>> 2.37.1
