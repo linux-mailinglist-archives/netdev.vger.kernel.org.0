@@ -2,81 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 101B46A4A07
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 19:42:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 788186A4A11
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 19:44:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230036AbjB0Smy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 13:42:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51166 "EHLO
+        id S230083AbjB0Sok (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 13:44:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230023AbjB0Smx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 13:42:53 -0500
-Received: from mail-il1-f205.google.com (mail-il1-f205.google.com [209.85.166.205])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CAAC26A6
-        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 10:42:52 -0800 (PST)
-Received: by mail-il1-f205.google.com with SMTP id k2-20020a056e0205a200b0031703f4bcabso4385299ils.0
-        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 10:42:52 -0800 (PST)
+        with ESMTP id S229900AbjB0Soj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 13:44:39 -0500
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6454512591
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 10:44:38 -0800 (PST)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-536d63d17dbso158571777b3.22
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 10:44:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=TlXgrolZnHWtaYjVv8047AvkWv+di3WxnoasDyNs4Fw=;
+        b=kppfsG53RTDF8+P5RSVPGIRz8HPbITYDO3lh19+uv1o122dp44wqxHu7pCdokhlOF8
+         6yAPiukfuwIhRCAsB8I9B+XlrTUiV2b9KCLJTrnSjeIP+uGwwzYTcc4UjyJcLStRgN+S
+         uatphoym8hUjkPpKteOkdIn21uqTw0rc/++PvjPzCTv0a0E94lLZVF7KqEbnVgZA95Uf
+         zRMetDlnkMMjQUMQVkNjztY0Usly0owjB/7XdgE/nOOphuV4O+Y3YwgvUUJu7mj0swlD
+         sKxsj8jmtlkM0CE0ac57wMSTBUuFUeP5dOb/CQtaaFFRcwKH0OdmT3qBxc45v+rva69Y
+         lRdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=qzxtfmmZrqXjh+Bj23y/tmPD29T4/gAlA0rwqV7QgHE=;
-        b=gGlz2edg5izLvlhhsO3lcePQqMBWbYz834GNz+qkG8yrAfEYCKKonkRDZ/kqZ9GKHP
-         yJIaAQBqXXhA1yeIcAn4vufMyq/5Cw5kcuiXrpcSjy8iBkCSDbiD6Kr2nUy+aEPxOWkS
-         mmgryd8KpcZvNKNHIF+7GZPY42xp7YCung0ejZuq22qJdCbm8nRhhiDrfloevA6/ZX+m
-         vip6nmOG3t88RJ6OfLbt9FjSpQp6dTYEMrNgIDUhYfsnQ/u4CKgH+zrNBi62sorlaiVQ
-         ovgxq7ZExYUT+YHetyA9kSptSYr//56sLz0TZ2yrlZO8UEtxUJ1YtVJDrIfeLN8wYDo3
-         dfIQ==
-X-Gm-Message-State: AO0yUKWfHkK0PyJ126V6S6NLg2bCkUxQEhR1mwGQdAeO2T+I7B+exnrP
-        RS/fptaytJ+qvd0TR4myQ92viC09PY4HoEPF/t8L3DOG2sa4
-X-Google-Smtp-Source: AK7set+RksJty87smpbv3BnzjFwdJIfUbN/G0jn4L/nzaz3XPLXdMAELIKph4iHNuEK6av1z9peIU+ACjo4CSl6dpmF7sCRJ4rjj
-MIME-Version: 1.0
-X-Received: by 2002:a02:2286:0:b0:3c5:d3e:9c82 with SMTP id
- o128-20020a022286000000b003c50d3e9c82mr26037jao.5.1677523371657; Mon, 27 Feb
- 2023 10:42:51 -0800 (PST)
-Date:   Mon, 27 Feb 2023 10:42:51 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ab939e05f5b2d8cc@google.com>
-Subject: [syzbot] [net?] KASAN: null-ptr-deref Read in __fl_put
-From:   syzbot <syzbot+baabf3efa7c1e57d28b2@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, jhs@mojatatu.com,
-        jiri@resnulli.us, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com
+        bh=TlXgrolZnHWtaYjVv8047AvkWv+di3WxnoasDyNs4Fw=;
+        b=eBTZCahO7dBrZAMeoEbi+pndPhKArmFi+nLmgeycvFEUbYtJT9oSFt9VnHd0AwadGM
+         SBemW1MSu0g1FaUIHh2f7Phu9/hLXoytmIth64YnAI0HSf/h1GpqoQV0Fqkwp2EBfFw0
+         jDlwoDvLH33pRj9XvAZ6YM3MuV1i6j5dH2UxQTQmaHS3S6zzdPG4j5zb2QbEqWNDh5E3
+         rVEymV1On6Gy8+9WrOWJxIM6meBkcPYg4ksNUTBMWAcWAhKQ3zqQXv3/IVENI7PdL7lc
+         gADotHP5xJD03+GXYtcqOceP8Dh+nAfbXNmmyjBo6hZZT+wz1acZdD+UdCwK9M+L7qEM
+         AwTw==
+X-Gm-Message-State: AO0yUKV9NE9cKTmTd+aJZj3t3sKRlgove5cpeGzUDYusAgrn/68hn0Q7
+        Rnm8dDfTA46OfNFZZnwBcMGu6rXyhENDDA==
+X-Google-Smtp-Source: AK7set8mORO610AM7mSHBIiAv+4c7NXFqnPVrbcDLYXm/w9kGBFC0PrWj8aYZEmXtmaAx95CHBeHL/yyd9i81w==
+X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
+ (user=edumazet job=sendgmr) by 2002:a5b:c0a:0:b0:a6f:b653:9f18 with SMTP id
+ f10-20020a5b0c0a000000b00a6fb6539f18mr2994966ybq.2.1677523477618; Mon, 27 Feb
+ 2023 10:44:37 -0800 (PST)
+Date:   Mon, 27 Feb 2023 18:44:36 +0000
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.39.2.722.g9855ee24e9-goog
+Message-ID: <20230227184436.554874-1-edumazet@google.com>
+Subject: [PATCH net] net/sched: flower: fix fl_change() error recovery path
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        Eric Dumazet <edumazet@google.com>,
+        syzbot+baabf3efa7c1e57d28b2@syzkaller.appspotmail.com,
+        syzbot <syzkaller@googlegroups.com>,
+        Paul Blakey <paulb@nvidia.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+The two "goto errout;" paths in fl_change() became wrong
+after cited commit.
 
-syzbot found the following issue on:
+Indeed we only must not call __fl_put() until the net pointer
+has been set in tcf_exts_init_ex()
 
-HEAD commit:    5b7c4cabbb65 Merge tag 'net-next-6.3' of git://git.kernel...
-git tree:       net
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=10874f28c80000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c74c134cc415a89b
-dashboard link: https://syzkaller.appspot.com/bug?extid=baabf3efa7c1e57d28b2
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=166c5e50c80000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1094ca50c80000
+This is a minimal fix. We might in the future validate TCA_FLOWER_FLAGS
+before we allocate @fnew.
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/b3d83e162bd2/disk-5b7c4cab.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/ad7e8c0fc7b5/vmlinux-5b7c4cab.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/060fac08a8fd/bzImage-5b7c4cab.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+baabf3efa7c1e57d28b2@syzkaller.appspotmail.com
-
-==================================================================
 BUG: KASAN: null-ptr-deref in instrument_atomic_read include/linux/instrumented.h:72 [inline]
 BUG: KASAN: null-ptr-deref in atomic_read include/linux/atomic/atomic-instrumented.h:27 [inline]
 BUG: KASAN: null-ptr-deref in refcount_read include/linux/refcount.h:147 [inline]
@@ -92,59 +94,84 @@ Read of size 4 at addr 000000000000014c by task syz-executor548/5082
 CPU: 0 PID: 5082 Comm: syz-executor548 Not tainted 6.2.0-syzkaller-05251-g5b7c4cabbb65 #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/21/2023
 Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xd9/0x150 lib/dump_stack.c:106
- print_report mm/kasan/report.c:420 [inline]
- kasan_report+0xec/0x130 mm/kasan/report.c:517
- check_region_inline mm/kasan/generic.c:183 [inline]
- kasan_check_range+0x141/0x190 mm/kasan/generic.c:189
- instrument_atomic_read include/linux/instrumented.h:72 [inline]
- atomic_read include/linux/atomic/atomic-instrumented.h:27 [inline]
- refcount_read include/linux/refcount.h:147 [inline]
- __refcount_add_not_zero include/linux/refcount.h:152 [inline]
- __refcount_inc_not_zero include/linux/refcount.h:227 [inline]
- refcount_inc_not_zero include/linux/refcount.h:245 [inline]
- maybe_get_net include/net/net_namespace.h:269 [inline]
- tcf_exts_get_net include/net/pkt_cls.h:260 [inline]
- __fl_put net/sched/cls_flower.c:513 [inline]
- __fl_put+0x13e/0x3b0 net/sched/cls_flower.c:508
- fl_change+0x101b/0x4ab0 net/sched/cls_flower.c:2341
- tc_new_tfilter+0x97c/0x2290 net/sched/cls_api.c:2310
- rtnetlink_rcv_msg+0x996/0xd50 net/core/rtnetlink.c:6165
- netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2574
- netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
- netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1365
- netlink_sendmsg+0x925/0xe30 net/netlink/af_netlink.c:1942
- sock_sendmsg_nosec net/socket.c:722 [inline]
- sock_sendmsg+0xde/0x190 net/socket.c:745
- ____sys_sendmsg+0x334/0x900 net/socket.c:2504
- ___sys_sendmsg+0x110/0x1b0 net/socket.c:2558
- __sys_sendmmsg+0x18f/0x460 net/socket.c:2644
- __do_sys_sendmmsg net/socket.c:2673 [inline]
- __se_sys_sendmmsg net/socket.c:2670 [inline]
- __x64_sys_sendmmsg+0x9d/0x100 net/socket.c:2670
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f3613969d19
-Code: 28 c3 e8 1a 15 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffc884e0c88 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
-RAX: ffffffffffffffda RBX: 00007f36139d7ed0 RCX: 00007f3613969d19
-RDX: 04924924924926d3 RSI: 0000000020000200 RDI: 0000000000000004
-RBP: 00007ffc884e0c98 R08: 00007f36139d7e40 R09: 00007f36139d7e40
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffc884e0ca0
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-==================================================================
+<TASK>
+__dump_stack lib/dump_stack.c:88 [inline]
+dump_stack_lvl+0xd9/0x150 lib/dump_stack.c:106
+print_report mm/kasan/report.c:420 [inline]
+kasan_report+0xec/0x130 mm/kasan/report.c:517
+check_region_inline mm/kasan/generic.c:183 [inline]
+kasan_check_range+0x141/0x190 mm/kasan/generic.c:189
+instrument_atomic_read include/linux/instrumented.h:72 [inline]
+atomic_read include/linux/atomic/atomic-instrumented.h:27 [inline]
+refcount_read include/linux/refcount.h:147 [inline]
+__refcount_add_not_zero include/linux/refcount.h:152 [inline]
+__refcount_inc_not_zero include/linux/refcount.h:227 [inline]
+refcount_inc_not_zero include/linux/refcount.h:245 [inline]
+maybe_get_net include/net/net_namespace.h:269 [inline]
+tcf_exts_get_net include/net/pkt_cls.h:260 [inline]
+__fl_put net/sched/cls_flower.c:513 [inline]
+__fl_put+0x13e/0x3b0 net/sched/cls_flower.c:508
+fl_change+0x101b/0x4ab0 net/sched/cls_flower.c:2341
+tc_new_tfilter+0x97c/0x2290 net/sched/cls_api.c:2310
+rtnetlink_rcv_msg+0x996/0xd50 net/core/rtnetlink.c:6165
+netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2574
+netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
+netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1365
+netlink_sendmsg+0x925/0xe30 net/netlink/af_netlink.c:1942
+sock_sendmsg_nosec net/socket.c:722 [inline]
+sock_sendmsg+0xde/0x190 net/socket.c:745
+____sys_sendmsg+0x334/0x900 net/socket.c:2504
+___sys_sendmsg+0x110/0x1b0 net/socket.c:2558
+__sys_sendmmsg+0x18f/0x460 net/socket.c:2644
+__do_sys_sendmmsg net/socket.c:2673 [inline]
+__se_sys_sendmmsg net/socket.c:2670 [inline]
+__x64_sys_sendmmsg+0x9d/0x100 net/socket.c:2670
 
-
+Fixes: 08a0063df3ae ("net/sched: flower: Move filter handle initialization earlier")
+Reported-by: syzbot+baabf3efa7c1e57d28b2@syzkaller.appspotmail.com
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Paul Blakey <paulb@nvidia.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ net/sched/cls_flower.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+index e960a46b05205bb0bca7dc0d21531e4d6a3853e3..475fe222a85566639bac75fc4a95bf649a10357d 100644
+--- a/net/sched/cls_flower.c
++++ b/net/sched/cls_flower.c
+@@ -2200,8 +2200,9 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
+ 		fnew->flags = nla_get_u32(tb[TCA_FLOWER_FLAGS]);
+ 
+ 		if (!tc_flags_valid(fnew->flags)) {
++			kfree(fnew);
+ 			err = -EINVAL;
+-			goto errout;
++			goto errout_tb;
+ 		}
+ 	}
+ 
+@@ -2226,8 +2227,10 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
+ 		}
+ 		spin_unlock(&tp->lock);
+ 
+-		if (err)
+-			goto errout;
++		if (err) {
++			kfree(fnew);
++			goto errout_tb;
++		}
+ 	}
+ 	fnew->handle = handle;
+ 
+@@ -2337,7 +2340,6 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
+ 	fl_mask_put(head, fnew->mask);
+ errout_idr:
+ 	idr_remove(&head->handle_idr, fnew->handle);
+-errout:
+ 	__fl_put(fnew);
+ errout_tb:
+ 	kfree(tb);
+-- 
+2.39.2.722.g9855ee24e9-goog
+
