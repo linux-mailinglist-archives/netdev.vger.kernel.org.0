@@ -2,76 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B98F6A499F
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 19:24:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5904A6A49BD
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 19:30:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229759AbjB0SYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 13:24:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57514 "EHLO
+        id S229542AbjB0SaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 13:30:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229845AbjB0SYA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 13:24:00 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3E8A233E5
-        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 10:23:49 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id z2so7638023plf.12
-        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 10:23:49 -0800 (PST)
+        with ESMTP id S229974AbjB0S35 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 13:29:57 -0500
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF221A4B1
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 10:29:56 -0800 (PST)
+Received: by mail-qv1-xf35.google.com with SMTP id f1so5064830qvx.13
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 10:29:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=GDtqLJH3f5lA4TmQ3x9NmeWyaKQg7VQJDPnwWZS0UVo=;
-        b=TZGBvnOjHwKmMcwKNEy3x+o9ZW23us+kXw1KbfRL5YQ2T+Kc9Chn7eHTAM6dmhYx/3
-         Bnx565o6qDyv2n6Z3JB0EdqISzWnWuuH1BFXyV6SrMIN5ZIbT2Rw3LN512m1pb76pC1G
-         6EF1ui2uSVVf1ora9C7w3S2QexGfk4NhpA3VjpTL9xXoBjl3FVAYSyjsdQs2KR8UFTjI
-         JhVqKFMfyNYyJKh/p9CeVzyU42YZ2TObjc1c12VUNuztKEGu9bUfwwVoCThozOr87S3o
-         4ZPbXyrPF+GRvJrlDppMMQLXlhs/2p0Iw+UncQrwhpnjV8/plyrIEjDHrM3CfI3PSKNv
-         Aztw==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=8gqvdI/sqm54XWkh3DNgmjvQKemViz9xEEbhMbeWe3c=;
+        b=ah1GvW2D49ep0hOqw/mlXtnmomQmxfiSth7nxEOTuMhOFAL99QpKjBLWCq+wH8akJc
+         p0n17L3oxLnHyg17c6g1tVpvAhGVsDDQJ50GuexcKwOglLAInq/DFoZ3q+f1NL4Rn/rb
+         08yaIH6KD+UisKS28gCNfID2vVt4qUmkz3Y+IO2RW8IyrhoMCJ6t1N0I+QvpdKycKOyU
+         FzjRHlIkeZ0+vUkSNDinURM5kf8TIAjJItUN1cPmoXdFB3AnUcUOk/BQvBHU2AHJr+6Z
+         eQzPi8E4NjFzpwYVOL1EkfNSKOYzIxCyH8BLc8E96SncGuibxJshN1FIwwDixyVhrobg
+         4Hcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GDtqLJH3f5lA4TmQ3x9NmeWyaKQg7VQJDPnwWZS0UVo=;
-        b=DLvwfkysTlmddEPD8iErD0VrjNhQmr4l6ZyvSC1KdhYnkUUnhWprJqyirQm0KIBlm+
-         TRsv2Ti9UZXpKOsHjpZSlBJ//mBec60XmA8oXxcE7Qulu1sam6flEpeAwNN0raOK/g5v
-         grP1kDCRCHIi81S9c8LQIo6jem9q0naXfGC9TVmHYmRVSX0f6lEe88fHc+4hWcEgUbeA
-         rS8MKZwEepMIRau5/SmCT5sR64aMfLtG0SQVkm8laNeVUcjjutKMJtNGY3ZQLLU3aITG
-         E/vXEP5xcl4UQOyUeSK3m0bCkY+DSFByfvcE5RzERxMDPfRyA6Fv7PTcPIFBFPpSKPnX
-         GScQ==
-X-Gm-Message-State: AO0yUKW+hmA2TeyPDORj3FMVgu7rr3Y9MVSMNMPxNeMIuWbjAgYc3Nzb
-        Zrbt6QGXhZTXdlRNNDQuiZw=
-X-Google-Smtp-Source: AK7set9TRFLB1upmuVcX5UjgtG1sxlrPoCIajLvEZGXfwgMb/kRAvf6cPmcK37D8PAH9ddmrM+87KA==
-X-Received: by 2002:a17:90a:3ec7:b0:234:106a:3490 with SMTP id k65-20020a17090a3ec700b00234106a3490mr93173pjc.40.1677522229201;
-        Mon, 27 Feb 2023 10:23:49 -0800 (PST)
-Received: from [10.69.71.131] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id j5-20020a17090ac48500b00213202d77d9sm4597768pjt.43.2023.02.27.10.23.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Feb 2023 10:23:48 -0800 (PST)
-Message-ID: <07ee8ccb-96c2-eb74-5c8d-65934dc051db@gmail.com>
-Date:   Mon, 27 Feb 2023 10:23:45 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH net] bgmac: fix *initial* chip reset to support BCM5358
-Content-Language: en-US
-To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8gqvdI/sqm54XWkh3DNgmjvQKemViz9xEEbhMbeWe3c=;
+        b=gQ5HGZs97FFCEhsARrtpEFANnQIKfnZxTfUgRPpyLq3+qA2fVwIGEvlhlYzBAKugp5
+         FPKOsV4uxY2LMnDcVHYoTmt+xaUj+IJUsgnPDC0EN89yzNrt7coeiN6gi2b9xKF7nimL
+         CBfPH8YKUqFKnfCh3iGVEemuTUZzGFks8iy4sBB6CVVmjdEI31hTFAMOQaQi37WlL/E3
+         kSXS991RrSt3yNZ/I4y55uYhPJe0bSWUnxGEOmAqMg/NPG41l+5p0MkXmGnNolpaiTlZ
+         silS1+VUaagACYjq9ktx4bwDDzvskZIblIhd5Hot+nfp7GXQVJtzTBJ22T15ajkaFQj7
+         YDfg==
+X-Gm-Message-State: AO0yUKXmbcszuOZ8n03cR/CaApHODTFoJcs0aTDbStBxeYhIGFTKLVbJ
+        4n4o+s1JgrvGkuECS3dWE9o=
+X-Google-Smtp-Source: AK7set8JAaa6QqvRhCiFk/ex/Sa1va63Zyjy0oAf4uJqHbWwiCQU/Mns4yyyJOxsM6zeFDkxU6du+w==
+X-Received: by 2002:a05:6214:2425:b0:56e:c09e:7d6b with SMTP id gy5-20020a056214242500b0056ec09e7d6bmr673722qvb.43.1677522595026;
+        Mon, 27 Feb 2023 10:29:55 -0800 (PST)
+Received: from vps.qemfd.net (vps.qemfd.net. [173.230.130.29])
+        by smtp.gmail.com with ESMTPSA id x21-20020a376315000000b007419eb86df0sm5374861qkb.127.2023.02.27.10.29.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Feb 2023 10:29:54 -0800 (PST)
+Received: from schwarzgerat.orthanc (schwarzgerat.danknet [192.168.128.2])
+        by vps.qemfd.net (Postfix) with ESMTP id 485D02B426;
+        Mon, 27 Feb 2023 13:29:54 -0500 (EST)
+Received: by schwarzgerat.orthanc (Postfix, from userid 1000)
+        id 4394B60018D; Mon, 27 Feb 2023 13:29:54 -0500 (EST)
+Date:   Mon, 27 Feb 2023 13:29:54 -0500
+From:   nick black <dankamongmen@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jeffrey Ji <jeffreyji@google.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Jon Mason <jon.mason@broadcom.com>,
-        netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Jon Mason <jdmason@kudzu.us>
-References: <20230227091156.19509-1-zajec5@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20230227091156.19509-1-zajec5@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Subject: Re: [PATCH] [net] add rx_otherhost_dropped sysfs entry
+Message-ID: <Y/z2olg1C4jKD5m9@schwarzgerat.orthanc>
+References: <Y/p5sDErhHtzW03E@schwarzgerat.orthanc>
+ <20230227102339.08ddf3fb@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230227102339.08ddf3fb@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -80,28 +79,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Jakub Kicinski left as an exercise for the reader:
+> "All the other stats are there" is not a strong enough reason
+> to waste memory on all systems. You need to justify the change
+> based on how important the counter is. I'd prefer to draw a
+> line on adding the sysfs stats entries. We don't want to have 
+> to invent a new stats struct just to avoid having sysfs entries
+> for each stat.
 
+In that case, I think a comment here is warranted explaining why
+this stat, out of 24 total, isn't important enough to reproduce
+in sysfs. I'm not sure what this comment would be:
+rx_otherhost_dropped certainly seems as useful as, say
+rx_compressed (only valid on e.g. CSLIP and PPP).
 
-On 2/27/2023 1:11 AM, Rafał Miłecki wrote:
-> From: Rafał Miłecki <rafal@milecki.pl>
-> 
-> While bringing hardware up we should perform a full reset including the
-> switch bit (BGMAC_BCMA_IOCTL_SW_RESET aka SICF_SWRST). It's what
-> specification says and what reference driver does.
-> 
-> This seems to be critical for the BCM5358. Without this hardware doesn't
-> get initialized properly and doesn't seem to transmit or receive any
-> packets.
-> 
-> Originally bgmac was calling bgmac_chip_reset() before setting
-> "has_robosw" property which resulted in expected behaviour. That has
-> changed as a side effect of adding platform device support which
-> regressed BCM5358 support.
-> 
-> Fixes: f6a95a24957a ("net: ethernet: bgmac: Add platform device support")
-> Cc: Jon Mason <jdmason@kudzu.us>
-> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+If this stat is left out of the sysfs interface, I'm likely to
+just grab the rtnl_link_stats64 directly via netlink, and forgo
+the sysfs interface entirely. If, in a modern switched world,
+I'm receiving many packets destined for other hosts, that's at
+least as interesting to me as several other classes of RX error.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-Florian
+nick black -=- https://www.nick-black.com
+to make an apple pie from scratch,
+you need first invent a universe.
