@@ -2,112 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA49F6A4CA3
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 22:00:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 109B76A4CAC
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 22:02:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229783AbjB0VAK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 16:00:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39308 "EHLO
+        id S229849AbjB0VB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 16:01:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229558AbjB0VAI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 16:00:08 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AA0623C61;
-        Mon, 27 Feb 2023 13:00:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=yxNQq6iAQdNqxHxg6xpTtkOHUc+Bubub8MOHjovJQps=; b=qyVfgukQMEl2DxmqtcwlmlPvAS
-        zB0a5j0IaU+dxaa+FZ/IrkDC1aspPRZqLBVqU/IRHkrXqonSnmBFUMTmdh2tcYPrQSuypIAHnm0b1
-        5nq6HJBj0bHs+FMmFAGL7rFgfDSjnVnNau1zD4uX6PoNp/gn/PZqO9OJ+Q+t9IOSEgdIzGVjlnExq
-        ivSxHAYdsaCHjb7xSXNSR5lKVZta2YosZU6uAKuG9E5SaeJyLyY0zgYZqWg4R35ZetWFvFy6ffs/f
-        fxJv1XsiUiYUHph/6lWq07apbkvD7+RNGehLp3qdjHr8/OXCMR2nnTUD4VA1sa5QNJq1aXf7S0Q6j
-        qzusSVVg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:39650)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pWkbF-0003hx-So; Mon, 27 Feb 2023 20:59:57 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pWkbD-0001zh-G7; Mon, 27 Feb 2023 20:59:55 +0000
-Date:   Mon, 27 Feb 2023 20:59:55 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Arnd Bergmann <arnd@kernel.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Hartley Sweeten <hsweeten@visionengravers.com>,
-        Ian Abbott <abbotti@mev.co.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kevin Cernekee <cernekee@gmail.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Manuel Lauss <manuel.lauss@gmail.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Olof Johansson <olof@lixom.net>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        YOKOTA Hiroshi <yokota@netlab.is.tsukuba.ac.jp>,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-arm-kernel@lists.infradead.org, linux-can@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-wireless@vger.kernel.org, Netdev <netdev@vger.kernel.org>
-Subject: Re: [RFC 0/6] pcmcia: separate 16-bit support from cardbus
-Message-ID: <Y/0Zy0nUmorvrp1u@shell.armlinux.org.uk>
-References: <20230227133457.431729-1-arnd@kernel.org>
- <3d8f28d7-78df-5276-612c-85b5262a987a@lwfinger.net>
- <c17bff4e-031e-4101-8564-51f6298b1c68@app.fastmail.com>
+        with ESMTP id S229834AbjB0VB6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 16:01:58 -0500
+Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4601623C7F;
+        Mon, 27 Feb 2023 13:01:57 -0800 (PST)
+Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-536cb25982eso211710847b3.13;
+        Mon, 27 Feb 2023 13:01:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=gbSo0z69FDjg0xel2jPAZLJQhmNE/ROmdCWMSIdEckg=;
+        b=mdEjCXEvLOL/rEEVRmRzy8OScWDk2rOQUmPNAuGAZa9b1MEWrf+dTIjqzaLDi8hiFc
+         kCL5xTRPcrUJdHmZNxaLK/mYhm6TJdbUFHXQ1mJr1dmFHDpKg/WHxO4IE0GARYDIrhVB
+         5kqv3+zBWpzI8XEc5L1KWUTYRQJKiHbswBUx8rQZjHS64FKLuZdMFlnEh5RpGnCox3d+
+         fs0ghqRyR4Zdj7s9cyeCHJzIhFQHQAPbjLV5ABB9sbmEsL0gE7p29KmgRfnoy7AUVKI4
+         OyhvPluMC+qk+uLil1g7K9FyKAjdysC7WZDD0BqqeuERzb4EXzlN2KGrb2M6Ldhe6+Wl
+         4QOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=gbSo0z69FDjg0xel2jPAZLJQhmNE/ROmdCWMSIdEckg=;
+        b=YMaBs+/bhQF1U6OaxX6FjH7aoWlC0j4gTrhSwPF4bBxYeTedUWbXXfvSxehUuUC/GH
+         i7yuvDxEITGJ0LID1hxuriSZzYWAtZuOlweO3EVB72yT6LGxiKTePM0qUqbZMf6ZtA1K
+         naCyL5uUbRzt8wTtLZCQFsXvuxq2XwOTp+V3fOsFgy7Uaj0OD4BvTpOtxNSCsYFATTC0
+         Cz651FJq8T5CHgHwjlCaSa52XBN+qtW5bH6pO1faVSlxveuWxs83a0AuC5QQTLwMWZkZ
+         sOlc7YUV+ZOTNclcQ9ziYFBy22ZR3YHmm2BAzFMyobz+lUdZFsT3NH1kv1o+dRizgAHH
+         POtg==
+X-Gm-Message-State: AO0yUKUjd44zXxF5EeDYhdaqczRCAwSTbwhvzaWXDWFd71GX3qfiarT1
+        nkkMAJNRH6QIrtStFuUgFJZgNvCatm0W0cTVPcw=
+X-Google-Smtp-Source: AK7set8ZRJ/04QVuUtSfV8RQeBBA144qhMTpdVn4XUsVGLzPsABkW93ZtV1Kqj7ABcTchAe6t6KzJwwtc2mF1ainjQc=
+X-Received: by 2002:a81:441c:0:b0:52e:f66d:b70f with SMTP id
+ r28-20020a81441c000000b0052ef66db70fmr58937ywa.5.1677531716357; Mon, 27 Feb
+ 2023 13:01:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c17bff4e-031e-4101-8564-51f6298b1c68@app.fastmail.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <cover.1675245257.git.lorenzo@kernel.org> <a72609ef4f0de7fee5376c40dbf54ad7f13bfb8d.1675245258.git.lorenzo@kernel.org>
+ <e519f15d-cdd0-9362-34f3-3e6b8c8a4762@meta.com>
+In-Reply-To: <e519f15d-cdd0-9362-34f3-3e6b8c8a4762@meta.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 27 Feb 2023 13:01:43 -0800
+Message-ID: <CAEf4BzY0sHqEXaY8no0VgwEbNoPEaQz0h53Gav=T1DCsjsjo8A@mail.gmail.com>
+Subject: Re: [PATCH v5 bpf-next 5/8] libbpf: add API to get XDP/XSK supported features
+To:     Yonghong Song <yhs@meta.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kuba@kernel.org,
+        Martin KaFai Lau <martin.lau@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 27, 2023 at 09:38:54PM +0100, Arnd Bergmann wrote:
-> On Mon, Feb 27, 2023, at 21:23, Larry Finger wrote:
-> > On 2/27/23 07:34, Arnd Bergmann wrote:
-> 
+On Mon, Feb 27, 2023 at 12:39 PM Yonghong Song <yhs@meta.com> wrote:
+>
+>
+>
+> On 2/1/23 2:24 AM, Lorenzo Bianconi wrote:
+> > Extend bpf_xdp_query routine in order to get XDP/XSK supported features
+> > of netdev over route netlink interface.
+> > Extend libbpf netlink implementation in order to support netlink_generic
+> > protocol.
 > >
-> > Your patch set also breaks my PowerBook G4. The output of 'lspci -nn | grep 
-> > Network' shows the following before your patch is applied:
+> > Co-developed-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> > Co-developed-by: Marek Majtyka <alardam@gmail.com>
+> > Signed-off-by: Marek Majtyka <alardam@gmail.com>
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >   tools/lib/bpf/libbpf.h  |  3 +-
+> >   tools/lib/bpf/netlink.c | 96 +++++++++++++++++++++++++++++++++++++++++
+> >   tools/lib/bpf/nlattr.h  | 12 ++++++
+> >   3 files changed, 110 insertions(+), 1 deletion(-)
 > >
-> > 0001:10:12.0 Network controller [0280]: Broadcom Inc. and subsidiaries BCM4306 
-> > 802.11b/g Wireless LAN Controller [14e4:4320] (rev 03)
-> > 0001:11:00.0 Network controller [0280]: Broadcom Inc. and subsidiaries BCM4318 
-> > [AirForce One 54g] 802.11g Wireless LAN Controller [14e4:4318] (rev 02)
+> [...]
+> > +
+> >   int bpf_xdp_query(int ifindex, int xdp_flags, struct bpf_xdp_query_opts *opts)
+> >   {
+> >       struct libbpf_nla_req req = {
+> > @@ -366,6 +433,10 @@ int bpf_xdp_query(int ifindex, int xdp_flags, struct bpf_xdp_query_opts *opts)
+> >               .ifinfo.ifi_family = AF_PACKET,
+> >       };
+> >       struct xdp_id_md xdp_id = {};
+> > +     struct xdp_features_md md = {
+> > +             .ifindex = ifindex,
+> > +     };
+> > +     __u16 id;
+> >       int err;
 > >
-> > The first of these is broken and built into the laptop. The second is plugged 
-> > into a PCMCIA slot, and uses yenta-socket as a driver.
+> >       if (!OPTS_VALID(opts, bpf_xdp_query_opts))
+> > @@ -393,6 +464,31 @@ int bpf_xdp_query(int ifindex, int xdp_flags, struct bpf_xdp_query_opts *opts)
+> >       OPTS_SET(opts, skb_prog_id, xdp_id.info.skb_prog_id);
+> >       OPTS_SET(opts, attach_mode, xdp_id.info.attach_mode);
 > >
-> > When your patches are applied, the second entry vanishes.
-> >
-> > Yes, this hardware is ancient, but I would prefer having this wifi interface 
-> > work. I can provide any output you need.
-> 
-> Is this the Cardbus or the PCMCIA version of the BCM4306 device? As far
-> as I understand this particular chip can be wired up either way inside
-> of the card, and the PowerBook G4 supports both types of devices.
-> 
-> If it's the PCMCIA version, then dropping support for it was the idea
-> of the patch series that we can debate, but if it was the Cardbus version
-> that broke, then this was likely a bug I introduced by accident.
+> > +     if (!OPTS_HAS(opts, feature_flags))
+> > +             return 0;
+> > +
+> > +     err = libbpf_netlink_resolve_genl_family_id("netdev", sizeof("netdev"), &id);
+> > +     if (err < 0)
+> > +             return libbpf_err(err);
+>
+> Hi, Lorenzo,
+>
+> Using latest libbpf repo (https://github.com/libbpf/libbpf, sync'ed from
+> source), looks like the above change won't work if the program is
+> running on an old kernel, e.g., 5.12 kernel.
+>
+> In this particular combination, in user space, bpf_xdp_query_opts does
+> have 'feature_flags' member, so the control can reach
+> libbpf_netlink_resolve_genl_family_id(). However, the family 'netdev'
+> is only available in latest kernel (after this patch set). So
+> the error will return in the above.
+>
+> This breaks backward compatibility since old working application won't
+> work any more with a refresh of libbpf.
+>
+> I could not come up with an easy solution for this. One thing we could
+> do is to treat 'libbpf_netlink_resolve_genl_family_id()' as a probe, so
+> return 0 if probe fails.
+>
+>    err = libbpf_netlink_resolve_genl_family_id("netdev",
+> sizeof("netdev"), &id);
+>    if (err < 0)
+>         return 0;
+>
+> Please let me know whether my suggestion makes sense or there could be a
+> better solution.
+>
 
-If it shows up as a PCI device, it will be cardbus, not 16-bit ISA.
+feature_flags is an output parameter and if the "netdev" family
+doesn't exist then there are no feature flags to return, right?
 
-PCMCIA cards don't show up in lspci.
+Is there a specific error code that's returned when such a family
+doesn't exist? If yes, we should check for it and return 0 for
+feature_flags. If not, we'll have to do a generic < 0 check as
+Yonghong proposes.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+
+>
+> > +
+> > +     memset(&req, 0, sizeof(req));
+> > +     req.nh.nlmsg_len = NLMSG_LENGTH(GENL_HDRLEN);
+> > +     req.nh.nlmsg_flags = NLM_F_REQUEST;
+> > +     req.nh.nlmsg_type = id;
+> > +     req.gnl.cmd = NETDEV_CMD_DEV_GET;
+> > +     req.gnl.version = 2;
+> > +
+> > +     err = nlattr_add(&req, NETDEV_A_DEV_IFINDEX, &ifindex, sizeof(ifindex));
+> > +     if (err < 0)
+> > +             return err;
+> > +
+> > +     err = libbpf_netlink_send_recv(&req, NETLINK_GENERIC,
+> > +                                    parse_xdp_features, NULL, &md);
+> > +     if (err)
+> > +             return libbpf_err(err);
+> > +
+> > +     opts->feature_flags = md.flags;
+> > +
+> >       return 0;
+> >   }
+> >
+> [...]
