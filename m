@@ -2,44 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 07A3E6A424D
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 14:11:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58BFD6A425F
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 14:15:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229874AbjB0NK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 08:10:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49986 "EHLO
+        id S229949AbjB0NPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 08:15:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229685AbjB0NK4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 08:10:56 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51649E04D;
-        Mon, 27 Feb 2023 05:10:55 -0800 (PST)
+        with ESMTP id S229933AbjB0NPH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 08:15:07 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAC1AF753;
+        Mon, 27 Feb 2023 05:15:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E78FA60DFF;
-        Mon, 27 Feb 2023 13:10:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD779C433D2;
-        Mon, 27 Feb 2023 13:10:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B24EB80C94;
+        Mon, 27 Feb 2023 13:15:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CB44C4339C;
+        Mon, 27 Feb 2023 13:15:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677503454;
-        bh=n157J+FX9Vk7oC3RGoXa72XZGmKXav1KHQAzqkqB9s4=;
-        h=From:Subject:To:Cc:Date:From;
-        b=GLV07VtPtN8aSBffaWUbusPqV52Uw2/Lms1Qj/Hw07W5ihdr4h8WcytpAea1auHzB
-         GGltYFcyuKRpebh6dVejmTDsFQD8QhQTj9JIcLEm/e5W2yXWqXlzEHi68JPoImEhj7
-         pqlnMSDDCqUbglPbV9G7gkHvCQxIMDpXfpilts079nZyYLGdwMe/oFCsk86J0p6J61
-         LubI+BLJvaRpmsCjQaAq9bpVORXQiVWFZQ/0pPs0sn434rUC4nwc3ahjwRg72SqUVh
-         hxQBjC2FSAHdFKUGxfA+o9zOawA/nI/m9IiexOEtsUpgF54XnBB811RseuJA1rD2XI
-         EcK7rnXHUxlZQ==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        s=k20201202; t=1677503703;
+        bh=zJRZGvJSsndRbdRqpKpyfMIAZ4V2sTYXfUa93Tykhj4=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=bSi2lpcJ71zaE9649OxRBNTnQaX1CzXQDWmUHZDMgwdnp9C1GvX4qAq7BFW0ZpPlj
+         USAuOQOPfmroixGBl7nN1jRTTuSRr/bZxLKkDYVWL3veybabZj4jVBcyvMFxd02pm9
+         jf2Sxz+KX9dxIAlG0TW1aFg0ysW/sCHQW6VlkOR3E2ZHaBZtw3saYuSaSs7ybqubQu
+         MCdA1HcD0vBqdCWfLi8zurMhV7g0jC5PQ0g3smMLkCXjb8rhtn34X9LA7igGV8Wphy
+         AIZHAEu4nQC3ZBYTGhBmQlpbmVK+BEvmJZQNMNHfU+lqa5ynStrQ8dDTCnSX1CqVvb
+         rczQBMr5mUiZA==
 From:   Kalle Valo <kvalo@kernel.org>
-Subject: pull-request: wireless-2023-02-27
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Message-Id: <20230227131053.BD779C433D2@smtp.kernel.org>
-Date:   Mon, 27 Feb 2023 13:10:53 +0000 (UTC)
+To:     Mario Limonciello <mario.limonciello@amd.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] wifi: ath11k: Add a warning for wcn6855 spurious wakeup events
+References: <20230220213807.28523-1-mario.limonciello@amd.com>
+        <87r0ubqo81.fsf@kernel.org>
+        <980959ea-b72f-4cc0-7662-4dd64932d005@amd.com>
+Date:   Mon, 27 Feb 2023 15:14:54 +0200
+In-Reply-To: <980959ea-b72f-4cc0-7662-4dd64932d005@amd.com> (Mario
+        Limonciello's message of "Mon, 27 Feb 2023 07:07:21 -0600")
+Message-ID: <87mt4zqmgh.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -49,43 +59,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Mario Limonciello <mario.limonciello@amd.com> writes:
 
-here's a pull request to net tree, more info below. Please let me know if there
-are any problems.
+> On 2/27/23 06:36, Kalle Valo wrote:
+>
+>> Mario Limonciello <mario.limonciello@amd.com> writes:
+>>
+>>> When WCN6855 firmware versions less than 0x110B196E are used with
+>>> an AMD APU and the user puts the system into s2idle spurious wakeup
+>>> events can occur. These are difficult to attribute to the WLAN F/W
+>>> so add a warning to the kernel driver to give users a hint where
+>>> to look.
+>>>
+>>> This was tested on WCN6855 and a Lenovo Z13 with the following
+>>> firmware versions:
+>>> WLAN.HSP.1.1-03125-QCAHSPSWPL_V1_V2_SILICONZ_LITE-3.6510.9
+>>> WLAN.HSP.1.1-03125-QCAHSPSWPL_V1_V2_SILICONZ_LITE-3.6510.23
+>>>
+>>> Link: http://lists.infradead.org/pipermail/ath11k/2023-February/004024.html
+>>> Link: https://gitlab.freedesktop.org/drm/amd/-/issues/2377
+>>> Link: https://bugs.launchpad.net/ubuntu/+source/linux-firmware/+bug/2006458
+>>> Link:
+>>> https://lore.kernel.org/linux-gpio/20221012221028.4817-1-mario.limonciello@amd.com/
+>>> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+>>
+>> [...]
+>>
+>>> +static void ath11k_check_s2idle_bug(struct ath11k_base *ab)
+>>> +{
+>>> +	struct pci_dev *rdev;
+>>> +
+>>> +	if (pm_suspend_target_state != PM_SUSPEND_TO_IDLE)
+>>> +		return;
+>>> +
+>>> +	if (ab->id.device != WCN6855_DEVICE_ID)
+>>> +		return;
+>>> +
+>>> +	if (ab->qmi.target.fw_version >= WCN6855_S2IDLE_VER)
+>>> +		return;
+>>> +
+>>> +	rdev = pci_get_domain_bus_and_slot(0, 0, PCI_DEVFN(0, 0));
+>>> +	if (rdev->vendor == PCI_VENDOR_ID_AMD)
+>>> + ath11k_warn(ab, "fw_version 0x%x may cause spurious wakeups.
+>>> Upgrade to 0x%x or later.",
+>>> +			    ab->qmi.target.fw_version, WCN6855_S2IDLE_VER);
+>>
+>> I understand the reasons for this warning but I don't really trust the
+>> check 'ab->qmi.target.fw_version >= WCN6855_S2IDLE_VER'. I don't know
+>> how the firmware team populates the fw_version so I'm worried that if we
+>> ever switch to a different firmware branch (or similar) this warning
+>> might all of sudden start triggering for the users.
+>>
+>
+> In that case, maybe would it be better to just have a list of the
+> public firmware with issue and ensure it doesn't match one of those?
 
-Kalle
+You mean ath11k checking for known broken versions and reporting that?
+We have so many different firmwares to support in ath11k, I'm not really
+keen on adding tests for a specific version.
 
-The following changes since commit 5b7c4cabbb65f5c469464da6c5f614cbd7f730f2:
+We have a list of known important bugs in the wiki:
 
-  Merge tag 'net-next-6.3' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next (2023-02-21 18:24:12 -0800)
+https://wireless.wiki.kernel.org/en/users/drivers/ath11k#known_bugslimitations
 
-are available in the Git repository at:
+What about adding the issue there, would that get more exposure to the
+bug and hopefully the users would upgrade the firmware?
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless.git tags/wireless-2023-02-27
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-for you to fetch changes up to 52fd90638a7269be2a6f6cf1e4dea6724f8e13b6:
-
-  wifi: wext: warn about usage only once (2023-02-26 19:53:35 +0200)
-
-----------------------------------------------------------------
-wireless fixes for v6.3
-
-First set of fixes for v6.3. We have only three oneliners. The most
-important one is the patch reducing warnings about the Wireless
-Extensions usage, reported by Linus.
-
-----------------------------------------------------------------
-Johannes Berg (1):
-      wifi: wext: warn about usage only once
-
-Len Brown (1):
-      wifi: ath11k: allow system suspend to survive ath11k
-
-Lorenzo Bianconi (1):
-      wifi: mt76: usb: fix use-after-free in mt76u_free_rx_queue
-
- drivers/net/wireless/ath/ath11k/pci.c    | 2 +-
- drivers/net/wireless/mediatek/mt76/usb.c | 1 +
- net/wireless/wext-core.c                 | 4 ++--
- 3 files changed, 4 insertions(+), 3 deletions(-)
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
