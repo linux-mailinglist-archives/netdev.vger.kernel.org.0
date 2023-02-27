@@ -2,342 +2,1467 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 011FC6A4545
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 15:55:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28E686A4573
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 16:00:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229916AbjB0Oyv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 09:54:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36772 "EHLO
+        id S230098AbjB0PAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 10:00:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229982AbjB0Oys (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 09:54:48 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C1DC22009;
-        Mon, 27 Feb 2023 06:54:44 -0800 (PST)
-Received: from dggpemm500012.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4PQNl41KZrzKqBd;
-        Mon, 27 Feb 2023 22:52:32 +0800 (CST)
-Received: from localhost.localdomain (10.175.124.27) by
- dggpemm500012.china.huawei.com (7.185.36.89) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Mon, 27 Feb 2023 22:54:29 +0800
-From:   gaoxingwang <gaoxingwang1@huawei.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
-        <yoshfuji@linux-ipv6.org>
-CC:     <kuba@kernel.org>, <liaichun@huawei.com>, <yanan@huawei.com>
-Subject: panic in mld_newpack
-Date:   Mon, 27 Feb 2023 22:54:43 +0800
-Message-ID: <20230227145443.2189961-1-gaoxingwang1@huawei.com>
-X-Mailer: git-send-email 2.23.0
+        with ESMTP id S230081AbjB0PAU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 10:00:20 -0500
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E75F212B2
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 07:00:06 -0800 (PST)
+Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31REsNlf014169;
+        Mon, 27 Feb 2023 14:59:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version; s=corp-2022-7-12;
+ bh=l7sqqULlFBC9g9OhFqyLHb8G9k1RNh+M8gdRDMxiP9o=;
+ b=gGTMSYBVYOLmumgWvDjppny1tXzWpq2b5fZQjpza0PLWC/qO2vp9rV02qH3/LMtHVVu7
+ x2LEd0P8tP0/qXLdqEyKkFnLG8ZwOmuVFCmbVBQ25/X+kIizko04R9Mxe7jbROftyHrW
+ T+W3xLrGv+uni3oCcPEgi1otSF2Z5B3eBMhEUKmxvqZ9Wd1XHrm4UyHbOZU8srpLegJo
+ qA/hHgi71VQ9cfGLhcqM0vYF+CnbjhM7EITQQNyPRamOMmEgohp0J95CbWLFXIbfNqGV
+ IO0GpsBZZ52M0OT7q4xgt7JHoUrCZgKnRPPq+BfQtD2Oh4yB527qKF/yPOfxOxtEZCCl xw== 
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3nyba23u9f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 27 Feb 2023 14:59:44 +0000
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 31REWwUP015940;
+        Mon, 27 Feb 2023 14:59:44 GMT
+Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2169.outbound.protection.outlook.com [104.47.59.169])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3ny8s5necn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 27 Feb 2023 14:59:43 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oT6+8Dc583ILvWb8CM3IEYVRr4KFvCz3595RcBUDYjyoqNkRWh5myHJv2k9Jo75Toyep6a9HPZrfCBhkb7GBfljykrzeE8euRi2eg3ogXWioME/F62Vt9bf7eO6DLusV0Y0jnLSVPUhP+55dEedixABBlSPFuE92n8RML3qpcl+D80sjGZ5PJMiTiS8dh2B+owMLU1QXSzj2DGP+Mlcg3lbTP5hVTp4g13wANoabDFPiimpxf4gVbujIIflKvJdgO/8iEynz2hPoJ8VjKMhggjhBxlcNX3v6teIsDW81Wh9g22xIAaR43eciLUKT2Bbi974E9qMM2KLxf0ExgdRVQw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=l7sqqULlFBC9g9OhFqyLHb8G9k1RNh+M8gdRDMxiP9o=;
+ b=aq824w9AwuMsyLJX90gOXPJ0nwgF90RLZCXTCprRHbiqKtSjtDU0ALhYs50Ozha1Hfj3GV86lJK/l/LEJofIOJEaKbbNr//FyJaxrbj7XJva2Y+0BCBSNOV5wipMIkifblt5pMRqVLICpHU3ZDAfE2ItAwyigOYAxPayszlFwfaQieGgP5SAW818vSp/MoTJnA3dnUjcRDl1DVxjmDvVpuPFKavrW8naEsikZN0UAl4t7Sx3Xtlv3TjgrGkuFaK6LHKuBp3mdC7K4mMXWJ5Dbvkle2fBwZxt8akR6f3cdxCCKP77kPHvVOKCpQ2kNZX3O/ZfuT/rj9P1q4fhbO0V6g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=l7sqqULlFBC9g9OhFqyLHb8G9k1RNh+M8gdRDMxiP9o=;
+ b=Gf5zIPGCE6ZO5B+L6vcHL6gNsAzbsEk/zUv3ZAGVFvHhPKRGRgzxjUA5kml8oEjCdVFaYc+FerlqmPuH+JG6eJ/eoFFbBpF6NiYe70iAbugF9km6hAsM75854npswB+dqzyzrBw2uV5cO7d5l2Y0U5hUfp/0gWCMksgyrCa3fsw=
+Received: from BN0PR10MB5128.namprd10.prod.outlook.com (2603:10b6:408:117::24)
+ by CY5PR10MB6261.namprd10.prod.outlook.com (2603:10b6:930:43::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.16; Mon, 27 Feb
+ 2023 14:59:40 +0000
+Received: from BN0PR10MB5128.namprd10.prod.outlook.com
+ ([fe80::5c2f:5e81:b6c4:a127]) by BN0PR10MB5128.namprd10.prod.outlook.com
+ ([fe80::5c2f:5e81:b6c4:a127%7]) with mapi id 15.20.6156.016; Mon, 27 Feb 2023
+ 14:59:40 +0000
+From:   Chuck Lever III <chuck.lever@oracle.com>
+To:     Hannes Reinecke <hare@suse.de>
+CC:     Chuck Lever <cel@kernel.org>, "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-tls-handshake@lists.linux.dev" 
+        <kernel-tls-handshake@lists.linux.dev>
+Subject: Re: [PATCH v5 1/2] net/handshake: Create a NETLINK service for
+ handling handshake requests
+Thread-Topic: [PATCH v5 1/2] net/handshake: Create a NETLINK service for
+ handling handshake requests
+Thread-Index: AQHZSITpzXcU72XpWUqa2tRUnzVdcK7iiYuAgABdpYA=
+Date:   Mon, 27 Feb 2023 14:59:40 +0000
+Message-ID: <1B595556-0236-49F3-A8B0-ECF2332450D4@oracle.com>
+References: <167726551328.5428.13732817493891677975.stgit@91.116.238.104.host.secureserver.net>
+ <167726635921.5428.7879951165266317921.stgit@91.116.238.104.host.secureserver.net>
+ <17a96448-b458-6c92-3d8b-c82f2fb399ed@suse.de>
+In-Reply-To: <17a96448-b458-6c92-3d8b-c82f2fb399ed@suse.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3696.120.41.1.2)
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN0PR10MB5128:EE_|CY5PR10MB6261:EE_
+x-ms-office365-filtering-correlation-id: eedf162f-3f50-43a6-17af-08db18d3406c
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Wr0YYFxUgANl9o6VzXdkMP46F7lgmWf0MayK+ayeA+K+aWDFoWyeuUbpk5FUPRGF4uEB+OTUfsc24+FpLKqpn3S9u8iejV33+LZExD5w2surp9kj/JcVm5K2EIEY6sYK5I5rdT1FQEKLPanqqW6Ip/LEJvifJohe3chRoFyBsm+z3wPmjcpv4DNE0HByeIkH0F8wvJm4o+13KArSeKPfkOJhT1PpI3klaYzc1f0lSFDr1g4nMratpgJ20mrcap1JLudAyT33h9kkVjrDdojjLi4t1TCOvt9AeA+Cdh2pPuwxsM7lvN4lE+Kmlz7DRTfddDvlN6PRD4txiojayf/imVdwZ1L4s+Ev4ZY2UA/uh7ul+kbTqVLknzHP/Ic65z0SokzJCBb4kPoJV8GnioNdoFz8IAtO8KHvThxNbBapRzPaVMPH7NEYuqz7MtL3eQYEUGiQk68pdcNxj4mENZaiMC1wokc8Mk6cTJQY/NGBW+BQIE6ritghjsWCDHyfb457J0xUhFyhRK5cr/FIW5t60QcmuVP5hxEl2ZFMki8mwrZjqtDBNu6NGLGUTO6sZs/9hoZuFBljfKwzVHSSefFjtolqxijG1l5I04YZm08wlTUTKe6ez4qPQyMY4NcpKkBAXHRGb2pRjCog89hbhyKzet/69UBNqnv/dK0f/zzv1nuh9smm1Bqws0pfL0brJ/qaxanUgMUFtJXFxavLTC8CA8vpbgup0mqRQLR+DwwNQCwmLAMEStj/aJFgRiHLdk3W
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR10MB5128.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(346002)(136003)(396003)(366004)(376002)(39860400002)(451199018)(91956017)(66476007)(66946007)(66556008)(6916009)(4326008)(76116006)(8676002)(64756008)(54906003)(66446008)(41300700001)(2906002)(71200400001)(30864003)(8936002)(5660300002)(2616005)(6506007)(53546011)(478600001)(6486002)(26005)(186003)(66899018)(316002)(6512007)(83380400001)(122000001)(86362001)(38070700005)(33656002)(36756003)(38100700002)(21314003)(45980500001)(559001)(579004);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?PMF4G3qFIU0L4yBhL2B4yhqSDbB+37+d4H3rM5uQIwy7iIRyaajwIeI98vIk?=
+ =?us-ascii?Q?jJP9OAyxOHtEpJiE5aiKbLpdcLLMeEY4XKUhbcbpmTFXYgFnVFwyEsz6tVAW?=
+ =?us-ascii?Q?t0JgyYCoUz0yP4+cY9oCzkdlvmvTl3GBzVN527LHwxALTXN0XENJM+1cc+qe?=
+ =?us-ascii?Q?JEjH9Ogh3I9YHTHYG0Zb7FRihGnNEMroEO9cdyssdHmINgneDM3SRUVztW0l?=
+ =?us-ascii?Q?3skOrLbWHGqaozc/t+KnSAlsEqBZxJmwh1cfkNW+TtlrSG8WdiyOopkk7UUd?=
+ =?us-ascii?Q?Vzd7TceU811q+DWTMtwrVHKschkCl1j0BU5Cx3CxurMcJegZteFD4SGkpO22?=
+ =?us-ascii?Q?dl+MLvBpVoGZIhkGflExO5geSio+UaAK5r7g4j213H27rEoZYfVrJIY6X/Y8?=
+ =?us-ascii?Q?pYJylCdD2YnA6gVp8tP5O2mSqNNK0yIiAS2A+1XylqhGPOD+O7Zjx0tV7v95?=
+ =?us-ascii?Q?+IpvPEQkMoqJ9j3dcmWgmnrpdpK95i9vhkvePbexrNlFr8EQL2SeempeEC1w?=
+ =?us-ascii?Q?DE9Kt7EE39K6ZYG3gLJb8tUXgQKZKc2UQCsuaWT1xJiIcg4x9hapyFr+ouNT?=
+ =?us-ascii?Q?ACxlxf0Be3hbEiE4ejutIy/iAPGpO+SYw4jRpaQmeBAEacmU74lLnFShuG01?=
+ =?us-ascii?Q?fztYOmMknHOlnDYe6jjZ1+tyw5zo36iqWMEkdYqUZxySz0mpC+mCZ4vIjJi8?=
+ =?us-ascii?Q?OWriHoh4HqldtpsuO8H5p+A6XN/Af0zW0RaWG0ks+wMkCZ528tjsvb/I045b?=
+ =?us-ascii?Q?284WjMTKJC1UWrJQu4uuFtvSKqUSlwedpVUnQT7APx2+nY/5ysuZwT+NIErG?=
+ =?us-ascii?Q?E/iTYBvEE+oMbrkNBGMIPA2NJvIzB6gOLCQK1UDjxIVTap3oNTJkGScCwRyY?=
+ =?us-ascii?Q?+1m4WMbCYTw12J34VeDs3YO554ekzthZnPlwV9B0M8JI/S7pvEGC3AY7cqx4?=
+ =?us-ascii?Q?vkRmplpZ4p3eCT222SCC3viKwOwtwc3n9+RsAVBCcMZ1iHr8Oy+vsRpRmyiO?=
+ =?us-ascii?Q?i12os6Pq/uyfDGyrb7e58IV2dk3Ppi7SbVT7hFmrDD3y5keGyhlYnrvw90EP?=
+ =?us-ascii?Q?TIVSTBFywSaCfwQphD05HB1akYu5ihd4QKARNULexAKelR+M6Jtc1BzEpBx2?=
+ =?us-ascii?Q?sC90QIAuXvrMabiNNq1Mh2BwOUJAri4FbLr5d8/FLLjDxCK1TgP6vE89Kyme?=
+ =?us-ascii?Q?S2nif3vg5r27HkpvgEU5W3FjK00R2+BPlAt+8wjHyBseNSMi1/cdbV9twfjd?=
+ =?us-ascii?Q?tcBnIEzA7oD8efi+YwzNjDI4Pc5yJoBqE3NjthQcMU1bJ6TNlvg1/aFlFfA3?=
+ =?us-ascii?Q?ZLWq0aaTBSlhGlR6ag/t88sYCio7IuctC3pwvXPsdVJVulFEsLsSH3UdyVf2?=
+ =?us-ascii?Q?f+EUsFQYQZrXUpSmASYt1tOhWanqqLHY4LvSDfryU3EcVB3IdfQ2kiaQBHGx?=
+ =?us-ascii?Q?snT3T5uAYT+9RCevHQ/FhV0csPtP0RZCeHNIDBGD8YgFppV5x8mzTDlR/oiO?=
+ =?us-ascii?Q?0IWQqGjFvp8jMFfTcnjH75lqkTjGBuQHF0lnjhVlgUwy4+OL0VM/qoQbUSEg?=
+ =?us-ascii?Q?L+B78yJ5lI71dIPES6ud6h851UHyeuUcpd4lnHrdZdBM7OlzXHdZ5l8V6ciJ?=
+ =?us-ascii?Q?DA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <E6525F457C2B5347BED6E0A31D9CC54E@namprd10.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500012.china.huawei.com (7.185.36.89)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: MIFXrtDY+q3m7gTAIANhPfvZF7PSNempF4/i7/HQyjnfA70yCvkZk3+PlwJ/U7Z40hx+LNJstFJBtqhzUI2NSDXUtxbhBBttc5fkDMCapfDVvELZFK8v72ARFHJlJ8T80KHfc3rNQ6fxjq64CWmSuU7wU01w08sMxafgi9poajK48NA9BrDN3D61B9Vkw6wNRwoJvCeKNQE2TzFyJfQPqlMK4f9lE+IwU5eNTOlymRR7kyYNovkGI58qWdhq2J9CRfewSpUnnjbvf8t8QTIkhFuFJFNZV7uOAG0kl8nwOCuoAko5qnmEH7dtuLUdblPV6yltbHV00BqJIDplP76PUXdQTlgG4Uo6a9FCyv1Ov/NrPJROjcGQcdjpwbR1tlzalYG28x+CsU+NcjgegvuDEz95aWFdq4DCVub5GLJuT163j/bWBVF+vJqXyuc++yxIRaKvtKA54iffDeYtipw/HumTGxQ5dr9ObLBmeNX43hvzB0QUieGI1dCqgPQIzyD0PJbwnL/WMk8Pt1CyPsx4UiDudXHekYDujOln10ln8zDDWk+i8dHPBKs3jgqYFl4ZTKPQ60RzxgGo7/58cIREU1ubK+6bHUtdRKpfrIR4fdbRWKGXmrZc38DiwAY2tYLUvCQNSk3tZWphnDDzMDte/VhWZv08/OXsVVNJXS6R6Zwq9RBuhqXQh/sQsf8g0Ps+yXXXwBIJX5ERsBoBrCSl4/8ZrCOJfb6isf+hh0eksUu4+s5k5DPN50DDQ/wbu96R9hG4lK8oB+p39y+jNeF1fw0CjHRUe7nyrWMkE2CzwN8T4hq2P/f7xTyWvs7Tjnpmxuq6kcC0Bq9d+9/EWeol93wyBgRjdrtHFs9Vqx6EoggZt/DI2+Jsq770buBKvGrFaVZnHMyyx+w0fyqGAG3z6aLdh3ZIh25zTqumUxHudZU=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN0PR10MB5128.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: eedf162f-3f50-43a6-17af-08db18d3406c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Feb 2023 14:59:40.0735
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: bKGRLFh431mFgzGxFm2GhMvvZrb2z4tv29A/zTpJAuiSJY5QPJhS1ctoMadFVf3P/i5W0UhRKzviNuiUNECY7A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR10MB6261
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
+ definitions=2023-02-27_10,2023-02-27_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 bulkscore=0 adultscore=0
+ mlxlogscore=999 suspectscore=0 phishscore=0 spamscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
+ definitions=main-2302270114
+X-Proofpoint-GUID: Hp8XmpF-Bhrh5B0v-NczCcI7_z6h6T2u
+X-Proofpoint-ORIG-GUID: Hp8XmpF-Bhrh5B0v-NczCcI7_z6h6T2u
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When I was executing the syzkaller test case, I accidentally triggered a panic
- similar to the following: 020ef930b826 (mld: fix panic in mld_newpack()) 
-I confirm that my kernel version has merged this commit, I can't understand
- how this problem arises.By the way,this problem only came up once.
 
-==============================================================================
-09:22:42 executing program 0:
-r0 = timerfd_create(0x0, 0x0)
-ioctl$sock_inet_SIOCSARP(r0, 0x5451, 0x0)
 
-[ 1775.166505][    C1] skbuff: skb_over_panic: text:ffffffff8acae9b4 len:40 put:40 head:ffff88806120dc00 data:ffff88806120dd00 tail:0x128 end:0xc0 dev:ip6erspan0
-[ 1775.172690][    C1] ------------[ cut here ]------------
-[ 1775.179233][    C1] kernel BUG at net/core/skbuff.c:110!
-[ 1775.180688][    C1] invalid opcode: 0000 [#1] SMP KASAN PTI
-[ 1775.183238][    C1] CPU: 1 PID: 25239 Comm: syz-executor.1 Not tainted 5.10.0 #1
-[ 1775.187004][    C1] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.13.0-1ubuntu1.1 04/01/2014
-[ 1775.189767][    C1] RIP: 0010:skb_panic+0x171/0x183
-[ 1775.191286][    C1] Code: f5 4c 8b 4c 24 10 41 56 8b 4b 70 45 89 e8 4c 89 e2 41 57 48 89 ee 48 c7 c7 a0 ae 2d 8e ff 74 24 10 ff 74 24 20 e8 0c 6d 62 ff <0f> 0b 48 c7 c7 a0 db 5d 92 48 83 c4 20 e8 7e 7a 6d ff e8 50 c0 5d
-[ 1775.195221][    C1] RSP: 0018:ffff888134009a48 EFLAGS: 00010286
-[ 1775.196462][    C1] RAX: 000000000000008a RBX: ffff88812885aa00 RCX: 0000000000000000
-[ 1775.198064][    C1] RDX: 0000000000000000 RSI: ffffffff815fe682 RDI: ffffed102680133b
-[ 1775.199662][    C1] RBP: ffffffff8e2db3e0 R08: 000000000000008a R09: ffffed10268012d2
-[ 1775.201276][    C1] R10: ffff88813400968f R11: ffffed10268012d1 R12: ffffffff8acae9b4
-[ 1775.202874][    C1] R13: 0000000000000028 R14: ffff888060ad6000 R15: 00000000000000c0
-[ 1775.208819][    C1] FS:  00007f1191620700(0000) GS:ffff888134000000(0000) knlGS:0000000000000000
-[ 1775.214244][    C1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 1775.218370][    C1] CR2: 00007f119161ebd8 CR3: 000000011f95e000 CR4: 0000000000150ee0
-[ 1775.223324][    C1] Call Trace:
-[ 1775.225501][    C1]  <IRQ>
-[ 1775.233024][    C1]  ? ip6_mc_hdr.isra.0.constprop.0+0x124/0x5a0
-[ 1775.234738][    C1]  skb_put.cold+0x24/0x24
-[ 1775.235951][    C1]  ip6_mc_hdr.isra.0.constprop.0+0x124/0x5a0
-[ 1775.237639][    C1]  ? tcp_gro_receive+0xdd0/0xdd0
-[ 1775.239008][    C1]  mld_newpack+0x38c/0x7a0
-[ 1775.240162][    C1]  ? ip6_mc_hdr.isra.0.constprop.0+0x5a0/0x5a0
-[ 1775.241900][    C1]  ? enqueue_entity+0xca2/0x3ab0
-[ 1775.243236][    C1]  ? find_first_bit+0x6c/0x90
-[ 1775.244763][    C1]  add_grhead.isra.0+0x2a6/0x380
-[ 1775.247156][    C1]  add_grec+0xcdc/0xf70
-[ 1775.249187][    C1]  ? add_grhead.isra.0+0x380/0x380
-[ 1775.251671][    C1]  ? _raw_spin_lock_bh+0x85/0xe0
-[ 1775.254022][    C1]  ? _raw_read_unlock_irqrestore+0x30/0x30
-[ 1775.256935][    C1]  ? clear_posix_cputimers_work+0x90/0x90
-[ 1775.259881][    C1]  ? perf_event_task_tick+0x804/0xd90
-[ 1775.262620][    C1]  mld_ifc_timer_expire+0x34b/0x810
-[ 1775.265234][    C1]  ? mld_send_initial_cr.part.0+0x150/0x150
-[ 1775.267741][    C1]  call_timer_fn+0x3f/0x200
-[ 1775.269050][    C1]  expire_timers+0x21c/0x3b0
-[ 1775.270364][    C1]  ? mld_send_initial_cr.part.0+0x150/0x150
-[ 1775.272020][    C1]  run_timer_softirq+0x2ad/0x7f0
-[ 1775.273434][    C1]  ? expire_timers+0x3b0/0x3b0
-[ 1775.274743][    C1]  ? ktime_get+0xd5/0x120
-[ 1775.275944][    C1]  ? kvm_sched_clock_read+0xd/0x20
-[ 1775.277371][    C1]  ? sched_clock+0x5/0x10
-[ 1775.278586][    C1]  ? sched_clock_cpu+0x18/0x190
-[ 1775.278596][    C1]  ? tick_program_event+0x7c/0x110
-[ 1775.278607][    C1]  __do_softirq+0x19b/0x612
-[ 1775.278621][    C1]  asm_call_irq_on_stack+0x12/0x20
-[ 1775.278625][    C1]  </IRQ>
-[ 1775.278635][    C1]  do_softirq_own_stack+0x37/0x50
-[ 1775.278643][    C1]  irq_exit_rcu+0x1a2/0x240
-[ 1775.278653][    C1]  sysvec_apic_timer_interrupt+0x36/0x80
-[ 1775.278664][    C1]  asm_sysvec_apic_timer_interrupt+0x12/0x20
-[ 1775.278675][    C1] RIP: 0010:security_socket_create+0x35/0xc0
-[ 1775.278686][    C1] Code: 56 41 89 f6 41 55 41 89 d5 41 54 41 89 cc 55 48 bd 00 00 00 00 00 fc ff df 53 48 83 ec 08 e8 d2 74 c5 fe 48 8b 1d fb fd 68 12 <48> 85 db 74 49 e8 c1 74 c5 fe 48 8d 7b 18 48 89 f8 48 c1 e8 03 80
-[ 1775.278691][    C1] RSP: 0018:ffff8880608efdf0 EFLAGS: 00000216
-[ 1775.278702][    C1] RAX: 0000000000040000 RBX: ffffffff8fe5f4f0 RCX: ffffc90006b18000
-[ 1775.278708][    C1] RDX: 00000000000000f4 RSI: ffffffff82b08dae RDI: 0000000000000010
-[ 1775.278714][    C1] RBP: dffffc0000000000 R08: ffff8880608efeb0 R09: 0000000000000000
-[ 1775.278719][    C1] R10: ffffffff94f30687 R11: fffffbfff29e60d0 R12: 0000000000000000
-[ 1775.278725][    C1] R13: 0000000000000010 R14: 0000000000000003 R15: 0000000000000010
-[ 1775.278735][    C1]  ? security_socket_create+0x2e/0xc0
-[ 1775.278747][    C1]  __sock_create+0x66/0x4a0
-[ 1775.278757][    C1]  __sys_socket+0xe3/0x1d0
-[ 1775.278765][    C1]  ? move_addr_to_kernel+0x60/0x60
-[ 1775.278776][    C1]  ? exit_to_user_mode_prepare+0x24/0x150
-[ 1775.278786][    C1]  __x64_sys_socket+0x74/0xb0
-[ 1775.278795][    C1]  do_syscall_64+0x33/0x40
-[ 1775.278805][    C1]  entry_SYSCALL_64_after_hwframe+0x61/0xc6
-[ 1775.278812][    C1] RIP: 0033:0x7f11930d61eb
-[ 1775.278824][    C1] Code: f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48 83 c8 ff c3 0f 1f 84 00 00 00 00 00 f3 0f 1e fa b8 29 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-[ 1775.278829][    C1] RSP: 002b:00007f119161eb58 EFLAGS: 00000286 ORIG_RAX: 0000000000000029
-[ 1775.278839][    C1] RAX: ffffffffffffffda RBX: 00007f119320f050 RCX: 00007f11930d61eb
-[ 1775.278844][    C1] RDX: 0000000000000010 RSI: 0000000000000003 RDI: 0000000000000010
-[ 1775.278850][    C1] RBP: 00007f1193140d75 R08: 0000000000000000 R09: 0000000000000000
-[ 1775.278856][    C1] R10: 0000000020000280 R11: 0000000000000286 R12: 00000000ffffffff
-[ 1775.278862][    C1] R13: 00007fff7153e8bf R14: 00007fff7153ea60 R15: 00007f119161fd80
-[ 1775.278880][    C1] Modules linked in:
-[ 1775.278894][    C1] kernel fault(0x1) notification starting on CPU 1
-[ 1775.278900][    C1] kernel fault(0x1) notification finished on CPU 1
-[ 1775.279032][    C1] ---[ end trace 0dbd9a08e777fbed ]---
-[ 1775.279043][    C1] RIP: 0010:skb_panic+0x171/0x183
-[ 1775.279052][    C1] Code: f5 4c 8b 4c 24 10 41 56 8b 4b 70 45 89 e8 4c 89 e2 41 57 48 89 ee 48 c7 c7 a0 ae 2d 8e ff 74 24 10 ff 74 24 20 e8 0c 6d 62 ff <0f> 0b 48 c7 c7 a0 db 5d 92 48 83 c4 20 e8 7e 7a 6d ff e8 50 c0 5d
-[ 1775.279058][    C1] RSP: 0018:ffff888134009a48 EFLAGS: 00010286
-[ 1775.279066][    C1] RAX: 000000000000008a RBX: ffff88812885aa00 RCX: 0000000000000000
-[ 1775.279072][    C1] RDX: 0000000000000000 RSI: ffffffff815fe682 RDI: ffffed102680133b
-[ 1775.279078][    C1] RBP: ffffffff8e2db3e0 R08: 000000000000008a R09: ffffed10268012d2
-[ 1775.279084][    C1] R10: ffff88813400968f R11: ffffed10268012d1 R12: ffffffff8acae9b4
-[ 1775.279090][    C1] R13: 0000000000000028 R14: ffff888060ad6000 R15: 00000000000000c0
-[ 1775.279097][    C1] FS:  00007f1191620700(0000) GS:ffff888134000000(0000) knlGS:0000000000000000
-[ 1775.279107][    C1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 1775.279113][    C1] CR2: 00007f119161ebd8 CR3: 000000011f95e000 CR4: 0000000000150ee0
-[ 1775.279118][    C1] Kernel panic - not syncing: Fatal exception in interrupt
-[ 1775.279128][    C1] kernel fault(0x5) notification starting on CPU 1
-[ 1775.279134][    C1] kernel fault(0x5) notification finished on CPU 1
-[ 1775.280189][    C1] Kernel Offset: disabled
-[ 1775.378438][    C1] kernel reboot(0x2) notification starting on CPU 1
-[ 1775.379930][    C1] kernel reboot(0x2) notification finished on CPU 1
-[ 1775.381407][    C1] Rebooting in 3 seconds..
-[ 1778.475964][    C1] kernel reboot(0x5) notification starting on CPU 1
-[ 1778.481790][    C1] kernel reboot(0x5) notification finished on CPU 1
-[ 1778.483273][    C1] ------------[ cut here ]------------
-[ 1778.484532][    C1] list_add double add: new=ffffffff8f385700, prev=ffffffff8f327ec8, next=ffffffff8f385700.
-[ 1778.486793][    C1] WARNING: CPU: 1 PID: 25239 at lib/list_debug.c:33 __list_add_valid+0xf3/0x130
-[ 1778.488600][    C1] Modules linked in:
-[ 1778.489401][    C1] CPU: 1 PID: 25239 Comm: syz-executor.1 Tainted: G      D           5.10.0 #1
-[ 1778.491185][    C1] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.13.0-1ubuntu1.1 04/01/2014
-[ 1778.493682][    C1] RIP: 0010:__list_add_valid+0xf3/0x130
-[ 1778.494975][    C1] Code: 48 c7 c7 80 69 cd 8c 4c 89 e6 e8 d1 15 8b 08 0f 0b 31 c0 eb 99 48 89 f2 4c 89 e1 48 89 ee 48 c7 c7 00 6a cd 8c e8 b6 15 8b 08 <0f> 0b 31 c0 e9 7b ff ff ff 48 89 f7 48 89 34 24 e8 28 c8 cd fe 48
-[ 1778.499459][    C1] RSP: 0018:ffff8881340096a8 EFLAGS: 00010086
-[ 1778.500890][    C1] RAX: 0000000000000000 RBX: ffffffff8f385700 RCX: 0000000000000000
-[ 1778.502717][    C1] RDX: 0000000000000000 RSI: ffffffff815fe682 RDI: ffffed10268012c7
-[ 1778.504558][    C1] RBP: ffffffff8f385700 R08: 0000000000000001 R09: ffffed102680125e
-[ 1778.506388][    C1] R10: ffff8881340092ef R11: ffffed102680125d R12: ffffffff8f385700
-[ 1778.508645][    C1] R13: 0000000000000046 R14: ffffffff8f327ec0 R15: 0000000000000000
-[ 1778.510509][    C1] FS:  00007f1191620700(0000) GS:ffff888134000000(0000) knlGS:0000000000000000
-[ 1778.512616][    C1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 1778.514179][    C1] CR2: 00007f119161ebd8 CR3: 000000011f95e000 CR4: 0000000000150ee0
-[ 1778.515940][    C1] Call Trace:
-[ 1778.516690][    C1]  <IRQ>
-[ 1778.517372][    C1]  __register_nmi_handler+0x1f9/0x390
-[ 1778.518596][    C1]  nmi_shootdown_cpus+0x8e/0x150
-[ 1778.519716][    C1]  native_machine_emergency_restart+0x44e/0x520
-[ 1778.521139][    C1]  ? nmi_shootdown_cpus+0x150/0x150
-[ 1778.522381][    C1]  ? down_trylock+0x88/0xc0
-[ 1778.523413][    C1]  ? kmsg_dump+0x19d/0x210
-[ 1778.524464][    C1]  ? atomic_notifier_call_chain+0xbd/0xf0
-[ 1778.525818][    C1]  panic+0x75b/0x811
-[ 1778.526771][    C1]  ? print_oops_end_marker.cold+0x15/0x15
-[ 1778.528062][    C1]  ? __show_regs.cold+0x44c/0x57b
-[ 1778.529262][    C1]  ? vprintk_func+0xb2/0x1d0
-[ 1778.530310][    C1]  oops_end.cold+0xc/0x18
-[ 1778.531309][    C1]  do_trap+0x1a5/0x260
-[ 1778.532282][    C1]  ? skb_panic+0x171/0x183
-[ 1778.533250][    C1]  do_error_trap+0x8a/0xf0
-[ 1778.534272][    C1]  ? skb_panic+0x171/0x183
-[ 1778.535423][    C1]  exc_invalid_op+0x4e/0x70
-[ 1778.536537][    C1]  ? skb_panic+0x171/0x183
-[ 1778.537605][    C1]  asm_exc_invalid_op+0x12/0x20
-[ 1778.538580][    C1] RIP: 0010:skb_panic+0x171/0x183
-[ 1778.539590][    C1] Code: f5 4c 8b 4c 24 10 41 56 8b 4b 70 45 89 e8 4c 89 e2 41 57 48 89 ee 48 c7 c7 a0 ae 2d 8e ff 74 24 10 ff 74 24 20 e8 0c 6d 62 ff <0f> 0b 48 c7 c7 a0 db 5d 92 48 83 c4 20 e8 7e 7a 6d ff e8 50 c0 5d
-[ 1778.543875][    C1] RSP: 0018:ffff888134009a48 EFLAGS: 00010286
-[ 1778.545337][    C1] RAX: 000000000000008a RBX: ffff88812885aa00 RCX: 0000000000000000
-[ 1778.547205][    C1] RDX: 0000000000000000 RSI: ffffffff815fe682 RDI: ffffed102680133b
-[ 1778.548991][    C1] RBP: ffffffff8e2db3e0 R08: 000000000000008a R09: ffffed10268012d2
-[ 1778.551004][    C1] R10: ffff88813400968f R11: ffffed10268012d1 R12: ffffffff8acae9b4
-[ 1778.553242][    C1] R13: 0000000000000028 R14: ffff888060ad6000 R15: 00000000000000c0
-[ 1778.554779][    C1]  ? ip6_mc_hdr.isra.0.constprop.0+0x124/0x5a0
-[ 1778.556491][    C1]  ? vprintk_func+0xb2/0x1d0
-[ 1778.557538][    C1]  ? skb_panic+0x171/0x183
-[ 1778.558413][    C1]  ? ip6_mc_hdr.isra.0.constprop.0+0x124/0x5a0
-[ 1778.559619][    C1]  skb_put.cold+0x24/0x24
-[ 1778.561447][    C1]  ip6_mc_hdr.isra.0.constprop.0+0x124/0x5a0
-[ 1778.563045][    C1]  ? tcp_gro_receive+0xdd0/0xdd0
-[ 1778.564144][    C1]  mld_newpack+0x38c/0x7a0
-[ 1778.565266][    C1]  ? ip6_mc_hdr.isra.0.constprop.0+0x5a0/0x5a0
-[ 1778.566675][    C1]  ? enqueue_entity+0xca2/0x3ab0
-[ 1778.567892][    C1]  ? find_first_bit+0x6c/0x90
-[ 1778.569147][    C1]  add_grhead.isra.0+0x2a6/0x380
-[ 1778.570281][    C1]  add_grec+0xcdc/0xf70
-[ 1778.571394][    C1]  ? add_grhead.isra.0+0x380/0x380
-[ 1778.572655][    C1]  ? _raw_spin_lock_bh+0x85/0xe0
-[ 1778.573758][    C1]  ? _raw_read_unlock_irqrestore+0x30/0x30
-[ 1778.575413][    C1]  ? clear_posix_cputimers_work+0x90/0x90
-[ 1778.576964][    C1]  ? perf_event_task_tick+0x804/0xd90
-[ 1778.578290][    C1]  mld_ifc_timer_expire+0x34b/0x810
-[ 1778.580459][    C1]  ? mld_send_initial_cr.part.0+0x150/0x150
-[ 1778.583421][    C1]  call_timer_fn+0x3f/0x200
-[ 1778.584651][    C1]  expire_timers+0x21c/0x3b0
-[ 1778.586838][    C1]  ? mld_send_initial_cr.part.0+0x150/0x150
-[ 1778.589528][    C1]  run_timer_softirq+0x2ad/0x7f0
-[ 1778.591333][    C1]  ? expire_timers+0x3b0/0x3b0
-[ 1778.593040][    C1]  ? ktime_get+0xd5/0x120
-[ 1778.594181][    C1]  ? kvm_sched_clock_read+0xd/0x20
-[ 1778.595540][    C1]  ? sched_clock+0x5/0x10
-[ 1778.596695][    C1]  ? sched_clock_cpu+0x18/0x190
-[ 1778.597983][    C1]  ? tick_program_event+0x7c/0x110
-[ 1778.599609][    C1]  __do_softirq+0x19b/0x612
-[ 1778.600949][    C1]  asm_call_irq_on_stack+0x12/0x20
-[ 1778.602316][    C1]  </IRQ>
-[ 1778.603094][    C1]  do_softirq_own_stack+0x37/0x50
-[ 1778.604407][    C1]  irq_exit_rcu+0x1a2/0x240
-[ 1778.605623][    C1]  sysvec_apic_timer_interrupt+0x36/0x80
-[ 1778.607612][    C1]  asm_sysvec_apic_timer_interrupt+0x12/0x20
-[ 1778.609617][    C1] RIP: 0010:security_socket_create+0x35/0xc0
-[ 1778.611229][    C1] Code: 56 41 89 f6 41 55 41 89 d5 41 54 41 89 cc 55 48 bd 00 00 00 00 00 fc ff df 53 48 83 ec 08 e8 d2 74 c5 fe 48 8b 1d fb fd 68 12 <48> 85 db 74 49 e8 c1 74 c5 fe 48 8d 7b 18 48 89 f8 48 c1 e8 03 80
-[ 1778.617288][    C1] RSP: 0018:ffff8880608efdf0 EFLAGS: 00000216
-[ 1778.618970][    C1] RAX: 0000000000040000 RBX: ffffffff8fe5f4f0 RCX: ffffc90006b18000
-[ 1778.621507][    C1] RDX: 00000000000000f4 RSI: ffffffff82b08dae RDI: 0000000000000010
-[ 1778.625961][    C1] RBP: dffffc0000000000 R08: ffff8880608efeb0 R09: 0000000000000000
-[ 1778.628778][    C1] R10: ffffffff94f30687 R11: fffffbfff29e60d0 R12: 0000000000000000
-[ 1778.630921][    C1] R13: 0000000000000010 R14: 0000000000000003 R15: 0000000000000010
-[ 1778.633134][    C1]  ? security_socket_create+0x2e/0xc0
-[ 1778.636572][    C1]  __sock_create+0x66/0x4a0
-[ 1778.639473][    C1]  __sys_socket+0xe3/0x1d0
-[ 1778.641563][    C1]  ? move_addr_to_kernel+0x60/0x60
-[ 1778.644707][    C1]  ? exit_to_user_mode_prepare+0x24/0x150
-[ 1778.646641][    C1]  __x64_sys_socket+0x74/0xb0
-[ 1778.647942][    C1]  do_syscall_64+0x33/0x40
-[ 1778.649407][    C1]  entry_SYSCALL_64_after_hwframe+0x61/0xc6
-[ 1778.651355][    C1] RIP: 0033:0x7f11930d61eb
-[ 1778.652974][    C1] Code: f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48 83 c8 ff c3 0f 1f 84 00 00 00 00 00 f3 0f 1e fa b8 29 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-[ 1778.659704][    C1] RSP: 002b:00007f119161eb58 EFLAGS: 00000286 ORIG_RAX: 0000000000000029
-[ 1778.662918][    C1] RAX: ffffffffffffffda RBX: 00007f119320f050 RCX: 00007f11930d61eb
-[ 1778.665308][    C1] RDX: 0000000000000010 RSI: 0000000000000003 RDI: 0000000000000010
-[ 1778.668092][    C1] RBP: 00007f1193140d75 R08: 0000000000000000 R09: 0000000000000000
-[ 1778.670520][    C1] R10: 0000000020000280 R11: 0000000000000286 R12: 00000000ffffffff
-[ 1778.672812][    C1] R13: 00007fff7153e8bf R14: 00007fff7153ea60 R15: 00007f119161fd80
-[ 1778.675425][    C1] Kernel panic - not syncing: panic_on_warn set ...
-[ 1778.676862][    C1] kernel fault(0x5) notification starting on CPU 1
-[ 1778.679271][    C1] kernel fault(0x5) notification finished on CPU 1
-[ 1778.682848][    C1] Kernel Offset: disabled
-[ 1778.686107][    C1] kernel reboot(0x2) notification starting on CPU 1
-[ 1778.689209][    C1] kernel reboot(0x2) notification finished on CPU 1
-[ 1778.691073][    C1] Rebooting in 3 seconds..
-[ 1782.003404][    C1] kernel reboot(0x5) notification starting on CPU 1
-[ 1782.011818][    C1] kernel reboot(0x5) notification finished on CPU 1
+> On Feb 27, 2023, at 4:24 AM, Hannes Reinecke <hare@suse.de> wrote:
+>=20
+> On 2/24/23 20:19, Chuck Lever wrote:
+>> From: Chuck Lever <chuck.lever@oracle.com>
+>> When a kernel consumer needs a transport layer security session, it
+>> first needs a handshake to negotiate and establish a session. This
+>> negotiation can be done in user space via one of the several
+>> existing library implementations, or it can be done in the kernel.
+>> No in-kernel handshake implementations yet exist. In their absence,
+>> we add a netlink service that can:
+>> a. Notify a user space daemon that a handshake is needed.
+>> b. Once notified, the daemon calls the kernel back via this
+>>    netlink service to get the handshake parameters, including an
+>>    open socket on which to establish the session.
+>> c. Once the handshake is complete, the daemon reports the
+>>    session status and other information via a second netlink
+>>    operation. This operation marks that it is safe for the
+>>    kernel to use the open socket and the security session
+>>    established there.
+>> The notification service uses a multicast group. Each handshake
+>> mechanism (eg, tlshd) adopts its own group number so that the
+>> handshake services are completely independent of one another. The
+>> kernel can then tell via netlink_has_listeners() whether a handshake
+>> service is active and prepared to handle a handshake request.
+>> A new netlink operation, ACCEPT, acts like accept(2) in that it
+>> instantiates a file descriptor in the user space daemon's fd table.
+>> If this operation is successful, the reply carries the fd number,
+>> which can be treated as an open and ready file descriptor.
+>> While user space is performing the handshake, the kernel keeps its
+>> muddy paws off the open socket. A second new netlink operation,
+>> DONE, indicates that the user space daemon is finished with the
+>> socket and it is safe for the kernel to use again. The operation
+>> also indicates whether a session was established successfully.
+>> Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+>> ---
+>>  Documentation/netlink/specs/handshake.yaml |  134 +++++++++++
+>>  include/net/handshake.h                    |   45 ++++
+>>  include/net/net_namespace.h                |    5
+>>  include/net/sock.h                         |    1
+>>  include/trace/events/handshake.h           |  159 +++++++++++++
+>>  include/uapi/linux/handshake.h             |   63 +++++
+>>  net/Makefile                               |    1
+>>  net/handshake/Makefile                     |   11 +
+>>  net/handshake/handshake.h                  |   41 +++
+>>  net/handshake/netlink.c                    |  340 +++++++++++++++++++++=
++++++++
+>>  net/handshake/request.c                    |  246 ++++++++++++++++++++
+>>  net/handshake/trace.c                      |   17 +
+>>  12 files changed, 1063 insertions(+)
+>>  create mode 100644 Documentation/netlink/specs/handshake.yaml
+>>  create mode 100644 include/net/handshake.h
+>>  create mode 100644 include/trace/events/handshake.h
+>>  create mode 100644 include/uapi/linux/handshake.h
+>>  create mode 100644 net/handshake/Makefile
+>>  create mode 100644 net/handshake/handshake.h
+>>  create mode 100644 net/handshake/netlink.c
+>>  create mode 100644 net/handshake/request.c
+>>  create mode 100644 net/handshake/trace.c
+>> diff --git a/Documentation/netlink/specs/handshake.yaml b/Documentation/=
+netlink/specs/handshake.yaml
+>> new file mode 100644
+>> index 000000000000..683a8f2df0a7
+>> --- /dev/null
+>> +++ b/Documentation/netlink/specs/handshake.yaml
+>> @@ -0,0 +1,134 @@
+>> +# SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
+>> +#
+>> +# GENL HANDSHAKE service.
+>> +#
+>> +# Author: Chuck Lever <chuck.lever@oracle.com>
+>> +#
+>> +# Copyright (c) 2023, Oracle and/or its affiliates.
+>> +#
+>> +
+>> +name: handshake
+>> +
+>> +protocol: genetlink-c
+>> +
+>> +doc: Netlink protocol to request a transport layer security handshake.
+>> +
+>> +uapi-header: linux/net/handshake.h
+>> +
+>> +definitions:
+>> +  -
+>> +    type: enum
+>> +    name: handler-class
+>> +    enum-name:
+>> +    value-start: 0
+>> +    entries: [ none ]
+>> +  -
+>> +    type: enum
+>> +    name: msg-type
+>> +    enum-name:
+>> +    value-start: 0
+>> +    entries: [ unspec, clienthello, serverhello ]
+>> +  -
+>> +    type: enum
+>> +    name: auth
+>> +    enum-name:
+>> +    value-start: 0
+>> +    entries: [ unspec, unauth, x509, psk ]
+>> +
+>> +attribute-sets:
+>> +  -
+>> +    name: accept
+>> +    attributes:
+>> +      -
+>> +        name: status
+>> +        doc: Status of this accept operation
+>> +        type: u32
+>> +        value: 1
+>> +      -
+>> +        name: sockfd
+>> +        doc: File descriptor of socket to use
+>> +        type: u32
+>> +      -
+>> +        name: handler-class
+>> +        doc: Which type of handler is responding
+>> +        type: u32
+>> +        enum: handler-class
+>> +      -
+>> +        name: message-type
+>> +        doc: Handshake message type
+>> +        type: u32
+>> +        enum: msg-type
+>> +      -
+>> +        name: auth
+>> +        doc: Authentication mode
+>> +        type: u32
+>> +        enum: auth
+>> +      -
+>> +        name: gnutls-priorities
+>> +        doc: GnuTLS priority string
+>> +        type: string
+>> +      -
+>> +        name: my-peerid
+>> +        doc: Serial no of key containing local identity
+>> +        type: u32
+>> +      -
+>> +        name: my-privkey
+>> +        doc: Serial no of key containing optional private key
+>> +        type: u32
+>> +  -
+>> +    name: done
+>> +    attributes:
+>> +      -
+>> +        name: status
+>> +        doc: Session status
+>> +        type: u32
+>> +        value: 1
+>> +      -
+>> +        name: sockfd
+>> +        doc: File descriptor of socket that has completed
+>> +        type: u32
+>> +      -
+>> +        name: remote-peerid
+>> +        doc: Serial no of keys containing identities of remote peer
+>> +        type: u32
+>> +
+>> +operations:
+>> +  list:
+>> +    -
+>> +      name: ready
+>> +      doc: Notify handlers that a new handshake request is waiting
+>> +      value: 1
+>> +      notify: accept
+>> +    -
+>> +      name: accept
+>> +      doc: Handler retrieves next queued handshake request
+>> +      attribute-set: accept
+>> +      flags: [ admin-perm ]
+>> +      do:
+>> +        request:
+>> +          attributes:
+>> +            - handler-class
+>> +        reply:
+>> +          attributes:
+>> +            - status
+>> +            - sockfd
+>> +            - message-type
+>> +            - auth
+>> +            - gnutls-priorities
+>> +            - my-peerid
+>> +            - my-privkey
+>> +    -
+>> +      name: done
+>> +      doc: Handler reports handshake completion
+>> +      attribute-set: done
+>> +      do:
+>> +        request:
+>> +          attributes:
+>> +            - status
+>> +            - sockfd
+>> +            - remote-peerid
+>> +
+>> +mcast-groups:
+>> +  list:
+>> +    -
+>> +      name: none
+>> diff --git a/include/net/handshake.h b/include/net/handshake.h
+>> new file mode 100644
+>> index 000000000000..08f859237936
+>> --- /dev/null
+>> +++ b/include/net/handshake.h
+>> @@ -0,0 +1,45 @@
+>> +/* SPDX-License-Identifier: GPL-2.0-only */
+>> +/*
+>> + * Generic HANDSHAKE service.
+>> + *
+>> + * Author: Chuck Lever <chuck.lever@oracle.com>
+>> + *
+>> + * Copyright (c) 2023, Oracle and/or its affiliates.
+>> + */
+>> +
+>> +/*
+>> + * Data structures and functions that are visible only within the
+>> + * kernel are declared here.
+>> + */
+>> +
+>> +#ifndef _NET_HANDSHAKE_H
+>> +#define _NET_HANDSHAKE_H
+>> +
+>> +struct handshake_req;
+>> +
+>> +/*
+>> + * Invariants for all handshake requests for one transport layer
+>> + * security protocol
+>> + */
+>> +struct handshake_proto {
+>> +	int			hp_handler_class;
+>> +	size_t			hp_privsize;
+>> +
+>> +	int			(*hp_accept)(struct handshake_req *req,
+>> +					     struct genl_info *gi, int fd);
+>> +	void			(*hp_done)(struct handshake_req *req,
+>> +					   int status, struct nlattr **tb);
+>> +	void			(*hp_destroy)(struct handshake_req *req);
+>> +};
+>> +
+>> +extern struct handshake_req *
+>> +handshake_req_alloc(struct socket *sock, const struct handshake_proto *=
+proto,
+>> +		    gfp_t flags);
+>> +extern void *handshake_req_private(struct handshake_req *req);
+>> +extern int handshake_req_submit(struct handshake_req *req, gfp_t flags)=
+;
+>> +extern int handshake_req_cancel(struct socket *sock);
+>> +
+>> +extern struct nlmsghdr *handshake_genl_put(struct sk_buff *msg,
+>> +					   struct genl_info *gi);
+>> +
+>> +#endif /* _NET_HANDSHAKE_H */
+>> diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
+>> index 78beaa765c73..a0ce9de4dab1 100644
+>> --- a/include/net/net_namespace.h
+>> +++ b/include/net/net_namespace.h
+>> @@ -188,6 +188,11 @@ struct net {
+>>  #if IS_ENABLED(CONFIG_SMC)
+>>  	struct netns_smc	smc;
+>>  #endif
+>> +
+>> +	/* transport layer security handshake requests */
+>> +	spinlock_t		hs_lock;
+>> +	struct list_head	hs_requests;
+>> +	int			hs_pending;
+>>  } __randomize_layout;
+>>    #include <linux/seq_file_net.h>
+>> diff --git a/include/net/sock.h b/include/net/sock.h
+>> index 573f2bf7e0de..2a7345ce2540 100644
+>> --- a/include/net/sock.h
+>> +++ b/include/net/sock.h
+>> @@ -519,6 +519,7 @@ struct sock {
+>>    	struct socket		*sk_socket;
+>>  	void			*sk_user_data;
+>> +	void			*sk_handshake_req;
+>>  #ifdef CONFIG_SECURITY
+>>  	void			*sk_security;
+>>  #endif
+>> diff --git a/include/trace/events/handshake.h b/include/trace/events/han=
+dshake.h
+>> new file mode 100644
+>> index 000000000000..feffcd1d6256
+>> --- /dev/null
+>> +++ b/include/trace/events/handshake.h
+>> @@ -0,0 +1,159 @@
+>> +/* SPDX-License-Identifier: GPL-2.0 */
+>> +#undef TRACE_SYSTEM
+>> +#define TRACE_SYSTEM handshake
+>> +
+>> +#if !defined(_TRACE_HANDSHAKE_H) || defined(TRACE_HEADER_MULTI_READ)
+>> +#define _TRACE_HANDSHAKE_H
+>> +
+>> +#include <linux/net.h>
+>> +#include <linux/tracepoint.h>
+>> +
+>> +DECLARE_EVENT_CLASS(handshake_event_class,
+>> +	TP_PROTO(
+>> +		const struct net *net,
+>> +		const struct handshake_req *req,
+>> +		const struct socket *sock
+>> +	),
+>> +	TP_ARGS(net, req, sock),
+>> +	TP_STRUCT__entry(
+>> +		__field(const void *, req)
+>> +		__field(const void *, sock)
+>> +		__field(unsigned int, netns_ino)
+>> +	),
+>> +	TP_fast_assign(
+>> +		__entry->req =3D req;
+>> +		__entry->sock =3D sock;
+>> +		__entry->netns_ino =3D net->ns.inum;
+>> +	),
+>> +	TP_printk("req=3D%p sock=3D%p",
+>> +		__entry->req, __entry->sock
+>> +	)
+>> +);
+>> +#define DEFINE_HANDSHAKE_EVENT(name)				\
+>> +	DEFINE_EVENT(handshake_event_class, name,		\
+>> +		TP_PROTO(					\
+>> +			const struct net *net,			\
+>> +			const struct handshake_req *req,	\
+>> +			const struct socket *sock		\
+>> +		),						\
+>> +		TP_ARGS(net, req, sock))
+>> +
+>> +DECLARE_EVENT_CLASS(handshake_fd_class,
+>> +	TP_PROTO(
+>> +		const struct net *net,
+>> +		const struct handshake_req *req,
+>> +		const struct socket *sock,
+>> +		int fd
+>> +	),
+>> +	TP_ARGS(net, req, sock, fd),
+>> +	TP_STRUCT__entry(
+>> +		__field(const void *, req)
+>> +		__field(const void *, sock)
+>> +		__field(int, fd)
+>> +		__field(unsigned int, netns_ino)
+>> +	),
+>> +	TP_fast_assign(
+>> +		__entry->req =3D req;
+>> +		__entry->sock =3D req->hr_sock;
+>> +		__entry->fd =3D fd;
+>> +		__entry->netns_ino =3D net->ns.inum;
+>> +	),
+>> +	TP_printk("req=3D%p sock=3D%p fd=3D%d",
+>> +		__entry->req, __entry->sock, __entry->fd
+>> +	)
+>> +);
+>> +#define DEFINE_HANDSHAKE_FD_EVENT(name)				\
+>> +	DEFINE_EVENT(handshake_fd_class, name,			\
+>> +		TP_PROTO(					\
+>> +			const struct net *net,			\
+>> +			const struct handshake_req *req,	\
+>> +			const struct socket *sock,		\
+>> +			int fd					\
+>> +		),						\
+>> +		TP_ARGS(net, req, sock, fd))
+>> +
+>> +DECLARE_EVENT_CLASS(handshake_error_class,
+>> +	TP_PROTO(
+>> +		const struct net *net,
+>> +		const struct handshake_req *req,
+>> +		const struct socket *sock,
+>> +		int err
+>> +	),
+>> +	TP_ARGS(net, req, sock, err),
+>> +	TP_STRUCT__entry(
+>> +		__field(const void *, req)
+>> +		__field(const void *, sock)
+>> +		__field(int, err)
+>> +		__field(unsigned int, netns_ino)
+>> +	),
+>> +	TP_fast_assign(
+>> +		__entry->req =3D req;
+>> +		__entry->sock =3D sock;
+>> +		__entry->err =3D err;
+>> +		__entry->netns_ino =3D net->ns.inum;
+>> +	),
+>> +	TP_printk("req=3D%p sock=3D%p err=3D%d",
+>> +		__entry->req, __entry->sock, __entry->err
+>> +	)
+>> +);
+>> +#define DEFINE_HANDSHAKE_ERROR(name)				\
+>> +	DEFINE_EVENT(handshake_error_class, name,		\
+>> +		TP_PROTO(					\
+>> +			const struct net *net,			\
+>> +			const struct handshake_req *req,	\
+>> +			const struct socket *sock,		\
+>> +			int err					\
+>> +		),						\
+>> +		TP_ARGS(net, req, sock, err))
+>> +
+>> +
+>> +/**
+>> + ** Request lifetime events
+>> + **/
+>> +
+>> +DEFINE_HANDSHAKE_EVENT(handshake_submit);
+>> +DEFINE_HANDSHAKE_ERROR(handshake_submit_err);
+>> +DEFINE_HANDSHAKE_EVENT(handshake_cancel);
+>> +DEFINE_HANDSHAKE_EVENT(handshake_cancel_none);
+>> +DEFINE_HANDSHAKE_EVENT(handshake_cancel_busy);
+>> +DEFINE_HANDSHAKE_EVENT(handshake_destruct);
+>> +
+>> +
+>> +TRACE_EVENT(handshake_complete,
+>> +	TP_PROTO(
+>> +		const struct net *net,
+>> +		const struct handshake_req *req,
+>> +		const struct socket *sock,
+>> +		int status
+>> +	),
+>> +	TP_ARGS(net, req, sock, status),
+>> +	TP_STRUCT__entry(
+>> +		__field(const void *, req)
+>> +		__field(const void *, sock)
+>> +		__field(int, status)
+>> +		__field(unsigned int, netns_ino)
+>> +	),
+>> +	TP_fast_assign(
+>> +		__entry->req =3D req;
+>> +		__entry->sock =3D sock;
+>> +		__entry->status =3D status;
+>> +		__entry->netns_ino =3D net->ns.inum;
+>> +	),
+>> +	TP_printk("req=3D%p sock=3D%p status=3D%d",
+>> +		__entry->req, __entry->sock, __entry->status
+>> +	)
+>> +);
+>> +
+>> +/**
+>> + ** Netlink events
+>> + **/
+>> +
+>> +DEFINE_HANDSHAKE_ERROR(handshake_notify_err);
+>> +DEFINE_HANDSHAKE_FD_EVENT(handshake_cmd_accept);
+>> +DEFINE_HANDSHAKE_ERROR(handshake_cmd_accept_err);
+>> +DEFINE_HANDSHAKE_FD_EVENT(handshake_cmd_done);
+>> +DEFINE_HANDSHAKE_ERROR(handshake_cmd_done_err);
+>> +
+>> +#endif /* _TRACE_HANDSHAKE_H */
+>> +
+>> +#include <trace/define_trace.h>
+>> diff --git a/include/uapi/linux/handshake.h b/include/uapi/linux/handsha=
+ke.h
+>> new file mode 100644
+>> index 000000000000..09fd7c37cba4
+>> --- /dev/null
+>> +++ b/include/uapi/linux/handshake.h
+>> @@ -0,0 +1,63 @@
+>> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+>> +/* Do not edit directly, auto-generated from: */
+>> +/*	Documentation/netlink/specs/handshake.yaml */
+>> +/* YNL-GEN uapi header */
+>> +
+>> +#ifndef _UAPI_LINUX_HANDSHAKE_H
+>> +#define _UAPI_LINUX_HANDSHAKE_H
+>> +
+>> +#define HANDSHAKE_FAMILY_NAME		"handshake"
+>> +#define HANDSHAKE_FAMILY_VERSION	1
+>> +
+>> +enum {
+>> +	HANDSHAKE_HANDLER_CLASS_NONE,
+>> +};
+>> +
+>> +enum {
+>> +	HANDSHAKE_MSG_TYPE_UNSPEC,
+>> +	HANDSHAKE_MSG_TYPE_CLIENTHELLO,
+>> +	HANDSHAKE_MSG_TYPE_SERVERHELLO,
+>> +};
+>> +
+>> +enum {
+>> +	HANDSHAKE_AUTH_UNSPEC,
+>> +	HANDSHAKE_AUTH_UNAUTH,
+>> +	HANDSHAKE_AUTH_X509,
+>> +	HANDSHAKE_AUTH_PSK,
+>> +};
+>> +
+>> +enum {
+>> +	HANDSHAKE_A_ACCEPT_STATUS =3D 1,
+>> +	HANDSHAKE_A_ACCEPT_SOCKFD,
+>> +	HANDSHAKE_A_ACCEPT_HANDLER_CLASS,
+>> +	HANDSHAKE_A_ACCEPT_MESSAGE_TYPE,
+>> +	HANDSHAKE_A_ACCEPT_AUTH,
+>> +	HANDSHAKE_A_ACCEPT_GNUTLS_PRIORITIES,
+>> +	HANDSHAKE_A_ACCEPT_MY_PEERID,
+>> +	HANDSHAKE_A_ACCEPT_MY_PRIVKEY,
+>> +
+>> +	__HANDSHAKE_A_ACCEPT_MAX,
+>> +	HANDSHAKE_A_ACCEPT_MAX =3D (__HANDSHAKE_A_ACCEPT_MAX - 1)
+>> +};
+>> +
+>> +enum {
+>> +	HANDSHAKE_A_DONE_STATUS =3D 1,
+>> +	HANDSHAKE_A_DONE_SOCKFD,
+>> +	HANDSHAKE_A_DONE_REMOTE_PEERID,
+>> +
+>> +	__HANDSHAKE_A_DONE_MAX,
+>> +	HANDSHAKE_A_DONE_MAX =3D (__HANDSHAKE_A_DONE_MAX - 1)
+>> +};
+>> +
+>> +enum {
+>> +	HANDSHAKE_CMD_READY =3D 1,
+>> +	HANDSHAKE_CMD_ACCEPT,
+>> +	HANDSHAKE_CMD_DONE,
+>> +
+>> +	__HANDSHAKE_CMD_MAX,
+>> +	HANDSHAKE_CMD_MAX =3D (__HANDSHAKE_CMD_MAX - 1)
+>> +};
+>> +
+>> +#define HANDSHAKE_MCGRP_NONE	"none"
+>> +
+>> +#endif /* _UAPI_LINUX_HANDSHAKE_H */
+>> diff --git a/net/Makefile b/net/Makefile
+>> index 0914bea9c335..adbb64277601 100644
+>> --- a/net/Makefile
+>> +++ b/net/Makefile
+>> @@ -79,3 +79,4 @@ obj-$(CONFIG_NET_NCSI)		+=3D ncsi/
+>>  obj-$(CONFIG_XDP_SOCKETS)	+=3D xdp/
+>>  obj-$(CONFIG_MPTCP)		+=3D mptcp/
+>>  obj-$(CONFIG_MCTP)		+=3D mctp/
+>> +obj-y				+=3D handshake/
+>> diff --git a/net/handshake/Makefile b/net/handshake/Makefile
+>> new file mode 100644
+>> index 000000000000..a41b03f4837b
+>> --- /dev/null
+>> +++ b/net/handshake/Makefile
+>> @@ -0,0 +1,11 @@
+>> +# SPDX-License-Identifier: GPL-2.0-only
+>> +#
+>> +# Makefile for the Generic HANDSHAKE service
+>> +#
+>> +# Author: Chuck Lever <chuck.lever@oracle.com>
+>> +#
+>> +# Copyright (c) 2023, Oracle and/or its affiliates.
+>> +#
+>> +
+>> +obj-y +=3D handshake.o
+>> +handshake-y :=3D netlink.o request.o trace.o
+>> diff --git a/net/handshake/handshake.h b/net/handshake/handshake.h
+>> new file mode 100644
+>> index 000000000000..366c7659ec09
+>> --- /dev/null
+>> +++ b/net/handshake/handshake.h
+>> @@ -0,0 +1,41 @@
+>> +/* SPDX-License-Identifier: GPL-2.0-only */
+>> +/*
+>> + * Generic netlink handshake service
+>> + *
+>> + * Author: Chuck Lever <chuck.lever@oracle.com>
+>> + *
+>> + * Copyright (c) 2023, Oracle and/or its affiliates.
+>> + */
+>> +
+>> +/*
+>> + * Data structures and functions that are visible only within the
+>> + * handshake module are declared here.
+>> + */
+>> +
+>> +#ifndef _INTERNAL_HANDSHAKE_H
+>> +#define _INTERNAL_HANDSHAKE_H
+>> +
+>> +/*
+>> + * One handshake request
+>> + */
+>> +struct handshake_req {
+>> +	struct list_head		hr_list;
+>> +	unsigned long			hr_flags;
+>> +	const struct handshake_proto	*hr_proto;
+>> +	struct socket			*hr_sock;
+>> +
+>> +	void				(*hr_saved_destruct)(struct sock *sk);
+>> +};
+>> +
+>> +#define HANDSHAKE_F_COMPLETED	BIT(0)
+>> +
+>> +/* netlink.c */
+>> +extern bool handshake_genl_inited;
+>> +int handshake_genl_notify(struct net *net, int handler_class, gfp_t fla=
+gs);
+>> +
+>> +/* request.c */
+>> +void __remove_pending_locked(struct net *net, struct handshake_req *req=
+);
+>> +void handshake_complete(struct handshake_req *req, int status,
+>> +			struct nlattr **tb);
+>> +
+>> +#endif /* _INTERNAL_HANDSHAKE_H */
+>> diff --git a/net/handshake/netlink.c b/net/handshake/netlink.c
+>> new file mode 100644
+>> index 000000000000..581e382236cf
+>> --- /dev/null
+>> +++ b/net/handshake/netlink.c
+>> @@ -0,0 +1,340 @@
+>> +// SPDX-License-Identifier: GPL-2.0-only
+>> +/*
+>> + * Generic netlink handshake service
+>> + *
+>> + * Author: Chuck Lever <chuck.lever@oracle.com>
+>> + *
+>> + * Copyright (c) 2023, Oracle and/or its affiliates.
+>> + */
+>> +
+>> +#include <linux/types.h>
+>> +#include <linux/socket.h>
+>> +#include <linux/kernel.h>
+>> +#include <linux/module.h>
+>> +#include <linux/skbuff.h>
+>> +#include <linux/inet.h>
+>> +
+>> +#include <net/sock.h>
+>> +#include <net/genetlink.h>
+>> +#include <net/handshake.h>
+>> +
+>> +#include <uapi/linux/handshake.h>
+>> +#include <trace/events/handshake.h>
+>> +#include "handshake.h"
+>> +
+>> +static struct genl_family __ro_after_init handshake_genl_family;
+>> +bool handshake_genl_inited;
+>> +
+>> +/**
+>> + * handshake_genl_notify - Notify handlers that a request is waiting
+>> + * @net: target network namespace
+>> + * @handler_class: target handler
+>> + * @flags: memory allocation control flags
+>> + *
+>> + * Returns zero on success or a negative errno if notification failed.
+>> + */
+>> +int handshake_genl_notify(struct net *net, int handler_class, gfp_t fla=
+gs)
+>> +{
+>> +	struct sk_buff *msg;
+>> +	void *hdr;
+>> +
+>> +	if (!genl_has_listeners(&handshake_genl_family, net, handler_class))
+>> +		return -ESRCH;
+>> +
+>> +	msg =3D genlmsg_new(GENLMSG_DEFAULT_SIZE, GFP_KERNEL);
+>> +	if (!msg)
+>> +		return -ENOMEM;
+>> +
+>> +	hdr =3D genlmsg_put(msg, 0, 0, &handshake_genl_family, 0,
+>> +			  HANDSHAKE_CMD_READY);
+>> +	if (!hdr)
+>> +		goto out_free;
+>> +
+>> +	if (nla_put_u32(msg, HANDSHAKE_A_ACCEPT_HANDLER_CLASS,
+>> +			handler_class) < 0) {
+>> +		genlmsg_cancel(msg, hdr);
+>> +		goto out_free;
+>> +	}
+>> +
+>> +	genlmsg_end(msg, hdr);
+>> +	return genlmsg_multicast_netns(&handshake_genl_family, net, msg,
+>> +				       0, handler_class, flags);
+>> +
+>> +out_free:
+>> +	nlmsg_free(msg);
+>> +	return -EMSGSIZE;
+>> +}
+>> +
+>> +/**
+>> + * handshake_genl_put - Create a generic netlink message header
+>> + * @msg: buffer in which to create the header
+>> + * @gi: generic netlink message context
+>> + *
+>> + * Returns a ready-to-use header, or NULL.
+>> + */
+>> +struct nlmsghdr *handshake_genl_put(struct sk_buff *msg, struct genl_in=
+fo *gi)
+>> +{
+>> +	return genlmsg_put(msg, gi->snd_portid, gi->snd_seq,
+>> +			   &handshake_genl_family, 0, gi->genlhdr->cmd);
+>> +}
+>> +EXPORT_SYMBOL(handshake_genl_put);
+>> +
+>> +static int handshake_status_reply(struct sk_buff *skb, struct genl_info=
+ *gi,
+>> +				  int status)
+>> +{
+>> +	struct nlmsghdr *hdr;
+>> +	struct sk_buff *msg;
+>> +	int ret;
+>> +
+>> +	ret =3D -ENOMEM;
+>> +	msg =3D genlmsg_new(GENLMSG_DEFAULT_SIZE, GFP_KERNEL);
+>> +	if (!msg)
+>> +		goto out;
+>> +	hdr =3D handshake_genl_put(msg, gi);
+>> +	if (!hdr)
+>> +		goto out_free;
+>> +
+>> +	ret =3D -EMSGSIZE;
+>> +	ret =3D nla_put_u32(msg, HANDSHAKE_A_ACCEPT_STATUS, status);
+>> +	if (ret < 0)
+>> +		goto out_free;
+>> +
+>> +	genlmsg_end(msg, hdr);
+>> +	return genlmsg_reply(msg, gi);
+>> +
+>> +out_free:
+>> +	genlmsg_cancel(msg, hdr);
+>> +out:
+>> +	return ret;
+>> +}
+>> +
+>> +/*
+>> + * dup() a kernel socket for use as a user space file descriptor
+>> + * in the current process.
+>> + *
+>> + * Implicit argument: "current()"
+>> + */
+>> +static int handshake_dup(struct socket *kernsock)
+>> +{
+>> +	struct file *file =3D get_file(kernsock->file);
+>> +	int newfd;
+>> +
+>> +	newfd =3D get_unused_fd_flags(O_CLOEXEC);
+>> +	if (newfd < 0) {
+>> +		fput(file);
+>> +		return newfd;
+>> +	}
+>> +
+>> +	fd_install(newfd, file);
+>> +	return newfd;
+>> +}
+>> +
+>> +static const struct nla_policy
+>> +handshake_accept_nl_policy[HANDSHAKE_A_ACCEPT_HANDLER_CLASS + 1] =3D {
+>> +	[HANDSHAKE_A_ACCEPT_HANDLER_CLASS] =3D { .type =3D NLA_U32, },
+>> +};
+>> +
+>> +static int handshake_nl_accept_doit(struct sk_buff *skb, struct genl_in=
+fo *gi)
+>> +{
+>> +	struct nlattr *tb[HANDSHAKE_A_ACCEPT_MAX + 1];
+>> +	struct net *net =3D sock_net(skb->sk);
+>> +	struct handshake_req *pos, *req;
+>> +	int fd, err;
+>> +
+>> +	err =3D -EINVAL;
+>> +	if (genlmsg_parse(nlmsg_hdr(skb), &handshake_genl_family, tb,
+>> +			  HANDSHAKE_A_ACCEPT_HANDLER_CLASS,
+>> +			  handshake_accept_nl_policy, NULL))
+>> +		goto out_status;
+>> +	if (!tb[HANDSHAKE_A_ACCEPT_HANDLER_CLASS])
+>> +		goto out_status;
+>> +
+>> +	req =3D NULL;
+>> +	spin_lock(&net->hs_lock);
+>> +	list_for_each_entry(pos, &net->hs_requests, hr_list) {
+>> +		if (pos->hr_proto->hp_handler_class !=3D
+>> +		    nla_get_u32(tb[HANDSHAKE_A_ACCEPT_HANDLER_CLASS]))
+>> +			continue;
+>> +		__remove_pending_locked(net, pos);
+>> +		req =3D pos;
+>> +		break;
+>> +	}
+>> +	spin_unlock(&net->hs_lock);
+>> +	if (!req)
+>> +		goto out_status;
+>> +
+>> +	fd =3D handshake_dup(req->hr_sock);
+>> +	if (fd < 0) {
+>> +		err =3D fd;
+>> +		goto out_complete;
+>> +	}
+>> +	err =3D req->hr_proto->hp_accept(req, gi, fd);
+>> +	if (err)
+>> +		goto out_complete;
+>> +
+>> +	trace_handshake_cmd_accept(net, req, req->hr_sock, fd);
+>> +	return 0;
+>> +
+>> +out_complete:
+>> +	handshake_complete(req, -EIO, NULL);
+>> +	fput(req->hr_sock->file);
+>> +out_status:
+>> +	trace_handshake_cmd_accept_err(net, req, NULL, err);
+>> +	return handshake_status_reply(skb, gi, err);
+>> +}
+>> +
+>> +static const struct nla_policy
+>> +handshake_done_nl_policy[HANDSHAKE_A_DONE_MAX + 1] =3D {
+>> +	[HANDSHAKE_A_DONE_SOCKFD] =3D { .type =3D NLA_U32, },
+>> +	[HANDSHAKE_A_DONE_STATUS] =3D { .type =3D NLA_U32, },
+>> +	[HANDSHAKE_A_DONE_REMOTE_PEERID] =3D { .type =3D NLA_U32, },
+>> +};
+>> +
+>> +static int handshake_nl_done_doit(struct sk_buff *skb, struct genl_info=
+ *gi)
+>> +{
+>> +	struct nlattr *tb[HANDSHAKE_A_DONE_MAX + 1];
+>> +	struct net *net =3D sock_net(skb->sk);
+>> +	struct socket *sock =3D NULL;
+>> +	struct handshake_req *req;
+>> +	int fd, status, err;
+>> +
+>> +	err =3D genlmsg_parse(nlmsg_hdr(skb), &handshake_genl_family, tb,
+>> +			    HANDSHAKE_A_DONE_MAX, handshake_done_nl_policy,
+>> +			    NULL);
+>> +	if (err || !tb[HANDSHAKE_A_DONE_SOCKFD]) {
+>> +		err =3D -EINVAL;
+>> +		goto out_status;
+>> +	}
+>> +
+>> +	fd =3D nla_get_u32(tb[HANDSHAKE_A_DONE_SOCKFD]);
+>> +
+>> +	err =3D 0;
+>> +	sock =3D sockfd_lookup(fd, &err);
+>> +	if (err) {
+>> +		err =3D -EBADF;
+>> +		goto out_status;
+>> +	}
+>> +
+>> +	req =3D sock->sk->sk_handshake_req;
+>> +	if (!req) {
+>> +		err =3D -EBUSY;
+>> +		goto out_status;
+>> +	}
+>> +
+>> +	trace_handshake_cmd_done(net, req, sock, fd);
+>> +
+>> +	status =3D -EIO;
+>> +	if (tb[HANDSHAKE_A_DONE_STATUS])
+>> +		status =3D nla_get_u32(tb[HANDSHAKE_A_DONE_STATUS]);
+>> +
+> And this makes me ever so slightly uneasy.
+>=20
+> As 'status' is a netlink attribute it's inevitably defined as 'unsigned'.
+> Yet we assume that 'status' is a negative number, leaving us _technically=
+_ in unchartered territory.
 
-VM DIAGNOSIS:
-08:12:23  Registers:
-info registers vcpu 0
-RAX=1ffff11026621efc RBX=ffff88813310f7a8 RCX=ffff88813310f838 RDX=dffffc0000000000
-RSI=ffff888134165100 RDI=ffff88813310f7a8 RBP=ffff88813310f6a0 RSP=ffff88813310f660
-R8 =0000000000000001 R9 =ffff88813310f7a8 R10=ffff88813310f807 R11=ffffed1026621f00
-R12=ffffed1026621ef7 R13=ffffed1026621ef6 R14=ffff88813310f7a8 R15=ffff88813310f7b0
-RIP=ffffffff8136180a RFL=00000286 [--S--P-] CPL=0 II=0 A20=1 SMM=0 HLT=0
-ES =0000 0000000000000000 ffffffff 00c00000
-CS =0010 0000000000000000 ffffffff 00a09b00 DPL=0 CS64 [-RA]
-SS =0018 0000000000000000 ffffffff 00c09300 DPL=0 DS   [-WA]
-DS =0000 0000000000000000 ffffffff 00c00000
-FS =0000 0000555556ca6980 ffffffff 00c00000
-GS =0000 ffff888019e00000 ffffffff 00c00000
-LDT=0000 0000000000000000 00000000 00000000
-TR =0040 fffffe0000003000 00004087 00008b00 DPL=0 TSS64-busy
-GDT=     fffffe0000001000 0000007f
-IDT=     fffffe0000000000 0000ffff
-CR0=80050033 CR2=00007fff964d1cb8 CR3=0000000133104000 CR4=00150ef0
-DR0=0000000000000000 DR1=0000000000000000 DR2=0000000000000000 DR3=0000000000000000
-DR6=00000000ffff0ff0 DR7=0000000000000400
-EFER=0000000000000d01
-FCW=037f FSW=0000 [ST=0] FTW=00 MXCSR=00001f80
-FPR0=0000000000000000 0000 FPR1=0000000000000000 0000
-FPR2=0000000000000000 0000 FPR3=0000000000000000 0000
-FPR4=0000000000000000 0000 FPR5=0000000000000000 0000
-FPR6=0000000000000000 0000 FPR7=0000000000000000 0000
-XMM00=00000000a60ce07b00000000cec3662e XMM01=00000000000000003f0e3cf1ddeaf46c
-XMM02=00000000000000000000000000000000 XMM03=00000000000000000000000000000000
-XMM04=000000000000000000000000000000ff XMM05=00000000000000000000000000000000
-XMM06=0000000000000000000000524f525245 XMM07=00000000000000000000000000000000
-XMM08=000000000000000000524f5252450040 XMM09=00000000000000000000000000000000
-XMM10=00000000000000000000000000000000 XMM11=00000000000000000000000000000000
-XMM12=00000000000000000000000000000000 XMM13=00000000000000000000000000000000
-XMM14=00000000000000000000000000000000 XMM15=00000000000000000000000000000000
-info registers vcpu 1
-RAX=dffffc0000000060 RBX=00000000000003fd RCX=0000000000000000 RDX=00000000000003fd
-RSI=ffffffff83444604 RDI=ffffffff95a09448 RBP=ffffffff95a09440 RSP=ffff8881340093b0
-R8 =0000000000000001 R9 =ffffed1026801282 R10=0000000000000003 R11=ffffed1026801281
-R12=0000000000000000 R13=fffffbfff2b412d3 R14=fffffbfff2b4128b R15=ffffffff95a09458
-RIP=ffffffff8344462f RFL=00000002 [-------] CPL=0 II=0 A20=1 SMM=0 HLT=0
-ES =0000 0000000000000000 ffffffff 00c00000
-CS =0010 0000000000000000 ffffffff 00a09b00 DPL=0 CS64 [-RA]
-SS =0018 0000000000000000 ffffffff 00c09300 DPL=0 DS   [-WA]
-DS =0000 0000000000000000 ffffffff 00c00000
-FS =0000 00007f1191620700 ffffffff 00c00000
-GS =0000 ffff888134000000 ffffffff 00c00000
-LDT=0000 0000000000000000 00000000 00000000
-TR =0040 fffffe000004a000 00000067 00008b00 DPL=0 TSS64-busy
-GDT=     fffffe0000048000 0000007f
-IDT=     fffffe0000000000 0000ffff
-CR0=80050033 CR2=00007f119161ebd8 CR3=000000011f95e000 CR4=00150ee0
-DR0=0000000000000000 DR1=0000000000000000 DR2=0000000000000000 DR3=0000000000000000
-DR6=00000000ffff0ff0 DR7=0000000000000400
-EFER=0000000000000d01
-FCW=037f FSW=0000 [ST=0] FTW=00 MXCSR=00001f80
-FPR0=0000000000000000 0000 FPR1=0000000000000000 0000
-FPR2=0000000000000000 0000 FPR3=0000000000000000 0000
-FPR4=0000000000000000 0000 FPR5=0000000000000000 0000
-FPR6=0000000000000000 0000 FPR7=0000000000000000 0000
-XMM00=00000000000000000000000000000000 XMM01=00000000000000000000000000000000
-XMM02=00007f11931e56c000007f11931e56a8 XMM03=00007f11931e56a000007f11931e56a0
-XMM04=0000000000000000000000ff00000000 XMM05=00000000000000000000000000001000
-XMM06=63e772d7f3a22482dabb339f3c035440 XMM07=bd0dad416e16bee646815929601aad29
-XMM08=000000000000000000524f5252450040 XMM09=00000000000000000000000000000000
-XMM10=00000000000000000000000000000000 XMM11=00000000000000000000000000000000
-XMM12=00000000000000000000000000000000 XMM13=00000000000000000000000000000000
-XMM14=00000000000000000000000000000000 XMM15=00000000000000000000000000000000
+Ah, that's an oversight.
+
+
+> And that is notwithstanding the problem that we haven't even defined _wha=
+t_ should be in the status attribute.
+
+It's now an errno value.
+
+
+> Reading the code I assume that it's either '0' for success or a negative =
+number (ie the error code) on failure.
+> Which implicitely means that we _never_ set a positive number here.
+> So what would we lose if we declare 'status' to carry the _positive_ erro=
+r number instead?
+> It would bring us in-line with the actual netlink attribute definition, w=
+e wouldn't need to worry about possible integer overflows, yadda yadda...
+>=20
+> Hmm?
+
+It can also be argued that errnos in user space are positive-valued,
+therefore, this user space visible protocol should use a positive
+errno.
+
+
+>> +	handshake_complete(req, status, tb);
+>> +	fput(sock->file);
+>> +	return 0;
+>> +
+>> +out_status:
+>> +	trace_handshake_cmd_done_err(net, req, sock, err);
+>> +	return handshake_status_reply(skb, gi, err);
+>> +}
+>> +
+>> +static const struct genl_split_ops handshake_nl_ops[] =3D {
+>> +	{
+>> +		.cmd		=3D HANDSHAKE_CMD_ACCEPT,
+>> +		.doit		=3D handshake_nl_accept_doit,
+>> +		.policy		=3D handshake_accept_nl_policy,
+>> +		.maxattr	=3D HANDSHAKE_A_ACCEPT_HANDLER_CLASS,
+>> +		.flags		=3D GENL_ADMIN_PERM | GENL_CMD_CAP_DO,
+>> +	},
+>> +	{
+>> +		.cmd		=3D HANDSHAKE_CMD_DONE,
+>> +		.doit		=3D handshake_nl_done_doit,
+>> +		.policy		=3D handshake_done_nl_policy,
+>> +		.maxattr	=3D HANDSHAKE_A_DONE_REMOTE_PEERID,
+>> +		.flags		=3D GENL_CMD_CAP_DO,
+>> +	},
+>> +};
+>> +
+>> +static const struct genl_multicast_group handshake_nl_mcgrps[] =3D {
+>> +	[HANDSHAKE_HANDLER_CLASS_NONE] =3D { .name =3D HANDSHAKE_MCGRP_NONE, }=
+,
+>> +};
+>> +
+>> +static struct genl_family __ro_after_init handshake_genl_family =3D {
+>> +	.hdrsize		=3D 0,
+>> +	.name			=3D HANDSHAKE_FAMILY_NAME,
+>> +	.version		=3D HANDSHAKE_FAMILY_VERSION,
+>> +	.netnsok		=3D true,
+>> +	.parallel_ops		=3D true,
+>> +	.n_mcgrps		=3D ARRAY_SIZE(handshake_nl_mcgrps),
+>> +	.n_split_ops		=3D ARRAY_SIZE(handshake_nl_ops),
+>> +	.split_ops		=3D handshake_nl_ops,
+>> +	.mcgrps			=3D handshake_nl_mcgrps,
+>> +	.module			=3D THIS_MODULE,
+>> +};
+>> +
+>> +static int __net_init handshake_net_init(struct net *net)
+>> +{
+>> +	spin_lock_init(&net->hs_lock);
+>> +	INIT_LIST_HEAD(&net->hs_requests);
+>> +	net->hs_pending	=3D 0;
+>> +	return 0;
+>> +}
+>> +
+>> +static void __net_exit handshake_net_exit(struct net *net)
+>> +{
+>> +	struct handshake_req *req;
+>> +	LIST_HEAD(requests);
+>> +
+>> +	/*
+>> +	 * This drains the net's pending list. Requests that
+>> +	 * have been accepted and are in progress will be
+>> +	 * destroyed when the socket is closed.
+>> +	 */
+>> +	spin_lock(&net->hs_lock);
+>> +	list_splice_init(&requests, &net->hs_requests);
+>> +	spin_unlock(&net->hs_lock);
+>> +
+>> +	while (!list_empty(&requests)) {
+>> +		req =3D list_first_entry(&requests, struct handshake_req, hr_list);
+>> +		list_del(&req->hr_list);
+>> +
+>> +		/*
+>> +		 * Requests on this list have not yet been
+>> +		 * accepted, so they do not have an fd to put.
+>> +		 */
+>> +
+>> +		handshake_complete(req, -ETIMEDOUT, NULL);
+>> +	}
+>> +}
+>> +
+>> +static struct pernet_operations handshake_genl_net_ops =3D {
+>> +	.init		=3D handshake_net_init,
+>> +	.exit		=3D handshake_net_exit,
+>> +};
+>> +
+>> +static int __init handshake_init(void)
+>> +{
+>> +	int ret;
+>> +
+>> +	ret =3D genl_register_family(&handshake_genl_family);
+>> +	if (ret) {
+>> +		pr_warn("handshake: netlink registration failed (%d)\n", ret);
+>> +		return ret;
+>> +	}
+>> +
+>> +	ret =3D register_pernet_subsys(&handshake_genl_net_ops);
+>> +	if (ret) {
+>> +		pr_warn("handshake: pernet registration failed (%d)\n", ret);
+>> +		genl_unregister_family(&handshake_genl_family);
+>> +	}
+>> +
+>> +	handshake_genl_inited =3D true;
+>> +	return ret;
+>> +}
+>> +
+>> +static void __exit handshake_exit(void)
+>> +{
+>> +	unregister_pernet_subsys(&handshake_genl_net_ops);
+>> +	genl_unregister_family(&handshake_genl_family);
+>> +}
+>> +
+>> +module_init(handshake_init);
+>> +module_exit(handshake_exit);
+>> diff --git a/net/handshake/request.c b/net/handshake/request.c
+>> new file mode 100644
+>> index 000000000000..1d3b8e76dd2c
+>> --- /dev/null
+>> +++ b/net/handshake/request.c
+>> @@ -0,0 +1,246 @@
+>> +// SPDX-License-Identifier: GPL-2.0-only
+>> +/*
+>> + * Handshake request lifetime events
+>> + *
+>> + * Author: Chuck Lever <chuck.lever@oracle.com>
+>> + *
+>> + * Copyright (c) 2023, Oracle and/or its affiliates.
+>> + */
+>> +
+>> +#include <linux/types.h>
+>> +#include <linux/socket.h>
+>> +#include <linux/kernel.h>
+>> +#include <linux/module.h>
+>> +#include <linux/skbuff.h>
+>> +#include <linux/inet.h>
+>> +#include <linux/fdtable.h>
+>> +
+>> +#include <net/sock.h>
+>> +#include <net/genetlink.h>
+>> +#include <net/handshake.h>
+>> +
+>> +#include <uapi/linux/handshake.h>
+>> +#include <trace/events/handshake.h>
+>> +#include "handshake.h"
+>> +
+>> +/*
+>> + * This limit is to prevent slow remotes from causing denial of service=
+.
+>> + * A ulimit-style tunable might be used instead.
+>> + */
+>> +#define HANDSHAKE_PENDING_MAX (10)
+>> +
+>> +static void __add_pending_locked(struct net *net, struct handshake_req =
+*req)
+>> +{
+>> +	net->hs_pending++;
+>> +	list_add_tail(&req->hr_list, &net->hs_requests);
+>> +}
+>> +
+>> +void __remove_pending_locked(struct net *net, struct handshake_req *req=
+)
+>> +{
+>> +	net->hs_pending--;
+>> +	list_del_init(&req->hr_list);
+>> +}
+>> +
+>> +/*
+>> + * Return values:
+>> + *   %true - the request was found on @net's pending list
+>> + *   %false - the request was not found on @net's pending list
+>> + *
+>> + * If @req was on a pending list, it has not yet been accepted.
+>> + */
+>> +static bool remove_pending(struct net *net, struct handshake_req *req)
+>> +{
+>> +	bool ret;
+>> +
+>> +	ret =3D false;
+>> +
+>> +	spin_lock(&net->hs_lock);
+>> +	if (!list_empty(&req->hr_list)) {
+>> +		__remove_pending_locked(net, req);
+>> +		ret =3D true;
+>> +	}
+>> +	spin_unlock(&net->hs_lock);
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static void handshake_req_destroy(struct handshake_req *req, struct soc=
+k *sk)
+>> +{
+>> +	req->hr_proto->hp_destroy(req);
+>> +	sk->sk_handshake_req =3D NULL;
+>> +	kfree(req);
+>> +}
+>> +
+>> +static void handshake_sk_destruct(struct sock *sk)
+>> +{
+>> +	struct handshake_req *req =3D sk->sk_handshake_req;
+>> +
+>> +	if (req) {
+>> +		trace_handshake_destruct(sock_net(sk), req, req->hr_sock);
+>> +		handshake_req_destroy(req, sk);
+>> +	}
+>> +}
+>> +
+>> +/**
+>> + * handshake_req_alloc - consumer API to allocate a request
+>> + * @sock: open socket on which to perform a handshake
+>> + * @proto: security protocol
+>> + * @flags: memory allocation flags
+>> + *
+>> + * Returns an initialized handshake_req or NULL.
+>> + */
+>> +struct handshake_req *handshake_req_alloc(struct socket *sock,
+>> +					  const struct handshake_proto *proto,
+>> +					  gfp_t flags)
+>> +{
+>> +	struct handshake_req *req;
+>> +
+>> +	/* Avoid accessing uninitialized global variables later on */
+>> +	if (!handshake_genl_inited)
+>> +		return NULL;
+>> +
+>> +	req =3D kzalloc(sizeof(*req) + proto->hp_privsize, flags);
+>> +	if (!req)
+>> +		return NULL;
+>> +
+>> +	sock_hold(sock->sk);
+>> +
+>> +	INIT_LIST_HEAD(&req->hr_list);
+>> +	req->hr_sock =3D sock;
+>> +	req->hr_proto =3D proto;
+>> +	return req;
+>> +}
+>> +EXPORT_SYMBOL(handshake_req_alloc);
+>> +
+>> +/**
+>> + * handshake_req_private - consumer API to return per-handshake private=
+ data
+>> + * @req: handshake arguments
+>> + *
+>> + */
+>> +void *handshake_req_private(struct handshake_req *req)
+>> +{
+>> +	return (void *)(req + 1);
+>> +}
+>> +EXPORT_SYMBOL(handshake_req_private);
+>> +
+>> +/**
+>> + * handshake_req_submit - consumer API to submit a handshake request
+>> + * @req: handshake arguments
+>> + * @flags: memory allocation flags
+>> + *
+>> + * Return values:
+>> + *   %0: Request queued
+>> + *   %-EBUSY: A handshake is already under way for this socket
+>> + *   %-ESRCH: No handshake agent is available
+>> + *   %-EAGAIN: Too many pending handshake requests
+>> + *   %-ENOMEM: Failed to allocate memory
+>> + *   %-EMSGSIZE: Failed to construct notification message
+>> + *
+>> + * A zero return value from handshake_request() means that
+>> + * exactly one subsequent completion callback is guaranteed.
+>> + *
+>> + * A negative return value from handshake_request() means that
+>> + * no completion callback will be done and that @req is
+>> + * destroyed.
+>> + */
+>> +int handshake_req_submit(struct handshake_req *req, gfp_t flags)
+>> +{
+>> +	struct socket *sock =3D req->hr_sock;
+>> +	struct sock *sk =3D sock->sk;
+>> +	struct net *net =3D sock_net(sk);
+>> +	int ret;
+>> +
+>> +	ret =3D -EAGAIN;
+>> +	if (READ_ONCE(net->hs_pending) >=3D HANDSHAKE_PENDING_MAX)
+>> +		goto out_err;
+>> +
+>> +	ret =3D -EBUSY;
+>> +	spin_lock(&net->hs_lock);
+>> +	if (sk->sk_handshake_req || !list_empty(&req->hr_list)) {
+>> +		spin_unlock(&net->hs_lock);
+>> +		goto out_err;
+>> +	}
+>> +	req->hr_saved_destruct =3D sk->sk_destruct;
+>> +	sk->sk_destruct =3D handshake_sk_destruct;
+>> +	sk->sk_handshake_req =3D req;
+>> +	__add_pending_locked(net, req);
+>> +	spin_unlock(&net->hs_lock);
+>> +
+>> +	ret =3D handshake_genl_notify(net, req->hr_proto->hp_handler_class,
+>> +				    flags);
+>> +	if (ret) {
+>> +		trace_handshake_notify_err(net, req, sock, ret);
+>> +		if (remove_pending(net, req))
+>> +			goto out_err;
+>> +	}
+>> +
+>> +	trace_handshake_submit(net, req, sock);
+>> +	return 0;
+>> +
+>> +out_err:
+>> +	trace_handshake_submit_err(net, req, sock, ret);
+>> +	handshake_req_destroy(req, sk);
+>> +	return ret;
+>> +}
+>> +EXPORT_SYMBOL(handshake_req_submit);
+>> +
+>> +void handshake_complete(struct handshake_req *req, int status,
+>> +			struct nlattr **tb)
+>> +{
+>> +	struct socket *sock =3D req->hr_sock;
+>> +	struct net *net =3D sock_net(sock->sk);
+>> +
+>> +	if (!test_and_set_bit(HANDSHAKE_F_COMPLETED, &req->hr_flags)) {
+>> +		trace_handshake_complete(net, req, sock, status);
+>> +		req->hr_proto->hp_done(req, status, tb);
+>> +		__sock_put(sock->sk);
+>> +	}
+>> +}
+>> +
+>> +/**
+>> + * handshake_req_cancel - consumer API to cancel an in-progress handsha=
+ke
+>> + * @sock: socket on which there is an ongoing handshake
+>> + *
+>> + * XXX: Perhaps killing the user space agent might also be necessary?
+>=20
+> I thought we had agreed that we would be sending a signal to the userspac=
+e process?
+
+We had discussed killing the handler, but I don't think it's necessary.
+I'd rather not do something that drastic unless we have no other choice.
+So far my testing hasn't shown a need for killing the child process.
+
+I'm also concerned that the kernel could reuse the handler's process ID.
+handshake_req_cancel would kill something that is not a handshake agent.
+
+
+> Ideally we would be sending a SIGHUP, wait for some time on the userspace=
+ process to respond with a 'done' message, and send a 'KILL' signal if we h=
+aven't received one.
+>=20
+> Obs: Sending a KILL signal would imply that userspace is able to cope wit=
+h children dying. Which pretty much excludes pthreads, I would think.
+>=20
+> Guess I'll have to consult Stevens :-)
+
+Basically what cancel does is atomically disarm the "done" callback.
+
+The socket belongs to the kernel, so it will live until the kernel is
+good and through with it.
+
+
+>> + *
+>> + * Request cancellation races with request completion. To determine
+>> + * who won, callers examine the return value from this function.
+>> + *
+>> + * Return values:
+>> + *   %0 - Uncompleted handshake request was canceled or not found
+>> + *   %-EBUSY - Handshake request already completed
+>=20
+> EBUSY? Wouldn't be EAGAIN more approriate?
+
+I don't think EAGAIN would be appropriate at all. The situation
+is that the handshake completed, so there's no need to call cancel
+again. It's synonym, EWOULDBLOCK, is also not a good semantic fit.
+
+
+> After all, the request is everything _but_ busy...
+
+I'm open to suggestion.
+
+One option is to use a boolean return value instead of an errno.
+
+
+>> + */
+>> +int handshake_req_cancel(struct socket *sock)
+>> +{
+>> +	struct handshake_req *req;
+>> +	struct sock *sk;
+>> +	struct net *net;
+>> +
+>> +	if (!sock)
+>> +		return 0;
+>> +
+>> +	sk =3D sock->sk;
+>> +	req =3D sk->sk_handshake_req;
+>> +	net =3D sock_net(sk);
+>> +
+>> +	if (!req) {
+>> +		trace_handshake_cancel_none(net, req, sock);
+>> +		return 0;
+>> +	}
+>> +
+>> +	if (remove_pending(net, req)) {
+>> +		/* Request hadn't been accepted */
+>> +		trace_handshake_cancel(net, req, sock);
+>> +		return 0;
+>> +	}
+>> +	if (test_and_set_bit(HANDSHAKE_F_COMPLETED, &req->hr_flags)) {
+>> +		/* Request already completed */
+>> +		trace_handshake_cancel_busy(net, req, sock);
+>> +		return -EBUSY;
+>> +	}
+>> +
+>> +	__sock_put(sk);
+>> +	trace_handshake_cancel(net, req, sock);
+>> +	return 0;
+>> +}
+>> +EXPORT_SYMBOL(handshake_req_cancel);
+>> diff --git a/net/handshake/trace.c b/net/handshake/trace.c
+>> new file mode 100644
+>> index 000000000000..3a5b6f29a2b8
+>> --- /dev/null
+>> +++ b/net/handshake/trace.c
+>> @@ -0,0 +1,17 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +/*
+>> + * Trace points for transport security layer handshakes.
+>> + *
+>> + * Author: Chuck Lever <chuck.lever@oracle.com>
+>> + *
+>> + * Copyright (c) 2023, Oracle and/or its affiliates.
+>> + */
+>> +
+>> +#include <linux/types.h>
+>> +#include <net/sock.h>
+>> +
+>> +#include "handshake.h"
+>> +
+>> +#define CREATE_TRACE_POINTS
+>> +
+>> +#include <trace/events/handshake.h>
+> Cheers,
+>=20
+> Hannes
+>=20
+>=20
+>=20
+
+--
+Chuck Lever
+
+
+
