@@ -2,72 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 423D56A4B90
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 20:51:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2FBC6A4B99
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 20:51:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230314AbjB0Tvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 14:51:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35374 "EHLO
+        id S230337AbjB0Tvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 14:51:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229944AbjB0Tvf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 14:51:35 -0500
+        with ESMTP id S230351AbjB0Tvp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 14:51:45 -0500
 Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D03D07ECC;
-        Mon, 27 Feb 2023 11:51:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 636CB2885C;
+        Mon, 27 Feb 2023 11:51:40 -0800 (PST)
 Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.west.internal (Postfix) with ESMTP id BADDF3200947;
-        Mon, 27 Feb 2023 14:51:29 -0500 (EST)
+        by mailout.west.internal (Postfix) with ESMTP id EE4323200094;
+        Mon, 27 Feb 2023 14:51:38 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Mon, 27 Feb 2023 14:51:30 -0500
+  by compute2.internal (MEProxy); Mon, 27 Feb 2023 14:51:39 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
-        :content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=fm3; t=1677527489; x=1677613889; bh=eD3XTUyleC7VHpJcu1oJPldm9
-        EE+fHMQEZsCRJDzCRQ=; b=l2F4WNnM+QPIRn26UF4B25y1qE+SX+/VsfcrMysXl
-        Kap3RUpSG+Gc8o8UUSSWD4Lcrp7valwBfvUYd7+DoO19olWIXyfWvO+z5lUTqMLk
-        did4fsmA59AWfsxgfjGEAV33qa8kJWWgRmp4ZIRQO1+ge2N3DYk1WJy2nOsFWGtq
-        8q4V82MTe5TxIozc0EEV0LIDiEFiGZ3P4vOwLmfpwJqSGRnsa1dYcWcXG/GHRRL2
-        nspm/ZeMjt+wtye5q6XUhr481jo+NagpKLjgKxP9Q+RPb7/3rsIfxitnA7xOL/34
-        QX5FbCniqb0ihQqPAQwM3LiUbotT00fBVnpaVZYGLN+qg==
+        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm3; t=1677527498; x=1677613898; bh=gB
+        Fdud0U0/x2N3GtbhHj2ToHCT4bsmtEl3upzYm7cgE=; b=RSZLtxSSnnabLFxjX9
+        7seENV5tpnz+8y96rl2FUH3cUjsZy+Uuy7BLFtImRR79+uEAn42MkwmEAWjA+0YW
+        Wt4LeL3YULW45KoquooeoMpUAvJjiZ+DbVtxZfY2NokW5wxpeRtbd3k7fcI3zdTd
+        21CHy5j67/mH8BNTkm4enhqGwyS+E39M9v3e+V7EjSTKmkP3vI4NeM4kzc5G5RR9
+        /OXv+ATLO3YZio2Z/TySOLN4Yyrvi80KBsOnV0LQSZwp8Qb50RPOFq2f4ZeUcQld
+        2+ctfgodm0aF7EwtzioY1Gz5qBWw8FPbf44qIotLRWsG73mMJzK7Ablk+fhDfV6O
+        6ruw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1677527489; x=1677613889; bh=eD3XTUyleC7VHpJcu1oJPldm9EE+fHMQEZs
-        CRJDzCRQ=; b=VzdRcjv/DNK/XYFRqa2x32PFNlYqNY7rRk4ITzhyvdiWiZ98/r8
-        ftvBicpNakKa6JmdXPoyd4aURPlLqVmp83ZepWh1LvtgEqqXiXmEq2WArbBKvT6P
-        wBgcXqUxWybOMXm9awVH0Hd3UIq1SDKHPfFfnMXxeydgS2wdYK5A8WeV+BGyj+jY
-        8mW8LQaX46Jau6ie1BbBaF0rTSXTgy3s7lajorxZVmwTvWFCsBvYFvnZY0Pb+Qkc
-        wXVVZDeUloXKCXNmRHGSamTVjbWIYDVKJ4DNA0hFIEGUFTb50+T2qXa06kXwRt9w
-        ykeiNlMbq1TkuiiXT8/F0PHyb7wq4Zg5NEQ==
-X-ME-Sender: <xms:wQn9YxCDL11D-rlH1dD18pcxbKql5K3XFBjvhd7bA5l9E0FkhK_pkw>
-    <xme:wQn9Y_hJsVfn5xmURXLFPBe2YgDAEeOD_25XgLLiUk2BRScYwpaEYDfAl2Ix_wEU4
-    zqKbvtPLYQUsC2yfQ>
-X-ME-Received: <xmr:wQn9Y8mm8dZWlnq6Fa0NC5LRThOFTGYiMs19oYpRijeUD66vtYSKqLOoE1q4caIDMCcl20FfLuKVD1EBQKDlbRP1jpwpP4gOGotNm3uFZrgb3Q>
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; t=1677527498; x=1677613898; bh=gBFdud0U0/x2N
+        3GtbhHj2ToHCT4bsmtEl3upzYm7cgE=; b=sYDu8x/cAom0vpBgEy+QrnEmIaBP+
+        OevzV6NuOMdDz7RaRoMpATMXpnO/PQNDkUdae/IL8tO1AwUMBHTaHg3rRqka8CAo
+        YTdwe5KYhcpGo6iO8xHyUiwBs30un5Ne5eAdMve5pZjGxQM19D7EHR0F00xF+/By
+        wq//RtupuuoHwNrl+yNMu4ntYxYHD1LNc9GGYAzS6PtVqIDls5DaxJpR5Z17iB0d
+        x+m6jtjyBBZpxRDit9fWcCn/T4NjDsocyKef9B0mAvprYdTuhtnNjRp1+14Dm11e
+        tqsRYI6+REJF1QS5169WG8SDcW+pvvgvJkW5mpSeAtdJYBVYUKkO0TkiQ==
+X-ME-Sender: <xms:ygn9Y_KFhTQ5XbpcLeIL0opCQWfCJWOXe6fHrvjlSIQ5MFq0kSX5Bg>
+    <xme:ygn9YzKQP_J3xWfcd1rHn5L-3qooo3vLs7Jdk5pf4edpiw13RW8dzyeHPObgndHyr
+    5JIQUmFp-DZfhrTNA>
+X-ME-Received: <xmr:ygn9Y3upFYJp0Pp3SmMNYUFjHwqQ4M2V3hT4tGypLUP8CLozGXV4Y-bXPfA09XRG4vwX3F7tJe1pE-FMD_mKMRZq0l69upn3LBWSvCR8ZjL16A>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudeltddguddviecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdefhedmnecujfgurhephf
-    fvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpeffrghnihgvlhcuighuuceougig
-    uhesugiguhhuuhdrgiihiieqnecuggftrfgrthhtvghrnhepheektdduueeiuefgieeghf
-    efvdeugeetiefffefhgfduudefudehveejgedtgedtnecuffhomhgrihhnpehivghtfhdr
-    ohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    gugihusegugihuuhhurdighiii
-X-ME-Proxy: <xmx:wQn9Y7wF7PTb_i_ziNRJCtylz-gFNAsYbrGFivn24Zs_4lse7tcy1w>
-    <xmx:wQn9Y2QdOeNqnyIToFbBusGkv58mwr9Rzmuw2RY-Iomiacilmb90Pg>
-    <xmx:wQn9Y-b3z2ArS2Oqzoyvs_o5QNZMEWbLopUrKGz1navR0GFJ0ut1qg>
-    <xmx:wQn9Y0c0rTnsOvMy0vn8Wp0klcBq_Wz6LWjMMlfDiO-N-_n7GI_ziA>
+    necuuegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdejtddmnecujfgurhephf
+    fvvefufffkofgjfhgggfestdekredtredttdenucfhrhhomhepffgrnhhivghlucgiuhcu
+    oegugihusegugihuuhhurdighiiiqeenucggtffrrghtthgvrhhnpefgfefggeejhfduie
+    ekvdeuteffleeifeeuvdfhheejleejjeekgfffgefhtddtteenucevlhhushhtvghrufhi
+    iigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegugihusegugihuuhhurdighiii
+X-ME-Proxy: <xmx:ygn9Y4YXxQUu2UjX58OHebzoa3ptctJvrWV9L7uABepVbs9wAhWhAw>
+    <xmx:ygn9Y2Ys2acIUt4Uhu6a09GiDiwwdzlut2epfUMxjEO_MWhCrJKbWA>
+    <xmx:ygn9Y8AnSngj114TF-brP_hv92O5ncD4yAQzAFVc6TSYckt0jMqslA>
+    <xmx:ygn9Y-6KVQpUynQDdjvGakmI3Dndcn2D4ZEWDweiidXC4XjRfcNn1w>
 Feedback-ID: i6a694271:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 27 Feb 2023 14:51:28 -0500 (EST)
+ 27 Feb 2023 14:51:37 -0500 (EST)
 From:   Daniel Xu <dxu@dxuuu.xyz>
-To:     bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v2 0/8] Support defragmenting IPv(4|6) packets in BPF
-Date:   Mon, 27 Feb 2023 12:51:02 -0700
-Message-Id: <cover.1677526810.git.dxu@dxuuu.xyz>
+To:     kuba@kernel.org, edumazet@google.com,
+        willemdebruijn.kernel@gmail.com, davem@davemloft.net,
+        pabeni@redhat.com, dsahern@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH bpf-next v2 1/8] ip: frags: Return actual error codes from ip_check_defrag()
+Date:   Mon, 27 Feb 2023 12:51:03 -0700
+Message-Id: <bf4afe3484836972f94c1b7738845ba69d7008f5.1677526810.git.dxu@dxuuu.xyz>
 X-Mailer: git-send-email 2.39.1
+In-Reply-To: <cover.1677526810.git.dxu@dxuuu.xyz>
+References: <cover.1677526810.git.dxu@dxuuu.xyz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -80,103 +84,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-=== Context ===
+Once we wrap ip_check_defrag() in a kfunc, it may be useful for progs to
+know the exact error condition ip_check_defrag() encountered.
 
-In the context of a middlebox, fragmented packets are tricky to handle.
-The full 5-tuple of a packet is often only available in the first
-fragment which makes enforcing consistent policy difficult. There are
-really only two stateless options, neither of which are very nice:
+Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
+---
+ drivers/net/macvlan.c  |  2 +-
+ net/ipv4/ip_fragment.c | 13 ++++++++-----
+ net/packet/af_packet.c |  2 +-
+ 3 files changed, 10 insertions(+), 7 deletions(-)
 
-1. Enforce policy on first fragment and accept all subsequent fragments.
-   This works but may let in certain attacks or allow data exfiltration.
-
-2. Enforce policy on first fragment and drop all subsequent fragments.
-   This does not really work b/c some protocols may rely on
-   fragmentation. For example, DNS may rely on oversized UDP packets for
-   large responses.
-
-So stateful tracking is the only sane option. RFC 8900 [0] calls this
-out as well in section 6.3:
-
-    Middleboxes [...] should process IP fragments in a manner that is
-    consistent with [RFC0791] and [RFC8200]. In many cases, middleboxes
-    must maintain state in order to achieve this goal.
-
-=== BPF related bits ===
-
-However, when policy is enforced through BPF, the prog is run before the
-kernel reassembles fragmented packets. This leaves BPF developers in a
-awkward place: implement reassembly (possibly poorly) or use a stateless
-method as described above.
-
-Fortunately, the kernel has robust support for fragmented IP packets.
-This patchset wraps the existing defragmentation facilities in kfuncs so
-that BPF progs running on middleboxes can reassemble fragmented packets
-before applying policy.
-
-=== Patchset details ===
-
-This patchset is (hopefully) relatively straightforward from BPF perspective.
-One thing I'd like to call out is the skb_copy()ing of the prog skb. I
-did this to maintain the invariant that the ctx remains valid after prog
-has run. This is relevant b/c ip_defrag() and ip_check_defrag() may
-consume the skb if the skb is a fragment.
-
-Originally I did play around with teaching the verifier about kfuncs
-that may consume the ctx and disallowing ctx accesses in ret != 0
-branches. It worked ok, but it seemed too complex to modify the
-surrounding assumptions about ctx validity.
-
-[0]: https://datatracker.ietf.org/doc/html/rfc8900
-
-===
-
-Changes from v1:
-* Add support for ipv6 defragmentation
-
-
-Daniel Xu (8):
-  ip: frags: Return actual error codes from ip_check_defrag()
-  bpf: verifier: Support KF_CHANGES_PKT flag
-  bpf, net, frags: Add bpf_ip_check_defrag() kfunc
-  net: ipv6: Factor ipv6_frag_rcv() to take netns and user
-  bpf: net: ipv6: Add bpf_ipv6_frag_rcv() kfunc
-  bpf: selftests: Support not connecting client socket
-  bpf: selftests: Support custom type and proto for client sockets
-  bpf: selftests: Add defrag selftests
-
- Documentation/bpf/kfuncs.rst                  |   7 +
- drivers/net/macvlan.c                         |   2 +-
- include/linux/btf.h                           |   1 +
- include/net/ip.h                              |  11 +
- include/net/ipv6.h                            |   1 +
- include/net/ipv6_frag.h                       |   1 +
- include/net/transp_v6.h                       |   1 +
- kernel/bpf/verifier.c                         |   8 +
- net/ipv4/Makefile                             |   1 +
- net/ipv4/ip_fragment.c                        |  15 +-
- net/ipv4/ip_fragment_bpf.c                    |  98 ++++++
- net/ipv6/Makefile                             |   1 +
- net/ipv6/af_inet6.c                           |   4 +
- net/ipv6/reassembly.c                         |  16 +-
- net/ipv6/reassembly_bpf.c                     | 143 ++++++++
- net/packet/af_packet.c                        |   2 +-
- tools/testing/selftests/bpf/Makefile          |   3 +-
- .../selftests/bpf/generate_udp_fragments.py   |  90 +++++
- .../selftests/bpf/ip_check_defrag_frags.h     |  57 +++
- tools/testing/selftests/bpf/network_helpers.c |  26 +-
- tools/testing/selftests/bpf/network_helpers.h |   3 +
- .../bpf/prog_tests/ip_check_defrag.c          | 327 ++++++++++++++++++
- .../selftests/bpf/progs/bpf_tracing_net.h     |   1 +
- .../selftests/bpf/progs/ip_check_defrag.c     | 133 +++++++
- 24 files changed, 931 insertions(+), 21 deletions(-)
- create mode 100644 net/ipv4/ip_fragment_bpf.c
- create mode 100644 net/ipv6/reassembly_bpf.c
- create mode 100755 tools/testing/selftests/bpf/generate_udp_fragments.py
- create mode 100644 tools/testing/selftests/bpf/ip_check_defrag_frags.h
- create mode 100644 tools/testing/selftests/bpf/prog_tests/ip_check_defrag.c
- create mode 100644 tools/testing/selftests/bpf/progs/ip_check_defrag.c
-
+diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
+index 99a971929c8e..b8310e13d7e1 100644
+--- a/drivers/net/macvlan.c
++++ b/drivers/net/macvlan.c
+@@ -456,7 +456,7 @@ static rx_handler_result_t macvlan_handle_frame(struct sk_buff **pskb)
+ 		unsigned int hash;
+ 
+ 		skb = ip_check_defrag(dev_net(skb->dev), skb, IP_DEFRAG_MACVLAN);
+-		if (!skb)
++		if (IS_ERR(skb))
+ 			return RX_HANDLER_CONSUMED;
+ 		*pskb = skb;
+ 		eth = eth_hdr(skb);
+diff --git a/net/ipv4/ip_fragment.c b/net/ipv4/ip_fragment.c
+index 69c00ffdcf3e..959d2c4260ea 100644
+--- a/net/ipv4/ip_fragment.c
++++ b/net/ipv4/ip_fragment.c
+@@ -514,6 +514,7 @@ struct sk_buff *ip_check_defrag(struct net *net, struct sk_buff *skb, u32 user)
+ 	struct iphdr iph;
+ 	int netoff;
+ 	u32 len;
++	int err;
+ 
+ 	if (skb->protocol != htons(ETH_P_IP))
+ 		return skb;
+@@ -535,15 +536,17 @@ struct sk_buff *ip_check_defrag(struct net *net, struct sk_buff *skb, u32 user)
+ 		if (skb) {
+ 			if (!pskb_may_pull(skb, netoff + iph.ihl * 4)) {
+ 				kfree_skb(skb);
+-				return NULL;
++				return ERR_PTR(-ENOMEM);
+ 			}
+-			if (pskb_trim_rcsum(skb, netoff + len)) {
++			err = pskb_trim_rcsum(skb, netoff + len);
++			if (err) {
+ 				kfree_skb(skb);
+-				return NULL;
++				return ERR_PTR(err);
+ 			}
+ 			memset(IPCB(skb), 0, sizeof(struct inet_skb_parm));
+-			if (ip_defrag(net, skb, user))
+-				return NULL;
++			err = ip_defrag(net, skb, user);
++			if (err)
++				return ERR_PTR(err);
+ 			skb_clear_hash(skb);
+ 		}
+ 	}
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index d4e76e2ae153..1ef94828c8da 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -1470,7 +1470,7 @@ static int packet_rcv_fanout(struct sk_buff *skb, struct net_device *dev,
+ 
+ 	if (fanout_has_flag(f, PACKET_FANOUT_FLAG_DEFRAG)) {
+ 		skb = ip_check_defrag(net, skb, IP_DEFRAG_AF_PACKET);
+-		if (!skb)
++		if (IS_ERR(skb))
+ 			return 0;
+ 	}
+ 	switch (f->type) {
 -- 
 2.39.1
 
