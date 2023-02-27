@@ -2,61 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 233726A4A94
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 20:08:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F5646A4AC2
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 20:24:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229824AbjB0TH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 14:07:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46258 "EHLO
+        id S229682AbjB0TYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 14:24:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229814AbjB0TH4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 14:07:56 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19B73618C;
-        Mon, 27 Feb 2023 11:07:54 -0800 (PST)
+        with ESMTP id S229511AbjB0TYD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 14:24:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5F841ACD0;
+        Mon, 27 Feb 2023 11:24:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CCA90B80861;
-        Mon, 27 Feb 2023 19:07:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 193C2C433EF;
-        Mon, 27 Feb 2023 19:07:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 30C7A60F0E;
+        Mon, 27 Feb 2023 19:24:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEEF3C433D2;
+        Mon, 27 Feb 2023 19:24:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677524871;
-        bh=Rb8avXpbAaWH6QXFNSR/fXEJx3QgA5sD+yXWUKWCfCo=;
+        s=k20201202; t=1677525841;
+        bh=9MJGWDl5+aT/Iiz66NQqX9NKb5ztwpFg8OnofQzOnAU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pz1C5Cl96zEioaPAbnz7jvz1eHbPVStOvGs3vgjhByQ2azUIdcYUZrFVVXyJ8EZEh
-         mUfwYlmqiAT9A4mxFZr6lPNTBa0By2B3NM85vCwLzifIIHp3i1BgB9WzWiBfoz4ZgO
-         NteJ4tNqYtp2rkMbGInGWQPZ2Ah4ImpzRLTnzYViVjlhbCcg2CKmGzcm0t/mdVpbbS
-         LF+gd14gK9I4hN4FiIhGSD5nuSt2e4dPDWfJz3H80SYam6KCI0p5MkcXpd0Cc7yLfq
-         g9Owbog98S/dIt0ZwDgOXPxSzADtZLaqaqjxE5NLanTh6RXa/p2seWCkYDTReNAWmH
-         DdOFSq77PifUQ==
-Date:   Mon, 27 Feb 2023 11:07:50 -0800
+        b=aQ+qhfADwzMQExYOQ1FESqIlkt5WZGzd29xXML7W0/JEcK8TTQBixbfG1yoy0ZdTO
+         6bcKc4TsL/H6gQOWDCWBAfRRpZHxTuh2VynbGdx0mNyA8Cjc7eICPleFE1xOV0fZh5
+         rM4ha+PW74RF8qdw70lCTXtqPtGyzl4h53ZTtVPmcjPzoFvmBrClUCnU41716I/23m
+         StGA3gnqlP93z1+1gxHrlB1EhJHtK9PnidWN36CbwtwPN95MrET5Qdn5EqdgjqLrwL
+         txO9oNrDs4fCH1ZHQ659gsG9SKP/CFYDvl+PKdg9adjKnPTKbrDdDyP0pvKFR8+hoz
+         gsFhOEZSUVOfw==
+Date:   Mon, 27 Feb 2023 11:23:59 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hangyu Hua <hbh25y@gmail.com>
-Cc:     Sabrina Dubroca <sd@queasysnail.net>,
-        Florian Westphal <fw@strlen.de>, borisp@nvidia.com,
-        john.fastabend@gmail.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, davejwatson@fb.com, aviadye@mellanox.com,
-        ilyal@mellanox.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: tls: fix possible race condition between
- do_tls_getsockopt_conf() and do_tls_setsockopt_conf()
-Message-ID: <20230227110750.6988fca5@kernel.org>
-In-Reply-To: <52faaa10-f3e4-bca9-4bff-6f1ea7d26593@gmail.com>
-References: <20230224105811.27467-1-hbh25y@gmail.com>
-        <20230224120606.GI26596@breakpoint.cc>
-        <20230224105508.4892901f@kernel.org>
-        <Y/kck0/+NB+Akpoy@hog>
-        <20230224130625.6b5261b4@kernel.org>
-        <Y/kwyS2n4uLn8eD0@hog>
-        <20230224141740.63d5e503@kernel.org>
-        <52faaa10-f3e4-bca9-4bff-6f1ea7d26593@gmail.com>
+To:     Fedor Pchelkin <pchelkin@ispras.ru>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Guenter Roeck <groeck@google.com>,
+        Martin Faltesek <mfaltesek@google.com>,
+        Duoming Zhou <duoming@zju.edu.cn>,
+        Samuel Ortiz <sameo@linux.intel.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        lvc-project@linuxtesting.org,
+        syzbot+df64c0a2e8d68e78a4fa@syzkaller.appspotmail.com
+Subject: Re: [PATCH] nfc: fix memory leak of se_io context in nfc_genl_se_io
+Message-ID: <20230227112359.6df702e3@kernel.org>
+In-Reply-To: <20230225105614.379382-1-pchelkin@ispras.ru>
+References: <20230225105614.379382-1-pchelkin@ispras.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -64,39 +62,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 27 Feb 2023 11:26:18 +0800 Hangyu Hua wrote:
-> In order to reduce ambiguity, I think it may be a good idea only to
-> lock do_tls_getsockopt_conf() like we did in do_tls_setsockopt()
+On Sat, 25 Feb 2023 13:56:14 +0300 Fedor Pchelkin wrote:
+> The callback context for sending/receiving APDUs to/from the selected
+> secure element is allocated inside nfc_genl_se_io and supposed to be
+> eventually freed in se_io_cb callback function. However, there are several
+> error paths where the bwi_timer is not charged to call se_io_cb later, and
+> the cb_context is leaked.
 > 
-> It will look like:
+> The patch proposes to free the cb_context explicitly on those error paths.
 > 
-> static int do_tls_getsockopt(struct sock *sk, int optname,
-> 			     char __user *optval, int __user *optlen)
-> {
-> 	int rc = 0;
-> 
-> 	switch (optname) {
-> 	case TLS_TX:
-> 	case TLS_RX:
-> +		lock_sock(sk);
-> 		rc = do_tls_getsockopt_conf(sk, optval, optlen,
-> 					    optname == TLS_TX);
-> +		release_sock(sk);
-> 		break;
-> 	case TLS_TX_ZEROCOPY_RO:
-> 		rc = do_tls_getsockopt_tx_zc(sk, optval, optlen);
-> 		break;
-> 	case TLS_RX_EXPECT_NO_PAD:
-> 		rc = do_tls_getsockopt_no_pad(sk, optval, optlen);
-> 		break;
-> 	default:
-> 		rc = -ENOPROTOOPT;
-> 		break;
-> 	}
-> 	return rc;
-> }
-> 
-> Of cause, I will clean the lock in do_tls_getsockopt_conf(). What do you
-> guys think?
+> At the moment we can't simply check 'dev->ops->se_io()' return value as it
+> may be negative in both cases: when the timer was charged and was not.
 
-I'd suggest to take the lock around the entire switch statement.
+FWIW this patch has already been applied, please send the next changes
+on top:
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=25ff6f8a5a3b8dc48e8abda6f013e8cc4b14ffea
