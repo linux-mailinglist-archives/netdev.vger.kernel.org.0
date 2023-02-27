@@ -2,120 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 564CC6A3FB7
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 11:53:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C03DD6A406A
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 12:15:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229861AbjB0KxJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 05:53:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56292 "EHLO
+        id S229585AbjB0LPy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 06:15:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229585AbjB0KxI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 05:53:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4301972A8
-        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 02:53:00 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        with ESMTP id S229535AbjB0LPx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 06:15:53 -0500
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A8721A97B
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 03:15:52 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 02FAE201CF;
+        Mon, 27 Feb 2023 12:15:50 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id K5ayoYr1z8la; Mon, 27 Feb 2023 12:15:49 +0100 (CET)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BCB1A60C4F
-        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 10:52:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D81E3C433D2;
-        Mon, 27 Feb 2023 10:52:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677495179;
-        bh=6JFT6ur4jX4S4xLulruMUMzwn9Veq3hAer5G9iC1/JE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RDdB/ecGyD3G+5YEfZHiWfOuN2ylSBr2TPE2HK+a7XNVtjk4TnpKILh/5JFOV2nzR
-         cyf26KOADfbbBDPbcgGBpfb9ZAU5FU1VvZJvq8H3F5oxLLQaOkVbL7en7XdzihknD2
-         y+cHG/oaTA9QnY6YCQsMWW2uRLURiC+511e8dOuhtZqTF+KoPVIwrcJZQThQq/MVP1
-         haxTR1sVxUJDnkIT4AriUY6Wz5t00ADSdKyEjUAF+hijRopDcZIyVPl3Jo5NAzMRiY
-         FIdYUyMyubw0g8Y7uDUvfcbPXabYTG72pamJFMFNldERMJKCr3R4d+BRzEFykQVs5Y
-         3mC9UwLK5MGpg==
-Date:   Mon, 27 Feb 2023 10:52:52 +0000
-From:   Lee Jones <lee@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Maksim Kiselev <bigunclemax@gmail.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [PATCH net 3/3] net: mscc: ocelot: fix duplicate driver name
- error
-Message-ID: <Y/yLhHIjtdBzSpLu@google.com>
-References: <20230224155235.512695-1-vladimir.oltean@nxp.com>
- <20230224155235.512695-4-vladimir.oltean@nxp.com>
+        by a.mx.secunet.com (Postfix) with ESMTPS id 7AC7A200A7;
+        Mon, 27 Feb 2023 12:15:49 +0100 (CET)
+Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
+        by mailout1.secunet.com (Postfix) with ESMTP id 6BD7580004A;
+        Mon, 27 Feb 2023 12:15:49 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.17; Mon, 27 Feb 2023 12:15:49 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.17; Mon, 27 Feb
+ 2023 12:15:49 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id A15913182E03; Mon, 27 Feb 2023 12:15:48 +0100 (CET)
+Date:   Mon, 27 Feb 2023 12:15:48 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+CC:     David George <David.George@sophos.com>,
+        Sri Sakthi <srisakthi.s@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Srisakthi Subramaniam <Srisakthi.Subramaniam@sophos.com>,
+        Vimal Agrawal <Vimal.Agrawal@sophos.com>
+Subject: Re: [PATCH] xfrm: Allow transport-mode states with AF_UNSPEC selector
+Message-ID: <Y/yQ5O7wXgOSzt3Z@gauss3.secunet.de>
+References: <CA+t5pP=6E4RvKiPdS4fm_Z2M2BLKPkd6jewtF0Y_Ci_w-oTb+w@mail.gmail.com>
+ <Y+8Pg5JzOBntLcWA@gondor.apana.org.au>
+ <CA+t5pP=NRQUax5ogB32dZN74Mk2qq_ZY7OgNro8JmckVkQsQyw@mail.gmail.com>
+ <Y+861os+ZbBWVvvi@gondor.apana.org.au>
+ <LO0P265MB604061D3617058B2B07D534CE0A49@LO0P265MB6040.GBRP265.PROD.OUTLOOK.COM>
+ <Y/RDBnFoROo5+xcm@gondor.apana.org.au>
+ <Y/RceGnV2JLvRmXC@gondor.apana.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230224155235.512695-4-vladimir.oltean@nxp.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <Y/RceGnV2JLvRmXC@gondor.apana.org.au>
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 Feb 2023, Vladimir Oltean wrote:
+On Tue, Feb 21, 2023 at 01:54:00PM +0800, Herbert Xu wrote:
+> On Tue, Feb 21, 2023 at 12:05:26PM +0800, Herbert Xu wrote:
+> > 
+> > OK I wasn't aware of this.  This definitely looks buggy.  We need
+> > to fix this bogus check.
+> 
+> It looks like I actually added this bogus check :)
+> 
+> Does this patch work for you?
+> 
+> ---8<---
+> xfrm state selectors are matched against the inner-most flow
+> which can be of any address family.  Therefore middle states
+> in nested configurations need to carry a wildcard selector in
+> order to work at all.
+> 
+> However, this is currently forbidden for transport-mode states.
+> 
+> Fix this by removing the unnecessary check.
+> 
+> Fixes: 13996378e658 ("[IPSEC]: Rename mode to outer_mode and add inner_mode")
+> Reported-by: David George <David.George@sophos.com>
+> Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 
-> When compiling a kernel which has both CONFIG_NET_DSA_MSCC_OCELOT_EXT
-> and CONFIG_MSCC_OCELOT_SWITCH enabled, the following error message will
-> be printed:
-> 
-> [    5.266588] Error: Driver 'ocelot-switch' is already registered, aborting...
-> 
-> Rename the ocelot_ext.c driver to "ocelot-ext-switch" to avoid the name
-> duplication, and update the mfd_cell entry for its resources.
-> 
-> Fixes: 3d7316ac81ac ("net: dsa: ocelot: add external ocelot switch control")
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  drivers/mfd/ocelot-core.c           | 2 +-
-
-Acked-by: Lee Jones <lee@kernel.org>
-
->  drivers/net/dsa/ocelot/ocelot_ext.c | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/mfd/ocelot-core.c b/drivers/mfd/ocelot-core.c
-> index b0ff05c1759f..e1772ff00cad 100644
-> --- a/drivers/mfd/ocelot-core.c
-> +++ b/drivers/mfd/ocelot-core.c
-> @@ -177,7 +177,7 @@ static const struct mfd_cell vsc7512_devs[] = {
->  		.num_resources = ARRAY_SIZE(vsc7512_miim1_resources),
->  		.resources = vsc7512_miim1_resources,
->  	}, {
-> -		.name = "ocelot-switch",
-> +		.name = "ocelot-ext-switch",
->  		.of_compatible = "mscc,vsc7512-switch",
->  		.num_resources = ARRAY_SIZE(vsc7512_switch_resources),
->  		.resources = vsc7512_switch_resources,
-> diff --git a/drivers/net/dsa/ocelot/ocelot_ext.c b/drivers/net/dsa/ocelot/ocelot_ext.c
-> index 14efa6387bd7..52b41db63a28 100644
-> --- a/drivers/net/dsa/ocelot/ocelot_ext.c
-> +++ b/drivers/net/dsa/ocelot/ocelot_ext.c
-> @@ -149,7 +149,7 @@ MODULE_DEVICE_TABLE(of, ocelot_ext_switch_of_match);
->  
->  static struct platform_driver ocelot_ext_switch_driver = {
->  	.driver = {
-> -		.name = "ocelot-switch",
-> +		.name = "ocelot-ext-switch",
->  		.of_match_table = of_match_ptr(ocelot_ext_switch_of_match),
->  	},
->  	.probe = ocelot_ext_probe,
-> -- 
-> 2.34.1
-> 
-
--- 
-Lee Jones [李琼斯]
+Patch applied, thanks a lot Herbert!
