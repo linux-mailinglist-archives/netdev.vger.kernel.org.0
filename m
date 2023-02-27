@@ -2,66 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B128B6A49CC
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 19:32:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74CBE6A49DE
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 19:35:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229776AbjB0Scl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 13:32:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38120 "EHLO
+        id S229595AbjB0Sfe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 13:35:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229930AbjB0Scf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 13:32:35 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C65762449B;
-        Mon, 27 Feb 2023 10:32:33 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77A19B80CA7;
-        Mon, 27 Feb 2023 18:32:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFAB5C4339C;
-        Mon, 27 Feb 2023 18:32:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677522751;
-        bh=TRYkcK6dGjq95G4Hqar17zQJsonjNZbS83j5jQWF9xU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rLx+SYB13VzG7b8YfE/9dIKS0w68O7VHFGIv1Wyhkrq21VkwVuWDGLYkD0mBOdNBP
-         NeUvZ2t/v9vigy6OtEQCLuK8Gj7DU8y+g6BYtdXQbyE8RVV1TudkaRFP0Leu7xaDUZ
-         tFPY9tNiVRBFsZqIyFmpEAjW1Gaa41iJe71W8azwttyg7UOqYj9mb4BAIJkvtQicI2
-         gtJXMkIFJ/GvkL/MxrPm/5UG++cFg9eNw8n/neXanZkhlnL3rg048ETYWMwDlXtEDi
-         Zj7YSW55AalqizmdCg3ObuoKMeoosZTLLTviP3d+dDOf95cL9khS5yAPrcA0Ozq/HJ
-         T6RNRpDyFfNZQ==
-Date:   Mon, 27 Feb 2023 10:32:29 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Larry Finger <Larry.Finger@lwfinger.net>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        "Berg, Johannes" <johannes.berg@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Nicolas Cavallari <Nicolas.Cavallari@green-communications.fr>,
-        Jan Engelhardt <jengelh@inai.de>
-Subject: Re: [PATCH] wifi: wext: warn about usage only once
-Message-ID: <20230227103229.5aed4714@kernel.org>
-In-Reply-To: <121c0039-5f0c-7c4e-5b07-9193ed547079@lwfinger.net>
-References: <20230224135933.94104aeda1a0.Ie771c6a66d7d6c3cf67da5f3b0c66cea66fd514c@changeid>
-        <dff29d82-9c4b-1933-c1c1-a3becf2a0f1f@lwfinger.net>
-        <CAHk-=whwDRefJJq0K8bXXSNY3-Zy8=Z3ZiKYh2mOOvfT-MqNhA@mail.gmail.com>
-        <121c0039-5f0c-7c4e-5b07-9193ed547079@lwfinger.net>
+        with ESMTP id S229486AbjB0Sfd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 13:35:33 -0500
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBEE7198F
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 10:35:31 -0800 (PST)
+Received: by mail-io1-xd2d.google.com with SMTP id t129so2907765iof.12
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 10:35:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=UTh4OFbqJSpT5IaxeTjsSLuZQoN9DS8rD2n8LR+Pb0g=;
+        b=nTw5Xc90tpgpR5LWu8201dYe26Q1JmfGapV1FQtdPQ1FlsnanGqErYpvVCRol2b0an
+         sSDlxpjxTpoj1EhRK6bFW1TvSD1SPF8sX7eRiSJ8s6XIqgi5I7BNAwHCZQ93UzTGPdbG
+         Jd+8gZp41YwayEX8fVpPJekQ5AazoCjTH5fC44ef0XAhMD9aUYmq4EV0o/TwHSt/ADbI
+         VlQeIfCrnkdzgM4RSpN4r9J5UNgojOxxFxnS9UzaaPM0O+wFk5zRMBhcbhVRf+NeEaXk
+         4ZSxwzsD1B9ur/oDm6k7yNFpbg78aXhb4B1B71eNrbdEl+vPoPrnUvudjf+PfyBcyPL0
+         aURg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=UTh4OFbqJSpT5IaxeTjsSLuZQoN9DS8rD2n8LR+Pb0g=;
+        b=7JR0lWUg8/uZr6FCKCFf0+tsQ5px7tYVtz4oRc+n1ZDavZ3xgjEzfVPfxfbd4XUKxO
+         esCS1cQtNjYflBni0Wz8TNdYLyAnjyRzm5EWaxBDYQ+q5eOVQVHZnfilJbfySvh4D2zY
+         7gPS3LfllsMOoRXanNUyswxP2SVw7c7MPfMxpUrCMUvxezWmHXo0gFK2QRGTEeXh9OGY
+         IIXqhLbGzerbfHBH9uSO4hU8dbk+uvPTHR5t3HueLL5ji9qRltAuOSN905QpYbVBkoUX
+         q5lWtVEXI3btoMuUwf8QOY/pXbRmJUmYIbYGTKRtlCeC2Krwi6WDIFo2Mn2mn6yKol94
+         v5Vw==
+X-Gm-Message-State: AO0yUKV6i4lSrUc2OoDYJNLupYIpoxMHYOwbbVy1m/2oAug7sqa8Oek3
+        Xk2NDnFgQmkyUbdcMub2iZ1bJAhJsTgMGhtqUKWHlw==
+X-Google-Smtp-Source: AK7set+Hy8ZvyzNcRuMZfFpYWj+WcL1GepzBPGfkByV6oLHmY6bfyj4ZUDWFItDHm/z8LxYz1Gf/ZOlCKjXmcJg37U0=
+X-Received: by 2002:a02:620d:0:b0:3c5:df3:a58b with SMTP id
+ d13-20020a02620d000000b003c50df3a58bmr31490jac.2.1677522931078; Mon, 27 Feb
+ 2023 10:35:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <Y/p5sDErhHtzW03E@schwarzgerat.orthanc> <20230227102339.08ddf3fb@kernel.org>
+ <Y/z2olg1C4jKD5m9@schwarzgerat.orthanc>
+In-Reply-To: <Y/z2olg1C4jKD5m9@schwarzgerat.orthanc>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 27 Feb 2023 19:35:18 +0100
+Message-ID: <CANn89iLPW5P62sd6N15OwhOHaPDdRCge7nJHjDyKWXRnky4ywg@mail.gmail.com>
+Subject: Re: [PATCH] [net] add rx_otherhost_dropped sysfs entry
+To:     nick black <dankamongmen@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jeffrey Ji <jeffreyji@google.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 25 Feb 2023 20:09:51 -0600 Larry Finger wrote:
-> In case Qt really needs to know what network it is on, what is a better way to 
-> detect if the network is on a Wifi device?
+On Mon, Feb 27, 2023 at 7:29=E2=80=AFPM nick black <dankamongmen@gmail.com>=
+ wrote:
+>
+> Jakub Kicinski left as an exercise for the reader:
+> > "All the other stats are there" is not a strong enough reason
+> > to waste memory on all systems. You need to justify the change
+> > based on how important the counter is. I'd prefer to draw a
+> > line on adding the sysfs stats entries. We don't want to have
+> > to invent a new stats struct just to avoid having sysfs entries
+> > for each stat.
+>
+> In that case, I think a comment here is warranted explaining why
+> this stat, out of 24 total, isn't important enough to reproduce
+> in sysfs. I'm not sure what this comment would be:
+> rx_otherhost_dropped certainly seems as useful as, say
+> rx_compressed (only valid on e.g. CSLIP and PPP).
+>
+> If this stat is left out of the sysfs interface, I'm likely to
+> just grab the rtnl_link_stats64 directly via netlink, and forgo
+> the sysfs interface entirely. If, in a modern switched world,
+> I'm receiving many packets destined for other hosts, that's at
+> least as interesting to me as several other classes of RX error.
 
-Presupposing lack of love for netlink - /sys/class/net/$ifc/uevent
-will have DEVTYPE=wlan.
+We do not want to add more sysfs files, unless absolutely needed.
+
+This sysfs thing adds costs at every interface creation and dismantle,
+even if the sysfs file is never to be used.
+
+netlink is the primary interface, sysfs is legacy from old days.
+netlink code is basically free if code is not run.
+
+So please, forget about sysfs, and switch to netlink :)
