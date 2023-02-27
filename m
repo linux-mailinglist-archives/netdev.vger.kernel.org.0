@@ -2,53 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88A236A4ACA
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 20:25:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D1E86A4AD2
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 20:26:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229906AbjB0TZZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 14:25:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59618 "EHLO
+        id S230049AbjB0T0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 14:26:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbjB0TZY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 14:25:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7685F1D92C;
-        Mon, 27 Feb 2023 11:25:23 -0800 (PST)
+        with ESMTP id S229815AbjB0T0C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 14:26:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5C47252A0
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 11:25:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E506B60F08;
-        Mon, 27 Feb 2023 19:25:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD7FAC433EF;
-        Mon, 27 Feb 2023 19:25:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 417F560F08
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 19:25:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 472CAC433EF;
+        Mon, 27 Feb 2023 19:25:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677525922;
-        bh=Vh7dHdYhOi+3z93RYe3EDKV3xZU/PUURtI1C0KIVf7w=;
+        s=k20201202; t=1677525954;
+        bh=HEvJNXzlxvofkA+7yqM0U2PT5NVNPTD+hKvhCeOJcIY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Yuq5dc9gS9w73YlPDau35cLGMTKqxCEc819IpqW81vdolbTmyKpKf4W59x+o1IHIV
-         mBs05Z1RD2k0CoSF1k/LaeEiMWydWRu/ZZlTYh9j5aq7v4iXtvoJLm8etqje1NVEaI
-         AL4b9RyvGCoVJtAO+vNZVlPPPx1nRQ2O7nnj6fYTU95L4Phx2nxGErHePwdNymmFr3
-         lS+YJ5KOYusDeYgleMqydLc6iaCLLNgx9XG1HvHnASW3fiRwtg4DSr/LXVIm0VZQBm
-         nOQO3kNwajX939QxuzQzsQPMZriRDdxvIhkl5LxAdY97GZWmdNgUWJqRrTNl3L4yH3
-         VbjxZ2553fTng==
-Date:   Mon, 27 Feb 2023 11:25:20 -0800
+        b=AQd7YKP6GGSCSJyf1imGN5AXAAQDLxlOyuCwcHlDOE8JWHm+V3IGvvV1i8MIPeHdY
+         /O7qCDLFaKGJtLF6yCViqB6lGmTAeDWlt1VmlN9ZYXq+b3xxo79eHTgq541W0aSVfX
+         mRdG6Ifmw/QJRnEN3vO2OFT+bo+o8dO/DRQ6AF+5mE/C6KJX5agSOjmfZLCd/cDWRZ
+         EhLE3e533A9NBDGkgAg2f2zlw097GeXsFt0aRETJzxj3GJIg+VwY7zJEuk6RYUDCLx
+         2B84BJFqfCeNXpOz2+Hn5myRqdn2caawLSt779sD0ml0L19AUGnAcKglW2Bf0YNN1k
+         lvnEowHQfG2Hw==
+Date:   Mon, 27 Feb 2023 11:25:53 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        paulb@nvidia.com, simon.horman@corigine.com,
-        marcelo.leitner@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net/sched: cls_api: Move call to
- tcf_exts_miss_cookie_base_destroy()
-Message-ID: <20230227112520.5ac534fa@kernel.org>
-In-Reply-To: <20230224-cls_api-wunused-function-v1-1-12c77986dc2d@kernel.org>
-References: <20230224-cls_api-wunused-function-v1-1-12c77986dc2d@kernel.org>
+To:     Pedro Tammela <pctammela@mojatatu.com>
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, liuhangbin@gmail.com
+Subject: Re: [PATCH] net/sched: act_api: move TCA_EXT_WARN_MSG to the
+ correct hierarchy
+Message-ID: <20230227112553.39df99fd@kernel.org>
+In-Reply-To: <20230224175601.180102-1-pctammela@mojatatu.com>
+References: <20230224175601.180102-1-pctammela@mojatatu.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,28 +54,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 Feb 2023 11:18:49 -0700 Nathan Chancellor wrote:
-> When CONFIG_NET_CLS_ACT is disabled:
+On Fri, 24 Feb 2023 14:56:01 -0300 Pedro Tammela wrote:
+> TCA_EXT_WARN_MSG is currently sitting outside of the expected hierarchy
+> for the tc actions code. It should sit within TCA_ACT_TAB.
 > 
->   ../net/sched/cls_api.c:141:13: warning: 'tcf_exts_miss_cookie_base_destroy' defined but not used [-Wunused-function]
->     141 | static void tcf_exts_miss_cookie_base_destroy(struct tcf_exts *exts)
->         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> 
-> Due to the way the code is structured, it is possible for a definition
-> of tcf_exts_miss_cookie_base_destroy() to be present without actually
-> being used. Its single callsite is in an '#ifdef CONFIG_NET_CLS_ACT'
-> block but a definition will always be present in the file. The version
-> of tcf_exts_miss_cookie_base_destroy() that actually does something
-> depends on CONFIG_NET_TC_SKB_EXT, so the stub function is used in both
-> CONFIG_NET_CLS_ACT=n and CONFIG_NET_CLS_ACT=y + CONFIG_NET_TC_SKB_EXT=n
-> configurations.
-> 
-> Move the call to tcf_exts_miss_cookie_base_destroy() in
-> tcf_exts_destroy() out of the '#ifdef CONFIG_NET_CLS_ACT', so that it
-> always appears used to the compiler, while not changing any behavior
-> with any of the various configuration combinations.
-> 
-> Fixes: 80cd22c35c90 ("net/sched: cls_api: Support hardware miss to tc action")
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+> Fixes: 0349b8779cc9 ("sched: add new attr TCA_EXT_WARN_MSG to report tc extact message")
+> Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
+> Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
 
 Applied, thanks!
