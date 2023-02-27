@@ -2,52 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 822AC6A4AD4
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 20:27:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 655B56A4B3D
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 20:37:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229740AbjB0T1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 14:27:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32986 "EHLO
+        id S230247AbjB0ThZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 14:37:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230073AbjB0T1G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 14:27:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C76225296
-        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 11:26:54 -0800 (PST)
+        with ESMTP id S230246AbjB0ThP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 14:37:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BCFC27D60
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 11:36:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1802CB80D9B
-        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 19:26:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F688C433EF;
-        Mon, 27 Feb 2023 19:26:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F35160F08
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 19:36:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 502CDC433D2;
+        Mon, 27 Feb 2023 19:36:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677526011;
-        bh=vu0BWuw2xNQQfltJVN6yIzWfBmF6fvPzISkBinlYiYw=;
+        s=k20201202; t=1677526602;
+        bh=k1n6LmRrnqG4OWHJkpU3zl1uPZonPElFUJW6Pv5eNpc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=l5DmCIpHYEJHKYy7C16yGFQxjussv6/J2xtgeIZWxO2GBxtqEz0nk0Fwg6CD/TT7+
-         VuwgxeJ0tkvjvQNwvUVKrKOlxkuSDhsTMxFewuwrz2y3ik5xvtmqKPRu7+4e3MTYwr
-         QoYlX38p95rpxv/gUDsji4rWRS62B8PyfC0cC6XqDQKISuC5jsSlGgD2y8rxNvugHH
-         XsrJahksobYKvfgAZuwrZ0XmGbvFh4wsA+rgYEzKhSu8m05TRY5uIDrvjWQ/ZC6Aa9
-         PFvEKjx+hhy9AbJOzjbu0e8BBHzlgiu3nuMK4wu3Xum5q5s6eJjYGWrhr/F30jCriM
-         ELXGoqkJcQOOA==
-Date:   Mon, 27 Feb 2023 11:26:50 -0800
+        b=ohlI3J8IGfW9EmrV4sW2UetWnAPshO301gv7In8vEEp2fvNMWGCVAhePp8/13XL9p
+         DoOqjvE6BK++A8HnDy2uVcshvN5Ky9DJlu1NBSLFhJU4zt8j9+B37WQld9V/EVFOQE
+         7tVWMszqs0+A7Yoda0L+q9A08/MSvsU0Y4RfGQCfYa00PiaPnL7l08RN/6fpQz9Y9c
+         bF7JkrNXJFHcthQsdVyIyq2QCcsDkP3rYTxjClHvWd70qFPLQ22Y1NGC/POJnfbbMK
+         nerNli+lbYNHOiWOQlIJBOktXz7yVsdSiWgMKyNuXmv4K14r+qGYDmqQhDwG/jbWli
+         Q+TtuCd9FL2Kw==
+Date:   Mon, 27 Feb 2023 11:36:41 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: [pull request][net V2 0/7] mlx5 fixes 2023-02-24
-Message-ID: <20230227112650.00bc7edd@kernel.org>
-In-Reply-To: <20230224181904.671473-1-saeed@kernel.org>
-References: <20230224181904.671473-1-saeed@kernel.org>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     Pedro Tammela <pctammela@mojatatu.com>, netdev@vger.kernel.org,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        amir@vadai.me, dcaratti@redhat.com, willemb@google.com,
+        ozsh@nvidia.com, paulb@nvidia.com
+Subject: Re: [PATCH net 1/3] net/sched: act_pedit: fix action bind logic
+Message-ID: <20230227113641.574dd3bf@kernel.org>
+In-Reply-To: <Y/o0BDsoepfkakiG@corigine.com>
+References: <20230224150058.149505-1-pctammela@mojatatu.com>
+        <20230224150058.149505-2-pctammela@mojatatu.com>
+        <Y/oIWNU5ryYmPPO1@corigine.com>
+        <a15d21c6-8a88-6c9a-ca7e-77a31ecfbe28@mojatatu.com>
+        <Y/o0BDsoepfkakiG@corigine.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,12 +59,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 Feb 2023 10:18:57 -0800 Saeed Mahameed wrote:
-> From: Saeed Mahameed <saeedm@nvidia.com>
+On Sat, 25 Feb 2023 17:15:00 +0100 Simon Horman wrote:
+> > > OTOH, perhaps it's a regression wrt the oldest of
+> > > the two patches references below.  
+> > 
+> > ...because filters and actions are completely separate TC objects.
+> > There shouldn't be actions that can be created independently but can't be
+> > really used.  
 > 
-> V1->V2:
->  - Toss away arguably non-fixes patches
-> 
-> This series provides bug fixes for mlx5 driver.
+> I agree that shouldn't be the case.
+> For me that doesn't make it a bug, but I don't feel strongly about it.
 
-Pulled, thanks!
+I'm with Simon - this is a long standing problem, and we weren't getting
+any user complaints about this. So I also prefer to route this via
+net-next, without the Fixes tags.
