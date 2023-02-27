@@ -2,144 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EE496A4187
-	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 13:16:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6568D6A419B
+	for <lists+netdev@lfdr.de>; Mon, 27 Feb 2023 13:20:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229812AbjB0MQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 07:16:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37474 "EHLO
+        id S229882AbjB0MUE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 07:20:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229535AbjB0MQh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 07:16:37 -0500
-Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8361A491;
-        Mon, 27 Feb 2023 04:16:34 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=kaishen@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VcehaX3_1677500191;
-Received: from localhost(mailfrom:KaiShen@linux.alibaba.com fp:SMTPD_---0VcehaX3_1677500191)
-          by smtp.aliyun-inc.com;
-          Mon, 27 Feb 2023 20:16:32 +0800
-From:   Kai <KaiShen@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
-        Kai <KaiShen@linux.alibaba.com>
-Subject: [PATCH net-next v2] net/smc: Use percpu ref for wr tx reference
-Date:   Mon, 27 Feb 2023 12:16:16 +0000
-Message-Id: <20230227121616.448-1-KaiShen@linux.alibaba.com>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S229850AbjB0MUC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 07:20:02 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F09919F3F;
+        Mon, 27 Feb 2023 04:19:49 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF811B80D17;
+        Mon, 27 Feb 2023 12:19:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80A9BC433D2;
+        Mon, 27 Feb 2023 12:19:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1677500386;
+        bh=vVnZnm8G66BSDTc5sTj7XTjPa2+eT0iZSUxP75tWAWg=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=PRdXXUaEOzYrqi//hZexYHq92BnZL3IDLb/J++VPlBTkaRAPvAx9B4wCTXcFUHQ/H
+         i65mVv/RqXF6isvh7IR1Szo58Bz1BVeWpYYuesxvbyMDB/+mGZSaIxShnG4tx1hw4q
+         OH8FM34duMCOAxSuXP0aCx8UPxP2rfxahBS369NsG0QjETTlzoCsudCryCU7SsmpBG
+         7i18RMDsC9bC59awupMJgD+WPAcL/IeMJmH4i6PjzXRSWrBYM29wPECbdXoQmuDeRZ
+         p9cMw50LRee77sW9Elgju20NvozS7lOYS+EsChVN2UVSRJ2V25RlYBFTeeczx3WP6f
+         VuqK3rYfks0LA==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] wifi: ath6kl: reduce WARN to dev_dbg() in callback
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20230126182431.867984-1-pchelkin@ispras.ru>
+References: <20230126182431.867984-1-pchelkin@ispras.ru>
+To:     Fedor Pchelkin <pchelkin@ispras.ru>
+Cc:     Fedor Pchelkin <pchelkin@ispras.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Oliver Neukum <oneukum@suse.com>,
+        Mohammed Shafi Shajakhan <mohammed@qca.qualcomm.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org,
+        syzbot+555908813b2ea35dae9a@syzkaller.appspotmail.com
+User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <167750038173.9069.13927854450311352461.kvalo@kernel.org>
+Date:   Mon, 27 Feb 2023 12:19:43 +0000 (UTC)
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The refcount wr_tx_refcnt may cause cache thrashing problems among
-cores and we can use percpu ref to mitigate this issue here. We
-gain some performance improvement with percpu ref here on our
-customized smc-r verion. Applying cache alignment may also mitigate
-this problem but it seem more reasonable to use percpu ref here.
+Fedor Pchelkin <pchelkin@ispras.ru> wrote:
 
-redis-benchmark on smc-r with atomic wr_tx_refcnt:
-SET: 525817.62 requests per second, p50=0.087 msec
-GET: 570841.44 requests per second, p50=0.087 msec
+> The warn is triggered on a known race condition, documented in the code above
+> the test, that is correctly handled.  Using WARN() hinders automated testing.
+> Reducing severity.
+> 
+> Fixes: de2070fc4aa7 ("ath6kl: Fix kernel panic on continuous driver load/unload")
+> Reported-and-tested-by: syzbot+555908813b2ea35dae9a@syzkaller.appspotmail.com
+> Signed-off-by: Oliver Neukum <oneukum@suse.com>
+> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
+> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
 
-redis-benchmark on the percpu_ref version:
-SET: 539956.81 requests per second, p50=0.087 msec
-GET: 587613.12 requests per second, p50=0.079 msec
+Patch applied to ath-next branch of ath.git, thanks.
 
-Signed-off-by: Kai <KaiShen@linux.alibaba.com>
----
- net/smc/smc_core.h |  5 ++++-
- net/smc/smc_wr.c   | 18 ++++++++++++++++--
- net/smc/smc_wr.h   |  5 ++---
- 3 files changed, 22 insertions(+), 6 deletions(-)
+75c4a8154cb6 wifi: ath6kl: reduce WARN to dev_dbg() in callback
 
-diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
-index 08b457c2d294..0705e33e2d68 100644
---- a/net/smc/smc_core.h
-+++ b/net/smc/smc_core.h
-@@ -106,7 +106,10 @@ struct smc_link {
- 	unsigned long		*wr_tx_mask;	/* bit mask of used indexes */
- 	u32			wr_tx_cnt;	/* number of WR send buffers */
- 	wait_queue_head_t	wr_tx_wait;	/* wait for free WR send buf */
--	atomic_t		wr_tx_refcnt;	/* tx refs to link */
-+	struct {
-+		struct percpu_ref	wr_tx_refs;
-+	} ____cacheline_aligned_in_smp;
-+	struct completion	ref_comp;
- 
- 	struct smc_wr_buf	*wr_rx_bufs;	/* WR recv payload buffers */
- 	struct ib_recv_wr	*wr_rx_ibs;	/* WR recv meta data */
-diff --git a/net/smc/smc_wr.c b/net/smc/smc_wr.c
-index b0678a417e09..dd923e76139f 100644
---- a/net/smc/smc_wr.c
-+++ b/net/smc/smc_wr.c
-@@ -648,7 +648,8 @@ void smc_wr_free_link(struct smc_link *lnk)
- 
- 	smc_wr_tx_wait_no_pending_sends(lnk);
- 	wait_event(lnk->wr_reg_wait, (!atomic_read(&lnk->wr_reg_refcnt)));
--	wait_event(lnk->wr_tx_wait, (!atomic_read(&lnk->wr_tx_refcnt)));
-+	percpu_ref_kill(&lnk->wr_tx_refs);
-+	wait_for_completion(&lnk->ref_comp);
- 
- 	if (lnk->wr_rx_dma_addr) {
- 		ib_dma_unmap_single(ibdev, lnk->wr_rx_dma_addr,
-@@ -847,6 +848,13 @@ void smc_wr_add_dev(struct smc_ib_device *smcibdev)
- 	tasklet_setup(&smcibdev->send_tasklet, smc_wr_tx_tasklet_fn);
- }
- 
-+static void smcr_wr_tx_refs_free(struct percpu_ref *ref)
-+{
-+	struct smc_link *lnk = container_of(ref, struct smc_link, wr_tx_refs);
-+
-+	complete(&lnk->ref_comp);
-+}
-+
- int smc_wr_create_link(struct smc_link *lnk)
- {
- 	struct ib_device *ibdev = lnk->smcibdev->ibdev;
-@@ -890,7 +898,13 @@ int smc_wr_create_link(struct smc_link *lnk)
- 	smc_wr_init_sge(lnk);
- 	bitmap_zero(lnk->wr_tx_mask, SMC_WR_BUF_CNT);
- 	init_waitqueue_head(&lnk->wr_tx_wait);
--	atomic_set(&lnk->wr_tx_refcnt, 0);
-+
-+	rc = percpu_ref_init(&lnk->wr_tx_refs, smcr_wr_tx_refs_free,
-+			     PERCPU_REF_ALLOW_REINIT, GFP_KERNEL);
-+	if (rc)
-+		goto dma_unmap;
-+	init_completion(&lnk->ref_comp);
-+
- 	init_waitqueue_head(&lnk->wr_reg_wait);
- 	atomic_set(&lnk->wr_reg_refcnt, 0);
- 	init_waitqueue_head(&lnk->wr_rx_empty_wait);
-diff --git a/net/smc/smc_wr.h b/net/smc/smc_wr.h
-index 45e9b894d3f8..f3008dda222a 100644
---- a/net/smc/smc_wr.h
-+++ b/net/smc/smc_wr.h
-@@ -63,14 +63,13 @@ static inline bool smc_wr_tx_link_hold(struct smc_link *link)
- {
- 	if (!smc_link_sendable(link))
- 		return false;
--	atomic_inc(&link->wr_tx_refcnt);
-+	percpu_ref_get(&link->wr_tx_refs);
- 	return true;
- }
- 
- static inline void smc_wr_tx_link_put(struct smc_link *link)
- {
--	if (atomic_dec_and_test(&link->wr_tx_refcnt))
--		wake_up_all(&link->wr_tx_wait);
-+	percpu_ref_put(&link->wr_tx_refs);
- }
- 
- static inline void smc_wr_drain_cq(struct smc_link *lnk)
 -- 
-2.31.1
+https://patchwork.kernel.org/project/linux-wireless/patch/20230126182431.867984-1-pchelkin@ispras.ru/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
