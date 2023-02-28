@@ -2,119 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F16B86A62A8
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 23:40:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6C8C6A60F6
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 22:11:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229672AbjB1Wkj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 17:40:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60346 "EHLO
+        id S229527AbjB1VLW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 16:11:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbjB1Wki (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 17:40:38 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 119762E0CB;
-        Tue, 28 Feb 2023 14:40:09 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id me6-20020a17090b17c600b0023816b0c7ceso7300962pjb.2;
-        Tue, 28 Feb 2023 14:40:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1677624007;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=k1M39pp6BOTJLqCwHMILP4cFGR727Jpzqg5ju78BWx8=;
-        b=Oz6li5x7qu54218EoqDEzjLgff3Vj2grOCtgtsoWTNgT6AYnNiUcIuRQiqcJOEA5gZ
-         lokkfjPyQ+w2r3I5ruEt9DFdVy3H+AEbsZWNRLJfP9IrivZCulnotDP2dkKjCHW2jezd
-         oH/1GsAf3wBT5OLBNz4wyDvwXNa1SJ1QxHOLzEYf1Kl89mujGFgm28uhD1qlomCjEflr
-         bCeRRfAqUwJtDDixVCbany7a9KpomAINGpJM705L2yJVBZK4mK9qrIQDIxc6JJIFd9yF
-         tjQFz536hqsfFmqM8whmhUnWETcCHagKQ8gjozlmnJvIEERWUuH+zGpWm83+hejyxPyb
-         WJ+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677624007;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=k1M39pp6BOTJLqCwHMILP4cFGR727Jpzqg5ju78BWx8=;
-        b=I7cIpliuWGRGqFKm2A1s8ZUg4Jc5n6dHM/3e9ZtF6BcBzO1IITWjl4OuMl5P5dv4FJ
-         7ONEXzuv/jR/twhujq4lDNtYJMrNyRC38iq+ae6y5CesvFcXYhTOHWhsMuB6fW97p41p
-         3vWDN7kkxBxphtO6XzW5nwN5QNlzjDw2ul7OhCCttl4GANVBVJexGy8Q1C39SenUSHBW
-         fA+Ko4aBMJuNxd2oS2aLO62x1kQwcP+Mbo1RnY3vDHJL5EseOT/CAN47vdQgVCaTtawl
-         0TVPbsXt9EL96vzv7xQCz0svBzfiiDxGUaval8Ln64eRjC1kapMVDhi1gNKoYh2QnvwJ
-         XJdg==
-X-Gm-Message-State: AO0yUKWekz0uoPRulgFUu0JZ2WZm1qXZQFZfo8xsBt/gtJXbBSSn4gyG
-        yUrkiv/N58OmHGJs4gAMzPw=
-X-Google-Smtp-Source: AK7set/cI3/YGAgHbDcqpXTyWxlPEBObsGXe9DTePwqU5sY2tx6bSstbGZUhiztB9D0VuAUQRYFuKA==
-X-Received: by 2002:a17:903:187:b0:199:1996:71ec with SMTP id z7-20020a170903018700b00199199671ecmr4957460plg.16.1677624007358;
-        Tue, 28 Feb 2023 14:40:07 -0800 (PST)
-Received: from localhost (c-73-164-155-12.hsd1.wa.comcast.net. [73.164.155.12])
-        by smtp.gmail.com with ESMTPSA id l6-20020a170902d34600b0019cb8ffd209sm7029866plk.229.2023.02.28.14.40.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Feb 2023 14:40:06 -0800 (PST)
-Date:   Sat, 18 Feb 2023 07:25:41 +0000
-From:   Bobby Eshleman <bobbyeshleman@gmail.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>, kvm@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Song Liu <song@kernel.org>, Eric Dumazet <edumazet@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        linux-kselftest@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Paolo Abeni <pabeni@redhat.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>, Hao Luo <haoluo@google.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Olsa <jolsa@kernel.org>, bpf@vger.kernel.org,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v3 1/3] vsock: support sockmap
-Message-ID: <Y/B9ddkfQw6Ae/lY@bullseye>
-References: <20230227-vsock-sockmap-upstream-v3-0-7e7f4ce623ee@bytedance.com>
- <20230227-vsock-sockmap-upstream-v3-1-7e7f4ce623ee@bytedance.com>
- <20230228163518-mutt-send-email-mst@kernel.org>
+        with ESMTP id S229580AbjB1VLV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 16:11:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA7DD2B619;
+        Tue, 28 Feb 2023 13:11:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CB3F611D5;
+        Tue, 28 Feb 2023 21:11:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6C6F4C4339B;
+        Tue, 28 Feb 2023 21:11:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1677618677;
+        bh=IB9Sk6Sew2oBE0tBUuiuebk20E+C56Ut6PZLin772Nk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=emOgvl42vWzqzWChtKHzMHvotZsKDFOYMyzPq7CQAWnydVT3wCUftCrJgz4I96sVT
+         J/p2OpBWB1Pfl7lM95qMXkEOuSSwV3OOY5QkIi4y4E4TMiphO/6LCFUrjcj6VtVV7y
+         OqFAVUEOEE+LHNIKcVtUjyUQDYVHHnyUdND45alz0Hd9SkIYZjwDkf5s6BhiNivQ3t
+         ooc1Zz4w4sfDqIRqmXhnwa/PPz8cRzyNIKX7rNjgeVdg9M8zNjUmOXtoCwjv3phgR8
+         zgYKOqkEV/UonTYwYdQveKsTxgsF4XCJOJ+DHfzlb61xD21CVpekeZTvgvBIXth6Ct
+         kGAa595muc6kQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 50A4DC395EC;
+        Tue, 28 Feb 2023 21:11:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230228163518-mutt-send-email-mst@kernel.org>
-X-Spam-Status: No, score=1.3 required=5.0 tests=BAYES_00,DATE_IN_PAST_96_XX,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] mm: remove zap_page_range and create zap_vma_pages
+From:   patchwork-bot+linux-riscv@kernel.org
+Message-Id: <167761867732.10135.11248419155612086016.git-patchwork-notify@kernel.org>
+Date:   Tue, 28 Feb 2023 21:11:17 +0000
+References: <20230104002732.232573-1-mike.kravetz@oracle.com>
+In-Reply-To: <20230104002732.232573-1-mike.kravetz@oracle.com>
+To:     Mike Kravetz <mike.kravetz@oracle.com>
+Cc:     linux-riscv@lists.infradead.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        hch@infradead.org, david@redhat.com, mhocko@suse.com,
+        peterx@redhat.com, nadav.amit@gmail.com, willy@infradead.org,
+        vbabka@suse.cz, riel@surriel.com, will@kernel.org,
+        mpe@ellerman.id.au, palmer@dabbelt.com, borntraeger@linux.ibm.com,
+        dave.hansen@linux.intel.com, brauner@kernel.org,
+        edumazet@google.com, akpm@linux-foundation.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 28, 2023 at 04:36:22PM -0500, Michael S. Tsirkin wrote:
-> On Tue, Feb 28, 2023 at 07:04:34PM +0000, Bobby Eshleman wrote:
-> > @@ -1241,19 +1252,34 @@ static int vsock_dgram_connect(struct socket *sock,
-> >  
-> >  	memcpy(&vsk->remote_addr, remote_addr, sizeof(vsk->remote_addr));
-> >  	sock->state = SS_CONNECTED;
-> > +	sk->sk_state = TCP_ESTABLISHED;
-> >  
-> >  out:
-> >  	release_sock(sk);
-> >  	return err;
-> >  }
+Hello:
+
+This patch was applied to riscv/linux.git (for-next)
+by Andrew Morton <akpm@linux-foundation.org>:
+
+On Tue,  3 Jan 2023 16:27:32 -0800 you wrote:
+> zap_page_range was originally designed to unmap pages within an address
+> range that could span multiple vmas.  While working on [1], it was
+> discovered that all callers of zap_page_range pass a range entirely within
+> a single vma.  In addition, the mmu notification call within zap_page
+> range does not correctly handle ranges that span multiple vmas.  When
+> crossing a vma boundary, a new mmu_notifier_range_init/end call pair
+> with the new vma should be made.
 > 
-> 
-> How is this related? Maybe add a comment to explain? Does
-> TCP_ESTABLISHED make sense for all types of sockets?
-> 
+> [...]
 
-Hey Michael, definitely, I can leave a comment.
+Here is the summary with links:
+  - mm: remove zap_page_range and create zap_vma_pages
+    https://git.kernel.org/riscv/c/e9adcfecf572
 
-The real reason is due to this piece of logic in sockmap:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/net/core/sock_map.c?h=v6.2#n531
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-And because of it, you see the same thing in (for example)
-unix_dgram_connect():
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/net/unix/af_unix.c?h=v6.2#n1394
 
-I believe it makes sense for these other socket types.
