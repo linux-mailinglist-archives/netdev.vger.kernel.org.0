@@ -2,42 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F3E8A6A5665
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 11:13:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5F2C6A566A
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 11:14:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229980AbjB1KNd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 05:13:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57798 "EHLO
+        id S230525AbjB1KOM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 05:14:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229485AbjB1KNc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 05:13:32 -0500
-Received: from out30-112.freemail.mail.aliyun.com (out30-112.freemail.mail.aliyun.com [115.124.30.112])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E8AAC678;
-        Tue, 28 Feb 2023 02:13:30 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0Vcj3VcW_1677579207;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0Vcj3VcW_1677579207)
-          by smtp.aliyun-inc.com;
-          Tue, 28 Feb 2023 18:13:27 +0800
-Message-ID: <1677579113.5159256-2-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v2] virtio-net: Fix probe of virtio-net on kvmtool
-Date:   Tue, 28 Feb 2023 18:11:53 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
+        with ESMTP id S230000AbjB1KOJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 05:14:09 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1367C15C9E
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 02:14:07 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id g3so233826wri.6
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 02:14:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1677579245;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=MtWOlYEzYU8o1W9I3L+KKLMvgELe3X6n/EypEh1Ozho=;
+        b=EqU0CvkmhrcQh6b4eYrxlA+sRPKiVO/FUnlQQZeo28mMe1OUNewRvgu/OCO6tuAxte
+         4L8UaCsqXrBvfCLDeSYFIEXjuYVaZDJXadKQhsc20qCm2n4f4CDonnw9TUMzln8ciecT
+         H6U4TY5bxiCjzZvH6oHdRg6zJ4h1iVDlhCgIdYLaeZUEEakfMnFM0oEstIP5FKIGvmT9
+         BZI6d6cWKvOv52AjNyoiDim4IWQW1ISgRUFYukiVWPn0P5nSOCAh9fjE0MDZ+n7RgThX
+         xxJ2wCRde6aP+26W9Wc+jTOLlx2bm9bVeq02iXocoBXXKsxNv1NKfva7NNp5kcIZZ3nA
+         6xIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1677579245;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=MtWOlYEzYU8o1W9I3L+KKLMvgELe3X6n/EypEh1Ozho=;
+        b=zIxpipbT4sg11NAo+cC7bk6YTEkfsqfHdv2lPoBhZyEAzbR2rf7zofORtPdxyho60y
+         GBC2QzDrLJdASgUr8A6C8aFcMfoo7FqPU6YVnQvt50f2jUwbHiHuq0CeoEzApA1HgUZM
+         xw97DXcRGMlnfXKNHVb4djJFjT7PdwzV7HLj3KuvI9EjUbPrnKZ45CdajkvCTVgsuiak
+         5xXVE6n/j/A0efBjGjrTTuTUftQsWnegJpKaBqc9SUfsMODrhDKuD0gP5VgaAeO+Jd3E
+         h6Dg0o5+inxukbhgnCEG94pPX5g9WfkOfF1u0T76XWj0FKgExI63dyODq/AMRSM/18DM
+         LgLQ==
+X-Gm-Message-State: AO0yUKVcOyovDPIHjtN3NU+cw/JHc3tSSpV641csWP+8HIvJ14UFFJ/g
+        xKAkS+MEjg0sVqEYA/1FGnku4w==
+X-Google-Smtp-Source: AK7set9palyPAQiOHfRloN7eMdX4WfhX5VAiXO20doqNN8f2VCpA3HoxVGJeVRdo21Gwxz8CMfW8Xg==
+X-Received: by 2002:adf:ee85:0:b0:2c7:454:cee8 with SMTP id b5-20020adfee85000000b002c70454cee8mr2237439wro.1.1677579245409;
+        Tue, 28 Feb 2023 02:14:05 -0800 (PST)
+Received: from [192.168.1.20] ([178.197.216.144])
+        by smtp.gmail.com with ESMTPSA id i12-20020adfefcc000000b002c54f4d0f71sm9286387wrp.38.2023.02.28.02.14.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Feb 2023 02:14:05 -0800 (PST)
+Message-ID: <7e9ffa10-d6e8-48b5-e832-cf77ac1a8802@linaro.org>
+Date:   Tue, 28 Feb 2023 11:14:03 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH] nfc: fix memory leak of se_io context in nfc_genl_se_io
+Content-Language: en-US
+To:     Fedor Pchelkin <pchelkin@ispras.ru>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>, rbradford@rivosinc.com,
-        Jason Wang <jasowang@redhat.com>
-References: <20230223-virtio-net-kvmtool-v2-1-8ec93511e67f@rivosinc.com>
- <CACGkMEu8JtT9_0YcbmfWCGxbrB1GHnesnspFYgaeVrb2x3o3oQ@mail.gmail.com>
- <1677578798.8465447-1-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <1677578798.8465447-1-xuanzhuo@linux.alibaba.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        Guenter Roeck <groeck@google.com>,
+        Martin Faltesek <mfaltesek@google.com>,
+        Duoming Zhou <duoming@zju.edu.cn>,
+        Samuel Ortiz <sameo@linux.intel.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        lvc-project@linuxtesting.org,
+        syzbot+df64c0a2e8d68e78a4fa@syzkaller.appspotmail.com
+References: <20230225105614.379382-1-pchelkin@ispras.ru>
+ <b0f65aaa-37aa-378f-fbbf-57d107f29f5f@linaro.org>
+ <20230227150553.m3okhdxqmjgon4dd@fpc>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230227150553.m3okhdxqmjgon4dd@fpc>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -45,87 +86,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 Feb 2023 18:06:38 +0800, Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
-> On Fri, 24 Feb 2023 11:11:37 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> > On Fri, Feb 24, 2023 at 3:38 AM Rob Bradford via B4 Relay
-> > <devnull+rbradford.rivosinc.com@kernel.org> wrote:
-> > >
-> > > From: Rob Bradford <rbradford@rivosinc.com>
-> > >
-> > > kvmtool does not support the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature
-> > > but does advertise the VIRTIO_NET_F_GUEST_TSO{4,6} features. Check that
-> > > the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature is present before setting
-> > > the NETIF_F_GRO_HW feature bit as otherwise
->
-> Here are settings for dev->features and dev->hw_features.
+On 27/02/2023 16:05, Fedor Pchelkin wrote:
+>>> Fixes: 5ce3f32b5264 ("NFC: netlink: SE API implementation")
+>>> Reported-by: syzbot+df64c0a2e8d68e78a4fa@syzkaller.appspotmail.com
+>>> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
+>>> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+>>
+>> SoB order is a bit odd. Who is the author?
+>>
+> 
+> The author is me (Fedor). I thought the authorship is expressed with the
+> first Signed-off-by line, isn't it?
 
-What I want to say is that in normal circumstances, ethtool will identify it and
-will not directly modify the backend, if there is no VIRTIO_NET_F_CTRL_GUEST_OFFLOADS.
+Yes and since you are sending it, then what is Alexey's Sob for? The
+tags are in order...
 
-Thanks.
+> 
+>>> ---
+>>>  drivers/nfc/st-nci/se.c   | 6 ++++++
+>>>  drivers/nfc/st21nfca/se.c | 6 ++++++
+>>>  net/nfc/netlink.c         | 4 ++++
+>>>  3 files changed, 16 insertions(+)
+>>>
+>>> diff --git a/drivers/nfc/st-nci/se.c b/drivers/nfc/st-nci/se.c
+>>> index ec87dd21e054..b2f1ced8e6dd 100644
+>>> --- a/drivers/nfc/st-nci/se.c
+>>> +++ b/drivers/nfc/st-nci/se.c
+>>> @@ -672,6 +672,12 @@ int st_nci_se_io(struct nci_dev *ndev, u32 se_idx,
+>>>  					ST_NCI_EVT_TRANSMIT_DATA, apdu,
+>>>  					apdu_length)
+>> nci_hci_send_event() should also free it in its error paths.
+>> nci_data_exchange_complete() as well? Who eventually frees it? These
+>> might be separate patches.
+>>
+>>
+> 
+> nci_hci_send_event(), as I can see, should not free the callback context.
+> I should have probably better explained that in the commit info (will
+> include this in the patch v2), but the main thing is: nfc_se_io() is
+> called with se_io_cb callback function as an argument and that callback is 
+> the exact place where an allocated se_io_ctx context should be freed. And
+> it is actually freed there unless some error path happens that leads the
 
->
->
-> > > an attempt will be made to
-> > > program the virtio-net device using the ctrl queue which will fail.
-> > >
-> > > This resolves the following error when running on kvmtool:
->
-> Can you talk about it in detail what it did?
->
-> Thanks.
->
-> > >
-> > > [    1.865992] net eth0: Fail to set guest offload.
-> > > [    1.872491] virtio_net virtio2 eth0: set_features() failed (-22); wanted 0x0000000000134829, left 0x0080000000134829
-> > >
-> > > Signed-off-by: Rob Bradford <rbradford@rivosinc.com>
-> > > ---
-> > > Changes in v2:
-> > > - Use parentheses to group logical OR of features
-> > > - Link to v1:
-> > >   https://lore.kernel.org/r/20230223-virtio-net-kvmtool-v1-1-fc23d29b9d7a@rivosinc.com
-> > > ---
-> > >  drivers/net/virtio_net.c | 7 +++----
-> > >  1 file changed, 3 insertions(+), 4 deletions(-)
-> > >
-> > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > index 61e33e4dd0cd..f8341d1a4ccd 100644
-> > > --- a/drivers/net/virtio_net.c
-> > > +++ b/drivers/net/virtio_net.c
-> > > @@ -3780,10 +3780,9 @@ static int virtnet_probe(struct virtio_device *vdev)
-> > >         }
-> > >         if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_CSUM))
-> > >                 dev->features |= NETIF_F_RXCSUM;
-> > > -       if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
-> > > -           virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6))
-> > > -               dev->features |= NETIF_F_GRO_HW;
-> > > -       if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
-> > > +       if ((virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
-> > > +           virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6)) &&
-> > > +           virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
-> > >                 dev->hw_features |= NETIF_F_GRO_HW;
-> >
-> > Does this mean we won't have NETIF_F_GRO_HW when only TSO4/TSO6 are
-> > supported but not GUEST_OFFLOADS?
-> >
-> > Is this intended?
-> >
-> > Thanks
-> >
-> > >
-> > >         dev->vlan_features = dev->features;
-> > >
-> > > ---
-> > > base-commit: c39cea6f38eefe356d64d0bc1e1f2267e282cdd3
-> > > change-id: 20230223-virtio-net-kvmtool-87f37515be22
-> > >
-> > > Best regards,
-> > > --
-> > > Rob Bradford <rbradford@rivosinc.com>
-> > >
-> >
-> > _______________________________________________
-> > Virtualization mailing list
-> > Virtualization@lists.linux-foundation.org
-> > https://lists.linuxfoundation.org/mailman/listinfo/virtualization
+Exactly, so why nci_hci_send_event() error path should not free it?
+
+> timer which triggers this se_io_cb callback not to be charged at all.
+> 
+
+
+Best regards,
+Krzysztof
+
