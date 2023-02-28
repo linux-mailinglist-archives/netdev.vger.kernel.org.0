@@ -2,110 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 95BEF6A5A0D
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 14:36:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98C396A5A19
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 14:43:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229535AbjB1Ngn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 08:36:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38264 "EHLO
+        id S229561AbjB1Nnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 08:43:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229509AbjB1Ngm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 08:36:42 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 767CD279A7
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 05:36:41 -0800 (PST)
+        with ESMTP id S229470AbjB1Nnb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 08:43:31 -0500
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 841D325B9F;
+        Tue, 28 Feb 2023 05:43:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=DxHpbPEvvEtASvMuak0wsJyk5U7PMQosqG3xB4FMaLw=; b=tT1I0a/INTa5dWmeIbKu4LMbOj
-        k/LvSSmv2ex9dl+Kt4t4Am0q6ribw8DfRQO1R6N6u7UIBQdElbYMZTIJcQXggQ2fcbEBkCFO7sJPz
-        SzeTor6TJc33wD4TSthnr6JkXBeurWtcnck77H8+euep1oFd9zuNjXKNnODoJDDi4LLmWXOhv5857
-        fByyGoOpoLsvD3vE9tvZI//vmnFiIHRnH/yS1/754mv+UYCHsvhxHCFvS6nf7LLATD1Qtq3v9HbH2
-        0TZDj50yyb2FsOHyXh/o7SjFx9RGcp6s3uiwFCxWx605jwpwtYtdzcL9EWceoETMmO784dD9RRsie
-        aMufSzwA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55350)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
+        bh=2YufEiSw26yUxGvxbvEcxh/qT0bL7Zfm+eeVmdJnJkM=; b=T/sgNzMZ8+UIner/PUcMgOg0r1
+        zQFvgCVN9l9b9eWUqLPajIEg7GxjjPqq3otpSJRj9gin0diwflv6ia8ZCPL04YQABg2bdTernyi89
+        ooFAaYDR6yXfIrMHL8UHBE18j8nG2rjqjGPvVxg0HTse1XpYp33aRiCrXUeN7LsRsnC8aF8IqhmOf
+        Eh2TxqwlxGimqD8PkcJjOoKbHU9BUQtsMHE3NZ4XZD2QFMaU3McaXEIW8qApfUB5PnksxSSvwoZTs
+        We2Y4z1gmxzeic23kKSYEQq1sgcrobW3UHb9fMAOmr4IwMr8NWA1U/LdljFfr92RsUSKXudXvL9nN
+        IbGKeqSA==;
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
         (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pX09l-0004l9-Ry; Tue, 28 Feb 2023 13:36:37 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pX09k-0002lP-3S; Tue, 28 Feb 2023 13:36:36 +0000
-Date:   Tue, 28 Feb 2023 13:36:36 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     =?iso-8859-1?Q?K=F6ry?= Maincent <kory.maincent@bootlin.com>
-Cc:     Richard Cochran <richardcochran@gmail.com>, andrew@lunn.ch,
-        davem@davemloft.net, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>
-Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support
- [multicast/DSA issues]
-Message-ID: <Y/4DZIDm1d74MuFJ@shell.armlinux.org.uk>
-References: <20200730124730.GY1605@shell.armlinux.org.uk>
- <20230227154037.7c775d4c@kmaincent-XPS-13-7390>
- <Y/zKJUHUhEgXjKFG@shell.armlinux.org.uk>
- <Y/0Idkhy27TObawi@hoboy.vegasvil.org>
- <Y/0N4ZcUl8pG7awc@shell.armlinux.org.uk>
- <Y/0QSphmMGXP5gYy@hoboy.vegasvil.org>
- <Y/3ubSj5+2C5xbZu@shell.armlinux.org.uk>
- <20230228141630.64d5ef63@kmaincent-XPS-13-7390>
+        (envelope-from <daniel@iogearbox.net>)
+        id 1pX0GN-000Dyo-8m; Tue, 28 Feb 2023 14:43:27 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1pX0GN-000H1f-0N; Tue, 28 Feb 2023 14:43:27 +0100
+Subject: Re: [PATCH bpf-next v2 0/8] Support defragmenting IPv(4|6) packets in
+ BPF
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Xu <dxu@dxuuu.xyz>
+Cc:     bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, quentin@isovalent.com
+References: <cover.1677526810.git.dxu@dxuuu.xyz>
+ <20230227230338.awdzw57e4uzh4u7n@MacBook-Pro-6.local>
+ <20230228015712.clq6kyrsd7rrklbz@kashmir.localdomain>
+ <CAADnVQ+a633QyZgkbXfRiT_WRbPgr5n8RN0w=ntEkBHUeqRcbw@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <fbf869c6-29ac-4dbe-dd1c-85c6c3c10670@iogearbox.net>
+Date:   Tue, 28 Feb 2023 14:43:26 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+In-Reply-To: <CAADnVQ+a633QyZgkbXfRiT_WRbPgr5n8RN0w=ntEkBHUeqRcbw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230228141630.64d5ef63@kmaincent-XPS-13-7390>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.8/26826/Tue Feb 28 09:32:16 2023)
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 28, 2023 at 02:16:30PM +0100, Köry Maincent wrote:
-> On Tue, 28 Feb 2023 12:07:09 +0000
-> "Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
-> > So yes, it's a nice idea to support multiple hardware timestamps, but
-> > I think that's an entirely separate problem to solving the current
-> > issue, which is a blocking issue to adding support for PTP on some
-> > platforms.
+On 2/28/23 5:56 AM, Alexei Starovoitov wrote:
+> On Mon, Feb 27, 2023 at 5:57â€¯PM Daniel Xu <dxu@dxuuu.xyz> wrote:
+>> On Mon, Feb 27, 2023 at 03:03:38PM -0800, Alexei Starovoitov wrote:
+>>> On Mon, Feb 27, 2023 at 12:51:02PM -0700, Daniel Xu wrote:
+>>>> === Context ===
+>>>>
+>>>> In the context of a middlebox, fragmented packets are tricky to handle.
+>>>> The full 5-tuple of a packet is often only available in the first
+>>>> fragment which makes enforcing consistent policy difficult. There are
+>>>> really only two stateless options, neither of which are very nice:
+>>>>
+>>>> 1. Enforce policy on first fragment and accept all subsequent fragments.
+>>>>     This works but may let in certain attacks or allow data exfiltration.
+>>>>
+>>>> 2. Enforce policy on first fragment and drop all subsequent fragments.
+>>>>     This does not really work b/c some protocols may rely on
+>>>>     fragmentation. For example, DNS may rely on oversized UDP packets for
+>>>>     large responses.
+>>>>
+>>>> So stateful tracking is the only sane option. RFC 8900 [0] calls this
+>>>> out as well in section 6.3:
+>>>>
+>>>>      Middleboxes [...] should process IP fragments in a manner that is
+>>>>      consistent with [RFC0791] and [RFC8200]. In many cases, middleboxes
+>>>>      must maintain state in order to achieve this goal.
+>>>>
+>>>> === BPF related bits ===
+>>>>
+>>>> However, when policy is enforced through BPF, the prog is run before the
+>>>> kernel reassembles fragmented packets. This leaves BPF developers in a
+>>>> awkward place: implement reassembly (possibly poorly) or use a stateless
+>>>> method as described above.
+>>>>
+>>>> Fortunately, the kernel has robust support for fragmented IP packets.
+>>>> This patchset wraps the existing defragmentation facilities in kfuncs so
+>>>> that BPF progs running on middleboxes can reassemble fragmented packets
+>>>> before applying policy.
+>>>>
+>>>> === Patchset details ===
+>>>>
+>>>> This patchset is (hopefully) relatively straightforward from BPF perspective.
+>>>> One thing I'd like to call out is the skb_copy()ing of the prog skb. I
+>>>> did this to maintain the invariant that the ctx remains valid after prog
+>>>> has run. This is relevant b/c ip_defrag() and ip_check_defrag() may
+>>>> consume the skb if the skb is a fragment.
+>>>
+>>> Instead of doing all that with extra skb copy can you hook bpf prog after
+>>> the networking stack already handled ip defrag?
+>>> What kind of middle box are you doing? Why does it have to run at TC layer?
+>>
+>> Unless I'm missing something, the only other relevant hooks would be
+>> socket hooks, right?
+>>
+>> Unfortunately I don't think my use case can do that. We are running the
+>> kernel as a router, so no sockets are involved.
 > 
-> Alright, Richard can I continue your work on it and send new revisions of your
-> patch series or do you prefer to continue on your own?
-> Also your series rise the question of which timestamping should be the default,
-> MAC or PHY, without breaking any past or future compatibilities.
-> There is question of using Kconfig or devicetree but each of them seems to have
-> drawbacks:
-> https://lore.kernel.org/netdev/ad4a8d3efbeaacf241a19bfbca5976f9@walle.cc/ 
+> Are you using bpf_fib_lookup and populating kernel routing
+> table and doing everything on your own including neigh ?
 > 
-> Do you or Russell have any new thought about it?
+> Have you considered to skb redirect to another netdev that does ip defrag?
+> Like macvlan does it under some conditions. This can be generalized.
+> 
+> Recently Florian proposed to allow calling bpf progs from all existing
+> netfilter hooks.
+> You can pretend to local deliver and hook in NF_INET_LOCAL_IN ?
+> I feel it would be so much cleaner if stack does ip_defrag normally.
+> The general issue of skb ownership between bpf prog and defrag logic
+> isn't really solved with skb_copy. It's still an issue.
 
-The only thought I have is that maybe a MAC driver should be able to
-override the default, then at least we have a way to deal with this
-on a case by case basis. However, that's just pulling an idea out of
-the air.
+I do like this series and we would also use it for Cilium case, so +1 on the
+tc BPF integration. Today we have in Cilium what Ed [0] hinted in his earlier
+mail where we extract information from first fragment and store the meta data
+in a BPF map for subsequent packets based on ipid [1], but limitations apply
+e.g. service load-balancing won't work. Redirecting to a different device
+or moving higher up the stack is cumbersome since we then need to go and
+recirculate back into tc BPF layer where all the business logic is located and
+handling the regular (non-fragmented) path, too. Wrt skb ownership, can you
+elaborate what is a concrete issue exactly? Anything that comes to mind with
+this approach that could crash the kernel?
 
-I think what might be useful as a first step is to go through the
-various networking devices to work out which support PTP today, and
-tabulate the result. There shouldn't be any cases where we have both
-the MAC and PHY having PTP support (for the API reasons I've already
-stated) but if there are, that needs to be highlighted.
-
-Then we can see what the default should be, and then which MAC
-drivers would need to override the default.
-
-It would probably be a good idea to document that in the kernel's
-Documentation subdirectory so when e.g. a PHY driver gains PTP
-support, we have some idea which MAC drivers may be impacted.
-
-Does that sound sensible?
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+   [0] https://lore.kernel.org/bpf/cf49a091-9b14-05b8-6a79-00e56f3019e1@gmail.com/
+   [1] https://github.com/cilium/cilium/pull/10264
