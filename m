@@ -2,40 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 954BD6A5657
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 11:08:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06D0F6A565B
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 11:09:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229953AbjB1KIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 05:08:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54438 "EHLO
+        id S229549AbjB1KJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 05:09:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230393AbjB1KId (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 05:08:33 -0500
-Received: from out30-101.freemail.mail.aliyun.com (out30-101.freemail.mail.aliyun.com [115.124.30.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC678C651;
-        Tue, 28 Feb 2023 02:08:31 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R491e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VcixL24_1677578908;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VcixL24_1677578908)
-          by smtp.aliyun-inc.com;
-          Tue, 28 Feb 2023 18:08:28 +0800
-Message-ID: <1677578798.8465447-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v2] virtio-net: Fix probe of virtio-net on kvmtool
-Date:   Tue, 28 Feb 2023 18:06:38 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S231250AbjB1KJB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 05:09:01 -0500
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 468ADDBE9;
+        Tue, 28 Feb 2023 02:08:59 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 995DDE0012;
+        Tue, 28 Feb 2023 10:08:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1677578936;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jq4CAXPaGT61q79hErbl8neygvo74vy/GTvXxBzgk0M=;
+        b=AagRiIkT4yCz23Fmei/+B6P2olcbQsBHRShBT7XQURRcDvmWYeUCUAtoPXybuWQxHH7EDh
+        k4UAyk71Pbt+ie2glYtvJ34GsOTcv7KzTAK2/97msIkohLfWzheJIxOIDs2Qi3CDVJecex
+        duc/fPZNf5KkpRBUqNfqWnra2QuPLUQgMUyb9bK2sjZe3tCrtWUkUEj5Tzu59TigZdr6ox
+        HgTK8jd0vXiuTUoW1HK05M4MlUC7ic4gGeLqOkxmzTzcmVuUvYQPNwomOHQiR4/4lW3oXf
+        v97mtCq+Ewvy+e7Ba8KSq+fO3ANv2aw1/YEfRHwpc6Q4U80RuRRundKsJ46q4w==
+Date:   Tue, 28 Feb 2023 11:08:53 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>, rbradford@rivosinc.com
-References: <20230223-virtio-net-kvmtool-v2-1-8ec93511e67f@rivosinc.com>
- <CACGkMEu8JtT9_0YcbmfWCGxbrB1GHnesnspFYgaeVrb2x3o3oQ@mail.gmail.com>
-In-Reply-To: <CACGkMEu8JtT9_0YcbmfWCGxbrB1GHnesnspFYgaeVrb2x3o3oQ@mail.gmail.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH wpan v2 2/6] ieee802154: Convert scan error messages to
+ extack
+Message-ID: <20230228110853.28e0cc1b@xps-13>
+In-Reply-To: <CANn89iLGLcQKYCTi7Vu3fm7n6v3mgeedeG4sE0MR2WG-dOWsXw@mail.gmail.com>
+References: <20230214135035.1202471-1-miquel.raynal@bootlin.com>
+        <20230214135035.1202471-3-miquel.raynal@bootlin.com>
+        <CANn89iLGLcQKYCTi7Vu3fm7n6v3mgeedeG4sE0MR2WG-dOWsXw@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -43,80 +66,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 Feb 2023 11:11:37 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> On Fri, Feb 24, 2023 at 3:38 AM Rob Bradford via B4 Relay
-> <devnull+rbradford.rivosinc.com@kernel.org> wrote:
+Hi Eric,
+
+edumazet@google.com wrote on Mon, 27 Feb 2023 21:41:51 +0100:
+
+> On Tue, Feb 14, 2023 at 2:50=E2=80=AFPM Miquel Raynal <miquel.raynal@boot=
+lin.com> wrote:
 > >
-> > From: Rob Bradford <rbradford@rivosinc.com>
+> > Instead of printing error messages in the kernel log, let's use extack.
+> > When there is a netlink error returned that could be further specified
+> > with a string, use extack as well.
 > >
-> > kvmtool does not support the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature
-> > but does advertise the VIRTIO_NET_F_GUEST_TSO{4,6} features. Check that
-> > the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature is present before setting
-> > the NETIF_F_GRO_HW feature bit as otherwise
-
-Here are settings for dev->features and dev->hw_features.
-
-
-> > an attempt will be made to
-> > program the virtio-net device using the ctrl queue which will fail.
+> > Apply this logic to the very recent scan/beacon infrastructure.
 > >
-> > This resolves the following error when running on kvmtool:
-
-Can you talk about it in detail what it did?
-
-Thanks.
-
-> >
-> > [    1.865992] net eth0: Fail to set guest offload.
-> > [    1.872491] virtio_net virtio2 eth0: set_features() failed (-22); wanted 0x0000000000134829, left 0x0080000000134829
-> >
-> > Signed-off-by: Rob Bradford <rbradford@rivosinc.com>
+> > Fixes: ed3557c947e1 ("ieee802154: Add support for user scanning request=
+s")
+> > Fixes: 9bc114504b07 ("ieee802154: Add support for user beaconing reques=
+ts")
+> > Suggested-by: Jakub Kicinski <kuba@kernel.org>
+> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 > > ---
-> > Changes in v2:
-> > - Use parentheses to group logical OR of features
-> > - Link to v1:
-> >   https://lore.kernel.org/r/20230223-virtio-net-kvmtool-v1-1-fc23d29b9d7a@rivosinc.com
-> > ---
-> >  drivers/net/virtio_net.c | 7 +++----
-> >  1 file changed, 3 insertions(+), 4 deletions(-)
+> >  net/ieee802154/nl802154.c | 19 +++++++++++++------
+> >  1 file changed, 13 insertions(+), 6 deletions(-)
 > >
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index 61e33e4dd0cd..f8341d1a4ccd 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -3780,10 +3780,9 @@ static int virtnet_probe(struct virtio_device *vdev)
-> >         }
-> >         if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_CSUM))
-> >                 dev->features |= NETIF_F_RXCSUM;
-> > -       if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
-> > -           virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6))
-> > -               dev->features |= NETIF_F_GRO_HW;
-> > -       if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
-> > +       if ((virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
-> > +           virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6)) &&
-> > +           virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
-> >                 dev->hw_features |= NETIF_F_GRO_HW;
->
-> Does this mean we won't have NETIF_F_GRO_HW when only TSO4/TSO6 are
-> supported but not GUEST_OFFLOADS?
->
-> Is this intended?
->
-> Thanks
->
+> > diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
+> > index 64fa811e1f0b..d3b6e9e80941 100644
+> > --- a/net/ieee802154/nl802154.c
+> > +++ b/net/ieee802154/nl802154.c
+> > @@ -1407,9 +1407,15 @@ static int nl802154_trigger_scan(struct sk_buff =
+*skb, struct genl_info *info)
+> >         u8 type;
+> >         int err;
 > >
-> >         dev->vlan_features = dev->features;
-> >
-> > ---
-> > base-commit: c39cea6f38eefe356d64d0bc1e1f2267e282cdd3
-> > change-id: 20230223-virtio-net-kvmtool-87f37515be22
-> >
-> > Best regards,
-> > --
-> > Rob Bradford <rbradford@rivosinc.com>
-> >
->
-> _______________________________________________
-> Virtualization mailing list
-> Virtualization@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/virtualization
+> > -       /* Monitors are not allowed to perform scans */
+> > -       if (wpan_dev->iftype =3D=3D NL802154_IFTYPE_MONITOR)
+> > +       if (wpan_dev->iftype =3D=3D NL802154_IFTYPE_MONITOR) {
+> > +               NL_SET_ERR_MSG(info->extack, "Monitors are not allowed =
+to perform scans");
+> >                 return -EPERM;
+> > +       }
+> > +
+> > +       if (!nla_get_u8(info->attrs[NL802154_ATTR_SCAN_TYPE])) {
+>=20
+> syzbot crashes hosts by _not_ adding NL802154_ATTR_SCAN_TYPE attribute.
+
+I was looking at Sanan Hasanov's e-mail, I believe this is the same
+breakage that is being reported?
+Link: https://lore.kernel.org/netdev/IA1PR07MB98302CDCC21F6BA664FB7298ABAF9=
+@IA1PR07MB9830.namprd07.prod.outlook.com/
+
+> Did you mean to write :
+>=20
+> diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
+> index 2215f576ee3788f74ea175b046d05d285bac752d..d8f4379d4fa68b5b07bb2c45c=
+d74d4b73213c107
+> 100644
+> --- a/net/ieee802154/nl802154.c
+> +++ b/net/ieee802154/nl802154.c
+> @@ -1412,7 +1412,7 @@ static int nl802154_trigger_scan(struct sk_buff
+> *skb, struct genl_info *info)
+>                 return -EOPNOTSUPP;
+>         }
+>=20
+> -       if (!nla_get_u8(info->attrs[NL802154_ATTR_SCAN_TYPE])) {
+> +       if (!info->attrs[NL802154_ATTR_SCAN_TYPE]) {
+
+That is absolutely what I intended to do, I will send a fix immediately.
+
+>                 NL_SET_ERR_MSG(info->extack, "Malformed request,
+> missing scan type");
+>                 return -EINVAL;
+>         }
+>=20
+
+Thanks a lot,
+Miqu=C3=A8l
