@@ -2,260 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EBF66A565D
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 11:09:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3E8A6A5665
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 11:13:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230274AbjB1KJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 05:09:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55608 "EHLO
+        id S229980AbjB1KNd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 05:13:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231222AbjB1KJr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 05:09:47 -0500
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6142CFF6;
-        Tue, 28 Feb 2023 02:09:32 -0800 (PST)
-Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1pWwvI-0000pa-Tq; Tue, 28 Feb 2023 11:09:28 +0100
-Message-ID: <675161ac-35c5-ee5d-e96b-8e70d9d11d98@leemhuis.info>
-Date:   Tue, 28 Feb 2023 11:09:28 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: Network do not works with linux >= 6.1.2. Issue bisected to
- "425c9bd06b7a70796d880828d15c11321bdfb76d" (RDMA/irdma: Report the correct
- link speed)
-Content-Language: en-US, de-DE
-From:   "Linux regression tracking (Thorsten Leemhuis)" 
-        <regressions@leemhuis.info>
-To:     Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>,
-        kamalheib1@gmail.com, shiraz.saleem@intel.com, leon@kernel.org,
-        sashal@kernel.org, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     Igor Raits <igor.raits@gooddata.com>,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-Reply-To: Thorsten Leemhuis <regressions@leemhuis.info>,
-          Linux regressions mailing list 
-          <regressions@lists.linux.dev>
-References: <CAK8fFZ6A_Gphw_3-QMGKEFQk=sfCw1Qmq0TVZK3rtAi7vb621A@mail.gmail.com>
- <68b14b11-d0c7-65c9-4eeb-0487c95e395d@leemhuis.info>
-In-Reply-To: <68b14b11-d0c7-65c9-4eeb-0487c95e395d@leemhuis.info>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1677578973;e61d9d42;
-X-HE-SMSGID: 1pWwvI-0000pa-Tq
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229485AbjB1KNc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 05:13:32 -0500
+Received: from out30-112.freemail.mail.aliyun.com (out30-112.freemail.mail.aliyun.com [115.124.30.112])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E8AAC678;
+        Tue, 28 Feb 2023 02:13:30 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0Vcj3VcW_1677579207;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0Vcj3VcW_1677579207)
+          by smtp.aliyun-inc.com;
+          Tue, 28 Feb 2023 18:13:27 +0800
+Message-ID: <1677579113.5159256-2-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v2] virtio-net: Fix probe of virtio-net on kvmtool
+Date:   Tue, 28 Feb 2023 18:11:53 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>, rbradford@rivosinc.com,
+        Jason Wang <jasowang@redhat.com>
+References: <20230223-virtio-net-kvmtool-v2-1-8ec93511e67f@rivosinc.com>
+ <CACGkMEu8JtT9_0YcbmfWCGxbrB1GHnesnspFYgaeVrb2x3o3oQ@mail.gmail.com>
+ <1677578798.8465447-1-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <1677578798.8465447-1-xuanzhuo@linux.alibaba.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, this is your Linux kernel regression tracker. Top-posting for once,
-to make this easily accessible to everyone.
+On Tue, 28 Feb 2023 18:06:38 +0800, Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+> On Fri, 24 Feb 2023 11:11:37 +0800, Jason Wang <jasowang@redhat.com> wrote:
+> > On Fri, Feb 24, 2023 at 3:38 AM Rob Bradford via B4 Relay
+> > <devnull+rbradford.rivosinc.com@kernel.org> wrote:
+> > >
+> > > From: Rob Bradford <rbradford@rivosinc.com>
+> > >
+> > > kvmtool does not support the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature
+> > > but does advertise the VIRTIO_NET_F_GUEST_TSO{4,6} features. Check that
+> > > the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature is present before setting
+> > > the NETIF_F_GRO_HW feature bit as otherwise
+>
+> Here are settings for dev->features and dev->hw_features.
 
-On 06.01.23 12:11, Linux kernel regression tracking (#adding) wrote:
-> On 06.01.23 08:55, Jaroslav Pulchart wrote:
->> Hello,
->>
->> I would like to report a >= 6.1.2 some network regression (looks like
->> NIC us not UP) on our Dell R7525 servers with E810 NICs. The issue was
->> observed after I updated 6.1.0 to 6.1.2 or newer (tested up to newest
->> 6.1.4-rc1). The system is not accesible and all services are in D
->> state after each reboot.
+What I want to say is that in normal circumstances, ethtool will identify it and
+will not directly modify the backend, if there is no VIRTIO_NET_F_CTRL_GUEST_OFFLOADS.
 
-Can anyone please provide a status on this? It seems to take quite a
-while to get this regression fixed, which is unfortunate. Or was
-progress made somewhere and I just missed it?
+Thanks.
 
-I noticed Tony tried to address this in mainline, but the last thing I'm
-aware of is "Please ignore/drop this. Just saw that this change doesn't
-solve the issue." here:
-
-https://lore.kernel.org/all/b944d1d4-7f90-dcef-231c-91bb031a4275@intel.com/#t
-
-Should the backport to 6.1.y (425c9bd06b7a ) maybe be dropped to at
-least resolve the issue there until this is fixed in mainline? Or would
-that cause a regression as well?
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
---
-Everything you wanna know about Linux kernel regression tracking:
-https://linux-regtracking.leemhuis.info/about/#tldr
-If I did something stupid, please tell me, as explained on that page.
-
-#regzbot poke
-
->> [  257.625207]       Tainted: G            E      6.1.4-0.gdc.el9.x86_64 #1
->> [  257.631911] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
->> disables this message.
->> [  257.639740] task:kworker/u192:1  state:D stack:0     pid:11
->> ppid:2      flags:0x00004000
->> [  257.648095] Workqueue: netns cleanup_net
->> [  257.652029] Call Trace:
->> [  257.654481]  <TASK>
->> [  257.656589]  __schedule+0x1eb/0x630
->> [  257.660087]  schedule+0x5a/0xd0
->> [  257.663233]  schedule_preempt_disabled+0x11/0x20
->> [  257.667851]  __mutex_lock.constprop.0+0x372/0x6c0
->> [  257.672561]  rdma_dev_change_netns+0x25/0x120 [ib_core]
->> [  257.677821]  rdma_dev_exit_net+0x139/0x1e0 [ib_core]
->> [  257.682804]  ops_exit_list+0x30/0x70
->> [  257.686382]  cleanup_net+0x213/0x3b0
->> [  257.689964]  process_one_work+0x1e2/0x3b0
->> [  257.693984]  ? rescuer_thread+0x390/0x390
->> [  257.697995]  worker_thread+0x50/0x3a0
->> [  257.701661]  ? rescuer_thread+0x390/0x390
->> [  257.705674]  kthread+0xd6/0x100
->> [  257.708819]  ? kthread_complete_and_exit+0x20/0x20
->> [  257.713613]  ret_from_fork+0x1f/0x30
->> [  257.717192]  </TASK>
->> [  257.719496] INFO: task kworker/87:0:470 blocked for more than 122 seconds.
->> [  257.726423]       Tainted: G            E      6.1.4-0.gdc.el9.x86_64 #1
->> [  257.733123] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
->> disables this message.
->> [  257.740949] task:kworker/87:0    state:D stack:0     pid:470
->> ppid:2      flags:0x00004000
->> [  257.749307] Workqueue: events linkwatch_event
->> [  257.753672] Call Trace:
->> [  257.756124]  <TASK>
->> [  257.758228]  __schedule+0x1eb/0x630
->> [  257.761723]  schedule+0x5a/0xd0
->> [  257.764867]  schedule_preempt_disabled+0x11/0x20
->> [  257.769487]  __mutex_lock.constprop.0+0x372/0x6c0
->> [  257.774196]  ? pick_next_task+0x57/0x9b0
->> [  257.778127]  ? finish_task_switch.isra.0+0x8f/0x2a0
->> [  257.783007]  linkwatch_event+0xa/0x30
->> [  257.786674]  process_one_work+0x1e2/0x3b0
->> [  257.790687]  worker_thread+0x50/0x3a0
->> [  257.794352]  ? rescuer_thread+0x390/0x390
->> [  257.798365]  kthread+0xd6/0x100
->> [  257.801513]  ? kthread_complete_and_exit+0x20/0x20
->> [  257.806303]  ret_from_fork+0x1f/0x30
->> [  257.809885]  </TASK>
->> [  257.812109] INFO: task kworker/39:1:614 blocked for more than 123 seconds.
->> [  257.818984]       Tainted: G            E      6.1.4-0.gdc.el9.x86_64 #1
->> [  257.825686] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
->> disables this message.
->> [  257.833519] task:kworker/39:1    state:D stack:0     pid:614
->> ppid:2      flags:0x00004000
->> [  257.841869] Workqueue: infiniband ib_cache_event_task [ib_core]
->> [  257.847802] Call Trace:
->> [  257.850252]  <TASK>
->> [  257.852360]  __schedule+0x1eb/0x630
->> [  257.855851]  schedule+0x5a/0xd0
->> [  257.858998]  schedule_preempt_disabled+0x11/0x20
->> [  257.863617]  __mutex_lock.constprop.0+0x372/0x6c0
->> [  257.868325]  ib_get_eth_speed+0x65/0x190 [ib_core]
->> [  257.873127]  ? ib_cache_update.part.0+0x4b/0x2b0 [ib_core]
->> [  257.878619]  ? __kmem_cache_alloc_node+0x18c/0x2b0
->> [  257.883417]  irdma_query_port+0xb3/0x110 [irdma]
->> [  257.888051]  ib_query_port+0xaa/0x100 [ib_core]
->> [  257.892601]  ib_cache_update.part.0+0x65/0x2b0 [ib_core]
->> [  257.897924]  ? pick_next_task+0x57/0x9b0
->> [  257.901855]  ? dequeue_task_fair+0xb6/0x3c0
->> [  257.906043]  ? finish_task_switch.isra.0+0x8f/0x2a0
->> [  257.910920]  ib_cache_event_task+0x58/0x80 [ib_core]
->> [  257.915906]  process_one_work+0x1e2/0x3b0
->> [  257.919918]  ? rescuer_thread+0x390/0x390
->> [  257.923931]  worker_thread+0x50/0x3a0
->> [  257.927595]  ? rescuer_thread+0x390/0x390
->> [  257.931609]  kthread+0xd6/0x100
->> [  257.934755]  ? kthread_complete_and_exit+0x20/0x20
->> [  257.939549]  ret_from_fork+0x1f/0x30
->> [  257.943128]  </TASK>
->> [  257.945438] INFO: task NetworkManager:3387 blocked for more than 123 seconds.
->> [  257.952577]       Tainted: G            E      6.1.4-0.gdc.el9.x86_64 #1
->> [  257.959274] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
->> disables this message.
->> [  257.967099] task:NetworkManager  state:D stack:0     pid:3387
->> ppid:1      flags:0x00004002
->> [  257.975446] Call Trace:
->> [  257.977901]  <TASK>
->> [  257.980004]  __schedule+0x1eb/0x630
->> [  257.983498]  schedule+0x5a/0xd0
->> [  257.986641]  schedule_timeout+0x11d/0x160
->> [  257.990654]  __wait_for_common+0x90/0x1e0
->> [  257.994666]  ? usleep_range_state+0x90/0x90
->> [  257.998854]  __flush_workqueue+0x13a/0x3f0
->> [  258.002955]  ? __kernfs_remove.part.0+0x11e/0x1e0
->> [  258.007661]  ib_cache_cleanup_one+0x1c/0xe0 [ib_core]
->> [  258.012721]  __ib_unregister_device+0x62/0xa0 [ib_core]
->> [  258.017959]  ib_unregister_device+0x22/0x30 [ib_core]
->> [  258.023024]  irdma_remove+0x1a/0x60 [irdma]
->> [  258.027223]  auxiliary_bus_remove+0x18/0x30
->> [  258.031414]  device_release_driver_internal+0x1aa/0x230
->> [  258.036643]  bus_remove_device+0xd8/0x150
->> [  258.040654]  device_del+0x18b/0x3f0
->> [  258.044149]  ice_unplug_aux_dev+0x42/0x60 [ice]
->> [  258.048707]  ice_lag_changeupper_event+0x287/0x2a0 [ice]
->> [  258.054038]  ice_lag_event_handler+0x51/0x130 [ice]
->> [  258.058930]  raw_notifier_call_chain+0x41/0x60
->> [  258.063381]  __netdev_upper_dev_link+0x1a0/0x370
->> [  258.068008]  netdev_master_upper_dev_link+0x3d/0x60
->> [  258.072886]  bond_enslave+0xd16/0x16f0 [bonding]
->> [  258.077517]  ? nla_put+0x28/0x40
->> [  258.080756]  do_setlink+0x26c/0xc10
->> [  258.084249]  ? avc_alloc_node+0x27/0x180
->> [  258.088173]  ? __nla_validate_parse+0x141/0x190
->> [  258.092708]  __rtnl_newlink+0x53a/0x620
->> [  258.096549]  rtnl_newlink+0x44/0x70
->> [  258.100040]  rtnetlink_rcv_msg+0x159/0x3d0
->> [  258.104140]  ? rtnl_calcit.isra.0+0x140/0x140
->> [  258.108496]  netlink_rcv_skb+0x4e/0x100
->> [  258.112338]  netlink_unicast+0x23b/0x360
->> [  258.116264]  netlink_sendmsg+0x24e/0x4b0
->> [  258.120191]  sock_sendmsg+0x5f/0x70
->> [  258.123684]  ____sys_sendmsg+0x241/0x2c0
->> [  258.127609]  ? copy_msghdr_from_user+0x6d/0xa0
->> [  258.132054]  ___sys_sendmsg+0x88/0xd0
->> [  258.135722]  ? ___sys_recvmsg+0x88/0xd0
->> [  258.139559]  ? wake_up_q+0x4a/0x90
->> [  258.142967]  ? rseq_get_rseq_cs.isra.0+0x16/0x220
->> [  258.147673]  ? __fget_light+0xa4/0x130
->> [  258.151434]  __sys_sendmsg+0x59/0xa0
->> [  258.155012]  do_syscall_64+0x38/0x90
->> [  258.158591]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
->> [  258.163645] RIP: 0033:0x7ff23714fa7d
->> [  258.167226] RSP: 002b:00007ffdddfc8c70 EFLAGS: 00000293 ORIG_RAX:
->> 000000000000002e
->> [  258.174798] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007ff23714fa7d
->> [  258.181933] RDX: 0000000000000000 RSI: 00007ffdddfc8cb0 RDI: 000000000000000d
->> [  258.189063] RBP: 00005572f5d77040 R08: 0000000000000000 R09: 0000000000000000
->> [  258.196197] R10: 0000000000000000 R11: 0000000000000293 R12: 00007ffdddfc8e1c
->> [  258.203332] R13: 00007ffdddfc8e20 R14: 0000000000000000 R15: 00007ffdddfc8e28
->> [  258.210464]  </TASK>
->> ...
->>
->> I bisected the issue to a commit
->> "425c9bd06b7a70796d880828d15c11321bdfb76d" (RDMA/irdma: Report the
->> correct link speed). Reverting this commit in my kernel build "fix"
->> the issue and the server has a working network again.
-> 
-> Thanks for the report. To be sure the issue doesn't fall through the
-> cracks unnoticed, I'm adding it to regzbot, the Linux kernel regression
-> tracking bot:
-> 
-> #regzbot ^introduced 425c9bd06b7a7079
-> #regzbot title RDMA/irdma: network stopped working
-> #regzbot ignore-activity
-> 
-> This isn't a regression? This issue or a fix for it are already
-> discussed somewhere else? It was fixed already? You want to clarify when
-> the regression started to happen? Or point out I got the title or
-> something else totally wrong? Then just reply and tell me -- ideally
-> while also telling regzbot about it, as explained by the page listed in
-> the footer of this mail.
-> 
-> Reminder for developers: When fixing the issue, add 'Link:' tags
-> pointing to the report (see page linked in footer for details).
-> 
-> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-> --
-> Everything you wanna know about Linux kernel regression tracking:
-> https://linux-regtracking.leemhuis.info/about/#tldr
-> That page also explains what to do if mails like this annoy you.
-> 
-> 
+>
+>
+> > > an attempt will be made to
+> > > program the virtio-net device using the ctrl queue which will fail.
+> > >
+> > > This resolves the following error when running on kvmtool:
+>
+> Can you talk about it in detail what it did?
+>
+> Thanks.
+>
+> > >
+> > > [    1.865992] net eth0: Fail to set guest offload.
+> > > [    1.872491] virtio_net virtio2 eth0: set_features() failed (-22); wanted 0x0000000000134829, left 0x0080000000134829
+> > >
+> > > Signed-off-by: Rob Bradford <rbradford@rivosinc.com>
+> > > ---
+> > > Changes in v2:
+> > > - Use parentheses to group logical OR of features
+> > > - Link to v1:
+> > >   https://lore.kernel.org/r/20230223-virtio-net-kvmtool-v1-1-fc23d29b9d7a@rivosinc.com
+> > > ---
+> > >  drivers/net/virtio_net.c | 7 +++----
+> > >  1 file changed, 3 insertions(+), 4 deletions(-)
+> > >
+> > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > index 61e33e4dd0cd..f8341d1a4ccd 100644
+> > > --- a/drivers/net/virtio_net.c
+> > > +++ b/drivers/net/virtio_net.c
+> > > @@ -3780,10 +3780,9 @@ static int virtnet_probe(struct virtio_device *vdev)
+> > >         }
+> > >         if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_CSUM))
+> > >                 dev->features |= NETIF_F_RXCSUM;
+> > > -       if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
+> > > -           virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6))
+> > > -               dev->features |= NETIF_F_GRO_HW;
+> > > -       if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
+> > > +       if ((virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
+> > > +           virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6)) &&
+> > > +           virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
+> > >                 dev->hw_features |= NETIF_F_GRO_HW;
+> >
+> > Does this mean we won't have NETIF_F_GRO_HW when only TSO4/TSO6 are
+> > supported but not GUEST_OFFLOADS?
+> >
+> > Is this intended?
+> >
+> > Thanks
+> >
+> > >
+> > >         dev->vlan_features = dev->features;
+> > >
+> > > ---
+> > > base-commit: c39cea6f38eefe356d64d0bc1e1f2267e282cdd3
+> > > change-id: 20230223-virtio-net-kvmtool-87f37515be22
+> > >
+> > > Best regards,
+> > > --
+> > > Rob Bradford <rbradford@rivosinc.com>
+> > >
+> >
+> > _______________________________________________
+> > Virtualization mailing list
+> > Virtualization@lists.linux-foundation.org
+> > https://lists.linuxfoundation.org/mailman/listinfo/virtualization
