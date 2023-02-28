@@ -2,55 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E92CE6A6086
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 21:42:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 962286A609E
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 21:48:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229672AbjB1Umj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 15:42:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60342 "EHLO
+        id S229814AbjB1UsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 15:48:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229652AbjB1Umh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 15:42:37 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DD0834C0E
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 12:41:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1677616906;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=+n5ao7sZl4YPF+uvuG7GgDxKNOHxoWdmpB6UrFdBImU=;
-        b=jHv1fqyrxw+fkdeUBEGpKmswh6AWlEFlntlh1ZBoTAvLWCPSIYoc52UTmkG+0aH6aJtCue
-        2jKyEUoBDeBmt1Z9Jx7LA/Qir2q7YglpCeiita6BV9psJM1AIKblTL5wB58nIBBWgYo2qL
-        J4L1NDJv2Lc0zQtBknyZAnOEwyUFV0s=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-563-n88w3L0tPlmNNPE3pXkhnQ-1; Tue, 28 Feb 2023 15:41:43 -0500
-X-MC-Unique: n88w3L0tPlmNNPE3pXkhnQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C1FDC882820;
-        Tue, 28 Feb 2023 20:41:41 +0000 (UTC)
-Received: from swamp.redhat.com (unknown [10.39.192.177])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CF0FE2026D68;
-        Tue, 28 Feb 2023 20:41:39 +0000 (UTC)
-From:   Petr Oros <poros@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, scott.w.taylor@intel.com,
-        intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net] ice: copy last block omitted in ice_get_module_eeprom()
-Date:   Tue, 28 Feb 2023 21:41:39 +0100
-Message-Id: <20230228204139.2264495-1-poros@redhat.com>
+        with ESMTP id S229801AbjB1UsQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 15:48:16 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F659D304;
+        Tue, 28 Feb 2023 12:48:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1677617288; x=1709153288;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=WfkJSHVX8viEFAtDtKjqj0PzUjCvDzCn7Cy2sK93AaA=;
+  b=EX0lPT2lGeaaJYVZUHefQLbj+N2jhTJIvvO5uJWssG11JMkMdd0BxkBl
+   XDoQ5MFlX7DN3BAigU2QNqiUublXVXCrbAdU4vR/PfWo+EmKMwyF6fqww
+   yvA/ZP8CnQNCT3MwLaoIQjMfUV1i99F+0fWRCjvTWz/gogKTb8KQZVNN0
+   uHUrjWVfzpKTwk0Gx2AeYCFCX7/AaZMEbh/of/r/r0W4BElxjswy0BRNA
+   SUhZYmarijc81IYLQewu60z+OKLUYOpFOAN423/AXPZN5+fByHomQXZGf
+   4Dk3G3LI6+4O6WorpWmtkx2A/Qz/Yq2uOBNAe72qFWfnacU4/MfOzIA6W
+   w==;
+X-IronPort-AV: E=Sophos;i="5.98,222,1673938800"; 
+   d="scan'208";a="202642252"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Feb 2023 13:48:08 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Tue, 28 Feb 2023 13:48:07 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Tue, 28 Feb 2023 13:48:05 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <UNGLinuxDriver@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net] net: lan966x: Fix port police support using tc-matchall
+Date:   Tue, 28 Feb 2023 21:47:42 +0100
+Message-ID: <20230228204742.2599151-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.38.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,95 +60,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ice_get_module_eeprom() is broken since commit e9c9692c8a81 ("ice:
-Reimplement module reads used by ethtool") In this refactor,
-ice_get_module_eeprom() reads the eeprom in blocks of size 8.
-But the condition that should protect the buffer overflow
-ignores the last block. The last block always contains zeros.
-Fix adding memcpy for last block.
+When the police was removed from the port, then it was trying to
+remove the police from the police id and not from the actual
+police index.
+The police id represents the id of the police and police index
+represents the position in HW where the police is situated.
+The port police id can be any number while the port police index
+is a number based on the port chip port.
+Fix this by deleting the police from HW that is situated at the
+police index and not police id.
 
-Bug uncovered by ethtool upstream commit 9538f384b535
-("netlink: eeprom: Defer page requests to individual parsers")
-After this commit, ethtool reads a block with length = 1;
-to read the SFF-8024 identifier value.
-
-unpatched driver:
-$ ethtool -m enp65s0f0np0 offset 0x90 length 8
-Offset          Values
-------          ------
-0x0090:         00 00 00 00 00 00 00 00
-$ ethtool -m enp65s0f0np0 offset 0x90 length 12
-Offset          Values
-------          ------
-0x0090:         00 00 01 a0 4d 65 6c 6c 00 00 00 00
-$
-
-$ ethtool -m enp65s0f0np0
-Offset          Values
-------          ------
-0x0000:         11 06 06 00 00 00 00 00 00 00 00 00 00 00 00 00
-0x0010:         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-0x0020:         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-0x0030:         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-0x0040:         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-0x0050:         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-0x0060:         00 00 00 00 00 00 00 00 00 00 00 00 00 01 08 00
-0x0070:         00 10 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-
-patched driver:
-$ ethtool -m enp65s0f0np0 offset 0x90 length 8
-Offset          Values
-------          ------
-0x0090:         00 00 01 a0 4d 65 6c 6c
-$ ethtool -m enp65s0f0np0 offset 0x90 length 12
-Offset          Values
-------          ------
-0x0090:         00 00 01 a0 4d 65 6c 6c 61 6e 6f 78
-$ ethtool -m enp65s0f0np0
-    Identifier                                : 0x11 (QSFP28)
-    Extended identifier                       : 0x00
-    Extended identifier description           : 1.5W max. Power consumption
-    Extended identifier description           : No CDR in TX, No CDR in RX
-    Extended identifier description           : High Power Class (> 3.5 W) not enabled
-    Connector                                 : 0x23 (No separable connector)
-    Transceiver codes                         : 0x88 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-    Transceiver type                          : 40G Ethernet: 40G Base-CR4
-    Transceiver type                          : 25G Ethernet: 25G Base-CR CA-N
-    Encoding                                  : 0x05 (64B/66B)
-    BR, Nominal                               : 25500Mbps
-    Rate identifier                           : 0x00
-    Length (SMF,km)                           : 0km
-    Length (OM3 50um)                         : 0m
-    Length (OM2 50um)                         : 0m
-    Length (OM1 62.5um)                       : 0m
-    Length (Copper or Active cable)           : 1m
-    Transmitter technology                    : 0xa0 (Copper cable unequalized)
-    Attenuation at 2.5GHz                     : 4db
-    Attenuation at 5.0GHz                     : 5db
-    Attenuation at 7.0GHz                     : 7db
-    Attenuation at 12.9GHz                    : 10db
-    ........
-    ....
-
-Fixes: e9c9692c8a81 ("ice: Reimplement module reads used by ethtool")
-Signed-off-by: Petr Oros <poros@redhat.com>
+Fixes: 5390334b59a3 ("net: lan966x: Add port police support using tc-matchall")
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- drivers/net/ethernet/intel/ice/ice_ethtool.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/microchip/lan966x/lan966x_police.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index b360bd8f15998b..33b2bee5cfb40f 100644
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -4356,6 +4356,8 @@ ice_get_module_eeprom(struct net_device *netdev,
- 			/* Make sure we have enough room for the new block */
- 			if ((i + SFF_READ_BLOCK_SIZE) < ee->len)
- 				memcpy(data + i, value, SFF_READ_BLOCK_SIZE);
-+			else if (ee->len - i > 0)
-+				memcpy(data + i, value, ee->len - i);
- 		}
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_police.c b/drivers/net/ethernet/microchip/lan966x/lan966x_police.c
+index a9aec900d608d..7d66fe75cd3bf 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_police.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_police.c
+@@ -194,7 +194,7 @@ int lan966x_police_port_del(struct lan966x_port *port,
+ 		return -EINVAL;
  	}
- 	return 0;
+ 
+-	err = lan966x_police_del(port, port->tc.police_id);
++	err = lan966x_police_del(port, POL_IDX_PORT + port->chip_port);
+ 	if (err) {
+ 		NL_SET_ERR_MSG_MOD(extack,
+ 				   "Failed to add policer to port");
 -- 
-2.39.2
+2.38.0
 
