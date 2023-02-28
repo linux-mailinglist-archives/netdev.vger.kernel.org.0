@@ -2,55 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 140E66A6254
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 23:20:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BCE96A6263
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 23:26:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229812AbjB1WUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 17:20:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41266 "EHLO
+        id S229792AbjB1W0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 17:26:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229563AbjB1WUT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 17:20:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D05627DBC;
-        Tue, 28 Feb 2023 14:20:18 -0800 (PST)
+        with ESMTP id S229492AbjB1W0v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 17:26:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D8826847
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 14:26:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C207611F4;
-        Tue, 28 Feb 2023 22:20:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C4F63C433D2;
-        Tue, 28 Feb 2023 22:20:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 875B2611FC
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 22:26:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8895DC433D2;
+        Tue, 28 Feb 2023 22:26:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677622817;
-        bh=ppvw0cxQI4JUhJxcTuOANj+eLyjWJ0rOYMJFU7anKAA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=f94cHrYbIQXeA9UEKLVi0Qc/wp7x6VynPGkBe57Z8RWOGW4auwjaXGRfAyumpPtVg
-         NDpWgyp4u5kwz3qDUXV5S49XR5O0PQHhykhL5GHtxblkm+5kiy7NEoymgJ8++D73k1
-         NYeK75uTZEJi4UXXEFA6zixIhkLJGGwV2T/C9dQKh1r5sHeAkKU4vBBpHkvLed2Pxl
-         bD7iAQGR1narZuzteL19aOW9CUwv81VzKXCpWo4y7B0rntXrQY/nhYuTu3N2hyXJIr
-         qrAEFJz6pN6/siYbcOwkTaN3d9kihl/x+zew6EtuIUWW0ScLCcPSCOq3jWx7Ysit5a
-         Tvqkr6+XT53aA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id ABF6DC691DE;
-        Tue, 28 Feb 2023 22:20:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1677623210;
+        bh=fWOxEO95PB3uURNOW5y7FilZFqbCmjHjy2UTvqZyaNU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=UQQljJOjOZHSGxEDt382Fjy6/G3kI7N+LQW6kac6C0XyTOm6acUar6/TNnsopvRq1
+         FH8b9fMQeY3YD546oGd5Dwx/uCUebQ9IKVuGWxzInV317QcbXeiW3x6NUja25hzMkH
+         ZWuXWtV56C7PwuPHMLFkxwnOeb6TwEQ8xktbMMTOAO/+zfu8UxcQp9eSLwBgsfElny
+         BzGKgHfCanmTwYiyzVz7lSEC/Abjk06kRQ2icoR8TDyVox2k4yV1d3A7QPkbmiP72G
+         NQ4jSLGyfUbmbzLvu2AEPthRxYMd4h+XJfUpiMjl5P837Zt4/qNRIhMdsgjAUYaJ5/
+         avf/seh3qbdsA==
+Date:   Tue, 28 Feb 2023 14:26:48 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        =?UTF-8?B?S8O2cnk=?= Maincent <kory.maincent@bootlin.com>,
+        andrew@lunn.ch, davem@davemloft.net, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>
+Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support
+ [multicast/DSA issues]
+Message-ID: <20230228142648.408f26c4@kernel.org>
+In-Reply-To: <Y/4rXpPBbCbLqJLY@shell.armlinux.org.uk>
+References: <20200730124730.GY1605@shell.armlinux.org.uk>
+        <20230227154037.7c775d4c@kmaincent-XPS-13-7390>
+        <Y/zKJUHUhEgXjKFG@shell.armlinux.org.uk>
+        <Y/0Idkhy27TObawi@hoboy.vegasvil.org>
+        <Y/0N4ZcUl8pG7awc@shell.armlinux.org.uk>
+        <Y/0QSphmMGXP5gYy@hoboy.vegasvil.org>
+        <Y/3ubSj5+2C5xbZu@shell.armlinux.org.uk>
+        <20230228141630.64d5ef63@kmaincent-XPS-13-7390>
+        <Y/4ayPsZuYh+13eI@hoboy.vegasvil.org>
+        <Y/4rXpPBbCbLqJLY@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 0/2] Freescale T1040RDB DTS updates
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167762281770.1436.1743470013249301155.git-patchwork-notify@kernel.org>
-Date:   Tue, 28 Feb 2023 22:20:17 +0000
-References: <20230224155941.514638-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20230224155941.514638-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     mpe@ellerman.id.au, linuxppc-dev@lists.ozlabs.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        npiggin@gmail.com, christophe.leroy@csgroup.eu, fido_max@inbox.ru,
-        bigunclemax@gmail.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,31 +66,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Fri, 24 Feb 2023 17:59:38 +0200 you wrote:
-> This contains a fix for the new device tree for the T1040RDB rev A
-> board, which never worked, and an update to enable multiple CPU port
-> support for all revisions of the T1040RDB.
+On Tue, 28 Feb 2023 16:27:10 +0000 Russell King (Oracle) wrote:
+> > 5. other?  
 > 
-> Vladimir Oltean (2):
->   powerpc: dts: t1040rdb: fix compatible string for Rev A boards
->   powerpc: dts: t1040rdb: enable both CPU ports
-> 
-> [...]
+> Another possible solution to this would be to introduce a rating for
+> each PTP clock in a similar way that we do for the kernel's
+> clocksources, and the one with the highest rating becomes the default. 
 
-Here is the summary with links:
-  - [1/2] powerpc: dts: t1040rdb: fix compatible string for Rev A boards
-    https://git.kernel.org/netdev/net/c/ae44f1c9d1fc
-  - [2/2] powerpc: dts: t1040rdb: enable both CPU ports
-    https://git.kernel.org/netdev/net/c/8b322f9fdb35
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Why not ethtool? Sorry if I'm missing something obvious..
