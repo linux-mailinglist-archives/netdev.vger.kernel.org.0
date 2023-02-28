@@ -2,153 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98C396A5A19
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 14:43:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D11F6A5A55
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 14:48:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229561AbjB1Nnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 08:43:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41736 "EHLO
+        id S229760AbjB1Nsx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 08:48:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbjB1Nnb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 08:43:31 -0500
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 841D325B9F;
-        Tue, 28 Feb 2023 05:43:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=2YufEiSw26yUxGvxbvEcxh/qT0bL7Zfm+eeVmdJnJkM=; b=T/sgNzMZ8+UIner/PUcMgOg0r1
-        zQFvgCVN9l9b9eWUqLPajIEg7GxjjPqq3otpSJRj9gin0diwflv6ia8ZCPL04YQABg2bdTernyi89
-        ooFAaYDR6yXfIrMHL8UHBE18j8nG2rjqjGPvVxg0HTse1XpYp33aRiCrXUeN7LsRsnC8aF8IqhmOf
-        Eh2TxqwlxGimqD8PkcJjOoKbHU9BUQtsMHE3NZ4XZD2QFMaU3McaXEIW8qApfUB5PnksxSSvwoZTs
-        We2Y4z1gmxzeic23kKSYEQq1sgcrobW3UHb9fMAOmr4IwMr8NWA1U/LdljFfr92RsUSKXudXvL9nN
-        IbGKeqSA==;
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1pX0GN-000Dyo-8m; Tue, 28 Feb 2023 14:43:27 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1pX0GN-000H1f-0N; Tue, 28 Feb 2023 14:43:27 +0100
-Subject: Re: [PATCH bpf-next v2 0/8] Support defragmenting IPv(4|6) packets in
- BPF
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Xu <dxu@dxuuu.xyz>
-Cc:     bpf <bpf@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, quentin@isovalent.com
-References: <cover.1677526810.git.dxu@dxuuu.xyz>
- <20230227230338.awdzw57e4uzh4u7n@MacBook-Pro-6.local>
- <20230228015712.clq6kyrsd7rrklbz@kashmir.localdomain>
- <CAADnVQ+a633QyZgkbXfRiT_WRbPgr5n8RN0w=ntEkBHUeqRcbw@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <fbf869c6-29ac-4dbe-dd1c-85c6c3c10670@iogearbox.net>
-Date:   Tue, 28 Feb 2023 14:43:26 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S229733AbjB1Nss (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 08:48:48 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7430AC
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 05:48:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=public-files.de;
+        s=s31663417; t=1677592100; i=frank-w@public-files.de;
+        bh=2YpcNOSGE0jbZslKPI/mf3HRAyT+1Nt33F3GdqqN4LE=;
+        h=X-UI-Sender-Class:Date:From:To:CC:Subject:Reply-to:In-Reply-To:
+         References;
+        b=lnyomj0TShlfO+glNYsFWC8oC4SYkr7y2Y25Jiws3bu9Gqm2lMR0MrGg4l02wdIAe
+         my20PYTkNz7HHy68YO9KqRgHlyhaamS/wKhvywtk5N/a5oJpMRnM5foY8vGhAVHbRT
+         QepO1nFXqHQL6CFBbXvNe72yl369ph3/2d8DpmCw6EH5Kz/zhpz8u8By/GQwtm4B11
+         hP9HRfeOyQ/NeSjh6nCzijlrWHZlA2eCIaywX6MuDf8aDCwHkpooMr6XtMxDSkznbl
+         iW/dtWWfVRbMmNP+Wxl8YHtDEqt4oqn/gEMDbfTSu79uC5l0dtkt6zVhzxUQkn+XE6
+         u84KVW1X7LndA==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [IPv6:::1] ([80.187.66.158]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MwfWa-1oZHz741Oc-00yCBo; Tue, 28
+ Feb 2023 14:48:20 +0100
+Date:   Tue, 28 Feb 2023 14:48:13 +0100
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Felix Fietkau <nbd@nbd.name>, netdev <netdev@vger.kernel.org>,
+        erkin.bozoglu@xeront.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>
+Subject: Re: Choose a default DSA CPU port
+User-Agent: K-9 Mail for Android
+Reply-to: frank-w@public-files.de
+In-Reply-To: <20230228115846.4r2wuyhsccmrpdfh@skbuf>
+References: <trinity-4ef08653-c2e7-4da8-8572-4081dca0e2f7-1677271483935@3c-app-gmx-bap70> <20230224210852.np3kduoqhrbzuqg3@skbuf> <trinity-5a3fbd85-79ce-4021-957f-aea9617bb320-1677333013552@3c-app-gmx-bap06> <f9fcf74b-7e30-9b51-776b-6a3537236bf6@arinc9.com> <6383a98a-1b00-913d-0db1-fe33685a8410@arinc9.com> <trinity-6ad483d2-5c50-4f38-b386-f4941c85c1fd-1677413524438@3c-app-gmx-bs15> <20230228115846.4r2wuyhsccmrpdfh@skbuf>
+Message-ID: <CB415113-7581-475E-9BB9-48F6A8707C15@public-files.de>
 MIME-Version: 1.0
-In-Reply-To: <CAADnVQ+a633QyZgkbXfRiT_WRbPgr5n8RN0w=ntEkBHUeqRcbw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.8/26826/Tue Feb 28 09:32:16 2023)
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:eA7FU6qF8VHzmU4Cs5gyf60xiFVRRd4n0SnuJjWeN6IeiaB2wIc
+ JfvFcomIl/bW+7iNJ8PNc9PO+nq9yRrQ6rrYk/LHQ/OEUIhM+h0EubpQLz8XkeJYyP1UEEv
+ xwDQSPmWDKDs76JrRhz8MF+esE2OS14vHwoMwMC0VigUWd+iKbwvQ7qhJWhW9qrM3p9zfs/
+ IYR7J6+rnHgVHR8RHcivQ==
+UI-OutboundReport: notjunk:1;M01:P0:PUuD8YwBOZo=;V7w3ZqktZSZCzZNVCvpI7OEMSKr
+ m1JgxxRM9C/NlkHifB8897McFYYik0TBSi6NhM6/aBmX2SDTfFe2nbDVqPhiniPXNwLbZaeS1
+ Un7tmq2sYO5iyK1qkEbF7WkfZbqyJcbdpeAmhbRO0E8hHtOTg4kjstGMoAbdA5C4x+iURYc/P
+ zANpOOWBy/EdlxeAjeJgaK5JRWwwS6/YbLaZmHgOM+FzPY0N0JGVxwaAxH5Oh3N+Z875OnWZy
+ rsMPcTc4GTVTqAlMdfQpfqcMx6ICwlmpRJdUpoKTxcoP6dspj5Yjgy7FDDNjv+joPKgpDeIQ2
+ T5ay+bK416p680Dhfy8Snk24/W1VZhc5CM91Rob4kt8XRKTpBZd6yCxtWKCx9VUrn7PpdUU/k
+ kfz8HbyX0xenSMnEGsz5y5RWD0fKF7fsRux9S7KESQSpnMFRrBBXzDf6O3fnytsNT1oTFhlh6
+ K7fTVsLAbUzIOAeNnXGlzdA+U4Orf7F0wCvBxX6YvIJiFz1QpRxWWMWgTpwTF/UA/OvSVcHII
+ ARcK55avalw0zFOT5Vo0o766hy3veR6ibXqAlL2ZxjMqZ9sRS+ypxXCoohZkMESwFX8o3EOJQ
+ oFpIIDzbC1K2jbBcFGmGEKhyGUSEPYEvRFxhM2Gf1ks9VVhmCGyArffgRX419NC5Ar9toTBsA
+ TzxLYBRlzDUi8Do2/b8r51XbuWFOXQpmfGPk2Uw5FxGaGggg+Eh/mofmvjBo0NRZh3pzSxOsI
+ ZrKuuCrRxqn8jj93Slc9oFjkCx8z+mxWHf4CB0m7vzgWclwxI+zaYYkFDYAaZMO2GyWhPXUSn
+ DKzHMj9jrkqmQa7q9kRSoUCWnfXQgw/CvD56nHyzWBQrZSPBgFCTKI+HOSTdqQ2Jrau8v3blb
+ HLniwVHPg3Z8MPw2Vqoqcm9QizXThCxTKNewtzyXhjgguhN3eE9ton7uWNcp6rK2i3oPwBrnQ
+ XP+4UCvW5//DYzcRAA6PrlUK++ED8r3MKxEa8qSQ+9dhNPUVxEaYVfd6C4p5pWtIMuxe0A==
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/28/23 5:56 AM, Alexei Starovoitov wrote:
-> On Mon, Feb 27, 2023 at 5:57 PM Daniel Xu <dxu@dxuuu.xyz> wrote:
->> On Mon, Feb 27, 2023 at 03:03:38PM -0800, Alexei Starovoitov wrote:
->>> On Mon, Feb 27, 2023 at 12:51:02PM -0700, Daniel Xu wrote:
->>>> === Context ===
->>>>
->>>> In the context of a middlebox, fragmented packets are tricky to handle.
->>>> The full 5-tuple of a packet is often only available in the first
->>>> fragment which makes enforcing consistent policy difficult. There are
->>>> really only two stateless options, neither of which are very nice:
->>>>
->>>> 1. Enforce policy on first fragment and accept all subsequent fragments.
->>>>     This works but may let in certain attacks or allow data exfiltration.
->>>>
->>>> 2. Enforce policy on first fragment and drop all subsequent fragments.
->>>>     This does not really work b/c some protocols may rely on
->>>>     fragmentation. For example, DNS may rely on oversized UDP packets for
->>>>     large responses.
->>>>
->>>> So stateful tracking is the only sane option. RFC 8900 [0] calls this
->>>> out as well in section 6.3:
->>>>
->>>>      Middleboxes [...] should process IP fragments in a manner that is
->>>>      consistent with [RFC0791] and [RFC8200]. In many cases, middleboxes
->>>>      must maintain state in order to achieve this goal.
->>>>
->>>> === BPF related bits ===
->>>>
->>>> However, when policy is enforced through BPF, the prog is run before the
->>>> kernel reassembles fragmented packets. This leaves BPF developers in a
->>>> awkward place: implement reassembly (possibly poorly) or use a stateless
->>>> method as described above.
->>>>
->>>> Fortunately, the kernel has robust support for fragmented IP packets.
->>>> This patchset wraps the existing defragmentation facilities in kfuncs so
->>>> that BPF progs running on middleboxes can reassemble fragmented packets
->>>> before applying policy.
->>>>
->>>> === Patchset details ===
->>>>
->>>> This patchset is (hopefully) relatively straightforward from BPF perspective.
->>>> One thing I'd like to call out is the skb_copy()ing of the prog skb. I
->>>> did this to maintain the invariant that the ctx remains valid after prog
->>>> has run. This is relevant b/c ip_defrag() and ip_check_defrag() may
->>>> consume the skb if the skb is a fragment.
->>>
->>> Instead of doing all that with extra skb copy can you hook bpf prog after
->>> the networking stack already handled ip defrag?
->>> What kind of middle box are you doing? Why does it have to run at TC layer?
->>
->> Unless I'm missing something, the only other relevant hooks would be
->> socket hooks, right?
->>
->> Unfortunately I don't think my use case can do that. We are running the
->> kernel as a router, so no sockets are involved.
-> 
-> Are you using bpf_fib_lookup and populating kernel routing
-> table and doing everything on your own including neigh ?
-> 
-> Have you considered to skb redirect to another netdev that does ip defrag?
-> Like macvlan does it under some conditions. This can be generalized.
-> 
-> Recently Florian proposed to allow calling bpf progs from all existing
-> netfilter hooks.
-> You can pretend to local deliver and hook in NF_INET_LOCAL_IN ?
-> I feel it would be so much cleaner if stack does ip_defrag normally.
-> The general issue of skb ownership between bpf prog and defrag logic
-> isn't really solved with skb_copy. It's still an issue.
+Am 28=2E Februar 2023 12:58:46 MEZ schrieb Vladimir Oltean <olteanv@gmail=
+=2Ecom>:
+>On Sun, Feb 26, 2023 at 01:12:04PM +0100, Frank Wunderlich wrote:
+>> but back to topic=2E=2E=2Ewe have a patch from vladuimir which allows
+>> setting the preferred cpu-port=2E=2E=2Ehow do we handle mt7531 here
+>> correctly (which still sets port5 if defined and then break)?
+>>=20
+>> https://git=2Ekernel=2Eorg/pub/scm/linux/kernel/git/netdev/net-next=2Eg=
+it/tree/drivers/net/dsa/mt7530=2Ec#n2383
+>>=20
+>> 	/* BPDU to CPU port */
+>> 	dsa_switch_for_each_cpu_port(cpu_dp, ds) {
+>> 		mt7530_rmw(priv, MT7531_CFC, MT7531_CPU_PMAP_MASK,
+>> 			   BIT(cpu_dp->index));
+>> 		break; //<<< should we drop this break only to set all "cpu-bits"? wh=
+at happens then (flooding both ports with packets?)
+>> 	}
+>>=20
+>> as dsa only handles only 1 cpu-port we want the real cpu-port
+>> (preferred | first)=2E is this bit set also if the master is changed
+>> with your follow-up patch?
+>
+>Could you please make a best-effort attempt at describing what does the
+>MT7531_CFC[MT7531_CPU_PMAP_MASK] register affect? From the comment, if
+>affects the trapping of control packets=2E Does the MT7530 not have this
+>register? Do they behave differently? Does the register affect anything
+>else? If that logic is commented out, does DSA-tagged traffic still work
+>on MT7531? How about a bridge created with stp_state 1? I don't
+>understand at the moment why the hardware allows specifying a port mask
+>rather than a single port=2E Intuitively I'd say that if this field
+>contains more than one bit set, then control packets would be delivered
+>to all CPU ports that are up, effectively resulting in double processing
+>in Linux=2E So that doesn't seem to be useful=2E But I don't have enough =
+data=2E
 
-I do like this series and we would also use it for Cilium case, so +1 on the
-tc BPF integration. Today we have in Cilium what Ed [0] hinted in his earlier
-mail where we extract information from first fragment and store the meta data
-in a BPF map for subsequent packets based on ipid [1], but limitations apply
-e.g. service load-balancing won't work. Redirecting to a different device
-or moving higher up the stack is cumbersome since we then need to go and
-recirculate back into tc BPF layer where all the business logic is located and
-handling the regular (non-fragmented) path, too. Wrt skb ownership, can you
-elaborate what is a concrete issue exactly? Anything that comes to mind with
-this approach that could crash the kernel?
+I have only this datasheet from bpi for mt7531
 
-   [0] https://lore.kernel.org/bpf/cf49a091-9b14-05b8-6a79-00e56f3019e1@gmail.com/
-   [1] https://github.com/cilium/cilium/pull/10264
+https://drive=2Egoogle=2Ecom/file/d/1aVdQz3rbKWjkvdga8-LQ-VFXjmHR8yf9/view
+
+On page 23 the register is defined but without additional information abou=
+t setting multiple bits in this range=2E CFC IS CPU_FORWARD_CONTROL registe=
+r and CPU_PMAP is a 8bit part of it which have a bit for selecting each por=
+t as cpu-port (0-7)=2E I found no information about packets sent over both =
+cpu-ports, round-robin or something else=2E
+
+For mt7530 i have no such document=2E
+
+The way i got from mtk some time ago was using a vlan_aware bridge for sel=
+ecting a "cpu-port" for a specific user-port=2E At this point port5 was no =
+cpu-port and traffic is directly routed to this port bypassing dsa and the =
+cpu-port define in driver=2E=2E=2Eafaik this way port5 was handled as userp=
+ort too=2E
+regards Frank
