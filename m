@@ -2,89 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D6C8C6A60F6
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 22:11:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5DEC6A610B
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 22:12:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229527AbjB1VLW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 16:11:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57522 "EHLO
+        id S229982AbjB1VMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 16:12:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229580AbjB1VLV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 16:11:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA7DD2B619;
-        Tue, 28 Feb 2023 13:11:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CB3F611D5;
-        Tue, 28 Feb 2023 21:11:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6C6F4C4339B;
-        Tue, 28 Feb 2023 21:11:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677618677;
-        bh=IB9Sk6Sew2oBE0tBUuiuebk20E+C56Ut6PZLin772Nk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=emOgvl42vWzqzWChtKHzMHvotZsKDFOYMyzPq7CQAWnydVT3wCUftCrJgz4I96sVT
-         J/p2OpBWB1Pfl7lM95qMXkEOuSSwV3OOY5QkIi4y4E4TMiphO/6LCFUrjcj6VtVV7y
-         OqFAVUEOEE+LHNIKcVtUjyUQDYVHHnyUdND45alz0Hd9SkIYZjwDkf5s6BhiNivQ3t
-         ooc1Zz4w4sfDqIRqmXhnwa/PPz8cRzyNIKX7rNjgeVdg9M8zNjUmOXtoCwjv3phgR8
-         zgYKOqkEV/UonTYwYdQveKsTxgsF4XCJOJ+DHfzlb61xD21CVpekeZTvgvBIXth6Ct
-         kGAa595muc6kQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 50A4DC395EC;
-        Tue, 28 Feb 2023 21:11:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229916AbjB1VME (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 16:12:04 -0500
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 305573645B
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 13:11:43 -0800 (PST)
+Received: by mail-pl1-x630.google.com with SMTP id i3so11869622plg.6
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 13:11:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1677618701;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=cFP0htlkJzLE3hJ3isyi4ivODWnmwstLPr/TGzbgO9A=;
+        b=N9lF0mUFm9MluKEh/UhRvC60juFm9lZG+SOya1YDeKTUdCQhrMFF4+xnYEPo+8196V
+         vEa5mopTkX/umz3phnYRDqHpkJtSEX5zWSd8V1BhUYjKIyU2sZY9CyapBHWdzPC/ixqi
+         EtTsgFh+8chHLk6wmZ1QtjF6O8Dc1AJR+rlvh8MTrti927oRlHq3Tif3RfjjtWXi9iOH
+         EpZgdbYD1qTDmpuLgOW5VYU9bBx0fQNMzFDnPO1Hljxi6l9QqvkE8IS3MMtN7ni/ZAbc
+         UuYTDhdJjPenKrRn/haFzstY0G+oG+76TnXSlVbOoxHSu+BtT3fNG2h5IQlvziPevISL
+         co3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1677618701;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cFP0htlkJzLE3hJ3isyi4ivODWnmwstLPr/TGzbgO9A=;
+        b=TQjikW2/o4zvA+LeXEXFWuHX69t2KL19sojB0o4DNdV9eqUJtcWCS43MO45GFGzWRn
+         Z6gjUE4Pn83TZiRtYLL1KA6y3sj0AkUjj9sakEmoHISAa60QD/6yYqqY9CNF5zUUIIoE
+         Kece5f5BCcX9pG6DBWCrYvoRMHGIplRUF0RJs4aoG2nxuiWlDCE0w3H4iM3MF7bmLmzv
+         4Eq2FTdZp7Q1z7hiXhzBuNciC1wcR5eIUy9r6X3pagu4HMySQxq1ZWM67SgOIUpSVBTs
+         Aj/fF2cgQ2PxRlp4fzXUnrGMxNUiCzRemyhS+3Fx8MnKd8Z2XoLgmJno9LXEApFx/Aeb
+         diYA==
+X-Gm-Message-State: AO0yUKXHXqNc4dyb9f9xAKS6At58wJSIWUJitghUgG/0tTLbwGwFpxr3
+        AIpz5nTSUZ/rOX12KfVOuzs=
+X-Google-Smtp-Source: AK7set/CD8yoPH5+fygFnaiIQH/6SauHGC6oZIceOrnDpccbJMYmNyZr8wbSlBtU+b7taiYpKRSU3g==
+X-Received: by 2002:a05:6a20:8f06:b0:cb:7cc4:3ddb with SMTP id b6-20020a056a208f0600b000cb7cc43ddbmr5392517pzk.3.1677618700721;
+        Tue, 28 Feb 2023 13:11:40 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id g17-20020aa78751000000b0058837da69edsm6455745pfo.128.2023.02.28.13.11.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Feb 2023 13:11:40 -0800 (PST)
+Date:   Tue, 28 Feb 2023 13:11:36 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Michael Walle <michael@walle.cc>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>, andrew@lunn.ch,
+        davem@davemloft.net, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        kory.maincent@bootlin.com, kuba@kernel.org,
+        maxime.chevallier@bootlin.com, netdev@vger.kernel.org,
+        thomas.petazzoni@bootlin.com
+Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support
+ [multicast/DSA issues]
+Message-ID: <Y/5uCFXZb4mBYroS@hoboy.vegasvil.org>
+References: <Y/4rXpPBbCbLqJLY@shell.armlinux.org.uk>
+ <20230228164435.133881-1-michael@walle.cc>
+ <Y/4yymy8ZBlMrjDG@shell.armlinux.org.uk>
+ <a7d0a9c31e86441b836baf3b5cd7804d@walle.cc>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] mm: remove zap_page_range and create zap_vma_pages
-From:   patchwork-bot+linux-riscv@kernel.org
-Message-Id: <167761867732.10135.11248419155612086016.git-patchwork-notify@kernel.org>
-Date:   Tue, 28 Feb 2023 21:11:17 +0000
-References: <20230104002732.232573-1-mike.kravetz@oracle.com>
-In-Reply-To: <20230104002732.232573-1-mike.kravetz@oracle.com>
-To:     Mike Kravetz <mike.kravetz@oracle.com>
-Cc:     linux-riscv@lists.infradead.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        hch@infradead.org, david@redhat.com, mhocko@suse.com,
-        peterx@redhat.com, nadav.amit@gmail.com, willy@infradead.org,
-        vbabka@suse.cz, riel@surriel.com, will@kernel.org,
-        mpe@ellerman.id.au, palmer@dabbelt.com, borntraeger@linux.ibm.com,
-        dave.hansen@linux.intel.com, brauner@kernel.org,
-        edumazet@google.com, akpm@linux-foundation.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a7d0a9c31e86441b836baf3b5cd7804d@walle.cc>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Tue, Feb 28, 2023 at 09:13:57PM +0100, Michael Walle wrote:
 
-This patch was applied to riscv/linux.git (for-next)
-by Andrew Morton <akpm@linux-foundation.org>:
+> All I'm trying to say, is there might also be some board constraints so
+> the MAC driver might not always be telling what is best, PHY or MAC.
 
-On Tue,  3 Jan 2023 16:27:32 -0800 you wrote:
-> zap_page_range was originally designed to unmap pages within an address
-> range that could span multiple vmas.  While working on [1], it was
-> discovered that all callers of zap_page_range pass a range entirely within
-> a single vma.  In addition, the mmu notification call within zap_page
-> range does not correctly handle ranges that span multiple vmas.  When
-> crossing a vma boundary, a new mmu_notifier_range_init/end call pair
-> with the new vma should be made.
-> 
-> [...]
++1
 
-Here is the summary with links:
-  - mm: remove zap_page_range and create zap_vma_pages
-    https://git.kernel.org/riscv/c/e9adcfecf572
+I can't see how the MAC, in general, could possibly determine whether
+it should be preferred.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks,
+Richard
