@@ -2,103 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFFFB6A5746
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 11:57:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46FB36A5758
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 11:59:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231284AbjB1K47 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 05:56:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42460 "EHLO
+        id S229606AbjB1K7n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 05:59:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231418AbjB1K4f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 05:56:35 -0500
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F13302B1
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 02:55:42 -0800 (PST)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-536af432ee5so261501767b3.0
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 02:55:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112; t=1677581741;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=0ByzrG1DNrO2v9eUo35sUjr/+tSq62I3qy0upjoBdQo=;
-        b=2EHzWpmLkXjtkEecsfe29xtlYImApGzHvssgCOdEf1VUskBNY4kaCqJiqgZg1ePfh4
-         RW/GNZoTfr/Bt9ruAl9+8Dn0PuRIlYlhBTEKMQKHcXGFvy2gyEDj64yFgAbk4pZWaf6V
-         w1ZKVNb/ZMSWRgjFuo7Rl112o2XkNxkOqNmuloO+FKP4qKfYD3xi/qvdu53OdsiBLQDU
-         gtf+QcWGB8oDWKqlJcw4bVv7rwBeHasjJLatFnkrCeR6ki1dGLYH/XczKkfNFsudWvdf
-         nxxiL9YRQfk2TUt2UOGISpW9K1LIfcekOzkal5b6kiKo7y5F8W/Uw4+bANkXr8395y9s
-         QUDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677581741;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=0ByzrG1DNrO2v9eUo35sUjr/+tSq62I3qy0upjoBdQo=;
-        b=H4UPrH7Ja/D/WA+PIsgWN3TGZzThaLer3LwaCRRAyCt5gtpkICReF6nQCtF8onq66y
-         ImTKVDqQp6YwlFcTosSbii8XJjCCyCQf5gYcbhWol2P0fTeKGKdNnA8BxwVA5yACK2t3
-         OncWw8ITuEzID0al/ihFp2mlAzny04rh2uw9DNPxg7Y8G6sNKREH26EJccMLwSGkDWrC
-         2WxMb4ZNnlWTquZ16u6so42i2l0nNrA5DNq9LeaB/dKJvci7N9wLWFhMb0BPTJWZhgvq
-         yb+IHfB3dZFQlC3q8nJch5frpLNod7QFiO98pu5V+DKTX9YFqFte0pdCJSAiCU8HyuI5
-         EB0g==
-X-Gm-Message-State: AO0yUKV3bs9bs9b5OH3beec41sq8bWp+ulNVZyj//098qaUvpRcEdhmb
-        uA/7Y+pBPDRwftJhuLZKjBZptRq/zZFGPnT9MqN2Fw==
-X-Google-Smtp-Source: AK7set9ClaSSsJq2rMTiGddWyRu2iOmdcVNQunJpI3R5g8sWEdTssHa0N4cEMxJn8QNgO/MVXwsHe1a4kr/2QJsJ4q4=
-X-Received: by 2002:a05:690c:609:b0:52e:b74b:1b93 with SMTP id
- bq9-20020a05690c060900b0052eb74b1b93mr2707065ywb.0.1677581741598; Tue, 28 Feb
- 2023 02:55:41 -0800 (PST)
+        with ESMTP id S229833AbjB1K7l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 05:59:41 -0500
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:237:300::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56852D9
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 02:59:33 -0800 (PST)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1pWxhh-0002Kr-BL; Tue, 28 Feb 2023 11:59:29 +0100
+Date:   Tue, 28 Feb 2023 11:59:29 +0100
+From:   Florian Westphal <fw@strlen.de>
+To:     Alexander Atanasov <alexander.atanasov@virtuozzo.com>
+Cc:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH] netfilter: nf_tables: always synchronize with readers
+ before releasing tables
+Message-ID: <20230228105929.GB6107@breakpoint.cc>
+References: <20230227121720.3775652-1-alexander.atanasov@virtuozzo.com>
+ <901abd29-9813-e4fe-c1db-f5273b1c55e3@virtuozzo.com>
+ <20230227124402.GA30043@breakpoint.cc>
+ <266de015-7712-8672-9ca0-67199817d587@virtuozzo.com>
+ <20230227161140.GA31439@breakpoint.cc>
+ <28a88519-d0e2-7629-9ed9-3f9c12ca024b@virtuozzo.com>
+ <20230227233155.GA6107@breakpoint.cc>
+ <ee004a9d-7d49-448f-16d7-807afc755dd0@virtuozzo.com>
 MIME-Version: 1.0
-References: <20230228034955.1215122-1-liuhangbin@gmail.com>
-In-Reply-To: <20230228034955.1215122-1-liuhangbin@gmail.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Tue, 28 Feb 2023 05:55:30 -0500
-Message-ID: <CAM0EoM=-sSuZbgjEH_KH8WTqTXYSagN0E6JLF+MKBFDSG_z9Hw@mail.gmail.com>
-Subject: Re: [PATCH iproute2] u32: fix TC_U32_TERMINAL printing
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ee004a9d-7d49-448f-16d7-807afc755dd0@virtuozzo.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hangbin,
-Can you please run tdc tests on all tc (both for iproute2 and kernel)
-changes you make and preferably show them in the commit log? If you
-introduce something new then add a new tdc test case to cover it.
+Alexander Atanasov <alexander.atanasov@virtuozzo.com> wrote:
+> On 28.02.23 1:31, Florian Westphal wrote:
+> > Alexander Atanasov <alexander.atanasov@virtuozzo.com> wrote:
+> > > As i said i am still trying to figure out the basechain place,
+> > > where is that synchronize_rcu() call done?
+> > 
+> > cleanup_net() in net/core/net_namespace.c.
+> > 
+> > pre_exit handlers run, then synchronize_rcu, then the
+> > normal exit handlers, then exit_batch.
+> 
+> It prevents anyone new to find the namespace but it does not guard against
+> the ones that have already found it.
 
-cheers,
-jamal
+The netns is being dismantled, how can there be any process left?
 
-On Mon, Feb 27, 2023 at 10:50 PM Hangbin Liu <liuhangbin@gmail.com> wrote:
->
-> We previously printed an asterisk if there was no 'sel' or 'TC_U32_TERMINAL'
-> flag. However, commit 1ff22754 ("u32: fix json formatting of flowid")
-> changed the logic to print an asterisk only if there is a 'TC_U32_TERMINAL'
-> flag. Therefore, we need to fix this regression.
->
-> Fixes: 1ff227545ce1 ("u32: fix json formatting of flowid")
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> ---
->  tc/f_u32.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/tc/f_u32.c b/tc/f_u32.c
-> index bfe9e5f9..de2d0c9e 100644
-> --- a/tc/f_u32.c
-> +++ b/tc/f_u32.c
-> @@ -1273,7 +1273,7 @@ static int u32_print_opt(struct filter_util *qu, FILE *f, struct rtattr *opt,
->         if (tb[TCA_U32_CLASSID]) {
->                 __u32 classid = rta_getattr_u32(tb[TCA_U32_CLASSID]);
->                 SPRINT_BUF(b1);
-> -               if (sel && (sel->flags & TC_U32_TERMINAL))
-> +               if (!sel || !(sel->flags & TC_U32_TERMINAL))
->                         print_string(PRINT_FP, NULL, "*", NULL);
->
->                 print_string(PRINT_ANY, "flowid", "flowid %s ",
-> --
-> 2.38.1
->
+> What stops them to enter a rcu_read_lock() section after the synchronize
+> call in cleanup_net() is done and race with the exit handler?
+
+There should be no task in the first place.
+
+> synchronize_rcu() must be called with the commit_mutex held to be safe
+> against lock less readers using data protected with commit_mutext.
+
+Sorry, I do not understand this bug nor the fix.
