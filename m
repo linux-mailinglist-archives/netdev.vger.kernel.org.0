@@ -2,158 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 866FE6A57ED
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 12:24:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FC1F6A57FB
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 12:25:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229528AbjB1LYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 06:24:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44102 "EHLO
+        id S231531AbjB1LZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 06:25:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231628AbjB1LYM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 06:24:12 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2617712F01
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 03:23:43 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id az36so6168176wmb.1
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 03:23:43 -0800 (PST)
+        with ESMTP id S231528AbjB1LYZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 06:24:25 -0500
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE7C92FCE8
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 03:24:03 -0800 (PST)
+Received: by mail-io1-xd2c.google.com with SMTP id f14so3881973iow.5
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 03:24:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1677583416;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=dexA46MbFD/1LJf//eW76xTgHB+gKrlRAfZ8jnkaOvM=;
-        b=D7degXSLzdHyyuLQSEez+rs6OoplckklX0y3yoGvzMO+5YqTBk/bkHm2mQ/ivXNeYn
-         lBJBIkAZMz0AuuAE6FxYOQ0bRdPYrEnl0df5rs6DhgYUh5u7gLvmcwEaI34LezA0l8KQ
-         xZ77ztBIa8JhuumE7fBQfx+YWQJoc/P2QIOm8KuT0OKc4ldLXhQs+q6mY4qBJSNux6Oq
-         I4ZHZEAownLfC+fI/GvQCjOJL/heOBr7Z1nzpFnF6lF2RvcWgdLYaPpQGLFnuCk8tQDX
-         eoBlkmPVM0bUl4tnXttpCRBxR3e050yQszSgWxgc3rev6xCmFM6jEItkfQjocVW3fi1Z
-         uFpg==
+        bh=0u2iKp9ldtcgMOD+hKR8kz3k0BOCjo1o/U4cCu8boAs=;
+        b=L0u+m/Xvcmz+gegyTZ64Bq2mJd6k/r1EXydm4FVgaQ6f4cz0HqDzFGrIqcKOKeSX4m
+         TQ2suA/qG7DQtPqbClxjbKGwj2GKtt6FFwCQFWrQVesEBm4qkMyt9e09ErWg4q4S1J75
+         n+o213OvKaZoFEpQM7Hk9gKLAaUlTk305d2L3HUZs/pPqw2e0UIx9zx6fMq0R9+gEEPT
+         O34ufDaxKGHtli6AC8vWpEO2KOSke0lMJ2Bnc+ZgrGF33uzfXf/47/wc4NKgmC4rPYU8
+         laCKAqxJH/CfzZv3sST8ObLCavdA+kzooEOzZrzU4a8Qxy08Ynv85vjvXyX/9L8+EqaA
+         tt5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677583416;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=dexA46MbFD/1LJf//eW76xTgHB+gKrlRAfZ8jnkaOvM=;
-        b=AaEFt8TUH8wTedv7DGNUNsSdpmebE7GZiJJnOtqz8bOt9iy5hY2UklzYnoVKdviAji
-         +egO06b3D7h+XII1cOB++jl5G9qJLXjojS+gIMYMoF5A+xuJpzw/ibNughoW38L91wif
-         8h7blYz9ambNWgU+BhiT5m8j7q5Ti0YBoc4J8OnyCMXUEJ6acZEiFqHkNuu0iOz5mbXX
-         W6hDUKwi2YY/AZTcv9pTxkJSmdF+faCJhb96hZtRnA3MTh4Qlh0GpjucbfUr9CLo8Qwk
-         0VFGZWf/GxmOk3PcFZX/63M/1sVzZVRiIq37cBGfjOeybIxF2RwrgrvtnUqJohE3ait2
-         Tzfg==
-X-Gm-Message-State: AO0yUKXXpyddOZvMypVtAU10gDqaaAJVvikiDrLXjeKS1yubS/d/2qSn
-        IsDM0PLkUyunGRpelSM/E2W4GQ==
-X-Google-Smtp-Source: AK7set8k5v1pMbP5E0MJG27rjohqibwn3NPj8ECtbmF9Uu/FsnlKLUs/jpmcAcpNDG7Ctk2/Y3aExA==
-X-Received: by 2002:a05:600c:1f0e:b0:3e7:95ba:e1c7 with SMTP id bd14-20020a05600c1f0e00b003e795bae1c7mr1982176wmb.32.1677583416101;
-        Tue, 28 Feb 2023 03:23:36 -0800 (PST)
-Received: from mai.box.freepro.com ([2a05:6e02:1041:c10:6830:6390:2815:b6a5])
-        by smtp.gmail.com with ESMTPSA id z5-20020a5d6545000000b002c5501a5803sm9598130wrv.65.2023.02.28.03.23.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Feb 2023 03:23:35 -0800 (PST)
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-To:     rafael@kernel.org, daniel.lezcano@linaro.org
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ido Schimmel <idosch@nvidia.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Petr Machata <petrm@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Eduardo Valentin <edubezval@gmail.com>,
-        Keerthy <j-keerthy@ti.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Balsam CHIHI <bchihi@baylibre.com>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        netdev@vger.kernel.org (open list:MELLANOX ETHERNET SWITCH DRIVERS),
-        linux-omap@vger.kernel.org (open list:TI BANDGAP AND THERMAL DRIVER),
-        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Mediatek SoC
-        support),
-        linux-mediatek@lists.infradead.org (moderated list:ARM/Mediatek SoC
-        support)
-Subject: [PATCH v4 13/19] thermal: Use thermal_zone_device_type() accessor
-Date:   Tue, 28 Feb 2023 12:22:32 +0100
-Message-Id: <20230228112238.2312273-14-daniel.lezcano@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230228112238.2312273-1-daniel.lezcano@linaro.org>
-References: <20230228112238.2312273-1-daniel.lezcano@linaro.org>
+        bh=0u2iKp9ldtcgMOD+hKR8kz3k0BOCjo1o/U4cCu8boAs=;
+        b=PuAZOkzbx0MegvUzDaqBo7mJbfLm0MDDLNh8g8Xh8c4vM619pC8fTWiwoyKgy5w67m
+         VVtY6rErjugHrwpkn+HNRMDxAZH5TVNIZXUkThN8TTcEjj29028oueU4yWXj+opePZXY
+         tG6j4bVHralqTHrnHjB1IV+xvZS4Wl9AwsL7kabT6QJ5jkbYFMA2cjFG/GLn9a+x7evL
+         xCm8cQWvnEvC1/vIUf9eI3Em1POWtzEdbeWwx07OmDjphf8zih+pRCFjarT5gEfvO1mA
+         jSIiII7X6MbGrcV/DUmSENpCOTa7pxh/791xZZ3noscwwfnwH+U9b6XBz+uTc594mFGi
+         bpzg==
+X-Gm-Message-State: AO0yUKU7lBfLErildepPhDzMH5VInFu0W6SvsqpUjKzyiupqkOqKzFaS
+        FeNcuxsq72QY2/QIvxzZ3K8iLLvo0N70hVjl+d7YWg==
+X-Google-Smtp-Source: AK7set/XxfKvKpioQb1Ae1RPArAsVZtkPOSIDArcUmsbNHh+ZP+BrV/3l+awhLoUPWogWiBdbkJZzvBuO+cK4uoi2os=
+X-Received: by 2002:a05:6602:214b:b0:74c:bb62:6763 with SMTP id
+ y11-20020a056602214b00b0074cbb626763mr1138820ioy.1.1677583438043; Tue, 28 Feb
+ 2023 03:23:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <000000000000e412e905f5b46201@google.com> <CANn89iJ_kLaF0tVVUfzKQwVkQ0VtCca1dL8eF+RrXCVDTK6h2Q@mail.gmail.com>
+ <20230227155352.3399bb10@kernel.org>
+In-Reply-To: <20230227155352.3399bb10@kernel.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 28 Feb 2023 12:23:46 +0100
+Message-ID: <CANn89i+ooMT_G9aL8keZ-WOcAKqpC44OLQNGvfUtjA6PW-yxcA@mail.gmail.com>
+Subject: Re: [syzbot] [net?] INFO: task hung in tls_sw_sendpage (3)
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     syzbot <syzbot+9c0268252b8ef967c62e@syzkaller.appspotmail.com>,
+        borisp@nvidia.com, bpf@vger.kernel.org, davem@davemloft.net,
+        john.fastabend@gmail.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace the accesses to 'tz->type' by its accessor version in order to
-self-encapsulate the thermal_zone_device structure.
+On Tue, Feb 28, 2023 at 12:53=E2=80=AFAM Jakub Kicinski <kuba@kernel.org> w=
+rote:
+>
+> On Mon, 27 Feb 2023 21:35:41 +0100 Eric Dumazet wrote:
+> > This looks suspicious to me
+> >
+> > commit 79ffe6087e9145d2377385cac48d0d6a6b4225a5
+> > Author: Jakub Kicinski <kuba@kernel.org>
+> > Date:   Tue Nov 5 14:24:35 2019 -0800
+> >
+> >     net/tls: add a TX lock
+> >
+> >
+> > If tls_sw_sendpage() has to call sk_stream_wait_memory(),
+> > sk_stream_wait_memory() is properly releasing the socket lock,
+> > but knows nothing about mutex_{un}lock(&tls_ctx->tx_lock);
+>
+> That's supposed to be the point of the lock, prevent new writers from
+> messing with the partially pushed records when the original writer
+> is waiting for write space.
+>
+> Obvious hack but the async crypto support makes TLS a bit of a mess :|
+>
+> sendpage_lock not taking tx_lock may lead to obvious problems, I'm not
+> seeing where the deadlock is, tho..
+>
 
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com> #mlxsw
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com> #MediaTek LVTS
----
- drivers/net/ethernet/mellanox/mlxsw/core_thermal.c | 2 +-
- drivers/thermal/mediatek/lvts_thermal.c            | 6 ++++--
- drivers/thermal/ti-soc-thermal/ti-thermal-common.c | 2 +-
- 3 files changed, 6 insertions(+), 4 deletions(-)
+This report mentions sendpage, but sendmsg() would have the same issue.
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-index 722e4a40afef..b0a169e68df9 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-@@ -177,7 +177,7 @@ mlxsw_thermal_module_trips_update(struct device *dev, struct mlxsw_core *core,
- 
- 	if (crit_temp > emerg_temp) {
- 		dev_warn(dev, "%s : Critical threshold %d is above emergency threshold %d\n",
--			 tz->tzdev->type, crit_temp, emerg_temp);
-+			 thermal_zone_device_type(tz->tzdev), crit_temp, emerg_temp);
- 		return 0;
- 	}
- 
-diff --git a/drivers/thermal/mediatek/lvts_thermal.c b/drivers/thermal/mediatek/lvts_thermal.c
-index beb835d644e2..216f53eb1385 100644
---- a/drivers/thermal/mediatek/lvts_thermal.c
-+++ b/drivers/thermal/mediatek/lvts_thermal.c
-@@ -305,7 +305,8 @@ static int lvts_set_trips(struct thermal_zone_device *tz, int low, int high)
- 	 * 14-0 : Raw temperature for threshold
- 	 */
- 	if (low != -INT_MAX) {
--		pr_debug("%s: Setting low limit temperature interrupt: %d\n", tz->type, low);
-+		pr_debug("%s: Setting low limit temperature interrupt: %d\n",
-+			 thermal_zone_device_type(tz), low);
- 		writel(raw_low, LVTS_H2NTHRE(base));
- 	}
- 
-@@ -318,7 +319,8 @@ static int lvts_set_trips(struct thermal_zone_device *tz, int low, int high)
- 	 *
- 	 * 14-0 : Raw temperature for threshold
- 	 */
--	pr_debug("%s: Setting high limit temperature interrupt: %d\n", tz->type, high);
-+	pr_debug("%s: Setting high limit temperature interrupt: %d\n",
-+		 thermal_zone_device_type(tz), high);
- 	writel(raw_high, LVTS_HTHRE(base));
- 
- 	return 0;
-diff --git a/drivers/thermal/ti-soc-thermal/ti-thermal-common.c b/drivers/thermal/ti-soc-thermal/ti-thermal-common.c
-index 060f46cea5ff..0c8914017c18 100644
---- a/drivers/thermal/ti-soc-thermal/ti-thermal-common.c
-+++ b/drivers/thermal/ti-soc-thermal/ti-thermal-common.c
-@@ -44,7 +44,7 @@ static void ti_thermal_work(struct work_struct *work)
- 	thermal_zone_device_update(data->ti_thermal, THERMAL_EVENT_UNSPECIFIED);
- 
- 	dev_dbg(data->bgp->dev, "updated thermal zone %s\n",
--		data->ti_thermal->type);
-+		thermal_zone_device_type(data->ti_thermal));
- }
- 
- /**
--- 
-2.34.1
+A thread might be blocked in sk_stream_wait_memory() with the mutex
+held, for an arbitrary amount of time,
+say if the remote peer stays in RWIN 0 for hours.
 
+This prevents tx_work from making progress, and
+tls_sw_cancel_work_tx() would be stuck forever.
+
+The consensus is that the kernel shouts a warning if a thread has been
+waiting on a mutex
+more than 120 seconds (check_hung_uninterruptible_tasks())
