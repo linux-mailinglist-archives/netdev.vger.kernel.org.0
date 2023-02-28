@@ -2,34 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F8546A5ADC
+	by mail.lfdr.de (Postfix) with ESMTP id CC04E6A5ADD
 	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 15:33:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229797AbjB1Odb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 09:33:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56928 "EHLO
+        id S229850AbjB1Odc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 09:33:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229486AbjB1Oda (ORCPT
+        with ESMTP id S229618AbjB1Oda (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 09:33:30 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70B32113D9;
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2E7AF755;
         Tue, 28 Feb 2023 06:33:28 -0800 (PST)
-Message-ID: <20230228132118.978145284@linutronix.de>
+Message-ID: <20230228132910.934296889@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1677594805;
+        s=2020; t=1677594807;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc; bh=Lb565lna/s6U3kiSF2MXBRiVLZf5H76cCRuDZ64GJmo=;
-        b=AHu1QN44yS5yiMIIaQM/bhF9U6AEh/nZRBJVWFyICDSqk3P0vJLcJDVAqaIrnTaJgdCWjv
-        Y4+p5PPsAH7FaBwIH95r2h8pR56X62fQMKvyEXrR5ZTA7zSxWBGzsPXjEPpnQKApgNBBJ/
-        +cR1qpOtrN+9RPUgHX4u8WlQz0LMbNQwwCT1XipIjsnpR8YVQ6xQf7p/7GwDhNhrXbDhNr
-        nShFyqLoWwUq6zqjT+ug3ayEttdG/J+PJ0YwXbz34e7bExIFUQYp99B8X/As+tXx2t4Ejh
-        ISJ07CvLK0rqWHkRFYLBv/13EcEEf6iA5Q8Ax0Wp0x169xPifESeqtcy6QNcrw==
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         references:references; bh=164HU9inGaDSStz20kDbBC51Xj3hrcXjyamsooLd+5g=;
+        b=i/JOnT2AKbM7BC9p9Q1bE+9kdzNuT9zADvs8sRa0yxUg4BHyvMmjDf0TsL3S9kfTJJ9Rhm
+        /4ddfUHSBqHHwfcL3CwSYWZPKqS6dpFg8MmvWVN0B1aQ/5+Em2gn2Fk9dZxBoGV1C6PvaN
+        ajTPa8brDAjcv79DeIM4ZXaJkAcqcU8Lb6UYA1fFkRBTyPj8Rg/+4Q4FzG2RialEYCv0jW
+        EFHjJOWKhh9GC1f/OdtRaw6lA85mv9atBfGFiY/hh3rZnhMaZnbYZtscLeBiG3kO72XSXG
+        coaZgRtrZo/23+7EXKYcw+sGnptVB9TTld4wZ3oMdpPTs7Zvvm11yBjGi7npzg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1677594805;
+        s=2020e; t=1677594807;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc; bh=Lb565lna/s6U3kiSF2MXBRiVLZf5H76cCRuDZ64GJmo=;
-        b=HFL4ArZ/QfvP9NVXbDuUui8LOdP2ihpwMWNvYqIGqxzGFQv32BRTNGxI4i04zfbG64mPWf
-        bj7WStzSy3LAjKAw==
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         references:references; bh=164HU9inGaDSStz20kDbBC51Xj3hrcXjyamsooLd+5g=;
+        b=DcfZ7D0xyV3ezgSoUkW+DvoTF83VWC4wcoRRY6eQ5PHaotzI1Vkc+0xDrwPBY9i1wSg6SR
+        O4il+nVOdAmdyVAg==
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Linus Torvalds <torvalds@linuxfoundation.org>, x86@kernel.org,
@@ -44,9 +46,11 @@ Cc:     Linus Torvalds <torvalds@linuxfoundation.org>, x86@kernel.org,
         Boqun Feng <boqun.feng@gmail.com>,
         Mark Rutland <mark.rutland@arm.com>,
         Marc Zyngier <maz@kernel.org>
-Subject: [patch 0/3] net, refcount: Address dst_entry reference count
- scalability issues
-Date:   Tue, 28 Feb 2023 15:33:25 +0100 (CET)
+Subject: [patch 1/3] net: dst: Prevent false sharing vs. dst_entry::__refcnt
+References: <20230228132118.978145284@linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Date:   Tue, 28 Feb 2023 15:33:26 +0100 (CET)
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -56,132 +60,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
+From: Wangyang Guo <wangyang.guo@intel.com>
 
-Wangyang and Arjan reported a bottleneck in the networking code related to
-struct dst_entry::__refcnt. Performance tanks massively when concurrency on
-a dst_entry increases.
+dst_entry::__refcnt is highly contended in scenarios where many connections
+happen from and to the same IP. The reference count is an atomic_t, so the
+reference count operations have to take the cache-line exclusive.
 
-This happens when there are a large amount of connections to or from the
-same IP address. The memtier benchmark when run on the same host as
-memcached amplifies this massively. But even over real network connections
-this issue can be observed at an obviously smaller scale (due to the
-network bandwith limitations in my setup, i.e. 1Gb).
+Aside of the unavoidable reference count contention there is another
+significant problem which is caused by that: False sharing.
 
-There are two factors which make this reference count a scalability issue:
+perf top identified two affected read accesses. dst_entry::lwtstate and
+rtable::rt_genid.
 
-   1) False sharing
+dst_entry:__refcnt is located at offset 64 of dst_entry, which puts it into
+a seperate cacheline vs. the read mostly members located at the beginning
+of the struct.
 
-      dst_entry:__refcnt is located at offset 64 of dst_entry, which puts
-      it into a seperate cacheline vs. the read mostly members located at
-      the beginning of the struct.
+That prevents false sharing vs. the struct members in the first 64
+bytes of the structure, but there is also
 
-      That prevents false sharing vs. the struct members in the first 64
-      bytes of the structure, but there is also
+     dst_entry::lwtstate
 
-      	    dst_entry::lwtstate
+which is located after the reference count and in the same cache line. This
+member is read after a reference count has been acquired.
 
-      which is located after the reference count and in the same cache
-      line. This member is read after a reference count has been acquired.
-
-      The other problem is struct rtable, which embeds a struct dst_entry
-      at offset 0. struct dst_entry has a size of 112 bytes, which means
-      that the struct members of rtable which follow the dst member share
-      the same cache line as dst_entry::__refcnt. Especially
+struct rtable embeds a struct dst_entry at offset 0. struct dst_entry has a
+size of 112 bytes, which means that the struct members of rtable which
+follow the dst member share the same cache line as dst_entry::__refcnt.
+Especially
 
       	  rtable::rt_genid
 
-      is also read by the contexts which have a reference count acquired
-      already.
+is also read by the contexts which have a reference count acquired
+already.
 
-      When dst_entry:__refcnt is incremented or decremented via an atomic
-      operation these read accesses stall and contribute to the performance
-      problem.
+When dst_entry:__refcnt is incremented or decremented via an atomic
+operation these read accesses stall.
 
-   2) atomic_inc_not_zero()
+This was found when analysing the memtier benchmark in 1:100 mode, which
+amplifies the problem extremly.
 
-      A reference on dst_entry:__refcnt is acquired via
-      atomic_inc_not_zero() and released via atomic_dec_return().
+Rearrange and pad the structure so that the lwtstate member is in the next
+cache-line. This increases the struct size from 112 to 136 bytes on 64bit.
 
-      atomic_inc_not_zero() is implemted via a atomic_try_cmpxchg() loop,
-      which exposes O(N^2) behaviour under contention with N concurrent
-      operations.
+The resulting improvement depends on the micro-architecture and the number
+of CPUs. It ranges from +20% to +120% with a localhost memtier/memcached
+benchmark.
 
-      Lightweight instrumentation exposed an average of 8!! retry loops per
-      atomic_inc_not_zero() invocation in a userspace inc()/dec() loop
-      running concurrently on 112 CPUs.
+[ tglx: Rearrange struct ]
 
-      There is nothing which can be done to make atomic_inc_not_zero() more
-      scalable.
-
-The following series addresses these issues:
-
-    1) Reorder and pad struct dst_entry to prevent the false sharing.
-
-    2) Implement and use a reference count implementation which avoids the
-       atomic_inc_not_zero() problem.
-
-       It is slightly less performant in the case of the final 1 -> 0
-       transition, but the deconstruction of these objects is a low
-       frequency event. get()/put() pairs are in the hotpath and that's
-       what this implementation optimizes for.
-
-       The algorithm of this reference count is only suitable for RCU
-       managed objects. Therefore it cannot replace the refcount_t
-       algorithm, which is also based on atomic_inc_not_zero(), due to a
-       subtle race condition related to the 1 -> 0 transition and the final
-       verdict to mark the reference count dead. See details in patch 2/3.
-
-       It might be just my lack of imagination which declares this to be
-       impossible and I'd be happy to be proven wrong.
-
-       As a bonus the new rcuref implementation provides underflow/overflow
-       detection and mitigation while being performance wise on par with
-       open coded atomic_inc_not_zero() / atomic_dec_return() pairs even in
-       the non-contended case.
-
-The combination of these two changes results in performance gains in micro
-benchmarks and also localhost and networked memtier benchmarks talking to
-memcached. It's hard to quantify the benchmark results as they depend
-heavily on the micro-architecture and the number of concurrent operations.
-
-The overall gain of both changes for localhost memtier ranges from 1.2X to
-3.2X and from +2% to %5% range for networked operations on a 1Gb connection.
-
-A micro benchmark which enforces maximized concurrency shows a gain between
-1.2X and 4.7X!!!
-
-Obviously this is focussed on a particular problem and therefore needs to
-be discussed in detail. It also requires wider testing outside of the cases
-which this is focussed on.
-
-Though the false sharing issue is obvious and should be addressed
-independent of the more focussed reference count changes.
-
-The series is also available from git:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/tglx/devel.git
-
-I want to say thanks to Wangyang who analyzed the issue and provided
-the initial fix for the false sharing problem. Further thanks go to
-Arjan Peter, Marc, Will and Borislav for valuable input and providing
-test results on machines which I do not have access to.
-
-Thoughts?
-
-Thanks,
-
-	tglx
+Signed-off-by: Wangyang Guo <wangyang.guo@intel.com>
+Signed-off-by: Arjan van De Ven <arjan@linux.intel.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org
 ---
- include/linux/rcuref.h          |   89 +++++++++++
- include/linux/types.h           |    6 
- include/net/dst.h               |   21 ++
- include/net/sock.h              |    2 
- lib/Makefile                    |    2 
- lib/rcuref.c                    |  311 ++++++++++++++++++++++++++++++++++++++++
- net/bridge/br_nf_core.c         |    2 
- net/core/dst.c                  |   26 ---
- net/core/rtnetlink.c            |    2 
- net/ipv6/route.c                |    6 
- net/netfilter/ipvs/ip_vs_xmit.c |    4 
- 11 files changed, 436 insertions(+), 35 deletions(-)
+ include/net/dst.h |   12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+--- a/include/net/dst.h
++++ b/include/net/dst.h
+@@ -69,15 +69,25 @@ struct dst_entry {
+ #endif
+ 	int			__use;
+ 	unsigned long		lastuse;
+-	struct lwtunnel_state   *lwtstate;
+ 	struct rcu_head		rcu_head;
+ 	short			error;
+ 	short			__pad;
+ 	__u32			tclassid;
+ #ifndef CONFIG_64BIT
++	struct lwtunnel_state   *lwtstate;
+ 	atomic_t		__refcnt;	/* 32-bit offset 64 */
+ #endif
+ 	netdevice_tracker	dev_tracker;
++#ifdef CONFIG_64BIT
++	/*
++	 * Ensure that lwtstate is not in the same cache line as __refcnt,
++	 * because that would lead to false sharing under high contention
++	 * of __refcnt. This also ensures that rtable::rt_genid is not
++	 * sharing the same cache-line.
++	 */
++	int			pad2[6];
++	struct lwtunnel_state   *lwtstate;
++#endif
+ };
+ 
+ struct dst_metrics {
+
