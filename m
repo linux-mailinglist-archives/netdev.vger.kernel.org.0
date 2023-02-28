@@ -2,302 +2,315 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C5DE66A5CC6
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 17:08:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17CF26A5CE3
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 17:13:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229978AbjB1QIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 11:08:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60326 "EHLO
+        id S229509AbjB1QNq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 11:13:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229672AbjB1QIU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 11:08:20 -0500
-Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1346CC17D;
-        Tue, 28 Feb 2023 08:08:15 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0VcjxrOm_1677600490;
-Received: from 30.13.181.20(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VcjxrOm_1677600490)
-          by smtp.aliyun-inc.com;
-          Wed, 01 Mar 2023 00:08:10 +0800
-Message-ID: <ae59d74d-4654-9837-af0b-2404db507da5@linux.alibaba.com>
-Date:   Wed, 1 Mar 2023 00:08:09 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.7.2
-Subject: Re: [PATCH bpf-next v3 3/4] net/smc: add BPF injection on smc
- negotiation
+        with ESMTP id S229560AbjB1QNp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 11:13:45 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDCD31B339
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 08:13:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1677600823; x=1709136823;
+  h=message-id:date:subject:to:references:from:cc:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=behNtJnZtcigK/1KB989Kfc+kXhRntjjBvsSWHTONYo=;
+  b=M/yKiSGuANvdyFD/J9rMjLjXqQoc8UgK3pen0tOuSQnyVgIy5ckPn6iW
+   xYG9v/NwTJ/IjPE2Z+4CWVY98/Hosh+67W/68Kt3Sgz+xetuUxllrgtVj
+   V3WLFRIRNCTv1SS/quaYSAtRRlts7bgn++oVnk12KGLPLka3sTZ7lmm2L
+   MH1OIV+c4wdQkp64gtkgW4Rr5QUmXwGVN4ga4Jiia62yaFE7vKDlwu6Yp
+   xsenDr8JTeHy5yxK/EMl8qEA8UXoK/SHuXj+E/rkEnzxfBlpLc/yB3/nf
+   CrKRheFyA+MQXFRyUi5QmZI7iWLhr75inDsSYJWjE7wYdNhHCs6oVVJCm
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10635"; a="322429913"
+X-IronPort-AV: E=Sophos;i="5.98,222,1673942400"; 
+   d="scan'208";a="322429913"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2023 08:13:43 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10635"; a="817128258"
+X-IronPort-AV: E=Sophos;i="5.98,222,1673942400"; 
+   d="scan'208";a="817128258"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmsmga001.fm.intel.com with ESMTP; 28 Feb 2023 08:13:42 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Tue, 28 Feb 2023 08:13:42 -0800
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21 via Frontend Transport; Tue, 28 Feb 2023 08:13:42 -0800
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.106)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Tue, 28 Feb 2023 08:13:42 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DvMSNi8kyXkJMy2wr8BuhgOFVwaXjJniahpohUkFD0HALLLvp7n1qkMwj2gexJTFfOiK48JsZfwu7vK2BaRJXHD8LHDJ8FJHZO6yEDsUJxFLTxM2LDqrnf0BK/K9P5XD9ecX5N3I8b4yXd6iKre8vcpv2SCVixJzawXR4dWZZbOo4H2JqFPihRqxXe46VjRKRMoWxsf6luBEi/bzSygV7KTZpcpkv41UhSaqlSYxDT3lxBnXalKUL3nRmfGHeG1BpPQW5JS+qGipkZVqKamr4lIXysfmUCBm5kMeCQBk5J6RCqC+hiobOIbJ/i2JDk5hMo2onNUCniw5tQVp+1V7ig==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gOHVZTzZXib9om5gJaDIuil802CkMiLSRZSMxTum8HM=;
+ b=jRLvCVf93mSOULfuYT0krvKWv2G+Igr/2Z7rZ2K8tdcgfAivtT+ZoodDA7RZuoIs4WMg1wV+ZP+Q2LM1Zn8iaQ9yscilB25YdC92X4CSVuSVx9UzjRvh/Chvw9y691iYgJmbp+j1UiJ2q5hYS5pDNPJuSfZHjCQYmGfPe3OndRjMTKvt3tfVZWWVn6ZeLjLgyTGIu9K4jQH+0dzijCTaP6HHgzPgdH3lP7Txg8jMOCvXXEbEI9mfmHGlcUPNyksmqmtHVqgORm2/vs/rWsdAbPCRkIsKypSxqvmaPU1hgalQugh07FP7yG3I5iGkfrMUZogy8XGJSdcF+o4x24h65g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM6PR11MB3625.namprd11.prod.outlook.com (2603:10b6:5:13a::21)
+ by PH8PR11MB6973.namprd11.prod.outlook.com (2603:10b6:510:226::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.30; Tue, 28 Feb
+ 2023 16:13:40 +0000
+Received: from DM6PR11MB3625.namprd11.prod.outlook.com
+ ([fe80::3ff6:ca60:f9fe:6934]) by DM6PR11MB3625.namprd11.prod.outlook.com
+ ([fe80::3ff6:ca60:f9fe:6934%4]) with mapi id 15.20.6134.030; Tue, 28 Feb 2023
+ 16:13:40 +0000
+Message-ID: <fe77a548-a248-95f3-f840-8cd6ee0c1c27@intel.com>
+Date:   Tue, 28 Feb 2023 17:12:35 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH net v6 1/2] net/ps3_gelic_net: Fix RX sk_buff length
 Content-Language: en-US
-To:     kernel test robot <lkp@intel.com>, kgraul@linux.ibm.com,
-        wenjia@linux.ibm.com, jaka@linux.ibm.com, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org
-Cc:     oe-kbuild-all@lists.linux.dev, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
-        bpf@vger.kernel.org
-References: <1677576294-33411-4-git-send-email-alibuda@linux.alibaba.com>
- <202302282100.x7qq7PGX-lkp@intel.com>
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-In-Reply-To: <202302282100.x7qq7PGX-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Geoff Levand <geoff@infradead.org>
+References: <cover.1677377639.git.geoff@infradead.org>
+ <1bf36b8e08deb3d16fafde3e88ae7cd761e4e7b3.1677377639.git.geoff@infradead.org>
+From:   Alexander Lobakin <aleksander.lobakin@intel.com>
+CC:     Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>
+In-Reply-To: <1bf36b8e08deb3d16fafde3e88ae7cd761e4e7b3.1677377639.git.geoff@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-10.0 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+X-ClientProxiedBy: FR2P281CA0133.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:9e::17) To DM6PR11MB3625.namprd11.prod.outlook.com
+ (2603:10b6:5:13a::21)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR11MB3625:EE_|PH8PR11MB6973:EE_
+X-MS-Office365-Filtering-Correlation-Id: 65eb013d-7705-45e3-a9b9-08db19a6c141
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ccBJd9ULvvCfyj05IccytEM6KrhcqLKhNmra1bdEOI9L0LY2zNXFwPpfsQK8VF5JquPB0X2MtXMXg7cN6SwG+cW9tslUukUO/v9BwgnFVboMr8Jr+C6FQ07pG8SDZtcmKkW04wIBuQNNbv3gKgFQaRMaZj0ZoY3v8erv6YCKdoMhkpY4+5+ubUPPb7HqGVpp2YI21ZIc3JyIYxbtUYcuQJO8EoFX6dLkD+SGY+025mXLygr2ZTnIBk+0LkmW5+6eCPyrJVsyoOX+t+psmtYehkvho0iigiy1IDAJZTmyK+U6O55olzNTda2XXn3yENLIPw/ENKk6m4S+12+KOXFGhGDZNw+jCiH2N/woixnhxahb2Jh/ytB7Uf39WOwr/Jh5RyMp4XtgZUCs+WNEptD9vZ5R3PmlPnPWMJerq1kjNzjs+PF7hvH6yhNb25oYleGPuzXQE5iNCM4OzBW/y2IzT6E50i6QSTYdUSqqg7MucYXivBWzOfhASM0lXXQQ3zLiXuF6gQSlBqS31D7SkXIfWEpVKscekpo7W7CO5kIMuGy57T0FJU3NG2FFYnw/tTEMX0kD0g3h15uZJtqXB/2cWmxnoauX8SH9oIY/gMGlenWK4wvYi9bUQcCi873I5AVmd2c28gnpZ6W8X4qA7M93kmLqS2sfUkzAFf4/F4+dKyMrFctVdzQu6u/+3tr/sxHy4ZU/P6GsejCfYMBbtCktKsFz+LDz9Dd9tP3UgioyLWM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3625.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(346002)(376002)(366004)(39860400002)(396003)(136003)(451199018)(82960400001)(38100700002)(31696002)(86362001)(36756003)(2906002)(66476007)(66946007)(66556008)(4326008)(41300700001)(6916009)(8936002)(5660300002)(8676002)(2616005)(6506007)(26005)(186003)(6512007)(54906003)(316002)(478600001)(6666004)(6486002)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?a2t3dExadkZ3NVhTM3IwTU52eDVNMkE5OUFabjVOSmo4dFp5QWFXekh5aWsv?=
+ =?utf-8?B?NEx0cWpwb1ZQT0NYN0pOb1VIR1FSRjh3ZmJqaTlHbmxNb2VmRGo0cjJFMzgz?=
+ =?utf-8?B?aWJyVUNUemQ2K1B2YmJJOThPVldiTGdzVmpKQXlWalNISUNqdis0bmQ4ZVoz?=
+ =?utf-8?B?VjdlNXR5L2pDcFVUTHpKclVkdlRtMjJJb05tODJkeDcybnZkUGJwVytqVnV4?=
+ =?utf-8?B?L1ZKTUVEU1NDRkIyNlJEZDUwVk1GRE1DdXpnem0zVlVKb05BQmwxWU01bXBN?=
+ =?utf-8?B?Ujh2MkhiOHd1bit2TXJ4eWV2K0ZoVE1wS0dKcnljN0NjSW5SNFBvT1dmQjYy?=
+ =?utf-8?B?QVRya1ZuVHpKcGJtQ04xaWtkaHE5eE9aeWJjRVpyOGVjR2JpcFdkSzVRblYw?=
+ =?utf-8?B?eWpRRDlIQWVJRDNlVEUyRmswemdnYTgxMUNUdlNQY092RDRJL0FXa0dhYUxl?=
+ =?utf-8?B?ODMrL2dpR2hMQnpMa3AyNXJpS0d0UDJUS1I1cXo3Z0xiSWpYVGw4enk5bHdw?=
+ =?utf-8?B?QThKL3RJNGQzL0srT1V3WWd2bXh5dHFrV3ZaekMvQUhqd0Y1UDg1eXdjZWgv?=
+ =?utf-8?B?VThuYi9Ga21IRi95cjVPMnhCNU5KVllBdXNvaE1RTGtXVzA2N3BJcjBRZVc4?=
+ =?utf-8?B?VGY1T2dGSkFnUkF3WlUyZnZmb1AvNXJNZ1VXRU1tSVlRN3Nyc3RuUFcwNFFa?=
+ =?utf-8?B?STArNy9RMlhaRWpCZGRvcjdGY3BpalJsTmhEWGNnNWNTWDgrWnRNemFaRDZB?=
+ =?utf-8?B?bXhlaVEwOG1FYlZ5NGM0bUptVVFyYVBSclpITXNZK3BjYzRMUXorSXBFQlFa?=
+ =?utf-8?B?SDZRMjBVVEIrYmNaaVE1Q2JaK2hNZkVRbDFqSGdDK3NTYUdoZksySm1WRWF5?=
+ =?utf-8?B?YURFby9QSk4wMlNxQkl2U083UHVOSnJFeHV4alFnVVBKSkFWcEh3N1BScGZr?=
+ =?utf-8?B?TTVDNXQyYTE5QzB1U2cwSnVVdlBTODZ1cjBwdXo1VFhYYjhGSnIvOWxESURO?=
+ =?utf-8?B?S1JJS1Y5WkpoY1VvUjVJcy9YeEtsUDFBMklrczJ5QzVRZ1FWdldobmwrOXdh?=
+ =?utf-8?B?L1ZQMUw0Y3RCUEtxUlh4SVRWNmdISUhjOXZHb0JNUzdYWEg1VTRIVm5LR0Jt?=
+ =?utf-8?B?dDZGN2k0aGNFZmtGMkppdzM0c1ZtdlU4a1JkdDF6YXR1UVcrUWFrelB0WG1B?=
+ =?utf-8?B?Y3RCMmNraFZMT1hUZ05DcHZhLzhJS2l0ZmlzNDFZalpSazFkUGYvYnJFSlYx?=
+ =?utf-8?B?ejBqcndhTEpQbHBNNVNsdUZBU1hROGV4SDZOaisyZWFkeUwzRTZVTGozb3Zy?=
+ =?utf-8?B?UkN0TkYwUVMvdkhIcE9RTm45bTRUMjdRVXc1NlJqS1BUT0NsZDdtdjN3bGpH?=
+ =?utf-8?B?ZXJMWTVJTVhPVkxnT3AzYnQrNWx3RklVRWdETW4rYnNWVmRMa1ZzR0xlRjkx?=
+ =?utf-8?B?N1hFd29na3UvcFBJQVdodURDNGlNUzZwdzJ3bTRvTDhwWXdacWtoTENaK0Q4?=
+ =?utf-8?B?ME9oSGNPUndEcTJhbWNFUjhMaDR0VU10ZERLb3A4cndObXErdlhMZzhlaG84?=
+ =?utf-8?B?WWMycklaeXMwTThqWHRLSVFUak92MUdlSEJhYTNPOFpvU0lZaEUwZnhucUFR?=
+ =?utf-8?B?WEg4dE04YjZZMjQ1NHJWdkNmbGJ5U0V0VG9sa0hLYkNhRVE0WW5zcDljS3Rn?=
+ =?utf-8?B?VnFZSVcvbWRyODlGOEhUMkszZjRwUTJVbTVYZFFxa1dWdzI4S0dqSEtJandw?=
+ =?utf-8?B?eTVZcGdzUldJZndlaERKUWVQeEZpUkM0eHVpVHFpWlNhRVJ0Ujl3K0hKVERa?=
+ =?utf-8?B?VHRxVngyeXlKUDhpaFpRdDUrcjAzL3pvMnFvMzR6cVQxTU5TWHI4K3J5ZjZC?=
+ =?utf-8?B?YzVVTnJWdFU1OXJXWlZaeHltT1RhdUhRbjRBSW00Q2tVb1pXQncvMXdlaFNq?=
+ =?utf-8?B?NEU5MElDcW8zZ292WVVVdXU0dTJqcTZVUjJBK01ucFlaa0dvRVNCT2tXZWVH?=
+ =?utf-8?B?dHNaUlc1ZGY5clFBbkNtRWh2V1crVUM1OWlkcWl0U3VBQnI1bnJuSVJIYlZZ?=
+ =?utf-8?B?b2YzdlFhVGdtcFNxOExvZGlPcC9pai90NnY1eXN6TDZENW5ORUR2TWFmb1c2?=
+ =?utf-8?B?c1hEMWJFS1V2TzI1aGxUOWQrNW9pcjM5ZlR4dFVVMUwrdDBzNDBxU25aUkpZ?=
+ =?utf-8?Q?aBCIUZF860y/0SkPq4vFKC8=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 65eb013d-7705-45e3-a9b9-08db19a6c141
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3625.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Feb 2023 16:13:40.3284
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: s4MJkBP0RS34bHFoXVY7bxIDgLfIQvCFuTJaCNaSS9kWILsUw6pQG8RgDrvRsmnCEsvetUIERn3wVop0Z4Opj5dUMw7a4Lzo2ATZ6UZo2I0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB6973
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Geoff Levand <geoff@infradead.org>
+Date: Sun, 26 Feb 2023 02:25:42 +0000
 
-You are right. Thanks for you test!!
-I will send new version to fix this.!
+> The Gelic Ethernet device needs to have the RX sk_buffs aligned to
+> GELIC_NET_RXBUF_ALIGN and the length of the RX sk_buffs must be a
+> multiple of GELIC_NET_RXBUF_ALIGN.
 
+[...]
 
-On 2/28/23 10:08 PM, kernel test robot wrote:
-> Hi Wythe,
-> 
-> Thank you for the patch! Yet something to improve:
-> 
-> [auto build test ERROR on bpf-next/master]
-> 
-> url:    https://github.com/intel-lab-lkp/linux/commits/D-Wythe/net-smc-move-smc_sock-related-structure-definition/20230228-173007
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-> patch link:    https://lore.kernel.org/r/1677576294-33411-4-git-send-email-alibuda%40linux.alibaba.com
-> patch subject: [PATCH bpf-next v3 3/4] net/smc: add BPF injection on smc negotiation
-> config: x86_64-randconfig-a015-20230227 (https://download.01.org/0day-ci/archive/20230228/202302282100.x7qq7PGX-lkp@intel.com/config)
-> compiler: gcc-11 (Debian 11.3.0-8) 11.3.0
-> reproduce (this is a W=1 build):
->          # https://github.com/intel-lab-lkp/linux/commit/aa482ab82f4bf9b99d490f8ba5d88e1491156ccf
->          git remote add linux-review https://github.com/intel-lab-lkp/linux
->          git fetch --no-tags linux-review D-Wythe/net-smc-move-smc_sock-related-structure-definition/20230228-173007
->          git checkout aa482ab82f4bf9b99d490f8ba5d88e1491156ccf
->          # save the config file
->          mkdir build_dir && cp config build_dir/.config
->          make W=1 O=build_dir ARCH=x86_64 olddefconfig
->          make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
-> 
-> If you fix the issue, kindly add following tag where applicable
-> | Reported-by: kernel test robot <lkp@intel.com>
-> | Link: https://lore.kernel.org/oe-kbuild-all/202302282100.x7qq7PGX-lkp@intel.com/
-> 
-> All errors (new ones prefixed by >>):
-> 
->     ld: net/smc/af_smc.o: in function `smc_hs_congested':
->>> net/smc/af_smc.c:169: undefined reference to `smc_sock_should_select_smc'
->     ld: net/smc/af_smc.o: in function `smc_release':
->>> net/smc/af_smc.c:327: undefined reference to `smc_sock_perform_collecting_info'
->     ld: net/smc/af_smc.o: in function `smc_connect':
->     net/smc/af_smc.c:1637: undefined reference to `smc_sock_should_select_smc'
-> 
-> 
-> vim +169 net/smc/af_smc.c
-> 
->     156	
->     157	static bool smc_hs_congested(const struct sock *sk)
->     158	{
->     159		const struct smc_sock *smc;
->     160	
->     161		smc = smc_clcsock_user_data(sk);
->     162	
->     163		if (!smc)
->     164			return true;
->     165	
->     166		if (workqueue_congested(WORK_CPU_UNBOUND, smc_hs_wq))
->     167			return true;
->     168	
->   > 169		if (!smc_sock_should_select_smc(smc))
->     170			return true;
->     171	
->     172		return false;
->     173	}
->     174	
->     175	static struct smc_hashinfo smc_v4_hashinfo = {
->     176		.lock = __RW_LOCK_UNLOCKED(smc_v4_hashinfo.lock),
->     177	};
->     178	
->     179	static struct smc_hashinfo smc_v6_hashinfo = {
->     180		.lock = __RW_LOCK_UNLOCKED(smc_v6_hashinfo.lock),
->     181	};
->     182	
->     183	int smc_hash_sk(struct sock *sk)
->     184	{
->     185		struct smc_hashinfo *h = sk->sk_prot->h.smc_hash;
->     186		struct hlist_head *head;
->     187	
->     188		head = &h->ht;
->     189	
->     190		write_lock_bh(&h->lock);
->     191		sk_add_node(sk, head);
->     192		write_unlock_bh(&h->lock);
->     193		sock_prot_inuse_add(sock_net(sk), sk->sk_prot, 1);
->     194	
->     195		return 0;
->     196	}
->     197	EXPORT_SYMBOL_GPL(smc_hash_sk);
->     198	
->     199	void smc_unhash_sk(struct sock *sk)
->     200	{
->     201		struct smc_hashinfo *h = sk->sk_prot->h.smc_hash;
->     202	
->     203		write_lock_bh(&h->lock);
->     204		if (sk_del_node_init(sk))
->     205			sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
->     206		write_unlock_bh(&h->lock);
->     207	}
->     208	EXPORT_SYMBOL_GPL(smc_unhash_sk);
->     209	
->     210	/* This will be called before user really release sock_lock. So do the
->     211	 * work which we didn't do because of user hold the sock_lock in the
->     212	 * BH context
->     213	 */
->     214	static void smc_release_cb(struct sock *sk)
->     215	{
->     216		struct smc_sock *smc = smc_sk(sk);
->     217	
->     218		if (smc->conn.tx_in_release_sock) {
->     219			smc_tx_pending(&smc->conn);
->     220			smc->conn.tx_in_release_sock = false;
->     221		}
->     222	}
->     223	
->     224	struct proto smc_proto = {
->     225		.name		= "SMC",
->     226		.owner		= THIS_MODULE,
->     227		.keepalive	= smc_set_keepalive,
->     228		.hash		= smc_hash_sk,
->     229		.unhash		= smc_unhash_sk,
->     230		.release_cb	= smc_release_cb,
->     231		.obj_size	= sizeof(struct smc_sock),
->     232		.h.smc_hash	= &smc_v4_hashinfo,
->     233		.slab_flags	= SLAB_TYPESAFE_BY_RCU,
->     234	};
->     235	EXPORT_SYMBOL_GPL(smc_proto);
->     236	
->     237	struct proto smc_proto6 = {
->     238		.name		= "SMC6",
->     239		.owner		= THIS_MODULE,
->     240		.keepalive	= smc_set_keepalive,
->     241		.hash		= smc_hash_sk,
->     242		.unhash		= smc_unhash_sk,
->     243		.release_cb	= smc_release_cb,
->     244		.obj_size	= sizeof(struct smc_sock),
->     245		.h.smc_hash	= &smc_v6_hashinfo,
->     246		.slab_flags	= SLAB_TYPESAFE_BY_RCU,
->     247	};
->     248	EXPORT_SYMBOL_GPL(smc_proto6);
->     249	
->     250	static void smc_fback_restore_callbacks(struct smc_sock *smc)
->     251	{
->     252		struct sock *clcsk = smc->clcsock->sk;
->     253	
->     254		write_lock_bh(&clcsk->sk_callback_lock);
->     255		clcsk->sk_user_data = NULL;
->     256	
->     257		smc_clcsock_restore_cb(&clcsk->sk_state_change, &smc->clcsk_state_change);
->     258		smc_clcsock_restore_cb(&clcsk->sk_data_ready, &smc->clcsk_data_ready);
->     259		smc_clcsock_restore_cb(&clcsk->sk_write_space, &smc->clcsk_write_space);
->     260		smc_clcsock_restore_cb(&clcsk->sk_error_report, &smc->clcsk_error_report);
->     261	
->     262		write_unlock_bh(&clcsk->sk_callback_lock);
->     263	}
->     264	
->     265	static void smc_restore_fallback_changes(struct smc_sock *smc)
->     266	{
->     267		if (smc->clcsock->file) { /* non-accepted sockets have no file yet */
->     268			smc->clcsock->file->private_data = smc->sk.sk_socket;
->     269			smc->clcsock->file = NULL;
->     270			smc_fback_restore_callbacks(smc);
->     271		}
->     272	}
->     273	
->     274	static int __smc_release(struct smc_sock *smc)
->     275	{
->     276		struct sock *sk = &smc->sk;
->     277		int rc = 0;
->     278	
->     279		if (!smc->use_fallback) {
->     280			rc = smc_close_active(smc);
->     281			sock_set_flag(sk, SOCK_DEAD);
->     282			sk->sk_shutdown |= SHUTDOWN_MASK;
->     283		} else {
->     284			if (sk->sk_state != SMC_CLOSED) {
->     285				if (sk->sk_state != SMC_LISTEN &&
->     286				    sk->sk_state != SMC_INIT)
->     287					sock_put(sk); /* passive closing */
->     288				if (sk->sk_state == SMC_LISTEN) {
->     289					/* wake up clcsock accept */
->     290					rc = kernel_sock_shutdown(smc->clcsock,
->     291								  SHUT_RDWR);
->     292				}
->     293				sk->sk_state = SMC_CLOSED;
->     294				sk->sk_state_change(sk);
->     295			}
->     296			smc_restore_fallback_changes(smc);
->     297		}
->     298	
->     299		sk->sk_prot->unhash(sk);
->     300	
->     301		if (sk->sk_state == SMC_CLOSED) {
->     302			if (smc->clcsock) {
->     303				release_sock(sk);
->     304				smc_clcsock_release(smc);
->     305				lock_sock(sk);
->     306			}
->     307			if (!smc->use_fallback)
->     308				smc_conn_free(&smc->conn);
->     309		}
->     310	
->     311		return rc;
->     312	}
->     313	
->     314	static int smc_release(struct socket *sock)
->     315	{
->     316		struct sock *sk = sock->sk;
->     317		struct smc_sock *smc;
->     318		int old_state, rc = 0;
->     319	
->     320		if (!sk)
->     321			goto out;
->     322	
->     323		sock_hold(sk); /* sock_put below */
->     324		smc = smc_sk(sk);
->     325	
->     326		/* trigger info gathering if needed.*/
->   > 327		smc_sock_perform_collecting_info(sk, SMC_SOCK_CLOSED_TIMING);
->     328	
->     329		old_state = sk->sk_state;
->     330	
->     331		/* cleanup for a dangling non-blocking connect */
->     332		if (smc->connect_nonblock && old_state == SMC_INIT)
->     333			tcp_abort(smc->clcsock->sk, ECONNABORTED);
->     334	
->     335		if (cancel_work_sync(&smc->connect_work))
->     336			sock_put(&smc->sk); /* sock_hold in smc_connect for passive closing */
->     337	
->     338		if (sk->sk_state == SMC_LISTEN)
->     339			/* smc_close_non_accepted() is called and acquires
->     340			 * sock lock for child sockets again
->     341			 */
->     342			lock_sock_nested(sk, SINGLE_DEPTH_NESTING);
->     343		else
->     344			lock_sock(sk);
->     345	
->     346		if (old_state == SMC_INIT && sk->sk_state == SMC_ACTIVE &&
->     347		    !smc->use_fallback)
->     348			smc_close_active_abort(smc);
->     349	
->     350		rc = __smc_release(smc);
->     351	
->     352		/* detach socket */
->     353		sock_orphan(sk);
->     354		sock->sk = NULL;
->     355		release_sock(sk);
->     356	
->     357		sock_put(sk); /* sock_hold above */
->     358		sock_put(sk); /* final sock_put */
->     359	out:
->     360		return rc;
->     361	}
->     362	
-> 
+>  static int gelic_descr_prepare_rx(struct gelic_card *card,
+>  				  struct gelic_descr *descr)
+>  {
+> -	int offset;
+> -	unsigned int bufsize;
+> +	struct device *dev = ctodev(card);
+> +	void *napi_buff;
+>  
+>  	if (gelic_descr_get_status(descr) !=  GELIC_DESCR_DMA_NOT_IN_USE)
+>  		dev_info(ctodev(card), "%s: ERROR status\n", __func__);
+> -	/* we need to round up the buffer size to a multiple of 128 */
+> -	bufsize = ALIGN(GELIC_NET_MAX_MTU, GELIC_NET_RXBUF_ALIGN);
+> -
+> -	/* and we need to have it 128 byte aligned, therefore we allocate a
+> -	 * bit more */
+> -	descr->skb = dev_alloc_skb(bufsize + GELIC_NET_RXBUF_ALIGN - 1);
+> -	if (!descr->skb) {
+> -		descr->buf_addr = 0; /* tell DMAC don't touch memory */
+> -		return -ENOMEM;
+> -	}
+> -	descr->buf_size = cpu_to_be32(bufsize);
+> +
+>  	descr->dmac_cmd_status = 0;
+>  	descr->result_size = 0;
+>  	descr->valid_size = 0;
+>  	descr->data_error = 0;
+> +	descr->buf_size = cpu_to_be32(GELIC_NET_MAX_MTU);
+> +
+> +	napi_buff = napi_alloc_frag_align(GELIC_NET_MAX_MTU,
+> +		GELIC_NET_RXBUF_ALIGN);
+
+Must be aligned to the opening brace.
+
+> +
+
+Redundant newline.
+
+> +	if (unlikely(!napi_buff)) {
+> +		descr->skb = NULL;
+> +		descr->buf_addr = 0;
+> +		descr->buf_size = 0;
+> +		return -ENOMEM;
+> +	}
+> +
+> +	descr->skb = napi_build_skb(napi_buff, GELIC_NET_MAX_MTU);
+
+You're mixing two, no, three things here.
+
+1. MTU. I.e. max L3+ payload len. It doesn't include Eth header, VLAN
+   and FCS.
+2. Max frame size. It is MTU + the abovementioned. Usually it's
+   something like `some power of two - 1`.
+3. skb truesize.
+   It is: frame size (i.e. 2) + headroom (usually %NET_SKB_PAD when
+   !XDP, %XDP_PACKET_HEADROOM otherwise, plus %NET_IP_ALIGN) + tailroom
+   (SKB_DATA_ALIGN(sizeof(struct skb_shared_info), see
+    SKB_WITH_OVERHEAD() and adjacent macros).
+
+I'm not sure whether your definition is the first or the second... or
+maybe third? You had 1522, but then changed to 1920? You must pass the
+third to napi_build_skb().
+So you should calculate the truesize first, then allocate a frag and
+build an skb. Then skb->data will point to the free space with the
+length of your max frame size.
+And the truesize calculation might be not just a hardcoded value, but an
+expression where you add all those head- and tailrooms, so that they
+will be calculated depending on the platform's configuration.
+
+Your current don't reserve any space as headroom, so that frames / HW
+visible part starts at the very beginning of a frag. It's okay, I mean,
+there will be reallocations when the stack needs more headroom, but
+definitely not something to kill the system. You could leave it to an
+improvement series in the future*.
+But it either way *must* include tailroom, e.g.
+SKB_DATA_ALIGN(see_above), otherwise your HW might overwrite kernel
+structures.
+
+* given that the required HW alignment is 128, I'd just allocate 128
+bytes more and then do `skb_reserve(skb, RXBUF_HW_ALIGN` right after
+napi_build_skb() to avoid reallocations.
+
+> +
+
+This is also redundant.
+
+> +	if (unlikely(!descr->skb)) {
+> +		skb_free_frag(napi_buff);
+> +		descr->skb = NULL;
+> +		descr->buf_addr = 0;
+> +		descr->buf_size = 0;
+> +		return -ENOMEM;
+> +	}
+> +
+> +	descr->buf_addr = cpu_to_be32(dma_map_single(dev, napi_buff,
+> +		GELIC_NET_MAX_MTU, DMA_FROM_DEVICE));
+>  
+> -	offset = ((unsigned long)descr->skb->data) &
+> -		(GELIC_NET_RXBUF_ALIGN - 1);
+> -	if (offset)
+> -		skb_reserve(descr->skb, GELIC_NET_RXBUF_ALIGN - offset);
+> -	/* io-mmu-map the skb */
+> -	descr->buf_addr = cpu_to_be32(dma_map_single(ctodev(card),
+> -						     descr->skb->data,
+> -						     GELIC_NET_MAX_MTU,
+> -						     DMA_FROM_DEVICE));
+>  	if (!descr->buf_addr) {
+> -		dev_kfree_skb_any(descr->skb);
+> +		skb_free_frag(napi_buff);
+>  		descr->skb = NULL;
+> -		dev_info(ctodev(card),
+> -			 "%s:Could not iommu-map rx buffer\n", __func__);
+> +		descr->buf_addr = 0;
+> +		descr->buf_size = 0;
+> +		dev_err_once(dev, "%s:Could not iommu-map rx buffer\n",
+> +			__func__);
+>  		gelic_descr_set_status(descr, GELIC_DESCR_DMA_NOT_IN_USE);
+>  		return -ENOMEM;
+> -	} else {
+> -		gelic_descr_set_status(descr, GELIC_DESCR_DMA_CARDOWNED);
+> -		return 0;
+>  	}
+> +
+> +	gelic_descr_set_status(descr, GELIC_DESCR_DMA_CARDOWNED);
+> +	return 0;
+
+An empty newline is preferred before any `return`.
+
+>  }
+>  
+>  /**
+> diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_net.h b/drivers/net/ethernet/toshiba/ps3_gelic_net.h
+> index 68f324ed4eaf..d3868eb7234c 100644
+> --- a/drivers/net/ethernet/toshiba/ps3_gelic_net.h
+> +++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.h
+> @@ -19,7 +19,7 @@
+>  #define GELIC_NET_RX_DESCRIPTORS        128 /* num of descriptors */
+>  #define GELIC_NET_TX_DESCRIPTORS        128 /* num of descriptors */
+>  
+> -#define GELIC_NET_MAX_MTU               VLAN_ETH_FRAME_LEN
+> +#define GELIC_NET_MAX_MTU               1920
+>  #define GELIC_NET_MIN_MTU               VLAN_ETH_ZLEN
+>  #define GELIC_NET_RXBUF_ALIGN           128
+>  #define GELIC_CARD_RX_CSUM_DEFAULT      1 /* hw chksum */
+
+Thanks,
+Olek
