@@ -2,269 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0F9F6A55F3
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 10:37:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC81F6A562D
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 10:55:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230239AbjB1Jhe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 04:37:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54824 "EHLO
+        id S230183AbjB1JzC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 04:55:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229520AbjB1Jhd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 04:37:33 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F922A6D6;
-        Tue, 28 Feb 2023 01:37:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677577051; x=1709113051;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xjjLkwPdC4Qnu2rsgdsvGKcGVndM1jwKd4HVYu7Q/Rg=;
-  b=bmHg8sPcaFuQc7//0yp1lD/dcV+0/TDMtoW2I4Bs0Xs0A8/rbLvm6Wqd
-   3OJvZW/NWqn5P3gtG3CouOzI89Tw3C3xDNQyNqyyIsblydYiDbWCxtiFo
-   eJmY6yK1RkHSeAAeXe+4vcQeAm3PsiElYLVmvjy/G4Zc7UrBpOYjLNcc/
-   Nl5oaZxNzmSUTBSj9Pe+S4/W1VC/RuYt4Nx29ukJBJtCERDcbprpYAqxM
-   lm89qwn7EdvSY7L6bbB3VI5BO9yxUVapGJdMFmcrcu3TwwXa5zXdlKAOq
-   XXkxQd9voLAmsJq8yomDQ6SWlIopP5avkn+j163RFhjrtSEgK0Q701A+6
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10634"; a="336383336"
-X-IronPort-AV: E=Sophos;i="5.98,221,1673942400"; 
-   d="scan'208";a="336383336"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2023 01:37:30 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10634"; a="667388941"
-X-IronPort-AV: E=Sophos;i="5.98,221,1673942400"; 
-   d="scan'208";a="667388941"
-Received: from lkp-server01.sh.intel.com (HELO 3895f5c55ead) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 28 Feb 2023 01:37:27 -0800
-Received: from kbuild by 3895f5c55ead with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pWwQI-0005Ha-2I;
-        Tue, 28 Feb 2023 09:37:26 +0000
-Date:   Tue, 28 Feb 2023 17:37:18 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Daniel Xu <dxu@dxuuu.xyz>, kuba@kernel.org, edumazet@google.com,
-        davem@davemloft.net, dsahern@kernel.org, pabeni@redhat.com
-Cc:     oe-kbuild-all@lists.linux.dev, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 5/8] bpf: net: ipv6: Add bpf_ipv6_frag_rcv()
- kfunc
-Message-ID: <202302281707.5vUL3boJ-lkp@intel.com>
-References: <bce083a4293eefb048a700b5a6086e8d8c957700.1677526810.git.dxu@dxuuu.xyz>
+        with ESMTP id S229637AbjB1JzA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 04:55:00 -0500
+Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-db5eur01on2097.outbound.protection.outlook.com [40.107.15.97])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E1122BF11
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 01:54:57 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UO9e4nCwxkg5WCpOy1hD0kfK56gv+8RwvuXYJKZqr0hMAf5JjA+D4BLepzp87DSdys99Z7GABWTPhnb5jWYrhqY2iu3i6E02nt1cvbrnSbMw/nkujHliOmljNvuATTfApbCDNfWCaCNV42H6up+YXpXy+7kEEPBkSaqnaYrFEH+KslJ0+FwfLIMWhivW5PxeZAV752DMDqqC3okKQK2U626farJ6O/UWC3p+Js9dH96rO4/u6XEmcbb6ze/1tlBIp4NolBADS5Oaj8dGKr9154KXHdlB438xezDKhNdX4n+znayUrRaGXOG5V7g9jbw1mGXi28gegJyrjK+kH0EfpQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=PN+gb8SKQtOFoM3oO1r1MT7Bmu3aRJlMLqLzv3qrDgs=;
+ b=TStGW3vz7H/h6aaZBeuVc5jLxquKr9uFpmsZkPf5VsmXN0fUynontzS1WR99cKzsTctxd38evDGtvrE9t3qPNH76Z9MhowjyUivD0s/j3fktW++0krpBaH/iMdLJaXHP8hkxU0EZx4qI6ToJ6IgLl6bbRV93VAOvwoPXJDyIwBTQBuv3kTCtpE/WZcxWNW6iiF+FY64Z4dJjjp3PU5myGOYACT85LbvIFtf5P3wYQXfVowtDFnGH9aU4IM7sZe09CQ8vrc5STauy/4BUaNVEI8GfC4HK8rROVv2hD8mx0iYTTQ6CsrUFtTZk1TcbkpfvPO+nxbiAlhDJTHjPcO0aYA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=virtuozzo.com; dmarc=pass action=none
+ header.from=virtuozzo.com; dkim=pass header.d=virtuozzo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=virtuozzo.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PN+gb8SKQtOFoM3oO1r1MT7Bmu3aRJlMLqLzv3qrDgs=;
+ b=r9T1wz25i6aNo9Tje+9Ogxbo7AcJfdnVtyVHnPLZm/EbCNpZo7avkTqsQF/3w4zbH1flsA3aqZedSujlOzyGCJqj3LdjCgCW4Wi1npj9BimgMXAjqOQysjWz8MEAUH2CMqqFjXj/sLitfKgZElBfCG7YSqUWu6RvUJeAallEsL8maRHTquIfxfy8DKYUb1uxqmwitX0tQSS7j0WJi29fjgFiJD9zdPzqKP7ERO/s5ZlFQLZUUt1TfgXhNWW8H5G002Dc8ZzPw6PS4LiBJWU1iJveYpY2A9oFsziqDNelbRII6kFg2pxUJ+Zdbdbv6a3u39q7XVotBc57rZ1m9Ewt5Q==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=virtuozzo.com;
+Received: from VE1PR08MB4765.eurprd08.prod.outlook.com (2603:10a6:802:a5::16)
+ by PAVPR08MB9281.eurprd08.prod.outlook.com (2603:10a6:102:306::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.30; Tue, 28 Feb
+ 2023 09:54:54 +0000
+Received: from VE1PR08MB4765.eurprd08.prod.outlook.com
+ ([fe80::de4d:b213:8e1:9343]) by VE1PR08MB4765.eurprd08.prod.outlook.com
+ ([fe80::de4d:b213:8e1:9343%7]) with mapi id 15.20.6134.030; Tue, 28 Feb 2023
+ 09:54:54 +0000
+Message-ID: <ee004a9d-7d49-448f-16d7-807afc755dd0@virtuozzo.com>
+Date:   Tue, 28 Feb 2023 11:54:51 +0200
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.6.1
+Subject: Re: [PATCH] netfilter: nf_tables: always synchronize with readers
+ before releasing tables
+To:     Florian Westphal <fw@strlen.de>
+Cc:     netdev@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+References: <20230227121720.3775652-1-alexander.atanasov@virtuozzo.com>
+ <901abd29-9813-e4fe-c1db-f5273b1c55e3@virtuozzo.com>
+ <20230227124402.GA30043@breakpoint.cc>
+ <266de015-7712-8672-9ca0-67199817d587@virtuozzo.com>
+ <20230227161140.GA31439@breakpoint.cc>
+ <28a88519-d0e2-7629-9ed9-3f9c12ca024b@virtuozzo.com>
+ <20230227233155.GA6107@breakpoint.cc>
+From:   Alexander Atanasov <alexander.atanasov@virtuozzo.com>
+In-Reply-To: <20230227233155.GA6107@breakpoint.cc>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: VI1PR09CA0085.eurprd09.prod.outlook.com
+ (2603:10a6:802:29::29) To VE1PR08MB4765.eurprd08.prod.outlook.com
+ (2603:10a6:802:a5::16)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bce083a4293eefb048a700b5a6086e8d8c957700.1677526810.git.dxu@dxuuu.xyz>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VE1PR08MB4765:EE_|PAVPR08MB9281:EE_
+X-MS-Office365-Filtering-Correlation-Id: e2cc6967-31de-4d90-8510-08db1971d768
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: s8okNY+dGIsnDXnb8SCyUZrsXEoCeYNeDahqG1Yqqdl+1XqWlSkWoerKz9U47y/xIBhqo6acImSKW5kdq66ZXWydb0p5lwohdg3MbvH6Oa4RB5gvHHJ5Ep9ZwrwGMiR5ZFMoTQ7E4IBCQoR975c/++uIW1YTqQch2DCE8A9q3MjQP5Dq4TEwQMLA3jiS2+mvB44e9IDEwhpfTTxiz295SJbyV/UI5Zvq08HhkveUWuUbZMNI4hZiKuPZiL8z7ksf2B+qbaMAOsOLVFAIwSlbaa/uWkEvhxkMiBaJlUSBBHMVA5yI3riGrapbNQb7zxttdDhaWC3L1U1hPof/D2MeSSsMX7dC4Lsd/1F8O41h+hWbtacalenuzyjvM/WwAhZLJAyWJ7GhIbVt2TbC1M9Ghx6P2/r2K4BRq8Ci8ZHqvEt/5tEGnjTtYiD/s6bllmaTAKuLQ9iBUnKxSjfWXJht7BwR7D5lA0N4+Ng7Q1e4rLCGuPe3U6F+LCauS8/oAkDVxglUalO86jEHAETAxTbAoeBFokmkijZsRffBdKrJkJjP4HHmcsT91F3Cle/vQ4IHmeUJkZww1rkZAznaQwA/gCDO/neXKMPT7+fl1JpJV8t7WpsKVKah+Qi1URTRaexkEmu72Z5CPwdqs57iPa7fbJw8XVhHMYsuvBA485eltKtrJjk7m2hRhqvXbTj5B3qCmq7nyphbVKYmmhsAHHRbP04xxEA/xrDUMSH066DPu4c=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR08MB4765.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(376002)(136003)(396003)(39850400004)(346002)(451199018)(5660300002)(4326008)(38100700002)(2616005)(2906002)(6916009)(41300700001)(83380400001)(8676002)(478600001)(8936002)(26005)(186003)(6512007)(6506007)(36756003)(53546011)(66476007)(66946007)(66556008)(31696002)(86362001)(6666004)(31686004)(4744005)(6486002)(316002)(54906003)(44832011)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Q0FHZmwxMFkzd0VsRTNscUtYNyt4YjlpMWpWRncyZ1ZRbzBBcHpWSjY5WllG?=
+ =?utf-8?B?WEFuWDBTQUpsTXFkVHphR0w0VTJGVDRNSi9vaW52VnROOXoyY2pZc0FFUEk1?=
+ =?utf-8?B?clRHU1ZBdEIxV04zaWh6QmhsNXdma0ZpRXNwTGNHVUhQMzFqeHF1ODJjSk8x?=
+ =?utf-8?B?MytsR0xTOGg0NlRZUFh3OEQ0dVFady92bEIzWlVRMUVnWkJOL2sxUDRrbkx6?=
+ =?utf-8?B?TVlnTUt4KzRiWDBjN2t2TlRVUSt5N2FEMVJ3K0pPcUZsUmtHTjBySFpjWVg1?=
+ =?utf-8?B?aVkySm04U2J4WGJSNS9IOGNwSXgraG13Z2s0bWpBTkF4YlgrRHZhdG52cXpY?=
+ =?utf-8?B?enExN3lHdDVkMzJoajBJS040RWM0ZWdUalpxNU9zZHF2Y25WSHM3d0c4QTdv?=
+ =?utf-8?B?ajBNRU5zUTZUdyt2RFpLbFNqTzBkQ1RHQ2piaUVSN0xDb3hBS1dyUnJxdEww?=
+ =?utf-8?B?VXZBYnRUS3AyK0xTbFZiekpZZ1prdVM5ak9qY05DTlp4b3NOUXVOWENJYUs5?=
+ =?utf-8?B?NDR6V2JaazIyMlBkSmxUeWVoR3dBb2FEQ1lvVFp2RVhsRnZpK0RtSXd4K1o3?=
+ =?utf-8?B?Rk81RXZyeW9rM0dySSsvYklZa2VIaWRVd3RGUXdpZ3BYK29QZGY5T2hyaTdU?=
+ =?utf-8?B?UU5GTm5JQWQ0L0pwYThScW5PZmI0cmRKa3VBdzljZnhRNjhoMjFsRHdEK094?=
+ =?utf-8?B?bTg4TWNMU0NjbXRiemlFMzFDV1p1aWc1LzZMTWRWdEFkQzZkUjhJSHA1UUkx?=
+ =?utf-8?B?dkZLY0Q5SUFQODRPREdZSkNZYktTSWZzZFY5RzJPRExyMm9LUHlUM1lHdHdQ?=
+ =?utf-8?B?NWY3a0paME9jZWx1VlFHWVhpKzNnR0lCWDVEdGkyUTBXSExSbC9hRm13N2Nm?=
+ =?utf-8?B?c2pFeGJrVEZHYnlxaXNhdisvWUNQelZqRWl1K1RuSzFSOC9yOFIrUWFxcGZU?=
+ =?utf-8?B?Yk03Uzh4Y25NUXhUODlZTEtkZFVXSmJrUlZueVNlazZ4c3p0MzNiejBUL1l3?=
+ =?utf-8?B?bW44RCsvbDlkUkEyZ3ZYMlpqN2s5QnB1VlNCUklPVHA5Q3lXcmR5VVJYZUx5?=
+ =?utf-8?B?aEMwNXV5WXBnVGFKUnhXaitITzdLTm1sQ3A3bklFVmprK0tjS3IrRHpyVVRS?=
+ =?utf-8?B?TmxBRmRnMWVCdUJZaFdERE5aZVdUWHdKV1lyZjVSa3pOUWpEUG96NmVYQk1r?=
+ =?utf-8?B?eEcrbzVyT2ZiUGJVVFdtSDYycHQ4a2llZm90Nm9MbnUxMzN5Wkp5SURRZDNQ?=
+ =?utf-8?B?ZXhGa3hNVDNzMXd4VkVDVFl2d0pUcWF4TmRhUGlxTWN1Q0pKSDVZaDNsK291?=
+ =?utf-8?B?WEl3U3NGbE9LVGkvRWozQ0IyT3BiUUZQdzhUSndvM3RqeWJQUy9UeHlSaTFi?=
+ =?utf-8?B?QVVOZDdmNUU5dGJ3aTFSUHd1WjFtQytwZFFxREVUY0hHdVBSczZpMkpPOEhT?=
+ =?utf-8?B?bm1GOXFUdnI5citLVm5HS20vZU94MEx1dFV1bU9XOTN1Y2VBUW1UVnJNQXUy?=
+ =?utf-8?B?MDl3VUV0dEgxczNYQWpiUHZ3RzRSYjlUTVkrT3BuY0piaUVCNlZDRXFGLzd1?=
+ =?utf-8?B?cFRNc1RZNXJBdVZNcFRrRis0czRQYVRab1cyc3NQcEVlZWhzY1ZTamxQejBh?=
+ =?utf-8?B?ZmZkbEl1VGNHd2tHcC9MdzhjODA4R1FqaTNRd2VGclA3ZFp5QjlhUktGVTB2?=
+ =?utf-8?B?RTFBOWNqMCtRTWZQTmNlYWJiSmpXZDZzOVZsNkxQcmZmSnk4cDY4ajBieCtu?=
+ =?utf-8?B?eWo2cHdKYjFPdE1icWxVK3JleE02TUFDc2VmL1NvWXJnaVA3WXlSUUZ0NGM4?=
+ =?utf-8?B?bGRHN2ZzMHhWSi9ncW5YOFYxSFI2ODVEd0h2S1JDcmRzeTdDRGtuV0lieXVk?=
+ =?utf-8?B?ZjN4QVJLanptSy9OT3FiTnVvQWhRNXNidzI0bHR0ZkhzZ00rR2Y1ekFlOElL?=
+ =?utf-8?B?TFpQcTVyS3dPTHdUcVRSSHJKZ2dGdGk5ZHJuQXdzQlIwbHhzSERKR1ozbVZD?=
+ =?utf-8?B?ZVJaU2NvbXpYbXdMKzN0eWpqVHg5dk9ZdklsT2RwMSs5YmpGUDFUS1NnRU9B?=
+ =?utf-8?B?UnlFRmV0bFlncFE3Q3pYaHFwaEhKRWhJaytNQkprdkNjNnVnSnVILzJ1UWlX?=
+ =?utf-8?B?SlNiS082U0xNTjFPZEI4OGYxdDZBT0YyR1czUlpnczRnUU5MbVVxaCsyWFlm?=
+ =?utf-8?Q?vys2p3xiiGPU+JEYCQ1BFU4=3D?=
+X-OriginatorOrg: virtuozzo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e2cc6967-31de-4d90-8510-08db1971d768
+X-MS-Exchange-CrossTenant-AuthSource: VE1PR08MB4765.eurprd08.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Feb 2023 09:54:54.0569
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 0bc7f26d-0264-416e-a6fc-8352af79c58f
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: o4oOhuAsvMJjjGLKQ8FWYkmV+r3i3TpJohdK4u8dLTTbrdfoueUllbYCKFNc77ei6x3GTbsHKmoCb6eJFWz9LezTj62DKd0TB8bt6z25AEkNON0SjEWcollOU956jN2S
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAVPR08MB9281
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Daniel,
+On 28.02.23 1:31, Florian Westphal wrote:
+> Alexander Atanasov <alexander.atanasov@virtuozzo.com> wrote:
+>> As i said i am still trying to figure out the basechain place,
+>> where is that synchronize_rcu() call done?
+> 
+> cleanup_net() in net/core/net_namespace.c.
+> 
+> pre_exit handlers run, then synchronize_rcu, then the
+> normal exit handlers, then exit_batch.
 
-Thank you for the patch! Yet something to improve:
+It prevents anyone new to find the namespace but it does not guard 
+against the ones that have already found it.
+What stops them to enter a rcu_read_lock() section after the synchronize 
+call in cleanup_net() is done and race with the exit handler?
 
-[auto build test ERROR on bpf-next/master]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Daniel-Xu/ip-frags-Return-actual-error-codes-from-ip_check_defrag/20230228-035449
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-patch link:    https://lore.kernel.org/r/bce083a4293eefb048a700b5a6086e8d8c957700.1677526810.git.dxu%40dxuuu.xyz
-patch subject: [PATCH bpf-next v2 5/8] bpf: net: ipv6: Add bpf_ipv6_frag_rcv() kfunc
-config: i386-debian-10.3 (https://download.01.org/0day-ci/archive/20230228/202302281707.5vUL3boJ-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-8) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/be4610312351d4a658435bd4649a3a830322396d
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Daniel-Xu/ip-frags-Return-actual-error-codes-from-ip_check_defrag/20230228-035449
-        git checkout be4610312351d4a658435bd4649a3a830322396d
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 olddefconfig
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202302281707.5vUL3boJ-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
-   ld: net/ipv6/af_inet6.o: in function `inet6_init':
->> net/ipv6/af_inet6.c:1177: undefined reference to `register_ipv6_reassembly_bpf'
-
-
-vim +1177 net/ipv6/af_inet6.c
-
-  1061	
-  1062	static int __init inet6_init(void)
-  1063	{
-  1064		struct list_head *r;
-  1065		int err = 0;
-  1066	
-  1067		sock_skb_cb_check_size(sizeof(struct inet6_skb_parm));
-  1068	
-  1069		/* Register the socket-side information for inet6_create.  */
-  1070		for (r = &inetsw6[0]; r < &inetsw6[SOCK_MAX]; ++r)
-  1071			INIT_LIST_HEAD(r);
-  1072	
-  1073		raw_hashinfo_init(&raw_v6_hashinfo);
-  1074	
-  1075		if (disable_ipv6_mod) {
-  1076			pr_info("Loaded, but administratively disabled, reboot required to enable\n");
-  1077			goto out;
-  1078		}
-  1079	
-  1080		err = proto_register(&tcpv6_prot, 1);
-  1081		if (err)
-  1082			goto out;
-  1083	
-  1084		err = proto_register(&udpv6_prot, 1);
-  1085		if (err)
-  1086			goto out_unregister_tcp_proto;
-  1087	
-  1088		err = proto_register(&udplitev6_prot, 1);
-  1089		if (err)
-  1090			goto out_unregister_udp_proto;
-  1091	
-  1092		err = proto_register(&rawv6_prot, 1);
-  1093		if (err)
-  1094			goto out_unregister_udplite_proto;
-  1095	
-  1096		err = proto_register(&pingv6_prot, 1);
-  1097		if (err)
-  1098			goto out_unregister_raw_proto;
-  1099	
-  1100		/* We MUST register RAW sockets before we create the ICMP6,
-  1101		 * IGMP6, or NDISC control sockets.
-  1102		 */
-  1103		err = rawv6_init();
-  1104		if (err)
-  1105			goto out_unregister_ping_proto;
-  1106	
-  1107		/* Register the family here so that the init calls below will
-  1108		 * be able to create sockets. (?? is this dangerous ??)
-  1109		 */
-  1110		err = sock_register(&inet6_family_ops);
-  1111		if (err)
-  1112			goto out_sock_register_fail;
-  1113	
-  1114		/*
-  1115		 *	ipngwg API draft makes clear that the correct semantics
-  1116		 *	for TCP and UDP is to consider one TCP and UDP instance
-  1117		 *	in a host available by both INET and INET6 APIs and
-  1118		 *	able to communicate via both network protocols.
-  1119		 */
-  1120	
-  1121		err = register_pernet_subsys(&inet6_net_ops);
-  1122		if (err)
-  1123			goto register_pernet_fail;
-  1124		err = ip6_mr_init();
-  1125		if (err)
-  1126			goto ipmr_fail;
-  1127		err = icmpv6_init();
-  1128		if (err)
-  1129			goto icmp_fail;
-  1130		err = ndisc_init();
-  1131		if (err)
-  1132			goto ndisc_fail;
-  1133		err = igmp6_init();
-  1134		if (err)
-  1135			goto igmp_fail;
-  1136	
-  1137		err = ipv6_netfilter_init();
-  1138		if (err)
-  1139			goto netfilter_fail;
-  1140		/* Create /proc/foo6 entries. */
-  1141	#ifdef CONFIG_PROC_FS
-  1142		err = -ENOMEM;
-  1143		if (raw6_proc_init())
-  1144			goto proc_raw6_fail;
-  1145		if (udplite6_proc_init())
-  1146			goto proc_udplite6_fail;
-  1147		if (ipv6_misc_proc_init())
-  1148			goto proc_misc6_fail;
-  1149		if (if6_proc_init())
-  1150			goto proc_if6_fail;
-  1151	#endif
-  1152		err = ip6_route_init();
-  1153		if (err)
-  1154			goto ip6_route_fail;
-  1155		err = ndisc_late_init();
-  1156		if (err)
-  1157			goto ndisc_late_fail;
-  1158		err = ip6_flowlabel_init();
-  1159		if (err)
-  1160			goto ip6_flowlabel_fail;
-  1161		err = ipv6_anycast_init();
-  1162		if (err)
-  1163			goto ipv6_anycast_fail;
-  1164		err = addrconf_init();
-  1165		if (err)
-  1166			goto addrconf_fail;
-  1167	
-  1168		/* Init v6 extension headers. */
-  1169		err = ipv6_exthdrs_init();
-  1170		if (err)
-  1171			goto ipv6_exthdrs_fail;
-  1172	
-  1173		err = ipv6_frag_init();
-  1174		if (err)
-  1175			goto ipv6_frag_fail;
-  1176	
-> 1177		err = register_ipv6_reassembly_bpf();
-  1178		if (err)
-  1179			goto ipv6_frag_fail;
-  1180	
-  1181		/* Init v6 transport protocols. */
-  1182		err = udpv6_init();
-  1183		if (err)
-  1184			goto udpv6_fail;
-  1185	
-  1186		err = udplitev6_init();
-  1187		if (err)
-  1188			goto udplitev6_fail;
-  1189	
-  1190		err = udpv6_offload_init();
-  1191		if (err)
-  1192			goto udpv6_offload_fail;
-  1193	
-  1194		err = tcpv6_init();
-  1195		if (err)
-  1196			goto tcpv6_fail;
-  1197	
-  1198		err = ipv6_packet_init();
-  1199		if (err)
-  1200			goto ipv6_packet_fail;
-  1201	
-  1202		err = pingv6_init();
-  1203		if (err)
-  1204			goto pingv6_fail;
-  1205	
-  1206		err = calipso_init();
-  1207		if (err)
-  1208			goto calipso_fail;
-  1209	
-  1210		err = seg6_init();
-  1211		if (err)
-  1212			goto seg6_fail;
-  1213	
-  1214		err = rpl_init();
-  1215		if (err)
-  1216			goto rpl_fail;
-  1217	
-  1218		err = ioam6_init();
-  1219		if (err)
-  1220			goto ioam6_fail;
-  1221	
-  1222		err = igmp6_late_init();
-  1223		if (err)
-  1224			goto igmp6_late_err;
-  1225	
+synchronize_rcu() must be called with the commit_mutex held to be safe 
+against lock less readers using data protected with commit_mutext.
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+Regards,
+Alexander Atanasov
+
