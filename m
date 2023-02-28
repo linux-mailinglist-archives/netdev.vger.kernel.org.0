@@ -2,162 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 796876A562E
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 10:55:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65B8E6A564E
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 11:07:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231161AbjB1Jza (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 04:55:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44592 "EHLO
+        id S230216AbjB1KHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 05:07:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229637AbjB1Jz3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 04:55:29 -0500
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 171372BECB
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 01:55:28 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1677578107; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=FHn5jSVRRPzoCUAmY2vPGh882tsHZlhcwJl5rSl57cyp+k4XEXYN5Luefq9PHGCQ295QGLjQaYyjuxLY6sB9Q2Y3OAcIqEFxzQywmfaP/lfMWxJBaeN5KyOt5/zcspE8Cq4kPo7RLMui87+qDacGB8WLZ9VDNVUJrWV3Q1vw2TA=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1677578107; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=1UKr/phEUB83iqqeal9B+3j9EZHyJmAvtUNDfzR3s4E=; 
-        b=XxhN0k/q7S1zSrmhhd+MuFMuRyNC6uGSVj/7B9fnijCP2mziUXl77MxE3qJhgiYU8i4DwWPXKVdpckQfJ88HfYB9PHHVqUzGj8Miq8T/9jYJl+wnbYJsQ8kRNDyj9Z/HRb4viO40KP/kqszvePaI4p6EIbRJZIC5L6SqL0R1j+4=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1677578107;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=1UKr/phEUB83iqqeal9B+3j9EZHyJmAvtUNDfzR3s4E=;
-        b=JHzUAH7SbYz9yXtaSaB157jZUpwZrN+yW4gFXmU4bfi15XSGHucMAn/d9FQTE7Qb
-        ce9uVK8PJdGJaJDS+rolSW5YABsndB6OsejJJ/vST52/GM4qE9jG5GEOT12+c4+cyBl
-        6xNm5PC1+bWrx5592JB4LZ95Fvob9uqhb7Bi+fL0=
-Received: from [10.10.10.122] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1677578104068848.0916428452233; Tue, 28 Feb 2023 01:55:04 -0800 (PST)
-Message-ID: <b59a9d46-7183-d809-e744-3159d0f666dd@arinc9.com>
-Date:   Tue, 28 Feb 2023 12:54:58 +0300
+        with ESMTP id S230208AbjB1KGk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 05:06:40 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49D6F22DCD
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 02:06:28 -0800 (PST)
+Received: from mail-yw1-f200.google.com (mail-yw1-f200.google.com [209.85.128.200])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 923383F201
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 10:06:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1677578784;
+        bh=y22P12T/3uivssKqi58jTR5H/vm5bFhVhbv1BLNfkj8=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=uNLc0QgohGE9NKvkonkRhKxxsMa7lVGli6bHz4LbwSXCnqdzss9ACgG62bOnQMn0W
+         lGx1xGef4SDNRVSJVC1b609oKxnyQOgSnc/GuyyOsEMgXR0o+nzODHnrmUf2vM5gBc
+         VmnCYK7CI/dkL9R55rE2fGmBGq/mqIbmeAjLUy5XYVUI0L1ED8RaFuOezCICjc5Aow
+         VIZRrPotmH5HtH4mQMkCcMxgBomdMtaH6DFTzUHJC0C4LolOsCkQ5sl56PTyI2+rRo
+         yNjBNA7ATr5FI1q5E3j+m29YdjH/suUGYlXbHC8bCKrTYV6daJM5QAC9nPhhaDxihq
+         lD9Re35eA5iNA==
+Received: by mail-yw1-f200.google.com with SMTP id 00721157ae682-53865bdc1b1so201256027b3.16
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 02:06:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=y22P12T/3uivssKqi58jTR5H/vm5bFhVhbv1BLNfkj8=;
+        b=1OHU63DBDgOGDFktsm6vGNHnpOCIJB2RlT8/gOhG0/yEIb43/7BEiwXlIOjUINMakQ
+         zCtEsZmylaLqhs1xdtwlkyvHHQmf2w11gVx34xGwZ+il/1XEL98f9AmD6B0+Jnc7Dv1B
+         vi3/7NIaIlHJVVBLNzUqc1+jphQPB06PsXjBA2d+zUnzIAwUFK0S3wffuaQB57z5OFlC
+         kA3CSSBME/mZJDrnl9lm6+lW71kxEhKjrPln//GN18zaZ6uahVvdqvi9jMdf702qaRcZ
+         ZQ4IGIquO49qTQn0gI8sLZuBObuD71YPI+l5l4+eNOX81BfdvGG5VJVrbpVTGq656P1x
+         a/FA==
+X-Gm-Message-State: AO0yUKXH7kX6vjJnwiCxBtIhZr5cdi98LPScYtBZuB+LXu1fsa/wcl2s
+        Pm/dWr1J8vu5brdn0fWXkjs2i9MBdEuEyDQiGSynvHkPnl8VmgdtDgGJsteMNr7hu0cng7r/ArZ
+        2kZt4yztJ0rW3ElCkGQEM1MWYvAla/r5Qs3jaVXPNDrrQ6fbZrA==
+X-Received: by 2002:a81:451a:0:b0:533:cf4e:9a80 with SMTP id s26-20020a81451a000000b00533cf4e9a80mr1235659ywa.6.1677578783570;
+        Tue, 28 Feb 2023 02:06:23 -0800 (PST)
+X-Google-Smtp-Source: AK7set9R6Ave+QCwJSbY+D8km3Y1LFdB8YigpvU611NKLdJGVncKINoTh/OUCzDPqvTfD0paJVCrabk1JwzN+1bMX6k=
+X-Received: by 2002:a81:451a:0:b0:533:cf4e:9a80 with SMTP id
+ s26-20020a81451a000000b00533cf4e9a80mr1235649ywa.6.1677578783371; Tue, 28 Feb
+ 2023 02:06:23 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: Aw: Re: Re: Choose a default DSA CPU port
-To:     Frank Wunderlich <frank-w@public-files.de>,
-        Felix Fietkau <nbd@nbd.name>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        netdev <netdev@vger.kernel.org>, erkin.bozoglu@xeront.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>
-References: <trinity-4ef08653-c2e7-4da8-8572-4081dca0e2f7-1677271483935@3c-app-gmx-bap70>
- <20230224210852.np3kduoqhrbzuqg3@skbuf>
- <trinity-5a3fbd85-79ce-4021-957f-aea9617bb320-1677333013552@3c-app-gmx-bap06>
- <f9fcf74b-7e30-9b51-776b-6a3537236bf6@arinc9.com>
- <6383a98a-1b00-913d-0db1-fe33685a8410@arinc9.com>
- <trinity-6ad483d2-5c50-4f38-b386-f4941c85c1fd-1677413524438@3c-app-gmx-bs15>
-Content-Language: en-US
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <trinity-6ad483d2-5c50-4f38-b386-f4941c85c1fd-1677413524438@3c-app-gmx-bs15>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_BL_SPAMCOP_NET,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+References: <20230226201730.515449-1-aleksandr.mikhalitsyn@canonical.com>
+ <Y/x8H4qCNsj4mEkA@unreal> <CAEivzxeorZoiE4VmJ45CoF4ZRoW3B+rkT0ufX7y1bxn510yzPQ@mail.gmail.com>
+ <Y/z3OtIA+25GjjH2@unreal>
+In-Reply-To: <Y/z3OtIA+25GjjH2@unreal>
+From:   Aleksandr Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
+Date:   Tue, 28 Feb 2023 11:06:12 +0100
+Message-ID: <CAEivzxemz8SDr2_NAvgi6XdzA12d5_3ZOmJ=1FF8VMbaGLdVng@mail.gmail.com>
+Subject: Re: [PATCH net-next] scm: fix MSG_CTRUNC setting condition for SO_PASSSEC
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26.02.2023 15:12, Frank Wunderlich wrote:
-> Hi,
->> Gesendet: Samstag, 25. Februar 2023 um 20:56 Uhr
->> Von: "Arınç ÜNAL" <arinc.unal@arinc9.com>
-> 
->> On 25.02.2023 19:11, Arınç ÜNAL wrote:
->>> On 25.02.2023 16:50, Frank Wunderlich wrote:
-> 
->>>> f63959c7eec3151c30a2ee0d351827b62e742dcb is the first bad commit
->>>
->>> Thanks a lot for finding this. I can confirm reverting this fixes the
->>> low throughput on my Bananapi BPI-R2 as well.
-> 
->> Just tested on an MT7621 Unielec U7621-06 board. MT7621 is not affected.
-> 
-> do you have full 1G (940 Mbit/s) on mt7621 device in 6.1??
+On Mon, Feb 27, 2023 at 7:32=E2=80=AFPM Leon Romanovsky <leon@kernel.org> w=
+rote:
+>
+> On Mon, Feb 27, 2023 at 10:55:04AM +0100, Aleksandr Mikhalitsyn wrote:
+> > On Mon, Feb 27, 2023 at 10:47=E2=80=AFAM Leon Romanovsky <leon@kernel.o=
+rg> wrote:
+> > >
+> > > On Sun, Feb 26, 2023 at 09:17:30PM +0100, Alexander Mikhalitsyn wrote=
+:
+> > > > Currently, we set MSG_CTRUNC flag is we have no
+> > > > msg_control buffer provided and SO_PASSCRED is set
+> > > > or if we have pending SCM_RIGHTS.
+> > > >
+> > > > For some reason we have no corresponding check for
+> > > > SO_PASSSEC.
+> > > >
+> > > > Cc: "David S. Miller" <davem@davemloft.net>
+> > > > Cc: Eric Dumazet <edumazet@google.com>
+> > > > Cc: Jakub Kicinski <kuba@kernel.org>
+> > > > Cc: Paolo Abeni <pabeni@redhat.com>
+> > > > Signed-off-by: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonic=
+al.com>
+> > > > ---
+> > > >  include/net/scm.h | 13 ++++++++++++-
+> > > >  1 file changed, 12 insertions(+), 1 deletion(-)
+> > >
+> > > Is it a bugfix? If yes, it needs Fixes line.
+> >
+> > It's from 1da177e4c3 ("Linux-2.6.12-rc2") times :)
+> > I wasn't sure that it's correct to put the "Fixes" tag on such an old
+> > and big commit. Will do. Thanks!
+> >
+> > >
+> > > >
+> > > > diff --git a/include/net/scm.h b/include/net/scm.h
+> > > > index 1ce365f4c256..585adc1346bd 100644
+> > > > --- a/include/net/scm.h
+> > > > +++ b/include/net/scm.h
+> > > > @@ -105,16 +105,27 @@ static inline void scm_passec(struct socket *=
+sock, struct msghdr *msg, struct sc
+> > > >               }
+> > > >       }
+> > > >  }
+> > > > +
+> > > > +static inline bool scm_has_secdata(struct socket *sock)
+> > > > +{
+> > > > +     return test_bit(SOCK_PASSSEC, &sock->flags);
+> > > > +}
+> > > >  #else
+> > > >  static inline void scm_passec(struct socket *sock, struct msghdr *=
+msg, struct scm_cookie *scm)
+> > > >  { }
+> > > > +
+> > > > +static inline bool scm_has_secdata(struct socket *sock)
+> > > > +{
+> > > > +     return false;
+> > > > +}
+> > > >  #endif /* CONFIG_SECURITY_NETWORK */
+> > >
+> > > There is no need in this ifdef, just test bit directly.
+> >
+> > The problem is that even if the kernel is compiled without
+> > CONFIG_SECURITY_NETWORK
+> > userspace can still set the SO_PASSSEC option. IMHO it's better not to
+> > set MSG_CTRUNC
+> > if CONFIG_SECURITY_NETWORK is disabled, msg_control is not set but
+> > SO_PASSSEC is enabled.
+> > Because in this case SCM_SECURITY will never be sent. Please correct
+> > me if I'm wrong.
+>
+> I don't know enough in this area to say if it is wrong or not.
+> My remark was due to the situation where user sets some bit which is
+> going to be ignored silently. It will be much cleaner do not set it
+> if CONFIG_SECURITY_NETWORK is disabled instead of masking its usage.
 
-Just tried 6.1 on MT7621. The result is similar. This SoC isn't capable 
-of delivering 1 Gbps throughput anyway, unless hardware flow offloading 
-is used, which I don't here.
+Hi Leon,
 
-$ iperf3 -c 192.168.2.1 -R
-Connecting to host 192.168.2.1, port 5201
-Reverse mode, remote host 192.168.2.1 is sending
-[  5] local 192.168.2.2 port 42310 connected to 192.168.2.1 port 5201
-[ ID] Interval           Transfer     Bitrate
-[  5]   0.00-1.00   sec  88.6 MBytes   743 Mbits/sec
-[  5]   1.00-2.00   sec  88.9 MBytes   745 Mbits/sec
-[  5]   2.00-3.00   sec  90.2 MBytes   757 Mbits/sec
-[  5]   3.00-4.00   sec  91.9 MBytes   771 Mbits/sec
-[  5]   4.00-5.00   sec  92.0 MBytes   772 Mbits/sec
-[  5]   5.00-6.00   sec  91.6 MBytes   768 Mbits/sec
-[  5]   6.00-7.00   sec  91.9 MBytes   771 Mbits/sec
-[  5]   7.00-8.00   sec  91.9 MBytes   771 Mbits/sec
-[  5]   8.00-9.00   sec  91.8 MBytes   770 Mbits/sec
-[  5]   9.00-10.00  sec  91.4 MBytes   767 Mbits/sec
-- - - - - - - - - - - - - - - - - - - - - - - - -
-[ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-10.01  sec   911 MBytes   764 Mbits/sec    0             sender
-[  5]   0.00-10.00  sec   910 MBytes   764 Mbits/sec 
-receiver
+I agree with you, but IMHO then it looks more correct to return -EOPNOTSUPP=
+ on
+setsockopt(fd, SO_PASSSEC, ...) if CONFIG_SECURITY_NETWORK is disabled.
+But such a change may break things.
 
-> 
-> if you look at the commit you see a special handling for mt7621
-> 
-> if (IS_ENABLED(CONFIG_SOC_MT7621)) {
-> ...
-> }else{
-> //all others go there including mt7623, out (t)rgmii should be here (internally SPEED_100 afair, but higher clock for trgmii):
->                 case SPEED_1000:
->                         val |= MTK_QTX_SCH_MAX_RATE_EN |
->                                FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, 10) |
->                                FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, 5) |
->                                FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 10);
->                         break;
-> }
-> 
-> but i do not understand the full code as it looks like it changes the full packet-handling ;)
+Okay, anyway I'll wait until net-next will be opened and present a
+patch with a more
+detailed description and Fixes tag. Speaking about this problem with
+CONFIG_SECURITY_NETWORK
+if you insist that it will be more correct then I'm ready to fix it too.
 
-Well, whatever it's doing, it doesn't hinder the performance on MT7621. ;P
+Thanks,
+Alex
 
-> 
-> imho reverting is good for test, but dropping the full change is not the right way...we should wait for felix here
-
-Agreed, I did that to make sure nothing else on current linux-next 
-affects the performance.
-
-> 
-> but back to topic...we have a patch from vladuimir which allows setting the preferred cpu-port...how do we handle mt7531 here correctly (which still sets port5 if defined and then break)?
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/drivers/net/dsa/mt7530.c#n2383
-> 
-> 	/* BPDU to CPU port */
-> 	dsa_switch_for_each_cpu_port(cpu_dp, ds) {
-> 		mt7530_rmw(priv, MT7531_CFC, MT7531_CPU_PMAP_MASK,
-> 			   BIT(cpu_dp->index));
-> 		break; //<<< should we drop this break only to set all "cpu-bits"? what happens then (flooding both ports with packets?)
-> 	}
-> 
-> as dsa only handles only 1 cpu-port we want the real cpu-port (preferred | first). is this bit set also if the master is changed with your follow-up patch?
-
-Honestly, I don't know. I'd like to leave this to you to figure out. You 
-should be able to get to the bottom of this with some testing on an 
-MT7531 switch. I haven't got access to one.
-
-Arınç
+>
+> Thanks
+>
+> >
+> > Kind regards,
+> > Alex
+> >
+> > >
+> > > >
+> > > >  static __inline__ void scm_recv(struct socket *sock, struct msghdr=
+ *msg,
+> > > >                               struct scm_cookie *scm, int flags)
+> > > >  {
+> > > >       if (!msg->msg_control) {
+> > > > -             if (test_bit(SOCK_PASSCRED, &sock->flags) || scm->fp)
+> > > > +             if (test_bit(SOCK_PASSCRED, &sock->flags) || scm->fp =
+||
+> > > > +                 scm_has_secdata(sock))
+> > > >                       msg->msg_flags |=3D MSG_CTRUNC;
+> > > >               scm_destroy(scm);
+> > > >               return;
+> > > > --
+> > > > 2.34.1
+> > > >
