@@ -2,161 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 38A946A5D49
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 17:39:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6424B6A5D57
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 17:43:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229587AbjB1Qi6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 11:38:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59082 "EHLO
+        id S229738AbjB1Qm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 11:42:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229788AbjB1Qis (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 11:38:48 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8E9535A1;
-        Tue, 28 Feb 2023 08:38:26 -0800 (PST)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1677602305;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FGAS1nlVnYYE/Wk69Z9hKYgT1cedX3d5tVr1dmMyxJM=;
-        b=Xiiami2Wj+m4eIgzQZPe9OfQskWhh4P48+x4tkgcoc+ySBBbaNzYSpmJmVxqZYmh2CYEyt
-        nn1PIo329HCDS1sOh7pQzb4G0eg4ePLWxGiQdXWswYE3MOlwqpehwgBoJe+AHKDBeD6gEY
-        z6vJrD30DcvXqmFmpgeSviLDjMUA5JMgGELi+nh/BKaR9tGW/91XXA5A0VGxuViDY+1iTI
-        goq4m7/7C81+KVEON5JOfCyyNV9VTfGPaKf3L+HQRuKOWNOC9e21uuq3fyPUTyKuK2gmRg
-        OYwwg5DAFsOcGRqya3vUyovxjFylv29lXQRN1wro+EKxwz1cDtbZSPoGj0ouxw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1677602305;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FGAS1nlVnYYE/Wk69Z9hKYgT1cedX3d5tVr1dmMyxJM=;
-        b=X2Ab+vjet8s27Gutg4vBPLjLfZUrBxYKgmpRIDXbW44kagEfuEL6PiovGBv1gg1FOMuFK2
-        3v+P66ZWAiXXHKAg==
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linuxfoundation.org>, x86@kernel.org,
-        Wangyang Guo <wangyang.guo@intel.com>,
-        Arjan van De Ven <arjan@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Marc Zyngier <maz@kernel.org>
-Subject: Re: [patch 0/3] net, refcount: Address dst_entry reference count
- scalability issues
-In-Reply-To: <CANn89iL2pYt2QA2sS4KkXrCSjprz9byE_p+Geom3MTNPMzfFDw@mail.gmail.com>
-References: <20230228132118.978145284@linutronix.de>
- <CANn89iL2pYt2QA2sS4KkXrCSjprz9byE_p+Geom3MTNPMzfFDw@mail.gmail.com>
-Date:   Tue, 28 Feb 2023 17:38:25 +0100
-Message-ID: <87h6v5n3su.ffs@tglx>
+        with ESMTP id S229730AbjB1Qmy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 11:42:54 -0500
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D05A82C679
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 08:41:52 -0800 (PST)
+Received: by mail-il1-f198.google.com with SMTP id v3-20020a92c6c3000000b003159a0109ceso6365033ilm.12
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 08:41:52 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=3F7vJLWGFsiTKVPdaUHctwhOd/Q+EKNvjOPIBluuyZQ=;
+        b=LMkIa0eEHPQ2gdgbuNvCmBWWX9pwjo7GGyEDgBsoz5c/Oy6QKm4T15F9sVrldQtSmo
+         TIKkOD4wdBcMRz/rNG/OtrRvyqxyHVSgL21ZSNuzYWOn18JHJIC3r+QDu0XW9pV3tqJn
+         pbLUCMIRTK1n2Mf9aU8EJV4LdNE8gRk9a+XxwcmdWhCsJqu0aMU9SapKfxXDR1+ULhli
+         nQQ4F9aQ6fTh9yvjiBy5V75O7N38ITOop292ECY7XgXMbRUKoayHKRS4u7N2Md5+V4DD
+         LtAKMP5hGjQgxGuRx92y623TPmgEVOancb5Go1Yaze6/fv2vc9Ds5KE3G6MEBvue0RFL
+         M5lQ==
+X-Gm-Message-State: AO0yUKWGpT4DBp5qjdo6QSNli/9Bemj9dTRmR0HvZyHUvU134kDMvDod
+        uwtgrg36XOgdjWAo8UqaoQ3L/bjGVXmtUX6y9gxgWHv0bFg6
+X-Google-Smtp-Source: AK7set9Ewc0ZA9WAz1DvmsWDUQnOSzPLuTXIwGfU292cwOE7tExPcShZO3WR9hBhZPtiDdBRNptUiUTV/aAHfCM4dWKVnR9R4Y/W
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a92:300f:0:b0:315:4c21:a377 with SMTP id
+ x15-20020a92300f000000b003154c21a377mr1531876ile.6.1677602512210; Tue, 28 Feb
+ 2023 08:41:52 -0800 (PST)
+Date:   Tue, 28 Feb 2023 08:41:52 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d092ed05f5c545a4@google.com>
+Subject: [syzbot] [wireless?] WARNING in ieee80211_ibss_csa_beacon (2)
+From:   syzbot <syzbot+b10a54cb0355d83fd75c@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com,
+        johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eric!
+Hello,
 
-On Tue, Feb 28 2023 at 16:07, Eric Dumazet wrote:
-> On Tue, Feb 28, 2023 at 3:33=E2=80=AFPM Thomas Gleixner <tglx@linutronix.=
-de> wrote:
->>
->> Hi!
->>
->> Wangyang and Arjan reported a bottleneck in the networking code related =
-to
->> struct dst_entry::__refcnt. Performance tanks massively when concurrency=
- on
->> a dst_entry increases.
->
-> We have per-cpu or per-tcp-socket dst though.
->
-> Input path is RCU and does not touch dst refcnt.
->
-> In real workloads (200Gbit NIC and above), we do not observe
-> contention on a dst refcnt.
->
-> So it would be nice knowing in which case you noticed some issues,
-> maybe there is something wrong in some layer.
+syzbot found the following issue on:
 
-Two lines further down I explained which benchmark was used, no?
+HEAD commit:    ae3419fbac84 vc_screen: don't clobber return value in vcs_..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1416fe18c80000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f763d89e26d3d4c4
+dashboard link: https://syzkaller.appspot.com/bug?extid=b10a54cb0355d83fd75c
+compiler:       Debian clang version 15.0.7, GNU ld (GNU Binutils for Debian) 2.35.2
 
->> This happens when there are a large amount of connections to or from the
->> same IP address. The memtier benchmark when run on the same host as
->> memcached amplifies this massively. But even over real network connectio=
-ns
->> this issue can be observed at an obviously smaller scale (due to the
->> network bandwith limitations in my setup, i.e. 1Gb).
->>       atomic_inc_not_zero() is implemted via a atomic_try_cmpxchg() loop,
->>       which exposes O(N^2) behaviour under contention with N concurrent
->>       operations.
->>
->>       Lightweight instrumentation exposed an average of 8!! retry loops =
-per
->>       atomic_inc_not_zero() invocation in a userspace inc()/dec() loop
->>       running concurrently on 112 CPUs.
->
-> User space benchmark <> kernel space.
+Unfortunately, I don't have any reproducer for this issue yet.
 
-I know that. The point was to illustrate the non-scalability.
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/35978c167752/disk-ae3419fb.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/cf285a5d176b/vmlinux-ae3419fb.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/6e8d414e67aa/bzImage-ae3419fb.xz
 
-> And we tend not using 112 cpus for kernel stack processing.
->
-> Again, concurrent dst->refcnt changes are quite unlikely.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+b10a54cb0355d83fd75c@syzkaller.appspotmail.com
 
-So unlikely that they stand out in that particular benchmark.
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 5872 at net/mac80211/ibss.c:500 ieee80211_ibss_csa_beacon+0x572/0x620
+Modules linked in:
+CPU: 1 PID: 5872 Comm: kworker/u4:16 Not tainted 6.2.0-syzkaller-12913-gae3419fbac84 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 02/16/2023
+Workqueue: phy4 ieee80211_csa_finalize_work
+RIP: 0010:ieee80211_ibss_csa_beacon+0x572/0x620 net/mac80211/ibss.c:500
+Code: f7 c6 05 d1 4a 2d 04 01 48 c7 c7 e0 af 0d 8c be fd 01 00 00 48 c7 c2 80 b0 0d 8c e8 98 4f 39 f7 e9 6e fe ff ff e8 de ea 59 f7 <0f> 0b b8 ea ff ff ff e9 7a ff ff ff e8 cd ea 59 f7 0f 0b e9 f9 fa
+RSP: 0018:ffffc9000bad7b48 EFLAGS: 00010293
+RAX: ffffffff8a32fba2 RBX: ffff88803c8b3838 RCX: ffff88802594d7c0
+RDX: 0000000000000000 RSI: ffffffff8b0a8b80 RDI: ffffffff8b587580
+RBP: ffff888028d65aaa R08: dffffc0000000000 R09: fffffbfff209e051
+R10: 0000000000000000 R11: dffffc0000000001 R12: ffff888028d65ab0
+R13: ffff88803c8b06c0 R14: ffff888028d64c80 R15: ffff888028d65ad0
+FS:  0000000000000000(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000001b32337000 CR3: 000000007baf6000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 000000000000003b DR6: 00000000ffff0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ ieee80211_set_after_csa_beacon net/mac80211/cfg.c:3523 [inline]
+ __ieee80211_csa_finalize net/mac80211/cfg.c:3585 [inline]
+ ieee80211_csa_finalize+0x54c/0xe50 net/mac80211/cfg.c:3609
+ ieee80211_csa_finalize_work+0xfc/0x140 net/mac80211/cfg.c:3634
+ process_one_work+0x915/0x13a0 kernel/workqueue.c:2390
+ worker_thread+0xa63/0x1210 kernel/workqueue.c:2537
+ kthread+0x270/0x300 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
+ </TASK>
 
->> The overall gain of both changes for localhost memtier ranges from 1.2X =
-to
->> 3.2X and from +2% to %5% range for networked operations on a 1Gb connect=
-ion.
->>
->> A micro benchmark which enforces maximized concurrency shows a gain betw=
-een
->> 1.2X and 4.7X!!!
->
-> Can you elaborate on what networking benchmark you have used,
-> and what actual gains you got ?
 
-I'm happy to repeat here that it was memtier/memcached as I explained
-more than once in the cover letter.
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-> In which path access to dst->lwtstate proved to be a problem ?
-
-ip_finish_output2()
-   if (lwtunnel_xmit_redirect(dst->lwtstate)) <- This read
-
-> To me, this looks like someone wanted to push a new piece of infra
-> (include/linux/rcuref.h)
-> and decided that dst->refcnt would be a perfect place.
->
-> Not the other way (noticing there is an issue, enquire networking
-> folks about it, before designing a solution)
-
-We looked at this because the reference count operations stood out in
-perf top and we analyzed it down to the false sharing _and_ the
-non-scalability of atomic_inc_not_zero().
-
-That's what made me to think about a different implementation and yes,
-the case at hand, which happens to be in the network code, allowed me to
-verify that it actually works and scales better.
-
-I'm terrible sorry, that I missed to first ask network people for
-permission to think. Won't happen again.
-
-Thanks,
-
-        tglx
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
