@@ -2,82 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CE106A50ED
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 03:11:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A04AF6A510A
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 03:20:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229823AbjB1CLt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 21:11:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35752 "EHLO
+        id S229627AbjB1CUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 21:20:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229485AbjB1CLs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 21:11:48 -0500
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC1772748C;
-        Mon, 27 Feb 2023 18:11:46 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R261e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0Vch.eGG_1677550293;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0Vch.eGG_1677550293)
-          by smtp.aliyun-inc.com;
-          Tue, 28 Feb 2023 10:11:43 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     pkshih@realtek.com
-Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH] rtlwifi: rtl8192se: Remove the unused variable bcntime_cfg
-Date:   Tue, 28 Feb 2023 10:11:32 +0800
-Message-Id: <20230228021132.88910-1-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        with ESMTP id S229547AbjB1CUp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 21:20:45 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5D4F144A3
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 18:20:44 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33BD0B80DDF
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 02:20:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F5DCC433D2;
+        Tue, 28 Feb 2023 02:20:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1677550841;
+        bh=PpxWKWltKjHBlPGQeZ0nRLchttFA3kP2HeBN6Zq0OFw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hHXcE9lxIfHXN9KWUiEVhHtUXJ/ffnsjH/gMJa/6bNRVcmpwrJ1z/lw6mMCOBlvms
+         i8U7NdxsSkSUhsgU9GKen9rucPGWDlPgAMgeEUngXR0cbwG5sLbxkwm6G7C+GS/Ixx
+         lDGMgkHn8JVbeWujn15eW4Do+NhbL3nGCFWE05jrn8QDzdUqhrBNL20OXOjeAZDcj8
+         cpWZiU7bEMlo3kTUOKiYxdXxkXsNH0+8jd9vTmY4ygl4eI+Yxmro1KS+wiT2AGXYLg
+         Ls1hSybj8dDZVPzhUi0cB9wqy+I+Rw4p17wvK4vA/TR/45kgY99A0E7LLzu/OK1JMA
+         zH+J6xu1HJFgQ==
+Date:   Mon, 27 Feb 2023 18:20:40 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Geoff Levand <geoff@infradead.org>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net v6 1/2] net/ps3_gelic_net: Fix RX sk_buff length
+Message-ID: <20230227182040.75740bb6@kernel.org>
+In-Reply-To: <1bf36b8e08deb3d16fafde3e88ae7cd761e4e7b3.1677377639.git.geoff@infradead.org>
+References: <cover.1677377639.git.geoff@infradead.org>
+        <1bf36b8e08deb3d16fafde3e88ae7cd761e4e7b3.1677377639.git.geoff@infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Variable bcntime_cfg is not effectively used, so delete it.
+On Sun, 26 Feb 2023 02:25:42 +0000 Geoff Levand wrote:
+> +	napi_buff = napi_alloc_frag_align(GELIC_NET_MAX_MTU,
+> +		GELIC_NET_RXBUF_ALIGN);
 
-drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c:1555:6: warning: variable 'bcntime_cfg' set but not used.
+You're changing how the buffers are allocated.
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=4240
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
----
- drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c | 8 --------
- 1 file changed, 8 deletions(-)
+> +	if (unlikely(!napi_buff)) {
+> +		descr->skb = NULL;
+> +		descr->buf_addr = 0;
+> +		descr->buf_size = 0;
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
-index bd0b7e365edb..e1eb9d8203ab 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
-@@ -1552,7 +1552,6 @@ void rtl92se_set_beacon_related_registers(struct ieee80211_hw *hw)
- {
- 	struct rtl_priv *rtlpriv = rtl_priv(hw);
- 	struct rtl_mac *mac = rtl_mac(rtl_priv(hw));
--	u16 bcntime_cfg = 0;
- 	u16 bcn_cw = 6, bcn_ifs = 0xf;
- 	u16 atim_window = 2;
- 
-@@ -1576,13 +1575,6 @@ void rtl92se_set_beacon_related_registers(struct ieee80211_hw *hw)
- 	 * other ad hoc STA */
- 	rtl_write_byte(rtlpriv, BCN_ERR_THRESH, 100);
- 
--	/* Beacon Time Configuration */
--	if (mac->opmode == NL80211_IFTYPE_ADHOC)
--		bcntime_cfg |= (bcn_cw << BCN_TCFG_CW_SHIFT);
--
--	/* TODO: bcn_ifs may required to be changed on ASIC */
--	bcntime_cfg |= bcn_ifs << BCN_TCFG_IFS;
--
- 	/*for beacon changed */
- 	rtl92s_phy_set_beacon_hwreg(hw, mac->beacon_interval);
- }
--- 
-2.20.1.7.g153144c
+Wiping the descriptors on failure.
 
+> +		return -ENOMEM;
+> +	}
+
+And generally reshuffling the code.
+
+Once again - please don't do any of that in a bug fix.
+Describe precisely what the problem is and fix that problem,
+Once the fix is accepted you can send separate patches with 
+other improvements.
