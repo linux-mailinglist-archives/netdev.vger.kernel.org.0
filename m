@@ -2,78 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A04AF6A510A
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 03:20:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEE336A512A
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 03:28:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229627AbjB1CUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Feb 2023 21:20:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44090 "EHLO
+        id S229874AbjB1C2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Feb 2023 21:28:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbjB1CUp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 21:20:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5D4F144A3
-        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 18:20:44 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 33BD0B80DDF
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 02:20:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F5DCC433D2;
-        Tue, 28 Feb 2023 02:20:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677550841;
-        bh=PpxWKWltKjHBlPGQeZ0nRLchttFA3kP2HeBN6Zq0OFw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hHXcE9lxIfHXN9KWUiEVhHtUXJ/ffnsjH/gMJa/6bNRVcmpwrJ1z/lw6mMCOBlvms
-         i8U7NdxsSkSUhsgU9GKen9rucPGWDlPgAMgeEUngXR0cbwG5sLbxkwm6G7C+GS/Ixx
-         lDGMgkHn8JVbeWujn15eW4Do+NhbL3nGCFWE05jrn8QDzdUqhrBNL20OXOjeAZDcj8
-         cpWZiU7bEMlo3kTUOKiYxdXxkXsNH0+8jd9vTmY4ygl4eI+Yxmro1KS+wiT2AGXYLg
-         Ls1hSybj8dDZVPzhUi0cB9wqy+I+Rw4p17wvK4vA/TR/45kgY99A0E7LLzu/OK1JMA
-         zH+J6xu1HJFgQ==
-Date:   Mon, 27 Feb 2023 18:20:40 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Geoff Levand <geoff@infradead.org>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net v6 1/2] net/ps3_gelic_net: Fix RX sk_buff length
-Message-ID: <20230227182040.75740bb6@kernel.org>
-In-Reply-To: <1bf36b8e08deb3d16fafde3e88ae7cd761e4e7b3.1677377639.git.geoff@infradead.org>
-References: <cover.1677377639.git.geoff@infradead.org>
-        <1bf36b8e08deb3d16fafde3e88ae7cd761e4e7b3.1677377639.git.geoff@infradead.org>
+        with ESMTP id S229870AbjB1C2E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Feb 2023 21:28:04 -0500
+Received: from out0-199.mail.aliyun.com (out0-199.mail.aliyun.com [140.205.0.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD9629EDD
+        for <netdev@vger.kernel.org>; Mon, 27 Feb 2023 18:28:02 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R791e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018047206;MF=amy.saq@antgroup.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---.RYnARxg_1677551279;
+Received: from 30.46.243.2(mailfrom:amy.saq@antgroup.com fp:SMTPD_---.RYnARxg_1677551279)
+          by smtp.aliyun-inc.com;
+          Tue, 28 Feb 2023 10:27:59 +0800
+Message-ID: <4fee48b3-fac0-9de6-1edd-b3f3b246dab0@antgroup.com>
+Date:   Tue, 28 Feb 2023 10:27:58 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.7.2
+Subject: Re: [PATCH v2] net/packet: support mergeable feautre of virtio
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        netdev@vger.kernel.org
+Cc:     <mst@redhat.com>, <davem@davemloft.net>, <jasowang@redhat.com>,
+        "=?UTF-8?B?6LCI6Ym06ZSL?=" <henry.tjf@antgroup.com>
+References: <1677497625-351024-1-git-send-email-amy.saq@antgroup.com>
+ <63fcdaf7e3e9d_1684422084b@willemb.c.googlers.com.notmuch>
+From:   "=?UTF-8?B?5rKI5a6J55CqKOWHm+eOpSk=?=" <amy.saq@antgroup.com>
+In-Reply-To: <63fcdaf7e3e9d_1684422084b@willemb.c.googlers.com.notmuch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 26 Feb 2023 02:25:42 +0000 Geoff Levand wrote:
-> +	napi_buff = napi_alloc_frag_align(GELIC_NET_MAX_MTU,
-> +		GELIC_NET_RXBUF_ALIGN);
 
-You're changing how the buffers are allocated.
+在 2023/2/28 上午12:31, Willem de Bruijn 写道:
+> 沈安琪(凛玥) wrote:
+>> From: Jianfeng Tan <henry.tjf@antgroup.com>
+>>
+>> Packet sockets, like tap, can be used as the backend for kernel vhost.
+>> In packet sockets, virtio net header size is currently hardcoded to be
+>> the size of struct virtio_net_hdr, which is 10 bytes; however, it is not
+>> always the case: some virtio features, such as mrg_rxbuf, need virtio
+>> net header to be 12-byte long.
+>>
+>> Mergeable buffers, as a virtio feature, is worthy to support: packets
+>> that larger than one-mbuf size will be dropped in vhost worker's
+>> handle_rx if mrg_rxbuf feature is not used, but large packets
+>> cannot be avoided and increasing mbuf's size is not economical.
+>>
+>> With this virtio feature enabled, packet sockets with hardcoded 10-byte
+>> virtio net header will parse mac head incorrectly in packet_snd by taking
+>> the last two bytes of virtio net header as part of mac header as well.
+>> This incorrect mac header parsing will cause packet be dropped due to
+>> invalid ether head checking in later under-layer device packet receiving.
+>>
+>> By adding extra field vnet_hdr_sz with utilizing holes in struct
+>> packet_sock to record current using virtio net header size and supporting
+>> extra sockopt PACKET_VNET_HDR_SZ to set specified vnet_hdr_sz, packet
+>> sockets can know the exact length of virtio net header that virtio user
+>> gives.
+>> In packet_snd, tpacket_snd and packet_recvmsg, instead of using hardcode
+>> virtio net header size, it can get the exact vnet_hdr_sz from corresponding
+>> packet_sock, and parse mac header correctly based on this information to
+>> avoid the packets being mistakenly dropped.
+>>
+>> Signed-off-by: Jianfeng Tan <henry.tjf@antgroup.com>
+>> Co-developed-by: Anqi Shen <amy.saq@antgroup.com>
+>> Signed-off-by: Anqi Shen <amy.saq@antgroup.com>
+> net-next is closed
 
-> +	if (unlikely(!napi_buff)) {
-> +		descr->skb = NULL;
-> +		descr->buf_addr = 0;
-> +		descr->buf_size = 0;
 
-Wiping the descriptors on failure.
+May we still send the revision of this patch and/or keep discussing 
+during the merge window? We understand that new features will not be 
+took until the merge window finishes.
 
-> +		return -ENOMEM;
-> +	}
 
-And generally reshuffling the code.
+>
+>> @@ -2311,7 +2312,7 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
+>>   				       (maclen < 16 ? 16 : maclen)) +
+>>   				       po->tp_reserve;
+>>   		if (po->has_vnet_hdr) {
+>> -			netoff += sizeof(struct virtio_net_hdr);
+>> +			netoff += po->vnet_hdr_sz;
+>>   			do_vnet = true;
+>>   		}
+>>   		macoff = netoff - maclen;
+>> @@ -2552,16 +2553,23 @@ static int __packet_snd_vnet_parse(struct virtio_net_hdr *vnet_hdr, size_t len)
+>>   }
+>>   
+>>   static int packet_snd_vnet_parse(struct msghdr *msg, size_t *len,
+>> -				 struct virtio_net_hdr *vnet_hdr)
+>> +				 struct virtio_net_hdr *vnet_hdr, int vnet_hdr_sz)
+>>   {
+>> -	if (*len < sizeof(*vnet_hdr))
+>> +	int ret;
+>> +
+>> +	if (*len < vnet_hdr_sz)
+>>   		return -EINVAL;
+>> -	*len -= sizeof(*vnet_hdr);
+>> +	*len -= vnet_hdr_sz;
+>>   
+>>   	if (!copy_from_iter_full(vnet_hdr, sizeof(*vnet_hdr), &msg->msg_iter))
+>>   		return -EFAULT;
+>>   
+>> -	return __packet_snd_vnet_parse(vnet_hdr, *len);
+>> +	ret = __packet_snd_vnet_parse(vnet_hdr, *len);
+>> +
+>> +	/* move iter to point to the start of mac header */
+>> +	if (ret == 0)
+>> +		iov_iter_advance(&msg->msg_iter, vnet_hdr_sz - sizeof(struct virtio_net_hdr));
+>> +	return ret;
+> Let's make the error path the exception
+>
+>          if (ret)
+>                  return ret;
+>
+> And maybe avoid calling iov_iter_advance if vnet_hdr_sz == sizeof(*vnet_hdr)
+>
+>>   	case PACKET_VNET_HDR:
+>> +	case PACKET_VNET_HDR_SZ:
+>>   	{
+>>   		int val;
+>> +		int hdr_len = 0;
+>>   
+>>   		if (sock->type != SOCK_RAW)
+>>   			return -EINVAL;
+>> @@ -3931,11 +3945,23 @@ static void packet_flush_mclist(struct sock *sk)
+>>   		if (copy_from_sockptr(&val, optval, sizeof(val)))
+>>   			return -EFAULT;
+>>   
+>> +		if (optname == PACKET_VNET_HDR_SZ) {
+>> +			if (val != sizeof(struct virtio_net_hdr) &&
+>> +			    val != sizeof(struct virtio_net_hdr_mrg_rxbuf))
+>> +				return -EINVAL;
+>> +			hdr_len = val;
+>> +		}
+>> +
+>      } else {
+>              hdr_len = sizeof(struct virtio_net_hdr);
+>      }
+>
+>>   		lock_sock(sk);
+>>   		if (po->rx_ring.pg_vec || po->tx_ring.pg_vec) {
+>>   			ret = -EBUSY;
+>>   		} else {
+>> -			po->has_vnet_hdr = !!val;
+>> +			if (optname == PACKET_VNET_HDR) {
+>> +				po->has_vnet_hdr = !!val;
+>> +				if (po->has_vnet_hdr)
+>> +					hdr_len = sizeof(struct virtio_net_hdr);
+>> +			}
+>> +			po->vnet_hdr_sz = hdr_len;
+> then this is not needed
+>>   			ret = 0;
+>>   		}
+>>   		release_sock(sk);
+>> @@ -4070,6 +4096,9 @@ static int packet_getsockopt(struct socket *sock, int level, int optname,
+>>   	case PACKET_VNET_HDR:
+>>   		val = po->has_vnet_hdr;
+>>   		break;
+>> +	case PACKET_VNET_HDR_SZ:
+>> +		val = po->vnet_hdr_sz;
+>> +		break;
+>>   	case PACKET_VERSION:
+>>   		val = po->tp_version;
+>>   		break;
+>> diff --git a/net/packet/internal.h b/net/packet/internal.h
+>> index 48af35b..e27b47d 100644
+>> --- a/net/packet/internal.h
+>> +++ b/net/packet/internal.h
+>> @@ -121,7 +121,8 @@ struct packet_sock {
+>>   				origdev:1,
+>>   				has_vnet_hdr:1,
+>>   				tp_loss:1,
+>> -				tp_tx_has_off:1;
+>> +				tp_tx_has_off:1,
+>> +				vnet_hdr_sz:8;	/* vnet header size should use */
+> has_vnet_hdr is no longer needed when adding vnet_hdr_sz. removing that simplifies the code
 
-Once again - please don't do any of that in a bug fix.
-Describe precisely what the problem is and fix that problem,
-Once the fix is accepted you can send separate patches with 
-other improvements.
+
+So we are going to indicate whether the packet socket has a vnet header 
+based on vnet_hdr_sz it is set to, right?
+
+
+>
+> drop the comment. That is quite self explanatory from the variable name.
+>
+>>   	int			pressure;
+>>   	int			ifindex;	/* bound device		*/
+>>   	__be16			num;
+>> -- 
+>> 1.8.3.1
+>>
