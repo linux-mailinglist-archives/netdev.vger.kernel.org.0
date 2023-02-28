@@ -2,84 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7757F6A5D64
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 17:46:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 667516A5D72
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 17:48:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229674AbjB1QqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 11:46:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37266 "EHLO
+        id S229794AbjB1Qsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 11:48:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbjB1QqC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 11:46:02 -0500
-Received: from mail-qv1-f52.google.com (mail-qv1-f52.google.com [209.85.219.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2316034C03;
-        Tue, 28 Feb 2023 08:45:57 -0800 (PST)
-Received: by mail-qv1-f52.google.com with SMTP id nv15so7265796qvb.7;
-        Tue, 28 Feb 2023 08:45:57 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=LYVO48FXas9roeOJnyiiq+0n+H4awkY5GZrrWNRYNF0=;
-        b=2I4bxxqFbFu7q/PsAyTElTZR/eQQlYTjSeyXufZn0ub/sYCjQn0iRIXh8WX+KaaF3A
-         vm1DyVb+Fn1gLU5XA2+Bm1ol/ee80xne4il2oAsutIN0NKO8q9uM3e61Yb5iQhTTtg0p
-         DDto++3ue+bTJNPEKKGU8ndC1zAIlBzfcsj6icTaJlblmxaM1l4GSSU9+6cdeFRaBE6K
-         m3Neg32+Vak6SXAkxydEhk/CGmlotU1DxBxldbXW0g/A4DQ2+Te61klHu65+UyuvDw8J
-         74CPRjCgWg9+VGp8x4NODhOztZJBvCTnXREbDeBsFFD7n+g/1kjSS7TNTtSXCjc7cMd4
-         HLUg==
-X-Gm-Message-State: AO0yUKXsQ7NExMRUtGB7SjKT8XM4y4QjeooDjeVrHalcfowtLI3McKgl
-        s/0GYLHRV6vVku+D5qS6XkA=
-X-Google-Smtp-Source: AK7set+Hs0hpd1ZNKXTBvr7aHFo+ekwRQK23UYef40SCMeUIPBk/GIbSWc3wULRdW0oyhCoeTUVYTg==
-X-Received: by 2002:a05:6214:cad:b0:56b:f47b:1cd2 with SMTP id s13-20020a0562140cad00b0056bf47b1cd2mr7496153qvs.41.1677602756014;
-        Tue, 28 Feb 2023 08:45:56 -0800 (PST)
-Received: from maniforge ([2620:10d:c091:480::1:f172])
-        by smtp.gmail.com with ESMTPSA id bl32-20020a05620a1aa000b007423e52f9d2sm7122602qkb.71.2023.02.28.08.45.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Feb 2023 08:45:55 -0800 (PST)
-Date:   Tue, 28 Feb 2023 10:45:53 -0600
-From:   David Vernet <void@manifault.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     davem@davemloft.net, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@kernel.org, davemarchevsky@meta.com, tj@kernel.org,
-        memxor@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@fb.com
-Subject: Re: [PATCH v3 bpf-next 2/5] bpf: Mark cgroups and dfl_cgrp fields as
- trusted.
-Message-ID: <Y/4vwaGKhZdLPTL3@maniforge>
-References: <20230228040121.94253-1-alexei.starovoitov@gmail.com>
- <20230228040121.94253-3-alexei.starovoitov@gmail.com>
+        with ESMTP id S229778AbjB1Qsh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 11:48:37 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A51AE6EAE;
+        Tue, 28 Feb 2023 08:48:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1677602886; x=1709138886;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=WRHLtls8wXHkKG0wPUdAzJHiEECJD6P2u5mrgkq32og=;
+  b=GIITSovHGRKPNNTtFu04OQGPMroln0wHW/qqp0zCw8RKm17eppp+CFws
+   /PUYx1LkfG9HzeeORUnfDR2tB0YnNvcsKjlmd14wsubbFTadTjxdS7klW
+   n9oTsrlgL7i41IbRyNU/A/K9xeXlMmTy0OYlHv7BMZ6gJv8uWL21EvvBD
+   icJ+BV2gcU7tlii29k/2gyfhtaBBsiOXwQFzoX5TjPuuTTEtHfHF+7jdi
+   SaK0GFNAczUaWQbkh0/rKSVg/0JeN1s8xl4Cbdtcxfz3v5LaZoV4aNw2v
+   FThPn5cmwovc4gLUJYnb07o152pMgB0iYdhnmie0jWGd+/5Gbs6tGEKlF
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10635"; a="317986827"
+X-IronPort-AV: E=Sophos;i="5.98,222,1673942400"; 
+   d="scan'208";a="317986827"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2023 08:48:06 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10635"; a="624107465"
+X-IronPort-AV: E=Sophos;i="5.98,222,1673942400"; 
+   d="scan'208";a="624107465"
+Received: from irvmail002.ir.intel.com ([10.43.11.120])
+  by orsmga003.jf.intel.com with ESMTP; 28 Feb 2023 08:48:03 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail002.ir.intel.com (Postfix) with ESMTP id 07A41369ED;
+        Tue, 28 Feb 2023 16:48:01 +0000 (GMT)
+From:   Alexander Lobakin <aleksander.lobakin@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Alexander Lobakin <aleksander.lobakin@intel.com>,
+        Michal Kubiak <michal.kubiak@intel.com>,
+        Larysa Zaremba <larysa.zaremba@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net 0/2] iavf: fix double-broken HW hash report
+Date:   Tue, 28 Feb 2023 17:46:11 +0100
+Message-Id: <20230228164613.1360409-1-aleksander.lobakin@intel.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230228040121.94253-3-alexei.starovoitov@gmail.com>
-User-Agent: Mutt/2.2.9 (2022-11-12)
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 27, 2023 at 08:01:18PM -0800, Alexei Starovoitov wrote:
-> From: Alexei Starovoitov <ast@kernel.org>
-> 
-> bpf programs sometimes do:
-> bpf_cgrp_storage_get(&map, task->cgroups->dfl_cgrp, ...);
-> It is safe to do, because cgroups->dfl_cgrp pointer is set diring init and
-> never changes. The task->cgroups is also never NULL. It is also set during init
-> and will change when task switches cgroups. For any trusted task pointer
-> dereference of cgroups and dfl_cgrp should yield trusted pointers. The verifier
-> wasn't aware of this. Hence in gcc compiled kernels task->cgroups dereference
-> was producing PTR_TO_BTF_ID without modifiers while in clang compiled kernels
-> the verifier recognizes __rcu tag in cgroups field and produces
-> PTR_TO_BTF_ID | MEM_RCU | MAYBE_NULL.
-> Tag cgroups and dfl_cgrp as trusted to equalize clang and gcc behavior.
-> When GCC supports btf_type_tag such tagging will done directly in the type.
-> 
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Currently, passing HW hash from descriptors to skb is broken two times.
+The first bug effectively disables hash from being filled at all, unless
+%NETIF_F_RXHASH is *disabled* via Ethtool. The second incorrectly says
+that IPv6 UDP packets are L3, which also triggers CPU hashing when
+needed (the networking core treats only L4 HW hash as "true").
+The very same problems were fixed in i40e and ice, but not in iavf,
+although each of the original commits bugged at least two drivers.
+It's never too late (I hope), so fix iavf this time.
 
-Acked-by: David Vernet <void@manifault.com>
+Alexander Lobakin (2):
+  iavf: fix inverted Rx hash condition leading to disabled hash
+  iavf: fix non-tunneled IPv6 UDP packet type and hashing
+
+ drivers/net/ethernet/intel/iavf/iavf_common.c | 2 +-
+ drivers/net/ethernet/intel/iavf/iavf_txrx.c   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+---
+To Tony: this is very trivial and tested for a while already, I hope it
+could hit one of the first couple RCs :p
+-- 
+2.39.2
+
