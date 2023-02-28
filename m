@@ -2,110 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C3A16A62AA
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 23:40:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0027C6A62B6
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 23:45:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229652AbjB1Wkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 17:40:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60460 "EHLO
+        id S229627AbjB1WpK convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 28 Feb 2023 17:45:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229686AbjB1Wkk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 17:40:40 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F21EF1B33B
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 14:40:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Dm/5O3gi7zNk1dTTBGhwJmfSoAwkksoFFz71QxRf3xg=; b=vfw3HFU7ajDyQxmNlTMZ1NwLYb
-        YHyNbghvpM3sEKUOV5QWG+Bbok8zqOv8Y4kzYxKnZ1a8NbMg3Y84cfilKQ3TH1GzYF6jCf/U0WFM5
-        j5neYAUby3kVCwfZWblPZsL35BZ4GEsfxlj43pYnWMynaVbrjjbqp+0Y0t6uMs9ThezCUtOBE0C/C
-        +rdfe0YkMCIsUPPP9i23t+Ggv4JeMpzI6h6qNOATsKulsOuDJdEdjIgNiI36j66Tc3/B59Z0Ia4i5
-        h3RbF82hd949pNK3bxNXF1g/BxgpgYni8C53tQFyxSEUBRdRgpE3rIssuYjMy0ZkKHrm0AiusD1Xj
-        hQRmfI0A==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:41768)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pX8dk-0005Pc-7R; Tue, 28 Feb 2023 22:40:08 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pX8dh-00037i-9p; Tue, 28 Feb 2023 22:40:05 +0000
-Date:   Tue, 28 Feb 2023 22:40:05 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        =?iso-8859-1?Q?K=F6ry?= Maincent <kory.maincent@bootlin.com>,
-        andrew@lunn.ch, davem@davemloft.net, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>
-Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support
- [multicast/DSA issues]
-Message-ID: <Y/6Cxf6EAAg22GOL@shell.armlinux.org.uk>
-References: <20230227154037.7c775d4c@kmaincent-XPS-13-7390>
- <Y/zKJUHUhEgXjKFG@shell.armlinux.org.uk>
- <Y/0Idkhy27TObawi@hoboy.vegasvil.org>
- <Y/0N4ZcUl8pG7awc@shell.armlinux.org.uk>
- <Y/0QSphmMGXP5gYy@hoboy.vegasvil.org>
- <Y/3ubSj5+2C5xbZu@shell.armlinux.org.uk>
- <20230228141630.64d5ef63@kmaincent-XPS-13-7390>
- <Y/4ayPsZuYh+13eI@hoboy.vegasvil.org>
- <Y/4rXpPBbCbLqJLY@shell.armlinux.org.uk>
- <20230228142648.408f26c4@kernel.org>
+        with ESMTP id S229557AbjB1WpJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 17:45:09 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E7CC30B1D
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 14:45:06 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-71-ecQdmCC0MlGQuDzZDzZ6eg-1; Tue, 28 Feb 2023 22:45:02 +0000
+X-MC-Unique: ecQdmCC0MlGQuDzZDzZ6eg-1
+Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
+ (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.47; Tue, 28 Feb
+ 2023 22:45:00 +0000
+Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
+ id 15.00.1497.047; Tue, 28 Feb 2023 22:45:00 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Russell King' <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@kernel.org>
+CC:     Dominik Brodowski <linux@dominikbrodowski.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        H Hartley Sweeten <hsweeten@visionengravers.com>,
+        "Ian Abbott" <abbotti@mev.co.uk>, Jakub Kicinski <kuba@kernel.org>,
+        Kevin Cernekee <cernekee@gmail.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Manuel Lauss <manuel.lauss@gmail.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        "Olof Johansson" <olof@lixom.net>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        "YOKOTA Hiroshi" <yokota@netlab.is.tsukuba.ac.jp>,
+        "bcm-kernel-feedback-list@broadcom.com" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [RFC 0/6] pcmcia: separate 16-bit support from cardbus
+Thread-Topic: [RFC 0/6] pcmcia: separate 16-bit support from cardbus
+Thread-Index: AQHZSuhWwIxyEez/qUesuC2XWPglYq7k9JKQ
+Date:   Tue, 28 Feb 2023 22:45:00 +0000
+Message-ID: <b75b24146c114e948bb2d325a8d27fda@AcuMS.aculab.com>
+References: <20230227133457.431729-1-arnd@kernel.org>
+ <Y/0PbJzvrzpvLbcW@shell.armlinux.org.uk>
+In-Reply-To: <Y/0PbJzvrzpvLbcW@shell.armlinux.org.uk>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230228142648.408f26c4@kernel.org>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,PDS_BAD_THREAD_QP_64,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 28, 2023 at 02:26:48PM -0800, Jakub Kicinski wrote:
-> On Tue, 28 Feb 2023 16:27:10 +0000 Russell King (Oracle) wrote:
-> > > 5. other?  
-> > 
-> > Another possible solution to this would be to introduce a rating for
-> > each PTP clock in a similar way that we do for the kernel's
-> > clocksources, and the one with the highest rating becomes the default. 
+From: Russell King
+> Sent: 27 February 2023 20:16
 > 
-> Why not ethtool? Sorry if I'm missing something obvious..
+> On Mon, Feb 27, 2023 at 02:34:51PM +0100, Arnd Bergmann wrote:
+> > I don't expect this to be a problem normal laptop support, as the last
+> > PC models that predate Cardbus support (e.g. 1997 ThinkPad 380ED) are
+> > all limited to i586MMX CPUs and 80MB of RAM. This is barely enough to
+> > boot Tiny Core Linux but not a regular distro.
+> 
+> Am I understanding that the argument you're putting forward here is
+> "cardbus started in year X, so from year X we can ignore 16-bit
+> PCMCIA support" ?
+> 
+> Given that PCMCIA support has been present in x86 hardware at least
+> up to 2010, I don't see how that is any basis for making a decision
+> about 16-bit PCMCIA support.
+> 
+> Isn't the relevant factor here whether 16-bit PCMCIA cards are still
+> in use on hardware that can run a modern distro? (And yes, x86
+> machines that have 16-bit PCMCIA can still run Debian Stable today.)
 
-If we make the "default" fixed, such as "we always default to PHY"
-then merge Marvell PHY PTP support, then on Macchiatobin, we will
-end up switching from the current mvpp2-based PTP support to using
-the inferior PHY PTP support, resulting in a loss of precision
-and accuracy. That's a regression.
+Or, more specifically, are any people using 16-bit PCMCIA cards
+in cardbus-capable sockets with a current kernel.
+They might be using unusual cards that aren't available as
+cardbus - perhaps 56k modems (does anyone still use those?).
 
-So, while we generally want PHY PTP support to be the default,
-there are legitimate reasons for wanting in some circumstances
-for the MAC to be the default.
+I'm pretty sure I've used sparc systems that had slots that
+would take both pcmcia and cardbus cards.
+Would have been 20 years ago - but they were 64MHz PCI so wouldn't
+have been that slow (I can't remember which cpu it was).
+They ran Solaris, but weren't made by Sun.
 
-The problem with an ethtool control is it's an extra step that
-the user has to do to restore the accuracy that they had under
-today's kernels, and I don't think that's something that they
-should be involved in doing.
+	David
 
-Providing controls to userspace is all very well _if_ there is
-a way for users to make sensible decisions - which means giving
-them information such as "on this hardware, MAC PTP is preferable
-because it has better accuracy and precision, but on some other
-hardware, PHY PTP is preferable" and such a document would get
-very very long.
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
-IMHO, it's better if the kernel automatically selects a sensible
-default _and_ gives the user the ability to override it e.g. via
-ethtool.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
