@@ -2,108 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 753CE6A5503
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 10:01:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D6156A55A2
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 10:25:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229689AbjB1JBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 04:01:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44656 "EHLO
+        id S229919AbjB1JZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 04:25:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbjB1JBp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 04:01:45 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 823D37EEE
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 01:01:44 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id bv17so8899597wrb.5
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 01:01:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=qa2qIogxZuvuxhxmdqENuhd54Z/fQnHO8EzOrXEVeLg=;
-        b=LU9MwyVVkV4bY5v9m+XGtruGo/11ZjeH8oom9NluA+kaj+evJ2seNgdq5MrO6Af6Pf
-         VSoy1ybsF3XTVXYlVaFgddgEvkSzAX01JhUPjAqIWy9YzETyv6c1hkI2j5AQxx1sLzfq
-         A6JK+yqmOEb6ldOOiT8U0P6tx+5obXkT9YzIrd9SuJUhclsCSBao75aY+C/W56YQEGB5
-         9msLvKUxhcQ9i/rsUxdivPo1oLDoLQ500RTKy/o348wg0SbzCpb9EMSOOKIxTmNIvOzE
-         PZNo8CnmACKbePJUlAQpLJqysXI0QID7jKALN7YgGyVnUPFM6Vfr1I+4Yv73SvjaxssB
-         M2LQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=qa2qIogxZuvuxhxmdqENuhd54Z/fQnHO8EzOrXEVeLg=;
-        b=qvxRmjYIHHJIhHSK2G0v8gEuWAw8B45jHLNQHlyBffs20k8AydVnXF8SLzJd9oj2ud
-         ZSs019IjvWhIeBVnkDaG/BIJpZqAx5rhZX9IypOKVo4yPkeWuHMPe+rEBLQiNSgEBMf0
-         GZ3TtprjYJ2vsJacdbVI026oZyEnpYr360bl5I9INOtbfOHr6qfFkEGuanspSmYnMKR8
-         is85gR7UzOgU89x8/tko2GyxLWAQs1AqM5N8SxCxyDgvrO3p+jBWNyw3eZEiXMcgYIOg
-         rxFOIGLSMAXbfAuTQw2SIxw1/+nsMaZLIdoIdlO4CiLcoWmZXQIu6bwgLB/Cgjsyddky
-         5aww==
-X-Gm-Message-State: AO0yUKW1QUFP1DuqpOo1NQT3sK1QuR5yzxa5N6CUBpAmAEg8UUCpaGtH
-        Q8D9yOGcSV95p1y+gLiSjIQ=
-X-Google-Smtp-Source: AK7set8ku7S1O8Yn0UrbmDhd/Een1oneXLldJRI3CEZeAXQO95dBjd5sg2nIkuWYBw82LKw4EnKnYA==
-X-Received: by 2002:a5d:6187:0:b0:2ca:e8c2:6d25 with SMTP id j7-20020a5d6187000000b002cae8c26d25mr1697398wru.60.1677574902887;
-        Tue, 28 Feb 2023 01:01:42 -0800 (PST)
-Received: from gmail.com ([81.168.73.77])
-        by smtp.gmail.com with ESMTPSA id x6-20020adff646000000b002c56046a3b5sm9004990wrp.53.2023.02.28.01.01.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Feb 2023 01:01:42 -0800 (PST)
-Date:   Tue, 28 Feb 2023 09:01:40 +0000
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     Edward Cree <ecree.xilinx@gmail.com>
-Cc:     Simon Horman <simon.horman@corigine.com>, edward.cree@amd.com,
-        netdev@vger.kernel.org, linux-net-drivers@amd.com, leon@kernel.org
-Subject: Re: [RFC PATCH v2 net-next] sfc: support offloading TC VLAN push/pop
- actions to the MAE
-Message-ID: <Y/3C9Lsjx03qxRXo@gmail.com>
-Mail-Followup-To: Edward Cree <ecree.xilinx@gmail.com>,
-        Simon Horman <simon.horman@corigine.com>, edward.cree@amd.com,
-        netdev@vger.kernel.org, linux-net-drivers@amd.com, leon@kernel.org
-References: <20230223235026.26066-1-edward.cree@amd.com>
- <Y/iMTcvQZ3uW8bgP@corigine.com>
- <a35e32a0-0520-ce60-5296-39f36b278b5a@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a35e32a0-0520-ce60-5296-39f36b278b5a@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229565AbjB1JZG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 04:25:06 -0500
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2BFF55A7;
+        Tue, 28 Feb 2023 01:25:03 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0Vcix4w._1677576294;
+Received: from j66a10360.sqa.eu95.tbsite.net(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0Vcix4w._1677576294)
+          by smtp.aliyun-inc.com;
+          Tue, 28 Feb 2023 17:25:00 +0800
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH bpf-next v3 0/4] net/smc: Introduce BPF injection capability
+Date:   Tue, 28 Feb 2023 17:24:50 +0800
+Message-Id: <1677576294-33411-1-git-send-email-alibuda@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 27, 2023 at 09:33:49PM +0000, Edward Cree wrote:
-> On 24/02/2023 10:07, Simon Horman wrote:
-> > On Thu, Feb 23, 2023 at 11:50:26PM +0000, edward.cree@amd.com wrote:
-> >> +				NL_SET_ERR_MSG_MOD(extack, "More than two VLAN pops, or action order violated");
-> > 
-> > nit: I'm not sure if there is anything to be done about it,
-> >      but checkpatch complains about ling lines here...
-> 
-> Yeah I don't think these can be helped.  Breaking up the
->  containing function (to reduce indent depth) would be
->  rather synthetic imho, most of it wouldn't even be able
->  to be shared with the decap and conntrack versions when
->  those get added.)
+From: "D. Wythe" <alibuda@linux.alibaba.com>
 
-You can put the string on it's own line, i.e. align it under
-extack. I think that will pacify checkpatch.
+This patches attempt to introduce BPF injection capability for SMC,
+and add selftest to ensure code stability.
 
-Martin
+As we all know that the SMC protocol is not suitable for all scenarios,
+especially for short-lived. However, for most applications, they cannot
+guarantee that there are no such scenarios at all. Therefore, apps
+may need some specific strategies to decide shall we need to use SMC
+or not, for example, apps can limit the scope of the SMC to a specific
+IP address or port.
 
-> 
-> >> +			}
-> >> +			tci = fa->vlan.vid & 0x0fff;
-> >> +			tci |= fa->vlan.prio << 13;
-> > 
-> > nit: Maybe VLAN_PRIO_SHIFT and VLAN_VID_MASK can be used here.
-> 
-> Yep good suggestion, incorporated for v3.
-> Thanks for the review.
-> 
-> -ed
+Based on the consideration of transparent replacement, we hope that apps
+can remain transparent even if they need to formulate some specific
+strategies for SMC using. That is, do not need to recompile their code.
+
+On the other hand, we need to ensure the scalability of strategies
+implementation. Although it is simple to use socket options or sysctl,
+it will bring more complexity to subsequent expansion.
+
+Fortunately, BPF can solve these concerns very well, users can write
+thire own strategies in eBPF to choose whether to use SMC or not.
+And it's quite easy for them to modify their strategies in the future.
+
+This patches implement injection capability for SMC via struct_ops.
+In that way, we can add new injection scenarios in the future.
+
+v3 -> v2: 
+    1. fix checkpatch error and warning.
+    2. split patch for better review.
+    3. enhance selftest to cover more scenarios.
+
+v2 -> v1:
+    1. fix compile error and warning.
+
+D. Wythe (4):
+  net/smc: move smc_sock related structure definition
+  bpf: add SMC support in BPF struct_ops
+  net/smc: add BPF injection on smc negotiation
+  bpf/selftests: add selftest for SMC bpf capability
+
+ include/linux/btf_ids.h                          |  12 +
+ include/net/smc.h                                | 248 ++++++++++++++++++
+ kernel/bpf/bpf_struct_ops_types.h                |   4 +
+ net/Makefile                                     |   5 +
+ net/smc/af_smc.c                                 |  15 +-
+ net/smc/bpf_smc_struct_ops.c                     | 148 +++++++++++
+ net/smc/smc.h                                    | 224 ----------------
+ tools/testing/selftests/bpf/prog_tests/bpf_smc.c |  37 +++
+ tools/testing/selftests/bpf/progs/bpf_smc.c      | 320 +++++++++++++++++++++++
+ 9 files changed, 788 insertions(+), 225 deletions(-)
+ create mode 100644 net/smc/bpf_smc_struct_ops.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_smc.c
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_smc.c
+
+-- 
+1.8.3.1
+
