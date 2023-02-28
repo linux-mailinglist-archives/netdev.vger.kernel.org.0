@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DEB46A5999
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 13:59:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0F786A59D4
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 14:09:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231393AbjB1M7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 07:59:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39464 "EHLO
+        id S231222AbjB1NJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 08:09:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbjB1M7c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 07:59:32 -0500
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9965166CB
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 04:59:31 -0800 (PST)
-Received: by mail-qt1-x836.google.com with SMTP id s12so10166194qtq.11
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 04:59:31 -0800 (PST)
+        with ESMTP id S229560AbjB1NJN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 08:09:13 -0500
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5158D2A99E
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 05:09:01 -0800 (PST)
+Received: by mail-qt1-x829.google.com with SMTP id ay9so10225796qtb.9
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 05:09:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=3Mvp5a5ow275qoj/bal5XzG6ACLZVXMLG5OcYtj+gP0=;
-        b=jaEdNPptrsNiY18ZpELtTn5GAhGJyf2gshKEmPhgJvjGJIuwDMROdBw+sx0+wo9wck
-         DndtEHZNPL4ZGyGp3hnhqxA76nvrO+Fp8aums/kZ/uQyWDFGEe9l+vZty0X060ASDxpA
-         wqfMYsH42jz461PqPQAWHV27tpwq53oOxgmsPVuLHM3mEDKDQdOYdq6lq2RMLB5UxTVW
-         5mt1PW9HcQ/wnYk+3LOLvXlprswyGFq2FWWrhA/TY3NnRYdKwn0g4XeutnkRhM6XgBTb
-         pAP/dCjvkfk6nd3433PyJowFHVOHXiHIeRoxXOMYs60+8xpWIpXlUjMSBsDmaiTQl1p1
-         oJyQ==
+        bh=vat3xeQmZTiFLEDSKZA59+N9HaKxMBir5fZRmbqi8hA=;
+        b=BuHwNJofDg+Udck252yy+ba7SqGxhgMPzNX5yBs9KShV6qyQkjVhEGILYp5y9cByOu
+         GXrbnhi6JELzZmWF056QxoPguYh/yHok9EYoHpo7TXA2O2y8I0Qb2XC9E79K2jxMYRQl
+         Ia9YGTrD9tfM4yPZOCMxmlSAvimeUxwKqpZ53WSrQXJbbdLJCnBRQ/f2i3IAnLa8RjbC
+         FpXz3RLCgAYA7QA4ge8ZXLK6iJfDH+CXSW/9OpPEBC/rEwBeT1Z7iLwGCGb+QqBZyu7O
+         sL8cOvREpI3tQZ6ZmP0r1KkOEgP0SlkAzfgeNaPHa0SoTIn2oOQpYyhmMcmTos1NGr/q
+         K4NA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=3Mvp5a5ow275qoj/bal5XzG6ACLZVXMLG5OcYtj+gP0=;
-        b=UAA2Eq7FvXgm2PE6m2X6CdWqyoBW3qFS8OyJdXi5GMli0hPVWWDYHAK/BexEAIAu9Y
-         XaGf9GPz2EhjVrnArrTgYOZN01KQC2TTjoFoE0MUI+s+APcreBmqcURupAxslnw/0XKL
-         72SE5hcsVE3pmGQFwlTagHzrvq4mNl2ia035Kk7Z8P7sK+oTnP90ET7wFMKvLTf6T3lk
-         oburgU+naAKw8lfttEXMUOoD4AiFraueHbggyBpSVL4ieXP9g1MWfwWz9a0lAV57gyJJ
-         SosfwqyO0MDfU0u1bzPRb9997ezM/ZAyw5jUDLOZmpyR9WpvE4A4H2FEmPZY+Fl9e2jE
-         zckg==
-X-Gm-Message-State: AO0yUKVPFHmENje0VVRwJNvceaD7V3GWpYYBarDvQK7Ij4fUEbfuOK7b
-        4bEYpLbPu4lNxEfRav3Og1g=
-X-Google-Smtp-Source: AK7set+2T9EEk0fUya7cONVG+TnsDXO8xG9kD4UnMOxoow0EOD+hr9ZQAGQFqx2eMwXzhQzFQ5bZTw==
-X-Received: by 2002:ac8:5f08:0:b0:3bf:a5fb:6d6e with SMTP id x8-20020ac85f08000000b003bfa5fb6d6emr3994074qta.29.1677589170918;
-        Tue, 28 Feb 2023 04:59:30 -0800 (PST)
+        bh=vat3xeQmZTiFLEDSKZA59+N9HaKxMBir5fZRmbqi8hA=;
+        b=UG9+Nm5vAsvCsvRUptaQ8KNWnLgLUyJmOfaZUH88bR63XSjI64jJM6evXN3T4qQa1h
+         yI9Q/89pZB6IJJlvZ7komSQzzad0lHmdZyD+YWmFllY288jFJba3963m15ZZFiVufAc5
+         zszDc2Jow3v3o1VdDQqe9DGz9tTRr7Ce4/06HQhNnqF6nTIS5hxwsGKw5yLpSDA+quWx
+         vTjwNpH0tzbw1ZC55xUn0hjZ5qWpErm7oReWWvwxYm2X5/sM98zzlwTnBQqSq7qJoN5I
+         uUhPCx1e9HvHIN2XMM7PWWRTRlzeQIIO1ceqO+jVlsgD8ljmhkO21XwGkIkWkpSXa+0e
+         xWUA==
+X-Gm-Message-State: AO0yUKWunbbE71Bk6bRZJRnJV92znneHghAqntdCRhk2L3SZkVz2serD
+        4ChUVpgUo3giKWz+8rQVrTU=
+X-Google-Smtp-Source: AK7set83HOyGzm+5IgGYMIt3g4B0RQqxlu+QOpSe190KOU9wQwh8I9F+WG2Nxw3bwQg/iKHyVb2ENg==
+X-Received: by 2002:ac8:5f08:0:b0:3bc:fc11:b368 with SMTP id x8-20020ac85f08000000b003bcfc11b368mr18640910qta.19.1677589740302;
+        Tue, 28 Feb 2023 05:09:00 -0800 (PST)
 Received: from vps.qemfd.net (vps.qemfd.net. [173.230.130.29])
-        by smtp.gmail.com with ESMTPSA id x30-20020ac84d5e000000b003bfb62a377fsm6471376qtv.3.2023.02.28.04.59.30
+        by smtp.gmail.com with ESMTPSA id w9-20020ac87189000000b003b8484fdfccsm6426832qto.42.2023.02.28.05.08.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Feb 2023 04:59:30 -0800 (PST)
+        Tue, 28 Feb 2023 05:08:59 -0800 (PST)
 Received: from schwarzgerat.orthanc (schwarzgerat.danknet [192.168.128.2])
-        by vps.qemfd.net (Postfix) with ESMTP id 255502B5DE;
-        Tue, 28 Feb 2023 07:59:30 -0500 (EST)
+        by vps.qemfd.net (Postfix) with ESMTP id 7350D2B5DE;
+        Tue, 28 Feb 2023 08:08:59 -0500 (EST)
 Received: by schwarzgerat.orthanc (Postfix, from userid 1000)
-        id 0D5AC60025E; Tue, 28 Feb 2023 07:59:30 -0500 (EST)
-Date:   Tue, 28 Feb 2023 07:59:30 -0500
+        id 628E260025E; Tue, 28 Feb 2023 08:08:59 -0500 (EST)
+Date:   Tue, 28 Feb 2023 08:08:59 -0500
 From:   nick black <dankamongmen@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
@@ -62,7 +62,7 @@ Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
         Willem de Bruijn <willemdebruijn.kernel@gmail.com>
 Subject: Re: [PATCH] [net] add rx_otherhost_dropped sysfs entry
-Message-ID: <Y/36sjlV6dWonLhC@schwarzgerat.orthanc>
+Message-ID: <Y/386wA5az1Yixyp@schwarzgerat.orthanc>
 References: <Y/p5sDErhHtzW03E@schwarzgerat.orthanc>
  <20230227102339.08ddf3fb@kernel.org>
  <Y/z2olg1C4jKD5m9@schwarzgerat.orthanc>
@@ -81,19 +81,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski left as an exercise for the reader:
-> How about a banner before rx_otherhost_dropped? Maybe:
-> 
-> 	/* end of old stats -- new stats via rtnetlink only */
+We do not want to export any further stats via sysfs.
+Applications ought be using netlink. Note this at the end
+of the NETSTAT_ENTRIES.
+---
+ net/core/net-sysfs.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-sounds good to me; I'll also annotate the sysfs documentation to
-emphasize that netlink is recommended, and that new stats will
-not be reflected there. from the perspective of an outsider like
-myself, it just looks like this stat was missed.
-
-i'll have a new patch for you shortly. thank you for your review!
-
+diff --git net/core/net-sysfs.c net/core/net-sysfs.c
+index 15e3f4606b5f..c00a0f332a22 100644
+--- net/core/net-sysfs.c
++++ net/core/net-sysfs.c
+@@ -714,6 +714,10 @@ NETSTAT_ENTRY(rx_compressed);
+ NETSTAT_ENTRY(tx_compressed);
+ NETSTAT_ENTRY(rx_nohandler);
+ 
++/* end of old stats -- new stats via rtnetlink only. we do not want
++ * more sysfs entries.
++ */
++
+ static struct attribute *netstat_attrs[] __ro_after_init = {
+ 	&dev_attr_rx_packets.attr,
+ 	&dev_attr_tx_packets.attr,
 -- 
-nick black -=- https://www.nick-black.com
-to make an apple pie from scratch,
-you need first invent a universe.
+2.39.2
+
