@@ -2,137 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 08E666A586A
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 12:37:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 577076A5817
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 12:30:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229560AbjB1LhE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 06:37:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36214 "EHLO
+        id S231691AbjB1L3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 06:29:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229510AbjB1LhD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 06:37:03 -0500
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77EE76198;
-        Tue, 28 Feb 2023 03:37:01 -0800 (PST)
-Received: from fpc (unknown [46.242.14.200])
-        by mail.ispras.ru (Postfix) with ESMTPSA id 1A4B14076277;
-        Tue, 28 Feb 2023 11:25:36 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru 1A4B14076277
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
-        s=default; t=1677583536;
-        bh=dseDSkkDHilrS59Zk+KH9sYISD8C5wKWpJzIj3wjll8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MiTjTGrbn73mC02flyHmmxWFWNNvXwDe0yrK8lTSI8BoWShr1298JbU6Z5UHPouDx
-         IwsYwh3gS2jUqD15v/tSDPM6PjbVY+8nT8Tj0U0kkMgU+ompnzTvgQH8/Meya7NjtQ
-         75TO2dEq3sTqMyxGHpFJo9GP2tw5AUbTQL4OrEBA=
-Date:   Tue, 28 Feb 2023 14:25:31 +0300
-From:   Fedor Pchelkin <pchelkin@ispras.ru>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S231664AbjB1L3g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 06:29:36 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D2A1C302
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 03:29:13 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id i34so38448540eda.7
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 03:29:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares.net; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=GBj/GGcssUIPclJb9OaTVZJj6GUgJJTT+lDCTo9rCgQ=;
+        b=ev4Uj0zM8CDLMvFJ9N89gY8s6bTexBCziLfJ9y93h0GjAvOdGgRLYhyM7EWKpGSG/c
+         uBBFYWpQ+ShDHjIhAMAbtmkRcPG4oU1w/LTk+Xr4H+V/ZfQfiOsJm6yk5r2BuJ15vlic
+         wQiodG7MheSxV25r7YFRcY9iC1qE2jrqtB3l03dLuU8KG0QcEaJvbntY1ecSLelsUB6F
+         Z7Q3nrhzvpDTr0apjMYNKcvvhwD+geZ8bmraNLTfVIY2NphLF5ntsu0sIRC+8QB7Z+nB
+         fVaQ4mzqOaH5FDJQRt757SZpNXAlTZJ/iNhFbhpQbSdIJM0+QDLF5Ul/EQJq6KYRdE5h
+         gOVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=GBj/GGcssUIPclJb9OaTVZJj6GUgJJTT+lDCTo9rCgQ=;
+        b=nVtkGCQBdO8sWCjYgQcYL+DCFgGVA7LDqtZGu+ucUSHuB5rUXsx+Nc8UROhBlgjrN3
+         xfknGYTOwW2kMm8AzVq8CLZJWvKj66/ST5/afFbfiCcjMOFRv1gSLqbZYlnNPDH5CgC1
+         0VZlIfcmBATiRCtIgqRbq4AFenzXfhGZa/p68o3fYizsulZirYaBJl0a6hSiR9m/gwnY
+         uzJbCzp8ryo4dzD5/YJ4rbWPLnEv/NpGzRJjXW4zA02CSE+WKK5Pv58fvuWsESKAXVEN
+         L5hNzg9a9lcywZzYS5YvCrnaPwk9Q26eAHFpNHV/5gv/cLvIzgEWI0u5eK3k9UVir0/t
+         tIaA==
+X-Gm-Message-State: AO0yUKXunWKAeGhFqcFvE9uQu723eGGnms32Z/QhBBxVlzZMiKU2mswB
+        2IP88fUcRphOHi3hCAD5Q61Gog==
+X-Google-Smtp-Source: AK7set8RZDJ6WdOsfg3RtQ3zH7fB6FvZdtq4hk6RJEmyFYlX71IvTbbNpXsS2JtDUgI3CjxqD9hTNg==
+X-Received: by 2002:a17:907:ca14:b0:8b0:26b6:3f2b with SMTP id uk20-20020a170907ca1400b008b026b63f2bmr2016682ejc.53.1677583722973;
+        Tue, 28 Feb 2023 03:28:42 -0800 (PST)
+Received: from ?IPV6:2a02:578:8593:1200:5848:64ae:8a99:312a? ([2a02:578:8593:1200:5848:64ae:8a99:312a])
+        by smtp.gmail.com with ESMTPSA id r22-20020a50aad6000000b004af6a7e9131sm4223979edc.64.2023.02.28.03.28.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Feb 2023 03:28:42 -0800 (PST)
+Message-ID: <a0a76c20-4fd9-476b-3e32-06f7cc2bbf1b@tessares.net>
+Date:   Tue, 28 Feb 2023 12:28:41 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH net 0/7] mptcp: fixes for 6.3
+Content-Language: en-GB
+To:     mptcp@lists.linux.dev, "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Guenter Roeck <groeck@google.com>,
-        Martin Faltesek <mfaltesek@google.com>,
-        Duoming Zhou <duoming@zju.edu.cn>,
-        Samuel Ortiz <sameo@linux.intel.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        lvc-project@linuxtesting.org,
-        syzbot+df64c0a2e8d68e78a4fa@syzkaller.appspotmail.com
-Subject: Re: [PATCH] nfc: fix memory leak of se_io context in nfc_genl_se_io
-Message-ID: <20230228112531.gam3dwqyx36pyynf@fpc>
-References: <20230225105614.379382-1-pchelkin@ispras.ru>
- <b0f65aaa-37aa-378f-fbbf-57d107f29f5f@linaro.org>
- <20230227150553.m3okhdxqmjgon4dd@fpc>
- <7e9ffa10-d6e8-48b5-e832-cf77ac1a8802@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7e9ffa10-d6e8-48b5-e832-cf77ac1a8802@linaro.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        Menglong Dong <imagedong@tencent.com>,
+        Mengen Sun <mengensun@tencent.com>,
+        Shuah Khan <shuah@kernel.org>, Florian Westphal <fw@strlen.de>,
+        Jiang Biao <benbjiang@tencent.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, stable@vger.kernel.org,
+        Christoph Paasch <cpaasch@apple.com>,
+        Geliang Tang <geliang.tang@suse.com>
+References: <20230227-upstream-net-20230227-mptcp-fixes-v1-0-070e30ae4a8e@tessares.net>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+In-Reply-To: <20230227-upstream-net-20230227-mptcp-fixes-v1-0-070e30ae4a8e@tessares.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 28, 2023 at 11:14:03AM +0100, Krzysztof Kozlowski wrote:
-> On 27/02/2023 16:05, Fedor Pchelkin wrote:
-> >>> Fixes: 5ce3f32b5264 ("NFC: netlink: SE API implementation")
-> >>> Reported-by: syzbot+df64c0a2e8d68e78a4fa@syzkaller.appspotmail.com
-> >>> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
-> >>> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-> >>
-> >> SoB order is a bit odd. Who is the author?
-> >>
-> > 
-> > The author is me (Fedor). I thought the authorship is expressed with the
-> > first Signed-off-by line, isn't it?
+Hello,
+
+On 27/02/2023 18:29, Matthieu Baerts wrote:
+> Patch 1 fixes a possible deadlock in subflow_error_report() reported by
+> lockdep. The report was in fact a false positive but the modification
+> makes sense and silences lockdep to allow syzkaller to find real issues.
+> The regression has been introduced in v5.12.
 > 
-> Yes and since you are sending it, then what is Alexey's Sob for? The
-> tags are in order...
+> Patch 2 is a refactoring needed to be able to fix the two next issues.
+> It improves the situation and can be backported up to v6.0.
 > 
-
-Now I get what you mean. Alexey is my supervisor and the patches I make
-are passed through him (even though they are sent by me). If this is not
-a customary thing, then I'll take that into account for further
-submissions. I guess something like Acked-by is more appropriate?
-
-> > 
-> >>> ---
-> >>>  drivers/nfc/st-nci/se.c   | 6 ++++++
-> >>>  drivers/nfc/st21nfca/se.c | 6 ++++++
-> >>>  net/nfc/netlink.c         | 4 ++++
-> >>>  3 files changed, 16 insertions(+)
-> >>>
-> >>> diff --git a/drivers/nfc/st-nci/se.c b/drivers/nfc/st-nci/se.c
-> >>> index ec87dd21e054..b2f1ced8e6dd 100644
-> >>> --- a/drivers/nfc/st-nci/se.c
-> >>> +++ b/drivers/nfc/st-nci/se.c
-> >>> @@ -672,6 +672,12 @@ int st_nci_se_io(struct nci_dev *ndev, u32 se_idx,
-> >>>  					ST_NCI_EVT_TRANSMIT_DATA, apdu,
-> >>>  					apdu_length)
-> >> nci_hci_send_event() should also free it in its error paths.
-> >> nci_data_exchange_complete() as well? Who eventually frees it? These
-> >> might be separate patches.
-> >>
-> >>
-> > 
-> > nci_hci_send_event(), as I can see, should not free the callback context.
-> > I should have probably better explained that in the commit info (will
-> > include this in the patch v2), but the main thing is: nfc_se_io() is
-> > called with se_io_cb callback function as an argument and that callback is 
-> > the exact place where an allocated se_io_ctx context should be freed. And
-> > it is actually freed there unless some error path happens that leads the
+> Patches 3 and 4 fix UaF reported by KASAN. It fixes issues potentially
+> visible since v5.7 and v5.19 but only reproducible until recently
+> (v6.0). These two patches depend on patch 2/7.
 > 
-> Exactly, so why nci_hci_send_event() error path should not free it?
+> Patch 5 fixes the order of the printed values: expected vs seen values.
+> The regression has been introduced recently: present in Linus' tree but
+> not in a tagged version yet.
 > 
-
-nci_hci_send_event() should not free it on its error path because the
-bwi_timer is already charged before nci_hci_send_event() is called.
-
-The pattern in the .se_io functions of the corresponding drivers (st-nci,
-st21nfca) is following:
-
-	info->se_info.cb = cb;
-	info->se_info.cb_context = cb_context;
-	mod_timer(&info->se_info.bwi_timer, jiffies +
-		  msecs_to_jiffies(info->se_info.wt_timeout)); // <-charged
-	info->se_info.bwi_active = true;
-	return nci_hci_send_event(...);
-
-As the timer is charged, it will eventually call se_io_cb() to free the
-context, even if the error path is taken inside nci_hci_send_event().
-
-Am I missing something?
-
-> > timer which triggers this se_io_cb callback not to be charged at all.
-> > 
+> Patch 6 adds missing ro_after_init flags. A previous patch added them
+> for other functions but these two have been missed. This previous patch
+> has been backported to stable versions (up to v5.12) so probably better
+> to do the same here.
 > 
+> Patch 7 fixes tcp_set_state() being called twice in a row since v5.10.
+
+I'm sorry to ask for that but is it possible not to apply these patches?
+
+> Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+> ---
+> Geliang Tang (1):
+>       mptcp: add ro_after_init for tcp{,v6}_prot_override
 > 
-> Best regards,
-> Krzysztof
+> Matthieu Baerts (2):
+>       selftests: mptcp: userspace pm: fix printed values
+>       mptcp: avoid setting TCP_CLOSE state twice
 > 
+> Paolo Abeni (4):
+>       mptcp: fix possible deadlock in subflow_error_report
+>       mptcp: refactor passive socket initialization
+>       mptcp: use the workqueue to destroy unaccepted sockets
+
+After 3 weeks of validation, syzkaller found an issue with this patch:
+
+  https://github.com/multipath-tcp/mptcp_net-next/issues/366
+
+We then need to NAK this series. We will send a v2 with a fix for that.
+
+>       mptcp: fix UaF in listener shutdown
+
+The other patches of the series are either not very important or are
+linked to the "faulty" one: they can all wait as well.
+
+Cheers,
+Matt
+-- 
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
