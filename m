@@ -2,84 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC6916A5B7E
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 16:16:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A01A96A5B83
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 16:17:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229888AbjB1PQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 10:16:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60216 "EHLO
+        id S229894AbjB1PRt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 10:17:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229861AbjB1PQc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 10:16:32 -0500
-Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB372ED79;
-        Tue, 28 Feb 2023 07:16:31 -0800 (PST)
-Received: by mail-qt1-f176.google.com with SMTP id h19so10754469qtk.7;
-        Tue, 28 Feb 2023 07:16:31 -0800 (PST)
+        with ESMTP id S229881AbjB1PRs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 10:17:48 -0500
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C842ED79
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 07:17:46 -0800 (PST)
+Received: by mail-io1-xd36.google.com with SMTP id q6so4171305iot.2
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 07:17:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=P7Cz6kbvRX5Jf355ebSBKy0RIgfXk61NCeYRAb4vPT8=;
+        b=i4rv6znLYMhsTceJFOhHDG9ba1CMN/Xk36xMgbkEK9T50xA7NB4K8WlZUXAeHfZVaN
+         qOeQ38C2ZXS/Iy1uZJn614UYbxacq9cN2VclRZHdRFUBRprtuc2LaVir1PHpApWHDIPt
+         EBKTyqt1WJCPbljjDQgsRVQuB2DC44NbaT9sLH0lYHefgrnqfk71zUxSruat+Opongo4
+         k0jkDNJKa/wVUdgEFynO5PGQqYhEI7vqd8usjc/l8pq/K05/wttqLXmk8Fx+jXIhJoJ1
+         cVCRd08UgQYfXbbEud6th3PIR0kpX3sIJMveSBB1PACm6e1LRcOtVDRqVaM1AIpWlWCJ
+         85Ew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=RPo/RiCcotu5llivQRx04vO6x7keCmQo8aszi+pK/Mg=;
-        b=ofLqhYkDr8wfes7ThJ5ZkksqXdLaIUmMKXbpRrB9THU/F7BQ+0aGyXmtM3RT5+gxqO
-         +Xt5yNIHMAOXjyecN40HqWskbYuj8wBVf9ynrGpYf73vYQ5P7U8cnem5HKNMQOKABLxp
-         spiFO13pP2PVzxANXBrIbo67Rh3m1eiOW9GoDIoJuLm0ePJv2OJuzyJHIl27b6GtpaRW
-         okrgA/6ZF8yszn2soD4nmVNaxZbo3xLbh60nHz3EHtBKv0YsByXKlGyzykLUk5FDoyOJ
-         6wwIiHqi5A2oMgqAqoULumeVSMMr3S8C4c2foEVtLGZHditKCvwookSHiB2SM02nYNjs
-         oPgA==
-X-Gm-Message-State: AO0yUKXrLFD6WWOdUCYMKJmHPIEPe899Vr49y3aj4Cf3vF0tonMwrjND
-        myjMgCbSxLlCVTzfsOgX9MA=
-X-Google-Smtp-Source: AK7set+mfSO1i5CwmeerG+592lIRurSup5MSfH0YpKclZmIcBDebTNjSTPRBsMt8TwMqeCeKeVbIsw==
-X-Received: by 2002:a05:622a:1889:b0:3b8:6ae7:1757 with SMTP id v9-20020a05622a188900b003b86ae71757mr5559647qtc.38.1677597390523;
-        Tue, 28 Feb 2023 07:16:30 -0800 (PST)
-Received: from maniforge ([2620:10d:c091:480::1:f172])
-        by smtp.gmail.com with ESMTPSA id n15-20020ac81e0f000000b003b691385327sm5024444qtl.6.2023.02.28.07.16.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Feb 2023 07:16:30 -0800 (PST)
-Date:   Tue, 28 Feb 2023 09:16:27 -0600
-From:   David Vernet <void@manifault.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     davem@davemloft.net, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@kernel.org, davemarchevsky@meta.com, tj@kernel.org,
-        memxor@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@fb.com
-Subject: Re: [PATCH v3 bpf-next 1/5] bpf: Rename __kptr_ref -> __kptr and
- __kptr -> __kptr_untrusted.
-Message-ID: <Y/4ay2APLyfPAMvD@maniforge>
-References: <20230228040121.94253-1-alexei.starovoitov@gmail.com>
- <20230228040121.94253-2-alexei.starovoitov@gmail.com>
+        bh=P7Cz6kbvRX5Jf355ebSBKy0RIgfXk61NCeYRAb4vPT8=;
+        b=MxFndP7hPU+c70J09AgGc80Kyip4TgjGpajN7nLaFtT4hnAkoNghhtFy5fPbhXF6qx
+         9s/dxdIJ/EDH3GjdPsmGIMl4YtilZ5auhu2+z0dsjfYrzNmPHoY/X7Nu0krEXPR4WY1D
+         5zD4196ME9HWH7K8DHeXo+GE9aJM6RNZci0ifBNpvF80Z5VoLmUnPR+6cwp6XYhgDSnE
+         p3HmoL+XPdGpVTBSKWTrvNeTT++sulmFikubthi3NgOHK7lQP8XjJa8RJ1EONSr/aWyP
+         I3biMbmKcurS28HKEBM/h3jz11fyioYLX5WW0xWUim9FR1PcvDmWmtaH9O2uTTb3a+Lf
+         0y/g==
+X-Gm-Message-State: AO0yUKUsgTRcFZpQYHzoEgx/DcFttxGhvH6w7w6nunZW0YfLwhQbgQBS
+        PIm4isHrvKanFg3sqy1UwgHUV8fv0rIdybEvRJpNIA/JXZ6JTQsy1ZU=
+X-Google-Smtp-Source: AK7set8p8GdPjTXxA1EMGlcXKaGQ77U2TcLGMP9YKcp9xsezJR3r0dwWN+BLGAkxLMMl8OKY5qO8Ulng+/xyxKzGfaM=
+X-Received: by 2002:a6b:e40c:0:b0:744:d7fc:7a4f with SMTP id
+ u12-20020a6be40c000000b00744d7fc7a4fmr1429782iog.1.1677597465904; Tue, 28 Feb
+ 2023 07:17:45 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230228040121.94253-2-alexei.starovoitov@gmail.com>
-User-Agent: Mutt/2.2.9 (2022-11-12)
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+References: <20230228132118.978145284@linutronix.de> <20230228132910.934296889@linutronix.de>
+In-Reply-To: <20230228132910.934296889@linutronix.de>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 28 Feb 2023 16:17:34 +0100
+Message-ID: <CANn89iKM6yMP2Doy0MuCrfX1LASPFt_OnpPY-aNg+hu=F3W7AA@mail.gmail.com>
+Subject: Re: [patch 1/3] net: dst: Prevent false sharing vs. dst_entry::__refcnt
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linuxfoundation.org>, x86@kernel.org,
+        Wangyang Guo <wangyang.guo@intel.com>,
+        Arjan van De Ven <arjan@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Marc Zyngier <maz@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 27, 2023 at 08:01:17PM -0800, Alexei Starovoitov wrote:
-> From: Alexei Starovoitov <ast@kernel.org>
-> 
-> __kptr meant to store PTR_UNTRUSTED kernel pointers inside bpf maps.
-> The concept felt useful, but didn't get much traction,
-> since bpf_rdonly_cast() was added soon after and bpf programs received
-> a simpler way to access PTR_UNTRUSTED kernel pointers
-> without going through restrictive __kptr usage.
-> 
-> Rename __kptr_ref -> __kptr and __kptr -> __kptr_untrusted to indicate
-> its intended usage.
-> The main goal of __kptr_untrusted was to read/write such pointers
-> directly while bpf_kptr_xchg was a mechanism to access refcnted
-> kernel pointers. The next patch will allow RCU protected __kptr access
-> with direct read. At that point __kptr_untrusted will be deprecated.
-> 
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+On Tue, Feb 28, 2023 at 3:33=E2=80=AFPM Thomas Gleixner <tglx@linutronix.de=
+> wrote:
+>
+> From: Wangyang Guo <wangyang.guo@intel.com>
+>
+> dst_entry::__refcnt is highly contended in scenarios where many connectio=
+ns
+> happen from and to the same IP. The reference count is an atomic_t, so th=
+e
+> reference count operations have to take the cache-line exclusive.
+>
+> Aside of the unavoidable reference count contention there is another
+> significant problem which is caused by that: False sharing.
+>
+> perf top identified two affected read accesses. dst_entry::lwtstate and
+> rtable::rt_genid.
+>
+> dst_entry:__refcnt is located at offset 64 of dst_entry, which puts it in=
+to
+> a seperate cacheline vs. the read mostly members located at the beginning
+> of the struct.
 
-Acked-by: David Vernet <void@manifault.com>
+This will probably increase struct rt6_info past the 4 cache line size, rig=
+ht ?
+
+It would be nice to allow sharing the 'hot' cache line with seldom used fie=
+lds.
+
+Instead of mere pads, add some unions, and let rt6i_uncached/rt6i_uncached_=
+list
+use them.
