@@ -2,77 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46FB36A5758
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 11:59:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D20896A575A
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 12:00:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229606AbjB1K7n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 05:59:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49728 "EHLO
+        id S229953AbjB1LAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 06:00:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229833AbjB1K7l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 05:59:41 -0500
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:237:300::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56852D9
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 02:59:33 -0800 (PST)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1pWxhh-0002Kr-BL; Tue, 28 Feb 2023 11:59:29 +0100
-Date:   Tue, 28 Feb 2023 11:59:29 +0100
-From:   Florian Westphal <fw@strlen.de>
-To:     Alexander Atanasov <alexander.atanasov@virtuozzo.com>
-Cc:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH] netfilter: nf_tables: always synchronize with readers
- before releasing tables
-Message-ID: <20230228105929.GB6107@breakpoint.cc>
-References: <20230227121720.3775652-1-alexander.atanasov@virtuozzo.com>
- <901abd29-9813-e4fe-c1db-f5273b1c55e3@virtuozzo.com>
- <20230227124402.GA30043@breakpoint.cc>
- <266de015-7712-8672-9ca0-67199817d587@virtuozzo.com>
- <20230227161140.GA31439@breakpoint.cc>
- <28a88519-d0e2-7629-9ed9-3f9c12ca024b@virtuozzo.com>
- <20230227233155.GA6107@breakpoint.cc>
- <ee004a9d-7d49-448f-16d7-807afc755dd0@virtuozzo.com>
+        with ESMTP id S229530AbjB1LAT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 06:00:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C93037EC9;
+        Tue, 28 Feb 2023 03:00:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 646A260FB6;
+        Tue, 28 Feb 2023 11:00:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BCE53C4339B;
+        Tue, 28 Feb 2023 11:00:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1677582017;
+        bh=Ar+SQirrxW781NqbLNsgv2M4w8CzAdGOTnzBfZZUZKc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=lt46VP3lJuDKBEKkebflLt+MjRD2LcebwxMi0nmGuKdbel04ghRUq4BtRMjGguy8l
+         up8JjlUwXt4qp1/EfA6s6e0d+sYnBN3GHWu5TKS7NRxggdFL0l0smNSc3lXrO4GXZy
+         VB5wnYNN/D4CMkmjD1yru04ubyp0c8aAkvaQG51et0Xl0NElyj3COAwWv51V2OKX7G
+         +R/XXtw4lTDc7Ob854xm/xjnfMN+i3kA/rHRj4aH936xkxNg0p3CNDXjKDNi6VlzWM
+         +7D3vaBQonCKeIKxfDQxK9f6Q9Ce9cgZ95TXp+xqij0xbh5BBKPuNatNyYyX6XHbMN
+         hn1UJvRMpcf1Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A04CCE68D34;
+        Tue, 28 Feb 2023 11:00:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ee004a9d-7d49-448f-16d7-807afc755dd0@virtuozzo.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3] nfc: fdp: add null check of devm_kmalloc_array in
+ fdp_nci_i2c_read_device_properties
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167758201765.16008.17971935204961563764.git-patchwork-notify@kernel.org>
+Date:   Tue, 28 Feb 2023 11:00:17 +0000
+References: <20230227093037.907654-1-void0red@gmail.com>
+In-Reply-To: <20230227093037.907654-1-void0red@gmail.com>
+To:     void0red <void0red@gmail.com>
+Cc:     krzysztof.kozlowski@linaro.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, simon.horman@corigine.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexander Atanasov <alexander.atanasov@virtuozzo.com> wrote:
-> On 28.02.23 1:31, Florian Westphal wrote:
-> > Alexander Atanasov <alexander.atanasov@virtuozzo.com> wrote:
-> > > As i said i am still trying to figure out the basechain place,
-> > > where is that synchronize_rcu() call done?
-> > 
-> > cleanup_net() in net/core/net_namespace.c.
-> > 
-> > pre_exit handlers run, then synchronize_rcu, then the
-> > normal exit handlers, then exit_batch.
+Hello:
+
+This patch was applied to netdev/net.git (main)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Mon, 27 Feb 2023 17:30:37 +0800 you wrote:
+> From: Kang Chen <void0red@gmail.com>
 > 
-> It prevents anyone new to find the namespace but it does not guard against
-> the ones that have already found it.
+> devm_kmalloc_array may fails, *fw_vsc_cfg might be null and cause
+> out-of-bounds write in device_property_read_u8_array later.
+> 
+> Fixes: a06347c04c13 ("NFC: Add Intel Fields Peak NFC solution driver")
+> Signed-off-by: Kang Chen <void0red@gmail.com>
+> 
+> [...]
 
-The netns is being dismantled, how can there be any process left?
+Here is the summary with links:
+  - [v3] nfc: fdp: add null check of devm_kmalloc_array in fdp_nci_i2c_read_device_properties
+    https://git.kernel.org/netdev/net/c/11f180a5d62a
 
-> What stops them to enter a rcu_read_lock() section after the synchronize
-> call in cleanup_net() is done and race with the exit handler?
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-There should be no task in the first place.
 
-> synchronize_rcu() must be called with the commit_mutex held to be safe
-> against lock less readers using data protected with commit_mutext.
-
-Sorry, I do not understand this bug nor the fix.
