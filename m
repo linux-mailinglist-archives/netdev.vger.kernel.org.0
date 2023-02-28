@@ -2,273 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 602436A5AE2
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 15:33:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBC106A5AFB
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 15:43:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229888AbjB1Odx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 09:33:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57016 "EHLO
+        id S229656AbjB1OnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 09:43:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229864AbjB1Odd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 09:33:33 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F36E8113D9;
-        Tue, 28 Feb 2023 06:33:30 -0800 (PST)
-Message-ID: <20230228132911.046172182@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1677594809;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=HGNvsoL6Q4NxlQt+etEpqzj5yMMCQjctFVp6Cmxqw4Q=;
-        b=A5HQuOrCA64Jyt2999M+Un5ClaXxgbihM/79xI4HlkFbmS4lXVn2kaGYtLTbcJ1HI+97zn
-        ElHDns5uF7TBF2HJVJglDp6wZe2zPNQSABK9NoxmLjy6HS8g7luho7EGGt1GATirZA6HuC
-        gHFbBlybtPAkh9AISNSBGEPxy8KLUjy08STZzWccs7TU2F3r34V2xdKPaRMEAfcjpb5tpd
-        FaizvtIT0ntYQ44P1QccIO9fGMY7aS2NrLEOuiCyUeR5FcLNBohv473ppDDDkvh8kJcs/1
-        unPw1cARZtl6Rcp1W56r58Wohl5wTaOXTOZQtcIxlwqD0QVgOFgZ0nnWnQcsCA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1677594809;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=HGNvsoL6Q4NxlQt+etEpqzj5yMMCQjctFVp6Cmxqw4Q=;
-        b=ptNUqv77KIPk6fbubhRQmFES5ppJAOP+kIbA/q5bT6wxKEZGZ0tAnproDxrh4JtmcHfDW9
-        GY63g26sS+97RVDA==
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Linus Torvalds <torvalds@linuxfoundation.org>, x86@kernel.org,
-        Wangyang Guo <wangyang.guo@intel.com>,
-        Arjan Van De Ven <arjan.van.de.ven@intel.com>,
+        with ESMTP id S229471AbjB1OnQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 09:43:16 -0500
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2089.outbound.protection.outlook.com [40.107.6.89])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6163911649;
+        Tue, 28 Feb 2023 06:43:14 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=obvBcmrUa9oWoeMqCG7vsJkD5FLaL1YB0fZyuY672+4fCjjfqFWyQAb/thKQ8uzzpZCdfkhms7v9SF3vYjXZawD7xBbifj5VEN+WvMHeKawpdvJKZsQSz1Y7LeZNCcYr+hREwq210ACCIq4w3tK44OoJpubdo4ztijX7S+RFkygKL4m3I+alYeeMSLzRheE1lzI0U7+ij7ZA8xzzJgEgGMZ0iT3eddvUiJGlDeXdjD73+NBjfKwEbbWLpvEbNrLZjPWRTxyQ6EbYtgQ6F57Sik8/gqAbCpFxPbZppBtfV9zJNfZ22ekqy3BXs/a9NsWZjG44XBevoItNGUH+fqUaMg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=tLfPRn4JhZMfiq0FffdoVq7zpCN3dGNvbXvntUsg34s=;
+ b=PS8xRIVmg/yF78gX9XW+5dOM3EN/nMC0uVpMynMmt9uGGb1kfPHCwQdGR8ONcRa/Ciz3WfbqwnFF5jr61rAn0tTRbax+UuGOUGhlzuS01sAn0MeVq9Ag0AmVZiRbPAe66ZK8oQGpK29iv0CnZwjI9zUmhgLYhMzzyYGL+LrQoPcoltrWXHYc4dRCw/sXj+KIK2OT8TdBUN7bIlfAX9tIxF2adioyXHxVb2UqUa0H43XNufwrk8pVtp2m5IABrtPH6Bpyz+2qH7gkkeqxA8TYzGMgR38e858Rih2Y+Z/VJvG1f5Y2mn1NFpgd3KlV5Cfs5NBB5knCu4OOCgU9Hz5q5g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=variscite.com; dmarc=pass action=none
+ header.from=variscite.com; dkim=pass header.d=variscite.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=variscite.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tLfPRn4JhZMfiq0FffdoVq7zpCN3dGNvbXvntUsg34s=;
+ b=GY+B2UolpuGCLSYjuvkBSX1Uk/avySzhxRzD/bJbmFaS5erYHQoX9tUSXHrPMd8f6l0sDzXbrytP6cmArPQ7dSfbCVaZw2kKVB+O29uKhpuM54FEO9vrjWRIEhbDDWL4d+BwBhQP7STzfrK7ipUp0aOaW4Mpj9BdvsKy0vD4uzSjTrFkf6eEFirBgQYPt6CxWxNs2o1CYP+6n93zwSxfFxV5LpoRVLZAjfG7L9bRTfLuF15sbfG43vnUcaBpjTWdmcR8lCqK0+IuRRAmt65gBxMbnKwwUVflMA5TqQgWC6Vovu5sWF3e6dZoJBk1meMUQ82N5AnxwfX0LDXK5AFEaQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=variscite.com;
+Received: from DU0PR08MB9003.eurprd08.prod.outlook.com (2603:10a6:10:471::13)
+ by DB9PR08MB9852.eurprd08.prod.outlook.com (2603:10a6:10:45f::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.30; Tue, 28 Feb
+ 2023 14:43:11 +0000
+Received: from DU0PR08MB9003.eurprd08.prod.outlook.com
+ ([fe80::27d4:87f6:273e:4a80]) by DU0PR08MB9003.eurprd08.prod.outlook.com
+ ([fe80::27d4:87f6:273e:4a80%7]) with mapi id 15.20.6134.025; Tue, 28 Feb 2023
+ 14:43:11 +0000
+From:   Ken Sloat <ken.s@variscite.com>
+Cc:     Ken Sloat <ken.s@variscite.com>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Marc Zyngier <maz@kernel.org>
-Subject: [patch 3/3] net: dst: Switch to rcuref_t reference counting
-References: <20230228132118.978145284@linutronix.de>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v1] net: phy: adin: Add flags to disable enhanced link detection
+Date:   Tue, 28 Feb 2023 09:40:56 -0500
+Message-Id: <20230228144056.2246114-1-ken.s@variscite.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BN9PR03CA0184.namprd03.prod.outlook.com
+ (2603:10b6:408:f9::9) To DU0PR08MB9003.eurprd08.prod.outlook.com
+ (2603:10a6:10:471::13)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Date:   Tue, 28 Feb 2023 15:33:29 +0100 (CET)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DU0PR08MB9003:EE_|DB9PR08MB9852:EE_
+X-MS-Office365-Filtering-Correlation-Id: 35137c46-bf15-45a4-5c07-08db199a1d7a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: GziSvQcika858eIcnS4wEUos5/m8BJYWAIfmWpPlFIj9aPlRJM/qhxDoj3LSyLOL/q4K+FgS6xAMuM699c0M/pwmep09OE+qcuHl/x1a72FLVg2DINtv6x/3pYcCt2laoeojkvati05264OgJFO8qWmftc6PwM/+26CzC7qZ8e5Ry9tVkGGtg5BwpA+OIy0OfsFNayJKbgzHo7edYj04Zt2SY/6/ujR6P5Vz4ILU59j9RZkLGkQ8kLJ1dZlLnw3CTpf4kuXrn90/xjTAgyPsAOZMTmob0hKoL/kBqhDabbejmXjGe+T0rdSx/oKATSm/aOvn61ddP4ztH+Kc1LC7ZNnrTBFgKUlzt/5cDIEEyoJD2ek/p7+so2lfhSicaey+nGrNSPkg4j4Lo0fFfnX+d/gPTw9aeynY/e8wZEW8BEQVSzudKOkC1+Tk2pPCWuOGVNPjrc3tqOKPILVyDKq+j/dL6dzMZYYuJtUEiDaykjfZMEUOOf93JcAJS6+/575x5zcRLNq5vB1pLsSfnZdHndA2s1CHIao0fla9g9C3WU2VQF8eYyHOploUmO2VOk8ZAAsU1iy7kOCFeKsd6UQn66MrGHG3wAe4SG5GGnJII91TNiKdtR5M5XPuC3y4BPYJQZIHyhwWNhiR9iX6KMSuOjbJCbxrqbnet2mFW4huBmb2fEwJwPKwm0QmS0J5hKPkBYQyuxGhkx4OF1hXxhPusaIjoAiiGhlkWDcKfYf9nqg=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR08MB9003.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(346002)(366004)(376002)(39840400004)(136003)(396003)(109986016)(451199018)(54906003)(83380400001)(2906002)(2616005)(316002)(186003)(52116002)(6486002)(26005)(36756003)(86362001)(1076003)(6666004)(5660300002)(8936002)(478600001)(41300700001)(38100700002)(38350700002)(6512007)(6506007)(4326008)(66476007)(66946007)(8676002)(66556008)(266003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?elgl1ktrABKgbTGgz/59JW6rnftmyEI8460Uigm6XEEjDVV4jamAdSXOlAs6?=
+ =?us-ascii?Q?u6hZv+PXUmkFl1oCHNi0+L7mxV1Smvci9deZelsoVgMbubv4/uyxZKTCc7z2?=
+ =?us-ascii?Q?Vg+HRHQUH0gy+m4474toExtxQPIk7NXkzirQq2lXcMyX6ypDCJx66r5cfkbs?=
+ =?us-ascii?Q?E2CSRFLxiR91KXvDwWp7U4qNuY7UpQrEsdRqJay2L/vsC9LQ/KJjz2vJMOGr?=
+ =?us-ascii?Q?jQtjylb925VogwCcVYaRY3YUMjhtcx7SE5H3c8FIRCKPnVi7AsmgNrtbbhZD?=
+ =?us-ascii?Q?sM7jt0kiff8G1j8XnZ8a491i8MVaP2+o3K+93juuN8SihZ10upP/7ej8dKiA?=
+ =?us-ascii?Q?hV5wpPW2kXCY9kzwU0YptoVwqNhx+xG4KWjYqxZQqX+JcXBqtMZXSoGxsYyt?=
+ =?us-ascii?Q?i7XNl1X9XGHCYR0rVI0OB8UwPLuXjNmySRLY8U9sO68GcrnFuSfohHtMj02i?=
+ =?us-ascii?Q?cdAxgsuPHxiDGPO506DCGILyly6p+6VBdFktHlBe/zs4csNWyXSK+gF2PouC?=
+ =?us-ascii?Q?OG96QUpXLVrZa7uqIDE7WDzKsot7cDnKYfoEhReRk8vbpgyVANQOhT+xdNNK?=
+ =?us-ascii?Q?CXcJESWCXhUA+4osIB2TFng/y7fCS4VFvT1Dl/DL8wv+tpuu5pnyw2+50PhM?=
+ =?us-ascii?Q?RB+AHyepgGIVGLyEvy0SDF2i3eTO/bN0TjD1/QLhmi0BopasYqXz+fa6TWZe?=
+ =?us-ascii?Q?p6xzXaFY1IqGeDPCnuO3+6hLdpiRMgLUP+8DHBjCm07AchOiHgTOeDfXIVUC?=
+ =?us-ascii?Q?WGapcYZsMYeTbSrku6gp/BKC30qlbIBu7/comCh0kQ4AH3wcXdPcAiheZqdE?=
+ =?us-ascii?Q?4A8PWrsZ51iIxoiQoUAOY1NW4f99QKbjI0iSTXINbP2p9/kueT/Hsk3sck6j?=
+ =?us-ascii?Q?6/VqrwrUdSMiHQqIp5DndyojaptfhY5UjvvwvObZRo9xqL16jI9BBzNFUm/a?=
+ =?us-ascii?Q?/NVOu9siJ8HfmYdAzmihIan4HEwrkRX28DlT0GsZWbiASj4HBdAJ8NQYZjEJ?=
+ =?us-ascii?Q?QyMTDmMilO97VXt3yRWRj7fW/d/rgvYZ5/d23oM0pEemcHTO7vcDOAHHb/DG?=
+ =?us-ascii?Q?Rjk3sYzbfOz9ceMzRKxPkRAjfXvBBbFMchCX0NXOpuKmlKArLMtosfKrbF6h?=
+ =?us-ascii?Q?XLB80IwxCwlw/6gVbXbTpt3dH7RZYxIO/sc7P9VRColJsgkxveQ+m+ySAqw9?=
+ =?us-ascii?Q?lYC0Z9gGMW/W6eo24J8+zVJ2vNqLaLnujtWi/s+JFnAZqmg3/sJk/oAYlKAh?=
+ =?us-ascii?Q?/s+t3zVJ8EwpKshQvDRBFTO497vRxytQK9ztR6+uFSA6Sl7QFGKCFVJG1Yc7?=
+ =?us-ascii?Q?mbxd23DS0SpW/If+V7//fjLf3iB4JUCgqDanwUzTl4GVsCigtlp67g/bRAL4?=
+ =?us-ascii?Q?bcYTAG5SvioTg43jKI38Y867NS/g8M3Yhmnz9TvKoklJv5ZdeiCxjpnh8qbz?=
+ =?us-ascii?Q?HfngzzmJHVPMQJp8nXgFnwoJyJUlabMImZn/3jxQC25yoVWavLizajgk4zDk?=
+ =?us-ascii?Q?JQKyX7TtBhsJZCf4hRms/SKei8myBRh4LbmIeeYeggXXcVrC16AZWVvREFia?=
+ =?us-ascii?Q?qfjCxhlyu9ZmNsJC+G3YzsiUjVqVqNiDH9ZYzpjQ?=
+X-OriginatorOrg: variscite.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 35137c46-bf15-45a4-5c07-08db199a1d7a
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR08MB9003.eurprd08.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Feb 2023 14:43:11.4523
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 399ae6ac-38f4-4ef0-94a8-440b0ad581de
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: vVEyu31pQBNeTv9LtAA9aUStPiBS2ODp0O5DusRWBfTPeYenTP+oLoXnUzTf8vOG6r0G6wuVJCeFMtrvUhfq1Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR08MB9852
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Under high contention dst_entry::__refcnt becomes a significant bottleneck.
+Enhanced link detection is an ADI PHY feature that allows for earlier
+detection of link down if certain signal conditions are met. This
+feature is for the most part enabled by default on the PHY. This is
+not suitable for all applications and breaks the IEEE standard as
+explained in the ADI datasheet.
 
-atomic_inc_not_zero() is implemented with a cmpxchg() loop, which goes into
-high retry rates on contention.
+To fix this, add override flags to disable enhanced link detection
+for 1000BASE-T and 100BASE-TX respectively by clearing any related
+feature enable bits.
 
-Switch the reference count to rcuref_t which results in a significant
-performance gain.
+This new feature was tested on an ADIN1300 but according to the
+datasheet applies equally for 100BASE-TX on the ADIN1200.
 
-The gain depends on the micro-architecture and the number of concurrent
-operations and has been measured in the range of +25% to +130% with a
-localhost memtier/memcached benchmark which amplifies the problem
-massively.
-
-Running the memtier/memcached benchmark over a real (1Gb) network
-connection the conversion on top of the false sharing fix for struct
-dst_entry::__refcnt results in a total gain in the 2%-5% range over the
-upstream baseline.
-
-Reported-by: Wangyang Guo <wangyang.guo@intel.com>
-Reported-by: Arjan Van De Ven <arjan.van.de.ven@intel.com>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: netdev@vger.kernel.org
+Signed-off-by: Ken Sloat <ken.s@variscite.com>
 ---
- include/net/dst.h               |    9 +++++----
- include/net/sock.h              |    2 +-
- net/bridge/br_nf_core.c         |    2 +-
- net/core/dst.c                  |   26 +++++---------------------
- net/core/rtnetlink.c            |    2 +-
- net/ipv6/route.c                |    6 +++---
- net/netfilter/ipvs/ip_vs_xmit.c |    4 ++--
- 7 files changed, 18 insertions(+), 33 deletions(-)
+ drivers/net/phy/adin.c | 38 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
---- a/include/net/dst.h
-+++ b/include/net/dst.h
-@@ -16,6 +16,7 @@
- #include <linux/bug.h>
- #include <linux/jiffies.h>
- #include <linux/refcount.h>
-+#include <linux/rcuref.h>
- #include <net/neighbour.h>
- #include <asm/processor.h>
- #include <linux/indirect_call_wrapper.h>
-@@ -65,7 +66,7 @@ struct dst_entry {
- 	 * input/output/ops or performance tanks badly
- 	 */
- #ifdef CONFIG_64BIT
--	atomic_t		__refcnt;	/* 64-bit offset 64 */
-+	rcuref_t		__refcnt;	/* 64-bit offset 64 */
- #endif
- 	int			__use;
- 	unsigned long		lastuse;
-@@ -75,7 +76,7 @@ struct dst_entry {
- 	__u32			tclassid;
- #ifndef CONFIG_64BIT
- 	struct lwtunnel_state   *lwtstate;
--	atomic_t		__refcnt;	/* 32-bit offset 64 */
-+	rcuref_t		__refcnt;	/* 32-bit offset 64 */
- #endif
- 	netdevice_tracker	dev_tracker;
- #ifdef CONFIG_64BIT
-@@ -238,7 +239,7 @@ static inline void dst_hold(struct dst_e
- 	 * the placement of __refcnt in struct dst_entry
- 	 */
- 	BUILD_BUG_ON(offsetof(struct dst_entry, __refcnt) & 63);
--	WARN_ON(atomic_inc_not_zero(&dst->__refcnt) == 0);
-+	WARN_ON(!rcuref_get(&dst->__refcnt));
+diff --git a/drivers/net/phy/adin.c b/drivers/net/phy/adin.c
+index da65215d19bb..8809f3e036a4 100644
+--- a/drivers/net/phy/adin.c
++++ b/drivers/net/phy/adin.c
+@@ -69,6 +69,15 @@
+ #define ADIN1300_EEE_CAP_REG			0x8000
+ #define ADIN1300_EEE_ADV_REG			0x8001
+ #define ADIN1300_EEE_LPABLE_REG			0x8002
++#define ADIN1300_FLD_EN_REG				0x8E27
++#define   ADIN1300_FLD_PCS_ERR_100_EN			BIT(7)
++#define   ADIN1300_FLD_PCS_ERR_1000_EN			BIT(6)
++#define   ADIN1300_FLD_SLCR_OUT_STUCK_100_EN	BIT(5)
++#define   ADIN1300_FLD_SLCR_OUT_STUCK_1000_EN	BIT(4)
++#define   ADIN1300_FLD_SLCR_IN_ZDET_100_EN		BIT(3)
++#define   ADIN1300_FLD_SLCR_IN_ZDET_1000_EN		BIT(2)
++#define   ADIN1300_FLD_SLCR_IN_INVLD_100_EN		BIT(1)
++#define   ADIN1300_FLD_SLCR_IN_INVLD_1000_EN	BIT(0)
+ #define ADIN1300_CLOCK_STOP_REG			0x9400
+ #define ADIN1300_LPI_WAKE_ERR_CNT_REG		0xa000
+ 
+@@ -508,6 +517,31 @@ static int adin_config_clk_out(struct phy_device *phydev)
+ 			      ADIN1300_GE_CLK_CFG_MASK, sel);
  }
  
- static inline void dst_use_noref(struct dst_entry *dst, unsigned long time)
-@@ -302,7 +303,7 @@ static inline void skb_dst_copy(struct s
-  */
- static inline bool dst_hold_safe(struct dst_entry *dst)
++static int adin_config_fld_en(struct phy_device *phydev)
++{
++	struct device *dev = &phydev->mdio.dev;
++	int reg;
++
++	reg = phy_read_mmd(phydev, MDIO_MMD_VEND1, ADIN1300_FLD_EN_REG);
++	if (reg < 0)
++		return reg;
++
++	if (device_property_read_bool(dev, "adi,disable-fld-1000base-t"))
++		reg &= ~(ADIN1300_FLD_PCS_ERR_1000_EN |
++				 ADIN1300_FLD_SLCR_OUT_STUCK_1000_EN |
++				 ADIN1300_FLD_SLCR_IN_ZDET_1000_EN |
++				 ADIN1300_FLD_SLCR_IN_INVLD_1000_EN);
++
++	if (device_property_read_bool(dev, "adi,disable-fld-100base-tx"))
++		reg &= ~(ADIN1300_FLD_PCS_ERR_100_EN |
++				 ADIN1300_FLD_SLCR_OUT_STUCK_100_EN |
++				 ADIN1300_FLD_SLCR_IN_ZDET_100_EN |
++				 ADIN1300_FLD_SLCR_IN_INVLD_100_EN);
++
++	return phy_write_mmd(phydev, MDIO_MMD_VEND1,
++			     ADIN1300_FLD_EN_REG, reg);
++}
++
+ static int adin_config_init(struct phy_device *phydev)
  {
--	return atomic_inc_not_zero(&dst->__refcnt);
-+	return rcuref_get(&dst->__refcnt);
- }
+ 	int rc;
+@@ -534,6 +568,10 @@ static int adin_config_init(struct phy_device *phydev)
+ 	if (rc < 0)
+ 		return rc;
  
- /**
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -2131,7 +2131,7 @@ sk_dst_get(struct sock *sk)
++	rc = adin_config_fld_en(phydev);
++	if (rc < 0)
++		return rc;
++
+ 	phydev_dbg(phydev, "PHY is using mode '%s'\n",
+ 		   phy_modes(phydev->interface));
  
- 	rcu_read_lock();
- 	dst = rcu_dereference(sk->sk_dst_cache);
--	if (dst && !atomic_inc_not_zero(&dst->__refcnt))
-+	if (dst && !rcuref_get(&dst->__refcnt))
- 		dst = NULL;
- 	rcu_read_unlock();
- 	return dst;
---- a/net/bridge/br_nf_core.c
-+++ b/net/bridge/br_nf_core.c
-@@ -73,7 +73,7 @@ void br_netfilter_rtable_init(struct net
- {
- 	struct rtable *rt = &br->fake_rtable;
- 
--	atomic_set(&rt->dst.__refcnt, 1);
-+	rcuref_init(&rt->dst.__refcnt, 1);
- 	rt->dst.dev = br->dev;
- 	dst_init_metrics(&rt->dst, br_dst_default_metrics, true);
- 	rt->dst.flags	= DST_NOXFRM | DST_FAKE_RTABLE;
---- a/net/core/dst.c
-+++ b/net/core/dst.c
-@@ -66,7 +66,7 @@ void dst_init(struct dst_entry *dst, str
- 	dst->tclassid = 0;
- #endif
- 	dst->lwtstate = NULL;
--	atomic_set(&dst->__refcnt, initial_ref);
-+	rcuref_init(&dst->__refcnt, initial_ref);
- 	dst->__use = 0;
- 	dst->lastuse = jiffies;
- 	dst->flags = flags;
-@@ -162,31 +162,15 @@ EXPORT_SYMBOL(dst_dev_put);
- 
- void dst_release(struct dst_entry *dst)
- {
--	if (dst) {
--		int newrefcnt;
--
--		newrefcnt = atomic_dec_return(&dst->__refcnt);
--		if (WARN_ONCE(newrefcnt < 0, "dst_release underflow"))
--			net_warn_ratelimited("%s: dst:%p refcnt:%d\n",
--					     __func__, dst, newrefcnt);
--		if (!newrefcnt)
--			call_rcu_hurry(&dst->rcu_head, dst_destroy_rcu);
--	}
-+	if (dst && rcuref_put(&dst->__refcnt))
-+		call_rcu_hurry(&dst->rcu_head, dst_destroy_rcu);
- }
- EXPORT_SYMBOL(dst_release);
- 
- void dst_release_immediate(struct dst_entry *dst)
- {
--	if (dst) {
--		int newrefcnt;
--
--		newrefcnt = atomic_dec_return(&dst->__refcnt);
--		if (WARN_ONCE(newrefcnt < 0, "dst_release_immediate underflow"))
--			net_warn_ratelimited("%s: dst:%p refcnt:%d\n",
--					     __func__, dst, newrefcnt);
--		if (!newrefcnt)
--			dst_destroy(dst);
--	}
-+	if (dst && rcuref_put(&dst->__refcnt))
-+		dst_destroy(dst);
- }
- EXPORT_SYMBOL(dst_release_immediate);
- 
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -840,7 +840,7 @@ int rtnl_put_cacheinfo(struct sk_buff *s
- 	if (dst) {
- 		ci.rta_lastuse = jiffies_delta_to_clock_t(jiffies - dst->lastuse);
- 		ci.rta_used = dst->__use;
--		ci.rta_clntref = atomic_read(&dst->__refcnt);
-+		ci.rta_clntref = rcuref_read(&dst->__refcnt);
- 	}
- 	if (expires) {
- 		unsigned long clock;
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -293,7 +293,7 @@ static const struct fib6_info fib6_null_
- 
- static const struct rt6_info ip6_null_entry_template = {
- 	.dst = {
--		.__refcnt	= ATOMIC_INIT(1),
-+		.__refcnt	= RCUREF_INIT(1),
- 		.__use		= 1,
- 		.obsolete	= DST_OBSOLETE_FORCE_CHK,
- 		.error		= -ENETUNREACH,
-@@ -307,7 +307,7 @@ static const struct rt6_info ip6_null_en
- 
- static const struct rt6_info ip6_prohibit_entry_template = {
- 	.dst = {
--		.__refcnt	= ATOMIC_INIT(1),
-+		.__refcnt	= RCUREF_INIT(1),
- 		.__use		= 1,
- 		.obsolete	= DST_OBSOLETE_FORCE_CHK,
- 		.error		= -EACCES,
-@@ -319,7 +319,7 @@ static const struct rt6_info ip6_prohibi
- 
- static const struct rt6_info ip6_blk_hole_entry_template = {
- 	.dst = {
--		.__refcnt	= ATOMIC_INIT(1),
-+		.__refcnt	= RCUREF_INIT(1),
- 		.__use		= 1,
- 		.obsolete	= DST_OBSOLETE_FORCE_CHK,
- 		.error		= -EINVAL,
---- a/net/netfilter/ipvs/ip_vs_xmit.c
-+++ b/net/netfilter/ipvs/ip_vs_xmit.c
-@@ -339,7 +339,7 @@ static int
- 			spin_unlock_bh(&dest->dst_lock);
- 			IP_VS_DBG(10, "new dst %pI4, src %pI4, refcnt=%d\n",
- 				  &dest->addr.ip, &dest_dst->dst_saddr.ip,
--				  atomic_read(&rt->dst.__refcnt));
-+				  rcuref_read(&rt->dst.__refcnt));
- 		}
- 		if (ret_saddr)
- 			*ret_saddr = dest_dst->dst_saddr.ip;
-@@ -507,7 +507,7 @@ static int
- 			spin_unlock_bh(&dest->dst_lock);
- 			IP_VS_DBG(10, "new dst %pI6, src %pI6, refcnt=%d\n",
- 				  &dest->addr.in6, &dest_dst->dst_saddr.in6,
--				  atomic_read(&rt->dst.__refcnt));
-+				  rcuref_read(&rt->dst.__refcnt));
- 		}
- 		if (ret_saddr)
- 			*ret_saddr = dest_dst->dst_saddr.in6;
+-- 
+2.34.1
 
