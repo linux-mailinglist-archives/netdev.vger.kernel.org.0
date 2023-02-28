@@ -2,100 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6B9B6A58D7
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 13:07:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46DC66A58E7
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 13:15:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231643AbjB1MHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 07:07:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35552 "EHLO
+        id S231356AbjB1MPR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 07:15:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231653AbjB1MHS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 07:07:18 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21C5D2ED72
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 04:07:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=0BCP96rUdXQKWmQ4SqWfqwRjuo8z9pcHgIezhPCFYSg=; b=nLB846dq28ZWV/pTUedMQAXwkv
-        Akz9/e5/0BjMngiFRmxiR/qJmzznG77ig1MztKe7WOjaOxv+9H5P53lAX2SKNNpTOedmouCNtgkAk
-        pQ2TjluCGC/GCCm6s1fPwqeJkoBFmG/q8K3+AcK+l6Mgo9342SlPH1f+q+fKfNXjTxcqu9eL+q4rM
-        nCwU+BUOlUnL06yDZyvZsJz52HEtSKLllK1XsrzLnU7zQTasLu88u320NWsKn2iaqXNY4AtaFIFZt
-        yjFb9SGPMzz0iF4ETQ459U0oTpQlZWcPHJ2+/zslsLFeeouMuklNnflQ8NLToiNyZAuTYVWN0vmw/
-        WhjxNnZw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:43392)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pWylE-0004eC-4O; Tue, 28 Feb 2023 12:07:12 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pWylB-0002hR-2R; Tue, 28 Feb 2023 12:07:09 +0000
-Date:   Tue, 28 Feb 2023 12:07:09 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     =?iso-8859-1?Q?K=F6ry?= Maincent <kory.maincent@bootlin.com>,
-        andrew@lunn.ch, davem@davemloft.net, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, kuba@kernel.org, netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>
-Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support
- [multicast/DSA issues]
-Message-ID: <Y/3ubSj5+2C5xbZu@shell.armlinux.org.uk>
-References: <20200730124730.GY1605@shell.armlinux.org.uk>
- <20230227154037.7c775d4c@kmaincent-XPS-13-7390>
- <Y/zKJUHUhEgXjKFG@shell.armlinux.org.uk>
- <Y/0Idkhy27TObawi@hoboy.vegasvil.org>
- <Y/0N4ZcUl8pG7awc@shell.armlinux.org.uk>
- <Y/0QSphmMGXP5gYy@hoboy.vegasvil.org>
+        with ESMTP id S229623AbjB1MPQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 07:15:16 -0500
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4F682685F;
+        Tue, 28 Feb 2023 04:15:14 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=guangguan.wang@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VcjP40a_1677586510;
+Received: from 30.221.100.247(mailfrom:guangguan.wang@linux.alibaba.com fp:SMTPD_---0VcjP40a_1677586510)
+          by smtp.aliyun-inc.com;
+          Tue, 28 Feb 2023 20:15:11 +0800
+Message-ID: <b0669898-f7b3-fa88-7365-e7e05a587d86@linux.alibaba.com>
+Date:   Tue, 28 Feb 2023 20:15:09 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y/0QSphmMGXP5gYy@hoboy.vegasvil.org>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.7.2
+Subject: Re: [PATCH net-next v2] net/smc: Use percpu ref for wr tx reference
+Content-Language: en-US
+To:     Kai <KaiShen@linux.alibaba.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>, kgraul@linux.ibm.com,
+        jaka@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+References: <20230227121616.448-1-KaiShen@linux.alibaba.com>
+ <b869713b-7f1d-4093-432c-9f958f5bd719@linux.ibm.com>
+ <e10d76c4-3b2c-b906-07c3-9a42b1c485bb@linux.alibaba.com>
+From:   Guangguan Wang <guangguan.wang@linux.alibaba.com>
+In-Reply-To: <e10d76c4-3b2c-b906-07c3-9a42b1c485bb@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-10.0 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 27, 2023 at 12:19:22PM -0800, Richard Cochran wrote:
-> On Mon, Feb 27, 2023 at 08:09:05PM +0000, Russell King (Oracle) wrote:
-> 
-> > Looking at that link, I'm only seeing that message, with none of
-> > the patches nor the discussion. Digging back in my mailbox, I
-> > find that the patches weren't threaded to the cover message, which
-> > makes it quite difficult to go back and review the discussion.
-> 
-> Sorry about that.  By accident I omitted --thread=shallow that time.
-> 
-> > Looking back briefly at the discussion on patch 3, was the reason
-> > this approach died due to the request to have something more flexible,
-> > supporting multiple hardware timestamps per packet?
-> 
-> I still think the approach will work, but I guess I got distracted
-> with other stuff and forgot about it.
-> 
-> The "multiple hardware timestamps per packet" is a nice idea, but it
-> would require a new user API, and so selectable MAC/PHY on the
-> existing API is still needed.
 
-I agree - even when we have support for multiple hardware timestamps,
-we still need the existing API to work in a sensible way, and we need
-a way to choose which hardware timestamp we want the existing API to
-report.
+On 2023/2/28 19:34, Kai wrote:
+> 
+> 
+> On 2023/2/28 6:55 下午, Wenjia Zhang wrote:
+> 
+>> @Kai, the performance improvement seems not so giant, but the method looks good, indeed. However, to keep the consistency of the code, I'm wondering why you only use the perf_ref for wr_tx_wait, but not for wr_reg_refcnt?
+> Didn't check the similar refcnt, my bad.
+> On the other hand, Our work is inspired by performance analysis, it seems wr_reg_refcnt is not on the IO path. It may not contribute to performance improvement.
+> And inspired by your comment, it seems we can also make the refcnt cdc_pend_tx_wr a perfcpu one. I will look into this.
+> 
+> Thanks
 
-So yes, it's a nice idea to support multiple hardware timestamps, but
-I think that's an entirely separate problem to solving the current
-issue, which is a blocking issue to adding support for PTP on some
-platforms.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+cdc_pend_tx_wr needs to be zero value tested every time it decreases in smc_cdc_tx_handler.
+I don't think this is the right scenario for percpu_ref.
