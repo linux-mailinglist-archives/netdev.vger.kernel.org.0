@@ -2,102 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BCF6B6A58CF
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 13:05:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6B9B6A58D7
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 13:07:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231486AbjB1MFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 07:05:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33126 "EHLO
+        id S231643AbjB1MHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 07:07:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231539AbjB1ME6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 07:04:58 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B05352DE62
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 04:04:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1677585854;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KCJidl22u1cKfAyMeW4PYXi3JfewoKCLf6JCBtPv+4E=;
-        b=imXD55bt2Gev2i/p6DR6bULaPt8kaQ8CGOQuC/kI2EHs5iMUnSiTVfE6pNlqy2BEE809QJ
-        ibgVYLZFzbpbKWGNd4IT3xKS8Vr3YesTjE71JKzcMhpfSBjfLyDDrUA4HoFoud5863mGIZ
-        dUkj7xJVEONxt6D2YpkNODvp1R6roU0=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-546-zMsShi3KMS-FbOogds8HIQ-1; Tue, 28 Feb 2023 07:04:13 -0500
-X-MC-Unique: zMsShi3KMS-FbOogds8HIQ-1
-Received: by mail-wm1-f72.google.com with SMTP id p22-20020a7bcc96000000b003e2036a1516so6804490wma.7
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 04:04:13 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=KCJidl22u1cKfAyMeW4PYXi3JfewoKCLf6JCBtPv+4E=;
-        b=jNc4n4Fl8wwvauBIHFzyfVALwSDDye2D8H/h6keRG5UgGtqAB0EPnn11mTtCrwlEGB
-         FiojOLyVvyEpiMP32UN3vQDj38Y2RIONrbmZKjY4TH/IJFWpjRc2XZaykzQ2WN3h6myo
-         pXdto16dd4icuMNtH82k1lDvLf/xgjtrr08LNZo+Mcsc92GuvNXFKpeHoF6M7qGp0UDz
-         AC4j/KyhjIln67PsBPUJLfB5t/CUbRe2pNSkTszeILUDOnZVfOEuFgRQP9a7RSHQrtrN
-         SW79mRxdXlY51NFvZu4Ryh4R9h6+FUU/6LOcKTaa+LnzfzG/K5fLrBt9i8teiX/5crOF
-         QhSA==
-X-Gm-Message-State: AO0yUKV3OSRO0MojDPXOCYXsVsrNhNu2l9vWLu+zudVugom1wAaAamP3
-        /gyQuolJvoUwa+DukffCrPpn7PHPEjHqPdF2mcdQGQTFWVgtRyLgZ6ah35/kglksyYOxTW8d861
-        rn79lsrBr+ltT/5pX
-X-Received: by 2002:a05:600c:35cc:b0:3ea:840c:e8ff with SMTP id r12-20020a05600c35cc00b003ea840ce8ffmr2220087wmq.3.1677585852444;
-        Tue, 28 Feb 2023 04:04:12 -0800 (PST)
-X-Google-Smtp-Source: AK7set+i4oLcSfX/DPlO4reXLr5cplrlWIwAVs7488OSTZEYMFEEjdYGmSLF3oxgzaF/YTdKk1RNSg==
-X-Received: by 2002:a05:600c:35cc:b0:3ea:840c:e8ff with SMTP id r12-20020a05600c35cc00b003ea840ce8ffmr2220063wmq.3.1677585852119;
-        Tue, 28 Feb 2023 04:04:12 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-121-8.dyn.eolo.it. [146.241.121.8])
-        by smtp.gmail.com with ESMTPSA id l8-20020a05600c1d0800b003de2fc8214esm13242664wms.20.2023.02.28.04.04.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Feb 2023 04:04:11 -0800 (PST)
-Message-ID: <85dae3d33c5b19b968313069c7c5342d688852b2.camel@redhat.com>
-Subject: Re: [PATCH] sched: delete some api is not used
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     lingfuyi <lingfuyi@126.com>, jhs@mojatatu.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lingfuyi <lingfuyi@kylinos.cn>, k2ci <kernel-bot@kylinos.cn>
-Date:   Tue, 28 Feb 2023 13:04:10 +0100
-In-Reply-To: <20230228031241.1675263-1-lingfuyi@126.com>
-References: <20230228031241.1675263-1-lingfuyi@126.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+        with ESMTP id S231653AbjB1MHS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 07:07:18 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21C5D2ED72
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 04:07:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=0BCP96rUdXQKWmQ4SqWfqwRjuo8z9pcHgIezhPCFYSg=; b=nLB846dq28ZWV/pTUedMQAXwkv
+        Akz9/e5/0BjMngiFRmxiR/qJmzznG77ig1MztKe7WOjaOxv+9H5P53lAX2SKNNpTOedmouCNtgkAk
+        pQ2TjluCGC/GCCm6s1fPwqeJkoBFmG/q8K3+AcK+l6Mgo9342SlPH1f+q+fKfNXjTxcqu9eL+q4rM
+        nCwU+BUOlUnL06yDZyvZsJz52HEtSKLllK1XsrzLnU7zQTasLu88u320NWsKn2iaqXNY4AtaFIFZt
+        yjFb9SGPMzz0iF4ETQ459U0oTpQlZWcPHJ2+/zslsLFeeouMuklNnflQ8NLToiNyZAuTYVWN0vmw/
+        WhjxNnZw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:43392)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pWylE-0004eC-4O; Tue, 28 Feb 2023 12:07:12 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pWylB-0002hR-2R; Tue, 28 Feb 2023 12:07:09 +0000
+Date:   Tue, 28 Feb 2023 12:07:09 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     =?iso-8859-1?Q?K=F6ry?= Maincent <kory.maincent@bootlin.com>,
+        andrew@lunn.ch, davem@davemloft.net, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, kuba@kernel.org, netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>
+Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support
+ [multicast/DSA issues]
+Message-ID: <Y/3ubSj5+2C5xbZu@shell.armlinux.org.uk>
+References: <20200730124730.GY1605@shell.armlinux.org.uk>
+ <20230227154037.7c775d4c@kmaincent-XPS-13-7390>
+ <Y/zKJUHUhEgXjKFG@shell.armlinux.org.uk>
+ <Y/0Idkhy27TObawi@hoboy.vegasvil.org>
+ <Y/0N4ZcUl8pG7awc@shell.armlinux.org.uk>
+ <Y/0QSphmMGXP5gYy@hoboy.vegasvil.org>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y/0QSphmMGXP5gYy@hoboy.vegasvil.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2023-02-28 at 11:12 +0800, lingfuyi wrote:
-> From: lingfuyi <lingfuyi@kylinos.cn>
->=20
-> fix compile errors like this:
-> net/sched/cls_api.c:141:13: error: =E2=80=98tcf_exts_miss_cookie_base_des=
-troy=E2=80=99
-> defined but not used [-Werror=3Dunused-function]
->=20
-> Reported-by: k2ci <kernel-bot@kylinos.cn>
-> Signed-off-by: lingfuyi <lingfuyi@kylinos.cn>
+On Mon, Feb 27, 2023 at 12:19:22PM -0800, Richard Cochran wrote:
+> On Mon, Feb 27, 2023 at 08:09:05PM +0000, Russell King (Oracle) wrote:
+> 
+> > Looking at that link, I'm only seeing that message, with none of
+> > the patches nor the discussion. Digging back in my mailbox, I
+> > find that the patches weren't threaded to the cover message, which
+> > makes it quite difficult to go back and review the discussion.
+> 
+> Sorry about that.  By accident I omitted --thread=shallow that time.
+> 
+> > Looking back briefly at the discussion on patch 3, was the reason
+> > this approach died due to the request to have something more flexible,
+> > supporting multiple hardware timestamps per packet?
+> 
+> I still think the approach will work, but I guess I got distracted
+> with other stuff and forgot about it.
+> 
+> The "multiple hardware timestamps per packet" is a nice idea, but it
+> would require a new user API, and so selectable MAC/PHY on the
+> existing API is still needed.
 
-This has been already addressed by:
+I agree - even when we have support for multiple hardware timestamps,
+we still need the existing API to work in a sensible way, and we need
+a way to choose which hardware timestamp we want the existing API to
+report.
 
-commit 37e1f3acc339b28493eb3dad571c3f01b6af86f6
-Author: Nathan Chancellor <nathan@kernel.org>
-Date:   Fri Feb 24 11:18:49 2023 -0700
+So yes, it's a nice idea to support multiple hardware timestamps, but
+I think that's an entirely separate problem to solving the current
+issue, which is a blocking issue to adding support for PTP on some
+platforms.
 
-    net/sched: cls_api: Move call to tcf_exts_miss_cookie_base_destroy()
-
-Thanks,
-
-Paolo
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
