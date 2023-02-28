@@ -2,129 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 39C0A6A5B79
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 16:16:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC6916A5B7E
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 16:16:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229630AbjB1PQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 10:16:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60164 "EHLO
+        id S229888AbjB1PQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 10:16:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229587AbjB1PQ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 10:16:29 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44F702DE69
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 07:16:28 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id qa18-20020a17090b4fd200b0023750b675f5so13995317pjb.3
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 07:16:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=0tC5HCISVzkLKp1GvR9hxhPs1xrLED+Ko6Sghw73aeI=;
-        b=RjGyeH7war87SnPqhCv8/GAy0kPO87ASG1kCeXv3okJIjF80vpZAv2Wf+6M1df1pKY
-         AreIEpL761L9oW2hd2/mZ0n4mzVaMIf5M17+iRsh1YeeqU7OHv6BCeo7dUuZ1vytMYff
-         4WRbFqk0jpV3gpiTVhDUo2oNJirsRKaHgeyBHeVITazN+hXDFVd1RyR94IhVY7U7K6Jh
-         LejvRWjjzmQ43+fBgWnnOdk1nS8cS3+yirUxSh6HKKxwIPrfwp43OmWZM0RwEZOG8ig4
-         14ub5Ooa5h4yi7dfRx/x41XhQBuBRsnKTxla5xyby0XINNjVxbis9BKbaWZ6uMQ+rWVy
-         t3Lw==
+        with ESMTP id S229861AbjB1PQc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 10:16:32 -0500
+Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB372ED79;
+        Tue, 28 Feb 2023 07:16:31 -0800 (PST)
+Received: by mail-qt1-f176.google.com with SMTP id h19so10754469qtk.7;
+        Tue, 28 Feb 2023 07:16:31 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0tC5HCISVzkLKp1GvR9hxhPs1xrLED+Ko6Sghw73aeI=;
-        b=SWBT4FPVxiP6LbzuhVdUmk5nVYfdoxABNHXtoE3sqtd50yHJOfh87tDIubKq5hVBvu
-         4ot0N+eCy/LI70lNzkczW6grvitIMZDjyq1lsxzIfXlGn2rP3LzVa7wXKv35Yiz3U3+I
-         H87dHbN5ddqVEAoWUabQIbMeeZ7jCJH/9CcMtjoe+JLgnCVpvWcmp1NiKmREVkYX96iw
-         YktYoYzQutmCEsWidbCmuNdMo+ief+ollq7lHIw1HViMhCxSRBHDqE2qX2vtGJzPdWfT
-         zw+YbUx3Vql4EmnVUSoqvrgzcNV66Ph6msLCPxjGliDJuDM/kPDkm8MEhlOM7Nw1MlEH
-         07vA==
-X-Gm-Message-State: AO0yUKVJmrH1Smp1p8sr12zCgVVtLkFxhMsLc7vv9UOZMmimBshYhjLA
-        2icLW2n2/uPiSqZanKKolZ4QFFAoHhk=
-X-Google-Smtp-Source: AK7set+wqWLJVzmrog+jffGq2C84R3iqM8LSJhT+yQWAXxhZSAAlalXWJ1RJTFIpKVvAM2ebjOIhqA==
-X-Received: by 2002:a17:90b:70e:b0:237:47b0:30d3 with SMTP id s14-20020a17090b070e00b0023747b030d3mr2861086pjz.4.1677597387696;
-        Tue, 28 Feb 2023 07:16:27 -0800 (PST)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id a15-20020a17090a70cf00b00233df90227fsm8017482pjm.18.2023.02.28.07.16.26
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=RPo/RiCcotu5llivQRx04vO6x7keCmQo8aszi+pK/Mg=;
+        b=ofLqhYkDr8wfes7ThJ5ZkksqXdLaIUmMKXbpRrB9THU/F7BQ+0aGyXmtM3RT5+gxqO
+         +Xt5yNIHMAOXjyecN40HqWskbYuj8wBVf9ynrGpYf73vYQ5P7U8cnem5HKNMQOKABLxp
+         spiFO13pP2PVzxANXBrIbo67Rh3m1eiOW9GoDIoJuLm0ePJv2OJuzyJHIl27b6GtpaRW
+         okrgA/6ZF8yszn2soD4nmVNaxZbo3xLbh60nHz3EHtBKv0YsByXKlGyzykLUk5FDoyOJ
+         6wwIiHqi5A2oMgqAqoULumeVSMMr3S8C4c2foEVtLGZHditKCvwookSHiB2SM02nYNjs
+         oPgA==
+X-Gm-Message-State: AO0yUKXrLFD6WWOdUCYMKJmHPIEPe899Vr49y3aj4Cf3vF0tonMwrjND
+        myjMgCbSxLlCVTzfsOgX9MA=
+X-Google-Smtp-Source: AK7set+mfSO1i5CwmeerG+592lIRurSup5MSfH0YpKclZmIcBDebTNjSTPRBsMt8TwMqeCeKeVbIsw==
+X-Received: by 2002:a05:622a:1889:b0:3b8:6ae7:1757 with SMTP id v9-20020a05622a188900b003b86ae71757mr5559647qtc.38.1677597390523;
+        Tue, 28 Feb 2023 07:16:30 -0800 (PST)
+Received: from maniforge ([2620:10d:c091:480::1:f172])
+        by smtp.gmail.com with ESMTPSA id n15-20020ac81e0f000000b003b691385327sm5024444qtl.6.2023.02.28.07.16.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Feb 2023 07:16:27 -0800 (PST)
-Date:   Tue, 28 Feb 2023 07:16:24 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     =?iso-8859-1?Q?K=F6ry?= Maincent <kory.maincent@bootlin.com>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>, andrew@lunn.ch,
-        davem@davemloft.net, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>
-Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support
- [multicast/DSA issues]
-Message-ID: <Y/4ayPsZuYh+13eI@hoboy.vegasvil.org>
-References: <20200730124730.GY1605@shell.armlinux.org.uk>
- <20230227154037.7c775d4c@kmaincent-XPS-13-7390>
- <Y/zKJUHUhEgXjKFG@shell.armlinux.org.uk>
- <Y/0Idkhy27TObawi@hoboy.vegasvil.org>
- <Y/0N4ZcUl8pG7awc@shell.armlinux.org.uk>
- <Y/0QSphmMGXP5gYy@hoboy.vegasvil.org>
- <Y/3ubSj5+2C5xbZu@shell.armlinux.org.uk>
- <20230228141630.64d5ef63@kmaincent-XPS-13-7390>
+        Tue, 28 Feb 2023 07:16:30 -0800 (PST)
+Date:   Tue, 28 Feb 2023 09:16:27 -0600
+From:   David Vernet <void@manifault.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     davem@davemloft.net, daniel@iogearbox.net, andrii@kernel.org,
+        martin.lau@kernel.org, davemarchevsky@meta.com, tj@kernel.org,
+        memxor@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com
+Subject: Re: [PATCH v3 bpf-next 1/5] bpf: Rename __kptr_ref -> __kptr and
+ __kptr -> __kptr_untrusted.
+Message-ID: <Y/4ay2APLyfPAMvD@maniforge>
+References: <20230228040121.94253-1-alexei.starovoitov@gmail.com>
+ <20230228040121.94253-2-alexei.starovoitov@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230228141630.64d5ef63@kmaincent-XPS-13-7390>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230228040121.94253-2-alexei.starovoitov@gmail.com>
+User-Agent: Mutt/2.2.9 (2022-11-12)
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 28, 2023 at 02:16:30PM +0100, Köry Maincent wrote:
-> On Tue, 28 Feb 2023 12:07:09 +0000
-> "Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
-> > So yes, it's a nice idea to support multiple hardware timestamps, but
-> > I think that's an entirely separate problem to solving the current
-> > issue, which is a blocking issue to adding support for PTP on some
-> > platforms.
+On Mon, Feb 27, 2023 at 08:01:17PM -0800, Alexei Starovoitov wrote:
+> From: Alexei Starovoitov <ast@kernel.org>
 > 
-> Alright, Richard can I continue your work on it and send new revisions of your
-> patch series or do you prefer to continue on your own?
-
-If you can work this, please do.  I can help review and test.
-
-> Also your series rise the question of which timestamping should be the default,
-> MAC or PHY, without breaking any past or future compatibilities.
-> There is question of using Kconfig or devicetree but each of them seems to have
-> drawbacks:
-> https://lore.kernel.org/netdev/ad4a8d3efbeaacf241a19bfbca5976f9@walle.cc/ 
+> __kptr meant to store PTR_UNTRUSTED kernel pointers inside bpf maps.
+> The concept felt useful, but didn't get much traction,
+> since bpf_rdonly_cast() was added soon after and bpf programs received
+> a simpler way to access PTR_UNTRUSTED kernel pointers
+> without going through restrictive __kptr usage.
 > 
-> Do you or Russell have any new thought about it?
+> Rename __kptr_ref -> __kptr and __kptr -> __kptr_untrusted to indicate
+> its intended usage.
+> The main goal of __kptr_untrusted was to read/write such pointers
+> directly while bpf_kptr_xchg was a mechanism to access refcnted
+> kernel pointers. The next patch will allow RCU protected __kptr access
+> with direct read. At that point __kptr_untrusted will be deprecated.
+> 
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 
-The overall default must be PHY, because that is the legacy condition.
-The options to change the default are:
-
-1. device tree: Bad because the default is a configuration and does
-   not describe the hardware.
-
-2. Kconfig: Override PHY default at compile time.
-
-3. Module Param: Configure default on kernel command line.
-
-4. Letting drivers override PHY at run time.
-
-5. other?
-
-It would be possible to support both 2 and 3, with command line having
-the last word.
-
-I don't like #4 because it would cleaner if every time stamping driver
-would simply implement the internal APIs, without having special hooks
-for various boards.
-
-Thanks,
-Richard
-
+Acked-by: David Vernet <void@manifault.com>
