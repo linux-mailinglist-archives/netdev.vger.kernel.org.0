@@ -2,113 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AA516A6035
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 21:14:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D01B56A6067
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 21:31:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229658AbjB1UOC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 15:14:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36148 "EHLO
+        id S229699AbjB1Ubn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 15:31:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229544AbjB1UOA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 15:14:00 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA6982A980
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 12:13:59 -0800 (PST)
-Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        with ESMTP id S229565AbjB1Ubm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 15:31:42 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EB8B33468
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 12:31:39 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id A9E106D5;
-        Tue, 28 Feb 2023 21:13:57 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1677615237;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=puUo3rLMdrjc6WAreGyMTicnvarj5rDB14R+sbJ+si0=;
-        b=PF009GnwBWejNhpN4UAs92uc4A1yj31lN3+F767hCnhz3Ok4Zcna4Oqf9XlyVxAFX79Tnj
-        s2E07+gzvuJsiFkChZl4Q5BZzrsXhd2Zgd5y+3CS640VlISWPZwbQ34CyqNTow3mxAxHuj
-        UYxGf1jx98O952zZ8kUtyzNwlU6ZrMBkLnp+2QUO3Oj8R117KfRHMWyHKplZzDEFyyQlqM
-        rJPDZjWf5xuxVk1UMU1CHC+JddRtvVByvuJ9tfc4mO7dOm0twl9nTrF10/ehqJ+b9bX7es
-        p+fR2q66zbh4jjYT8pAvLsbgxbIeRH4oZECEOEwY3q1Y/Kft0UMqPHrIWKbVvg==
+        by ams.source.kernel.org (Postfix) with ESMTPS id 138EEB80E1A
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 20:31:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74382C433D2;
+        Tue, 28 Feb 2023 20:31:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1677616296;
+        bh=G8m2430IqHEhAe2YQ8ZCfRTaZ0QkfVTDf4bVJPZTP48=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pa7MqsNqHPx2mLvU3vv7n+8Ln6YHw3rc6DSBPVy4Mz6DK4Bvg2okKqXlySVV46/M1
+         z0jzp8hj6EU2h1mi9vmPBudgeU7WRTPa2PWrMgWcnSgiRmLeLm0bCeX4ubGK7QYYvn
+         l4WEVq4mmzK3rUuMWV9YDPoW7IWuqqQiG52x4O+PbTyZOlPRFD4yChJ4Waa+so2nK8
+         E4Pc4ZMtsTazfyTSL0vXjQhvWoG/EBO86CvwKpZ/2thqHWxw4wEB3i3ejvmm71cDXJ
+         fMfeA/DHygg0jCoUNb93ipNdcahMAynBVeoJB/HrJObndmm8pAtSzodKDpq2qSvjoD
+         U94dsC2Ej2KFw==
+Date:   Tue, 28 Feb 2023 12:31:35 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Alexander Lobakin <aleksander.lobakin@intel.com>
+Cc:     Geoff Levand <geoff@infradead.org>, <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net v6 1/2] net/ps3_gelic_net: Fix RX sk_buff length
+Message-ID: <20230228123135.251edc25@kernel.org>
+In-Reply-To: <03f987ab-2cc1-21f6-a4cb-2df1273a8560@intel.com>
+References: <cover.1677377639.git.geoff@infradead.org>
+        <1bf36b8e08deb3d16fafde3e88ae7cd761e4e7b3.1677377639.git.geoff@infradead.org>
+        <20230227182040.75740bb6@kernel.org>
+        <03f987ab-2cc1-21f6-a4cb-2df1273a8560@intel.com>
 MIME-Version: 1.0
-Date:   Tue, 28 Feb 2023 21:13:57 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     andrew@lunn.ch, davem@davemloft.net, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, kory.maincent@bootlin.com, kuba@kernel.org,
-        maxime.chevallier@bootlin.com, netdev@vger.kernel.org,
-        richardcochran@gmail.com, thomas.petazzoni@bootlin.com
-Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support
- [multicast/DSA issues]
-In-Reply-To: <Y/4yymy8ZBlMrjDG@shell.armlinux.org.uk>
-References: <Y/4rXpPBbCbLqJLY@shell.armlinux.org.uk>
- <20230228164435.133881-1-michael@walle.cc>
- <Y/4yymy8ZBlMrjDG@shell.armlinux.org.uk>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <a7d0a9c31e86441b836baf3b5cd7804d@walle.cc>
-X-Sender: michael@walle.cc
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2023-02-28 17:58, schrieb Russell King (Oracle):
-> On Tue, Feb 28, 2023 at 05:44:35PM +0100, Michael Walle wrote:
->> >> 4. Letting drivers override PHY at run time.
->> >
->> > I think this is the only sensible solution - we know for example that
->> > mvpp2 will prefer its PTP implementation as it is (a) higher resolution
->> > and (b) has more flexibility than what can be provided by the Marvell
->> > PHYs that it is often used with.
->> 
->> Please also consider that there might be one switch with a shared
->> PHC and multiple PHYs, each with its own PHC.
+On Tue, 28 Feb 2023 16:47:25 +0100 Alexander Lobakin wrote:
+> >> +		return -ENOMEM;
+> >> +	}  
+> > 
+> > And generally reshuffling the code.
+> > 
+> > Once again - please don't do any of that in a bug fix.
+> > Describe precisely what the problem is and fix that problem,  
 > 
-> Doesn't the PTP API already allow that? The PHC is a separate API from
-> the network hardware timestamping - and the netdev/PHY is required
-> to implement the ethtool get_ts_info API that provides userspace with
-> the index to the PHC associated with the interface.
+> IIRC the original problem is that the skb linear parts are not always
+> aligned to a boundary which this particular HW requires. So initially
+> there was something like "allocate len + alignment - 1, then
+> PTR_ALIGN()",
 
-Yes, but the source for the timestamp is the PHC. If the PHCs are
-not synchronized, the timestamps won't be either. With a shared PHC,
-the synchronization is already a given.
+Let's focus on where the bug is. At a quick look I'm guessing that 
+the bug is that we align the CPU buffer instead of the DMA buffer.
+We should pass the entire allocate len + alignment - 1 as length 
+to dma_map() and then align the dma_addr. dma_addr is what the device
+sees. Not the virtual address of skb->data.
 
->> In this case, it is a
->> property of the board wether PHY timestamping actually works, because
->> it will need some kind of synchronization between all the PHYs.
-> 
-> How is this any different from e.g. a platform where there are
-> multiple network interfaces each with their own independent PHC
-> such as Macchiatobin, where there are two CP110 dies, each with
-> their own group of three ethernet adapters, and each die has its
-> own PHC shared between the three ethernet adapters?
-> 
-> Hardware synchronisation between the two PHCs isn't possible, but
-> they might tick at the same rate (it's something that hasn't been
-> checked.) However, the hardware signals aren't that helpful because
-> there's no way to make e.g. the rising edge always be at the start
-> of a second. So the synchronisation has to be done in software.
-> 
-> I don't think PHCs need to be synchronised in hardware to "actually
-> work". Take an example of a PC with two network cards, both having
-> their own independent PHC.
+If I'm right the bug is not in fact directly addressed by the patch.
+I'm guessing the patch helps because at least the patch passes the
+aligned length to the dma_map(), rather than GELIC_NET_MAX_MTU (which
+is not a multiple of 128).
 
-That might be true if you just want to use PTP as a time sync protocol,
-but keep in mind that there is also the time aware scheduler which uses
-the PHC as its time source, too. If you want to use PHY timestamping
-in this case, the PHCs needs to be synchronized. Honestly, I'm not 
-really
-sure, how that is supposed to work.
-All I'm trying to say, is there might also be some board constraints so
-the MAC driver might not always be telling what is best, PHY or MAC.
+> but I said that it's a waste of memory and we shouldn't do
+> that, using napi_alloc_frag_align() instead.
+> I guess if that would've been described, this could go as a fix? I don't
+> think wasting memory is a good fix, even if we need to change the
+> allocation scheme...
 
--michael
+In general doing such a rewrite may be fine, if the author is an expert
+and the commit message is very precise. Here we are at v6 already and
+IMHO the problem is not even well understood.
+
+Let's focus on understanding the problem and writing a _minimal_ fix.
+
+The waste of memory claim can't be taken seriously when the MTU define
+is bumped by 500 with no mention in the commit msg, as you also noticed.
+
+Minimal fix, please.
