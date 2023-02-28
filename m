@@ -2,113 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FC1F6A57FB
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 12:25:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1543B6A5806
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 12:27:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231531AbjB1LZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 06:25:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44496 "EHLO
+        id S231527AbjB1L1s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 06:27:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231528AbjB1LYZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 06:24:25 -0500
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE7C92FCE8
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 03:24:03 -0800 (PST)
-Received: by mail-io1-xd2c.google.com with SMTP id f14so3881973iow.5
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 03:24:03 -0800 (PST)
+        with ESMTP id S231534AbjB1L1r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 06:27:47 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on20729.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eab::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE3679008
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 03:27:13 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jtUh417sMjBl3vE+M6R4Wavc8JaO4qQ0kCFwK4hijh5IgXAWK4eAAr7e+Ataxibvbd4sY8NYILHf9XnJh3l87JSSNxAghIEDXqna6SajUWtjyfICUklSavWsKESwasNHqcBXtb+htjOQ2QMsSm5bX+Uko883CHdz6UXD3pqF9jRou0OMLFmH/fORSGITZpfi25hEqOJrPJO0uotjR1V3eSN81v5Mzi6D/oNbu9NuqjCq3Sf2OGEu/XpuZp3vtKbIioMIgtTgBNCf0Wr+kVmzV59AoIz/V3AzJS5jbuppN7JkllE9m+QMCREvWrio4EBNnPghWsof6mL1qqV1PaAhRg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6MX8glnjqGFfKGbNB+A53mS7+w41oH9gZHQEveuvnBY=;
+ b=RJiIxV+8aMjfu8a1IqpgTgZCi170+PR1z/EbvF786LXERvTrGOO2wEjGNPzC4rXo4acJgpYRhYWxNNHXL09aVE/3KDQPBVNeH83VRcvDL7/s6jHFjkxeVs17B8RDYHmG/ggLAa9oupZQV2ZyPzyvaNRwsUEP4MH4j6YdKReDksivf7ngOku0EapiGGcm8VOAywrkNp7UJjAioQazN6b/D0OkrAolgxryCCfpVrYw5pNCVpY9tZ6Bsw2H3ISniS2ayy6+dv9+iSyRkCGT1rpHRrwG6SnF8qOafh2TbEZd2mJ6EE8pe+fqvjpulLDAv6ZKAaJmmIQkJh7hWFMZ5durDQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0u2iKp9ldtcgMOD+hKR8kz3k0BOCjo1o/U4cCu8boAs=;
-        b=L0u+m/Xvcmz+gegyTZ64Bq2mJd6k/r1EXydm4FVgaQ6f4cz0HqDzFGrIqcKOKeSX4m
-         TQ2suA/qG7DQtPqbClxjbKGwj2GKtt6FFwCQFWrQVesEBm4qkMyt9e09ErWg4q4S1J75
-         n+o213OvKaZoFEpQM7Hk9gKLAaUlTk305d2L3HUZs/pPqw2e0UIx9zx6fMq0R9+gEEPT
-         O34ufDaxKGHtli6AC8vWpEO2KOSke0lMJ2Bnc+ZgrGF33uzfXf/47/wc4NKgmC4rPYU8
-         laCKAqxJH/CfzZv3sST8ObLCavdA+kzooEOzZrzU4a8Qxy08Ynv85vjvXyX/9L8+EqaA
-         tt5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=0u2iKp9ldtcgMOD+hKR8kz3k0BOCjo1o/U4cCu8boAs=;
-        b=PuAZOkzbx0MegvUzDaqBo7mJbfLm0MDDLNh8g8Xh8c4vM619pC8fTWiwoyKgy5w67m
-         VVtY6rErjugHrwpkn+HNRMDxAZH5TVNIZXUkThN8TTcEjj29028oueU4yWXj+opePZXY
-         tG6j4bVHralqTHrnHjB1IV+xvZS4Wl9AwsL7kabT6QJ5jkbYFMA2cjFG/GLn9a+x7evL
-         xCm8cQWvnEvC1/vIUf9eI3Em1POWtzEdbeWwx07OmDjphf8zih+pRCFjarT5gEfvO1mA
-         jSIiII7X6MbGrcV/DUmSENpCOTa7pxh/791xZZ3noscwwfnwH+U9b6XBz+uTc594mFGi
-         bpzg==
-X-Gm-Message-State: AO0yUKU7lBfLErildepPhDzMH5VInFu0W6SvsqpUjKzyiupqkOqKzFaS
-        FeNcuxsq72QY2/QIvxzZ3K8iLLvo0N70hVjl+d7YWg==
-X-Google-Smtp-Source: AK7set/XxfKvKpioQb1Ae1RPArAsVZtkPOSIDArcUmsbNHh+ZP+BrV/3l+awhLoUPWogWiBdbkJZzvBuO+cK4uoi2os=
-X-Received: by 2002:a05:6602:214b:b0:74c:bb62:6763 with SMTP id
- y11-20020a056602214b00b0074cbb626763mr1138820ioy.1.1677583438043; Tue, 28 Feb
- 2023 03:23:58 -0800 (PST)
-MIME-Version: 1.0
-References: <000000000000e412e905f5b46201@google.com> <CANn89iJ_kLaF0tVVUfzKQwVkQ0VtCca1dL8eF+RrXCVDTK6h2Q@mail.gmail.com>
- <20230227155352.3399bb10@kernel.org>
-In-Reply-To: <20230227155352.3399bb10@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 28 Feb 2023 12:23:46 +0100
-Message-ID: <CANn89i+ooMT_G9aL8keZ-WOcAKqpC44OLQNGvfUtjA6PW-yxcA@mail.gmail.com>
-Subject: Re: [syzbot] [net?] INFO: task hung in tls_sw_sendpage (3)
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6MX8glnjqGFfKGbNB+A53mS7+w41oH9gZHQEveuvnBY=;
+ b=VPqtlIT8QiPncpkNS2Tu5EHw87zrfTv8vU6VvmpRMwO72BSnQhpFSzLJ3dvF/80SGKOY4uXYRsGY5Y9De6gnf+Jr8lZ86dT9/zhlCsadRPUFdQNqYwwK7QwAi9Pg/Vn87R/DrPGSr4PUOE2/iA6m+B6NW37uUBtTbflX6E3sHPc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SN4PR13MB5373.namprd13.prod.outlook.com (2603:10b6:806:20c::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.21; Tue, 28 Feb
+ 2023 11:24:31 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6134.030; Tue, 28 Feb 2023
+ 11:24:31 +0000
+Date:   Tue, 28 Feb 2023 12:24:20 +0100
+From:   Simon Horman <simon.horman@corigine.com>
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     syzbot <syzbot+9c0268252b8ef967c62e@syzkaller.appspotmail.com>,
-        borisp@nvidia.com, bpf@vger.kernel.org, davem@davemloft.net,
-        john.fastabend@gmail.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, gaurav.jain@nxp.com, borisp@nvidia.com,
+        john.fastabend@gmail.com
+Subject: Re: [PATCH net] tls: rx: fix return value for async crypto
+Message-ID: <Y/3kZDAzhTT4RlYY@corigine.com>
+References: <20230227181201.1793772-1-kuba@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230227181201.1793772-1-kuba@kernel.org>
+X-ClientProxiedBy: AS4P250CA0025.EURP250.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5e3::15) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SN4PR13MB5373:EE_
+X-MS-Office365-Filtering-Correlation-Id: af188cfa-5185-4487-bea5-08db197e5c8e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: h4/Kc+PnFC6ypQJ9GIwwieRElorosTdM5rJiHhvJic0qPrQjjnwHWAjrpDBs+pQa8QZhCYNJEzNmAVWCP8GXRWVdDW3N5NNHhPBqYf6iEgyuMgUxSXB4UmLioCTapbCRFuKSsO1nt+fiLDur5MLgGDtRoMClM82qJl1O+FrlPo5JSpaR5UfPfKweE0wuMdPC5OZ6uOrOxl/GvKWfVCs+eOl9DQXi9TwbpKdchTDNLAOpDJi59COOMqbUua3fq/MsiYQTsECB1hUIXuBY/i77u1vCheBIheYQiZ3fw1qTRJI9iKOc8V8fQ5w6RTcC2cZULbQHlMfkk2NEFKyKcMxOJ73vwsat588xWyJ1Wxl8UilU3YmStza9actp2tigAgkjgheSASy5grI3OT4Gk9Q1KVfGwzacnVJJMehw5E2arE+buz0TkiV04zOI9qhfqshLLkF/1ellwJ1ztzyui/NjMlR5RVHx7WYs6kR73ey9vWoznLAk17YNz4X6yfS6maQZFWsBkg4i6pxWhmAiYSk3cnFsSoCgJuSOPodbC5iVLxW7WnjNPX5nqdQS31sCGjVUf+Hjok0NoNL4mZLkmbuQ53oj5Pg8nO90J8/5MkonodEmxKXPdUCGCGKwkw5jeUFagSpWPeAebOGJmIe7tHgx+PJhsDiE/JjzA9YSFIvlxHI=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(39840400004)(346002)(136003)(396003)(366004)(451199018)(316002)(5660300002)(41300700001)(186003)(66476007)(6486002)(6916009)(83380400001)(66946007)(966005)(86362001)(6506007)(8676002)(66556008)(478600001)(2906002)(6512007)(36756003)(6666004)(2616005)(44832011)(8936002)(4744005)(38100700002)(4326008);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Y4hp4bH+X4F8uIvyCPRfbyf2BRte50TqYu4YxBET23flJvvQHdgLjSpFvMyO?=
+ =?us-ascii?Q?NlxNtcssrXT9mrA+LuP52OntX7MY3Rg4/6xxKxfol1/Vc1tMaz6BT6kpQfla?=
+ =?us-ascii?Q?qwYZm1eEEsh/2W5ziDZ0lr/U3K3lpphJJcYTQOPzdFcy/0nih6WxvPgZhcD6?=
+ =?us-ascii?Q?JHm/qq8PZPtGsAzKHwOgQK7bqjoItXDArty2Wrj8MfYfrJloSG/VLqAyWwVO?=
+ =?us-ascii?Q?Ryv96lwWRp6b1pLJq0Rcbz7awS5TZmq0XlwRkvWVnNq91p11w5WQgbQru1Fc?=
+ =?us-ascii?Q?QvDwv2rnzwfpEI56YUg6NmjpzsVYtU2BySeFSUqE2qWEPh6i/qXU+Y4k/T/e?=
+ =?us-ascii?Q?j3T5/q6P/MGCYpFURAth0TmXw31YmsiXwKuBKh48b8GcpMoUA/WOqk6rINGO?=
+ =?us-ascii?Q?GSdT7wtiADfWz8SFYZbk+Ofssj084Wzi65gCM5GTXEXfTjZ/aY300vyPhlkS?=
+ =?us-ascii?Q?dND91gVuKO0825nxf8Iw98NRzBgE9dZsfSayVmy/5tIborCLYcL1FOjvJfIN?=
+ =?us-ascii?Q?agPMFGgW/Jt/y4/j+Oczk56r3dWhGeUl6UbWJRFabojiKaaFZuNyhfRJyveM?=
+ =?us-ascii?Q?YCZBA4TcF5Ii58Rqfhm35sB7a/fki6Us8QrM4aauvvAZLQ3fdytH1NYmzAOj?=
+ =?us-ascii?Q?zUGj4b6NIXIBusm+ynFvEZelmpS91MbIg1EuEEzv8YuUGLAUayigFwmN0vFV?=
+ =?us-ascii?Q?5EhXRqRfIQ6bnKwhfFrMZ9ZNayhjC4upkek4UFa5k9kUQU2y+ls+ptdm9d4g?=
+ =?us-ascii?Q?ExTiwnOUNXd/KEpAq+i2odpLdcXAZeeeLUol23Sbaohtx/8tERNZMPejKSDv?=
+ =?us-ascii?Q?8l6HwuipBBReB3vx9sh0Oy4KbpxvpvRpwvVD8gbUbn9ektFN9p35fuh1fLxn?=
+ =?us-ascii?Q?Jw1O7W+ZNQayeADpI0zJQAO4lOHoEb2mAZTzDNTvUswwi74GU8V+0JUSwn2I?=
+ =?us-ascii?Q?HrGkI89Y6EHxySRt+b5dL6y1yIcilRs7T4OYWXFDvWGgY2wrgRNBs4XPOGzt?=
+ =?us-ascii?Q?Vo1DBurVrX0tM7aJh8wTOU7tGSRwcjdG8vzJpsIPeJ9O+CBSMoeXVfzEXXy2?=
+ =?us-ascii?Q?ezkQKRa7Gw6jhDqcGL31TgHFE1ujpcASLVulM3HoxIuKLMieWmCOSbx+I69j?=
+ =?us-ascii?Q?1WQeplr/4wLbJUFYN5WofHtqpsD6SiDV2iwwa99Wn9t08wK8VzZ/qutL6y9M?=
+ =?us-ascii?Q?q5YdnH3JkMvgA84STrpZh6ucRnmeF7PbFNwj/OTelD70EGWN2f/Qj0sa0lOd?=
+ =?us-ascii?Q?zL6Nh0umxis0mMIYlBtaEPBCRXABZnLXdG2SaVtOgtxkvu4672TXwocrvWWx?=
+ =?us-ascii?Q?rVZ4neugpfkfaW//ODWvwuHCA1eVL7KziCDpSTYRtbf8boT3YVBYNHisWbXu?=
+ =?us-ascii?Q?Ih9FFSVOKVRXzyXLsSD+HHGA9LeXe+PH4SBtd/Qw33Fio6NHMAMCAnW4A+jG?=
+ =?us-ascii?Q?JWumYUud45zzrAsHCQR6naR8SNM3IihGEVAjuQnITl+7Dd5MdE7B0stUXN6x?=
+ =?us-ascii?Q?41Zs99i/bI1eo9L50eOVZG1E9GMj95LJdCITfonqLNmCWTYK3g+QLk120atH?=
+ =?us-ascii?Q?9z5TYysFRIyaJnzY+M0H6F0zWJ35j1NFYasbxsfOi8lwp8PxFFd8kSSmDaXa?=
+ =?us-ascii?Q?Aj8yYFxel64WvjPaKxgbznW4xVYAPk9ZxJQh9iMZokgdtV8ibqO56+RB7lPE?=
+ =?us-ascii?Q?Rth/Vw=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: af188cfa-5185-4487-bea5-08db197e5c8e
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Feb 2023 11:24:31.4676
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2L/4kfLCntf2krm7h8Pxe6/c4RBKcuU3qWWTnisP9MGq04AtHoOn+bigy4VnfyStuVlv1X/xwda0KMY8yIKr8ERSIuAe83gePKSC+4SN7WA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN4PR13MB5373
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 28, 2023 at 12:53=E2=80=AFAM Jakub Kicinski <kuba@kernel.org> w=
-rote:
->
-> On Mon, 27 Feb 2023 21:35:41 +0100 Eric Dumazet wrote:
-> > This looks suspicious to me
-> >
-> > commit 79ffe6087e9145d2377385cac48d0d6a6b4225a5
-> > Author: Jakub Kicinski <kuba@kernel.org>
-> > Date:   Tue Nov 5 14:24:35 2019 -0800
-> >
-> >     net/tls: add a TX lock
-> >
-> >
-> > If tls_sw_sendpage() has to call sk_stream_wait_memory(),
-> > sk_stream_wait_memory() is properly releasing the socket lock,
-> > but knows nothing about mutex_{un}lock(&tls_ctx->tx_lock);
->
-> That's supposed to be the point of the lock, prevent new writers from
-> messing with the partially pushed records when the original writer
-> is waiting for write space.
->
-> Obvious hack but the async crypto support makes TLS a bit of a mess :|
->
-> sendpage_lock not taking tx_lock may lead to obvious problems, I'm not
-> seeing where the deadlock is, tho..
->
+On Mon, Feb 27, 2023 at 10:12:01AM -0800, Jakub Kicinski wrote:
+> Gaurav reports that TLS Rx is broken with async crypto
+> accelerators. The commit under fixes missed updating
+> the retval byte counting logic when updating how records
+> are stored. Even tho both before and after the change
+> 'decrypted' was updated inside the main loop, it was
+> completely overwritten when processing the async
+> completions. Now that the rx_list only holds
+> non-zero-copy records we need to add, not overwrite.
+> 
+> Reported-and-bisected-by: Gaurav Jain <gaurav.jain@nxp.com>
+> Fixes: cbbdee9918a2 ("tls: rx: async: don't put async zc on the list")
+> Link: https://bugzilla.kernel.org/show_bug.cgi?id=217064
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-This report mentions sendpage, but sendmsg() would have the same issue.
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-A thread might be blocked in sk_stream_wait_memory() with the mutex
-held, for an arbitrary amount of time,
-say if the remote peer stays in RWIN 0 for hours.
-
-This prevents tx_work from making progress, and
-tls_sw_cancel_work_tx() would be stuck forever.
-
-The consensus is that the kernel shouts a warning if a thread has been
-waiting on a mutex
-more than 120 seconds (check_hung_uninterruptible_tasks())
