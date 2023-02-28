@@ -2,100 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 764386A543D
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 09:16:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 471816A545F
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 09:30:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230293AbjB1IQr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 03:16:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34012 "EHLO
+        id S229606AbjB1IaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 03:30:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbjB1IQp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 03:16:45 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 554F2265BD;
-        Tue, 28 Feb 2023 00:16:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677572205; x=1709108205;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=jvlbirBCen0JoozO0DRtMtM9lsFMy3zjq3zERzZPv4o=;
-  b=JkWo2QjrMqaPRM7zvDWAbJDEzF9vieUXT7Kc04wLzHD23KVNxrhZI+P5
-   5yb0pGiQ+TRsQArirJVopjuFlYKIVMnDQNWUhLqhaKO/BCJTqUyT2EV1h
-   J2JKG/TAhIgGQEWUUo5+wkIYT7X4R+b9p4nKUVXs+I0IjV2RlQBGTvo4y
-   qcBHK1U8xuAydotAohFAxpKS22FVBcW6SwJOBTaDPoEFq4sijN1ODD7kh
-   Cbql8gEkIHXsGDhXr0zdtT/PaU1/WF2x/p1UZE1DhniBZA2bDVhRfZEHV
-   GatHeRjir0gAwHkzT33WRNjKbRuZmg2uiJbqjRa75EXX/xTOCX2sml/mc
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10634"; a="334122092"
-X-IronPort-AV: E=Sophos;i="5.98,221,1673942400"; 
-   d="scan'208";a="334122092"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2023 00:16:26 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10634"; a="667359132"
-X-IronPort-AV: E=Sophos;i="5.98,221,1673942400"; 
-   d="scan'208";a="667359132"
-Received: from lkp-server01.sh.intel.com (HELO 3895f5c55ead) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 28 Feb 2023 00:16:23 -0800
-Received: from kbuild by 3895f5c55ead with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pWv9q-0005Dl-2y;
-        Tue, 28 Feb 2023 08:16:22 +0000
-Date:   Tue, 28 Feb 2023 16:15:55 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Daniel Xu <dxu@dxuuu.xyz>, kuba@kernel.org, edumazet@google.com,
-        davem@davemloft.net, dsahern@kernel.org, pabeni@redhat.com
-Cc:     oe-kbuild-all@lists.linux.dev, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 5/8] bpf: net: ipv6: Add bpf_ipv6_frag_rcv()
- kfunc
-Message-ID: <202302281646.GYE1qnGb-lkp@intel.com>
-References: <bce083a4293eefb048a700b5a6086e8d8c957700.1677526810.git.dxu@dxuuu.xyz>
+        with ESMTP id S229525AbjB1IaQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 03:30:16 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE94F233E9
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 00:30:14 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id x6so3684909ljq.1
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 00:30:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1677573013;
+        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=aPR3wybdLDGQ751O+Ph+iKip/50WSjBMbLi5cBgGIUQ=;
+        b=SCzrfgou23B756jLBrow2DC+PMVKCIOblVQ+puf9OwCJLmelA5YS8O7XJMfas9dudD
+         9jBVb+/go15c263eRCuZpKQCtUerVUlpPpaEIzVQ20JDaur+pMBmTNadtok1Jzw2fvID
+         IfOTwQ9z1nMSlj6JtFYbxkyY9vDR/nARv3yFXklxPNdrp42puqnaUv3bZXUzwK71eboM
+         aL63WYeMqkuQpVszMBdTNqB4EGEVB579yMqa8c9rTHBZY+FDMAdpHDbxrLa8QzFWB/md
+         f38NEiuP3rWLy2gjFMJPX1e9K8khLNfC+d4rhTQp8LBbRRnzFkRlVVQDSlXfk75sJSuv
+         TjFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1677573013;
+        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=aPR3wybdLDGQ751O+Ph+iKip/50WSjBMbLi5cBgGIUQ=;
+        b=PMvFGRApXHeAfKZSn9OYbrgchin8P0YJeUqIPWneMWRsdMEx/+A94yU5ldAA3eDPB1
+         kCJAF8SVTVZOpI1zk/aEdVMlHBLL3rbw2RSQ3xcQhnuNBnev+7hkwGQu4/e96QTne6IK
+         8zaeAjqJfOa4A8D2hbN+FVQ2QbZaHMoMGqNf1GaLxdS2h9BTKAPAhbMiZj0450wg9IFP
+         pjXVtlz1dyXmgDsbpiOM2eIKfafRm5Oe0Ps2Si2O1B/DHNEaspZxgogpDcdrUG0DmmGI
+         GCkUlidCWN74Wq6u2mPHoYYrtc/a5g+2d7EoYHQJdVLaFOVqvMKbe7OX63GpkutfMGCz
+         +IAA==
+X-Gm-Message-State: AO0yUKXlc7wJrAFpsgGu3KswuPv1KwfjqsO86n0TVLRqlzdyKsBAQToV
+        /v2m3Kwx6uaJ2Z6c3cdCEBSHxr1Tsk6v/Cbyd2I=
+X-Google-Smtp-Source: AK7set9GG/mjuCeBJY/0gtPwb0uefYaHlJpM/4sEktkhtlAWOSxxZ/HNVELcIhuXpOO61EB1MEs4bXGPpRlW3ZxVI7k=
+X-Received: by 2002:a2e:b5dc:0:b0:295:b0cd:522 with SMTP id
+ g28-20020a2eb5dc000000b00295b0cd0522mr533747ljn.2.1677573012889; Tue, 28 Feb
+ 2023 00:30:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bce083a4293eefb048a700b5a6086e8d8c957700.1677526810.git.dxu@dxuuu.xyz>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a9a:4387:0:b0:24f:361:322a with HTTP; Tue, 28 Feb 2023
+ 00:30:12 -0800 (PST)
+Reply-To: leighhimworth1@gmail.com
+From:   Leigh Himsworth <aishatuyarro07037820720@gmail.com>
+Date:   Tue, 28 Feb 2023 16:30:12 +0800
+Message-ID: <CAAPj31uYvNhS4dfJ8AzBgfvsvtNUikRo5e2j8ZLkpHO-mozb6g@mail.gmail.com>
+Subject: =?UTF-8?B?T2zDoQ==?=
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: Yes, score=5.1 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        FROM_LOCAL_DIGITS,FROM_LOCAL_HEX,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2a00:1450:4864:20:0:0:0:230 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5000]
+        *  0.0 FROM_LOCAL_DIGITS From: localpart has long digit sequence
+        *  0.0 FROM_LOCAL_HEX From: localpart has long hexadecimal sequence
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [aishatuyarro07037820720[at]gmail.com]
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [leighhimworth1[at]gmail.com]
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [aishatuyarro07037820720[at]gmail.com]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        *  3.0 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Daniel,
+Ol=C3=A1,
 
-Thank you for the patch! Yet something to improve:
+Sou Leigh Himsworth, de Massachusetts, estou procurando investir um
+ativo avaliado em US $ 350 milh=C3=B5es, no Astronaut Asteroid e em
+qualquer outro projeto comercial lucrativo em seu pa=C3=ADs que possa gerar
+nosso retorno esperado sobre o investimento.
 
-[auto build test ERROR on bpf-next/master]
+Por favor, deixe-me saber se voc=C3=AA est=C3=A1 interessado para que possa=
+mos
+falar sobre isso com mais detalhes.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Daniel-Xu/ip-frags-Return-actual-error-codes-from-ip_check_defrag/20230228-035449
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-patch link:    https://lore.kernel.org/r/bce083a4293eefb048a700b5a6086e8d8c957700.1677526810.git.dxu%40dxuuu.xyz
-patch subject: [PATCH bpf-next v2 5/8] bpf: net: ipv6: Add bpf_ipv6_frag_rcv() kfunc
-config: i386-defconfig (https://download.01.org/0day-ci/archive/20230228/202302281646.GYE1qnGb-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-8) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/be4610312351d4a658435bd4649a3a830322396d
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Daniel-Xu/ip-frags-Return-actual-error-codes-from-ip_check_defrag/20230228-035449
-        git checkout be4610312351d4a658435bd4649a3a830322396d
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 olddefconfig
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202302281646.GYE1qnGb-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
-   ld: net/ipv6/af_inet6.o: in function `inet6_init':
->> af_inet6.c:(.init.text+0x22a): undefined reference to `register_ipv6_reassembly_bpf'
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+Cumprimentos.
+Leigh Himsworth
