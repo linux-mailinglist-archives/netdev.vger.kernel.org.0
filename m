@@ -2,57 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 962286A609E
-	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 21:48:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C91D6A60CB
+	for <lists+netdev@lfdr.de>; Tue, 28 Feb 2023 21:59:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229814AbjB1UsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 15:48:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37186 "EHLO
+        id S229783AbjB1U74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 15:59:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229801AbjB1UsQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 15:48:16 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F659D304;
-        Tue, 28 Feb 2023 12:48:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1677617288; x=1709153288;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=WfkJSHVX8viEFAtDtKjqj0PzUjCvDzCn7Cy2sK93AaA=;
-  b=EX0lPT2lGeaaJYVZUHefQLbj+N2jhTJIvvO5uJWssG11JMkMdd0BxkBl
-   XDoQ5MFlX7DN3BAigU2QNqiUublXVXCrbAdU4vR/PfWo+EmKMwyF6fqww
-   yvA/ZP8CnQNCT3MwLaoIQjMfUV1i99F+0fWRCjvTWz/gogKTb8KQZVNN0
-   uHUrjWVfzpKTwk0Gx2AeYCFCX7/AaZMEbh/of/r/r0W4BElxjswy0BRNA
-   SUhZYmarijc81IYLQewu60z+OKLUYOpFOAN423/AXPZN5+fByHomQXZGf
-   4Dk3G3LI6+4O6WorpWmtkx2A/Qz/Yq2uOBNAe72qFWfnacU4/MfOzIA6W
-   w==;
-X-IronPort-AV: E=Sophos;i="5.98,222,1673938800"; 
-   d="scan'208";a="202642252"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Feb 2023 13:48:08 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Tue, 28 Feb 2023 13:48:07 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Tue, 28 Feb 2023 13:48:05 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <UNGLinuxDriver@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net] net: lan966x: Fix port police support using tc-matchall
-Date:   Tue, 28 Feb 2023 21:47:42 +0100
-Message-ID: <20230228204742.2599151-1-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.38.0
+        with ESMTP id S229679AbjB1U7y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 15:59:54 -0500
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 997B314E96
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 12:59:53 -0800 (PST)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-536cb25982eso308877397b3.13
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 12:59:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=H15Wgrg45uphokJUqJE+ge3DLPSULLnvrd4PVO7cLLc=;
+        b=fF7yR1zieU4gkviG5qrWrdfSWhtKPGGWlvtMBXv4KHBDu0aJ3gWsucs0SnY/VXu9xI
+         98ilQKazhvCJdc/WBewUB+5SWcdhorii7J1pOeAzos6f/dQqHZdg02M4AtOUfeTq8eOO
+         f09htTPMG/pkdx7lHQGqeX5kSZIxN5OkkPfc77FKJnyPHYn11vG35NdgnRPHPkAFKcea
+         XgImIWOsGyc18s8CqlKSzyo64N6r/4hd/TI5CyRtFIgPb+s+gMlpDT8KVNO9m7c21yRW
+         SoYMoaCOLdsdFi4o18FJKo606Yo0hMRNZOz6SykPjzCGVDwzVDiSukBxaNiAwswCzVE4
+         k7xA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=H15Wgrg45uphokJUqJE+ge3DLPSULLnvrd4PVO7cLLc=;
+        b=ci3tPe3MKQdpvi8/qEx2Gk3B7ETLMYIwcYlbhPVujusjGBsVy/w+xnKH4CDJIQ5Fc6
+         IV913V8OMRZnBIs7z70/QnAgB+IGaCx3beH3prYoBS7pnsXYZfrjPBORYdTf9Xl0RnGr
+         MFD68FHiaJSgn2RNHy/uLc51Uk/CoVG79iXDkcVResnNiPwrTzGvTHaPODv4RNEB7NVt
+         O8Mxx02WBfQXrCweq2URUhrU295533A75oIoFmR1V5E3fLjQTXXdZ8UQAEJq+xnYjPYk
+         XSeHq6u/anZdmvgeHpMX8459IYfR4RfPznNrXuTv3mXCB6ura9gIAW2VvtAFCE1q324m
+         sdsQ==
+X-Gm-Message-State: AO0yUKXgpXjGzNNXMpW34jzKOgh/wJwYJP0Dr5mGk3kBFIMcCp3YiE0H
+        prHbIw7UhlVDNTZfREyVqiIyR9KUUsHooesJGnj+MA==
+X-Google-Smtp-Source: AK7set+d6vs4ymgWzsVBho7zIKcb2AoIn1quNMhQ7GG855RnJ+2d+gNas87Vdn9aekeC5XgvBudues+ObsH6EIGw7ZY=
+X-Received: by 2002:a5b:8b:0:b0:90d:af77:9ca6 with SMTP id b11-20020a5b008b000000b0090daf779ca6mr2178238ybp.7.1677617992660;
+ Tue, 28 Feb 2023 12:59:52 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+References: <Y8v+qVZ8OmodOCQ9@nvidia.com>
+In-Reply-To: <Y8v+qVZ8OmodOCQ9@nvidia.com>
+From:   "T.J. Mercier" <tjmercier@google.com>
+Date:   Tue, 28 Feb 2023 12:59:41 -0800
+Message-ID: <CABdmKX3kJZKsOQSi=4+RE8D3AF=-823B9WV11sC4WH67hjzqSQ@mail.gmail.com>
+Subject: Re: [LSF/MM/BPF proposal]: Physr discussion
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     lsf-pc@lists.linuxfoundation.org, linux-mm@kvack.org,
+        iommu@lists.linux.dev, linux-rdma@vger.kernel.org,
+        Matthew Wilcox <willy@infradead.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Joao Martins <joao.m.martins@oracle.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Ming Lei <ming.lei@redhat.com>, linux-block@vger.kernel.org,
+        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        nvdimm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,35 +74,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the police was removed from the port, then it was trying to
-remove the police from the police id and not from the actual
-police index.
-The police id represents the id of the police and police index
-represents the position in HW where the police is situated.
-The port police id can be any number while the port police index
-is a number based on the port chip port.
-Fix this by deleting the police from HW that is situated at the
-police index and not police id.
+On Sat, Jan 21, 2023 at 7:03 AM Jason Gunthorpe <jgg@nvidia.com> wrote:
+>
+> I would like to have a session at LSF to talk about Matthew's
+> physr discussion starter:
+>
+>  https://lore.kernel.org/linux-mm/YdyKWeU0HTv8m7wD@casper.infradead.org/
+>
+> I have become interested in this with some immediacy because of
+> IOMMUFD and this other discussion with Christoph:
+>
+>  https://lore.kernel.org/kvm/4-v2-472615b3877e+28f7-vfio_dma_buf_jgg@nvidia.com/
+>
+> Which results in, more or less, we have no way to do P2P DMA
+> operations without struct page - and from the RDMA side solving this
+> well at the DMA API means advancing at least some part of the physr
+> idea.
+>
+> So - my objective is to enable to DMA API to "DMA map" something that
+> is not a scatterlist, may or may not contain struct pages, but can
+> still contain P2P DMA data. From there I would move RDMA MR's to use
+> this new API, modify DMABUF to export it, complete the above VFIO
+> series, and finally, use all of this to add back P2P support to VFIO
+> when working with IOMMUFD by allowing IOMMUFD to obtain a safe
+> reference to the VFIO memory using DMABUF. From there we'd want to see
+> pin_user_pages optimized, and that also will need some discussion how
+> best to structure it.
+>
+> I also have several ideas on how something like physr can optimize the
+> iommu driver ops when working with dma-iommu.c and IOMMUFD.
+>
+> I've been working on an implementation and hope to have something
+> draft to show on the lists in a few weeks. It is pretty clear there
+> are several interesting decisions to make that I think will benefit
+> from a live discussion.
+>
+> Providing a kernel-wide alternative to scatterlist is something that
+> has general interest across all the driver subsystems. I've started to
+> view the general problem rather like xarray where the main focus is to
+> create the appropriate abstraction and then go about transforming
+> users to take advatange of the cleaner abstraction. scatterlist
+> suffers here because it has an incredibly leaky API, a huge number of
+> (often sketchy driver) users, and has historically been very difficult
+> to improve.
+>
+> The session would quickly go over the current state of whatever the
+> mailing list discussion evolves into and an open discussion around the
+> different ideas.
+>
+> Thanks,
+> Jason
+>
 
-Fixes: 5390334b59a3 ("net: lan966x: Add port police support using tc-matchall")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- drivers/net/ethernet/microchip/lan966x/lan966x_police.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_police.c b/drivers/net/ethernet/microchip/lan966x/lan966x_police.c
-index a9aec900d608d..7d66fe75cd3bf 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_police.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_police.c
-@@ -194,7 +194,7 @@ int lan966x_police_port_del(struct lan966x_port *port,
- 		return -EINVAL;
- 	}
- 
--	err = lan966x_police_del(port, port->tc.police_id);
-+	err = lan966x_police_del(port, POL_IDX_PORT + port->chip_port);
- 	if (err) {
- 		NL_SET_ERR_MSG_MOD(extack,
- 				   "Failed to add policer to port");
--- 
-2.38.0
-
+Hi, I'm interested in participating in this discussion!
