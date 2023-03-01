@@ -2,208 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D3A06A6EAE
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 15:45:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB1D56A6EBE
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 15:46:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230232AbjCAOpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 09:45:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39362 "EHLO
+        id S229925AbjCAOqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 09:46:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229940AbjCAOpE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 09:45:04 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 347F92CFD2
-        for <netdev@vger.kernel.org>; Wed,  1 Mar 2023 06:44:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1677681856;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=E86jCb8kW1PzrvPSO5dVoBke0amKLBuYHjvi+nJQr9o=;
-        b=bTk2IXxjyM8H25glC8AUnI8Nvf7PrGOtJM0U4bFXTraGafQvNNnwqGKMD68lNez2cjCeuD
-        b0xuj84RHxU8q8eLhCZzTn2uD+C8RuDKf3BCnYjD60hYCrDECSiRRdEPN4ZS1cEa7wspr2
-        oFpOBKMeBwtdnl4AOUlSDrmVrxG+hEA=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-111-P-tW0JuNMayp8vgBLodOZQ-1; Wed, 01 Mar 2023 09:44:15 -0500
-X-MC-Unique: P-tW0JuNMayp8vgBLodOZQ-1
-Received: by mail-wm1-f71.google.com with SMTP id az12-20020a05600c600c00b003e8910ec2fdso4643270wmb.6
-        for <netdev@vger.kernel.org>; Wed, 01 Mar 2023 06:44:15 -0800 (PST)
+        with ESMTP id S229991AbjCAOqJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 09:46:09 -0500
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C27B043934
+        for <netdev@vger.kernel.org>; Wed,  1 Mar 2023 06:45:39 -0800 (PST)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-53852143afcso368707197b3.3
+        for <netdev@vger.kernel.org>; Wed, 01 Mar 2023 06:45:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=c5fRwh/q88qnR4rLODR5aN06oeaTsbFFIXqxWtKoAdA=;
+        b=Skkgc1pJVdMg4lM3S/QvC70xPPr5jlTmvz4EOn+Pc6rF3VpQhVc4iGugen9Q06wzaW
+         YU5vBuwqleOCYoFdAyxRZHQORMrJn2alOT/fjacfQLA291X6YhVykyxziMNBllMvYuaY
+         rKWSJgX2G7dhiWsfoI33lKF5ZUW3nVjhcxCb4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677681854;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=E86jCb8kW1PzrvPSO5dVoBke0amKLBuYHjvi+nJQr9o=;
-        b=sUM1B60YnSdzXjnZ5gY0cDLlhPLT/tNiDdoC7ganESebIURQRq8ePfFxFzBoufFrNV
-         2+IYXJQmsQt71OST2RcWEZxrOg+wsMkHAkoVUrm1ZFyk6MX1XZbDXKMXRpCLG7tdz8Lh
-         XukFzAjkaSfKoDvEePPMZ1uEAl1rwBUGk1E/aPpcpKDQGhs8pn9902LZFv7RqmURKv8/
-         6eAGwNmL+jzF35LWw6SBFEnFgx0nb4d5O1Xt5YVzfOJnpVsHxnRBveiKHFjz+Amb8vUv
-         hxcbzVvaYFWQLsB5V77fRsLYpnkrpv2ULzuUdu8ZQ/7nOqKRFbnBf3pZ/dMu09HXSQkE
-         fPvw==
-X-Gm-Message-State: AO0yUKXJQMFcrOVjYqgoWjTBf9zDSRy2Sva/Xqr9a8ig80Fpbs43YwxM
-        Y9evXG5L8UpKo9yaMu0h2aSZEEzrm2TaRKftNevAmXnFitcteY4OVGqpU34JMiA1PHiHBsiembA
-        /Zk7E6jcr7acg4WOp
-X-Received: by 2002:a5d:6e09:0:b0:2c7:5247:e496 with SMTP id h9-20020a5d6e09000000b002c75247e496mr5056892wrz.60.1677681854203;
-        Wed, 01 Mar 2023 06:44:14 -0800 (PST)
-X-Google-Smtp-Source: AK7set8mSY3e1Y8uBNg7J/umChcu632unCjyUQQS2o6WA2kpSEr1P+PNtHKwqRrvNwfJaKiCprzfMA==
-X-Received: by 2002:a5d:6e09:0:b0:2c7:5247:e496 with SMTP id h9-20020a5d6e09000000b002c75247e496mr5056875wrz.60.1677681853859;
-        Wed, 01 Mar 2023 06:44:13 -0800 (PST)
-Received: from redhat.com ([2.52.141.194])
-        by smtp.gmail.com with ESMTPSA id t14-20020adfe44e000000b002c5503a8d21sm13145104wrm.70.2023.03.01.06.44.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Mar 2023 06:44:13 -0800 (PST)
-Date:   Wed, 1 Mar 2023 09:44:09 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     rbradford@rivosinc.com
-Cc:     Jason Wang <jasowang@redhat.com>,
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=c5fRwh/q88qnR4rLODR5aN06oeaTsbFFIXqxWtKoAdA=;
+        b=7N8Or/dZTPxlHPrjTVC4lOn6UxHkFQoyC+490vVHJk1cSi2E8pWJCR5Hbl9Oxspll0
+         5jHRlRe8YsMSqwj8L/w/kmhHeEz5Y6ElU+UNjKrbaPRjBC+pMCJ/7zoCXe3XyutlJKJ0
+         bG/m772IDjOAqMD8HJQZt2zHxmqASKZj4CFW18do4NB3hgk0AezWLyMapb4O1J3mItGo
+         hBml8lMuJ5Vie3t6O5j96SANKbvsvQr1CrPry37bENJP5TSkFPXRkoduTg3zR2coVj6s
+         iHFBmj9Hu+74xJaBI/7oX8JXwaAqy2QIaJocQV4jrvrm64H5ADyHjqDt9PxIJy0Oup7k
+         L+aA==
+X-Gm-Message-State: AO0yUKXwzncDWZ0fDmVtc+49byAIDWEZki2VWytdNnQ3Le46gk5NRITO
+        vLPVPp0cBqxYJA4PdDtHxlw55S2HoiB3ka/ppDtccQ==
+X-Google-Smtp-Source: AK7set/9RgMm3XRu83JsW4Wbbsi1f43oJuRNJ4GJnMD9Ynj6+QG8QTN/H949zZF90kB3oY5EYLAgq26FWAoCc+/6F5A=
+X-Received: by 2002:a81:ae0e:0:b0:53c:7c33:9d25 with SMTP id
+ m14-20020a81ae0e000000b0053c7c339d25mr726867ywh.8.1677681938671; Wed, 01 Mar
+ 2023 06:45:38 -0800 (PST)
+MIME-Version: 1.0
+References: <20230228215433.3944508-1-robh@kernel.org>
+In-Reply-To: <20230228215433.3944508-1-robh@kernel.org>
+From:   Simon Glass <sjg@chromium.org>
+Date:   Wed, 1 Mar 2023 07:45:19 -0700
+Message-ID: <CAPnjgZ1=UPMf72JjejpdSvss5+d1tnMv=efYUgJcH6T09YAKTw@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: Fix SPI and I2C bus node names in examples
+To:     Rob Herring <robh@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Robert Foss <rfoss@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] virtio-net: Fix probe of virtio-net on kvmtool
-Message-ID: <20230301093054-mutt-send-email-mst@kernel.org>
-References: <20230223-virtio-net-kvmtool-v3-1-e038660624de@rivosinc.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230223-virtio-net-kvmtool-v3-1-e038660624de@rivosinc.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-pm@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-usb@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_SPF_WL
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 01, 2023 at 01:59:52PM +0000, Rob Bradford via B4 Relay wrote:
-> From: Rob Bradford <rbradford@rivosinc.com>
-> 
-> Since the following commit virtio-net on kvmtool has printed a warning
-> during the probe:
-> 
-> commit dbcf24d153884439dad30484a0e3f02350692e4c
-> Author: Jason Wang <jasowang@redhat.com>
-> Date:   Tue Aug 17 16:06:59 2021 +0800
-> 
->     virtio-net: use NETIF_F_GRO_HW instead of NETIF_F_LRO
-> 
-> [    1.865992] net eth0: Fail to set guest offload.
-> [    1.872491] virtio_net virtio2 eth0: set_features() failed (-22); wanted 0x0000000000134829, left 0x0080000000134829
-> 
-> This is because during the probing the underlying netdev device has
-> identified that the netdev features on the device has changed and
-> attempts to update the virtio-net offloads through the virtio-net
-> control queue. kvmtool however does not have a control queue that supports
-> offload changing (VIRTIO_NET_F_CTRL_GUEST_OFFLOADS is not advertised)
-> 
-> The netdev features have changed due to validation checks in
-> netdev_fix_features():
-> 
-> if (!(features & NETIF_F_RXCSUM)) {
-> 	/* NETIF_F_GRO_HW implies doing RXCSUM since every packet
-> 	 * successfully merged by hardware must also have the
-> 	 * checksum verified by hardware.  If the user does not
-> 	 * want to enable RXCSUM, logically, we should disable GRO_HW.
-> 	 */
-> 	if (features & NETIF_F_GRO_HW) {
-> 		netdev_dbg(dev, "Dropping NETIF_F_GRO_HW since no RXCSUM feature.\n");
-> 		features &= ~NETIF_F_GRO_HW;
-> 	}
-> }
-> 
-> Since kvmtool does not advertise the VIRTIO_NET_F_GUEST_CSUM feature the
-> NETIF_F_RXCSUM bit is not present and so the NETIF_F_GRO_HW bit is
-> cleared. This results in the netdev features changing, which triggers
-> the attempt to reprogram the virtio-net offloads which then fails.
-> 
-> This commit prevents that set of netdev features from changing by
-> preemptively applying the same validation and only setting
-> NETIF_F_GRO_HW if NETIF_F_RXCSUM is set because the device supports both
-> VIRTIO_NET_F_GUEST_CSUM and VIRTIO_NET_F_GUEST_TSO{4,6}
-> 
-> Signed-off-by: Rob Bradford <rbradford@rivosinc.com>
+On Tue, 28 Feb 2023 at 14:54, Rob Herring <robh@kernel.org> wrote:
+>
+> SPI and I2C bus node names are expected to be "spi" or "i2c",
+> respectively, with nothing else, a unit-address, or a '-N' index. A
+> pattern of 'spi0' or 'i2c0' or similar has crept in. Fix all these
+> cases. Mostly scripted with the following commands:
+>
+> git grep -l '\si2c[0-9] {' Documentation/devicetree/ | xargs sed -i -e 's/i2c[0-9] {/i2c {/'
+> git grep -l '\sspi[0-9] {' Documentation/devicetree/ | xargs sed -i -e 's/spi[0-9] {/spi {/'
+>
+> With this, a few errors in examples were exposed and fixed.
+>
+> Signed-off-by: Rob Herring <robh@kernel.org>
 > ---
-> Changes in v3:
-> - Identified root-cause of feature bit changing and updated conditions
->   check
-> - Link to v2: https://lore.kernel.org/r/20230223-virtio-net-kvmtool-v2-1-8ec93511e67f@rivosinc.com
-> 
-> Changes in v2:
-> - Use parentheses to group logical OR of features 
-> - Link to v1:
->   https://lore.kernel.org/r/20230223-virtio-net-kvmtool-v1-1-fc23d29b9d7a@rivosinc.com
+> Cc: Miguel Ojeda <ojeda@kernel.org>
+> Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+> Cc: Benson Leung <bleung@chromium.org>
+> Cc: Guenter Roeck <groeck@chromium.org>
+> Cc: Stephen Boyd <sboyd@kernel.org>
+> Cc: Andrzej Hajda <andrzej.hajda@intel.com>
+> Cc: Neil Armstrong <neil.armstrong@linaro.org>
+> Cc: Robert Foss <rfoss@kernel.org>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: Sam Ravnborg <sam@ravnborg.org>
+> Cc: MyungJoo Ham <myungjoo.ham@samsung.com>
+> Cc: Chanwoo Choi <cw00.choi@samsung.com>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Bartosz Golaszewski <brgl@bgdev.pl>
+> Cc: Pavel Machek <pavel@ucw.cz>
+> Cc: Lee Jones <lee@kernel.org>
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Wolfgang Grandegger <wg@grandegger.com>
+> Cc: Kalle Valo <kvalo@kernel.org>
+> Cc: Sebastian Reichel <sre@kernel.org>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: linux-clk@vger.kernel.org
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: linux-gpio@vger.kernel.org
+> Cc: linux-i2c@vger.kernel.org
+> Cc: linux-leds@vger.kernel.org
+> Cc: linux-media@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-can@vger.kernel.org
+> Cc: linux-wireless@vger.kernel.org
+> Cc: linux-pm@vger.kernel.org
+> Cc: alsa-devel@alsa-project.org
+> Cc: linux-usb@vger.kernel.org
 > ---
->  drivers/net/virtio_net.c | 10 ++++++----
->  1 file changed, 6 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 61e33e4dd0cd..2e7705142ca5 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -3778,11 +3778,13 @@ static int virtnet_probe(struct virtio_device *vdev)
->  			dev->features |= dev->hw_features & NETIF_F_ALL_TSO;
->  		/* (!csum && gso) case will be fixed by register_netdev() */
->  	}
-> -	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_CSUM))
-> +	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_CSUM)) {
->  		dev->features |= NETIF_F_RXCSUM;
-> -	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
-> -	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6))
-> -		dev->features |= NETIF_F_GRO_HW;
-> +		/* This dependency is enforced by netdev_fix_features */
-> +		if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
-> +		    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6))
-> +			dev->features |= NETIF_F_GRO_HW;
-> +	}
->  	if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
->  		dev->hw_features |= NETIF_F_GRO_HW;
->  
 
-I see. It is annoying that we are duplicating the logic from
-netdev_fix_features here though :(
-Maybe we should call netdev_update_features, in the callback check
-the flags and decide what to set and what to clear?
-Or export netdev_fix_features to modules?
-
-
-
-Also re-reading Documentation/networking/netdev-features.rst - 
-
- 1. netdev->hw_features set contains features whose state may possibly
-    be changed (enabled or disabled) for a particular device by user's
-    request.  This set should be initialized in ndo_init callback and not
-    changed later.
-
- 2. netdev->features set contains features which are currently enabled
-    for a device.  This should be changed only by network core or in
-    error paths of ndo_set_features callback.
-
-
-is it then wrong that virtio sets NETIF_F_RXCSUM and NETIF_F_GRO_HW in
-dev->features and not in dev->hw_features? We set it there because
-without ctrl guest offload these can not be changed.
-I suspect this is just a minor documentation bug yes? Maybe devices
-where features can't be cleared are uncommon.
-
-Also:
-        if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
-                dev->hw_features |= NETIF_F_GRO_HW;
-
-but should we not set NETIF_F_RXCSUM there too?
-
-
-
-> ---
-> base-commit: c39cea6f38eefe356d64d0bc1e1f2267e282cdd3
-> change-id: 20230223-virtio-net-kvmtool-87f37515be22
-> 
-> Best regards,
-> -- 
-> Rob Bradford <rbradford@rivosinc.com>
-
+Reviewed-by: Simon Glass <sjg@chromium.org>
