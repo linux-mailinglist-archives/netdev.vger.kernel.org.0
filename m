@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BB086A703B
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 16:51:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A20276A703D
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 16:51:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229553AbjCAPvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 10:51:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43000 "EHLO
+        id S229699AbjCAPvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 10:51:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229879AbjCAPvK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 10:51:10 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29AD843476;
-        Wed,  1 Mar 2023 07:51:03 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id oj5so9815070pjb.5;
-        Wed, 01 Mar 2023 07:51:03 -0800 (PST)
+        with ESMTP id S229879AbjCAPvQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 10:51:16 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C107460B6;
+        Wed,  1 Mar 2023 07:51:05 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id q31-20020a17090a17a200b0023750b69614so13395235pja.5;
+        Wed, 01 Mar 2023 07:51:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1677685862;
+        d=gmail.com; s=20210112; t=1677685864;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=yiBzhLzbQr9xtj01CzdjXMDh0hhAbysTY5uSxywJbNo=;
-        b=WzeigffhExQd1H6VPBp1Z6Ms38esWmI24pwo0clFnkOgKGKqH00DwlD371A4PRjBR2
-         Knu5Qz2CNkyrEKCpQvuRt/4gL6tzmj7qYsiqUuAhO4TqGLLQyKnTkvdP62pufu4ErTre
-         xS2MQLAkqhufPfBAkBL2cDwK4e8ZIKlPIdd6TL7yap6gY7++4gAAHiYQi8NSY+DMfcLS
-         qEQGHRIq6g1/U+2XNo1JbHXJWtCLCFBC4E2HGSXgDfyzzqwzGuklWg9HODPIMuE7oNR7
-         l6IFXPhZszuG09dfVDt0WFDMNxiFnAfeDQS1LcjK8ZJ+7+AgIkbA5KgHBCXIwDgYAbdX
-         C2jA==
+        bh=I4DPxaA2KI42WAf76J1TanSD7CSM/V5DVF96yv7d/wc=;
+        b=EIQ7A/TQ7fUfT9sOtpVnwbN3FCuKT5ph7fowyHWRXS+5BkLiTCjwpZy7qO94/hlVsa
+         zUyeUMq0u8HLnLh2Bptv8vJOett9qXR2ukG9vCHBxZK9smian0GKGwB2guc+8cF4Yznf
+         jNIRoouqZdGw4A5OPTaWiwgS1yPJuE0WE/vQGunq9kd3JFwfHaTnmyobgJBSEGZIMiF9
+         6dykfjskY10r2bHO7W+xNVY01SyKUZesewVG19cgdO6AWLo/tpHn9p+pDgxT/fTLfnOb
+         M5Ro3Ro4swii/SDA5wQcQQYqkWw/xBka7wheWrgGZFnwjyuvFHSH/E2mgO0u+8vcmO8P
+         vi9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677685862;
+        d=1e100.net; s=20210112; t=1677685864;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=yiBzhLzbQr9xtj01CzdjXMDh0hhAbysTY5uSxywJbNo=;
-        b=o56Gu+70NIXJcKSQ0nOkemuIJAsnh/xYqwMZQsIF4VG1LFUYmuIdSVeBW8zYbitYlt
-         59T0503PzjUHS/dOf6QxRNinxlGEpddCWD14x1QTNdyhH0od3G6iENYrXy7PjPxaDM/J
-         9cR5viqfvPsWQly9i78dZedMHJ8FfdPqcByqJ7fMKS527XMvfjCRe4Dlv46yxKssBoib
-         un3gOfVrYIhYfRWQdwl8Perdb8kVYK7pIA5DeBQ/l2/GKTSlpHLT4HJmyImd+ehSI//h
-         XPSxQ/0USiVeN/qgGlPlUGDGWyMiHDFknRpdBtAGxRzTWkhNjtXLMGYLGMD3d0EE9AXl
-         lxsA==
-X-Gm-Message-State: AO0yUKXh38xh+uX0qZk4JPCksAXAfkZAN+3kNN0CKi8ZJgEo7+hG7pnx
-        QPcp/sIKJ/RRhONVeARBH2va4mY7y5Y=
-X-Google-Smtp-Source: AK7set/Ma9BQU9m+/hLf2zoy5RqE3yu0QrMnU7V016PU9FJXk4KPDBR4hJ3MO8TX4xOP3nivklP1JA==
-X-Received: by 2002:a17:90b:4d0b:b0:22b:efa5:d05 with SMTP id mw11-20020a17090b4d0b00b0022befa50d05mr7731973pjb.40.1677685862221;
-        Wed, 01 Mar 2023 07:51:02 -0800 (PST)
+        bh=I4DPxaA2KI42WAf76J1TanSD7CSM/V5DVF96yv7d/wc=;
+        b=BCoaa236AQDvydHzJdZVPUyQKqk1g5M+Q9TY11bT677JWFPhlBQPcHGPOa2oMtQJlz
+         c4pXFzNazXO2OwmNZORG77iLZwDuksiBzIHN/oOlM5ODeujrAIUbFYnekKdiptV2Tw0I
+         KCXPXEq1VJJWAcQvNVxFY6XFHHnUoF2/r86QYOu+Vv3lagXkQIvJYg16gBUntWsNjk+P
+         oHO8jhYJIDO8M/Sf6Q4xn1OoaPDao1Sm2d2SQTxnneaE+fLTREJtPs4l6R3/ebU4rd7b
+         erCQJT2ZQz0KYX58PUWfc5p7WIAbI7MK1DlTB4Aece60k8IdQpC2KzzM5vqiD1sn+J6Y
+         i9eg==
+X-Gm-Message-State: AO0yUKUubIGsyy+Zy5KXIuBr3EFWyBF/50/GA7idLNVzqWsITg5KWePm
+        C3ui71tZWq+FyD/bN+7nNbmu8ZyN49M=
+X-Google-Smtp-Source: AK7set9tA06H3MkU2MbpWGhaKJE2cTn5in+oadiPHTa0nCZPsxUzil2Uc2TIc3LGzaCPWmtLwIgEDw==
+X-Received: by 2002:a05:6a20:548a:b0:c6:bd82:ea2d with SMTP id i10-20020a056a20548a00b000c6bd82ea2dmr10089053pzk.2.1677685864330;
+        Wed, 01 Mar 2023 07:51:04 -0800 (PST)
 Received: from gatsby.corp.tfbnw.net (75-172-126-232.tukw.qwest.net. [75.172.126.232])
-        by smtp.gmail.com with ESMTPSA id c9-20020a637249000000b00502f20aa4desm7589490pgn.70.2023.03.01.07.51.01
+        by smtp.gmail.com with ESMTPSA id c9-20020a637249000000b00502f20aa4desm7589490pgn.70.2023.03.01.07.51.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Mar 2023 07:51:01 -0800 (PST)
+        Wed, 01 Mar 2023 07:51:03 -0800 (PST)
 From:   Joanne Koong <joannelkoong@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     martin.lau@kernel.org, andrii@kernel.org, ast@kernel.org,
         memxor@gmail.com, daniel@iogearbox.net, netdev@vger.kernel.org,
         toke@kernel.org, Joanne Koong <joannelkoong@gmail.com>
-Subject: [PATCH v13 bpf-next 03/10] bpf: Allow initializing dynptrs in kfuncs
-Date:   Wed,  1 Mar 2023 07:49:46 -0800
-Message-Id: <20230301154953.641654-4-joannelkoong@gmail.com>
+Subject: [PATCH v13 bpf-next 04/10] bpf: Define no-ops for externally called bpf dynptr functions
+Date:   Wed,  1 Mar 2023 07:49:47 -0800
+Message-Id: <20230301154953.641654-5-joannelkoong@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230301154953.641654-1-joannelkoong@gmail.com>
 References: <20230301154953.641654-1-joannelkoong@gmail.com>
@@ -72,176 +72,126 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This change allows kfuncs to take in an uninitialized dynptr as a
-parameter. Before this change, only helper functions could successfully
-use uninitialized dynptrs. This change moves the memory access check
-(including stack state growing and slot marking) into
-process_dynptr_func(), which both helpers and kfuncs call into.
+Some bpf dynptr functions will be called from places where
+if CONFIG_BPF_SYSCALL is not set, then the dynptr function is
+undefined. For example, when skb type dynptrs are added in the
+next commit, dynptr functions are called from net/core/filter.c
+
+This patch defines no-op implementations of these dynptr functions
+so that they do not break compilation by being an undefined reference.
 
 Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
 ---
- kernel/bpf/verifier.c | 67 ++++++++++++++-----------------------------
- 1 file changed, 22 insertions(+), 45 deletions(-)
+ include/linux/bpf.h | 75 +++++++++++++++++++++++++++------------------
+ 1 file changed, 45 insertions(+), 30 deletions(-)
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index e0e00509846b..82e39fc5ed05 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -268,7 +268,6 @@ struct bpf_call_arg_meta {
- 	u32 ret_btf_id;
- 	u32 subprogno;
- 	struct btf_field *kptr_field;
--	u8 uninit_dynptr_regno;
- };
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 520b238abd5a..296841a31749 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -1124,6 +1124,33 @@ static __always_inline __nocfi unsigned int bpf_dispatcher_nop_func(
+ 	return bpf_func(ctx, insnsi);
+ }
  
- struct btf *btf_vmlinux;
-@@ -6225,10 +6224,11 @@ static int process_kptr_func(struct bpf_verifier_env *env, int regno,
-  * Helpers which do not mutate the bpf_dynptr set MEM_RDONLY in their argument
-  * type, and declare it as 'const struct bpf_dynptr *' in their prototype.
-  */
--static int process_dynptr_func(struct bpf_verifier_env *env, int regno,
--			       enum bpf_arg_type arg_type, struct bpf_call_arg_meta *meta)
-+static int process_dynptr_func(struct bpf_verifier_env *env, int regno, int insn_idx,
-+			       enum bpf_arg_type arg_type)
- {
- 	struct bpf_reg_state *regs = cur_regs(env), *reg = &regs[regno];
-+	int err;
- 
- 	/* MEM_UNINIT and MEM_RDONLY are exclusive, when applied to an
- 	 * ARG_PTR_TO_DYNPTR (or ARG_PTR_TO_DYNPTR | DYNPTR_TYPE_*):
-@@ -6254,23 +6254,23 @@ static int process_dynptr_func(struct bpf_verifier_env *env, int regno,
- 	 *		 to.
- 	 */
- 	if (arg_type & MEM_UNINIT) {
-+		int i;
++/* the implementation of the opaque uapi struct bpf_dynptr */
++struct bpf_dynptr_kern {
++	void *data;
++	/* Size represents the number of usable bytes of dynptr data.
++	 * If for example the offset is at 4 for a local dynptr whose data is
++	 * of type u64, the number of usable bytes is 4.
++	 *
++	 * The upper 8 bits are reserved. It is as follows:
++	 * Bits 0 - 23 = size
++	 * Bits 24 - 30 = dynptr type
++	 * Bit 31 = whether dynptr is read-only
++	 */
++	u32 size;
++	u32 offset;
++} __aligned(8);
 +
- 		if (!is_dynptr_reg_valid_uninit(env, reg)) {
- 			verbose(env, "Dynptr has to be an uninitialized dynptr\n");
- 			return -EINVAL;
- 		}
- 
--		/* We only support one dynptr being uninitialized at the moment,
--		 * which is sufficient for the helper functions we have right now.
--		 */
--		if (meta->uninit_dynptr_regno) {
--			verbose(env, "verifier internal error: multiple uninitialized dynptr args\n");
--			return -EFAULT;
-+		/* we write BPF_DW bits (8 bytes) at a time */
-+		for (i = 0; i < BPF_DYNPTR_SIZE; i += 8) {
-+			err = check_mem_access(env, insn_idx, regno,
-+					       i, BPF_DW, BPF_WRITE, -1, false);
-+			if (err)
-+				return err;
- 		}
- 
--		meta->uninit_dynptr_regno = regno;
-+		err = mark_stack_slots_dynptr(env, reg, arg_type, insn_idx);
- 	} else /* MEM_RDONLY and None case from above */ {
--		int err;
--
- 		/* For the reg->type == PTR_TO_STACK case, bpf_dynptr is never const */
- 		if (reg->type == CONST_PTR_TO_DYNPTR && !(arg_type & MEM_RDONLY)) {
- 			verbose(env, "cannot pass pointer to const bpf_dynptr, the helper mutates it\n");
-@@ -6306,10 +6306,8 @@ static int process_dynptr_func(struct bpf_verifier_env *env, int regno,
- 		}
- 
- 		err = mark_dynptr_read(env, reg);
--		if (err)
--			return err;
- 	}
--	return 0;
-+	return err;
++enum bpf_dynptr_type {
++	BPF_DYNPTR_TYPE_INVALID,
++	/* Points to memory that is local to the bpf program */
++	BPF_DYNPTR_TYPE_LOCAL,
++	/* Underlying data is a ringbuf record */
++	BPF_DYNPTR_TYPE_RINGBUF,
++};
++
++int bpf_dynptr_check_size(u32 size);
++u32 bpf_dynptr_get_size(const struct bpf_dynptr_kern *ptr);
++
+ #ifdef CONFIG_BPF_JIT
+ int bpf_trampoline_link_prog(struct bpf_tramp_link *link, struct bpf_trampoline *tr);
+ int bpf_trampoline_unlink_prog(struct bpf_tramp_link *link, struct bpf_trampoline *tr);
+@@ -2266,6 +2293,11 @@ static inline bool has_current_bpf_ctx(void)
  }
  
- static bool arg_type_is_mem_size(enum bpf_arg_type type)
-@@ -6719,7 +6717,8 @@ static int dynptr_ref_obj_id(struct bpf_verifier_env *env, struct bpf_reg_state
- 
- static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
- 			  struct bpf_call_arg_meta *meta,
--			  const struct bpf_func_proto *fn)
-+			  const struct bpf_func_proto *fn,
-+			  int insn_idx)
+ void notrace bpf_prog_inc_misses_counter(struct bpf_prog *prog);
++
++void bpf_dynptr_init(struct bpf_dynptr_kern *ptr, void *data,
++		     enum bpf_dynptr_type type, u32 offset, u32 size);
++void bpf_dynptr_set_null(struct bpf_dynptr_kern *ptr);
++void bpf_dynptr_set_rdonly(struct bpf_dynptr_kern *ptr);
+ #else /* !CONFIG_BPF_SYSCALL */
+ static inline struct bpf_prog *bpf_prog_get(u32 ufd)
  {
- 	u32 regno = BPF_REG_1 + arg;
- 	struct bpf_reg_state *regs = cur_regs(env), *reg = &regs[regno];
-@@ -6932,7 +6931,7 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
- 		err = check_mem_size_reg(env, reg, regno, true, meta);
- 		break;
- 	case ARG_PTR_TO_DYNPTR:
--		err = process_dynptr_func(env, regno, arg_type, meta);
-+		err = process_dynptr_func(env, regno, insn_idx, arg_type);
- 		if (err)
- 			return err;
- 		break;
-@@ -8218,7 +8217,7 @@ static int check_helper_call(struct bpf_verifier_env *env, struct bpf_insn *insn
- 	meta.func_id = func_id;
- 	/* check args */
- 	for (i = 0; i < MAX_BPF_FUNC_REG_ARGS; i++) {
--		err = check_func_arg(env, i, &meta, fn);
-+		err = check_func_arg(env, i, &meta, fn, insn_idx);
- 		if (err)
- 			return err;
- 	}
-@@ -8243,30 +8242,6 @@ static int check_helper_call(struct bpf_verifier_env *env, struct bpf_insn *insn
+@@ -2495,6 +2527,19 @@ static inline void bpf_prog_inc_misses_counter(struct bpf_prog *prog)
+ static inline void bpf_cgrp_storage_free(struct cgroup *cgroup)
+ {
+ }
++
++static inline void bpf_dynptr_init(struct bpf_dynptr_kern *ptr, void *data,
++				   enum bpf_dynptr_type type, u32 offset, u32 size)
++{
++}
++
++static inline void bpf_dynptr_set_null(struct bpf_dynptr_kern *ptr)
++{
++}
++
++static inline void bpf_dynptr_set_rdonly(struct bpf_dynptr_kern *ptr)
++{
++}
+ #endif /* CONFIG_BPF_SYSCALL */
  
- 	regs = cur_regs(env);
+ void __bpf_free_used_btfs(struct bpf_prog_aux *aux,
+@@ -2913,36 +2958,6 @@ int bpf_bprintf_prepare(char *fmt, u32 fmt_size, const u64 *raw_args,
+ 			u32 num_args, struct bpf_bprintf_data *data);
+ void bpf_bprintf_cleanup(struct bpf_bprintf_data *data);
  
--	/* This can only be set for PTR_TO_STACK, as CONST_PTR_TO_DYNPTR cannot
--	 * be reinitialized by any dynptr helper. Hence, mark_stack_slots_dynptr
--	 * is safe to do directly.
+-/* the implementation of the opaque uapi struct bpf_dynptr */
+-struct bpf_dynptr_kern {
+-	void *data;
+-	/* Size represents the number of usable bytes of dynptr data.
+-	 * If for example the offset is at 4 for a local dynptr whose data is
+-	 * of type u64, the number of usable bytes is 4.
+-	 *
+-	 * The upper 8 bits are reserved. It is as follows:
+-	 * Bits 0 - 23 = size
+-	 * Bits 24 - 30 = dynptr type
+-	 * Bit 31 = whether dynptr is read-only
 -	 */
--	if (meta.uninit_dynptr_regno) {
--		if (regs[meta.uninit_dynptr_regno].type == CONST_PTR_TO_DYNPTR) {
--			verbose(env, "verifier internal error: CONST_PTR_TO_DYNPTR cannot be initialized\n");
--			return -EFAULT;
--		}
--		/* we write BPF_DW bits (8 bytes) at a time */
--		for (i = 0; i < BPF_DYNPTR_SIZE; i += 8) {
--			err = check_mem_access(env, insn_idx, meta.uninit_dynptr_regno,
--					       i, BPF_DW, BPF_WRITE, -1, false);
--			if (err)
--				return err;
--		}
+-	u32 size;
+-	u32 offset;
+-} __aligned(8);
 -
--		err = mark_stack_slots_dynptr(env, &regs[meta.uninit_dynptr_regno],
--					      fn->arg_type[meta.uninit_dynptr_regno - BPF_REG_1],
--					      insn_idx);
--		if (err)
--			return err;
--	}
+-enum bpf_dynptr_type {
+-	BPF_DYNPTR_TYPE_INVALID,
+-	/* Points to memory that is local to the bpf program */
+-	BPF_DYNPTR_TYPE_LOCAL,
+-	/* Underlying data is a kernel-produced ringbuf record */
+-	BPF_DYNPTR_TYPE_RINGBUF,
+-};
 -
- 	if (meta.release_regno) {
- 		err = -EINVAL;
- 		/* This can only be set for PTR_TO_STACK, as CONST_PTR_TO_DYNPTR cannot
-@@ -9475,7 +9450,8 @@ static int process_kf_arg_ptr_to_rbtree_node(struct bpf_verifier_env *env,
- 						  &meta->arg_rbtree_root.field);
- }
- 
--static int check_kfunc_args(struct bpf_verifier_env *env, struct bpf_kfunc_call_arg_meta *meta)
-+static int check_kfunc_args(struct bpf_verifier_env *env, struct bpf_kfunc_call_arg_meta *meta,
-+			    int insn_idx)
- {
- 	const char *func_name = meta->func_name, *ref_tname;
- 	const struct btf *btf = meta->btf;
-@@ -9672,7 +9648,8 @@ static int check_kfunc_args(struct bpf_verifier_env *env, struct bpf_kfunc_call_
- 				return -EINVAL;
- 			}
- 
--			ret = process_dynptr_func(env, regno, ARG_PTR_TO_DYNPTR | MEM_RDONLY, NULL);
-+			ret = process_dynptr_func(env, regno, insn_idx,
-+						  ARG_PTR_TO_DYNPTR | MEM_RDONLY);
- 			if (ret < 0)
- 				return ret;
- 			break;
-@@ -9880,7 +9857,7 @@ static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
- 	}
- 
- 	/* Check the arguments */
--	err = check_kfunc_args(env, &meta);
-+	err = check_kfunc_args(env, &meta, insn_idx);
- 	if (err < 0)
- 		return err;
- 	/* In case of release function, we get register number of refcounted
+-void bpf_dynptr_init(struct bpf_dynptr_kern *ptr, void *data,
+-		     enum bpf_dynptr_type type, u32 offset, u32 size);
+-void bpf_dynptr_set_null(struct bpf_dynptr_kern *ptr);
+-int bpf_dynptr_check_size(u32 size);
+-u32 bpf_dynptr_get_size(const struct bpf_dynptr_kern *ptr);
+-
+ #ifdef CONFIG_BPF_LSM
+ void bpf_cgroup_atype_get(u32 attach_btf_id, int cgroup_atype);
+ void bpf_cgroup_atype_put(int cgroup_atype);
 -- 
 2.34.1
 
