@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9191F6A76D9
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 23:36:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E22216A76DB
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 23:36:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229560AbjCAWg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 17:36:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49490 "EHLO
+        id S229806AbjCAWge (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 17:36:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229809AbjCAWgY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 17:36:24 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3FB255045;
-        Wed,  1 Mar 2023 14:36:16 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id p20so14397643plw.13;
-        Wed, 01 Mar 2023 14:36:16 -0800 (PST)
+        with ESMTP id S229812AbjCAWga (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 17:36:30 -0500
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE978532A6;
+        Wed,  1 Mar 2023 14:36:20 -0800 (PST)
+Received: by mail-pl1-x62b.google.com with SMTP id h8so12310357plf.10;
+        Wed, 01 Mar 2023 14:36:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=EfRwdNNEi/2+7+6J8QxLfiLl6zVXmSw2KcnizOxBRSA=;
-        b=F8HZ1ItSeQE+W4EwdHK4oVPA8q/hgehNoNcNfsmAa8oK70ugtVHQgVEEYfmsTKOexG
-         cbmQavpyVEnTtVobRe10X91cLeBzvECNcI3wdtdtXa86FnKpF5MyEUq6Aep0lUm1wgTP
-         XBTcc2TmZO6ZmvAB24iBqMGk2IRN8zxKImfON3KE/kfE3XqmXyrKkkJbRKzZQPSpTKuV
-         2LFf5JFFbfYCSWUxVtBPO9C/6mVwKwtxae6bZ+8yyvSz1svnk2+GkZDQW/J2616FOiEq
-         JgVTCC5J+c/wvTJc+6T9j/bqeKhy9YfeTiniCpv7UqaQim9fYq4aApBvjy/fu11JpPF3
-         RbLQ==
+        bh=jvA1jHWUpzFqO2EmaliTkyRnfSesjl9+i1aVLilCcYU=;
+        b=UesHPS2qZkquqXpk408/e1XQXErgSOFeWe1KFx8CrTAMGPMtbJ3FW1k6BIF5mwMFK7
+         ZujMRsf12kGLiHq24p3RP9Y7Mp+BOtEyHj+HRrciN5gvY8u1Vts4mfotntE/eOr7PFu1
+         emm83gz+uZRIQK+uAEMAIdK6xAb0i4CIlLulvHuhippf3vTgiEV/7lsQVmiWZMzSeMUv
+         tIeeDxFch+AQ0yA5jMjGzPOp24cdBCivrD2Ai9rNXetoh8hHx+QfyppnCGPeTqwtYS3/
+         cdpLiIEltjNJ8GNEmtEcJrAOSFO4qu4HM7B/uGQj0mH1Kkn0IL0XrCCbg+/ABw9dbimE
+         lsgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=EfRwdNNEi/2+7+6J8QxLfiLl6zVXmSw2KcnizOxBRSA=;
-        b=joFlM4IXO+VH5GgY1k1N+3v777YV4LHoPkg4aE0TCQmLR3giAj4KzDBypc8IHiKqfJ
-         HumMkmnC1cEucMrnFGzVSXlXS2ubbZWF+K/p3Fqcnje9p9Cib+PJmx7Un6DX0OCMgz/A
-         bx+wXI+gb3bU3LN5k+EP5r5R36A8bUTcFcx23bHO/e7O9b6L/2BmZqjSKVswZaJbqOKB
-         lKczZd1v6+kn8eP8EsPDg6ehatilZM94GOcQkj1Cfio4y4tOMgmoU/JYhPyT4rBlOmxa
-         omzT/Y2LZlT6kfYwybWrNRu+GzFsRTxIPnmAwbCObU1FMGjVNNfOgr42ZEKYYb5lGaFN
-         Qh5Q==
-X-Gm-Message-State: AO0yUKVul5PR7fTVRxXO2EQJsFQu4xS9rCoQ36FlkKpGFsWf2ikwYbNM
-        6cSiZxX55EKSJjW01Ta617I=
-X-Google-Smtp-Source: AK7set+Qh9A9uWArFUsc4o8Y1zoanA5/xFTUfpQJUvpW44f4+4XRoRDdnDXnf8lBxfLqHyiGZ5iKDw==
-X-Received: by 2002:a17:903:27d0:b0:19e:21d0:5b95 with SMTP id km16-20020a17090327d000b0019e21d05b95mr7066994plb.10.1677710175887;
-        Wed, 01 Mar 2023 14:36:15 -0800 (PST)
+        bh=jvA1jHWUpzFqO2EmaliTkyRnfSesjl9+i1aVLilCcYU=;
+        b=PZ0q2fNBNhps+cG6Mbudp2HoXT42X9W63qEm5GyrFLlP7UlQIrOyasx0AO6jPzO7it
+         CXnNHd3PDJxwFH6VnpApY5e0qxh3IKie7TIW8nNNCbPZfiCEnVwtLJK7ITLhWeeGF+dF
+         +XHeCqhcOtCuP1cA49LvJ4G4I945z4/ZnwJ6fCdirCWvU5q8yqMWsIkk6lujRg6M6FP9
+         ZiDnxDR4Fyp677pWGyM756ZjKriOmy4fZf+6myBomygBP07lK3J0jxjqEftJnhJpO5BW
+         ldLQkgWUF15+uDhODPyLryY6EAVQzreYvgEjQQTkSPZBJiuRFKy6lBYLj5meZxLM1z5x
+         Vy2w==
+X-Gm-Message-State: AO0yUKXLNUvZOWsXZvYvagiavXSkz3DuA+jjhS3gjGpSsX0bTUMBYEse
+        jI8+6S+7HTW9fNQmwc/r5TY=
+X-Google-Smtp-Source: AK7set9KngYn5dmzBf6m4b5ovOooapXcZAHLH0c/e2X/q+2gHFxiLpuebNNPQyOBrgNyT4OWT6yaNg==
+X-Received: by 2002:a17:903:11d0:b0:19c:e6c8:db16 with SMTP id q16-20020a17090311d000b0019ce6c8db16mr10260193plh.27.1677710179986;
+        Wed, 01 Mar 2023 14:36:19 -0800 (PST)
 Received: from localhost.localdomain ([2620:10d:c090:400::5:2f7d])
-        by smtp.gmail.com with ESMTPSA id 1-20020a170902c24100b0019a8468cbe7sm8458465plg.224.2023.03.01.14.36.14
+        by smtp.gmail.com with ESMTPSA id jj22-20020a170903049600b0019a75ea08e5sm8948648plb.33.2023.03.01.14.36.18
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Wed, 01 Mar 2023 14:36:15 -0800 (PST)
+        Wed, 01 Mar 2023 14:36:19 -0800 (PST)
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     davem@davemloft.net
 Cc:     daniel@iogearbox.net, andrii@kernel.org, martin.lau@kernel.org,
         void@manifault.com, davemarchevsky@meta.com, tj@kernel.org,
         memxor@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
         kernel-team@fb.com
-Subject: [PATCH v4 bpf-next 4/6] selftests/bpf: Add a test case for kptr_rcu.
-Date:   Wed,  1 Mar 2023 14:35:53 -0800
-Message-Id: <20230301223555.84824-5-alexei.starovoitov@gmail.com>
+Subject: [PATCH v4 bpf-next 5/6] selftests/bpf: Tweak cgroup kfunc test.
+Date:   Wed,  1 Mar 2023 14:35:54 -0800
+Message-Id: <20230301223555.84824-6-alexei.starovoitov@gmail.com>
 X-Mailer: git-send-email 2.37.1 (Apple Git-137.1)
 In-Reply-To: <20230301223555.84824-1-alexei.starovoitov@gmail.com>
 References: <20230301223555.84824-1-alexei.starovoitov@gmail.com>
@@ -75,50 +75,44 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexei Starovoitov <ast@kernel.org>
 
-Tweak existing map_kptr test to check kptr_rcu.
+Adjust cgroup kfunc test to dereference RCU protected cgroup pointer
+as PTR_TRUSTED and pass into KF_TRUSTED_ARGS kfunc.
 
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: David Vernet <void@manifault.com>
 ---
- tools/testing/selftests/bpf/progs/map_kptr.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ .../testing/selftests/bpf/progs/cgrp_kfunc_success.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/bpf/progs/map_kptr.c b/tools/testing/selftests/bpf/progs/map_kptr.c
-index 3fe7cde4cbfd..3903d30217b8 100644
---- a/tools/testing/selftests/bpf/progs/map_kptr.c
-+++ b/tools/testing/selftests/bpf/progs/map_kptr.c
-@@ -118,6 +118,7 @@ extern struct prog_test_ref_kfunc *bpf_kfunc_call_test_acquire(unsigned long *sp
- extern struct prog_test_ref_kfunc *
- bpf_kfunc_call_test_kptr_get(struct prog_test_ref_kfunc **p, int a, int b) __ksym;
- extern void bpf_kfunc_call_test_release(struct prog_test_ref_kfunc *p) __ksym;
-+void bpf_kfunc_call_test_ref(struct prog_test_ref_kfunc *p) __ksym;
+diff --git a/tools/testing/selftests/bpf/progs/cgrp_kfunc_success.c b/tools/testing/selftests/bpf/progs/cgrp_kfunc_success.c
+index 42e13aebdd62..030aff700084 100644
+--- a/tools/testing/selftests/bpf/progs/cgrp_kfunc_success.c
++++ b/tools/testing/selftests/bpf/progs/cgrp_kfunc_success.c
+@@ -61,7 +61,7 @@ int BPF_PROG(test_cgrp_acquire_leave_in_map, struct cgroup *cgrp, const char *pa
+ SEC("tp_btf/cgroup_mkdir")
+ int BPF_PROG(test_cgrp_xchg_release, struct cgroup *cgrp, const char *path)
+ {
+-	struct cgroup *kptr;
++	struct cgroup *kptr, *cg;
+ 	struct __cgrps_kfunc_map_value *v;
+ 	long status;
  
- #define WRITE_ONCE(x, val) ((*(volatile typeof(x) *) &(x)) = (val))
+@@ -80,6 +80,16 @@ int BPF_PROG(test_cgrp_xchg_release, struct cgroup *cgrp, const char *path)
+ 		return 0;
+ 	}
  
-@@ -147,12 +148,23 @@ static void test_kptr_ref(struct map_value *v)
- 	WRITE_ONCE(v->unref_ptr, p);
- 	if (!p)
- 		return;
-+	/*
-+	 * p is rcu_ptr_prog_test_ref_kfunc,
-+	 * because bpf prog is non-sleepable and runs in RCU CS.
-+	 * p can be passed to kfunc that requires KF_RCU.
-+	 */
-+	bpf_kfunc_call_test_ref(p);
- 	if (p->a + p->b > 100)
- 		return;
- 	/* store NULL */
- 	p = bpf_kptr_xchg(&v->ref_ptr, NULL);
- 	if (!p)
- 		return;
-+	/*
-+	 * p is trusted_ptr_prog_test_ref_kfunc.
-+	 * p can be passed to kfunc that requires KF_RCU.
-+	 */
-+	bpf_kfunc_call_test_ref(p);
- 	if (p->a + p->b > 100) {
- 		bpf_kfunc_call_test_release(p);
- 		return;
++	kptr = v->cgrp;
++	if (!kptr) {
++		err = 4;
++		return 0;
++	}
++
++	cg = bpf_cgroup_ancestor(kptr, 1);
++	if (cg)	/* verifier only check */
++		bpf_cgroup_release(cg);
++
+ 	kptr = bpf_kptr_xchg(&v->cgrp, NULL);
+ 	if (!kptr) {
+ 		err = 3;
 -- 
 2.39.2
 
