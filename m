@@ -2,109 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F38EC6A6ADA
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 11:34:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 476FF6A6AEC
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 11:39:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229613AbjCAKe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 05:34:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51444 "EHLO
+        id S229820AbjCAKj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 05:39:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbjCAKe0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 05:34:26 -0500
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2116.outbound.protection.outlook.com [40.107.102.116])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0A94305DA;
-        Wed,  1 Mar 2023 02:34:24 -0800 (PST)
+        with ESMTP id S229759AbjCAKjY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 05:39:24 -0500
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CC0D30B3C;
+        Wed,  1 Mar 2023 02:39:23 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=elya0NLlhtB0Gz35oSHwPsT9ypIjfFEtTBrNwDaeUDEz3Ihc03jPHtg0dIFxKEoE5Z8wUsqvtf1SF7zlHo1aG5c1UIH6F5hyFfC4i+VeFPUvaSPEIfQlGOq8MWDX+kcQtG73eAcMavS6YsQtWhTE95LmaYAPJuarYODVwP9bW40YUEGSbI37RpoDWWA8IiQYw4eoRIlEqA/3MjOgnvaRh2wFH+gxKABiQXS6TJXKCDN7ner6AnQ4ENpKggcJ/N0nX3iAisafbVddUE4XvwbRnqLrfjJ+BuG7d+mT0YKe6esMQ8hh5KwsKWd6Az1UXaVwierOoKWlwLeipSwpa+b5nQ==
+ b=OfZ5jVIhhEem6Tj533RgW7EFchbkC4o+c80aYOZLvKEllMja2Txw5xcwBXnXbcrOLTTBy2jmK6thoS4iOh3F3oH6muiwqrELLyctKf8LLooES4kaWEOTd9SLJKCh6FLQU02c0NdE0Z+l+wLuhngCxJdkGa029xE71PjZiCDnaYLaaQqhgJ69M6GekUph9ESp10/KgKUJfEA47bC96lwpLA6zChlKMgpOzBmVnVQtcL2oO7MKGfIiCSVLkDCoE4JmmRtoT02uQxb/IKYWJLtaYdj9Q22fta819yzST69tHZ7FsjNKBQbCvOTTLmki4/a/vPKnnBaNQIPieqilx0Rt0Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hVppVjdcdMJ/9u04EJXw6dfNfztQYQ2aJ/tkkKH+VX0=;
- b=TZKKMqETxlY3ufbJJmQpJkI3t48aX7Ff6SZ/FgcyhubQaZbUawLB5TYTe/4O8Yozy8NtmVX8/+/7aTUtk6Swk0xsrh6nzr37T30oBqV6Iqe2Ufsnyy8ay77nllI9EzZExvXT/X5HdtfjkxNrg+2uZcmzSDHc1gcN5XitkspWWSHv0cLT3sm8jbpFsU7AaywIXwXa0TiRbNTpe3CDrU97eGfeVRo7w/pHT8p/e4MXXOSQ0BbKhwxglbHduv/RPUrjUhKRZoXcj6UaoUwT9yFRkopyL/ExDdbIMDLim4/yuRZAw3P22W0S6yTrxmi1RR7f8753dL3SgTMUkWpoL0hwfg==
+ bh=8rkphRyxkscrYIkL2XD/CIXDS1iPkQBl5ljszcWoB38=;
+ b=lt8JzbyB0/OHNQnsVvCg/EGio5MV7nSMK8lW4UhDM8Oxh5HA/Pw2mNn9lsmK2ujegT5W3jCJf4RiJEhCZKzEGfvtxAjZg7t7LpMOHciH8Z/nfXOMpD6dlt3jmlmZPoz4Ci1kA66ysfQR73XF1Sn52S9GQ3Ffo7Z8eRPy6/Rh0E1KG1zWaxuhO3Hp7HKdpjs+WMzWZFBjo2N+eI08DY7HWjGvhxZmAaq9rbUlxJw3tnaGaZgH63glvKmr3yLFG3B/NAxr4tgzCeaTaCyIdVuJKc6OFDyUQE+KUld2C4R5xyXDQPS6k+PsbPS6qWnOa+/CC9xq9ZW0Lc6/qnxKYpQi8g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hVppVjdcdMJ/9u04EJXw6dfNfztQYQ2aJ/tkkKH+VX0=;
- b=ZRSH94fzbl7hYSPSI6NCe3RHPKNxlaf5MJ6KxbxtOpLRGFawatNvUsTf26ktekIPfhvYsIAyw9NOIdY5+feowLVuffrac7P9CsZEVUck/PqWnbmc4WJYVnc1JE+R4UdDNhC/NKyaLMsuVhplRZLdwDWCJwCHzHJ9GMPSK5YOfZY=
+ bh=8rkphRyxkscrYIkL2XD/CIXDS1iPkQBl5ljszcWoB38=;
+ b=ivNVlvGDNmNw5PpxJbxKfsclJoNns2ypuod9AOK4Wdur85hCDebesrPMl9F51yobJ04AlWf2IrOxAdwMi0JDc16Xr2lDN4gPCQ3aohFzkq6KyC5xalkqhkxOPYdLZ+sz0EXOTbhZqibrAJ59Q2jmlSb16NsniqlR3ysF80/cqsw=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by PH0PR13MB5517.namprd13.prod.outlook.com (2603:10b6:510:142::9) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.24; Wed, 1 Mar
- 2023 10:34:21 +0000
+ 2023 10:39:21 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::85f5:bdb:fb9e:294c%3]) with mapi id 15.20.6156.018; Wed, 1 Mar 2023
- 10:34:21 +0000
-Date:   Wed, 1 Mar 2023 11:34:14 +0100
+ 10:39:21 +0000
+Date:   Wed, 1 Mar 2023 11:39:13 +0100
 From:   Simon Horman <simon.horman@corigine.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net] net: lan966x: Fix port police support using
- tc-matchall
-Message-ID: <Y/8qJn+xkuNRpQis@corigine.com>
-References: <20230228204742.2599151-1-horatiu.vultur@microchip.com>
+To:     Ping-Ke Shih <pkshih@realtek.com>
+Cc:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH] rtlwifi: rtl8192se: Remove the unused variable
+ bcntime_cfg
+Message-ID: <Y/8rUTtuzcgp34KQ@corigine.com>
+References: <20230228021132.88910-1-jiapeng.chong@linux.alibaba.com>
+ <Y/3gUquaPNlaLaKt@corigine.com>
+ <1d262829764d40a086e93f0c7d0541bc@realtek.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230228204742.2599151-1-horatiu.vultur@microchip.com>
-X-ClientProxiedBy: AM0PR02CA0092.eurprd02.prod.outlook.com
- (2603:10a6:208:154::33) To PH0PR13MB4842.namprd13.prod.outlook.com
+In-Reply-To: <1d262829764d40a086e93f0c7d0541bc@realtek.com>
+X-ClientProxiedBy: AM3PR05CA0156.eurprd05.prod.outlook.com
+ (2603:10a6:207:3::34) To PH0PR13MB4842.namprd13.prod.outlook.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH0PR13MB5517:EE_
-X-MS-Office365-Filtering-Correlation-Id: 910fdbde-a43b-490d-590d-08db1a4084d5
+X-MS-Office365-Filtering-Correlation-Id: a406bd20-7fe5-4916-51b0-08db1a41374f
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: V/uH+sMGu4nUl11BTTHpaUlBZtXJQBezAVct0ccqGLbKMIa7q+aMJAW95ZjGBKp1nc9p6ARM0kbbMQn1oaM8tgJKLIHfceOvmwKB/0M6gFS56a0Vt33iMIGEOM5Ej+IrYPCdXPVaeBoSJEuAnqE49aQVlMaeGX5j5u/qlmsrd7wBnjBbnltBUrnhHUYMmjohL8PdmD/MvWYe8Y3FFZ0PUYjJ8ON9qn5GLpi3L/dmlgZfExjmLHR17kHD8EbxKPET3lfSPNH7VQ9qvvvXrqnx140Kt+5A4VUIx/1PnLprBDGtXSRWxU9gx1LHzaYKBD9qr7OctcsuKsCEwbV1KyAqXU2Lo86CzhlBEDxAEfzCMsqlTjNmNjA+xFwigR92u/g6JSiumzV317qPNKBTF805e0F4vOywZa8Pcj4BieTgmu0Zyuq/CJlJZuU+pVRaDS73H7M5RRwl3zVZU3MApzIFbr0hzIWeOt6XjLEX51/IbbLsbp0Vvdclr5c9JOuf1odp3cZClRBfrBqHRh+zxO/4IYDZKeL0ckhyY0liTl+JsXCVKMcG4uE9nhfGpOYTKSeouQEqF25Ab8vE5nX0lGehdBx+KW6yueugD1JYBeMGO1knFFEnHB84KYOCXkXDztqN982j2BkRQCCKxqC7soL/drDYrVGOxH/9iN/bNdGQlmraMtPliEOIrn9jgC2ptwPb
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(376002)(136003)(39830400003)(346002)(366004)(451199018)(36756003)(86362001)(66556008)(41300700001)(66476007)(66946007)(5660300002)(8676002)(6916009)(8936002)(44832011)(2906002)(4744005)(38100700002)(4326008)(6666004)(6486002)(478600001)(316002)(186003)(2616005)(6512007)(6506007);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: ZmVX5sqxXDVN4LupXNZEl+sKodzK1sBzap/YyxvJmS82KmCYCROve/JoaVqQjn05fS/Mx/ttNoqtt9PNFOxeUgLRnxlhcQF+U5B2Eaq8NmVkiiecoSRrQG3JrWtL9SHLd71Tckk0sf3a6464sQOcwjtGUxFWNzHEmEAwcyeR9mtoAxVUeqOQA4IxLPFEf+eZ8UjVxDo1Pkq4vLuCNB+P5oECgitOH/dQPhC/K1BZLiU2SNpTHKK2LCAyJ/orhinyTCYTocE9yMbsXKb1Oy7QIIYQkdMcMdORqUhxeNvZpQHPo+l6DwtLIeoTo2Vi5A4PAiTK3XGMN3LMmOhJM/XWs0Zyx3CzYcChDcM4fMxQvKdlcwOxu3LVt3h/CHmJeC7MdeXZAs/YIdRB4ghqHoYbgq0jn/r1XA857abDxBGOVIrTau2tpxhpPdCdre2+ccPhwlVyeJ0vwmwleyPaPZ5CLDjowhtf0MUiSXoOw3wxm/BK43OIThKYZB9edmd/7BVvKBUEske1e0y00dJqPVxdp0+J97AzikndUZqYlJgix0UdMVIIa1puYtIAIuqHnlYPHhVDMsHBzzxeoWg3FJAsxXCEJhtvBRBQewXD84XxplyL4Ps6bNFrc3oXGPJnlJB6cHK7m8a+aeVCDAkyKZ4eWYg7CxjMebPscnWJDX1Uxp89yq8SMqICeACPU4K4YLf+
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(376002)(136003)(39830400003)(346002)(366004)(451199018)(36756003)(86362001)(66556008)(41300700001)(66476007)(66946007)(7416002)(5660300002)(8676002)(6916009)(8936002)(44832011)(2906002)(38100700002)(4326008)(6666004)(54906003)(6486002)(966005)(478600001)(316002)(83380400001)(186003)(2616005)(53546011)(6512007)(6506007);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YrLBv/afkwHxwqrS3ZgjKJOzktm6WDrGjAfqPaFS7uw8VQgra9yCBAoDpNGm?=
- =?us-ascii?Q?vgL/HjJ9YcCEKjTWCiL7cTVVR4C41/okDBZW1caq5SqDn9mjOSNE0Sndwdiq?=
- =?us-ascii?Q?Lpd1ocADmBN0XmANy8DNXIWJsoWzxvrn8f4Le2+mf+GX45SSH/Re5dnGdHfN?=
- =?us-ascii?Q?1ECDovbui5UhTyu7lvioumMK3awr2SbteX6rRFNt+lU97fAvoRG/s7wQN77U?=
- =?us-ascii?Q?z2dZmOqpJpcxEXla5ZeZNf35rvq6AsxHwqooYGB7JYlnBGHK+fOaPcKZ5ZJ8?=
- =?us-ascii?Q?SuP5np5iSewVEw+7UrZgFWK6/dAk3B2HfwYQiIFZfzR+WkvDCC+X+X5Dbyz4?=
- =?us-ascii?Q?OsLEU0mRMB9MX6PpF2qKnkAHxhuw46mr8SZKjXiJ922vns4sbLFRMawjiggz?=
- =?us-ascii?Q?1vMa0MVfEZr1Vl4fbNE5PxAn7DNWcUAXfZgJyquBxYKsJfU247OI2nL3B800?=
- =?us-ascii?Q?zmFGxp7tnqbMmF5Uz8BBrWkX6G06bFhSqNpp4uzIGjIFBHKuzefuAi2lOwRi?=
- =?us-ascii?Q?7TDV3b2NObmKFzSO9rCk/qayKBAOzBXrbLCJoUuZIQzTGnkATApTMDI+ek9W?=
- =?us-ascii?Q?WjJzMIShcqQPYEnifSzUs1zTH4T9Iyj9Ti5kpMjiQDBUIXGBKMwFlnQMcbmS?=
- =?us-ascii?Q?e2GAAt9I5/XGwpXKbZyOpgJPzBw1GQ7Y00snpUruORB7k/ho5+EtwJldZZzn?=
- =?us-ascii?Q?dfLxUdjJ9+2U2pDNROoz3qAo/f3HhghApQ82a2Lq0ThpmCZGS9+MGUbwI+Ow?=
- =?us-ascii?Q?+xnuo4iG0S11dMycJ9x2nwMS4UJjl3uqg0SFzJTkBdLkSb9IbGyoxgJLi49M?=
- =?us-ascii?Q?vMnWyw+OEI8hfClSxTsRbZ+drreQUzmnLCDeqxnKx5ykCOehj1Cz/c1zENa8?=
- =?us-ascii?Q?89KvEis7xZpgTs+Mn8g2P3dQs66vQGT5oG3vG7bmVojpHa+K1zRlaDB/co3o?=
- =?us-ascii?Q?cHSpf+XFJ2NySp0NkTGNCVu0cbMto92VWiwtJZU/k3fdYcpYPFReiOMsc+zZ?=
- =?us-ascii?Q?ZSNqWFymp2UlPxBYiLDgUVT//+7Q+Z0qnQnf0ZaMyBFzoYlqNF2krGFC9UsP?=
- =?us-ascii?Q?fIILGebjbKpARV1WU9PuxTgkpcoWZHeuNhpJaZ6rygJjCdeOPYvvCUKaW6q+?=
- =?us-ascii?Q?iUUN+w0vytuZbjkHag/B66EaI1qzAGvr75k1MTN90U2CgtdSs6ap1pqaaRVY?=
- =?us-ascii?Q?vUwC+9cxfEUuugqaDk9mm35eOA9JGSymVfwQTLicDv/lLzEl9BEs9JmheVfa?=
- =?us-ascii?Q?giWojUZ3A5HG0/4a91hIlg4o8TIooYasVMIYkrn22rEtEaYs71B9CL7MknZi?=
- =?us-ascii?Q?9Z95KldRhJugL3kXku3xjakDKVuUbd8XH7Bl15JHlX+PZOlN+0gWoAop5X48?=
- =?us-ascii?Q?Ke0kZ5PKMJBntlkALmUTkNJUukyG+qwG2LANIAqDsee+hzIADf2vf6ldaCys?=
- =?us-ascii?Q?RAt1v2nzjRxla8SB9tUrk+3ra0l86YU1JnVBKnbVUxRLmg9V7LneJqi0UVqG?=
- =?us-ascii?Q?fjLndo3P/K6jTS1kLhg7mBeOlYBk0MzbkUG84DCN3KnmclCECIGbFUSnBVkE?=
- =?us-ascii?Q?o63nEcrKZnCfDVK8vyMJDAbzVGlqWQSp2OOdAUhKVCbL+/Dm3fuw1coPOeMu?=
- =?us-ascii?Q?8V61TU/Gm4uBjRsCoK1hp16dm52gLRn+7KXXPlfHmrpVMn/XVjtNkFVtt1C4?=
- =?us-ascii?Q?rf9ZOg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?yE5KkApZWfEaSLI5JnokKoY6dPAFX9y7l4YjerBAK546pyJz2JDXGwiVeTj8?=
+ =?us-ascii?Q?7S6wo8NvzuB92sQPud+WycKHA+UTmEMUNmb3WK69TB5Xmct8gy5QiEVM6goJ?=
+ =?us-ascii?Q?nEOhN4OrmwDkORE5sMuuDeP+FBTwlVGnrz7liBSfryq2JA7X8YBuftKXo/TC?=
+ =?us-ascii?Q?lLHFzMoexL17qOdd/P/OXmcoxsxKECG8qXS4SpsR/c4CPvRQ1EWqytm6NgZH?=
+ =?us-ascii?Q?qSXd6MucNXZiGMH3X3PqOPV4OMTm5by5FuJAJt9eHIZr5VmOabvhYn1rmrcC?=
+ =?us-ascii?Q?DvqMt6qMhMdYCIDYhol67OqCz11xr6bTLTOIKOEN4JsjL31priEzZJ9r7XrI?=
+ =?us-ascii?Q?9F0ukMCyD/4OXuAQLs9vbHTack7sPoTbyfQmnqyoR+jZs2p6C0qjjG0/dxbS?=
+ =?us-ascii?Q?YKfOlUi6wmHZQNBz3jixr/4jn2nP5cG59TzymAFwDDsUczlGM+r1+TqAv7s2?=
+ =?us-ascii?Q?ors3kIBic+LFOpZtTOWsVx54XvI3SagU6HHuNV8q29iZ+Uw2+1VC/MQs4tea?=
+ =?us-ascii?Q?kofj9uS13v340jIJdDLoMJNDaOVhgoBUUFlQUWgltGHTmGm8zPbTuNRKGwsO?=
+ =?us-ascii?Q?i4EazSRfGDjB9zwIkxWZmyaM4DIlLyAsIkvmzN58I7R4RxstEGvz3Ycm2LBr?=
+ =?us-ascii?Q?1dBTPWCKtvdnO9Svfm54G/qU/74Lhtyt6VrQlxqThw4mDIhUZciqGUI961BX?=
+ =?us-ascii?Q?88R4ITOIvshnRLOWB4PRDi/r1pQ4/JaEZTOQCQniB23MA2KV5A01xicq5PNu?=
+ =?us-ascii?Q?my8Ry3m42vL08ifx3sv9tBfod63GpMWh/OgS4tFd1wvJND7SdxyyB6JNOyTP?=
+ =?us-ascii?Q?fAnDx8g8yH6UMB6f7z+ktC62D24+feXgbcrn4qXPontRDICqhMSePrzTUoSh?=
+ =?us-ascii?Q?g1fpLcJc9IjzCA2pBH0PBLKXFypNgs53J1e8ye9r3ucn3aeDnkxLlrd7E2LY?=
+ =?us-ascii?Q?xObV3+20HMdImCdK9WCqMflg4b+4nWT5vW9SaiHESvq+WUoiKos6JVSxU98m?=
+ =?us-ascii?Q?PuOkvcpiqFbZAJOEVe6TRqmSf8Zv+QpQje5xs0F1RcAvK4a4H2hCQcfYm/y1?=
+ =?us-ascii?Q?H7djWrdoJOCzfRVNYh4joT0u3A7GFz+sCWC1k/cBn1+iTXVu1+SIfJllX+t7?=
+ =?us-ascii?Q?RQRr3dyR4SBJuGNEQynDIOUgxoNvoG5yPm1Mf8ys6/pxIEzZWUFbGzKAglsQ?=
+ =?us-ascii?Q?YcxVbE8zZjzqKOhflPFbfe7IxtctHKi/eUG0gR00e2yI0hpcfEO3QPlz0vnj?=
+ =?us-ascii?Q?wTMyKTTLYdIaj8rqNU6vylvPnrZmurO69Yzs5HJq1Eu6rrWBzZxejgv3oGkb?=
+ =?us-ascii?Q?0cneQKcNs/08R1Ua8Q+FG5rxgcoktYz+dW9/8YWo0NSu/GjEFifxQIPj0oi0?=
+ =?us-ascii?Q?pNeC1p6JAh9C7qC26AEv+w04zcvnQG6DOmmq+kBITASfSibYJVKh2MrEZl5e?=
+ =?us-ascii?Q?GNO0kKr+nJfcfevsFfAAJlHZudkPyKEEYB5XkmdP3xDS19SWOu10ygcpS3HM?=
+ =?us-ascii?Q?uEe2N/vg78rBSW8ngxCvEzTfNruJRnQb5HbgwugH+DZQ3imp7hEN0vnY3x0p?=
+ =?us-ascii?Q?AqgRiz6ocZl8+w8Otl0bV0gT13QpBy855YBjo1+QRrIoMVX/hMyd67s+zidd?=
+ =?us-ascii?Q?+b606Ia0RGIsUpy4JHlhW5rEtkc1p9aUUFyew485BO8tGEBkuOyDpboHrcke?=
+ =?us-ascii?Q?Wwmeyg=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 910fdbde-a43b-490d-590d-08db1a4084d5
+X-MS-Exchange-CrossTenant-Network-Message-Id: a406bd20-7fe5-4916-51b0-08db1a41374f
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Mar 2023 10:34:21.4047
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Mar 2023 10:39:20.9804
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0Z00TLUgy8/F0o7h1u71GhWthcJh/lAD+nkyBP3g8XrYrBoIUszqYqamzXyOxulhNkj0T55QFAPn/97t2PZoAnNeyW3tiKhWJQ1zNwOYlno=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 40OKCuZyQH6Takw8XdnILFyY98ZhFZwn81lPBw+74J7nGoo6DhBltG9MyA55qHZthKkkkUJ8PptrpkmQEl6kchYs/Tc9mzJKShHlIlMwi8Y=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB5517
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
@@ -115,18 +124,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 28, 2023 at 09:47:42PM +0100, Horatiu Vultur wrote:
-> When the police was removed from the port, then it was trying to
-> remove the police from the police id and not from the actual
-> police index.
-> The police id represents the id of the police and police index
-> represents the position in HW where the police is situated.
-> The port police id can be any number while the port police index
-> is a number based on the port chip port.
-> Fix this by deleting the police from HW that is situated at the
-> police index and not police id.
+On Wed, Mar 01, 2023 at 12:32:38AM +0000, Ping-Ke Shih wrote:
 > 
-> Fixes: 5390334b59a3 ("net: lan966x: Add port police support using tc-matchall")
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> 
+> > -----Original Message-----
+> > From: Simon Horman <simon.horman@corigine.com>
+> > Sent: Tuesday, February 28, 2023 7:07 PM
+> > To: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> > Cc: Ping-Ke Shih <pkshih@realtek.com>; kvalo@kernel.org; davem@davemloft.net; edumazet@google.com;
+> > kuba@kernel.org; pabeni@redhat.com; linux-wireless@vger.kernel.org; netdev@vger.kernel.org;
+> > linux-kernel@vger.kernel.org; Abaci Robot <abaci@linux.alibaba.com>
+> > Subject: Re: [PATCH] rtlwifi: rtl8192se: Remove the unused variable bcntime_cfg
+> > 
+> > On Tue, Feb 28, 2023 at 10:11:32AM +0800, Jiapeng Chong wrote:
+> > > Variable bcntime_cfg is not effectively used, so delete it.
+> > >
+> > > drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c:1555:6: warning: variable 'bcntime_cfg' set but not
+> > used.
+> > >
+> > > Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> > > Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=4240
+> > > Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> > 
+> > Hi Jiapeng Chong,
+> > 
+> > this looks good to me.
+> > 
+> > Reviewed-by: Simon Horman <simon.horman@corigine.com>
+> > 
+> > While reviewing this gcc 12.2.0 told me:
+> > 
+> > drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c:1555:25: error: unused variable 'bcn_ifs'
+> > [-Werror=unused-variable]
+> >  1555 |         u16 bcn_cw = 6, bcn_ifs = 0xf;
+> >       |                         ^~~~~~~
+> > drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c:1555:13: error: unused variable 'bcn_cw'
+> > [-Werror=unused-variable]
+> >  1555 |         u16 bcn_cw = 6, bcn_ifs = 0xf;
+> >       |             ^~~~~~
+> > 
+> > So perhaps you could consider sending another patch to remove them too.
+> > 
+> 
+> These errors are introduced by this patch, so please fix them together by this
+> patch.
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Yes, indeed. Sorry for missing that important point.
+Had I noticed it my advice would have been the same as yours.
