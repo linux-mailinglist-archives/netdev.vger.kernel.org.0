@@ -2,208 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D8C46A70D3
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 17:24:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A3626A7140
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 17:34:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229696AbjCAQYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 11:24:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44950 "EHLO
+        id S230190AbjCAQes (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 11:34:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbjCAQYv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 11:24:51 -0500
-Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBF0A3B0CC;
-        Wed,  1 Mar 2023 08:24:49 -0800 (PST)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.west.internal (Postfix) with ESMTP id 9FEDB3200406;
-        Wed,  1 Mar 2023 11:24:48 -0500 (EST)
-Received: from imap42 ([10.202.2.92])
-  by compute1.internal (MEProxy); Wed, 01 Mar 2023 11:24:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm3; t=1677687887; x=
-        1677774287; bh=226yzvA64Kc8Q6zDrmuOtbs/tNXb1G/+qqLqVU0wHB4=; b=Q
-        gm5jFnpNqKyvfla6eRJrva3qhtbnUJ1RIrAD3Fl4JiCtqYtj9exaFLwkLlw/J9IW
-        CH4QA6HIR/xoP4kmwHX+Quq45QY2+BG57owtJDssVVSg9J6ywZsMsvyQgoFKrEgS
-        SdeJPePl7J5JnSy6cxPWai/Z5x97djayaPmn3chDhTlCSQP2dyGPXJ8Fr9uiXmPc
-        AeQEmvbKrXHwO0c3uf+qX19ctRMvJjK3HTZaJilwAgX3FuZkX/+feVMIWvvSTsCS
-        ZlDBn1IV98QliXyCLHUzr4OTb0u51LCeEVSOCSUnHnZRxiTGY1H4ajAWqpOO0SRb
-        FekUkcuHmCfk7w2AkxyPQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1677687887; x=
-        1677774287; bh=226yzvA64Kc8Q6zDrmuOtbs/tNXb1G/+qqLqVU0wHB4=; b=g
-        KUVlxshVdl0QmWZQ7o9s16OU/obw9EVg7TJH6NIcFJIOGon+kHQO3np8mwQh8L+C
-        oNtQSx9D1k7N4rzCkibBLQPez5jvubUR/795i1+KUFAz0GR5csS1rqXeem+1GBmc
-        UHjtCrjaX1o+1fr11Wmn64MbuyzMQY6NJ2XHsqDUOddD6OoFrgi80RKmUUMJHFPi
-        beYMpP0+JarS8tMdn2GvbBSCowbJMZnh2l7itK3kdcaEm1eQzWp4x6vS7kdH6Z58
-        YnJzaUto0FwpXgfpWFlOXEtYozK71YSNQIq9mb/6pDyX7MuzmmJ97FgADtJiXEtW
-        Pm79a7A+OrS8PPo+sCO/g==
-X-ME-Sender: <xms:T3z_Y0EdtiTqMRRrm0nISQVg-go1QHXe5OyKBmVt0Tqp9YuBwvXyVA>
-    <xme:T3z_Y9X2tN0pkEE8IfJC0y_rQn-ap8ClQ85giFB3DCMSNfn9cn2x0D8IakdH7yk0p
-    FuYDa-rqNwfMVAbiA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudelhedgkedtucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucgfrhhlucfvnfffucdlfeehmdenucfjughrpefofg
-    ggkfgjfhffhffvvefutgfgsehtqhertderreejnecuhfhrohhmpedfffgrnhhivghlucgi
-    uhdfuceougiguhesugiguhhuuhdrgiihiieqnecuggftrfgrthhtvghrnhepueefheduve
-    eiheeitdeufeekudfhuddukefghfeiieegveeufffhteejgeejgefgnecuffhomhgrihhn
-    pehgihhthhhusgdrtghomhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmh
-    grihhlfhhrohhmpegugihusegugihuuhhurdighiii
-X-ME-Proxy: <xmx:T3z_Y-LOjDX5NAcX_e2_yOXzIl5-T-mMwH2h64PFb_kryXbrngQzVw>
-    <xmx:T3z_Y2GODkhDhWBRMvngm3F6bX4QqDp0lhWsYMVkZeTYP0ZaoefO5g>
-    <xmx:T3z_Y6WJzV186uOyIEsll2Qr3HcGPEUqb6SJLTPCjs7MNdkaE_fS5Q>
-    <xmx:T3z_Y5TaLAWcccpos6M2HlQWZG-ij7LEon31LhKw1CHcHERCe46vAw>
-Feedback-ID: i6a694271:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id C1FC7BC0078; Wed,  1 Mar 2023 11:24:47 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.9.0-alpha0-183-gbf7d00f500-fm-20230220.001-gbf7d00f5
-Mime-Version: 1.0
-Message-Id: <e882b638-ab7e-4dde-b95b-c01c8e78e02a@app.fastmail.com>
-In-Reply-To: <cc4712f7-c723-89fc-dc9c-c8db3ff8c760@gmail.com>
-References: <cover.1677526810.git.dxu@dxuuu.xyz>
- <cf49a091-9b14-05b8-6a79-00e56f3019e1@gmail.com>
- <20230227220406.4x45jcigpnjjpdfy@kashmir.localdomain>
- <cc4712f7-c723-89fc-dc9c-c8db3ff8c760@gmail.com>
-Date:   Wed, 01 Mar 2023 09:24:25 -0700
-From:   "Daniel Xu" <dxu@dxuuu.xyz>
-To:     "Edward Cree" <ecree.xilinx@gmail.com>
-Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 0/8] Support defragmenting IPv(4|6) packets in BPF
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229887AbjCAQe1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 11:34:27 -0500
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on20630.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e89::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 015A94AFE5;
+        Wed,  1 Mar 2023 08:33:48 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=h+/6An29Ui7JX4+52Nbtl6UBP4WmudqeYr8l7Xh2UZdQMFedjYyYmzr7qRrGtCeIYW3HWFpuxq+78YgdWRwnhI9T5Cxb4yT6yHhKNCHnhZOlL+KKYjJbTOl14EdSnut4kiBS/wfNDWrGDUrVIcV3HDac9bMEI5Qu3iM6fs5YxsksYaz/HzI/eozAS2+6bJFUSgM92ym7TALVnkWW+JPBGPp50NTtex1apxHYTbjk32pENB1jaffAObO2Zbsc/FRcTDNRmHrfdMQoeY9wYa+X360kz3TdH+/m0iyx37bDQ9397bcVdfg7gwwMP5MtXOREBpOuaKeNcFkG69c+xLuUAg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Kgt/t44JTJCTnDFzAl0CVVo0jn+uJ7arC8wDiyGxeyY=;
+ b=JyighItzvlzeSDAjwuwzhk3Ysk3+R746wvf2u+DVQO0X2SsjYHOq8OebcTH7inl31qiNoF9WkkPPqfgGc5Ri4/erVZkTfnPFZyQjJi2VmsPeR0dWC2HHUVzQK5qnvgGFVZhz4aMm7o3w737Sejeh4ATLmJlDXOcIzcTXsVxsExVktJe7hCrD1bT8h3ZJw4Nt7hKiBXBRE4W1bt5T64rL/bEm0EplqMmmO/S+4gV1q47vqbQyMyymWvCQalUQ1R+H7AE0eINShYaihsQP5iQJs4n8kQZUV4v4pevp73q3A8lMYDGwme3yg1FcogcfGJvFMgh8cKJA9mUHiYkTXCKOgg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Kgt/t44JTJCTnDFzAl0CVVo0jn+uJ7arC8wDiyGxeyY=;
+ b=Jg+kkJrfahNW7jAEQ2XYkBTQeWEjx+mB/ttEvee5eTpbJzDHDPGf/4zIWoEBjNGo5g6/JShdv04bUOe94z3pikeulZMEcOd702xX0tenu3IIhJO5fPwxrFopbjbo0DFkjU6jw2rP2JmRd8gzITkWLiqe4+nQ+IsjKU0qzY0Y9EQ=
+Received: from BN9PR03CA0927.namprd03.prod.outlook.com (2603:10b6:408:107::32)
+ by MN0PR12MB5786.namprd12.prod.outlook.com (2603:10b6:208:375::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.30; Wed, 1 Mar
+ 2023 16:32:21 +0000
+Received: from BN8NAM11FT082.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:107:cafe::d9) by BN9PR03CA0927.outlook.office365.com
+ (2603:10b6:408:107::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.30 via Frontend
+ Transport; Wed, 1 Mar 2023 16:32:21 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
+Received: from SATLEXMB03.amd.com (165.204.84.17) by
+ BN8NAM11FT082.mail.protection.outlook.com (10.13.176.94) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6156.12 via Frontend Transport; Wed, 1 Mar 2023 16:32:21 +0000
+Received: from SATLEXMB07.amd.com (10.181.41.45) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Wed, 1 Mar
+ 2023 10:32:20 -0600
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB07.amd.com
+ (10.181.41.45) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Wed, 1 Mar
+ 2023 08:32:20 -0800
+Received: from xndengvm004102.xilinx.com (10.180.168.240) by
+ SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.34
+ via Frontend Transport; Wed, 1 Mar 2023 10:32:16 -0600
+From:   Gautam Dawar <gautam.dawar@amd.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <linux-net-drivers@amd.com>, <harpreet.anand@amd.com>,
+        <tanuj.kamde@amd.com>, Gautam Dawar <gautam.dawar@amd.com>
+Subject: [PATCH] vhost-vdpa: free iommu domain after last use during cleanup
+Date:   Wed, 1 Mar 2023 22:02:01 +0530
+Message-ID: <20230301163203.29883-1-gautam.dawar@amd.com>
+X-Mailer: git-send-email 2.30.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT082:EE_|MN0PR12MB5786:EE_
+X-MS-Office365-Filtering-Correlation-Id: f2110bdf-e1fc-4793-6d87-08db1a7287e3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: YiWBJGDz895Kxro8GTfraBe0rLM8Q6xJEcr75lsh5uaoZQfkO6s/h6FpjGpWxVywVCv7Gpn2veAaL8I0lzRjYC0e1xTIzphaytFFOa9dGLN/fed8sCbDktE+DBZcDysAoGhrDJP/DKdAKoOZPDklCUEK046SJ4HsYYYFdbjPGb/avvhTLg9E5DzwywbYoQxetYs2oZJNHbgbcydUZU2ZlQp7caDURG7EGMm8L4CNvL4RwyeBaneBVuQhYtpUbuIAYlv088khtiuGQ5rQm9knlujAO8ZdroJnDmrwEP0yAy09sV/33jX220bS/y5miMiluHOOY15kFrZFYefKQkL3jz5taX4Gs5iuaZ95OCPrTeAIxpv2Pq6LrCD7GTEwW8Kyx6dQovIr5BOIfLH7uXn2thPKaRG4QljWOUt+wOrHP40QYyvqdf1fxgnqdFuU9Y3wE1noAOfK12l16euPV8aiNoHk367clUQj9ZISF2DRgoitaW/ed49hxvbpSWK1ekk8UE+Tmx6NjElpwzgSpu4dzxJw8sebetNG5CGtmTtbZ8DtyHMAk/rka1DatM+huBindeV2JYqPqUI/sPeJlNxqzdBKro3cCIBXDCUBpNstpcigpZDBF8s/GaC/NdzbqTon8KbShNytrUAkFqdsykgOabg1wZ7eBW3IfbGtw3WSYAbqPaqSiegmf7QaFrstWBVtUFyz5W/cJAcN6KaaBMG2gITAdJsQNSZwLPti0Z/c4Ok=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(346002)(396003)(39860400002)(136003)(376002)(451199018)(46966006)(36840700001)(40470700004)(26005)(2906002)(5660300002)(6666004)(8936002)(8676002)(70206006)(44832011)(70586007)(54906003)(110136005)(316002)(478600001)(186003)(1076003)(36860700001)(2616005)(426003)(47076005)(336012)(82310400005)(41300700001)(83380400001)(4326008)(82740400003)(36756003)(86362001)(40460700003)(356005)(81166007)(40480700001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Mar 2023 16:32:21.1011
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f2110bdf-e1fc-4793-6d87-08db1a7287e3
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT082.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5786
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,SPF_HELO_PASS,
+        SPF_NONE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ed,
+Currently vhost_vdpa_cleanup() unmaps the DMA mappings by calling
+`iommu_unmap(v->domain, map->start, map->size);`
+from vhost_vdpa_general_unmap() when the parent vDPA driver doesn't
+provide DMA config operations.
 
-Had some trouble with email yesterday (forgot to renew domain
-registration) and this reply might not have made it out. Apologies
-if it's a repost.
+However, the IOMMU domain referred to by `v->domain` is freed in
+vhost_vdpa_free_domain() before vhost_vdpa_cleanup() in
+vhost_vdpa_release() which results in NULL pointer de-reference.
+Accordingly, moving the call to vhost_vdpa_free_domain() in
+vhost_vdpa_cleanup() would makes sense. This will also help
+detaching the dma device in error handling of vhost_vdpa_alloc_domain().
 
-On Mon, Feb 27, 2023 at 10:58:47PM +0000, Edward Cree wrote:
-> On 27/02/2023 22:04, Daniel Xu wrote:
-> > I don't believe full L4 headers are required in the first fragment.
-> > Sufficiently sneaky attackers can, I think, send a byte at a time to
-> > subvert your proposed algorithm. Storing skb data seems inevitable h=
-ere.
-> > Someone can correct me if I'm wrong here.
->=20
-> My thinking was that legitimate traffic would never do this and thus if
->  your first fragment doesn't have enough data to make a determination
->  then you just DROP the packet.
+This issue was observed on terminating QEMU with SIGQUIT.
 
-Right, that would be practical. I had some discussion with coworkers and
-the other option on the table is to drop all fragments. At least for us
-in the cloud, fragments are heavily frowned upon (where are they not..)
-anyways.
+Fixes: 037d4305569a ("vhost-vdpa: call vhost_vdpa_cleanup during the release")
+Signed-off-by: Gautam Dawar <gautam.dawar@amd.com>
+---
+ drivers/vhost/vdpa.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-> > What I find valuable about this patch series is that we can
-> > leverage the well understood and battle hardened kernel facilities. =
-So
-> > avoid all the correctness and security issues that the kernel has sp=
-ent
-> > 20+ years fixing.
->=20
-> I can certainly see the argument here.  I guess it's a question of are
->  you more worried about the DoS from tricking the validator into think=
-ing
->  good fragments are bad (the reverse is irrelevant because if you can
->  trick a validator into thinking your bad fragment belongs to a previo=
-usly
->  seen good packet, then you can equally trick a reassembler into stitc=
-hing
->  your bad fragment into that packet), or are you more worried about the
->  DoS from tying lots of memory down in the reassembly cache.
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index ec32f785dfde..b7657984dd8d 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -1134,6 +1134,7 @@ static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
+ 
+ err_attach:
+ 	iommu_domain_free(v->domain);
++	v->domain = NULL;
+ 	return ret;
+ }
+ 
+@@ -1178,6 +1179,7 @@ static void vhost_vdpa_cleanup(struct vhost_vdpa *v)
+ 			vhost_vdpa_remove_as(v, asid);
+ 	}
+ 
++	vhost_vdpa_free_domain(v);
+ 	vhost_dev_cleanup(&v->vdev);
+ 	kfree(v->vdev.vqs);
+ }
+@@ -1250,7 +1252,6 @@ static int vhost_vdpa_release(struct inode *inode, struct file *filep)
+ 	vhost_vdpa_clean_irq(v);
+ 	vhost_vdpa_reset(v);
+ 	vhost_dev_stop(&v->vdev);
+-	vhost_vdpa_free_domain(v);
+ 	vhost_vdpa_config_put(v);
+ 	vhost_vdpa_cleanup(v);
+ 	mutex_unlock(&d->mutex);
+-- 
+2.30.1
 
-Equal balance of concerns on my side. Ideally there are no dropping of
-valid packets and DoS is very hard to achieve.
-
-> Even with reordering handling, a data structure to record which ranges=
- of
->  a packet have been seen takes much less memory than storing the compl=
-ete
->  fragment bodies.  (Just a simple bitmap of 8-byte blocks =E2=80=94 th=
-e resolution
->  of iph->frag_off =E2=80=94 reduces size by a factor of 64, not counti=
-ng all the
->  overhead of a struct sk_buff for each fragment in the queue.  Or you
->  could re-use the rbtree-based code from the reassembler, just with a
->  freshly allocated node containing only offset & length, instead of the
->  whole SKB.)
-
-Yeah, now that you say that, it doesn't sound too bad on space side. But
-I do wonder -- how much code and complexity is that going to be? For
-example I think ipv6 frags have a 60s reassembly timeout which adds more
-stuff to consider. And probably even more I've already forgotten.
-
-B/c at least on the kernel side, this series is 80% code for tests. And
-the kfunc wrappers are not very invasive at all.  Plus it's wrapping
-infra that hasn't changed much for decades.
-
-
-> And having a BPF helper effectively consume the skb is awkward, as you
->  noted; someone is likely to decide that skb_copy() is too slow, try to
->  add ctx invalidation, and thereby create a whole new swathe of potent=
-ial
->  correctness and security issues.
-
-Yep. I did try that. While the verifier bits weren't too tricky, there
-are a lot of infra concerns to solve:
-
-* https://github.com/danobi/linux/commit/35a66af8d54cca647b0adfc7c1da710=
-5d2603dde
-* https://github.com/danobi/linux/commit/e8c86ea75e2ca8f0631632d54ef7633=
-81308711e
-* https://github.com/danobi/linux/commit/972bcf769f41fbfa7f84ce00faf06b5=
-b57bc6f7a
-
-But FWIW, fragmented packets are kinda a corner case anyways. I don't
-think it would be resonable to expect high perf when packets are in
-play.
-
-> Plus, imagine trying to support this in a hardware-offload XDP device.
->  They'd have to reimplement the entire frag cache, which is a much big=
-ger
->  attack surface than just a frag validator, and they couldn't leverage
->  the battle-hardened kernel implementation.
-
-Hmm, well this helper is restricted to TC progs for now. I don't quite
-see a path to enabling for XDP as there would have to be at a minimum
-quite a few allocations to handle frags. So not sure XDP is a factor at
-the moment.
-
->=20
-> > And make it trivial for the next person that comes
-> > along to do the right thing.
->=20
-> Fwiw the validator approach could *also* be a helper, it doesn't have =
-to
->  be something the BPF developer writes for themselves.
->=20
-> But if after thinking about the possibility you still prefer your way,=
- I
->  won't try to stop you =E2=80=94 I just wanted to ensure it had been c=
-onsidered.
-
-Thank you for the discussion. The thought had come to mind originally,
-but I shied away after seeing some of the reassembly details. Would be
-interested in hearing more from other folks.
-
-
-Thanks,
-Daniel
