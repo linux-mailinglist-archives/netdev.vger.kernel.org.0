@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54DB06A7276
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 19:00:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B7626A7277
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 19:00:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229463AbjCASAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 13:00:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57032 "EHLO
+        id S229972AbjCASAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 13:00:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229996AbjCASA0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 13:00:26 -0500
+        with ESMTP id S229935AbjCASAb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 13:00:31 -0500
 Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 367FE4A1C5
-        for <netdev@vger.kernel.org>; Wed,  1 Mar 2023 10:00:25 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BEA54A1CE
+        for <netdev@vger.kernel.org>; Wed,  1 Mar 2023 10:00:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1677693626; x=1709229626;
+  t=1677693630; x=1709229630;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=cpj1lnXwVLhe5IVcEe8Q8xpkegHUsbBC5nIt5ukYDmM=;
-  b=M9MuANZSXpybVSqZ5yD11grG2Z5DP1Y1faLwRfFpG1Ax0dYqnl3ZqoXN
-   Qyv8G9ZNyxQvoQKxfO09hXMOUo9gvmJlRWXsTjE4EMciumZj08q+lyNan
-   1k2Bu9pL+K8G4YjmAzfsjdZdk6sAZkgwhDTchfxVOQLH70tK1lJtOKVHK
-   s=;
+  bh=ZVXga+M0SdGwDLTIQVqG4pTuPvNKi6uIc8adXcvowpE=;
+  b=dNcSZ1SPWRhMlQc23rZbxjr9PByfq/fS0snDH7H4OlL9tC1v/JkZ5znw
+   DBbxIk2wC41GWUuHAIZ1Z1Zk0x2eiC/KUk9uH799a7q+v+6xQvto5T7gW
+   5YoOo7A9FVRWR7bl+eKT+5NMpoGkQDGh35kZd+7CkCZ/7ihMHuZJYFbVL
+   Y=;
 X-IronPort-AV: E=Sophos;i="5.98,225,1673913600"; 
-   d="scan'208";a="266329580"
+   d="scan'208";a="266329615"
 Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-m6i4x-af372327.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2023 18:00:20 +0000
-Received: from EX19D016EUA004.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2a-m6i4x-af372327.us-west-2.amazon.com (Postfix) with ESMTPS id EF16F614B8;
-        Wed,  1 Mar 2023 18:00:17 +0000 (UTC)
+  by smtp-border-fw-33001.sea14.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2023 18:00:29 +0000
+Received: from EX19D013EUA003.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2a-m6i4x-af372327.us-west-2.amazon.com (Postfix) with ESMTPS id 1551360A59;
+        Wed,  1 Mar 2023 18:00:26 +0000 (UTC)
 Received: from EX19D028EUB003.ant.amazon.com (10.252.61.31) by
- EX19D016EUA004.ant.amazon.com (10.252.50.4) with Microsoft SMTP Server
+ EX19D013EUA003.ant.amazon.com (10.252.50.72) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.24; Wed, 1 Mar 2023 18:00:16 +0000
+ 15.2.1118.24; Wed, 1 Mar 2023 18:00:26 +0000
 Received: from u570694869fb251.ant.amazon.com (10.85.143.174) by
  EX19D028EUB003.ant.amazon.com (10.252.61.31) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.24; Wed, 1 Mar 2023 18:00:08 +0000
+ 15.2.1118.24; Wed, 1 Mar 2023 18:00:18 +0000
 From:   Shay Agroskin <shayagr@amazon.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
@@ -58,9 +58,9 @@ CC:     Shay Agroskin <shayagr@amazon.com>,
         "Arinzon, David" <darinzon@amazon.com>,
         "Itzko, Shahar" <itzko@amazon.com>,
         "Abboud, Osama" <osamaabb@amazon.com>
-Subject: [PATCH RFC v1 net-next 3/5] net: ena: Recalculate TX state variables every device reset
-Date:   Wed, 1 Mar 2023 19:59:14 +0200
-Message-ID: <20230301175916.1819491-4-shayagr@amazon.com>
+Subject: [PATCH RFC v1 net-next 4/5] net: ena: Add support to changing tx_push_buf_len
+Date:   Wed, 1 Mar 2023 19:59:15 +0200
+Message-ID: <20230301175916.1819491-5-shayagr@amazon.com>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20230301175916.1819491-1-shayagr@amazon.com>
 References: <20230301175916.1819491-1-shayagr@amazon.com>
@@ -80,45 +80,177 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With the ability to modify LLQ entry size, the size of packet's
-payload that can be written directly to the device changes.
-This patch makes the driver recalculate this information every device
-negotiation (also called device reset).
+The ENA driver allows for two distinct values for the number of bytes
+of the packet's payload that can be written directly to the device.
+
+For a value of 224 the driver turns on Large LLQ Header mode in which
+the first 224 of the packet's payload are written to the LLQ.
 
 Signed-off-by: Shay Agroskin <shayagr@amazon.com>
 ---
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/amazon/ena/ena_eth_com.h |  4 ++
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c | 50 +++++++++++++++++--
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  | 28 +++++++++--
+ drivers/net/ethernet/amazon/ena/ena_netdev.h  |  7 +--
+ 4 files changed, 77 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 830d5be22aa9..43e3c76bd6ae 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -3662,8 +3662,9 @@ int ena_restore_device(struct ena_adapter *adapter)
- 	struct ena_com_dev_get_features_ctx get_feat_ctx;
- 	struct ena_com_dev *ena_dev = adapter->ena_dev;
- 	struct pci_dev *pdev = adapter->pdev;
-+	struct ena_ring *txr;
-+	int rc, count, i;
- 	bool wd_state;
--	int rc;
+diff --git a/drivers/net/ethernet/amazon/ena/ena_eth_com.h b/drivers/net/ethernet/amazon/ena/ena_eth_com.h
+index 689313ee25a8..8bec31fa816c 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_eth_com.h
++++ b/drivers/net/ethernet/amazon/ena/ena_eth_com.h
+@@ -10,6 +10,10 @@
  
- 	set_bit(ENA_FLAG_ONGOING_RESET, &adapter->flags);
- 	rc = ena_device_init(adapter, adapter->pdev, &get_feat_ctx, &wd_state);
-@@ -3673,6 +3674,13 @@ int ena_restore_device(struct ena_adapter *adapter)
- 	}
- 	adapter->wd_state = wd_state;
+ /* head update threshold in units of (queue size / ENA_COMP_HEAD_THRESH) */
+ #define ENA_COMP_HEAD_THRESH 4
++/* we allow 2 DMA descriptors per LLQ entry */
++#define ENA_LLQ_ENTRY_DESC_CHUNK_SIZE	(2 * sizeof(struct ena_eth_io_tx_desc))
++#define ENA_LLQ_HEADER		(128 - ENA_LLQ_ENTRY_DESC_CHUNK_SIZE)
++#define ENA_LLQ_LARGE_HEADER	(256 - ENA_LLQ_ENTRY_DESC_CHUNK_SIZE)
  
-+	count =  adapter->xdp_num_queues + adapter->num_io_queues;
-+	for (i = 0 ; i < count; i++) {
-+		txr = &adapter->tx_ring[i];
-+		txr->tx_mem_queue_type = ena_dev->tx_mem_queue_type;
-+		txr->tx_max_header_size = ena_dev->tx_max_header_size;
+ struct ena_com_tx_ctx {
+ 	struct ena_com_tx_meta ena_meta;
+diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+index 8da79eedc057..5e13fbc7b0ab 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
++++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+@@ -476,6 +476,18 @@ static void ena_get_ringparam(struct net_device *netdev,
+ 
+ 	ring->tx_max_pending = adapter->max_tx_ring_size;
+ 	ring->rx_max_pending = adapter->max_rx_ring_size;
++	if (adapter->ena_dev->tx_mem_queue_type ==
++	    ENA_ADMIN_PLACEMENT_POLICY_HOST)
++		goto no_llq_supported;
++
++	if (adapter->large_llq_header_supported)
++		kernel_ring->tx_push_buf_max_len = ENA_LLQ_LARGE_HEADER;
++	else
++		kernel_ring->tx_push_buf_max_len = ENA_LLQ_HEADER;
++
++	kernel_ring->tx_push_buf_len = adapter->ena_dev->tx_max_header_size;
++
++no_llq_supported:
+ 	ring->tx_pending = adapter->tx_ring[0].ring_size;
+ 	ring->rx_pending = adapter->rx_ring[0].ring_size;
+ }
+@@ -486,7 +498,8 @@ static int ena_set_ringparam(struct net_device *netdev,
+ 			     struct netlink_ext_ack *extack)
+ {
+ 	struct ena_adapter *adapter = netdev_priv(netdev);
+-	u32 new_tx_size, new_rx_size;
++	u32 new_tx_size, new_rx_size, new_tx_push_buf_len;
++	bool changed = false;
+ 
+ 	new_tx_size = ring->tx_pending < ENA_MIN_RING_SIZE ?
+ 			ENA_MIN_RING_SIZE : ring->tx_pending;
+@@ -496,11 +509,40 @@ static int ena_set_ringparam(struct net_device *netdev,
+ 			ENA_MIN_RING_SIZE : ring->rx_pending;
+ 	new_rx_size = rounddown_pow_of_two(new_rx_size);
+ 
+-	if (new_tx_size == adapter->requested_tx_ring_size &&
+-	    new_rx_size == adapter->requested_rx_ring_size)
++	changed |= new_tx_size != adapter->requested_tx_ring_size ||
++		   new_rx_size != adapter->requested_rx_ring_size;
++
++	/* This value is ignored if LLQ is not supported */
++	new_tx_push_buf_len = 0;
++	if (adapter->ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_HOST)
++		goto no_llq_supported;
++
++	new_tx_push_buf_len = kernel_ring->tx_push_buf_len;
++
++	/* support for ENA_LLQ_LARGE_HEADER is tested in the 'get' command */
++	if (new_tx_push_buf_len != ENA_LLQ_HEADER &&
++	    new_tx_push_buf_len != ENA_LLQ_LARGE_HEADER) {
++		bool large_llq_sup = adapter->large_llq_header_supported;
++		char large_llq_size_str[40];
++
++		snprintf(large_llq_size_str, 40, ", %lu", ENA_LLQ_LARGE_HEADER);
++
++		NL_SET_ERR_MSG_FMT_MOD(extack,
++				       "Only [%lu%s] tx push buff length values are supported",
++				       ENA_LLQ_HEADER,
++				       large_llq_sup ? large_llq_size_str : "");
++
++		return -EINVAL;
 +	}
 +
- 	rc = ena_device_validate_params(adapter, &get_feat_ctx);
- 	if (rc) {
- 		dev_err(&pdev->dev, "Validation of device parameters failed\n");
++	changed |= new_tx_push_buf_len != adapter->ena_dev->tx_max_header_size;
++
++no_llq_supported:
++	if (!changed)
+ 		return 0;
+ 
+-	return ena_update_queue_sizes(adapter, new_tx_size, new_rx_size);
++	return ena_update_queue_params(adapter, new_tx_size, new_rx_size,
++				       new_tx_push_buf_len);
+ }
+ 
+ static u32 ena_flow_hash_to_flow_type(u16 hash_fields)
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index 43e3c76bd6ae..0625be4619a8 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -2811,11 +2811,13 @@ static int ena_close(struct net_device *netdev)
+ 	return 0;
+ }
+ 
+-int ena_update_queue_sizes(struct ena_adapter *adapter,
+-			   u32 new_tx_size,
+-			   u32 new_rx_size)
++int ena_update_queue_params(struct ena_adapter *adapter,
++			    u32 new_tx_size,
++			    u32 new_rx_size,
++			    u32 new_llq_header_len)
+ {
+-	bool dev_was_up;
++	bool dev_was_up, large_llq_changed = false;
++	int rc = 0;
+ 
+ 	dev_was_up = test_bit(ENA_FLAG_DEV_UP, &adapter->flags);
+ 	ena_close(adapter->netdev);
+@@ -2825,7 +2827,23 @@ int ena_update_queue_sizes(struct ena_adapter *adapter,
+ 			  0,
+ 			  adapter->xdp_num_queues +
+ 			  adapter->num_io_queues);
+-	return dev_was_up ? ena_up(adapter) : 0;
++
++	large_llq_changed = adapter->ena_dev->tx_mem_queue_type ==
++			    ENA_ADMIN_PLACEMENT_POLICY_DEV;
++	large_llq_changed &=
++		new_llq_header_len != adapter->ena_dev->tx_max_header_size;
++
++	/* a check that the configuration is valid is done by caller */
++	if (!large_llq_changed)
++		goto if_up;
++
++	adapter->large_llq_header_enabled = !adapter->large_llq_header_enabled;
++
++	ena_destroy_device(adapter, false);
++	rc = ena_restore_device(adapter);
++
++if_up:
++	return dev_was_up && !rc ? ena_up(adapter) : 0;
+ }
+ 
+ int ena_set_rx_copybreak(struct ena_adapter *adapter, u32 rx_copybreak)
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.h b/drivers/net/ethernet/amazon/ena/ena_netdev.h
+index 3e8c4a66c7d8..5a0d4ee76172 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.h
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.h
+@@ -396,9 +396,10 @@ void ena_dump_stats_to_buf(struct ena_adapter *adapter, u8 *buf);
+ 
+ int ena_update_hw_stats(struct ena_adapter *adapter);
+ 
+-int ena_update_queue_sizes(struct ena_adapter *adapter,
+-			   u32 new_tx_size,
+-			   u32 new_rx_size);
++int ena_update_queue_params(struct ena_adapter *adapter,
++			    u32 new_tx_size,
++			    u32 new_rx_size,
++			    u32 new_llq_header_len);
+ 
+ int ena_update_queue_count(struct ena_adapter *adapter, u32 new_channel_count);
+ 
 -- 
 2.25.1
 
