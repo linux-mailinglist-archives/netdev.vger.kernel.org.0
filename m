@@ -2,121 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 128CC6A7480
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 20:49:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 407946A7489
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 20:53:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229606AbjCATtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 14:49:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51870 "EHLO
+        id S229796AbjCATx3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 14:53:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229546AbjCATtl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 14:49:41 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F39755BE;
-        Wed,  1 Mar 2023 11:49:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1677700172; x=1709236172;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=7reiKjD1KnrY4wWSGx+aBYfAaGWBUZqD36fWwdHvUGk=;
-  b=ED/+bG5aGg/myGfBdBmIN44SgamBP2erdVjiYHDyNYf3q1a2nPJe1ljv
-   H0wsrDCJoDtrQYREzkStpe6IgPtFeNgSgFQhz5V/4M0JTwhDGMc09KYg9
-   pnQ49VjzPVvdRsAXeWrkRwC2Ij+17Xs83U02DO71QmqDCoIlH7RglHRAP
-   klhq92Kj5e9ZJXCAwWmiofPfcvZYox545C7KfccxmVYRB1tSYHk1Y3X+K
-   x8Df0YvUjlvtMn3JBzSCajtzDy+uNr3cr7iR6KU+4Y46TakbX3G0G4WAj
-   BTyZKEZ+5riuFA4un6YNtcjSB95P0Y48BRrUSZW0kW2vYUhOE3soKMuNP
-   A==;
-X-IronPort-AV: E=Sophos;i="5.98,225,1673938800"; 
-   d="scan'208";a="202842359"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Mar 2023 12:49:31 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Wed, 1 Mar 2023 12:49:31 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.16 via Frontend
- Transport; Wed, 1 Mar 2023 12:49:30 -0700
-Date:   Wed, 1 Mar 2023 20:49:30 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH net] net: lan966x: Fix port police support using
- tc-matchall
-Message-ID: <20230301194930.44g55mljrw3qicsi@soft-dev3-1>
-References: <20230228204742.2599151-1-horatiu.vultur@microchip.com>
- <20230301122711.2eqlbjplitrpktdj@skbuf>
+        with ESMTP id S229492AbjCATx2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 14:53:28 -0500
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B3BE20562;
+        Wed,  1 Mar 2023 11:53:27 -0800 (PST)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1pXSVr-0007Fg-02;
+        Wed, 01 Mar 2023 20:53:19 +0100
+Date:   Wed, 1 Mar 2023 19:53:10 +0000
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     Jianhui Zhao <zhaojh329@gmail.com>,
+        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
+Subject: [RFC PATCH net-next v11 00/12] net: ethernet: mtk_eth_soc: various
+ enhancements
+Message-ID: <cover.1677699407.git.daniel@makrotopia.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230301122711.2eqlbjplitrpktdj@skbuf>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 03/01/2023 14:27, Vladimir Oltean wrote:
+This series brings a variety of fixes and enhancements for mtk_eth_soc,
+adds support for the MT7981 SoC and facilitates sharing the SGMII PCS
+code between mtk_eth_soc and mt7530.
 
-Hi Vladimir,
+Note that this series depends on commit 697c3892d825
+("regmap: apply reg_base and reg_downshift for single register ops") to
+not break mt7530 pcs register access.
 
-> 
-> On Tue, Feb 28, 2023 at 09:47:42PM +0100, Horatiu Vultur wrote:
-> > When the police was removed from the port, then it was trying to
-> > remove the police from the police id and not from the actual
-> > police index.
-> > The police id represents the id of the police and police index
-> > represents the position in HW where the police is situated.
-> > The port police id can be any number while the port police index
-> > is a number based on the port chip port.
-> > Fix this by deleting the police from HW that is situated at the
-> > police index and not police id.
-> >
-> > Fixes: 5390334b59a3 ("net: lan966x: Add port police support using tc-matchall")
-> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> > ---
-> >  drivers/net/ethernet/microchip/lan966x/lan966x_police.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_police.c b/drivers/net/ethernet/microchip/lan966x/lan966x_police.c
-> > index a9aec900d608d..7d66fe75cd3bf 100644
-> > --- a/drivers/net/ethernet/microchip/lan966x/lan966x_police.c
-> > +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_police.c
-> > @@ -194,7 +194,7 @@ int lan966x_police_port_del(struct lan966x_port *port,
-> >               return -EINVAL;
-> >       }
-> >
-> > -     err = lan966x_police_del(port, port->tc.police_id);
-> > +     err = lan966x_police_del(port, POL_IDX_PORT + port->chip_port);
-> >       if (err) {
-> >               NL_SET_ERR_MSG_MOD(extack,
-> >                                  "Failed to add policer to port");
-> > --
-> > 2.38.0
-> >
-> 
-> Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+The whole series has been tested on MT7622+MT7531 (BPi-R64),
+MT7623+MT7530 (BPi-R2), MT7981+GPY211 (GL.iNet GL-MT3000) and
+MT7986+MT7531 (BPi-R3).
 
-Thanks for the review.
+Changes since v10:
+ * improve mediatek,mt7981-eth dt-bindings
+ * use regmap_set_bits instead of regmap_update_bits where possible
+ * completely remove mtk_sgmii.c
+ * no need to keep struct mtk_sgmii either as it had only a single
+   element
 
-> 
-> but the extack message is also wrong; it says it failed to add the
-> policer, when the operation that failed was a deletion.
+Changes since v9:
+ * fix path in mediatek,sgmiisys dt-binding
 
-Good catch, but this err path will never be hit as the function
-lan966x_police_del always returns 0.
+Changes since v8:
+ * move mediatek,sgmiisys dt-bindings to correct net/pcs folder
+ * rebase on top of net-next/main so series applies cleanly again
 
-I am planning to send a patch when the net-next gets open to
-actually change the return type of the function 'lan966x_police_del' and
-then the extack message will be removed.
+Changes since v7:
+ * move mediatek,sgmiisys.yaml to more appropriate folder
+ * don't include <linux/phylink.h> twice in PCS driver, sort includes
+
+Changes since v6:
+ * label MAC MCR bit 12 in 08/12, MediaTek replied explaining its function
+
+Changes since v5:
+ * drop dev pointer also from struct mtk_sgmii, pass it as function
+   parameter instead
+ * address comments left for dt-bindings
+ * minor improvements to commit messages
+
+Changes since v4:
+ * remove unused dev pointer in struct pcs_mtk_lynxi
+ * squash link timer check into correct follow-up patch
+
+Changes since v3:
+ * remove unused #define's
+ * use BMCR_* instead of #define'ing our own constants
+ * return before changing registers in case of invalid link timer
+
+Changes since v2:
+ * improve dt-bindings, convert sgmisys bindings to dt-schema yaml
+ * fix typo
+
+Changes since v1:
+ * apply reverse xmas tree everywhere
+ * improve commit descriptions
+ * add dt binding documentation
+ * various small changes addressing all comments received for v1
 
 
+Daniel Golle (12):
+  net: ethernet: mtk_eth_soc: add support for MT7981 SoC
+  dt-bindings: net: mediatek,net: add mt7981-eth binding
+  dt-bindings: arm: mediatek: sgmiisys: Convert to DT schema
+  dt-bindings: arm: mediatek: sgmiisys: add MT7981 SoC
+  net: ethernet: mtk_eth_soc: set MDIO bus clock frequency
+  net: ethernet: mtk_eth_soc: reset PCS state
+  net: ethernet: mtk_eth_soc: only write values if needed
+  net: ethernet: mtk_eth_soc: fix RX data corruption issue
+  net: ethernet: mtk_eth_soc: ppe: add support for flow accounting
+  net: pcs: add driver for MediaTek SGMII PCS
+  net: ethernet: mtk_eth_soc: switch to external PCS driver
+  net: dsa: mt7530: use external PCS driver
+
+ .../arm/mediatek/mediatek,sgmiisys.txt        |  27 --
+ .../devicetree/bindings/net/mediatek,net.yaml |  53 ++-
+ .../bindings/net/pcs/mediatek,sgmiisys.yaml   |  55 ++++
+ MAINTAINERS                                   |   7 +
+ drivers/net/dsa/Kconfig                       |   1 +
+ drivers/net/dsa/mt7530.c                      | 277 ++++------------
+ drivers/net/dsa/mt7530.h                      |  47 +--
+ drivers/net/ethernet/mediatek/Kconfig         |   2 +
+ drivers/net/ethernet/mediatek/Makefile        |   2 +-
+ drivers/net/ethernet/mediatek/mtk_eth_path.c  |  14 +-
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c   | 114 ++++++-
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h   | 114 +++----
+ drivers/net/ethernet/mediatek/mtk_ppe.c       | 114 ++++++-
+ drivers/net/ethernet/mediatek/mtk_ppe.h       |  25 +-
+ .../net/ethernet/mediatek/mtk_ppe_debugfs.c   |   9 +-
+ .../net/ethernet/mediatek/mtk_ppe_offload.c   |   8 +
+ drivers/net/ethernet/mediatek/mtk_ppe_regs.h  |  14 +
+ drivers/net/ethernet/mediatek/mtk_sgmii.c     | 203 ------------
+ drivers/net/pcs/Kconfig                       |   7 +
+ drivers/net/pcs/Makefile                      |   1 +
+ drivers/net/pcs/pcs-mtk-lynxi.c               | 302 ++++++++++++++++++
+ include/linux/pcs/pcs-mtk-lynxi.h             |  13 +
+ 22 files changed, 817 insertions(+), 592 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,sgmiisys.txt
+ create mode 100644 Documentation/devicetree/bindings/net/pcs/mediatek,sgmiisys.yaml
+ delete mode 100644 drivers/net/ethernet/mediatek/mtk_sgmii.c
+ create mode 100644 drivers/net/pcs/pcs-mtk-lynxi.c
+ create mode 100644 include/linux/pcs/pcs-mtk-lynxi.h
+
+
+base-commit: 1716a175592aff9549a0c07aac8f9cadd03003f5
 -- 
-/Horatiu
+2.39.2
+
