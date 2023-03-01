@@ -2,166 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E61036A7288
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 19:03:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 690116A72B3
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 19:08:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230054AbjCASDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 13:03:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33670 "EHLO
+        id S229471AbjCASIm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 13:08:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbjCASDc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 13:03:32 -0500
-Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1171B77A
-        for <netdev@vger.kernel.org>; Wed,  1 Mar 2023 10:02:59 -0800 (PST)
+        with ESMTP id S229547AbjCASIl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 13:08:41 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0BE623C78;
+        Wed,  1 Mar 2023 10:08:25 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id cw28so8274557edb.5;
+        Wed, 01 Mar 2023 10:08:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1677693780; x=1709229780;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=BPoHj7y3TSz4Jyvq/CxtWfo4JlAQU0fLjMnyPT9F+3w=;
-  b=CkMxKx15gKb6WWvVGo5Gxw2SVEEQr3LUcqCkKvT2wFoeB+/knisgndow
-   CQphg1T7xhKKGGTZ442Xe3JZchDvkq6pjocp9jiw1Rvea7FwuSr9eJSvz
-   cukPsai944l/GGEBQOcx5ccnpR/y7HOUeaobWdD2tVQZjfsJgAmbwuhh8
-   E=;
-X-IronPort-AV: E=Sophos;i="5.98,225,1673913600"; 
-   d="scan'208";a="304406455"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-1box-2bm6-32cf6363.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2023 18:02:42 +0000
-Received: from EX19D010EUA002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-1box-2bm6-32cf6363.us-west-2.amazon.com (Postfix) with ESMTPS id 9449D81083;
-        Wed,  1 Mar 2023 18:02:40 +0000 (UTC)
-Received: from EX19D028EUB003.ant.amazon.com (10.252.61.31) by
- EX19D010EUA002.ant.amazon.com (10.252.50.108) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.24; Wed, 1 Mar 2023 18:02:39 +0000
-Received: from u570694869fb251.ant.amazon.com (10.85.143.174) by
- EX19D028EUB003.ant.amazon.com (10.252.61.31) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.24; Wed, 1 Mar 2023 18:02:31 +0000
-From:   Shay Agroskin <shayagr@amazon.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
-CC:     Shay Agroskin <shayagr@amazon.com>,
-        "Woodhouse, David" <dwmw@amazon.com>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        Saeed Bshara <saeedb@amazon.com>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        "Dagan, Noam" <ndagan@amazon.com>,
-        "Arinzon, David" <darinzon@amazon.com>,
-        "Itzko, Shahar" <itzko@amazon.com>,
-        "Abboud, Osama" <osamaabb@amazon.com>
-Subject: [PATCH RFC v1 net-next 5/5] net: ena: Advertise ETHTOOL_RING_USE_TX_PUSH_BUF_LEN support
-Date:   Wed, 1 Mar 2023 20:02:13 +0200
-Message-ID: <20230301180213.1828060-1-shayagr@amazon.com>
-X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20230301175916.1819491-1-shayagr@amazon.com>
-References: <20230301175916.1819491-1-shayagr@amazon.com>
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8JirHVQ09DhBCB5aPmkX9jdoyQBJV9YAIL+MUHS2yNM=;
+        b=IZHKB+uoEHe+hnmk2HtzKaLj4D/0BFRsg+AgXv4L2aksVPeBZ603ETTuvXUFgoxDRF
+         6hZTR5TLesypgd28YzgpGtp8ceuFIl1pK5BRL1j5X+utL4CLkR5a7NOzba9MmoHn5lWy
+         tO5CpmELmrnn8P7CSiC/f7bJKLt5RNm7w3AFIDN3mMTXqtSRzy8q6VWtF2Mkr9bSemrA
+         XVnIaqtrFcm496f8inG91Ne0qik8s9KpujSnVogbk4GXOyKqqnwaCAlUHsRwQ9zCJhUo
+         P+lSJedU1o4XV8kNNBy+sc70KcpOK6I0h56FBouqllkM7Rvg5ahMIYI0j8OIpFoRWb/p
+         +FJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=8JirHVQ09DhBCB5aPmkX9jdoyQBJV9YAIL+MUHS2yNM=;
+        b=Ir6MO309opZTl+GaFy424MMp62NLuL+NjKsTkzcWM/tU8Y8ro8o7aD3IuSdgdVcpsE
+         0rCqps4hi1Hdrbb1+Y28iNhouDXQglNJld6Xb8nXsMQz7TcrC8YRUGG8DhlsZjJE363a
+         /2QjIhmgeBKX3eLmS9dLIm3TW8vykdx215LXeQVqZhVLfEmDuYorQhxOPcsbc1LoVZ3C
+         saM+EeW6XmYiMCxyrctxZIKGffh+Oxm5oIjHaDpCP/QsWPPazMBTosvtGIrGgZaBizqp
+         xIdIYtb43Soh9HfN3S8Vla4llD7mzK7v0JLwwTfwT7omM0lMQNu7NA1dgloukNsOkct5
+         9lzQ==
+X-Gm-Message-State: AO0yUKXNek84a/CgHPiiU3pYH1vYXt1doBH+2k/Yy6sIC8ofQ86dg47Q
+        kZX6Zrzvk0JyDunGVgTY4OcgN+MxU413ZKYuARs=
+X-Google-Smtp-Source: AK7set9Va+klVdUMOwc6oFL4qHIMZ46EeIofw5YR6yENkfuFajULNCdLWIHUQZmROVVVZn/PbaXSb9oTzEZzkbq+TDo=
+X-Received: by 2002:a17:906:a46:b0:895:58be:963 with SMTP id
+ x6-20020a1709060a4600b0089558be0963mr3578596ejf.3.1677694104038; Wed, 01 Mar
+ 2023 10:08:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.85.143.174]
-X-ClientProxiedBy: EX19D036UWC004.ant.amazon.com (10.13.139.205) To
- EX19D028EUB003.ant.amazon.com (10.252.61.31)
-X-Spam-Status: No, score=-11.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20230301154953.641654-1-joannelkoong@gmail.com> <20230301154953.641654-11-joannelkoong@gmail.com>
+In-Reply-To: <20230301154953.641654-11-joannelkoong@gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 1 Mar 2023 10:08:12 -0800
+Message-ID: <CAADnVQJCYcPnutRvjJgShAEokfrXfC4DToPOTJRuyzA1R64mBg@mail.gmail.com>
+Subject: Re: [PATCH v13 bpf-next 10/10] selftests/bpf: tests for using dynptrs
+ to parse skb and xdp buffers
+To:     Joanne Koong <joannelkoong@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <martin.lau@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Advertise support for modifying TX push buffer len using ethtool. This
-capability requires the driver to support Low Latency Queue which might
-not be the case for some scenarios.
+On Wed, Mar 1, 2023 at 7:51=E2=80=AFAM Joanne Koong <joannelkoong@gmail.com=
+> wrote:
+>
+> 5) progs/dynptr_success.c
+>    * Add test case "test_skb_readonly" for testing attempts at writes
+>      on a prog type with read-only skb ctx.
+>    * Add "test_dynptr_skb_data" for testing that bpf_dynptr_data isn't
+>      supported for skb progs.
 
-Signed-off-by: Shay Agroskin <shayagr@amazon.com>
----
- drivers/net/ethernet/amazon/ena/ena_ethtool.c | 14 ++++++++++++--
- drivers/net/ethernet/amazon/ena/ena_netdev.c  |  7 ++++++-
- drivers/net/ethernet/amazon/ena/ena_netdev.h  |  2 +-
- 3 files changed, 19 insertions(+), 4 deletions(-)
+I added
++dynptr/test_dynptr_skb_data
++dynptr/test_skb_readonly
+to DENYLIST.s390x and applied.
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-index 5e13fbc7b0ab..27fe0e6a5b6e 100644
---- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-@@ -939,7 +939,7 @@ static int ena_set_tunable(struct net_device *netdev,
- 	return ret;
- }
- 
--static const struct ethtool_ops ena_ethtool_ops = {
-+static struct ethtool_ops ena_ethtool_ops = {
- 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
- 				     ETHTOOL_COALESCE_USE_ADAPTIVE_RX,
- 	.get_link_ksettings	= ena_get_link_ksettings,
-@@ -967,8 +967,18 @@ static const struct ethtool_ops ena_ethtool_ops = {
- 	.get_ts_info            = ethtool_op_get_ts_info,
- };
- 
--void ena_set_ethtool_ops(struct net_device *netdev)
-+void ena_set_ethtool_ops(struct ena_adapter *adapter)
- {
-+	struct net_device *netdev = adapter->netdev;
-+
-+	ena_ethtool_ops.supported_ring_params = 0;
-+	if (adapter->ena_dev->tx_mem_queue_type ==
-+	    ENA_ADMIN_PLACEMENT_POLICY_HOST)
-+		goto no_llq_supported;
-+
-+	ena_ethtool_ops.supported_ring_params |= ETHTOOL_RING_USE_TX_PUSH_BUF_LEN;
-+
-+no_llq_supported:
- 	netdev->ethtool_ops = &ena_ethtool_ops;
- }
- 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 0625be4619a8..22f9786a91e2 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -3719,6 +3719,11 @@ int ena_restore_device(struct ena_adapter *adapter)
- 		}
- 	}
- 
-+	/* Some ethtool advertised capabilities might change after
-+	 * destroy/restore calls
-+	 */
-+	ena_set_ethtool_ops(adapter);
-+
- 	set_bit(ENA_FLAG_DEVICE_RUNNING, &adapter->flags);
- 
- 	clear_bit(ENA_FLAG_ONGOING_RESET, &adapter->flags);
-@@ -4450,7 +4455,7 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	netdev->netdev_ops = &ena_netdev_ops;
- 	netdev->watchdog_timeo = TX_TIMEOUT;
--	ena_set_ethtool_ops(netdev);
-+	ena_set_ethtool_ops(adapter);
- 
- 	netdev->priv_flags |= IFF_UNICAST_FLT;
- 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.h b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-index 5a0d4ee76172..f1dedf24cd11 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-@@ -388,7 +388,7 @@ struct ena_adapter {
- 	u32 xdp_num_queues;
- };
- 
--void ena_set_ethtool_ops(struct net_device *netdev);
-+void ena_set_ethtool_ops(struct ena_adapter *adapter);
- 
- void ena_dump_stats_to_dmesg(struct ena_adapter *adapter);
- 
--- 
-2.25.1
-
+Thank you so much for all the hard work to make it happen.
+Great milestone!
