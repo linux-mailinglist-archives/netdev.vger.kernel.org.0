@@ -2,114 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 996196A6B16
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 11:52:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC4586A6B27
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 11:57:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229621AbjCAKwV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 05:52:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35238 "EHLO
+        id S229670AbjCAK52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 05:57:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229585AbjCAKwU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 05:52:20 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2129.outbound.protection.outlook.com [40.107.92.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 070B236459
-        for <netdev@vger.kernel.org>; Wed,  1 Mar 2023 02:52:20 -0800 (PST)
+        with ESMTP id S229512AbjCAK51 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 05:57:27 -0500
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2128.outbound.protection.outlook.com [40.107.94.128])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C40E199C5;
+        Wed,  1 Mar 2023 02:57:26 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MnEYA4VE7LHVnvGkSfmjia3HQefUYVkZwU+nU2EVtidoZ8FrduFXE/Pm8tigez+sVF8vB3Cf9LLtSkRFSr/FhumxVk/HyF3++vvjHfFH3L1jE/rLruVBzG5YH/e/BlIzs0Np5sslR9uEHIcjzls/di6pW6I86P/bRMkmyWPnIKW/fF+pY0xa9KFQqKkYT7glglo0suBfXsHTplJhejDVxy9gdD+ACAaUdkwoPsxF6RvMuF6Alu2Agce8c6OZph95aAZbqzigwFrcwhJNUUt9zb8TjNPG6piBKgWT6b06+8NQLAiUKm0R7u+iTWdlq7NRa5cn+xOeuFExc4G/lkFB0A==
+ b=nnXITJHA1jSS+zSdqlaJ16C/4RPRB51u+bTu3otV5vU50WN3/+beo/hISMZ4wr+LqHwXQGd+9Vx2Ml9jRNCXVFM7Qh6REB35Gv4QvyM3fkcNIR5WGnOdNQSfQsk8Dsd0s+7iy9ATIaaQdKSafCZOcjxyCOh+ydEsyWGFimrxHCicjcZJS1FVcOYANE2PmAh9VMFqeAIl9N8LzanJGK4yYWlMeIyZbQG7LAffoU6hUDQ+u/zi+WFBIrtwGp+a825TZq0Xch0d99+cIJ74kHEMMHrk2DGspIKODM1tphq3lzF0ygfq4AC+iUt5rGwYxw7kSS1+LExekniGiihRqfpHPA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YOfHqnMbCrqjxHCSo0V9L60ht7QHHMCIdV1V1W5w1r0=;
- b=P2XHgS+ncrcReKNZZyST3Pv9TMedc7LGNuYkw80XnjVHRkqYdKTAhcJRC0z/slZDqx/qZI0UuUqirY98WhOVJjmsQkN7N6rTO5XDeUSaiFcQxV8bdXrLu/hKAZumOa3NdUWm+U74Eh0qfjcspdM/BMdTioaI6YLW+h7T8iOwbmE+wsOv7ac8kd/Iug5hjo49Kvms9L8vNOsVfa9/y13GeWsrHHAUQE6hO41iHWMqsx03r/4ibdTMdgHDuKN0wJQzlMJQs+qzMnkLPTpEpGhiquJQWRFTEUVjKBe88OpYMZiCebPg4hi1eSiMlnFzMalCjT1ud6PTRoiSFIlqLr7ffA==
+ bh=whc4FP1khjhQqKvKa1AZKrKRbgcghoZtcCiMttyMosQ=;
+ b=UoLxzdhzXXPUFIAkBhc8zg6+xGx6UsiEK8BWZjDN4j9IwhRN9uTPEdPdlZlJzrYHn9Xy85aA+v16GHjjjK90ZaN7fjMcq8MPUSthZNncAh/tv2GNPlpu3bbnEp1zY4aTR5jqhCsv97pYAth9S4wdJ6c2OtWxv+Uz8C4cxr9rGCJmXhb04RoHOFS9p5F7SoJxMvLiS4UrMoefEfep6FpRsosnnonciAG3DW4ZNmBv+nkiVDRw1JhC6FQX2rbbRt8gqK+ibmWLthrMowTPejwGNa+u48kAsTfJfuCo/SpOBeeSNNnClCfQvely6FvGhzRn/e1BBo6yM5TcuYNd3ttYmw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YOfHqnMbCrqjxHCSo0V9L60ht7QHHMCIdV1V1W5w1r0=;
- b=qani8A8J4966ZxV4LzsJ+D1TPCDRartBsn0M0Pxoy33/OslQwCvvlbGjZqoY+4OWCJYaBtE0Lq1mi0falPn9N/59vxdRTpmBOFy4c6kyKJxevtM4rMPpqPHk2s/yCBQke/Wah2Td5dVI/YciY/TRynK+TXyimDfHPRZK0mxZCLI=
+ bh=whc4FP1khjhQqKvKa1AZKrKRbgcghoZtcCiMttyMosQ=;
+ b=HGZkzJEJlYXtn+2yiLdRrmaXr+q5ydi4SYd0xpX+9XrUNLNdvUQSXcGleO07BWCcVV3aJ9xtwN1/Ij6lTCGM7K602B5l79EIyD6RlqihgWCXMFtKiEIMRcHiA/flDP7bQ126mAJ/YUH3GD4O6l99py+e4s2rVykySYyGkQVaTyI=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH7PR13MB5527.namprd13.prod.outlook.com (2603:10b6:510:139::8) with
+ by MN2PR13MB4117.namprd13.prod.outlook.com (2603:10b6:208:260::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.18; Wed, 1 Mar
- 2023 10:52:16 +0000
+ 2023 10:57:23 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::85f5:bdb:fb9e:294c%3]) with mapi id 15.20.6156.018; Wed, 1 Mar 2023
- 10:52:16 +0000
-Date:   Wed, 1 Mar 2023 11:52:09 +0100
+ 10:57:23 +0000
+Date:   Wed, 1 Mar 2023 11:57:16 +0100
 From:   Simon Horman <simon.horman@corigine.com>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH RFC 0/6] r8169: disable ASPM during NAPI poll
-Message-ID: <Y/8uWeQNxteyH+gT@corigine.com>
-References: <af076f1f-a034-82e5-8f76-f3ec32a14eaa@gmail.com>
- <CAAd53p6D7e=pSX0uEZfXiwt9Es9Pd+4s1N5k-8ob+Gb98e01Og@mail.gmail.com>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     pkshih@realtek.com, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH v2] rtlwifi: rtl8192se: Remove some unused variables
+Message-ID: <Y/8vjN8hcMU85bkC@corigine.com>
+References: <20230301030534.2102-1-jiapeng.chong@linux.alibaba.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAAd53p6D7e=pSX0uEZfXiwt9Es9Pd+4s1N5k-8ob+Gb98e01Og@mail.gmail.com>
-X-ClientProxiedBy: AM0PR10CA0020.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:208:17c::30) To PH0PR13MB4842.namprd13.prod.outlook.com
+In-Reply-To: <20230301030534.2102-1-jiapeng.chong@linux.alibaba.com>
+X-ClientProxiedBy: AM8P191CA0013.EURP191.PROD.OUTLOOK.COM
+ (2603:10a6:20b:21a::18) To PH0PR13MB4842.namprd13.prod.outlook.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH7PR13MB5527:EE_
-X-MS-Office365-Filtering-Correlation-Id: ada7daf6-d305-461a-3576-08db1a430543
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MN2PR13MB4117:EE_
+X-MS-Office365-Filtering-Correlation-Id: ca5fdae9-2a30-42c9-6140-08db1a43bc84
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vjuhod5Ka3P09/EloxIknNezAXkDIEqsdMa5hKOiS8xC4NoUqqJjFlJKrOSSsvfVP0avex/5l1JMnbvCac4zLzln26mr2LVxjr4KyLkmSNh8aYoWy517SS+kyRcmEr4P/Q+xkgOU063YkAyVMM3+rT4P8FjLxKOBN9+UGS+PxQ3hznwKeRlY8OHnG5Rk0cmQLHqadaLhhE21tFu30uU5jMH2ST5CK1gIVsNF7ORgqvMM2/PYmNTUKELFAz2orzzXCfwneMPcs7U81iOO5pz2tT0oje/OWEtY3RzXnOeE+cwXYgArQFQUBupuY1N29iG5OAN9XkHqQi8wsmfILgt1IPyJNJAC1YhuPOTLXhAqbnnqfWpXcEyPzm+xrk22pxBcTkjolHIC2Bi+CxS7GrvMQOzfYifEszENnmSHBGOzPVKGiRZUky2M4/3d8hl2a8ZPFUmmkF1N+Isee0a6S0S7wRiVQlD/UEeBIggmP/9UH1/Ckh3TD8NKxSnWebvL3uppxVpt3Zr6NbKlSf+nC7qKCB3S9JPw8RkwQq9eGI7/a/MVECzI3L1DE4NWAo5GDj5hfNqJqIBPuCpohEt6o8ubdoY4LI7Ps6nvWP5ybn6aMx0ZZmev9hF3jtFjXK7vhIYziGJIyTqZFjKCEWaT9RT2Um+zqjEA+SOOR9Jy/ULW7jZqIT6ezSqz+7ry9/g8VVr8
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(39840400004)(396003)(366004)(346002)(376002)(451199018)(316002)(2906002)(54906003)(4744005)(44832011)(5660300002)(36756003)(8936002)(86362001)(6506007)(6512007)(53546011)(66476007)(66556008)(66946007)(186003)(4326008)(6916009)(8676002)(38100700002)(41300700001)(2616005)(478600001)(83380400001)(6666004)(6486002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: U2/yKvOn85qf1FHhqRipH4rwVdUvs02ZFU4xHcP0TYxOGwTL67PBFme3+xLQoMlUDJq70+k3+kA9k1eg6HSNtyoSxXzqZzj2AAzvy/FW/NQvFV5GVLCXThMiXtML9Zsi7j+Wx/+gnY4RMUJdXnJBDaW9wrM3VPxpLyfWh4+1BqnkEy17i0Lzugj0bGEi+CK/fMXrSeO1uljrMC8pP3cCQIAXG/WaZOQGblgra+1Q/hwxzuzfEf3UQ/vjyKiEx3F3XWCjdMnd4MyxJp69IXR6dIzJ8XyeIkjRYnFs0ububkPyjj3brUlIMwtjOgcW5DNf3yOcY7FXYQHcoyhDVibZRMKyODRNCLjVcfQbg3W+5xjNVeL43HRD1XNazyp1iASPJKVaPxv7eQHM2qVl1paBC53fXx7ifZcuVD9dRFzxpN5Qc7mIdlO/eK+sZF0lkLhDC0XFyztHRYp5AWaT22HROEBtlOwNelZX8rlKjrFHGfLxaoHw6Zio3GMOKjWxEkdyDWVv1vRKhdGFtUTrcAF79YQPwTYncGBnYv6OYmR34R8kS0aUdi/Z6h6tzroS+MFbkZEW4sIFfaGPg82Mpard1WZyw4g2YL4TYxyxs0sOarW1s4WVZzIPluyc0/kmEXLNqNYO4qi8TZWFxvhRRANFZXXD1+2m/5NhWNl36fLD0F85TI4qJXXbIP8QkO9l6iL6
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(39840400004)(136003)(366004)(376002)(346002)(451199018)(38100700002)(86362001)(36756003)(2906002)(44832011)(4744005)(7416002)(41300700001)(66946007)(66556008)(66476007)(6916009)(8676002)(4326008)(8936002)(5660300002)(6666004)(2616005)(6512007)(6506007)(186003)(83380400001)(478600001)(316002)(6486002)(966005);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hVyaAcwl4nhsEQdKm2hjZ/dqCOb2SaqAfnvp4Kdsw14NxDO8v9FHfAZY+XC6?=
- =?us-ascii?Q?tgaV3rCLuTapmaSnNjUUNljeHIxZbJ3b6sQYvsol4o0Ej9g8SFtjgu7fv7JY?=
- =?us-ascii?Q?/fcc11Y5A8ZTxacIChcDJYfrknsJDYNfNJGxNasdhvhRo+TiWp8GRMxuJ9Gt?=
- =?us-ascii?Q?Wvs5iaRsQysNN/2cnLChhWshr2atHnkZlZ/N20dq/pmn58CG7ipOrVPDSCom?=
- =?us-ascii?Q?s/9x+M5r8lmkNRTTbJ0hNGc4vQpdbKBijLzjX5HlrHuBk8ehaNz3AZePtK0N?=
- =?us-ascii?Q?EI01hKniuv4gnZ/NKEp0HhNp7uBb/I4VBfvxbkSlQkV0VrmyKSk29Id7do7K?=
- =?us-ascii?Q?1AeX8+3+YAXaOv1kq+529zbuQM/hShH7cjqqqQN6ZJe+TVS6kzuby1VF6N/8?=
- =?us-ascii?Q?y8JxsVq3ER4Vf303VIY+SVyOaQYy4ikn1E5Bn4Cp8aN3MUSu/SyDNeqg2LeD?=
- =?us-ascii?Q?Jr97PTo0e67cOs1SXcGK5R25RclXmPJZkz7XBbdiyZAf7k4Feqn4C3K4Effo?=
- =?us-ascii?Q?D9DNNMqVLZhXxM2eOY5lMDsGIpcSXj6A72Sqho/8C5oLruWroMbkHIH1QkF2?=
- =?us-ascii?Q?6Virq8VqM7inyG5q88lkJvHzm1dBMRM9PQZPLjK2wAW9nELkwNId593PKRY2?=
- =?us-ascii?Q?05HYvbbtE5SMkN4Oq8Mx/THx4r9QxaR66jsJ9cjui74NjLkskitTNZuvmnTe?=
- =?us-ascii?Q?0XqMlsITtNTD9cHjqdQvdAsA/qkQ0n2A3beHrKJA0CpVjRAdOPnfW9Eo3Eow?=
- =?us-ascii?Q?nUPcxzrSMxW5MPBxPbtfGm7TiJSrzHX4mWQKgwHtcW1g34HrQk7P9cpDaxJY?=
- =?us-ascii?Q?5ADPaZjG9tfE5irLsu6AifnGIfmzOtWFXP7oqeaNNsz3WNP0fqbRd8MYru+N?=
- =?us-ascii?Q?/POMz9XdZTSQ+6pYfX2nDeJW1PDUBS6lEon9j3jN99EHSaWMu3LgPqTxS5uI?=
- =?us-ascii?Q?Y1WGFWSqai8gzlY1sOVtYBVZESC2btbSqKY+xy15QwLh8AX23HJXk29dtcv+?=
- =?us-ascii?Q?80Bt75megmygZyBMfPAwq13PopIGvi0+17Ou0zMEnF6nQgZkGXvc2QnojFga?=
- =?us-ascii?Q?hRCHVWCZ/zC+hK7sZuBj0++rbFOCFqqL42gGSaDZE5eK/yAAT1e98SmaufOK?=
- =?us-ascii?Q?VDLOgkY2BbyCYDgx4AAAexllLj7cc5UPrP5xizDPV9JRIIZdy7Rzx6h6sC9x?=
- =?us-ascii?Q?Jh5aMfx7VIMQMAI/JD8PHO7zjtAgwFDtSe5RSX7rbAQRmV3lHb9fHw0Ohpok?=
- =?us-ascii?Q?5QM9BCfJ5ANQpJzOLsNfEgvaZpmjLOwuOq8AayfxtxlBzRGD3+5juozcBPWX?=
- =?us-ascii?Q?UfrU6lVpzk50NTOW9T111WoWllgdqAf9YMbTM08QwhfgLDRguSpPufk+/UPr?=
- =?us-ascii?Q?XjTVI8jwGl4TOh6I3zWX0CiaB2nILGj5LJ39PCMF1FKx0z8A9hsNYvhoI25U?=
- =?us-ascii?Q?zLmH50M+vsNfnuap4e86z0icDNg4kx1+fKmHFhbZ4GF8UrhPe6ocCMz/m4dl?=
- =?us-ascii?Q?gT3coalq0WClpeLPhiiDCcqsB69R/46wCehOlYaafv6RtrDcHcFRtXQ7+/sO?=
- =?us-ascii?Q?CZwJobKpi+9JaSQ/yCc8RXsWZ0Z71asZvwMIN3OtYhiJGOR7yyZ9odjiU7Ab?=
- =?us-ascii?Q?NHZnIeypaoDppzRryYhVck4UBdFu5v56KQtwqXsOeNfXysP/3eHIVPRmIqTA?=
- =?us-ascii?Q?h6bFmw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UrscYoJWHaDTh6FI75gHPVQD/DvWupU6fIwzxgctChzPuGB8rq8LN7h8Whpe?=
+ =?us-ascii?Q?yNwlARI7az0tck/Ru8HayVJL3cCc0+pmtY/NFHjztRoEMMREDLe+FrEBGFqe?=
+ =?us-ascii?Q?dEUtPoFx9eGOxm0tthKPqa9EN8Nqe8For7Sn4DNs6f7MSn39Oz+g2o5uNdvh?=
+ =?us-ascii?Q?KDHU3Y2mH111sPEJUvn0Z24y5oIa2FaLZeqpxZC2Xl0AXFe2hu9ebBTNMlmR?=
+ =?us-ascii?Q?qmeLfZjgGtF/NIUR1X1+XpQbE0W87vJcztJ4QCkBeDU5DpQG5693ip7Q94va?=
+ =?us-ascii?Q?ZhbM0OEo1+H1pSv6cPKa8w2I13pgliqkTX4qQc6/BrJh3KB4jeumGJ/l1yof?=
+ =?us-ascii?Q?n/ZZqAAnG4EMelAhBJz3zCujQQpaHVNUemhPBA/fZJZcysuuDX48HTd3+VHH?=
+ =?us-ascii?Q?jdeDNEw8KdzTiAmElyo9f5ACkHA5PQEUPbf/+Sgtd43rAnfPm8LJWgvvTFUI?=
+ =?us-ascii?Q?IOkO1ocAV7+soOVsDERZe0CMh4llNXS2ZDvbXl/9+7E2iuandbFpoeft0WZM?=
+ =?us-ascii?Q?jB3hMeGsXyeqDcGSgd2Jmig8gSFof1m1XEQeEUhdaCQNmcqSdj+f9seei7kY?=
+ =?us-ascii?Q?Xl3w9EnqijAWNajsG96/Fdzpkb6mxkSw7YlV9gHpWslUNyrbD3lNCdRm8458?=
+ =?us-ascii?Q?/h1wSDkA0vDVqO9RFYRhKR+nL3/nalADboOh5boDsElOukptcVkpeeFZuI/W?=
+ =?us-ascii?Q?yfw0sgtr9YReSrcaG/LbHbRw4cMH1Qwlu6Og26An0dsWLjU0tp4EjIEIF6ai?=
+ =?us-ascii?Q?qy+R4u5oIYwvn5onxAVD01ZFJ7nHq9QxeILP9PJxwpE6Vby/9KAObeATIZdp?=
+ =?us-ascii?Q?3jfXiBIa8KKn9tlY2oWGTIQAgsHtoEyX/koNqAoQPiIyK+KC0MarctAE7oCN?=
+ =?us-ascii?Q?Q5gptrS5q7aMj5UUOiWghMjoIvEhPbc4QL99JUdiYENVy1IWaumSvgg9Stuo?=
+ =?us-ascii?Q?1o1Pilk/R4ASTfXqF4C0O9c0JbSp2nq+Z5OAlI9WJHryZwVLvwj+EYqBST9u?=
+ =?us-ascii?Q?VciRjv2vpTRZTFxMhHlz+DrpHq0NGiS6ekoJAEr+8QP6Lp7nNUnMVSs/xCFr?=
+ =?us-ascii?Q?/JXrwVUcFGTlTXOap3Lvx6KeDnWVAsO/o6Ct3xSWHox3UZFmW5mOrZLLpLnL?=
+ =?us-ascii?Q?uIIvwAM3GPT1cFa2OFcCjmjJexf5mBfSaQZ8FWB3SJ1wW3PkV5deIGdaSRtd?=
+ =?us-ascii?Q?SDDACQQ8IS0AQcAtNl7akOLIvy0fwtUx2uvI/4Q8sp/mOUfMK50JikawOapF?=
+ =?us-ascii?Q?uOVOrpzqc6eYKd6Ca9hqZzIPr9WfStAhVkiJzDCsfBHwLNgLEMYygXM5XJjT?=
+ =?us-ascii?Q?+9ViHud/6EQhIqF143fZkB3k1IRqc3Xh/Z3X+uqw8mMOYtw5lV7fTyzBJRdm?=
+ =?us-ascii?Q?SCyufifyjQjB/OEQo6g1jnveQJZotJQ4rVbIr6aO49BscsTN9aN9TA3rDuig?=
+ =?us-ascii?Q?SC2dsZdsqCNCbFM08tAeyZXrBtcuudsabvFeDivpxaBSV4E4lx6HX1UYlKXQ?=
+ =?us-ascii?Q?nDdT4clriX7sBni83oxa34jBimG/20a3ZNYBL8136FGJb1nbeoMT30hZtLLK?=
+ =?us-ascii?Q?1sSZCqdUgq/VBaUR6tXrjn2ivxm07C3TZ3xBtkYLtBtNDAF/pG8EtDdFCGVz?=
+ =?us-ascii?Q?sb6/vMzyX2NPFdNMMMdkk4xoQte/+EEtlC2eP6cngVjg3whJSVrdPwRh4vWQ?=
+ =?us-ascii?Q?xRWH+g=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ada7daf6-d305-461a-3576-08db1a430543
+X-MS-Exchange-CrossTenant-Network-Message-Id: ca5fdae9-2a30-42c9-6140-08db1a43bc84
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Mar 2023 10:52:15.8041
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Mar 2023 10:57:23.2542
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: o0eMd8kAobd1xgvUAdeY36hs8O/VcqxtwCUhhpiCcTwvWpljWN3Ai2ghsnDKt3AgFNtHfiGohdtyIbhYtUf/E+9Jjkk0jR4OgvLN9uZLL1w=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR13MB5527
+X-MS-Exchange-CrossTenant-UserPrincipalName: AW/Tnckl8kRyDCfSVMWWkRoGZ3pkmu7xP9Ua+z6zJN95Xm/3b+uRme+otCnHCaSJOd/xQQLRvV0VTvQRyoMYAeWW/LsO+9PPFrHXhs1Girk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB4117
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
@@ -119,21 +115,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 01, 2023 at 02:50:43PM +0800, Kai-Heng Feng wrote:
-> On Sun, Feb 26, 2023 at 5:43 AM Heiner Kallweit <hkallweit1@gmail.com> wrote:
-> >
-> > This is a rework of ideas from Kai-Heng on how to avoid the known
-> > ASPM issues whilst still allowing for a maximum of ASPM-related power
-> > savings. As a prerequisite some locking is added first.
-> >
-> > This change affects a bigger number of supported chip versions,
-> > therefore this series comes as RFC first for further testing.
+On Wed, Mar 01, 2023 at 11:05:34AM +0800, Jiapeng Chong wrote:
+> Variable bcntime_cfg, bcn_cw and bcn_ifs are not effectively used, so
+> delete it.
 > 
-> Thanks for the series.
+> drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c:1555:6: warning:
+> variable 'bcntime_cfg' set but not used.
 > 
-> Tested-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-
-FWIIW, I also looked over this series and it looks good to me.
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=4240
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 
 Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
