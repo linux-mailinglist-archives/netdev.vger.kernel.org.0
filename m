@@ -2,114 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83E726A6651
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 04:10:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 564376A6664
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 04:17:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229557AbjCADKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 22:10:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52804 "EHLO
+        id S229681AbjCADRK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 22:17:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229656AbjCADKh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 22:10:37 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 242042CC77
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 19:10:31 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id b20so7082965pfo.6
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 19:10:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1677640230;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=CEysnDdx6JRqKcZNWR/Qvf05mn2uE2UqY/BT4rdoBjI=;
-        b=V3rS525VGydYvGveG7qj1P8al1oHlcyK8uNylQrKeAkvMzJR9Jv6t32UcE8NTLU1E9
-         9SnRrdYJMwE1JjTM0BFBqXIPN7OlkLrT4/9ppNTfxwhFOwlQB6RlqIjoQj0DeRpsyR+4
-         QuG6gz0uZhB1yKvfVvI4HFDWRJtTiflxid8Xj1sJdnRlf9cUtoScXM4T9emCebEc+AmB
-         pAd4uD/do8saHWkuDI/MvR+jxyDyqEYsWpa2nj+QrWcHA0jGXbaW3xP27eMahqMRUvzc
-         Zn4MhiwcoI96hrgpaENXq2CH0PgOFXwC2LAypdOZQGU7UlKjhLY3YMGeQS5TGPk7JTCl
-         Aycg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677640230;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=CEysnDdx6JRqKcZNWR/Qvf05mn2uE2UqY/BT4rdoBjI=;
-        b=Lso73+/JLUBoLotwaZT7p3xsOFMMU16PKcCluH8TGfjseTMpj/VDj7KvSZmktT3Ryn
-         zYfFHrFsHzvo1cBiBbQNLgTSFs++xAC+xYZAkx0bfCgWzxG41fFfjINynqtnsPoxcQ46
-         t1/3OxhuOC3W1mQijIVRwjX5KczW41I0hG8SDUTNz0TDsC5qU5pyWSaBkeZxCCUVh7mY
-         AbGtKXj/efBrCbzeh6P7oc9ZUXPf9O4x1sWKNPmNC/UIsiPUkAyucZoqMjhfNc0SmMKa
-         SYtaMQnqlcMx+RiNcINAIy+FaCzUruvU834B12+Uc5vhKNz7/or1ZyYF2XhIiesn84d2
-         iBJg==
-X-Gm-Message-State: AO0yUKXtt02PxmxEwRvSP/r8e2lG6ySMB7KFFvuUvdtAVYcI0Y7Y7Pc0
-        k1x3fAVCfQwn5gm8UNU4eyidfISD3T0E1T54
-X-Google-Smtp-Source: AK7set8I1v00H3D+GdozFk8mDueJwB5GbpkpGdDudy9leahMSKKQtnUo7A0iJkOVe1MdOOb2r/CElQ==
-X-Received: by 2002:a05:6a00:47:b0:5a9:b4eb:d262 with SMTP id i7-20020a056a00004700b005a9b4ebd262mr4715420pfk.1.1677640230510;
-        Tue, 28 Feb 2023 19:10:30 -0800 (PST)
-Received: from Laptop-X1 ([43.228.180.230])
-        by smtp.gmail.com with ESMTPSA id i22-20020aa78b56000000b00586fbbdf6e4sm6770175pfd.34.2023.02.28.19.10.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Feb 2023 19:10:29 -0800 (PST)
-Date:   Wed, 1 Mar 2023 11:10:26 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: Re: [PATCH iproute2] u32: fix TC_U32_TERMINAL printing
-Message-ID: <Y/7CIiBcHabfFaD6@Laptop-X1>
-References: <20230228034955.1215122-1-liuhangbin@gmail.com>
- <CAM0EoM=-sSuZbgjEH_KH8WTqTXYSagN0E6JLF+MKBFDSG_z9Hw@mail.gmail.com>
+        with ESMTP id S229496AbjCADRJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 22:17:09 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 474ED37B41;
+        Tue, 28 Feb 2023 19:17:08 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6DC56122D;
+        Wed,  1 Mar 2023 03:17:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89D35C433D2;
+        Wed,  1 Mar 2023 03:17:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1677640627;
+        bh=Kd9ZzTP/IT+UqzT+MbMRvYxxm/pwIusoqLP0tgakQKs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tZfW86w7zoAjyXJGoiYfQC3Q0t/s9Z/MZFdzSG6ClI8GcYhudD8GZx7SWVOVdQiIf
+         GYgJuc58B09UZU6w6IvNM0VCPoq2ttQ4GpUzrsczcU3g82vtHA7mqQJ8P+z6P7IOJj
+         tCG4rGRXSlLQYYVguiV0hKb6cq7G6UmXnmvmhBPaYiUv1i00xL5GfzFcb/ziZk0UWH
+         tFl/OXZpo4RGTNHg5fWkmE899la+Wll92zHVCKXWd1KgxhRbPybnTA6FkJFkuSc43F
+         FLy0wUs/wcje07NvxAcfzp/nZuaGgvYnpPQrQP4H+MI4DcFFieA2GXhoNKcLHNDDbb
+         VKcda8gsUuUrg==
+Date:   Tue, 28 Feb 2023 19:17:05 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linuxfoundation.org>, x86@kernel.org,
+        Wangyang Guo <wangyang.guo@intel.com>,
+        Arjan van De Ven <arjan@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Marc Zyngier <maz@kernel.org>
+Subject: Re: [patch 0/3] net, refcount: Address dst_entry reference count
+ scalability issues
+Message-ID: <20230228191705.3bc8bed6@kernel.org>
+In-Reply-To: <871qm9mgkb.ffs@tglx>
+References: <20230228132118.978145284@linutronix.de>
+        <CANn89iL2pYt2QA2sS4KkXrCSjprz9byE_p+Geom3MTNPMzfFDw@mail.gmail.com>
+        <87h6v5n3su.ffs@tglx>
+        <CANn89iL_ey=S=FjkhJ+mk7gabOdVag6ENKnu9GnZkcF31qOaZA@mail.gmail.com>
+        <871qm9mgkb.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAM0EoM=-sSuZbgjEH_KH8WTqTXYSagN0E6JLF+MKBFDSG_z9Hw@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 28, 2023 at 05:55:30AM -0500, Jamal Hadi Salim wrote:
-> Hangbin,
-> Can you please run tdc tests on all tc (both for iproute2 and kernel)
-> changes you make and preferably show them in the commit log? If you
-> introduce something new then add a new tdc test case to cover it.
+FWIW looks good to me, especially the refcount part.
+We do see 10% of jitter in microbenchmarks due to random cache
+effects, so forgive the questioning. But again, the refcount seems 
+like an obvious win to my noob eyes.
 
-OK, the patch fixed an issue I found when run tdc u32 test.
+While I have you it would be remiss of me not to mention my ksoftirq
+change which makes a large difference in production workloads:
+https://lore.kernel.org/all/20221222221244.1290833-3-kuba@kernel.org/
+Is Peter's "rework" of softirq going in for 6.3?
 
-1..11
-not ok 1 afa9 - Add u32 with source match
-	Could not match regex pattern. Verify command output:
-filter protocol ip pref 1 u32 chain 0 
-filter protocol ip pref 1 u32 chain 0 fh 800: ht divisor 1 
-filter protocol ip pref 1 u32 chain 0 fh 800::800 order 2048 key ht 800 bkt 0 *flowid 1:1 not_in_hw 
-  match 7f000001/ffffffff at 12
-	action order 1: gact action pass
-	 random type none pass val 0
-	 index 1 ref 1 bind 1
+On Wed, 01 Mar 2023 02:00:20 +0100 Thomas Gleixner wrote:
+> >> We looked at this because the reference count operations stood out in
+> >> perf top and we analyzed it down to the false sharing _and_ the
+> >> non-scalability of atomic_inc_not_zero().
+> >
+> > Please share your recipe and perf results.  
+> 
+> Sorry for being not explicit enough about this, but I was under the
+> impression that explicitely mentioning memcached and memtier would be
+> enough of a hint for people famiiar with this matter.
 
-After the fix, the u32.json test passed
+I think the disconnect may be that we are indeed familiar with 
+the workloads, but these exact workloads don't hit the issue
+in production (I don't work at Google but a similarly large corp).
+My initial reaction was also to see if I can find the issue in prod.
+Not to question but in hope that I can indeed find a repro, and make
+this series an easy sell.
 
-All test results:
-
-1..11
-ok 1 afa9 - Add u32 with source match
-ok 2 6aa7 - Add/Replace u32 with source match and invalid indev
-ok 3 bc4d - Replace valid u32 with source match and invalid indev
-ok 4 648b - Add u32 with custom hash table
-ok 5 6658 - Add/Replace u32 with custom hash table and invalid handle
-ok 6 9d0a - Replace valid u32 with custom hash table and invalid handle
-ok 7 1644 - Add u32 filter that links to a custom hash table
-ok 8 74c2 - Add/Replace u32 filter with invalid hash table id
-ok 9 1fe6 - Replace valid u32 filter with invalid hash table id
-ok 10 0692 - Test u32 sample option, divisor 256
-ok 11 2478 - Test u32 sample option, divisor 16
-
-
-When I post the patch, I though this issue is a clear logic one, so I didn't
- paste the test result.
-
-Thanks
-Hangbin
+> Run memcached with -t $N and memtier_benchmark with -t $M and
+> --ratio=1:100 on the same machine. localhost connections obviously
+> amplify the problem,
+> 
+> Start with the defaults for $N and $M and increase them. Depending on
+> your machine this will tank at some point. But even in reasonably small
+> $N, $M scenarios the refcount operations and the resulting false sharing
+> fallout becomes visible in perf top. At some point it becomes the
+> dominating issue while the machine still has capacity...
+> 
+> > We must have been very lucky to not see this at Google.  
+> 
+> There _is_ a world outside of Google? :)
+> 
+> Seriously. The point is that even if you @google cannot obverse this as
+> a major issue and it just gives your usecase a minimal 0.X gain, it
+> still is contributing to the overall performance, no?
