@@ -2,226 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CA856A738B
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 19:36:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC6F16A73B3
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 19:43:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229771AbjCASg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 13:36:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43242 "EHLO
+        id S229894AbjCASnV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 13:43:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229894AbjCASgw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 13:36:52 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E809A47402;
-        Wed,  1 Mar 2023 10:36:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A56D9B8110A;
-        Wed,  1 Mar 2023 18:36:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 123C7C433A7;
-        Wed,  1 Mar 2023 18:36:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677695808;
-        bh=1PTbEGcPaUc/kPHFJ2lFOtZgCtP4SxJi0Ga247F3+QI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TNzFLQusSYUt4ScKa51nAS3gNDneFjt9EfhnGqaPGbOWeeeCKaFbZL9enIGrH6Ctq
-         U8bAcmr7dZLUNeIr7OFyzG+IMMKOHEQ5J/pZs5L5LWFbkL4GF4dbsGw/8dW/H4aBTU
-         nV3kTtRw37ig79ynzSxJALmsMO4TvoYgfnLjeZyBVGyju3ghB/n5CmxA5WH20a71Sv
-         dlNuQD1iGp2UoxVbjsjidkbf8gh5ZCmVXCpkqaswEtNysbf3QTDBqLpcyyf//4Oxcq
-         CrEJrnIN5VRFp1DgEraf4e/PM6sQtu+ATRsiCq128sAncGKpj61+YmdZP/iJqQV9sr
-         Y4rN44QSJ4xLg==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        linux-doc@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net 3/3] netlink: specs: update for codegen enumerating from 1
-Date:   Wed,  1 Mar 2023 10:36:42 -0800
-Message-Id: <20230301183642.2168393-4-kuba@kernel.org>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230301183642.2168393-1-kuba@kernel.org>
-References: <20230301183642.2168393-1-kuba@kernel.org>
+        with ESMTP id S229665AbjCASnU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 13:43:20 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 142761A647;
+        Wed,  1 Mar 2023 10:43:19 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id d30so57849336eda.4;
+        Wed, 01 Mar 2023 10:43:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1677696197;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=NeBOkrsW3y7Vj5BOWZGuYQDb9cRvWdipWp5l5oMe1Dw=;
+        b=UYPp6L2OHH31SkRLN9/1JN6l4ky4pJlY3zflrwmT8bS7wXotZykhn8IAOAXtaNmUpa
+         ZLyMvZ1PXjtpuHjOhKOovbRF21h9h7ZrRq+EFSqAPPWwBasd0TFRLVbCmVHXzOZNqkfr
+         X6NmnR970m64YtBHM1icA11VohnSxgb/pEv+nBQ5xDW8IvEFKfDeAWieDLKHz/9KVnWn
+         eu75OS+CCUFq0QG9JeOwCmRsR2hjRHt1qcE9gbP2LOm+puj15d0LVw1ugRIQOcjsljvZ
+         MKNblL1Lhe4Gax/SVLn97+Y23Os1zCFlsKSTUSTCY9IqUg0c8UinaIkO73N5cvX8/mO2
+         re9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1677696197;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=NeBOkrsW3y7Vj5BOWZGuYQDb9cRvWdipWp5l5oMe1Dw=;
+        b=FB5d3jboXUZjwT0mtZhxGTZufzkwd0Xn9nm/p/lFeThOmbVgx8DQfma9u4UEWn7YHp
+         ZdXMwAupGdBwofr3JJzMqoELgSbUg8n0ySDDoxwXlbE+bYBYskgL6Syi2mSR1hcehT8Z
+         vbhZ3QD+EozaEzuZpkFmK1nE05X/GIotiJawOPdMn2KmSo3q5IxDnjpV2tXQ7aVKRSju
+         Qq6wt8rqk8VU4E2FbJIjyBZ2SnUqTNVlqFfzq2q48ZKVUy2+F5Q7pruteePBccJt6HWw
+         2DaPbYTHyePrjG9RVXwqeeW7fu8DIcOWb4w405s2GZS7LtLer7AsYbGUlWcrLHsIu4g8
+         Y5Gg==
+X-Gm-Message-State: AO0yUKVX4Khvcz5e8kD4/E8C0Q1ahbTbwLOX6mjjqmklKHnPWSbiv5de
+        D7SvyAbW+HAoftSK3cPxjZfSY0P4EfeiHDAxQ9Q=
+X-Google-Smtp-Source: AK7set9ofmAMqc8kBuhyL5cs0fdSAtiNorCZ8oWvIGdSpFlQFhFd85+Jx7A9dXe+YHZ9PCr95uccB5oEliHgk9sX78M=
+X-Received: by 2002:a50:ab12:0:b0:4bc:7781:5103 with SMTP id
+ s18-20020a50ab12000000b004bc77815103mr1589692edc.5.1677696197414; Wed, 01 Mar
+ 2023 10:43:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230301154953.641654-1-joannelkoong@gmail.com>
+ <20230301154953.641654-11-joannelkoong@gmail.com> <CAADnVQJCYcPnutRvjJgShAEokfrXfC4DToPOTJRuyzA1R64mBg@mail.gmail.com>
+In-Reply-To: <CAADnVQJCYcPnutRvjJgShAEokfrXfC4DToPOTJRuyzA1R64mBg@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 1 Mar 2023 10:43:05 -0800
+Message-ID: <CAEf4BzaL-o1b51s1Hx_vN9q51Vnp7GBNziYc0ffBfMeQbG5HGQ@mail.gmail.com>
+Subject: Re: [PATCH v13 bpf-next 10/10] selftests/bpf: tests for using dynptrs
+ to parse skb and xdp buffers
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Joanne Koong <joannelkoong@gmail.com>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <martin.lau@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that the codegen rules had been changed we can update
-the specs to reflect the new default.
+On Wed, Mar 1, 2023 at 10:08=E2=80=AFAM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Wed, Mar 1, 2023 at 7:51=E2=80=AFAM Joanne Koong <joannelkoong@gmail.c=
+om> wrote:
+> >
+> > 5) progs/dynptr_success.c
+> >    * Add test case "test_skb_readonly" for testing attempts at writes
+> >      on a prog type with read-only skb ctx.
+> >    * Add "test_dynptr_skb_data" for testing that bpf_dynptr_data isn't
+> >      supported for skb progs.
+>
+> I added
+> +dynptr/test_dynptr_skb_data
+> +dynptr/test_skb_readonly
+> to DENYLIST.s390x and applied.
+>
+> Thank you so much for all the hard work to make it happen.
+> Great milestone!
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- Documentation/netlink/specs/ethtool.yaml | 15 ---------------
- Documentation/netlink/specs/fou.yaml     |  2 ++
- Documentation/netlink/specs/netdev.yaml  |  2 --
- 3 files changed, 2 insertions(+), 17 deletions(-)
-
-diff --git a/Documentation/netlink/specs/ethtool.yaml b/Documentation/netlink/specs/ethtool.yaml
-index 08b776908d15..35c462bce56f 100644
---- a/Documentation/netlink/specs/ethtool.yaml
-+++ b/Documentation/netlink/specs/ethtool.yaml
-@@ -11,7 +11,6 @@ doc: Partial family for Ethtool Netlink.
-       -
-         name: dev-index
-         type: u32
--        value: 1
-       -
-         name: dev-name
-         type: string
-@@ -25,7 +24,6 @@ doc: Partial family for Ethtool Netlink.
-       -
-         name: index
-         type: u32
--        value: 1
-       -
-         name: name
-         type: string
-@@ -39,14 +37,12 @@ doc: Partial family for Ethtool Netlink.
-         name: bit
-         type: nest
-         nested-attributes: bitset-bit
--        value: 1
-   -
-     name: bitset
-     attributes:
-       -
-         name: nomask
-         type: flag
--        value: 1
-       -
-         name: size
-         type: u32
-@@ -61,7 +57,6 @@ doc: Partial family for Ethtool Netlink.
-       -
-         name: index
-         type: u32
--        value: 1
-       -
-         name: value
-         type: string
-@@ -71,7 +66,6 @@ doc: Partial family for Ethtool Netlink.
-       -
-         name: string
-         type: nest
--        value: 1
-         multi-attr: true
-         nested-attributes: string
-   -
-@@ -80,7 +74,6 @@ doc: Partial family for Ethtool Netlink.
-       -
-         name: id
-         type: u32
--        value: 1
-       -
-         name: count
-         type: u32
-@@ -96,14 +89,12 @@ doc: Partial family for Ethtool Netlink.
-         name: stringset
-         type: nest
-         multi-attr: true
--        value: 1
-         nested-attributes: stringset
-   -
-     name: strset
-     attributes:
-       -
-         name: header
--        value: 1
-         type: nest
-         nested-attributes: header
-       -
-@@ -119,7 +110,6 @@ doc: Partial family for Ethtool Netlink.
-     attributes:
-       -
-         name: header
--        value: 1
-         type: nest
-         nested-attributes: header
-       -
-@@ -132,7 +122,6 @@ doc: Partial family for Ethtool Netlink.
-     attributes:
-       -
-         name: header
--        value: 1
-         type: nest
-         nested-attributes: header
-       -
-@@ -180,7 +169,6 @@ doc: Partial family for Ethtool Netlink.
-     attributes:
-       -
-         name: pad
--        value: 1
-         type: pad
-       -
-         name: reassembly-errors
-@@ -205,7 +193,6 @@ doc: Partial family for Ethtool Netlink.
-     attributes:
-       -
-         name: header
--        value: 1
-         type: nest
-         nested-attributes: header
-       -
-@@ -251,13 +238,11 @@ doc: Partial family for Ethtool Netlink.
- 
-       do: &strset-get-op
-         request:
--          value: 1
-           attributes:
-             - header
-             - stringsets
-             - counts-only
-         reply:
--          value: 1
-           attributes:
-             - header
-             - stringsets
-diff --git a/Documentation/netlink/specs/fou.yaml b/Documentation/netlink/specs/fou.yaml
-index 266c386eedf3..cca4cf98f03a 100644
---- a/Documentation/netlink/specs/fou.yaml
-+++ b/Documentation/netlink/specs/fou.yaml
-@@ -26,6 +26,7 @@ kernel-policy: global
-       -
-         name: unspec
-         type: unused
-+        value: 0
-       -
-         name: port
-         type: u16
-@@ -71,6 +72,7 @@ kernel-policy: global
-     -
-       name: unspec
-       doc: unused
-+      value: 0
- 
-     -
-       name: add
-diff --git a/Documentation/netlink/specs/netdev.yaml b/Documentation/netlink/specs/netdev.yaml
-index cffef09729f1..ba9ee13cf729 100644
---- a/Documentation/netlink/specs/netdev.yaml
-+++ b/Documentation/netlink/specs/netdev.yaml
-@@ -48,7 +48,6 @@ name: netdev
-         name: ifindex
-         doc: netdev ifindex
-         type: u32
--        value: 1
-         checks:
-           min: 1
-       -
-@@ -66,7 +65,6 @@ name: netdev
-     -
-       name: dev-get
-       doc: Get / dump information about a netdev.
--      value: 1
-       attribute-set: dev
-       do:
-         request:
--- 
-2.39.2
-
+Yep, a lot of iterators work is made much easier thanks to the
+foundations laid by your (Joanne's) dynptr work. Thank you!
