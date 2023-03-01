@@ -2,79 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C28566A692E
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 09:53:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0A8E6A6964
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 10:03:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229781AbjCAIxB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 03:53:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46328 "EHLO
+        id S229888AbjCAJDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 04:03:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229660AbjCAIw7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 03:52:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 539AA35BF;
-        Wed,  1 Mar 2023 00:52:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05EE3B80FE3;
-        Wed,  1 Mar 2023 08:52:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 858A7C433D2;
-        Wed,  1 Mar 2023 08:52:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677660774;
-        bh=6c6cP/IHyRsWowu2tZHcz9eWebeuuAH5j8u2NP4wnVo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Ed999CG6d0eqg2KNSuFTYXnvp/Q1rvY1tRn4mnKA4qF8ZX8PN1/WRkwarGFe3iqCM
-         pYHJVUDK6wZLZ/mGQD7NQAvj5FsLhd6M5DbTR9Z/eISLk2eLEATdrzaJcAIwfiCHrM
-         +r4R+094Rn0yoanJXQ/s20157NcE7X+yPNos8t2UHzpO3F8DCDxmpfpFQJyntUFIA0
-         e/aUT4GqmU0iSpooRfo62rBs/bYFTFogO7/QauFLK4pABdzo+bpArlplZdPH2/45nd
-         Mlq/RI7xFBVNMdDKz87VMGoCD7gHidR4Z+8aiV+Yv/zp9lO9EqCQ9JTqbukJeqT5Qg
-         8Vqy64XZU8Lww==
-Date:   Wed, 1 Mar 2023 08:52:44 +0000
-From:   Lee Jones <lee@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Robert Foss <rfoss@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Pavel Machek <pavel@ucw.cz>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
-        netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-pm@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-usb@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Fix SPI and I2C bus node names in examples
-Message-ID: <Y/8SXMHQtv6Er1Xx@google.com>
-References: <20230228215433.3944508-1-robh@kernel.org>
+        with ESMTP id S229706AbjCAJDj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 04:03:39 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C431C23127
+        for <netdev@vger.kernel.org>; Wed,  1 Mar 2023 01:03:25 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id y2so12648796pjg.3
+        for <netdev@vger.kernel.org>; Wed, 01 Mar 2023 01:03:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=7kLFJAEhf38Z91ErKT+SpxGk8u9CKv5JjAsWvmwSh1U=;
+        b=kFV6gWvUnLZUgZ3rx1fWN6XsMVZGaOvEhSfcLg/s8cO8hXYZcsfYyMQVpM1nPe0baw
+         9ArjHkD/rTNKS5uasdrwh9EyO2HLnFSdTwYbjkFKAu3WyoU4IHt3Tz34CYydA9oO369D
+         BObp7hV6riaekilNuiKshaOLfMCvvMGnhgoDEztu+nfov0YCkeX/+HL/23Yn7jAZ8k5x
+         NMf4axghp3wg1SxSNbK2DtkVk61xSTsSv7ln/oLuupE6mXwtZ4StRepp85j7sHIy6sLP
+         gDU3wf3dZ189e0zn3+AZIZ/STcotbaSfkInW+N3RhCLw3z5qel277LPsO3bAKE4Pkh8k
+         BMvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=7kLFJAEhf38Z91ErKT+SpxGk8u9CKv5JjAsWvmwSh1U=;
+        b=492WG/RtXOnPhd6/bYwO9xloyMnVPVw/Dj30NVK/MWsZROA08Uv6gUNKh4XgFHPfeG
+         2lbUv1osT28mf8HNUKMXdCQ8SqCc4uE3o3SYY2UiJmBZtBW6czXj/LMBWwRacRAwNraY
+         aOLgFRK7dJ9n7fn6As/cJ5R7iJTA75tNufHuhDs782hjKrYSCr0GcmCjtTUzu8HdvZqp
+         YA8jhYbn4V0Ru3mM2pTVlzTfDMguxPSasWts9Pv1K07uFXz7gPUVY1LYxWvT1qgmeOyx
+         1yUlvuuWKnH4WgfZDKsz7A2ZU2IPf+UHZI1J4CcTCnRWlGARoytbmsMB35cKxmbzUyDm
+         Piuw==
+X-Gm-Message-State: AO0yUKXbLpnwbhUwe4+09T4YoMdmZDjhF4p1JSqhDq84/PhtCnFEBF6W
+        BOYg9k8cVJZjJFhO752Z5Z6euJIcY8P6ovtzgpxw5w==
+X-Google-Smtp-Source: AK7set/EtY+OG6oXO/oVlz80z4XiEM8n0HHmXdl5DR+0gJsIWwZvMhJ6meksEeV5+DLgP3I/bf83eA0yaUAqAI17xbc=
+X-Received: by 2002:a17:902:e5d0:b0:19a:fa2f:559e with SMTP id
+ u16-20020a170902e5d000b0019afa2f559emr3823016plf.3.1677661405158; Wed, 01 Mar
+ 2023 01:03:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230228215433.3944508-1-robh@kernel.org>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+References: <20211006035407.1147909-1-dmitry.baryshkov@linaro.org>
+ <Y0hr9XTGAg8Q6K6y@google.com> <CAA8EJppuGbDGb1D-yf2WL77U1bqx1QQStQeDArWmGFCUiOtnww@mail.gmail.com>
+ <10237323.nUPlyArG6x@steina-w>
+In-Reply-To: <10237323.nUPlyArG6x@steina-w>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Wed, 1 Mar 2023 10:02:48 +0100
+Message-ID: <CAPDyKFq7NFx_cwTZajqjOnRsjJ1i-F0ip+b0ZjFUcOdLjMJSkQ@mail.gmail.com>
+Subject: Re: [PATCH v1 00/15] create power sequencing subsystem
+To:     Alexander Stein <alexander.stein@ew.tq-group.com>
+Cc:     Matthias Kaehlcke <mka@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        linux-arm-msm@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,100 +80,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 Feb 2023, Rob Herring wrote:
+On Wed, 1 Mar 2023 at 09:17, Alexander Stein
+<alexander.stein@ew.tq-group.com> wrote:
+>
+> Hi,
+>
+> sorry for being late to the party.
+>
+> Am Mittwoch, 19. Oktober 2022, 08:03:22 CET schrieb Dmitry Baryshkov:
+> > Ho,
+> >
+> > On Thu, 13 Oct 2022 at 22:50, Matthias Kaehlcke <mka@chromium.org> wrote:
+> > > Do you still plan to refresh this series?
+> > >
+> > > I know there have been multiple attempts to get something similar
+> > > landed in the past 10 year or so. Your series didn't seem to get
+> > > much pushback from maintainers, might be worth sending a refresh :)
+> >
+> > Yes, I hope to return to it eventually. I just had no time for it lately.
+>
+> I just found this thread while searching for power sequencing devices in
+> Linux. From what I understand this is transforming the existing mmc pwrseq
+> drivers into generic ones. What is the intention of this new subsystem? What
+> is it supposed to address?
+> In my case I have an LTE module attached via USB, but in order to use it I
+> need to perform several steps:
+> 1. apply power supply
+> 2. Issue a reset pulse(!), the length actually defines whether its a reset or
+> poweroff/on
+> 3a. wait for a GPIO to toggle
+> 3b. wait a minimum time
+> 4a. device will enumerate on USB
+> 4b. device can be access using UART
+>
+> This is something required to actually see/detect the device in the first
+> place, thus it cannot be part of the device driver side.
+> Is this something pwrseq is supposed to address?
 
-> SPI and I2C bus node names are expected to be "spi" or "i2c",
-> respectively, with nothing else, a unit-address, or a '-N' index. A
-> pattern of 'spi0' or 'i2c0' or similar has crept in. Fix all these
-> cases. Mostly scripted with the following commands:
-> 
-> git grep -l '\si2c[0-9] {' Documentation/devicetree/ | xargs sed -i -e 's/i2c[0-9] {/i2c {/'
-> git grep -l '\sspi[0-9] {' Documentation/devicetree/ | xargs sed -i -e 's/spi[0-9] {/spi {/'
-> 
-> With this, a few errors in examples were exposed and fixed.
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
-> Cc: Miguel Ojeda <ojeda@kernel.org>
-> Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-> Cc: Benson Leung <bleung@chromium.org>
-> Cc: Guenter Roeck <groeck@chromium.org>
-> Cc: Stephen Boyd <sboyd@kernel.org>
-> Cc: Andrzej Hajda <andrzej.hajda@intel.com>
-> Cc: Neil Armstrong <neil.armstrong@linaro.org>
-> Cc: Robert Foss <rfoss@kernel.org>
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: Sam Ravnborg <sam@ravnborg.org>
-> Cc: MyungJoo Ham <myungjoo.ham@samsung.com>
-> Cc: Chanwoo Choi <cw00.choi@samsung.com>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Bartosz Golaszewski <brgl@bgdev.pl>
-> Cc: Pavel Machek <pavel@ucw.cz>
-> Cc: Lee Jones <lee@kernel.org>
-> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: Wolfgang Grandegger <wg@grandegger.com>
-> Cc: Kalle Valo <kvalo@kernel.org>
-> Cc: Sebastian Reichel <sre@kernel.org>
-> Cc: Mark Brown <broonie@kernel.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: linux-clk@vger.kernel.org
-> Cc: dri-devel@lists.freedesktop.org
-> Cc: linux-gpio@vger.kernel.org
-> Cc: linux-i2c@vger.kernel.org
-> Cc: linux-leds@vger.kernel.org
-> Cc: linux-media@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Cc: linux-can@vger.kernel.org
-> Cc: linux-wireless@vger.kernel.org
-> Cc: linux-pm@vger.kernel.org
-> Cc: alsa-devel@alsa-project.org
-> Cc: linux-usb@vger.kernel.org
-> ---
->  .../bindings/auxdisplay/holtek,ht16k33.yaml       |  2 +-
->  .../bindings/chrome/google,cros-ec-typec.yaml     |  2 +-
->  .../chrome/google,cros-kbd-led-backlight.yaml     |  2 +-
->  .../devicetree/bindings/clock/ti,lmk04832.yaml    |  2 +-
->  .../bindings/display/bridge/analogix,anx7625.yaml |  2 +-
->  .../bindings/display/bridge/anx6345.yaml          |  2 +-
->  .../bindings/display/bridge/lontium,lt8912b.yaml  |  2 +-
->  .../bindings/display/bridge/nxp,ptn3460.yaml      |  2 +-
->  .../bindings/display/bridge/ps8640.yaml           |  2 +-
->  .../bindings/display/bridge/sil,sii9234.yaml      |  2 +-
->  .../bindings/display/bridge/ti,dlpc3433.yaml      |  2 +-
->  .../bindings/display/bridge/toshiba,tc358762.yaml |  2 +-
->  .../bindings/display/bridge/toshiba,tc358768.yaml |  2 +-
->  .../bindings/display/panel/nec,nl8048hl11.yaml    |  2 +-
->  .../bindings/display/solomon,ssd1307fb.yaml       |  4 ++--
->  .../devicetree/bindings/eeprom/at25.yaml          |  2 +-
->  .../bindings/extcon/extcon-usbc-cros-ec.yaml      |  2 +-
->  .../bindings/extcon/extcon-usbc-tusb320.yaml      |  2 +-
->  .../devicetree/bindings/gpio/gpio-pca9570.yaml    |  2 +-
->  .../devicetree/bindings/gpio/gpio-pca95xx.yaml    |  8 ++++----
->  .../bindings/i2c/google,cros-ec-i2c-tunnel.yaml   |  2 +-
->  .../bindings/leds/cznic,turris-omnia-leds.yaml    |  2 +-
+Yes, this is one of those typical use-cases for discoverable buses
+that we need to add support for, in one way or the other.
+
+>
+> Best regards,
+> Alexander
 
 [...]
 
->  .../devicetree/bindings/leds/issi,is31fl319x.yaml |  2 +-
->  .../devicetree/bindings/leds/leds-aw2013.yaml     |  2 +-
->  .../devicetree/bindings/leds/leds-rt4505.yaml     |  2 +-
->  .../devicetree/bindings/leds/ti,tca6507.yaml      |  2 +-
-
-Acked-by: Lee Jones <lee@kernel.org>
-
->  .../devicetree/bindings/mfd/actions,atc260x.yaml  |  2 +-
->  .../devicetree/bindings/mfd/google,cros-ec.yaml   |  6 +++---
->  .../devicetree/bindings/mfd/ti,tps65086.yaml      |  2 +-
->  .../devicetree/bindings/mfd/x-powers,axp152.yaml  |  4 ++--
->  .../devicetree/bindings/net/asix,ax88796c.yaml    |  2 +-
-
-Acked-by: Lee Jones <lee@kernel.org>
-
-[...]
-
--- 
-Lee Jones [李琼斯]
+Kind regards
+Uffe
