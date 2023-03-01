@@ -2,190 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C22CA6A67A1
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 07:29:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A5D96A67AB
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 07:38:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229635AbjCAG3L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 01:29:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56362 "EHLO
+        id S229568AbjCAGik (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 01:38:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbjCAG3K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 01:29:10 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1721B166FE
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 22:29:09 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id ck15so49846026edb.0
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 22:29:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:content-language
-         :references:cc:to:user-agent:mime-version:date:message-id:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=id8UmxtnQcNh3noS8r466VqMaQOj1QzBiEu58jCXArs=;
-        b=i2gsPuhTLQesSE2mQSEWv6OiWXJZLc0k7dD4XEpBzrI1q8nhVEewr+AHuFehSxPkxT
-         /yVSiyMfIiYAql9+TlZG629agD1dL9eV+x+3bTtcrIYjqRgzDT2+T8vbQRwz8JUbI6CF
-         FDmrqP7oMMFafZrvnbwXlF+vlZWwXshue2ktx8tTCsPJ1eY3PWkRfQf61ITFdC7tOUrV
-         nmDEAyvnijq/91Pil+VInMqpHWu79enFd6ubRzGvfbW/eqN7GuAekXbE2AyxdMMU7F/X
-         UIjlV0IZRMNoOYAvssBRLk6TlDWddYPThLa+GUs/9EG+1SPUXxwtu61u1+eRoM0VAZ3U
-         BtgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:content-language
-         :references:cc:to:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=id8UmxtnQcNh3noS8r466VqMaQOj1QzBiEu58jCXArs=;
-        b=YbiOSyyqeLgP/KLsnxUk6cMCZz2lGg7b8H2L8L68ItG7sNTB2X2MG4sEZO2YPkr0RX
-         xmENFowRtoXTl4m4oJl4VtqTAym4+S9Gio9hmFUzOAj1RDzrAv0KM8op7Y0NAA5GeKam
-         lcS8dnbnS+eQSXMo6QA5DLmrtcUnsDY7vxic9hwv62u3AptLauFotLdIAR0y7Z4kWALG
-         daoMAyl9z7b2/myWxcp5bxNUgNZQgqGeOjRZJgWqXXsnsuwJFDfqo5zeaN2wVX7Foj2d
-         NfuhkLuVv4LaznhwGQtcBVywjZ5rpvgTwgw4qzeC/hbgiLqn9S0bwEWyFVUviv08ihVD
-         6Klg==
-X-Gm-Message-State: AO0yUKXolclAIJf+oMDOg5RWfC0VOKJ7xpNwZmNgF0JNMM/kESFTAKc9
-        uFX9p1LGdR00igCMGF5nFRY=
-X-Google-Smtp-Source: AK7set94XyBgO5Gew3POCQiPc8F4PcJ65zStp9i8tatKiCgOTpp0ROdmtIXEAnA0ocnSQEbpgn95mQ==
-X-Received: by 2002:a17:907:7244:b0:879:ab3:93d1 with SMTP id ds4-20020a170907724400b008790ab393d1mr7766611ejc.4.1677652147388;
-        Tue, 28 Feb 2023 22:29:07 -0800 (PST)
-Received: from ?IPV6:2a01:c22:771e:1d00:bcb0:d3fd:5ada:db40? (dynamic-2a01-0c22-771e-1d00-bcb0-d3fd-5ada-db40.c22.pool.telefonica.de. [2a01:c22:771e:1d00:bcb0:d3fd:5ada:db40])
-        by smtp.googlemail.com with ESMTPSA id r7-20020a170906350700b008b2e4f88ed7sm5375139eja.111.2023.02.28.22.29.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Feb 2023 22:29:06 -0800 (PST)
-Message-ID: <1489eb86-908f-88ac-8f6f-c895a32a8c23@gmail.com>
-Date:   Wed, 1 Mar 2023 07:29:04 +0100
+        with ESMTP id S229512AbjCAGij (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 01:38:39 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4A881422C
+        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 22:38:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=public-files.de;
+        s=s31663417; t=1677652696; i=frank-w@public-files.de;
+        bh=kRvw/ZdyCWLk2Wqzk8821rUKMMv3J9MQpwyqgqkrfno=;
+        h=X-UI-Sender-Class:Date:From:To:CC:Subject:Reply-to:In-Reply-To:
+         References;
+        b=qiGyF9Dox+hy1Ty+L17Bd+8zE0AqAcpL0+N4ywUfOhsCD+flSQFp1IZrGZVhC8IlT
+         oajZajJCn65yGkNt29bVSAXIH3Tg88dMuYqxQcmk1DzhKORT3dV7NHp/qHzFin6k1e
+         8U67BKCcBYxjr2J7uwOKyshbgbodnHzs2CTUIHqe2CIcawdFPtVwzHUelvlkb/aDew
+         SWW3/qCS+IQ0KMdtGCGTX3PZ5ma017vqA6XhrEddK6yD/NyfmMoiiBgQLbTxLPXZM5
+         q2Q3Sxw9Tr9BHH9sXsPvJs43rP6YFo1r05+PeT0/nYC9z/HeP+37den28OfSQexhAB
+         Mcx/gSz80dN+Q==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [127.0.0.1] ([80.245.79.250]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MDhhN-1pN3N91CSt-00AkLd; Wed, 01
+ Mar 2023 07:38:16 +0100
+Date:   Wed, 01 Mar 2023 07:38:10 +0100
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Felix Fietkau <nbd@nbd.name>, netdev <netdev@vger.kernel.org>,
+        erkin.bozoglu@xeront.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>
+Subject: Re: Choose a default DSA CPU port
+User-Agent: K-9 Mail for Android
+Reply-to: frank-w@public-files.de
+In-Reply-To: <20230228225622.yc42xlkrphx4gbdy@skbuf>
+References: <trinity-4ef08653-c2e7-4da8-8572-4081dca0e2f7-1677271483935@3c-app-gmx-bap70> <20230224210852.np3kduoqhrbzuqg3@skbuf> <trinity-5a3fbd85-79ce-4021-957f-aea9617bb320-1677333013552@3c-app-gmx-bap06> <f9fcf74b-7e30-9b51-776b-6a3537236bf6@arinc9.com> <6383a98a-1b00-913d-0db1-fe33685a8410@arinc9.com> <trinity-6ad483d2-5c50-4f38-b386-f4941c85c1fd-1677413524438@3c-app-gmx-bs15> <20230228115846.4r2wuyhsccmrpdfh@skbuf> <CB415113-7581-475E-9BB9-48F6A8707C15@public-files.de> <20230228225622.yc42xlkrphx4gbdy@skbuf>
+Message-ID: <0842D2D2-E71C-4DEF-BBCD-2D0C0869046E@public-files.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-To:     Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Lukas Wunner <lukas@wunner.de>
-Cc:     netdev@vger.kernel.org
-References: <20230228133412.7662-1-alexander.stein@ew.tq-group.com>
-Content-Language: en-US
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH 1/1] net: phy: dp83867: Disable IRQs on suspend
-In-Reply-To: <20230228133412.7662-1-alexander.stein@ew.tq-group.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:C6O0SWzvWO44Xwn3BXYheToXnrChDl99/oehqQdwsIoJ5SWnUN5
+ 3KxqnhPvTGcAte92ZQCmypsM2hXQupa2+HUEFCuw3FV8+bkCxvVTdHJBdNw9Svtr6jPWQpt
+ 0hwDl9rtdQYSor+mgB7STKvGIkYrtrUJasgYOrRs5y8RhjLUwy24MYFPFjm3HIYiZyt/19m
+ h3WhnBfpKcECTVSXNQtkA==
+UI-OutboundReport: notjunk:1;M01:P0:gHt1fLc/pds=;1BQOoWTDF0MRJ4GK9sMC0SP+Dd9
+ e825frjPNTiQV5h6IMbnLZ1D4XcMoH3hn8Qzy2+fZFd/FktEiNhSv8tJ8bVkoSO4/ZEASIcS9
+ Id8rcDwkHwieIRabSMPybvXIZh7ctNHcAhN+qjmAZiBExWrqxIfMrvmvIAC9jtkMF4bF8EPqo
+ SfaA2qZ0s8hmZ7TDTZFK1Agkm7XedvbzBeaGoWICkzhrUALnwkOs/OBFgfTa1dyYCIiND0zmw
+ naJY0J8QsxO2X8ak6A9iy+T0yCyCKVP0TMqfuLY6A/4fho3JqcM3yplRUY2luTpF/cjm6mE23
+ iySXPt5deIYtwZynQnjgvHOV/vr2agV1TpMOCjxDGMVi4+CeXKqjkkfePyk8TIlit/iZTwMir
+ d0kQJ6eNeh/oCxFJbJofMaeb7+hYXO4FRDCsl7WXkobIUw6BMbsaQ5bvsBmNaoJbpjAQGG/M3
+ 2rUSQvjK6uQ/1jJ9hyuCGW+ZxpHoAKqCFi2iAnoOlAK6iq5lWUJUOvsnCbOQapxLgTWV7s++Q
+ iCSRzxhcNCiELdZd0Ofi0jPuhbMfWDlyIFfjApd7HZG6bIkIKXWzqXmSJIPv6NdrHRpoFTT6K
+ afPLfMG5DEr3PxK0m/ZLZTgvyy42RaoCLNdZWrB2Ef5KPyaqWxt9+/cLwuqf9CIJ17SaHegRm
+ EwsE/rvDZOcBvwaWro/YeNXJTya26xIJXktIOILwa8YVuSeKxb/RCgXxEdR/NdQLh/9KYqcSq
+ g1QoWzqdx/vFeTnzyEzZB5RxLl0OB7CXdj+U0QQF+FQhpOZnUDxm8oA4LH5A5LCqbVyQ7XUcd
+ EAgLg3JwO7XElzL6FE72asVjNsq/Bdv7isohUaby/4jzRQuY6lZ+FDlwX9RsDLUd3FZTvKVE4
+ gygL8lIvmh8b9tHJr4l5LXX6MkMvjyVa7bvKYgehCZzaZvNL1yShvlAcNp+G22LNzq5e2VeHE
+ FKjdN7aDDCX0wuQcMQeumtmwsNh2BnZnZp8YfJ1bDDIiX6y4VDQHGVJo/YhEnaJxf8O04A==
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28.02.2023 14:34, Alexander Stein wrote:
-> Before putting the PHY into IEEE power down mode, disable IRQs to
-> prevent accessing the PHY once MDIO has already been shutdown.
-> 
-> Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-> ---
-> I get this backtrace when trying to put the system into 'mem' powersaving
-> state.
-> 
-I would have expected the following commit to prevent this scenario:
-1758bde2e4aa ("net: phy: Don't trigger state machine while in suspend")
+Am 28=2E Februar 2023 23:56:22 MEZ schrieb Vladimir Oltean <olteanv@gmail=
+=2Ecom>:
+>On Tue, Feb 28, 2023 at 02:48:13PM +0100, Frank Wunderlich wrote:
+>> I have only this datasheet from bpi for mt7531
+>>=20
+>> https://drive=2Egoogle=2Ecom/file/d/1aVdQz3rbKWjkvdga8-LQ-VFXjmHR8yf9/v=
+iew
+>>=20
+>> On page 23 the register is defined but without additional information
+>> about setting multiple bits in this range=2E CFC IS CPU_FORWARD_CONTROL
+>> register and CPU_PMAP is a 8bit part of it which have a bit for
+>> selecting each port as cpu-port (0-7)=2E I found no information about
+>> packets sent over both cpu-ports, round-robin or something else=2E
+>>=20
+>> For mt7530 i have no such document=2E
+>
+>I did have the document you shared and did read that description=2E
+>I was asking for the results of some experiments because the description
+>isn't clear, and characterizing the impact it has seems like a more
+>practical way to find out=2E
+>
+>> The way i got from mtk some time ago was using a vlan_aware bridge for
+>> selecting a "cpu-port" for a specific user-port=2E At this point port5
+>> was no cpu-port and traffic is directly routed to this port bypassing
+>> dsa and the cpu-port define in driver=2E=2E=2Eafaik this way port5 was
+>> handled as userport too=2E
+>
+>Sorry, I understood nothing from this=2E Can you rephrase?
 
-Can you check whether phydev->irq_suspended gets set in
-mdio_bus_phy_suspend() in your case?
+It was a userspace way to use the second ethernet lane p5-mac1 without def=
+ining p5 as cpu-port (and so avoiding this cpu-port handling)=2E I know it =
+is completely different,but maybe using multiple cpu-ports require some vla=
+n assignment inside the switch to not always flood both cpu-ports with same=
+ packets=2E So p5 could only accept tagged packets which has to been tagged=
+ by userport=2E
 
-Which MAC driver do you use with this PHY?
+How can i check if same packets processed by linux  on gmacs (in case i dr=
+op the break for testing)? Looking if rx increases the same way for both ma=
+cs looks not like a reliable test=2E
 
-> [   31.355468] ------------[ cut here ]------------
-> [   31.360089] WARNING: CPU: 1 PID: 77 at drivers/net/phy/phy.c:1183 phy_error+0x10/0x54
-> [   31.367932] Modules linked in: bluetooth 8021q garp stp mrp llc snd_soc_tlv320aic32x4_spi hantro_vpu snd_soc_fsl_
-> asoc_card snd_soc_fsl_sai snd_soc_imx_audmux snd_soc_fsl_utils snd_soc_tlv320aic32x4_i2c snd_soc_simple_card_utils i
-> mx_pcm_dma snd_soc_tlv320aic32x4 snd_soc_core v4l2_vp9 snd_pcm_dmaengine v4l2_h264 videobuf2_dma_contig v4l2_mem2mem
->  videobuf2_memops videobuf2_v4l2 videobuf2_common snd_pcm crct10dif_ce governor_userspace snd_timer imx_bus snd cfg8
-> 0211 soundcore pwm_imx27 imx_sdma virt_dma qoriq_thermal pwm_beeper fuse ipv6
-> [   31.372014] PM: suspend devices took 0.184 seconds
-> [   31.415246] CPU: 1 PID: 77 Comm: irq/39-0-0025 Not tainted 6.2.0-next-20230228+ #1425 2e0329a68388c493d090f81d406
-> 77fb8aeac52cf
-> [   31.415257] Hardware name: TQ-Systems GmbH i.MX8MQ TQMa8MQ on MBa8Mx (DT)
-> [   31.415261] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> [   31.445168] pc : phy_error+0x10/0x54
-> [   31.448749] lr : dp83867_handle_interrupt+0x78/0x88
-> [   31.453633] sp : ffff80000a353cb0
-> [   31.456947] x29: ffff80000a353cb0 x28: 0000000000000000 x27: 0000000000000000
-> [   31.464091] x26: 0000000000000000 x25: ffff800008dbb408 x24: ffff800009885568
-> [   31.471235] x23: ffff0000c0e4b860 x22: ffff0000c0e4b8dc x21: ffff0000c0a46d18
-> [   31.478380] x20: ffff8000098d18a8 x19: ffff0000c0a46800 x18: 0000000000000007
-> [   31.485525] x17: 6f63657320313030 x16: 2e30206465737061 x15: 6c65282064657465
-> [   31.492669] x14: 6c706d6f6320736b x13: 2973646e6f636573 x12: 0000000000000000
-> [   31.499815] x11: ffff800009362180 x10: 0000000000000a80 x9 : ffff80000a3537a0
-> [   31.506959] x8 : 0000000000000000 x7 : 0000000000000930 x6 : ffff0000c1494700
-> [   31.514104] x5 : 0000000000000000 x4 : 0000000000000000 x3 : ffff0000c0a3d480
-> [   31.521248] x2 : 0000000000000000 x1 : ffff0000c0f3d700 x0 : ffff0000c0a46800
-> [   31.528393] Call trace:
-> [   31.530840]  phy_error+0x10/0x54
-> [   31.534071]  dp83867_handle_interrupt+0x78/0x88
-> [   31.538605]  phy_interrupt+0x98/0xd8
-> [   31.542183]  handle_nested_irq+0xcc/0x148
-> [   31.546199]  pca953x_irq_handler+0xc8/0x154
-> [   31.550389]  irq_thread_fn+0x28/0xa0
-> [   31.553966]  irq_thread+0xcc/0x180
-> [   31.557371]  kthread+0xf4/0xf8
-> [   31.560429]  ret_from_fork+0x10/0x20
-> [   31.564009] ---[ end trace 0000000000000000 ]---
-> 
-> $ ./scripts/faddr2line build_arm64/vmlinux dp83867_handle_interrupt+0x78/0x88
-> dp83867_handle_interrupt+0x78/0x88:
-> dp83867_handle_interrupt at drivers/net/phy/dp83867.c:332
-> 
->  drivers/net/phy/dp83867.c | 30 ++++++++++++++++++++++++++++--
->  1 file changed, 28 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-> index 89cd821f1f46..ed7e3df7dfd1 100644
-> --- a/drivers/net/phy/dp83867.c
-> +++ b/drivers/net/phy/dp83867.c
-> @@ -693,6 +693,32 @@ static int dp83867_of_init(struct phy_device *phydev)
->  }
->  #endif /* CONFIG_OF_MDIO */
->  
-> +static int dp83867_suspend(struct phy_device *phydev)
-> +{
-> +	/* Disable PHY Interrupts */
-> +	if (phy_interrupt_is_valid(phydev)) {
-> +		phydev->interrupts = PHY_INTERRUPT_DISABLED;
-> +		if (phydev->drv->config_intr)
-> +			phydev->drv->config_intr(phydev);
-> +	}
-> +
-> +	return genphy_suspend(phydev);
-> +}
-> +
-> +static int dp83867_resume(struct phy_device *phydev)
-> +{
-> +	genphy_resume(phydev);
-> +
-> +	/* Enable PHY Interrupts */
-> +	if (phy_interrupt_is_valid(phydev)) {
-> +		phydev->interrupts = PHY_INTERRUPT_ENABLED;
-> +		if (phydev->drv->config_intr)
-> +			phydev->drv->config_intr(phydev);
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  static int dp83867_probe(struct phy_device *phydev)
->  {
->  	struct dp83867_private *dp83867;
-> @@ -968,8 +994,8 @@ static struct phy_driver dp83867_driver[] = {
->  		.config_intr	= dp83867_config_intr,
->  		.handle_interrupt = dp83867_handle_interrupt,
->  
-> -		.suspend	= genphy_suspend,
-> -		.resume		= genphy_resume,
-> +		.suspend	= dp83867_suspend,
-> +		.resume		= dp83867_resume,
->  
->  		.link_change_notify = dp83867_link_change_notify,
->  		.set_loopback	= dp83867_loopback,
-
+regards Frank
