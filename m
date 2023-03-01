@@ -2,67 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEFFD6A699B
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 10:14:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D8F86A69C2
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 10:26:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229928AbjCAJOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 04:14:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37702 "EHLO
+        id S229854AbjCAJZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 04:25:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229679AbjCAJOb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 04:14:31 -0500
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0ABB1589D
-        for <netdev@vger.kernel.org>; Wed,  1 Mar 2023 01:14:09 -0800 (PST)
-Received: by mail-il1-x134.google.com with SMTP id u6so7943550ilk.12
-        for <netdev@vger.kernel.org>; Wed, 01 Mar 2023 01:14:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1677662048;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2W74kZgdzLwXeWfd5vUawHJhbxagnPJTHMTQTU6PIRY=;
-        b=EqdQFRMJfDAc/HB9IYLLJHxZN3CZe6nWDd+o5+XRMUDJQ1rQKQSXWRpl3TNvJqEf22
-         3moVrMnX/2UKnpa5STzEtEdRpLvIgT6yA5JnEt2H0llyXGpK6ZSPTeEPWWA/3FaZvO39
-         3r9l3D0gg5kbrWUToc4sGP/v4KDnfS0X3Im0hGFdqX1HlzYniB5hgj5r+suen7IjBaQZ
-         pbJNZWIKe+g7jDixy7e00nMRq7zpfGPd1O5Dp+lI55iQYy5+0/P1VGg4V0+qMPIiCrV6
-         FEQf1fYfBwVcSaVlK0FUlVrVYdep/6C0MnOxGgNQHmIx4AWKIPS+aAYYbOtfKruVLBhp
-         EByg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677662048;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=2W74kZgdzLwXeWfd5vUawHJhbxagnPJTHMTQTU6PIRY=;
-        b=Vz+vadgoRXYIwFh8CvToGrAImhTh0ENj4FE23U7nqXdvJsNFLHan8TUPLUQ8y1ky4/
-         Y1OrToAGZGkv3sDOvGXrDq7w+Sx12DXyVJv602JHXIrUeIzKo9CONAtResMPN93aEUFC
-         sGKQdzOJ7QSuISU+FwhlaQG0vQ73EbQN4+mscle0WDPfkadiKPqzOWVqwezXzmHUTDP/
-         pHuIhWTYCMxHEJnH5p0GS1mMPqB1lNwX/Vs18W39o6stJp4+jkiI8Xs3qh03mXTD+tOn
-         LGFoe6851RMtXYGVGXJeuj2cN0VXOIa4ftLFLEqP6Zmc7C9gSV8kk1fQV/0le+oenDi/
-         uZiw==
-X-Gm-Message-State: AO0yUKXRHF9XOywFq6/u/bzwXYMIjOJ8EBhtOVANeUrfbJ9eLboWCOre
-        9M2e/7Fa7gynjABR2gK5DwxNGinOmgXLf4LIrGXMFg==
-X-Google-Smtp-Source: AK7set898CCnTC3c5RyGK6sk6QHq0j8agD5VbcCuyIbbapZ6q5MuXC+HWFmomNCBZxpdUi1RTtnMOsUzsdcNg/In1/Q=
-X-Received: by 2002:a92:300c:0:b0:317:b01:229 with SMTP id x12-20020a92300c000000b003170b010229mr2774235ile.2.1677662046865;
- Wed, 01 Mar 2023 01:14:06 -0800 (PST)
+        with ESMTP id S229790AbjCAJZT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 04:25:19 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC63832E5F
+        for <netdev@vger.kernel.org>; Wed,  1 Mar 2023 01:24:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1677662676;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=EjLBO2oSAz1qd2pyxymW7NNpmRhL/8rZkZFuY2z88lg=;
+        b=WA6iYRnX5Xb/GiTIapqCJfjy1LLWSgstX19G6+sGOevMv2h8SyLPtGiyqScUoJaVQUx3QS
+        Fpd4h8NvhH0UDy5kG1UPbqW08jV8MosFtUKIBTgl9Hhap4d+Q7kCoqNNEB+/UHWhFddTtn
+        PezlZif7Jp1+nSREFu65zTXUQBNGZnw=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-280-y6BwrYfuMfy1XckhSv52eQ-1; Wed, 01 Mar 2023 04:24:33 -0500
+X-MC-Unique: y6BwrYfuMfy1XckhSv52eQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 41D9A85CBE0;
+        Wed,  1 Mar 2023 09:24:32 +0000 (UTC)
+Received: from localhost (ovpn-13-180.pek2.redhat.com [10.72.13.180])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id F07B52026D76;
+        Wed,  1 Mar 2023 09:24:28 +0000 (UTC)
+Date:   Wed, 1 Mar 2023 17:24:26 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Matthew Wilcox <willy@infradead.org>,
+        Edward Cree <ecree.xilinx@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-mm@kvack.org, arnd@arndb.de, christophe.leroy@csgroup.eu,
+        hch@infradead.org, agordeev@linux.ibm.com,
+        wangkefeng.wang@huawei.com, schnelle@linux.ibm.com,
+        David.Laight@aculab.com, shorne@gmail.com,
+        loongarch@lists.linux.dev, linux-m68k@lists.linux-m68k.org,
+        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        x86@kernel.org, netdev@vger.kernel.org,
+        Martin Habets <habetsm.xilinx@gmail.com>
+Subject: Re: [PATCH v5 01/17] asm-generic/iomap.h: remove ARCH_HAS_IOREMAP_xx
+ macros
+Message-ID: <Y/8Zyjfuypg3EiDd@MiWiFi-R3L-srv>
+References: <20230301034247.136007-1-bhe@redhat.com>
+ <20230301034247.136007-2-bhe@redhat.com>
+ <7bd6db48-ffb1-7eb1-decf-afa8be032970@gmail.com>
+ <Y/7eceqZ+89iPm1C@casper.infradead.org>
 MIME-Version: 1.0
-References: <20230301002857.2101894-1-kuba@kernel.org>
-In-Reply-To: <20230301002857.2101894-1-kuba@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 1 Mar 2023 10:13:50 +0100
-Message-ID: <CANn89iKh_gZFgSBnF=TCBCspS-2EUWDT6vvXjsUvgM-rcQBqSw@mail.gmail.com>
-Subject: Re: [PATCH net] net: tls: avoid hanging tasks on the tx_lock
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, pabeni@redhat.com,
-        syzbot+9c0268252b8ef967c62e@syzkaller.appspotmail.com,
-        stable@vger.kernel.org, borisp@nvidia.com,
-        john.fastabend@gmail.com, simon.horman@netronome.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y/7eceqZ+89iPm1C@casper.infradead.org>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,29 +71,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 1, 2023 at 1:29=E2=80=AFAM Jakub Kicinski <kuba@kernel.org> wro=
-te:
->
-> syzbot sent a hung task report and Eric explains that adversarial
-> receiver may keep RWIN at 0 for a long time, so we are not guaranteed
-> to make forward progress. Thread which took tx_lock and went to sleep
-> may not release tx_lock for hours. Use interruptible sleep where
-> possible and reschedule the work if it can't take the lock.
->
-> Testing: existing selftest passes
->
-> Reported-by: syzbot+9c0268252b8ef967c62e@syzkaller.appspotmail.com
-> Fixes: 79ffe6087e91 ("net/tls: add a TX lock")
-> Link: https://lore.kernel.org/all/000000000000e412e905f5b46201@google.com=
-/
-> Cc: stable@vger.kernel.org # wait 4 weeks
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> CC: borisp@nvidia.com
-> CC: john.fastabend@gmail.com
-> CC: simon.horman@netronome.com
->
+On 03/01/23 at 05:11am, Matthew Wilcox wrote:
+> On Wed, Mar 01, 2023 at 04:38:10AM +0000, Edward Cree wrote:
+> > On 01/03/2023 03:42, Baoquan He wrote:
+> > > diff --git a/drivers/net/ethernet/sfc/io.h b/drivers/net/ethernet/sfc/io.h
+> > > index 30439cc83a89..07f99ad14bf3 100644
+> > > --- a/drivers/net/ethernet/sfc/io.h
+> > > +++ b/drivers/net/ethernet/sfc/io.h
+> > > @@ -70,7 +70,7 @@
+> > >   */
+> > >  #ifdef CONFIG_X86_64
+> > >  /* PIO is a win only if write-combining is possible */
+> > > -#ifdef ARCH_HAS_IOREMAP_WC
+> > > +#ifdef ioremap_wc
+> > >  #define EFX_USE_PIO 1
+> > >  #endif
+> > >  #endif
+> > 
+> > So I don't know how valid what we're doing here is...
+> 
+> Well, x86 defines ARCH_HAS_IOREMAP_WC unconditionally, so it doesn't
+> affect you ... but you raise a good question about how a driver can
+> determine if it's actually getting WC memory.
 
-This seems sane to me, thanks.
+Yeah, this change doesn't affect sfc. Because ARCH_HAS_IOREMAP_WC is used to
+make ioremap_wc defined in <asm/io.h> override the default one in
+<asm-generic/iomap.h>, this patch has made code have the same effect.
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+Besides, I have a question still in my mind. Surely this is unrelated to
+this patch.
+
+In commit 38d9029a652c (parisc: Define ioremap_uc and ioremap_wc),
+ioremap_wc definition was added in arch/parisc/include/asm/io.h, and it
+didn't add ARCH_HAS_IOREMAP_WC definition. However, it won't cause
+redefinition of ioremap_wc, even though there's "#include <asm-generic/iomap.h>"
+at below. I could be dizzy on these io.h and iomap.h.
+
+When I added ioremap_wt and ioremap_np to debug, ioremap_np will
+cause redefinition, while ioremap_wt woundn't. Does anyone know what
+I am missing?
+
+diff --git a/arch/parisc/include/asm/io.h b/arch/parisc/include/asm/io.h
+index c05e781be2f5..20d566eec3b3 100644
+--- a/arch/parisc/include/asm/io.h
++++ b/arch/parisc/include/asm/io.h
+@@ -127,6 +127,8 @@ static inline void gsc_writeq(unsigned long long val, unsigned long addr)
+  */
+ void __iomem *ioremap(unsigned long offset, unsigned long size);
+ #define ioremap_wc                     ioremap
++#define ioremap_wt                     ioremap
++#define ioremap_np                     ioremap
+ #define ioremap_uc                     ioremap
+ #define pci_iounmap                    pci_iounmap
+
