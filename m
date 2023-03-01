@@ -2,106 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A5B426A648F
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 02:07:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D91E56A6493
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 02:13:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229662AbjCABHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 20:07:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33108 "EHLO
+        id S229744AbjCABN4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 20:13:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229587AbjCABHe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 20:07:34 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AE1A2FCD8
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 17:07:31 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id o12so47537207edb.9
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 17:07:31 -0800 (PST)
+        with ESMTP id S229587AbjCABNy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 20:13:54 -0500
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DFA915891;
+        Tue, 28 Feb 2023 17:13:51 -0800 (PST)
+Received: by mail-ot1-x330.google.com with SMTP id l13-20020a0568301d6d00b0068f24f576c5so6692179oti.11;
+        Tue, 28 Feb 2023 17:13:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google; t=1677632850;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GA/g+K3G8Gm+uzhNLjPprz2bSCPjjGvaQ1drgLyoaRU=;
-        b=LWD1p8mh7yZwlcEm5G+HkZ/9fYNdzlueMz7KUl72WwvJ8bPw6w23ruCtZHOEwrEEMY
-         Sw3zxKz/YzgnJ9pwj0rGrnrMB5YXWUyMSu8bpCslnrZG119Q3qtAWz2E/HBmNd1fbMKi
-         K0jyUnUp7jn0WnmMbjkDcUO+2OPKQjvakoIT4=
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :sender:from:to:cc:subject:date:message-id:reply-to;
+        bh=oEBx/PZMBNyHmgNExVPbEAPmWmNsn6Qj9xnMQGkJNno=;
+        b=Gkm2+ehKSgvZvheKoRDMw5PoCdLIZu5A+3rnf1+N7KTvzei/nU6PzzO0wVTgHMOFUP
+         YaeWiw2kTj5dkJSAa6gh/vdJHQY4O0cq3QfNdmIkenq6DDHJvK8SrIHS+JaclLZxXxhc
+         2omCLS5UldgkTAecp4m5Dvsl/pFAWxtVraBB3wiR7BWy3v42qr4eRXelWC8/XIGfRwxI
+         TiAsFg4m2uDN5ApBgTsWKo7V3rByleBGK78hVaUGUukIjfmN7IFrmq79VICrGzEWioIW
+         6LaObCp8NCeW3DjKhi9J3ZAtqfY7ADHgzVRyMpih++0VMvYmq25AN0w0RpHEc1wxmZOf
+         Mmuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677632850;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=GA/g+K3G8Gm+uzhNLjPprz2bSCPjjGvaQ1drgLyoaRU=;
-        b=W9lcM6yC9dVU3IZ4fn5PimFd7hYUc3oqNIKTLDqPIKEl0sJyLNcn6t2rya1/7O2Rl4
-         FwkOnELnybI+5L3i9nyAXLkfcLItNgb9lVIe0s4/OopOOS1lgli0Zvn4SMNznTjqiwbM
-         KvrMoMYIimXbYny78lcwAGn3TmVb0+WzQaoFJR39Tj+KWWZCdzzlldVl9Jn+cetld0oc
-         icY536G82deYQ9OJfbMmtPE2dWadyo0CACp9QAfjzCApuFvZtLT83yJDqdXsPjYYoKCU
-         kJ+1bXh3nG4+dbCaKFf/X9bhipwKSnZ2of+bAELyt/7UcKSLuXhgvp515NhoqLzft/tR
-         v48Q==
-X-Gm-Message-State: AO0yUKXNFTNrwi61POwfAmpxDBSZyJamIRhTBorqfhc+Ba/4voB2fqva
-        pSTyAVRrZakDYmp5+qBrGsTohxVi+8YIuPdm2Wk=
-X-Google-Smtp-Source: AK7set8iETK9tVhd6dn6EGYGTEJK4zmXJy9RtrdoYs3S/Eh2udLuF3X1MlZ9/zbsNJG4Qr2jqlS9DQ==
-X-Received: by 2002:a17:906:aaca:b0:878:6477:d7 with SMTP id kt10-20020a170906aaca00b00878647700d7mr4372725ejb.72.1677632849840;
-        Tue, 28 Feb 2023 17:07:29 -0800 (PST)
-Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com. [209.85.208.53])
-        by smtp.gmail.com with ESMTPSA id r22-20020a50aad6000000b004af6a7e9131sm4914529edc.64.2023.02.28.17.07.28
-        for <netdev@vger.kernel.org>
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :sender:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=oEBx/PZMBNyHmgNExVPbEAPmWmNsn6Qj9xnMQGkJNno=;
+        b=LJTEhKvaocPnN6o5mptQsVtorwYGoWdwXo1Hj0DJATAQ4qad94Kfv0aEoFIaGreC4O
+         LGWneX3pqjCUgeXk3hdVMoEUJWxmGFKkclR9QcBRlVKn+lT2b+6GV+mm7QvgkTt/eanz
+         y/HWU28w5IwyYO2yfKx0Jzn/ZnGQfEZgjhg4dY6vmaUpz06vNZ0zST70nmSLOgK5Y65G
+         Hq9OoRwlRISYCcS+LqOc8nVlAZMsqaUTR9hs5eP1aVzgO05Apw8OlNNykUCkmZfH6f/C
+         eEnu566SrGMvGjInx7erZlJq7OsTmzSOmbH6Qzf8oYc4dEbagQNaa3TV2MAweVxy15Qt
+         5jUw==
+X-Gm-Message-State: AO0yUKVZVI1EWzNEjzGAvB/VgLJxDdidC+imqfjoBXmQxnjSFOmmvnUC
+        HGd7LCMq2aTNYTx5YxWY6fw=
+X-Google-Smtp-Source: AK7set9pAeCLIHmdY+B1zAQ/NF+5q3+1fPreB3j3JGWux5VMEZCbi/9KewRlamj7fIOsnXrdybD37g==
+X-Received: by 2002:a9d:19eb:0:b0:694:11c1:29f7 with SMTP id k98-20020a9d19eb000000b0069411c129f7mr2759141otk.19.1677633230469;
+        Tue, 28 Feb 2023 17:13:50 -0800 (PST)
+Received: from [192.168.1.119] ([216.130.59.33])
+        by smtp.gmail.com with ESMTPSA id z10-20020a0568301daa00b00693c4348e8asm4524817oti.42.2023.02.28.17.13.48
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Feb 2023 17:07:28 -0800 (PST)
-Received: by mail-ed1-f53.google.com with SMTP id cq23so47723585edb.1
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 17:07:28 -0800 (PST)
-X-Received: by 2002:a17:906:c08c:b0:8f1:4cc5:f14c with SMTP id
- f12-20020a170906c08c00b008f14cc5f14cmr2345984ejz.0.1677632847945; Tue, 28 Feb
- 2023 17:07:27 -0800 (PST)
+        Tue, 28 Feb 2023 17:13:49 -0800 (PST)
+Sender: Larry Finger <larry.finger@gmail.com>
+Message-ID: <866973b7-1f54-21a3-79aa-992ed0594c1a@lwfinger.net>
+Date:   Tue, 28 Feb 2023 19:13:48 -0600
 MIME-Version: 1.0
-References: <20230228132118.978145284@linutronix.de> <20230228132910.991359171@linutronix.de>
- <CAHk-=wjeMbHK61Ee+Ug4w8AGHCSDx94GuLs5bPXhHNhA_+RjzA@mail.gmail.com>
-In-Reply-To: <CAHk-=wjeMbHK61Ee+Ug4w8AGHCSDx94GuLs5bPXhHNhA_+RjzA@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linuxfoundation.org>
-Date:   Tue, 28 Feb 2023 17:07:11 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wiGA91ca02-J0ebAnCE1wA_=Q35MiFz4ONo3Zw76uFxNQ@mail.gmail.com>
-Message-ID: <CAHk-=wiGA91ca02-J0ebAnCE1wA_=Q35MiFz4ONo3Zw76uFxNQ@mail.gmail.com>
-Subject: Re: [patch 2/3] atomics: Provide rcuref - scalable reference counting
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>, x86@kernel.org,
-        Wangyang Guo <wangyang.guo@intel.com>,
-        Arjan Van De Ven <arjan.van.de.ven@intel.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [RFC 0/6] pcmcia: separate 16-bit support from cardbus
+Content-Language: en-US
+To:     Arnd Bergmann <arnd@arndb.de>, Arnd Bergmann <arnd@kernel.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        linux-kernel@vger.kernel.org
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Hartley Sweeten <hsweeten@visionengravers.com>,
+        Ian Abbott <abbotti@mev.co.uk>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        Kevin Cernekee <cernekee@gmail.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Manuel Lauss <manuel.lauss@gmail.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Olof Johansson <olof@lixom.net>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        YOKOTA Hiroshi <yokota@netlab.is.tsukuba.ac.jp>,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-arm-kernel@lists.infradead.org, linux-can@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-wireless@vger.kernel.org, Netdev <netdev@vger.kernel.org>
+References: <20230227133457.431729-1-arnd@kernel.org>
+ <3d8f28d7-78df-5276-612c-85b5262a987a@lwfinger.net>
+ <c17bff4e-031e-4101-8564-51f6298b1c68@app.fastmail.com>
+ <e9f8501f-ede0-4d38-6585-d3dc2469d3fe@lwfinger.net>
+ <7085019b-4fad-4d8d-89c0-1dd33fb27bb7@app.fastmail.com>
+ <18be9b45-e7c1-9f81-afeb-3e0d4cfe5f73@lwfinger.net>
+ <31fee002-db3b-43d9-b8bc-5a869516c2d7@app.fastmail.com>
+From:   Larry Finger <Larry.Finger@lwfinger.net>
+In-Reply-To: <31fee002-db3b-43d9-b8bc-5a869516c2d7@app.fastmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 28, 2023 at 4:42=E2=80=AFPM Linus Torvalds
-<torvalds@linuxfoundation.org> wrote:
->
-> And yes, that may mean that it should have some architecture-specific
-> code (with fallback defaults for the generic case).
+On 2/28/23 02:37, Arnd Bergmann wrote:
+> My intention was to keep Cardbus support working with old defconfig files,
+> and I've not moved CONFIG_CARDBUS into a separate submenu between
+> CONFIG_PCI_HOTPLUG and CONFIG_PCI_CONTROLLER but left the driver in
+> drivers/pci/hotplug. I think that's the best compromise here, but maybe
+> the PCI maintainers have a better idea.
 
-Another reason for architecture-specific code is that anybody who
-doesn't have atomics and just relies on an LL/SC model is actually
-better of *not* having any of this complexity.
+Arnd,
 
-In fact, the Intel RAO instruction set would likely do that on x86
-too. With that alleged future "CMPccXADD", there likely is no longer
-any advantage to this model of rcuref.
+I did a bit more investigation. My original .config had CONFIG_PCI_HOTPLUG not 
+defined, but did have CONFIG_CARDBUS and the various yenta modules turned on. 
+With your changes, the CONFIG_PCI_HOTPLUG overrode CARDBUS.
 
-Now, I don't know when - if ever - said RAO instruction set extension
-comes, but I'd hope that the new scalable reference counting would be
-ready for it.
+I thought mine was a corner case, but now I am not sure. As stated above, the 
+Debian 12 factory configuration for ppc32 does not turn on PCI hotplug, but the 
+x86_64 configuration for openSUSE Tumbleweed does. The x86_64 configuration in 
+Fedora 37 does not contain CONFIG_PCI_HOTPLUG, but does have CARDBUS set.
 
-             Linus
+It seems that several distros may get the wrong result with this change,
+
+Larry
+
