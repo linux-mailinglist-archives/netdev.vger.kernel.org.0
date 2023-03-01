@@ -2,80 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EC946A6741
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 06:11:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BAF96A674D
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 06:22:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229716AbjCAFLX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 00:11:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44212 "EHLO
+        id S229691AbjCAFWl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 00:22:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229525AbjCAFLW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 00:11:22 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4072C302B0;
-        Tue, 28 Feb 2023 21:11:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=hXZNqqCBlKtrYnD75V9Zin6CQQ9GsiuAV2QuBhHw8t0=; b=wUFjowPZM9tYICB9b/77CU7dnJ
-        MB0PIZrQVl9kpzkq8wVJ8MDNqTaW5iKCDxi0d/81sVAJDK/nbnq2NpcDJqEjSxvXNEwtVYlDIVxTm
-        JPhFQg/0QP1WqufLtvipNbhtqOiLicjoai9AM8IsH48uTtuQq3CYRP1cYkqCoz6aFIxvcKIgh6zN+
-        sn2C13Gm04x1hlaqlOvOh+Ak2RQgeSLS9twVbIpDqrooOQtVzw1nU5OPp0UPLkEA0Jq1tySPE5InC
-        cHLKIZHwVvOncey3ttM5gKAz2E3afoUboGUK6OA1ZQuFwAy0a12zBWi+yEscxN1wmGdRMhdPHXOLk
-        uLtJ857w==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pXEkD-001OZz-LR; Wed, 01 Mar 2023 05:11:13 +0000
-Date:   Wed, 1 Mar 2023 05:11:13 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Edward Cree <ecree.xilinx@gmail.com>
-Cc:     Baoquan He <bhe@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-mm@kvack.org, arnd@arndb.de,
-        christophe.leroy@csgroup.eu, hch@infradead.org,
-        agordeev@linux.ibm.com, wangkefeng.wang@huawei.com,
-        schnelle@linux.ibm.com, David.Laight@aculab.com, shorne@gmail.com,
-        loongarch@lists.linux.dev, linux-m68k@lists.linux-m68k.org,
-        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        x86@kernel.org, netdev@vger.kernel.org,
-        Martin Habets <habetsm.xilinx@gmail.com>
-Subject: Re: [PATCH v5 01/17] asm-generic/iomap.h: remove ARCH_HAS_IOREMAP_xx
- macros
-Message-ID: <Y/7eceqZ+89iPm1C@casper.infradead.org>
-References: <20230301034247.136007-1-bhe@redhat.com>
- <20230301034247.136007-2-bhe@redhat.com>
- <7bd6db48-ffb1-7eb1-decf-afa8be032970@gmail.com>
+        with ESMTP id S229509AbjCAFWk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 00:22:40 -0500
+Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C70283757A;
+        Tue, 28 Feb 2023 21:22:37 -0800 (PST)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mx.sberdevices.ru (Postfix) with ESMTP id B29095FD5F;
+        Wed,  1 Mar 2023 08:22:34 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1677648154;
+        bh=pSybxYLtaFBPZn4llcjWoXZByulTRftoVwSM3MF7hHo=;
+        h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type;
+        b=tDGr+UA3jvR+kF0RvxTyVjehhcpoRu7UxYNr+9dfAuOuKp2zy7+x7r0cfQcTVsVgb
+         yYhwvmecXJ1pyBJsEGOXZrUcoGNLO3IKPPZIfNxQBAGafERZZIZjZU6YZSIDarck9x
+         OQzfG6rxypuBlELR0LptuaSVDC9zzp3wogV3ISlu5m3T6/GDh0V9t9GIk9rCpJzJS3
+         /E+6t9zBR7AYUOLtyvmhMJgIA9uqTe3EwmLk7z5ieM0RARIBhqmtbJ1olGqwfWQitL
+         v8mDnvA7VEOn9HiDMPigpzQ+1YTXNuMuPlO51Jolh6XSm2KiWdnIAr1AYdp3L2YNbm
+         uXZSi1KfXA/qA==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mx.sberdevices.ru (Postfix) with ESMTP;
+        Wed,  1 Mar 2023 08:22:31 +0300 (MSK)
+Message-ID: <76e7698d-890b-d14d-fa34-da5dd7dd13d8@sberdevices.ru>
+Date:   Wed, 1 Mar 2023 08:19:45 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7bd6db48-ffb1-7eb1-decf-afa8be032970@gmail.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Content-Language: en-US
+To:     Stefano Garzarella <sgarzare@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     <oxffffaa@gmail.com>, <kernel@sberdevices.ru>,
+        <avkrasnov@sberdevices.ru>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
+Subject: [RFC PATCH v1] vsock: check error queue to set EPOLLERR
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.16.1.6]
+X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
+ S-MS-EXCH01.sberdevices.ru (172.16.1.4)
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/03/01 02:04:00 #20904788
+X-KSMG-AntiVirus-Status: Clean, skipped
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 01, 2023 at 04:38:10AM +0000, Edward Cree wrote:
-> On 01/03/2023 03:42, Baoquan He wrote:
-> > diff --git a/drivers/net/ethernet/sfc/io.h b/drivers/net/ethernet/sfc/io.h
-> > index 30439cc83a89..07f99ad14bf3 100644
-> > --- a/drivers/net/ethernet/sfc/io.h
-> > +++ b/drivers/net/ethernet/sfc/io.h
-> > @@ -70,7 +70,7 @@
-> >   */
-> >  #ifdef CONFIG_X86_64
-> >  /* PIO is a win only if write-combining is possible */
-> > -#ifdef ARCH_HAS_IOREMAP_WC
-> > +#ifdef ioremap_wc
-> >  #define EFX_USE_PIO 1
-> >  #endif
-> >  #endif
-> 
-> So I don't know how valid what we're doing here is...
+EPOLLERR must be set not only when there is error on the socket, but also
+when error queue of it is not empty (may be it contains some control
+messages). Without this patch 'poll()' won't detect data in error queue.
+This patch is based on 'tcp_poll()'.
 
-Well, x86 defines ARCH_HAS_IOREMAP_WC unconditionally, so it doesn't
-affect you ... but you raise a good question about how a driver can
-determine if it's actually getting WC memory.
+Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+---
+ net/vmw_vsock/af_vsock.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+index 19aea7cba26e..b5e51ef4a74c 100644
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -1026,7 +1026,7 @@ static __poll_t vsock_poll(struct file *file, struct socket *sock,
+ 	poll_wait(file, sk_sleep(sk), wait);
+ 	mask = 0;
+ 
+-	if (sk->sk_err)
++	if (sk->sk_err || !skb_queue_empty_lockless(&sk->sk_error_queue))
+ 		/* Signify that there has been an error on this socket. */
+ 		mask |= EPOLLERR;
+ 
+-- 
+2.25.1
