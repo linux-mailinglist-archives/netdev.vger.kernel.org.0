@@ -2,82 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 891116A654A
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 03:06:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10D8B6A654F
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 03:10:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229709AbjCACGq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 21:06:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57058 "EHLO
+        id S229661AbjCACKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 21:10:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229697AbjCACGn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 21:06:43 -0500
-Received: from 167-179-156-38.a7b39c.syd.nbn.aussiebb.net (167-179-156-38.a7b39c.syd.nbn.aussiebb.net [167.179.156.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B1636FD1
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 18:06:42 -0800 (PST)
-Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
-        by formenos.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1pXBrS-00GidY-60; Wed, 01 Mar 2023 10:06:31 +0800
-Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Wed, 01 Mar 2023 10:06:30 +0800
-Date:   Wed, 1 Mar 2023 10:06:30 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Aichun Li <liaichun@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        steffen.klassert@secunet.com, yanan@huawei.com,
-        zhongxuan2@huawei.com
-Subject: Re: [PATCH] af_key: Fix panic in dump_ah_combs()
-Message-ID: <Y/6zJnNRXtpYyaSJ@gondor.apana.org.au>
-References: <20230228140126.2208-1-liaichun@huawei.com>
+        with ESMTP id S229535AbjCACKc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 21:10:32 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4BC5302AA;
+        Tue, 28 Feb 2023 18:10:31 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C18AB80EB7;
+        Wed,  1 Mar 2023 02:10:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B0BAC433EF;
+        Wed,  1 Mar 2023 02:10:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1677636629;
+        bh=DwD4dwYD5ZCP16+h0w7+VuPBS+OuOFme1UfFZif6HPQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=A+/wA6Mz2o3AGsg6Sejul69Cxjb+XHyCSbWcNdrSmnNY6JXea9hVnukr0/uHT0S7R
+         td/beP0ilLOkJU+JDsbvX6aFyeadTjnhdM9KE1SnoYKLh+equLmS3fvYEjHfk93Fvh
+         bZ5l54i6rIfIKFmKHg7Iv6hj6Pz+c3LY+tCbv9UPAAPgv777BHBj3ARQW/NqMBb19H
+         SKRCWW1bLthfgGJAd9sUO7Cnm82s5IgNv0NQ0s3qMkUwH1hCRr2Gp59QatARsiSWCU
+         dhEHhI4JdgPJNJJ4VImir3hVeXKp76fdruPD1qHWd7EU1kWrVFVsM01igF4PzynPAT
+         O8s8FWdT0WYDA==
+Date:   Tue, 28 Feb 2023 21:10:27 -0500
+From:   Sasha Levin <sashal@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Breno Leitao <leitao@debian.org>,
+        Michael van der Westhuizen <rmikey@meta.com>,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        wsa+renesas@sang-engineering.com, netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 6.2 26/53] netpoll: Remove 4s sleep during
+ carrier detection
+Message-ID: <Y/60ExOLZSb4oWP/@sashalap>
+References: <20230226144446.824580-1-sashal@kernel.org>
+ <20230226144446.824580-26-sashal@kernel.org>
+ <20230227101532.5bc82c09@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20230228140126.2208-1-liaichun@huawei.com>
-X-Spam-Status: No, score=2.7 required=5.0 tests=BAYES_00,HELO_DYNAMIC_IPADDR2,
-        PDS_RDNS_DYNAMIC_FP,RDNS_DYNAMIC,SPF_HELO_NONE,SPF_PASS,TVD_RCVD_IP
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: **
+In-Reply-To: <20230227101532.5bc82c09@kernel.org>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 28, 2023 at 10:01:26PM +0800, Aichun Li wrote:
-> Because the exclamation mark (!) is removed, the return value calculated by
->  count_esp_combs is smaller than that before ealg->available is removed. And in
->  dump_esp_combs, the number of struct sadb_combs in skb_put is larger than
->  alloc, This result in a buffer overrun.
-> 
-> [ 658.159619] ------------[ cut here ]------------
-> [ 658.159629] kernel BUG at net/core/skbuff.c:110!
-> [ 658.159733] invalid opcode: 0000 [#1] SMP KASAN NOPTI
-> [ 658.160047] CPU: 14 PID: 107946 Comm: kernel_BUG_in_w Kdump: loaded Tainted: G I 5.10.0-60.18.0.50.x86_64 #1
+On Mon, Feb 27, 2023 at 10:15:32AM -0800, Jakub Kicinski wrote:
+>On Sun, 26 Feb 2023 09:44:18 -0500 Sasha Levin wrote:
+>> From: Breno Leitao <leitao@debian.org>
+>>
+>> [ Upstream commit d8afe2f8a92d2aac3df645772f6ee61b0b2fc147 ]
+>>
+>> This patch removes the msleep(4s) during netpoll_setup() if the carrier
+>> appears instantly.
+>>
+>> Here are some scenarios where this workaround is counter-productive in
+>> modern ages:
+>
+>Potential behavior change, can we wait 4 weeks, until it's been
+>in a couple of -rcs?
 
-Can you reproduce this on a mainline kernel?
- 
-> diff --git a/net/key/af_key.c b/net/key/af_key.c
-> index 8bc7d3999..bf2859c37 100644
-> --- a/net/key/af_key.c
-> +++ b/net/key/af_key.c
-> @@ -2927,7 +2927,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
->  		if (!ealg->pfkey_supported)
->  			continue;
->  
-> -		if (!(ealg_tmpl_set(t, ealg)))
-> +		if (!(ealg_tmpl_set(t, ealg) && ealg->available))
->  			continue;
+Dropped for now, will revisit in a few weeks. Thanks!
 
-This makes no sense.  You are making the result of
-count_esp_combs smaller.  How can that prevent a buffer overrun
-if it was too small to begin with?
-
-PS we could remove those brackets though, that would be a good
-clean-up patch.
-
--		if (!(ealg_tmpl_set(t, ealg)))
-+		if (!ealg_tmpl_set(t, ealg))
-
-Cheers,
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+Thanks,
+Sasha
