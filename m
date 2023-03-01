@@ -2,72 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 471896A67BA
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 07:51:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 78EB86A67C6
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 07:51:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229510AbjCAGvA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 01:51:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39378 "EHLO
+        id S229580AbjCAGvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 01:51:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbjCAGu7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 01:50:59 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 078CA21977
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 22:50:57 -0800 (PST)
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        with ESMTP id S229451AbjCAGvK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 01:51:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A38232BF0B;
+        Tue, 28 Feb 2023 22:51:07 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 650A23F233
-        for <netdev@vger.kernel.org>; Wed,  1 Mar 2023 06:50:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1677653456;
-        bh=dzrOEZ/G+cU1AC5yDnZF1hMrTyBmU7AJE5kFkCkvOQA=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=nqpwIM6EKxvJ0jauuTemQltZRnU1Bt0wVZUztEoyozDOQpac/CwOpDBMIAYYyq4qs
-         lC+E5QlndHU6jrymua+qhnq8e4Weulyo8BCN5xDmfjIPscoXhwZ3YcHCZVEt+5cXiI
-         +sT5W5W/znGW5I/bNoJpCnf+OvcsgLBcQkcbtdKb/Cl9NGcsyqwJUj56c5XX1YNKqG
-         liEmNj0/Cyqww9k1eoB8LlFoowLEyhZw8RaYJpGgrC27T2T1KOn0D+YGE1FLSGalgL
-         gIw/ATtSMGJAgeDdaAdmvU0fIOZv374KP6T/lFAbG5rLAi7Nlbyk5tNTYxrEklXjH3
-         zX3S+IOvCV3Ww==
-Received: by mail-pj1-f71.google.com with SMTP id gf1-20020a17090ac7c100b002369bf87b7aso3994674pjb.8
-        for <netdev@vger.kernel.org>; Tue, 28 Feb 2023 22:50:56 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677653455;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=dzrOEZ/G+cU1AC5yDnZF1hMrTyBmU7AJE5kFkCkvOQA=;
-        b=alAfPlTzLkR7KWJRHwM3l6N8UaQVEbIPqktJZ7p8sFhOoNCqlLytpB0FryvVWEI+Zc
-         aQ1JQNrxi9M3MnMOECP36Zyw5JoFTL77FXI15fLfTy6/u8SN6OSsOHKYWKVgRFMdUkUZ
-         gHxoVcvBuPypcIOhfciKUpWIJwakHY1UTOw5awyIHd25kJVPnoX0kfsIBoQzoIlq9VoY
-         WxkquXufpFMlrMuQtZFRzn0Ek8+d/o9iujCVgZY4OZOHD3x5W64ituDO0RVZBxHJyVh9
-         wEMfffc3VkfDvCZklstyjb6WNBJ7ZEtj+qnKJhRHBu+6N/04MIOwZs7VMY8yvx/zpztc
-         KqHA==
-X-Gm-Message-State: AO0yUKUzSX+C9TUvbSxHLmldth9kSuswuI5+sdjvjbQdufgUdf5Z2DmW
-        K6GM/43zTQhVGYGLJjejU+DCQ245bmnivnXS49I8VsPZPLxQeENY1A65GkV2cF+OE0bnKqqzsM7
-        OClcWn2YI069lG5CZGYWdoQ2eVSKqR+8kY+I+6gq/wWUCCFGIKA==
-X-Received: by 2002:a17:903:2615:b0:19b:b17:6610 with SMTP id jd21-20020a170903261500b0019b0b176610mr1965048plb.4.1677653455097;
-        Tue, 28 Feb 2023 22:50:55 -0800 (PST)
-X-Google-Smtp-Source: AK7set9O2hozg8W7LXsPplRhCcSEM+wrhXNbZ8y4530KE8NxFOXkoiLxNvfNUDo7tk0a0mEi0RNpwREnZtXUKOA0VYM=
-X-Received: by 2002:a17:903:2615:b0:19b:b17:6610 with SMTP id
- jd21-20020a170903261500b0019b0b176610mr1965043plb.4.1677653454819; Tue, 28
- Feb 2023 22:50:54 -0800 (PST)
-MIME-Version: 1.0
-References: <af076f1f-a034-82e5-8f76-f3ec32a14eaa@gmail.com>
-In-Reply-To: <af076f1f-a034-82e5-8f76-f3ec32a14eaa@gmail.com>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Wed, 1 Mar 2023 14:50:43 +0800
-Message-ID: <CAAd53p6D7e=pSX0uEZfXiwt9Es9Pd+4s1N5k-8ob+Gb98e01Og@mail.gmail.com>
-Subject: Re: [PATCH RFC 0/6] r8169: disable ASPM during NAPI poll
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4181E6122A;
+        Wed,  1 Mar 2023 06:51:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13A05C4339C;
+        Wed,  1 Mar 2023 06:51:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1677653466;
+        bh=wLkMLeYVg39jdoFtmeKF2FCB/B7Xc+Wq5sqDU7iNotE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=K6zPgqPXp0Y/xc6BNFauRluIJdCwb/LyhjQGczc8UAQjdfDrVq7TDLD8Z+JUpE8eZ
+         JauC8OTwrKIDBxyRnr+oJu5MBMqa3IE8Kv4Tnolf8trZ5HYoy5brjp4M0gUsz8EWpd
+         IB5MZ8KKWdzy9qaDY8/a4eknGirTNYqM5RBlLtHe0dLJ2oEskAoTXT2nGEkKQqLsmk
+         JBQaH3j5kWnD/uxWHykDuz3l41G1SHdOiFRZiY8CMJYwXotYYaDjYiIRPCfmGNj49C
+         PhTtdM0hG6W0TyYq75VzkwaRurIgKjI4kB0B9nqZq6LNgWLqEWQu7jkibtk8u7Nu41
+         XhgJmkSju5LVA==
+Date:   Wed, 1 Mar 2023 07:51:03 +0100
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Robert Foss <rfoss@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-pm@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-usb@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: Fix SPI and I2C bus node names in examples
+Message-ID: <Y/7112o60iSJKBmd@ninjato>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Robert Foss <rfoss@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>, Pavel Machek <pavel@ucw.cz>,
+        Lee Jones <lee@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Kalle Valo <kvalo@kernel.org>, Sebastian Reichel <sre@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-pm@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-usb@vger.kernel.org
+References: <20230228215433.3944508-1-robh@kernel.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="YR5VkbtgaV6fwHXL"
+Content-Disposition: inline
+In-Reply-To: <20230228215433.3944508-1-robh@kernel.org>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -77,32 +113,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 26, 2023 at 5:43 AM Heiner Kallweit <hkallweit1@gmail.com> wrote:
->
-> This is a rework of ideas from Kai-Heng on how to avoid the known
-> ASPM issues whilst still allowing for a maximum of ASPM-related power
-> savings. As a prerequisite some locking is added first.
->
-> This change affects a bigger number of supported chip versions,
-> therefore this series comes as RFC first for further testing.
 
-Thanks for the series.
+--YR5VkbtgaV6fwHXL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Tested-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+4:33PM -0600, Rob Herring wrote:
+> SPI and I2C bus node names are expected to be "spi" or "i2c",
+> respectively, with nothing else, a unit-address, or a '-N' index. A
+> pattern of 'spi0' or 'i2c0' or similar has crept in. Fix all these
+> cases. Mostly scripted with the following commands:
+>=20
+> git grep -l '\si2c[0-9] {' Documentation/devicetree/ | xargs sed -i -e 's=
+/i2c[0-9] {/i2c {/'
+> git grep -l '\sspi[0-9] {' Documentation/devicetree/ | xargs sed -i -e 's=
+/spi[0-9] {/spi {/'
+>=20
+> With this, a few errors in examples were exposed and fixed.
+>=20
+> Signed-off-by: Rob Herring <robh@kernel.org>
 
->
-> Heiner Kallweit (6):
->   r8169: use spinlock to protect mac ocp register access
->   r8169: use spinlock to protect access to registers Config2 and Config5
->   r8169: enable cfg9346 config register access in atomic context
->   r8169: prepare rtl_hw_aspm_clkreq_enable for usage in atomic context
->   r8169: disable ASPM during NAPI poll
->   r8169: remove ASPM restrictions now that ASPM is disabled during NAPI
->     poll
->
->  drivers/net/ethernet/realtek/r8169_main.c | 145 +++++++++++++++-------
->  1 file changed, 100 insertions(+), 45 deletions(-)
->
-> --
-> 2.39.2
->
+Acked-by: Wolfram Sang <wsa@kernel.org>
+
+
+--YR5VkbtgaV6fwHXL
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmP+9dcACgkQFA3kzBSg
+KbarOQ//WCC+R6Fe2lHHwZbZ4vmS2d/Rlz7qLlnduMr+4h9rcgknAchlVnbv0OUy
+Fu8SgebyBTX19WTXbUTyILzN7IsxLxzvTesJDhfIB5n9o7uIe3V0ZiX1R1SWsyV8
+GVbUGpJFSmhar2duHPida9xvf98Cww8v3KSoWNPHSaea5+w2oXluLm6jhQPrA1pR
+1I5WdUeWduWgwX/xDPJ0eeCEW4UxRawpGgCeMo/Ip/JZRwixnNDX1BJZsNIqJBDU
+gcZq4glZHY/Gwlo9gHGZwG8Nn+pWo8dsv+zcytJfhGjqb/k3NqsZ9YUvkbGb/pQ1
+RvEGvrA/KichSvbyfcBv02QcG5e6Fo4wk4879wTK8EGIN7RCnZyQCPRNzDogCcG4
+nYyGcj22Fvv2lWoon/Gg2MGIBhGvYyZXttD185ZkCYWpRKKGFGIa6jdwuMexfNwx
+VyuM7+HONLuKvO4+l1plMFAqBLy1Ex6kQDN4iDuZVVYA4Vcy2NyaQndehGUVTfrn
+OXu+lKVm9gNAKSlXTGXVQE04Bb2nMfp0B9PSYxvGxX3P2IJ6f68m/1LYH+kG4vaM
+kuFXDcSwYXIp++xhlMhHdyTKm5VTE0MX6wm9PEKjJ+fri1lohTa3mdUvaMzcosho
+MT0d2HrmQMXy+rAJoc7GlgEV5vd4O2sx9hACz8tahPmILpAkHGg=
+=TVnc
+-----END PGP SIGNATURE-----
+
+--YR5VkbtgaV6fwHXL--
