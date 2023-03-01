@@ -2,26 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD3046A76BB
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 23:20:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9031A6A76BE
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 23:20:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229775AbjCAWUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 17:20:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39218 "EHLO
+        id S229732AbjCAWUg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 17:20:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229553AbjCAWUc (ORCPT
+        with ESMTP id S229684AbjCAWUc (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 17:20:32 -0500
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 66F1D521EF;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 663D41B2C0;
         Wed,  1 Mar 2023 14:20:29 -0800 (PST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
         pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net 0/3] Netfilter fixes for net
-Date:   Wed,  1 Mar 2023 23:20:18 +0100
-Message-Id: <20230301222021.154670-1-pablo@netfilter.org>
+Subject: [PATCH net 1/3] selftests: nft_nat: ensuring the listening side is up before starting the client
+Date:   Wed,  1 Mar 2023 23:20:19 +0100
+Message-Id: <20230301222021.154670-2-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230301222021.154670-1-pablo@netfilter.org>
+References: <20230301222021.154670-1-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
@@ -32,47 +34,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Hangbin Liu <liuhangbin@gmail.com>
 
-The following patchset contains Netfilter fixes for net:
+The test_local_dnat_portonly() function initiates the client-side as
+soon as it sets the listening side to the background. This could lead to
+a race condition where the server may not be ready to listen. To ensure
+that the server-side is up and running before initiating the
+client-side, a delay is introduced to the test_local_dnat_portonly()
+function.
 
-1) Fix bogus error report in selftests/netfilter/nft_nat.sh,
-   from Hangbin Liu.
+Before the fix:
+  # ./nft_nat.sh
+  PASS: netns routing/connectivity: ns0-rthlYrBU can reach ns1-rthlYrBU and ns2-rthlYrBU
+  PASS: ping to ns1-rthlYrBU was ip NATted to ns2-rthlYrBU
+  PASS: ping to ns1-rthlYrBU OK after ip nat output chain flush
+  PASS: ipv6 ping to ns1-rthlYrBU was ip6 NATted to ns2-rthlYrBU
+  2023/02/27 04:11:03 socat[6055] E connect(5, AF=2 10.0.1.99:2000, 16): Connection refused
+  ERROR: inet port rewrite
 
-2) Initialize last and quota expressions from template when
-   expr_ops::clone is called, otherwise, states are not restored
-   accordingly when loading a dynamic set with elements using
-   these two expressions.
+After the fix:
+  # ./nft_nat.sh
+  PASS: netns routing/connectivity: ns0-9sPJV6JJ can reach ns1-9sPJV6JJ and ns2-9sPJV6JJ
+  PASS: ping to ns1-9sPJV6JJ was ip NATted to ns2-9sPJV6JJ
+  PASS: ping to ns1-9sPJV6JJ OK after ip nat output chain flush
+  PASS: ipv6 ping to ns1-9sPJV6JJ was ip6 NATted to ns2-9sPJV6JJ
+  PASS: inet port rewrite without l3 address
 
-Please, pull these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git
-
-Thanks.
-
-----------------------------------------------------------------
-
-The following changes since commit 8f9850dd8d23c1290cb642ce9548a440da5771ec:
-
-  net: phy: unlock on error in phy_probe() (2023-02-28 12:40:12 +0100)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git HEAD
-
-for you to fetch changes up to aabef97a35160461e9c576848ded737558d89055:
-
-  netfilter: nft_quota: copy content when cloning expression (2023-03-01 17:23:23 +0100)
-
-----------------------------------------------------------------
-Hangbin Liu (1):
-      selftests: nft_nat: ensuring the listening side is up before starting the client
-
-Pablo Neira Ayuso (2):
-      netfilter: nft_last: copy content when cloning expression
-      netfilter: nft_quota: copy content when cloning expression
-
- net/netfilter/nft_last.c                     | 4 ++++
- net/netfilter/nft_quota.c                    | 6 +++++-
+Fixes: 282e5f8fe907 ("netfilter: nat: really support inet nat without l3 address")
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
  tools/testing/selftests/netfilter/nft_nat.sh | 2 ++
- 3 files changed, 11 insertions(+), 1 deletion(-)
+ 1 file changed, 2 insertions(+)
+
+diff --git a/tools/testing/selftests/netfilter/nft_nat.sh b/tools/testing/selftests/netfilter/nft_nat.sh
+index 924ecb3f1f73..dd40d9f6f259 100755
+--- a/tools/testing/selftests/netfilter/nft_nat.sh
++++ b/tools/testing/selftests/netfilter/nft_nat.sh
+@@ -404,6 +404,8 @@ EOF
+ 	echo SERVER-$family | ip netns exec "$ns1" timeout 5 socat -u STDIN TCP-LISTEN:2000 &
+ 	sc_s=$!
+ 
++	sleep 1
++
+ 	result=$(ip netns exec "$ns0" timeout 1 socat TCP:$daddr:2000 STDOUT)
+ 
+ 	if [ "$result" = "SERVER-inet" ];then
+-- 
+2.30.2
+
