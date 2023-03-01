@@ -2,159 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31A0F6A7512
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 21:16:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 518BE6A7593
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 21:47:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229963AbjCAUQl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 15:16:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51874 "EHLO
+        id S229563AbjCAUr4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 15:47:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230006AbjCAUQT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 15:16:19 -0500
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DD6041B40
-        for <netdev@vger.kernel.org>; Wed,  1 Mar 2023 12:15:51 -0800 (PST)
-Received: by mail-wm1-x332.google.com with SMTP id r19-20020a05600c459300b003eb3e2a5e7bso285386wmo.0
-        for <netdev@vger.kernel.org>; Wed, 01 Mar 2023 12:15:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1677701746;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=dexA46MbFD/1LJf//eW76xTgHB+gKrlRAfZ8jnkaOvM=;
-        b=ukkjFNfgK59eu1LeshuNmpkbqUe+57GbYmcQvpYODW4eZc+/Eq6TviqWeezCFCnshm
-         virQlpn5g0pq5dm0tCb4La0RxiEepuXJ0ATEarJnTRo5L8kW0LuVLeL/QTLb/cYJ2876
-         cQbDvyf6N2XuYiBCXId7qImjTLXYL2KmFERCHLCfpfWgff35YPxmw669uMYTZEI6Od5x
-         u0AdvvvxIOdT5F0INCtrz755ZtjnqQ6UMFMVp+avsAlis1j1mLMZYvb8AB88hrq18UWh
-         HlmsLFhEVn9Xin7EvoiMYtCOV5K6vMHyJsJZJ8i3AV3jxXkr2z/oBGTV8Eow78dq+qQs
-         GVxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677701746;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=dexA46MbFD/1LJf//eW76xTgHB+gKrlRAfZ8jnkaOvM=;
-        b=37PqdKdsO0PtEu5S4oOpVDBk+Ev0qoAwpYJMKbvpLZebA77+T8BwKomDuBoVR58uU+
-         jaF96BFI/XclpYUjWu3PEpH8Vpg4vnHbt+GVMaAiWtDQfvJBvHyHxPo937TRDMev0I1m
-         OhHqZ0MsWQDNQz9BQm50sNaONMYQ5zR9mil78SGaeuWq8CwUiYzUMWT9QMP9HhTdieYT
-         WQDXm9oknPPxPMty7pH5XV0cewuYI3PHe89djVJcJuLf3yhU7QpiNLZtwJ8ImGnqVdNC
-         AJzvBCUdbTg3u9Fy03NYMuhwnRiP+9lmX3JykMFvc8sqTnzlNfDLyjP5BQ7AWFBhAYYd
-         Bsyg==
-X-Gm-Message-State: AO0yUKXWioWHNeiaFAGhgWdwBcFh5Y5c3bqlEHjrJTuucCbV3Jpocp01
-        G/eewmGHH1fkRpUpt1ACqF7XlQ==
-X-Google-Smtp-Source: AK7set9sVSbQhQevjSNopAXDfJiA3HK0YMzMlVoLJ/jyJ4/SWnabQbYwdqwMzhMc8PU0zFG7/gjZ9g==
-X-Received: by 2002:a05:600c:30d3:b0:3eb:376e:2b9c with SMTP id h19-20020a05600c30d300b003eb376e2b9cmr5682213wmn.36.1677701746296;
-        Wed, 01 Mar 2023 12:15:46 -0800 (PST)
-Received: from mai.box.freepro.com ([2a05:6e02:1041:c10:6ffe:ce4f:bd31:1e6d])
-        by smtp.gmail.com with ESMTPSA id x16-20020a1c7c10000000b003e70a7c1b73sm576546wmc.16.2023.03.01.12.15.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Mar 2023 12:15:45 -0800 (PST)
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-To:     rafael@kernel.org, daniel.lezcano@linaro.org
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ido Schimmel <idosch@nvidia.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Petr Machata <petrm@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Eduardo Valentin <edubezval@gmail.com>,
-        Keerthy <j-keerthy@ti.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Balsam CHIHI <bchihi@baylibre.com>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Mark Brown <broonie@kernel.org>,
-        netdev@vger.kernel.org (open list:MELLANOX ETHERNET SWITCH DRIVERS),
-        linux-omap@vger.kernel.org (open list:TI BANDGAP AND THERMAL DRIVER),
-        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Mediatek SoC
-        support),
-        linux-mediatek@lists.infradead.org (moderated list:ARM/Mediatek SoC
-        support)
-Subject: [PATCH v5 13/18] thermal: Use thermal_zone_device_type() accessor
-Date:   Wed,  1 Mar 2023 21:14:41 +0100
-Message-Id: <20230301201446.3713334-14-daniel.lezcano@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230301201446.3713334-1-daniel.lezcano@linaro.org>
-References: <20230301201446.3713334-1-daniel.lezcano@linaro.org>
+        with ESMTP id S229758AbjCAUrz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 15:47:55 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE991498A1
+        for <netdev@vger.kernel.org>; Wed,  1 Mar 2023 12:47:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1677703632;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=2il8EePBRc7AgflT4XHq9yy6CUWbrrE2NEZTXgGKJCU=;
+        b=WkMoNP3GlcwYTn8CXasnUrZ9NzCof+/JBCYF76AI54kppthNlDYWBNJb9Uuj2ciJ5Qiu+T
+        YdvadTg7x2Tmi2986eG/skl1Vqsxq3+LV3FV6FCDyJA8CJULjQLkH4fLS2yFQsn3ux60Ii
+        1GlJni3AAGurV9ewEVwXEe0NCpfljUo=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-578-iXqunm27Mj-9JXP5nSkxuA-1; Wed, 01 Mar 2023 15:47:10 -0500
+X-MC-Unique: iXqunm27Mj-9JXP5nSkxuA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2F525100F90B;
+        Wed,  1 Mar 2023 20:47:10 +0000 (UTC)
+Received: from swamp.redhat.com (unknown [10.39.192.177])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4BD8F140EBF4;
+        Wed,  1 Mar 2023 20:47:08 +0000 (UTC)
+From:   Petr Oros <poros@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     aleksander.lobakin@intel.com, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        scott.w.taylor@intel.com, intel-wired-lan@lists.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net v3] ice: copy last block omitted in ice_get_module_eeprom()
+Date:   Wed,  1 Mar 2023 21:47:07 +0100
+Message-Id: <20230301204707.2592337-1-poros@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace the accesses to 'tz->type' by its accessor version in order to
-self-encapsulate the thermal_zone_device structure.
+ice_get_module_eeprom() is broken since commit e9c9692c8a81 ("ice:
+Reimplement module reads used by ethtool") In this refactor,
+ice_get_module_eeprom() reads the eeprom in blocks of size 8.
+But the condition that should protect the buffer overflow
+ignores the last block. The last block always contains zeros.
 
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com> #mlxsw
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com> #MediaTek LVTS
+Bug uncovered by ethtool upstream commit 9538f384b535
+("netlink: eeprom: Defer page requests to individual parsers")
+After this commit, ethtool reads a block with length = 1;
+to read the SFF-8024 identifier value.
+
+unpatched driver:
+$ ethtool -m enp65s0f0np0 offset 0x90 length 8
+Offset          Values
+------          ------
+0x0090:         00 00 00 00 00 00 00 00
+$ ethtool -m enp65s0f0np0 offset 0x90 length 12
+Offset          Values
+------          ------
+0x0090:         00 00 01 a0 4d 65 6c 6c 00 00 00 00
+$
+
+$ ethtool -m enp65s0f0np0
+Offset          Values
+------          ------
+0x0000:         11 06 06 00 00 00 00 00 00 00 00 00 00 00 00 00
+0x0010:         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0x0020:         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0x0030:         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0x0040:         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0x0050:         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0x0060:         00 00 00 00 00 00 00 00 00 00 00 00 00 01 08 00
+0x0070:         00 10 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+patched driver:
+$ ethtool -m enp65s0f0np0 offset 0x90 length 8
+Offset          Values
+------          ------
+0x0090:         00 00 01 a0 4d 65 6c 6c
+$ ethtool -m enp65s0f0np0 offset 0x90 length 12
+Offset          Values
+------          ------
+0x0090:         00 00 01 a0 4d 65 6c 6c 61 6e 6f 78
+$ ethtool -m enp65s0f0np0
+    Identifier                                : 0x11 (QSFP28)
+    Extended identifier                       : 0x00
+    Extended identifier description           : 1.5W max. Power consumption
+    Extended identifier description           : No CDR in TX, No CDR in RX
+    Extended identifier description           : High Power Class (> 3.5 W) not enabled
+    Connector                                 : 0x23 (No separable connector)
+    Transceiver codes                         : 0x88 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+    Transceiver type                          : 40G Ethernet: 40G Base-CR4
+    Transceiver type                          : 25G Ethernet: 25G Base-CR CA-N
+    Encoding                                  : 0x05 (64B/66B)
+    BR, Nominal                               : 25500Mbps
+    Rate identifier                           : 0x00
+    Length (SMF,km)                           : 0km
+    Length (OM3 50um)                         : 0m
+    Length (OM2 50um)                         : 0m
+    Length (OM1 62.5um)                       : 0m
+    Length (Copper or Active cable)           : 1m
+    Transmitter technology                    : 0xa0 (Copper cable unequalized)
+    Attenuation at 2.5GHz                     : 4db
+    Attenuation at 5.0GHz                     : 5db
+    Attenuation at 7.0GHz                     : 7db
+    Attenuation at 12.9GHz                    : 10db
+    ........
+    ....
+
+Fixes: e9c9692c8a81 ("ice: Reimplement module reads used by ethtool")
+Signed-off-by: Petr Oros <poros@redhat.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/core_thermal.c | 2 +-
- drivers/thermal/mediatek/lvts_thermal.c            | 6 ++++--
- drivers/thermal/ti-soc-thermal/ti-thermal-common.c | 2 +-
- 3 files changed, 6 insertions(+), 4 deletions(-)
+v2: memcpy unified calls
+v3: copy_len is now declared in if scope
+    unwrapped line before memcpy
+---
+---
+ drivers/net/ethernet/intel/ice/ice_ethtool.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-index 722e4a40afef..b0a169e68df9 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-@@ -177,7 +177,7 @@ mlxsw_thermal_module_trips_update(struct device *dev, struct mlxsw_core *core,
+diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+index b360bd8f15998b..f86e814354a311 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+@@ -4331,6 +4331,8 @@ ice_get_module_eeprom(struct net_device *netdev,
+ 		 * SFP modules only ever use page 0.
+ 		 */
+ 		if (page == 0 || !(data[0x2] & 0x4)) {
++			u32 copy_len;
++
+ 			/* If i2c bus is busy due to slow page change or
+ 			 * link management access, call can fail. This is normal.
+ 			 * So we retry this a few times.
+@@ -4354,8 +4356,8 @@ ice_get_module_eeprom(struct net_device *netdev,
+ 			}
  
- 	if (crit_temp > emerg_temp) {
- 		dev_warn(dev, "%s : Critical threshold %d is above emergency threshold %d\n",
--			 tz->tzdev->type, crit_temp, emerg_temp);
-+			 thermal_zone_device_type(tz->tzdev), crit_temp, emerg_temp);
- 		return 0;
+ 			/* Make sure we have enough room for the new block */
+-			if ((i + SFF_READ_BLOCK_SIZE) < ee->len)
+-				memcpy(data + i, value, SFF_READ_BLOCK_SIZE);
++			copy_len = min_t(u32, SFF_READ_BLOCK_SIZE, ee->len - i);
++			memcpy(data + i, value, copy_len);
+ 		}
  	}
- 
-diff --git a/drivers/thermal/mediatek/lvts_thermal.c b/drivers/thermal/mediatek/lvts_thermal.c
-index beb835d644e2..216f53eb1385 100644
---- a/drivers/thermal/mediatek/lvts_thermal.c
-+++ b/drivers/thermal/mediatek/lvts_thermal.c
-@@ -305,7 +305,8 @@ static int lvts_set_trips(struct thermal_zone_device *tz, int low, int high)
- 	 * 14-0 : Raw temperature for threshold
- 	 */
- 	if (low != -INT_MAX) {
--		pr_debug("%s: Setting low limit temperature interrupt: %d\n", tz->type, low);
-+		pr_debug("%s: Setting low limit temperature interrupt: %d\n",
-+			 thermal_zone_device_type(tz), low);
- 		writel(raw_low, LVTS_H2NTHRE(base));
- 	}
- 
-@@ -318,7 +319,8 @@ static int lvts_set_trips(struct thermal_zone_device *tz, int low, int high)
- 	 *
- 	 * 14-0 : Raw temperature for threshold
- 	 */
--	pr_debug("%s: Setting high limit temperature interrupt: %d\n", tz->type, high);
-+	pr_debug("%s: Setting high limit temperature interrupt: %d\n",
-+		 thermal_zone_device_type(tz), high);
- 	writel(raw_high, LVTS_HTHRE(base));
- 
  	return 0;
-diff --git a/drivers/thermal/ti-soc-thermal/ti-thermal-common.c b/drivers/thermal/ti-soc-thermal/ti-thermal-common.c
-index 060f46cea5ff..0c8914017c18 100644
---- a/drivers/thermal/ti-soc-thermal/ti-thermal-common.c
-+++ b/drivers/thermal/ti-soc-thermal/ti-thermal-common.c
-@@ -44,7 +44,7 @@ static void ti_thermal_work(struct work_struct *work)
- 	thermal_zone_device_update(data->ti_thermal, THERMAL_EVENT_UNSPECIFIED);
- 
- 	dev_dbg(data->bgp->dev, "updated thermal zone %s\n",
--		data->ti_thermal->type);
-+		thermal_zone_device_type(data->ti_thermal));
- }
- 
- /**
 -- 
-2.34.1
+2.39.2
 
