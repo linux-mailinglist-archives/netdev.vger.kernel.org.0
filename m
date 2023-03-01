@@ -2,123 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 400A66A6C9A
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 13:51:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 656376A6CC1
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 14:03:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229652AbjCAMv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 07:51:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52794 "EHLO
+        id S229706AbjCANDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 08:03:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229610AbjCAMv2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 07:51:28 -0500
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CAE5136EC
-        for <netdev@vger.kernel.org>; Wed,  1 Mar 2023 04:51:27 -0800 (PST)
-Received: by mail-il1-x12b.google.com with SMTP id i12so8215014ila.5
-        for <netdev@vger.kernel.org>; Wed, 01 Mar 2023 04:51:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1677675087;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mW+jBsU/XyUGPMqkN70SNtcytc4P1G9QTjSqRsLhK+w=;
-        b=Aypo8XJ+ClHe34J3jcqic3RTa/bBqc5GgjhduzYDeSy7ESIpl21lnh0yW4FyUu0jYo
-         XeimMIoWcv5Iib7Cz4Cd0Bf+/fPLaSwHHkZGZbJMcFdN1zuoSKzmblho4nouWesQPJZv
-         Lb4WzTPjjgHk+rtMBJYUYoiNmvoxcAlfYSPqNo/q0QDAHlLJef7uVV2E4HhsQr0E33xW
-         ONlI1wS3yzDXp9RTa8X+VpwQy6k0bIgXlLma17/v36Ui3BnInUhLHWkGdvNzbDieU/Mu
-         LFwT/LhR+MfaBknrj8HgQ+gMJrj6WXbYh520IowwasZDHJawQ4NoQEKk7bs/8VlpTADC
-         Yuag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677675087;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mW+jBsU/XyUGPMqkN70SNtcytc4P1G9QTjSqRsLhK+w=;
-        b=h6koGHysDL5tIYTn8KvSVOZeKqrGrjaVWUgNUsr4q1xvWIagTVosGYqbu3ecN1B80L
-         4ujJh4W1aqlywssiTYTqU40p8zYUkULHvJXRqe0tj7zQmgPAJt13rOwxEfOWefTxu4eN
-         tJqCc2nVvEtWe3Lr2uPUS8TbVj32VRoNZWTJ028/FiH42wI8n/0DILExT6iCvKMvEXAF
-         FikIudCrv8rCLSBnTEGFUR0o3UakHR6l0J5G2dl7dXzGgt+r5RH8AS7f0uDdjn7lMwQ+
-         SvxOco6Lw2fVzsFYrr1QrNDq6v9MQuncNGqNbSQo3WIe+UjvOtIOSCc3L85apVi3Lol7
-         3pdA==
-X-Gm-Message-State: AO0yUKUM6Q23An0Wmu+CEkD+j9WXjqVgQufHI5Y2mqOtgwXjoB/zbmjO
-        EJL7cn+k3CsscfXfS3CyIu8cUTva4iv5dQ1vRZXtew==
-X-Google-Smtp-Source: AK7set+jvNsPiRGZsjykiEA+x/tq31AJ/T+TSw18qU/mi1XV83/a5QO56Gc1wmrrGmwCbrd3UoNqAPoQb/FhoLHw9+Q=
-X-Received: by 2002:a92:710a:0:b0:310:d631:cd72 with SMTP id
- m10-20020a92710a000000b00310d631cd72mr3010747ilc.2.1677675086782; Wed, 01 Mar
- 2023 04:51:26 -0800 (PST)
+        with ESMTP id S229591AbjCANDL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 08:03:11 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0EB513DD7;
+        Wed,  1 Mar 2023 05:02:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=LurPeUM/DsgzZU53OWxGyoBXqqBYvv+Z9jh0hFkmRkY=; b=mUiawe2SZYE4t1t0EF7GDfh0m6
+        2IljaQirtS2k5zSTJstMPvgryFOVZ7YLU5KoVAdyiv5Jab3qgbsTS2C4nJHk1FJ0pUCTyyx3C5HXK
+        RIQnuzN5RPTcrIDE1JapoZnZVwG7TcK8ESbDm7tywwoSZENy83Wt+hxI2YKcqzJQ7jig=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pXM6Q-006Etq-8I; Wed, 01 Mar 2023 14:02:38 +0100
+Date:   Wed, 1 Mar 2023 14:02:38 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Ken Sloat <ken.s@variscite.com>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1] net: phy: adin: Add flags to disable enhanced link
+ detection
+Message-ID: <Y/9M7nPZk8qMt0ZO@lunn.ch>
+References: <20230228144056.2246114-1-ken.s@variscite.com>
+ <Y/4VV6MwM9xA/3KD@lunn.ch>
+ <DU0PR08MB900305C9B7DD4460ED29F5FBECAC9@DU0PR08MB9003.eurprd08.prod.outlook.com>
+ <Y/4ba4s37NayCIwW@lunn.ch>
+ <20230228193105.0f378a9d@kernel.org>
 MIME-Version: 1.0
-References: <20230224184606.7101-1-fw@strlen.de> <CANn89iJ+7X8kLjR2YrGbT64zGSu_XQfT_T5+WPQfheDmgQrf2A@mail.gmail.com>
- <CANn89i+WYy+Q1i1e1vrQmPzH-eDEVHJn29xgmsXJ8uMidP9CqQ@mail.gmail.com> <20230301123114.GA6827@breakpoint.cc>
-In-Reply-To: <20230301123114.GA6827@breakpoint.cc>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 1 Mar 2023 13:51:11 +0100
-Message-ID: <CANn89iK7eugDqgW=GO5gZS3=-O28bCGkgTKQ+OPs90oWkqCNkw@mail.gmail.com>
-Subject: Re: [PATCH net] net: avoid indirect memory pressure calls
-To:     Florian Westphal <fw@strlen.de>
-Cc:     Brian Vazquez <brianvv@google.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        shakeelb@google.com, soheil@google.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230228193105.0f378a9d@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 1, 2023 at 1:31=E2=80=AFPM Florian Westphal <fw@strlen.de> wrot=
-e:
->
-> Eric Dumazet <edumazet@google.com> wrote:
-> > BTW I was curious why Google was not seeing this, and it appears Brian =
-Vasquez
-> > forgot to upstream this change...
-> >
-> > commit 5ea2f21d6c1078d2c563cb455ad5877b4ada94e1
-> > Author: Brian Vazquez <brianvv@google.com>
-> > Date:   Thu Mar 3 19:09:49 2022 -0800
-> >
-> >     PRODKERNEL: net-directcall: annotate tcp_leave_memory_pressure and
-> >     tcp_getsockopt
-> >
-> > diff --git a/net/core/sock.c b/net/core/sock.c
-> > index 05032b399c873984e5297898d647905ca9f21f2e..54cb989dc162f3982380ac1=
-2cf5a150214e209a2
-> > 100644
-> > --- a/net/core/sock.c
-> > +++ b/net/core/sock.c
-> > @@ -2647,10 +2647,13 @@ static void sk_enter_memory_pressure(struct soc=
-k *sk)
-> >         sk->sk_prot->enter_memory_pressure(sk);
-> >  }
-> >
-> > +INDIRECT_CALLABLE_DECLARE(void tcp_leave_memory_pressure(struct sock *=
-sk));
-> > +
-> >  static void sk_leave_memory_pressure(struct sock *sk)
-> >  {
-> >         if (sk->sk_prot->leave_memory_pressure) {
-> > -               sk->sk_prot->leave_memory_pressure(sk);
-> > +               INDIRECT_CALL_1(sk->sk_prot->leave_memory_pressure,
-> > +                               tcp_leave_memory_pressure, sk);
-> >         } else {
-> >                 unsigned long *memory_pressure =3D sk->sk_prot->memory_=
-pressure;
->
-> re-tested: this change also resolves the regression i was seeing.
->
-> If you prefer to upstream this instead of the proposed change then I'm
-> fine with that.
+On Tue, Feb 28, 2023 at 07:31:05PM -0800, Jakub Kicinski wrote:
+> On Tue, 28 Feb 2023 16:19:07 +0100 Andrew Lunn wrote:
+> > The Marvell PHYs also support a fast link down mode, so i think using
+> > fast link down everywhere, in the code and the commit message would be
+> > good. How about adin_fast_down_disable().
+> 
+> Noob question - does this "break the IEEE standard" from the MAC<>PHY
+> perspective or the media perspective? I'm guessing it's the former
+> and the setting will depend on the MAC, given configuration via the DT?
 
-This seems a bit less risky, if the plan is to add this to stable trees.
-( We had this mitigation for ~4 years at Google)
+IEEE 802.3 says something like you need to wait 1 second before
+declaring the link down. For applications like MetroLAN, 1 second is
+too long, they want to know within something like 50ms so they can
+swap to a hot standby.
 
-I will rebase Brian patch (only the tcp_leave_memory_pressure part) and sen=
-d it.
+Marvell PHYs have something similar, there is a register you can poke
+to shorten the time it waits until it declares the link down. I'm sure
+others PHYs have it too.
 
-Thanks !
+Ah, we already have a PHY tunable for it,
+ETHTOOL_PHY_FAST_LINK_DOWN. I had forgotten about that. The Marvell
+PHY supports its.
+
+So i have two questions i guess:
+
+1) Since it is not compliant with 802.3 by default, do we actually
+want it disabled by default? But is that going to cause regressions?
+Or there devices actually making use of this feature of this PHY?
+
+2) Rather than a vendor specific DT bool to disable it, should we add
+a generic DT property listing the actual delay in milliseconds, which
+basically does what the PHY tunable does.
+
+I think the answer to the second question should be Yes. It is a bit
+more effort for this change, but is a generic solution.
+
+I was pondering the first question while reviewing and decided to say
+nothing. There is a danger of regressions. But as this case shows, it
+can also cause problems.
+
+	  Andrew
