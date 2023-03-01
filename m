@@ -2,117 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A8CBA6A6E48
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 15:22:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE1666A6E53
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 15:25:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229805AbjCAOWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 09:22:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39312 "EHLO
+        id S229879AbjCAOZW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 09:25:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229793AbjCAOWP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 09:22:15 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21CBD41B6A
-        for <netdev@vger.kernel.org>; Wed,  1 Mar 2023 06:21:49 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id 132so7767769pgh.13
-        for <netdev@vger.kernel.org>; Wed, 01 Mar 2023 06:21:49 -0800 (PST)
+        with ESMTP id S229750AbjCAOZT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 09:25:19 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D87E37AAF
+        for <netdev@vger.kernel.org>; Wed,  1 Mar 2023 06:25:17 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id ck15so54723846edb.0
+        for <netdev@vger.kernel.org>; Wed, 01 Mar 2023 06:25:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1677680467;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=OcToE/2Ky4OE4lmTJMgOrchA0mqlqsf7rpylXLL+GrY=;
-        b=SUx3imsawvC/d5K+jCdzdiyeVw4zfX8Pjkjm4lMge9qADiCwolI0jwNc5IHjEEQz18
-         qgVQj3L3WVJ9GeI+dLvATAWnVavFbx5tty8IvyDn6LDA8YDQxIt10dBM5jxksBTa3TLj
-         8QHm8LEOrxK3313WprGsMzApGip5yNKPFQq2hKgOVA0IaEUAK6IiJv0Eev5tvpRvYTDw
-         +QZpSgCS0zvq+hNsNoAf9kJQT09aZxbVmjOyty/OIimCXk5T231p0Z2uYVax/HuHSrLf
-         hpDHJl3jNs0yLM0QWPW0jyS6N//ddGkR/c2Dt8kcX840C68kHQyfZug9fK6MZcu+I2/3
-         vjOQ==
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=9jpccmvW5G9g4h1RhMOIsgBhwoVCmPKcSKS3NuKK1yc=;
+        b=oohamuWzQpzUCq8y8ob2nKKrFXQbCBbzXUDJdfz7rlzHyfe5+Q18VB7h5FqIXIxO0j
+         Z9bTVQE3ul7E9zLr5O3fSkY74VzIs2OPnVDRl2bCCN2kbP57eR0AFJGWStiEemTUrh/u
+         S932ryELzTbvHXXRHge5aI3Ib55PAufrnqKP/BCu5znxKW6P2kgfVUles4LIVO9ic8NW
+         zcTzLlxTpzVxE3jkULvJT583r1WxVXQvuDazPBvOkU5hc3oxKHaLdk0X6z8DOfHnrHL8
+         e2VH9iEezVCFAHzvcGKaSn29PpZet2ZhC8r6YcioW+znWG4HoVLZA+BepNAgsJ9tgW3L
+         OStw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677680467;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=OcToE/2Ky4OE4lmTJMgOrchA0mqlqsf7rpylXLL+GrY=;
-        b=gWqMEHRh4Dud5V2SvOJGFn2QN/auHHB1x7/2NFR4ml6J2IA4DXMS5Tgu0GJAu/e/BP
-         4TF70jre/CgD0rotBR++HkSaZcg6pX5Ky31B11bQuu4tPRTEAFSBlceNk2DsL4DUE9rM
-         btbb6dsU22DOKOaAcP0z0Mqdzj/nydVfB5j3nc8Dt+s/ERtzItfpI9OwFfHBgM6kV10U
-         TDfQ2KRmDLtzR75ZzzMTX3gqcTxPSyHymR3EN46iHUCMmfFLJD5RunoF7LuKqznWDaX7
-         LYECbiTKx4DGNgyANOuKyso0rlNcZST/NR5l9fPgL2p9A/4HrvXl4DTqFkYhJ+1+NQu7
-         EYJg==
-X-Gm-Message-State: AO0yUKWpek5UjGE8/G5FrnpsV8QEhwDaYpyYE2DHxRZrn95sRMkiiJdL
-        yeY+45/J9wbs5wbT582fXXe8MYBsM8XLHGzW
-X-Google-Smtp-Source: AK7set+qMTYCFIaf+Zf8XovyhueFlPnSZaUE+sfMunhvnMKq+Sz7AX6hY/nikxTzrVvZsjL+0OifmQ==
-X-Received: by 2002:a62:1950:0:b0:5a8:ac0f:e116 with SMTP id 77-20020a621950000000b005a8ac0fe116mr5532734pfz.24.1677680467200;
-        Wed, 01 Mar 2023 06:21:07 -0800 (PST)
-Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id j23-20020aa783d7000000b005ac86f7b87fsm7971654pfn.77.2023.03.01.06.21.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Mar 2023 06:21:05 -0800 (PST)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     David Ahern <dsahern@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv2 iproute2] u32: fix TC_U32_TERMINAL printing
-Date:   Wed,  1 Mar 2023 22:21:00 +0800
-Message-Id: <20230301142100.1533509-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.38.1
+        bh=9jpccmvW5G9g4h1RhMOIsgBhwoVCmPKcSKS3NuKK1yc=;
+        b=4oFPZVhb/71ad8BbzcqUxwT9BDVj2NbZaIj9mI+pXma05fHhFKfBjBFPT5paWdkSeZ
+         TAJF4+ELHCP1v9F1NM8P8y1bD0q8Yl0o51OZ8p+h7YcXyIyrsFgMcvR1XkNUchlWBrax
+         w2DaAkU6VEbaevMeN5cAvTvISw0wqTvKIdpx3mg8I/Oz7NjXsCXUzXq5d69A/emF4+WH
+         jHFGr3IXqbqTj/JbS9wDpjchypos14R0kXw0SPVQLjuq91hBRInlDRi7/D4TpEYktMQw
+         9yWjdQo0VvJiUxbYD6oPeeWUJDL/ubDPMaYpPZh5PZ2WQlLbq8EVhCYqJ8cdMuW9kQY9
+         lZ0g==
+X-Gm-Message-State: AO0yUKXs1FLSXXM1ZO47W3V++NLkId2WoHYZ7CLUSVT0Wz/XyuafOjcf
+        YJho9Y/r+PPoHrHAUmIMVjAkWNkTtEs7yr1sz0FhKA==
+X-Google-Smtp-Source: AK7set+p0Th1ekwsNtNnZd2IB9CHawyC93hZKmPGoH6BMgQtNR23lB/HFgYWfMEyjmQbVNIVQ5/IQq0JaMjDIXDiF4w=
+X-Received: by 2002:a17:907:d30d:b0:8f3:9ee9:f1e2 with SMTP id
+ vg13-20020a170907d30d00b008f39ee9f1e2mr5546438ejc.5.1677680716414; Wed, 01
+ Mar 2023 06:25:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20230223-virtio-net-kvmtool-v2-1-8ec93511e67f@rivosinc.com>
+ <CACGkMEu8JtT9_0YcbmfWCGxbrB1GHnesnspFYgaeVrb2x3o3oQ@mail.gmail.com> <1677578798.8465447-1-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <1677578798.8465447-1-xuanzhuo@linux.alibaba.com>
+From:   Rob Bradford <rbradford@rivosinc.com>
+Date:   Wed, 1 Mar 2023 14:25:05 +0000
+Message-ID: <CABPZdxussbbsqtrKZ8bbxSJYU4xuJphTJtvxV=jHHHWs7cO6+A@mail.gmail.com>
+Subject: Re: [PATCH v2] virtio-net: Fix probe of virtio-net on kvmtool
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We previously printed an asterisk if there was no 'sel' or 'TC_U32_TERMINAL'
-flag. However, commit 1ff22754 ("u32: fix json formatting of flowid")
-changed the logic to print an asterisk only if there is a 'TC_U32_TERMINAL'
-flag. Therefore, we need to fix this regression.
+On Tue, 28 Feb 2023 at 10:08, Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+>
+> On Fri, 24 Feb 2023 11:11:37 +0800, Jason Wang <jasowang@redhat.com> wrote:
+> > On Fri, Feb 24, 2023 at 3:38 AM Rob Bradford via B4 Relay
+> > <devnull+rbradford.rivosinc.com@kernel.org> wrote:
+> > >
+> > > From: Rob Bradford <rbradford@rivosinc.com>
+> > >
+> > > kvmtool does not support the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature
+> > > but does advertise the VIRTIO_NET_F_GUEST_TSO{4,6} features. Check that
+> > > the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature is present before setting
+> > > the NETIF_F_GRO_HW feature bit as otherwise
+>
+> Here are settings for dev->features and dev->hw_features.
+>
+>
+> > > an attempt will be made to
+> > > program the virtio-net device using the ctrl queue which will fail.
+> > >
+> > > This resolves the following error when running on kvmtool:
+>
+> Can you talk about it in detail what it did?
 
-Before the fix, the tdc u32 test failed:
+In the updated v3 version of the patch I went into a lot more detail,
+particularly of why the bit was being cleared and triggering the
+control queue reprogramming. Based on that I also adjusted the
+conditional check.
 
-1..11
-not ok 1 afa9 - Add u32 with source match
-        Could not match regex pattern. Verify command output:
-filter protocol ip pref 1 u32 chain 0
-filter protocol ip pref 1 u32 chain 0 fh 800: ht divisor 1
-filter protocol ip pref 1 u32 chain 0 fh 800::800 order 2048 key ht 800 bkt 0 *flowid 1:1 not_in_hw
-  match 7f000001/ffffffff at 12
-        action order 1: gact action pass
-         random type none pass val 0
-         index 1 ref 1 bind 1
+Cheers,
 
-After fix, the test passed:
-1..11
-ok 1 afa9 - Add u32 with source match
-
-Fixes: 1ff227545ce1 ("u32: fix json formatting of flowid")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
-v2: add tdc test result in the commit description
----
- tc/f_u32.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tc/f_u32.c b/tc/f_u32.c
-index bfe9e5f9..de2d0c9e 100644
---- a/tc/f_u32.c
-+++ b/tc/f_u32.c
-@@ -1273,7 +1273,7 @@ static int u32_print_opt(struct filter_util *qu, FILE *f, struct rtattr *opt,
- 	if (tb[TCA_U32_CLASSID]) {
- 		__u32 classid = rta_getattr_u32(tb[TCA_U32_CLASSID]);
- 		SPRINT_BUF(b1);
--		if (sel && (sel->flags & TC_U32_TERMINAL))
-+		if (!sel || !(sel->flags & TC_U32_TERMINAL))
- 			print_string(PRINT_FP, NULL, "*", NULL);
- 
- 		print_string(PRINT_ANY, "flowid", "flowid %s ",
--- 
-2.38.1
-
+Rob
