@@ -2,226 +2,308 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D06766A6EE1
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 15:56:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 717F16A6EFE
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 16:05:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229912AbjCAO4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 09:56:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51806 "EHLO
+        id S229722AbjCAPFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 10:05:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229492AbjCAOz7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 09:55:59 -0500
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2061.outbound.protection.outlook.com [40.107.21.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86EFC3B0D9;
-        Wed,  1 Mar 2023 06:55:57 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NUgGeQ0H73DY99f84odQbesElzXcaYZ3TaDBeV/ZNXhg2j+OsayVPQjtvWbj0PnUvBjpvyA/xharljf1m261g46JxXqu5MtaXocfSGixNKlOZ9VUDUJjK55CPpVErU89SbQRXLJRYC989pURzGpCXZRRpiHZCioDlXCS74VVNXu7LzHs/MkrSYc7d7OGkvloUjyQFNlN1b+HYzM3emYP4Npg1RLlkUUyvr/MrmFFwBRfJo/2p146gYMXNa+9dENQMAIUvE5XtiRHoh10W46iX/AbfFcMRYCvsbK9XiSElOwSZqYxnJtRNLhClbEd1MNdo6rdJ6GnUCeKTmHrFrF7rg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qVUOzVRbI9KIuzUiM5FYYzGdIyLrqxIm2psLdhlz8CE=;
- b=FHbGKFaCAj19NDAPSqRQdim72dsZpRMOfj6vmKBbm45GLg582BdNVNykiUwPqAqSgCCvqe5y3NuyXXR6oWfHenhjhByP2Bei3y3852ZRo2T/1WK8IcuuN0k+s4UJmkhmDjunRJvZjS8wWHf/SZg6EYBY3FuY9+iuWNi/HGZyGUK1+r5gd7GA7Pd4yezcOPY6Wvm6ZnVclXM+ywAVKVrF0xb5SlNxXjoSwtXw0uIw6/r0ouFfUfLUWtSwwXof/pLjTKJ8nRGZ2bncRsSduw+CqIBjRRkxEptd5D1tl96csGZFhD4GKK7oCaH8LhTeIx0M82WPuzQR89qx+6AKYvdv3g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qVUOzVRbI9KIuzUiM5FYYzGdIyLrqxIm2psLdhlz8CE=;
- b=aREDM/0lqa3Nb5VLoao34JXmJxiHkyKbDJU65dvrz4hshGL+yNJ8Yd3IKsToxaY4ctMm7VCUY7ff7FqlYIk1LS5oOvyUdTmQ/Icj9nJcIYn/J33yXrmem+bAJqFT4mVz/XwgFC1ul5wIzbhCiYCltMR8GXto3hBJckvTHRSz8aE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from DB9PR04MB9648.eurprd04.prod.outlook.com (2603:10a6:10:30c::10)
- by AS8PR04MB8499.eurprd04.prod.outlook.com (2603:10a6:20b:342::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.18; Wed, 1 Mar
- 2023 14:55:53 +0000
-Received: from DB9PR04MB9648.eurprd04.prod.outlook.com
- ([fe80::c1c1:4646:4635:547d]) by DB9PR04MB9648.eurprd04.prod.outlook.com
- ([fe80::c1c1:4646:4635:547d%4]) with mapi id 15.20.6156.018; Wed, 1 Mar 2023
- 14:55:53 +0000
-From:   Madhu Koriginja <madhu.koriginja@nxp.com>
-To:     gerrit@erg.abdn.ac.uk, davem@davemloft.net, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org, edumazet@google.com, dccp@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     vani.namala@nxp.com, Madhu Koriginja <madhu.koriginja@nxp.com>
-Subject: [PATCH] [NETFILTER]: Keep conntrack reference until IPsecv6 policy checks are done
-Date:   Wed,  1 Mar 2023 20:25:34 +0530
-Message-Id: <20230301145534.421569-1-madhu.koriginja@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SI2P153CA0002.APCP153.PROD.OUTLOOK.COM
- (2603:1096:4:140::16) To DB9PR04MB9648.eurprd04.prod.outlook.com
- (2603:10a6:10:30c::10)
+        with ESMTP id S229470AbjCAPFl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 10:05:41 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF5443B202
+        for <netdev@vger.kernel.org>; Wed,  1 Mar 2023 07:05:39 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id o12so54999231edb.9
+        for <netdev@vger.kernel.org>; Wed, 01 Mar 2023 07:05:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gooddata.com; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=6YcVt3vIJNT5V3fzxeGYVMhnMWIjDQfdnFrYWds9v74=;
+        b=HSrt2t4pDqHafbuJiBX862RxmGRT6QoFtKidjyJcMVWn8dMeovr2gLHezh0DXX9C4V
+         Co7KkGWmWjtX5ivqNJ0eccKod+t+dnK4vdqr8uQVvfUGJDbnIrT0QVL/2Rfsa5n5UJMx
+         xCsJqauIfgzHjDSDPtlWxWwunlJGrVp89eRsY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=6YcVt3vIJNT5V3fzxeGYVMhnMWIjDQfdnFrYWds9v74=;
+        b=xvFJMI6BKlfSHBUfUFPVq73JRfe8uVQxkRoj0nBoCpEf07kj9dP6Au7c/AZowUGNO6
+         ZLYs/09nQtOr0l1dyvJHBhX/egiMMVQRtsVhux7376U/GVd3HYtBp8dGNgcNpOiONIil
+         FVxfIR76M+RiI05vLEzOh5rBZjomjel1UI/tkzhaZI+U2b3+0pXqq4l7xETKi2fi5fUE
+         21j4neZdO9kYJVdDBDYml4pvw6HVNd7dAv6UfM8HXpdn3fgK3EaXZ6GMJOtcNvm1NVD+
+         RsznBh+z6VB3wSwp7LPf50FQTQYZzefhA5nl+kSo6NJo3SD0/b7GJvVVe/9sSvHjl/y9
+         BLvQ==
+X-Gm-Message-State: AO0yUKWVHfZCTmONfAf8Z7UwGPJYNTcM7w5Z95j25sHOPVtAGi2ZjKhl
+        +XHUAxbENvjgqAeTYm9kJv8X9YQ/Y7b2FQQFtidE8Q==
+X-Google-Smtp-Source: AK7set8p5EGu/XFLaUcAhivot2ldkG4IiFebI736/z0FDgXMxPT7gHfSnGVwB6DHlrpFLuLR1pxJo+yKFwyGfggJvYY=
+X-Received: by 2002:a17:906:7050:b0:8b1:28e5:a1bc with SMTP id
+ r16-20020a170906705000b008b128e5a1bcmr3135520ejj.5.1677683138035; Wed, 01 Mar
+ 2023 07:05:38 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DB9PR04MB9648:EE_|AS8PR04MB8499:EE_
-X-MS-Office365-Filtering-Correlation-Id: 50154116-c5bf-4f43-6fae-08db1a650e32
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DNvWGL0BcQNqFOxB/XflIegDfiz/ad+8/xat4ajLN/+xM9pwHl4AixDYWOIZuFLjAHqZ92jxJx4lDDtXF6iabUZIXXENhbSHAdFzFb58Dc9uWdIaJulwKFLKQ3PSAV+zy0HAptFYIpoz/B1B7zvaYP2u/axgV7gxmdxR3D1NLRp3rlkhgRUuOWIWgerqh4JoYe3TW1Wk9LHaKYh5DQbwuvBrLioYddPrt5/+V2MXkytWmQQKJq7mAdu3cPWyLJtYDl8vTaFgMfQVB8BI4X/+2XtLzASopaVWkeYwC/Nnskjp2gfhE8N2bQY6qQ0xWDntrQWyflnruzZXojZKMjSB3NBQ/I2+u1iIrUvw8MXmGtVQEQplXaYU9ltoVtBDF9Iw7arBGM1Im6nLda+A+b0u8BRvne77JfNUuExuRxv42lhUSBhMRO2bMvujvjhcLADiXCmZqZvFUjeFnPn4tZb9DEov7Uosx28k1/8KRhRbEU1xSdKBFlCAgkaHtL+jZIehQsAikvXbd4wN0bc/Rn7Tp0Ck2D3si7RLkJKd8fjnR+hnWcQuv7fGlpsfzOMpO8icVzedExhlySYuOIzC8Mxq9rIHugaqlDoJOUZCusaOtbzNRpsugvMKjsik6A0p+y29IiZLlqyLFbrWM/S3o+NdAWAnSvWZ2RHuLwSvZ/5txKfeZczeT5+Tzppi837a2uLL34+3yM0iSupnqqrv5Ix5+A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB9648.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(376002)(136003)(346002)(39860400002)(366004)(451199018)(6666004)(6486002)(8936002)(52116002)(2616005)(86362001)(316002)(296002)(41300700001)(83380400001)(6512007)(36756003)(6506007)(186003)(1076003)(26005)(8676002)(66476007)(44832011)(38100700002)(4326008)(66946007)(66556008)(38350700002)(478600001)(2906002)(5660300002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YjehmtuhPy7Qg1nWyeILiWtxixjA7Rt0fOuG+RjH+IrJK4FrrzCzGWuPvlOg?=
- =?us-ascii?Q?tLKPNqGzWSr/2SNrA/+ZcZDltXq6QoguDrJXnufpUerVbMLDSloLC5eKdQXP?=
- =?us-ascii?Q?KB+n7DCGDF52L7UMfd0nTdoZfnygXOiauhYBUZ0cYZhFuDo7KHd5aOtfLelm?=
- =?us-ascii?Q?s0FtV8b4WeGEmbiuBiSW8Im4tfD12pg+LAEWAnmbu8y3T4SbulDHzvtudnKI?=
- =?us-ascii?Q?ojdFGuJOeHkAlUK6CFOUeXGGI0A75SXASFCHi2N29Q4W+zCWt08/A2RP2NER?=
- =?us-ascii?Q?/BdpxMcRLfzu4SFitAyFWYE+6Rt4F6/CHb9aNN5t1GGHsymNIdzWw1pDgyly?=
- =?us-ascii?Q?lp4TlDsjHEv2plQjAdm21OKrXuNuYsDSEwqAWWuFSPI5/b2ZDIGVV4RLWg8t?=
- =?us-ascii?Q?d0MyChGyyYrtkFyt25O7Xk1gkw4POWI06cODkVO1p99IHe65LmwGcYd6DI4p?=
- =?us-ascii?Q?ZxJwqiYsjsRoEJRIPpYw8uE+b/XTD647kDdml0hDeeBQ0xmVZ6KieqbEaDgh?=
- =?us-ascii?Q?FjFJhXlLJ4fI3nnJwaCNpjq/W6nGci10/ukEVb0gaEuwcBh5XzYUz5jXWrAk?=
- =?us-ascii?Q?c5WEoLt3LLp2YX0mvpNN0N8IMu3ESkAn5Wfeir0NY8/HwUJI+Q4d028gzoac?=
- =?us-ascii?Q?lvywXWWPnXiPpDFqMhKUCNDZDNpRA5YFHzF3OV8KevIwKyRA2LH/SKtRe8K5?=
- =?us-ascii?Q?ijLZXJa532SbXM82Cxk6sd9ejSa25PT6wUmv92Q2nfyYF+IVx4YMDf9NFpHb?=
- =?us-ascii?Q?NpFmiNYr0XGX8tBYnoNAsq7oKtjCIYJQeDBeAPWaNCjIPDorA7JBcjERawkb?=
- =?us-ascii?Q?lqpPsHC2AaBxRT2CdaEdVBklFU6cz7FesnQ24bVYbEkFFJLA0UaFk+MsqbiN?=
- =?us-ascii?Q?YcKS8HrEo/H2rqVAlYBYov8XHb9LKZUtreBoev6mUX1nHU0vEABgXLRr/jlv?=
- =?us-ascii?Q?7brpziqE+SMl3oMxw2aVIocgdNrVxzzKKWLS2fzX0gtE5S5LYTGKF2tw4spa?=
- =?us-ascii?Q?rxne00Vxp0tmY7Uc2s1KjejOSHEsvzF/qmb9pxSd3S/a5XTX3+9SEMXOjpiz?=
- =?us-ascii?Q?c9Hse1H33FNqUo7tMwUgF/FXAePXS5DV5pQZUm/kftFo3uUMb7kFQFpi3Hj2?=
- =?us-ascii?Q?/uyyvBeSCAMNWwwKKEpDVVOhtp4Ik37tNKSYAa+a7HU26G1aziKXNVCBfo0q?=
- =?us-ascii?Q?SYiFGn2/45YAtM1ifg74Jy1edv4iA4LowJIIbkUt8wmDWLeNoH311WEjKQ30?=
- =?us-ascii?Q?IYzvuSP8d8Py3aGxsvEFldD4Sez+YpgyY61u1eHm6AkMyUBG78EQLe5qjH7z?=
- =?us-ascii?Q?NO0Aactfsg9A6CM9RYZNkocUZNmjJK3v5fSrf+vTZMRh1y0QdDsImPkmqn4n?=
- =?us-ascii?Q?zEHPgtbnXG044JS9ym80Ti0sRixYrHrkBzTfUQ9BC0XxgrR6L8Yre7Psjs2Y?=
- =?us-ascii?Q?Cn6q7FKxIzDP1R0UngpWHVYXXWIfaXb1EJONwZTvNM5rprZMPN9U952GgEEN?=
- =?us-ascii?Q?POJeqElQM0Jx582qX0uDZtFibAIfMotQiZU4BywUuXw9PUUf3Ps1Vc1yAp+4?=
- =?us-ascii?Q?n1x8/gjsKQWDoiQbsnYDeQZkZL5L+Bn7hWuxQLnAjU89glPCIhost4e4Wu3Z?=
- =?us-ascii?Q?AQ=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 50154116-c5bf-4f43-6fae-08db1a650e32
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB9648.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Mar 2023 14:55:53.6668
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KJGBfrEXDentoV+srrm2NSamjqCi7bhRjVSkMTiPiRDgSzy01Od+SHLD9RJoV9SbuXK3LAKTaTW3sAnQqx/zIQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8499
+References: <CAK8fFZ6A_Gphw_3-QMGKEFQk=sfCw1Qmq0TVZK3rtAi7vb621A@mail.gmail.com>
+ <68b14b11-d0c7-65c9-4eeb-0487c95e395d@leemhuis.info> <675161ac-35c5-ee5d-e96b-8e70d9d11d98@leemhuis.info>
+ <CAK8fFZ6jbCYK7FFoYGJpq5oH195t+dBF0sbOr_V6k4Q8pPb_ow@mail.gmail.com>
+ <f7ab5942-eee2-88e4-ffac-007de0ed06ba@intel.com> <CAK8fFZ4-kDdB_RkQG5xx2WuELe-TprD-Vfd_XJAB_4h54eR=sw@mail.gmail.com>
+In-Reply-To: <CAK8fFZ4-kDdB_RkQG5xx2WuELe-TprD-Vfd_XJAB_4h54eR=sw@mail.gmail.com>
+From:   Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>
+Date:   Wed, 1 Mar 2023 16:05:11 +0100
+Message-ID: <CAK8fFZ5Jjh-ZXfLdupQGqvb9pg7nW-6fWMN3cPMdmQQfQRLGFA@mail.gmail.com>
+Subject: Re: Network do not works with linux >= 6.1.2. Issue bisected to
+ "425c9bd06b7a70796d880828d15c11321bdfb76d" (RDMA/irdma: Report the correct
+ link speed)
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     Thorsten Leemhuis <regressions@leemhuis.info>,
+        Linux regressions mailing list <regressions@lists.linux.dev>,
+        kamalheib1@gmail.com, shiraz.saleem@intel.com, leon@kernel.org,
+        sashal@kernel.org, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, Igor Raits <igor.raits@gooddata.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Keep the conntrack reference until policy checks have been performed for
-IPsec V6 NAT support. The reference needs to be dropped before a packet is
-queued to avoid having the conntrack module unloadable.
+>
+> >
+> > On 2/28/2023 4:33 AM, Jaroslav Pulchart wrote:
+> > >>
+> > >> Hi, this is your Linux kernel regression tracker. Top-posting for once,
+> > >> to make this easily accessible to everyone.
+> > >>
+> > >> On 06.01.23 12:11, Linux kernel regression tracking (#adding) wrote:
+> > >>> On 06.01.23 08:55, Jaroslav Pulchart wrote:
+> > >>>> Hello,
+> > >>>>
+> > >>>> I would like to report a >= 6.1.2 some network regression (looks like
+> > >>>> NIC us not UP) on our Dell R7525 servers with E810 NICs. The issue was
+> > >>>> observed after I updated 6.1.0 to 6.1.2 or newer (tested up to newest
+> > >>>> 6.1.4-rc1). The system is not accesible and all services are in D
+> > >>>> state after each reboot.
+> > >>
+> > >> Can anyone please provide a status on this? It seems to take quite a
+> > >> while to get this regression fixed, which is unfortunate. Or was
+> > >> progress made somewhere and I just missed it?
+> > >>
+> > >> I noticed Tony tried to address this in mainline, but the last thing I'm
+> > >> aware of is "Please ignore/drop this. Just saw that this change doesn't
+> > >> solve the issue." here:
+> > >>
+> > >
+> > > FYI: We are building 6.1.y with the provided patch to fix the
+> > > regression in our environment.
+> >
+> > Thanks for the input Jaroslav; just to be clear, are you using the v1
+> > [1] or v2 [2] of the patch?
+>
+> We are using v1 [1] of the patch.
+>
+>
+> >
+> > We're doing more testing on v2, but I was going to reach out to you
+> > afterwards to see if you would mind testing the v2 as we haven't heard
+> > from the other reporter who said v2 didn't work for him.
+> >
 
-Signed-off-by: Madhu Koriginja <madhu.koriginja@nxp.com>
----
- net/dccp/ipv6.c      |  1 +
- net/ipv6/ip6_input.c | 14 +++++++-------
- net/ipv6/raw.c       |  2 +-
- net/ipv6/tcp_ipv6.c  |  2 ++
- net/ipv6/udp.c       |  2 ++
- 5 files changed, 13 insertions(+), 8 deletions(-)
+I re-build 6.1.14 with v2 [2] patch + install it + reboot the server a
+few times and it works.
 
-diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
-index 58a401e9cf09..eb503096db6c 100644
---- a/net/dccp/ipv6.c
-+++ b/net/dccp/ipv6.c
-@@ -771,6 +771,7 @@ static int dccp_v6_rcv(struct sk_buff *skb)
- 
- 	if (!xfrm6_policy_check(sk, XFRM_POLICY_IN, skb))
- 		goto discard_and_relse;
-+	nf_reset(skb);
- 
- 	return __sk_receive_skb(sk, skb, 1, dh->dccph_doff * 4,
- 				refcounted) ? -1 : 0;
-diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
-index acf0749ee5bb..7dc295b7af8f 100644
---- a/net/ipv6/ip6_input.c
-+++ b/net/ipv6/ip6_input.c
-@@ -374,10 +374,6 @@ static int ip6_input_finish(struct net *net, struct sock *sk, struct sk_buff *sk
- 			/* Only do this once for first final protocol */
- 			have_final = true;
- 
--			/* Free reference early: we don't need it any more,
--			   and it may hold ip_conntrack module loaded
--			   indefinitely. */
--			nf_reset(skb);
- 
- 			skb_postpull_rcsum(skb, skb_network_header(skb),
- 					   skb_network_header_len(skb));
-@@ -388,9 +384,13 @@ static int ip6_input_finish(struct net *net, struct sock *sk, struct sk_buff *sk
- 			    !ipv6_is_mld(skb, nexthdr, skb_network_header_len(skb)))
- 				goto discard;
- 		}
--		if (!(ipprot->flags & INET6_PROTO_NOPOLICY) &&
--		    !xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb))
--			goto discard;
-+
-+		if (!ipprot->flags & INET6_PROTO_NOPOLICY) {
-+			if (!xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb))
-+				goto discard;
-+
-+			nf_reset(skb);
-+		}
- 
- 		ret = ipprot->handler(skb);
- 		if (ret > 0) {
-diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
-index 4856d9320b28..cf68c9418897 100644
---- a/net/ipv6/raw.c
-+++ b/net/ipv6/raw.c
-@@ -220,7 +220,6 @@ static bool ipv6_raw_deliver(struct sk_buff *skb, int nexthdr)
- 
- 			/* Not releasing hash table! */
- 			if (clone) {
--				nf_reset(clone);
- 				rawv6_rcv(sk, clone);
- 			}
- 		}
-@@ -428,6 +427,7 @@ int rawv6_rcv(struct sock *sk, struct sk_buff *skb)
- 		kfree_skb(skb);
- 		return NET_RX_DROP;
- 	}
-+	nf_reset(skb);
- 
- 	if (!rp->checksum)
- 		skb->ip_summed = CHECKSUM_UNNECESSARY;
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 9a117a79af65..0bc959cfbea4 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -1534,6 +1534,8 @@ static int tcp_v6_rcv(struct sk_buff *skb)
- 	if (tcp_v6_inbound_md5_hash(sk, skb))
- 		goto discard_and_relse;
- 
-+	nf_reset(skb);
-+
- 	if (tcp_filter(sk, skb))
- 		goto discard_and_relse;
- 	th = (const struct tcphdr *)skb->data;
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 72b2e7809af6..aacb48e977cb 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -567,6 +567,7 @@ static int udpv6_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
- 
- 	if (!xfrm6_policy_check(sk, XFRM_POLICY_IN, skb))
- 		goto drop;
-+	nf_reset(skb);
- 
- 	if (static_branch_unlikely(&udpv6_encap_needed_key) && up->encap_type) {
- 		int (*encap_rcv)(struct sock *sk, struct sk_buff *skb);
-@@ -860,6 +861,7 @@ int __udp6_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
- 
- 	if (!xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb))
- 		goto discard;
-+	nf_reset(skb);
- 
- 	if (udp_lib_checksum_complete(skb))
- 		goto csum_error;
--- 
-2.25.1
-
+> > Thanks,
+> > Tony
+> >
+> > [1]
+> > https://lore.kernel.org/netdev/20230131213703.1347761-2-anthony.l.nguyen@intel.com/
+> > [2]
+> > https://lore.kernel.org/netdev/20230217004201.2895321-1-anthony.l.nguyen@intel.com/
+> >
+> > >> https://lore.kernel.org/all/b944d1d4-7f90-dcef-231c-91bb031a4275@intel.com/#t
+> > >>
+> > >> Should the backport to 6.1.y (425c9bd06b7a ) maybe be dropped to at
+> > >> least resolve the issue there until this is fixed in mainline? Or would
+> > >> that cause a regression as well?
+> > >>
+> > >> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+> > >> --
+> > >> Everything you wanna know about Linux kernel regression tracking:
+> > >> https://linux-regtracking.leemhuis.info/about/#tldr
+> > >> If I did something stupid, please tell me, as explained on that page.
+> > >>
+> > >> #regzbot poke
+> > >>
+> > >>>> [  257.625207]       Tainted: G            E      6.1.4-0.gdc.el9.x86_64 #1
+> > >>>> [  257.631911] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
+> > >>>> disables this message.
+> > >>>> [  257.639740] task:kworker/u192:1  state:D stack:0     pid:11
+> > >>>> ppid:2      flags:0x00004000
+> > >>>> [  257.648095] Workqueue: netns cleanup_net
+> > >>>> [  257.652029] Call Trace:
+> > >>>> [  257.654481]  <TASK>
+> > >>>> [  257.656589]  __schedule+0x1eb/0x630
+> > >>>> [  257.660087]  schedule+0x5a/0xd0
+> > >>>> [  257.663233]  schedule_preempt_disabled+0x11/0x20
+> > >>>> [  257.667851]  __mutex_lock.constprop.0+0x372/0x6c0
+> > >>>> [  257.672561]  rdma_dev_change_netns+0x25/0x120 [ib_core]
+> > >>>> [  257.677821]  rdma_dev_exit_net+0x139/0x1e0 [ib_core]
+> > >>>> [  257.682804]  ops_exit_list+0x30/0x70
+> > >>>> [  257.686382]  cleanup_net+0x213/0x3b0
+> > >>>> [  257.689964]  process_one_work+0x1e2/0x3b0
+> > >>>> [  257.693984]  ? rescuer_thread+0x390/0x390
+> > >>>> [  257.697995]  worker_thread+0x50/0x3a0
+> > >>>> [  257.701661]  ? rescuer_thread+0x390/0x390
+> > >>>> [  257.705674]  kthread+0xd6/0x100
+> > >>>> [  257.708819]  ? kthread_complete_and_exit+0x20/0x20
+> > >>>> [  257.713613]  ret_from_fork+0x1f/0x30
+> > >>>> [  257.717192]  </TASK>
+> > >>>> [  257.719496] INFO: task kworker/87:0:470 blocked for more than 122 seconds.
+> > >>>> [  257.726423]       Tainted: G            E      6.1.4-0.gdc.el9.x86_64 #1
+> > >>>> [  257.733123] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
+> > >>>> disables this message.
+> > >>>> [  257.740949] task:kworker/87:0    state:D stack:0     pid:470
+> > >>>> ppid:2      flags:0x00004000
+> > >>>> [  257.749307] Workqueue: events linkwatch_event
+> > >>>> [  257.753672] Call Trace:
+> > >>>> [  257.756124]  <TASK>
+> > >>>> [  257.758228]  __schedule+0x1eb/0x630
+> > >>>> [  257.761723]  schedule+0x5a/0xd0
+> > >>>> [  257.764867]  schedule_preempt_disabled+0x11/0x20
+> > >>>> [  257.769487]  __mutex_lock.constprop.0+0x372/0x6c0
+> > >>>> [  257.774196]  ? pick_next_task+0x57/0x9b0
+> > >>>> [  257.778127]  ? finish_task_switch.isra.0+0x8f/0x2a0
+> > >>>> [  257.783007]  linkwatch_event+0xa/0x30
+> > >>>> [  257.786674]  process_one_work+0x1e2/0x3b0
+> > >>>> [  257.790687]  worker_thread+0x50/0x3a0
+> > >>>> [  257.794352]  ? rescuer_thread+0x390/0x390
+> > >>>> [  257.798365]  kthread+0xd6/0x100
+> > >>>> [  257.801513]  ? kthread_complete_and_exit+0x20/0x20
+> > >>>> [  257.806303]  ret_from_fork+0x1f/0x30
+> > >>>> [  257.809885]  </TASK>
+> > >>>> [  257.812109] INFO: task kworker/39:1:614 blocked for more than 123 seconds.
+> > >>>> [  257.818984]       Tainted: G            E      6.1.4-0.gdc.el9.x86_64 #1
+> > >>>> [  257.825686] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
+> > >>>> disables this message.
+> > >>>> [  257.833519] task:kworker/39:1    state:D stack:0     pid:614
+> > >>>> ppid:2      flags:0x00004000
+> > >>>> [  257.841869] Workqueue: infiniband ib_cache_event_task [ib_core]
+> > >>>> [  257.847802] Call Trace:
+> > >>>> [  257.850252]  <TASK>
+> > >>>> [  257.852360]  __schedule+0x1eb/0x630
+> > >>>> [  257.855851]  schedule+0x5a/0xd0
+> > >>>> [  257.858998]  schedule_preempt_disabled+0x11/0x20
+> > >>>> [  257.863617]  __mutex_lock.constprop.0+0x372/0x6c0
+> > >>>> [  257.868325]  ib_get_eth_speed+0x65/0x190 [ib_core]
+> > >>>> [  257.873127]  ? ib_cache_update.part.0+0x4b/0x2b0 [ib_core]
+> > >>>> [  257.878619]  ? __kmem_cache_alloc_node+0x18c/0x2b0
+> > >>>> [  257.883417]  irdma_query_port+0xb3/0x110 [irdma]
+> > >>>> [  257.888051]  ib_query_port+0xaa/0x100 [ib_core]
+> > >>>> [  257.892601]  ib_cache_update.part.0+0x65/0x2b0 [ib_core]
+> > >>>> [  257.897924]  ? pick_next_task+0x57/0x9b0
+> > >>>> [  257.901855]  ? dequeue_task_fair+0xb6/0x3c0
+> > >>>> [  257.906043]  ? finish_task_switch.isra.0+0x8f/0x2a0
+> > >>>> [  257.910920]  ib_cache_event_task+0x58/0x80 [ib_core]
+> > >>>> [  257.915906]  process_one_work+0x1e2/0x3b0
+> > >>>> [  257.919918]  ? rescuer_thread+0x390/0x390
+> > >>>> [  257.923931]  worker_thread+0x50/0x3a0
+> > >>>> [  257.927595]  ? rescuer_thread+0x390/0x390
+> > >>>> [  257.931609]  kthread+0xd6/0x100
+> > >>>> [  257.934755]  ? kthread_complete_and_exit+0x20/0x20
+> > >>>> [  257.939549]  ret_from_fork+0x1f/0x30
+> > >>>> [  257.943128]  </TASK>
+> > >>>> [  257.945438] INFO: task NetworkManager:3387 blocked for more than 123 seconds.
+> > >>>> [  257.952577]       Tainted: G            E      6.1.4-0.gdc.el9.x86_64 #1
+> > >>>> [  257.959274] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
+> > >>>> disables this message.
+> > >>>> [  257.967099] task:NetworkManager  state:D stack:0     pid:3387
+> > >>>> ppid:1      flags:0x00004002
+> > >>>> [  257.975446] Call Trace:
+> > >>>> [  257.977901]  <TASK>
+> > >>>> [  257.980004]  __schedule+0x1eb/0x630
+> > >>>> [  257.983498]  schedule+0x5a/0xd0
+> > >>>> [  257.986641]  schedule_timeout+0x11d/0x160
+> > >>>> [  257.990654]  __wait_for_common+0x90/0x1e0
+> > >>>> [  257.994666]  ? usleep_range_state+0x90/0x90
+> > >>>> [  257.998854]  __flush_workqueue+0x13a/0x3f0
+> > >>>> [  258.002955]  ? __kernfs_remove.part.0+0x11e/0x1e0
+> > >>>> [  258.007661]  ib_cache_cleanup_one+0x1c/0xe0 [ib_core]
+> > >>>> [  258.012721]  __ib_unregister_device+0x62/0xa0 [ib_core]
+> > >>>> [  258.017959]  ib_unregister_device+0x22/0x30 [ib_core]
+> > >>>> [  258.023024]  irdma_remove+0x1a/0x60 [irdma]
+> > >>>> [  258.027223]  auxiliary_bus_remove+0x18/0x30
+> > >>>> [  258.031414]  device_release_driver_internal+0x1aa/0x230
+> > >>>> [  258.036643]  bus_remove_device+0xd8/0x150
+> > >>>> [  258.040654]  device_del+0x18b/0x3f0
+> > >>>> [  258.044149]  ice_unplug_aux_dev+0x42/0x60 [ice]
+> > >>>> [  258.048707]  ice_lag_changeupper_event+0x287/0x2a0 [ice]
+> > >>>> [  258.054038]  ice_lag_event_handler+0x51/0x130 [ice]
+> > >>>> [  258.058930]  raw_notifier_call_chain+0x41/0x60
+> > >>>> [  258.063381]  __netdev_upper_dev_link+0x1a0/0x370
+> > >>>> [  258.068008]  netdev_master_upper_dev_link+0x3d/0x60
+> > >>>> [  258.072886]  bond_enslave+0xd16/0x16f0 [bonding]
+> > >>>> [  258.077517]  ? nla_put+0x28/0x40
+> > >>>> [  258.080756]  do_setlink+0x26c/0xc10
+> > >>>> [  258.084249]  ? avc_alloc_node+0x27/0x180
+> > >>>> [  258.088173]  ? __nla_validate_parse+0x141/0x190
+> > >>>> [  258.092708]  __rtnl_newlink+0x53a/0x620
+> > >>>> [  258.096549]  rtnl_newlink+0x44/0x70
+> > >>>> [  258.100040]  rtnetlink_rcv_msg+0x159/0x3d0
+> > >>>> [  258.104140]  ? rtnl_calcit.isra.0+0x140/0x140
+> > >>>> [  258.108496]  netlink_rcv_skb+0x4e/0x100
+> > >>>> [  258.112338]  netlink_unicast+0x23b/0x360
+> > >>>> [  258.116264]  netlink_sendmsg+0x24e/0x4b0
+> > >>>> [  258.120191]  sock_sendmsg+0x5f/0x70
+> > >>>> [  258.123684]  ____sys_sendmsg+0x241/0x2c0
+> > >>>> [  258.127609]  ? copy_msghdr_from_user+0x6d/0xa0
+> > >>>> [  258.132054]  ___sys_sendmsg+0x88/0xd0
+> > >>>> [  258.135722]  ? ___sys_recvmsg+0x88/0xd0
+> > >>>> [  258.139559]  ? wake_up_q+0x4a/0x90
+> > >>>> [  258.142967]  ? rseq_get_rseq_cs.isra.0+0x16/0x220
+> > >>>> [  258.147673]  ? __fget_light+0xa4/0x130
+> > >>>> [  258.151434]  __sys_sendmsg+0x59/0xa0
+> > >>>> [  258.155012]  do_syscall_64+0x38/0x90
+> > >>>> [  258.158591]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> > >>>> [  258.163645] RIP: 0033:0x7ff23714fa7d
+> > >>>> [  258.167226] RSP: 002b:00007ffdddfc8c70 EFLAGS: 00000293 ORIG_RAX:
+> > >>>> 000000000000002e
+> > >>>> [  258.174798] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007ff23714fa7d
+> > >>>> [  258.181933] RDX: 0000000000000000 RSI: 00007ffdddfc8cb0 RDI: 000000000000000d
+> > >>>> [  258.189063] RBP: 00005572f5d77040 R08: 0000000000000000 R09: 0000000000000000
+> > >>>> [  258.196197] R10: 0000000000000000 R11: 0000000000000293 R12: 00007ffdddfc8e1c
+> > >>>> [  258.203332] R13: 00007ffdddfc8e20 R14: 0000000000000000 R15: 00007ffdddfc8e28
+> > >>>> [  258.210464]  </TASK>
+> > >>>> ...
+> > >>>>
+> > >>>> I bisected the issue to a commit
+> > >>>> "425c9bd06b7a70796d880828d15c11321bdfb76d" (RDMA/irdma: Report the
+> > >>>> correct link speed). Reverting this commit in my kernel build "fix"
+> > >>>> the issue and the server has a working network again.
+> > >>>
+> > >>> Thanks for the report. To be sure the issue doesn't fall through the
+> > >>> cracks unnoticed, I'm adding it to regzbot, the Linux kernel regression
+> > >>> tracking bot:
+> > >>>
+> > >>> #regzbot ^introduced 425c9bd06b7a7079
+> > >>> #regzbot title RDMA/irdma: network stopped working
+> > >>> #regzbot ignore-activity
+> > >>>
+> > >>> This isn't a regression? This issue or a fix for it are already
+> > >>> discussed somewhere else? It was fixed already? You want to clarify when
+> > >>> the regression started to happen? Or point out I got the title or
+> > >>> something else totally wrong? Then just reply and tell me -- ideally
+> > >>> while also telling regzbot about it, as explained by the page listed in
+> > >>> the footer of this mail.
+> > >>>
+> > >>> Reminder for developers: When fixing the issue, add 'Link:' tags
+> > >>> pointing to the report (see page linked in footer for details).
+> > >>>
+> > >>> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+> > >>> --
+> > >>> Everything you wanna know about Linux kernel regression tracking:
+> > >>> https://linux-regtracking.leemhuis.info/about/#tldr
+> > >>> That page also explains what to do if mails like this annoy you.
+> > >>>
+> > >>>
