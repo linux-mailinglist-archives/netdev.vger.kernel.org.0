@@ -2,155 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A3626A7140
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 17:34:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 335686A7167
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 17:40:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230190AbjCAQes (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 11:34:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49348 "EHLO
+        id S229905AbjCAQkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 11:40:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229887AbjCAQe1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 11:34:27 -0500
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on20630.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e89::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 015A94AFE5;
-        Wed,  1 Mar 2023 08:33:48 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=h+/6An29Ui7JX4+52Nbtl6UBP4WmudqeYr8l7Xh2UZdQMFedjYyYmzr7qRrGtCeIYW3HWFpuxq+78YgdWRwnhI9T5Cxb4yT6yHhKNCHnhZOlL+KKYjJbTOl14EdSnut4kiBS/wfNDWrGDUrVIcV3HDac9bMEI5Qu3iM6fs5YxsksYaz/HzI/eozAS2+6bJFUSgM92ym7TALVnkWW+JPBGPp50NTtex1apxHYTbjk32pENB1jaffAObO2Zbsc/FRcTDNRmHrfdMQoeY9wYa+X360kz3TdH+/m0iyx37bDQ9397bcVdfg7gwwMP5MtXOREBpOuaKeNcFkG69c+xLuUAg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Kgt/t44JTJCTnDFzAl0CVVo0jn+uJ7arC8wDiyGxeyY=;
- b=JyighItzvlzeSDAjwuwzhk3Ysk3+R746wvf2u+DVQO0X2SsjYHOq8OebcTH7inl31qiNoF9WkkPPqfgGc5Ri4/erVZkTfnPFZyQjJi2VmsPeR0dWC2HHUVzQK5qnvgGFVZhz4aMm7o3w737Sejeh4ATLmJlDXOcIzcTXsVxsExVktJe7hCrD1bT8h3ZJw4Nt7hKiBXBRE4W1bt5T64rL/bEm0EplqMmmO/S+4gV1q47vqbQyMyymWvCQalUQ1R+H7AE0eINShYaihsQP5iQJs4n8kQZUV4v4pevp73q3A8lMYDGwme3yg1FcogcfGJvFMgh8cKJA9mUHiYkTXCKOgg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Kgt/t44JTJCTnDFzAl0CVVo0jn+uJ7arC8wDiyGxeyY=;
- b=Jg+kkJrfahNW7jAEQ2XYkBTQeWEjx+mB/ttEvee5eTpbJzDHDPGf/4zIWoEBjNGo5g6/JShdv04bUOe94z3pikeulZMEcOd702xX0tenu3IIhJO5fPwxrFopbjbo0DFkjU6jw2rP2JmRd8gzITkWLiqe4+nQ+IsjKU0qzY0Y9EQ=
-Received: from BN9PR03CA0927.namprd03.prod.outlook.com (2603:10b6:408:107::32)
- by MN0PR12MB5786.namprd12.prod.outlook.com (2603:10b6:208:375::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.30; Wed, 1 Mar
- 2023 16:32:21 +0000
-Received: from BN8NAM11FT082.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:107:cafe::d9) by BN9PR03CA0927.outlook.office365.com
- (2603:10b6:408:107::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.30 via Frontend
- Transport; Wed, 1 Mar 2023 16:32:21 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
-Received: from SATLEXMB03.amd.com (165.204.84.17) by
- BN8NAM11FT082.mail.protection.outlook.com (10.13.176.94) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6156.12 via Frontend Transport; Wed, 1 Mar 2023 16:32:21 +0000
-Received: from SATLEXMB07.amd.com (10.181.41.45) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Wed, 1 Mar
- 2023 10:32:20 -0600
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB07.amd.com
- (10.181.41.45) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Wed, 1 Mar
- 2023 08:32:20 -0800
-Received: from xndengvm004102.xilinx.com (10.180.168.240) by
- SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.34
- via Frontend Transport; Wed, 1 Mar 2023 10:32:16 -0600
-From:   Gautam Dawar <gautam.dawar@amd.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <linux-net-drivers@amd.com>, <harpreet.anand@amd.com>,
-        <tanuj.kamde@amd.com>, Gautam Dawar <gautam.dawar@amd.com>
-Subject: [PATCH] vhost-vdpa: free iommu domain after last use during cleanup
-Date:   Wed, 1 Mar 2023 22:02:01 +0530
-Message-ID: <20230301163203.29883-1-gautam.dawar@amd.com>
-X-Mailer: git-send-email 2.30.1
+        with ESMTP id S229656AbjCAQku (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 11:40:50 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B8DD42BC7
+        for <netdev@vger.kernel.org>; Wed,  1 Mar 2023 08:39:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1677688786;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=NSJcgD+Y6L1I9dbPpK5kubARotLSu9co9Llr60nk3dc=;
+        b=FDSQtRuw9hhzOY3gZczy/ErgmZDOvPX2ObasC/LTt66xdGhG05tC8YZDaovS8w/Z6NtdXo
+        Fcn4Rm3lO4v+y+7gRdq/s5wOxOo61MlqtuBG0QfdVoPYpsHwtIUQIpzQzH6SvgWoVKYG6Y
+        jKvGdrvUVB0aTkvjXAg70+fOwtgIA/M=
+Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com
+ [209.85.216.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-630-1WATKNBrML-xTlQu89nePQ-1; Wed, 01 Mar 2023 11:39:43 -0500
+X-MC-Unique: 1WATKNBrML-xTlQu89nePQ-1
+Received: by mail-pj1-f70.google.com with SMTP id o17-20020a17090ab89100b0023752c22f38so4740254pjr.4
+        for <netdev@vger.kernel.org>; Wed, 01 Mar 2023 08:39:43 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1677688782;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=NSJcgD+Y6L1I9dbPpK5kubARotLSu9co9Llr60nk3dc=;
+        b=LYo+TmoiLr/6lqNuA2Qt8hQqCPNgDQ5jhUml71nRf/iwJFwvUBVi69P8Evb8/KwT0X
+         Dt/iC+L1LLCyGSbT8tdkWgaqwTsTmtsBmPm/HD4aLBiDUOTU4RR+JmsqsxYRgXFcBp2X
+         fwkWzjWUJlzCLfh3m4t8P8wp6s7FNiZLw+KTabe9upLFQB4eYxwPgFaC2BbwzK3f12oO
+         4DKEUQ/16H07UQBCeIjRfAwsr8SaRJZHzOwng2CXT03XZXiep0v7vdxxPefR4k3SxTU5
+         UPmlLu1qGCdMFyYCXakb2ueiZ7R8cFISSWE0cf6EqyYTKgdhg9JPEeFovoy2eBRKMd01
+         kJAg==
+X-Gm-Message-State: AO0yUKXFqIIXMV/+KUPWcLGtxKh8OB55TejcZDrRQVQwoP+6svh/Ikfq
+        zUDetFkdM0nNOSnMTHTG/AWdnUK6BuQlQinz9LLcBNcMqUi0NQG90rEF1gxk98avquuAFf9gluQ
+        HYySC4cNBFsewG3ol
+X-Received: by 2002:a17:902:f54e:b0:19a:98c9:8cea with SMTP id h14-20020a170902f54e00b0019a98c98ceamr8243569plf.39.1677688782459;
+        Wed, 01 Mar 2023 08:39:42 -0800 (PST)
+X-Google-Smtp-Source: AK7set+qO4JpSY8sVTIOnTnJXuzwrWx71YibPF0ctGLZforUa7b2hGsadOAQOW8IGnCxDARvr/Jtpg==
+X-Received: by 2002:a17:902:f54e:b0:19a:98c9:8cea with SMTP id h14-20020a170902f54e00b0019a98c98ceamr8243541plf.39.1677688782148;
+        Wed, 01 Mar 2023 08:39:42 -0800 (PST)
+Received: from localhost.localdomain ([240d:1a:c0d:9f00:ca6:1aff:fead:cef4])
+        by smtp.gmail.com with ESMTPSA id x25-20020a63b219000000b00502ecc282e2sm7603216pge.5.2023.03.01.08.39.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Mar 2023 08:39:41 -0800 (PST)
+From:   Shigeru Yoshida <syoshida@redhat.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Shigeru Yoshida <syoshida@redhat.com>,
+        "sjur . brandeland @ stericsson . com" 
+        <sjur.brandeland@stericsson.com>,
+        syzbot+b563d33852b893653a9e@syzkaller.appspotmail.com
+Subject: [PATCH net v2] net: caif: Fix use-after-free in cfusbl_device_notify()
+Date:   Thu,  2 Mar 2023 01:39:13 +0900
+Message-Id: <20230301163913.391304-1-syoshida@redhat.com>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT082:EE_|MN0PR12MB5786:EE_
-X-MS-Office365-Filtering-Correlation-Id: f2110bdf-e1fc-4793-6d87-08db1a7287e3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YiWBJGDz895Kxro8GTfraBe0rLM8Q6xJEcr75lsh5uaoZQfkO6s/h6FpjGpWxVywVCv7Gpn2veAaL8I0lzRjYC0e1xTIzphaytFFOa9dGLN/fed8sCbDktE+DBZcDysAoGhrDJP/DKdAKoOZPDklCUEK046SJ4HsYYYFdbjPGb/avvhTLg9E5DzwywbYoQxetYs2oZJNHbgbcydUZU2ZlQp7caDURG7EGMm8L4CNvL4RwyeBaneBVuQhYtpUbuIAYlv088khtiuGQ5rQm9knlujAO8ZdroJnDmrwEP0yAy09sV/33jX220bS/y5miMiluHOOY15kFrZFYefKQkL3jz5taX4Gs5iuaZ95OCPrTeAIxpv2Pq6LrCD7GTEwW8Kyx6dQovIr5BOIfLH7uXn2thPKaRG4QljWOUt+wOrHP40QYyvqdf1fxgnqdFuU9Y3wE1noAOfK12l16euPV8aiNoHk367clUQj9ZISF2DRgoitaW/ed49hxvbpSWK1ekk8UE+Tmx6NjElpwzgSpu4dzxJw8sebetNG5CGtmTtbZ8DtyHMAk/rka1DatM+huBindeV2JYqPqUI/sPeJlNxqzdBKro3cCIBXDCUBpNstpcigpZDBF8s/GaC/NdzbqTon8KbShNytrUAkFqdsykgOabg1wZ7eBW3IfbGtw3WSYAbqPaqSiegmf7QaFrstWBVtUFyz5W/cJAcN6KaaBMG2gITAdJsQNSZwLPti0Z/c4Ok=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(346002)(396003)(39860400002)(136003)(376002)(451199018)(46966006)(36840700001)(40470700004)(26005)(2906002)(5660300002)(6666004)(8936002)(8676002)(70206006)(44832011)(70586007)(54906003)(110136005)(316002)(478600001)(186003)(1076003)(36860700001)(2616005)(426003)(47076005)(336012)(82310400005)(41300700001)(83380400001)(4326008)(82740400003)(36756003)(86362001)(40460700003)(356005)(81166007)(40480700001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Mar 2023 16:32:21.1011
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f2110bdf-e1fc-4793-6d87-08db1a7287e3
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT082.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5786
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,SPF_HELO_PASS,
-        SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently vhost_vdpa_cleanup() unmaps the DMA mappings by calling
-`iommu_unmap(v->domain, map->start, map->size);`
-from vhost_vdpa_general_unmap() when the parent vDPA driver doesn't
-provide DMA config operations.
+syzbot reported use-after-free in cfusbl_device_notify() [1].  This
+causes a stack trace like below:
 
-However, the IOMMU domain referred to by `v->domain` is freed in
-vhost_vdpa_free_domain() before vhost_vdpa_cleanup() in
-vhost_vdpa_release() which results in NULL pointer de-reference.
-Accordingly, moving the call to vhost_vdpa_free_domain() in
-vhost_vdpa_cleanup() would makes sense. This will also help
-detaching the dma device in error handling of vhost_vdpa_alloc_domain().
+BUG: KASAN: use-after-free in cfusbl_device_notify+0x7c9/0x870 net/caif/caif_usb.c:138
+Read of size 8 at addr ffff88807ac4e6f0 by task kworker/u4:6/1214
 
-This issue was observed on terminating QEMU with SIGQUIT.
+CPU: 0 PID: 1214 Comm: kworker/u4:6 Not tainted 5.19.0-rc3-syzkaller-00146-g92f20ff72066 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: netns cleanup_net
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0xeb/0x467 mm/kasan/report.c:313
+ print_report mm/kasan/report.c:429 [inline]
+ kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
+ cfusbl_device_notify+0x7c9/0x870 net/caif/caif_usb.c:138
+ notifier_call_chain+0xb5/0x200 kernel/notifier.c:87
+ call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:1945
+ call_netdevice_notifiers_extack net/core/dev.c:1983 [inline]
+ call_netdevice_notifiers net/core/dev.c:1997 [inline]
+ netdev_wait_allrefs_any net/core/dev.c:10227 [inline]
+ netdev_run_todo+0xbc0/0x10f0 net/core/dev.c:10341
+ default_device_exit_batch+0x44e/0x590 net/core/dev.c:11334
+ ops_exit_list+0x125/0x170 net/core/net_namespace.c:167
+ cleanup_net+0x4ea/0xb00 net/core/net_namespace.c:594
+ process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
+ </TASK>
 
-Fixes: 037d4305569a ("vhost-vdpa: call vhost_vdpa_cleanup during the release")
-Signed-off-by: Gautam Dawar <gautam.dawar@amd.com>
+When unregistering a net device, unregister_netdevice_many_notify()
+sets the device's reg_state to NETREG_UNREGISTERING, calls notifiers
+with NETDEV_UNREGISTER, and adds the device to the todo list.
+
+Later on, devices in the todo list are processed by netdev_run_todo().
+netdev_run_todo() waits devices' reference count become 1 while
+rebdoadcasting NETDEV_UNREGISTER notification.
+
+When cfusbl_device_notify() is called with NETDEV_UNREGISTER multiple
+times, the parent device might be freed.  This could cause UAF.
+Processing NETDEV_UNREGISTER multiple times also causes inbalance of
+reference count for the module.
+
+This patch fixes the issue by accepting only first NETDEV_UNREGISTER
+notification.
+
+Fixes: 7ad65bf68d70 ("caif: Add support for CAIF over CDC NCM USB interface")
+CC: sjur.brandeland@stericsson.com <sjur.brandeland@stericsson.com>
+Link: https://syzkaller.appspot.com/bug?id=c3bfd8e2450adab3bffe4d80821fbbced600407f [1]
+Reported-by: syzbot+b563d33852b893653a9e@syzkaller.appspotmail.com
+Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
 ---
- drivers/vhost/vdpa.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/caif/caif_usb.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index ec32f785dfde..b7657984dd8d 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -1134,6 +1134,7 @@ static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
+diff --git a/net/caif/caif_usb.c b/net/caif/caif_usb.c
+index ebc202ffdd8d..bf61ea4b8132 100644
+--- a/net/caif/caif_usb.c
++++ b/net/caif/caif_usb.c
+@@ -134,6 +134,9 @@ static int cfusbl_device_notify(struct notifier_block *me, unsigned long what,
+ 	struct usb_device *usbdev;
+ 	int res;
  
- err_attach:
- 	iommu_domain_free(v->domain);
-+	v->domain = NULL;
- 	return ret;
- }
- 
-@@ -1178,6 +1179,7 @@ static void vhost_vdpa_cleanup(struct vhost_vdpa *v)
- 			vhost_vdpa_remove_as(v, asid);
- 	}
- 
-+	vhost_vdpa_free_domain(v);
- 	vhost_dev_cleanup(&v->vdev);
- 	kfree(v->vdev.vqs);
- }
-@@ -1250,7 +1252,6 @@ static int vhost_vdpa_release(struct inode *inode, struct file *filep)
- 	vhost_vdpa_clean_irq(v);
- 	vhost_vdpa_reset(v);
- 	vhost_dev_stop(&v->vdev);
--	vhost_vdpa_free_domain(v);
- 	vhost_vdpa_config_put(v);
- 	vhost_vdpa_cleanup(v);
- 	mutex_unlock(&d->mutex);
++	if (what == NETDEV_UNREGISTER && dev->reg_state >= NETREG_UNREGISTERED)
++		return 0;
++
+ 	/* Check whether we have a NCM device, and find its VID/PID. */
+ 	if (!(dev->dev.parent && dev->dev.parent->driver &&
+ 	      strcmp(dev->dev.parent->driver->name, "cdc_ncm") == 0))
 -- 
-2.30.1
+2.39.0
 
