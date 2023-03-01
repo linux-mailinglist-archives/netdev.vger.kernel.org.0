@@ -2,130 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C39336A6D0D
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 14:32:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECECF6A6D3A
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 14:42:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229496AbjCANcy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 08:32:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54416 "EHLO
+        id S229881AbjCANmF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 08:42:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbjCANcx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 08:32:53 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FBF48699
-        for <netdev@vger.kernel.org>; Wed,  1 Mar 2023 05:32:51 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id l24-20020a25b318000000b007eba3f8e3baso273366ybj.4
-        for <netdev@vger.kernel.org>; Wed, 01 Mar 2023 05:32:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1677677570;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=jAF5ywvz4PTuwTf1oGMAqhM+HsiHCV+LLEpgHI/vUxM=;
-        b=E8q6mifWchHIbVsJlDmFYahcv937vRW7059iD63LKMPzdMRMMqa4Ysj6zyQ6aq0Wg/
-         3Myp+ebmicC5xim3fFejitHHOoIi43xFcpsvm+6sGJ7slg0thJ21mzYkoIMsgT8+3+4C
-         oHqEn/bocgFufYXNJkQ+bf4udNjK24Ee+MOdA+HFL6yN4XsXBlpZfW8k46VxGKZrCwlj
-         YDx/MI0c+bo7Mn0VnROZ8grgprnqRRj/xioiYb45HExVMmSBg0tk+82j5DQtckoM2z2r
-         CMiGLW1wqkfuhNB8pC3Q3uYUoYOHUawv/Sj5/gJxDYl8boiOq8C0lDSL4mk9XWcGdS0A
-         suvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677677570;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=jAF5ywvz4PTuwTf1oGMAqhM+HsiHCV+LLEpgHI/vUxM=;
-        b=2gKHkbh88L9xmnXrwahlf9YeSXQmddDQPW4eIm5lhwtHxzaVW58QRm9WiPrscMaN+2
-         yCaId/aDkxwDc10t/gjfRx7pEbYSqMB5DxzXQB4+wJHOG+tzgbeocsGkcgyInkYxHi29
-         ANmCGnJtgwFsYpFST+0LuVko/XFY1u1uKhzuRT+uFS79i4mgVf47GvlfF0ENeA4P+OOt
-         EGV6XAYdBk753KbgluZtxuOwStykTVIJQYOVHICxBf5CUILAAPl4UIU80+UWZvRlAha4
-         YQxY2vKPqTLkkZS/GcRLeDjoAjw57gZlDfdIksn/qiBN963HkYnvN9AFXGE7l6iYzFU9
-         ZXmQ==
-X-Gm-Message-State: AO0yUKWwk5VHi/pO4G+6UNEGEw4+rBlBUIHRGK/yzjZ2OS9ZrQjUl+Kx
-        65EUQt7zxXPGk2ymDWL4QI5YJ4MSM/vk9g==
-X-Google-Smtp-Source: AK7set/mHF0+LtzlESnbaX6nlia1p+nMEr9Led30bj6Jl1RCv2Ga22C6Sv/iTk5IRZbtOhjRfIZU/WSepR7HHw==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a25:9f0a:0:b0:a36:3875:564a with SMTP id
- n10-20020a259f0a000000b00a363875564amr3366922ybq.2.1677677570343; Wed, 01 Mar
- 2023 05:32:50 -0800 (PST)
-Date:   Wed,  1 Mar 2023 13:32:47 +0000
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.40.0.rc0.216.gc4246ad0f0-goog
-Message-ID: <20230301133247.2346111-1-edumazet@google.com>
-Subject: [PATCH net] net: use indirect calls helpers for sk_exit_memory_pressure()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        Brian Vazquez <brianvv@google.com>,
-        Florian Westphal <fw@strlen.de>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229616AbjCANmA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 08:42:00 -0500
+Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE9903E602;
+        Wed,  1 Mar 2023 05:41:55 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VctY7I7_1677678110;
+Received: from 30.221.150.55(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VctY7I7_1677678110)
+          by smtp.aliyun-inc.com;
+          Wed, 01 Mar 2023 21:41:51 +0800
+Message-ID: <2d07c847-f865-06d6-c6b6-8f1a97627a33@linux.alibaba.com>
+Date:   Wed, 1 Mar 2023 21:41:49 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.7.2
+Subject: Re: [PATCH net v2] net/smc: fix application data exception
+Content-Language: en-US
+To:     Heiko Carstens <hca@linux.ibm.com>
+Cc:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
+        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        David Howells <dhowells@redhat.com>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Will Deacon <will.deacon@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>
+References: <1676529545-32741-1-git-send-email-alibuda@linux.alibaba.com>
+ <Y/5J30kmv1cPc7nE@osiris>
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+In-Reply-To: <Y/5J30kmv1cPc7nE@osiris>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.7 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,NORMAL_HTTP_TO_IP,NUMERIC_HTTP_ADDR,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Brian Vazquez <brianvv@google.com>
 
-Florian reported a regression and sent a patch with the following
-changelog:
 
-<quote>
- There is a noticeable tcp performance regression (loopback or cross-netns),
- seen with iperf3 -Z (sendfile mode) when generic retpolines are needed.
+On 3/1/23 2:37 AM, Heiko Carstens wrote:
+> On Thu, Feb 16, 2023 at 02:39:05PM +0800, D. Wythe wrote:
+>> From: "D. Wythe" <alibuda@linux.alibaba.com>
+>>
+>> There is a certain probability that following
+>> exceptions will occur in the wrk benchmark test:
+>>
+>> Running 10s test @ http://11.213.45.6:80
+>>    8 threads and 64 connections
+>>    Thread Stats   Avg      Stdev     Max   +/- Stdev
+>>      Latency     3.72ms   13.94ms 245.33ms   94.17%
+>>      Req/Sec     1.96k   713.67     5.41k    75.16%
+>>    155262 requests in 10.10s, 23.10MB read
+>> Non-2xx or 3xx responses: 3
+>>
+>> We will find that the error is HTTP 400 error, which is a serious
+>> exception in our test, which means the application data was
+>> corrupted.
+>>
+>> Consider the following scenarios:
+>>
+>> CPU0                            CPU1
+>>
+>> buf_desc->used = 0;
+>>                                  cmpxchg(buf_desc->used, 0, 1)
+>>                                  deal_with(buf_desc)
+>>
+>> memset(buf_desc->cpu_addr,0);
+>>
+>> This will cause the data received by a victim connection to be cleared,
+>> thus triggering an HTTP 400 error in the server.
+>>
+>> This patch exchange the order between clear used and memset, add
+>> barrier to ensure memory consistency.
+>>
+>> Fixes: 1c5526968e27 ("net/smc: Clear memory when release and reuse buffer")
+>> Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+>> ---
+>> v2: rebase it with latest net tree.
+>>
+>>   net/smc/smc_core.c | 17 ++++++++---------
+>>   1 file changed, 8 insertions(+), 9 deletions(-)
+>>
+>> diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+>> index c305d8d..c19d4b7 100644
+>> --- a/net/smc/smc_core.c
+>> +++ b/net/smc/smc_core.c
+>> @@ -1120,8 +1120,9 @@ static void smcr_buf_unuse(struct smc_buf_desc *buf_desc, bool is_rmb,
+>>   
+>>   		smc_buf_free(lgr, is_rmb, buf_desc);
+>>   	} else {
+>> -		buf_desc->used = 0;
+>> -		memset(buf_desc->cpu_addr, 0, buf_desc->len);
+>> +		/* memzero_explicit provides potential memory barrier semantics */
+>> +		memzero_explicit(buf_desc->cpu_addr, buf_desc->len);
+>> +		WRITE_ONCE(buf_desc->used, 0);
+> 
+> This looks odd to me. memzero_explicit() is only sort of a compiler
+> barrier, since it is a function call, but not a real memory barrier.
 
- With SK_RECLAIM_THRESHOLD checks gone number of calls to enter/leave
- memory pressure happen much more often. For TCP indirect calls are
- used.
+Hi Heiko,
 
- We can't remove the if-set-return short-circuit check in
- tcp_enter_memory_pressure because there are callers other than
- sk_enter_memory_pressure.  Doing a check in the sk wrapper too
- reduces the indirect calls enough to recover some performance.
+Thanks for you point out, the semantics of memzero_explicit
+is exactly what you said. But my original intention is
+just wants to ensure the order relationship between memset and the assignment.
+I'm not really sure whether a CPU memory barrier is needed here.
 
- Before,
- 0.00-60.00  sec   322 GBytes  46.1 Gbits/sec                  receiver
+> You may want to check Documentation/memory-barriers.txt and
+> Documentation/atomic_t.txt.
+> 
+> To me the proper solution looks like buf_desc->used should be converted to
+> an atomic_t, and then you could do:
+> 
+> 	memset(buf_desc->cpu_addr, 0, buf_desc->len);
+> 	smp_mb__before_atomic();
+> 	atomic_set(&buf_desc->used, 0);
 
- After:
- 0.00-60.04  sec   359 GBytes  51.4 Gbits/sec                  receiver
+Anyhow, your solution is definitely correct, because that CPU memory barrier
+(smp_mb__before_atomic) implies the compiler barrier.
 
- "iperf3 -c $peer -t 60 -Z -f g", connected via veth in another netns.
-</quote>
+> and in a similar way use atomic_cmpxchg() instead of the now used cmpxchg()
+> for the part that sets buf_desc->used to 1.
+> 
+> Adding experts to cc, since s390 has such strong memory ordering semantics
+> that you can basically do whatever you want without breaking anything. So I
+> don't consider myself an expert here at all. :)
+> 
+> But given that this is common code, let's make sure this is really correct
+Thank you for your comments again. :-), I am looking up some more information,
+and I believe I can reply to you soon.
 
-It seems we forgot to upstream this indirect call mitigation we
-had for years, lets do this instead.
+best wishes,
+D. Wythe
 
-[edumazet] - It seems we forgot to upstream this indirect call
-             mitigation we had for years, let's do this instead.
-           - Changed to INDIRECT_CALL_INET_1() to avoid bots reports.
 
-Fixes: 4890b686f408 ("net: keep sk->sk_forward_alloc as small as possible")
-Reported-by: Florian Westphal <fw@strlen.de>
-Link: https://lore.kernel.org/netdev/20230227152741.4a53634b@kernel.org/T/
-Signed-off-by: Brian Vazquez <brianvv@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- net/core/sock.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 341c565dbc262fcece1c5b410609d910a68edcb0..c258887953905c340ad6deab8b66cbf45ecbf178 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -2818,7 +2818,8 @@ static void sk_enter_memory_pressure(struct sock *sk)
- static void sk_leave_memory_pressure(struct sock *sk)
- {
- 	if (sk->sk_prot->leave_memory_pressure) {
--		sk->sk_prot->leave_memory_pressure(sk);
-+		INDIRECT_CALL_INET_1(sk->sk_prot->leave_memory_pressure,
-+				     tcp_leave_memory_pressure, sk);
- 	} else {
- 		unsigned long *memory_pressure = sk->sk_prot->memory_pressure;
- 
--- 
-2.40.0.rc0.216.gc4246ad0f0-goog
+
+
 
