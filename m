@@ -2,114 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 040666A7262
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 18:54:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66E446A7269
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 18:55:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229708AbjCARyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 12:54:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51880 "EHLO
+        id S229540AbjCARzn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 12:55:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbjCARyL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 12:54:11 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96F3E420E
-        for <netdev@vger.kernel.org>; Wed,  1 Mar 2023 09:53:53 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id l1so11073610wry.12
-        for <netdev@vger.kernel.org>; Wed, 01 Mar 2023 09:53:53 -0800 (PST)
+        with ESMTP id S229486AbjCARzm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 12:55:42 -0500
+Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E56F6474D6
+        for <netdev@vger.kernel.org>; Wed,  1 Mar 2023 09:55:40 -0800 (PST)
+Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-1763e201bb4so352371fac.1
+        for <netdev@vger.kernel.org>; Wed, 01 Mar 2023 09:55:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1677693231;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=SMt7axMQbQeEE0CBN+7cLsm38pqjF8+UDAWISk+ju1w=;
-        b=Y48/7TJMkuAooHPX/5fCy8Pu2KlC0b1QWLaHlJRC1A/cTfejiS/pqkaP/5RkbpSiMt
-         j6nBcxPY5VMGju2hjsyHsgOxGoHQQM+5V1LpGh+8XemefhdyP8DDypNpKFrLLvEyx8TM
-         rtx8G0kLIqvH+r+VFHUsG+culSCKYx5HqVJe/IAdofHC4bsDnv3y7RZWSWITY4B8QI5X
-         d3Tn2At1n15kW3pl6xT4UV22b5k7qwCyKigV/cO2k5d71TtWm/1Cv1GcmhK94oHCssbj
-         3rhoc1SuMHo9W99kc8fOomy6mt9WQvN9ck7mgz7Evd6pL/nUnsJnL16Kdtn5MrSU76W8
-         JLSg==
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=lW9USzRjSNKQcr3Hd3xJSw/v5dVfuxODJ3A3WZVp0uU=;
+        b=AFs2vJWDFrLqGzqYeUdTXRhtZoHCVXhHUhHyeMISPRpXjEyXTreLl02HGOCiIsMevE
+         aXBD8Fv0f67yGbYPaUPZJkRH9iXg2bPc0VlNdsyhPj4plM8plBFG7OPpXE23OQr7zAao
+         7Q5bFJLVIb3jGdYXggB3Wx9a6kj7vKvVPKZCVL75oS1J3REUKp+Uj94yNhBEubImQJLL
+         AdxlKYrXp/SpFdTO+C8MbMo8ypXVgLfuI1Ell1iX650mt5EhY+Gm2+3IoIxAZa4a7/CB
+         yMgvffw8n86PuLHcJUieiJa+IscckXLtp2J9mSED+D7rb5aLUlktMz6fi+5RuyNZm5Y3
+         HpyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677693231;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=SMt7axMQbQeEE0CBN+7cLsm38pqjF8+UDAWISk+ju1w=;
-        b=UW2HwwreJcBrT5xqgEZFVArUpTxrC40yTcqC9poOgJ5H5HIDEguHsn1G/XcluJJ3/e
-         s54QwwaW9nL4JJXiFtP4Ec7M/K6DacCf+QXTR6tufs3z7OAoDgg7JxUxo4HOI7hop9rm
-         /E6wOLauo+6UsAGOTkHNYgcQPnbtLYxaF11FhcXbojpSp6FZFOvARq+KApee6dmyhtXK
-         ANO0Hay0MjvL596+Ey9D5lPpP0xH52h4aiF3uraB486TCZLEBHdp1ZrO/jBuID7aBsEb
-         k0cH7E2wnoLyUY9OE2+dX8zWFxyPxCZnIJ5iUtwGui6n6hsEyQeKf0SDXTrLv/YXfl52
-         3yvw==
-X-Gm-Message-State: AO0yUKVPoo6wqIEGMvlrGToQFmMTPrgg6CsDRj7oxx/uphh46ppIZumE
-        R4pUzeH1SXcGdDWcJMNi+nLqbnDz5TDg98fTUxY=
-X-Google-Smtp-Source: AK7set9z6uX2WMIASh8NP4bcA8VPH95sb0tr3ntszKOnHfUxWEWFiB7TkTqLTN9IRYFytqWgysFq+lB93lhX65Q89wc=
-X-Received: by 2002:a5d:4e44:0:b0:2c5:fd95:c495 with SMTP id
- r4-20020a5d4e44000000b002c5fd95c495mr1543334wrt.4.1677693231489; Wed, 01 Mar
- 2023 09:53:51 -0800 (PST)
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=lW9USzRjSNKQcr3Hd3xJSw/v5dVfuxODJ3A3WZVp0uU=;
+        b=aK0yF9+vNOfusZ+IjmNIF7xCx96hYYmbaOFg6qhC7mfm5W4RrdL99XcacbgcSOjw7v
+         quA5ajwjUYq3LwCd1uDbQIb7UNFYwCvnTgmHhEjw6ZhpNZMz5cN7IJ3KD6yD+QiyXDtl
+         CCDUm0ZJyVUKLIgKn2ZkkaPMEifUIdDjUTywmB1m3msvmkjPNW/Q23DI49T+e4jrB9Wq
+         sGvn4tXJphJ9XpPVz5PXrhm37JOkZjJc4LURmVLnxpj7pSzykTMG9YICHzq+leoKtWve
+         vQ4w+Gj+X17H48RnJUxnZeqC2iBtF7k2toiVx8qBYOmU0jflaquXiIXr1flwYxBMboX1
+         WfIA==
+X-Gm-Message-State: AO0yUKVtZBVl25zyy7mzwVpSfYBmZzmpPjjVfEf/+HhSqRg1PGNxIGtn
+        gJxvT+FzX//PNNrMqZo2Y3mG0pDUUUqob+eI
+X-Google-Smtp-Source: AK7set95LKBtipZzpYbeJfd95ANJd4uwmQb29UZ+jkIclSkzBVeNqAhQtdUvLivzlUxFhGGL0ubw5Q==
+X-Received: by 2002:a05:6870:c1ce:b0:163:1b4d:d58a with SMTP id i14-20020a056870c1ce00b001631b4dd58amr4642478oad.33.1677693340232;
+        Wed, 01 Mar 2023 09:55:40 -0800 (PST)
+Received: from ?IPV6:2804:1b3:7000:b7ef:4775:7234:d5d9:b9b4? ([2804:1b3:7000:b7ef:4775:7234:d5d9:b9b4])
+        by smtp.gmail.com with ESMTPSA id q3-20020a056870730300b0017289a068c0sm4566794oal.46.2023.03.01.09.55.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Mar 2023 09:55:39 -0800 (PST)
+Message-ID: <02d77548-3257-0293-60c5-2b1a13079922@mojatatu.com>
+Date:   Wed, 1 Mar 2023 14:55:37 -0300
 MIME-Version: 1.0
-Received: by 2002:adf:a35b:0:0:0:0:0 with HTTP; Wed, 1 Mar 2023 09:53:50 -0800 (PST)
-Reply-To: sackrobert@yandex.com
-From:   Robert Sack <felixfernando.6500@gmail.com>
-Date:   Wed, 1 Mar 2023 18:53:50 +0100
-Message-ID: <CAA6riO2TGGFJijq8=k9NOcCTrcS-8FgUP4rYknrHdBEhLfYb3Q@mail.gmail.com>
-Subject: INVESTMENT
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=7.9 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,LOTS_OF_MONEY,MONEY_FREEMAIL_REPTO,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM,UNDISC_MONEY
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:42c listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [felixfernando.6500[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [felixfernando.6500[at]gmail.com]
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        *  3.0 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  0.0 MONEY_FREEMAIL_REPTO Lots of money from someone using free
-        *      email?
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-        *  3.0 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-X-Spam-Level: *******
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCHv2 iproute2] u32: fix TC_U32_TERMINAL printing
+Content-Language: en-US
+To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
+Cc:     David Ahern <dsahern@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>
+References: <20230301142100.1533509-1-liuhangbin@gmail.com>
+From:   Victor Nogueira <victor@mojatatu.com>
+In-Reply-To: <20230301142100.1533509-1-liuhangbin@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Partner,
+On 01/03/2023 11:21, Hangbin Liu wrote:
+> We previously printed an asterisk if there was no 'sel' or 'TC_U32_TERMINAL'
+> flag. However, commit 1ff22754 ("u32: fix json formatting of flowid")
+> changed the logic to print an asterisk only if there is a 'TC_U32_TERMINAL'
+> flag. Therefore, we need to fix this regression.
+> 
+> Before the fix, the tdc u32 test failed:
+> 
+> 1..11
+> not ok 1 afa9 - Add u32 with source match
+>          Could not match regex pattern. Verify command output:
+> filter protocol ip pref 1 u32 chain 0
+> filter protocol ip pref 1 u32 chain 0 fh 800: ht divisor 1
+> filter protocol ip pref 1 u32 chain 0 fh 800::800 order 2048 key ht 800 bkt 0 *flowid 1:1 not_in_hw
+>    match 7f000001/ffffffff at 12
+>          action order 1: gact action pass
+>           random type none pass val 0
+>           index 1 ref 1 bind 1
+> 
+> After fix, the test passed:
+> 1..11
+> ok 1 afa9 - Add u32 with source match
+> 
+> Fixes: 1ff227545ce1 ("u32: fix json formatting of flowid")
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 
-My Name is Mr.Robert Sack from  the United Kingdom.
-It is my resolve to contact you for an investment proposal.
-I have a client who owns a pool of funds worth Eight Million,Five
-Hundred Thousand British Pounds(=C2=A38.5m)
-and wants to invest in any viable and profitable business that has
-good returns on investment(ROI)
-such as Manufacturing, Agriculture, Real Estate,
-Hoteling,Education,trading and others, in an effort to expand his
-business empire globally.
+Reviewed-by: Victor Nogueira <victor@mojatatu.com>
 
-If you choose to partner with my client,please indicate.
+> ---
+> v2: add tdc test result in the commit description
+> ---
+>   tc/f_u32.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/tc/f_u32.c b/tc/f_u32.c
+> index bfe9e5f9..de2d0c9e 100644
+> --- a/tc/f_u32.c
+> +++ b/tc/f_u32.c
+> @@ -1273,7 +1273,7 @@ static int u32_print_opt(struct filter_util *qu, FILE *f, struct rtattr *opt,
+>   	if (tb[TCA_U32_CLASSID]) {
+>   		__u32 classid = rta_getattr_u32(tb[TCA_U32_CLASSID]);
+>   		SPRINT_BUF(b1);
+> -		if (sel && (sel->flags & TC_U32_TERMINAL))
+> +		if (!sel || !(sel->flags & TC_U32_TERMINAL))
+>   			print_string(PRINT_FP, NULL, "*", NULL);
+>   
+>   		print_string(PRINT_ANY, "flowid", "flowid %s ",
 
-Thank you in anticipation as I look forward to reading your reply.
-
-Mr. Robert Sack
-International Financial Consultant
