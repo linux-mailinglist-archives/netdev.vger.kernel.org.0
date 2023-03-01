@@ -2,71 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE2716A65AC
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 03:42:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 909BE6A661D
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 04:02:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229805AbjCACmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Feb 2023 21:42:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54418 "EHLO
+        id S229834AbjCADCM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Feb 2023 22:02:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229672AbjCACmF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 21:42:05 -0500
-Received: from out30-100.freemail.mail.aliyun.com (out30-100.freemail.mail.aliyun.com [115.124.30.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F001837554;
-        Tue, 28 Feb 2023 18:42:01 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0VclalNq_1677638517;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0VclalNq_1677638517)
-          by smtp.aliyun-inc.com;
-          Wed, 01 Mar 2023 10:41:58 +0800
-Date:   Wed, 1 Mar 2023 10:41:57 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "D. Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com,
-        wenjia@linux.ibm.com, jaka@linux.ibm.com, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-rdma@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next v3 0/4] net/smc: Introduce BPF injection
- capability
-Message-ID: <Y/67dZ8X+VoOi10b@TONYMAC-ALIBABA.local>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <1677576294-33411-1-git-send-email-alibuda@linux.alibaba.com>
- <20230228150051.4eeaa121@kernel.org>
+        with ESMTP id S229511AbjCADCL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Feb 2023 22:02:11 -0500
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16FD438B5D;
+        Tue, 28 Feb 2023 19:01:51 -0800 (PST)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 771E92019A4;
+        Wed,  1 Mar 2023 04:01:49 +0100 (CET)
+Received: from smtp.na-rdc02.nxp.com (usphx01srsp001v.us-phx01.nxp.com [134.27.49.11])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 01E24201999;
+        Wed,  1 Mar 2023 04:01:49 +0100 (CET)
+Received: from right.am.freescale.net (right.am.freescale.net [10.81.116.134])
+        by usphx01srsp001v.us-phx01.nxp.com (Postfix) with ESMTP id A59FD4022E;
+        Tue, 28 Feb 2023 20:01:47 -0700 (MST)
+From:   Li Yang <leoyang.li@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Bauer <mail@david-bauer.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Li Yang <leoyang.li@nxp.com>,
+        Viorel Suman <viorel.suman@nxp.com>,
+        Wei Fang <wei.fang@nxp.com>
+Subject: [PATCH RESEND v2 1/2] net: phy: at803x: fix the wol setting functions
+Date:   Tue, 28 Feb 2023 21:01:25 -0600
+Message-Id: <20230301030126.18494-1-leoyang.li@nxp.com>
+X-Mailer: git-send-email 2.25.1.377.g2d2118b
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230228150051.4eeaa121@kernel.org>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 28, 2023 at 03:00:51PM -0800, Jakub Kicinski wrote:
-> On Tue, 28 Feb 2023 17:24:50 +0800 D. Wythe wrote:
-> > From: "D. Wythe" <alibuda@linux.alibaba.com>
-> > 
-> > This patches attempt to introduce BPF injection capability for SMC,
-> > and add selftest to ensure code stability.
-> 
-> What happened to fixing the issues Al pointed out long, long time ago?
-> 
-> https://lore.kernel.org/all/YutBc9aCQOvPPlWN@ZenIV/
+In 7beecaf7d507 ("net: phy: at803x: improve the WOL feature"), it seems
+not correct to use a wol_en bit in a 1588 Control Register which is only
+available on AR8031/AR8033(share the same phy_id) to determine if WoL is
+enabled.  Change it back to use AT803X_INTR_ENABLE_WOL for determining
+the WoL status which is applicable on all chips supporting wol. Also
+update the at803x_set_wol() function to only update the 1588 register on
+chips having it.  After this change, disabling wol at probe from
+d7cd5e06c9dd ("net: phy: at803x: disable WOL at probe") is no longer
+needed.  So that part is removed.
 
-Actually, this patch set is going to replace the patch of TCP ULP for
-SMC. If this patch set is accepted, I am going to revert that patch.
+Fixes: 7beecaf7d507b ("net: phy: at803x: improve the WOL feature")
+Signed-off-by: Li Yang <leoyang.li@nxp.com>
+Reviewed-by: Viorel Suman <viorel.suman@nxp.com>
+Reviewed-by: Wei Fang <wei.fang@nxp.com>
+---
+ drivers/net/phy/at803x.c | 40 ++++++++++++++++------------------------
+ 1 file changed, 16 insertions(+), 24 deletions(-)
 
-For the reasons, the TCP ULP for SMC doesn't use wildly. It's not
-possible to know which applications are suitable to be replaced with
-SMC. But it's easier to detect the behavior of applications and
-determine whether to replace applications with SMC. And this patch set
-is going to fallback to TCP by behavior with eBPF.
+diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+index 22f4458274aa..2102279b3964 100644
+--- a/drivers/net/phy/at803x.c
++++ b/drivers/net/phy/at803x.c
+@@ -461,21 +461,25 @@ static int at803x_set_wol(struct phy_device *phydev,
+ 			phy_write_mmd(phydev, MDIO_MMD_PCS, offsets[i],
+ 				      mac[(i * 2) + 1] | (mac[(i * 2)] << 8));
+ 
+-		/* Enable WOL function */
+-		ret = phy_modify_mmd(phydev, MDIO_MMD_PCS, AT803X_PHY_MMD3_WOL_CTRL,
+-				0, AT803X_WOL_EN);
+-		if (ret)
+-			return ret;
++		/* Enable WOL function for 1588 */
++		if (phydev->drv->phy_id == ATH8031_PHY_ID) {
++			ret = phy_modify_mmd(phydev, MDIO_MMD_PCS, AT803X_PHY_MMD3_WOL_CTRL,
++					0, AT803X_WOL_EN);
++			if (ret)
++				return ret;
++		}
+ 		/* Enable WOL interrupt */
+ 		ret = phy_modify(phydev, AT803X_INTR_ENABLE, 0, AT803X_INTR_ENABLE_WOL);
+ 		if (ret)
+ 			return ret;
+ 	} else {
+-		/* Disable WoL function */
+-		ret = phy_modify_mmd(phydev, MDIO_MMD_PCS, AT803X_PHY_MMD3_WOL_CTRL,
+-				AT803X_WOL_EN, 0);
+-		if (ret)
+-			return ret;
++		/* Disable WoL function for 1588 */
++		if (phydev->drv->phy_id == ATH8031_PHY_ID) {
++			ret = phy_modify_mmd(phydev, MDIO_MMD_PCS, AT803X_PHY_MMD3_WOL_CTRL,
++					AT803X_WOL_EN, 0);
++			if (ret)
++				return ret;
++		}
+ 		/* Disable WOL interrupt */
+ 		ret = phy_modify(phydev, AT803X_INTR_ENABLE, AT803X_INTR_ENABLE_WOL, 0);
+ 		if (ret)
+@@ -510,11 +514,8 @@ static void at803x_get_wol(struct phy_device *phydev,
+ 	wol->supported = WAKE_MAGIC;
+ 	wol->wolopts = 0;
+ 
+-	value = phy_read_mmd(phydev, MDIO_MMD_PCS, AT803X_PHY_MMD3_WOL_CTRL);
+-	if (value < 0)
+-		return;
+-
+-	if (value & AT803X_WOL_EN)
++	value = phy_read(phydev, AT803X_INTR_ENABLE);
++	if (value & AT803X_INTR_ENABLE_WOL)
+ 		wol->wolopts |= WAKE_MAGIC;
+ }
+ 
+@@ -866,9 +867,6 @@ static int at803x_probe(struct phy_device *phydev)
+ 	if (phydev->drv->phy_id == ATH8031_PHY_ID) {
+ 		int ccr = phy_read(phydev, AT803X_REG_CHIP_CONFIG);
+ 		int mode_cfg;
+-		struct ethtool_wolinfo wol = {
+-			.wolopts = 0,
+-		};
+ 
+ 		if (ccr < 0) {
+ 			ret = ccr;
+@@ -887,12 +885,6 @@ static int at803x_probe(struct phy_device *phydev)
+ 			break;
+ 		}
+ 
+-		/* Disable WOL by default */
+-		ret = at803x_set_wol(phydev, &wol);
+-		if (ret < 0) {
+-			phydev_err(phydev, "failed to disable WOL on probe: %d\n", ret);
+-			goto err;
+-		}
+ 	}
+ 
+ 	return 0;
+-- 
+2.38.0
 
-So this is the _fix_ for that patch.
-
-Thank you,
-Tony Lu
