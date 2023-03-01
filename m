@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A298A6A7037
-	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 16:51:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BB086A703B
+	for <lists+netdev@lfdr.de>; Wed,  1 Mar 2023 16:51:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230019AbjCAPvA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 10:51:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43024 "EHLO
+        id S229553AbjCAPvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 10:51:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229620AbjCAPu4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 10:50:56 -0500
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B79CD457D1;
-        Wed,  1 Mar 2023 07:50:55 -0800 (PST)
-Received: by mail-pg1-x529.google.com with SMTP id p6so8011141pga.0;
-        Wed, 01 Mar 2023 07:50:55 -0800 (PST)
+        with ESMTP id S229879AbjCAPvK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 10:51:10 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29AD843476;
+        Wed,  1 Mar 2023 07:51:03 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id oj5so9815070pjb.5;
+        Wed, 01 Mar 2023 07:51:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1677685855;
+        d=gmail.com; s=20210112; t=1677685862;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=faJ7mc6oUHrWjyXNkw+7M0lLdt4KdopPLj9GK5dJLQ4=;
-        b=VfjpdNYz2/0AH/9CFXXWjWYMVdBwCRZsaEyuZRrzhgxq/MSjeB5duIj4SK4NFeDyO4
-         ALCfQKrxu2H4YBzn0TQXYKgMsCcItFGHUmB+KDPwjWSYTiGZbX2rdGAUP4jxdDGPo+dc
-         OFaq2z/CoLgEVFfYcDDQPSO+DvSuDfYQvZoi/NTI3rgIj3Pn1iYt0zRYegO/u+WXTwp4
-         pn90VsDIDS2fe4O02zE9mB4lOrfFzwSZIsYPXVwMbTPOHUjarY6waIvvA06AHliSdvst
-         jx/VQ/K7y21EqAUcONabnbYKVBPJrT7uzyTVFblj3DKyBhC2kBG+J7hthBGCV1rH5NIV
-         FIjQ==
+        bh=yiBzhLzbQr9xtj01CzdjXMDh0hhAbysTY5uSxywJbNo=;
+        b=WzeigffhExQd1H6VPBp1Z6Ms38esWmI24pwo0clFnkOgKGKqH00DwlD371A4PRjBR2
+         Knu5Qz2CNkyrEKCpQvuRt/4gL6tzmj7qYsiqUuAhO4TqGLLQyKnTkvdP62pufu4ErTre
+         xS2MQLAkqhufPfBAkBL2cDwK4e8ZIKlPIdd6TL7yap6gY7++4gAAHiYQi8NSY+DMfcLS
+         qEQGHRIq6g1/U+2XNo1JbHXJWtCLCFBC4E2HGSXgDfyzzqwzGuklWg9HODPIMuE7oNR7
+         l6IFXPhZszuG09dfVDt0WFDMNxiFnAfeDQS1LcjK8ZJ+7+AgIkbA5KgHBCXIwDgYAbdX
+         C2jA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677685855;
+        d=1e100.net; s=20210112; t=1677685862;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=faJ7mc6oUHrWjyXNkw+7M0lLdt4KdopPLj9GK5dJLQ4=;
-        b=aQ6DPQA1ItncIn/qfEeIs0mV3pwBk7uwOALqB3wYsyZwD7KklDdiLxFMxI/tyA/Ibf
-         pYC0ZvxBnfLHcHf+yn3gysLXuQlrVBhSThybaIf2YYOB+q3eh8YPAWq27jh9HsjPao/L
-         qL17JS7ogrspqjVC/NQdVT1DVci632ZOSEREk6fHKI1vQDcaeLbWLGJ8VdpnBYs4cK2W
-         zSNX2TXomvOylOxNX0rEAVXI09SfdVfKsj3qbWm1HH4uzHGlc7iPqeTpg+N7tJP91iRB
-         H/ZZlx82uyvn6sBBmlbD9mxIIe1AUrITxUp5D45hast5m5ZUNpMik4yCbcNPhZpP5YsQ
-         mscg==
-X-Gm-Message-State: AO0yUKWu0TzM6+FLY0O0zpWfUKl/t8flx44n2BVBQoV4Bsdl/wPRV9yA
-        LR+fB6Cr2bRTAnO9wQ293QUZ0HAtpCg=
-X-Google-Smtp-Source: AK7set/vh1mKlCXvIhK+lToen1hsDwejDVcoe1pEmedRIU7g1WSeQX6s91lM2cMPEln9a8hJ6e8oJw==
-X-Received: by 2002:a62:6586:0:b0:5a8:5e6d:28d7 with SMTP id z128-20020a626586000000b005a85e6d28d7mr6867420pfb.0.1677685854774;
-        Wed, 01 Mar 2023 07:50:54 -0800 (PST)
+        bh=yiBzhLzbQr9xtj01CzdjXMDh0hhAbysTY5uSxywJbNo=;
+        b=o56Gu+70NIXJcKSQ0nOkemuIJAsnh/xYqwMZQsIF4VG1LFUYmuIdSVeBW8zYbitYlt
+         59T0503PzjUHS/dOf6QxRNinxlGEpddCWD14x1QTNdyhH0od3G6iENYrXy7PjPxaDM/J
+         9cR5viqfvPsWQly9i78dZedMHJ8FfdPqcByqJ7fMKS527XMvfjCRe4Dlv46yxKssBoib
+         un3gOfVrYIhYfRWQdwl8Perdb8kVYK7pIA5DeBQ/l2/GKTSlpHLT4HJmyImd+ehSI//h
+         XPSxQ/0USiVeN/qgGlPlUGDGWyMiHDFknRpdBtAGxRzTWkhNjtXLMGYLGMD3d0EE9AXl
+         lxsA==
+X-Gm-Message-State: AO0yUKXh38xh+uX0qZk4JPCksAXAfkZAN+3kNN0CKi8ZJgEo7+hG7pnx
+        QPcp/sIKJ/RRhONVeARBH2va4mY7y5Y=
+X-Google-Smtp-Source: AK7set/Ma9BQU9m+/hLf2zoy5RqE3yu0QrMnU7V016PU9FJXk4KPDBR4hJ3MO8TX4xOP3nivklP1JA==
+X-Received: by 2002:a17:90b:4d0b:b0:22b:efa5:d05 with SMTP id mw11-20020a17090b4d0b00b0022befa50d05mr7731973pjb.40.1677685862221;
+        Wed, 01 Mar 2023 07:51:02 -0800 (PST)
 Received: from gatsby.corp.tfbnw.net (75-172-126-232.tukw.qwest.net. [75.172.126.232])
-        by smtp.gmail.com with ESMTPSA id c9-20020a637249000000b00502f20aa4desm7589490pgn.70.2023.03.01.07.50.54
+        by smtp.gmail.com with ESMTPSA id c9-20020a637249000000b00502f20aa4desm7589490pgn.70.2023.03.01.07.51.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Mar 2023 07:50:54 -0800 (PST)
+        Wed, 01 Mar 2023 07:51:01 -0800 (PST)
 From:   Joanne Koong <joannelkoong@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     martin.lau@kernel.org, andrii@kernel.org, ast@kernel.org,
         memxor@gmail.com, daniel@iogearbox.net, netdev@vger.kernel.org,
         toke@kernel.org, Joanne Koong <joannelkoong@gmail.com>
-Subject: [PATCH v13 bpf-next 02/10] bpf: Refactor process_dynptr_func
-Date:   Wed,  1 Mar 2023 07:49:45 -0800
-Message-Id: <20230301154953.641654-3-joannelkoong@gmail.com>
+Subject: [PATCH v13 bpf-next 03/10] bpf: Allow initializing dynptrs in kfuncs
+Date:   Wed,  1 Mar 2023 07:49:46 -0800
+Message-Id: <20230301154953.641654-4-joannelkoong@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230301154953.641654-1-joannelkoong@gmail.com>
 References: <20230301154953.641654-1-joannelkoong@gmail.com>
@@ -72,148 +72,176 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This change cleans up process_dynptr_func's flow to be more intuitive
-and updates some comments with more context.
+This change allows kfuncs to take in an uninitialized dynptr as a
+parameter. Before this change, only helper functions could successfully
+use uninitialized dynptrs. This change moves the memory access check
+(including stack state growing and slot marking) into
+process_dynptr_func(), which both helpers and kfuncs call into.
 
 Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
 ---
- include/linux/bpf_verifier.h |  3 --
- kernel/bpf/verifier.c        | 62 ++++++++++++++++++------------------
- 2 files changed, 31 insertions(+), 34 deletions(-)
+ kernel/bpf/verifier.c | 67 ++++++++++++++-----------------------------
+ 1 file changed, 22 insertions(+), 45 deletions(-)
 
-diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
-index cf1bb1cf4a7b..b26ff2a8f63b 100644
---- a/include/linux/bpf_verifier.h
-+++ b/include/linux/bpf_verifier.h
-@@ -616,9 +616,6 @@ int check_func_arg_reg_off(struct bpf_verifier_env *env,
- 			   enum bpf_arg_type arg_type);
- int check_mem_reg(struct bpf_verifier_env *env, struct bpf_reg_state *reg,
- 		   u32 regno, u32 mem_size);
--struct bpf_call_arg_meta;
--int process_dynptr_func(struct bpf_verifier_env *env, int regno,
--			enum bpf_arg_type arg_type, struct bpf_call_arg_meta *meta);
- 
- /* this lives here instead of in bpf.h because it needs to dereference tgt_prog */
- static inline u64 bpf_trampoline_compute_key(const struct bpf_prog *tgt_prog,
 diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 5cb8b623f639..e0e00509846b 100644
+index e0e00509846b..82e39fc5ed05 100644
 --- a/kernel/bpf/verifier.c
 +++ b/kernel/bpf/verifier.c
-@@ -959,39 +959,49 @@ static int destroy_if_dynptr_stack_slot(struct bpf_verifier_env *env,
- 	return 0;
- }
+@@ -268,7 +268,6 @@ struct bpf_call_arg_meta {
+ 	u32 ret_btf_id;
+ 	u32 subprogno;
+ 	struct btf_field *kptr_field;
+-	u8 uninit_dynptr_regno;
+ };
  
--static bool is_dynptr_reg_valid_uninit(struct bpf_verifier_env *env, struct bpf_reg_state *reg,
--				       int spi)
-+static bool is_dynptr_reg_valid_uninit(struct bpf_verifier_env *env, struct bpf_reg_state *reg)
- {
-+	int spi;
-+
- 	if (reg->type == CONST_PTR_TO_DYNPTR)
- 		return false;
- 
--	/* For -ERANGE (i.e. spi not falling into allocated stack slots), we
--	 * will do check_mem_access to check and update stack bounds later, so
--	 * return true for that case.
-+	spi = dynptr_get_spi(env, reg);
-+
-+	/* -ERANGE (i.e. spi not falling into allocated stack slots) isn't an
-+	 * error because this just means the stack state hasn't been updated yet.
-+	 * We will do check_mem_access to check and update stack bounds later.
- 	 */
--	if (spi < 0)
--		return spi == -ERANGE;
--	/* We allow overwriting existing unreferenced STACK_DYNPTR slots, see
--	 * mark_stack_slots_dynptr which calls destroy_if_dynptr_stack_slot to
--	 * ensure dynptr objects at the slots we are touching are completely
--	 * destructed before we reinitialize them for a new one. For referenced
--	 * ones, destroy_if_dynptr_stack_slot returns an error early instead of
--	 * delaying it until the end where the user will get "Unreleased
-+	if (spi < 0 && spi != -ERANGE)
-+		return false;
-+
-+	/* We don't need to check if the stack slots are marked by previous
-+	 * dynptr initializations because we allow overwriting existing unreferenced
-+	 * STACK_DYNPTR slots, see mark_stack_slots_dynptr which calls
-+	 * destroy_if_dynptr_stack_slot to ensure dynptr objects at the slots we are
-+	 * touching are completely destructed before we reinitialize them for a new
-+	 * one. For referenced ones, destroy_if_dynptr_stack_slot returns an error early
-+	 * instead of delaying it until the end where the user will get "Unreleased
- 	 * reference" error.
- 	 */
- 	return true;
- }
- 
--static bool is_dynptr_reg_valid_init(struct bpf_verifier_env *env, struct bpf_reg_state *reg,
--				     int spi)
-+static bool is_dynptr_reg_valid_init(struct bpf_verifier_env *env, struct bpf_reg_state *reg)
- {
- 	struct bpf_func_state *state = func(env, reg);
--	int i;
-+	int i, spi;
- 
--	/* This already represents first slot of initialized bpf_dynptr */
-+	/* This already represents first slot of initialized bpf_dynptr.
-+	 *
-+	 * CONST_PTR_TO_DYNPTR already has fixed and var_off as 0 due to
-+	 * check_func_arg_reg_off's logic, so we don't need to check its
-+	 * offset and alignment.
-+	 */
- 	if (reg->type == CONST_PTR_TO_DYNPTR)
- 		return true;
- 
-+	spi = dynptr_get_spi(env, reg);
- 	if (spi < 0)
- 		return false;
- 	if (!state->stack[spi].spilled_ptr.dynptr.first_slot)
-@@ -6215,11 +6225,10 @@ static int process_kptr_func(struct bpf_verifier_env *env, int regno,
+ struct btf *btf_vmlinux;
+@@ -6225,10 +6224,11 @@ static int process_kptr_func(struct bpf_verifier_env *env, int regno,
   * Helpers which do not mutate the bpf_dynptr set MEM_RDONLY in their argument
   * type, and declare it as 'const struct bpf_dynptr *' in their prototype.
   */
--int process_dynptr_func(struct bpf_verifier_env *env, int regno,
--			enum bpf_arg_type arg_type, struct bpf_call_arg_meta *meta)
-+static int process_dynptr_func(struct bpf_verifier_env *env, int regno,
-+			       enum bpf_arg_type arg_type, struct bpf_call_arg_meta *meta)
+-static int process_dynptr_func(struct bpf_verifier_env *env, int regno,
+-			       enum bpf_arg_type arg_type, struct bpf_call_arg_meta *meta)
++static int process_dynptr_func(struct bpf_verifier_env *env, int regno, int insn_idx,
++			       enum bpf_arg_type arg_type)
  {
  	struct bpf_reg_state *regs = cur_regs(env), *reg = &regs[regno];
--	int spi = 0;
++	int err;
  
  	/* MEM_UNINIT and MEM_RDONLY are exclusive, when applied to an
  	 * ARG_PTR_TO_DYNPTR (or ARG_PTR_TO_DYNPTR | DYNPTR_TYPE_*):
-@@ -6228,15 +6237,6 @@ int process_dynptr_func(struct bpf_verifier_env *env, int regno,
- 		verbose(env, "verifier internal error: misconfigured dynptr helper type flags\n");
- 		return -EFAULT;
- 	}
--	/* CONST_PTR_TO_DYNPTR already has fixed and var_off as 0 due to
--	 * check_func_arg_reg_off's logic. We only need to check offset
--	 * and its alignment for PTR_TO_STACK.
--	 */
--	if (reg->type == PTR_TO_STACK) {
--		spi = dynptr_get_spi(env, reg);
--		if (spi < 0 && spi != -ERANGE)
--			return spi;
--	}
- 
- 	/*  MEM_UNINIT - Points to memory that is an appropriate candidate for
- 	 *		 constructing a mutable bpf_dynptr object.
-@@ -6254,7 +6254,7 @@ int process_dynptr_func(struct bpf_verifier_env *env, int regno,
+@@ -6254,23 +6254,23 @@ static int process_dynptr_func(struct bpf_verifier_env *env, int regno,
  	 *		 to.
  	 */
  	if (arg_type & MEM_UNINIT) {
--		if (!is_dynptr_reg_valid_uninit(env, reg, spi)) {
-+		if (!is_dynptr_reg_valid_uninit(env, reg)) {
++		int i;
++
+ 		if (!is_dynptr_reg_valid_uninit(env, reg)) {
  			verbose(env, "Dynptr has to be an uninitialized dynptr\n");
  			return -EINVAL;
  		}
-@@ -6277,7 +6277,7 @@ int process_dynptr_func(struct bpf_verifier_env *env, int regno,
- 			return -EINVAL;
+ 
+-		/* We only support one dynptr being uninitialized at the moment,
+-		 * which is sufficient for the helper functions we have right now.
+-		 */
+-		if (meta->uninit_dynptr_regno) {
+-			verbose(env, "verifier internal error: multiple uninitialized dynptr args\n");
+-			return -EFAULT;
++		/* we write BPF_DW bits (8 bytes) at a time */
++		for (i = 0; i < BPF_DYNPTR_SIZE; i += 8) {
++			err = check_mem_access(env, insn_idx, regno,
++					       i, BPF_DW, BPF_WRITE, -1, false);
++			if (err)
++				return err;
  		}
  
--		if (!is_dynptr_reg_valid_init(env, reg, spi)) {
-+		if (!is_dynptr_reg_valid_init(env, reg)) {
- 			verbose(env,
- 				"Expected an initialized dynptr as arg #%d\n",
- 				regno);
+-		meta->uninit_dynptr_regno = regno;
++		err = mark_stack_slots_dynptr(env, reg, arg_type, insn_idx);
+ 	} else /* MEM_RDONLY and None case from above */ {
+-		int err;
+-
+ 		/* For the reg->type == PTR_TO_STACK case, bpf_dynptr is never const */
+ 		if (reg->type == CONST_PTR_TO_DYNPTR && !(arg_type & MEM_RDONLY)) {
+ 			verbose(env, "cannot pass pointer to const bpf_dynptr, the helper mutates it\n");
+@@ -6306,10 +6306,8 @@ static int process_dynptr_func(struct bpf_verifier_env *env, int regno,
+ 		}
+ 
+ 		err = mark_dynptr_read(env, reg);
+-		if (err)
+-			return err;
+ 	}
+-	return 0;
++	return err;
+ }
+ 
+ static bool arg_type_is_mem_size(enum bpf_arg_type type)
+@@ -6719,7 +6717,8 @@ static int dynptr_ref_obj_id(struct bpf_verifier_env *env, struct bpf_reg_state
+ 
+ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
+ 			  struct bpf_call_arg_meta *meta,
+-			  const struct bpf_func_proto *fn)
++			  const struct bpf_func_proto *fn,
++			  int insn_idx)
+ {
+ 	u32 regno = BPF_REG_1 + arg;
+ 	struct bpf_reg_state *regs = cur_regs(env), *reg = &regs[regno];
+@@ -6932,7 +6931,7 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
+ 		err = check_mem_size_reg(env, reg, regno, true, meta);
+ 		break;
+ 	case ARG_PTR_TO_DYNPTR:
+-		err = process_dynptr_func(env, regno, arg_type, meta);
++		err = process_dynptr_func(env, regno, insn_idx, arg_type);
+ 		if (err)
+ 			return err;
+ 		break;
+@@ -8218,7 +8217,7 @@ static int check_helper_call(struct bpf_verifier_env *env, struct bpf_insn *insn
+ 	meta.func_id = func_id;
+ 	/* check args */
+ 	for (i = 0; i < MAX_BPF_FUNC_REG_ARGS; i++) {
+-		err = check_func_arg(env, i, &meta, fn);
++		err = check_func_arg(env, i, &meta, fn, insn_idx);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -8243,30 +8242,6 @@ static int check_helper_call(struct bpf_verifier_env *env, struct bpf_insn *insn
+ 
+ 	regs = cur_regs(env);
+ 
+-	/* This can only be set for PTR_TO_STACK, as CONST_PTR_TO_DYNPTR cannot
+-	 * be reinitialized by any dynptr helper. Hence, mark_stack_slots_dynptr
+-	 * is safe to do directly.
+-	 */
+-	if (meta.uninit_dynptr_regno) {
+-		if (regs[meta.uninit_dynptr_regno].type == CONST_PTR_TO_DYNPTR) {
+-			verbose(env, "verifier internal error: CONST_PTR_TO_DYNPTR cannot be initialized\n");
+-			return -EFAULT;
+-		}
+-		/* we write BPF_DW bits (8 bytes) at a time */
+-		for (i = 0; i < BPF_DYNPTR_SIZE; i += 8) {
+-			err = check_mem_access(env, insn_idx, meta.uninit_dynptr_regno,
+-					       i, BPF_DW, BPF_WRITE, -1, false);
+-			if (err)
+-				return err;
+-		}
+-
+-		err = mark_stack_slots_dynptr(env, &regs[meta.uninit_dynptr_regno],
+-					      fn->arg_type[meta.uninit_dynptr_regno - BPF_REG_1],
+-					      insn_idx);
+-		if (err)
+-			return err;
+-	}
+-
+ 	if (meta.release_regno) {
+ 		err = -EINVAL;
+ 		/* This can only be set for PTR_TO_STACK, as CONST_PTR_TO_DYNPTR cannot
+@@ -9475,7 +9450,8 @@ static int process_kf_arg_ptr_to_rbtree_node(struct bpf_verifier_env *env,
+ 						  &meta->arg_rbtree_root.field);
+ }
+ 
+-static int check_kfunc_args(struct bpf_verifier_env *env, struct bpf_kfunc_call_arg_meta *meta)
++static int check_kfunc_args(struct bpf_verifier_env *env, struct bpf_kfunc_call_arg_meta *meta,
++			    int insn_idx)
+ {
+ 	const char *func_name = meta->func_name, *ref_tname;
+ 	const struct btf *btf = meta->btf;
+@@ -9672,7 +9648,8 @@ static int check_kfunc_args(struct bpf_verifier_env *env, struct bpf_kfunc_call_
+ 				return -EINVAL;
+ 			}
+ 
+-			ret = process_dynptr_func(env, regno, ARG_PTR_TO_DYNPTR | MEM_RDONLY, NULL);
++			ret = process_dynptr_func(env, regno, insn_idx,
++						  ARG_PTR_TO_DYNPTR | MEM_RDONLY);
+ 			if (ret < 0)
+ 				return ret;
+ 			break;
+@@ -9880,7 +9857,7 @@ static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
+ 	}
+ 
+ 	/* Check the arguments */
+-	err = check_kfunc_args(env, &meta);
++	err = check_kfunc_args(env, &meta, insn_idx);
+ 	if (err < 0)
+ 		return err;
+ 	/* In case of release function, we get register number of refcounted
 -- 
 2.34.1
 
