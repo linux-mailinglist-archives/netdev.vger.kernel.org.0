@@ -2,54 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 434B46A7F7A
-	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 11:02:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9CE16A7F84
+	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 11:03:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230085AbjCBKB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Mar 2023 05:01:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42302 "EHLO
+        id S229794AbjCBKDY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Mar 2023 05:03:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230250AbjCBKBH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Mar 2023 05:01:07 -0500
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on20725.outbound.protection.outlook.com [IPv6:2a01:111:f400:7ea9::725])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8406C18A99
-        for <netdev@vger.kernel.org>; Thu,  2 Mar 2023 02:00:35 -0800 (PST)
+        with ESMTP id S230373AbjCBKCM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Mar 2023 05:02:12 -0500
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF8F943910
+        for <netdev@vger.kernel.org>; Thu,  2 Mar 2023 02:01:44 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dRBXDLXobQrkPu9M1ivGidDIPAahlzTZVX6Raz82ug2WAyPT8AD7I9vW3DbIX0wNLIdoJNId3DYbUr068iDibanbb+JDiBuA8UwpibQA3qkDjFZ2FUXNavSLzf1XZgUPpiKhua6AIgdkjjRWqBLiU27f9M66e91JdMIsjuWK47v1+iOtU2/2ijgRzbbzW7unC0fH2UqpRNH0ISidfPudbqHnDVotCMPDHBEK6k4R31Q9ouzgjnR1kilP1P7RtT62/sW+Wmll/hxN1YAJaWFzz8aBMa8DxXjCXepiM+/kiknr08y5yRR6va/8PLYvU/+MprlWC49ZKhNpFarCpwUgHg==
+ b=ToSVmtKJZPuykejOyOCA/PGK9MoId1qVSVqw+F3EowOfSCyZF839me4sQZN+8IyNjNARYkGlKKAjqfz0rjh9y+MKYUQQL9mNwdHpBGUbwIXRQTnyY3NcEAst1r34IzJ5BSegKu7eJCOdeEWL/pp1REGNUV6BXNppv/jJwzhQmsXQvaGOj1R8ljKLilfZpKF/baWVE+zYUTlPqSkIeWGPXJpMTwPblD/0kjtoqCry+6HPxOll8ODjPt7TwXK0TGe/uvXa6e2uJ22X9CeFuo4u3CxZfryy50V77paE/QpdJTPteeLcxCDuJTVlsFCgxW4jAe7YXBH3z4/97GKvejYzhQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=blB+yIin0Ex5x3g19Ifp7A5ZLaRBGhG2IM9UEC5U+uQ=;
- b=kASeHTXKZhFhBfdLygLN9ITIkTd7eCUzpLIzbkr0i5O/KKUo+C3UCrmoJNHZBJUAswT+y+eUfp6OW2SIOc8+tvMP4dTj9EfZMjAzv/ydUk5EkJgbwqrPMDF3PwST90MtvjIENFC7VDdv5Mdwv5DwfM2LJmC2mJvOvHAAk+rlAERRIuB34X1SLSHQCJx81/27bfmFnWLrjAbGm/vyX52BZLvf9wHTdrvsqVh2bfZeUmKtru5OxbYR9cwSofIU1VdIarposHeK0aGYGbXkesKE33FuH39jAlrdfpunutkQfwEeXOCQYRUFpPUj1ajfJe6FZhaXVyUhkuQHXxBQ40ILWQ==
+ bh=Em64dQQd2jTFUpuNzXAO82pd4eDvPmO78PCBw01qtOc=;
+ b=JJlZHDIrQczQhKIIQbptmIBMnQxKTyAaDfMLKheEGpKcNiZmQKjnEH1zZjfqn+7W2OgzbXFYEzd/AG2jiMy+dk/+G45KwayISTxbL+MpT3VSsc736wpTmLaBdR7yFhvZPv5vV5r+hURAsAN5+swX6WHR2P5X7Y8I84uxsivbKLP47OjEIoX2vXY6FGpnKdTzoD4ESmWfuSJzxmanWXEV9BQ1DPkA8zeAZXSv23VmBD3YpdPkzCTL9dc2VCBLdzpuUueoAbZjAxEcXOFbrGf+2NrstjMzMSDGojU0ldY0LG1adYkRanVoutq9WOyXV7l0taR/sAauD/kaHqHzzN4VeA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=blB+yIin0Ex5x3g19Ifp7A5ZLaRBGhG2IM9UEC5U+uQ=;
- b=ftfbjb5xlD9x+9CB16PeUvY+yidWOmm13wZ6XK0+v4gW+SKDrTGIdApH2XLj5B5z6HyBH/h6bkEwqpTfVv6lxgx0r6H/rk2Xpqcu3xj4VNAkRFmi8ms5EK6hYbGtV2yajcGQBaEVbtVNNBs0Qx58Hqbt2pTbJILCYxUt5R0bbhc=
+ bh=Em64dQQd2jTFUpuNzXAO82pd4eDvPmO78PCBw01qtOc=;
+ b=HJSEuYP++/GRipmq2k2nWqq4T2vswo22g6Myr6Gdn7tuimcpz5d7odtES+CY2bD8moZdVWhbGPPEP/HCfqV0Zm6wbzutDqoxxXrYUok+6abtp2Ll/MxmSssf96/cXMK3pAJLJ6pmyWA7tJ6OX8rcjBHLLgGFc86E9QGIXHquBMA=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by SJ0PR13MB5692.namprd13.prod.outlook.com (2603:10b6:a03:407::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.18; Thu, 2 Mar
- 2023 09:58:56 +0000
+ 2023 09:58:58 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::85f5:bdb:fb9e:294c%3]) with mapi id 15.20.6156.018; Thu, 2 Mar 2023
- 09:58:56 +0000
+ 09:58:58 +0000
 From:   Simon Horman <simon.horman@corigine.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
+        Huanhuan Wang <huanhuan.wang@corigine.com>,
+        Louis Peens <louis.peens@corigine.com>,
         Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net 0/3] nfp: fix incorrect IPsec checksum handling
-Date:   Thu,  2 Mar 2023 10:58:27 +0100
-Message-Id: <20230302095830.2512535-1-simon.horman@corigine.com>
+Subject: [PATCH net 1/3] nfp: fix incorrectly set csum flag for nfd3 path
+Date:   Thu,  2 Mar 2023 10:58:28 +0100
+Message-Id: <20230302095830.2512535-2-simon.horman@corigine.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230302095830.2512535-1-simon.horman@corigine.com>
+References: <20230302095830.2512535-1-simon.horman@corigine.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: AS4PR10CA0008.EURPRD10.PROD.OUTLOOK.COM
@@ -58,86 +62,143 @@ X-ClientProxiedBy: AS4PR10CA0008.EURPRD10.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SJ0PR13MB5692:EE_
-X-MS-Office365-Filtering-Correlation-Id: 924d9c35-b8be-4e07-072b-08db1b04bc73
+X-MS-Office365-Filtering-Correlation-Id: 7bdfd4c2-e859-43f8-209e-08db1b04bda9
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: x7O7EfHFZOCZ5Zjf/kBvhe9rgZVr7lulU0LT3TIxIooWUyjQFtaZVswqog7NQqACalV7/HDdh2zL7UCnf/3CQW6AHlYK1dDE0yAjTgHyZ9e8CLcZLUJ4yJ+/351xxB2uiWi+6J3Bw3ofpQc5aAQ9+BTgl9h3VJ/TWYTGkjAePJV/2e50n4hv4nTWSpugSy97wqc+0UwvdZ9uKcYjqD0JAg2tosHavDdg9/SqdpXeFeR4T4qOFWIWlFnSGhdsC+lZhN34TMNG/TIwd28dQInFNkZlYeSTS1DiPDdkDSsJ3EQBnapjt7KSfZbPfuzTllD8DXCuUiEpto6PZ5Pu1eEfaqP+2HXg79OQ7k3QIw37bEUTwLg/06Xzjsf/jyKA5Hl77fzmY2o9gLSjwZSWhpsJQDoyNqDpjy9U/17BDC5y5CugmwGEz1e9pjeXxXcyUK6N9n/WUHdIxv94yKHgRFcsqX3rirdaIXCJWJ8WGHBLw3Xc/2rFkhcRfryAXwWCjgrahpfBtiAUog+9vTrC0KqZLyWFy5NI6Ht8/3jx7KPb/Ub0kNRd+AaO5C+5J1aUqLvHSUcK50pdVrUP1EVU+mJIL7P2jIXtqeWkpVh50i8xX/y/kTdp9SuZB1T4OWfX+Z653G0Ied3bdKQvmpxyuWJFYQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(136003)(376002)(396003)(366004)(39840400004)(451199018)(5660300002)(2616005)(44832011)(6666004)(4744005)(107886003)(110136005)(52116002)(38100700002)(6486002)(478600001)(41300700001)(186003)(36756003)(6512007)(8936002)(6506007)(1076003)(316002)(4326008)(86362001)(66556008)(66476007)(8676002)(66946007)(83380400001)(2906002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: wg9ixQJuwtwqtFKwzmlwxf+6owWRm9q5AjEDqcKheORwrc1zkj/68JhJuIRgoXhBiNkANTQCpnA5s1Ap1y1R7FhntOJPRVe/V8gOe7K+lsTxW5WS5xmiSE5zzsk/TFmEHtmwx5qx1JXPN59UuoJC4UK3s7g421JU56i7KL0xmUvMvJMHNYR6kmmN9yVbRHn97/QHlt0ocQavJmgrkX3Sm9sRaZp/fvA8PUFfufg8SLYYzd5woQ0AsZQRToFP+BS7os0T6WLMH/72qKmq/L1HMexvP+jjptG9Bb8ilHPeXJ/tYG2raWVSFSO/qoJOLRGBlPUgxJ5OoDKZlk2igbIQo5zxQldqRafE0MwcKUoBs02ukOZ4OLuLOIwvl+H6NHLlpAL17/EoPg7tt5GK0WTt2cgC83Kg8lV3BqhnkPeCGMiPR8Jtk2m1Bo3c9DR4sYg+tVgMUjZXWECnmMMDkNKZFLP10zgXDduh3U0lv88cQb5CNDA/01GGZq9L8eQLG9U9uEvY2Jvu1KHo1Rs5AYFr6OhWSMgTQhnWF+hjM6F1O1BK3zf6SbSDdBT5LrHAefw9BzdXkgCaNi4eAYRGjSXDOxCi9KjJbgMDv7mvS7VZUSkrnM9/XZe8xsl8hklVeJZx6S4hZSQQ83AaILs4cXm1hQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(136003)(376002)(396003)(366004)(39840400004)(451199018)(5660300002)(2616005)(44832011)(6666004)(54906003)(107886003)(110136005)(52116002)(38100700002)(6486002)(478600001)(41300700001)(186003)(36756003)(6512007)(8936002)(6506007)(1076003)(316002)(4326008)(86362001)(66556008)(66476007)(8676002)(66946007)(83380400001)(2906002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Ohw0PQwT2Aoib5jxAHvtbCfkx9vD4ek92RgA/dhTeBGcLK5ewiociz2UykQV?=
- =?us-ascii?Q?9O5uqVfPE33j/EXlP8bRksG9xHr29gl4F3+hPNdxZpwi3JvyOdEZ8YsxzXWQ?=
- =?us-ascii?Q?riRdUm70/woGPpGcEWpHPMI/quSxrvnU/Y3/k87OW3EH6H9mqH349qRpG504?=
- =?us-ascii?Q?B1rNJ5/uhFp4SRk9NydMtGMTgI74kbLdx0K8JOGKiYAb95tuX0X4xQaOyOnu?=
- =?us-ascii?Q?dSXKGYgBRgmzqh9gm9daWE4KzQ95wvCg/CtYnBFOOhGRp0UyZmmF4Y+/FrPc?=
- =?us-ascii?Q?HuQhtrAs7H7mpOpmfa6KhJNxH1I3CR/yX6qCXaUXZj/75/+VXMJ6arg/LKNu?=
- =?us-ascii?Q?hGzR9Ad8eASeiF+k2Uh9/1x2KY4tW8KwFXY5HvFN8/W8ru1QQgMD9gns61cb?=
- =?us-ascii?Q?mgw8Wn5UQfQpK3JkI7m/LKJMbNEy3T8qt9SZDAi/zvdXw8AnTLK5KU9ybY3W?=
- =?us-ascii?Q?Jk1A0Z/HMp9neAdsTwlXE+U/uFcuDYvW9qTaaRzLWfnv9sIFP0vBWCWRn3CN?=
- =?us-ascii?Q?2CRZ8yXMIigvJoylNTHGoRQNowjyzx2irX3RCVW/36ubvTgsevr7gDV9zmF5?=
- =?us-ascii?Q?rwME9U/B7k6CNYewwGSK5OIfAFAo1jDr5p48V08e30Dis8dBYioVJgGnPNbb?=
- =?us-ascii?Q?cHc7HZdK+gvSW5Np9E+Mo3ix248T+2WKZbHZnqRFo8yfMOAowJlnT3fkdgjJ?=
- =?us-ascii?Q?YBD9OsszyBq7+54c8UM8WrcuwjCl9uD7GJbNGO0Ld73f00QVpZlKSyiVpMar?=
- =?us-ascii?Q?bHRIvUTHPBvuxsBftkYqp/EegXaN4WJJCHyq4sPReItCsnILOhXCfcgi8f/3?=
- =?us-ascii?Q?cUm6y40AE16v7zCSMu8xhrE8G0xioS3rF/3y8uJtqByGPjoUytgrp/dfSwp4?=
- =?us-ascii?Q?irHUgOdyMUEN0CnPrFn7h863+9LPI98URot4uGiGdACinYaeJ481fkbWtoNK?=
- =?us-ascii?Q?OELLlO09miZdQVvLxzkGA2W2T/BBORkVdknTJGu7ngmELk8EdOXlQ8vuEWRf?=
- =?us-ascii?Q?fnv9nowfcu8i0dypVgOnQgJOuANxLqW8Mm+yBHwdAx1YsgNYyic5988cIZEd?=
- =?us-ascii?Q?1nJMnd+XQCyjgDmOMzKI9T26EYUKlpYAHTFXfY4mZVBaskbF5unm6SpMuMfX?=
- =?us-ascii?Q?fpHQeuIOAjBKV+d/Dzdm1k8MVY4MeyKiOZPcyXLq/SK46ihpVQR+kQ8dqT0G?=
- =?us-ascii?Q?4+z8/Qxeg+s6j2GPmStWxaueyr62TCygw9j0vaMOUlxGKgo9a3EaHMWPtjVa?=
- =?us-ascii?Q?Esreelj6idcZ87D+IfWzV+pCugZ2QaQX3K00z45Xj0VHR35lK37dNgAGbJO7?=
- =?us-ascii?Q?ep+rOBHvqHNfTPRIVvdPhG+eVphuRWvZ91ig/9JbQyU/Vh8hae8QA75RUdgS?=
- =?us-ascii?Q?1EmTNBU3/28IgxmYi+scI8R4YG0WLNMSqyyb2aJ2Dkg8Tdcj+lSA/hYVez+g?=
- =?us-ascii?Q?q1dHb2bMSURihFlSq/mLuN2LGe1i2e1eR4FSZ9fEjvOvbrkmGR40Mh24XCQc?=
- =?us-ascii?Q?4c3VdsGMu3oeAgoOZ3AFnladz2/8TJjftAJqeIYqrRESDd14oB3tLQkHMXKc?=
- =?us-ascii?Q?c3fLpTcJPx72eAjato5aGvWFi0VXCWh+LDwHju/CkT/IegJ86Dz2Z3k/DJk5?=
- =?us-ascii?Q?oP1h04Mi7qVGjCcRuYLWofcV99Vy+NyjYAE75myOZ77E8IqC44DRVwc1+i62?=
- =?us-ascii?Q?0/8tUw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?kTElDPwy2hb2m++Qhnsxo5fMUC88HeVxgv8KR6jvT10PVOef2v66ejjofaFY?=
+ =?us-ascii?Q?7yBmif4UZS1MEnojQwIxkGAEHlF/bNKdlNwAEdKSmwLFEoHpln81Edjo5+5B?=
+ =?us-ascii?Q?BBAR2BjSbqPRg8gIPKHNHnMmsKrhJjfyJdnkJLy4NgsPXR5gYPEfdaLnkQbq?=
+ =?us-ascii?Q?PebtfL8neUzgaKWZ1z0z5VRnPFUwW1IIiqdmdySy08i+q4TRdet/uWMheKzU?=
+ =?us-ascii?Q?O5KXp55PJCD47WMrDZRGUPOHNinB/tHddlXaEOiPdwYHyp3qcnLxjjYHjmHN?=
+ =?us-ascii?Q?hdMwqDSIEpU1oZ7Aa/hku9/W2bfUd/YiwuOXKM3qfMGEXHaLiyol6Qkqem12?=
+ =?us-ascii?Q?lnZ/Xjg25sNHQTdhriLC+3oxHca0qONzffVqxZvHFsr1rZB7maLuoskr26gp?=
+ =?us-ascii?Q?XNJV7XJjuOuh/MQwkwlrVeXfgs1XXkDqNweD0x0mjFRKjp+Gg3VQgCDFVHyD?=
+ =?us-ascii?Q?91UMFWz+X3hsDN4cLLXWFw8ohst/64kCWvgFUfxFAiUlXdEeyC6SpWlNeO37?=
+ =?us-ascii?Q?3EsC141dyItttht2sQzsFkStQhU/EkeNyanLQ5gjCZmX44yiKUDFQ2ZKm8Ny?=
+ =?us-ascii?Q?V7QqL4lVkB2Qo/K7mARmlV4lXMtNW2sNq5snzZTO5bsUASVYM7LL92EfqJIC?=
+ =?us-ascii?Q?gAtWFXFQHuna5t+w/d7iij0aZAj0P4KMiqbjUUzhc1Sy7RvWsQbj26H10Y9t?=
+ =?us-ascii?Q?BRqBjFf7aT5H4xf1ntd6y3U/T1MY0cV4+QkPKIbMr8/iDRFmHFtQ4yraFM94?=
+ =?us-ascii?Q?BS3IYyKEoJ+OiMtOaNsI/jgLnxPmewRxT7UIsQz6/idNSs8eJzhAQFWUzxvH?=
+ =?us-ascii?Q?K0bkDBENeRSnnuvDx4Jggral/uTSNA3el+X7Jv3IbggwJNpJC+Z2rS051lRk?=
+ =?us-ascii?Q?CIXvBnck0XI3JOEpiAVrODArhl1STcgvv2wPKVb05ZIIcPsBIp2+ZwQo6Lq7?=
+ =?us-ascii?Q?p1TOJauWRPiCqV1pPTM9KDaGFwuBSsGQZNdmWZQ0xu0Ce8hYGSTrj6mCjsYC?=
+ =?us-ascii?Q?UTJoOoPGIvyg2PEY/PC1fiwCLCAMEmUkMagk+FBJ4RV47c1eg9bmJaavlslP?=
+ =?us-ascii?Q?O0872v3C3lKlwCuAF5YpHTCLMpk9fMosHH/f+MGEDDBGIARbwbhyWz8FhIvG?=
+ =?us-ascii?Q?EBn6z/tZIrVEgvtQFVrcdxOGS18K5vuWNIhcKGR0xUjUKOgvxywW54hYkgjf?=
+ =?us-ascii?Q?s32luOIhoMZubLg64iJA6YCogg3D/ProsgInXFwGIxnhk5f4DXg9ZRqNZTtS?=
+ =?us-ascii?Q?pD6w8R7FEIcf4YyRDrZ5RZDmxIZAQEL/GXGgVr5ucRVDgZyxXiBQxlJroWhb?=
+ =?us-ascii?Q?8RyecTAhePzDLLsvP+yCb6KC7kja5RZPmp/oa49Mlc7/BwgVoIMlYUoJ6HZY?=
+ =?us-ascii?Q?FAmf2tWp8WneQPNG+KG3KrfXQlkKwlHNtR5PQnMvJjWXiwNtEFJ9NVE44GVK?=
+ =?us-ascii?Q?VvVyPgbYOXOmaf+x/4RucKMtnlnA6Gs4b4n6eEL5cQ7FYelBvCEvbTj4RH8i?=
+ =?us-ascii?Q?xLh+6lPqGOfJVAZTYBwZbDhGksBfaW/ogtSB0PRg8grXhYYNwSXp4C3ufPM9?=
+ =?us-ascii?Q?So/O8Qo5SPCmrkYLF9Y45C2JprK0GAHVDY//O8h7EtoTyd8AXzgt+xoo+G30?=
+ =?us-ascii?Q?qBKRDoajsSx86O+UEPxqsBRdks8yeCJr4ZmK8JB1ClCDASyFWdWLLUBoMUlO?=
+ =?us-ascii?Q?mvLyeg=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 924d9c35-b8be-4e07-072b-08db1b04bc73
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7bdfd4c2-e859-43f8-209e-08db1b04bda9
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2023 09:58:56.2124
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2023 09:58:58.0883
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xWpaSmbr1RCDeUiDPHeY2NiMnxns1X3epBWScQSCzp4ZWLpBfPW2ju82CGNR2/ZldzYucE4DaHxb2+nF2CwLKeeYwRSrulqrXapmZp6+9BM=
+X-MS-Exchange-CrossTenant-UserPrincipalName: AAoXKrC8uGs3T/QolDkaKChaKZXdQraPyVJ8E7+DaYEp8E2luC3Lbh7+wSP30ImRt5WXhMao2DeWK1Gwsajm54bKHoBVwBEOBAJhbwxF8ck=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR13MB5692
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Huanhuan Wang <huanhuan.wang@corigine.com>
 
-this short series resolves two problems with IPsec checksum handling
-in the nfp driver.
+The csum flag of IPsec packet are set repeatedly. Therefore, the csum
+flag set of IPsec and non-IPsec packet need to be distinguished.
 
-* PATCH 1/3, 2/3: Correct setting of checksum flags.
-  One patch for each of the nfd3 and nfdk datapaths.
+As the ipv6 header does not have a csum field, so l3-csum flag is not
+required to be set for ipv6 case.
 
-* Patch 3/3: Correct configuration of NETIF_F_CSUM_MASK
-  so that the stack does not unecessarily calculate csums for
-  IPsec offload packets.
+L4-csum flag include the tcp csum flag and udp csum flag, we shouldn't
+set the udp and tcp csum flag at the same time for one packet, should
+set l4-csum flag according to the transport layer is tcp or udp.
 
-Huanhuan Wang (3):
-  nfp: fix incorrectly set csum flag for nfd3 path
-  nfp: fix incorrectly set csum flag for nfdk path
-  nfp: fix esp-tx-csum-offload doesn't take effect
-
+Fixes: 57f273adbcd4 ("nfp: add framework to support ipsec offloading")
+Signed-off-by: Huanhuan Wang <huanhuan.wang@corigine.com>
+Reviewed-by: Louis Peens <louis.peens@corigine.com>
+Signed-off-by: Simon Horman <simon.horman@corigine.com>
+---
  drivers/net/ethernet/netronome/nfp/nfd3/dp.c  |  7 +++---
  .../net/ethernet/netronome/nfp/nfd3/ipsec.c   | 25 +++++++++++++++++--
- drivers/net/ethernet/netronome/nfp/nfdk/dp.c  |  6 +++--
- .../net/ethernet/netronome/nfp/nfdk/ipsec.c   |  8 ++++--
- .../ethernet/netronome/nfp/nfp_net_common.c   |  4 +++
- 5 files changed, 41 insertions(+), 9 deletions(-)
+ 2 files changed, 27 insertions(+), 5 deletions(-)
 
+diff --git a/drivers/net/ethernet/netronome/nfp/nfd3/dp.c b/drivers/net/ethernet/netronome/nfp/nfd3/dp.c
+index 59fb0583cc08..0cc026b0aefd 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfd3/dp.c
++++ b/drivers/net/ethernet/netronome/nfp/nfd3/dp.c
+@@ -324,14 +324,15 @@ netdev_tx_t nfp_nfd3_tx(struct sk_buff *skb, struct net_device *netdev)
+ 
+ 	/* Do not reorder - tso may adjust pkt cnt, vlan may override fields */
+ 	nfp_nfd3_tx_tso(r_vec, txbuf, txd, skb, md_bytes);
+-	nfp_nfd3_tx_csum(dp, r_vec, txbuf, txd, skb);
++	if (ipsec)
++		nfp_nfd3_ipsec_tx(txd, skb);
++	else
++		nfp_nfd3_tx_csum(dp, r_vec, txbuf, txd, skb);
+ 	if (skb_vlan_tag_present(skb) && dp->ctrl & NFP_NET_CFG_CTRL_TXVLAN) {
+ 		txd->flags |= NFD3_DESC_TX_VLAN;
+ 		txd->vlan = cpu_to_le16(skb_vlan_tag_get(skb));
+ 	}
+ 
+-	if (ipsec)
+-		nfp_nfd3_ipsec_tx(txd, skb);
+ 	/* Gather DMA */
+ 	if (nr_frags > 0) {
+ 		__le64 second_half;
+diff --git a/drivers/net/ethernet/netronome/nfp/nfd3/ipsec.c b/drivers/net/ethernet/netronome/nfp/nfd3/ipsec.c
+index e90f8c975903..51087693072c 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfd3/ipsec.c
++++ b/drivers/net/ethernet/netronome/nfp/nfd3/ipsec.c
+@@ -10,9 +10,30 @@
+ void nfp_nfd3_ipsec_tx(struct nfp_nfd3_tx_desc *txd, struct sk_buff *skb)
+ {
+ 	struct xfrm_state *x = xfrm_input_state(skb);
++	struct xfrm_offload *xo = xfrm_offload(skb);
++	struct iphdr *iph = ip_hdr(skb);
++	int l4_proto;
+ 
+ 	if (x->xso.dev && (x->xso.dev->features & NETIF_F_HW_ESP_TX_CSUM)) {
+-		txd->flags |= NFD3_DESC_TX_CSUM | NFD3_DESC_TX_IP4_CSUM |
+-			      NFD3_DESC_TX_TCP_CSUM | NFD3_DESC_TX_UDP_CSUM;
++		txd->flags |= NFD3_DESC_TX_CSUM;
++
++		if (iph->version == 4)
++			txd->flags |= NFD3_DESC_TX_IP4_CSUM;
++
++		if (x->props.mode == XFRM_MODE_TRANSPORT)
++			l4_proto = xo->proto;
++		else if (x->props.mode == XFRM_MODE_TUNNEL)
++			l4_proto = xo->inner_ipproto;
++		else
++			return;
++
++		switch (l4_proto) {
++		case IPPROTO_UDP:
++			txd->flags |= NFD3_DESC_TX_UDP_CSUM;
++			return;
++		case IPPROTO_TCP:
++			txd->flags |= NFD3_DESC_TX_TCP_CSUM;
++			return;
++		}
+ 	}
+ }
 -- 
 2.30.2
 
