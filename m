@@ -2,78 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D6C736A7A7C
-	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 05:29:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 902F46A7A8C
+	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 05:36:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229689AbjCBE3W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Mar 2023 23:29:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56504 "EHLO
+        id S229608AbjCBEgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Mar 2023 23:36:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbjCBE3V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 23:29:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A8531350A
-        for <netdev@vger.kernel.org>; Wed,  1 Mar 2023 20:29:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A15866147B
-        for <netdev@vger.kernel.org>; Thu,  2 Mar 2023 04:29:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFFBFC433EF;
-        Thu,  2 Mar 2023 04:29:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677731359;
-        bh=n/5dqKcbbelpxhBrgskYlat25V8ox4xx/d4tNu9C6gE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=A4EU+ObIzFhwoid9ORGIlC/Etqeu/XBGdIWAtPiVLpy1zsPiN+yW3kXeYq5cxErHy
-         j2PCaVNvweZV8ls5TdDBFh1T++g+qWh7UqNtCQlpR77fURIt0cQBUKmic9coKewIE6
-         6eXgxz7hX5WUE1zR9kcrbuv64RJg72499FcTxkGY8FC4gbLPMjDitNoChf9DOgPPdP
-         bpAb0tlEqWisvusq5HM9xLfYN/8GrQ6VR1ILKEk7IpZN9ykZpwiapGtgolYRlpEsLt
-         B4tQhdwCWht3w/C9vurMPO0hIUY9aHUg2hRCCN+ZV/y2akqoXnClM5UzQXBSop+liw
-         dnw84PeIXJWmA==
-Date:   Wed, 1 Mar 2023 20:29:17 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Rongguang Wei <clementwei90@163.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        xiaolinkui@kylinos.cn, netdev@vger.kernel.org,
-        Rongguang Wei <weirongguang@kylinos.cn>
-Subject: Re: [PATCH v1] net: stmmac: add to set device wake up flag when
- stmmac init phy
-Message-ID: <20230301202917.5960b5e3@kernel.org>
-In-Reply-To: <20230301074756.35156-1-clementwei90@163.com>
-References: <20230301074756.35156-1-clementwei90@163.com>
+        with ESMTP id S229734AbjCBEgo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 23:36:44 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F3248A71
+        for <netdev@vger.kernel.org>; Wed,  1 Mar 2023 20:36:41 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id m8-20020a17090a4d8800b002377bced051so1653368pjh.0
+        for <netdev@vger.kernel.org>; Wed, 01 Mar 2023 20:36:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1677731801;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=3Sq1Xk/kmeTr6cRbg3WCMLCEIrSn3Yj/ffY/0Qgxyio=;
+        b=q7hqNkDEwz1BKNkXJ4KQUalrH65Qx/CfVFa86CepnTUDDvLL7CB5wciTXeed+2XouK
+         IBM6oPyFgWSitsAuP8ivZJIekkB2681HbOk1q2kMN4SZHFnOfa9bwNi4Sl1jKUfjZl4T
+         8Pc74nBI8xl1vn5vQqB3SvK/WZv4p6djoAlfyg+Ui7Zm8QkS9xVB8Btsvf+P30M52sC1
+         IsGY3TyR/AmKnS/mQToOKvjRW3mdrncME/+krNPf0Rmh+0+KzkIvMFzUMepW6w+iZZGc
+         iEKn7jWRzFFb3ytYSio/zgpGOm3E7IYJ33azj5876P26ut/Zn4JrAxRNGeW1ZrOxeU1R
+         sJNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1677731801;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=3Sq1Xk/kmeTr6cRbg3WCMLCEIrSn3Yj/ffY/0Qgxyio=;
+        b=UgeVTc6N3WF4sti7ivzjr5yhrb/taoJ8wXWGhNp5fyoEYRAo0UA3+zaiFIFCRvw0lf
+         GLeFpAdd2rFgkmdMs4818XWD3VLQPmPLMJ+Oiv35NT3I5tTh0GEAA3YBr8TUwTfgEvf0
+         vvA7MT5+LgR3B7CXifFyENS0qV2NJ7e64xGMgF65ygW42+pvlDhblhUsfnHhdhpwAzbE
+         e+4D1eTzgBpi2auEdXzlKHLhA02/8D9ZmRNIybNawOiSzPeKyZB8WJNN6I/qvK8ArZB9
+         Yi0TYQCUebhFvX67n1iIwwYNip3AmyoKyQtD+tWPoUXPsUGS2Fk1rdWdbWzzwUQFN6O8
+         m1cw==
+X-Gm-Message-State: AO0yUKWVNqgjjwHAx1okyFkUoFjI57ANCrsS84etpMgun/aeArGRkDKP
+        j5nBFHVrYL8fqaYI2IdxEKY=
+X-Google-Smtp-Source: AK7set/6r0gTK89JFLiGtijc/4n5Zu0DzbhoD+4u51pIsJhJpgNMcpP4wFtz6S+fUo7ujG/DksLJZw==
+X-Received: by 2002:a17:902:ec91:b0:19a:f556:e386 with SMTP id x17-20020a170902ec9100b0019af556e386mr9957404plg.0.1677731800997;
+        Wed, 01 Mar 2023 20:36:40 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id n16-20020a170902969000b00199203a4fa3sm9210487plp.203.2023.03.01.20.36.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Mar 2023 20:36:40 -0800 (PST)
+Date:   Wed, 1 Mar 2023 20:36:37 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     =?iso-8859-1?Q?K=F6ry?= Maincent <kory.maincent@bootlin.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "Russell King (Oracle)" <linux@armlinux.org.uk>, andrew@lunn.ch,
+        davem@davemloft.net, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>
+Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support
+ [multicast/DSA issues]
+Message-ID: <ZAAn1deCtR0BoVAm@hoboy.vegasvil.org>
+References: <Y/0N4ZcUl8pG7awc@shell.armlinux.org.uk>
+ <Y/0QSphmMGXP5gYy@hoboy.vegasvil.org>
+ <Y/3ubSj5+2C5xbZu@shell.armlinux.org.uk>
+ <20230228141630.64d5ef63@kmaincent-XPS-13-7390>
+ <Y/4ayPsZuYh+13eI@hoboy.vegasvil.org>
+ <Y/4rXpPBbCbLqJLY@shell.armlinux.org.uk>
+ <20230228142648.408f26c4@kernel.org>
+ <Y/6Cxf6EAAg22GOL@shell.armlinux.org.uk>
+ <20230228145911.2df60a9f@kernel.org>
+ <20230301170408.0cc0519d@kmaincent-XPS-13-7390>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230301170408.0cc0519d@kmaincent-XPS-13-7390>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  1 Mar 2023 15:47:56 +0800 Rongguang Wei wrote:
-> From: Rongguang Wei <weirongguang@kylinos.cn>
-> 
-> When MAC is not support PMT, driver will check PHY's WoL capability
-> and set device wakeup capability in stmmac_init_phy(). We can enable
-> the WoL through ethtool, the driver would enable the device wake up
-> flag. Now the device_may_wakeup() return true.
-> 
-> But if there is a way which enable the PHY's WoL capability derectly,
-> like in BIOS. The driver would not know the enable thing and would not
-> set the device wake up flag. The phy_suspend may failed like this:
-> 
-> [   32.409063] PM: dpm_run_callback(): mdio_bus_phy_suspend+0x0/0x50 returns -16
-> [   32.409065] PM: Device stmmac-1:00 failed to suspend: error -16
-> [   32.409067] PM: Some devices failed to suspend, or early wake event detected
-> 
-> Add to set the device wakeup enable flag according to the get_wol
-> function result in PHY can fix the error in this scene.
+On Wed, Mar 01, 2023 at 05:04:08PM +0100, Köry Maincent wrote:
+> I suppose the idea of Russell to rate each PTP clocks may be the best one, as
+> all others solutions have drawbacks. Does using the PTP clock period value (in
+> picoseconds) is enough to decide which PTP is the best one? It is hardware
+> specific therefore it is legitimate to be set by the MAC and PHY drivers.
 
-Please add an appropriate Fixes tag and repost if you consider this
-a bug fix, or repost next week with [PATCH net-next] for inclusion 
-in Linux 6.3 if you're okay with the patch being treated as enabling 
-the feature on more platforms (i.e. not a fix).
+It is not that simple.  In fact, I've never seen an objective
+comparision of different HW.  The vendors surely have no reason to
+conduct such a study.  Also, the data sheets never make any claim
+about synchronization quality.
+
+Thanks,
+Richard
