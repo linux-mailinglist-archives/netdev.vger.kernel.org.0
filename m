@@ -2,68 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C565B6A858B
-	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 16:48:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C2CA6A85C1
+	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 17:03:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229766AbjCBPsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Mar 2023 10:48:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48062 "EHLO
+        id S229649AbjCBQDU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Mar 2023 11:03:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbjCBPsN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Mar 2023 10:48:13 -0500
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D03DD6EBC;
-        Thu,  2 Mar 2023 07:48:12 -0800 (PST)
-Received: by mail-qv1-xf29.google.com with SMTP id ks17so11920269qvb.6;
-        Thu, 02 Mar 2023 07:48:12 -0800 (PST)
+        with ESMTP id S229506AbjCBQDT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Mar 2023 11:03:19 -0500
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4585E15165
+        for <netdev@vger.kernel.org>; Thu,  2 Mar 2023 08:03:18 -0800 (PST)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-536bbaeceeaso316870047b3.11
+        for <netdev@vger.kernel.org>; Thu, 02 Mar 2023 08:03:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4KNdpY7mZZeDMkNs/8ZHD716EPWzyrnrEKXe+qhTR3c=;
-        b=FNM6gfaaMuXxpfs5roJYZVjl8ioiJANcydrINN6kG4maAyuA+d1qkZvVrYwKrWWZFP
-         wH5c3OqVNYgS+Jdiw9OyfH43c8eq9bGnAsfEOMJvK9z9hk7ydYpJSf618Bi2tCpOcNpx
-         P1BOJmGH3OPAZVZI7RBiLmBTyZ14k/ERcXvj4lH6UcCTUQ+8ydQ0zjzoFHSkX/rNU+7E
-         Y3teVJvg4/IwEHr/6GpggJJi6NtE+yYwyoc88hYk54cQYTLTuKZkcpiDLCz44EMNGt1q
-         TdWZYlGIKY3WUi9vd9eKTyZUsV16738cwhhTE/U3odFMeCcg9SAWy7qNw3c+Z7vrdO9J
-         p3iw==
+        d=google.com; s=20210112; t=1677772997;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=OCOfjy9wgPSJAfIMwhSliKQPfrgPuk24lq60Zc+oJ3w=;
+        b=poLVNQzg/V7jkO67c4aASSzpvoGIK0gxkS2bCETcVWgmsT1SoOu1KyXcmTe/jJ9Apv
+         4v3pWgK+1h9/PSOj9MYztO9Wy5RNZETDBo85HyMxBg593Oh8Zze4FVv44iALm8ReNcY4
+         Kb2/cegSrGCJINxZL5I3MNuSrEi/RTK7+T4GAo7Y+F0V+psZg9lsNxwcTIUY7jqtl6tW
+         eCQma7ysc55iZrBKsVKQZIn+Bkvi5zGGfSW8bp5QtMYys31wYT3cvEk4IctWNmgulTI2
+         oqatWSDxGEVCpcSXuNqSj+hSX3Mx8Rja9VKfy4wgFjJvW2S+pd093IdPr1K5FKdXl4Rm
+         9dsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=4KNdpY7mZZeDMkNs/8ZHD716EPWzyrnrEKXe+qhTR3c=;
-        b=BvKavR5BWkio1sY1kRt4A/4fpTtl2pauT1ByN1Ye9QCE6LF7tbYu/wsmubPAMX1xxO
-         AWDUYMoNo5CdqYaE/mWjH4qlfx7xDYYc3EvNxRf8gwx/4cdpiUq6u7Z4F3TOVaYWS2nz
-         RkgnkCTOTqjaoFrvathrUcLmYzQwztZjeO2ir48+6wihoAt7k2zmOZFdQOe7IkQ5n64+
-         qyRR3NjLrUSRgE/TS6b3UVWwM/oo9E3vwsNdRGJlAcITVsym8vn6U1nDcTbvihfIXmIF
-         kY63K4zd8ZJ8qIa4lyhstIbZvNVNRS/+01sCmLBlaoDyuuZts4mK3Mjke474ia3AouCv
-         tNbw==
-X-Gm-Message-State: AO0yUKXLF6OGZht2styqnl7Uw9sQQ1sGtxDOkIul2F0hhdwroY3BZoVS
-        ZSOjQQ8mcca7bdxa/yxnyDKyMkOQxSk=
-X-Google-Smtp-Source: AK7set8vHj0UySoAa9aQkTdwfIxwW6/G3k6RYJV6mH6EJucH9wEsq9N5AUoHpBcRzw2iExz0GjyPHw==
-X-Received: by 2002:a05:6214:2589:b0:56b:7cb:bdcd with SMTP id fq9-20020a056214258900b0056b07cbbdcdmr22386104qvb.39.1677772091950;
-        Thu, 02 Mar 2023 07:48:11 -0800 (PST)
-Received: from willemb.c.googlers.com.com (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
-        by smtp.gmail.com with ESMTPSA id s72-20020a37454b000000b007417e60f621sm11097113qka.126.2023.03.02.07.48.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Mar 2023 07:48:11 -0800 (PST)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     linux-man@vger.kernel.org
-Cc:     mtk.manpages@gmail.com, alx.manpages@gmail.com, pabeni@redhat.com,
-        netdev@vger.kernel.org, Willem de Bruijn <willemb@google.com>
-Subject: [PATCH manpages v2 2/2] udp.7: add UDP_GRO
-Date:   Thu,  2 Mar 2023 10:48:08 -0500
-Message-Id: <20230302154808.2139031-2-willemdebruijn.kernel@gmail.com>
+        d=1e100.net; s=20210112; t=1677772997;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=OCOfjy9wgPSJAfIMwhSliKQPfrgPuk24lq60Zc+oJ3w=;
+        b=zlMuhvQzqOPLVvg7MzMUFz1XZmk6TJTkJ0TcRDHSEeFJREH3Qx0tmc+oBArwAoiDDJ
+         5gqAUeVLAcCfXaKMLOlNn6u6kAhqtG5fNjDo/0ffGRCnjZdSjJX2rbQAR0v2bpU3G7wc
+         Wv1QYc0KIML0t6tz3dn2RfSLVGiGX1nNOJ1CkCYFJSQSnMijkxniMQAlN7yMyfe6aO7M
+         Wrv/rSwb6le8icO9h2tEI+W/f6GfyictJmfgwbu/r+8GfJa3+Vk0QTAKKrq6/io4hRSQ
+         TRvK3WNbWMaCuwBHgJEYczY7du6RVdiddhkh1RhcoPZ2gc4l7sqwz8sj7DTWpgi5FZwc
+         UWRw==
+X-Gm-Message-State: AO0yUKVXDTDxONPDqbhUAJlq7uz8izmFnotbOvRqz6v6RaSPaiESOr7x
+        +2WPyL6RPO9jTGztQepowElB6LlBSic=
+X-Google-Smtp-Source: AK7set8XZeCs3Ju2LfDDbQxdv8YUdLKNoKygQ79DzdYX7f/D+n66RB6DxvZr7mGXaMUbKUr/OImEvfuwGCo=
+X-Received: from jaewan1.c.googlers.com ([fda3:e722:ac3:cc00:3:22c1:c0a8:e59])
+ (user=jaewan job=sendgmr) by 2002:a81:a783:0:b0:533:cf4e:9a80 with SMTP id
+ e125-20020a81a783000000b00533cf4e9a80mr4044211ywh.6.1677772997559; Thu, 02
+ Mar 2023 08:03:17 -0800 (PST)
+Date:   Thu,  2 Mar 2023 16:03:05 +0000
+Mime-Version: 1.0
 X-Mailer: git-send-email 2.39.2.722.g9855ee24e9-goog
-In-Reply-To: <20230302154808.2139031-1-willemdebruijn.kernel@gmail.com>
-References: <20230302154808.2139031-1-willemdebruijn.kernel@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Message-ID: <20230302160310.923349-1-jaewan@google.com>
+Subject: [PATCH v8 0/5] mac80211_hwsim: Add PMSR support
+From:   Jaewan Kim <jaewan@google.com>
+To:     gregkh@linuxfoundation.org, johannes@sipsolutions.net,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-team@android.com, adelva@google.com,
+        Jaewan Kim <jaewan@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,56 +66,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+Dear Kernel maintainers,
 
-UDP_GRO was added in commit e20cf8d3f1f7
-("udp: implement GRO for plain UDP sockets.")
+First of all, thank you for spending your precious time for reviewing
+my changes, and also sorry for my mistakes in previous patchsets.
 
-    $ git describe --contains e20cf8d3f1f7
-    linux/v5.0-rc1~129^2~379^2~8
+Let me propose series of CLs for adding PMSR support in the mac80211_hwsim.
 
-Kernel source has example code in tools/testing/selftests/net/udpgro*
+PMSR (peer measurement) is generalized measurement between STAs,
+and currently FTM (fine time measurement or flight time measurement)
+is the one and only measurement.
 
-Per https://www.kernel.org/doc/man-pages/patches.html,
-"Describe how you obtained the information in your patch":
-I reviewed the relevant UDP_GRO patches.
+FTM measures the RTT (round trip time) and FTM can be used to measure
+distances between two STAs. RTT is often referred as 'measuring distance'
+as well.
 
-Signed-off-by: Willem de Bruijn <willemb@google.com>
+Kernel had already defined protocols for PMSR in the
+include/uapi/linux/nl80211.h and relevant parsing/sending code are in the
+net/wireless/pmsr.c, but they are only used in intel's iwlwifi driver.
 
----
+CLs are tested with iw tool on Virtual Android device (a.k.a. Cuttlefish).
+Hope this explains my CLs.
 
-Changes v1->v2
-  - semantic newlines: also break on comma
-  - remove bold: section number following function name
----
- man7/udp.7 | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+Many Thanks,
 
-diff --git a/man7/udp.7 b/man7/udp.7
-index 6646c1e96bb0..a350a40da340 100644
---- a/man7/udp.7
-+++ b/man7/udp.7
-@@ -232,6 +232,20 @@ calls by passing it as a
- .BR cmsg (7).
- A value of zero disables the feature.
- This option should not be used in code intended to be portable.
-+.TP
-+.BR UDP_GRO " (since Linux 5.0)"
-+Enables UDP receive offload.
-+If enabled,
-+the socket may receive multiple datagrams worth of data as a single large
-+buffer,
-+together with a
-+.BR cmsg (7)
-+that holds the segment size.
-+This option is the inverse of segmentation offload.
-+It reduces receive cost by handling multiple datagrams worth of data
-+as a single large packet in the kernel receive path,
-+even when that exceeds MTU.
-+This option should not be used in code intended to be portable.
- .SS Ioctls
- These ioctls can be accessed using
- .BR ioctl (2).
+--
+V7 -> V8: Separated CL for exporting nl80211_send_chandef
+V6 -> V7: Split 'mac80211_hwsim: handle FTM requests with virtio'
+          with three pieces
+V5 -> V6: Added per CL change history.
+V4 -> V5: Fixed style
+V3 -> V4: Added detailed explanation to cover letter and per CL commit
+          messages, includes explanation of PMSR and FTM.
+          Also fixed memory leak.
+V1 -> V3: Initial commits (include resends)
+
+Jaewan Kim (5):
+  mac80211_hwsim: add PMSR capability support
+  wifi: nl80211: make nl80211_send_chandef non-static
+  mac80211_hwsim: add PMSR request support via virtio
+  mac80211_hwsim: add PMSR abort support via virtio
+  mac80211_hwsim: add PMSR report support via virtio
+
+ drivers/net/wireless/mac80211_hwsim.c | 775 +++++++++++++++++++++++++-
+ drivers/net/wireless/mac80211_hwsim.h |  58 ++
+ include/net/cfg80211.h                |   9 +
+ net/wireless/nl80211.c                |   4 +-
+ 4 files changed, 834 insertions(+), 12 deletions(-)
+
 -- 
 2.39.2.722.g9855ee24e9-goog
 
