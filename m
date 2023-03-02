@@ -2,49 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DBE576A84B3
-	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 15:56:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 739F16A84EC
+	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 16:07:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230228AbjCBO4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Mar 2023 09:56:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53906 "EHLO
+        id S229790AbjCBPHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Mar 2023 10:07:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230284AbjCBO4q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Mar 2023 09:56:46 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5596D532B7;
-        Thu,  2 Mar 2023 06:56:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=pKceL3KJW3PgeIN/qIwk7feEkC0lS+FRtyxxuMpmlv0=; b=0BHCWj1x9/kBByiHX6Cgjurwo7
-        K+nR6WpnhLo+qPJAZh7p3qr7J/v/qBw4CvzHOeDiMMdznMW4qLhby4w3Z7eKLBmvcJWF1oZlk+j62
-        BZ0TjbAYuBEStzsbQ7I+AJZqlqB0fdeBTWDXI7zJfzqyCvaemgLHqFM5N496kXhxwzS0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pXkLa-006Jct-5g; Thu, 02 Mar 2023 15:55:54 +0100
-Date:   Thu, 2 Mar 2023 15:55:54 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC net-next] net: phy: intel-xway: remove LED
- configuration
-Message-ID: <ZAC4+kjSxLtxMZDR@lunn.ch>
-References: <20230302141651.377261-1-michael@walle.cc>
+        with ESMTP id S230348AbjCBPGw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Mar 2023 10:06:52 -0500
+Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 735AE5653E
+        for <netdev@vger.kernel.org>; Thu,  2 Mar 2023 07:06:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1677769604; x=1709305604;
+  h=references:from:to:cc:subject:date:in-reply-to:
+   message-id:mime-version;
+  bh=Ff1FqqYO805lpW5G33/SECnHSs203EiO+jLq4kDuA/E=;
+  b=pUg3o9i0RVhxaqlK6zvLkB2NzufEQQetcZyyFSzQqHx4d64Xl7DYK/l5
+   WXTycX9KKEAJ+BDxd7Jc084l1Lb/AnHZKJqdySoTLGuiyF7qk/gA2AFnj
+   ZiuQ0HWhYCYgFq27BDQLQ71+AW74QIq/tZbZamnp4A9ZZQPA4K2oxX5cI
+   8=;
+X-IronPort-AV: E=Sophos;i="5.98,228,1673913600"; 
+   d="scan'208";a="266585723"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-m6i4x-b5bd57cf.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-33001.sea14.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2023 15:06:37 +0000
+Received: from EX19D013EUA004.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1a-m6i4x-b5bd57cf.us-east-1.amazon.com (Postfix) with ESMTPS id 4D88C447FE;
+        Thu,  2 Mar 2023 15:06:34 +0000 (UTC)
+Received: from EX19D028EUB003.ant.amazon.com (10.252.61.31) by
+ EX19D013EUA004.ant.amazon.com (10.252.50.48) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.24; Thu, 2 Mar 2023 15:06:33 +0000
+Received: from u570694869fb251.ant.amazon.com.amazon.com (10.85.143.175) by
+ EX19D028EUB003.ant.amazon.com (10.252.61.31) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.24; Thu, 2 Mar 2023 15:06:26 +0000
+References: <20230301175916.1819491-1-shayagr@amazon.com>
+ <20230301175916.1819491-2-shayagr@amazon.com>
+ <20230301200055.69e86e53@kernel.org>
+User-agent: mu4e 1.6.10; emacs 28.0.91
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     David Miller <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        "Woodhouse, David" <dwmw@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        Saeed Bshara <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Arinzon, David" <darinzon@amazon.com>,
+        "Itzko, Shahar" <itzko@amazon.com>,
+        "Abboud, Osama" <osamaabb@amazon.com>
+Subject: Re: [PATCH RFC v1 net-next 1/5] ethtool: Add support for
+ configuring tx_push_buf_len
+Date:   Thu, 2 Mar 2023 16:23:59 +0200
+In-Reply-To: <20230301200055.69e86e53@kernel.org>
+Message-ID: <pj41zledq742hf.fsf@u570694869fb251.ant.amazon.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230302141651.377261-1-michael@walle.cc>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+Content-Type: text/plain; format=flowed
+X-Originating-IP: [10.85.143.175]
+X-ClientProxiedBy: EX19D042UWB004.ant.amazon.com (10.13.139.150) To
+ EX19D028EUB003.ant.amazon.com (10.252.61.31)
+X-Spam-Status: No, score=-11.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,44 +81,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 02, 2023 at 03:16:51PM +0100, Michael Walle wrote:
-> For this PHY, the LEDs can either be configured through an attached
-> EEPROM or if not available, the PHY offers sane default modes. Right now,
-> the driver will configure to a mode just suitable for one configuration
-> (although there is a bold claim that "most boards have just one LED").
-> I'd argue, that as long as there is no configuration through other means
-> (like device tree), the driver shouldn't configure anything LED related
-> so that the PHY is using either the modes configured by the EEPROM or
-> the power-on defaults.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
-> I know there is ongoing work on the device tree, but even then, my
-> argument holds, if there is no config in the device tree, the driver
-> shouldn't just use "any" configuration when there are means by the
-> hardware to configure the LEDs.
-> 
-> Not just as an RFC because netdev is closed, but also to get other
-> opinions. Not to be applied.
 
-I would suggest you CC: the two people responsible for adding this
-code:
+Jakub Kicinski <kuba@kernel.org> writes:
 
-    Signed-off-by: John Crispin <john@phrozen.org>
-    Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+> On Wed, 1 Mar 2023 19:59:12 +0200 Shay Agroskin wrote:
+>> @@ -98,7 +100,12 @@ static int rings_fill_reply(struct sk_buff 
+>> *skb,
+>>  	    (kr->cqe_size &&
+>>  	     (nla_put_u32(skb, ETHTOOL_A_RINGS_CQE_SIZE, 
+>>  kr->cqe_size))) ||
+>>  	    nla_put_u8(skb, ETHTOOL_A_RINGS_TX_PUSH, 
+>>  !!kr->tx_push) ||
+>> -	    nla_put_u8(skb, ETHTOOL_A_RINGS_RX_PUSH, 
+>> !!kr->rx_push))
+>> +	    nla_put_u8(skb, ETHTOOL_A_RINGS_RX_PUSH, 
+>> !!kr->rx_push) ||
+>> +	    (kr->tx_push_buf_len &&
+>> +	     (nla_put_u32(skb, 
+>> ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN_MAX,
+>> +			  kr->tx_push_buf_max_len) ||
+>> +	      nla_put_u32(skb, ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN,
+>> +			  kr->tx_push_buf_len))))
+>
+> Why gate both on kr->tx_push_buf_len and not current and max 
+> separately?
+> Is kr->tx_push_buf_len == 0 never a valid setting?
+>
 
-So i guess this came from OpenWRT? Maybe they can tell us if this
-change is going to cause regressions.
+Hi, thanks for reviewing it
 
-I would say there is no right defaults for LEDs, whatever you do will
-be wrong for somebody. And the way this driver sets the LEDs has been
-there since the first commit. This is its decision of what the default
-should be. So i'm leaning towards rejecting your definition of what
-the default should be.
+There's actually no requirement that tx_push_buf_len needs to be > 
+0. I'll drop this check.
+It seems like the reply object gets zeroed at 
+ethnl_init_reply_data() so ENA can simply not touch this field if 
+no push buffer exists, leaving the values at 0.
 
-There is progress on controlling PHY LEDs via /sysfs. So i think you
-should wait until Christian and I get the API between the core and the
-PHY driver stable, and then help us by implementing support in the
-intel-xway.
+> Otherwise LGTM!
+>
+> Could you add this chunk to expose the value in the YAML spec?
+>
+> diff --git a/Documentation/netlink/specs/ethtool.yaml 
+> b/Documentation/netlink/specs/ethtool.yaml
+> index 35c462bce56f..2dd6aef582e4 100644
+> --- a/Documentation/netlink/specs/ethtool.yaml
+> +++ b/Documentation/netlink/specs/ethtool.yaml
+> @@ -163,6 +163,12 @@ doc: Partial family for Ethtool Netlink.
+>        -
+>          name: rx-push
+>          type: u8
+> +      -
+> +        name: tx-push-buf-len
+> +        type: u32
+> +      -
+> +        name: tx-push-buf-len-max
+> +        type: u32
+>  
+>    -
+>      name: mm-stat
+> @@ -309,6 +315,8 @@ doc: Partial family for Ethtool Netlink.
+>              - cqe-size
+>              - tx-push
+>              - rx-push
+> +            - tx-push-buf-len
+> +            - tx-push-buf-len-max
+>        dump: *ring-get-op
+>      -
+>        name: rings-set
 
-	Andrew
+ack. I'll add it
+
