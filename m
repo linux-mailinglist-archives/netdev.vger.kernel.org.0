@@ -2,109 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 504A56A7FC8
-	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 11:16:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 688EF6A7FE3
+	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 11:21:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229991AbjCBKQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Mar 2023 05:16:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36510 "EHLO
+        id S229920AbjCBKVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Mar 2023 05:21:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbjCBKQy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Mar 2023 05:16:54 -0500
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 814333A879
-        for <netdev@vger.kernel.org>; Thu,  2 Mar 2023 02:16:53 -0800 (PST)
-Received: by mail-io1-f70.google.com with SMTP id c13-20020a0566022d0d00b0074cc4ed52d9so10136924iow.18
-        for <netdev@vger.kernel.org>; Thu, 02 Mar 2023 02:16:53 -0800 (PST)
+        with ESMTP id S229795AbjCBKVU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Mar 2023 05:21:20 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFCA3298E0
+        for <netdev@vger.kernel.org>; Thu,  2 Mar 2023 02:20:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1677752433;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rjrL2EXhz6JO0AkbHS6QYk5+IhLOU9nymJnzUdVn1xs=;
+        b=VAkd69Gs2JGdo6jSejXeDScf6u2CE1plj86WUwRxuC6Z1DvD1NTlVLk5vJogjVazIGSPR6
+        jnqRxlBAeyn5qMn8sTvGj85rnWrxnBNkCfwUHr86xvv5wyx+CQy0+9p7cOxPZgkQQ5NE1M
+        6qLxebsOzpMjwgK3KRxeXrpgjO6cfpM=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-611-8Hyksm1DMpyYXrroI5u-wg-1; Thu, 02 Mar 2023 05:20:32 -0500
+X-MC-Unique: 8Hyksm1DMpyYXrroI5u-wg-1
+Received: by mail-qt1-f199.google.com with SMTP id l17-20020ac84cd1000000b003bfbae42753so8123099qtv.12
+        for <netdev@vger.kernel.org>; Thu, 02 Mar 2023 02:20:32 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=gfU34tRPzjFsfIGICwAUSyYWO7y40eQRHesXaw40d8s=;
-        b=IvLkzmKlleqPeQuaZwR4fcbTLuM4kQUtkqKRB7D7+lwhHZfrUaAEad7fY4RPhieaEZ
-         aXROvfirSQpTgFbY8JgTIhroefg6LVJloxADzKCjL7uTbRkB5hSmKN/eL/NFwkQ4W14i
-         5m4VwrqRoo5+MlqtQ0rlsmL6HTV+TmYcn4xae003bI37YaI3chX0lebd/pUgNE8MT7/S
-         Ge0XwoQdMUVnaMdKzfbLpwAXsEqKvMt+qGY9jejeQzM/h5uZeEOYlYdrN3cpzhTkU0az
-         EkVy5ZkeDex05Nuc2BnSzIzXfxIFcnuoybPbLkuwOnAZ4y9v/ZaXX8LFV7+0Ml+svhlu
-         oaYA==
-X-Gm-Message-State: AO0yUKU2byumx9rbAml412mSBLmdCMwtnjqm+bXwe2JdgK9lZgqGmKSE
-        5ll6ehMAug55fBHgOpsf2GQInsFT7kI7tNtcKPLPy0EWpqic
-X-Google-Smtp-Source: AK7set+/K3PFd/KL6aqokazUrBlm0Z0tvxLV672j3djpKYOCKyBsMKiRM1UiJba0CXhjSPWzLaKdu1YfYoeIRHv5TkCoXGLj2GRQ
-MIME-Version: 1.0
-X-Received: by 2002:a92:180b:0:b0:310:a298:1c95 with SMTP id
- 11-20020a92180b000000b00310a2981c95mr4344576ily.6.1677752212861; Thu, 02 Mar
- 2023 02:16:52 -0800 (PST)
-Date:   Thu, 02 Mar 2023 02:16:52 -0800
-In-Reply-To: <000000000000057d3e05edbd51b9@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ab3bcc05f5e82073@google.com>
-Subject: Re: [syzbot] [net?] WARNING in default_device_exit_batch (4)
-From:   syzbot <syzbot+9dfc3f3348729cc82277@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, roman.gushchin@linux.dev, shakeelb@google.com,
-        shaozhengchao@huawei.com, syzkaller-bugs@googlegroups.com,
-        vasily.averin@linux.dev
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=rjrL2EXhz6JO0AkbHS6QYk5+IhLOU9nymJnzUdVn1xs=;
+        b=Ow3hzqmgO1ZCFczDgmLE+M3Hxo3EwKMaEo9d/6BViav3Zw/sBbPa64Sa3lgQs6JL0Z
+         1JVVwJvCl2fGZMnmhHoIE9Gm5dYxIlO0oXP+C4FewpO6rugaG6A7k9F0EB4cc15f5pYQ
+         oVuRcBse37QLkL/fSGTidEJkPjClm3VF0mo6E7hapd4bw1SW6hqeeOcTJHeUvK8U5iaD
+         3QUMBTwqtoNVVCyD/vO96anS4ls2dVM4V1e7xKxyyRUcJF6YG+Uxfi9u0iSiFALILknq
+         qIkfvH1/8E9/YWMzh7cS0croFJ630wSLtz6NFuf+PjOUOwKSpLwV6v4ru60fO/Wt3Ks1
+         eesw==
+X-Gm-Message-State: AO0yUKV5g2SU5+EtC4UC5a6guVTkvhaPmxv4zJXTqeYs6VNV+SdFrY1F
+        q5hBAoPf6fOkJQR//HkW3wdHZx6ccVIy/BsAd3LlvpASOZvaDrCkZuGtrWsPePi1nyore60pBCT
+        R5E2jVVWutTLyquQ4
+X-Received: by 2002:a0c:9a0d:0:b0:56e:a69a:730 with SMTP id p13-20020a0c9a0d000000b0056ea69a0730mr14035352qvd.1.1677752431457;
+        Thu, 02 Mar 2023 02:20:31 -0800 (PST)
+X-Google-Smtp-Source: AK7set8QkPFQKK3jKhNe0n2G/KTJFzY1FXdoKaqbHMxgqBoWOUVkxwZcGtqZie9s4/8iajizaG9J5w==
+X-Received: by 2002:a0c:9a0d:0:b0:56e:a69a:730 with SMTP id p13-20020a0c9a0d000000b0056ea69a0730mr14035330qvd.1.1677752431130;
+        Thu, 02 Mar 2023 02:20:31 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-121-8.dyn.eolo.it. [146.241.121.8])
+        by smtp.gmail.com with ESMTPSA id e15-20020a05620a014f00b0074281812276sm10765098qkn.97.2023.03.02.02.20.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Mar 2023 02:20:30 -0800 (PST)
+Message-ID: <ac92a5f3e553e35a50119918ea0f2a833c124333.camel@redhat.com>
+Subject: Re: [PATCH net] ieee802154: Prevent user from crashing the host
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Sanan Hasanov <sanan.hasanov@Knights.ucf.edu>
+Date:   Thu, 02 Mar 2023 11:20:26 +0100
+In-Reply-To: <20230302094848.206f35ae@xps-13>
+References: <20230301154450.547716-1-miquel.raynal@bootlin.com>
+         <20230302094848.206f35ae@xps-13>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+MIME-Version: 1.0
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+Hello,
 
-HEAD commit:    5b7c4cabbb65 Merge tag 'net-next-6.3' of git://git.kernel...
-git tree:       net-next
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=12e7db64c80000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c74c134cc415a89b
-dashboard link: https://syzkaller.appspot.com/bug?extid=9dfc3f3348729cc82277
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13158898c80000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11c52674c80000
+On Thu, 2023-03-02 at 09:48 +0100, Miquel Raynal wrote:
+> miquel.raynal@bootlin.com wrote on Wed,  1 Mar 2023 16:44:50 +0100:
+>=20
+> > Avoid crashing the machine by checking
+> > info->attrs[NL802154_ATTR_SCAN_TYPE] presence before de-referencing it,
+> > which was the primary intend of the blamed patch.
+>=20
+> Subject should have been wpan instead of net, sorry for the confusion.
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/65932a118570/disk-5b7c4cab.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/8de67fb8c522/vmlinux-5b7c4cab.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/2b90e329d792/bzImage-5b7c4cab.xz
+I read the above as you intend this patch to go through
+Alexander/Stefan tree, thus dropping from netdev PW.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+9dfc3f3348729cc82277@syzkaller.appspotmail.com
+LMK if you prefer otherwise, thanks!
 
-bond7 (unregistering): Released all slaves
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 56 at net/core/dev.c:10867 unregister_netdevice_many_notify+0x14cf/0x19f0 net/core/dev.c:10867
-Modules linked in:
-CPU: 1 PID: 56 Comm: kworker/u4:4 Not tainted 6.2.0-syzkaller-05251-g5b7c4cabbb65 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 02/16/2023
-Workqueue: netns cleanup_net
-RIP: 0010:unregister_netdevice_many_notify+0x14cf/0x19f0 net/core/dev.c:10867
-Code: af 1a 00 00 48 c7 c6 00 1c 5c 8b 48 c7 c7 40 1c 5c 8b c6 05 28 d4 4c 06 01 e8 5d 45 37 f9 0f 0b e9 01 f9 ff ff e8 f1 c8 6f f9 <0f> 0b e9 d8 f8 ff ff e8 85 66 c1 f9 e9 11 ed ff ff 4c 89 ef e8 d8
-RSP: 0018:ffffc90001577a38 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 000000007db3f601 RCX: 0000000000000000
-RDX: ffff888017d61d40 RSI: ffffffff8814e53f RDI: 0000000000000001
-RBP: ffff88807bc46100 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000000000
-R13: ffff88807bc46100 R14: ffff88802ab70000 R15: dffffc0000000000
-FS:  0000000000000000(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffcb678e960 CR3: 00000000768f2000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- unregister_netdevice_many net/core/dev.c:10897 [inline]
- default_device_exit_batch+0x451/0x5b0 net/core/dev.c:11350
- ops_exit_list+0x125/0x170 net/core/net_namespace.c:174
- cleanup_net+0x4ee/0xb10 net/core/net_namespace.c:613
- process_one_work+0x9bf/0x1820 kernel/workqueue.c:2390
- worker_thread+0x669/0x1090 kernel/workqueue.c:2537
- kthread+0x2e8/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
- </TASK>
+Paolo
 
