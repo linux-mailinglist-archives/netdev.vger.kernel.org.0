@@ -2,118 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63CA56A8986
-	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 20:36:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26B9C6A8AE7
+	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 22:02:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229918AbjCBTga (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Mar 2023 14:36:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59640 "EHLO
+        id S229498AbjCBVCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Mar 2023 16:02:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbjCBTg3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Mar 2023 14:36:29 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B142A4A1EA
-        for <netdev@vger.kernel.org>; Thu,  2 Mar 2023 11:36:26 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id cw28so1445290edb.5
-        for <netdev@vger.kernel.org>; Thu, 02 Mar 2023 11:36:26 -0800 (PST)
+        with ESMTP id S229471AbjCBVCM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Mar 2023 16:02:12 -0500
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB37327D44
+        for <netdev@vger.kernel.org>; Thu,  2 Mar 2023 13:02:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google; t=1677785785;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=zMpeUvEYrqUYBTl3i4/HldERmQW4oJNrULU8+QHVKzQ=;
-        b=BYcaYhUQ79fOBo2EK8jHFq3LJAUm28rvGs9w50RmJ9Gz1doBd0D267u3oxGDouE0EB
-         tCQKgKrRQxslclGIQD3ZoHCxY43t8dy7cfOcxsOxGJeJWnUqALQojMPJfF+x1M69JaFZ
-         O33PKirJtz92OKV+gl3/6j3dhLVUQLwQjWPAM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677785785;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=zMpeUvEYrqUYBTl3i4/HldERmQW4oJNrULU8+QHVKzQ=;
-        b=Sz3cW9594TgAxsdQeYBS6aItMqlqGcNlbBvTAnXzl1DNhMsZXjmhnNpgMvuBPyTU+w
-         YtBixPt6dN4haMhMC0SdXaYKTaCCjQTatKn6IJ4SXR/oLme596KW563yYDoCDZuOlt98
-         COxPA4TPAyxXXAMvzSGYFlcrnFP8INGvG92VRWJh0boGCsVjBSn3N7K7h5dWE7Geafzq
-         VYrQirNJs0OcPtc4YRMOiEpE8BkA/uAi+g3Xp1aOnu+abDbvDfaqgdGZWsnHibyGyia3
-         bKigN+Zl6eJ2ZeSfljOyMCm8f89z/BQySk5kCeIrcbMYsFiZzPUeM7QUZew73IU3fSmS
-         LZjw==
-X-Gm-Message-State: AO0yUKWc2qWwzlMHLa93rpQo33T0FSx16R6ECGEB9TfcURl6IUHZUutU
-        P2VCSiH+ZV7RSTA+r3yotcbVml/2U3eZOHdilco=
-X-Google-Smtp-Source: AK7set/LM0ELaoznnMO0QtKgdlNGxYB/YlqZFFmX37ZkfmnBw118byo41nU19wAVIKQyhsuIe7lluQ==
-X-Received: by 2002:a17:907:2cc4:b0:8a9:e031:c4b7 with SMTP id hg4-20020a1709072cc400b008a9e031c4b7mr13993915ejc.4.1677785785038;
-        Thu, 02 Mar 2023 11:36:25 -0800 (PST)
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com. [209.85.208.42])
-        by smtp.gmail.com with ESMTPSA id ku17-20020a170907789100b008def483cf79sm33678ejc.168.2023.03.02.11.36.23
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Mar 2023 11:36:24 -0800 (PST)
-Received: by mail-ed1-f42.google.com with SMTP id d30so1461538eda.4
-        for <netdev@vger.kernel.org>; Thu, 02 Mar 2023 11:36:23 -0800 (PST)
-X-Received: by 2002:a50:9e26:0:b0:4af:70a5:5609 with SMTP id
- z35-20020a509e26000000b004af70a55609mr1981413ede.1.1677785783066; Thu, 02 Mar
- 2023 11:36:23 -0800 (PST)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1677790931; x=1709326931;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=/wmHfBQaj0LyZKWQwgM9axugumBxpTCujx4UlBTYPpg=;
+  b=VQVjcRvXaub36LGZf5I9ABscwElEqMcvgOTyfzHFdCcVuvY3Zko16n9S
+   RbJdEM5BcTAxiQo3Re3I/NKXRgFcWx1TXAKD0PrrLL8kVgfcoqbGrVFo1
+   QEASoe3PltLPmZvExq+lG67VDsxkD246Iu1u2SuzAzIfsHkmF7wAWxpx3
+   U=;
+X-IronPort-AV: E=Sophos;i="5.98,228,1673913600"; 
+   d="scan'208";a="189076809"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-1box-2bm6-32cf6363.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2023 20:31:20 +0000
+Received: from EX19D010EUA004.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-1box-2bm6-32cf6363.us-west-2.amazon.com (Postfix) with ESMTPS id F112B81B2D;
+        Thu,  2 Mar 2023 20:31:18 +0000 (UTC)
+Received: from EX19D028EUB003.ant.amazon.com (10.252.61.31) by
+ EX19D010EUA004.ant.amazon.com (10.252.50.94) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.24; Thu, 2 Mar 2023 20:31:17 +0000
+Received: from u570694869fb251.ant.amazon.com (10.85.143.177) by
+ EX19D028EUB003.ant.amazon.com (10.252.61.31) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.24; Thu, 2 Mar 2023 20:31:09 +0000
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
+CC:     Shay Agroskin <shayagr@amazon.com>,
+        "Woodhouse, David" <dwmw@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        Saeed Bshara <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Arinzon, David" <darinzon@amazon.com>,
+        "Itzko, Shahar" <itzko@amazon.com>,
+        "Abboud, Osama" <osamaabb@amazon.com>
+Subject: [PATCH RFC v2 net-next 0/4] Add tx push buf len param to ethtool
+Date:   Thu, 2 Mar 2023 22:30:41 +0200
+Message-ID: <20230302203045.4101652-1-shayagr@amazon.com>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
-References: <20230228132118.978145284@linutronix.de> <20230228132910.991359171@linutronix.de>
- <CAHk-=wjeMbHK61Ee+Ug4w8AGHCSDx94GuLs5bPXhHNhA_+RjzA@mail.gmail.com>
- <87pm9slocp.ffs@tglx> <87bklcklnb.ffs@tglx>
-In-Reply-To: <87bklcklnb.ffs@tglx>
-From:   Linus Torvalds <torvalds@linuxfoundation.org>
-Date:   Thu, 2 Mar 2023 11:36:06 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wi=CDyS_ebXw745OCXnhwDpVLnahNveQNcZOPrzE5QiQA@mail.gmail.com>
-Message-ID: <CAHk-=wi=CDyS_ebXw745OCXnhwDpVLnahNveQNcZOPrzE5QiQA@mail.gmail.com>
-Subject: Re: [patch 2/3] atomics: Provide rcuref - scalable reference counting
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>, x86@kernel.org,
-        Wangyang Guo <wangyang.guo@intel.com>,
-        Arjan Van De Ven <arjan.van.de.ven@intel.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.85.143.177]
+X-ClientProxiedBy: EX19D046UWA003.ant.amazon.com (10.13.139.18) To
+ EX19D028EUB003.ant.amazon.com (10.252.61.31)
+X-Spam-Status: No, score=-11.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 1, 2023 at 5:05=E2=80=AFPM Thomas Gleixner <tglx@linutronix.de>=
- wrote:
->
-> The result of staring more is:
->
-> get():
->     6b57:       f0 41 83 45 40 01       lock addl $0x1,0x40(%r13)
->     6b5d:       0f 88 cd 00 00 00       js     6c30                     /=
-/ -> slowpath if negative
+Changed since v1:
+- Added the new ethtool param to generic netlink specs
+- Dropped dynamic advertisement of tx push buff support in ENA.
+  The driver will advertise it for all platforms
 
-[ rest removed ]
+This patchset adds a new sub-configuration to ethtool get/set queue
+params (ethtool -g) called 'tx-push-buf-len'.
 
-Yeah, so this looks like I was hoping for.
+This configuration specifies the maximum number of bytes of a
+transmitted packet a driver can push directly to the underlying
+device ('push' mode). The motivation for pushing some of the bytes to
+the device has the advantages of
 
-That PREEMPT=3Dy case of 'put() makes me slightly unhappy, and I'm
-wondering if it can be improved with better placement of the
-preempt_disable/enable, but apart from maybe some massaging to that I
-don't see a good way to avoid it.
+- Allowing a smart device to take fast actions based on the packet's
+  header
+- Reducing latency for small packets that can be copied completely into
+  the device
 
-And the ugliness is mostly about the preemption side, not about the
-refcount itself. I've looked at that "preempt_enable ->
-preempt_schedule" code generation before, and I've disliked it before,
-and I don't have an answer to it.
+This new param is practically similar to tx-copybreak value that can be
+set using ethtool's tunable but conceptually serves a different purpose.
+While tx-copybreak is used to reduce the overhead of DMA mapping and
+makes no sense to use if less than the whole segment gets copied,
+tx-push-buf-len allows to improve performance by analyzing the packet's
+data (usually headers) before performing the DMA operation.
 
-> but the actual network code does some sanity checking:
+The configuration can be queried and set using the commands:
 
-Ok. Not pretty. But at least it's just an xadd on the access itself,
-there's just some extra noise around it.
+    $ ethtool -g [interface]
 
-            Linus
+    # ethtool -G [interface] tx-push-buf-len [number of bytes]
+
+This patchset also adds support for the new configuration in ENA driver
+for which this parameter ensures efficient resources management on the
+device side.
+
+David Arinzon (1):
+  net: ena: Add an option to configure large LLQ headers
+
+Shay Agroskin (3):
+  ethtool: Add support for configuring tx_push_buf_len
+  net: ena: Recalculate TX state variables every device reset
+  net: ena: Add support to changing tx_push_buf_len
+
+ Documentation/netlink/specs/ethtool.yaml      |   8 +
+ Documentation/networking/ethtool-netlink.rst  |  43 ++++--
+ drivers/net/ethernet/amazon/ena/ena_eth_com.h |   4 +
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c |  51 ++++++-
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  | 138 ++++++++++++++----
+ drivers/net/ethernet/amazon/ena/ena_netdev.h  |  15 +-
+ include/linux/ethtool.h                       |  14 +-
+ include/uapi/linux/ethtool_netlink.h          |   2 +
+ net/ethtool/netlink.h                         |   2 +-
+ net/ethtool/rings.c                           |  28 +++-
+ 10 files changed, 245 insertions(+), 60 deletions(-)
+
+-- 
+2.25.1
+
