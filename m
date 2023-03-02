@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CFBD6A7856
-	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 01:24:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48FB96A785B
+	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 01:27:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229529AbjCBAYO convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 1 Mar 2023 19:24:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47550 "EHLO
+        id S229615AbjCBA1o convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 1 Mar 2023 19:27:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbjCBAYN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 19:24:13 -0500
+        with ESMTP id S229451AbjCBA1n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Mar 2023 19:27:43 -0500
 Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1C801B2E5;
-        Wed,  1 Mar 2023 16:24:11 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEB92367E4;
+        Wed,  1 Mar 2023 16:27:42 -0800 (PST)
 Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 3220NcIhA001350, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 3220NcIhA001350
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 3220RGHD0003818, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 3220RGHD0003818
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
-        Thu, 2 Mar 2023 08:23:38 +0800
-Received: from RTEXMBS05.realtek.com.tw (172.21.6.98) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+        Thu, 2 Mar 2023 08:27:16 +0800
+Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
+ RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.32; Thu, 2 Mar 2023 08:23:04 +0800
+ 15.1.2507.17; Thu, 2 Mar 2023 08:27:23 +0800
 Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
+ RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Thu, 2 Mar 2023 08:23:03 +0800
+ 15.1.2375.7; Thu, 2 Mar 2023 08:27:23 +0800
 Received: from RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02]) by
  RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02%5]) with mapi id
- 15.01.2375.007; Thu, 2 Mar 2023 08:23:03 +0800
+ 15.01.2375.007; Thu, 2 Mar 2023 08:27:22 +0800
 From:   Ping-Ke Shih <pkshih@realtek.com>
 To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 CC:     "kvalo@kernel.org" <kvalo@kernel.org>,
@@ -45,8 +45,8 @@ CC:     "kvalo@kernel.org" <kvalo@kernel.org>,
 Subject: RE: [PATCH v2] rtlwifi: rtl8192se: Remove some unused variables
 Thread-Topic: [PATCH v2] rtlwifi: rtl8192se: Remove some unused variables
 Thread-Index: AQHZS+rSpy19DpHS5UeAkzV39mTD+67mocvQ
-Date:   Thu, 2 Mar 2023 00:23:03 +0000
-Message-ID: <cd3987d9c17d416aafd5f0fb0fae7a27@realtek.com>
+Date:   Thu, 2 Mar 2023 00:27:22 +0000
+Message-ID: <f86efaab1fe04d6184a6d398eeb43b31@realtek.com>
 References: <20230301030534.2102-1-jiapeng.chong@linux.alibaba.com>
 In-Reply-To: <20230301030534.2102-1-jiapeng.chong@linux.alibaba.com>
 Accept-Language: en-US, zh-TW
@@ -54,7 +54,7 @@ Content-Language: zh-TW
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS05.realtek.com.tw, 9
+x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
 x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
  rules found
 x-kse-antivirus-interceptor-info: scan successful
@@ -63,10 +63,6 @@ x-kse-bulkmessagesfiltering-scan-result: protection disabled
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-AntiSpam-Interceptor-Info: fallback
-X-KSE-Antivirus-Interceptor-Info: fallback
-X-KSE-AntiSpam-Interceptor-Info: fallback
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
