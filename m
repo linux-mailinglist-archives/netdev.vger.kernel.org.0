@@ -2,139 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FD4D6A7D89
-	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 10:21:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0A7A6A7D8D
+	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 10:22:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229921AbjCBJVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Mar 2023 04:21:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54520 "EHLO
+        id S229689AbjCBJWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Mar 2023 04:22:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229831AbjCBJVn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Mar 2023 04:21:43 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72EB230EB9
-        for <netdev@vger.kernel.org>; Thu,  2 Mar 2023 01:20:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1677748820;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mNAh7WwsaV0kOk2ITHv/T/MFdHkpYUKS8lAASyQo12s=;
-        b=cUMnoJruM/FiQCbLzYKR+v1jwYiCKkN3NTRfoYKkw4UnUWf7wmcVJ9Rk9KbKuYm0isTBie
-        zvG1Ajk9oaaty4OL7koiRtxLXpJPwmP204GZ4gxLS1l4/EuJPes5SeEAO+P6pTKssBW+YN
-        1eULUJeiyfH2N9o7LJaUAiOpTw8f/sM=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-167-st6txYhYOiGEv0DvN_Yy5w-1; Thu, 02 Mar 2023 04:20:19 -0500
-X-MC-Unique: st6txYhYOiGEv0DvN_Yy5w-1
-Received: by mail-wr1-f72.google.com with SMTP id u5-20020a5d6da5000000b002cd82373455so1955099wrs.9
-        for <netdev@vger.kernel.org>; Thu, 02 Mar 2023 01:20:19 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677748818;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mNAh7WwsaV0kOk2ITHv/T/MFdHkpYUKS8lAASyQo12s=;
-        b=4z3waDSqpXHkb47OtUbFTTQeRmZC+DsCEf6nb1OOGpILH4/8viZ7xXw5wAiw1oTgaY
-         zeIyRQc4r7UBgwQgpKTwQIIVCFyOk5C1fQlK8xJvQRiWaRdsGWD/y2aIVAREpxiKNTnk
-         pif7H0LwoNRPNoZS3tAhNv5Mzb+JvwuWkEcT1fj6T8DYzNCOg4vPKgSDRROUCpTbsY0S
-         Caw1iDCvdp4MYEqqj/N56dK0JxcZwN3lK67/IUe90Nq01ThuSp+C4fn9x3wGiMxasaNm
-         l4FnlLKirpQ9OPd4G/ezzMhSs9yQFWlZF9yzXGMbP79q+NMNln1G/uEyTXFn4AWLPk5R
-         /FeQ==
-X-Gm-Message-State: AO0yUKXrWB3rv+W0AS1BC7zTQoUL4fMdOCobluUPd1elyF8eHaI3sIOy
-        hQu5qemF0LPs0gXAJ0BWfcstUcJPJoFV82+xJmeAQ0xiKlIdatMGuWipBa9nDYIuApv4Jt1HDwV
-        Zv18k6tuTKuGVtXbz
-X-Received: by 2002:adf:ce09:0:b0:2c5:52c3:3f05 with SMTP id p9-20020adfce09000000b002c552c33f05mr6913068wrn.37.1677748818283;
-        Thu, 02 Mar 2023 01:20:18 -0800 (PST)
-X-Google-Smtp-Source: AK7set9PN/kdkIqrGoMb6UfHqEwEV9RSL6zdzJVeFnieVx1t6UmihOxwNslkLjNRDZls5mCSN7BIMA==
-X-Received: by 2002:adf:ce09:0:b0:2c5:52c3:3f05 with SMTP id p9-20020adfce09000000b002c552c33f05mr6913041wrn.37.1677748818002;
-        Thu, 02 Mar 2023 01:20:18 -0800 (PST)
-Received: from sgarzare-redhat (c-115-213.cust-q.wadsl.it. [212.43.115.213])
-        by smtp.gmail.com with ESMTPSA id x16-20020a5d54d0000000b002c71703876bsm14635935wrv.14.2023.03.02.01.20.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Mar 2023 01:20:17 -0800 (PST)
-Date:   Thu, 2 Mar 2023 10:20:09 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Bobby Eshleman <bobbyeshleman@gmail.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>, kvm@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Song Liu <song@kernel.org>, Eric Dumazet <edumazet@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        linux-kselftest@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Paolo Abeni <pabeni@redhat.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>, Hao Luo <haoluo@google.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Olsa <jolsa@kernel.org>, bpf@vger.kernel.org,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v3 1/3] vsock: support sockmap
-Message-ID: <20230302092009.xohos3cvowrrykck@sgarzare-redhat>
-References: <20230227-vsock-sockmap-upstream-v3-0-7e7f4ce623ee@bytedance.com>
- <20230227-vsock-sockmap-upstream-v3-1-7e7f4ce623ee@bytedance.com>
- <20230228163518-mutt-send-email-mst@kernel.org>
- <Y/B9ddkfQw6Ae/lY@bullseye>
+        with ESMTP id S229731AbjCBJVx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Mar 2023 04:21:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A93383B3EA;
+        Thu,  2 Mar 2023 01:21:39 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2596E61548;
+        Thu,  2 Mar 2023 09:21:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A911AC433D2;
+        Thu,  2 Mar 2023 09:21:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1677748898;
+        bh=cOTeCtj7ndRx/yOBQ/xH7JUbBavYYcRLlMhD50aq8hs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=l0Zi3Zr8ZQsz3ayPTPfBqRRnxVJQkC6RzCQ0JbNTE/s+O93w6pDsIRyWo5cH1R5mp
+         PZnhT8/iOkCsxawERFoUUCI2404AwOzHebXvUpcCowYm1IbGGm4DERD9DAZ+WJmYLt
+         Zh1cvvFb98nMYcFFLP88j3aZnTvkMWY2H8nHOufy8c+l5dv0UHdgqQVGCNBEQEeq9o
+         3OI2fXdB0SMn5POai1sYkNlWNIDQ+uD07OFeLic8+OjvluRG1O/oaWZmoMBMpKgTcO
+         jYjqHP5hjA8iWGrc6bCtwbMBEh3d+PWyplwXxzeGQgsMY5uucuTCtuQJ40kaBp/Hhq
+         SXx6H+jL08TSg==
+Date:   Thu, 2 Mar 2023 11:21:33 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Ratheesh Kannoth <rkannoth@marvell.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, sgoutham@marvell.com
+Subject: Re: [net PATCH] octeontx2-af: Fix start and end bit for scan config
+Message-ID: <20230302092133.GB561905@unreal>
+References: <20230302032855.831573-1-rkannoth@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y/B9ddkfQw6Ae/lY@bullseye>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230302032855.831573-1-rkannoth@marvell.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 18, 2023 at 07:25:41AM +0000, Bobby Eshleman wrote:
->On Tue, Feb 28, 2023 at 04:36:22PM -0500, Michael S. Tsirkin wrote:
->> On Tue, Feb 28, 2023 at 07:04:34PM +0000, Bobby Eshleman wrote:
->> > @@ -1241,19 +1252,34 @@ static int vsock_dgram_connect(struct socket *sock,
->> >
->> >  	memcpy(&vsk->remote_addr, remote_addr, sizeof(vsk->remote_addr));
->> >  	sock->state = SS_CONNECTED;
->> > +	sk->sk_state = TCP_ESTABLISHED;
->> >
->> >  out:
->> >  	release_sock(sk);
->> >  	return err;
->> >  }
->>
->>
->> How is this related? Maybe add a comment to explain? Does
->> TCP_ESTABLISHED make sense for all types of sockets?
->>
->
->Hey Michael, definitely, I can leave a comment.
+On Thu, Mar 02, 2023 at 08:58:55AM +0530, Ratheesh Kannoth wrote:
+> for_each_set_bit_from() needs start bit as one bit prior
+> and end bit as one bit post position in the bit map
+> 
+> Fixes: 88fffc65f940 (octeontx2-af: Exact match scan from kex profile)
 
-I agree, since I had the same doubt in previous versions, I think it's 
-worth putting a comment in the code to explain why.
+This is wrong Fixes line. It should be:
+Fixes: 812103edf670 ("octeontx2-af: Exact match scan from kex profile")
 
-Since there may be a v4, I'll leave some small comments in a separate 
-email.
+Thanks
 
-Thanks,
-Stefano
-
->
->The real reason is due to this piece of logic in sockmap:
->https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/net/core/sock_map.c?h=v6.2#n531
->
->And because of it, you see the same thing in (for example)
->unix_dgram_connect():
->https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/net/unix/af_unix.c?h=v6.2#n1394
->
->I believe it makes sense for these other socket types.
->
-
+> Signed-off-by: Ratheesh Kannoth <rkannoth@marvell.com>
+> Reviewed-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+> ---
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
+> index 327d3c6b1175..9c7bbef27e31 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
+> +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
+> @@ -603,9 +603,8 @@ static int npc_scan_kex(struct rvu *rvu, int blkaddr, u8 intf)
+>  	 * exact match code.
+>  	 */
+>  	masked_cfg = cfg & NPC_EXACT_NIBBLE;
+> -	bitnr = NPC_EXACT_NIBBLE_START;
+> -	for_each_set_bit_from(bitnr, (unsigned long *)&masked_cfg,
+> -			      NPC_EXACT_NIBBLE_START) {
+> +	bitnr = NPC_EXACT_NIBBLE_START - 1;
+> +	for_each_set_bit_from(bitnr, (unsigned long *)&masked_cfg, NPC_EXACT_NIBBLE_END + 1) {
+>  		npc_scan_exact_result(mcam, bitnr, key_nibble, intf);
+>  		key_nibble++;
+>  	}
+> -- 
+> 2.25.1
+> 
