@@ -2,146 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B52936A816F
-	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 12:44:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D0086A8184
+	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 12:49:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229713AbjCBLoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Mar 2023 06:44:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41590 "EHLO
+        id S229617AbjCBLth (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Mar 2023 06:49:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229486AbjCBLo1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Mar 2023 06:44:27 -0500
-Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B766A2D58;
-        Thu,  2 Mar 2023 03:44:23 -0800 (PST)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id CE6555FD0A;
-        Thu,  2 Mar 2023 14:44:20 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1677757460;
-        bh=nXzgEDaJ7mfgPMR2dSDVcHR/9usu9xKMYmIGbh5aJzs=;
-        h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-        b=fOZ9v9mkFvHLKT2oMKeBoeidU0rEs5MYIhFdtKNJ3TCaSiQ803CM1tgkrVc2kpQrR
-         Htclbjt6KtXejEbpPAj2tJGmmv+wBde4T83MRrwpbk6xjCehn5ksXT/XeT8CfBXRqp
-         8FjDdGGZobZQMKDz++HR4m8S5kliZpy2hSZ2BbWzsOQWqIfnLzUohjBBCGK3Hf4XVV
-         kThzJZvpJYjPwQPCf9THz6Cv2EnkcMOiKr3hSjvAN/pflo18GOhv/kgfvXJctWD5+I
-         k425QVc9QEgpacMknn1azrPiN14n0xyLe5RMe4/3cpbSyHTur/OZLMdk6MSDPYTZVR
-         gFQQ8c8bEW4BQ==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mx.sberdevices.ru (Postfix) with ESMTP;
-        Thu,  2 Mar 2023 14:44:17 +0300 (MSK)
-Message-ID: <3b38870c-7606-bf2e-8b17-21a75a1ed751@sberdevices.ru>
-Date:   Thu, 2 Mar 2023 14:41:29 +0300
+        with ESMTP id S229449AbjCBLtg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Mar 2023 06:49:36 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C6F813DF7
+        for <netdev@vger.kernel.org>; Thu,  2 Mar 2023 03:49:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=feCINtbNdSorlHYIeJZVC6gKrhaFB4cNR6bn4bxBWmI=; b=k5xkEXcWngn9Z5H1bL+OjXQsVR
+        /ayNRBgqjcKcEC6EyIjC6zTXiEdPUdNVw40rL6oe5MZ45n1Ui2vzy65jqdaEqus0tNQwaSyRvVWZG
+        kvZA3upSC5MTfapVEjxN0FTkEZD+AY5Vd+iVq5PoMMcqSOCMbcyd5UPvAuA0nGymX6T37/M0BoDK4
+        S/73UBB5qjsmE06ZrFR8P53FbQxQMbHs/GY3/su1mAQM+gD1y4iJTXPjE/iKoyxqSZBt6EOAhpGSo
+        T2yKuIi6x3I4xlaXTCNJ7D7hp/ImGGaDrVc/VXpaog2IvMIgghQt1TY36bdllH8H3OWNXa/tofvh2
+        gs2ijbPg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57904)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pXhRB-0007lI-22; Thu, 02 Mar 2023 11:49:29 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pXhR8-0004m8-VH; Thu, 02 Mar 2023 11:49:27 +0000
+Date:   Thu, 2 Mar 2023 11:49:26 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     =?iso-8859-1?Q?K=F6ry?= Maincent <kory.maincent@bootlin.com>,
+        Jakub Kicinski <kuba@kernel.org>, andrew@lunn.ch,
+        davem@davemloft.net, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>
+Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support
+ [multicast/DSA issues]
+Message-ID: <ZACNRjCojuK6tcnl@shell.armlinux.org.uk>
+References: <Y/0QSphmMGXP5gYy@hoboy.vegasvil.org>
+ <Y/3ubSj5+2C5xbZu@shell.armlinux.org.uk>
+ <20230228141630.64d5ef63@kmaincent-XPS-13-7390>
+ <Y/4ayPsZuYh+13eI@hoboy.vegasvil.org>
+ <Y/4rXpPBbCbLqJLY@shell.armlinux.org.uk>
+ <20230228142648.408f26c4@kernel.org>
+ <Y/6Cxf6EAAg22GOL@shell.armlinux.org.uk>
+ <20230228145911.2df60a9f@kernel.org>
+ <20230301170408.0cc0519d@kmaincent-XPS-13-7390>
+ <ZAAn1deCtR0BoVAm@hoboy.vegasvil.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [RFC PATCH v1] vsock: check error queue to set EPOLLERR
-Content-Language: en-US
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, <oxffffaa@gmail.com>,
-        <kernel@sberdevices.ru>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>
-References: <76e7698d-890b-d14d-fa34-da5dd7dd13d8@sberdevices.ru>
- <20230302100621.gk45unegjbqjgpxh@sgarzare-redhat>
-From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
-In-Reply-To: <20230302100621.gk45unegjbqjgpxh@sgarzare-redhat>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [172.16.1.6]
-X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
- S-MS-EXCH01.sberdevices.ru (172.16.1.4)
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/03/02 07:22:00 #20908555
-X-KSMG-AntiVirus-Status: Clean, skipped
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <ZAAn1deCtR0BoVAm@hoboy.vegasvil.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
-
-On 02.03.2023 13:06, Stefano Garzarella wrote:
-> On Wed, Mar 01, 2023 at 08:19:45AM +0300, Arseniy Krasnov wrote:
->> EPOLLERR must be set not only when there is error on the socket, but also
->> when error queue of it is not empty (may be it contains some control
->> messages). Without this patch 'poll()' won't detect data in error queue.
+On Wed, Mar 01, 2023 at 08:36:37PM -0800, Richard Cochran wrote:
+> On Wed, Mar 01, 2023 at 05:04:08PM +0100, K�ry Maincent wrote:
+> > I suppose the idea of Russell to rate each PTP clocks may be the best one, as
+> > all others solutions have drawbacks. Does using the PTP clock period value (in
+> > picoseconds) is enough to decide which PTP is the best one? It is hardware
+> > specific therefore it is legitimate to be set by the MAC and PHY drivers.
 > 
-> Do you have a reproducer?
-> 
-Dedicated reproducer - no:)
-To reproduce this issue, i used last MSG_ZEROCOPY patches. Completion was inserted to
-error queue, and 'poll()' didn't report about it. That was the reason, why this patch
-was included to MSG_ZEROCOPY patchset. But also i think it is better to reduce number
-of patches in it(i'm working on v2), so it is good to handle this patch separately.
-May be one way to reproduce it is use SO_TIMESTAMP(time info about skbuff will be queued
-to the error queue). IIUC this feature is implemented at socket layer and may work in
-vsock (but i'm not sure). Ok, i'll check it and try to implement reproducer.
+> It is not that simple.  In fact, I've never seen an objective
+> comparision of different HW.  The vendors surely have no reason to
+> conduct such a study.  Also, the data sheets never make any claim
+> about synchronization quality.
 
-IIUC, for future, policy for fixes is "for each fix implement reproducer in vsock_test"?
+mvpp2 (MAC) hardware has a counter in hardware that we can read the
+timestamps from, and it supports being fine-tuned and stepped in
+hardware. So the hardware gives us the timestamps with no shenanigans.
+The hardware timestamp is incremented by a programmable amount
+(including a 32-bit fractional part) every 3ns.
 
->> This patch is based on 'tcp_poll()'.
-> 
-> LGTM but we should add a Fixes tag.
-> It's not clear to me whether the problem depends on when we switched to using sk_buff or was pre-existing.
-> 
-> Do you have any idea when we introduced this issue?
-git blame shows, that this code exists since first commit to vsock:
+The mvpp2 hardware captures the timestamp when receiving packets, and
+places the timestamp in the buffer descriptors - there is no filtering
+and this timestamping essentially comes for free from the software
+perspective. There is no requirement to read any registers before the
+next packet that needs to be timestamped, and the timestamps can not
+be confused which packet they are intended for. Since these timestamps
+are in the buffer descriptors, they are available as soon as the packet
+is ready to be passed to the networking layers.
 
-commit d021c344051af91f42c5ba9fdedc176740cbd238
-Author: Andy King <acking@vmware.com>
-Date:   Wed Feb 6 14:23:56 2013 +0000
+Timestamps can be inserted into transmitted packets and the checksums
+updated by the hardware. The hardware has capability to do a number
+of operations on the packets when inserting the timestamp, although
+I never wrote software support for this (I wanted some way to
+positively test these but I don't think I had a way to do that.)
+Multiple transmit packets can be queued for timestamping and the
+hardware will cope.
 
-    VSOCK: Introduce VM Sockets
+Hardware signals are supported. The hardware has event capture,
+capabilities, which snapshots the counter, and this should give high
+accuracy. However, for generation of events, e.g. PPS, I have observed
+that there is no way to ensure that the PPS signal is aligned to the
+start of a second. That said, the signal is subject to the fine
+adjustments of the hardware counter - so increasing the hardware
+counter's increment correctly shortens the PPS signal period.
 
-For TCP same logic was added by:
+All accesses to the hardware are fast, being MMIO, which gives a
+very stable reading when the hardware clock is adjusted by ptp4l.
 
-commit 4ed2d765dfaccff5ebdac68e2064b59125033a3b
-Author: Willem de Bruijn <willemb@google.com>
-Date:   Mon Aug 4 22:11:49 2014 -0400
-
-    net-timestamp: TCP timestamping
+The hardware timestamp counter is shared across all three ethernet
+interfaces of the CP110 die, and there can be more than one CP110
+die in a SoC.
 
 
-> 
-> Thanks,
-> Stefano
-> 
+Marvell PHY hardware is qutie different. The counter is updated every
+8ns, and merely increments by one each time. There is no fractional
+adjustment, meaning that there is no fine adjustment of the hardware.
+Fine adjustment is performed by using the kernel's timecounter
+infrastructure.
 
-Thanks Arseniy
+The counter is accessed over MDIO which appears to introduce a lot of
+variability in latency, which transfers over to read accesses to the
+counter, and thus the read timestamp. This makes it harder for ptp4l to
+synchronise the counter, and from my testing, introduces a lot of
+noise.
 
->>
->> Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
->> ---
->> net/vmw_vsock/af_vsock.c | 2 +-
->> 1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
->> index 19aea7cba26e..b5e51ef4a74c 100644
->> --- a/net/vmw_vsock/af_vsock.c
->> +++ b/net/vmw_vsock/af_vsock.c
->> @@ -1026,7 +1026,7 @@ static __poll_t vsock_poll(struct file *file, struct socket *sock,
->>     poll_wait(file, sk_sleep(sk), wait);
->>     mask = 0;
->>
->> -    if (sk->sk_err)
->> +    if (sk->sk_err || !skb_queue_empty_lockless(&sk->sk_error_queue))
->>         /* Signify that there has been an error on this socket. */
->>         mask |= EPOLLERR;
->>
->> -- 
->> 2.25.1
->>
-> 
+The PHY can't modify the packet in any way, but merely captures the
+counter when the packet is transmitted. The PHY needs to be programmed
+with the byte offset from the start of the packet to the ethernet
+protocol, and the ethernet protocol to the IP header - suggesting
+that the PTP hardware needs to know whether packets will or will not
+be incorporating a VLAN header (this is explicitly mentioned in e.g.
+the 88e151x manual.)
+
+The PHY's filtering applies to both the transmit and receive paths,
+and as there is only one set of capture registers for a transmit
+packet, this may become a problem, especially if we are not using
+interrupts for the PHY. Without interrupts, at best we poll the PHY
+every 2ms (but could be longer due to MDIO access times.)
+
+For receive, the PHY implement two capture register sets. The PHY
+needs to parse the packet (using the offsets into the packet above)
+in order to retrieve the MessageID field which is then used to work
+out which receive capture register to write the packet's counter
+value to. This means if one receives several PTP packets in quick
+succession, there is a chance to lose timestamps.
+
+The situation with hardware signals will be similar to PP2, in that
+event capture takes a snapshot of the hardware counter, which can
+then be translated. However, as the hardware counter does not get
+adjusted, signal generation is tied to the unadjusted rate at which
+the hardware ticks at, which means that asking for a PPS, the
+generated signal will drift as the PHY 125MHz clock drifts.
+
+
+In conclusion, not only does PP2 have a 3ns tick vs 8ns for PHY, PP2
+can more reliably capture the timestamps, reading the hardware counter
+value has less noise, and thus can be synchronised by ptp4l with far
+less random variance than the PHY implementation.
+
+Therefore, I believe that the Marvell PHY PTP implementation is all
+round inferior to that found in the Marvell PP2 MAC, and hence why I
+believe that the PP2 MAC implementation should be used by default over
+the PHY.
+
+
+(In essence, because of all the noise when trying the Marvell PHY with
+ptp4l, I came to the conlusion that NTP was a far better solution to
+time synchronisation between machines than PTP would ever be due to
+the nose induced by MDIO access. However, I should also state that I
+basically gave up with PTP in the end because hardware support is
+overall poor, and NTP just works - and I'd still have to run NTP for
+the machines that have no PTP capabilities. PTP probably only makes
+sense if one has a nice expensive grand master PTP clock on ones
+network, and all the machines one wants to synchronise have decent
+PTP implementations.)
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
