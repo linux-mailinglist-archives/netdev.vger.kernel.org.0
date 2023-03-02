@@ -2,134 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E50C46A8728
-	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 17:45:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 78AF36A875D
+	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 17:50:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230045AbjCBQpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Mar 2023 11:45:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53608 "EHLO
+        id S230063AbjCBQua (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Mar 2023 11:50:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230030AbjCBQpO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Mar 2023 11:45:14 -0500
-Received: from mailrelay1-1.pub.mailoutpod2-cph3.one.com (mailrelay1-1.pub.mailoutpod2-cph3.one.com [IPv6:2a02:2350:5:400::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F15E72ED57
-        for <netdev@vger.kernel.org>; Thu,  2 Mar 2023 08:45:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ravnborg.org; s=rsa2;
-        h=in-reply-to:content-type:mime-version:references:message-id:subject:cc:to:
-         from:date:from;
-        bh=sAIc9DICHOwHXe3hoL0M1Cz46v91ph++acz6kjkneyk=;
-        b=kDFUay36skYmps2/wdqt4fAH3ooPZbYWVp4pqBqM961wiZduj7P0xLgJw2P+NpMGf7kg1DoicLT6s
-         g6l09K8HwL4RYQ8zGGoaFGn4km6zQYbAroP+EN+9HlyJrhV1W8t5cDqTAwscYUwdLDpYbIiHboO9rZ
-         aMzoAa0S/vUdoj1kf/OGdJTZUpW+MrjaNGUTQavNWIRuYfGMKTi7Tl3hROfbZVtoTWtbKeUCJQ2L0I
-         vgAjzdLxgJIXjLXCeRFb3ZpkshGAWy49N0muwOqA6SWUqwPx0aPY3DSGC5+6RFk99RSbDSFXHj01s6
-         xLMWjzebL84uGzeen8v31LzBEjuhwEg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
-        d=ravnborg.org; s=ed2;
-        h=in-reply-to:content-type:mime-version:references:message-id:subject:cc:to:
-         from:date:from;
-        bh=sAIc9DICHOwHXe3hoL0M1Cz46v91ph++acz6kjkneyk=;
-        b=dTZtzyqF/jIMi0Zr3bfFJbyk3/PAmHQdX/XPn81EeMGXIgD+hYOJ9q2VlxqlJBJy6Rr6S2UsHglzv
-         pur80rgBQ==
-X-HalOne-ID: 943971d9-b919-11ed-babc-11abd97b9443
-Received: from ravnborg.org (2-105-2-98-cable.dk.customer.tdc.net [2.105.2.98])
-        by mailrelay1 (Halon) with ESMTPSA
-        id 943971d9-b919-11ed-babc-11abd97b9443;
-        Thu, 02 Mar 2023 16:45:06 +0000 (UTC)
-Date:   Thu, 2 Mar 2023 17:45:04 +0100
-From:   Sam Ravnborg <sam@ravnborg.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Robert Foss <rfoss@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
-        netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-pm@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-usb@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Fix SPI and I2C bus node names in examples
-Message-ID: <ZADSkGa6dK4H9p75@ravnborg.org>
-References: <20230228215433.3944508-1-robh@kernel.org>
+        with ESMTP id S230056AbjCBQu3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Mar 2023 11:50:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79849D3
+        for <netdev@vger.kernel.org>; Thu,  2 Mar 2023 08:50:07 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4FDEDB8121B
+        for <netdev@vger.kernel.org>; Thu,  2 Mar 2023 16:49:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B50AC4339B;
+        Thu,  2 Mar 2023 16:49:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1677775774;
+        bh=rJSYZJupHT7cV7i8wdDq1MgG56MnrDYdgtRHNo0HNhc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hqm7cfmJrzu5h5hndotBpozz5mWU19A1bduyfFAS/E1UJ068t4XDB3e/h8KC85TBo
+         VSbVZrqdEarrg8QSj4zY/jxP7nXcXW3sy+JEhAhlYl52pVxh8toBrAjZn81FVp46+S
+         haLGUgTFYnJMOfcr+vaMQrjFtZwAW+L5CR178NfeqUw1sgPAtaCPq2WsdKacNyNAoB
+         SY4Cr/akYsuLY5HaA/lrAjlFfPyFJ28WuoIz1Xuhml3RM8cc0Qwl0Jcjc+KEAgpRoI
+         YmByarvaiBVhYeKwTd6dl9BL4aSxf0tWDxqcR4rAyl5d+AHyQNexGczvOD56eLhajr
+         UPb1Q+R8IC5tw==
+Date:   Thu, 2 Mar 2023 08:49:32 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        =?UTF-8?B?S8O2cnk=?= Maincent <kory.maincent@bootlin.com>,
+        andrew@lunn.ch, davem@davemloft.net, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>
+Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support
+ [multicast/DSA issues]
+Message-ID: <20230302084932.4e242f71@kernel.org>
+In-Reply-To: <ZACNRjCojuK6tcnl@shell.armlinux.org.uk>
+References: <Y/0QSphmMGXP5gYy@hoboy.vegasvil.org>
+        <Y/3ubSj5+2C5xbZu@shell.armlinux.org.uk>
+        <20230228141630.64d5ef63@kmaincent-XPS-13-7390>
+        <Y/4ayPsZuYh+13eI@hoboy.vegasvil.org>
+        <Y/4rXpPBbCbLqJLY@shell.armlinux.org.uk>
+        <20230228142648.408f26c4@kernel.org>
+        <Y/6Cxf6EAAg22GOL@shell.armlinux.org.uk>
+        <20230228145911.2df60a9f@kernel.org>
+        <20230301170408.0cc0519d@kmaincent-XPS-13-7390>
+        <ZAAn1deCtR0BoVAm@hoboy.vegasvil.org>
+        <ZACNRjCojuK6tcnl@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230228215433.3944508-1-robh@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rob.
+On Thu, 2 Mar 2023 11:49:26 +0000 Russell King (Oracle) wrote:
+> (In essence, because of all the noise when trying the Marvell PHY with
+> ptp4l, I came to the conlusion that NTP was a far better solution to
+> time synchronisation between machines than PTP would ever be due to
+> the nose induced by MDIO access. However, I should also state that I
+> basically gave up with PTP in the end because hardware support is
+> overall poor, and NTP just works - and I'd still have to run NTP for
+> the machines that have no PTP capabilities. PTP probably only makes
+> sense if one has a nice expensive grand master PTP clock on ones
+> network, and all the machines one wants to synchronise have decent
+> PTP implementations.)
 
->  .../bindings/display/bridge/analogix,anx7625.yaml |  2 +-
->  .../bindings/display/bridge/anx6345.yaml          |  2 +-
->  .../bindings/display/bridge/lontium,lt8912b.yaml  |  2 +-
->  .../bindings/display/bridge/nxp,ptn3460.yaml      |  2 +-
->  .../bindings/display/bridge/ps8640.yaml           |  2 +-
->  .../bindings/display/bridge/sil,sii9234.yaml      |  2 +-
->  .../bindings/display/bridge/ti,dlpc3433.yaml      |  2 +-
->  .../bindings/display/bridge/toshiba,tc358762.yaml |  2 +-
->  .../bindings/display/bridge/toshiba,tc358768.yaml |  2 +-
->  .../bindings/display/panel/nec,nl8048hl11.yaml    |  2 +-
-Acked-by: Sam Ravnborg <sam@ravnborg.org>
+Don't wanna waste too much of your time with the questions since
+I haven't done much research but - wouldn't MAC timestamp be a better
+choice more often (as long as it's a real, to-spec PTP stamp)? 
+Are we picking PHY for historical reasons?
 
-
-
-> index 669f70b1b4c4..8bd58913804a 100644
-> --- a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-> +++ b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-> @@ -226,7 +226,7 @@ unevaluatedProperties: false
->  
->  examples:
->    - |
-> -    i2c1 {
-> +    i2c {
->              #address-cells = <1>;
->              #size-cells = <0>;
->  
-> @@ -239,7 +239,7 @@ examples:
->  
->              ssd1306_i2c: oled@3d {
->                      compatible = "solomon,ssd1306";
-> -                    reg = <0x3c>;
-> +                    reg = <0x3d>;
->                      pwms = <&pwm 4 3000>;
->                      reset-gpios = <&gpio2 7>;
->                      solomon,com-lrremap;
-
-I can see this align the example with i2c-mux-gpio.yaml so the change
-should be fine. I am just positive surprised the tooling caught it.
-
-The change is
-Acked-by: Sam Ravnborg <sam@ravnborg.org>
-
-the above was just me thinking loud.
-
-	Sam
+Not that flipping the default would address the problem of regressing
+some setups..
