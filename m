@@ -2,185 +2,263 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 889956A84F0
-	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 16:09:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23C056A8501
+	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 16:15:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229586AbjCBPJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Mar 2023 10:09:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42160 "EHLO
+        id S229807AbjCBPPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Mar 2023 10:15:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbjCBPJS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Mar 2023 10:09:18 -0500
-Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6632C1351A;
-        Thu,  2 Mar 2023 07:09:15 -0800 (PST)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id 82B075FD0E;
-        Thu,  2 Mar 2023 18:09:12 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1677769752;
-        bh=arLYnzRobVfIG4Xp6X3i9HedVCLBAhYiuD+9xD5xV54=;
-        h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-        b=NuxGBxE/GMn/5Jxg6mKRWyM7waw7zJ5DmrumuRxbeMkZBAXbJ5cIXagAopnzXPPgv
-         6G5+EmDOjS9z2l7oIIOBVIW9ldWODX1HiqZ1npdGI9W9QrSOcqy41cBV95rpA8IY73
-         VoCkE1eDYGl0kt7uFKaxvoK2pLDDntzPnNc4d9PFW2FsnIBIU+oYN6bomsEe010k8k
-         ykjduawsI13bzUlIWIiVMmu2P+gmBIbslFyObfYyhPocIAVqxrcgAD4Y86jkYIeUmM
-         SKnP84W6gUNJUk6d+KMqM4ZKg8uW88OMyhCP3EmNgUsQjUkM7aIMektqs4hnR+Y44c
-         x2N5bZcimqwTQ==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mx.sberdevices.ru (Postfix) with ESMTP;
-        Thu,  2 Mar 2023 18:09:07 +0300 (MSK)
-Message-ID: <63035ec9-6546-0881-353a-502b68daaada@sberdevices.ru>
-Date:   Thu, 2 Mar 2023 18:06:19 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [RFC PATCH v1] vsock: check error queue to set EPOLLERR
-Content-Language: en-US
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, <oxffffaa@gmail.com>,
-        <kernel@sberdevices.ru>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>
-References: <76e7698d-890b-d14d-fa34-da5dd7dd13d8@sberdevices.ru>
- <20230302100621.gk45unegjbqjgpxh@sgarzare-redhat>
- <3b38870c-7606-bf2e-8b17-21a75a1ed751@sberdevices.ru>
- <20230302133845.hglm4uregjsvrcrc@sgarzare-redhat>
-From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
-In-Reply-To: <20230302133845.hglm4uregjsvrcrc@sgarzare-redhat>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [172.16.1.6]
-X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
- S-MS-EXCH01.sberdevices.ru (172.16.1.4)
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/03/02 07:22:00 #20908555
-X-KSMG-AntiVirus-Status: Clean, skipped
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229716AbjCBPO7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Mar 2023 10:14:59 -0500
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C72336099;
+        Thu,  2 Mar 2023 07:14:51 -0800 (PST)
+Received: by mail-qt1-x835.google.com with SMTP id h19so18303500qtk.7;
+        Thu, 02 Mar 2023 07:14:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=95WH/OgvmfXG1txDeH+kYfxETXAxwY/MkC2SLXxtlfc=;
+        b=fx6eFxxv8h79e27tYjxUX9v93IbfSY1YevaTWQ8ZMVVkFKspUGLv5jGhihYPvGxsm8
+         HmJ3RXSNOEr46QStYsoUqLJhRODO7/H2I3UWGSJYiYlUIeDPaX01yg9lSA1oLzGUmYET
+         HEHU/BFYB5Fbyi7nWRSiPcHuin/72wEjwB+9njhgP5PBdtTc2SDY+sekYeeafzVx2F0S
+         p5DqLbW9ZFpZ0lWikcxQPKITkyzU96MDf0WQrP0hLUc8x3coMeztRFZp0RJ7tqc1n+9t
+         aL56x1a1S8v2swkfmIYyepxaDGt8bjbRkxE1OK3QygL/r23PePdJwM92ilN/uQ6XmRdx
+         SgBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=95WH/OgvmfXG1txDeH+kYfxETXAxwY/MkC2SLXxtlfc=;
+        b=LGir9NJvkZsGaxGbqQYsWgtFPr/knkDIoAJHjEKour9ScMvEn4v3BhB1BL5nC6BG8v
+         5sGZlfEIBbnv/EExpgAt4TEbeAPXE3PlsMQTlzF+u8P0HfC7Rla28ZKnfx/61+STzYrM
+         7QlxderYQWAsOlrwR2P38AZsdjCCU0U5/ylOmdHrMBKsTfN5r3mr93sC9ko3Zx2SpinP
+         5c9braO/1uzRtesXEe3gMB6eD6JSVhSXrTg7JG1/ZitdfTdrfiSC6RbwmS9iDksaVVx/
+         Izth06KJz6MbVJ1JIcCJSuYVX3P3S2ZkhwSXgff69XUHB5VVdYCcstv4eJqvkU94m3BG
+         9eGw==
+X-Gm-Message-State: AO0yUKXeUIiFFzIYJimSZz1+XmQDmLUX8k9cfiw8xM15LyhTvfkcnaNL
+        Zd/GZZYwtEndtn9SNZmGDAY=
+X-Google-Smtp-Source: AK7set+pt0k4jXvex1zAp/D9bNsic50MVm8wsa6Rj3dgI0P1vLSFvm2Gk/D+1spJxwgJhrxiy0BXMw==
+X-Received: by 2002:ac8:5f94:0:b0:3bf:d1c6:d375 with SMTP id j20-20020ac85f94000000b003bfd1c6d375mr18695105qta.36.1677770090407;
+        Thu, 02 Mar 2023 07:14:50 -0800 (PST)
+Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
+        by smtp.gmail.com with ESMTPSA id n76-20020a37404f000000b0071aacb2c76asm10891479qka.132.2023.03.02.07.14.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Mar 2023 07:14:49 -0800 (PST)
+Date:   Thu, 02 Mar 2023 10:14:49 -0500
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     yang.yang29@zte.com.cn, davem@davemloft.net
+Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        shuah@kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        zhang.yunkai@zte.com.cn, xu.xin16@zte.com.cn,
+        jiang.xuexin@zte.com.cn
+Message-ID: <6400bd699f568_20743e2082b@willemb.c.googlers.com.notmuch>
+In-Reply-To: <202303021838359696196@zte.com.cn>
+References: <202303021838359696196@zte.com.cn>
+Subject: RE: [PATCH linux-next v2] selftests: net: udpgso_bench_tx: Add test
+ for IP fragmentation of UDP packets
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+yang.yang29@ wrote:
+> From: zhang yunkai (CGEL ZTE) <zhang.yunkai@zte.com.cn>
+> 
+> The UDP GSO bench only tests the performance of userspace payload splitting
+> and UDP GSO. But we are also concerned about the performance comparing with
+> IP fragmentation and UDP GSO. In other words comparing IP fragmentation and
+> segmentation.
+> 
+> So we add testcase of IP fragmentation of UDP packets, then user would easy
+> to get to know the performance promotion of UDP GSO compared with IP
+> fragmentation. We add a new option "-f", which is to send big data using
+> IP fragmentation instead of using UDP GSO or userspace payload splitting.
+> 
+> In the QEMU environment we could see obvious promotion of UDP GSO.
+> The first test is to get the performance of userspace payload splitting.
+> bash# udpgso_bench_tx -l 4 -4 -D "$DST"
+> udp tx:     21 MB/s    15162 calls/s    361 msg/s
+> udp tx:     21 MB/s    15498 calls/s    369 msg/s
+> udp tx:     18 MB/s    13440 calls/s    320 msg/s
+> udp tx:     19 MB/s    13776 calls/s    328 msg/s
+> 
+> The second test is to get the performance of IP fragmentation.
+> bash# udpgso_bench_tx -l 4 -4 -D "$DST" -f
+> udp tx:     41 MB/s      711 calls/s    711 msg/s
+> udp tx:     41 MB/s      700 calls/s    700 msg/s
+> udp tx:     43 MB/s      738 calls/s    738 msg/s
+> udp tx:     40 MB/s      693 calls/s    693 msg/s
+> 
+> The third test is to get the performance of UDP GSO.
+> bash# udpgso_bench_tx -l 4 -4 -D "$DST" -S 0
+> udp tx:     45 MB/s      775 calls/s    775 msg/s
+> udp tx:     47 MB/s      800 calls/s    800 msg/s
+> udp tx:     47 MB/s      814 calls/s    814 msg/s
+> udp tx:     47 MB/s      812 calls/s    812 msg/s
+> 
+> v2: Suggested by Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> - Use IP_PMTUDISC_OMIT to disable PMTU discovery and to avoid send
+>   returning with error after ICMP destination unreachable messages if MTU
+>   is exceeded in the path.
+
+Did you actually observe a difference in behavior with this change?
+
+The man page summarizes it better than I could:
+
+  IP_PMTUDISC_DO forces the don't-fragment flag to be set on all
+  outgoing packets.[..] The kernel will reject (with EMSGSIZE)
+  datagrams that are bigger than the known path MTU.
+
+I would think your fragmentation test fails with that option set.
+
+net-next is still closed btw.
+ 
+> Signed-off-by: zhang yunkai (CGEL ZTE) <zhang.yunkai@zte.com.cn>
+> Reviewed-by: xu xin (CGEL ZTE) <xu.xin16@zte.com.cn>
+> Reviewed-by: Yang Yang (CGEL ZTE) <yang.yang29@zte.com.cn>
+> Cc: Xuexin Jiang (CGEL ZTE) <jiang.xuexin@zte.com.cn>
+> ---
+>  tools/testing/selftests/net/udpgso_bench_tx.c | 49 ++++++++++++++++++++++-----
+>  1 file changed, 40 insertions(+), 9 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/net/udpgso_bench_tx.c b/tools/testing/selftests/net/udpgso_bench_tx.c
+> index 477392715a9a..b3333b39bb87 100644
+> --- a/tools/testing/selftests/net/udpgso_bench_tx.c
+> +++ b/tools/testing/selftests/net/udpgso_bench_tx.c
+> @@ -64,6 +64,7 @@ static int	cfg_runtime_ms	= -1;
+>  static bool	cfg_poll;
+>  static int	cfg_poll_loop_timeout_ms = 2000;
+>  static bool	cfg_segment;
+> +static bool	cfg_fragment;
+>  static bool	cfg_sendmmsg;
+>  static bool	cfg_tcp;
+>  static uint32_t	cfg_tx_ts = SOF_TIMESTAMPING_TX_SOFTWARE;
+> @@ -375,6 +376,21 @@ static int send_udp_sendmmsg(int fd, char *data)
+>  	return ret;
+>  }
+> 
+> +static int send_udp_fragment(int fd, char *data)
+> +{
+> +	int ret;
+> +
+> +	ret = sendto(fd, data, cfg_payload_len, cfg_zerocopy ? MSG_ZEROCOPY : 0,
+> +			cfg_connected ? NULL : (void *)&cfg_dst_addr,
+> +			cfg_connected ? 0 : cfg_alen);
+> +	if (ret == -1)
+> +		error(1, errno, "write");
+> +	if (ret != cfg_payload_len)
+> +		error(1, errno, "write: %uB != %uB\n", ret, cfg_payload_len);
+> +
+> +	return 1;
+> +}
+> +
+>  static void send_udp_segment_cmsg(struct cmsghdr *cm)
+>  {
+>  	uint16_t *valp;
+> @@ -429,7 +445,7 @@ static int send_udp_segment(int fd, char *data)
+> 
+>  static void usage(const char *filepath)
+>  {
+> -	error(1, 0, "Usage: %s [-46acmHPtTuvz] [-C cpu] [-D dst ip] [-l secs] "
+> +	error(1, 0, "Usage: %s [-46acfmHPtTuvz] [-C cpu] [-D dst ip] [-l secs] "
+>  		    "[-L secs] [-M messagenr] [-p port] [-s sendsize] [-S gsosize]",
+>  		    filepath);
+>  }
+> @@ -440,7 +456,7 @@ static void parse_opts(int argc, char **argv)
+>  	int max_len, hdrlen;
+>  	int c;
+> 
+> -	while ((c = getopt(argc, argv, "46acC:D:Hl:L:mM:p:s:PS:tTuvz")) != -1) {
+> +	while ((c = getopt(argc, argv, "46acC:D:fHl:L:mM:p:s:PS:tTuvz")) != -1) {
+>  		switch (c) {
+>  		case '4':
+>  			if (cfg_family != PF_UNSPEC)
+> @@ -469,6 +485,9 @@ static void parse_opts(int argc, char **argv)
+>  		case 'l':
+>  			cfg_runtime_ms = strtoul(optarg, NULL, 10) * 1000;
+>  			break;
+> +		case 'f':
+> +			cfg_fragment = true;
+> +			break;
+>  		case 'L':
+>  			cfg_poll_loop_timeout_ms = strtoul(optarg, NULL, 10) * 1000;
+>  			break;
+> @@ -527,10 +546,10 @@ static void parse_opts(int argc, char **argv)
+>  		error(1, 0, "must pass one of -4 or -6");
+>  	if (cfg_tcp && !cfg_connected)
+>  		error(1, 0, "connectionless tcp makes no sense");
+> -	if (cfg_segment && cfg_sendmmsg)
+> -		error(1, 0, "cannot combine segment offload and sendmmsg");
+> -	if (cfg_tx_tstamp && !(cfg_segment || cfg_sendmmsg))
+> -		error(1, 0, "Options -T and -H require either -S or -m option");
+> +	if ((cfg_segment + cfg_sendmmsg + cfg_fragment) > 1)
+> +		error(1, 0, "cannot combine segment offload, fragment and sendmmsg");
+> +	if (cfg_tx_tstamp && !(cfg_segment || cfg_sendmmsg || cfg_fragment))
+> +		error(1, 0, "Options -T and -H require either -S or -m or -f option");
+> 
+>  	if (cfg_family == PF_INET)
+>  		hdrlen = sizeof(struct iphdr) + sizeof(struct udphdr);
+> @@ -551,14 +570,24 @@ static void set_pmtu_discover(int fd, bool is_ipv4)
+>  {
+>  	int level, name, val;
+> 
+> +	/* IP fragmentation test uses IP_PMTUDISC_OMIT to disable PMTU discovery and
+> +	 * to avoid send returning with error after ICMP destination unreachable
+> +	 * messages if MTU is exceeded in the path.
+> +	 */
+>  	if (is_ipv4) {
+>  		level	= SOL_IP;
+>  		name	= IP_MTU_DISCOVER;
+> -		val	= IP_PMTUDISC_DO;
+> +		if (cfg_segment)
+> +			val	= IP_PMTUDISC_DO;
+> +		else if (cfg_fragment)
+> +			val	= IP_PMTUDISC_OMIT;
+>  	} else {
+>  		level	= SOL_IPV6;
+>  		name	= IPV6_MTU_DISCOVER;
+> -		val	= IPV6_PMTUDISC_DO;
+> +		if (cfg_segment)
+> +			val	= IPV6_PMTUDISC_DO;
+> +		else if (cfg_fragment)
+> +			val	= IPV6_PMTUDISC_OMIT;
+>  	}
+> 
+>  	if (setsockopt(fd, level, name, &val, sizeof(val)))
+> @@ -674,7 +703,7 @@ int main(int argc, char **argv)
+>  	    connect(fd, (void *)&cfg_dst_addr, cfg_alen))
+>  		error(1, errno, "connect");
+> 
+> -	if (cfg_segment)
+> +	if (cfg_segment || cfg_fragment)
+>  		set_pmtu_discover(fd, cfg_family == PF_INET);
+> 
+>  	if (cfg_tx_tstamp)
+> @@ -695,6 +724,8 @@ int main(int argc, char **argv)
+>  			num_sends += send_udp_segment(fd, buf[i]);
+>  		else if (cfg_sendmmsg)
+>  			num_sends += send_udp_sendmmsg(fd, buf[i]);
+> +		else if (cfg_fragment)
+> +			num_sends += send_udp_fragment(fd, buf[i]);
+>  		else
+>  			num_sends += send_udp(fd, buf[i]);
+>  		num_msgs++;
+> -- 
+> 2.15.2
 
 
-On 02.03.2023 16:38, Stefano Garzarella wrote:
-> On Thu, Mar 02, 2023 at 02:41:29PM +0300, Arseniy Krasnov wrote:
->> Hello!
->>
->> On 02.03.2023 13:06, Stefano Garzarella wrote:
->>> On Wed, Mar 01, 2023 at 08:19:45AM +0300, Arseniy Krasnov wrote:
->>>> EPOLLERR must be set not only when there is error on the socket, but also
->>>> when error queue of it is not empty (may be it contains some control
->>>> messages). Without this patch 'poll()' won't detect data in error queue.
->>>
->>> Do you have a reproducer?
->>>
->> Dedicated reproducer - no:)
->> To reproduce this issue, i used last MSG_ZEROCOPY patches. Completion was inserted to
->> error queue, and 'poll()' didn't report about it. That was the reason, why this patch
->> was included to MSG_ZEROCOPY patchset. But also i think it is better to reduce number
->> of patches in it(i'm working on v2), so it is good to handle this patch separately.
-> 
-> Yep, absolutely!
-> 
->> May be one way to reproduce it is use SO_TIMESTAMP(time info about skbuff will be queued
->> to the error queue). IIUC this feature is implemented at socket layer and may work in
->> vsock (but i'm not sure). Ok, i'll check it and try to implement reproducer.
->>
->> IIUC, for future, policy for fixes is "for each fix implement reproducer in vsock_test"?
-> 
-> Nope, but for each fix we should have a Fixes tag.
-> 
-> Usually we use vsock_test to check regressions on features and also the
-> behaviour of different transports.
-> My question was more about whether this problem was there before
-> supporting sk_buff or not, to figure out which Fixes tag to use.
-> 
-Ok i see
->>
->>>> This patch is based on 'tcp_poll()'.
->>>
->>> LGTM but we should add a Fixes tag.
->>> It's not clear to me whether the problem depends on when we switched to using sk_buff or was pre-existing.
->>>
->>> Do you have any idea when we introduced this issue?
->> git blame shows, that this code exists since first commit to vsock:
-> 
-> Okay, but did we use sk_error_queue before supporting sk_buff?
-> 
-No I think, sk_error_queue was unavailable to user(and still unavailable today),
-because we don't have check for MSG_ERRQUEUE flag in recv logic in af_vsock.c
-(i've added it in MSG_ZEROCOPY). So even if some subsystem of the kernel inserts
-skb to sk_error_queue in AF_VSOCK case, user won't dequeue it.
-
-> Anyway, if we are not sure I think we can use the following Fixes tag,
-> I don't see any issue if we backport this patch also before supporting
-> sk_buff.
-> 
-Ok, i'll try to prepare reproducer(may be in vsock_test) and add Fixes tag with the
-commit "VSOCK: Introduce VM Sockets."
-
-Thanks, Arseniy
-> Thanks,
-> Stefano
-> 
->>
->> commit d021c344051af91f42c5ba9fdedc176740cbd238
->> Author: Andy King <acking@vmware.com>
->> Date:   Wed Feb 6 14:23:56 2013 +0000
->>
->>    VSOCK: Introduce VM Sockets
->>
->> For TCP same logic was added by:
->>
->> commit 4ed2d765dfaccff5ebdac68e2064b59125033a3b
->> Author: Willem de Bruijn <willemb@google.com>
->> Date:   Mon Aug 4 22:11:49 2014 -0400
->>
->>    net-timestamp: TCP timestamping
->>
->>
->>>
->>> Thanks,
->>> Stefano
->>>
->>
->> Thanks Arseniy
->>
->>>>
->>>> Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
->>>> ---
->>>> net/vmw_vsock/af_vsock.c | 2 +-
->>>> 1 file changed, 1 insertion(+), 1 deletion(-)
->>>>
->>>> diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
->>>> index 19aea7cba26e..b5e51ef4a74c 100644
->>>> --- a/net/vmw_vsock/af_vsock.c
->>>> +++ b/net/vmw_vsock/af_vsock.c
->>>> @@ -1026,7 +1026,7 @@ static __poll_t vsock_poll(struct file *file, struct socket *sock,
->>>>     poll_wait(file, sk_sleep(sk), wait);
->>>>     mask = 0;
->>>>
->>>> -    if (sk->sk_err)
->>>> +    if (sk->sk_err || !skb_queue_empty_lockless(&sk->sk_error_queue))
->>>>         /* Signify that there has been an error on this socket. */
->>>>         mask |= EPOLLERR;
->>>>
->>>> -- 
->>>> 2.25.1
->>>>
->>>
->>
-> 
