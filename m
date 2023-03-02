@@ -2,116 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 896436A7D2B
-	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 10:00:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CDB56A7D55
+	for <lists+netdev@lfdr.de>; Thu,  2 Mar 2023 10:10:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229761AbjCBJAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Mar 2023 04:00:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34844 "EHLO
+        id S229895AbjCBJKQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Mar 2023 04:10:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229496AbjCBJAC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Mar 2023 04:00:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF56515578;
-        Thu,  2 Mar 2023 01:00:00 -0800 (PST)
+        with ESMTP id S229461AbjCBJKP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Mar 2023 04:10:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF802A6C2;
+        Thu,  2 Mar 2023 01:10:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63885B811F6;
-        Thu,  2 Mar 2023 08:59:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26C8EC433EF;
-        Thu,  2 Mar 2023 08:59:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9083A6153A;
+        Thu,  2 Mar 2023 09:10:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 118F2C433EF;
+        Thu,  2 Mar 2023 09:10:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677747598;
-        bh=7vsJJ2UWnbA5yPqyrOOw+/4k4if8YpbZ3L78wTns+mk=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=djPhtteGfc7rhC+rbH7RwqdDKFvj9ACvNesN+NQ1tfpElhz51rQngnHKV8GTHU2Xw
-         tGsvTNOew3QWPxpFPZgb6pNxq+wC/uuw+zKHBiO+JMJaK6n/sk/j8CWDA4w4a8oyD7
-         r+xBiwYp+PeXemm7WAd7N/VgKHexP6IiUzuSurfRCEhyMKmvlFYVPqzabG9Ry/Ze75
-         oqbdFD3l+nfgR8areP0z6FEKYfIEU32JzSWqHB9IHoRo64j4xNt241B67IEosR4LSL
-         VMu4RWnVSlozgV0uNkWcwPvEGSPzi0r59KeVvytZJVOrtaTb8RvO7KPRckiiScuG/y
-         bbIP1izBNyxXA==
-Message-ID: <9a540967-c1a6-b9df-a662-b8a729d7d64b@kernel.org>
-Date:   Thu, 2 Mar 2023 09:59:49 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v2 2/2] dt-bindings: net: adin: Document bindings for fast
- link down disable
-Content-Language: en-US
-To:     Ken Sloat <ken.s@variscite.com>
-Cc:     noname.nuno@gmail.com, pabeni@redhat.com, edumazet@google.com,
-        Michael Hennerich <michael.hennerich@analog.com>,
+        s=k20201202; t=1677748212;
+        bh=UZHjTt3WcAHN0hlxS276lYr5jPZwtybl0ohiW2kCEiU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=N1x2z3qXQML4+BOJD7c4cF7FwMgMh8QfPe2mlaTVD8B7t6djp/P7UqujWYwC9gjUG
+         6xd4i4FZVm3LkaQjKgJ0HtC2RbpPuv5ycZmCWy84ZYinZzhcG4L6ZMSFxfHJU0D3I2
+         bY1UjGO68LlkSzeikb6tDF08t+oPLJ5KB1JMlJXgCXTWbNfEHW0YVew6ZxXwbQsV40
+         RKO65PdWaVB3K5Y1SgAuCR2oMm6JIs5YW7cGg4W6bFCyKRW2IBQm3AOLlJDX2aR+wm
+         LpJ1kG4yXWAck9Shifpf6M9Ln4TLJeRofygXvesY+dC6H6UXHz4oZeiyo2SVKfX9zT
+         LRXHhJPWM3KgA==
+Date:   Thu, 2 Mar 2023 11:10:08 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Alexander Lobakin <aleksander.lobakin@intel.com>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandru Tachici <alexandru.tachici@analog.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Michal Kubiak <michal.kubiak@intel.com>,
+        Larysa Zaremba <larysa.zaremba@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <20230228144056.2246114-1-ken.s@variscite.com>
- <20230228184956.2309584-1-ken.s@variscite.com>
- <20230228184956.2309584-2-ken.s@variscite.com>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <20230228184956.2309584-2-ken.s@variscite.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Subject: Re: [PATCH RESEND net v1 0/2] iavf: fix double-broken HW hash report
+Message-ID: <20230302091008.GA561905@unreal>
+References: <20230301115908.47995-1-aleksander.lobakin@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230301115908.47995-1-aleksander.lobakin@intel.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28/02/2023 19:49, Ken Sloat wrote:
-> The ADI PHY contains a feature commonly known as "Fast Link Down" and
-> called "Enhanced Link Detection" by ADI. This feature is enabled by
-> default and provides earlier detection of link loss in certain
-> situations.
+On Wed, Mar 01, 2023 at 12:59:06PM +0100, Alexander Lobakin wrote:
+> Currently, passing HW hash from descriptors to skb is broken two times.
+> The first bug effectively disables hash from being filled at all, unless
+> %NETIF_F_RXHASH is *disabled* via Ethtool. The second incorrectly says
+> that IPv6 UDP packets are L3, which also triggers CPU hashing when
+> needed (the networking core treats only L4 HW hash as "true").
+> The very same problems were fixed in i40e and ice, but not in iavf,
+> although each of the original commits bugged at least two drivers.
+> It's never too late (I hope), so fix iavf this time.
+> 
+> Alexander Lobakin (2):
+>   iavf: fix inverted Rx hash condition leading to disabled hash
+>   iavf: fix non-tunneled IPv6 UDP packet type and hashing
 > 
 
-Please use scripts/get_maintainers.pl to get a list of necessary people
-and lists to CC.  It might happen, that command when run on an older
-kernel, gives you outdated entries.  Therefore please be sure you base
-your patches on recent Linux kernel.
-
-> Document the new optional flags "adi,disable-fast-down-1000base-t" and
-> "adi,disable-fast-down-100base-tx" which disable the "Fast Link Down"
-> feature in the ADI PHY.
-
-You did not explain why do you need it.
-
-> 
-> Signed-off-by: Ken Sloat <ken.s@variscite.com>
-> ---
-
-Don't attach your new patchsets to your old threads. It buries them deep
-and make usage of our tools difficult.
-
-
->  Documentation/devicetree/bindings/net/adi,adin.yaml | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/adi,adin.yaml b/Documentation/devicetree/bindings/net/adi,adin.yaml
-> index 64ec1ec71ccd..923baff26c3e 100644
-> --- a/Documentation/devicetree/bindings/net/adi,adin.yaml
-> +++ b/Documentation/devicetree/bindings/net/adi,adin.yaml
-> @@ -52,6 +52,18 @@ properties:
->      description: Enable 25MHz reference clock output on CLK25_REF pin.
->      type: boolean
->  
-> +  adi,disable-fast-down-1000base-t:
-> +    $ref: /schemas/types.yaml#definitions/flag
-> +    description: |
-> +      If set, disables any ADI fast link down ("Enhanced Link Detection")
-> +      function bits for 1000base-t interfaces.
-
-And why disabling it per board should be a property of DT?
-
-Best regards,
-Krzysztof
-
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
