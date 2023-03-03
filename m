@@ -2,164 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F2A16A9217
-	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 09:01:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7235D6A9255
+	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 09:23:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229849AbjCCIBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 03:01:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56336 "EHLO
+        id S230051AbjCCIXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 03:23:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbjCCIBa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 03:01:30 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64FF1457E1;
-        Fri,  3 Mar 2023 00:01:28 -0800 (PST)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4PSgQr1mZKznVbL;
-        Fri,  3 Mar 2023 16:01:24 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by canpemm500010.china.huawei.com
- (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Fri, 3 Mar
- 2023 16:01:25 +0800
-From:   Liu Jian <liujian56@huawei.com>
-To:     <john.fastabend@gmail.com>, <jakub@cloudflare.com>,
-        <edumazet@google.com>, <davem@davemloft.net>, <dsahern@kernel.org>,
-        <kuba@kernel.org>, <pabeni@redhat.com>, <socketcan@hartkopp.net>,
-        <ast@kernel.org>, <cong.wang@bytedance.com>, <daniel@iogearbox.net>
-CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <liujian56@huawei.com>
-Subject: [PATCH bpf v2] bpf, sockmap: fix an infinite loop error when len is 0 in tcp_bpf_recvmsg_parser()
-Date:   Fri, 3 Mar 2023 16:09:46 +0800
-Message-ID: <20230303080946.1146638-1-liujian56@huawei.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229604AbjCCIXK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 03:23:10 -0500
+Received: from out30-98.freemail.mail.aliyun.com (out30-98.freemail.mail.aliyun.com [115.124.30.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1560659E7C;
+        Fri,  3 Mar 2023 00:21:56 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R491e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=kaishen@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0Vd-bAB9_1677831676;
+Received: from localhost(mailfrom:KaiShen@linux.alibaba.com fp:SMTPD_---0Vd-bAB9_1677831676)
+          by smtp.aliyun-inc.com;
+          Fri, 03 Mar 2023 16:21:16 +0800
+From:   Kai <KaiShen@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: [PATCH net-next v3] net/smc: Use percpu ref for wr tx reference
+Date:   Fri,  3 Mar 2023 08:21:15 +0000
+Message-Id: <20230303082115.449-1-KaiShen@linux.alibaba.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the buffer length of the recvmsg system call is 0, we got the
-flollowing soft lockup problem:
+The refcount wr_tx_refcnt may cause cache thrashing problems among
+cores and we can use percpu ref to mitigate this issue here. We
+gain some performance improvement with percpu ref here on our
+customized smc-r verion. Applying cache alignment may also mitigate
+this problem but it seem more reasonable to use percpu ref here.
+We can also replace wr_reg_refcnt with one percpu reference like
+wr_tx_refcnt.
 
-watchdog: BUG: soft lockup - CPU#3 stuck for 27s! [a.out:6149]
-CPU: 3 PID: 6149 Comm: a.out Kdump: loaded Not tainted 6.2.0+ #30
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.15.0-1 04/01/2014
-RIP: 0010:remove_wait_queue+0xb/0xc0
-Code: 5e 41 5f c3 cc cc cc cc 0f 1f 80 00 00 00 00 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 f3 0f 1e fa 0f 1f 44 00 00 41 57 <41> 56 41 55 41 54 55 48 89 fd 53 48 89 f3 4c 8d 6b 18 4c 8d 73 20
-RSP: 0018:ffff88811b5978b8 EFLAGS: 00000246
-RAX: 0000000000000000 RBX: ffff88811a7d3780 RCX: ffffffffb7a4d768
-RDX: dffffc0000000000 RSI: ffff88811b597908 RDI: ffff888115408040
-RBP: 1ffff110236b2f1b R08: 0000000000000000 R09: ffff88811a7d37e7
-R10: ffffed10234fa6fc R11: 0000000000000001 R12: ffff88811179b800
-R13: 0000000000000001 R14: ffff88811a7d38a8 R15: ffff88811a7d37e0
-FS:  00007f6fb5398740(0000) GS:ffff888237180000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000000 CR3: 000000010b6ba002 CR4: 0000000000370ee0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- tcp_msg_wait_data+0x279/0x2f0
- tcp_bpf_recvmsg_parser+0x3c6/0x490
- inet_recvmsg+0x280/0x290
- sock_recvmsg+0xfc/0x120
- ____sys_recvmsg+0x160/0x3d0
- ___sys_recvmsg+0xf0/0x180
- __sys_recvmsg+0xea/0x1a0
- do_syscall_64+0x3f/0x90
- entry_SYSCALL_64_after_hwframe+0x72/0xdc
+redis-benchmark on smc-r with atomic wr_tx_refcnt:
+SET: 525817.62 requests per second, p50=0.087 msec
+GET: 570841.44 requests per second, p50=0.087 msec
 
-The logic in tcp_bpf_recvmsg_parser is as follows:
+redis-benchmark on the percpu_ref version:
+SET: 539956.81 requests per second, p50=0.087 msec
+GET: 587613.12 requests per second, p50=0.079 msec
 
-msg_bytes_ready:
-	copied = sk_msg_recvmsg(sk, psock, msg, len, flags);
-	if (!copied) {
-		wait data;
-		goto msg_bytes_ready;
-	}
+Signed-off-by: Kai <KaiShen@linux.alibaba.com>
 
-In this case, "copied" alway is 0, the infinite loop occurs.
+v1->v2:
+- Modify patch prefix
 
-According to the Linux system call man page, 0 should be returned in this
-case. Therefore, in tcp_bpf_recvmsg_parser(), if the length is 0, directly
-return.
-
-Also modify several other functions with the same problem.
-
-Fixes: 1f5be6b3b063 ("udp: Implement udp_bpf_recvmsg() for sockmap")
-Fixes: 9825d866ce0d ("af_unix: Implement unix_dgram_bpf_recvmsg()")
-Fixes: c5d2177a72a1 ("bpf, sockmap: Fix race in ingress receive verdict with redirect to self")
-Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
-Signed-off-by: Liu Jian <liujian56@huawei.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+v2->v3:
+- Make wr_reg_refcnt a percpu one as well
+- Init percpu ref with 0 flag instead of ALLOW_REINIT flag
 ---
-v1->v2: change "if (len == 0)" to "if (!len)"
- net/ipv4/tcp_bpf.c  | 6 ++++++
- net/ipv4/udp_bpf.c  | 3 +++
- net/unix/unix_bpf.c | 3 +++
- 3 files changed, 12 insertions(+)
+ net/smc/smc_core.h | 10 ++++++++--
+ net/smc/smc_wr.c   | 35 ++++++++++++++++++++++++++++-------
+ net/smc/smc_wr.h   |  5 ++---
+ 3 files changed, 38 insertions(+), 12 deletions(-)
 
-diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-index cf26d65ca389..ebf917511937 100644
---- a/net/ipv4/tcp_bpf.c
-+++ b/net/ipv4/tcp_bpf.c
-@@ -186,6 +186,9 @@ static int tcp_bpf_recvmsg_parser(struct sock *sk,
- 	if (unlikely(flags & MSG_ERRQUEUE))
- 		return inet_recv_error(sk, msg, len, addr_len);
+diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
+index 08b457c2d294..1645fba0d2d3 100644
+--- a/net/smc/smc_core.h
++++ b/net/smc/smc_core.h
+@@ -106,7 +106,10 @@ struct smc_link {
+ 	unsigned long		*wr_tx_mask;	/* bit mask of used indexes */
+ 	u32			wr_tx_cnt;	/* number of WR send buffers */
+ 	wait_queue_head_t	wr_tx_wait;	/* wait for free WR send buf */
+-	atomic_t		wr_tx_refcnt;	/* tx refs to link */
++	struct {
++		struct percpu_ref	wr_tx_refs;
++	} ____cacheline_aligned_in_smp;
++	struct completion	tx_ref_comp;
  
-+	if (!len)
-+		return 0;
-+
- 	psock = sk_psock_get(sk);
- 	if (unlikely(!psock))
- 		return tcp_recvmsg(sk, msg, len, flags, addr_len);
-@@ -244,6 +247,9 @@ static int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 	if (unlikely(flags & MSG_ERRQUEUE))
- 		return inet_recv_error(sk, msg, len, addr_len);
+ 	struct smc_wr_buf	*wr_rx_bufs;	/* WR recv payload buffers */
+ 	struct ib_recv_wr	*wr_rx_ibs;	/* WR recv meta data */
+@@ -122,7 +125,10 @@ struct smc_link {
  
-+	if (!len)
-+		return 0;
-+
- 	psock = sk_psock_get(sk);
- 	if (unlikely(!psock))
- 		return tcp_recvmsg(sk, msg, len, flags, addr_len);
-diff --git a/net/ipv4/udp_bpf.c b/net/ipv4/udp_bpf.c
-index e5dc91d0e079..0735d820e413 100644
---- a/net/ipv4/udp_bpf.c
-+++ b/net/ipv4/udp_bpf.c
-@@ -68,6 +68,9 @@ static int udp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 	if (unlikely(flags & MSG_ERRQUEUE))
- 		return inet_recv_error(sk, msg, len, addr_len);
+ 	struct ib_reg_wr	wr_reg;		/* WR register memory region */
+ 	wait_queue_head_t	wr_reg_wait;	/* wait for wr_reg result */
+-	atomic_t		wr_reg_refcnt;	/* reg refs to link */
++	struct {
++		struct percpu_ref	wr_reg_refs;
++	} ____cacheline_aligned_in_smp;
++	struct completion	reg_ref_comp;
+ 	enum smc_wr_reg_state	wr_reg_state;	/* state of wr_reg request */
  
-+	if (!len)
-+		return 0;
-+
- 	psock = sk_psock_get(sk);
- 	if (unlikely(!psock))
- 		return sk_udp_recvmsg(sk, msg, len, flags, addr_len);
-diff --git a/net/unix/unix_bpf.c b/net/unix/unix_bpf.c
-index e9bf15513961..2f9d8271c6ec 100644
---- a/net/unix/unix_bpf.c
-+++ b/net/unix/unix_bpf.c
-@@ -54,6 +54,9 @@ static int unix_bpf_recvmsg(struct sock *sk, struct msghdr *msg,
- 	struct sk_psock *psock;
- 	int copied;
+ 	u8			gid[SMC_GID_SIZE];/* gid matching used vlan id*/
+diff --git a/net/smc/smc_wr.c b/net/smc/smc_wr.c
+index b0678a417e09..0021065a600a 100644
+--- a/net/smc/smc_wr.c
++++ b/net/smc/smc_wr.c
+@@ -377,12 +377,11 @@ int smc_wr_reg_send(struct smc_link *link, struct ib_mr *mr)
+ 	if (rc)
+ 		return rc;
  
-+	if (!len)
-+		return 0;
+-	atomic_inc(&link->wr_reg_refcnt);
++	percpu_ref_get(&link->wr_reg_refs);
+ 	rc = wait_event_interruptible_timeout(link->wr_reg_wait,
+ 					      (link->wr_reg_state != POSTED),
+ 					      SMC_WR_REG_MR_WAIT_TIME);
+-	if (atomic_dec_and_test(&link->wr_reg_refcnt))
+-		wake_up_all(&link->wr_reg_wait);
++	percpu_ref_put(&link->wr_reg_refs);
+ 	if (!rc) {
+ 		/* timeout - terminate link */
+ 		smcr_link_down_cond_sched(link);
+@@ -647,8 +646,10 @@ void smc_wr_free_link(struct smc_link *lnk)
+ 	smc_wr_wakeup_tx_wait(lnk);
+ 
+ 	smc_wr_tx_wait_no_pending_sends(lnk);
+-	wait_event(lnk->wr_reg_wait, (!atomic_read(&lnk->wr_reg_refcnt)));
+-	wait_event(lnk->wr_tx_wait, (!atomic_read(&lnk->wr_tx_refcnt)));
++	percpu_ref_kill(&lnk->wr_reg_refs);
++	wait_for_completion(&lnk->reg_ref_comp);
++	percpu_ref_kill(&lnk->wr_tx_refs);
++	wait_for_completion(&lnk->tx_ref_comp);
+ 
+ 	if (lnk->wr_rx_dma_addr) {
+ 		ib_dma_unmap_single(ibdev, lnk->wr_rx_dma_addr,
+@@ -847,6 +848,20 @@ void smc_wr_add_dev(struct smc_ib_device *smcibdev)
+ 	tasklet_setup(&smcibdev->send_tasklet, smc_wr_tx_tasklet_fn);
+ }
+ 
++static void smcr_wr_tx_refs_free(struct percpu_ref *ref)
++{
++	struct smc_link *lnk = container_of(ref, struct smc_link, wr_tx_refs);
 +
- 	psock = sk_psock_get(sk);
- 	if (unlikely(!psock))
- 		return __unix_recvmsg(sk, msg, len, flags);
++	complete(&lnk->tx_ref_comp);
++}
++
++static void smcr_wr_reg_refs_free(struct percpu_ref *ref)
++{
++	struct smc_link *lnk = container_of(ref, struct smc_link, wr_reg_refs);
++
++	complete(&lnk->reg_ref_comp);
++}
++
+ int smc_wr_create_link(struct smc_link *lnk)
+ {
+ 	struct ib_device *ibdev = lnk->smcibdev->ibdev;
+@@ -890,9 +905,15 @@ int smc_wr_create_link(struct smc_link *lnk)
+ 	smc_wr_init_sge(lnk);
+ 	bitmap_zero(lnk->wr_tx_mask, SMC_WR_BUF_CNT);
+ 	init_waitqueue_head(&lnk->wr_tx_wait);
+-	atomic_set(&lnk->wr_tx_refcnt, 0);
++	rc = percpu_ref_init(&lnk->wr_tx_refs, smcr_wr_tx_refs_free, 0, GFP_KERNEL);
++	if (rc)
++		goto dma_unmap;
++	init_completion(&lnk->tx_ref_comp);
+ 	init_waitqueue_head(&lnk->wr_reg_wait);
+-	atomic_set(&lnk->wr_reg_refcnt, 0);
++	rc = percpu_ref_init(&lnk->wr_reg_refs, smcr_wr_reg_refs_free, 0, GFP_KERNEL);
++	if (rc)
++		goto dma_unmap;
++	init_completion(&lnk->reg_ref_comp);
+ 	init_waitqueue_head(&lnk->wr_rx_empty_wait);
+ 	return rc;
+ 
+diff --git a/net/smc/smc_wr.h b/net/smc/smc_wr.h
+index 45e9b894d3f8..f3008dda222a 100644
+--- a/net/smc/smc_wr.h
++++ b/net/smc/smc_wr.h
+@@ -63,14 +63,13 @@ static inline bool smc_wr_tx_link_hold(struct smc_link *link)
+ {
+ 	if (!smc_link_sendable(link))
+ 		return false;
+-	atomic_inc(&link->wr_tx_refcnt);
++	percpu_ref_get(&link->wr_tx_refs);
+ 	return true;
+ }
+ 
+ static inline void smc_wr_tx_link_put(struct smc_link *link)
+ {
+-	if (atomic_dec_and_test(&link->wr_tx_refcnt))
+-		wake_up_all(&link->wr_tx_wait);
++	percpu_ref_put(&link->wr_tx_refs);
+ }
+ 
+ static inline void smc_wr_drain_cq(struct smc_link *lnk)
 -- 
-2.34.1
+2.31.1
 
