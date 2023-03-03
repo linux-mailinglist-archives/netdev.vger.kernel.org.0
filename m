@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FE626A9340
-	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 10:00:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5CD66A9348
+	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 10:00:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230432AbjCCJAK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 04:00:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56982 "EHLO
+        id S230451AbjCCJAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 04:00:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230053AbjCCI7z (ORCPT
+        with ESMTP id S230377AbjCCI7z (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 03:59:55 -0500
 Received: from fd01.gateway.ufhost.com (fd01.gateway.ufhost.com [61.152.239.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD37199E0;
-        Fri,  3 Mar 2023 00:59:42 -0800 (PST)
-Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AEE41CAFD;
+        Fri,  3 Mar 2023 00:59:43 -0800 (PST)
+Received: from EXMBX165.cuchost.com (unknown [175.102.18.54])
         (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
-        by fd01.gateway.ufhost.com (Postfix) with ESMTP id E7F3724E398;
-        Fri,  3 Mar 2023 16:59:40 +0800 (CST)
-Received: from EXMBX162.cuchost.com (172.16.6.72) by EXMBX166.cuchost.com
- (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 3 Mar
- 2023 16:59:40 +0800
+        (Client CN "EXMBX165", Issuer "EXMBX165" (not verified))
+        by fd01.gateway.ufhost.com (Postfix) with ESMTP id F1F2D24E38C;
+        Fri,  3 Mar 2023 16:59:41 +0800 (CST)
+Received: from EXMBX162.cuchost.com (172.16.6.72) by EXMBX165.cuchost.com
+ (172.16.6.75) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 3 Mar
+ 2023 16:59:42 +0800
 Received: from starfive-sdk.starfivetech.com (171.223.208.138) by
  EXMBX162.cuchost.com (172.16.6.72) with Microsoft SMTP Server (TLS) id
- 15.0.1497.42; Fri, 3 Mar 2023 16:59:39 +0800
+ 15.0.1497.42; Fri, 3 Mar 2023 16:59:40 +0800
 From:   Samin Guo <samin.guo@starfivetech.com>
 To:     <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
@@ -41,9 +41,9 @@ CC:     "David S . Miller" <davem@davemloft.net>,
         Peter Geis <pgwipeout@gmail.com>,
         Yanhong Wang <yanhong.wang@starfivetech.com>,
         Samin Guo <samin.guo@starfivetech.com>
-Subject: [PATCH v5 11/12] riscv: dts: starfive: visionfive-2-v1.2a: Add gmac+phy's delay configuration
-Date:   Fri, 3 Mar 2023 16:59:27 +0800
-Message-ID: <20230303085928.4535-12-samin.guo@starfivetech.com>
+Subject: [PATCH v5 12/12] riscv: dts: starfive: visionfive 2: Enable gmac device tree node
+Date:   Fri, 3 Mar 2023 16:59:28 +0800
+Message-ID: <20230303085928.4535-13-samin.guo@starfivetech.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20230303085928.4535-1-samin.guo@starfivetech.com>
 References: <20230303085928.4535-1-samin.guo@starfivetech.com>
@@ -61,38 +61,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-v1.2A gmac0 uses motorcomm YT8531(rgmii-id) PHY, and needs delay
-configurations.
+From: Yanhong Wang <yanhong.wang@starfivetech.com>
 
-v1.2A gmac1 uses motorcomm YT8512(rmii) PHY, and needs to
-switch rx and rx to external clock sources.
+Update gmac device tree node status to okay.
 
+Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
 Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
 ---
- .../starfive/jh7110-starfive-visionfive-2-v1.2a.dts | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ .../dts/starfive/jh7110-starfive-visionfive-2.dtsi     | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2-v1.2a.dts b/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2-v1.2a.dts
-index 4af3300f3cf3..205a13d8c8b1 100644
---- a/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2-v1.2a.dts
-+++ b/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2-v1.2a.dts
-@@ -11,3 +11,16 @@
- 	model = "StarFive VisionFive 2 v1.2A";
- 	compatible = "starfive,visionfive-2-v1.2a", "starfive,jh7110";
+diff --git a/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2.dtsi b/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2.dtsi
+index c2aa8946a0f1..d1c409f40014 100644
+--- a/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2.dtsi
++++ b/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2.dtsi
+@@ -12,6 +12,8 @@
+ / {
+ 	aliases {
+ 		serial0 = &uart0;
++		ethernet0 = &gmac0;
++		ethernet1 = &gmac1;
+ 		i2c0 = &i2c0;
+ 		i2c2 = &i2c2;
+ 		i2c5 = &i2c5;
+@@ -92,6 +94,14 @@
+ 	status = "okay";
  };
+ 
++&gmac0 {
++	status = "okay";
++};
 +
 +&gmac1 {
-+	phy-mode = "rmii";
-+	assigned-clocks = <&syscrg JH7110_SYSCLK_GMAC1_TX>,
-+			  <&syscrg JH7110_SYSCLK_GMAC1_RX>;
-+	assigned-clock-parents = <&syscrg JH7110_SYSCLK_GMAC1_RMII_RTX>,
-+				 <&syscrg JH7110_SYSCLK_GMAC1_RMII_RTX>;
++	status = "okay";
 +};
 +
-+&phy0 {
-+	rx-internal-delay-ps = <1900>;
-+	tx-internal-delay-ps = <1350>;
-+};
+ &i2c0 {
+ 	clock-frequency = <100000>;
+ 	i2c-sda-hold-time-ns = <300>;
 -- 
 2.17.1
 
