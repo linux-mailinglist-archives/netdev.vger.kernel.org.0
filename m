@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A1A06A901B
-	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 05:15:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F03716A901D
+	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 05:15:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229608AbjCCEPG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Mar 2023 23:15:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43332 "EHLO
+        id S229649AbjCCEPQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Mar 2023 23:15:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbjCCEPA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Mar 2023 23:15:00 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0087418B19;
-        Thu,  2 Mar 2023 20:14:58 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id l1so1304003pjt.2;
-        Thu, 02 Mar 2023 20:14:58 -0800 (PST)
+        with ESMTP id S229586AbjCCEPJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Mar 2023 23:15:09 -0500
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CDC81F4B8;
+        Thu,  2 Mar 2023 20:15:03 -0800 (PST)
+Received: by mail-pl1-x630.google.com with SMTP id z2so1439106plf.12;
+        Thu, 02 Mar 2023 20:15:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=mxemTZI1aXgNMHCLf9j7EyPk5tzpuqXbbK2hvTwb8zc=;
-        b=Jan0y+B6+awY+xBIoHW1BT7PevAfFik9rvHWTPNuV6fkuA5LrILKGnojM4tBkvDsFo
-         6d852b22JrTnqhwRJ74Nnz9oI+wonYYRI3jjGB965InGLjXvrC+iC4OosO9ySD78KVzk
-         OsjkD4NDWNVu4adsaN/ci/HouPBUOlrHqr9pGGHPyfEtV6uMKJIf+rhL9nDgpT0+6zbK
-         SUwvN9IXRClKdkGNSossW+UdT46y/7jrTeSj1CpEfFGk2XboiUdj/PMdn4v1bhadtNkh
-         OFTZHQn8VcWx/kILe2ow33jsSxe0HnvSYVrrSJgVewL/rOyv6B6m1L4L1Qs19y5ZvFR7
-         mMpw==
+        bh=/9+SpTbu/eQlK2eeB9dMHwh8sCFRZa/qXdGsa2165Vk=;
+        b=qulOqrRmz98uA1QQLYjtO+Be5AA7b4e7irho/vwodk3JRHPX7DmiSaA4JyTKt1pmd4
+         0PM5uYZr8DsIGMV7mUPBfzaq1akdDf8+VVR0bwnl68BeJMED9DSaXts9obTRwOCTLf3K
+         2XJL580YnFGKrqb8ZKYPv+10lnRHdW1PShNcV2Jn4lF2oMYmUvWX9AAV1pwMTLacYj06
+         WGGHXeV+uhLQCV9ICG7xg4tKIpPoRFdlXu0F0N2UDj4/w/HAND/IypGG/HoYouvlV5r2
+         614xa/HiKs20FwnyTxNTdtUQmgEL6BnqYlVxoeDiYQtxvLjIsLZlKdo5N9+aCwxLwDOo
+         8QrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=mxemTZI1aXgNMHCLf9j7EyPk5tzpuqXbbK2hvTwb8zc=;
-        b=eTMxRRoocSwEDzqgVVHLoZT0S2OcQwseRC9XGJ9EbKFZFXDumhDsOOuPQqGtGN3Yii
-         VcG22cwuPce5fUQ0fLj5b971O/Ccj6aLVJFZPGfhEElgfUbbTDlaP0295dCw+2VvU+ir
-         rus1ZBJ9P2Cmkq3yUC05znzGdCWb9UgMpr8ajmfxuiPawXGJhGcni3/+e419LHh7tsiO
-         syJ0zMHtk97FKTxFUPZjeM0frtXWBTOJ32A3e3RkWsVZXnmSoSHdbKsax16MNgJ/m2lw
-         10HnHb6Hises84tSDsbqrFdCcZczriAJDosW4pr1ziItDoKe0dOD3BKgH1vfsUjo26iv
-         kG2A==
-X-Gm-Message-State: AO0yUKWDHI4CCK+Hr4B0RjXEa+HbWecbfz/a8JpRN5njMh9ALpfgw7po
-        WQw9GFfUj1a4Inyo15zt590=
-X-Google-Smtp-Source: AK7set/s3YWcAVip3CgqGIMn6CQ8E67Y/IXclT362FhhMSgDzgFmwxJzlsxKMfsnZrYoqjmThBDJDg==
-X-Received: by 2002:a05:6a20:5483:b0:cd:47dc:82b5 with SMTP id i3-20020a056a20548300b000cd47dc82b5mr1257504pzk.21.1677816898406;
-        Thu, 02 Mar 2023 20:14:58 -0800 (PST)
+        bh=/9+SpTbu/eQlK2eeB9dMHwh8sCFRZa/qXdGsa2165Vk=;
+        b=LmtqWMZ/QE3oDCiFdDdM9w2X5Y6qfiS1GiqPIBgnDATLe0F7O9AhUPJ6ukY2RdgiOB
+         OWbswm3/aKuNElymwgk8MwnytjPv/tCsBuyu1x+SnCNi84qvb7V3YkrtC+KmyclTz1Zj
+         vlilbh8RTblWtEjrSdNBeH25aHuncr1o67cVYp3ZMlf90tc1s1EH0XyJWcostkyTHgv3
+         tN8op4EDAFG2LWLj+/ij/60sZBmZyogFIz4mqQaNDbxAcl2p+m1VNvgaK8zj5wpLtZ5q
+         jnDT9fB49yS/TKDfJcAYF3SkpoMq/PBewU8GBUtD9cVY3o0noZgpoNawjwDT9v+imTiI
+         Bggg==
+X-Gm-Message-State: AO0yUKXgwoa9lr189JWcfSMOXdOxD0NqFvHe8WcPjeFdaMLqn0KYxaXc
+        IxJF+PDrKfgvQMcqPo06dGU=
+X-Google-Smtp-Source: AK7set9GFuHw9tdYKx2vcf5svpBfXlxNCxZgdPd7sf1HO2btsyWSU86kv1xV3APZO/9G9nUJC1EHuw==
+X-Received: by 2002:a17:902:c40d:b0:19e:6955:36af with SMTP id k13-20020a170902c40d00b0019e695536afmr946500plk.26.1677816902544;
+        Thu, 02 Mar 2023 20:15:02 -0800 (PST)
 Received: from macbook-pro-6.dhcp.thefacebook.com ([2620:10d:c090:400::5:5ad7])
-        by smtp.gmail.com with ESMTPSA id c10-20020aa7880a000000b0058d91fb2239sm485486pfo.63.2023.03.02.20.14.56
+        by smtp.gmail.com with ESMTPSA id u2-20020a17090341c200b0019e8fec28ebsm166759ple.289.2023.03.02.20.15.00
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Thu, 02 Mar 2023 20:14:57 -0800 (PST)
+        Thu, 02 Mar 2023 20:15:02 -0800 (PST)
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     davem@davemloft.net
 Cc:     daniel@iogearbox.net, andrii@kernel.org, martin.lau@kernel.org,
         void@manifault.com, davemarchevsky@meta.com, tj@kernel.org,
         memxor@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
         kernel-team@fb.com
-Subject: [PATCH v5 bpf-next 2/6] bpf: Mark cgroups and dfl_cgrp fields as trusted.
-Date:   Thu,  2 Mar 2023 20:14:42 -0800
-Message-Id: <20230303041446.3630-3-alexei.starovoitov@gmail.com>
+Subject: [PATCH v5 bpf-next 3/6] bpf: Introduce kptr_rcu.
+Date:   Thu,  2 Mar 2023 20:14:43 -0800
+Message-Id: <20230303041446.3630-4-alexei.starovoitov@gmail.com>
 X-Mailer: git-send-email 2.37.1 (Apple Git-137.1)
 In-Reply-To: <20230303041446.3630-1-alexei.starovoitov@gmail.com>
 References: <20230303041446.3630-1-alexei.starovoitov@gmail.com>
@@ -75,50 +75,294 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexei Starovoitov <ast@kernel.org>
 
-bpf programs sometimes do:
-bpf_cgrp_storage_get(&map, task->cgroups->dfl_cgrp, ...);
-It is safe to do, because cgroups->dfl_cgrp pointer is set diring init and
-never changes. The task->cgroups is also never NULL. It is also set during init
-and will change when task switches cgroups. For any trusted task pointer
-dereference of cgroups and dfl_cgrp should yield trusted pointers. The verifier
-wasn't aware of this. Hence in gcc compiled kernels task->cgroups dereference
-was producing PTR_TO_BTF_ID without modifiers while in clang compiled kernels
-the verifier recognizes __rcu tag in cgroups field and produces
-PTR_TO_BTF_ID | MEM_RCU | MAYBE_NULL.
-Tag cgroups and dfl_cgrp as trusted to equalize clang and gcc behavior.
-When GCC supports btf_type_tag such tagging will done directly in the type.
+The life time of certain kernel structures like 'struct cgroup' is protected by RCU.
+Hence it's safe to dereference them directly from __kptr tagged pointers in bpf maps.
+The resulting pointer is MEM_RCU and can be passed to kfuncs that expect KF_RCU.
+Derefrence of other kptr-s returns PTR_UNTRUSTED.
+
+For example:
+struct map_value {
+   struct cgroup __kptr *cgrp;
+};
+
+SEC("tp_btf/cgroup_mkdir")
+int BPF_PROG(test_cgrp_get_ancestors, struct cgroup *cgrp_arg, const char *path)
+{
+  struct cgroup *cg, *cg2;
+
+  cg = bpf_cgroup_acquire(cgrp_arg); // cg is PTR_TRUSTED and ref_obj_id > 0
+  bpf_kptr_xchg(&v->cgrp, cg);
+
+  cg2 = v->cgrp; // This is new feature introduced by this patch.
+  // cg2 is PTR_MAYBE_NULL | MEM_RCU.
+  // When cg2 != NULL, it's a valid cgroup, but its percpu_ref could be zero
+
+  if (cg2)
+    bpf_cgroup_ancestor(cg2, level); // safe to do.
+}
 
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: David Vernet <void@manifault.com>
 Acked-by: Tejun Heo <tj@kernel.org>
+Acked-by: David Vernet <void@manifault.com>
 ---
- kernel/bpf/verifier.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ Documentation/bpf/kfuncs.rst                  | 12 ++--
+ include/linux/btf.h                           |  2 +-
+ kernel/bpf/helpers.c                          |  6 +-
+ kernel/bpf/verifier.c                         | 55 ++++++++++++++++---
+ net/bpf/test_run.c                            |  3 +-
+ .../selftests/bpf/progs/cgrp_kfunc_failure.c  |  2 +-
+ .../selftests/bpf/progs/map_kptr_fail.c       |  4 +-
+ tools/testing/selftests/bpf/verifier/calls.c  |  2 +-
+ .../testing/selftests/bpf/verifier/map_kptr.c |  2 +-
+ 9 files changed, 65 insertions(+), 23 deletions(-)
 
+diff --git a/Documentation/bpf/kfuncs.rst b/Documentation/bpf/kfuncs.rst
+index b5d9b0d446bc..69eccf6f98ef 100644
+--- a/Documentation/bpf/kfuncs.rst
++++ b/Documentation/bpf/kfuncs.rst
+@@ -249,11 +249,13 @@ added later.
+ 2.4.8 KF_RCU flag
+ -----------------
+ 
+-The KF_RCU flag is used for kfuncs which have a rcu ptr as its argument.
+-When used together with KF_ACQUIRE, it indicates the kfunc should have a
+-single argument which must be a trusted argument or a MEM_RCU pointer.
+-The argument may have reference count of 0 and the kfunc must take this
+-into consideration.
++The KF_RCU flag is a weaker version of KF_TRUSTED_ARGS. The kfuncs marked with
++KF_RCU expect either PTR_TRUSTED or MEM_RCU arguments. The verifier guarantees
++that the objects are valid and there is no use-after-free. The pointers are not
++NULL, but the object's refcount could have reached zero. The kfuncs need to
++consider doing refcnt != 0 check, especially when returning a KF_ACQUIRE
++pointer. Note as well that a KF_ACQUIRE kfunc that is KF_RCU should very likely
++also be KF_RET_NULL.
+ 
+ .. _KF_deprecated_flag:
+ 
+diff --git a/include/linux/btf.h b/include/linux/btf.h
+index 49e0fe6d8274..556b3e2e7471 100644
+--- a/include/linux/btf.h
++++ b/include/linux/btf.h
+@@ -70,7 +70,7 @@
+ #define KF_TRUSTED_ARGS (1 << 4) /* kfunc only takes trusted pointer arguments */
+ #define KF_SLEEPABLE    (1 << 5) /* kfunc may sleep */
+ #define KF_DESTRUCTIVE  (1 << 6) /* kfunc performs destructive actions */
+-#define KF_RCU          (1 << 7) /* kfunc only takes rcu pointer arguments */
++#define KF_RCU          (1 << 7) /* kfunc takes either rcu or trusted pointer arguments */
+ 
+ /*
+  * Tag marking a kernel function as a kfunc. This is meant to minimize the
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index de9ef8476e29..ef32c5222943 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -2152,8 +2152,10 @@ __bpf_kfunc struct cgroup *bpf_cgroup_ancestor(struct cgroup *cgrp, int level)
+ 	if (level > cgrp->level || level < 0)
+ 		return NULL;
+ 
++	/* cgrp's refcnt could be 0 here, but ancestors can still be accessed */
+ 	ancestor = cgrp->ancestors[level];
+-	cgroup_get(ancestor);
++	if (!cgroup_tryget(ancestor))
++		return NULL;
+ 	return ancestor;
+ }
+ 
+@@ -2371,7 +2373,7 @@ BTF_ID_FLAGS(func, bpf_rbtree_first, KF_RET_NULL)
+ BTF_ID_FLAGS(func, bpf_cgroup_acquire, KF_ACQUIRE | KF_TRUSTED_ARGS)
+ BTF_ID_FLAGS(func, bpf_cgroup_kptr_get, KF_ACQUIRE | KF_KPTR_GET | KF_RET_NULL)
+ BTF_ID_FLAGS(func, bpf_cgroup_release, KF_RELEASE)
+-BTF_ID_FLAGS(func, bpf_cgroup_ancestor, KF_ACQUIRE | KF_TRUSTED_ARGS | KF_RET_NULL)
++BTF_ID_FLAGS(func, bpf_cgroup_ancestor, KF_ACQUIRE | KF_RCU | KF_RET_NULL)
+ BTF_ID_FLAGS(func, bpf_cgroup_from_id, KF_ACQUIRE | KF_RET_NULL)
+ #endif
+ BTF_ID_FLAGS(func, bpf_task_from_pid, KF_ACQUIRE | KF_RET_NULL)
 diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index bf580f246a01..b834f3d2d81a 100644
+index b834f3d2d81a..a095055d7ef4 100644
 --- a/kernel/bpf/verifier.c
 +++ b/kernel/bpf/verifier.c
-@@ -5046,6 +5046,11 @@ static int bpf_map_direct_read(struct bpf_map *map, int off, int size, u64 *val)
+@@ -4218,7 +4218,7 @@ static int map_kptr_match_type(struct bpf_verifier_env *env,
+ 			       struct bpf_reg_state *reg, u32 regno)
+ {
+ 	const char *targ_name = kernel_type_name(kptr_field->kptr.btf, kptr_field->kptr.btf_id);
+-	int perm_flags = PTR_MAYBE_NULL | PTR_TRUSTED;
++	int perm_flags = PTR_MAYBE_NULL | PTR_TRUSTED | MEM_RCU;
+ 	const char *reg_name = "";
  
- BTF_TYPE_SAFE_NESTED(struct task_struct) {
- 	const cpumask_t *cpus_ptr;
-+	struct css_set __rcu *cgroups;
-+};
-+
-+BTF_TYPE_SAFE_NESTED(struct css_set) {
-+	struct cgroup *dfl_cgrp;
- };
- 
- static bool nested_ptr_is_trusted(struct bpf_verifier_env *env,
-@@ -5057,6 +5062,7 @@ static bool nested_ptr_is_trusted(struct bpf_verifier_env *env,
- 		return false;
- 
- 	BTF_TYPE_EMIT(BTF_TYPE_SAFE_NESTED(struct task_struct));
-+	BTF_TYPE_EMIT(BTF_TYPE_SAFE_NESTED(struct css_set));
- 
- 	return btf_nested_type_is_trusted(&env->log, reg, off);
+ 	/* Only unreferenced case accepts untrusted pointers */
+@@ -4285,6 +4285,34 @@ static int map_kptr_match_type(struct bpf_verifier_env *env,
+ 	return -EINVAL;
  }
+ 
++/* The non-sleepable programs and sleepable programs with explicit bpf_rcu_read_lock()
++ * can dereference RCU protected pointers and result is PTR_TRUSTED.
++ */
++static bool in_rcu_cs(struct bpf_verifier_env *env)
++{
++	return env->cur_state->active_rcu_lock || !env->prog->aux->sleepable;
++}
++
++/* Once GCC supports btf_type_tag the following mechanism will be replaced with tag check */
++BTF_SET_START(rcu_protected_types)
++BTF_ID(struct, prog_test_ref_kfunc)
++BTF_ID(struct, cgroup)
++BTF_SET_END(rcu_protected_types)
++
++static bool rcu_protected_object(const struct btf *btf, u32 btf_id)
++{
++	if (!btf_is_kernel(btf))
++		return false;
++	return btf_id_set_contains(&rcu_protected_types, btf_id);
++}
++
++static bool rcu_safe_kptr(const struct btf_field *field)
++{
++	const struct btf_field_kptr *kptr = &field->kptr;
++
++	return field->type == BPF_KPTR_REF && rcu_protected_object(kptr->btf, kptr->btf_id);
++}
++
+ static int check_map_kptr_access(struct bpf_verifier_env *env, u32 regno,
+ 				 int value_regno, int insn_idx,
+ 				 struct btf_field *kptr_field)
+@@ -4319,7 +4347,10 @@ static int check_map_kptr_access(struct bpf_verifier_env *env, u32 regno,
+ 		 * value from map as PTR_TO_BTF_ID, with the correct type.
+ 		 */
+ 		mark_btf_ld_reg(env, cur_regs(env), value_regno, PTR_TO_BTF_ID, kptr_field->kptr.btf,
+-				kptr_field->kptr.btf_id, PTR_MAYBE_NULL | PTR_UNTRUSTED);
++				kptr_field->kptr.btf_id,
++				rcu_safe_kptr(kptr_field) && in_rcu_cs(env) ?
++				PTR_MAYBE_NULL | MEM_RCU :
++				PTR_MAYBE_NULL | PTR_UNTRUSTED);
+ 		/* For mark_ptr_or_null_reg */
+ 		val_reg->id = ++env->id_gen;
+ 	} else if (class == BPF_STX) {
+@@ -5163,10 +5194,17 @@ static int check_ptr_to_btf_access(struct bpf_verifier_env *env,
+ 	 * An RCU-protected pointer can also be deemed trusted if we are in an
+ 	 * RCU read region. This case is handled below.
+ 	 */
+-	if (nested_ptr_is_trusted(env, reg, off))
++	if (nested_ptr_is_trusted(env, reg, off)) {
+ 		flag |= PTR_TRUSTED;
+-	else
++		/*
++		 * task->cgroups is trusted. It provides a stronger guarantee
++		 * than __rcu tag on 'cgroups' field in 'struct task_struct'.
++		 * Clear MEM_RCU in such case.
++		 */
++		flag &= ~MEM_RCU;
++	} else {
+ 		flag &= ~PTR_TRUSTED;
++	}
+ 
+ 	if (flag & MEM_RCU) {
+ 		/* Mark value register as MEM_RCU only if it is protected by
+@@ -5175,11 +5213,10 @@ static int check_ptr_to_btf_access(struct bpf_verifier_env *env,
+ 		 * read lock region. Also mark rcu pointer as PTR_MAYBE_NULL since
+ 		 * it could be null in some cases.
+ 		 */
+-		if (!env->cur_state->active_rcu_lock ||
+-		    !(is_trusted_reg(reg) || is_rcu_reg(reg)))
+-			flag &= ~MEM_RCU;
+-		else
++		if (in_rcu_cs(env) && (is_trusted_reg(reg) || is_rcu_reg(reg)))
+ 			flag |= PTR_MAYBE_NULL;
++		else
++			flag &= ~MEM_RCU;
+ 	} else if (reg->type & MEM_RCU) {
+ 		/* ptr (reg) is marked as MEM_RCU, but the struct field is not tagged
+ 		 * with __rcu. Mark the flag as PTR_UNTRUSTED conservatively.
+@@ -9676,7 +9713,7 @@ static int check_kfunc_args(struct bpf_verifier_env *env, struct bpf_kfunc_call_
+ 			return -EINVAL;
+ 		}
+ 
+-		if (is_kfunc_trusted_args(meta) &&
++		if ((is_kfunc_trusted_args(meta) || is_kfunc_rcu(meta)) &&
+ 		    (register_is_null(reg) || type_may_be_null(reg->type))) {
+ 			verbose(env, "Possibly NULL pointer passed to trusted arg%d\n", i);
+ 			return -EACCES;
+diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+index 6f3d654b3339..6a8b33a103a4 100644
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -737,6 +737,7 @@ __bpf_kfunc void bpf_kfunc_call_test_mem_len_fail2(u64 *mem, int len)
+ 
+ __bpf_kfunc void bpf_kfunc_call_test_ref(struct prog_test_ref_kfunc *p)
+ {
++	/* p != NULL, but p->cnt could be 0 */
+ }
+ 
+ __bpf_kfunc void bpf_kfunc_call_test_destructive(void)
+@@ -784,7 +785,7 @@ BTF_ID_FLAGS(func, bpf_kfunc_call_test_fail3)
+ BTF_ID_FLAGS(func, bpf_kfunc_call_test_mem_len_pass1)
+ BTF_ID_FLAGS(func, bpf_kfunc_call_test_mem_len_fail1)
+ BTF_ID_FLAGS(func, bpf_kfunc_call_test_mem_len_fail2)
+-BTF_ID_FLAGS(func, bpf_kfunc_call_test_ref, KF_TRUSTED_ARGS)
++BTF_ID_FLAGS(func, bpf_kfunc_call_test_ref, KF_TRUSTED_ARGS | KF_RCU)
+ BTF_ID_FLAGS(func, bpf_kfunc_call_test_destructive, KF_DESTRUCTIVE)
+ BTF_ID_FLAGS(func, bpf_kfunc_call_test_static_unused_arg)
+ BTF_SET8_END(test_sk_check_kfunc_ids)
+diff --git a/tools/testing/selftests/bpf/progs/cgrp_kfunc_failure.c b/tools/testing/selftests/bpf/progs/cgrp_kfunc_failure.c
+index 4ad7fe24966d..b42291ed9586 100644
+--- a/tools/testing/selftests/bpf/progs/cgrp_kfunc_failure.c
++++ b/tools/testing/selftests/bpf/progs/cgrp_kfunc_failure.c
+@@ -205,7 +205,7 @@ int BPF_PROG(cgrp_kfunc_get_unreleased, struct cgroup *cgrp, const char *path)
+ }
+ 
+ SEC("tp_btf/cgroup_mkdir")
+-__failure __msg("arg#0 is untrusted_ptr_or_null_ expected ptr_ or socket")
++__failure __msg("expects refcounted")
+ int BPF_PROG(cgrp_kfunc_release_untrusted, struct cgroup *cgrp, const char *path)
+ {
+ 	struct __cgrps_kfunc_map_value *v;
+diff --git a/tools/testing/selftests/bpf/progs/map_kptr_fail.c b/tools/testing/selftests/bpf/progs/map_kptr_fail.c
+index e19e2a5f38cf..08f9ec18c345 100644
+--- a/tools/testing/selftests/bpf/progs/map_kptr_fail.c
++++ b/tools/testing/selftests/bpf/progs/map_kptr_fail.c
+@@ -281,7 +281,7 @@ int reject_kptr_get_bad_type_match(struct __sk_buff *ctx)
+ }
+ 
+ SEC("?tc")
+-__failure __msg("R1 type=untrusted_ptr_or_null_ expected=percpu_ptr_")
++__failure __msg("R1 type=rcu_ptr_or_null_ expected=percpu_ptr_")
+ int mark_ref_as_untrusted_or_null(struct __sk_buff *ctx)
+ {
+ 	struct map_value *v;
+@@ -316,7 +316,7 @@ int reject_untrusted_store_to_ref(struct __sk_buff *ctx)
+ }
+ 
+ SEC("?tc")
+-__failure __msg("R2 type=untrusted_ptr_ expected=ptr_")
++__failure __msg("R2 must be referenced")
+ int reject_untrusted_xchg(struct __sk_buff *ctx)
+ {
+ 	struct prog_test_ref_kfunc *p;
+diff --git a/tools/testing/selftests/bpf/verifier/calls.c b/tools/testing/selftests/bpf/verifier/calls.c
+index 289ed202ec66..9a326a800e5c 100644
+--- a/tools/testing/selftests/bpf/verifier/calls.c
++++ b/tools/testing/selftests/bpf/verifier/calls.c
+@@ -243,7 +243,7 @@
+ 	},
+ 	.result_unpriv = REJECT,
+ 	.result = REJECT,
+-	.errstr = "R1 must be referenced",
++	.errstr = "R1 must be",
+ },
+ {
+ 	"calls: valid kfunc call: referenced arg needs refcounted PTR_TO_BTF_ID",
+diff --git a/tools/testing/selftests/bpf/verifier/map_kptr.c b/tools/testing/selftests/bpf/verifier/map_kptr.c
+index 6914904344c0..d775ccb01989 100644
+--- a/tools/testing/selftests/bpf/verifier/map_kptr.c
++++ b/tools/testing/selftests/bpf/verifier/map_kptr.c
+@@ -336,7 +336,7 @@
+ 	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
+ 	.fixup_map_kptr = { 1 },
+ 	.result = REJECT,
+-	.errstr = "R1 type=untrusted_ptr_or_null_ expected=percpu_ptr_",
++	.errstr = "R1 type=rcu_ptr_or_null_ expected=percpu_ptr_",
+ },
+ {
+ 	"map_kptr: ref: reject off != 0",
 -- 
 2.30.2
 
