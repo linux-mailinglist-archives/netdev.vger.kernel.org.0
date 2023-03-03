@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A8376A9874
-	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 14:33:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B19996A9870
+	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 14:33:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230490AbjCCNdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 08:33:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41104 "EHLO
+        id S230479AbjCCNdn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 08:33:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230457AbjCCNdk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 08:33:40 -0500
+        with ESMTP id S230153AbjCCNdl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 08:33:41 -0500
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7C411173;
-        Fri,  3 Mar 2023 05:33:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 839511043A;
+        Fri,  3 Mar 2023 05:33:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677850419; x=1709386419;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=DL/6eDQ7YyAxU1AXYV7e9LB+t2Wuqp5AFFnDG4qMMS8=;
-  b=NyU6Lr+PuAOJ3vYBcNv6/id9VDdbec4gCCKNmd6VNKZAdShvKkgC1+uR
-   uoy/rIByBCQofyd1yyDHrOVyouqDX7N2v9VLglN+eB242gJXLY28DRsAn
-   rOnkXCpgjQTHASO88QRSuRpo4W1OJzcQRBrXlpGI+VJ0KLHi5XAtW6ztY
-   YHEHbAzNty8M1+Tt8TtF3RCQOQBcNgMbHeVlsykKsVAJF9xlGwHYgUZmg
-   cl8AZgf9z2U2wuwZEa9VaCu1meCB403vglsbNrrLmAaLle5If39ElDAAI
-   D2RE9sQ6WDo69KavyfX7Hbd7D1qrZm4z1un2AuRn9YS5pYw4IqWiR2SR8
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10637"; a="421314253"
+  t=1677850420; x=1709386420;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=gkP8YSGL/x3nylTZPZvFPOewgh3s/bhW36zHGcB17/E=;
+  b=nxNH7L6mzCBtkYrbzxNrwD9cf92XXOuwtwl9tt96rCJZZU5bqHDzrsNx
+   Gu1JWkM2Y2D1Al2uiDMVvePdavALlx74Tqwz79gJsNgVpDA1rCUVgF/WS
+   OzBxc+ufUCwMSfzF5gkewAbGKabfsbAYe/uoTc/GkMeQCZ+CYMaoHRek9
+   3ASnkg/lYhjnrlxFVMFSHQZcvWWG+P3wg6D1aKGRBCFzNT5A+D2esqw+q
+   nKw9GrCq7a6VgZHIdOTPXOVX3VwrH6OvGhMWHj0/BVcneI+DuVe0a1Plx
+   FdEQQSSfYpJ66fI9Mh0mxSnJpe7IdjZsc1FI6jl89lT9J3zfmkrYzufd+
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10637"; a="421314262"
 X-IronPort-AV: E=Sophos;i="5.98,230,1673942400"; 
-   d="scan'208";a="421314253"
+   d="scan'208";a="421314262"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2023 05:33:38 -0800
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2023 05:33:39 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10637"; a="625347416"
+X-IronPort-AV: E=McAfee;i="6500,9779,10637"; a="625347421"
 X-IronPort-AV: E=Sophos;i="5.98,230,1673942400"; 
-   d="scan'208";a="625347416"
+   d="scan'208";a="625347421"
 Received: from irvmail002.ir.intel.com ([10.43.11.120])
   by orsmga003.jf.intel.com with ESMTP; 03 Mar 2023 05:33:35 -0800
 Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail002.ir.intel.com (Postfix) with ESMTP id 7690B3557F;
-        Fri,  3 Mar 2023 13:33:33 +0000 (GMT)
+        by irvmail002.ir.intel.com (Postfix) with ESMTP id 6DAE535FBF;
+        Fri,  3 Mar 2023 13:33:34 +0000 (GMT)
 From:   Alexander Lobakin <aleksander.lobakin@intel.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -55,11 +55,14 @@ Cc:     Alexander Lobakin <aleksander.lobakin@intel.com>,
         Menglong Dong <imagedong@tencent.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Eric Dumazet <edumazet@google.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v2 0/3] xdp: recycle Page Pool backed skbs built from XDP frames
-Date:   Fri,  3 Mar 2023 14:32:29 +0100
-Message-Id: <20230303133232.2546004-1-aleksander.lobakin@intel.com>
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH bpf-next v2 1/3] net: page_pool, skbuff: make skb_mark_for_recycle() always available
+Date:   Fri,  3 Mar 2023 14:32:30 +0100
+Message-Id: <20230303133232.2546004-2-aleksander.lobakin@intel.com>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230303133232.2546004-1-aleksander.lobakin@intel.com>
+References: <20230303133232.2546004-1-aleksander.lobakin@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -71,58 +74,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Yeah, I still remember that "Who needs cpumap nowadays" (c), but anyway.
+skb_mark_for_recycle() is guarded with CONFIG_PAGE_POOL, this creates
+unneeded complication when using it in the generic code. For now, it's
+only used in the drivers always selecting Page Pool, so this works.
+Move the guards so that preprocessor will cut out only the operation
+itself and the function will still be a noop on !PAGE_POOL systems,
+but available there as well.
+No functional changes.
 
-__xdp_build_skb_from_frame() missed the moment when the networking stack
-became able to recycle skb pages backed by a page_pool. This was making
-e.g. cpumap redirect even less effective than simple %XDP_PASS. veth was
-also affected in some scenarios.
-A lot of drivers use skb_mark_for_recycle() already, it's been almost
-two years and seems like there are no issues in using it in the generic
-code too. {__,}xdp_release_frame() can be then removed as it losts its
-last user.
-Page Pool becomes then zero-alloc (or almost) in the abovementioned
-cases, too. Other memory type models (who needs them at this point)
-have no changes.
-
-Some numbers on 1 Xeon Platinum core bombed with 27 Mpps of 64-byte
-IPv6 UDP, iavf w/XDP[0] (CONFIG_PAGE_POOL_STATS is enabled):
-
-Plain %XDP_PASS on baseline, Page Pool driver:
-
-src cpu Rx     drops  dst cpu Rx
-  2.1 Mpps       N/A    2.1 Mpps
-
-cpumap redirect (w/o leaving its node) on baseline:
-
-  6.8 Mpps  5.0 Mpps    1.8 Mpps
-
-cpumap redirect with skb PP recycling:
-
-  7.9 Mpps  5.7 Mpps    2.2 Mpps
-                       +22% (from cpumap redir on baseline)
-
-[0] https://github.com/alobakin/linux/commits/iavf-xdp
-
-Alexander Lobakin (3):
-  net: page_pool, skbuff: make skb_mark_for_recycle() always available
-  xdp: recycle Page Pool backed skbs built from XDP frames
-  xdp: remove unused {__,}xdp_release_frame()
-
- include/linux/skbuff.h |  4 ++--
- include/net/xdp.h      | 29 -----------------------------
- net/core/xdp.c         | 19 ++-----------------
- 3 files changed, 4 insertions(+), 48 deletions(-)
-
+Reported-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/oe-kbuild-all/202303020342.Wi2PRFFH-lkp@intel.com
+Signed-off-by: Alexander Lobakin <aleksander.lobakin@intel.com>
 ---
-From v1[1]:
-* make skb_mark_for_recycle() always available, otherwise there are build
-  failures on non-PP systems (kbuild bot);
-* 'Page Pool' -> 'page_pool' when it's about a page_pool instance, not
-  API (Jesper);
-* expanded test system info a bit in the cover letter (Jesper).
+ include/linux/skbuff.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-[1] https://lore.kernel.org/bpf/20230301160315.1022488-1-aleksander.lobakin@intel.com
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index ff7ad331fb82..5cc1b4606b69 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -5071,12 +5071,12 @@ static inline u64 skb_get_kcov_handle(struct sk_buff *skb)
+ #endif
+ }
+ 
+-#ifdef CONFIG_PAGE_POOL
+ static inline void skb_mark_for_recycle(struct sk_buff *skb)
+ {
++#ifdef CONFIG_PAGE_POOL
+ 	skb->pp_recycle = 1;
+-}
+ #endif
++}
+ 
+ #endif	/* __KERNEL__ */
+ #endif	/* _LINUX_SKBUFF_H */
 -- 
 2.39.2
 
