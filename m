@@ -2,167 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D35B6A9515
-	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 11:20:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99D746A9547
+	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 11:32:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229861AbjCCKU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 05:20:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37010 "EHLO
+        id S230250AbjCCKc2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 05:32:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbjCCKU0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 05:20:26 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F0F7168B0
-        for <netdev@vger.kernel.org>; Fri,  3 Mar 2023 02:20:25 -0800 (PST)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 4933F127D;
-        Fri,  3 Mar 2023 11:20:23 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1677838823;
+        with ESMTP id S230126AbjCCKc0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 05:32:26 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AABDA559D5
+        for <netdev@vger.kernel.org>; Fri,  3 Mar 2023 02:31:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1677839499;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=1ZUzQT8BPAh5CTM5uURavdjoDXTGKWGfBgAXn3xfo6g=;
-        b=Gg4wl+meTqoxw3THmuG6b777ViFKIDhbwjCNsh/fFXZLxJEKFQxafORBgytD1IUIuFGpyx
-        E/VLC+nNR7ouJ3N/2BaxFutx/IdhPp/ScBWppYi2ibFGB+lrQP+NZ2hGxRlQr+h52NO6Me
-        YGrL8HaCyLTFOig3DKGGukOkCRWTe8Ipc7fzcHo7MN3VAcYonIVJRdek0kFZTzexnYyzYp
-        SOUIqe5GT9viz7I3Ii3j9wEFL13j8NPKWXrR0bazD+VmG0T2ji2CNQSsT9XNeTJB+R3pgp
-        /752p7qmXDp3o9DLBA5oJp5c6BuQl/KnyBIPGbV3QRg8/JddRzJafQ6OkvoUmw==
-From:   Michael Walle <michael@walle.cc>
-To:     linux@armlinux.org.uk
-Cc:     andrew@lunn.ch, davem@davemloft.net, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, kory.maincent@bootlin.com, kuba@kernel.org,
-        maxime.chevallier@bootlin.com, netdev@vger.kernel.org,
-        richardcochran@gmail.com, thomas.petazzoni@bootlin.com,
-        Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support [multicast/DSA issues]
-Date:   Fri,  3 Mar 2023 11:20:05 +0100
-Message-Id: <20230303102005.442331-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <ZADcSwvmwt8jYxWD@shell.armlinux.org.uk>
-References: <ZADcSwvmwt8jYxWD@shell.armlinux.org.uk>
+        bh=7hFKulmrqZbTf9q6Sh0sTv9iLMhiQyVri/7U3fZos58=;
+        b=XpeJBgJI5B4RYCIYnzi+nnFoTjWZkVIzuRTeH0vXkSvKIm5tL+Kue/C8powXR3OsXFHtAw
+        jD/SWZd5atbh1czv8g0QhRjOMynqc/93Z/RuEp2uh2JuTxbmTid+qjbCrrGLSI5iii8Kre
+        Rw1nmg2S/ak1nhTadxBy6vOXaJHNhjM=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-413-xPYChlCTPyy66yW5sZgI7g-1; Fri, 03 Mar 2023 05:31:38 -0500
+X-MC-Unique: xPYChlCTPyy66yW5sZgI7g-1
+Received: by mail-ed1-f71.google.com with SMTP id u10-20020a056402064a00b004c689813557so3208563edx.10
+        for <netdev@vger.kernel.org>; Fri, 03 Mar 2023 02:31:38 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=7hFKulmrqZbTf9q6Sh0sTv9iLMhiQyVri/7U3fZos58=;
+        b=PdiRY+ofWNOH7WPjdDjkJfHykn1qIX+aNC5QrbELXlIhJG8qqovcMBWs7SHwneHgvY
+         1Q+7o+zEE9r+OCHcA9a0FS3d9LU10lbPqH/1Ydj32f+K5vf3RgCjKDgGSUWU740qKkiK
+         oimZLtnvuZGc1Y38b+NI4ASSHFp+6+FpENhqMEQ+r8zKgUQXHAJg8tySDXrbO1OyAbt4
+         xfdo0nF2PXPeQgJDv6yloLWVFBnDTF7KQPEl+dnq0ZPK9Y93rYNZ/cExZOpjuaYX+cX8
+         FKWcZQ5gZyN3heRa6TdDO0cWiUH9szzas/PjyqeI896OtZHYB0XHOy08D9ey7jNydr+y
+         8b0w==
+X-Gm-Message-State: AO0yUKXNa9tOYLjOgFWRyf9aWBhug02BSIy9MuRlrVSScUG2HSw3GEyH
+        nvhGrX7gb/zH7Orxfmf8qkRxHb397OdqarUifAHCXFX/HN5/IPOflylUFqxJE9gONoCX84FWPXR
+        o+DZgAxHQ9HcDOzs9
+X-Received: by 2002:a17:906:a882:b0:8aa:a802:adcd with SMTP id ha2-20020a170906a88200b008aaa802adcdmr1126697ejb.30.1677839497577;
+        Fri, 03 Mar 2023 02:31:37 -0800 (PST)
+X-Google-Smtp-Source: AK7set+dNeTha+dpDazmX7Y6KMFZSZy5QW/4mxFqD4WQL+q6eFTVdNlEwM6IxZz2Z/PPEAHrK/Ks/w==
+X-Received: by 2002:a17:906:a882:b0:8aa:a802:adcd with SMTP id ha2-20020a170906a88200b008aaa802adcdmr1126668ejb.30.1677839497257;
+        Fri, 03 Mar 2023 02:31:37 -0800 (PST)
+Received: from [192.168.42.100] (nat-cgn9-185-107-15-52.static.kviknet.net. [185.107.15.52])
+        by smtp.gmail.com with ESMTPSA id ci25-20020a170906c35900b008b23e619960sm803620ejb.139.2023.03.03.02.31.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 03 Mar 2023 02:31:36 -0800 (PST)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <ac7c7be0-656a-8b5a-c629-e135e39f844a@redhat.com>
+Date:   Fri, 3 Mar 2023 11:31:35 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam: Yes
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Cc:     brouer@redhat.com,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Larysa Zaremba <larysa.zaremba@intel.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Song Liu <song@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH bpf-next v1 1/2] xdp: recycle Page Pool backed skbs built
+ from XDP frames
+Content-Language: en-US
+To:     Yunsheng Lin <linyunsheng@huawei.com>,
+        Alexander Lobakin <aleksander.lobakin@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>
+References: <20230301160315.1022488-1-aleksander.lobakin@intel.com>
+ <20230301160315.1022488-2-aleksander.lobakin@intel.com>
+ <36d42e20-b33f-5442-0db7-e9f5ef9d0941@huawei.com>
+In-Reply-To: <36d42e20-b33f-5442-0db7-e9f5ef9d0941@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > (In essence, because of all the noise when trying the Marvell PHY with
-> > > ptp4l, I came to the conlusion that NTP was a far better solution to
-> > > time synchronisation between machines than PTP would ever be due to
-> > > the nose induced by MDIO access. However, I should also state that I
-> > > basically gave up with PTP in the end because hardware support is
-> > > overall poor, and NTP just works - and I'd still have to run NTP for
-> > > the machines that have no PTP capabilities. PTP probably only makes
-> > > sense if one has a nice expensive grand master PTP clock on ones
-> > > network, and all the machines one wants to synchronise have decent
-> > > PTP implementations.)
-> > 
-> > Don't wanna waste too much of your time with the questions since
-> > I haven't done much research but - wouldn't MAC timestamp be a better
-> > choice more often (as long as it's a real, to-spec PTP stamp)? 
-> > Are we picking PHY for historical reasons?
-> > 
-> > Not that flipping the default would address the problem of regressing
-> > some setups..
 
-Another thing I pointed out some time ago is that you might have a
-working setup with MAC timestamping. Then comes along a patch which
-adds PHY timestamping for the PHY you are using and it might break your
-setup, because of the "PHY timestamping first" rule.
-
-> There is the argument in PTP that having the PHY do the timestamping
-> results in the timestamps being "closer to the wire" meaning that
-> they will not be subject to any delays between the packet leaving
-> the MAC and being transmitted on the wire. Some PHYs have FIFOs or
-> other buffering which introduces a delay which PTP doesn't desire.
+On 02/03/2023 03.30, Yunsheng Lin wrote:
+> On 2023/3/2 0:03, Alexander Lobakin wrote:
+>> __xdp_build_skb_from_frame() state(d):
+>>
+>> /* Until page_pool get SKB return path, release DMA here */
+>>
+>> Page Pool got skb pages recycling in April 2021, but missed this
+>> function.
+>>
+>> xdp_release_frame() is relevant only for Page Pool backed frames and it
+>> detaches the page from the corresponding Pool in order to make it
+>> freeable via page_frag_free(). It can instead just mark the output skb
+>> as eligible for recycling if the frame is backed by a PP. No change for
+>> other memory model types (the same condition check as before).
+>> cpumap redirect and veth on Page Pool drivers now become zero-alloc (or
+>> almost).
+>>
+>> Signed-off-by: Alexander Lobakin <aleksander.lobakin@intel.com>
+>> ---
+>>   net/core/xdp.c | 4 ++--
+>>   1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/net/core/xdp.c b/net/core/xdp.c
+>> index 8c92fc553317..a2237cfca8e9 100644
+>> --- a/net/core/xdp.c
+>> +++ b/net/core/xdp.c
+>> @@ -658,8 +658,8 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
+>>   	 * - RX ring dev queue index	(skb_record_rx_queue)
+>>   	 */
+>>   
+>> -	/* Until page_pool get SKB return path, release DMA here */
+>> -	xdp_release_frame(xdpf);
+>> +	if (xdpf->mem.type == MEM_TYPE_PAGE_POOL)
+>> +		skb_mark_for_recycle(skb);
 > 
-> TI has a blog on this:
 > 
-> https://e2e.ti.com/blogs_/b/analogwire/posts/how-to-implement-ieee-1588-time-stamping-in-an-ethernet-transceiver
+> We both rely on both skb->pp_recycle and page->pp_magic to decide
+> the page is really from page pool. So there was a few corner case
+> problem when we are sharing a page for different skb in the driver
+> level or calling skb_clone() or skb_try_coalesce().
+> see:
+> https://github.com/torvalds/linux/commit/2cc3aeb5ecccec0d266813172fcd82b4b5fa5803
+> https://lore.kernel.org/netdev/MW5PR15MB51214C0513DB08A3607FBC1FBDE19@MW5PR15MB5121.namprd15.prod.outlook.com/t/
+> https://lore.kernel.org/netdev/167475990764.1934330.11960904198087757911.stgit@localhost.localdomain/
 > 
-> However, what is failed to be mentioned there is that yes, doing
-> PTP at the PHY means one can accurately trigger a capture of the
-> timestamp from the PHC when the SFD is detected on the media. That
-> is a great advantage, but is really only half the story.
+> As the 'struct xdp_frame' also use 'struct skb_shared_info' which is
+> sharable, see xdp_get_shared_info_from_frame().
 > 
-> If the PHC (hardware counter) in the PHY can't be accurately
-> synchronised, for example, it has a 1.5ppm second-to-second
-> variability, then the resulting timestamps will also have that
-> same variability. Another way to look at it is they will appear to
-> have 1.5ppm of noise. If this noise is random, then it becomes
-> difficult to filter that noise out, and results in jitter.
-
-Exactly this.
-
-> However, timestamping at the MAC may have only 40ppb of variability,
-> but have a resulting delay through the PHY. The delay through the
-> PHY will likely be constant, so the timestamps gathered at the MAC
-> will have a constant error but have much less noise.
-
-One thing to consider is also the quality of the oscillator of each
-part. E.g. we design boards which have special temperture controlled
-oscillators. How would you know where that one is connected to, MAC?
-PHY? Both?
-
-> Things change if one can use hardware signals to synchronise the
-> PHC, because then we become less reliant on a variable latency
-> accessing the PHY over the MDIO bus. The hardware event capture
-> allows the PHC to be captured on a hardware signal, software can
-> then read that timestamp, and if the hardware event is a PPS,
-> then that can be used to ensure that the PHC is ticking at the
-> correct rate. If the PPS is also aligned to a second boundary,
-> then the hardware PHC can also be aligned. With both, the latency
-> of the MDIO bus becomes irrelevant, and PTP at the PHY becomes a
-> far more preferable option.
+> For now xdpf_clone() does not seems to handling frag page yet,
+> so it should be fine for now.
 > 
-> Note that things which can influence the latency over the MDIO bus
-> include how many PHYs or other devices are also on it, and the
-> rate at which accesses to those PHYs are performed. Then there's
-> latency from kernel locking and scheduling. Maybe interrupt
-> latency if the MDIO bus driver uses interrupts.
+> IMHO we should find a way to use per-page marker, instead of both
+> per-skb and per-page markers, in order to avoid the above problem
+> for xdp if xdp has a similar processing as skb, as suggested by Eric.
 > 
-> When I created the generic Marvell PHY PTP layer (my patch set
-> for Marvell PHYs) I tried very hard to eliminate as many of these
-> sources of variable latency as possible - such as avoiding taking
-> and releasing locks on every MDIO bus access. Even with that, I
-> could not get the PHY's PHC to synchronise any better than 1.5ppm,
-> vs 40ppb for the PP2 MAC's PHC.
+
+Moving to a per-page marker can be *more* expensive if the struct-page
+memory isn't cache-hot.  So, if struct-page is accessed anyhow then sure
+we can move it to a per-page marker.
+
+> https://lore.kernel.org/netdev/CANn89iKgZU4Q+THXupzZi4hETuKuCOvOB=iHpp5JzQTNv_Fg_A@mail.gmail.com/
 > 
-> The last bit of consideration is whether the PHCs can be synchronised
-> in hardware. If one has multiple ethernet interfaces, no hardware
-> synchronisation of PHY PHCs, but also have MAC PTP support which is
-> shared across the ethernet interfaces, why would one want to use the
-> PHY with software based synchronisation of their individual PHCs.
+>>   
+>>   	/* Allow SKB to reuse area used by xdp_frame */
+>>   	xdp_scrub_frame(xdpf);
+>>
 > 
-> So, to wrap this email up... if one has hardware purposely designed
-> for PTP support, which uses the PTP hardware signals from the
-> various PHCs, then one would want to use the PHY based timestamping.
-> If one doesn't have that, then one would want to use something that
-> gives the best timestamps, which may not necessarily be the PHY.
 
-Which would make that a property of the board and not something
-the software could figure out most of the time.
-
-IMHO it really depends on how precise one want to go. Just saying
-PHY timestamping is better isn't true. Vendors might go great
-lengths to design their boards to do very well regarding precision
-including PHY timestamping and maybe some kind of synchronization.
-
-But in genernal, MAC timestamping - if available and not totally
-broken - is the better choice IMHO. If it wasn't for the legacy rule,
-I'd prefer MAC timestamping and just use PHY timestamping if MAC
-timestamping is not available. If both are available, PHY
-timestamping should be an opt-in.
-
--michael
