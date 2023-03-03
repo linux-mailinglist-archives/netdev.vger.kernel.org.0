@@ -2,53 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0238D6A9812
-	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 13:59:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D7BB6A982B
+	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 14:12:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230217AbjCCM7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 07:59:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42706 "EHLO
+        id S229892AbjCCNMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 08:12:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbjCCM7a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 07:59:30 -0500
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868DC521D3;
-        Fri,  3 Mar 2023 04:59:27 -0800 (PST)
-Received: from localhost.localdomain (unknown [182.179.171.187])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: usama.anjum)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id C769E6602FB8;
-        Fri,  3 Mar 2023 12:59:22 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1677848365;
-        bh=MDOqV2RHO0eQ1qKkCRXV3uNsxpoqYhQQGsWN9W/E1oE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=RLZn0njeawNYwS1ZNGYzL18IRaIhIRcVIfa36KBsISaD3ae31IG0Gw66EjuwZhdK+
-         fgsNEO9yRSGCom1UqHVWFS8qCV2QsiXIRwHgOMCUon3J1APkxaKK9nH8WvIuXLJ0GY
-         Iak0zz1BJUvuZjz4kaQlKs5BhROOUTLDtavEz2M17TOj1U1a3x8hBzI6lrkIuTGPyF
-         a/334sk7prYwg9yxcVx2RPG/bdXTzkELSZMlrsy4FfWDJ1MECJjfhiKT5BLmRsKwiS
-         yai/ee0YUTXhoSIhJ1M+yUGcady0xUyjTs2guC53Gl+rKuLFOyZxbqhjizbKhvLRqT
-         r1ieOWXIRuS+w==
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-To:     Ariel Elior <aelior@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        kernel@collabora.com, kernel-janitors@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] qede: remove linux/version.h
-Date:   Fri,  3 Mar 2023 17:58:44 +0500
-Message-Id: <20230303125844.2050449-1-usama.anjum@collabora.com>
-X-Mailer: git-send-email 2.39.2
+        with ESMTP id S229563AbjCCNMx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 08:12:53 -0500
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1146D10F0
+        for <netdev@vger.kernel.org>; Fri,  3 Mar 2023 05:12:50 -0800 (PST)
+Received: (Authenticated sender: kory.maincent@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id B0F4D40008;
+        Fri,  3 Mar 2023 13:12:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1677849169;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AMNOjpgLvxddvR7qOB5Du1EiUOiGDc9UQlYsmboXaHQ=;
+        b=pfsBTnwpjwcM61jFyMeZD6IInl0x/+LNflQLYEMH+JDo421N3Yn9LxIJn9N88wvAsa1sWT
+        mJU2fsaMyV7H7tjV9Ns0GtpE/ivaE445R1vjq8gN7iVdlRQis/SUpqrsFxTbz9iK4TSwo+
+        BwToQR3toSfaWTXgTxOd5SJnPXLhWR6NsSn05uDY6ANFmvuvxDETlnUcFnyl8+p0oac18y
+        zbnXeAL1/lWHyLXUdMgNMogX5CAFF2Bq4xJG3c7WWqNkosUJJ1VzkEqSovuIMNagK5QVtO
+        r3zlJ3rb3D22cMRx7KkzVgzJjLkdJXZ1viF2NbQfmWazd0CwhVrkkoO7k2u+9Q==
+Date:   Fri, 3 Mar 2023 14:12:47 +0100
+From:   =?UTF-8?B?S8O2cnk=?= Maincent <kory.maincent@bootlin.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Richard Cochran <richardcochran@gmail.com>, andrew@lunn.ch,
+        davem@davemloft.net, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>
+Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support
+ [multicast/DSA issues]
+Message-ID: <20230303141247.4acd6863@kmaincent-XPS-13-7390>
+In-Reply-To: <20230302092320.6ee8eb6d@kernel.org>
+References: <Y/0QSphmMGXP5gYy@hoboy.vegasvil.org>
+        <Y/3ubSj5+2C5xbZu@shell.armlinux.org.uk>
+        <20230228141630.64d5ef63@kmaincent-XPS-13-7390>
+        <Y/4ayPsZuYh+13eI@hoboy.vegasvil.org>
+        <Y/4rXpPBbCbLqJLY@shell.armlinux.org.uk>
+        <20230228142648.408f26c4@kernel.org>
+        <Y/6Cxf6EAAg22GOL@shell.armlinux.org.uk>
+        <20230228145911.2df60a9f@kernel.org>
+        <20230301170408.0cc0519d@kmaincent-XPS-13-7390>
+        <ZAAn1deCtR0BoVAm@hoboy.vegasvil.org>
+        <ZACNRjCojuK6tcnl@shell.armlinux.org.uk>
+        <20230302084932.4e242f71@kernel.org>
+        <20230302180616.7bcfc1ef@kmaincent-XPS-13-7390>
+        <20230302092320.6ee8eb6d@kernel.org>
+Organization: bootlin
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,42 +71,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-make versioncheck reports the following:
-./drivers/net/ethernet/qlogic/qede/qede.h: 10 linux/version.h not needed.
-./drivers/net/ethernet/qlogic/qede/qede_ethtool.c: 7 linux/version.h not needed.
+On Thu, 2 Mar 2023 09:23:20 -0800
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-So remove linux/version.h from both of these files.
+> Do you happen to have a datasheet for MACB? The time stamping
+> capability is suspiciously saved in a variable called hw_dma_cap
+> which may indicate it's a DMA time stamp not a true PTP stamp.
+>=20
+> Quite a few NICs/MACs support DMA time stamps because it's far=20
+> easier to take the stamp where the descriptor writing logic is
+> (DMA block) than take it at the end of the MAC and haul it all=20
+> the way thru the pipeline back to the DMA block.
 
-Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
----
- drivers/net/ethernet/qlogic/qede/qede.h         | 1 -
- drivers/net/ethernet/qlogic/qede/qede_ethtool.c | 1 -
- 2 files changed, 2 deletions(-)
+I don't have the datasheet but indeed you seem to have right. From the supp=
+ort
+commit message:=20
+> Time stamps are obtained from the dma buffer descriptors
 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede.h b/drivers/net/ethernet/qlogic/qede/qede.h
-index f90dcfe9ee68..6ff1bd48d2aa 100644
---- a/drivers/net/ethernet/qlogic/qede/qede.h
-+++ b/drivers/net/ethernet/qlogic/qede/qede.h
-@@ -7,7 +7,6 @@
- #ifndef _QEDE_H_
- #define _QEDE_H_
- #include <linux/compiler.h>
--#include <linux/version.h>
- #include <linux/workqueue.h>
- #include <linux/netdevice.h>
- #include <linux/interrupt.h>
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-index 8034d812d5a0..374a86b875a3 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-@@ -4,7 +4,6 @@
-  * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
--#include <linux/version.h>
- #include <linux/types.h>
- #include <linux/netdevice.h>
- #include <linux/etherdevice.h>
--- 
-2.39.2
+I suppose it is less precise as using true PTP stamp as it is an hardware b=
+lock
+further. Is that right?
 
+Regards,
+K=C3=B6ry
