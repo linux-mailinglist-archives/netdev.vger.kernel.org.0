@@ -2,108 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B341C6A9718
-	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 13:16:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88E626A971D
+	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 13:17:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230243AbjCCMQt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 07:16:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35326 "EHLO
+        id S231180AbjCCMRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 07:17:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229881AbjCCMQs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 07:16:48 -0500
-X-Greylist: delayed 562 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 03 Mar 2023 04:16:45 PST
-Received: from esmtp-1.proxad.net (esmtp-1.proxad.net [213.36.6.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBCD62A98D;
-        Fri,  3 Mar 2023 04:16:45 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by esmtp-1.proxad.net (Postfix) with ESMTP id 7051881BB1;
-        Fri,  3 Mar 2023 13:07:22 +0100 (CET)
-X-Virus-Scanned: Debian amavisd-new at proxad.net
-Received: from esmtp-1.proxad.net ([127.0.0.1])
-        by localhost (esmtp-b23-1.proxad.net [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id kvvE6ffmOTT2; Fri,  3 Mar 2023 13:07:21 +0100 (CET)
-Received: from zstore-5.mgt.proxad.net (unknown [172.18.94.8])
-        by esmtp-1.proxad.net (Postfix) with ESMTP id 9A57181A18;
-        Fri,  3 Mar 2023 13:07:15 +0100 (CET)
-Date:   Fri, 3 Mar 2023 13:07:15 +0100 (CET)
-From:   Adrien Moulin <amoulin@corp.free.fr>
-To:     Boris Pismenny <borisp@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>
-Message-ID: <61481278.42813558.1677845235112.JavaMail.zimbra@corp.free.fr>
-Subject: TLS zerocopy sendfile offset causes data corruption
+        with ESMTP id S231213AbjCCMRp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 07:17:45 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E345F6C2
+        for <netdev@vger.kernel.org>; Fri,  3 Mar 2023 04:17:42 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id q16so2072352wrw.2
+        for <netdev@vger.kernel.org>; Fri, 03 Mar 2023 04:17:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1677845861;
+        h=to:subject:message-id:date:from:sender:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Tcw1FUJszn0ybZBzjWPIGWACFhZNznsTlZ1HMZm7vk8=;
+        b=QWFA1p2VbUvl/RdUvsI9SrEVga79yQA/3yUbwnl3CpZidZGFIQlkcL09qXoGEQNu3i
+         agte4DV6kkLCq/KqGuFyAvw+/Nga+gxAVctFDcVnsTWnCKsQRAPun58wU6kJ1KDh0kWH
+         2cS7OrYiZnenvxsMX2G4Gt8Ee79K8jM5w19wGv83UzdAdKL32vuFrAIQV1fEbgzHbXiP
+         L3ohqh2BIXxmlGY6bGAVtOCw5Lb21ZQOytMyzrZHBYpUTu66eWRoQS5LntS6IpS4z80B
+         kKvm4qSLGjYNuqDJh4X5capNk2b+Hiv0eMPoafJeP6PzyhlnTe346F8xZu1dM6P3h30P
+         QPfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1677845861;
+        h=to:subject:message-id:date:from:sender:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Tcw1FUJszn0ybZBzjWPIGWACFhZNznsTlZ1HMZm7vk8=;
+        b=M0SnaPWsxAQ/spJuTW54RTH3rWZeq5jJSkz2F+wyPv9k9qL8hzE7dpX+ICpXOQy10B
+         jpxEK1qR8oVPhkNyHLUvL/RzzgWtpvpGsyTEW0lEcINKCzs9z5wQ5wBzPtthpb5e06iR
+         ckquwv6ehA6li9j59ftqXOzWpdGNlUgVyMO1uPlTwZEW1jd6p4LlcCAIOO+uSLuhYZ5R
+         7LsOkMmtmU87mKOVmuvmhu8v5bXCn0gLIyzBUMVNxdRurDmCtb4FxljlTv8pUtx/S1l4
+         N6tOjdo/AiCpauhbdLMoqZ1B/Q2cFRk302/dcbfNdIvk/D4z4p/t9uFRg9EJSZdQR5FB
+         viAw==
+X-Gm-Message-State: AO0yUKVB6q6ZGO77bEy7qtZ2LQ30A3w1v1YSX/XLjYzF+isZefFD9vkR
+        Gv/PslD3BAPVLZ6BKgR1MkVrz6jEaxBwH+yvrRI=
+X-Google-Smtp-Source: AK7set/q2qgHoldqk5H5fHx63GGguv4oW2aJMvHYg/RMimJh1RiuYAb+oDVDZt68KNqXqDha/i92nGWXxoipDebsHGo=
+X-Received: by 2002:adf:f584:0:b0:2cb:80af:e8ab with SMTP id
+ f4-20020adff584000000b002cb80afe8abmr395579wro.11.1677845861134; Fri, 03 Mar
+ 2023 04:17:41 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Mailer: Zimbra 8.8.12_GA_3803 (ZimbraWebClient - SAF16.2 (Mac)/8.8.12_GA_3794)
-Thread-Index: lTDPthBuN+Zxmy4UPuAb4ZDFQmGN9Q==
-Thread-Topic: TLS zerocopy sendfile offset causes data corruption
-X-Spam-Status: No, score=-0.5 required=5.0 tests=BAYES_05,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Sender: westseaoilandpetroleumservices@gmail.com
+Received: by 2002:a05:6020:29a1:b0:263:7687:f144 with HTTP; Fri, 3 Mar 2023
+ 04:17:40 -0800 (PST)
+From:   "Mr. Abu Kamara" <mrabukamara772@gmail.com>
+Date:   Fri, 3 Mar 2023 04:17:40 -0800
+X-Google-Sender-Auth: mzELhk_HG8JExflG6i0PX5QuC6k
+Message-ID: <CAO_TN8wOgZgR-+_VuPF-Dq-Z4X5RH63NVLp7ef-OiED+5H84QA@mail.gmail.com>
+Subject: WINNING NOTIFICATION.......
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=5.4 required=5.0 tests=BAYES_80,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,SUBJ_ALL_CAPS,
+        T_HK_NAME_FM_MR_MRS,UNDISC_MONEY autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2a00:1450:4864:20:0:0:0:436 listed in]
+        [list.dnswl.org]
+        *  2.0 BAYES_80 BODY: Bayes spam probability is 80 to 95%
+        *      [score: 0.8992]
+        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [westseaoilandpetroleumservices[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
+        *  3.0 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-When doing a sendfile call on a TLS_TX_ZEROCOPY_RO-enabled socket with an offset that is neither zero nor 4k-aligned, and with a "count" bigger than a single TLS record, part of the data received will be corrupted.
-
-I am seeing this on 5.19 and 6.2.1 (x86_64) with a ConnectX-6 Dx NIC, with TLS NIC offload including sendfile otherwise working perfectly when not using TLS_TX_ZEROCOPY_RO.
-I have a simple reproducer program available here https://gist.github.com/elyosh/922e6c15f8d4d7102c8ac9508b0cdc3b
-
-Doing sendfile of a 32K file with a 8 bytes offset, first without zerocopy :
-
-# ./ktls_test -i testfile -p 443 -c cert.pem -k key.pem -o 8
-Serving file testfile, will send 32760 bytes (8 - 32768) with SHA1 sum 83fc1e3900cf900025311f2c27378a357f9f4d2c
-sendfile(5, 3, 8, 32760) = 32760
-
-% wget -S -q -O test_copy https://xxxxxx/; shasum test_copy
-  HTTP/1.1 200 OK
-  Content-Type: application/octet-stream
-  Content-Length: 32760
-  X-Source-SHA1: 83fc1e3900cf900025311f2c27378a357f9f4d2c
-83fc1e3900cf900025311f2c27378a357f9f4d2c  test_copy
-
-Same with TLS_TX_ZEROCOPY_RO enabled, received data will be corrupted :
-
-# ./ktls_test -i testfile -p 443 -c cert.pem -k key.pem -o 8 -z
-Serving file testfile, will send 32760 bytes (8 - 32768) with SHA1 sum 83fc1e3900cf900025311f2c27378a357f9f4d2c
-TLS_TX_ZEROCOPY_RO enabled
-sendfile(5, 3, 8, 32760) = 32760
-
-% wget -S -q -O test_zerocopy https://xxxxxx/; shasum test_zerocopy
-  HTTP/1.1 200 OK
-  Content-Type: application/octet-stream
-  Content-Length: 32760
-  X-Source-SHA1: 83fc1e3900cf900025311f2c27378a357f9f4d2c
-03374f669f98d5f56837660a3817ce1d2a2819f8  test_zerocopy
-
-% diff -U 1 -d <(xxd test_copy) <(xxd test_zerocopy)                             
---- /dev/fd/11	2023-03-03 10:13:26
-+++ /dev/fd/12	2023-03-03 10:13:26
-@@ -1087,3 +1087,3 @@
- 000043e0: 1010 1010 1010 1010 1010 1010 1010 1010  ................
--000043f0: 1010 1010 1010 1010 1111 1111 1111 1111  ................
-+000043f0: 1010 1010 1010 1010 1010 1010 1010 1010  ................
- 00004400: 1111 1111 1111 1111 1111 1111 1111 1111  ................
-@@ -1151,3 +1151,3 @@
- 000047e0: 1111 1111 1111 1111 1111 1111 1111 1111  ................
--000047f0: 1111 1111 1111 1111 1212 1212 1212 1212  ................
-+000047f0: 1111 1111 1111 1111 1111 1111 1111 1111  ................
- 00004800: 1212 1212 1212 1212 1212 1212 1212 1212  ................
-@@ -1215,3 +1215,3 @@
- 00004be0: 1212 1212 1212 1212 1212 1212 1212 1212  ................
--00004bf0: 1212 1212 1212 1212 1313 1313 1313 1313  ................
-+00004bf0: 1212 1212 1212 1212 1212 1212 1212 1212  ................
- 00004c00: 1313 1313 1313 1313 1313 1313 1313 1313  ................
-
-For context, I noticed this issue trying to serve cached files with nginx. For static files this works fine (sendfile offset is zero at first, then 16k-aligned), but cached files are stored with a ~500 bytes header that is skipped in the sendfile call, triggering this issue.
-
-Best regards
-
--- 
-Adrien Moulin
+Hello greetings to you, My name is Mr. Abu Kamara, Director of Alpha
+Lottery Guinness, did you get our notification?
