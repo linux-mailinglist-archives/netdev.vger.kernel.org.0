@@ -2,137 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BFA46A91F1
-	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 08:50:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F2A16A9217
+	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 09:01:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229890AbjCCHt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 02:49:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47960 "EHLO
+        id S229849AbjCCIBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 03:01:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229534AbjCCHt6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 02:49:58 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 973151B2DB;
-        Thu,  2 Mar 2023 23:49:56 -0800 (PST)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4PSg6T1GlCz16P0r;
-        Fri,  3 Mar 2023 15:47:13 +0800 (CST)
-Received: from canpemm500010.china.huawei.com (7.192.105.118) by
- canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Fri, 3 Mar 2023 15:49:54 +0800
-Received: from canpemm500010.china.huawei.com ([7.192.105.118]) by
- canpemm500010.china.huawei.com ([7.192.105.118]) with mapi id 15.01.2507.021;
- Fri, 3 Mar 2023 15:49:54 +0800
-From:   "liujian (CE)" <liujian56@huawei.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>
-CC:     Eric Dumazet <edumazet@google.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Subject: RE: [PATCH bpf] bpf, sockmap: fix an infinite loop error when len is
- 0 in tcp_bpf_recvmsg_parser()
-Thread-Topic: [PATCH bpf] bpf, sockmap: fix an infinite loop error when len is
- 0 in tcp_bpf_recvmsg_parser()
-Thread-Index: AQHZR315G6w0F5D1P0O7gAu4Ybh6167jimKAgASdD4CAAImacA==
-Date:   Fri, 3 Mar 2023 07:49:54 +0000
-Message-ID: <7073a9a93be94a0cb694b58acbe36fa7@huawei.com>
-References: <20230223120212.1604148-1-liujian56@huawei.com>
- <63fdbd07b3593_5f4ac208eb@john.notmuch>
- <CAADnVQLs=Cc06Pvu+zcXxSsB4zxsJm2DT-6me6NLm1hEjfDkTw@mail.gmail.com>
-In-Reply-To: <CAADnVQLs=Cc06Pvu+zcXxSsB4zxsJm2DT-6me6NLm1hEjfDkTw@mail.gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.176.93]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        with ESMTP id S229447AbjCCIBa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 03:01:30 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64FF1457E1;
+        Fri,  3 Mar 2023 00:01:28 -0800 (PST)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4PSgQr1mZKznVbL;
+        Fri,  3 Mar 2023 16:01:24 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by canpemm500010.china.huawei.com
+ (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Fri, 3 Mar
+ 2023 16:01:25 +0800
+From:   Liu Jian <liujian56@huawei.com>
+To:     <john.fastabend@gmail.com>, <jakub@cloudflare.com>,
+        <edumazet@google.com>, <davem@davemloft.net>, <dsahern@kernel.org>,
+        <kuba@kernel.org>, <pabeni@redhat.com>, <socketcan@hartkopp.net>,
+        <ast@kernel.org>, <cong.wang@bytedance.com>, <daniel@iogearbox.net>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <liujian56@huawei.com>
+Subject: [PATCH bpf v2] bpf, sockmap: fix an infinite loop error when len is 0 in tcp_bpf_recvmsg_parser()
+Date:   Fri, 3 Mar 2023 16:09:46 +0800
+Message-ID: <20230303080946.1146638-1-liujian56@huawei.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500010.china.huawei.com (7.192.105.118)
 X-CFilter-Loop: Reflected
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogQWxleGVpIFN0YXJvdm9p
-dG92IFttYWlsdG86YWxleGVpLnN0YXJvdm9pdG92QGdtYWlsLmNvbV0NCj4gU2VudDogRnJpZGF5
-LCBNYXJjaCAzLCAyMDIzIDM6MDQgUE0NCj4gVG86IEpvaG4gRmFzdGFiZW5kIDxqb2huLmZhc3Rh
-YmVuZEBnbWFpbC5jb20+DQo+IENjOiBsaXVqaWFuIChDRSkgPGxpdWppYW41NkBodWF3ZWkuY29t
-PjsgRXJpYyBEdW1hemV0DQo+IDxlZHVtYXpldEBnb29nbGUuY29tPjsgSmFrdWIgU2l0bmlja2kg
-PGpha3ViQGNsb3VkZmxhcmUuY29tPjsgRGF2aWQgUy4NCj4gTWlsbGVyIDxkYXZlbUBkYXZlbWxv
-ZnQubmV0PjsgRGF2aWQgQWhlcm4gPGRzYWhlcm5Aa2VybmVsLm9yZz47IEpha3ViDQo+IEtpY2lu
-c2tpIDxrdWJhQGtlcm5lbC5vcmc+OyBQYW9sbyBBYmVuaSA8cGFiZW5pQHJlZGhhdC5jb20+OyBB
-bGV4ZWkNCj4gU3Rhcm92b2l0b3YgPGFzdEBrZXJuZWwub3JnPjsgQ29uZyBXYW5nIDxjb25nLndh
-bmdAYnl0ZWRhbmNlLmNvbT47DQo+IERhbmllbCBCb3JrbWFubiA8ZGFuaWVsQGlvZ2VhcmJveC5u
-ZXQ+OyBOZXR3b3JrIERldmVsb3BtZW50DQo+IDxuZXRkZXZAdmdlci5rZXJuZWwub3JnPjsgYnBm
-IDxicGZAdmdlci5rZXJuZWwub3JnPg0KPiBTdWJqZWN0OiBSZTogW1BBVENIIGJwZl0gYnBmLCBz
-b2NrbWFwOiBmaXggYW4gaW5maW5pdGUgbG9vcCBlcnJvciB3aGVuIGxlbiBpcyAwDQo+IGluIHRj
-cF9icGZfcmVjdm1zZ19wYXJzZXIoKQ0KPiANCj4gT24gVHVlLCBGZWIgMjgsIDIwMjMgYXQgMTI6
-MzbigK9BTSBKb2huIEZhc3RhYmVuZA0KPiA8am9obi5mYXN0YWJlbmRAZ21haWwuY29tPiB3cm90
-ZToNCj4gPg0KPiA+IExpdSBKaWFuIHdyb3RlOg0KPiA+ID4gV2hlbiB0aGUgYnVmZmVyIGxlbmd0
-aCBvZiB0aGUgcmVjdm1zZyBzeXN0ZW0gY2FsbCBpcyAwLCB3ZSBnb3QgdGhlDQo+ID4gPiBmbG9s
-bG93aW5nIHNvZnQgbG9ja3VwIHByb2JsZW06DQo+ID4gPg0KPiA+ID4gd2F0Y2hkb2c6IEJVRzog
-c29mdCBsb2NrdXAgLSBDUFUjMyBzdHVjayBmb3IgMjdzISBbYS5vdXQ6NjE0OV0NCj4gPiA+IENQ
-VTogMyBQSUQ6IDYxNDkgQ29tbTogYS5vdXQgS2R1bXA6IGxvYWRlZCBOb3QgdGFpbnRlZCA2LjIu
-MCsgIzMwDQo+ID4gPiBIYXJkd2FyZSBuYW1lOiBRRU1VIFN0YW5kYXJkIFBDIChRMzUgKyBJQ0g5
-LCAyMDA5KSwgQklPUyAxLjE1LjAtMQ0KPiA+ID4gMDQvMDEvMjAxNA0KPiA+ID4gUklQOiAwMDEw
-OnJlbW92ZV93YWl0X3F1ZXVlKzB4Yi8weGMwDQo+ID4gPiBDb2RlOiA1ZSA0MSA1ZiBjMyBjYyBj
-YyBjYyBjYyAwZiAxZiA4MCAwMCAwMCAwMCAwMCA5MCA5MCA5MCA5MCA5MCA5MA0KPiA+ID4gOTAg
-OTAgOTAgOTAgOTAgOTAgOTAgOTAgOTAgOTAgZjMgMGYgMWUgZmEgMGYgMWYgNDQgMDAgMDAgNDEg
-NTcgPDQxPg0KPiA+ID4gNTYgNDEgNTUgNDEgNTQgNTUgNDggODkgZmQgNTMgNDggODkgZjMgNGMg
-OGQgNmIgMTggNGMgOGQgNzMgMjANCj4gPiA+IFJTUDogMDAxODpmZmZmODg4MTFiNTk3OGI4IEVG
-TEFHUzogMDAwMDAyNDYNCj4gPiA+IFJBWDogMDAwMDAwMDAwMDAwMDAwMCBSQlg6IGZmZmY4ODgx
-MWE3ZDM3ODAgUkNYOiBmZmZmZmZmZmI3YTRkNzY4DQo+ID4gPiBSRFg6IGRmZmZmYzAwMDAwMDAw
-MDAgUlNJOiBmZmZmODg4MTFiNTk3OTA4IFJESTogZmZmZjg4ODExNTQwODA0MA0KPiA+ID4gUkJQ
-OiAxZmZmZjExMDIzNmIyZjFiIFIwODogMDAwMDAwMDAwMDAwMDAwMCBSMDk6IGZmZmY4ODgxMWE3
-ZDM3ZTcNCj4gPiA+IFIxMDogZmZmZmVkMTAyMzRmYTZmYyBSMTE6IDAwMDAwMDAwMDAwMDAwMDEg
-UjEyOiBmZmZmODg4MTExNzliODAwDQo+ID4gPiBSMTM6IDAwMDAwMDAwMDAwMDAwMDEgUjE0OiBm
-ZmZmODg4MTFhN2QzOGE4IFIxNTogZmZmZjg4ODExYTdkMzdlMA0KPiA+ID4gRlM6ICAwMDAwN2Y2
-ZmI1Mzk4NzQwKDAwMDApIEdTOmZmZmY4ODgyMzcxODAwMDAoMDAwMCkNCj4gPiA+IGtubEdTOjAw
-MDAwMDAwMDAwMDAwMDANCj4gPiA+IENTOiAgMDAxMCBEUzogMDAwMCBFUzogMDAwMCBDUjA6IDAw
-MDAwMDAwODAwNTAwMzMNCj4gPiA+IENSMjogMDAwMDAwMDAyMDAwMDAwMCBDUjM6IDAwMDAwMDAx
-MGI2YmEwMDIgQ1I0OiAwMDAwMDAwMDAwMzcwZWUwDQo+ID4gPiBEUjA6IDAwMDAwMDAwMDAwMDAw
-MDAgRFIxOiAwMDAwMDAwMDAwMDAwMDAwIERSMjogMDAwMDAwMDAwMDAwMDAwMA0KPiA+ID4gRFIz
-OiAwMDAwMDAwMDAwMDAwMDAwIERSNjogMDAwMDAwMDBmZmZlMGZmMCBEUjc6IDAwMDAwMDAwMDAw
-MDA0MDANCj4gPiA+IENhbGwgVHJhY2U6DQo+ID4gPiAgPFRBU0s+DQo+ID4gPiAgdGNwX21zZ193
-YWl0X2RhdGErMHgyNzkvMHgyZjANCj4gPiA+ICB0Y3BfYnBmX3JlY3Ztc2dfcGFyc2VyKzB4M2M2
-LzB4NDkwDQo+ID4gPiAgaW5ldF9yZWN2bXNnKzB4MjgwLzB4MjkwDQo+ID4gPiAgc29ja19yZWN2
-bXNnKzB4ZmMvMHgxMjANCj4gPiA+ICBfX19fc3lzX3JlY3Ztc2crMHgxNjAvMHgzZDANCj4gPiA+
-ICBfX19zeXNfcmVjdm1zZysweGYwLzB4MTgwDQo+ID4gPiAgX19zeXNfcmVjdm1zZysweGVhLzB4
-MWEwDQo+ID4gPiAgZG9fc3lzY2FsbF82NCsweDNmLzB4OTANCj4gPiA+ICBlbnRyeV9TWVNDQUxM
-XzY0X2FmdGVyX2h3ZnJhbWUrMHg3Mi8weGRjDQo+ID4gPg0KPiA+ID4gVGhlIGxvZ2ljIGluIHRj
-cF9icGZfcmVjdm1zZ19wYXJzZXIgaXMgYXMgZm9sbG93czoNCj4gPiA+DQo+ID4gPiBtc2dfYnl0
-ZXNfcmVhZHk6DQo+ID4gPiAgICAgICBjb3BpZWQgPSBza19tc2dfcmVjdm1zZyhzaywgcHNvY2ss
-IG1zZywgbGVuLCBmbGFncyk7DQo+ID4gPiAgICAgICBpZiAoIWNvcGllZCkgew0KPiA+ID4gICAg
-ICAgICAgICAgICB3YWl0IGRhdGE7DQo+ID4gPiAgICAgICAgICAgICAgIGdvdG8gbXNnX2J5dGVz
-X3JlYWR5Ow0KPiA+ID4gICAgICAgfQ0KPiA+ID4NCj4gPiA+IEluIHRoaXMgY2FzZSwgImNvcGll
-ZCIgYWx3YXkgaXMgMCwgdGhlIGluZmluaXRlIGxvb3Agb2NjdXJzLg0KPiA+ID4NCj4gPiA+IEFj
-Y29yZGluZyB0byB0aGUgTGludXggc3lzdGVtIGNhbGwgbWFuIHBhZ2UsIDAgc2hvdWxkIGJlIHJl
-dHVybmVkIGluDQo+ID4gPiB0aGlzIGNhc2UuIFRoZXJlZm9yZSwgaW4gdGNwX2JwZl9yZWN2bXNn
-X3BhcnNlcigpLCBpZiB0aGUgbGVuZ3RoIGlzDQo+ID4gPiAwLCBkaXJlY3RseSByZXR1cm4uDQo+
-ID4gPg0KPiA+ID4gQWxzbyBtb2RpZnkgc2V2ZXJhbCBvdGhlciBmdW5jdGlvbnMgd2l0aCB0aGUg
-c2FtZSBwcm9ibGVtLg0KPiA+ID4NCj4gPiA+IEZpeGVzOiAxZjViZTZiM2IwNjMgKCJ1ZHA6IElt
-cGxlbWVudCB1ZHBfYnBmX3JlY3Ztc2coKSBmb3Igc29ja21hcCIpDQo+ID4gPiBGaXhlczogOTgy
-NWQ4NjZjZTBkICgiYWZfdW5peDogSW1wbGVtZW50IHVuaXhfZGdyYW1fYnBmX3JlY3Ztc2coKSIp
-DQo+ID4gPiBGaXhlczogYzVkMjE3N2E3MmExICgiYnBmLCBzb2NrbWFwOiBGaXggcmFjZSBpbiBp
-bmdyZXNzIHJlY2VpdmUNCj4gPiA+IHZlcmRpY3Qgd2l0aCByZWRpcmVjdCB0byBzZWxmIikNCj4g
-PiA+IEZpeGVzOiA2MDQzMjZiNDFhNmYgKCJicGYsIHNvY2ttYXA6IGNvbnZlcnQgdG8gZ2VuZXJp
-YyBza19tc2cNCj4gPiA+IGludGVyZmFjZSIpDQo+ID4gPiBTaWduZWQtb2ZmLWJ5OiBMaXUgSmlh
-biA8bGl1amlhbjU2QGh1YXdlaS5jb20+DQo+ID4gPiAtLS0NCj4gPg0KPiA+IFRoYW5rcy4NCj4g
-Pg0KPiA+IEFja2VkLWJ5OiBKb2huIEZhc3RhYmVuZCA8am9obi5mYXN0YWJlbmRAZ21haWwuY29t
-Pg0KPiANCj4gVGhhbmtzIEpvaG4uDQo+IA0KPiBMaXUsDQo+IA0KPiBjb3VsZCB5b3UgcGxlYXNl
-IGNoYW5nZSBpZiAobGVuID09IDApIHRvIGlmICghbGVuKSBhbmQgcmVzcGluIHdpdGggSm9obidz
-IGFjay4NCj4gVGhhbmtzDQpPa2F5LCBJIHdpbGwgc2VuZCB2Mi4gDQpUaGFua3MuDQo=
+When the buffer length of the recvmsg system call is 0, we got the
+flollowing soft lockup problem:
+
+watchdog: BUG: soft lockup - CPU#3 stuck for 27s! [a.out:6149]
+CPU: 3 PID: 6149 Comm: a.out Kdump: loaded Not tainted 6.2.0+ #30
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.15.0-1 04/01/2014
+RIP: 0010:remove_wait_queue+0xb/0xc0
+Code: 5e 41 5f c3 cc cc cc cc 0f 1f 80 00 00 00 00 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 f3 0f 1e fa 0f 1f 44 00 00 41 57 <41> 56 41 55 41 54 55 48 89 fd 53 48 89 f3 4c 8d 6b 18 4c 8d 73 20
+RSP: 0018:ffff88811b5978b8 EFLAGS: 00000246
+RAX: 0000000000000000 RBX: ffff88811a7d3780 RCX: ffffffffb7a4d768
+RDX: dffffc0000000000 RSI: ffff88811b597908 RDI: ffff888115408040
+RBP: 1ffff110236b2f1b R08: 0000000000000000 R09: ffff88811a7d37e7
+R10: ffffed10234fa6fc R11: 0000000000000001 R12: ffff88811179b800
+R13: 0000000000000001 R14: ffff88811a7d38a8 R15: ffff88811a7d37e0
+FS:  00007f6fb5398740(0000) GS:ffff888237180000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020000000 CR3: 000000010b6ba002 CR4: 0000000000370ee0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ tcp_msg_wait_data+0x279/0x2f0
+ tcp_bpf_recvmsg_parser+0x3c6/0x490
+ inet_recvmsg+0x280/0x290
+ sock_recvmsg+0xfc/0x120
+ ____sys_recvmsg+0x160/0x3d0
+ ___sys_recvmsg+0xf0/0x180
+ __sys_recvmsg+0xea/0x1a0
+ do_syscall_64+0x3f/0x90
+ entry_SYSCALL_64_after_hwframe+0x72/0xdc
+
+The logic in tcp_bpf_recvmsg_parser is as follows:
+
+msg_bytes_ready:
+	copied = sk_msg_recvmsg(sk, psock, msg, len, flags);
+	if (!copied) {
+		wait data;
+		goto msg_bytes_ready;
+	}
+
+In this case, "copied" alway is 0, the infinite loop occurs.
+
+According to the Linux system call man page, 0 should be returned in this
+case. Therefore, in tcp_bpf_recvmsg_parser(), if the length is 0, directly
+return.
+
+Also modify several other functions with the same problem.
+
+Fixes: 1f5be6b3b063 ("udp: Implement udp_bpf_recvmsg() for sockmap")
+Fixes: 9825d866ce0d ("af_unix: Implement unix_dgram_bpf_recvmsg()")
+Fixes: c5d2177a72a1 ("bpf, sockmap: Fix race in ingress receive verdict with redirect to self")
+Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
+Signed-off-by: Liu Jian <liujian56@huawei.com>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+---
+v1->v2: change "if (len == 0)" to "if (!len)"
+ net/ipv4/tcp_bpf.c  | 6 ++++++
+ net/ipv4/udp_bpf.c  | 3 +++
+ net/unix/unix_bpf.c | 3 +++
+ 3 files changed, 12 insertions(+)
+
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index cf26d65ca389..ebf917511937 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -186,6 +186,9 @@ static int tcp_bpf_recvmsg_parser(struct sock *sk,
+ 	if (unlikely(flags & MSG_ERRQUEUE))
+ 		return inet_recv_error(sk, msg, len, addr_len);
+ 
++	if (!len)
++		return 0;
++
+ 	psock = sk_psock_get(sk);
+ 	if (unlikely(!psock))
+ 		return tcp_recvmsg(sk, msg, len, flags, addr_len);
+@@ -244,6 +247,9 @@ static int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 	if (unlikely(flags & MSG_ERRQUEUE))
+ 		return inet_recv_error(sk, msg, len, addr_len);
+ 
++	if (!len)
++		return 0;
++
+ 	psock = sk_psock_get(sk);
+ 	if (unlikely(!psock))
+ 		return tcp_recvmsg(sk, msg, len, flags, addr_len);
+diff --git a/net/ipv4/udp_bpf.c b/net/ipv4/udp_bpf.c
+index e5dc91d0e079..0735d820e413 100644
+--- a/net/ipv4/udp_bpf.c
++++ b/net/ipv4/udp_bpf.c
+@@ -68,6 +68,9 @@ static int udp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 	if (unlikely(flags & MSG_ERRQUEUE))
+ 		return inet_recv_error(sk, msg, len, addr_len);
+ 
++	if (!len)
++		return 0;
++
+ 	psock = sk_psock_get(sk);
+ 	if (unlikely(!psock))
+ 		return sk_udp_recvmsg(sk, msg, len, flags, addr_len);
+diff --git a/net/unix/unix_bpf.c b/net/unix/unix_bpf.c
+index e9bf15513961..2f9d8271c6ec 100644
+--- a/net/unix/unix_bpf.c
++++ b/net/unix/unix_bpf.c
+@@ -54,6 +54,9 @@ static int unix_bpf_recvmsg(struct sock *sk, struct msghdr *msg,
+ 	struct sk_psock *psock;
+ 	int copied;
+ 
++	if (!len)
++		return 0;
++
+ 	psock = sk_psock_get(sk);
+ 	if (unlikely(!psock))
+ 		return __unix_recvmsg(sk, msg, len, flags);
+-- 
+2.34.1
+
