@@ -2,91 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88E626A971D
-	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 13:17:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB54E6A9721
+	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 13:18:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231180AbjCCMRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 07:17:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36588 "EHLO
+        id S230477AbjCCMS3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 07:18:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231213AbjCCMRp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 07:17:45 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E345F6C2
-        for <netdev@vger.kernel.org>; Fri,  3 Mar 2023 04:17:42 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id q16so2072352wrw.2
-        for <netdev@vger.kernel.org>; Fri, 03 Mar 2023 04:17:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1677845861;
-        h=to:subject:message-id:date:from:sender:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Tcw1FUJszn0ybZBzjWPIGWACFhZNznsTlZ1HMZm7vk8=;
-        b=QWFA1p2VbUvl/RdUvsI9SrEVga79yQA/3yUbwnl3CpZidZGFIQlkcL09qXoGEQNu3i
-         agte4DV6kkLCq/KqGuFyAvw+/Nga+gxAVctFDcVnsTWnCKsQRAPun58wU6kJ1KDh0kWH
-         2cS7OrYiZnenvxsMX2G4Gt8Ee79K8jM5w19wGv83UzdAdKL32vuFrAIQV1fEbgzHbXiP
-         L3ohqh2BIXxmlGY6bGAVtOCw5Lb21ZQOytMyzrZHBYpUTu66eWRoQS5LntS6IpS4z80B
-         kKvm4qSLGjYNuqDJh4X5capNk2b+Hiv0eMPoafJeP6PzyhlnTe346F8xZu1dM6P3h30P
-         QPfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677845861;
-        h=to:subject:message-id:date:from:sender:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Tcw1FUJszn0ybZBzjWPIGWACFhZNznsTlZ1HMZm7vk8=;
-        b=M0SnaPWsxAQ/spJuTW54RTH3rWZeq5jJSkz2F+wyPv9k9qL8hzE7dpX+ICpXOQy10B
-         jpxEK1qR8oVPhkNyHLUvL/RzzgWtpvpGsyTEW0lEcINKCzs9z5wQ5wBzPtthpb5e06iR
-         ckquwv6ehA6li9j59ftqXOzWpdGNlUgVyMO1uPlTwZEW1jd6p4LlcCAIOO+uSLuhYZ5R
-         7LsOkMmtmU87mKOVmuvmhu8v5bXCn0gLIyzBUMVNxdRurDmCtb4FxljlTv8pUtx/S1l4
-         N6tOjdo/AiCpauhbdLMoqZ1B/Q2cFRk302/dcbfNdIvk/D4z4p/t9uFRg9EJSZdQR5FB
-         viAw==
-X-Gm-Message-State: AO0yUKVB6q6ZGO77bEy7qtZ2LQ30A3w1v1YSX/XLjYzF+isZefFD9vkR
-        Gv/PslD3BAPVLZ6BKgR1MkVrz6jEaxBwH+yvrRI=
-X-Google-Smtp-Source: AK7set/q2qgHoldqk5H5fHx63GGguv4oW2aJMvHYg/RMimJh1RiuYAb+oDVDZt68KNqXqDha/i92nGWXxoipDebsHGo=
-X-Received: by 2002:adf:f584:0:b0:2cb:80af:e8ab with SMTP id
- f4-20020adff584000000b002cb80afe8abmr395579wro.11.1677845861134; Fri, 03 Mar
- 2023 04:17:41 -0800 (PST)
+        with ESMTP id S229476AbjCCMS2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 07:18:28 -0500
+Received: from forwardcorp1b.mail.yandex.net (forwardcorp1b.mail.yandex.net [178.154.239.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12F0A14986;
+        Fri,  3 Mar 2023 04:18:25 -0800 (PST)
+Received: from mail-nwsmtp-smtp-corp-main-26.myt.yp-c.yandex.net (mail-nwsmtp-smtp-corp-main-26.myt.yp-c.yandex.net [IPv6:2a02:6b8:c12:5da4:0:640:ef2d:0])
+        by forwardcorp1b.mail.yandex.net (Yandex) with ESMTP id B756A5FBC2;
+        Fri,  3 Mar 2023 15:18:22 +0300 (MSK)
+Received: from [IPV6:2a02:6b8:b081:6426::1:21] (unknown [2a02:6b8:b081:6426::1:21])
+        by mail-nwsmtp-smtp-corp-main-26.myt.yp-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id LIWpnA0OpSw0-JjONf7qC;
+        Fri, 03 Mar 2023 15:18:21 +0300
+X-Yandex-Fwd: 1
+Authentication-Results: mail-nwsmtp-smtp-corp-main-26.myt.yp-c.yandex.net; dkim=pass
+Message-ID: <7f292302-97d0-4d66-31cd-f628d013ef4a@yandex-team.ru>
+Date:   Fri, 3 Mar 2023 15:18:21 +0300
 MIME-Version: 1.0
-Sender: westseaoilandpetroleumservices@gmail.com
-Received: by 2002:a05:6020:29a1:b0:263:7687:f144 with HTTP; Fri, 3 Mar 2023
- 04:17:40 -0800 (PST)
-From:   "Mr. Abu Kamara" <mrabukamara772@gmail.com>
-Date:   Fri, 3 Mar 2023 04:17:40 -0800
-X-Google-Sender-Auth: mzELhk_HG8JExflG6i0PX5QuC6k
-Message-ID: <CAO_TN8wOgZgR-+_VuPF-Dq-Z4X5RH63NVLp7ef-OiED+5H84QA@mail.gmail.com>
-Subject: WINNING NOTIFICATION.......
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.4 required=5.0 tests=BAYES_80,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,SUBJ_ALL_CAPS,
-        T_HK_NAME_FM_MR_MRS,UNDISC_MONEY autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:436 listed in]
-        [list.dnswl.org]
-        *  2.0 BAYES_80 BODY: Bayes spam probability is 80 to 95%
-        *      [score: 0.8992]
-        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [westseaoilandpetroleumservices[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
-        *  3.0 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-X-Spam-Level: *****
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [EXT] Re: [PATCH v0] qed/qed_dev: guard against a possible
+ division by zero
+Content-Language: en-US
+From:   Daniil Tatianin <d-tatianin@yandex-team.ru>
+To:     Manish Chopra <manishc@marvell.com>,
+        Simon Horman <simon.horman@corigine.com>
+Cc:     Ariel Elior <aelior@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Yuval Mintz <Yuval.Mintz@qlogic.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20230209103813.2500486-1-d-tatianin@yandex-team.ru>
+ <Y+TVVuLgF+V7iTO1@corigine.com>
+ <b39e6122-ba7b-60dd-a70c-d3915b203ff0@yandex-team.ru>
+ <BY3PR18MB4612FC497A8B12889548FF82ABA39@BY3PR18MB4612.namprd18.prod.outlook.com>
+ <d3fe83e4-db71-6180-40e8-e0cfaf52be34@yandex-team.ru>
+In-Reply-To: <d3fe83e4-db71-6180-40e8-e0cfaf52be34@yandex-team.ru>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello greetings to you, My name is Mr. Abu Kamara, Director of Alpha
-Lottery Guinness, did you get our notification?
+On 2/16/23 9:42 AM, Daniil Tatianin wrote:
+> On 2/16/23 12:20 AM, Manish Chopra wrote:
+>>> -----Original Message-----
+>>> From: Daniil Tatianin <d-tatianin@yandex-team.ru>
+>>> Sent: Tuesday, February 14, 2023 12:53 PM
+>>> To: Simon Horman <simon.horman@corigine.com>
+>>> Cc: Ariel Elior <aelior@marvell.com>; Manish Chopra
+>>> <manishc@marvell.com>; David S. Miller <davem@davemloft.net>; Eric
+>>> Dumazet <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>; Paolo
+>>> Abeni <pabeni@redhat.com>; Yuval Mintz <Yuval.Mintz@qlogic.com>;
+>>> netdev@vger.kernel.org; linux-kernel@vger.kernel.org
+>>> Subject: [EXT] Re: [PATCH v0] qed/qed_dev: guard against a possible 
+>>> division
+>>> by zero
+>>>
+>>> External Email
+>>>
+>>> ----------------------------------------------------------------------
+>>>
+>>>
+>>> On 2/9/23 2:13 PM, Simon Horman wrote:
+>>>> On Thu, Feb 09, 2023 at 01:38:13PM +0300, Daniil Tatianin wrote:
+>>>>> Previously we would divide total_left_rate by zero if num_vports
+>>>>> happened to be 1 because non_requested_count is calculated as
+>>>>> num_vports - req_count. Guard against this by explicitly checking for
+>>>>> zero when doing the division.
+>>>>>
+>>>>> Found by Linux Verification Center (linuxtesting.org) with the SVACE
+>>>>> static analysis tool.
+>>>>>
+>>>>> Fixes: bcd197c81f63 ("qed: Add vport WFQ configuration APIs")
+>>>>> Signed-off-by: Daniil Tatianin <d-tatianin@yandex-team.ru>
+>>>>> ---
+>>>>>    drivers/net/ethernet/qlogic/qed/qed_dev.c | 2 +-
+>>>>>    1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>>
+>>>>> diff --git a/drivers/net/ethernet/qlogic/qed/qed_dev.c
+>>>>> b/drivers/net/ethernet/qlogic/qed/qed_dev.c
+>>>>> index d61cd32ec3b6..90927f68c459 100644
+>>>>> --- a/drivers/net/ethernet/qlogic/qed/qed_dev.c
+>>>>> +++ b/drivers/net/ethernet/qlogic/qed/qed_dev.c
+>>>>> @@ -5123,7 +5123,7 @@ static int qed_init_wfq_param(struct qed_hwfn
+>>>>> *p_hwfn,
+>>>>>
+>>>>>        total_left_rate    = min_pf_rate - total_req_min_rate;
+>>>>>
+>>>>> -    left_rate_per_vp = total_left_rate / non_requested_count;
+>>>>> +    left_rate_per_vp = total_left_rate / (non_requested_count ?: 1);
+>>>>
+>>>> I don't know if num_vports can be 1.
+>>>> But if it is then I agree that the above will be a divide by zero.
+>>>>
+>>>> I do, however, wonder if it would be better to either:
+>>>>
+>>>> * Treat this case as invalid and return with -EINVAL if num_vports is
+>>>> 1; or
+>>> I think that's a good idea considering num_vports == 1 is indeed an 
+>>> invalid
+>>> value.
+>>> I'd like to hear a maintainer's opinion on this.
+>> Practically, this flow will only hit with presence of SR-IOV VFs. In 
+>> that case it's
+>> always expected to have num_vports > 1.
+> 
+> In that case, should we add a check and return with -EINVAL otherwise?
+> Thank you!
+>
+
+Ping
+
+>>>> * Skip both the calculation immediately above and the code
+>>>>     in the if condition below, which is the only place where
+>>>>     the calculated value is used, if num_vports is 1.
+>>>>     I don't think the if clause makes much sense if num_vports is
+>>>> one.left_rate_per_vp is also used below the if clause, it is assigned
+>>>> to
+>>> .min_speed in a for loop. Looking at that code division by 1 seems to 
+>>> make
+>>> sense to me in this case.
+>>>>
+>>>>>        if (left_rate_per_vp <  min_pf_rate / QED_WFQ_UNIT) {
+>>>>>            DP_VERBOSE(p_hwfn, NETIF_MSG_LINK,
+>>>>>                   "Non WFQ configured vports rate [%d Mbps] is less
+>>> than one
+>>>>> percent of configured PF min rate[%d Mbps]\n",
+>>>>> -- 
+>>>>> 2.25.1
+>>>>>
