@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 358B66A9329
-	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 10:00:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D2146A932C
+	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 10:00:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229816AbjCCI7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 03:59:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56074 "EHLO
+        id S230346AbjCCI74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 03:59:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230284AbjCCI7k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 03:59:40 -0500
-Received: from fd01.gateway.ufhost.com (fd01.gateway.ufhost.com [61.152.239.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 382F81423A;
-        Fri,  3 Mar 2023 00:59:39 -0800 (PST)
-Received: from EXMBX165.cuchost.com (unknown [175.102.18.54])
+        with ESMTP id S230294AbjCCI7l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 03:59:41 -0500
+Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 236FE19F0B;
+        Fri,  3 Mar 2023 00:59:40 -0800 (PST)
+Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
         (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (Client CN "EXMBX165", Issuer "EXMBX165" (not verified))
-        by fd01.gateway.ufhost.com (Postfix) with ESMTP id 12EDE24DC09;
-        Fri,  3 Mar 2023 16:59:38 +0800 (CST)
-Received: from EXMBX162.cuchost.com (172.16.6.72) by EXMBX165.cuchost.com
- (172.16.6.75) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 3 Mar
+        (Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
+        by ex01.ufhost.com (Postfix) with ESMTP id 02F4E24E2C0;
+        Fri,  3 Mar 2023 16:59:39 +0800 (CST)
+Received: from EXMBX162.cuchost.com (172.16.6.72) by EXMBX166.cuchost.com
+ (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 3 Mar
  2023 16:59:38 +0800
 Received: from starfive-sdk.starfivetech.com (171.223.208.138) by
  EXMBX162.cuchost.com (172.16.6.72) with Microsoft SMTP Server (TLS) id
- 15.0.1497.42; Fri, 3 Mar 2023 16:59:37 +0800
+ 15.0.1497.42; Fri, 3 Mar 2023 16:59:38 +0800
 From:   Samin Guo <samin.guo@starfivetech.com>
 To:     <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
@@ -41,9 +41,9 @@ CC:     "David S . Miller" <davem@davemloft.net>,
         Peter Geis <pgwipeout@gmail.com>,
         Yanhong Wang <yanhong.wang@starfivetech.com>,
         Samin Guo <samin.guo@starfivetech.com>
-Subject: [PATCH v5 08/12] net: stmmac: starfive_dmac: Add phy interface settings
-Date:   Fri, 3 Mar 2023 16:59:24 +0800
-Message-ID: <20230303085928.4535-9-samin.guo@starfivetech.com>
+Subject: [PATCH v5 09/12] riscv: dts: starfive: jh7110: Add syscon to support phy interface settings
+Date:   Fri, 3 Mar 2023 16:59:25 +0800
+Message-ID: <20230303085928.4535-10-samin.guo@starfivetech.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20230303085928.4535-1-samin.guo@starfivetech.com>
 References: <20230303085928.4535-1-samin.guo@starfivetech.com>
@@ -53,103 +53,42 @@ X-Originating-IP: [171.223.208.138]
 X-ClientProxiedBy: EXCAS064.cuchost.com (172.16.6.24) To EXMBX162.cuchost.com
  (172.16.6.72)
 X-YovoleRuleAgent: yovoleflag
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-dwmac supports multiple modess. When working under rmii and rgmii,
-you need to set different phy interfaces.
-
-According to the dwmac document, when working in rmii, it needs to be
-set to 0x4, and rgmii needs to be set to 0x1.
-
 The phy interface needs to be set in syscon, the format is as follows:
 starfive,syscon: <&syscon, offset, mask>
 
 Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
 ---
- .../ethernet/stmicro/stmmac/dwmac-starfive.c  | 46 +++++++++++++++++++
- 1 file changed, 46 insertions(+)
+ arch/riscv/boot/dts/starfive/jh7110.dtsi | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
-index 566378306f67..40fdd7036127 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
-@@ -7,10 +7,15 @@
-  *
-  */
+diff --git a/arch/riscv/boot/dts/starfive/jh7110.dtsi b/arch/riscv/boot/dts/starfive/jh7110.dtsi
+index 2ce28292b721..c1c5085dab72 100644
+--- a/arch/riscv/boot/dts/starfive/jh7110.dtsi
++++ b/arch/riscv/boot/dts/starfive/jh7110.dtsi
+@@ -554,6 +554,7 @@
+ 			snps,en-tx-lpi-clockgating;
+ 			snps,txpbl = <16>;
+ 			snps,rxpbl = <16>;
++			starfive,syscon = <&aon_syscon 0xc 0x1c0000>;
+ 			status = "disabled";
+ 			phy-handle = <&phy0>;
  
-+#include <linux/mfd/syscon.h>
- #include <linux/of_device.h>
-+#include <linux/regmap.h>
+@@ -596,6 +597,7 @@
+ 			snps,en-tx-lpi-clockgating;
+ 			snps,txpbl = <16>;
+ 			snps,rxpbl = <16>;
++			starfive,syscon = <&sys_syscon 0x90 0x1c>;
+ 			status = "disabled";
+ 			phy-handle = <&phy1>;
  
- #include "stmmac_platform.h"
- 
-+#define MACPHYC_PHY_INFT_RMII	0x4
-+#define MACPHYC_PHY_INFT_RGMII	0x1
-+
- struct starfive_dwmac {
- 	struct device *dev;
- 	struct clk *clk_tx;
-@@ -53,6 +58,46 @@ static void starfive_eth_fix_mac_speed(void *priv, unsigned int speed)
- 		dev_err(dwmac->dev, "failed to set tx rate %lu\n", rate);
- }
- 
-+static int starfive_dwmac_set_mode(struct plat_stmmacenet_data *plat_dat)
-+{
-+	struct starfive_dwmac *dwmac = plat_dat->bsp_priv;
-+	struct of_phandle_args args;
-+	struct regmap *regmap;
-+	unsigned int reg, mask, mode;
-+	int err;
-+
-+	switch (plat_dat->interface) {
-+	case PHY_INTERFACE_MODE_RMII:
-+		mode = MACPHYC_PHY_INFT_RMII;
-+		break;
-+
-+	case PHY_INTERFACE_MODE_RGMII:
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+		mode = MACPHYC_PHY_INFT_RGMII;
-+		break;
-+
-+	default:
-+		dev_err(dwmac->dev, "Unsupported interface %d\n",
-+			plat_dat->interface);
-+	}
-+
-+	err = of_parse_phandle_with_fixed_args(dwmac->dev->of_node,
-+					       "starfive,syscon", 2, 0, &args);
-+	if (err) {
-+		dev_dbg(dwmac->dev, "syscon reg not found\n");
-+		return -EINVAL;
-+	}
-+
-+	reg = args.args[0];
-+	mask = args.args[1];
-+	regmap = syscon_node_to_regmap(args.np);
-+	of_node_put(args.np);
-+	if (IS_ERR(regmap))
-+		return PTR_ERR(regmap);
-+
-+	return regmap_update_bits(regmap, reg, mask, mode << __ffs(mask));
-+}
-+
- static int starfive_dwmac_probe(struct platform_device *pdev)
- {
- 	struct plat_stmmacenet_data *plat_dat;
-@@ -93,6 +138,7 @@ static int starfive_dwmac_probe(struct platform_device *pdev)
- 	plat_dat->bsp_priv = dwmac;
- 	plat_dat->dma_cfg->dche = true;
- 
-+	starfive_dwmac_set_mode(plat_dat);
- 	err = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
- 	if (err) {
- 		stmmac_remove_config_dt(pdev, plat_dat);
 -- 
 2.17.1
 
