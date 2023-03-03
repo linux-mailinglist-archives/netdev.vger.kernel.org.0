@@ -2,162 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2549E6AA0DA
-	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 22:09:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 927D46AA0EB
+	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 22:16:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231811AbjCCVJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 16:09:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50532 "EHLO
+        id S231591AbjCCVQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 16:16:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231799AbjCCVJi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 16:09:38 -0500
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 685996150D;
-        Fri,  3 Mar 2023 13:09:35 -0800 (PST)
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 323Hw71Q027393;
-        Fri, 3 Mar 2023 21:09:11 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : from : subject : to : cc : references : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=0GV0GIblVbFArHNpmZ1Srz0Rk2Sez5YtbO96Shw/C94=;
- b=K3GuB/c67HB+9X5scaPeKggDaitwzAl87gNnC3C2vueKKu5ykHfKheQhr1xKU/22aTAG
- 2+qjLzzrcdUMfHDrMM8J2lxHIyVHw3312cEHlYqeO4nzKWp0jVnGkb3wsqgDTsz83U2S
- nuBYJpzVB0bP0JlKacrywW+IItuotYBNMh/5qrIlH2w3bzY3RVFj2YEo71ZnLw2D5cs0
- kiHUZjliGhYkEWITN3YHvZZeHW/E9PUMeEH2Yv/bx3TZjK2WeuMe2bZZma6hvZxrc/Ta
- tyt1/AmHVAK43H2/wqZIiWRyYD0i8xWBH4KecTVsak0SRfxB0QClW+YoH0gbO2hx0Rh5 zQ== 
-Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3p3dpxj579-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 03 Mar 2023 21:09:11 +0000
-Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
-        by NASANPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 323L9ALS015416
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 3 Mar 2023 21:09:10 GMT
-Received: from [10.110.20.90] (10.80.80.8) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Fri, 3 Mar 2023
- 13:09:09 -0800
-Message-ID: <2ae96b75-82f1-165a-e56d-7446c90bb7af@quicinc.com>
-Date:   Fri, 3 Mar 2023 13:09:08 -0800
+        with ESMTP id S231216AbjCCVQr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 16:16:47 -0500
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1937F61507
+        for <netdev@vger.kernel.org>; Fri,  3 Mar 2023 13:16:46 -0800 (PST)
+Received: by mail-il1-f199.google.com with SMTP id i8-20020a056e02054800b00318a7211804so2003235ils.5
+        for <netdev@vger.kernel.org>; Fri, 03 Mar 2023 13:16:46 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=iZMq3I524LZ3LyFG/4UrcrlRiCRLs/dbIEgvULqsulE=;
+        b=I97+D445jiK+c23TvQP8BHnDoubUipyFMKFpdVLs7hmNphnJq9Q/UXNhUQ9bHOJ3qC
+         r/gc3t/Gx9KxaGanDl/JNL1XLypRQhbInM9yrZ5nkzM6NzFVcKDwgqORAm64dv1okzCx
+         YPjjdWxnfn0M/BO2fUZDeTr82LYhJzSVZbvKB6gbvjomM7mWEDTdu1FMYvRDX3uovnZP
+         bFs2CBbQSBbxvttDpXWlM1564GeG75kEZ2EyG3tfSpklWQvYLvU+y1ghusGSQyF2mn2k
+         58Ybdi9aQ5u4yzfmCBftloWKaCCpgZzOTBl55uQ4kgCTdgwA3pyEzc6R1XNkwSV773rs
+         9cHg==
+X-Gm-Message-State: AO0yUKXm5lXxJJZq84fwLlXd4PxFpgms0Y1qprhkZr8LeWlXQlc0nliC
+        9/Jb6S+paUMxn/79dBKEq2OfLJHYQdSb3rfbkf2aXMh3yOcE
+X-Google-Smtp-Source: AK7set+mfsbnChKExhVMU5JwTUXJdUffgj3MzkjSGFSmdbTqAwHH5ibRwTuY/I/0xe0RTcrqAcy/xKgvNy+eTZ13UWsMdkUfXvJ8
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-From:   Elliot Berman <quic_eberman@quicinc.com>
-Subject: Re: [PATCH] firmware: qcom_scm: Use fixed width src vm bitmap
-To:     Bjorn Andersson <andersson@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Amol Maheshwari <amahesh@qti.qualcomm.com>,
-        Arnd Bergmann <arnd@arndb.de>, Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        "Gokul krishna Krishnakumar" <quic_gokukris@quicinc.com>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <ath10k@lists.infradead.org>, <linux-wireless@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-remoteproc@vger.kernel.org>
-References: <20230213181832.3489174-1-quic_eberman@quicinc.com>
- <20230213214417.mtcpeultvynyls6s@ripper> <Y+tNRPf0PGdShf5l@kroah.com>
- <20230214172325.lplxgbprhj3bzvr3@ripper>
- <bdda82f7-933d-443b-614a-6befad2899b5@quicinc.com>
-Content-Language: en-US
-In-Reply-To: <bdda82f7-933d-443b-614a-6befad2899b5@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: fFgsdjU-gZTIeIOv6LUxDDseAdoa3PuQ
-X-Proofpoint-GUID: fFgsdjU-gZTIeIOv6LUxDDseAdoa3PuQ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-03_05,2023-03-03_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 malwarescore=0
- spamscore=0 bulkscore=0 lowpriorityscore=0 impostorscore=0 phishscore=0
- mlxlogscore=999 clxscore=1011 priorityscore=1501 mlxscore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
- definitions=main-2303030177
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a02:94ab:0:b0:3c4:d4b2:f72 with SMTP id
+ x40-20020a0294ab000000b003c4d4b20f72mr1362791jah.3.1677878205481; Fri, 03 Mar
+ 2023 13:16:45 -0800 (PST)
+Date:   Fri, 03 Mar 2023 13:16:45 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000006a07d505f60576b3@google.com>
+Subject: [syzbot] [bluetooth?] WARNING in hci_send_acl
+From:   syzbot <syzbot+90c0638c7b912d27bfe7@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com, johan.hedberg@gmail.com,
+        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
+        marcel@holtmann.org, netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
+
+syzbot found the following issue on:
+
+HEAD commit:    2ebd1fbb946d Merge branch 'for-next/core' into for-kernelci
+git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-kernelci
+console output: https://syzkaller.appspot.com/x/log.txt?x=12aad518c80000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3519974f3f27816d
+dashboard link: https://syzkaller.appspot.com/bug?extid=90c0638c7b912d27bfe7
+compiler:       Debian clang version 15.0.7, GNU ld (GNU Binutils for Debian) 2.35.2
+userspace arch: arm64
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/16985cc7a274/disk-2ebd1fbb.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/fd3452567115/vmlinux-2ebd1fbb.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/c75510922212/Image-2ebd1fbb.gz.xz
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+90c0638c7b912d27bfe7@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 22417 at kernel/workqueue.c:1438 __queue_work+0x11e0/0x1484 kernel/workqueue.c:1438
+Modules linked in:
+CPU: 1 PID: 22417 Comm: syz-executor.0 Not tainted 6.2.0-syzkaller-18300-g2ebd1fbb946d #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/21/2023
+pstate: 804000c5 (Nzcv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+pc : __queue_work+0x11e0/0x1484 kernel/workqueue.c:1438
+lr : __queue_work+0x11e0/0x1484 kernel/workqueue.c:1438
+sp : ffff80002bf37250
+x29: ffff80002bf37290 x28: 0000000000000008 x27: 0000000000002000
+x26: ffff0000ce923800 x25: dfff800000000000 x24: ffff0000ce9239c0
+x23: 0000000000000000 x22: ffff00012c509b48 x21: 1fffe000258a1369
+x20: 00000000000b0012 x19: ffff00012df8cd10 x18: ffff80002bf372e0
+x17: ffff800015b8d000 x16: ffff80000804d18c x15: 0000000000000000
+x14: 1ffff00002b720af x13: dfff800000000000 x12: 0000000000000001
+x11: ff80800008220790 x10: 0000000000000000 x9 : ffff800008220790
+x8 : ffff00012c509b40 x7 : ffff8000105bcce8 x6 : 0000000000000000
+x5 : 0000000000000001 x4 : 0000000000000001 x3 : ffff80000821f4ec
+x2 : ffff00012df8cd10 x1 : 0000000000000000 x0 : 0000000000000000
+Call trace:
+ __queue_work+0x11e0/0x1484 kernel/workqueue.c:1438
+ queue_work_on+0x9c/0x128 kernel/workqueue.c:1545
+ queue_work include/linux/workqueue.h:503 [inline]
+ hci_send_acl+0x86c/0xb54 net/bluetooth/hci_core.c:3183
+ l2cap_do_send+0x238/0x350
+ l2cap_chan_send+0x36c/0x2044
+ l2cap_sock_sendmsg+0x184/0x2a8 net/bluetooth/l2cap_sock.c:1172
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg net/socket.c:734 [inline]
+ ____sys_sendmsg+0x558/0x844 net/socket.c:2479
+ ___sys_sendmsg net/socket.c:2533 [inline]
+ __sys_sendmmsg+0x318/0x7d8 net/socket.c:2619
+ __do_sys_sendmmsg net/socket.c:2648 [inline]
+ __se_sys_sendmmsg net/socket.c:2645 [inline]
+ __arm64_sys_sendmmsg+0xa0/0xbc net/socket.c:2645
+ __invoke_syscall arch/arm64/kernel/syscall.c:38 [inline]
+ invoke_syscall+0x98/0x2c0 arch/arm64/kernel/syscall.c:52
+ el0_svc_common+0x138/0x258 arch/arm64/kernel/syscall.c:142
+ do_el0_svc+0x64/0x198 arch/arm64/kernel/syscall.c:193
+ el0_svc+0x58/0x168 arch/arm64/kernel/entry-common.c:637
+ el0t_64_sync_handler+0x84/0xf0 arch/arm64/kernel/entry-common.c:655
+ el0t_64_sync+0x190/0x194 arch/arm64/kernel/entry.S:591
+irq event stamp: 524
+hardirqs last  enabled at (523): [<ffff80001243d19c>] __raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:151 [inline]
+hardirqs last  enabled at (523): [<ffff80001243d19c>] _raw_spin_unlock_irqrestore+0x44/0xa4 kernel/locking/spinlock.c:194
+hardirqs last disabled at (524): [<ffff80000821f4d8>] queue_work_on+0x50/0x128 kernel/workqueue.c:1542
+softirqs last  enabled at (514): [<ffff80001058d02c>] spin_unlock_bh include/linux/spinlock.h:395 [inline]
+softirqs last  enabled at (514): [<ffff80001058d02c>] release_sock+0x178/0x1cc net/core/sock.c:3497
+softirqs last disabled at (512): [<ffff80001058cef0>] spin_lock_bh include/linux/spinlock.h:355 [inline]
+softirqs last disabled at (512): [<ffff80001058cef0>] release_sock+0x3c/0x1cc net/core/sock.c:3484
+---[ end trace 0000000000000000 ]---
 
 
-On 2/14/2023 10:52 AM, Elliot Berman wrote:
-> 
-> 
-> On 2/14/2023 9:23 AM, Bjorn Andersson wrote:
->> On Tue, Feb 14, 2023 at 09:58:44AM +0100, Greg Kroah-Hartman wrote:
->>> On Mon, Feb 13, 2023 at 01:44:17PM -0800, Bjorn Andersson wrote:
->>>> On Mon, Feb 13, 2023 at 10:18:29AM -0800, Elliot Berman wrote:
->>>>> The maximum VMID for assign_mem is 63. Use a u64 to represent this
->>>>> bitmap instead of architecture-dependent "unsigned int" which 
->>>>> varies in
->>>>> size on 32-bit and 64-bit platforms.
->>>>>
->>>>> Acked-by: Kalle Valo <kvalo@kernel.org> (ath10k)
->>>>> Tested-by: Gokul krishna Krishnakumar <quic_gokukris@quicinc.com>
->>>>> Signed-off-by: Elliot Berman <quic_eberman@quicinc.com>
->>>>
->>>> Reviewed-by: Bjorn Andersson <andersson@kernel.org>
->>>>
->>>> @Greg, would you mind taking this through your tree for v6.3, you
->>>> already have a related change in fastrpc.c in your tree...
->>>
->>> I tried, but it doesn't apply to my char-misc tree at all:
->>>
->>> checking file drivers/firmware/qcom_scm.c
->>> Hunk #1 succeeded at 898 (offset -7 lines).
->>> Hunk #2 succeeded at 915 (offset -7 lines).
->>> Hunk #3 succeeded at 930 (offset -7 lines).
->>> checking file drivers/misc/fastrpc.c
->>> checking file drivers/net/wireless/ath/ath10k/qmi.c
->>> checking file drivers/remoteproc/qcom_q6v5_mss.c
->>> Hunk #1 succeeded at 227 (offset -8 lines).
->>> Hunk #2 succeeded at 404 (offset -10 lines).
->>> Hunk #3 succeeded at 939 with fuzz 1 (offset -28 lines).
->>> checking file drivers/remoteproc/qcom_q6v5_pas.c
->>> Hunk #1 FAILED at 94.
->>> 1 out of 1 hunk FAILED
->>> checking file drivers/soc/qcom/rmtfs_mem.c
->>> Hunk #1 succeeded at 30 (offset -1 lines).
->>> can't find file to patch at input line 167
->>> Perhaps you used the wrong -p or --strip option?
->>> The text leading up to this was:
->>> --------------------------
->>> |diff --git a/include/linux/firmware/qcom/qcom_scm.h
->>> b/include/linux/firmware/qcom/qcom_scm.h
->>> |index 1e449a5d7f5c..250ea4efb7cb 100644
->>> |--- a/include/linux/firmware/qcom/qcom_scm.h
->>> |+++ b/include/linux/firmware/qcom/qcom_scm.h
->>> --------------------------
->>>
->>> What tree is this patch made against?
->>>
->>
->> Sorry about that, I missed the previous changes in qcom_q6v5_pas in the
->> remoteproc tree. Elliot said he based it on linux-next, so I expect that
->> it will merge fine on top of -rc1, once that arrives.
->>
-> 
-> Yes, this patch applies on next-20230213. I guess there are enough 
-> changes were coming from QCOM side (via Bjorn's qcom tree) as well as 
-> the fastrpc change (via Greg's char-misc tree).
-> 
-> Let me know if I should do anything once -rc1 arrives. Happy to post 
-> version on the -rc1 if it helps.
-> 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-The patch now applies on tip of Linus's tree and on char-misc.
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
