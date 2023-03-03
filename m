@@ -2,159 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC1956A9C2A
-	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 17:49:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED7DF6A9C35
+	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 17:51:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231300AbjCCQtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 11:49:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57846 "EHLO
+        id S231230AbjCCQu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 11:50:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231357AbjCCQtE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 11:49:04 -0500
-Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A8A476A1
-        for <netdev@vger.kernel.org>; Fri,  3 Mar 2023 08:48:41 -0800 (PST)
-Received: from [192.168.0.2] (ip5f5ae973.dynamic.kabel-deutschland.de [95.90.233.115])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        with ESMTP id S230304AbjCCQu5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 11:50:57 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BAF99ECC;
+        Fri,  3 Mar 2023 08:50:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id BEC3861CC457B;
-        Fri,  3 Mar 2023 17:48:38 +0100 (CET)
-Message-ID: <bd0a8066-9360-7440-9705-68118eb5e0ff@molgen.mpg.de>
-Date:   Fri, 3 Mar 2023 17:48:37 +0100
+        by ams.source.kernel.org (Postfix) with ESMTPS id B89A3B817F6;
+        Fri,  3 Mar 2023 16:50:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 74D0BC4339B;
+        Fri,  3 Mar 2023 16:50:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1677862220;
+        bh=8xWNjy4woa7jnd3rYthsoAMiOcOr7pkQtBdjCC1LPMA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=EFiDguaCoYDwA/dtVXiSEiwjXdGkTnOHL/q0Hq7KaI8daknInLIZXkcqcQSVya4Tf
+         q9RMUsFnbH7BVGfELzbwV/t0p3b4SwCiL8DSfUWQFByh4AgWKQ8kxYUmRFBC/aHPTy
+         5EaHvAbvvR+Wsvxi3ILEq7c0rWP6n6M+47h8oJ6U44iJYU5v6eVcvxgHQZdR2uN+3C
+         +oiiLBJuoV/v9fCIbvS0IR5WdS96VFO9yTSxErh5kDfuMheHH6+uuVkAcYiiN4oGUI
+         foNqhgXIBuM+VsOW4H1H8M+tL1oWYvZsydlfqvkXAIDagB1nf63CyJU0wnidzpgfc+
+         L7qwGWNk+7Vew==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 574EBE68D5C;
+        Fri,  3 Mar 2023 16:50:20 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [Intel-wired-lan] [PATCH v1] netdevice: use ifmap isteand of
- plain fields
-Content-Language: en-US
-To:     Vincenzo Palazzo <vincenzopalazzodev@gmail.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        davem@davemloft.net, jesse.brandeburg@intel.com
-References: <20230303150818.132386-1-vincenzopalazzodev@gmail.com>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <20230303150818.132386-1-vincenzopalazzodev@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v5 bpf-next 0/6] bpf: Introduce kptr RCU.
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167786222035.26859.4386915483809485037.git-patchwork-notify@kernel.org>
+Date:   Fri, 03 Mar 2023 16:50:20 +0000
+References: <20230303041446.3630-1-alexei.starovoitov@gmail.com>
+In-Reply-To: <20230303041446.3630-1-alexei.starovoitov@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     davem@davemloft.net, daniel@iogearbox.net, andrii@kernel.org,
+        martin.lau@kernel.org, void@manifault.com, davemarchevsky@meta.com,
+        tj@kernel.org, memxor@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-team@fb.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Vincenzo,
+Hello:
 
+This series was applied to bpf/bpf-next.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
 
-Thank you for your patch. There is a small typo in the commit message 
-summary in *instead*.
-
-Am 03.03.23 um 16:08 schrieb Vincenzo Palazzo:
-> clean the code by using the ifmap instead of plain fields,
-> and avoid code duplication.
+On Thu,  2 Mar 2023 20:14:40 -0800 you wrote:
+> From: Alexei Starovoitov <ast@kernel.org>
 > 
-> P.S: I'm giving credit to the author of the FIXME commit.
-
-No idea, what you mean exactly, but you can do that by adding From: in 
-the first line of the commit message body.
-
-
-Kind regards,
-
-Paul
-
-
-> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-> Signed-off-by: Vincenzo Palazzo <vincenzopalazzodev@gmail.com>
-> ---
->   drivers/net/ethernet/intel/e1000e/netdev.c |  4 ++--
->   include/linux/netdevice.h                  |  8 +-------
->   net/core/dev_ioctl.c                       | 12 ++++++------
->   net/core/rtnetlink.c                       |  6 +++---
->   4 files changed, 12 insertions(+), 18 deletions(-)
+> v4->v5:
+> fix typos, add acks.
 > 
-> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-> index e1eb1de88bf9..059ff8bcdbbc 100644
-> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
-> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-> @@ -7476,8 +7476,8 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->   	netif_napi_add(netdev, &adapter->napi, e1000e_poll);
->   	strscpy(netdev->name, pci_name(pdev), sizeof(netdev->name));
->   
-> -	netdev->mem_start = mmio_start;
-> -	netdev->mem_end = mmio_start + mmio_len;
-> +	netdev->dev_mapping.mem_start = mmio_start;
-> +	netdev->dev_mapping.mem_end = mmio_start + mmio_len;
->   
->   	adapter->bd_number = cards_found++;
->   
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index 6a14b7b11766..c5987e90a078 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -2031,13 +2031,7 @@ struct net_device {
->   	char			name[IFNAMSIZ];
->   	struct netdev_name_node	*name_node;
->   	struct dev_ifalias	__rcu *ifalias;
-> -	/*
-> -	 *	I/O specific fields
-> -	 *	FIXME: Merge these and struct ifmap into one
-> -	 */
-> -	unsigned long		mem_end;
-> -	unsigned long		mem_start;
-> -	unsigned long		base_addr;
-> +	struct ifmap dev_mapping;
->   
->   	/*
->   	 *	Some hardware also needs these fields (state,dev_list,
-> diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
-> index 5cdbfbf9a7dc..89469cb97e35 100644
-> --- a/net/core/dev_ioctl.c
-> +++ b/net/core/dev_ioctl.c
-> @@ -88,9 +88,9 @@ static int dev_getifmap(struct net_device *dev, struct ifreq *ifr)
->   	if (in_compat_syscall()) {
->   		struct compat_ifmap *cifmap = (struct compat_ifmap *)ifmap;
->   
-> -		cifmap->mem_start = dev->mem_start;
-> -		cifmap->mem_end   = dev->mem_end;
-> -		cifmap->base_addr = dev->base_addr;
-> +		cifmap->mem_start = dev->dev_mapping.mem_start;
-> +		cifmap->mem_end   = dev->dev_mapping.mem_end;
-> +		cifmap->base_addr = dev->dev_mapping.base_addr;
->   		cifmap->irq       = dev->irq;
->   		cifmap->dma       = dev->dma;
->   		cifmap->port      = dev->if_port;
-> @@ -98,9 +98,9 @@ static int dev_getifmap(struct net_device *dev, struct ifreq *ifr)
->   		return 0;
->   	}
->   
-> -	ifmap->mem_start  = dev->mem_start;
-> -	ifmap->mem_end    = dev->mem_end;
-> -	ifmap->base_addr  = dev->base_addr;
-> +	ifmap->mem_start  = dev->dev_mapping.mem_start;
-> +	ifmap->mem_end    = dev->dev_mapping.mem_end;
-> +	ifmap->base_addr  = dev->dev_mapping.base_addr;
->   	ifmap->irq        = dev->irq;
->   	ifmap->dma        = dev->dma;
->   	ifmap->port       = dev->if_port;
-> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-> index 5d8eb57867a9..ff8fc1bbda31 100644
-> --- a/net/core/rtnetlink.c
-> +++ b/net/core/rtnetlink.c
-> @@ -1445,9 +1445,9 @@ static int rtnl_fill_link_ifmap(struct sk_buff *skb, struct net_device *dev)
->   	struct rtnl_link_ifmap map;
->   
->   	memset(&map, 0, sizeof(map));
-> -	map.mem_start   = dev->mem_start;
-> -	map.mem_end     = dev->mem_end;
-> -	map.base_addr   = dev->base_addr;
-> +	map.mem_start   = dev->dev_mapping.mem_start;
-> +	map.mem_end     = dev->dev_mapping.mem_end;
-> +	map.base_addr   = dev->dev_mapping.base_addr;
->   	map.irq         = dev->irq;
->   	map.dma         = dev->dma;
->   	map.port        = dev->if_port;
+> v3->v4:
+> - patch 3 got much cleaner after BPF_KPTR_RCU was removed as suggested by David.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v5,bpf-next,1/6] bpf: Rename __kptr_ref -> __kptr and __kptr -> __kptr_untrusted.
+    https://git.kernel.org/bpf/bpf-next/c/03b77e17aeb2
+  - [v5,bpf-next,2/6] bpf: Mark cgroups and dfl_cgrp fields as trusted.
+    https://git.kernel.org/bpf/bpf-next/c/8d093b4e95a2
+  - [v5,bpf-next,3/6] bpf: Introduce kptr_rcu.
+    https://git.kernel.org/bpf/bpf-next/c/20c09d92faee
+  - [v5,bpf-next,4/6] selftests/bpf: Add a test case for kptr_rcu.
+    https://git.kernel.org/bpf/bpf-next/c/838bd4ac9aa3
+  - [v5,bpf-next,5/6] selftests/bpf: Tweak cgroup kfunc test.
+    https://git.kernel.org/bpf/bpf-next/c/0047d8343f60
+  - [v5,bpf-next,6/6] bpf: Refactor RCU enforcement in the verifier.
+    https://git.kernel.org/bpf/bpf-next/c/6fcd486b3a0a
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
