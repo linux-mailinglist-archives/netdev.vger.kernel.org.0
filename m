@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD4756AA609
-	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 01:03:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFD3E6AA604
+	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 01:03:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229861AbjCDAD3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 19:03:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38876 "EHLO
+        id S229679AbjCDAD2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 19:03:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbjCDAD1 (ORCPT
+        with ESMTP id S229538AbjCDAD1 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 19:03:27 -0500
 Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6B95EC71;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B655FEB50;
         Fri,  3 Mar 2023 16:03:24 -0800 (PST)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id C4DB85FD19;
-        Sat,  4 Mar 2023 01:04:24 +0300 (MSK)
+        by mx.sberdevices.ru (Postfix) with ESMTP id 64FE45FD2E;
+        Sat,  4 Mar 2023 01:05:19 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1677881064;
-        bh=Icgy8iDTd8OsLA0qcC7gyzpquMde/dsgpaxAtiinzyo=;
+        s=mail; t=1677881119;
+        bh=e3N0YJ0uSXUIygh8I5oRxE8zPq5uyuoYZQhh7v2tXp4=;
         h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type;
-        b=bBOOyNLjfdEd0XdCMzLE+adQMP36CslJqEklfr63E9CrBCwE6EPFLDpSGUbxhL+uE
-         9+PiLk1FV2GDtqjPqDFZhIg9QtlwRlt5ffO5bDFsFU4HM8OlZNEtc/J84NUP7l+Pc4
-         SpnxpNF9BMGvHtU0nMzUNVS7IhmokX9C192mwi5QnMRRtVn9V28NNMDo/WntG8EZSn
-         5vFsK6X30TEm+YiDW1Glcdu5N2Rmxg4eKiaiFr0At5F0G1M+khWOoKcVGq6uAJTq40
-         9UPgdHM50t3WUIWQhZpBxdypTIfTymbanNevw8AHi1nlqx5eFE8f+VEBuIicdNQYyr
-         diI7J7Ow17ieA==
+        b=bEKaIMcFKwNSwUf9ShSc9fH+vHOfHn84oXfVs+JOqa0cEqfp4DbzYMC15A03tDHh7
+         3v8S32KaH1beaxPMyp9BAsCkFOIDPQE3uYbdSi1f91YijkE0i12Sb4P9g/0juaDv7p
+         t+PPLZFt25ogbsBqHiFLgSXQxtnWJyQMWGEr+zGDMnNV0XRoOatBiaFk5NdmwD6Zc+
+         ZofIZ1tbuPzNdzvdiyYZrj4fsAx+DBzK+696tpxVcqEwjuqL7JZtmtlJya0RUUOKY8
+         xnr2wdKaseE7+hMynk9xbG8GfX//9I9aFR0SjPKXfDZOEZMjTk7Y6MhRKdrJJFB4n5
+         4LTocHToMBjEw==
 Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
         by mx.sberdevices.ru (Postfix) with ESMTP;
-        Sat,  4 Mar 2023 01:04:24 +0300 (MSK)
-Message-ID: <0ec95196-7445-b183-022d-fd3e1e1a7529@sberdevices.ru>
-Date:   Sat, 4 Mar 2023 01:01:34 +0300
+        Sat,  4 Mar 2023 01:05:19 +0300 (MSK)
+Message-ID: <b6fe000f-5638-28d0-525f-ce38cc2cb036@sberdevices.ru>
+Date:   Sat, 4 Mar 2023 01:02:29 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
@@ -49,11 +49,11 @@ CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <kernel@sberdevices.ru>, <oxffffaa@gmail.com>,
         <avkrasnov@sberdevices.ru>
 From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
-Subject: [RFC PATCH v1 2/3] virtio/vsock: fix 'rx_bytes'/'fwd_cnt' calculation
+Subject: [RFC PATCH v1 3/3] virtio/vsock: remove all data from sk_buff
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [172.16.1.6]
-X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
+X-ClientProxiedBy: S-MS-EXCH02.sberdevices.ru (172.16.1.5) To
  S-MS-EXCH01.sberdevices.ru (172.16.1.4)
 X-KSMG-Rule-ID: 4
 X-KSMG-Message-Action: clean
@@ -71,10 +71,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Substraction of 'skb->len' is redundant here: 'skb_headroom()' is delta
-between 'data' and 'head' pointers, e.g. it is number of bytes returned
-to user (of course accounting size of header). 'skb->len' is number of
-bytes rest in buffer.
+In case of SOCK_SEQPACKET all sk_buffs are used once - after read some
+data from it, it will be removed, so user will never read rest of the
+data. Thus we need to update credit parameters of the socket like whole
+sk_buff is read - so call 'skb_pull()' for the whole buffer.
 
 Fixes: 71dc9ec9ac7d ("virtio/vsock: replace virtio_vsock_pkt with sk_buff")
 Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
@@ -83,17 +83,17 @@ Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index 77bb1cad8471..d80075e1db42 100644
+index d80075e1db42..bbcf331b6ad6 100644
 --- a/net/vmw_vsock/virtio_transport_common.c
 +++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -255,7 +255,7 @@ static void virtio_transport_dec_rx_pkt(struct virtio_vsock_sock *vvs,
- {
- 	int len;
+@@ -470,7 +470,7 @@ static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
+ 					dequeued_len = err;
+ 				} else {
+ 					user_buf_len -= bytes_to_copy;
+-					skb_pull(skb, bytes_to_copy);
++					skb_pull(skb, skb->len);
+ 				}
  
--	len = skb_headroom(skb) - sizeof(struct virtio_vsock_hdr) - skb->len;
-+	len = skb_headroom(skb) - sizeof(struct virtio_vsock_hdr);
- 
- 	if (len < 0)
- 		pr_emerg("Negative len %i\n", len);
+ 				spin_lock_bh(&vvs->rx_lock);
 -- 
 2.25.1
