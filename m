@@ -2,77 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F15BF6A9C08
-	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 17:46:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC1956A9C2A
+	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 17:49:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230511AbjCCQq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 11:46:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54580 "EHLO
+        id S231300AbjCCQtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 11:49:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230383AbjCCQq2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 11:46:28 -0500
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B8E75CC32;
-        Fri,  3 Mar 2023 08:45:55 -0800 (PST)
-Received: (Authenticated sender: kory.maincent@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id A01BDFF809;
-        Fri,  3 Mar 2023 16:45:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1677861908;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Fk/rzQMf5+dVvCZ+KR9/MtNF55SHNmrM2/qr5Tb85/c=;
-        b=UJtDyjQZ9XqjZV7+8twZoQcleitOjjIB1CENZAh+q8QUu1nL/kJIXtE5DFJ3M7UuWKIwU7
-        ev3QMUS7SAAQ9tWtiPctj5d0wd2wni2Pf0uBxQLQfEPgFpP3J5G4VUj6/LKEQ3NXPZ4sG+
-        pMJAKZoe883nQfxCkgeFmSDBl8wDToTxl71Uj0NDjGXmAfBdRRUSvfZsrlyzHtR3zFfTXX
-        ichaS252M4Cp5qy5wzpUthhqZ6YkDcrFyHOK9TILazcof41Bn0Bq6BBrqvFMKt5nIgjtFx
-        kumoR6O1nNQUmNGNxPdXhJ+grKM9w9EI/sxmn/6QNBypGt6xlkC4t9R9xOUAnQ==
-Date:   Fri, 3 Mar 2023 17:45:02 +0100
-From:   =?UTF-8?B?S8O2cnk=?= Maincent <kory.maincent@bootlin.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-omap@vger.kernel.org
-Cc:     Michael Walle <michael@walle.cc>, thomas.petazzoni@bootlin.com,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Jie Wang <wangjie125@huawei.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Sven Eckelmann <sven@narfation.org>,
-        Wang Yufen <wangyufen@huawei.com>,
-        Alexandru Tachici <alexandru.tachici@analog.com>
-Subject: Re: [PATCH v2 0/4] Up until now, there was no way to let the user
- select the layer at which time stamping occurs.  The stack assumed that PHY
- time stamping is always preferred, but some MAC/PHY combinations were
- buggy.
-Message-ID: <20230303174502.1317e444@kmaincent-XPS-13-7390>
-In-Reply-To: <20230303164248.499286-1-kory.maincent@bootlin.com>
-References: <20230303164248.499286-1-kory.maincent@bootlin.com>
-Organization: bootlin
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        with ESMTP id S231357AbjCCQtE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 11:49:04 -0500
+Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A8A476A1
+        for <netdev@vger.kernel.org>; Fri,  3 Mar 2023 08:48:41 -0800 (PST)
+Received: from [192.168.0.2] (ip5f5ae973.dynamic.kabel-deutschland.de [95.90.233.115])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id BEC3861CC457B;
+        Fri,  3 Mar 2023 17:48:38 +0100 (CET)
+Message-ID: <bd0a8066-9360-7440-9705-68118eb5e0ff@molgen.mpg.de>
+Date:   Fri, 3 Mar 2023 17:48:37 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [Intel-wired-lan] [PATCH v1] netdevice: use ifmap isteand of
+ plain fields
+Content-Language: en-US
+To:     Vincenzo Palazzo <vincenzopalazzodev@gmail.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        davem@davemloft.net, jesse.brandeburg@intel.com
+References: <20230303150818.132386-1-vincenzopalazzodev@gmail.com>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <20230303150818.132386-1-vincenzopalazzodev@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,11 +47,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  3 Mar 2023 17:42:37 +0100
-K=C3=B6ry Maincent <kory.maincent@bootlin.com> wrote:
-
-Oops, sorry some bug in my cover letter subject.
+Dear Vincenzo,
 
 
-Regards,
-K=C3=B6ry
+Thank you for your patch. There is a small typo in the commit message 
+summary in *instead*.
+
+Am 03.03.23 um 16:08 schrieb Vincenzo Palazzo:
+> clean the code by using the ifmap instead of plain fields,
+> and avoid code duplication.
+> 
+> P.S: I'm giving credit to the author of the FIXME commit.
+
+No idea, what you mean exactly, but you can do that by adding From: in 
+the first line of the commit message body.
+
+
+Kind regards,
+
+Paul
+
+
+> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+> Signed-off-by: Vincenzo Palazzo <vincenzopalazzodev@gmail.com>
+> ---
+>   drivers/net/ethernet/intel/e1000e/netdev.c |  4 ++--
+>   include/linux/netdevice.h                  |  8 +-------
+>   net/core/dev_ioctl.c                       | 12 ++++++------
+>   net/core/rtnetlink.c                       |  6 +++---
+>   4 files changed, 12 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+> index e1eb1de88bf9..059ff8bcdbbc 100644
+> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
+> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+> @@ -7476,8 +7476,8 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>   	netif_napi_add(netdev, &adapter->napi, e1000e_poll);
+>   	strscpy(netdev->name, pci_name(pdev), sizeof(netdev->name));
+>   
+> -	netdev->mem_start = mmio_start;
+> -	netdev->mem_end = mmio_start + mmio_len;
+> +	netdev->dev_mapping.mem_start = mmio_start;
+> +	netdev->dev_mapping.mem_end = mmio_start + mmio_len;
+>   
+>   	adapter->bd_number = cards_found++;
+>   
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 6a14b7b11766..c5987e90a078 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -2031,13 +2031,7 @@ struct net_device {
+>   	char			name[IFNAMSIZ];
+>   	struct netdev_name_node	*name_node;
+>   	struct dev_ifalias	__rcu *ifalias;
+> -	/*
+> -	 *	I/O specific fields
+> -	 *	FIXME: Merge these and struct ifmap into one
+> -	 */
+> -	unsigned long		mem_end;
+> -	unsigned long		mem_start;
+> -	unsigned long		base_addr;
+> +	struct ifmap dev_mapping;
+>   
+>   	/*
+>   	 *	Some hardware also needs these fields (state,dev_list,
+> diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
+> index 5cdbfbf9a7dc..89469cb97e35 100644
+> --- a/net/core/dev_ioctl.c
+> +++ b/net/core/dev_ioctl.c
+> @@ -88,9 +88,9 @@ static int dev_getifmap(struct net_device *dev, struct ifreq *ifr)
+>   	if (in_compat_syscall()) {
+>   		struct compat_ifmap *cifmap = (struct compat_ifmap *)ifmap;
+>   
+> -		cifmap->mem_start = dev->mem_start;
+> -		cifmap->mem_end   = dev->mem_end;
+> -		cifmap->base_addr = dev->base_addr;
+> +		cifmap->mem_start = dev->dev_mapping.mem_start;
+> +		cifmap->mem_end   = dev->dev_mapping.mem_end;
+> +		cifmap->base_addr = dev->dev_mapping.base_addr;
+>   		cifmap->irq       = dev->irq;
+>   		cifmap->dma       = dev->dma;
+>   		cifmap->port      = dev->if_port;
+> @@ -98,9 +98,9 @@ static int dev_getifmap(struct net_device *dev, struct ifreq *ifr)
+>   		return 0;
+>   	}
+>   
+> -	ifmap->mem_start  = dev->mem_start;
+> -	ifmap->mem_end    = dev->mem_end;
+> -	ifmap->base_addr  = dev->base_addr;
+> +	ifmap->mem_start  = dev->dev_mapping.mem_start;
+> +	ifmap->mem_end    = dev->dev_mapping.mem_end;
+> +	ifmap->base_addr  = dev->dev_mapping.base_addr;
+>   	ifmap->irq        = dev->irq;
+>   	ifmap->dma        = dev->dma;
+>   	ifmap->port       = dev->if_port;
+> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+> index 5d8eb57867a9..ff8fc1bbda31 100644
+> --- a/net/core/rtnetlink.c
+> +++ b/net/core/rtnetlink.c
+> @@ -1445,9 +1445,9 @@ static int rtnl_fill_link_ifmap(struct sk_buff *skb, struct net_device *dev)
+>   	struct rtnl_link_ifmap map;
+>   
+>   	memset(&map, 0, sizeof(map));
+> -	map.mem_start   = dev->mem_start;
+> -	map.mem_end     = dev->mem_end;
+> -	map.base_addr   = dev->base_addr;
+> +	map.mem_start   = dev->dev_mapping.mem_start;
+> +	map.mem_end     = dev->dev_mapping.mem_end;
+> +	map.base_addr   = dev->dev_mapping.base_addr;
+>   	map.irq         = dev->irq;
+>   	map.dma         = dev->dma;
+>   	map.port        = dev->if_port;
