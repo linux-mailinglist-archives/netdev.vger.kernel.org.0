@@ -2,139 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 927D46AA0EB
-	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 22:16:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3D3E6AA139
+	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 22:31:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231591AbjCCVQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 16:16:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57054 "EHLO
+        id S231764AbjCCVbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 16:31:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231216AbjCCVQr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 16:16:47 -0500
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1937F61507
-        for <netdev@vger.kernel.org>; Fri,  3 Mar 2023 13:16:46 -0800 (PST)
-Received: by mail-il1-f199.google.com with SMTP id i8-20020a056e02054800b00318a7211804so2003235ils.5
-        for <netdev@vger.kernel.org>; Fri, 03 Mar 2023 13:16:46 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=iZMq3I524LZ3LyFG/4UrcrlRiCRLs/dbIEgvULqsulE=;
-        b=I97+D445jiK+c23TvQP8BHnDoubUipyFMKFpdVLs7hmNphnJq9Q/UXNhUQ9bHOJ3qC
-         r/gc3t/Gx9KxaGanDl/JNL1XLypRQhbInM9yrZ5nkzM6NzFVcKDwgqORAm64dv1okzCx
-         YPjjdWxnfn0M/BO2fUZDeTr82LYhJzSVZbvKB6gbvjomM7mWEDTdu1FMYvRDX3uovnZP
-         bFs2CBbQSBbxvttDpXWlM1564GeG75kEZ2EyG3tfSpklWQvYLvU+y1ghusGSQyF2mn2k
-         58Ybdi9aQ5u4yzfmCBftloWKaCCpgZzOTBl55uQ4kgCTdgwA3pyEzc6R1XNkwSV773rs
-         9cHg==
-X-Gm-Message-State: AO0yUKXm5lXxJJZq84fwLlXd4PxFpgms0Y1qprhkZr8LeWlXQlc0nliC
-        9/Jb6S+paUMxn/79dBKEq2OfLJHYQdSb3rfbkf2aXMh3yOcE
-X-Google-Smtp-Source: AK7set+mfsbnChKExhVMU5JwTUXJdUffgj3MzkjSGFSmdbTqAwHH5ibRwTuY/I/0xe0RTcrqAcy/xKgvNy+eTZ13UWsMdkUfXvJ8
+        with ESMTP id S231408AbjCCVbv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 16:31:51 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C01518A8E;
+        Fri,  3 Mar 2023 13:31:48 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id AE496CE225F;
+        Fri,  3 Mar 2023 21:31:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5469BC433D2;
+        Fri,  3 Mar 2023 21:31:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1677879104;
+        bh=e50m2NHbLD9NoP+yfVDDhz9HJIZgAzAYVpSchQdi13c=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cefp0NCs+xrovA6txVpCeNXZ1IJ7dYjcbAd5Rv6OaQmbZOnJmTi1iKlsV0PnyicIb
+         UTwWVUQetLx8ItofwDd+r4O0XyyXuLXHzCVuVT8AGBq+5Rt1NkLeZTU+isgGbLT6CN
+         9/9Wps/TBamz33eXa3iuT7uvDP5Kj8DjYx9yb+yy2Ivk28OFaTde5b3gxE8wuvGdba
+         6XV1wO3/zVaISk0XPDWAmpInjFCWmNbyUX298JWShZnfdIpr2CShgYl3Y1f9YmtsVP
+         rN8aNYPaKHs7/WfiiJEGOxL33EPNRkUu1TblE0QnjR5XI1wP7wtjfVAFwks8+bCIwW
+         nRcTUg2nmzr2g==
+Date:   Fri, 3 Mar 2023 13:31:43 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     peterz@infradead.org, jstultz@google.com, edumazet@google.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Subject: Re: [PATCH 2/3] softirq: avoid spurious stalls due to
+ need_resched()
+Message-ID: <20230303133143.7b35433f@kernel.org>
+In-Reply-To: <87r0u6j721.ffs@tglx>
+References: <20221222221244.1290833-1-kuba@kernel.org>
+        <20221222221244.1290833-3-kuba@kernel.org>
+        <87r0u6j721.ffs@tglx>
 MIME-Version: 1.0
-X-Received: by 2002:a02:94ab:0:b0:3c4:d4b2:f72 with SMTP id
- x40-20020a0294ab000000b003c4d4b20f72mr1362791jah.3.1677878205481; Fri, 03 Mar
- 2023 13:16:45 -0800 (PST)
-Date:   Fri, 03 Mar 2023 13:16:45 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000006a07d505f60576b3@google.com>
-Subject: [syzbot] [bluetooth?] WARNING in hci_send_acl
-From:   syzbot <syzbot+90c0638c7b912d27bfe7@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, johan.hedberg@gmail.com,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
-        marcel@holtmann.org, netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Fri, 03 Mar 2023 14:30:46 +0100 Thomas Gleixner wrote:
+> > -		if (time_before(jiffies, end) && !need_resched() &&
+> > -		    --max_restart)
+> > +		unsigned long limit;
+> > +
+> > +		if (time_is_before_eq_jiffies(end) || !--max_restart)
+> > +			limit = SOFTIRQ_OVERLOAD_TIME;
+> > +		else if (need_resched())
+> > +			limit = SOFTIRQ_DEFER_TIME;
+> > +		else
+> >  			goto restart;
+> >  
+> > +		__this_cpu_write(overload_limit, jiffies + limit);  
+> 
+> The logic of all this is non-obvious and I had to reread it 5 times to
+> conclude that it is matching the intent. Please add comments.
+> 
+> While I'm not a big fan of heuristical duct tape, this looks harmless
+> enough to not end up in an endless stream of tweaking. Famous last
+> words...
 
-syzbot found the following issue on:
+Would it all be more readable if I named the "overload_limit"
+"overloaded_until" instead? Naming..
+I'll add comments, too.
 
-HEAD commit:    2ebd1fbb946d Merge branch 'for-next/core' into for-kernelci
-git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-kernelci
-console output: https://syzkaller.appspot.com/x/log.txt?x=12aad518c80000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3519974f3f27816d
-dashboard link: https://syzkaller.appspot.com/bug?extid=90c0638c7b912d27bfe7
-compiler:       Debian clang version 15.0.7, GNU ld (GNU Binutils for Debian) 2.35.2
-userspace arch: arm64
+> But without the sched_clock() changes the actual defer time depends on
+> HZ and the point in time where limit is set. That means it ranges from 0
+> to 1/HZ, i.e. the 2ms defer time ends up with close to 10ms on HZ=100 in
+> the worst case, which perhaps explains the 8ms+ stalls you are still
+> observing. Can you test with that sched_clock change applied, i.e. the
+> first two commits from
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git core/softirq
+> 
+> 59be25c466d9 ("softirq: Use sched_clock() based timeout")
+> bd5a5bd77009 ("softirq: Rewrite softirq processing loop")
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Those will help, but I spent some time digging into the jiffies related
+warts with kprobes - while annoying they weren't a major source of wake
+ups. (FWIW the jiffies noise on our workloads is due to cgroup stats
+disabling IRQs for multiple ms on the timekeeping CPU).
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/16985cc7a274/disk-2ebd1fbb.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/fd3452567115/vmlinux-2ebd1fbb.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/c75510922212/Image-2ebd1fbb.gz.xz
+Here are fresh stats on why we wake up ksoftirqd on our Web workload
+(collected over 100 sec):
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+90c0638c7b912d27bfe7@syzkaller.appspotmail.com
+Time exceeded:      484
+Loop max run out:  6525
+need_resched():   10219
+(control: 17226 - number of times wakeup_process called for ksirqd)
 
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 22417 at kernel/workqueue.c:1438 __queue_work+0x11e0/0x1484 kernel/workqueue.c:1438
-Modules linked in:
-CPU: 1 PID: 22417 Comm: syz-executor.0 Not tainted 6.2.0-syzkaller-18300-g2ebd1fbb946d #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/21/2023
-pstate: 804000c5 (Nzcv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-pc : __queue_work+0x11e0/0x1484 kernel/workqueue.c:1438
-lr : __queue_work+0x11e0/0x1484 kernel/workqueue.c:1438
-sp : ffff80002bf37250
-x29: ffff80002bf37290 x28: 0000000000000008 x27: 0000000000002000
-x26: ffff0000ce923800 x25: dfff800000000000 x24: ffff0000ce9239c0
-x23: 0000000000000000 x22: ffff00012c509b48 x21: 1fffe000258a1369
-x20: 00000000000b0012 x19: ffff00012df8cd10 x18: ffff80002bf372e0
-x17: ffff800015b8d000 x16: ffff80000804d18c x15: 0000000000000000
-x14: 1ffff00002b720af x13: dfff800000000000 x12: 0000000000000001
-x11: ff80800008220790 x10: 0000000000000000 x9 : ffff800008220790
-x8 : ffff00012c509b40 x7 : ffff8000105bcce8 x6 : 0000000000000000
-x5 : 0000000000000001 x4 : 0000000000000001 x3 : ffff80000821f4ec
-x2 : ffff00012df8cd10 x1 : 0000000000000000 x0 : 0000000000000000
-Call trace:
- __queue_work+0x11e0/0x1484 kernel/workqueue.c:1438
- queue_work_on+0x9c/0x128 kernel/workqueue.c:1545
- queue_work include/linux/workqueue.h:503 [inline]
- hci_send_acl+0x86c/0xb54 net/bluetooth/hci_core.c:3183
- l2cap_do_send+0x238/0x350
- l2cap_chan_send+0x36c/0x2044
- l2cap_sock_sendmsg+0x184/0x2a8 net/bluetooth/l2cap_sock.c:1172
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg net/socket.c:734 [inline]
- ____sys_sendmsg+0x558/0x844 net/socket.c:2479
- ___sys_sendmsg net/socket.c:2533 [inline]
- __sys_sendmmsg+0x318/0x7d8 net/socket.c:2619
- __do_sys_sendmmsg net/socket.c:2648 [inline]
- __se_sys_sendmmsg net/socket.c:2645 [inline]
- __arm64_sys_sendmmsg+0xa0/0xbc net/socket.c:2645
- __invoke_syscall arch/arm64/kernel/syscall.c:38 [inline]
- invoke_syscall+0x98/0x2c0 arch/arm64/kernel/syscall.c:52
- el0_svc_common+0x138/0x258 arch/arm64/kernel/syscall.c:142
- do_el0_svc+0x64/0x198 arch/arm64/kernel/syscall.c:193
- el0_svc+0x58/0x168 arch/arm64/kernel/entry-common.c:637
- el0t_64_sync_handler+0x84/0xf0 arch/arm64/kernel/entry-common.c:655
- el0t_64_sync+0x190/0x194 arch/arm64/kernel/entry.S:591
-irq event stamp: 524
-hardirqs last  enabled at (523): [<ffff80001243d19c>] __raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:151 [inline]
-hardirqs last  enabled at (523): [<ffff80001243d19c>] _raw_spin_unlock_irqrestore+0x44/0xa4 kernel/locking/spinlock.c:194
-hardirqs last disabled at (524): [<ffff80000821f4d8>] queue_work_on+0x50/0x128 kernel/workqueue.c:1542
-softirqs last  enabled at (514): [<ffff80001058d02c>] spin_unlock_bh include/linux/spinlock.h:395 [inline]
-softirqs last  enabled at (514): [<ffff80001058d02c>] release_sock+0x178/0x1cc net/core/sock.c:3497
-softirqs last disabled at (512): [<ffff80001058cef0>] spin_lock_bh include/linux/spinlock.h:355 [inline]
-softirqs last disabled at (512): [<ffff80001058cef0>] release_sock+0x3c/0x1cc net/core/sock.c:3484
----[ end trace 0000000000000000 ]---
+As you can see need_resched() dominates.
+
+Zooming into the time exceeded - we can count nanoseconds between
+__do_softirq starting and the check. This is the histogram of actual
+usecs as seen by BPF (AKA ktime_get_mono_fast_ns() / 1000):
+
+[256, 512)             1 |                                                    |
+[512, 1K)              0 |                                                    |
+[1K, 2K)             217 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@         |
+[2K, 4K)             266 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+
+So yes, we can probably save ourselves ~200 wakeup with a better clock
+but that's just 1.3% of the total wake ups :(
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Now - now about the max loop count. I ORed the pending softirqs every
+time we get to the end of the loop. Looks like vast majority of the
+loop counter wake ups are exclusively due to RCU:
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+@looped[512]: 5516
+
+Where 512 is the ORed pending mask over all iterations
+512 == 1 << RCU_SOFTIRQ.
+
+And they usually take less than 100us to consume the 10 iterations.
+Histogram of usecs consumed when we run out of loop iterations:
+
+[16, 32)               3 |                                                    |
+[32, 64)            4786 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+[64, 128)            871 |@@@@@@@@@                                           |
+[128, 256)            34 |                                                    |
+[256, 512)             9 |                                                    |
+[512, 1K)            262 |@@                                                  |
+[1K, 2K)              35 |                                                    |
+[2K, 4K)               1 |                                                    |
+
+Paul, is this expected? Is RCU not trying too hard to be nice?
+
+# cat /sys/module/rcutree/parameters/blimit
+10
+
+Or should we perhaps just raise the loop limit? Breaking after less 
+than 100usec seems excessive :(
+
+> whether that makes a difference? Those two can be applied with some
+> minor polishing. The rest of that series is broken by f10020c97f4c
+> ("softirq: Allow early break").
+> 
+> There is another issue with this overload limit. Assume max_restart or
+> timeout triggered and limit was set to now + 100ms. ksoftirqd runs and
+> gets the issue resolved after 10ms.
+> 
+> So for the remaining 90ms any invocation of raise_softirq() outside of
+> (soft)interrupt context, which wakes ksoftirqd again, prevents
+> processing on return from interrupt until ksoftirqd gets on the CPU and
+> goes back to sleep, because task_is_running() == true and the stale
+> limit is not after jiffies.
+> 
+> Probably not a big issue, but someone will notice on some weird workload
+> sooner than later and the tweaking will start nevertheless. :) So maybe
+> we fix it right away. :)
+
+Hm, Paolo raised this point as well, but the overload time is strictly
+to stop paying attention to the fact ksoftirqd is running.
+IOW current kernels behave as if they had overload_limit of infinity.
+
+The current code already prevents processing until ksoftirqd schedules
+in, after raise_softirq() from a funky context.
