@@ -2,66 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A793C6A9E29
-	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 19:08:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB9626A9E2B
+	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 19:09:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231478AbjCCSIm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 13:08:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53834 "EHLO
+        id S230512AbjCCSJt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 13:09:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230512AbjCCSIl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 13:08:41 -0500
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22EF9DBFB;
-        Fri,  3 Mar 2023 10:08:40 -0800 (PST)
-Received: by mail-lj1-x230.google.com with SMTP id b10so3271643ljr.0;
-        Fri, 03 Mar 2023 10:08:40 -0800 (PST)
+        with ESMTP id S231539AbjCCSJr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 13:09:47 -0500
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FE39113CB
+        for <netdev@vger.kernel.org>; Fri,  3 Mar 2023 10:09:45 -0800 (PST)
+Received: by mail-wm1-x330.google.com with SMTP id j19-20020a05600c1c1300b003e9b564fae9so4522588wms.2
+        for <netdev@vger.kernel.org>; Fri, 03 Mar 2023 10:09:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Y779fsdPllk73iFSKFWEUZhysRcnGSThIiUqv0kC8lg=;
-        b=KQ5ad3dwukBu7s19Alqt1gcWpRvIarYj1lmtuc3GkDaEjFb03/azs9cd1TngN9K23v
-         vmu+W0tn6okdHwBgFxr+aGF/VaT2R3FJKnW1Zwk9SFCjgW5c2Hb/Nd5m5yAr+RYI3cZG
-         20mdAb1LEgNzwaaymymgH6i82VQjTJZgyEV6mALXSl4Ki8VgbLfFcN4NrKH9TcAz24un
-         5pEEm23LBnxAXe/Ie7kF8kaEcJx4Grv9HyBh8wwZAmCH6SV9vWuC4evMRp/cIiX2qPXG
-         IpETl8ca+Iq1LQTADtDCvb7JGliTo2n/sHIXI3KlyU6Jz3ylD/LWLBxSFslSH1Q4DPJl
-         6D9Q==
+        d=gmail.com; s=20210112; t=1677866983;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=u37BUiqVfqrO2g1C0p7SHL4Rg4pvcPK9tYwoGI/HO3M=;
+        b=Lsc142JPIawJVGB4o/tc8fQxZJXiiZm6kcw5EUuJFv2SRnxqVKjx0xxHpB1rbA5ajW
+         mGo7wdl4JOJsr26lfudesGTFg0Uq7BmqaBOTivHBfkQpfhhdnt2goqnDYuMblgyun9Um
+         DJP7JiaV4/nBNFDUECKP8YyW1tJQ8d5E7WsBb7X5tD5XBUY9WhERh2tWCXQ4w1YUqqBJ
+         kf8lVkFKdh3aJprPXvDjhg4fIUhdScB5W4ujb/eJx/8iqS4n4ZooWkmx9akVehS2JXEP
+         aZhqxgeSBvvjVPFbwIQLZGqfFLOmYiFY0M6AqjOL1ooZu6xHLogN+Zcr/EX+xX4CqO7h
+         Wz2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Y779fsdPllk73iFSKFWEUZhysRcnGSThIiUqv0kC8lg=;
-        b=FfVFDmTCe4HrXJUaEpJpcQGgGiF2QTCuKL8VrV0UFG9A7nVIoBQR0eYNo0/gBD1qpp
-         UoL+/a8wn8tXDypqB3v/FIkHI5KGrgxYkGhivKBd+E/D7Rbx5C4XlHXcJHQYx6xY6v1h
-         85VSj2DFEagq02vypGect4lGdmGULyos9WMRKf4YD9fluMZVKnFNdsWCrIcN20ixiloA
-         w7YZJRW2MSf6cyxLhzKtGH/aAoY0Jz01xnFG1BYNdpNqTb1+fSRi1iCfPKSvKamk3OKL
-         Tavi9/+rOW0Sjo6XLZW6gqhDf5yySdUsBvH48S+5UPYPXaKoasoqbgrJ508cigAZ+eaE
-         0dwQ==
-X-Gm-Message-State: AO0yUKVMwbsV9tX8KqVeTgYrXSW+LG7lGFVfwWIxeyFrnhqRJJ9jkYZ2
-        aWI65siVxwUt/wH0OdJtNC+8UK5UEVAJk7nNPi3f22GD
-X-Google-Smtp-Source: AK7set8imPN+V4oquFW31wvcp3uzwidOpMD/0dQQTK7/71jiXTpkZumCeQBM1P6XlCIYcfpHL2Okzyh1ue+X7mRpDpM=
-X-Received: by 2002:a2e:b4ae:0:b0:295:a3a8:b2a2 with SMTP id
- q14-20020a2eb4ae000000b00295a3a8b2a2mr836976ljm.9.1677866918365; Fri, 03 Mar
- 2023 10:08:38 -0800 (PST)
+        d=1e100.net; s=20210112; t=1677866983;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=u37BUiqVfqrO2g1C0p7SHL4Rg4pvcPK9tYwoGI/HO3M=;
+        b=gClqaK1hSrXiTyrH5IGqpQPBz7dYkvFVkbTmr+qkJfw/+/oQnTX6V12SSm2K/J7jJh
+         Pc5RHGNQRTMmaXQThrmRgACCK4nzsXapWDNTe+FXVYRO2qxO6gQ26neU/IVz5DIVNu35
+         u4VBJ7m0jQsnY+J9bzvcuuUeEjXZrVzTN8Pf7BJ00Q3y7vhKKgSWwo7O0Shq3ZkQg8Dz
+         PpX80jHey5FdmnZY5N2yO6ZE0KR9PLY/ojOvg128UuyqzXXnI46Ft8GhxtCc50aLflMQ
+         zzO60oKHCX/PDIuvJq4SZHJUhX1nZVuTV3vLNLuqLOPez+v4U6Vsj+sjXTTH80Nj3hTn
+         QEmg==
+X-Gm-Message-State: AO0yUKUKKHhVNV4ylv4TGh8uix/XTXFs2NQe2suZVK9O/effs11yCaKz
+        oSMCagGAP8A2m2ZlSPTsX8HrfoA/kiz7kxbs2lY=
+X-Google-Smtp-Source: AK7set/YtUomOQPXQVcIghVlu+EccsrABmhpcldiGMVUGn/xmHgV4vmNVNeGXL7y+cFbOJIJzb4A7g==
+X-Received: by 2002:a05:600c:1550:b0:3e9:c2f4:8ad4 with SMTP id f16-20020a05600c155000b003e9c2f48ad4mr2413026wmg.8.1677866983577;
+        Fri, 03 Mar 2023 10:09:43 -0800 (PST)
+Received: from localhost.localdomain ([2001:b07:5d37:537d:5e25:9ef5:7977:d60c])
+        by smtp.gmail.com with ESMTPSA id o11-20020a05600c4fcb00b003e8f0334db8sm7458083wmq.5.2023.03.03.10.09.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Mar 2023 10:09:43 -0800 (PST)
+From:   Vincenzo Palazzo <vincenzopalazzodev@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, intel-wired-lan@lists.osuosl.org,
+        jesse.brandeburg@intel.com,
+        Vincenzo Palazzo <vincenzopalazzodev@gmail.com>
+Subject: [PATCH v2] netdevice: use ifmap instead of plain fields
+Date:   Fri,  3 Mar 2023 19:09:26 +0100
+Message-Id: <20230303180926.142107-1-vincenzopalazzodev@gmail.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-References: <CAAgLYK7pm06588j+W7F0+2mgfVs1Sr7ioL4x+Bd-TZfV-Zw9Pg@mail.gmail.com>
-In-Reply-To: <CAAgLYK7pm06588j+W7F0+2mgfVs1Sr7ioL4x+Bd-TZfV-Zw9Pg@mail.gmail.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Fri, 3 Mar 2023 10:08:27 -0800
-Message-ID: <CABBYNZL2RPLFfjs=EaS4khqLSXjwN2d=1FqY3Z-feX-j_QmOnw@mail.gmail.com>
-Subject: Re: [PATCH 1/1] Bluetooth: fix race condition in hidp_session_thread
-To:     lm0963 <lm0963hack@gmail.com>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, security@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Tedd Ho-Jeong An <hj.tedd.an@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -72,60 +69,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Tedd,
+clean the code by using the ifmap instead of plain fields,
+and avoid code duplication.
 
-On Wed, Mar 1, 2023 at 10:18=E2=80=AFPM lm0963 <lm0963hack@gmail.com> wrote=
-:
->
-> There is a potential race condition in hidp_session_thread that may
-> lead to use-after-free. For instance, the timer is active while
-> hidp_del_timer is called in hidp_session_thread(). After hidp_session_put=
-,
-> then 'session' will be freed, causing kernel panic when hidp_idle_timeout
-> is running.
->
-> The solution is to use del_timer_sync instead of del_timer.
->
-> Here is the call trace:
->
-> ? hidp_session_probe+0x780/0x780
-> call_timer_fn+0x2d/0x1e0
-> __run_timers.part.0+0x569/0x940
-> hidp_session_probe+0x780/0x780
-> call_timer_fn+0x1e0/0x1e0
-> ktime_get+0x5c/0xf0
-> lapic_next_deadline+0x2c/0x40
-> clockevents_program_event+0x205/0x320
-> run_timer_softirq+0xa9/0x1b0
-> __do_softirq+0x1b9/0x641
-> __irq_exit_rcu+0xdc/0x190
-> irq_exit_rcu+0xe/0x20
-> sysvec_apic_timer_interrupt+0xa1/0xc0
->
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Min Li <lm0963hack@gmail.com>
-> ---
->  net/bluetooth/hidp/core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/net/bluetooth/hidp/core.c b/net/bluetooth/hidp/core.c
-> index bed1a7b9205c..707f229f896a 100644
-> --- a/net/bluetooth/hidp/core.c
-> +++ b/net/bluetooth/hidp/core.c
-> @@ -433,7 +433,7 @@ static void hidp_set_timer(struct hidp_session *sessi=
-on)
->  static void hidp_del_timer(struct hidp_session *session)
->  {
->         if (session->idle_to > 0)
-> -               del_timer(&session->timer);
-> +               del_timer_sync(&session->timer);
->  }
->
->  static void hidp_process_report(struct hidp_session *session, int type,
-> --
-> 2.25.1
+Signed-off-by: Vincenzo Palazzo <vincenzopalazzodev@gmail.com>
+---
+ drivers/net/ethernet/intel/e1000e/netdev.c |  4 ++--
+ include/linux/netdevice.h                  |  8 +-------
+ net/core/dev_ioctl.c                       | 12 ++++++------
+ net/core/rtnetlink.c                       |  6 +++---
+ 4 files changed, 12 insertions(+), 18 deletions(-)
 
-Looks like CI didn't pick up this one.
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index e1eb1de88bf9..059ff8bcdbbc 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -7476,8 +7476,8 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	netif_napi_add(netdev, &adapter->napi, e1000e_poll);
+ 	strscpy(netdev->name, pci_name(pdev), sizeof(netdev->name));
+ 
+-	netdev->mem_start = mmio_start;
+-	netdev->mem_end = mmio_start + mmio_len;
++	netdev->dev_mapping.mem_start = mmio_start;
++	netdev->dev_mapping.mem_end = mmio_start + mmio_len;
+ 
+ 	adapter->bd_number = cards_found++;
+ 
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 6a14b7b11766..c5987e90a078 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -2031,13 +2031,7 @@ struct net_device {
+ 	char			name[IFNAMSIZ];
+ 	struct netdev_name_node	*name_node;
+ 	struct dev_ifalias	__rcu *ifalias;
+-	/*
+-	 *	I/O specific fields
+-	 *	FIXME: Merge these and struct ifmap into one
+-	 */
+-	unsigned long		mem_end;
+-	unsigned long		mem_start;
+-	unsigned long		base_addr;
++	struct ifmap dev_mapping;
+ 
+ 	/*
+ 	 *	Some hardware also needs these fields (state,dev_list,
+diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
+index 5cdbfbf9a7dc..89469cb97e35 100644
+--- a/net/core/dev_ioctl.c
++++ b/net/core/dev_ioctl.c
+@@ -88,9 +88,9 @@ static int dev_getifmap(struct net_device *dev, struct ifreq *ifr)
+ 	if (in_compat_syscall()) {
+ 		struct compat_ifmap *cifmap = (struct compat_ifmap *)ifmap;
+ 
+-		cifmap->mem_start = dev->mem_start;
+-		cifmap->mem_end   = dev->mem_end;
+-		cifmap->base_addr = dev->base_addr;
++		cifmap->mem_start = dev->dev_mapping.mem_start;
++		cifmap->mem_end   = dev->dev_mapping.mem_end;
++		cifmap->base_addr = dev->dev_mapping.base_addr;
+ 		cifmap->irq       = dev->irq;
+ 		cifmap->dma       = dev->dma;
+ 		cifmap->port      = dev->if_port;
+@@ -98,9 +98,9 @@ static int dev_getifmap(struct net_device *dev, struct ifreq *ifr)
+ 		return 0;
+ 	}
+ 
+-	ifmap->mem_start  = dev->mem_start;
+-	ifmap->mem_end    = dev->mem_end;
+-	ifmap->base_addr  = dev->base_addr;
++	ifmap->mem_start  = dev->dev_mapping.mem_start;
++	ifmap->mem_end    = dev->dev_mapping.mem_end;
++	ifmap->base_addr  = dev->dev_mapping.base_addr;
+ 	ifmap->irq        = dev->irq;
+ 	ifmap->dma        = dev->dma;
+ 	ifmap->port       = dev->if_port;
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 5d8eb57867a9..ff8fc1bbda31 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -1445,9 +1445,9 @@ static int rtnl_fill_link_ifmap(struct sk_buff *skb, struct net_device *dev)
+ 	struct rtnl_link_ifmap map;
+ 
+ 	memset(&map, 0, sizeof(map));
+-	map.mem_start   = dev->mem_start;
+-	map.mem_end     = dev->mem_end;
+-	map.base_addr   = dev->base_addr;
++	map.mem_start   = dev->dev_mapping.mem_start;
++	map.mem_end     = dev->dev_mapping.mem_end;
++	map.base_addr   = dev->dev_mapping.base_addr;
+ 	map.irq         = dev->irq;
+ 	map.dma         = dev->dma;
+ 	map.port        = dev->if_port;
+-- 
+2.39.2
 
---=20
-Luiz Augusto von Dentz
