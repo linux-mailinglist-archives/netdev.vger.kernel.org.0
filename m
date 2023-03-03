@@ -2,207 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E29316AA4A7
-	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 23:40:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 581986AA60E
+	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 01:03:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231579AbjCCWkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 17:40:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51410 "EHLO
+        id S229876AbjCDADc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 19:03:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233757AbjCCWjk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 17:39:40 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8924F16892;
-        Fri,  3 Mar 2023 14:38:36 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C8C361934;
-        Fri,  3 Mar 2023 22:37:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DB8BC433EF;
-        Fri,  3 Mar 2023 22:37:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677883059;
-        bh=vPJ6IgeN1STHLi8nzv50PyN7PRUVaqLg8F1OkcFyxpQ=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=FvFt5jeEhHk0nQ5AXI/iNsJjMj9Ju3ETv7ZJ6SXRgMsMXmUDCSboZ8D7uc2irNrx8
-         VZjL4sAV9RsSR26aLwrmhL5yBJssETEyVZthJ/PTpV/Z5vRd00qxaxoyou7v/2EHMT
-         8CY87qGocfzo+VOq4heEiSETJR8xMjjbugiA0l/0nXGweAWWF9tSAIhtlHyYoSiNtq
-         llwCpbMhNQClhhbDGu8fBY4OV+SwlJuDxznAhoj2MnjdsjM93Wy2VewhOQpvxiIZBR
-         QQQs45L40qVogQdqkmY0NGYIV7foffU7PSvsuFGxmSYcnXAzpht+6TNcMmEVUda5QF
-         Dr9mdzsaBJtdA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 462805C0278; Fri,  3 Mar 2023 14:37:39 -0800 (PST)
-Date:   Fri, 3 Mar 2023 14:37:39 -0800
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>, peterz@infradead.org,
-        jstultz@google.com, edumazet@google.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] softirq: avoid spurious stalls due to need_resched()
-Message-ID: <20230303223739.GC1301832@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20221222221244.1290833-1-kuba@kernel.org>
- <20221222221244.1290833-3-kuba@kernel.org>
- <87r0u6j721.ffs@tglx>
- <20230303133143.7b35433f@kernel.org>
+        with ESMTP id S229520AbjCDAD1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 19:03:27 -0500
+Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B61F4BBBB;
+        Fri,  3 Mar 2023 16:03:24 -0800 (PST)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mx.sberdevices.ru (Postfix) with ESMTP id 04D7B5FD06;
+        Sat,  4 Mar 2023 01:00:44 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1677880844;
+        bh=7L0edCMAkGUC4DPvTm9asbeHzX24JhAHEcdZKa63fyE=;
+        h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type;
+        b=afB1VWAPjwtq5RXaaUh09yB0lUke4N4f5j0Zk+Q8iuzTXiezFUfPqlQPcdgBvcKNT
+         f7uHceGGgJLx1lM/msZ7kiV8I8cyXDELvPi8FyYC4QB/NKd1KrjgWx/jWLI/w2pEXK
+         5QnA1DlXwBqglDCITOWpR2z3rfnWw+BAdbDDnz1jPOWb4MchEb1uFEdquSBkN7N2HI
+         gWeNXtvvcqONKVdPZ2nTfJAdi8ID6L3PQf/Pp77J4a6IhTAC6WPcpqjCS8jvjCREC5
+         IDIxVFfBPYbY9GJAphiI7gHx7LkvXIJ1rz17UQ0hJYqpk+fc5/UGuIj+SStkad5t/h
+         GvchH8/Bw9LTw==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mx.sberdevices.ru (Postfix) with ESMTP;
+        Sat,  4 Mar 2023 01:00:38 +0300 (MSK)
+Message-ID: <c2d3e204-89d9-88e9-8a15-3fe027e56b4b@sberdevices.ru>
+Date:   Sat, 4 Mar 2023 00:57:48 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230303133143.7b35433f@kernel.org>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Content-Language: en-US
+To:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>
+CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kernel@sberdevices.ru>, <oxffffaa@gmail.com>,
+        <avkrasnov@sberdevices.ru>
+From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
+Subject: [RFC PATCH v1 0/3] virtio/vsock: fix credit update logic
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.16.1.6]
+X-ClientProxiedBy: S-MS-EXCH02.sberdevices.ru (172.16.1.5) To
+ S-MS-EXCH01.sberdevices.ru (172.16.1.4)
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/03/03 17:09:00 #20912733
+X-KSMG-AntiVirus-Status: Clean, skipped
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 03, 2023 at 01:31:43PM -0800, Jakub Kicinski wrote:
-> On Fri, 03 Mar 2023 14:30:46 +0100 Thomas Gleixner wrote:
-> > > -		if (time_before(jiffies, end) && !need_resched() &&
-> > > -		    --max_restart)
-> > > +		unsigned long limit;
-> > > +
-> > > +		if (time_is_before_eq_jiffies(end) || !--max_restart)
-> > > +			limit = SOFTIRQ_OVERLOAD_TIME;
-> > > +		else if (need_resched())
-> > > +			limit = SOFTIRQ_DEFER_TIME;
-> > > +		else
-> > >  			goto restart;
-> > >  
-> > > +		__this_cpu_write(overload_limit, jiffies + limit);  
-> > 
-> > The logic of all this is non-obvious and I had to reread it 5 times to
-> > conclude that it is matching the intent. Please add comments.
-> > 
-> > While I'm not a big fan of heuristical duct tape, this looks harmless
-> > enough to not end up in an endless stream of tweaking. Famous last
-> > words...
-> 
-> Would it all be more readable if I named the "overload_limit"
-> "overloaded_until" instead? Naming..
-> I'll add comments, too.
-> 
-> > But without the sched_clock() changes the actual defer time depends on
-> > HZ and the point in time where limit is set. That means it ranges from 0
-> > to 1/HZ, i.e. the 2ms defer time ends up with close to 10ms on HZ=100 in
-> > the worst case, which perhaps explains the 8ms+ stalls you are still
-> > observing. Can you test with that sched_clock change applied, i.e. the
-> > first two commits from
-> > 
-> >   git://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git core/softirq
-> > 
-> > 59be25c466d9 ("softirq: Use sched_clock() based timeout")
-> > bd5a5bd77009 ("softirq: Rewrite softirq processing loop")
-> 
-> Those will help, but I spent some time digging into the jiffies related
-> warts with kprobes - while annoying they weren't a major source of wake
-> ups. (FWIW the jiffies noise on our workloads is due to cgroup stats
-> disabling IRQs for multiple ms on the timekeeping CPU).
-> 
-> Here are fresh stats on why we wake up ksoftirqd on our Web workload
-> (collected over 100 sec):
-> 
-> Time exceeded:      484
-> Loop max run out:  6525
-> need_resched():   10219
-> (control: 17226 - number of times wakeup_process called for ksirqd)
-> 
-> As you can see need_resched() dominates.
-> 
-> Zooming into the time exceeded - we can count nanoseconds between
-> __do_softirq starting and the check. This is the histogram of actual
-> usecs as seen by BPF (AKA ktime_get_mono_fast_ns() / 1000):
-> 
-> [256, 512)             1 |                                                    |
-> [512, 1K)              0 |                                                    |
-> [1K, 2K)             217 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@         |
-> [2K, 4K)             266 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
-> 
-> So yes, we can probably save ourselves ~200 wakeup with a better clock
-> but that's just 1.3% of the total wake ups :(
-> 
-> 
-> Now - now about the max loop count. I ORed the pending softirqs every
-> time we get to the end of the loop. Looks like vast majority of the
-> loop counter wake ups are exclusively due to RCU:
-> 
-> @looped[512]: 5516
-> 
-> Where 512 is the ORed pending mask over all iterations
-> 512 == 1 << RCU_SOFTIRQ.
-> 
-> And they usually take less than 100us to consume the 10 iterations.
-> Histogram of usecs consumed when we run out of loop iterations:
-> 
-> [16, 32)               3 |                                                    |
-> [32, 64)            4786 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
-> [64, 128)            871 |@@@@@@@@@                                           |
-> [128, 256)            34 |                                                    |
-> [256, 512)             9 |                                                    |
-> [512, 1K)            262 |@@                                                  |
-> [1K, 2K)              35 |                                                    |
-> [2K, 4K)               1 |                                                    |
-> 
-> Paul, is this expected? Is RCU not trying too hard to be nice?
+Hello,
 
-This is from way back in the day, so it is quite possible that better
-tuning and/or better heuristics should be applied.
+this patchset fixes two things in credit account logic:
+1) Current implementation of 'virtio_transport_dec_rx_pkt()':
 
-On the other hand, 100 microseconds is a good long time from an
-CONFIG_PREEMPT_RT=y perspective!
+   value to update 'rx_bytes' and 'fwd_cnt' is calculated as:
 
-> # cat /sys/module/rcutree/parameters/blimit
-> 10
-> 
-> Or should we perhaps just raise the loop limit? Breaking after less 
-> than 100usec seems excessive :(
+   skb_headroom(skb) - sizeof(struct virtio_vsock_hdr) - skb->len;
 
-But note that RCU also has rcutree.rcu_divisor, which defaults to 7.
-And an rcutree.rcu_resched_ns, which defaults to three milliseconds
-(3,000,000 nanoseconds).  This means that RCU will do:
+   i'm a little bit confused about subtracting 'skb->len'. It is clear,
+   that difference between first two components is number of bytes copied
+   to user. 'skb_headroom()' is delta between 'data' and 'head'. 'data'
+   is incremented on each copy data to user from skb by call 'skb_pull()'
+   (at the same moment, 'skb->len' is decremented to the same amount of
+   bytes). 'head' points to the header of the packet. But what is purpose
+   of 'skb->len' here? For SOCK_STREAM is has no effect because this
+   logic is called only when 'skb->len' == 0, but for SOCK_SEQPACKET and
+   other future calls i think it is buggy.
 
-o	All the callbacks if there are less than ten.
+2) For SOCK_SEQPACKET all sk_buffs are handled only once - after dequeue
+   each sk_buff is removed, so user will never read rest of the data.
+   Thus we need to update credit parameters of the socket ('rx_bytes' and
+   'fwd_cnt') like whole sk_buff is read - so call 'skb_pull()' for the
+   whole buffer.
 
-o	Ten callbacks or 1/128th of them, whichever is larger.
+Reproducer is included. To trigger problem run vsock_test without two
+patches with fix - You will see 'Negative len:'. Patches with fixes
+depends on reproducer due to 'pr_emerg()', but i can resend them, seems
+not a big deal.
 
-o	Unless the larger of them is more than 100 callbacks, in which
-	case there is an additional limit of three milliseconds worth
-	of them.
 
-Except that if a given CPU ends up with more than 10,000 callbacks
-(rcutree.qhimark), that CPU's blimit is set to 10,000.
+Arseniy Krasnov (3):
+  test/vsock: SOCK_SEQPACKET 'rx_bytes'/'fwd_cnt' bug reproducer
+  virtio/vsock: fix 'rx_bytes'/'fwd_cnt' calculation
+  virtio/vsock: remove all data from sk_buff
 
-So there is much opportunity to tune the existing heuristics and also
-much opportunity to tweak the heuristics themselves.
+ net/vmw_vsock/virtio_transport_common.c |  8 +++--
+ tools/testing/vsock/vsock_test.c        | 44 +++++++++++++++++++++++++
+ 2 files changed, 50 insertions(+), 2 deletions(-)
 
-But let's see a good use case before tweaking, please.  ;-)
-
-							Thanx, Paul
-
-> > whether that makes a difference? Those two can be applied with some
-> > minor polishing. The rest of that series is broken by f10020c97f4c
-> > ("softirq: Allow early break").
-> > 
-> > There is another issue with this overload limit. Assume max_restart or
-> > timeout triggered and limit was set to now + 100ms. ksoftirqd runs and
-> > gets the issue resolved after 10ms.
-> > 
-> > So for the remaining 90ms any invocation of raise_softirq() outside of
-> > (soft)interrupt context, which wakes ksoftirqd again, prevents
-> > processing on return from interrupt until ksoftirqd gets on the CPU and
-> > goes back to sleep, because task_is_running() == true and the stale
-> > limit is not after jiffies.
-> > 
-> > Probably not a big issue, but someone will notice on some weird workload
-> > sooner than later and the tweaking will start nevertheless. :) So maybe
-> > we fix it right away. :)
-> 
-> Hm, Paolo raised this point as well, but the overload time is strictly
-> to stop paying attention to the fact ksoftirqd is running.
-> IOW current kernels behave as if they had overload_limit of infinity.
-> 
-> The current code already prevents processing until ksoftirqd schedules
-> in, after raise_softirq() from a funky context.
+-- 
+2.25.1
