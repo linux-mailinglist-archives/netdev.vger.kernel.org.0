@@ -2,169 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97D5C6A9A41
-	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 16:09:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6429E6A9A54
+	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 16:13:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229947AbjCCPJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 10:09:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53032 "EHLO
+        id S231440AbjCCPNT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 10:13:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231409AbjCCPJV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 10:09:21 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3943C12F13
-        for <netdev@vger.kernel.org>; Fri,  3 Mar 2023 07:09:20 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id r19-20020a05600c459300b003eb3e2a5e7bso1478524wmo.0
-        for <netdev@vger.kernel.org>; Fri, 03 Mar 2023 07:09:20 -0800 (PST)
+        with ESMTP id S231432AbjCCPNO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 10:13:14 -0500
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2109.outbound.protection.outlook.com [40.107.96.109])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B8711F49C;
+        Fri,  3 Mar 2023 07:13:06 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UOR7PqX2OfOyiT40qGF3NJ1XF/ghNCcRsWBSbTaavRoozXKSEwx7KUHYvlxSczSlAJPQ517B46iJFUNGj3GoEB1CpppBCyYxuWiZyrvz/hwY0Fa/7ZElxTPhpSnhHdUnvDhtf48QrMzf8LS7PG38WB1WpqLgaRXcHPVXAcBV55CnanZNu6vMP6/QtYg3CR2G9mwk1nKJwtjD5ItqR6U2+6jVP5RTrHWQ3UHZJQBYvHQ2Gpkj62J61bot+auKJi7BljB6igGpjaTgkkoUkS5BKN7rmLtwvXNeaBpk8iWSl6RYeIBKURcwZzcZnlObV+Ewdp9uPv7tYuKJVXxd7k7CeA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8AUdj7kRsWbVlP7GQYjhRyZr9HdaWsYzqV8wiaBIoy8=;
+ b=HInoh0/zsYWyn6C/mKAXHhFDBRZBvU6rINomGa+bJxaGW6FtN0lPE/RqL/6AnKGIzniBNvYxz7XGj2hxasCkwCEnMglWedwOJOiXZ56nC1hhKjjBSPDYpMXCm7tlcVKKv4lRrRsX85vh/rLlILL7EpYMFEyajezW3Vb4jI30wbhrZTXDHlZ4gKofabTsZW6OYOpV4Cj+3CwUml1LJ3JixAtjkU4n1LOSRtE9gtdWbYk5cJMracQQooV5iOq7wYYZq/mVK8PLRJ8hznzYA2KoaorbaKFvttPwIG7R8fe3yLT7Tm3JsfgwhUHX/cp/km2/CLNSMYAU4BRqxM6ADvoEfQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1677856158;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=UrrwJPkFd0S1Re+XqTQZpJcc+TxHQ0A8Rp4cbauFo18=;
-        b=SsLpc76smhv7GBOH7gxTQZlcMdq3XZFrMjgr8HVzZlLg2gYzjOqYvVU+Q7dmlM4E0R
-         g4ePb++hj4qcG+87fEeBH/gDOq7SZ7FY2cXQidfkr+E+DGz1Mss1cGujzM+s/+ko6Ox9
-         qx13qwyG+3FNIiKZ4VQmjtjvKtGXQ1heI84WBSxssCxQXqol6Z7ourT/y2D2bh76VTNO
-         5q/BZ2YQ3MYCQJPVdTQaYDxEQb+DWEYuI+em7uYQLRj0uwfRXEiTcy6Dh5h/E1+HXcOr
-         AfDJdgF6+SMkOqERssBChfPAi7UEhbABqjKqnF7lVQh0x7V/mvDsm8HLOTMy7K+eOLUN
-         gssw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677856158;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=UrrwJPkFd0S1Re+XqTQZpJcc+TxHQ0A8Rp4cbauFo18=;
-        b=G7hiSvI/ZquT3EX6zzuJkJfpoL+rYY8ti+OXBQV332RxqUcKky1bxV/2XOUXOtRYau
-         tAATrSMsjGx9989Te/Ovtl5D1mGjOJJp3sWhdqG9GbQppHewmqQm0FOhMyh/1oDTs0mz
-         OhCA36PgMKVGyaWkssZakmxWdwi3lko+RSeDjnwKegBFLgteGUUP1XQrWmsWFu3SyGWD
-         OLdAf5kd4DhJrP68QGm9JSoqp7COo59tcVzH9a8u38y+4tk5SC0j4hUc/astARrRTk51
-         RlcibzgEyQGHm4gXoAxsmwut8Zt8OHZJUW89ZS+Mib3/B7wEvvRHHqbiC1eiixto4t1A
-         rwTw==
-X-Gm-Message-State: AO0yUKXnV293WfcuSYsq+6RjWCp0OroZbqrx5nEk8FvM33ifbAsddAxI
-        LcDPBh+2gTozDD2WHhZipZFTQRNEgZKkJfikMFY=
-X-Google-Smtp-Source: AK7set/AJZ7j/MVuYcsxS7J29cli2QDD2mwX9i+TusBa+IrMGuMRDK9mDHpAkO6XQ4k5Ul4aLb/ffg==
-X-Received: by 2002:a05:600c:4587:b0:3ea:d611:e1 with SMTP id r7-20020a05600c458700b003ead61100e1mr1908418wmo.21.1677856158219;
-        Fri, 03 Mar 2023 07:09:18 -0800 (PST)
-Received: from localhost.localdomain ([2001:b07:5d37:537d:5e25:9ef5:7977:d60c])
-        by smtp.gmail.com with ESMTPSA id t21-20020a1c7715000000b003e2096da239sm5965211wmi.7.2023.03.03.07.09.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Mar 2023 07:09:17 -0800 (PST)
-From:   Vincenzo Palazzo <vincenzopalazzodev@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, intel-wired-lan@lists.osuosl.org,
-        jesse.brandeburg@intel.com,
-        Vincenzo Palazzo <vincenzopalazzodev@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH v1] netdevice: use ifmap isteand of plain fields
-Date:   Fri,  3 Mar 2023 16:08:18 +0100
-Message-Id: <20230303150818.132386-1-vincenzopalazzodev@gmail.com>
-X-Mailer: git-send-email 2.39.2
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8AUdj7kRsWbVlP7GQYjhRyZr9HdaWsYzqV8wiaBIoy8=;
+ b=OV8ArPEyeCNa460+uEz9v1lA2w+s/cWM2lVgRUTdUCNi6k9dcMbrYJhBEQ60j5d6ziepNVcClXoq7TjAq8/MyiCFvJUEmPaRwoRrcZg/eOsIsMwSlDeFCbrX5aH2iK6KqHMUOA2fyV2Trr3LCCXd3A33LqscaGBkTibmV7rUL7E=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by IA1PR10MB6805.namprd10.prod.outlook.com
+ (2603:10b6:208:42b::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.17; Fri, 3 Mar
+ 2023 15:13:01 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::1897:6663:87ba:c8fa]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::1897:6663:87ba:c8fa%4]) with mapi id 15.20.6156.016; Fri, 3 Mar 2023
+ 15:13:00 +0000
+Date:   Fri, 3 Mar 2023 09:12:53 -0600
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Lee Jones <lee@kernel.org>
+Cc:     linux-phy@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+        Kishon Vijay Abraham I <kishon@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [RFC v1 net-next 2/7] mfd: ocelot: add ocelot-serdes capability
+Message-ID: <ZAIOddFw//0VDoyw@MSI.localdomain>
+References: <20230216075321.2898003-1-colin.foster@in-advantage.com>
+ <20230216075321.2898003-3-colin.foster@in-advantage.com>
+ <20230303104807.GW2303077@google.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230303104807.GW2303077@google.com>
+X-ClientProxiedBy: CH0PR03CA0231.namprd03.prod.outlook.com
+ (2603:10b6:610:e7::26) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWHPR1001MB2351:EE_|IA1PR10MB6805:EE_
+X-MS-Office365-Filtering-Correlation-Id: 64b5fe39-3d97-4fa7-3993-08db1bf9c64a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: aNDNPvodgNF0URzI5hbecwVNKwAlRhtjBifwaekeHGfB3ium5yfcZP7rdqiaOruZCAMXvUz4FqKugpM4DfLUkww1ZB3ETWYOGrxgkR+uDk2O1Ym1o3GgS25fdkiWwaGk7tttcLMH1XGZFnEChvwDjBw+AMl8aEmJrb9osKs2iYMzYEZQAEwd9InNzv6qAKVWgeA5e1kPsnPWk4ueOUhKnnkm53c8mHocH1XQ2nuN8g4ZPTzNUvvbcTeMQo82VbSstq1PZ4K3LKDJLQQDvRT1iWST7JUpCWqE+RbbsTxnNCSBeOKfcGL+rTEqr8PgtE/9shAT+u6UzX1knY5n01SSCMjvLx9R9Obf0h2S7fkDrewaa0uNWkYLlMIfVlh6oxUtw8PBCCbOrpwjO0vSSGoKRopZu2nAQZkfkjMN3MRNArJhOqgdjoFdfBrjfexJ28BzWeQiizq1wxiURFl0Qu3t0p/HSrG95sqlEgL07kJOhb5qjB+WBDNBgM8gTw9cBKKnybLIEgBJqNwGDXEuMNUgCMt2C0zMBYumyZ6F5Q+CeAhpbMvCddWALy1AvyNPSNUdMLFcblDk7dz6jN9Me6WMYQgnJI4CbgPWzxCZU0FZyysmQld+HqaaaJx0VlMnWkE4Xkvt2FMg+lt/aUqqzyWJyA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(39830400003)(366004)(136003)(396003)(376002)(346002)(451199018)(66556008)(6666004)(38100700002)(8936002)(5660300002)(478600001)(7416002)(66476007)(86362001)(26005)(9686003)(186003)(6486002)(6506007)(6512007)(8676002)(44832011)(4326008)(6916009)(66946007)(4744005)(2906002)(316002)(41300700001)(54906003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ZnqbeXAznGjr5j5DvxS8i9y/LuaX2xvXABRTt2gylikCS2RZ71AyDSy9x76Y?=
+ =?us-ascii?Q?dhQMhgPt+E/tM/vy48TB/jeWXTDtu4XZP8qe67BMY3GwrWfFhODWhBQ1ALcC?=
+ =?us-ascii?Q?0VxGxG2qgBJfzEcTw/cJuxXOsutS6tGl9tUch+TtSQomAvW2Ue0kpOFCnuKy?=
+ =?us-ascii?Q?mMs18k7PfEVlfp9/h7IgZyzSGnLFqA/suncXCoXDXvXq0asS171GA0Sz5GQ7?=
+ =?us-ascii?Q?CH0XhaKdh81L2PoWxz/bLsRuIwPoRHCC4cNRSbdRRLL6My1EQskin7gP7+Fr?=
+ =?us-ascii?Q?cxnmMtZRWCAyXiQzQiW4Bgvu2tLAIhLPmz+lKYyFcHbpaKMc+BKWXMm8O4X0?=
+ =?us-ascii?Q?+jLvKch0fsaDAAnceyd71JuvZrwcU0nAhakaFHD0yY7A8JcoHWIEB98uHh2z?=
+ =?us-ascii?Q?fesYuZI7ACJ61s3SWOg3xHJx1lvu/gka4/kGD5C5fi1Rxr8T/4mEf7+KyL+V?=
+ =?us-ascii?Q?hF27DVzTivaxIkEw+KFYS+/VKyxh7rb9TCRhR/c1cdT6tUsQlHuUyOwwD/b3?=
+ =?us-ascii?Q?Qg5dws46PSHXawMt9vcUs6vHfShd/pwGGykhwNXCuUYvjn9uBv8Bs9xmQObu?=
+ =?us-ascii?Q?0uxKoMOKC9+NWL6ywTxtuRUrO3hGhHdtDLHUGJrqep1PIuOKZlR7S+5IJ2ra?=
+ =?us-ascii?Q?nyhzTN4hRQ9lg831qArHh6B+u6+EVqUtG3m5SMHkHNK3XgXmM00ZaW2JP8AI?=
+ =?us-ascii?Q?TZ8tvGDpRNbJb7RUz4JMOh52LXL3qpqIdH7VJd/1dNVE4BI4GYzI8jb7KUn0?=
+ =?us-ascii?Q?HyegScbRvyq015xXmIkTLEqkTSWnNCQom3eTY6BLqPYEcJNNhWkwdXcseSzr?=
+ =?us-ascii?Q?0nTkKy1LjI0Szobi8pkiM7wn2lyZgwv7b4PLq+lBZjyra0VdZXwuBKhdqTny?=
+ =?us-ascii?Q?BH9CX6g6FUaXTiKVa+w+oeRP6128nokELW+O2RH53du60lFESv1+22sXtQ4A?=
+ =?us-ascii?Q?i3gj4nY1NN6VCgpOsIRVoabz23vw58xY2XYhfnGeSZuYfCNt3KvORxU6ia4d?=
+ =?us-ascii?Q?eF7sbnFlf7bQqW/qA1dhDRKIJ/AGYuTb6gwx6nR2wuBVs63ly1sCVESynNyD?=
+ =?us-ascii?Q?Hj6pz2Sa4xnlA3RtdIEbF1jQY4FdH8ywkf1Hsb34SGtZdFxvHHUicxDmqHgS?=
+ =?us-ascii?Q?I2p7A+UQau+zSILnBKxKS7zJeteaKBq+cKQkoM93Mza0ULheNk+W57sx889K?=
+ =?us-ascii?Q?XLikA5qaFRDfk1DVcT/LLiKdmS2hllBI9JGq7cck0zKNLysGiQbOSPXaAite?=
+ =?us-ascii?Q?PFxUDwccUAYxm+6Tpjcyc7EwI15bBrVl9iRxykos/P+tFGrWyHZ+oYFFyt/E?=
+ =?us-ascii?Q?22Wu5neIUrpALDhJk8rs7O7GdyxU3ZrLTj3kpPO9Kh/bAOwiI5mjOntoM68o?=
+ =?us-ascii?Q?onStIK+V3IDLhTkH1j05GRe6dcxrVGh1nEReYVpIeOxC20eJnt02iKRldVhq?=
+ =?us-ascii?Q?Ky6wnE2wMmMsWXSbndgN+4zyvkKUF2vEHEQhXSIw4F50Lu6YX4oUeh51BwnF?=
+ =?us-ascii?Q?bWMEohhKHXDZuOi84H1OEJCn0PusBLL3D2/mGdyeQdsvSoG7pOAZMfWPTKsd?=
+ =?us-ascii?Q?iDjK9gLG5rcd5oy8lF5WbKpYSPXc/i9Zyhmvd2HsfD+sYLnEi4W/aaX5BY3i?=
+ =?us-ascii?Q?sWXdeg2C7c1Px2xvpH3z/58=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 64b5fe39-3d97-4fa7-3993-08db1bf9c64a
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2023 15:13:00.6865
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: eLuoU027SD4d58W6YJ/ZB3xvM0opkEgQ9JsVo1MKtbQNmoqBdPVo+vYtuIckwjBODJcEZolbnNu8rL+ZAI5oUD1BclZGL6kFZpgxVs70FQg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR10MB6805
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-clean the code by using the ifmap instead of plain fields,
-and avoid code duplication.
+On Fri, Mar 03, 2023 at 10:48:07AM +0000, Lee Jones wrote:
+> On Wed, 15 Feb 2023, Colin Foster wrote:
+> 
+> > Add support for the Ocelot SERDES module to support functionality of all
+> > non-internal phy ports.
+> 
+> Looks non-controversial.
+> 
+> Please provide some explanation of what SERDES means / is.
 
-P.S: I'm giving credit to the author of the FIXME commit.
+Will do.
 
-Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Vincenzo Palazzo <vincenzopalazzodev@gmail.com>
----
- drivers/net/ethernet/intel/e1000e/netdev.c |  4 ++--
- include/linux/netdevice.h                  |  8 +-------
- net/core/dev_ioctl.c                       | 12 ++++++------
- net/core/rtnetlink.c                       |  6 +++---
- 4 files changed, 12 insertions(+), 18 deletions(-)
+>  
+> > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> > ---
+> >  drivers/mfd/ocelot-core.c | 13 +++++++++++++
+> >  1 file changed, 13 insertions(+)
+> 
+> I'd expect this to go in via MFD once it comes out of RFC.
 
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index e1eb1de88bf9..059ff8bcdbbc 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -7476,8 +7476,8 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	netif_napi_add(netdev, &adapter->napi, e1000e_poll);
- 	strscpy(netdev->name, pci_name(pdev), sizeof(netdev->name));
- 
--	netdev->mem_start = mmio_start;
--	netdev->mem_end = mmio_start + mmio_len;
-+	netdev->dev_mapping.mem_start = mmio_start;
-+	netdev->dev_mapping.mem_end = mmio_start + mmio_len;
- 
- 	adapter->bd_number = cards_found++;
- 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 6a14b7b11766..c5987e90a078 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -2031,13 +2031,7 @@ struct net_device {
- 	char			name[IFNAMSIZ];
- 	struct netdev_name_node	*name_node;
- 	struct dev_ifalias	__rcu *ifalias;
--	/*
--	 *	I/O specific fields
--	 *	FIXME: Merge these and struct ifmap into one
--	 */
--	unsigned long		mem_end;
--	unsigned long		mem_start;
--	unsigned long		base_addr;
-+	struct ifmap dev_mapping;
- 
- 	/*
- 	 *	Some hardware also needs these fields (state,dev_list,
-diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
-index 5cdbfbf9a7dc..89469cb97e35 100644
---- a/net/core/dev_ioctl.c
-+++ b/net/core/dev_ioctl.c
-@@ -88,9 +88,9 @@ static int dev_getifmap(struct net_device *dev, struct ifreq *ifr)
- 	if (in_compat_syscall()) {
- 		struct compat_ifmap *cifmap = (struct compat_ifmap *)ifmap;
- 
--		cifmap->mem_start = dev->mem_start;
--		cifmap->mem_end   = dev->mem_end;
--		cifmap->base_addr = dev->base_addr;
-+		cifmap->mem_start = dev->dev_mapping.mem_start;
-+		cifmap->mem_end   = dev->dev_mapping.mem_end;
-+		cifmap->base_addr = dev->dev_mapping.base_addr;
- 		cifmap->irq       = dev->irq;
- 		cifmap->dma       = dev->dma;
- 		cifmap->port      = dev->if_port;
-@@ -98,9 +98,9 @@ static int dev_getifmap(struct net_device *dev, struct ifreq *ifr)
- 		return 0;
- 	}
- 
--	ifmap->mem_start  = dev->mem_start;
--	ifmap->mem_end    = dev->mem_end;
--	ifmap->base_addr  = dev->base_addr;
-+	ifmap->mem_start  = dev->dev_mapping.mem_start;
-+	ifmap->mem_end    = dev->dev_mapping.mem_end;
-+	ifmap->base_addr  = dev->dev_mapping.base_addr;
- 	ifmap->irq        = dev->irq;
- 	ifmap->dma        = dev->dma;
- 	ifmap->port       = dev->if_port;
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 5d8eb57867a9..ff8fc1bbda31 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -1445,9 +1445,9 @@ static int rtnl_fill_link_ifmap(struct sk_buff *skb, struct net_device *dev)
- 	struct rtnl_link_ifmap map;
- 
- 	memset(&map, 0, sizeof(map));
--	map.mem_start   = dev->mem_start;
--	map.mem_end     = dev->mem_end;
--	map.base_addr   = dev->base_addr;
-+	map.mem_start   = dev->dev_mapping.mem_start;
-+	map.mem_end     = dev->dev_mapping.mem_end;
-+	map.base_addr   = dev->dev_mapping.base_addr;
- 	map.irq         = dev->irq;
- 	map.dma         = dev->dma;
- 	map.port        = dev->if_port;
--- 
-2.39.2
+Understood. I'll be sure to make it clear that some sync will be needed
+between MFD and net-next in the cover letter this time.
 
+Thanks Lee!
