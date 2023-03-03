@@ -2,149 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F3C0E6A956A
-	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 11:40:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B17106A958C
+	for <lists+netdev@lfdr.de>; Fri,  3 Mar 2023 11:48:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229806AbjCCKj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 05:39:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50898 "EHLO
+        id S229822AbjCCKsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 05:48:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbjCCKj6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 05:39:58 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C63214492
-        for <netdev@vger.kernel.org>; Fri,  3 Mar 2023 02:39:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1677839950;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/ZYISymnHUJzQ9oGrozV91eykhzhId/Ob9/Pj/GYOnU=;
-        b=hyjGT557X7VACNKsyfzpzz5wJXZxGtv8D7YIKCcHo8JGcKvlFgQ45hoDLs9c7cMl7SpAro
-        SjEWsf96SW0pDfSN+hua1qJ+qTmeyJeLQ2Z8jJRbFmUFh+88Yn3zYuuNQ90AJPC4CI41WZ
-        DOQDknR86xssLrMPKNl24FCLDY89tEQ=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-634-cbBVnu9OPe-YUP6CD5X0Pg-1; Fri, 03 Mar 2023 05:39:09 -0500
-X-MC-Unique: cbBVnu9OPe-YUP6CD5X0Pg-1
-Received: by mail-ed1-f70.google.com with SMTP id w7-20020a056402268700b004bbcdf3751bso3400467edd.1
-        for <netdev@vger.kernel.org>; Fri, 03 Mar 2023 02:39:09 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/ZYISymnHUJzQ9oGrozV91eykhzhId/Ob9/Pj/GYOnU=;
-        b=wD3R1O3fhfoAJA21LgwYl7efYuguXKs8hYQ7aQIwQk5QvmWPPNwgpUd5v2xyBYdapx
-         5sDOXpLhdiQrPGyHZOu2Bhrw1q8o/EOw40abrEMCph/PXBt8jnvl1h4Bxx9AnETXgbsi
-         oruo6vsAKG6auZKQDvrHPjx1tWiAaMwlZt03ACpiixYdxxHkzZLrlJ0f1CvNNhslpswU
-         N6x3lC2oPKPWE0NU0U4iqFz/Q7ZlzUv8qtMcsWAs7xHMM3i0NNlBTbZjKnR5RMLtRGQ4
-         xjwxewNQeN8S2ki8uk4l2xVSZ9CQE7WfLTEWzONPZkwJXEHZ8toDXlWFonIn3vYhr1o3
-         Tcbg==
-X-Gm-Message-State: AO0yUKWvEe+r91shHbyUuBBEv4UG+4nJs+B8N/MNCSh8zGTfaLUiztYH
-        Ioe74JALXGmLVkWNDdp/hpyri8kprX3KhKX9vbtZ9LKvD/OGhxFSKQNN2zkdWGWoK0HiSGt2LJi
-        ZSncR4Cy6ylkyauYF
-X-Received: by 2002:a17:906:d0ca:b0:88d:ba89:183a with SMTP id bq10-20020a170906d0ca00b0088dba89183amr4943413ejb.11.1677839948356;
-        Fri, 03 Mar 2023 02:39:08 -0800 (PST)
-X-Google-Smtp-Source: AK7set8plnpvyHVS2XtWbo4Yk9SK76K0Al5X/5xZLNnTMe4Kr7DlrMRSAMoG9vBm5d4bxXIduPqHdQ==
-X-Received: by 2002:a17:906:d0ca:b0:88d:ba89:183a with SMTP id bq10-20020a170906d0ca00b0088dba89183amr4943389ejb.11.1677839948109;
-        Fri, 03 Mar 2023 02:39:08 -0800 (PST)
-Received: from [192.168.42.100] (nat-cgn9-185-107-15-52.static.kviknet.net. [185.107.15.52])
-        by smtp.gmail.com with ESMTPSA id h17-20020a170906399100b008d1dc5f5692sm808927eje.76.2023.03.03.02.39.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 03 Mar 2023 02:39:07 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <22ca47ca-325f-f4df-af5d-344be6b372d8@redhat.com>
-Date:   Fri, 3 Mar 2023 11:39:06 +0100
+        with ESMTP id S229437AbjCCKsP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 05:48:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF73B10AA8;
+        Fri,  3 Mar 2023 02:48:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BDFB617D4;
+        Fri,  3 Mar 2023 10:48:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F6A2C433EF;
+        Fri,  3 Mar 2023 10:48:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1677840493;
+        bh=okozz4AY2el34L2QlCjDBtxJAFsbbVEKqcfLhlw1EBk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=HK54mxmwGQPNbD1pW6I15F99TXYAu6nzM7X9F8nmR1gsX/K5u+QzHgIODmTJNbJs7
+         l3f9+c6TbiF6hJXjoy+wHMLp0zXfucD1AhugIaX2wKhrL8hjAq0WnDjlAH+sbiFm0i
+         WAEXjDaMg5a0OyEZpLRQy+eBJHXTdg/ujjB8y0+nFqI41QCuqdWxcOnnR/1vofdxQs
+         V5m6oC+BrYhIl+9HEixsnpzpjMpc8ipMvCHuudKbCg/7v58cFsXi2Uev+gNXwBS2RD
+         RD3QKT/2pPF8iYGKRbnMO0EPdZiraWDtV1CCyC8SY0CHyWvdhPDqfRse8FzycWF/NS
+         7xNzSNHxhy+Dw==
+Date:   Fri, 3 Mar 2023 10:48:07 +0000
+From:   Lee Jones <lee@kernel.org>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     linux-phy@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+        Kishon Vijay Abraham I <kishon@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [RFC v1 net-next 2/7] mfd: ocelot: add ocelot-serdes capability
+Message-ID: <20230303104807.GW2303077@google.com>
+References: <20230216075321.2898003-1-colin.foster@in-advantage.com>
+ <20230216075321.2898003-3-colin.foster@in-advantage.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Cc:     brouer@redhat.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Larysa Zaremba <larysa.zaremba@intel.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Song Liu <song@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next v1 0/2] xdp: recycle Page Pool backed skbs built
- from XDP frames
-Content-Language: en-US
-To:     Alexander Lobakin <aleksander.lobakin@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>
-References: <20230301160315.1022488-1-aleksander.lobakin@intel.com>
-In-Reply-To: <20230301160315.1022488-1-aleksander.lobakin@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230216075321.2898003-3-colin.foster@in-advantage.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 15 Feb 2023, Colin Foster wrote:
 
-On 01/03/2023 17.03, Alexander Lobakin wrote:
-> Yeah, I still remember that "Who needs cpumap nowadays" (c), but anyway.
-> 
-> __xdp_build_skb_from_frame() missed the moment when the networking stack
-> became able to recycle skb pages backed by a Page Pool. This was making
-                                                ^^^^^^^^^
-When talking about page_pool, can we write "page_pool" instead of
-capitalized "Page Pool", please. I looked through the git log, and here
-we all used "page_pool".
+> Add support for the Ocelot SERDES module to support functionality of all
+> non-internal phy ports.
 
-> e.g. cpumap redirect even less effective than simple %XDP_PASS. veth was
-> also affected in some scenarios.
+Looks non-controversial.
 
-Thanks for working on closing this gap :-)
+Please provide some explanation of what SERDES means / is.
+ 
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> ---
+>  drivers/mfd/ocelot-core.c | 13 +++++++++++++
+>  1 file changed, 13 insertions(+)
 
-> A lot of drivers use skb_mark_for_recycle() already, it's been almost
-> two years and seems like there are no issues in using it in the generic
-> code too. {__,}xdp_release_frame() can be then removed as it losts its
-> last user.
-> Page Pool becomes then zero-alloc (or almost) in the abovementioned
-> cases, too. Other memory type models (who needs them at this point)
-> have no changes.
-> 
-> Some numbers on 1 Xeon Platinum core bombed with 27 Mpps of 64-byte
-> IPv6 UDP:
+I'd expect this to go in via MFD once it comes out of RFC.
 
-What NIC driver?
+> diff --git a/drivers/mfd/ocelot-core.c b/drivers/mfd/ocelot-core.c
+> index b0ff05c1759f..c2224f8a16c0 100644
+> --- a/drivers/mfd/ocelot-core.c
+> +++ b/drivers/mfd/ocelot-core.c
+> @@ -45,6 +45,9 @@
+>  #define VSC7512_SIO_CTRL_RES_START	0x710700f8
+>  #define VSC7512_SIO_CTRL_RES_SIZE	0x00000100
+>  
+> +#define VSC7512_HSIO_RES_START		0x710d0000
+> +#define VSC7512_HSIO_RES_SIZE		0x00000128
+> +
+>  #define VSC7512_ANA_RES_START		0x71880000
+>  #define VSC7512_ANA_RES_SIZE		0x00010000
+>  
+> @@ -129,8 +132,13 @@ static const struct resource vsc7512_sgpio_resources[] = {
+>  	DEFINE_RES_REG_NAMED(VSC7512_SIO_CTRL_RES_START, VSC7512_SIO_CTRL_RES_SIZE, "gcb_sio"),
+>  };
+>  
+> +static const struct resource vsc7512_serdes_resources[] = {
+> +	DEFINE_RES_REG_NAMED(VSC7512_HSIO_RES_START, VSC7512_HSIO_RES_SIZE, "hsio"),
+> +};
+> +
+>  static const struct resource vsc7512_switch_resources[] = {
+>  	DEFINE_RES_REG_NAMED(VSC7512_ANA_RES_START, VSC7512_ANA_RES_SIZE, "ana"),
+> +	DEFINE_RES_REG_NAMED(VSC7512_HSIO_RES_START, VSC7512_HSIO_RES_SIZE, "hsio"),
+>  	DEFINE_RES_REG_NAMED(VSC7512_QS_RES_START, VSC7512_QS_RES_SIZE, "qs"),
+>  	DEFINE_RES_REG_NAMED(VSC7512_QSYS_RES_START, VSC7512_QSYS_RES_SIZE, "qsys"),
+>  	DEFINE_RES_REG_NAMED(VSC7512_REW_RES_START, VSC7512_REW_RES_SIZE, "rew"),
+> @@ -176,6 +184,11 @@ static const struct mfd_cell vsc7512_devs[] = {
+>  		.use_of_reg = true,
+>  		.num_resources = ARRAY_SIZE(vsc7512_miim1_resources),
+>  		.resources = vsc7512_miim1_resources,
+> +	}, {
+> +		.name = "ocelot-serdes",
+> +		.of_compatible = "mscc,vsc7514-serdes",
+> +		.num_resources = ARRAY_SIZE(vsc7512_serdes_resources),
+> +		.resources = vsc7512_serdes_resources,
+>  	}, {
+>  		.name = "ocelot-switch",
+>  		.of_compatible = "mscc,vsc7512-switch",
+> -- 
+> 2.25.1
+> 
 
-> 
-> Plain %XDP_PASS on baseline, Page Pool driver:
-> 
-> src cpu Rx     drops  dst cpu Rx
->    2.1 Mpps       N/A    2.1 Mpps
-> 
-> cpumap redirect (w/o leaving its node) on baseline:
-> 
->    6.8 Mpps  5.0 Mpps    1.8 Mpps
-> 
-> cpumap redirect with skb PP recycling:
-> 
->    7.9 Mpps  5.7 Mpps    2.2 Mpps   +22%
-> 
-
-It is of cause awesome, that cpumap SKBs are faster than normal SKB path.
-I do wonder where the +22% number comes from?
-
-> Alexander Lobakin (2):
->    xdp: recycle Page Pool backed skbs built from XDP frames
->    xdp: remove unused {__,}xdp_release_frame()
-> 
->   include/net/xdp.h | 29 -----------------------------
->   net/core/xdp.c    | 19 ++-----------------
->   2 files changed, 2 insertions(+), 46 deletions(-)
-> 
-
+-- 
+Lee Jones [李琼斯]
