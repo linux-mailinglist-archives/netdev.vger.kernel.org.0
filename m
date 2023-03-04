@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C67826AA918
-	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 11:17:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0B116AA913
+	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 11:17:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229452AbjCDKRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Mar 2023 05:17:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54818 "EHLO
+        id S229712AbjCDKQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Mar 2023 05:16:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229699AbjCDKQ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Mar 2023 05:16:56 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CE01149AC
-        for <netdev@vger.kernel.org>; Sat,  4 Mar 2023 02:16:53 -0800 (PST)
+        with ESMTP id S229452AbjCDKQz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Mar 2023 05:16:55 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 569A11498E
+        for <netdev@vger.kernel.org>; Sat,  4 Mar 2023 02:16:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677925013; x=1709461013;
+  t=1677925012; x=1709461012;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=eM4eMCzRvTqassvwE9IO178P/Tx9J4vclt1qL5iXIv0=;
-  b=bYfJvTlGNerXN313FU5CeEj+Hlh9T6ejVPYIH/NfRqHfaH8tX1vZ1Kn1
-   FYgVLTHYqV4be3k8LFw5vUmu4EtHU+AZmEHWaiZg8GOwCjngNoOefG4gn
-   +9+bbgjBkiO1jYARZ8wqUFlgh6z5Hjf1CcltvQdo1VbtxJZEDR8iR5ah7
-   4Bn7/W/jPBFYDhAUtcuRatW7S8yVWi9lnVlgPvQlhOteIXEJVSCHpC8ts
-   QeNsPY4La8NrYQeE5xNmH4absM9zRw/7ZJz0eQIZCIJ1VVEnueHZSyTnq
-   uUL9ioG3Y8XtM6WW1yyeaQfEaQfq4G/f+1y4kR792xNDCzbtbj/Z/yeuD
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10638"; a="315645739"
+  bh=P1wkPjxcmiyE7CsMBstlYB9OyRv3JTbll2wLBdIKMaM=;
+  b=XX8wRxm0k3NPg0f8MnzrxZcQn9PJaAmEiSbNb7ytSOF8coSDF6GFsR5d
+   0E1nPMSW9+9KjnnEJNHBwXp6eul/0JqceEmoqz+5MMexCoreglD5Qyo9u
+   D23aoWooUV/PJ6A0MB5oFr+a4FW5b11gfX4gNWjx9rZigIN+S37zQPSqB
+   ZyFZtST9s03Ph7ksD33thkRfopc9mbS/DoiiTIxY3HZOgHA11FcTgjn9J
+   wClNXrkg9aCAyA9HthScWouVI7xoDc+ER23Dc3B3hJIOA7acpC+CwTE0p
+   jHwudOBz9o8T4ieKN+XwIukR8WgjVbe98+pHALbwPv3TSq8weFIi+kx0H
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10638"; a="333969093"
 X-IronPort-AV: E=Sophos;i="5.98,233,1673942400"; 
-   d="scan'208";a="315645739"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2023 02:16:51 -0800
+   d="scan'208";a="333969093"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2023 02:16:51 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10638"; a="739783305"
+X-IronPort-AV: E=McAfee;i="6500,9779,10638"; a="1004856500"
 X-IronPort-AV: E=Sophos;i="5.98,233,1673942400"; 
-   d="scan'208";a="739783305"
+   d="scan'208";a="1004856500"
 Received: from lkp-server01.sh.intel.com (HELO 776573491cc5) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 04 Mar 2023 02:16:49 -0800
+  by fmsmga005.fm.intel.com with ESMTP; 04 Mar 2023 02:16:49 -0800
 Received: from kbuild by 776573491cc5 with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1pYOwa-00024Q-35;
+        id 1pYOwa-00024T-3C;
         Sat, 04 Mar 2023 10:16:48 +0000
-Date:   Sat, 4 Mar 2023 18:16:23 +0800
+Date:   Sat, 4 Mar 2023 18:16:24 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Vincenzo Palazzo <vincenzopalazzodev@gmail.com>,
         netdev@vger.kernel.org
-Cc:     oe-kbuild-all@lists.linux.dev, davem@davemloft.net,
-        intel-wired-lan@lists.osuosl.org, jesse.brandeburg@intel.com,
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+        davem@davemloft.net, intel-wired-lan@lists.osuosl.org,
+        jesse.brandeburg@intel.com,
         Vincenzo Palazzo <vincenzopalazzodev@gmail.com>
 Subject: Re: [PATCH v2] netdevice: use ifmap instead of plain fields
-Message-ID: <202303041751.pvvDsaXr-lkp@intel.com>
+Message-ID: <202303041847.nRrrz1v9-lkp@intel.com>
 References: <20230303180926.142107-1-vincenzopalazzodev@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -70,7 +71,6 @@ Hi Vincenzo,
 Thank you for the patch! Yet something to improve:
 
 [auto build test ERROR on net/master]
-[also build test ERROR on net-next/master horms-ipvs/master linus/master v6.2 next-20230303]
 [If your patch is applied to the wrong git tree, kindly drop us a note.
 And when submitting patch, we suggest to use '--base' as documented in
 https://git-scm.com/docs/git-format-patch#_base_tree_information]
@@ -78,410 +78,426 @@ https://git-scm.com/docs/git-format-patch#_base_tree_information]
 url:    https://github.com/intel-lab-lkp/linux/commits/Vincenzo-Palazzo/netdevice-use-ifmap-instead-of-plain-fields/20230304-021243
 patch link:    https://lore.kernel.org/r/20230303180926.142107-1-vincenzopalazzodev%40gmail.com
 patch subject: [PATCH v2] netdevice: use ifmap instead of plain fields
-config: arm-randconfig-r012-20230302 (https://download.01.org/0day-ci/archive/20230304/202303041751.pvvDsaXr-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
+config: s390-randconfig-r015-20230302 (https://download.01.org/0day-ci/archive/20230304/202303041847.nRrrz1v9-lkp@intel.com/config)
+compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project 67409911353323ca5edf2049ef0df54132fa1ca7)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
         # https://github.com/intel-lab-lkp/linux/commit/51cc3d72ba492238269006f1dc11209ac772ba0a
         git remote add linux-review https://github.com/intel-lab-lkp/linux
         git fetch --no-tags linux-review Vincenzo-Palazzo/netdevice-use-ifmap-instead-of-plain-fields/20230304-021243
         git checkout 51cc3d72ba492238269006f1dc11209ac772ba0a
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/net/ethernet/3com/ drivers/net/ethernet/amd/ drivers/net/ethernet/xilinx/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash drivers/net/arcnet/ drivers/net/ethernet/davicom/ drivers/net/ethernet/packetengines/ drivers/net/ethernet/smsc/ drivers/net/ethernet/ti/ drivers/net/fddi/skfp/ drivers/net/wan/
 
 If you fix the issue, kindly add following tag where applicable
 | Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202303041751.pvvDsaXr-lkp@intel.com/
+| Link: https://lore.kernel.org/oe-kbuild-all/202303041847.nRrrz1v9-lkp@intel.com/
 
 All errors (new ones prefixed by >>):
 
-   drivers/net/ethernet/3com/3c589_cs.c: In function 'tc589_config':
->> drivers/net/ethernet/3com/3c589_cs.c:277:12: error: 'struct net_device' has no member named 'base_addr'
-     277 |         dev->base_addr = link->resource[0]->start;
-         |            ^~
-   drivers/net/ethernet/3com/3c589_cs.c:278:21: error: 'struct net_device' has no member named 'base_addr'
-     278 |         ioaddr = dev->base_addr;
-         |                     ^~
-   In file included from include/linux/device.h:15,
-                    from include/linux/dma-mapping.h:7,
-                    from include/linux/skbuff.h:28,
-                    from include/linux/if_ether.h:19,
-                    from include/linux/ethtool.h:18,
-                    from drivers/net/ethernet/3com/3c589_cs.c:36:
-   drivers/net/ethernet/3com/3c589_cs.c:295:44: error: 'struct net_device' has no member named 'base_addr'
-     295 |                                         dev->base_addr, dev->base_addr+15);
-         |                                            ^~
-   include/linux/dev_printk.h:110:37: note: in definition of macro 'dev_printk_index_wrap'
-     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
-         |                                     ^~~~~~~~~~~
-   drivers/net/ethernet/3com/3c589_cs.c:294:25: note: in expansion of macro 'dev_err'
-     294 |                         dev_err(&link->dev, "IO port conflict at 0x%03lx-0x%03lx\n",
-         |                         ^~~~~~~
-   drivers/net/ethernet/3com/3c589_cs.c:295:60: error: 'struct net_device' has no member named 'base_addr'
-     295 |                                         dev->base_addr, dev->base_addr+15);
-         |                                                            ^~
-   include/linux/dev_printk.h:110:37: note: in definition of macro 'dev_printk_index_wrap'
-     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
-         |                                     ^~~~~~~~~~~
-   drivers/net/ethernet/3com/3c589_cs.c:294:25: note: in expansion of macro 'dev_err'
-     294 |                         dev_err(&link->dev, "IO port conflict at 0x%03lx-0x%03lx\n",
-         |                         ^~~~~~~
-   drivers/net/ethernet/3com/3c589_cs.c:322:53: error: 'struct net_device' has no member named 'base_addr'
-     322 |                         (multi ? "562" : "589"), dev->base_addr, dev->irq,
-         |                                                     ^~
-   In file included from include/linux/io.h:13,
-                    from include/linux/irq.h:20,
-                    from include/asm-generic/hardirq.h:17,
-                    from arch/arm/include/asm/hardirq.h:10,
-                    from include/linux/hardirq.h:11,
-                    from include/linux/interrupt.h:11,
-                    from drivers/net/ethernet/3com/3c589_cs.c:33:
-   drivers/net/ethernet/3com/3c589_cs.c: In function 'tc589_wait_for_completion':
-   drivers/net/ethernet/3com/3c589_cs.c:368:22: error: 'struct net_device' has no member named 'base_addr'
-     368 |         outw(cmd, dev->base_addr + EL3_CMD);
-         |                      ^~
-   arch/arm/include/asm/io.h:207:60: note: in definition of macro '__io'
-     207 | #define __io(a)         __typesafe_io(PCI_IO_VIRT_BASE + ((a) & IO_SPACE_LIMIT))
-         |                                                            ^
-   drivers/net/ethernet/3com/3c589_cs.c:368:9: note: in expansion of macro 'outw'
-     368 |         outw(cmd, dev->base_addr + EL3_CMD);
-         |         ^~~~
-   In file included from include/linux/byteorder/little_endian.h:5,
-                    from arch/arm/include/uapi/asm/byteorder.h:22,
-                    from include/asm-generic/bitops/le.h:6,
-                    from arch/arm/include/asm/bitops.h:269,
-                    from include/linux/bitops.h:68,
-                    from include/linux/log2.h:12,
-                    from include/asm-generic/div64.h:55,
-                    from arch/arm/include/asm/div64.h:107,
-                    from include/linux/math.h:6,
-                    from include/linux/math64.h:6,
-                    from include/linux/time.h:6,
-                    from include/linux/stat.h:19,
-                    from include/linux/module.h:13,
-                    from drivers/net/ethernet/3com/3c589_cs.c:27:
-   drivers/net/ethernet/3com/3c589_cs.c:370:30: error: 'struct net_device' has no member named 'base_addr'
-     370 |                 if (!(inw(dev->base_addr + EL3_STATUS) & 0x1000))
-         |                              ^~
-   include/uapi/linux/byteorder/little_endian.h:37:51: note: in definition of macro '__le16_to_cpu'
-      37 | #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
-         |                                                   ^
-   arch/arm/include/asm/io.h:243:37: note: in expansion of macro '__io'
-     243 |                         __raw_readw(__io(p))); __iormb(); __v; })
-         |                                     ^~~~
-   drivers/net/ethernet/3com/3c589_cs.c:370:23: note: in expansion of macro 'inw'
-     370 |                 if (!(inw(dev->base_addr + EL3_STATUS) & 0x1000))
-         |                       ^~~
-   drivers/net/ethernet/3com/3c589_cs.c: In function 'tc589_set_xcvr':
-   drivers/net/ethernet/3com/3c589_cs.c:398:34: error: 'struct net_device' has no member named 'base_addr'
-     398 |         unsigned int ioaddr = dev->base_addr;
-         |                                  ^~
-   drivers/net/ethernet/3com/3c589_cs.c: In function 'dump_status':
-   drivers/net/ethernet/3com/3c589_cs.c:427:34: error: 'struct net_device' has no member named 'base_addr'
-     427 |         unsigned int ioaddr = dev->base_addr;
-         |                                  ^~
-   drivers/net/ethernet/3com/3c589_cs.c: In function 'tc589_reset':
-   drivers/net/ethernet/3com/3c589_cs.c:442:34: error: 'struct net_device' has no member named 'base_addr'
-     442 |         unsigned int ioaddr = dev->base_addr;
-         |                                  ^~
-   drivers/net/ethernet/3com/3c589_cs.c: In function 'netdev_get_drvinfo':
-   drivers/net/ethernet/3com/3c589_cs.c:485:36: error: 'struct net_device' has no member named 'base_addr'
-     485 |                 "PCMCIA 0x%lx", dev->base_addr);
-         |                                    ^~
-   drivers/net/ethernet/3com/3c589_cs.c: In function 'el3_open':
-   drivers/net/ethernet/3com/3c589_cs.c:522:29: error: 'struct net_device' has no member named 'base_addr'
-     522 |           dev->name, inw(dev->base_addr + EL3_STATUS));
-         |                             ^~
-   include/uapi/linux/byteorder/little_endian.h:37:51: note: in definition of macro '__le16_to_cpu'
-      37 | #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
-         |                                                   ^
-   arch/arm/include/asm/io.h:243:37: note: in expansion of macro '__io'
-     243 |                         __raw_readw(__io(p))); __iormb(); __v; })
+   In file included from drivers/net/arcnet/com20020_cs.c:44:
+   In file included from include/linux/netdevice.h:38:
+   In file included from include/net/net_namespace.h:43:
+   In file included from include/linux/skbuff.h:28:
+   In file included from include/linux/dma-mapping.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:547:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:560:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
+                                                             ^
+   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
+   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
+                                                        ^
+   In file included from drivers/net/arcnet/com20020_cs.c:44:
+   In file included from include/linux/netdevice.h:38:
+   In file included from include/net/net_namespace.h:43:
+   In file included from include/linux/skbuff.h:28:
+   In file included from include/linux/dma-mapping.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:573:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
+                                                             ^
+   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
+   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
+                                                        ^
+   In file included from drivers/net/arcnet/com20020_cs.c:44:
+   In file included from include/linux/netdevice.h:38:
+   In file included from include/net/net_namespace.h:43:
+   In file included from include/linux/skbuff.h:28:
+   In file included from include/linux/dma-mapping.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:584:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:594:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:604:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:692:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsb(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:700:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsw(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:708:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsl(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:717:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesb(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:726:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesw(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:735:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesl(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+>> drivers/net/arcnet/com20020_cs.c:232:16: error: no member named 'base_addr' in 'struct net_device'
+           ioaddr = dev->base_addr = link->resource[0]->start;
+                    ~~~  ^
+   drivers/net/arcnet/com20020_cs.c:268:11: error: no member named 'base_addr' in 'struct net_device'
+                      dev->base_addr, dev->irq);
+                      ~~~  ^
+   include/net/net_debug.h:66:46: note: expanded from macro 'netdev_dbg'
+                   netdev_printk(KERN_DEBUG, __dev, format, ##args); \
+                                                              ^~~~
+   drivers/net/arcnet/com20020_cs.c:300:21: error: no member named 'base_addr' in 'struct net_device'
+                   int ioaddr = dev->base_addr;
+                                ~~~  ^
+   12 warnings and 3 errors generated.
 --
-   drivers/net/ethernet/3com/3c574_cs.c: In function 'tc574_config':
->> drivers/net/ethernet/3com/3c574_cs.c:337:12: error: 'struct net_device' has no member named 'base_addr'
-     337 |         dev->base_addr = link->resource[0]->start;
-         |            ^~
-   drivers/net/ethernet/3com/3c574_cs.c:339:21: error: 'struct net_device' has no member named 'base_addr'
-     339 |         ioaddr = dev->base_addr;
-         |                     ^~
-   In file included from include/linux/kernel.h:29,
-                    from include/linux/cpumask.h:10,
-                    from include/linux/mm_types_task.h:14,
-                    from include/linux/mm_types.h:5,
-                    from include/linux/buildid.h:5,
-                    from include/linux/module.h:14,
-                    from drivers/net/ethernet/3com/3c574_cs.c:74:
-   drivers/net/ethernet/3com/3c574_cs.c:357:38: error: 'struct net_device' has no member named 'base_addr'
-     357 |                                   dev->base_addr, dev->base_addr+15);
-         |                                      ^~
-   include/linux/printk.h:427:33: note: in definition of macro 'printk_index_wrap'
-     427 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
-         |                                 ^~~~~~~~~~~
-   include/linux/printk.h:518:9: note: in expansion of macro 'printk'
-     518 |         printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
-         |         ^~~~~~
-   drivers/net/ethernet/3com/3c574_cs.c:356:25: note: in expansion of macro 'pr_notice'
-     356 |                         pr_notice("IO port conflict at 0x%03lx-0x%03lx\n",
-         |                         ^~~~~~~~~
-   drivers/net/ethernet/3com/3c574_cs.c:357:54: error: 'struct net_device' has no member named 'base_addr'
-     357 |                                   dev->base_addr, dev->base_addr+15);
-         |                                                      ^~
-   include/linux/printk.h:427:33: note: in definition of macro 'printk_index_wrap'
-     427 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
-         |                                 ^~~~~~~~~~~
-   include/linux/printk.h:518:9: note: in expansion of macro 'printk'
-     518 |         printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
-         |         ^~~~~~
-   drivers/net/ethernet/3com/3c574_cs.c:356:25: note: in expansion of macro 'pr_notice'
-     356 |                         pr_notice("IO port conflict at 0x%03lx-0x%03lx\n",
-         |                         ^~~~~~~~~
-   drivers/net/ethernet/3com/3c574_cs.c:430:34: error: 'struct net_device' has no member named 'base_addr'
-     430 |                     cardname, dev->base_addr, dev->irq, dev->dev_addr);
-         |                                  ^~
-   drivers/net/ethernet/3com/3c574_cs.c: In function 'dump_status':
-   drivers/net/ethernet/3com/3c574_cs.c:473:34: error: 'struct net_device' has no member named 'base_addr'
-     473 |         unsigned int ioaddr = dev->base_addr;
-         |                                  ^~
-   In file included from include/linux/io.h:13,
-                    from include/linux/irq.h:20,
-                    from include/asm-generic/hardirq.h:17,
-                    from arch/arm/include/asm/hardirq.h:10,
-                    from include/linux/hardirq.h:11,
-                    from include/linux/interrupt.h:11,
-                    from drivers/net/ethernet/3com/3c574_cs.c:79:
-   drivers/net/ethernet/3com/3c574_cs.c: In function 'tc574_wait_for_completion':
-   drivers/net/ethernet/3com/3c574_cs.c:492:22: error: 'struct net_device' has no member named 'base_addr'
-     492 |         outw(cmd, dev->base_addr + EL3_CMD);
-         |                      ^~
-   arch/arm/include/asm/io.h:207:60: note: in definition of macro '__io'
-     207 | #define __io(a)         __typesafe_io(PCI_IO_VIRT_BASE + ((a) & IO_SPACE_LIMIT))
-         |                                                            ^
-   drivers/net/ethernet/3com/3c574_cs.c:492:9: note: in expansion of macro 'outw'
-     492 |         outw(cmd, dev->base_addr + EL3_CMD);
-         |         ^~~~
-   In file included from include/linux/byteorder/little_endian.h:5,
-                    from arch/arm/include/uapi/asm/byteorder.h:22,
-                    from include/asm-generic/bitops/le.h:6,
-                    from arch/arm/include/asm/bitops.h:269,
-                    from include/linux/bitops.h:68,
-                    from include/linux/log2.h:12,
-                    from include/asm-generic/div64.h:55,
-                    from arch/arm/include/asm/div64.h:107,
-                    from include/linux/math.h:6,
-                    from include/linux/math64.h:6,
-                    from include/linux/time.h:6,
-                    from include/linux/stat.h:19,
-                    from include/linux/module.h:13:
-   drivers/net/ethernet/3com/3c574_cs.c:494:30: error: 'struct net_device' has no member named 'base_addr'
-     494 |                 if (!(inw(dev->base_addr + EL3_STATUS) & 0x1000)) break;
-         |                              ^~
-   include/uapi/linux/byteorder/little_endian.h:37:51: note: in definition of macro '__le16_to_cpu'
-      37 | #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
-         |                                                   ^
-   arch/arm/include/asm/io.h:243:37: note: in expansion of macro '__io'
-     243 |                         __raw_readw(__io(p))); __iormb(); __v; })
-         |                                     ^~~~
-   drivers/net/ethernet/3com/3c574_cs.c:494:23: note: in expansion of macro 'inw'
-     494 |                 if (!(inw(dev->base_addr + EL3_STATUS) & 0x1000)) break;
-         |                       ^~~
-   drivers/net/ethernet/3com/3c574_cs.c: In function 'tc574_reset':
-   drivers/net/ethernet/3com/3c574_cs.c:593:34: error: 'struct net_device' has no member named 'base_addr'
-     593 |         unsigned int ioaddr = dev->base_addr;
-         |                                  ^~
-   drivers/net/ethernet/3com/3c574_cs.c: In function 'el3_open':
-   drivers/net/ethernet/3com/3c574_cs.c:687:37: error: 'struct net_device' has no member named 'base_addr'
-     687 |                   dev->name, inw(dev->base_addr + EL3_STATUS));
-         |                                     ^~
-   include/uapi/linux/byteorder/little_endian.h:37:51: note: in definition of macro '__le16_to_cpu'
-      37 | #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
-         |                                                   ^
-   arch/arm/include/asm/io.h:243:37: note: in expansion of macro '__io'
-     243 |                         __raw_readw(__io(p))); __iormb(); __v; })
-         |                                     ^~~~
-   include/linux/dev_printk.h:129:48: note: in expansion of macro 'inw'
+   In file included from drivers/net/wan/pci200syn.c:27:
+   In file included from include/linux/netdevice.h:38:
+   In file included from include/net/net_namespace.h:43:
+   In file included from include/linux/skbuff.h:28:
+   In file included from include/linux/dma-mapping.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:547:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:560:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
+                                                             ^
+   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
+   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
+                                                        ^
+   In file included from drivers/net/wan/pci200syn.c:27:
+   In file included from include/linux/netdevice.h:38:
+   In file included from include/net/net_namespace.h:43:
+   In file included from include/linux/skbuff.h:28:
+   In file included from include/linux/dma-mapping.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:573:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
+                                                             ^
+   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
+   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
+                                                        ^
+   In file included from drivers/net/wan/pci200syn.c:27:
+   In file included from include/linux/netdevice.h:38:
+   In file included from include/net/net_namespace.h:43:
+   In file included from include/linux/skbuff.h:28:
+   In file included from include/linux/dma-mapping.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:584:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:594:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:604:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:692:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsb(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:700:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsw(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:708:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsl(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:717:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesb(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:726:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesw(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:735:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesl(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+>> drivers/net/wan/pci200syn.c:376:8: error: no member named 'mem_start' in 'struct net_device'
+                   dev->mem_start = ramphys;
+                   ~~~  ^
+>> drivers/net/wan/pci200syn.c:377:8: error: no member named 'mem_end' in 'struct net_device'
+                   dev->mem_end = ramphys + ramsize - 1;
+                   ~~~  ^
+   12 warnings and 2 errors generated.
 --
-   drivers/net/ethernet/amd/nmclan_cs.c: In function 'nmclan_config':
->> drivers/net/ethernet/amd/nmclan_cs.c:629:6: error: 'struct net_device' has no member named 'base_addr'
-     629 |   dev->base_addr = link->resource[0]->start;
-         |      ^~
-   drivers/net/ethernet/amd/nmclan_cs.c:631:15: error: 'struct net_device' has no member named 'base_addr'
-     631 |   ioaddr = dev->base_addr;
-         |               ^~
-   drivers/net/ethernet/amd/nmclan_cs.c:676:18: error: 'struct net_device' has no member named 'base_addr'
-     676 |               dev->base_addr, dev->irq, if_names[dev->if_port], dev->dev_addr);
-         |                  ^~
-   drivers/net/ethernet/amd/nmclan_cs.c: In function 'nmclan_reset':
-   drivers/net/ethernet/amd/nmclan_cs.c:746:20: error: 'struct net_device' has no member named 'base_addr'
-     746 |   mace_init(lp, dev->base_addr, dev->dev_addr);
-         |                    ^~
-   drivers/net/ethernet/amd/nmclan_cs.c:747:21: error: 'struct net_device' has no member named 'base_addr'
-     747 |   mace_write(lp, dev->base_addr, MACE_IMR, MACE_IMR_DEFAULT);
-         |                     ^~
-   drivers/net/ethernet/amd/nmclan_cs.c: In function 'mace_open':
-   drivers/net/ethernet/amd/nmclan_cs.c:777:28: error: 'struct net_device' has no member named 'base_addr'
-     777 |   unsigned int ioaddr = dev->base_addr;
-         |                            ^~
-   drivers/net/ethernet/amd/nmclan_cs.c: In function 'mace_close':
-   drivers/net/ethernet/amd/nmclan_cs.c:800:28: error: 'struct net_device' has no member named 'base_addr'
-     800 |   unsigned int ioaddr = dev->base_addr;
-         |                            ^~
-   drivers/net/ethernet/amd/nmclan_cs.c: In function 'netdev_get_drvinfo':
-   drivers/net/ethernet/amd/nmclan_cs.c:820:36: error: 'struct net_device' has no member named 'base_addr'
-     820 |                 "PCMCIA 0x%lx", dev->base_addr);
-         |                                    ^~
-   drivers/net/ethernet/amd/nmclan_cs.c: In function 'mace_start_xmit':
-   drivers/net/ethernet/amd/nmclan_cs.c:858:28: error: 'struct net_device' has no member named 'base_addr'
-     858 |   unsigned int ioaddr = dev->base_addr;
-         |                            ^~
-   drivers/net/ethernet/amd/nmclan_cs.c: In function 'mace_interrupt':
-   drivers/net/ethernet/amd/nmclan_cs.c:927:15: error: 'struct net_device' has no member named 'base_addr'
-     927 |   ioaddr = dev->base_addr;
-         |               ^~
-   drivers/net/ethernet/amd/nmclan_cs.c: In function 'mace_rx':
-   drivers/net/ethernet/amd/nmclan_cs.c:1062:28: error: 'struct net_device' has no member named 'base_addr'
-    1062 |   unsigned int ioaddr = dev->base_addr;
-         |                            ^~
-   drivers/net/ethernet/amd/nmclan_cs.c: In function 'mace_get_stats':
-   drivers/net/ethernet/amd/nmclan_cs.c:1271:19: error: 'struct net_device' has no member named 'base_addr'
-    1271 |   update_stats(dev->base_addr, dev);
-         |                   ^~
-   drivers/net/ethernet/amd/nmclan_cs.c: In function 'restore_multicast_list':
-   drivers/net/ethernet/amd/nmclan_cs.c:1453:28: error: 'struct net_device' has no member named 'base_addr'
-    1453 |   unsigned int ioaddr = dev->base_addr;
-         |                            ^~
+   In file included from drivers/net/wan/pc300too.c:31:
+   In file included from include/linux/netdevice.h:38:
+   In file included from include/net/net_namespace.h:43:
+   In file included from include/linux/skbuff.h:28:
+   In file included from include/linux/dma-mapping.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:547:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:560:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
+                                                             ^
+   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
+   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
+                                                        ^
+   In file included from drivers/net/wan/pc300too.c:31:
+   In file included from include/linux/netdevice.h:38:
+   In file included from include/net/net_namespace.h:43:
+   In file included from include/linux/skbuff.h:28:
+   In file included from include/linux/dma-mapping.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:573:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
+                                                             ^
+   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
+   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
+                                                        ^
+   In file included from drivers/net/wan/pc300too.c:31:
+   In file included from include/linux/netdevice.h:38:
+   In file included from include/net/net_namespace.h:43:
+   In file included from include/linux/skbuff.h:28:
+   In file included from include/linux/dma-mapping.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:584:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:594:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:604:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:692:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsb(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:700:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsw(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:708:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsl(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:717:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesb(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:726:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesw(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:735:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesl(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+>> drivers/net/wan/pc300too.c:437:8: error: no member named 'mem_start' in 'struct net_device'
+                   dev->mem_start = ramphys;
+                   ~~~  ^
+>> drivers/net/wan/pc300too.c:438:8: error: no member named 'mem_end' in 'struct net_device'
+                   dev->mem_end = ramphys + ramsize - 1;
+                   ~~~  ^
+   12 warnings and 2 errors generated.
 --
-   drivers/net/ethernet/xilinx/xilinx_emaclite.c: In function 'xemaclite_mdio_setup':
->> drivers/net/ethernet/xilinx/xilinx_emaclite.c:827:21: error: 'struct net_device' has no member named 'mem_start'
-     827 |         if (lp->ndev->mem_start != res.start) {
-         |                     ^~
-   drivers/net/ethernet/xilinx/xilinx_emaclite.c: In function 'xemaclite_of_probe':
-   drivers/net/ethernet/xilinx/xilinx_emaclite.c:1124:13: error: 'struct net_device' has no member named 'mem_start'
-    1124 |         ndev->mem_start = res->start;
-         |             ^~
->> drivers/net/ethernet/xilinx/xilinx_emaclite.c:1125:13: error: 'struct net_device' has no member named 'mem_end'
-    1125 |         ndev->mem_end = res->end;
-         |             ^~
-   In file included from include/linux/device.h:15,
-                    from include/linux/dma-mapping.h:7,
-                    from include/linux/skbuff.h:28,
-                    from include/net/net_namespace.h:43,
-                    from include/linux/netdevice.h:38,
-                    from drivers/net/ethernet/xilinx/xilinx_emaclite.c:12:
-   drivers/net/ethernet/xilinx/xilinx_emaclite.c:1166:45: error: 'struct net_device' has no member named 'mem_start'
-    1166 |                  (unsigned long __force)ndev->mem_start, lp->base_addr, ndev->irq);
-         |                                             ^~
-   include/linux/dev_printk.h:110:37: note: in definition of macro 'dev_printk_index_wrap'
-     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
-         |                                     ^~~~~~~~~~~
-   drivers/net/ethernet/xilinx/xilinx_emaclite.c:1164:9: note: in expansion of macro 'dev_info'
-    1164 |         dev_info(dev,
-         |         ^~~~~~~~
+   In file included from drivers/net/ethernet/davicom/dm9000.c:15:
+   In file included from include/linux/netdevice.h:38:
+   In file included from include/net/net_namespace.h:43:
+   In file included from include/linux/skbuff.h:28:
+   In file included from include/linux/dma-mapping.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:547:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:560:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
+                                                             ^
+   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
+   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
+                                                        ^
+   In file included from drivers/net/ethernet/davicom/dm9000.c:15:
+   In file included from include/linux/netdevice.h:38:
+   In file included from include/net/net_namespace.h:43:
+   In file included from include/linux/skbuff.h:28:
+   In file included from include/linux/dma-mapping.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:573:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
+                                                             ^
+   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
+   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
+                                                        ^
+   In file included from drivers/net/ethernet/davicom/dm9000.c:15:
+   In file included from include/linux/netdevice.h:38:
+   In file included from include/net/net_namespace.h:43:
+   In file included from include/linux/skbuff.h:28:
+   In file included from include/linux/dma-mapping.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:584:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:594:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:604:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:692:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsb(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:700:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsw(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:708:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsl(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:717:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesb(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:726:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesw(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:735:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesl(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+>> drivers/net/ethernet/davicom/dm9000.c:1572:8: error: no member named 'base_addr' in 'struct net_device'
+           ndev->base_addr = (unsigned long)db->io_addr;
+           ~~~~  ^
+   12 warnings and 1 error generated.
+..
 
 
-vim +277 drivers/net/ethernet/3com/3c589_cs.c
+vim +232 drivers/net/arcnet/com20020_cs.c
 
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  236  
-15b99ac1729503 drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2006-03-31  237  static int tc589_config(struct pcmcia_device *link)
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  238  {
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  239  	struct net_device *dev = link->priv;
-dd0fab5b940c0b drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2009-10-24  240  	int ret, i, j, multi = 0, fifo;
-923ca6f61887c9 drivers/net/ethernet/3com/3c589_cs.c Jakub Kicinski         2021-10-13  241  	__be16 addr[ETH_ALEN / 2];
-906da809c5be30 drivers/net/pcmcia/3c589_cs.c        Olof Johansson         2008-02-04  242  	unsigned int ioaddr;
-99101d3d8900dd drivers/net/pcmcia/3c589_cs.c        Joe Perches            2010-09-13  243  	static const char * const ram_split[] = {"5:3", "3:1", "1:1", "3:5"};
-dddfbd824b96a2 drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2009-10-18  244  	u8 *buf;
-dddfbd824b96a2 drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2009-10-18  245  	size_t len;
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  246  
-dd0fab5b940c0b drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2009-10-24  247  	dev_dbg(&link->dev, "3c589_config\n");
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  248  
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  249  	/* Is this a 3c562? */
-efd50585e2ff9b drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2006-10-25  250  	if (link->manf_id != MANFID_3COM)
-636b8116d4e116 drivers/net/pcmcia/3c589_cs.c        Joe Perches            2010-08-12  251  		dev_info(&link->dev, "hmmm, is this really a 3Com card??\n");
-efd50585e2ff9b drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2006-10-25  252  	multi = (link->card_id == PRODID_3COM_3C562);
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  253  
-90abdc3b973229 drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2010-07-24  254  	link->io_lines = 16;
-90abdc3b973229 drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2010-07-24  255  
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  256  	/* For the 3c562, the base address must be xx00-xx7f */
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  257  	for (i = j = 0; j < 0x400; j += 0x10) {
-6df3efccee5f56 drivers/net/ethernet/3com/3c589_cs.c Justin van Wijngaarden 2014-02-17  258  		if (multi && (j & 0x80))
-6df3efccee5f56 drivers/net/ethernet/3com/3c589_cs.c Justin van Wijngaarden 2014-02-17  259  			continue;
-90abdc3b973229 drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2010-07-24  260  		link->resource[0]->start = j ^ 0x300;
-90abdc3b973229 drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2010-07-24  261  		i = pcmcia_request_io(link);
-4c89e88bfde6a3 drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2008-08-03  262  		if (i == 0)
-4c89e88bfde6a3 drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2008-08-03  263  			break;
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  264  	}
-dd0fab5b940c0b drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2009-10-24  265  	if (i != 0)
-dd0fab5b940c0b drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2009-10-24  266  		goto failed;
-dd0fab5b940c0b drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2009-10-24  267  
-eb14120f743d29 drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2010-03-07  268  	ret = pcmcia_request_irq(link, el3_interrupt);
-dd0fab5b940c0b drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2009-10-24  269  	if (ret)
-dd0fab5b940c0b drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2009-10-24  270  		goto failed;
-dd0fab5b940c0b drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2009-10-24  271  
-1ac71e5a35eebe drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2010-07-29  272  	ret = pcmcia_enable_device(link);
-dd0fab5b940c0b drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2009-10-24  273  	if (ret)
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  274  		goto failed;
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  275  
-eb14120f743d29 drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2010-03-07  276  	dev->irq = link->irq;
-9a017a910346af drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2010-07-24 @277  	dev->base_addr = link->resource[0]->start;
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  278  	ioaddr = dev->base_addr;
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  279  	EL3WINDOW(0);
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  280  
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  281  	/* The 3c589 has an extra EEPROM for configuration info, including
-6df3efccee5f56 drivers/net/ethernet/3com/3c589_cs.c Justin van Wijngaarden 2014-02-17  282  	 * the hardware address.  The 3c562 puts the address in the CIS.
-6df3efccee5f56 drivers/net/ethernet/3com/3c589_cs.c Justin van Wijngaarden 2014-02-17  283  	 */
-dddfbd824b96a2 drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2009-10-18  284  	len = pcmcia_get_tuple(link, 0x88, &buf);
-dddfbd824b96a2 drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2009-10-18  285  	if (buf && len >= 6) {
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  286  		for (i = 0; i < 3; i++)
-923ca6f61887c9 drivers/net/ethernet/3com/3c589_cs.c Jakub Kicinski         2021-10-13  287  			addr[i] = htons(le16_to_cpu(buf[i*2]));
-dddfbd824b96a2 drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2009-10-18  288  		kfree(buf);
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  289  	} else {
-dddfbd824b96a2 drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2009-10-18  290  		kfree(buf); /* 0 < len < 6 */
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  291  		for (i = 0; i < 3; i++)
-923ca6f61887c9 drivers/net/ethernet/3com/3c589_cs.c Jakub Kicinski         2021-10-13  292  			addr[i] = htons(read_eeprom(ioaddr, i));
-923ca6f61887c9 drivers/net/ethernet/3com/3c589_cs.c Jakub Kicinski         2021-10-13  293  		if (addr[0] == htons(0x6060)) {
-636b8116d4e116 drivers/net/pcmcia/3c589_cs.c        Joe Perches            2010-08-12  294  			dev_err(&link->dev, "IO port conflict at 0x%03lx-0x%03lx\n",
-636b8116d4e116 drivers/net/pcmcia/3c589_cs.c        Joe Perches            2010-08-12  295  					dev->base_addr, dev->base_addr+15);
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  296  			goto failed;
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  297  		}
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  298  	}
-923ca6f61887c9 drivers/net/ethernet/3com/3c589_cs.c Jakub Kicinski         2021-10-13  299  	eth_hw_addr_set(dev, (u8 *)addr);
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  300  
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  301  	/* The address and resource configuration register aren't loaded from
-6df3efccee5f56 drivers/net/ethernet/3com/3c589_cs.c Justin van Wijngaarden 2014-02-17  302  	 * the EEPROM and *must* be set to 0 and IRQ3 for the PCMCIA version.
-6df3efccee5f56 drivers/net/ethernet/3com/3c589_cs.c Justin van Wijngaarden 2014-02-17  303  	 */
-6df3efccee5f56 drivers/net/ethernet/3com/3c589_cs.c Justin van Wijngaarden 2014-02-17  304  
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  305  	outw(0x3f00, ioaddr + 8);
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  306  	fifo = inl(ioaddr);
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  307  
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  308  	/* The if_port symbol can be set when the module is loaded */
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  309  	if ((if_port >= 0) && (if_port <= 3))
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  310  		dev->if_port = if_port;
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  311  	else
-636b8116d4e116 drivers/net/pcmcia/3c589_cs.c        Joe Perches            2010-08-12  312  		dev_err(&link->dev, "invalid if_port requested\n");
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  313  
-dd2e5a156525f1 drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2009-11-03  314  	SET_NETDEV_DEV(dev, &link->dev);
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  315  
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  316  	if (register_netdev(dev) != 0) {
-636b8116d4e116 drivers/net/pcmcia/3c589_cs.c        Joe Perches            2010-08-12  317  		dev_err(&link->dev, "register_netdev() failed\n");
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  318  		goto failed;
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  319  	}
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  320  
-f64e96973a1fa8 drivers/net/pcmcia/3c589_cs.c        Alexander Kurz         2010-03-31  321  	netdev_info(dev, "3Com 3c%s, io %#3lx, irq %d, hw_addr %pM\n",
-f64e96973a1fa8 drivers/net/pcmcia/3c589_cs.c        Alexander Kurz         2010-03-31  322  			(multi ? "562" : "589"), dev->base_addr, dev->irq,
-e174961ca1a0b2 drivers/net/pcmcia/3c589_cs.c        Johannes Berg          2008-10-27  323  			dev->dev_addr);
-f64e96973a1fa8 drivers/net/pcmcia/3c589_cs.c        Alexander Kurz         2010-03-31  324  	netdev_info(dev, "  %dK FIFO split %s Rx:Tx, %s xcvr\n",
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  325  			(fifo & 7) ? 32 : 8, ram_split[(fifo >> 16) & 3],
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  326  			if_names[dev->if_port]);
-15b99ac1729503 drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2006-03-31  327  	return 0;
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  328  
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  329  failed:
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  330  	tc589_release(link);
-15b99ac1729503 drivers/net/pcmcia/3c589_cs.c        Dominik Brodowski      2006-03-31  331  	return -ENODEV;
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  332  } /* tc589_config */
-^1da177e4c3f41 drivers/net/pcmcia/3c589_cs.c        Linus Torvalds         2005-04-16  333  
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  194  
+15b99ac1729503d drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2006-03-31  195  static int com20020_config(struct pcmcia_device *link)
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  196  {
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  197  	struct arcnet_local *lp;
+2dfd2533e9e7006 drivers/net/arcnet/com20020_cs.c Himangi Saraogi   2014-08-09  198  	struct com20020_dev *info;
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  199  	struct net_device *dev;
+dd0fab5b940c0b6 drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2009-10-24  200  	int i, ret;
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  201  	int ioaddr;
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  202  
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  203  	info = link->priv;
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  204  	dev = info->dev;
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  205  
+dd0fab5b940c0b6 drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2009-10-24  206  	dev_dbg(&link->dev, "config...\n");
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  207  
+dd0fab5b940c0b6 drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2009-10-24  208  	dev_dbg(&link->dev, "com20020_config\n");
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  209  
+90abdc3b973229b drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2010-07-24  210  	dev_dbg(&link->dev, "baseport1 is %Xh\n",
+90abdc3b973229b drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2010-07-24  211  		(unsigned int)link->resource[0]->start);
+90abdc3b973229b drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2010-07-24  212  
+4c89e88bfde6a3c drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2008-08-03  213  	i = -ENODEV;
+90abdc3b973229b drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2010-07-24  214  	link->io_lines = 16;
+90abdc3b973229b drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2010-07-24  215  
+7f5e760c1b26904 drivers/net/arcnet/com20020_cs.c Joe Perches       2015-05-05  216  	if (!link->resource[0]->start) {
+7f5e760c1b26904 drivers/net/arcnet/com20020_cs.c Joe Perches       2015-05-05  217  		for (ioaddr = 0x100; ioaddr < 0x400; ioaddr += 0x10) {
+90abdc3b973229b drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2010-07-24  218  			link->resource[0]->start = ioaddr;
+90abdc3b973229b drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2010-07-24  219  			i = pcmcia_request_io(link);
+4c89e88bfde6a3c drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2008-08-03  220  			if (i == 0)
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  221  				break;
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  222  		}
+7f5e760c1b26904 drivers/net/arcnet/com20020_cs.c Joe Perches       2015-05-05  223  	} else {
+90abdc3b973229b drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2010-07-24  224  		i = pcmcia_request_io(link);
+7f5e760c1b26904 drivers/net/arcnet/com20020_cs.c Joe Perches       2015-05-05  225  	}
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  226  
+7f5e760c1b26904 drivers/net/arcnet/com20020_cs.c Joe Perches       2015-05-05  227  	if (i != 0) {
+dd0fab5b940c0b6 drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2009-10-24  228  		dev_dbg(&link->dev, "requestIO failed totally!\n");
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  229  		goto failed;
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  230  	}
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  231  
+9a017a910346afd drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2010-07-24 @232  	ioaddr = dev->base_addr = link->resource[0]->start;
+dd0fab5b940c0b6 drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2009-10-24  233  	dev_dbg(&link->dev, "got ioaddr %Xh\n", ioaddr);
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  234  
+5fa9167a1bf5f5a drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2009-11-08  235  	dev_dbg(&link->dev, "request IRQ %d\n",
+eb14120f743d297 drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2010-03-07  236  		link->irq);
+7f5e760c1b26904 drivers/net/arcnet/com20020_cs.c Joe Perches       2015-05-05  237  	if (!link->irq) {
+dd0fab5b940c0b6 drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2009-10-24  238  		dev_dbg(&link->dev, "requestIRQ failed totally!\n");
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  239  		goto failed;
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  240  	}
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  241  
+eb14120f743d297 drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2010-03-07  242  	dev->irq = link->irq;
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  243  
+1ac71e5a35eebee drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2010-07-29  244  	ret = pcmcia_enable_device(link);
+dd0fab5b940c0b6 drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2009-10-24  245  	if (ret)
+dd0fab5b940c0b6 drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2009-10-24  246  		goto failed;
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  247  
+7f5e760c1b26904 drivers/net/arcnet/com20020_cs.c Joe Perches       2015-05-05  248  	if (com20020_check(dev)) {
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  249  		regdump(dev);
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  250  		goto failed;
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  251  	}
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  252  
+4cf1653aa90c632 drivers/net/pcmcia/com20020_cs.c Wang Chen         2008-11-12  253  	lp = netdev_priv(dev);
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  254  	lp->card_name = "PCMCIA COM20020";
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  255  	lp->card_flags = ARC_CAN_10MBIT; /* pretend all of them can 10Mbit */
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  256  
+dd2e5a156525f11 drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2009-11-03  257  	SET_NETDEV_DEV(dev, &link->dev);
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  258  
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  259  	i = com20020_found(dev, 0);	/* calls register_netdev */
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  260  
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  261  	if (i != 0) {
+636b8116d4e116e drivers/net/pcmcia/com20020_cs.c Joe Perches       2010-08-12  262  		dev_notice(&link->dev,
+636b8116d4e116e drivers/net/pcmcia/com20020_cs.c Joe Perches       2010-08-12  263  			   "com20020_found() failed\n");
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  264  		goto failed;
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  265  	}
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  266  
+636b8116d4e116e drivers/net/pcmcia/com20020_cs.c Joe Perches       2010-08-12  267  	netdev_dbg(dev, "port %#3lx, irq %d\n",
+636b8116d4e116e drivers/net/pcmcia/com20020_cs.c Joe Perches       2010-08-12  268  		   dev->base_addr, dev->irq);
+15b99ac1729503d drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2006-03-31  269  	return 0;
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  270  
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  271  failed:
+dd0fab5b940c0b6 drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2009-10-24  272  	dev_dbg(&link->dev, "com20020_config failed...\n");
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  273  	com20020_release(link);
+15b99ac1729503d drivers/net/pcmcia/com20020_cs.c Dominik Brodowski 2006-03-31  274  	return -ENODEV;
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  275  } /* com20020_config */
+^1da177e4c3f415 drivers/net/pcmcia/com20020_cs.c Linus Torvalds    2005-04-16  276  
 
 -- 
 0-DAY CI Kernel Test Service
