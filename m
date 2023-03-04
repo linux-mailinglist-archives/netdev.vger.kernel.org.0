@@ -2,82 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A633B6AAB3B
-	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 17:49:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6795D6AAB61
+	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 18:03:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229562AbjCDQtM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Mar 2023 11:49:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42978 "EHLO
+        id S229551AbjCDRDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Mar 2023 12:03:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbjCDQtL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Mar 2023 11:49:11 -0500
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 787181A676;
-        Sat,  4 Mar 2023 08:49:10 -0800 (PST)
-Received: from fpc.. (unknown [46.242.14.200])
-        by mail.ispras.ru (Postfix) with ESMTPSA id B9C9244C1023;
-        Sat,  4 Mar 2023 16:49:08 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru B9C9244C1023
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
-        s=default; t=1677948548;
-        bh=vA0uddaAF4XkgrzjTMknhDOe+mBtUEC4F4gPVaK/S0k=;
-        h=From:To:Cc:Subject:Date:From;
-        b=gv57uY8XyHCNo2SNdxOBtVjHHinjaG8id0LpuoJRefFLuKBHZxZ5V+KMUqHqOpaE/
-         WKTtB6v/1LYnxpg02YirFjw8uQd5dj+C77e0ztCX9yDUNwVoyWaHzeQBN4Dj8be5qv
-         klwglD/CjpjonTWWs1TQB6u43XGUofPGnr/AQb5g=
-From:   Fedor Pchelkin <pchelkin@ispras.ru>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Fedor Pchelkin <pchelkin@ispras.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        lvc-project@linuxtesting.org
-Subject: [PATCH] nfc: change order inside nfc_se_io error path
-Date:   Sat,  4 Mar 2023 19:48:44 +0300
-Message-Id: <20230304164844.133931-1-pchelkin@ispras.ru>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        with ESMTP id S229447AbjCDRDe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Mar 2023 12:03:34 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CB8DEB64
+        for <netdev@vger.kernel.org>; Sat,  4 Mar 2023 09:03:33 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id d41-20020a05600c4c2900b003e9e066550fso2896560wmp.4
+        for <netdev@vger.kernel.org>; Sat, 04 Mar 2023 09:03:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1677949412;
+        h=in-reply-to:references:cc:to:from:subject:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=rRoRMVP6YkESKWZflhbN5LHdWG/p3LxNDdy/3uOEkCo=;
+        b=O69na9crOY5zAsw9EFw/FQ7POzIPLe12zx9IIDL3YwaRZm43kWeGQ0tTMqZn72k0Eb
+         2cBHrKEXgOVCd1hD/YGnEl8+rFoZJgMg/sSqYn9Q0nynV3lpH84sg61DVV/qKPXvcIy/
+         Sy0X4EquKLQJS2AmynBxZKagXeLyeJXc7O6f7zne04XuOnnWwrel54m3QREiGiN6/Sai
+         NjnKmQewPihsEEwo/yqnbUJ8GniQNsrFtnuC6KXFmDk0TVhnHhDQi2mWJTfHgIqP8y55
+         8heOugau9PBiD9Asn6ClRQss4QFZ9ETgu/JuJOuotjxEoe9pVyMwmTu52hTF1rpv/EI7
+         992g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1677949412;
+        h=in-reply-to:references:cc:to:from:subject:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=rRoRMVP6YkESKWZflhbN5LHdWG/p3LxNDdy/3uOEkCo=;
+        b=5XMNguD0xHLAtcJ7ECHCKUSHE1bvdbkI0F12/Quxq5vCcKOzSYQ0mLWAXi3i5DaO/b
+         lYYNyENVuhdseBfNiBB2VSYIzrocwwA1B018oxT81DU7LjuGYBboUppoSDkA7T1DnsTL
+         oJ70RXM1hbqLnwHedkYZIW++AVTWJfHUgEvU7saaalJvw4eOeew+JxE7AK6Ozdol6vdQ
+         Nkq/8a4H6dh6QHdISgo3NoEMz218f7Lx8zSwNrndD+wWawOpjduvH1EWoCyqWpi8uPYj
+         BfiDyjHgKcNM+OlP5k3wZeT3bOFmkGy5qJ0gTEdOJZWtB7pPYzM2iTUQ6Z7s6elKtshu
+         l4Eg==
+X-Gm-Message-State: AO0yUKXexzAo34lZEH+Zqqb32JDJViMZzLrc7U5KV/leGTdcX7xFK8Cp
+        HsN4wQGgkgCAXQdp9wPpt3x/uVXZjnwcSN5Es44=
+X-Google-Smtp-Source: AK7set84EZGTIEMvwi1GVX+Zt903jcqPWmtaeEUXvbr0HhyY67V3IS/JK9Ni4uyhSGHNsTdPKw64UQ==
+X-Received: by 2002:a05:600c:3b05:b0:3ea:e7e7:95da with SMTP id m5-20020a05600c3b0500b003eae7e795damr4833932wms.8.1677949412003;
+        Sat, 04 Mar 2023 09:03:32 -0800 (PST)
+Received: from localhost ([2001:b07:5d37:537d:5e25:9ef5:7977:d60c])
+        by smtp.gmail.com with ESMTPSA id f13-20020a7bcd0d000000b003db01178b62sm9163050wmj.40.2023.03.04.09.03.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 04 Mar 2023 09:03:31 -0800 (PST)
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date:   Sat, 04 Mar 2023 18:03:29 +0100
+Message-Id: <CQXRF9CS3SAI.2TU7KF0UR6V7P@vincent-arch>
+Subject: Re: [PATCH v4] netdevice: use ifmap instead of plain fields
+From:   "Vincenzo Palazzo" <vincenzopalazzodev@gmail.com>
+To:     "Stephen Hemminger" <stephen@networkplumber.org>
+Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
+        <intel-wired-lan@lists.osuosl.org>, <jesse.brandeburg@intel.com>,
+        <khc@pm.waw.pl>, "kernel test robot" <lkp@intel.com>
+X-Mailer: aerc 0.14.0
+References: <20230304122432.265902-1-vincenzopalazzodev@gmail.com>
+ <20230304080650.74e8d396@hermes.local>
+In-Reply-To: <20230304080650.74e8d396@hermes.local>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-cb_context should be freed on error paths in nfc_se_io as stated by commit
-25ff6f8a5a3b ("nfc: fix memory leak of se_io context in nfc_genl_se_io").
+On Sat Mar 4, 2023 at 5:06 PM CET, Stephen Hemminger wrote:
+> On Sat,  4 Mar 2023 13:24:33 +0100
+> Vincenzo Palazzo <vincenzopalazzodev@gmail.com> wrote:
+>
+> > clean the code by using the ifmap instead of plain fields,
+> > and avoid code duplication.
+> >=20
+> > v4 with some build error that the 0 day bot found while
+> > compiling some drivers that I was not able to build on=20
+> > my machine.
+> >=20
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Link: https://lore.kernel.org/oe-kbuild-all/202303041847.nRrrz1v9-lkp@i=
+ntel.com/
+> > Signed-off-by: Vincenzo Palazzo <vincenzopalazzodev@gmail.com>
+> > ---
+>
+> Patching cadaver drivers is not worth it.
 
-Make the error path in nfc_se_io unwind everything in reverse order, i.e.
-free the cb_context after unlocking the device.
+Mh, what is mean? they are drivers that are not longer
+mantained and/or used?
 
-No functional changes intended - only adjusting to good coding practice.
+Cheers!
 
-Suggested-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
----
- net/nfc/netlink.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/nfc/netlink.c b/net/nfc/netlink.c
-index 348bf561bc9f..b9264e730fd9 100644
---- a/net/nfc/netlink.c
-+++ b/net/nfc/netlink.c
-@@ -1446,8 +1446,8 @@ static int nfc_se_io(struct nfc_dev *dev, u32 se_idx,
- 	return rc;
- 
- error:
--	kfree(cb_context);
- 	device_unlock(&dev->dev);
-+	kfree(cb_context);
- 	return rc;
- }
- 
--- 
-2.34.1
-
+Vincent.
