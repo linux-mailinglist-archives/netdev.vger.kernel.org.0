@@ -2,91 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B67066AA7A9
+	by mail.lfdr.de (Postfix) with ESMTP id 14D4A6AA7A7
 	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 03:44:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229476AbjCDCoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 21:44:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52092 "EHLO
+        id S229509AbjCDCoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 21:44:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbjCDCoU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 21:44:20 -0500
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A8F619F
-        for <netdev@vger.kernel.org>; Fri,  3 Mar 2023 18:44:19 -0800 (PST)
-Received: by mail-qt1-x82c.google.com with SMTP id z6so5159107qtv.0
-        for <netdev@vger.kernel.org>; Fri, 03 Mar 2023 18:44:19 -0800 (PST)
+        with ESMTP id S229447AbjCDCoW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 21:44:22 -0500
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E2FA619F
+        for <netdev@vger.kernel.org>; Fri,  3 Mar 2023 18:44:21 -0800 (PST)
+Received: by mail-qt1-x82e.google.com with SMTP id c3so5062620qtc.8
+        for <netdev@vger.kernel.org>; Fri, 03 Mar 2023 18:44:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1677897859;
-        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=a0CHDuylwM1/yyyS+zFHav6yB4uVh2p2GXtTo14DZbw=;
-        b=KpX0f5rDRgP420+l5Q9aAeQMWLq/ITJ7P9HA6AtMw7jd1lBAWWX4UtOqOGSJd3adbc
-         PFNCWH6VtBOzyQO+RXV1U1/x0NFxiNqlVVZKH0XOD7yUtqq3HHPOw9JR0ChLdGzE/fP1
-         bnAq1CqrR4Ng9K0aRoyVSD4Tg6RQ1nYkdzcq4=
+        d=broadcom.com; s=google; t=1677897860;
+        h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=u6HPuD5v/lw3q/tDMYG3Ltfk0jbxgGzylQ1BtW0dqug=;
+        b=Kswc5gQswjnXQ1h+aEFSn6/gfzkunXziXvmeO5n1dt44DF9rrJpwwh7fMrFWjb6BtS
+         asIqNTApWSsUC6euFyk3Dn2UsGoTxizIlch72aYKSY9/3vwEBSnFlulxXUwZup0l7kTA
+         IZl0Q0yNlQ7PLDHYVY6UBDyAvR3XbGvPIK8rc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677897859;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=a0CHDuylwM1/yyyS+zFHav6yB4uVh2p2GXtTo14DZbw=;
-        b=qQD3sj/0BWtWp/Xx1p6rKc4X+Eyb7HF5g1eP1RhelKfrR7M5qkWo/RYl1ZpK53JynI
-         AjhojDbjaSNGML1zfsPhZSksd/Hxorp7R99g4yXGHf8oLAX6EcGE+wqVl/2wqmoS90Ox
-         sML+GahiV9KvXt05k8qVvOejNJUUvqXTv8iEV0oBghp6v0uzvlDyvsvpKRyl4BMks/Go
-         qjjc1QSEkrumjNfLKrXAbOyMBaHVnCQrydGuEa7yWiVhXSyMkLELf9cQrLyPg0YNy/sg
-         7/YW4k+iscpRb18Veu9UouBc87Q0UtBc0G7WZvAORmirWhYvaeoN/tA3FtIg4kFAPyjV
-         zRwQ==
-X-Gm-Message-State: AO0yUKX3NZJsKhCMlBg5eIsYWYVxs1HwBhTJP3kGtQUW/s9SbtfisYTj
-        j20X5bL/uQnmXzn5rUaMn4Pl2g==
-X-Google-Smtp-Source: AK7set+nv/p7ia0q7RnhiFnYcpclR49Ac1ApClAABrxVZ6iIEbEa2KJIN/rgQPNTF4iLF/dzvZUcCw==
-X-Received: by 2002:a05:622a:1a1c:b0:3b8:6788:bf25 with SMTP id f28-20020a05622a1a1c00b003b86788bf25mr6264828qtb.23.1677897858361;
-        Fri, 03 Mar 2023 18:44:18 -0800 (PST)
+        d=1e100.net; s=20210112; t=1677897860;
+        h=references:in-reply-to:message-id:date:subject:cc:to:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=u6HPuD5v/lw3q/tDMYG3Ltfk0jbxgGzylQ1BtW0dqug=;
+        b=pzLT23U7eq1P4as8vMc8E0rXPDAktoKZzejnRKvy1zGzQDxru8fLEvCKNm1K9+b59G
+         lI1GQSBzkHmpk29sEOWGZDPJmXG/Erz51/WHokFO3E1Z5uv26d3kVre+wm6Y3C/eN+CS
+         ZQO/rhjpiBAtprEInq2L2zAtXRQ3FL/+q5kJFs9O6jvV4cz3LRXDSAcTqJ+P09aqkEo+
+         hxkmBbU40WbbVpBMmdIHlxiqQopJBHjNMjhzoXhxoJBU9Plj5PscSMaUkpazzqDct5OA
+         SJt3QgiPK9KdKe0P9G3z/5G1mYMyxg67qoHgfn0HBFxUz91dLMYsxGBAKOO59WG1PqtX
+         Ki7w==
+X-Gm-Message-State: AO0yUKU1b4iq4UaSYNud/L36vlF5Ba8BmHEeS8nCpb5cGYcIoygpB3Au
+        uNMaVS58rkoPbzkNaxWp07WtQg==
+X-Google-Smtp-Source: AK7set8GKwdN/n5IyXzPwI5QFnMpnmKOAGb0gYjTL6ULUGbf0Zb5MUcnEfVfj6IkgVd6pFAKOoCV3w==
+X-Received: by 2002:a05:622a:1106:b0:3ba:36f2:c207 with SMTP id e6-20020a05622a110600b003ba36f2c207mr7429995qty.39.1677897859771;
+        Fri, 03 Mar 2023 18:44:19 -0800 (PST)
 Received: from localhost.attlocal.net (108-196-84-92.lightspeed.irvnca.sbcglobal.net. [108.196.84.92])
-        by smtp.gmail.com with ESMTPSA id h20-20020ac846d4000000b003b64f1b1f40sm2963845qto.40.2023.03.03.18.44.17
+        by smtp.gmail.com with ESMTPSA id h20-20020ac846d4000000b003b64f1b1f40sm2963845qto.40.2023.03.03.18.44.18
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 03 Mar 2023 18:44:17 -0800 (PST)
+        Fri, 03 Mar 2023 18:44:19 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edumazet@google.com,
         pabeni@redhat.com, gospo@broadcom.com
-Subject: [PATCH net 0/2] bnxt_en: 2 bug fixes
-Date:   Fri,  3 Mar 2023 18:43:56 -0800
-Message-Id: <1677897838-23562-1-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 1/2] bnxt_en: Avoid order-5 memory allocation for TPA data
+Date:   Fri,  3 Mar 2023 18:43:57 -0800
+Message-Id: <1677897838-23562-2-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1677897838-23562-1-git-send-email-michael.chan@broadcom.com>
+References: <1677897838-23562-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000dca9e105f60a0968"
-X-Spam-Status: No, score=-1.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        boundary="000000000000f0c4af05f60a0997"
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        MIME_HEADER_CTYPE_ONLY,MIME_NO_TEXT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_NONE,T_TVD_MIME_NO_HEADERS autolearn=no autolearn_force=no
-        version=3.4.6
+        MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_TVD_MIME_NO_HEADERS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000dca9e105f60a0968
+--000000000000f0c4af05f60a0997
 
-This series fixes 2 issues:
+The driver needs to keep track of all the possible concurrent TPA (GRO/LRO)
+completions on the aggregation ring.  On P5 chips, the maximum number
+of concurrent TPA is 256 and the amount of memory we allocate is order-5
+on systems using 4K pages.  Memory allocation failure has been reported:
 
-1. A potential order-5 memory allocation failure during open.
-2. Double memory free bug during shutdown.
+NetworkManager: page allocation failure: order:5, mode:0x40dc0(GFP_KERNEL|__GFP_COMP|__GFP_ZERO), nodemask=(null),cpuset=/,mems_allowed=0-1
+CPU: 15 PID: 2995 Comm: NetworkManager Kdump: loaded Not tainted 5.10.156 #1
+Hardware name: Dell Inc. PowerEdge R660/0M1CC5, BIOS 0.2.25 08/12/2022
+Call Trace:
+ dump_stack+0x57/0x6e
+ warn_alloc.cold.120+0x7b/0xdd
+ ? _cond_resched+0x15/0x30
+ ? __alloc_pages_direct_compact+0x15f/0x170
+ __alloc_pages_slowpath.constprop.108+0xc58/0xc70
+ __alloc_pages_nodemask+0x2d0/0x300
+ kmalloc_order+0x24/0xe0
+ kmalloc_order_trace+0x19/0x80
+ bnxt_alloc_mem+0x1150/0x15c0 [bnxt_en]
+ ? bnxt_get_func_stat_ctxs+0x13/0x60 [bnxt_en]
+ __bnxt_open_nic+0x12e/0x780 [bnxt_en]
+ bnxt_open+0x10b/0x240 [bnxt_en]
+ __dev_open+0xe9/0x180
+ __dev_change_flags+0x1af/0x220
+ dev_change_flags+0x21/0x60
+ do_setlink+0x35c/0x1100
 
-Michael Chan (1):
-  bnxt_en: Avoid order-5 memory allocation for TPA data
+Instead of allocating this big chunk of memory and dividing it up for the
+concurrent TPA instances, allocate each small chunk separately for each
+TPA instance.  This will reduce it to order-0 allocations.
 
-Selvin Xavier (1):
-  bnxt_en: Fix the double free during device removal
+Fixes: 79632e9ba386 ("bnxt_en: Expand bnxt_tpa_info struct to support 57500 chips.")
+Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Reviewed-by: Damodharam Ammepalli <damodharam.ammepalli@broadcom.com>
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
 
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 25 +++++++++----------
- drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c |  2 ++
- 2 files changed, 14 insertions(+), 13 deletions(-)
-
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 5d4b1f2ebeac..f96d539b469c 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -3145,7 +3145,7 @@ static int bnxt_alloc_ring(struct bnxt *bp, struct bnxt_ring_mem_info *rmem)
+ 
+ static void bnxt_free_tpa_info(struct bnxt *bp)
+ {
+-	int i;
++	int i, j;
+ 
+ 	for (i = 0; i < bp->rx_nr_rings; i++) {
+ 		struct bnxt_rx_ring_info *rxr = &bp->rx_ring[i];
+@@ -3153,8 +3153,10 @@ static void bnxt_free_tpa_info(struct bnxt *bp)
+ 		kfree(rxr->rx_tpa_idx_map);
+ 		rxr->rx_tpa_idx_map = NULL;
+ 		if (rxr->rx_tpa) {
+-			kfree(rxr->rx_tpa[0].agg_arr);
+-			rxr->rx_tpa[0].agg_arr = NULL;
++			for (j = 0; j < bp->max_tpa; j++) {
++				kfree(rxr->rx_tpa[j].agg_arr);
++				rxr->rx_tpa[j].agg_arr = NULL;
++			}
+ 		}
+ 		kfree(rxr->rx_tpa);
+ 		rxr->rx_tpa = NULL;
+@@ -3163,14 +3165,13 @@ static void bnxt_free_tpa_info(struct bnxt *bp)
+ 
+ static int bnxt_alloc_tpa_info(struct bnxt *bp)
+ {
+-	int i, j, total_aggs = 0;
++	int i, j;
+ 
+ 	bp->max_tpa = MAX_TPA;
+ 	if (bp->flags & BNXT_FLAG_CHIP_P5) {
+ 		if (!bp->max_tpa_v2)
+ 			return 0;
+ 		bp->max_tpa = max_t(u16, bp->max_tpa_v2, MAX_TPA_P5);
+-		total_aggs = bp->max_tpa * MAX_SKB_FRAGS;
+ 	}
+ 
+ 	for (i = 0; i < bp->rx_nr_rings; i++) {
+@@ -3184,12 +3185,12 @@ static int bnxt_alloc_tpa_info(struct bnxt *bp)
+ 
+ 		if (!(bp->flags & BNXT_FLAG_CHIP_P5))
+ 			continue;
+-		agg = kcalloc(total_aggs, sizeof(*agg), GFP_KERNEL);
+-		rxr->rx_tpa[0].agg_arr = agg;
+-		if (!agg)
+-			return -ENOMEM;
+-		for (j = 1; j < bp->max_tpa; j++)
+-			rxr->rx_tpa[j].agg_arr = agg + j * MAX_SKB_FRAGS;
++		for (j = 0; j < bp->max_tpa; j++) {
++			agg = kcalloc(MAX_SKB_FRAGS, sizeof(*agg), GFP_KERNEL);
++			if (!agg)
++				return -ENOMEM;
++			rxr->rx_tpa[j].agg_arr = agg;
++		}
+ 		rxr->rx_tpa_idx_map = kzalloc(sizeof(*rxr->rx_tpa_idx_map),
+ 					      GFP_KERNEL);
+ 		if (!rxr->rx_tpa_idx_map)
 -- 
 2.32.0
 
 
---000000000000dca9e105f60a0968
+--000000000000f0c4af05f60a0997
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -157,13 +243,13 @@ hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
 E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBI5sebnCb1XMkShaxkxcTRiCUr8E+pP
-ynuaDEyHVgWQMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMw
-NDAyNDQxOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIIlpGd+2ln6r8Y1t2Y6Sbi7CoJmW6V2x
+enG2GzVVFvDxMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMw
+NDAyNDQyMFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAc6DH19DDs22N2GE04OqVarEg87ZzfVINNt72zvjvfAP5aZT7h
-X/0SI84jpS7Y6Hr+85czNeYZg3QRtO79bsTVYsqbziCMcVGYHvfbZFDIURJhw6f3ZJk8DIuRBd5h
-x4u1ogj8dvZbGWEu1Z3QnTZhA4945MpltDduI9r1n2LVx5yvwid0dtn5/CuZ58QzMevF4KirmbZ/
-J3wfqTf15jAyZD3qLHIzDuMLfW4uvCJhqB8dqJxAgim8xkp+zy4tSvUPQP4oeoWMwJe9LYlvmudf
-+okoawSyNMqXl8kVOrVNmmVyGbNbThWmgL609ecEvtK3dlr3e7CM686G1eTn4wU8
---000000000000dca9e105f60a0968--
+ATANBgkqhkiG9w0BAQEFAASCAQCxYxQCNxRmSFci9UGT0rCJmy50sOmGNUwjaLLIk278A/7LZgMX
+pUkIwTuVE5x8ObH6uFMVfO4f7N6NgFyrJ8pmRQqRWx+aBw75FwQywI3TnVzF3sTZNRHkpxpHnpf+
+niPJhrDPaNTktLBBWyrsqXaSBQA/IInSjLjdGtU6OVqvrZmUTy7LJ2qpRsT/pcbQlpYEmMpSkSH1
+L2nku9fd2+R81hcl596x1lAVnsAJUEXYFYDk1QF1Bel7GbS+3irhdNafvUld0WADt8u7uyuKcJ/x
+b4fDWT95JypN5yG2lubUGUCkvS+dq60nyBzIowJGxLvv2EtEPYxHpfx/ZE7sCN3/
+--000000000000f0c4af05f60a0997--
