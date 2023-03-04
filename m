@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C04FC6AAC7C
-	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 21:45:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69C5D6AAC80
+	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 21:48:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229625AbjCDUpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Mar 2023 15:45:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36882 "EHLO
+        id S229759AbjCDUsr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Mar 2023 15:48:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbjCDUpU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Mar 2023 15:45:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7328B13DE6
-        for <netdev@vger.kernel.org>; Sat,  4 Mar 2023 12:45:19 -0800 (PST)
+        with ESMTP id S229746AbjCDUsn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Mar 2023 15:48:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 005D61B551;
+        Sat,  4 Mar 2023 12:48:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FD5F60A78
-        for <netdev@vger.kernel.org>; Sat,  4 Mar 2023 20:45:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13C63C433D2;
-        Sat,  4 Mar 2023 20:45:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F12860A48;
+        Sat,  4 Mar 2023 20:48:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB6A2C433D2;
+        Sat,  4 Mar 2023 20:48:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677962718;
-        bh=VhACX2BzP2CJ6dJLPQ+50XcvA66BdZH2ABZ8DF7ECSM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NFs5fCIRcX2VOqpv56MRzafPSgTXmcsOPQYTwdwg57MF7ZOIwDzbHq/RV712fCYhO
-         SHCAgbhBdzAi7YQiohNAa/1BnXPn6FEPv8zc3s0ol6gCeum6c3nD5IrVZfX03h64U3
-         vfmPWrienNCZXNwdJLxppQc4wQurKsNslVlbm3cWFSML8f1fs71f+VnAKLlYhuP9eD
-         9niddf1s1nNCS8xWtCbuVeKox/PG9MNJ+4f+OgUQUIb/mApFd+B/7dMTNkpQv0rPAA
-         ZnDbgj113QV4b96w04zWUM7UL8xOg1cDFPpdLPkk5vVHHfmwtGjU9Vu1ySvPxxAVGD
-         HNr8P1a0ud+qA==
-Date:   Sat, 4 Mar 2023 12:45:17 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Chuck Lever III <chuck.lever@oracle.com>
-Cc:     Chuck Lever <cel@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        "kernel-tls-handshake@lists.linux.dev" 
-        <kernel-tls-handshake@lists.linux.dev>,
-        John Haxby <john.haxby@oracle.com>
-Subject: Re: [PATCH v6 1/2] net/handshake: Create a NETLINK service for
- handling handshake requests
-Message-ID: <20230304124517.394695e8@kernel.org>
-In-Reply-To: <0C0B6439-B3D0-46F3-8CD2-6AACD0DDE923@oracle.com>
-References: <167786872946.7199.12490725847535629441.stgit@91.116.238.104.host.secureserver.net>
-        <167786949141.7199.15896224944077004509.stgit@91.116.238.104.host.secureserver.net>
-        <20230303182131.1d1dd4d8@kernel.org>
-        <62D38E0F-DA0C-46F7-85D4-80FD61C55FD3@oracle.com>
-        <83CDD55A-703B-4A61-837A-C98F1A28BE17@oracle.com>
-        <20230304111616.1b11acea@kernel.org>
-        <C236CECE-702B-4410-A509-9D33F51392C2@oracle.com>
-        <20230304120108.05dd44c5@kernel.org>
-        <0C0B6439-B3D0-46F3-8CD2-6AACD0DDE923@oracle.com>
+        s=k20201202; t=1677962918;
+        bh=NfBmVBeYzwKjgG01hzGaF8aGIwKsoVzw9AJTurpewMM=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=NplpAjwiVhpTS3DgedLpcxM49Rxt8SNDOfrg6C2pX44h1V3EhVMYCP8yvNT65DIA9
+         PditGBBi6emtHyhEpzrzFDbLV12GC6ht7lUpAv6al6rF8kkMNNj4Q8hhOLfGdHp9Y6
+         xSzPMl/ZMDaYQANYpQNZvBWxrUAmrkfG0vYUIYRRCwj3ENmbv664cOfIqcz5r616yn
+         +svuLAHBQN1Mp/h2VodZF1iaHVIB4ONqvn7hD3FR3Xg8b8yh3NTCie4Zf/gXnFJL87
+         J36rB0yb2vETE4osKvlXQj1De9VFC2lpUAtCiLlQIfUgtzK5w8pDXEGkhmK83WBT6b
+         EQhbpNMBAsGPA==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 623905C036B; Sat,  4 Mar 2023 12:48:38 -0800 (PST)
+Date:   Sat, 4 Mar 2023 12:48:38 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, peterz@infradead.org,
+        jstultz@google.com, edumazet@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/3] softirq: avoid spurious stalls due to need_resched()
+Message-ID: <20230304204838.GA1265853@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20221222221244.1290833-1-kuba@kernel.org>
+ <20221222221244.1290833-3-kuba@kernel.org>
+ <87r0u6j721.ffs@tglx>
+ <20230303133143.7b35433f@kernel.org>
+ <20230303223739.GC1301832@paulmck-ThinkPad-P17-Gen-1>
+ <20230303233627.GA2136520@paulmck-ThinkPad-P17-Gen-1>
+ <20230303154413.1d846ac3@kernel.org>
+ <20230304012535.GF1301832@paulmck-ThinkPad-P17-Gen-1>
+ <20230303173921.29d9faef@kernel.org>
+ <20230304031109.GG1301832@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230304031109.GG1301832@paulmck-ThinkPad-P17-Gen-1>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,59 +65,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 4 Mar 2023 20:19:06 +0000 Chuck Lever III wrote:
-> >> Sorry to make trouble -- hopefully this discussion is also
-> >> keeping you out of trouble too.  
+On Fri, Mar 03, 2023 at 07:11:09PM -0800, Paul E. McKenney wrote:
+> On Fri, Mar 03, 2023 at 05:39:21PM -0800, Jakub Kicinski wrote:
+> > On Fri, 3 Mar 2023 17:25:35 -0800 Paul E. McKenney wrote:
+> > > > Just to be sure - have you seen Peter's patches?
+> > > > 
+> > > >   git://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git core/softirq
+> > > > 
+> > > > I think it feeds the time limit to the callback from softirq,
+> > > > so the local 3ms is no more?  
+> > > 
+> > > I might or might not have back in September of 2020.  ;-)
+> > > 
+> > > But either way, the question remains:  Should RCU_SOFTIRQ do time checking
+> > > in ksoftirqd context?  Seems like the answer should be "yes", independently
+> > > of Peter's patches.
 > > 
-> > I was hoping choice of BSD would keep me out of trouble :)
-> > My second choice was to make them public domain.. but lawyers should
-> > like BSD-3-clause more because of the warranty statement.  
+> > :-o  I didn't notice, I thought that's from Dec 22, LWN was writing
+> > about Peter's rework at that point. I'm not sure what the story is :(
+> > And when / if any of these changes are coming downstream.
 > 
-> The issue is that the GPL forces our hand. Derived code
-> is under GPL if the spec is under GPL. The 3 existing
-> specs in Documentation/netlink/specs are unlabeled, and
-> therefore I think would be subsumed under the blanket
-> license that other kernel source falls under.
+> Not a problem either way, as the compiler would complain bitterly about
+> the resulting merge conflict and it is easy to fix.  ;-)
 
-Understood.
+And even more not a problem because in_serving_softirq() covers both the
+softirq environment as well as ksoftirqd.  So that "else" clause is for
+rcuoc kthreads, which do not block other softirq vectors.  So I am adding
+a comment instead...
 
-> I don't think you can simply choose a license for
-> the derived code. The only way to fix this so that the
-> generated code is under BSD-3-clause is to explicitly
-> re-license the specs under Documentation/netlink/specs/
-> as BSD-3-clause. (which is as easy as asking the authors
-> for permission to do that - I assume this stuff is new
-> enough that it won't be difficult to track them down).
-
-Fair point. I'll relicense, they are all written by me.
-The two other people who touched them should be easy to
-get hold of.
-
-> Again, it would be convenient for contributors in this
-> area to specify the spec and code license in the YAML
-> spec. Anyone can contribute under BSD-3-clause or GPL,
-> but the code and spec licenses have to match, IMO.
-
-Yes, I'll clean the existing specs up. The only outstanding
-question AFAICT is whether we really need the GPL or you can 
-get an exception for yourself and use BSD?
-
-I care more about the downstream users than kernel devs on this,
-I'd really prefer for the users not to have to worry about 
-licensing. There may be a codegen for some funky new language 
-which requires a specific license which may not be compatible
-with GPL.
-
-For normal C this is covered by the "uAPI note" but I doubt
-that will cover generated code. And frankly would prefer not 
-to have to ask :( So let's try BSD?
-
-FWIW I always thought that companies which have an explicit
-"can contribute to the kernel in GPL" policy do it because
-one needs an exception _for_GPL_, not for the kernel.
-Logically the answer to BSD-3-Clause to be "oh, yea, we 
-don't care"... I said "logically", you can make the obvious
-joke yourself :)
-
-> I can start with the LF first to see if we actually have
-> a problem.
+							Thanx, Paul
