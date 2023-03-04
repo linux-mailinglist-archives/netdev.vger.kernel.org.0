@@ -2,73 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE5CB6AA629
-	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 01:13:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CB346AA62F
+	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 01:21:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229844AbjCDANA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 19:13:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46370 "EHLO
+        id S229559AbjCDAV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 19:21:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229696AbjCDAM5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 19:12:57 -0500
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4729268E;
-        Fri,  3 Mar 2023 16:12:51 -0800 (PST)
-Received: by mail-qt1-x82f.google.com with SMTP id r5so4857087qtp.4;
-        Fri, 03 Mar 2023 16:12:51 -0800 (PST)
+        with ESMTP id S229506AbjCDAVZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 19:21:25 -0500
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3018C5B5D0;
+        Fri,  3 Mar 2023 16:21:24 -0800 (PST)
+Received: by mail-lj1-x234.google.com with SMTP id z5so4028075ljc.8;
+        Fri, 03 Mar 2023 16:21:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1677888770;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=i4u4zN80f7tcAvVyt7THDAii+UFiTWyh0CLCh3yTArU=;
-        b=qMmhH316fm2+9EjhIhUEhayKGHDU4ZwLtGO4FH17fr3y+y9d5wiCOgCjv/xd8VDHBk
-         YMkw+dFX308it5+CRIkZwlkZi45xN94H6Uv2YNVgG5KceCvVKAl6SDKAASEAVV4Uuur/
-         jUFTsTnHhYsPw8v7AbZ80gqBelDrPLtZyDuwRY+kklPiQxpvh/3sG8J269NhTAkOCSYo
-         M6o2gSnOTr/wYJ9fMa9bK+Wpg9BFV+eYYMxPtTwf8teRuOO1lSpGebQU4Yg9gNWmZF7W
-         1mP9d5wCmh6yZ8cKgDuzGhcBHNbJfDztJWGkZuhSJVy65zt3Bqa0CGjJ08NtIVZiZqol
-         mtWw==
+        bh=JinayjQ+FRJfdz6rtIqH02UdJx0VHccAawBNmE8kFLI=;
+        b=otzTRpj2mVxBB2jy4tVDGo+7c4Bhy+M5/xoDVew66k5kMGm2DaaN71u3n4f4/gittE
+         UoGXkEg77ZJZAFiJR8/xT3dGsAgSXkByl+koOa5nhzMFSb8MoFr5AbLHPUb/VWE2ck6O
+         PhrLI6z6Y/5WTDZ3UCMO8kG+1bSTgoZbLv+mUvrKkOYC+GYC1vXzthQho1tVSK3jl0e1
+         Z8kp4tglonkwsSbFtPQ8mpgkhvRcieRa02Nh393FqfM/z0+lAbMtCH1U6HsvbLLdF21g
+         SVAmAjV9/Kfvvv8QTHVmrl7/6BWNFkNm5jG8Z7vOAwzQ5kFPfwgZTW9cqxwqoGFtYnQ4
+         U+6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677888770;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=i4u4zN80f7tcAvVyt7THDAii+UFiTWyh0CLCh3yTArU=;
-        b=X/aQ6OTYPDTgIKqyXUthtMA77iFIF06ww4LifzYIopqtyv5JG2injRQdzPVMatJfZf
-         UAw/ScijE6+oF0AQkOXMWmmY5C2CtZAQJgoYoO1ITX880CuIF/bVtzqPCW+reNIFjsOj
-         AWdLJEO+o/6qvuxQMaPiM7H4Gs3cc5DuQyCjRF8BG9YAqWUJS/vss34OaQYY4WEIzsA7
-         wg+5x16P7CeTUZY2Sj/Moay/DEz3oUwe8sIIrsm1be56HlVRAaSwcKfUe4A/fy+kO36W
-         Et0INmX1yIVmO+TEeswzA1KouxevhrLwkK4Fv02nikxa/d4A1/J4MXTdN52zxHfFOX23
-         zO2Q==
-X-Gm-Message-State: AO0yUKUThinEHk1GGHQBLR90djQO8gSGq4jHu+IkiHhRBnsKibv9/iml
-        40/0vKYZWntdTDnL0MeJd7DOeVTwNxLfww==
-X-Google-Smtp-Source: AK7set+vkfXgY5drvynmvbq6Q4KSNK3cXR3fV6Q/++aEF54U1b6ACiedKIJM+Vq8qBeoWl45BSVPOQ==
-X-Received: by 2002:ac8:5fd0:0:b0:3bf:d51e:b14 with SMTP id k16-20020ac85fd0000000b003bfd51e0b14mr5443837qta.46.1677888770137;
-        Fri, 03 Mar 2023 16:12:50 -0800 (PST)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id d79-20020ae9ef52000000b007296805f607sm2749242qkg.17.2023.03.03.16.12.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Mar 2023 16:12:49 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     netfilter-devel@vger.kernel.org,
-        network dev <netdev@vger.kernel.org>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>, davem@davemloft.net,
-        kuba@kernel.org, Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Aaron Conole <aconole@redhat.com>
-Subject: [PATCH nf-next 6/6] selftests: add a selftest for big tcp
-Date:   Fri,  3 Mar 2023 19:12:42 -0500
-Message-Id: <05ccf9eec0b79e62d52ae65a096126546d84bea6.1677888566.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.39.1
-In-Reply-To: <cover.1677888566.git.lucien.xin@gmail.com>
-References: <cover.1677888566.git.lucien.xin@gmail.com>
+        bh=JinayjQ+FRJfdz6rtIqH02UdJx0VHccAawBNmE8kFLI=;
+        b=OtDzt9FzfVLVF/qR5ZcbNLv19qDn/glY3Wq9N+xh1Plx1vQyFvr7r0vM1cSaCJfP66
+         KilXmrfE4/6iEYQODC37gIQ6nW5bXa047nAF0U1gal6Tj+j8/sHniNov7N6K+U5nXQGN
+         gkS9ToRkRVUW7PuiU2TCpSfiz1wr3daqPn150mB+1GbZkOBmzr0eMXG+USqZo3JbTwsU
+         BC9UzZ+kmXqSBzvsUboOXdHLDvJtgBYCjQ27EV4pBkC0iahIXmqqZ9S2ipI/9jxOA+zj
+         538U4iNcR7PTAPuQwNyi3fVyQPFpW6ifI15dod3TGFqM98SxK/hMQUg4Sm0HYjMvNFy/
+         iPnw==
+X-Gm-Message-State: AO0yUKXrOVGXLnoWW6kW/JDNvCzRfPpNLdahqrpOvs9vAewRGfvUJ6V3
+        08Ut7dMS37inRsyknwziEBhnaY75tbPk3p1Y6lBN+4pLIRM=
+X-Google-Smtp-Source: AK7set9D99c+i6SWpFr5eOXLcsEwBWpUbeNnXnVvzaZAVbE39bnRoE/pylU8uWjZ2OrFbqAIxfbXwhL13a9ljTiXT7k=
+X-Received: by 2002:a05:651c:b9b:b0:295:9dc0:f204 with SMTP id
+ bg27-20020a05651c0b9b00b002959dc0f204mr1108583ljb.9.1677889282251; Fri, 03
+ Mar 2023 16:21:22 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20230206233912.9410-1-bage@debian.org> <20230206233912.9410-2-bage@debian.org>
+In-Reply-To: <20230206233912.9410-2-bage@debian.org>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Fri, 3 Mar 2023 16:21:10 -0800
+Message-ID: <CABBYNZLuCoTZEnC83E_Ctz4kF4Bpr=O7a9WbBY-92_3auYT_ew@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] Bluetooth: Add new quirk for broken local ext
+ features page 2
+To:     Bastian Germann <bage@debian.org>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Vasily Khoruzhick <anarsoul@gmail.com>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -79,221 +75,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This test runs on the client-router-server topo, and monitors the traffic
-on the RX devices of router and server while sending BIG TCP packets with
-netperf from client to server. Meanwhile, it changes 'tso' on the TX devs
-and 'gro' on the RX devs. Then it checks if any BIG TCP packets appears
-on the RX devs with 'ip/ip6tables -m length ! --length 0:65535' for each
-case.
+Hi Bastien,
 
-Note that we also add tc action ct in link1 ingress to cover the ipv6
-jumbo packets process in nf_ct_skb_network_trim() of nf_conntrack_ovs.
+On Mon, Feb 6, 2023 at 3:39=E2=80=AFPM Bastian Germann <bage@debian.org> wr=
+ote:
+>
+> From: Vasily Khoruzhick <anarsoul@gmail.com>
+>
+> Some adapters (e.g. RTL8723CS) advertise that they have more than
+> 2 pages for local ext features, but they don't support any features
+> declared in these pages. RTL8723CS reports max_page =3D 2 and declares
+> support for sync train and secure connection, but it responds with
+> either garbage or with error in status on corresponding commands.
+>
+> Signed-off-by: Vasily Khoruzhick <anarsoul@gmail.com>
+> Signed-off-by: Bastian Germann <bage@debian.org>
+> ---
+>  include/net/bluetooth/hci.h | 7 +++++++
+>  net/bluetooth/hci_event.c   | 4 +++-
+>  2 files changed, 10 insertions(+), 1 deletion(-)
+>
+> diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
+> index 8d773b042c85..7127313140cf 100644
+> --- a/include/net/bluetooth/hci.h
+> +++ b/include/net/bluetooth/hci.h
+> @@ -294,6 +294,13 @@ enum {
+>          * during the hdev->setup vendor callback.
+>          */
+>         HCI_QUIRK_BROKEN_MWS_TRANSPORT_CONFIG,
+> +
+> +       /* When this quirk is set, max_page for local extended features
+> +        * is set to 1, even if controller reports higher number. Some
+> +        * controllers (e.g. RTL8723CS) report more pages, but they
+> +        * don't actually support features declared there.
+> +        */
+> +       HCI_QUIRK_BROKEN_LOCAL_EXT_FEATURES_PAGE_2,
+>  };
+>
+>  /* HCI device flags */
+> diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+> index ad92a4be5851..83ebc8e65b42 100644
+> --- a/net/bluetooth/hci_event.c
+> +++ b/net/bluetooth/hci_event.c
+> @@ -886,7 +886,9 @@ static u8 hci_cc_read_local_ext_features(struct hci_d=
+ev *hdev, void *data,
+>         if (rp->status)
+>                 return rp->status;
+>
+> -       if (hdev->max_page < rp->max_page)
+> +       if (!test_bit(HCI_QUIRK_BROKEN_LOCAL_EXT_FEATURES_PAGE_2,
+> +                     &hdev->quirks) &&
+> +           hdev->max_page < rp->max_page)
+>                 hdev->max_page =3D rp->max_page;
+>
+>         if (rp->page < HCI_MAX_PAGES)
+> --
+> 2.39.1
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- tools/testing/selftests/net/Makefile   |   1 +
- tools/testing/selftests/net/big_tcp.sh | 180 +++++++++++++++++++++++++
- 2 files changed, 181 insertions(+)
- create mode 100755 tools/testing/selftests/net/big_tcp.sh
+Looks like I never replied to this one, we might want to add a warning
+when the controller requires such quirks since the manufacturer is
+supposed to fix this in their firmware.
 
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 6cd8993454d7..099741290184 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -48,6 +48,7 @@ TEST_PROGS += l2_tos_ttl_inherit.sh
- TEST_PROGS += bind_bhash.sh
- TEST_PROGS += ip_local_port_range.sh
- TEST_PROGS += rps_default_mask.sh
-+TEST_PROGS += big_tcp.sh
- TEST_PROGS_EXTENDED := in_netns.sh setup_loopback.sh setup_veth.sh
- TEST_PROGS_EXTENDED += toeplitz_client.sh toeplitz.sh
- TEST_GEN_FILES =  socket nettest
-diff --git a/tools/testing/selftests/net/big_tcp.sh b/tools/testing/selftests/net/big_tcp.sh
-new file mode 100755
-index 000000000000..cde9a91c4797
---- /dev/null
-+++ b/tools/testing/selftests/net/big_tcp.sh
-@@ -0,0 +1,180 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Testing For IPv4 and IPv6 BIG TCP.
-+# TOPO: CLIENT_NS (link0)<--->(link1) ROUTER_NS (link2)<--->(link3) SERVER_NS
-+
-+CLIENT_NS=$(mktemp -u client-XXXXXXXX)
-+CLIENT_IP4="198.51.100.1"
-+CLIENT_IP6="2001:db8:1::1"
-+
-+SERVER_NS=$(mktemp -u server-XXXXXXXX)
-+SERVER_IP4="203.0.113.1"
-+SERVER_IP6="2001:db8:2::1"
-+
-+ROUTER_NS=$(mktemp -u router-XXXXXXXX)
-+SERVER_GW4="203.0.113.2"
-+CLIENT_GW4="198.51.100.2"
-+SERVER_GW6="2001:db8:2::2"
-+CLIENT_GW6="2001:db8:1::2"
-+
-+MAX_SIZE=128000
-+CHK_SIZE=65535
-+
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
-+setup() {
-+	ip netns add $CLIENT_NS
-+	ip netns add $SERVER_NS
-+	ip netns add $ROUTER_NS
-+	ip -net $ROUTER_NS link add link1 type veth peer name link0 netns $CLIENT_NS
-+	ip -net $ROUTER_NS link add link2 type veth peer name link3 netns $SERVER_NS
-+
-+	ip -net $CLIENT_NS link set link0 up
-+	ip -net $CLIENT_NS link set link0 mtu 1442
-+	ip -net $CLIENT_NS addr add $CLIENT_IP4/24 dev link0
-+	ip -net $CLIENT_NS addr add $CLIENT_IP6/64 dev link0 nodad
-+	ip -net $CLIENT_NS route add $SERVER_IP4 dev link0 via $CLIENT_GW4
-+	ip -net $CLIENT_NS route add $SERVER_IP6 dev link0 via $CLIENT_GW6
-+	ip -net $CLIENT_NS link set dev link0 \
-+		gro_ipv4_max_size $MAX_SIZE gso_ipv4_max_size $MAX_SIZE
-+	ip -net $CLIENT_NS link set dev link0 \
-+		gro_max_size $MAX_SIZE gso_max_size $MAX_SIZE
-+	ip net exec $CLIENT_NS sysctl -wq net.ipv4.tcp_window_scaling=10
-+
-+	ip -net $ROUTER_NS link set link1 up
-+	ip -net $ROUTER_NS link set link2 up
-+	ip -net $ROUTER_NS addr add $CLIENT_GW4/24 dev link1
-+	ip -net $ROUTER_NS addr add $CLIENT_GW6/64 dev link1 nodad
-+	ip -net $ROUTER_NS addr add $SERVER_GW4/24 dev link2
-+	ip -net $ROUTER_NS addr add $SERVER_GW6/64 dev link2 nodad
-+	ip -net $ROUTER_NS link set dev link1 \
-+		gro_ipv4_max_size $MAX_SIZE gso_ipv4_max_size $MAX_SIZE
-+	ip -net $ROUTER_NS link set dev link2 \
-+		gro_ipv4_max_size $MAX_SIZE gso_ipv4_max_size $MAX_SIZE
-+	ip -net $ROUTER_NS link set dev link1 \
-+		gro_max_size $MAX_SIZE gso_max_size $MAX_SIZE
-+	ip -net $ROUTER_NS link set dev link2 \
-+		gro_max_size $MAX_SIZE gso_max_size $MAX_SIZE
-+	# test for nf_ct_skb_network_trim in nf_conntrack_ovs used by TC ct action.
-+	ip net exec $ROUTER_NS tc qdisc add dev link1 ingress
-+	ip net exec $ROUTER_NS tc filter add dev link1 ingress \
-+		proto ip flower ip_proto tcp action ct
-+	ip net exec $ROUTER_NS tc filter add dev link1 ingress \
-+		proto ipv6 flower ip_proto tcp action ct
-+	ip net exec $ROUTER_NS sysctl -wq net.ipv4.ip_forward=1
-+	ip net exec $ROUTER_NS sysctl -wq net.ipv6.conf.all.forwarding=1
-+
-+	ip -net $SERVER_NS link set link3 up
-+	ip -net $SERVER_NS addr add $SERVER_IP4/24 dev link3
-+	ip -net $SERVER_NS addr add $SERVER_IP6/64 dev link3 nodad
-+	ip -net $SERVER_NS route add $CLIENT_IP4 dev link3 via $SERVER_GW4
-+	ip -net $SERVER_NS route add $CLIENT_IP6 dev link3 via $SERVER_GW6
-+	ip -net $SERVER_NS link set dev link3 \
-+		gro_ipv4_max_size $MAX_SIZE gso_ipv4_max_size $MAX_SIZE
-+	ip -net $SERVER_NS link set dev link3 \
-+		gro_max_size $MAX_SIZE gso_max_size $MAX_SIZE
-+	ip net exec $SERVER_NS sysctl -wq net.ipv4.tcp_window_scaling=10
-+	ip net exec $SERVER_NS netserver 2>&1 >/dev/null
-+}
-+
-+cleanup() {
-+	ip net exec $SERVER_NS pkill netserver
-+	ip -net $ROUTER_NS link del link1
-+	ip -net $ROUTER_NS link del link2
-+	ip netns del "$CLIENT_NS"
-+	ip netns del "$SERVER_NS"
-+	ip netns del "$ROUTER_NS"
-+}
-+
-+start_counter() {
-+	local ipt="iptables"
-+	local iface=$1
-+	local netns=$2
-+
-+	[ "$NF" = "6" ] && ipt="ip6tables"
-+	ip net exec $netns $ipt -t raw -A PREROUTING -i $iface \
-+		-m length ! --length 0:$CHK_SIZE -j ACCEPT
-+}
-+
-+check_counter() {
-+	local ipt="iptables"
-+	local iface=$1
-+	local netns=$2
-+
-+	[ "$NF" = "6" ] && ipt="ip6tables"
-+	test `ip net exec $netns $ipt -t raw -L -v |grep $iface | awk '{print $1}'` != "0"
-+}
-+
-+stop_counter() {
-+	local ipt="iptables"
-+	local iface=$1
-+	local netns=$2
-+
-+	[ "$NF" = "6" ] && ipt="ip6tables"
-+	ip net exec $netns $ipt -t raw -D PREROUTING -i $iface \
-+		-m length ! --length 0:$CHK_SIZE -j ACCEPT
-+}
-+
-+do_netperf() {
-+	local serip=$SERVER_IP4
-+	local netns=$1
-+
-+	[ "$NF" = "6" ] && serip=$SERVER_IP6
-+	ip net exec $netns netperf -$NF -t TCP_STREAM -H $serip 2>&1 >/dev/null
-+}
-+
-+do_test() {
-+	local cli_tso=$1
-+	local gw_gro=$2
-+	local gw_tso=$3
-+	local ser_gro=$4
-+	local ret="PASS"
-+
-+	ip net exec $CLIENT_NS ethtool -K link0 tso $cli_tso
-+	ip net exec $ROUTER_NS ethtool -K link1 gro $gw_gro
-+	ip net exec $ROUTER_NS ethtool -K link2 tso $gw_tso
-+	ip net exec $SERVER_NS ethtool -K link3 gro $ser_gro
-+
-+	start_counter link1 $ROUTER_NS
-+	start_counter link3 $SERVER_NS
-+	do_netperf $CLIENT_NS
-+
-+	if check_counter link1 $ROUTER_NS; then
-+		check_counter link3 $SERVER_NS || ret="FAIL_on_link3"
-+	else
-+		ret="FAIL_on_link1"
-+	fi
-+
-+	stop_counter link1 $ROUTER_NS
-+	stop_counter link3 $SERVER_NS
-+	printf "%-9s %-8s %-8s %-8s: [%s]\n" \
-+		$cli_tso $gw_gro $gw_tso $ser_gro $ret
-+	test $ret = "PASS"
-+}
-+
-+testup() {
-+	echo "CLI GSO | GW GRO | GW GSO | SER GRO" && \
-+	do_test "on"  "on"  "on"  "on"  && \
-+	do_test "on"  "off" "on"  "off" && \
-+	do_test "off" "on"  "on"  "on"  && \
-+	do_test "on"  "on"  "off" "on"  && \
-+	do_test "off" "on"  "off" "on"
-+}
-+
-+if ! netperf -V &> /dev/null; then
-+	echo "SKIP: Could not run test without netperf tool"
-+	exit $ksft_skip
-+fi
-+
-+if ! ip link help 2>&1 | grep gso_ipv4_max_size &> /dev/null; then
-+	echo "SKIP: Could not run test without gso/gro_ipv4_max_size supported in ip-link"
-+	exit $ksft_skip
-+fi
-+
-+trap cleanup EXIT
-+setup && echo "Testing for BIG TCP:" && \
-+NF=4 testup && echo "***v4 Tests Done***" && \
-+NF=6 testup && echo "***v6 Tests Done***"
-+exit $?
--- 
-2.39.1
 
+
+--=20
+Luiz Augusto von Dentz
