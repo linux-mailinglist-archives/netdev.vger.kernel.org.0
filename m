@@ -2,111 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A05C86AAC58
-	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 21:15:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F5CF6AAC5F
+	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 21:17:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229702AbjCDUPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Mar 2023 15:15:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47676 "EHLO
+        id S229455AbjCDURm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Mar 2023 15:17:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbjCDUPA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Mar 2023 15:15:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E9C18169;
-        Sat,  4 Mar 2023 12:14:59 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 08C8EB808D0;
-        Sat,  4 Mar 2023 20:14:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21BEFC433EF;
-        Sat,  4 Mar 2023 20:14:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677960896;
-        bh=3r578BL7TwpWHlpQ0on74A4ds7yYrKerlhknBqHE0IQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Of74lGgrQfr/3MT85Mry+dk98AnwqBx/+IKkV8dz7hpunpG/juil6jblXMxLIcXBH
-         otDFXzf26WX1vIQfjtEdOfRcHdWgRJ6boGHh/XsJsH/L1/dtv7Z5jnzlaj2op2B4o4
-         nGMfOtYx0YzF4FQmz+EBu9ckLQPtV3mUYeJDCdB5elK/H55dP2tJpt/pvCT6I8ESZS
-         EYIJw0pgzfvvru+19Oo2drthgeVkF5beApFrnmEAqghgBqsbpzQmm5hoht9HFoxh3N
-         3kN6/VWB+pginmwR+OoqxqA0Q70T/VI0WywY3cn/oA7H6RmGx2NYH+NcaRO0HJUqAa
-         NE+vFF1/bWCDg==
-Date:   Sat, 4 Mar 2023 20:14:53 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Clark <robdclark@gmail.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sean Paul <sean@poorly.run>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Kishon Vijay Abraham I <kishon@kernel.org>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        linux-clk@vger.kernel.org, linux-crypto@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        linux-media@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-phy@lists.infradead.org, linux-gpio@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-riscv@lists.infradead.org,
-        linux-spi@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: yamllint: Require a space after a comment
- '#'
-Message-ID: <ZAOmvQMn+7R9KcVx@sirena.org.uk>
-References: <20230303214223.49451-1-robh@kernel.org>
+        with ESMTP id S229714AbjCDURh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Mar 2023 15:17:37 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEBBD1A97A
+        for <netdev@vger.kernel.org>; Sat,  4 Mar 2023 12:17:34 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id u3-20020a17090a450300b00239db6d7d47so5427447pjg.4
+        for <netdev@vger.kernel.org>; Sat, 04 Mar 2023 12:17:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112; t=1677961054;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=SUaF2/cQyGgMHhHHAZ1X0lvpVBqaw9k25ZM4oArX/p0=;
+        b=MGEJacBybDXKzXEfk2/LdGcMTcMrBC/41jhRCw9HOJCFstfNUPMY/biW+3by/Zx6en
+         2wojZHlUR5bP0idHEMlE4QyaRFUZ4q+8YVqxtgWDMOVM4vkQsDwOBJ4QzRfBxImZu+ZX
+         040xhhs7l86ZPQVc1ExATldwi4B3mYCc0jTkwBbUgfkqP18dIs/cQGDFWxmwdh5yrY8I
+         dB0Kuu5K4jRikt/9xZNmE+ZBR8E5z4PWPIsi6Y+be59K6TN6laxQe81eTBQMG0OgXeDz
+         jRkEzcYXNyLW7DMQ/X55r/uwLOhPv7SxYgwYDZQwIITEuPUVvW3Bs1PrMW0uid0rwhe9
+         4Cng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1677961054;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=SUaF2/cQyGgMHhHHAZ1X0lvpVBqaw9k25ZM4oArX/p0=;
+        b=Jwgcf/LDN8u1cXgponXUBFRBgD31788QFdy+8kj7qbJ/G+FahLuQihrLPMtHgp+rYU
+         lpvlnM1ICZpD9jD7Yn9/n3TcRN/w9woO3bfI7eiob/fSOVpsY7QJ9jC61E+bMLbz7++J
+         EUZ6TrpFpMjTW7of55vTD5xIVYBp8OiT9ks2QgF2G3ouOBj7VUxjqrjiAe0+5tRO2481
+         duZ4O4ashYjFZ/DUpZQhi7SOEFU4duBHuTgPJfff2DgXn8vNAhN9JFNTmLn0cR199e4g
+         3mGAb9poNxzyOnpRHSsA3uzejioAFTkczrEM+j/wNGdIcr1wVzw+QODURAuVmJgcfHC0
+         9TWg==
+X-Gm-Message-State: AO0yUKX1jOtZ4S9Yx2ETEIJmHCI91s8CAHdDDO80wIvrF58g+rvhsvRU
+        8e2L+vksSerfpMm00P+oTFqBolN4V/SZzcX+YPvVtQ==
+X-Google-Smtp-Source: AK7set9YR9416BdqD0TU4Ki0FVYzCFqwjP0jNHmGnZiQUthwhqq3ld6eyR7npcS96ScpZcZawvIl2w==
+X-Received: by 2002:a17:902:d4cc:b0:19b:dbf7:f9ca with SMTP id o12-20020a170902d4cc00b0019bdbf7f9camr8204282plg.0.1677961054107;
+        Sat, 04 Mar 2023 12:17:34 -0800 (PST)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id lg16-20020a170902fb9000b00192a8b35fa3sm3687682plb.122.2023.03.04.12.17.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 04 Mar 2023 12:17:33 -0800 (PST)
+Date:   Sat, 4 Mar 2023 12:17:32 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Vincenzo Palazzo <vincenzopalazzodev@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+Subject: Re: [PATCH v1] netdevice: clean old FIXME that it is not worthed
+Message-ID: <20230304121732.3d102b7e@hermes.local>
+In-Reply-To: <20230304194433.560378-1-vincenzopalazzodev@gmail.com>
+References: <20230304194433.560378-1-vincenzopalazzodev@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="DpC9JxmBtx/VM1Dr"
-Content-Disposition: inline
-In-Reply-To: <20230303214223.49451-1-robh@kernel.org>
-X-Cookie: Single tasking: Just Say No.
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat,  4 Mar 2023 20:44:33 +0100
+Vincenzo Palazzo <vincenzopalazzodev@gmail.com> wrote:
 
---DpC9JxmBtx/VM1Dr
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> Alternative patch that removes an old FIXME because it currently
+> the change is worthed as some comments in the patch point out
+> (https://lore.kernel.org/all/20230304080650.74e8d396@hermes.local/#t)
+> 
+> Signed-off-by: Vincenzo Palazzo <vincenzopalazzodev@gmail.com>
+> ---
+>  include/linux/netdevice.h | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 6a14b7b11766..82af7eb62075 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -2033,7 +2033,6 @@ struct net_device {
+>  	struct dev_ifalias	__rcu *ifalias;
+>  	/*
+>  	 *	I/O specific fields
+> -	 *	FIXME: Merge these and struct ifmap into one
+>  	 */
+>  	unsigned long		mem_end;
+>  	unsigned long		mem_start;
 
-On Fri, Mar 03, 2023 at 03:42:23PM -0600, Rob Herring wrote:
-> Enable yamllint to check the prefered commenting style of requiring a
-> space after a comment character '#'. Fix the cases in the tree which
-> have a warning with this enabled. Most cases just need a space after the
-> '#'. A couple of cases with comments which were not intended to be
-> comments are revealed. Those were in ti,sa2ul.yaml, ti,cal.yaml, and
-> brcm,bcmgenet.yaml.
+These fields actually are only used by old hardware devices that
+pre-date buses with auto discovery. I.e ISA bus not PCI.
 
-Acked-by: Mark Brown <broonie@kernel.org>
+Since ISA bus support is gone, either these devices should have
+been removed as well or they really aren't using those fields..
 
---DpC9JxmBtx/VM1Dr
-Content-Type: application/pgp-signature; name="signature.asc"
+If someone wanted to clean this stuff out, start by seeing
+if any of those devices still live. For example, the E1000e has
+a couple of variants and dropping support for the non-PCI variant
+would be ok.
 
------BEGIN PGP SIGNATURE-----
+All of arcnet could/should go away? Maybe move to staging?
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmQDprwACgkQJNaLcl1U
-h9AqEQf+Ki9N0115CHG31rvFs9RFMaV3z2FBkTIO1Zs9u9jJ0UFONa8aS8bq8aPQ
-gm3UuhyofZ4p+tqg6Y6nKHVWZalcU4N95+sNm/ZzjCvDKR66x0O+uPlCXd8pfREU
-kNoKd5CFtP+fjtXf0oEscR6C4Pu/I20EuDWUyrfNii3oFMAuDeVS2wgXadAxOJ6d
-fSPFcja3GW9gJ4EE0LacuhUM5ZUtW25HeTc7vmBynRd7tTqjc4FQgPSyt8tvUe0Y
-VodxCsoIvcS9vx94nDyo1USMh/HFKAtRlJNuuWj1+kWcrRUfBuJVlSSzZt6o9M+k
-6cA73SE3SJ8RJIFe8Bz9r6ULWYSY6A==
-=/n6h
------END PGP SIGNATURE-----
-
---DpC9JxmBtx/VM1Dr--
+The wan devices might also have been ISA only devices that are now
+unusable.
