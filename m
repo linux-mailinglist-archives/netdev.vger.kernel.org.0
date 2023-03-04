@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 439BB6AA959
-	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 12:56:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A62AD6AA96D
+	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 13:28:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229451AbjCDL4q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Mar 2023 06:56:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51088 "EHLO
+        id S229478AbjCDM0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Mar 2023 07:26:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbjCDL4p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Mar 2023 06:56:45 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91CC512BF7
-        for <netdev@vger.kernel.org>; Sat,  4 Mar 2023 03:56:43 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id c18so3036504wmr.3
-        for <netdev@vger.kernel.org>; Sat, 04 Mar 2023 03:56:43 -0800 (PST)
+        with ESMTP id S229437AbjCDM0c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Mar 2023 07:26:32 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 731D41969B
+        for <netdev@vger.kernel.org>; Sat,  4 Mar 2023 04:26:30 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id j19-20020a05600c191300b003eb3e1eb0caso5467889wmq.1
+        for <netdev@vger.kernel.org>; Sat, 04 Mar 2023 04:26:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1677931001;
+        d=gmail.com; s=20210112; t=1677932788;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=TKK/iG5K9zWrV4XF7+E7FOfh/8Q63ckdq09rrLqINWo=;
-        b=aJlQsvhktZD9cHDc/EXe5gi3FOd5XwLkxRRSQRkfvkKtrf8xkfvhzExrVBVb5tWgK6
-         2RUaCFcNAlKPF8+Ect2i5/G/COTpq3dYG9GueLiLHFjkVWrDSrjkJsnx43UtLk2EZqkO
-         fgZpeKWJlWz0wcI1iWjXViApBiQ9T72OsV6+hJKwPxPYDVmQdZ/ORAREYfVOWMcHlLut
-         d536A9J/ZVHxu6SRSFBU4ZOAiKB7p1t6JwRAl3D760Xn8hZn75VV7obnAqNO8/CcjtUT
-         tJd5svqJcjJzaSoUA7iheRyayYwJc52s6OdxhytSKJVjWd1r/tF8Et5iyy7Nvr1v+vCo
-         vJEw==
+        bh=t44anjaBAzNJ7CFzTmVvfekMt2lk1zm9OMq9giS02Ak=;
+        b=nQR7FlhV5FoL7iWfOb7hDwYGk4wPH8Lxju3D0e7HsuxtHi8MOUq9ysKAqyu/SJQgoe
+         XJdBjCycNSnlPCEQuZqiL3Hmzh5Su+A9bdlcgYGFXA4Bq7BnSpfmG0HiRIggZKNYipV3
+         DNiWn41qYmv0s7WlNZ3UFB9l2DILbUjxQfpWQDKgQKuldlgZY8TZLjbeVPUBi1r/B5i0
+         LpvVorOv2EPht4lgwiapKd/OHeYbechmpsiRvUWwBOB8wO+PROpG8xX21LdL7BTbMhIG
+         WKGoWkC2Rq5SlKvSNrvaGBqIz4jkgYuITtiKEpjjkxQt0HBzAMm0AlFgGTPyIkft+Qek
+         9lEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677931001;
+        d=1e100.net; s=20210112; t=1677932788;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=TKK/iG5K9zWrV4XF7+E7FOfh/8Q63ckdq09rrLqINWo=;
-        b=pIpuDoqOa3JEmt1vAGlpcE7W8iRNFlOv0N+Now1b2MtmVQP2G5uL+BrUhMleYvGODx
-         XB/jdd7oomnNapeA+mwUByiyTjQW087xkTwwa5VQ+kTT/pRbk0AsBovf59rb7NNCFlFc
-         +VS+O0bkYJ+Y6MT5HcS3wgZV7MIlKjvx2QqP9I52afH0yoQMH9OAzN5KnCn3e7ZW7uRn
-         4Ifk3frpxL/RMuUkwj5fRQOZE96U6OA+qwZ3dhir0IlsRqd5/VyMbvewhkN5qxqwrFeP
-         bgO+1X6LNCl6fWZn/aZi4xi80sMudy7XifUFm5SAf6F/XfsZC4gRCW48Tm/4m8Jfwkne
-         wtTQ==
-X-Gm-Message-State: AO0yUKVn+lNKVRokdq4Or5acoxTxrOhx9Rb4pDrUFc5AMKCeu4BB8u4f
-        W48Pfi7Yv6lj0glUeeZMlxmHnyQiSK2b6XFPiV0=
-X-Google-Smtp-Source: AK7set8QmKjg5OZgxTVG20QxLFctKfhOEeHh/W64rCmn+sUmNFU9XvACuXnvus+G2a+99qBwX4N0LQ==
-X-Received: by 2002:a05:600c:1906:b0:3eb:3c76:c23c with SMTP id j6-20020a05600c190600b003eb3c76c23cmr4251846wmq.3.1677931001497;
-        Sat, 04 Mar 2023 03:56:41 -0800 (PST)
+        bh=t44anjaBAzNJ7CFzTmVvfekMt2lk1zm9OMq9giS02Ak=;
+        b=DrdcSrFdXhXGCqfkyguFyc0uauJ7wpd4z+oXIXvoh7xJkSzvWEjW8+scUneqXjWC1E
+         nM0CuZt8N3ULve8SV25X7VYdZK2ItW/MlETpqKSTgJRR/Nh/r7489WYNYRmHi7qrwN9h
+         PSP48hmglPgNkbjq81UvkchkcdqiNtz4LAx9vA0Mmnv5Evva1ddHNGu0nDaewZOY6wlT
+         IKnWifoC4kHQ2dSXfqHIRda3aMlklXdOu/BofUHQn7JQHpFMaeFvmfm8JK8wBaF24McI
+         GcVtnF8zOZz7kstXYaHtDxlM5aaDOVCpYRcOjClfog3gqGIZ1/0tl5NcnJ9oFi0bnEmn
+         HByA==
+X-Gm-Message-State: AO0yUKXj+sm3tmBMECldSbSKQoTQeYHzygoVPBUU3ycnEqf1O6s3pZK6
+        H694yFPALi3kZE05ZPI/rqUaC58YKhGlDB70J94=
+X-Google-Smtp-Source: AK7set9DwdAnpfclMzNp0P9Q2G6H8iesddS3Vn4c69OI7RAPRgCuIJjH++zN+0uDG2mXoUfGY3PDvQ==
+X-Received: by 2002:a05:600c:3107:b0:3eb:38a2:2bcd with SMTP id g7-20020a05600c310700b003eb38a22bcdmr4248253wmo.28.1677932788478;
+        Sat, 04 Mar 2023 04:26:28 -0800 (PST)
 Received: from localhost.localdomain ([2001:b07:5d37:537d:5e25:9ef5:7977:d60c])
-        by smtp.gmail.com with ESMTPSA id m13-20020a056000008d00b002c54c92e125sm4901142wrx.46.2023.03.04.03.56.40
+        by smtp.gmail.com with ESMTPSA id r18-20020a05600c35d200b003dfe549da4fsm9434658wmq.18.2023.03.04.04.26.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Mar 2023 03:56:41 -0800 (PST)
+        Sat, 04 Mar 2023 04:26:27 -0800 (PST)
 From:   Vincenzo Palazzo <vincenzopalazzodev@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, intel-wired-lan@lists.osuosl.org,
         jesse.brandeburg@intel.com, khc@pm.waw.pl,
         Vincenzo Palazzo <vincenzopalazzodev@gmail.com>,
         kernel test robot <lkp@intel.com>
-Subject: [PATCH v3] netdevice: use ifmap instead of plain fields
-Date:   Sat,  4 Mar 2023 12:56:26 +0100
-Message-Id: <20230304115626.215026-1-vincenzopalazzodev@gmail.com>
+Subject: [PATCH v4] netdevice: use ifmap instead of plain fields
+Date:   Sat,  4 Mar 2023 13:24:33 +0100
+Message-Id: <20230304122432.265902-1-vincenzopalazzodev@gmail.com>
 X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -72,6 +72,10 @@ X-Mailing-List: netdev@vger.kernel.org
 
 clean the code by using the ifmap instead of plain fields,
 and avoid code duplication.
+
+v4 with some build error that the 0 day bot found while
+compiling some drivers that I was not able to build on 
+my machine.
 
 Reported-by: kernel test robot <lkp@intel.com>
 Link: https://lore.kernel.org/oe-kbuild-all/202303041847.nRrrz1v9-lkp@intel.com/
