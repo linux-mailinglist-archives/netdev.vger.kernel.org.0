@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF0456AAA45
-	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 14:50:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90D576AAA62
+	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 15:24:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229455AbjCDNur (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Mar 2023 08:50:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46920 "EHLO
+        id S229589AbjCDOYB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Mar 2023 09:24:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbjCDNuq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Mar 2023 08:50:46 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40F03EB58;
-        Sat,  4 Mar 2023 05:50:45 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id a2so5595653plm.4;
-        Sat, 04 Mar 2023 05:50:45 -0800 (PST)
+        with ESMTP id S229437AbjCDOX7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Mar 2023 09:23:59 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C5F1A4AE;
+        Sat,  4 Mar 2023 06:23:58 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id u3-20020a17090a450300b00239db6d7d47so4911424pjg.4;
+        Sat, 04 Mar 2023 06:23:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1677937845;
+        d=gmail.com; s=20210112; t=1677939838;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=55fX7XmVrjOhmxNsuhTqY9HmQVxMxyykjJcmJvuidsU=;
-        b=OmtbjRr+nsnQBjrXWIYmJvZQS+3fz+Cg/MG8pJ83B4OHnWKzOj49OfozXhhgIqvWGu
-         bqQFq1Y1JZ53ctY0IIijMjIVjftHzltd5FTjFkJ88gkzsqxSr/AJ7gfZO0TjskluRInJ
-         piNSHLhNv4Tv23j1SXyeG5hc+GxZNFU++vaCtzbaDi6NPEEU8t0VlURNzeusZF4HoHWt
-         q1+qr8ZmHK54pJUPXIlabiJ1Bm08qyizU7BH6p6ihRCOLDChzBnlsxxKmGuGIz8Rjce2
-         5QIa8bm8nmucxZ9AUjY0OWr9vVU5ve87Ab11Khce9jcMGmmmVbxEPeWWdA+oPhuYNVUM
-         pxaA==
+        bh=E40eLy+/e4WccoyCmK8MHA6xOEkEoM/JFQrkvVd5+lc=;
+        b=C69qxzcM4ocpfcTdB9d7K2pPOg8tam57WmyhAaqc11l9Scmqe5K/uWhMvq/zsyLL6z
+         1FwTReikWwE3+vM4MKtv2k7oQED872sixJOS2KXEwyjAAE2U1sKbOwJ06GtZxvhDMxrb
+         AVRvG1CsldUctSwLaBnmBQkUl2ujo8CgS0hOrDDVOBShhi52dEwxtLRG4V3Wg0qa/IHh
+         6UnMcKCgbAikEDE4eR25b0EUC3mMsTTC60FM1fHRbaaGbqbK3E/wBSKdtvHHndQS47r8
+         LU78Jy5xMIwrLGXz6nk98SvE6a/Ao7NviGyQ+1HFL1y3QT3VeXrzPjjHRS6LdFh/IXDM
+         nkCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677937845;
+        d=1e100.net; s=20210112; t=1677939838;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=55fX7XmVrjOhmxNsuhTqY9HmQVxMxyykjJcmJvuidsU=;
-        b=6WefFp6eItilQ9S/TSkSkX9pEvMI1+dFkltgPTukZB2MBou7TdBG7UCpcmugVx+E1X
-         U67GlaNmBvMfomSxTJ2eVLu3DmDHhAHMG0m2RuH5IGTRmnsBLJgwZm8kadZrd0wDPY0X
-         hXTqffqqtBjlRYLlRXD0SCVwOcEQ1OQEi7f/2ykXUPtsmx6xX33WbaGkUG4hXEsi4WnM
-         2DJRo2Y7+hKiMiMkyGCCHY4r+imi+uNf6gxOUYApNBVbvikICfm77DLEujUfXVPUsJiL
-         T8+ai+JPpXlfX+j1K61EVFJFM3IPAF1CYE6d3C2flubOBqOi0/6ZV+35xN0r7QHShTNz
-         Dy6Q==
-X-Gm-Message-State: AO0yUKXgYMIUa3IO7vCe5qAH33dIldb08afiz6BL3S1qQzu/Wc2rp0eQ
-        oI8zKaGYQ1Q8lpF95EDq4GE=
-X-Google-Smtp-Source: AK7set9L78JEUAdTmlSpluFThbWCI/GGjtWZpfaHfq7WEBm11psjgDhJ4tgHe5P7kNGDjW80IhW+wg==
-X-Received: by 2002:a17:903:234a:b0:19a:b1ac:45d4 with SMTP id c10-20020a170903234a00b0019ab1ac45d4mr6025132plh.3.1677937844732;
-        Sat, 04 Mar 2023 05:50:44 -0800 (PST)
+        bh=E40eLy+/e4WccoyCmK8MHA6xOEkEoM/JFQrkvVd5+lc=;
+        b=ULIjqMFcUYAnaXbAeTYRQFgfXigvXwSX44vrPI6kP3EyRl5Wjqe4KnAtTusyjzPm54
+         7wbcvPrhUhewMlP6tkac5be7LzY11swcfWVwB8RhA/TDM8ZjkouABlhFMahig/OD0OVS
+         hSkKswoQryuXNnYuwdJ4IGoHEfMf/1sXhoAkjOoDBLy5OCNWCFWRczyYiKbKBwkBCFd5
+         qqyJ+BZvcO62hbXjpkcyFY9Zslnbx/kyWW1GN4LcNfQUePQIYJDd1FjnoNQp8jc95+54
+         nL5jnoHzQwIsmkv9WApA5AI+8NvTK8AaC2D2nQ+4Q6s2hcg7Litr0mFAHzTFd2B0m39o
+         s9hw==
+X-Gm-Message-State: AO0yUKWHz8VUg6ow+6E+4WkZ1nQs/MK+9N18xrpsD69FCeEYZ7cFCJ12
+        aGsZs+0PBQXL91HRr3julao=
+X-Google-Smtp-Source: AK7set8T/YxAc9SFEUfkXxNSRdG+eOe+UhcryHT3kFHCDvAilrsViarerJRhKev8BPE9PVSwkdRbXw==
+X-Received: by 2002:a17:90b:190f:b0:230:a082:b085 with SMTP id mp15-20020a17090b190f00b00230a082b085mr4200433pjb.0.1677939838314;
+        Sat, 04 Mar 2023 06:23:58 -0800 (PST)
 Received: from ubuntu.localdomain ([112.10.230.37])
-        by smtp.gmail.com with ESMTPSA id 4-20020a170902e9c400b0019c61616f82sm3362161plk.230.2023.03.04.05.50.40
+        by smtp.gmail.com with ESMTPSA id bt9-20020a17090af00900b00230dc295651sm3236502pjb.8.2023.03.04.06.23.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Mar 2023 05:50:44 -0800 (PST)
+        Sat, 04 Mar 2023 06:23:57 -0800 (PST)
 From:   Min Li <lm0963hack@gmail.com>
 To:     luiz.dentz@gmail.com
 Cc:     marcel@holtmann.org, johan.hedberg@gmail.com, davem@davemloft.net,
@@ -56,9 +56,9 @@ Cc:     marcel@holtmann.org, johan.hedberg@gmail.com, davem@davemloft.net,
         wsa+renesas@sang-engineering.com, linux@weissschuh.net,
         linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/1] Bluetooth: fix race condition in hci_cmd_sync_clear
-Date:   Sat,  4 Mar 2023 21:50:35 +0800
-Message-Id: <20230304135035.6232-1-lm0963hack@gmail.com>
+Subject: [PATCH v2 1/1] Bluetooth: fix race condition in hidp_session_thread
+Date:   Sat,  4 Mar 2023 22:23:30 +0800
+Message-Id: <20230304142330.7367-1-lm0963hack@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -72,97 +72,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a potential race condition in hci_cmd_sync_work and
-hci_cmd_sync_clear, and could lead to use-after-free. For instance,
-hci_cmd_sync_work is added to the 'req_workqueue' after cancel_work_sync
-The entry of 'cmd_sync_work_list' may be freed in hci_cmd_sync_clear, and
-causing kernel panic when it is used in 'hci_cmd_sync_work'.
+There is a potential race condition in hidp_session_thread that may
+lead to use-after-free. For instance, the timer is active while
+hidp_del_timer is called in hidp_session_thread(). After hidp_session_put,
+then 'session' will be freed, causing kernel panic when hidp_idle_timeout
+is running.
 
-Here's the call trace:
+The solution is to use del_timer_sync instead of del_timer.
 
-dump_stack_lvl+0x49/0x63
-print_report.cold+0x5e/0x5d3
-? hci_cmd_sync_work+0x282/0x320
-kasan_report+0xaa/0x120
-? hci_cmd_sync_work+0x282/0x320
-__asan_report_load8_noabort+0x14/0x20
-hci_cmd_sync_work+0x282/0x320
-process_one_work+0x77b/0x11c0
-? _raw_spin_lock_irq+0x8e/0xf0
-worker_thread+0x544/0x1180
-? poll_idle+0x1e0/0x1e0
-kthread+0x285/0x320
-? process_one_work+0x11c0/0x11c0
-? kthread_complete_and_exit+0x30/0x30
-ret_from_fork+0x22/0x30
-</TASK>
+Here is the call trace:
 
-Allocated by task 266:
-kasan_save_stack+0x26/0x50
-__kasan_kmalloc+0xae/0xe0
-kmem_cache_alloc_trace+0x191/0x350
-hci_cmd_sync_queue+0x97/0x2b0
-hci_update_passive_scan+0x176/0x1d0
-le_conn_complete_evt+0x1b5/0x1a00
-hci_le_conn_complete_evt+0x234/0x340
-hci_le_meta_evt+0x231/0x4e0
-hci_event_packet+0x4c5/0xf00
-hci_rx_work+0x37d/0x880
-process_one_work+0x77b/0x11c0
-worker_thread+0x544/0x1180
-kthread+0x285/0x320
-ret_from_fork+0x22/0x30
-
-Freed by task 269:
-kasan_save_stack+0x26/0x50
-kasan_set_track+0x25/0x40
-kasan_set_free_info+0x24/0x40
-____kasan_slab_free+0x176/0x1c0
-__kasan_slab_free+0x12/0x20
-slab_free_freelist_hook+0x95/0x1a0
-kfree+0xba/0x2f0
-hci_cmd_sync_clear+0x14c/0x210
-hci_unregister_dev+0xff/0x440
-vhci_release+0x7b/0xf0
-__fput+0x1f3/0x970
-____fput+0xe/0x20
-task_work_run+0xd4/0x160
-do_exit+0x8b0/0x22a0
-do_group_exit+0xba/0x2a0
-get_signal+0x1e4a/0x25b0
-arch_do_signal_or_restart+0x93/0x1f80
-exit_to_user_mode_prepare+0xf5/0x1a0
-syscall_exit_to_user_mode+0x26/0x50
-ret_from_fork+0x15/0x30
+? hidp_session_probe+0x780/0x780
+call_timer_fn+0x2d/0x1e0
+__run_timers.part.0+0x569/0x940
+hidp_session_probe+0x780/0x780
+call_timer_fn+0x1e0/0x1e0
+ktime_get+0x5c/0xf0
+lapic_next_deadline+0x2c/0x40
+clockevents_program_event+0x205/0x320
+run_timer_softirq+0xa9/0x1b0
+__do_softirq+0x1b9/0x641
+__irq_exit_rcu+0xdc/0x190
+irq_exit_rcu+0xe/0x20
+sysvec_apic_timer_interrupt+0xa1/0xc0
 
 v2:
   - Fixed code style issues
 
 Signed-off-by: Min Li <lm0963hack@gmail.com>
 ---
- net/bluetooth/hci_sync.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/bluetooth/hidp/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index 117eedb6f709..3103daf49d63 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -643,6 +643,7 @@ void hci_cmd_sync_clear(struct hci_dev *hdev)
- 	cancel_work_sync(&hdev->cmd_sync_work);
- 	cancel_work_sync(&hdev->reenable_adv_work);
- 
-+	mutex_lock(&hdev->cmd_sync_work_lock);
- 	list_for_each_entry_safe(entry, tmp, &hdev->cmd_sync_work_list, list) {
- 		if (entry->destroy)
- 			entry->destroy(hdev, entry->data, -ECANCELED);
-@@ -650,6 +651,7 @@ void hci_cmd_sync_clear(struct hci_dev *hdev)
- 		list_del(&entry->list);
- 		kfree(entry);
- 	}
-+	mutex_unlock(&hdev->cmd_sync_work_lock);
+diff --git a/net/bluetooth/hidp/core.c b/net/bluetooth/hidp/core.c
+index bed1a7b9205c..707f229f896a 100644
+--- a/net/bluetooth/hidp/core.c
++++ b/net/bluetooth/hidp/core.c
+@@ -433,7 +433,7 @@ static void hidp_set_timer(struct hidp_session *session)
+ static void hidp_del_timer(struct hidp_session *session)
+ {
+ 	if (session->idle_to > 0)
+-		del_timer(&session->timer);
++		del_timer_sync(&session->timer);
  }
  
- void __hci_cmd_sync_cancel(struct hci_dev *hdev, int err)
+ static void hidp_process_report(struct hidp_session *session, int type,
 -- 
 2.25.1
 
