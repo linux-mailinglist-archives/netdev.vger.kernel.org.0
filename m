@@ -2,60 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 14D4A6AA7A7
+	by mail.lfdr.de (Postfix) with ESMTP id 60C686AA7A8
 	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 03:44:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229509AbjCDCoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 21:44:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52114 "EHLO
+        id S229447AbjCDCoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 21:44:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbjCDCoW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 21:44:22 -0500
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E2FA619F
-        for <netdev@vger.kernel.org>; Fri,  3 Mar 2023 18:44:21 -0800 (PST)
-Received: by mail-qt1-x82e.google.com with SMTP id c3so5062620qtc.8
-        for <netdev@vger.kernel.org>; Fri, 03 Mar 2023 18:44:21 -0800 (PST)
+        with ESMTP id S229500AbjCDCoX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 21:44:23 -0500
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E6125E30
+        for <netdev@vger.kernel.org>; Fri,  3 Mar 2023 18:44:22 -0800 (PST)
+Received: by mail-qt1-x82d.google.com with SMTP id y10so5106262qtj.2
+        for <netdev@vger.kernel.org>; Fri, 03 Mar 2023 18:44:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1677897860;
+        d=broadcom.com; s=google; t=1677897861;
         h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=u6HPuD5v/lw3q/tDMYG3Ltfk0jbxgGzylQ1BtW0dqug=;
-        b=Kswc5gQswjnXQ1h+aEFSn6/gfzkunXziXvmeO5n1dt44DF9rrJpwwh7fMrFWjb6BtS
-         asIqNTApWSsUC6euFyk3Dn2UsGoTxizIlch72aYKSY9/3vwEBSnFlulxXUwZup0l7kTA
-         IZl0Q0yNlQ7PLDHYVY6UBDyAvR3XbGvPIK8rc=
+        bh=iSDKpx9BWeMnovTVMCEOAQylS8AdBoU6Sp5HqL6Dgsg=;
+        b=I/ICm4IeNUmszZnujaOian5Z8lt/MYVpZhtheAMAyIZF7UFfiLOEAgkoDJVHWygfur
+         7WVJfld9uF8M0P6bNNY2BUhPNCfgMkOeWw9azVbAdhraQJ9NYurwvzTBS9YdkZhJypPS
+         M3imqEkZaAlzfVvUNqDMkuKDP/cNLzVRkfs2U=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677897860;
+        d=1e100.net; s=20210112; t=1677897861;
         h=references:in-reply-to:message-id:date:subject:cc:to:from
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=u6HPuD5v/lw3q/tDMYG3Ltfk0jbxgGzylQ1BtW0dqug=;
-        b=pzLT23U7eq1P4as8vMc8E0rXPDAktoKZzejnRKvy1zGzQDxru8fLEvCKNm1K9+b59G
-         lI1GQSBzkHmpk29sEOWGZDPJmXG/Erz51/WHokFO3E1Z5uv26d3kVre+wm6Y3C/eN+CS
-         ZQO/rhjpiBAtprEInq2L2zAtXRQ3FL/+q5kJFs9O6jvV4cz3LRXDSAcTqJ+P09aqkEo+
-         hxkmBbU40WbbVpBMmdIHlxiqQopJBHjNMjhzoXhxoJBU9Plj5PscSMaUkpazzqDct5OA
-         SJt3QgiPK9KdKe0P9G3z/5G1mYMyxg67qoHgfn0HBFxUz91dLMYsxGBAKOO59WG1PqtX
-         Ki7w==
-X-Gm-Message-State: AO0yUKU1b4iq4UaSYNud/L36vlF5Ba8BmHEeS8nCpb5cGYcIoygpB3Au
-        uNMaVS58rkoPbzkNaxWp07WtQg==
-X-Google-Smtp-Source: AK7set8GKwdN/n5IyXzPwI5QFnMpnmKOAGb0gYjTL6ULUGbf0Zb5MUcnEfVfj6IkgVd6pFAKOoCV3w==
-X-Received: by 2002:a05:622a:1106:b0:3ba:36f2:c207 with SMTP id e6-20020a05622a110600b003ba36f2c207mr7429995qty.39.1677897859771;
-        Fri, 03 Mar 2023 18:44:19 -0800 (PST)
+        bh=iSDKpx9BWeMnovTVMCEOAQylS8AdBoU6Sp5HqL6Dgsg=;
+        b=ET5Y9/Je5NYdcTsz0Bh7l6nsSKNOLLNhGMdPaI6Qys+3eVXAccBISOpCzwLs0ICN2a
+         BhzPtGoIZVDDzFDcuzIhZ8QTl/Pbsz7qQXuaYdvaT3D+fVBTqzvb7gz9itoxSV1fttJq
+         4HrTkvG/iN1YFTnS16b5B+XOV+dVOpAB3sZZ1utS1vWWTpCuITyY/iaLDXh2P8oF9QXx
+         tZZf7fyOYX5Q3cKi/OFr/uz9ELvirCpR6OwvBmRzWHwM/29MRG7pxMGOAoujqp1a6kVx
+         bhGpEBJo0TtlavpK5g5gxkW+P+KxN+MBAr4kMarRbcEfzIxcXI6ogd/G6A8rCDGmlAAX
+         mX+w==
+X-Gm-Message-State: AO0yUKWRFiTXUKXrT+kK1GxxHpYN4bhHOYvssAmQc5+uIUs5pjc0WuwD
+        mASGzDnFnUtaXjySCTGDB2QPWw==
+X-Google-Smtp-Source: AK7set/Ja9ee60R/tnjhRqdLJz3qqaDTTMPdJU5qU81KjfE8wim0ol5JE+YFzmMzNL05nVfZFYjzqQ==
+X-Received: by 2002:a05:622a:24f:b0:3b8:2c34:b9f2 with SMTP id c15-20020a05622a024f00b003b82c34b9f2mr6714031qtx.63.1677897861329;
+        Fri, 03 Mar 2023 18:44:21 -0800 (PST)
 Received: from localhost.attlocal.net (108-196-84-92.lightspeed.irvnca.sbcglobal.net. [108.196.84.92])
-        by smtp.gmail.com with ESMTPSA id h20-20020ac846d4000000b003b64f1b1f40sm2963845qto.40.2023.03.03.18.44.18
+        by smtp.gmail.com with ESMTPSA id h20-20020ac846d4000000b003b64f1b1f40sm2963845qto.40.2023.03.03.18.44.19
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 03 Mar 2023 18:44:19 -0800 (PST)
+        Fri, 03 Mar 2023 18:44:20 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, gospo@broadcom.com
-Subject: [PATCH net 1/2] bnxt_en: Avoid order-5 memory allocation for TPA data
-Date:   Fri,  3 Mar 2023 18:43:57 -0800
-Message-Id: <1677897838-23562-2-git-send-email-michael.chan@broadcom.com>
+        pabeni@redhat.com, gospo@broadcom.com,
+        Selvin Xavier <selvin.xavier@broadcom.com>
+Subject: [PATCH net 2/2] bnxt_en: Fix the double free during device removal
+Date:   Fri,  3 Mar 2023 18:43:58 -0800
+Message-Id: <1677897838-23562-3-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1677897838-23562-1-git-send-email-michael.chan@broadcom.com>
 References: <1677897838-23562-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000f0c4af05f60a0997"
+        boundary="00000000000004034705f60a0a6e"
 X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -66,113 +67,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000f0c4af05f60a0997
+--00000000000004034705f60a0a6e
 
-The driver needs to keep track of all the possible concurrent TPA (GRO/LRO)
-completions on the aggregation ring.  On P5 chips, the maximum number
-of concurrent TPA is 256 and the amount of memory we allocate is order-5
-on systems using 4K pages.  Memory allocation failure has been reported:
+From: Selvin Xavier <selvin.xavier@broadcom.com>
 
-NetworkManager: page allocation failure: order:5, mode:0x40dc0(GFP_KERNEL|__GFP_COMP|__GFP_ZERO), nodemask=(null),cpuset=/,mems_allowed=0-1
-CPU: 15 PID: 2995 Comm: NetworkManager Kdump: loaded Not tainted 5.10.156 #1
-Hardware name: Dell Inc. PowerEdge R660/0M1CC5, BIOS 0.2.25 08/12/2022
+Following warning reported by KASAN during driver unload
+
+==================================================================
+BUG: KASAN: double-free in bnxt_remove_one+0x103/0x200 [bnxt_en]
+Free of addr ffff88814e8dd4c0 by task rmmod/17469
+CPU: 47 PID: 17469 Comm: rmmod Kdump: loaded Tainted: G S                 6.2.0-rc7+ #2
+Hardware name: Dell Inc. PowerEdge R740/01YM03, BIOS 2.3.10 08/15/2019
 Call Trace:
- dump_stack+0x57/0x6e
- warn_alloc.cold.120+0x7b/0xdd
- ? _cond_resched+0x15/0x30
- ? __alloc_pages_direct_compact+0x15f/0x170
- __alloc_pages_slowpath.constprop.108+0xc58/0xc70
- __alloc_pages_nodemask+0x2d0/0x300
- kmalloc_order+0x24/0xe0
- kmalloc_order_trace+0x19/0x80
- bnxt_alloc_mem+0x1150/0x15c0 [bnxt_en]
- ? bnxt_get_func_stat_ctxs+0x13/0x60 [bnxt_en]
- __bnxt_open_nic+0x12e/0x780 [bnxt_en]
- bnxt_open+0x10b/0x240 [bnxt_en]
- __dev_open+0xe9/0x180
- __dev_change_flags+0x1af/0x220
- dev_change_flags+0x21/0x60
- do_setlink+0x35c/0x1100
+ <TASK>
+ dump_stack_lvl+0x33/0x46
+ print_report+0x17b/0x4b3
+ ? __call_rcu_common.constprop.79+0x27e/0x8c0
+ ? __pfx_free_object_rcu+0x10/0x10
+ ? __virt_addr_valid+0xe3/0x160
+ ? bnxt_remove_one+0x103/0x200 [bnxt_en]
+ kasan_report_invalid_free+0x64/0xd0
+ ? bnxt_remove_one+0x103/0x200 [bnxt_en]
+ ? bnxt_remove_one+0x103/0x200 [bnxt_en]
+ __kasan_slab_free+0x179/0x1c0
+ ? bnxt_remove_one+0x103/0x200 [bnxt_en]
+ __kmem_cache_free+0x194/0x350
+ bnxt_remove_one+0x103/0x200 [bnxt_en]
+ pci_device_remove+0x62/0x110
+ device_release_driver_internal+0xf6/0x1c0
+ driver_detach+0x76/0xe0
+ bus_remove_driver+0x89/0x160
+ pci_unregister_driver+0x26/0x110
+ ? strncpy_from_user+0x188/0x1c0
+ bnxt_exit+0xc/0x24 [bnxt_en]
+ __x64_sys_delete_module+0x21f/0x390
+ ? __pfx___x64_sys_delete_module+0x10/0x10
+ ? __pfx_mem_cgroup_handle_over_high+0x10/0x10
+ ? _raw_spin_lock+0x87/0xe0
+ ? __pfx__raw_spin_lock+0x10/0x10
+ ? __audit_syscall_entry+0x185/0x210
+ ? ktime_get_coarse_real_ts64+0x51/0x80
+ ? syscall_trace_enter.isra.18+0x126/0x1a0
+ do_syscall_64+0x37/0x90
+ entry_SYSCALL_64_after_hwframe+0x72/0xdc
+RIP: 0033:0x7effcb6fd71b
+Code: 73 01 c3 48 8b 0d 6d 17 2c 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa b8 b0 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 3d 17 2c 00 f7 d8 64 89 01 48
+RSP: 002b:00007ffeada270b8 EFLAGS: 00000206 ORIG_RAX: 00000000000000b0
+RAX: ffffffffffffffda RBX: 00005623660e0750 RCX: 00007effcb6fd71b
+RDX: 000000000000000a RSI: 0000000000000800 RDI: 00005623660e07b8
+RBP: 0000000000000000 R08: 00007ffeada26031 R09: 0000000000000000
+R10: 00007effcb771280 R11: 0000000000000206 R12: 00007ffeada272e0
+R13: 00007ffeada28bc4 R14: 00005623660e02a0 R15: 00005623660e0750
+ </TASK>
 
-Instead of allocating this big chunk of memory and dividing it up for the
-concurrent TPA instances, allocate each small chunk separately for each
-TPA instance.  This will reduce it to order-0 allocations.
+Auxiliary device structures are freed in bnxt_aux_dev_release. So avoid
+calling kfree from bnxt_remove_one.
 
-Fixes: 79632e9ba386 ("bnxt_en: Expand bnxt_tpa_info struct to support 57500 chips.")
-Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
-Reviewed-by: Damodharam Ammepalli <damodharam.ammepalli@broadcom.com>
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Also, set bp->edev to NULL before freeing the auxilary private structure.
+
+Fixes: d80d88b0dfff ("bnxt_en: Add auxiliary driver support")
+Reviewed-by: Ajit Khaparde <ajit.khaparde@broadcom.com>
+Reviewed-by: Andy Gospodarek <andrew.gospodarek@broadcom.com>
+Signed-off-by: Selvin Xavier <selvin.xavier@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 23 ++++++++++++-----------
- 1 file changed, 12 insertions(+), 11 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 2 --
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c | 2 ++
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 5d4b1f2ebeac..f96d539b469c 100644
+index f96d539b469c..808236dc898b 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -3145,7 +3145,7 @@ static int bnxt_alloc_ring(struct bnxt *bp, struct bnxt_ring_mem_info *rmem)
- 
- static void bnxt_free_tpa_info(struct bnxt *bp)
+@@ -13205,8 +13205,6 @@ static void bnxt_remove_one(struct pci_dev *pdev)
+ 	bnxt_free_hwrm_resources(bp);
+ 	bnxt_ethtool_free(bp);
+ 	bnxt_dcb_free(bp);
+-	kfree(bp->edev);
+-	bp->edev = NULL;
+ 	kfree(bp->ptp_cfg);
+ 	bp->ptp_cfg = NULL;
+ 	kfree(bp->fw_health);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
+index d4cc9c371e7b..e7b5e28ee29f 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
+@@ -317,9 +317,11 @@ static void bnxt_aux_dev_release(struct device *dev)
  {
--	int i;
-+	int i, j;
+ 	struct bnxt_aux_priv *aux_priv =
+ 		container_of(dev, struct bnxt_aux_priv, aux_dev.dev);
++	struct bnxt *bp = netdev_priv(aux_priv->edev->net);
  
- 	for (i = 0; i < bp->rx_nr_rings; i++) {
- 		struct bnxt_rx_ring_info *rxr = &bp->rx_ring[i];
-@@ -3153,8 +3153,10 @@ static void bnxt_free_tpa_info(struct bnxt *bp)
- 		kfree(rxr->rx_tpa_idx_map);
- 		rxr->rx_tpa_idx_map = NULL;
- 		if (rxr->rx_tpa) {
--			kfree(rxr->rx_tpa[0].agg_arr);
--			rxr->rx_tpa[0].agg_arr = NULL;
-+			for (j = 0; j < bp->max_tpa; j++) {
-+				kfree(rxr->rx_tpa[j].agg_arr);
-+				rxr->rx_tpa[j].agg_arr = NULL;
-+			}
- 		}
- 		kfree(rxr->rx_tpa);
- 		rxr->rx_tpa = NULL;
-@@ -3163,14 +3165,13 @@ static void bnxt_free_tpa_info(struct bnxt *bp)
- 
- static int bnxt_alloc_tpa_info(struct bnxt *bp)
- {
--	int i, j, total_aggs = 0;
-+	int i, j;
- 
- 	bp->max_tpa = MAX_TPA;
- 	if (bp->flags & BNXT_FLAG_CHIP_P5) {
- 		if (!bp->max_tpa_v2)
- 			return 0;
- 		bp->max_tpa = max_t(u16, bp->max_tpa_v2, MAX_TPA_P5);
--		total_aggs = bp->max_tpa * MAX_SKB_FRAGS;
- 	}
- 
- 	for (i = 0; i < bp->rx_nr_rings; i++) {
-@@ -3184,12 +3185,12 @@ static int bnxt_alloc_tpa_info(struct bnxt *bp)
- 
- 		if (!(bp->flags & BNXT_FLAG_CHIP_P5))
- 			continue;
--		agg = kcalloc(total_aggs, sizeof(*agg), GFP_KERNEL);
--		rxr->rx_tpa[0].agg_arr = agg;
--		if (!agg)
--			return -ENOMEM;
--		for (j = 1; j < bp->max_tpa; j++)
--			rxr->rx_tpa[j].agg_arr = agg + j * MAX_SKB_FRAGS;
-+		for (j = 0; j < bp->max_tpa; j++) {
-+			agg = kcalloc(MAX_SKB_FRAGS, sizeof(*agg), GFP_KERNEL);
-+			if (!agg)
-+				return -ENOMEM;
-+			rxr->rx_tpa[j].agg_arr = agg;
-+		}
- 		rxr->rx_tpa_idx_map = kzalloc(sizeof(*rxr->rx_tpa_idx_map),
- 					      GFP_KERNEL);
- 		if (!rxr->rx_tpa_idx_map)
+ 	ida_free(&bnxt_aux_dev_ids, aux_priv->id);
+ 	kfree(aux_priv->edev->ulp_tbl);
++	bp->edev = NULL;
+ 	kfree(aux_priv->edev);
+ 	kfree(aux_priv);
+ }
 -- 
 2.32.0
 
 
---000000000000f0c4af05f60a0997
+--00000000000004034705f60a0a6e
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -243,13 +239,13 @@ hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
 E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIIlpGd+2ln6r8Y1t2Y6Sbi7CoJmW6V2x
-enG2GzVVFvDxMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMw
-NDAyNDQyMFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIIRigcSzWSFdYe0rXVA3laYxTC776bXd
+YCfLJ6GFcPxpMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMw
+NDAyNDQyMVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCxYxQCNxRmSFci9UGT0rCJmy50sOmGNUwjaLLIk278A/7LZgMX
-pUkIwTuVE5x8ObH6uFMVfO4f7N6NgFyrJ8pmRQqRWx+aBw75FwQywI3TnVzF3sTZNRHkpxpHnpf+
-niPJhrDPaNTktLBBWyrsqXaSBQA/IInSjLjdGtU6OVqvrZmUTy7LJ2qpRsT/pcbQlpYEmMpSkSH1
-L2nku9fd2+R81hcl596x1lAVnsAJUEXYFYDk1QF1Bel7GbS+3irhdNafvUld0WADt8u7uyuKcJ/x
-b4fDWT95JypN5yG2lubUGUCkvS+dq60nyBzIowJGxLvv2EtEPYxHpfx/ZE7sCN3/
---000000000000f0c4af05f60a0997--
+ATANBgkqhkiG9w0BAQEFAASCAQBYH8JUVQJ+3q5VhG6hyd0zSEV/4WFma1XcS1gFPEIvo3AVbv5S
+r1JZ8PPqBbaQdoWFUSOe+0+hGiO4J8lPdIrvxvMtFg/pLNPJ6WCLC+n8fMeaDajE+nJj3EAEUHrZ
+LKR2uQNC/kAsUzKNMvIN/O7WmDtvI3kAS4o2E1zAiy23D/ivafvqqgWUG2Prwt5uT1wltKEuRzL6
+UPsfio1IA8nm3YXc9T3Idg7DOiCMr7VThfhFOSiesliA5LTYSltbWHWnt4+k6M9Fzt0GdwDwgOVg
+Gc4hrTGbwxbo/xqNM76RUo6FXVrSqajJSLrN3jAqFnOpWyRJdPRrNn/ya/KOTAC8
+--00000000000004034705f60a0a6e--
