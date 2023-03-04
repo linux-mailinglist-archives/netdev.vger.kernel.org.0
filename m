@@ -2,94 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B00AE6AA5FF
-	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 00:59:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E4D76AA61D
+	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 01:12:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229830AbjCCX7W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 18:59:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35728 "EHLO
+        id S229820AbjCDAMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 19:12:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbjCCX7V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 18:59:21 -0500
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B2A5CA12;
-        Fri,  3 Mar 2023 15:59:19 -0800 (PST)
-Received: by mail-qt1-x830.google.com with SMTP id h19so4807316qtk.7;
-        Fri, 03 Mar 2023 15:59:19 -0800 (PST)
+        with ESMTP id S229818AbjCDAMq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 19:12:46 -0500
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B363721283;
+        Fri,  3 Mar 2023 16:12:45 -0800 (PST)
+Received: by mail-qv1-xf2d.google.com with SMTP id nf5so2909546qvb.5;
+        Fri, 03 Mar 2023 16:12:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1677887958;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=U1nTNHMYdyHCaoekkizYh9XLLLFdRS3SAJPYKEnkyUU=;
-        b=OMl5RyFRfMexLL3jZVjSn4vNHqSs6pOcR9iseiK4FVpD7nTZZEIugqCPYU8YwJJavo
-         MwOMK8HhyfMrcIfoKmnIWS+tqgBmBDBo3tP5IFMcc16Iaywc5MlyBzeS/QdpuT9GjUl9
-         MM3Rll3Z+gY9v4p3WH52L7XJLjLPo1AvXPoKs9CITCd/8H+4Gw2txDZ/SubHiAp7jdJ6
-         1yfQWpzkq4RzOJc+akc0tRYne5YD4uZdv2F24Ydn3KC2NgcgF9wSdU6MxccfPot6MLzG
-         7aJdLTAFahZtMumw7Ml6nZB/5BMEdJTDUhb2Y4YBkVr4Oz3Jy/31FNXQuWeOUoycO/x/
-         85xQ==
+        d=gmail.com; s=20210112; t=1677888764;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=WzK6eFE5ziYvB/Q6lz47iCEBLCPVXXXPkxWxsawXNwI=;
+        b=gSlWyJFdJDlzo1pekas36Gg5Jaa7dlc0ipgNITWftRP4z6wefBW28x8d2h78Cc01+5
+         Dwb2DvKwkg02Bp9ucip1nRXD5IhKbLLZqVVwvV5W4nNO6MXa9RPUc9spxG+wlW2jCTFO
+         sOfPaY6SFkBoHC9KgWjXMI2OFEtY2MOjdPF7wwX2rmgN2LB5vHrmLlW9dFxS2RA1N2jq
+         KpMFKv7J9VMr0e6dVh4Jp7CMmppwdfOSSiRSqJxJoGkoxz4NqLEWHou5Vcx3Hm+OZHDf
+         yxX/HzzrWw5fNynC+He+iGmymTq118gUtDGWbxs9retf90Xel2SeUz48A1veUdm2KTBQ
+         3OWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677887958;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=U1nTNHMYdyHCaoekkizYh9XLLLFdRS3SAJPYKEnkyUU=;
-        b=hii+3nr7QB2FGDtfVZFcLQJB+sBnwW/zPzxRvfhIr7Yc+OAIJAzUmQzedyVZNXrq5x
-         v3fZPD4O8uPnd5epoeUChIRe9haj478b2om3YyKSULE+rD1gXKkQdn/LD4vx6DRonwno
-         MMmdtdTc4+2ovY9bAY02p9+Ooo7G8zyWngGauLJpCuz7mA1cSjJXhaVTbB07zhGwsCt6
-         AcOlcH0idmdU7JxP0mn7TSLrpXEwVL3fGDnqHejlRJQGkWYwNggHRALjpFw5he8aPTtA
-         4+LLOzwUSSFlVX4+P4K6PuZEEsCym9sSr066p1+84syunkkPxyvFj15KyiiKkr5w+iJU
-         BApQ==
-X-Gm-Message-State: AO0yUKUExMVk8TjIfkIz0CB2/7Pw/2wdwC+c26coW+//1SqqdxtVVZGz
-        aH0txZoDAin85iFbX/b3GtA=
-X-Google-Smtp-Source: AK7set8xw48pmJapZtqFLrxVJ1J3zmGyHxh/cPnKxjzP11vXxYezWIpDrw5FtZ07a+K9I5YAdtNSwA==
-X-Received: by 2002:a05:622a:1354:b0:3bf:c474:df98 with SMTP id w20-20020a05622a135400b003bfc474df98mr5755019qtk.56.1677887958503;
-        Fri, 03 Mar 2023 15:59:18 -0800 (PST)
-Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
-        by smtp.gmail.com with ESMTPSA id y9-20020ac87089000000b003bfaae103f6sm2674891qto.89.2023.03.03.15.59.18
+        d=1e100.net; s=20210112; t=1677888764;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=WzK6eFE5ziYvB/Q6lz47iCEBLCPVXXXPkxWxsawXNwI=;
+        b=ca/N2Tc+cAGHg7I744OjNm7brgJstP2CuVhcEiMzFLzCZhj9e9z35I2fR2dFOzy/8y
+         m/Pyvkthhts9oE533vFHmEXrs67uWeZ1KC9T/35MtdjHqQELzir/pB4vFT7Goo8CgKN/
+         QAz3xAZn8Pak9uJ8gRIz+6Ref+bb404gTQyJQqG8IETQ38QdUcMOEZDr+PwAwIT/SSAr
+         eRdkl+kWlMi4gR8A0V3TQwujiJ6u9PKTflwbkuQUWPPXBHJ7KdXrAZng8OA+STEXU9zu
+         TbXvIS080c3UZR+z4YW2tZGMtegpCZ10/4lMonzevtH4cxEXQmdc+FRdptwuWEfdGWLL
+         5yEA==
+X-Gm-Message-State: AO0yUKV7Qtq4cPqrcr2ZzMTIxvZKw0gx02/QQnxZLxFa4GW1N/PbFcNc
+        w99ZhicxU5DZeesKvEcNHF5DNB5hUtCTww==
+X-Google-Smtp-Source: AK7set9m+Imlshp78aSkn5FbZqt1tCvAEZHdBaULkCFznPaFABFvxuNOJRl8bvTyG5Novm0sF9xcgw==
+X-Received: by 2002:a05:6214:2021:b0:53b:aa54:4eea with SMTP id 1-20020a056214202100b0053baa544eeamr6814427qvf.20.1677888764623;
+        Fri, 03 Mar 2023 16:12:44 -0800 (PST)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id d79-20020ae9ef52000000b007296805f607sm2749242qkg.17.2023.03.03.16.12.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Mar 2023 15:59:18 -0800 (PST)
-Date:   Fri, 03 Mar 2023 18:59:17 -0500
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     =?UTF-8?B?S8O2cnkgTWFpbmNlbnQ=?= <kory.maincent@bootlin.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-omap@vger.kernel.org
-Cc:     Michael Walle <michael@walle.cc>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kory Maincent <kory.maincent@bootlin.com>,
-        thomas.petazzoni@bootlin.com, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Fri, 03 Mar 2023 16:12:44 -0800 (PST)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     netfilter-devel@vger.kernel.org,
+        network dev <netdev@vger.kernel.org>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>, davem@davemloft.net,
+        kuba@kernel.org, Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Jie Wang <wangjie125@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Wang Yufen <wangyufen@huawei.com>,
-        Alexandru Tachici <alexandru.tachici@analog.com>,
-        Oleksij Rempel <linux@rempel-privat.de>
-Message-ID: <640289d5ef54c_cc8e2087a@willemb.c.googlers.com.notmuch>
-In-Reply-To: <20230303164248.499286-4-kory.maincent@bootlin.com>
-References: <20230303164248.499286-1-kory.maincent@bootlin.com>
- <20230303164248.499286-4-kory.maincent@bootlin.com>
-Subject: RE: [PATCH v2 3/4] net: Let the active time stamping layer be
- selectable.
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Aaron Conole <aconole@redhat.com>
+Subject: [PATCH nf-next 0/6] netfilter: handle ipv6 jumbo packets properly for bridge ovs and tc
+Date:   Fri,  3 Mar 2023 19:12:36 -0500
+Message-Id: <cover.1677888566.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.39.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -100,250 +76,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-K=C3=B6ry Maincent wrote:
-> From: Richard Cochran <richardcochran@gmail.com>
-> =
+Currently pskb_trim_rcsum() is always done on the RX path. However, IPv6
+jumbo packets hide the real packet len in the Hop-by-hop option header,
+which should be parsed before doing the trim.
 
-> Make the sysfs knob writable, and add checks in the ioctl and time
-> stamping paths to respect the currently selected time stamping layer.
-> =
+In ip6_rcv_core() it calls ipv6_parse_hopopts() to handle the Hop-by-hop
+option header then do pskb_trim_rcsum(). The similar process should also
+be done properly before pskb_trim_rcsum() on the RX path of bridge and
+openvswitch and tc.
 
-> Signed-off-by: Richard Cochran <richardcochran@gmail.com>
-> Signed-off-by: Kory Maincent <kory.maincent@bootlin.com>
-> ---
-> =
+This patchset improves the function handling the Hop-by-hop option header
+in bridge, and moves this function into netfilter utils, and then uses it
+in nf_conntrack_ovs for openvswitch and tc conntrack.
 
-> Notes:
->     Changes in v2:
->     - Move selected_timestamping_layer introduction in this patch.
->     - Replace strmcmp by sysfs_streq.
->     - Use the PHY timestamp only if available.
-> =
+Note that this patch is especially needed after the IPv6 BIG TCP was
+supported in kernel, which is using IPv6 Jumbo packets, and the last
+patch adds a big tcp selftest, which also covers it.
 
->  .../ABI/testing/sysfs-class-net-timestamping  |  5 +-
->  drivers/net/phy/phy_device.c                  |  6 +++
->  include/linux/netdevice.h                     | 10 ++++
->  net/core/dev_ioctl.c                          | 44 ++++++++++++++--
->  net/core/net-sysfs.c                          | 50 +++++++++++++++++--=
+Xin Long (6):
+  netfilter: bridge: call pskb_may_pull in br_nf_check_hbh_len
+  netfilter: bridge: check len before accessing more nh data
+  netfilter: bridge: move pskb_trim_rcsum out of br_nf_check_hbh_len
+  netfilter: move br_nf_check_hbh_len to utils
+  netfilter: use nf_ip6_check_hbh_len in nf_ct_skb_network_trim
+  selftests: add a selftest for big tcp
 
->  net/core/timestamping.c                       |  6 +++
->  net/ethtool/common.c                          | 18 +++++--
->  7 files changed, 127 insertions(+), 12 deletions(-)
-> =
+ include/linux/netfilter_ipv6.h         |   2 +
+ net/bridge/br_netfilter_ipv6.c         |  79 ++---------
+ net/netfilter/nf_conntrack_ovs.c       |  11 +-
+ net/netfilter/utils.c                  |  54 ++++++++
+ tools/testing/selftests/net/Makefile   |   1 +
+ tools/testing/selftests/net/big_tcp.sh | 180 +++++++++++++++++++++++++
+ 6 files changed, 256 insertions(+), 71 deletions(-)
+ create mode 100755 tools/testing/selftests/net/big_tcp.sh
 
-> diff --git a/Documentation/ABI/testing/sysfs-class-net-timestamping b/D=
-ocumentation/ABI/testing/sysfs-class-net-timestamping
-> index 529c3a6eb607..6dfd59740cad 100644
-> --- a/Documentation/ABI/testing/sysfs-class-net-timestamping
-> +++ b/Documentation/ABI/testing/sysfs-class-net-timestamping
-> @@ -11,7 +11,10 @@ What:		/sys/class/net/<iface>/current_timestamping_p=
-rovider
->  Date:		January 2022
->  Contact:	Richard Cochran <richardcochran@gmail.com>
->  Description:
-> -		Show the current SO_TIMESTAMPING provider.
-> +		Shows or sets the current SO_TIMESTAMPING provider.
-> +		When changing the value, some packets in the kernel
-> +		networking stack may still be delivered with time
-> +		stamps from the previous provider.
->  		The possible values are:
->  		- "mac"  The MAC provides time stamping.
->  		- "phy"  The PHY or MII device provides time stamping.
-> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.=
-c
-> index 8cff61dbc4b5..8dff0c6493b5 100644
-> --- a/drivers/net/phy/phy_device.c
-> +++ b/drivers/net/phy/phy_device.c
-> @@ -1451,6 +1451,11 @@ int phy_attach_direct(struct net_device *dev, st=
-ruct phy_device *phydev,
->  =
+-- 
+2.39.1
 
->  	phydev->phy_link_change =3D phy_link_change;
->  	if (dev) {
-> +		if (phy_has_hwtstamp(phydev))
-> +			dev->selected_timestamping_layer =3D PHY_TIMESTAMPING;
-> +		else
-> +			dev->selected_timestamping_layer =3D MAC_TIMESTAMPING;
-> +
->  		phydev->attached_dev =3D dev;
->  		dev->phydev =3D phydev;
->  =
-
-> @@ -1762,6 +1767,7 @@ void phy_detach(struct phy_device *phydev)
->  =
-
->  	phy_suspend(phydev);
->  	if (dev) {
-> +		dev->selected_timestamping_layer =3D MAC_TIMESTAMPING;
->  		phydev->attached_dev->phydev =3D NULL;
->  		phydev->attached_dev =3D NULL;
->  	}
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index ba2bd604359d..d8e9da2526f0 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -1742,6 +1742,11 @@ enum netdev_ml_priv_type {
->  	ML_PRIV_CAN,
->  };
->  =
-
-> +enum timestamping_layer {
-> +	MAC_TIMESTAMPING,
-> +	PHY_TIMESTAMPING,
-> +};
-> +
->  /**
->   *	struct net_device - The DEVICE structure.
->   *
-> @@ -1981,6 +1986,9 @@ enum netdev_ml_priv_type {
->   *
->   *	@threaded:	napi threaded mode is enabled
->   *
-> + *	@selected_timestamping_layer:	Tracks whether the MAC or the PHY
-> + *					performs packet time stamping.
-> + *
->   *	@net_notifier_list:	List of per-net netdev notifier block
->   *				that follow this device when it is moved
->   *				to another network namespace.
-> @@ -2339,6 +2347,8 @@ struct net_device {
->  	unsigned		wol_enabled:1;
->  	unsigned		threaded:1;
->  =
-
-> +	enum timestamping_layer selected_timestamping_layer;
-> +
->  	struct list_head	net_notifier_list;
->  =
-
->  #if IS_ENABLED(CONFIG_MACSEC)
-> diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
-> index 7674bb9f3076..cc7cf2a542fb 100644
-> --- a/net/core/dev_ioctl.c
-> +++ b/net/core/dev_ioctl.c
-> @@ -262,6 +262,43 @@ static int dev_eth_ioctl(struct net_device *dev,
->  	return err;
->  }
->  =
-
-> +static int dev_hwtstamp_ioctl(struct net_device *dev,
-> +			      struct ifreq *ifr, unsigned int cmd)
-> +{
-> +	const struct net_device_ops *ops =3D dev->netdev_ops;
-> +	int err;
-> +
-> +	err =3D dsa_ndo_eth_ioctl(dev, ifr, cmd);
-> +	if (err =3D=3D 0 || err !=3D -EOPNOTSUPP)
-> +		return err;
-> +
-> +	if (!netif_device_present(dev))
-> +		return -ENODEV;
-> +
-> +	switch (dev->selected_timestamping_layer) {
-> +
-> +	case MAC_TIMESTAMPING:
-> +		if (ops->ndo_do_ioctl =3D=3D phy_do_ioctl) {
-> +			/* Some drivers set .ndo_do_ioctl to phy_do_ioctl. */
-> +			err =3D -EOPNOTSUPP;
-> +		} else {
-> +			err =3D ops->ndo_eth_ioctl(dev, ifr, cmd);
-> +		}
-> +		break;
-> +
-> +	case PHY_TIMESTAMPING:
-> +		if (phy_has_hwtstamp(dev->phydev)) {
-> +			err =3D phy_mii_ioctl(dev->phydev, ifr, cmd);
-> +		} else {
-> +			err =3D -ENODEV;
-> +			WARN_ON(1);
-> +		}
-> +		break;
-> +	}
-> +
-> +	return err;
-> +}
-> +
->  static int dev_siocbond(struct net_device *dev,
->  			struct ifreq *ifr, unsigned int cmd)
->  {
-> @@ -397,6 +434,9 @@ static int dev_ifsioc(struct net *net, struct ifreq=
- *ifr, void __user *data,
->  			return err;
->  		fallthrough;
->  =
-
-> +	case SIOCGHWTSTAMP:
-> +		return dev_hwtstamp_ioctl(dev, ifr, cmd);
-> +
->  	/*
->  	 *	Unknown or private ioctl
->  	 */
-> @@ -407,9 +447,7 @@ static int dev_ifsioc(struct net *net, struct ifreq=
- *ifr, void __user *data,
->  =
-
->  		if (cmd =3D=3D SIOCGMIIPHY ||
->  		    cmd =3D=3D SIOCGMIIREG ||
-> -		    cmd =3D=3D SIOCSMIIREG ||
-> -		    cmd =3D=3D SIOCSHWTSTAMP ||
-> -		    cmd =3D=3D SIOCGHWTSTAMP) {
-> +		    cmd =3D=3D SIOCSMIIREG) {
->  			err =3D dev_eth_ioctl(dev, ifr, cmd);
->  		} else if (cmd =3D=3D SIOCBONDENSLAVE ||
->  		    cmd =3D=3D SIOCBONDRELEASE ||
-> diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-> index 26095634fb31..66079424b100 100644
-> --- a/net/core/net-sysfs.c
-> +++ b/net/core/net-sysfs.c
-> @@ -666,17 +666,59 @@ static ssize_t current_timestamping_provider_show=
-(struct device *dev,
->  	if (!rtnl_trylock())
->  		return restart_syscall();
->  =
-
-> -	if (phy_has_tsinfo(phydev)) {
-> -		ret =3D sprintf(buf, "%s\n", "phy");
-> -	} else {
-> +	switch (netdev->selected_timestamping_layer) {
-> +	case MAC_TIMESTAMPING:
->  		ret =3D sprintf(buf, "%s\n", "mac");
-> +		break;
-> +	case PHY_TIMESTAMPING:
-> +		ret =3D sprintf(buf, "%s\n", "phy");
-> +		break;
->  	}
->  =
-
->  	rtnl_unlock();
->  =
-
->  	return ret;
->  }
-> -static DEVICE_ATTR_RO(current_timestamping_provider);
-> +
-> +static ssize_t current_timestamping_provider_store(struct device *dev,=
-
-> +						   struct device_attribute *attr,
-> +						   const char *buf, size_t len)
-> +{
-> +	struct net_device *netdev =3D to_net_dev(dev);
-> +	struct net *net =3D dev_net(netdev);
-> +	enum timestamping_layer flavor;
-> +
-> +	if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
-> +		return -EPERM;
-> +
-> +	if (sysfs_streq(buf, "mac"))
-> +		flavor =3D MAC_TIMESTAMPING;
-> +	else if (sysfs_streq(buf, "phy"))
-> +		flavor =3D PHY_TIMESTAMPING;
-> +	else
-> +		return -EINVAL;
-
-Should setting netdev->selected_timestamping_layer be limited to
-choices that the device supports?
-
-At a higher level, this series assumes that any timestamp not through
-phydev is a MAC timestamp. I don't think that is necessarily true for
-all devices. Some may timestamp at the phy, but not expose a phydev.
-This is a somewhat pedantic point. I understand that the purpose of
-the series is to select from among two sets of APIs.
