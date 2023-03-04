@@ -2,57 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BCE8E6AA73E
-	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 02:25:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 029B56AA745
+	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 02:28:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229579AbjCDBZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 20:25:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56902 "EHLO
+        id S229744AbjCDB2y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 20:28:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbjCDBZi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 20:25:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BBDC1EBF6;
-        Fri,  3 Mar 2023 17:25:37 -0800 (PST)
+        with ESMTP id S229748AbjCDB2w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 20:28:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F8B84B825;
+        Fri,  3 Mar 2023 17:28:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1056B61994;
-        Sat,  4 Mar 2023 01:25:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A105C433D2;
-        Sat,  4 Mar 2023 01:25:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C763B81A0F;
+        Sat,  4 Mar 2023 01:28:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 425E5C433D2;
+        Sat,  4 Mar 2023 01:28:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677893136;
-        bh=cD03O8hsJm+YS6YyRbl5aS8A9Wz5ofu4B302OFvDbWE=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=ahvtOHvy3dzGuNJTHwt6c0ea8EzBFdpZPUj4iOzzIOmoVVQ4hcpe9OgDl+givCVFK
-         lYWuRh6O37xXfnWz63hGVp9qrO0Bon3bv1PzeiuikE2rR6VuA4L/9bQphuSPR17/ts
-         BMzwoi8QBLFtkECfxDKTCfFA3s+rLKnEnIN02vW/6HZIaGU8GojetQnptcjjByYhV8
-         iYvQzNpOjkvreNmjTeHpqwpV6/HbwpFImkaSo83jiRq6TxmaplQvoQfSiRsBJam3M/
-         CyBwAsBYrn597WuHHxBqqciSUyhZt2yoqytJ565CGltEXOMyIFbt+RdoZBJJZWSVQ9
-         MwOq1hhDPI7kQ==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id E8A115C0278; Fri,  3 Mar 2023 17:25:35 -0800 (PST)
-Date:   Fri, 3 Mar 2023 17:25:35 -0800
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>, peterz@infradead.org,
-        jstultz@google.com, edumazet@google.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] softirq: avoid spurious stalls due to need_resched()
-Message-ID: <20230304012535.GF1301832@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20221222221244.1290833-1-kuba@kernel.org>
- <20221222221244.1290833-3-kuba@kernel.org>
- <87r0u6j721.ffs@tglx>
- <20230303133143.7b35433f@kernel.org>
- <20230303223739.GC1301832@paulmck-ThinkPad-P17-Gen-1>
- <20230303233627.GA2136520@paulmck-ThinkPad-P17-Gen-1>
- <20230303154413.1d846ac3@kernel.org>
+        s=k20201202; t=1677893328;
+        bh=ny6HjtYAUY+JHwTfupvSdYzhfWsHYhOu/qimYuTSYzc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=huPAwxAThcBdwy/Qi0SHw1EW/gM9NEPEdeFTRyBENYeRF2Xp8oWxurflOzuKd1rO0
+         8nG/kMKTxspzXfNFLdQ42BO6mcnVVgrXiYBmRHufm5OQk0wlCYyUKkpWLiF76jPkd+
+         1XIT2/8XtZ/LFmEswFOSNabts5AsGz7r13F8Tbf7XorcIaG/OTfODgLgFwnf6Y+T9q
+         X+so7Zm4Fq7jzVB6vykzVWQxbaKA0lycGp9RG2iTqmUchHq7vy9oIGLQ33DQ4gXZlM
+         AgQ4INV/SI7Gz+khtwtXBQLSD8Hnh8QSwHxA3nk+yhl4o/R7M8LOIK+zje7zp6ig1H
+         zi/L4eAaRM0Wg==
+Date:   Fri, 3 Mar 2023 17:28:47 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Li Yang <leoyang.li@nxp.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        David Bauer <mail@david-bauer.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Viorel Suman <viorel.suman@nxp.com>,
+        Wei Fang <wei.fang@nxp.com>
+Subject: Re: [PATCH RESEND v2 1/2] net: phy: at803x: fix the wol setting
+ functions
+Message-ID: <20230303172847.202fa96e@kernel.org>
+In-Reply-To: <20230301030126.18494-1-leoyang.li@nxp.com>
+References: <20230301030126.18494-1-leoyang.li@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230303154413.1d846ac3@kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -62,81 +58,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 03, 2023 at 03:44:13PM -0800, Jakub Kicinski wrote:
-> On Fri, 3 Mar 2023 15:36:27 -0800 Paul E. McKenney wrote:
-> > On Fri, Mar 03, 2023 at 02:37:39PM -0800, Paul E. McKenney wrote:
-> > > On Fri, Mar 03, 2023 at 01:31:43PM -0800, Jakub Kicinski wrote:  
-> > > > Now - now about the max loop count. I ORed the pending softirqs every
-> > > > time we get to the end of the loop. Looks like vast majority of the
-> > > > loop counter wake ups are exclusively due to RCU:
-> > > > 
-> > > > @looped[512]: 5516
-> > > > 
-> > > > Where 512 is the ORed pending mask over all iterations
-> > > > 512 == 1 << RCU_SOFTIRQ.
-> > > > 
-> > > > And they usually take less than 100us to consume the 10 iterations.
-> > > > Histogram of usecs consumed when we run out of loop iterations:
-> > > > 
-> > > > [16, 32)               3 |                                                    |
-> > > > [32, 64)            4786 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
-> > > > [64, 128)            871 |@@@@@@@@@                                           |
-> > > > [128, 256)            34 |                                                    |
-> > > > [256, 512)             9 |                                                    |
-> > > > [512, 1K)            262 |@@                                                  |
-> > > > [1K, 2K)              35 |                                                    |
-> > > > [2K, 4K)               1 |                                                    |
-> > > > 
-> > > > Paul, is this expected? Is RCU not trying too hard to be nice?  
-> > > 
-> > > This is from way back in the day, so it is quite possible that better
-> > > tuning and/or better heuristics should be applied.
-> > > 
-> > > On the other hand, 100 microseconds is a good long time from an
-> > > CONFIG_PREEMPT_RT=y perspective!
-> > >   
-> > > > # cat /sys/module/rcutree/parameters/blimit
-> > > > 10
-> > > > 
-> > > > Or should we perhaps just raise the loop limit? Breaking after less 
-> > > > than 100usec seems excessive :(  
-> > > 
-> > > But note that RCU also has rcutree.rcu_divisor, which defaults to 7.
-> > > And an rcutree.rcu_resched_ns, which defaults to three milliseconds
-> > > (3,000,000 nanoseconds).  This means that RCU will do:
-> > > 
-> > > o	All the callbacks if there are less than ten.
-> > > 
-> > > o	Ten callbacks or 1/128th of them, whichever is larger.
-> > > 
-> > > o	Unless the larger of them is more than 100 callbacks, in which
-> > > 	case there is an additional limit of three milliseconds worth
-> > > 	of them.
-> > > 
-> > > Except that if a given CPU ends up with more than 10,000 callbacks
-> > > (rcutree.qhimark), that CPU's blimit is set to 10,000.  
-> > 
-> > Also, if in the context of a softirq handler (as opposed to ksoftirqd)
-> > that interrupted the idle task with no pending task, the count of
-> > callbacks is ignored and only the 3-millisecond limit counts.  In the
-> > context of ksoftirq, the only limit is that which the scheduler chooses
-> > to impose.
-> > 
-> > But it sure seems like the ksoftirqd case should also pay attention to
-> > that 3-millisecond limit.  I will queue a patch to that effect, and maybe
-> > Eric Dumazet will show me the error of my ways.
+On Tue, 28 Feb 2023 21:01:25 -0600 Li Yang wrote:
+> In 7beecaf7d507 ("net: phy: at803x: improve the WOL feature"), it seems
+> not correct to use a wol_en bit in a 1588 Control Register which is only
+> available on AR8031/AR8033(share the same phy_id) to determine if WoL is
+> enabled.  Change it back to use AT803X_INTR_ENABLE_WOL for determining
+> the WoL status which is applicable on all chips supporting wol. Also
+> update the at803x_set_wol() function to only update the 1588 register on
+> chips having it.  After this change, disabling wol at probe from
+> d7cd5e06c9dd ("net: phy: at803x: disable WOL at probe") is no longer
+> needed.  So that part is removed.
 > 
-> Just to be sure - have you seen Peter's patches?
+> Fixes: 7beecaf7d507b ("net: phy: at803x: improve the WOL feature")
+
+Given the fixes tag Luo Jie <luoj@codeaurora.org> should be CCed.
+
+> Signed-off-by: Li Yang <leoyang.li@nxp.com>
+> Reviewed-by: Viorel Suman <viorel.suman@nxp.com>
+> Reviewed-by: Wei Fang <wei.fang@nxp.com>
+> ---
+>  drivers/net/phy/at803x.c | 40 ++++++++++++++++------------------------
+>  1 file changed, 16 insertions(+), 24 deletions(-)
 > 
->   git://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git core/softirq
-> 
-> I think it feeds the time limit to the callback from softirq,
-> so the local 3ms is no more?
+> diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+> index 22f4458274aa..2102279b3964 100644
+> --- a/drivers/net/phy/at803x.c
+> +++ b/drivers/net/phy/at803x.c
+> @@ -461,21 +461,25 @@ static int at803x_set_wol(struct phy_device *phydev,
+>  			phy_write_mmd(phydev, MDIO_MMD_PCS, offsets[i],
+>  				      mac[(i * 2) + 1] | (mac[(i * 2)] << 8));
+>  
+> -		/* Enable WOL function */
+> -		ret = phy_modify_mmd(phydev, MDIO_MMD_PCS, AT803X_PHY_MMD3_WOL_CTRL,
+> -				0, AT803X_WOL_EN);
+> -		if (ret)
+> -			return ret;
+> +		/* Enable WOL function for 1588 */
+> +		if (phydev->drv->phy_id == ATH8031_PHY_ID) {
+> +			ret = phy_modify_mmd(phydev, MDIO_MMD_PCS, AT803X_PHY_MMD3_WOL_CTRL,
 
-I might or might not have back in September of 2020.  ;-)
+This line is now too long, unless there is a good reason please stick
+to the 80 char maximum.
 
-But either way, the question remains:  Should RCU_SOFTIRQ do time checking
-in ksoftirqd context?  Seems like the answer should be "yes", independently
-of Peter's patches.
+> +					0, AT803X_WOL_EN);
 
-							Thanx, Paul
+while at it please fix the alignment, the continuation line should start
+under phydev (checkpatch will tell you)
+
+> +			if (ret)
+> +				return ret;
+> +		}
+>  		/* Enable WOL interrupt */
+>  		ret = phy_modify(phydev, AT803X_INTR_ENABLE, 0, AT803X_INTR_ENABLE_WOL);
+>  		if (ret)
+>  			return ret;
+>  	} else {
+> -		/* Disable WoL function */
+> -		ret = phy_modify_mmd(phydev, MDIO_MMD_PCS, AT803X_PHY_MMD3_WOL_CTRL,
+> -				AT803X_WOL_EN, 0);
+> -		if (ret)
+> -			return ret;
+> +		/* Disable WoL function for 1588 */
+> +		if (phydev->drv->phy_id == ATH8031_PHY_ID) {
+> +			ret = phy_modify_mmd(phydev, MDIO_MMD_PCS, AT803X_PHY_MMD3_WOL_CTRL,
+> +					AT803X_WOL_EN, 0);
+
+same comments as above
+
+> +			if (ret)
+> +				return ret;
+> +		}
+>  		/* Disable WOL interrupt */
+>  		ret = phy_modify(phydev, AT803X_INTR_ENABLE, AT803X_INTR_ENABLE_WOL, 0);
+>  		if (ret)
+> @@ -510,11 +514,8 @@ static void at803x_get_wol(struct phy_device *phydev,
+>  	wol->supported = WAKE_MAGIC;
+>  	wol->wolopts = 0;
+>  
+> -	value = phy_read_mmd(phydev, MDIO_MMD_PCS, AT803X_PHY_MMD3_WOL_CTRL);
+> -	if (value < 0)
+> -		return;
+> -
+> -	if (value & AT803X_WOL_EN)
+> +	value = phy_read(phydev, AT803X_INTR_ENABLE);
+
+Does phy_read() never fail? Why remove the error checking?
+
+> +	if (value & AT803X_INTR_ENABLE_WOL)
+>  		wol->wolopts |= WAKE_MAGIC;
+>  }
+>  
+
