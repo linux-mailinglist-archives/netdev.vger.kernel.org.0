@@ -2,50 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 029B56AA745
-	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 02:28:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEE4E6AA752
+	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 02:35:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229744AbjCDB2y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Mar 2023 20:28:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59386 "EHLO
+        id S229590AbjCDBfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Mar 2023 20:35:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229748AbjCDB2w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 20:28:52 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F8B84B825;
-        Fri,  3 Mar 2023 17:28:51 -0800 (PST)
+        with ESMTP id S229515AbjCDBfX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Mar 2023 20:35:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2A1F64A91
+        for <netdev@vger.kernel.org>; Fri,  3 Mar 2023 17:35:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0C763B81A0F;
-        Sat,  4 Mar 2023 01:28:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 425E5C433D2;
-        Sat,  4 Mar 2023 01:28:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EC3361997
+        for <netdev@vger.kernel.org>; Sat,  4 Mar 2023 01:35:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B89D6C433EF;
+        Sat,  4 Mar 2023 01:35:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677893328;
-        bh=ny6HjtYAUY+JHwTfupvSdYzhfWsHYhOu/qimYuTSYzc=;
+        s=k20201202; t=1677893721;
+        bh=1bi4llHOwlPPb86qFs2pmB2pX17hbLNqmRX20t+Ttuo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=huPAwxAThcBdwy/Qi0SHw1EW/gM9NEPEdeFTRyBENYeRF2Xp8oWxurflOzuKd1rO0
-         8nG/kMKTxspzXfNFLdQ42BO6mcnVVgrXiYBmRHufm5OQk0wlCYyUKkpWLiF76jPkd+
-         1XIT2/8XtZ/LFmEswFOSNabts5AsGz7r13F8Tbf7XorcIaG/OTfODgLgFwnf6Y+T9q
-         X+so7Zm4Fq7jzVB6vykzVWQxbaKA0lycGp9RG2iTqmUchHq7vy9oIGLQ33DQ4gXZlM
-         AgQ4INV/SI7Gz+khtwtXBQLSD8Hnh8QSwHxA3nk+yhl4o/R7M8LOIK+zje7zp6ig1H
-         zi/L4eAaRM0Wg==
-Date:   Fri, 3 Mar 2023 17:28:47 -0800
+        b=jg84SrzVXVEC0srdtbf8JuWDM5L1QmGBgeYnWwsdW5pv05tbvF+hFy/u46Rg7/iQ6
+         55jHyYePpvCN06cAEGVgjj5wRupS74YgRo/1ZCW+4/aquxjGIiq93EMZGIG6HTV+fF
+         znljY9NfrLfsNuVHhIjDazeQePdce4SJfk7mZj2rx5v7VMQscC56k7mUpgYuQTcpZ9
+         SGUfWpczSE/EQXhBZ3bJ6hZVnKVSxZgZ61Pn2DXrE/Lx75GxWUwVmmQIBegvNlWI4l
+         pX5wuZSzKkIf22rksFSlcsRSAy6bOQC8uB402cTM+ag4volLpTeL1UQth1nYatjMcp
+         Vi8OyhOJT4RRw==
+Date:   Fri, 3 Mar 2023 17:35:19 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Li Yang <leoyang.li@nxp.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        David Bauer <mail@david-bauer.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Viorel Suman <viorel.suman@nxp.com>,
-        Wei Fang <wei.fang@nxp.com>
-Subject: Re: [PATCH RESEND v2 1/2] net: phy: at803x: fix the wol setting
- functions
-Message-ID: <20230303172847.202fa96e@kernel.org>
-In-Reply-To: <20230301030126.18494-1-leoyang.li@nxp.com>
-References: <20230301030126.18494-1-leoyang.li@nxp.com>
+To:     Vincenzo Palazzo <vincenzopalazzodev@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        intel-wired-lan@lists.osuosl.org, jesse.brandeburg@intel.com
+Subject: Re: [PATCH v2] netdevice: use ifmap instead of plain fields
+Message-ID: <20230303173519.72c2d236@kernel.org>
+In-Reply-To: <20230303180926.142107-1-vincenzopalazzodev@gmail.com>
+References: <20230303180926.142107-1-vincenzopalazzodev@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -58,94 +52,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 Feb 2023 21:01:25 -0600 Li Yang wrote:
-> In 7beecaf7d507 ("net: phy: at803x: improve the WOL feature"), it seems
-> not correct to use a wol_en bit in a 1588 Control Register which is only
-> available on AR8031/AR8033(share the same phy_id) to determine if WoL is
-> enabled.  Change it back to use AT803X_INTR_ENABLE_WOL for determining
-> the WoL status which is applicable on all chips supporting wol. Also
-> update the at803x_set_wol() function to only update the 1588 register on
-> chips having it.  After this change, disabling wol at probe from
-> d7cd5e06c9dd ("net: phy: at803x: disable WOL at probe") is no longer
-> needed.  So that part is removed.
-> 
-> Fixes: 7beecaf7d507b ("net: phy: at803x: improve the WOL feature")
-
-Given the fixes tag Luo Jie <luoj@codeaurora.org> should be CCed.
-
-> Signed-off-by: Li Yang <leoyang.li@nxp.com>
-> Reviewed-by: Viorel Suman <viorel.suman@nxp.com>
-> Reviewed-by: Wei Fang <wei.fang@nxp.com>
-> ---
->  drivers/net/phy/at803x.c | 40 ++++++++++++++++------------------------
->  1 file changed, 16 insertions(+), 24 deletions(-)
-> 
-> diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-> index 22f4458274aa..2102279b3964 100644
-> --- a/drivers/net/phy/at803x.c
-> +++ b/drivers/net/phy/at803x.c
-> @@ -461,21 +461,25 @@ static int at803x_set_wol(struct phy_device *phydev,
->  			phy_write_mmd(phydev, MDIO_MMD_PCS, offsets[i],
->  				      mac[(i * 2) + 1] | (mac[(i * 2)] << 8));
+On Fri,  3 Mar 2023 19:09:26 +0100 Vincenzo Palazzo wrote:
+> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+> index e1eb1de88bf9..059ff8bcdbbc 100644
+> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
+> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+> @@ -7476,8 +7476,8 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  	netif_napi_add(netdev, &adapter->napi, e1000e_poll);
+>  	strscpy(netdev->name, pci_name(pdev), sizeof(netdev->name));
 >  
-> -		/* Enable WOL function */
-> -		ret = phy_modify_mmd(phydev, MDIO_MMD_PCS, AT803X_PHY_MMD3_WOL_CTRL,
-> -				0, AT803X_WOL_EN);
-> -		if (ret)
-> -			return ret;
-> +		/* Enable WOL function for 1588 */
-> +		if (phydev->drv->phy_id == ATH8031_PHY_ID) {
-> +			ret = phy_modify_mmd(phydev, MDIO_MMD_PCS, AT803X_PHY_MMD3_WOL_CTRL,
-
-This line is now too long, unless there is a good reason please stick
-to the 80 char maximum.
-
-> +					0, AT803X_WOL_EN);
-
-while at it please fix the alignment, the continuation line should start
-under phydev (checkpatch will tell you)
-
-> +			if (ret)
-> +				return ret;
-> +		}
->  		/* Enable WOL interrupt */
->  		ret = phy_modify(phydev, AT803X_INTR_ENABLE, 0, AT803X_INTR_ENABLE_WOL);
->  		if (ret)
->  			return ret;
->  	} else {
-> -		/* Disable WoL function */
-> -		ret = phy_modify_mmd(phydev, MDIO_MMD_PCS, AT803X_PHY_MMD3_WOL_CTRL,
-> -				AT803X_WOL_EN, 0);
-> -		if (ret)
-> -			return ret;
-> +		/* Disable WoL function for 1588 */
-> +		if (phydev->drv->phy_id == ATH8031_PHY_ID) {
-> +			ret = phy_modify_mmd(phydev, MDIO_MMD_PCS, AT803X_PHY_MMD3_WOL_CTRL,
-> +					AT803X_WOL_EN, 0);
-
-same comments as above
-
-> +			if (ret)
-> +				return ret;
-> +		}
->  		/* Disable WOL interrupt */
->  		ret = phy_modify(phydev, AT803X_INTR_ENABLE, AT803X_INTR_ENABLE_WOL, 0);
->  		if (ret)
-> @@ -510,11 +514,8 @@ static void at803x_get_wol(struct phy_device *phydev,
->  	wol->supported = WAKE_MAGIC;
->  	wol->wolopts = 0;
+> -	netdev->mem_start = mmio_start;
+> -	netdev->mem_end = mmio_start + mmio_len;
+> +	netdev->dev_mapping.mem_start = mmio_start;
+> +	netdev->dev_mapping.mem_end = mmio_start + mmio_len;
 >  
-> -	value = phy_read_mmd(phydev, MDIO_MMD_PCS, AT803X_PHY_MMD3_WOL_CTRL);
-> -	if (value < 0)
-> -		return;
-> -
-> -	if (value & AT803X_WOL_EN)
-> +	value = phy_read(phydev, AT803X_INTR_ENABLE);
+>  	adapter->bd_number = cards_found++;
 
-Does phy_read() never fail? Why remove the error checking?
+That's not the only driver that'd need to be changed.
+Try building the kernel with allmodconfig.
 
-> +	if (value & AT803X_INTR_ENABLE_WOL)
->  		wol->wolopts |= WAKE_MAGIC;
->  }
->  
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 6a14b7b11766..c5987e90a078 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -2031,13 +2031,7 @@ struct net_device {
+>  	char			name[IFNAMSIZ];
+>  	struct netdev_name_node	*name_node;
+>  	struct dev_ifalias	__rcu *ifalias;
+> -	/*
+> -	 *	I/O specific fields
+> -	 *	FIXME: Merge these and struct ifmap into one
+> -	 */
+> -	unsigned long		mem_end;
+> -	unsigned long		mem_start;
+> -	unsigned long		base_addr;
+> +	struct ifmap dev_mapping;
 
+base_addr was unsigned long now its unsigned short.
+IDK if that matters.
+
+I'd rather we didn't mess with this code - it's only used by ancient
+drivers. We can wait until those drivers are no longer used and delete
+this instead.
