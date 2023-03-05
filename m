@@ -2,219 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 362A86AAD0B
-	for <lists+netdev@lfdr.de>; Sat,  4 Mar 2023 23:57:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C1466AADCA
+	for <lists+netdev@lfdr.de>; Sun,  5 Mar 2023 03:08:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229565AbjCDW5m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Mar 2023 17:57:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46262 "EHLO
+        id S229471AbjCECIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Mar 2023 21:08:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229520AbjCDW5l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Mar 2023 17:57:41 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D61B4DBC0
-        for <netdev@vger.kernel.org>; Sat,  4 Mar 2023 14:57:37 -0800 (PST)
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com [209.85.160.200])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 3595441304
-        for <netdev@vger.kernel.org>; Sat,  4 Mar 2023 22:57:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1677970656;
-        bh=Vju82LMq7Hb3dulxwnm87osrgbRmnYPvBM1vXLn4dUA=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=eVuXfteV4OyfoBeHCOKLBLDrTUF2AN4RIQ5VxgHsDYFtbUUswzwmUqj1MBx6ZwlFZ
-         geielPHAU7QBpSgAE4Z7UaG5Qp0kaQoM46PY1GAeNg9fpXTiAJWUyF7gMZG5uSlmc3
-         ry5G4pe9DRTd6F4A08fo+Cq7i98rMj7+Hl5keO3b4bkxKlQxlJUsogWIsFOf7Ci+1f
-         ptkYyy+OW+M14Z4zrsmKX6IkmibnmijAqbHnLSAAcrIOGEjEj81WsRqeMvut59hTj6
-         OWwDqf9qJDPIW0g0bISKeZAUzscm0OVnPQUJ1jbo1iCWyFChDFLimDT87slvaxq8TN
-         lZatfuLgALM8Q==
-Received: by mail-qt1-f200.google.com with SMTP id z1-20020ac87ca1000000b003ba2a2c50f9so3385074qtv.23
-        for <netdev@vger.kernel.org>; Sat, 04 Mar 2023 14:57:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677970654;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Vju82LMq7Hb3dulxwnm87osrgbRmnYPvBM1vXLn4dUA=;
-        b=48p9BQ6r1NSNcBzEl863svN4jGxVTVUE02lyItBswqRjLxG8F83SzcoS4PwOgtCezf
-         XVcEZBI/X+IYGcslzVFWiONcOZP2x087mcB6kIyIOOrkuLn+4oMWbrf3jFRRuXQ3KV1P
-         BJAVAocoH0M86nLBPqHFJrVf9P0+1il8Rwvk9BciAwAj2h0DDr3x0xtgerqwnUSOvDfe
-         hnCrnwYsORo8h/gHsCd54MHmruR4cZKdKIBoX5UBZfp0LhO2eLq4NLCrOc0LQabwyCJJ
-         f6OH871ZddukuUbD7WgdiRMVglk094Nu/iBD+S6RW8STD4xQ2zCgMzlYUB6QtxZoRNXX
-         TPSg==
-X-Gm-Message-State: AO0yUKVLi4jRNi+NkhRy6sTXAIE/X9mBny+OYmS2O261EW1uITaNs3jN
-        elOxdYwZ216MRT5k2nh45g9QtfF3wkcUSGxf1k4HljXlkj7oPJc5GdwZ/ovi9dCcYCBcBP0fIcv
-        SImkIRyqvnGFKNeUIcq1epVjrKIpjKO/hCtHruX+Dq0mqtClu/Q==
-X-Received: by 2002:a05:6214:933:b0:571:1409:5ee1 with SMTP id dk19-20020a056214093300b0057114095ee1mr1789519qvb.0.1677970654695;
-        Sat, 04 Mar 2023 14:57:34 -0800 (PST)
-X-Google-Smtp-Source: AK7set9OCpr8hRBc/QazhmBC/md4LdexEqTNSjYLrirDk7uhU3nwpz+1l8MCPf/QOPXZH2D1Js8bjRxfqR+PGxy3+lk=
-X-Received: by 2002:a05:6214:933:b0:571:1409:5ee1 with SMTP id
- dk19-20020a056214093300b0057114095ee1mr1789506qvb.0.1677970654498; Sat, 04
- Mar 2023 14:57:34 -0800 (PST)
+        with ESMTP id S229437AbjCECIF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Mar 2023 21:08:05 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF62DBE8
+        for <netdev@vger.kernel.org>; Sat,  4 Mar 2023 18:08:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:References:Cc:To:Subject:From:MIME-Version:Date:Message-ID:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=12h7df2cbC1ROxKnp3ZwT83/sZad6sWR/tLZN3wG5kg=; b=D09/D7woHlQC2QYGHG4YFjdY/h
+        gyki/6MWnsMQDKY3SUqroSREWtA5msbVvtMjn8wMjITaDAhB+deNPj/6tRi5Aaptuzhv4hW2oQfcY
+        xSzFI/eDuQIkMs4tpVBhNBkqIv6/dBeuSSJE3mQiHDqg04/zs/h68DR/mJS/++mJjqSjrvSUXe5dM
+        PDhdNmwNnV1USvmYJrMI2trcun7F6EA6kM+mbBP5JRPoknqi5WZuSUQBbntS2oLQgKqFYv7j36Gdq
+        y4uiSws/L9aJzF91o0GEZFi2Hj5AkHNoIqVk0EEWs5424AZZf9R7tTbZk8aFohIyyozyoTvMrdMhP
+        mcycVT8g==;
+Received: from 108-90-42-56.lightspeed.sntcca.sbcglobal.net ([108.90.42.56] helo=[192.168.1.80])
+        by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+        id 1pYdmq-00GBZc-1L;
+        Sun, 05 Mar 2023 02:07:44 +0000
+Message-ID: <e4b6ec21-0ed3-1c2c-58e2-8e0b329082f9@infradead.org>
+Date:   Sat, 4 Mar 2023 18:07:36 -0800
 MIME-Version: 1.0
-References: <20230303085928.4535-1-samin.guo@starfivetech.com> <20230303085928.4535-6-samin.guo@starfivetech.com>
-In-Reply-To: <20230303085928.4535-6-samin.guo@starfivetech.com>
-From:   Emil Renner Berthing <emil.renner.berthing@canonical.com>
-Date:   Sat, 4 Mar 2023 23:57:18 +0100
-Message-ID: <CAJM55Z_SV3ig56JY9BF5LeWt4M+bKYh_HdxSY02CP+9i7F0vCQ@mail.gmail.com>
-Subject: Re: [PATCH v5 05/12] riscv: dts: starfive: jh7110: Add ethernet
- device nodes
-To:     Samin Guo <samin.guo@starfivetech.com>
-Cc:     linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Yanhong Wang <yanhong.wang@starfivetech.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+From:   Geoff Levand <geoff@infradead.org>
+Subject: Re: [PATCH net v6 1/2] net/ps3_gelic_net: Fix RX sk_buff length
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Alexander Lobakin <aleksander.lobakin@intel.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>
+References: <cover.1677377639.git.geoff@infradead.org>
+ <1bf36b8e08deb3d16fafde3e88ae7cd761e4e7b3.1677377639.git.geoff@infradead.org>
+ <20230227182040.75740bb6@kernel.org>
+ <03f987ab-2cc1-21f6-a4cb-2df1273a8560@intel.com>
+ <20230228123135.251edc25@kernel.org>
+Content-Language: en-US
+In-Reply-To: <20230228123135.251edc25@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 3 Mar 2023 at 10:01, Samin Guo <samin.guo@starfivetech.com> wrote:
->
-> Add JH7110 ethernet device node to support gmac driver for the JH7110
-> RISC-V SoC.
->
-> Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
-> Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
-> ---
->  arch/riscv/boot/dts/starfive/jh7110.dtsi | 91 ++++++++++++++++++++++++
->  1 file changed, 91 insertions(+)
->
-> diff --git a/arch/riscv/boot/dts/starfive/jh7110.dtsi b/arch/riscv/boot/dts/starfive/jh7110.dtsi
-> index 09806418ed1b..2ce28292b721 100644
-> --- a/arch/riscv/boot/dts/starfive/jh7110.dtsi
-> +++ b/arch/riscv/boot/dts/starfive/jh7110.dtsi
-> @@ -233,6 +233,13 @@
->                 #clock-cells = <0>;
->         };
->
-> +       stmmac_axi_setup: stmmac-axi-config {
-> +               snps,lpi_en;
-> +               snps,wr_osr_lmt = <4>;
-> +               snps,rd_osr_lmt = <4>;
-> +               snps,blen = <256 128 64 32 0 0 0>;
-> +       };
-> +
->         tdm_ext: tdm-ext-clock {
->                 compatible = "fixed-clock";
->                 clock-output-names = "tdm_ext";
-> @@ -518,5 +525,89 @@
->                         gpio-controller;
->                         #gpio-cells = <2>;
->                 };
-> +
-> +               gmac0: ethernet@16030000 {
-> +                       compatible = "starfive,jh7110-dwmac", "snps,dwmac-5.20";
-> +                       reg = <0x0 0x16030000 0x0 0x10000>;
-> +                       clocks = <&aoncrg JH7110_AONCLK_GMAC0_AXI>,
-> +                                <&aoncrg JH7110_AONCLK_GMAC0_AHB>,
-> +                                <&syscrg JH7110_SYSCLK_GMAC0_PTP>,
-> +                                <&aoncrg JH7110_AONCLK_GMAC0_TX_INV>,
-> +                                <&syscrg JH7110_SYSCLK_GMAC0_GTXC>;
-> +                       clock-names = "stmmaceth", "pclk", "ptp_ref",
-> +                                     "tx", "gtx";
-> +                       resets = <&aoncrg JH7110_AONRST_GMAC0_AXI>,
-> +                                <&aoncrg JH7110_AONRST_GMAC0_AHB>;
-> +                       reset-names = "stmmaceth", "ahb";
-> +                       interrupts = <7>, <6>, <5>;
-> +                       interrupt-names = "macirq", "eth_wake_irq", "eth_lpi";
-> +                       phy-mode = "rgmii-id";
-> +                       snps,multicast-filter-bins = <64>;
-> +                       snps,perfect-filter-entries = <8>;
-> +                       rx-fifo-depth = <2048>;
-> +                       tx-fifo-depth = <2048>;
-> +                       snps,fixed-burst;
-> +                       snps,no-pbl-x8;
-> +                       snps,force_thresh_dma_mode;
-> +                       snps,axi-config = <&stmmac_axi_setup>;
-> +                       snps,tso;
-> +                       snps,en-tx-lpi-clockgating;
-> +                       snps,txpbl = <16>;
-> +                       snps,rxpbl = <16>;
-> +                       status = "disabled";
-> +                       phy-handle = <&phy0>;
-> +
-> +                       mdio {
-> +                               #address-cells = <1>;
-> +                               #size-cells = <0>;
-> +                               compatible = "snps,dwmac-mdio";
-> +
-> +                               phy0: ethernet-phy@0 {
-> +                                       reg = <0>;
-> +                               };
-> +                       };
-> +               };
-> +
-> +               gmac1: ethernet@16040000 {
-> +                       compatible = "starfive,jh7110-dwmac", "snps,dwmac-5.20";
-> +                       reg = <0x0 0x16040000 0x0 0x10000>;
-> +                       clocks = <&syscrg JH7110_SYSCLK_GMAC1_AXI>,
-> +                                <&syscrg JH7110_SYSCLK_GMAC1_AHB>,
-> +                                <&syscrg JH7110_SYSCLK_GMAC1_PTP>,
-> +                                <&syscrg JH7110_SYSCLK_GMAC1_TX_INV>,
-> +                                <&syscrg JH7110_SYSCLK_GMAC1_GTXC>;
-> +                       clock-names = "stmmaceth", "pclk", "ptp_ref",
-> +                                     "tx", "gtx";
-> +                       resets = <&syscrg JH7110_SYSRST_GMAC1_AXI>,
-> +                                <&syscrg JH7110_SYSRST_GMAC1_AHB>;
-> +                       reset-names = "stmmaceth", "ahb";
-> +                       interrupts = <78>, <77>, <76>;
-> +                       interrupt-names = "macirq", "eth_wake_irq", "eth_lpi";
-> +                       phy-mode = "rgmii-id";
-> +                       snps,multicast-filter-bins = <64>;
-> +                       snps,perfect-filter-entries = <8>;
-> +                       rx-fifo-depth = <2048>;
-> +                       tx-fifo-depth = <2048>;
-> +                       snps,fixed-burst;
-> +                       snps,no-pbl-x8;
-> +                       snps,force_thresh_dma_mode;
-> +                       snps,axi-config = <&stmmac_axi_setup>;
-> +                       snps,tso;
-> +                       snps,en-tx-lpi-clockgating;
-> +                       snps,txpbl = <16>;
-> +                       snps,rxpbl = <16>;
-> +                       status = "disabled";
-> +                       phy-handle = <&phy1>;
-> +
-> +                       mdio {
-> +                               #address-cells = <1>;
-> +                               #size-cells = <0>;
-> +                               compatible = "snps,dwmac-mdio";
-> +
-> +                               phy1: ethernet-phy@1 {
-> +                                       reg = <0>;
+Hi,
 
-I'm getting errors on eth1 unless this is set to <1>. In any case the
-number after @ in the node name should match the reg value.
+On 2/28/23 12:31, Jakub Kicinski wrote:
+>>
+>> IIRC the original problem is that the skb linear parts are not always
+>> aligned to a boundary which this particular HW requires. So initially
+>> there was something like "allocate len + alignment - 1, then
+>> PTR_ALIGN()",
+> 
+> Let's focus on where the bug is. At a quick look I'm guessing that 
+> the bug is that we align the CPU buffer instead of the DMA buffer.
+> We should pass the entire allocate len + alignment - 1 as length 
+> to dma_map() and then align the dma_addr. dma_addr is what the device
+> sees. Not the virtual address of skb->data.
+> 
+> If I'm right the bug is not in fact directly addressed by the patch.
+> I'm guessing the patch helps because at least the patch passes the
+> aligned length to the dma_map(), rather than GELIC_NET_MAX_MTU (which
+> is not a multiple of 128).
 
-> +                               };
-> +                       };
-> +               };
->         };
->  };
-> --
-> 2.17.1
->
->
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
+I found some old notes for the gelic network device.  It had values
+for the max frame size, and the max MTU size.  These values are the
+same as what is in the 'spider net' driver.  For patch set v7 I just
+took what the spider net driver was doing for its RX DMA buffer
+allocation and applied that to the gelic driver.
+
+I think your comment about aligning the DMA buffer is addressed by
+the lines:
+
+    offset = ((unsigned long)descr->skb->data) &
+		(GELIC_NET_RXBUF_ALIGN - 1);
+    if (offset)
+        skb_reserve(descr->skb, GELIC_NET_RXBUF_ALIGN - offset);
+
+I tried to do some thorough testing of v7, and I couldn't get it to
+error.
+
+-Geoff
+
+
+
