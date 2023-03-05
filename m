@@ -2,68 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B6D96AB16A
-	for <lists+netdev@lfdr.de>; Sun,  5 Mar 2023 17:49:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E6286AB173
+	for <lists+netdev@lfdr.de>; Sun,  5 Mar 2023 17:58:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229579AbjCEQrT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Mar 2023 11:47:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39454 "EHLO
+        id S229698AbjCEQ6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Mar 2023 11:58:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbjCEQrS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Mar 2023 11:47:18 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7FC21026D
-        for <netdev@vger.kernel.org>; Sun,  5 Mar 2023 08:47:16 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id i5so7723285pla.2
-        for <netdev@vger.kernel.org>; Sun, 05 Mar 2023 08:47:16 -0800 (PST)
+        with ESMTP id S229693AbjCEQ6Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Mar 2023 11:58:24 -0500
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 994C7CA12
+        for <netdev@vger.kernel.org>; Sun,  5 Mar 2023 08:58:22 -0800 (PST)
+Received: by mail-il1-x12b.google.com with SMTP id y9so3979456ill.3
+        for <netdev@vger.kernel.org>; Sun, 05 Mar 2023 08:58:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112; t=1678034836;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=p8CGQ0+gwdQ3evaNuyAGcInX2XmXpACBAvytALAzo3o=;
-        b=TdtFnYme1tZgNNo/JeLiyK1SSuV6jUDfVy6FCqg8WGde0F3s+gqJCfuC1YUDFOANHk
-         2ejrjprYYf82F4XL1ZGsPwfkKsD4vWF6S6G21GDBzoHh/VP0tXxP8OkMP3TQttvoEWFn
-         t6Uc4OoVgw5OLhNdlUgzh3fEy7MqfpmxbcDJuUi65ZhCpLO8Bz17GoB+eK2VuShikwLs
-         U3s54jIUaRkUiL+kqLs2khgELHpUpAxWt5DBBTjQB2mO+bYquMc8ozzNtnziTNrBVtcu
-         9VMxDNwRZ4XDf5g3eEQqedmW4Vo9klJ+h+icYLHvX6a9hJ/NiEF6k1TZMRgbt0GIR/zR
-         BfnQ==
+        d=ieee.org; s=google; t=1678035502;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=aj+sCMCZSrVKo/Uw+s7aitBRb/4NWTM49sBMqERhEpg=;
+        b=Ani9WhXYsvqGrbaM/ZwAoURorj6hFZNvybfaw90UB54nZEMgAdiyUOU1PiNPtRGQRa
+         pj/lrqdmWvoC8qaZ28RSh1P0XlTwcNx8UTpfk6+2Nw0866SfRfwdqD4V0ysNB5yMhGBu
+         2txFv7UUfQkC5ZQCH4nQrcfgaI+XomU50F+vM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678034836;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=p8CGQ0+gwdQ3evaNuyAGcInX2XmXpACBAvytALAzo3o=;
-        b=ZvzfyQPuTUNB93/kdaHgS2/16Q0I3iAPQj+dMK+2lglPFwarrsmqqdjtYEp7r7AyBl
-         wgM7tcF1AtZOL8LVzBL8ePJMBc6Xy0D3FyXKziAZiynQwv/S2bFCCzuifW7qJ1yt/rOz
-         CKJbmUtpXYvkzYYjeES/C8m4zsOdyFtx0+GBNN9Z8KUSr65nc4tI31DQzNKiDMr1wOdZ
-         fvQWXiJJPXvZ7pyeDeYQSmpTG+NJxl2Rg0e90MVCkaUrLUbQoO2CTCnMb4nPyJL7veQI
-         EAPnbJmsHGPFbvqI48eF9SqUnifN5yghAQ1fbqClCJDNm71c9iGfKNIxYR1irC1vRQ09
-         ou1Q==
-X-Gm-Message-State: AO0yUKXA8m9i1jrAoZXtMl2X1zv1UPWbnloutD1bQP1CH5yaC2Yu3JOu
-        qjOj30aTk/SskCt8p9Svzhq3XroGQ91iAefgtT06wg==
-X-Google-Smtp-Source: AK7set8r3P+K9bLpK7IaCLOTKW25unYlSToOKjf/HQnef3pk3VkeLgEUqKGc/98YyJ3r6ustmK4OIQ==
-X-Received: by 2002:a17:903:24d:b0:19e:76b7:c7d2 with SMTP id j13-20020a170903024d00b0019e76b7c7d2mr10558673plh.26.1678034836201;
-        Sun, 05 Mar 2023 08:47:16 -0800 (PST)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id u5-20020a170902e80500b0019a8468cbe7sm4905366plg.224.2023.03.05.08.47.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Mar 2023 08:47:16 -0800 (PST)
-Date:   Sun, 5 Mar 2023 08:47:14 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Pedro Tammela <pctammela@mojatatu.com>
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com
-Subject: Re: [PATCH iproute2 v2 3/3] tc: m_nat: parse index argument
- correctly
-Message-ID: <20230305084714.1bf8fb11@hermes.local>
-In-Reply-To: <20230227184510.277561-4-pctammela@mojatatu.com>
-References: <20230227184510.277561-1-pctammela@mojatatu.com>
-        <20230227184510.277561-4-pctammela@mojatatu.com>
+        d=1e100.net; s=20210112; t=1678035502;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=aj+sCMCZSrVKo/Uw+s7aitBRb/4NWTM49sBMqERhEpg=;
+        b=Jmc62NsxCyPMj19DmXf5PWg+7/BOFY2dMeQCt+d0VsuAv58HPA/HnHsIcpAOBTnuSg
+         pbyzMhOtqwPTkf/L/IkOakv0/5k+HHtzRZC0zxmK/xIKS4iCHOA9KMOCvAeH4gByphpk
+         /Sh6xiPMjKFWwYWpBuhhup0YV1/GvbdlH/O9dtgXXWv1GBOfyiqGbkDaXOvCS9V3BxSR
+         6u9pstTq0XELNk4AsdRVZNE5fUWeQP09r44poOn/iRrvGIOt3tsm/IpojUINFRHk569O
+         bh5d9sv9eUdSrk6MAHeQDECkkw9Fm71rtO5J6Upel6CujQ5oNCoa3ZdIKHMC/9vzoWis
+         CV8w==
+X-Gm-Message-State: AO0yUKUAqw60H3yZ4/VnjfmHW97LF+mreWLBQrJdQGYrtWacDbBrlYAd
+        tj01ll5d8UBelBOgYPCTa/M7sw==
+X-Google-Smtp-Source: AK7set+rwXEfKWTFcnCQMZXRHbEdVRTYlTfIugZqOftJv3Qt3HR7/P2Gcd3pkLvWzm380at8+xIWIQ==
+X-Received: by 2002:a05:6e02:1527:b0:317:e415:bc55 with SMTP id i7-20020a056e02152700b00317e415bc55mr8622126ilu.23.1678035501921;
+        Sun, 05 Mar 2023 08:58:21 -0800 (PST)
+Received: from [10.211.55.3] ([98.61.227.136])
+        by smtp.googlemail.com with ESMTPSA id p17-20020a92da51000000b0031796c6d735sm2246671ilq.41.2023.03.05.08.58.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 05 Mar 2023 08:58:21 -0800 (PST)
+Message-ID: <5d90b252-c650-9908-05d3-fbbfdf47aa38@ieee.org>
+Date:   Sun, 5 Mar 2023 10:58:19 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH net-next 2/6] net: ipa: kill gsi->virt_raw
+To:     Alex Elder <elder@linaro.org>,
+        Alexander Lobakin <aleksander.lobakin@intel.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, caleb.connolly@linaro.org, mka@chromium.org,
+        evgreen@chromium.org, andersson@kernel.org,
+        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
+        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
+        elder@kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20230215195352.755744-1-elder@linaro.org>
+ <20230215195352.755744-3-elder@linaro.org>
+ <b0b2ae77-3311-34c8-d1a2-c6f30eca3f1e@intel.com>
+ <c76bbb06-b6b0-8dae-965f-95e8af3634b6@linaro.org>
+ <4c92160f-b2ea-c5ef-5647-6078ab47e518@intel.com>
+ <a919afca-d33e-618d-5db3-17a08d90e8af@linaro.org>
+Content-Language: en-US
+From:   Alex Elder <elder@ieee.org>
+In-Reply-To: <a919afca-d33e-618d-5db3-17a08d90e8af@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,13 +82,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 27 Feb 2023 15:45:10 -0300
-Pedro Tammela <pctammela@mojatatu.com> wrote:
+On 2/17/23 7:04 AM, Alex Elder wrote:
+> On 2/17/23 5:57 AM, Alexander Lobakin wrote:
+>>>> just devm_platform_ioremap_resource_byname() be used here for 
+>>>> simplicity?
+>>> Previously, virt_raw would be the "real" re-mapped pointer, and then
+>>> virt would be adjusted downward from that.  It was a weird thing to
+>>> do, because the result pointed to a non-mapped address.  But all uses
+>>> of the virt pointer added an offset that was enough to put the result
+>>> into the mapped range.
+>>>
+>>> The new code updates all offsets to account for what the adjustment
+>>> previously did.  The test that got removed isn't necessary any more.
+>> Yeah I got it, just asked that maybe you can now use
+>> platform_ioremap_resource_byname() instead of
+>> platform_get_resource_byname() + ioremap() :)
+> 
+> Sorry, I focused on the "devm" part and not this part.
+> Yes I like that, but let me do that as a follow-on
+> patch, and I think I can do it in more than this
+> spot (possibly three, but I have to look closely).
 
-> Fixes: fc2d0206 ("Add NAT action")
-In future use more characters for fixes line. Current checkpatch
-complains:
+Looking at this today, the only OF functions that look up a
+resource and I/O remap it in one call are devm_*() variants.
+There is no platform_ioremap_resource_byname() function.
 
-WARNING: Please use correct Fixes: style 'Fixes: <12 chars of sha1> ("<title line>")' - ie: 'Fixes: fc2d02069b52 ("Add NAT action")'
-#426: 
-Fixes: fc2d0206 ("Add NAT action")
+One that's available is devm_platform_ioremap_resource_byname(),
+which could possibly be used in the two locations that call
+platform_get_resource_byname() followed by ioremap().
+
+As I said earlier, if I were to use any devm_*() function
+calls the driver, I would want to convert *everything* to
+use devm_*() variants, and I have no plans to do that at
+this time.
+
+So I will not be implementing your suggestion.
+
+					-Alex
+
+> Thanks.
+> 
+>                      -Alex
+> 
+> 
+
