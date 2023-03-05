@@ -2,96 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FAC16AADCC
-	for <lists+netdev@lfdr.de>; Sun,  5 Mar 2023 03:08:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFDFC6AAEE3
+	for <lists+netdev@lfdr.de>; Sun,  5 Mar 2023 10:54:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229539AbjCECIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Mar 2023 21:08:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47682 "EHLO
+        id S229732AbjCEJyw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Mar 2023 04:54:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229489AbjCECIV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Mar 2023 21:08:21 -0500
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1234::107])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAE4013D45
-        for <netdev@vger.kernel.org>; Sat,  4 Mar 2023 18:08:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Date:Cc:To:Subject:From:References:
-        In-Reply-To:Message-Id:Sender:Reply-To:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=aemgN5qIiQEXTBmjjyHuwmEC8bbg0+4AndH9n+s6pG0=; b=WYepPKnfcMHdFfWiZ8KVt7gFPA
-        pF8RbIOM0I+2a6PR+Ch8iB3CzGlXa3pVXLzJkg7FHuTemftSjUzMfhjxtVrLGOnPM86XbbeBlVgoC
-        7xa8cIo/SfrOxkbJicHJFBfr+M79wQd2mWKdU8sep3GErFHaZK1TxGh7jls6CsaP4K9gIo24OD6zz
-        QF6yNDPU6BmIqf/UgpHEEdmETfHHBl2Znklmn8D6SaDPxTcUk4Z4CZQnktNmz2qYu48dsYepP5IyG
-        11v7lDnIrVSjXrkEuk/9IM2syBgOs2s6F9wqF3fvYluOy9qLHCms4peKD9SatVMDb5rcWn5GhLROm
-        DWsj7CSQ==;
-Received: from geoff by merlin.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pYdnF-006Wd2-7j; Sun, 05 Mar 2023 02:08:09 +0000
-Message-Id: <45545484eadcf15a3ef06e35ccf34981cda2e867.1677981671.git.geoff@infradead.org>
-In-Reply-To: <cover.1677981671.git.geoff@infradead.org>
-References: <cover.1677981671.git.geoff@infradead.org>
-From:   Geoff Levand <geoff@infradead.org>
-Patch-Date: Sat, 4 Mar 2023 17:48:15 -0800
-Subject: [PATCH net v7 2/2] net/ps3_gelic_net: Use dma_mapping_error
-To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Date:   Sun, 05 Mar 2023 02:08:09 +0000
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229642AbjCEJyv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Mar 2023 04:54:51 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24FB7A5FD
+        for <netdev@vger.kernel.org>; Sun,  5 Mar 2023 01:54:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1678010045;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=zZ1FRbEzDhg7eiI4sxCa3iFgs3/LMEjHpvregVmhCSg=;
+        b=frZEOw7tGhYHFMuUwPJpmgvB5kENa87clBxOBlT3YVfd0PKk4HrWAqoogAJj9T5CFoFBff
+        GJsz0qw9SgnXVSG5+yhHQ6YkNlNiv/mH4vP429egBwZhY2QcPZ/84uIntfkIo2vtAwjH9u
+        CvMgoI3lJ8FcZ4G0L6UYHyTxhJMgvjI=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-458-rdJ3u0gBOQyZ38YowrzjlQ-1; Sun, 05 Mar 2023 04:54:03 -0500
+X-MC-Unique: rdJ3u0gBOQyZ38YowrzjlQ-1
+Received: by mail-wr1-f71.google.com with SMTP id bh3-20020a05600005c300b002c70d6e2014so951726wrb.10
+        for <netdev@vger.kernel.org>; Sun, 05 Mar 2023 01:54:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678010042;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=zZ1FRbEzDhg7eiI4sxCa3iFgs3/LMEjHpvregVmhCSg=;
+        b=iHL03CViebB4emjYli0q/Ctooc55ib/0JkHctnuN450hsBwNDgwvQn7qKAXPZYBk9O
+         TKUh3uY5qxc0AoK4vVfk0i4zbbDaXjpI+Hhxk8Dd50u2H0y0HiGX17iJbaO4kaYH7Lc9
+         J+4KdpIpGw4WYhtyYC2UQ8wbnuPCpEy6nT4H40UA2UaCxS8EJrBSksQT6kvIl2xdWEZc
+         LPlgEW1VdXgY9LNCV9Xe1d9R2mJMSEgn6fdZNAEcMX8BKm/NXGLMExvMLH85uyNhPWFn
+         pPEXrepiLXFTBbj9WDFJix21GawrTDljAuJ7p+gknzVN8TFrOxFUfe2cahtN0Fq3TIym
+         bwJw==
+X-Gm-Message-State: AO0yUKUEm1c1xkXitw14yvQr2ydlzzXYIwFSgOB5PBYJbNFmq+ixKthM
+        DYvoxxaO35GckCXLlhNmCdDthcmZBTKLP3tAygakKSRX95CJyhuF5ThrBpR6Y2NeKt9B+0YGF14
+        0VzkupaTW+o0pABdt
+X-Received: by 2002:adf:fc0d:0:b0:2c7:1e3b:2d46 with SMTP id i13-20020adffc0d000000b002c71e3b2d46mr4900200wrr.17.1678010042430;
+        Sun, 05 Mar 2023 01:54:02 -0800 (PST)
+X-Google-Smtp-Source: AK7set8IoOS6Gx/WJKStkNGfdBuK7UXUinqGFeitKJGyU7CYQyNcgwXAwkQ7nJs7SEFHzH1aVenCxA==
+X-Received: by 2002:adf:fc0d:0:b0:2c7:1e3b:2d46 with SMTP id i13-20020adffc0d000000b002c71e3b2d46mr4900192wrr.17.1678010042180;
+        Sun, 05 Mar 2023 01:54:02 -0800 (PST)
+Received: from redhat.com ([2.52.23.160])
+        by smtp.gmail.com with ESMTPSA id k8-20020a5d66c8000000b002c573a6216fsm6984304wrw.37.2023.03.05.01.54.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 05 Mar 2023 01:54:01 -0800 (PST)
+Date:   Sun, 5 Mar 2023 04:53:58 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jason Wang <jasowang@redhat.com>, rbradford@rivosinc.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] virtio-net: Fix probe of virtio-net on kvmtool
+Message-ID: <20230305045249-mutt-send-email-mst@kernel.org>
+References: <20230223-virtio-net-kvmtool-v3-1-e038660624de@rivosinc.com>
+ <20230301093054-mutt-send-email-mst@kernel.org>
+ <CACGkMEsG10CWigz+S6JgSVK8XfbpT=L=30hZ8LDvohtaanAiZQ@mail.gmail.com>
+ <20230302044806-mutt-send-email-mst@kernel.org>
+ <20230303164603.7b35a76f@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230303164603.7b35a76f@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current Gelic Etherenet driver was checking the return value of its
-dma_map_single call, and not using the dma_mapping_error() routine.
+On Fri, Mar 03, 2023 at 04:46:03PM -0800, Jakub Kicinski wrote:
+> On Thu, 2 Mar 2023 04:48:38 -0500 Michael S. Tsirkin wrote:
+> > > Looks not the core can try to enable and disable features according to
+> > > the diff between features and hw_features
+> > > 
+> > > static inline netdev_features_t netdev_get_wanted_features(
+> > >         struct net_device *dev)
+> > > {
+> > >         return (dev->features & ~dev->hw_features) | dev->wanted_features;
+> > > }
+> > 
+> > yes what we do work according to code.  So the documentation is wrong then?
+> 
+> It's definitely incomplete but which part are you saying is wrong?
 
-Fixes runtime problems like these:
+So it says:
+  2. netdev->features set contains features which are currently enabled
+     for a device.
 
-  DMA-API: ps3_gelic_driver sb_05: device driver failed to check map error
-  WARNING: CPU: 0 PID: 0 at kernel/dma/debug.c:1027 .check_unmap+0x888/0x8dc
+ok so far.
+But this part:
 
-Fixes: 02c1889166b4 ("ps3: gigabit ethernet driver for PS3, take3")
-Signed-off-by: Geoff Levand <geoff@infradead.org>
----
- drivers/net/ethernet/toshiba/ps3_gelic_net.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+  This should be changed only by network core or in
+     error paths of ndo_set_features callback.
 
-diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_net.c b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-index b0ebe0e603b4..40261947e0ea 100644
---- a/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-+++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-@@ -323,7 +323,7 @@ static int gelic_card_init_chain(struct gelic_card *card,
- 				       GELIC_DESCR_SIZE,
- 				       DMA_BIDIRECTIONAL);
- 
--		if (!descr->bus_addr)
-+		if (dma_mapping_error(ctodev(card), descr->bus_addr))
- 			goto iommu_error;
- 
- 		descr->next = descr + 1;
-@@ -401,7 +401,7 @@ static int gelic_descr_prepare_rx(struct gelic_card *card,
- 						     descr->skb->data,
- 						     GELIC_NET_MAX_FRAME,
- 						     DMA_FROM_DEVICE));
--	if (!descr->buf_addr) {
-+	if (dma_mapping_error(ctodev(card), descr->buf_addr)) {
- 		dev_kfree_skb_any(descr->skb);
- 		descr->skb = NULL;
- 		dev_info(ctodev(card),
-@@ -781,7 +781,7 @@ static int gelic_descr_prepare_tx(struct gelic_card *card,
- 
- 	buf = dma_map_single(ctodev(card), skb->data, skb->len, DMA_TO_DEVICE);
- 
--	if (!buf) {
-+	if (dma_mapping_error(ctodev(card), buf)) {
- 		dev_err(ctodev(card),
- 			"dma map 2 failed (%p, %i). Dropping packet\n",
- 			skb->data, skb->len);
+seems to say virtio should not touch netdev->features, no?
+
 -- 
-2.34.1
+MST
 
