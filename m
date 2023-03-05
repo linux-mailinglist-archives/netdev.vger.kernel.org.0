@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12AC86AADCB
-	for <lists+netdev@lfdr.de>; Sun,  5 Mar 2023 03:08:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FAC16AADCC
+	for <lists+netdev@lfdr.de>; Sun,  5 Mar 2023 03:08:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229518AbjCECIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Mar 2023 21:08:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47686 "EHLO
+        id S229539AbjCECIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Mar 2023 21:08:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229500AbjCECIV (ORCPT
+        with ESMTP id S229489AbjCECIV (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 4 Mar 2023 21:08:21 -0500
 Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1234::107])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E947113D5C
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAE4013D45
         for <netdev@vger.kernel.org>; Sat,  4 Mar 2023 18:08:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=merlin.20170209; h=Date:Cc:To:Subject:From:References:
         In-Reply-To:Message-Id:Sender:Reply-To:MIME-Version:Content-Type:
         Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=tCA8RznNgTSozDHpBLe7Y7BSCMBWgHdlmMqaTgNotXc=; b=Hwzco48gX8ydhB0qaUTSpY0kQ4
-        /qElbE2MJnQLbBtIDhbkc3YfGEr4sjCuPAEaaQpIXDPRrEBYEzhq5oyyNKBz+LFFqRx7vwQq3WH2T
-        MnRCrR7EdXfvjGmT6gVkkF7OnTV1G+0vYM3GhjBmZ+URrckXl3nj4Y9ABO2C4kfkT95cyThMRcNSG
-        k+ePu8YBfkZkCZQ6IJfVjybCImlwVT2Q+FHumKyyNMXMm+hZWAzoojNZggngFMITCn+wlSh5jtKwV
-        iwQpCr29I8Jg9fGsKbnd0FVZ0U3L1D1m+1cp6QDobbVlIKZUbo+9dcU1rcmscF6sRZIP7kHyXuMKP
-        q402c+MQ==;
+        bh=aemgN5qIiQEXTBmjjyHuwmEC8bbg0+4AndH9n+s6pG0=; b=WYepPKnfcMHdFfWiZ8KVt7gFPA
+        pF8RbIOM0I+2a6PR+Ch8iB3CzGlXa3pVXLzJkg7FHuTemftSjUzMfhjxtVrLGOnPM86XbbeBlVgoC
+        7xa8cIo/SfrOxkbJicHJFBfr+M79wQd2mWKdU8sep3GErFHaZK1TxGh7jls6CsaP4K9gIo24OD6zz
+        QF6yNDPU6BmIqf/UgpHEEdmETfHHBl2Znklmn8D6SaDPxTcUk4Z4CZQnktNmz2qYu48dsYepP5IyG
+        11v7lDnIrVSjXrkEuk/9IM2syBgOs2s6F9wqF3fvYluOy9qLHCms4peKD9SatVMDb5rcWn5GhLROm
+        DWsj7CSQ==;
 Received: from geoff by merlin.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pYdnF-006Wd0-0P; Sun, 05 Mar 2023 02:08:09 +0000
-Message-Id: <22d742b4e7d11ff48e8c40e39db3c776e495abe2.1677981671.git.geoff@infradead.org>
+        id 1pYdnF-006Wd2-7j; Sun, 05 Mar 2023 02:08:09 +0000
+Message-Id: <45545484eadcf15a3ef06e35ccf34981cda2e867.1677981671.git.geoff@infradead.org>
 In-Reply-To: <cover.1677981671.git.geoff@infradead.org>
 References: <cover.1677981671.git.geoff@infradead.org>
 From:   Geoff Levand <geoff@infradead.org>
 Patch-Date: Sat, 4 Mar 2023 17:48:15 -0800
-Subject: [PATCH net v7 1/2] net/ps3_gelic_net: Fix RX sk_buff length
+Subject: [PATCH net v7 2/2] net/ps3_gelic_net: Use dma_mapping_error
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
@@ -47,80 +47,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Gelic Ethernet device needs to have the RX sk_buffs aligned to
-GELIC_NET_RXBUF_ALIGN, and also the length of the RX sk_buffs must
-be a multiple of GELIC_NET_RXBUF_ALIGN.
+The current Gelic Etherenet driver was checking the return value of its
+dma_map_single call, and not using the dma_mapping_error() routine.
 
-The current Gelic Ethernet driver was not allocating sk_buffs large
-enough to allow for this alignment.
+Fixes runtime problems like these:
 
-Also, correct the maximum and minimum MTU sizes, and add a new
-preprocessor macro for the maximum frame size, GELIC_NET_MAX_FRAME.
-
-Fixes various randomly occurring runtime network errors.
+  DMA-API: ps3_gelic_driver sb_05: device driver failed to check map error
+  WARNING: CPU: 0 PID: 0 at kernel/dma/debug.c:1027 .check_unmap+0x888/0x8dc
 
 Fixes: 02c1889166b4 ("ps3: gigabit ethernet driver for PS3, take3")
 Signed-off-by: Geoff Levand <geoff@infradead.org>
 ---
- drivers/net/ethernet/toshiba/ps3_gelic_net.c | 10 ++++++----
- drivers/net/ethernet/toshiba/ps3_gelic_net.h |  5 +++--
- 2 files changed, 9 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/toshiba/ps3_gelic_net.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_net.c b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-index cf8de8a7a8a1..b0ebe0e603b4 100644
+index b0ebe0e603b4..40261947e0ea 100644
 --- a/drivers/net/ethernet/toshiba/ps3_gelic_net.c
 +++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-@@ -375,11 +375,13 @@ static int gelic_descr_prepare_rx(struct gelic_card *card,
- 	if (gelic_descr_get_status(descr) !=  GELIC_DESCR_DMA_NOT_IN_USE)
- 		dev_info(ctodev(card), "%s: ERROR status\n", __func__);
- 	/* we need to round up the buffer size to a multiple of 128 */
--	bufsize = ALIGN(GELIC_NET_MAX_MTU, GELIC_NET_RXBUF_ALIGN);
-+	bufsize = (GELIC_NET_MAX_FRAME + GELIC_NET_RXBUF_ALIGN - 1) &
-+		(~(GELIC_NET_RXBUF_ALIGN - 1));
+@@ -323,7 +323,7 @@ static int gelic_card_init_chain(struct gelic_card *card,
+ 				       GELIC_DESCR_SIZE,
+ 				       DMA_BIDIRECTIONAL);
  
- 	/* and we need to have it 128 byte aligned, therefore we allocate a
- 	 * bit more */
--	descr->skb = dev_alloc_skb(bufsize + GELIC_NET_RXBUF_ALIGN - 1);
-+	descr->skb = netdev_alloc_skb(*card->netdev, bufsize +
-+		GELIC_NET_RXBUF_ALIGN - 1);
- 	if (!descr->skb) {
- 		descr->buf_addr = 0; /* tell DMAC don't touch memory */
- 		return -ENOMEM;
-@@ -397,7 +399,7 @@ static int gelic_descr_prepare_rx(struct gelic_card *card,
- 	/* io-mmu-map the skb */
- 	descr->buf_addr = cpu_to_be32(dma_map_single(ctodev(card),
+-		if (!descr->bus_addr)
++		if (dma_mapping_error(ctodev(card), descr->bus_addr))
+ 			goto iommu_error;
+ 
+ 		descr->next = descr + 1;
+@@ -401,7 +401,7 @@ static int gelic_descr_prepare_rx(struct gelic_card *card,
  						     descr->skb->data,
--						     GELIC_NET_MAX_MTU,
-+						     GELIC_NET_MAX_FRAME,
+ 						     GELIC_NET_MAX_FRAME,
  						     DMA_FROM_DEVICE));
- 	if (!descr->buf_addr) {
+-	if (!descr->buf_addr) {
++	if (dma_mapping_error(ctodev(card), descr->buf_addr)) {
  		dev_kfree_skb_any(descr->skb);
-@@ -915,7 +917,7 @@ static void gelic_net_pass_skb_up(struct gelic_descr *descr,
- 	data_error = be32_to_cpu(descr->data_error);
- 	/* unmap skb buffer */
- 	dma_unmap_single(ctodev(card), be32_to_cpu(descr->buf_addr),
--			 GELIC_NET_MAX_MTU,
-+			 GELIC_NET_MAX_FRAME,
- 			 DMA_FROM_DEVICE);
+ 		descr->skb = NULL;
+ 		dev_info(ctodev(card),
+@@ -781,7 +781,7 @@ static int gelic_descr_prepare_tx(struct gelic_card *card,
  
- 	skb_put(skb, be32_to_cpu(descr->valid_size)?
-diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_net.h b/drivers/net/ethernet/toshiba/ps3_gelic_net.h
-index 68f324ed4eaf..0d98defb011e 100644
---- a/drivers/net/ethernet/toshiba/ps3_gelic_net.h
-+++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.h
-@@ -19,8 +19,9 @@
- #define GELIC_NET_RX_DESCRIPTORS        128 /* num of descriptors */
- #define GELIC_NET_TX_DESCRIPTORS        128 /* num of descriptors */
+ 	buf = dma_map_single(ctodev(card), skb->data, skb->len, DMA_TO_DEVICE);
  
--#define GELIC_NET_MAX_MTU               VLAN_ETH_FRAME_LEN
--#define GELIC_NET_MIN_MTU               VLAN_ETH_ZLEN
-+#define GELIC_NET_MAX_FRAME             2312
-+#define GELIC_NET_MAX_MTU               2294
-+#define GELIC_NET_MIN_MTU               64
- #define GELIC_NET_RXBUF_ALIGN           128
- #define GELIC_CARD_RX_CSUM_DEFAULT      1 /* hw chksum */
- #define GELIC_NET_WATCHDOG_TIMEOUT      5*HZ
+-	if (!buf) {
++	if (dma_mapping_error(ctodev(card), buf)) {
+ 		dev_err(ctodev(card),
+ 			"dma map 2 failed (%p, %i). Dropping packet\n",
+ 			skb->data, skb->len);
 -- 
 2.34.1
-
 
