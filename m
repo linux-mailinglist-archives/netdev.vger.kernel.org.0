@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A07A6AD046
+	by mail.lfdr.de (Postfix) with ESMTP id CEACE6AD047
 	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 22:28:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229993AbjCFV2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 16:28:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53680 "EHLO
+        id S230039AbjCFV24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 16:28:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229990AbjCFV2r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 16:28:47 -0500
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09C3D30B32
-        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 13:28:30 -0800 (PST)
-Received: by mail-wm1-x336.google.com with SMTP id k37so6595655wms.0
-        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 13:28:29 -0800 (PST)
+        with ESMTP id S230020AbjCFV2v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 16:28:51 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2127974A5C
+        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 13:28:31 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id j2so10247587wrh.9
+        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 13:28:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678138108;
+        d=gmail.com; s=20210112; t=1678138109;
         h=content-transfer-encoding:in-reply-to:references:cc:to:from
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=b9AKknuKKfnLxpDQvjO1K47KXCz0le2zEbS5FuxPY2A=;
-        b=C5OzqlUgqv2DYspkOOUUgJXftI5Ro63jg7RnsuYxFQStKIjlOo4ALUanm/tW+kgvKE
-         2av1ewkhJt8GtoZlpkmAuQZbFtGK+0nj5gqde/v53id89de42zvsd1smvewd0FkYGKB/
-         S9XJrSOuE2G2V2ji3INNxsOnnmr0cGZK65yOjahZ6NW2CZ1cmoiq9eS9WzBG498gWvwF
-         JnvOXwTOEbiHmEEK2Ze1CWTkY6adhh90H1qdDR6F64P9foJlVf8YxQiinljHrpCnJOoX
-         HjNWl/qWoGFYh+8SqPMABAwCNigAXO7+7irrGx3LxlqOiDJPqeVkuzfBmIhAuod0QzMT
-         HzGQ==
+        bh=N9UWUbGKmEfF/ZCXlYPSs/b8L+hGvY0HicAyB0cfmWU=;
+        b=BYUFh8zHKx8f5y4lhD9gTznGbsjDjKaDVNQ4WTJ7VJpfyyY3mq7Mk07SWm977U6K7I
+         LeFmZN5Izi/UIkNPqcizimSUj5nU/FGi4xLCn6+L1dAtkqxQPB5ehVdy54KZMbshmD/B
+         hVouzprxv5za+KoQMjVDIU1I8aws3Poy/mV2hVeScEgXE+udBwIkdRChTodSwkUcJVbD
+         TPpdIGLU/ZNZOTAYbEpLMO4W/yfRSBvk6Tac1dSYn+ZgiKNTGO370GqTnD5H4Ftr8xqf
+         yqHoZ/aT6Bttn3PZIazCt+DDevzNIo0Ecvcy+zeupzJ7ni9BQtqyvXJWkd4T9IDFdG22
+         llmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678138108;
+        d=1e100.net; s=20210112; t=1678138109;
         h=content-transfer-encoding:in-reply-to:references:cc:to:from
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=b9AKknuKKfnLxpDQvjO1K47KXCz0le2zEbS5FuxPY2A=;
-        b=v0a11tRmb8Qn06xxem+C/VTVUQZS7VydcvR+d4GYlhMZlXIlxuelBXvFB0Zv7zS6Aq
-         TURuT+OP7AyplVt0Blpp5T23pizOn3vp/K14g2I76m4ez7cWpWPz0pEi52Opqnn2aO89
-         Ps+MlNeYgCumR7qkguR/z+jkSu/bt6RLneTxa0wEYhPV9NjbfMUEUbi67GJ/vxF2IibS
-         iDJ6KhfE6zOknUH0uGLSGSB2WQcZBJZKW6WBBxOPPLay4WPVKQJ4x1q6hARA9P/30uhg
-         +wdDquHl2NpF5yUSomXUbL0qOhUniV71iozO8KsGkpwLf4lgFKP7jmJHAV1+Fr3nGUb3
-         oFrw==
-X-Gm-Message-State: AO0yUKVwztCxip3M1xSslpvQORuKytY2w4Lc+z4QdbE54LSU5odVHICM
-        RoMBnYCA4iSsxHNvIaxElUM=
-X-Google-Smtp-Source: AK7set/Mwv2vU/gaIWvQz8HF0nvEnK6JTdSR0PYD8L4lC1HtIhTv551LS52+TyMIe3+6YWI0zugmRw==
-X-Received: by 2002:a05:600c:4fd6:b0:3df:d8c5:ec18 with SMTP id o22-20020a05600c4fd600b003dfd8c5ec18mr10323478wmq.13.1678138108256;
-        Mon, 06 Mar 2023 13:28:28 -0800 (PST)
+        bh=N9UWUbGKmEfF/ZCXlYPSs/b8L+hGvY0HicAyB0cfmWU=;
+        b=idonVMRzcElZY/oXYqxy3zSIrsUj3IntwnhEvzllro/H1zPNMFBzZOITry+D+is7fV
+         B/aKDNcF0qKqUSehj5cq3pRsC6kD2kDl8KQwhmfJFMgQvxHwWEubNb1TuGj595tx9y33
+         IqDeA0XaUHoeUj2BhoPtNKTCmc1e8xYD+uF7oVfU6pdLL/omIBof0ImxyLV59Eb1eyv7
+         A2JMru02owk2MAyjkZjkvCPD7OIt0gve+PAxeJi19iOryNdSS1CsWFFGUX4Wwh//IrrQ
+         thFCs5+1RnkzI5xKWiIxyMAdABVmd/m+PEa7rOXXjWTtcGzbOlrc/69dJiq5QH0Pr1Li
+         hllA==
+X-Gm-Message-State: AO0yUKVB5qz6elrDCJPDxoXHdSO4R/vIEmFtaDpzT/b4j1DGlYR176IA
+        vwRxao/pnWWdL9figibi/1Y=
+X-Google-Smtp-Source: AK7set+suNpvmhZSG0PB+ahcd+KowARy5hF8e4NeYqAYUGWfMTGxGpCMyRtU+3lsVfSxQpB3rzYWeg==
+X-Received: by 2002:adf:e585:0:b0:2c7:1e52:c5a8 with SMTP id l5-20020adfe585000000b002c71e52c5a8mr7757910wrm.21.1678138109495;
+        Mon, 06 Mar 2023 13:28:29 -0800 (PST)
 Received: from ?IPV6:2a01:c22:7bf4:7d00:9590:4142:18ea:aa32? (dynamic-2a01-0c22-7bf4-7d00-9590-4142-18ea-aa32.c22.pool.telefonica.de. [2a01:c22:7bf4:7d00:9590:4142:18ea:aa32])
-        by smtp.googlemail.com with ESMTPSA id o2-20020a05600c510200b003e208cec49bsm24206909wms.3.2023.03.06.13.28.27
+        by smtp.googlemail.com with ESMTPSA id c12-20020a5d63cc000000b002c5801aa9b0sm10888506wrw.40.2023.03.06.13.28.28
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Mar 2023 13:28:27 -0800 (PST)
-Message-ID: <15b30923-0b59-db1e-e64f-3b05b8fcbd01@gmail.com>
-Date:   Mon, 6 Mar 2023 22:24:49 +0100
+        Mon, 06 Mar 2023 13:28:29 -0800 (PST)
+Message-ID: <acf3615b-e9c5-ccb6-65b2-885e86d74b7e@gmail.com>
+Date:   Mon, 6 Mar 2023 22:25:49 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.8.0
-Subject: [PATCH net-next 3/6] r8169: enable cfg9346 config register access in
- atomic context
+Subject: [PATCH net-next 4/6] r8169: prepare rtl_hw_aspm_clkreq_enable for
+ usage in atomic context
 Content-Language: en-US
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
@@ -80,67 +80,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For disabling ASPM during NAPI poll we'll have to unlock access
-to the config registers in atomic context. Other code parts
-running with config register access unlocked are partially
-longer and can sleep. Add a usage counter to enable parallel
-execution of code parts requiring unlocked config registers.
+Bail out if the function is used with chip versions that don't support
+ASPM configuration. In addition remove the delay, it tuned out that
+it's not needed, also vendor driver r8125 doesn't have it.
 
+Suggested-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 Reviewed-by: Simon Horman <simon.horman@corigine.com>
 Tested-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 Tested-by: Holger Hoffstätte <holger@applied-asynchrony.com>
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 18 ++++++++++++++++--
- 1 file changed, 16 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index e6f3f1947..61cbf498f 100644
+index 61cbf498f..96af31aea 100644
 --- a/drivers/net/ethernet/realtek/r8169_main.c
 +++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -616,6 +616,9 @@ struct rtl8169_private {
- 	spinlock_t config25_lock;
- 	spinlock_t mac_ocp_lock;
+@@ -2741,6 +2741,9 @@ static void rtl_disable_exit_l1(struct rtl8169_private *tp)
  
-+	spinlock_t cfg9346_usage_lock;
-+	int cfg9346_usage_count;
-+
- 	unsigned supports_gmii:1;
- 	unsigned aspm_manageable:1;
- 	dma_addr_t counters_phys_addr;
-@@ -664,12 +667,22 @@ static inline struct device *tp_to_dev(struct rtl8169_private *tp)
- 
- static void rtl_lock_config_regs(struct rtl8169_private *tp)
+ static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
  {
--	RTL_W8(tp, Cfg9346, Cfg9346_Lock);
-+	unsigned long flags;
++	if (tp->mac_version < RTL_GIGA_MAC_VER_32)
++		return;
 +
-+	spin_lock_irqsave(&tp->cfg9346_usage_lock, flags);
-+	if (!--tp->cfg9346_usage_count)
-+		RTL_W8(tp, Cfg9346, Cfg9346_Lock);
-+	spin_unlock_irqrestore(&tp->cfg9346_usage_lock, flags);
+ 	/* Don't enable ASPM in the chip if OS can't control ASPM */
+ 	if (enable && tp->aspm_manageable) {
+ 		rtl_mod_config5(tp, 0, ASPM_en);
+@@ -2770,8 +2773,6 @@ static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
+ 		rtl_mod_config2(tp, ClkReqEn, 0);
+ 		rtl_mod_config5(tp, ASPM_en, 0);
+ 	}
+-
+-	udelay(10);
  }
  
- static void rtl_unlock_config_regs(struct rtl8169_private *tp)
- {
--	RTL_W8(tp, Cfg9346, Cfg9346_Unlock);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&tp->cfg9346_usage_lock, flags);
-+	if (!tp->cfg9346_usage_count++)
-+		RTL_W8(tp, Cfg9346, Cfg9346_Unlock);
-+	spin_unlock_irqrestore(&tp->cfg9346_usage_lock, flags);
- }
- 
- static void rtl_pci_commit(struct rtl8169_private *tp)
-@@ -5229,6 +5242,7 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	tp->eee_adv = -1;
- 	tp->ocp_base = OCP_STD_PHY_BASE;
- 
-+	spin_lock_init(&tp->cfg9346_usage_lock);
- 	spin_lock_init(&tp->config25_lock);
- 	spin_lock_init(&tp->mac_ocp_lock);
- 
+ static void rtl_set_fifo_size(struct rtl8169_private *tp, u16 rx_stat,
 -- 
 2.39.2
 
