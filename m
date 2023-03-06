@@ -2,277 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 159CB6ACD7A
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 20:04:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6E4B6ACDA3
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 20:13:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230044AbjCFTEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 14:04:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51506 "EHLO
+        id S229737AbjCFTNL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 14:13:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230043AbjCFTD5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 14:03:57 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 080252D56;
-        Mon,  6 Mar 2023 11:03:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Hs9cE/jMhmLn1aS6B5/r7nVSBq794QvOcPkISP8ZkTg=; b=hn3abSiVLOqaRsTZ+E6NnB8mom
-        2zllyK4b4NpXmIy/3w3Saj6IaKRQ04TPR16e9Ez4RaBx+xU4bg/4sOcfDO/vvTNK5fLv/0QnsumjS
-        Hc4KsSCgjI8jnC15Zvcnzh+Oapp0x68RKWkOkFnbE4L/W6IT04i11+CtV1/103XF10lY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pZG6h-006bAl-Vp; Mon, 06 Mar 2023 20:02:47 +0100
-Date:   Mon, 6 Mar 2023 20:02:47 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Klaus Kudielka <klaus.kudielka@gmail.com>
-Cc:     Michael Walle <michael@walle.cc>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Felix Fietkau <nbd@nbd.name>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-aspeed@lists.ozlabs.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: Re: [PATCH net-next v2 4/6] net: mdio: scan bus based on bus
- capabilities for C22 and C45
-Message-ID: <db6b8a09-b680-4baa-8963-d355ad29eb09@lunn.ch>
-References: <20230116-net-next-remove-probe-capabilities-v2-0-15513b05e1f4@walle.cc>
- <20230116-net-next-remove-probe-capabilities-v2-4-15513b05e1f4@walle.cc>
- <449bde236c08d5ab5e54abd73b645d8b29955894.camel@gmail.com>
- <100c439a-2a4d-4cb2-96f2-5bf273e2121a@lunn.ch>
- <712bc92ca6d576f33f63f1e9c2edf0030b10d3ae.camel@gmail.com>
+        with ESMTP id S229922AbjCFTNJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 14:13:09 -0500
+Received: from out-26.mta0.migadu.com (out-26.mta0.migadu.com [IPv6:2001:41d0:1004:224b::1a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32BCA2C662
+        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 11:13:05 -0800 (PST)
+Message-ID: <d8a49972-2875-2be9-a210-92d9dac32c03@linux.dev>
+Date:   Mon, 6 Mar 2023 19:12:59 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <712bc92ca6d576f33f63f1e9c2edf0030b10d3ae.camel@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net] bnxt_en: reset PHC frequency in free-running mode
+Content-Language: en-US
+To:     Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        Vadim Fedorenko <vadfed@meta.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Andy Gospodarek <andrew.gospodarek@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        netdev@vger.kernel.org
+References: <20230306165344.350387-1-vadfed@meta.com>
+ <CALs4sv1A1eTpH45Z=kyL3qtu7Yfu8JRW6Wc2r1d+UxjvB_EEEA@mail.gmail.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Vadim Fedorenko <vadim.fedorenko@linux.dev>
+In-Reply-To: <CALs4sv1A1eTpH45Z=kyL3qtu7Yfu8JRW6Wc2r1d+UxjvB_EEEA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> dev_warn_ratelimited(bus->parent, "<function_name> %d\n", mii_id);
+On 06/03/2023 17:11, Pavan Chebbi wrote:
+> On Mon, Mar 6, 2023 at 10:23 PM Vadim Fedorenko <vadfed@meta.com> wrote:
+>>
+>> When using a PHC in shared between multiple hosts, the previous
+>> frequency value may not be reset and could lead to host being unable to
+>> compensate the offset with timecounter adjustments. To avoid such state
+>> reset the hardware frequency of PHC to zero on init. Some refactoring is
+>> needed to make code readable.
+>>
+> Thanks for the patch.
+> I see what you are trying to do. But I think we have some build issues
+> with this.
+> Haven't looked at the whole patch, but one error I can spot is down at
+> the bottom.
 > 
-> at the entry point of each function. And here we go.
+>> Fixes: 85036aee1938 ("bnxt_en: Add a non-real time mode to access NIC clock")
+>> Signed-off-by: Vadim Fedorenko <vadfed@meta.com>
+>> ---
+>>   drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  6 +-
+>>   drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  2 +
+>>   drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 57 +++++++++++--------
+>>   3 files changed, 36 insertions(+), 29 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+>> index 5d4b1f2ebeac..8472ff79adf3 100644
+>> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+>> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+>> @@ -6989,11 +6989,9 @@ static int bnxt_hwrm_func_qcfg(struct bnxt *bp)
+>>                  if (flags & FUNC_QCFG_RESP_FLAGS_FW_DCBX_AGENT_ENABLED)
+>>                          bp->fw_cap |= BNXT_FW_CAP_DCBX_AGENT;
+>>          }
+>> -       if (BNXT_PF(bp) && (flags & FUNC_QCFG_RESP_FLAGS_MULTI_HOST)) {
+>> +       if (BNXT_PF(bp) && (flags & FUNC_QCFG_RESP_FLAGS_MULTI_HOST))
+>>                  bp->flags |= BNXT_FLAG_MULTI_HOST;
+>> -               if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
+>> -                       bp->fw_cap &= ~BNXT_FW_CAP_PTP_RTC;
+>> -       }
+>> +
+>>          if (flags & FUNC_QCFG_RESP_FLAGS_RING_MONITOR_ENABLED)
+>>                  bp->fw_cap |= BNXT_FW_CAP_RING_MONITOR;
+>>
+>> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+>> index dcb09fbe4007..41e4bb7b8acb 100644
+>> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+>> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+>> @@ -2000,6 +2000,8 @@ struct bnxt {
+>>          u32                     fw_dbg_cap;
+>>
+>>   #define BNXT_NEW_RM(bp)                ((bp)->fw_cap & BNXT_FW_CAP_NEW_RM)
+>> +#define BNXT_PTP_RTC(bp)       (!BNXT_MH(bp) && \
+>> +                                ((bp)->fw_cap & BNXT_FW_CAP_PTP_RTC))
+>>          u32                     hwrm_spec_code;
+>>          u16                     hwrm_cmd_seq;
+>>          u16                     hwrm_cmd_kong_seq;
+>> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+>> index 4ec8bba18cdd..99c1a53231aa 100644
+>> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+>> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+>> @@ -63,7 +63,7 @@ static int bnxt_ptp_settime(struct ptp_clock_info *ptp_info,
+>>                                                  ptp_info);
+>>          u64 ns = timespec64_to_ns(ts);
+>>
+>> -       if (ptp->bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
+>> +       if (BNXT_PTP_RTC(ptp->bp))
+>>                  return bnxt_ptp_cfg_settime(ptp->bp, ns);
+>>
+>>          spin_lock_bh(&ptp->ptp_lock);
+>> @@ -196,7 +196,7 @@ static int bnxt_ptp_adjtime(struct ptp_clock_info *ptp_info, s64 delta)
+>>          struct bnxt_ptp_cfg *ptp = container_of(ptp_info, struct bnxt_ptp_cfg,
+>>                                                  ptp_info);
+>>
+>> -       if (ptp->bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
+>> +       if (BNXT_PTP_RTC(ptp->bp))
+>>                  return bnxt_ptp_adjphc(ptp, delta);
+>>
+>>          spin_lock_bh(&ptp->ptp_lock);
+>> @@ -205,34 +205,39 @@ static int bnxt_ptp_adjtime(struct ptp_clock_info *ptp_info, s64 delta)
+>>          return 0;
+>>   }
+>>
+>> +static int bnxt_ptp_adjfine_rtc(struct bnxt *bp, long scaled_ppm)
+>> +{
+>> +       s32 ppb = scaled_ppm_to_ppb(scaled_ppm);
+>> +       struct hwrm_port_mac_cfg_input *req;
+>> +       int rc;
+>> +
+>> +       rc = hwrm_req_init(bp, req, HWRM_PORT_MAC_CFG);
+>> +       if (rc)
+>> +               return rc;
+>> +
+>> +       req->ptp_freq_adj_ppb = cpu_to_le32(ppb);
+>> +       req->enables = cpu_to_le32(PORT_MAC_CFG_REQ_ENABLES_PTP_FREQ_ADJ_PPB);
+>> +       rc = hwrm_req_send(bp, req);
+>> +       if (rc)
+>> +               netdev_err(bp->dev,
+>> +                          "ptp adjfine failed. rc = %d\n", rc);
+>> +       return rc;
+>> +}
+>> +
+>>   static int bnxt_ptp_adjfine(struct ptp_clock_info *ptp_info, long scaled_ppm)
+>>   {
+>>          struct bnxt_ptp_cfg *ptp = container_of(ptp_info, struct bnxt_ptp_cfg,
+>>                                                  ptp_info);
+>> -       struct hwrm_port_mac_cfg_input *req;
+>>          struct bnxt *bp = ptp->bp;
+>> -       int rc = 0;
+>>
+>> -       if (!(ptp->bp->fw_cap & BNXT_FW_CAP_PTP_RTC)) {
+>> -               spin_lock_bh(&ptp->ptp_lock);
+>> -               timecounter_read(&ptp->tc);
+>> -               ptp->cc.mult = adjust_by_scaled_ppm(ptp->cmult, scaled_ppm);
+>> -               spin_unlock_bh(&ptp->ptp_lock);
+>> -       } else {
+>> -               s32 ppb = scaled_ppm_to_ppb(scaled_ppm);
+>> -
+>> -               rc = hwrm_req_init(bp, req, HWRM_PORT_MAC_CFG);
+>> -               if (rc)
+>> -                       return rc;
+>> +       if (BNXT_PTP_RTC(ptp->bp))
+>> +               return bnxt_ptp_adjfine_rtc(bp, scaled_ppm);
+>>
+>> -               req->ptp_freq_adj_ppb = cpu_to_le32(ppb);
+>> -               req->enables = cpu_to_le32(PORT_MAC_CFG_REQ_ENABLES_PTP_FREQ_ADJ_PPB);
+>> -               rc = hwrm_req_send(ptp->bp, req);
+>> -               if (rc)
+>> -                       netdev_err(ptp->bp->dev,
+>> -                                  "ptp adjfine failed. rc = %d\n", rc);
+>> -       }
+>> -       return rc;
+>> +       spin_lock_bh(&ptp->ptp_lock);
+>> +       timecounter_read(&ptp->tc);
+>> +       ptp->cc.mult = adjust_by_scaled_ppm(ptp->cmult, scaled_ppm);
+>> +       spin_unlock_bh(&ptp->ptp_lock);
+>> +       return 0;
+>>   }
+>>
+>>   void bnxt_ptp_pps_event(struct bnxt *bp, u32 data1, u32 data2)
+>> @@ -879,7 +884,7 @@ int bnxt_ptp_init_rtc(struct bnxt *bp, bool phc_cfg)
+>>          u64 ns;
+>>          int rc;
+>>
+>> -       if (!bp->ptp_cfg || !(bp->fw_cap & BNXT_FW_CAP_PTP_RTC))
+>> +       if (!bp->ptp_cfg || !BNXT_PTP_RTC(bp))
+>>                  return -ENODEV;
+>>
+>>          if (!phc_cfg) {
+>> @@ -932,13 +937,15 @@ int bnxt_ptp_init(struct bnxt *bp, bool phc_cfg)
+>>          atomic_set(&ptp->tx_avail, BNXT_MAX_TX_TS);
+>>          spin_lock_init(&ptp->ptp_lock);
+>>
+>> -       if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC) {
+>> +       if (BNXT_PTP_RTC(ptp->bp)) {
+>>                  bnxt_ptp_timecounter_init(bp, false);
+>>                  rc = bnxt_ptp_init_rtc(bp, phc_cfg);
+>>                  if (rc)
+>>                          goto out;
+>>          } else {
+>>                  bnxt_ptp_timecounter_init(bp, true);
+>> +               if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
+>> +                       bnxt_ptp_adjfreq_rtc(bp, 0);
 > 
+> You meant bnxt_ptp_adjfine_rtc(), right.
+> Anyway, let me go through the patch in detail, while you may submit
+> corrections for the build.
 > 
-> 
-> ########
-> # good: [3486593374858b41ae6ef7720cb28ff39ad822f3] net: mdio: Add workaround for Micrel PHYs which are not C45 compatible
-> 
-> *** snip ***
-> [    0.194348] Creating 3 MTD partitions on "spi0.0":
-> [    0.194353] 0x000000000000-0x0000000f0000 : "U-Boot"
-> [    0.194534] 0x000000100000-0x000000800000 : "Rescue system"
-> [    0.194652] 0x0000000f0000-0x000000100000 : "u-boot-env"
-> [    0.195518] orion-mdio f1072004.mdio: orion_mdio_smi_read 1
-> [    0.195592] orion-mdio f1072004.mdio: orion_mdio_smi_read 1
-> [    0.202202] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    0.202280] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    0.202346] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    0.202470] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    0.202534] mv88e6085 f1072004.mdio-mii:10: switch 0x1760 detected: Marvell 88E6176, revision 1
-> [    0.202542] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    0.202674] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    0.202799] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    0.202921] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    0.320192] mvneta_bm f10c8000.bm: Buffer Manager for network controller enabled
+Oh, yeah, right, artefact of rebasing. Will fix it in v2, thanks.
 
-So there are no xmdio reads for c45. That is what the commit you
-pointed to is about, should it scan C22, C45 or both C45.
 
-> *** snip ***
-> [    1.598893] Run /init as init process
-> [    1.598896]   with arguments:
-> [    1.598898]     /init
-> [    1.598900]   with environment:
-> [    1.598902]     HOME=/
-> [    1.598904]     TERM=linux
-> *** snip ***
-> [    4.628127] mv88e6085 f1072004.mdio-mii:10 lan3: Link is Up - 1Gbps/Full - flow control rx/tx
-> [    4.628150] IPv6: ADDRCONF(NETDEV_CHANGE): lan3: link becomes ready
-> [    4.628210] br0: port 2(lan3) entered blocking state
-> [    4.628219] br0: port 2(lan3) entered forwarding state
-> [    4.629187] IPv6: ADDRCONF(NETDEV_CHANGE): br0: link becomes ready
-> [  283.962353] orion_mdio_smi_read: 9231 callbacks suppressed
-> [  283.962361] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  283.962492] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  283.962617] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  283.962799] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  283.962981] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  283.963162] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  283.963344] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  283.963466] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  283.963588] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  283.963652] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  310.572411] orion_mdio_smi_read: 56 callbacks suppressed
-> [  310.572419] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  310.572550] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  310.572675] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  310.572857] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  310.573039] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  310.573220] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  310.573402] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  310.573524] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  310.573647] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  310.573711] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  726.308614] orion_mdio_smi_read: 56 callbacks suppressed
-> [  726.308623] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  726.308754] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  726.308879] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  726.309060] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  726.309242] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  726.309423] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  726.309604] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  726.309727] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  726.309850] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  726.309914] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  841.713791] orion_mdio_smi_read: 56 callbacks suppressed
-> [  841.713800] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  841.713931] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  841.714056] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  841.714239] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  841.714420] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  841.714602] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  841.714783] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  841.714906] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  841.715029] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  841.715093] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> 
-> 
-> 
-> #####
-> # first bad commit: [1a136ca2e089d91df8eec0a796a324171373ffd8] net: mdio: scan bus based on bus capabilities for C22 and C45
-> 
-> *** snip ***
-> [    0.191685] Creating 3 MTD partitions on "spi0.0":
-> [    0.191690] 0x000000000000-0x0000000f0000 : "U-Boot"
-> [    0.191871] 0x000000100000-0x000000800000 : "Rescue system"
-> [    0.191991] 0x0000000f0000-0x000000100000 : "u-boot-env"
-> [    0.192830] orion-mdio f1072004.mdio: orion_mdio_smi_read 1
-> [    0.192906] orion-mdio f1072004.mdio: orion_mdio_smi_read 1
-> [    0.199530] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    0.199610] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    0.199677] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    0.199799] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    0.199864] mv88e6085 f1072004.mdio-mii:10: switch 0x1760 detected: Marvell 88E6176, revision 1
-> [    0.199871] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    0.199994] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    0.200117] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    0.200239] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    0.396608] ata2: SATA link down (SStatus 0 SControl 300)
-> [    0.554697] ata1: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
-> [    0.555370] ata1.00: supports DRM functions and may not be fully accessible
-> [    0.555375] ata1.00: ATA-10: KINGSTON SKC600MS512G, S4800105, max UDMA/133
-> [    0.555385] ata1.00: 1000215216 sectors, multi 1: LBA48 NCQ (depth 32)
-> [    0.556058] ata1.00: Features: Trust Dev-Sleep
-> [    0.556158] ata1.00: supports DRM functions and may not be fully accessible
-> [    0.556811] ata1.00: configured for UDMA/133
-> [    0.556985] scsi 0:0:0:0: Direct-Access     ATA      KINGSTON SKC600M 0105 PQ: 0 ANSI: 5
-> [    0.557485] sd 0:0:0:0: [sda] 1000215216 512-byte logical blocks: (512 GB/477 GiB)
-> [    0.557493] sd 0:0:0:0: [sda] 4096-byte physical blocks
-> [    0.557515] sd 0:0:0:0: [sda] Write Protect is off
-> [    0.557520] sd 0:0:0:0: [sda] Mode Sense: 00 3a 00 00
-> [    0.557553] sd 0:0:0:0: [sda] Write cache: enabled, read cache: enabled, doesn't support DPO or FUA
-> [    0.557620] sd 0:0:0:0: [sda] Preferred minimum I/O size 4096 bytes
-> [    0.558111]  sda: sda1
-> [    0.558230] sd 0:0:0:0: [sda] Attached SCSI removable disk
-> [    2.741909] mvneta_bm f10c8000.bm: Buffer Manager for network controller enabled
-> *** snip ***
-> [    3.213998] sfp sfp: module TP-LINK          TL-SM321B        rev      sn 1403076900       dc 140401
-> [    3.214020] mvneta f1034000.ethernet eth2: switched to inband/1000base-x link mode
-> [    5.194695] orion_mdio_smi_read: 43968 callbacks suppressed
-> [    5.194701] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    5.194767] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    5.194891] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    5.195014] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    5.195137] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    5.195259] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    5.195324] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    5.195446] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    5.195510] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    5.195633] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [    6.223184] mv88e6085 f1072004.mdio-mii:10: configuring for fixed/rgmii-id link mode
-> [    6.224852] mv88e6085 f1072004.mdio-mii:10: configuring for fixed/rgmii-id link mode
-> [    6.226126] mv88e6085 f1072004.mdio-mii:10: Link is Up - 1Gbps/Full - flow control off
-> [    6.229455] mv88e6085 f1072004.mdio-mii:10: Link is Up - 1Gbps/Full - flow control off
-> [    6.294120] mv88e6085 f1072004.mdio-mii:10 lan0 (uninitialized): PHY [mv88e6xxx-1:00] driver [Marvell 88E1540] (irq=68)
-> [    6.366663] mv88e6085 f1072004.mdio-mii:10 lan1 (uninitialized): PHY [mv88e6xxx-1:01] driver [Marvell 88E1540] (irq=69)
-> [    6.438843] mv88e6085 f1072004.mdio-mii:10 lan2 (uninitialized): PHY [mv88e6xxx-1:02] driver [Marvell 88E1540] (irq=70)
-> [    6.510122] mv88e6085 f1072004.mdio-mii:10 lan3 (uninitialized): PHY [mv88e6xxx-1:03] driver [Marvell 88E1540] (irq=71)
-> [    6.582302] mv88e6085 f1072004.mdio-mii:10 lan4 (uninitialized): PHY [mv88e6xxx-1:04] driver [Marvell 88E1540] (irq=72)
-> [    6.584680] device eth1 entered promiscuous mode
-> [    6.585573] device eth0 entered promiscuous mode
-> [    6.585593] DSA: tree 0 setup
-> [    6.586408] Freeing unused kernel image (initmem) memory: 1024K
-> [    6.586547] Run /init as init process
-> [    6.586551]   with arguments:
-> [    6.586553]     /init
-> [    6.586555]   with environment:
-> [    6.586557]     HOME=/
-> [    6.586559]     TERM=linux
-> *** snip ***
-> [    9.437029] mv88e6085 f1072004.mdio-mii:10 lan3: Link is Up - 1Gbps/Full - flow control rx/tx
-> [    9.437052] IPv6: ADDRCONF(NETDEV_CHANGE): lan3: link becomes ready
-> [    9.437116] br0: port 2(lan3) entered blocking state
-> [    9.437125] br0: port 2(lan3) entered forwarding state
-> [    9.438061] IPv6: ADDRCONF(NETDEV_CHANGE): br0: link becomes ready
-> [    9.469466] systemd-journald[207]: Time jumped backwards, rotating.
-> [  414.675728] orion_mdio_smi_read: 11201 callbacks suppressed
-> [  414.675736] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  414.675869] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  414.675996] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  414.676179] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  414.676361] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  414.676543] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  414.676725] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  414.676847] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  414.676970] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  414.677034] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  540.809740] orion_mdio_smi_read: 56 callbacks suppressed
-> [  540.809748] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  540.809879] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  540.810004] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  540.810186] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  540.810368] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  540.810551] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  540.810732] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  540.810855] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  540.810978] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
-> [  540.811042] orion-mdio f1072004.mdio: orion_mdio_smi_read 16
+>>          }
+>>
+>>          ptp->ptp_info = bnxt_ptp_caps;
+>> --
+>> 2.30.2
+>>
 
-> "orion_mdio_smi_read: 43968 callbacks suppressed" after 5 seconds - quite impressive!
-
-That is probably the switch being configured. I assume it uses address
-16?
-
-But it looks like there are many more after the bad commit. So is the
-return value messed up, putting the switch driver into a loop? Maybe
-print the smi address, register and the return value in
-orion_mdio_smi_read(). And maybe the same in the switch driver, if all
-reads happen to go through one function.
-
-      Andrew
