@@ -2,85 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CA316AC7C1
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 17:23:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FEAB6AC7E9
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 17:28:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230160AbjCFQXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 11:23:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47788 "EHLO
+        id S229616AbjCFQ2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 11:28:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbjCFQWo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 11:22:44 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2299B3773A
-        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 08:20:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678119540;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=d9yibYb7BiHv8VUJHHc1xSbchMTl79O8SC4SNRlYdVk=;
-        b=abp2wcxqSftJL+H4L9taMDXkF0ej5wSKRB6TMmIm5pp4wG5I7EkDMLDCbjfc6UCpr6M3Hi
-        gswnAN1o7Z8xG+Gs6WsM2Tvny23fO1w/FjrFslLHkAO9+tIHPttvL70z5Vi35Qspixmimw
-        EXkG9kKMlR69uh0n7p/y/oxDNWzO5jo=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-607-CkCnu-N6P0Kd3UHx_ED1dw-1; Mon, 06 Mar 2023 11:18:57 -0500
-X-MC-Unique: CkCnu-N6P0Kd3UHx_ED1dw-1
-Received: by mail-qk1-f200.google.com with SMTP id d10-20020a05620a240a00b0073baf1de8ebso5668964qkn.19
-        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 08:18:57 -0800 (PST)
+        with ESMTP id S229624AbjCFQ2N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 11:28:13 -0500
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36B8B1258F;
+        Mon,  6 Mar 2023 08:27:36 -0800 (PST)
+Received: by mail-ot1-x333.google.com with SMTP id l15-20020a9d7a8f000000b0069447f0db6fso5633036otn.4;
+        Mon, 06 Mar 2023 08:27:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678119994;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=JXnJjEIOpZbPuEgqFoR8MuwGlYRD8/do8e4iqVYe9jA=;
+        b=g2J1sOvHFScq9ttVIurPqh6uAVdu9A9+zHDROKJbzN8VcYNxBAVfI+tsucHnUA8/Ac
+         8tq9jyUdB63cpoi9l0zvWwyf2mdYmtBfgqEwUkHi5aw4AKS2lLQoG6JZoCTo1EQXpC5d
+         mjQ2vS7bP7YwIcosH996Cgf2tKcoXLNfKwZnuXvOnKDJG4r5Tpyqs1JdvZakHp1KvNlZ
+         0YDzTjz7eakWo+QR8wrkz7uT/6nAcIhTBWimKa/6KmyM+YEXfapBRIqwUSKh215xAUn6
+         VlfoXFS+0t0Gl5NLgaJ6Ar1Ld4OjC4EX5wk1s2WenrPJoIy34wEEqo2rC/EF/8eFOMA/
+         CKsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678119537;
+        d=1e100.net; s=20210112; t=1678119994;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=d9yibYb7BiHv8VUJHHc1xSbchMTl79O8SC4SNRlYdVk=;
-        b=oSCQQrLS4E6bTduubh9tBhP8EfgGtroA/EGd0E+N7jQRDWM2cXYKQT31UJC9J4lwvq
-         AsJR2wX6gkNgrYvbnjuWoBzWARDZ+b7/KkwZRzOe3lXMGOqWudcrIdpwkt/cKiHkIkna
-         m314thSSfQE02yU7KocQEtiIFedC95WTwREvhoVrxr0uSWePJ9N6cQ4GwWDMva0PeS6X
-         223ulL5hL0UOB7NWdWCBKNAv1aGT9+JBNiBHoqiLLhRnxt7y0TcsVrNO9rV3DpG0kX/e
-         IRVXtldiU1qBgFwtkN53PUURurpb9csi1PQJRDSwYp5Q1Nbt4Uj1dRk3UEFC0XJnx5pw
-         dDOw==
-X-Gm-Message-State: AO0yUKU7A2FWGBxjHIbV13u9b5CYpD3pnNJB1Hx1Re234eGNZbOb6DJT
-        B+tbxpY0pbam7w/r9EdZqhmERkJps4M6tiY1TQqEmx7zgE1RkPWDsl2FChZpzIK6bboutWIkabP
-        TNB0XBwaGWr+3GMYH
-X-Received: by 2002:ac8:57c4:0:b0:3bf:c7ac:37e4 with SMTP id w4-20020ac857c4000000b003bfc7ac37e4mr21646907qta.53.1678119536888;
-        Mon, 06 Mar 2023 08:18:56 -0800 (PST)
-X-Google-Smtp-Source: AK7set8J4YE/RXJjUhe6KmcGADN++XZIQZ5a1lW56p6P5SGInNCKdizbMZ77Gy1LukOOT+Xou8kNBQ==
-X-Received: by 2002:ac8:57c4:0:b0:3bf:c7ac:37e4 with SMTP id w4-20020ac857c4000000b003bfc7ac37e4mr21646869qta.53.1678119536628;
-        Mon, 06 Mar 2023 08:18:56 -0800 (PST)
-Received: from sgarzare-redhat (host-82-57-51-170.retail.telecomitalia.it. [82.57.51.170])
-        by smtp.gmail.com with ESMTPSA id l5-20020ac87245000000b003b9a426d626sm7744060qtp.22.2023.03.06.08.18.54
+        bh=JXnJjEIOpZbPuEgqFoR8MuwGlYRD8/do8e4iqVYe9jA=;
+        b=yhnUEvPCVdbCytJ3F6i7RXjbWGWmbXX/An2SJ18HEG4I9FWLAidnotpynQG513YhGj
+         Imuf/7rAUnQwnuSpDZW9nVAB9149gptTNZ26aLThIA2W3NEYKJ5hMBhSHbWdDTvhoHG9
+         EjFTtz+HOl4XrtEMuHl9KWNMQvf+BskamKTy3lFGrd/Tz6IHWi3ETf46TFe7mLRetrH4
+         h+ZYhTSHgLnbFDrC3LhMChdWa2a1DSDJ5AlUb1zZ7p3iMct3SVuGJuKHNdOawkeY+HjZ
+         gPtTTh7WDAoKlm1y2V9E2NYJOLfPLS0nkPfeAxmlnNYavk5czdv9wVJaPfOovlc8QqWz
+         Hv9Q==
+X-Gm-Message-State: AO0yUKXeyZYec/WsRHJIYK989P/FaqkJCY58PeCavUsm5pPkIPb73VNL
+        1HHpN6zlM085/MFzs7oBWDo=
+X-Google-Smtp-Source: AK7set854bcEzEyHdjoLmMiODiDoqSho1Jnq1WR5UQCRePSQOWlyKsiQ7DfOgrVk6sIwi1qC6U3GzQ==
+X-Received: by 2002:a9d:718e:0:b0:694:1f5b:9a81 with SMTP id o14-20020a9d718e000000b006941f5b9a81mr4626020otj.28.1678119993802;
+        Mon, 06 Mar 2023 08:26:33 -0800 (PST)
+Received: from localhost ([12.97.180.36])
+        by smtp.gmail.com with ESMTPSA id f9-20020a9d5f09000000b0068bce0cd4e1sm4260265oti.9.2023.03.06.08.26.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Mar 2023 08:18:56 -0800 (PST)
-Date:   Mon, 6 Mar 2023 17:18:52 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseniy Krasnov <avkrasnov@sberdevices.ru>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@sberdevices.ru, oxffffaa@gmail.com
-Subject: Re: [RFC PATCH v2 2/4] virtio/vsock: remove all data from sk_buff
-Message-ID: <20230306161852.4s7qf4qm3fnwjck7@sgarzare-redhat>
-References: <a7ab414b-5e41-c7b6-250b-e8401f335859@sberdevices.ru>
- <dfadea17-a91e-105f-c213-a73f9731c8bd@sberdevices.ru>
- <20230306120857.6flftb3fftmsceyl@sgarzare-redhat>
- <b18e3b13-3386-e9ee-c817-59588e6d5fb6@sberdevices.ru>
- <20230306155121.7xwxzgxtle7qjbnc@sgarzare-redhat>
- <9b882d45-3d9d-c44d-a172-f23fff54962b@sberdevices.ru>
+        Mon, 06 Mar 2023 08:26:33 -0800 (PST)
+Date:   Mon, 6 Mar 2023 08:26:32 -0800
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Vernon Yang <vernon2gm@gmail.com>
+Cc:     torvalds@linux-foundation.org, tytso@mit.edu, Jason@zx2c4.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, jejb@linux.ibm.com, martin.petersen@oracle.com,
+        andriy.shevchenko@linux.intel.com, linux@rasmusvillemoes.dk,
+        james.smart@broadcom.com, dick.kennedy@broadcom.com,
+        linux-kernel@vger.kernel.org, wireguard@lists.zx2c4.com,
+        netdev@vger.kernel.org, linux-scsi@vger.kernel.org
+Subject: Re: [PATCH 1/5] random: fix try_to_generate_entropy() if no further
+ cpus set
+Message-ID: <ZAYUODI1yaH5PqHk@yury-laptop>
+References: <20230306160651.2016767-1-vernon2gm@gmail.com>
+ <20230306160651.2016767-2-vernon2gm@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9b882d45-3d9d-c44d-a172-f23fff54962b@sberdevices.ru>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+In-Reply-To: <20230306160651.2016767-2-vernon2gm@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -88,54 +77,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 06, 2023 at 07:00:10PM +0300, Arseniy Krasnov wrote:
->
->
->On 06.03.2023 18:51, Stefano Garzarella wrote:
->> On Mon, Mar 06, 2023 at 06:31:22PM +0300, Arseniy Krasnov wrote:
->>>
->>>
->>> On 06.03.2023 15:08, Stefano Garzarella wrote:
->>>> On Sun, Mar 05, 2023 at 11:07:37PM +0300, Arseniy Krasnov wrote:
->>>>> In case of SOCK_SEQPACKET all sk_buffs are used once - after read some
->>>>> data from it, it will be removed, so user will never read rest of the
->>>>> data. Thus we need to update credit parameters of the socket like whole
->>>>> sk_buff is read - so call 'skb_pull()' for the whole buffer.
->>>>>
->>>>> Fixes: 71dc9ec9ac7d ("virtio/vsock: replace virtio_vsock_pkt with sk_buff")
->>>>> Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
->>>>> ---
->>>>> net/vmw_vsock/virtio_transport_common.c | 2 +-
->>>>> 1 file changed, 1 insertion(+), 1 deletion(-)
->>>>
->>>> Maybe we could avoid this patch if we directly use pkt_len as I
->>>> suggested in the previous patch.
->>> Hm, may be we can avoid calling 'skb_pull()' here if 'virtio_transport_dec_rx_pkt()'
->>> will use integer argument?
->>
->> Yep, exactly!
->>
->>> Just call 'virtio_transport_dec_rx_pkt(skb->len)'. skb
->>
->> It depends on how we call virtio_transport_inc_rx_pkt(). If we use
->> hdr->len there I would use the same to avoid confusion. Plus that's the
->> value the other peer sent us, so definitely the right value to increase
->> fwd_cnt with. But if skb->len always reflects it, then that's fine.
->i've checked 'virtio_transport_rx_work()', it calls 'virtio_vsock_skb_rx_put()' which
->sets 'skb->len'. Value is used from header, so seems 'skb->len' == 'hdr->len' in this
->case.
+On Tue, Mar 07, 2023 at 12:06:47AM +0800, Vernon Yang wrote:
+> After commit 596ff4a09b89 ("cpumask: re-introduce constant-sized cpumask
+> optimizations"), when NR_CPUS <= BITS_PER_LONG, small_cpumask_bits used
+> a macro instead of variable-sized for efficient.
+> 
+> If no further cpus set, the cpumask_next() returns small_cpumask_bits,
+> it must greater than or equal to nr_cpumask_bits, so fix it to correctly.
+> 
+> Signed-off-by: Vernon Yang <vernon2gm@gmail.com>
 
-Thank you for checking it.
+Hi Vernon,
 
-However, I still think it is better to use `hdr->len` (we have to assign 
-it to `pkt_len` anyway, as in the proposal I sent for patch 1), 
-otherwise we have to go every time to check if skb_* functions touch 
-skb->len.
+In all that cases, nr_cpu_ids must be used. The difference is that
+nr_cpumask_bits is an upper limit for possible CPUs, and it's derived
+from compile-time NR_CPUS, unless CPUMASK_OFFSTACK is enabled.
 
-E.g. skb_pull() decrease skb->len, so I'm not sure we can call 
-virtio_transport_dec_rx_pkt(skb->len) if we don't remove `skb_pull(skb, 
-bytes_to_copy);` inside the loop.
+nr_cpu_ids is an actual number of CPUS as counted on boot.
+
+So, nr_cpu_ids is always equal or less than nr_cpumask_bits, and we'd
+compare with the smaller number.
+
+Nor sure, but maybe it's worth to introduce a macro like:
+ #define valid_cpuid(cpu) (cpu) < nr_cpu_ids
 
 Thanks,
-Stefano
-
+Yury
+> ---
+>  drivers/char/random.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/char/random.c b/drivers/char/random.c
+> index ce3ccd172cc8..d76f12a5f74f 100644
+> --- a/drivers/char/random.c
+> +++ b/drivers/char/random.c
+> @@ -1311,7 +1311,7 @@ static void __cold try_to_generate_entropy(void)
+>  			/* Basic CPU round-robin, which avoids the current CPU. */
+>  			do {
+>  				cpu = cpumask_next(cpu, &timer_cpus);
+> -				if (cpu == nr_cpumask_bits)
+> +				if (cpu >= nr_cpumask_bits)
+>  					cpu = cpumask_first(&timer_cpus);
+>  			} while (cpu == smp_processor_id() && num_cpus > 1);
+>  
+> -- 
+> 2.34.1
