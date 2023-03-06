@@ -2,136 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42E1E6ACC33
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 19:14:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EB566ACC39
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 19:15:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229832AbjCFSOX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 13:14:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54936 "EHLO
+        id S230026AbjCFSPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 13:15:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231206AbjCFSOO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 13:14:14 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B83634F60;
-        Mon,  6 Mar 2023 10:13:33 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id m8-20020a17090a4d8800b002377bced051so14058274pjh.0;
-        Mon, 06 Mar 2023 10:13:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678126412;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=nVDRLydRone1J93o9oyayT1ixn2USWzwJPhyrHw1GAs=;
-        b=K0ohwVvtpaqIM1ff7KNQ9iqtOS8LvwFVSwAlfsHNWS+XjLRUXy+7LqEMHc6UcjJooC
-         FXfafhU/B3oMyaN3xDuDn75iDeDIkapf8UmM5Ftc2Nlx2D+6wSo/5OKDbsQyvGp3xaaj
-         /lFsvPnIJSQu3+SzJMD6Svu5gzZvneVauDck+s0/+HezZ6a3r8VUUtZoxrz4bey7u6Jq
-         KjC5m8XXbsrDJD7zTOh0IXffYxdKDgw+0gSOuHO5Hpl0PK/XIUSd6iVQ8JHdD9Q2O+e6
-         cYJs0DaF4TwIsYLLVBx5k16xkzyxKmRl3WziS2Q+dqrKfFNMB8zdfO8XP5/SByNcBQ+S
-         Jtfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678126412;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nVDRLydRone1J93o9oyayT1ixn2USWzwJPhyrHw1GAs=;
-        b=vQ0IhA6r6DC7PvoUxNSgrUpBAGxZ0B7opExWoxufviE6iJCC+UqVsrwmx8QI4Z8ag8
-         DQBbZyvNtipFLe2jGfLCWJMWNPUyShFpMbdnENYHz+IveHQQ88jHzbARnDmOJ8GwczGE
-         QzkOGjEyZejJMXRavsVVf0Z03ZS9LyxKLTCouUhA8Ick9RWAd9/owqkle24UjCasGWqQ
-         pbZBaBIK/livyVMexZhbi3+M/c9/U1TTw2/4sbv3m5hN3YnUSlHyZ0M0q3yGOfIgF6VK
-         +jOzTU/oXqxrJjTA+gJj6mTP6/DNGOcZTYq4FJ7lTJ8ncfqQwC6vG/fJo0evsplMb0v4
-         bY1g==
-X-Gm-Message-State: AO0yUKX5wj82POwt1wogaLk4S0ZTpUsYzmEYlPgqCSylgMmeh0W0gFjH
-        Nbivex2Wekp95pA9pyfgHH4=
-X-Google-Smtp-Source: AK7set8JSu5HH2SYYBQFO2nNfsP5nq/yMAXfZHaMuGcyFct+Bv6s3IpIB0hslTUQT9wBsrFGbwUhWg==
-X-Received: by 2002:a17:90b:3812:b0:237:b702:49ac with SMTP id mq18-20020a17090b381200b00237b70249acmr12565429pjb.17.1678126412292;
-        Mon, 06 Mar 2023 10:13:32 -0800 (PST)
-Received: from vernon-pc ([49.67.2.142])
-        by smtp.gmail.com with ESMTPSA id p26-20020a634f5a000000b00502e6c22c42sm6628207pgl.59.2023.03.06.10.13.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Mar 2023 10:13:32 -0800 (PST)
-Date:   Tue, 7 Mar 2023 02:13:25 +0800
-From:   Vernon Yang <vernon2gm@gmail.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     tytso@mit.edu, Jason@zx2c4.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        jejb@linux.ibm.com, martin.petersen@oracle.com,
-        yury.norov@gmail.com, andriy.shevchenko@linux.intel.com,
-        linux@rasmusvillemoes.dk, james.smart@broadcom.com,
-        dick.kennedy@broadcom.com, linux-kernel@vger.kernel.org,
-        wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org
-Subject: Re: [PATCH 5/5] cpumask: fix comment of cpumask_xxx
-Message-ID: <ZAYtRcbMeRUQFUw/@vernon-pc>
-References: <20230306160651.2016767-1-vernon2gm@gmail.com>
- <20230306160651.2016767-6-vernon2gm@gmail.com>
- <CAHk-=whVnaTBt2Xm-A+8SMc5-q5CuZBDU6rUZ8yC8GoAnbTBvw@mail.gmail.com>
+        with ESMTP id S231166AbjCFSOp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 13:14:45 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2636618A2;
+        Mon,  6 Mar 2023 10:14:09 -0800 (PST)
+Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4PVmsF0n1dz6J7MV;
+        Tue,  7 Mar 2023 02:13:05 +0800 (CST)
+Received: from [10.123.123.126] (10.123.123.126) by
+ lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Mon, 6 Mar 2023 18:13:30 +0000
+Message-ID: <562fbb68-936c-ca1d-ef4c-b94610a65ef9@huawei.com>
+Date:   Mon, 6 Mar 2023 21:13:29 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v9 10/12] selftests/landlock: Add 10 new test suites
+ dedicated to network
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+        <artem.kuzin@huawei.com>
+References: <20230116085818.165539-1-konstantin.meskhidze@huawei.com>
+ <20230116085818.165539-11-konstantin.meskhidze@huawei.com>
+ <fa306757-2040-415b-99a7-ba40c100638a@digikod.net>
+ <b324a6bc-0b0f-c299-72b9-903eede187e8@huawei.com>
+ <0efdc745-2365-a8c2-43cb-ef3608586481@digikod.net>
+From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+In-Reply-To: <0efdc745-2365-a8c2-43cb-ef3608586481@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHk-=whVnaTBt2Xm-A+8SMc5-q5CuZBDU6rUZ8yC8GoAnbTBvw@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Originating-IP: [10.123.123.126]
+X-ClientProxiedBy: lhrpeml100006.china.huawei.com (7.191.160.224) To
+ lhrpeml500004.china.huawei.com (7.191.163.9)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 06, 2023 at 09:29:10AM -0800, Linus Torvalds wrote:
-> On Mon, Mar 6, 2023 at 8:07 AM Vernon Yang <vernon2gm@gmail.com> wrote:
-> >
-> > After commit 596ff4a09b89 ("cpumask: re-introduce constant-sized cpumask
-> > optimizations"), the cpumask size is divided into three different case,
-> > so fix comment of cpumask_xxx correctly.
->
-> No no.
->
-> Those three cases are meant to be entirely internal optimizations.
-> They are literally just "preferred sizes".
->
-> The correct thing to do is always that
->
->    * Returns >= nr_cpu_ids if no cpus set.
->
-> because nr_cpu_ids is always the *smallest* of the access sizes.
->
-> That's exactly why it's a ">=". The CPU mask stuff has always
-> historically potentially used a different size than the actual
-> nr_cpu_ids, in that it could do word-sized scans even when the machine
-> might only have a smaller set of CPUs.
->
-> So the whole "small" vs "large" should be seen entirely internal to
-> cpumask.h. We should not expose it outside (sadly, that already
-> happened with "nr_cpumask_size", which also was that kind of thing.
 
-I also just see nr_cpumask_size exposed to outside, so... Sorry.
 
->
-> So no, this patch is wrong. If anything, the comments should be strengthened.
->
-> Of course, right now Guenter seems to be reporting a problem with that
-> optimization, so unless I figure out what is going on I'll just need
-> to revert it anyway.
+3/6/2023 7:00 PM, Mickaël Salaün пишет:
+> 
+> On 06/03/2023 13:03, Konstantin Meskhidze (A) wrote:
+>> 
+>> 
+>> 2/21/2023 9:05 PM, Mickaël Salaün пишет:
+>>>
+>>> On 16/01/2023 09:58, Konstantin Meskhidze wrote:
+>>>> These test suites try to check edge cases for TCP sockets
+>>>> bind() and connect() actions.
+>>>>
+>>>> socket:
+>>>> * bind: Tests with non-landlocked/landlocked ipv4 and ipv6 sockets.
+>>>> * connect: Tests with non-landlocked/landlocked ipv4 and ipv6 sockets.
+>>>> * bind_afunspec: Tests with non-landlocked/landlocked restrictions
+>>>> for bind action with AF_UNSPEC socket family.
+>>>> * connect_afunspec: Tests with non-landlocked/landlocked restrictions
+>>>> for connect action with AF_UNSPEC socket family.
+>>>> * ruleset_overlap: Tests with overlapping rules for one port.
+>>>> * ruleset_expanding: Tests with expanding rulesets in which rules are
+>>>> gradually added one by one, restricting sockets' connections.
+>>>> * inval: Tests with invalid user space supplied data:
+>>>>       - out of range ruleset attribute;
+>>>>       - unhandled allowed access;
+>>>>       - zero port value;
+>>>>       - zero access value;
+>>>>       - legitimate access values;
+>>>> * bind_connect_inval_addrlen: Tests with invalid address length
+>>>> for ipv4/ipv6 sockets.
+>>>> * inval_port_format: Tests with wrong port format for ipv4/ipv6 sockets.
+>>>>
+>>>> layout1:
+>>>> * with_net: Tests with network bind() socket action within
+>>>> filesystem directory access test.
+>>>>
+>>>> Test coverage for security/landlock is 94.1% of 946 lines according
+>>>> to gcc/gcov-11.
+>>>>
+>>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>>>> ---
+>>>>
+>>>> Changes since v8:
+>>>> * Adds is_sandboxed const for FIXTURE_VARIANT(socket).
+>>>> * Refactors AF_UNSPEC tests.
+>>>> * Adds address length checking tests.
+>>>> * Convert ports in all tests to __be16.
+>>>> * Adds invalid port values tests.
+>>>> * Minor fixes.
+>>>>
+>>>> Changes since v7:
+>>>> * Squashes all selftest commits.
+>>>> * Adds fs test with network bind() socket action.
+>>>> * Minor fixes.
+>>>>
+>>>> ---
+>>>>    tools/testing/selftests/landlock/config     |    4 +
+>>>>    tools/testing/selftests/landlock/fs_test.c  |   65 ++
+>>>>    tools/testing/selftests/landlock/net_test.c | 1157 +++++++++++++++++++
+>>>>    3 files changed, 1226 insertions(+)
+>>>>    create mode 100644 tools/testing/selftests/landlock/net_test.c
+>>>>
+>>>> diff --git a/tools/testing/selftests/landlock/config b/tools/testing/selftests/landlock/config
+>>>> index 0f0a65287bac..71f7e9a8a64c 100644
+>>>> --- a/tools/testing/selftests/landlock/config
+>>>> +++ b/tools/testing/selftests/landlock/config
+> 
+> [...]
+> 
+>>>> +static int bind_variant(const struct _fixture_variant_socket *const variant,
+>>>> +			const int sockfd,
+>>>> +			const struct _test_data_socket *const self,
+>>>> +			const size_t index, const bool zero_size)
+>>>> +
+>>>
+>>> Extra new line.
+>> 
+>>    Will be deleted. Thanks. >>
+>>>> +{
+>>>> +	if (variant->is_ipv4)
+>>>> +		return bind(sockfd, &self->addr4[index],
+>>>> +			    (zero_size ? 0 : sizeof(self->addr4[index])));
+>>>
+>>> Is the zero_size really useful? Do calling bind and connect with this
+>>> argument reaches the Landlock code (check_addrlen) or is it caught by
+>>> the network code beforehand?
+>> 
+>>     In __sys_bind() syscall security_socket_bind() function goes before
+>>     sock->ops->bind() method. Selinux and Smacks provide such checks in
+>>     bind()/connect() hooks, so I think Landlock should do the same.
+>>     What do you think?
+> 
+> Yes, we should keep these checks. However, we should have a
+> bind_variant() without the zero_size argument because it is only set to
+> true once (in bind_connect_inval_addrlen). You can explicitly call
+> bind() with a zero size in bind_connect_inval_addrlen().
+> 
+> Same for connect_variant().
 
-Yes, cause is the cpumask_next() calls find_next_bit(..., size, ...), and
-find_next_bit(..., size, ...) if no bits are set, returns @size.
-
-@size was a nr_cpumask_bits variable before, now it is small_cpumask_bits, and
-when NR_CPUS < = BITS_PER_LONG, small_cpumask_bits is a macro, which is
-replaced with NR_CPUS at compile, so only the NR_CPUS is returned when it no
-further cpus set.
-
-But before nr_cpumask_bits variable, it was read while running, and it was
-mutable.
-
-The random.c try_to_generate_entropy() to get first cpu by
-`if (cpu == nr_cpumask_bits)`, but cpumask_next() alway return NR_CPUS,
-nr_cpumask_bits is nr_cpu_ids, so pass NR_CPUS to add_timer_on(),
-
->
->                 Linus
->
->                 Linus
+  Ok. Will be fixed.
+> 
+> 
+>>>
+>>>
+>>>> +	else
+>>>> +		return bind(sockfd, &self->addr6[index],
+>>>> +			    (zero_size ? 0 : sizeof(self->addr6[index])));
+>>>> +}
+>>>> +
+>>>> +static int connect_variant(const struct _fixture_variant_socket *const variant,
+>>>> +			   const int sockfd,
+>>>> +			   const struct _test_data_socket *const self,
+>>>> +			   const size_t index, const bool zero_size)
+>>>> +{
+>>>> +	if (variant->is_ipv4)
+>>>> +		return connect(sockfd, &self->addr4[index],
+>>>> +			       (zero_size ? 0 : sizeof(self->addr4[index])));
+>>>> +	else
+>>>> +		return connect(sockfd, &self->addr6[index],
+>>>> +			       (zero_size ? 0 : sizeof(self->addr6[index])));
+>>>> +}
+> .
