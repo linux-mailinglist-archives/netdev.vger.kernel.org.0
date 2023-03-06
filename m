@@ -2,88 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A881E6ABFD2
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 13:48:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A96C6ABFD7
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 13:50:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230157AbjCFMsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 07:48:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44638 "EHLO
+        id S230237AbjCFMt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 07:49:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229582AbjCFMsF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 07:48:05 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 130F12942E
-        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 04:47:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678106837;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=8txTUjCfQ30DZq8EG3/E5KSXjGhKnOOc6WZNsN31Luc=;
-        b=EuvrFS2fqhJy/P8qyE5GZiUfiJBtFL1fQVzHI10+XZ29B5g6SUGKxM8MNOUgllXelePhsV
-        0in6MBth09zEX42e3gPGaGxpx/g0JwYJpWn/scNTNoQq1WdnzQOwMc9idBLE+0X3AKRI0E
-        axip0uRZASI/30EW2N9KLNngI1osZzM=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-396-xCgpg84XP0e1q72Ku4EVgQ-1; Mon, 06 Mar 2023 07:47:15 -0500
-X-MC-Unique: xCgpg84XP0e1q72Ku4EVgQ-1
-Received: by mail-ed1-f72.google.com with SMTP id h15-20020a056402280f00b004bf9e193c23so13814628ede.11
-        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 04:47:15 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678106834;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=8txTUjCfQ30DZq8EG3/E5KSXjGhKnOOc6WZNsN31Luc=;
-        b=JRLC3kEcZ+OOGztrpa3c7U9+MA5G871pAAgy++XLHF4UMyYssOn8Xh2c2K747ucOFo
-         cIK6OZIDXawNBx+H3jD5a9zuVQ13wmOWMI69drjRcKaaLR7KaJugz1uOsmIMjY9aDkb0
-         rJm/3wH3ZIIwZcorWcmPkobcJ3T0Sj9a3bjMHv1thwCFPLPY5n0Ov0DaRR389rq7lv4m
-         2zAYH/7yH+cdb0jQRrE63cvuIPrYwG1oNETDIOD4iL4UaXLS6Ld849VoO3k4b51F19FZ
-         NyLpBHtYheMUyvK7Ph4kFEfF45o5DUYXuhbqIcnRIyUgsLnBrgwCffQ3XtWKMEIusJHa
-         ct1Q==
-X-Gm-Message-State: AO0yUKXCJJpH2VlUCoPmH/nAVc+VnBJUSOZ6WItfnX3dks50ux6zJ85Q
-        WLfYlfNZdrK9jkg5pEzBGTZz43V+QbUIdxT80IUOgFqphBp3bVW0rtPOHJGk3ih2Cl9xwRxGyjP
-        W7Z7tcOe4nFOR98BPaLdPxI2o5mw+EyPVvJdaDdbzly4VrQ==
-X-Received: by 2002:a50:f61b:0:b0:4bc:eec5:37f5 with SMTP id c27-20020a50f61b000000b004bceec537f5mr5830006edn.6.1678106834189;
-        Mon, 06 Mar 2023 04:47:14 -0800 (PST)
-X-Google-Smtp-Source: AK7set8tGjGVFa9l6Oz7NGjZKpCUJ1HrHE5LNsxo692Eigf3lWq+BjiUq2WqRJCevUtx2QlSu/l2LnnZ90BvOOaVHyw=
-X-Received: by 2002:a50:f61b:0:b0:4bc:eec5:37f5 with SMTP id
- c27-20020a50f61b000000b004bceec537f5mr5829990edn.6.1678106833964; Mon, 06 Mar
- 2023 04:47:13 -0800 (PST)
+        with ESMTP id S229718AbjCFMt5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 07:49:57 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD20D2BEDB
+        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 04:49:51 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pZAHf-0007TK-M3; Mon, 06 Mar 2023 13:49:43 +0100
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pZAHd-002FYH-TN; Mon, 06 Mar 2023 13:49:41 +0100
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pZAHd-003d6H-8h; Mon, 06 Mar 2023 13:49:41 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        UNGLinuxDriver@microchip.com
+Subject: [PATCH net-next v1 1/2] net: dsa: microchip: add ksz_setup_tc_mode() function
+Date:   Mon,  6 Mar 2023 13:49:39 +0100
+Message-Id: <20230306124940.865233-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Mon, 6 Mar 2023 07:47:02 -0500
-Message-ID: <CAK-6q+hVu8xST=zreEdH3ne+kUY-zGriRwHAR9OpCxTwPFwOSw@mail.gmail.com>
-Subject: introduce function wrapper for sk_data_ready() call?
-To:     peilin.ye@bytedance.com
-Cc:     cong.wang@bytedance.com, "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        cluster-devel <cluster-devel@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Add ksz_setup_tc_mode() to make queue scheduling and shaping configuration
+more visible.
 
-I saw that in 6.3-rc1 the following patch introduced something in dlm
-socket application handling 40e0b0908142 ("net/sock: Introduce
-trace_sk_data_ready()"). I am asking myself if we could instead
-introduce a wrapper in net/ protocol family implementations and they
-do such trace event calls there inside the socket implementation
-instead of letting the application layer do it. It looks pretty
-generic for me and it does not trace any application specific
-information.
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ drivers/net/dsa/microchip/ksz_common.c | 20 ++++++++++++--------
+ drivers/net/dsa/microchip/ksz_common.h |  6 ++----
+ 2 files changed, 14 insertions(+), 12 deletions(-)
 
-I did something similar for sk_error_report(), see e3ae2365efc1 ("net:
-sock: introduce sk_error_report").
-
-Thanks.
-
-- Alex
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 48e35a1d110e..ae05fe0b0a81 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -32,10 +32,6 @@
+ #include "ksz9477.h"
+ #include "lan937x.h"
+ 
+-#define KSZ_CBS_ENABLE ((MTI_SCHEDULE_STRICT_PRIO << MTI_SCHEDULE_MODE_S) | \
+-			(MTI_SHAPING_SRP << MTI_SHAPING_S))
+-#define KSZ_CBS_DISABLE ((MTI_SCHEDULE_WRR << MTI_SCHEDULE_MODE_S) |\
+-			 (MTI_SHAPING_OFF << MTI_SHAPING_S))
+ #define MIB_COUNTER_NUM 0x20
+ 
+ struct ksz_stats_raw {
+@@ -3119,6 +3115,14 @@ static int cinc_cal(s32 idle_slope, s32 send_slope, u32 *bw)
+ 	return 0;
+ }
+ 
++static int ksz_setup_tc_mode(struct ksz_device *dev, int port, u8 scheduler,
++			     u8 shaper)
++{
++	return ksz_pwrite8(dev, port, REG_PORT_MTI_QUEUE_CTRL_0,
++			   FIELD_PREP(MTI_SCHEDULE_MODE_M, scheduler) |
++			   FIELD_PREP(MTI_SHAPING_M, shaper));
++}
++
+ static int ksz_setup_tc_cbs(struct dsa_switch *ds, int port,
+ 			    struct tc_cbs_qopt_offload *qopt)
+ {
+@@ -3138,8 +3142,8 @@ static int ksz_setup_tc_cbs(struct dsa_switch *ds, int port,
+ 		return ret;
+ 
+ 	if (!qopt->enable)
+-		return ksz_pwrite8(dev, port, REG_PORT_MTI_QUEUE_CTRL_0,
+-				   KSZ_CBS_DISABLE);
++		return ksz_setup_tc_mode(dev, port, MTI_SCHEDULE_WRR,
++					 MTI_SHAPING_OFF);
+ 
+ 	/* High Credit */
+ 	ret = ksz_pwrite16(dev, port, REG_PORT_MTI_HI_WATER_MARK,
+@@ -3164,8 +3168,8 @@ static int ksz_setup_tc_cbs(struct dsa_switch *ds, int port,
+ 			return ret;
+ 	}
+ 
+-	return ksz_pwrite8(dev, port, REG_PORT_MTI_QUEUE_CTRL_0,
+-			   KSZ_CBS_ENABLE);
++	return ksz_setup_tc_mode(dev, port, MTI_SCHEDULE_STRICT_PRIO,
++				 MTI_SHAPING_SRP);
+ }
+ 
+ static int ksz_setup_tc(struct dsa_switch *ds, int port,
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 10c732b1cea8..f53834bbe896 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -662,12 +662,10 @@ static inline int is_lan937x(struct ksz_device *dev)
+ 
+ #define REG_PORT_MTI_QUEUE_CTRL_0	0x0914
+ 
+-#define MTI_SCHEDULE_MODE_M		0x3
+-#define MTI_SCHEDULE_MODE_S		6
++#define MTI_SCHEDULE_MODE_M		GENMASK(7, 6)
+ #define MTI_SCHEDULE_STRICT_PRIO	0
+ #define MTI_SCHEDULE_WRR		2
+-#define MTI_SHAPING_M			0x3
+-#define MTI_SHAPING_S			4
++#define MTI_SHAPING_M			GENMASK(5, 4)
+ #define MTI_SHAPING_OFF			0
+ #define MTI_SHAPING_SRP			1
+ #define MTI_SHAPING_TIME_AWARE		2
+-- 
+2.30.2
 
