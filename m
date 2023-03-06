@@ -2,117 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF9EF6AB6EA
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 08:22:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AC966AB71B
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 08:31:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229680AbjCFHWy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 02:22:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52940 "EHLO
+        id S229780AbjCFHbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 02:31:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229616AbjCFHWx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 02:22:53 -0500
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 855501C7CC
-        for <netdev@vger.kernel.org>; Sun,  5 Mar 2023 23:22:51 -0800 (PST)
-Received: by mail-il1-f197.google.com with SMTP id v14-20020a92c80e000000b0031faea6493cso1446472iln.11
-        for <netdev@vger.kernel.org>; Sun, 05 Mar 2023 23:22:51 -0800 (PST)
+        with ESMTP id S229561AbjCFHbo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 02:31:44 -0500
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4366B1E1F6;
+        Sun,  5 Mar 2023 23:31:41 -0800 (PST)
+Received: by mail-pj1-x1043.google.com with SMTP id kb15so8881335pjb.1;
+        Sun, 05 Mar 2023 23:31:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cEeWSamPP//pxy4lKPrymNEPE0BRaQvyhxLQGg4BK5U=;
+        b=M/9ysp0aPgRd5Hv7DtjFq2u/tYGPIqFtie6zb+B5GsgkpE60amgnHgcn1YbCBs1bDE
+         ft930AYKVL1xBSUEkIAP/FiQxJiawMuQRSd4RFQhn38YQ1AnEW2xcceLkHjrvmLBM2zw
+         pCMMd2tRxI0e9tgkC28oNUU42o9BmTRanuyiQdq50wuKfg4PJ9iWwK7f53+eeqr2rz1P
+         8Lj1xkOdp7gs8NmfbhIEXLopt2nId2/zBEiNfnfaLZ5ws4hmNCW5hBq/SXXi4CdHMui5
+         MpNQBLTEyZ1a83VGF7/ih2mDAQhwSkrV4FwJ4J9iToExpJs+whCfowAatqV4pXwuk43X
+         ixxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=lZoa4m6FEfnQaYMSu4CgCJx4+GY8uuz4pvBCiPijuw0=;
-        b=Zym00yrsKNRJPm7KfTrdydA84EWqxv7uyA4wkQJzEf+t409AX0UApzQShA3GjRpPir
-         3nDxDxSI7RqPOrzgA9+tQu8a027uDSexgeulv85rcQkBlLX6Ur7/zY1boUG1k6edsRo3
-         rn7FWdqLYM5JzTzdg0Wt71R91XPjqCHQyVImvbMU+w5pMa6rw7oz470G/7o7S0CvsdiI
-         AWye2qNnXKx8V7jJ/MV5wwI1Awfh4HmQSslzmmjWlSKGCoV4VbWeopy4fOWlVYxHR20p
-         aO+5Nrd1KrytdBaHDpZQfUWzpOh9mzUX/ZBm4iRJYxzgb0MUwE28g/TQKLT6yU8OkXRN
-         JGoQ==
-X-Gm-Message-State: AO0yUKXO5Eq0PyPMbrCsoULVCO3F/OENFpboPRbevcTreVTnmnEzb65A
-        j48KuneTdUXrjIDQ3euoqDuUFrItZf1c1MisZATXVNDLIo/d
-X-Google-Smtp-Source: AK7set93N6rJzgsUJtWwSTMcs7aQ81sO3w7Wq4CfHTV4TScoHLpiKcssCsNEdoqZu3tX7gG19NKXLTXiWl350WJP/e56mh5hqK1o
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=cEeWSamPP//pxy4lKPrymNEPE0BRaQvyhxLQGg4BK5U=;
+        b=v1c2t50WlY4n2n57O2MwvHc53K3brMAb0SVN8WveZwjAIc6rtVGrglChJ40vNCRuPR
+         zaJEieoS8KLkKe5FJCQGm5mojR3TI+k3R48dc1fvMOsU4dqS23adfnH0t0rtl2jKhXVn
+         3KpUB2LEhplvtsHApciRbt9WNx4Vd5u4+yijMGAelkmkDhTtT58Z54Kjt1QT6xJpzN77
+         cCwMW++sOqtE/aAuOjYKpxD+wkQaruwE/eaGcgbs/49gAh5UkCaZsTQ/pvh8O1NfyZlw
+         DI8sN2jz+oNIAjZm71yAI8ucrBy7FAUi8u1aig6sQjddauTLrKE7AHINU5T4oACnHfXZ
+         Hhrw==
+X-Gm-Message-State: AO0yUKVeW+CLTaKmjfE2oREf2hDvGB6mQwniw/OV0uDo39nUa8Erodjj
+        g7+7uXeWjkRE1KiqoCtw9mg=
+X-Google-Smtp-Source: AK7set8njaPB/Dn186/pV5Shti/LPXxBpbHPjFtyC7LUjTP4mz8XnBpyH1kO30LqkNJnQG0TxzLD7Q==
+X-Received: by 2002:a17:902:c951:b0:19e:9807:de48 with SMTP id i17-20020a170902c95100b0019e9807de48mr10403129pla.23.1678087900742;
+        Sun, 05 Mar 2023 23:31:40 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id 4-20020a170902e9c400b0019c61616f82sm5930857plk.230.2023.03.05.23.31.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 05 Mar 2023 23:31:40 -0800 (PST)
+From:   xu xin <xu.xin.sc@gmail.com>
+X-Google-Original-From: xu xin <xu.xin16@zte.com.cn>
+To:     willemdebruijn.kernel@gmail.com
+Cc:     davem@davemloft.net, edumazet@google.com, jiang.xuexin@zte.com.cn,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, shuah@kernel.org, xu.xin16@zte.com.cn,
+        yang.yang29@zte.com.cn, zhang.yunkai@zte.com.cn
+Subject: RE: [PATCH linux-next v2] selftests: net: udpgso_bench_tx: Add test for IP fragmentation of UDP packets
+Date:   Mon,  6 Mar 2023 07:31:36 +0000
+Message-Id: <20230306073136.155697-1-xu.xin16@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <6401f7889e959_3f6dc82084b@willemb.c.googlers.com.notmuch>
+References: <6401f7889e959_3f6dc82084b@willemb.c.googlers.com.notmuch>
 MIME-Version: 1.0
-X-Received: by 2002:a5d:8858:0:b0:745:33df:c498 with SMTP id
- t24-20020a5d8858000000b0074533dfc498mr4767773ios.3.1678087370881; Sun, 05 Mar
- 2023 23:22:50 -0800 (PST)
-Date:   Sun, 05 Mar 2023 23:22:50 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a4c51705f63629cb@google.com>
-Subject: [syzbot] [wireless?] KMSAN: uninit-value in ath9k_hw_init
-From:   syzbot <syzbot+df61b36319e045c00a08@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, glider@google.com,
-        kuba@kernel.org, kvalo@kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com, toke@toke.dk
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+>> >     IP_PMTUDISC_DONT: turn off pmtu detection.
+>> >     IP_PMTUDISC_OMIT: the same as DONT, but in some scenarios, DF will
+>> > be ignored. I did not construct such a scene, presumably when forwarding.
+>> > Any way, in this test, is the same as DONT.
+>
+>My points was not to compare IP_PMTUDISC_OMIT to .._DONT but to .._DO,
+>which is what the existing UDP GSO test is setting.
 
-syzbot found the following issue on:
+Yeah, we got your point, but the result was as the patch showed, which hadn't
+changed much (patch v2 V.S patch v1), because the fragmentation option of 'patch v1'
+used the default PMTU discovery strategy(IP_PMTUDISC_DONT, because the code didn't
+setting PMTU explicitly by setsockopt() when use './udpgso_bench_tx -f' ), which is
+not much different from the 'patch v2' using IP_PMTUDISC_OMIT.
 
-HEAD commit:    944070199c5e kmsan: add memsetXX tests
-git tree:       https://github.com/google/kmsan.git master
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=172481f2c80000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=46c642641b9ef616
-dashboard link: https://syzkaller.appspot.com/bug?extid=df61b36319e045c00a08
-compiler:       Debian clang version 15.0.7, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15055432c80000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1010b19cc80000
+>
+>USO should generate segments that meet MTU rules. The test forces
+>the DF bit (IP_PMTUDISC_DO).
+>
+>UFO instead requires local fragmentation, must enter the path for this
+>in ip_output.c. It should fail if IP_PMTUDISC_DO is set:
+>
+>        /* Unless user demanded real pmtu discovery (IP_PMTUDISC_DO), we allow
+>         * to fragment the frame generated here. No matter, what transforms
+>         * how transforms change size of the packet, it will come out.
+>         */
+>        skb->ignore_df = ip_sk_ignore_df(sk);
+>
+>        /* DF bit is set when we want to see DF on outgoing frames.
+>         * If ignore_df is set too, we still allow to fragment this frame
+>         * locally. */
+>        if (inet->pmtudisc == IP_PMTUDISC_DO ||
+>            inet->pmtudisc == IP_PMTUDISC_PROBE ||
+>            (skb->len <= dst_mtu(&rt->dst) &&
+>             ip_dont_fragment(sk, &rt->dst)))
+>                df = htons(IP_DF);
+> 
+>> >
+>> > We have a question, what is the point of this test if it is not compared to
+>> > UDP GSO and IP fragmentation. No user or tool will segment in user mode,
+>
+>Are you saying no process will use UDP_SEGMENT?
+>
+No, we are saying "user-space payload splitting", in other words, use ./udpgso_bench_tx
+without '-f' or '-S'.
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/055bbd57e905/disk-94407019.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/82472690bcfe/vmlinux-94407019.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/db3f379532ab/bzImage-94407019.xz
+Sincerely.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+df61b36319e045c00a08@syzkaller.appspotmail.com
-
-ath9k_htc 6-1:1.0: ath9k_htc: HTC initialized with 33 credits
-=====================================================
-BUG: KMSAN: uninit-value in ath9k_hw_read_revisions drivers/net/wireless/ath/ath9k/hw.c:289 [inline]
-BUG: KMSAN: uninit-value in __ath9k_hw_init drivers/net/wireless/ath/ath9k/hw.c:572 [inline]
-BUG: KMSAN: uninit-value in ath9k_hw_init+0x11e0/0x2d60 drivers/net/wireless/ath/ath9k/hw.c:700
- ath9k_hw_read_revisions drivers/net/wireless/ath/ath9k/hw.c:289 [inline]
- __ath9k_hw_init drivers/net/wireless/ath/ath9k/hw.c:572 [inline]
- ath9k_hw_init+0x11e0/0x2d60 drivers/net/wireless/ath/ath9k/hw.c:700
- ath9k_init_priv drivers/net/wireless/ath/ath9k/htc_drv_init.c:662 [inline]
- ath9k_init_device drivers/net/wireless/ath/ath9k/htc_drv_init.c:839 [inline]
- ath9k_htc_probe_device+0xf48/0x3b60 drivers/net/wireless/ath/ath9k/htc_drv_init.c:963
- ath9k_htc_hw_init+0x4f/0x100 drivers/net/wireless/ath/ath9k/htc_hst.c:521
- ath9k_hif_usb_firmware_cb+0x2eb/0x800 drivers/net/wireless/ath/ath9k/hif_usb.c:1243
- request_firmware_work_func+0x130/0x240 drivers/base/firmware_loader/main.c:1107
- process_one_work+0xb0d/0x1410 kernel/workqueue.c:2289
- worker_thread+0x107b/0x1d60 kernel/workqueue.c:2436
- kthread+0x31f/0x430 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
-
-Local variable val created at:
- ath9k_regread+0x62/0x1b0 drivers/net/wireless/ath/ath9k/htc_drv_init.c:239
- ath9k_hw_read_revisions drivers/net/wireless/ath/ath9k/hw.c:287 [inline]
- __ath9k_hw_init drivers/net/wireless/ath/ath9k/hw.c:572 [inline]
- ath9k_hw_init+0x5be/0x2d60 drivers/net/wireless/ath/ath9k/hw.c:700
-
-CPU: 0 PID: 115 Comm: kworker/0:2 Not tainted 6.2.0-syzkaller-81157-g944070199c5e #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 02/16/2023
-Workqueue: events request_firmware_work_func
-=====================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+>The local protocol stack removed UFO in series d9d30adf5677.
+>USO can be offloaded to hardware by quite a few devices (NETIF_F_GSO_UDP_L4).
+>> > UDP GSO should compare performance with IP fragmentation.
+>> 
+>> I think it is misleading to think the cost of IP fragmentation matters
