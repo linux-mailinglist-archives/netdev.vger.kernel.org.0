@@ -2,115 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B889E6AB480
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 03:02:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AFA66AB499
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 03:19:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229628AbjCFCCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Mar 2023 21:02:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45576 "EHLO
+        id S229661AbjCFCTZ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 5 Mar 2023 21:19:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229540AbjCFCCi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Mar 2023 21:02:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56C0212853;
-        Sun,  5 Mar 2023 18:02:36 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7155860B67;
-        Mon,  6 Mar 2023 02:02:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34FC7C433D2;
-        Mon,  6 Mar 2023 02:02:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678068155;
-        bh=Z/pfCgpFoEEHv7JcHJ6XnWQ3ENGLr+0L1mCke+Jm2IQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=h1qn3Qnq9ADu9N5IFa3vlUdv+8/g8WhMnFTZ0mkEx/YORQUtbGCzGpwUUxsouVJM7
-         JHCM38DmbjZWOmy4AZjo5nvWw32qJaYF/8uT11+Ksa2VYAbofgRpjt3O9T0WnEzi+k
-         bG7MaoDj9shn7Wc/bZ/4hpyjR3YWQTGfI9Hwvt3RZhiji27G7Ex/ywiAwNo4CaDWM2
-         OhBbQM7xPgatwh2lY6CLsiNHoovMflRhW+f6C8QhPP17AHUsw25uNx7Poqx3G+8pFy
-         qspD/tG3xiuZ8Lh3+A6aYfOqFIE1ZrIH1gP0i6qBmbe0W7UFBeib2XvCxHcFUmLwQG
-         LMimPrjLJfVdA==
-Date:   Mon, 6 Mar 2023 10:02:26 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Abel Vesa <abelvesa@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        kernel@pengutronix.de, Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Russell King <linux@armlinux.org.uk>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 00/19] ARM: imx: make Ethernet refclock configurable
-Message-ID: <20230306020226.GC143566@dragon>
-References: <20230131084642.709385-1-o.rempel@pengutronix.de>
+        with ESMTP id S229570AbjCFCTY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Mar 2023 21:19:24 -0500
+Received: from fd01.gateway.ufhost.com (fd01.gateway.ufhost.com [61.152.239.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8156DCA02;
+        Sun,  5 Mar 2023 18:19:22 -0800 (PST)
+Received: from EXMBX165.cuchost.com (unknown [175.102.18.54])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (Client CN "EXMBX165", Issuer "EXMBX165" (not verified))
+        by fd01.gateway.ufhost.com (Postfix) with ESMTP id EED2624E34B;
+        Mon,  6 Mar 2023 10:19:18 +0800 (CST)
+Received: from EXMBX162.cuchost.com (172.16.6.72) by EXMBX165.cuchost.com
+ (172.16.6.75) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Mon, 6 Mar
+ 2023 10:19:19 +0800
+Received: from [192.168.120.42] (171.223.208.138) by EXMBX162.cuchost.com
+ (172.16.6.72) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Mon, 6 Mar
+ 2023 10:19:17 +0800
+Message-ID: <9093ee69-eee3-7a6c-794e-3df2be11496e@starfivetech.com>
+Date:   Mon, 6 Mar 2023 10:19:17 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230131084642.709385-1-o.rempel@pengutronix.de>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v5 05/12] riscv: dts: starfive: jh7110: Add ethernet
+ device nodes
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Yanhong Wang <yanhong.wang@starfivetech.com>
+References: <20230303085928.4535-1-samin.guo@starfivetech.com>
+ <20230303085928.4535-6-samin.guo@starfivetech.com> <ZAH6CGoXBKz0FmW3@lunn.ch>
+Content-Language: en-US
+From:   Guo Samin <samin.guo@starfivetech.com>
+In-Reply-To: <ZAH6CGoXBKz0FmW3@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
+X-Originating-IP: [171.223.208.138]
+X-ClientProxiedBy: EXCAS064.cuchost.com (172.16.6.24) To EXMBX162.cuchost.com
+ (172.16.6.72)
+X-YovoleRuleAgent: yovoleflag
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 31, 2023 at 09:46:23AM +0100, Oleksij Rempel wrote:
-> changes v3:
-> - add Reviewed-by: Abel Vesa <abel.vesa@linaro.org>
-> - rebase on top of abelvesa/for-next
-> 
-> changes v2:
-> - remove "ARM: imx6q: use of_clk_get_by_name() instead of_clk_get() to
->   get ptp clock" patch
-> - fix build warnings
-> - add "Acked-by: Lee Jones <lee@kernel.org>"
-> - reword some commits as suggested by Fabio
-> 
-> Most of i.MX SoC variants have configurable FEC/Ethernet reference
-> lock
-> used by RMII specification. This functionality is located in the
-> general purpose registers (GRPx) and till now was not implemented as
-> part of SoC clock tree.
-> 
-> With this patch set, we move forward and add this missing functionality
-> to some of i.MX clk drivers. So, we will be able to configure clock
-> opology
-> by using devicetree and be able to troubleshoot clock dependencies
-> by using clk_summary etc.
-> 
-> Currently implemented and tested i.MX6Q, i.MX6DL and i.MX6UL variants.
-> 
-> 
-> Oleksij Rempel (19):
->   clk: imx: add clk-gpr-mux driver
->   clk: imx6q: add ethernet refclock mux support
->   ARM: imx6q: skip ethernet refclock reconfiguration if enet_clk_ref is
->     present
->   ARM: dts: imx6qdl: use enet_clk_ref instead of enet_out for the FEC
->     node
->   ARM: dts: imx6dl-lanmcu: configure ethernet reference clock parent
->   ARM: dts: imx6dl-alti6p: configure ethernet reference clock parent
->   ARM: dts: imx6dl-plybas: configure ethernet reference clock parent
->   ARM: dts: imx6dl-plym2m: configure ethernet reference clock parent
->   ARM: dts: imx6dl-prtmvt: configure ethernet reference clock parent
->   ARM: dts: imx6dl-victgo: configure ethernet reference clock parent
->   ARM: dts: imx6q-prtwd2: configure ethernet reference clock parent
->   ARM: dts: imx6qdl-skov-cpu: configure ethernet reference clock parent
->   ARM: dts: imx6dl-eckelmann-ci4x10: configure ethernet reference clock
->     parent
->   clk: imx: add imx_obtain_fixed_of_clock()
->   clk: imx6ul: fix enet1 gate configuration
->   clk: imx6ul: add ethernet refclock mux support
->   ARM: dts: imx6ul: set enet_clk_ref to CLK_ENETx_REF_SEL
->   ARM: mach-imx: imx6ul: remove not optional ethernet refclock overwrite
->   ARM: dts: imx6ul-prti6g: configure ethernet reference clock parent
 
-Applied all mach-imx and DTS ones, thanks!
+
+在 2023/3/3 21:45:44, Andrew Lunn 写道:
+>> +		gmac0: ethernet@16030000 {
+>> +			compatible = "starfive,jh7110-dwmac", "snps,dwmac-5.20";
+>> +			reg = <0x0 0x16030000 0x0 0x10000>;
+>> +			clocks = <&aoncrg JH7110_AONCLK_GMAC0_AXI>,
+>> +				 <&aoncrg JH7110_AONCLK_GMAC0_AHB>,
+>> +				 <&syscrg JH7110_SYSCLK_GMAC0_PTP>,
+>> +				 <&aoncrg JH7110_AONCLK_GMAC0_TX_INV>,
+>> +				 <&syscrg JH7110_SYSCLK_GMAC0_GTXC>;
+>> +			clock-names = "stmmaceth", "pclk", "ptp_ref",
+>> +				      "tx", "gtx";
+>> +			resets = <&aoncrg JH7110_AONRST_GMAC0_AXI>,
+>> +				 <&aoncrg JH7110_AONRST_GMAC0_AHB>;
+>> +			reset-names = "stmmaceth", "ahb";
+>> +			interrupts = <7>, <6>, <5>;
+>> +			interrupt-names = "macirq", "eth_wake_irq", "eth_lpi";
+>> +			phy-mode = "rgmii-id";
+> 
+> phy-mode is a board property, not a SoC property. It should be in the
+> board .dts file, not the SoC .dtsi file.
+
+Thanks. I will fix it in the next version.
+> 
+>> +			snps,multicast-filter-bins = <64>;
+>> +			snps,perfect-filter-entries = <8>;
+>> +			rx-fifo-depth = <2048>;
+>> +			tx-fifo-depth = <2048>;
+>> +			snps,fixed-burst;
+>> +			snps,no-pbl-x8;
+>> +			snps,force_thresh_dma_mode;
+>> +			snps,axi-config = <&stmmac_axi_setup>;
+>> +			snps,tso;
+>> +			snps,en-tx-lpi-clockgating;
+>> +			snps,txpbl = <16>;
+>> +			snps,rxpbl = <16>;
+>> +			status = "disabled";
+>> +			phy-handle = <&phy0>;
+> 
+> The PHY is external, so this is also a board property, not a SoC
+> property. 
+Will fix, thanks.
+> 
+>> +
+>> +			mdio {
+>> +				#address-cells = <1>;
+>> +				#size-cells = <0>;
+>> +				compatible = "snps,dwmac-mdio";
+>> +
+>> +				phy0: ethernet-phy@0 {
+>> +					reg = <0>;
+>> +				};
+> 
+> The PHY is also a board property. You could for example design a board
+> where both PHYs are on one MDIO bus, in order to save two SoC pins.
+
+Sounds like a good idea.
+> 
+>       Andrew
+
+Thank you for taking the time to review.
+-- 
+Best regards,
+Samin
