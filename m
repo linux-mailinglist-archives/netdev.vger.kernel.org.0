@@ -2,78 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA13D6ACAC2
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 18:38:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C1916ACA93
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 18:34:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229704AbjCFRh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 12:37:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47748 "EHLO
+        id S230033AbjCFReR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 12:34:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbjCFRh6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 12:37:58 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8CC56A9CF
-        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 09:37:21 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id ec29so11117998edb.6
-        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 09:37:21 -0800 (PST)
+        with ESMTP id S229888AbjCFReP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 12:34:15 -0500
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2366C23300;
+        Mon,  6 Mar 2023 09:33:17 -0800 (PST)
+Received: by mail-qt1-x834.google.com with SMTP id r5so11426564qtp.4;
+        Mon, 06 Mar 2023 09:33:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1678124185;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hyTtB/4llIx7xJW4yBF6B/aJvNGYAxGhl43lVEfQF64=;
-        b=axUowq0Zk1SHQzPulJY0QSq6tAIBBacsm8F3M8n+dGtxH1wkT/RS8ZOZ8fpQ9JRDCW
-         OubiQ00Djww81LE4+cgpUgSDPjMZ5G0RTeq+jkEmO58Vgyb/jg844zHlYFLVa0Z5QcCG
-         wRC93T0bKUtb2xetb8QAYZ+uHaRuJ7b3L7+nE=
+        d=gmail.com; s=20210112; t=1678123889;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=UANncWrkqP0wGFe9cfk0F5rdhQoiGsROa82g/rlru+8=;
+        b=F3KF8af5PGId9V+MeGxLK9IkmQO1mIopPtxpp0Cj9HK7tZtVtCgYLD9APuqgHoNAkd
+         LCkPgPvE/rfQ2kNWJIPqVOZHjIPXofx2p+o/BIBi4dblyVurxuxhXpg4btCDPT0lZHl+
+         mxKl5QV1Imslhuh4tYbfpGjMpTl4RQVNSCcgLSJj4rnaoGnodEsMWCOSCGstQX/LQXXX
+         xgmaQ2JMM+L2Lkp+C5b1tJl5Ogde2n/vHerzVNSBbP5AZhaBVCDhZsnxlvehGfCRGnUH
+         Mwr/6qjzH0in8bkTp/k57hPHsp+50UOsXA2Z82EYpe4eQActGWSPbUAB19TU+oxxiZKY
+         3xIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678124185;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=hyTtB/4llIx7xJW4yBF6B/aJvNGYAxGhl43lVEfQF64=;
-        b=4xNI5y8lpovM3RtbUbo5kXdF9WeV6H+Hrx9COvFgWUBaStT/eVPlMMLvGJjiDOLf5i
-         ZbUin/23D4HtN+ohOGvuOEgx4+SqhWbxkIcvqiSd6RXxWNGERY7oNQzWaY15dEITbsAP
-         qGcuCyrbhSwY6O7oInJE8EsAu7s4SfajCno9HyiCBNJLDfkdVHcU7Ut5TsRX8nUcNoNd
-         i8v9PkBK2+R1+lY0Vs+2JrIr5HkJrgEaZlkeGKvksxWIObric0Z8gmZnV3/Lcs5pt8+I
-         4AHXItncLANhqcgn7K/EN8MjTRRkFpYMrUPloTxNEwJKs6TQ6nk+E8v4M6SCyxaXsUdw
-         MzbA==
-X-Gm-Message-State: AO0yUKU+F+0NDmN/BINF1HVjnZLTHmwA241zrg3zBluj1t65gEtdCaeS
-        sJgntOqd8LaZls6vfdSOM16lf/XJUk+iZp3fNyM+vA==
-X-Google-Smtp-Source: AK7set90SqArmnOqtOZGazGJNYcrxQrKusMNz4RZC8SO55W+Vl8W+hiZi/+5JD0DojPyp+jJvaXg5A==
-X-Received: by 2002:aa7:c14e:0:b0:4ac:d2cd:81c7 with SMTP id r14-20020aa7c14e000000b004acd2cd81c7mr11596009edp.5.1678124184877;
-        Mon, 06 Mar 2023 09:36:24 -0800 (PST)
-Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com. [209.85.208.49])
-        by smtp.gmail.com with ESMTPSA id k21-20020a05640212d500b004aee4e2a56esm5388062edx.0.2023.03.06.09.36.24
-        for <netdev@vger.kernel.org>
+        d=1e100.net; s=20210112; t=1678123889;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=UANncWrkqP0wGFe9cfk0F5rdhQoiGsROa82g/rlru+8=;
+        b=GWFmxx0dnkeRoR7bz5OuucNnVRRpCJ/lgPXA1jO6rjyW++yF0sJmV/6ofTawdOJHOY
+         2mlq+fc3cwX5PgEwNZdK9WHjyi7yic4lOH/hFOzSsZzqVsvN5kwEjmar9jEVh5qdiCf0
+         NoQyR74Zpjc9nENw8Ot7jn67hmqVR++hO92pKzyMIUabbnZUUYqrc2SFnWa25D24Cv6E
+         PnB0tJLSC4URy638BaKQDpWEfqRS4Vz6iOC86SrXXtNjq+1xCqw5grjSrknNQK6WnZVH
+         xNIL8O2nZcG2knY5D+WDe0TPDrVAIOZa7kXIzbQqJgJb8ORZxQc8EyFtgKk0riyyRZ+v
+         UWQg==
+X-Gm-Message-State: AO0yUKUToXkOLnTUwvuRgfRewoM1VzM5UzpssrNf70AIF2bOefYxMfaN
+        4H/BzVlJLj3QdXEbY9lWaxs=
+X-Google-Smtp-Source: AK7set+VZBNwYL+15nzYCtkcQxPb2Q4aV6IuGCCvMgWgtV7HdOQJDIB4fptSsUiZ6Iq1D8M3TJi6VQ==
+X-Received: by 2002:ac8:4904:0:b0:3bd:15d4:ff65 with SMTP id e4-20020ac84904000000b003bd15d4ff65mr13033343qtq.40.1678123889116;
+        Mon, 06 Mar 2023 09:31:29 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id a18-20020ac84352000000b003bfaff2a6b9sm7971848qtn.10.2023.03.06.09.31.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Mar 2023 09:36:24 -0800 (PST)
-Received: by mail-ed1-f49.google.com with SMTP id da10so42031263edb.3
-        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 09:36:24 -0800 (PST)
-X-Received: by 2002:a17:906:4997:b0:877:7480:c75d with SMTP id
- p23-20020a170906499700b008777480c75dmr5644673eju.0.1678123768103; Mon, 06 Mar
- 2023 09:29:28 -0800 (PST)
+        Mon, 06 Mar 2023 09:31:28 -0800 (PST)
+Message-ID: <2f8622b7-b5a3-241c-5f69-9d1a48e36e56@gmail.com>
+Date:   Mon, 6 Mar 2023 09:31:24 -0800
 MIME-Version: 1.0
-References: <20230306160651.2016767-1-vernon2gm@gmail.com> <20230306160651.2016767-6-vernon2gm@gmail.com>
-In-Reply-To: <20230306160651.2016767-6-vernon2gm@gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 6 Mar 2023 09:29:10 -0800
-X-Gmail-Original-Message-ID: <CAHk-=whVnaTBt2Xm-A+8SMc5-q5CuZBDU6rUZ8yC8GoAnbTBvw@mail.gmail.com>
-Message-ID: <CAHk-=whVnaTBt2Xm-A+8SMc5-q5CuZBDU6rUZ8yC8GoAnbTBvw@mail.gmail.com>
-Subject: Re: [PATCH 5/5] cpumask: fix comment of cpumask_xxx
-To:     Vernon Yang <vernon2gm@gmail.com>
-Cc:     tytso@mit.edu, Jason@zx2c4.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        jejb@linux.ibm.com, martin.petersen@oracle.com,
-        yury.norov@gmail.com, andriy.shevchenko@linux.intel.com,
-        linux@rasmusvillemoes.dk, james.smart@broadcom.com,
-        dick.kennedy@broadcom.com, linux-kernel@vger.kernel.org,
-        wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH net] net: ethernet: mtk_eth_soc: fix RX data corruption
+ issue
+Content-Language: en-US
+To:     Daniel Golle <daniel@makrotopia.org>, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>
+References: <138da2735f92c8b6f8578ec2e5a794ee515b665f.1677937317.git.daniel@makrotopia.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <138da2735f92c8b6f8578ec2e5a794ee515b665f.1677937317.git.daniel@makrotopia.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,40 +94,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 6, 2023 at 8:07=E2=80=AFAM Vernon Yang <vernon2gm@gmail.com> wr=
-ote:
->
-> After commit 596ff4a09b89 ("cpumask: re-introduce constant-sized cpumask
-> optimizations"), the cpumask size is divided into three different case,
-> so fix comment of cpumask_xxx correctly.
+On 3/4/23 05:43, Daniel Golle wrote:
+> Fix data corruption issue with SerDes connected PHYs operating at 1.25
+> Gbps speed where we could previously observe about 30% packet loss while
+> the bad packet counter was increasing.
+> 
+> As almost all boards with MediaTek MT7622 or MT7986 use either the MT7531
+> switch IC operating at 3.125Gbps SerDes rate or single-port PHYs using
+> rate-adaptation to 2500Base-X mode, this issue only got exposed now when
+> we started trying to use SFP modules operating with 1.25 Gbps with the
+> BananaPi R3 board.
+> 
+> The fix is to set bit 12 which disables the RX FIFO clear function when
+> setting up MAC MCR, MediaTek SDK did the same change stating:
+> "If without this patch, kernel might receive invalid packets that are
+> corrupted by GMAC."[1]
+> 
+> [1]: https://git01.mediatek.com/plugins/gitiles/openwrt/feeds/mtk-openwrt-feeds/+/d8a2975939a12686c4a95c40db21efdc3f821f63
+> 
+> Fixes: 42c03844e93d ("net-next: mediatek: add support for MediaTek MT7622 SoC")
+> Tested-by: Bjørn Mork <bjorn@mork.no>
+> Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 
-No no.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
 
-Those three cases are meant to be entirely internal optimizations.
-They are literally just "preferred sizes".
-
-The correct thing to do is always that
-
-   * Returns >=3D nr_cpu_ids if no cpus set.
-
-because nr_cpu_ids is always the *smallest* of the access sizes.
-
-That's exactly why it's a ">=3D". The CPU mask stuff has always
-historically potentially used a different size than the actual
-nr_cpu_ids, in that it could do word-sized scans even when the machine
-might only have a smaller set of CPUs.
-
-So the whole "small" vs "large" should be seen entirely internal to
-cpumask.h. We should not expose it outside (sadly, that already
-happened with "nr_cpumask_size", which also was that kind of thing.
-
-So no, this patch is wrong. If anything, the comments should be strengthene=
-d.
-
-Of course, right now Guenter seems to be reporting a problem with that
-optimization, so unless I figure out what is going on I'll just need
-to revert it anyway.
-
-                Linus
-
-                Linus
