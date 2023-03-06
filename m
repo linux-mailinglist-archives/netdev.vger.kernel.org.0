@@ -2,237 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F3C56ACBAF
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 18:58:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 75C736ACBD9
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 19:03:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231182AbjCFR55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 12:57:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51210 "EHLO
+        id S230317AbjCFSDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 13:03:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230504AbjCFR5i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 12:57:38 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D72C5D8B2;
-        Mon,  6 Mar 2023 09:56:52 -0800 (PST)
-Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4PVmQK0NvLz6JB3Z;
-        Tue,  7 Mar 2023 01:53:13 +0800 (CST)
-Received: from [10.123.123.126] (10.123.123.126) by
- lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Mon, 6 Mar 2023 17:55:49 +0000
-Message-ID: <a009dff3-5550-a0e3-aaf3-12001b71b7da@huawei.com>
-Date:   Mon, 6 Mar 2023 20:55:48 +0300
+        with ESMTP id S230462AbjCFSDG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 13:03:06 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 951BC3E607
+        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 10:01:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1678125652;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=I738/18sbvHmC2+417kvwhaipDQYnMqOKuRA/kftVmQ=;
+        b=GompGGBXLtoycqiUp0l5E6JLeyxshuJGixTmrCSCW7KcAIRNWFB07Rk6daYX3a7khsta7z
+        BQm4BI93+AS9kC7PvZ8JiyEQf79e23S85mJV1ZgbWUbB6lW5qpFCoxrIm5Rc0r5XQnw0Gb
+        Ey9tCftozn38KP+Lfg2r4rHjKQ1XSik=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-475-XzkrrADgMkqRDCwwaxwmKQ-1; Mon, 06 Mar 2023 12:57:40 -0500
+X-MC-Unique: XzkrrADgMkqRDCwwaxwmKQ-1
+Received: by mail-wm1-f70.google.com with SMTP id l16-20020a05600c1d1000b003e77552705cso4048066wms.7
+        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 09:57:40 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678125459;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=I738/18sbvHmC2+417kvwhaipDQYnMqOKuRA/kftVmQ=;
+        b=WtgMP2xe/uONRx3YIKfq9fX0x1vDlgOUChDjYbUYWsgRPB5i7N35CO221Fxor5HeA0
+         gIddYIrIMc6LZd0P4zxXkFE8oG+LE0xAxLJ8C0xdyi8CkylVWxUbEMjth0qxdcAC8y+j
+         nsdubyZqsbOMPGrIZJyJJw+xz6vPsw+qCNkwbqydeM4bm3MvRB+ombRm3Npp4Ns6M4W5
+         Wgn95gbGBeAlIofsNCm9vnj/pfqOqrGmZgCyGTnD82WHu3QHFpBiOLKw09iw0/n0FASk
+         AVRHViqNNaSeOc342k9LMPntwdsv1iTL6Ahs7m2z5Iw85woBdC7CDzHgb+QtbnOQScCB
+         I4ng==
+X-Gm-Message-State: AO0yUKWuale9bxL0nYxIEqN5tsshXUWVhTIrulzwWcafcTDR7V3xua7t
+        /dON5fx7SAGzMP9p8m8C98wlePeGnKvMkUTBH0FcGqD6rDexD4hKwzhRXdPIhMGKCWd1BQeOzZz
+        S3Pm35nz+riQsu7Ceq2xYU66h
+X-Received: by 2002:a05:600c:4f53:b0:3ea:dbdd:b59c with SMTP id m19-20020a05600c4f5300b003eadbddb59cmr10192604wmq.15.1678125458894;
+        Mon, 06 Mar 2023 09:57:38 -0800 (PST)
+X-Google-Smtp-Source: AK7set/7vZlQ5uxUx+GGtLM0+if0KbUiPqDYTkq6I2qARMVnh5tT0y/ZRu7nd7JUJRS0jmoNHNwt9Q==
+X-Received: by 2002:a05:600c:4f53:b0:3ea:dbdd:b59c with SMTP id m19-20020a05600c4f5300b003eadbddb59cmr10192578wmq.15.1678125458554;
+        Mon, 06 Mar 2023 09:57:38 -0800 (PST)
+Received: from redhat.com ([2.52.23.160])
+        by smtp.gmail.com with ESMTPSA id l5-20020a05600c16c500b003e20fa01a86sm10602188wmn.13.2023.03.06.09.57.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Mar 2023 09:57:38 -0800 (PST)
+Date:   Mon, 6 Mar 2023 12:57:34 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
+        Yichun Zhang <yichun@openresty.com>
+Subject: Re: [PATCH net 2/2] virtio_net: add checking sq is full inside xdp
+ xmit
+Message-ID: <20230306125344-mutt-send-email-mst@kernel.org>
+References: <20230306041535.73319-1-xuanzhuo@linux.alibaba.com>
+ <20230306041535.73319-3-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v9 12/12] landlock: Document Landlock's network support
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>,
-        =?UTF-8?Q?G=c3=bcnther_Noack?= <gnoack3000@gmail.com>
-CC:     <willemdebruijn.kernel@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
-        <artem.kuzin@huawei.com>
-References: <20230116085818.165539-1-konstantin.meskhidze@huawei.com>
- <20230116085818.165539-13-konstantin.meskhidze@huawei.com>
- <Y8xwLvDbhKPG8JqY@galopp> <eb33371b-551e-ae6c-d7e3-a3101644b7ec@huawei.com>
- <68f26cf2-f382-4d31-c80f-22392a85376f@digikod.net>
- <526a70a2-b0bc-f29a-6558-022ca12a6430@huawei.com>
- <278ab07f-7583-a4e0-3d37-1bacd091531d@digikod.net>
- <85b31cb8-1aeb-d6f0-6c7d-91cea6b563d4@huawei.com>
- <950d64ee-5b17-af81-8b85-dd2b392c7487@digikod.net>
-From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-In-Reply-To: <950d64ee-5b17-af81-8b85-dd2b392c7487@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.123.123.126]
-X-ClientProxiedBy: lhrpeml100005.china.huawei.com (7.191.160.25) To
- lhrpeml500004.china.huawei.com (7.191.163.9)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230306041535.73319-3-xuanzhuo@linux.alibaba.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Mar 06, 2023 at 12:15:35PM +0800, Xuan Zhuo wrote:
+> If the queue of xdp xmit is not an independent queue, then when the xdp
+> xmit used all the desc, the xmit from the __dev_queue_xmit() may encounter
+> the following error.
+> 
+> net ens4: Unexpected TXQ (0) queue failure: -28
+> 
+> This patch adds a check whether sq is full in XDP Xmit.
+> 
+> Reported-by: Yichun Zhang <yichun@openresty.com>
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> ---
+>  drivers/net/virtio_net.c | 25 +++++++++++++++----------
+>  1 file changed, 15 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 777de0ec0b1b..3001b9a548e5 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -302,6 +302,8 @@ struct padded_vnet_hdr {
+>  
+>  static void virtnet_rq_free_unused_buf(struct virtqueue *vq, void *buf);
+>  static void virtnet_sq_free_unused_buf(struct virtqueue *vq, void *buf);
+> +static void check_sq_full(struct virtnet_info *vi, struct net_device *dev,
+> +			  struct send_queue *sq);
+>  
+>  static bool is_xdp_frame(void *ptr)
+>  {
+> @@ -341,6 +343,16 @@ static int rxq2vq(int rxq)
+>  	return rxq * 2;
+>  }
+>  
 
+I'd really rather we ordered functions reasonably so declarations
+are not needed.
 
-3/6/2023 7:09 PM, Mickaël Salaün пишет:
-> 
-> On 06/03/2023 14:43, Konstantin Meskhidze (A) wrote:
->> 
->> 
->> 2/21/2023 7:16 PM, Mickaël Salaün пишет:
->>>
->>> On 30/01/2023 11:03, Konstantin Meskhidze (A) wrote:
->>>>
->>>>
->>>> 1/27/2023 9:22 PM, Mickaël Salaün пишет:
->>>>>
->>>>> On 23/01/2023 10:38, Konstantin Meskhidze (A) wrote:
->>>>>>
->>>>>>
->>>>>> 1/22/2023 2:07 AM, Günther Noack пишет:
->>>>>
->>>>> [...]
->>>>>
->>>>>>>> @@ -143,10 +157,24 @@ for the ruleset creation, by filtering access rights according to the Landlock
->>>>>>>>     ABI version.  In this example, this is not required because all of the requested
->>>>>>>>     ``allowed_access`` rights are already available in ABI 1.
->>>>>>>>     
->>>>>>>> -We now have a ruleset with one rule allowing read access to ``/usr`` while
->>>>>>>> -denying all other handled accesses for the filesystem.  The next step is to
->>>>>>>> -restrict the current thread from gaining more privileges (e.g. thanks to a SUID
->>>>>>>> -binary).
->>>>>>>> +For network access-control, we can add a set of rules that allow to use a port
->>>>>>>> +number for a specific action. All ports values must be defined in network byte
->>>>>>>> +order.
->>>>>>>
->>>>>>> What is the point of asking user space to convert this to network byte
->>>>>>> order? It seems to me that the kernel would be able to convert it to
->>>>>>> network byte order very easily internally and in a single place -- why
->>>>>>> ask all of the users to deal with that complexity? Am I overlooking
->>>>>>> something?
->>>>>>
->>>>>>      I had a discussion about this issue with Mickaёl.
->>>>>>      Please check these threads:
->>>>>>      1.
->>>>>> https://lore.kernel.org/netdev/49391484-7401-e7c7-d909-3bd6bd024731@digikod.net/
->>>>>>      2.
->>>>>> https://lore.kernel.org/netdev/1ed20e34-c252-b849-ab92-78c82901c979@huawei.com/
->>>>>
->>>>> I'm definitely not sure if this is the right solution, or if there is
->>>>> one. The rationale is to make it close to the current (POSIX) API. We
->>>>> didn't get many opinion about that but I'd really like to have a
->>>>> discussion about port endianness for this Landlock API.
->>>>
->>>>      As for me, the kernel should take care about port converting. This
->>>> work should be done under the hood.
->>>>
->>>>      Any thoughts?
->>>>
->>>>>
->>>>> I looked at some code (e.g. see [1]) and it seems that using htons()
->>>>> might make application patching more complex after all. What do you
->>>>> think? Is there some network (syscall) API that don't use this convention?
->>>>>
->>>>> [1] https://github.com/landlock-lsm/tuto-lighttpd
->>>>>
->>>>>>>
->>>>>>>> +
->>>>>>>> +.. code-block:: c
->>>>>>>> +
->>>>>>>> +    struct landlock_net_service_attr net_service = {
->>>>>>>> +        .allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP,
->>>>>>>> +        .port = htons(8080),
->>>>>>>> +    };
->>>>>>>
->>>>>>> This is a more high-level comment:
->>>>>>>
->>>>>>> The notion of a 16-bit "port" seems to be specific to TCP and UDP --
->>>>>>> how do you envision this struct to evolve if other protocols need to
->>>>>>> be supported in the future?
->>>>>>
->>>>>>       When TCP restrictions land into Linux, we need to think about UDP
->>>>>> support. Then other protocols will be on the road. Anyway you are right
->>>>>> this struct will be evolving in long term, but I don't have a particular
->>>>>> envision now. Thanks for the question - we need to think about it.
->>>>>>>
->>>>>>> Should this struct and the associated constants have "TCP" in its
->>>>>>> name, and other protocols use a separate struct in the future?
->>>>>
->>>>> Other protocols such as AF_VSOCK uses a 32-bit port. We could use a
->>>>> 32-bits port field or ever a 64-bit one. The later could make more sense
->>>>> because each field would eventually be aligned on 64-bit. Picking a
->>>>> 16-bit value was to help developers (and compilers/linters) with the
->>>>> "correct" type (for TCP).
->>>
->>> Thinking more about this, let's use a __u64 port (and remove the
->>> explicit packing). The landlock_append_net_rule() function should use a
->>> __u16 port argument, but the add_rule_net_service() function should
->>> check that there is no overflow with the port attribute (not higher than
->>> U16_MAX) before passing it to landlock_append_net_rule(). We should
->>> prioritize flexibility for the kernel UAPI over stricter types. User
->>> space libraries can improve this kind of types with a more complex API.
->>>
->>> Big endian can make sense for a pure network API because the port value
->>> (and the IP address) is passed to other machines through the network,
->>> as-is. However, with Landlock, the port value is only used by the
->>> kernel. Moreover, in practice, port values are mostly converted when
->>> filling the sockaddr*_in structs. It would then make it more risky to
->>> ask developers another explicit htons() conversion for Landlock
->>> syscalls. Let's stick to the host endianess and let the kernel do the
->>> conversion.
->>>
->>> Please include these rationales in code comments. We also need to update
->>> the tests for endianess, but still check big and little endian
->>> consistency as it is currently done in these tests. A new test should be
->>> added to check port boundaries with:
->>> - port = 0
->>> - port = U16_MAX
->>       port = U16_MAX value passes.
-> 
-> correct
-> 
->> 
->>> - port = U16_MAX + 1 (which should get an EINVAL)
->>       port = U16_MAX + 1 after casting is 0, EINVAL is returned.
-> 
-> In the tests, we want the casting to be be done by the kernel. The test
-> should then pass 0x10000 to the struct and the kernel should return
-> EINVAL because it is greater than U16_MAX, not because it is zero.
-> 
->> 
->>> - port = U16_MAX + 2 (to check u16 casting != 0)
->>       port = U16_MAX + 2 after casting is 1, is it passes?
-> 
-> In this case, 0x10001 should be rejected by the kernel (and return
-> EINVAL) because it is greater than U16_MAX.
-> 
->> 
->>> - port = U32_MAX + 1
->>> - port = U32_MAX + 2
->> 
->>       Don't you think that all port values >= U16_MAX + 1, EINVAL should
->>       be returned?
-> 
-> All port values > U16_MAX should indeed return EINVAL, and tests should
-> check kernel casting (i.e. the kernel must check the 64-bit value before
-> casting it to a 16-bit value and only check the casted zero). I didn't
-> mean that these cases should pass, only that they should be tested, but
-> I think you got it. ;)
+> +static bool is_xdp_raw_buffer_queue(struct virtnet_info *vi, int q)
+> +{
+> +	if (q < (vi->curr_queue_pairs - vi->xdp_queue_pairs))
+> +		return false;
+> +	else if (q < vi->curr_queue_pairs)
+> +		return true;
+> +	else
+> +		return false;
+> +}
+> +
+>  static inline struct virtio_net_hdr_mrg_rxbuf *skb_vnet_hdr(struct sk_buff *skb)
+>  {
+>  	return (struct virtio_net_hdr_mrg_rxbuf *)skb->cb;
+> @@ -686,6 +698,9 @@ static int virtnet_xdp_xmit(struct net_device *dev,
+>  	}
+>  	ret = nxmit;
+>  
+> +	if (!is_xdp_raw_buffer_queue(vi, sq - vi->sq))
+> +		check_sq_full(vi, dev, sq);
+> +
+>  	if (flags & XDP_XMIT_FLUSH) {
+>  		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq))
+>  			kicks = 1;
+> @@ -1784,16 +1799,6 @@ static void check_sq_full(struct virtnet_info *vi, struct net_device *dev,
+>  	}
+>  }
+>  
+> -static bool is_xdp_raw_buffer_queue(struct virtnet_info *vi, int q)
+> -{
+> -	if (q < (vi->curr_queue_pairs - vi->xdp_queue_pairs))
+> -		return false;
+> -	else if (q < vi->curr_queue_pairs)
+> -		return true;
+> -	else
+> -		return false;
+> -}
+> -
+>  static void virtnet_poll_cleantx(struct receive_queue *rq)
+>  {
+>  	struct virtnet_info *vi = rq->vq->vdev->priv;
+> -- 
+> 2.32.0.3.g01195cf9f
 
-   Yep. I got the point. Thanks.
-> 
->>>
->>>
->>>>>
->>>>> If we think about protocols other than TCP and UDP (e.g. AF_VSOCK), it
->>>>> could make sense to have a dedicated attr struct specifying other
->>>>> properties (e.g. CID). Anyway, the API is flexible but it would be nice
->>>>> to not mess with it too much. What do you think?
->>>>>
->>>>>
->>>>>>>
->>>>>>>> +
->>>>>>>> +    err = landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
->>>>>>>> +                            &net_service, 0);
->>>>>>>> +
->>>>>>>> +The next step is to restrict the current thread from gaining more privileges
->>>>>>>> +(e.g. thanks to a SUID binary). We now have a ruleset with the first rule allowing
->>>>>>>              ^^^^^^
->>>>>>>              "through" a SUID binary? "thanks to" sounds like it's desired
->>>>>>>              to do that, while we're actually trying to prevent it here?
->>>>>>
->>>>>>       This is Mickaёl's part. Let's ask his opinion here.
->>>>>>
->>>>>>       Mickaёl, any thoughts?
->>>>>
->>>>> Yep, "through" looks better.
->>>>> .
->>> .
-> .
