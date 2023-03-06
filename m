@@ -2,99 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B62196AD146
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 23:16:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACEC26AD17E
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 23:27:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229985AbjCFWQO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 17:16:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42338 "EHLO
+        id S229784AbjCFW1y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 17:27:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229646AbjCFWQN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 17:16:13 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 695B73E62B;
-        Mon,  6 Mar 2023 14:16:12 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id c18so6631960wmr.3;
-        Mon, 06 Mar 2023 14:16:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678140971;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=/np7LTt0kPylI77w/zYzftVt9xv6o8UgeSBcijuygZ8=;
-        b=OyY0qjlxGPI9MrjPz/G8v0QASAzgt1AATjxNJldMeDn5F+EIcmiWPVY+C53jA2X6Wa
-         Mtf6jSV6rXP96ZrE9Lo4AT6AUO2E062uK/coUcMtuKYscSmdrfXPW6HMD4jxK7AWoyDQ
-         cy4HjKazG4lcTrM1ecljphlDxla7TxUZpcOAIK/d4zBvt95mLc3OvkzBYdtpSW4QvFhr
-         j5b6deICww2IHf6rOzROfnBeH48MId3e072VH00XcLP3MkFllrMdsNZe/+B+oKGv5cvX
-         0L+M3MtJdfS3BoRFiNFLnYI4Bd/5GmF7UwLCQq8fq9c/oNXGvC3G+4sHPtVtSTtp92kz
-         SnXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678140971;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/np7LTt0kPylI77w/zYzftVt9xv6o8UgeSBcijuygZ8=;
-        b=gAGHV9/6kPijni/CiJ53POJUg6o91P2xyyYszwdY2xkG+sdNE/61ojMkpfTN+Uop/Z
-         OqpXj5FyG9zrpmiiwakZ1a7tyZiK/kOfz7WKHLe/rw1wNkReMCiRpD7yOeBQLVwZ20iI
-         t2/83hpmMVzRu06lIldLgDe7IRMjiWDTNvKQ6iGD3xuhLgO+nAzSliypwRF+CtF4DMCP
-         NUeERRrAKMXXCV0uF//jOzbk2bbhS2/OWXZL1l4IGoES0WyylGiYOy/HYrWDDRISosoo
-         DPE1T70rwhBIHUTzNYaCYHxI4s+PBXTnT+K/RtqfD4AiVsKFtydhd7ECt0kcjMiikCAP
-         xbQw==
-X-Gm-Message-State: AO0yUKXc9JKLFOsMq2rsdnWDEGVnZ0n+EfD2x3jwD+y6MM7ZDao7fqfb
-        JQCojqjCtPqK269VIjnv0co=
-X-Google-Smtp-Source: AK7set8me7kyk7DK81kOYPo/vCehL750oq9qIGwsvDqa4DCiaennXbMy4+03nGVf0UcUBtJN3w0sog==
-X-Received: by 2002:a05:600c:444c:b0:3eb:39e2:915b with SMTP id v12-20020a05600c444c00b003eb39e2915bmr10513783wmn.31.1678140970738;
-        Mon, 06 Mar 2023 14:16:10 -0800 (PST)
-Received: from ?IPV6:2a01:c22:7bf4:7d00:9590:4142:18ea:aa32? (dynamic-2a01-0c22-7bf4-7d00-9590-4142-18ea-aa32.c22.pool.telefonica.de. [2a01:c22:7bf4:7d00:9590:4142:18ea:aa32])
-        by smtp.googlemail.com with ESMTPSA id m23-20020a05600c3b1700b003daf6e3bc2fsm40143wms.1.2023.03.06.14.16.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Mar 2023 14:16:10 -0800 (PST)
-Message-ID: <d5b3d530-e050-1891-e5c0-8c98e136b744@gmail.com>
-Date:   Mon, 6 Mar 2023 23:16:09 +0100
+        with ESMTP id S229516AbjCFW1x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 17:27:53 -0500
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CE456512F;
+        Mon,  6 Mar 2023 14:27:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
+        bh=BGzXDnZx8+mCiNisS7Atnv9YnItWYP7gOAI+eGw+fp4=; b=LHJUnwT4DDHLVtqbSLfhcjfqAd
+        h1Sb2hRVLRJwRKL7UvggVIR73cnirt6/P1g3KkiRuCZlYtPTE1FQu8QUIOQy0LZIr9qiSYDsZ3cmv
+        LNhRjvV3eutlrr+jfJg31K3q6RzcjzX7BrU2p0VQfU1SGNpZ1pSf8Kt+hwOFtezn3xdc66k7q7Vj6
+        TnNC/Uo6yUOdJpJfLnE6seHsTWzdtprcOtSjMphW5H5ytXyDud5MeIXg4LUqgfkR6QtMsReejHrtz
+        DZW0jGR1EOicCRONfb6Wi+9hz1iRgpA6JirmrqMHOZ+3PRRh3Oh2eSLZ4v0mRgtaOcJcbaWkG/3FD
+        dl2mjKKg==;
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1pZJIz-000C1l-PO; Mon, 06 Mar 2023 23:27:41 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1pZJIz-000Mas-Dp; Mon, 06 Mar 2023 23:27:41 +0100
+Subject: Re: [PATCH bpf v6] bpf, test_run: fix &xdp_frame misplacement for
+ LIVE_FRAMES
+To:     Alexander Lobakin <aleksander.lobakin@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>
+Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Song Liu <song@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20230224163607.2994755-1-aleksander.lobakin@intel.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <d0c5d435-2e56-f5af-8153-c3a7240f634f@iogearbox.net>
+Date:   Mon, 6 Mar 2023 23:27:39 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: linux-next: Signed-off-by missing for commit in the net tree
+In-Reply-To: <20230224163607.2994755-1-aleksander.lobakin@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        David Miller <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-References: <20230307083703.558634a9@canb.auug.org.au>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-In-Reply-To: <20230307083703.558634a9@canb.auug.org.au>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.8/26833/Mon Mar  6 09:22:59 2023)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06.03.2023 22:37, Stephen Rothwell wrote:
-> Hi all,
+On 2/24/23 5:36 PM, Alexander Lobakin wrote:
+> &xdp_buff and &xdp_frame are bound in a way that
 > 
-> Commit
+> xdp_buff->data_hard_start == xdp_frame
 > 
->   58aac3a2ef41 ("net: phy: smsc: fix link up detection in forced irq mode")
-> 
-> is missing a Signed-off-by from its committer.
-> 
+> It's always the case and e.g. xdp_convert_buff_to_frame() relies on
+> this.
+[...]
 
-Seems to be ok, false positive?
-
-net: phy: smsc: fix link up detection in forced irq mode
-Currently link up can't be detected in forced mode if polling
-isn't used. Only link up interrupt source we have is aneg
-complete which isn't applicable in forced mode. Therefore we
-have to use energy-on as link up indicator.
-
-Fixes: 7365494550f6 ("net: phy: smsc: skip ENERGYON interrupt if disabled")
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+The patch got applied to bpf, thanks!
