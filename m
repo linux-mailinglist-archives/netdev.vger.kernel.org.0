@@ -2,180 +2,382 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EB566ACC39
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 19:15:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D98216ACC4E
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 19:19:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230026AbjCFSPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 13:15:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55934 "EHLO
+        id S229872AbjCFSTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 13:19:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231166AbjCFSOp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 13:14:45 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2636618A2;
-        Mon,  6 Mar 2023 10:14:09 -0800 (PST)
-Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4PVmsF0n1dz6J7MV;
-        Tue,  7 Mar 2023 02:13:05 +0800 (CST)
-Received: from [10.123.123.126] (10.123.123.126) by
- lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Mon, 6 Mar 2023 18:13:30 +0000
-Message-ID: <562fbb68-936c-ca1d-ef4c-b94610a65ef9@huawei.com>
-Date:   Mon, 6 Mar 2023 21:13:29 +0300
+        with ESMTP id S229486AbjCFSTb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 13:19:31 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C95F0457CB
+        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 10:19:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678126744; x=1709662744;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=v3Djklsyht7uJKBw6Zfk65UNwZ0LJrKevoeIRjYoG+A=;
+  b=J4ceM678wjHWxs6wHghkRW5CbnPIEbO5N16HCwSaZX8TJE/jaEQGVZpF
+   /JFZWC8XR6rjr/OXPLje146LJyY9wWcAtsvnUrBOerCuwjOPCIqqS4k2+
+   V6qX9fAaC1toGuyGYhKQjSf1rJ/l3aMY3yo/sdP+jIWlHbZdFJZPK/im1
+   ELskxVTt5Bj8XYQix1gELBkhLw2sFgjGNwZCsWi2NX2HkEOhTFdUkyatt
+   89roEVoplMiC99gKi1a3i9yI5UWolXLkZUiAZaEeJijGDRTCu5BOgPMkD
+   PTnE5EAd+0KYoH9Z0ER2opAoVjqUBRwAGDxtexEd5fhaxR8yW+p8b3O5n
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="337958270"
+X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
+   d="scan'208";a="337958270"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 10:18:32 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="626244963"
+X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
+   d="scan'208";a="626244963"
+Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 06 Mar 2023 10:18:30 -0800
+Received: from kbuild by b613635ddfff with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pZFPp-0000Wd-0W;
+        Mon, 06 Mar 2023 18:18:29 +0000
+Date:   Tue, 7 Mar 2023 02:17:32 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Vadim Fedorenko <vadfed@meta.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     oe-kbuild-all@lists.linux.dev, Vadim Fedorenko <vadfed@meta.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        netdev@vger.kernel.org
+Subject: Re: [net-next] ptp_ocp: add force_irq to xilinx_spi configuration
+Message-ID: <202303070211.1hVqbsqg-lkp@intel.com>
+References: <20230306155726.4035925-1-vadfed@meta.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v9 10/12] selftests/landlock: Add 10 new test suites
- dedicated to network
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
-        <artem.kuzin@huawei.com>
-References: <20230116085818.165539-1-konstantin.meskhidze@huawei.com>
- <20230116085818.165539-11-konstantin.meskhidze@huawei.com>
- <fa306757-2040-415b-99a7-ba40c100638a@digikod.net>
- <b324a6bc-0b0f-c299-72b9-903eede187e8@huawei.com>
- <0efdc745-2365-a8c2-43cb-ef3608586481@digikod.net>
-From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-In-Reply-To: <0efdc745-2365-a8c2-43cb-ef3608586481@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.123.123.126]
-X-ClientProxiedBy: lhrpeml100006.china.huawei.com (7.191.160.224) To
- lhrpeml500004.china.huawei.com (7.191.163.9)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230306155726.4035925-1-vadfed@meta.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Vadim,
+
+I love your patch! Perhaps something to improve:
+
+[auto build test WARNING on net-next/master]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Vadim-Fedorenko/ptp_ocp-add-force_irq-to-xilinx_spi-configuration/20230306-235901
+patch link:    https://lore.kernel.org/r/20230306155726.4035925-1-vadfed%40meta.com
+patch subject: [net-next] ptp_ocp: add force_irq to xilinx_spi configuration
+config: ia64-allyesconfig (https://download.01.org/0day-ci/archive/20230307/202303070211.1hVqbsqg-lkp@intel.com/config)
+compiler: ia64-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/a30de1354a643bbb9f8e8174332d00d78e74c520
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Vadim-Fedorenko/ptp_ocp-add-force_irq-to-xilinx_spi-configuration/20230306-235901
+        git checkout a30de1354a643bbb9f8e8174332d00d78e74c520
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=ia64 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202303070211.1hVqbsqg-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+   drivers/ptp/ptp_ocp.c:665:34: error: 'struct xspi_platform_data' has no member named 'force_irq'
+     665 |                                 .force_irq = true,
+         |                                  ^~~~~~~~~
+>> drivers/ptp/ptp_ocp.c:665:46: warning: excess elements in struct initializer
+     665 |                                 .force_irq = true,
+         |                                              ^~~~
+   drivers/ptp/ptp_ocp.c:665:46: note: (near initialization for '(anonymous)')
 
 
-3/6/2023 7:00 PM, Mickaël Salaün пишет:
-> 
-> On 06/03/2023 13:03, Konstantin Meskhidze (A) wrote:
->> 
->> 
->> 2/21/2023 9:05 PM, Mickaël Salaün пишет:
->>>
->>> On 16/01/2023 09:58, Konstantin Meskhidze wrote:
->>>> These test suites try to check edge cases for TCP sockets
->>>> bind() and connect() actions.
->>>>
->>>> socket:
->>>> * bind: Tests with non-landlocked/landlocked ipv4 and ipv6 sockets.
->>>> * connect: Tests with non-landlocked/landlocked ipv4 and ipv6 sockets.
->>>> * bind_afunspec: Tests with non-landlocked/landlocked restrictions
->>>> for bind action with AF_UNSPEC socket family.
->>>> * connect_afunspec: Tests with non-landlocked/landlocked restrictions
->>>> for connect action with AF_UNSPEC socket family.
->>>> * ruleset_overlap: Tests with overlapping rules for one port.
->>>> * ruleset_expanding: Tests with expanding rulesets in which rules are
->>>> gradually added one by one, restricting sockets' connections.
->>>> * inval: Tests with invalid user space supplied data:
->>>>       - out of range ruleset attribute;
->>>>       - unhandled allowed access;
->>>>       - zero port value;
->>>>       - zero access value;
->>>>       - legitimate access values;
->>>> * bind_connect_inval_addrlen: Tests with invalid address length
->>>> for ipv4/ipv6 sockets.
->>>> * inval_port_format: Tests with wrong port format for ipv4/ipv6 sockets.
->>>>
->>>> layout1:
->>>> * with_net: Tests with network bind() socket action within
->>>> filesystem directory access test.
->>>>
->>>> Test coverage for security/landlock is 94.1% of 946 lines according
->>>> to gcc/gcov-11.
->>>>
->>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
->>>> ---
->>>>
->>>> Changes since v8:
->>>> * Adds is_sandboxed const for FIXTURE_VARIANT(socket).
->>>> * Refactors AF_UNSPEC tests.
->>>> * Adds address length checking tests.
->>>> * Convert ports in all tests to __be16.
->>>> * Adds invalid port values tests.
->>>> * Minor fixes.
->>>>
->>>> Changes since v7:
->>>> * Squashes all selftest commits.
->>>> * Adds fs test with network bind() socket action.
->>>> * Minor fixes.
->>>>
->>>> ---
->>>>    tools/testing/selftests/landlock/config     |    4 +
->>>>    tools/testing/selftests/landlock/fs_test.c  |   65 ++
->>>>    tools/testing/selftests/landlock/net_test.c | 1157 +++++++++++++++++++
->>>>    3 files changed, 1226 insertions(+)
->>>>    create mode 100644 tools/testing/selftests/landlock/net_test.c
->>>>
->>>> diff --git a/tools/testing/selftests/landlock/config b/tools/testing/selftests/landlock/config
->>>> index 0f0a65287bac..71f7e9a8a64c 100644
->>>> --- a/tools/testing/selftests/landlock/config
->>>> +++ b/tools/testing/selftests/landlock/config
-> 
-> [...]
-> 
->>>> +static int bind_variant(const struct _fixture_variant_socket *const variant,
->>>> +			const int sockfd,
->>>> +			const struct _test_data_socket *const self,
->>>> +			const size_t index, const bool zero_size)
->>>> +
->>>
->>> Extra new line.
->> 
->>    Will be deleted. Thanks. >>
->>>> +{
->>>> +	if (variant->is_ipv4)
->>>> +		return bind(sockfd, &self->addr4[index],
->>>> +			    (zero_size ? 0 : sizeof(self->addr4[index])));
->>>
->>> Is the zero_size really useful? Do calling bind and connect with this
->>> argument reaches the Landlock code (check_addrlen) or is it caught by
->>> the network code beforehand?
->> 
->>     In __sys_bind() syscall security_socket_bind() function goes before
->>     sock->ops->bind() method. Selinux and Smacks provide such checks in
->>     bind()/connect() hooks, so I think Landlock should do the same.
->>     What do you think?
-> 
-> Yes, we should keep these checks. However, we should have a
-> bind_variant() without the zero_size argument because it is only set to
-> true once (in bind_connect_inval_addrlen). You can explicitly call
-> bind() with a zero size in bind_connect_inval_addrlen().
-> 
-> Same for connect_variant().
+vim +665 drivers/ptp/ptp_ocp.c
 
-  Ok. Will be fixed.
-> 
-> 
->>>
->>>
->>>> +	else
->>>> +		return bind(sockfd, &self->addr6[index],
->>>> +			    (zero_size ? 0 : sizeof(self->addr6[index])));
->>>> +}
->>>> +
->>>> +static int connect_variant(const struct _fixture_variant_socket *const variant,
->>>> +			   const int sockfd,
->>>> +			   const struct _test_data_socket *const self,
->>>> +			   const size_t index, const bool zero_size)
->>>> +{
->>>> +	if (variant->is_ipv4)
->>>> +		return connect(sockfd, &self->addr4[index],
->>>> +			       (zero_size ? 0 : sizeof(self->addr4[index])));
->>>> +	else
->>>> +		return connect(sockfd, &self->addr6[index],
->>>> +			       (zero_size ? 0 : sizeof(self->addr6[index])));
->>>> +}
-> .
+   423	
+   424	#define OCP_RES_LOCATION(member) \
+   425		.name = #member, .bp_offset = offsetof(struct ptp_ocp, member)
+   426	
+   427	#define OCP_MEM_RESOURCE(member) \
+   428		OCP_RES_LOCATION(member), .setup = ptp_ocp_register_mem
+   429	
+   430	#define OCP_SERIAL_RESOURCE(member) \
+   431		OCP_RES_LOCATION(member), .setup = ptp_ocp_register_serial
+   432	
+   433	#define OCP_I2C_RESOURCE(member) \
+   434		OCP_RES_LOCATION(member), .setup = ptp_ocp_register_i2c
+   435	
+   436	#define OCP_SPI_RESOURCE(member) \
+   437		OCP_RES_LOCATION(member), .setup = ptp_ocp_register_spi
+   438	
+   439	#define OCP_EXT_RESOURCE(member) \
+   440		OCP_RES_LOCATION(member), .setup = ptp_ocp_register_ext
+   441	
+   442	/* This is the MSI vector mapping used.
+   443	 * 0: PPS (TS5)
+   444	 * 1: TS0
+   445	 * 2: TS1
+   446	 * 3: GNSS1
+   447	 * 4: GNSS2
+   448	 * 5: MAC
+   449	 * 6: TS2
+   450	 * 7: I2C controller
+   451	 * 8: HWICAP (notused)
+   452	 * 9: SPI Flash
+   453	 * 10: NMEA
+   454	 * 11: Signal Generator 1
+   455	 * 12: Signal Generator 2
+   456	 * 13: Signal Generator 3
+   457	 * 14: Signal Generator 4
+   458	 * 15: TS3
+   459	 * 16: TS4
+   460	 --
+   461	 * 8: Orolia TS1
+   462	 * 10: Orolia TS2
+   463	 * 11: Orolia TS0 (GNSS)
+   464	 * 12: Orolia PPS
+   465	 * 14: Orolia TS3
+   466	 * 15: Orolia TS4
+   467	 */
+   468	
+   469	static struct ocp_resource ocp_fb_resource[] = {
+   470		{
+   471			OCP_MEM_RESOURCE(reg),
+   472			.offset = 0x01000000, .size = 0x10000,
+   473		},
+   474		{
+   475			OCP_EXT_RESOURCE(ts0),
+   476			.offset = 0x01010000, .size = 0x10000, .irq_vec = 1,
+   477			.extra = &(struct ptp_ocp_ext_info) {
+   478				.index = 0,
+   479				.irq_fcn = ptp_ocp_ts_irq,
+   480				.enable = ptp_ocp_ts_enable,
+   481			},
+   482		},
+   483		{
+   484			OCP_EXT_RESOURCE(ts1),
+   485			.offset = 0x01020000, .size = 0x10000, .irq_vec = 2,
+   486			.extra = &(struct ptp_ocp_ext_info) {
+   487				.index = 1,
+   488				.irq_fcn = ptp_ocp_ts_irq,
+   489				.enable = ptp_ocp_ts_enable,
+   490			},
+   491		},
+   492		{
+   493			OCP_EXT_RESOURCE(ts2),
+   494			.offset = 0x01060000, .size = 0x10000, .irq_vec = 6,
+   495			.extra = &(struct ptp_ocp_ext_info) {
+   496				.index = 2,
+   497				.irq_fcn = ptp_ocp_ts_irq,
+   498				.enable = ptp_ocp_ts_enable,
+   499			},
+   500		},
+   501		{
+   502			OCP_EXT_RESOURCE(ts3),
+   503			.offset = 0x01110000, .size = 0x10000, .irq_vec = 15,
+   504			.extra = &(struct ptp_ocp_ext_info) {
+   505				.index = 3,
+   506				.irq_fcn = ptp_ocp_ts_irq,
+   507				.enable = ptp_ocp_ts_enable,
+   508			},
+   509		},
+   510		{
+   511			OCP_EXT_RESOURCE(ts4),
+   512			.offset = 0x01120000, .size = 0x10000, .irq_vec = 16,
+   513			.extra = &(struct ptp_ocp_ext_info) {
+   514				.index = 4,
+   515				.irq_fcn = ptp_ocp_ts_irq,
+   516				.enable = ptp_ocp_ts_enable,
+   517			},
+   518		},
+   519		/* Timestamp for PHC and/or PPS generator */
+   520		{
+   521			OCP_EXT_RESOURCE(pps),
+   522			.offset = 0x010C0000, .size = 0x10000, .irq_vec = 0,
+   523			.extra = &(struct ptp_ocp_ext_info) {
+   524				.index = 5,
+   525				.irq_fcn = ptp_ocp_ts_irq,
+   526				.enable = ptp_ocp_ts_enable,
+   527			},
+   528		},
+   529		{
+   530			OCP_EXT_RESOURCE(signal_out[0]),
+   531			.offset = 0x010D0000, .size = 0x10000, .irq_vec = 11,
+   532			.extra = &(struct ptp_ocp_ext_info) {
+   533				.index = 1,
+   534				.irq_fcn = ptp_ocp_signal_irq,
+   535				.enable = ptp_ocp_signal_enable,
+   536			},
+   537		},
+   538		{
+   539			OCP_EXT_RESOURCE(signal_out[1]),
+   540			.offset = 0x010E0000, .size = 0x10000, .irq_vec = 12,
+   541			.extra = &(struct ptp_ocp_ext_info) {
+   542				.index = 2,
+   543				.irq_fcn = ptp_ocp_signal_irq,
+   544				.enable = ptp_ocp_signal_enable,
+   545			},
+   546		},
+   547		{
+   548			OCP_EXT_RESOURCE(signal_out[2]),
+   549			.offset = 0x010F0000, .size = 0x10000, .irq_vec = 13,
+   550			.extra = &(struct ptp_ocp_ext_info) {
+   551				.index = 3,
+   552				.irq_fcn = ptp_ocp_signal_irq,
+   553				.enable = ptp_ocp_signal_enable,
+   554			},
+   555		},
+   556		{
+   557			OCP_EXT_RESOURCE(signal_out[3]),
+   558			.offset = 0x01100000, .size = 0x10000, .irq_vec = 14,
+   559			.extra = &(struct ptp_ocp_ext_info) {
+   560				.index = 4,
+   561				.irq_fcn = ptp_ocp_signal_irq,
+   562				.enable = ptp_ocp_signal_enable,
+   563			},
+   564		},
+   565		{
+   566			OCP_MEM_RESOURCE(pps_to_ext),
+   567			.offset = 0x01030000, .size = 0x10000,
+   568		},
+   569		{
+   570			OCP_MEM_RESOURCE(pps_to_clk),
+   571			.offset = 0x01040000, .size = 0x10000,
+   572		},
+   573		{
+   574			OCP_MEM_RESOURCE(tod),
+   575			.offset = 0x01050000, .size = 0x10000,
+   576		},
+   577		{
+   578			OCP_MEM_RESOURCE(irig_in),
+   579			.offset = 0x01070000, .size = 0x10000,
+   580		},
+   581		{
+   582			OCP_MEM_RESOURCE(irig_out),
+   583			.offset = 0x01080000, .size = 0x10000,
+   584		},
+   585		{
+   586			OCP_MEM_RESOURCE(dcf_in),
+   587			.offset = 0x01090000, .size = 0x10000,
+   588		},
+   589		{
+   590			OCP_MEM_RESOURCE(dcf_out),
+   591			.offset = 0x010A0000, .size = 0x10000,
+   592		},
+   593		{
+   594			OCP_MEM_RESOURCE(nmea_out),
+   595			.offset = 0x010B0000, .size = 0x10000,
+   596		},
+   597		{
+   598			OCP_MEM_RESOURCE(image),
+   599			.offset = 0x00020000, .size = 0x1000,
+   600		},
+   601		{
+   602			OCP_MEM_RESOURCE(pps_select),
+   603			.offset = 0x00130000, .size = 0x1000,
+   604		},
+   605		{
+   606			OCP_MEM_RESOURCE(sma_map1),
+   607			.offset = 0x00140000, .size = 0x1000,
+   608		},
+   609		{
+   610			OCP_MEM_RESOURCE(sma_map2),
+   611			.offset = 0x00220000, .size = 0x1000,
+   612		},
+   613		{
+   614			OCP_I2C_RESOURCE(i2c_ctrl),
+   615			.offset = 0x00150000, .size = 0x10000, .irq_vec = 7,
+   616			.extra = &(struct ptp_ocp_i2c_info) {
+   617				.name = "xiic-i2c",
+   618				.fixed_rate = 50000000,
+   619				.data_size = sizeof(struct xiic_i2c_platform_data),
+   620				.data = &(struct xiic_i2c_platform_data) {
+   621					.num_devices = 2,
+   622					.devices = (struct i2c_board_info[]) {
+   623						{ I2C_BOARD_INFO("24c02", 0x50) },
+   624						{ I2C_BOARD_INFO("24mac402", 0x58),
+   625						  .platform_data = "mac" },
+   626					},
+   627				},
+   628			},
+   629		},
+   630		{
+   631			OCP_SERIAL_RESOURCE(gnss_port),
+   632			.offset = 0x00160000 + 0x1000, .irq_vec = 3,
+   633			.extra = &(struct ptp_ocp_serial_port) {
+   634				.baud = 115200,
+   635			},
+   636		},
+   637		{
+   638			OCP_SERIAL_RESOURCE(gnss2_port),
+   639			.offset = 0x00170000 + 0x1000, .irq_vec = 4,
+   640			.extra = &(struct ptp_ocp_serial_port) {
+   641				.baud = 115200,
+   642			},
+   643		},
+   644		{
+   645			OCP_SERIAL_RESOURCE(mac_port),
+   646			.offset = 0x00180000 + 0x1000, .irq_vec = 5,
+   647			.extra = &(struct ptp_ocp_serial_port) {
+   648				.baud = 57600,
+   649			},
+   650		},
+   651		{
+   652			OCP_SERIAL_RESOURCE(nmea_port),
+   653			.offset = 0x00190000 + 0x1000, .irq_vec = 10,
+   654		},
+   655		{
+   656			OCP_SPI_RESOURCE(spi_flash),
+   657			.offset = 0x00310000, .size = 0x10000, .irq_vec = 9,
+   658			.extra = &(struct ptp_ocp_flash_info) {
+   659				.name = "xilinx_spi", .pci_offset = 0,
+   660				.data_size = sizeof(struct xspi_platform_data),
+   661				.data = &(struct xspi_platform_data) {
+   662					.num_chipselect = 1,
+   663					.bits_per_word = 8,
+   664					.num_devices = 1,
+ > 665					.force_irq = true,
+   666					.devices = &(struct spi_board_info) {
+   667						.modalias = "spi-nor",
+   668					},
+   669				},
+   670			},
+   671		},
+   672		{
+   673			OCP_MEM_RESOURCE(freq_in[0]),
+   674			.offset = 0x01200000, .size = 0x10000,
+   675		},
+   676		{
+   677			OCP_MEM_RESOURCE(freq_in[1]),
+   678			.offset = 0x01210000, .size = 0x10000,
+   679		},
+   680		{
+   681			OCP_MEM_RESOURCE(freq_in[2]),
+   682			.offset = 0x01220000, .size = 0x10000,
+   683		},
+   684		{
+   685			OCP_MEM_RESOURCE(freq_in[3]),
+   686			.offset = 0x01230000, .size = 0x10000,
+   687		},
+   688		{
+   689			.setup = ptp_ocp_fb_board_init,
+   690		},
+   691		{ }
+   692	};
+   693	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
