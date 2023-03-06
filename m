@@ -2,355 +2,239 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 657FB6AB748
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 08:52:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B85E86AB7F9
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 09:10:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229696AbjCFHwo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 02:52:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50614 "EHLO
+        id S229649AbjCFIKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 03:10:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbjCFHwn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 02:52:43 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C3A81F483;
-        Sun,  5 Mar 2023 23:52:41 -0800 (PST)
-Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4PVW2M0V5cz682sK;
-        Mon,  6 Mar 2023 15:50:03 +0800 (CST)
-Received: from [10.123.123.126] (10.123.123.126) by
- lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Mon, 6 Mar 2023 07:52:38 +0000
-Message-ID: <25ffc506-82cc-848c-6288-ae3955220edb@huawei.com>
-Date:   Mon, 6 Mar 2023 10:52:37 +0300
+        with ESMTP id S229490AbjCFIKB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 03:10:01 -0500
+Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-db5eur01on2042.outbound.protection.outlook.com [40.107.15.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7582A25F;
+        Mon,  6 Mar 2023 00:09:59 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TkIA53hzJ7eHVrGEQRStZFPc8i2CZn2pYMeqsHMOYDEY2hMMUawVO0z905gMv8cx0223BJhFQ1BcBR1Xs8AoQ/11+m77KfeqymXgFxTKOmt1X/Z7Doza6ZtxtL/MP8q9D7MLcOrGXN+LKrbhP2ReLz2DaOPr7rl5tuoiLEEEa3nuryaXt9FCq2umDO1SvPCgFrR1uKDAw4W/px+KDHr0nIwfc/7yXqx+9ADAZVivT0x51wCOmn08YxHAw+IKGgn9IXAUJIH0kQvocNwIWQDb38rvwACG3vuO1wCP18VglhwsfMFLlEfrOe8vbg0UX9G8znqzQIhPcLY+7Y7hkJA3xQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=LpvY5CPAJ9QNxlCuuuNJSNU+SRRxeNu/Vr3bmE46oUA=;
+ b=CB6soEVLuy2IwqroaqgDyyV8dXUqXIttwbXgc6JPlNyWHwpw5FWsS2fkClEHURfPGCqvTzNgf9mFWZigE0sBPkEN/3EJzuqaeRBIlQ5gHc17KWDZRUgQsz52ZX2V+ixmFze1SbqGz+6C5GCkPCrzvl6W6KwngAxhrGsbLJJBxxlt9Ux4KlL0L0CbMvEzVjGMglkONVm/WQRVkYXWckTHW8iw1LsdgRNwDwvLPFg735Pw5gKshoGW8WgCle2Yana0ZIM3ttkU8y3BcO507Yk06nSj46Xy4XCBLKh/yFKxbN+WcA02mGgGnCqS5gvh9P0WaSZ1QzFdvRoRBcnKbGQoqg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LpvY5CPAJ9QNxlCuuuNJSNU+SRRxeNu/Vr3bmE46oUA=;
+ b=JIdrGUL0a9QzswoXsvTm87eKphG/KvqiMrVxpbwY/ILA6enwQkk1EGnXCxFRcdwJjvmOKlOhXcsa77iM0rLuH6tCZDUJuxi04oX11qyPFgFDABt/P4boIey+rFArpSd23XQ6LGSWYk4y8bUeCSCEBVXCzBV7CeCzxUthChESdQ8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from GV1PR04MB9055.eurprd04.prod.outlook.com (2603:10a6:150:1e::22)
+ by VI1PR04MB7120.eurprd04.prod.outlook.com (2603:10a6:800:124::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.28; Mon, 6 Mar
+ 2023 08:09:56 +0000
+Received: from GV1PR04MB9055.eurprd04.prod.outlook.com
+ ([fe80::9c6d:d40c:fbe5:58bd]) by GV1PR04MB9055.eurprd04.prod.outlook.com
+ ([fe80::9c6d:d40c:fbe5:58bd%9]) with mapi id 15.20.6156.028; Mon, 6 Mar 2023
+ 08:09:56 +0000
+Date:   Mon, 6 Mar 2023 10:09:53 +0200
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net v2] net: dpaa2-mac: Get serdes only for backplane
+ links
+Message-ID: <20230306080953.3wbprojol4gs5bel@LXL00007.wbi.nxp.com>
+References: <20230304003159.1389573-1-sean.anderson@seco.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230304003159.1389573-1-sean.anderson@seco.com>
+X-ClientProxiedBy: VI1PR08CA0165.eurprd08.prod.outlook.com
+ (2603:10a6:800:d1::19) To GV1PR04MB9055.eurprd04.prod.outlook.com
+ (2603:10a6:150:1e::22)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v9 06/12] landlock: Refactor _unmask_layers() and
- _init_layer_masks()
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
-        <artem.kuzin@huawei.com>
-References: <20230116085818.165539-1-konstantin.meskhidze@huawei.com>
- <20230116085818.165539-7-konstantin.meskhidze@huawei.com>
- <3e9ef23b-c599-6ba1-1d18-a615f53b6e7b@digikod.net>
-From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-In-Reply-To: <3e9ef23b-c599-6ba1-1d18-a615f53b6e7b@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.123.123.126]
-X-ClientProxiedBy: lhrpeml500003.china.huawei.com (7.191.162.67) To
- lhrpeml500004.china.huawei.com (7.191.163.9)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: GV1PR04MB9055:EE_|VI1PR04MB7120:EE_
+X-MS-Office365-Filtering-Correlation-Id: bcafd2e2-42dc-490d-6b7e-08db1e1a2c53
+X-LD-Processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: wWUcI2VD6wLyfkeqR8g16GT6MJOjv3AvNmQVCBUBg1AFi5G6A1joT4Em611dhGVwy3ihg4k1e53aSFs2OU1Cr3u9DK/dySsCVS0y++IWe0G7RgY7m8/fdp/0hOCeXefReIstB3aKGji1zZAcDWbRNIf8LKOLVhtmbY4mdkeOAj7zujp1QdLqcVwMeOLq0SXZO7mXs5sKIbeRZ9ybXUCZqLLEGDCPOQ0+MOEOJKNyPG+/rxaI0L9eSJ2FrSMqmVt7jchozplhPPGVhVobfW7TpgKlxJrQy5wg/Q+lROaTOdG8pjkTmd1LEgqAeIt7H01OHZ3hTDuF8ZIyilQwPM2RYW7HtC8JVQwMS6GO4iHxRUCq8TMEICiSL4MWbwozIFBGiYV+h/uxf8Sktwfm9SJNhSMoxMtvHF3IA0NzlqpAnEZEfRsyQD+Sfnq4ZQUB05jwKOluG3iIbMZWf1nXSsi0sYzcHydVGLZ9uDpgp2Qjh5y7vII+EO8HWiaB7GtBoW+mAnRDDIZnfzftwwJRU+JcSfjExlDUKj8TJY+JQsywBPswVZRIxvK7xV7izfdCLlJudlNhujd7bqudAlSFnuDTG5jd4365nLGz2GKtdLvpdjssSbZa5lnj6KWBXmX0tr6Zj7qnt4jTwk4oFmqX+65uRRauq3HClTAHRhU/b4St/n4=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV1PR04MB9055.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(346002)(376002)(396003)(136003)(366004)(451199018)(54906003)(6486002)(966005)(316002)(83380400001)(86362001)(186003)(2906002)(44832011)(5660300002)(66556008)(8936002)(6916009)(8676002)(66946007)(41300700001)(66476007)(4326008)(478600001)(6512007)(1076003)(26005)(6506007)(6666004)(38100700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?mvSB1kRqfTFhXpEKBrSrQIM0WlZi91mZtJNKfhiQKAvBCeXSL2bikF9L5dU2?=
+ =?us-ascii?Q?5YDKzczdr9a8HHlOoLicXsmsOhYlZMLF0+omqrUIFmzdlUvVcnNQguKgPcJn?=
+ =?us-ascii?Q?k0vRK2A1JPiR1cXaULtHOfpyzx3YFULzUbIH6vEbRF/MywJMDOSB7cFTo59d?=
+ =?us-ascii?Q?5GGfY5Zs8FbJtuEkhvh1/ZoZoWD8DcnF59YGmdqyq0gKFGiIE/UgV35pl/PG?=
+ =?us-ascii?Q?ciyB7aQ0vXgkgjU3eYzQcH1myp4Hqa8LpqOHz/TiuiQig++Ra61arhMO4sc7?=
+ =?us-ascii?Q?+Tp+wFmFMZ21qpSVDQ/juFRyghpuMofxKfaOt4wZb98tNmPk7jSVCmAyIH0J?=
+ =?us-ascii?Q?KYvsndo9CQnoBYF5noOLbNA66oMmX6p72bFBq8j3F2XEK0HjIWbqStGaXmzT?=
+ =?us-ascii?Q?slGFOY8IJn4yVj8xrmLom8g0Q1V3fdJ9V61K/+MdmzK6U52upA0zYB923tdb?=
+ =?us-ascii?Q?U+J5Z04u/EXkrIsOWNr8MrNxlPL74kD7MRCuw1O8kXglDroqRT1h1OFAPe9v?=
+ =?us-ascii?Q?GrWfBJBpIZ91JoW6odtrU/TvR8sPTDD52ra9gynT82l1cQD8OfRj0CiSi7oT?=
+ =?us-ascii?Q?3RO5V6IK/tQWIeef3og4B9gya/VpV13Cn8Kkrm74LorX4y9ErrKz5O5l3LkI?=
+ =?us-ascii?Q?67vaW9cVUJTuUBl2dVqTaKLfVuhunVaEu4whUAFahgwc6P9NRFN7WzFMoAXd?=
+ =?us-ascii?Q?j7CVmdgWRxUclOR0OrK4AIHOsKTxt9nWkP+ed7u9JYa0y4OaTSZOfDcOx0ID?=
+ =?us-ascii?Q?Al2E6OpoHXtAl9sit+45Gvqtl+ROOoyM1TSKPlzn+CgHh0V3oQe9De28BHVI?=
+ =?us-ascii?Q?0lcI0iZMy1/j5eFXqKO97yD9cW/XPMphTynudPONJgYm+wDPRWm13/LD2qcv?=
+ =?us-ascii?Q?UKK3/2MdYUiPksDl4zFwPTualvJjaaW8ETVWUBeLCzPfrPnfgOjQa1ExsGbV?=
+ =?us-ascii?Q?7hr6bWc2WetM8KuWGLNK9+nOrIj+B2TkYq8pO75EW6DnH3wH44qVp1IKa0ns?=
+ =?us-ascii?Q?hES/9J712BD+ZYOIiaeEzcOeslblxjAv2t7Qs7DSHC7laySzMGlTV/VHQHzK?=
+ =?us-ascii?Q?6Q8pzCEmHkdPuLmqGmEc+7EKToLOtWmnWjFqqipLoKhbljY16ergeM3N5eWH?=
+ =?us-ascii?Q?PKK3GVI1+XfeT3MaGCeiO2svrN2sCIfMEbnW5xUKZNkZYWVOj8IIr941I3ep?=
+ =?us-ascii?Q?raoIJ/ApCUrQwW7XbRF0K/TEKChxUcNEO1QUaXe5T8Bek1eyROBiRYwJRi4Y?=
+ =?us-ascii?Q?3bGWw0qKLII4XT1EcHpPU34XsPKdhfccmCNvM7iJC2CuA0pzHpMVThQ9y0mI?=
+ =?us-ascii?Q?5OABlyCavizCFtYebDMQrIWDJFHnpwAqvm9hhhRTS3UC61ZvJJ+C1gYBucic?=
+ =?us-ascii?Q?KcWs87I6jmfw9cKYw3c+Atwiu+1GMvdKzkjpb7zP6TWng9+fWeeuXw17UH97?=
+ =?us-ascii?Q?M+beMCbJSt+i35ikYm7GOwIx21kWAQUXfyS2okyESABoivlPcbg43e50DLvC?=
+ =?us-ascii?Q?gfONknhjklFmj8QFvM5jKkvAsSmp68dPQCJB1zDBw6oIxi3xURd23yEKZ8vL?=
+ =?us-ascii?Q?EFx0bAV/6NR+++jNqEfRnLL+KtPHSKgIRG1ERzdOonSb6fAWnnQ9C8uRZL+I?=
+ =?us-ascii?Q?SA=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bcafd2e2-42dc-490d-6b7e-08db1e1a2c53
+X-MS-Exchange-CrossTenant-AuthSource: GV1PR04MB9055.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Mar 2023 08:09:56.7047
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0MWP+mganp6BQwT9xu+/xn8CA/71VCfQ+bZ/kMHJibN5RcreFVzknsI9tM54CfHB3UrAtGsi/G9T7LxpAsFE9w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7120
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-2/21/2023 9:07 PM, Mickaël Salaün пишет:
-> It's not "_unmask_layers() and _init_layer_masks()": there is no "_"
-> prefixes.
-> Using "landlock_unmask_layers()" in the subject would be too long, so
-> you can replace it with "landlock: Refactor layer helpers".
-> For consistency, you can change the previous patch's subject to
-> "landlock: Move and rename layer helpers"
+On Fri, Mar 03, 2023 at 07:31:59PM -0500, Sean Anderson wrote:
+> When commenting on what would become commit 085f1776fa03 ("net: dpaa2-mac:
+> add backplane link mode support"), Ioana Ciornei said [1]:
 > 
-> Anyway, please send a new patch series. Most of the kernel code should
-> be good and I could then push it to -next for testing while reviewing
-> the last parts.
+> > ...DPMACs in TYPE_BACKPLANE can have both their PCS and SerDes managed
+> > by Linux (since the firmware is not touching these). That being said,
+> > DPMACs in TYPE_PHY (the type that is already supported in dpaa2-mac) can
+> > also have their PCS managed by Linux (no interraction from the
+> > firmware's part with the PCS, just the SerDes).
+> 
+> This implies that Linux only manages the SerDes when the link type is
+> backplane. Modify the condition in dpaa2_mac_connect to reflect this,
+> moving the existing conditions to more appropriate places.
 
-   Hi, Mickaël. I was on a short vacation. Sorry for late reply.
-   I will reply your review and send a new patch ASAP.
+I am not sure I understand why are you moving the conditions to
+different places. Could you please explain?
 
-   Regards,
-   Konstantin
+Why not just append the existing condition from dpaa2_mac_connect() with
+"mac->attr.link_type == DPMAC_LINK_TYPE_BACKPLANE"?
+
+This way, the serdes_phy is populated only if all the conditions pass
+and you don't have to scatter them all around the driver.
 
 > 
+> [1] https://lore.kernel.org/netdev/20210120221900.i6esmk6uadgqpdtu@skbuf/
 > 
-> On 16/01/2023 09:58, Konstantin Meskhidze wrote:
->> Add new key_type argument to the landlock_init_layer_masks() helper.
->> Add a masks_array_size argument to the landlock_unmask_layers() helper.
->> These modifications support implementing new rule types in the next
->> Landlock versions.
->> 
->> Signed-off-by: Mickaël Salaün <mic@digikod.net>
->> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
->> ---
->> 
->> Changes since v8:
->> * None.
->> 
->> Changes since v7:
->> * Refactors commit message, adds a co-developer.
->> * Minor fixes.
->> 
->> Changes since v6:
->> * Removes masks_size attribute from init_layer_masks().
->> * Refactors init_layer_masks() with new landlock_key_type.
->> 
->> Changes since v5:
->> * Splits commit.
->> * Formats code with clang-format-14.
->> 
->> Changes since v4:
->> * Refactors init_layer_masks(), get_handled_accesses()
->> and unmask_layers() functions to support multiple rule types.
->> * Refactors landlock_get_fs_access_mask() function with
->> LANDLOCK_MASK_ACCESS_FS mask.
->> 
->> Changes since v3:
->> * Splits commit.
->> * Refactors landlock_unmask_layers functions.
->> 
->> ---
->>   security/landlock/fs.c      | 43 ++++++++++++++++--------------
->>   security/landlock/ruleset.c | 52 ++++++++++++++++++++++++++-----------
->>   security/landlock/ruleset.h | 17 ++++++------
->>   3 files changed, 70 insertions(+), 42 deletions(-)
->> 
->> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
->> index 73a7399f93ba..a73dbd3f9ddb 100644
->> --- a/security/landlock/fs.c
->> +++ b/security/landlock/fs.c
->> @@ -441,20 +441,22 @@ static bool is_access_to_paths_allowed(
->>   	}
->>   
->>   	if (unlikely(dentry_child1)) {
->> -		landlock_unmask_layers(find_rule(domain, dentry_child1),
->> -				       landlock_init_layer_masks(
->> -					       domain, LANDLOCK_MASK_ACCESS_FS,
->> -					       &_layer_masks_child1),
->> -				       &_layer_masks_child1);
->> +		landlock_unmask_layers(
->> +			find_rule(domain, dentry_child1),
->> +			landlock_init_layer_masks(
->> +				domain, LANDLOCK_MASK_ACCESS_FS,
->> +				&_layer_masks_child1, LANDLOCK_KEY_INODE),
->> +			&_layer_masks_child1, ARRAY_SIZE(_layer_masks_child1));
->>   		layer_masks_child1 = &_layer_masks_child1;
->>   		child1_is_directory = d_is_dir(dentry_child1);
->>   	}
->>   	if (unlikely(dentry_child2)) {
->> -		landlock_unmask_layers(find_rule(domain, dentry_child2),
->> -				       landlock_init_layer_masks(
->> -					       domain, LANDLOCK_MASK_ACCESS_FS,
->> -					       &_layer_masks_child2),
->> -				       &_layer_masks_child2);
->> +		landlock_unmask_layers(
->> +			find_rule(domain, dentry_child2),
->> +			landlock_init_layer_masks(
->> +				domain, LANDLOCK_MASK_ACCESS_FS,
->> +				&_layer_masks_child2, LANDLOCK_KEY_INODE),
->> +			&_layer_masks_child2, ARRAY_SIZE(_layer_masks_child2));
->>   		layer_masks_child2 = &_layer_masks_child2;
->>   		child2_is_directory = d_is_dir(dentry_child2);
->>   	}
->> @@ -507,14 +509,15 @@ static bool is_access_to_paths_allowed(
->>   
->>   		rule = find_rule(domain, walker_path.dentry);
->>   		allowed_parent1 = landlock_unmask_layers(
->> -			rule, access_masked_parent1, layer_masks_parent1);
->> +			rule, access_masked_parent1, layer_masks_parent1,
->> +			ARRAY_SIZE(*layer_masks_parent1));
->>   		allowed_parent2 = landlock_unmask_layers(
->> -			rule, access_masked_parent2, layer_masks_parent2);
->> +			rule, access_masked_parent2, layer_masks_parent2,
->> +			ARRAY_SIZE(*layer_masks_parent2));
->>   
->>   		/* Stops when a rule from each layer grants access. */
->>   		if (allowed_parent1 && allowed_parent2)
->>   			break;
->> -
->>   jump_up:
->>   		if (walker_path.dentry == walker_path.mnt->mnt_root) {
->>   			if (follow_up(&walker_path)) {
->> @@ -553,8 +556,8 @@ static int check_access_path(const struct landlock_ruleset *const domain,
->>   {
->>   	layer_mask_t layer_masks[LANDLOCK_NUM_ACCESS_FS] = {};
->>   
->> -	access_request =
->> -		landlock_init_layer_masks(domain, access_request, &layer_masks);
->> +	access_request = landlock_init_layer_masks(
->> +		domain, access_request, &layer_masks, LANDLOCK_KEY_INODE);
->>   	if (is_access_to_paths_allowed(domain, path, access_request,
->>   				       &layer_masks, NULL, 0, NULL, NULL))
->>   		return 0;
->> @@ -640,7 +643,8 @@ static bool collect_domain_accesses(
->>   		return true;
->>   
->>   	access_dom = landlock_init_layer_masks(domain, LANDLOCK_MASK_ACCESS_FS,
->> -					       layer_masks_dom);
->> +					       layer_masks_dom,
->> +					       LANDLOCK_KEY_INODE);
->>   
->>   	dget(dir);
->>   	while (true) {
->> @@ -648,7 +652,8 @@ static bool collect_domain_accesses(
->>   
->>   		/* Gets all layers allowing all domain accesses. */
->>   		if (landlock_unmask_layers(find_rule(domain, dir), access_dom,
->> -					   layer_masks_dom)) {
->> +					   layer_masks_dom,
->> +					   ARRAY_SIZE(*layer_masks_dom))) {
->>   			/*
->>   			 * Stops when all handled accesses are allowed by at
->>   			 * least one rule in each layer.
->> @@ -763,7 +768,7 @@ static int current_check_refer_path(struct dentry *const old_dentry,
->>   		 */
->>   		access_request_parent1 = landlock_init_layer_masks(
->>   			dom, access_request_parent1 | access_request_parent2,
->> -			&layer_masks_parent1);
->> +			&layer_masks_parent1, LANDLOCK_KEY_INODE);
->>   		if (is_access_to_paths_allowed(
->>   			    dom, new_dir, access_request_parent1,
->>   			    &layer_masks_parent1, NULL, 0, NULL, NULL))
->> @@ -1139,7 +1144,7 @@ static int hook_file_open(struct file *const file)
->>   	if (is_access_to_paths_allowed(
->>   		    dom, &file->f_path,
->>   		    landlock_init_layer_masks(dom, full_access_request,
->> -					      &layer_masks),
->> +					      &layer_masks, LANDLOCK_KEY_INODE),
->>   		    &layer_masks, NULL, 0, NULL, NULL)) {
->>   		allowed_access = full_access_request;
->>   	} else {
->> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
->> index 22590cac3d56..9748b54b42fe 100644
->> --- a/security/landlock/ruleset.c
->> +++ b/security/landlock/ruleset.c
->> @@ -576,14 +576,15 @@ landlock_find_rule(const struct landlock_ruleset *const ruleset,
->>   /*
->>    * @layer_masks is read and may be updated according to the access request and
->>    * the matching rule.
->> + * @masks_array_size must be equal to ARRAY_SIZE(*layer_masks).
->>    *
->>    * Returns true if the request is allowed (i.e. relevant layer masks for the
->>    * request are empty).
->>    */
->> -bool landlock_unmask_layers(
->> -	const struct landlock_rule *const rule,
->> -	const access_mask_t access_request,
->> -	layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS])
->> +bool landlock_unmask_layers(const struct landlock_rule *const rule,
->> +			    const access_mask_t access_request,
->> +			    layer_mask_t (*const layer_masks)[],
->> +			    const size_t masks_array_size)
->>   {
->>   	size_t layer_level;
->>   
->> @@ -615,8 +616,7 @@ bool landlock_unmask_layers(
->>   		 * requested access.
->>   		 */
->>   		is_empty = true;
->> -		for_each_set_bit(access_bit, &access_req,
->> -				 ARRAY_SIZE(*layer_masks)) {
->> +		for_each_set_bit(access_bit, &access_req, masks_array_size) {
->>   			if (layer->access & BIT_ULL(access_bit))
->>   				(*layer_masks)[access_bit] &= ~layer_bit;
->>   			is_empty = is_empty && !(*layer_masks)[access_bit];
->> @@ -627,6 +627,10 @@ bool landlock_unmask_layers(
->>   	return false;
->>   }
->>   
->> +typedef access_mask_t
->> +get_access_mask_t(const struct landlock_ruleset *const ruleset,
->> +		  const u16 layer_level);
->> +
->>   /*
->>    * init_layer_masks - Initialize layer masks from an access request
->>    *
->> @@ -636,19 +640,34 @@ bool landlock_unmask_layers(
->>    * @domain: The domain that defines the current restrictions.
->>    * @access_request: The requested access rights to check.
->>    * @layer_masks: The layer masks to populate.
->> + * @key_type: The key type to switch between access masks of different types.
->>    *
->>    * Returns: An access mask where each access right bit is set which is handled
->>    * in any of the active layers in @domain.
->>    */
->> -access_mask_t landlock_init_layer_masks(
->> -	const struct landlock_ruleset *const domain,
->> -	const access_mask_t access_request,
->> -	layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS])
->> +access_mask_t
->> +landlock_init_layer_masks(const struct landlock_ruleset *const domain,
->> +			  const access_mask_t access_request,
->> +			  layer_mask_t (*const layer_masks)[],
->> +			  const enum landlock_key_type key_type)
->>   {
->>   	access_mask_t handled_accesses = 0;
->> -	size_t layer_level;
->> +	size_t layer_level, num_access;
->> +	get_access_mask_t *get_access_mask;
->> +
->> +	switch (key_type) {
->> +	case LANDLOCK_KEY_INODE:
->> +		get_access_mask = landlock_get_fs_access_mask;
->> +		num_access = LANDLOCK_NUM_ACCESS_FS;
->> +		break;
->> +	default:
->> +		WARN_ON_ONCE(1);
->> +		return 0;
->> +	}
->> +
->> +	memset(layer_masks, 0,
->> +	       array_size(sizeof((*layer_masks)[0]), num_access));
->>   
->> -	memset(layer_masks, 0, sizeof(*layer_masks));
->>   	/* An empty access request can happen because of O_WRONLY | O_RDWR. */
->>   	if (!access_request)
->>   		return 0;
->> @@ -658,10 +677,13 @@ access_mask_t landlock_init_layer_masks(
->>   		const unsigned long access_req = access_request;
->>   		unsigned long access_bit;
->>   
->> -		for_each_set_bit(access_bit, &access_req,
->> -				 ARRAY_SIZE(*layer_masks)) {
->> +		for_each_set_bit(access_bit, &access_req, num_access) {
->> +			/*
->> +			 * Artificially handles all initially denied by default
->> +			 * access rights.
->> +			 */
->>   			if (BIT_ULL(access_bit) &
->> -			    landlock_get_fs_access_mask(domain, layer_level)) {
->> +			    get_access_mask(domain, layer_level)) {
->>   				(*layer_masks)[access_bit] |=
->>   					BIT_ULL(layer_level);
->>   				handled_accesses |= BIT_ULL(access_bit);
->> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
->> index 60a3c4d4d961..77349764e111 100644
->> --- a/security/landlock/ruleset.h
->> +++ b/security/landlock/ruleset.h
->> @@ -266,14 +266,15 @@ landlock_get_fs_access_mask(const struct landlock_ruleset *const ruleset,
->>   	return landlock_get_raw_fs_access_mask(ruleset, layer_level) |
->>   	       ACCESS_FS_INITIALLY_DENIED;
->>   }
->> -bool landlock_unmask_layers(
->> -	const struct landlock_rule *const rule,
->> -	const access_mask_t access_request,
->> -	layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS]);
->> +bool landlock_unmask_layers(const struct landlock_rule *const rule,
->> +			    const access_mask_t access_request,
->> +			    layer_mask_t (*const layer_masks)[],
->> +			    const size_t masks_array_size);
->>   
->> -access_mask_t landlock_init_layer_masks(
->> -	const struct landlock_ruleset *const domain,
->> -	const access_mask_t access_request,
->> -	layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS]);
->> +access_mask_t
->> +landlock_init_layer_masks(const struct landlock_ruleset *const domain,
->> +			  const access_mask_t access_request,
->> +			  layer_mask_t (*const layer_masks)[],
->> +			  const enum landlock_key_type key_type);
->>   
->>   #endif /* _SECURITY_LANDLOCK_RULESET_H */
-> .
+> Fixes: f978fe85b8d1 ("dpaa2-mac: configure the SerDes phy on a protocol change")
+> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+> ---
+> For v2 I tested a variety of setups to try and determine what the
+> behavior is. I evaluated the following branches on a variety of commits
+> on an LS1088ARDB:
+> 
+> - net/master
+> - this commit alone
+> - my lynx10g series [1] alone
+> - both of the above together
+> 
+> I also switched between MC firmware 10.30 (no protocol change support)
+> and 10.34 (with protocol change support), and I tried MAC link types of
+> of FIXED, PHY, and BACKPLANE. After loading the MC firmware, DPC,
+> kernel, and dtb, I booted up and ran
+> 
+> $ ls-addni dpmac.1
+> 
+> I had a 10G fiber SFP module plugged in and connected on the other end
+> to my computer.
+> 
+> My results are as follows:
+> 
+> - When the link type is FIXED, all configurations work.
+> - PHY and BACKPLANE do not work on net/master.
+> - I occasionally saw an ENOTSUPP error from dpmac_set_protocol with MC
+>   version 10.30. I am not sure what the cause of this is, as I was
+>   unable to reproduce it reliably.
+> - Occasionally, the link did not come up with my lynx10g series without
+>   this commit. Like the above issue, this would persist across reboots,
+>   but switching to another configuration and back would often fix this
+>   issue.
+> 
+> Unfortunately, I was unable to pinpoint any "smoking gun" due to
+> difficulty in reproducing errors.  However, I still think this commit is
+> correct, and should be applied. If Linux and the MC are out of sync,
+> most of the time things will work correctly but occasionally they won't.
+> 
+> [1] https://lore.kernel.org/linux-arm-kernel/20221230000139.2846763-1-sean.anderson@seco.com/
+>     But with some additional changes for v10.
+> 
+> Changes in v2:
+> - Fix incorrect condition in dpaa2_mac_set_supported_interfaces
+> 
+>  drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 16 ++++++++++------
+>  1 file changed, 10 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+> index c886f33f8c6f..9b40c862d807 100644
+> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+> @@ -179,9 +179,13 @@ static void dpaa2_mac_config(struct phylink_config *config, unsigned int mode,
+>  	if (err)
+>  		netdev_err(mac->net_dev,  "dpmac_set_protocol() = %d\n", err);
+>  
+> -	err = phy_set_mode_ext(mac->serdes_phy, PHY_MODE_ETHERNET, state->interface);
+> -	if (err)
+> -		netdev_err(mac->net_dev, "phy_set_mode_ext() = %d\n", err);
+> +	if (!phy_interface_mode_is_rgmii(mode)) {
+> +		err = phy_set_mode_ext(mac->serdes_phy, PHY_MODE_ETHERNET,
+> +				       state->interface);
+> +		if (err)
+> +			netdev_err(mac->net_dev, "phy_set_mode_ext() = %d\n",
+> +				   err);
+> +	}
+>  }
+>  
+>  static void dpaa2_mac_link_up(struct phylink_config *config,
+> @@ -317,7 +321,8 @@ static void dpaa2_mac_set_supported_interfaces(struct dpaa2_mac *mac)
+>  		}
+>  	}
+>  
+> -	if (!mac->serdes_phy)
+> +	if (!(mac->features & DPAA2_MAC_FEATURE_PROTOCOL_CHANGE) ||
+> +	    !mac->serdes_phy)
+>  		return;
+
+For example, you removed the check against
+DPAA2_MAC_FEATURE_PROTOCOL_CHANGE from below in dpaa2_mac_connect() just
+to put it here.
+
+>  
+>  	/* In case we have access to the SerDes phy/lane, then ask the SerDes
+> @@ -377,8 +382,7 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
+>  		return -EINVAL;
+>  	mac->if_mode = err;
+>  
+> -	if (mac->features & DPAA2_MAC_FEATURE_PROTOCOL_CHANGE &&
+> -	    !phy_interface_mode_is_rgmii(mac->if_mode) &&
+> +	if (mac->attr.link_type == DPMAC_LINK_TYPE_BACKPLANE &&
+>  	    is_of_node(dpmac_node)) {
+>  		serdes_phy = of_phy_get(to_of_node(dpmac_node), NULL);
+>  
+> -- 
