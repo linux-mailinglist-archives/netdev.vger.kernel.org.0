@@ -2,176 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AA346AC6E6
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 17:02:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FA606AC6FA
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 17:03:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229725AbjCFQB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 11:01:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42436 "EHLO
+        id S231324AbjCFQCt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 11:02:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230160AbjCFQBM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 11:01:12 -0500
-Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7FBD34C39;
-        Mon,  6 Mar 2023 08:01:04 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VdI0zlf_1678118461;
-Received: from 192.168.50.70(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VdI0zlf_1678118461)
-          by smtp.aliyun-inc.com;
-          Tue, 07 Mar 2023 00:01:02 +0800
-Message-ID: <5e64b96e-5c8e-a631-287d-f960f52d8aaa@linux.alibaba.com>
-Date:   Tue, 7 Mar 2023 00:01:01 +0800
+        with ESMTP id S229876AbjCFQCU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 11:02:20 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F23A38679;
+        Mon,  6 Mar 2023 08:01:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E6E36102C;
+        Mon,  6 Mar 2023 16:01:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BD13C4339C;
+        Mon,  6 Mar 2023 16:01:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678118474;
+        bh=6/kPY6G6Svg0te3uLDPOCCrp1vKJWU98W01va9m9RUI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=N4210lP8/snfv9NbE3rzkqhrurDYhltsPmrhpiheJIMgs4l+xopd+EgARpaNVtr0W
+         VBI/lHFigPwFt8oUpfG0SNQHwy7UQeTrgLCkPx/oOHNn2/ZqlTItn70StJ+0e4/Jmw
+         99SofbWyC8LiZmrVbwbDxlgWFjT/mpYttWZec1ODRvqi1NDpjNtg4S4XuXGH7S0Hy7
+         9i4T0HmN3eHOb5UmnHAJrzHzqb8AtMgRDmNVXgSd/a5bKOpX3jMUnnwg4X8AXB2Cnt
+         tji5vN3Sc9eXnLvPtyf2+1TrYILt/rVEdHYQx/6fI+Gtg6/qrP8MlthRyWOf7Mhk4W
+         WIV/aHM60KtSw==
+Date:   Mon, 6 Mar 2023 17:01:10 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        andrii@kernel.org, lorenzo.bianconi@redhat.com
+Subject: Re: [PATCH bpf-next] selftests/bpf: use ifname instead of ifindex in
+ XDP compliance test tool
+Message-ID: <ZAYORsGRSdCsV8fL@lore-desk>
+References: <5d11c9163490126fdc391dacb122480e4c059e62.1677863821.git.lorenzo@kernel.org>
+ <19947245-b305-f9c5-f79d-f79a152aaaaa@iogearbox.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.8.0
-Subject: Re: [PATCH net] net/smc: fix fallback failed while sendmsg with
- fastopen
-Content-Language: en-US
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
-        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <1678075728-18812-1-git-send-email-alibuda@linux.alibaba.com>
- <ZAXbkUh4h2rIJdR2@corigine.com>
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-In-Reply-To: <ZAXbkUh4h2rIJdR2@corigine.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="CzwNbl2V2nYwT7nc"
+Content-Disposition: inline
+In-Reply-To: <19947245-b305-f9c5-f79d-f79a152aaaaa@iogearbox.net>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Simon,
 
-Thank you for your suggestion.  Your writing style is more elegant.
+--CzwNbl2V2nYwT7nc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I will modify it according to your plan. Can I add your name as a 
-co-developer?
+> On 3/3/23 6:21 PM, Lorenzo Bianconi wrote:
+> > Rely on interface name instead of interface index in error messages or =
+logs
+> > from XDP compliance test tool.
+> > Improve XDP compliance test tool error messages.
+> >=20
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >   tools/testing/selftests/bpf/xdp_features.c | 92 ++++++++++++++--------
+> >   1 file changed, 57 insertions(+), 35 deletions(-)
+> >=20
+> > diff --git a/tools/testing/selftests/bpf/xdp_features.c b/tools/testing=
+/selftests/bpf/xdp_features.c
+> > index fce12165213b..7414801cd7ec 100644
+> > --- a/tools/testing/selftests/bpf/xdp_features.c
+> > +++ b/tools/testing/selftests/bpf/xdp_features.c
+> > @@ -25,6 +25,7 @@
+> >   static struct env {
+> >   	bool verbosity;
+> > +	char ifname[IF_NAMESIZE];
+> >   	int ifindex;
+> >   	bool is_tester;
+> >   	struct {
+> > @@ -109,25 +110,25 @@ static int get_xdp_feature(const char *arg)
+> >   	return 0;
+> >   }
+> > -static char *get_xdp_feature_str(void)
+> > +static char *get_xdp_feature_str(bool color)
+> >   {
+> >   	switch (env.feature.action) {
+> >   	case XDP_PASS:
+> > -		return YELLOW("XDP_PASS");
+> > +		return color ? YELLOW("XDP_PASS") : "XDP_PASS";
+> >   	case XDP_DROP:
+> > -		return YELLOW("XDP_DROP");
+> > +		return color ? YELLOW("XDP_DROP") : "XDP_DROP";
+> >   	case XDP_ABORTED:
+> > -		return YELLOW("XDP_ABORTED");
+> > +		return color ? YELLOW("XDP_ABORTED") : "XDP_ABORTED";
+> >   	case XDP_TX:
+> > -		return YELLOW("XDP_TX");
+> > +		return color ? YELLOW("XDP_TX") : "XDP_TX";
+> >   	case XDP_REDIRECT:
+> > -		return YELLOW("XDP_REDIRECT");
+> > +		return color ? YELLOW("XDP_REDIRECT") : "XDP_REDIRECT";
+> >   	default:
+> >   		break;
+> >   	}
+> >   	if (env.feature.drv_feature =3D=3D NETDEV_XDP_ACT_NDO_XMIT)
+> > -		return YELLOW("XDP_NDO_XMIT");
+> > +		return color ? YELLOW("XDP_NDO_XMIT") : "XDP_NDO_XMIT";
+> >   	return "";
+> >   }
+>=20
+> Please split this into multiple patches, logically separated. This one is=
+ changing
+> multiple things at once and above has not much relation to relying on int=
+erface names.
 
-Best wishes.
+ack, I will do.
 
-D. Wythe
+Regards,
+Lorenzo
 
-On 3/6/23 8:24 PM, Simon Horman wrote:
-> On Mon, Mar 06, 2023 at 12:08:48PM +0800, D. Wythe wrote:
->> From: "D. Wythe" <alibuda@linux.alibaba.com>
->>
->> Before determining whether the msg has unsupported options, it has been
->> prematurely terminated by the wrong status check.
->>
->> For the application, the general method of MSG_FASTOPEN likes
->>
->> fd = socket(...)
->> /* rather than connect */
->> sendto(fd, data, len, MSG_FASTOPEN)
->>
->> Hence, We need to check the flag before state check, because the sock state
->> here is always SMC_INIT when applications tries MSG_FASTOPEN. Once we
->> found unsupported options, fallback it to TCP.
->>
->> Fixes: ee9dfbef02d1 ("net/smc: handle sockopts forcing fallback")
->> Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
->> ---
->>   net/smc/af_smc.c | 26 ++++++++++++++++----------
->>   1 file changed, 16 insertions(+), 10 deletions(-)
->>
->> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
->> index b233c94..fd80879 100644
->> --- a/net/smc/af_smc.c
->> +++ b/net/smc/af_smc.c
->> @@ -2662,24 +2662,30 @@ static int smc_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
->>   	int rc = -EPIPE;
->>   
->>   	smc = smc_sk(sk);
->> -	lock_sock(sk);
->> -	if ((sk->sk_state != SMC_ACTIVE) &&
->> -	    (sk->sk_state != SMC_APPCLOSEWAIT1) &&
->> -	    (sk->sk_state != SMC_INIT))
->> -		goto out;
->>   
->> +	/* SMC do not support connect with fastopen */
->>   	if (msg->msg_flags & MSG_FASTOPEN) {
->> +		rc = -EINVAL;
->> +		lock_sock(sk);
->> +		/* not perform connect yet, fallback it */
->>   		if (sk->sk_state == SMC_INIT && !smc->connect_nonblock) {
->>   			rc = smc_switch_to_fallback(smc, SMC_CLC_DECL_OPTUNSUPP);
->> -			if (rc)
->> -				goto out;
->> -		} else {
->> -			rc = -EINVAL;
->> -			goto out;
->> +			/*  fallback success */
->> +			if (rc == 0)
->> +				goto fallback;	/* with sock lock hold */
->>   		}
->> +		release_sock(sk);
->> +		return rc;
->>   	}
->>   
->> +	lock_sock(sk);
->> +	if (sk->sk_state != SMC_ACTIVE &&
->> +	    sk->sk_state != SMC_APPCLOSEWAIT1 &&
->> +	    sk->sk_state != SMC_INIT)
->> +		goto out;
->> +
->>   	if (smc->use_fallback) {
->> +fallback:
->>   		rc = smc->clcsock->ops->sendmsg(smc->clcsock, msg, len);
->>   	} else {
->>   		rc = smc_tx_sendmsg(smc, msg, len);
->> -- 
->> 1.8.3.1
-> Probably I messed something this, as this is *compile tested only*.
->
-> But as the code at the out label looks like this:
->
-> out:
->          release_sock(sk);
->          return rc;
->
-> And smc_switch_to_fallback sets smc->use_fallback,
-> I wonder if the following is a bit nicer:
->
-> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-> index a4cccdfdc00a..5d5c19e53b77 100644
-> --- a/net/smc/af_smc.c
-> +++ b/net/smc/af_smc.c
-> @@ -2657,16 +2657,14 @@ static int smc_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
->   {
->   	struct sock *sk = sock->sk;
->   	struct smc_sock *smc;
-> -	int rc = -EPIPE;
-> +	int rc;
->   
->   	smc = smc_sk(sk);
->   	lock_sock(sk);
-> -	if ((sk->sk_state != SMC_ACTIVE) &&
-> -	    (sk->sk_state != SMC_APPCLOSEWAIT1) &&
-> -	    (sk->sk_state != SMC_INIT))
-> -		goto out;
->   
-> +	/* SMC does not support connect with fastopen */
->   	if (msg->msg_flags & MSG_FASTOPEN) {
-> +		/* not connected yet, fallback */
->   		if (sk->sk_state == SMC_INIT && !smc->connect_nonblock) {
->   			rc = smc_switch_to_fallback(smc, SMC_CLC_DECL_OPTUNSUPP);
->   			if (rc)
-> @@ -2675,6 +2673,11 @@ static int smc_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
->   			rc = -EINVAL;
->   			goto out;
->   		}
-> +	} else if (sk->sk_state != SMC_ACTIVE &&
-> +		   sk->sk_state != SMC_APPCLOSEWAIT1 &&
-> +		   sk->sk_state != SMC_INIT) {
-> +		rc = -EPIPE;
-> +		goto out;
->   	}
->   
->   	if (smc->use_fallback) {
->
+>=20
+> Thanks,
+> Daniel
+
+--CzwNbl2V2nYwT7nc
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCZAYORgAKCRA6cBh0uS2t
+rMVXAQCzzZntylSPJkLD+vXsYiIDrSSygM/F0fHvQkSbcTOcOwEAwMOH8HEWvyGu
+cyVfEW7iScK/cHdOUtWNiPxSz47VZgM=
+=/dnG
+-----END PGP SIGNATURE-----
+
+--CzwNbl2V2nYwT7nc--
