@@ -2,58 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7412C6AB96C
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 10:14:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02D3F6AB9C5
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 10:27:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229831AbjCFJOJ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 6 Mar 2023 04:14:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50420 "EHLO
+        id S229973AbjCFJ1K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 04:27:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229871AbjCFJOB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 04:14:01 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 329D918AAF
-        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 01:13:57 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-234-wLlajqEvM_i0pebfXhezoA-1; Mon, 06 Mar 2023 09:13:55 +0000
-X-MC-Unique: wLlajqEvM_i0pebfXhezoA-1
-Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
- (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.47; Mon, 6 Mar
- 2023 09:13:52 +0000
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.047; Mon, 6 Mar 2023 09:13:52 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Thomas Gleixner' <tglx@linutronix.de>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     "peterz@infradead.org" <peterz@infradead.org>,
-        "jstultz@google.com" <jstultz@google.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>
-Subject: RE: [PATCH 2/3] softirq: avoid spurious stalls due to need_resched()
-Thread-Topic: [PATCH 2/3] softirq: avoid spurious stalls due to need_resched()
-Thread-Index: AQHZT6MmVGN6gMfiFUibqhxDqTGe3a7tcg6A
-Date:   Mon, 6 Mar 2023 09:13:52 +0000
-Message-ID: <dc3b87517d8342e8a8e61b75730cf3d1@AcuMS.aculab.com>
-References: <20230303133143.7b35433f@kernel.org> <87r0u3hqtw.ffs@tglx>
-In-Reply-To: <87r0u3hqtw.ffs@tglx>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S229871AbjCFJ1I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 04:27:08 -0500
+Received: from mail-ua1-x92a.google.com (mail-ua1-x92a.google.com [IPv6:2607:f8b0:4864:20::92a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A4E722DF7
+        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 01:27:07 -0800 (PST)
+Received: by mail-ua1-x92a.google.com with SMTP id d12so5942599uak.10
+        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 01:27:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112; t=1678094826;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=zhS37jgP1oSKDQocHToehtxxyITsXcT+owYbmJ0INPU=;
+        b=4t56tDC/G+oovfdiW5rxFZCyYsIfw/WmqyS1QgC9FKLy44l3wGWvPNPrKaEI6mAvIe
+         ELD4XcqhLxDYPapof54et2VAMu4KrZDT7kUwAj9Hrs6wS7u5XxJjEWAUEaYcKiG/Zn39
+         LbYGMfhwfIZ4JLhat+2hMudxk6CM3YJdkOXGSLSfaulwOvc6XpKpqL1F+6VUjzq55xQy
+         y2JSmDTTT0sTDy7JHDzT8MfLrGyiRKAqCmO15rXFhnzLrphpS2zddGj0+LqedgxxL0hV
+         0N2PQS1jMZSutIFgUay8tQ8K/XSrnWtb4nxvfgnG2GPyXj9/IYPjvJKK9fj6DB19DqZ2
+         l4GA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678094826;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=zhS37jgP1oSKDQocHToehtxxyITsXcT+owYbmJ0INPU=;
+        b=tsn5xf1+06cpBgVfKxnv4Wl95vxiIq/kBm1dejzpm4IvF1qowZ9J2hm0GWItYe2DWi
+         dMgmFzEErrcOMazh32KmPZUWh7cwrK7bNNc0mdLLPAZq2r4R3g+WyNg1/LogBuKRycgC
+         R07NyongTc0XK9HC2WsgebAqZUADlFUcq5rrgIoljMf3Kc+Wvagd/N/I5xIRdVMEQVx3
+         xqQr8ZFLs/YJkqJFpJKqRXD5GoJACrCJOytkC1ZaXZLZqcUUu9i6TdtVbp2b/P1GMpM2
+         /63CDhyElqhGGbW7R0d3z4AeSL3l+q2+np5HxmG/ZaG7StUB5nIDcS2d2rD6bMin5tyD
+         xwhw==
+X-Gm-Message-State: AO0yUKVrP9Ft5VFGPsdKAUmwIWJfFpQYVdXi+6V+I+YpTp3b10ta6yw8
+        tVAmpPiwalPyaZ+W8TbTgYmUtWkKcPWOiWgDVEaE3w==
+X-Google-Smtp-Source: AK7set+CHskqiSsm+6Cmi6WHgSSwP4myqJ1YcVc2LU1gm2fnO90Xr69irT8NxRARr/yjxDC8cjTLGID26SceOFHbVxE=
+X-Received: by 2002:a9f:3104:0:b0:687:afc8:ffb9 with SMTP id
+ m4-20020a9f3104000000b00687afc8ffb9mr6636458uab.2.1678094826467; Mon, 06 Mar
+ 2023 01:27:06 -0800 (PST)
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,PDS_BAD_THREAD_QP_64,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20230228215433.3944508-1-robh@kernel.org>
+In-Reply-To: <20230228215433.3944508-1-robh@kernel.org>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Mon, 6 Mar 2023 10:26:55 +0100
+Message-ID: <CAMRc=Mfouay5Z6M6VYnBX7Pe+ahTVfvfQsJ+kToWAwZJxZWJZg@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: Fix SPI and I2C bus node names in examples
+To:     Rob Herring <robh@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Robert Foss <rfoss@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-pm@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-usb@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,75 +95,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thomas Gleixner
-> Sent: 05 March 2023 20:43
-...
-> The point is that softirqs are just the proliferation of an at least 50
-> years old OS design paradigm. Back then everyhting which run in an
-> interrupt handler was "important" and more or less allowed to hog the
-> CPU at will.
-> 
-> That obviously caused problems because it prevented other interrupt
-> handlers from being served.
-> 
-> This was attempted to work around in hardware by providing interrupt
-> priority levels. No general purpose OS utilized that ever because there
-> is no way to get this right. Not even on UP, unless you build a designed
-> for the purpose "OS".
-> 
-> Soft interrupts are not any better. They avoid the problem of stalling
-> interrupts by moving the problem one level down to the scheduler.
-> 
-> Granted they are a cute hack, but at the very end they are still evading
-> the resource control mechanisms of the OS by defining their own rules:
+On Tue, Feb 28, 2023 at 10:54=E2=80=AFPM Rob Herring <robh@kernel.org> wrot=
+e:
+>
+> SPI and I2C bus node names are expected to be "spi" or "i2c",
+> respectively, with nothing else, a unit-address, or a '-N' index. A
+> pattern of 'spi0' or 'i2c0' or similar has crept in. Fix all these
+> cases. Mostly scripted with the following commands:
+>
+> git grep -l '\si2c[0-9] {' Documentation/devicetree/ | xargs sed -i -e 's=
+/i2c[0-9] {/i2c {/'
+> git grep -l '\sspi[0-9] {' Documentation/devicetree/ | xargs sed -i -e 's=
+/spi[0-9] {/spi {/'
+>
+> With this, a few errors in examples were exposed and fixed.
+>
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+> Cc: Miguel Ojeda <ojeda@kernel.org>
+> Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+> Cc: Benson Leung <bleung@chromium.org>
+> Cc: Guenter Roeck <groeck@chromium.org>
+> Cc: Stephen Boyd <sboyd@kernel.org>
+> Cc: Andrzej Hajda <andrzej.hajda@intel.com>
+> Cc: Neil Armstrong <neil.armstrong@linaro.org>
+> Cc: Robert Foss <rfoss@kernel.org>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: Sam Ravnborg <sam@ravnborg.org>
+> Cc: MyungJoo Ham <myungjoo.ham@samsung.com>
+> Cc: Chanwoo Choi <cw00.choi@samsung.com>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Bartosz Golaszewski <brgl@bgdev.pl>
+> Cc: Pavel Machek <pavel@ucw.cz>
+> Cc: Lee Jones <lee@kernel.org>
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Wolfgang Grandegger <wg@grandegger.com>
+> Cc: Kalle Valo <kvalo@kernel.org>
+> Cc: Sebastian Reichel <sre@kernel.org>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: linux-clk@vger.kernel.org
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: linux-gpio@vger.kernel.org
+> Cc: linux-i2c@vger.kernel.org
+> Cc: linux-leds@vger.kernel.org
+> Cc: linux-media@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-can@vger.kernel.org
+> Cc: linux-wireless@vger.kernel.org
+> Cc: linux-pm@vger.kernel.org
+> Cc: alsa-devel@alsa-project.org
+> Cc: linux-usb@vger.kernel.org
+> ---
+>  .../bindings/auxdisplay/holtek,ht16k33.yaml       |  2 +-
+>  .../bindings/chrome/google,cros-ec-typec.yaml     |  2 +-
+>  .../chrome/google,cros-kbd-led-backlight.yaml     |  2 +-
+>  .../devicetree/bindings/clock/ti,lmk04832.yaml    |  2 +-
+>  .../bindings/display/bridge/analogix,anx7625.yaml |  2 +-
+>  .../bindings/display/bridge/anx6345.yaml          |  2 +-
+>  .../bindings/display/bridge/lontium,lt8912b.yaml  |  2 +-
+>  .../bindings/display/bridge/nxp,ptn3460.yaml      |  2 +-
+>  .../bindings/display/bridge/ps8640.yaml           |  2 +-
+>  .../bindings/display/bridge/sil,sii9234.yaml      |  2 +-
+>  .../bindings/display/bridge/ti,dlpc3433.yaml      |  2 +-
+>  .../bindings/display/bridge/toshiba,tc358762.yaml |  2 +-
+>  .../bindings/display/bridge/toshiba,tc358768.yaml |  2 +-
+>  .../bindings/display/panel/nec,nl8048hl11.yaml    |  2 +-
+>  .../bindings/display/solomon,ssd1307fb.yaml       |  4 ++--
+>  .../devicetree/bindings/eeprom/at25.yaml          |  2 +-
+>  .../bindings/extcon/extcon-usbc-cros-ec.yaml      |  2 +-
+>  .../bindings/extcon/extcon-usbc-tusb320.yaml      |  2 +-
+>  .../devicetree/bindings/gpio/gpio-pca9570.yaml    |  2 +-
+>  .../devicetree/bindings/gpio/gpio-pca95xx.yaml    |  8 ++++----
 
-From some measurements I've done, while softints seem like a good
-idea they are almost pointless.
-
-What usually happens is a hardware interrupt happens, does some
-of the required work, schedules a softint and returns.
-Immediately a softint happens (at the same instruction) and
-does all the rest of the work.
-The work has to be done, but you've added cost of the extra
-scheduling and interrupt - so overall it is slower.
-
-The massive batching up of some operations (like ethernet
-transmit clearing and rx setup, and things being freed after rcu)
-doesn't help latency.
-Without the batching the softint would finish faster and cause
-less of a latency 'problem' to whatever was interrupted.
-
-Now softints do help interrupt latency, but that is only relevant
-if you have critical interrupts (like pulling data out of a hardware
-fifo).  Most modern hardware doesn't have anything that critical.
-
-Now there is code that can decide to drop softint processing to
-a normal thread. If that ever happens you probably lose 'big time'.
-Normal softint processing is higher priority than any process code.
-But the kernel thread runs at the priority of a normal user thread.
-Pretty much the lowest of the low.
-So all this 'high priority' interrupt related processing that
-really does have to happen to keep the system running just doesn't
-get scheduled.
-
-I think it was Eric who had problems with ethernet packets being
-dropped and changed the logic (of dropping to a thread) to make
-it much less likely - but that got reverted (well more code added
-that effectively reverted it) not long after.
-
-Try (as I was) to run a test that requires you to receive ALL
-of the 500000 ethernet packets being sent to an interface every
-second while also doing enough processing on the packets to
-make the system (say) 90% busy (real time UDP audio processing)
-and you soon find the defaults are entirely hopeless.
-
-Even the interrupt 'mitigation' options on the ethernet controller
-don't actually work - packets get dropped at the low level.
-(That will fail on an otherwise idle system.)
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+Acked-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
