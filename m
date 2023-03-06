@@ -2,148 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 677016ACBB1
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 18:58:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F3C56ACBAF
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 18:58:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231195AbjCFR6N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 12:58:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50072 "EHLO
+        id S231182AbjCFR55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 12:57:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230426AbjCFR5p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 12:57:45 -0500
-Received: from mail-io1-xd48.google.com (mail-io1-xd48.google.com [IPv6:2607:f8b0:4864:20::d48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FC016BDEA
-        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 09:57:10 -0800 (PST)
-Received: by mail-io1-xd48.google.com with SMTP id w4-20020a5d9604000000b0074d326b26bcso5722610iol.9
-        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 09:57:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678125344;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=lyLuNdgZ1IvpwYziHJ8KnGU0TWTg6VLKPOdKY3yDHYk=;
-        b=wHgFfb+1030AaZmm3QiKakHYy15PrZl6QmvXvlRkUfBm378fELERCord4SJFDEuveY
-         BEiboS3blUV8yP/x6mVLjEq5jCy/WUV+8ymCLSjM+P1tljh3JfUkphadkKYEiBaIf1cN
-         +nr83Oak5inFov0xTiVoQCfVoVryxc49OMwhxZQ3Ip+TGp58K1zpjXPmnbwwoe4seLza
-         MkW7JLAOLZMNrayRGCcpzZx/Yn01+V2rdEOeqIKOm+yT8/M6wDqbpAbx4rQmm9hK7nyJ
-         f8LrhrVhbt4R7X/SoYckj5uy2PGxS0iBkvmNYF4pN2SBJO2EF/jwMYG3uKIoLhurMNG9
-         LiMQ==
-X-Gm-Message-State: AO0yUKVLI9WDFMWxCmEKNBBGI8se4kiHgFQg5/cAzOZ0/b6IPabEN4nU
-        chlcNBHIH0NrpzujLgm6zmYm3uin7goo3FmUEPgXK0kFUEw7
-X-Google-Smtp-Source: AK7set8KFJTyxCTNZhTBiF3/TszCh8aFERtmUIHcpPzNXesrtaqxZMXLGjFX+k+5RxzObIWIcTsa+JAYk6xqh6DpLfsIWJZgHaZx
+        with ESMTP id S230504AbjCFR5i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 12:57:38 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D72C5D8B2;
+        Mon,  6 Mar 2023 09:56:52 -0800 (PST)
+Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4PVmQK0NvLz6JB3Z;
+        Tue,  7 Mar 2023 01:53:13 +0800 (CST)
+Received: from [10.123.123.126] (10.123.123.126) by
+ lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Mon, 6 Mar 2023 17:55:49 +0000
+Message-ID: <a009dff3-5550-a0e3-aaf3-12001b71b7da@huawei.com>
+Date:   Mon, 6 Mar 2023 20:55:48 +0300
 MIME-Version: 1.0
-X-Received: by 2002:a6b:6a0a:0:b0:745:b287:c281 with SMTP id
- x10-20020a6b6a0a000000b00745b287c281mr5639958iog.2.1678125344375; Mon, 06 Mar
- 2023 09:55:44 -0800 (PST)
-Date:   Mon, 06 Mar 2023 09:55:44 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000000a4e2d05f63f011e@google.com>
-Subject: [syzbot] [wireless?] KMSAN: uninit-value in ath9k_wmi_ctrl_rx
-From:   syzbot <syzbot+f2cb6e0ffdb961921e4d@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, glider@google.com,
-        kuba@kernel.org, kvalo@kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com, toke@toke.dk
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v9 12/12] landlock: Document Landlock's network support
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>,
+        =?UTF-8?Q?G=c3=bcnther_Noack?= <gnoack3000@gmail.com>
+CC:     <willemdebruijn.kernel@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+        <artem.kuzin@huawei.com>
+References: <20230116085818.165539-1-konstantin.meskhidze@huawei.com>
+ <20230116085818.165539-13-konstantin.meskhidze@huawei.com>
+ <Y8xwLvDbhKPG8JqY@galopp> <eb33371b-551e-ae6c-d7e3-a3101644b7ec@huawei.com>
+ <68f26cf2-f382-4d31-c80f-22392a85376f@digikod.net>
+ <526a70a2-b0bc-f29a-6558-022ca12a6430@huawei.com>
+ <278ab07f-7583-a4e0-3d37-1bacd091531d@digikod.net>
+ <85b31cb8-1aeb-d6f0-6c7d-91cea6b563d4@huawei.com>
+ <950d64ee-5b17-af81-8b85-dd2b392c7487@digikod.net>
+From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+In-Reply-To: <950d64ee-5b17-af81-8b85-dd2b392c7487@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.123.123.126]
+X-ClientProxiedBy: lhrpeml100005.china.huawei.com (7.191.160.25) To
+ lhrpeml500004.china.huawei.com (7.191.163.9)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following issue on:
-
-HEAD commit:    944070199c5e kmsan: add memsetXX tests
-git tree:       https://github.com/google/kmsan.git master
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=1269e302c80000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=46c642641b9ef616
-dashboard link: https://syzkaller.appspot.com/bug?extid=f2cb6e0ffdb961921e4d
-compiler:       Debian clang version 15.0.7, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17592674c80000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10340838c80000
-
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/055bbd57e905/disk-94407019.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/82472690bcfe/vmlinux-94407019.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/db3f379532ab/bzImage-94407019.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+f2cb6e0ffdb961921e4d@syzkaller.appspotmail.com
-
-=====================================================
-BUG: KMSAN: uninit-value in ath9k_wmi_ctrl_rx+0x2fd/0x530 drivers/net/wireless/ath/ath9k/wmi.c:227
- ath9k_wmi_ctrl_rx+0x2fd/0x530 drivers/net/wireless/ath/ath9k/wmi.c:227
- ath9k_htc_rx_msg+0x5a7/0xac0 drivers/net/wireless/ath/ath9k/htc_hst.c:479
- ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:653 [inline]
- ath9k_hif_usb_rx_cb+0x18fd/0x1ee0 drivers/net/wireless/ath/ath9k/hif_usb.c:686
- __usb_hcd_giveback_urb+0x521/0x750 drivers/usb/core/hcd.c:1671
- usb_hcd_giveback_urb+0x158/0x680 drivers/usb/core/hcd.c:1754
- dummy_timer+0xd4d/0x4cc0 drivers/usb/gadget/udc/dummy_hcd.c:1988
- call_timer_fn+0x45/0x4e0 kernel/time/timer.c:1700
- expire_timers kernel/time/timer.c:1751 [inline]
- __run_timers+0x861/0xf90 kernel/time/timer.c:2022
- run_timer_softirq+0x68/0xe0 kernel/time/timer.c:2035
- __do_softirq+0x1c9/0x7c5 kernel/softirq.c:571
- invoke_softirq kernel/softirq.c:445 [inline]
- __irq_exit_rcu+0xe5/0x220 kernel/softirq.c:650
- irq_exit_rcu+0x12/0x20 kernel/softirq.c:662
- sysvec_apic_timer_interrupt+0x9e/0xc0 arch/x86/kernel/apic/apic.c:1107
- asm_sysvec_apic_timer_interrupt+0x1f/0x30 arch/x86/include/asm/idtentry.h:649
- native_safe_halt arch/x86/include/asm/irqflags.h:51 [inline]
- arch_safe_halt arch/x86/include/asm/irqflags.h:89 [inline]
- acpi_safe_halt drivers/acpi/processor_idle.c:112 [inline]
- acpi_idle_do_entry drivers/acpi/processor_idle.c:570 [inline]
- acpi_idle_enter+0x6d7/0x820 drivers/acpi/processor_idle.c:707
- cpuidle_enter_state+0x84d/0x1ae0 drivers/cpuidle/cpuidle.c:239
- cpuidle_enter+0x7f/0xf0 drivers/cpuidle/cpuidle.c:356
- call_cpuidle kernel/sched/idle.c:155 [inline]
- cpuidle_idle_call kernel/sched/idle.c:236 [inline]
- do_idle+0x5ee/0x7f0 kernel/sched/idle.c:303
- cpu_startup_entry+0x21/0x30 kernel/sched/idle.c:400
- rest_init+0x22e/0x2b0 init/main.c:732
- arch_call_rest_init+0x12/0x20 init/main.c:894
- start_kernel+0x951/0xb40 init/main.c:1148
- x86_64_start_reservations+0x2e/0x30 arch/x86/kernel/head64.c:556
- x86_64_start_kernel+0x118/0x120 arch/x86/kernel/head64.c:537
- secondary_startup_64_no_verify+0xcf/0xdb
-
-Uninit was created at:
- slab_post_alloc_hook+0x12d/0xb60 mm/slab.h:766
- slab_alloc_node mm/slub.c:3452 [inline]
- __kmem_cache_alloc_node+0x518/0x920 mm/slub.c:3491
- __do_kmalloc_node mm/slab_common.c:967 [inline]
- __kmalloc_node_track_caller+0x118/0x3c0 mm/slab_common.c:988
- kmalloc_reserve net/core/skbuff.c:492 [inline]
- __alloc_skb+0x3b8/0x900 net/core/skbuff.c:565
- __netdev_alloc_skb+0x12f/0x7e0 net/core/skbuff.c:630
- __dev_alloc_skb include/linux/skbuff.h:3165 [inline]
- ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:635 [inline]
- ath9k_hif_usb_rx_cb+0xda6/0x1ee0 drivers/net/wireless/ath/ath9k/hif_usb.c:686
- __usb_hcd_giveback_urb+0x521/0x750 drivers/usb/core/hcd.c:1671
- usb_hcd_giveback_urb+0x158/0x680 drivers/usb/core/hcd.c:1754
- dummy_timer+0xd4d/0x4cc0 drivers/usb/gadget/udc/dummy_hcd.c:1988
- call_timer_fn+0x45/0x4e0 kernel/time/timer.c:1700
- expire_timers kernel/time/timer.c:1751 [inline]
- __run_timers+0x861/0xf90 kernel/time/timer.c:2022
- run_timer_softirq+0x68/0xe0 kernel/time/timer.c:2035
- __do_softirq+0x1c9/0x7c5 kernel/softirq.c:571
-
-CPU: 0 PID: 0 Comm: swapper/0 Not tainted 6.2.0-syzkaller-81157-g944070199c5e #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 02/16/2023
-=====================================================
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+3/6/2023 7:09 PM, Mickaël Salaün пишет:
+> 
+> On 06/03/2023 14:43, Konstantin Meskhidze (A) wrote:
+>> 
+>> 
+>> 2/21/2023 7:16 PM, Mickaël Salaün пишет:
+>>>
+>>> On 30/01/2023 11:03, Konstantin Meskhidze (A) wrote:
+>>>>
+>>>>
+>>>> 1/27/2023 9:22 PM, Mickaël Salaün пишет:
+>>>>>
+>>>>> On 23/01/2023 10:38, Konstantin Meskhidze (A) wrote:
+>>>>>>
+>>>>>>
+>>>>>> 1/22/2023 2:07 AM, Günther Noack пишет:
+>>>>>
+>>>>> [...]
+>>>>>
+>>>>>>>> @@ -143,10 +157,24 @@ for the ruleset creation, by filtering access rights according to the Landlock
+>>>>>>>>     ABI version.  In this example, this is not required because all of the requested
+>>>>>>>>     ``allowed_access`` rights are already available in ABI 1.
+>>>>>>>>     
+>>>>>>>> -We now have a ruleset with one rule allowing read access to ``/usr`` while
+>>>>>>>> -denying all other handled accesses for the filesystem.  The next step is to
+>>>>>>>> -restrict the current thread from gaining more privileges (e.g. thanks to a SUID
+>>>>>>>> -binary).
+>>>>>>>> +For network access-control, we can add a set of rules that allow to use a port
+>>>>>>>> +number for a specific action. All ports values must be defined in network byte
+>>>>>>>> +order.
+>>>>>>>
+>>>>>>> What is the point of asking user space to convert this to network byte
+>>>>>>> order? It seems to me that the kernel would be able to convert it to
+>>>>>>> network byte order very easily internally and in a single place -- why
+>>>>>>> ask all of the users to deal with that complexity? Am I overlooking
+>>>>>>> something?
+>>>>>>
+>>>>>>      I had a discussion about this issue with Mickaёl.
+>>>>>>      Please check these threads:
+>>>>>>      1.
+>>>>>> https://lore.kernel.org/netdev/49391484-7401-e7c7-d909-3bd6bd024731@digikod.net/
+>>>>>>      2.
+>>>>>> https://lore.kernel.org/netdev/1ed20e34-c252-b849-ab92-78c82901c979@huawei.com/
+>>>>>
+>>>>> I'm definitely not sure if this is the right solution, or if there is
+>>>>> one. The rationale is to make it close to the current (POSIX) API. We
+>>>>> didn't get many opinion about that but I'd really like to have a
+>>>>> discussion about port endianness for this Landlock API.
+>>>>
+>>>>      As for me, the kernel should take care about port converting. This
+>>>> work should be done under the hood.
+>>>>
+>>>>      Any thoughts?
+>>>>
+>>>>>
+>>>>> I looked at some code (e.g. see [1]) and it seems that using htons()
+>>>>> might make application patching more complex after all. What do you
+>>>>> think? Is there some network (syscall) API that don't use this convention?
+>>>>>
+>>>>> [1] https://github.com/landlock-lsm/tuto-lighttpd
+>>>>>
+>>>>>>>
+>>>>>>>> +
+>>>>>>>> +.. code-block:: c
+>>>>>>>> +
+>>>>>>>> +    struct landlock_net_service_attr net_service = {
+>>>>>>>> +        .allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP,
+>>>>>>>> +        .port = htons(8080),
+>>>>>>>> +    };
+>>>>>>>
+>>>>>>> This is a more high-level comment:
+>>>>>>>
+>>>>>>> The notion of a 16-bit "port" seems to be specific to TCP and UDP --
+>>>>>>> how do you envision this struct to evolve if other protocols need to
+>>>>>>> be supported in the future?
+>>>>>>
+>>>>>>       When TCP restrictions land into Linux, we need to think about UDP
+>>>>>> support. Then other protocols will be on the road. Anyway you are right
+>>>>>> this struct will be evolving in long term, but I don't have a particular
+>>>>>> envision now. Thanks for the question - we need to think about it.
+>>>>>>>
+>>>>>>> Should this struct and the associated constants have "TCP" in its
+>>>>>>> name, and other protocols use a separate struct in the future?
+>>>>>
+>>>>> Other protocols such as AF_VSOCK uses a 32-bit port. We could use a
+>>>>> 32-bits port field or ever a 64-bit one. The later could make more sense
+>>>>> because each field would eventually be aligned on 64-bit. Picking a
+>>>>> 16-bit value was to help developers (and compilers/linters) with the
+>>>>> "correct" type (for TCP).
+>>>
+>>> Thinking more about this, let's use a __u64 port (and remove the
+>>> explicit packing). The landlock_append_net_rule() function should use a
+>>> __u16 port argument, but the add_rule_net_service() function should
+>>> check that there is no overflow with the port attribute (not higher than
+>>> U16_MAX) before passing it to landlock_append_net_rule(). We should
+>>> prioritize flexibility for the kernel UAPI over stricter types. User
+>>> space libraries can improve this kind of types with a more complex API.
+>>>
+>>> Big endian can make sense for a pure network API because the port value
+>>> (and the IP address) is passed to other machines through the network,
+>>> as-is. However, with Landlock, the port value is only used by the
+>>> kernel. Moreover, in practice, port values are mostly converted when
+>>> filling the sockaddr*_in structs. It would then make it more risky to
+>>> ask developers another explicit htons() conversion for Landlock
+>>> syscalls. Let's stick to the host endianess and let the kernel do the
+>>> conversion.
+>>>
+>>> Please include these rationales in code comments. We also need to update
+>>> the tests for endianess, but still check big and little endian
+>>> consistency as it is currently done in these tests. A new test should be
+>>> added to check port boundaries with:
+>>> - port = 0
+>>> - port = U16_MAX
+>>       port = U16_MAX value passes.
+> 
+> correct
+> 
+>> 
+>>> - port = U16_MAX + 1 (which should get an EINVAL)
+>>       port = U16_MAX + 1 after casting is 0, EINVAL is returned.
+> 
+> In the tests, we want the casting to be be done by the kernel. The test
+> should then pass 0x10000 to the struct and the kernel should return
+> EINVAL because it is greater than U16_MAX, not because it is zero.
+> 
+>> 
+>>> - port = U16_MAX + 2 (to check u16 casting != 0)
+>>       port = U16_MAX + 2 after casting is 1, is it passes?
+> 
+> In this case, 0x10001 should be rejected by the kernel (and return
+> EINVAL) because it is greater than U16_MAX.
+> 
+>> 
+>>> - port = U32_MAX + 1
+>>> - port = U32_MAX + 2
+>> 
+>>       Don't you think that all port values >= U16_MAX + 1, EINVAL should
+>>       be returned?
+> 
+> All port values > U16_MAX should indeed return EINVAL, and tests should
+> check kernel casting (i.e. the kernel must check the 64-bit value before
+> casting it to a 16-bit value and only check the casted zero). I didn't
+> mean that these cases should pass, only that they should be tested, but
+> I think you got it. ;)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+   Yep. I got the point. Thanks.
+> 
+>>>
+>>>
+>>>>>
+>>>>> If we think about protocols other than TCP and UDP (e.g. AF_VSOCK), it
+>>>>> could make sense to have a dedicated attr struct specifying other
+>>>>> properties (e.g. CID). Anyway, the API is flexible but it would be nice
+>>>>> to not mess with it too much. What do you think?
+>>>>>
+>>>>>
+>>>>>>>
+>>>>>>>> +
+>>>>>>>> +    err = landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
+>>>>>>>> +                            &net_service, 0);
+>>>>>>>> +
+>>>>>>>> +The next step is to restrict the current thread from gaining more privileges
+>>>>>>>> +(e.g. thanks to a SUID binary). We now have a ruleset with the first rule allowing
+>>>>>>>              ^^^^^^
+>>>>>>>              "through" a SUID binary? "thanks to" sounds like it's desired
+>>>>>>>              to do that, while we're actually trying to prevent it here?
+>>>>>>
+>>>>>>       This is Mickaёl's part. Let's ask his opinion here.
+>>>>>>
+>>>>>>       Mickaёl, any thoughts?
+>>>>>
+>>>>> Yep, "through" looks better.
+>>>>> .
+>>> .
+> .
