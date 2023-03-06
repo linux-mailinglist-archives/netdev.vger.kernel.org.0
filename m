@@ -2,120 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 841B06AB945
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 10:07:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64FD56AB942
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 10:07:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229898AbjCFJHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 04:07:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42192 "EHLO
+        id S229835AbjCFJHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 04:07:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229869AbjCFJHg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 04:07:36 -0500
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12DBD22A10
-        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 01:07:36 -0800 (PST)
-Received: by mail-pl1-x649.google.com with SMTP id u14-20020a170902e5ce00b0019e3ce940b7so5568000plf.12
-        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 01:07:36 -0800 (PST)
+        with ESMTP id S229616AbjCFJHc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 04:07:32 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC2CB1F5E4
+        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 01:07:28 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id o12so35398892edb.9
+        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 01:07:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1678093655;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=4A46wKTC+CcMedW/G9j+SuC/vj+S0/LGxEORBPUqymI=;
-        b=jkvSAN8NSy+uLMta6N+AwFqfJL62XqCwN2Bvyh1/a4/UbQHwRL3F/PnRe/nQwArwp+
-         pOFb3Q5ynk4fHladF23EbePCt7qkXIXnZz31qzXoKEcyttpIsLznMvMwOYwFrIAZzTaa
-         JQ6HYh6KSSQtTZAjFvWY2qaQCCyGsnsU+sQGrAVrIEJMzbMjsSKERgSuP8SFd1AhIIXQ
-         nzs4sYU43IKvUecajKYsdYNRSr2m4gS6DyRR2g0M8z4QOplfdoba7KAt0mdbmpReptu/
-         kHiIF4rCYUdxPJkcT1kxuhqhIf3ofnBN6ZJjhZayUrHE/t/M+5gSPyyhK14GKyXbNDzB
-         lsGg==
+        d=gmail.com; s=20210112; t=1678093647;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=S1UTt4DO5EMkPVciGar3ib0Qx9uHBfOwmWIzMq/trQk=;
+        b=hugdiMZ7pSe9GbfKN1rytTwezAhKbYL63OVcDPys2gQVl7vNhdnMLSLV5bJPuC0MsF
+         XEceVOkgSua0OnNLYEHszRO9juNIqEl2QvC5ehX8ufSosV6FQa8dfPVmOQrDotgzrBLA
+         PBQcssrNXh9V8RO8w3Nxh79nk8J6X6AgYFZPBs9fshDIz7IHzIIRhhfi1y0Nl+fpgEI4
+         HXhzLXhaxrRNXZkJ0TTprvIqbfYiksO3+vdy21zS2JNtM0KMCJF/pvEaqoUv5XjNnY8i
+         9M7NvKR6p+9/5ylEs/3uGyqywydW+w1JFvox4VqIqwhHD9CWd9MY6QOTQJCw31iPCF2v
+         zEvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678093655;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=4A46wKTC+CcMedW/G9j+SuC/vj+S0/LGxEORBPUqymI=;
-        b=5GYBUChIICnibDgz88rh/euJIcNdcD63+9HbvW0Yfq0e2OFUotiRu/RX4GqHC6wcBu
-         MdSmYx5PjH9qQJgqL9JQWn0Zdf5o9S5V3FKdOdTeOgl+QG9fJyGkVxW3Q8p0KOka1GpZ
-         icBEeDF4GHVWekQ820FmceazNsyxOsqgl8wRFPfMRa8gWATNgRlf568UYriRGmMmwLH0
-         6rPS8J/PgMSvtJkzsBHvyl5CQqh/XpIVtOMVtJJuFTHW4Yc7DtSVnSYyXLYdX+EtZv6I
-         wqno7cxN78Q13EF4TTuMxTx3JmqesaqOhTC3lcnxZetdK0Dg371TNaeh8zIiPnEBss3e
-         86Nw==
-X-Gm-Message-State: AO0yUKVi3HUmOcawwtXTO7GQxH59uHEyKpN3BJtEyIKepYPnTjHJNcmE
-        x9T8nVSDIIi3w0NtpcGap2cKpJGRTXWZ
-X-Google-Smtp-Source: AK7set/jjFYkNXqa31b0x4vkHuOnIhd4oQL+wq7Pm60LeC6WBNHSXLU9Hyr58Rwz92XV5T/MwzVUExwVqHoS
-X-Received: from apusaka-p920.tpe.corp.google.com ([2401:fa00:1:17:d5f3:860e:1224:5e0a])
- (user=apusaka job=sendgmr) by 2002:a62:ce43:0:b0:593:dc61:2161 with SMTP id
- y64-20020a62ce43000000b00593dc612161mr4272494pfg.2.1678093655488; Mon, 06 Mar
- 2023 01:07:35 -0800 (PST)
-Date:   Mon,  6 Mar 2023 17:07:07 +0800
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.40.0.rc0.216.gc4246ad0f0-goog
-Message-ID: <20230306170628.1.I8d0612b2968dd4740a4ceaf42f329fb59d5b9324@changeid>
-Subject: [PATCH] Bluetooth: hci_sync: Don't wait peer's reply when powering off
-From:   Archie Pusaka <apusaka@google.com>
-To:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>
-Cc:     CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        Abhishek Pandit-Subedi <abhishekpandit@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        d=1e100.net; s=20210112; t=1678093647;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=S1UTt4DO5EMkPVciGar3ib0Qx9uHBfOwmWIzMq/trQk=;
+        b=BwvMYQaOETefeiADD7GUIWNDYjfl5Skf1G2REFh0+IcGEW9rbX97VHqNpPHM/oI1KN
+         d5QGNjOGILN8Y2y2LR/jK+p+YQI6Smoez+wwLbgeFOUgEwciSkqiWPwb58gOZ5cHakAk
+         drLOei31ZP2ULcRVi6cDBHgIMX6KqBxBjr++0Stj9XQ2t9e1x7gJjvznrjR7P6H7J3Yw
+         NFCqv1pG5wcf+1nwpsBO8b3HUvaDKiz3EAhmw0BIem7+NEr2NWnQ0PoxBUYnJ38ePxt3
+         nY3vNRgTAnzhlVp1+ecskoAE0fwrH/8R0f8YsXMI753qywS/eSpTSNE0WG06Sj5BIfte
+         0uQQ==
+X-Gm-Message-State: AO0yUKU4eYcADf/hAAifWEduipeGrHww4aFbaEK/nREzT1diYAckzHxY
+        pedxXnm0SbnCsN1l2cYSDtU=
+X-Google-Smtp-Source: AK7set93L6+14+MRDbmnXRmj28LzM2yIkEySkxnQo+M4ypSaseZ5nGGNrsZiEcPTsJ+vjq48qo2RAA==
+X-Received: by 2002:a17:907:6e8f:b0:8de:e66b:27e with SMTP id sh15-20020a1709076e8f00b008dee66b027emr10929045ejc.16.1678093647324;
+        Mon, 06 Mar 2023 01:07:27 -0800 (PST)
+Received: from localhost (tor-exit-3.zbau.f3netze.de. [185.220.100.254])
+        by smtp.gmail.com with ESMTPSA id 23-20020a170906005700b008e3e2b6a9adsm4306459ejg.94.2023.03.06.01.07.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Mar 2023 01:07:26 -0800 (PST)
+Date:   Mon, 6 Mar 2023 11:07:20 +0200
+From:   Maxim Mikityanskiy <maxtram95@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, Adrien Moulin <amoulin@corp.free.fr>,
+        borisp@nvidia.com, john.fastabend@gmail.com, tariqt@nvidia.com,
+        maximmi@nvidia.com
+Subject: Re: [PATCH net] net: tls: fix device-offloaded sendpage straddling
+ records
+Message-ID: <ZAWtE34EJw79Oqkx@mail.gmail.com>
+References: <20230304192610.3818098-1-kuba@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230304192610.3818098-1-kuba@kernel.org>
+X-Spam-Status: No, score=1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Archie Pusaka <apusaka@chromium.org>
+On Sat, Mar 04, 2023 at 11:26:10AM -0800, Jakub Kicinski wrote:
+> Adrien reports that incorrect data is transmitted when a single
+> page straddles multiple records. We would transmit the same
+> data in all iterations of the loop.
+> 
+> Reported-by: Adrien Moulin <amoulin@corp.free.fr>
+> Link: https://lore.kernel.org/all/61481278.42813558.1677845235112.JavaMail.zimbra@corp.free.fr
+> Fixes: c1318b39c7d3 ("tls: Add opt-in zerocopy mode of sendfile()")
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
 
-Currently, when we initiate disconnection, we will wait for the peer's
-reply unless when we are suspending, where we fire and forget the
-disconnect request.
+Thanks for the fix, looks good to me.
 
-A similar case is when adapter is powering off. However, we still wait
-for the peer's reply in this case. Therefore, if the peer is
-unresponsive, the command will time out and the power off sequence
-will fail, causing "bluetooth powered on by itself" to users.
+Acked-by: Maxim Mikityanskiy <maxtram95@gmail.com>
 
-This patch makes the host doesn't wait for the peer's reply when the
-disconnection reason is powering off.
+> Maxim, can I add a .mailmap entry for you? get_maintainers
+> will complain if I don't CC your @nvidia address :(
 
-Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@google.com>
-
----
-
- net/bluetooth/hci_sync.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
-
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index 561a519a11bd6..a6cea389b675f 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -5103,10 +5103,12 @@ static int hci_disconnect_sync(struct hci_dev *hdev, struct hci_conn *conn,
- 	cp.handle = cpu_to_le16(conn->handle);
- 	cp.reason = reason;
- 
--	/* Wait for HCI_EV_DISCONN_COMPLETE not HCI_EV_CMD_STATUS when not
--	 * suspending.
-+	/* Wait for HCI_EV_DISCONN_COMPLETE, not HCI_EV_CMD_STATUS, when the
-+	 * reason is anything but HCI_ERROR_REMOTE_POWER_OFF. This reason is
-+	 * used when suspending or powering off, where we don't want to wait
-+	 * for the peer's response.
- 	 */
--	if (!hdev->suspended)
-+	if (reason != HCI_ERROR_REMOTE_POWER_OFF)
- 		return __hci_cmd_sync_status_sk(hdev, HCI_OP_DISCONNECT,
- 						sizeof(cp), &cp,
- 						HCI_EV_DISCONN_COMPLETE,
--- 
-2.40.0.rc0.216.gc4246ad0f0-goog
-
+Yes please, that would be great. You can also add maximmi@mellanox.com,
+in case someone refers to some old commit.
