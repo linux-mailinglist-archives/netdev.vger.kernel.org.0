@@ -2,198 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12FE56AB739
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 08:45:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B043A6AB73C
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 08:48:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229680AbjCFHpn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 02:45:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46572 "EHLO
+        id S229651AbjCFHs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 02:48:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229661AbjCFHpm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 02:45:42 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 559041968C;
-        Sun,  5 Mar 2023 23:45:40 -0800 (PST)
-Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4PVVtF4wJjz6J9Tw;
-        Mon,  6 Mar 2023 15:43:01 +0800 (CST)
-Received: from [10.123.123.126] (10.123.123.126) by
- lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Mon, 6 Mar 2023 07:45:37 +0000
-Message-ID: <4b8e5ffb-7025-779f-4f42-ca018fb980b4@huawei.com>
-Date:   Mon, 6 Mar 2023 10:45:36 +0300
+        with ESMTP id S229613AbjCFHs4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 02:48:56 -0500
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2047.outbound.protection.outlook.com [40.107.6.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FEEA901C
+        for <netdev@vger.kernel.org>; Sun,  5 Mar 2023 23:48:55 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hg5zBvepkGsmh0B3A8qsZ8x8BesnNVcSD8OLs1pImti+SXq0FyRWAlpqgYFh3mUue9ERk4MrPOXmTj07mzlybqLmWFZBpuojsBFXx+LgUjqYtlJpirv1CkwAGph2s8iMamixR6n7bzxDGIRTDfgEm97N8zOsBAv0pfMBz0DHGDto/aV9OnSLyUbuT4a7FPOm3NpFFyoxWpGjnrVTp7rQyW6lXqHzno41SWyFoc5YV/nDrDmxozeNZaMGr7vMley81yhRwFbX7L0hfvV9GrFud1SWHFM2hxK1k92b4TykaGdj0OG0kzk+IEvKkHV+7cYPrvnvKt3I6gF+ujvolyA0jg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=41RWR3kp0azA7UdocINh4kEiWtlufSoladcLIEf/KnI=;
+ b=H7eYUtFsQm3hppfy1vaIAJRQPWeDVbqxnXkfLkZHjgoYAUdXok1Bcmaq+riAZAzfpa1pCFNddeaFfDMIceDzfO2ycr2618LQ2VnfJL9Z9LIDkiDupw4p99c2mHAuAU6u+EjHxoKEhBVEV+ZDiYELUej+3oHkpOVCrK49k2EY3WpTVO8rMl6fOrHFzKnAAefU+n0f9MvALDjDIzqjyr/9dvvJ77nKQGUpRomPrURz3ZjaLI2+TmC5bfQNUfQi530ZzqMznT15uMjrGZEa0xkDmamrzrFI5iYT9c+IVtjun16JwWLaisv9y+Bmy3H0I7Rx+Gf19B7UgnPYss8CBxBYhw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=solid-run.com; dmarc=pass action=none
+ header.from=solid-run.com; dkim=pass header.d=solid-run.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=solidrn.onmicrosoft.com; s=selector1-solidrn-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=41RWR3kp0azA7UdocINh4kEiWtlufSoladcLIEf/KnI=;
+ b=jhTptzzG/N4DPF1PkUTGG1q7P5Z0+sNU/vPbP/LN9zvt6zqbNRxF3XWKGn+FegYYTKLFoLssUTj3O2Drsfwqx6iiYEhK28XyjVr9XCRK8/oEiSEcbNVVQY7rh3/T8gAN4PedhCKQtfEE17oGMl+ZK4G3FSUdjvSydka8Uje/pQM=
+Received: from AM0PR04MB4723.eurprd04.prod.outlook.com (2603:10a6:208:c0::20)
+ by AM7PR04MB6951.eurprd04.prod.outlook.com (2603:10a6:20b:10f::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.28; Mon, 6 Mar
+ 2023 07:48:52 +0000
+Received: from AM0PR04MB4723.eurprd04.prod.outlook.com
+ ([fe80::b28a:f4f1:8415:221d]) by AM0PR04MB4723.eurprd04.prod.outlook.com
+ ([fe80::b28a:f4f1:8415:221d%4]) with mapi id 15.20.6156.022; Mon, 6 Mar 2023
+ 07:48:52 +0000
+From:   Alvaro Karsz <alvaro.karsz@solid-run.com>
+To:     Jason Wang <jasowang@redhat.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net] virtio-net: unify notifications coalescing structs
+Thread-Topic: [PATCH net] virtio-net: unify notifications coalescing structs
+Thread-Index: AQHZT3okq/4zOsyz3kGfXdQdK8+naq7tG6AAgABFKlI=
+Date:   Mon, 6 Mar 2023 07:48:51 +0000
+Message-ID: <AM0PR04MB4723D2274F037EDD814007A7D4B69@AM0PR04MB4723.eurprd04.prod.outlook.com>
+References: <20230305154942.1770925-1-alvaro.karsz@solid-run.com>
+ <CACGkMEuc_MtVpM2bJH20dmXC30Po8Fbd2Y-xv-Q=O13=pLSLpA@mail.gmail.com>
+In-Reply-To: <CACGkMEuc_MtVpM2bJH20dmXC30Po8Fbd2Y-xv-Q=O13=pLSLpA@mail.gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-GB
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=solid-run.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: AM0PR04MB4723:EE_|AM7PR04MB6951:EE_
+x-ms-office365-filtering-correlation-id: baf9857f-3af1-4945-b60f-08db1e173a9f
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Tv+e9vOA58xLmGyoOHgsDqjikG1GbCYOfpORWOc2sIXUmcUkGDaT/+Y9QzJfBivHOtmojqWU1OF+uRdrfIpg4BSsejWavoOqYUoFAaATKD//MNilxMJWJTrzEwDGot99OoHBpbJfNtmotyL23doL/9jbme8qJqtBJlciZxdjta6d7buVfsVQhZwU4d/it70kEMmgxXe3O48OwrtnbDkOukQREY9I9dszWRiSkP5ZcshHfoHguosOdIHqDjY8Tz+2xoMn+nSYlHVsNXfeLGTguVwqHJGr8SmobUz/e3SKd2YnNspplvFBgaaXHXNzG/Nmuy0svBq6HZ6JHNe1TeuHpijqM1VSJRh7w/tRKmBRsWyABbAApMyQxcKom4Ms1STsEAr3akFKT3ZcBgpEJHYARzt6Rhjw8TO3hLciZAXcYW92YXdATIWoeC3cX6uEPEsnO1CrFn+t/2nCwo1VpDwX/o7K4T5n49y5xBxPD0H5Pd2vtQrYI9Mv7hUcsubMZH2Uf5pnV/6JuLqjUgWPRvxZed1KtMVudLeepD/N1iH4Zzl9ScuGGVylaw3fx47upEK1sU7+BU01N6q2LNJx4nxAEBGTumJTyWsidiP794UWbf/6hbeWSIIMq3sY0166pJEbtyoKf965qKLftFiUUFGB6/06yvVTiU8w0KPMY5C5BMt3kv3ocz9+K02vSGO64zyp0cDSPuaUzBEWLGQ+NXkPvg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB4723.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(376002)(136003)(346002)(39830400003)(396003)(366004)(451199018)(33656002)(4326008)(76116006)(66556008)(41300700001)(66946007)(66476007)(66446008)(64756008)(8676002)(6916009)(8936002)(44832011)(2906002)(5660300002)(122000001)(86362001)(38100700002)(38070700005)(558084003)(7696005)(71200400001)(478600001)(55016003)(54906003)(316002)(91956017)(52536014)(6506007)(9686003)(186003)(26005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?zCwW/S44gO+IuRpcvT9cpSzOCubf2si9fculWwhz+0l6IpXVALjsF6lkeg?=
+ =?iso-8859-1?Q?w3BECcMNdhoeiumj2lfx+9Oy9kItdEmJ3ITjGtq6zulgWXlzTnGxwtaQ6H?=
+ =?iso-8859-1?Q?ZJaS+4+eqB4lrbLm8ELUc4ufH/njFFeAgKeYP/zaHyLm87MB0SzyaKmkPJ?=
+ =?iso-8859-1?Q?mppndoVv97q+vFE49XAlqGXAIes8WWp+NJ5hqOkHhQg3Us4Ed8OcOuVmiX?=
+ =?iso-8859-1?Q?07i/xkcCsIJr/Pju9yVFrUEMCYUsF62z/7WI/BrwaUAadE6H0BOzDdwvCg?=
+ =?iso-8859-1?Q?iO4a3dBl34/hRpsjuAeIQLZNFqcnosn+7YleNB1qT1k0MUcIBnPfdCsopn?=
+ =?iso-8859-1?Q?lv9ZuR3m98YYKeDLkwl4tmnUV5XgGzOziWXZPuF/Btxqu9g3yK1coOjbYs?=
+ =?iso-8859-1?Q?S2wQXB/3iHc63VDjWbxNdDstGvIV5hoKNaZLUEnU5JDm3I5AeVPER6/UAk?=
+ =?iso-8859-1?Q?NTeDyNpMtJ+KMYckvsx02yCECuyl8XYhns1CECHWhj/to1p0WVDLCya4Xl?=
+ =?iso-8859-1?Q?2xylP4llclqIgCZCuPvk/0QqQzvwfNW+zsePO92QS4kRqiEcWnrU548tvf?=
+ =?iso-8859-1?Q?38Req3ChUsx54GB2CxumFzMRKrxkU2MwCKY5i2+HEAPUKgyGZZYU2d27F9?=
+ =?iso-8859-1?Q?lHGlkojOmYGYnhlatmb/sLP8ZUJRF6BxEZb/yCJN0mh1Cu1G4eQsER68p2?=
+ =?iso-8859-1?Q?JtcHYbN32LJDfgWQjhUXf8yqMDj6CDNT1rKDMBiTq2oKAQaoReyvNSt3xy?=
+ =?iso-8859-1?Q?tbYh6FE1Hy8QsKLjrllL9cvmpdaYaOSCu1/6MzCHifuBcShUwfqeXNVoal?=
+ =?iso-8859-1?Q?wdWtw5H4JT+YYa7eVxIFn+UCP2QT+fuZvX+NJdAtbZqKo6iIQoBd5qVUy7?=
+ =?iso-8859-1?Q?B0lUsGhvAg7K9CGUpd5kF/QdmdycAjsTRj0i4dAFnogqDgPF7OsdhrqxUR?=
+ =?iso-8859-1?Q?UI83ZMKsU2vY6445+VS4icpjaTb2MwhOfSik9VfJ7jJBxcyGNVU2tufPPG?=
+ =?iso-8859-1?Q?qgcYlOVkwXaBTt0EmhFENFr8MhCXB40dwNkj8fjENFIqpCMIbqej0v23nx?=
+ =?iso-8859-1?Q?7wMANJplQO5LWGBVWAkGGDwGyVhabQjdbMF0gr+5eX4z5yctDuSF7UuUr6?=
+ =?iso-8859-1?Q?b3A29qqrJe2yuHDArwegDAfYTdfhR/Lub+RBlZTsWZd2aZZ0IYcNYC7QPI?=
+ =?iso-8859-1?Q?889ZtN15PrzfXSkWv5HtUEU8dFZhKO2cMLbMa8RbcqOPWPSnEbwgwjfW1u?=
+ =?iso-8859-1?Q?CjQJ/AsVIR/ckj+Sw/WQ2KeTdXX0ehb/93mjALyebxBlC5l9+0jGvdPHeA?=
+ =?iso-8859-1?Q?scB9U/kHfBWnFdmoWOiZ3vxnhBea+Uw8oxdiCyTO7xCSDL43FVD0AmwFGn?=
+ =?iso-8859-1?Q?P7TDqdl2lsT5//pFpp5kExJ9HYqld2YEvBlNn7sFUjh7meIQdzgl6ZzJHP?=
+ =?iso-8859-1?Q?dZM/GSqUBK9qAqGipLyG+w8B/KamMmKTWwIIDnz2gSQzeTRKyEAt1fVuKi?=
+ =?iso-8859-1?Q?/0Tt0/z661tD+HmM5RxBDS37VhnI/4cMEGTCogG/cGH4EqsrCL/xflyNgK?=
+ =?iso-8859-1?Q?yC6WGur77OyMIFzIILz6zN+piy7vniTVr5SGcNUDj3jVZx+rToFeXxvGHE?=
+ =?iso-8859-1?Q?/XA9agQa3Cybg+k0YkHYfzsARKo/RQWeuPM921VCXotfEkXyVHFB535g?=
+ =?iso-8859-1?Q?=3D=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v9 00/12] Network support for Landlock
-Content-Language: ru
-To:     =?UTF-8?Q?G=c3=bcnther_Noack?= <gnoack3000@gmail.com>
-CC:     <mic@digikod.net>, <willemdebruijn.kernel@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
-        <artem.kuzin@huawei.com>
-References: <20230116085818.165539-1-konstantin.meskhidze@huawei.com>
- <Y/fl5iEbkL5Pj5cJ@galopp>
-From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-In-Reply-To: <Y/fl5iEbkL5Pj5cJ@galopp>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.123.123.126]
-X-ClientProxiedBy: lhrpeml100001.china.huawei.com (7.191.160.183) To
- lhrpeml500004.china.huawei.com (7.191.163.9)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-OriginatorOrg: solid-run.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB4723.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: baf9857f-3af1-4945-b60f-08db1e173a9f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Mar 2023 07:48:51.9527
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a4a8aaf3-fd27-4e27-add2-604707ce5b82
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 2Bg8Q4C5K5zMr0GjBISbAfT4fATTctolKq1YLE/69GHw/DG6+y4436YVpSkzyZXMAHzNo9dbKtvCFyc5HPSYH6Tfa8YJTpqbpBuykC5f79A=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB6951
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,T_SPF_PERMERROR autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-2/24/2023 1:17 AM, Günther Noack пишет:
-> Hello Konstantin!
-
-   Hi, Günther.
-   Sorry for late reply. I was in short vacation.
-   Thanks for the questions. I will try to give you answers ASAP.
-> 
-> Sorry for asking such fundamental questions again so late in the review.
-> 
-> After playing with patch V9 with the Go-Landlock library, I'm still
-> having trouble understanding these questions -- they probably have
-> good answers, but I also did not see them explained in the
-> documentation. Maybe it would help to clarify it there?
-> 
-> * What is the use case for permitting processes to connect to a given
->    TCP port, but leaving unspecified what the IP address is?
-> 
->    Example: If a Landlock ruleset permits connecting to TCP port 53,
->    that makes it possible to talk to any IP address on the internet (at
->    least if the process runs on a normal Linux desktop machine), and we
->    can't really control whether that is the system's proper (TCP-)DNS
->    server or whether that is an attacker-controlled service for
->    accepting leaked secrets from the process...?
-> 
->    Is the plan that IP address support should be added in a follow-up
->    patch?  Will it become part of the landlock_net_service_attr struct?
-> 
-> * Given the list of obscure network protocols listed in the socket(2)
->    man page, I find it slightly weird to have rules for the use of TCP,
->    but to leave less prominent protocols unrestricted.
-> 
->    For example, a process with an enabled Landlock network ruleset may
->    connect only to certain TCP ports, but at the same time it can
->    happily use Bluetooth/CAN bus/DECnet/IPX or other protocols?
-> 
->    I'm mentioning these more obscure protocols, because I doubt that
->    Landlock will grow more sophisticated support for them anytime soon,
->    so maybe the best option would be to just make it possible to
->    disable these?  Is that also part of the plan?
-> 
->    (I think there would be a lot of value in restricting network
->    access, even when it's done very broadly.  There are many programs
->    that don't need network at all, and among those that do need
->    network, most only require IP networking.
-> 
->    Btw, the argument for more broad disabling of network access was
->    already made at https://cr.yp.to/unix/disablenetwork.html in the
->    past.)
-> 
-> * This one is more of an implementation question: I don't understand
->    why we are storing the networking rules in the same RB tree as the
->    file system rules. - It looks a bit like "YAGNI" to me...?
-> 
->    Would it be more efficient to keep the file system rules in the
->    existing RB tree, and store the networking rules *separately* next
->    to it in a different RB tree, or even in a more optimized data
->    structure? In pseudocode:
-> 
->      struct fast_lookup_int_set bind_tcp_ports;
->      struct fast_lookup_int_set connect_tcp_ports;
->      struct landlock_rb_tree fs_rules;
-> 
->    It seems that there should be a data structure that supports this
->    well and which uses the fact that we only need to store small
->    integers?
-> 
-> Thanks,
-> –Günther
-> 
-> P.S.: Apologies if some of it was discussed previously. I did my best
-> to catch up on previous threads, but it's long, and it's possible that
-> I missed parts of the discussion.
-> 
-> On Mon, Jan 16, 2023 at 04:58:06PM +0800, Konstantin Meskhidze wrote:
->> Hi,
->> This is a new V9 patch related to Landlock LSM network confinement.
->> It is based on the landlock's -next branch on top of v6.2-rc3 kernel version:
->> https://git.kernel.org/pub/scm/linux/kernel/git/mic/linux.git/log/?h=next
->> 
->> It brings refactoring of previous patch version V8.
->> Mostly there are fixes of logic and typos, adding new tests.
->> 
->> All test were run in QEMU evironment and compiled with
->>  -static flag.
->>  1. network_test: 32/32 tests passed.
->>  2. base_test: 7/7 tests passed.
->>  3. fs_test: 78/78 tests passed.
->>  4. ptrace_test: 8/8 tests passed.
->> 
->> Previous versions:
->> v8: https://lore.kernel.org/linux-security-module/20221021152644.155136-1-konstantin.meskhidze@huawei.com/
->> v7: https://lore.kernel.org/linux-security-module/20220829170401.834298-1-konstantin.meskhidze@huawei.com/
->> v6: https://lore.kernel.org/linux-security-module/20220621082313.3330667-1-konstantin.meskhidze@huawei.com/
->> v5: https://lore.kernel.org/linux-security-module/20220516152038.39594-1-konstantin.meskhidze@huawei.com
->> v4: https://lore.kernel.org/linux-security-module/20220309134459.6448-1-konstantin.meskhidze@huawei.com/
->> v3: https://lore.kernel.org/linux-security-module/20220124080215.265538-1-konstantin.meskhidze@huawei.com/
->> v2: https://lore.kernel.org/linux-security-module/20211228115212.703084-1-konstantin.meskhidze@huawei.com/
->> v1: https://lore.kernel.org/linux-security-module/20211210072123.386713-1-konstantin.meskhidze@huawei.com/
->> 
->> Konstantin Meskhidze (11):
->>   landlock: Make ruleset's access masks more generic
->>   landlock: Refactor landlock_find_rule/insert_rule
->>   landlock: Refactor merge/inherit_ruleset functions
->>   landlock: Move and rename umask_layers() and init_layer_masks()
->>   landlock: Refactor _unmask_layers() and _init_layer_masks()
->>   landlock: Refactor landlock_add_rule() syscall
->>   landlock: Add network rules and TCP hooks support
->>   selftests/landlock: Share enforce_ruleset()
->>   selftests/landlock: Add 10 new test suites dedicated to network
->>   samples/landlock: Add network demo
->>   landlock: Document Landlock's network support
->> 
->> Mickaël Salaün (1):
->>   landlock: Allow filesystem layout changes for domains without such
->>     rule type
->> 
->>  Documentation/userspace-api/landlock.rst     |   72 +-
->>  include/uapi/linux/landlock.h                |   49 +
->>  samples/landlock/sandboxer.c                 |  131 +-
->>  security/landlock/Kconfig                    |    1 +
->>  security/landlock/Makefile                   |    2 +
->>  security/landlock/fs.c                       |  255 ++--
->>  security/landlock/limits.h                   |    7 +-
->>  security/landlock/net.c                      |  200 +++
->>  security/landlock/net.h                      |   26 +
->>  security/landlock/ruleset.c                  |  409 +++++--
->>  security/landlock/ruleset.h                  |  185 ++-
->>  security/landlock/setup.c                    |    2 +
->>  security/landlock/syscalls.c                 |  165 ++-
->>  tools/testing/selftests/landlock/base_test.c |    2 +-
->>  tools/testing/selftests/landlock/common.h    |   10 +
->>  tools/testing/selftests/landlock/config      |    4 +
->>  tools/testing/selftests/landlock/fs_test.c   |   75 +-
->>  tools/testing/selftests/landlock/net_test.c  | 1157 ++++++++++++++++++
->>  18 files changed, 2398 insertions(+), 354 deletions(-)
->>  create mode 100644 security/landlock/net.c
->>  create mode 100644 security/landlock/net.h
->>  create mode 100644 tools/testing/selftests/landlock/net_test.c
->> 
->> -- 
->> 2.25.1
->> 
-> .
+> Is this too late to be changed?=0A=
+> =0A=
+> Thanks=0A=
+=0A=
+You're right.=0A=
+What do you suggest, dropping the patch or adding the unified struct withou=
+t deleting the existing ones?=0A=
