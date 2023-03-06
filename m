@@ -2,86 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6795A6AD0F5
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 23:00:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C484A6AD129
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 23:08:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229705AbjCFWAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 17:00:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54868 "EHLO
+        id S229871AbjCFWIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 17:08:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229525AbjCFWAW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 17:00:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C74F839B81
-        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 14:00:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8448AB81135
-        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 22:00:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0DFA2C4339B;
-        Mon,  6 Mar 2023 22:00:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678140019;
-        bh=Z+t7RJHWXhqqYVaB6v6igwdoN7V53f4saMQhZtCKL/Y=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=e3ilGinrUVmWMRQFMdX2AR54iWPrEMeNGqECmuNOIXB1tFBBgTAi7R8comQWKfrW4
-         cWMSy1qiaQvp83+d0DWISDtPiohC/wJEuxmaMkBlrHMobUNIJ8q3bcThfvXx0l1V/v
-         +s551YG/NaqSspq/HH3ww0gjKjkU2RODYVYVrCXQYzBC4hnwp2nTJ4D+/6Vs3YZq4Q
-         LPGzdHXxUicQL5JI6+UOmptKfnnCrgZAFcpnfeaF338dYydLukUyyVCpthb+jqfnG5
-         WDxTVO8NqfUlV8nlIU3FRbIIT8A3JEZYVp+9MeYByDviC1rDw0oz2nZEVO6ueCgfib
-         RjjEz/Hlb0gpQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DE934E68C39;
-        Mon,  6 Mar 2023 22:00:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229651AbjCFWIQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 17:08:16 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE2A528854
+        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 14:08:15 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id h11-20020a17090a2ecb00b00237c740335cso10074858pjs.3
+        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 14:08:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112; t=1678140495;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ZdjNV87cxSkGCCuxqxx32JPjVG/7VfVasFbIpj9Fvdo=;
+        b=K8+oQRQmCdhmLpnEb+hCUiQ63uCpROLRfnTv65gzLXeRkViKOM1m3eU7JWuITKYK5I
+         fJMg0ulxMMjAW0xAMAosvZ2xWG4NUYEoEXTSLnSWB7+UFvvrZjD3QB18ykZxLCcVGE0W
+         ds6RiZ9TiTOu0ieI7IDNN/3wAlW/L2r6ILSfGqZnxc74j/3HV/kje1G4BDddZxEBGWas
+         wIPO7H5LSEjMlWo5UXoEp+R9EtBdbpA2IoB4JrrvAja9kpwvSA/WvPtjHRWxtm73S73t
+         oZeqQcU1KEFIIFz1z5vXPQNORVL9WBT4AJHU/il0VTFpIhAp32arDbvZvo1qdFb1kdi0
+         qMgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678140495;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ZdjNV87cxSkGCCuxqxx32JPjVG/7VfVasFbIpj9Fvdo=;
+        b=lwBPEoQIe1ReBEPSki35hG/mYOkI5Cq3FcHeeiGb/QoUTUHEG1OaRbNonKI2dybmBR
+         4faBxKLvgxkQopQCH/ELWprYsdKKrymvQ851gtD1xeabkSag4pQLzMp0c2iCHs5pnXpU
+         1ol+Jk9GC1TKXHaCAiaogxL8qWQgvajhTDkqun2m90upKBvdfNzZdojaTRy3hZJuQiFu
+         f+z4j1O9AThF+vpl9DzGTfrMgDvJW19sw1sNBNDXGSEMeuWWBSlPDlaUYWlx692TS28J
+         WCpSkmFY1g1j+wt6I6aV0EMX3B6sW6Fn45ooGONqcmTOFJGe+rOyYRi4YC+FFkAYo64c
+         o2Gw==
+X-Gm-Message-State: AO0yUKWvBcAeiaautSXFmTpJnzaCfaBBDFXNtaiXJbvN9bhZ92pbhIgQ
+        LZW346bCoDi8wjSVKNLHx8sFfHD69txzlCpaaIRuNA==
+X-Google-Smtp-Source: AK7set+pJS2SspDRq5Fs0NBFdPvzZys2gsriNHACGkc8N58vCQO+4QEt/szQFs6+kdAgqRWjLtvRQw==
+X-Received: by 2002:a17:903:41c3:b0:19e:699e:9b64 with SMTP id u3-20020a17090341c300b0019e699e9b64mr16462201ple.65.1678140495293;
+        Mon, 06 Mar 2023 14:08:15 -0800 (PST)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id lc15-20020a170902fa8f00b0019eddc81b86sm216074plb.0.2023.03.06.14.08.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Mar 2023 14:08:15 -0800 (PST)
+Date:   Mon, 6 Mar 2023 14:08:12 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Mike Freemon <mfreemon@cloudflare.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [RFC PATCH] Add a sysctl to allow TCP window shrinking in order
+ to honor memory limits
+Message-ID: <20230306140812.17f35658@hermes.local>
+In-Reply-To: <20230306213058.598516-1-mfreemon@cloudflare.com>
+References: <20230306213058.598516-1-mfreemon@cloudflare.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: tls: fix device-offloaded sendpage straddling
- records
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167814001890.23313.11794676936510215207.git-patchwork-notify@kernel.org>
-Date:   Mon, 06 Mar 2023 22:00:18 +0000
-References: <20230304192610.3818098-1-kuba@kernel.org>
-In-Reply-To: <20230304192610.3818098-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, amoulin@corp.free.fr, borisp@nvidia.com,
-        john.fastabend@gmail.com, tariqt@nvidia.com, maximmi@nvidia.com,
-        maxtram95@gmail.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Mon,  6 Mar 2023 15:30:58 -0600
+Mike Freemon <mfreemon@cloudflare.com> wrote:
 
-This patch was applied to netdev/net.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
+> +		 * RFC 7323, section 2.4, says there are instances when a retracted
+> +		 * window can be offered, and that TCP implementations MUST ensure
+> +		 * that they handle a shrinking window, as specified in RFC 1122.
+> +		 *
+> +		 * This patch implements that functionality, which is enabled by
+> +		 * setting the following sysctl.
+> +		 *
+> +		 * sysctl: net.ipv4.tcp_shrink_window
+> +		 *
+> +		 * This sysctl changes how the TCP window is calculated.
+> +		 *
+> +		 * If sysctl tcp_shrink_window is zero (the default value), then the
+> +		 * window is never shrunk.
+> +		 *
+> +		 * If sysctl tcp_shrink_window is non-zero, then the memory limit
+> +		 * set by autotuning is honored.  This requires that the TCP window
+> +		 * be shrunk ("retracted") as described in RFC 1122.
+> +		 *
+> +		 * For context and additional information about this patch, see the
+> +		 * blog post at TODO
 
-On Sat,  4 Mar 2023 11:26:10 -0800 you wrote:
-> Adrien reports that incorrect data is transmitted when a single
-> page straddles multiple records. We would transmit the same
-> data in all iterations of the loop.
-> 
-> Reported-by: Adrien Moulin <amoulin@corp.free.fr>
-> Link: https://lore.kernel.org/all/61481278.42813558.1677845235112.JavaMail.zimbra@corp.free.fr
-> Fixes: c1318b39c7d3 ("tls: Add opt-in zerocopy mode of sendfile()")
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> 
-> [...]
+This comment should be reworded such that it can be read at a much
+later date with out all the associated context described here.
 
-Here is the summary with links:
-  - [net] net: tls: fix device-offloaded sendpage straddling records
-    https://git.kernel.org/netdev/net/c/e539a105f947
+I.e. Get rid of "this patch part" and the blog post part.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Best to just refer to tcp_shrink_window sysctl and put the details
+in the regular documentation spot (Documentation/networking/ip-sysctl.rst).
