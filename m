@@ -2,173 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 521F56AC4D0
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 16:27:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF4B06AC50B
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 16:31:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231211AbjCFP13 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 10:27:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47550 "EHLO
+        id S230128AbjCFPbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 10:31:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230520AbjCFP12 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 10:27:28 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D26C630B01
-        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 07:27:21 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id u9so40270361edd.2
-        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 07:27:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678116440;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ODNvh0aj+RRcc0sJE3W2ZNeaulZCi+AZxVWHyLYlNzA=;
-        b=AqDBHud3xX7XCrcHWa5O19qVjUg7N96KM4zCm7tQZ9qbecaSGYt3cJBRSHOsG7m91H
-         3cD3agmBuYbFBxBnlY5cdY1gvNd45lLIvmkMA7F8wGnmx2u2v89LelBw+3PEW+ALy/nA
-         NX7X8lOirF6ev97+0Di1vfJIneprxBaKJ0RNIo2X0qjVimdEtL3Cg+kUNDGyX8KWp/nP
-         0gKoVHYwWU8L75nsr93uLCNjZT0IoZYGzht+61VYkKlSvKhoa/Rn3X+PEdLc2SUuGW57
-         vCmixDchC2OJhvahAp3JRUr+GZVST4d7fAek0ynU9ZcbRpOPRfCoTVPmzYHCd1gk6eh1
-         gVvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678116440;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ODNvh0aj+RRcc0sJE3W2ZNeaulZCi+AZxVWHyLYlNzA=;
-        b=4uPsFxbbycj7VGsPUWLW/f5CLXfFVDJ8MBJ9qkci+CQSHS1IH4WQgarovW59FB2/rz
-         jP0iJwM6mWSvblpcf9MZ4Owzun9p1YfBubZko4enBVwqmGcP0MJnmLxFdtbY6awn2Gil
-         wpkjla8IBjE0ZUBIy8s9deIx2jTfCWZOZHBJWVyzM052r2YhC2ZHHVkRjNhmw9RTZiap
-         9CwSuRJnU3NZmCh0ggUr96xbpDIu0vP6St9Y51iMGflGmftYMPG9Lg52XYNUCBTWH7GD
-         d/shtGAZ/tkl9YfN3j0kJxLPgQm22477MMVmZvdTjwSdOwLV/Zp1RI5m3z6fIghb8eEI
-         5niA==
-X-Gm-Message-State: AO0yUKXghW5/mGQ73i2QX7ezZE7gDSwXjdxmzMS/cMPvjLRF/YKsRw2e
-        91IDgDRyCS+31wgJX0LeLDsTuw==
-X-Google-Smtp-Source: AK7set//DXK2NFElPWWdfefGNYB8q/vr/0SdcYbhhdP4nrgNd+1EHgYzumflJt70FpO31uL6521Vfw==
-X-Received: by 2002:a17:907:6d92:b0:8ed:e8d6:4e0e with SMTP id sb18-20020a1709076d9200b008ede8d64e0emr17396285ejc.36.1678116440341;
-        Mon, 06 Mar 2023 07:27:20 -0800 (PST)
-Received: from ?IPV6:2a02:810d:15c0:828:c1e7:5006:98ac:f57? ([2a02:810d:15c0:828:c1e7:5006:98ac:f57])
-        by smtp.gmail.com with ESMTPSA id h7-20020a50cdc7000000b004bc15a440f1sm5301661edj.78.2023.03.06.07.27.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Mar 2023 07:27:20 -0800 (PST)
-Message-ID: <e004ef95-290d-19d4-eab7-483b1ede573b@linaro.org>
-Date:   Mon, 6 Mar 2023 16:27:18 +0100
+        with ESMTP id S230341AbjCFPbJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 10:31:09 -0500
+Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D1319D;
+        Mon,  6 Mar 2023 07:31:01 -0800 (PST)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mx.sberdevices.ru (Postfix) with ESMTP id 44A465FD22;
+        Mon,  6 Mar 2023 18:30:58 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1678116658;
+        bh=OgZo6Aq2fk3CdEmFT2c72x8cXEzEqOMILRx65+UY1xc=;
+        h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+        b=m2YwdLTgKmljuNPF6h8pyjPgj/ohC6JcQ84QGyTb1isFXjiOaYn47CnChs9hk2I0x
+         oY2Pjs4tYaJ5SXMphgB22JDwBs7hgMxkzq3cHuFEy/jqxgTOHLtpgcTiYTR9xw5fW4
+         uyNteMOJ8gKKDbZMEYppeXCno7bcxcHV6vsov8pjM5wyJwFt0Uq9wfUgIP0qCzxoBe
+         bzRmRVH1AZiguFRnGGlGcpNQ91WpTGleqEdlOEbMUJvz/+5e3WXvKu3SCoiUq8ti3R
+         V7zHLBoGcEakSne927ands0SnvcVgX48pBucmlqmJ3Q/9gAZVixCbvlpYZTjeyySI3
+         CvGKbzPKaaMvQ==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mx.sberdevices.ru (Postfix) with ESMTP;
+        Mon,  6 Mar 2023 18:30:53 +0300 (MSK)
+Message-ID: <c9b0b5b7-def1-b849-ca94-714bb6763266@sberdevices.ru>
+Date:   Mon, 6 Mar 2023 18:27:58 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH] nfc: fix memory leak of se_io context in nfc_genl_se_io
+ Thunderbird/102.7.1
+Subject: Re: [RFC PATCH v2 1/4] virtio/vsock: fix 'rx_bytes'/'fwd_cnt'
+ calculation
 Content-Language: en-US
-To:     Fedor Pchelkin <pchelkin@ispras.ru>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+To:     Stefano Garzarella <sgarzare@redhat.com>
+CC:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Guenter Roeck <groeck@google.com>,
-        Martin Faltesek <mfaltesek@google.com>,
-        Duoming Zhou <duoming@zju.edu.cn>,
-        Samuel Ortiz <sameo@linux.intel.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        lvc-project@linuxtesting.org,
-        syzbot+df64c0a2e8d68e78a4fa@syzkaller.appspotmail.com
-References: <20230225105614.379382-1-pchelkin@ispras.ru>
- <b0f65aaa-37aa-378f-fbbf-57d107f29f5f@linaro.org>
- <20230227150553.m3okhdxqmjgon4dd@fpc>
- <7e9ffa10-d6e8-48b5-e832-cf77ac1a8802@linaro.org>
- <20230228112531.gam3dwqyx36pyynf@fpc>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230228112531.gam3dwqyx36pyynf@fpc>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kernel@sberdevices.ru>, <oxffffaa@gmail.com>
+References: <a7ab414b-5e41-c7b6-250b-e8401f335859@sberdevices.ru>
+ <4a3f3978-1093-4c0a-663f-28d77eeb0806@sberdevices.ru>
+ <20230306115718.2h7munjxd2royuzq@sgarzare-redhat>
+From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
+In-Reply-To: <20230306115718.2h7munjxd2royuzq@sgarzare-redhat>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [172.16.1.6]
+X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
+ S-MS-EXCH01.sberdevices.ru (172.16.1.4)
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/03/06 11:48:00 #20919088
+X-KSMG-AntiVirus-Status: Clean, skipped
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28/02/2023 12:25, Fedor Pchelkin wrote:
-> On Tue, Feb 28, 2023 at 11:14:03AM +0100, Krzysztof Kozlowski wrote:
->> On 27/02/2023 16:05, Fedor Pchelkin wrote:
->>>>> Fixes: 5ce3f32b5264 ("NFC: netlink: SE API implementation")
->>>>> Reported-by: syzbot+df64c0a2e8d68e78a4fa@syzkaller.appspotmail.com
->>>>> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
->>>>> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
->>>>
->>>> SoB order is a bit odd. Who is the author?
->>>>
->>>
->>> The author is me (Fedor). I thought the authorship is expressed with the
->>> first Signed-off-by line, isn't it?
+
+
+On 06.03.2023 14:57, Stefano Garzarella wrote:
+> On Sun, Mar 05, 2023 at 11:06:26PM +0300, Arseniy Krasnov wrote:
+>> Substraction of 'skb->len' is redundant here: 'skb_headroom()' is delta
+>> between 'data' and 'head' pointers, e.g. it is number of bytes returned
+>> to user (of course accounting size of header). 'skb->len' is number of
+>> bytes rest in buffer.
 >>
->> Yes and since you are sending it, then what is Alexey's Sob for? The
->> tags are in order...
+>> Fixes: 71dc9ec9ac7d ("virtio/vsock: replace virtio_vsock_pkt with sk_buff")
+>> Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+>> ---
+>> net/vmw_vsock/virtio_transport_common.c | 2 +-
+>> 1 file changed, 1 insertion(+), 1 deletion(-)
 >>
-> 
-> Now I get what you mean. Alexey is my supervisor and the patches I make
-> are passed through him (even though they are sent by me). If this is not
-> a customary thing, then I'll take that into account for further
-> submissions. I guess something like Acked-by is more appropriate?
-
-Different people abuse these tags in different way, so it happens, but
-it's not necessarily the correct way. I, for example, see little value
-of some tags added from some internal and private arrangements. If
-Alexey wants to ack something, sure, please ack - we have mailing list
-for that. Storing acks for some of your private process is not relevant
-to upstream process.
-
-> 
->>>
->>>>> ---
->>>>>  drivers/nfc/st-nci/se.c   | 6 ++++++
->>>>>  drivers/nfc/st21nfca/se.c | 6 ++++++
->>>>>  net/nfc/netlink.c         | 4 ++++
->>>>>  3 files changed, 16 insertions(+)
->>>>>
->>>>> diff --git a/drivers/nfc/st-nci/se.c b/drivers/nfc/st-nci/se.c
->>>>> index ec87dd21e054..b2f1ced8e6dd 100644
->>>>> --- a/drivers/nfc/st-nci/se.c
->>>>> +++ b/drivers/nfc/st-nci/se.c
->>>>> @@ -672,6 +672,12 @@ int st_nci_se_io(struct nci_dev *ndev, u32 se_idx,
->>>>>  					ST_NCI_EVT_TRANSMIT_DATA, apdu,
->>>>>  					apdu_length)
->>>> nci_hci_send_event() should also free it in its error paths.
->>>> nci_data_exchange_complete() as well? Who eventually frees it? These
->>>> might be separate patches.
->>>>
->>>>
->>>
->>> nci_hci_send_event(), as I can see, should not free the callback context.
->>> I should have probably better explained that in the commit info (will
->>> include this in the patch v2), but the main thing is: nfc_se_io() is
->>> called with se_io_cb callback function as an argument and that callback is 
->>> the exact place where an allocated se_io_ctx context should be freed. And
->>> it is actually freed there unless some error path happens that leads the
+>> diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+>> index a1581c77cf84..2e2a773df5c1 100644
+>> --- a/net/vmw_vsock/virtio_transport_common.c
+>> +++ b/net/vmw_vsock/virtio_transport_common.c
+>> @@ -255,7 +255,7 @@ static void virtio_transport_dec_rx_pkt(struct virtio_vsock_sock *vvs,
+>> {
+>>     int len;
 >>
->> Exactly, so why nci_hci_send_event() error path should not free it?
->>
+>> -    len = skb_headroom(skb) - sizeof(struct virtio_vsock_hdr) - skb->len;
+>> +    len = skb_headroom(skb) - sizeof(struct virtio_vsock_hdr);
 > 
-> nci_hci_send_event() should not free it on its error path because the
-> bwi_timer is already charged before nci_hci_send_event() is called.
+> IIUC virtio_transport_dec_rx_pkt() is always called after skb_pull(),
+> so skb_headroom() is returning the amount of space we removed.
 > 
-> The pattern in the .se_io functions of the corresponding drivers (st-nci,
-> st21nfca) is following:
+> Looking at the other patches in this series, I think maybe we should
+> change virtio_transport_dec_rx_pkt() and virtio_transport_inc_rx_pkt()
+> by passing the value to subtract or add directly.
+> Since some times we don't remove the whole payload, so it would be
+> better to call it with the value in hdr->len.
 > 
-> 	info->se_info.cb = cb;
-> 	info->se_info.cb_context = cb_context;
-> 	mod_timer(&info->se_info.bwi_timer, jiffies +
-> 		  msecs_to_jiffies(info->se_info.wt_timeout)); // <-charged
-> 	info->se_info.bwi_active = true;
-> 	return nci_hci_send_event(...);
+> I mean something like this (untested):
 > 
-> As the timer is charged, it will eventually call se_io_cb() to free the
-> context, even if the error path is taken inside nci_hci_send_event().
+> index a1581c77cf84..9e69ae7a9a96 100644
+> --- a/net/vmw_vsock/virtio_transport_common.c
+> +++ b/net/vmw_vsock/virtio_transport_common.c
+> @@ -241,21 +241,18 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
+>  }
 > 
-> Am I missing something?
+>  static bool virtio_transport_inc_rx_pkt(struct virtio_vsock_sock *vvs,
+> -                                       struct sk_buff *skb)
+> +                                       u32 len)
+>  {
+> -       if (vvs->rx_bytes + skb->len > vvs->buf_alloc)
+> +       if (vvs->rx_bytes + len > vvs->buf_alloc)
+>                 return false;
+> 
+> -       vvs->rx_bytes += skb->len;
+> +       vvs->rx_bytes += len;
+>         return true;
+>  }
+> 
+>  static void virtio_transport_dec_rx_pkt(struct virtio_vsock_sock *vvs,
+> -                                       struct sk_buff *skb)
+> +                                       u32 len)
+>  {
+> -       int len;
+> -
+> -       len = skb_headroom(skb) - sizeof(struct virtio_vsock_hdr) - skb->len;
+>         vvs->rx_bytes -= len;
+>         vvs->fwd_cnt += len;
+>  }
+> @@ -388,7 +385,7 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
+>                 skb_pull(skb, bytes);
+> 
+>                 if (skb->len == 0) {
+> -                       virtio_transport_dec_rx_pkt(vvs, skb);
+> +                       virtio_transport_dec_rx_pkt(vvs, bytes);
+>                         consume_skb(skb);
+>                 } else {
+>                         __skb_queue_head(&vvs->rx_queue, skb);
+> @@ -437,17 +434,17 @@ static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
+> 
+>         while (!msg_ready) {
+>                 struct virtio_vsock_hdr *hdr;
+> +               size_t pkt_len;
+> 
+>                 skb = __skb_dequeue(&vvs->rx_queue);
+>                 if (!skb)
+>                         break;
+>                 hdr = virtio_vsock_hdr(skb);
+> +               pkt_len = (size_t)le32_to_cpu(hdr->len);
+> 
+>                 if (dequeued_len >= 0) {
+> -                       size_t pkt_len;
+>                         size_t bytes_to_copy;
+> 
+> -                       pkt_len = (size_t)le32_to_cpu(hdr->len);
+>                         bytes_to_copy = min(user_buf_len, pkt_len);
+> 
+>                         if (bytes_to_copy) {
+> @@ -484,7 +481,7 @@ static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
+>                                 msg->msg_flags |= MSG_EOR;
+>                 }
+> 
+> -               virtio_transport_dec_rx_pkt(vvs, skb);
+> +               virtio_transport_dec_rx_pkt(vvs, pkt_len);
+>                 kfree_skb(skb);
+>         }
+> 
+> @@ -1040,7 +1037,7 @@ virtio_transport_recv_enqueue(struct vsock_sock *vsk,
+> 
+>         spin_lock_bh(&vvs->rx_lock);
+> 
+> -       can_enqueue = virtio_transport_inc_rx_pkt(vvs, skb);
+> +       can_enqueue = virtio_transport_inc_rx_pkt(vvs, len);
+>         if (!can_enqueue) {
+>                 free_pkt = true;
+>                 goto out;
+> 
+> When we used vsock_pkt, we were passing the structure because the `len`
+> field was immutable (and copied from the header), whereas with skb it
+> can change and so we introduced these errors.
+> 
+> What do you think?
+Yes, i think passing explicit integer value to 'virtio_transport_inc/dec_rx_pkt'
+is more clear solution. I had this variant, but thought that current will be
+smaller. Current version with skb argument forces to call 'skb_pull()' before
+each 'virtio_transport_dec_rx_pkt()' as 'rx_bytes'/'fwd_cnt' new value relies
+on skb parameters - otherwise 'rx_bytes' become invalid. 'skb_pull()' will be
+used only to update 'skb->len' which shows rest of the data. I'll do it in v3.
 
-Hm, sounds right.
-
-Best regards,
-Krzysztof
-
+Thanks, Arseniy
+> 
+> Thanks,
+> Stefano
+> 
