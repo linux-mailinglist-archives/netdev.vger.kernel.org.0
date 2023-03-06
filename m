@@ -2,340 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 917136AC97D
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 18:12:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4C016AC982
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 18:13:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230006AbjCFRMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 12:12:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59212 "EHLO
+        id S230388AbjCFRNc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 12:13:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229545AbjCFRMs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 12:12:48 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5899B30E8A
-        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 09:12:17 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id y15-20020a17090aa40f00b00237ad8ee3a0so9408733pjp.2
-        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 09:12:17 -0800 (PST)
+        with ESMTP id S230028AbjCFRNZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 12:13:25 -0500
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2126.outbound.protection.outlook.com [40.107.94.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCDE49758;
+        Mon,  6 Mar 2023 09:13:00 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GxTzOqPpF0CP8Ixm98Mj0O40l+jdlt8iXn/1oRGjVhttY7EsvrhPM66/5wAWIXI8dxhwnTWhbFHnWsrmEdtmoF1ZWp2srwTtlZYtySm50trvdkPtyx2RsuqBss4d9KBPa2CxxZzNaFUzRTwhbJUGcId5cZlSJkTVW5+AqQFjS0YZhQJ7Q0ggcrj6hjVM7I1iTvUjeo+JVNyWI5lLXppfEVdHvvfX171wNREaYeyiHmk50VccTs/AsBnFQAaAtSFgV4C38jbn3VRap+YxuH0yudekIidGYy2/0YdS0Iu0oBtaU7E94fjv9kK1hc4HjlkKEQSWSybWqu5BKPqVCWTOGg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=i/AUsn3s/IENOiIW8+xeqgk74qSj4/Zkr8PiJE6011w=;
+ b=geevlblFZSE1GDTW54ZqPtsCoTlOw4v2HIKK1A+hJzteNLr9iqet2fDU+YZellh0UUOCOTRLnGyANk4RH8fq0fLiPM3oCvlXFm5sUDfGG5Fx7H2QJDKUmgOEWy2A/PoqZEL+JmGh4WJFLWW8rUhTHD1gno0Z9AHrZpp30IICb00xEbNQlBqbO1wINbIsLWBgYZIMCQGnu0EoqPaaPCLJsuDvIMCCL50er9ypc2E/m8p/Qap3Ed2F7X18uWzn3DIxDSItN+6wvOvPNmXgHR1rNfaXVD2lRJw1cP7NFJD7YIT0ZJ/XUi+ZNQpVKuBYrmpqTiz+wT4p8zTmOgLf8cVDOg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1678122677;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=6R4JXR8QbsDzrgnp3iE0NQ8tLZpucpzfh1OV98jPX58=;
-        b=DfCR+2hP1FJpcqYSwXNy5nfgQBHF7B03SBenQT+NPdXWDWN2ghkmtOYBco0brqvoy8
-         2RqlxfSxukn/lhQg+4hAmZa/WrvWrT5lUUozn+2R0xGVpy1czrZopkWze1fY6PFTTz3v
-         3e0aGmaCr3XeU5ftqBlilNDQCUQY1iojJ/Ao0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678122677;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=6R4JXR8QbsDzrgnp3iE0NQ8tLZpucpzfh1OV98jPX58=;
-        b=t0Fa1EajlkIL8KliNC1G2XxvgYRR76H55Q5F1l4nKXt6Kb8ibLzBu2grWJtlmusOc/
-         jKDuYlhqEPKdUs917YwVMG8NYTqTnGJo1tHlV/fbhuYtuPAOB9T5LCMLMdLN6oedV/4R
-         zCd2gDGwDH4xyt3ZkHOCOK4Yd78KaWfhTPCMipsDU993wsFa6Of079hlgBiZ3r9P7sLN
-         5f2Pg6TpAFssu/zM8bVcxjRD6Tx3uHk5ksMP5iWyvc8t5taCcDPvVybgAFpu8scQsoe0
-         sPxZYGktoNrE1djinKDfb+hxPPAQcLigXaIAmo4sh+ML5sEK/CeRidZuO+gbQTCxrHkH
-         RvcQ==
-X-Gm-Message-State: AO0yUKVJoncdREGidC6ErEz0J51/MAov9gDmxNmJR5nLPYG2+BbY93IC
-        8UYQitnCYXCxKRBGjBENntVDT6KqvJWCzSr8speLWg==
-X-Google-Smtp-Source: AK7set8q2lExQmx+Mx9cqtMED45NSb1tzQT64b+EA2Tg7Pj3lmpztpsiGLFzGC87IDkAlQ+FQ0U9TD2MIpIlAqKv6po=
-X-Received: by 2002:a17:902:efce:b0:19b:5233:51d8 with SMTP id
- ja14-20020a170902efce00b0019b523351d8mr4754851plb.13.1678122676631; Mon, 06
- Mar 2023 09:11:16 -0800 (PST)
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=i/AUsn3s/IENOiIW8+xeqgk74qSj4/Zkr8PiJE6011w=;
+ b=hVIezC/gOS556G/DXebFLheBglCH95aWZjgEhI6vIJyaCbluqZFgVKyecmmLeT90D5ec7/fvubHiLcHN9W5oKNg9w9GT0SOX8/dHPt+bLtfVCODiqAIUd70NGUhUFHy27uV06WkoyTnbtIpmIO9IN3kdbpqU9nfwgh1oRtGaAyQ=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SA1PR13MB5635.namprd13.prod.outlook.com (2603:10b6:806:232::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.28; Mon, 6 Mar
+ 2023 17:12:07 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c%3]) with mapi id 15.20.6156.028; Mon, 6 Mar 2023
+ 17:12:07 +0000
+Date:   Mon, 6 Mar 2023 18:12:02 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Jaewan Kim <jaewan@google.com>
+Cc:     gregkh@linuxfoundation.org, johannes@sipsolutions.net,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@android.com, adelva@google.com
+Subject: Re: [PATCH v8 3/5] mac80211_hwsim: add PMSR request support via
+ virtio
+Message-ID: <ZAYe4oATHMdqi/H9@corigine.com>
+References: <20230302160310.923349-1-jaewan@google.com>
+ <20230302160310.923349-4-jaewan@google.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230302160310.923349-4-jaewan@google.com>
+X-ClientProxiedBy: AM3PR05CA0141.eurprd05.prod.outlook.com
+ (2603:10a6:207:3::19) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-References: <20230306165344.350387-1-vadfed@meta.com>
-In-Reply-To: <20230306165344.350387-1-vadfed@meta.com>
-From:   Pavan Chebbi <pavan.chebbi@broadcom.com>
-Date:   Mon, 6 Mar 2023 22:41:04 +0530
-Message-ID: <CALs4sv1A1eTpH45Z=kyL3qtu7Yfu8JRW6Wc2r1d+UxjvB_EEEA@mail.gmail.com>
-Subject: Re: [PATCH net] bnxt_en: reset PHC frequency in free-running mode
-To:     Vadim Fedorenko <vadfed@meta.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Andy Gospodarek <andrew.gospodarek@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Vadim Fedorenko <vadim.fedorenko@linux.dev>,
-        netdev@vger.kernel.org
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000109f8f05f63e625b"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SA1PR13MB5635:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6f5270c4-2e38-487e-f91c-08db1e65ea38
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: SCXGzWDBFABeXhr4U4ng+dLhmNMYrB0ArKpS65gjKNP3XRcH8nRWYyrZbzndFDDrYWgEEYSb8sL+EBfUPd7ac7LcWT6bRhpKRw5kofqidjcUyrMRlscWGjoYqiS+nMXgdvWt3xzWHYoH8wd6EkaOvz6rOJVVKYElIxWZ0aQDBuk0Y45GKPK9YnHppjo0X+giT6llFLfVnpecnzeiQTyvZWpg31rgwNROERHuM/aC3hN+2R4oHmrjloHINkhHVUqJtuzpH+VVCS6xuTBoL/hnvmN94VS7EZDGmOdZ/kSn1tQi3+ZXkimLlArWRH7h/1JiX10ALvbiNXFCkTx+OyMmwi3AQ5DyUN5GspyqGffAVR+FSnbuQtpZRm8KUqPMVJsCARMPYnmEAEOkWW/KatI+H3knmjo04kVy9s2LLUZfK6w3sB0e3YVc/e63q1rjLqRLAGPJCs0hTnh4ksoQ3aopsuM7d5UyYHYShldKQU9OUNR2B6GbxW/pP2a4v40c9ZCNzUBsMUEjMCsrlaMd4f4OUXp4poIk0o6y+Q0OMz7/c5ea4lWlSQATSBh1jKLy1nAfZsx5L5t6qcVO8gkaTrEqpW8bBabfwPsUFKKZ2qzxWPPiKaBXcjNKYjOYPcwd3/ckxo7aAvK9WXOJaZRohWBddQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(346002)(366004)(136003)(39840400004)(376002)(451199018)(83380400001)(36756003)(38100700002)(8936002)(478600001)(5660300002)(2906002)(86362001)(186003)(2616005)(6666004)(6486002)(6512007)(6506007)(66476007)(66946007)(44832011)(4326008)(6916009)(66556008)(8676002)(316002)(41300700001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2kZYozq8DqpMcTr2HtkASxyqokegtWT8ezoU3EIsm6HhOF+2H+a11d2HFYXC?=
+ =?us-ascii?Q?ftYmWfoFUBvsvoBlMYGBlcHrBmLqZ2W4hgOFcuuCnnvQdHEZBZayXTys1GYJ?=
+ =?us-ascii?Q?6e0txmSjfuYocyuCpfqsnSjyB/95SJxkDcR1tKSeb7G2WehPF8Z4f6c/9MG6?=
+ =?us-ascii?Q?pMBEmgPhub+K/hVDf1RCdjRa37Eb4s8c98s8sQaWBGy/swQYivKJWS+B319r?=
+ =?us-ascii?Q?4iGf93TUdFKumikFk3fRuVKOQjkbOzS7ugLxOdSud2aDPX5VXNYUIJ74GyMs?=
+ =?us-ascii?Q?DZg8ZoOIlQ8gUWLCBOvrgt8vEN5RAmtrR3/LpsaZ0TRT1zwyk73DJYsxKqW+?=
+ =?us-ascii?Q?iGQqrl7egflWcV66m0iU23SNHok5a1dxObhwgzkDCskXfsY5ObrE/hie9d3M?=
+ =?us-ascii?Q?cRrW7z97FdRhakEefkj6R/27spSn/Cgt923bKf+U+YMU81YT9rbGnQ7B5yyW?=
+ =?us-ascii?Q?2bdcQbtuPb8877Kx8FVThsP/58wcEPj3JmbZ0aWPb3hm//SeXmXT4EhTxkE1?=
+ =?us-ascii?Q?lGYtSMsinwE2yWvNFPzZcHuDS39ZMV9K0/AW6oHS8IDVvttuygT5cykw/F6e?=
+ =?us-ascii?Q?gjd39hTSNLHS8aa6PYXNsgCVUMpqr5B2nwgUzvmUVPumo3sessf6ZVN4q2TG?=
+ =?us-ascii?Q?0ZUmyKBX+zDlcsg1MZ1cDFEu33tBQN9FvUZXEjoUI3L8JPn/QogUCfVpAvMh?=
+ =?us-ascii?Q?8nHWM8OZo7/S4sdQ+UMr2gmYDuQbP5uMf4nLSFnis0iaWBIqkjw+kwZrT7g/?=
+ =?us-ascii?Q?xHB3G1JJFSaSCp8Xar/TMruAvGO5kYJTEJGgMbX9G8fTvTrdmz8jKaCUWYxH?=
+ =?us-ascii?Q?6cfk4FmrnNrX7oMNNnUvObQEnVjza1ryYDBma8KeSzJzsrTrrKUUGW8cudbQ?=
+ =?us-ascii?Q?6uTS5rVI/dWoFPspmiK4dG1lV/EzO1lzW/XEjsM5jCsgIQJ0K74j1aCkXh8+?=
+ =?us-ascii?Q?b9tql/xAWYqzftyFyhAPVgqqR66nasxMm9A1FOFp5OBcmNAryPkmEI9SEjN8?=
+ =?us-ascii?Q?cyHK5DLtGKz/xRUzWvFJLWQ7cOOF/uMvCMcl4l/Lx2h7iFyGiYLTYDs/T4Qc?=
+ =?us-ascii?Q?CiiEc+l26VEHAig9NSYbv2cDC0e7pmNkHHrl7U80ZtkR73hnDF/3pTfd9vWC?=
+ =?us-ascii?Q?ICwXqlEhUYeecqaG8bUSrb6YYy49ZebjNz43NfpSxxlLrij7ZrwXYE5YKy2d?=
+ =?us-ascii?Q?SjOrD81LqPxVp5y8CYogp3OfweR9YegagCtWAPsSlGsBvhloFvPBbz3BknST?=
+ =?us-ascii?Q?ZeQp6XRxETDcbXwOyI0NRyXWTUEm6fTT1Ou0RHbZzFijSI4DJr/B+MjFoaTH?=
+ =?us-ascii?Q?saiIu0QuQpIw5pRVLzhxyu6AyjEqIJ5+Upo8J9s5h7i7ztKUxVMHAlNzyf79?=
+ =?us-ascii?Q?TrC4hd2f0Nv2MGLaHr/MJQ3Ou8J+YW2zevNRh4DoafLlhaTWS6LGDmH61oEB?=
+ =?us-ascii?Q?65mDZNT+QwQ3bvnPFVl3BJRszvJznDfOKJDtr7PJJr5QbS+fyD9abd2ezYUA?=
+ =?us-ascii?Q?Fo9jGIX54WZFk2/RUWyuz/pJxqoyx/hOx0hg4fUfMI61LoEP3H9k7Iwk91uu?=
+ =?us-ascii?Q?yg29JuHE5Gyh1VNiEzCYyCCSvlcW/32JfJa18Ca4UfnnrqSB2+imTRDt2uIu?=
+ =?us-ascii?Q?pQAlL4dWypnUrGL46dF1Y/BIEH0HTTSixsi6dH7NkAabAv17Kyt1Vvo4i6je?=
+ =?us-ascii?Q?5VOoDA=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6f5270c4-2e38-487e-f91c-08db1e65ea38
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Mar 2023 17:12:07.6795
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dhpZneTz6VKHSlINJD+/pGR9O8p5Wp9zG9+ONSVXiDuILE0p9esYsIMmOj88uZK4KsKfBDRiQe5QUq7vRNHPst43au+Guy5qbL0yU9Dw/3Q=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR13MB5635
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000109f8f05f63e625b
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Mon, Mar 6, 2023 at 10:23=E2=80=AFPM Vadim Fedorenko <vadfed@meta.com> w=
-rote:
->
-> When using a PHC in shared between multiple hosts, the previous
-> frequency value may not be reset and could lead to host being unable to
-> compensate the offset with timecounter adjustments. To avoid such state
-> reset the hardware frequency of PHC to zero on init. Some refactoring is
-> needed to make code readable.
->
-Thanks for the patch.
-I see what you are trying to do. But I think we have some build issues
-with this.
-Haven't looked at the whole patch, but one error I can spot is down at
-the bottom.
-
-> Fixes: 85036aee1938 ("bnxt_en: Add a non-real time mode to access NIC clo=
-ck")
-> Signed-off-by: Vadim Fedorenko <vadfed@meta.com>
+On Thu, Mar 02, 2023 at 04:03:08PM +0000, Jaewan Kim wrote:
+> PMSR (a.k.a. peer measurement) is generalized measurement between two
+> Wi-Fi devices. And currently FTM (a.k.a. fine time measurement or flight
+> time measurement) is the one and only measurement. FTM is measured by
+> RTT (a.k.a. round trip time) of packets between two Wi-Fi devices.
+> 
+> Add necessary functionalities for mac80211_hwsim to start PMSR request by
+> passthrough the request to wmediumd via virtio. mac80211_hwsim can't
+> measure RTT for real because mac80211_hwsim the software simulator and
+> packets are sent almost immediately for real. This change expect wmediumd
+> to have all the location information of devices, so passthrough requests
+> to wmediumd.
+> 
+> In detail, add new mac80211_hwsim command HWSIM_CMD_ABORT_PMSR. When
+> mac80211_hwsim receives the PMSR start request via
+> ieee80211_ops.start_pmsr, the received cfg80211_pmsr_request is resent to
+> the wmediumd with command HWSIM_CMD_START_PMSR and attribute
+> HWSIM_ATTR_PMSR_REQUEST. The attribute is formatted as the same way as
+> nl80211_pmsr_start() expects.
+> 
+> Signed-off-by: Jaewan Kim <jaewan@google.com>
 > ---
->  drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  6 +-
->  drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  2 +
->  drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 57 +++++++++++--------
->  3 files changed, 36 insertions(+), 29 deletions(-)
->
-> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethe=
-rnet/broadcom/bnxt/bnxt.c
-> index 5d4b1f2ebeac..8472ff79adf3 100644
-> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> @@ -6989,11 +6989,9 @@ static int bnxt_hwrm_func_qcfg(struct bnxt *bp)
->                 if (flags & FUNC_QCFG_RESP_FLAGS_FW_DCBX_AGENT_ENABLED)
->                         bp->fw_cap |=3D BNXT_FW_CAP_DCBX_AGENT;
->         }
-> -       if (BNXT_PF(bp) && (flags & FUNC_QCFG_RESP_FLAGS_MULTI_HOST)) {
-> +       if (BNXT_PF(bp) && (flags & FUNC_QCFG_RESP_FLAGS_MULTI_HOST))
->                 bp->flags |=3D BNXT_FLAG_MULTI_HOST;
-> -               if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
-> -                       bp->fw_cap &=3D ~BNXT_FW_CAP_PTP_RTC;
-> -       }
-> +
->         if (flags & FUNC_QCFG_RESP_FLAGS_RING_MONITOR_ENABLED)
->                 bp->fw_cap |=3D BNXT_FW_CAP_RING_MONITOR;
->
-> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethe=
-rnet/broadcom/bnxt/bnxt.h
-> index dcb09fbe4007..41e4bb7b8acb 100644
-> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-> @@ -2000,6 +2000,8 @@ struct bnxt {
->         u32                     fw_dbg_cap;
->
->  #define BNXT_NEW_RM(bp)                ((bp)->fw_cap & BNXT_FW_CAP_NEW_R=
-M)
-> +#define BNXT_PTP_RTC(bp)       (!BNXT_MH(bp) && \
-> +                                ((bp)->fw_cap & BNXT_FW_CAP_PTP_RTC))
->         u32                     hwrm_spec_code;
->         u16                     hwrm_cmd_seq;
->         u16                     hwrm_cmd_kong_seq;
-> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/=
-ethernet/broadcom/bnxt/bnxt_ptp.c
-> index 4ec8bba18cdd..99c1a53231aa 100644
-> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-> @@ -63,7 +63,7 @@ static int bnxt_ptp_settime(struct ptp_clock_info *ptp_=
-info,
->                                                 ptp_info);
->         u64 ns =3D timespec64_to_ns(ts);
->
-> -       if (ptp->bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
-> +       if (BNXT_PTP_RTC(ptp->bp))
->                 return bnxt_ptp_cfg_settime(ptp->bp, ns);
->
->         spin_lock_bh(&ptp->ptp_lock);
-> @@ -196,7 +196,7 @@ static int bnxt_ptp_adjtime(struct ptp_clock_info *pt=
-p_info, s64 delta)
->         struct bnxt_ptp_cfg *ptp =3D container_of(ptp_info, struct bnxt_p=
-tp_cfg,
->                                                 ptp_info);
->
-> -       if (ptp->bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
-> +       if (BNXT_PTP_RTC(ptp->bp))
->                 return bnxt_ptp_adjphc(ptp, delta);
->
->         spin_lock_bh(&ptp->ptp_lock);
-> @@ -205,34 +205,39 @@ static int bnxt_ptp_adjtime(struct ptp_clock_info *=
-ptp_info, s64 delta)
->         return 0;
+> V7->V8: Export nl80211_send_chandef directly and instead of creating
+>         wrapper.
+> V7: Initial commit (split from previously large patch)
+> ---
+>  drivers/net/wireless/mac80211_hwsim.c | 207 +++++++++++++++++++++++++-
+>  drivers/net/wireless/mac80211_hwsim.h |   6 +
+>  2 files changed, 212 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
+> index 79476d55c1ca..691b83140d57 100644
+> --- a/drivers/net/wireless/mac80211_hwsim.c
+> +++ b/drivers/net/wireless/mac80211_hwsim.c
+> @@ -721,6 +721,8 @@ struct mac80211_hwsim_data {
+>  
+>  	/* only used when pmsr capability is supplied */
+>  	struct cfg80211_pmsr_capabilities pmsr_capa;
+> +	struct cfg80211_pmsr_request *pmsr_request;
+> +	struct wireless_dev *pmsr_request_wdev;
+>  
+>  	struct mac80211_hwsim_link_data link_data[IEEE80211_MLD_MAX_NUM_LINKS];
+>  };
+> @@ -3139,6 +3141,208 @@ static int mac80211_hwsim_change_sta_links(struct ieee80211_hw *hw,
+>  	return 0;
 >  }
->
-> +static int bnxt_ptp_adjfine_rtc(struct bnxt *bp, long scaled_ppm)
+>  
+> +static int mac80211_hwsim_send_pmsr_ftm_request_peer(struct sk_buff *msg,
+> +						     struct cfg80211_pmsr_ftm_request_peer *request)
 > +{
-> +       s32 ppb =3D scaled_ppm_to_ppb(scaled_ppm);
-> +       struct hwrm_port_mac_cfg_input *req;
-> +       int rc;
+> +	struct nlattr *ftm;
 > +
-> +       rc =3D hwrm_req_init(bp, req, HWRM_PORT_MAC_CFG);
-> +       if (rc)
-> +               return rc;
+> +	if (!request->requested)
+> +		return -EINVAL;
 > +
-> +       req->ptp_freq_adj_ppb =3D cpu_to_le32(ppb);
-> +       req->enables =3D cpu_to_le32(PORT_MAC_CFG_REQ_ENABLES_PTP_FREQ_AD=
-J_PPB);
-> +       rc =3D hwrm_req_send(bp, req);
-> +       if (rc)
-> +               netdev_err(bp->dev,
-> +                          "ptp adjfine failed. rc =3D %d\n", rc);
-> +       return rc;
+> +	ftm = nla_nest_start(msg, NL80211_PMSR_TYPE_FTM);
+> +	if (!ftm)
+> +		return -ENOBUFS;
+> +
+> +	if (nla_put_u32(msg, NL80211_PMSR_FTM_REQ_ATTR_PREAMBLE, request->preamble))
+
+nit: I suspect that you need to invoke nla_nest_cancel() in
+     error paths to unwind nla_nest_start() calls.
+
+> +		return -ENOBUFS;
+> +
+
+...
+
+> +static int mac80211_hwsim_send_pmsr_request(struct sk_buff *msg,
+> +					    struct cfg80211_pmsr_request *request)
+> +{
+> +	int err;
+> +	struct nlattr *pmsr = nla_nest_start(msg, NL80211_ATTR_PEER_MEASUREMENTS);
+nit: reverse xmas tree - longest line to shortest - for local variable
+     declarations.
+
+> +
+> +	if (!pmsr)
+> +		return -ENOBUFS;
+> +
+> +	if (nla_put_u32(msg, NL80211_ATTR_TIMEOUT, request->timeout))
+> +		return -ENOBUFS;
+> +
+> +	if (!is_zero_ether_addr(request->mac_addr)) {
+> +		if (nla_put(msg, NL80211_ATTR_MAC, ETH_ALEN, request->mac_addr))
+> +			return -ENOBUFS;
+> +		if (nla_put(msg, NL80211_ATTR_MAC_MASK, ETH_ALEN, request->mac_addr_mask))
+> +			return -ENOBUFS;
+> +	}
+> +
+> +	for (int i = 0; i < request->n_peers; i++) {
+
+nit: the scope of err can be reduced to this block.
+
+> +		err = mac80211_hwsim_send_pmsr_request_peer(msg, &request->peers[i]);
+> +		if (err)
+> +			return err;
+> +	}
+> +
+> +	nla_nest_end(msg, pmsr);
+> +
+> +	return 0;
 > +}
-> +
->  static int bnxt_ptp_adjfine(struct ptp_clock_info *ptp_info, long scaled=
-_ppm)
->  {
->         struct bnxt_ptp_cfg *ptp =3D container_of(ptp_info, struct bnxt_p=
-tp_cfg,
->                                                 ptp_info);
-> -       struct hwrm_port_mac_cfg_input *req;
->         struct bnxt *bp =3D ptp->bp;
-> -       int rc =3D 0;
->
-> -       if (!(ptp->bp->fw_cap & BNXT_FW_CAP_PTP_RTC)) {
-> -               spin_lock_bh(&ptp->ptp_lock);
-> -               timecounter_read(&ptp->tc);
-> -               ptp->cc.mult =3D adjust_by_scaled_ppm(ptp->cmult, scaled_=
-ppm);
-> -               spin_unlock_bh(&ptp->ptp_lock);
-> -       } else {
-> -               s32 ppb =3D scaled_ppm_to_ppb(scaled_ppm);
-> -
-> -               rc =3D hwrm_req_init(bp, req, HWRM_PORT_MAC_CFG);
-> -               if (rc)
-> -                       return rc;
-> +       if (BNXT_PTP_RTC(ptp->bp))
-> +               return bnxt_ptp_adjfine_rtc(bp, scaled_ppm);
->
-> -               req->ptp_freq_adj_ppb =3D cpu_to_le32(ppb);
-> -               req->enables =3D cpu_to_le32(PORT_MAC_CFG_REQ_ENABLES_PTP=
-_FREQ_ADJ_PPB);
-> -               rc =3D hwrm_req_send(ptp->bp, req);
-> -               if (rc)
-> -                       netdev_err(ptp->bp->dev,
-> -                                  "ptp adjfine failed. rc =3D %d\n", rc)=
-;
-> -       }
-> -       return rc;
-> +       spin_lock_bh(&ptp->ptp_lock);
-> +       timecounter_read(&ptp->tc);
-> +       ptp->cc.mult =3D adjust_by_scaled_ppm(ptp->cmult, scaled_ppm);
-> +       spin_unlock_bh(&ptp->ptp_lock);
-> +       return 0;
->  }
->
->  void bnxt_ptp_pps_event(struct bnxt *bp, u32 data1, u32 data2)
-> @@ -879,7 +884,7 @@ int bnxt_ptp_init_rtc(struct bnxt *bp, bool phc_cfg)
->         u64 ns;
->         int rc;
->
-> -       if (!bp->ptp_cfg || !(bp->fw_cap & BNXT_FW_CAP_PTP_RTC))
-> +       if (!bp->ptp_cfg || !BNXT_PTP_RTC(bp))
->                 return -ENODEV;
->
->         if (!phc_cfg) {
-> @@ -932,13 +937,15 @@ int bnxt_ptp_init(struct bnxt *bp, bool phc_cfg)
->         atomic_set(&ptp->tx_avail, BNXT_MAX_TX_TS);
->         spin_lock_init(&ptp->ptp_lock);
->
-> -       if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC) {
-> +       if (BNXT_PTP_RTC(ptp->bp)) {
->                 bnxt_ptp_timecounter_init(bp, false);
->                 rc =3D bnxt_ptp_init_rtc(bp, phc_cfg);
->                 if (rc)
->                         goto out;
->         } else {
->                 bnxt_ptp_timecounter_init(bp, true);
-> +               if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
-> +                       bnxt_ptp_adjfreq_rtc(bp, 0);
-
-You meant bnxt_ptp_adjfine_rtc(), right.
-Anyway, let me go through the patch in detail, while you may submit
-corrections for the build.
-
->         }
->
->         ptp->ptp_info =3D bnxt_ptp_caps;
-> --
-> 2.30.2
->
-
---000000000000109f8f05f63e625b
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-OltyqaGBuzv+bJTUL+bmV7E4QBLIqGt4jVr1R9hJdH6KxXwJdyfHZ9C6qXmoe2NQhiFUyBOJ0wgk
-dB9Z1IU7nCwvNKYg2JMoJs93tIgbhPJg/D7pqW8gabkCAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
-BB0wG4EZcGF2YW4uY2hlYmJpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
-HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUEV6y/89alKPoFbKUaJXsvWu5
-fdowDQYJKoZIhvcNAQELBQADggEBAEHSIB6g652wVb+r2YCmfHW47Jo+5TuCBD99Hla8PYhaWGkd
-9HIyD3NPhb6Vb6vtMWJW4MFGQF42xYRrAS4LZj072DuMotr79rI09pbOiWg0FlRRFt6R9vgUgebu
-pWSH7kmwVXcPtY94XSMMak4b7RSKig2mKbHDpD4bC7eGlwl5RxzYkgrHtMNRmHmQor5Nvqe52cFJ
-25Azqtwvjt5nbrEd81iBmboNTEnLaKuxbbCtLaMEP8xKeDjAKnNOqHUMps0AsQT8c0EGq39YHpjp
-Wn1l67VU0rMShbEFsiUf9WYgE677oinpdm0t2mdCjxr35tryxptoTZXKHDxr/Yy6l6ExggJtMIIC
-aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
-EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwV/XkICjVscn4SNZMw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJqy57uJLCywVzLBy9ygWPgfRrvR2R54
-KJ9GM9ohdY6wMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMw
-NjE3MTExN1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBoOA4XwmUORSBaOspP+diFqhGnPVmqx49Zi47k82HnIoTcYZ4K
-B5Cs+MUnMN+eeCP7PDfTzrc+xT+uLwn5c9qoY+aFKPQzWHunZ3xW71oMVqqc51mzKNro92Z3+v2v
-yswT39wS4CB9SS2FQq8cJRdQiDjSX1cCPkkNHhOremv1l9NfgZCdDzYInmvcWAYWidWWzvAv/Gfe
-J2KMuZLuIM6tJZFXJXkoReLPkIARZNC0JD/FC73l/M/imJfvZwMfww5CEwoX99CUHq5yRDycRkp7
-1Hji0aSiJ1dZOrUV76FPyCjP0y3GayLqHDLgXvzBKPI3KcM6C4FQnHWhR7rB6U9y
---000000000000109f8f05f63e625b--
