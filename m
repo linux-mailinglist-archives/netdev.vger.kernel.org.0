@@ -2,70 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AA546AC8BE
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 17:52:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C80E6AC8B9
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 17:51:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230186AbjCFQwF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 11:52:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49906 "EHLO
+        id S230125AbjCFQu7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 11:50:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229798AbjCFQwD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 11:52:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3DD71FEA;
-        Mon,  6 Mar 2023 08:51:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B98AD61001;
-        Mon,  6 Mar 2023 16:49:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB615C433EF;
-        Mon,  6 Mar 2023 16:49:57 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="p7OvzPz1"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1678121396;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=l0IN1VirqLiMA24UJjnZzI6umrNwjSsL7ENm7zhRfEY=;
-        b=p7OvzPz1NmfKhe6kfIuqjE+THJUupW4DBOjmYlYF+caw15CTip4wmluH9W1Flbbziaghta
-        9it828fCf9UjeM+GVJF6yiGH5IwDVBBToxv13m1Gr6Sn6dMmMxa0OIpkUeipfG8xYK/h8c
-        VRnTEB0oxbtXms6RWFdtVuaEt9rvUN8=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 23ff5f42 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Mon, 6 Mar 2023 16:49:55 +0000 (UTC)
-Received: by mail-yb1-xb35.google.com with SMTP id v13so8823855ybu.0;
-        Mon, 06 Mar 2023 08:49:55 -0800 (PST)
-X-Gm-Message-State: AO0yUKWyrk7X+Mwn/2jQjt7u//l5Ze38dvVnboiuEKSYACkwU4OJwD7L
-        V0XiCNjvJzx/chpWGkluvioLXrhbarXtiA5d8V4=
-X-Google-Smtp-Source: AK7set9CK46/v8qFmWbdZ/4F4SRDr5QbKoIrAv/Wae6SuQP8a65V94c1vPHoCPtLR3gHjN4UILUiQdF7vxmAXeMOPdQ=
-X-Received: by 2002:a25:7808:0:b0:a4a:a708:2411 with SMTP id
- t8-20020a257808000000b00a4aa7082411mr6622201ybc.10.1678121092709; Mon, 06 Mar
- 2023 08:44:52 -0800 (PST)
-MIME-Version: 1.0
-References: <20230306160651.2016767-1-vernon2gm@gmail.com> <20230306160651.2016767-6-vernon2gm@gmail.com>
- <ZAYXJ2E+JHcp2kD/@yury-laptop>
-In-Reply-To: <ZAYXJ2E+JHcp2kD/@yury-laptop>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Mon, 6 Mar 2023 17:44:41 +0100
-X-Gmail-Original-Message-ID: <CAHmME9r_JXNCVVCNxZRQkafA=eOOu5k0+AweRDor3tNu283bdg@mail.gmail.com>
-Message-ID: <CAHmME9r_JXNCVVCNxZRQkafA=eOOu5k0+AweRDor3tNu283bdg@mail.gmail.com>
-Subject: Re: [PATCH 5/5] cpumask: fix comment of cpumask_xxx
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     Vernon Yang <vernon2gm@gmail.com>, torvalds@linux-foundation.org,
-        tytso@mit.edu, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, andriy.shevchenko@linux.intel.com,
-        linux@rasmusvillemoes.dk, james.smart@broadcom.com,
-        dick.kennedy@broadcom.com, linux-kernel@vger.kernel.org,
-        wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org
+        with ESMTP id S229798AbjCFQu6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 11:50:58 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 276FF30EA7;
+        Mon,  6 Mar 2023 08:50:28 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id h17-20020a17090aea9100b0023739b10792so9356327pjz.1;
+        Mon, 06 Mar 2023 08:50:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678121366;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=FyzVPjWfXnTi2A6JA+vLWl/vlGfJCkJsgnI57YCj2dk=;
+        b=aTRhtOKzopegMmO2yssOZkimSjssIB1Fe4aC8HZEsD3OR5cnh4N2g7iuSqfDbS9K5N
+         CS8TVBVdeQZqQfD3dFmdVX3QUkxzNkaZ5MaF35ZM6wNjohaLBeFCivpxT+cs4mnddsN1
+         4TMJT+ngEmiRar/0a7wziePefj2s334WYFD1cml4bH29b/21M17Q0ZMzTPan6WcmWTyV
+         9z+EsmcrSJrphT/ZIbuuL729qCpqvNQLIwNflHSDPWKS/qjn5RYl046inEUlPM8721Bx
+         ifkSjYxCj6fWSgL9rgRzzT4NIF7Zp898TfP7yV3sl2SLv2TiV5V89riysdMyUhr4XQ+t
+         SKrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678121366;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=FyzVPjWfXnTi2A6JA+vLWl/vlGfJCkJsgnI57YCj2dk=;
+        b=adHS1iv1J1c7vEGz9R+yKpO3Lp+gJw7TDDxwUU6UKG38J9aTZma5CUneUTU7z91DPg
+         1ffFvsmN+qvgGUlkRdXF5kVZPbT5TWbOsFikeLaDlMdE8/XcUXFDp9yb10NYgfYP1v1J
+         7W0w5vmjP3HhpMGQUY1fvFhMGFMeFctKEQCsVTX389KrnEJE9OI2bQLSpF7gkqKjGnn0
+         4DlhlHPpzxYpuWetoXlYV9YgRE2otvr0Ml8L9F1ZmpeP4iWtvkN0JsEwqOh/bV481ll7
+         ZmPHoUrCmeQIspvVoqDfs6Yne4D3FJg3rRhj0kdKzIWejJGfoITfJUN5AsuUdutP3r1d
+         ufsQ==
+X-Gm-Message-State: AO0yUKU581daoxSAUHX/XDIw0c1D9OrJMW7HWAj3YVxujaBgI95JvrK4
+        5SP1GIqasulWgJJUUQKQjiPStpAgiX0=
+X-Google-Smtp-Source: AK7set/tAvMHEOLBgk/J+TSbInWJpoBAIk9fk2swfjHlWNVo4lmtt2y54TjkH+Sact5n0jkX8+6sNA==
+X-Received: by 2002:a17:902:d4cd:b0:19e:23c1:4c3d with SMTP id o13-20020a170902d4cd00b0019e23c14c3dmr14086927plg.2.1678121366695;
+        Mon, 06 Mar 2023 08:49:26 -0800 (PST)
+Received: from [192.168.0.128] ([98.97.39.127])
+        by smtp.googlemail.com with ESMTPSA id jy11-20020a17090342cb00b0019cbd37a335sm6962692plb.93.2023.03.06.08.49.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Mar 2023 08:49:26 -0800 (PST)
+Message-ID: <3507f6a501688243d1f16ef65753acc40b9e85aa.camel@gmail.com>
+Subject: Re: [PATCH net 0/2] add checking sq is full inside xdp xmit
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+Date:   Mon, 06 Mar 2023 08:49:24 -0800
+In-Reply-To: <20230306041535.73319-1-xuanzhuo@linux.alibaba.com>
+References: <20230306041535.73319-1-xuanzhuo@linux.alibaba.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+MIME-Version: 1.0
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,44 +81,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 6, 2023 at 5:39=E2=80=AFPM Yury Norov <yury.norov@gmail.com> wr=
-ote:
->
-> On Tue, Mar 07, 2023 at 12:06:51AM +0800, Vernon Yang wrote:
-> > After commit 596ff4a09b89 ("cpumask: re-introduce constant-sized cpumas=
-k
-> > optimizations"), the cpumask size is divided into three different case,
-> > so fix comment of cpumask_xxx correctly.
-> >
-> > Signed-off-by: Vernon Yang <vernon2gm@gmail.com>
-> > ---
-> >  include/linux/cpumask.h | 46 ++++++++++++++++++++---------------------
-> >  1 file changed, 23 insertions(+), 23 deletions(-)
-> >
-> > diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
-> > index 8fbe76607965..248bdb1c50dc 100644
-> > --- a/include/linux/cpumask.h
-> > +++ b/include/linux/cpumask.h
-> > @@ -155,7 +155,7 @@ static __always_inline unsigned int cpumask_check(u=
-nsigned int cpu)
-> >   * cpumask_first - get the first cpu in a cpumask
-> >   * @srcp: the cpumask pointer
-> >   *
-> > - * Returns >=3D nr_cpu_ids if no cpus set.
-> > + * Returns >=3D small_cpumask_bits if no cpus set.
->
-> There's no such thing like small_cpumask_bits. Here and everywhere,
-> nr_cpu_ids must be used.
->
-> Actually, before 596ff4a09b89 nr_cpumask_bits was deprecated, and it
-> must be like that for all users even now.
->
-> nr_cpumask_bits must be considered as internal cpumask parameter and
-> never referenced outside of cpumask code.
+On Mon, 2023-03-06 at 12:15 +0800, Xuan Zhuo wrote:
+> If the queue of xdp xmit is not an independent queue, then when the xdp
+> xmit used all the desc, the xmit from the __dev_queue_xmit() may encounte=
+r
+> the following error.
+>=20
+> net ens4: Unexpected TXQ (0) queue failure: -28
+>=20
+> This patch adds a check whether sq is full in XDP Xmit.
+>=20
+> Thanks.
+>=20
+> Xuan Zhuo (2):
+>   virtio_net: separate the logic of checking whether sq is full
+>   virtio_net: add checking sq is full inside xdp xmit
+>=20
+>  drivers/net/virtio_net.c | 78 ++++++++++++++++++++++++----------------
+>  1 file changed, 47 insertions(+), 31 deletions(-)
+>=20
+> --
+> 2.32.0.3.g01195cf9f
+>=20
 
-What's the right thing I should do, then, for wireguard's usage and
-for random.c's usage? It sounds like you object to this patchset, but
-if the problem is real, it sounds like I should at least fix the two
-cases I maintain. What's the right check?
+Series looks good to me.
 
-Jason
+Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+
