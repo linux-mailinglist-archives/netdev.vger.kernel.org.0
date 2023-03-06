@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AAFA16AC766
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 17:12:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3458D6AC79F
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 17:20:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229595AbjCFQMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 11:12:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54480 "EHLO
+        id S229805AbjCFQUg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 11:20:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229874AbjCFQMJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 11:12:09 -0500
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D337252B1;
-        Mon,  6 Mar 2023 08:08:55 -0800 (PST)
-Received: by mail-pl1-x62e.google.com with SMTP id i3so10911059plg.6;
-        Mon, 06 Mar 2023 08:08:55 -0800 (PST)
+        with ESMTP id S231636AbjCFQT5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 11:19:57 -0500
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92DBF3928F;
+        Mon,  6 Mar 2023 08:17:42 -0800 (PST)
+Received: by mail-qt1-x834.google.com with SMTP id c3so11092033qtc.8;
+        Mon, 06 Mar 2023 08:17:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678118821;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=bGjJeP+v7EwPoYJLnQF7j3pQ+Q0I3C16zMfTP7kU+5M=;
-        b=aL5SNB72UDHwQv4qnw//unrBnNllZbNrRzanaYxUy9W/JDkLcplqqM4aKE+ujoOOIf
-         fCY0pUo4O+SAIPvsI7vvghKZooDezOQjbEmJ41PSZKr8Kfg7UN/FRkMDeiX7mKJfW491
-         vosst0R8Q0TqDuSVHw633qpocZ151nfLDA5zhkXJCZq/6d3K5ANsQs2+/Vfwh8bAwBWi
-         X+mMdUcUJ5v55broppBqyrsJ9Exa60kJdAxzcP/Q2/3G+0RtYQS9D9GGH8F3+YqJfpHV
-         cZMMAzqhY8hy2BhSdOvH/CSDuodP6pGaa/SxItwCN+SvENwLK7tZK9OdpSyVUo0uRvmH
-         aang==
+        d=gmail.com; s=20210112; t=1678119375;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=IYGyvuAOKnVSJLZ+PGJAH4uPpRYGFdgKO1BedlDVykI=;
+        b=kgi1+iWFbxRLTFxekjD2pI2NKmQgD+RR4bdx2BeL+4I/+FSqc5MHFSucYLuIohUpfa
+         0345mB2OordJ4yoq9g5ZqU5h5S6HXkLlCJTBmm5KS1MY2jgy5zaC4Kw7q9JK3dAqjt5Y
+         Y9mnpyZ/39xns9YJxuiTnFz5lCiwRFa6gkdGYyKIx21hcLaLytX3yhaFob4UvWdnLyvV
+         HQRc5NdeHtka0/Fw7mDs+/regvI+w/sWpWbOitUTXj18CkacGgUUL8guO/5WYpDVvzFh
+         n0FDNV5EAN51UuNBhea3wLhq3oYrnQHiHevrMTRk9GXoS6JFBtlu21u3GXFxYov7OinU
+         sdtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678118821;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=bGjJeP+v7EwPoYJLnQF7j3pQ+Q0I3C16zMfTP7kU+5M=;
-        b=RJPvYBGNGa4t5/tcOIrzKHIYb7x5EVdoQNy+td9hfquE+RsrjJmB+QpdhSWmTVcHks
-         kQWHG3rgUoA3Mfm29qnNtTuXNtIyJz1JC8sTS5xKf+3GwKP3ZXjVZm54qZZNJftox9Et
-         BpeZYMWp2hYiG4Vs00Aq3Ae13w3RvqfvsZQMPiyHpb5MvK6o3RgBMiG2izOK6pLjDUU9
-         UXQ38P7YYFjqWpIMtUrJ8HiB3l3do/KPv8yLlMo+MdtnbbpOuUtqDkoVllWzSYR5ACV/
-         /NPFrkedq82p6Zl3CcXpk/zQUiMmE6bdgrnhTuli2PJmyU5VNcxgV2Lrt5tfGz+/k0gM
-         bhaA==
-X-Gm-Message-State: AO0yUKWdE8VmTRFI2sKwPaCMUqPnvhgwqjEWVAAlKiubm0JUkXlptkan
-        zZM4Dv9nAyynQFd+m2kIbbo=
-X-Google-Smtp-Source: AK7set+c3m5DDFKg/kkMDhXjx6ZzAhMuAS2jyN4DU0O1mVKmvqcaXJPmOUVoNzoxKTsUwdrUm7FwEw==
-X-Received: by 2002:a05:6a20:1443:b0:d0:15c9:4e68 with SMTP id a3-20020a056a20144300b000d015c94e68mr760681pzi.62.1678118821142;
-        Mon, 06 Mar 2023 08:07:01 -0800 (PST)
+        d=1e100.net; s=20210112; t=1678119375;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=IYGyvuAOKnVSJLZ+PGJAH4uPpRYGFdgKO1BedlDVykI=;
+        b=R1HTbg/r7jGD/VOvLvnmokJ41mWdEitSgVv2m97OPoB8Yt2mbG3QwTjAkNYeUnasvh
+         O0NNY5WUkJ6PavXP4ngGiOMYFGmA6zfVuhh0oZhSsCnJraOha0l2WwaDJjY3hLotR84S
+         g9AsPyD2yoEXoW4pnUJLpPVY3PAIpfjWGoBkCYtPmSICg9RCuYDgv9EyO0z3MmxbLMPP
+         /OihA2MdmOu+bBAHe/uK6pt0p/DVBd2EG/Rw9Q/PpfQ29ss9VqdNsJ+eaUulf8WRNhhE
+         ia2/j1AiGKCAt+pFSxEwKLhPYzwFQu2W3lUsUW+TsWOWuieeAsE8gw2P7/vGgzF15YVS
+         yU/A==
+X-Gm-Message-State: AO0yUKVYuxUueYcKfZaWp3YUD1W+kA5Du7vzEh6KhJWU7keow2lvrBKK
+        s9CFwDO5yPTz0C7zLpxEMsOFUGLwdHo6V6dC
+X-Google-Smtp-Source: AK7set9FRJJ4bXIzCpqYTe8FRO5hxEPWPyG4KeJpbdnQ94eOSJ9cEuAei2kEStRQ6ROkgIXiyTXqbg==
+X-Received: by 2002:a62:7b45:0:b0:5a9:b4eb:d262 with SMTP id w66-20020a627b45000000b005a9b4ebd262mr10996934pfc.1.1678118827070;
+        Mon, 06 Mar 2023 08:07:07 -0800 (PST)
 Received: from vernon-pc.. ([49.67.2.142])
-        by smtp.gmail.com with ESMTPSA id u6-20020aa78386000000b005d35695a66csm6465318pfm.137.2023.03.06.08.06.55
+        by smtp.gmail.com with ESMTPSA id u6-20020aa78386000000b005d35695a66csm6465318pfm.137.2023.03.06.08.07.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Mar 2023 08:07:00 -0800 (PST)
+        Mon, 06 Mar 2023 08:07:06 -0800 (PST)
 From:   Vernon Yang <vernon2gm@gmail.com>
 To:     torvalds@linux-foundation.org, tytso@mit.edu, Jason@zx2c4.com,
         davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
@@ -58,10 +59,12 @@ To:     torvalds@linux-foundation.org, tytso@mit.edu, Jason@zx2c4.com,
 Cc:     linux-kernel@vger.kernel.org, wireguard@lists.zx2c4.com,
         netdev@vger.kernel.org, linux-scsi@vger.kernel.org,
         Vernon Yang <vernon2gm@gmail.com>
-Subject: [PATCH 0/5] fix call cpumask_next() if no further cpus set
-Date:   Tue,  7 Mar 2023 00:06:46 +0800
-Message-Id: <20230306160651.2016767-1-vernon2gm@gmail.com>
+Subject: [PATCH 1/5] random: fix try_to_generate_entropy() if no further cpus set
+Date:   Tue,  7 Mar 2023 00:06:47 +0800
+Message-Id: <20230306160651.2016767-2-vernon2gm@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230306160651.2016767-1-vernon2gm@gmail.com>
+References: <20230306160651.2016767-1-vernon2gm@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -74,112 +77,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+After commit 596ff4a09b89 ("cpumask: re-introduce constant-sized cpumask
+optimizations"), when NR_CPUS <= BITS_PER_LONG, small_cpumask_bits used
+a macro instead of variable-sized for efficient.
 
-I updated the Linux kernel to commit fe15c26ee26e ("Linux 6.3-rc1")
-and found that when the system boots to systemd ranom initialization,
-panic, as follows:
+If no further cpus set, the cpumask_next() returns small_cpumask_bits,
+it must greater than or equal to nr_cpumask_bits, so fix it to correctly.
 
-[    3.607299] BUG: unable to handle page fault for address: 000000000001cc43
-[    3.607558] #PF: supervisor read access in kernel mode
-[    3.607704] #PF: error_code(0x0000) - not-present page
-[    3.607704] PGD 0 P4D 0
-[    3.607704] Oops: 0000 [#1] PREEMPT SMP NOPTI
-[    3.607704] CPU: 1 PID: 1 Comm: systemd Not tainted 6.3.0-rc1 #50
-[    3.607704] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
-[    3.607704] RIP: 0010:_raw_spin_lock+0x12/0x30
-[    3.607704] Code: 84 00 00 00 00 00 66 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 f3 0f 1e fa 65 ff 05 dd de 1e 7e 31 c0 ba 01 00 00 00 <f0> 0f b1 17 75 05 c3 cc cc cc cc 89 c6 e9 9c 00 00 00 6
-[    3.607704] RSP: 0018:ffffc90000013d50 EFLAGS: 00000002
-[    3.607704] RAX: 0000000000000000 RBX: 0000000000000040 RCX: 0000000000000002
-[    3.607704] RDX: 0000000000000001 RSI: 0000000000000246 RDI: 000000000001cc43
-[    3.607704] RBP: ffffc90000013dc8 R08: 00000000d6fbd601 R09: 0000000065abc912
-[    3.607704] R10: 00000000ba93b167 R11: 000000007bb5d0bf R12: 000000000001cc43
-[    3.607704] R13: 000000000001cc43 R14: 0000000000000003 R15: 0000000000000003
-[    3.607704] FS:  00007fbd4911b400(0000) GS:ffff88807dd00000(0000) knlGS:0000000000000000
-[    3.607704] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    3.607704] CR2: 000000000001cc43 CR3: 0000000003b42000 CR4: 00000000000006e0
-[    3.607704] Call Trace:
-[    3.607704]  <TASK>
-[    3.607704]  add_timer_on+0x80/0x130
-[    3.607704]  try_to_generate_entropy+0x246/0x270
-[    3.607704]  ? do_filp_open+0xb1/0x160
-[    3.607704]  ? __pfx_entropy_timer+0x10/0x10
-[    3.607704]  ? inode_security+0x1d/0x60
-[    3.607704]  urandom_read_iter+0x23/0x90
-[    3.607704]  vfs_read+0x203/0x2d0
-[    3.607704]  ksys_read+0x5e/0xe0
-[    3.607704]  do_syscall_64+0x3f/0x90
-[    3.607704]  entry_SYSCALL_64_after_hwframe+0x72/0xdc
-[    3.607704] RIP: 0033:0x7fbd49a25992
-[    3.607704] Code: c0 e9 b2 fe ff ff 50 48 8d 3d fa b2 0c 00 e8 c5 1d 02 00 0f 1f 44 00 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 0f 05 <48> 3d 00 f0 ff ff 77 56 c3 0f 1f 44 00 00 48 83 ec 28 4
-[    3.607704] RSP: 002b:00007ffea3fe8318 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-[    3.607704] RAX: ffffffffffffffda RBX: 0000000000000010 RCX: 00007fbd49a25992
-[    3.607704] RDX: 0000000000000010 RSI: 00007ffea3fe83a0 RDI: 000000000000000c
-[    3.607704] RBP: 000000000000000c R08: 3983c6a57a866072 R09: c736ebfbeb917d7e
-[    3.607704] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-[    3.607704] R13: 0000000000000001 R14: 00007ffea3fe83a0 R15: 00005609e5454ea8
-[    3.607704]  </TASK>
-[    3.607704] Modules linked in:
-[    3.607704] CR2: 000000000001cc43
-[    3.607704] ---[ end trace 0000000000000000 ]---
-[    3.607704] RIP: 0010:_raw_spin_lock+0x12/0x30
-[    3.607704] Code: 84 00 00 00 00 00 66 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 f3 0f 1e fa 65 ff 05 dd de 1e 7e 31 c0 ba 01 00 00 00 <f0> 0f b1 17 75 05 c3 cc cc cc cc 89 c6 e9 9c 00 00 00 6
-[    3.607704] RSP: 0018:ffffc90000013d50 EFLAGS: 00000002
-[    3.607704] RAX: 0000000000000000 RBX: 0000000000000040 RCX: 0000000000000002
-[    3.607704] RDX: 0000000000000001 RSI: 0000000000000246 RDI: 000000000001cc43
-[    3.607704] RBP: ffffc90000013dc8 R08: 00000000d6fbd601 R09: 0000000065abc912
-[    3.607704] R10: 00000000ba93b167 R11: 000000007bb5d0bf R12: 000000000001cc43
-[    3.607704] R13: 000000000001cc43 R14: 0000000000000003 R15: 0000000000000003
-[    3.607704] FS:  00007fbd4911b400(0000) GS:ffff88807dd00000(0000) knlGS:0000000000000000
-[    3.607704] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    3.607704] CR2: 000000000001cc43 CR3: 0000000003b42000 CR4: 00000000000006e0
-[    3.607704] note: systemd[1] exited with irqs disabled
-[    3.618556] note: systemd[1] exited with preempt_count 2
-[    3.618991] Kernel panic - not syncing: Attempted to kill init! exitcode=0x00000009
-[    3.619797] Kernel Offset: disabled
-[    3.619798] ---[ end Kernel panic - not syncing: Attempted to kill init! exitcode=0x00000009 ]---
+Signed-off-by: Vernon Yang <vernon2gm@gmail.com>
+---
+ drivers/char/random.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
-Analysis add_timer_on() found that the parameter cpu is equal to 64, which
-feels strange, because qemu only specifies two CPUs, continues to look up,
-and finds that the parameter cpu is obtained by
-try_to_generate_entropy() -> cpumask_next().
-
-Then use git bisect to find the bug, and find that it was introduced by
-commit 596ff4a09b89 ("cpumask: re-introduce constant-sized cpumask optimizations"),
-carefully analyzing the cpumask_next() modification record, I found that
-nr_cpumask_bits modified to small_cpumask_bits, and when NR_CPUS <= BITS_PER_LONG,
-small_cpumask_bits is a macro and before nr_cpumask_bits is a variable-sized.
-
-look for find_next_bit() If no bits are set, returns @size, I seem to
-understand the cause of the problem.
-
-I fixed this bug by make `if (cpu == nr_cpumask_bits)` to `if (cpu >= nr_cpumask_bits)`
-
-At the same time I think about this situation, maybe there are the same errors
-elsewhere, check it, sure enough, there are, quite a few.
-
-The patch "random:xxx" has been verified, it is valid, the other three fixes
-have not been verified, because I do not have an environment, but they
-principle are same, so also submitted at the same time, if someone helps to
-verify, thanks you very much.
-
-If there is anything error, please tell me, thanks.
-
-Vernon Yang (5):
-  random: fix try_to_generate_entropy() if no further cpus set
-  wireguard: fix wg_cpumask_choose_online() if no further cpus set
-  scsi: lpfc: fix lpfc_cpu_affinity_check() if no further cpus set
-  scsi: lpfc: fix lpfc_nvmet_setup_io_context() if no further cpus set
-  cpumask: fix comment of cpumask_xxx
-
- drivers/char/random.c            |  2 +-
- drivers/net/wireguard/queueing.h |  2 +-
- drivers/scsi/lpfc/lpfc_init.c    | 14 +++++-----
- drivers/scsi/lpfc/lpfc_nvmet.c   |  2 +-
- include/linux/cpumask.h          | 46 ++++++++++++++++----------------
- 5 files changed, 33 insertions(+), 33 deletions(-)
-
---
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index ce3ccd172cc8..d76f12a5f74f 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1311,7 +1311,7 @@ static void __cold try_to_generate_entropy(void)
+ 			/* Basic CPU round-robin, which avoids the current CPU. */
+ 			do {
+ 				cpu = cpumask_next(cpu, &timer_cpus);
+-				if (cpu == nr_cpumask_bits)
++				if (cpu >= nr_cpumask_bits)
+ 					cpu = cpumask_first(&timer_cpus);
+ 			} while (cpu == smp_processor_id() && num_cpus > 1);
+ 
+-- 
 2.34.1
 
