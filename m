@@ -2,68 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 558E36ABF10
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 13:05:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B01EB6ABF22
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 13:08:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230225AbjCFMFn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 07:05:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57380 "EHLO
+        id S230233AbjCFMIj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 07:08:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230251AbjCFMFg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 07:05:36 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E58B29174;
-        Mon,  6 Mar 2023 04:05:33 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id s11so37477018edy.8;
-        Mon, 06 Mar 2023 04:05:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678104332;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=D0dVpf0jOGyrhZAJR8RbJwG183fo5cC9DkfkYCpCrSQ=;
-        b=byxDqp8yV398MYIjqgnhkRB0yYS9up0LKukf+6wo1wcxdwLRfXg1FG8O8F2UVpGR2e
-         9LwDFUhnwV6nyAXybMTrp69wIJ/FWvi3q8P2gTXpLeY/vCcuCp4ihcj+h0M10gqMfCv5
-         Fzp56LM5OdFCtTOMKc5am4Ty6aokdldt87jFqOv3JTSqxh0pfOPXG4N8AoAIO0lZ/DTq
-         9G+WFYEDOqj9aDr16x6m6DaGw4opdbffBz6/xwDSe2y5MqGixSgZHyf6gFT8lAp1VU0n
-         wGtPpaqs9IttkR1rda/6biEtALWMTnnYPCkPcn/WI1J/yUygqrXThl/apM92SNtuK15x
-         4RSg==
+        with ESMTP id S229457AbjCFMIh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 07:08:37 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B120921A32
+        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 04:07:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1678104468;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=I0ekj7n7BGA/ETtY6sbgYM92CAukII9oGd0VLpZBNPM=;
+        b=FzYp/LtsXs6r6XOKfVzSSFzL7/oz/iUxuhparwb5rf4SrQZ8O7bsLAtoGnE8DfjocqEymb
+        zz/IkI/bzgpGPUL9fNmRY6QMFFNuZFPe3S1Z2ULpIDv060lVVYuYoW73JGui+RCaYvMWwC
+        nJXGSJplL1ZAIwrFolPbHCfx8iwVmR8=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-490-qZEL9nENMlWklnHhap8i8A-1; Mon, 06 Mar 2023 07:07:47 -0500
+X-MC-Unique: qZEL9nENMlWklnHhap8i8A-1
+Received: by mail-qk1-f198.google.com with SMTP id dm13-20020a05620a1d4d00b00742a22c4239so5269169qkb.1
+        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 04:07:47 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678104332;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=D0dVpf0jOGyrhZAJR8RbJwG183fo5cC9DkfkYCpCrSQ=;
-        b=frDTnG6CMx+3H+zs9NymDG5lRdjBQm7w3Ld22y/CDdUWsgoNo5povMYSJPmOYw1uUV
-         WFeG1ZwdjSSBnuaX/p6nrdwaanZmH308TCn5Ze9ym1Vy5YSK8sgCtXvi8A8vAY7M+xDX
-         4RnLrXcJRdya6TCrGMnnpUtT4LCX3QhmCy2pAh0nmH6hLtNKEYD3JcXeOPHutPI2Q3D4
-         Y6SFC0poJHTQXMMzmaW3d+FV2GaLIY28ijhO0MtRbBnJFkNaOCcQmB9IZbsJOKRG4JCp
-         YunlXW+wmmkiaKLy/hQ1/o4ZLj2nkukQ9aDBNohFsmt4Bcj8weP4NA4uleiL+fIG8Jef
-         Nh3A==
-X-Gm-Message-State: AO0yUKV4lTjrWc3wkB7z4q7Hmt+RkfRApUYdLvV3uOciBYrVxCpZ2dYJ
-        iiyeS7AObqXnFyJ/XvjYRkM=
-X-Google-Smtp-Source: AK7set9RhqYug2VOpjo5vosMgrEfbo0gqfrCV+7YBs5r5t+86zI1PH+O6FADojps3NmJQrHHYJ7CTg==
-X-Received: by 2002:aa7:d404:0:b0:4aa:ca81:a528 with SMTP id z4-20020aa7d404000000b004aaca81a528mr8742131edq.40.1678104331921;
-        Mon, 06 Mar 2023 04:05:31 -0800 (PST)
-Received: from labdl-itc-sw04.tmt.telital.com (host-217-57-98-66.business.telecomitalia.it. [217.57.98.66])
-        by smtp.googlemail.com with ESMTPSA id i18-20020a50d752000000b004accf3a63cbsm4979969edj.68.2023.03.06.04.05.31
+        d=1e100.net; s=20210112; t=1678104467;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=I0ekj7n7BGA/ETtY6sbgYM92CAukII9oGd0VLpZBNPM=;
+        b=cH/7vSeiQ2buLzbZZ794vvyagLuXTCW1BCWmm/fniFzKaWVyGOZfjDUODkFz2j1sLp
+         MIAOtIen3r1RQgUkdpnAO7H9fzZXvzczQc5jNNeKagp5WHcQaqPIXzdHlz5ayuaUCOEV
+         Dl2josXg8i0l0eqVRrTIhL6LSsvr3Nbe4SDsbvW99LsWp9pp0RJMyKiqerx2rQ4Hvfcl
+         YQZLpHJywfdQWcfOZKJlLge3qDhnoSlI40QAD2IBTbnxiZ8+zwqD1CgtKH8AOvJnDxV7
+         i/JBj9bG2yStrhsTctT1dNhAEsKTvle8aggUm/nH5GxUUEO0njwL5vRqN4TDGCTVRs9t
+         Tpgw==
+X-Gm-Message-State: AO0yUKWr1lVDIbjvCtNfPk86RNk4Y+y0lchKmDfBvMUWMardNTvaquS+
+        XWqtjGgRwAZXWgwHD2MgPABgLxKUS2K1EyK+iSh++NDBe/mqKJQuJNnyeVFM3UpqtnAIlfLbWCH
+        dD0EmJ4AEWcqG8ygm
+X-Received: by 2002:ac8:5846:0:b0:3b8:5f26:e81f with SMTP id h6-20020ac85846000000b003b85f26e81fmr17766936qth.26.1678104467253;
+        Mon, 06 Mar 2023 04:07:47 -0800 (PST)
+X-Google-Smtp-Source: AK7set+V96PPHCzW88GO7gnogT8Tq/LXjyFpkqulWQDOc7ELP578FLhsQX2W1rCp9GrjRWDk+JnlEg==
+X-Received: by 2002:ac8:5846:0:b0:3b8:5f26:e81f with SMTP id h6-20020ac85846000000b003b85f26e81fmr17766898qth.26.1678104466945;
+        Mon, 06 Mar 2023 04:07:46 -0800 (PST)
+Received: from sgarzare-redhat (host-82-57-51-170.retail.telecomitalia.it. [82.57.51.170])
+        by smtp.gmail.com with ESMTPSA id 5-20020ac85605000000b003b0766cd169sm7496344qtr.2.2023.03.06.04.07.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Mar 2023 04:05:31 -0800 (PST)
-From:   Enrico Sau <enrico.sau@gmail.com>
-To:     Bj?rn Mork <bjorn@mork.no>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        Mon, 06 Mar 2023 04:07:46 -0800 (PST)
+Date:   Mon, 6 Mar 2023 13:07:42 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseniy Krasnov <avkrasnov@sberdevices.ru>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, Enrico Sau <enrico.sau@gmail.com>
-Subject: [PATCH NET 1/1] net: usb: qmi_wwan: add Telit 0x1080 composition
-Date:   Mon,  6 Mar 2023 13:05:28 +0100
-Message-Id: <20230306120528.198842-1-enrico.sau@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Paolo Abeni <pabeni@redhat.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@sberdevices.ru, oxffffaa@gmail.com
+Subject: Re: [RFC PATCH v2 3/4] virtio/vsock: free skb on data copy failure
+Message-ID: <20230306120742.v6ss4w22ku7pe45a@sgarzare-redhat>
+References: <a7ab414b-5e41-c7b6-250b-e8401f335859@sberdevices.ru>
+ <ef98aad4-f86d-fe60-9a35-792363a78a68@sberdevices.ru>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <ef98aad4-f86d-fe60-9a35-792363a78a68@sberdevices.ru>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,375 +84,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the following Telit FE990 composition:
+On Sun, Mar 05, 2023 at 11:08:38PM +0300, Arseniy Krasnov wrote:
+>This fixes two things in case when 'memcpy_to_msg()' fails:
+>1) Update credit parameters of the socket, like this skbuff was
+>   copied to user successfully. This is needed because when skbuff was
+>   received it's length was used to update 'rx_bytes', thus when we drop
+>   skbuff here, we must account rest of it's data in 'rx_bytes'.
+>2) Free skbuff which was removed from socket's queue.
+>
+>Fixes: 71dc9ec9ac7d ("virtio/vsock: replace virtio_vsock_pkt with sk_buff")
+>Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+>---
+> net/vmw_vsock/virtio_transport_common.c | 6 +++++-
+> 1 file changed, 5 insertions(+), 1 deletion(-)
+>
+>diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+>index 30b0539990ba..ffb1af4f2b52 100644
+>--- a/net/vmw_vsock/virtio_transport_common.c
+>+++ b/net/vmw_vsock/virtio_transport_common.c
+>@@ -379,8 +379,12 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
+> 		spin_unlock_bh(&vvs->rx_lock);
+>
+> 		err = memcpy_to_msg(msg, skb->data, bytes);
+>-		if (err)
+>+		if (err) {
+>+			skb_pull(skb, skb->len);
+>+			virtio_transport_dec_rx_pkt(vvs, skb);
+>+			consume_skb(skb);
 
-0x1080: tty, adb, rmnet, tty, tty, tty, tty
+I'm not sure it's the right thing to do, if we fail to copy the content
+into the user's buffer, I think we should queue it again.
 
-Signed-off-by: Enrico Sau <enrico.sau@gmail.com>
----
+In fact, before commit 71dc9ec9ac7d ("virtio/vsock: replace
+virtio_vsock_pkt with sk_buff"), we used to remove the packet from the
+rx_queue, only if memcpy_to_msg() was successful.
 
-This is the verbose lsusb:
+Maybe it is better to do as we did before and use skb_peek() at the
+beginning of the loop and __skb_unlink() when skb->len == 0.
 
-Bus 001 Device 009: ID 1bc7:1080 Telit Wireless Solutions FE990
-Device Descriptor:
-  bLength                18
-  bDescriptorType         1
-  bcdUSB               2.10
-  bDeviceClass            0 
-  bDeviceSubClass         0 
-  bDeviceProtocol         0 
-  bMaxPacketSize0        64
-  idVendor           0x1bc7 Telit Wireless Solutions
-  idProduct          0x1080 
-  bcdDevice            5.04
-  iManufacturer           1 Telit Wireless Solutions
-  iProduct                2 FE990
-  iSerial                 3 9455d1d2
-  bNumConfigurations      1
-  Configuration Descriptor:
-    bLength                 9
-    bDescriptorType         2
-    wTotalLength       0x0119
-    bNumInterfaces          7
-    bConfigurationValue     1
-    iConfiguration          4 DIAG_ADB_RMNET_NMEA_DUN_DUN_SER
-    bmAttributes         0x80
-      (Bus Powered)
-    MaxPower              500mA
-    Interface Descriptor:
-      bLength                 9
-      bDescriptorType         4
-      bInterfaceNumber        0
-      bAlternateSetting       0
-      bNumEndpoints           2
-      bInterfaceClass       255 Vendor Specific Class
-      bInterfaceSubClass    255 Vendor Specific Subclass
-      bInterfaceProtocol     48 
-      iInterface              0 
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x01  EP 1 OUT
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0200  1x 512 bytes
-        bInterval               0
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x81  EP 1 IN
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0200  1x 512 bytes
-        bInterval               0
-    Interface Descriptor:
-      bLength                 9
-      bDescriptorType         4
-      bInterfaceNumber        1
-      bAlternateSetting       0
-      bNumEndpoints           2
-      bInterfaceClass       255 Vendor Specific Class
-      bInterfaceSubClass     66 
-      bInterfaceProtocol      1 
-      iInterface              5 ADB Interface
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x02  EP 2 OUT
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0200  1x 512 bytes
-        bInterval               0
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x82  EP 2 IN
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0200  1x 512 bytes
-        bInterval               0
-    Interface Descriptor:
-      bLength                 9
-      bDescriptorType         4
-      bInterfaceNumber        2
-      bAlternateSetting       0
-      bNumEndpoints           3
-      bInterfaceClass       255 Vendor Specific Class
-      bInterfaceSubClass    255 Vendor Specific Subclass
-      bInterfaceProtocol     80 
-      iInterface              6 RmNet
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x83  EP 3 IN
-        bmAttributes            3
-          Transfer Type            Interrupt
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0008  1x 8 bytes
-        bInterval               9
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x8e  EP 14 IN
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0200  1x 512 bytes
-        bInterval               0
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x0f  EP 15 OUT
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0200  1x 512 bytes
-        bInterval               0
-    Interface Descriptor:
-      bLength                 9
-      bDescriptorType         4
-      bInterfaceNumber        3
-      bAlternateSetting       0
-      bNumEndpoints           3
-      bInterfaceClass       255 Vendor Specific Class
-      bInterfaceSubClass    255 Vendor Specific Subclass
-      bInterfaceProtocol     96 
-      iInterface              0 
-      ** UNRECOGNIZED:  05 24 00 10 01
-      ** UNRECOGNIZED:  05 24 01 00 00
-      ** UNRECOGNIZED:  04 24 02 02
-      ** UNRECOGNIZED:  05 24 06 00 00
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x85  EP 5 IN
-        bmAttributes            3
-          Transfer Type            Interrupt
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x000a  1x 10 bytes
-        bInterval               9
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x84  EP 4 IN
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0200  1x 512 bytes
-        bInterval               0
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x03  EP 3 OUT
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0200  1x 512 bytes
-        bInterval               0
-    Interface Descriptor:
-      bLength                 9
-      bDescriptorType         4
-      bInterfaceNumber        4
-      bAlternateSetting       0
-      bNumEndpoints           3
-      bInterfaceClass       255 Vendor Specific Class
-      bInterfaceSubClass    255 Vendor Specific Subclass
-      bInterfaceProtocol     64 
-      iInterface              0 
-      ** UNRECOGNIZED:  05 24 00 10 01
-      ** UNRECOGNIZED:  05 24 01 00 00
-      ** UNRECOGNIZED:  04 24 02 02
-      ** UNRECOGNIZED:  05 24 06 00 00
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x87  EP 7 IN
-        bmAttributes            3
-          Transfer Type            Interrupt
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x000a  1x 10 bytes
-        bInterval               9
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x86  EP 6 IN
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0200  1x 512 bytes
-        bInterval               0
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x04  EP 4 OUT
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0200  1x 512 bytes
-        bInterval               0
-    Interface Descriptor:
-      bLength                 9
-      bDescriptorType         4
-      bInterfaceNumber        5
-      bAlternateSetting       0
-      bNumEndpoints           3
-      bInterfaceClass       255 Vendor Specific Class
-      bInterfaceSubClass    255 Vendor Specific Subclass
-      bInterfaceProtocol     64 
-      iInterface              0 
-      ** UNRECOGNIZED:  05 24 00 10 01
-      ** UNRECOGNIZED:  05 24 01 00 00
-      ** UNRECOGNIZED:  04 24 02 02
-      ** UNRECOGNIZED:  05 24 06 00 00
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x89  EP 9 IN
-        bmAttributes            3
-          Transfer Type            Interrupt
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x000a  1x 10 bytes
-        bInterval               9
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x88  EP 8 IN
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0200  1x 512 bytes
-        bInterval               0
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x05  EP 5 OUT
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0200  1x 512 bytes
-        bInterval               0
-    Interface Descriptor:
-      bLength                 9
-      bDescriptorType         4
-      bInterfaceNumber        6
-      bAlternateSetting       0
-      bNumEndpoints           3
-      bInterfaceClass       255 Vendor Specific Class
-      bInterfaceSubClass    255 Vendor Specific Subclass
-      bInterfaceProtocol     64 
-      iInterface              0 
-      ** UNRECOGNIZED:  05 24 00 10 01
-      ** UNRECOGNIZED:  05 24 01 00 00
-      ** UNRECOGNIZED:  04 24 02 02
-      ** UNRECOGNIZED:  05 24 06 00 00
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x8b  EP 11 IN
-        bmAttributes            3
-          Transfer Type            Interrupt
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x000a  1x 10 bytes
-        bInterval               9
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x8a  EP 10 IN
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0200  1x 512 bytes
-        bInterval               0
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x06  EP 6 OUT
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0200  1x 512 bytes
-        bInterval               0
-Binary Object Store Descriptor:
-  bLength                 5
-  bDescriptorType        15
-  wTotalLength       0x002a
-  bNumDeviceCaps          3
-  USB 2.0 Extension Device Capability:
-    bLength                 7
-    bDescriptorType        16
-    bDevCapabilityType      2
-    bmAttributes   0x0000010e
-      BESL Link Power Management (LPM) Supported
-    BESL value      256 us 
-  SuperSpeed USB Device Capability:
-    bLength                10
-    bDescriptorType        16
-    bDevCapabilityType      3
-    bmAttributes         0x00
-    wSpeedsSupported   0x000f
-      Device can operate at Low Speed (1Mbps)
-      Device can operate at Full Speed (12Mbps)
-      Device can operate at High Speed (480Mbps)
-      Device can operate at SuperSpeed (5Gbps)
-    bFunctionalitySupport   1
-      Lowest fully-functional device speed is Full Speed (12Mbps)
-    bU1DevExitLat           0 micro seconds
-    bU2DevExitLat           0 micro seconds
-  SuperSpeedPlus USB Device Capability:
-    bLength                20
-    bDescriptorType        16
-    bDevCapabilityType     10
-    bmAttributes         0x00000001
-      Sublink Speed Attribute count 1
-      Sublink Speed ID count 0
-    wFunctionalitySupport   0x1100
-    bmSublinkSpeedAttr[0]   0x000a4030
-      Speed Attribute ID: 0 10Gb/s Symmetric RX SuperSpeedPlus
-    bmSublinkSpeedAttr[1]   0x000a40b0
-      Speed Attribute ID: 0 10Gb/s Symmetric TX SuperSpeedPlus
-can't get debug descriptor: Resource temporarily unavailable
-Device Status:     0x0000
-  (Bus Powered)
+Thanks,
+Stefano
 
----
- drivers/net/usb/qmi_wwan.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index a808d718c012..571e37e67f9c 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -1364,6 +1364,7 @@ static const struct usb_device_id products[] = {
- 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1057, 2)},	/* Telit FN980 */
- 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1060, 2)},	/* Telit LN920 */
- 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1070, 2)},	/* Telit FN990 */
-+	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1080, 2)}, /* Telit FE990 */
- 	{QMI_FIXED_INTF(0x1bc7, 0x1100, 3)},	/* Telit ME910 */
- 	{QMI_FIXED_INTF(0x1bc7, 0x1101, 3)},	/* Telit ME910 dual modem */
- 	{QMI_FIXED_INTF(0x1bc7, 0x1200, 5)},	/* Telit LE920 */
--- 
-2.25.1
+> 			goto out;
+>+		}
+>
+> 		spin_lock_bh(&vvs->rx_lock);
+>
+>-- 
+>2.25.1
+>
 
