@@ -2,174 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02D3F6AB9C5
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 10:27:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DD0C6ABA03
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 10:36:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229973AbjCFJ1K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 04:27:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36834 "EHLO
+        id S230025AbjCFJgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 04:36:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229871AbjCFJ1I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 04:27:08 -0500
-Received: from mail-ua1-x92a.google.com (mail-ua1-x92a.google.com [IPv6:2607:f8b0:4864:20::92a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A4E722DF7
-        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 01:27:07 -0800 (PST)
-Received: by mail-ua1-x92a.google.com with SMTP id d12so5942599uak.10
-        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 01:27:07 -0800 (PST)
+        with ESMTP id S230061AbjCFJgL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 04:36:11 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC0C23323
+        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 01:36:02 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id a25so36018919edb.0
+        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 01:36:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112; t=1678094826;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=zhS37jgP1oSKDQocHToehtxxyITsXcT+owYbmJ0INPU=;
-        b=4t56tDC/G+oovfdiW5rxFZCyYsIfw/WmqyS1QgC9FKLy44l3wGWvPNPrKaEI6mAvIe
-         ELD4XcqhLxDYPapof54et2VAMu4KrZDT7kUwAj9Hrs6wS7u5XxJjEWAUEaYcKiG/Zn39
-         LbYGMfhwfIZ4JLhat+2hMudxk6CM3YJdkOXGSLSfaulwOvc6XpKpqL1F+6VUjzq55xQy
-         y2JSmDTTT0sTDy7JHDzT8MfLrGyiRKAqCmO15rXFhnzLrphpS2zddGj0+LqedgxxL0hV
-         0N2PQS1jMZSutIFgUay8tQ8K/XSrnWtb4nxvfgnG2GPyXj9/IYPjvJKK9fj6DB19DqZ2
-         l4GA==
+        d=gmail.com; s=20210112; t=1678095361;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=+vFW5To1+smj2gw7atPORu0HKgb6eHRbuZNVD+S3Cyw=;
+        b=J6ixpz0GbkIYexAg0M01qPupSYB727GvC0vLtPh47Rrg8Ona6DbLgjTVPdZDHAUK+c
+         6jA7BBlIRDqds8yA3SORrovAyRdJzm6gdBwaxN25rZDBhV7MaFNNDFQlMPHBe891O3vq
+         mtLIVIROFgqDMtqECZLh2Neo2duonp2/uJ+28sLo6NxFSgkDu77m729WJ1qIOIxoA3iK
+         wYgWz20kfbF449vHNSVFASFXtTXYg9czPqJ+fydVbxl4PrnsMKLHmLNtsJ59g2gg26b2
+         GH6L77Pdth8c3P2sfLe/+pMS19hH06R4ClLKk6gX2GSEnPbnIyR47usZvbJszHr6L5PD
+         kHwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678094826;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=zhS37jgP1oSKDQocHToehtxxyITsXcT+owYbmJ0INPU=;
-        b=tsn5xf1+06cpBgVfKxnv4Wl95vxiIq/kBm1dejzpm4IvF1qowZ9J2hm0GWItYe2DWi
-         dMgmFzEErrcOMazh32KmPZUWh7cwrK7bNNc0mdLLPAZq2r4R3g+WyNg1/LogBuKRycgC
-         R07NyongTc0XK9HC2WsgebAqZUADlFUcq5rrgIoljMf3Kc+Wvagd/N/I5xIRdVMEQVx3
-         xqQr8ZFLs/YJkqJFpJKqRXD5GoJACrCJOytkC1ZaXZLZqcUUu9i6TdtVbp2b/P1GMpM2
-         /63CDhyElqhGGbW7R0d3z4AeSL3l+q2+np5HxmG/ZaG7StUB5nIDcS2d2rD6bMin5tyD
-         xwhw==
-X-Gm-Message-State: AO0yUKVrP9Ft5VFGPsdKAUmwIWJfFpQYVdXi+6V+I+YpTp3b10ta6yw8
-        tVAmpPiwalPyaZ+W8TbTgYmUtWkKcPWOiWgDVEaE3w==
-X-Google-Smtp-Source: AK7set+CHskqiSsm+6Cmi6WHgSSwP4myqJ1YcVc2LU1gm2fnO90Xr69irT8NxRARr/yjxDC8cjTLGID26SceOFHbVxE=
-X-Received: by 2002:a9f:3104:0:b0:687:afc8:ffb9 with SMTP id
- m4-20020a9f3104000000b00687afc8ffb9mr6636458uab.2.1678094826467; Mon, 06 Mar
- 2023 01:27:06 -0800 (PST)
+        d=1e100.net; s=20210112; t=1678095361;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=+vFW5To1+smj2gw7atPORu0HKgb6eHRbuZNVD+S3Cyw=;
+        b=ZbNZWX/Rboh6DEbHpkhf9gTqxVidlWT+4+G8Yx0LV8iFHJmMvrzrjzCMncm0K6W/sS
+         1e0x7ev2HNJk46gImRz+wVv5Pr9VUzg2AWHdPIbPPK1t2zlrhYlLQX//Au0z/m4wf7bX
+         lBp1H1ubVQBe0VhbOP5FOJe/0WLbyUL9KOfxnVHz6RLzro7qMdqZDcNtsQqhRRqpirzq
+         tIfBvLqi1QA1TMWRYUVqMXf/imMYig0NRMEHHvkxcrxjLnloicM7XtzcTzsapCIEUnbW
+         PJqphsVC+Oe9SpK3Yusn6MxRgIHTA16DkoN5CpT3lcl9NVvsdi/Y3cikVpxoLuXXlgYD
+         wFgQ==
+X-Gm-Message-State: AO0yUKUy52VY1mwoh7zBsF7JkXiSbJQcsdMvbkDw7vrcDIiM+YCea+KY
+        ovhlohGYiWbA6nKU7wz5TVppc1LVb4Sw2W/Usx4=
+X-Google-Smtp-Source: AK7set975TR0YRg8Sl3kS8cuQl5EJt5wlQKTlrttc/bhpiMyDZxkMXnbkUdiMFDLn8dSpsXrK62P7g==
+X-Received: by 2002:aa7:d305:0:b0:4c0:4912:2006 with SMTP id p5-20020aa7d305000000b004c049122006mr8077733edq.11.1678095360979;
+        Mon, 06 Mar 2023 01:36:00 -0800 (PST)
+Received: from localhost ([203.28.246.189])
+        by smtp.gmail.com with ESMTPSA id r29-20020a50d69d000000b004af70c546dasm4794446edi.87.2023.03.06.01.35.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Mar 2023 01:36:00 -0800 (PST)
+Date:   Mon, 6 Mar 2023 11:35:54 +0200
+From:   Maxim Mikityanskiy <maxtram95@gmail.com>
+To:     =?utf-8?Q?Stanis=C5=82aw?= Czech <s.czech@nowatel.com>
+Cc:     netdev@vger.kernel.org, Gal Pressman <gal@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: Re: htb offload on vlan (mlx5)
+Message-ID: <ZAWz+iSrxfLnXX+N@mail.gmail.com>
+References: <dccaf6ea-f0f8-8749-6b59-fb83d9c60d68@nowatel.com>
 MIME-Version: 1.0
-References: <20230228215433.3944508-1-robh@kernel.org>
-In-Reply-To: <20230228215433.3944508-1-robh@kernel.org>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Mon, 6 Mar 2023 10:26:55 +0100
-Message-ID: <CAMRc=Mfouay5Z6M6VYnBX7Pe+ahTVfvfQsJ+kToWAwZJxZWJZg@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: Fix SPI and I2C bus node names in examples
-To:     Rob Herring <robh@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Robert Foss <rfoss@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
-        netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-pm@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-usb@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <dccaf6ea-f0f8-8749-6b59-fb83d9c60d68@nowatel.com>
+X-Spam-Status: No, score=1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 28, 2023 at 10:54=E2=80=AFPM Rob Herring <robh@kernel.org> wrot=
-e:
->
-> SPI and I2C bus node names are expected to be "spi" or "i2c",
-> respectively, with nothing else, a unit-address, or a '-N' index. A
-> pattern of 'spi0' or 'i2c0' or similar has crept in. Fix all these
-> cases. Mostly scripted with the following commands:
->
-> git grep -l '\si2c[0-9] {' Documentation/devicetree/ | xargs sed -i -e 's=
-/i2c[0-9] {/i2c {/'
-> git grep -l '\sspi[0-9] {' Documentation/devicetree/ | xargs sed -i -e 's=
-/spi[0-9] {/spi {/'
->
-> With this, a few errors in examples were exposed and fixed.
->
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
-> Cc: Miguel Ojeda <ojeda@kernel.org>
-> Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-> Cc: Benson Leung <bleung@chromium.org>
-> Cc: Guenter Roeck <groeck@chromium.org>
-> Cc: Stephen Boyd <sboyd@kernel.org>
-> Cc: Andrzej Hajda <andrzej.hajda@intel.com>
-> Cc: Neil Armstrong <neil.armstrong@linaro.org>
-> Cc: Robert Foss <rfoss@kernel.org>
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: Sam Ravnborg <sam@ravnborg.org>
-> Cc: MyungJoo Ham <myungjoo.ham@samsung.com>
-> Cc: Chanwoo Choi <cw00.choi@samsung.com>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Bartosz Golaszewski <brgl@bgdev.pl>
-> Cc: Pavel Machek <pavel@ucw.cz>
-> Cc: Lee Jones <lee@kernel.org>
-> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: Wolfgang Grandegger <wg@grandegger.com>
-> Cc: Kalle Valo <kvalo@kernel.org>
-> Cc: Sebastian Reichel <sre@kernel.org>
-> Cc: Mark Brown <broonie@kernel.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: linux-clk@vger.kernel.org
-> Cc: dri-devel@lists.freedesktop.org
-> Cc: linux-gpio@vger.kernel.org
-> Cc: linux-i2c@vger.kernel.org
-> Cc: linux-leds@vger.kernel.org
-> Cc: linux-media@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Cc: linux-can@vger.kernel.org
-> Cc: linux-wireless@vger.kernel.org
-> Cc: linux-pm@vger.kernel.org
-> Cc: alsa-devel@alsa-project.org
-> Cc: linux-usb@vger.kernel.org
-> ---
->  .../bindings/auxdisplay/holtek,ht16k33.yaml       |  2 +-
->  .../bindings/chrome/google,cros-ec-typec.yaml     |  2 +-
->  .../chrome/google,cros-kbd-led-backlight.yaml     |  2 +-
->  .../devicetree/bindings/clock/ti,lmk04832.yaml    |  2 +-
->  .../bindings/display/bridge/analogix,anx7625.yaml |  2 +-
->  .../bindings/display/bridge/anx6345.yaml          |  2 +-
->  .../bindings/display/bridge/lontium,lt8912b.yaml  |  2 +-
->  .../bindings/display/bridge/nxp,ptn3460.yaml      |  2 +-
->  .../bindings/display/bridge/ps8640.yaml           |  2 +-
->  .../bindings/display/bridge/sil,sii9234.yaml      |  2 +-
->  .../bindings/display/bridge/ti,dlpc3433.yaml      |  2 +-
->  .../bindings/display/bridge/toshiba,tc358762.yaml |  2 +-
->  .../bindings/display/bridge/toshiba,tc358768.yaml |  2 +-
->  .../bindings/display/panel/nec,nl8048hl11.yaml    |  2 +-
->  .../bindings/display/solomon,ssd1307fb.yaml       |  4 ++--
->  .../devicetree/bindings/eeprom/at25.yaml          |  2 +-
->  .../bindings/extcon/extcon-usbc-cros-ec.yaml      |  2 +-
->  .../bindings/extcon/extcon-usbc-tusb320.yaml      |  2 +-
->  .../devicetree/bindings/gpio/gpio-pca9570.yaml    |  2 +-
->  .../devicetree/bindings/gpio/gpio-pca95xx.yaml    |  8 ++++----
+On Fri, Mar 03, 2023 at 07:04:43PM +0100, Stanisław Czech wrote:
+> Hi,
+> 
+> I'm trying to use htb offload on vlan interface using  ConnectX-6 card
+> (01:00.0 Ethernet controller: Mellanox Technologies MT28908 Family
+> [ConnectX-6])
+> but it seems there is no such a capability on the vlan interface?
+> 
+> On a physical interface:
+> 
+> ethtool -k eth0 | grep hw-tc-offload
+> hw-tc-offload: on
+> 
+> On a vlan:
+> 
+> ethtool -k eth0.4 | grep hw-tc-offload
+> hw-tc-offload: off [fixed]
+> 
+> so while there is no problem with:
+> tc qdisc replace dev eth0 root handle 1:0 htb offload default 2
+> 
+> I can't do:
+> tc qdisc replace dev eth0.4 root handle 1:0 htb offload default 2
+> Error: hw-tc-offload ethtool feature flag must be on.
 
-Acked-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Hi Stanisław,
+
+That's expected, vlan_features doesn't contain NETIF_F_HW_TC, and I
+think that's the case for all drivers. Regarding HTB offload, I don't
+think the current implementation in mlx5e can be easily modified to
+support being attached to a VLAN only, because the current
+implementation relies on objects created globally in the NIC.
+
+CCed Nvidia folks in case they have more comments.
+
+> 
+> 
+> modinfo mlx5_core
+> filename: /lib/modules/6.2.1-1.el9.elrepo.x86_64/kernel/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.ko.xz
+> license:        Dual BSD/GPL
+> description:    Mellanox 5th generation network adapters (ConnectX series)
+> core driver
+> author:         Eli Cohen <eli@mellanox.com>
+> srcversion:     59FA0D4A4E95B726AB8900D
+> 
+> Is there a different way to use htb offload on the vlan interface?
+> 
+> Greetings,
+> *Stanisław Czech*
+> 
