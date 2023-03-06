@@ -2,337 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7387F6AC25F
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 15:08:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DD056AC32E
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 15:26:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230474AbjCFOIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 09:08:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36420 "EHLO
+        id S229545AbjCFO0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 09:26:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230447AbjCFOH3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 09:07:29 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 643B130B3B;
-        Mon,  6 Mar 2023 06:07:00 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id ay14so35330667edb.11;
-        Mon, 06 Mar 2023 06:07:00 -0800 (PST)
+        with ESMTP id S229716AbjCFO0t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 09:26:49 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D98D2313E
+        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 06:26:13 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id u9so39367196edd.2
+        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 06:26:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678111614;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=o18xGJE6G8VHczzh6g7gWOmbuvdeK4kZly98pWL+YIw=;
-        b=C0tZblsfBKXEXQDTu8AQ9okK72sV10Lj8fUtLen79rRP162xxFh6V80y/fOLsZOrUv
-         aoHDmPA98fa7ofgjq51pzVJXdPhbXcsL+3o/Egcy+vVjkBNCHrmE34+KmNrJ9c+T5Car
-         9SXz+jiEPcvaA5xQh9c4we0yljrlzp1hOyOfSWz8cTULp39u9LDkl5UFX7twglzQ2ZU9
-         fz0guwViJopyltAnAlI7qp2/xEjcMR747eZRmaup6GdwysFtxXnizbSBhCiKgms6zLsd
-         b+fI1SmKu/TCP67OfLycQjoNzE52FjLw9erjJDvSLxELYiucZuxcC64xU8X56wu3Efuf
-         ycjQ==
+        d=gmail.com; s=20210112; t=1678112706;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=xKEIbZNzea3T59teJFpJFSS5WJ3+z49ovYMV1oln6xg=;
+        b=aoyeUNJctHw55elNFwk95n2tm9eUHPIgnhJGIa/eLplRzYnuEQlTd0GgNF9ZVUC4YX
+         junOwUKsZiih6zbPidybrHGw4p4R4Y9fJlmEU58/0KUqusYQ7WnOVNOkLR1UwlOd7XzG
+         74WQCae/4cvpMotQTLkxFpsKBTCtokJhxMPKDpEunvqvwuDN9qDyVRra+tQ9BOlQx7L3
+         hwbjlb4F7ZfC2sNuJzn3/uC71KY5CE/QA3SZpQogto6Z0RlU1XUsUUyt79sQt3l4Q4lX
+         3uREHuSX0XcjjlR+xx5VZxtymHx9orn/l/Ea+nb+DFOkYrYFPnRobuh7MMBP532a2wZE
+         D60A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678111614;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=o18xGJE6G8VHczzh6g7gWOmbuvdeK4kZly98pWL+YIw=;
-        b=324OduprLAn3PteELvKxJeB8r1hUb/M0T+fV+a+uLkmQ6zO/P+ZPK0muwN6cPDsvPD
-         MQh0Swqc1N4HXNm+7Lf6AcoIfuReZYySF/haQCXNjggSXU0tKpIWy+yLqv8hrBD+pYWf
-         DN+MVUEXDCS5fLvYpY/xN81wg/bvmi65YaxF4fd9Etcw/hKbEpW6Ql+/OzvIYGHUto24
-         ycD4XjpobMt2xRx1gprCxlUcDrDkDzWUS/6Kp5l8nRxeEyrCOVOydO7puP1dNGXywhSn
-         WuQN0hvBnzvXWEe5j2O4Tu/zCu2jV6NohVbr9Xa4gMcE/gloSiKrlI1NIUs+BgjE9fli
-         8mIw==
-X-Gm-Message-State: AO0yUKVD/3kz0CsCUkrxX1rU0Nsx8lp6V9lwKYshb5fVCO+/ewyBD0p3
-        dMoQy52jc+tfrbHXaylB4bs=
-X-Google-Smtp-Source: AK7set+o8V/2NfbY3mB0VxCHYW8A5t6Xr5+22VYb8HihbEy/mp9ayI8JgmGQ1ZnL5Zz08T0vy4QP6g==
-X-Received: by 2002:a17:906:ceca:b0:8c0:386e:6693 with SMTP id si10-20020a170906ceca00b008c0386e6693mr10149194ejb.63.1678111614021;
-        Mon, 06 Mar 2023 06:06:54 -0800 (PST)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id le16-20020a170907171000b008da6a37de1bsm4711947ejc.10.2023.03.06.06.06.53
+        d=1e100.net; s=20210112; t=1678112706;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=xKEIbZNzea3T59teJFpJFSS5WJ3+z49ovYMV1oln6xg=;
+        b=52lKMN+5/XGEZIba23w5Zyv3AFPALAyLJ/qayQoURLhth4XY87tKjssAU4TCevAzeC
+         j6iWp3vK/UYz5SkXKoqd/bzVt6/F/TdpHNDz3PEf1fc9eQ1tZGcGOjxLI+xoCNuSjm+N
+         T7/JZakGHYrB8S8ZJHUcyUsrAjbZA8g43Y3tzY7xgeudufxRU6DLjJwOCyDh9XKJr7KU
+         ja8apm4w6f1PZNrnwC6HtEkfgIKLWeK1HlRkQE6tp3c3tIJ+WdXKbWHV8WAazaBfOYr7
+         YrjBWL9fVNX6BQkAlSH2ResZn6HHjiFR0beCGrx9VP/aeL6/vYjN46zsvvLxDzBThZ16
+         j/CQ==
+X-Gm-Message-State: AO0yUKUJ18PPq849qg9xTo4X1tdqOcvykk7RrKCj+MBSGKS8cVIFIJ8B
+        ZDTK9rb7q8mNaLAEdi7T3wRf9fwpQJ81ENrd
+X-Google-Smtp-Source: AK7set/TYP6F2mfRSW+zSISNjHSlesatjdgxr/3knKH/gqtjNvIQw33ACP4o8Z+2hkGsIB+z9VbORA==
+X-Received: by 2002:a17:906:a3c2:b0:8e1:12b6:a8fc with SMTP id ca2-20020a170906a3c200b008e112b6a8fcmr10277071ejb.4.1678112705692;
+        Mon, 06 Mar 2023 06:25:05 -0800 (PST)
+Received: from localhost ([185.220.101.165])
+        by smtp.gmail.com with ESMTPSA id qt2-20020a170906ece200b008e938e98046sm4604851ejb.223.2023.03.06.06.25.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Mar 2023 06:06:53 -0800 (PST)
-Date:   Mon, 6 Mar 2023 16:06:51 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Woojung Huh <woojung.huh@microchip.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net-next v1 2/2] net: dsa: microchip: add ETS Qdisc
- support for KSZ9477 series
-Message-ID: <20230306140651.kqayqatlrccfky2b@skbuf>
-References: <20230306124940.865233-1-o.rempel@pengutronix.de>
- <20230306124940.865233-2-o.rempel@pengutronix.de>
+        Mon, 06 Mar 2023 06:25:05 -0800 (PST)
+Date:   Mon, 6 Mar 2023 16:25:00 +0200
+From:   Maxim Mikityanskiy <maxtram95@gmail.com>
+To:     =?utf-8?Q?Stanis=C5=82aw?= Czech <s.czech@nowatel.com>
+Cc:     netdev@vger.kernel.org, Gal Pressman <gal@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: Re: htb offload on vlan (mlx5)
+Message-ID: <ZAX3vAu8QEbKOz5t@mail.gmail.com>
+References: <dccaf6ea-f0f8-8749-6b59-fb83d9c60d68@nowatel.com>
+ <ZAWz+iSrxfLnXX+N@mail.gmail.com>
+ <425d50fa-9915-6eb7-609c-0e6a5373870a@nowatel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20230306124940.865233-2-o.rempel@pengutronix.de>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <425d50fa-9915-6eb7-609c-0e6a5373870a@nowatel.com>
+X-Spam-Status: No, score=1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Oleksij,
+On Mon, Mar 06, 2023 at 02:59:40PM +0100, Stanisław Czech wrote:
+> 06.03.2023  10:35, Maxim Mikityanskiy wrote:
+> > That's expected, vlan_features doesn't contain NETIF_F_HW_TC, and I
+> > think that's the case for all drivers. Regarding HTB offload, I don't
+> > think the current implementation in mlx5e can be easily modified to
+> > support being attached to a VLAN only, because the current
+> > implementation relies on objects created globally in the NIC.
+> > 
+> > CCed Nvidia folks in case they have more comments.
+> > 
+> 
+> Thank you for you answer Maxim... I tried to use SR IOV and use the HTB
+> offload functionality on the VF
+> but it's not possible either:
+> 
+> ethtool -K enp1s0np0 hw-tc-offload  on
+> echo 7 > /sys/class/infiniband/mlx5_0/device/mlx5_num_vfs
+> ethtool -K enp1s0f7v6 hw-tc-offload  on
+> 
+> ip l s dev enp1s0np0 name eth0
+> ip l s dev eth0 vf 6 vlan 4
+> 
+> and I see in
+> ethtool -k eth0
+> hw-tc-offload: on
+> 
+> but still:
+> Error: mlx5_core: Missing QoS capabilities. Try disabling SRIOV or use a
+> supported device.
+> 
+> So I guess there is no way to use HTB offloading anywhere else than on the
+> PF device itself...
 
-On Mon, Mar 06, 2023 at 01:49:40PM +0100, Oleksij Rempel wrote:
-> Add ETS Qdisc support for KSZ9477 of switches. Current implementation is
-> limited to strict priority mode.
-> 
-> Tested on KSZ8563R with following configuration:
-> tc qdisc replace dev lan2 root handle 1: ets strict 4 \
->   priomap 3 3 2 2 1 1 0 0
-> ip link add link lan2 name v1 type vlan id 1 \
->   egress-qos-map 0:0 1:1 2:2 3:3 4:4 5:5 6:6 7:7
-> 
-> and patched iperf3 version:
-> https://github.com/esnet/iperf/pull/1476
-> iperf3 -c 172.17.0.1 -b100M  -l1472 -t100 -u -R --sock-prio 2
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
->  drivers/net/dsa/microchip/ksz_common.c | 178 +++++++++++++++++++++++++
->  drivers/net/dsa/microchip/ksz_common.h |  12 ++
->  2 files changed, 190 insertions(+)
-> 
-> diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-> index ae05fe0b0a81..f32ad39c1d8d 100644
-> --- a/drivers/net/dsa/microchip/ksz_common.c
-> +++ b/drivers/net/dsa/microchip/ksz_common.c
-> @@ -3172,12 +3172,190 @@ static int ksz_setup_tc_cbs(struct dsa_switch *ds, int port,
->  				 MTI_SHAPING_SRP);
->  }
->  
-> +static int ksz_ets_band_to_queue(struct tc_ets_qopt_offload_replace_params *p,
-> +				 int band)
-> +{
-> +	/* Compared to queues, bands prioritize packets differently. In strict
-> +	 * priority mode, the lowest priority is assigned to Queue 0 while the
-> +	 * highest priority is given to Band 0.
-> +	 */
-> +	return p->bands - 1 - band;
-> +}
-> +
-> +static int ksz_queue_set_strict(struct ksz_device *dev, int port, int queue)
-> +{
-> +	int ret;
-> +
-> +	/* In order to ensure proper prioritization, it is necessary to set the
-> +	 * rate limit for the related queue to zero. Otherwise strict priority
-> +	 * mode will not work.
-> +	 */
-> +	ret = ksz_pwrite8(dev, port, KSZ9477_REG_PORT_OUT_RATE_0 + queue,
-> +			  KSZ9477_OUT_RATE_NO_LIMIT);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ksz_pwrite32(dev, port, REG_PORT_MTI_QUEUE_INDEX__4, queue);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return ksz_setup_tc_mode(dev, port, MTI_SCHEDULE_STRICT_PRIO,
-> +				 MTI_SHAPING_OFF);
-> +}
-> +
-> +static int ksz_queue_set_wrr(struct ksz_device *dev, int port, int queue,
-> +			     int weight)
-> +{
-> +	int ret;
-> +
-> +	/* In order to ensure proper prioritization, it is necessary to set the
-> +	 * rate limit for the related queue to zero. Otherwise weighted round
-> +	 * robin mode will not work.
-> +	 */
-> +	ret = ksz_pwrite8(dev, port, KSZ9477_REG_PORT_OUT_RATE_0 + queue,
-> +			  KSZ9477_OUT_RATE_NO_LIMIT);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ksz_pwrite32(dev, port, REG_PORT_MTI_QUEUE_INDEX__4, queue);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ksz_setup_tc_mode(dev, port, MTI_SCHEDULE_WRR,
-> +				MTI_SHAPING_OFF);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return ksz_pwrite8(dev, port, KSZ9477_PORT_MTI_QUEUE_CTRL_1, weight);
-> +}
-> +
-> +static int ksz_tc_ets_add(struct ksz_device *dev, int port,
-> +			  struct tc_ets_qopt_offload_replace_params *p)
-> +{
-> +	int ret, band, tc_prio;
-> +	u32 queue_map = 0;
-> +
-> +	/* Configure queue scheduling mode for all bands. Currently only strict
-> +	 * prio mode is supported.
-> +	 */
-> +	for (band = 0; band < p->bands; band++) {
-> +		int queue = ksz_ets_band_to_queue(p, band);
-> +
-> +		ret = ksz_queue_set_strict(dev, port, queue);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	/* Configure the mapping between traffic classes and queues. Note:
-> +	 * priomap variable support 16 traffic classes, but the chip can handle
-> +	 * only 8 classes.
-> +	 */
-> +	for (tc_prio = 0; tc_prio < ARRAY_SIZE(p->priomap); tc_prio++) {
-> +		int queue;
-> +
-> +		if (tc_prio > KSZ9477_MAX_TC_PRIO)
-> +			break;
-> +
-> +		queue = ksz_ets_band_to_queue(p, p->priomap[tc_prio]);
-> +		queue_map |= queue << (tc_prio * KSZ9477_PORT_TC_MAP_S);
-> +	}
-> +
-> +	return ksz_pwrite32(dev, port, KSZ9477_PORT_MRI_TC_MAP__4, queue_map);
-> +}
-> +
-> +static int ksz_tc_ets_del(struct ksz_device *dev, int port)
-> +{
-> +	int ret, queue;
-> +
-> +	/* To restore the default chip configuration, set all queues to use the
-> +	 * WRR scheduler with a weight of 1.
-> +	 */
-> +	for (queue = 0; queue < dev->info->num_tx_queues; queue++) {
-> +		ret = ksz_queue_set_wrr(dev, port, queue,
-> +					KSZ9477_DEFAULT_WRR_WEIGHT);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	/* Revert the queue mapping for TC-priority to its default setting on
-> +	 * the chip.
-> +	 */
-> +	return ksz_pwrite32(dev, port, KSZ9477_PORT_MRI_TC_MAP__4,
-> +			    KSZ9477_DEFAULT_TC_MAP);
-> +}
-> +
-> +static int ksz_tc_ets_validate(struct ksz_device *dev, int port,
-> +			       struct tc_ets_qopt_offload_replace_params *p)
-> +{
-> +	int band;
-> +
-> +	/* Since it is not feasible to share one port among multiple qdisc,
-> +	 * the user must configure all available queues appropriately.
-> +	 */
-> +	if (p->bands != dev->info->num_tx_queues) {
-> +		dev_err(dev->dev, "Not supported amount of bands. It should be %d\n",
-> +			dev->info->num_tx_queues);
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	for (band = 0; band < p->bands; ++band) {
-> +		/* The KSZ switches utilize a weighted round robin configuration
-> +		 * where a certain number of packets can be transmitted from a
-> +		 * queue before the next queue is serviced. For more information
-> +		 * on this, refer to section 5.2.8.4 of the KSZ8565R
-> +		 * documentation on the Port Transmit Queue Control 1 Register.
-> +		 * However, the current ETS Qdisc implementation (as of February
-> +		 * 2023) assigns a weight to each queue based on the number of
-> +		 * bytes or extrapolated bandwidth in percentages. Since this
-> +		 * differs from the KSZ switches' method and we don't want to
-> +		 * fake support by converting bytes to packets, we have decided
-> +		 * to return an error instead.
-> +		 */
-> +		if (p->quanta[band]) {
-> +			dev_err(dev->dev, "Quanta/weights configuration is not supported.\n");
-> +			return -EOPNOTSUPP;
-> +		}
+Yes, as the error message suggests, when SRIOV is enabled, the firmware
+doesn't expose the needed capabilities for HTB offload. That means these
+two features aren't compatible at the moment, and there is nothing the
+driver could do, because the limitation comes from the firmware side.
 
-So what does the user gain using tc-ets over tc-mqprio? That has a way
-to set up strict prioritization and prio:tc maps as well, and to my
-knowledge mqprio is vastly more popular in non-DCB setups than tc-ets.
-The only thing is that with mqprio, AFAIK, the round robin between TXQs
-belonging to the same traffic class is not weighted.
+> 
+> Anyway, maybe using multiple VFS to support multiple VLANs (single VF for
+> single vlan) would
+> be more efficent than simple vlans on PF interface (regarding qdisc lock
+> problem) ?
 
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int ksz_tc_setup_qdisc_ets(struct dsa_switch *ds, int port,
-> +				  struct tc_ets_qopt_offload *qopt)
-> +{
-> +	struct ksz_device *dev = ds->priv;
-> +	int ret;
-> +
-> +	if (qopt->parent != TC_H_ROOT) {
-> +		dev_err(dev->dev, "Parent should be \"root\"\n");
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	switch (qopt->command) {
-> +	case TC_ETS_REPLACE:
-> +		ret = ksz_tc_ets_validate(dev, port, &qopt->replace_params);
-> +		if (ret)
-> +			return ret;
-> +
-> +		return ksz_tc_ets_add(dev, port, &qopt->replace_params);
-> +	case TC_ETS_DESTROY:
-> +		return ksz_tc_ets_del(dev, port);
-> +	case TC_ETS_STATS:
-> +	case TC_ETS_GRAFT:
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	return -EOPNOTSUPP;
-> +}
-> +
->  static int ksz_setup_tc(struct dsa_switch *ds, int port,
->  			enum tc_setup_type type, void *type_data)
->  {
->  	switch (type) {
->  	case TC_SETUP_QDISC_CBS:
->  		return ksz_setup_tc_cbs(ds, port, type_data);
-> +	case TC_SETUP_QDISC_ETS:
-> +		return ksz_tc_setup_qdisc_ets(ds, port, type_data);
->  	default:
->  		return -EOPNOTSUPP;
->  	}
-> diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-> index f53834bbe896..7618a4714e06 100644
-> --- a/drivers/net/dsa/microchip/ksz_common.h
-> +++ b/drivers/net/dsa/microchip/ksz_common.h
-> @@ -657,6 +657,15 @@ static inline int is_lan937x(struct ksz_device *dev)
->  #define KSZ8_LEGAL_PACKET_SIZE		1518
->  #define KSZ9477_MAX_FRAME_SIZE		9000
->  
-> +#define KSZ9477_REG_PORT_OUT_RATE_0	0x0420
-> +#define KSZ9477_OUT_RATE_NO_LIMIT	0
-> +
-> +#define KSZ9477_PORT_MRI_TC_MAP__4	0x0808
-> +#define KSZ9477_DEFAULT_TC_MAP		0x33221100
-> +
-> +#define KSZ9477_PORT_TC_MAP_S		4
-> +#define KSZ9477_MAX_TC_PRIO		7
-> +
->  /* CBS related registers */
->  #define REG_PORT_MTI_QUEUE_INDEX__4	0x0900
->  
-> @@ -670,6 +679,9 @@ static inline int is_lan937x(struct ksz_device *dev)
->  #define MTI_SHAPING_SRP			1
->  #define MTI_SHAPING_TIME_AWARE		2
->  
-> +#define KSZ9477_PORT_MTI_QUEUE_CTRL_1	0x0915
-> +#define KSZ9477_DEFAULT_WRR_WEIGHT	1
-> +
->  #define REG_PORT_MTI_HI_WATER_MARK	0x0916
->  #define REG_PORT_MTI_LO_WATER_MARK	0x0918
->  
-> -- 
-> 2.30.2
+You mean with non-offloaded HTB? You might try, but there will still be
+the lock contention issue in case of multiple queues. There will be
+multiple locks, though (one per VF), which might alleviate the
+contention, but there are too many variables to guess without actually
+testing it. It also depends on how many VLANs you have, because each VF
+has its memory footprint. It also may be worth looking at SFs, which are
+lighter than VFs.
+
+> I would like to utilize more CPU cores as the vlans on a single PF interface
+> use only a single
+> cpu core ( the 100% ksoftirqd problem)
+> 
+> Could this be some workaround?
+> 
+> 
+> Greetings,
+> *Stanisław Czech*
 > 
