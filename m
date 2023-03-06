@@ -2,117 +2,271 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FB2C6AD9B5
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 09:58:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17A5B6ADB8C
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 11:15:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230139AbjCGI6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 03:58:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39764 "EHLO
+        id S229794AbjCGKP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 05:15:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230138AbjCGI6F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 03:58:05 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98A2932CCB
-        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 00:58:03 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id i34so49339875eda.7
-        for <netdev@vger.kernel.org>; Tue, 07 Mar 2023 00:58:03 -0800 (PST)
+        with ESMTP id S229698AbjCGKP1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 05:15:27 -0500
+Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F9982129C
+        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 02:15:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678179482;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ZVTfPiVagOZL90gtIf96Yys0KYhqSZTVjW5Vb21u5PM=;
-        b=lMOa5uVEs630Vnh6L/HLw1O+7z304xtCXQWssdZJSHBtS4gIfwMxoSXq/0Zgf/xUbN
-         PN1HG2FZxjcmO345RxD5HR4grPkXWhRsqUFgr+JvkV6aWU72WtqZAe/ZZCkkq+sgsB7p
-         fx4vQxO+UJweosWCMiYvgAzNM1YfAP9OG9zO3yJvtLyT4cA1G0ud0lgINu7+Gbm+/6Gd
-         qa1h8WDwJJGEWNAxdRiEPORgRxXprK2YQflKCXc3dUfIcRoueho+UxtOkW3L/SOLWnrD
-         xkMAvbpKIcDVZqMHPIrVJJMNjpMaPY96d0ICAOMq8opK6t40l4RJ4EO05Fmv0hpF3O3g
-         axKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678179482;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZVTfPiVagOZL90gtIf96Yys0KYhqSZTVjW5Vb21u5PM=;
-        b=YYwPx648FOvuciftZHwczrUbtixjsdU9KkRXWL2WkjmuM1npMcLEq9IuP1rhJPXVS8
-         28/d//QgKVn7k9OPChyRU9lRJAQV8q/05P1C8S8SV2VvRwzq8MguulPm08+9/+vKevjm
-         TLVI7ktg+g4EET6g10vmTbDQmLRvFGnf8W5bz+UWlknrZWw0CVx+foFUJg8r0WrEYfRi
-         r1m3TCVXh/azrBT4kMGp+b1q/UIidQNKfcYiI9aPRInpPt1uZtokxidK/fajpikdQzss
-         gFhinVOSKIdqVSDyaANkLMDdIdpL2DDIUlHC8imszTgWoTQ7Ron7eY60H1Y7qWh5MvzP
-         yHIg==
-X-Gm-Message-State: AO0yUKXl9mViPcBqP7RnWn1hLjVgAg1BZM+/t7CBVl+o0w3GZ+bztWIJ
-        ZvpsecCpOAfIrWlyQ3jahaZTjg==
-X-Google-Smtp-Source: AK7set9i6XN8jLMfyZaebyCVBR+PyyIEq6PPzmiHj6R2qI1SLS1ib+ru7uB7rd79hwfISF1aZfF07Q==
-X-Received: by 2002:aa7:d7c3:0:b0:4af:5aa1:6e58 with SMTP id e3-20020aa7d7c3000000b004af5aa16e58mr13274064eds.21.1678179482002;
-        Tue, 07 Mar 2023 00:58:02 -0800 (PST)
-Received: from ?IPV6:2a02:810d:15c0:828:5310:35c7:6f9e:2cd3? ([2a02:810d:15c0:828:5310:35c7:6f9e:2cd3])
-        by smtp.gmail.com with ESMTPSA id o22-20020a509b16000000b004c4eed3fe20sm6364807edi.5.2023.03.07.00.58.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Mar 2023 00:58:01 -0800 (PST)
-Message-ID: <63dbbda7-a444-8dac-6399-45e305652155@linaro.org>
-Date:   Tue, 7 Mar 2023 09:58:00 +0100
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1678184126; x=1709720126;
+  h=references:from:to:cc:subject:date:in-reply-to:
+   message-id:mime-version;
+  bh=/YdWZNh0t2y/ak7Jvo4SVilCrbIglF3/wkSfwXR8kEQ=;
+  b=Y7UzLaLL4lwFhILFWhCRHc+46CHeqdqSa0XYUalk014yYu57EbTWjSNx
+   rAkQ/AfoHAYj3HjbEEsJEttFFw0sL003sewPPD5CIrqAnrlf7O/BVniIv
+   lTEZSQJN5M/CqkmSgg+BdR60h1DPmLGSueVB0yh0jK6++MQ59bEzx8rbs
+   k=;
+X-IronPort-AV: E=Sophos;i="5.98,240,1673913600"; 
+   d="scan'208";a="190476982"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-f253a3a3.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2023 10:15:23 +0000
+Received: from EX19D007EUA004.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2b-m6i4x-f253a3a3.us-west-2.amazon.com (Postfix) with ESMTPS id 141F1810BA;
+        Tue,  7 Mar 2023 10:15:22 +0000 (UTC)
+Received: from EX19D028EUB003.ant.amazon.com (10.252.61.31) by
+ EX19D007EUA004.ant.amazon.com (10.252.50.76) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.24; Tue, 7 Mar 2023 10:15:21 +0000
+Received: from u570694869fb251.ant.amazon.com.amazon.com (10.85.143.174) by
+ EX19D028EUB003.ant.amazon.com (10.252.61.31) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.24; Tue, 7 Mar 2023 10:15:13 +0000
+References: <20230302203045.4101652-1-shayagr@amazon.com>
+ <20230302203045.4101652-3-shayagr@amazon.com>
+ <ZAHfVNAgzgEZNByU@corigine.com>
+User-agent: mu4e 1.8.13; emacs 28.0.91
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     Simon Horman <simon.horman@corigine.com>
+CC:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        David Arinzon <darinzon@amazon.com>,
+        "Woodhouse, David" <dwmw@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        Saeed Bshara <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Itzko, Shahar" <itzko@amazon.com>,
+        "Abboud, Osama" <osamaabb@amazon.com>
+Subject: Re: [PATCH RFC v2 net-next 2/4] net: ena: Add an option to
+ configure large LLQ headers
+Date:   Mon, 6 Mar 2023 11:27:56 +0200
+In-Reply-To: <ZAHfVNAgzgEZNByU@corigine.com>
+Message-ID: <pj41zlpm9k27h0.fsf@u570694869fb251.ant.amazon.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [EXTERNAL] Re: [PATCH v5 1/2] dt-bindings: net: Add ICSSG
- Ethernet
-Content-Language: en-US
-To:     Md Danish Anwar <a0501179@ti.com>, Rob Herring <robh@kernel.org>,
-        MD Danish Anwar <danishanwar@ti.com>
-Cc:     "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>, andrew@lunn.ch, nm@ti.com,
-        ssantosh@kernel.org, srk@ti.com, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-References: <20230210114957.2667963-1-danishanwar@ti.com>
- <20230210114957.2667963-2-danishanwar@ti.com>
- <20230210192001.GB2923614-robh@kernel.org>
- <43df3c2c-d0d0-f2b8-cf8b-8a2453ca43b4@ti.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <43df3c2c-d0d0-f2b8-cf8b-8a2453ca43b4@ti.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; format=flowed
+X-Originating-IP: [10.85.143.174]
+X-ClientProxiedBy: EX19D033UWA001.ant.amazon.com (10.13.139.103) To
+ EX19D028EUB003.ant.amazon.com (10.252.61.31)
+X-Spam-Status: No, score=-10.6 required=5.0 tests=BAYES_00,DATE_IN_PAST_24_48,
+        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/03/2023 05:57, Md Danish Anwar wrote:
->>> +allOf:
->>> +  - $ref: /schemas/remoteproc/ti,pru-consumer.yaml#
->>> +
->>> +properties:
->>> +  compatible:
->>> +    enum:
->>> +      - ti,am654-icssg-prueth  # for AM65x SoC family
->>> +
->>> +  ti,sram:
->>> +    $ref: /schemas/types.yaml#/definitions/phandle
->>> +    description:
->>> +      phandle to MSMC SRAM node
->>
->> I believe we have a standard 'sram' property to point to SRAM nodes 
->> assuming this is just mmio-sram or similar.
->>
-> 
-> Yes, we have standard 'sram' property but Krzysztof had asked me to make the
-> sram property vendor specific in last revision of this series.
 
-Sorry about that. I missed that we already have a 'sram'. The question
-remains whether this is a phandle to MMIO SRAM or similar (sram.yaml).
+Simon Horman <simon.horman@corigine.com> writes:
 
-Best regards,
-Krzysztof
+> On Thu, Mar 02, 2023 at 10:30:43PM +0200, Shay Agroskin wrote:
+>> From: David Arinzon <darinzon@amazon.com>
+>> 
+>> Allow configuring the device with large LLQ headers. The Low 
+>> Latency
+>> Queue (LLQ) allows the driver to write the first N bytes of the 
+>> packet,
+>> along with the rest of the TX descriptors directly into device 
+>> (N can be
+>> either 96 or 224 for large LLQ headers configuration).
+>> 
+>> Having L4 TCP/UDP headers contained in the first 96 bytes of 
+>> the packet
+>> is required to get maximum performance from the device.
+>> 
+>> Signed-off-by: David Arinzon <darinzon@amazon.com>
+>> Signed-off-by: Shay Agroskin <shayagr@amazon.com>
+>
+> Overall this looks very nice to me, its a very interesting HW 
+> feature.
+>
+> As this is an RFC I've made a few nit-picking comments inline.
+> Those not withstanding,
+>
+> Reviewed-by: Simon Horman <simon.horman@corigine.com>
+>
+
+Thanks for reviewing this patchset (:
+>> ---
+>>  drivers/net/ethernet/amazon/ena/ena_netdev.c | 100 
+>>  ++++++++++++++-----
+>>  drivers/net/ethernet/amazon/ena/ena_netdev.h |   8 ++
+>>  2 files changed, 84 insertions(+), 24 deletions(-)
+>> 
+>> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c 
+>> b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+>> index d3999db7c6a2..830d5be22aa9 100644
+>> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
+>> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+>> @@ -44,6 +44,8 @@ static int ena_rss_init_default(struct 
+>> ena_adapter *adapter);
+>>  static void check_for_admin_com_state(struct ena_adapter 
+>>  *adapter);
+>>  static void ena_destroy_device(struct ena_adapter *adapter, 
+>>  bool graceful);
+>>  static int ena_restore_device(struct ena_adapter *adapter);
+>> +static void ena_calc_io_queue_size(struct ena_adapter 
+>> *adapter,
+>> +				   struct 
+>> ena_com_dev_get_features_ctx *get_feat_ctx);
+>>  
+>
+> FWIIW, I think it is nicer to move functions rather than provide 
+> forward
+> declarations. That could be done in a preparatory patch if you 
+> want
+> to avoid crowding out the intentions of this this patch.
+>
+
+Seeing that it is indeed called only once it does make more sense 
+just to move the function implementation itself
+
+>>  static void ena_init_io_rings(struct ena_adapter *adapter,
+>>  			      int first_index, int count);
+>> @@ -3387,13 +3389,30 @@ static int 
+>> ena_device_validate_params(struct ena_adapter *adapter,
+>>  	return 0;
+>>  }
+>>  
+>> -static void set_default_llq_configurations(struct 
+>> ena_llq_configurations *llq_config)
+>> +static void set_default_llq_configurations(struct ena_adapter 
+>> *adapter,
+>> +					   struct 
+>> ena_llq_configurations *llq_config,
+>> +					   struct 
+>> ena_admin_feature_llq_desc *llq)
+>>  {
+>> +	struct ena_com_dev *ena_dev = adapter->ena_dev;
+>> +
+>>  	llq_config->llq_header_location = ENA_ADMIN_INLINE_HEADER;
+>>  	llq_config->llq_stride_ctrl = 
+>>  ENA_ADMIN_MULTIPLE_DESCS_PER_ENTRY;
+>>  	llq_config->llq_num_decs_before_header = 
+>>  ENA_ADMIN_LLQ_NUM_DESCS_BEFORE_HEADER_2;
+>> -	llq_config->llq_ring_entry_size = 
+>> ENA_ADMIN_LIST_ENTRY_SIZE_128B;
+>> -	llq_config->llq_ring_entry_size_value = 128;
+>> +
+>> +	adapter->large_llq_header_supported =
+>> +		!!(ena_dev->supported_features & (1 << 
+>> ENA_ADMIN_LLQ));
+>
+> nit: BIT(ENA_ADMIN_LLQ)
+>
+
+Yup, I'll change to it
+
+> ...
+>
+>> @@ -3587,7 +3609,8 @@ static int 
+>> ena_enable_msix_and_set_admin_interrupts(struct ena_adapter 
+>> *adapter)
+>>  	return rc;
+>>  }
+>>  
+>> -static void ena_destroy_device(struct ena_adapter *adapter, 
+>> bool graceful)
+>> +static
+>> +void ena_destroy_device(struct ena_adapter *adapter, bool 
+>> graceful)
+>
+> nit: this change seems unrelated to the rest of this patch.
+>
+
+I'll remove it
+
+>>  {
+>>  	struct net_device *netdev = adapter->netdev;
+>>  	struct ena_com_dev *ena_dev = adapter->ena_dev;
+>> @@ -3633,7 +3656,8 @@ static void ena_destroy_device(struct 
+>> ena_adapter *adapter, bool graceful)
+>>  	clear_bit(ENA_FLAG_DEVICE_RUNNING, &adapter->flags);
+>>  }
+>>  
+>> -static int ena_restore_device(struct ena_adapter *adapter)
+>> +static
+>> +int ena_restore_device(struct ena_adapter *adapter)
+>
+> Ditto.
+>
+> ...
+>
+
+I'll remove it
+
+>> @@ -4333,7 +4384,6 @@ static int ena_probe(struct pci_dev 
+>> *pdev, const struct pci_device_id *ent)
+>>  	ena_dev->intr_moder_rx_interval = 
+>>  ENA_INTR_INITIAL_RX_INTERVAL_USECS;
+>>  	ena_dev->intr_delay_resolution = 
+>>  ENA_DEFAULT_INTR_DELAY_RESOLUTION;
+>>  	max_num_io_queues = ena_calc_max_io_queue_num(pdev, 
+>>  ena_dev, &get_feat_ctx);
+>> -	ena_calc_io_queue_size(adapter, &get_feat_ctx);
+>>  	if (unlikely(!max_num_io_queues)) {
+>>  		rc = -EFAULT;
+>>  		goto err_device_destroy;
+>> @@ -4366,6 +4416,7 @@ static int ena_probe(struct pci_dev 
+>> *pdev, const struct pci_device_id *ent)
+>>  			"Failed to query interrupt moderation 
+>>  feature\n");
+>>  		goto err_device_destroy;
+>>  	}
+>> +
+>
+> nit: this change seems unrelated to the rest of this patch.
+>
+
+These are cosmetic little changes to improve code 
+readability. I'll just create an additional simple commit that 
+adds them.
+
+>>  	ena_init_io_rings(adapter,
+>>  			  0,
+>>  			  adapter->xdp_num_queues +
+>> @@ -4486,6 +4537,7 @@ static void __ena_shutoff(struct pci_dev 
+>> *pdev, bool shutdown)
+>>  	rtnl_lock(); /* lock released inside the below if-else 
+>>  block */
+>>  	adapter->reset_reason = ENA_REGS_RESET_SHUTDOWN;
+>>  	ena_destroy_device(adapter, true);
+>> +
+>
+> Ditto.
+>
+
+I'll move it to another patch
+
+>>  	if (shutdown) {
+>>  		netif_device_detach(netdev);
+>>  		dev_close(netdev);
+>
+> ...
 
