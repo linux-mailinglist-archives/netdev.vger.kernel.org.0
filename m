@@ -2,123 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FEAB6AC7E9
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 17:28:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 702476AC7EC
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 17:29:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229616AbjCFQ2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 11:28:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35440 "EHLO
+        id S229692AbjCFQ3D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 11:29:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229624AbjCFQ2N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 11:28:13 -0500
-Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36B8B1258F;
-        Mon,  6 Mar 2023 08:27:36 -0800 (PST)
-Received: by mail-ot1-x333.google.com with SMTP id l15-20020a9d7a8f000000b0069447f0db6fso5633036otn.4;
-        Mon, 06 Mar 2023 08:27:36 -0800 (PST)
+        with ESMTP id S229642AbjCFQ3C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 11:29:02 -0500
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on20702.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e8a::702])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13EFC3527C;
+        Mon,  6 Mar 2023 08:28:34 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jWBdeWc2FMY0UScWv27N1SsLvq5DwYUidwRmHtk45gvXBaAYYh5Jyp2a1OUMa8noiQuHr+wHkN/fV6zUi/K2sphZ/X2a7SG1r7T44i111S3eBjCgMNvA2WnMO0L3QHAjktGh2hsP1bO+D/BRl6ezEG9zQzLRBjUdIwTfGgDuleIrYJ38xdmJdyYjWpavy9LBlEUVtWAFtv9fSCQPwH2RPC6Gk8anFzSDZPBI2kcEAjVVcsuhlVLa6rTIA2NTRCD9INceWp/Xs0eIl+y7YVDF4hZCwimqMa6dB1M/dWZbAdm9o+5agst1fpvPDAnDFEqbuRPXr3aC0m51akZSkpzKww==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=IKKXB32K4nwlVKvny423mmIIT3OT8vOHZStjOyOQ6WU=;
+ b=mDblxvS3O2VNZJRt+skvzm/4Dqo1kNxn/qDcIndRCHJjkgiMw13zwfYhTubDBlcOz2jkmVrkX4HjAnmEhLY1krtmlQVwxVxPurpJL/tWDtvQ2oze5CTyB+HlMD2E+vU2viitbhjUVIdckfoqmi9BsM88F387EIXaoJPT4xPJuLCDqLgicj0ZQEDF/zqjCq+GEJK0kNBsPFJJ7mvQABnwFzujpFtflRMVyDdoURIsAfRK7vdam5BpTsY7ENNaDZTu25uOBepMkzr+JPPPN5gCI+UyN3HuqRJTH7gL+9dSHeLCOOfD6dgRz++Tj73DITgMYaN1njuLJpO39JMJnLt22A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678119994;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=JXnJjEIOpZbPuEgqFoR8MuwGlYRD8/do8e4iqVYe9jA=;
-        b=g2J1sOvHFScq9ttVIurPqh6uAVdu9A9+zHDROKJbzN8VcYNxBAVfI+tsucHnUA8/Ac
-         8tq9jyUdB63cpoi9l0zvWwyf2mdYmtBfgqEwUkHi5aw4AKS2lLQoG6JZoCTo1EQXpC5d
-         mjQ2vS7bP7YwIcosH996Cgf2tKcoXLNfKwZnuXvOnKDJG4r5Tpyqs1JdvZakHp1KvNlZ
-         0YDzTjz7eakWo+QR8wrkz7uT/6nAcIhTBWimKa/6KmyM+YEXfapBRIqwUSKh215xAUn6
-         VlfoXFS+0t0Gl5NLgaJ6Ar1Ld4OjC4EX5wk1s2WenrPJoIy34wEEqo2rC/EF/8eFOMA/
-         CKsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678119994;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JXnJjEIOpZbPuEgqFoR8MuwGlYRD8/do8e4iqVYe9jA=;
-        b=yhnUEvPCVdbCytJ3F6i7RXjbWGWmbXX/An2SJ18HEG4I9FWLAidnotpynQG513YhGj
-         Imuf/7rAUnQwnuSpDZW9nVAB9149gptTNZ26aLThIA2W3NEYKJ5hMBhSHbWdDTvhoHG9
-         EjFTtz+HOl4XrtEMuHl9KWNMQvf+BskamKTy3lFGrd/Tz6IHWi3ETf46TFe7mLRetrH4
-         h+ZYhTSHgLnbFDrC3LhMChdWa2a1DSDJ5AlUb1zZ7p3iMct3SVuGJuKHNdOawkeY+HjZ
-         gPtTTh7WDAoKlm1y2V9E2NYJOLfPLS0nkPfeAxmlnNYavk5czdv9wVJaPfOovlc8QqWz
-         Hv9Q==
-X-Gm-Message-State: AO0yUKXeyZYec/WsRHJIYK989P/FaqkJCY58PeCavUsm5pPkIPb73VNL
-        1HHpN6zlM085/MFzs7oBWDo=
-X-Google-Smtp-Source: AK7set854bcEzEyHdjoLmMiODiDoqSho1Jnq1WR5UQCRePSQOWlyKsiQ7DfOgrVk6sIwi1qC6U3GzQ==
-X-Received: by 2002:a9d:718e:0:b0:694:1f5b:9a81 with SMTP id o14-20020a9d718e000000b006941f5b9a81mr4626020otj.28.1678119993802;
-        Mon, 06 Mar 2023 08:26:33 -0800 (PST)
-Received: from localhost ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id f9-20020a9d5f09000000b0068bce0cd4e1sm4260265oti.9.2023.03.06.08.26.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Mar 2023 08:26:33 -0800 (PST)
-Date:   Mon, 6 Mar 2023 08:26:32 -0800
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Vernon Yang <vernon2gm@gmail.com>
-Cc:     torvalds@linux-foundation.org, tytso@mit.edu, Jason@zx2c4.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, jejb@linux.ibm.com, martin.petersen@oracle.com,
-        andriy.shevchenko@linux.intel.com, linux@rasmusvillemoes.dk,
-        james.smart@broadcom.com, dick.kennedy@broadcom.com,
-        linux-kernel@vger.kernel.org, wireguard@lists.zx2c4.com,
-        netdev@vger.kernel.org, linux-scsi@vger.kernel.org
-Subject: Re: [PATCH 1/5] random: fix try_to_generate_entropy() if no further
- cpus set
-Message-ID: <ZAYUODI1yaH5PqHk@yury-laptop>
-References: <20230306160651.2016767-1-vernon2gm@gmail.com>
- <20230306160651.2016767-2-vernon2gm@gmail.com>
-MIME-Version: 1.0
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IKKXB32K4nwlVKvny423mmIIT3OT8vOHZStjOyOQ6WU=;
+ b=kO3XMBxNiIRfE2VYgr5wuLMFZ3/EzAv+5VY28GDBkzuloyxLbqP8otxQ6TrF81Aw3ukqHNMv4ZKXWvf/+UMJpWzRo+eXB6Z/RU40XOsVVXOk8jIhWg7kXugVA5PdEyb4S0aabvyD+mn/oO9JGfFV8CBcHK7x8BjZic3qfofG7nw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SJ0PR13MB5755.namprd13.prod.outlook.com (2603:10b6:a03:40e::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.27; Mon, 6 Mar
+ 2023 16:27:06 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c%3]) with mapi id 15.20.6156.028; Mon, 6 Mar 2023
+ 16:27:06 +0000
+Date:   Mon, 6 Mar 2023 17:26:58 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     netfilter-devel@vger.kernel.org,
+        network dev <netdev@vger.kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>, davem@davemloft.net,
+        kuba@kernel.org, Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Aaron Conole <aconole@redhat.com>
+Subject: Re: [PATCH nf-next 3/6] netfilter: bridge: move pskb_trim_rcsum out
+ of br_nf_check_hbh_len
+Message-ID: <ZAYUUplZOcAUu5Xc@corigine.com>
+References: <cover.1677888566.git.lucien.xin@gmail.com>
+ <688b6037c640efeb6141d4646cc9dc1b657796e7.1677888566.git.lucien.xin@gmail.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230306160651.2016767-2-vernon2gm@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <688b6037c640efeb6141d4646cc9dc1b657796e7.1677888566.git.lucien.xin@gmail.com>
+X-ClientProxiedBy: AM0PR01CA0109.eurprd01.prod.exchangelabs.com
+ (2603:10a6:208:168::14) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SJ0PR13MB5755:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0fc52c39-a9f2-4b0b-a034-08db1e5f9fdb
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: O81nB8EdxZF3VTGArownIDJfnWwLYyNk36rY1AgaBgbN9gYKqsPh7XdizxVOSgHECmo2hWMxcqMD/C9RJNPhqf2G73GwPZ5Dy5wiRJwqy3blyRCIyuZlukojr6jgp1esFgkjCsCbbQbJk1H2dMBurtzOJEPE15oS75vI6Q9ghMB8wB2s+4/jynAT9nLbbeIKBdyr18ba/VuaoojuIu6d2OsGwdc0gRPL/Y0bQY5Nf3V7OCauSSII8KjnmgFsj99YywMKtWqwCLUgoY/hee1kAazKguNXNVZYJ7Vaf+n8CnnSTjdfD6myNn3BHOzLKbC28aLMKrmjtOj4vjvczN67qPvOUYZz3iVnTnfS6aE8xm1uZo++wqZtM+lbq/7pzuZSltZgQ5L72ZjaO6nDtCLR7b518dnv6om4EhsZdalxNGizkEFpr5zvQ+v4gIDk/ODROCkF3HCqdH4aSdSr/q7UFO3sJhaysFXCDtlP8pmmRToxVaQCkU46jxZH4IX0zJrmzEfrK02hDnVgRsAREGwog6oj54E3AAI0iLz01BGwn230rKF+EZXVAOzJwZmTlVODVNr5eqd79fvf6iwk5b8PXbh7j7V4uQIz6/uLN8Zb1v6572ZnWnWmpSqVWmjKgpHGSvLYG6Xn/vrDJ5sG+17WxV2yF2XdmUgYiAyosKtCPlIbF4H5KDX0GRIKfQ6i03Fy
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(39840400004)(396003)(366004)(346002)(376002)(451199018)(6666004)(4326008)(6916009)(6512007)(66946007)(66476007)(8676002)(6506007)(186003)(66556008)(41300700001)(8936002)(7416002)(44832011)(86362001)(2616005)(36756003)(5660300002)(83380400001)(2906002)(6486002)(38100700002)(316002)(54906003)(478600001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?shrAS7YIWlUYpP4Ih1bVqQESSQFHy05FlQzVo3vRFv303x7mttqq3wCMqxQE?=
+ =?us-ascii?Q?QeuDwWtdyiCusXB3z1AavR18JNJ94L2F1vwpRyEMYqhyYN0lTvD2h9Od29po?=
+ =?us-ascii?Q?J2hrGBoOx/tVSZwybfV94Nw74tdesPxWb1peB/GWOFrU6lBELEURSHVnWIwE?=
+ =?us-ascii?Q?2grDwvvORFvkr+p3gqUmmPegRN/dE3fo/R/+qLLrS0c7TtovQ5g9XF74jg9a?=
+ =?us-ascii?Q?YPF2n63yBOooZCcJOoSvNlVqceOIGFxvqoECwMhycvc7EVoGM9CfAX+kAKZO?=
+ =?us-ascii?Q?bmmzDs6b9a48QW3BdV0/g0lBZW3PUMNPqL9TkaI1oB8OyG+3BPQdR7iWpTap?=
+ =?us-ascii?Q?x5IX6Mjr/5IOt2aNNq3ygl5N39HxBMk3jpKyC3aGpVo7AjLIYE/YP4H5T4tm?=
+ =?us-ascii?Q?XhSrL1J13Irzc+UaahRzi52NGetiJzCld80EwpsYbZ9CmDtBch/NiDU5W836?=
+ =?us-ascii?Q?UoN//O3RLxfIzFkva8U/gY/2CxtVTLgRZCVqn5/0EI+2kg2xH9QVLK3rm7PS?=
+ =?us-ascii?Q?kfKJgQtMB5ktiQjcuS/RUoq+VI8z8j0NnPSR6hRkb+DxW5ZuG+vVvaDMvplu?=
+ =?us-ascii?Q?DG8xweGFt887v2XQb5lPXsGtLQI36A8oincgGKwOuPLugSLVb02MLfBugr9e?=
+ =?us-ascii?Q?+AglbtaJYRUDztfwwuAwV5cFpTKCSFc5v2mojcFg1/iUTdVsGw3lVOLndr7w?=
+ =?us-ascii?Q?0UNmw5tBzSNkzgRL7P57zHKTRf5cAwVHiZcRtYDJDWEXX+AHiA1T7nafdwWx?=
+ =?us-ascii?Q?2V0zQzuF5/zoU58DyZoK99x62c0mbu1usbuC0IazRjn8FjtpAjfCGNQ2B5P/?=
+ =?us-ascii?Q?fSm80SAZILgWygPzmG7mPT6r+Yh2sb5zE1ow1P9YGW+zbovnJ2h3NrxosOgH?=
+ =?us-ascii?Q?JPW84j5moBZLN/yPe3OHC+NAn8t8NTd3efhbmaRwBCLEv4lR+UB+age3VYqj?=
+ =?us-ascii?Q?GQBetoz/DruavIt2glxvM4P5ztgFBtQmTbtmIbkMw1WP+5EQ5ZU/dNTN30S9?=
+ =?us-ascii?Q?vebpXJYwApI0SeFkfELSpiE7bL0PlX6Lzy4u4QgJgYFkoOsgNouXBgMY468o?=
+ =?us-ascii?Q?m3NfMwcO15Tkse5WlnbQqykVmzEmCFYTA6O9pXfjX8GVooJ3qz46W/pHZkX8?=
+ =?us-ascii?Q?nA68MMZ7N1Y3uLhX+9BwYAb4PQYU1XhIgB5EOcVAknx7ZLr/aRVZnt+XkDTG?=
+ =?us-ascii?Q?3EAl6JOuO1XNDDuIFqJsDHI8Y1Bi0A/IF7K6x4W32OyUN8vc83PdILbwPPPZ?=
+ =?us-ascii?Q?XvAqLIue33/Y7nQIUya42naRQ5e6Br9B4UIv6RL/plYJ6Wph8UqhNxZkvPlM?=
+ =?us-ascii?Q?yoVgWpA2G8q+jDjcHEJxIJEDR70NzU7PGIDTCF7o0Uzs9MZDeAeTmjncMTUR?=
+ =?us-ascii?Q?kaznJDEsv2Ke/3QxDFTNsYAMk0i5n+mOlkE+K3lC6DQqVG82Osdd2199AjSd?=
+ =?us-ascii?Q?Mi225Y8Mv6W2CEABNdKwCPUonPZDIh9jlm2D+AQZEgNP++FI6ln1aNBYLU3e?=
+ =?us-ascii?Q?d4EJoldJ/WSwzGDW9rXbEfl0o2VridMcnLuomar/5NME/bjATMlKMNHybmN9?=
+ =?us-ascii?Q?jNUjT8Oh7ygLuLqzl/sjG4tIvRtB3ioYOUQ+C/IYB1idslO+bj1GgA4N5KA9?=
+ =?us-ascii?Q?qjaPWtqNNo0xKjK8cxpAevZnlzOY48zHqWcP3Rhl2RedC3EjfTmYz+JXZwtY?=
+ =?us-ascii?Q?ot+MRQ=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0fc52c39-a9f2-4b0b-a034-08db1e5f9fdb
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Mar 2023 16:27:05.8878
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: iLrfEEUsGdDKTiMZlPVKWvtODM1dDGyLbsEtBvhmZoLvhzodo+cDWNeq1sXjdKNwhajFdcUoLhdmPQDs+x8h05RjDQjKNTP1oOD1X85fhDs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR13MB5755
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 07, 2023 at 12:06:47AM +0800, Vernon Yang wrote:
-> After commit 596ff4a09b89 ("cpumask: re-introduce constant-sized cpumask
-> optimizations"), when NR_CPUS <= BITS_PER_LONG, small_cpumask_bits used
-> a macro instead of variable-sized for efficient.
+On Fri, Mar 03, 2023 at 07:12:39PM -0500, Xin Long wrote:
+> br_nf_check_hbh_len() is a function to check the Hop-by-hop option
+> header, and shouldn't do pskb_trim_rcsum() there. This patch is to
+> pass pkt_len out to br_validate_ipv6() and do pskb_trim_rcsum()
+> after calling br_validate_ipv6() instead.
 > 
-> If no further cpus set, the cpumask_next() returns small_cpumask_bits,
-> it must greater than or equal to nr_cpumask_bits, so fix it to correctly.
-> 
-> Signed-off-by: Vernon Yang <vernon2gm@gmail.com>
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 
-Hi Vernon,
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-In all that cases, nr_cpu_ids must be used. The difference is that
-nr_cpumask_bits is an upper limit for possible CPUs, and it's derived
-from compile-time NR_CPUS, unless CPUMASK_OFFSTACK is enabled.
-
-nr_cpu_ids is an actual number of CPUS as counted on boot.
-
-So, nr_cpu_ids is always equal or less than nr_cpumask_bits, and we'd
-compare with the smaller number.
-
-Nor sure, but maybe it's worth to introduce a macro like:
- #define valid_cpuid(cpu) (cpu) < nr_cpu_ids
-
-Thanks,
-Yury
 > ---
->  drivers/char/random.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  net/bridge/br_netfilter_ipv6.c | 33 ++++++++++++++-------------------
+>  1 file changed, 14 insertions(+), 19 deletions(-)
 > 
-> diff --git a/drivers/char/random.c b/drivers/char/random.c
-> index ce3ccd172cc8..d76f12a5f74f 100644
-> --- a/drivers/char/random.c
-> +++ b/drivers/char/random.c
-> @@ -1311,7 +1311,7 @@ static void __cold try_to_generate_entropy(void)
->  			/* Basic CPU round-robin, which avoids the current CPU. */
->  			do {
->  				cpu = cpumask_next(cpu, &timer_cpus);
-> -				if (cpu == nr_cpumask_bits)
-> +				if (cpu >= nr_cpumask_bits)
->  					cpu = cpumask_first(&timer_cpus);
->  			} while (cpu == smp_processor_id() && num_cpus > 1);
+> diff --git a/net/bridge/br_netfilter_ipv6.c b/net/bridge/br_netfilter_ipv6.c
+> index 50f564c33551..07289e4f3213 100644
+> --- a/net/bridge/br_netfilter_ipv6.c
+> +++ b/net/bridge/br_netfilter_ipv6.c
+> @@ -43,11 +43,11 @@
+>  /* We only check the length. A bridge shouldn't do any hop-by-hop stuff
+>   * anyway
+>   */
+> -static int br_nf_check_hbh_len(struct sk_buff *skb)
+> +static int br_nf_check_hbh_len(struct sk_buff *skb, u32 *plen)
+>  {
+>  	int len, off = sizeof(struct ipv6hdr);
+>  	unsigned char *nh;
+> -	u32 pkt_len;
+> +	u32 pkt_len = 0;
 >  
-> -- 
-> 2.34.1
+>  	if (!pskb_may_pull(skb, off + 8))
+>  		return -1;
+> @@ -83,10 +83,6 @@ static int br_nf_check_hbh_len(struct sk_buff *skb)
+>  				return -1;
+>  			if (pkt_len > skb->len - sizeof(struct ipv6hdr))
+>  				return -1;
+> -			if (pskb_trim_rcsum(skb,
+> -					    pkt_len + sizeof(struct ipv6hdr)))
+> -				return -1;
+> -			nh = skb_network_header(skb);
+
+nit: Something you may want to consider if you spin a v2.
+
+     It seems that pkt_len is only set here.
+     So *plen could also be set here, simplifying the return path slightly.
+
+     Also, if so, then a not entirely related clean-up would
+     be to reduce the scope of pkt_len to this block.
+
+>  		}
+>  		off += optlen;
+>  		len -= optlen;
+> @@ -94,6 +90,8 @@ static int br_nf_check_hbh_len(struct sk_buff *skb)
+>  	if (len)
+>  		return -1;
+>  
+> +	if (pkt_len)
+> +		*plen = pkt_len;
+>  	return 0;
+>  }
+>  
+
+...
