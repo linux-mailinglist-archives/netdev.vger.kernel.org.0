@@ -2,138 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88AA36AD03B
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 22:28:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 79DBE6AD04B
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 22:29:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229984AbjCFV2J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 16:28:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52112 "EHLO
+        id S229516AbjCFV3C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 16:29:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229669AbjCFV2G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 16:28:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 137A22057B;
-        Mon,  6 Mar 2023 13:28:02 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A8056B81135;
-        Mon,  6 Mar 2023 21:28:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA102C433A1;
-        Mon,  6 Mar 2023 21:27:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678138079;
-        bh=OPscq8j4gixbBXyx4rYRiqcOtug0pajWX+t3LwK0uPE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PsQMxWTNyqmjmOyLA6f4aBxEbqjXLjGnQvTHUoE4f6zTvuB0TEbKKoow7O0Bl6lqg
-         gYnqSQeBrO1rJ29HWmn+yvMly1eyD9pru67Ei5XhYPhftQR6cu4eDx5Y2uE63s5KIt
-         s3zsZ4FOYFUkiy7gTDlGyR2DhiXrF2ddTXSUbWfDk94k+YWjCuHsJXdkT6LOyMmw3/
-         OBMkdU9AXHfmpJlFP0bcKZdHq+IuioXEaW+oivplUHjLiBGkJeMjuBmdvu2rgkgh5Q
-         WG7SALFgV1PPXh9MrSvGscl5OUXQrlqRl1aL8dYkfSYDeEvI72A6J1sMyBNHxpS7Fw
-         LxAw7Z0FF0jTA==
-Date:   Mon, 6 Mar 2023 21:27:32 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
-Cc:     miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
-        jic23@kernel.org, tudor.ambarus@microchip.com, pratyush@kernel.org,
-        Sanju.Mehta@amd.com, chin-ting_kuo@aspeedtech.com, clg@kaod.org,
-        kdasu.kdev@gmail.com, f.fainelli@gmail.com, rjui@broadcom.com,
-        sbranden@broadcom.com, eajames@linux.ibm.com, olteanv@gmail.com,
-        han.xu@nxp.com, john.garry@huawei.com, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, narmstrong@baylibre.com,
-        khilman@baylibre.com, matthias.bgg@gmail.com, haibo.chen@nxp.com,
-        linus.walleij@linaro.org, daniel@zonque.org,
-        haojian.zhuang@gmail.com, robert.jarzmik@free.fr,
-        agross@kernel.org, bjorn.andersson@linaro.org, heiko@sntech.de,
-        krzysztof.kozlowski@linaro.org, andi@etezian.org,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
-        wens@csie.org, jernej.skrabec@gmail.com, samuel@sholland.org,
-        masahisa.kojima@linaro.org, jaswinder.singh@linaro.org,
-        rostedt@goodmis.org, mingo@redhat.com, l.stelmach@samsung.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, alex.aring@gmail.com, stefan@datenfreihafen.org,
-        kvalo@kernel.org, james.schulman@cirrus.com,
-        david.rhodes@cirrus.com, tanureal@opensource.cirrus.com,
-        rf@opensource.cirrus.com, perex@perex.cz, tiwai@suse.com,
-        npiggin@gmail.com, christophe.leroy@csgroup.eu, mpe@ellerman.id.au,
-        oss@buserror.net, windhl@126.com, yangyingliang@huawei.com,
-        william.zhang@broadcom.com, kursad.oney@broadcom.com,
-        jonas.gorski@gmail.com, anand.gore@broadcom.com, rafal@milecki.pl,
-        git@amd.com, linux-spi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, joel@jms.id.au, andrew@aj.id.au,
-        radu_nicolae.pirea@upb.ro, nicolas.ferre@microchip.com,
-        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
-        bcm-kernel-feedback-list@broadcom.com, fancer.lancer@gmail.com,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        jbrunet@baylibre.com, martin.blumenstingl@googlemail.com,
-        avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        yogeshgaur.83@gmail.com, konrad.dybcio@somainline.org,
-        alim.akhtar@samsung.com, ldewangan@nvidia.com,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        michal.simek@amd.com, linux-aspeed@lists.ozlabs.org,
-        openbmc@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wpan@vger.kernel.org,
-        libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
-        linux-mtd@lists.infradead.org, lars@metafoo.de,
-        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
-        michael@walle.cc, palmer@dabbelt.com,
-        linux-riscv@lists.infradead.org, alsa-devel@alsa-project.org,
-        patches@opensource.cirrus.com, linuxppc-dev@lists.ozlabs.org,
-        amitrkcian2002@gmail.com, Dhruva Gole <d-gole@ti.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>
-Subject: Re: [PATCH V5 01/15] spi: Replace all spi->chip_select and
- spi->cs_gpiod references with function call
-Message-ID: <00684da3-520f-459d-b6bd-55e728e93ebf@sirena.org.uk>
-References: <20230306172109.595464-1-amit.kumar-mahapatra@amd.com>
- <20230306172109.595464-2-amit.kumar-mahapatra@amd.com>
+        with ESMTP id S230006AbjCFV2y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 16:28:54 -0500
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A694E37F05
+        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 13:28:33 -0800 (PST)
+Received: by mail-wm1-x336.google.com with SMTP id l7-20020a05600c1d0700b003eb5e6d906bso6025171wms.5
+        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 13:28:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678138112;
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=DGfzjjoiQHuMjP01DyQVjuhjLdCZBikcH33VI7IxHdY=;
+        b=ENPDQJSvRFgkk2v72WVohnmhBqI/M6OvGhETbv58yPG5S5bniWhe7ZQO0Rt57KVtyi
+         +ynd7ycsF8kWebIx2/S3jTNrNJfn5Tq9S+vWyzE8mscCYRfKfrOY4a173liyFykgkSqq
+         lAj2jfK+EdMeJ+cPYex+61s7ftI78FQ7qdpKJiL7ryDaPJXmi2jl9/at9SvibmrZuWiL
+         Gu7HRl1yaauY7QJk13yBJiqp/X93de8mfSa8pX/OYAOlYSUkvz0daC2vcXyIRV6JaIlV
+         c9/1Y8u/QyqVH8ecO4DkGLD5/+MUXR5S1ebYRKXmOWPOxKZtM4mW3VE0gO+MFiOAv+uO
+         uzWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678138112;
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=DGfzjjoiQHuMjP01DyQVjuhjLdCZBikcH33VI7IxHdY=;
+        b=fB7ycmF72z+teFUfXyYih1PjKskfToUgjmgVOC3GF2c89JJgsYk+UlNddZ6piTXcrd
+         cLzW+V1QIqWKRh/Hs1ans+iIDlmXZ5MZEAcAbZqtdrO+zae2FzBFibVxYiDUo24+TWss
+         XwJwi2xH9K8ctCHMPYNJoDNfrskFEHAKHdJ+6Zw0aqYaNrWepMHaQoS00vOdxQE3KHo4
+         umXsWqAZGm7vRj0giERpa3/EmGHVsdGOM1glkC3ip4X5NUif4sNGEZG8W581TMwZV11z
+         ESFwyrGDkDzQjGDoUOwewuL8cAlqhW9ZVDGg0SEX6/kj+wPyN3esIrPMEDpiTQFnaTJr
+         edtA==
+X-Gm-Message-State: AO0yUKW2LSAyIc0Ojy76nHZNT5YtPfNOTrnDT3rX9XfqWku4a4akcL0w
+        CtEoQuL/G3fZslUo/JtEtQ8=
+X-Google-Smtp-Source: AK7set9HE2vMkBFZrWGb5wjW3FlKKos72kh3CIiD7WdtXNPEIWWlwr4p/W0RS749iQyOHeENZl+eFg==
+X-Received: by 2002:a05:600c:548e:b0:3df:db20:b0ae with SMTP id iv14-20020a05600c548e00b003dfdb20b0aemr8765331wmb.17.1678138112033;
+        Mon, 06 Mar 2023 13:28:32 -0800 (PST)
+Received: from ?IPV6:2a01:c22:7bf4:7d00:9590:4142:18ea:aa32? (dynamic-2a01-0c22-7bf4-7d00-9590-4142-18ea-aa32.c22.pool.telefonica.de. [2a01:c22:7bf4:7d00:9590:4142:18ea:aa32])
+        by smtp.googlemail.com with ESMTPSA id x8-20020a1c7c08000000b003eb2e33f327sm21485042wmc.2.2023.03.06.13.28.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Mar 2023 13:28:31 -0800 (PST)
+Message-ID: <a3d4b8fb-d949-35f2-1746-c50814330ac9@gmail.com>
+Date:   Mon, 6 Mar 2023 22:28:06 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="RfYQ7lwbbyjtjTUN"
-Content-Disposition: inline
-In-Reply-To: <20230306172109.595464-2-amit.kumar-mahapatra@amd.com>
-X-Cookie: teamwork, n.:
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: [PATCH net-next 6/6] r8169: remove ASPM restrictions now that ASPM is
+ disabled during NAPI poll
+Content-Language: en-US
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Simon Horman <simon.horman@corigine.com>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        =?UTF-8?Q?Holger_Hoffst=c3=a4tte?= <holger@applied-asynchrony.com>
+References: <b434a0ce-9a76-e227-3267-ee26497ec446@gmail.com>
+In-Reply-To: <b434a0ce-9a76-e227-3267-ee26497ec446@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Now that  ASPM is disabled during NAPI poll, we can remove all ASPM
+restrictions. This allows for higher power savings if the network
+isn't fully loaded.
 
---RfYQ7lwbbyjtjTUN
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Tested-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Tested-by: Holger Hoffstätte <holger@applied-asynchrony.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 27 +----------------------
+ 1 file changed, 1 insertion(+), 26 deletions(-)
 
-On Mon, Mar 06, 2023 at 10:50:55PM +0530, Amit Kumar Mahapatra wrote:
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 2897b9bf2..6563e4c6a 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -620,7 +620,6 @@ struct rtl8169_private {
+ 	int cfg9346_usage_count;
+ 
+ 	unsigned supports_gmii:1;
+-	unsigned aspm_manageable:1;
+ 	dma_addr_t counters_phys_addr;
+ 	struct rtl8169_counters *counters;
+ 	struct rtl8169_tc_offsets tc_offset;
+@@ -2744,8 +2743,7 @@ static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
+ 	if (tp->mac_version < RTL_GIGA_MAC_VER_32)
+ 		return;
+ 
+-	/* Don't enable ASPM in the chip if OS can't control ASPM */
+-	if (enable && tp->aspm_manageable) {
++	if (enable) {
+ 		rtl_mod_config5(tp, 0, ASPM_en);
+ 		rtl_mod_config2(tp, 0, ClkReqEn);
+ 
+@@ -5221,16 +5219,6 @@ static void rtl_init_mac_address(struct rtl8169_private *tp)
+ 	rtl_rar_set(tp, mac_addr);
+ }
+ 
+-/* register is set if system vendor successfully tested ASPM 1.2 */
+-static bool rtl_aspm_is_safe(struct rtl8169_private *tp)
+-{
+-	if (tp->mac_version >= RTL_GIGA_MAC_VER_61 &&
+-	    r8168_mac_ocp_read(tp, 0xc0b2) & 0xf)
+-		return true;
+-
+-	return false;
+-}
+-
+ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ {
+ 	struct rtl8169_private *tp;
+@@ -5302,19 +5290,6 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	tp->mac_version = chipset;
+ 
+-	/* Disable ASPM L1 as that cause random device stop working
+-	 * problems as well as full system hangs for some PCIe devices users.
+-	 * Chips from RTL8168h partially have issues with L1.2, but seem
+-	 * to work fine with L1 and L1.1.
+-	 */
+-	if (rtl_aspm_is_safe(tp))
+-		rc = 0;
+-	else if (tp->mac_version >= RTL_GIGA_MAC_VER_46)
+-		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1_2);
+-	else
+-		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
+-	tp->aspm_manageable = !rc;
+-
+ 	tp->dash_type = rtl_check_dash(tp);
+ 
+ 	tp->cp_cmd = RTL_R16(tp, CPlusCmd) & CPCMD_MASK;
+-- 
+2.39.2
 
->  drivers/spi/spi-omap-100k.c       |  2 +-
 
-This is also not against -rc1, this file was removed in bcace9c4c9270292
-("spi: remove omap 100K driver").
 
---RfYQ7lwbbyjtjTUN
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmQGWsMACgkQJNaLcl1U
-h9C7Fwf+MqZVyi3PlI6YIKPDaaFyWnmjZtweIjxd+4E2eEmTZq9MbcCHS/W56cUk
-TPWusPOjIa33XHC376rZpTYGqNTRjvOo8UwttJFAFQFbtMNui8BfC1bnrROwoyUE
-AxcOxhCAi3r1P0nRIkS126TepySOo1qXD1gf6YUQydf6/iDxzq7VddVjfqtt3dPF
-6rnt0G5xA5O0Z75Kc76h4ePCX7kXMqJhJSaJf7HFcGwD2P5HIeRcRyucD2q4Ddnr
-KzkdziV90/s6X7Q9cfiA620jfm8jVdqqN3yC+JX/L2Iu8kpeefFFgD49yG2aMtxv
-zgXP6uMpvQm5g7F9e/wo/JMWhjfh8g==
-=uJRe
------END PGP SIGNATURE-----
-
---RfYQ7lwbbyjtjTUN--
