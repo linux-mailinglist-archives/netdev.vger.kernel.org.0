@@ -2,109 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C80E6AC8B9
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 17:51:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A06966AC8CC
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 17:55:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230125AbjCFQu7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 11:50:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48704 "EHLO
+        id S229803AbjCFQzc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 11:55:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229798AbjCFQu6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 11:50:58 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 276FF30EA7;
-        Mon,  6 Mar 2023 08:50:28 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id h17-20020a17090aea9100b0023739b10792so9356327pjz.1;
-        Mon, 06 Mar 2023 08:50:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678121366;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=FyzVPjWfXnTi2A6JA+vLWl/vlGfJCkJsgnI57YCj2dk=;
-        b=aTRhtOKzopegMmO2yssOZkimSjssIB1Fe4aC8HZEsD3OR5cnh4N2g7iuSqfDbS9K5N
-         CS8TVBVdeQZqQfD3dFmdVX3QUkxzNkaZ5MaF35ZM6wNjohaLBeFCivpxT+cs4mnddsN1
-         4TMJT+ngEmiRar/0a7wziePefj2s334WYFD1cml4bH29b/21M17Q0ZMzTPan6WcmWTyV
-         9z+EsmcrSJrphT/ZIbuuL729qCpqvNQLIwNflHSDPWKS/qjn5RYl046inEUlPM8721Bx
-         ifkSjYxCj6fWSgL9rgRzzT4NIF7Zp898TfP7yV3sl2SLv2TiV5V89riysdMyUhr4XQ+t
-         SKrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678121366;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=FyzVPjWfXnTi2A6JA+vLWl/vlGfJCkJsgnI57YCj2dk=;
-        b=adHS1iv1J1c7vEGz9R+yKpO3Lp+gJw7TDDxwUU6UKG38J9aTZma5CUneUTU7z91DPg
-         1ffFvsmN+qvgGUlkRdXF5kVZPbT5TWbOsFikeLaDlMdE8/XcUXFDp9yb10NYgfYP1v1J
-         7W0w5vmjP3HhpMGQUY1fvFhMGFMeFctKEQCsVTX389KrnEJE9OI2bQLSpF7gkqKjGnn0
-         4DlhlHPpzxYpuWetoXlYV9YgRE2otvr0Ml8L9F1ZmpeP4iWtvkN0JsEwqOh/bV481ll7
-         ZmPHoUrCmeQIspvVoqDfs6Yne4D3FJg3rRhj0kdKzIWejJGfoITfJUN5AsuUdutP3r1d
-         ufsQ==
-X-Gm-Message-State: AO0yUKU581daoxSAUHX/XDIw0c1D9OrJMW7HWAj3YVxujaBgI95JvrK4
-        5SP1GIqasulWgJJUUQKQjiPStpAgiX0=
-X-Google-Smtp-Source: AK7set/tAvMHEOLBgk/J+TSbInWJpoBAIk9fk2swfjHlWNVo4lmtt2y54TjkH+Sact5n0jkX8+6sNA==
-X-Received: by 2002:a17:902:d4cd:b0:19e:23c1:4c3d with SMTP id o13-20020a170902d4cd00b0019e23c14c3dmr14086927plg.2.1678121366695;
-        Mon, 06 Mar 2023 08:49:26 -0800 (PST)
-Received: from [192.168.0.128] ([98.97.39.127])
-        by smtp.googlemail.com with ESMTPSA id jy11-20020a17090342cb00b0019cbd37a335sm6962692plb.93.2023.03.06.08.49.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Mar 2023 08:49:26 -0800 (PST)
-Message-ID: <3507f6a501688243d1f16ef65753acc40b9e85aa.camel@gmail.com>
-Subject: Re: [PATCH net 0/2] add checking sq is full inside xdp xmit
-From:   Alexander H Duyck <alexander.duyck@gmail.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Date:   Mon, 06 Mar 2023 08:49:24 -0800
-In-Reply-To: <20230306041535.73319-1-xuanzhuo@linux.alibaba.com>
-References: <20230306041535.73319-1-xuanzhuo@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+        with ESMTP id S229704AbjCFQzb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 11:55:31 -0500
+Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 851142915C
+        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 08:54:59 -0800 (PST)
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.17.1.19/8.17.1.19) with ESMTP id 326Ed23U007548;
+        Mon, 6 Mar 2023 08:53:58 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=s2048-2021-q4;
+ bh=fBNLmwAC4f4oOW8xMeIXfA7JiFjfqYeLBqYXR0c9UVM=;
+ b=TFblkv0RDdnHxacH6jICFet2b5kFP2JAkyJMBksG4JuIcc+UNYjpeM4V1BLo8CZih1sj
+ vUoRrcBD53FYxy6rb2yPCUljSblrfGBE3Y5Eol108PaIPz5kN5jdq6RCmtja78TIkJRo
+ lxiSrqbU0aOdVDyUx+8qinHFq2SCa5Oanooq5oeXujLgvT/iWrY7ITJrpx68k1qZh4pn
+ 2nwuFNTmcaba7+Eqh88GBHOT7Fx0uUTO2dSEV6Rpwx32OmgqWhSxjMvzHZrrAlR8J317
+ PkOZGC4+KOU8t62KQ/BWwjQjcESDz7UOOSrRNxqybXEveOisE+MDwRrp04IBLM/Z0SvC TQ== 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0001303.ppops.net (PPS) with ESMTPS id 3p4px6fgej-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 06 Mar 2023 08:53:57 -0800
+Received: from devvm1736.cln0.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server id
+ 15.1.2507.17; Mon, 6 Mar 2023 08:53:54 -0800
+From:   Vadim Fedorenko <vadfed@meta.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        Andy Gospodarek <andrew.gospodarek@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>
+CC:     Vadim Fedorenko <vadfed@meta.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vadim Fedorenko <vadim.fedorenko@linux.dev>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH net] bnxt_en: reset PHC frequency in free-running mode
+Date:   Mon, 6 Mar 2023 08:53:44 -0800
+Message-ID: <20230306165344.350387-1-vadfed@meta.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [2620:10d:c085:208::f]
+X-Proofpoint-ORIG-GUID: 4crg5LTFTckjTygUlmwbmqOneh6rTkPP
+X-Proofpoint-GUID: 4crg5LTFTckjTygUlmwbmqOneh6rTkPP
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-03-06_10,2023-03-06_01,2023-02-09_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2023-03-06 at 12:15 +0800, Xuan Zhuo wrote:
-> If the queue of xdp xmit is not an independent queue, then when the xdp
-> xmit used all the desc, the xmit from the __dev_queue_xmit() may encounte=
-r
-> the following error.
->=20
-> net ens4: Unexpected TXQ (0) queue failure: -28
->=20
-> This patch adds a check whether sq is full in XDP Xmit.
->=20
-> Thanks.
->=20
-> Xuan Zhuo (2):
->   virtio_net: separate the logic of checking whether sq is full
->   virtio_net: add checking sq is full inside xdp xmit
->=20
->  drivers/net/virtio_net.c | 78 ++++++++++++++++++++++++----------------
->  1 file changed, 47 insertions(+), 31 deletions(-)
->=20
-> --
-> 2.32.0.3.g01195cf9f
->=20
+When using a PHC in shared between multiple hosts, the previous
+frequency value may not be reset and could lead to host being unable to
+compensate the offset with timecounter adjustments. To avoid such state
+reset the hardware frequency of PHC to zero on init. Some refactoring is
+needed to make code readable.
 
-Series looks good to me.
+Fixes: 85036aee1938 ("bnxt_en: Add a non-real time mode to access NIC clock")
+Signed-off-by: Vadim Fedorenko <vadfed@meta.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  6 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  2 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 57 +++++++++++--------
+ 3 files changed, 36 insertions(+), 29 deletions(-)
 
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 5d4b1f2ebeac..8472ff79adf3 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -6989,11 +6989,9 @@ static int bnxt_hwrm_func_qcfg(struct bnxt *bp)
+ 		if (flags & FUNC_QCFG_RESP_FLAGS_FW_DCBX_AGENT_ENABLED)
+ 			bp->fw_cap |= BNXT_FW_CAP_DCBX_AGENT;
+ 	}
+-	if (BNXT_PF(bp) && (flags & FUNC_QCFG_RESP_FLAGS_MULTI_HOST)) {
++	if (BNXT_PF(bp) && (flags & FUNC_QCFG_RESP_FLAGS_MULTI_HOST))
+ 		bp->flags |= BNXT_FLAG_MULTI_HOST;
+-		if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
+-			bp->fw_cap &= ~BNXT_FW_CAP_PTP_RTC;
+-	}
++
+ 	if (flags & FUNC_QCFG_RESP_FLAGS_RING_MONITOR_ENABLED)
+ 		bp->fw_cap |= BNXT_FW_CAP_RING_MONITOR;
+ 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index dcb09fbe4007..41e4bb7b8acb 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -2000,6 +2000,8 @@ struct bnxt {
+ 	u32			fw_dbg_cap;
+ 
+ #define BNXT_NEW_RM(bp)		((bp)->fw_cap & BNXT_FW_CAP_NEW_RM)
++#define BNXT_PTP_RTC(bp)	(!BNXT_MH(bp) && \
++				 ((bp)->fw_cap & BNXT_FW_CAP_PTP_RTC))
+ 	u32			hwrm_spec_code;
+ 	u16			hwrm_cmd_seq;
+ 	u16                     hwrm_cmd_kong_seq;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+index 4ec8bba18cdd..99c1a53231aa 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+@@ -63,7 +63,7 @@ static int bnxt_ptp_settime(struct ptp_clock_info *ptp_info,
+ 						ptp_info);
+ 	u64 ns = timespec64_to_ns(ts);
+ 
+-	if (ptp->bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
++	if (BNXT_PTP_RTC(ptp->bp))
+ 		return bnxt_ptp_cfg_settime(ptp->bp, ns);
+ 
+ 	spin_lock_bh(&ptp->ptp_lock);
+@@ -196,7 +196,7 @@ static int bnxt_ptp_adjtime(struct ptp_clock_info *ptp_info, s64 delta)
+ 	struct bnxt_ptp_cfg *ptp = container_of(ptp_info, struct bnxt_ptp_cfg,
+ 						ptp_info);
+ 
+-	if (ptp->bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
++	if (BNXT_PTP_RTC(ptp->bp))
+ 		return bnxt_ptp_adjphc(ptp, delta);
+ 
+ 	spin_lock_bh(&ptp->ptp_lock);
+@@ -205,34 +205,39 @@ static int bnxt_ptp_adjtime(struct ptp_clock_info *ptp_info, s64 delta)
+ 	return 0;
+ }
+ 
++static int bnxt_ptp_adjfine_rtc(struct bnxt *bp, long scaled_ppm)
++{
++	s32 ppb = scaled_ppm_to_ppb(scaled_ppm);
++	struct hwrm_port_mac_cfg_input *req;
++	int rc;
++
++	rc = hwrm_req_init(bp, req, HWRM_PORT_MAC_CFG);
++	if (rc)
++		return rc;
++
++	req->ptp_freq_adj_ppb = cpu_to_le32(ppb);
++	req->enables = cpu_to_le32(PORT_MAC_CFG_REQ_ENABLES_PTP_FREQ_ADJ_PPB);
++	rc = hwrm_req_send(bp, req);
++	if (rc)
++		netdev_err(bp->dev,
++			   "ptp adjfine failed. rc = %d\n", rc);
++	return rc;
++}
++
+ static int bnxt_ptp_adjfine(struct ptp_clock_info *ptp_info, long scaled_ppm)
+ {
+ 	struct bnxt_ptp_cfg *ptp = container_of(ptp_info, struct bnxt_ptp_cfg,
+ 						ptp_info);
+-	struct hwrm_port_mac_cfg_input *req;
+ 	struct bnxt *bp = ptp->bp;
+-	int rc = 0;
+ 
+-	if (!(ptp->bp->fw_cap & BNXT_FW_CAP_PTP_RTC)) {
+-		spin_lock_bh(&ptp->ptp_lock);
+-		timecounter_read(&ptp->tc);
+-		ptp->cc.mult = adjust_by_scaled_ppm(ptp->cmult, scaled_ppm);
+-		spin_unlock_bh(&ptp->ptp_lock);
+-	} else {
+-		s32 ppb = scaled_ppm_to_ppb(scaled_ppm);
+-
+-		rc = hwrm_req_init(bp, req, HWRM_PORT_MAC_CFG);
+-		if (rc)
+-			return rc;
++	if (BNXT_PTP_RTC(ptp->bp))
++		return bnxt_ptp_adjfine_rtc(bp, scaled_ppm);
+ 
+-		req->ptp_freq_adj_ppb = cpu_to_le32(ppb);
+-		req->enables = cpu_to_le32(PORT_MAC_CFG_REQ_ENABLES_PTP_FREQ_ADJ_PPB);
+-		rc = hwrm_req_send(ptp->bp, req);
+-		if (rc)
+-			netdev_err(ptp->bp->dev,
+-				   "ptp adjfine failed. rc = %d\n", rc);
+-	}
+-	return rc;
++	spin_lock_bh(&ptp->ptp_lock);
++	timecounter_read(&ptp->tc);
++	ptp->cc.mult = adjust_by_scaled_ppm(ptp->cmult, scaled_ppm);
++	spin_unlock_bh(&ptp->ptp_lock);
++	return 0;
+ }
+ 
+ void bnxt_ptp_pps_event(struct bnxt *bp, u32 data1, u32 data2)
+@@ -879,7 +884,7 @@ int bnxt_ptp_init_rtc(struct bnxt *bp, bool phc_cfg)
+ 	u64 ns;
+ 	int rc;
+ 
+-	if (!bp->ptp_cfg || !(bp->fw_cap & BNXT_FW_CAP_PTP_RTC))
++	if (!bp->ptp_cfg || !BNXT_PTP_RTC(bp))
+ 		return -ENODEV;
+ 
+ 	if (!phc_cfg) {
+@@ -932,13 +937,15 @@ int bnxt_ptp_init(struct bnxt *bp, bool phc_cfg)
+ 	atomic_set(&ptp->tx_avail, BNXT_MAX_TX_TS);
+ 	spin_lock_init(&ptp->ptp_lock);
+ 
+-	if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC) {
++	if (BNXT_PTP_RTC(ptp->bp)) {
+ 		bnxt_ptp_timecounter_init(bp, false);
+ 		rc = bnxt_ptp_init_rtc(bp, phc_cfg);
+ 		if (rc)
+ 			goto out;
+ 	} else {
+ 		bnxt_ptp_timecounter_init(bp, true);
++		if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
++			bnxt_ptp_adjfreq_rtc(bp, 0);
+ 	}
+ 
+ 	ptp->ptp_info = bnxt_ptp_caps;
+-- 
+2.30.2
 
