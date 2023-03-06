@@ -2,111 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02F626ACFC5
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 22:04:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4EE46ACFCF
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 22:06:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230070AbjCFVE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 16:04:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52580 "EHLO
+        id S229926AbjCFVGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 16:06:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229988AbjCFVEV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 16:04:21 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E24D67017;
-        Mon,  6 Mar 2023 13:03:58 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id a9so11877057plh.11;
-        Mon, 06 Mar 2023 13:03:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678136637;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=z+JZSTuFczC5mo7PEY3yBvoy/91ay9ZlZhiG7/0/jdU=;
-        b=J0G/0FbeicKyFQgCtYlOOk4T3oRqyNdGAmPLsHhC+AQzhfqNm09l3mAHs8IQpeDEK5
-         tXW5R82OI7u7bhUdeK8PTTb/Xa9tmNRW7An5ryNY/VlLVIorS/f6VDFNRkHmqPkgNexd
-         2V3nsdCrTizVcd32Nzq54QHft2pumYH/7g99jp8KyqObk62dxUAhMUOvzYwk4eHeaqYi
-         mFS8sQLnUlwEgOfm+7KQW3KulkPpElt6qFYGnOKeiXEHNGxbOKze1nQsgpi92CJ1qwSo
-         3KKUgdfecQl+4WpkS+onsXDqnrl4hRx53yIXhebFwMkVPogmwvrypbhF/nK3UGyGfLIU
-         dnAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678136637;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=z+JZSTuFczC5mo7PEY3yBvoy/91ay9ZlZhiG7/0/jdU=;
-        b=I2qoBWXpa7O4XHvL+4BqWsTXf61fQc0nTX5d8q86t1XaYhxWqccn3O+xWMmQt3dQPJ
-         AClu9wxJEvO+10BjZT+VwnxwHajmVzyimSSHAISOGECMw8ArPTz/Pn9Y9ZDmsxgSm1DE
-         tUk/T3aElUkjFkAwMXuNbHaiLDdgg3cVkLrPf4CJ28HwTyVX8+jAXPA3MyXfJwTB+8L1
-         sA1CpIXHr+YNnEOHCRpzlokix/nKt4f4WnSov/UASoreOH2zlglqnLOYC26Vu3NJFkSj
-         4gTkLskhH8ZnO6IsGOkh+dOH1J+6CYxax9k06Et2szm0vwDNBRzsxY22qHPIyWagX62Z
-         1g6g==
-X-Gm-Message-State: AO0yUKX5lWfXzIA0Vl7rtvkn0ZuRLACTgXcawkLpDzcZgd2exl7xoMua
-        OLpkUIrgdrVfSdyYJIfFRD0=
-X-Google-Smtp-Source: AK7set9bJ+RZpctLL9LNRn8+W3MRhstsXchoF/02mRPZgh29TAeFmlavfd29dFchZTN62FY8teR5EQ==
-X-Received: by 2002:a05:6a20:394f:b0:bc:8254:ddff with SMTP id r15-20020a056a20394f00b000bc8254ddffmr15220080pzg.1.1678136637715;
-        Mon, 06 Mar 2023 13:03:57 -0800 (PST)
-Received: from vernon-pc.. ([49.67.2.142])
-        by smtp.gmail.com with ESMTPSA id 3-20020aa79143000000b005810c4286d6sm6706760pfi.0.2023.03.06.13.03.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Mar 2023 13:03:57 -0800 (PST)
-From:   Vernon Yang <vernon2gm@gmail.com>
-To:     torvalds@linux-foundation.org, tytso@mit.edu, Jason@zx2c4.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, jejb@linux.ibm.com, martin.petersen@oracle.com,
-        yury.norov@gmail.com, andriy.shevchenko@linux.intel.com,
-        linux@rasmusvillemoes.dk, james.smart@broadcom.com,
-        dick.kennedy@broadcom.com
-Cc:     linux-kernel@vger.kernel.org, wireguard@lists.zx2c4.com,
-        netdev@vger.kernel.org, linux-scsi@vger.kernel.org,
-        Vernon Yang <vernon2gm@gmail.com>
-Subject: [PATCH v2 4/4] scsi: lpfc: fix lpfc_nvmet_setup_io_context() if no further cpus set
-Date:   Tue,  7 Mar 2023 05:03:12 +0800
-Message-Id: <20230306210312.2614988-5-vernon2gm@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230306210312.2614988-1-vernon2gm@gmail.com>
-References: <20230306210312.2614988-1-vernon2gm@gmail.com>
+        with ESMTP id S229565AbjCFVG1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 16:06:27 -0500
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B2FE3BDB7;
+        Mon,  6 Mar 2023 13:06:20 -0800 (PST)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 326K42t6011040;
+        Mon, 6 Mar 2023 21:06:14 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=X+l+D0wTEg1NK0XLIfd80zTd+g8fH2sBn/mflmRj/20=;
+ b=B9HCWoJBBBU/K7rA2Jx3B6QUjvVXv/QuFq9gFEN8Tam1lmy/fgANGLLjb+x9geEPhPGh
+ edcA6ccr0pqmR0MUmgzQydhyMYiIDmGbUjyGcq+ZYRLep4sR1WlE0HVmS3BL5AiDo0l6
+ gYZtmbKYjVHKnOS/vzJm/W6MKD0WzEsFJQYjJrNDuVSiXROXtXIy+P1xg370thaP34+V
+ lLTNTq+8waD5WFASTvRHgmNUqaMFkSsx4V3n38nLLz9NFikUVjOurFR06lGqMOtjCbdU
+ ycPHRPE1EUM8GZXIaNOsoLNJ4rGuHWpg2qGS8XyF+pN1oa76K+CqoFIvO4aQwRxFl32e YQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3p50n4fya7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 06 Mar 2023 21:06:13 +0000
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 326KUQ4i002476;
+        Mon, 6 Mar 2023 21:06:13 GMT
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3p50n4fy9u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 06 Mar 2023 21:06:13 +0000
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+        by ppma01wdc.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 326JWCmT005009;
+        Mon, 6 Mar 2023 21:06:12 GMT
+Received: from smtprelay02.dal12v.mail.ibm.com ([9.208.130.97])
+        by ppma01wdc.us.ibm.com (PPS) with ESMTPS id 3p41847a4e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 06 Mar 2023 21:06:12 +0000
+Received: from smtpav04.wdc07v.mail.ibm.com (smtpav04.wdc07v.mail.ibm.com [10.39.53.231])
+        by smtprelay02.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 326L6But46138092
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 6 Mar 2023 21:06:11 GMT
+Received: from smtpav04.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 387D058045;
+        Mon,  6 Mar 2023 21:06:11 +0000 (GMT)
+Received: from smtpav04.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 767CA58054;
+        Mon,  6 Mar 2023 21:06:09 +0000 (GMT)
+Received: from [9.163.94.4] (unknown [9.163.94.4])
+        by smtpav04.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+        Mon,  6 Mar 2023 21:06:09 +0000 (GMT)
+Message-ID: <76103587-435d-159d-98b7-0c4cbedaf62e@linux.ibm.com>
+Date:   Mon, 6 Mar 2023 22:06:08 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.8.0
+Subject: Re: [PATCH net] net/smc: fix NULL sndbuf_desc in smc_cdc_tx_handler()
+To:     Alexander H Duyck <alexander.duyck@gmail.com>,
+        "D. Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com,
+        jaka@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+References: <1678073786-110013-1-git-send-email-alibuda@linux.alibaba.com>
+ <a4a6c3381239d1297f218c5b6d01828bac016660.camel@gmail.com>
+From:   Wenjia Zhang <wenjia@linux.ibm.com>
+In-Reply-To: <a4a6c3381239d1297f218c5b6d01828bac016660.camel@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: zVbj8YPHySCY0WwmG-Xq2A6BNZSWLC2S
+X-Proofpoint-GUID: tgmKc7x-4CZTWDmm1R4mUUSjvp5iNrmF
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-03-06_14,2023-03-06_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 adultscore=0
+ mlxlogscore=999 bulkscore=0 phishscore=0 priorityscore=1501 clxscore=1015
+ impostorscore=0 suspectscore=0 lowpriorityscore=0 spamscore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
+ definitions=main-2303060183
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When cpumask_next() the return value is greater than or equal to
-nr_cpu_ids, it indicates invalid.
 
-Before commit 596ff4a09b89 ("cpumask: re-introduce constant-sized cpumask
-optimizations"), when cpumask_next() returned an invalid cpu, the driver
-used the judgment equal to nr_cpu_ids to indicate the invalid cpu, so it
-happened to work normally, but this is the wrong approach.
 
-After commit 596ff4a09b89 ("cpumask: re-introduce constant-sized cpumask
-optimizations"), these incorrect practices actively buggy, so fix it to
-correctly.
+On 06.03.23 17:38, Alexander H Duyck wrote:
+> On Mon, 2023-03-06 at 11:36 +0800, D. Wythe wrote:
+>> From: "D. Wythe" <alibuda@linux.alibaba.com>
+>>
+>> When performing a stress test on SMC-R by rmmod mlx5_ib driver
+>> during the wrk/nginx test, we found that there is a probability
+>> of triggering a panic while terminating all link groups.
+>>
+>> This issue dues to the race between smc_smcr_terminate_all()
+>> and smc_buf_create().
+>>
+>> 			smc_smcr_terminate_all
+>>
+>> smc_buf_create
+>> /* init */
+>> conn->sndbuf_desc = NULL;
+>> ...
+>>
+>> 			__smc_lgr_terminate
+>> 				smc_conn_kill
+>> 					smc_close_abort
+>> 						smc_cdc_get_slot_and_msg_send
+>>
+>> 			__softirqentry_text_start
+>> 				smc_wr_tx_process_cqe
+>> 					smc_cdc_tx_handler
+>> 						READ(conn->sndbuf_desc->len);
+>> 						/* panic dues to NULL sndbuf_desc */
+>>
+>> conn->sndbuf_desc = xxx;
+>>
+>> This patch tries to fix the issue by always to check the sndbuf_desc
+>> before send any cdc msg, to make sure that no null pointer is
+>> seen during cqe processing.
+>>
+>> Fixes: 0b29ec643613 ("net/smc: immediate termination for SMCR link groups")
+>> Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+> 
+> Looking at the code for __smc_buf_create it seems like you might have
+> more issues hiding in the code. From what I can tell smc_buf_get_slot
+> can only return a pointer or NULL but it is getting checked for being
+> being a PTR_ERR or IS_ERR in several spots that are likely all dead
+> code.
+> 
+This smc_buf_get_slot() is used to get a reusable slot, which is 
+originally assigned by smcr_new_buf_create() or smcd_new_buf_create() 
+depending on the device being used. In 
+smcr_new_buf_create()/smcd_new_buf_create(), the pointer values of the 
+return codes are converted from integer values.
 
-Signed-off-by: Vernon Yang <vernon2gm@gmail.com>
----
- drivers/scsi/lpfc/lpfc_nvmet.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/scsi/lpfc/lpfc_nvmet.c b/drivers/scsi/lpfc/lpfc_nvmet.c
-index 7517dd55fe91..3ae7f330f827 100644
---- a/drivers/scsi/lpfc/lpfc_nvmet.c
-+++ b/drivers/scsi/lpfc/lpfc_nvmet.c
-@@ -1621,7 +1621,7 @@ lpfc_nvmet_setup_io_context(struct lpfc_hba *phba)
- 			continue;
- 		}
- 		cpu = cpumask_next(cpu, cpu_present_mask);
--		if (cpu == nr_cpu_ids)
-+		if (cpu >= nr_cpu_ids)
- 			cpu = cpumask_first(cpu_present_mask);
- 
- 	}
--- 
-2.34.1
-
+>> ---
+>>   net/smc/smc_cdc.c | 3 +++
+>>   1 file changed, 3 insertions(+)
+>>
+>> diff --git a/net/smc/smc_cdc.c b/net/smc/smc_cdc.c
+>> index 53f63bf..2f0e2ee 100644
+>> --- a/net/smc/smc_cdc.c
+>> +++ b/net/smc/smc_cdc.c
+>> @@ -114,6 +114,9 @@ int smc_cdc_msg_send(struct smc_connection *conn,
+>>   	union smc_host_cursor cfed;
+>>   	int rc;
+>>   
+>> +	if (unlikely(!READ_ONCE(conn->sndbuf_desc)))
+>> +		return -EINVAL;
+>> +
+> 
+> This return value doesn't seem right to me. Rather than en EINVAL
+> should this be something like a ENOBUFS just to make it easier to debug
+> when this issue is encountered?
+I agree.
+> 
+>>   	smc_cdc_add_pending_send(conn, pend);
+>>   
+>>   	conn->tx_cdc_seq++;
+> 
+> 
