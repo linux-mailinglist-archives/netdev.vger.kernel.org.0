@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C484A6AD129
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 23:08:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE98D6AD134
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 23:09:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229871AbjCFWIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 17:08:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33894 "EHLO
+        id S229975AbjCFWJm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 17:09:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229651AbjCFWIQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 17:08:16 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE2A528854
-        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 14:08:15 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id h11-20020a17090a2ecb00b00237c740335cso10074858pjs.3
-        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 14:08:15 -0800 (PST)
+        with ESMTP id S229973AbjCFWJh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 17:09:37 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 040AD4D616
+        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 14:09:35 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id bd34so6869598pfb.3
+        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 14:09:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112; t=1678140495;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112; t=1678140575;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:subject:cc:to:from:date:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ZdjNV87cxSkGCCuxqxx32JPjVG/7VfVasFbIpj9Fvdo=;
-        b=K8+oQRQmCdhmLpnEb+hCUiQ63uCpROLRfnTv65gzLXeRkViKOM1m3eU7JWuITKYK5I
-         fJMg0ulxMMjAW0xAMAosvZ2xWG4NUYEoEXTSLnSWB7+UFvvrZjD3QB18ykZxLCcVGE0W
-         ds6RiZ9TiTOu0ieI7IDNN/3wAlW/L2r6ILSfGqZnxc74j/3HV/kje1G4BDddZxEBGWas
-         wIPO7H5LSEjMlWo5UXoEp+R9EtBdbpA2IoB4JrrvAja9kpwvSA/WvPtjHRWxtm73S73t
-         oZeqQcU1KEFIIFz1z5vXPQNORVL9WBT4AJHU/il0VTFpIhAp32arDbvZvo1qdFb1kdi0
-         qMgw==
+        bh=4FQv5I8b8c0Yhh9L0GuxNm1K+n9nP+qDzpUI4KcMXto=;
+        b=gxgBFSDJo1Kd10sreCibZQZvhSj0TR+y1w/5nfbZCRYSDSQPjryfDWlObicl/bSLVQ
+         Uxkq8UY/bg55sgvLWtg2+HJifm83/l2YdftJh0JjP/i+7kXhAYfIqoy17MtgHDCvwwfM
+         0Iq6WT7DeO1WGsc6AGQg+tCS7Ewq11nXfCpRpvHQZA9TBhUMJz0RGrl2QARsqdqrjy89
+         FwqsN7D+cK8SQd9/F3U71yS7XsAkJDhgR5ZY741xtPZTHATioeznUQBjUkgx4nidgvSx
+         NmbWcPHq5REAKSrLXjtKQXLeIP8k/dttAmwR5ddzdS4h/8ApcFWQCUIVtgGGHbLSrhhL
+         FaiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678140495;
+        d=1e100.net; s=20210112; t=1678140575;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=ZdjNV87cxSkGCCuxqxx32JPjVG/7VfVasFbIpj9Fvdo=;
-        b=lwBPEoQIe1ReBEPSki35hG/mYOkI5Cq3FcHeeiGb/QoUTUHEG1OaRbNonKI2dybmBR
-         4faBxKLvgxkQopQCH/ELWprYsdKKrymvQ851gtD1xeabkSag4pQLzMp0c2iCHs5pnXpU
-         1ol+Jk9GC1TKXHaCAiaogxL8qWQgvajhTDkqun2m90upKBvdfNzZdojaTRy3hZJuQiFu
-         f+z4j1O9AThF+vpl9DzGTfrMgDvJW19sw1sNBNDXGSEMeuWWBSlPDlaUYWlx692TS28J
-         WCpSkmFY1g1j+wt6I6aV0EMX3B6sW6Fn45ooGONqcmTOFJGe+rOyYRi4YC+FFkAYo64c
-         o2Gw==
-X-Gm-Message-State: AO0yUKWvBcAeiaautSXFmTpJnzaCfaBBDFXNtaiXJbvN9bhZ92pbhIgQ
-        LZW346bCoDi8wjSVKNLHx8sFfHD69txzlCpaaIRuNA==
-X-Google-Smtp-Source: AK7set+pJS2SspDRq5Fs0NBFdPvzZys2gsriNHACGkc8N58vCQO+4QEt/szQFs6+kdAgqRWjLtvRQw==
-X-Received: by 2002:a17:903:41c3:b0:19e:699e:9b64 with SMTP id u3-20020a17090341c300b0019e699e9b64mr16462201ple.65.1678140495293;
-        Mon, 06 Mar 2023 14:08:15 -0800 (PST)
+        bh=4FQv5I8b8c0Yhh9L0GuxNm1K+n9nP+qDzpUI4KcMXto=;
+        b=TQ+CrRdA2tlSjroIwLjZlQd/lgBPklHjlnGXgc3lyGkBVAbpSc/dTeIcAVhOiDTEP9
+         lpWtkbP2fVm6Sys1kHDxqZ1+B8+tunBSjAYIcqw+NmJ4gMH4HyCJ85AnLG4re6YjYmjh
+         jtxKxs6aucp2AJeyLSPXV0rQDWVNSictYResf55tS7KtAOFLDPdWkflDPHFYlDhr2huJ
+         /6PIgfCpUTlMw+5IcUV9lQt1ukSOwm7WpVNJNAk+CEYug9D2fqkIa7JoADZuGWv/l/hR
+         4scE6APkAup32nC0jUQ2Snp9/q7xaQws1qxDIZfUv7AhCZA1Y9FUG/SduIyu+0/4v8fA
+         so9g==
+X-Gm-Message-State: AO0yUKXnDvk7QrI00Q86Mzah1LR0sS0lrShgona1xSVsAfwMVPqxGVg1
+        mg5ajkjwgeBAv4VG0R04demgSW6Sw1bOjsJRhoFO6w==
+X-Google-Smtp-Source: AK7set9vWYcEwuO8pC7CO5cdEeYpJ5tp7tburzauZKetb6SkadV29+u6aNmw8l0QmphsgD/19EmURQ==
+X-Received: by 2002:aa7:98c3:0:b0:5a8:e3dc:4337 with SMTP id e3-20020aa798c3000000b005a8e3dc4337mr12688135pfm.16.1678140575025;
+        Mon, 06 Mar 2023 14:09:35 -0800 (PST)
 Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id lc15-20020a170902fa8f00b0019eddc81b86sm216074plb.0.2023.03.06.14.08.14
+        by smtp.gmail.com with ESMTPSA id j18-20020aa78dd2000000b005d61829db4fsm6693113pfr.168.2023.03.06.14.09.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Mar 2023 14:08:15 -0800 (PST)
-Date:   Mon, 6 Mar 2023 14:08:12 -0800
+        Mon, 06 Mar 2023 14:09:34 -0800 (PST)
+Date:   Mon, 6 Mar 2023 14:09:31 -0800
 From:   Stephen Hemminger <stephen@networkplumber.org>
 To:     Mike Freemon <mfreemon@cloudflare.com>
 Cc:     netdev@vger.kernel.org
 Subject: Re: [RFC PATCH] Add a sysctl to allow TCP window shrinking in order
  to honor memory limits
-Message-ID: <20230306140812.17f35658@hermes.local>
+Message-ID: <20230306140931.4c21d871@hermes.local>
 In-Reply-To: <20230306213058.598516-1-mfreemon@cloudflare.com>
 References: <20230306213058.598516-1-mfreemon@cloudflare.com>
 MIME-Version: 1.0
@@ -73,31 +73,9 @@ X-Mailing-List: netdev@vger.kernel.org
 On Mon,  6 Mar 2023 15:30:58 -0600
 Mike Freemon <mfreemon@cloudflare.com> wrote:
 
-> +		 * RFC 7323, section 2.4, says there are instances when a retracted
-> +		 * window can be offered, and that TCP implementations MUST ensure
-> +		 * that they handle a shrinking window, as specified in RFC 1122.
-> +		 *
-> +		 * This patch implements that functionality, which is enabled by
-> +		 * setting the following sysctl.
-> +		 *
-> +		 * sysctl: net.ipv4.tcp_shrink_window
-> +		 *
-> +		 * This sysctl changes how the TCP window is calculated.
-> +		 *
-> +		 * If sysctl tcp_shrink_window is zero (the default value), then the
-> +		 * window is never shrunk.
-> +		 *
-> +		 * If sysctl tcp_shrink_window is non-zero, then the memory limit
-> +		 * set by autotuning is honored.  This requires that the TCP window
-> +		 * be shrunk ("retracted") as described in RFC 1122.
-> +		 *
-> +		 * For context and additional information about this patch, see the
-> +		 * blog post at TODO
+> +		if (net->ipv4.sysctl_tcp_shrink_window) {
+> +			if (free_space < (1 << tp->rx_opt.rcv_wscale))
+> +				return 0;
+> +		}
 
-This comment should be reworded such that it can be read at a much
-later date with out all the associated context described here.
-
-I.e. Get rid of "this patch part" and the blog post part.
-
-Best to just refer to tcp_shrink_window sysctl and put the details
-in the regular documentation spot (Documentation/networking/ip-sysctl.rst).
+Please combine if clauses with &&
