@@ -2,95 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A9DDB6ACE5D
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 20:44:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DAE576ACE75
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 20:52:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229707AbjCFToW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 14:44:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45876 "EHLO
+        id S230079AbjCFTwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 14:52:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230264AbjCFToO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 14:44:14 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8FF6D516
-        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 11:44:10 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id n5so6584727pfv.11
-        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 11:44:10 -0800 (PST)
+        with ESMTP id S230033AbjCFTwj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 14:52:39 -0500
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DDD647416
+        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 11:52:38 -0800 (PST)
+Received: by mail-lf1-x12f.google.com with SMTP id m6so14307531lfq.5
+        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 11:52:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112; t=1678131850;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=uDamLz1R1M2EvlCJNJ9a8cQq3vVkOtXVUA0EYL8IVDk=;
-        b=l6BrC34U1QJuFxxEt/uXf+VQiB2RO3q/GbyPWKUcJbbKo538Lpc27O3P7G7QbDFSzO
-         AjceZvW1po++YXDHMleqc9pz1p5PIdfyYvHBp+NzBQWKlktPcoLp4gVR+HO2YyBEc4t/
-         vp6yDnBAc2kMJy2Q9hg+7g9i1D6W75I7jE1r8Ab+QyZdnqX+HwnxJYTArQZ+auUQJ6Po
-         FfKGfhOFC3GOdTiIzOsM0DkQm4xvPZVWocRKwu1S5DCO9IeiIMkfWp3PUREJNMSL+yCG
-         w6Kib62DTx07mO5rO+XBYxhoijtWjOfOTzl5OYgjQXdk97DkAEEyDPPPC1NbWP28/XN4
-         bfPw==
+        d=gmail.com; s=20210112; t=1678132356;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=vK8bUdNSf/W3Da4uxUdWyBTkoZaxWgGFcA9KQyMW+lc=;
+        b=QMXOn5FGLPsohxN0MV3UiZWTs0N5uCl4naiA/CO2mqdFOPdyUJADxzUCLkJLSaDRpA
+         xPk2pkyefONdZj8weQDkQjVnQZ/3hCsqaXhBOWfGMQie4D5su9vKS0y+gzBQPuE13B0R
+         zhbd61uZiqW+rTgJcfm8vPLUv/AgdgQP2m/jhrPVpSzf2oMuPkn0xEIvFHmw+Q3WdNya
+         RjrgHGWFryGWZ6EdkLJ3qL9IfaxV9znYLZt00tHN1kgqqnDcDHB21CvyNyp2WYhGG2jY
+         XWyJCBtJDxeaMLIGx0gJP1mXwZoNlcicffzpJ+MYjC1JJoUaipqWw4i84hSNo6na9Ni/
+         qGpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678131850;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=uDamLz1R1M2EvlCJNJ9a8cQq3vVkOtXVUA0EYL8IVDk=;
-        b=57n/aHJeR5lfbSEjsDdva5L14T5fYiIdT9OgmPpKdsooflYGSobIHyByCmNY2tRWmS
-         j/30OT8iiZ5LTSicv5VsonnXBDWUS7Br4h45+FbUyMmbgnsKiN5YUBvRcQtORRC7HWxE
-         fs9qqJ/V1s17KbWgHQQ5O6CxgS9JU71yXDiW88cMYHMezX4nVd8UFLLEdU4ftnhHjEVF
-         Q2yIT314eJ4HNDqIPTv1ghTrKgOaHUZekgTFtXPtVKlkwN0PilUXnmBbPsCF7te9UCRK
-         OpSXFLkXANMVuHGEtHT5e1QNkIL3ZyI6jsbhaDrklzx23XaTfm8OOUk7USRwDfGcBGkF
-         G5+w==
-X-Gm-Message-State: AO0yUKU0O6UDZOowzsNKxqMUf2YT7rBzZOZz2gMthx7TrXBbCgnZSkS4
-        W4zjzlaQn/K55UUWtYX5h6jAJtqXWXjMZggGo4tOPQ==
-X-Google-Smtp-Source: AK7set8G6+bZt/ulnZE8eovXbH7LJXT+4Z6a97J84Zfh+olPY/BYH08s7EWreofbR+uPjJVplf3LNw==
-X-Received: by 2002:aa7:95a8:0:b0:5a8:5e6d:28d7 with SMTP id a8-20020aa795a8000000b005a85e6d28d7mr9800158pfk.0.1678131849879;
-        Mon, 06 Mar 2023 11:44:09 -0800 (PST)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id w8-20020aa78588000000b00593906a8843sm6799652pfn.176.2023.03.06.11.44.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Mar 2023 11:44:09 -0800 (PST)
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH net] mailmap: update entries for Stephen Hemminger
-Date:   Mon,  6 Mar 2023 11:44:05 -0800
-Message-Id: <20230306194405.108236-1-stephen@networkplumber.org>
-X-Mailer: git-send-email 2.39.2
+        d=1e100.net; s=20210112; t=1678132356;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=vK8bUdNSf/W3Da4uxUdWyBTkoZaxWgGFcA9KQyMW+lc=;
+        b=W2fcDM05zTJhHO8j1ql3cVYT7bupvJvruaUWcBmBqZQV/bb1Thg8ovG32K4X+HGJlM
+         ZlJykK9WiScejlazjtZAemh2Vy4dx5uO04lbnfOe42Z7XsVkGeeKXqmxGCLd/qQ1s/cl
+         ROEDg1mn1WTtpEsHERx7pL25YJiIh/9BFco1Z+6/OTPzbo0r7c+WB0+3MAJ4JbOcCCpz
+         l/A5g7j8Vl33u16R/pY9Os6kpvouBYVXuCKtVIL4440C+SEi1KxSiPBk7AbyvXpf0PFV
+         FzBTIB7euIwJKBTzVrGjgkegn8saB5wyT1+hXSVeIDPpYnU19A0nNNCXg/vV/7QQKZXJ
+         v/SQ==
+X-Gm-Message-State: AO0yUKWLUrbffP97OTUXwh7AqYijwAVKYS9yBAwo7xpwNvxvFliHYFEO
+        j5Z7fwIvhnMfsvNzZ5/ajnA6IL0RyZ1a4jplHwo=
+X-Google-Smtp-Source: AK7set9U1STubYe3bKa+z/Q//EDbhn9V8ErRoeO5JmVAQs+i8tdpRR5B2SfuShimTJ5ZoTRBymmvtftXKMlPeARKCM4=
+X-Received: by 2002:a19:7517:0:b0:4dd:805b:5b75 with SMTP id
+ y23-20020a197517000000b004dd805b5b75mr3644430lfe.7.1678132356240; Mon, 06 Mar
+ 2023 11:52:36 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Received: by 2002:a05:6022:31cc:b0:38:de19:723 with HTTP; Mon, 6 Mar 2023
+ 11:52:33 -0800 (PST)
+Reply-To: thajxoa@gmail.com
+From:   Thaj Xoa <rw49060@gmail.com>
+Date:   Mon, 6 Mar 2023 19:52:33 +0000
+Message-ID: <CACL3VFOdFHMMV2ehU2uE2qTPeunH-L+9GG6Lggnn2AEzQ_5Yfg@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=4.8 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Map all my old email addresses to current address.
-
-Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
----
- .mailmap | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/.mailmap b/.mailmap
-index a872c9683958..0ce99a1fa24f 100644
---- a/.mailmap
-+++ b/.mailmap
-@@ -409,7 +409,10 @@ Shuah Khan <shuah@kernel.org> <shuah.kh@samsung.com>
- Simon Arlott <simon@octiron.net> <simon@fire.lp0.eu>
- Simon Kelley <simon@thekelleys.org.uk>
- Stéphane Witzmann <stephane.witzmann@ubpmes.univ-bpclermont.fr>
--Stephen Hemminger <shemminger@osdl.org>
-+Stephen Hemminger <stephen@networkplumber.org> <shemminger@linux-foundation.org>
-+Stephen Hemminger <stephen@networkplumber.org> <shemminger@osdl.org>
-+Stephen Hemminger <stephen@networkplumber.org> <sthemmin@microsoft.com>
-+Stephen Hemminger <stephen@networkplumber.org> <sthemmin@vyatta.com>
- Steve Wise <larrystevenwise@gmail.com> <swise@chelsio.com>
- Steve Wise <larrystevenwise@gmail.com> <swise@opengridcomputing.com>
- Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
 -- 
-2.39.2
+Dear Friend,
 
+How are you today, I have an important message for you just get back
+for more details.
+
+Sincerely,
+Mr Thaj Xoa
