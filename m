@@ -2,316 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F15E6ACED3
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 21:05:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E3B36ACEE6
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 21:11:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230201AbjCFUFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 15:05:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46112 "EHLO
+        id S230374AbjCFULB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 15:11:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230464AbjCFUFD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 15:05:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B2016A42C
-        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 12:05:01 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD03F61147
-        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 20:05:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E31A8C433EF;
-        Mon,  6 Mar 2023 20:04:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678133100;
-        bh=pQfKzfuB5e+RmakuVbb6WR7bHiRaCztu08po00Zv++s=;
-        h=From:To:Cc:Subject:Date:From;
-        b=e/bPZtqIXY1TlhvdNaIzRFrWezYRcOD+UTTsutex7+dh2FQ9c8Q1GatN21VXyNUFQ
-         ybQRhh9JePnnsGn+H8KBD2gTR0o6jtLx+gX3fVxPkbXS5bItKIcgOuO1QYhH1ZF8ip
-         0wZp5O9o6ZcGh/h787UNKJlDndtXgcqGhNCxIXh4bBpzDyQ3WAXzbLFhz2O7xZSHPv
-         o7yEInhQyJagykac4xYIH6V62d8XxPBTZvyppZg2XaXM8zzni+G4X1BrSM+GcBd7rW
-         esy2XJumZF9cC54pxPaE9zTPy1YSicv1d8riPXfAkgEpZVOucybeNOS6G+HNY2XtKC
-         LN7tGlHGHfW4A==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-Subject: [PATCH net] ynl: re-license uniformly under GPL-2.0 OR BSD-3-Clause
-Date:   Mon,  6 Mar 2023 12:04:57 -0800
-Message-Id: <20230306200457.3903854-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.39.2
+        with ESMTP id S230306AbjCFULA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 15:11:00 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C5C634322;
+        Mon,  6 Mar 2023 12:09:44 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id v11so11734350plz.8;
+        Mon, 06 Mar 2023 12:09:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678133383;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=6/LQ22SxCIaIMKCmzqtubiDIW3rGorKjMWE5QuR4ZXc=;
+        b=fHyBqUUng0UtV2DrPjYsCsxUdTJ0m92kQd6HPV9pj4B7tkHIl2tI/EGKc1+lBqHwWr
+         dS+YnXVZUQAQdgrw4g/nsX3PlB3PCAA1/fKNTO3g6Pa8BlX0xwcwOHuJQp/o4Ftt06U7
+         SCwmAdgtzvw7JEjy3zW8BDcHQjKudPCgkjuRafuzM42A+0bK0f+jnrbQxPtb0okVQ2/A
+         nccDT5T4/ir/zLCsOtcqRbz7FIVzqeNDs+zWimcQahkKSDSwCsxVAh0bcEzP1akiZNMw
+         f6M+0CT4biDiU1LRo58zXen/y5TeCXYFQqRnUw3sZzwnXJ2+PEeKDAxWlPM+rpBS1ZJB
+         Cbcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678133383;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=6/LQ22SxCIaIMKCmzqtubiDIW3rGorKjMWE5QuR4ZXc=;
+        b=PRo+FPdfuwtDs12zKsZKFA+Ngb4q7NKiccghuKRKdA2pK6hXgoNKBAjssOgKvDEvMK
+         kOdW5j1lIYhwuhvrp8sZtZH+8Jjb06IXhFZwnnRK9ehw+gC5yMm/p8LQGwAlFW8/w555
+         KXu9baJR11KYcEtmjUE/VCscG7L13XObrUc51mTEHstKKsdNo/eAH/ZyGzKC/XaQlj99
+         2pYUqxjRBtTj8PrHP9qUusyh+eMbYZuriGm2X4UIDFCK7eKvr0joi1g/6hxlCruFJ9dl
+         +Ktt9sD+G5xgiNVzAbWsPh1FKyTbpifWtKHKeJNSJwtAJkvoZRy0KuijWqy3yQzL1MF8
+         REkw==
+X-Gm-Message-State: AO0yUKXVZC4homHKoDTlXwvACdovSEIychLf29BmclaoemL2MAk8XTJq
+        lOZB7YomCXQfTt4ZIdcA/cI=
+X-Google-Smtp-Source: AK7set8ml1Zwwn2Jgrqz4SIpPButPySeJkHFErNLtXD+4bzwyvrMYjJswOKnxcAA24bZzTL44s7Ohw==
+X-Received: by 2002:a17:902:ea0c:b0:19a:727e:d4f3 with SMTP id s12-20020a170902ea0c00b0019a727ed4f3mr18574527plg.5.1678133383608;
+        Mon, 06 Mar 2023 12:09:43 -0800 (PST)
+Received: from vernon-pc ([49.67.2.142])
+        by smtp.gmail.com with ESMTPSA id v4-20020a1709029a0400b00198b01b412csm7059281plp.303.2023.03.06.12.09.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Mar 2023 12:09:43 -0800 (PST)
+Date:   Tue, 7 Mar 2023 04:09:37 +0800
+From:   Vernon Yang <vernon2gm@gmail.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     tytso@mit.edu, Jason@zx2c4.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        jejb@linux.ibm.com, martin.petersen@oracle.com,
+        yury.norov@gmail.com, andriy.shevchenko@linux.intel.com,
+        linux@rasmusvillemoes.dk, james.smart@broadcom.com,
+        dick.kennedy@broadcom.com, linux-kernel@vger.kernel.org,
+        wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
+        linux-scsi@vger.kernel.org
+Subject: Re: [PATCH 3/5] scsi: lpfc: fix lpfc_cpu_affinity_check() if no
+ further cpus set
+Message-ID: <ZAZIgcpEBE7HXBuy@vernon-pc>
+References: <20230306160651.2016767-1-vernon2gm@gmail.com>
+ <20230306160651.2016767-4-vernon2gm@gmail.com>
+ <CAHk-=wj73=Os1p=W7D2va=Rd81ZKvjb35yWgXQNgn1hXNRpAbw@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <CAHk-=wj73=Os1p=W7D2va=Rd81ZKvjb35yWgXQNgn1hXNRpAbw@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I was intending to make all the Netlink Spec code BSD-3-Clause
-to ease the adoption but it appears that:
- - I fumbled the uAPI and used "GPL WITH uAPI note" there
- - it gives people pause as they expect GPL in the kernel
-As suggested by Chuck re-license under dual. This gives us benefit
-of full BSD freedom while fulfilling the broad "kernel is under GPL"
-expectations.
+On Mon, Mar 06, 2023 at 10:48:04AM -0800, Linus Torvalds wrote:
+> On Mon, Mar 6, 2023 at 8:07 AM Vernon Yang <vernon2gm@gmail.com> wrote:
+> >
+> > -                               if (new_cpu == nr_cpumask_bits)
+> > +                               if (new_cpu >= nr_cpumask_bits)
+>
+> This all should use "nr_cpu_ids", not "nr_cpumask_bits".
+>
+> But I really suspect that it should all be rewritten to not do that
+> thing over and over, but just use a helper function for it.
+>
+>   int lpfc_next_present_cpu(int n, int alternate)
+>   {
+>         n = cpumask_next(n, cpu_present_mask);
+>         if (n >= nr_cpu_ids)
+>                 n = alternate;
+>         return n;
+>   }
+>
+> and then you could just use
+>
+>         start_cpu = lpfc_next_present_cpu(new_cpu, first_cpu);
 
-Link: https://lore.kernel.org/all/20230304120108.05dd44c5@kernel.org/
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
---
-CC: Tariq Toukan <tariqt@nvidia.com>
-CC: Lorenzo Bianconi <lorenzo@kernel.org>
+OK, thanks you very much.
 
-Tariq, Lorenzo, can I have your acks?
----
- Documentation/netlink/genetlink-c.yaml        | 2 +-
- Documentation/netlink/genetlink-legacy.yaml   | 2 +-
- Documentation/netlink/genetlink.yaml          | 2 +-
- Documentation/netlink/specs/ethtool.yaml      | 2 ++
- Documentation/netlink/specs/fou.yaml          | 2 ++
- Documentation/netlink/specs/netdev.yaml       | 2 ++
- Documentation/userspace-api/netlink/specs.rst | 3 +++
- include/uapi/linux/fou.h                      | 2 +-
- include/uapi/linux/netdev.h                   | 2 +-
- net/core/netdev-genl-gen.c                    | 2 +-
- net/core/netdev-genl-gen.h                    | 2 +-
- net/ipv4/fou_nl.c                             | 2 +-
- net/ipv4/fou_nl.h                             | 2 +-
- tools/include/uapi/linux/netdev.h             | 2 +-
- tools/net/ynl/cli.py                          | 2 +-
- tools/net/ynl/lib/__init__.py                 | 2 +-
- tools/net/ynl/lib/nlspec.py                   | 2 +-
- tools/net/ynl/lib/ynl.py                      | 2 +-
- tools/net/ynl/ynl-gen-c.py                    | 7 ++++---
- tools/net/ynl/ynl-regen.sh                    | 2 +-
- 20 files changed, 28 insertions(+), 18 deletions(-)
+I'll send a second version shortly
 
-diff --git a/Documentation/netlink/genetlink-c.yaml b/Documentation/netlink/genetlink-c.yaml
-index bbcfa2472b04..f082a5ad7cf1 100644
---- a/Documentation/netlink/genetlink-c.yaml
-+++ b/Documentation/netlink/genetlink-c.yaml
-@@ -1,4 +1,4 @@
--# SPDX-License-Identifier: GPL-2.0
-+# SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
- %YAML 1.2
- ---
- $id: http://kernel.org/schemas/netlink/genetlink-c.yaml#
-diff --git a/Documentation/netlink/genetlink-legacy.yaml b/Documentation/netlink/genetlink-legacy.yaml
-index 5642925c4ceb..c6b8c77f7d12 100644
---- a/Documentation/netlink/genetlink-legacy.yaml
-+++ b/Documentation/netlink/genetlink-legacy.yaml
-@@ -1,4 +1,4 @@
--# SPDX-License-Identifier: GPL-2.0
-+# SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
- %YAML 1.2
- ---
- $id: http://kernel.org/schemas/netlink/genetlink-legacy.yaml#
-diff --git a/Documentation/netlink/genetlink.yaml b/Documentation/netlink/genetlink.yaml
-index 62a922755ce2..b2d56ab9e615 100644
---- a/Documentation/netlink/genetlink.yaml
-+++ b/Documentation/netlink/genetlink.yaml
-@@ -1,4 +1,4 @@
--# SPDX-License-Identifier: GPL-2.0
-+# SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
- %YAML 1.2
- ---
- $id: http://kernel.org/schemas/netlink/genetlink-legacy.yaml#
-diff --git a/Documentation/netlink/specs/ethtool.yaml b/Documentation/netlink/specs/ethtool.yaml
-index 35c462bce56f..18ecb7d90cbe 100644
---- a/Documentation/netlink/specs/ethtool.yaml
-+++ b/Documentation/netlink/specs/ethtool.yaml
-@@ -1,3 +1,5 @@
-+# SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-+
- name: ethtool
- 
- protocol: genetlink-legacy
-diff --git a/Documentation/netlink/specs/fou.yaml b/Documentation/netlink/specs/fou.yaml
-index cca4cf98f03a..cff104288723 100644
---- a/Documentation/netlink/specs/fou.yaml
-+++ b/Documentation/netlink/specs/fou.yaml
-@@ -1,3 +1,5 @@
-+# SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-+
- name: fou
- 
- protocol: genetlink-legacy
-diff --git a/Documentation/netlink/specs/netdev.yaml b/Documentation/netlink/specs/netdev.yaml
-index ba9ee13cf729..24de747b5344 100644
---- a/Documentation/netlink/specs/netdev.yaml
-+++ b/Documentation/netlink/specs/netdev.yaml
-@@ -1,3 +1,5 @@
-+# SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-+
- name: netdev
- 
- doc:
-diff --git a/Documentation/userspace-api/netlink/specs.rst b/Documentation/userspace-api/netlink/specs.rst
-index 32e53328d113..2122e0c4a399 100644
---- a/Documentation/userspace-api/netlink/specs.rst
-+++ b/Documentation/userspace-api/netlink/specs.rst
-@@ -24,6 +24,9 @@ YAML specifications can be found under ``Documentation/netlink/specs/``
- This document describes details of the schema.
- See :doc:`intro-specs` for a practical starting guide.
- 
-+All specs must be licensed under ``GPL-2.0-only OR BSD-3-Clause``
-+to allow for easy adoption in user space code.
-+
- Compatibility levels
- ====================
- 
-diff --git a/include/uapi/linux/fou.h b/include/uapi/linux/fou.h
-index 19ebbef41a63..5041c3598493 100644
---- a/include/uapi/linux/fou.h
-+++ b/include/uapi/linux/fou.h
-@@ -1,4 +1,4 @@
--/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+/* SPDX-License-Identifier: (GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause */
- /* Do not edit directly, auto-generated from: */
- /*	Documentation/netlink/specs/fou.yaml */
- /* YNL-GEN uapi header */
-diff --git a/include/uapi/linux/netdev.h b/include/uapi/linux/netdev.h
-index 588391447bfb..8c4e3e536c04 100644
---- a/include/uapi/linux/netdev.h
-+++ b/include/uapi/linux/netdev.h
-@@ -1,4 +1,4 @@
--/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+/* SPDX-License-Identifier: (GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause */
- /* Do not edit directly, auto-generated from: */
- /*	Documentation/netlink/specs/netdev.yaml */
- /* YNL-GEN uapi header */
-diff --git a/net/core/netdev-genl-gen.c b/net/core/netdev-genl-gen.c
-index 48812ec843f5..9e10802587fc 100644
---- a/net/core/netdev-genl-gen.c
-+++ b/net/core/netdev-genl-gen.c
-@@ -1,4 +1,4 @@
--// SPDX-License-Identifier: BSD-3-Clause
-+// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
- /* Do not edit directly, auto-generated from: */
- /*	Documentation/netlink/specs/netdev.yaml */
- /* YNL-GEN kernel source */
-diff --git a/net/core/netdev-genl-gen.h b/net/core/netdev-genl-gen.h
-index b16dc7e026bb..2c5fc7d1e8a7 100644
---- a/net/core/netdev-genl-gen.h
-+++ b/net/core/netdev-genl-gen.h
-@@ -1,4 +1,4 @@
--/* SPDX-License-Identifier: BSD-3-Clause */
-+/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
- /* Do not edit directly, auto-generated from: */
- /*	Documentation/netlink/specs/netdev.yaml */
- /* YNL-GEN kernel header */
-diff --git a/net/ipv4/fou_nl.c b/net/ipv4/fou_nl.c
-index 6c3820f41dd5..5c14fe030eda 100644
---- a/net/ipv4/fou_nl.c
-+++ b/net/ipv4/fou_nl.c
-@@ -1,4 +1,4 @@
--// SPDX-License-Identifier: BSD-3-Clause
-+// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
- /* Do not edit directly, auto-generated from: */
- /*	Documentation/netlink/specs/fou.yaml */
- /* YNL-GEN kernel source */
-diff --git a/net/ipv4/fou_nl.h b/net/ipv4/fou_nl.h
-index b7a68121ce6f..58b1e1ed4b3b 100644
---- a/net/ipv4/fou_nl.h
-+++ b/net/ipv4/fou_nl.h
-@@ -1,4 +1,4 @@
--/* SPDX-License-Identifier: BSD-3-Clause */
-+/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
- /* Do not edit directly, auto-generated from: */
- /*	Documentation/netlink/specs/fou.yaml */
- /* YNL-GEN kernel header */
-diff --git a/tools/include/uapi/linux/netdev.h b/tools/include/uapi/linux/netdev.h
-index 588391447bfb..8c4e3e536c04 100644
---- a/tools/include/uapi/linux/netdev.h
-+++ b/tools/include/uapi/linux/netdev.h
-@@ -1,4 +1,4 @@
--/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+/* SPDX-License-Identifier: (GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause */
- /* Do not edit directly, auto-generated from: */
- /*	Documentation/netlink/specs/netdev.yaml */
- /* YNL-GEN uapi header */
-diff --git a/tools/net/ynl/cli.py b/tools/net/ynl/cli.py
-index db410b74d539..ffaa8038aa8c 100755
---- a/tools/net/ynl/cli.py
-+++ b/tools/net/ynl/cli.py
-@@ -1,5 +1,5 @@
- #!/usr/bin/env python3
--# SPDX-License-Identifier: BSD-3-Clause
-+# SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
- 
- import argparse
- import json
-diff --git a/tools/net/ynl/lib/__init__.py b/tools/net/ynl/lib/__init__.py
-index 3c73f59eabab..a2cb8b16d6f1 100644
---- a/tools/net/ynl/lib/__init__.py
-+++ b/tools/net/ynl/lib/__init__.py
-@@ -1,4 +1,4 @@
--# SPDX-License-Identifier: BSD-3-Clause
-+# SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
- 
- from .nlspec import SpecAttr, SpecAttrSet, SpecFamily, SpecOperation
- from .ynl import YnlFamily
-diff --git a/tools/net/ynl/lib/nlspec.py b/tools/net/ynl/lib/nlspec.py
-index 9d394e50de23..0a2cfb5862aa 100644
---- a/tools/net/ynl/lib/nlspec.py
-+++ b/tools/net/ynl/lib/nlspec.py
-@@ -1,4 +1,4 @@
--# SPDX-License-Identifier: BSD-3-Clause
-+# SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
- 
- import collections
- import importlib
-diff --git a/tools/net/ynl/lib/ynl.py b/tools/net/ynl/lib/ynl.py
-index 1c7411ee04dc..a842adc8e87e 100644
---- a/tools/net/ynl/lib/ynl.py
-+++ b/tools/net/ynl/lib/ynl.py
-@@ -1,4 +1,4 @@
--# SPDX-License-Identifier: BSD-3-Clause
-+# SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
- 
- import functools
- import os
-diff --git a/tools/net/ynl/ynl-gen-c.py b/tools/net/ynl/ynl-gen-c.py
-index 62f8f2c3c56c..c940ca834d3f 100755
---- a/tools/net/ynl/ynl-gen-c.py
-+++ b/tools/net/ynl/ynl-gen-c.py
-@@ -1,4 +1,5 @@
- #!/usr/bin/env python3
-+# SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
- 
- import argparse
- import collections
-@@ -2127,12 +2128,12 @@ _C_KW = {
- 
-     _, spec_kernel = find_kernel_root(args.spec)
-     if args.mode == 'uapi':
--        cw.p('/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */')
-+        cw.p('/* SPDX-License-Identifier: (GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause */')
-     else:
-         if args.header:
--            cw.p('/* SPDX-License-Identifier: BSD-3-Clause */')
-+            cw.p('/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */')
-         else:
--            cw.p('// SPDX-License-Identifier: BSD-3-Clause')
-+            cw.p('// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause')
-     cw.p("/* Do not edit directly, auto-generated from: */")
-     cw.p(f"/*\t{spec_kernel} */")
-     cw.p(f"/* YNL-GEN {args.mode} {'header' if args.header else 'source'} */")
-diff --git a/tools/net/ynl/ynl-regen.sh b/tools/net/ynl/ynl-regen.sh
-index 43989ae48ed0..74f5de1c2399 100755
---- a/tools/net/ynl/ynl-regen.sh
-+++ b/tools/net/ynl/ynl-regen.sh
-@@ -1,5 +1,5 @@
- #!/bin/bash
--# SPDX-License-Identifier: BSD-3-Clause
-+# SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
- 
- TOOL=$(dirname $(realpath $0))/ynl-gen-c.py
- 
--- 
-2.39.2
-
+>
+> or similar.
+>
+>               Linus
+>
+> PS. We "kind of" already have a helper function for this:
+> cpumask_next_wrap(). But it's really meant for a different pattern
+> entirely, so let's not confuse things.
