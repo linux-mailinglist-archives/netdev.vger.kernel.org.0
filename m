@@ -2,69 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76D4E6AB45D
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 02:42:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B889E6AB480
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 03:02:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229545AbjCFBmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Mar 2023 20:42:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34470 "EHLO
+        id S229628AbjCFCCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Mar 2023 21:02:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbjCFBmn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Mar 2023 20:42:43 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B2E311168
-        for <netdev@vger.kernel.org>; Sun,  5 Mar 2023 17:42:42 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id t11so10760778lfr.1
-        for <netdev@vger.kernel.org>; Sun, 05 Mar 2023 17:42:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678066960;
-        h=to:subject:message-id:date:from:sender:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=8jX4UTEXnl4YI4Cr0l4r6X7ymfDJgVwbo9qxCR/3gxY=;
-        b=nRsJ7bfDj/9/VScnrBUglHluWAmKGeY8EFwYpldSVU7eg786oV/IgtwfzMqjnkxkh/
-         UwwaWEpHrmBOm122LIc9ErJoPuJGT2+jZt4NpGseBi/JHmuQjYmsRVA+7+jN/VGiapas
-         IIwvA2TilWk9X0/Mx/SymgkE3V7rmoRyFQx5oNO+Suhr9CIrS01OfvPJX7wvLCkCo54B
-         Wu0Ct6GHaUCqrIHwmG8dlgj7o04X1GrPnxFJeoihbDUFuaLKpdBlpjjKSr7+Fabi09Nn
-         Bm11joa67nsyXy5mKm9oHNHl8BI1LrA5bxvQX6eDWI0/qla3Y15XT5H/5s+2XwUjnraZ
-         YXXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678066960;
-        h=to:subject:message-id:date:from:sender:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=8jX4UTEXnl4YI4Cr0l4r6X7ymfDJgVwbo9qxCR/3gxY=;
-        b=gznY4aP/QhBrvjG5RNLTL662fN1XrKa4f4A8Fb+vN+6TOeQRpmJ5L1Bkqn83JOTdMr
-         KMmLqNXVmSPCnHBhLog3yNH4QPO0F4GblIyorJruDuyn/8c3ZG5A5Moa72bB4ZYWlmsc
-         7muoGYQOuAhbrGKggs9hYuLtqkJvh6pcj3UiojjFdUaQX2MWXFls8gf9CCX7XJRJuXLW
-         jeMQsB6Or7ZlMlNjqC6XGiIH+cYh0psIS1KzxHq32YE3wD4xdS8YOyiT9ehLepUmODrs
-         m9XE+znJ7ROlUGo6CQetT03xe8jp6O2Pd30GvRWgm6MB481HGf34oWv2G/y4675rjNRg
-         SGxA==
-X-Gm-Message-State: AO0yUKUWMbNXbG2ns+q8RpiLUdhycW6rvnNWaEKoOTzgZIqdLBzCaG5N
-        SmqB8GLVmXYmijog9mfukneYdq2+qUfwixLVwbM=
-X-Google-Smtp-Source: AK7set/80EjQOWkEWe4+yJjDGV5HUaR8R4mpXsbU91OOEDnzIE0wYBvKzqU7Rtwg+km/+1at5b93FoFgEHnkJNWlMCA=
-X-Received: by 2002:ac2:5de1:0:b0:4dd:af74:fe17 with SMTP id
- z1-20020ac25de1000000b004ddaf74fe17mr2656093lfq.7.1678066959747; Sun, 05 Mar
- 2023 17:42:39 -0800 (PST)
+        with ESMTP id S229540AbjCFCCi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Mar 2023 21:02:38 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56C0212853;
+        Sun,  5 Mar 2023 18:02:36 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7155860B67;
+        Mon,  6 Mar 2023 02:02:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34FC7C433D2;
+        Mon,  6 Mar 2023 02:02:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678068155;
+        bh=Z/pfCgpFoEEHv7JcHJ6XnWQ3ENGLr+0L1mCke+Jm2IQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=h1qn3Qnq9ADu9N5IFa3vlUdv+8/g8WhMnFTZ0mkEx/YORQUtbGCzGpwUUxsouVJM7
+         JHCM38DmbjZWOmy4AZjo5nvWw32qJaYF/8uT11+Ksa2VYAbofgRpjt3O9T0WnEzi+k
+         bG7MaoDj9shn7Wc/bZ/4hpyjR3YWQTGfI9Hwvt3RZhiji27G7Ex/ywiAwNo4CaDWM2
+         OhBbQM7xPgatwh2lY6CLsiNHoovMflRhW+f6C8QhPP17AHUsw25uNx7Poqx3G+8pFy
+         qspD/tG3xiuZ8Lh3+A6aYfOqFIE1ZrIH1gP0i6qBmbe0W7UFBeib2XvCxHcFUmLwQG
+         LMimPrjLJfVdA==
+Date:   Mon, 6 Mar 2023 10:02:26 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Abel Vesa <abelvesa@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        kernel@pengutronix.de, Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Russell King <linux@armlinux.org.uk>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 00/19] ARM: imx: make Ethernet refclock configurable
+Message-ID: <20230306020226.GC143566@dragon>
+References: <20230131084642.709385-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Sender: osujinonyc@gmail.com
-Received: by 2002:ab3:66cb:0:b0:222:439f:bafd with HTTP; Sun, 5 Mar 2023
- 17:42:39 -0800 (PST)
-From:   "Mrs. Rabi Affason Marcus" <affasonrabi@gmail.com>
-Date:   Sun, 5 Mar 2023 17:42:39 -0800
-X-Google-Sender-Auth: 54Zd8whoov_QbMI7h3a29WWwTCo
-Message-ID: <CALES-bFg=BZO74USROOEX6UMxAaiSsc9+epVSBKmjfRR-jzqwg@mail.gmail.com>
-Subject: DID YOU RECEIVED MY PREVIOUS NOTIFICATION?
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=3.8 required=5.0 tests=BAYES_99,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,SUBJ_ALL_CAPS,
-        T_HK_NAME_FM_MR_MRS autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: ***
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230131084642.709385-1-o.rempel@pengutronix.de>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello good morning from here and how are you doing today? Please did
-you received my previous notification?
+On Tue, Jan 31, 2023 at 09:46:23AM +0100, Oleksij Rempel wrote:
+> changes v3:
+> - add Reviewed-by: Abel Vesa <abel.vesa@linaro.org>
+> - rebase on top of abelvesa/for-next
+> 
+> changes v2:
+> - remove "ARM: imx6q: use of_clk_get_by_name() instead of_clk_get() to
+>   get ptp clock" patch
+> - fix build warnings
+> - add "Acked-by: Lee Jones <lee@kernel.org>"
+> - reword some commits as suggested by Fabio
+> 
+> Most of i.MX SoC variants have configurable FEC/Ethernet reference
+> lock
+> used by RMII specification. This functionality is located in the
+> general purpose registers (GRPx) and till now was not implemented as
+> part of SoC clock tree.
+> 
+> With this patch set, we move forward and add this missing functionality
+> to some of i.MX clk drivers. So, we will be able to configure clock
+> opology
+> by using devicetree and be able to troubleshoot clock dependencies
+> by using clk_summary etc.
+> 
+> Currently implemented and tested i.MX6Q, i.MX6DL and i.MX6UL variants.
+> 
+> 
+> Oleksij Rempel (19):
+>   clk: imx: add clk-gpr-mux driver
+>   clk: imx6q: add ethernet refclock mux support
+>   ARM: imx6q: skip ethernet refclock reconfiguration if enet_clk_ref is
+>     present
+>   ARM: dts: imx6qdl: use enet_clk_ref instead of enet_out for the FEC
+>     node
+>   ARM: dts: imx6dl-lanmcu: configure ethernet reference clock parent
+>   ARM: dts: imx6dl-alti6p: configure ethernet reference clock parent
+>   ARM: dts: imx6dl-plybas: configure ethernet reference clock parent
+>   ARM: dts: imx6dl-plym2m: configure ethernet reference clock parent
+>   ARM: dts: imx6dl-prtmvt: configure ethernet reference clock parent
+>   ARM: dts: imx6dl-victgo: configure ethernet reference clock parent
+>   ARM: dts: imx6q-prtwd2: configure ethernet reference clock parent
+>   ARM: dts: imx6qdl-skov-cpu: configure ethernet reference clock parent
+>   ARM: dts: imx6dl-eckelmann-ci4x10: configure ethernet reference clock
+>     parent
+>   clk: imx: add imx_obtain_fixed_of_clock()
+>   clk: imx6ul: fix enet1 gate configuration
+>   clk: imx6ul: add ethernet refclock mux support
+>   ARM: dts: imx6ul: set enet_clk_ref to CLK_ENETx_REF_SEL
+>   ARM: mach-imx: imx6ul: remove not optional ethernet refclock overwrite
+>   ARM: dts: imx6ul-prti6g: configure ethernet reference clock parent
+
+Applied all mach-imx and DTS ones, thanks!
