@@ -2,92 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E57D06AC5D2
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 16:46:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3693B6AC5ED
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 16:52:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230425AbjCFPqY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 10:46:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53358 "EHLO
+        id S230310AbjCFPwV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 10:52:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229843AbjCFPqW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 10:46:22 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A85FE2D14F;
-        Mon,  6 Mar 2023 07:45:59 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id i34so40428581eda.7;
-        Mon, 06 Mar 2023 07:45:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678117556;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=+agbrQBr9UIR6u+yd/9aPdKOrcjr4SJiOd6RvbJ917E=;
-        b=Y77j9wNfCqhsQgS5VtBqGxkr8fNqSRIiwr7uASxDqh41IHEK6k6P0iDCMIQ010xLN8
-         8gGCpcmgTFWfiJ61RPep8tFG0/ivQG1G0DByq8/8QDtpvocC4GkMyu04ddS/cWmT/7s5
-         06n64qwzdpI34bvi8Pj6WzfCuLgjEmFW1lL5RTSoRz4fVk65VA4E67Cyo7tqAufgQz2U
-         E9UvW3OpZaef7UqqVnqAcvGJ1yeVay1LIstSzDk8cIS73hReozWfns/A3W4VRwZEniRh
-         zvQqrnG7Bl4V/uGRce4XXabZsWlm40LofmGGxVRT6yVCi9SArylPJDlUqdOH6XchBb28
-         zl9w==
+        with ESMTP id S229757AbjCFPwU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 10:52:20 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 326273344C
+        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 07:51:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1678117888;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Q86XLZ7Q4ZHp1CUGcCN/NjLhC2ggJRWLx1s//bOcLDM=;
+        b=IDGY3v4CGTQZ5idFWVW87EHcy0lVva+Ckm1QP33JE4zD1o0xlMWDuXOwOCDMlbt0PLkbsw
+        cuVE2g+sX2EJtbLsfVEBTjN60pf/ea00y0B1DV8muqwcvqkb291HZ7z4hWMKGOsuizk4Rt
+        32ElIB+cwlfCStYB3uVtvK3uVAFrA3w=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-294-gx1-qRXEMyqSOVpOGtTsOA-1; Mon, 06 Mar 2023 10:51:27 -0500
+X-MC-Unique: gx1-qRXEMyqSOVpOGtTsOA-1
+Received: by mail-qt1-f200.google.com with SMTP id c5-20020ac85185000000b003bfae3b8051so5465071qtn.0
+        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 07:51:27 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678117556;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=+agbrQBr9UIR6u+yd/9aPdKOrcjr4SJiOd6RvbJ917E=;
-        b=78bRD269mz/8LGKcV1+dZdzg7bzjpfx6NYkY7uJB/hp6z7zVlQw2d4terV44mkajbn
-         pbI4R9SGeznrQsQiC1enUToD6Kdxzt9YhBQg+m9t8db3rCITZWGPmmFtEws/pvmwKGi0
-         GStyB4f3ftnqXaIo9cmFW5IRBdy202QricYn+zMxtUd0myWmvtktyh0WiNcImnCeaODj
-         yyNoAMG723FCuyzwo6eaKA5jR/N2w3MgFDCp6K5C8Xgy+K4HuWHOCe0oYTJy8u4RpSWV
-         +EdpCTbPTV2sHx30SO5CJvWysJ38ZmypcWGkAV2bpMcTNjumMVHU7GbOS1471l0KDTNY
-         ksaQ==
-X-Gm-Message-State: AO0yUKU6hp7PcI3qvs/2ZzyLjlfunqjFPAhnVPghu5O2WfBevPHj14h+
-        wL1dC7gSPAUZQpf8I91oeH4=
-X-Google-Smtp-Source: AK7set9BlqZGG5uxTwNphRDgJIRMh0nQJIjcZc4FuO0fw/8jOfMKvBhYTdg7oIcUFcf1w1KT+Ji3hw==
-X-Received: by 2002:aa7:d513:0:b0:4af:7f6e:297b with SMTP id y19-20020aa7d513000000b004af7f6e297bmr11260638edq.35.1678117555732;
-        Mon, 06 Mar 2023 07:45:55 -0800 (PST)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id j7-20020a17090643c700b008caaae1f1e1sm4686362ejn.110.2023.03.06.07.45.54
+        d=1e100.net; s=20210112; t=1678117887;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Q86XLZ7Q4ZHp1CUGcCN/NjLhC2ggJRWLx1s//bOcLDM=;
+        b=6NnzL1xwSYRpuZipYP4NrLMjrHDwr2ZFgZQMOol+/2886UULisI03JVv6OIjJ1YQPF
+         /wB0s8eYSelTudNWlOkWNxRQwacVJ/HOjd8pLP7Jwr5ubAU6n6jVnDwh/FDq86whizv2
+         lGaX9gDzsosqwQ+3xe1oG0ph3UWoJhUxGDm4WNvaDWLtYqq2YWR6ZeWPbEBzgPA26dxz
+         f0h/1BGkBfFuUaFKEFiNJ2ubG2Wv8qR7FsfnPpSSG2M0m3RhZvo+IZZTLhmYJvND943y
+         Pk9Zba+jr0JEyLMmC86m2QaAHddRegBBO6PAijv3RYYMiRae5+PbVk2W7BbXDW036hfE
+         bjzw==
+X-Gm-Message-State: AO0yUKUtZkjAD5jpTOPY7jIHdRwaA88Xqxr5i9X87g7GpJ2Wkp8mGDfH
+        HKp7rs3i0jRM1wPJBr2WQQgEZ/z0A+7AsTMMrHWz6/ajCIQ20vetQUGMJHDpE9921+UFBKUZjGw
+        Z43ukh/tSRhZSWIJC
+X-Received: by 2002:a05:622a:c:b0:3b9:bc8c:c207 with SMTP id x12-20020a05622a000c00b003b9bc8cc207mr26969673qtw.18.1678117886721;
+        Mon, 06 Mar 2023 07:51:26 -0800 (PST)
+X-Google-Smtp-Source: AK7set8J+A3R80v+MVqfE2WCygPas52Ry5LmPSFlnPMQvzMyOQV6nh5+6ZCsftO+pkisfBFlvJJ58Q==
+X-Received: by 2002:a05:622a:c:b0:3b9:bc8c:c207 with SMTP id x12-20020a05622a000c00b003b9bc8cc207mr26969642qtw.18.1678117886394;
+        Mon, 06 Mar 2023 07:51:26 -0800 (PST)
+Received: from sgarzare-redhat (host-82-57-51-170.retail.telecomitalia.it. [82.57.51.170])
+        by smtp.gmail.com with ESMTPSA id q17-20020ac84111000000b003bfa52112f9sm7805681qtl.4.2023.03.06.07.51.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Mar 2023 07:45:55 -0800 (PST)
-Date:   Mon, 6 Mar 2023 17:45:52 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     arinc9.unal@gmail.com
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        Mon, 06 Mar 2023 07:51:25 -0800 (PST)
+Date:   Mon, 6 Mar 2023 16:51:21 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseniy Krasnov <avkrasnov@sberdevices.ru>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Russell King <linux@armlinux.org.uk>,
-        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        =?utf-8?B?UmVuw6k=?= van Dorst <opensource@vdorst.com>,
-        Alexander Couzens <lynxis@fe80.eu>,
-        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
-        Richard van Schagen <richard@routerhints.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [RFC PATCH net] net: dsa: mt7530: move PLL setup out of port 6
- pad configuration
-Message-ID: <20230306154552.26o6sbwf3rfekcyz@skbuf>
-References: <20230304125453.53476-1-arinc.unal@arinc9.com>
- <20230304125453.53476-1-arinc.unal@arinc9.com>
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@sberdevices.ru, oxffffaa@gmail.com
+Subject: Re: [RFC PATCH v2 2/4] virtio/vsock: remove all data from sk_buff
+Message-ID: <20230306155121.7xwxzgxtle7qjbnc@sgarzare-redhat>
+References: <a7ab414b-5e41-c7b6-250b-e8401f335859@sberdevices.ru>
+ <dfadea17-a91e-105f-c213-a73f9731c8bd@sberdevices.ru>
+ <20230306120857.6flftb3fftmsceyl@sgarzare-redhat>
+ <b18e3b13-3386-e9ee-c817-59588e6d5fb6@sberdevices.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230304125453.53476-1-arinc.unal@arinc9.com>
- <20230304125453.53476-1-arinc.unal@arinc9.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+In-Reply-To: <b18e3b13-3386-e9ee-c817-59588e6d5fb6@sberdevices.ru>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -95,276 +86,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Arınç,
+On Mon, Mar 06, 2023 at 06:31:22PM +0300, Arseniy Krasnov wrote:
+>
+>
+>On 06.03.2023 15:08, Stefano Garzarella wrote:
+>> On Sun, Mar 05, 2023 at 11:07:37PM +0300, Arseniy Krasnov wrote:
+>>> In case of SOCK_SEQPACKET all sk_buffs are used once - after read some
+>>> data from it, it will be removed, so user will never read rest of the
+>>> data. Thus we need to update credit parameters of the socket like whole
+>>> sk_buff is read - so call 'skb_pull()' for the whole buffer.
+>>>
+>>> Fixes: 71dc9ec9ac7d ("virtio/vsock: replace virtio_vsock_pkt with sk_buff")
+>>> Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+>>> ---
+>>> net/vmw_vsock/virtio_transport_common.c | 2 +-
+>>> 1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> Maybe we could avoid this patch if we directly use pkt_len as I
+>> suggested in the previous patch.
+>Hm, may be we can avoid calling 'skb_pull()' here if 'virtio_transport_dec_rx_pkt()'
+>will use integer argument?
 
-On Sat, Mar 04, 2023 at 03:54:54PM +0300, arinc9.unal@gmail.com wrote:
-> From: Arınç ÜNAL <arinc.unal@arinc9.com>
-> 
-> Move the PLL setup of the MT7530 switch out of the pad configuration of
-> port 6 to mt7530_setup, after reset.
+Yep, exactly!
 
-it would have been good if this patch had done that and only that, no?
+>Just call 'virtio_transport_dec_rx_pkt(skb->len)'. skb
 
-> This fixes the improper initialisation of the switch when only port 5 is
-> used as a CPU port.
-> 
-> Add supported phy modes of port 5 on the PLL setup.
-> 
-> Remove now incorrect comment regarding P5 as GMAC5.
-> 
-> Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek MT7530 switch")
-> Fixes: 38f790a80560 ("net: dsa: mt7530: Add support for port 5")
-> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> ---
-> 
-> I'm trying to mimic this change by Alexander [0] for the MT7530 switch.
-> This is already the case for MT7530 and MT7531 on the MediaTek ethernet
-> driver on U-Boot [1] [2].
-> 
-> [0] https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=42bc4fafe359ed6b73602b7a2dba0dd99588f8ce
-> [1] https://github.com/u-boot/u-boot/blob/a94ab561e2f49a80d8579930e840b810ab1a1330/drivers/net/mtk_eth.c#L729
-> [2] https://github.com/u-boot/u-boot/blob/a94ab561e2f49a80d8579930e840b810ab1a1330/drivers/net/mtk_eth.c#L903
-> 
-> There are some parts I couldn't figure out myself with my limited C
-> knowledge. I've pointed them out on the code. Vladimir, could you help?
-> 
-> There is a lot of code which is only needed for port 6 or trgmii on port 6,
-> but runs whether port 6 or trgmii is used or not. For now, the best I can
-> do is to fix port 5 so it works without port 6 being used.
-> 
-> The U-Boot driver seems to be much more organised so it could be taken as
-> a reference to sort out this DSA driver further.
-> 
-> Also, now that the pad setup for mt7530 is also moved somewhere else, can
-> we completely get rid of @pad_setup?
-> 
-> Arınç
+It depends on how we call virtio_transport_inc_rx_pkt(). If we use
+hdr->len there I would use the same to avoid confusion. Plus that's the
+value the other peer sent us, so definitely the right value to increase
+fwd_cnt with. But if skb->len always reflects it, then that's fine.
 
-I don't like the strategy you used in this patch here, and I don't want
-to answer these questions just yet, because I'm not certain that my
-answers will be useful in the end.
+>is never returned to queue to read it again, so i think may be there is no sense for
+>extra call 'skb_pull'?
 
-> 
-> ---
->  drivers/net/dsa/mt7530.c | 46 +++++++++++++++++++++++++++++-----------
->  1 file changed, 34 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-> index 0e99de26d159..fb20ce4f443e 100644
-> --- a/drivers/net/dsa/mt7530.c
-> +++ b/drivers/net/dsa/mt7530.c
-> @@ -395,9 +395,8 @@ mt7530_fdb_write(struct mt7530_priv *priv, u16 vid,
->  
->  /* Setup TX circuit including relevant PAD and driving */
->  static int
-> -mt7530_pad_clk_setup(struct dsa_switch *ds, phy_interface_t interface)
-> +mt7530_pad_clk_setup(struct mt7530_priv *priv, phy_interface_t interface)
->  {
-> -	struct mt7530_priv *priv = ds->priv;
->  	u32 ncpo1, ssc_delta, trgint, i, xtal;
->  
->  	xtal = mt7530_read(priv, MT7530_MHWTRAP) & HWTRAP_XTAL_MASK;
-> @@ -409,9 +408,32 @@ mt7530_pad_clk_setup(struct dsa_switch *ds, phy_interface_t interface)
->  		return -EINVAL;
->  	}
->  
-> +	/* Is setting trgint to 0 really needed for the !trgint check? */
-> +	trgint = 0;
-> +
-> +	/* FIXME: run this switch if p5 is defined on the devicetree */
-> +	/* and change interface to the phy-mode of port 5 */
-> +	switch (interface) {
+Right!
 
-so this should be something like priv->p5_interface (assuming this is
-initialized by the time mt7530_pad_clk_setup() is called, which it isn't).
-
-> +	case PHY_INTERFACE_MODE_GMII:
-> +		/* PLL frequency: 125MHz */
-> +		ncpo1 = 0x0c80;
-> +		break;
-> +	case PHY_INTERFACE_MODE_MII:
-> +		break;
-
-so with priv->p5_interface == "mii", ncpo1 is uninitialized (will be
-potentially still initialized by the port 6 "switch" statement below).
-
-> +	case PHY_INTERFACE_MODE_RGMII:
-> +		/* PLL frequency: 125MHz */
-> +		ncpo1 = 0x0c80;
-> +		break;
-> +	default:
-> +		dev_err(priv->dev, "xMII interface %d not supported\n",
-> +			interface);
-> +		return -EINVAL;
-> +	}
-
-What method did you use to determine the ncpo1 values here? Are they
-coordinated with what p6 wants? I would expect to see a table with
-
-  priv->p5_interface        priv->p6_interface       ncpo1 value
-      gmii                     rgmii                     ???
-      mii                      rgmii                     ???
-      rgmii                    rgmii                     ???
-      gmii                     trgmii                    ???
-      mii                      trgmii                    ???
-      rgmii                    trgmii                    ???
-
-right now, you let the p6_interface logic overwrite the ncpo1 selected
-by the p5_interface logic like crazy, and it's not clear to me that this
-is what you want.
-
-This problem is way deeper than knowledge of the C language, your pseudo
-code simply does not describe what should happen in all combinations.
-
-From our private conversation dated Feb 08, I guess that what you're
-doing is also a useless complication and not what you truly want. What
-you truly want is for the CORE_GSWPLL_GRP2 register to be programmed
-regardless of whether port 6 is used or not.
-
-> +
-> +	/* FIXME: run this switch if p6 is defined on the devicetree */
-> +	/* and change interface to the phy-mode of port 6 */
->  	switch (interface) {
-
-same comment as above, this should approximate priv->p6_interface.
-
->  	case PHY_INTERFACE_MODE_RGMII:
-> -		trgint = 0;
->  		/* PLL frequency: 125MHz */
->  		ncpo1 = 0x0c80;
->  		break;
-> @@ -2172,7 +2194,11 @@ mt7530_setup(struct dsa_switch *ds)
->  		     SYS_CTRL_PHY_RST | SYS_CTRL_SW_RST |
->  		     SYS_CTRL_REG_RST);
->  
-> -	/* Enable Port 6 only; P5 as GMAC5 which currently is not supported */
-> +	/* Setup switch core pll */
-> +	/* FIXME: feed the phy-mode of port 5 and 6, if the ports are defined on the devicetree */
-> +	mt7530_pad_clk_setup(priv, interface);
-
-"interface" is completely uninitialized here.
-
-Sorry, I'm not reviewing this any further, because it obviously doesn't work.
-
-> +
-> +	/* Enable Port 6 */
->  	val = mt7530_read(priv, MT7530_MHWTRAP);
->  	val &= ~MHWTRAP_P6_DIS & ~MHWTRAP_PHY_ACCESS;
->  	val |= MHWTRAP_MANUAL;
-> @@ -2491,11 +2517,9 @@ static void mt7531_mac_port_get_caps(struct dsa_switch *ds, int port,
->  }
->  
->  static int
-> -mt753x_pad_setup(struct dsa_switch *ds, const struct phylink_link_state *state)
-> +mt7530_pad_setup(struct dsa_switch *ds, phy_interface_t interface)
->  {
-> -	struct mt7530_priv *priv = ds->priv;
-> -
-> -	return priv->info->pad_setup(ds, state->interface);
-> +	return 0;
->  }
->  
->  static int
-> @@ -2769,8 +2793,6 @@ mt753x_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
->  		if (priv->p6_interface == state->interface)
->  			break;
->  
-> -		mt753x_pad_setup(ds, state);
-> -
->  		if (mt753x_mac_config(ds, port, mode, state) < 0)
->  			goto unsupported;
->  
-> @@ -3187,7 +3209,7 @@ static const struct mt753x_info mt753x_table[] = {
->  		.phy_write_c22 = mt7530_phy_write_c22,
->  		.phy_read_c45 = mt7530_phy_read_c45,
->  		.phy_write_c45 = mt7530_phy_write_c45,
-> -		.pad_setup = mt7530_pad_clk_setup,
-> +		.pad_setup = mt7530_pad_setup,
->  		.mac_port_get_caps = mt7530_mac_port_get_caps,
->  		.mac_port_config = mt7530_mac_config,
->  	},
-> @@ -3199,7 +3221,7 @@ static const struct mt753x_info mt753x_table[] = {
->  		.phy_write_c22 = mt7530_phy_write_c22,
->  		.phy_read_c45 = mt7530_phy_read_c45,
->  		.phy_write_c45 = mt7530_phy_write_c45,
-> -		.pad_setup = mt7530_pad_clk_setup,
-> +		.pad_setup = mt7530_pad_setup,
-
-as a general rule, for bug fixes don't touch stuff that you don't need to touch
-
->  		.mac_port_get_caps = mt7530_mac_port_get_caps,
->  		.mac_port_config = mt7530_mac_config,
->  	},
-> -- 
-> 2.37.2
-> 
-
-Could you please let me know if this patch works, instead of what you've
-posted above? It does what you *said* you tried to do, aka it performs
-the initialization of CORE_GSWPLL_GRP2 independently of port 6 setup.
-There is a slight reordering of register writes with MT7530_P6ECR, but
-hopefully that doesn't bother anyone.
-
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 3a15015bc409..a508402c4ecb 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -393,6 +393,24 @@ mt7530_fdb_write(struct mt7530_priv *priv, u16 vid,
- 		mt7530_write(priv, MT7530_ATA1 + (i * 4), reg[i]);
- }
- 
-+/* Set up switch core clock for MT7530 */
-+static void mt7530_pll_setup(struct mt7530_priv *priv)
-+{
-+	/* Disable PLL */
-+	core_write(priv, CORE_GSWPLL_GRP1, 0);
-+
-+	/* Set core clock into 500Mhz */
-+	core_write(priv, CORE_GSWPLL_GRP2,
-+		   RG_GSWPLL_POSDIV_500M(1) |
-+		   RG_GSWPLL_FBKDIV_500M(25));
-+
-+	/* Enable PLL */
-+	core_write(priv, CORE_GSWPLL_GRP1,
-+		   RG_GSWPLL_EN_PRE |
-+		   RG_GSWPLL_POSDIV_200M(2) |
-+		   RG_GSWPLL_FBKDIV_200M(32));
-+}
-+
- /* Setup TX circuit including relevant PAD and driving */
- static int
- mt7530_pad_clk_setup(struct dsa_switch *ds, phy_interface_t interface)
-@@ -453,21 +471,6 @@ mt7530_pad_clk_setup(struct dsa_switch *ds, phy_interface_t interface)
- 	core_clear(priv, CORE_TRGMII_GSW_CLK_CG,
- 		   REG_GSWCK_EN | REG_TRGMIICK_EN);
- 
--	/* Setup core clock for MT7530 */
--	/* Disable PLL */
--	core_write(priv, CORE_GSWPLL_GRP1, 0);
--
--	/* Set core clock into 500Mhz */
--	core_write(priv, CORE_GSWPLL_GRP2,
--		   RG_GSWPLL_POSDIV_500M(1) |
--		   RG_GSWPLL_FBKDIV_500M(25));
--
--	/* Enable PLL */
--	core_write(priv, CORE_GSWPLL_GRP1,
--		   RG_GSWPLL_EN_PRE |
--		   RG_GSWPLL_POSDIV_200M(2) |
--		   RG_GSWPLL_FBKDIV_200M(32));
--
- 	/* Setup the MT7530 TRGMII Tx Clock */
- 	core_write(priv, CORE_PLL_GROUP5, RG_LCDDS_PCW_NCPO1(ncpo1));
- 	core_write(priv, CORE_PLL_GROUP6, RG_LCDDS_PCW_NCPO0(0));
-@@ -2196,6 +2199,8 @@ mt7530_setup(struct dsa_switch *ds)
- 		     SYS_CTRL_PHY_RST | SYS_CTRL_SW_RST |
- 		     SYS_CTRL_REG_RST);
- 
-+	mt7530_pll_setup(priv);
-+
- 	/* Enable Port 6 only; P5 as GMAC5 which currently is not supported */
- 	val = mt7530_read(priv, MT7530_MHWTRAP);
- 	val &= ~MHWTRAP_P6_DIS & ~MHWTRAP_PHY_ACCESS;
--- 
-2.34.1
+Thanks,
+Stefano
 
