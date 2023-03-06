@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A5F76AC82E
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 17:36:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CDF06AC830
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 17:36:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230034AbjCFQgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 11:36:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48090 "EHLO
+        id S230058AbjCFQgc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 11:36:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230092AbjCFQfr (ORCPT
+        with ESMTP id S230100AbjCFQfr (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 11:35:47 -0500
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBAFE37F2A;
-        Mon,  6 Mar 2023 08:35:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1E4638662;
+        Mon,  6 Mar 2023 08:35:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678120513; x=1709656513;
+  t=1678120514; x=1709656514;
   h=from:date:subject:mime-version:content-transfer-encoding:
    message-id:references:in-reply-to:to:cc;
-  bh=fkjGvDLGnqfWXqERgwLxoLJ8bMf+bRuRswHYc5L4n/I=;
-  b=UJ3ksJjuIjaJw6fnTj/xO4g3UNupBUPTesSgrb2wwUPaZLuWKULyDbEM
-   U78qAFvM7MK3cq/2pr+N6I45EfnaRvhR9RJUQXWyC8u2a5SABNRZj+16+
-   RNPmyKhgxoh3+WcSH+Yfy8Xzr0DYBk+YfNEzGrPi2pHVWbwZkiWcX2xcD
-   tN6+K71kCXPzSzs8GWvLOpKO1qmBmeu0tGprP1bloNMo/IKCb7P62asqz
-   Fl9ogLBJcr+jgBHwneaXrElhEz4/uqLaewEUYc9qBeHkDar0wkbFbH389
-   Ecp+HDRMGgTnVYHpG3ko8ltnibmVGdrCGdf2qvpAikQwNzZwTx98hXJv/
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="315998624"
+  bh=0eAGjVOQ2rbaK9zJyF59qMjxM1fjU52p32WNDpV9uis=;
+  b=m/RTaqTMyXDnIrWFH58wZy5g7vadgMyPgDutC8vUY6Q/kZvF6xz6tzxg
+   9Yu43xORSem409piPbNzl9yJYO5BkRcWIv3ZzGgfauuboGDM3X10842Q+
+   hlFty/C5yMgRYXvK7dZodDMqZbU9u8DJ8Cka98FR1lBTRd0LxpQ61jdgD
+   RfR8t8ODqIsy1+GYBC372CKwOweF6Yd/RnKjBhVnLxMaEAati35WzFf9G
+   6YpVcGG0FsyB6vD4Bjwlcr5ceASMSCRHnHs8UAHajLOz6xULkQ1A8l5c+
+   dfFFB77AkAMxSTVSYTr4PSfTVD7Ds74CIiTEB27yLICsYRsKng74N7Ljt
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="315998652"
 X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
-   d="scan'208";a="315998624"
+   d="scan'208";a="315998652"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 08:32:32 -0800
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 08:32:35 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="745132845"
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="745132872"
 X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
-   d="scan'208";a="745132845"
+   d="scan'208";a="745132872"
 Received: from lab-ah.igk.intel.com ([10.102.42.211])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 08:32:29 -0800
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 08:32:32 -0800
 From:   Andrzej Hajda <andrzej.hajda@intel.com>
-Date:   Mon, 06 Mar 2023 17:31:59 +0100
-Subject: [PATCH v4 03/10] lib/ref_tracker: add printing to memory buffer
+Date:   Mon, 06 Mar 2023 17:32:00 +0100
+Subject: [PATCH v4 04/10] lib/ref_tracker: remove warnings in case of
+ allocation failure
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230224-track_gt-v4-3-464e8ab4c9ab@intel.com>
+Message-Id: <20230224-track_gt-v4-4-464e8ab4c9ab@intel.com>
 References: <20230224-track_gt-v4-0-464e8ab4c9ab@intel.com>
 In-Reply-To: <20230224-track_gt-v4-0-464e8ab4c9ab@intel.com>
 To:     Jani Nikula <jani.nikula@linux.intel.com>,
@@ -71,137 +72,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In case one wants to show stats via debugfs.
+Library can handle allocation failures. To avoid allocation warnings
+__GFP_NOWARN has been added everywhere. Moreover GFP_ATOMIC has been
+replaced with GFP_NOWAIT in case of stack allocation on tracker free
+call.
 
 Signed-off-by: Andrzej Hajda <andrzej.hajda@intel.com>
 ---
- include/linux/ref_tracker.h |  8 +++++++
- lib/ref_tracker.c           | 56 ++++++++++++++++++++++++++++++++++++++-------
- 2 files changed, 56 insertions(+), 8 deletions(-)
+ lib/ref_tracker.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/ref_tracker.h b/include/linux/ref_tracker.h
-index a2cf1f6309adb2..2fdbfd2e14797a 100644
---- a/include/linux/ref_tracker.h
-+++ b/include/linux/ref_tracker.h
-@@ -50,6 +50,8 @@ void __ref_tracker_dir_print(struct ref_tracker_dir *dir,
- void ref_tracker_dir_print(struct ref_tracker_dir *dir,
- 			   unsigned int display_limit);
- 
-+int ref_tracker_dir_snprint(struct ref_tracker_dir *dir, char *buf, size_t size);
-+
- int ref_tracker_alloc(struct ref_tracker_dir *dir,
- 		      struct ref_tracker **trackerp, gfp_t gfp);
- 
-@@ -78,6 +80,12 @@ static inline void ref_tracker_dir_print(struct ref_tracker_dir *dir,
- {
- }
- 
-+static inline int ref_tracker_dir_snprint(struct ref_tracker_dir *dir,
-+					  char *buf, size_t size)
-+{
-+	return 0;
-+}
-+
- static inline int ref_tracker_alloc(struct ref_tracker_dir *dir,
- 				    struct ref_tracker **trackerp,
- 				    gfp_t gfp)
 diff --git a/lib/ref_tracker.c b/lib/ref_tracker.c
-index ab1253fde244ea..2ef4596b6b36f5 100644
+index 2ef4596b6b36f5..cae4498fcfd701 100644
 --- a/lib/ref_tracker.c
 +++ b/lib/ref_tracker.c
-@@ -62,8 +62,27 @@ ref_tracker_get_stats(struct ref_tracker_dir *dir, unsigned int limit)
- 	return stats;
- }
+@@ -189,7 +189,7 @@ int ref_tracker_alloc(struct ref_tracker_dir *dir,
+ 	unsigned long entries[REF_TRACKER_STACK_ENTRIES];
+ 	struct ref_tracker *tracker;
+ 	unsigned int nr_entries;
+-	gfp_t gfp_mask = gfp;
++	gfp_t gfp_mask = gfp | __GFP_NOWARN;
+ 	unsigned long flags;
  
--void __ref_tracker_dir_print(struct ref_tracker_dir *dir,
--			   unsigned int display_limit)
-+struct ostream {
-+	char *buf;
-+	int size, used;
-+};
-+
-+#define pr_ostream(stream, fmt, args...) \
-+({ \
-+	struct ostream *_s = (stream); \
-+\
-+	if (!_s->buf) { \
-+		pr_err(fmt, ##args); \
-+	} else { \
-+		int ret, len = _s->size - _s->used; \
-+		ret = snprintf(_s->buf + _s->used, len, pr_fmt(fmt), ##args); \
-+		_s->used += min(ret, len); \
-+	} \
-+})
-+
-+static void
-+__ref_tracker_dir_pr_ostream(struct ref_tracker_dir *dir,
-+			     unsigned int display_limit, struct ostream *s)
- {
- 	struct ref_tracker_dir_stats *stats;
- 	unsigned int i = 0, skipped;
-@@ -77,8 +96,8 @@ void __ref_tracker_dir_print(struct ref_tracker_dir *dir,
- 
- 	stats = ref_tracker_get_stats(dir, display_limit);
- 	if (IS_ERR(stats)) {
--		pr_err("%s@%pK: couldn't get stats, error %pe\n",
--		       dir->name, dir, stats);
-+		pr_ostream(s, "%s@%pK: couldn't get stats, error %pe\n",
-+			   dir->name, dir, stats);
- 		return;
+ 	WARN_ON_ONCE(dir->dead);
+@@ -237,7 +237,8 @@ int ref_tracker_free(struct ref_tracker_dir *dir,
+ 		return -EEXIST;
  	}
+ 	nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 1);
+-	stack_handle = stack_depot_save(entries, nr_entries, GFP_ATOMIC);
++	stack_handle = stack_depot_save(entries, nr_entries,
++					GFP_NOWAIT | __GFP_NOWARN);
  
-@@ -88,19 +107,27 @@ void __ref_tracker_dir_print(struct ref_tracker_dir *dir,
- 		stack = stats->stacks[i].stack_handle;
- 		if (sbuf && !stack_depot_snprint(stack, sbuf, STACK_BUF_SIZE, 4))
- 			sbuf[0] = 0;
--		pr_err("%s@%pK has %d/%d users at\n%s\n", dir->name, dir,
--		       stats->stacks[i].count, stats->total, sbuf);
-+		pr_ostream(s, "%s@%pK has %d/%d users at\n%s\n", dir->name, dir,
-+			   stats->stacks[i].count, stats->total, sbuf);
- 		skipped -= stats->stacks[i].count;
- 	}
- 
- 	if (skipped)
--		pr_err("%s@%pK skipped reports about %d/%d users.\n",
--		       dir->name, dir, skipped, stats->total);
-+		pr_ostream(s, "%s@%pK skipped reports about %d/%d users.\n",
-+			   dir->name, dir, skipped, stats->total);
- 
- 	kfree(sbuf);
- 
- 	kfree(stats);
- }
-+
-+void __ref_tracker_dir_print(struct ref_tracker_dir *dir,
-+			   unsigned int display_limit)
-+{
-+	struct ostream os = {};
-+
-+	__ref_tracker_dir_pr_ostream(dir, display_limit, &os);
-+}
- EXPORT_SYMBOL(__ref_tracker_dir_print);
- 
- void ref_tracker_dir_print(struct ref_tracker_dir *dir,
-@@ -114,6 +141,19 @@ void ref_tracker_dir_print(struct ref_tracker_dir *dir,
- }
- EXPORT_SYMBOL(ref_tracker_dir_print);
- 
-+int ref_tracker_dir_snprint(struct ref_tracker_dir *dir, char *buf, size_t size)
-+{
-+	struct ostream os = { .buf = buf, .size = size };
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&dir->lock, flags);
-+	__ref_tracker_dir_pr_ostream(dir, 16, &os);
-+	spin_unlock_irqrestore(&dir->lock, flags);
-+
-+	return os.used;
-+}
-+EXPORT_SYMBOL(ref_tracker_dir_snprint);
-+
- void ref_tracker_dir_exit(struct ref_tracker_dir *dir)
- {
- 	struct ref_tracker *tracker, *n;
+ 	spin_lock_irqsave(&dir->lock, flags);
+ 	if (tracker->dead) {
 
 -- 
 2.34.1
