@@ -2,139 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 933E76ACCDC
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 19:43:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65FC46ACCE7
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 19:44:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229926AbjCFSn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 13:43:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48296 "EHLO
+        id S229579AbjCFSoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 13:44:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229634AbjCFSn0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 13:43:26 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 558D52E0FB;
-        Mon,  6 Mar 2023 10:43:25 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id p26so6282597wmc.4;
-        Mon, 06 Mar 2023 10:43:25 -0800 (PST)
+        with ESMTP id S230033AbjCFSo3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 13:44:29 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C07265475
+        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 10:44:02 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id h8so11440322plf.10
+        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 10:44:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678128204;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=9howz/MYIxQFOTkjG2sZpdC7yu6HSX7t+4kJG+A428w=;
-        b=RnYzgl5WppeBICyY1Qmu1aiUrbPL0PnHOWQqqLHOo6Oa8WlLlBB3H8ipoPvJsND8NL
-         +AqUgw+/V2JVJ4I0dnK1gAaYDtM2lcMCjU4fLKUOLyagYv63UPbPk6yL4a0qbbic3uVl
-         wgf4ldWVweQlmgN6hGD9PKYh37kyyh4VBQDIn6jbuhVMlqq+GRv8Z79RNhjO28JEhcxQ
-         pZSYbgJHyVerQBR13/kqTrDp/MOUt4XB2kVkeF3hcMdt5HK2R3MNxxlsNkWV60PM8PS8
-         zRqtwE3CLnmu+UOlA7BiWYRMep8EbKDTd7hTdT8ENLJo1ib46CIXo4GcSWOz9KtKcEwn
-         Ammw==
+        d=linaro.org; s=google; t=1678128241;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=365J6Piko6rztWGOR0yLK2bsAIKP4u5eMy2EMrLl6w0=;
+        b=tf2EZgbURrgBp9bwac8RT/sGU9/M1fIIhoYFbwBGIZCucpJpms9fV5d0sSKqeeBUTR
+         yvA3MbEO79BepXdOrT/5ZFy3mPpPCNjVGV4uIH7nphVdHFPwt7RJ+BtNrWr1SbPTiRpM
+         uY2u7IBYkTptpeqmiQatMMbTrSpZ3gugd7v/rhz/5vrB8Nst1NbnfjBC9Q4Gk6XnjT5j
+         wAekaMDoTtBVA8LkcCN8xJGcnrSON8plNIUjxVJjwKiM95yYIJ1s0VgQup0G5OntHy1T
+         EwlhGVYvgyeuk6OyxFPggK+oOIQ7fOyepEXF1cf1PFMIoRfOhFzWJbzP6+HosX0UcLYw
+         QN8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678128204;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20210112; t=1678128241;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=9howz/MYIxQFOTkjG2sZpdC7yu6HSX7t+4kJG+A428w=;
-        b=bts/DOMgHdrXGYTRUfWEQdNIBnZZDqeC70h+ZNYBRYcPIa2FDwBO325sJ5O2aukYp2
-         otTzdVXdsxB0VlfVtQzOeO4mHdrVQBlzXh8z1Ix1mMykBJRqdgwYXvsqeG7MBUwmeViy
-         WpYaRowH0fIb7s3TIX14w8WBaAXe0UPm6/iwvsmSipPoEVVgPkDDLvp3K2k9Vir3HLlj
-         xIPYQPrZXLQbEO+K1Aq4fl00CB/Oy1maMqS1nZCaGgUbwey1X6dgu9nwyMK4kWDQIARC
-         x6qPErYHtZQpSp0vdAGTD3dvyeL4ocnO7qbBQSu7N2m/aIhAMyJsaGLRCEnJYfd3caUg
-         0GKQ==
-X-Gm-Message-State: AO0yUKX00Cj6f22maIWASb8uYsnWr2V3vQSurPjGo/mDoYz10N+8hplT
-        BTMm+tuMsYvhjBF0XsRwt+c=
-X-Google-Smtp-Source: AK7set9ocXY79rQCq8kdmSs3rFvVpcdzSuqw0hZ/yLMPPrZfSYmrWzRcwSyRFmjA6ou8n26+wR5neA==
-X-Received: by 2002:a05:600c:4f87:b0:3ea:d610:f059 with SMTP id n7-20020a05600c4f8700b003ead610f059mr11280986wmq.4.1678128203504;
-        Mon, 06 Mar 2023 10:43:23 -0800 (PST)
-Received: from Ansuel-xps. (93-34-89-197.ip49.fastwebnet.it. [93.34.89.197])
-        by smtp.gmail.com with ESMTPSA id r18-20020a05600c35d200b003dfe549da4fsm15761153wmq.18.2023.03.06.10.43.22
+        bh=365J6Piko6rztWGOR0yLK2bsAIKP4u5eMy2EMrLl6w0=;
+        b=iQzU2Mo3XU+bUtYGf9ii5QkuP82TrB8RC7iWr93nC5F2LtROV+lAtgjimfqJFLItZD
+         GpzgWbDujp9uRzgeKkzo9zPaSWAhO9n9vYdl00quOH11rw6Km0YkXlaq3Y4+bGDaZqlf
+         SAHiGybOV9JOIw3d1q/nd43sJJxKsreYHl5x/HSQh+kB5q5ZWAobVPMCIlaU0kM4LRb0
+         +sUu430Es6eAhXQO44tluX9QbJzTkxESmBgOxjJkpIWP9RwkN9bwlMlrTAjnwKHy7CtP
+         oNtnSeyMGNRhLHdoZN/wDHzpEFI60554g/cGmkYa85YnVcp5Rd1NF4U+qKKMb9OVs8Yl
+         Qw0w==
+X-Gm-Message-State: AO0yUKVh26hmbi3nWSsXNJLaagn+nk7fPidx/bcUeMm3Skbtr7fudk9B
+        3e0ysPZvMg0n10sprCIzMhSw4w==
+X-Google-Smtp-Source: AK7set+/MEIeQEy/F6GN5ZSD5HtwdnA/tFtpDPXbVIG5nrXJuyJNtIIVYf4bU3UboWwix9n+UDkZEw==
+X-Received: by 2002:a17:903:246:b0:19c:fd73:5586 with SMTP id j6-20020a170903024600b0019cfd735586mr14251090plh.38.1678128241615;
+        Mon, 06 Mar 2023 10:44:01 -0800 (PST)
+Received: from p14s ([2604:3d09:148c:c800:e8cc:984:8f0a:efd3])
+        by smtp.gmail.com with ESMTPSA id x6-20020a170902ec8600b0019c91d3bdb4sm7010259plg.304.2023.03.06.10.44.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Mar 2023 10:43:22 -0800 (PST)
-Message-ID: <6406344a.050a0220.693b3.6689@mx.google.com>
-X-Google-Original-Message-ID: <ZAY0SzbzIgRH1oBa@Ansuel-xps.>
-Date:   Mon, 6 Mar 2023 19:43:23 +0100
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Lee Jones <lee@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Pavel Machek <pavel@ucw.cz>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        John Crispin <john@phrozen.org>, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        Tim Harvey <tharvey@gateworks.com>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        Bagas Sanjaya <bagasdotme@gmail.com>,
-        Arun.Ramadoss@microchip.com
-Subject: Re: [PATCH v8 00/13] Adds support for PHY LEDs with offload triggers
-References: <20230216013230.22978-1-ansuelsmth@gmail.com>
- <Y++PdVq+DlzdotMq@lunn.ch>
- <Y/YubNUBvQ5fBjtG@google.com>
+        Mon, 06 Mar 2023 10:44:01 -0800 (PST)
+Date:   Mon, 6 Mar 2023 11:43:58 -0700
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     MD Danish Anwar <danishanwar@ti.com>
+Cc:     "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
+        Roger Quadros <rogerq@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <t-kristo@ti.com>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Nishanth Menon <nm@ti.com>, linux-remoteproc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, srk@ti.com, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v3 0/6] Introduce PRU platform consumer API
+Message-ID: <20230306184358.GA1633717@p14s>
+References: <20230306110934.2736465-1-danishanwar@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y/YubNUBvQ5fBjtG@google.com>
+In-Reply-To: <20230306110934.2736465-1-danishanwar@ti.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 22, 2023 at 03:02:04PM +0000, Lee Jones wrote:
-> On Fri, 17 Feb 2023, Andrew Lunn wrote:
+On Mon, Mar 06, 2023 at 04:39:28PM +0530, MD Danish Anwar wrote:
+> Hi All,
+> The Programmable Real-Time Unit and Industrial Communication Subsystem (PRU-ICSS
+> or simply PRUSS) on various TI SoCs consists of dual 32-bit RISC cores
+> (Programmable Real-Time Units, or PRUs) for program execution.
 > 
-> > On Thu, Feb 16, 2023 at 02:32:17AM +0100, Christian Marangi wrote:
-> > > This is another attempt on adding this feature on LEDs, hoping this is
-> > > the right time and someone finally notice this.
-> > 
-> > Hi Christian
-> > 
-> > Thanks for keeping working on this.
-> > 
-> > I want to review it, and maybe implement LED support in a PHY
-> > driver. But i'm busy with reworking EEE at the moment.
-> > 
-> > The merge window is about to open, so patches are not going to be
-> > accepted for the next two weeks. So i will take a look within that
-> > time and give you feedback.
+> There are 3 foundation components for TI PRUSS subsystem: the PRUSS platform
+> driver, the PRUSS INTC driver and the PRUSS remoteproc driver. All of them have
+> already been merged and can be found under:
+> 1) drivers/soc/ti/pruss.c
+>    Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml
+> 2) drivers/irqchip/irq-pruss-intc.c
+>    Documentation/devicetree/bindings/interrupt-controller/ti,pruss-intc.yaml
+> 3) drivers/remoteproc/pru_rproc.c
+>    Documentation/devicetree/bindings/remoteproc/ti,pru-consumer.yaml
 > 
-> Thanks Andrew.  If Pavel is still unavailable to conduct reviews, I'm
-> going to need all the help I can get with complex submissions such as
-> these.
+> The programmable nature of the PRUs provide flexibility to implement custom
+> peripheral interfaces, fast real-time responses, or specialized data handling.
+> Example of a PRU consumer drivers will be: 
+>   - Software UART over PRUSS
+>   - PRU-ICSS Ethernet EMAC
 > 
+> In order to make usage of common PRU resources and allow the consumer drivers to
+> configure the PRU hardware for specific usage the PRU API is introduced.
+> 
+> This is the v3 of the old patch series[1]. This doesn't have any functional 
+> changes, the old series has been rebased on linux-next (tag: next-20230306).
+> 
+> This series depends on another series which is already merged in the remoteproc
+> tree[2] and is part of v6.3-rc1. This series and the remoteproc series form the
+> PRUSS consumer API which can be used by consumer drivers to utilize the PRUs.
+> 
+> One example of the consumer driver is the PRU-ICSSG ethernet driver [3],which 
+> depends on this series and the remoteproc series[2].
+> 
+> [1] https://lore.kernel.org/all/20220418123004.9332-1-p-mohan@ti.com/
+> [2] https://lore.kernel.org/all/20230106121046.886863-1-danishanwar@ti.com/#t
+> [3] https://lore.kernel.org/all/20230210114957.2667963-1-danishanwar@ti.com/
+> 
+> Thanks and Regards,
+> Md Danish Anwar
+> 
+> Andrew F. Davis (1):
+>   soc: ti: pruss: Add pruss_{request,release}_mem_region() API
+> 
+> Suman Anna (3):
+>   soc: ti: pruss: Add pruss_cfg_read()/update() API
+>   soc: ti: pruss: Add helper functions to set GPI mode, MII_RT_event and
+>     XFR
+>   soc: ti: pruss: Add helper function to enable OCP master ports
+> 
+> Tero Kristo (2):
+>   soc: ti: pruss: Add pruss_get()/put() API
+>   soc: ti: pruss: Add helper functions to get/set PRUSS_CFG_GPMUX
+> 
+>  drivers/soc/ti/pruss.c           | 257 ++++++++++++++++++++++++++++++-
+>  include/linux/pruss_driver.h     |  72 ++++++---
+>  include/linux/remoteproc/pruss.h | 221 ++++++++++++++++++++++++++
+>  3 files changed, 526 insertions(+), 24 deletions(-)
 
-Hi Lee,
-thanks for stepping in. Just wanted to tell you I got some message with
-Andrew to make this thing less problematic and to dry/make it more
-review friendly.
+The last revision of this set was sent out on April 18th 2022... It is always
+very difficult to follow-up with a patchset when it has been this long.
+Moreover, you added a SoB to patch 1 and 2 but none of the other ones.
 
-We decided on pushing this in 3 step:
-1. Propose most basic things for some switch and some PHY. (brightness
-and blink_set support only, already supported by LED core)
-2. A small series that should be just a cleanup for the netdev trigger
-3. Support for hw_control in the most possible clean and way with small
-patch to they are not hard to track and understand the concept of this
-feature.
+Roger had comments on the previous set - I will look at this revision when he
+has provided his RB for this entire set.
 
-I'm starting with the step 1 and sending some of my patch and Andrew
-patch to add basic support and I will add you and LED mailing list in
-Cc.
+Thanks,
+Mathieu
 
-Again thanks for starting checking this and feel free to ask any
-question about this to me also privately, I'm very open to any help.
-
--- 
-	Ansuel
+> 
+> -- 
+> 2.25.1
+> 
