@@ -2,130 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AEDE6AD049
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 22:29:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 865696AD028
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 22:27:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230034AbjCFV25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 16:28:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53834 "EHLO
+        id S229787AbjCFV1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 16:27:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230025AbjCFV2x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 16:28:53 -0500
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C58A474DA
-        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 13:28:32 -0800 (PST)
-Received: by mail-wm1-x32d.google.com with SMTP id fm20-20020a05600c0c1400b003ead37e6588so9139751wmb.5
-        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 13:28:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678138111;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=soPTZuxKkPs8F671BDUXDGY7ntnppFcO4XnsaBkc22I=;
-        b=M3Pqeo7qCHCdt2exp003r44xWg4XvxyrzpSQB9izPqkIvU7x1m1Bi1aktzUG3nv2Xz
-         To9ukeu0kZ8yE79daSmdC1unYGnokn2/wKEY9DmvGjqAbF88dcqvqTl3141mRmpca3Lu
-         RnUqnzkDfa4czqWNwUKLfxBw1Z1tMOeqb5WtkRFvZR3qODBOwU9Iv8AILJnug6EHFHxA
-         7qhGIhBMkTuohAWyPmNcqKsBY7GMYEwvj3KvdZ0Gk/YM8cAOemfkCah1Yx1xL/+YX6BG
-         74lPY/502PgD1CXPLy0+bqQ0g2VwmIOHmz3n5PbJo+5Fjg9z6c+8QXkBJTmkwvv6PueJ
-         sHcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678138111;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=soPTZuxKkPs8F671BDUXDGY7ntnppFcO4XnsaBkc22I=;
-        b=uyNO09+NPI71OgDdTHxbqlESSFyoEoTuBqgKETF0txeygwkEc+80fxZuKPEJgxcKyy
-         dEr7aA5ZGb3bglJ8EOWiR0oNgW/v+XCsvC0p4W45CyYqDST7DAgAFCXfrAezjGC7WIAD
-         CPSTtPDbnaKZQDMGUcT4W911m0MhJ+iiDvXYggGvT4/o3RV1KfuojJxjGv62Abum+gjf
-         0GvIr+xxYKQweq4UITBxA0ApnMeNeFqrC0LIt+kWwmq0P17ak4SmzHxYcbsqh4QqQ4YW
-         ZzTcX6b09FZdMpHxYTzg3n7t5JuqYOzVA+l7f0LoK3GRjwOewdyzZHqy2iwlNofWU6Be
-         X4zQ==
-X-Gm-Message-State: AO0yUKVUX08NIZUzdrFwgYH8PtBJXQxtAghRcqOUjGTo7YAxtdQ2Bd41
-        TT3NkbyaThVgZqVDTp4s/XfOtLZXdEc=
-X-Google-Smtp-Source: AK7set9tSV5ePU4+bZh11wdi5N1u2vtLUzAItzLXEQ7c2ImZRcOLir5F1qz4HYhUqa+4dwdM/8fRnQ==
-X-Received: by 2002:a05:600c:3ca3:b0:3db:8de:6993 with SMTP id bg35-20020a05600c3ca300b003db08de6993mr8456246wmb.4.1678138110871;
-        Mon, 06 Mar 2023 13:28:30 -0800 (PST)
-Received: from ?IPV6:2a01:c22:7bf4:7d00:9590:4142:18ea:aa32? (dynamic-2a01-0c22-7bf4-7d00-9590-4142-18ea-aa32.c22.pool.telefonica.de. [2a01:c22:7bf4:7d00:9590:4142:18ea:aa32])
-        by smtp.googlemail.com with ESMTPSA id h22-20020a05600c351600b003daf6e3bc2fsm22119735wmq.1.2023.03.06.13.28.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Mar 2023 13:28:30 -0800 (PST)
-Message-ID: <eacc78aa-d2ad-2db5-e41d-e7852c7b170b@gmail.com>
-Date:   Mon, 6 Mar 2023 22:26:47 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: [PATCH net-next 5/6] r8169: disable ASPM during NAPI poll
-Content-Language: en-US
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
+        with ESMTP id S229627AbjCFV1H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 16:27:07 -0500
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1277515C3;
+        Mon,  6 Mar 2023 13:27:06 -0800 (PST)
+Received: from fpc.intra.ispras.ru (unknown [10.10.165.10])
+        by mail.ispras.ru (Postfix) with ESMTPSA id E7EF140737DF;
+        Mon,  6 Mar 2023 21:27:04 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru E7EF140737DF
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
+        s=default; t=1678138025;
+        bh=MMdH886uaIHU3k4OniEz5qYWbc40cmBeDwnXZ2fjIog=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hefXv1iI6P/RmXzKFsjbtTWhmxWS73VDhDcgiT6Y3wKwe4MGIgVsEE4fT6hm6H5Uc
+         nyaW0ApA8EMAfnj6lI74tnVROrwJpjZbnky2qRccmwvinF1Fcp+m1IWjrzs5rfwiPK
+         +NdBmSPjjDgj97fajujuhdETd1XronfIdc7NHFgA=
+From:   Fedor Pchelkin <pchelkin@ispras.ru>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Fedor Pchelkin <pchelkin@ispras.ru>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Simon Horman <simon.horman@corigine.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        =?UTF-8?Q?Holger_Hoffst=c3=a4tte?= <holger@applied-asynchrony.com>
-References: <b434a0ce-9a76-e227-3267-ee26497ec446@gmail.com>
-In-Reply-To: <b434a0ce-9a76-e227-3267-ee26497ec446@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        lvc-project@linuxtesting.org
+Subject: [PATCH v2] nfc: change order inside nfc_se_io error path
+Date:   Tue,  7 Mar 2023 00:26:50 +0300
+Message-Id: <20230306212650.230322-1-pchelkin@ispras.ru>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230306125842.7fea0be5@kernel.org>
+References: 
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Several chip versions have problems with ASPM, what may result in
-rx_missed errors or tx timeouts. The root cause isn't known but
-experience shows that disabling ASPM during NAPI poll can avoid
-these problems.
+cb_context should be freed on the error path in nfc_se_io as stated by
+commit 25ff6f8a5a3b ("nfc: fix memory leak of se_io context in
+nfc_genl_se_io").
 
-Suggested-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
-Tested-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Tested-by: Holger Hoffstätte <holger@applied-asynchrony.com>
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Make the error path in nfc_se_io unwind everything in reverse order, i.e.
+free the cb_context after unlocking the device.
+
+Suggested-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+v1->v2: remove 'no functional changes' statement from commit info
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 96af31aea..2897b9bf2 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -4577,6 +4577,10 @@ static irqreturn_t rtl8169_interrupt(int irq, void *dev_instance)
- 	}
+ net/nfc/netlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/nfc/netlink.c b/net/nfc/netlink.c
+index 348bf561bc9f..b9264e730fd9 100644
+--- a/net/nfc/netlink.c
++++ b/net/nfc/netlink.c
+@@ -1446,8 +1446,8 @@ static int nfc_se_io(struct nfc_dev *dev, u32 se_idx,
+ 	return rc;
  
- 	if (napi_schedule_prep(&tp->napi)) {
-+		rtl_unlock_config_regs(tp);
-+		rtl_hw_aspm_clkreq_enable(tp, false);
-+		rtl_lock_config_regs(tp);
-+
- 		rtl_irq_disable(tp);
- 		__napi_schedule(&tp->napi);
- 	}
-@@ -4636,9 +4640,14 @@ static int rtl8169_poll(struct napi_struct *napi, int budget)
- 
- 	work_done = rtl_rx(dev, tp, budget);
- 
--	if (work_done < budget && napi_complete_done(napi, work_done))
-+	if (work_done < budget && napi_complete_done(napi, work_done)) {
- 		rtl_irq_enable(tp);
- 
-+		rtl_unlock_config_regs(tp);
-+		rtl_hw_aspm_clkreq_enable(tp, true);
-+		rtl_lock_config_regs(tp);
-+	}
-+
- 	return work_done;
+ error:
+-	kfree(cb_context);
+ 	device_unlock(&dev->dev);
++	kfree(cb_context);
+ 	return rc;
  }
  
 -- 
-2.39.2
-
-
+2.34.1
 
