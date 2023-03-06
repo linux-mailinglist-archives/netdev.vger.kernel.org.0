@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1773F6ACF6F
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 21:48:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A533C6ACF71
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 21:48:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229947AbjCFUr4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 15:47:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34518 "EHLO
+        id S230012AbjCFUsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 15:48:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbjCFUrx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 15:47:53 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4E9E7201B;
-        Mon,  6 Mar 2023 12:47:52 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id c4so6757374pfl.0;
-        Mon, 06 Mar 2023 12:47:52 -0800 (PST)
+        with ESMTP id S229933AbjCFUsK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 15:48:10 -0500
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31A0672B3B;
+        Mon,  6 Mar 2023 12:47:57 -0800 (PST)
+Received: by mail-pl1-x62b.google.com with SMTP id u5so11848138plq.7;
+        Mon, 06 Mar 2023 12:47:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678135672;
+        d=gmail.com; s=20210112; t=1678135676;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ohhBlm5/EvdaRANIY+/17hlHt7n4eAlMQRKCzUzJefs=;
-        b=P9VGVXIw6J51iOQeGUMdlchyu9nMT+CJXhCGQt5j0A3EMcsN9uwA+ikRPkdjw/loKH
-         32Mgu+nPV0wqlP8lBPfETTy9cIvJXNdzA/PRaRLJ9cOuURQpNM3tnNfbMRnh0CQpnzwX
-         Twu30sMOpTzjtgBep+klHkWeG1VgaBxPxapwBJt57r/FE9G1mjZbX2cMfgoD+LCn8PGz
-         DsUVAC9dZggw9ZhlOygRzfLR1C0/dxVRb+NyH9gzP9jg5+Bt2z/SdLk7bnVvXWOWfjow
-         vDs6MxWlMkw3lCOqt4AJKJsHwlfHCoBydyRPwn9tzGk7j5tVgjG8Jkec0aarUwYqhMMv
-         XITg==
+        bh=MGmtZmnDs5ASNE58FlHEoRflz4j5hRXcFcWdJp13C10=;
+        b=qYRs34Gk9hUvTs5ooXKPKoymdDDp1qyJBx1E+sIY2JvW1s22DJk2X7y1vFmfMeNrya
+         jjiZs95ll3Deo94LJL0MIxxSzm3AWRXtvMwqww3eAIRMZv1we4kFFe5CoNGogyjud4lu
+         pXxem8c/aN7PvEOkXxjWSMGHwMbKX563gMIWEEC8S196B2+ltQLn/Qz0WDJ+GiwYyu4/
+         v7TN1sQjBcS/3bHO/fl8LNr5VGX4MBH5kONmDgLJUmrWf5YzB0akr/Oq91jAVYUCyxPi
+         Lo/fnlVTqlRZPMUY2RyW7pa2rGqTEbKBIuL4RiQYRZ9a6C+RYptbZSpYXQaxMI9QmYTH
+         ru9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678135672;
+        d=1e100.net; s=20210112; t=1678135676;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=ohhBlm5/EvdaRANIY+/17hlHt7n4eAlMQRKCzUzJefs=;
-        b=Vhov+hPpFIN+VRnZ1cH9eFITRx6Y+9YuXHe1i4i1JQ3Hmfs91YSTKJckKykOH4EdCE
-         mgpwf8Y3QCR3n9IWSlVqCKyBp+ZZKPFN32fXx2YQZKwUYuUKkmCv1fi29xW4yYZ9Zjll
-         ltfBghdVPpSS5z0gYHUgbt+SOeeYzbDPfSDYOzG1dRvUCrMbLG2K1uJMmIS8y9iHJDJP
-         r+pVXtruomI/38Mk4YoLwSePoHjbS4Yfl/UPyTn213gt5AFxLxBl8g7YJCHdknaDYht4
-         b047d8J8EnAOkMOFVrEo2yiaXBQJev73dFeRziduF0aV2MMqiie2EwMwI0VuEvCGbK+8
-         0/IA==
-X-Gm-Message-State: AO0yUKXtYINKfa3fR+fKdcS8dVphKLNrat/nzRD+U9dsRQOjCrEQo13N
-        tRH8r8LM42p3cMrkgGpuTIE=
-X-Google-Smtp-Source: AK7set9iSDUiwRSSU+iAktisKbnMBWUM4GX842oxXYu7f5iOPfLRWS9DR+Fg3gD6eN2AelR9p6vmtA==
-X-Received: by 2002:a62:3814:0:b0:5a9:c533:3c06 with SMTP id f20-20020a623814000000b005a9c5333c06mr9912111pfa.14.1678135672104;
-        Mon, 06 Mar 2023 12:47:52 -0800 (PST)
+        bh=MGmtZmnDs5ASNE58FlHEoRflz4j5hRXcFcWdJp13C10=;
+        b=7v+DGIXDLuUQ7NhQBJWM8rUyQ1nX+4MHDPgHAieFzgqidJAZwGf9qnJCOVGVVDUAzN
+         Ds54AIO13UjO6cTD2dAO3A+u95F5tSw5byIa2EbGYLXvroOqtF3yHb3fYttafvo3dmwO
+         qA9caNdbPPrOK/Jr7UtHWpYYhky/voUTDBfebr7pnwtjAgiH1C28nIfJ3KOLfUGrgXAw
+         RSHK7ZuH6ncw0GH/aYEFc5naSFuSrEHQWE2rUYFr6X2DzcygHhCoElU6MJNVompGlpoZ
+         5tiriI/vCSJ5Yw6HDCod9Q0nzpXf5nIPBa0mVtyvT+b/v6xKDLATZVcMpk0PTLOOfGea
+         OVBA==
+X-Gm-Message-State: AO0yUKWIYDY7j4iR3NjmlBMsRPOlXkpQBqP1JbaDSppSvSI7u21E3mNi
+        vkHnCcUNjuimckN0JMZtpB0=
+X-Google-Smtp-Source: AK7set/FIMLWtnvm1jz8Ak/Nanv3uUTjVLkFSHhdcorkKHDqQ6eoh1Z+NIyFSpqTUVyNVTkxCTNMkA==
+X-Received: by 2002:a05:6a20:1e61:b0:cb:a0e3:4598 with SMTP id cy33-20020a056a201e6100b000cba0e34598mr11460370pzb.43.1678135676488;
+        Mon, 06 Mar 2023 12:47:56 -0800 (PST)
 Received: from vernon-pc.. ([49.67.2.142])
-        by smtp.gmail.com with ESMTPSA id e23-20020aa78c57000000b005a75d85c0c7sm6699772pfd.51.2023.03.06.12.47.47
+        by smtp.gmail.com with ESMTPSA id e23-20020aa78c57000000b005a75d85c0c7sm6699772pfd.51.2023.03.06.12.47.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Mar 2023 12:47:51 -0800 (PST)
+        Mon, 06 Mar 2023 12:47:56 -0800 (PST)
 From:   Vernon Yang <vernon2gm@gmail.com>
 To:     torvalds@linux-foundation.org, tytso@mit.edu, Jason@zx2c4.com,
         davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
@@ -59,9 +59,9 @@ To:     torvalds@linux-foundation.org, tytso@mit.edu, Jason@zx2c4.com,
 Cc:     linux-kernel@vger.kernel.org, wireguard@lists.zx2c4.com,
         netdev@vger.kernel.org, linux-scsi@vger.kernel.org,
         Vernon Yang <vernon2gm@gmail.com>
-Subject: [PATCH v2 1/4] random: fix try_to_generate_entropy() if no further cpus set
-Date:   Tue,  7 Mar 2023 04:47:20 +0800
-Message-Id: <20230306204723.2584724-2-vernon2gm@gmail.com>
+Subject: [PATCH v2 2/4] wireguard: fix wg_cpumask_choose_online() if no further cpus set
+Date:   Tue,  7 Mar 2023 04:47:21 +0800
+Message-Id: <20230306204723.2584724-3-vernon2gm@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230306204723.2584724-1-vernon2gm@gmail.com>
 References: <20230306204723.2584724-1-vernon2gm@gmail.com>
@@ -91,22 +91,22 @@ correctly.
 
 Signed-off-by: Vernon Yang <vernon2gm@gmail.com>
 ---
- drivers/char/random.c | 2 +-
+ drivers/net/wireguard/queueing.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index ce3ccd172cc8..253f2ddb8913 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1311,7 +1311,7 @@ static void __cold try_to_generate_entropy(void)
- 			/* Basic CPU round-robin, which avoids the current CPU. */
- 			do {
- 				cpu = cpumask_next(cpu, &timer_cpus);
--				if (cpu == nr_cpumask_bits)
-+				if (cpu >= nr_cpu_ids)
- 					cpu = cpumask_first(&timer_cpus);
- 			} while (cpu == smp_processor_id() && num_cpus > 1);
+diff --git a/drivers/net/wireguard/queueing.h b/drivers/net/wireguard/queueing.h
+index 583adb37ee1e..125284b346a7 100644
+--- a/drivers/net/wireguard/queueing.h
++++ b/drivers/net/wireguard/queueing.h
+@@ -106,7 +106,7 @@ static inline int wg_cpumask_choose_online(int *stored_cpu, unsigned int id)
+ {
+ 	unsigned int cpu = *stored_cpu, cpu_index, i;
  
+-	if (unlikely(cpu == nr_cpumask_bits ||
++	if (unlikely(cpu >= nr_cpu_ids ||
+ 		     !cpumask_test_cpu(cpu, cpu_online_mask))) {
+ 		cpu_index = id % cpumask_weight(cpu_online_mask);
+ 		cpu = cpumask_first(cpu_online_mask);
 -- 
 2.34.1
 
