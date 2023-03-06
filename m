@@ -2,95 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64FD56AB942
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 10:07:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7412C6AB96C
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 10:14:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229835AbjCFJHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 04:07:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42106 "EHLO
+        id S229831AbjCFJOJ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 6 Mar 2023 04:14:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229616AbjCFJHc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 04:07:32 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC2CB1F5E4
-        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 01:07:28 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id o12so35398892edb.9
-        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 01:07:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678093647;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=S1UTt4DO5EMkPVciGar3ib0Qx9uHBfOwmWIzMq/trQk=;
-        b=hugdiMZ7pSe9GbfKN1rytTwezAhKbYL63OVcDPys2gQVl7vNhdnMLSLV5bJPuC0MsF
-         XEceVOkgSua0OnNLYEHszRO9juNIqEl2QvC5ehX8ufSosV6FQa8dfPVmOQrDotgzrBLA
-         PBQcssrNXh9V8RO8w3Nxh79nk8J6X6AgYFZPBs9fshDIz7IHzIIRhhfi1y0Nl+fpgEI4
-         HXhzLXhaxrRNXZkJ0TTprvIqbfYiksO3+vdy21zS2JNtM0KMCJF/pvEaqoUv5XjNnY8i
-         9M7NvKR6p+9/5ylEs/3uGyqywydW+w1JFvox4VqIqwhHD9CWd9MY6QOTQJCw31iPCF2v
-         zEvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678093647;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=S1UTt4DO5EMkPVciGar3ib0Qx9uHBfOwmWIzMq/trQk=;
-        b=BwvMYQaOETefeiADD7GUIWNDYjfl5Skf1G2REFh0+IcGEW9rbX97VHqNpPHM/oI1KN
-         d5QGNjOGILN8Y2y2LR/jK+p+YQI6Smoez+wwLbgeFOUgEwciSkqiWPwb58gOZ5cHakAk
-         drLOei31ZP2ULcRVi6cDBHgIMX6KqBxBjr++0Stj9XQ2t9e1x7gJjvznrjR7P6H7J3Yw
-         NFCqv1pG5wcf+1nwpsBO8b3HUvaDKiz3EAhmw0BIem7+NEr2NWnQ0PoxBUYnJ38ePxt3
-         nY3vNRgTAnzhlVp1+ecskoAE0fwrH/8R0f8YsXMI753qywS/eSpTSNE0WG06Sj5BIfte
-         0uQQ==
-X-Gm-Message-State: AO0yUKU4eYcADf/hAAifWEduipeGrHww4aFbaEK/nREzT1diYAckzHxY
-        pedxXnm0SbnCsN1l2cYSDtU=
-X-Google-Smtp-Source: AK7set93L6+14+MRDbmnXRmj28LzM2yIkEySkxnQo+M4ypSaseZ5nGGNrsZiEcPTsJ+vjq48qo2RAA==
-X-Received: by 2002:a17:907:6e8f:b0:8de:e66b:27e with SMTP id sh15-20020a1709076e8f00b008dee66b027emr10929045ejc.16.1678093647324;
-        Mon, 06 Mar 2023 01:07:27 -0800 (PST)
-Received: from localhost (tor-exit-3.zbau.f3netze.de. [185.220.100.254])
-        by smtp.gmail.com with ESMTPSA id 23-20020a170906005700b008e3e2b6a9adsm4306459ejg.94.2023.03.06.01.07.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Mar 2023 01:07:26 -0800 (PST)
-Date:   Mon, 6 Mar 2023 11:07:20 +0200
-From:   Maxim Mikityanskiy <maxtram95@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, Adrien Moulin <amoulin@corp.free.fr>,
-        borisp@nvidia.com, john.fastabend@gmail.com, tariqt@nvidia.com,
-        maximmi@nvidia.com
-Subject: Re: [PATCH net] net: tls: fix device-offloaded sendpage straddling
- records
-Message-ID: <ZAWtE34EJw79Oqkx@mail.gmail.com>
-References: <20230304192610.3818098-1-kuba@kernel.org>
+        with ESMTP id S229871AbjCFJOB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 04:14:01 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 329D918AAF
+        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 01:13:57 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-234-wLlajqEvM_i0pebfXhezoA-1; Mon, 06 Mar 2023 09:13:55 +0000
+X-MC-Unique: wLlajqEvM_i0pebfXhezoA-1
+Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
+ (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.47; Mon, 6 Mar
+ 2023 09:13:52 +0000
+Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
+ id 15.00.1497.047; Mon, 6 Mar 2023 09:13:52 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Thomas Gleixner' <tglx@linutronix.de>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     "peterz@infradead.org" <peterz@infradead.org>,
+        "jstultz@google.com" <jstultz@google.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>
+Subject: RE: [PATCH 2/3] softirq: avoid spurious stalls due to need_resched()
+Thread-Topic: [PATCH 2/3] softirq: avoid spurious stalls due to need_resched()
+Thread-Index: AQHZT6MmVGN6gMfiFUibqhxDqTGe3a7tcg6A
+Date:   Mon, 6 Mar 2023 09:13:52 +0000
+Message-ID: <dc3b87517d8342e8a8e61b75730cf3d1@AcuMS.aculab.com>
+References: <20230303133143.7b35433f@kernel.org> <87r0u3hqtw.ffs@tglx>
+In-Reply-To: <87r0u3hqtw.ffs@tglx>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230304192610.3818098-1-kuba@kernel.org>
-X-Spam-Status: No, score=1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,PDS_BAD_THREAD_QP_64,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 04, 2023 at 11:26:10AM -0800, Jakub Kicinski wrote:
-> Adrien reports that incorrect data is transmitted when a single
-> page straddles multiple records. We would transmit the same
-> data in all iterations of the loop.
+From: Thomas Gleixner
+> Sent: 05 March 2023 20:43
+...
+> The point is that softirqs are just the proliferation of an at least 50
+> years old OS design paradigm. Back then everyhting which run in an
+> interrupt handler was "important" and more or less allowed to hog the
+> CPU at will.
 > 
-> Reported-by: Adrien Moulin <amoulin@corp.free.fr>
-> Link: https://lore.kernel.org/all/61481278.42813558.1677845235112.JavaMail.zimbra@corp.free.fr
-> Fixes: c1318b39c7d3 ("tls: Add opt-in zerocopy mode of sendfile()")
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
+> That obviously caused problems because it prevented other interrupt
+> handlers from being served.
+> 
+> This was attempted to work around in hardware by providing interrupt
+> priority levels. No general purpose OS utilized that ever because there
+> is no way to get this right. Not even on UP, unless you build a designed
+> for the purpose "OS".
+> 
+> Soft interrupts are not any better. They avoid the problem of stalling
+> interrupts by moving the problem one level down to the scheduler.
+> 
+> Granted they are a cute hack, but at the very end they are still evading
+> the resource control mechanisms of the OS by defining their own rules:
 
-Thanks for the fix, looks good to me.
+From some measurements I've done, while softints seem like a good
+idea they are almost pointless.
 
-Acked-by: Maxim Mikityanskiy <maxtram95@gmail.com>
+What usually happens is a hardware interrupt happens, does some
+of the required work, schedules a softint and returns.
+Immediately a softint happens (at the same instruction) and
+does all the rest of the work.
+The work has to be done, but you've added cost of the extra
+scheduling and interrupt - so overall it is slower.
 
-> Maxim, can I add a .mailmap entry for you? get_maintainers
-> will complain if I don't CC your @nvidia address :(
+The massive batching up of some operations (like ethernet
+transmit clearing and rx setup, and things being freed after rcu)
+doesn't help latency.
+Without the batching the softint would finish faster and cause
+less of a latency 'problem' to whatever was interrupted.
 
-Yes please, that would be great. You can also add maximmi@mellanox.com,
-in case someone refers to some old commit.
+Now softints do help interrupt latency, but that is only relevant
+if you have critical interrupts (like pulling data out of a hardware
+fifo).  Most modern hardware doesn't have anything that critical.
+
+Now there is code that can decide to drop softint processing to
+a normal thread. If that ever happens you probably lose 'big time'.
+Normal softint processing is higher priority than any process code.
+But the kernel thread runs at the priority of a normal user thread.
+Pretty much the lowest of the low.
+So all this 'high priority' interrupt related processing that
+really does have to happen to keep the system running just doesn't
+get scheduled.
+
+I think it was Eric who had problems with ethernet packets being
+dropped and changed the logic (of dropping to a thread) to make
+it much less likely - but that got reverted (well more code added
+that effectively reverted it) not long after.
+
+Try (as I was) to run a test that requires you to receive ALL
+of the 500000 ethernet packets being sent to an interface every
+second while also doing enough processing on the packets to
+make the system (say) 90% busy (real time UDP audio processing)
+and you soon find the defaults are entirely hopeless.
+
+Even the interrupt 'mitigation' options on the ethernet controller
+don't actually work - packets get dropped at the low level.
+(That will fail on an otherwise idle system.)
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
