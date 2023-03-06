@@ -2,133 +2,355 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B043A6AB73C
-	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 08:48:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 657FB6AB748
+	for <lists+netdev@lfdr.de>; Mon,  6 Mar 2023 08:52:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229651AbjCFHs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 02:48:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47890 "EHLO
+        id S229696AbjCFHwo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 02:52:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229613AbjCFHs4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 02:48:56 -0500
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2047.outbound.protection.outlook.com [40.107.6.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FEEA901C
-        for <netdev@vger.kernel.org>; Sun,  5 Mar 2023 23:48:55 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hg5zBvepkGsmh0B3A8qsZ8x8BesnNVcSD8OLs1pImti+SXq0FyRWAlpqgYFh3mUue9ERk4MrPOXmTj07mzlybqLmWFZBpuojsBFXx+LgUjqYtlJpirv1CkwAGph2s8iMamixR6n7bzxDGIRTDfgEm97N8zOsBAv0pfMBz0DHGDto/aV9OnSLyUbuT4a7FPOm3NpFFyoxWpGjnrVTp7rQyW6lXqHzno41SWyFoc5YV/nDrDmxozeNZaMGr7vMley81yhRwFbX7L0hfvV9GrFud1SWHFM2hxK1k92b4TykaGdj0OG0kzk+IEvKkHV+7cYPrvnvKt3I6gF+ujvolyA0jg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=41RWR3kp0azA7UdocINh4kEiWtlufSoladcLIEf/KnI=;
- b=H7eYUtFsQm3hppfy1vaIAJRQPWeDVbqxnXkfLkZHjgoYAUdXok1Bcmaq+riAZAzfpa1pCFNddeaFfDMIceDzfO2ycr2618LQ2VnfJL9Z9LIDkiDupw4p99c2mHAuAU6u+EjHxoKEhBVEV+ZDiYELUej+3oHkpOVCrK49k2EY3WpTVO8rMl6fOrHFzKnAAefU+n0f9MvALDjDIzqjyr/9dvvJ77nKQGUpRomPrURz3ZjaLI2+TmC5bfQNUfQi530ZzqMznT15uMjrGZEa0xkDmamrzrFI5iYT9c+IVtjun16JwWLaisv9y+Bmy3H0I7Rx+Gf19B7UgnPYss8CBxBYhw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=solid-run.com; dmarc=pass action=none
- header.from=solid-run.com; dkim=pass header.d=solid-run.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=solidrn.onmicrosoft.com; s=selector1-solidrn-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=41RWR3kp0azA7UdocINh4kEiWtlufSoladcLIEf/KnI=;
- b=jhTptzzG/N4DPF1PkUTGG1q7P5Z0+sNU/vPbP/LN9zvt6zqbNRxF3XWKGn+FegYYTKLFoLssUTj3O2Drsfwqx6iiYEhK28XyjVr9XCRK8/oEiSEcbNVVQY7rh3/T8gAN4PedhCKQtfEE17oGMl+ZK4G3FSUdjvSydka8Uje/pQM=
-Received: from AM0PR04MB4723.eurprd04.prod.outlook.com (2603:10a6:208:c0::20)
- by AM7PR04MB6951.eurprd04.prod.outlook.com (2603:10a6:20b:10f::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.28; Mon, 6 Mar
- 2023 07:48:52 +0000
-Received: from AM0PR04MB4723.eurprd04.prod.outlook.com
- ([fe80::b28a:f4f1:8415:221d]) by AM0PR04MB4723.eurprd04.prod.outlook.com
- ([fe80::b28a:f4f1:8415:221d%4]) with mapi id 15.20.6156.022; Mon, 6 Mar 2023
- 07:48:52 +0000
-From:   Alvaro Karsz <alvaro.karsz@solid-run.com>
-To:     Jason Wang <jasowang@redhat.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net] virtio-net: unify notifications coalescing structs
-Thread-Topic: [PATCH net] virtio-net: unify notifications coalescing structs
-Thread-Index: AQHZT3okq/4zOsyz3kGfXdQdK8+naq7tG6AAgABFKlI=
-Date:   Mon, 6 Mar 2023 07:48:51 +0000
-Message-ID: <AM0PR04MB4723D2274F037EDD814007A7D4B69@AM0PR04MB4723.eurprd04.prod.outlook.com>
-References: <20230305154942.1770925-1-alvaro.karsz@solid-run.com>
- <CACGkMEuc_MtVpM2bJH20dmXC30Po8Fbd2Y-xv-Q=O13=pLSLpA@mail.gmail.com>
-In-Reply-To: <CACGkMEuc_MtVpM2bJH20dmXC30Po8Fbd2Y-xv-Q=O13=pLSLpA@mail.gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-GB
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=solid-run.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: AM0PR04MB4723:EE_|AM7PR04MB6951:EE_
-x-ms-office365-filtering-correlation-id: baf9857f-3af1-4945-b60f-08db1e173a9f
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Tv+e9vOA58xLmGyoOHgsDqjikG1GbCYOfpORWOc2sIXUmcUkGDaT/+Y9QzJfBivHOtmojqWU1OF+uRdrfIpg4BSsejWavoOqYUoFAaATKD//MNilxMJWJTrzEwDGot99OoHBpbJfNtmotyL23doL/9jbme8qJqtBJlciZxdjta6d7buVfsVQhZwU4d/it70kEMmgxXe3O48OwrtnbDkOukQREY9I9dszWRiSkP5ZcshHfoHguosOdIHqDjY8Tz+2xoMn+nSYlHVsNXfeLGTguVwqHJGr8SmobUz/e3SKd2YnNspplvFBgaaXHXNzG/Nmuy0svBq6HZ6JHNe1TeuHpijqM1VSJRh7w/tRKmBRsWyABbAApMyQxcKom4Ms1STsEAr3akFKT3ZcBgpEJHYARzt6Rhjw8TO3hLciZAXcYW92YXdATIWoeC3cX6uEPEsnO1CrFn+t/2nCwo1VpDwX/o7K4T5n49y5xBxPD0H5Pd2vtQrYI9Mv7hUcsubMZH2Uf5pnV/6JuLqjUgWPRvxZed1KtMVudLeepD/N1iH4Zzl9ScuGGVylaw3fx47upEK1sU7+BU01N6q2LNJx4nxAEBGTumJTyWsidiP794UWbf/6hbeWSIIMq3sY0166pJEbtyoKf965qKLftFiUUFGB6/06yvVTiU8w0KPMY5C5BMt3kv3ocz9+K02vSGO64zyp0cDSPuaUzBEWLGQ+NXkPvg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB4723.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(376002)(136003)(346002)(39830400003)(396003)(366004)(451199018)(33656002)(4326008)(76116006)(66556008)(41300700001)(66946007)(66476007)(66446008)(64756008)(8676002)(6916009)(8936002)(44832011)(2906002)(5660300002)(122000001)(86362001)(38100700002)(38070700005)(558084003)(7696005)(71200400001)(478600001)(55016003)(54906003)(316002)(91956017)(52536014)(6506007)(9686003)(186003)(26005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?zCwW/S44gO+IuRpcvT9cpSzOCubf2si9fculWwhz+0l6IpXVALjsF6lkeg?=
- =?iso-8859-1?Q?w3BECcMNdhoeiumj2lfx+9Oy9kItdEmJ3ITjGtq6zulgWXlzTnGxwtaQ6H?=
- =?iso-8859-1?Q?ZJaS+4+eqB4lrbLm8ELUc4ufH/njFFeAgKeYP/zaHyLm87MB0SzyaKmkPJ?=
- =?iso-8859-1?Q?mppndoVv97q+vFE49XAlqGXAIes8WWp+NJ5hqOkHhQg3Us4Ed8OcOuVmiX?=
- =?iso-8859-1?Q?07i/xkcCsIJr/Pju9yVFrUEMCYUsF62z/7WI/BrwaUAadE6H0BOzDdwvCg?=
- =?iso-8859-1?Q?iO4a3dBl34/hRpsjuAeIQLZNFqcnosn+7YleNB1qT1k0MUcIBnPfdCsopn?=
- =?iso-8859-1?Q?lv9ZuR3m98YYKeDLkwl4tmnUV5XgGzOziWXZPuF/Btxqu9g3yK1coOjbYs?=
- =?iso-8859-1?Q?S2wQXB/3iHc63VDjWbxNdDstGvIV5hoKNaZLUEnU5JDm3I5AeVPER6/UAk?=
- =?iso-8859-1?Q?NTeDyNpMtJ+KMYckvsx02yCECuyl8XYhns1CECHWhj/to1p0WVDLCya4Xl?=
- =?iso-8859-1?Q?2xylP4llclqIgCZCuPvk/0QqQzvwfNW+zsePO92QS4kRqiEcWnrU548tvf?=
- =?iso-8859-1?Q?38Req3ChUsx54GB2CxumFzMRKrxkU2MwCKY5i2+HEAPUKgyGZZYU2d27F9?=
- =?iso-8859-1?Q?lHGlkojOmYGYnhlatmb/sLP8ZUJRF6BxEZb/yCJN0mh1Cu1G4eQsER68p2?=
- =?iso-8859-1?Q?JtcHYbN32LJDfgWQjhUXf8yqMDj6CDNT1rKDMBiTq2oKAQaoReyvNSt3xy?=
- =?iso-8859-1?Q?tbYh6FE1Hy8QsKLjrllL9cvmpdaYaOSCu1/6MzCHifuBcShUwfqeXNVoal?=
- =?iso-8859-1?Q?wdWtw5H4JT+YYa7eVxIFn+UCP2QT+fuZvX+NJdAtbZqKo6iIQoBd5qVUy7?=
- =?iso-8859-1?Q?B0lUsGhvAg7K9CGUpd5kF/QdmdycAjsTRj0i4dAFnogqDgPF7OsdhrqxUR?=
- =?iso-8859-1?Q?UI83ZMKsU2vY6445+VS4icpjaTb2MwhOfSik9VfJ7jJBxcyGNVU2tufPPG?=
- =?iso-8859-1?Q?qgcYlOVkwXaBTt0EmhFENFr8MhCXB40dwNkj8fjENFIqpCMIbqej0v23nx?=
- =?iso-8859-1?Q?7wMANJplQO5LWGBVWAkGGDwGyVhabQjdbMF0gr+5eX4z5yctDuSF7UuUr6?=
- =?iso-8859-1?Q?b3A29qqrJe2yuHDArwegDAfYTdfhR/Lub+RBlZTsWZd2aZZ0IYcNYC7QPI?=
- =?iso-8859-1?Q?889ZtN15PrzfXSkWv5HtUEU8dFZhKO2cMLbMa8RbcqOPWPSnEbwgwjfW1u?=
- =?iso-8859-1?Q?CjQJ/AsVIR/ckj+Sw/WQ2KeTdXX0ehb/93mjALyebxBlC5l9+0jGvdPHeA?=
- =?iso-8859-1?Q?scB9U/kHfBWnFdmoWOiZ3vxnhBea+Uw8oxdiCyTO7xCSDL43FVD0AmwFGn?=
- =?iso-8859-1?Q?P7TDqdl2lsT5//pFpp5kExJ9HYqld2YEvBlNn7sFUjh7meIQdzgl6ZzJHP?=
- =?iso-8859-1?Q?dZM/GSqUBK9qAqGipLyG+w8B/KamMmKTWwIIDnz2gSQzeTRKyEAt1fVuKi?=
- =?iso-8859-1?Q?/0Tt0/z661tD+HmM5RxBDS37VhnI/4cMEGTCogG/cGH4EqsrCL/xflyNgK?=
- =?iso-8859-1?Q?yC6WGur77OyMIFzIILz6zN+piy7vniTVr5SGcNUDj3jVZx+rToFeXxvGHE?=
- =?iso-8859-1?Q?/XA9agQa3Cybg+k0YkHYfzsARKo/RQWeuPM921VCXotfEkXyVHFB535g?=
- =?iso-8859-1?Q?=3D=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S229519AbjCFHwn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 02:52:43 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C3A81F483;
+        Sun,  5 Mar 2023 23:52:41 -0800 (PST)
+Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4PVW2M0V5cz682sK;
+        Mon,  6 Mar 2023 15:50:03 +0800 (CST)
+Received: from [10.123.123.126] (10.123.123.126) by
+ lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Mon, 6 Mar 2023 07:52:38 +0000
+Message-ID: <25ffc506-82cc-848c-6288-ae3955220edb@huawei.com>
+Date:   Mon, 6 Mar 2023 10:52:37 +0300
 MIME-Version: 1.0
-X-OriginatorOrg: solid-run.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB4723.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: baf9857f-3af1-4945-b60f-08db1e173a9f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Mar 2023 07:48:51.9527
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a4a8aaf3-fd27-4e27-add2-604707ce5b82
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 2Bg8Q4C5K5zMr0GjBISbAfT4fATTctolKq1YLE/69GHw/DG6+y4436YVpSkzyZXMAHzNo9dbKtvCFyc5HPSYH6Tfa8YJTpqbpBuykC5f79A=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB6951
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_PASS,T_SPF_PERMERROR autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v9 06/12] landlock: Refactor _unmask_layers() and
+ _init_layer_masks()
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+        <artem.kuzin@huawei.com>
+References: <20230116085818.165539-1-konstantin.meskhidze@huawei.com>
+ <20230116085818.165539-7-konstantin.meskhidze@huawei.com>
+ <3e9ef23b-c599-6ba1-1d18-a615f53b6e7b@digikod.net>
+From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+In-Reply-To: <3e9ef23b-c599-6ba1-1d18-a615f53b6e7b@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.123.123.126]
+X-ClientProxiedBy: lhrpeml500003.china.huawei.com (7.191.162.67) To
+ lhrpeml500004.china.huawei.com (7.191.163.9)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Is this too late to be changed?=0A=
-> =0A=
-> Thanks=0A=
-=0A=
-You're right.=0A=
-What do you suggest, dropping the patch or adding the unified struct withou=
-t deleting the existing ones?=0A=
+
+
+2/21/2023 9:07 PM, Mickaël Salaün пишет:
+> It's not "_unmask_layers() and _init_layer_masks()": there is no "_"
+> prefixes.
+> Using "landlock_unmask_layers()" in the subject would be too long, so
+> you can replace it with "landlock: Refactor layer helpers".
+> For consistency, you can change the previous patch's subject to
+> "landlock: Move and rename layer helpers"
+> 
+> Anyway, please send a new patch series. Most of the kernel code should
+> be good and I could then push it to -next for testing while reviewing
+> the last parts.
+
+   Hi, Mickaël. I was on a short vacation. Sorry for late reply.
+   I will reply your review and send a new patch ASAP.
+
+   Regards,
+   Konstantin
+
+> 
+> 
+> On 16/01/2023 09:58, Konstantin Meskhidze wrote:
+>> Add new key_type argument to the landlock_init_layer_masks() helper.
+>> Add a masks_array_size argument to the landlock_unmask_layers() helper.
+>> These modifications support implementing new rule types in the next
+>> Landlock versions.
+>> 
+>> Signed-off-by: Mickaël Salaün <mic@digikod.net>
+>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>> ---
+>> 
+>> Changes since v8:
+>> * None.
+>> 
+>> Changes since v7:
+>> * Refactors commit message, adds a co-developer.
+>> * Minor fixes.
+>> 
+>> Changes since v6:
+>> * Removes masks_size attribute from init_layer_masks().
+>> * Refactors init_layer_masks() with new landlock_key_type.
+>> 
+>> Changes since v5:
+>> * Splits commit.
+>> * Formats code with clang-format-14.
+>> 
+>> Changes since v4:
+>> * Refactors init_layer_masks(), get_handled_accesses()
+>> and unmask_layers() functions to support multiple rule types.
+>> * Refactors landlock_get_fs_access_mask() function with
+>> LANDLOCK_MASK_ACCESS_FS mask.
+>> 
+>> Changes since v3:
+>> * Splits commit.
+>> * Refactors landlock_unmask_layers functions.
+>> 
+>> ---
+>>   security/landlock/fs.c      | 43 ++++++++++++++++--------------
+>>   security/landlock/ruleset.c | 52 ++++++++++++++++++++++++++-----------
+>>   security/landlock/ruleset.h | 17 ++++++------
+>>   3 files changed, 70 insertions(+), 42 deletions(-)
+>> 
+>> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
+>> index 73a7399f93ba..a73dbd3f9ddb 100644
+>> --- a/security/landlock/fs.c
+>> +++ b/security/landlock/fs.c
+>> @@ -441,20 +441,22 @@ static bool is_access_to_paths_allowed(
+>>   	}
+>>   
+>>   	if (unlikely(dentry_child1)) {
+>> -		landlock_unmask_layers(find_rule(domain, dentry_child1),
+>> -				       landlock_init_layer_masks(
+>> -					       domain, LANDLOCK_MASK_ACCESS_FS,
+>> -					       &_layer_masks_child1),
+>> -				       &_layer_masks_child1);
+>> +		landlock_unmask_layers(
+>> +			find_rule(domain, dentry_child1),
+>> +			landlock_init_layer_masks(
+>> +				domain, LANDLOCK_MASK_ACCESS_FS,
+>> +				&_layer_masks_child1, LANDLOCK_KEY_INODE),
+>> +			&_layer_masks_child1, ARRAY_SIZE(_layer_masks_child1));
+>>   		layer_masks_child1 = &_layer_masks_child1;
+>>   		child1_is_directory = d_is_dir(dentry_child1);
+>>   	}
+>>   	if (unlikely(dentry_child2)) {
+>> -		landlock_unmask_layers(find_rule(domain, dentry_child2),
+>> -				       landlock_init_layer_masks(
+>> -					       domain, LANDLOCK_MASK_ACCESS_FS,
+>> -					       &_layer_masks_child2),
+>> -				       &_layer_masks_child2);
+>> +		landlock_unmask_layers(
+>> +			find_rule(domain, dentry_child2),
+>> +			landlock_init_layer_masks(
+>> +				domain, LANDLOCK_MASK_ACCESS_FS,
+>> +				&_layer_masks_child2, LANDLOCK_KEY_INODE),
+>> +			&_layer_masks_child2, ARRAY_SIZE(_layer_masks_child2));
+>>   		layer_masks_child2 = &_layer_masks_child2;
+>>   		child2_is_directory = d_is_dir(dentry_child2);
+>>   	}
+>> @@ -507,14 +509,15 @@ static bool is_access_to_paths_allowed(
+>>   
+>>   		rule = find_rule(domain, walker_path.dentry);
+>>   		allowed_parent1 = landlock_unmask_layers(
+>> -			rule, access_masked_parent1, layer_masks_parent1);
+>> +			rule, access_masked_parent1, layer_masks_parent1,
+>> +			ARRAY_SIZE(*layer_masks_parent1));
+>>   		allowed_parent2 = landlock_unmask_layers(
+>> -			rule, access_masked_parent2, layer_masks_parent2);
+>> +			rule, access_masked_parent2, layer_masks_parent2,
+>> +			ARRAY_SIZE(*layer_masks_parent2));
+>>   
+>>   		/* Stops when a rule from each layer grants access. */
+>>   		if (allowed_parent1 && allowed_parent2)
+>>   			break;
+>> -
+>>   jump_up:
+>>   		if (walker_path.dentry == walker_path.mnt->mnt_root) {
+>>   			if (follow_up(&walker_path)) {
+>> @@ -553,8 +556,8 @@ static int check_access_path(const struct landlock_ruleset *const domain,
+>>   {
+>>   	layer_mask_t layer_masks[LANDLOCK_NUM_ACCESS_FS] = {};
+>>   
+>> -	access_request =
+>> -		landlock_init_layer_masks(domain, access_request, &layer_masks);
+>> +	access_request = landlock_init_layer_masks(
+>> +		domain, access_request, &layer_masks, LANDLOCK_KEY_INODE);
+>>   	if (is_access_to_paths_allowed(domain, path, access_request,
+>>   				       &layer_masks, NULL, 0, NULL, NULL))
+>>   		return 0;
+>> @@ -640,7 +643,8 @@ static bool collect_domain_accesses(
+>>   		return true;
+>>   
+>>   	access_dom = landlock_init_layer_masks(domain, LANDLOCK_MASK_ACCESS_FS,
+>> -					       layer_masks_dom);
+>> +					       layer_masks_dom,
+>> +					       LANDLOCK_KEY_INODE);
+>>   
+>>   	dget(dir);
+>>   	while (true) {
+>> @@ -648,7 +652,8 @@ static bool collect_domain_accesses(
+>>   
+>>   		/* Gets all layers allowing all domain accesses. */
+>>   		if (landlock_unmask_layers(find_rule(domain, dir), access_dom,
+>> -					   layer_masks_dom)) {
+>> +					   layer_masks_dom,
+>> +					   ARRAY_SIZE(*layer_masks_dom))) {
+>>   			/*
+>>   			 * Stops when all handled accesses are allowed by at
+>>   			 * least one rule in each layer.
+>> @@ -763,7 +768,7 @@ static int current_check_refer_path(struct dentry *const old_dentry,
+>>   		 */
+>>   		access_request_parent1 = landlock_init_layer_masks(
+>>   			dom, access_request_parent1 | access_request_parent2,
+>> -			&layer_masks_parent1);
+>> +			&layer_masks_parent1, LANDLOCK_KEY_INODE);
+>>   		if (is_access_to_paths_allowed(
+>>   			    dom, new_dir, access_request_parent1,
+>>   			    &layer_masks_parent1, NULL, 0, NULL, NULL))
+>> @@ -1139,7 +1144,7 @@ static int hook_file_open(struct file *const file)
+>>   	if (is_access_to_paths_allowed(
+>>   		    dom, &file->f_path,
+>>   		    landlock_init_layer_masks(dom, full_access_request,
+>> -					      &layer_masks),
+>> +					      &layer_masks, LANDLOCK_KEY_INODE),
+>>   		    &layer_masks, NULL, 0, NULL, NULL)) {
+>>   		allowed_access = full_access_request;
+>>   	} else {
+>> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
+>> index 22590cac3d56..9748b54b42fe 100644
+>> --- a/security/landlock/ruleset.c
+>> +++ b/security/landlock/ruleset.c
+>> @@ -576,14 +576,15 @@ landlock_find_rule(const struct landlock_ruleset *const ruleset,
+>>   /*
+>>    * @layer_masks is read and may be updated according to the access request and
+>>    * the matching rule.
+>> + * @masks_array_size must be equal to ARRAY_SIZE(*layer_masks).
+>>    *
+>>    * Returns true if the request is allowed (i.e. relevant layer masks for the
+>>    * request are empty).
+>>    */
+>> -bool landlock_unmask_layers(
+>> -	const struct landlock_rule *const rule,
+>> -	const access_mask_t access_request,
+>> -	layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS])
+>> +bool landlock_unmask_layers(const struct landlock_rule *const rule,
+>> +			    const access_mask_t access_request,
+>> +			    layer_mask_t (*const layer_masks)[],
+>> +			    const size_t masks_array_size)
+>>   {
+>>   	size_t layer_level;
+>>   
+>> @@ -615,8 +616,7 @@ bool landlock_unmask_layers(
+>>   		 * requested access.
+>>   		 */
+>>   		is_empty = true;
+>> -		for_each_set_bit(access_bit, &access_req,
+>> -				 ARRAY_SIZE(*layer_masks)) {
+>> +		for_each_set_bit(access_bit, &access_req, masks_array_size) {
+>>   			if (layer->access & BIT_ULL(access_bit))
+>>   				(*layer_masks)[access_bit] &= ~layer_bit;
+>>   			is_empty = is_empty && !(*layer_masks)[access_bit];
+>> @@ -627,6 +627,10 @@ bool landlock_unmask_layers(
+>>   	return false;
+>>   }
+>>   
+>> +typedef access_mask_t
+>> +get_access_mask_t(const struct landlock_ruleset *const ruleset,
+>> +		  const u16 layer_level);
+>> +
+>>   /*
+>>    * init_layer_masks - Initialize layer masks from an access request
+>>    *
+>> @@ -636,19 +640,34 @@ bool landlock_unmask_layers(
+>>    * @domain: The domain that defines the current restrictions.
+>>    * @access_request: The requested access rights to check.
+>>    * @layer_masks: The layer masks to populate.
+>> + * @key_type: The key type to switch between access masks of different types.
+>>    *
+>>    * Returns: An access mask where each access right bit is set which is handled
+>>    * in any of the active layers in @domain.
+>>    */
+>> -access_mask_t landlock_init_layer_masks(
+>> -	const struct landlock_ruleset *const domain,
+>> -	const access_mask_t access_request,
+>> -	layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS])
+>> +access_mask_t
+>> +landlock_init_layer_masks(const struct landlock_ruleset *const domain,
+>> +			  const access_mask_t access_request,
+>> +			  layer_mask_t (*const layer_masks)[],
+>> +			  const enum landlock_key_type key_type)
+>>   {
+>>   	access_mask_t handled_accesses = 0;
+>> -	size_t layer_level;
+>> +	size_t layer_level, num_access;
+>> +	get_access_mask_t *get_access_mask;
+>> +
+>> +	switch (key_type) {
+>> +	case LANDLOCK_KEY_INODE:
+>> +		get_access_mask = landlock_get_fs_access_mask;
+>> +		num_access = LANDLOCK_NUM_ACCESS_FS;
+>> +		break;
+>> +	default:
+>> +		WARN_ON_ONCE(1);
+>> +		return 0;
+>> +	}
+>> +
+>> +	memset(layer_masks, 0,
+>> +	       array_size(sizeof((*layer_masks)[0]), num_access));
+>>   
+>> -	memset(layer_masks, 0, sizeof(*layer_masks));
+>>   	/* An empty access request can happen because of O_WRONLY | O_RDWR. */
+>>   	if (!access_request)
+>>   		return 0;
+>> @@ -658,10 +677,13 @@ access_mask_t landlock_init_layer_masks(
+>>   		const unsigned long access_req = access_request;
+>>   		unsigned long access_bit;
+>>   
+>> -		for_each_set_bit(access_bit, &access_req,
+>> -				 ARRAY_SIZE(*layer_masks)) {
+>> +		for_each_set_bit(access_bit, &access_req, num_access) {
+>> +			/*
+>> +			 * Artificially handles all initially denied by default
+>> +			 * access rights.
+>> +			 */
+>>   			if (BIT_ULL(access_bit) &
+>> -			    landlock_get_fs_access_mask(domain, layer_level)) {
+>> +			    get_access_mask(domain, layer_level)) {
+>>   				(*layer_masks)[access_bit] |=
+>>   					BIT_ULL(layer_level);
+>>   				handled_accesses |= BIT_ULL(access_bit);
+>> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
+>> index 60a3c4d4d961..77349764e111 100644
+>> --- a/security/landlock/ruleset.h
+>> +++ b/security/landlock/ruleset.h
+>> @@ -266,14 +266,15 @@ landlock_get_fs_access_mask(const struct landlock_ruleset *const ruleset,
+>>   	return landlock_get_raw_fs_access_mask(ruleset, layer_level) |
+>>   	       ACCESS_FS_INITIALLY_DENIED;
+>>   }
+>> -bool landlock_unmask_layers(
+>> -	const struct landlock_rule *const rule,
+>> -	const access_mask_t access_request,
+>> -	layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS]);
+>> +bool landlock_unmask_layers(const struct landlock_rule *const rule,
+>> +			    const access_mask_t access_request,
+>> +			    layer_mask_t (*const layer_masks)[],
+>> +			    const size_t masks_array_size);
+>>   
+>> -access_mask_t landlock_init_layer_masks(
+>> -	const struct landlock_ruleset *const domain,
+>> -	const access_mask_t access_request,
+>> -	layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS]);
+>> +access_mask_t
+>> +landlock_init_layer_masks(const struct landlock_ruleset *const domain,
+>> +			  const access_mask_t access_request,
+>> +			  layer_mask_t (*const layer_masks)[],
+>> +			  const enum landlock_key_type key_type);
+>>   
+>>   #endif /* _SECURITY_LANDLOCK_RULESET_H */
+> .
