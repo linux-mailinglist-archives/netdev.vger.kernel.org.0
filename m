@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 411DC6AF842
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 23:08:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96E756AF840
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 23:08:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230381AbjCGWIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 17:08:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56766 "EHLO
+        id S230409AbjCGWIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 17:08:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229686AbjCGWIg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 17:08:36 -0500
+        with ESMTP id S230200AbjCGWIh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 17:08:37 -0500
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34C08943B8
-        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 14:08:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7F9692732
+        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 14:08:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678226915; x=1709762915;
+  t=1678226916; x=1709762916;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=uatTSWFzA4NccItdiirQb1EygGKUDjG8zmngX5CiXQ8=;
-  b=XRMhF5MZEk9jrNMaOo7Cag49fq9mH4jZPeAFiMk7bB4qEjiCQfiPdrfc
-   4h1pP03Xkb1ygzp3GbWVYdF0ARvw9CIlm7aTZ0OVxL8NlO1vookMp4PfY
-   1HYyCalxvg/7rp4EtlKcq3iZe+veNzOwhVNMcj1MrJ6wMyHIinBvpjmz8
-   BYFFUZNc9eH6GDGd8CLoVMpJkDE9cCfZ0zHNQ0mfSbV0rceNj6EokZmM0
-   Vbd8VYY8biGCVPCI7JlqvlYiZNvhbxlMZflVp1aK2CoqHIHkBNtYTpxNh
-   gWuRH02HHFA7N06qpDlXGXFE6kKUDKBYg/YQsFZNajsoMjCr0Q8179uX/
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10642"; a="316386703"
+  bh=rNMDUxVbUJrrqyM/4VAhn0Gtdno3yEClhpOlSUiV+M4=;
+  b=PWNkudyPfUf1C3A6+sGh81KJ5nFn6Ldx4gw2dsHisn2uG2B4JVd3AuwE
+   BFayxM8pugTbQbn+H2/VABa7Smwlhp1f2tFcvd5YQomtUekSg1735F6gJ
+   e++ncJ50Pkmj4La4H8FWh6ZJhv1fuwR33CD9JXKCmJiInIOp47cQmSACl
+   wb96e2anHjhSIH3EXcR6ATQua/KPx8FVYS+deKIM/lHq5Ernjh2kuPcnI
+   claOaT0VLcu8K1UF0mL3nMZ9scF8eStU/yePPJYIND+ZGwql/WWDYc3zJ
+   YTEKLBUWu1nrtuUx05TzhSfT9xgj2hTl7jJeAETKCeE7FGu3iSxAC7Q2q
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10642"; a="316386720"
 X-IronPort-AV: E=Sophos;i="5.98,242,1673942400"; 
-   d="scan'208";a="316386703"
+   d="scan'208";a="316386720"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2023 14:08:34 -0800
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2023 14:08:36 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10642"; a="654123238"
+X-IronPort-AV: E=McAfee;i="6500,9779,10642"; a="654123242"
 X-IronPort-AV: E=Sophos;i="5.98,242,1673942400"; 
-   d="scan'208";a="654123238"
+   d="scan'208";a="654123242"
 Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
-  by orsmga006.jf.intel.com with ESMTP; 07 Mar 2023 14:08:34 -0800
+  by orsmga006.jf.intel.com with ESMTP; 07 Mar 2023 14:08:35 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, netdev@vger.kernel.org
-Cc:     Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        anthony.l.nguyen@intel.com, Dan Carpenter <error27@gmail.com>,
-        Gurucharan G <gurucharanx.g@intel.com>
-Subject: [PATCH net 2/3] ice: don't ignore return codes in VSI related code
-Date:   Tue,  7 Mar 2023 14:07:13 -0800
-Message-Id: <20230307220714.3997294-3-anthony.l.nguyen@intel.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, anthony.l.nguyen@intel.com,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Sujai Buvaneswaran <sujai.buvaneswaran@intel.com>
+Subject: [PATCH net 3/3] ethernet: ice: avoid gcc-9 integer overflow warning
+Date:   Tue,  7 Mar 2023 14:07:14 -0800
+Message-Id: <20230307220714.3997294-4-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20230307220714.3997294-1-anthony.l.nguyen@intel.com>
 References: <20230307220714.3997294-1-anthony.l.nguyen@intel.com>
@@ -62,85 +62,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-There were few smatch warnings reported by Dan:
-- ice_vsi_cfg_xdp_txqs can return 0 instead of ret, which is cleaner
-- return values in ice_vsi_cfg_def were ignored
-- in ice_vsi_rebuild return value was ignored in case rebuild failed,
-  it was a never reached code, however, rewrite it for clarity.
-- ice_vsi_cfg_tc can return 0 instead of ret
+With older compilers like gcc-9, the calculation of the vlan
+priority field causes a false-positive warning from the byteswap:
 
-Fixes: 6624e780a577 ("ice: split ice_vsi_setup into smaller functions")
-Reported-by: Dan Carpenter <error27@gmail.com>
-Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+In file included from drivers/net/ethernet/intel/ice/ice_tc_lib.c:4:
+drivers/net/ethernet/intel/ice/ice_tc_lib.c: In function 'ice_parse_cls_flower':
+include/uapi/linux/swab.h:15:15: error: integer overflow in expression '(int)(short unsigned int)((int)match.key-><U67c8>.<U6698>.vlan_priority << 13) & 57344 & 255' of type 'int' results in '0' [-Werror=overflow]
+   15 |  (((__u16)(x) & (__u16)0x00ffU) << 8) |   \
+      |   ~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+include/uapi/linux/swab.h:106:2: note: in expansion of macro '___constant_swab16'
+  106 |  ___constant_swab16(x) :   \
+      |  ^~~~~~~~~~~~~~~~~~
+include/uapi/linux/byteorder/little_endian.h:42:43: note: in expansion of macro '__swab16'
+   42 | #define __cpu_to_be16(x) ((__force __be16)__swab16((x)))
+      |                                           ^~~~~~~~
+include/linux/byteorder/generic.h:96:21: note: in expansion of macro '__cpu_to_be16'
+   96 | #define cpu_to_be16 __cpu_to_be16
+      |                     ^~~~~~~~~~~~~
+drivers/net/ethernet/intel/ice/ice_tc_lib.c:1458:5: note: in expansion of macro 'cpu_to_be16'
+ 1458 |     cpu_to_be16((match.key->vlan_priority <<
+      |     ^~~~~~~~~~~
+
+After a change to be16_encode_bits(), the code becomes more
+readable to both people and compilers, which avoids the warning.
+
+Fixes: 34800178b302 ("ice: Add support for VLAN priority filters in switchdev")
+Suggested-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Tested-by: Sujai Buvaneswaran <sujai.buvaneswaran@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_lib.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_tc_lib.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 781475480ff2..0f52ea38b6f3 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -2126,7 +2126,7 @@ int ice_vsi_cfg_xdp_txqs(struct ice_vsi *vsi)
- 	ice_for_each_rxq(vsi, i)
- 		ice_tx_xsk_pool(vsi, i);
- 
--	return ret;
-+	return 0;
- }
- 
- /**
-@@ -2693,12 +2693,14 @@ ice_vsi_cfg_def(struct ice_vsi *vsi, struct ice_vsi_cfg_params *params)
- 		return ret;
- 
- 	/* allocate memory for Tx/Rx ring stat pointers */
--	if (ice_vsi_alloc_stat_arrays(vsi))
-+	ret = ice_vsi_alloc_stat_arrays(vsi);
-+	if (ret)
- 		goto unroll_vsi_alloc;
- 
- 	ice_alloc_fd_res(vsi);
- 
--	if (ice_vsi_get_qs(vsi)) {
-+	ret = ice_vsi_get_qs(vsi);
-+	if (ret) {
- 		dev_err(dev, "Failed to allocate queues. vsi->idx = %d\n",
- 			vsi->idx);
- 		goto unroll_vsi_alloc_stat;
-@@ -2811,6 +2813,7 @@ ice_vsi_cfg_def(struct ice_vsi *vsi, struct ice_vsi_cfg_params *params)
- 		break;
- 	default:
- 		/* clean up the resources and exit */
-+		ret = -EINVAL;
- 		goto unroll_vsi_init;
- 	}
- 
-@@ -3508,10 +3511,10 @@ int ice_vsi_rebuild(struct ice_vsi *vsi, u32 vsi_flags)
- 		if (vsi_flags & ICE_VSI_FLAG_INIT) {
- 			ret = -EIO;
- 			goto err_vsi_cfg_tc_lan;
--		} else {
--			kfree(coalesce);
--			return ice_schedule_reset(pf, ICE_RESET_PFR);
+diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.c b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+index 6b48cbc049c6..76f29a5bf8d7 100644
+--- a/drivers/net/ethernet/intel/ice/ice_tc_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+@@ -1455,8 +1455,8 @@ ice_parse_cls_flower(struct net_device *filter_dev, struct ice_vsi *vsi,
+ 		if (match.mask->vlan_priority) {
+ 			fltr->flags |= ICE_TC_FLWR_FIELD_VLAN_PRIO;
+ 			headers->vlan_hdr.vlan_prio =
+-				cpu_to_be16((match.key->vlan_priority <<
+-					     VLAN_PRIO_SHIFT) & VLAN_PRIO_MASK);
++				be16_encode_bits(match.key->vlan_priority,
++						 VLAN_PRIO_MASK);
  		}
-+
-+		kfree(coalesce);
-+		return ice_schedule_reset(pf, ICE_RESET_PFR);
+ 
+ 		if (match.mask->vlan_tpid)
+@@ -1489,8 +1489,8 @@ ice_parse_cls_flower(struct net_device *filter_dev, struct ice_vsi *vsi,
+ 		if (match.mask->vlan_priority) {
+ 			fltr->flags |= ICE_TC_FLWR_FIELD_CVLAN_PRIO;
+ 			headers->cvlan_hdr.vlan_prio =
+-				cpu_to_be16((match.key->vlan_priority <<
+-					     VLAN_PRIO_SHIFT) & VLAN_PRIO_MASK);
++				be16_encode_bits(match.key->vlan_priority,
++						 VLAN_PRIO_MASK);
+ 		}
  	}
  
- 	ice_vsi_realloc_stat_arrays(vsi, prev_txq, prev_rxq);
-@@ -3759,7 +3762,7 @@ int ice_vsi_cfg_tc(struct ice_vsi *vsi, u8 ena_tc)
- 	dev = ice_pf_to_dev(pf);
- 	if (vsi->tc_cfg.ena_tc == ena_tc &&
- 	    vsi->mqprio_qopt.mode != TC_MQPRIO_MODE_CHANNEL)
--		return ret;
-+		return 0;
- 
- 	ice_for_each_traffic_class(i) {
- 		/* build bitmap of enabled TCs */
 -- 
 2.38.1
 
