@@ -2,65 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 414D76AFAC6
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 00:53:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C7996AFB00
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 01:22:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229758AbjCGXxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 18:53:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40588 "EHLO
+        id S229685AbjCHAWl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 19:22:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbjCGXxV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 18:53:21 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F2D999C35;
-        Tue,  7 Mar 2023 15:53:20 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id k10so35263896edk.13;
-        Tue, 07 Mar 2023 15:53:19 -0800 (PST)
+        with ESMTP id S229718AbjCHAWi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 19:22:38 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC4CCAFB8B;
+        Tue,  7 Mar 2023 16:22:33 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id l1so15024322pjt.2;
+        Tue, 07 Mar 2023 16:22:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678233198;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=FdjE0n4Mn4g5FWhFGcgINl7gukDbjB9TKM/iRt5mgrQ=;
-        b=cVmEl3B/u542VqRx2sYhwamgmtWUPXBnDULsNr0Oj+hVmGKEVgPtVhi2cThqUmQMxG
-         YgBiCnvH8aYEsI3vTaArc3mNyI/D9SpgHJ7CLFonH+1p/mQ5Tl936ZAyiunCi3s36B5T
-         1sAsgvTqh8MNKlouyRKT9XeAnZs4lIrE0+sCRr34wUNjMpMO+LMMyZDuujnM28gkL7M3
-         S0Nn9KSADDXUol3sZVt64/aMfYjrWZkg4IM00ddHZC22gOyvw5agz0fxLRBALLj14N4p
-         xav0f0sy8QIDiEYrxd+WbXujYWKZcybGRTLs9uwKibspaqieBymONQvClV7Df8JN+w1A
-         ZOmw==
+        d=gmail.com; s=20210112; t=1678234953;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=35Won8zMWVVfPTEvhn2MxcVhR7a/DGVFntbhUz0/4yw=;
+        b=fIpSwKd2OegJR409d02lXFRB+ZwhOyO+8Qbrkm5cJPg4Bop5P+9uNq4LillBqDYNEj
+         AUefz91QTTsnh8pYk3xdsYjpMqlS/ceg3z2GyzreXnzl9eIF67e2hDG9ilDVwpT42LAx
+         EMcpl5mZdzrwvN3qzbCKEIAe9gVaNy29wzl657wpSk3dLTSjT7mc+Mb7yzSFwSuxgeZe
+         QqsnBYrMIo08xiZ1psrckYPqLFAzMTtpYQGbE7za4TF9rtQXay6nyJZdz07DFjMxoeeb
+         vVmaveiFeEjmBEaGcpIBQTxW7tWR/1AzhgccPWMuuz2eiyOzCW3hoIz36nNHL2oASfRC
+         +sxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678233198;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=FdjE0n4Mn4g5FWhFGcgINl7gukDbjB9TKM/iRt5mgrQ=;
-        b=Vl199kUdYTDCs/73vrATVUMRavss+gzYq02XIOUr8dEp5yYEtDEcZ22w0G6B3N9/Dj
-         Tv7Eqwoq9YBaJ5AITY57wr2JKGQSDVpWbGuiJmviPJiga0h2eJT9cyauFaCMi6r2JD9l
-         4gwFIfZgfppEem2BaFa8Wq9wmwtQo8A9+LnjglzXhmIdvGrq5RRXM9kC9XKfcVpapUuF
-         gHH2k/qCIDrLFS6my2pzO4PRTk4w7tEXA/pMl7djH2YZvFAxYZPq0y50mXOnfbxKXugb
-         z3ThHKBE2FivxA45CW/iHVZvPy6PvchVX64YplyIMe/y4ay8YoUM8aR9XLGWnKH/qz/W
-         nRHA==
-X-Gm-Message-State: AO0yUKVE1zL/wJ7PCup9EtSzx4R/wUq1zYdnvUJ5X8zxKExfcn/U4BRj
-        r4JreXOEMhfmcJ1z22teBU0ty5keJ5VeC/sJh40=
-X-Google-Smtp-Source: AK7set9B6oVRaFntg12OgVAm7Qe95jsjRRyNTS3c23PoEGnmr/pBV8bZG4hbZ09iHA1EI8Fo1yY8DsyRfhYZVHy0l8c=
-X-Received: by 2002:a17:906:3141:b0:8e5:411d:4d09 with SMTP id
- e1-20020a170906314100b008e5411d4d09mr8148375eje.15.1678233198343; Tue, 07 Mar
- 2023 15:53:18 -0800 (PST)
+        d=1e100.net; s=20210112; t=1678234953;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=35Won8zMWVVfPTEvhn2MxcVhR7a/DGVFntbhUz0/4yw=;
+        b=IxUBbcP1PVLU2seWaRMsVEsRoCFBQLJN4ejv5V1nWcBKXTu3UWZRiO8yvVzNChFYbN
+         OCORqNLMo6lSbpQIzha449bgOp0lIy3dto+v0Ilrxhl4G/yuBOXkL/i9xViuOL4yGpig
+         TuZhZhev/AO6ndA/U8rCXMw/wtGIsDV01tTTessOXacfs3TBMOlLJ2KMhi/Sum+lBWQz
+         4gRVWOce2tB20SZHN4eRagNlr6csqIIWyxPQI9lbhO/VjLmca1kv3qA/Ccwh//R2Qgf1
+         +5IhpBRuqduBOICK1An62whmvp8uW0nF1XOf9LOlZk9mVV8lpIr56jAliylOFzfE1j0J
+         kALg==
+X-Gm-Message-State: AO0yUKW8cm8JgJqZgAs1F08WIcpUs+s5nHODj5TRTHoixL8gLMTN+E2D
+        38+t73sBkXg8IEo8IKa4drw=
+X-Google-Smtp-Source: AK7set+OU+ZArKrJvYHh6kIMnL/wqiCiVHWQeGVEMq11+eDuOJCa5624lHFNshLCgAWUXNZhBrn1MQ==
+X-Received: by 2002:a17:90b:4c0a:b0:22c:aaaf:8dd9 with SMTP id na10-20020a17090b4c0a00b0022caaaf8dd9mr17003966pjb.47.1678234952980;
+        Tue, 07 Mar 2023 16:22:32 -0800 (PST)
+Received: from localhost (ec2-52-9-159-93.us-west-1.compute.amazonaws.com. [52.9.159.93])
+        by smtp.gmail.com with ESMTPSA id c21-20020a17090a8d1500b002347475e71fsm8085968pjo.14.2023.03.07.16.22.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Mar 2023 16:22:32 -0800 (PST)
+Date:   Tue, 7 Mar 2023 23:53:17 +0000
+From:   Bobby Eshleman <bobbyeshleman@gmail.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     Arseniy Krasnov <avkrasnov@sberdevices.ru>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        kvm@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, oxffffaa@gmail.com,
+        Eric Dumazet <edumazet@google.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>, kernel@sberdevices.ru,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [RFC PATCH v2 2/4] virtio/vsock: remove all data from sk_buff
+Message-ID: <ZAfObcosX5PlS4Lf@bullseye>
+References: <a7ab414b-5e41-c7b6-250b-e8401f335859@sberdevices.ru>
+ <dfadea17-a91e-105f-c213-a73f9731c8bd@sberdevices.ru>
+ <20230306120857.6flftb3fftmsceyl@sgarzare-redhat>
+ <b18e3b13-3386-e9ee-c817-59588e6d5fb6@sberdevices.ru>
+ <20230306155121.7xwxzgxtle7qjbnc@sgarzare-redhat>
+ <9b882d45-3d9d-c44d-a172-f23fff54962b@sberdevices.ru>
+ <20230306161852.4s7qf4qm3fnwjck7@sgarzare-redhat>
 MIME-Version: 1.0
-References: <20230301154953.641654-1-joannelkoong@gmail.com>
- <20230301154953.641654-4-joannelkoong@gmail.com> <20230306073628.g2kg5vp6lw6vzyya@apollo>
- <CAJnrk1ZF5FEtXKsMEnwbLu5qr-mQ6-j9+PK2j1NEf=hLE1CCKQ@mail.gmail.com>
-In-Reply-To: <CAJnrk1ZF5FEtXKsMEnwbLu5qr-mQ6-j9+PK2j1NEf=hLE1CCKQ@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 7 Mar 2023 15:53:06 -0800
-Message-ID: <CAEf4BzbJTwG6cZ_Oq+ViqR4BiZ+VyVn0q9iYZbyb21ZwdLP9Wg@mail.gmail.com>
-Subject: Re: [PATCH v13 bpf-next 03/10] bpf: Allow initializing dynptrs in kfuncs
-To:     Joanne Koong <joannelkoong@gmail.com>
-Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>, bpf@vger.kernel.org,
-        martin.lau@kernel.org, andrii@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org, toke@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230306161852.4s7qf4qm3fnwjck7@sgarzare-redhat>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -71,125 +84,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 6, 2023 at 10:54=E2=80=AFPM Joanne Koong <joannelkoong@gmail.co=
-m> wrote:
->
-> On Sun, Mar 5, 2023 at 11:36=E2=80=AFPM Kumar Kartikeya Dwivedi
-> <memxor@gmail.com> wrote:
-> >
-> > On Wed, Mar 01, 2023 at 04:49:46PM CET, Joanne Koong wrote:
-> > > This change allows kfuncs to take in an uninitialized dynptr as a
-> > > parameter. Before this change, only helper functions could successful=
-ly
-> > > use uninitialized dynptrs. This change moves the memory access check
-> > > (including stack state growing and slot marking) into
-> > > process_dynptr_func(), which both helpers and kfuncs call into.
-> > >
-> > > Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
-> > > ---
-> > >  kernel/bpf/verifier.c | 67 ++++++++++++++---------------------------=
---
-> > >  1 file changed, 22 insertions(+), 45 deletions(-)
-> > >
-> > > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > > index e0e00509846b..82e39fc5ed05 100644
-> > > --- a/kernel/bpf/verifier.c
-> > > +++ b/kernel/bpf/verifier.c
-> > > @@ -268,7 +268,6 @@ struct bpf_call_arg_meta {
-> > >       u32 ret_btf_id;
-> > >       u32 subprogno;
-> > >       struct btf_field *kptr_field;
-> > > -     u8 uninit_dynptr_regno;
-> > >  };
-> > >
-> > >  struct btf *btf_vmlinux;
-> > > @@ -6225,10 +6224,11 @@ static int process_kptr_func(struct bpf_verif=
-ier_env *env, int regno,
-> > >   * Helpers which do not mutate the bpf_dynptr set MEM_RDONLY in thei=
-r argument
-> > >   * type, and declare it as 'const struct bpf_dynptr *' in their prot=
-otype.
-> > >   */
-> > > -static int process_dynptr_func(struct bpf_verifier_env *env, int reg=
-no,
-> > > -                            enum bpf_arg_type arg_type, struct bpf_c=
-all_arg_meta *meta)
-> > > +static int process_dynptr_func(struct bpf_verifier_env *env, int reg=
-no, int insn_idx,
-> > > +                            enum bpf_arg_type arg_type)
-> > >  {
-> > >       struct bpf_reg_state *regs =3D cur_regs(env), *reg =3D &regs[re=
-gno];
-> > > +     int err;
-> > >
-> > >       /* MEM_UNINIT and MEM_RDONLY are exclusive, when applied to an
-> > >        * ARG_PTR_TO_DYNPTR (or ARG_PTR_TO_DYNPTR | DYNPTR_TYPE_*):
-> > > @@ -6254,23 +6254,23 @@ static int process_dynptr_func(struct bpf_ver=
-ifier_env *env, int regno,
-> > >        *               to.
-> > >        */
-> > >       if (arg_type & MEM_UNINIT) {
-> > > +             int i;
-> > > +
-> > >               if (!is_dynptr_reg_valid_uninit(env, reg)) {
-> > >                       verbose(env, "Dynptr has to be an uninitialized=
- dynptr\n");
-> > >                       return -EINVAL;
-> > >               }
-> > >
-> > > -             /* We only support one dynptr being uninitialized at th=
-e moment,
-> > > -              * which is sufficient for the helper functions we have=
- right now.
-> > > -              */
-> > > -             if (meta->uninit_dynptr_regno) {
-> > > -                     verbose(env, "verifier internal error: multiple=
- uninitialized dynptr args\n");
-> > > -                     return -EFAULT;
-> > > +             /* we write BPF_DW bits (8 bytes) at a time */
-> > > +             for (i =3D 0; i < BPF_DYNPTR_SIZE; i +=3D 8) {
-> > > +                     err =3D check_mem_access(env, insn_idx, regno,
-> > > +                                            i, BPF_DW, BPF_WRITE, -1=
-, false);
-> > > +                     if (err)
-> > > +                             return err;
-> > >               }
-> >
-> > I am not sure moving check_mem_access into process_dynptr_func is the r=
-ight
-> > thing to do. Not sure if a problem already, but sooner or later it migh=
-t be.
-> >
-> > The side effects of the call should take effect on the current state on=
-ly after
-> > we have gone through all arguments for the helper/kfunc call. In this c=
-ase we
-> > will now do stack access while processing the dynptr arg, which may aff=
-ect the
-> > state of stack we see through other memory arguments coming later.
-> >
-> > I think it is better to do it after argument processing is done, simila=
-r to
-> > existing meta.access_size handling which is done after check_func_arg l=
-oop (for
-> > the same reasons).
-> >
->
-> Thanks for taking a look. I don't have a strong preference for either
-> so if you do feel strongly about doing the check_mem_access() only
-> after argument processing, I'm happy to change it. The
-> check_mem_access() call on the dyntpr will mark only the dynptr stack
-> slots, so I don't fully see how it may affect the state of stack
-> through other memory arguments coming later, but I do see your point
-> about keeping the logic more separated out.
+On Mon, Mar 06, 2023 at 05:18:52PM +0100, Stefano Garzarella wrote:
+> On Mon, Mar 06, 2023 at 07:00:10PM +0300, Arseniy Krasnov wrote:
+> > 
+> > 
+> > On 06.03.2023 18:51, Stefano Garzarella wrote:
+> > > On Mon, Mar 06, 2023 at 06:31:22PM +0300, Arseniy Krasnov wrote:
+> > > > 
+> > > > 
+> > > > On 06.03.2023 15:08, Stefano Garzarella wrote:
+> > > > > On Sun, Mar 05, 2023 at 11:07:37PM +0300, Arseniy Krasnov wrote:
+> > > > > > In case of SOCK_SEQPACKET all sk_buffs are used once - after read some
+> > > > > > data from it, it will be removed, so user will never read rest of the
+> > > > > > data. Thus we need to update credit parameters of the socket like whole
+> > > > > > sk_buff is read - so call 'skb_pull()' for the whole buffer.
+> > > > > > 
+> > > > > > Fixes: 71dc9ec9ac7d ("virtio/vsock: replace virtio_vsock_pkt with sk_buff")
+> > > > > > Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+> > > > > > ---
+> > > > > > net/vmw_vsock/virtio_transport_common.c | 2 +-
+> > > > > > 1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > > 
+> > > > > Maybe we could avoid this patch if we directly use pkt_len as I
+> > > > > suggested in the previous patch.
+> > > > Hm, may be we can avoid calling 'skb_pull()' here if 'virtio_transport_dec_rx_pkt()'
+> > > > will use integer argument?
+> > > 
+> > > Yep, exactly!
+> > > 
+> > > > Just call 'virtio_transport_dec_rx_pkt(skb->len)'. skb
+> > > 
+> > > It depends on how we call virtio_transport_inc_rx_pkt(). If we use
+> > > hdr->len there I would use the same to avoid confusion. Plus that's the
+> > > value the other peer sent us, so definitely the right value to increase
+> > > fwd_cnt with. But if skb->len always reflects it, then that's fine.
+> > i've checked 'virtio_transport_rx_work()', it calls 'virtio_vsock_skb_rx_put()' which
+> > sets 'skb->len'. Value is used from header, so seems 'skb->len' == 'hdr->len' in this
+> > case.
+> 
+> Thank you for checking it.
+> 
+> However, I still think it is better to use `hdr->len` (we have to assign it
+> to `pkt_len` anyway, as in the proposal I sent for patch 1), otherwise we
+> have to go every time to check if skb_* functions touch skb->len.
+> 
+> E.g. skb_pull() decrease skb->len, so I'm not sure we can call
+> virtio_transport_dec_rx_pkt(skb->len) if we don't remove `skb_pull(skb,
+> bytes_to_copy);` inside the loop.
+> 
 
-FWIW, I did a similar approach for iters as well. And I suspect it's
-not the only place where we do similar things while processing helper
-arguments, etc.
+I think it does make reasoning about the bytes accounting easier if it
+is based off of the non-mutating hdr->len.
 
-Let's keep this in mind, but I wouldn't necessarily go complicating
-code right now with more of "let's record some info for later" and
-then "ok, we recorded something before, let's act on it".
+Especially if vsock does ever support tunneling (e.g., through
+virtio-net) or some future feature that makes the skb->len more dynamic.
 
->
-> > > [...]
+Best,
+Bobby
