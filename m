@@ -2,200 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F2526AEF8A
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 19:24:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49CF56AEFA5
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 19:25:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229587AbjCGSYN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 13:24:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46936 "EHLO
+        id S232676AbjCGSY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 13:24:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231857AbjCGSXr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 13:23:47 -0500
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2079.outbound.protection.outlook.com [40.107.8.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08657360BB;
-        Tue,  7 Mar 2023 10:19:09 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cK/kAIgJBfadtf8WC6mI1hd/OTmK0n+MJC3yAbTUL4+abKioO5bVefgXZ2+Q1LOB0XsEMI2LFM9R3s4oaDhoqNsxf1Bp24VUZIudz57P8tCbQrzPkaMsMOCkfTpkcYoxsbma0Tz5JeKKK8HtRILaTqaH4nsrcK3djVTMcUi8TBABQiy1O5iTYoGlsUCk3LdSJsAWN47gYI6Jow2ayUFl9R8XJ6ILeLSRRGvMr8Q0gMqwYJwlGnU6TGaxKhnDsbsnS/LpHKkmNmIKq8e6dA+tKekApkgaJUAmjgVb5xDUXKwnXCU4F4jv+FzVdUins8z1hdflXBG7QE8u6BYsmwsDrQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NH1pEiiATjFTFyDl6uFrpLZAbu5ZR8OIwSx3nPFU1k4=;
- b=EZteO5dtH+4uaNt1tretu8A6ZEYU3RRkI01xviIHezDLXpCziBw6cz0dEUK2Vj8DgZPbg2hsn4wWfEBKewTgaDxDEweL49tZSw/w41MwRNTqgiM923qGxT3fSmVP/wpG5yhnSsqsQGp0TEL2Z9aoIey7SMKkoEkqE6ncBZtm6M8rWuhvjyxxKR/UdvkgR4cGXrqkjpDHCHVGESPkOUQ8lm0mW1hT0jHdUtFPheiRdW4X8fR5P6Rpo67hACeycMQ3jDONg24tqz2HAz0A47e01OXikJvnGb7rIWHIRkokkcutXtGOMpH8sOq/WbT8bebi55qsUhNGHC/tIssR+DSScA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=variscite.com; dmarc=pass action=none
- header.from=variscite.com; dkim=pass header.d=variscite.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=variscite.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NH1pEiiATjFTFyDl6uFrpLZAbu5ZR8OIwSx3nPFU1k4=;
- b=gO73r4LgPIUuoL0Ygp4bPhTAXQYVLkXxN9/nRKwOwt/5eYHgeoPKeAsjgY3QDF4cr78bhIUrpegswUbBO2Io7jtgR05X66tPJNhcQ6xNPWj3DK/XmJT7HcmDNg8aE592neVzWd/GZmLdKOL7sST4Ys2Ujt6T8o/1wui1VFu7kHHw+ee/nObDlqZDcgoMiZ495dQBkpbvmRsRCqcN1bsQL1POv6KE6dYVB7bDP/1RRMxSqbIDJhafVphCQycPEofhchuCfw/QV21btY1+kWEhVT8hrpOgK3sYSS9s9uWB3GRQcQcrHBed3x9jm+3gadXqoDodRZxPv+snS15UXu4ifA==
-Received: from DU0PR08MB9003.eurprd08.prod.outlook.com (2603:10a6:10:471::13)
- by AM9PR08MB6018.eurprd08.prod.outlook.com (2603:10a6:20b:2df::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.28; Tue, 7 Mar
- 2023 18:19:06 +0000
-Received: from DU0PR08MB9003.eurprd08.prod.outlook.com
- ([fe80::27d4:87f6:273e:4a80]) by DU0PR08MB9003.eurprd08.prod.outlook.com
- ([fe80::27d4:87f6:273e:4a80%6]) with mapi id 15.20.6156.028; Tue, 7 Mar 2023
- 18:19:06 +0000
-From:   Ken Sloat <ken.s@variscite.com>
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-CC:     "noname.nuno@gmail.com" <noname.nuno@gmail.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S232636AbjCGSYQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 13:24:16 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E50F9AFC6;
+        Tue,  7 Mar 2023 10:19:54 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9589A61539;
+        Tue,  7 Mar 2023 18:19:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B55D5C4339B;
+        Tue,  7 Mar 2023 18:19:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678213193;
+        bh=BcUGeMLEm0LPA6u+zuE2Qt4EJaLi1EQErnMdvMFu038=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Whku19nSoWJzSWst16iQ++EOjtE1aPFEt2JszLF1tFs63JeCm4VO4EsXwgvo6/KR3
+         59Jlp8PnNNm/2y/NbTduduRcI8Ji6M2ya5sAwq2K59DL+Gau83IZj9jdT+TXroDumo
+         JlNPIuMeaiggrYss3rnwhkZhB9SW9xD+867XomDVbhR//JWWjZgCjaWmMMwRCkHKeM
+         VRzo+s6KaJPuaDTWFR5t9yA29CfB6xFUP6mDo2lDnMBEiV1QGXYHTYuhlv/DgzYCGi
+         olyNFfyuxE1EY6VOUxsgwxmdDTvzhRZLwlO8wwmyD5AMQ+taDMuIFKJCQHrtWpYu07
+         S72s7z6mrqPKw==
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandru Tachici <alexandru.tachici@analog.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Ken Sloat <ken.s@variscite.com>
-Subject: RE: [PATCH v2 2/2] dt-bindings: net: adin: Document bindings for fast
- link down disable
-Thread-Topic: [PATCH v2 2/2] dt-bindings: net: adin: Document bindings for
- fast link down disable
-Thread-Index: AQHZS6WmxBanjkfcjUqlkph1yg+i+q7nM2SAgAh2gYA=
-Date:   Tue, 7 Mar 2023 18:19:06 +0000
-Message-ID: <DU0PR08MB9003C9BD97B4055BE1EEDB0CECB79@DU0PR08MB9003.eurprd08.prod.outlook.com>
-References: <20230228144056.2246114-1-ken.s@variscite.com>
- <20230228184956.2309584-1-ken.s@variscite.com>
- <20230228184956.2309584-2-ken.s@variscite.com>
- <9a540967-c1a6-b9df-a662-b8a729d7d64b@kernel.org>
-In-Reply-To: <9a540967-c1a6-b9df-a662-b8a729d7d64b@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=variscite.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DU0PR08MB9003:EE_|AM9PR08MB6018:EE_
-x-ms-office365-filtering-correlation-id: a631aa5b-5706-49e7-3699-08db1f387017
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 232kYN+0x5PZkKlE+9X0PSN9lDaGafKkv8IdTfvy8MLaS6JcSYOhAA9HeSbG1BvxzrSkcpt2Cwx2FY7m0CbdPC/uW3s8MYlR5811r1Dp9IL/i/uCFdOXzA63QuU0SCk2aHXxIn63jmiZrylYUQmWNEl6G7yoQ9gqGRjzRfLmRmr3c90rqnPfZgDp9vW63aTzIZT0M2wxQKC89Tcet/bH7VIWk2mkYl4+mgyQ2msChcDVGOTeGBSwTIOUIRT9JJeheODpIkHLcRC7YH7MAXo1XmM40KynHXOnujbJnpyhZPQKJphlFwNtPfveE/tRh7LPKsFEPlh3tKzery9DXoQHk2UhEsTxbgZVNIL1i1qlPQ6k1gxqyeOKajSNxyLbZk5tonGqlL5TCHi73EOl/xVZyIJt9pR5sDIP40BqrkZ1fiiRIEFDx/KZggJCzuainCQgBJ4u7Fd1bNngZBrqliLxYbt0+784+VhAuexqumGCWXCF2IXOSr4HSgGzEehw4YUr47/6X5BxBzDyTJrDv1Lj8moR9RCQCe9tdLJuN6/7CsvxpNJNWIlstaUkk7dUQ8CeDykcfJ3e5DOwO6nXrGOvjU4bhDKYuEfAX3RDotPP9kqDkXS+2i5I7NCbfuygLK+7FNgVuUymHkbZvRZfv+EDu1f6hv2K3hQDDlGbLD2mXcWtau90x05wq5/aU8t+5n7bw8RUs9ch6CsPgD/e8VZ51Q==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR08MB9003.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(396003)(376002)(39840400004)(136003)(346002)(366004)(451199018)(6506007)(53546011)(107886003)(83380400001)(38070700005)(33656002)(86362001)(122000001)(186003)(38100700002)(9686003)(26005)(41300700001)(55016003)(66946007)(66556008)(66476007)(66446008)(6916009)(8676002)(4326008)(2906002)(64756008)(52536014)(7416002)(5660300002)(54906003)(8936002)(76116006)(7696005)(478600001)(71200400001)(316002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?bjJQZ1I5R1RBVjVRTVlPeElnL3F2aVQ2bklsNndZMHcvclA1eVF6MWV2MWlL?=
- =?utf-8?B?ZDVCUkdGeTh4RmVkVlUwTHRPV0hYc2crM2ZQZm5wemhDaXFpU0pvNDN6Wm8r?=
- =?utf-8?B?a0JOL2JRSUpWcVNsbUJ2Nm15N0ZXVkhRL0JabWZkSkVZaUNrWnZrRDhIdFVN?=
- =?utf-8?B?cTNRT2ZmTDUxSndzT3k4citRVVByOFByUjJvSy9JdEQ3cjhVeGtYaHNtTlVn?=
- =?utf-8?B?OHl5Tk5oL2pBY3RhSDhObXhXNmpDRW4yTGxDdDU0Yk1saGJxQ1JaY3JKSy9k?=
- =?utf-8?B?R0loejhUYThCMHlBbG93ZCtwSm0wRXp1QUhDRjhGUDVkU21iSlRhZUpOcFlR?=
- =?utf-8?B?Nk1KcGwxYXhyTlR2M21Xd3RpdTF0WGxZYUc3YUo1RHdDb1ZpT2JHQWsreHJ2?=
- =?utf-8?B?WUIzZnBZbkxpTmw1UHB4WTM1bkJuKzBHYUUxRFZlSUxxUnQyUGRiOTlvSEVC?=
- =?utf-8?B?ck01SCttVDk0S0c4NE5CcFRtcisvUEp2RFdEZW1FZm8zWFY2NElGc3I4NEtX?=
- =?utf-8?B?dWNTR2VTaFdnbER3emoxamhJck9rNE1aK292ZU5SVEFZckpEMHAzRVo2ZTkv?=
- =?utf-8?B?emFXSVRLZGtsRUxzd3cvTE45RGV4VWQ3N010T0J2NXV2aDY1aWd3V0wrUkZJ?=
- =?utf-8?B?MDVXRjBLdVdTMmNEZE5WNkx6K2VkV2FOeDN5ekNPeFE1VlMwSjVUM1dyKzZ6?=
- =?utf-8?B?cGpocTRCVWVUa2hMdlJjL3pJMkdXTGQvaElKSytYZ0dPWjVEZVRHRlExV2xH?=
- =?utf-8?B?VmVLdWxYbktucnRlMUpPMFZjZHFJMUVGM1Vyblc2U0NZNHovOXhrMEd0ZWhZ?=
- =?utf-8?B?RFRqYlpDZ0FaUzQ1M1lqNk1WTXdPalI4MGFJZk1NaXJZNDRMU2VaU21GRHVY?=
- =?utf-8?B?b3pwcml5Y2NGZmU5YlBBNStWNmt5NEEyWjFnTURLUGgzdGdWQUwzVTFmakxt?=
- =?utf-8?B?ZUg4d2FNUzdFSmhhMlFEai9hYmh3dkNvd0pKbTN4UElOWUlCV2N3Qng2bTlL?=
- =?utf-8?B?Q2pQaFVsZmJwMFdlaTVvYkRIdTk2eXhXemsxem40bGs5UkNnb1pNTUdaZDEx?=
- =?utf-8?B?cU1adk1Rc1RtV1VEQ0o5S1YxaUJScFptaUJzbDNSVHFpa0lwajYybUhtQ3Zi?=
- =?utf-8?B?em05MU8rTGk1V2FxTENuY1kyVEY1VHkyZEYxWmxhK01jMEMrdWJzUklLcWVk?=
- =?utf-8?B?azFMRGVsK0g0ZDdlTDEzemNYWUpkRlk2RVZ2aERPT3JSY3dlY25VdWRvNjd5?=
- =?utf-8?B?N0pRY1AzdHJFWWpVbFJRT2ZwdldDUzYwT2hqSHgrcW1ZT3lZUko5b2t4N2ZG?=
- =?utf-8?B?T2NNYnlXdTJad2lhL3RDaFJuT281WEpLbXJydFhjRk5lU011VE1rdU9VOHZO?=
- =?utf-8?B?RUUwQXlvNndiTFh0UDNjT2wyTzhRMnBMUnB5bFk2MU5BQ0ZtMDNMditnTkR2?=
- =?utf-8?B?R3NqK2lsOGFOWVdUUzlOazVic2dnUUxhSHdjNGdOdUV1SjJadzYzS1BFWU8r?=
- =?utf-8?B?eWtiQmtmeGNhSk9RMHh5M0hGeEFjZ29sY0RSVDBtRk1iOEdTOGlvZjd4YmMy?=
- =?utf-8?B?TGltNDZsQVh2L3Q4UzcxUHNVTWdmaTRDYWxOalU4VVlMVGpwRXJMZkYzamJT?=
- =?utf-8?B?ck5hbDdESUxTcm9HcTZQdWJLVGxkZ09MYW9nU29HRFBsY1N4WW4zaDdOaHd6?=
- =?utf-8?B?SE5DWTBnSjFJMXZaSUN6dTlTeVdvMnRnQUx0bS9WTFV5a2t2UFNPVmxmQ2M3?=
- =?utf-8?B?V2VWZEhTQXJ4c1RMTXJ2b0xhV2VTckV0MUdDeTBadTBnZEFoWVZWbjVYVlBG?=
- =?utf-8?B?Q05DMXkxbGJvSUxmV0pHeHduMmE2SUpFc2pyTmlEL3FiRXk0ckpqSkVJWUpF?=
- =?utf-8?B?Z201S3pCb2VTZk45d3VrdjE3RFVHTUNJT2RGQUdJWllOVDV0K2c0akFYczFE?=
- =?utf-8?B?Zlc1K1NLYUd6WVlKUlBSemFEcmlWRStjWGgvWW5hVUQ4Rk1GSjlHbE42Mm8w?=
- =?utf-8?B?cTF2cmtrS2h3K2UwbjIvblZjQk5PV2lCTVh5TDVRNXZXY21zN2lwYjdlNGRX?=
- =?utf-8?B?bzluTnc4a1oxR3VzaU4zTmtXWjZjVFBTSUdrWjRYclAwb0k2MCtwQlRwdkdo?=
- =?utf-8?Q?SGsJ6tV8yIFWL6mUAbv3MCOf1?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Abhijit Ayarekar <aayarekar@marvell.com>,
+        Ajit Khaparde <ajit.khaparde@broadcom.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        Dimitris Michailidis <dmichail@fungible.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jiawen Wu <jiawenwu@trustnetic.com>,
+        Manish Chopra <manishc@marvell.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Mengyuan Lou <mengyuanlou@net-swift.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Rahul Verma <rahulv@marvell.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Rasesh Mody <rmody@marvell.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Shahed Shaikh <shshaikh@marvell.com>,
+        Somnath Kotur <somnath.kotur@broadcom.com>,
+        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Veerasenareddy Burru <vburru@marvell.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        GR-Linux-NIC-Dev@marvell.com, intel-wired-lan@lists.osuosl.org
+Subject: [PATCH 00/28] PCI/AER: Remove redundant Device Control Error Reporting Enable
+Date:   Tue,  7 Mar 2023 12:19:11 -0600
+Message-Id: <20230307181940.868828-1-helgaas@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-OriginatorOrg: variscite.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR08MB9003.eurprd08.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a631aa5b-5706-49e7-3699-08db1f387017
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Mar 2023 18:19:06.2100
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 399ae6ac-38f4-4ef0-94a8-440b0ad581de
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: RmoQp1E4+h3CwWOVjvc93mTENZ1kn+klfwR1nDxz5SM7yWSaPugcFWHq6pVycB60t+/TVX8Uxcb9SCMiT9B5TQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR08MB6018
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgS3J6eXN6dG9mLA0KDQpUaGFua3MgZm9yIHlvdXIgcmVwbHkgYW5kIHNvcnJ5IGZvciB0aGUg
-bGF0ZSByZXNwb25zZS4NCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBL
-cnp5c3p0b2YgS296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+DQo+IFNlbnQ6IFRodXJzZGF5LCBN
-YXJjaCAyLCAyMDIzIDI6MDAgQU0NCj4gVG86IEtlbiBTbG9hdCA8a2VuLnNAdmFyaXNjaXRlLmNv
-bT4NCj4gQ2M6IG5vbmFtZS5udW5vQGdtYWlsLmNvbTsgcGFiZW5pQHJlZGhhdC5jb207DQo+IGVk
-dW1hemV0QGdvb2dsZS5jb207IE1pY2hhZWwgSGVubmVyaWNoDQo+IDxtaWNoYWVsLmhlbm5lcmlj
-aEBhbmFsb2cuY29tPjsgRGF2aWQgUy4gTWlsbGVyIDxkYXZlbUBkYXZlbWxvZnQubmV0PjsNCj4g
-SmFrdWIgS2ljaW5za2kgPGt1YmFAa2VybmVsLm9yZz47IFJvYiBIZXJyaW5nIDxyb2JoK2R0QGtl
-cm5lbC5vcmc+Ow0KPiBBbmRyZXcgTHVubiA8YW5kcmV3QGx1bm4uY2g+OyBIZWluZXIgS2FsbHdl
-aXQgPGhrYWxsd2VpdDFAZ21haWwuY29tPjsNCj4gUnVzc2VsbCBLaW5nIDxsaW51eEBhcm1saW51
-eC5vcmcudWs+OyBBbGV4YW5kcnUgVGFjaGljaQ0KPiA8YWxleGFuZHJ1LnRhY2hpY2lAYW5hbG9n
-LmNvbT47IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7DQo+IGRldmljZXRyZWVAdmdlci5rZXJuZWwu
-b3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0gg
-djIgMi8yXSBkdC1iaW5kaW5nczogbmV0OiBhZGluOiBEb2N1bWVudCBiaW5kaW5ncyBmb3INCj4g
-ZmFzdCBsaW5rIGRvd24gZGlzYWJsZQ0KPiANCj4gT24gMjgvMDIvMjAyMyAxOTo0OSwgS2VuIFNs
-b2F0IHdyb3RlOg0KPiA+IFRoZSBBREkgUEhZIGNvbnRhaW5zIGEgZmVhdHVyZSBjb21tb25seSBr
-bm93biBhcyAiRmFzdCBMaW5rIERvd24iIGFuZA0KPiA+IGNhbGxlZCAiRW5oYW5jZWQgTGluayBE
-ZXRlY3Rpb24iIGJ5IEFESS4gVGhpcyBmZWF0dXJlIGlzIGVuYWJsZWQgYnkNCj4gPiBkZWZhdWx0
-IGFuZCBwcm92aWRlcyBlYXJsaWVyIGRldGVjdGlvbiBvZiBsaW5rIGxvc3MgaW4gY2VydGFpbg0K
-PiA+IHNpdHVhdGlvbnMuDQo+ID4NCj4gDQo+IFBsZWFzZSB1c2Ugc2NyaXB0cy9nZXRfbWFpbnRh
-aW5lcnMucGwgdG8gZ2V0IGEgbGlzdCBvZiBuZWNlc3NhcnkgcGVvcGxlIGFuZA0KPiBsaXN0cyB0
-byBDQy4gIEl0IG1pZ2h0IGhhcHBlbiwgdGhhdCBjb21tYW5kIHdoZW4gcnVuIG9uIGFuIG9sZGVy
-IGtlcm5lbCwNCj4gZ2l2ZXMgeW91IG91dGRhdGVkIGVudHJpZXMuICBUaGVyZWZvcmUgcGxlYXNl
-IGJlIHN1cmUgeW91IGJhc2UgeW91ciBwYXRjaGVzDQo+IG9uIHJlY2VudCBMaW51eCBrZXJuZWwu
-DQo+IA0KDQpVbmRlcnN0b29kDQoNCj4gPiBEb2N1bWVudCB0aGUgbmV3IG9wdGlvbmFsIGZsYWdz
-ICJhZGksZGlzYWJsZS1mYXN0LWRvd24tMTAwMGJhc2UtdCIgYW5kDQo+ID4gImFkaSxkaXNhYmxl
-LWZhc3QtZG93bi0xMDBiYXNlLXR4IiB3aGljaCBkaXNhYmxlIHRoZSAiRmFzdCBMaW5rIERvd24i
-DQo+ID4gZmVhdHVyZSBpbiB0aGUgQURJIFBIWS4NCj4gDQo+IFlvdSBkaWQgbm90IGV4cGxhaW4g
-d2h5IGRvIHlvdSBuZWVkIGl0Lg0KDQpNeSB0aG91Z2h0cyB3ZXJlIHRoaXMgd2FzIGV4cGxhaW5l
-ZCBpbiB0aGUgZmVhdHVyZSBwYXRjaCBhbmQgc28gd2FzIHJlZHVuZGFudCBoZXJlIHdoaWNoIGlz
-IHdoeSBJIGdhdmUgYSBicmllZiBzdW1tYXJ5LCBidXQgaWYgdGhlIG5vcm0gaXMgdG8gZHVwbGlj
-YXRlIHRoaXMgaW5mb3JtYXRpb24gSSBjYW4gY2VydGFpbmx5IGRvIHRoYXQuDQoNCj4gDQo+ID4N
-Cj4gPiBTaWduZWQtb2ZmLWJ5OiBLZW4gU2xvYXQgPGtlbi5zQHZhcmlzY2l0ZS5jb20+DQo+ID4g
-LS0tDQo+IA0KPiBEb24ndCBhdHRhY2ggeW91ciBuZXcgcGF0Y2hzZXRzIHRvIHlvdXIgb2xkIHRo
-cmVhZHMuIEl0IGJ1cmllcyB0aGVtIGRlZXAgYW5kDQo+IG1ha2UgdXNhZ2Ugb2Ygb3VyIHRvb2xz
-IGRpZmZpY3VsdC4NCj4gDQpJIGFkZGVkIHRoZSBpbi1yZXBseS10byBpZCBpbiBnaXQgc2VuZC1l
-bWFpbCBhcyBJIHRob3VnaHQgdGhpcyB3YXMgdGhlIG5vcm0gYnV0IEkgd2lsbCBub3QgZG8gdGhp
-cyBpbiB0aGUgZnV0dXJlLCBzb3JyeS4NCg0KPiANCj4gPiAgRG9jdW1lbnRhdGlvbi9kZXZpY2V0
-cmVlL2JpbmRpbmdzL25ldC9hZGksYWRpbi55YW1sIHwgMTIgKysrKysrKysrKysrDQo+ID4gIDEg
-ZmlsZSBjaGFuZ2VkLCAxMiBpbnNlcnRpb25zKCspDQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvRG9j
-dW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL25ldC9hZGksYWRpbi55YW1sDQo+ID4gYi9E
-b2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvbmV0L2FkaSxhZGluLnlhbWwNCj4gPiBp
-bmRleCA2NGVjMWVjNzFjY2QuLjkyM2JhZmYyNmMzZSAxMDA2NDQNCj4gPiAtLS0gYS9Eb2N1bWVu
-dGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvbmV0L2FkaSxhZGluLnlhbWwNCj4gPiArKysgYi9E
-b2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvbmV0L2FkaSxhZGluLnlhbWwNCj4gPiBA
-QCAtNTIsNiArNTIsMTggQEAgcHJvcGVydGllczoNCj4gPiAgICAgIGRlc2NyaXB0aW9uOiBFbmFi
-bGUgMjVNSHogcmVmZXJlbmNlIGNsb2NrIG91dHB1dCBvbiBDTEsyNV9SRUYgcGluLg0KPiA+ICAg
-ICAgdHlwZTogYm9vbGVhbg0KPiA+DQo+ID4gKyAgYWRpLGRpc2FibGUtZmFzdC1kb3duLTEwMDBi
-YXNlLXQ6DQo+ID4gKyAgICAkcmVmOiAvc2NoZW1hcy90eXBlcy55YW1sI2RlZmluaXRpb25zL2Zs
-YWcNCj4gPiArICAgIGRlc2NyaXB0aW9uOiB8DQo+ID4gKyAgICAgIElmIHNldCwgZGlzYWJsZXMg
-YW55IEFESSBmYXN0IGxpbmsgZG93biAoIkVuaGFuY2VkIExpbmsgRGV0ZWN0aW9uIikNCj4gPiAr
-ICAgICAgZnVuY3Rpb24gYml0cyBmb3IgMTAwMGJhc2UtdCBpbnRlcmZhY2VzLg0KPiANCj4gQW5k
-IHdoeSBkaXNhYmxpbmcgaXQgcGVyIGJvYXJkIHNob3VsZCBiZSBhIHByb3BlcnR5IG9mIERUPw0K
-PiANClRoYXQgc2VlbWVkIGxpa2UgYSBsb2dpY2FsIHBsYWNlIHRvIGFsbG93IG92ZXJyaWRlIG9u
-IGJvYXJkcyB3aGVyZSBpdCBpcyB1bmRlc2lyZWQuIFdvdWxkIHlvdSBzYXkgdGhhdCBwcm9wZXJ0
-aWVzIHN1Y2ggYXMgdGhpcyBzaG91bGQgaW5zdGVhZCBiZSBjdXN0b20gUEhZIHR1bmFibGVzLCB3
-aGljaCBtYXkgcmVxdWlyZSBwYXRjaGluZyBvZiBldGh0b29sIGFzIHdlbGw/DQoNCj4gQmVzdCBy
-ZWdhcmRzLA0KPiBLcnp5c3p0b2YNCg0KU2luY2VyZWx5LA0KS2VuIFNsb2F0DQoNCg==
+From: Bjorn Helgaas <bhelgaas@google.com>
+
+Since f26e58bf6f54 ("PCI/AER: Enable error reporting when AER is native"),
+which appeared in v6.0, the PCI core has enabled PCIe error reporting for
+all devices during enumeration.
+
+Remove driver code to do this and remove unnecessary includes of
+<linux/aer.h> from several other drivers.
+
+Intel folks, sorry that I missed removing the <linux/aer.h> includes in the
+first series.
+
+
+Bjorn Helgaas (28):
+  alx: Drop redundant pci_enable_pcie_error_reporting()
+  be2net: Drop redundant pci_enable_pcie_error_reporting()
+  bnx2: Drop redundant pci_enable_pcie_error_reporting()
+  bnx2x: Drop redundant pci_enable_pcie_error_reporting()
+  bnxt: Drop redundant pci_enable_pcie_error_reporting()
+  cxgb4: Drop redundant pci_enable_pcie_error_reporting()
+  net/fungible: Drop redundant pci_enable_pcie_error_reporting()
+  net: hns3: remove unnecessary aer.h include
+  netxen_nic: Drop redundant pci_enable_pcie_error_reporting()
+  octeon_ep: Drop redundant pci_enable_pcie_error_reporting()
+  qed: Drop redundant pci_enable_pcie_error_reporting()
+  net: qede: Remove unnecessary aer.h include
+  qlcnic: Drop redundant pci_enable_pcie_error_reporting()
+  qlcnic: Remove unnecessary aer.h include
+  sfc: Drop redundant pci_enable_pcie_error_reporting()
+  sfc: falcon: Drop redundant pci_enable_pcie_error_reporting()
+  sfc/siena: Drop redundant pci_enable_pcie_error_reporting()
+  sfc_ef100: Drop redundant pci_disable_pcie_error_reporting()
+  net: ngbe: Drop redundant pci_enable_pcie_error_reporting()
+  net: txgbe: Drop redundant pci_enable_pcie_error_reporting()
+  e1000e: Remove unnecessary aer.h include
+  fm10k: Remove unnecessary aer.h include
+  i40e: Remove unnecessary aer.h include
+  iavf: Remove unnecessary aer.h include
+  ice: Remove unnecessary aer.h include
+  igb: Remove unnecessary aer.h include
+  igc: Remove unnecessary aer.h include
+  ixgbe: Remove unnecessary aer.h include
+
+ drivers/net/ethernet/atheros/alx/main.c       |  4 ----
+ drivers/net/ethernet/broadcom/bnx2.c          | 21 -------------------
+ drivers/net/ethernet/broadcom/bnx2.h          |  1 -
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x.h   |  1 -
+ .../net/ethernet/broadcom/bnx2x/bnx2x_main.c  | 19 -----------------
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  4 ----
+ .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   |  4 ----
+ drivers/net/ethernet/emulex/benet/be_main.c   |  8 -------
+ .../net/ethernet/fungible/funcore/fun_dev.c   |  5 -----
+ .../net/ethernet/hisilicon/hns3/hns3_enet.c   |  1 -
+ drivers/net/ethernet/intel/e1000e/netdev.c    |  1 -
+ drivers/net/ethernet/intel/fm10k/fm10k_pci.c  |  1 -
+ drivers/net/ethernet/intel/i40e/i40e.h        |  1 -
+ drivers/net/ethernet/intel/iavf/iavf.h        |  1 -
+ drivers/net/ethernet/intel/ice/ice.h          |  1 -
+ drivers/net/ethernet/intel/igb/igb_main.c     |  1 -
+ drivers/net/ethernet/intel/igc/igc_main.c     |  1 -
+ drivers/net/ethernet/intel/ixgbe/ixgbe.h      |  1 -
+ .../ethernet/marvell/octeon_ep/octep_main.c   |  4 ----
+ .../ethernet/qlogic/netxen/netxen_nic_main.c  | 10 +--------
+ drivers/net/ethernet/qlogic/qed/qed_main.c    |  9 --------
+ drivers/net/ethernet/qlogic/qede/qede_main.c  |  1 -
+ .../ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c   |  1 -
+ .../net/ethernet/qlogic/qlcnic/qlcnic_main.c  |  4 ----
+ .../net/ethernet/qlogic/qlcnic/qlcnic_sysfs.c |  1 -
+ drivers/net/ethernet/sfc/ef100.c              |  3 ---
+ drivers/net/ethernet/sfc/efx.c                |  5 -----
+ drivers/net/ethernet/sfc/falcon/efx.c         |  9 --------
+ drivers/net/ethernet/sfc/siena/efx.c          |  5 -----
+ drivers/net/ethernet/wangxun/ngbe/ngbe_main.c |  4 ----
+ .../net/ethernet/wangxun/txgbe/txgbe_main.c   |  5 -----
+ 31 files changed, 1 insertion(+), 136 deletions(-)
+
+-- 
+2.25.1
+
