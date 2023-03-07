@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D02796ADDB7
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 12:42:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2A486ADDB5
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 12:42:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231388AbjCGLmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 06:42:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39702 "EHLO
+        id S231379AbjCGLl7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 06:41:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231256AbjCGLkb (ORCPT
+        with ESMTP id S230061AbjCGLkb (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 06:40:31 -0500
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2076.outbound.protection.outlook.com [40.107.220.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443057BA03;
-        Tue,  7 Mar 2023 03:39:00 -0800 (PST)
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on20604.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe5b::604])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A89AB7C94C;
+        Tue,  7 Mar 2023 03:38:58 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nAAfpxFbPzQ/zBPMA88Bc70bOSFMOoKP+gHfSl4MDWOA/Vin+SUlw+4aNRSAx19octC6rX4q7u5gIroIAcZyXlKChbH1MTGJR61lr+JTt55MzqfhrN4Q8kl9293FDiGbeIbuqnb+zl1x0qn2AnwJ7tN3nSAFJ8hHAmN2nDfSajDO/IrEdI/DLXHE1MrReKt/bEn5smnckwuKZf8zU4WszROTD/IPBoYbog+q1ncfsTnSspCiFcHb04RsbfqfR1KLoqJ2COjiiNsati+xnRmhO+MKjUYq7bWByOgf/HK7jA7vPKMS0i0HiPjvoFPs1IwM9luF097arN1cj8txCCw9MQ==
+ b=b1k1OFMLqBMTmBJpbwpscbzDOQjmsJPD593FzdRx/vvZRNOFB5jQz/whd4EgscB7mc7Odo9r9Rtd9q6dowV4NxQ9k5ezPkEZUEyeMBFve5/AqUymcDOGv9ZuIuJsypwRt9qLQ1xTY4gjJbM9QjM8UO7UHO/2c0bvRLqm9gMyUmPffHh91dJ1XRV/i+Y5inBqIGmcV4dAI9d4sHuKmpsT1W91T7jDfMpKkXnNcSEoylZ22jG6PyW2aghNsWdLyNENnqgPPQ+NY8jU0ophu08lFfje5tKk28UdfeujT8ibjPLibhmbPXy3fXBksHR1Gv64KrcGpL1h+qRTFilTO5EmJA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=01BOhMw9BsMj5+QAtrPIInhWA9hS/wgAkqiKIqsfZYE=;
- b=Mvtxv8BNXT+p8GnnUF8MNywyQRLhS4psyD/tCUsB/M9POgkjvg14Q5tg2OClj/wADfKTVoLtCwUwLHJMuJj5E+EchFoCHvoFug4srtWCYjdGlh/OuhxynWadOZJteqlBYHdyNSZNGejnSBcIsr6vDhG7LWCQyRIqo56Xvjp1yO8gO6htwp/Mx7JtrRKh/ExqLULcmxLxRqZrLJjMsjsFhhoILAgfQHMTPm+pcTUPZcmssKyXmEx0ItSYHBe9J4aTcWHCtx2LtCWv8/zJ23HMW6I4eYZinpoAv4aXXdLoyp6s2Vc5Z3m/FFdTwbtd8rVY4TpwLImwjm9XoXzFUsoDNA==
+ bh=UIRfWTzSPupYUB9+vixLaaLRNyYlTsniXxo6YIV04fk=;
+ b=YkegaL+F5I1nQFYSP0r8L2y/OaYGUoFTrcKaCbrV6JiMRNXJx93tvywmNijIVh8vGLzhAMNbLhjA4z2l817d7siyd6WktLoF7IFfTNFHGZnkE0oBOzHP+t9RPx8NNSm5//QJDC1EAgWluYmnMhE6OAnjFVOFbVycVT+gjrEk496jHaPDaKPlhGZKrTTYDL9vgDNUSR8FMfq35d+rKthu54lsQh+QTBqnW0e4nptIRsPnbowhz3zHiLsF1N09iz95Kc7GiPK1Z9uHs4wUhE0YUI/q3r8D22uZVpUg0D+wcw2UHr1jDI199pmfV9q6tlV2Im0pjTy0JsapDWBDE/fgyA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=01BOhMw9BsMj5+QAtrPIInhWA9hS/wgAkqiKIqsfZYE=;
- b=o7dOdq5C+j0DqQ+r2BR7bj8RGwHZe4TpUA35YEmpEus2xAiNyClIyNFwTT4uxmZGFnFgkVUXp6jnmEedTmvTDiN05lSLDXRvdOUJ7NLXax2BSFH+Ttb9OGozsNCtiYZSkPnt3gZt5djABaI6CnfX8VUCzjMShAWAw72r+LGGIXg=
-Received: from DM6PR12CA0014.namprd12.prod.outlook.com (2603:10b6:5:1c0::27)
- by IA1PR12MB7709.namprd12.prod.outlook.com (2603:10b6:208:423::15) with
+ bh=UIRfWTzSPupYUB9+vixLaaLRNyYlTsniXxo6YIV04fk=;
+ b=XZiaeKes2VNHv7NKVc2sSTp7MemoIxohihiWeS6y19oHOXo/kHXGd2qhjTK6tcQEosnku8kqWpr5KV+uuE7XKpA7Vz1Gdb3DkzPIEwh+CMB7rsB5jvHrq5qlK7PQrRmIUqrZQnYldBx2JJT7EUYkJFw5gQiVEAuY4jbzKk889/0=
+Received: from DM6PR18CA0031.namprd18.prod.outlook.com (2603:10b6:5:15b::44)
+ by DS0PR12MB8318.namprd12.prod.outlook.com (2603:10b6:8:f6::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.29; Tue, 7 Mar
- 2023 11:38:13 +0000
-Received: from DS1PEPF0000E640.namprd02.prod.outlook.com
- (2603:10b6:5:1c0:cafe::cd) by DM6PR12CA0014.outlook.office365.com
- (2603:10b6:5:1c0::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.28; Tue, 7 Mar
+ 2023 11:38:26 +0000
+Received: from DS1PEPF0000E642.namprd02.prod.outlook.com
+ (2603:10b6:5:15b:cafe::d6) by DM6PR18CA0031.outlook.office365.com
+ (2603:10b6:5:15b::44) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.29 via Frontend
- Transport; Tue, 7 Mar 2023 11:38:13 +0000
+ Transport; Tue, 7 Mar 2023 11:38:26 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -46,20 +46,16 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DS1PEPF0000E640.mail.protection.outlook.com (10.167.17.202) with Microsoft
+ DS1PEPF0000E642.mail.protection.outlook.com (10.167.17.198) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6178.13 via Frontend Transport; Tue, 7 Mar 2023 11:38:12 +0000
-Received: from SATLEXMB07.amd.com (10.181.41.45) by SATLEXMB04.amd.com
+ 15.20.6178.13 via Frontend Transport; Tue, 7 Mar 2023 11:38:26 +0000
+Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 7 Mar
- 2023 05:38:11 -0600
-Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB07.amd.com
- (10.181.41.45) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 7 Mar
- 2023 03:38:10 -0800
+ 2023 05:38:19 -0600
 Received: from xndengvm004102.xilinx.com (10.180.168.240) by
  SATLEXMB03.amd.com (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.34
- via Frontend Transport; Tue, 7 Mar 2023 05:38:06 -0600
+ via Frontend Transport; Tue, 7 Mar 2023 05:38:15 -0600
 From:   Gautam Dawar <gautam.dawar@amd.com>
 To:     <linux-net-drivers@amd.com>, <jasowang@redhat.com>,
         Edward Cree <ecree.xilinx@gmail.com>,
@@ -73,9 +69,9 @@ To:     <linux-net-drivers@amd.com>, <jasowang@redhat.com>,
 CC:     <eperezma@redhat.com>, <harpreet.anand@amd.com>,
         <tanuj.kamde@amd.com>, <koushik.dutta@amd.com>,
         Gautam Dawar <gautam.dawar@amd.com>
-Subject: [PATCH net-next v2 11/14] sfc: use PF's IOMMU domain for running VF's MCDI commands
-Date:   Tue, 7 Mar 2023 17:06:13 +0530
-Message-ID: <20230307113621.64153-12-gautam.dawar@amd.com>
+Subject: [PATCH net-next v2 12/14] sfc: unmap VF's MCDI buffer when switching to vDPA mode
+Date:   Tue, 7 Mar 2023 17:06:14 +0530
+Message-ID: <20230307113621.64153-13-gautam.dawar@amd.com>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20230307113621.64153-1-gautam.dawar@amd.com>
 References: <20230307113621.64153-1-gautam.dawar@amd.com>
@@ -84,390 +80,243 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS1PEPF0000E640:EE_|IA1PR12MB7709:EE_
-X-MS-Office365-Filtering-Correlation-Id: 80fadda8-9347-4c1c-9f78-08db1f006f49
+X-MS-TrafficTypeDiagnostic: DS1PEPF0000E642:EE_|DS0PR12MB8318:EE_
+X-MS-Office365-Filtering-Correlation-Id: 123b92a9-c2dd-4d56-c26c-08db1f00778c
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HydmbrCOhr7xCuyWEK9G88uRpVIAOmXAzvw9uIJuDvIgqMeK/ZFrltog33d0QPIQvtraad/+9rA4cneuz9Cmx/qYwdXJtcNoXqubAyzuA5/Vpz9fw0V7pDCC+Kq50cLEMV0V8iABcB3IbRirrOp29Jrf1WLzfigltH8qQNl7CM6XUJp4cOhEIlbgU7Za8LL15M2tkF5Z6dIcgb92qiW5lDdg8+1Ywm8WyixxG8xPjyQ5+btJEQAoyGj6BfhIr66umOsHPNEPDYKZame6YSC/ydpgL/w8epD4qxqqOpv2PE4otheSV6yk4+CPFIkf++btQTTx6yv9QmSee7zugkZYmSN/efeKjYRGZl82URtaFgVmHu/g2d7p/z68kB8p8UHLYpGivxb0y30oyjzL8uUoLcjN8FPkf8BiL6kDw1OH7G7Jt87fxmzOqJBNSFDRxp3dEdvgTwAULhGgamuebPmC9Hpmf/2HKIvGTLkIjPvrBVn3/vFI5+UtN2Mdbz9gcQT6XAptmZaXz5o+Hqq/856cqEcdxBwd3n9afSAEMO18SuEdEsMKzOXL+PAfsDJTm/evBzL8Uc0N6FKACzEiRnEuoxYLOlvLHjB/sMVlKotX55C5g/OTgQONw7bH+S1udq5w5suB74WE8zqBTFyELSDC4hMLhHlsRuAAkYcppUQvlpVUqAEDJU2xj3zS9Kja2M3x/8T85XsaIDSYcJFJ4dvHDc+h+WN3Wr+ZPoKhR8gKFm3mfgxpsVLLLLAKQY4+mANr
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(396003)(376002)(346002)(136003)(39860400002)(451199018)(40470700004)(36840700001)(46966006)(70206006)(8676002)(4326008)(70586007)(41300700001)(81166007)(82740400003)(316002)(8936002)(54906003)(110136005)(5660300002)(7416002)(44832011)(478600001)(30864003)(82310400005)(2906002)(40460700003)(356005)(921005)(36756003)(36860700001)(40480700001)(1076003)(6666004)(83380400001)(26005)(186003)(2616005)(86362001)(336012)(47076005)(426003)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: UkC1PVpVRMLgDknrRkze2VVT87mRdKv/jOWbzx0vrIBZHa+TwKH+INQxMImCywCVBNXhs/rLbq1GztT//dzJ5zWLyHGa6ilJykA5Q4+Nrm7+4lIdsM7AekpdlMOYNfL5I5AXoswxFkpk6YR8YGKVHrfOWc7Kitn4iBJ2bKIlY2rEWDR4kgxXlRMTo9Eid2YhLaX+qbHSMtavcZBDIACbJZ0yT0oVlJpaiH1edf7tGEWvfrtgPUskrsOCxwneZkhHJFQ+eTVeKXKyDWsEFCn+8CAB8dUWpFXLqaVwiCoOJCP7O2+3DrtNB9TYRfzmEgrx3biBoejsrvf8K4Ex79jMtacbbxhDvvUM8VaXWOnY7MDmtWVYLTPLtKawUnwzMiKSSi9wkN4IDFTxJb3lZ5efkQqD4ZrLm3fQb2ApJ8ZwKhAPIA4Un7gxDGO+6kYykd52Hx9pbme2TuiPUt0xNtQf5pXgHDa+GctrabhNdlUJSmYCS3JA5qIGjGJklGblozSp9krPXxZhuxye6JFKVp3a6K7+yB+InOuTR6EleYMhEQb74fO0DiC8MlZptaM1AdkVBaNHyN8bGooBn6VlBa6JQU4FvMK2c5iZZ2hkQCZUzMhgsTJnKug0hGXBMSdO8nMmYupMMy2vY7/amdu4lRbRxexMybJHAeUEz5SaSi8cadYqL7EP8pLJ84n7jEqRjo8WPkqJ8UjJ3KRJVmJKVuWqkZ21L853rmdx99wP+PuRmhyZhRIPJCLQuBGOpoJu+5Vd
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(396003)(136003)(376002)(346002)(39860400002)(451199018)(36840700001)(40470700004)(46966006)(8936002)(2906002)(44832011)(7416002)(5660300002)(41300700001)(83380400001)(4326008)(70206006)(8676002)(70586007)(54906003)(110136005)(47076005)(40460700003)(2616005)(1076003)(478600001)(426003)(336012)(40480700001)(86362001)(316002)(82310400005)(186003)(81166007)(36756003)(82740400003)(26005)(356005)(921005)(36860700001)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2023 11:38:12.9832
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2023 11:38:26.7981
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 80fadda8-9347-4c1c-9f78-08db1f006f49
+X-MS-Exchange-CrossTenant-Network-Message-Id: 123b92a9-c2dd-4d56-c26c-08db1f00778c
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DS1PEPF0000E640.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: DS1PEPF0000E642.namprd02.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB7709
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8318
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,SPF_HELO_PASS,
+        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This changeset uses MC_CMD_CLIENT_CMD to execute VF's MCDI
-commands when running in vDPA mode (STATE_VDPA).
-Also, use the PF's IOMMU domain for executing the encapsulated
-VF's MCDI commands to isolate DMA of guest buffers in the VF's
-IOMMU domain.
-This patch also updates the PCIe FN's client id in the efx_nic
-structure which is required while running MC_CMD_CLIENT_CMD.
+To avoid clash of IOVA range of VF's MCDI DMA buffer with the guest
+buffer IOVAs, unmap the MCDI buffer when switching to vDPA mode
+and use PF's IOMMU domain for running VF's MCDI commands.
 
 Signed-off-by: Gautam Dawar <gautam.dawar@amd.com>
 ---
- drivers/net/ethernet/sfc/ef100.c      |   1 +
- drivers/net/ethernet/sfc/ef100_nic.c  |  35 +++++++++
- drivers/net/ethernet/sfc/mcdi.c       | 108 ++++++++++++++++++++++----
- drivers/net/ethernet/sfc/mcdi.h       |   2 +-
- drivers/net/ethernet/sfc/net_driver.h |   2 +
- drivers/net/ethernet/sfc/ptp.c        |   4 +-
- 6 files changed, 132 insertions(+), 20 deletions(-)
+ drivers/net/ethernet/sfc/ef100_nic.c      |  1 -
+ drivers/net/ethernet/sfc/ef100_vdpa.c     | 25 ++++++++++++++++
+ drivers/net/ethernet/sfc/ef100_vdpa.h     |  3 ++
+ drivers/net/ethernet/sfc/ef100_vdpa_ops.c | 35 +++++++++++++++++++++++
+ drivers/net/ethernet/sfc/mcdi.h           |  3 ++
+ drivers/net/ethernet/sfc/net_driver.h     | 12 ++++++++
+ 6 files changed, 78 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/sfc/ef100.c b/drivers/net/ethernet/sfc/ef100.c
-index c1c69783db7b..8453c9ba0f41 100644
---- a/drivers/net/ethernet/sfc/ef100.c
-+++ b/drivers/net/ethernet/sfc/ef100.c
-@@ -465,6 +465,7 @@ static int ef100_pci_probe(struct pci_dev *pci_dev,
- 	efx->type = (const struct efx_nic_type *)entry->driver_data;
- 
- 	efx->pci_dev = pci_dev;
-+	efx->client_id = MC_CMD_CLIENT_ID_SELF;
- 	pci_set_drvdata(pci_dev, efx);
- 	rc = efx_init_struct(efx, pci_dev);
- 	if (rc)
 diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
-index bda4fcbe1126..cd9f724a9e64 100644
+index cd9f724a9e64..1bffc1994ed8 100644
 --- a/drivers/net/ethernet/sfc/ef100_nic.c
 +++ b/drivers/net/ethernet/sfc/ef100_nic.c
-@@ -206,9 +206,11 @@ static int efx_ef100_init_datapath_caps(struct efx_nic *efx)
- 		  "firmware reports num_mac_stats = %u\n",
- 		  efx->num_mac_stats);
+@@ -33,7 +33,6 @@
  
-+#ifdef CONFIG_SFC_VDPA
- 	nic_data->vdpa_supported = efx_ef100_has_cap(nic_data->datapath_caps3,
- 						     CLIENT_CMD_VF_PROXY) &&
- 				   efx->type->is_vf;
-+#endif
+ #define EF100_MAX_VIS 4096
+ #define EF100_NUM_MCDI_BUFFERS	1
+-#define MCDI_BUF_LEN (8 + MCDI_CTL_SDU_LEN_MAX)
+ 
+ #define EF100_RESET_PORT ((ETH_RESET_MAC | ETH_RESET_PHY) << ETH_RESET_SHARED_SHIFT)
+ 
+diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.c b/drivers/net/ethernet/sfc/ef100_vdpa.c
+index 5c9f29f881a6..30ca4ab00175 100644
+--- a/drivers/net/ethernet/sfc/ef100_vdpa.c
++++ b/drivers/net/ethernet/sfc/ef100_vdpa.c
+@@ -223,10 +223,19 @@ static int vdpa_allocate_vis(struct efx_nic *efx, unsigned int *allocated_vis)
+ static void ef100_vdpa_delete(struct efx_nic *efx)
+ {
+ 	struct vdpa_device *vdpa_dev;
++	int rc;
+ 
+ 	if (efx->vdpa_nic) {
+ 		vdpa_dev = &efx->vdpa_nic->vdpa_dev;
+ 		ef100_vdpa_reset(vdpa_dev);
++		if (efx->mcdi_buf_mode == EFX_BUF_MODE_VDPA) {
++			rc = ef100_vdpa_map_mcdi_buffer(efx);
++			if (rc) {
++				pci_err(efx->pci_dev,
++					"map_mcdi_buffer failed, err: %d\n",
++					rc);
++			}
++		}
+ 
+ 		/* replace with _vdpa_unregister_device later */
+ 		put_device(&vdpa_dev->dev);
+@@ -276,6 +285,21 @@ static int get_net_config(struct ef100_vdpa_nic *vdpa_nic)
  	return 0;
  }
  
-@@ -1086,6 +1088,35 @@ static int ef100_check_design_params(struct efx_nic *efx)
- 	return rc;
- }
- 
-+static int efx_ef100_update_client_id(struct efx_nic *efx)
++static void unmap_mcdi_buffer(struct efx_nic *efx)
 +{
 +	struct ef100_nic_data *nic_data = efx->nic_data;
-+	unsigned int pf_index = PCIE_FUNCTION_PF_NULL;
-+	unsigned int vf_index = PCIE_FUNCTION_VF_NULL;
-+	efx_qword_t pciefn;
-+	int rc;
++	struct efx_mcdi_iface *mcdi;
 +
-+	if (efx->pci_dev->is_virtfn)
-+		vf_index = nic_data->vf_index;
-+	else
-+		pf_index = nic_data->pf_index;
-+
-+	/* Construct PCIE_FUNCTION structure */
-+	EFX_POPULATE_QWORD_3(pciefn,
-+			     PCIE_FUNCTION_PF, pf_index,
-+			     PCIE_FUNCTION_VF, vf_index,
-+			     PCIE_FUNCTION_INTF, PCIE_INTERFACE_CALLER);
-+	/* look up self client ID */
-+	rc = efx_ef100_lookup_client_id(efx, pciefn, &efx->client_id);
-+	if (rc) {
-+		pci_warn(efx->pci_dev,
-+			 "%s: Failed to get client ID, rc %d\n",
-+			 __func__, rc);
-+	}
-+
-+	return rc;
++	mcdi = efx_mcdi(efx);
++	spin_lock_bh(&mcdi->iface_lock);
++	/* Save current MCDI mode to be restored later */
++	efx->vdpa_nic->mcdi_mode = mcdi->mode;
++	efx->mcdi_buf_mode = EFX_BUF_MODE_VDPA;
++	mcdi->mode = MCDI_MODE_FAIL;
++	spin_unlock_bh(&mcdi->iface_lock);
++	efx_nic_free_buffer(efx, &nic_data->mcdi_buf);
 +}
 +
- /*	NIC probe and remove
-  */
- static int ef100_probe_main(struct efx_nic *efx)
-@@ -1173,6 +1204,10 @@ static int ef100_probe_main(struct efx_nic *efx)
- 		goto fail;
- 	efx->port_num = rc;
+ static struct ef100_vdpa_nic *ef100_vdpa_create(struct efx_nic *efx,
+ 						const char *dev_name,
+ 						enum ef100_vdpa_class dev_type,
+@@ -342,6 +366,7 @@ static struct ef100_vdpa_nic *ef100_vdpa_create(struct efx_nic *efx,
+ 	for (i = 0; i < EF100_VDPA_MAC_FILTER_NTYPES; i++)
+ 		vdpa_nic->filters[i].filter_id = EFX_INVALID_FILTER_ID;
  
-+	rc = efx_ef100_update_client_id(efx);
-+	if (rc)
-+		goto fail;
-+
- 	efx_mcdi_print_fwver(efx, fw_version, sizeof(fw_version));
- 	pci_dbg(efx->pci_dev, "Firmware version %s\n", fw_version);
- 
-diff --git a/drivers/net/ethernet/sfc/mcdi.c b/drivers/net/ethernet/sfc/mcdi.c
-index a7f2c31071e8..3bf1ebe05775 100644
---- a/drivers/net/ethernet/sfc/mcdi.c
-+++ b/drivers/net/ethernet/sfc/mcdi.c
-@@ -145,14 +145,15 @@ void efx_mcdi_fini(struct efx_nic *efx)
- 	kfree(efx->mcdi);
- }
- 
--static void efx_mcdi_send_request(struct efx_nic *efx, unsigned cmd,
--				  const efx_dword_t *inbuf, size_t inlen)
-+static void efx_mcdi_send_request(struct efx_nic *efx, u32 client_id,
-+				  unsigned int cmd, const efx_dword_t *inbuf,
-+				  size_t inlen)
- {
- 	struct efx_mcdi_iface *mcdi = efx_mcdi(efx);
- #ifdef CONFIG_SFC_MCDI_LOGGING
- 	char *buf = mcdi->logging_buffer; /* page-sized */
- #endif
--	efx_dword_t hdr[2];
-+	efx_dword_t hdr[5];
- 	size_t hdr_len;
- 	u32 xflags, seqno;
- 
-@@ -179,7 +180,7 @@ static void efx_mcdi_send_request(struct efx_nic *efx, unsigned cmd,
- 				     MCDI_HEADER_XFLAGS, xflags,
- 				     MCDI_HEADER_NOT_EPOCH, !mcdi->new_epoch);
- 		hdr_len = 4;
--	} else {
-+	} else if (client_id == efx->client_id) {
- 		/* MCDI v2 */
- 		BUG_ON(inlen > MCDI_CTL_SDU_LEN_MAX_V2);
- 		EFX_POPULATE_DWORD_7(hdr[0],
-@@ -194,6 +195,35 @@ static void efx_mcdi_send_request(struct efx_nic *efx, unsigned cmd,
- 				     MC_CMD_V2_EXTN_IN_EXTENDED_CMD, cmd,
- 				     MC_CMD_V2_EXTN_IN_ACTUAL_LEN, inlen);
- 		hdr_len = 8;
-+	} else {
-+		/* MCDI v2 */
-+		WARN_ON(inlen > MCDI_CTL_SDU_LEN_MAX_V2);
-+		/* MCDI v2 with credentials of a different client */
-+		BUILD_BUG_ON(MC_CMD_CLIENT_CMD_IN_LEN != 4);
-+		/* Outer CLIENT_CMD wrapper command with client ID */
-+		EFX_POPULATE_DWORD_7(hdr[0],
-+				     MCDI_HEADER_RESPONSE, 0,
-+				     MCDI_HEADER_RESYNC, 1,
-+				     MCDI_HEADER_CODE, MC_CMD_V2_EXTN,
-+				     MCDI_HEADER_DATALEN, 0,
-+				     MCDI_HEADER_SEQ, seqno,
-+				     MCDI_HEADER_XFLAGS, xflags,
-+				     MCDI_HEADER_NOT_EPOCH, !mcdi->new_epoch);
-+		EFX_POPULATE_DWORD_2(hdr[1],
-+				     MC_CMD_V2_EXTN_IN_EXTENDED_CMD,
-+				     MC_CMD_CLIENT_CMD,
-+				     MC_CMD_V2_EXTN_IN_ACTUAL_LEN, inlen + 12);
-+		MCDI_SET_DWORD(&hdr[2],
-+			       CLIENT_CMD_IN_CLIENT_ID, client_id);
-+
-+		/* MCDIv2 header for inner command */
-+		EFX_POPULATE_DWORD_2(hdr[3],
-+				     MCDI_HEADER_CODE, MC_CMD_V2_EXTN,
-+				     MCDI_HEADER_DATALEN, 0);
-+		EFX_POPULATE_DWORD_2(hdr[4],
-+				     MC_CMD_V2_EXTN_IN_EXTENDED_CMD, cmd,
-+				     MC_CMD_V2_EXTN_IN_ACTUAL_LEN, inlen);
-+		hdr_len = 20;
- 	}
- 
- #ifdef CONFIG_SFC_MCDI_LOGGING
-@@ -474,7 +504,8 @@ static void efx_mcdi_release(struct efx_mcdi_iface *mcdi)
- 			&mcdi->async_list, struct efx_mcdi_async_param, list);
- 		if (async) {
- 			mcdi->state = MCDI_STATE_RUNNING_ASYNC;
--			efx_mcdi_send_request(efx, async->cmd,
-+			efx_mcdi_send_request(efx, efx->client_id,
-+					      async->cmd,
- 					      (const efx_dword_t *)(async + 1),
- 					      async->inlen);
- 			mod_timer(&mcdi->async_timer,
-@@ -797,7 +828,7 @@ static int efx_mcdi_proxy_wait(struct efx_nic *efx, u32 handle, bool quiet)
- 	return mcdi->proxy_rx_status;
- }
- 
--static int _efx_mcdi_rpc(struct efx_nic *efx, unsigned int cmd,
-+static int _efx_mcdi_rpc(struct efx_nic *efx, u32 client_id, unsigned int cmd,
- 			 const efx_dword_t *inbuf, size_t inlen,
- 			 efx_dword_t *outbuf, size_t outlen,
- 			 size_t *outlen_actual, bool quiet, int *raw_rc)
-@@ -811,7 +842,7 @@ static int _efx_mcdi_rpc(struct efx_nic *efx, unsigned int cmd,
- 		return -EINVAL;
- 	}
- 
--	rc = efx_mcdi_rpc_start(efx, cmd, inbuf, inlen);
-+	rc = efx_mcdi_rpc_start(efx, client_id, cmd, inbuf, inlen);
++	unmap_mcdi_buffer(efx);
+ 	rc = get_net_config(vdpa_nic);
  	if (rc)
- 		return rc;
+ 		goto err_put_device;
+diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.h b/drivers/net/ethernet/sfc/ef100_vdpa.h
+index 49fb6be04eb3..0913ac2519cb 100644
+--- a/drivers/net/ethernet/sfc/ef100_vdpa.h
++++ b/drivers/net/ethernet/sfc/ef100_vdpa.h
+@@ -147,6 +147,7 @@ struct ef100_vdpa_filter {
+  * @status: device status as per VIRTIO spec
+  * @features: negotiated feature bits
+  * @max_queue_pairs: maximum number of queue pairs supported
++ * @mcdi_mode: MCDI mode at the time of unmapping VF mcdi buffer
+  * @net_config: virtio_net_config data
+  * @vring: vring information of the vDPA device.
+  * @mac_address: mac address of interface associated with this vdpa device
+@@ -166,6 +167,7 @@ struct ef100_vdpa_nic {
+ 	u8 status;
+ 	u64 features;
+ 	u32 max_queue_pairs;
++	enum efx_mcdi_mode mcdi_mode;
+ 	struct virtio_net_config net_config;
+ 	struct ef100_vdpa_vring_info vring[EF100_VDPA_MAX_QUEUES_PAIRS * 2];
+ 	u8 *mac_address;
+@@ -185,6 +187,7 @@ int ef100_vdpa_add_filter(struct ef100_vdpa_nic *vdpa_nic,
+ int ef100_vdpa_init_vring(struct ef100_vdpa_nic *vdpa_nic, u16 idx);
+ void ef100_vdpa_irq_vectors_free(void *data);
+ int ef100_vdpa_reset(struct vdpa_device *vdev);
++int ef100_vdpa_map_mcdi_buffer(struct efx_nic *efx);
  
-@@ -836,7 +867,8 @@ static int _efx_mcdi_rpc(struct efx_nic *efx, unsigned int cmd,
- 
- 			/* We now retry the original request. */
- 			mcdi->state = MCDI_STATE_RUNNING_SYNC;
--			efx_mcdi_send_request(efx, cmd, inbuf, inlen);
-+			efx_mcdi_send_request(efx, efx->client_id, cmd,
-+					      inbuf, inlen);
- 
- 			rc = _efx_mcdi_rpc_finish(efx, cmd, inlen,
- 						  outbuf, outlen, outlen_actual,
-@@ -855,16 +887,44 @@ static int _efx_mcdi_rpc(struct efx_nic *efx, unsigned int cmd,
+ static inline bool efx_vdpa_is_little_endian(struct ef100_vdpa_nic *vdpa_nic)
+ {
+diff --git a/drivers/net/ethernet/sfc/ef100_vdpa_ops.c b/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
+index db86c2693950..c6c9458f0e6f 100644
+--- a/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
++++ b/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
+@@ -711,12 +711,47 @@ static int ef100_vdpa_suspend(struct vdpa_device *vdev)
+ 	mutex_unlock(&vdpa_nic->lock);
  	return rc;
  }
- 
-+#ifdef CONFIG_SFC_VDPA
-+static bool is_mode_vdpa(struct efx_nic *efx)
++
++int ef100_vdpa_map_mcdi_buffer(struct efx_nic *efx)
 +{
-+	if (efx->pci_dev->is_virtfn &&
-+	    efx->pci_dev->physfn &&
-+	    efx->state == STATE_VDPA &&
-+	    efx->vdpa_nic)
-+		return true;
++	struct ef100_nic_data *nic_data = efx->nic_data;
++	struct efx_mcdi_iface *mcdi;
++	int rc;
 +
-+	return false;
++	/* Update VF's MCDI buffer when switching out of vdpa mode */
++	rc = efx_nic_alloc_buffer(efx, &nic_data->mcdi_buf,
++				  MCDI_BUF_LEN, GFP_KERNEL);
++	if (rc)
++		return rc;
++
++	mcdi = efx_mcdi(efx);
++	spin_lock_bh(&mcdi->iface_lock);
++	mcdi->mode = efx->vdpa_nic->mcdi_mode;
++	efx->mcdi_buf_mode = EFX_BUF_MODE_EF100;
++	spin_unlock_bh(&mcdi->iface_lock);
++
++	return 0;
 +}
-+#endif
 +
- static int _efx_mcdi_rpc_evb_retry(struct efx_nic *efx, unsigned cmd,
- 				   const efx_dword_t *inbuf, size_t inlen,
- 				   efx_dword_t *outbuf, size_t outlen,
- 				   size_t *outlen_actual, bool quiet)
+ static void ef100_vdpa_free(struct vdpa_device *vdev)
  {
-+#ifdef CONFIG_SFC_VDPA
-+	struct efx_nic *efx_pf;
-+#endif
- 	int raw_rc = 0;
- 	int rc;
+ 	struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
++	int rc;
+ 	int i;
  
--	rc = _efx_mcdi_rpc(efx, cmd, inbuf, inlen,
--			   outbuf, outlen, outlen_actual, true, &raw_rc);
-+#ifdef CONFIG_SFC_VDPA
-+	if (is_mode_vdpa(efx)) {
-+		efx_pf = pci_get_drvdata(efx->pci_dev->physfn);
-+		rc = _efx_mcdi_rpc(efx_pf, efx->client_id, cmd, inbuf,
-+				   inlen, outbuf, outlen, outlen_actual,
-+				   true, &raw_rc);
-+	} else {
-+#endif
-+		rc = _efx_mcdi_rpc(efx, efx->client_id, cmd, inbuf,
-+				   inlen, outbuf, outlen, outlen_actual, true,
-+				   &raw_rc);
-+#ifdef CONFIG_SFC_VDPA
-+	}
-+#endif
- 
- 	if ((rc == -EPROTO) && (raw_rc == MC_CMD_ERR_NO_EVB_PORT) &&
- 	    efx->type->is_vf) {
-@@ -881,9 +941,22 @@ static int _efx_mcdi_rpc_evb_retry(struct efx_nic *efx, unsigned cmd,
- 
- 		do {
- 			usleep_range(delay_us, delay_us + 10000);
--			rc = _efx_mcdi_rpc(efx, cmd, inbuf, inlen,
--					   outbuf, outlen, outlen_actual,
--					   true, &raw_rc);
-+#ifdef CONFIG_SFC_VDPA
-+			if (is_mode_vdpa(efx)) {
-+				efx_pf = pci_get_drvdata(efx->pci_dev->physfn);
-+				rc = _efx_mcdi_rpc(efx_pf, efx->client_id, cmd,
-+						   inbuf, inlen, outbuf, outlen,
-+						   outlen_actual, true,
-+						   &raw_rc);
-+			} else {
-+#endif
-+				rc = _efx_mcdi_rpc(efx, efx->client_id,
-+						   cmd, inbuf, inlen, outbuf,
-+						   outlen, outlen_actual, true,
-+						   &raw_rc);
-+#ifdef CONFIG_SFC_VDPA
+ 	if (vdpa_nic) {
++		if (vdpa_nic->efx->mcdi_buf_mode == EFX_BUF_MODE_VDPA) {
++			/* This will only be called via call to put_device()
++			 * on vdpa device creation failure
++			 */
++			rc = ef100_vdpa_map_mcdi_buffer(vdpa_nic->efx);
++			if (rc) {
++				dev_err(&vdev->dev,
++					"map_mcdi_buffer failed, err: %d\n",
++					rc);
 +			}
-+#endif
- 			if (delay_us < 100000)
- 				delay_us <<= 1;
- 		} while ((rc == -EPROTO) &&
-@@ -939,7 +1012,7 @@ int efx_mcdi_rpc(struct efx_nic *efx, unsigned cmd,
-  * function and is then responsible for calling efx_mcdi_display_error
-  * as needed.
-  */
--int efx_mcdi_rpc_quiet(struct efx_nic *efx, unsigned cmd,
-+int efx_mcdi_rpc_quiet(struct efx_nic *efx, unsigned int cmd,
- 		       const efx_dword_t *inbuf, size_t inlen,
- 		       efx_dword_t *outbuf, size_t outlen,
- 		       size_t *outlen_actual)
-@@ -948,7 +1021,7 @@ int efx_mcdi_rpc_quiet(struct efx_nic *efx, unsigned cmd,
- 				       outlen_actual, true);
- }
- 
--int efx_mcdi_rpc_start(struct efx_nic *efx, unsigned cmd,
-+int efx_mcdi_rpc_start(struct efx_nic *efx, u32 client_id, unsigned int cmd,
- 		       const efx_dword_t *inbuf, size_t inlen)
- {
- 	struct efx_mcdi_iface *mcdi = efx_mcdi(efx);
-@@ -965,7 +1038,7 @@ int efx_mcdi_rpc_start(struct efx_nic *efx, unsigned cmd,
- 		return -ENETDOWN;
- 
- 	efx_mcdi_acquire_sync(mcdi);
--	efx_mcdi_send_request(efx, cmd, inbuf, inlen);
-+	efx_mcdi_send_request(efx, client_id, cmd, inbuf, inlen);
- 	return 0;
- }
- 
-@@ -1009,7 +1082,8 @@ static int _efx_mcdi_rpc_async(struct efx_nic *efx, unsigned int cmd,
- 		 */
- 		if (mcdi->async_list.next == &async->list &&
- 		    efx_mcdi_acquire_async(mcdi)) {
--			efx_mcdi_send_request(efx, cmd, inbuf, inlen);
-+			efx_mcdi_send_request(efx, efx->client_id,
-+					      cmd, inbuf, inlen);
- 			mod_timer(&mcdi->async_timer,
- 				  jiffies + MCDI_RPC_TIMEOUT);
- 		}
++		}
++
+ 		for (i = 0; i < (vdpa_nic->max_queue_pairs * 2); i++) {
+ 			reset_vring(vdpa_nic, i);
+ 			if (vdpa_nic->vring[i].vring_ctx)
 diff --git a/drivers/net/ethernet/sfc/mcdi.h b/drivers/net/ethernet/sfc/mcdi.h
-index dafab52aaef7..2c526d2edeb6 100644
+index 2c526d2edeb6..bc4de3b4e6f3 100644
 --- a/drivers/net/ethernet/sfc/mcdi.h
 +++ b/drivers/net/ethernet/sfc/mcdi.h
-@@ -150,7 +150,7 @@ int efx_mcdi_rpc_quiet(struct efx_nic *efx, unsigned cmd,
- 		       efx_dword_t *outbuf, size_t outlen,
- 		       size_t *outlen_actual);
+@@ -6,6 +6,9 @@
  
--int efx_mcdi_rpc_start(struct efx_nic *efx, unsigned cmd,
-+int efx_mcdi_rpc_start(struct efx_nic *efx, u32 client_id, unsigned int cmd,
- 		       const efx_dword_t *inbuf, size_t inlen);
- int efx_mcdi_rpc_finish(struct efx_nic *efx, unsigned cmd, size_t inlen,
- 			efx_dword_t *outbuf, size_t outlen,
+ #ifndef EFX_MCDI_H
+ #define EFX_MCDI_H
++#include "mcdi_pcol.h"
++
++#define MCDI_BUF_LEN (8 + MCDI_CTL_SDU_LEN_MAX)
+ 
+ /**
+  * enum efx_mcdi_state - MCDI request handling state
 diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
-index 1da71deac71c..948c7a06403a 100644
+index 948c7a06403a..9cdfeb6ad05a 100644
 --- a/drivers/net/ethernet/sfc/net_driver.h
 +++ b/drivers/net/ethernet/sfc/net_driver.h
-@@ -859,6 +859,7 @@ struct efx_mae;
-  * @secondary_list: List of &struct efx_nic instances for the secondary PCI
-  *	functions of the controller, if this is for the primary function.
-  *	Serialised by rtnl_lock.
-+ * @client_id: client ID of this PCIe function
-  * @type: Controller type attributes
-  * @legacy_irq: IRQ number
-  * @workqueue: Workqueue for port reconfigures and the HW monitor.
-@@ -1022,6 +1023,7 @@ struct efx_nic {
- 	struct list_head secondary_list;
- 	struct pci_dev *pci_dev;
- 	unsigned int port_num;
-+	u32 client_id;
- 	const struct efx_nic_type *type;
- 	int legacy_irq;
- 	bool eeh_disabled_legacy_irq;
-diff --git a/drivers/net/ethernet/sfc/ptp.c b/drivers/net/ethernet/sfc/ptp.c
-index 9f07e1ba7780..d90d4f6b3824 100644
---- a/drivers/net/ethernet/sfc/ptp.c
-+++ b/drivers/net/ethernet/sfc/ptp.c
-@@ -1052,8 +1052,8 @@ static int efx_ptp_synchronize(struct efx_nic *efx, unsigned int num_readings)
+@@ -848,6 +848,16 @@ enum efx_xdp_tx_queues_mode {
  
- 	/* Clear flag that signals MC ready */
- 	WRITE_ONCE(*start, 0);
--	rc = efx_mcdi_rpc_start(efx, MC_CMD_PTP, synch_buf,
--				MC_CMD_PTP_IN_SYNCHRONIZE_LEN);
-+	rc = efx_mcdi_rpc_start(efx, MC_CMD_CLIENT_ID_SELF, MC_CMD_PTP,
-+				synch_buf, MC_CMD_PTP_IN_SYNCHRONIZE_LEN);
- 	EFX_WARN_ON_ONCE_PARANOID(rc);
+ struct efx_mae;
  
- 	/* Wait for start from MCDI (or timeout) */
++/**
++ * enum efx_buf_alloc_mode - buffer allocation mode
++ * @EFX_BUF_MODE_EF100: buffer setup in ef100 mode
++ * @EFX_BUF_MODE_VDPA: buffer setup in vdpa mode
++ */
++enum efx_buf_alloc_mode {
++	EFX_BUF_MODE_EF100,
++	EFX_BUF_MODE_VDPA
++};
++
+ /**
+  * struct efx_nic - an Efx NIC
+  * @name: Device name (net device name or bus id before net device registered)
+@@ -877,6 +887,7 @@ struct efx_mae;
+  * @irq_rx_mod_step_us: Step size for IRQ moderation for RX event queues
+  * @irq_rx_moderation_us: IRQ moderation time for RX event queues
+  * @msg_enable: Log message enable flags
++ * @mcdi_buf_mode: mcdi buffer allocation mode
+  * @state: Device state number (%STATE_*). Serialised by the rtnl_lock.
+  * @reset_pending: Bitmask for pending resets
+  * @tx_queue: TX DMA queues
+@@ -1045,6 +1056,7 @@ struct efx_nic {
+ 	u32 msg_enable;
+ 
+ 	enum nic_state state;
++	enum efx_buf_alloc_mode mcdi_buf_mode;
+ 	unsigned long reset_pending;
+ 
+ 	struct efx_channel *channel[EFX_MAX_CHANNELS];
 -- 
 2.30.1
 
