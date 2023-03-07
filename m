@@ -2,82 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6835A6AD40F
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 02:33:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F1D86AD42E
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 02:43:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230016AbjCGBdj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 20:33:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59048 "EHLO
+        id S229938AbjCGBn5 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 6 Mar 2023 20:43:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230011AbjCGBdQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 20:33:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F576C895;
-        Mon,  6 Mar 2023 17:32:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8896B81283;
-        Tue,  7 Mar 2023 01:32:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4280AC433EF;
-        Tue,  7 Mar 2023 01:32:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678152745;
-        bh=EJo/w9osdGXrw0fp0h5jJPIkK8rkzG76FPt137jlcJk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JpKrN/+QfBTMvJbMTYxCZCpTe+Nl5WEqFHNtuGe0UmoLNoxyofoaECgSqaEruV5nC
-         k18MOaf4llXqmtAJI2MW3cNjt7T1llwq0i/2eSG2o4Wgt6JmCD4nY24TZbr7LCMAuN
-         VPdnQ2dbV1rCQLveEuzrzRal2n2cXNGI9vT36fgHDrrznT38JvoqUDfy+RZ5P2AjHd
-         5T8YwMzN6qfCrOsHY7Kyq2bXggUInVxUVeQgXYkRWVLWfw5kJEooyUG7gibA9Q70l6
-         3Ruc7Z9D/WUlqiFr4r8v8g8fNuA0jRPfibtc0cG3dTm1ZTU0Ul55+/CMQxSvF6MJvl
-         RWZr9ADti9ywQ==
-Date:   Mon, 6 Mar 2023 17:32:24 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Stephen Rothwell <sfr@rothwell.id.au>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: Signed-off-by missing for commit in the net tree
-Message-ID: <20230306173224.52afebb0@kernel.org>
-In-Reply-To: <20230307115252.2b23c4f5@oak.ozlabs.ibm.com>
-References: <20230307083703.558634a9@canb.auug.org.au>
-        <d5b3d530-e050-1891-e5c0-8c98e136b744@gmail.com>
-        <20230307115252.2b23c4f5@oak.ozlabs.ibm.com>
+        with ESMTP id S229930AbjCGBnx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 20:43:53 -0500
+Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D110C46AF;
+        Mon,  6 Mar 2023 17:43:41 -0800 (PST)
+Received: from EXMBX165.cuchost.com (unknown [175.102.18.54])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (Client CN "EXMBX165", Issuer "EXMBX165" (not verified))
+        by ex01.ufhost.com (Postfix) with ESMTP id 2164C24E0D8;
+        Tue,  7 Mar 2023 09:43:40 +0800 (CST)
+Received: from EXMBX162.cuchost.com (172.16.6.72) by EXMBX165.cuchost.com
+ (172.16.6.75) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Tue, 7 Mar
+ 2023 09:43:40 +0800
+Received: from [192.168.120.42] (171.223.208.138) by EXMBX162.cuchost.com
+ (172.16.6.72) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Tue, 7 Mar
+ 2023 09:43:39 +0800
+Message-ID: <8bd8654e-4bba-c718-4b17-5291e70f05fe@starfivetech.com>
+Date:   Tue, 7 Mar 2023 09:43:36 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v5 11/12] riscv: dts: starfive: visionfive-2-v1.2a: Add
+ gmac+phy's delay configuration
+Content-Language: en-US
+To:     Emil Renner Berthing <emil.renner.berthing@canonical.com>
+CC:     <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Yanhong Wang <yanhong.wang@starfivetech.com>
+References: <20230303085928.4535-1-samin.guo@starfivetech.com>
+ <20230303085928.4535-12-samin.guo@starfivetech.com>
+ <CAJM55Z_8m42vfoPDicTP18S6Z1ZXYbFeS1edTjzYVB3Kq2xFeQ@mail.gmail.com>
+From:   Guo Samin <samin.guo@starfivetech.com>
+In-Reply-To: <CAJM55Z_8m42vfoPDicTP18S6Z1ZXYbFeS1edTjzYVB3Kq2xFeQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Originating-IP: [171.223.208.138]
+X-ClientProxiedBy: EXCAS064.cuchost.com (172.16.6.24) To EXMBX162.cuchost.com
+ (172.16.6.72)
+X-YovoleRuleAgent: yovoleflag
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 7 Mar 2023 11:52:52 +1100 Stephen Rothwell wrote:
-> > Seems to be ok, false positive?
-> > 
-> > net: phy: smsc: fix link up detection in forced irq mode
-> > Currently link up can't be detected in forced mode if polling
-> > isn't used. Only link up interrupt source we have is aneg
-> > complete which isn't applicable in forced mode. Therefore we
-> > have to use energy-on as link up indicator.
-> > 
-> > Fixes: 7365494550f6 ("net: phy: smsc: skip ENERGYON interrupt if disabled")
-> > Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> > Signed-off-by: David S. Miller <davem@davemloft.net>  
-> 
-> It was committed by Jakub Kicinski <kuba@kernel.org>
-> 
-> $ git show --pretty=raw 58aac3a2ef41
-> commit 58aac3a2ef414fea6d7fdf823ea177744a087d13
-> tree 26bf9b3b866bd43baa1b8055d42536ac7ce3b3cf
-> parent 89b59a84cb166f1ab5b6de9830e61324937c661e
-> author Heiner Kallweit <hkallweit1@gmail.com> 1677927164 +0100
-> committer Jakub Kicinski <kuba@kernel.org> 1678137790 -0800
 
-Yes, my bad, sorry.
+
+在 2023/3/6 21:00:19, Emil Renner Berthing 写道:
+> On Fri, 3 Mar 2023 at 10:01, Samin Guo <samin.guo@starfivetech.com> wrote:
+>> v1.2A gmac0 uses motorcomm YT8531(rgmii-id) PHY, and needs delay
+>> configurations.
+>>
+>> v1.2A gmac1 uses motorcomm YT8512(rmii) PHY, and needs to
+>> switch rx and rx to external clock sources.
+>>
+>> Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
+>> ---
+>>  .../starfive/jh7110-starfive-visionfive-2-v1.2a.dts | 13 +++++++++++++
+>>  1 file changed, 13 insertions(+)
+>>
+>> diff --git a/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2-v1.2a.dts b/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2-v1.2a.dts
+>> index 4af3300f3cf3..205a13d8c8b1 100644
+>> --- a/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2-v1.2a.dts
+>> +++ b/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2-v1.2a.dts
+>> @@ -11,3 +11,16 @@
+>>         model = "StarFive VisionFive 2 v1.2A";
+>>         compatible = "starfive,visionfive-2-v1.2a", "starfive,jh7110";
+>>  };
+>> +
+>> +&gmac1 {
+>> +       phy-mode = "rmii";
+>> +       assigned-clocks = <&syscrg JH7110_SYSCLK_GMAC1_TX>,
+>> +                         <&syscrg JH7110_SYSCLK_GMAC1_RX>;
+>> +       assigned-clock-parents = <&syscrg JH7110_SYSCLK_GMAC1_RMII_RTX>,
+>> +                                <&syscrg JH7110_SYSCLK_GMAC1_RMII_RTX>;
+>> +};
+>> +
+>> +&phy0 {
+>> +       rx-internal-delay-ps = <1900>;
+>> +       tx-internal-delay-ps = <1350>;
+>> +};
+> 
+> Here you're not specifying the internal delays for phy1 which means it
+> defaults to 1950ps for both rx and tx. Is that right or did you mean
+> to set them to 0 like the v1.3b phy1?
+
+Hi, emil, usually, only 1000M (rgmii) needs to configure the delay, and 100M(rmii) does not.
+> 
+> Also your u-boot seems to set what the linux phy driver calls
+> motorcomm,keep-pll-enabled and motorcomm,auto-sleep-disabled for all
+> the phys. Did you leave those out on purpose?
+
+Hi, Emil, We did configure motorcomm,auto-sleep-disabled for yt8512 in uboot, 
+but Yutai upstream's Linux driver only yt8521/yt8531 supports this property. 
+Yt8512 is a Generic PHY driver and does not support the configuration of 
+motorcomm,auto-sleep-disabled and motorcomm,keep-pll-enabled.
+
+And without configuring these two attributes, vf2-1.2a gmac1 also works normally.
+
+
+Best regards,
+Samin
+> 
+>> --
+>> 2.17.1
+>>
+>>
+>> _______________________________________________
+>> linux-riscv mailing list
+>> linux-riscv@lists.infradead.org
+>> http://lists.infradead.org/mailman/listinfo/linux-riscv
+
+-- 
+Best regards,
+Samin
