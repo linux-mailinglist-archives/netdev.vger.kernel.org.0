@@ -2,103 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 659D36AD307
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 00:51:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86BB86AD325
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 01:07:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229744AbjCFXva (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 18:51:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32814 "EHLO
+        id S229720AbjCGAGr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 19:06:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbjCFXv3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 18:51:29 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00A2E3B3E3;
-        Mon,  6 Mar 2023 15:51:27 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AAE5BB80E98;
-        Mon,  6 Mar 2023 23:51:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11C78C433EF;
-        Mon,  6 Mar 2023 23:51:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678146685;
-        bh=jL7xXOOyjDrI1lWEUBmIuKIMDYmR+aYVz30Qx6CwOT0=;
-        h=Date:From:To:Cc:Subject:From;
-        b=TU1RuuekTGlXlz65IZhKSq04p671+b9C3B6TVcUVnowY4mlVDgUE2HJTkNrBj6AJ9
-         sVOuwDE8Lx9oeU2Sd+WlOvfB6lAho86dFhJLVoLLa1n4TA3eLk/v4b37tj+2iimWIr
-         bLvDMil1xwUhHsg+77M/MeOoWUAUwp4F+ucIn4ZU055VR/ay7ko9rpwIf4S0AUJaLu
-         4kK3mN+V1NG+eG3UwU4EKt/tere4MUnd0ymUTzmwcTLtoVd0Q7gupKXSoUkYDBqy2C
-         LXB316/9x7OldO2mkCFqs4n08ekxtUXmUGZRFQxqa3tF+RWZDQa5J5tb6jUbdFdLDk
-         U7VjVDlQKCV7Q==
-Date:   Mon, 6 Mar 2023 17:51:52 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229490AbjCGAGq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 19:06:46 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EC034DE33;
+        Mon,  6 Mar 2023 16:06:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678147604; x=1709683604;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=x6YbLdiiX44qz82846yYDicn6b4G4tPKv0db1Wij+Ws=;
+  b=nhKudHAXmJhioSLMaRhX5x/xpaXHEpFoVv/G8y6yRyzrfu9WoszDCugC
+   V3qSbWuGg+Gv6rzS4cxHr9mW5wBDM/m4CoQZN/TFfbgw0BK2HxObD7GWp
+   Oawg+st18zhqXmOjGA8xZuWw6scM6X8u9mdzwMT2giTP83uhTm57uXeOU
+   8b4ELUjM8AcFqoSr6b9Py+2+mTYHPSDD4PCJi7oNWlnFZKLAdqPsqiXWR
+   FxaaSAT+kGwqvDpusmjm+CK3fKH1wGnBsIAk1OCBDKOalbK/R1l/4/RrX
+   oYF2VsABZ8cQmF/90e8bgRVTKqlibeTY8lUHDBt9WbYO2tbAblwpmESYv
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="337235074"
+X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
+   d="scan'208";a="337235074"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 16:06:43 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="740514107"
+X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
+   d="scan'208";a="740514107"
+Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 06 Mar 2023 16:06:40 -0800
+Received: from kbuild by b613635ddfff with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pZKql-0000kZ-1D;
+        Tue, 07 Mar 2023 00:06:39 +0000
+Date:   Tue, 7 Mar 2023 08:05:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sean Anderson <sean.anderson@seco.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org
+Cc:     oe-kbuild-all@lists.linux.dev,
+        "David S . Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH][next] net/mlx4_en: Replace fake flex-array with
- flexible-array member
-Message-ID: <ZAZ8mNbphtPyZWM6@work>
+        Sean Anderson <sean.anderson@seco.com>
+Subject: Re: [PATCH net-next] net: mdio: Add netlink interface
+Message-ID: <202303070724.WmNAt4Af-lkp@intel.com>
+References: <20230306204517.1953122-1-sean.anderson@seco.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230306204517.1953122-1-sean.anderson@seco.com>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Zero-length arrays as fake flexible arrays are deprecated and we are
-moving towards adopting C99 flexible-array members instead.
+Hi Sean,
 
-Transform zero-length array into flexible-array member in struct
-mlx4_en_rx_desc. 
+I love your patch! Perhaps something to improve:
 
-Address the following warnings found with GCC-13 and
--fstrict-flex-arrays=3 enabled:
-drivers/net/ethernet/mellanox/mlx4/en_rx.c:88:30: warning: array subscript i is outside array bounds of ‘struct mlx4_wqe_data_seg[0]’ [-Warray-bounds=]
-drivers/net/ethernet/mellanox/mlx4/en_rx.c:149:30: warning: array subscript 0 is outside array bounds of ‘struct mlx4_wqe_data_seg[0]’ [-Warray-bounds=]
-drivers/net/ethernet/mellanox/mlx4/en_rx.c:127:30: warning: array subscript i is outside array bounds of ‘struct mlx4_wqe_data_seg[0]’ [-Warray-bounds=]
-drivers/net/ethernet/mellanox/mlx4/en_rx.c:128:30: warning: array subscript i is outside array bounds of ‘struct mlx4_wqe_data_seg[0]’ [-Warray-bounds=]
-drivers/net/ethernet/mellanox/mlx4/en_rx.c:129:30: warning: array subscript i is outside array bounds of ‘struct mlx4_wqe_data_seg[0]’ [-Warray-bounds=]
-drivers/net/ethernet/mellanox/mlx4/en_rx.c:117:30: warning: array subscript i is outside array bounds of ‘struct mlx4_wqe_data_seg[0]’ [-Warray-bounds=]
-drivers/net/ethernet/mellanox/mlx4/en_rx.c:119:30: warning: array subscript i is outside array bounds of ‘struct mlx4_wqe_data_seg[0]’ [-Warray-bounds=]
+[auto build test WARNING on net-next/master]
 
-This helps with the ongoing efforts to tighten the FORTIFY_SOURCE
-routines on memcpy() and help us make progress towards globally
-enabling -fstrict-flex-arrays=3 [1].
+url:    https://github.com/intel-lab-lkp/linux/commits/Sean-Anderson/net-mdio-Add-netlink-interface/20230307-044742
+patch link:    https://lore.kernel.org/r/20230306204517.1953122-1-sean.anderson%40seco.com
+patch subject: [PATCH net-next] net: mdio: Add netlink interface
+config: sparc-allyesconfig (https://download.01.org/0day-ci/archive/20230307/202303070724.WmNAt4Af-lkp@intel.com/config)
+compiler: sparc64-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/78ff5545f403a98977a2db207cc165cb3a3b4d8f
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Sean-Anderson/net-mdio-Add-netlink-interface/20230307-044742
+        git checkout 78ff5545f403a98977a2db207cc165cb3a3b4d8f
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc SHELL=/bin/bash drivers/net/
 
-Link: https://github.com/KSPP/linux/issues/21
-Link: https://github.com/KSPP/linux/issues/264
-Link: https://gcc.gnu.org/pipermail/gcc-patches/2022-October/602902.html [1]
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- drivers/net/ethernet/mellanox/mlx4/mlx4_en.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202303070724.WmNAt4Af-lkp@intel.com/
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-index 544e09b97483..034733b13b1a 100644
---- a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-+++ b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-@@ -323,7 +323,7 @@ struct mlx4_en_tx_ring {
- 
- struct mlx4_en_rx_desc {
- 	/* actual number of entries depends on rx ring stride */
--	struct mlx4_wqe_data_seg data[0];
-+	DECLARE_FLEX_ARRAY(struct mlx4_wqe_data_seg, data);
- };
- 
- struct mlx4_en_rx_ring {
+All warnings (new ones prefixed by >>):
+
+   drivers/net/mdio/mdio-netlink.c: In function 'mdio_nl_eval':
+>> drivers/net/mdio/mdio-netlink.c:98:40: warning: variable 'val' set but not used [-Wunused-but-set-variable]
+      98 |         int phy_id, reg, prtad, devad, val;
+         |                                        ^~~
+
+
+vim +/val +98 drivers/net/mdio/mdio-netlink.c
+
+    91	
+    92	static int mdio_nl_eval(struct mdio_nl_xfer *xfer)
+    93	{
+    94		struct mdio_nl_insn *insn;
+    95		unsigned long timeout;
+    96		u16 regs[8] = { 0 };
+    97		int pc, ret = 0;
+  > 98		int phy_id, reg, prtad, devad, val;
+    99	
+   100		timeout = jiffies + msecs_to_jiffies(xfer->timeout_ms);
+   101	
+   102		mutex_lock(&xfer->mdio->mdio_lock);
+   103	
+   104		for (insn = xfer->prog, pc = 0;
+   105		     pc < xfer->prog_len;
+   106		     insn = &xfer->prog[++pc]) {
+   107			if (time_after(jiffies, timeout)) {
+   108				ret = -ETIMEDOUT;
+   109				break;
+   110			}
+   111	
+   112			switch ((enum mdio_nl_op)insn->op) {
+   113			case MDIO_NL_OP_READ:
+   114				phy_id = __arg_ri(insn->arg0, regs);
+   115				prtad = mdio_phy_id_prtad(phy_id);
+   116				devad = mdio_phy_id_devad(phy_id);
+   117				reg = __arg_ri(insn->arg1, regs);
+   118	
+   119				if (mdio_phy_id_is_c45(phy_id))
+   120					ret = __mdiobus_c45_read(xfer->mdio, prtad,
+   121								 devad, reg);
+   122				else
+   123					ret = __mdiobus_read(xfer->mdio, phy_id, reg);
+   124	
+   125				if (ret < 0)
+   126					goto exit;
+   127				*__arg_r(insn->arg2, regs) = ret;
+   128				ret = 0;
+   129				break;
+   130	
+   131			case MDIO_NL_OP_WRITE:
+   132				phy_id = __arg_ri(insn->arg0, regs);
+   133				prtad = mdio_phy_id_prtad(phy_id);
+   134				devad = mdio_phy_id_devad(phy_id);
+   135				reg = __arg_ri(insn->arg1, regs);
+   136				val = __arg_ri(insn->arg2, regs);
+   137	
+
 -- 
-2.34.1
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
