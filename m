@@ -2,70 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 412216AF729
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 22:05:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DAD7A6AF748
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 22:12:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230070AbjCGVFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 16:05:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36042 "EHLO
+        id S231310AbjCGVMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 16:12:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230117AbjCGVEk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 16:04:40 -0500
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C68095469
-        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 13:04:37 -0800 (PST)
-Received: by mail-ot1-x32d.google.com with SMTP id r23-20020a05683001d700b00690eb18529fso7919453ota.1
-        for <netdev@vger.kernel.org>; Tue, 07 Mar 2023 13:04:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678223076;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=b79BXCuUjKyCbpmsa2I8DrdDWBsn9TmSv1er4+ZSA9w=;
-        b=gGjAfSrYJsocPo4QDcSlTv2VZ6555vnIT9csknjCW8U2QFBCJ21hzKo0ivWF79OMWS
-         ZRFRkG5r5RoLVisRQdDJ36BXo24Bum1sacxonHYYnSjRkByXu+kuYQnhJow23BKRZdpN
-         GvJg+zV4+ql7u3gyvHoowC8bcDfcpxod4Xmj+/akLEmdgjOe0ETCejcbBqCHbpSjftWE
-         Ibm+fIcIvBzuA2F8RYI0f5nCP+abvK+n5BG04ePq8CgWinKgi2ZQp9fgJm2ep4xzfuZy
-         Q625xnwRIdI4i3tECbUOGCFt/IugjlEuJUgGrTqt4QazJm2J8H+ARAIBkTFBqWsZmMT8
-         a4dQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678223076;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=b79BXCuUjKyCbpmsa2I8DrdDWBsn9TmSv1er4+ZSA9w=;
-        b=jMEZElU2a+0AP43eLND3qilLp/SrkUqoUDqEvkSVYVoUZmh8dlNCvMcn++8QtTCPP3
-         DRqjZ7Qi1eSNUe8VfHUt3Eg1RKrJ55TJZzR8qg21r0vmL6VgM50mJ9xtyOYgSGvVJ6Lk
-         3OijO0At641zxWjpKmUIRW71lhBdnjZ9RL1CtoDRi8AG5iwHHy24nna/ITz2YXein30Q
-         QifHnWdHM/RzfXyMrHhtWrupKvky9BOjB573Fw1VY16ew6pLNWRR0203vM3oUdiSUoHt
-         GXiuJTLN2OS7hEKNA6akm71lcOWzpYWoauptMWt6dpl7T+jTKfQZKtwCXyjpVhJ9VZgd
-         uHWg==
-X-Gm-Message-State: AO0yUKVAYlZLF7J1qKG1miXgmBrBZKqT62UJ0M+yf5cCOwM4XhmTEZRU
-        W78P77sMWw+qT5kjGCrRa/EEEoRn/uIFng==
-X-Google-Smtp-Source: AK7set8HhWPN9fVEF5lt3Ylve2nv+9hyvb4ddiltICyIZB7Uz1Qeh1Mh+ix41HhE2PHsKxHVosqQlA==
-X-Received: by 2002:a9d:610b:0:b0:694:1185:c7bf with SMTP id i11-20020a9d610b000000b006941185c7bfmr6427952otj.0.1678223075968;
-        Tue, 07 Mar 2023 13:04:35 -0800 (PST)
-Received: from tresc054937.tre-sc.gov.br ([187.94.103.218])
-        by smtp.gmail.com with ESMTPSA id u22-20020a056830249600b00684152e9ff2sm5701472ots.0.2023.03.07.13.04.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Mar 2023 13:04:34 -0800 (PST)
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     linus.walleij@linaro.org, alsi@bang-olufsen.dk, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        robh+dt@kernel.org, krzk+dt@kernel.org, arinc.unal@arinc9.com,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Alexander Duyck <alexanderduyck@fb.com>
-Subject: [PATCH net-next v4] net: dsa: realtek: rtl8365mb: add change_mtu
-Date:   Tue,  7 Mar 2023 18:02:46 -0300
-Message-Id: <20230307210245.542-1-luizluca@gmail.com>
-X-Mailer: git-send-email 2.39.2
+        with ESMTP id S231283AbjCGVMq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 16:12:46 -0500
+Received: from sender4-op-o10.zoho.com (sender4-op-o10.zoho.com [136.143.188.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91BCCA569C;
+        Tue,  7 Mar 2023 13:12:44 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1678223483; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=ETjq7rbMswQJ2j1BHDNrQSbH1N0d/xsSJ5KzBh6V+TDq8/uk+tq6s886s7na+VJgHcNhhyWO9Ymze0zaIarlilxPcdhaEqrYUEZLcLZiA29JQeSkhHRWcEC+Zp7iMuD2Q2koXq0x444192VBIXct068ec6CIvXCNuDHbd/MoC9I=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1678223483; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=nHEWJ62o/VJ8EVGCBg+hnZDPaMdn8ffAQGXXQugTBr0=; 
+        b=EUGU+r+Mr1laPBXSh1EDhXrKyWSyEROMOsDE4WZJpgupQj1PHZdMilvUFe6wIP6OhLNCvqbT0ebvODEazOWFdAunGTfrvN56kI8ySDAUuebHDKdPePKgklKEwivsKbY8qEK/pJvX3Sly1fGFEnV7vbQZFWlh6AY0q+8krLnoT/8=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1678223483;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=nHEWJ62o/VJ8EVGCBg+hnZDPaMdn8ffAQGXXQugTBr0=;
+        b=K0Oa55MkQsbV4Q+HVOxBLE7muKBK9hA9LJIj1RhRpXKyGhQ16Q39Sh05M6ZwnEuV
+        QLVhRJiUzns3nwQMICkYURvXD5RJjuVRS5Vxfs6DxNwhfa4Yrep8qMgywCNrpRSs5U/
+        tUeTQxbDUVXhKsVx7hADcQElw9GRACfQH05RpBAM=
+Received: from [10.10.10.3] (212.68.60.226 [212.68.60.226]) by mx.zohomail.com
+        with SMTPS id 16782234810581014.6128349434224; Tue, 7 Mar 2023 13:11:21 -0800 (PST)
+Message-ID: <2da9d544-03b8-8a8c-f7b6-f69a82310cd5@arinc9.com>
+Date:   Wed, 8 Mar 2023 00:11:14 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH net] net: dsa: mt7530: permit port 5 to work without port
+ 6 on MT7621 SoC
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Russell King <linux@armlinux.org.uk>,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
+        Alexander Couzens <lynxis@fe80.eu>,
+        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
+        Richard van Schagen <richard@routerhints.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        erkin.bozoglu@xeront.com, Greg Ungerer <gerg@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <20230307155411.868573-1-vladimir.oltean@nxp.com>
+Content-Language: en-US
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <20230307155411.868573-1-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,147 +79,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The rtl8365mb was using a fixed MTU size of 1536, which was probably
-inspired by the rtl8366rb's initial packet size. However, unlike that
-family, the rtl8365mb family can specify the max packet size in bytes,
-rather than in fixed steps. The max packet size now defaults to
-VLAN_ETH_HLEN+ETH_DATA_LEN+ETH_FCS_LEN, which is 1522 bytes.
+On 7.03.2023 18:54, Vladimir Oltean wrote:
+> The MT7530 switch from the MT7621 SoC has 2 ports which can be set up as
+> internal: port 5 and 6. Arınç reports that the GMAC1 attached to port 5
+> receives corrupted frames, unless port 6 (attached to GMAC0) has been
+> brought up by the driver. This is true regardless of whether port 5 is
+> used as a user port or as a CPU port (carrying DSA tags).
+> 
+> Offline debugging (blind for me) which began in the linked thread showed
+> experimentally that the configuration done by the driver for port 6
+> contains a step which is needed by port 5 as well - the write to
+> CORE_GSWPLL_GRP2 (note that I've no idea as to what it does, apart from
+> the comment "Set core clock into 500Mhz"). Prints put by Arınç show that
+> the reset value of CORE_GSWPLL_GRP2 is RG_GSWPLL_POSDIV_500M(1) |
+> RG_GSWPLL_FBKDIV_500M(40) (0x128), both on the MCM MT7530 from the
+> MT7621 SoC, as well as on the standalone MT7530 from MT7623NI Bananapi
+> BPI-R2. Apparently, port 5 on the standalone MT7530 can work under both
+> values of the register, while on the MT7621 SoC it cannot.
+> 
+> The call path that triggers the register write is:
+> 
+> mt753x_phylink_mac_config() for port 6
+> -> mt753x_pad_setup()
+>     -> mt7530_pad_clk_setup()
+> 
+> so this fully explains the behavior noticed by Arınç, that bringing port
+> 6 up is necessary.
+> 
+> The simplest fix for the problem is to extract the register writes which
+> are needed for both port 5 and 6 into a common mt7530_pll_setup()
+> function, which is called at mt7530_setup() time, immediately after
+> switch reset. We can argue that this mirrors the code layout introduced
+> in mt7531_setup() by commit 42bc4fafe359 ("net: mt7531: only do PLL once
+> after the reset"), in that the PLL setup has the exact same positioning,
+> and further work to consolidate the separate setup() functions is not
+> hindered.
+> 
+> Testing confirms that:
+> 
+> - the slight reordering of writes to MT7530_P6ECR and to
+>    CORE_GSWPLL_GRP1 / CORE_GSWPLL_GRP2 introduced by this change does not
+>    appear to cause problems for the operation of port 6 on MT7621 and on
+>    MT7623 (where port 5 also always worked)
+> 
+> - packets sent through port 5 are not corrupted anymore, regardless of
+>    whether port 6 is enabled by phylink or not (or even present in the
+>    device tree)
+> 
+> My algorithm for determining the Fixes: tag is as follows. Testing shows
+> that some logic from mt7530_pad_clk_setup() is needed even for port 5.
+> Prior to commit ca366d6c889b ("net: dsa: mt7530: Convert to PHYLINK
+> API"), a call did exist for all phy_is_pseudo_fixed_link() ports - so
+> port 5 included. That commit replaced it with a temporary "Port 5 is not
+> supported!" comment, and the following commit 38f790a80560 ("net: dsa:
+> mt7530: Add support for port 5") replaced that comment with a
+> configuration procedure in mt7530_setup_port5() which was insufficient
+> for port 5 to work. I'm laying the blame on the patch that claimed
+> support for port 5, although one would have also needed the change from
+> commit c3b8e07909db ("net: dsa: mt7530: setup core clock even in TRGMII
+> mode") for the write to be performed completely independently from port
+> 6's configuration.
+> 
+> Thanks go to Arınç for describing the problem, for debugging and for
+> testing.
+> 
+> Reported-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> Link: https://lore.kernel.org/netdev/f297c2c4-6e7c-57ac-2394-f6025d309b9d@arinc9.com/
+> Fixes: 38f790a80560 ("net: dsa: mt7530: Add support for port 5")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-DSA calls change_mtu for the CPU port once the max MTU value among the
-ports changes. As the max packet size is defined globally, the switch
-is configured only when the call affects the CPU port.
+Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-The available specifications do not directly define the max supported
-packet size, but it mentions a 16k limit. This driver will use the 0x3FFF
-limit as it is used in the vendor API code. However, the switch sets the
-max packet size to 16368 bytes (0x3FF0) after it resets.
-
-change_mtu uses MTU size, or ethernet payload size, while the switch
-works with frame size. The frame size is calculated considering the
-ethernet header (14 bytes), a possible 802.1Q tag (4 bytes), the payload
-size (MTU), and the Ethernet FCS (4 bytes). The CPU tag (8 bytes) is
-consumed before the switch enforces the limit.
-
-MTU was tested up to 2018 (with 802.1Q) as that is as far as mt7620
-(where rtl8367s is stacked) can go. The register was manually
-manipulated byte-by-byte to ensure the MTU to frame size conversion was
-correct. For frames without 802.1Q tag, the frame size limit will be 4
-bytes over the required size.
-
-There is a jumbo register, enabled by default at 6k packet size.
-However, the jumbo settings do not seem to limit nor expand the maximum
-tested MTU (2018), even when jumbo is disabled. More tests are needed
-with a device that can handle larger frames.
-
-Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
-Reviewed-by: Alvin Šipraga <alsi@bang-olufsen.dk>
----
- drivers/net/dsa/realtek/rtl8365mb.c | 40 ++++++++++++++++++++++++++---
- 1 file changed, 36 insertions(+), 4 deletions(-)
-
-v3->v4:
-- removed spurious newline after comment.
-
-v2->v3:
-- changed max frame size to 0x3FFF (used by vendor API)
-- added info about how frame size is calculated, some more description
-  about the tests performed and the 4 extra bytes when untagged frame is
-  used.
-
-v1->v2:
-- dropped jumbo code as it was not changing the behavior (up to 2k MTU)
-- fixed typos
-- fixed code alignment
-- renamed rtl8365mb_(change|max)_mtu to rtl8365mb_port_(change|max)_mtu
-
-
-diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
-index da31d8b839ac..41ea3b5a42b1 100644
---- a/drivers/net/dsa/realtek/rtl8365mb.c
-+++ b/drivers/net/dsa/realtek/rtl8365mb.c
-@@ -98,6 +98,7 @@
- #include <linux/of_irq.h>
- #include <linux/regmap.h>
- #include <linux/if_bridge.h>
-+#include <linux/if_vlan.h>
- 
- #include "realtek.h"
- 
-@@ -267,6 +268,7 @@
- /* Maximum packet length register */
- #define RTL8365MB_CFG0_MAX_LEN_REG	0x088C
- #define   RTL8365MB_CFG0_MAX_LEN_MASK	0x3FFF
-+#define RTL8365MB_CFG0_MAX_LEN_MAX	0x3FFF
- 
- /* Port learning limit registers */
- #define RTL8365MB_LUT_PORT_LEARN_LIMIT_BASE		0x0A20
-@@ -1135,6 +1137,35 @@ static void rtl8365mb_phylink_mac_link_up(struct dsa_switch *ds, int port,
- 	}
- }
- 
-+static int rtl8365mb_port_change_mtu(struct dsa_switch *ds, int port,
-+				     int new_mtu)
-+{
-+	struct realtek_priv *priv = ds->priv;
-+	int frame_size;
-+
-+	/* When a new MTU is set, DSA always sets the CPU port's MTU to the
-+	 * largest MTU of the slave ports. Because the switch only has a global
-+	 * RX length register, only allowing CPU port here is enough.
-+	 */
-+	if (!dsa_is_cpu_port(ds, port))
-+		return 0;
-+
-+	frame_size = new_mtu + VLAN_ETH_HLEN + ETH_FCS_LEN;
-+
-+	dev_dbg(priv->dev, "changing mtu to %d (frame size: %d)\n",
-+		new_mtu, frame_size);
-+
-+	return regmap_update_bits(priv->map, RTL8365MB_CFG0_MAX_LEN_REG,
-+				  RTL8365MB_CFG0_MAX_LEN_MASK,
-+				  FIELD_PREP(RTL8365MB_CFG0_MAX_LEN_MASK,
-+					     frame_size));
-+}
-+
-+static int rtl8365mb_port_max_mtu(struct dsa_switch *ds, int port)
-+{
-+	return RTL8365MB_CFG0_MAX_LEN_MAX - VLAN_ETH_HLEN - ETH_FCS_LEN;
-+}
-+
- static void rtl8365mb_port_stp_state_set(struct dsa_switch *ds, int port,
- 					 u8 state)
- {
-@@ -1980,10 +2011,7 @@ static int rtl8365mb_setup(struct dsa_switch *ds)
- 		p->index = i;
- 	}
- 
--	/* Set maximum packet length to 1536 bytes */
--	ret = regmap_update_bits(priv->map, RTL8365MB_CFG0_MAX_LEN_REG,
--				 RTL8365MB_CFG0_MAX_LEN_MASK,
--				 FIELD_PREP(RTL8365MB_CFG0_MAX_LEN_MASK, 1536));
-+	ret = rtl8365mb_port_change_mtu(ds, cpu->trap_port, ETH_DATA_LEN);
- 	if (ret)
- 		goto out_teardown_irq;
- 
-@@ -2103,6 +2131,8 @@ static const struct dsa_switch_ops rtl8365mb_switch_ops_smi = {
- 	.get_eth_mac_stats = rtl8365mb_get_mac_stats,
- 	.get_eth_ctrl_stats = rtl8365mb_get_ctrl_stats,
- 	.get_stats64 = rtl8365mb_get_stats64,
-+	.port_change_mtu = rtl8365mb_port_change_mtu,
-+	.port_max_mtu = rtl8365mb_port_max_mtu,
- };
- 
- static const struct dsa_switch_ops rtl8365mb_switch_ops_mdio = {
-@@ -2124,6 +2154,8 @@ static const struct dsa_switch_ops rtl8365mb_switch_ops_mdio = {
- 	.get_eth_mac_stats = rtl8365mb_get_mac_stats,
- 	.get_eth_ctrl_stats = rtl8365mb_get_ctrl_stats,
- 	.get_stats64 = rtl8365mb_get_stats64,
-+	.port_change_mtu = rtl8365mb_port_change_mtu,
-+	.port_max_mtu = rtl8365mb_port_max_mtu,
- };
- 
- static const struct realtek_ops rtl8365mb_ops = {
--- 
-2.39.2
-
+Cheers.
+Arınç
