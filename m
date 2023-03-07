@@ -2,243 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88C656AF781
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 22:24:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91A636AF7A4
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 22:31:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231139AbjCGVYB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 16:24:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60424 "EHLO
+        id S230004AbjCGVbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 16:31:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231430AbjCGVX6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 16:23:58 -0500
-Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6599125AD;
-        Tue,  7 Mar 2023 13:23:56 -0800 (PST)
-Received: by mail-qv1-xf2d.google.com with SMTP id f1so9843367qvx.13;
-        Tue, 07 Mar 2023 13:23:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678224235;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=W7wy7tldXBpzM+bGCTdlS1FPn6gzwTpV6plLhyQ1/xY=;
-        b=kNpTxyc5InwLq3A4NJn6e98b54cUXBQZ0R+OtFYvzJoM/UqAzXBo3cV31cgtJWZAfY
-         V+k6apeYn5+5HPAQsoyADJchP8KsYGaAFWMoPectpaLn7p3bHFhuyQHJ6GPzmNYi97e2
-         wTaTS3oHvrS6dBJC5Q4SmGaKf/Y1Do2whfxe84mk7GtaFUjRg/+b1QL0WzfNXuuZXDbE
-         DVW2AweGEQEKTFuZ0SvCLum6zgWRtkxG6mxe/f+u1ETgC5LxQdoAVXN/tmXKOUfEPfev
-         g9DbigLGTj5Zg7ahHDIKLJJCaw5tc5cDSGtkRuRv7S20s1wznVspyggP58EgTkZ+ZjNt
-         rwuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678224235;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=W7wy7tldXBpzM+bGCTdlS1FPn6gzwTpV6plLhyQ1/xY=;
-        b=PamKlUTfyNWu/EyuFUCwz5kwQXuZqJyyzIJ4n7h0S/U0BKfDQQ5AIIDa8TAo5A5K9a
-         GCdqivtvdMwQo61W/VrZ0vBvWaxEye2oL26t3g9VYXraeFOGI0dRYguRdlILafwjGPKz
-         ymFkWiabkiQCjsvqvW9qS8CwZgNpqJ2Sx59d1aa718wCN6h8yfDnchxigvdXm4L75DCP
-         wdtTDQayqHpIrLaecG4uVGYf/ib2ha3eYiNSIWIjH6CugIEIy1ZgDs2vztsr1ECFybDG
-         RoCq76j74w6gm0ZiapOld4d9qektg3vCmDpfzClndz12z2ZrG/DyPhozeWQbHkD8Ap2b
-         Y27w==
-X-Gm-Message-State: AO0yUKWwU/8dsechFgN/Pgpa6kWkDFcE40DcKdV7wP+HVyjGMJUHnGnK
-        tJ70kej4VfErLDeumi2xlRJ3PICHiOk=
-X-Google-Smtp-Source: AK7set9hXudD9H3ogfdHRtGH95OcQwDFxVrzlyWzzsMYJLClnUuvtRAYDjhdRmhIm6IvuvnCk/nWug==
-X-Received: by 2002:a05:6214:250e:b0:56e:bdfb:f4c5 with SMTP id gf14-20020a056214250e00b0056ebdfbf4c5mr549120qvb.36.1678224235664;
-        Tue, 07 Mar 2023 13:23:55 -0800 (PST)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id q28-20020a05620a2a5c00b007422fd3009esm10346878qkp.20.2023.03.07.13.23.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Mar 2023 13:23:55 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>
-Subject: [PATCH net-next 2/2] sctp: add weighted fair queueing stream scheduler
-Date:   Tue,  7 Mar 2023 16:23:27 -0500
-Message-Id: <61dc1f980ae4cb8c7082446b1334d931404ec9c2.1678224012.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.39.1
-In-Reply-To: <cover.1678224012.git.lucien.xin@gmail.com>
-References: <cover.1678224012.git.lucien.xin@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229940AbjCGVbG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 16:31:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7ECD5849A;
+        Tue,  7 Mar 2023 13:30:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 536956154D;
+        Tue,  7 Mar 2023 21:30:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B47BC433EF;
+        Tue,  7 Mar 2023 21:30:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1678224658;
+        bh=36o8AruU3hfc6QJy9oCEJc8TPiLr1A1Cs5VTFOz0r/Q=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Z+0VYs5E+j+bwhNXvsF9KnrZW3kmEeK3/rYutKZKZumj7/nKcfFNYAIyIe90j0jxh
+         cN4JRWfZE9vH4OVaghpmbPPHKe7NAqsgFTgjoHF7EdJ8t7BfbaU+824eTt2/mdIbFk
+         ZfEP+s7JSoTDg3NH9kwSGPQVwxQb8oiVIvvyuUYo=
+Date:   Tue, 7 Mar 2023 13:30:57 -0800
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, Soheil Hassas Yeganeh <soheil@google.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Carlos Maiolino <cmaiolino@redhat.com>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Christian Brauner <brauner@kernel.org>,
+        linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH v4 RESEND] epoll: use refcount to reduce ep_mutex
+ contention
+Message-Id: <20230307133057.1904d8ffab2980f8e23ee3cc@linux-foundation.org>
+In-Reply-To: <e8228f0048977456466bc33b42600e929fedd319.1678213651.git.pabeni@redhat.com>
+References: <e8228f0048977456466bc33b42600e929fedd319.1678213651.git.pabeni@redhat.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As it says in rfc8260#section-3.6 about the weighted fair queueing
-scheduler:
+On Tue,  7 Mar 2023 19:46:37 +0100 Paolo Abeni <pabeni@redhat.com> wrote:
 
-   A Weighted Fair Queueing scheduler between the streams is used.  The
-   weight is configurable per outgoing SCTP stream.  This scheduler
-   considers the lengths of the messages of each stream and schedules
-   them in a specific way to use the capacity according to the given
-   weights.  If the weight of stream S1 is n times the weight of stream
-   S2, the scheduler should assign to stream S1 n times the capacity it
-   assigns to stream S2.  The details are implementation dependent.
-   Interleaving user messages allows for a better realization of the
-   capacity usage according to the given weights.
+> We are observing huge contention on the epmutex during an http
+> connection/rate test:
+> 
+>  83.17% 0.25%  nginx            [kernel.kallsyms]         [k] entry_SYSCALL_64_after_hwframe
+> [...]
+>            |--66.96%--__fput
+>                       |--60.04%--eventpoll_release_file
+>                                  |--58.41%--__mutex_lock.isra.6
+>                                            |--56.56%--osq_lock
+> 
+> The application is multi-threaded, creates a new epoll entry for
+> each incoming connection, and does not delete it before the
+> connection shutdown - that is, before the connection's fd close().
+> 
+> Many different threads compete frequently for the epmutex lock,
+> affecting the overall performance.
+> 
+> To reduce the contention this patch introduces explicit reference counting
+> for the eventpoll struct. Each registered event acquires a reference,
+> and references are released at ep_remove() time.
+> 
+> Additionally, this introduces a new 'dying' flag to prevent races between
+> the EP file close() and the monitored file close().
+> ep_eventpoll_release() marks, under f_lock spinlock, each epitem as before
 
-This patch adds Weighted Fair Queueing Scheduler actually based on
-the code of Fair Capacity Scheduler by adding fc_weight into struct
-sctp_stream_out_ext and taking it into account when sorting stream->
-fc_list in sctp_sched_fc_sched() and sctp_sched_fc_dequeue_done().
+"as dying"?
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- include/net/sctp/stream_sched.h |  1 +
- include/net/sctp/structs.h      |  1 +
- include/uapi/linux/sctp.h       |  3 +-
- net/sctp/stream_sched.c         |  1 +
- net/sctp/stream_sched_fc.c      | 50 ++++++++++++++++++++++++++++++---
- 5 files changed, 51 insertions(+), 5 deletions(-)
+> removing it, while EP file close() does not touch dying epitems.
 
-diff --git a/include/net/sctp/stream_sched.h b/include/net/sctp/stream_sched.h
-index 913170710adb..572d73fdcd5e 100644
---- a/include/net/sctp/stream_sched.h
-+++ b/include/net/sctp/stream_sched.h
-@@ -59,5 +59,6 @@ void sctp_sched_ops_register(enum sctp_sched_type sched,
- void sctp_sched_ops_prio_init(void);
- void sctp_sched_ops_rr_init(void);
- void sctp_sched_ops_fc_init(void);
-+void sctp_sched_ops_wfq_init(void);
- 
- #endif /* __sctp_stream_sched_h__ */
-diff --git a/include/net/sctp/structs.h b/include/net/sctp/structs.h
-index 2f1c9f50b352..a0933efd93c3 100644
---- a/include/net/sctp/structs.h
-+++ b/include/net/sctp/structs.h
-@@ -1432,6 +1432,7 @@ struct sctp_stream_out_ext {
- 		struct {
- 			struct list_head fc_list;
- 			__u32 fc_length;
-+			__u16 fc_weight;
- 		};
- 	};
- };
-diff --git a/include/uapi/linux/sctp.h b/include/uapi/linux/sctp.h
-index 6814c5a1c4bc..b7d91d4cf0db 100644
---- a/include/uapi/linux/sctp.h
-+++ b/include/uapi/linux/sctp.h
-@@ -1212,7 +1212,8 @@ enum sctp_sched_type {
- 	SCTP_SS_PRIO,
- 	SCTP_SS_RR,
- 	SCTP_SS_FC,
--	SCTP_SS_MAX = SCTP_SS_FC
-+	SCTP_SS_WFQ,
-+	SCTP_SS_MAX = SCTP_SS_WFQ
- };
- 
- /* Probe Interval socket option */
-diff --git a/net/sctp/stream_sched.c b/net/sctp/stream_sched.c
-index 1ebd14ef8daa..e843760e9aaa 100644
---- a/net/sctp/stream_sched.c
-+++ b/net/sctp/stream_sched.c
-@@ -125,6 +125,7 @@ void sctp_sched_ops_init(void)
- 	sctp_sched_ops_prio_init();
- 	sctp_sched_ops_rr_init();
- 	sctp_sched_ops_fc_init();
-+	sctp_sched_ops_wfq_init();
- }
- 
- static void sctp_sched_free_sched(struct sctp_stream *stream)
-diff --git a/net/sctp/stream_sched_fc.c b/net/sctp/stream_sched_fc.c
-index b336c2f5486b..4bd18a497a6d 100644
---- a/net/sctp/stream_sched_fc.c
-+++ b/net/sctp/stream_sched_fc.c
-@@ -19,11 +19,32 @@
- #include <net/sctp/sm.h>
- #include <net/sctp/stream_sched.h>
- 
--/* Fair Capacity handling
-- * RFC 8260 section 3.5
-+/* Fair Capacity and Weighted Fair Queueing handling
-+ * RFC 8260 section 3.5 and 3.6
-  */
- static void sctp_sched_fc_unsched_all(struct sctp_stream *stream);
- 
-+static int sctp_sched_wfq_set(struct sctp_stream *stream, __u16 sid,
-+			      __u16 weight, gfp_t gfp)
-+{
-+	struct sctp_stream_out_ext *soute = SCTP_SO(stream, sid)->ext;
-+
-+	if (!weight)
-+		return -EINVAL;
-+
-+	soute->fc_weight = weight;
-+	return 0;
-+}
-+
-+static int sctp_sched_wfq_get(struct sctp_stream *stream, __u16 sid,
-+			      __u16 *value)
-+{
-+	struct sctp_stream_out_ext *soute = SCTP_SO(stream, sid)->ext;
-+
-+	*value = soute->fc_weight;
-+	return 0;
-+}
-+
- static int sctp_sched_fc_set(struct sctp_stream *stream, __u16 sid,
- 			     __u16 weight, gfp_t gfp)
- {
-@@ -50,6 +71,7 @@ static int sctp_sched_fc_init_sid(struct sctp_stream *stream, __u16 sid,
- 
- 	INIT_LIST_HEAD(&soute->fc_list);
- 	soute->fc_length = 0;
-+	soute->fc_weight = 1;
- 
- 	return 0;
- }
-@@ -67,7 +89,8 @@ static void sctp_sched_fc_sched(struct sctp_stream *stream,
- 		return;
- 
- 	list_for_each_entry(pos, &stream->fc_list, fc_list)
--		if (pos->fc_length >= soute->fc_length)
-+		if ((__u64)pos->fc_length * soute->fc_weight >=
-+		    (__u64)soute->fc_length * pos->fc_weight)
- 			break;
- 	list_add_tail(&soute->fc_list, &pos->fc_list);
- }
-@@ -137,7 +160,8 @@ static void sctp_sched_fc_dequeue_done(struct sctp_outq *q,
- 
- 	pos = soute;
- 	list_for_each_entry_continue(pos, &stream->fc_list, fc_list)
--		if (pos->fc_length >= soute->fc_length)
-+		if ((__u64)pos->fc_length * soute->fc_weight >=
-+		    (__u64)soute->fc_length * pos->fc_weight)
- 			break;
- 	list_move_tail(&soute->fc_list, &pos->fc_list);
- }
-@@ -181,3 +205,21 @@ void sctp_sched_ops_fc_init(void)
- {
- 	sctp_sched_ops_register(SCTP_SS_FC, &sctp_sched_fc);
- }
-+
-+static struct sctp_sched_ops sctp_sched_wfq = {
-+	.set = sctp_sched_wfq_set,
-+	.get = sctp_sched_wfq_get,
-+	.init = sctp_sched_fc_init,
-+	.init_sid = sctp_sched_fc_init_sid,
-+	.free_sid = sctp_sched_fc_free_sid,
-+	.enqueue = sctp_sched_fc_enqueue,
-+	.dequeue = sctp_sched_fc_dequeue,
-+	.dequeue_done = sctp_sched_fc_dequeue_done,
-+	.sched_all = sctp_sched_fc_sched_all,
-+	.unsched_all = sctp_sched_fc_unsched_all,
-+};
-+
-+void sctp_sched_ops_wfq_init(void)
-+{
-+	sctp_sched_ops_register(SCTP_SS_WFQ, &sctp_sched_wfq);
-+}
--- 
-2.39.1
+The need for this dying flag is somewhat unclear to me.  I mean, if we
+have refcounting done correctly, why the need for this flag?  Some
+additional description of the dynamics would be helpful.
 
+Methinks this flag is here to cope with the delayed freeing via
+hlist_del_rcu(), but that's a guess?
+
+> The eventpoll struct is released by whoever - among EP file close() and
+> and the monitored file close() drops its last reference.
+> 
+> With all the above in place, we can drop the epmutex usage at disposal time.
+> 
+> Overall this produces a significant performance improvement in the
+> mentioned connection/rate scenario: the mutex operations disappear from
+> the topmost offenders in the perf report, and the measured connections/rate
+> grows by ~60%.
+> 
+> To make the change more readable this additionally renames ep_free() to
+> ep_clear_and_put(), and moves the actual memory cleanup in a separate
+> ep_free() helper.
+> 
+> ...
+>
+> --- a/fs/eventpoll.c
+> +++ b/fs/eventpoll.c
+>
+> ...
+>
+> +	free_uid(ep->user);
+> +	wakeup_source_unregister(ep->ws);
+> +	kfree(ep);
+> +}
+> +
+>  /*
+>   * Removes a "struct epitem" from the eventpoll RB tree and deallocates
+>   * all the associated resources. Must be called with "mtx" held.
+> + * If the dying flag is set, do the removal only if force is true.
+
+This comment describes "what" the code does, which is obvious from the
+code anwyay.  It's better if comments describe "why" the code does what
+it does.
+
+> + * Returns true if the eventpoll can be disposed.
+>   */
+> -static int ep_remove(struct eventpoll *ep, struct epitem *epi)
+> +static bool __ep_remove(struct eventpoll *ep, struct epitem *epi, bool force)
+>  {
+>  	struct file *file = epi->ffd.file;
+>  	struct epitems_head *to_free;
+>
+> ...
+>
+>  	/*
+> -	 * We don't want to get "file->f_lock" because it is not
+> -	 * necessary. It is not necessary because we're in the "struct file"
+> -	 * cleanup path, and this means that no one is using this file anymore.
+> -	 * So, for example, epoll_ctl() cannot hit here since if we reach this
+> -	 * point, the file counter already went to zero and fget() would fail.
+> -	 * The only hit might come from ep_free() but by holding the mutex
+> -	 * will correctly serialize the operation. We do need to acquire
+> -	 * "ep->mtx" after "epmutex" because ep_remove() requires it when called
+> -	 * from anywhere but ep_free().
+> -	 *
+> -	 * Besides, ep_remove() acquires the lock, so we can't hold it here.
+> +	 * Use the 'dying' flag to prevent a concurrent ep_cleat_and_put() from
+
+s/cleat/clear/
+
+> +	 * touching the epitems list before eventpoll_release_file() can access
+> +	 * the ep->mtx.
+>  	 */
+> -	mutex_lock(&epmutex);
+> -	if (unlikely(!file->f_ep)) {
+> -		mutex_unlock(&epmutex);
+> -		return;
+> -	}
+> -	hlist_for_each_entry_safe(epi, next, file->f_ep, fllink) {
+> +again:
+> +	spin_lock(&file->f_lock);
+> +	if (file->f_ep && file->f_ep->first) {
+> +		/* detach from ep tree */
+
+Comment appears to be misplaced - the following code doesn't detach
+anything?
+
+> +		epi = hlist_entry(file->f_ep->first, struct epitem, fllink);
+> +		epi->dying = true;
+> +		spin_unlock(&file->f_lock);
+> +
+> +		/*
+> +		 * ep access is safe as we still own a reference to the ep
+> +		 * struct
+> +		 */
+>  		ep = epi->ep;
+> -		mutex_lock_nested(&ep->mtx, 0);
+> -		ep_remove(ep, epi);
+> +		mutex_lock(&ep->mtx);
+> +		dispose = __ep_remove(ep, epi, true);
+>  		mutex_unlock(&ep->mtx);
+> +
+> +		if (dispose)
+> +			ep_free(ep);
+> +		goto again;
+>  	}
+> ...
+>
