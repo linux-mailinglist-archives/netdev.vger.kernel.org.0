@@ -2,97 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BCBDD6ADA1A
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 10:20:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B64446ADA20
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 10:20:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230306AbjCGJUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 04:20:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35676 "EHLO
+        id S230332AbjCGJUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 04:20:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230400AbjCGJUG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 04:20:06 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 670BC86176
-        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 01:20:01 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id cw28so49580564edb.5
-        for <netdev@vger.kernel.org>; Tue, 07 Mar 2023 01:20:01 -0800 (PST)
+        with ESMTP id S230420AbjCGJUJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 04:20:09 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAF8C78C95
+        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 01:20:06 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id da10so49640391edb.3
+        for <netdev@vger.kernel.org>; Tue, 07 Mar 2023 01:20:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678180800;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112; t=1678180805;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=IzQo7ACRtABeHVtQ4D7zqYvAtCiwC9n8/XfqHD2Rxc8=;
-        b=FSvUJkm4RPpLhAHF8QisYObMMowi0+kIX2o0u0RvT2huAi97xCjE0PfI6PwnO1QlRf
-         Zl2Ppb2i2/nAIr4+v7y5FmgWyvChaOA/SY2y5vrYpUuzwXiWWfU9n8o3aIb3wBaZVw7V
-         auGH9SwatTumL9n9cK6l6KJ/5w0ysUdQArFUSR/7DTUfeIYNY+wDjUWgqySK/vxAHNTP
-         bP+/ZbWwXGFwmDQw72i7RT/fkpJuuzxixO5HwYh8KfF0M3+X9+fZ8rNcPj7tHVP2Nnhx
-         iZF3QQC2Unf7B+8jrCJAeQsHfO3c6Fh2AdWZ9ioVRYBnWJXgT4eKkZpDooKRiPwSugdK
-         xqzg==
+        bh=zu/hjvWXlUQhawKgHr39aKzFHFibVYuD00ads5+zLRQ=;
+        b=bjzwJQ9uC4VEnNp28JY112LiyASziAeFsi32aKqEOWXqmCVe/3gPesr7t/pV4I/YPZ
+         N457FtXlvI7xpy35IzsWxORDdm9GEPt0N+lo95LkfKh+6pHyntaLVExi3Uyr0D/9B01i
+         l7d4yP7WK840gSbICf/o7YXHjnm955hxXJSa5tgUGsNwS5OgWhy5y6nYbvJnw0i2+9gD
+         QMPreLlnDhnRSB98IuYM/X7ajry1j+7ow6ifM25oARzQEiju6bOYMXik6QvHxnh+gJz8
+         BMBKSy+3Rsvdshd7gJgt5OVP5X4kHNRcqYLoCcgrsmnnPMpaKc/F8bUiSMAN61M3X0bK
+         l36A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678180800;
+        d=1e100.net; s=20210112; t=1678180805;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=IzQo7ACRtABeHVtQ4D7zqYvAtCiwC9n8/XfqHD2Rxc8=;
-        b=vyij2VgYfCkA2U8ZEn71pXIoDiEE55UyM6LZv8H0E0qUi0xTxrOJ5cw/X2KDMDHe+i
-         rbxzYjtYtLXVR/hWZO/59DXDV14A2fmzfDH65iCin+0yX1ccwYq4sQHrvc+TgDxiKqF3
-         Gigv/yaF8DvtunvlRGlwalDLrhpDup1OSIhcKxmUc8PCQaHGUKwEKJDlCi7QMQJlGJ88
-         7Hp55vBQdKK11fifrFAM6vkPPzND8CsCdrvRHXl5JZWvbYzJ54iwI2m1u1uujSTKxPjH
-         yf3O2/Hy0zE/F7IweJfMrDqUQa61mmnQEBxhGMyd1vZrfBIrMrUVZiD2bI/n+osSfJf1
-         IFxg==
-X-Gm-Message-State: AO0yUKUTXX7ztkcbPHURw7ZX4oO6QlOCrN/LgapxwN0VZw3EotODM1WO
-        Wy9Pz88J+7vxGoycY7R47+lvSA==
-X-Google-Smtp-Source: AK7set98ksW9rs50yKitdSxLDce6QStPj3hvHEQeoO0MfL6r8ueGUAWtmey0LhC8oeipnH4yqo5uIQ==
-X-Received: by 2002:a17:906:434c:b0:908:6a98:5b48 with SMTP id z12-20020a170906434c00b009086a985b48mr13239479ejm.40.1678180799975;
-        Tue, 07 Mar 2023 01:19:59 -0800 (PST)
-Received: from ?IPV6:2a02:810d:15c0:828:5310:35c7:6f9e:2cd3? ([2a02:810d:15c0:828:5310:35c7:6f9e:2cd3])
-        by smtp.gmail.com with ESMTPSA id v30-20020a50955e000000b004bf2d58201fsm6399243eda.35.2023.03.07.01.19.59
+        bh=zu/hjvWXlUQhawKgHr39aKzFHFibVYuD00ads5+zLRQ=;
+        b=OLxdc+wMEyFwfHmDAIm7IWBfDFr+SeocfKR1CaPQvTOEG4NCk666A10+cIuyiyvUg8
+         fDYqgcsQIxLcPVtwWIQhRNOPZv/5S8DpsZkGP0kGAFQO6ZOxvkBWoyTsPEEnFv2byDon
+         pZIHZBssJpZyNmijiE1StAXyxEy/G5peQcwg7ZvmkEUDF3knB5z8pjeEHN3RilFCTKw0
+         a3D+y6j9SXCJDJIaOOpeQELJuf7bcG+8nqKBu/zLXhZazx+LCf6/sX9gEfQtKBINWb+m
+         RWsludjlHGHdC1I6i3IzRq6la1S84g8ygseQrehBtGILNQhYPs8hgLNJDYuo7b6l0kgS
+         EHUQ==
+X-Gm-Message-State: AO0yUKUeV3CWlLIIZXLhP8V5qhSOvteGqqtGY3WI+Kffx7F0CCUskLwo
+        mjWKfnBRfMt92bAv7K8VX1o5Pg==
+X-Google-Smtp-Source: AK7set+mFVAMIXdWzLWwuXV1apjF3mwxvpxsM8dKiUjZ4IFlSGeJznDezn05zLQCg/m97aIqs7WDKg==
+X-Received: by 2002:a50:ee02:0:b0:4c3:6ac8:2aac with SMTP id g2-20020a50ee02000000b004c36ac82aacmr12044793eds.35.1678180805304;
+        Tue, 07 Mar 2023 01:20:05 -0800 (PST)
+Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
+        by smtp.gmail.com with ESMTPSA id m26-20020a50999a000000b004af73333d6esm6439765edb.53.2023.03.07.01.20.04
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Mar 2023 01:19:59 -0800 (PST)
-Message-ID: <a81ee827-87cf-e7ea-8e91-e8d790a9984f@linaro.org>
-Date:   Tue, 7 Mar 2023 10:19:58 +0100
+        Tue, 07 Mar 2023 01:20:05 -0800 (PST)
+Message-ID: <583cc2c7-7883-57fe-6b48-25e5e43c3ec0@blackwall.org>
+Date:   Tue, 7 Mar 2023 11:20:03 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.8.0
-Subject: Re: [PATCH v2] nfc: change order inside nfc_se_io error path
+Subject: Re: [PATCH nf-next 2/6] netfilter: bridge: check len before accessing
+ more nh data
 Content-Language: en-US
-To:     Fedor Pchelkin <pchelkin@ispras.ru>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        lvc-project@linuxtesting.org
-References: <20230306212650.230322-1-pchelkin@ispras.ru>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230306212650.230322-1-pchelkin@ispras.ru>
+To:     Xin Long <lucien.xin@gmail.com>, netfilter-devel@vger.kernel.org,
+        network dev <netdev@vger.kernel.org>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>, davem@davemloft.net,
+        kuba@kernel.org, Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Aaron Conole <aconole@redhat.com>
+References: <cover.1677888566.git.lucien.xin@gmail.com>
+ <e5ea0147b3314ad9db5140c7b307472efbd114bd.1677888566.git.lucien.xin@gmail.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <e5ea0147b3314ad9db5140c7b307472efbd114bd.1677888566.git.lucien.xin@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,
+        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/03/2023 22:26, Fedor Pchelkin wrote:
-> cb_context should be freed on the error path in nfc_se_io as stated by
-> commit 25ff6f8a5a3b ("nfc: fix memory leak of se_io context in
-> nfc_genl_se_io").
+On 04/03/2023 02:12, Xin Long wrote:
+> In the while loop of br_nf_check_hbh_len(), similar to ip6_parse_tlv(),
+> before accessing 'nh[off + 1]', it should add a check 'len < 2'; and
+> before parsing IPV6_TLV_JUMBO, it should add a check 'optlen > len',
+> in case of overflows.
 > 
-> Make the error path in nfc_se_io unwind everything in reverse order, i.e.
-> free the cb_context after unlocking the device.
-> 
-> Suggested-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> ---
+>  net/bridge/br_netfilter_ipv6.c | 47 ++++++++++++++++------------------
+>  1 file changed, 22 insertions(+), 25 deletions(-)
 
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
 
-Best regards,
-Krzysztof
 
