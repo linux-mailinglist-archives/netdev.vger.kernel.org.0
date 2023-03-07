@@ -2,278 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C67C46AF87E
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 23:22:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC5956AFA01
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 00:03:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230340AbjCGWWV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 17:22:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47760 "EHLO
+        id S230272AbjCGXDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 18:03:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230347AbjCGWWT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 17:22:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12FECF96D;
-        Tue,  7 Mar 2023 14:22:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B11EB81A40;
-        Tue,  7 Mar 2023 22:22:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBF9EC433EF;
-        Tue,  7 Mar 2023 22:22:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678227732;
-        bh=hep12z65/htc8VobV1reqBOHqul0NinommIACH39giU=;
-        h=Date:From:To:Cc:Subject:From;
-        b=ldLwEkbOPvId1SGhV49JymfWZJ4wtC1cB1ISU8VtHRd6mgfBM4VJqByD8C6rSfEl+
-         oVMB5vsm8ffgDNJ8ydcbfH7o+aK9pRJ87QDnxtGspc3bcNUImPb403UxwDmtZ9gxI0
-         xWZ02PpOSKMaL1k5I71nBxuM6Fi6+loXhYHI/KSULt3RYJXHfJjHFqGToS6IVgyr3/
-         u+35JFk1nXXWx3QzmGK3dWZtldE9q5qfHMkzG7jHVGPYNEj762Pj/0A+cl50FISavT
-         fQLC1i3yqJGcn2DQIbv2XpJ56P7irz1XT9i9pGTQA2xFOAIALi05rhVUGuxD7eENhY
-         +8pUG/+qSzZUg==
-Date:   Tue, 7 Mar 2023 16:22:39 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH][next] wifi: ath11k: Replace fake flex-array with
- flexible-array member
-Message-ID: <ZAe5L5DtmsQxzqRH@work>
+        with ESMTP id S229925AbjCGXCn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 18:02:43 -0500
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 723157A91E
+        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 15:01:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1678230068; x=1709766068;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Q0ZaZyxtNZdQdDNv9vKi6OV/UKGncGpZ+n1uGgM4zhQ=;
+  b=pSSMrLA7DH5iisN7rXIkcAstRFMeGlx5SLWA0QlnQHzxjRFN3f0e+2ii
+   cQr8yIdopOP3iMBWcEsXhGIrUAomWMvqT45XJlZRjGw/kle4CiVpFqO9/
+   V8zvothu43DpQjxBHgNNj8URfMdhI8oR67M+PYKhU0Rljs2T3f7Bqabci
+   g=;
+X-IronPort-AV: E=Sophos;i="5.98,242,1673913600"; 
+   d="scan'208";a="190780708"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-m6i4x-d47337e0.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2023 23:01:06 +0000
+Received: from EX13MTAUWB002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2a-m6i4x-d47337e0.us-west-2.amazon.com (Postfix) with ESMTPS id 740AF60D97;
+        Tue,  7 Mar 2023 23:01:05 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB002.ant.amazon.com (10.43.161.202) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.45; Tue, 7 Mar 2023 23:01:04 +0000
+Received: from 88665a182662.ant.amazon.com (10.135.222.163) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.24;
+ Tue, 7 Mar 2023 23:01:02 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <edumazet@google.com>
+CC:     <davem@davemloft.net>, <eric.dumazet@gmail.com>, <kuba@kernel.org>,
+        <kuniyu@amazon.com>, <netdev@vger.kernel.org>, <pabeni@redhat.com>,
+        <rao.shoaib@oracle.com>,
+        <syzbot+7699d9e5635c10253a27@syzkaller.appspotmail.com>
+Subject: Re: [PATCH net] af_unix: fix struct pid leaks in OOB support
+Date:   Tue, 7 Mar 2023 15:00:52 -0800
+Message-ID: <20230307230052.96807-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230307164530.771896-1-edumazet@google.com>
+References: <20230307164530.771896-1-edumazet@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.135.222.163]
+X-ClientProxiedBy: EX19D036UWC002.ant.amazon.com (10.13.139.242) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Zero-length arrays as fake flexible arrays are deprecated and we are
-moving towards adopting C99 flexible-array members instead.
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue,  7 Mar 2023 16:45:30 +0000
+> syzbot reported struct pid leak [1].
+> 
+> Issue is that queue_oob() calls maybe_add_creds() which potentially
+> holds a reference on a pid.
+> 
+> But skb->destructor is not set (either directly or by calling
+> unix_scm_to_skb())
+> 
+> This means that subsequent kfree_skb() or consume_skb() would leak
+> this reference.
+> 
+> In this fix, I chose to fully support scm even for the OOB message.
+> 
+> [1]
+> BUG: memory leak
+> unreferenced object 0xffff8881053e7f80 (size 128):
+> comm "syz-executor242", pid 5066, jiffies 4294946079 (age 13.220s)
+> hex dump (first 32 bytes):
+> 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+> backtrace:
+> [<ffffffff812ae26a>] alloc_pid+0x6a/0x560 kernel/pid.c:180
+> [<ffffffff812718df>] copy_process+0x169f/0x26c0 kernel/fork.c:2285
+> [<ffffffff81272b37>] kernel_clone+0xf7/0x610 kernel/fork.c:2684
+> [<ffffffff812730cc>] __do_sys_clone+0x7c/0xb0 kernel/fork.c:2825
+> [<ffffffff849ad699>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> [<ffffffff849ad699>] do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+> [<ffffffff84a0008b>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> 
+> Fixes: 314001f0bf92 ("af_unix: Add OOB support")
+> Reported-by: syzbot+7699d9e5635c10253a27@syzkaller.appspotmail.com
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-Address 25 of the following warnings found with GCC-13 and
--fstrict-flex-arrays=3 enabled:
-drivers/net/wireless/ath/ath11k/debugfs_htt_stats.c:30:51: warning: array subscript <unknown> is outside array bounds of ‘const u32[0]’ {aka ‘const unsigned int[]’} [-Warray-bounds=]
+Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-This helps with the ongoing efforts to tighten the FORTIFY_SOURCE
-routines on memcpy() and help us make progress towards globally
-enabling -fstrict-flex-arrays=3 [1].
+Thanks!
 
-Link: https://github.com/KSPP/linux/issues/21
-Link: https://github.com/KSPP/linux/issues/266
-Link: https://gcc.gnu.org/pipermail/gcc-patches/2022-October/602902.html [1]
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- .../wireless/ath/ath11k/debugfs_htt_stats.h   | 50 +++++++++----------
- 1 file changed, 25 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.h b/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.h
-index 2b97cbbd28cb..db5c176e2e5b 100644
---- a/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.h
-+++ b/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.h
-@@ -143,7 +143,7 @@ enum htt_tx_pdev_underrun_enum {
- /* Bytes stored in little endian order */
- /* Length should be multiple of DWORD */
- struct htt_stats_string_tlv {
--	u32 data[0]; /* Can be variable length */
-+	DECLARE_FLEX_ARRAY(u32, data); /* Can be variable length */
- } __packed;
- 
- #define HTT_STATS_MAC_ID	GENMASK(7, 0)
-@@ -205,27 +205,27 @@ struct htt_tx_pdev_stats_cmn_tlv {
- 
- /* NOTE: Variable length TLV, use length spec to infer array size */
- struct htt_tx_pdev_stats_urrn_tlv_v {
--	u32 urrn_stats[0]; /* HTT_TX_PDEV_MAX_URRN_STATS */
-+	DECLARE_FLEX_ARRAY(u32, urrn_stats); /* HTT_TX_PDEV_MAX_URRN_STATS */
- };
- 
- /* NOTE: Variable length TLV, use length spec to infer array size */
- struct htt_tx_pdev_stats_flush_tlv_v {
--	u32 flush_errs[0]; /* HTT_TX_PDEV_MAX_FLUSH_REASON_STATS */
-+	DECLARE_FLEX_ARRAY(u32, flush_errs); /* HTT_TX_PDEV_MAX_FLUSH_REASON_STATS */
- };
- 
- /* NOTE: Variable length TLV, use length spec to infer array size */
- struct htt_tx_pdev_stats_sifs_tlv_v {
--	u32 sifs_status[0]; /* HTT_TX_PDEV_MAX_SIFS_BURST_STATS */
-+	DECLARE_FLEX_ARRAY(u32, sifs_status); /* HTT_TX_PDEV_MAX_SIFS_BURST_STATS */
- };
- 
- /* NOTE: Variable length TLV, use length spec to infer array size */
- struct htt_tx_pdev_stats_phy_err_tlv_v {
--	u32  phy_errs[0]; /* HTT_TX_PDEV_MAX_PHY_ERR_STATS */
-+	DECLARE_FLEX_ARRAY(u32, phy_errs); /* HTT_TX_PDEV_MAX_PHY_ERR_STATS */
- };
- 
- /* NOTE: Variable length TLV, use length spec to infer array size */
- struct htt_tx_pdev_stats_sifs_hist_tlv_v {
--	u32 sifs_hist_status[0]; /* HTT_TX_PDEV_SIFS_BURST_HIST_STATS */
-+	DECLARE_FLEX_ARRAY(u32, sifs_hist_status); /* HTT_TX_PDEV_SIFS_BURST_HIST_STATS */
- };
- 
- struct htt_tx_pdev_stats_tx_ppdu_stats_tlv_v {
-@@ -591,19 +591,19 @@ struct htt_tx_hwq_difs_latency_stats_tlv_v {
- /* NOTE: Variable length TLV, use length spec to infer array size */
- struct htt_tx_hwq_cmd_result_stats_tlv_v {
- 	/* Histogram of sched cmd result */
--	u32 cmd_result[0]; /* HTT_TX_HWQ_MAX_CMD_RESULT_STATS */
-+	DECLARE_FLEX_ARRAY(u32, cmd_result); /* HTT_TX_HWQ_MAX_CMD_RESULT_STATS */
- };
- 
- /* NOTE: Variable length TLV, use length spec to infer array size */
- struct htt_tx_hwq_cmd_stall_stats_tlv_v {
- 	/* Histogram of various pause conitions */
--	u32 cmd_stall_status[0]; /* HTT_TX_HWQ_MAX_CMD_STALL_STATS */
-+	DECLARE_FLEX_ARRAY(u32, cmd_stall_status); /* HTT_TX_HWQ_MAX_CMD_STALL_STATS */
- };
- 
- /* NOTE: Variable length TLV, use length spec to infer array size */
- struct htt_tx_hwq_fes_result_stats_tlv_v {
- 	/* Histogram of number of user fes result */
--	u32 fes_result[0]; /* HTT_TX_HWQ_MAX_FES_RESULT_STATS */
-+	DECLARE_FLEX_ARRAY(u32, fes_result); /* HTT_TX_HWQ_MAX_FES_RESULT_STATS */
- };
- 
- /* NOTE: Variable length TLV, use length spec to infer array size
-@@ -636,7 +636,7 @@ struct htt_tx_hwq_tried_mpdu_cnt_hist_tlv_v {
-  */
- struct htt_tx_hwq_txop_used_cnt_hist_tlv_v {
- 	/* Histogram of txop used cnt */
--	u32 txop_used_cnt_hist[0]; /* HTT_TX_HWQ_TXOP_USED_CNT_HIST */
-+	DECLARE_FLEX_ARRAY(u32, txop_used_cnt_hist); /* HTT_TX_HWQ_TXOP_USED_CNT_HIST */
- };
- 
- /* == TX SELFGEN STATS == */
-@@ -804,17 +804,17 @@ struct htt_tx_pdev_mpdu_stats_tlv {
- /* == TX SCHED STATS == */
- /* NOTE: Variable length TLV, use length spec to infer array size */
- struct htt_sched_txq_cmd_posted_tlv_v {
--	u32 sched_cmd_posted[0]; /* HTT_TX_PDEV_SCHED_TX_MODE_MAX */
-+	DECLARE_FLEX_ARRAY(u32, sched_cmd_posted); /* HTT_TX_PDEV_SCHED_TX_MODE_MAX */
- };
- 
- /* NOTE: Variable length TLV, use length spec to infer array size */
- struct htt_sched_txq_cmd_reaped_tlv_v {
--	u32 sched_cmd_reaped[0]; /* HTT_TX_PDEV_SCHED_TX_MODE_MAX */
-+	DECLARE_FLEX_ARRAY(u32, sched_cmd_reaped); /* HTT_TX_PDEV_SCHED_TX_MODE_MAX */
- };
- 
- /* NOTE: Variable length TLV, use length spec to infer array size */
- struct htt_sched_txq_sched_order_su_tlv_v {
--	u32 sched_order_su[0]; /* HTT_TX_PDEV_NUM_SCHED_ORDER_LOG */
-+	DECLARE_FLEX_ARRAY(u32, sched_order_su); /* HTT_TX_PDEV_NUM_SCHED_ORDER_LOG */
- };
- 
- enum htt_sched_txq_sched_ineligibility_tlv_enum {
-@@ -842,7 +842,7 @@ enum htt_sched_txq_sched_ineligibility_tlv_enum {
- /* NOTE: Variable length TLV, use length spec to infer array size */
- struct htt_sched_txq_sched_ineligibility_tlv_v {
- 	/* indexed by htt_sched_txq_sched_ineligibility_tlv_enum */
--	u32 sched_ineligibility[0];
-+	DECLARE_FLEX_ARRAY(u32, sched_ineligibility);
- };
- 
- #define	HTT_TX_PDEV_STATS_SCHED_PER_TXQ_MAC_ID	GENMASK(7, 0)
-@@ -888,17 +888,17 @@ struct htt_stats_tx_sched_cmn_tlv {
- 
- /* NOTE: Variable length TLV, use length spec to infer array size */
- struct htt_tx_tqm_gen_mpdu_stats_tlv_v {
--	u32 gen_mpdu_end_reason[0]; /* HTT_TX_TQM_MAX_GEN_MPDU_END_REASON */
-+	DECLARE_FLEX_ARRAY(u32, gen_mpdu_end_reason); /* HTT_TX_TQM_MAX_GEN_MPDU_END_REASON */
- };
- 
- /* NOTE: Variable length TLV, use length spec to infer array size */
- struct htt_tx_tqm_list_mpdu_stats_tlv_v {
--	u32 list_mpdu_end_reason[0]; /* HTT_TX_TQM_MAX_LIST_MPDU_END_REASON */
-+	DECLARE_FLEX_ARRAY(u32, list_mpdu_end_reason); /* HTT_TX_TQM_MAX_LIST_MPDU_END_REASON */
- };
- 
- /* NOTE: Variable length TLV, use length spec to infer array size */
- struct htt_tx_tqm_list_mpdu_cnt_tlv_v {
--	u32 list_mpdu_cnt_hist[0];
-+	DECLARE_FLEX_ARRAY(u32, list_mpdu_cnt_hist);
- 			/* HTT_TX_TQM_MAX_LIST_MPDU_CNT_HISTOGRAM_BINS */
- };
- 
-@@ -1098,7 +1098,7 @@ struct htt_tx_de_compl_stats_tlv {
-  *                               ENTRIES_PER_BIN_COUNT)
-  */
- struct htt_tx_de_fw2wbm_ring_full_hist_tlv {
--	u32 fw2wbm_ring_full_hist[0];
-+	DECLARE_FLEX_ARRAY(u32, fw2wbm_ring_full_hist);
- };
- 
- struct htt_tx_de_cmn_stats_tlv {
-@@ -1151,7 +1151,7 @@ struct htt_ring_if_cmn_tlv {
- /* NOTE: Variable length TLV, use length spec to infer array size */
- struct htt_sfm_client_user_tlv_v {
- 	/* Number of DWORDS used per user and per client */
--	u32 dwords_used_by_user_n[0];
-+	DECLARE_FLEX_ARRAY(u32, dwords_used_by_user_n);
- };
- 
- struct htt_sfm_client_tlv {
-@@ -1436,12 +1436,12 @@ struct htt_rx_soc_fw_stats_tlv {
- 
- /* NOTE: Variable length TLV, use length spec to infer array size */
- struct htt_rx_soc_fw_refill_ring_empty_tlv_v {
--	u32 refill_ring_empty_cnt[0]; /* HTT_RX_STATS_REFILL_MAX_RING */
-+	DECLARE_FLEX_ARRAY(u32, refill_ring_empty_cnt); /* HTT_RX_STATS_REFILL_MAX_RING */
- };
- 
- /* NOTE: Variable length TLV, use length spec to infer array size */
- struct htt_rx_soc_fw_refill_ring_num_refill_tlv_v {
--	u32 refill_ring_num_refill[0]; /* HTT_RX_STATS_REFILL_MAX_RING */
-+	DECLARE_FLEX_ARRAY(u32, refill_ring_num_refill); /* HTT_RX_STATS_REFILL_MAX_RING */
- };
- 
- /* RXDMA error code from WBM released packets */
-@@ -1473,7 +1473,7 @@ enum htt_rx_rxdma_error_code_enum {
- 
- /* NOTE: Variable length TLV, use length spec to infer array size */
- struct htt_rx_soc_fw_refill_ring_num_rxdma_err_tlv_v {
--	u32 rxdma_err[0]; /* HTT_RX_RXDMA_MAX_ERR_CODE */
-+	DECLARE_FLEX_ARRAY(u32, rxdma_err); /* HTT_RX_RXDMA_MAX_ERR_CODE */
- };
- 
- /* REO error code from WBM released packets */
-@@ -1505,7 +1505,7 @@ enum htt_rx_reo_error_code_enum {
- 
- /* NOTE: Variable length TLV, use length spec to infer array size */
- struct htt_rx_soc_fw_refill_ring_num_reo_err_tlv_v {
--	u32 reo_err[0]; /* HTT_RX_REO_MAX_ERR_CODE */
-+	DECLARE_FLEX_ARRAY(u32, reo_err); /* HTT_RX_REO_MAX_ERR_CODE */
- };
- 
- /* == RX PDEV STATS == */
-@@ -1622,13 +1622,13 @@ struct htt_rx_pdev_fw_stats_phy_err_tlv {
- /* NOTE: Variable length TLV, use length spec to infer array size */
- struct htt_rx_pdev_fw_ring_mpdu_err_tlv_v {
- 	/* Num error MPDU for each RxDMA error type  */
--	u32 fw_ring_mpdu_err[0]; /* HTT_RX_STATS_RXDMA_MAX_ERR */
-+	DECLARE_FLEX_ARRAY(u32, fw_ring_mpdu_err); /* HTT_RX_STATS_RXDMA_MAX_ERR */
- };
- 
- /* NOTE: Variable length TLV, use length spec to infer array size */
- struct htt_rx_pdev_fw_mpdu_drop_tlv_v {
- 	/* Num MPDU dropped  */
--	u32 fw_mpdu_drop[0]; /* HTT_RX_STATS_FW_DROP_REASON_MAX */
-+	DECLARE_FLEX_ARRAY(u32, fw_mpdu_drop); /* HTT_RX_STATS_FW_DROP_REASON_MAX */
- };
- 
- #define HTT_PDEV_CCA_STATS_TX_FRAME_INFO_PRESENT               (0x1)
--- 
-2.34.1
-
+> Cc: Rao Shoaib <rao.shoaib@oracle.com>
+> Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
+> ---
+>  net/unix/af_unix.c | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+> index 347122c3575eaae597405369e2e9d8324d6ad240..0b0f18ecce4470d6fd21c084a3ea49e04dcbb9bd 100644
+> --- a/net/unix/af_unix.c
+> +++ b/net/unix/af_unix.c
+> @@ -2105,7 +2105,8 @@ static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
+>  #define UNIX_SKB_FRAGS_SZ (PAGE_SIZE << get_order(32768))
+>  
+>  #if IS_ENABLED(CONFIG_AF_UNIX_OOB)
+> -static int queue_oob(struct socket *sock, struct msghdr *msg, struct sock *other)
+> +static int queue_oob(struct socket *sock, struct msghdr *msg, struct sock *other,
+> +		     struct scm_cookie *scm, bool fds_sent)
+>  {
+>  	struct unix_sock *ousk = unix_sk(other);
+>  	struct sk_buff *skb;
+> @@ -2116,6 +2117,11 @@ static int queue_oob(struct socket *sock, struct msghdr *msg, struct sock *other
+>  	if (!skb)
+>  		return err;
+>  
+> +	err = unix_scm_to_skb(scm, skb, !fds_sent);
+> +	if (err < 0) {
+> +		kfree_skb(skb);
+> +		return err;
+> +	}
+>  	skb_put(skb, 1);
+>  	err = skb_copy_datagram_from_iter(skb, 0, &msg->msg_iter, 1);
+>  
+> @@ -2243,7 +2249,7 @@ static int unix_stream_sendmsg(struct socket *sock, struct msghdr *msg,
+>  
+>  #if IS_ENABLED(CONFIG_AF_UNIX_OOB)
+>  	if (msg->msg_flags & MSG_OOB) {
+> -		err = queue_oob(sock, msg, other);
+> +		err = queue_oob(sock, msg, other, &scm, fds_sent);
+>  		if (err)
+>  			goto out_err;
+>  		sent++;
+> -- 
+> 2.40.0.rc0.216.gc4246ad0f0-goog
