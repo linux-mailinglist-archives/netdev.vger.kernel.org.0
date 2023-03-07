@@ -2,85 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 180056AEBC8
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 18:49:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6FEF6AEC4C
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 18:53:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232222AbjCGRtD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 12:49:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36342 "EHLO
+        id S230224AbjCGRxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 12:53:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232192AbjCGRsf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 12:48:35 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 231EE8B07E
-        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 09:43:27 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id u9so55719471edd.2
-        for <netdev@vger.kernel.org>; Tue, 07 Mar 2023 09:43:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678211006;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=HY8B7YU0rEW4tU6YC9s+DFpVtZ1fIP0SQmfDEJb6rw4=;
-        b=AHBuuLUIojVXuubRLzFW1rtPur4jbiV5G1ojGswQNQcVdyHL5vorPA71qEJKztwmnm
-         ooTeIXBRahYY4wFdPt7k+cbQ7MpvH55krlXv60dhzlopJkzYq07a0Ja04zS/wLiBAbV0
-         pp9lumPVSwUy2HfStFdxMpqV4NrcnRfpwSwKgnWwB2T1ZrxWbKY7MyPixHrUp06CoOkC
-         yOtyM9oijwyS2N9K5cFshBuy4uiisnp279tWS87dIZlUy3LlFlxv8+rO/w1WYI0uZc3K
-         6WIeRFijNbNrWb1ZL+pZSzDo/VPg58u+B6P3DoxWG3YXVRU18N4U/KMCg/8bIOi07dQc
-         uRtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678211006;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=HY8B7YU0rEW4tU6YC9s+DFpVtZ1fIP0SQmfDEJb6rw4=;
-        b=y+pQV80haM0Be5yQzi4sWS1FfQW2pQqj9bqOnTgVpomAaLeMDR5AcvrSW5J6rjGRPq
-         b0YhHrLQRuUteNg59O81G8ngJgGl4kTGSvz7Esu09GBJ/QCUdC9ZeQP+aho+ON77B4qe
-         sivypoLrR0ojFYVs20W0t/pdTOEj/AMaKckE04qKZgLUkB14b2OV3bFldZN2hhqVMlQ0
-         O2gxVk6P2B5OB0un3fxjgIdf7fwjm45CFpoWNDf8r5qtssDZJqGaplFMp3zLTZfm+Ztv
-         zK/XVICCnfYR7Dv8elKMMtJJciXeXOS1ufNgPZbD8zXznLCU57RvJ06Rph17epEQoKVH
-         jUcg==
-X-Gm-Message-State: AO0yUKXRZxM01GSPQ7r/zCU9W97ZHxle6A552SvZYh6RMK3jStX+N67z
-        RfpqjdxxdZeb6qcsy4reygM=
-X-Google-Smtp-Source: AK7set/czagDFRW21AezUKb9CKMowwC08/rogZJzg2FTlTEtcf1GbdikMscNK3WrcE7wU7AOZUPJIg==
-X-Received: by 2002:a17:906:dac3:b0:8a9:fa2f:e440 with SMTP id xi3-20020a170906dac300b008a9fa2fe440mr20239333ejb.55.1678211005710;
-        Tue, 07 Mar 2023 09:43:25 -0800 (PST)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id h3-20020a170906590300b008ddf3476c75sm6436774ejq.92.2023.03.07.09.43.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Mar 2023 09:43:25 -0800 (PST)
-Date:   Tue, 7 Mar 2023 19:43:23 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        Felix Fietkau <nbd@nbd.name>, netdev <netdev@vger.kernel.org>,
-        erkin.bozoglu@xeront.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>
-Subject: Re: Choose a default DSA CPU port
-Message-ID: <20230307174323.sbzhb7gy6blgj2jf@skbuf>
-References: <trinity-5a3fbd85-79ce-4021-957f-aea9617bb320-1677333013552@3c-app-gmx-bap06>
- <f9fcf74b-7e30-9b51-776b-6a3537236bf6@arinc9.com>
- <6383a98a-1b00-913d-0db1-fe33685a8410@arinc9.com>
- <trinity-6ad483d2-5c50-4f38-b386-f4941c85c1fd-1677413524438@3c-app-gmx-bs15>
- <20230228115846.4r2wuyhsccmrpdfh@skbuf>
- <CB415113-7581-475E-9BB9-48F6A8707C15@public-files.de>
- <20230228225622.yc42xlkrphx4gbdy@skbuf>
- <0842D2D2-E71C-4DEF-BBCD-2D0C0869046E@public-files.de>
- <20230301123743.qifnk34pqwuyhf7u@skbuf>
- <trinity-a6b4447d-52b8-42a6-a4ce-b06543872534-1678126825554@3c-app-gmx-bs54>
+        with ESMTP id S229885AbjCGRxe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 12:53:34 -0500
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D060303F3;
+        Tue,  7 Mar 2023 09:48:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678211289; x=1709747289;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=CseGsboymzeRp0eTjTdXNQMvYr/oAqXs/xDFdB+CdIs=;
+  b=C7xMfMiNnB7zKMwKTB5wQJF64b7Y+wiUdHyptFXCY1teNK1KE6gCSt0T
+   yO4/nEzFY23ItSkjRBmqFe/cO/dpw7voNNpsQNDZhn+MtrUwgn2RmRQJF
+   TinABp349wC80a1fKCUV34X1vJTgW/wiYryhhi45ci/Gqzl/JhYQbUArR
+   2osbOXE47p/HdCpfl/NmIFmMI6KVN53UzDr8Ecep82j+jEHpS3XF0UAro
+   gAkhUaADGQIKokXOL8OLWwo0prrOSXx9jq3KY6U5rU65/KyfJvheGRiYl
+   eyTwXYjRBzOoFt3SB7w3sQhkBcZ4WiM33Nrbbv+pOeevC/47PidpWh0DU
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10642"; a="398500884"
+X-IronPort-AV: E=Sophos;i="5.98,241,1673942400"; 
+   d="scan'208";a="398500884"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2023 09:48:08 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10642"; a="786774620"
+X-IronPort-AV: E=Sophos;i="5.98,241,1673942400"; 
+   d="scan'208";a="786774620"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga002.fm.intel.com with ESMTP; 07 Mar 2023 09:48:08 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Tue, 7 Mar 2023 09:48:08 -0800
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Tue, 7 Mar 2023 09:48:07 -0800
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21 via Frontend Transport; Tue, 7 Mar 2023 09:48:07 -0800
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (104.47.56.41) by
+ edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.21; Tue, 7 Mar 2023 09:48:07 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YzJCUJftO8SgFUcEzc/YmFmXgr9J80Yt6pDI9PwpMQzq4Fx6RbHg7QV3R0ESzn1NVrSCJGSgZ4zEkpaQp9Pz8Jz+tnagVfUiDT+9z94B/sGP9BCcrF7KR3zH9XEaiJJnLO0UAO47khWMs705CqBb02joX7QfrIymK2PoWWrNoWvtVi0TRjj5CFeSHnnA7zpY/JNEub6XnBy9mz+h10iJTzUROmUdZa7CboqtlVH7w0IQlSe1lJX9bTTqvkaIzzqKLKNcRM/9FAB2ZpZWkHVe5ySh22AwS8fErYKGbUTCIMNnSkX5jVxxE3JMFF4kue0QZ5IW74M+nyzn60YGApJmag==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ThrXkA+N7rjNut62oiJqq8WtB31JGrZV6lIBwxqxO0w=;
+ b=kHmMn9I0HiLZEiIGfJAJbrsSyUGnxBb/2wkE5emnpFaCKjeMnmtzfSZhREY1P875+IYdAVn5y5hnDiVmCzHTiDbKIiIuVgRK/HJu6OYovMD1SE/319tQzWpkMGVNerkJy939x3CWc6f/NsUe9VbfPCHfSFL3zGB7zT7tfWHDkrZahPaa3Hemq7jetLEQ5bSGbmKM9F7tw7VJmBDUIu2SffLQDNv6qGdKVi24fdHjtfx1ICePUfO5XyoTrbHdhDY6VEGL0KbUYr2wJiIM1X3uzq4f1kelouNwTLShr2SQBBZYTFlGkONfK5+918eBMrY1vbkoRwjn5rdU/WThzfdp0w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM6PR11MB3625.namprd11.prod.outlook.com (2603:10b6:5:13a::21)
+ by BN9PR11MB5513.namprd11.prod.outlook.com (2603:10b6:408:102::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.19; Tue, 7 Mar
+ 2023 17:48:05 +0000
+Received: from DM6PR11MB3625.namprd11.prod.outlook.com
+ ([fe80::3ff6:ca60:f9fe:6934]) by DM6PR11MB3625.namprd11.prod.outlook.com
+ ([fe80::3ff6:ca60:f9fe:6934%4]) with mapi id 15.20.6156.029; Tue, 7 Mar 2023
+ 17:48:05 +0000
+Message-ID: <ee0aa756-4a9c-1d7a-4179-78024e41d37e@intel.com>
+Date:   Tue, 7 Mar 2023 18:47:14 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH] xsk: Add missing overflow check in xdp_umem_reg
+Content-Language: en-US
+To:     Kal Conley <kal.conley@dectris.com>
+CC:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Alexei Starovoitov" <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20230307172306.786657-1-kal.conley@dectris.com>
+From:   Alexander Lobakin <aleksander.lobakin@intel.com>
+In-Reply-To: <20230307172306.786657-1-kal.conley@dectris.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR2P281CA0151.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:98::14) To DM6PR11MB3625.namprd11.prod.outlook.com
+ (2603:10b6:5:13a::21)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <trinity-a6b4447d-52b8-42a6-a4ce-b06543872534-1678126825554@3c-app-gmx-bs54>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR11MB3625:EE_|BN9PR11MB5513:EE_
+X-MS-Office365-Filtering-Correlation-Id: ed10018b-5ddf-4962-2a18-08db1f341aa7
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 3rbXXFEV89yNS/FhzBIvUC9nQlM9RnVDcJIanNRQ7e8MTmH03ta7sCfaIjnyyFJBP4CkoYBvNRZjVfDw9pzwQwSPkkBtFyiwcf4BcVFWBh7hfNDnpvloDZ57gyNVwrTkKBWKx2qP08K20sfLlhyw9h8xCul4JSKm4PQwqnwdYV1R3pZs4l/i9wmrWcUWvSVeKkX4lqIt8cURuHNHjy+1iqSNcIEwPr+Mjv6M2jhNYZGczOqkIjlw4P5mAjT7tC2tBAyIvQalXmEkWiShjHfV2ljvfoQFThk9GEvD632vESdJ/yVrWM0VpelUhp8ST0Ttu+tZ5y/1ZVwCuaqUdarGnYA9orISMnL0/I3iZAMXVKSag6aG0hYIEzjpekHP9uHIcdoh2fNnZq2Co3mCPEkfwhotalCeNBbP4oVXDmgUuUij+d1ya3Zc27xo1foLhP0NRYgUwxWxXlJEpzWI/mvynhl/7cCV4h7wv606yA0wNkQJnUO7vBWWDQQkCrXX8DNZmyp9P5UBPl/5kmj+G+zlOlm897YtX6LlQetrZ4v2E8uVKyIPQCRPk0+njNfT31q86La3MsmBh3zujxeMrAwU/PG9PAg0JD8S2PBT/PdUZVbbiGlvzTy53WYh80grleZsQB0AxAYGpS+/j5EDsv78HNffyydFFI09iISio6cjYBAqTDWhNQnChB8DBezipJcVUoegwLGt2a8qw0zEbIp2yBObAlKP/IfrQGkJ68pl24Q=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3625.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(136003)(376002)(346002)(366004)(396003)(39860400002)(451199018)(4326008)(66556008)(6916009)(83380400001)(66476007)(66946007)(8676002)(6486002)(36756003)(54906003)(478600001)(316002)(86362001)(31696002)(41300700001)(6666004)(2616005)(26005)(186003)(6512007)(6506007)(31686004)(2906002)(5660300002)(8936002)(7416002)(38100700002)(82960400001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NkV3amNnVHFPSit1eWNVLzd0NTZpT3Y4algrZE9GekF3OWd5N1lZVnV5QjFi?=
+ =?utf-8?B?UCtSdkdKd0o4V2xyUW8wK2FnVWpuaUtqdzJIOUM3YkMzYkt0MTM1T3ptNVE2?=
+ =?utf-8?B?YWtzbnhJTnRsNkk3SW1LK0o2MnRGczdhTHlqN2dtQklGRUhqc3cvVFVFOEJC?=
+ =?utf-8?B?Rm1yc1VmUmhXWmhkZ0dweldMTzZ4K0cyTkZkdEtZSmZ6N0NyKzNZc2l1SXdQ?=
+ =?utf-8?B?RENjaTZCSktSbVg1MTlZM3JLTElLM3BZVTNIRlFySEhRdXNZRWUxVE9GR2NE?=
+ =?utf-8?B?bzNYQXFYOVdLckVIMzBpZHVVb3dSY2tBcS81dWEwNk5URnN4SUI3Y3NmOXY1?=
+ =?utf-8?B?UDN5a2JBemE1UW5IS25BM3pPUnVSdEtPTGdXQ3R3SEpqaXdybGtKeVVFK2ox?=
+ =?utf-8?B?aGJmMklTekx0b1I2eDRXUmNZVVJvNHBWaXlLUlFaR0JIaSs3QWpCVTlEcTM4?=
+ =?utf-8?B?dDh4VlM4SUhoWnFWZURFZ2gybjhzVytJV0ZsSmtabmd2NUp3WHA4N3A2cDRK?=
+ =?utf-8?B?ZWpvSG1BdDZDYmFVRlJ4Um9SSWJPdVFDSjhaNGZycG9YbVVoU1I1aWk4L1NX?=
+ =?utf-8?B?aHBFamVoQjBZSmh5MHRxSm1wbHRaWk01TlU4SlIrcXovZUlyUDNRK1JXMlpH?=
+ =?utf-8?B?Mnc3Nnd1YUdLVW0zakZ1R2hOTDlVbTU2NmVoeHhuUEZxSDdzYytjYUtSRFBS?=
+ =?utf-8?B?WUpzdTBxbUhUWjNOTmlNdHkvaVA2ZkRvMkRtMjNZejdUZEovWFpjbUEreVZ6?=
+ =?utf-8?B?Q2dLYjVVaHQ3b2JyS1FYcHdGNlpEOEIxY2lwTXF6RExaOFVENXBZektDTnYw?=
+ =?utf-8?B?bUhEb1RwcXlqU2tiaUZXMnRxamhTV1JBUGJxdmNIQkFEQXcvRnVZRlB5N011?=
+ =?utf-8?B?TVZRRDBWVEhrc0Y5d0MzVFZyNmJwUFVsNjlySWx2TUovK0FNSDZZcXF6bXZR?=
+ =?utf-8?B?M1ZjZ0dJcm5ZNm8xcnV0L28xUmVuV1ErQ3huNmE0TkRsRUo1K05hNk5pQVBs?=
+ =?utf-8?B?VCtURWR3U2QyamlzdVMwOWR5a3EzTWRrVmNvSGFBV0dhU05MdWZ6Zm40N0pt?=
+ =?utf-8?B?a2V1d2VmVndDZFZPMUIzZ1lCYWpwWEdHcWVCenNHL011VzZYQURtVDBJSTZD?=
+ =?utf-8?B?dDVjTy9BMjB5K1dmZmtON1hGRE45bHplM2RQd2pKUzhIVnRRTlhxZ1dCQ0pK?=
+ =?utf-8?B?TFBQejIyZHJpdVNhSFN6cjlqYWY1dTJvcitmVWUyZHVvUUQrMGMxOU1XVE1h?=
+ =?utf-8?B?VmNMZ1RJWUpQV0Z3dzBTQlhndm0xdjBKa0x0YW9GODZiYlp1all2ZmViNmd0?=
+ =?utf-8?B?VHlUQVZ2S09FQ3llMGpYcnpqVm9Hck1VMFdBcDU0QVR6QU1ORlBjODlYQzZH?=
+ =?utf-8?B?WmxHZUJ5V3VvWlppZWg5alR1eisrVHdGZjhxNFNOemRzNDY3d1J4ckFvNE9w?=
+ =?utf-8?B?cUpDaTI3b1J2RDRQa1QyYWs3YURucndyWkRBSk9IQnFYb2k4VjRTQmtSbjFr?=
+ =?utf-8?B?L3FUbXlONGo5aUsyR0Jtd0pucDRldmlTWk5qN0Fqa3JmamNFNWtNWlltVWZj?=
+ =?utf-8?B?RXpzbElqVHFRZ0FrMU1VVFdTOEh6WVJPRXpGM0QvVGsxWUtMdVllZzhsUTBz?=
+ =?utf-8?B?MGgxY25rcHJIK1gvQjhCaVZPZzVPVndodkhqZ2tYVHk4ZFcyZm1Jb1k2djNZ?=
+ =?utf-8?B?QzJ1UEFSY3JNMjBTelRxbGxQWEZiTUlOYzJqSkk4bktMSXhDVEM2bng1b2pF?=
+ =?utf-8?B?cUllVEVsbUNDa0JUS1lKNkRLYi8ybFhldHVzSnBOUXo3TEhxUTdjRDlHaHAv?=
+ =?utf-8?B?VUlnakRXMnVqLzYyRjN3TUllK3pUTmw5TGp3UDBIQThYcU92cEtNbUUyNGdZ?=
+ =?utf-8?B?V3hkUmFPODFqUUlXYWI1Um1kYktLeTBCSlRXaGpEM1VpY2RoeHppclUyL2Zn?=
+ =?utf-8?B?ZWdERlVYcUU1WCtTL09Dc1JmTUs5QUpGdFBmQnBaNGhpY1haQnAxWDE0YzVw?=
+ =?utf-8?B?RTZYeG1HUXNNRHd3YmtGZG5SU0EwNDNRckZzNytXK21YUUVxSm1RTnp5bWsv?=
+ =?utf-8?B?L3lPaUlrd1E2TFpsY2R4NkNuUzY3TE12RlgwQzBVbVVqUXIwa0hsWTlEdkdT?=
+ =?utf-8?B?S21yU2ZmNGN1TlAvRjBtMERuR0JHZUIrd1p6TysrWVRDNFZVS243bytoblFW?=
+ =?utf-8?Q?KfxbUFYycqnUE8ENqPO7ZWo=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: ed10018b-5ddf-4962-2a18-08db1f341aa7
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3625.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2023 17:48:05.1324
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3zDpeyR2RkhbExCygpt4xz7OV/etL4vTGatOs4F4cNZR4JASnduC/SXA+07DvcuFxqLVIoaNKaIt3lxYK5t1uHmV4WQ2SRbj8jufEkU5ch0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR11MB5513
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -88,54 +172,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 06, 2023 at 07:20:25PM +0100, Frank Wunderlich wrote:
-> is it possible to map this function only to mt7530, not mt7531?
+From: Kal Conley <kal.conley@dectris.com>
+Date: Tue,  7 Mar 2023 18:23:06 +0100
+
+> The number of chunks can overflow u32. Make sure to return -EINVAL on
+> overflow.
 > 
-> as one way i would add a check for the chip
+> Fixes: bbff2f321a86 ("xsk: new descriptor addressing scheme")
+> Signed-off-by: Kal Conley <kal.conley@dectris.com>
+> ---
+>  net/xdp/xdp_umem.c | 13 +++++++------
+>  1 file changed, 7 insertions(+), 6 deletions(-)
 > 
-> if (priv->id != ID_MT7530) { return NULL; }
-> //existing content for mt7531
+> diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
+> index 4681e8e8ad94..f1aa79018ce8 100644
+> --- a/net/xdp/xdp_umem.c
+> +++ b/net/xdp/xdp_umem.c
+> @@ -150,10 +150,11 @@ static int xdp_umem_account_pages(struct xdp_umem *umem)
+>  
+>  static int xdp_umem_reg(struct xdp_umem *umem, struct xdp_umem_reg *mr)
+>  {
+> -	u32 npgs_rem, chunk_size = mr->chunk_size, headroom = mr->headroom;
+> +	u32 chunk_size = mr->chunk_size, headroom = mr->headroom;
+>  	bool unaligned_chunks = mr->flags & XDP_UMEM_UNALIGNED_CHUNK_FLAG;
+> -	u64 npgs, addr = mr->addr, size = mr->len;
+> -	unsigned int chunks, chunks_rem;
+> +	u64 addr = mr->addr, size = mr->len;
+> +	u64 chunks, npgs;
+> +	u32 chunks_rem, npgs_rem;
 
-yeah, returning "NULL" to ds->ops->preferred_default_local_cpu_port()
-would mean "don't know, don't care" and DSA would choose by itself.
+The RCT declaration style is messed up in the whole block. Please move
+lines around, there's nothing wrong in that.
 
-although I feel we're not at the stage where we should discuss about
-that just yet.
+>  	int err;
+>  
+>  	if (chunk_size < XDP_UMEM_MIN_CHUNK_SIZE || chunk_size > PAGE_SIZE) {
+> @@ -188,8 +189,8 @@ static int xdp_umem_reg(struct xdp_umem *umem, struct xdp_umem_reg *mr)
+>  	if (npgs > U32_MAX)
+>  		return -EINVAL;
+>  
+> -	chunks = (unsigned int)div_u64_rem(size, chunk_size, &chunks_rem);
+> -	if (chunks == 0)
+> +	chunks = div_u64_rem(size, chunk_size, &chunks_rem);
+> +	if (chunks == 0 || chunks > U32_MAX)
 
-> where did you find the comment about multicast?
+You can change the first cond to `!chunks` while at it, it's more
+preferred than `== 0`.
 
-well, I didn't find "link-local multicast", but "BPDU to CPU port" and
-may have ran a little bit too far with that info.
+>  		return -EINVAL;
 
-If you search for the "Bridge Group Address" keyword in IEEE 802.1Q or
-IEEE 802.1D (older) documents, you'll see that STP BPDUs are sent to a
-reserved multicast MAC DA of 01-80-C2-00-00-00, which is link-local,
-meaning that switches don't forward it but trap it. Since I knew that,
-I just assumed that "BPDU to CPU port" means "trapping of any frames
-with that MAC DA to the CPU port", since if I were a hardware designer,
-that's what I would do. It's possible to identify STP BPDUs (to trap
-just those) by examining the LLC header, but I wouldn't bother since the
-MAC DA is reserved for this kind of stuff and I'd be locking myself out
-of being compatible with possible protocol changes in the future.
+Do you have any particular bugs that the current code leads to? Or it's
+just something that might hypothetically happen?
 
-> https://elixir.bootlin.com/linux/v6.3-rc1/source/drivers/net/dsa/mt7530.c has
-> "multicast" only in the packet-counters (mib_desc)
-> 
-> > The next most obvious thing would be L2 PTP (ptp4l -2), but since mt7530
-> > doesn't support hw timestamping, you'd need to try software timestamping
-> > instead ("ptp4l -i swpX -2 -P -S -m", plus the equivalent command on a
-> > link partner).
-> 
-> have not done anything with l2 p2p yet, and no server running...i'm not sure
-> i can check this the right way.
+>  
+>  	if (!unaligned_chunks && chunks_rem)
+> @@ -201,7 +202,7 @@ static int xdp_umem_reg(struct xdp_umem *umem, struct xdp_umem_reg *mr)
+>  	umem->size = size;
+>  	umem->headroom = headroom;
+>  	umem->chunk_size = chunk_size;
+> -	umem->chunks = chunks;
+> +	umem->chunks = (u32)chunks;
 
-Anyway, it doesn't have to be PTP, it can be literally any application
-using a PF_PACKET socket to send sequence-numbered packets towards a
-mt7530 port with the 01:80:c2:00:00:00 MAC DA, and using 2 tcpdump
-instances on the 2 GMACs to check whether packets are received once or
-twice.
+You already checked @chunks fits into 32 bits, so the cast can be
+omitted here, it's redundant.
 
-If this is still too complicated, just send 5 actual BPDUs and see if
-you receive them on both CPU ports:
+>  	umem->npgs = (u32)npgs;
+>  	umem->pgs = NULL;
+>  	umem->user = NULL;
 
-mausezahn eth0 -b 01:80:c2:00:00:00 -c 5 -t bpdu
+Thanks,
+Olek
