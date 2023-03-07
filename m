@@ -2,113 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB8AB6AD9E2
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 10:09:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A94866AD9E9
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 10:10:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230198AbjCGJJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 04:09:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51692 "EHLO
+        id S230235AbjCGJKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 04:10:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229742AbjCGJJL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 04:09:11 -0500
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C34B521F0;
-        Tue,  7 Mar 2023 01:09:08 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 72E5C2000F;
-        Tue,  7 Mar 2023 09:09:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1678180147;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tfEXGeK3r8IepmXyCN3O+CQO+OTuTekK6f/XtQOU0sY=;
-        b=iZIt8MiYGDIUgrVnCV8xsRaDE3ZRy7LdSAcAV6CCOHg9qdeqsK9lcjZxfcwCmmkW3962b+
-        yzXAdLF7nyjmSUb9Km2tckxMuVg9nWeYS5sN5wpeKD10NHQ9dSuDS5VDvLfiJizNtvzZpS
-        L3HyqEdNVYXwlRMnrQ1dtPUuOY7i+btjcPPNn72c8JAcuU0SaHzbtCdwS8WHqEByv/gy2I
-        mervmjXY+o4cfJ3P2DRetAbQmfLqMXjXpKv9VsSo6+WZncLGdXzTZG9TY0erSy3VkIt9h+
-        bB3sIpaB4nUx3peEyvlrTYVL+0+Jm7tSQPvt+Nb36EhpVUcjHo0wdLf+C0nyaQ==
-Date:   Tue, 7 Mar 2023 10:09:03 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Denis Kirjanov <dkirjanov@suse.de>
-Cc:     Dongliang Mu <dzm91@hust.edu.cn>,
-        Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
+        with ESMTP id S229811AbjCGJK3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 04:10:29 -0500
+Received: from hust.edu.cn (unknown [202.114.0.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AB51110EC;
+        Tue,  7 Mar 2023 01:10:27 -0800 (PST)
+Received: from dzm91$hust.edu.cn ( [172.16.0.254] ) by ajax-webmail-app2
+ (Coremail) ; Tue, 7 Mar 2023 17:09:29 +0800 (GMT+08:00)
+X-Originating-IP: [172.16.0.254]
+Date:   Tue, 7 Mar 2023 17:09:29 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   =?UTF-8?B?5oWV5Yas5Lqu?= <dzm91@hust.edu.cn>
+To:     "denis kirjanov" <dkirjanov@suse.de>
+Cc:     "alexander aring" <alex.aring@gmail.com>,
+        "stefan schmidt" <stefan@datenfreihafen.org>,
+        "miquel raynal" <miquel.raynal@bootlin.com>,
+        "david s. miller" <davem@davemloft.net>,
+        "eric dumazet" <edumazet@google.com>,
+        "jakub kicinski" <kuba@kernel.org>,
+        "paolo abeni" <pabeni@redhat.com>,
         syzbot+bd85b31816913a32e473@syzkaller.appspotmail.com,
         linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: ieee802154: fix a null pointer in
+Subject: Re: Re: [PATCH] net: ieee802154: fix a null pointer in
  nl802154_trigger_scan
-Message-ID: <20230307100903.71e2d9b2@xps-13>
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20220802(cbd923c5)
+ Copyright (c) 2002-2023 www.mailtech.cn hust
 In-Reply-To: <782a6f2d-84ae-3530-7e3c-07f31a4f303b@suse.de>
 References: <20230307073004.74224-1-dzm91@hust.edu.cn>
-        <782a6f2d-84ae-3530-7e3c-07f31a4f303b@suse.de>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
+ <782a6f2d-84ae-3530-7e3c-07f31a4f303b@suse.de>
+Content-Transfer-Encoding: base64
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+Message-ID: <697a2a6.23479.186bb5537c5.Coremail.dzm91@hust.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: GQEQrACngepJ_wZkIMdbAQ--.25231W
+X-CM-SenderInfo: asqsiiirqrkko6kx23oohg3hdfq/1tbiAQkDD17Em4N7ZAACsb
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+CgoKPiAtLS0tLeWOn+Wni+mCruS7ti0tLS0tCj4g5Y+R5Lu25Lq6OiAiRGVuaXMgS2lyamFub3Yi
+IDxka2lyamFub3ZAc3VzZS5kZT4KPiDlj5HpgIHml7bpl7Q6IDIwMjMtMDMtMDcgMTY6NDM6NDYg
+KOaYn+acn+S6jCkKPiDmlLbku7bkuro6ICJEb25nbGlhbmcgTXUiIDxkem05MUBodXN0LmVkdS5j
+bj4sICJBbGV4YW5kZXIgQXJpbmciIDxhbGV4LmFyaW5nQGdtYWlsLmNvbT4sICJTdGVmYW4gU2No
+bWlkdCIgPHN0ZWZhbkBkYXRlbmZyZWloYWZlbi5vcmc+LCAiTWlxdWVsIFJheW5hbCIgPG1pcXVl
+bC5yYXluYWxAYm9vdGxpbi5jb20+LCAiRGF2aWQgUy4gTWlsbGVyIiA8ZGF2ZW1AZGF2ZW1sb2Z0
+Lm5ldD4sICJFcmljIER1bWF6ZXQiIDxlZHVtYXpldEBnb29nbGUuY29tPiwgIkpha3ViIEtpY2lu
+c2tpIiA8a3ViYUBrZXJuZWwub3JnPiwgIlBhb2xvIEFiZW5pIiA8cGFiZW5pQHJlZGhhdC5jb20+
+Cj4g5oqE6YCBOiBzeXpib3QrYmQ4NWIzMTgxNjkxM2EzMmU0NzNAc3l6a2FsbGVyLmFwcHNwb3Rt
+YWlsLmNvbSwgbGludXgtd3BhbkB2Z2VyLmtlcm5lbC5vcmcsIG5ldGRldkB2Z2VyLmtlcm5lbC5v
+cmcsIGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcKPiDkuLvpopg6IFJlOiBbUEFUQ0hdIG5l
+dDogaWVlZTgwMjE1NDogZml4IGEgbnVsbCBwb2ludGVyIGluIG5sODAyMTU0X3RyaWdnZXJfc2Nh
+bgo+IAo+IAo+IAo+IE9uIDMvNy8yMyAxMDozMCwgRG9uZ2xpYW5nIE11IHdyb3RlOgo+ID4gVGhl
+cmUgaXMgYSBudWxsIHBvaW50ZXIgZGVyZWZlcmVuY2UgaWYgTkw4MDIxNTRfQVRUUl9TQ0FOX1RZ
+UEUgaXMKPiA+IG5vdCBzZXQgYnkgdGhlIHVzZXIuCj4gPiAKPiA+IEZpeCB0aGlzIGJ5IGFkZGlu
+ZyBhIG51bGwgcG9pbnRlciBjaGVjay4KPiA+IAo+ID4gUmVwb3J0ZWQtYW5kLXRlc3RlZC1ieTog
+c3l6Ym90K2JkODViMzE4MTY5MTNhMzJlNDczQHN5emthbGxlci5hcHBzcG90bWFpbC5jb20KPiA+
+IFNpZ25lZC1vZmYtYnk6IERvbmdsaWFuZyBNdSA8ZHptOTFAaHVzdC5lZHUuY24+Cj4gCj4gUGxl
+YXNlIGFkZCBhIEZpeGVzOiB0YWcgCgpJJ3ZlIHNlbnQgYSB2MiBwYXRjaC4gVGhhbmtzIGZvciB5
+b3VyIHJlbWluZGVyLgoKPiAKPiA+IC0tLQo+ID4gIG5ldC9pZWVlODAyMTU0L25sODAyMTU0LmMg
+fCAzICsrLQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAyIGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24o
+LSkKPiA+IAo+ID4gZGlmZiAtLWdpdCBhL25ldC9pZWVlODAyMTU0L25sODAyMTU0LmMgYi9uZXQv
+aWVlZTgwMjE1NC9ubDgwMjE1NC5jCj4gPiBpbmRleCAyMjE1ZjU3NmVlMzcuLjFjZjAwY2ZmZDYz
+ZiAxMDA2NDQKPiA+IC0tLSBhL25ldC9pZWVlODAyMTU0L25sODAyMTU0LmMKPiA+ICsrKyBiL25l
+dC9pZWVlODAyMTU0L25sODAyMTU0LmMKPiA+IEBAIC0xNDEyLDcgKzE0MTIsOCBAQCBzdGF0aWMg
+aW50IG5sODAyMTU0X3RyaWdnZXJfc2NhbihzdHJ1Y3Qgc2tfYnVmZiAqc2tiLCBzdHJ1Y3QgZ2Vu
+bF9pbmZvICppbmZvKQo+ID4gIAkJcmV0dXJuIC1FT1BOT1RTVVBQOwo+ID4gIAl9Cj4gPiAgCj4g
+PiAtCWlmICghbmxhX2dldF91OChpbmZvLT5hdHRyc1tOTDgwMjE1NF9BVFRSX1NDQU5fVFlQRV0p
+KSB7Cj4gPiArCWlmICghaW5mby0+YXR0cnNbTkw4MDIxNTRfQVRUUl9TQ0FOX1RZUEVdIHx8Cj4g
+PiArCSAgICAhbmxhX2dldF91OChpbmZvLT5hdHRyc1tOTDgwMjE1NF9BVFRSX1NDQU5fVFlQRV0p
+KSB7Cj4gPiAgCQlOTF9TRVRfRVJSX01TRyhpbmZvLT5leHRhY2ssICJNYWxmb3JtZWQgcmVxdWVz
+dCwgbWlzc2luZyBzY2FuIHR5cGUiKTsKPiA+ICAJCXJldHVybiAtRUlOVkFMOwo+ID4gIAl9Cgo=
 
-dkirjanov@suse.de wrote on Tue, 7 Mar 2023 11:43:46 +0300:
-
-> On 3/7/23 10:30, Dongliang Mu wrote:
-> > There is a null pointer dereference if NL802154_ATTR_SCAN_TYPE is
-> > not set by the user.
-> >=20
-> > Fix this by adding a null pointer check.
-
-Thanks for the patch! This has been fixed already:
-https://lore.kernel.org/linux-wpan/20230301154450.547716-1-miquel.raynal@bo=
-otlin.com/T/#u
-
-> > Reported-and-tested-by: syzbot+bd85b31816913a32e473@syzkaller.appspotma=
-il.com
-
-Just for reference, this tag shall not be used:
-
-	"Please do not use combined tags, e.g.
-	``Reported-and-tested-by``"
-	Documentation/process/maintainer-tip.rst
-
-> > Signed-off-by: Dongliang Mu <dzm91@hust.edu.cn> =20
->=20
-> Please add a Fixes: tag=20
->=20
-> > ---
-> >  net/ieee802154/nl802154.c | 3 ++-
-> >  1 file changed, 2 insertions(+), 1 deletion(-)
-> >=20
-> > diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
-> > index 2215f576ee37..1cf00cffd63f 100644
-> > --- a/net/ieee802154/nl802154.c
-> > +++ b/net/ieee802154/nl802154.c
-> > @@ -1412,7 +1412,8 @@ static int nl802154_trigger_scan(struct sk_buff *=
-skb, struct genl_info *info)
-> >  		return -EOPNOTSUPP;
-> >  	}
-> > =20
-> > -	if (!nla_get_u8(info->attrs[NL802154_ATTR_SCAN_TYPE])) {
-> > +	if (!info->attrs[NL802154_ATTR_SCAN_TYPE] ||
-> > +	    !nla_get_u8(info->attrs[NL802154_ATTR_SCAN_TYPE])) {
-> >  		NL_SET_ERR_MSG(info->extack, "Malformed request, missing scan type");
-> >  		return -EINVAL;
-> >  	} =20
-
-
-Thanks,
-Miqu=C3=A8l
