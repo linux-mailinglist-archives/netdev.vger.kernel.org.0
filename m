@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 094916AF44E
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 20:16:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33E696AF3EB
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 20:11:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233897AbjCGTP5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 14:15:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43726 "EHLO
+        id S233785AbjCGTL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 14:11:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230162AbjCGTPf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 14:15:35 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A340CD647;
-        Tue,  7 Mar 2023 10:59:02 -0800 (PST)
+        with ESMTP id S233680AbjCGTKu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 14:10:50 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD4BC85A2;
+        Tue,  7 Mar 2023 10:55:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=public-files.de;
-        s=s31663417; t=1678215540; i=frank-w@public-files.de;
-        bh=k9ls87AUqXtQuQdmuxvYZphUw05BBFcV2MURS2q3dHo=;
+        s=s31663417; t=1678215228; i=frank-w@public-files.de;
+        bh=+owYiX7jswArKs3fL+HnoSgqSO+sE7J8CBPiU44HSVA=;
         h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=PtKB/92XDzY0GWt8hZXlK8GslfNV1TTVOc4jqXirgsGO+ZD3rVds+6xc0P/VTh9od
-         IkPytmJXWLTOmy3ussLeBptofN4/5otgPZquOvttxp5RdmVhEQz0hIi8n7V7sgur6B
-         4uY7G6FRE1pFamw7LehtT3UTFeZ9opMu2R2qjWI8o7CKRrCv9Ah2oed3Ayr57hhl4h
-         GUU9c8ZE/20vzemeDT8ZaKU30arjoXH3SCe5/8CdfWfzBuvt8WrgHvWzaoStYRn57H
-         uZ5z6o+S20B4RthHYl1fvScprh0FUTq/UKIeWwyEA330IDo9JUZuYrhLj1IHaunIdQ
-         A5rHLggvoXZrQ==
+        b=Ud9W7IEd/03xmWP/ai64n/sHBhn0fBsP6DlJXdr5l0uNkSfa4zEU/lAo34Tm/y6RP
+         bJNoR3KxCBkO9chRoQSPcSMDRyajidiVJgYrgfB6KEnrCLgdWahy7vkNS6AVC9MGFk
+         +sQf/9G03qLckfMgAPncpMxMwS1fu9OraROpcVONaOkMIKqsd2YbtOi7nrxGN5y6G0
+         iF7zovhxIvx+TbxQ8kAUZztBSNez95df01rwHNs6piXujUsggN5qxuwMecDtI7XRTj
+         I0uxYTTwaFFn7ef/eVODUgVKUVwrSkGYmMY6r5++ywCI/21cTfqMt3UjX7gZWcN6gz
+         iheRYz9g6tmiQ==
 X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
 Received: from [217.61.156.24] ([217.61.156.24]) by web-mail.gmx.net
  (3c-app-gmx-bs16.server.lan [172.19.170.68]) (via HTTP); Tue, 7 Mar 2023
- 19:52:54 +0100
+ 19:53:48 +0100
 MIME-Version: 1.0
-Message-ID: <trinity-4b8f5f5f-55fe-4c7c-9ba6-d903c722d0d8-1678215174716@3c-app-gmx-bs16>
+Message-ID: <trinity-c28f2d1c-6730-416a-ad34-6e03182c2cd5-1678215227989@3c-app-gmx-bs16>
 From:   Frank Wunderlich <frank-w@public-files.de>
 To:     Daniel Golle <daniel@makrotopia.org>
 Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
@@ -56,36 +56,36 @@ Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
         Jianhui Zhao <zhaojh329@gmail.com>,
         =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
         Alexander Couzens <lynxis@fe80.eu>
-Subject: Aw: [PATCH net-next v12 08/18] net: ethernet: mtk_eth_soc: fix
- 1000Base-X and 2500Base-X modes
+Subject: Aw: [PATCH net-next v12 07/18] net: ethernet: mtk_eth_soc: only
+ write values if needed
 Content-Type: text/plain; charset=UTF-8
-Date:   Tue, 7 Mar 2023 19:52:54 +0100
+Date:   Tue, 7 Mar 2023 19:53:48 +0100
 Importance: normal
 Sensitivity: Normal
-In-Reply-To: <fd5c7ea79a7f84caac7d0b64b39fe5c4043edfa8.1678201958.git.daniel@makrotopia.org>
+In-Reply-To: <d2db725199011ec06082926830cf9fb2a8aeb147.1678201958.git.daniel@makrotopia.org>
 References: <cover.1678201958.git.daniel@makrotopia.org>
- <fd5c7ea79a7f84caac7d0b64b39fe5c4043edfa8.1678201958.git.daniel@makrotopia.org>
+ <d2db725199011ec06082926830cf9fb2a8aeb147.1678201958.git.daniel@makrotopia.org>
 Content-Transfer-Encoding: quoted-printable
 X-UI-Message-Type: mail
 X-Priority: 3
-X-Provags-ID: V03:K1:ES5k/UBa3QqaRIr9k0VcmOXcFh0bykQJLKCIgGmd/YebGxi28WQ/EcN+n7mMf+t0YkaCy
- Y4897TVRC1SPVCFsi/uYPVwNKBdUpeRan3iRALEpNX1BKVJ7NWo7tZm//nuGZPenHExqoeI+dKKN
- VN6Cu2y+0iYztONsYUKBmW9UoqsHg/XLbwmDdbXOAo1i1FVhz6i9OvdB6Q2zmHE7u4xNzAxyTYsH
- OxyamxZFKelQJuufRPUa5QumyakVh0qvBi71r/B98Fa0QqgnObZiX3Scg7b9G54HL02TLA9kel/y
- G8=
-UI-OutboundReport: notjunk:1;M01:P0:FKFSpgLdtoE=;ggl2He6pfDHWCL4A66ZEN11V2xU
- GjxyNVfMJ/61dmO3ZncoXdVglmIC82xVOp+4YvojI5h3T+PatvIfHWkDQftqu4wNaCe7ASo3U
- y9L8Mhp6FwVrSEDcy75LcTiKxzAD5g/DjOxWylP9eptnnK5SAOgiAJOBEvZhwDWf1SGAMEAj0
- Mrwp4Gdcovx7sBRJmUj/bdfcAbn7Id6GW9bgUTfPzOVuIeWexW2/IInsGl63R7mmXZykSZghP
- SA7YxToaoBy8Lm7H90L2+N8+XPuYyor59xipAJWmndVd4hd7dbxqn3iHpKOkFtfWFHvtxzaBL
- 714WMsGX9G7/U6EEaTTT2ngDU0SxLm3cv+x44Bl0XULxoZRYziVFF6d8534IFaqFntZCgfBpg
- iRieo0uX4m84nf5rIxDaa7yBb5pm5Ez140pz4JVRVASlTm/DLem1Ls8Ml1XORAx/eXOgZVyHw
- 7vze7jkQRR8Oqx5dMAwPdgABN+mosNIH9kICwTV7MeCFETWnrwQNpT2tlS24lclOWtpKjWXL3
- Q7dqiFe/DVuJFE9i+JzZTThMNpwltcJmbky7s+H3IwyHywUpHcYn1SEJ3VXT4/Jc1OMWZqS7Y
- iEx/xGT2adxKChTNEWWrIxqAYOQDTGGAwMls0rhCbVYBU/0sPp1IpO4XuxEw4YrEicuf1Nf/s
- xqsJiSX2vPixB9d7EhOb0YYlox5uzs/N+VxVgx2aDw0V75jmLQXNoYw/BNA6Z0t+C9tQ2RJ6M
- z/I+0AWwSmC9lx+rIEPMUW0c+Uf8j3X1yvVS4fRUAXtnkQcAg7EV8+mzoTlEuz7zZg2xkNJE4
- 9zG7ZVoGjBs4GBKcaYhBgFbQ==
+X-Provags-ID: V03:K1:pkz3K6WA6EmNJMhsiAcvkx7bjekeiDSDQDd8tCucyVIXTL57c1OwHykxVgZKG1lGsNyg1
+ 0cWV/hriObkPzyLS+0mGKLemW65VGLyO2iap2e1yYSL0GICfo5VbTKwQ8DkKaGAEY1NspIXVaseU
+ lDoQX7fOwYvYMS2ZGrGAg+YIjOJiAkww3nvUJWFN21/EG7AIU5SydbGcwR6Y+xK9xx0tsk+cUGZr
+ kB+K7tsWcuBEK5/xd/TbPnoqFd097MJDgdQbXT7+bzEicx/1VLzODjxPMN3Gn1Yui8bM/sKvC6QH
+ Lo=
+UI-OutboundReport: notjunk:1;M01:P0:mxzF7MLmkLI=;/RFfM47ZWNU2XSMGrw0gxKEoCRi
+ xN13YE1EvN8VdTw8rS/2cyFNG+AoWNsqWM9YR7IhvFNPKeYDE+SoLwGeXs0oagtNQLQf9EOxk
+ gcgJkOXmEIJDd41Gv1DnWJ13fAIj+FBM6XIDYbsi/IwJw+mDYvsRYxk5RT9uUeTx7uAirIAEc
+ kdVMqy37arAgw1BjHnWZWh4wR57GDqgkvAK13qPvyiFAfPusc3lNFxTPJIU7n3NmS08WNbpDF
+ FMjMuUZuJ5JgMNXGRVg5quf+z+P2FgkMNDtm6c8aaiFshuZ0b0lAlyR3z2HJhQDgzC+zytIub
+ foMFAK1Dikg24AkfeeQP7qE/9yZBoZnk9C3/xsyPKr3GmWzzh3MbLXVU3J8eosodFg249eIHn
+ 7lJNSEr7aAERqaWXOcKNaSUBLAmmin6sKHBSvTwlSCXE7fMjMsgGTDXWM2Vm1pCbkKRDn2aUB
+ ZK9E+ZYWu7cca711Q8/UjOi0C6DxiYPH2W1CNNhNRh/I9V1J/bGAJY9aTzbl3+3LZDmW9DjIm
+ mZKFLid0r+020WWqHU6Dyz/T36itBN2wwOtQR/kQ6hk+Gw6KBJKepHXUZ3J53aW8FWtJrZ0cR
+ cT89vsQa06PLXUF2PimUVABhFLki555V+5YGQJRPEHrYFdD0DY966B66ovTLwK11S7ZXTQhXc
+ naFm23TpAk2anx7XQmJteQnGAiPI+v0l1XFdiaJVVZRUxgcBpUzY4p747w2C573ynKluLEP0U
+ fSwj+7zOjp4QIY8zNNFmfEX/gr3PcIXslEVP/By46T9tK+LhX9OfkQyo6OFlr4hPHpa5SNtaS
+ 125/WcdSyvOnLbZ8kXoo7R9Mhw2WRgQp92LxqvW+KULJk=
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
@@ -98,20 +98,9 @@ X-Mailing-List: netdev@vger.kernel.org
 
 > Gesendet: Dienstag, 07=2E M=C3=A4rz 2023 um 16:53 Uhr
 > Von: "Daniel Golle" <daniel@makrotopia=2Eorg>
->
-> After conversion to phylink_pcs the 1000Base-X and 2500Base-X modes
-> would work only after `ethtool -s eth1 autoneg off`=2E
-> As ethtool autoneg and the ETHTOOL_LINK_MODE_Autoneg_BIT is supposed
-> to control auto-negotiation on the external interface it doesn't make
-> much sense to use it to control on-board SGMII auto-negotiation between
-> MAC and PHY=2E
-> Set correct values to really only enable SGMII auto-negotiation when
-> actually operating in SGMII mode=2E For 1000Base-X and 2500Base-X mode,
-> enable remote-fault detection only if in-band-status is enabled=2E
-> This fixes using 1000Base-X and 2500Base-X SFPs on the BananaPi R3
-> board and also makes it possible to use interface-mode-switching PHYs
-> operating in either SGMII mode for 10M/100M/1000M or in 2500Base-X for
-> 2500M mode on other boards=2E
+> Only restart auto-negotiation and write link timer if actually
+> necessary=2E This prevents loosing the link in case of minor
+> changes=2E
 
 Hi,
 
