@@ -2,74 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6C0C6AF76B
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 22:22:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4C9D6AF77C
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 22:24:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230017AbjCGVWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 16:22:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56958 "EHLO
+        id S231325AbjCGVX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 16:23:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229636AbjCGVWH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 16:22:07 -0500
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 936379E054
-        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 13:22:05 -0800 (PST)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-53852143afcso269490927b3.3
-        for <netdev@vger.kernel.org>; Tue, 07 Mar 2023 13:22:05 -0800 (PST)
+        with ESMTP id S229809AbjCGVXz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 16:23:55 -0500
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBDC28737F;
+        Tue,  7 Mar 2023 13:23:54 -0800 (PST)
+Received: by mail-qt1-x830.google.com with SMTP id c19so15992349qtn.13;
+        Tue, 07 Mar 2023 13:23:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1678224125;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Ix+rz8/Cgkdlv6+uECDU6NopcnuqQRV5cx3kDDiFh8Q=;
-        b=jPGlnvYPXnj6sY3e3wnH2CKmwP+bxvCmgMXJFEoCPLjFskYphPavq8nFeGzPemVqUd
-         V7c1v4KGLSesT7wUtl/6is5w3dpAKe0/t8sxf/p85w4PpWKcUcWVvsJQyPiL0AB/dI2I
-         8Y7ZwE95vik8WG9ElQnIi9oLfwiVF3njs3GVct5Xiz8tNZfJ+Hc/biWKpUtlui9e8aXT
-         e5xvJbuWPjvlOJrE+inq3YpogISAW8cuNaooAgXFRDcCxLnaBsYdkd6JJ9caBaZshBtX
-         1RZRQ7CKAXUUM4V1nAhsKosvoFdsDpC+LZFaCW/T4nMFy7PtsWoHgbnz2gC7xW012WPJ
-         WEpw==
+        d=gmail.com; s=20210112; t=1678224233;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=KJgQcrpPIIVlWvFmarwfb9A6WS97bSM7vxKuJ6xoBQw=;
+        b=lSQPebSvo98ZY+V2Wki+hCJxBqoW6CSV+2xA6qvGG79JPbpy9qVVveto1fPSeKrLUh
+         qIFlGOtCDoFxxidUYTBTpkuasRIXbN1/q9aHZtjKBv0ffyNck3edgwnGq4ex2OWcfyGA
+         c/PbXSCwN+o5FD6Z43Vrd+Nws7wrWrNwjv/nS0j3R1css2rdGQv/yOZi5UtObn1Lq3Ca
+         lnC6YAhlVfDfI2uI1bnhJjBGMWgzXgEg2BaUeOvw2A8OVlp2uV7ggDUx984ZndiSjtB9
+         yXZtUckTThwvZU16Wbv5C8/XyU19SgeHn+eaayU9YI11GIljx6zNLTYZr+7EN0fqLgra
+         ENaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678224125;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Ix+rz8/Cgkdlv6+uECDU6NopcnuqQRV5cx3kDDiFh8Q=;
-        b=ntENV8G89b2UW2XBDQAikltKX0sMjUfVlb2LwzjFs7hVBSvJ2B6haA4wzSgvpwcPVJ
-         6H/kw5wq4tjr3eLz/mZ0U1bYSHmFI7DfOGwQIqnWpbCuTRw8kAohhrWI/sUXF9dW69L6
-         9Wz1F3ptnSdIKFAGV1Lppiea8tkBXeA6vIyRJQcdaeItKPJyJdhA1BV+7jR+Bf19k0SS
-         vyWf/AJDk0AlT0M8HdPfpofqzyjt8w4ghnsY4PORKLnhNsHnjZBmziOZspNvTLnmaRvE
-         wmxQ3BzCfKWiC2NfpN4wFiJU4wArMkPuDEsKb9MNzvxsC6JwT1B+NcWZQ+2mn3gokdjc
-         YQ3Q==
-X-Gm-Message-State: AO0yUKV70oILorVjcKGRY5fJLxauzfkWDqDeMvjT2GPmwoJtNevhJ9i7
-        tQapKbmoeKwo9paw+u5F0OGnTxVWg5s7Dr6HJool/g==
-X-Google-Smtp-Source: AK7set9ogEoXjKLSGYP4LNAsO6Wu44RKFwsr+WT5Vgcv0blZpxfFNL9xJ6zzOMkLcF8VIYNM2T7c/1h++I6kybekwvU=
-X-Received: by 2002:a81:ac4c:0:b0:533:9ffb:cb11 with SMTP id
- z12-20020a81ac4c000000b005339ffbcb11mr10285814ywj.7.1678224123295; Tue, 07
- Mar 2023 13:22:03 -0800 (PST)
+        d=1e100.net; s=20210112; t=1678224233;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=KJgQcrpPIIVlWvFmarwfb9A6WS97bSM7vxKuJ6xoBQw=;
+        b=1tpl5RoA0NtgwPwwp1DrKSxBoZyesbIX1U6BJ1rER6bSuwalDn9uLHkDYU82S5KQUK
+         u1mmf0D2Sw8/YHCUL4vn2P8ZM1wvxkbo8J3w8xaoZHOO8zdrrkE1DzoMgq0AyblHcfXl
+         4B7eh8semPkku+86+dHSE24IzffHW4o+BxqX0ra9J+EStRY9fdHduSDEtXD45KtKgkG+
+         KWcO5UX6RGFlDEDAYslOUntp6yP5eXaBe2uhoV3nv4zCyaWtVe5+FHc3YW+PpU4isLjn
+         VycrqF5x4pE+iqgpvBoS1ws6Xe/NkPBXk7MvVvQmMQEI6TUEXk4Hp23oOGevSpYnAItE
+         IwCA==
+X-Gm-Message-State: AO0yUKUihkgCg17HK+TBdJ7vUYvtXeMCBtkP8dQYXe+iLRXInHOmDrRF
+        z7guCm/4bmk0jSTYV3OYjJfyqzlqGh4=
+X-Google-Smtp-Source: AK7set9TqH8VUi+kjopqFuIBCE1R1HwrQp+win83nBl8R+9Crev7UHJ2ak3q+d3eLwuc2lgogRXVIA==
+X-Received: by 2002:ac8:5c83:0:b0:3a8:e35:258f with SMTP id r3-20020ac85c83000000b003a80e35258fmr28512344qta.31.1678224233488;
+        Tue, 07 Mar 2023 13:23:53 -0800 (PST)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id q28-20020a05620a2a5c00b007422fd3009esm10346878qkp.20.2023.03.07.13.23.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Mar 2023 13:23:52 -0800 (PST)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>
+Subject: [PATCH net-next 0/2] sctp: add another two stream schedulers
+Date:   Tue,  7 Mar 2023 16:23:25 -0500
+Message-Id: <cover.1678224012.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-References: <e8228f0048977456466bc33b42600e929fedd319.1678213651.git.pabeni@redhat.com>
- <CO1PR11MB5089C96D23A1D6F0F121716DD6B79@CO1PR11MB5089.namprd11.prod.outlook.com>
-In-Reply-To: <CO1PR11MB5089C96D23A1D6F0F121716DD6B79@CO1PR11MB5089.namprd11.prod.outlook.com>
-From:   Soheil Hassas Yeganeh <soheil@google.com>
-Date:   Tue, 7 Mar 2023 16:21:27 -0500
-Message-ID: <CACSApvY_pj-tReFEpoH5e6xvUuk2ih9Nc+cc6AZzd5yvFCiTQg@mail.gmail.com>
-Subject: Re: [PATCH v4 RESEND] epoll: use refcount to reduce ep_mutex contention
-To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Carlos Maiolino <cmaiolino@redhat.com>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Christian Brauner <brauner@kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,83 +71,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 7, 2023 at 4:17=E2=80=AFPM Keller, Jacob E <jacob.e.keller@inte=
-l.com> wrote:
->
->
->
-> > -----Original Message-----
-> > From: Paolo Abeni <pabeni@redhat.com>
-> > Sent: Tuesday, March 7, 2023 10:47 AM
-> > To: netdev@vger.kernel.org
-> > Cc: Soheil Hassas Yeganeh <soheil@google.com>; Al Viro
-> > <viro@zeniv.linux.org.uk>; Carlos Maiolino <cmaiolino@redhat.com>; Eric
-> > Biggers <ebiggers@kernel.org>; Keller, Jacob E <jacob.e.keller@intel.co=
-m>;
-> > Andrew Morton <akpm@linux-foundation.org>; Jens Axboe <axboe@kernel.dk>=
-;
-> > Christian Brauner <brauner@kernel.org>; linux-fsdevel@vger.kernel.org
-> > Subject: [PATCH v4 RESEND] epoll: use refcount to reduce ep_mutex conte=
-ntion
-> >
-> > We are observing huge contention on the epmutex during an http
-> > connection/rate test:
-> >
-> >  83.17% 0.25%  nginx            [kernel.kallsyms]         [k]
-> > entry_SYSCALL_64_after_hwframe
-> > [...]
-> >            |--66.96%--__fput
-> >                       |--60.04%--eventpoll_release_file
-> >                                  |--58.41%--__mutex_lock.isra.6
-> >                                            |--56.56%--osq_lock
-> >
-> > The application is multi-threaded, creates a new epoll entry for
-> > each incoming connection, and does not delete it before the
-> > connection shutdown - that is, before the connection's fd close().
-> >
-> > Many different threads compete frequently for the epmutex lock,
-> > affecting the overall performance.
-> >
-> > To reduce the contention this patch introduces explicit reference count=
-ing
-> > for the eventpoll struct. Each registered event acquires a reference,
-> > and references are released at ep_remove() time.
-> >
-> > Additionally, this introduces a new 'dying' flag to prevent races betwe=
-en
-> > the EP file close() and the monitored file close().
-> > ep_eventpoll_release() marks, under f_lock spinlock, each epitem as bef=
-ore
-> > removing it, while EP file close() does not touch dying epitems.
-> >
-> > The eventpoll struct is released by whoever - among EP file close() and
-> > and the monitored file close() drops its last reference.
-> >
-> > With all the above in place, we can drop the epmutex usage at disposal =
-time.
-> >
-> > Overall this produces a significant performance improvement in the
-> > mentioned connection/rate scenario: the mutex operations disappear from
-> > the topmost offenders in the perf report, and the measured connections/=
-rate
-> > grows by ~60%.
-> >
-> > To make the change more readable this additionally renames ep_free() to
-> > ep_clear_and_put(), and moves the actual memory cleanup in a separate
-> > ep_free() helper.
-> >
-> > Tested-by: Xiumei Mu <xmu@redhiat.com>
-> > Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
-> > Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> > ---
-> > This is a repost of v4, with no changes. Kindly asking if FS maintainer=
-s
-> > could have a look.
->
-> This (still) looks good to me.
->
-> Thanks,
-> Jake
+All SCTP stream schedulers are defined in rfc8260#section-3,
+First-Come First-Served, Round-Robin and Priority-Based
+Schedulers are already added in kernel.
 
-Thank you! Still looks great to me as well.
+This patchset adds another two schedulers: Fair Capacity
+Scheduler and Weighted Fair Queueing Scheduler.
+
+Note that the left one "Round-Robin Scheduler per Packet"
+Scheduler is not implemented by this patch, as it's still
+intrusive to be added in the current SCTP kernel code.
+
+Xin Long (2):
+  sctp: add fair capacity stream scheduler
+  sctp: add weighted fair queueing stream scheduler
+
+ include/net/sctp/stream_sched.h |   2 +
+ include/net/sctp/structs.h      |   8 ++
+ include/uapi/linux/sctp.h       |   4 +-
+ net/sctp/Makefile               |   3 +-
+ net/sctp/stream_sched.c         |   2 +
+ net/sctp/stream_sched_fc.c      | 225 ++++++++++++++++++++++++++++++++
+ 6 files changed, 242 insertions(+), 2 deletions(-)
+ create mode 100644 net/sctp/stream_sched_fc.c
+
+-- 
+2.39.1
+
