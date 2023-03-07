@@ -2,86 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C03D36AE3A6
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 16:01:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64E5D6AE3B0
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 16:02:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229591AbjCGPBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 10:01:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37226 "EHLO
+        id S229544AbjCGPCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 10:02:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229622AbjCGPAj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 10:00:39 -0500
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E886A64A93
-        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 06:48:44 -0800 (PST)
-Received: by mail-qt1-x836.google.com with SMTP id s12so14465694qtq.11
-        for <netdev@vger.kernel.org>; Tue, 07 Mar 2023 06:48:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678200524;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=z8x32D9h0pju5TkkSZQKI9UvgpiHIF5+KOfXOJdQ4xE=;
-        b=dMJE444iF3vsNt1758LtjStetsT1jO1fO/3jFBoo9DYFJ+iKj0fkuS+Dpgb38WgBeb
-         AizihWyiqm+doZpZViFTsO/u6YGW1L96LucWL7XA3GFTB6K5Zpg9PzTN43BLU8SLEoNg
-         g34tMccq8aC+JYi0D5a8k5DOOmm/dvXthR3JgMTRTGsEuCuLYZ7JtEujY5ab4j2+472D
-         prYi34O7xst1K2RsPpGLrrJ43HFDGxUhBRjU4a96o357VMS2rtKhzFj6eZVCCPkYno1D
-         IpCdOgL0AaVM1LT6DwOdsDMGGPHFByD3l7muQ/c0EQ/+v7IwyKkujGVASKFzxIk+mu8o
-         kKEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678200524;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=z8x32D9h0pju5TkkSZQKI9UvgpiHIF5+KOfXOJdQ4xE=;
-        b=WxH4hImdAECVoQLHpLpwYi71pOwT8koLEdcNlu9tEwpCn5xlqb/9+u9o62hYIAxXGn
-         edFbfLiaAJBr4U24wRqqmsNUlpZ4a6I2oTHigeBSzIo0Ys0CVrOueTWkY9o22rJelGM+
-         3hglLrm6B6tZtzRIeRiJD9HjAwayRZl+TaFFtalWyGPp5E+aNQM9OO8eFzXOzjiCHxLC
-         u54XLiCI3y0Y6a6FofLPwOkXf+xbh4Nd7TP++Mgb9wvQfeQ9VV/xpc4rH94qNrn3F/0U
-         G4BnQTV531jnICAnHvg/14LIZTZx1atT9u0YsNURIIsIfkrjIhRE/88/2repcp5NuWte
-         varQ==
-X-Gm-Message-State: AO0yUKWgoGKNm/VvdsLsb4QhdGTNovwqqNrOq2Eal2GPE1a9evwjADHV
-        E1B94mg/iVJkQeFSGnQkSLg=
-X-Google-Smtp-Source: AK7set+qUhuM3W3h8D7fDdCQ1fIzWcI1ZcUZOfIBwcY57Pnsb1DNalolqzmSFnqs9H1mFvaH+nL1RQ==
-X-Received: by 2002:ac8:7c56:0:b0:3bf:e415:5cc3 with SMTP id o22-20020ac87c56000000b003bfe4155cc3mr22318089qtv.58.1678200524022;
-        Tue, 07 Mar 2023 06:48:44 -0800 (PST)
-Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
-        by smtp.gmail.com with ESMTPSA id 136-20020a37088e000000b00742a252ba06sm9579582qki.135.2023.03.07.06.48.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Mar 2023 06:48:43 -0800 (PST)
-Date:   Tue, 07 Mar 2023 09:48:43 -0500
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     Vadim Fedorenko <vadfed@meta.com>, Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S229926AbjCGPC0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 10:02:26 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C75AC92BD1;
+        Tue,  7 Mar 2023 06:50:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=52aUlbvng8ZlSp5SHAYvGoE7nONOcBEC7hFRcVN2iRc=; b=FyDOP/6Gvkyu/VtmHz7xOyXh6N
+        AVAQjso/fCR2NkcrGWG/0WXOBz2EEl6kBfShcAPGNFrDbwOeNQ6r9ffrXQ70EEpKKwVfvwwYMz8Lv
+        lY5O/DBsba4+5xTophqwCMhXFI7jqU0skSMLxFWo88r/q10zC15tNK8Gxb+XY8BZ73MOCaXqE58zA
+        YLuBQriaWisGZl0bKkeIzQZrT66uDV1OeIjP2cN48k8gR8ga2Nv7KTl1XKZgdp+py0B+AoV3xGxxt
+        jsvjv3M85Rn9A0G/M0ems4WJIL/TDxVxXKM6H9idA8wTH+VHcdGpgTJkxGqzI3TuVaW3dNrcp/nZQ
+        nb6hlXLQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47312)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pZYeD-0000Ym-So; Tue, 07 Mar 2023 14:50:37 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pZYeC-0001c8-3F; Tue, 07 Mar 2023 14:50:36 +0000
+Date:   Tue, 7 Mar 2023 14:50:36 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Sean Anderson <sean.anderson@seco.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@kernel.org>
-Cc:     Vadim Fedorenko <vadfed@meta.com>,
-        Vadim Fedorenko <vadim.fedorenko@linux.dev>,
-        netdev@vger.kernel.org
-Message-ID: <64074ecb4c538_edbc4208f1@willemb.c.googlers.com.notmuch>
-In-Reply-To: <20230306160738.4116342-1-vadfed@meta.com>
-References: <20230306160738.4116342-1-vadfed@meta.com>
-Subject: RE: [PATCH net-next] net-timestamp: extend SOF_TIMESTAMPING_OPT_ID to
- HW timestamps
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next] net: mdio: Add netlink interface
+Message-ID: <ZAdPPAL549lg1uFG@shell.armlinux.org.uk>
+References: <20230306204517.1953122-1-sean.anderson@seco.com>
+ <7a02294e-bf50-4399-9e68-1235ba24a381@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7a02294e-bf50-4399-9e68-1235ba24a381@lunn.ch>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vadim Fedorenko wrote:
-> When the feature was added it was enabled for SW timestamps only but
-> with current hardware the same out-of-order timestamps can be seen.
-> Let's expand the area for the feature to all types of timestamps.
+On Tue, Mar 07, 2023 at 03:22:46PM +0100, Andrew Lunn wrote:
+> > +		switch ((enum mdio_nl_op)insn->op) {
+> > +		case MDIO_NL_OP_READ:
+> > +			phy_id = __arg_ri(insn->arg0, regs);
+> > +			prtad = mdio_phy_id_prtad(phy_id);
+> > +			devad = mdio_phy_id_devad(phy_id);
+> > +			reg = __arg_ri(insn->arg1, regs);
+> > +
+> > +			if (mdio_phy_id_is_c45(phy_id))
+> > +				ret = __mdiobus_c45_read(xfer->mdio, prtad,
+> > +							 devad, reg);
+> > +			else
+> > +				ret = __mdiobus_read(xfer->mdio, phy_id, reg);
 > 
-> Signed-off-by: Vadim Fedorenko <vadfed@meta.com>
+> The application should say if it want to do C22 or C45. As you said in
+> the cover note, the ioctl interface is limiting when there is no PHY,
+> so you are artificially adding the same restriction here. Also, you
+> might want to do C45 on a C22 PHY, e.g. to access EEE registers. Plus
+> you could consider adding C45 over C22 here.
 
-Reviewed-by: Willem de Bruijn <willemb@google.com>
+Remembering of course that C45-over-C22 on a device that isn't a PHY
+could end up causing havoc, but then if you are using this interface,
+you already have the gun pointing at your foot... and if you go and
+try C45-over-C22 to scan a MDIO bus, you'd definitely be pulling the
+trigger too.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
