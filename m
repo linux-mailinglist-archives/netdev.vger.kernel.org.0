@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4F3B6AF7AA
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 22:31:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A53736AF7AB
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 22:31:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229956AbjCGVbh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 16:31:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39072 "EHLO
+        id S231484AbjCGVbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 16:31:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbjCGVbg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 16:31:36 -0500
-Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23119193FA;
-        Tue,  7 Mar 2023 13:31:35 -0800 (PST)
-Received: by mail-qv1-xf31.google.com with SMTP id bo10so9855150qvb.12;
-        Tue, 07 Mar 2023 13:31:35 -0800 (PST)
+        with ESMTP id S229548AbjCGVbh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 16:31:37 -0500
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 278D35849A;
+        Tue,  7 Mar 2023 13:31:36 -0800 (PST)
+Received: by mail-qv1-xf2e.google.com with SMTP id ne1so9875744qvb.9;
+        Tue, 07 Mar 2023 13:31:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678224694;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=yff8KdMSGC1/YkFySy35NRQTKZ1OPFf9I0TG1c87sSE=;
-        b=HU3FaK2P7bRH7wZ7OywsU/y5xZJSV2dYN6+VOAN3B20pi1Tsk5p8QiI/26+0g5ve1V
-         0Gr95u5b4rUPw5iksmbAdUO6VbVEJCCfEO18I2RKMRGteFTN6cBwVJnbumb6qOdZIhQ7
-         QO38xUNh0v0hShg02qzNx3+W1281g9jI3lI4jR9OUJ/s2dbBqpNsqJ3IACIaRxbzivH9
-         szkQnsib1RnK1UmUgxo97kozt42kkyB1aUVu2uRGNyCxWNw7GRGVWAHCIiHsan+FEmQh
-         fqkqwp96FCLAcNCW+bDqiLGcmXBRy84pXSs0uWjF8wH7vahQFm3t5wJsOBpWXSP0HHT1
-         bomQ==
+        d=gmail.com; s=20210112; t=1678224695;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uR5PleXq3LjItpttm0fNa6NbIkqQPJZjrKTMGwB87kI=;
+        b=NELzoh+VxKU1GW1YiHoFgVpLaf4QF/XIJn5RPw6pbcMhUB9t1yXmpO4oHqd3ivg0Pd
+         PqDStIrJSblmG+LyPtp8nzA54a34xfj4jGib0KAqNsM2ROqB5F41S7cMvvL9Q+DVlI/n
+         JZ9hKto14a8B23LCvPb7gngXcjDqcWm5eAxg4pmgMhqIqsHr2iRV/M9cdk8AOk1LoQzX
+         UjYr1tCrIsURiGvIVKPGAR/fc6HDSfMuy8Xj6PVp2VL/baMRJrP1JuFOT58VLStCXNmg
+         Pr0c+XbIPENdegaflVETd3PofTuiNXdvc87/pqTaEX6HXZcoHVxktDR43ZAFKqbi0Pfc
+         qYsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678224694;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=yff8KdMSGC1/YkFySy35NRQTKZ1OPFf9I0TG1c87sSE=;
-        b=fcjzmBAFAfv4FU5zasA24SjwONR5OX5g2V489BBN7CGgOAV3z1XEeMSX9OWcGmdKeO
-         rgJ7re8J8M8SvKpvmUaQ1zKJIZoHGZKCma5fRjILc4RRJtdXn0ClpWTLbsTtW4E9u67C
-         a4KmKiPlu8pIk6i3oPKDJlq+H60o5UVSx7fiU552zialHmSWWzwpw/zYs3qmbVmjCAyn
-         Crpgn9+/5ij/K0VsIELK7GoNCGnLRaDVe+Wzh+YlJr0YhH7AHMSLEI+Pt98kZ4RbjqjY
-         KPYe1eeokCSZ2T/Ge10FVwmzoEqAFuIYE2cHJmvMHTYE7VIVRMRTLAxdxIK0yZdrP9eZ
-         2GZQ==
-X-Gm-Message-State: AO0yUKWs9W0ejyhnwLADUhyOApQpGonZFlnLjwksSBZO4E5xaNq6p3eu
-        bD/b2seY/5jufGrZFts4fBaA37EIZtxiqw==
-X-Google-Smtp-Source: AK7set+TK8LOQqN9O1w7gkWBGBBNWkYcM9GXfigbB9bjt6IOky/gWL/XtAIGowQqrEHFhSYTcYQzcQ==
-X-Received: by 2002:a05:6214:1c4c:b0:56b:ec30:67eb with SMTP id if12-20020a0562141c4c00b0056bec3067ebmr28980617qvb.39.1678224694019;
-        Tue, 07 Mar 2023 13:31:34 -0800 (PST)
+        d=1e100.net; s=20210112; t=1678224695;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=uR5PleXq3LjItpttm0fNa6NbIkqQPJZjrKTMGwB87kI=;
+        b=HtQ2xZWyCCnOZEKV6OniUbKZIAXIpczhWjJkBl6iAZgEEiOvUkrShv0q6XQIP+hC2b
+         IINmERQNKKFQh8VQ0bc93hqwI/KLIsQBO6zwtjGrpGDClEGfj3D2ugC01qBiTTxk0LJY
+         N930COaeDHJ36NnLQGe+tcu7aYm2VLUtTCHQcS3ijgbErLUy/1/FK7vAEAe+cbtoNS9o
+         LCklmxMvjlvXq9b9ZIk6KHLrRAQGFTK2IcaW3EhLtudRInDncqFBr+yRpZbTlAJoaSrx
+         OWzlfvRLOZpdxRz85FcicvAVOe1huwMeARDPuwMdhcGjR5sQ7/Y805RoWxhZP+xsHtsS
+         EV9A==
+X-Gm-Message-State: AO0yUKWIlMBMeV87vNDsEtg/soBB2cMWJ12wN/zdFs7cF+Ijrvd0FD2X
+        IaiE/6JTrHdS0YN1Xdu85/vkmBmqRq8DXA==
+X-Google-Smtp-Source: AK7set+qSLYW48OfgiFsnrkFXCbJKrevbDD9p/ZIaO8AU/oCYixzGkd1Qgh2BUPEM51jf5EGqnRL/Q==
+X-Received: by 2002:a05:6214:c46:b0:56e:a756:912 with SMTP id r6-20020a0562140c4600b0056ea7560912mr24262145qvj.52.1678224695035;
+        Tue, 07 Mar 2023 13:31:35 -0800 (PST)
 Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id r125-20020a374483000000b006fcb77f3bd6sm10269329qka.98.2023.03.07.13.31.32
+        by smtp.gmail.com with ESMTPSA id r125-20020a374483000000b006fcb77f3bd6sm10269329qka.98.2023.03.07.13.31.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Mar 2023 13:31:33 -0800 (PST)
+        Tue, 07 Mar 2023 13:31:34 -0800 (PST)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     netfilter-devel@vger.kernel.org,
         network dev <netdev@vger.kernel.org>
@@ -61,10 +62,12 @@ Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
         Pravin B Shelar <pshelar@ovn.org>,
         Aaron Conole <aconole@redhat.com>,
         Simon Horman <simon.horman@corigine.com>
-Subject: [PATCHv2 nf-next 0/6] netfilter: handle ipv6 jumbo packets properly for bridge ovs and tc
-Date:   Tue,  7 Mar 2023 16:31:26 -0500
-Message-Id: <cover.1678224658.git.lucien.xin@gmail.com>
+Subject: [PATCHv2 nf-next 1/6] netfilter: bridge: call pskb_may_pull in br_nf_check_hbh_len
+Date:   Tue,  7 Mar 2023 16:31:27 -0500
+Message-Id: <1395e96f22b8eb3abb0593af644ac687ac746591.1678224658.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.39.1
+In-Reply-To: <cover.1678224658.git.lucien.xin@gmail.com>
+References: <cover.1678224658.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -77,48 +80,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently pskb_trim_rcsum() is always done on the RX path. However, IPv6
-jumbo packets hide the real packet len in the Hop-by-hop option header,
-which should be parsed before doing the trim.
+When checking Hop-by-hop option header, if the option data is in
+nonlinear area, it should do pskb_may_pull instead of discarding
+the skb as a bad IPv6 packet.
 
-In ip6_rcv_core() it calls ipv6_parse_hopopts() to handle the Hop-by-hop
-option header then do pskb_trim_rcsum(). The similar process should also
-be done properly before pskb_trim_rcsum() on the RX path of bridge and
-openvswitch and tc.
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
+Reviewed-by: Aaron Conole <aconole@redhat.com>
+---
+ net/bridge/br_netfilter_ipv6.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-This patchset improves the function handling the Hop-by-hop option header
-in bridge, and moves this function into netfilter utils, and then uses it
-in nf_conntrack_ovs for openvswitch and and tc.
-
-Note that this patch is especially needed after the IPv6 BIG TCP was
-supported in kernel, which is using IPv6 Jumbo packets, and the last
-patch adds a big tcp selftest, which also covers it.
-
-v1->v2:
-  - use the proper cast type in Patch 1, as Simon suggested.
-  - simplify the return path in Patch 2, as Simon suggested.
-  - move pkt_len definition into a smaller scope in Patch 3,
-    as Simon suggested.
-  - move err definition into a smaller scope in Patch 5, as
-    Simon suggested.
-
-Xin Long (6):
-  netfilter: bridge: call pskb_may_pull in br_nf_check_hbh_len
-  netfilter: bridge: check len before accessing more nh data
-  netfilter: bridge: move pskb_trim_rcsum out of br_nf_check_hbh_len
-  netfilter: move br_nf_check_hbh_len to utils
-  netfilter: use nf_ip6_check_hbh_len in nf_ct_skb_network_trim
-  selftests: add a selftest for big tcp
-
- include/linux/netfilter_ipv6.h         |   2 +
- net/bridge/br_netfilter_ipv6.c         |  79 ++---------
- net/netfilter/nf_conntrack_ovs.c       |  11 +-
- net/netfilter/utils.c                  |  52 +++++++
- tools/testing/selftests/net/Makefile   |   1 +
- tools/testing/selftests/net/big_tcp.sh | 180 +++++++++++++++++++++++++
- 6 files changed, 254 insertions(+), 71 deletions(-)
- create mode 100755 tools/testing/selftests/net/big_tcp.sh
-
+diff --git a/net/bridge/br_netfilter_ipv6.c b/net/bridge/br_netfilter_ipv6.c
+index 6b07f30675bb..afd1c718b683 100644
+--- a/net/bridge/br_netfilter_ipv6.c
++++ b/net/bridge/br_netfilter_ipv6.c
+@@ -45,14 +45,18 @@
+  */
+ static int br_nf_check_hbh_len(struct sk_buff *skb)
+ {
+-	unsigned char *raw = (u8 *)(ipv6_hdr(skb) + 1);
++	int len, off = sizeof(struct ipv6hdr);
++	unsigned char *nh;
+ 	u32 pkt_len;
+-	const unsigned char *nh = skb_network_header(skb);
+-	int off = raw - nh;
+-	int len = (raw[1] + 1) << 3;
+ 
+-	if ((raw + len) - skb->data > skb_headlen(skb))
++	if (!pskb_may_pull(skb, off + 8))
+ 		goto bad;
++	nh = (unsigned char *)(ipv6_hdr(skb) + 1);
++	len = (nh[1] + 1) << 3;
++
++	if (!pskb_may_pull(skb, off + len))
++		goto bad;
++	nh = skb_network_header(skb);
+ 
+ 	off += 2;
+ 	len -= 2;
 -- 
 2.39.1
 
