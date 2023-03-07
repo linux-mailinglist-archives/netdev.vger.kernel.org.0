@@ -2,77 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B6E146AF7B1
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 22:32:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D84976AF7E0
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 22:44:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229715AbjCGVbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 16:31:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39304 "EHLO
+        id S231163AbjCGVoP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 16:44:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231510AbjCGVbp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 16:31:45 -0500
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E60DEA337C;
-        Tue,  7 Mar 2023 13:31:40 -0800 (PST)
-Received: by mail-qt1-x82b.google.com with SMTP id z6so16145067qtv.0;
-        Tue, 07 Mar 2023 13:31:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678224700;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=npyb8A+8myxQM9keePhgQ8S8LvCjZg2rFBholC2/OAI=;
-        b=UM7gO9FlwmU51A/EieFL0ZnH4ggdhv8K0d5VlBKRQezihV5+zcR4NzjAQYTGUdBe/z
-         N//nGapQsWyhPVAaq46VotMzIuZqP5PaXLnE24E4aRZBbxOApm10sFBY5m9IWlphIDw2
-         qmcoIkEuIubtfBF3LCOhsac5u4QBLzuw+ibVqUZNrQM+N+fVVTMxsNyj4rxa2JJciSWC
-         gedDdAflm22XgJ0OLGQ7vbqSbuFR1xOi1m/DU6jF9uyJmYLo60AzLWx4i55WJmcYdtNX
-         JJXjYAyejyxnO0b4m50heulsn3/JcKaDn7gcrDS/fAxuKiQ2Jvgr6J+JYX2psvW+L9mU
-         sCow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678224700;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=npyb8A+8myxQM9keePhgQ8S8LvCjZg2rFBholC2/OAI=;
-        b=CmOS2FXbJMaLo8DJPOVCugADHnOJ2LUgtccCgomEV1sy5eFw94Kd+Dh/1ryBCMSWoe
-         JjGnGCVwHievuWXgIey/hKL7VGTwi5eEcVFY+cB+rO8dIoOOZ8kOthY7y7q9Bsm2HxD7
-         s+C1jwoQBarY6TEHVZYPUR39w+mu8PAAtXW8kVTfhHeEhRdsTMOhSF79nvT9vpHb6JRF
-         ODj52pcvio4xDAw6IiV6H0UezW5wtH7OHwEduXCTAJZUcoyc6JvsXezjldKkdppabYRc
-         b8HyMjN1fYgx0NJeVSH3Dd1+HI0nccBUZ1R1MHi6Rd68gToOuOsgKchaUzwY4dAZJIng
-         t+lQ==
-X-Gm-Message-State: AO0yUKU7RM/XsnnOshPwiTBTo7H6rzrOE0MWl7oHCR+O2ezhylPPzNhy
-        bUgV0WhpVRhrSqLE/+GPBu5uGZz+9H2Z7A==
-X-Google-Smtp-Source: AK7set/41hOVA0Rn5eLDLbkXaQGgu3y9AAx3bFR3uW1Lh8JPg0LmaouE6FF0ryqFwk5IIExs3Dap6A==
-X-Received: by 2002:a05:622a:d6:b0:3bf:a5fb:6d6e with SMTP id p22-20020a05622a00d600b003bfa5fb6d6emr27023819qtw.29.1678224700221;
-        Tue, 07 Mar 2023 13:31:40 -0800 (PST)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id r125-20020a374483000000b006fcb77f3bd6sm10269329qka.98.2023.03.07.13.31.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Mar 2023 13:31:39 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     netfilter-devel@vger.kernel.org,
-        network dev <netdev@vger.kernel.org>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>, davem@davemloft.net,
-        kuba@kernel.org, Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Aaron Conole <aconole@redhat.com>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: [PATCHv2 nf-next 6/6] selftests: add a selftest for big tcp
-Date:   Tue,  7 Mar 2023 16:31:32 -0500
-Message-Id: <c1ae6bb8f9c67c14437c7714efed7fd2ec551258.1678224658.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.39.1
-In-Reply-To: <cover.1678224658.git.lucien.xin@gmail.com>
-References: <cover.1678224658.git.lucien.xin@gmail.com>
+        with ESMTP id S229778AbjCGVoO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 16:44:14 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AFD49FBFD;
+        Tue,  7 Mar 2023 13:44:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1678225451; x=1709761451;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Zj0qI8CAUK+aElkXSjjWKiWXVNXm/fVmzoMI8q5h2QM=;
+  b=whUxNtEe/En/x9AjL2yR/ucGcgSCoaVNDlu2F1FlPcMZnE8WP/W2y17w
+   xtQkPJOihEHJrgZVcWcEgen/RnU7lNZCaBIHA6ImxmlDzZzIdCCHUSoLw
+   MZW9GFEh2GQlhsIcIcn8nNYOdbphGHS/BX3h+KJ1H4sFEbElPBfVdCKTO
+   rrsbgvpPacltevBp/zHacb4BNtXK3wRCHlAOZNyETutGWzlq7/rLRCd2N
+   h83+78C+/el/TQwfbZkGAHOE3R2EVCeuUa+gRCvXbN/cWM8qViqPrRaKZ
+   prZW/2B0GeszwRhsnccy77ewf/BiGPvj0DcbDsCm8DhpM1HA2/GMAlOCG
+   w==;
+X-IronPort-AV: E=Sophos;i="5.98,242,1673938800"; 
+   d="scan'208";a="204181945"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Mar 2023 14:44:09 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Tue, 7 Mar 2023 14:44:07 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Tue, 7 Mar 2023 14:44:05 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <richardcochran@gmail.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v3] net: phy: micrel: Add support for PTP_PF_PEROUT for lan8841
+Date:   Tue, 7 Mar 2023 22:44:02 +0100
+Message-ID: <20230307214402.793057-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.38.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,222 +61,502 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This test runs on the client-router-server topo, and monitors the traffic
-on the RX devices of router and server while sending BIG TCP packets with
-netperf from client to server. Meanwhile, it changes 'tso' on the TX devs
-and 'gro' on the RX devs. Then it checks if any BIG TCP packets appears
-on the RX devs with 'ip/ip6tables -m length ! --length 0:65535' for each
-case.
+Lan8841 has 10 GPIOs and it has 2 events(EVENT_A and EVENT_B). It is
+possible to assigned the 2 events to any of the GPIOs, but a GPIO can
+have only 1 event at a time.
+These events are used to generate periodic signals. It is possible to
+configure the length, the start time and the period of the signal by
+configuring the event.
+Currently the SW uses only EVENT_A to generate the perout.
 
-Note that we also add tc action ct in link1 ingress to cover the ipv6
-jumbo packets process in nf_ct_skb_network_trim() of nf_conntrack_ovs.
+These events are generated by comparing the target time with the PHC
+time. In case the PHC time is changed to a value bigger than the target
+time + reload time, then it would generate only 1 event and then it
+would stop because target time + reload time is small than PHC time.
+Therefore it is required to change also the target time every time when
+the PHC is changed. The same will apply also when the PHC time is
+changed to a smaller value.
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Reviewed-by: Aaron Conole <aconole@redhat.com>
+This was tested using:
+testptp -L 6,2
+testptp -p 1000000000 -w 200000000
+
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- tools/testing/selftests/net/Makefile   |   1 +
- tools/testing/selftests/net/big_tcp.sh | 180 +++++++++++++++++++++++++
- 2 files changed, 181 insertions(+)
- create mode 100755 tools/testing/selftests/net/big_tcp.sh
+v2->v3:
+- make sure not to or the return codes and check each one individually
 
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 6cd8993454d7..099741290184 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -48,6 +48,7 @@ TEST_PROGS += l2_tos_ttl_inherit.sh
- TEST_PROGS += bind_bhash.sh
- TEST_PROGS += ip_local_port_range.sh
- TEST_PROGS += rps_default_mask.sh
-+TEST_PROGS += big_tcp.sh
- TEST_PROGS_EXTENDED := in_netns.sh setup_loopback.sh setup_veth.sh
- TEST_PROGS_EXTENDED += toeplitz_client.sh toeplitz.sh
- TEST_GEN_FILES =  socket nettest
-diff --git a/tools/testing/selftests/net/big_tcp.sh b/tools/testing/selftests/net/big_tcp.sh
-new file mode 100755
-index 000000000000..cde9a91c4797
---- /dev/null
-+++ b/tools/testing/selftests/net/big_tcp.sh
-@@ -0,0 +1,180 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Testing For IPv4 and IPv6 BIG TCP.
-+# TOPO: CLIENT_NS (link0)<--->(link1) ROUTER_NS (link2)<--->(link3) SERVER_NS
+v1->v2:
+- simplify code using phy_set/clear_bits_mmd and phy_modify_mmd
+- check the return value of phy_*_mmd functions and act upon it
+- use pr_warn_ratelimited instead of phydev_warn
+- use devm_kcalloc instead of devm_kmalloc_array
+- move code around to not have forward declarations
+---
+ drivers/net/phy/micrel.c | 391 ++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 389 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index 2c84fccef4f64..e5b2af69ac033 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -318,6 +318,7 @@ struct kszphy_ptp_priv {
+ 	struct ptp_clock_info ptp_clock_info;
+ 	/* Lock for ptp_clock */
+ 	struct mutex ptp_lock;
++	struct ptp_pin_desc *pin_config;
+ };
+ 
+ struct kszphy_priv {
+@@ -3658,6 +3659,77 @@ static int lan8841_hwtstamp(struct mii_timestamper *mii_ts, struct ifreq *ifr)
+ 	return copy_to_user(ifr->ifr_data, &config, sizeof(config)) ? -EFAULT : 0;
+ }
+ 
++#define LAN8841_EVENT_A		0
++#define LAN8841_EVENT_B		1
++#define LAN8841_PTP_LTC_TARGET_SEC_HI(event)	((event) == LAN8841_EVENT_A ? 278 : 288)
++#define LAN8841_PTP_LTC_TARGET_SEC_LO(event)	((event) == LAN8841_EVENT_A ? 279 : 289)
++#define LAN8841_PTP_LTC_TARGET_NS_HI(event)	((event) == LAN8841_EVENT_A ? 280 : 290)
++#define LAN8841_PTP_LTC_TARGET_NS_LO(event)	((event) == LAN8841_EVENT_A ? 281 : 291)
 +
-+CLIENT_NS=$(mktemp -u client-XXXXXXXX)
-+CLIENT_IP4="198.51.100.1"
-+CLIENT_IP6="2001:db8:1::1"
++static int lan8841_ptp_set_target(struct kszphy_ptp_priv *ptp_priv, u8 event,
++				  s64 sec, u32 nsec)
++{
++	struct phy_device *phydev = ptp_priv->phydev;
++	int ret;
 +
-+SERVER_NS=$(mktemp -u server-XXXXXXXX)
-+SERVER_IP4="203.0.113.1"
-+SERVER_IP6="2001:db8:2::1"
++	ret = phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_TARGET_SEC_HI(event),
++			    upper_16_bits(sec));
++	if (ret)
++		return ret;
 +
-+ROUTER_NS=$(mktemp -u router-XXXXXXXX)
-+SERVER_GW4="203.0.113.2"
-+CLIENT_GW4="198.51.100.2"
-+SERVER_GW6="2001:db8:2::2"
-+CLIENT_GW6="2001:db8:1::2"
++	ret = phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_TARGET_SEC_LO(event),
++			    lower_16_bits(sec));
++	if (ret)
++		return ret;
 +
-+MAX_SIZE=128000
-+CHK_SIZE=65535
++	ret = phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_TARGET_NS_HI(event) & 0x3fff,
++			    upper_16_bits(nsec));
++	if (ret)
++		return ret;
 +
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
-+setup() {
-+	ip netns add $CLIENT_NS
-+	ip netns add $SERVER_NS
-+	ip netns add $ROUTER_NS
-+	ip -net $ROUTER_NS link add link1 type veth peer name link0 netns $CLIENT_NS
-+	ip -net $ROUTER_NS link add link2 type veth peer name link3 netns $SERVER_NS
-+
-+	ip -net $CLIENT_NS link set link0 up
-+	ip -net $CLIENT_NS link set link0 mtu 1442
-+	ip -net $CLIENT_NS addr add $CLIENT_IP4/24 dev link0
-+	ip -net $CLIENT_NS addr add $CLIENT_IP6/64 dev link0 nodad
-+	ip -net $CLIENT_NS route add $SERVER_IP4 dev link0 via $CLIENT_GW4
-+	ip -net $CLIENT_NS route add $SERVER_IP6 dev link0 via $CLIENT_GW6
-+	ip -net $CLIENT_NS link set dev link0 \
-+		gro_ipv4_max_size $MAX_SIZE gso_ipv4_max_size $MAX_SIZE
-+	ip -net $CLIENT_NS link set dev link0 \
-+		gro_max_size $MAX_SIZE gso_max_size $MAX_SIZE
-+	ip net exec $CLIENT_NS sysctl -wq net.ipv4.tcp_window_scaling=10
-+
-+	ip -net $ROUTER_NS link set link1 up
-+	ip -net $ROUTER_NS link set link2 up
-+	ip -net $ROUTER_NS addr add $CLIENT_GW4/24 dev link1
-+	ip -net $ROUTER_NS addr add $CLIENT_GW6/64 dev link1 nodad
-+	ip -net $ROUTER_NS addr add $SERVER_GW4/24 dev link2
-+	ip -net $ROUTER_NS addr add $SERVER_GW6/64 dev link2 nodad
-+	ip -net $ROUTER_NS link set dev link1 \
-+		gro_ipv4_max_size $MAX_SIZE gso_ipv4_max_size $MAX_SIZE
-+	ip -net $ROUTER_NS link set dev link2 \
-+		gro_ipv4_max_size $MAX_SIZE gso_ipv4_max_size $MAX_SIZE
-+	ip -net $ROUTER_NS link set dev link1 \
-+		gro_max_size $MAX_SIZE gso_max_size $MAX_SIZE
-+	ip -net $ROUTER_NS link set dev link2 \
-+		gro_max_size $MAX_SIZE gso_max_size $MAX_SIZE
-+	# test for nf_ct_skb_network_trim in nf_conntrack_ovs used by TC ct action.
-+	ip net exec $ROUTER_NS tc qdisc add dev link1 ingress
-+	ip net exec $ROUTER_NS tc filter add dev link1 ingress \
-+		proto ip flower ip_proto tcp action ct
-+	ip net exec $ROUTER_NS tc filter add dev link1 ingress \
-+		proto ipv6 flower ip_proto tcp action ct
-+	ip net exec $ROUTER_NS sysctl -wq net.ipv4.ip_forward=1
-+	ip net exec $ROUTER_NS sysctl -wq net.ipv6.conf.all.forwarding=1
-+
-+	ip -net $SERVER_NS link set link3 up
-+	ip -net $SERVER_NS addr add $SERVER_IP4/24 dev link3
-+	ip -net $SERVER_NS addr add $SERVER_IP6/64 dev link3 nodad
-+	ip -net $SERVER_NS route add $CLIENT_IP4 dev link3 via $SERVER_GW4
-+	ip -net $SERVER_NS route add $CLIENT_IP6 dev link3 via $SERVER_GW6
-+	ip -net $SERVER_NS link set dev link3 \
-+		gro_ipv4_max_size $MAX_SIZE gso_ipv4_max_size $MAX_SIZE
-+	ip -net $SERVER_NS link set dev link3 \
-+		gro_max_size $MAX_SIZE gso_max_size $MAX_SIZE
-+	ip net exec $SERVER_NS sysctl -wq net.ipv4.tcp_window_scaling=10
-+	ip net exec $SERVER_NS netserver 2>&1 >/dev/null
++	return phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_TARGET_NS_LO(event),
++			    lower_16_bits(nsec));
 +}
 +
-+cleanup() {
-+	ip net exec $SERVER_NS pkill netserver
-+	ip -net $ROUTER_NS link del link1
-+	ip -net $ROUTER_NS link del link2
-+	ip netns del "$CLIENT_NS"
-+	ip netns del "$SERVER_NS"
-+	ip netns del "$ROUTER_NS"
++#define LAN8841_BUFFER_TIME	2
++
++static int lan8841_ptp_update_target(struct kszphy_ptp_priv *ptp_priv,
++				     const struct timespec64 *ts)
++{
++	return lan8841_ptp_set_target(ptp_priv, LAN8841_EVENT_A,
++				      ts->tv_sec + LAN8841_BUFFER_TIME, ts->tv_nsec);
 +}
 +
-+start_counter() {
-+	local ipt="iptables"
-+	local iface=$1
-+	local netns=$2
++#define LAN8841_PTP_LTC_TARGET_RELOAD_SEC_HI(event)	((event) == LAN8841_EVENT_A ? 282 : 292)
++#define LAN8841_PTP_LTC_TARGET_RELOAD_SEC_LO(event)	((event) == LAN8841_EVENT_A ? 283 : 293)
++#define LAN8841_PTP_LTC_TARGET_RELOAD_NS_HI(event)	((event) == LAN8841_EVENT_A ? 284 : 294)
++#define LAN8841_PTP_LTC_TARGET_RELOAD_NS_LO(event)	((event) == LAN8841_EVENT_A ? 285 : 295)
 +
-+	[ "$NF" = "6" ] && ipt="ip6tables"
-+	ip net exec $netns $ipt -t raw -A PREROUTING -i $iface \
-+		-m length ! --length 0:$CHK_SIZE -j ACCEPT
++static int lan8841_ptp_set_reload(struct kszphy_ptp_priv *ptp_priv, u8 event,
++				  s64 sec, u32 nsec)
++{
++	struct phy_device *phydev = ptp_priv->phydev;
++	int ret;
++
++	ret = phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_TARGET_RELOAD_SEC_HI(event),
++			    upper_16_bits(sec));
++	if (ret)
++		return ret;
++
++	ret = phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_TARGET_RELOAD_SEC_LO(event),
++			    lower_16_bits(sec));
++	if (ret)
++		return ret;
++
++	ret = phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_TARGET_RELOAD_NS_HI(event) & 0x3fff,
++			    upper_16_bits(nsec));
++	if (ret)
++		return ret;
++
++	return phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_TARGET_RELOAD_NS_LO(event),
++			     lower_16_bits(nsec));
 +}
 +
-+check_counter() {
-+	local ipt="iptables"
-+	local iface=$1
-+	local netns=$2
+ #define LAN8841_PTP_LTC_SET_SEC_HI	262
+ #define LAN8841_PTP_LTC_SET_SEC_MID	263
+ #define LAN8841_PTP_LTC_SET_SEC_LO	264
+@@ -3671,6 +3743,7 @@ static int lan8841_ptp_settime64(struct ptp_clock_info *ptp,
+ 	struct kszphy_ptp_priv *ptp_priv = container_of(ptp, struct kszphy_ptp_priv,
+ 							ptp_clock_info);
+ 	struct phy_device *phydev = ptp_priv->phydev;
++	int ret;
+ 
+ 	/* Set the value to be stored */
+ 	mutex_lock(&ptp_priv->ptp_lock);
+@@ -3683,9 +3756,10 @@ static int lan8841_ptp_settime64(struct ptp_clock_info *ptp,
+ 	/* Set the command to load the LTC */
+ 	phy_write_mmd(phydev, 2, LAN8841_PTP_CMD_CTL,
+ 		      LAN8841_PTP_CMD_CTL_PTP_LTC_LOAD);
++	ret = lan8841_ptp_update_target(ptp_priv, ts);
+ 	mutex_unlock(&ptp_priv->ptp_lock);
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ #define LAN8841_PTP_LTC_RD_SEC_HI	358
+@@ -3740,6 +3814,7 @@ static int lan8841_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ 	bool add = true;
+ 	u32 nsec;
+ 	s32 sec;
++	int ret;
+ 
+ 	/* The HW allows up to 15 sec to adjust the time, but here we limit to
+ 	 * 10 sec the adjustment. The reason is, in case the adjustment is 14
+@@ -3803,7 +3878,13 @@ static int lan8841_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ 	}
+ 	mutex_unlock(&ptp_priv->ptp_lock);
+ 
+-	return 0;
++	/* Update the target clock */
++	ptp->gettime64(ptp, &ts);
++	mutex_lock(&ptp_priv->ptp_lock);
++	ret = lan8841_ptp_update_target(ptp_priv, &ts);
++	mutex_unlock(&ptp_priv->ptp_lock);
 +
-+	[ "$NF" = "6" ] && ipt="ip6tables"
-+	test `ip net exec $netns $ipt -t raw -L -v |grep $iface | awk '{print $1}'` != "0"
++	return ret;
+ }
+ 
+ #define LAN8841_PTP_LTC_RATE_ADJ_HI		269
+@@ -3839,6 +3920,292 @@ static int lan8841_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+ 	return 0;
+ }
+ 
++static int lan8841_ptp_verify(struct ptp_clock_info *ptp, unsigned int pin,
++			      enum ptp_pin_function func, unsigned int chan)
++{
++	switch (func) {
++	case PTP_PF_NONE:
++	case PTP_PF_PEROUT:
++		break;
++	default:
++		return -1;
++	}
++
++	return 0;
 +}
 +
-+stop_counter() {
-+	local ipt="iptables"
-+	local iface=$1
-+	local netns=$2
++#define LAN8841_PTP_GPIO_NUM	10
++#define LAN8841_GPIO_EN		128
++#define LAN8841_GPIO_DIR	129
++#define LAN8841_GPIO_BUF	130
 +
-+	[ "$NF" = "6" ] && ipt="ip6tables"
-+	ip net exec $netns $ipt -t raw -D PREROUTING -i $iface \
-+		-m length ! --length 0:$CHK_SIZE -j ACCEPT
++static int lan8841_ptp_perout_off(struct kszphy_ptp_priv *ptp_priv, int pin)
++{
++	struct phy_device *phydev = ptp_priv->phydev;
++	int ret;
++
++	ret = phy_clear_bits_mmd(phydev, 2, LAN8841_GPIO_EN, BIT(pin));
++	if (ret)
++		return ret;
++
++	ret = phy_clear_bits_mmd(phydev, 2, LAN8841_GPIO_DIR, BIT(pin));
++	if (ret)
++		return ret;
++
++	return phy_clear_bits_mmd(phydev, 2, LAN8841_GPIO_BUF, BIT(pin));
 +}
 +
-+do_netperf() {
-+	local serip=$SERVER_IP4
-+	local netns=$1
++static int lan8841_ptp_perout_on(struct kszphy_ptp_priv *ptp_priv, int pin)
++{
++	struct phy_device *phydev = ptp_priv->phydev;
++	int ret;
 +
-+	[ "$NF" = "6" ] && serip=$SERVER_IP6
-+	ip net exec $netns netperf -$NF -t TCP_STREAM -H $serip 2>&1 >/dev/null
++	ret = phy_set_bits_mmd(phydev, 2, LAN8841_GPIO_EN, BIT(pin));
++	if (ret)
++		return ret;
++
++	ret = phy_set_bits_mmd(phydev, 2, LAN8841_GPIO_DIR, BIT(pin));
++	if (ret)
++		return ret;
++
++	return phy_set_bits_mmd(phydev, 2, LAN8841_GPIO_BUF, BIT(pin));
 +}
 +
-+do_test() {
-+	local cli_tso=$1
-+	local gw_gro=$2
-+	local gw_tso=$3
-+	local ser_gro=$4
-+	local ret="PASS"
++#define LAN8841_GPIO_DATA_SEL1				131
++#define LAN8841_GPIO_DATA_SEL2				132
++#define LAN8841_GPIO_DATA_SEL_GPIO_DATA_SEL_EVENT_MASK	GENMASK(2, 0)
++#define LAN8841_GPIO_DATA_SEL_GPIO_DATA_SEL_EVENT_A	1
++#define LAN8841_GPIO_DATA_SEL_GPIO_DATA_SEL_EVENT_B	2
++#define LAN8841_PTP_GENERAL_CONFIG			257
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_POL_A	BIT(1)
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_POL_B	BIT(3)
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_A_MASK	GENMASK(7, 4)
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_B_MASK	GENMASK(11, 8)
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_A		4
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_B		7
 +
-+	ip net exec $CLIENT_NS ethtool -K link0 tso $cli_tso
-+	ip net exec $ROUTER_NS ethtool -K link1 gro $gw_gro
-+	ip net exec $ROUTER_NS ethtool -K link2 tso $gw_tso
-+	ip net exec $SERVER_NS ethtool -K link3 gro $ser_gro
++static int lan8841_ptp_remove_event(struct kszphy_ptp_priv *ptp_priv, int pin,
++				    u8 event)
++{
++	struct phy_device *phydev = ptp_priv->phydev;
++	u16 tmp;
++	int ret;
 +
-+	start_counter link1 $ROUTER_NS
-+	start_counter link3 $SERVER_NS
-+	do_netperf $CLIENT_NS
++	/* Now remove pin from the event. GPIO_DATA_SEL1 contains the GPIO
++	 * pins 0-4 while GPIO_DATA_SEL2 contains GPIO pins 5-9, therefore
++	 * depending on the pin, it requires to read a different register
++	 */
++	if (pin < 5) {
++		tmp = LAN8841_GPIO_DATA_SEL_GPIO_DATA_SEL_EVENT_MASK << (3 * pin);
++		ret = phy_clear_bits_mmd(phydev, 2, LAN8841_GPIO_DATA_SEL1, tmp);
++	} else {
++		tmp = LAN8841_GPIO_DATA_SEL_GPIO_DATA_SEL_EVENT_MASK << (3 * (pin - 5));
++		ret = phy_clear_bits_mmd(phydev, 2, LAN8841_GPIO_DATA_SEL2, tmp);
++	}
++	if (ret)
++		return ret;
 +
-+	if check_counter link1 $ROUTER_NS; then
-+		check_counter link3 $SERVER_NS || ret="FAIL_on_link3"
++	/* Disable the event */
++	if (event == LAN8841_EVENT_A)
++		tmp = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_POL_A |
++		      LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_A_MASK;
 +	else
-+		ret="FAIL_on_link1"
-+	fi
-+
-+	stop_counter link1 $ROUTER_NS
-+	stop_counter link3 $SERVER_NS
-+	printf "%-9s %-8s %-8s %-8s: [%s]\n" \
-+		$cli_tso $gw_gro $gw_tso $ser_gro $ret
-+	test $ret = "PASS"
++		tmp = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_POL_B |
++		      LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_B_MASK;
++	return phy_clear_bits_mmd(phydev, 2, LAN8841_GPIO_EN, tmp);
 +}
 +
-+testup() {
-+	echo "CLI GSO | GW GRO | GW GSO | SER GRO" && \
-+	do_test "on"  "on"  "on"  "on"  && \
-+	do_test "on"  "off" "on"  "off" && \
-+	do_test "off" "on"  "on"  "on"  && \
-+	do_test "on"  "on"  "off" "on"  && \
-+	do_test "off" "on"  "off" "on"
++static int lan8841_ptp_enable_event(struct kszphy_ptp_priv *ptp_priv, int pin,
++				    u8 event, int pulse_width)
++{
++	struct phy_device *phydev = ptp_priv->phydev;
++	u16 tmp;
++	int ret;
++
++	/* Enable the event */
++	if (event == LAN8841_EVENT_A)
++		ret = phy_modify_mmd(phydev, 2, LAN8841_PTP_GENERAL_CONFIG,
++				     LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_POL_A |
++				     LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_A_MASK,
++				     LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_POL_A |
++				     pulse_width << LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_A);
++	else
++		ret = phy_modify_mmd(phydev, 2, LAN8841_PTP_GENERAL_CONFIG,
++				     LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_POL_B |
++				     LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_B_MASK,
++				     LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_POL_B |
++				     pulse_width << LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_B);
++	if (ret)
++		return ret;
++
++	/* Now connect the pin to the event. GPIO_DATA_SEL1 contains the GPIO
++	 * pins 0-4 while GPIO_DATA_SEL2 contains GPIO pins 5-9, therefore
++	 * depending on the pin, it requires to read a different register
++	 */
++	if (event == LAN8841_EVENT_A)
++		tmp = LAN8841_GPIO_DATA_SEL_GPIO_DATA_SEL_EVENT_A;
++	else
++		tmp = LAN8841_GPIO_DATA_SEL_GPIO_DATA_SEL_EVENT_B;
++
++	if (pin < 5)
++		ret = phy_set_bits_mmd(phydev, 2, LAN8841_GPIO_DATA_SEL1,
++				       tmp << (3 * pin));
++	else
++		ret = phy_set_bits_mmd(phydev, 2, LAN8841_GPIO_DATA_SEL2,
++				       tmp << (3 * (pin - 5)));
++
++	return ret;
 +}
 +
-+if ! netperf -V &> /dev/null; then
-+	echo "SKIP: Could not run test without netperf tool"
-+	exit $ksft_skip
-+fi
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_200MS	13
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_100MS	12
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_50MS	11
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_10MS	10
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_5MS	9
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_1MS	8
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_500US	7
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_100US	6
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_50US	5
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_10US	4
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_5US	3
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_1US	2
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_500NS	1
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_100NS	0
 +
-+if ! ip link help 2>&1 | grep gso_ipv4_max_size &> /dev/null; then
-+	echo "SKIP: Could not run test without gso/gro_ipv4_max_size supported in ip-link"
-+	exit $ksft_skip
-+fi
++static int lan8841_ptp_perout(struct ptp_clock_info *ptp,
++			      struct ptp_clock_request *rq, int on)
++{
++	struct kszphy_ptp_priv *ptp_priv = container_of(ptp, struct kszphy_ptp_priv,
++							ptp_clock_info);
++	struct phy_device *phydev = ptp_priv->phydev;
++	struct timespec64 ts_on, ts_period;
++	s64 on_nsec, period_nsec;
++	int pulse_width;
++	int pin;
++	int ret;
 +
-+trap cleanup EXIT
-+setup && echo "Testing for BIG TCP:" && \
-+NF=4 testup && echo "***v4 Tests Done***" && \
-+NF=6 testup && echo "***v6 Tests Done***"
-+exit $?
++	if (rq->perout.flags & ~PTP_PEROUT_DUTY_CYCLE)
++		return -EOPNOTSUPP;
++
++	pin = ptp_find_pin(ptp_priv->ptp_clock, PTP_PF_PEROUT, rq->perout.index);
++	if (pin == -1 || pin >= LAN8841_PTP_GPIO_NUM)
++		return -EINVAL;
++
++	if (!on) {
++		ret = lan8841_ptp_perout_off(ptp_priv, pin);
++		if (ret)
++			return ret;
++
++		return lan8841_ptp_remove_event(ptp_priv, LAN8841_EVENT_A, pin);
++	}
++
++	ts_on.tv_sec = rq->perout.on.sec;
++	ts_on.tv_nsec = rq->perout.on.nsec;
++	on_nsec = timespec64_to_ns(&ts_on);
++
++	ts_period.tv_sec = rq->perout.period.sec;
++	ts_period.tv_nsec = rq->perout.period.nsec;
++	period_nsec = timespec64_to_ns(&ts_period);
++
++	if (period_nsec < 200) {
++		pr_warn_ratelimited("%s: perout period too small, minimim is 200 nsec\n",
++				    phydev_name(phydev));
++		return -EOPNOTSUPP;
++	}
++
++	if (on_nsec >= period_nsec) {
++		pr_warn_ratelimited("%s: pulse width must be smaller than period\n",
++				    phydev_name(phydev));
++		return -EINVAL;
++	}
++
++	switch (on_nsec) {
++	case 200000000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_200MS;
++		break;
++	case 100000000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_100MS;
++		break;
++	case 50000000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_50MS;
++		break;
++	case 10000000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_10MS;
++		break;
++	case 5000000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_5MS;
++		break;
++	case 1000000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_1MS;
++		break;
++	case 500000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_500US;
++		break;
++	case 100000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_100US;
++		break;
++	case 50000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_50US;
++		break;
++	case 10000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_10US;
++		break;
++	case 5000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_5US;
++		break;
++	case 1000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_1US;
++		break;
++	case 500:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_500NS;
++		break;
++	case 100:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_100NS;
++		break;
++	default:
++		pr_warn_ratelimited("%s: Use default duty cycle of 100ns\n",
++				    phydev_name(phydev));
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_100NS;
++		break;
++	}
++
++	mutex_lock(&ptp_priv->ptp_lock);
++	ret = lan8841_ptp_set_target(ptp_priv, LAN8841_EVENT_A, rq->perout.start.sec,
++				     rq->perout.start.nsec);
++	mutex_unlock(&ptp_priv->ptp_lock);
++	if (ret)
++		return ret;
++
++	ret = lan8841_ptp_set_reload(ptp_priv, LAN8841_EVENT_A, rq->perout.period.sec,
++				     rq->perout.period.nsec);
++	if (ret)
++		return ret;
++
++	ret = lan8841_ptp_enable_event(ptp_priv, pin, LAN8841_EVENT_A,
++				       pulse_width);
++	if (ret)
++		return ret;
++
++	ret = lan8841_ptp_perout_on(ptp_priv, pin);
++	if (ret)
++		lan8841_ptp_remove_event(ptp_priv, pin, LAN8841_EVENT_A);
++
++	return ret;
++}
++
++static int lan8841_ptp_enable(struct ptp_clock_info *ptp,
++			      struct ptp_clock_request *rq, int on)
++{
++	switch (rq->type) {
++	case PTP_CLK_REQ_PEROUT:
++		return lan8841_ptp_perout(ptp, rq, on);
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	return 0;
++}
++
+ static struct ptp_clock_info lan8841_ptp_clock_info = {
+ 	.owner		= THIS_MODULE,
+ 	.name		= "lan8841 ptp",
+@@ -3847,6 +4214,10 @@ static struct ptp_clock_info lan8841_ptp_clock_info = {
+ 	.settime64	= lan8841_ptp_settime64,
+ 	.adjtime	= lan8841_ptp_adjtime,
+ 	.adjfine	= lan8841_ptp_adjfine,
++	.verify         = lan8841_ptp_verify,
++	.enable         = lan8841_ptp_enable,
++	.n_per_out      = LAN8841_PTP_GPIO_NUM,
++	.n_pins         = LAN8841_PTP_GPIO_NUM,
+ };
+ 
+ #define LAN8841_OPERATION_MODE_STRAP_LOW_REGISTER 3
+@@ -3874,7 +4245,23 @@ static int lan8841_probe(struct phy_device *phydev)
+ 	priv = phydev->priv;
+ 	ptp_priv = &priv->ptp_priv;
+ 
++	ptp_priv->pin_config = devm_kcalloc(&phydev->mdio.dev,
++					    LAN8841_PTP_GPIO_NUM,
++					    sizeof(*ptp_priv->pin_config),
++					    GFP_KERNEL);
++	if (!ptp_priv->pin_config)
++		return -ENOMEM;
++
++	for (int i = 0; i < LAN8841_PTP_GPIO_NUM; ++i) {
++		struct ptp_pin_desc *p = &ptp_priv->pin_config[i];
++
++		snprintf(p->name, sizeof(p->name), "pin%d", i);
++		p->index = i;
++		p->func = PTP_PF_NONE;
++	}
++
+ 	ptp_priv->ptp_clock_info = lan8841_ptp_clock_info;
++	ptp_priv->ptp_clock_info.pin_config = ptp_priv->pin_config;
+ 	ptp_priv->ptp_clock = ptp_clock_register(&ptp_priv->ptp_clock_info,
+ 						 &phydev->mdio.dev);
+ 	if (IS_ERR(ptp_priv->ptp_clock)) {
 -- 
-2.39.1
+2.38.0
 
