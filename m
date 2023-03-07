@@ -2,125 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65E896ADBD8
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 11:27:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EAF66ADBC7
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 11:25:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230347AbjCGK1S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 05:27:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35406 "EHLO
+        id S230118AbjCGKZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 05:25:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230272AbjCGK0v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 05:26:51 -0500
-Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6139073032
-        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 02:26:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1678184778; x=1709720778;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=9I9bk5/xMcc+LaSDF1LPR9bct/xXgqP9+q5kisBQESo=;
-  b=LmilPdIdi/kbIky7rLgbiFzq4AmsTf+oyTw2a6XrbAaLyx7+eqKY+J9y
-   LNgp7cabUMGR9P2LEVjuqMXgSVc2ACC3yYlDifjfo4EQFssm8YhGqThqZ
-   /JQGG32X55Piz1FkzaRzbMyg54qbCREHdDCHk6Gn2evybTOBfvSyQwKoS
-   s=;
-X-IronPort-AV: E=Sophos;i="5.98,240,1673913600"; 
-   d="scan'208";a="1110085494"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-m6i4x-bbc6e425.us-east-1.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2023 10:26:12 +0000
-Received: from EX19D003EUA001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1a-m6i4x-bbc6e425.us-east-1.amazon.com (Postfix) with ESMTPS id CA34A8111E;
-        Tue,  7 Mar 2023 10:26:10 +0000 (UTC)
-Received: from EX19D028EUB003.ant.amazon.com (10.252.61.31) by
- EX19D003EUA001.ant.amazon.com (10.252.50.31) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.24; Tue, 7 Mar 2023 10:26:09 +0000
-Received: from u570694869fb251.ant.amazon.com (10.85.143.174) by
- EX19D028EUB003.ant.amazon.com (10.252.61.31) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.24; Tue, 7 Mar 2023 10:26:01 +0000
-From:   Shay Agroskin <shayagr@amazon.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
-CC:     Shay Agroskin <shayagr@amazon.com>,
-        "Woodhouse, David" <dwmw@amazon.com>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        Saeed Bshara <saeedb@amazon.com>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        "Dagan, Noam" <ndagan@amazon.com>,
-        "Arinzon, David" <darinzon@amazon.com>,
-        "Itzko, Shahar" <itzko@amazon.com>,
-        "Abboud, Osama" <osamaabb@amazon.com>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH RFC v3 net-next 4/5] net: ena: Recalculate TX state variables every device reset
-Date:   Tue, 7 Mar 2023 12:24:57 +0200
-Message-ID: <20230307102458.2756297-5-shayagr@amazon.com>
-X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20230307102458.2756297-1-shayagr@amazon.com>
-References: <20230307102458.2756297-1-shayagr@amazon.com>
+        with ESMTP id S229548AbjCGKZP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 05:25:15 -0500
+X-Greylist: delayed 54684 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Mar 2023 02:25:13 PST
+Received: from out-24.mta0.migadu.com (out-24.mta0.migadu.com [91.218.175.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42AB27698
+        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 02:25:12 -0800 (PST)
+Message-ID: <aa6edec3-4be8-d1e4-159f-1659aa4e0bbe@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1678184710;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7lTK9UGJRDX4IkJKg2UZIo69ATgMXypgW/C+oA22R/E=;
+        b=j1v7QAB6REeKDnJniPEIBDPotB4oaM7v9YJmdq7ON/15bZy4Soy2wyiAZnJ7DOL+NEV09P
+        lQ3cymZ/FOHwe3OMqjv/zWhiYcwu1CJPxuC7AHe+MDzJmtF1sCXo5yqx5AGkqQESR9shW1
+        V+FloROpdCNKWeGNOGY0dH6y20z9AjY=
+Date:   Tue, 7 Mar 2023 10:25:04 +0000
 MIME-Version: 1.0
+Subject: Re: [PATCH net] bnxt_en: reset PHC frequency in free-running mode
+Content-Language: en-US
+To:     Pavan Chebbi <pavan.chebbi@broadcom.com>
+Cc:     Vadim Fedorenko <vadfed@meta.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andy Gospodarek <andrew.gospodarek@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        netdev@vger.kernel.org
+References: <20230306165344.350387-1-vadfed@meta.com>
+ <CALs4sv1A1eTpH45Z=kyL3qtu7Yfu8JRW6Wc2r1d+UxjvB_EEEA@mail.gmail.com>
+ <d8a49972-2875-2be9-a210-92d9dac32c03@linux.dev>
+ <CALs4sv0u87c3QpkT5=pGOEtLBwuZtEhaN9Ez97jmXgPv7y3-ew@mail.gmail.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Vadim Fedorenko <vadim.fedorenko@linux.dev>
+In-Reply-To: <CALs4sv0u87c3QpkT5=pGOEtLBwuZtEhaN9Ez97jmXgPv7y3-ew@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.85.143.174]
-X-ClientProxiedBy: EX19D038UWC001.ant.amazon.com (10.13.139.213) To
- EX19D028EUB003.ant.amazon.com (10.252.61.31)
-X-Spam-Status: No, score=-11.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With the ability to modify LLQ entry size, the size of packet's
-payload that can be written directly to the device changes.
-This patch makes the driver recalculate this information every device
-negotiation (also called device reset).
+On 07/03/2023 05:07, Pavan Chebbi wrote:
+> On Tue, Mar 7, 2023 at 12:43 AM Vadim Fedorenko
+> <vadim.fedorenko@linux.dev> wrote:
+>>
+>> On 06/03/2023 17:11, Pavan Chebbi wrote:
+>>> On Mon, Mar 6, 2023 at 10:23 PM Vadim Fedorenko <vadfed@meta.com> wrote:
+>>>>
+>>>> @@ -932,13 +937,15 @@ int bnxt_ptp_init(struct bnxt *bp, bool phc_cfg)
+>>>>           atomic_set(&ptp->tx_avail, BNXT_MAX_TX_TS);
+>>>>           spin_lock_init(&ptp->ptp_lock);
+>>>>
+>>>> -       if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC) {
+>>>> +       if (BNXT_PTP_RTC(ptp->bp)) {
+>>>>                   bnxt_ptp_timecounter_init(bp, false);
+>>>>                   rc = bnxt_ptp_init_rtc(bp, phc_cfg);
+>>>>                   if (rc)
+>>>>                           goto out;
+>>>>           } else {
+>>>>                   bnxt_ptp_timecounter_init(bp, true);
+>>>> +               if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
+>>>> +                       bnxt_ptp_adjfreq_rtc(bp, 0);
+> 
+> I am not sure if the intended objective of resetting the PHC is going
+> to be achieved with this. The FW will always apply the new ppb on the
+> base PHC frequency. I am not sure what you mean by "reset the hardware
+> frequency of PHC to zero" in the commit message.
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
-Signed-off-by: Shay Agroskin <shayagr@amazon.com>
----
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+Well, I meant reset it to base frequency and remove any adjustments 
+applied before. I'll re-phrase it in the next version.
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index b97ecae439b2..537951ca4d61 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -3750,8 +3750,9 @@ static int ena_restore_device(struct ena_adapter *adapter)
- 	struct ena_com_dev_get_features_ctx get_feat_ctx;
- 	struct ena_com_dev *ena_dev = adapter->ena_dev;
- 	struct pci_dev *pdev = adapter->pdev;
-+	struct ena_ring *txr;
-+	int rc, count, i;
- 	bool wd_state;
--	int rc;
- 
- 	set_bit(ENA_FLAG_ONGOING_RESET, &adapter->flags);
- 	rc = ena_device_init(adapter, adapter->pdev, &get_feat_ctx, &wd_state);
-@@ -3761,6 +3762,13 @@ static int ena_restore_device(struct ena_adapter *adapter)
- 	}
- 	adapter->wd_state = wd_state;
- 
-+	count =  adapter->xdp_num_queues + adapter->num_io_queues;
-+	for (i = 0 ; i < count; i++) {
-+		txr = &adapter->tx_ring[i];
-+		txr->tx_mem_queue_type = ena_dev->tx_mem_queue_type;
-+		txr->tx_max_header_size = ena_dev->tx_max_header_size;
-+	}
-+
- 	rc = ena_device_validate_params(adapter, &get_feat_ctx);
- 	if (rc) {
- 		dev_err(&pdev->dev, "Validation of device parameters failed\n");
--- 
-2.25.1
+> If you want PHC to
+> start counting from 0 on init, you may use bnxt_ptp_cfg_settime() with
+> 0.
+
+That's not what we want, the current counter behavior is ok.
+
+> Also, the RTC flag may not be set on newer firmwares running on MH
+> systems. I see no harm in resetting the PHC unconditionally if we are
+> not in RTC mode.
+
+And that's perfectly fine! Each firmware upgrade requires full NIC reset 
+and it will end up with reset of PHC to base frequency. But in the 
+situation when we have several version of kernel running on the SLED, on 
+kernel upgrade we end up with adjustment stored in the PHC using old 
+kernel which was tuning RTC, but then booted into new kernel which stops 
+tuning RTC. If the last stored adjustment was close to boundaries for 
+some reasons, timecounter will never compensate the difference and all 
+hosts in the sled will be drifting hard. The only way to bring it back 
+to working state is to power reset the sled, which is disruptive action.
+
+The fix was proved to work actually in our setup.
+
+
+>>>
+>>> You meant bnxt_ptp_adjfine_rtc(), right.
+>>> Anyway, let me go through the patch in detail, while you may submit
+>>> corrections for the build.
+>>>
+>> Oh, yeah, right, artefact of rebasing. Will fix it in v2, thanks.
+>>
+>>
+>>>>           }
+>>>>
+>>>>           ptp->ptp_info = bnxt_ptp_caps;
+>>>> --
+>>>> 2.30.2
+>>>>
+>>
 
