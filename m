@@ -2,76 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 230046AF17E
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 19:44:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9EA26AF196
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 19:46:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231516AbjCGSom (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 13:44:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38868 "EHLO
+        id S232873AbjCGSps (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 13:45:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232981AbjCGSoX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 13:44:23 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96A38B56EB
-        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 10:34:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=public-files.de;
-        s=s31663417; t=1678213958; i=frank-w@public-files.de;
-        bh=iiYFJVeV5Lun31L5V97QB9wHxZh/USWR/3jK7Ozn0Z8=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=nrwQLyXnCC5aMbkQ+6Szw8cSeTl6xv481PdnVPYCXBg0FFTp+clxOOyGLKECps2LE
-         YNHkGL+/ucknfCvYf8mtmpATU+/fhl2DJqc6Ey0aNYw2BL8H7ZrNBSWKkFOfcMKp+y
-         4PtsDRDUSOoxZI0bLBZlMO7xUuyZ77WgoNBNTgYsiQfWTcXj0TYh9x3+RXo+Fv7hVv
-         PEeJN5eRzHJU9f3N/ErvKFnhep0hO+kRgmiH6U3aVGNDqcwJ9T6b31EbS+InFrTcpW
-         TMEwudSd2z6rAeXuoqbTQxMOILXZ8HFfoIp+MfAa2edIbiKX0wA6ZQWwaoLudPNxOZ
-         PTC/48FGwQAAg==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [217.61.156.24] ([217.61.156.24]) by web-mail.gmx.net
- (3c-app-gmx-bs16.server.lan [172.19.170.68]) (via HTTP); Tue, 7 Mar 2023
- 19:32:38 +0100
-MIME-Version: 1.0
-Message-ID: <trinity-92c3826f-c2c8-40af-8339-bc6d0d3ffea4-1678213958520@3c-app-gmx-bs16>
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     Felix Fietkau <nbd@nbd.name>, Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Daniel Golle <daniel@makrotopia.org>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S232925AbjCGSpO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 13:45:14 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 348A0A9DC9
+        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 10:34:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1678213989;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2ky9dYKwxEvaHQ/+rcftd+ezGjDIRTSsKEhlT3yu3PY=;
+        b=e2CCvezIE60CsWy7sdzu6wyH1vu2cIcMB5myvuT2QPhRfPBWt5lHCuAfBO0OnqW/m0EC1k
+        eLlSm5RENkz1wVG5QQj+pFABy0Fr3OJl4IUD5J/ceswzlb2Eg6uaz4q0MrsWi8mDXP+IVc
+        Q3/LQRapfQqS3eBmUpyAK4uPaq19NaI=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-315-tldqTq31Psu876WkwGHu2Q-1; Tue, 07 Mar 2023 13:33:02 -0500
+X-MC-Unique: tldqTq31Psu876WkwGHu2Q-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 48997185A794;
+        Tue,  7 Mar 2023 18:33:01 +0000 (UTC)
+Received: from RHTPC1VM0NT (unknown [10.22.32.201])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id B57762026D68;
+        Tue,  7 Mar 2023 18:33:00 +0000 (UTC)
+From:   Aaron Conole <aconole@redhat.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     netfilter-devel@vger.kernel.org,
+        network dev <netdev@vger.kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>, davem@davemloft.net,
+        kuba@kernel.org, Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [BUG] MTK SoC Ethernet throughput TX only ~620Mbit/s since 6.2-rc1
-Content-Type: text/plain; charset=UTF-8
-Date:   Tue, 7 Mar 2023 19:32:38 +0100
-Importance: normal
-Sensitivity: Normal
-X-Priority: 3
-X-Provags-ID: V03:K1:ubRWJfPcckhsg8gokIy5pT2FiG3BLjXPVe2Bp2f2IhnzRb7del4i7YLlq+tA7wVTjxgOW
- 8Ou0/KrAWx322W9iRCjABuv9wZ3f03whhGZFDnag7vtjT+Nhj6iGtUQeidVh8zqPC9zyiVDweRhC
- lOryXI3U+73Kv1nSsOT6BHD9lCGbv63CHS9XZAT33TKsEi1gtJUfFgJS1wmlEZ5H3ygNsmEEQwDG
- ig5TSwZQITE0mMrXUtLcSx9evYtYZmqEAwhM0klefPQkSaqrYPDdrrh+MVZYibvwITdfYPz42vTT
- LI=
-UI-OutboundReport: notjunk:1;M01:P0:r9ye7wDW7pg=;Jfx09dZpv3ZaCbno6AfR0AMqdNB
- rk0ZYj+3BgeN+F9WFQifUjaQw76M5ozqb3poMp/MOv129rT9nCAfgHVNj8+KuL3/F2gtkOXxY
- t8UJ1np1S69eVLxUwWVvVcdx4P3hRM/b5ibGqbVB/WF2HvpUV3Ny1CajvH+8r8F8vduzM5Wa1
- CeKhXUotHJgIn3m24VhpFevqwdUVg95eSN+LDwr3F+REVr+HZ79FqhT17Is5qipPu83V4U+3M
- 6Shhi0yJEEgjiiO9gkY8G9R+vlVk2D0qdYHVvBXWDrjpR+9aIylO8lyYkwgr99d4doUIVTEkt
- e/YXaqib4Kxodx0m+F+brczfzNxNpCKc6pYcaof2v7unRpuc1Gb242QYSNk3IVmmuEqYfO+7p
- MvXcTeJs+yuEyIjswNTI8akIfRf1tsYqJUVWjo2DZvT1Lh7xzxnGv+SaAZb/gXC8W4t8MNRcg
- JxDgOJyIR5dbxIi6m/vuKywhyHbqttRjL6SmLl7leVL5jfBOSWyktEXBiNMVvcEzjZ61z4z5U
- hn6nLUDZkZ1sovff2YWWqLlMnoCXPWxA1trjDm94jCZ7Hywbmc9MonRee8Lgy4w7pUvdRRDIZ
- ho8tggehVMUrWFV3czpHDdVM9lT9Leas9GSgDXhE/VfAP3m0lUl21UgWjqUkzRHAore120v/z
- xTsVMogWaoOHCqEACuBX/8xygKKGHA6YgiA3PvBAQ1hPhyn6U3q5fklDXYsQ5z1HrlOWMsLjb
- AYDH8t7jnkQ2ZRpQEHv4tJKct6lBMHNNuqA96cQmfaPCAB0vvQCk+pFvnWGKvD310nHceuLNu
- O3BFEdrh22FuorwP5u141KA0+GNWZp2jDDxtmUZd0dy3A=
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Pravin B Shelar <pshelar@ovn.org>
+Subject: Re: [PATCH nf-next 2/6] netfilter: bridge: check len before
+ accessing more nh data
+References: <cover.1677888566.git.lucien.xin@gmail.com>
+        <e5ea0147b3314ad9db5140c7b307472efbd114bd.1677888566.git.lucien.xin@gmail.com>
+Date:   Tue, 07 Mar 2023 13:32:59 -0500
+In-Reply-To: <e5ea0147b3314ad9db5140c7b307472efbd114bd.1677888566.git.lucien.xin@gmail.com>
+        (Xin Long's message of "Fri, 3 Mar 2023 19:12:38 -0500")
+Message-ID: <f7tttyw4dk4.fsf@redhat.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.2 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,68 +70,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Xin Long <lucien.xin@gmail.com> writes:
 
-i've noticed that beginning on 6.2-rc1 the throughput on my Bananapi-R2 and Bananapi-R3 goes from 940Mbit/s down do 620Mbit/s since 6.2-rc1.
-Only TX (from SBC PoV) is affected, RX is still 940Mbit/s.
+> In the while loop of br_nf_check_hbh_len(), similar to ip6_parse_tlv(),
+> before accessing 'nh[off + 1]', it should add a check 'len < 2'; and
+> before parsing IPV6_TLV_JUMBO, it should add a check 'optlen > len',
+> in case of overflows.
+>
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> ---
 
-i bisected this to this commit:
+Reviewed-by: Aaron Conole <aconole@redhat.com>
 
-f63959c7eec3151c30a2ee0d351827b62e742dcb ("net: ethernet: mtk_eth_soc: implement multi-queue support for per-port queues")
+>  net/bridge/br_netfilter_ipv6.c | 47 ++++++++++++++++------------------
+>  1 file changed, 22 insertions(+), 25 deletions(-)
+>
+> diff --git a/net/bridge/br_netfilter_ipv6.c b/net/bridge/br_netfilter_ipv6.c
+> index 5cd3e4c35123..50f564c33551 100644
+> --- a/net/bridge/br_netfilter_ipv6.c
+> +++ b/net/bridge/br_netfilter_ipv6.c
+> @@ -50,54 +50,51 @@ static int br_nf_check_hbh_len(struct sk_buff *skb)
+>  	u32 pkt_len;
+>  
+>  	if (!pskb_may_pull(skb, off + 8))
+> -		goto bad;
+> +		return -1;
+>  	nh = (u8 *)(ipv6_hdr(skb) + 1);
+>  	len = (nh[1] + 1) << 3;
+>  
+>  	if (!pskb_may_pull(skb, off + len))
+> -		goto bad;
+> +		return -1;
+>  	nh = skb_network_header(skb);
+>  
+>  	off += 2;
+>  	len -= 2;
+> -
+>  	while (len > 0) {
+> -		int optlen = nh[off + 1] + 2;
+> -
+> -		switch (nh[off]) {
+> -		case IPV6_TLV_PAD1:
+> -			optlen = 1;
+> -			break;
+> +		int optlen;
+>  
+> -		case IPV6_TLV_PADN:
+> -			break;
+> +		if (nh[off] == IPV6_TLV_PAD1) {
+> +			off++;
+> +			len--;
+> +			continue;
+> +		}
+> +		if (len < 2)
+> +			return -1;
+> +		optlen = nh[off + 1] + 2;
+> +		if (optlen > len)
+> +			return -1;
+>  
+> -		case IPV6_TLV_JUMBO:
+> +		if (nh[off] == IPV6_TLV_JUMBO) {
+>  			if (nh[off + 1] != 4 || (off & 3) != 2)
+> -				goto bad;
+> +				return -1;
+>  			pkt_len = ntohl(*(__be32 *)(nh + off + 2));
+>  			if (pkt_len <= IPV6_MAXPLEN ||
+>  			    ipv6_hdr(skb)->payload_len)
+> -				goto bad;
+> +				return -1;
+>  			if (pkt_len > skb->len - sizeof(struct ipv6hdr))
+> -				goto bad;
+> +				return -1;
+>  			if (pskb_trim_rcsum(skb,
+>  					    pkt_len + sizeof(struct ipv6hdr)))
+> -				goto bad;
+> +				return -1;
+>  			nh = skb_network_header(skb);
+> -			break;
+> -		default:
+> -			if (optlen > len)
+> -				goto bad;
+> -			break;
+>  		}
+>  		off += optlen;
+>  		len -= optlen;
+>  	}
+> -	if (len == 0)
+> -		return 0;
+> -bad:
+> -	return -1;
+> +	if (len)
+> +		return -1;
+> +
+> +	return 0;
+>  }
+>  
+>  int br_validate_ipv6(struct net *net, struct sk_buff *skb)
 
-Daniel reported me that this is known so far and they need assistance from MTK and i should report it officially.
-
-As far as i understand it the commit should fix problems with clients using non-GBE speeds (10/100 Mbit/s) on the Gbit-capable dsa
-interfaces (mt753x connected) behind the mac, but now the Gigabit speed is no more reached.
-I see no CRC/dropped packets, retransmitts or similar.
-
-after reverting the commit above i get 940Mbit like in rx direction, but this will introduce the problems mentioned above so this not a complete fix.
-
-example output before revert on mt7623/bpi.r2:
-
-root@bpi-r2:~# iperf3 -c 192.168.0.21
-Connecting to host 192.168.0.21, port 5201
-[ 5] local 192.168.0.11 port 48882 connected to 192.168.0.21 port 5201
-[ ID] Interval Transfer Bitrate Retr Cwnd
-[ 5] 0.00-1.00 sec 75.3 MBytes 632 Mbits/sec 0 396 KBytes
-[ 5] 1.00-2.00 sec 74.3 MBytes 623 Mbits/sec 0 396 KBytes
-[ 5] 2.00-3.00 sec 74.6 MBytes 625 Mbits/sec 0 396 KBytes
-[ 5] 3.00-4.00 sec 73.9 MBytes 620 Mbits/sec 0 396 KBytes
-[ 5] 4.00-5.00 sec 74.6 MBytes 626 Mbits/sec 0 396 KBytes
-[ 5] 5.00-6.00 sec 74.4 MBytes 624 Mbits/sec 0 396 KBytes
-[ 5] 6.00-7.00 sec 74.4 MBytes 624 Mbits/sec 0 396 KBytes
-[ 5] 7.00-8.00 sec 74.4 MBytes 624 Mbits/sec 0 396 KBytes
-[ 5] 8.00-9.00 sec 73.9 MBytes 620 Mbits/sec 0 396 KBytes
-[ 5] 9.00-10.00 sec 74.6 MBytes 626 Mbits/sec 0 396 KBytes
-- - - - - - - - - - - - - - - - - - - - - - - - -
-[ ID] Interval Transfer Bitrate Retr
-[ 5] 0.00-10.00 sec 745 MBytes 625 Mbits/sec 0 sender
-[ 5] 0.00-10.05 sec 744 MBytes 621 Mbits/sec receiver
-
-iperf Done.
-root@bpi-r2:~# ethtool -S eth0 | grep -v ': 0'
-NIC statistics:
-tx_bytes: 819999267
-tx_packets: 538815
-rx_bytes: 18338089
-rx_packets: 261984
-p06_TxUnicast: 261974
-p06_TxMulticast: 10
-p06_TxPktSz65To127: 261983
-p06_TxPktSz256To511: 1
-p06_TxBytes: 19386025
-p06_RxFiltering: 13
-p06_RxUnicast: 538783
-p06_RxMulticast: 31
-p06_RxBroadcast: 1
-p06_RxPktSz64: 3
-p06_RxPktSz65To127: 47
-p06_RxPktSz128To255: 2
-p06_RxPktSz256To511: 1
-p06_RxPktSz512To1023: 2
-p06_RxPktSz1024ToMax: 538760
-p06_RxBytes: 819999267
-
-Hope i've forgot no information for now :)
-
-regards Frank
