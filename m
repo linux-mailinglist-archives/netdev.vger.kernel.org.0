@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5205E6AF40F
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 20:13:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F069A6AF390
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 20:06:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233764AbjCGTMx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 14:12:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58436 "EHLO
+        id S233602AbjCGTGc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 14:06:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233729AbjCGTM0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 14:12:26 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74E0CACB8E;
-        Tue,  7 Mar 2023 10:56:30 -0800 (PST)
+        with ESMTP id S233665AbjCGTGK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 14:06:10 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BA90C082B;
+        Tue,  7 Mar 2023 10:51:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=public-files.de;
-        s=s31663417; t=1678215368; i=frank-w@public-files.de;
-        bh=6PwA0h1qZLuhuoZ4NUTsAvcwTuRFj66q2WPa+dKxE10=;
+        s=s31663417; t=1678215040; i=frank-w@public-files.de;
+        bh=nWexxL308BH6z9moewgL9uYihCpYFK54dVeZ2PBn3f8=;
         h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=VSYNgnuJD/bL8dEcbW+NdQ3PafH53Ibg13qE/F1SlHk5Fq9JWCyW3PQbDzr5CXNNP
-         tVhwxVq4k/2B9Q8q0JWBHMMsE7dDn28xvQgLoLdcLoe7pZLmmnDMTxtsthh4nLdW01
-         7gRrHIzHNXTgDD8fIelEq6A8QdLYNX3PlNq7H9/+IyMF1cBgadFPH8/pjd4CcR2DmG
-         BVSSWjySiXpnwDHYUg6KwhGQrxxnFICsdl+0Ovm8RepMH/BggqdUjs+t2+3wzL2pTu
-         eYrYzjjG0mTKmpRZvooWNkHejEPjxichhZ5Ngf9GeXct7MNqxJdsceuJOerPG0J71u
-         sPUyDV2BQDFWQ==
+        b=tIoGoyJqs2OkjReYZUq7R4DzCHsQfWQztFQt0KYgB3j4czOZiXbqyOTrzPbm6KFVZ
+         liwK94XYdcyqvarEYpALo+sYdLpNoDD9pVUn+Dh2f/9ygzrIXfdxNkH/lIy/5puhO9
+         2PJg2Bme9jBtXursaPmy8+5WeNnFNQPmT4C4sWL0ARLoOegq85fkCjDQ79meY4TSrq
+         HI+AL1OH3onxeqhHLrlfXUHOp2T/BpEUbuXY35JZhegNDwMbdjuzSq93wfFtFP1/+b
+         9L+vkQmVV3sgFqOxjxVubm0L4dOE6IilYta8ILPWjY1ohwOWSj5Bx/NsbHGkQ6gRL0
+         mh9l3rfxnbiYg==
 X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
 Received: from [217.61.156.24] ([217.61.156.24]) by web-mail.gmx.net
  (3c-app-gmx-bs16.server.lan [172.19.170.68]) (via HTTP); Tue, 7 Mar 2023
- 19:49:47 +0100
+ 19:50:40 +0100
 MIME-Version: 1.0
-Message-ID: <trinity-ed437b5e-2949-4a45-9dff-73cbefc0835a-1678214986988@3c-app-gmx-bs16>
+Message-ID: <trinity-19cb78f9-24ee-4cab-a24d-5c431d154e43-1678215039980@3c-app-gmx-bs16>
 From:   Frank Wunderlich <frank-w@public-files.de>
 To:     Daniel Golle <daniel@makrotopia.org>
 Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
@@ -56,36 +56,36 @@ Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
         Jianhui Zhao <zhaojh329@gmail.com>,
         =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
         Alexander Couzens <lynxis@fe80.eu>
-Subject: Aw: [PATCH net-next v12 06/18] net: ethernet: mtk_eth_soc: reset
- PCS state
+Subject: Aw: [PATCH net-next v12 09/18] net: ethernet: mtk_eth_soc: Fix link
+ status for none-SGMII modes
 Content-Type: text/plain; charset=UTF-8
-Date:   Tue, 7 Mar 2023 19:49:47 +0100
+Date:   Tue, 7 Mar 2023 19:50:40 +0100
 Importance: normal
 Sensitivity: Normal
-In-Reply-To: <0105ba8db974bca74846d605b18dcf948a7ab3d9.1678201958.git.daniel@makrotopia.org>
+In-Reply-To: <1590fb0e69f6243ac6a961b16bf7ae7534f46949.1678201958.git.daniel@makrotopia.org>
 References: <cover.1678201958.git.daniel@makrotopia.org>
- <0105ba8db974bca74846d605b18dcf948a7ab3d9.1678201958.git.daniel@makrotopia.org>
+ <1590fb0e69f6243ac6a961b16bf7ae7534f46949.1678201958.git.daniel@makrotopia.org>
 Content-Transfer-Encoding: quoted-printable
 X-UI-Message-Type: mail
 X-Priority: 3
-X-Provags-ID: V03:K1:RhX0TPvkWegrZOa+oeIK8QoIIXSR4k63trcaLclg7gV0U5IdcSHf0rQnjgVgbghob/H7j
- DCqn+fl7K/mPiiFiHXa97DHM41d24dgRlzSoQPFWJYsgogNbfI561PFe6aemrwMn7lMPAQLKCRzQ
- hBBlXb1DOZGnKMOsoe7Z8WODgyyvV39+Pnc6TSII9f8MqVgepgrEaxKGRNAHs7948NvZNuIh0zON
- P3PJelnBLUNohQeCYLK3Cemvg7DWHPWXQUQZ+kOYwzZX+04aqDssu8nH03uLv/zKpm/kP+149mQn
- qw=
-UI-OutboundReport: notjunk:1;M01:P0:bqOYuHtBtxM=;Dt0Cv4XN+FzRgoZJkapFC9WxsKW
- v9/9IZs1GBLpST0lQi/5PH75nBUqKNJubexG7OZHiWgK7EEGCn1o3vHFJF3yv+2PmY5wIBXJD
- ErAIOJdDu2FXnX4efjJ+rY13cCWznGgejk3AzkdYmMvv3m26JGxtXxYeeG4hYh81lzo9m0Cqi
- WTxsRA6JSQfo4accJmTmT/dBs0hbcXwbbXTShmbNQdBnLmgFRR3ZPUnNqClditagA7FobUepv
- tJ+w1F2uYbMXeSHM+jJxZ1mI9YnxEBlmYk03ciBALkgZ4z0VH1VjCGhjyLTuRQXvRYzo7SC5S
- KZtKBlhZ1kw1q3kwG4Fm8mUnuWBb3fRQEmjoP0EnL2W09A0WL+1OSpFUoZkAGJakmODYqZ1Lf
- MFO0pK4d1/0PYFiUUZMn9AGO/Mrj5ALnL75V9Y6ugtVmGCsZOZGAN51pULRrcdA4+ZEgmv5VR
- lTTfpNTI5yF0ghcamOY1gRq6bZuLkLA5CWNCBlBi1pzbaKS427burIx6ADFAaGbgMYI/SjysQ
- m1DTc36kZRP/IUyPp79hr6i8uiiIyNTDMfoGe5nsHMyheHz5JWiJsMaFB1TbC/dzVKzSqTePq
- CXG8NC4ypOsfoTrwQEVvWbCEL42vnJqxZ3QePJrf+/5BXemorlo4SFtiMsX83u15/e5qpCWLk
- vUD1IkVLPIUKirLYtLxD6enWtZbI7bbH6QtknXsppnizxJ2NVEy6HXz1Ajk+KTcqCwr366EAw
- UeeMSfu8deIzvMMO6LbdxCgINLSWjwi1VBzMkwWSi4GTQx53gg2qtJzYoG/JallCv3Pcb1/Ia
- U/jL5EW8cfUVjyNAkLy0frww==
+X-Provags-ID: V03:K1:76gtEPPKbw3oW5Vh9Br7sY/0upYihofaodLeF5Poo1oqibixMOcL2y0Fehhg3y1CanIwj
+ i5ak/DrOGWMtDkAYTL930BJHMzxlrPSD2RbFOg1hZRZSQNQhey/uFIOTm3zkeR1tT5latxzmDT+R
+ ornMPbIXSbhTma8tYRTXgrgq9yEciDBGKHnfKhUD4rF9mztF2FgFZj88rHLE0511TZGh4Q3XxDfh
+ +RLVZaxpaN91URF6IUIDZ9pozauNCiX0MQ/ER24URfXEoXWLDYpb024n4rMKi5LvTM/hpuX4DO1B
+ AI=
+UI-OutboundReport: notjunk:1;M01:P0:oYTl1d60MWg=;C4x3bNHaagBMTR7qFsMFz764oFC
+ jJLFXAfjjvaBoce70TTO7nh0M+WdDbscQzSasa9/SVoIR72+oR2P1GgL50WxyPdJv7GW3jgSE
+ E0BDP8nKyWbC/fgxe09oIJvEUyrxiT9KYQ8r0wW4hVwz0maIvWO4MDymQ8XZpf4jqSmISLh7I
+ LtwFvVINAheIPWzHwsDGpwnLrg+fVJnG2EFknNv2X74RfPTyjS2yr7sOm9TlGMFP1wudgMG2E
+ +kvs20B3TwakSQUJkYPK7OWbRXk80KyKKYPAbGuhEc3g0S1poZZVKUOjl0aIAc13/xdW0J5F4
+ fR2VS8+xWT00FOggTPtn2l9+56qDd3grvNKEqzrWPmgRf0pctgFChlJ7rKiRYsysC2uq+31j3
+ m96NS+N0oukLakr9dG1gzJFtk+p9demgwiG9zrU/CpC93y0i2CQktk4BBPHNGBP6Mfj/r1B3Q
+ AIfiFJ4OWoywMTZ24UWNgJeY5KnXT1BsdI/iXym4LhpHwD+KOCftR1UXY6OLPxoGYe5U6O63M
+ mlZEyG5zqlx+FmopGHsSC28luN0cCQegFCzpmBC1F/FUEa2PODTQrj5NVYxqcLz7xujEjRBcO
+ PJ2usGtkhRAKkRZ+zAejstj/9sG2Nc/hLY2fwFyIVoGLBBRjInZFeFElBXD4rJk2CFP48X5Uc
+ gxyZLoFkcVG/rIhr2PylXTzTif/AUtcUPTkwT/+tDn3Ros7LXKmvmLqz2ukq7SnhwLhPK4Obs
+ OrJRtP4FVmMOnhISR2Z+et3AuEKc+Xwmk06cxMSLQtDiOQDUTxSNF8JcRfcgxmCyrpU0VPwZf
+ 2r/3kTJb1FQ+1YQB21okVMcg==
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
@@ -96,16 +96,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Gesendet: Dienstag, 07=2E M=C3=A4rz 2023 um 16:53 Uhr
+> Gesendet: Dienstag, 07=2E M=C3=A4rz 2023 um 16:54 Uhr
 > Von: "Daniel Golle" <daniel@makrotopia=2Eorg>
->
-> Reset the internal PCS state machine when changing interface mode=2E
-> This prevents confusing the state machine when changing interface
-> modes, e=2Eg=2E from SGMII to 2500Base-X or vice-versa=2E
->=20
-> Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux=2Eorg=2Euk>
-> Tested-by: Bj=C3=B8rn Mork <bjorn@mork=2Eno>
-> Signed-off-by: Daniel Golle <daniel@makrotopia=2Eorg>
+> Link partner advertised link modes are not reported by the SerDes
+> hardware if not operating in SGMII mode=2E Hence we cannot use
+> phylink_mii_c22_pcs_decode_state() in this case=2E
+> Implement reporting link and an_complete only and use speed according to
+> the interface mode=2E
 
 Hi,
 
