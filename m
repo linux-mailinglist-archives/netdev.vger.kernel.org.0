@@ -2,99 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D68E76AE4A0
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 16:27:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08B146AE4B8
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 16:30:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231313AbjCGP10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 10:27:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48826 "EHLO
+        id S230523AbjCGPaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 10:30:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231322AbjCGP1I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 10:27:08 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0F91BEF
-        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 07:25:01 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id l1so13551778pjt.2
-        for <netdev@vger.kernel.org>; Tue, 07 Mar 2023 07:25:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112; t=1678202700;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=EXUdt2f8St/8i9PlevprO/yPreFB1GGsVjZEDQ4VuFw=;
-        b=2r0N4IpCKhHpnLwxvMAbB2IHwA9VeS4lk60DKy8VCEdFCOng1i35hfql+JaHPa5Rbf
-         0muR4yZsv9Z4Dc09WI7iHufxZk0umQgoAnd0hBVOaOa1Tb4CuykP+D3WxgESB85Yi3ka
-         0HUHbTVDi/Ggc+HbpOs+eRbZJbmowm5RC+JhwRp8PE4q7Yt3BpL0SW2ctvLGB5PmskSN
-         DhVjb0zF70nh8zOiDCbrP3ViOQ2loCNpObQViniDKQ01zjUXYAhwzZvEb/kgtcKvLWTu
-         l9SdU8tNTLIPmWsVrYf/KYH6CAvOzpnKKpsc6rx5dtSIuRTo8QLga5wmnBhiUjhpKH/b
-         sCYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678202700;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=EXUdt2f8St/8i9PlevprO/yPreFB1GGsVjZEDQ4VuFw=;
-        b=Y3RBuGrdMH2c8Y32sxFuywqT2lk5Q252AsHJnStRJzLMkcxIzB/NHyv4f1f7jK7i5D
-         cV8uVESv4Ge0S143YHPB/WlEY4BCPO+RPJlZ7UmcKP6r0GHISK9O13aspKHyiCVp5467
-         glT6NLZNiPyDsWj3iD5Nvt/SzhFd0sms+W9qkJf0F3c+Z/WBU8J1JmWCGL/m8cN4Uwtq
-         z738uMLNO4jjirmiH4zetVi+4AdPiPPBYiTIOMqYhlx5Lh/Gv1MtWAPsVUgHyjaHA3FJ
-         /SffKgW2NXYj6go2UpgaBPGJ9aRcS04siXqbjJiYYgoUM1rU/is9/oYpXIKgnTn3IP6t
-         H6Ww==
-X-Gm-Message-State: AO0yUKU9dyhM+bm17lt5ivflrtw+YU1AHMPsROkAoRV1Q4CeddmV3a8N
-        LmBqwNtaCdGU3KBEBOJFhm8MGw==
-X-Google-Smtp-Source: AK7set8guo/bS98UkXhyentGJiEUfcZeiy8tfTbEFuNThINYuWNfB0P2aEzTLf3tT8+jZxpcRzZgVg==
-X-Received: by 2002:a17:902:d483:b0:19a:f556:e386 with SMTP id c3-20020a170902d48300b0019af556e386mr16619433plg.0.1678202700567;
-        Tue, 07 Mar 2023 07:25:00 -0800 (PST)
-Received: from [172.20.4.229] ([50.233.106.125])
-        by smtp.gmail.com with ESMTPSA id kq14-20020a170903284e00b0019cf747253csm8581257plb.87.2023.03.07.07.24.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Mar 2023 07:25:00 -0800 (PST)
-Message-ID: <bad4c222-de52-625e-e73d-5997a7553a57@kernel.dk>
-Date:   Tue, 7 Mar 2023 08:24:59 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH net-next] net: reclaim skb->scm_io_uring bit
-Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-References: <20230307145959.750210-1-edumazet@google.com>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <20230307145959.750210-1-edumazet@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S230508AbjCGPaM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 10:30:12 -0500
+Received: from azure-sdnproxy.icoremail.net (azure-sdnproxy.icoremail.net [20.232.28.96])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 8FE544109B;
+        Tue,  7 Mar 2023 07:30:08 -0800 (PST)
+Received: from localhost.localdomain (unknown [122.235.141.95])
+        by mail-app2 (Coremail) with SMTP id by_KCgAHD_dQWAdkcRJrCw--.39650S4;
+        Tue, 07 Mar 2023 23:29:21 +0800 (CST)
+From:   Lin Ma <linma@zju.edu.cn>
+To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, richardcochran@gmail.com,
+        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
+        john.fastabend@gmail.com
+Cc:     intel-wired-lan@lists.osuosl.org, pmenzel@molgen.mpg.de,
+        regressions@lists.linux.dev, vinschen@redhat.com,
+        Lin Ma <linma@zju.edu.cn>, stable@vger.kernel.org
+Subject: [PATCH v2] igb: revert rtnl_lock() that causes deadlock
+Date:   Tue,  7 Mar 2023 23:29:17 +0800
+Message-Id: <20230307152917.32182-1-linma@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <ZAc/3oVos9DBx3iR@calimero.vinschen.de>
+References: <ZAc/3oVos9DBx3iR@calimero.vinschen.de>
+X-CM-TRANSID: by_KCgAHD_dQWAdkcRJrCw--.39650S4
+X-Coremail-Antispam: 1UD129KBjvJXoWxWw4xZw4kXw1DCw15Cr4fuFg_yoW5ur1xpF
+        17G3yxCF1kWr4jqayxZw18A34xXayjy34rWrn7uw4fuFs8CryDtry8CFWj9ayrCrWxJF9F
+        qF1kZa1UJF1UJa7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvC14x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
+        Y2ka0xkIwI1lc2xSY4AK67AK6ryrMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r
+        1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CE
+        b7AF67AKxVW8ZVWrXwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0x
+        vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAI
+        cVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2Kf
+        nxnUUI43ZEXa7VUjTa0DUUUUU==
+X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/7/23 7:59 AM, Eric Dumazet wrote:
-> Commit 0091bfc81741 ("io_uring/af_unix: defer registered
-> files gc to io_uring release") added one bit to struct sk_buff.
-> 
-> This structure is critical for networking, and we try very hard
-> to not add bloat on it, unless absolutely required.
+The commit 6faee3d4ee8b ("igb: Add lock to avoid data race") adds
+rtnl_lock to eliminate a false data race shown below
 
-Understandable.
+ (FREE from device detaching)      |   (USE from netdev core)
+igb_remove                         |  igb_ndo_get_vf_config
+ igb_disable_sriov                 |  vf >= adapter->vfs_allocated_count?
+  kfree(adapter->vf_data)          |
+  adapter->vfs_allocated_count = 0 |
+                                   |    memcpy(... adapter->vf_data[vf]
 
-> For instance, we can use a specific destructor as a wrapper
-> around unix_destruct_scm(), to identify skbs that unix_gc()
-> has to special case.
+The above race will never happen and the extra rtnl_lock causes deadlock
+below
 
-Looks fine to me:
+[  141.420169]  <TASK>
+[  141.420672]  __schedule+0x2dd/0x840
+[  141.421427]  schedule+0x50/0xc0
+[  141.422041]  schedule_preempt_disabled+0x11/0x20
+[  141.422678]  __mutex_lock.isra.13+0x431/0x6b0
+[  141.423324]  unregister_netdev+0xe/0x20
+[  141.423578]  igbvf_remove+0x45/0xe0 [igbvf]
+[  141.423791]  pci_device_remove+0x36/0xb0
+[  141.423990]  device_release_driver_internal+0xc1/0x160
+[  141.424270]  pci_stop_bus_device+0x6d/0x90
+[  141.424507]  pci_stop_and_remove_bus_device+0xe/0x20
+[  141.424789]  pci_iov_remove_virtfn+0xba/0x120
+[  141.425452]  sriov_disable+0x2f/0xf0
+[  141.425679]  igb_disable_sriov+0x4e/0x100 [igb]
+[  141.426353]  igb_remove+0xa0/0x130 [igb]
+[  141.426599]  pci_device_remove+0x36/0xb0
+[  141.426796]  device_release_driver_internal+0xc1/0x160
+[  141.427060]  driver_detach+0x44/0x90
+[  141.427253]  bus_remove_driver+0x55/0xe0
+[  141.427477]  pci_unregister_driver+0x2a/0xa0
+[  141.428296]  __x64_sys_delete_module+0x141/0x2b0
+[  141.429126]  ? mntput_no_expire+0x4a/0x240
+[  141.429363]  ? syscall_trace_enter.isra.19+0x126/0x1a0
+[  141.429653]  do_syscall_64+0x5b/0x80
+[  141.429847]  ? exit_to_user_mode_prepare+0x14d/0x1c0
+[  141.430109]  ? syscall_exit_to_user_mode+0x12/0x30
+[  141.430849]  ? do_syscall_64+0x67/0x80
+[  141.431083]  ? syscall_exit_to_user_mode_prepare+0x183/0x1b0
+[  141.431770]  ? syscall_exit_to_user_mode+0x12/0x30
+[  141.432482]  ? do_syscall_64+0x67/0x80
+[  141.432714]  ? exc_page_fault+0x64/0x140
+[  141.432911]  entry_SYSCALL_64_after_hwframe+0x72/0xdc
 
-Reviewed-by: Jens Axboe <axboe@kernel.dk>
+Since the igb_disable_sriov() will call pci_disable_sriov() before
+releasing any resources, the netdev core will synchronize the cleanup to
+avoid any races. This patch removes the useless rtnl_(un)lock to guarantee
+correctness.
 
+CC: stable@vger.kernel.org
+Fixes: 6faee3d4ee8b ("igb: Add lock to avoid data race")
+Reported-by: Corinna Vinschen <vinschen@redhat.com>
+Link: https://lore.kernel.org/intel-wired-lan/ZAcJvkEPqWeJHO2r@calimero.vinschen.de/
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+---
+V1->V2: update Link and correct Corinna's name
+ drivers/net/ethernet/intel/igb/igb_main.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 03bc1e8af575..5532361b0e94 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -3863,9 +3863,7 @@ static void igb_remove(struct pci_dev *pdev)
+ 	igb_release_hw_control(adapter);
+ 
+ #ifdef CONFIG_PCI_IOV
+-	rtnl_lock();
+ 	igb_disable_sriov(pdev);
+-	rtnl_unlock();
+ #endif
+ 
+ 	unregister_netdev(netdev);
 -- 
-Jens Axboe
-
+2.34.1
 
