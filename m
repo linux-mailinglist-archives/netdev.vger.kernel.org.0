@@ -2,81 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 021AE6AF801
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 22:50:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F17A6AF82D
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 23:03:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230042AbjCGVuZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 16:50:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33372 "EHLO
+        id S230444AbjCGWDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 17:03:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231189AbjCGVuX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 16:50:23 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D1FDA2C25
-        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 13:50:22 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B3B6B6159A
-        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 21:50:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1B0C5C43444;
-        Tue,  7 Mar 2023 21:50:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678225821;
-        bh=jPOaP+3pdt+NZE0cIsUJtiOKW6nWsG6VGnSSAffGvPw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=OinQ90QaiuOV2HlLA4Y9jNWyhCQt+Mc51gtdVdN4fCueVcsXcLAMOLi2h66Po+KZZ
-         +QZE+scD70wHZ8L8RF6yBhCT57Tm70UGnGhGVEGgwMuguPHIn+ucuVa1O6D55cd6D0
-         HwqBWq4vaAEKwQT9bB6beCz/YymzUkEtyvCOszdDXY65r5DfFPM8IHJZkmq4jyPNDb
-         +F8vAaOY1zaAY81W+NVYPyDbO4dqxd+43hefDECcrLUJK2ameZgGmbUewE4v3leDwE
-         v+bmBozJaNNwuFZtlIraFP710BsrvtmJJwyKDoBmQCS0J5xifucwov5TyfRUD231l0
-         1q9i01wQ/L7UQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E801FE61B64;
-        Tue,  7 Mar 2023 21:50:20 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229590AbjCGWDl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 17:03:41 -0500
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD7ABA42EB;
+        Tue,  7 Mar 2023 14:03:38 -0800 (PST)
+Received: by mail-wm1-x32b.google.com with SMTP id j3so8738164wms.2;
+        Tue, 07 Mar 2023 14:03:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678226617;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=JuDmDmY4IV0QLoJ1ArzJ4ijcazQ7ZD0u2S2wBUytaV4=;
+        b=RNXi6CIgsswuyNAn64MCE1WBucMN/4Lb2cthlZw4x33sH4no/5WS9mQOMKrXlZeIiZ
+         f4A2fky6gKi+hjyL07oPC4kprq1TCIoE9pRh0xDlCilqd4j35ULgS5rUYFFwQqiEgk6F
+         dFcWPzK/4/j5+q0lz+LJNcsixcNJHCcPeJHy7Q16jEXU8Iah9kdiFgCzW3RAO+6OMgpi
+         1mVqCP4Hx/9Ppg5oftc8FsrLtbcNvc4UboWlZ0RSzEkX/34eJ4DiE3nPssW7VrzWwjba
+         7gssg+qqA46xyoQmNVnsXbI4zHB8V0fgh5ij87CA18eZoqDNVkGgXyIC0DfSgJUkYr/i
+         m2gQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678226617;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=JuDmDmY4IV0QLoJ1ArzJ4ijcazQ7ZD0u2S2wBUytaV4=;
+        b=0Z21xhCB2+DQJFszCyX2N30jqlziUxf0jnG3Kp+GW+7PEFEYqdo2Lp4eUrNK67XQR3
+         5AZA4RqWlMTNDKQEmHYlIdmZhmbT7GX8SStutkuuPnYW4KxhNInnI5NDo0iUQeQIKsmQ
+         rLU/jPyLaFfiHtfQS/GlOI3mV9OyXvyWoJALqG74hT/u6mxppeMZvPPASXWmLkN9BwvU
+         YsgPBr2Q5Rxx0/R+wnWnQCRqGt91Xwnu1vi2313bNeFVaIJYZSThQWz30zlDSX+y4iM1
+         gpdwN1bSjHFyEkdZ9+Ai4Asr3RdNz++KHlxXcmgYNYtUBNdlSgn2mCcB+yfRCeZ+YmwY
+         7Msg==
+X-Gm-Message-State: AO0yUKUxDCwict25pqP91jJle5CSPmVl/O7vCkxgu+VvIwkD9c4Qr3I5
+        5gytuMh5s7taqlzEy3LM2YG8NMOYBpBKXuT9
+X-Google-Smtp-Source: AK7set+nNuteaAJCPG2h+uXKJN36DhqNuJ1LM58JQ9dJYBDea2ahKspMS4VBH1MVa7s1gsdYprAUZw==
+X-Received: by 2002:a05:600c:5127:b0:3ea:f01d:2346 with SMTP id o39-20020a05600c512700b003eaf01d2346mr14624376wms.15.1678226617227;
+        Tue, 07 Mar 2023 14:03:37 -0800 (PST)
+Received: from arinc9-PC.lan ([212.68.60.226])
+        by smtp.gmail.com with ESMTPSA id o13-20020a5d670d000000b002c8476dde7asm13556735wru.114.2023.03.07.14.03.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Mar 2023 14:03:36 -0800 (PST)
+From:   arinc9.unal@gmail.com
+X-Google-Original-From: arinc.unal@arinc9.com
+To:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
+Cc:     =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH net 1/2] net: dsa: mt7530: remove now incorrect comment regarding port 5
+Date:   Wed,  8 Mar 2023 01:03:27 +0300
+Message-Id: <20230307220328.11186-1-arinc.unal@arinc9.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] mailmap: add entry for Maxim Mikityanskiy
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167822582094.6774.15369837477499999059.git-patchwork-notify@kernel.org>
-Date:   Tue, 07 Mar 2023 21:50:20 +0000
-References: <20230306192018.3894988-1-kuba@kernel.org>
-In-Reply-To: <20230306192018.3894988-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, maxtram95@gmail.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-This patch was applied to netdev/net.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
+Remove now incorrect comment regarding port 5 as GMAC5. This is supposed to
+be supported since commit 38f790a80560 ("net: dsa: mt7530: Add support for
+port 5") under mt7530_setup_port5().
 
-On Mon,  6 Mar 2023 11:20:18 -0800 you wrote:
-> Map Maxim's old corporate addresses to his personal one.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> --
-> CC: maxtram95@gmail.com
-> ---
->  .mailmap | 2 ++
->  1 file changed, 2 insertions(+)
+Fixes: 38f790a80560 ("net: dsa: mt7530: Add support for port 5")
+Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+---
+ drivers/net/dsa/mt7530.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Here is the summary with links:
-  - [net] mailmap: add entry for Maxim Mikityanskiy
-    https://git.kernel.org/netdev/net/c/e7b15acdc10f
-
-You are awesome, thank you!
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index a508402c4ecb..b1a79460df0e 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -2201,7 +2201,7 @@ mt7530_setup(struct dsa_switch *ds)
+ 
+ 	mt7530_pll_setup(priv);
+ 
+-	/* Enable Port 6 only; P5 as GMAC5 which currently is not supported */
++	/* Enable port 6 */
+ 	val = mt7530_read(priv, MT7530_MHWTRAP);
+ 	val &= ~MHWTRAP_P6_DIS & ~MHWTRAP_PHY_ACCESS;
+ 	val |= MHWTRAP_MANUAL;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.37.2
 
