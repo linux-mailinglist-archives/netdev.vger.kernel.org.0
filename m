@@ -2,104 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FF7B6AED58
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 19:03:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 358186AEF04
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 19:19:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231509AbjCGSDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 13:03:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39036 "EHLO
+        id S232657AbjCGSTk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 13:19:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231286AbjCGSC6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 13:02:58 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F967AA277
-        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 09:56:13 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id k10so31867021edk.13
-        for <netdev@vger.kernel.org>; Tue, 07 Mar 2023 09:56:13 -0800 (PST)
+        with ESMTP id S232641AbjCGSTR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 13:19:17 -0500
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 590FD9CBED
+        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 10:13:39 -0800 (PST)
+Received: by mail-yb1-xb2d.google.com with SMTP id v101so12327148ybi.2
+        for <netdev@vger.kernel.org>; Tue, 07 Mar 2023 10:13:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google; t=1678211771;
+        d=chromium.org; s=google; t=1678212818;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=kpbwD5A+nT3p8meze/QbtH3VFkABogGoDoeoO8g0g+8=;
-        b=GYEZjQyFR0uDSo/6obGk52hmnrkvkX/aOV+lQp6jP9HYYzznFirIN/GJoNFU1AGTn3
-         VtKvQ0U2EOj9bfIycG9jNIdZ1bTbcxWniVUxTlMik7QFPDzLAUBjGCox1E4/2JHALhbq
-         2x/N2l9l5kF5eeWDQRle0rU1Pq7MxbBV937Yo=
+        bh=sH8Wy2Ph761evbKn3y8LG62Tu+KFGePC7gyj4o8USOA=;
+        b=UP+9D9GXzLCgcmXQGGP3q3C7u1PkefkqLS6Z1ClEa+/CqKo0BvvfXz/JK/Q5wudRSn
+         1yp2x3C8D6SoTMFYgu48Iiw0jbJTYQ+FdXJI5zrU2mZouLp25QtUpORoSQxRMiLFiS3W
+         oqykigITON7KiL+ujyvz4/10HWi1gjPYtlHzM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678211771;
+        d=1e100.net; s=20210112; t=1678212818;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=kpbwD5A+nT3p8meze/QbtH3VFkABogGoDoeoO8g0g+8=;
-        b=GoCQS+qGIYTZeoaATH3ZdCLmsum+VzRcdMnHosGm5E2d/staiAWu+zTKmFXmabJ08u
-         nPO/ny9c/NYAMlaOgkDsdW4IjEMVO5Hta7zMaeGgrmShBLLqge9yvY3Rge6NPl42Irjj
-         IkX7lAlTvhgeKHVraIJYp7FfUDRx/9GYujj65Y6tZVWl+OGI4SQv1hnLPqGyxQKtQgzm
-         c1edF6R1Kcd/cPxAAE1KdvYKNdrdAJ3AiBHy+4w1UsewEdi4pmjCwI78embiPzZNA3LO
-         pPphO08tX7GxeivGRh8oaEttTFFS8UbxVWmmkX/To5TBqbmWqaeNBRDU//5xVynT/KiM
-         dPCg==
-X-Gm-Message-State: AO0yUKUOXVP4vSg62Is7xHfNaE/T/i5T3qQMYV0ITFr/dyjJ+e5TFIYz
-        zHydTxXkMsui9KQxdGE04b8SOtTar19APqD7d077QYq/
-X-Google-Smtp-Source: AK7set8JjCfQpZmpsQgJe3FcrgqzW2wzHbKAlKMHzcfVJ/Gs7Pp2x+42fFXWZ4+KNmFOItsfuS9YjQ==
-X-Received: by 2002:a17:906:4997:b0:8b1:800b:9fbf with SMTP id p23-20020a170906499700b008b1800b9fbfmr14402659eju.13.1678211771375;
-        Tue, 07 Mar 2023 09:56:11 -0800 (PST)
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com. [209.85.208.44])
-        by smtp.gmail.com with ESMTPSA id f14-20020a1709067f8e00b008c16025b318sm6360534ejr.155.2023.03.07.09.56.10
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Mar 2023 09:56:10 -0800 (PST)
-Received: by mail-ed1-f44.google.com with SMTP id s11so55768214edy.8
-        for <netdev@vger.kernel.org>; Tue, 07 Mar 2023 09:56:10 -0800 (PST)
-X-Received: by 2002:a17:906:b10d:b0:878:561c:6665 with SMTP id
- u13-20020a170906b10d00b00878561c6665mr7662618ejy.0.1678211770178; Tue, 07 Mar
- 2023 09:56:10 -0800 (PST)
+        bh=sH8Wy2Ph761evbKn3y8LG62Tu+KFGePC7gyj4o8USOA=;
+        b=yepj1LBihHePzoUsrbj9OmeaDRmUbsr7uJZi9dbI7Nos19qEjacxOGsL2guxH0+jVp
+         lD9bJoR1pFccNZXPYGWnuSJcLOyMFwdPfTiviNDePnzcrjcn5ziL33j2wqUMMJgc22+0
+         Nc4/PKQns5wTS6B3KtMgfAk4aJJB5GwjqhYzgEQCvqqlhuJpAtbHsB5Vm2Y5JgK0iE05
+         EOK83I2IkkC4bnF4Ltx5xoYJDwLtnKCZbTQJxUJLHQRpUrBLwuj4TKwtWdadTfqFI/a3
+         AfpLXJKxTdV4k52afsvaIPl42ARl7oV18rvf3g01lvkiFycrtaI4TO9x3c/eR3I4BxNH
+         E4Eg==
+X-Gm-Message-State: AO0yUKXV5sUwLMCLJl7vRo99HrfPCnXVAhaCrHHqSsdjRlkZ76DSL3vr
+        zTLSqyEEI3H7/QNjYHPO5MYzCNTT5yCyWL5kBo2JexH/431MS4ptwynEJg==
+X-Google-Smtp-Source: AK7set+Aj6jA4kMXw9p7vsPELm43cnWFvS3/a2HCzpZ8bHXDixnTNPk0vbZEYb6n4LPrlpMnjWEsZHLzSPRMqZ5bTx8=
+X-Received: by 2002:a25:fe04:0:b0:b1a:64ba:9c9b with SMTP id
+ k4-20020a25fe04000000b00b1a64ba9c9bmr1170204ybe.1.1678212818267; Tue, 07 Mar
+ 2023 10:13:38 -0800 (PST)
 MIME-Version: 1.0
-References: <20230307125358.772287565@linutronix.de> <20230307125538.989175656@linutronix.de>
-In-Reply-To: <20230307125538.989175656@linutronix.de>
-From:   Linus Torvalds <torvalds@linuxfoundation.org>
-Date:   Tue, 7 Mar 2023 09:55:52 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wjO15WdfF2Y=pROf2pid0zW5xfHnfJt3bH2QWQp6oWyGw@mail.gmail.com>
-Message-ID: <CAHk-=wjO15WdfF2Y=pROf2pid0zW5xfHnfJt3bH2QWQp6oWyGw@mail.gmail.com>
-Subject: Re: [patch V2 4/4] net: dst: Switch to rcuref_t reference counting
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>, x86@kernel.org,
-        Wangyang Guo <wangyang.guo@intel.com>,
-        Arjan van De Ven <arjan@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+References: <20230307005028.2065800-1-grundler@chromium.org>
+ <84094771-7f98-0d8d-fe79-7c22e15a602d@gmail.com> <CANEJEGvM_xLrSSjrgKLh_xP+BrFFT+afDQhG8BOdgHPf7eR4gQ@mail.gmail.com>
+ <20230307102931.GA25631@wunner.de>
+In-Reply-To: <20230307102931.GA25631@wunner.de>
+From:   Grant Grundler <grundler@chromium.org>
+Date:   Tue, 7 Mar 2023 10:13:26 -0800
+Message-ID: <CANEJEGv44GeY=qWiVTJx6tkL-fxs=7vT8uzGm9nPsGirwVBGVQ@mail.gmail.com>
+Subject: Re: [PATCH] net: asix: fix modprobe "sysfs: cannot create duplicate filename"
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     Grant Grundler <grundler@chromium.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Anton Lundin <glance@acc.umu.se>,
+        Eizan Miyamoto <eizan@chromium.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Arjan Van De Ven <arjan.van.de.ven@intel.com>
+        netdev <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-9.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+        USER_IN_DEF_SPF_WL autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 7, 2023 at 4:57=E2=80=AFAM Thomas Gleixner <tglx@linutronix.de>=
- wrote:
+On Tue, Mar 7, 2023 at 2:29=E2=80=AFAM Lukas Wunner <lukas@wunner.de> wrote=
+:
 >
-> -       atomic_t                __refcnt;       /* 64-bit offset 64 */
-> +       rcuref_t                __refcnt;       /* 64-bit offset 64 */
+> On Mon, Mar 06, 2023 at 10:10:09PM -0800, Grant Grundler wrote:
+> > On Mon, Mar 6, 2023 at 7:46???PM Florian Fainelli <f.fainelli@gmail.com=
+> wrote:
+> > > On 3/6/2023 4:50 PM, Grant Grundler wrote:
+> > > > +     priv->phydev =3D mdiobus_get_phy(priv->mdio, priv->phy_addr);
+> > > > +     if (priv->phydev)
+> > > > +             return 0;
+> > >
+> > > This was in ax88772_init_phy() before, why is this being moved here n=
+ow?
+> >
+> > Because other drivers I looked at (e.g. tg3 and r8169) do all the mdiob=
+us_*
+> > calls in one function and I wanted to have some "symmetry"
+> > with ax88772_release_mdio() function I added below.
+>
+> I'd suggest moving this cleanup to a separate commit so that you keep
+> the fix itself as small as possible and thus minimize the potential of
+> introducing regressions in stable kernels that will receive the fix.
 
-> -       atomic_t                __refcnt;       /* 32-bit offset 64 */
-> +       rcuref_t                __refcnt;       /* 32-bit offset 64 */
+Ok - will do.
 
-I assume any mis-use is caught by typechecking, but I'd be even
-happier if you changed the name of the member when you fundamentally
-change the use model for it (eg "__refcnt" -> "__rcuref" or
-something).
+> Also, per convention please use the if-clause to catch the error case,
+> not the success case.  It doesn't matter if you need two or three more
+> lines, readability is more important IMO.
 
-Or was there some reason for not doing that?
+Sure. No problem. The code I wrote seemed easier to read but I'm
+familiar with the convention and have no objection to that.
 
-          Linus
+I'll add the Fixes: tag as well (thanks for confirming Oleksij!)
+
+cheers,
+grant
+
+>
+> Thanks,
+>
+> Lukas
