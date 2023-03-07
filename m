@@ -2,126 +2,267 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EAF66ADBC7
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 11:25:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89B1B6ADBEE
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 11:30:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230118AbjCGKZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 05:25:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34990 "EHLO
+        id S230347AbjCGKaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 05:30:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbjCGKZP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 05:25:15 -0500
-X-Greylist: delayed 54684 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Mar 2023 02:25:13 PST
-Received: from out-24.mta0.migadu.com (out-24.mta0.migadu.com [91.218.175.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42AB27698
-        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 02:25:12 -0800 (PST)
-Message-ID: <aa6edec3-4be8-d1e4-159f-1659aa4e0bbe@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1678184710;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7lTK9UGJRDX4IkJKg2UZIo69ATgMXypgW/C+oA22R/E=;
-        b=j1v7QAB6REeKDnJniPEIBDPotB4oaM7v9YJmdq7ON/15bZy4Soy2wyiAZnJ7DOL+NEV09P
-        lQ3cymZ/FOHwe3OMqjv/zWhiYcwu1CJPxuC7AHe+MDzJmtF1sCXo5yqx5AGkqQESR9shW1
-        V+FloROpdCNKWeGNOGY0dH6y20z9AjY=
-Date:   Tue, 7 Mar 2023 10:25:04 +0000
+        with ESMTP id S230211AbjCGKaB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 05:30:01 -0500
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48DC4149BD
+        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 02:29:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1678184953; x=1709720953;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Dq9B7Opwkok8PFNcIWXAYrZOXmHHmY8MR4kC+89XxkY=;
+  b=vqHvFAuepkzyLHnK3pBCJq1sxQVEuhAsQ86Nn33dBMP5onub7/IqIfZY
+   qrw1Oi2HWN5Bx+AlqdVuzKytDvb3A8yeQqOQtfOlnaQ4KUBhZQ7vuEmVA
+   B3ggTFGPt8nSi5gF5uQeM+8rjlJtCwVmFR94BygSl7XKu8OUFAcyY0R1m
+   Q=;
+X-IronPort-AV: E=Sophos;i="5.98,240,1673913600"; 
+   d="scan'208";a="190481800"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1box-1dm6-7f722725.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2023 10:29:12 +0000
+Received: from EX19D011EUA001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1box-1dm6-7f722725.us-east-1.amazon.com (Postfix) with ESMTPS id B8E7F87AE7;
+        Tue,  7 Mar 2023 10:29:09 +0000 (UTC)
+Received: from EX19D028EUB003.ant.amazon.com (10.252.61.31) by
+ EX19D011EUA001.ant.amazon.com (10.252.50.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.24; Tue, 7 Mar 2023 10:29:08 +0000
+Received: from u570694869fb251.ant.amazon.com (10.85.143.174) by
+ EX19D028EUB003.ant.amazon.com (10.252.61.31) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.24; Tue, 7 Mar 2023 10:29:00 +0000
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
+CC:     Shay Agroskin <shayagr@amazon.com>,
+        "Woodhouse, David" <dwmw@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        Saeed Bshara <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Arinzon, David" <darinzon@amazon.com>,
+        "Itzko, Shahar" <itzko@amazon.com>,
+        "Abboud, Osama" <osamaabb@amazon.com>
+Subject: [PATCH RFC v3 net-next 5/5] net: ena: Add support to changing tx_push_buf_len
+Date:   Tue, 7 Mar 2023 12:28:29 +0200
+Message-ID: <20230307102829.2764777-1-shayagr@amazon.com>
+X-Mailer: git-send-email 2.30.1
+In-Reply-To: <20230307102458.2756297-1-shayagr@amazon.com>
+References: <20230307102458.2756297-1-shayagr@amazon.com>
 MIME-Version: 1.0
-Subject: Re: [PATCH net] bnxt_en: reset PHC frequency in free-running mode
-Content-Language: en-US
-To:     Pavan Chebbi <pavan.chebbi@broadcom.com>
-Cc:     Vadim Fedorenko <vadfed@meta.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andy Gospodarek <andrew.gospodarek@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        netdev@vger.kernel.org
-References: <20230306165344.350387-1-vadfed@meta.com>
- <CALs4sv1A1eTpH45Z=kyL3qtu7Yfu8JRW6Wc2r1d+UxjvB_EEEA@mail.gmail.com>
- <d8a49972-2875-2be9-a210-92d9dac32c03@linux.dev>
- <CALs4sv0u87c3QpkT5=pGOEtLBwuZtEhaN9Ez97jmXgPv7y3-ew@mail.gmail.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Vadim Fedorenko <vadim.fedorenko@linux.dev>
-In-Reply-To: <CALs4sv0u87c3QpkT5=pGOEtLBwuZtEhaN9Ez97jmXgPv7y3-ew@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.85.143.174]
+X-ClientProxiedBy: EX19D045UWC001.ant.amazon.com (10.13.139.223) To
+ EX19D028EUB003.ant.amazon.com (10.252.61.31)
+X-Spam-Status: No, score=-11.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/03/2023 05:07, Pavan Chebbi wrote:
-> On Tue, Mar 7, 2023 at 12:43 AM Vadim Fedorenko
-> <vadim.fedorenko@linux.dev> wrote:
->>
->> On 06/03/2023 17:11, Pavan Chebbi wrote:
->>> On Mon, Mar 6, 2023 at 10:23 PM Vadim Fedorenko <vadfed@meta.com> wrote:
->>>>
->>>> @@ -932,13 +937,15 @@ int bnxt_ptp_init(struct bnxt *bp, bool phc_cfg)
->>>>           atomic_set(&ptp->tx_avail, BNXT_MAX_TX_TS);
->>>>           spin_lock_init(&ptp->ptp_lock);
->>>>
->>>> -       if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC) {
->>>> +       if (BNXT_PTP_RTC(ptp->bp)) {
->>>>                   bnxt_ptp_timecounter_init(bp, false);
->>>>                   rc = bnxt_ptp_init_rtc(bp, phc_cfg);
->>>>                   if (rc)
->>>>                           goto out;
->>>>           } else {
->>>>                   bnxt_ptp_timecounter_init(bp, true);
->>>> +               if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
->>>> +                       bnxt_ptp_adjfreq_rtc(bp, 0);
-> 
-> I am not sure if the intended objective of resetting the PHC is going
-> to be achieved with this. The FW will always apply the new ppb on the
-> base PHC frequency. I am not sure what you mean by "reset the hardware
-> frequency of PHC to zero" in the commit message.
+The ENA driver allows for two distinct values for the number of bytes
+of the packet's payload that can be written directly to the device.
 
-Well, I meant reset it to base frequency and remove any adjustments 
-applied before. I'll re-phrase it in the next version.
+For a value of 224 the driver turns on Large LLQ Header mode in which
+the first 224 of the packet's payload are written to the LLQ.
 
-> If you want PHC to
-> start counting from 0 on init, you may use bnxt_ptp_cfg_settime() with
-> 0.
+Signed-off-by: Shay Agroskin <shayagr@amazon.com>
+---
+ drivers/net/ethernet/amazon/ena/ena_eth_com.h |  4 ++
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c | 57 +++++++++++++++++--
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  | 26 +++++++--
+ drivers/net/ethernet/amazon/ena/ena_netdev.h  |  7 ++-
+ 4 files changed, 82 insertions(+), 12 deletions(-)
 
-That's not what we want, the current counter behavior is ok.
-
-> Also, the RTC flag may not be set on newer firmwares running on MH
-> systems. I see no harm in resetting the PHC unconditionally if we are
-> not in RTC mode.
-
-And that's perfectly fine! Each firmware upgrade requires full NIC reset 
-and it will end up with reset of PHC to base frequency. But in the 
-situation when we have several version of kernel running on the SLED, on 
-kernel upgrade we end up with adjustment stored in the PHC using old 
-kernel which was tuning RTC, but then booted into new kernel which stops 
-tuning RTC. If the last stored adjustment was close to boundaries for 
-some reasons, timecounter will never compensate the difference and all 
-hosts in the sled will be drifting hard. The only way to bring it back 
-to working state is to power reset the sled, which is disruptive action.
-
-The fix was proved to work actually in our setup.
-
-
->>>
->>> You meant bnxt_ptp_adjfine_rtc(), right.
->>> Anyway, let me go through the patch in detail, while you may submit
->>> corrections for the build.
->>>
->> Oh, yeah, right, artefact of rebasing. Will fix it in v2, thanks.
->>
->>
->>>>           }
->>>>
->>>>           ptp->ptp_info = bnxt_ptp_caps;
->>>> --
->>>> 2.30.2
->>>>
->>
+diff --git a/drivers/net/ethernet/amazon/ena/ena_eth_com.h b/drivers/net/ethernet/amazon/ena/ena_eth_com.h
+index 689313ee25a8..8bec31fa816c 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_eth_com.h
++++ b/drivers/net/ethernet/amazon/ena/ena_eth_com.h
+@@ -10,6 +10,10 @@
+ 
+ /* head update threshold in units of (queue size / ENA_COMP_HEAD_THRESH) */
+ #define ENA_COMP_HEAD_THRESH 4
++/* we allow 2 DMA descriptors per LLQ entry */
++#define ENA_LLQ_ENTRY_DESC_CHUNK_SIZE	(2 * sizeof(struct ena_eth_io_tx_desc))
++#define ENA_LLQ_HEADER		(128 - ENA_LLQ_ENTRY_DESC_CHUNK_SIZE)
++#define ENA_LLQ_LARGE_HEADER	(256 - ENA_LLQ_ENTRY_DESC_CHUNK_SIZE)
+ 
+ struct ena_com_tx_ctx {
+ 	struct ena_com_tx_meta ena_meta;
+diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+index 8da79eedc057..f71ca72d641b 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
++++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+@@ -476,6 +476,19 @@ static void ena_get_ringparam(struct net_device *netdev,
+ 
+ 	ring->tx_max_pending = adapter->max_tx_ring_size;
+ 	ring->rx_max_pending = adapter->max_rx_ring_size;
++	if (adapter->ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV) {
++		bool large_llq_supported = adapter->large_llq_header_supported;
++
++		kernel_ring->tx_push_buf_len = adapter->ena_dev->tx_max_header_size;
++		if (large_llq_supported)
++			kernel_ring->tx_push_buf_max_len = ENA_LLQ_LARGE_HEADER;
++		else
++			kernel_ring->tx_push_buf_max_len = ENA_LLQ_HEADER;
++	} else {
++		kernel_ring->tx_push_buf_max_len = 0;
++		kernel_ring->tx_push_buf_len = 0;
++	}
++
+ 	ring->tx_pending = adapter->tx_ring[0].ring_size;
+ 	ring->rx_pending = adapter->rx_ring[0].ring_size;
+ }
+@@ -486,7 +499,8 @@ static int ena_set_ringparam(struct net_device *netdev,
+ 			     struct netlink_ext_ack *extack)
+ {
+ 	struct ena_adapter *adapter = netdev_priv(netdev);
+-	u32 new_tx_size, new_rx_size;
++	u32 new_tx_size, new_rx_size, new_tx_push_buf_len;
++	bool changed = false;
+ 
+ 	new_tx_size = ring->tx_pending < ENA_MIN_RING_SIZE ?
+ 			ENA_MIN_RING_SIZE : ring->tx_pending;
+@@ -496,11 +510,45 @@ static int ena_set_ringparam(struct net_device *netdev,
+ 			ENA_MIN_RING_SIZE : ring->rx_pending;
+ 	new_rx_size = rounddown_pow_of_two(new_rx_size);
+ 
+-	if (new_tx_size == adapter->requested_tx_ring_size &&
+-	    new_rx_size == adapter->requested_rx_ring_size)
++	changed |= new_tx_size != adapter->requested_tx_ring_size ||
++		   new_rx_size != adapter->requested_rx_ring_size;
++
++	/* This value is ignored if LLQ is not supported */
++	new_tx_push_buf_len = adapter->ena_dev->tx_max_header_size;
++
++	/* Validate that the push buffer is supported on the underlying device */
++	if (kernel_ring->tx_push_buf_len) {
++		enum ena_admin_placement_policy_type placement;
++
++		new_tx_push_buf_len = kernel_ring->tx_push_buf_len;
++
++		placement = adapter->ena_dev->tx_mem_queue_type;
++		if (placement == ENA_ADMIN_PLACEMENT_POLICY_HOST)
++			return -EOPNOTSUPP;
++
++		if (new_tx_push_buf_len != ENA_LLQ_HEADER &&
++		    new_tx_push_buf_len != ENA_LLQ_LARGE_HEADER) {
++			bool large_llq_sup = adapter->large_llq_header_supported;
++			char large_llq_size_str[40];
++
++			snprintf(large_llq_size_str, 40, ", %lu", ENA_LLQ_LARGE_HEADER);
++
++			NL_SET_ERR_MSG_FMT_MOD(extack,
++					       "Supported tx push buff values: [%lu%s]",
++					       ENA_LLQ_HEADER,
++					       large_llq_sup ? large_llq_size_str : "");
++
++			return -EINVAL;
++		}
++
++		changed |= new_tx_push_buf_len != adapter->ena_dev->tx_max_header_size;
++	}
++
++	if (!changed)
+ 		return 0;
+ 
+-	return ena_update_queue_sizes(adapter, new_tx_size, new_rx_size);
++	return ena_update_queue_params(adapter, new_tx_size, new_rx_size,
++				       new_tx_push_buf_len);
+ }
+ 
+ static u32 ena_flow_hash_to_flow_type(u16 hash_fields)
+@@ -900,6 +948,7 @@ static int ena_set_tunable(struct net_device *netdev,
+ static const struct ethtool_ops ena_ethtool_ops = {
+ 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
+ 				     ETHTOOL_COALESCE_USE_ADAPTIVE_RX,
++	.supported_ring_params	= ETHTOOL_RING_USE_TX_PUSH_BUF_LEN,
+ 	.get_link_ksettings	= ena_get_link_ksettings,
+ 	.get_drvinfo		= ena_get_drvinfo,
+ 	.get_msglevel		= ena_get_msglevel,
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index 537951ca4d61..776a35c27c53 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -2809,11 +2809,13 @@ static int ena_close(struct net_device *netdev)
+ 	return 0;
+ }
+ 
+-int ena_update_queue_sizes(struct ena_adapter *adapter,
+-			   u32 new_tx_size,
+-			   u32 new_rx_size)
++int ena_update_queue_params(struct ena_adapter *adapter,
++			    u32 new_tx_size,
++			    u32 new_rx_size,
++			    u32 new_llq_header_len)
+ {
+-	bool dev_was_up;
++	bool dev_was_up, large_llq_changed = false;
++	int rc = 0;
+ 
+ 	dev_was_up = test_bit(ENA_FLAG_DEV_UP, &adapter->flags);
+ 	ena_close(adapter->netdev);
+@@ -2823,7 +2825,21 @@ int ena_update_queue_sizes(struct ena_adapter *adapter,
+ 			  0,
+ 			  adapter->xdp_num_queues +
+ 			  adapter->num_io_queues);
+-	return dev_was_up ? ena_up(adapter) : 0;
++
++	large_llq_changed = adapter->ena_dev->tx_mem_queue_type ==
++			    ENA_ADMIN_PLACEMENT_POLICY_DEV;
++	large_llq_changed &=
++		new_llq_header_len != adapter->ena_dev->tx_max_header_size;
++
++	/* a check that the configuration is valid is done by caller */
++	if (large_llq_changed) {
++		adapter->large_llq_header_enabled = !adapter->large_llq_header_enabled;
++
++		ena_destroy_device(adapter, false);
++		rc = ena_restore_device(adapter);
++	}
++
++	return dev_was_up && !rc ? ena_up(adapter) : rc;
+ }
+ 
+ int ena_set_rx_copybreak(struct ena_adapter *adapter, u32 rx_copybreak)
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.h b/drivers/net/ethernet/amazon/ena/ena_netdev.h
+index 3e8c4a66c7d8..5a0d4ee76172 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.h
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.h
+@@ -396,9 +396,10 @@ void ena_dump_stats_to_buf(struct ena_adapter *adapter, u8 *buf);
+ 
+ int ena_update_hw_stats(struct ena_adapter *adapter);
+ 
+-int ena_update_queue_sizes(struct ena_adapter *adapter,
+-			   u32 new_tx_size,
+-			   u32 new_rx_size);
++int ena_update_queue_params(struct ena_adapter *adapter,
++			    u32 new_tx_size,
++			    u32 new_rx_size,
++			    u32 new_llq_header_len);
+ 
+ int ena_update_queue_count(struct ena_adapter *adapter, u32 new_channel_count);
+ 
+-- 
+2.25.1
 
