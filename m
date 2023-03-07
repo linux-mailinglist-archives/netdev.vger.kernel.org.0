@@ -2,120 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B045D6AD397
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 01:59:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B31656AD386
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 01:57:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229701AbjCGA7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 19:59:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59442 "EHLO
+        id S229702AbjCGA46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 19:56:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229696AbjCGA7d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 19:59:33 -0500
-X-Greylist: delayed 392 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 06 Mar 2023 16:59:29 PST
-Received: from gimli.rothwell.id.au (unknown [IPv6:2404:9400:2:0:216:3eff:fee1:997a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F04731E1C
-        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 16:59:29 -0800 (PST)
-Received: from authenticated.rothwell.id.au (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.rothwell.id.au (Postfix) with ESMTPSA id 4PVxkY60MSzykW;
-        Tue,  7 Mar 2023 11:52:53 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=rothwell.id.au;
-        s=201702; t=1678150375;
-        bh=OTQcyoWW8W+dsJF+tizzSxsNTDpMqcgj3C/Jk1CfLyw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kBv0M9YGt+4BkOhekgqRUvPeP9jfVDVtj2jcj/Xe3rr8uCXkSetjywfAFyeTOPaJ8
-         sctjdqoGJrhG+lQR74xx1NMCPpyCgdRsFEjf1SKIGh0vO8c8GJGN9l6UTdJ813TjZw
-         rmqzNKb7uoSTu61eqe72w7I9OWjUgKPrw9/OFxY6/UXLiDM6Yfu0rsLYYl5NBk6Ns5
-         9zmbEz4caKV/9l3He1o/JjhSNbpwv57SzicIC7+6b4W5j0oJstR51izSbBCDffLESZ
-         1T+DxFZt6PYBwxRAayymjsOhPbU8UJmJylQoucrkC03utRQxazKkPGzV9NXd1ACxR+
-         tP5w3MXZlqvOg==
-Date:   Tue, 7 Mar 2023 11:52:52 +1100
-From:   Stephen Rothwell <sfr@rothwell.id.au>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: Signed-off-by missing for commit in the net tree
-Message-ID: <20230307115252.2b23c4f5@oak.ozlabs.ibm.com>
-In-Reply-To: <d5b3d530-e050-1891-e5c0-8c98e136b744@gmail.com>
-References: <20230307083703.558634a9@canb.auug.org.au>
-        <d5b3d530-e050-1891-e5c0-8c98e136b744@gmail.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.36; aarch64-unknown-linux-gnu)
+        with ESMTP id S229669AbjCGA45 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 19:56:57 -0500
+Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE86B4D625
+        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 16:56:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1678150616; x=1709686616;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=N/C3Y5pzRvo7wBoP0uW3mPJBJ+iAoy4QrLO7EEgHu8Y=;
+  b=VdGNQJCeVtgYh6SfGkL5EHxWIcNtRif4b0e8/jmeLQNPVoElvuc8/bvK
+   pENWY0DTYtlWNDnhfQF4l2hoT2DYryqQoR6lB4xoCaKn3CzsFXgXxKQWR
+   Vaou5dZKvnXSYEGxQENVAstT9tEtaLoOy8ZmFQrSE1rnWIbuNMo+vwBRH
+   o=;
+X-IronPort-AV: E=Sophos;i="5.98,238,1673913600"; 
+   d="scan'208";a="315492567"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-9694bb9e.us-east-1.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2023 00:56:50 +0000
+Received: from EX13MTAUWB002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1e-m6i4x-9694bb9e.us-east-1.amazon.com (Postfix) with ESMTPS id 208C580F41;
+        Tue,  7 Mar 2023 00:56:49 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB002.ant.amazon.com (10.43.161.202) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.45; Tue, 7 Mar 2023 00:56:48 +0000
+Received: from 88665a182662.ant.amazon.com (10.187.170.29) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.24; Tue, 7 Mar 2023 00:56:46 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <aahringo@redhat.com>
+CC:     <cluster-devel@redhat.com>, <cong.wang@bytedance.com>,
+        <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <peilin.ye@bytedance.com>, <kuniyu@amazon.com>
+Subject: Re: introduce function wrapper for sk_data_ready() call?
+Date:   Mon, 6 Mar 2023 16:56:38 -0800
+Message-ID: <20230307005638.76597-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <CAK-6q+hVu8xST=zreEdH3ne+kUY-zGriRwHAR9OpCxTwPFwOSw@mail.gmail.com>
+References: <CAK-6q+hVu8xST=zreEdH3ne+kUY-zGriRwHAR9OpCxTwPFwOSw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/QZfzygOe5M27vvB.wvaVLQK";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.187.170.29]
+X-ClientProxiedBy: EX19D038UWC002.ant.amazon.com (10.13.139.238) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/QZfzygOe5M27vvB.wvaVLQK
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Mon, 6 Mar 2023 07:47:02 -0500
+> 
+> Hi,
+> 
+> I saw that in 6.3-rc1 the following patch introduced something in dlm
+> socket application handling 40e0b0908142 ("net/sock: Introduce
+> trace_sk_data_ready()"). I am asking myself if we could instead
+> introduce a wrapper in net/ protocol family implementations and they
+> do such trace event calls there inside the socket implementation
+> instead of letting the application layer do it. It looks pretty
+> generic for me and it does not trace any application specific
+> information.
 
-Hi Heiner,
+I think you cannot apply the same logic to some functions which call
+trace_sk_data_ready() twice, e.g. subflow_data_ready, tls_data_ready().
 
-On Mon, 6 Mar 2023 23:16:09 +0100 Heiner Kallweit <hkallweit1@gmail.com> wr=
-ote:
->
-> On 06.03.2023 22:37, Stephen Rothwell wrote:
-> >=20
-> > Commit
-> >=20
-> >   58aac3a2ef41 ("net: phy: smsc: fix link up detection in forced irq mo=
-de")
-> >=20
-> > is missing a Signed-off-by from its committer.
->=20
-> Seems to be ok, false positive?
->=20
-> net: phy: smsc: fix link up detection in forced irq mode
-> Currently link up can't be detected in forced mode if polling
-> isn't used. Only link up interrupt source we have is aneg
-> complete which isn't applicable in forced mode. Therefore we
-> have to use energy-on as link up indicator.
->=20
-> Fixes: 7365494550f6 ("net: phy: smsc: skip ENERGYON interrupt if disabled=
-")
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> Signed-off-by: David S. Miller <davem@davemloft.net>
+Then, only such functions need an additional trace_sk_data_ready(),
+which is not clean, I think.
 
-It was committed by Jakub Kicinski <kuba@kernel.org>
+Thanks,
+Kuniyuki
 
-$ git show --pretty=3Draw 58aac3a2ef41
-commit 58aac3a2ef414fea6d7fdf823ea177744a087d13
-tree 26bf9b3b866bd43baa1b8055d42536ac7ce3b3cf
-parent 89b59a84cb166f1ab5b6de9830e61324937c661e
-author Heiner Kallweit <hkallweit1@gmail.com> 1677927164 +0100
-committer Jakub Kicinski <kuba@kernel.org> 1678137790 -0800
 
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/QZfzygOe5M27vvB.wvaVLQK
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmQGiuQACgkQAVBC80lX
-0GyXywf+N2S0korooYAI10TLOcpdf2nsSWuCLwlezBTU/cqR4cC69Bgzi7i+4vf1
-clTfhbWTVBd5aYcIvq4wOWoTuQRoHHcPIVdKPAl+grip7wdPdKHLyngeF7xrTiqJ
-DKtDq8cjPMeE6Dhr9bsx9WR18ROAQmRELyU5ZA+hTPKd/KgvXzKrRpFuyz8UBxTc
-v1GHZdb5sgTJxISPNWlW3XefsUc4H42ZBHmUy34/fDrW2aTXHGeMmHN8u7R+/L2W
-oie70dPm3+KovnnC9lWadkg0/jqH49aW4xDDres3NbRexY+WMT67Dm8gutU78qLm
-4D779FSb1NMVRkjhem4H5mAsxPxA2g==
-=BX3z
------END PGP SIGNATURE-----
-
---Sig_/QZfzygOe5M27vvB.wvaVLQK--
+> 
+> I did something similar for sk_error_report(), see e3ae2365efc1 ("net:
+> sock: introduce sk_error_report").
+> 
+> Thanks.
+> 
+> - Alex
