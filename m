@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B687D6AEFA1
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 19:24:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D6226AEFA3
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 19:25:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231857AbjCGSY5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 13:24:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47054 "EHLO
+        id S232764AbjCGSY7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 13:24:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232792AbjCGSYU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 13:24:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6C639CBF7;
-        Tue,  7 Mar 2023 10:19:59 -0800 (PST)
+        with ESMTP id S232701AbjCGSY3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 13:24:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62D219F22D;
+        Tue,  7 Mar 2023 10:20:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EFAD6150F;
-        Tue,  7 Mar 2023 18:19:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72D34C433EF;
-        Tue,  7 Mar 2023 18:19:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B39EB819C8;
+        Tue,  7 Mar 2023 18:20:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B0A3C433EF;
+        Tue,  7 Mar 2023 18:20:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678213198;
-        bh=5kyhbiBEtsJwMz5HCmxLv5VbTa4UdxUccaqPgY32uh8=;
+        s=k20201202; t=1678213200;
+        bh=uTSSQxN9Ng89FUpnr+qHDi5OyXYmSr64uBuRSG1WJSY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cS8ss2GpmOsDF5I8H1FALF4fgvR6vvWwMqBHwvoV3rPKwozyXYj68u9hukliqEYYf
-         5jliPnkvObXjJfS9jAbwiRZjSo4uSmwl51bZ/MscD5jUX2OfIO8ZHO5oiycrusfGas
-         8LKp++6SWDThELLs28W4YQzIGNrONDflbIdpmjGHzgshsK+3W+xLQXtAu6mGTr7A4t
-         uHlbk0k5/nkXIo2TBpUQCp8bWwVSV2xaBjoX1OjXzCiky4nA2m1zO/T7XCmnSyvnaM
-         RfeBDqkSsq4v/LKL5eUXGNKXXUdUMnfZhQEPQcqcYOyEGEOdMoK1yWGAzpKgAGcWW2
-         FpzmLQ4AyAT4w==
+        b=SbpnB4++dC2O5b7l/RR11xhePxpzE7uV9WOux3IBs5PRDdEqsIcBIpPzAlMjXEmh7
+         bt+R34c2CM4D0fLxRhk5mhqxWOH3CW5rL3Zcrl/8okxDnZEztLGOUACTmX+3cBgc7c
+         s3/QXb2hOWYjmHvnFpRRg6g+1IpTKItbJ+DImYpou7I++PYWNlFKKodlpFAoe4Sqjl
+         s0h1sg0p1VaZZlSv8KMKs204F9qp98dcbK1gyKNtPjeDY+yqDtbD/K29TDnbd3AvtX
+         +xIwxrE6riRQVGm+EtwRsfzR3dE/6eXKcOcFtY6ULL8e7Q0v70ZsOjLy/C5ULg1aNX
+         CmbNtwUaAcPBw==
 From:   Bjorn Helgaas <helgaas@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -38,10 +38,12 @@ To:     "David S . Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Bjorn Helgaas <bhelgaas@google.com>,
-        Chris Snook <chris.snook@gmail.com>
-Subject: [PATCH 01/28] alx: Drop redundant pci_enable_pcie_error_reporting()
-Date:   Tue,  7 Mar 2023 12:19:12 -0600
-Message-Id: <20230307181940.868828-2-helgaas@kernel.org>
+        Ajit Khaparde <ajit.khaparde@broadcom.com>,
+        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
+        Somnath Kotur <somnath.kotur@broadcom.com>
+Subject: [PATCH 02/28] be2net: Drop redundant pci_enable_pcie_error_reporting()
+Date:   Tue,  7 Mar 2023 12:19:13 -0600
+Message-Id: <20230307181940.868828-3-helgaas@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230307181940.868828-1-helgaas@kernel.org>
 References: <20230307181940.868828-1-helgaas@kernel.org>
@@ -60,7 +62,7 @@ From: Bjorn Helgaas <bhelgaas@google.com>
 
 pci_enable_pcie_error_reporting() enables the device to send ERR_*
 Messages.  Since f26e58bf6f54 ("PCI/AER: Enable error reporting when AER is
-native"), the PCI core does this for all devices during enumeration, so the
+native"), the PCI core does this for all devices during enumeration,  so the
 driver doesn't need to do it itself.
 
 Remove the redundant pci_enable_pcie_error_reporting() call from the
@@ -72,47 +74,53 @@ Message may cause the Root Port to generate an interrupt, depending on the
 AER Root Error Command register managed by the AER service driver.
 
 Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Chris Snook <chris.snook@gmail.com>
+Cc: Ajit Khaparde <ajit.khaparde@broadcom.com>
+Cc: Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
+Cc: Somnath Kotur <somnath.kotur@broadcom.com>
 ---
- drivers/net/ethernet/atheros/alx/main.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/net/ethernet/emulex/benet/be_main.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/atheros/alx/main.c b/drivers/net/ethernet/atheros/alx/main.c
-index 306393f8eeca..49bb9a8f00e6 100644
---- a/drivers/net/ethernet/atheros/alx/main.c
-+++ b/drivers/net/ethernet/atheros/alx/main.c
-@@ -39,7 +39,6 @@
- #include <linux/ipv6.h>
- #include <linux/if_vlan.h>
- #include <linux/mdio.h>
+diff --git a/drivers/net/ethernet/emulex/benet/be_main.c b/drivers/net/ethernet/emulex/benet/be_main.c
+index 46fe3d74e2e9..aed1b622f51f 100644
+--- a/drivers/net/ethernet/emulex/benet/be_main.c
++++ b/drivers/net/ethernet/emulex/benet/be_main.c
+@@ -16,7 +16,6 @@
+ #include "be.h"
+ #include "be_cmds.h"
+ #include <asm/div64.h>
 -#include <linux/aer.h>
- #include <linux/bitops.h>
- #include <linux/netdevice.h>
- #include <linux/etherdevice.h>
-@@ -1745,7 +1744,6 @@ static int alx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		goto out_pci_disable;
+ #include <linux/if_bridge.h>
+ #include <net/busy_poll.h>
+ #include <net/vxlan.h>
+@@ -5726,8 +5725,6 @@ static void be_remove(struct pci_dev *pdev)
+ 	be_unmap_pci_bars(adapter);
+ 	be_drv_cleanup(adapter);
+ 
+-	pci_disable_pcie_error_reporting(pdev);
+-
+ 	pci_release_regions(pdev);
+ 	pci_disable_device(pdev);
+ 
+@@ -5845,10 +5842,6 @@ static int be_probe(struct pci_dev *pdev, const struct pci_device_id *pdev_id)
+ 		goto free_netdev;
  	}
  
--	pci_enable_pcie_error_reporting(pdev);
- 	pci_set_master(pdev);
- 
- 	if (!pdev->pm_cap) {
-@@ -1879,7 +1877,6 @@ static int alx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+-	status = pci_enable_pcie_error_reporting(pdev);
+-	if (!status)
+-		dev_info(&pdev->dev, "PCIe error reporting enabled\n");
+-
+ 	status = be_map_pci_bars(adapter);
+ 	if (status)
+ 		goto free_netdev;
+@@ -5893,7 +5886,6 @@ static int be_probe(struct pci_dev *pdev, const struct pci_device_id *pdev_id)
+ unmap_bars:
+ 	be_unmap_pci_bars(adapter);
+ free_netdev:
+-	pci_disable_pcie_error_reporting(pdev);
  	free_netdev(netdev);
- out_pci_release:
- 	pci_release_mem_regions(pdev);
--	pci_disable_pcie_error_reporting(pdev);
- out_pci_disable:
- 	pci_disable_device(pdev);
- 	return err;
-@@ -1897,7 +1894,6 @@ static void alx_remove(struct pci_dev *pdev)
- 	iounmap(hw->hw_addr);
- 	pci_release_mem_regions(pdev);
- 
--	pci_disable_pcie_error_reporting(pdev);
- 	pci_disable_device(pdev);
- 
- 	mutex_destroy(&alx->mtx);
+ rel_reg:
+ 	pci_release_regions(pdev);
 -- 
 2.25.1
 
