@@ -2,139 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F1D86AD42E
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 02:43:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B01EE6AD441
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 02:48:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229938AbjCGBn5 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 6 Mar 2023 20:43:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43548 "EHLO
+        id S229758AbjCGBs0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 20:48:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229930AbjCGBnx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 20:43:53 -0500
-Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D110C46AF;
-        Mon,  6 Mar 2023 17:43:41 -0800 (PST)
-Received: from EXMBX165.cuchost.com (unknown [175.102.18.54])
-        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (Client CN "EXMBX165", Issuer "EXMBX165" (not verified))
-        by ex01.ufhost.com (Postfix) with ESMTP id 2164C24E0D8;
-        Tue,  7 Mar 2023 09:43:40 +0800 (CST)
-Received: from EXMBX162.cuchost.com (172.16.6.72) by EXMBX165.cuchost.com
- (172.16.6.75) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Tue, 7 Mar
- 2023 09:43:40 +0800
-Received: from [192.168.120.42] (171.223.208.138) by EXMBX162.cuchost.com
- (172.16.6.72) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Tue, 7 Mar
- 2023 09:43:39 +0800
-Message-ID: <8bd8654e-4bba-c718-4b17-5291e70f05fe@starfivetech.com>
-Date:   Tue, 7 Mar 2023 09:43:36 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v5 11/12] riscv: dts: starfive: visionfive-2-v1.2a: Add
- gmac+phy's delay configuration
-Content-Language: en-US
-To:     Emil Renner Berthing <emil.renner.berthing@canonical.com>
-CC:     <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S229757AbjCGBsZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 20:48:25 -0500
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C629340C6;
+        Mon,  6 Mar 2023 17:48:23 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0VdJ7o38_1678153700;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VdJ7o38_1678153700)
+          by smtp.aliyun-inc.com;
+          Tue, 07 Mar 2023 09:48:20 +0800
+Message-ID: <1678153623.7521684-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH net 2/2] virtio_net: add checking sq is full inside xdp xmit
+Date:   Tue, 7 Mar 2023 09:47:03 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Yanhong Wang <yanhong.wang@starfivetech.com>
-References: <20230303085928.4535-1-samin.guo@starfivetech.com>
- <20230303085928.4535-12-samin.guo@starfivetech.com>
- <CAJM55Z_8m42vfoPDicTP18S6Z1ZXYbFeS1edTjzYVB3Kq2xFeQ@mail.gmail.com>
-From:   Guo Samin <samin.guo@starfivetech.com>
-In-Reply-To: <CAJM55Z_8m42vfoPDicTP18S6Z1ZXYbFeS1edTjzYVB3Kq2xFeQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Originating-IP: [171.223.208.138]
-X-ClientProxiedBy: EXCAS064.cuchost.com (172.16.6.24) To EXMBX162.cuchost.com
- (172.16.6.72)
-X-YovoleRuleAgent: yovoleflag
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
+        Yichun Zhang <yichun@openresty.com>
+References: <20230306041535.73319-1-xuanzhuo@linux.alibaba.com>
+ <20230306041535.73319-3-xuanzhuo@linux.alibaba.com>
+ <20230306125344-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230306125344-mutt-send-email-mst@kernel.org>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, 6 Mar 2023 12:57:34 -0500, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> On Mon, Mar 06, 2023 at 12:15:35PM +0800, Xuan Zhuo wrote:
+> > If the queue of xdp xmit is not an independent queue, then when the xdp
+> > xmit used all the desc, the xmit from the __dev_queue_xmit() may encounter
+> > the following error.
+> >
+> > net ens4: Unexpected TXQ (0) queue failure: -28
+> >
+> > This patch adds a check whether sq is full in XDP Xmit.
+> >
+> > Reported-by: Yichun Zhang <yichun@openresty.com>
+> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > ---
+> >  drivers/net/virtio_net.c | 25 +++++++++++++++----------
+> >  1 file changed, 15 insertions(+), 10 deletions(-)
+> >
+> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > index 777de0ec0b1b..3001b9a548e5 100644
+> > --- a/drivers/net/virtio_net.c
+> > +++ b/drivers/net/virtio_net.c
+> > @@ -302,6 +302,8 @@ struct padded_vnet_hdr {
+> >
+> >  static void virtnet_rq_free_unused_buf(struct virtqueue *vq, void *buf);
+> >  static void virtnet_sq_free_unused_buf(struct virtqueue *vq, void *buf);
+> > +static void check_sq_full(struct virtnet_info *vi, struct net_device *dev,
+> > +			  struct send_queue *sq);
+> >
+> >  static bool is_xdp_frame(void *ptr)
+> >  {
+> > @@ -341,6 +343,16 @@ static int rxq2vq(int rxq)
+> >  	return rxq * 2;
+> >  }
+> >
+>
+> I'd really rather we ordered functions reasonably so declarations
+> are not needed.
+
+Yes, but this function depends on some other functions. If we put this function
+above, then these dependent functions must be processed. The current method
+should be a relatively simple way.
+
+Thanks.
 
 
-在 2023/3/6 21:00:19, Emil Renner Berthing 写道:
-> On Fri, 3 Mar 2023 at 10:01, Samin Guo <samin.guo@starfivetech.com> wrote:
->> v1.2A gmac0 uses motorcomm YT8531(rgmii-id) PHY, and needs delay
->> configurations.
->>
->> v1.2A gmac1 uses motorcomm YT8512(rmii) PHY, and needs to
->> switch rx and rx to external clock sources.
->>
->> Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
->> ---
->>  .../starfive/jh7110-starfive-visionfive-2-v1.2a.dts | 13 +++++++++++++
->>  1 file changed, 13 insertions(+)
->>
->> diff --git a/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2-v1.2a.dts b/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2-v1.2a.dts
->> index 4af3300f3cf3..205a13d8c8b1 100644
->> --- a/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2-v1.2a.dts
->> +++ b/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2-v1.2a.dts
->> @@ -11,3 +11,16 @@
->>         model = "StarFive VisionFive 2 v1.2A";
->>         compatible = "starfive,visionfive-2-v1.2a", "starfive,jh7110";
->>  };
->> +
->> +&gmac1 {
->> +       phy-mode = "rmii";
->> +       assigned-clocks = <&syscrg JH7110_SYSCLK_GMAC1_TX>,
->> +                         <&syscrg JH7110_SYSCLK_GMAC1_RX>;
->> +       assigned-clock-parents = <&syscrg JH7110_SYSCLK_GMAC1_RMII_RTX>,
->> +                                <&syscrg JH7110_SYSCLK_GMAC1_RMII_RTX>;
->> +};
->> +
->> +&phy0 {
->> +       rx-internal-delay-ps = <1900>;
->> +       tx-internal-delay-ps = <1350>;
->> +};
-> 
-> Here you're not specifying the internal delays for phy1 which means it
-> defaults to 1950ps for both rx and tx. Is that right or did you mean
-> to set them to 0 like the v1.3b phy1?
-
-Hi, emil, usually, only 1000M (rgmii) needs to configure the delay, and 100M(rmii) does not.
-> 
-> Also your u-boot seems to set what the linux phy driver calls
-> motorcomm,keep-pll-enabled and motorcomm,auto-sleep-disabled for all
-> the phys. Did you leave those out on purpose?
-
-Hi, Emil, We did configure motorcomm,auto-sleep-disabled for yt8512 in uboot, 
-but Yutai upstream's Linux driver only yt8521/yt8531 supports this property. 
-Yt8512 is a Generic PHY driver and does not support the configuration of 
-motorcomm,auto-sleep-disabled and motorcomm,keep-pll-enabled.
-
-And without configuring these two attributes, vf2-1.2a gmac1 also works normally.
-
-
-Best regards,
-Samin
-> 
->> --
->> 2.17.1
->>
->>
->> _______________________________________________
->> linux-riscv mailing list
->> linux-riscv@lists.infradead.org
->> http://lists.infradead.org/mailman/listinfo/linux-riscv
-
--- 
-Best regards,
-Samin
+>
+> > +static bool is_xdp_raw_buffer_queue(struct virtnet_info *vi, int q)
+> > +{
+> > +	if (q < (vi->curr_queue_pairs - vi->xdp_queue_pairs))
+> > +		return false;
+> > +	else if (q < vi->curr_queue_pairs)
+> > +		return true;
+> > +	else
+> > +		return false;
+> > +}
+> > +
+> >  static inline struct virtio_net_hdr_mrg_rxbuf *skb_vnet_hdr(struct sk_buff *skb)
+> >  {
+> >  	return (struct virtio_net_hdr_mrg_rxbuf *)skb->cb;
+> > @@ -686,6 +698,9 @@ static int virtnet_xdp_xmit(struct net_device *dev,
+> >  	}
+> >  	ret = nxmit;
+> >
+> > +	if (!is_xdp_raw_buffer_queue(vi, sq - vi->sq))
+> > +		check_sq_full(vi, dev, sq);
+> > +
+> >  	if (flags & XDP_XMIT_FLUSH) {
+> >  		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq))
+> >  			kicks = 1;
+> > @@ -1784,16 +1799,6 @@ static void check_sq_full(struct virtnet_info *vi, struct net_device *dev,
+> >  	}
+> >  }
+> >
+> > -static bool is_xdp_raw_buffer_queue(struct virtnet_info *vi, int q)
+> > -{
+> > -	if (q < (vi->curr_queue_pairs - vi->xdp_queue_pairs))
+> > -		return false;
+> > -	else if (q < vi->curr_queue_pairs)
+> > -		return true;
+> > -	else
+> > -		return false;
+> > -}
+> > -
+> >  static void virtnet_poll_cleantx(struct receive_queue *rq)
+> >  {
+> >  	struct virtnet_info *vi = rq->vq->vdev->priv;
+> > --
+> > 2.32.0.3.g01195cf9f
+>
