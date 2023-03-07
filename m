@@ -2,111 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9241E6AE3C8
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 16:04:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E61CC6AE431
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 16:13:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230268AbjCGPDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 10:03:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42514 "EHLO
+        id S230510AbjCGPNc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 10:13:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229910AbjCGPDQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 10:03:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5348A81CF2;
-        Tue,  7 Mar 2023 06:54:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E303361265;
-        Tue,  7 Mar 2023 14:54:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0293CC433EF;
-        Tue,  7 Mar 2023 14:54:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678200896;
-        bh=o5gPeq4QDA4D5M45DH1MR6vMlCRXmlPsUa7kM4g6OJ8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OoM8vRUHXVTWreqQt3f3H9K2DxMq566IsWxmlqbXPpgMKlXWAMhQgqDPIu8+DBAYG
-         vzdB0jMSMC1p6lYA+CQ/S+UyCdHW/R+7FaBH/GAu0JNUliUwKg7lckbfztSTR39lNC
-         piBZjS1YDpglIQpEWrj/1ZkJiYIL99gOO6Iawhx88iIrf7dOix8OMzB77Q4EIlEAln
-         6oY3GNTvr2//QyYMDxRve7HRj813DgTZuLUPehUTDfUhIZQYCKUwTSJfuOqKsxF5Db
-         Qv/89KLCM9ss2/2VtGFYBSF1P9+lzxMt0UrnFxuxBSuuE8Yo2HJfSPPZCtCoi/E0hR
-         oh0wEMXXDls6g==
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        saeedm@nvidia.com, tariqt@nvidia.com, leon@kernel.org,
-        shayagr@amazon.com, akiyano@amazon.com, darinzon@amazon.com,
-        sgoutham@marvell.com, lorenzo.bianconi@redhat.com, toke@redhat.com,
-        teknoraver@meta.com
-Subject: [PATCH net-next 8/8] mvpp2: take care of xdp_features when reconfiguring queues
-Date:   Tue,  7 Mar 2023 15:54:05 +0100
-Message-Id: <fe34ea957afb95ce255a17ec79df08d9647b72c7.1678200041.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <cover.1678200041.git.lorenzo@kernel.org>
-References: <cover.1678200041.git.lorenzo@kernel.org>
+        with ESMTP id S230207AbjCGPMx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 10:12:53 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C83E99253;
+        Tue,  7 Mar 2023 07:07:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=aCuAQ+9ZexTOZhRkrKAZ7NnOk4pWsiuK/duImLCmS0k=; b=f4i0DLE5xGih8HU+T9zCUyzciK
+        fZ/a8LnfuHbUX3MuoX/dbvG3wwp1wnEuvwv+DhpGYcBbMaM7lWUBDQEbZeDGGSiF5UuN5872nN3Qq
+        sagW+IkXxmqF5jK5mXOX9NvqTjXvYmyb2wGlF6cK0zFIGxnO8yMhoytA09EmrzmFXcZA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pZYNU-006fbt-1f; Tue, 07 Mar 2023 15:33:20 +0100
+Date:   Tue, 7 Mar 2023 15:33:20 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Michael Walle <michael@walle.cc>, sean.anderson@seco.com,
+        davem@davemloft.net, edumazet@google.com, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, pabeni@redhat.com, tobias@waldekranz.com
+Subject: Re: [PATCH net-next] net: mdio: Add netlink interface
+Message-ID: <7013dea3-a026-4a0c-81e0-7ebe6f708e39@lunn.ch>
+References: <20230306204517.1953122-1-sean.anderson@seco.com>
+ <20230307112307.777207-1-michael@walle.cc>
+ <684c859a-02e2-4652-9a40-9607410f95e6@lunn.ch>
+ <20230307140535.32ldprkyblpmicjg@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230307140535.32ldprkyblpmicjg@skbuf>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matteo Croce <teknoraver@meta.com>
+> - Atomic (why only atomic?) (read) access to paged registers
 
-XDP is supported only if enough queues are present, so when reconfiguring
-the queues set xdp_features accordingly.
+I would say 'atomic' is wrong, you cannot access paged registers at
+all.
 
-Fixes: 66c0e13ad236 ("drivers: net: turn on XDP features")
-Suggested-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Matteo Croce <teknoraver@meta.com>
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+> are we ok with the implications?
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 9b4ecbe4f36d..3ea00bc9b91c 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -4996,6 +4996,14 @@ static int mvpp2_bm_switch_buffers(struct mvpp2 *priv, bool percpu)
- 
- 	for (i = 0; i < priv->port_count; i++) {
- 		port = priv->port_list[i];
-+		if (percpu && port->ntxqs >= num_possible_cpus() * 2)
-+			xdp_set_features_flag(port->dev,
-+					      NETDEV_XDP_ACT_BASIC |
-+					      NETDEV_XDP_ACT_REDIRECT |
-+					      NETDEV_XDP_ACT_NDO_XMIT);
-+		else
-+			xdp_clear_features_flag(port->dev);
-+
- 		mvpp2_swf_bm_pool_init(port);
- 		if (status[i])
- 			mvpp2_open(port->dev);
-@@ -6863,13 +6871,14 @@ static int mvpp2_port_probe(struct platform_device *pdev,
- 
- 	if (!port->priv->percpu_pools)
- 		mvpp2_set_hw_csum(port, port->pool_long->id);
-+	else if (port->ntxqs >= num_possible_cpus() * 2)
-+		dev->xdp_features = NETDEV_XDP_ACT_BASIC |
-+				    NETDEV_XDP_ACT_REDIRECT |
-+				    NETDEV_XDP_ACT_NDO_XMIT;
- 
- 	dev->vlan_features |= features;
- 	netif_set_tso_max_segs(dev, MVPP2_MAX_TSO_SEGS);
- 
--	dev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
--			    NETDEV_XDP_ACT_NDO_XMIT;
--
- 	dev->priv_flags |= IFF_UNICAST_FLT;
- 
- 	/* MTU range: 68 - 9704 */
--- 
-2.39.2
+I am. Anybody doing this level of debugging should be able to
+recompile the kernel to enable write support. It does limit debugging
+in field, where maybe you cannot recompile the kernel, but to me, that
+is a reasonable trade off.
 
+   Andrew
