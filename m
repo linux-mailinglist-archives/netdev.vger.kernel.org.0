@@ -2,150 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC5956AFA01
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 00:03:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 020B06AFA2F
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 00:21:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230272AbjCGXDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 18:03:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55614 "EHLO
+        id S229659AbjCGXVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 18:21:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229925AbjCGXCn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 18:02:43 -0500
-Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 723157A91E
-        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 15:01:08 -0800 (PST)
+        with ESMTP id S229806AbjCGXVS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 18:21:18 -0500
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7409C9E318;
+        Tue,  7 Mar 2023 15:21:16 -0800 (PST)
+Received: by mail-wm1-x330.google.com with SMTP id k37so8840174wms.0;
+        Tue, 07 Mar 2023 15:21:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1678230068; x=1709766068;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Q0ZaZyxtNZdQdDNv9vKi6OV/UKGncGpZ+n1uGgM4zhQ=;
-  b=pSSMrLA7DH5iisN7rXIkcAstRFMeGlx5SLWA0QlnQHzxjRFN3f0e+2ii
-   cQr8yIdopOP3iMBWcEsXhGIrUAomWMvqT45XJlZRjGw/kle4CiVpFqO9/
-   V8zvothu43DpQjxBHgNNj8URfMdhI8oR67M+PYKhU0Rljs2T3f7Bqabci
-   g=;
-X-IronPort-AV: E=Sophos;i="5.98,242,1673913600"; 
-   d="scan'208";a="190780708"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-m6i4x-d47337e0.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2023 23:01:06 +0000
-Received: from EX13MTAUWB002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2a-m6i4x-d47337e0.us-west-2.amazon.com (Postfix) with ESMTPS id 740AF60D97;
-        Tue,  7 Mar 2023 23:01:05 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB002.ant.amazon.com (10.43.161.202) with Microsoft SMTP Server (TLS)
- id 15.0.1497.45; Tue, 7 Mar 2023 23:01:04 +0000
-Received: from 88665a182662.ant.amazon.com (10.135.222.163) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.24;
- Tue, 7 Mar 2023 23:01:02 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <edumazet@google.com>
-CC:     <davem@davemloft.net>, <eric.dumazet@gmail.com>, <kuba@kernel.org>,
-        <kuniyu@amazon.com>, <netdev@vger.kernel.org>, <pabeni@redhat.com>,
-        <rao.shoaib@oracle.com>,
-        <syzbot+7699d9e5635c10253a27@syzkaller.appspotmail.com>
-Subject: Re: [PATCH net] af_unix: fix struct pid leaks in OOB support
-Date:   Tue, 7 Mar 2023 15:00:52 -0800
-Message-ID: <20230307230052.96807-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230307164530.771896-1-edumazet@google.com>
-References: <20230307164530.771896-1-edumazet@google.com>
+        d=gmail.com; s=20210112; t=1678231275;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=HYZwdboZtaofkxYF/AMrNWZjuYShpz74P+9J9F7wGPo=;
+        b=IE/EuwubCFwIUiQ1UCE4AQ9bBvgVDhBE1KKV+0aeH1NMR7eb8xDrgfzzfrLqnqrovt
+         6B2Xb3Rupbpw3LTDODH/hN4Gf5oLSExy3UW2IH9b+TpOLAXDQOVNPr56NTAYDLJG6shc
+         /1YfSYvhTWyRfWP7+zOsBKaKUj0sb81i/u9vOcZg85orYZ5BI695HdwWBD5mAnNGlrpg
+         3kGkmUWH0E/niYYU567fwBzCIcMRDgYC4qLiPFsZiFX6NHRkFXUGZbg37ZHj7PKfOT8T
+         CkFynM2V4fBgrPArtyb5FKB+6tYGfPhq9ajWABkQifjxVfC88+oXpo3fC59Nvqt+4IFQ
+         5Jaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678231275;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=HYZwdboZtaofkxYF/AMrNWZjuYShpz74P+9J9F7wGPo=;
+        b=IDgesasvRTc3D590Uz2m/BiLx9M9zvyElQiDjtJ/SU/fTmG9Xy0YQuwrZP0CMRWKW+
+         DSGwk5rpF3mr/u6hmiXctfNCDJIbx9LyXKiClfY0meveyglujJsHVj5SHsl404HhiZk6
+         s1wd/X1VOY9c3M8Jz/T6ns8VJrb296Edx5hr3n54Lwj1n6oqfdQEXBWQNfhNmOtpb8xA
+         piQA/ssWz+4VqLx2kg0e+/DlhXoXao+hcGyZgdLQxUFRBpjupwD2pfF7QaAfDW2zsWM9
+         gYeiKRpY/fj4Ves4MZdWbswHWSfB1p3217Do0AlLxxWE54s0W1juYqxtlFaMrYA9RWjO
+         Lk1w==
+X-Gm-Message-State: AO0yUKX/weu+XIE5xJsukAGUzFzlc7FF/FmyBlxGAK42ymccpzLi7E4d
+        29eQanD0lKn89Hx5qyjZONg=
+X-Google-Smtp-Source: AK7set8d6nc3OMllfFEEVMQ2FWoY8wuoG+KGTEyes4OWEZZRiJ4RDuQzLH5PGcqH5tUcjI/Eb3a8yg==
+X-Received: by 2002:a05:600c:348d:b0:3eb:9822:2907 with SMTP id a13-20020a05600c348d00b003eb98222907mr10953463wmq.4.1678231274745;
+        Tue, 07 Mar 2023 15:21:14 -0800 (PST)
+Received: from Ansuel-xps. (93-34-89-197.ip49.fastwebnet.it. [93.34.89.197])
+        by smtp.gmail.com with ESMTPSA id m1-20020a05600c4f4100b003e01493b136sm19403673wmq.43.2023.03.07.15.21.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Mar 2023 15:21:14 -0800 (PST)
+Message-ID: <6407c6ea.050a0220.7c931.824f@mx.google.com>
+X-Google-Original-Message-ID: <ZAd69hshZrKvapYQ@Ansuel-xps.>
+Date:   Tue, 7 Mar 2023 18:57:10 +0100
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, Lee Jones <lee@kernel.org>,
+        linux-leds@vger.kernel.org
+Subject: Re: [net-next PATCH 01/11] net: dsa: qca8k: add LEDs basic support
+References: <20230307170046.28917-1-ansuelsmth@gmail.com>
+ <20230307170046.28917-2-ansuelsmth@gmail.com>
+ <b03334df-4389-44b5-ac85-8b0878c64512@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.135.222.163]
-X-ClientProxiedBy: EX19D036UWC002.ant.amazon.com (10.13.139.242) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b03334df-4389-44b5-ac85-8b0878c64512@lunn.ch>
+X-Spam-Status: No, score=-0.5 required=5.0 tests=BAYES_00,DATE_IN_PAST_03_06,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue,  7 Mar 2023 16:45:30 +0000
-> syzbot reported struct pid leak [1].
+On Wed, Mar 08, 2023 at 12:16:13AM +0100, Andrew Lunn wrote:
+> > +qca8k_setup_led_ctrl(struct qca8k_priv *priv)
+> > +{
+> > +	struct fwnode_handle *ports, *port;
+> > +	int port_num;
+> > +	int ret;
+> > +
+> > +	ports = device_get_named_child_node(priv->dev, "ports");
+> > +	if (!ports) {
+> > +		dev_info(priv->dev, "No ports node specified in device tree!\n");
+> > +		return 0;
+> > +	}
+> > +
+> > +	fwnode_for_each_child_node(ports, port) {
+> > +		struct fwnode_handle *phy_node, *reg_port_node = port;
+> > +
+> > +		phy_node = fwnode_find_reference(port, "phy-handle", 0);
+> > +		if (!IS_ERR(phy_node))
+> > +			reg_port_node = phy_node;
 > 
-> Issue is that queue_oob() calls maybe_add_creds() which potentially
-> holds a reference on a pid.
+> I don't understand this bit. Why are you looking at the phy-handle?
 > 
-> But skb->destructor is not set (either directly or by calling
-> unix_scm_to_skb())
+> > +
+> > +		if (fwnode_property_read_u32(reg_port_node, "reg", &port_num))
+> > +			continue;
 > 
-> This means that subsequent kfree_skb() or consume_skb() would leak
-> this reference.
+> I would of expect port, not reg_port_node. I'm missing something
+> here....
 > 
-> In this fix, I chose to fully support scm even for the OOB message.
-> 
-> [1]
-> BUG: memory leak
-> unreferenced object 0xffff8881053e7f80 (size 128):
-> comm "syz-executor242", pid 5066, jiffies 4294946079 (age 13.220s)
-> hex dump (first 32 bytes):
-> 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
-> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
-> backtrace:
-> [<ffffffff812ae26a>] alloc_pid+0x6a/0x560 kernel/pid.c:180
-> [<ffffffff812718df>] copy_process+0x169f/0x26c0 kernel/fork.c:2285
-> [<ffffffff81272b37>] kernel_clone+0xf7/0x610 kernel/fork.c:2684
-> [<ffffffff812730cc>] __do_sys_clone+0x7c/0xb0 kernel/fork.c:2825
-> [<ffffffff849ad699>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-> [<ffffffff849ad699>] do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
-> [<ffffffff84a0008b>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> 
-> Fixes: 314001f0bf92 ("af_unix: Add OOB support")
-> Reported-by: syzbot+7699d9e5635c10253a27@syzkaller.appspotmail.com
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+It's really not to implement ugly things like "reg - 1"
 
-Thanks!
+On qca8k the port index goes from 0 to 6.
+0 is cpu port 1
+1 is port0 at mdio reg 0
+2 is port1 at mdio reg 1
+...
+6 is cpu port 2
 
+Each port have a phy-handle that refer to a phy node with the correct
+reg and that reflect the correct port index.
 
-> Cc: Rao Shoaib <rao.shoaib@oracle.com>
-> Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
-> ---
->  net/unix/af_unix.c | 10 ++++++++--
->  1 file changed, 8 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-> index 347122c3575eaae597405369e2e9d8324d6ad240..0b0f18ecce4470d6fd21c084a3ea49e04dcbb9bd 100644
-> --- a/net/unix/af_unix.c
-> +++ b/net/unix/af_unix.c
-> @@ -2105,7 +2105,8 @@ static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
->  #define UNIX_SKB_FRAGS_SZ (PAGE_SIZE << get_order(32768))
->  
->  #if IS_ENABLED(CONFIG_AF_UNIX_OOB)
-> -static int queue_oob(struct socket *sock, struct msghdr *msg, struct sock *other)
-> +static int queue_oob(struct socket *sock, struct msghdr *msg, struct sock *other,
-> +		     struct scm_cookie *scm, bool fds_sent)
->  {
->  	struct unix_sock *ousk = unix_sk(other);
->  	struct sk_buff *skb;
-> @@ -2116,6 +2117,11 @@ static int queue_oob(struct socket *sock, struct msghdr *msg, struct sock *other
->  	if (!skb)
->  		return err;
->  
-> +	err = unix_scm_to_skb(scm, skb, !fds_sent);
-> +	if (err < 0) {
-> +		kfree_skb(skb);
-> +		return err;
-> +	}
->  	skb_put(skb, 1);
->  	err = skb_copy_datagram_from_iter(skb, 0, &msg->msg_iter, 1);
->  
-> @@ -2243,7 +2249,7 @@ static int unix_stream_sendmsg(struct socket *sock, struct msghdr *msg,
->  
->  #if IS_ENABLED(CONFIG_AF_UNIX_OOB)
->  	if (msg->msg_flags & MSG_OOB) {
-> -		err = queue_oob(sock, msg, other);
-> +		err = queue_oob(sock, msg, other, &scm, fds_sent);
->  		if (err)
->  			goto out_err;
->  		sent++;
-> -- 
-> 2.40.0.rc0.216.gc4246ad0f0-goog
+Tell me if this looks wrong, for qca8k we have qca8k_port_to_phy() and
+at times we introduced the mdio thing to describe the port - 1 directly
+in DT. If needed I can drop the additional fwnode and use this function
+but I would love to use what is defined in DT thatn a simple - 1.
+
+-- 
+	Ansuel
