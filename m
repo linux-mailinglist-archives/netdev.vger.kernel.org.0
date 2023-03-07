@@ -2,345 +2,745 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B5AB6ADEA1
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 13:24:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B02C6ADEA8
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 13:26:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229947AbjCGMYd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 07:24:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43630 "EHLO
+        id S231177AbjCGM0l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 07:26:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230235AbjCGMYb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 07:24:31 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86742509B8;
-        Tue,  7 Mar 2023 04:24:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678191854; x=1709727854;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=16i7FhQPl1Bv2Ytfh13MjaKwAF5L8LLHnN/ScaNMOok=;
-  b=SlW2tb7KfC2W+CJDyIDTk0x29yf/dDhMeq1VU/kgMLepUPWA53T3Z1vc
-   Gw85mqUZlVFTEIZoYs21g5licbh60g7zzWc3naRhppIsWKP7NekH6t+fS
-   vgYghhEFuWcxOunGjGuwyKtu3xv0p0jcxv3iAQ+1upDiVDVa/IPnrisG2
-   cH542w/QPSqInpJrACyFWfW22kdIlvdA3pJSuM8488Fnxq11ZS/YaAZyk
-   nhuJPJEhNBZHSOdNKLCmLhpEgcTftQn826nNagP4+95YOxxdXVsL2vcKr
-   0o+epN9pi6I9aG8HJuUy39+ZDk1GoZDhSx1ub0D8WlENaqpK9iOMviG4S
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="333308907"
-X-IronPort-AV: E=Sophos;i="5.98,240,1673942400"; 
-   d="scan'208";a="333308907"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2023 04:24:14 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="740703613"
-X-IronPort-AV: E=Sophos;i="5.98,240,1673942400"; 
-   d="scan'208";a="740703613"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by fmsmga008.fm.intel.com with ESMTP; 07 Mar 2023 04:24:13 -0800
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Tue, 7 Mar 2023 04:24:13 -0800
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Tue, 7 Mar 2023 04:24:12 -0800
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21 via Frontend Transport; Tue, 7 Mar 2023 04:24:12 -0800
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.101)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.21; Tue, 7 Mar 2023 04:24:12 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BUIVz4hQrNvaO0yzdyHzG3c/lpnomLDv/xDVZZgKk6Faw5ltMEtlr9uSmBIzXqeb+pyMEiPRwFjmSaP/H6/Xp3m4xwLrvp6+gawI7wm7v7KFTNmS6ki7SKp4gMwYPRS3UgXVdK3AD5+I551km8pZ9FQuwLQBq/o//8jmpjW45iIi7Pj0CkUV76MhimnZ5TR1cITbma6cDnyaLewiu+1+helHqGpRtDcSoxxejCM6at0ANdi+tXBJgdeOB4e6liq345UYKpONn7rbZGub1CDiVr0PTJEkILbDohubbTvBbHzbdSi8T/SyYBhRgbFAY8435h7x4auwJttygef+GIUSNA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2G+BAHygVRAYs6iA0eGUx6cOQrU/uTd54ryh7cyLuyY=;
- b=FTk/TgqJgYSBMieeN/ThWvc1UojLNpCdino0gprcPcVIyyVy/4Vc0fP3XVBN04c/cHJ4wHvIxCsaiczUXBmWKEG4ToDttIInhnUkKrDxlWhEkrI69sNk90jdeEGVcw01wHfe7bHtEVftJdJMmHDq9WQXkGhDWANZtg5eI55TciKdEz+cICzHx7UdTNS9Tg7XyetjCwVfPqaf7p9IQUyyZXCmTV8WW5QrUMuy5a51hQVacUHmNCxq+DsTYVxSi0ygFLoReu6FLRQ2GPkWb4zGf3u4l22rh/DMNbOKz75O0kF1ZZybZLWiYsqwBpxfsXmnAd4eWq1pjt2dM/i2ujK/FQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from DM6PR11MB4657.namprd11.prod.outlook.com (2603:10b6:5:2a6::7) by
- PH7PR11MB7593.namprd11.prod.outlook.com (2603:10b6:510:27f::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6156.28; Tue, 7 Mar 2023 12:24:10 +0000
-Received: from DM6PR11MB4657.namprd11.prod.outlook.com
- ([fe80::95e8:dde5:9afe:9946]) by DM6PR11MB4657.namprd11.prod.outlook.com
- ([fe80::95e8:dde5:9afe:9946%9]) with mapi id 15.20.6156.027; Tue, 7 Mar 2023
- 12:24:10 +0000
-From:   "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-CC:     Vadim Fedorenko <vadfed@meta.com>,
+        with ESMTP id S230031AbjCGM0j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 07:26:39 -0500
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32745769DD
+        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 04:26:34 -0800 (PST)
+Received: by mail-lj1-x22e.google.com with SMTP id f16so12919390ljq.10
+        for <netdev@vger.kernel.org>; Tue, 07 Mar 2023 04:26:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112; t=1678191992;
+        h=content-transfer-encoding:mime-version:message-id:date:references
+         :in-reply-to:subject:cc:to:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=/OEdPV91yfX2/+4I17IoxuO2WNbLZIKUCMJCjGB1wIc=;
+        b=ckIdwELevonqyF+EE3+wONQeHT5/SZw9d+Vpy8thxp/R9CuENKQwt6UI0prnRdBDh7
+         QEoHIYTFou1M5xu6AwjSAwLC21FT9M4+qHYBzJky5Y0/wvubg6YJd1i0oslq3hoyCwNQ
+         QhMiuyVbvR/0RAHUQSVav7rXBrjIiw0/kYXaNAWRT/WusDofgAIq0+Pvyd0gepJKF5xz
+         9t0418GEmN/2QtgySDyaFaIS2NXOc+NBRkIphQZjaZjQ2s8YwNA4XPfqDa9g8AKxjHcF
+         IN4aguvv53YPyV4wFHFKodRn7tIjpzUrNjkN6zyzR1wSRQgpAWC94qzn2ywSnB6++Owi
+         6GjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678191992;
+        h=content-transfer-encoding:mime-version:message-id:date:references
+         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=/OEdPV91yfX2/+4I17IoxuO2WNbLZIKUCMJCjGB1wIc=;
+        b=7QiQM0crmcOfN3qih5vwmfGhfaSViH9M3SVTSCOW/OhzEhneieV26GSA9OQv9DZ1zX
+         Qgxfp7JGer3Ch1KxHmkGg7QbButrXKYpSdS6iKXhX1fh7qCpxvJK0SXi/iJWpq918CNc
+         CxWEDI/vWEovcXTLDhmVgYvUUkYWa6UIHuHg1/jr/BB9b5jwrvXYdyKkWQSOzXTNkQRN
+         rcvWRgYdtwUnEo/pbHZfA1lQNB4bTYjjaLYUmxYbje7ZWWRU1CftUWrKJXIiEqmQQ68+
+         v7vwRJ1HFwe9HqQ3DWp7hZZ5qBiHbCIkwSzJbvXiU5SKCE3mqNsIzySWpisBoo8KTnnq
+         Jovg==
+X-Gm-Message-State: AO0yUKUt3Rr5EJ9icQe83tq3d8Swz4bxjPBg4FvB5fuD+6bzRVBg1lyw
+        0hSUS+kvJS0UKxD+tht9o34RgDLEw+/tzrsT9JI=
+X-Google-Smtp-Source: AK7set+LzfDdU1MYJvLtQMFKgYYbPbRwOnXsc+P/e3cAl2WfmWRESugiqVytbVc05DDYy6sCZwwe/A==
+X-Received: by 2002:a05:651c:508:b0:295:9ba0:6411 with SMTP id o8-20020a05651c050800b002959ba06411mr7137068ljp.15.1678191992123;
+        Tue, 07 Mar 2023 04:26:32 -0800 (PST)
+Received: from wkz-x13 (a124.broadband3.quicknet.se. [46.17.184.124])
+        by smtp.gmail.com with ESMTPSA id c13-20020a05651c014d00b002945b851ea5sm2150112ljd.21.2023.03.07.04.26.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Mar 2023 04:26:31 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Sean Anderson <sean.anderson@seco.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
-        "Olech, Milena" <milena.olech@intel.com>,
-        "Michalik, Michal" <michal.michalik@intel.com>
-Subject: RE: [RFC PATCH v5 4/4] ice: implement dpll interface to control cgu
-Thread-Topic: [RFC PATCH v5 4/4] ice: implement dpll interface to control cgu
-Thread-Index: AQHZKp3NB3+z9/Hbn06pYsw7Q84CVK6l1pCAgAzKLSCABfITAIA29HxQ
-Date:   Tue, 7 Mar 2023 12:24:10 +0000
-Message-ID: <DM6PR11MB4657E804602158A60BF23C679BB79@DM6PR11MB4657.namprd11.prod.outlook.com>
-References: <20230117180051.2983639-1-vadfed@meta.com>
- <20230117180051.2983639-5-vadfed@meta.com> <Y8lZl+U0Bll4BAKE@nanopsycho>
- <DM6PR11MB46570EA36A31F636BFA14EC19BCC9@DM6PR11MB4657.namprd11.prod.outlook.com>
- <Y9kQ+uWAYZHhqtW2@nanopsycho>
-In-Reply-To: <Y9kQ+uWAYZHhqtW2@nanopsycho>
-Accept-Language: pl-PL, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DM6PR11MB4657:EE_|PH7PR11MB7593:EE_
-x-ms-office365-filtering-correlation-id: 93657aba-f3b4-4ef5-fc60-08db1f06db0b
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: l6ql2HnLOtxsGpZzqVXx5SVkGzXSkdcdVqoELMGUXEUFPfzpFdqbZ5T33rlxreWiyq2aTsrwx6+D/dsowsueM/yZSi6KtYmoUh3Rkjfjs18vH39BrZgoALjTnD0cUB7dRpa0dNx31FgnafK6Wq1Og3ueqG8OWW4lN2Fg+fKQUxMaFGCUAoRcYfr3qMX4Gbt3Rtfg1N6znP61OCz3wUC2bY3GD9+7kst7jLJ5oUVZ0vfdiUXRuoFgcC46HuIE7NVxmavgMX0y/w+hYCkCXSnu0J5rd1jdcIe09Xp9S8To7JjD4u94X/D60f8fRoe4tt/TzNjsQV/XT1l4HnGx/4U8QHyf/S4Kcjy/IDF5E5g+PYM5SjghCsLRQ5kTh7T6b6VA5iJheAKdfJj7qiKYq1aiu87PNZ1icW365iUvWeV/AnlVJ6NCp4xoE4THjhX21XEfi3Q2vyMgan6jKhoIBm+0Mu6mTR+kD1XHvUqvDz0193d/ex1QNIOxIUr+A0f0S9kqA6LeGf7p6vqhmkOD7CkgQ7PDqPxY4VzhXqzWBCxh5k9ZsNXBM4RKcfOZBIYCWe4T2tInmrt7qSLs2cCdcYSt0LulzUMn1KEo8cKcjX0Cd1lpn6OVe4PaQ+XXppEM/D2PxptqbVL0qMMqjnP+Eqc5NMXAhjGEpwBBjNzEe3+X3QtgaHz7/f/9c+7cTa587ty6mhPz68BjjlsnNyZnQLHR3g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(376002)(39860400002)(346002)(396003)(136003)(366004)(451199018)(316002)(83380400001)(54906003)(55016003)(86362001)(33656002)(64756008)(9686003)(186003)(82960400001)(76116006)(5660300002)(26005)(478600001)(66946007)(66556008)(8936002)(66476007)(8676002)(2906002)(41300700001)(4326008)(6506007)(107886003)(66446008)(71200400001)(7696005)(6916009)(122000001)(38100700002)(52536014)(38070700005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?WiEp35/dZCCj3FEchiNGvnR1oRD7OWn49eU6y0VMUqvzpZ+EjIdmUPvZWFg1?=
- =?us-ascii?Q?BVO5FmGSSeyToWyyZ6fZdG4Pog47hnpVkmTtrTE/PKQaUm5npmJITn8WDQSm?=
- =?us-ascii?Q?8uNLmuWz2CP3tD+fb8ziMOXB/khzFnNmEBpxzjdjYvSeeYq0M5fhZV8FFPm0?=
- =?us-ascii?Q?xAEaZ2WGFDlhY+DOuZsMgXfIC3rnmwkar3mM1lTT+P7JeRHBao1uWubdAfzT?=
- =?us-ascii?Q?7KoI2oykxOtz5sQDp+KEBPBQgZK4t2caKQX2mBi+DU8lkqtZwh+e+TH3BRV/?=
- =?us-ascii?Q?TEP0FHh8vZtpiCdKAeCWJIJocECFDlRL8oDvNfZ26kU97oVJoBNi8P0KbnkX?=
- =?us-ascii?Q?3i8PmbgWQTWiYXFky1t5K/GIMP0iQfIiHSo9CW3ohTnRjwFBrKAXAJ/AqsyG?=
- =?us-ascii?Q?ETfOT11FACpf7yZFRjSe2GH6INLptZD2rUNM7lzY4pyPtjmMtbWRInOSGfUJ?=
- =?us-ascii?Q?lkaAD3w2/fCPjdOvxEyYgqveLGrOt48zsiR7AldfQj3uxNyHDWLrmlzM97vy?=
- =?us-ascii?Q?pru4R9xnAZConki0J+FWgZmy6KyJtsrHVq1Hk9cgCMZopwZMErHwRkHFyGF/?=
- =?us-ascii?Q?y1HXTIfE1hLB/ZAiyeLrNkxYj3Nlm9uMTcHJWdj0D8Spy3VelYbneQp01syl?=
- =?us-ascii?Q?0Zj5ga1njeCSMtN5ID9x03NjD0bggcqtwtuaQnDTb27KkiOsfgisstF7GBTl?=
- =?us-ascii?Q?YFCvrg8H/hWC2TeHCvHDNM3Zm6ujGR83JgQTMz+Q6x/mKsE5Jzl2uROD61Zi?=
- =?us-ascii?Q?RWkIXT9m1uaHjT14l5quel9Rep/68lCBY1UdLEc51RUGmEz13wFexe9VbMiK?=
- =?us-ascii?Q?wMkPpQXU51UJoP90ZcI2XgV8IN1EZ7lLveYeTDTqZrAW2B+g7P+d6u+8zPYC?=
- =?us-ascii?Q?KMhOhsS4d2IVB+JryLg6YMiPZHy1OLFQqjBN0jeWVvVjGy+fIb++e3MbGFcQ?=
- =?us-ascii?Q?TCCvW7+owVrx89o7ot1cRtgB/KiEEmE25Cv8yTf3fWeakhrUiAhtqVvN49ql?=
- =?us-ascii?Q?yBkiSgS8l4Sio9G6p508THc4soXREwYYBydiZRjxi1w48urJsWP8Y/oTToHg?=
- =?us-ascii?Q?E1h265rlUqNMkqXcau9KLIHFKAxShSwegB4DVnAdyXxPfZZDiW2wUa4Xvm4s?=
- =?us-ascii?Q?jkNUHe6ruTmwIDeKoKBPBAj8BejvyIV9UoeeyvMbBBpkz4Q6Dn1rWJUqB9tk?=
- =?us-ascii?Q?9RQGSqJC1QsXvoceZ2g+FTryhpBl0KT0m76zcfoS9bvJavEFMl6HVoLgjJck?=
- =?us-ascii?Q?bbbM9yweJh4P9UBXZ9xjG9IqZ+vYr6wDJP7pUxnCaLnRGVjI5SF16FFztp2S?=
- =?us-ascii?Q?37yh5CXKFPO4y0DvjFolcMGxhLRMG1gGJdTpNnKC7wC2og0Hlg8SHE7h2kC/?=
- =?us-ascii?Q?tJQelQPka4pi6u8VyGa9JX5bf/VYngVHHTEN0tdpoPPSnZAjtn50ZRHzI7Wm?=
- =?us-ascii?Q?aDb3Wx+CGSL6fA7cK1JcXu/sB3X6o85zVygab1KZ/ZZU65lF4k+wdyIXBWA0?=
- =?us-ascii?Q?3tld/6upb7UlgSFud2LBf6bjum77vSRklgdIKTIQjmd6/XsevIVCB3b8W5X7?=
- =?us-ascii?Q?pQap7WE3ZR57o3TxmS1jgQN27pxSMudQqvr++PYwRYoKtRCxc+UuQYULTvwo?=
- =?us-ascii?Q?qA=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Sean Anderson <sean.anderson@seco.com>
+Subject: Re: [PATCH net-next] net: mdio: Add netlink interface
+In-Reply-To: <20230306204517.1953122-1-sean.anderson@seco.com>
+References: <20230306204517.1953122-1-sean.anderson@seco.com>
+Date:   Tue, 07 Mar 2023 13:26:30 +0100
+Message-ID: <874jqwkart.fsf@waldekranz.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB4657.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 93657aba-f3b4-4ef5-fc60-08db1f06db0b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Mar 2023 12:24:10.7848
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: EUKv9ZK42tCdi51XmkM3YdYCY641PWKRorAFqtFlYKHEuhvhpcxNt3SjqClTQ09QiiZMHXOt4Ir0SO6KogMW19JQzjLVw+1JMNEU6uPB378=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB7593
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->From: Jiri Pirko <jiri@resnulli.us>
->Sent: Tuesday, January 31, 2023 2:01 PM
+On m=C3=A5n, mar 06, 2023 at 15:45, Sean Anderson <sean.anderson@seco.com> =
+wrote:
+> This adds a netlink interface to make reads/writes to mdio buses. This
+> makes it easier to debug devices. This is especially useful when there
+> is a PCS involved (and the ethtool reads are faked), when there is no
+> MAC associated with a PHY, or when the MDIO device is not a PHY.
 >
->Fri, Jan 27, 2023 at 07:13:20PM CET, arkadiusz.kubalewski@intel.com wrote:
->>
->>>From: Jiri Pirko <jiri@resnulli.us>
->>>Sent: Thursday, January 19, 2023 3:54 PM
->>>
->>>Tue, Jan 17, 2023 at 07:00:51PM CET, vadfed@meta.com wrote:
->>>>From: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+> The closest existing in-kernel interfaces are the SIOCG/SMIIREG ioctls, b=
+ut
+> they have several drawbacks:
 >
->[...]
+> 1. "Write register" is not always exactly that. The kernel will try to
+>    be extra helpful and do things behind the scenes if it detects a
+>    write to the reset bit of a PHY for example.
 >
+> 2. Only one op per syscall. This means that is impossible to implement
+>    many operations in a safe manner. Something as simple as a
+>    read/mask/write cycle can race against an in-kernel driver.
 >
->>>>+/**
->>>>+ * ice_dpll_periodic_work - DPLLs periodic worker
->>>>+ * @work: pointer to kthread_work structure
->>>>+ *
->>>>+ * DPLLs periodic worker is responsible for polling state of dpll.
->>>>+ */
->>>>+static void ice_dpll_periodic_work(struct kthread_work *work) {
->>>>+	struct ice_dplls *d =3D container_of(work, struct ice_dplls,
->>>>work.work);
->>>>+	struct ice_pf *pf =3D container_of(d, struct ice_pf, dplls);
->>>>+	struct ice_dpll *de =3D &pf->dplls.eec;
->>>>+	struct ice_dpll *dp =3D &pf->dplls.pps;
->>>>+	int ret =3D 0;
->>>>+
->>>>+	if (!test_bit(ICE_FLAG_DPLL, pf->flags))
->>>
->>>Why do you need to check the flag there, this would should not be ever
->>>scheduled in case the flag was not set.
->>>
->>
->>It's here rather for stopping the worker, It shall no longer reschedule
->>and bail out.
+> 3. Addressing is awkward since you don't address the MDIO bus
+>    directly, rather "the MDIO bus to which this netdev's PHY is
+>    connected". This makes it hard to talk to devices on buses to which
+>    no PHYs are connected, the typical case being Ethernet switches.
 >
->How that can happen?
+> To address these shortcomings, this adds a GENL interface with which a us=
+er
+> can interact with an MDIO bus directly.  The user sends a program that
+> mdio-netlink executes, possibly emitting data back to the user. I.e. it
+> implements a very simple VM. Read/mask/write operations could be
+> implemented by dedicated commands, but when you start looking at more
+> advanced things like reading out the VLAN database of a switch you need
+> state and branching.
 >
+> To prevent userspace phy drivers, writes are disabled by default, and can
+> only be enabled by editing the source. This is the same strategy used by
+> regmap for debugfs writes. Unfortunately, this disallows several useful
+> features, including
+>
+> - Register writes (obviously)
+> - C45-over-C22
+> - Atomic access to paged registers
+> - Better MDIO emulation for e.g. QEMU
+>
+> However, the read-only interface remains broadly useful for debugging.
+> Users who want to use the above features can re-enable them by defining
+> MDIO_NETLINK_ALLOW_WRITE and recompiling their kernel.
 
-You might be right, I will take a closer look on this before final submissi=
-on.
+What about taking a page from the BPF playbook and require all loaded
+programs (MDIO_GENL_XFERs) to be licensed under GPL?  That would mean
+that the userspace program that generated it would also have to be
+GPLed.
 
->
->
->>
->>>
->>>>+		return;
->>>>+	mutex_lock(&d->lock);
->>>>+	ret =3D ice_dpll_update_state(&pf->hw, de);
->>>>+	if (!ret)
->>>>+		ret =3D ice_dpll_update_state(&pf->hw, dp);
->>>>+	if (ret) {
->>>>+		d->cgu_state_acq_err_num++;
->>>>+		/* stop rescheduling this worker */
->>>>+		if (d->cgu_state_acq_err_num >
->>>>+		    CGU_STATE_ACQ_ERR_THRESHOLD) {
->>>>+			dev_err(ice_pf_to_dev(pf),
->>>>+				"EEC/PPS DPLLs periodic work disabled\n");
->>>>+			return;
->>>>+		}
->>>>+	}
->>>>+	mutex_unlock(&d->lock);
->>>>+	ice_dpll_notify_changes(de);
->>>>+	ice_dpll_notify_changes(dp);
->>>>+
->>>>+	/* Run twice a second or reschedule if update failed */
->>>>+	kthread_queue_delayed_work(d->kworker, &d->work,
->>>>+				   ret ? msecs_to_jiffies(10) :
->>>>+				   msecs_to_jiffies(500));
->>>>+}
->
->[...]
->
->
->>>>+/**
->>>>+ * ice_dpll_rclk_find_dplls - find the device-wide DPLLs by clock_id
->>>>+ * @pf: board private structure
->>>>+ *
->>>>+ * Return:
->>>>+ * * 0 - success
->>>>+ * * negative - init failure
->>>>+ */
->>>>+static int ice_dpll_rclk_find_dplls(struct ice_pf *pf) {
->>>>+	u64 clock_id =3D 0;
->>>>+
->>>>+	ice_generate_clock_id(pf, &clock_id);
->>>>+	pf->dplls.eec.dpll =3D dpll_device_get_by_clock_id(clock_id,
->>>
->>>I have to say I'm a bit lost in this code. Why exactly do you need
->>>this here? Looks like the pointer was set in ice_dpll_init_dpll().
->>>
->>>Or, is that in case of a different PF instantiating the DPLL instances?
->>
->>Yes it is, different PF is attaching recovered clock pins with this.
->>
->>>If yes, I'm pretty sure what it is wrong. What is the PF which did
->>>instanticate those unbinds? You have to share the dpll instance,
->>>refcount it.
->>>
->>
->>It will break, as in our case only one designated PF controls the dpll.
->
->You need to fix this then.
->
+My view has always been that a vendor looking to build a userspace SDK
+won't be deterred by this limitation.  They can easily build
+mdio-netlink.ko from mdio-tools and use that to drive it, or (more
+likely) they already have their own implementation that they are stuck
+with for legacy reasons.  In other words: we are only punishing
+legitimate users (mdio-tools being one of them, IMO).
 
-Yeah, with v6 we did the refcounts.
+Perhaps with this approach we could have our cake and eat it too.
 
+> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+> ---
+> This driver was written by Tobias Waldekranz. It is adapted from the
+> version he released with mdio-tools [1]. This was last discussed 2.5
+> years ago [2], and I have incorperated his cover letter into this commit
+> message. The discussion mainly centered around the write capability
+> allowing for userspace phy drivers. Although it comes with reduced
+> functionality, I hope this new approach satisfies Andrew. I have also
+> made several minor changes for style and to stay abrest of changing
+> APIs.
 >
->>
->>>Btw, you have a problem during init as well, as the order matters.
->>>What if the other function probes only after executing this? You got
->>>-EFAULT here and bail out.
->>>
->>
->>We don't expect such use case, altough I see your point, will try to fix
->it.
->
->What? You have to be kidding me, correct? User obviously should have free
->will to use sysfs to bind/unbind the PCI devices in any order he pleases.
->
->
->>
->>>In mlx5, I also share one dpll instance between 2 PFs. What I do is I
->>>create mlx5-dpll instance which is refcounted, created by first probed
->>>PF and removed by the last one. In mlx5 case, the PFs are equal,
->>>nobody is an owner of the dpll. In your case, I think it is different.
->>>So probably better to implement the logic in driver then in the dpll
->core.
->>>
->>
->>For this NIC only one PF will control the dpll, so there is a designated
->owner.
->>Here owner must not only initialize a dpll but also register its pin,
->>so the other PFs could register additional pins. Basically it means for
->>ice that we can only rely on some postponed rclk initialization for a
->>case of unordered PF initialization. Seems doable.
->
->My point is, you should have one DPLL instance shared for muptiple PFs.
->Then, you have pin struct and dpll struct to use in pin_register and you
->can avoid this odd description magic which is based obviously on broken
->model you have.
->
+> Tobias, I've taken the liberty of adding some copyright notices
+> attributing this to you.
 
-v6 shall fix it.
+Fine by me :)
 
+> [1] https://github.com/wkz/mdio-tools
+> [2] https://lore.kernel.org/netdev/C42DZQLTPHM5.2THDSRK84BI3T@wkz-x280/
 >
->>
->>>Then you don't need dpll_device_get_by_clock_id at all. If you decide
->>>to implement that in dpll core, I believe that there should be some
->>>functions like:
->>>dpll =3D dpll_device_get(ops, clock_id, ...)  - to create/get reference
->>>dpll_device_put(dpll)                       - to put reference/destroy
->>
->>Sure, we can rename "dpll_device_get_by_clock_id" to "dpll_device_get"
->>(as it is only function currently exported for such behavior), and add
->>"dpll_device_put", with ref counts as suggested.
->>
->>>
->>>First caller of dpll_device_get() actually makes dpll to instantiate
->>>the device.
->>>
->>
->>Maybe I am missing something.. do you suggest that "dpll_device_get"
->>would allocate dpll device and do ref count, and then
->>dpll_device_register(..) call
+>  drivers/net/mdio/Kconfig          |   8 +
+>  drivers/net/mdio/Makefile         |   1 +
+>  drivers/net/mdio/mdio-netlink.c   | 464 ++++++++++++++++++++++++++++++
+>  include/uapi/linux/mdio-netlink.h |  61 ++++
+>  4 files changed, 534 insertions(+)
+>  create mode 100644 drivers/net/mdio/mdio-netlink.c
+>  create mode 100644 include/uapi/linux/mdio-netlink.h
 >
->No need for separate register, is it? just have one dpll_device_get()
->function allocate-register/getref for you. Why do you need anything else?
->
-
-v6 shall fix it.
-
-Thank you,
-Arkadiusz
-
->
->>would assign all the arguments that are available only in the owner
->>instance?
->>Or i got it wrong?
->
->[...]
-
+> diff --git a/drivers/net/mdio/Kconfig b/drivers/net/mdio/Kconfig
+> index 90309980686e..8a01978e5b51 100644
+> --- a/drivers/net/mdio/Kconfig
+> +++ b/drivers/net/mdio/Kconfig
+> @@ -43,6 +43,14 @@ config ACPI_MDIO
+>=20=20
+>  if MDIO_BUS
+>=20=20
+> +config MDIO_NETLINK
+> +	tristate "Netlink interface for MDIO buses"
+> +	help
+> +	  Enable a netlink interface to allow reading MDIO buses from
+> +	  userspace. A small virtual machine allows implementing complex
+> +	  operations, such as conditional reads or polling. All operations
+> +	  submitted in the same program are evaluated atomically.
+> +
+>  config MDIO_DEVRES
+>  	tristate
+>=20=20
+> diff --git a/drivers/net/mdio/Makefile b/drivers/net/mdio/Makefile
+> index 7d4cb4c11e4e..5583d5b8d174 100644
+> --- a/drivers/net/mdio/Makefile
+> +++ b/drivers/net/mdio/Makefile
+> @@ -4,6 +4,7 @@
+>  obj-$(CONFIG_ACPI_MDIO)		+=3D acpi_mdio.o
+>  obj-$(CONFIG_FWNODE_MDIO)	+=3D fwnode_mdio.o
+>  obj-$(CONFIG_OF_MDIO)		+=3D of_mdio.o
+> +obj-$(CONFIG_MDIO_NETLINK)	+=3D mdio-netlink.o
+>=20=20
+>  obj-$(CONFIG_MDIO_ASPEED)		+=3D mdio-aspeed.o
+>  obj-$(CONFIG_MDIO_BCM_IPROC)		+=3D mdio-bcm-iproc.o
+> diff --git a/drivers/net/mdio/mdio-netlink.c b/drivers/net/mdio/mdio-netl=
+ink.c
+> new file mode 100644
+> index 000000000000..3e32d1a9bab3
+> --- /dev/null
+> +++ b/drivers/net/mdio/mdio-netlink.c
+> @@ -0,0 +1,464 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (C) 2022-23 Sean Anderson <sean.anderson@seco.com>
+> + * Copyright (C) 2020-22 Tobias Waldekranz <tobias@waldekranz.com>
+> + */
+> +
+> +#include <linux/init.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/netlink.h>
+> +#include <linux/phy.h>
+> +#include <net/genetlink.h>
+> +#include <net/netlink.h>
+> +#include <uapi/linux/mdio-netlink.h>
+> +
+> +struct mdio_nl_xfer {
+> +	struct genl_info *info;
+> +	struct sk_buff *msg;
+> +	void *hdr;
+> +	struct nlattr *data;
+> +
+> +	struct mii_bus *mdio;
+> +	int timeout_ms;
+> +
+> +	int prog_len;
+> +	struct mdio_nl_insn *prog;
+> +};
+> +
+> +static int mdio_nl_open(struct mdio_nl_xfer *xfer);
+> +static int mdio_nl_close(struct mdio_nl_xfer *xfer, bool last, int xerr);
+> +
+> +static int mdio_nl_flush(struct mdio_nl_xfer *xfer)
+> +{
+> +	int err;
+> +
+> +	err =3D mdio_nl_close(xfer, false, 0);
+> +	if (err)
+> +		return err;
+> +
+> +	return mdio_nl_open(xfer);
+> +}
+> +
+> +static int mdio_nl_emit(struct mdio_nl_xfer *xfer, u32 datum)
+> +{
+> +	int err =3D 0;
+> +
+> +	if (!nla_put_nohdr(xfer->msg, sizeof(datum), &datum))
+> +		return 0;
+> +
+> +	err =3D mdio_nl_flush(xfer);
+> +	if (err)
+> +		return err;
+> +
+> +	return nla_put_nohdr(xfer->msg, sizeof(datum), &datum);
+> +}
+> +
+> +static inline u16 *__arg_r(u32 arg, u16 *regs)
+> +{
+> +	WARN_ON_ONCE(arg >> 16 !=3D MDIO_NL_ARG_REG);
+> +
+> +	return &regs[arg & 0x7];
+> +}
+> +
+> +static inline u16 __arg_i(u32 arg)
+> +{
+> +	WARN_ON_ONCE(arg >> 16 !=3D MDIO_NL_ARG_IMM);
+> +
+> +	return arg & 0xffff;
+> +}
+> +
+> +static inline u16 __arg_ri(u32 arg, u16 *regs)
+> +{
+> +	switch ((enum mdio_nl_argmode)(arg >> 16)) {
+> +	case MDIO_NL_ARG_IMM:
+> +		return arg & 0xffff;
+> +	case MDIO_NL_ARG_REG:
+> +		return regs[arg & 7];
+> +	default:
+> +		WARN_ON_ONCE(1);
+> +		return 0;
+> +	}
+> +}
+> +
+> +/* To prevent out-of-tree drivers from being implemented through this
+> + * interface, disallow writes by default. This does disallow read-only u=
+ses,
+> + * such as c45-over-c22 or reading phys with pages. However, with a such=
+ a
+> + * flexible interface, we must use a big hammer. People who want to use =
+this
+> + * will need to modify the source code directly.
+> + */
+> +#undef MDIO_NETLINK_ALLOW_WRITE
+> +
+> +static int mdio_nl_eval(struct mdio_nl_xfer *xfer)
+> +{
+> +	struct mdio_nl_insn *insn;
+> +	unsigned long timeout;
+> +	u16 regs[8] =3D { 0 };
+> +	int pc, ret =3D 0;
+> +	int phy_id, reg, prtad, devad, val;
+> +
+> +	timeout =3D jiffies + msecs_to_jiffies(xfer->timeout_ms);
+> +
+> +	mutex_lock(&xfer->mdio->mdio_lock);
+> +
+> +	for (insn =3D xfer->prog, pc =3D 0;
+> +	     pc < xfer->prog_len;
+> +	     insn =3D &xfer->prog[++pc]) {
+> +		if (time_after(jiffies, timeout)) {
+> +			ret =3D -ETIMEDOUT;
+> +			break;
+> +		}
+> +
+> +		switch ((enum mdio_nl_op)insn->op) {
+> +		case MDIO_NL_OP_READ:
+> +			phy_id =3D __arg_ri(insn->arg0, regs);
+> +			prtad =3D mdio_phy_id_prtad(phy_id);
+> +			devad =3D mdio_phy_id_devad(phy_id);
+> +			reg =3D __arg_ri(insn->arg1, regs);
+> +
+> +			if (mdio_phy_id_is_c45(phy_id))
+> +				ret =3D __mdiobus_c45_read(xfer->mdio, prtad,
+> +							 devad, reg);
+> +			else
+> +				ret =3D __mdiobus_read(xfer->mdio, phy_id, reg);
+> +
+> +			if (ret < 0)
+> +				goto exit;
+> +			*__arg_r(insn->arg2, regs) =3D ret;
+> +			ret =3D 0;
+> +			break;
+> +
+> +		case MDIO_NL_OP_WRITE:
+> +			phy_id =3D __arg_ri(insn->arg0, regs);
+> +			prtad =3D mdio_phy_id_prtad(phy_id);
+> +			devad =3D mdio_phy_id_devad(phy_id);
+> +			reg =3D __arg_ri(insn->arg1, regs);
+> +			val =3D __arg_ri(insn->arg2, regs);
+> +
+> +#ifdef MDIO_NETLINK_ALLOW_WRITE
+> +			add_taint(TAINT_USER, LOCKDEP_STILL_OK);
+> +			if (mdio_phy_id_is_c45(phy_id))
+> +				ret =3D __mdiobus_c45_write(xfer->mdio, prtad,
+> +							  devad, reg, val
+> +			else
+> +				ret =3D __mdiobus_write(xfer->mdio, dev, reg,
+> +						      val);
+> +#else
+> +			ret =3D -EPERM;
+> +#endif
+> +			if (ret < 0)
+> +				goto exit;
+> +			ret =3D 0;
+> +			break;
+> +
+> +		case MDIO_NL_OP_AND:
+> +			*__arg_r(insn->arg2, regs) =3D
+> +				__arg_ri(insn->arg0, regs) &
+> +				__arg_ri(insn->arg1, regs);
+> +			break;
+> +
+> +		case MDIO_NL_OP_OR:
+> +			*__arg_r(insn->arg2, regs) =3D
+> +				__arg_ri(insn->arg0, regs) |
+> +				__arg_ri(insn->arg1, regs);
+> +			break;
+> +
+> +		case MDIO_NL_OP_ADD:
+> +			*__arg_r(insn->arg2, regs) =3D
+> +				__arg_ri(insn->arg0, regs) +
+> +				__arg_ri(insn->arg1, regs);
+> +			break;
+> +
+> +		case MDIO_NL_OP_JEQ:
+> +			if (__arg_ri(insn->arg0, regs) =3D=3D
+> +			    __arg_ri(insn->arg1, regs))
+> +				pc +=3D (s16)__arg_i(insn->arg2);
+> +			break;
+> +
+> +		case MDIO_NL_OP_JNE:
+> +			if (__arg_ri(insn->arg0, regs) !=3D
+> +			    __arg_ri(insn->arg1, regs))
+> +				pc +=3D (s16)__arg_i(insn->arg2);
+> +			break;
+> +
+> +		case MDIO_NL_OP_EMIT:
+> +			ret =3D mdio_nl_emit(xfer, __arg_ri(insn->arg0, regs));
+> +			if (ret < 0)
+> +				goto exit;
+> +			ret =3D 0;
+> +			break;
+> +
+> +		case MDIO_NL_OP_UNSPEC:
+> +		default:
+> +			ret =3D -EINVAL;
+> +			goto exit;
+> +		}
+> +	}
+> +exit:
+> +	mutex_unlock(&xfer->mdio->mdio_lock);
+> +	return ret;
+> +}
+> +
+> +struct mdio_nl_op_proto {
+> +	u8 arg0;
+> +	u8 arg1;
+> +	u8 arg2;
+> +};
+> +
+> +static const struct mdio_nl_op_proto mdio_nl_op_protos[MDIO_NL_OP_MAX + =
+1] =3D {
+> +	[MDIO_NL_OP_READ] =3D {
+> +		.arg0 =3D BIT(MDIO_NL_ARG_REG) | BIT(MDIO_NL_ARG_IMM),
+> +		.arg1 =3D BIT(MDIO_NL_ARG_REG) | BIT(MDIO_NL_ARG_IMM),
+> +		.arg2 =3D BIT(MDIO_NL_ARG_REG),
+> +	},
+> +	[MDIO_NL_OP_WRITE] =3D {
+> +		.arg0 =3D BIT(MDIO_NL_ARG_REG) | BIT(MDIO_NL_ARG_IMM),
+> +		.arg1 =3D BIT(MDIO_NL_ARG_REG) | BIT(MDIO_NL_ARG_IMM),
+> +		.arg2 =3D BIT(MDIO_NL_ARG_REG) | BIT(MDIO_NL_ARG_IMM),
+> +	},
+> +	[MDIO_NL_OP_AND] =3D {
+> +		.arg0 =3D BIT(MDIO_NL_ARG_REG) | BIT(MDIO_NL_ARG_IMM),
+> +		.arg1 =3D BIT(MDIO_NL_ARG_REG) | BIT(MDIO_NL_ARG_IMM),
+> +		.arg2 =3D BIT(MDIO_NL_ARG_REG),
+> +	},
+> +	[MDIO_NL_OP_OR] =3D {
+> +		.arg0 =3D BIT(MDIO_NL_ARG_REG) | BIT(MDIO_NL_ARG_IMM),
+> +		.arg1 =3D BIT(MDIO_NL_ARG_REG) | BIT(MDIO_NL_ARG_IMM),
+> +		.arg2 =3D BIT(MDIO_NL_ARG_REG),
+> +	},
+> +	[MDIO_NL_OP_ADD] =3D {
+> +		.arg0 =3D BIT(MDIO_NL_ARG_REG) | BIT(MDIO_NL_ARG_IMM),
+> +		.arg1 =3D BIT(MDIO_NL_ARG_REG) | BIT(MDIO_NL_ARG_IMM),
+> +		.arg2 =3D BIT(MDIO_NL_ARG_REG),
+> +	},
+> +	[MDIO_NL_OP_JEQ] =3D {
+> +		.arg0 =3D BIT(MDIO_NL_ARG_REG) | BIT(MDIO_NL_ARG_IMM),
+> +		.arg1 =3D BIT(MDIO_NL_ARG_REG) | BIT(MDIO_NL_ARG_IMM),
+> +		.arg2 =3D BIT(MDIO_NL_ARG_IMM),
+> +	},
+> +	[MDIO_NL_OP_JNE] =3D {
+> +		.arg0 =3D BIT(MDIO_NL_ARG_REG) | BIT(MDIO_NL_ARG_IMM),
+> +		.arg1 =3D BIT(MDIO_NL_ARG_REG) | BIT(MDIO_NL_ARG_IMM),
+> +		.arg2 =3D BIT(MDIO_NL_ARG_IMM),
+> +	},
+> +	[MDIO_NL_OP_EMIT] =3D {
+> +		.arg0 =3D BIT(MDIO_NL_ARG_REG) | BIT(MDIO_NL_ARG_IMM),
+> +		.arg1 =3D BIT(MDIO_NL_ARG_NONE),
+> +		.arg2 =3D BIT(MDIO_NL_ARG_NONE),
+> +	},
+> +};
+> +
+> +static int mdio_nl_validate_insn(const struct nlattr *attr,
+> +				 struct netlink_ext_ack *extack,
+> +				 const struct mdio_nl_insn *insn)
+> +{
+> +	const struct mdio_nl_op_proto *proto;
+> +
+> +	if (insn->op > MDIO_NL_OP_MAX) {
+> +		NL_SET_ERR_MSG_ATTR(extack, attr, "Illegal instruction");
+> +		return -EINVAL;
+> +	}
+> +
+> +	proto =3D &mdio_nl_op_protos[insn->op];
+> +
+> +	if (!(BIT(insn->arg0 >> 16) & proto->arg0)) {
+> +		NL_SET_ERR_MSG_ATTR(extack, attr, "Argument 0 invalid");
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (!(BIT(insn->arg1 >> 16) & proto->arg1)) {
+> +		NL_SET_ERR_MSG_ATTR(extack, attr, "Argument 1 invalid");
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (!(BIT(insn->arg2 >> 16) & proto->arg2)) {
+> +		NL_SET_ERR_MSG_ATTR(extack, attr, "Argument 2 invalid");
+> +		return -EINVAL;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int mdio_nl_validate_prog(const struct nlattr *attr,
+> +				 struct netlink_ext_ack *extack)
+> +{
+> +	const struct mdio_nl_insn *prog =3D nla_data(attr);
+> +	int len =3D nla_len(attr);
+> +	int i, err =3D 0;
+> +
+> +	if (len % sizeof(*prog)) {
+> +		NL_SET_ERR_MSG_ATTR(extack, attr, "Unaligned instruction");
+> +		return -EINVAL;
+> +	}
+> +
+> +	len /=3D sizeof(*prog);
+> +	for (i =3D 0; i < len; i++) {
+> +		err =3D mdio_nl_validate_insn(attr, extack, &prog[i]);
+> +		if (err)
+> +			break;
+> +	}
+> +
+> +	return err;
+> +}
+> +
+> +static const struct nla_policy mdio_nl_policy[MDIO_NLA_MAX + 1] =3D {
+> +	[MDIO_NLA_UNSPEC]  =3D { .type =3D NLA_UNSPEC, },
+> +	[MDIO_NLA_BUS_ID]  =3D { .type =3D NLA_STRING, .len =3D MII_BUS_ID_SIZE=
+ },
+> +	[MDIO_NLA_TIMEOUT] =3D NLA_POLICY_MAX(NLA_U16, 10 * MSEC_PER_SEC),
+> +	[MDIO_NLA_PROG]    =3D NLA_POLICY_VALIDATE_FN(NLA_BINARY,
+> +						    mdio_nl_validate_prog,
+> +						    0x1000),
+> +	[MDIO_NLA_DATA]    =3D { .type =3D NLA_NESTED },
+> +	[MDIO_NLA_ERROR]   =3D { .type =3D NLA_S32, },
+> +};
+> +
+> +static struct genl_family mdio_nl_family;
+> +
+> +static int mdio_nl_open(struct mdio_nl_xfer *xfer)
+> +{
+> +	int err;
+> +
+> +	xfer->msg =3D nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
+> +	if (!xfer->msg) {
+> +		err =3D -ENOMEM;
+> +		goto err;
+> +	}
+> +
+> +	xfer->hdr =3D genlmsg_put(xfer->msg, xfer->info->snd_portid,
+> +				xfer->info->snd_seq, &mdio_nl_family,
+> +				NLM_F_ACK | NLM_F_MULTI, MDIO_GENL_XFER);
+> +	if (!xfer->hdr) {
+> +		err =3D -EMSGSIZE;
+> +		goto err_free;
+> +	}
+> +
+> +	xfer->data =3D nla_nest_start(xfer->msg, MDIO_NLA_DATA);
+> +	if (!xfer->data) {
+> +		err =3D -EMSGSIZE;
+> +		goto err_free;
+> +	}
+> +
+> +	return 0;
+> +
+> +err_free:
+> +	nlmsg_free(xfer->msg);
+> +err:
+> +	return err;
+> +}
+> +
+> +static int mdio_nl_close(struct mdio_nl_xfer *xfer, bool last, int xerr)
+> +{
+> +	struct nlmsghdr *end;
+> +	int err;
+> +
+> +	nla_nest_end(xfer->msg, xfer->data);
+> +
+> +	if (xerr && nla_put_s32(xfer->msg, MDIO_NLA_ERROR, xerr)) {
+> +		err =3D mdio_nl_flush(xfer);
+> +		if (err)
+> +			goto err_free;
+> +
+> +		if (nla_put_s32(xfer->msg, MDIO_NLA_ERROR, xerr)) {
+> +			err =3D -EMSGSIZE;
+> +			goto err_free;
+> +		}
+> +	}
+> +
+> +	genlmsg_end(xfer->msg, xfer->hdr);
+> +
+> +	if (last) {
+> +		end =3D nlmsg_put(xfer->msg, xfer->info->snd_portid,
+> +				xfer->info->snd_seq, NLMSG_DONE, 0,
+> +				NLM_F_ACK | NLM_F_MULTI);
+> +		if (!end) {
+> +			err =3D mdio_nl_flush(xfer);
+> +			if (err)
+> +				goto err_free;
+> +
+> +			end =3D nlmsg_put(xfer->msg, xfer->info->snd_portid,
+> +					xfer->info->snd_seq, NLMSG_DONE, 0,
+> +					NLM_F_ACK | NLM_F_MULTI);
+> +			if (!end) {
+> +				err =3D -EMSGSIZE;
+> +				goto err_free;
+> +			}
+> +		}
+> +	}
+> +
+> +	return genlmsg_unicast(genl_info_net(xfer->info), xfer->msg,
+> +			       xfer->info->snd_portid);
+> +
+> +err_free:
+> +	nlmsg_free(xfer->msg);
+> +	return err;
+> +}
+> +
+> +static int mdio_nl_cmd_xfer(struct sk_buff *skb, struct genl_info *info)
+> +{
+> +	struct mdio_nl_xfer xfer;
+> +	int err;
+> +
+> +	if (!info->attrs[MDIO_NLA_BUS_ID] ||
+> +	    !info->attrs[MDIO_NLA_PROG]   ||
+> +	     info->attrs[MDIO_NLA_DATA]   ||
+> +	     info->attrs[MDIO_NLA_ERROR])
+> +		return -EINVAL;
+> +
+> +	xfer.mdio =3D mdio_find_bus(nla_data(info->attrs[MDIO_NLA_BUS_ID]));
+> +	if (!xfer.mdio)
+> +		return -ENODEV;
+> +
+> +	if (info->attrs[MDIO_NLA_TIMEOUT])
+> +		xfer.timeout_ms =3D nla_get_u32(info->attrs[MDIO_NLA_TIMEOUT]);
+> +	else
+> +		xfer.timeout_ms =3D 100;
+> +
+> +	xfer.info =3D info;
+> +	xfer.prog_len =3D nla_len(info->attrs[MDIO_NLA_PROG]) / sizeof(*xfer.pr=
+og);
+> +	xfer.prog =3D nla_data(info->attrs[MDIO_NLA_PROG]);
+> +
+> +	err =3D mdio_nl_open(&xfer);
+> +	if (err)
+> +		return err;
+> +
+> +	err =3D mdio_nl_eval(&xfer);
+> +
+> +	err =3D mdio_nl_close(&xfer, true, err);
+> +	return err;
+> +}
+> +
+> +static const struct genl_ops mdio_nl_ops[] =3D {
+> +	{
+> +		.cmd =3D MDIO_GENL_XFER,
+> +		.doit =3D mdio_nl_cmd_xfer,
+> +		.flags =3D GENL_ADMIN_PERM,
+> +	},
+> +};
+> +
+> +static struct genl_family mdio_nl_family =3D {
+> +	.name     =3D "mdio",
+> +	.version  =3D 1,
+> +	.maxattr  =3D MDIO_NLA_MAX,
+> +	.netnsok  =3D false,
+> +	.module   =3D THIS_MODULE,
+> +	.ops      =3D mdio_nl_ops,
+> +	.n_ops    =3D ARRAY_SIZE(mdio_nl_ops),
+> +	.policy   =3D mdio_nl_policy,
+> +};
+> +
+> +static int __init mdio_nl_init(void)
+> +{
+> +	return genl_register_family(&mdio_nl_family);
+> +}
+> +
+> +static void __exit mdio_nl_exit(void)
+> +{
+> +	genl_unregister_family(&mdio_nl_family);
+> +}
+> +
+> +MODULE_AUTHOR("Tobias Waldekranz <tobias@waldekranz.com>");
+> +MODULE_DESCRIPTION("MDIO Netlink Interface");
+> +MODULE_LICENSE("GPL");
+> +
+> +module_init(mdio_nl_init);
+> +module_exit(mdio_nl_exit);
+> diff --git a/include/uapi/linux/mdio-netlink.h b/include/uapi/linux/mdio-=
+netlink.h
+> new file mode 100644
+> index 000000000000..bebd3b45c882
+> --- /dev/null
+> +++ b/include/uapi/linux/mdio-netlink.h
+> @@ -0,0 +1,61 @@
+> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+> +/*
+> + * Copyright (C) 2020-22 Tobias Waldekranz <tobias@waldekranz.com>
+> + */
+> +
+> +#ifndef _UAPI_LINUX_MDIO_NETLINK_H
+> +#define _UAPI_LINUX_MDIO_NETLINK_H
+> +
+> +#include <linux/types.h>
+> +
+> +enum {
+> +	MDIO_GENL_UNSPEC,
+> +	MDIO_GENL_XFER,
+> +
+> +	__MDIO_GENL_MAX,
+> +	MDIO_GENL_MAX =3D __MDIO_GENL_MAX - 1
+> +};
+> +
+> +enum {
+> +	MDIO_NLA_UNSPEC,
+> +	MDIO_NLA_BUS_ID,  /* string */
+> +	MDIO_NLA_TIMEOUT, /* u32 */
+> +	MDIO_NLA_PROG,    /* struct mdio_nl_insn[] */
+> +	MDIO_NLA_DATA,    /* nest */
+> +	MDIO_NLA_ERROR,   /* s32 */
+> +
+> +	__MDIO_NLA_MAX,
+> +	MDIO_NLA_MAX =3D __MDIO_NLA_MAX - 1
+> +};
+> +
+> +enum mdio_nl_op {
+> +	MDIO_NL_OP_UNSPEC,
+> +	MDIO_NL_OP_READ,	/* read  dev(RI), port(RI), dst(R) */
+> +	MDIO_NL_OP_WRITE,	/* write dev(RI), port(RI), src(RI) */
+> +	MDIO_NL_OP_AND,		/* and   a(RI),   b(RI),    dst(R) */
+> +	MDIO_NL_OP_OR,		/* or    a(RI),   b(RI),    dst(R) */
+> +	MDIO_NL_OP_ADD,		/* add   a(RI),   b(RI),    dst(R) */
+> +	MDIO_NL_OP_JEQ,		/* jeq   a(RI),   b(RI),    jmp(I) */
+> +	MDIO_NL_OP_JNE,		/* jeq   a(RI),   b(RI),    jmp(I) */
+> +	MDIO_NL_OP_EMIT,	/* emit  src(RI) */
+> +
+> +	__MDIO_NL_OP_MAX,
+> +	MDIO_NL_OP_MAX =3D __MDIO_NL_OP_MAX - 1
+> +};
+> +
+> +enum mdio_nl_argmode {
+> +	MDIO_NL_ARG_NONE,
+> +	MDIO_NL_ARG_REG,
+> +	MDIO_NL_ARG_IMM,
+> +	MDIO_NL_ARG_RESERVED
+> +};
+> +
+> +struct mdio_nl_insn {
+> +	__u64 op:8;
+> +	__u64 reserved:2;
+> +	__u64 arg0:18;
+> +	__u64 arg1:18;
+> +	__u64 arg2:18;
+> +};
+> +
+> +#endif /* _UAPI_LINUX_MDIO_NETLINK_H */
+> --=20
+> 2.35.1.1320.gc452695387.dirty
