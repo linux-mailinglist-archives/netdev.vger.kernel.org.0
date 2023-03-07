@@ -2,71 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC3E86AD6C6
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 06:28:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21B1A6AD6EF
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 06:42:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230132AbjCGF2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 00:28:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38986 "EHLO
+        id S230258AbjCGFmz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 00:42:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229982AbjCGF15 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 00:27:57 -0500
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4E9755046
-        for <netdev@vger.kernel.org>; Mon,  6 Mar 2023 21:27:50 -0800 (PST)
-Received: by mail-wm1-x32e.google.com with SMTP id r19-20020a05600c459300b003eb3e2a5e7bso6498281wmo.0
-        for <netdev@vger.kernel.org>; Mon, 06 Mar 2023 21:27:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1678166869;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=A8M/ZNHm41J+Clg6mlxXrqT98RL27ba318OGQ7b+J+Q=;
-        b=AXz8IE3BfGxvgHWARVu3cvmOd6P97RlW9noY25nWVCy6dXQ2vvPVZ9Py6kBKTNXlj3
-         RGGCQe8dv+KR7SlUXWeg4O/QW8LuIHTN3sz2+J49IWOWaWZSnqHG+zwdQuVY+H/pQVAu
-         F9xnuSl0vF/CiPxxoqZdBY5As2d0bOFPf01iGsYIwKPrv+7UuMKjhKDUTJ/CjAuIkHqe
-         QiF24XnHbg6mgGw/2JMNF1CRC89YDDxSsVTPSCGpyM4sMgyw3xMrNYXJ+P/6jUxfQQGo
-         zYkZjnrGLZrVFDSGBEFopoY1j+UVtcWWTiIotD6oCoQoVZsBz60ZhyC3s+t5/o19HC0v
-         rNGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678166869;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=A8M/ZNHm41J+Clg6mlxXrqT98RL27ba318OGQ7b+J+Q=;
-        b=nm/tjiCQEqsUCluPcDKZnkbp4zhRae6RksCwWA3B4Of60FB065ufDdHHR2bc/IE1/F
-         omR3/3nBgjUUyPAj+dzFkKOmmhV2hQdSX9tnmFH0ie/2JGfv3+c0tIBTi+5UD5Asoh+9
-         1KGvB8xAxDJ9zNF6qpFa/OARKaBUBUWatY3vffIvF1S9Z0sKH33V0Fncjpv+X9BuU/al
-         cJwkto6LtvrY2aOa4PPNoTsKReuM5rlbIBuQT61JGhDrT5t+pukrIXT9BOUdBvawJ6TB
-         rtqJcyaC5OUJaxS/IxF9wbn+Z8bYqVEbe35M7VTlkrdOjaD2kuW+lgWkmVTdzrh8gP2q
-         /ZFg==
-X-Gm-Message-State: AO0yUKVMJWLV1Gnk+vFnbScTD92wPX5wLLPJxtI4kbOXb3mxmlAbsehE
-        D5J+fzzWmDJwiECZVjPdPVstmNSbBFpJJFxMWgF4Hw==
-X-Google-Smtp-Source: AK7set+xWDoE/FuWr9saZhwuqb1gnA/rnnySOj/6SiypapxLJrV26Ug57td0Fc5DRpB4SqTyaxspNyemmIW2im9XebY=
-X-Received: by 2002:a05:600c:688:b0:3e1:eaca:db25 with SMTP id
- a8-20020a05600c068800b003e1eacadb25mr2801113wmn.6.1678166869199; Mon, 06 Mar
- 2023 21:27:49 -0800 (PST)
+        with ESMTP id S229570AbjCGFmx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 00:42:53 -0500
+Received: from out30-112.freemail.mail.aliyun.com (out30-112.freemail.mail.aliyun.com [115.124.30.112])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06B5E6C1A5;
+        Mon,  6 Mar 2023 21:42:50 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R841e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VdJyV4n_1678167700;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VdJyV4n_1678167700)
+          by smtp.aliyun-inc.com;
+          Tue, 07 Mar 2023 13:42:48 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     ajit.khaparde@broadcom.com
+Cc:     sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH] emulex/benet: clean up some inconsistent indenting
+Date:   Tue,  7 Mar 2023 13:41:38 +0800
+Message-Id: <20230307054138.21632-1-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-References: <20230307052254.198305-1-edumazet@google.com>
-In-Reply-To: <20230307052254.198305-1-edumazet@google.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 7 Mar 2023 06:27:37 +0100
-Message-ID: <CANn89i+sfROgQUaNR+eMc2BWxtOjMmLgqsv52A1iLGhyydrBbg@mail.gmail.com>
-Subject: Re: [PATCH net] netfilter: conntrack:
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>
-Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, eric.dumazet@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,21 +42,125 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 7, 2023 at 6:22=E2=80=AFAM Eric Dumazet <edumazet@google.com> w=
-rote:
->
-> Customers using GKE 1.25 and 1.26 are facing conntrack issues
-> root caused to commit c9c3b6811f74 ("netfilter: conntrack: make
-> max chain length random").
->
-> Even if we assume Uniform Hashing, a bucket often reachs 8 chained
-> items while the load factor of the hash table is smaller than 0.5
->
+No functional modification involved.
 
-Sorry for the messed patch title.
+drivers/net/ethernet/emulex/benet/be_cmds.c:1120 be_cmd_pmac_add() warn: inconsistent indenting.
 
-This should have been:
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=4396
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+---
+ drivers/net/ethernet/emulex/benet/be_cmds.c | 27 +++++++++++----------
+ 1 file changed, 14 insertions(+), 13 deletions(-)
 
-netfilter: conntrack: adopt safer max chain length
+diff --git a/drivers/net/ethernet/emulex/benet/be_cmds.c b/drivers/net/ethernet/emulex/benet/be_cmds.c
+index 08ec84cd21c0..61adcebeef01 100644
+--- a/drivers/net/ethernet/emulex/benet/be_cmds.c
++++ b/drivers/net/ethernet/emulex/benet/be_cmds.c
+@@ -135,7 +135,8 @@ static int be_mcc_notify(struct be_adapter *adapter)
+ 
+ /* To check if valid bit is set, check the entire word as we don't know
+  * the endianness of the data (old entry is host endian while a new entry is
+- * little endian) */
++ * little endian)
++ */
+ static inline bool be_mcc_compl_is_new(struct be_mcc_compl *compl)
+ {
+ 	u32 flags;
+@@ -248,7 +249,8 @@ static int be_mcc_compl_process(struct be_adapter *adapter,
+ 	u8 opcode = 0, subsystem = 0;
+ 
+ 	/* Just swap the status to host endian; mcc tag is opaquely copied
+-	 * from mcc_wrb */
++	 * from mcc_wrb
++	 */
+ 	be_dws_le_to_cpu(compl, 4);
+ 
+ 	base_status = base_status(compl->status);
+@@ -657,8 +659,7 @@ static int be_mbox_db_ready_wait(struct be_adapter *adapter, void __iomem *db)
+ 	return 0;
+ }
+ 
+-/*
+- * Insert the mailbox address into the doorbell in two steps
++/* Insert the mailbox address into the doorbell in two steps
+  * Polls on the mbox doorbell till a command completion (or a timeout) occurs
+  */
+ static int be_mbox_notify_wait(struct be_adapter *adapter)
+@@ -802,7 +803,7 @@ static void be_wrb_cmd_hdr_prepare(struct be_cmd_req_hdr *req_hdr,
+ 	req_hdr->subsystem = subsystem;
+ 	req_hdr->request_length = cpu_to_le32(cmd_len - sizeof(*req_hdr));
+ 	req_hdr->version = 0;
+-	fill_wrb_tags(wrb, (ulong) req_hdr);
++	fill_wrb_tags(wrb, (ulong)req_hdr);
+ 	wrb->payload_length = cmd_len;
+ 	if (mem) {
+ 		wrb->embedded |= (1 & MCC_WRB_SGE_CNT_MASK) <<
+@@ -832,8 +833,8 @@ static void be_cmd_page_addrs_prepare(struct phys_addr *pages, u32 max_pages,
+ static inline struct be_mcc_wrb *wrb_from_mbox(struct be_adapter *adapter)
+ {
+ 	struct be_dma_mem *mbox_mem = &adapter->mbox_mem;
+-	struct be_mcc_wrb *wrb
+-		= &((struct be_mcc_mailbox *)(mbox_mem->va))->wrb;
++	struct be_mcc_wrb *wrb = &((struct be_mcc_mailbox *)(mbox_mem->va))->wrb;
++
+ 	memset(wrb, 0, sizeof(*wrb));
+ 	return wrb;
+ }
+@@ -896,7 +897,7 @@ static struct be_mcc_wrb *be_cmd_copy(struct be_adapter *adapter,
+ 
+ 	memcpy(dest_wrb, wrb, sizeof(*wrb));
+ 	if (wrb->embedded & cpu_to_le32(MCC_WRB_EMBEDDED_MASK))
+-		fill_wrb_tags(dest_wrb, (ulong) embedded_payload(wrb));
++		fill_wrb_tags(dest_wrb, (ulong)embedded_payload(wrb));
+ 
+ 	return dest_wrb;
+ }
+@@ -1114,7 +1115,7 @@ int be_cmd_pmac_add(struct be_adapter *adapter, const u8 *mac_addr,
+ err:
+ 	mutex_unlock(&adapter->mcc_lock);
+ 
+-	 if (base_status(status) == MCC_STATUS_UNAUTHORIZED_REQUEST)
++	if (base_status(status) == MCC_STATUS_UNAUTHORIZED_REQUEST)
+ 		status = -EPERM;
+ 
+ 	return status;
+@@ -1803,7 +1804,7 @@ int be_cmd_get_fat_dump(struct be_adapter *adapter, u32 buf_len, void *buf)
+ 
+ 	total_size = buf_len;
+ 
+-	get_fat_cmd.size = sizeof(struct be_cmd_req_get_fat) + 60*1024;
++	get_fat_cmd.size = sizeof(struct be_cmd_req_get_fat) + 60 * 1024;
+ 	get_fat_cmd.va = dma_alloc_coherent(&adapter->pdev->dev,
+ 					    get_fat_cmd.size,
+ 					    &get_fat_cmd.dma, GFP_ATOMIC);
+@@ -1813,7 +1814,7 @@ int be_cmd_get_fat_dump(struct be_adapter *adapter, u32 buf_len, void *buf)
+ 	mutex_lock(&adapter->mcc_lock);
+ 
+ 	while (total_size) {
+-		buf_size = min(total_size, (u32)60*1024);
++		buf_size = min(total_size, (u32)60 * 1024);
+ 		total_size -= buf_size;
+ 
+ 		wrb = wrb_from_mccq(adapter);
+@@ -3362,7 +3363,7 @@ int be_cmd_ddr_dma_test(struct be_adapter *adapter, u64 pattern,
+ 	req->pattern = cpu_to_le64(pattern);
+ 	req->byte_count = cpu_to_le32(byte_cnt);
+ 	for (i = 0; i < byte_cnt; i++) {
+-		req->snd_buff[i] = (u8)(pattern >> (j*8));
++		req->snd_buff[i] = (u8)(pattern >> (j * 8));
+ 		j++;
+ 		if (j > 7)
+ 			j = 0;
+@@ -3846,7 +3847,7 @@ int be_cmd_set_mac_list(struct be_adapter *adapter, u8 *mac_array,
+ 	req->hdr.domain = domain;
+ 	req->mac_count = mac_count;
+ 	if (mac_count)
+-		memcpy(req->mac, mac_array, ETH_ALEN*mac_count);
++		memcpy(req->mac, mac_array, ETH_ALEN * mac_count);
+ 
+ 	status = be_mcc_notify_wait(adapter);
+ 
+-- 
+2.20.1.7.g153144c
 
-Florian, Pablo, let me know if you want me to send a v2, thanks !
