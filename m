@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 80FCE6ADAD6
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 10:47:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D81D56ADADA
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 10:47:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230227AbjCGJr3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 04:47:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42260 "EHLO
+        id S229976AbjCGJrv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 04:47:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230194AbjCGJrX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 04:47:23 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2050.outbound.protection.outlook.com [40.107.92.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F9EB56167;
-        Tue,  7 Mar 2023 01:47:08 -0800 (PST)
+        with ESMTP id S230297AbjCGJro (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 04:47:44 -0500
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2089.outbound.protection.outlook.com [40.107.101.89])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC7356174;
+        Tue,  7 Mar 2023 01:47:18 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dNv7nWJ5nEcVcqfbaLjIa7Es9mbN3ZddC38PxLhhXD2p/NWd3/1omZi2C6reTuv0GBk7faGPeY8oIq2aP3tRaS1/8Q4z3zjwYZ21GCrZKvJDdlWbpjlE/kVSvQ7+nCr9QXsGoY8khSTweesQSAPAFKlFxzp4VgvxCnZ1KF95hNGNjHdYIvQvpOuAW0yWbVlq2PPaegz6qOmxfEX/TbqLsCt+0S4cE4Wnb7bDsP6D6hTcbLAKAEQ1Zpi+BzxDuWn8PyNuV7WeHs0OcN3F8G+mv+bgKdyEtmxaglJ8UM0S2wkWSOg6dXMQRKaFnTgy/vhMt847OrAai5ITT+DvSiFH8w==
+ b=S0VbmbOT2u2PaWgpuh3FM/IgU2Sbgkvx9KUxTmlnSQITRBIfIY/eu/furYtCKkKfGxx1EqUQ6k8O5HIatoN2j3AUAxBV7wCMRUDkj7M7wVXTx6tDg918gnoXXVhQ1iLZi8rCuRhmZYWLgexSSqayE9RGstOmMURuzH18IQltuQbjzK8rFXlgH7Oo5P7VN1jReKXaGabOqXR2vkTizFSDmriX+qfQrIOYKfrs5UQiUNtSDw0VW3qxF2aoD2I3S/II4guEatmADA4gLso8nRe8S0OS6SSsHIx76UWA74WcLkWQHtNPU3hQzGl6NOAR/OdxZTZH2s2SMgLgoXXEZV+O/w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DA5HMa94GjlMbRcd1xSm7oa5D0Tq7NIj3XAs6Syqfog=;
- b=A8vjbK+X9BqLGJzLXIrRk+bCutd7nV5LHttylpnUUQK9p1GXTbjepfpXoKnf/IRmDUXr3OzPHrSrF5h6lM+JHFKPJM/+mHRTf2LEC57ayn9y0YqjKr6QiJq3NC2uCFe8flMgJ+0LZ9vYgiFsXWIRZUmOFtD7Xlga2iYN6Paiu+GLvIMDiMG3lA8eGsUCcb5TDgysp5pfVcfJj2K8SwtsWjDnuS777Hz9rr1jq+SubHyUTRohYF6ckShEDJk9TewJTEAcYsFXLT+v8aU15yzwK96DvcyuHGStcjbptTYSLHUKTPuLc3u/cFzfGLzFaqKwD85KAx4g6ekjBamM8WfTOQ==
+ bh=Ujul2KGrmfcoaS9XrNmTunJFhP8wR2gVoIlq74Lykb0=;
+ b=FHJZTRMejMuO/XHP/Cx3XmF3X4PM9ZeyWcuzosGBSTiD0iCePpFdzIYIjGdO/1oRoWfeVKcEKsPDGrmhOYBsjqE0hovSbRODeUvZ2Lquwf/EJsBBQ6DbCPKKWXNPVeomJa9CGw6pGsbDmZmJdmQJvM+7PiuvAAIHcXL/1yfu5EgBrjEqSDhnux1KsDxNQmofXZpYBjgAzt5rhFDwMyLD/9RDUvMNXGBzr7f2AzZNMhdcQbgRC44629GnPWMfhH3BS0KtvXo3fgghafb/jOttGU8q2llaqGjAhBk6S9imYOgP5QutrIsp794lP/DLcg6ShMzyP1N/cFMzOxlkHn0QAw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.161) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -28,18 +28,17 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DA5HMa94GjlMbRcd1xSm7oa5D0Tq7NIj3XAs6Syqfog=;
- b=sntoBYJJIJDj+aLZXH3xd0RiEvRVtprg2PrJUN9yj7yGRkaa5vEiDRegRKC4NLcrqZm7x0DLiHV4l9Fi5XGdRwsJVn7/Mb8lRAqyKBgc2YrJyXnSDEhHUcb7bB/GW34Ep4wpayxFrDr2I1F4XN86GHae8HNoD7JsGCCDyH41yOf5PJhci7hqFbgMYmelk9Gxf2ibMxmzv+5BuyGCD82ID+gV2l5GjZqdgSU2lTtfD2K21NMiggkldmxWYyukMWOhUT9FslV7m63jVIkM7B4EF+fy1OLle9DRWHSwZSnsSobcQj0INflX+cyDlXnuPpYdQToVdKnocKmxV2rwr/7r8A==
-Received: from DM6PR18CA0031.namprd18.prod.outlook.com (2603:10b6:5:15b::44)
- by BL1PR12MB5730.namprd12.prod.outlook.com (2603:10b6:208:385::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.22; Tue, 7 Mar
- 2023 09:47:06 +0000
-Received: from DM6NAM11FT059.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:15b:cafe::ca) by DM6PR18CA0031.outlook.office365.com
- (2603:10b6:5:15b::44) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.28 via Frontend
- Transport; Tue, 7 Mar 2023 09:47:06 +0000
+ bh=Ujul2KGrmfcoaS9XrNmTunJFhP8wR2gVoIlq74Lykb0=;
+ b=EoMOQK6UUBCOHm3cqeiiSEsq1jklQo50TcvEqkLarPpIoW+fDFY94buUkIQQGRuJh+LIbwcPzRomu38kyVMARod1Et3khaSi0YdRMx86qKiGq8pyK5TcUeW5QFfO0nGTQD8UMOOqQtFwCJA5U+TzSFjTTkhjZej9gQUBDjc+RR+GyUHPPl0PIqCaS5l79OOP9106ir83ebYvqxGyQldV3dyKvSeiqm3aTFBp6IJKWXQ/rpiF3x285wt++x/CQAq7SjllJpdsR26DEEj/cMa+dnCuDyEuZ/oc48WjLRoWLSkiCpu1Eo3Q2rL7VD5vhPicoHb23VZ0hQGj7OZpjxLh8Q==
+Received: from DM6PR06CA0064.namprd06.prod.outlook.com (2603:10b6:5:54::41) by
+ DM4PR12MB6493.namprd12.prod.outlook.com (2603:10b6:8:b6::13) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6156.26; Tue, 7 Mar 2023 09:47:13 +0000
+Received: from DM6NAM11FT101.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:54:cafe::e) by DM6PR06CA0064.outlook.office365.com
+ (2603:10b6:5:54::41) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.29 via Frontend
+ Transport; Tue, 7 Mar 2023 09:47:13 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -47,28 +46,30 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.117.161 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
 Received: from mail.nvidia.com (216.228.117.161) by
- DM6NAM11FT059.mail.protection.outlook.com (10.13.172.92) with Microsoft SMTP
+ DM6NAM11FT101.mail.protection.outlook.com (10.13.172.208) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6178.16 via Frontend Transport; Tue, 7 Mar 2023 09:47:06 +0000
+ 15.20.6178.16 via Frontend Transport; Tue, 7 Mar 2023 09:47:12 +0000
 Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
  (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 7 Mar 2023
- 01:47:01 -0800
+ 01:47:04 -0800
 Received: from nvidia.com (10.126.231.37) by rnnvmail201.nvidia.com
  (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Tue, 7 Mar 2023
- 01:46:57 -0800
+ 01:47:01 -0800
 From:   Gavin Li <gavinl@nvidia.com>
 To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
         <pabeni@redhat.com>, <roopa@nvidia.com>,
         <eng.alaamohamedsoliman.am@gmail.com>, <bigeasy@linutronix.de>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <gavi@nvidia.com>, <roid@nvidia.com>, <maord@nvidia.com>,
-        <saeedm@nvidia.com>
-Subject: [PATCH net-next v5 0/4] net/mlx5e: Add GBP VxLAN HW offload support
-Date:   Tue, 7 Mar 2023 11:46:33 +0200
-Message-ID: <20230307094637.246993-1-gavinl@nvidia.com>
+        <saeedm@nvidia.com>, Simon Horman <simon.horman@corigine.com>
+Subject: [PATCH net-next v5 1/4] vxlan: Remove unused argument from vxlan_build_gbp_hdr( ) and vxlan_build_gpe_hdr( )
+Date:   Tue, 7 Mar 2023 11:46:34 +0200
+Message-ID: <20230307094637.246993-2-gavinl@nvidia.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230307094637.246993-1-gavinl@nvidia.com>
+References: <20230307094637.246993-1-gavinl@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -77,23 +78,23 @@ X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT059:EE_|BL1PR12MB5730:EE_
-X-MS-Office365-Filtering-Correlation-Id: ad17efa5-0922-4c38-b42e-08db1ef0e988
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT101:EE_|DM4PR12MB6493:EE_
+X-MS-Office365-Filtering-Correlation-Id: 816c5f04-1bb5-4a6b-854b-08db1ef0ed81
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: aBIfyXHeu64/esGWWiyBRfDhZ6LTeXBG5iDizHyqZX8lws65pnUf5blu9EwBjqFjDQ8syoKowDiaza2BBmF9posr3xfA1i+wnB3LpRTOMRBUDwLg6AQX+KRwLd4nUhGLMAbW7+ZlHT6De7M5QZhV0J0ZOOubS01Civlar5th0UoxOW9cM0tA2k8OAT5KnXIfV5GslakXwYVtjWyKQka6WDGY7z0fw58bGsC82qmcBoL/kb/v61ENdvqfAfkw9pUefOq44c81MEqV1ZKHkEMiFlTaC94aGi6hXnnO6tmZ9WOtX3JjdPPnMMHYTeHyv+wdl8xhT1lxVyw26p+K/pKCSvZRTOeoIEN8ZCnoefbz12yqRQ4B/huHJ4yiioYg9AkLZSp2td+q9AYjeFx2KvPEIN3/v46BGIWXrqPYhCH/QtIbK2ALFsGn15HuGN+lNWUAhvNfGCtG9wz6ZOr/hHY57SriyTXTU6bwyBixCq0uh17JRwsURAVV3+pDyykUmQnq0U76fMbkc4c+WJQ1setpGW6Lvx/AtH3S+kSAlvKIYG41nFZhctyBTe6VDdTkusk/NOQcTAm1xrLbSBa1wPcKFTREstxm0TNFFRmqxnajRf1aBjwb3qJflUKzmNCIERgydpX7h+ZAxTRYlvv8GjxpW8+OcMxRrv1CI+4VG+g6GCbWEgHSTkpY56PkcaJqczeGqk66sYJtJzh5klI7OwIEqQ==
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(346002)(376002)(396003)(136003)(451199018)(46966006)(36840700001)(40470700004)(83380400001)(316002)(54906003)(110136005)(40480700001)(82310400005)(55016003)(36756003)(86362001)(336012)(6286002)(40460700003)(186003)(2906002)(16526019)(5660300002)(1076003)(70206006)(70586007)(82740400003)(41300700001)(36860700001)(4326008)(8936002)(8676002)(6666004)(426003)(2616005)(478600001)(26005)(47076005)(7696005)(107886003)(356005)(7636003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: kFVJSZzYC0aBJgcPF5q5nbx3Q/QEuhxQA6nh89rDagz5uO76Umjeem8Hg28/Dah3D9hOm0x6P13YhpImcqU+YgjxqyTD7eoycSGo9bVYeAZOp0whOuvOSXud75+ctU8UeIoDQsn8Ay8DK1rccl3LZcv9TFs1bQE4Ab0d2ZxvOSfhjX1dumsT6/xU/MUQkQHBxTU4TQOPRXT0l1MqrAMTKDvvpsFM6Ox+2Dp0izYfxre6hCJAaIZB6zDPV+6q1vXugQqe9JOj2Q3XEC19sQ8v58IURdBnCDk2OEbF/6CtR+4TQi7m7TWGaP8k2RWFI5o2dLGkkqfDCIfSrjAooWP9xKEnZjHVNOEKLu76IbSpCgvVMVhFciojyf5Nhd59rClITRaXhulOGdeciFlcziE9PTb7BTgNtN+SA0Rs5ZHZL++mOYRr5SmiRAe4Z/6RfVTfxdBY6sizY3qLuhsmk9L6Y5bzfbidbBSlOO6wbvuwI37AWt2ZUHSGQm8M07lNMdP2rdJ3rR6HTzNCCKHGr7kjh4oKByoUARBd2btqJhESXr0bH4sQesREISJ4F6zgQqMqh31hkL9BV/BrxyTeIHiMfO7Swk3vsYPct7qV4Lq64clsntwWRRQb8opUHAc4fcFmnDfKkBbY2QHGifxac1CzQOxR8+K7AsvtcZRaKWJBGUPr9GoMvHQpm4vh/w7qOYYscOCalxC0zK4TMSZHiiBYEA==
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(136003)(376002)(39860400002)(346002)(396003)(451199018)(40470700004)(36840700001)(46966006)(8936002)(70206006)(41300700001)(5660300002)(2906002)(4326008)(8676002)(110136005)(316002)(54906003)(478600001)(7696005)(1076003)(36756003)(36860700001)(426003)(70586007)(47076005)(6666004)(26005)(40480700001)(186003)(336012)(2616005)(55016003)(86362001)(356005)(82740400003)(83380400001)(40460700003)(7636003)(82310400005)(16526019)(6286002);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2023 09:47:06.0678
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2023 09:47:12.7167
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ad17efa5-0922-4c38-b42e-08db1ef0e988
+X-MS-Exchange-CrossTenant-Network-Message-Id: 816c5f04-1bb5-4a6b-854b-08db1ef0ed81
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT059.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT101.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5730
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6493
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -104,69 +105,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Patch-1: Remove unused argument from functions.
-Patch-2: Expose helper function vxlan_build_gbp_hdr.
-Patch-3: Add helper function for encap_info_equal for tunnels with options.
-Patch-4: Add HW offloading support for TC flows with VxLAN GBP encap/decap
-        in mlx ethernet driver.
+Remove unused argument (i.e. u32 vxflags) in vxlan_build_gbp_hdr( ) and
+vxlan_build_gpe_hdr( ) function arguments.
 
-Gavin Li (4):
-  vxlan: Remove unused argument from vxlan_build_gbp_hdr( ) and
-    vxlan_build_gpe_hdr( )
+Signed-off-by: Gavin Li <gavinl@nvidia.com>
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 ---
-changelog:
-v2->v3
-- Addressed comments from Paolo Abeni
-- Add new patch
----
-  vxlan: Expose helper vxlan_build_gbp_hdr
----
-changelog:
-v1->v2
-- Addressed comments from Alexander Lobakin
-- Use const to annotate read-only the pointer parameter
----
-  net/mlx5e: Add helper for encap_info_equal for tunnels with options
----
-changelog:
-v3->v4
-- Addressed comments from Alexander Lobakin
-- Fix vertical alignment issue
-v1->v2
-- Addressed comments from Alexander Lobakin
-- Replace confusing pointer arithmetic with function call
-- Use boolean operator NOT to check if the function return value is not zero
----
-  net/mlx5e: TC, Add support for VxLAN GBP encap/decap flows offload
----
-changelog:
-v4->v5
-- Addressed comments from Simon Horman
-- Remove Simon Horman from Reviewed-by list
-v3->v4
-- Addressed comments from Simon Horman
-- Using cast in place instead of changing API
-v2->v3
-- Addressed comments from Alexander Lobakin
-- Remove the WA by casting away
-v1->v2
-- Addressed comments from Alexander Lobakin
-- Add a separate pair of braces around bitops
-- Remove the WA by casting away
-- Fit all log messages into one line
-- Use NL_SET_ERR_MSG_FMT_MOD to print the invalid value on error
----
+ drivers/net/vxlan/vxlan_core.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
- .../ethernet/mellanox/mlx5/core/en/tc_tun.h   |  3 +
- .../mellanox/mlx5/core/en/tc_tun_encap.c      | 32 ++++++++
- .../mellanox/mlx5/core/en/tc_tun_geneve.c     | 24 +-----
- .../mellanox/mlx5/core/en/tc_tun_vxlan.c      | 76 ++++++++++++++++++-
- drivers/net/vxlan/vxlan_core.c                | 27 +------
- include/linux/mlx5/device.h                   |  6 ++
- include/linux/mlx5/mlx5_ifc.h                 | 13 +++-
- include/net/vxlan.h                           | 19 +++++
- 8 files changed, 149 insertions(+), 51 deletions(-)
-
+diff --git a/drivers/net/vxlan/vxlan_core.c b/drivers/net/vxlan/vxlan_core.c
+index b1b179effe2a..86967277ab97 100644
+--- a/drivers/net/vxlan/vxlan_core.c
++++ b/drivers/net/vxlan/vxlan_core.c
+@@ -2140,8 +2140,7 @@ static bool route_shortcircuit(struct net_device *dev, struct sk_buff *skb)
+ 	return false;
+ }
+ 
+-static void vxlan_build_gbp_hdr(struct vxlanhdr *vxh, u32 vxflags,
+-				struct vxlan_metadata *md)
++static void vxlan_build_gbp_hdr(struct vxlanhdr *vxh, struct vxlan_metadata *md)
+ {
+ 	struct vxlanhdr_gbp *gbp;
+ 
+@@ -2160,8 +2159,7 @@ static void vxlan_build_gbp_hdr(struct vxlanhdr *vxh, u32 vxflags,
+ 	gbp->policy_id = htons(md->gbp & VXLAN_GBP_ID_MASK);
+ }
+ 
+-static int vxlan_build_gpe_hdr(struct vxlanhdr *vxh, u32 vxflags,
+-			       __be16 protocol)
++static int vxlan_build_gpe_hdr(struct vxlanhdr *vxh, __be16 protocol)
+ {
+ 	struct vxlanhdr_gpe *gpe = (struct vxlanhdr_gpe *)vxh;
+ 
+@@ -2224,9 +2222,9 @@ static int vxlan_build_skb(struct sk_buff *skb, struct dst_entry *dst,
+ 	}
+ 
+ 	if (vxflags & VXLAN_F_GBP)
+-		vxlan_build_gbp_hdr(vxh, vxflags, md);
++		vxlan_build_gbp_hdr(vxh, md);
+ 	if (vxflags & VXLAN_F_GPE) {
+-		err = vxlan_build_gpe_hdr(vxh, vxflags, skb->protocol);
++		err = vxlan_build_gpe_hdr(vxh, skb->protocol);
+ 		if (err < 0)
+ 			return err;
+ 		inner_protocol = skb->protocol;
 -- 
 2.31.1
 
