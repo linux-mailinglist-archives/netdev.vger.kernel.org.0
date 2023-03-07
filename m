@@ -2,91 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A94866AD9E9
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 10:10:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB31F6ADA05
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 10:16:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230235AbjCGJKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 04:10:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52922 "EHLO
+        id S230200AbjCGJQU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 04:16:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229811AbjCGJK3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 04:10:29 -0500
-Received: from hust.edu.cn (unknown [202.114.0.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AB51110EC;
-        Tue,  7 Mar 2023 01:10:27 -0800 (PST)
-Received: from dzm91$hust.edu.cn ( [172.16.0.254] ) by ajax-webmail-app2
- (Coremail) ; Tue, 7 Mar 2023 17:09:29 +0800 (GMT+08:00)
-X-Originating-IP: [172.16.0.254]
-Date:   Tue, 7 Mar 2023 17:09:29 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   =?UTF-8?B?5oWV5Yas5Lqu?= <dzm91@hust.edu.cn>
-To:     "denis kirjanov" <dkirjanov@suse.de>
-Cc:     "alexander aring" <alex.aring@gmail.com>,
-        "stefan schmidt" <stefan@datenfreihafen.org>,
-        "miquel raynal" <miquel.raynal@bootlin.com>,
-        "david s. miller" <davem@davemloft.net>,
-        "eric dumazet" <edumazet@google.com>,
-        "jakub kicinski" <kuba@kernel.org>,
-        "paolo abeni" <pabeni@redhat.com>,
-        syzbot+bd85b31816913a32e473@syzkaller.appspotmail.com,
-        linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: Re: [PATCH] net: ieee802154: fix a null pointer in
- nl802154_trigger_scan
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20220802(cbd923c5)
- Copyright (c) 2002-2023 www.mailtech.cn hust
-In-Reply-To: <782a6f2d-84ae-3530-7e3c-07f31a4f303b@suse.de>
-References: <20230307073004.74224-1-dzm91@hust.edu.cn>
- <782a6f2d-84ae-3530-7e3c-07f31a4f303b@suse.de>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S230241AbjCGJQS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 04:16:18 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC05618B6
+        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 01:16:16 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id cw28so49542775edb.5
+        for <netdev@vger.kernel.org>; Tue, 07 Mar 2023 01:16:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112; t=1678180575;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=pg/NFvmwJGvoKSIhDeKGsWuEVzhl71PHzrq4hemdODk=;
+        b=qo5jNn5ub4hP0aHduQg86cN5mwCrkH/oE+KpFRdGD/yrZJhQymzbRi3FYqnFDgvIH6
+         GKCVtMYvtGQu8cBBSHJTMu+3aI/g0OaH0CMufkXa3JWOj3xYYpHOJkq4UuTgrH7ZdBOD
+         +hB68hMKURdQCvWTZ8o/c5fdXE0JNu77IRQZztqZf9MIbMcZ9iK+npTO7FJCfNFpD6K7
+         s4cBK6KdBWbR3+OS53kalSm8r/HhnjHHOJM2jyv5Ak7hOiMMGV+7xLp2oeU48tiQYLSR
+         fJf/C1OsR066V9QcorDU0D4cBsXkI/PWt58eC1rXOTmniJHvwDeSyVrZ6ICegUtGTs2g
+         xgJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678180575;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=pg/NFvmwJGvoKSIhDeKGsWuEVzhl71PHzrq4hemdODk=;
+        b=wXqUhjdLAk/WFxlS2zn037AxNguMlUZsSLrbV2h0ecTv1zGCOUwvq0iMtEBPSw1fmQ
+         +/DvGqDyY9WviR5dzfps/pz3UeitKguM+CqWfFxCWwpgDrCDutMY1ZV2O0FGQUynavDK
+         9da9FZuzHUpeSGPrSI+v1VmmjFyCwCKu0zx5A06FKWEEPR+LzofHV5uf7BfrQ2jhcwCf
+         pkD7a3lt9bko7WXH04Wd2boKbHkAw/U+r8grvE2ZjJRzSjj9Y/jji+Ha8glj1PuikTzC
+         DLS1bfwsuK+TkEJlYwizzd8bLA1iMNT3zCPeshdGVSHsD+sUlji5eIsYrAf8uOVg3B6N
+         yn6g==
+X-Gm-Message-State: AO0yUKUJHqOttzgjcWmJ9KWk0G89XdvecT6C7jpqyyAqkbyRanoAmSbx
+        lhs1+sJjBGF+2Rkfeuhg7fQQhQ==
+X-Google-Smtp-Source: AK7set8h9Zt06qvXMQvgPQLYEpMeuYJ69g8TVgOaXmqcWvreNh0u21lHS1Dt94lY5DD4PGIC6mmAWg==
+X-Received: by 2002:a17:907:b60a:b0:8e9:afb1:65c6 with SMTP id vl10-20020a170907b60a00b008e9afb165c6mr19865407ejc.13.1678180574894;
+        Tue, 07 Mar 2023 01:16:14 -0800 (PST)
+Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
+        by smtp.gmail.com with ESMTPSA id e22-20020a170906081600b008d1693c212csm5728014ejd.8.2023.03.07.01.16.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Mar 2023 01:16:14 -0800 (PST)
+Message-ID: <4a8e8bd0-e5a0-b416-c0c9-1543d67d709f@blackwall.org>
+Date:   Tue, 7 Mar 2023 11:16:13 +0200
 MIME-Version: 1.0
-Message-ID: <697a2a6.23479.186bb5537c5.Coremail.dzm91@hust.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: GQEQrACngepJ_wZkIMdbAQ--.25231W
-X-CM-SenderInfo: asqsiiirqrkko6kx23oohg3hdfq/1tbiAQkDD17Em4N7ZAACsb
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH nf-next 1/6] netfilter: bridge: call pskb_may_pull in
+ br_nf_check_hbh_len
+To:     Xin Long <lucien.xin@gmail.com>, netfilter-devel@vger.kernel.org,
+        network dev <netdev@vger.kernel.org>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>, davem@davemloft.net,
+        kuba@kernel.org, Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Aaron Conole <aconole@redhat.com>
+References: <cover.1677888566.git.lucien.xin@gmail.com>
+ <4c156bee64fa58bacb808cead7a7f43d531fd587.1677888566.git.lucien.xin@gmail.com>
+Content-Language: en-US
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <4c156bee64fa58bacb808cead7a7f43d531fd587.1677888566.git.lucien.xin@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,
+        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CgoKPiAtLS0tLeWOn+Wni+mCruS7ti0tLS0tCj4g5Y+R5Lu25Lq6OiAiRGVuaXMgS2lyamFub3Yi
-IDxka2lyamFub3ZAc3VzZS5kZT4KPiDlj5HpgIHml7bpl7Q6IDIwMjMtMDMtMDcgMTY6NDM6NDYg
-KOaYn+acn+S6jCkKPiDmlLbku7bkuro6ICJEb25nbGlhbmcgTXUiIDxkem05MUBodXN0LmVkdS5j
-bj4sICJBbGV4YW5kZXIgQXJpbmciIDxhbGV4LmFyaW5nQGdtYWlsLmNvbT4sICJTdGVmYW4gU2No
-bWlkdCIgPHN0ZWZhbkBkYXRlbmZyZWloYWZlbi5vcmc+LCAiTWlxdWVsIFJheW5hbCIgPG1pcXVl
-bC5yYXluYWxAYm9vdGxpbi5jb20+LCAiRGF2aWQgUy4gTWlsbGVyIiA8ZGF2ZW1AZGF2ZW1sb2Z0
-Lm5ldD4sICJFcmljIER1bWF6ZXQiIDxlZHVtYXpldEBnb29nbGUuY29tPiwgIkpha3ViIEtpY2lu
-c2tpIiA8a3ViYUBrZXJuZWwub3JnPiwgIlBhb2xvIEFiZW5pIiA8cGFiZW5pQHJlZGhhdC5jb20+
-Cj4g5oqE6YCBOiBzeXpib3QrYmQ4NWIzMTgxNjkxM2EzMmU0NzNAc3l6a2FsbGVyLmFwcHNwb3Rt
-YWlsLmNvbSwgbGludXgtd3BhbkB2Z2VyLmtlcm5lbC5vcmcsIG5ldGRldkB2Z2VyLmtlcm5lbC5v
-cmcsIGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcKPiDkuLvpopg6IFJlOiBbUEFUQ0hdIG5l
-dDogaWVlZTgwMjE1NDogZml4IGEgbnVsbCBwb2ludGVyIGluIG5sODAyMTU0X3RyaWdnZXJfc2Nh
-bgo+IAo+IAo+IAo+IE9uIDMvNy8yMyAxMDozMCwgRG9uZ2xpYW5nIE11IHdyb3RlOgo+ID4gVGhl
-cmUgaXMgYSBudWxsIHBvaW50ZXIgZGVyZWZlcmVuY2UgaWYgTkw4MDIxNTRfQVRUUl9TQ0FOX1RZ
-UEUgaXMKPiA+IG5vdCBzZXQgYnkgdGhlIHVzZXIuCj4gPiAKPiA+IEZpeCB0aGlzIGJ5IGFkZGlu
-ZyBhIG51bGwgcG9pbnRlciBjaGVjay4KPiA+IAo+ID4gUmVwb3J0ZWQtYW5kLXRlc3RlZC1ieTog
-c3l6Ym90K2JkODViMzE4MTY5MTNhMzJlNDczQHN5emthbGxlci5hcHBzcG90bWFpbC5jb20KPiA+
-IFNpZ25lZC1vZmYtYnk6IERvbmdsaWFuZyBNdSA8ZHptOTFAaHVzdC5lZHUuY24+Cj4gCj4gUGxl
-YXNlIGFkZCBhIEZpeGVzOiB0YWcgCgpJJ3ZlIHNlbnQgYSB2MiBwYXRjaC4gVGhhbmtzIGZvciB5
-b3VyIHJlbWluZGVyLgoKPiAKPiA+IC0tLQo+ID4gIG5ldC9pZWVlODAyMTU0L25sODAyMTU0LmMg
-fCAzICsrLQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAyIGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24o
-LSkKPiA+IAo+ID4gZGlmZiAtLWdpdCBhL25ldC9pZWVlODAyMTU0L25sODAyMTU0LmMgYi9uZXQv
-aWVlZTgwMjE1NC9ubDgwMjE1NC5jCj4gPiBpbmRleCAyMjE1ZjU3NmVlMzcuLjFjZjAwY2ZmZDYz
-ZiAxMDA2NDQKPiA+IC0tLSBhL25ldC9pZWVlODAyMTU0L25sODAyMTU0LmMKPiA+ICsrKyBiL25l
-dC9pZWVlODAyMTU0L25sODAyMTU0LmMKPiA+IEBAIC0xNDEyLDcgKzE0MTIsOCBAQCBzdGF0aWMg
-aW50IG5sODAyMTU0X3RyaWdnZXJfc2NhbihzdHJ1Y3Qgc2tfYnVmZiAqc2tiLCBzdHJ1Y3QgZ2Vu
-bF9pbmZvICppbmZvKQo+ID4gIAkJcmV0dXJuIC1FT1BOT1RTVVBQOwo+ID4gIAl9Cj4gPiAgCj4g
-PiAtCWlmICghbmxhX2dldF91OChpbmZvLT5hdHRyc1tOTDgwMjE1NF9BVFRSX1NDQU5fVFlQRV0p
-KSB7Cj4gPiArCWlmICghaW5mby0+YXR0cnNbTkw4MDIxNTRfQVRUUl9TQ0FOX1RZUEVdIHx8Cj4g
-PiArCSAgICAhbmxhX2dldF91OChpbmZvLT5hdHRyc1tOTDgwMjE1NF9BVFRSX1NDQU5fVFlQRV0p
-KSB7Cj4gPiAgCQlOTF9TRVRfRVJSX01TRyhpbmZvLT5leHRhY2ssICJNYWxmb3JtZWQgcmVxdWVz
-dCwgbWlzc2luZyBzY2FuIHR5cGUiKTsKPiA+ICAJCXJldHVybiAtRUlOVkFMOwo+ID4gIAl9Cgo=
+On 04/03/2023 02:12, Xin Long wrote:
+> When checking Hop-by-hop option header, if the option data is in
+> nonlinear area, it should do pskb_may_pull instead of discarding
+> the skb as a bad IPv6 packet.
+> 
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> ---
+>  net/bridge/br_netfilter_ipv6.c | 14 +++++++++-----
+>  1 file changed, 9 insertions(+), 5 deletions(-)
+> 
+
+Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
 
