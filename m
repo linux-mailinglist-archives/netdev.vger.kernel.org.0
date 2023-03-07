@@ -2,102 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 630156AE10C
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 14:47:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35B696AE11E
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 14:49:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230333AbjCGNrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 08:47:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45324 "EHLO
+        id S231219AbjCGNtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 08:49:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230395AbjCGNqj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 08:46:39 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 646CA84F40
-        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 05:45:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678196711;
-        h=from:from:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:in-reply-to:in-reply-to:  references:references;
-        bh=CjSk2U3oMAFmhtNturhD3NcmwhqwU56rdcLTkQIFSg8=;
-        b=GX9bzm/pCMuu4ciO7QEUGFayHVeG16XNVVMtfuV1NCD2VH76lvoc1UpdE0ev1AyXIzIoLO
-        C9LF+44ZnJ3BF6rQt9osfiMsjmtindRoZRsl+MpAwN5qOMOrUFRhTjn4BP5kgLJ/0Sj1Ab
-        qsgcdnj8ZQzOMa9QauKI36QJmLEXjfU=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-407-h5hR5eD8O2uvXWN4CpUT_A-1; Tue, 07 Mar 2023 08:45:06 -0500
-X-MC-Unique: h5hR5eD8O2uvXWN4CpUT_A-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3EA28803520;
-        Tue,  7 Mar 2023 13:45:05 +0000 (UTC)
-Received: from calimero.vinschen.de (unknown [10.39.192.200])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 61ADCC15BAD;
-        Tue,  7 Mar 2023 13:45:04 +0000 (UTC)
-Received: by calimero.vinschen.de (Postfix, from userid 500)
-        id F0CD1A80B97; Tue,  7 Mar 2023 14:45:02 +0100 (CET)
-Date:   Tue, 7 Mar 2023 14:45:02 +0100
-From:   Corinna Vinschen <vinschen@redhat.com>
-To:     Lin Ma <linma@zju.edu.cn>
-Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, richardcochran@gmail.com,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, intel-wired-lan@lists.osuosl.org,
-        pmenzel@molgen.mpg.de, regressions@lists.linux.dev,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] igb: revert rtnl_lock() that causes deadlock
-Message-ID: <ZAc/3oVos9DBx3iR@calimero.vinschen.de>
-Reply-To: intel-wired-lan@lists.osuosl.org
-Mail-Followup-To: Lin Ma <linma@zju.edu.cn>, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        richardcochran@gmail.com, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com,
-        intel-wired-lan@lists.osuosl.org, pmenzel@molgen.mpg.de,
-        regressions@lists.linux.dev, stable@vger.kernel.org
-References: <301b585a.80249.186bbe6cc50.Coremail.linma@zju.edu.cn>
- <20230307130547.31446-1-linma@zju.edu.cn>
+        with ESMTP id S230478AbjCGNsp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 08:48:45 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A38E98388D;
+        Tue,  7 Mar 2023 05:47:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=gQ+99a99lnf83/yelPjxBU/kH2TZpXh3Q6BntDbpKjc=; b=l/cno+2MrYiXA2G8Ygtwkk/iSn
+        d1Ns6NgiLWFp4sDBYffXfwMK/ar6u1HkblvrPPnUYDaIi5yQ0LKWyH3MjhVvLsiYWR8fhRKGo805s
+        ORZZAM+FugHsrw9Rnl9GFv9OUdIhgc4rXtf87QWSVHSWXCfRJgEohRhePAqPHr5L3G2A=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pZXfI-006fI5-7e; Tue, 07 Mar 2023 14:47:40 +0100
+Date:   Tue, 7 Mar 2023 14:47:40 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Sean Anderson <sean.anderson@seco.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next] net: mdio: Add netlink interface
+Message-ID: <537d82d4-9893-4329-874a-0a4f24af1a0d@lunn.ch>
+References: <20230306204517.1953122-1-sean.anderson@seco.com>
+ <ZAZt0D+CQBnYIogp@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230307130547.31446-1-linma@zju.edu.cn>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <ZAZt0D+CQBnYIogp@shell.armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mar  7 21:05, Lin Ma wrote:
-> The commit 6faee3d4ee8b ("igb: Add lock to avoid data race") adds
-> rtnl_lock to eliminate a false data race shown below
+On Mon, Mar 06, 2023 at 10:48:48PM +0000, Russell King (Oracle) wrote:
+> On Mon, Mar 06, 2023 at 03:45:16PM -0500, Sean Anderson wrote:
+> > +static int mdio_nl_eval(struct mdio_nl_xfer *xfer)
+> > +{
+> > +	struct mdio_nl_insn *insn;
+> > +	unsigned long timeout;
+> > +	u16 regs[8] = { 0 };
+> > +	int pc, ret = 0;
 > 
->  (FREE from device detaching)      |   (USE from netdev core)
-> igb_remove                         |  igb_ndo_get_vf_config
->  igb_disable_sriov                 |  vf >= adapter->vfs_allocated_count?
->   kfree(adapter->vf_data)          |
->   adapter->vfs_allocated_count = 0 |
->                                    |    memcpy(... adapter->vf_data[vf]
+> So "pc" is signed.
 > 
-> The above race will never happen and the extra rtnl_lock causes deadlock
-> below
-> [...]
-> CC: stable@vger.kernel.org
-> Fixes: 6faee3d4ee8b ("igb: Add lock to avoid data race")
-> Reported-by: Corinna <vinschen@redhat.com>
+> > +	int phy_id, reg, prtad, devad, val;
+> > +
+> > +	timeout = jiffies + msecs_to_jiffies(xfer->timeout_ms);
+> > +
+> > +	mutex_lock(&xfer->mdio->mdio_lock);
+> > +
+> > +	for (insn = xfer->prog, pc = 0;
+> > +	     pc < xfer->prog_len;
+> 
+> xfer->prog_len is signed, so this is a signed comparison.
+> 
+> > +		case MDIO_NL_OP_JEQ:
+> > +			if (__arg_ri(insn->arg0, regs) ==
+> > +			    __arg_ri(insn->arg1, regs))
+> > +				pc += (s16)__arg_i(insn->arg2);
+> 
+> This adds a signed 16-bit integer to pc, which can make pc negative.
+> 
+> And so the question becomes... what prevents pc becoming negative
+> and then trying to use a negative number as an index?
 
-Thank you, but "Corinna Vinschen", please.
+I don't know ebpf very well, but would it of caught this?  I know the
+aim of this is to be simple, but due to its simplicity, we are loosing
+out on all the inherent safety of eBPF. Is a eBPF interface all that
+complex? I assume you just need to add some way to identify MDIO
+busses and kfunc to perform a read on the bus?
 
-
-Thanks,
-Corinna
-
+       Andrew
