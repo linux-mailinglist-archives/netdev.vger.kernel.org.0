@@ -2,174 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C46016AE253
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 15:27:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3A626AE284
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 15:32:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229536AbjCGO1s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 09:27:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50298 "EHLO
+        id S230027AbjCGOcf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 09:32:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230310AbjCGO1d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 09:27:33 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CA2925973;
-        Tue,  7 Mar 2023 06:22:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=aaS0Jt6Mb7Lc0+qLFOpJDYYFIi00EAG/KuvtIBx67/o=; b=ZMwdLwQKO7fk9047lKOM/ZmNeM
-        l3XgsGcDnfRZFIbf8ktbv07YJQSiQAsihdjvswzhhgfbmVtmqFCRIa2m711/GHLc7CDBJJXDNM4nk
-        Vzv5JDGDFQyAsNRNZCVZ8kvMGuFnVkQ5kxVZCkjFZetbOGn6BQY7/E5d9yLRPMvCjqXY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pZYDG-006fXK-80; Tue, 07 Mar 2023 15:22:46 +0100
-Date:   Tue, 7 Mar 2023 15:22:46 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        with ESMTP id S230044AbjCGOcA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 09:32:00 -0500
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D39CA8A53
+        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 06:27:40 -0800 (PST)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1pZYHT-00012B-1d;
+        Tue, 07 Mar 2023 15:27:07 +0100
+Date:   Tue, 7 Mar 2023 14:27:02 +0000
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net-next] net: mdio: Add netlink interface
-Message-ID: <7a02294e-bf50-4399-9e68-1235ba24a381@lunn.ch>
-References: <20230306204517.1953122-1-sean.anderson@seco.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH RFC net-next 4/4] net: mtk_eth_soc: note interface modes
+ not set in supported_interfaces
+Message-ID: <ZAdJtvKe1txMjp3f@makrotopia.org>
+References: <Y/ivHGroIVTe4YP/@shell.armlinux.org.uk>
+ <E1pVXJK-00CTAl-V7@rmk-PC.armlinux.org.uk>
+ <ZAcnjXxLfeE9UIsO@shell.armlinux.org.uk>
+ <ZAc7Q4VMzLjzQbRC@makrotopia.org>
+ <ZAdEi2TsIw8Vjsh8@shell.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230306204517.1953122-1-sean.anderson@seco.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <ZAdEi2TsIw8Vjsh8@shell.armlinux.org.uk>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> To prevent userspace phy drivers, writes are disabled by default, and can
-> only be enabled by editing the source. This is the same strategy used by
-> regmap for debugfs writes. Unfortunately, this disallows several useful
-> features, including
+On Tue, Mar 07, 2023 at 02:04:59PM +0000, Russell King (Oracle) wrote:
+> On Tue, Mar 07, 2023 at 01:25:23PM +0000, Daniel Golle wrote:
+> > A quick grep through the device trees of the more than 650 ramips and
+> > mediatek boards we support in OpenWrt has revealed that *none* of them
+> > uses either reduced-MII or reverse-MII PHY modes. I could imaging that
+> > some more specialized ramips boards may use the RMII 100M PHY mode to
+> > connect with exotic PHYs for industrial or automotive applications
+> > (think: for 100BASE-T1 PHY connected via RMII). I have never seen or
+> > touched such boards, but there are hints that they do exist.
+> > 
+> > For reverse-MII there are cases in which the Ralink SoC (Rt305x, for
+> > example) is used in iNIC mode, ie. connected as a PHY to another SoC,
+> > and running only a minimal firmware rather than running Linux. Due to
+> > the lack of external DRAM for the Ralink SoC on this kind of boards,
+> > the Ralink SoC there will anyway never be able to boot Linux.
+> > I've seen this e.g. in multimedia devices like early WiFi-connected
+> > not-yet-so-smart TVs.
+> > 
+> > Tl;dr: I'd drop them. If anyone really needs them, it would be easy to
+> > add them again and then also add them to the phylink capability mask.
 > 
-> - Register writes (obviously)
-> - C45-over-C22
+> Thanks! That seems to be well reasoned. Would you have any objection to
+> using the above as part of the commit message removing these modes?
 
-You could add C45-over-C22 as another op.
-
-This tool is dangerous, even in its read only mode, just like the
-IOCTL interface. Interrupt status registers are often clear on read,
-so you can loose interrupts. Statistics counters are sometimes clear
-on read. BMSR link bit is also latching, so a read of it could mean
-you miss link events, etc. Adding C45-over-C22 is just as dangerous,
-you can mess up MDIO switches which use the registers for other
-things, but by deciding to use this tool you have decided to take the
-risk of blowing your foot off.
-
-> - Atomic access to paged registers
-> - Better MDIO emulation for e.g. QEMU
-> 
-> However, the read-only interface remains broadly useful for debugging.
-
-I would say it is broadly useful for PHYs. But not Ethernet switches,
-when in read only mode. 
-
-> +static int mdio_nl_open(struct mdio_nl_xfer *xfer);
-> +static int mdio_nl_close(struct mdio_nl_xfer *xfer, bool last, int xerr);
-
-I guess i never did a proper review of this code before, due to not
-liking the concept....
-
-Move the code around so these are not needed, unless there are
-functions which are mutually recursive.
-
-> +static inline u16 *__arg_r(u32 arg, u16 *regs)
-> +{
-> +	WARN_ON_ONCE(arg >> 16 != MDIO_NL_ARG_REG);
-> +
-> +	return &regs[arg & 0x7];
-> +}
-
-No inline functions in C files. Leave the compiler to decide.
-
-> +static int mdio_nl_eval(struct mdio_nl_xfer *xfer)
-> +{
-> +	struct mdio_nl_insn *insn;
-> +	unsigned long timeout;
-> +	u16 regs[8] = { 0 };
-> +	int pc, ret = 0;
-> +	int phy_id, reg, prtad, devad, val;
-> +
-> +	timeout = jiffies + msecs_to_jiffies(xfer->timeout_ms);
-> +
-> +	mutex_lock(&xfer->mdio->mdio_lock);
-
-Should timeout be set inside the lock, for when you have two
-applications running in parallel and each take a while?
-
-> +
-> +	for (insn = xfer->prog, pc = 0;
-> +	     pc < xfer->prog_len;
-> +	     insn = &xfer->prog[++pc]) {
-> +		if (time_after(jiffies, timeout)) {
-> +			ret = -ETIMEDOUT;
-> +			break;
-> +		}
-> +
-> +		switch ((enum mdio_nl_op)insn->op) {
-> +		case MDIO_NL_OP_READ:
-> +			phy_id = __arg_ri(insn->arg0, regs);
-> +			prtad = mdio_phy_id_prtad(phy_id);
-> +			devad = mdio_phy_id_devad(phy_id);
-> +			reg = __arg_ri(insn->arg1, regs);
-> +
-> +			if (mdio_phy_id_is_c45(phy_id))
-> +				ret = __mdiobus_c45_read(xfer->mdio, prtad,
-> +							 devad, reg);
-> +			else
-> +				ret = __mdiobus_read(xfer->mdio, phy_id, reg);
-
-The application should say if it want to do C22 or C45. As you said in
-the cover note, the ioctl interface is limiting when there is no PHY,
-so you are artificially adding the same restriction here. Also, you
-might want to do C45 on a C22 PHY, e.g. to access EEE registers. Plus
-you could consider adding C45 over C22 here.
-
-> +
-> +			if (ret < 0)
-> +				goto exit;
-> +			*__arg_r(insn->arg2, regs) = ret;
-> +			ret = 0;
-> +			break;
-> +
-> +		case MDIO_NL_OP_WRITE:
-> +			phy_id = __arg_ri(insn->arg0, regs);
-> +			prtad = mdio_phy_id_prtad(phy_id);
-> +			devad = mdio_phy_id_devad(phy_id);
-> +			reg = __arg_ri(insn->arg1, regs);
-> +			val = __arg_ri(insn->arg2, regs);
-> +
-> +#ifdef MDIO_NETLINK_ALLOW_WRITE
-> +			add_taint(TAINT_USER, LOCKDEP_STILL_OK);
-
-I don't know, but maybe taint on read as well.
-
-> +			if (mdio_phy_id_is_c45(phy_id))
-> +				ret = __mdiobus_c45_write(xfer->mdio, prtad,
-> +							  devad, reg, val
-> +			else
-> +				ret = __mdiobus_write(xfer->mdio, dev, reg,
-> +						      val);
-> +#else
-> +			ret = -EPERM;
-
-EPERM is odd, EOPNOTSUPP would be better. EPERM suggests you can run
-it as root and it should work.
-
-   Andrew
+Sure, go ahead, sounds good to me.
