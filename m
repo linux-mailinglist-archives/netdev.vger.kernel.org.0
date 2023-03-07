@@ -2,274 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 620AC6ADF58
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 13:58:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3AFA6AE014
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 14:13:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230005AbjCGM6Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 07:58:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55218 "EHLO
+        id S230155AbjCGNNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 08:13:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229913AbjCGM56 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 07:57:58 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B20B76F71;
-        Tue,  7 Mar 2023 04:57:48 -0800 (PST)
-Message-ID: <20230307125538.989175656@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1678193866;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=4Doa8MeF8eRNEXVS0R6+XvKtxdSgyI58na1gVzLY2sA=;
-        b=eHggAehHejK7m2paUFpR33AS4mxhv4SeJwgkYWjpD8/ChqBp6nd5oHgCGle8Oto2jt1dZM
-        X4s7+PWDMnjA8zTU5QYo2Mi7zwl1wjVwzuLX2IhbohMFGsDUj7yinJul0xMI1o0fZbyWcR
-        mwckqJ2vHJicnQv9/keDeFYK+UmYtZg5fD0GXhDbfpYXPjzAN2hXECTeXte3zc4wGapIZG
-        FVgBeiNUUtVQ0UvA36y/88FJj0+JscXxEshKR3xARiIIJZQqgwjTLElaCXlTZR81Iq+4HO
-        lyP4Sk5b7K7TeKebJ0YSjOq/FmQf26LUYu0oaXj87vdHndJwCGe6G0CMo9JEYQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1678193866;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=4Doa8MeF8eRNEXVS0R6+XvKtxdSgyI58na1gVzLY2sA=;
-        b=Zulwbqlyq5ib9YomdtRadcSvyqCUMnxCAkNKDG9GQIHnJh19Odb28i7U6NBto8MVQ0nXRb
-        54gh7cH8UTx8nDCw==
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Linus Torvalds <torvalds@linuxfoundation.org>, x86@kernel.org,
-        Wangyang Guo <wangyang.guo@intel.com>,
-        Arjan van De Ven <arjan@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Arjan Van De Ven <arjan.van.de.ven@intel.com>
-Subject: [patch V2 4/4] net: dst: Switch to rcuref_t reference counting
-References: <20230307125358.772287565@linutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Date:   Tue,  7 Mar 2023 13:57:46 +0100 (CET)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229938AbjCGNMw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 08:12:52 -0500
+Received: from azure-sdnproxy.icoremail.net (azure-sdnproxy.icoremail.net [20.232.28.96])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 8E6F532507;
+        Tue,  7 Mar 2023 05:11:33 -0800 (PST)
+Received: from localhost.localdomain (unknown [122.235.142.236])
+        by mail-app2 (Coremail) with SMTP id by_KCgCXnSGrNgdkbPtpCw--.43366S4;
+        Tue, 07 Mar 2023 21:05:47 +0800 (CST)
+From:   Lin Ma <linma@zju.edu.cn>
+To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, richardcochran@gmail.com,
+        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
+        john.fastabend@gmail.com
+Cc:     intel-wired-lan@lists.osuosl.org, pmenzel@molgen.mpg.de,
+        regressions@lists.linux.dev, vinschen@redhat.com,
+        Lin Ma <linma@zju.edu.cn>, stable@vger.kernel.org
+Subject: [PATCH] igb: revert rtnl_lock() that causes deadlock
+Date:   Tue,  7 Mar 2023 21:05:47 +0800
+Message-Id: <20230307130547.31446-1-linma@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <301b585a.80249.186bbe6cc50.Coremail.linma@zju.edu.cn>
+References: <301b585a.80249.186bbe6cc50.Coremail.linma@zju.edu.cn>
+X-CM-TRANSID: by_KCgCXnSGrNgdkbPtpCw--.43366S4
+X-Coremail-Antispam: 1UD129KBjvJXoWxWw4xZw4kXw1DCw15Cr4fuFg_yoW5ZFy3pF
+        13G3yxCF1kWr4jgayxZw18A34xXayjy34fWrn7uw4fuFs8CryDtry8CFWj93y5CrWxGF9F
+        qF1kZa1UJF1UJa7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvC14x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
+        Y2ka0xkIwI1lc2xSY4AK67AK6ry8MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r
+        1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CE
+        b7AF67AKxVW8ZVWrXwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0x
+        vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAI
+        cVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2Kf
+        nxnUUI43ZEXa7VUjySoJUUUUU==
+X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Under high contention dst_entry::__refcnt becomes a significant bottleneck.
+The commit 6faee3d4ee8b ("igb: Add lock to avoid data race") adds
+rtnl_lock to eliminate a false data race shown below
 
-atomic_inc_not_zero() is implemented with a cmpxchg() loop, which goes into
-high retry rates on contention.
+ (FREE from device detaching)      |   (USE from netdev core)
+igb_remove                         |  igb_ndo_get_vf_config
+ igb_disable_sriov                 |  vf >= adapter->vfs_allocated_count?
+  kfree(adapter->vf_data)          |
+  adapter->vfs_allocated_count = 0 |
+                                   |    memcpy(... adapter->vf_data[vf]
 
-Switch the reference count to rcuref_t which results in a significant
-performance gain.
+The above race will never happen and the extra rtnl_lock causes deadlock
+below
 
-The gain depends on the micro-architecture and the number of concurrent
-operations and has been measured in the range of +25% to +130% with a
-localhost memtier/memcached benchmark which amplifies the problem
-massively.
+[  141.420169]  <TASK>
+[  141.420672]  __schedule+0x2dd/0x840
+[  141.421427]  schedule+0x50/0xc0
+[  141.422041]  schedule_preempt_disabled+0x11/0x20
+[  141.422678]  __mutex_lock.isra.13+0x431/0x6b0
+[  141.423324]  unregister_netdev+0xe/0x20
+[  141.423578]  igbvf_remove+0x45/0xe0 [igbvf]
+[  141.423791]  pci_device_remove+0x36/0xb0
+[  141.423990]  device_release_driver_internal+0xc1/0x160
+[  141.424270]  pci_stop_bus_device+0x6d/0x90
+[  141.424507]  pci_stop_and_remove_bus_device+0xe/0x20
+[  141.424789]  pci_iov_remove_virtfn+0xba/0x120
+[  141.425452]  sriov_disable+0x2f/0xf0
+[  141.425679]  igb_disable_sriov+0x4e/0x100 [igb]
+[  141.426353]  igb_remove+0xa0/0x130 [igb]
+[  141.426599]  pci_device_remove+0x36/0xb0
+[  141.426796]  device_release_driver_internal+0xc1/0x160
+[  141.427060]  driver_detach+0x44/0x90
+[  141.427253]  bus_remove_driver+0x55/0xe0
+[  141.427477]  pci_unregister_driver+0x2a/0xa0
+[  141.428296]  __x64_sys_delete_module+0x141/0x2b0
+[  141.429126]  ? mntput_no_expire+0x4a/0x240
+[  141.429363]  ? syscall_trace_enter.isra.19+0x126/0x1a0
+[  141.429653]  do_syscall_64+0x5b/0x80
+[  141.429847]  ? exit_to_user_mode_prepare+0x14d/0x1c0
+[  141.430109]  ? syscall_exit_to_user_mode+0x12/0x30
+[  141.430849]  ? do_syscall_64+0x67/0x80
+[  141.431083]  ? syscall_exit_to_user_mode_prepare+0x183/0x1b0
+[  141.431770]  ? syscall_exit_to_user_mode+0x12/0x30
+[  141.432482]  ? do_syscall_64+0x67/0x80
+[  141.432714]  ? exc_page_fault+0x64/0x140
+[  141.432911]  entry_SYSCALL_64_after_hwframe+0x72/0xdc
 
-Running the memtier/memcached benchmark over a real (1Gb) network
-connection the conversion on top of the false sharing fix for struct
-dst_entry::__refcnt results in a total gain in the 2%-5% range over the
-upstream baseline.
+Since the igb_disable_sriov() will call pci_disable_sriov() before
+releasing any resources, the netdev core will synchronize the cleanup to
+avoid any races. This patch removes the useless rtnl_(un)lock to guarantee
+correctness.
 
-Reported-by: Wangyang Guo <wangyang.guo@intel.com>
-Reported-by: Arjan Van De Ven <arjan.van.de.ven@intel.com>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: netdev@vger.kernel.org
+CC: stable@vger.kernel.org
+Fixes: 6faee3d4ee8b ("igb: Add lock to avoid data race")
+Reported-by: Corinna <vinschen@redhat.com>
+Link: https://lore.kernel.org/regressions/3ef31c0b-ce40-20d0-7740-5dc0cca278ca@molgen.mpg.de/
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
 ---
- include/net/dst.h               |    9 +++++----
- include/net/sock.h              |    2 +-
- net/bridge/br_nf_core.c         |    2 +-
- net/core/dst.c                  |   26 +++++---------------------
- net/core/rtnetlink.c            |    2 +-
- net/ipv6/route.c                |    6 +++---
- net/netfilter/ipvs/ip_vs_xmit.c |    4 ++--
- 7 files changed, 18 insertions(+), 33 deletions(-)
+ drivers/net/ethernet/intel/igb/igb_main.c | 2 --
+ 1 file changed, 2 deletions(-)
 
---- a/include/net/dst.h
-+++ b/include/net/dst.h
-@@ -16,6 +16,7 @@
- #include <linux/bug.h>
- #include <linux/jiffies.h>
- #include <linux/refcount.h>
-+#include <linux/rcuref.h>
- #include <net/neighbour.h>
- #include <asm/processor.h>
- #include <linux/indirect_call_wrapper.h>
-@@ -65,7 +66,7 @@ struct dst_entry {
- 	 * input/output/ops or performance tanks badly
- 	 */
- #ifdef CONFIG_64BIT
--	atomic_t		__refcnt;	/* 64-bit offset 64 */
-+	rcuref_t		__refcnt;	/* 64-bit offset 64 */
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 03bc1e8af575..5532361b0e94 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -3863,9 +3863,7 @@ static void igb_remove(struct pci_dev *pdev)
+ 	igb_release_hw_control(adapter);
+ 
+ #ifdef CONFIG_PCI_IOV
+-	rtnl_lock();
+ 	igb_disable_sriov(pdev);
+-	rtnl_unlock();
  #endif
- 	int			__use;
- 	unsigned long		lastuse;
-@@ -75,7 +76,7 @@ struct dst_entry {
- 	__u32			tclassid;
- #ifndef CONFIG_64BIT
- 	struct lwtunnel_state   *lwtstate;
--	atomic_t		__refcnt;	/* 32-bit offset 64 */
-+	rcuref_t		__refcnt;	/* 32-bit offset 64 */
- #endif
- 	netdevice_tracker	dev_tracker;
  
-@@ -241,7 +242,7 @@ static inline void dst_hold(struct dst_e
- 	 * the placement of __refcnt in struct dst_entry
- 	 */
- 	BUILD_BUG_ON(offsetof(struct dst_entry, __refcnt) & 63);
--	WARN_ON(atomic_inc_not_zero(&dst->__refcnt) == 0);
-+	WARN_ON(!rcuref_get(&dst->__refcnt));
- }
- 
- static inline void dst_use_noref(struct dst_entry *dst, unsigned long time)
-@@ -305,7 +306,7 @@ static inline void skb_dst_copy(struct s
-  */
- static inline bool dst_hold_safe(struct dst_entry *dst)
- {
--	return atomic_inc_not_zero(&dst->__refcnt);
-+	return rcuref_get(&dst->__refcnt);
- }
- 
- /**
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -2131,7 +2131,7 @@ sk_dst_get(struct sock *sk)
- 
- 	rcu_read_lock();
- 	dst = rcu_dereference(sk->sk_dst_cache);
--	if (dst && !atomic_inc_not_zero(&dst->__refcnt))
-+	if (dst && !rcuref_get(&dst->__refcnt))
- 		dst = NULL;
- 	rcu_read_unlock();
- 	return dst;
---- a/net/bridge/br_nf_core.c
-+++ b/net/bridge/br_nf_core.c
-@@ -73,7 +73,7 @@ void br_netfilter_rtable_init(struct net
- {
- 	struct rtable *rt = &br->fake_rtable;
- 
--	atomic_set(&rt->dst.__refcnt, 1);
-+	rcuref_init(&rt->dst.__refcnt, 1);
- 	rt->dst.dev = br->dev;
- 	dst_init_metrics(&rt->dst, br_dst_default_metrics, true);
- 	rt->dst.flags	= DST_NOXFRM | DST_FAKE_RTABLE;
---- a/net/core/dst.c
-+++ b/net/core/dst.c
-@@ -66,7 +66,7 @@ void dst_init(struct dst_entry *dst, str
- 	dst->tclassid = 0;
- #endif
- 	dst->lwtstate = NULL;
--	atomic_set(&dst->__refcnt, initial_ref);
-+	rcuref_init(&dst->__refcnt, initial_ref);
- 	dst->__use = 0;
- 	dst->lastuse = jiffies;
- 	dst->flags = flags;
-@@ -162,31 +162,15 @@ EXPORT_SYMBOL(dst_dev_put);
- 
- void dst_release(struct dst_entry *dst)
- {
--	if (dst) {
--		int newrefcnt;
--
--		newrefcnt = atomic_dec_return(&dst->__refcnt);
--		if (WARN_ONCE(newrefcnt < 0, "dst_release underflow"))
--			net_warn_ratelimited("%s: dst:%p refcnt:%d\n",
--					     __func__, dst, newrefcnt);
--		if (!newrefcnt)
--			call_rcu_hurry(&dst->rcu_head, dst_destroy_rcu);
--	}
-+	if (dst && rcuref_put(&dst->__refcnt))
-+		call_rcu_hurry(&dst->rcu_head, dst_destroy_rcu);
- }
- EXPORT_SYMBOL(dst_release);
- 
- void dst_release_immediate(struct dst_entry *dst)
- {
--	if (dst) {
--		int newrefcnt;
--
--		newrefcnt = atomic_dec_return(&dst->__refcnt);
--		if (WARN_ONCE(newrefcnt < 0, "dst_release_immediate underflow"))
--			net_warn_ratelimited("%s: dst:%p refcnt:%d\n",
--					     __func__, dst, newrefcnt);
--		if (!newrefcnt)
--			dst_destroy(dst);
--	}
-+	if (dst && rcuref_put(&dst->__refcnt))
-+		dst_destroy(dst);
- }
- EXPORT_SYMBOL(dst_release_immediate);
- 
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -840,7 +840,7 @@ int rtnl_put_cacheinfo(struct sk_buff *s
- 	if (dst) {
- 		ci.rta_lastuse = jiffies_delta_to_clock_t(jiffies - dst->lastuse);
- 		ci.rta_used = dst->__use;
--		ci.rta_clntref = atomic_read(&dst->__refcnt);
-+		ci.rta_clntref = rcuref_read(&dst->__refcnt);
- 	}
- 	if (expires) {
- 		unsigned long clock;
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -293,7 +293,7 @@ static const struct fib6_info fib6_null_
- 
- static const struct rt6_info ip6_null_entry_template = {
- 	.dst = {
--		.__refcnt	= ATOMIC_INIT(1),
-+		.__refcnt	= RCUREF_INIT(1),
- 		.__use		= 1,
- 		.obsolete	= DST_OBSOLETE_FORCE_CHK,
- 		.error		= -ENETUNREACH,
-@@ -307,7 +307,7 @@ static const struct rt6_info ip6_null_en
- 
- static const struct rt6_info ip6_prohibit_entry_template = {
- 	.dst = {
--		.__refcnt	= ATOMIC_INIT(1),
-+		.__refcnt	= RCUREF_INIT(1),
- 		.__use		= 1,
- 		.obsolete	= DST_OBSOLETE_FORCE_CHK,
- 		.error		= -EACCES,
-@@ -319,7 +319,7 @@ static const struct rt6_info ip6_prohibi
- 
- static const struct rt6_info ip6_blk_hole_entry_template = {
- 	.dst = {
--		.__refcnt	= ATOMIC_INIT(1),
-+		.__refcnt	= RCUREF_INIT(1),
- 		.__use		= 1,
- 		.obsolete	= DST_OBSOLETE_FORCE_CHK,
- 		.error		= -EINVAL,
---- a/net/netfilter/ipvs/ip_vs_xmit.c
-+++ b/net/netfilter/ipvs/ip_vs_xmit.c
-@@ -339,7 +339,7 @@ static int
- 			spin_unlock_bh(&dest->dst_lock);
- 			IP_VS_DBG(10, "new dst %pI4, src %pI4, refcnt=%d\n",
- 				  &dest->addr.ip, &dest_dst->dst_saddr.ip,
--				  atomic_read(&rt->dst.__refcnt));
-+				  rcuref_read(&rt->dst.__refcnt));
- 		}
- 		if (ret_saddr)
- 			*ret_saddr = dest_dst->dst_saddr.ip;
-@@ -507,7 +507,7 @@ static int
- 			spin_unlock_bh(&dest->dst_lock);
- 			IP_VS_DBG(10, "new dst %pI6, src %pI6, refcnt=%d\n",
- 				  &dest->addr.in6, &dest_dst->dst_saddr.in6,
--				  atomic_read(&rt->dst.__refcnt));
-+				  rcuref_read(&rt->dst.__refcnt));
- 		}
- 		if (ret_saddr)
- 			*ret_saddr = dest_dst->dst_saddr.in6;
+ 	unregister_netdev(netdev);
+-- 
+2.34.1
 
