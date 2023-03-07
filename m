@@ -2,78 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CA4B6AD5E1
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 04:47:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2DA36AD62A
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 05:18:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229605AbjCGDrt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 22:47:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39738 "EHLO
+        id S230268AbjCGESc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 23:18:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230192AbjCGDri (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 22:47:38 -0500
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEC3E6BDF1;
-        Mon,  6 Mar 2023 19:47:20 -0800 (PST)
-Received: by mail-qt1-x82b.google.com with SMTP id d7so13093435qtr.12;
-        Mon, 06 Mar 2023 19:47:20 -0800 (PST)
+        with ESMTP id S230258AbjCGESM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 23:18:12 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D39B74A58;
+        Mon,  6 Mar 2023 20:17:38 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id ay14so43689177edb.11;
+        Mon, 06 Mar 2023 20:17:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678160813;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=bGgWQRdFIzl1Y3g1dgV/zFO10xfrflw7I7b73eveKLY=;
-        b=Jk1sjQ4XJF+U0eeqj2YaRbudxWApeNhC0bPeEUGU7IfLSPL42UhVRXb1Cg+5KfwyZX
-         l9dkuFX3iFNJVmNhoIfv03nph8Ey83myh/tw/x0mSID1/m581bO7l0SfnNUc7QMtRhk7
-         m4KU4xtYQ/Z/kvzAHQvq8mUMGKIfaT3mddqDqyXJDAnCO6aRelzsi4sDpQDHkoT5nBZv
-         LyBGTO4WTyJdZX7rhjw8UwW87eKQTFYJDnWISoKTw8b2xssQqlW4qcBnmFwmfHYsQSqH
-         qO4K6iZnscGyzb/rlgC2u2v8KdVm7YXcP7LhTC8bi/G5KP6Wi6AsTDsCgG1L45bZV+/J
-         dpjw==
+        d=gmail.com; s=20210112; t=1678162652;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=QTXjcayLZoZ4Jg8E7qsZ3gtXhW2rdu4DubQwwX1FJ4I=;
+        b=QYh2DEkv2BMGpuJJDmLIX1WUe/a7HIX00XeWR3Kyvj1Tt9d3YeFdXt/3e40MCUM44p
+         m5/fQwU6pN1gWJiYCEgyimDr+9mNryB3a4D75ampUl88kJV3DTUa/nrmc75f67Ra2Va3
+         rXJBqHCJSHzGcjgCXAvPTHnQ1tAR6TRjdqOpMCTFaUJWaOra1aHQaMwk66rtN2uJzDBe
+         h3FdGURc+qm7N7wrk2JwfxDEWH8Q4T8YqAZj1Za9xmjxtiA6gJQzHKgVrE4RMkEwo4OL
+         1yTq94pnG8Q2t7I3deHKi3uuVbTqs9HQ2qll5nSoFncHOUkK1h1i2iYdkN7X5/OsqyDu
+         TzXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678160813;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=bGgWQRdFIzl1Y3g1dgV/zFO10xfrflw7I7b73eveKLY=;
-        b=YWFQmxWMBuF+K8DHTZH38I+om01UNGAOGUcBDP0NpSS9M8sWuUyE1aQVqEvbg3ESb8
-         kACPND5URzLNtCYhhhjAZocdJfs7IaY5sL/5DivxZ1zayHrYPUisWfptfaRz0pLPyRhd
-         /nUCxbnVGY45cXjIX0AnGxgadMZqTbX0OK+zM+bGbRElJcYVhXxm9Rlp+OhRPqARWs1/
-         HjVMb0Vz9WInO7O8UrRIBdzQ+R2eGR2b3Ym/jd8nyM+g86NQJoPLqgKYhuhbyz/Q/WLE
-         YS+YOqFXo7Uh4SsVP3Lq00vlDx6r9z+hzo6Gc/A3Cyb2f1kxu9KXSxLNGskpj1gR1pI0
-         ptyA==
-X-Gm-Message-State: AO0yUKUgZqx1BQ7arwnHbvMwpE7iG5v+vzE6FEBjz+J4KuKNAI2AHx1n
-        Lu6KLIpDqtxe0keMZchN6ZE=
-X-Google-Smtp-Source: AK7set9PVaJBUrzneXIr1jxdEgyaaGEnL7v2KZxGmtvzFeNJdAyuN5S0K2SGI8b6p+ASHr18V/RpGQ==
-X-Received: by 2002:a05:622a:1a0c:b0:3bf:df2e:a494 with SMTP id f12-20020a05622a1a0c00b003bfdf2ea494mr615544qtb.6.1678160812749;
-        Mon, 06 Mar 2023 19:46:52 -0800 (PST)
-Received: from [192.168.1.105] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id s15-20020ac85ecf000000b003afbf704c7csm8583252qtx.24.2023.03.06.19.46.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Mar 2023 19:46:52 -0800 (PST)
-Message-ID: <84094771-7f98-0d8d-fe79-7c22e15a602d@gmail.com>
-Date:   Mon, 6 Mar 2023 19:46:49 -0800
+        d=1e100.net; s=20210112; t=1678162652;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=QTXjcayLZoZ4Jg8E7qsZ3gtXhW2rdu4DubQwwX1FJ4I=;
+        b=a9PmUwCS0OduELJsaJrXsWHJnA5o689gF6puzMWaGXG820EFmPxQHuP6TrvLOOpHkF
+         twT9KZgpq+qPbPvY5nIeOV/78oAqN7RVw7uevygW9TUgqsyX8ci96zmgHorBm1SR6IC2
+         P03XtiVE97wO5g/w5JfyXdMOTwWFK/7DzDUXM0HhK+WIWj4GnTPA3uuwvm66zsDyOoBW
+         hnRuLcbb2ydPTDjbpwN5aYInqIeGMFsUocJpkBIQW+2joPRyQ+D4OC5k3XWqVm7Jh70c
+         NmB6PzzWCyLDD4Xot9T4T2LFp4bvM88Bo//MTFcqXUsZS9wDbTyHOhrQqv7Nod5PjKRr
+         iwOA==
+X-Gm-Message-State: AO0yUKX+BO8P4NvwniEpLnbYnB0HM0F1PbFE/CoTq4LvlFY2x8gUt0zc
+        rPUt2h+aPgnytC/DV/BVPHQPu/8tkckaz6LA7ZmDLDiKa0Y=
+X-Google-Smtp-Source: AK7set+9D18dxn1tqA0s9eBHMgNpzz7jTmhfwaZbBkFF2okwzkos8TileTGlddttOhZNt6L/WK4bx/c60uE5Cm3/ijM=
+X-Received: by 2002:a17:906:6b1a:b0:877:747d:4a85 with SMTP id
+ q26-20020a1709066b1a00b00877747d4a85mr6451918ejr.3.1678162651705; Mon, 06 Mar
+ 2023 20:17:31 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH] net: asix: fix modprobe "sysfs: cannot create duplicate
- filename"
-Content-Language: en-US
-To:     Grant Grundler <grundler@chromium.org>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Lukas Wunner <lukas@wunner.de>
-Cc:     Anton Lundin <glance@acc.umu.se>,
-        Eizan Miyamoto <eizan@chromium.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
+References: <cover.1677526810.git.dxu@dxuuu.xyz> <20230227230338.awdzw57e4uzh4u7n@MacBook-Pro-6.local>
+ <20230228015712.clq6kyrsd7rrklbz@kashmir.localdomain> <CAADnVQ+a633QyZgkbXfRiT_WRbPgr5n8RN0w=ntEkBHUeqRcbw@mail.gmail.com>
+ <20230228231716.a5uwc4tdo3kjlkg7@aviatrix-fedora.tail1b9c7.ts.net>
+In-Reply-To: <20230228231716.a5uwc4tdo3kjlkg7@aviatrix-fedora.tail1b9c7.ts.net>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 6 Mar 2023 20:17:20 -0800
+Message-ID: <CAADnVQKK+a_0effQW5qBSq1AXoQOJg5-79q3d1NWJ2Vv8SHvOw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 0/8] Support defragmenting IPv(4|6) packets in BPF
+To:     Daniel Xu <dxu@dxuuu.xyz>
+Cc:     bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>
-References: <20230307005028.2065800-1-grundler@chromium.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20230307005028.2065800-1-grundler@chromium.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -82,109 +74,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Feb 28, 2023 at 3:17=E2=80=AFPM Daniel Xu <dxu@dxuuu.xyz> wrote:
+>
+> > Have you considered to skb redirect to another netdev that does ip defr=
+ag?
+> > Like macvlan does it under some conditions. This can be generalized.
+>
+> I had not considered that yet. Are you suggesting adding a new
+> passthrough netdev thing that'll defrags? I looked at the macvlan driver
+> and it looks like it defrags to handle some multicast corner case.
 
+Something like that. A netdev that bpf prog can redirect too.
+It will consume ip frags and eventually will produce reassembled skb.
 
-On 3/6/2023 4:50 PM, Grant Grundler wrote:
-> "modprobe asix ; rmmod asix ; modprobe asix" fails with:
->     sysfs: cannot create duplicate filename \
->     	'/devices/virtual/mdio_bus/usb-003:004'
-> 
-> Issue was originally reported by Anton Lundin on 2022-06-22 14:16 UTC:
->     https://lore.kernel.org/netdev/20220623063649.GD23685@pengutronix.de/T/
-> 
-> Chrome OS team hit the same issue in Feb, 2023 when trying to find
-> work arounds for other issues with AX88172 devices.
-> 
-> The use of devm_mdiobus_register() with usbnet devices results in the
-> MDIO data being associated with the USB device. When the asix driver
-> is unloaded, the USB device continues to exist and the corresponding
-> "mdiobus_unregister()" is NOT called until the USB device is unplugged
-> or unauthorized. So the next "modprobe asix" will fail because the MDIO
-> phy sysfs attributes still exist.
-> 
-> The 'easy' (from a design PoV) fix is to use the non-devm variants of
-> mdiobus_* functions and explicitly manage this use in the asix_bind
-> and asix_unbind function calls. I've not explored trying to fix usbnet
-> initialization so devm_* stuff will work.
-> 
-> Reported-by: Anton Lundin <glance@acc.umu.se>
-> Tested-by: Eizan Miyamoto <eizan@chromium.org>
-> Signed-off-by: Grant Grundler <grundler@chromium.org>
-
-Should we have a Fixes: tag here? One more question below
-
-> ---
->   drivers/net/usb/asix_devices.c | 32 ++++++++++++++++++++++++--------
->   1 file changed, 24 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-> index 30e87389aefa1..f0a87b933062a 100644
-> --- a/drivers/net/usb/asix_devices.c
-> +++ b/drivers/net/usb/asix_devices.c
-> @@ -640,8 +640,9 @@ static int asix_resume(struct usb_interface *intf)
->   static int ax88772_init_mdio(struct usbnet *dev)
->   {
->   	struct asix_common_private *priv = dev->driver_priv;
-> +	int ret;
->   
-> -	priv->mdio = devm_mdiobus_alloc(&dev->udev->dev);
-> +	priv->mdio = mdiobus_alloc();
->   	if (!priv->mdio)
->   		return -ENOMEM;
->   
-> @@ -653,7 +654,27 @@ static int ax88772_init_mdio(struct usbnet *dev)
->   	snprintf(priv->mdio->id, MII_BUS_ID_SIZE, "usb-%03d:%03d",
->   		 dev->udev->bus->busnum, dev->udev->devnum);
->   
-> -	return devm_mdiobus_register(&dev->udev->dev, priv->mdio);
-> +	ret = mdiobus_register(priv->mdio);
-> +	if (ret) {
-> +		netdev_err(dev->net, "Could not register MDIO bus (err %d)\n", ret);
-> +		goto mdio_regerr;
-> +	}
-> +
-> +	priv->phydev = mdiobus_get_phy(priv->mdio, priv->phy_addr);
-> +	if (priv->phydev)
-> +		return 0;
-
-This was in ax88772_init_phy() before, why is this being moved here now?
-
-> +
-> +	netdev_err(dev->net, "Could not find PHY\n");
-> +	mdiobus_unregister(priv->mdio);
-> +mdio_regerr:
-> +	mdiobus_free(priv->mdio);
-> +	return ret;
-> +}
-> +
-> +static void ax88772_release_mdio(struct asix_common_private *priv)
-> +{
-> +	mdiobus_unregister(priv->mdio);
-> +	mdiobus_free(priv->mdio);
->   }
->   
->   static int ax88772_init_phy(struct usbnet *dev)
-> @@ -661,12 +682,6 @@ static int ax88772_init_phy(struct usbnet *dev)
->   	struct asix_common_private *priv = dev->driver_priv;
->   	int ret;
->   
-> -	priv->phydev = mdiobus_get_phy(priv->mdio, priv->phy_addr);
-> -	if (!priv->phydev) {
-> -		netdev_err(dev->net, "Could not find PHY\n");
-> -		return -ENODEV;
-> -	}
-> -
->   	ret = phy_connect_direct(dev->net, priv->phydev, &asix_adjust_link,
->   				 PHY_INTERFACE_MODE_INTERNAL);
->   	if (ret) {
-> @@ -805,6 +820,7 @@ static void ax88772_unbind(struct usbnet *dev, struct usb_interface *intf)
->   	struct asix_common_private *priv = dev->driver_priv;
->   
->   	phy_disconnect(priv->phydev);
-> +	ax88772_release_mdio(priv);
->   	asix_rx_fixup_common_free(dev->driver_priv);
->   }
->   
-
--- 
-Florian
+The kernel ip_defrag logic has timeouts, counters, rhashtable
+with thresholds, etc. All of them are per netns.
+Just another ip_defrag_user will still share rhashtable
+with its limits. The kernel can even do icmp_send().
+ip_defrag is not a kfunc. It's a big block with plenty of kernel
+wide side effects.
+I really don't think we can alloc_skb, copy_skb, and ip_defrag it.
+It messes with the stack too much.
+It's also not clear to me when skb is reassembled and how bpf sees it.
+"redirect into reassembling netdev" and attaching bpf prog to consume
+that skb is much cleaner imo.
+May be there are other ways to use ip_defrag, but certainly not like
+synchronous api helper.
