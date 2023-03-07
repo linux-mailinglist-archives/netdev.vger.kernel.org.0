@@ -2,136 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D8EEA6AE191
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 15:01:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98D516AE199
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 15:05:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230188AbjCGOBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 09:01:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42036 "EHLO
+        id S229706AbjCGOFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 09:05:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229787AbjCGOBt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 09:01:49 -0500
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4772A54CAD;
-        Tue,  7 Mar 2023 06:01:46 -0800 (PST)
-Received: by mail-qt1-f180.google.com with SMTP id c19so14277083qtn.13;
-        Tue, 07 Mar 2023 06:01:46 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678197705;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZIwtnbs3hhla8EYiCStTsWUllaDHjZv8F8tfryJtRbU=;
-        b=bZ9mWl8l/LK+BrEGpJYUyBoWfy95z60fZV3xygHVryhx1KBP+QhHWI+eyoaFtlsFJ7
-         E1W15jUDV8vVj5RbEY4xmKw3OWDRyMHEVnvD4ZRIjQZwOB5LqT8Pw9s72+91o6BnDUqw
-         +VUgI60fHsvDnL67KsiO3cgASM8/KCvXOMTOHHi01Fh7PiEuEy7c5Uk/Nu9b5HkbqEd8
-         ydQvvnHXJjNAfa/kX/IYQCsq/oQLm87oVFXpy1PHMrr4mW7EZqjJbJCCI8zRmtLIBdr5
-         BK4cvO6UBaeTyZ1pu4QPwEIcDuyojDFMDo30QHMXlDWCA0naZ/yrlKL/VWm9ozFc00Aa
-         fqEg==
-X-Gm-Message-State: AO0yUKWtu6ylwFQl+OhT1HlHx9aZwxdiIJlANUu8c0zypK6T4GlQ573w
-        obmHEQTt2D+MvNqp6LbrEA==
-X-Google-Smtp-Source: AK7set/ie2Czy1LR7jpiOaAypsEJpBOiJDLh02ocsL9PmQMfeZBp9nReUBtCOPjsaf3yPB5BHxvbMQ==
-X-Received: by 2002:a05:622a:488:b0:3bf:c431:ea6e with SMTP id p8-20020a05622a048800b003bfc431ea6emr4245426qtx.3.1678197705142;
-        Tue, 07 Mar 2023 06:01:45 -0800 (PST)
-Received: from robh_at_kernel.org ([2605:ef80:8082:8c7f:9efe:1ea4:c2ba:e845])
-        by smtp.gmail.com with ESMTPSA id s15-20020ac85ecf000000b003afbf704c7csm9360921qtx.24.2023.03.07.06.01.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Mar 2023 06:01:44 -0800 (PST)
-Received: (nullmailer pid 54639 invoked by uid 1000);
-        Tue, 07 Mar 2023 14:01:39 -0000
-Date:   Tue, 7 Mar 2023 08:01:39 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Siddharth Vadapalli <s-vadapalli@ti.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        linux@armlinux.org.uk, pabeni@redhat.com,
-        krzysztof.kozlowski@linaro.org, krzysztof.kozlowski+dt@linaro.org,
-        nsekhar@ti.com, rogerq@kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, srk@ti.com
-Subject: Re: [PATCH net-next] dt-bindings: net: ti: k3-am654-cpsw-nuss:
- Document Serdes PHY
-Message-ID: <20230307140139.GA48063-robh@kernel.org>
-References: <20230306094750.159657-1-s-vadapalli@ti.com>
+        with ESMTP id S229483AbjCGOFV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 09:05:21 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD9451FA0
+        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 06:05:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=YVMDZytrYEm0pRK+YVIOPakgBHyzl6Ueyh42E07KaAY=; b=kgoI6cMKmQ+zdg/dopS0ok7V+S
+        6EORBXJBIWER4AVvuaHbi/gUq/Q8YFq4oJ/pB9BMC/ri8l/yCLd1KTyZMD/QHNf6ro105jKSqaFAc
+        VVVqdLBCaBqoOso71jjRklik6ub9CQ49KMh/dbfLhLgV1CMCy64P9jBX09KTTb2foJ52KwqeJt8MW
+        IS0Pgi7vv8ofiQVNEVMhd3//caX3qAvj6KOxEu4wCt6XbUqZ9yBx9190Jtk8CU5NJwRsphHs573AM
+        3knwRTIT9hEonXiy/ayN7P9CDmp3xoyP3PAlpdt/3aCyy/bCJD2Pdk+pXSq3Iycd1qsSPfDqQjUKf
+        ltoby0IA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:38326)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pZXw8-0000PY-BV; Tue, 07 Mar 2023 14:05:04 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pZXw3-0001Zr-SV; Tue, 07 Mar 2023 14:04:59 +0000
+Date:   Tue, 7 Mar 2023 14:04:59 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Daniel Golle <daniel@makrotopia.org>
+Cc:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH RFC net-next 4/4] net: mtk_eth_soc: note interface modes
+ not set in supported_interfaces
+Message-ID: <ZAdEi2TsIw8Vjsh8@shell.armlinux.org.uk>
+References: <Y/ivHGroIVTe4YP/@shell.armlinux.org.uk>
+ <E1pVXJK-00CTAl-V7@rmk-PC.armlinux.org.uk>
+ <ZAcnjXxLfeE9UIsO@shell.armlinux.org.uk>
+ <ZAc7Q4VMzLjzQbRC@makrotopia.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230306094750.159657-1-s-vadapalli@ti.com>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+In-Reply-To: <ZAc7Q4VMzLjzQbRC@makrotopia.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 06, 2023 at 03:17:50PM +0530, Siddharth Vadapalli wrote:
-> Update bindings to include Serdes PHY as an optional PHY, in addition to
-> the existing CPSW MAC's PHY. The CPSW MAC's PHY is required while the
-> Serdes PHY is optional. The Serdes PHY handle has to be provided only
-> when the Serdes is being configured in a Single-Link protocol. Using the
-> name "serdes-phy" to represent the Serdes PHY handle, the am65-cpsw-nuss
-> driver can obtain the Serdes PHY and request the Serdes to be
-> configured.
+On Tue, Mar 07, 2023 at 01:25:23PM +0000, Daniel Golle wrote:
+> A quick grep through the device trees of the more than 650 ramips and
+> mediatek boards we support in OpenWrt has revealed that *none* of them
+> uses either reduced-MII or reverse-MII PHY modes. I could imaging that
+> some more specialized ramips boards may use the RMII 100M PHY mode to
+> connect with exotic PHYs for industrial or automotive applications
+> (think: for 100BASE-T1 PHY connected via RMII). I have never seen or
+> touched such boards, but there are hints that they do exist.
 > 
-> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
-> ---
+> For reverse-MII there are cases in which the Ralink SoC (Rt305x, for
+> example) is used in iNIC mode, ie. connected as a PHY to another SoC,
+> and running only a minimal firmware rather than running Linux. Due to
+> the lack of external DRAM for the Ralink SoC on this kind of boards,
+> the Ralink SoC there will anyway never be able to boot Linux.
+> I've seen this e.g. in multimedia devices like early WiFi-connected
+> not-yet-so-smart TVs.
 > 
-> Hello,
-> 
-> This patch corresponds to the Serdes PHY bindings that were missed out in
-> the series at:
-> Link: https://lore.kernel.org/r/20230104103432.1126403-1-s-vadapalli@ti.com/
-> This was pointed out at:
-> https://lore.kernel.org/r/CAMuHMdW5atq-FuLEL3htuE3t2uO86anLL3zeY7n1RqqMP_rH1g@mail.gmail.com/
-> 
->  .../bindings/net/ti,k3-am654-cpsw-nuss.yaml   | 21 +++++++++++++++++--
->  1 file changed, 19 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-> index 900063411a20..fab7df437dcc 100644
-> --- a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-> +++ b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-> @@ -126,8 +126,25 @@ properties:
->              description: CPSW port number
->  
->            phys:
-> -            maxItems: 1
-> -            description: phandle on phy-gmii-sel PHY
-> +            minItems: 1
-> +            maxItems: 2
-> +            description:
-> +              phandle(s) on CPSW MAC's PHY (Required) and the Serdes
-> +              PHY (Optional). phandle to the Serdes PHY is required
-> +              when the Serdes has to be configured in Single-Link
-> +              configuration.
+> Tl;dr: I'd drop them. If anyone really needs them, it would be easy to
+> add them again and then also add them to the phylink capability mask.
 
-Like this:
+Thanks! That seems to be well reasoned. Would you have any objection to
+using the above as part of the commit message removing these modes?
 
-minItems: 1
-items:
-  - description: CPSW MAC's PHY
-  - description: Serdes PHY. Serdes PHY is required
-      when the Serdes has to be configured in Single-Link
-
-> +
-> +          phy-names:
-> +            oneOf:
-> +              - items:
-> +                  - const: mac-phy
-> +                  - const: serdes-phy
-> +              - items:
-> +                  - const: mac-phy
-
-Drop this and use minItems in 1st 'items' entry.
-
-> +            description:
-> +              Identifiers for the CPSW MAC's PHY and the Serdes PHY.
-> +              CPSW MAC's PHY is required and therefore "mac-phy" is
-> +              required, while "serdes-phy" is optional.
-
-No need to state in plain text what the schema already says.
-
-Rob
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
