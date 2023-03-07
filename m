@@ -2,126 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E7A176AD335
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 01:15:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F3DE6AD353
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 01:26:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229565AbjCGAPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 19:15:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50770 "EHLO
+        id S229797AbjCGA0O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Mar 2023 19:26:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbjCGAPg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 19:15:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D6C3B0C2;
-        Mon,  6 Mar 2023 16:15:35 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9942B811E3;
-        Tue,  7 Mar 2023 00:15:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 099BBC433D2;
-        Tue,  7 Mar 2023 00:15:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678148132;
-        bh=FS9WIYrQoj667GDcd9ZicNBtv9aXKYwndML6rXyJ4I4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PZPNWFizzs1vurdEcuVlciMzYtOTn9y0NXsWygFmdx64DPhyPP68Wmn3DZcb7IXoP
-         y0k/b9IaPAK5YatHc1PcVmuaMUKZs1RBkNeYDD/FgnlnyHxM7LSm/ETvmdOeowWYW5
-         jlYf3y9V65fbN9iBMl7XewizbCVg10MoR8RAdULuXtJbrJtESHzEWsB2DhuXpQKzy9
-         KsJTSubxTtoq/TxAwLbMmQg72kAaSN/Aiku8IfhAvdRFcURsOSmLBgXrSJhXLNEE5X
-         GpMKoAy3lwxDAK1JE3LLdYxaIFofgrD/luddryLyFpEhVLASelLPEyZU5obEDNVSs2
-         JFNuI11SHPFRQ==
-Date:   Tue, 7 Mar 2023 01:15:28 +0100
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        pabeni@redhat.com, edumazet@google.com, hawk@kernel.org,
-        toke@redhat.com, memxor@gmail.com, alardam@gmail.com,
-        lorenzo.bianconi@redhat.com
-Subject: Re: [RFC net-next] ethtool: provide XDP information with
- XDP_FEATURES_GET
-Message-ID: <ZAaCINTWbMxH2wGD@lore-desk>
-References: <ced8d727138d487332e32739b392ec7554e7a241.1678098067.git.lorenzo@kernel.org>
- <20230306102150.5fee8042@kernel.org>
- <ZAYxolxpBtGZbO6m@lore-desk>
- <20230306113225.6a087a4c@kernel.org>
+        with ESMTP id S229754AbjCGA0M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 19:26:12 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5745C6487A;
+        Mon,  6 Mar 2023 16:25:48 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id cw28so46031739edb.5;
+        Mon, 06 Mar 2023 16:25:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678148747;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+UR9FFBEa9VeA+oww67B6rFyUQmEe/PPppV1t7khWOE=;
+        b=YtCf/G8y5zoYuVqIEvqRe4vOcs9im83Qf4S3UIgvr0MXCvIpCCYbAOxj+sAVTGFnxC
+         Dmy1uYOKzKzzp0RcTA5Ca0HkzuJ+l2HRS9wTRbYYWCDRY92YGL8q1xWDhdzNO6eEhjqL
+         Qu5fdBDMNrPtKV7tnzGiBWFE2aP/AGd6GItdER1NdZUtD2RYGgxz2whfKm8w2X7/EHqZ
+         v5bjmCgGpQ8SABd7TqOWUTVld2b4nXnY/q1K+vPtCHHsIef/4jX/5gjJbPMT0cGYicAi
+         oc56BdeZN6ftDEPOk4QQaOH59ixEdSzoRsxAuDZuOMOz4CubTWIF+1ou4dXfikLr1dGa
+         FqqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678148747;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=+UR9FFBEa9VeA+oww67B6rFyUQmEe/PPppV1t7khWOE=;
+        b=IkuvzIcjBtDDQHrZQntnZuRB3L6mViEvhfzBz7iODyRkUxIO9vvf6/Qi9+38uENwq2
+         scPapW1OBooRdlO9kyPwvmWogNXFyaLilOpDGp9PNdYSTC5tVHtcIhqRtedmYqDLsr1/
+         KMTEV/xxULgiogJiqyGEqkxZ1gpPNsg/eKCNj3bVcheommQI/RJ9JbT6cIvlyquhJpQ/
+         gFkfg8eZjSe/htmOAKAX+t8OFTxAkSwZrt8L8aADA0W2avmG4dwYfX4jN3QYpuHyVSeT
+         CjlfpJwysuunzHVDQyNjFru5XgpoVV72le+72a60bZ9D74n6jRIEwrqP+sGXFfyR4FyN
+         bRhw==
+X-Gm-Message-State: AO0yUKVUn85h5A75lmnwKgjQpJj0GSSAHdsBwdd0AeC/ck9ZfgoD3e77
+        aUVcNJ7nSA98+QjRKaBgJOdvYMANbPGcT6cDyec=
+X-Google-Smtp-Source: AK7set9PO9Kg/5pL+9arPCWrc2LMan5SygAUNqKvXUnWpE2y0K1fIhjZpNIIy59E8TtdA7J7USobuxaQcjT3YXuB114=
+X-Received: by 2002:a17:907:20b8:b0:914:5659:593 with SMTP id
+ pw24-20020a17090720b800b0091456590593mr1306665ejb.3.1678148746754; Mon, 06
+ Mar 2023 16:25:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ScMZVT0OGjuYurHk"
-Content-Disposition: inline
-In-Reply-To: <20230306113225.6a087a4c@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20230306115745.87401-1-kerneljasonxing@gmail.com> <ZAX98D91HvKrJBCO@corigine.com>
+In-Reply-To: <ZAX98D91HvKrJBCO@corigine.com>
+From:   Jason Xing <kerneljasonxing@gmail.com>
+Date:   Tue, 7 Mar 2023 08:25:10 +0800
+Message-ID: <CAL+tcoDAeTznH_EDdaM5dA4N5U-KhhnnvrxOCCAceMOdvGa+MA@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next] udp: introduce __sk_mem_schedule() usage
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     willemdebruijn.kernel@gmail.com, davem@davemloft.net,
+        dsahern@kernel.org, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        Jason Xing <kernelxing@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Mar 6, 2023 at 10:51=E2=80=AFPM Simon Horman <simon.horman@corigine=
+.com> wrote:
+>
+> On Mon, Mar 06, 2023 at 07:57:45PM +0800, Jason Xing wrote:
+> > From: Jason Xing <kernelxing@tencent.com>
+> >
+> > Keep the accounting schema consistent across different protocols
+> > with __sk_mem_schedule(). Besides, it adjusts a little bit on how
+> > to calculate forward allocated memory compared to before. After
+> > applied this patch, we could avoid receive path scheduling extra
+> > amount of memory.
+> >
+> > Link: https://lore.kernel.org/lkml/20230221110344.82818-1-kerneljasonxi=
+ng@gmail.com/
+> > Signed-off-by: Jason Xing <kernelxing@tencent.com>
+> > ---
+> > V2:
+> > 1) change the title and body message
+> > 2) use __sk_mem_schedule() instead suggested by Paolo Abeni
+> > ---
+> >  net/ipv4/udp.c | 31 ++++++++++++++++++-------------
+> >  1 file changed, 18 insertions(+), 13 deletions(-)
+> >
+> > diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+> > index 9592fe3e444a..21c99087110d 100644
+> > --- a/net/ipv4/udp.c
+> > +++ b/net/ipv4/udp.c
+> > @@ -1531,10 +1531,23 @@ static void busylock_release(spinlock_t *busy)
+> >               spin_unlock(busy);
+> >  }
+> >
+> > +static inline int udp_rmem_schedule(struct sock *sk, int size)
+>
 
---ScMZVT0OGjuYurHk
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> nit: I think it's best to drop the inline keyword and
+>      let the compiler figure that out.
 
-> On Mon, 6 Mar 2023 19:32:02 +0100 Lorenzo Bianconi wrote:
-> > So far the only way to dump the XDP features supported by the NIC is th=
-rough
-> > libbpf running bpf_xdp_query(). I would say it is handy for a sysadmin =
-to
-> > examine the XDP NIC capabilities in a similar way he/she is currently d=
-oing
-> > for the hw offload capabilities. Something like (I have an ethtool user=
--space
-> > patch not posted yet):
->=20
-> The sysadmin running linux-next or 6.3-rc1, that is? :)
+Thanks for the review. I'll do that in the v3 patch.
 
-:)
-
->=20
-> The plan in my head is to package a tool like tools/net/ynl/cli.py for
-> sysadmins to use. Either package it with the specs or expose the specs
-> in sysfs like we expose BTF and kheaders.
->=20
-> I was hoping we can "give it a release or two" to get more experience
-> with the specs with just developers using them, 'cause once sysadmins
-> are using them we'll have to worry about backward compat.
->=20
-> But I don't want to hold you back so if the plan above sounds sensible
-> to you we can start executing on it, perhaps?
->=20
-> Alternative would be to teach ethtool or some other tool (new tool?)
-> to speak netdev genl, because duplicating the uAPI at the kernel level
-> really seems odd :(
-
-ok, I got your point here and I am fine with it. What I would like to impro=
-ve
-with the proposed ethtool support is to help the user to double-check why a
-given XDP verdict or functionality is not working properly. A typical examp=
-le
-I think is mlx5 driver where we can enable/disable some XDP capabilities th=
-rough
-ethtool, so the sysadmin can double check that XDP "rx-sg" is actually not
-enabled because rq_wq_type is not set to MLX5_WQ_TYPE_CYCLIC.
-I think it is fine to use cli.py to solve this issue in order to avoid mixi=
-ng
-uAPI :)
-
-Regards,
-Lorenzo
-
---ScMZVT0OGjuYurHk
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCZAaCIAAKCRA6cBh0uS2t
-rPYUAQCEwmSMpEZoutCTuOSnPtg/MSN3XafvDKiEpJAQmuqwWAD/Y5kBUFmFOc4m
-fuWw1qaMJqhskWLsBpwrt5Jhf8fF7Qc=
-=BQ+/
------END PGP SIGNATURE-----
-
---ScMZVT0OGjuYurHk--
+Jason
