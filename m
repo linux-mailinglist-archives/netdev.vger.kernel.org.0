@@ -2,179 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF6C26AD7AF
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 07:54:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14E2A6AD7E2
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 07:58:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230389AbjCGGyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 01:54:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55590 "EHLO
+        id S231274AbjCGG6z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 01:58:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbjCGGyB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 01:54:01 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0AB5367E7;
-        Mon,  6 Mar 2023 22:54:00 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id 82so10471339ybn.6;
-        Mon, 06 Mar 2023 22:54:00 -0800 (PST)
+        with ESMTP id S231245AbjCGG6W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 01:58:22 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on20726.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe59::726])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1319D8615D;
+        Mon,  6 Mar 2023 22:57:39 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UBZjfuU8PW6rrd8m/9SM0LcCrbIlZKAjUynHwIeZuanHfeCrK5yjRd31tcHVrnm4//n5jU2vMO94kJGuJNcH5pT/f0lZtpWGLKEdzuaVKzaUFyzinjyWui9/KecsJS+bl0CdgLv+oyEvM5l6Qw2KKPlCyAx3tVskCx8Bj8XNn91dJiASjB2Ix6/W1LJCWol1ycxmrqlf2lFPI/lHCdhwuiHH81GwRYqtaHjxmsLkNTRayoXP93HuPSfd2/R4vLIWo8MA+/BBQIPNSf7K/hEmcYdd+b+Ns2rQLRBEANOvPzS8IQocooke/Uibn87t2+/q9ivacm50iFwLq/6wZZOGKQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=609lC1rn4x1JNwtUqhqFClHEMTPqC7PvSArdGZyVXu0=;
+ b=T10kygKoN+WLVsM08p+mUsZwzkj/TnMHtBQ9Npvfkndisk+8gutaATOcyHWwS4ZgZ6OgpFr6PKeOT82rdJZ0v1P0g1wG0kEo5W2E6SNkyvpG4bySP5y0eV31GKRlSIQdjpACqK45oCbJNyef5U9r6zctu9kzFlPfQ39+vEgAZqZ/rl/PN6jkFO4ClIck8H58JSIzaRA3PjL0X0K++/8WxcEpUacs/HvPyabgFijOX7nGG+DIR+PISV4LYYWeKaghmHnAzGM2LxSyDbQ5vDjyRnJm1FcHqaGAXe7HF70x8bt9VAatL8dsG5/GSx/qyWHVsgzwz2/PgwXaqJYwRpBtSQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678172040;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Q0EHXS3Ap8HuXGSMW5ADL+Ibpan5sh3lcTUzLyMohRE=;
-        b=WerA/8ecKCD4Kgg5MwGJNQQHWyu92KD83f8vPdGkmRe8SoXrc7hIBviZGju8237xik
-         qfLRtKqdpBNcA8eredtgs5E3i/UM1CbyxHJJof57BDt2DOc9JVEoBEcOmtpBO90RLplt
-         NCUkzEKg1jMTOIpe785kClXDYxXoGqsxxKuPWT7d0Q0VqHYe07DzZtkuaRnNgOJhyL84
-         g0mg4JQ5cPkIvgDRqTPnZkhx0rvyz8EI0Cb23jmVsDjpY4lZ2q6yTowwu0ACbyQ2uOEY
-         MNPtp5GrOVaT5eLf7OKZHA6RMJVZM3uOKM2/PzrfHsXrMQpDLi0118pV20hQ3ZDFW+yA
-         Atpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678172040;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Q0EHXS3Ap8HuXGSMW5ADL+Ibpan5sh3lcTUzLyMohRE=;
-        b=OQxYM19d6L8h7hmT3W5aA6FSoKSz4wExiNr82MN3jyKaJIkyheJrXNZSPTrjEf7Lf9
-         mwxtRp+LBM81/nYZBj/ji15JsEQajIZAPFwtjhDmoFs7gHL/YCWATaVK0jkmnxFZhMcq
-         rSjq3lzaL3XqnbGGPUVbH1xH3huEKN7Fgn2V3t0VX8+DP//bTIGn4tN3L1M7rUKntNvH
-         4iecn9i7lNWkkO2FJVd1RCE8QfDkjR9DDN2W7uEMzX/XtJKV/7QreJR+Kx3/A4ETiTZu
-         sHwlZngbkSTVlQjjBJglWoqzH4nDB68YnFBwDBs/hZ/o4FGyJ/GSFSDqp9OeXceGV87P
-         DA3g==
-X-Gm-Message-State: AO0yUKXupm5CQRPC3k22QfgqJUpn7Qsqv3708iSERTnDGj/VYCchjJVj
-        ktqNSlXpbqnrJJoflrXkFBQsCOiW/mA/oNMjGmld5JDw1ek=
-X-Google-Smtp-Source: AK7set+qQyX56S6aaYgQAnWZADrUuGEyCv2jXN12QQNplsIswKcSSX7rqvdOmZeVgzehXxLR2YVMuZ4NCtoCtFAFLJI=
-X-Received: by 2002:a05:6902:208:b0:ace:1ae4:9dd2 with SMTP id
- j8-20020a056902020800b00ace1ae49dd2mr8095919ybs.8.1678172039937; Mon, 06 Mar
- 2023 22:53:59 -0800 (PST)
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=609lC1rn4x1JNwtUqhqFClHEMTPqC7PvSArdGZyVXu0=;
+ b=UcZ4gMxX2RajnTFFyhmlSx0Lkk1Bmvh0MqZ/hqXpCyGn+VQi8RxHjS+5kkYKNj5Q2R2OXOfUEoZE3rbHm5BaY805FsNf6i5gKYn+jDbnsfsV0HdztqBQyJhaxTNR/NbEP6dtajkTbSbJox1XkwM4NqVKGUcQEKwdLfXT6xdnoWM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SJ0PR13MB5428.namprd13.prod.outlook.com (2603:10b6:a03:421::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.28; Tue, 7 Mar
+ 2023 06:56:42 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6156.029; Tue, 7 Mar 2023
+ 06:56:42 +0000
+Date:   Tue, 7 Mar 2023 07:56:36 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Jaewan Kim <jaewan@google.com>
+Cc:     gregkh@linuxfoundation.org, johannes@sipsolutions.net,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@android.com, adelva@google.com
+Subject: Re: [PATCH v8 4/5] mac80211_hwsim: add PMSR abort support via virtio
+Message-ID: <ZAbgJD52AMpxlH+u@corigine.com>
+References: <20230302160310.923349-1-jaewan@google.com>
+ <20230302160310.923349-5-jaewan@google.com>
+ <ZAYkypRT+mIdQr/v@corigine.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZAYkypRT+mIdQr/v@corigine.com>
+X-ClientProxiedBy: AM8P189CA0001.EURP189.PROD.OUTLOOK.COM
+ (2603:10a6:20b:218::6) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-References: <20230301154953.641654-1-joannelkoong@gmail.com>
- <20230301154953.641654-4-joannelkoong@gmail.com> <20230306073628.g2kg5vp6lw6vzyya@apollo>
-In-Reply-To: <20230306073628.g2kg5vp6lw6vzyya@apollo>
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Mon, 6 Mar 2023 22:53:48 -0800
-Message-ID: <CAJnrk1ZF5FEtXKsMEnwbLu5qr-mQ6-j9+PK2j1NEf=hLE1CCKQ@mail.gmail.com>
-Subject: Re: [PATCH v13 bpf-next 03/10] bpf: Allow initializing dynptrs in kfuncs
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf@vger.kernel.org, martin.lau@kernel.org, andrii@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        toke@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SJ0PR13MB5428:EE_
+X-MS-Office365-Filtering-Correlation-Id: 51791778-a73a-4ccc-5518-08db1ed91b4e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ZkaTydiWgfojgSvtg2lNXuuB9L1+uj3YOmCv+o3UyRsDNYMrcnBk9Af2Vi8vqYaZBmgwKp8ey132USay9u6jm7t/N5njQcriMunySMUae89ZI9c6XgQZaEfI5d2gpG8HACATO6seEhXpgLhzyFtMgq9Ytm0G1h9ThXiqw/ilULBLs4eOWlrjGo7oJjvSLIxh3lfcoyBNDS0US75eC5E2HwcvZnqra4wCr9Dn7/mpxSEBmx8MCvQ88tWZaTWoAY68HjDh38F13FPjeNPxvfTWPs7QW+WHokefZ1rRWhbpWYvLB6bQUBuKtymgHuv6VKb6m/5R/F2A/JvmaAwFs2YLw9kaxKpkUK2QCkUqVOJxjnxE0EPczlyqIBEbNkeJkiGh+9PKK2mjNXp+k3J/BAr9kM3uNaU+ZiwRn5z6xTSmg5uWP1l9knwhUTuXMrfDTDXuGRjyAcjAh89WepQMwA/CkXzGFX/krf80x96V2P1pVl+wkQesl+5cZ/Hw6EvEpveciHu+aBtV2J8K2JRsC4txyuzhI4oUElH9JymK/IkhydXMbldu5lyeqgnBhpe9dV0CV54eI4KACDMJ5/uGJNhlb31nJbJNIAqYS5xbcjLBO/4fMAJ/gfbaQk0BELztpCpIu8yjZw7BUAr8Egn33JmT4A8SrJH90onUvWAtlrBcH0pWazlErrcf7CYt2iSgpAsMpgr0ayoQMlRgPzeu5EwbXyQYPTT5relD0HohETM2BIc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(366004)(136003)(396003)(376002)(39840400004)(451199018)(83380400001)(36756003)(6512007)(38100700002)(5660300002)(2906002)(478600001)(8936002)(86362001)(186003)(2616005)(6666004)(6486002)(44832011)(6506007)(4326008)(66476007)(6916009)(66946007)(8676002)(66556008)(316002)(41300700001)(67856001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?anbifP/9ADG0OhMyU+ww4mwtmBmI+8QTGvaj7X++302l3ZwUlQfBeP1Qphjl?=
+ =?us-ascii?Q?cdimFyE305qn3/ZSl9neymHEye0CDrNlI3IREnb24UQzyxbB1K6ACCcncro+?=
+ =?us-ascii?Q?sZLLRUsFa1zOnt653uQJrTyoG+tgnDY1MH/ebn8NgWQXVD2yh41Jj+KPBEt6?=
+ =?us-ascii?Q?RWl5edLZylxBG+4wnZ6B+CmlrzYJBxZLSVPN7fPxLLOCcp6zMxjKaFfnmTZD?=
+ =?us-ascii?Q?EEXkqicEpnyVTDYkVkCLxH9iqM5D6vWXETwbhTKE7d0Y9g1NAJsqRX3Rc+4U?=
+ =?us-ascii?Q?oDYIVbOLNNjgfB9/3t8qK3l94xfMD5SM9ZaylWqzMUkpqPkS8UoqGD9BN4nk?=
+ =?us-ascii?Q?tOL4CMLThpaqyx1dG0eZSPVUacRKYHB9ugkVRjY/4s2EhjnTlNFb2mqdog0n?=
+ =?us-ascii?Q?y9R6R/plqvJTrEXLobfdTPZTGLLON2dTIUl5nm/ntKwZ9H5j4clD/K5EwZIa?=
+ =?us-ascii?Q?4S9SyvgkBQdFY+hp6o/lf6/g+mZ3s9KNFBF3YvjNiXgxaKMeL1hz+icUQXGN?=
+ =?us-ascii?Q?vOgAQEICM4MaqMeMoXACWaZ/ANggaIFT+GEAT/R08S3GabAj2Ji6EQyxKIYZ?=
+ =?us-ascii?Q?/JIOpMu+ddjJScN90+JwZs4Z21l6dm3+22ZnCr73PiBanDgja0M9xZlFIoG+?=
+ =?us-ascii?Q?oDdtdN0au+Y7Qr7luHQJ9JkyA3a02c9aOd9rxYeYPMgYITfLtHyB08gRiY/h?=
+ =?us-ascii?Q?F0ar0A2WsNd7+F26nnl/e5+9OtB4NYRBUGf4OQ7NMO6vcdCnmTvieiyHSSxA?=
+ =?us-ascii?Q?PmY5DBmU9zNmb6/e6TRRW+FdCJYj3ELua/B+XxTm19DxhS5Rd7SICKIX71Ok?=
+ =?us-ascii?Q?j5tvOwQmBXX8PyhxBdDjSs+e25wj+s7Ycyb9sPLBbuCv47EU4F4duV3byIrg?=
+ =?us-ascii?Q?+aOiKV6rZsxL1o9EV2eh/YF3J/e8KN7ehENcYPY58/enCNSfDAIAkRRMk+al?=
+ =?us-ascii?Q?0xP01QGYeUpBi42eL/6mls1bsuJN3bO7l2cRE1Jp9NZD7I5dEWaE9SWTkO/U?=
+ =?us-ascii?Q?ZvyQ/EhN3lHF++VxyJePTOYAuxvUO4j3Yfb9XuRGoECWnKO2r4A8yagZQm1N?=
+ =?us-ascii?Q?ObG7hxcKuD0h2nTP5Fdgri2um1OZexOigsA9sCnWLXoWGUsscJEh37axePL2?=
+ =?us-ascii?Q?lvO/9INp8nLtkD4LMpJ0GT+zoI0+JvRxZrLMw1Yka8SK81EbhFS3+2nbUvaA?=
+ =?us-ascii?Q?jsASFvODA2aYvXE36qsQmgASB17/An7V/mIx5LKiP9swcbAbyohVNSN4PnBj?=
+ =?us-ascii?Q?E7zXYG7S+XkxwCwR7zqMvXhnMefe2epl7qhn/k20LYU/LutKeqvhVTJmBXrz?=
+ =?us-ascii?Q?ZhU7ToSVsRcOXVr1VcnBTW1n0tw0MSmkLUxtBiI8SBTpX4qM/Q0iq4kvQLHH?=
+ =?us-ascii?Q?cRL4+dHwjU9sdNNTCgXJrgbIE6QzWEUvwoyvf3HhhrIe5x2ToitPDycbFKgU?=
+ =?us-ascii?Q?PspmdrTvl8gdbQn/pXy12P+gEoF6aC6MSKNR4d+5TEcHJy9/PEbvL8BCvrcY?=
+ =?us-ascii?Q?Oh/8WFhp6Ds5EPPzAeTucRwX2ubPj3Ail5hwZm9KuvSEaMjXJBLs38gMRGPw?=
+ =?us-ascii?Q?7fMIbwQmzIypE4cfAgJND1qGf1xNBzshOKN3D/NIXiBH74XwXxbx/BU7JCBl?=
+ =?us-ascii?Q?UuQQnNLznLWBFFDJfOBBebplQFm9xrjjGGpj3lKTY/z6JeZ7gmmEbHuVoLhF?=
+ =?us-ascii?Q?WUJHgg=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 51791778-a73a-4ccc-5518-08db1ed91b4e
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2023 06:56:41.9943
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: a8Y4AjH46lHoroIWoiv1TVBy570lcoz5dwuPLJXSeQoW0XACN2ncYj2PsBh38h6wMco6YkxAEt3I+xhZfd1mYQ5fmypwUXJpl1B2UX5ewI0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR13MB5428
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 5, 2023 at 11:36=E2=80=AFPM Kumar Kartikeya Dwivedi
-<memxor@gmail.com> wrote:
->
-> On Wed, Mar 01, 2023 at 04:49:46PM CET, Joanne Koong wrote:
-> > This change allows kfuncs to take in an uninitialized dynptr as a
-> > parameter. Before this change, only helper functions could successfully
-> > use uninitialized dynptrs. This change moves the memory access check
-> > (including stack state growing and slot marking) into
-> > process_dynptr_func(), which both helpers and kfuncs call into.
-> >
-> > Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
-> > ---
-> >  kernel/bpf/verifier.c | 67 ++++++++++++++-----------------------------
-> >  1 file changed, 22 insertions(+), 45 deletions(-)
-> >
-> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > index e0e00509846b..82e39fc5ed05 100644
-> > --- a/kernel/bpf/verifier.c
-> > +++ b/kernel/bpf/verifier.c
-> > @@ -268,7 +268,6 @@ struct bpf_call_arg_meta {
-> >       u32 ret_btf_id;
-> >       u32 subprogno;
-> >       struct btf_field *kptr_field;
-> > -     u8 uninit_dynptr_regno;
-> >  };
-> >
-> >  struct btf *btf_vmlinux;
-> > @@ -6225,10 +6224,11 @@ static int process_kptr_func(struct bpf_verifie=
-r_env *env, int regno,
-> >   * Helpers which do not mutate the bpf_dynptr set MEM_RDONLY in their =
-argument
-> >   * type, and declare it as 'const struct bpf_dynptr *' in their protot=
-ype.
-> >   */
-> > -static int process_dynptr_func(struct bpf_verifier_env *env, int regno=
-,
-> > -                            enum bpf_arg_type arg_type, struct bpf_cal=
-l_arg_meta *meta)
-> > +static int process_dynptr_func(struct bpf_verifier_env *env, int regno=
-, int insn_idx,
-> > +                            enum bpf_arg_type arg_type)
-> >  {
-> >       struct bpf_reg_state *regs =3D cur_regs(env), *reg =3D &regs[regn=
-o];
-> > +     int err;
-> >
-> >       /* MEM_UNINIT and MEM_RDONLY are exclusive, when applied to an
-> >        * ARG_PTR_TO_DYNPTR (or ARG_PTR_TO_DYNPTR | DYNPTR_TYPE_*):
-> > @@ -6254,23 +6254,23 @@ static int process_dynptr_func(struct bpf_verif=
-ier_env *env, int regno,
-> >        *               to.
-> >        */
-> >       if (arg_type & MEM_UNINIT) {
-> > +             int i;
+On Mon, Mar 06, 2023 at 06:37:14PM +0100, Simon Horman wrote:
+> On Thu, Mar 02, 2023 at 04:03:09PM +0000, Jaewan Kim wrote:
+> > PMSR (a.k.a. peer measurement) is generalized measurement between two
+> > devices with Wi-Fi support. And currently FTM (a.k.a. fine time
+> > measurement or flight time measurement) is the one and only measurement.
+> > 
+> > Add necessary functionalities for mac80211_hwsim to abort previous PMSR
+> > request. The abortion request is sent to the wmedium where the PMSR request
+> > is actually handled.
+> > 
+> > In detail, add new mac80211_hwsim command HWSIM_CMD_ABORT_PMSR. When
+> > mac80211_hwsim receives the PMSR abortion request via
+> > ieee80211_ops.abort_pmsr, the received cfg80211_pmsr_request is resent to
+> > the wmediumd with command HWSIM_CMD_ABORT_PMSR and attribute
+> > HWSIM_ATTR_PMSR_REQUEST. The attribute is formatted as the same way as
+> > nl80211_pmsr_start() expects.
+
+...
+
+> > +		goto out_err;
 > > +
-> >               if (!is_dynptr_reg_valid_uninit(env, reg)) {
-> >                       verbose(env, "Dynptr has to be an uninitialized d=
-ynptr\n");
-> >                       return -EINVAL;
-> >               }
-> >
-> > -             /* We only support one dynptr being uninitialized at the =
-moment,
-> > -              * which is sufficient for the helper functions we have r=
-ight now.
-> > -              */
-> > -             if (meta->uninit_dynptr_regno) {
-> > -                     verbose(env, "verifier internal error: multiple u=
-ninitialized dynptr args\n");
-> > -                     return -EFAULT;
-> > +             /* we write BPF_DW bits (8 bytes) at a time */
-> > +             for (i =3D 0; i < BPF_DYNPTR_SIZE; i +=3D 8) {
-> > +                     err =3D check_mem_access(env, insn_idx, regno,
-> > +                                            i, BPF_DW, BPF_WRITE, -1, =
-false);
-> > +                     if (err)
-> > +                             return err;
-> >               }
->
-> I am not sure moving check_mem_access into process_dynptr_func is the rig=
-ht
-> thing to do. Not sure if a problem already, but sooner or later it might =
-be.
->
-> The side effects of the call should take effect on the current state only=
- after
-> we have gone through all arguments for the helper/kfunc call. In this cas=
-e we
-> will now do stack access while processing the dynptr arg, which may affec=
-t the
-> state of stack we see through other memory arguments coming later.
->
-> I think it is better to do it after argument processing is done, similar =
-to
-> existing meta.access_size handling which is done after check_func_arg loo=
-p (for
-> the same reasons).
->
+> > +	pmsr = nla_nest_start(skb, HWSIM_ATTR_PMSR_REQUEST);
+> > +	if (!pmsr) {
+> > +		err = -ENOMEM;
+> > +		goto out_err;
+> > +	}
+> > +
+> > +	err = mac80211_hwsim_send_pmsr_request(skb, request);
+> > +	if (err)
+> 
+> I think this error path needs to call nla_nest_cancel().
 
-Thanks for taking a look. I don't have a strong preference for either
-so if you do feel strongly about doing the check_mem_access() only
-after argument processing, I'm happy to change it. The
-check_mem_access() call on the dyntpr will mark only the dynptr stack
-slots, so I don't fully see how it may affect the state of stack
-through other memory arguments coming later, but I do see your point
-about keeping the logic more separated out.
+As per Johannes's comment elsewhere,
+I now realise this is not necessary as the skb is destroyed.
 
-> > [...]
+...
