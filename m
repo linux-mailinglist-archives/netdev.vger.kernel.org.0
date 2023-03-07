@@ -2,150 +2,265 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A53796AD451
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 02:56:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31CB86AD483
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 03:17:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229809AbjCGB4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Mar 2023 20:56:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55842 "EHLO
+        id S229820AbjCGCRG convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 6 Mar 2023 21:17:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbjCGB4j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 20:56:39 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D04B4392E;
-        Mon,  6 Mar 2023 17:56:38 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id cp7-20020a17090afb8700b0023756229427so15111908pjb.1;
-        Mon, 06 Mar 2023 17:56:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678154198;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=nzo/UKrDg68SSlPoKhUPm6gAiurUzxTEKzLrV5f+/WI=;
-        b=KyRVWbYNUG479AwJ9Yeb60Hbl5tQ4IwkvYqmongkJx9o83QWlzimUq27qLojsX9wgC
-         w3JO55BhwYDocYgGlgIUjthKbhJ8hptnTv/S3T7Oo/vHctmwO9+K3ZmlGIpQUrJoUOl6
-         SNvYeFyaEttzMGEbfWa3RX/LVZ4qPqThnXfx/7L6oNeUXHeu/X46KX/xVj5xFjO0aXiQ
-         s5dufWgrF5Z7FZsg+ZqOBvtQQw6sknYFzAeBtM2ZiEePNNegdkH1QL6ebfmuKzgLv1eQ
-         Haa4O6sLBhELTBvhlnKvNCSLh3VspGcE316vrx2826PZ8enq0t7C8Ja7b3CUxYFG7mOE
-         rTSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678154198;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=nzo/UKrDg68SSlPoKhUPm6gAiurUzxTEKzLrV5f+/WI=;
-        b=vwXOsHr96yRuWgsDzd4ApmAb6w5vqA50iH2namrxBSGRgmrV4xBpZD+OYMN7iEKcWT
-         16p8pWjW09vkYWET7QOoP97JRLOqlbUr0NKD2xCd5eohzDrnTD807vEltDJDF3qVMrku
-         JIYzRZHxGa7CBQtB/zUCgRG1wY4kX6mJMFZBugoq28ILai64yslBxnc9IMUCS+XvaCYu
-         9+1q+n4/Y0ETKTSMhJmgu4XA3DaMSboecEOQpUxCyRXNjeVI1QheEYG5my7ZqVURa0uS
-         BIUri/CVqrO50HqBnAJ+hATm9rqxyuLYEPa+suT2NduQn5lSwg3qC3GHFLDnqXAiCm1i
-         XtTg==
-X-Gm-Message-State: AO0yUKUKW4walyJbRRJFfDzoMFRzZBLIoXM7W/ChpArw0K3fMi+5te0n
-        NzKMsqejOTnEBFgmm12Oiu0=
-X-Google-Smtp-Source: AK7set9o4+61KviBTKqqtQOIP6plj3L7fBGPXGNOQrTDrgRMVIcRXHEzLp6ip403Ej0sbR/l6mip6A==
-X-Received: by 2002:a17:90b:3812:b0:23a:4875:6e1a with SMTP id mq18-20020a17090b381200b0023a48756e1amr14105428pjb.25.1678154197717;
-        Mon, 06 Mar 2023 17:56:37 -0800 (PST)
-Received: from KERNELXING-MB0.tencent.com ([103.7.29.31])
-        by smtp.gmail.com with ESMTPSA id c4-20020a170902d90400b0019a593e45f1sm7240315plz.261.2023.03.06.17.56.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Mar 2023 17:56:37 -0800 (PST)
-From:   Jason Xing <kerneljasonxing@gmail.com>
-To:     simon.horman@corigine.com, willemdebruijn.kernel@gmail.com,
-        davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, kerneljasonxing@gmail.com,
-        Jason Xing <kernelxing@tencent.com>
-Subject: [PATCH v3 net-next] udp: introduce __sk_mem_schedule() usage
-Date:   Tue,  7 Mar 2023 09:56:20 +0800
-Message-Id: <20230307015620.18301-1-kerneljasonxing@gmail.com>
-X-Mailer: git-send-email 2.33.0
+        with ESMTP id S229576AbjCGCRF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Mar 2023 21:17:05 -0500
+Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE5765709A;
+        Mon,  6 Mar 2023 18:17:01 -0800 (PST)
+Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
+        by ex01.ufhost.com (Postfix) with ESMTP id 6651924E226;
+        Tue,  7 Mar 2023 10:17:00 +0800 (CST)
+Received: from EXMBX162.cuchost.com (172.16.6.72) by EXMBX166.cuchost.com
+ (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Tue, 7 Mar
+ 2023 10:17:00 +0800
+Received: from [192.168.120.42] (171.223.208.138) by EXMBX162.cuchost.com
+ (172.16.6.72) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Tue, 7 Mar
+ 2023 10:16:59 +0800
+Message-ID: <bcbe5647-aef0-08b8-4779-97cf2182fcd6@starfivetech.com>
+Date:   Tue, 7 Mar 2023 10:16:57 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v5 08/12] net: stmmac: starfive_dmac: Add phy interface
+ settings
+Content-Language: en-US
+To:     Emil Renner Berthing <emil.renner.berthing@canonical.com>
+CC:     <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Yanhong Wang <yanhong.wang@starfivetech.com>
+References: <20230303085928.4535-1-samin.guo@starfivetech.com>
+ <20230303085928.4535-9-samin.guo@starfivetech.com>
+ <CAJM55Z-3CCY8xx81Qr9UqSSQ+gOer3XXJzOvnAe7yyESk23pQw@mail.gmail.com>
+ <bc79afab-17d1-8789-3325-8e6d62123dce@starfivetech.com>
+ <CAJM55Z8zYUQc33r9tJB1du-FSp+uDf40720taMuGTuPcPU+aZg@mail.gmail.com>
+From:   Guo Samin <samin.guo@starfivetech.com>
+In-Reply-To: <CAJM55Z8zYUQc33r9tJB1du-FSp+uDf40720taMuGTuPcPU+aZg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Originating-IP: [171.223.208.138]
+X-ClientProxiedBy: EXCAS064.cuchost.com (172.16.6.24) To EXMBX162.cuchost.com
+ (172.16.6.72)
+X-YovoleRuleAgent: yovoleflag
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jason Xing <kernelxing@tencent.com>
 
-Keep the accounting schema consistent across different protocols
-with __sk_mem_schedule(). Besides, it adjusts a little bit on how
-to calculate forward allocated memory compared to before. After
-applied this patch, we could avoid receive path scheduling extra
-amount of memory.
 
-Link: https://lore.kernel.org/lkml/20230221110344.82818-1-kerneljasonxing@gmail.com/
-Signed-off-by: Jason Xing <kernelxing@tencent.com>
----
-v3:
-1) get rid of inline suggested by Simon Horman
+在 2023/3/6 20:49:57, Emil Renner Berthing 写道:
+> On Mon, 6 Mar 2023 at 04:07, Guo Samin <samin.guo@starfivetech.com> wrote:
+>> 在 2023/3/4 0:50:54, Emil Renner Berthing 写道:
+>>> On Fri, 3 Mar 2023 at 10:01, Samin Guo <samin.guo@starfivetech.com> wrote:
+>>>>
+>>>> dwmac supports multiple modess. When working under rmii and rgmii,
+>>>> you need to set different phy interfaces.
+>>>>
+>>>> According to the dwmac document, when working in rmii, it needs to be
+>>>> set to 0x4, and rgmii needs to be set to 0x1.
+>>>>
+>>>> The phy interface needs to be set in syscon, the format is as follows:
+>>>> starfive,syscon: <&syscon, offset, mask>
+>>>>
+>>>> Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
+>>>> ---
+>>>>  .../ethernet/stmicro/stmmac/dwmac-starfive.c  | 46 +++++++++++++++++++
+>>>>  1 file changed, 46 insertions(+)
+>>>>
+>>>> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
+>>>> index 566378306f67..40fdd7036127 100644
+>>>> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
+>>>> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
+>>>> @@ -7,10 +7,15 @@
+>>>>   *
+>>>>   */
+>>>>
+>>>> +#include <linux/mfd/syscon.h>
+>>>>  #include <linux/of_device.h>
+>>>> +#include <linux/regmap.h>
+>>>>
+>>>>  #include "stmmac_platform.h"
+>>>>
+>>>> +#define MACPHYC_PHY_INFT_RMII  0x4
+>>>> +#define MACPHYC_PHY_INFT_RGMII 0x1
+>>>
+>>> Please prefix these with something like STARFIVE_DWMAC_
+>>>
+>> Hi, Emil, These definitions come from the datasheet of dwmac. However, add STARDRIVE_ DWMAC is a good idea. I will fix it,thanks.
+>>>>  struct starfive_dwmac {
+>>>>         struct device *dev;
+>>>>         struct clk *clk_tx;
+>>>> @@ -53,6 +58,46 @@ static void starfive_eth_fix_mac_speed(void *priv, unsigned int speed)
+>>>>                 dev_err(dwmac->dev, "failed to set tx rate %lu\n", rate);
+>>>>  }
+>>>>
+>>>> +static int starfive_dwmac_set_mode(struct plat_stmmacenet_data *plat_dat)
+>>>> +{
+>>>> +       struct starfive_dwmac *dwmac = plat_dat->bsp_priv;
+>>>> +       struct of_phandle_args args;
+>>>> +       struct regmap *regmap;
+>>>> +       unsigned int reg, mask, mode;
+>>>> +       int err;
+>>>> +
+>>>> +       switch (plat_dat->interface) {
+>>>> +       case PHY_INTERFACE_MODE_RMII:
+>>>> +               mode = MACPHYC_PHY_INFT_RMII;
+>>>> +               break;
+>>>> +
+>>>> +       case PHY_INTERFACE_MODE_RGMII:
+>>>> +       case PHY_INTERFACE_MODE_RGMII_ID:
+>>>> +               mode = MACPHYC_PHY_INFT_RGMII;
+>>>> +               break;
+>>>> +
+>>>> +       default:
+>>>> +               dev_err(dwmac->dev, "Unsupported interface %d\n",
+>>>> +                       plat_dat->interface);
+>>>> +       }
+>>>> +
+>>>> +       err = of_parse_phandle_with_fixed_args(dwmac->dev->of_node,
+>>>> +                                              "starfive,syscon", 2, 0, &args);
+>>>> +       if (err) {
+>>>> +               dev_dbg(dwmac->dev, "syscon reg not found\n");
+>>>> +               return -EINVAL;
+>>>> +       }
+>>>> +
+>>>> +       reg = args.args[0];
+>>>> +       mask = args.args[1];
+>>>> +       regmap = syscon_node_to_regmap(args.np);
+>>>> +       of_node_put(args.np);
+>>>
+>>> I think the above is basically
+>>> unsigned int args[2];
+>>> syscon_regmap_lookup_by_phandle_args(dwmac->dev_of_node,
+>>> "starfive,syscon", 2, args);
+>>>
+>>> ..but as Andrew points out another solution is to use platform match
+>>> data for this. Eg.
+>>>
+>>> static const struct starfive_dwmac_match_data starfive_dwmac_jh7110_data {
+>>>   .phy_interface_offset = 0xc,
+>>>   .phy_interface_mask = 0x1c0000,
+>>> };
+>>>
+>>> static const struct of_device_id starfive_dwmac_match[] = {
+>>>   { .compatible = "starfive,jh7110-dwmac", .data =
+>>> &starfive_dwmac_jh7110_data },
+>>>   { /* sentinel */ }
+>>> };
+>>>
+>>> and in the probe function:
+>>>
+>> Hi Emil, Yes，this is usually a good solution, and I have considered this plan before.
+>> However, gmac0 of jh7110 is different from the reg/mask of gmac1.
+>> You can find it in patch-9:
+>>
+>> &gmac0 {
+>>         starfive,syscon = <&aon_syscon 0xc 0x1c0000>;
+>> };
+>>
+>> &gmac1 {
+>>         starfive,syscon = <&sys_syscon 0x90 0x1c>;
+>> };
+>>
+>> In this case, using match_data of starfive,jh7110-dwma does not seem to be compatible.
+> 
+> Ugh, you're right. Both the syscon block, the register offset and the
+> bit position in those registers are different from gmac0 to gmac1, and
+> since we need a phandle to the syscon block anyway passing those two
+> other parameters as arguments is probably the nicest solution. For the
+> next version I'd change the 2nd argument from mask to the bit position
+> though. It seems the field is always 3 bits wide and this makes it a
+> little clearer that we're not just putting register values in the
+> device tree. Eg. something like
+> 
+Yes，the field is always 3 bits wide, the next version will use bit position instead of mask.
+Thank you for your advice.
+> regmap = syscon_regmap_lookup_by_phandle_args(dev->of_node,
+> "starfive,syscon", 2, args);
+> ...
+> err = regmap_update_bits(regmap, args[0], 7U << args[1], mode << args[1]);
+> ...
+> 
+I also think the current method is relatively simple and compatible.
 
-v2:
-1) change the title and body message
-2) use __sk_mem_schedule() instead suggested by Paolo Abeni
----
- net/ipv4/udp.c | 31 ++++++++++++++++++-------------
- 1 file changed, 18 insertions(+), 13 deletions(-)
 
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index c605d171eb2d..60473781933c 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -1531,10 +1531,23 @@ static void busylock_release(spinlock_t *busy)
- 		spin_unlock(busy);
- }
- 
-+static int udp_rmem_schedule(struct sock *sk, int size)
-+{
-+	int delta;
-+
-+	delta = size - sk->sk_forward_alloc;
-+	if (delta > 0 && !__sk_mem_schedule(sk, delta, SK_MEM_RECV))
-+		return -ENOBUFS;
-+
-+	sk->sk_forward_alloc -= size;
-+
-+	return 0;
-+}
-+
- int __udp_enqueue_schedule_skb(struct sock *sk, struct sk_buff *skb)
- {
- 	struct sk_buff_head *list = &sk->sk_receive_queue;
--	int rmem, delta, amt, err = -ENOMEM;
-+	int rmem, err = -ENOMEM;
- 	spinlock_t *busy = NULL;
- 	int size;
- 
-@@ -1567,20 +1580,12 @@ int __udp_enqueue_schedule_skb(struct sock *sk, struct sk_buff *skb)
- 		goto uncharge_drop;
- 
- 	spin_lock(&list->lock);
--	if (size >= sk->sk_forward_alloc) {
--		amt = sk_mem_pages(size);
--		delta = amt << PAGE_SHIFT;
--		if (!__sk_mem_raise_allocated(sk, delta, amt, SK_MEM_RECV)) {
--			err = -ENOBUFS;
--			spin_unlock(&list->lock);
--			goto uncharge_drop;
--		}
--
--		sk->sk_forward_alloc += delta;
-+	err = udp_rmem_schedule(sk, size);
-+	if (err) {
-+		spin_unlock(&list->lock);
-+		goto uncharge_drop;
- 	}
- 
--	sk->sk_forward_alloc -= size;
--
- 	/* no need to setup a destructor, we will explicitly release the
- 	 * forward allocated memory on dequeue
- 	 */
+Best regards,
+Samin
+> Alternatively we'd put data for each gmac interface in the platform
+> data including the syscon compatible string, and use
+> syscon_regmap_lookup_by_compatible("starfive,jh7110-aon-syscon"); for
+> gmac0 fx. This way the dependency from the gmac nodes to the syscon
+> nodes won't be recorded is the device tree though.
+> 
+> @Andrew is this what you were suggesting?
+> 
+
+
+>>> struct starfive_dwmac_match_data *pdata = device_get_match_data(&pdev->dev);
+>>>
+>>>> +       if (IS_ERR(regmap))
+>>>> +               return PTR_ERR(regmap);
+>>>> +
+>>>> +       return regmap_update_bits(regmap, reg, mask, mode << __ffs(mask));
+>>>> +}
+>>>> +
+>>>>  static int starfive_dwmac_probe(struct platform_device *pdev)
+>>>>  {
+>>>>         struct plat_stmmacenet_data *plat_dat;
+>>>> @@ -93,6 +138,7 @@ static int starfive_dwmac_probe(struct platform_device *pdev)
+>>>>         plat_dat->bsp_priv = dwmac;
+>>>>         plat_dat->dma_cfg->dche = true;
+>>>>
+>>>> +       starfive_dwmac_set_mode(plat_dat);
+>>>
+>>> The function returns errors in an int, but you never check it :(
+>>>
+>> Thank you for pointing out that it will be added in the next version.
+>>>>         err = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
+>>>>         if (err) {
+>>>>                 stmmac_remove_config_dt(pdev, plat_dat);
+>>
+>>
+>> Best regards,
+>> Samin
+>>
+>>>> --
+>>>> 2.17.1
+>>>>
+>>>>
+>>>> _______________________________________________
+>>>> linux-riscv mailing list
+>>>> linux-riscv@lists.infradead.org
+>>>> http://lists.infradead.org/mailman/listinfo/linux-riscv
+>>
+>> --
+>> Best regards,
+>> Samin
+
 -- 
-2.37.3
-
+Best regards,
+Samin
