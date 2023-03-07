@@ -2,98 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E8C86AE3EC
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 16:07:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D68E76AE4A0
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 16:27:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229813AbjCGPHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 10:07:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46104 "EHLO
+        id S231313AbjCGP10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 10:27:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229577AbjCGPHB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 10:07:01 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EBF6911F6;
-        Tue,  7 Mar 2023 07:00:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Pej/R2eiauVJxEiGN1MisFQpptx8WKIt172xVqffJMM=; b=og/4LJa2feM9MOGbDE8JLsOVO4
-        /anOKsdL1LSH4kJodJn4fJizhGpyjikcXwhzpXMDBVPXoCh254+DfEPTIvsQ0f9WvqsxqIZXFWICF
-        BmRS6pxd2irlt9y3XrMfjNs3iz7LMIb7Iu2pwDAgsR5g38+RroLZ3gbU68wESHCdhZL1hG1WCAsur
-        iC67thkxs1phqW93qePVb85y0YiPF+/j0BBoNlDjjwePyPHp5fz50R8SqCBhFDNh/hY/AbTbCGs/B
-        7M11X5jeF2VbC/yCjuitpD7Q6MZ0CH6FPoiYPYpcfQIrj1dnHD0THcfzQWZ0AEPH8SfcK4Trx9oIj
-        H4kVpnNA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34842)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pZYno-0000aj-Rs; Tue, 07 Mar 2023 15:00:32 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pZYnm-0001cI-GO; Tue, 07 Mar 2023 15:00:30 +0000
-Date:   Tue, 7 Mar 2023 15:00:30 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Michael Walle <michael@walle.cc>, sean.anderson@seco.com,
-        davem@davemloft.net, edumazet@google.com, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, tobias@waldekranz.com
-Subject: Re: [PATCH net-next] net: mdio: Add netlink interface
-Message-ID: <ZAdRjo3wXmVigPAC@shell.armlinux.org.uk>
-References: <20230306204517.1953122-1-sean.anderson@seco.com>
- <20230307112307.777207-1-michael@walle.cc>
- <684c859a-02e2-4652-9a40-9607410f95e6@lunn.ch>
- <20230307140535.32ldprkyblpmicjg@skbuf>
- <7013dea3-a026-4a0c-81e0-7ebe6f708e39@lunn.ch>
+        with ESMTP id S231322AbjCGP1I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 10:27:08 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0F91BEF
+        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 07:25:01 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id l1so13551778pjt.2
+        for <netdev@vger.kernel.org>; Tue, 07 Mar 2023 07:25:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112; t=1678202700;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=EXUdt2f8St/8i9PlevprO/yPreFB1GGsVjZEDQ4VuFw=;
+        b=2r0N4IpCKhHpnLwxvMAbB2IHwA9VeS4lk60DKy8VCEdFCOng1i35hfql+JaHPa5Rbf
+         0muR4yZsv9Z4Dc09WI7iHufxZk0umQgoAnd0hBVOaOa1Tb4CuykP+D3WxgESB85Yi3ka
+         0HUHbTVDi/Ggc+HbpOs+eRbZJbmowm5RC+JhwRp8PE4q7Yt3BpL0SW2ctvLGB5PmskSN
+         DhVjb0zF70nh8zOiDCbrP3ViOQ2loCNpObQViniDKQ01zjUXYAhwzZvEb/kgtcKvLWTu
+         l9SdU8tNTLIPmWsVrYf/KYH6CAvOzpnKKpsc6rx5dtSIuRTo8QLga5wmnBhiUjhpKH/b
+         sCYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678202700;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=EXUdt2f8St/8i9PlevprO/yPreFB1GGsVjZEDQ4VuFw=;
+        b=Y3RBuGrdMH2c8Y32sxFuywqT2lk5Q252AsHJnStRJzLMkcxIzB/NHyv4f1f7jK7i5D
+         cV8uVESv4Ge0S143YHPB/WlEY4BCPO+RPJlZ7UmcKP6r0GHISK9O13aspKHyiCVp5467
+         glT6NLZNiPyDsWj3iD5Nvt/SzhFd0sms+W9qkJf0F3c+Z/WBU8J1JmWCGL/m8cN4Uwtq
+         z738uMLNO4jjirmiH4zetVi+4AdPiPPBYiTIOMqYhlx5Lh/Gv1MtWAPsVUgHyjaHA3FJ
+         /SffKgW2NXYj6go2UpgaBPGJ9aRcS04siXqbjJiYYgoUM1rU/is9/oYpXIKgnTn3IP6t
+         H6Ww==
+X-Gm-Message-State: AO0yUKU9dyhM+bm17lt5ivflrtw+YU1AHMPsROkAoRV1Q4CeddmV3a8N
+        LmBqwNtaCdGU3KBEBOJFhm8MGw==
+X-Google-Smtp-Source: AK7set8guo/bS98UkXhyentGJiEUfcZeiy8tfTbEFuNThINYuWNfB0P2aEzTLf3tT8+jZxpcRzZgVg==
+X-Received: by 2002:a17:902:d483:b0:19a:f556:e386 with SMTP id c3-20020a170902d48300b0019af556e386mr16619433plg.0.1678202700567;
+        Tue, 07 Mar 2023 07:25:00 -0800 (PST)
+Received: from [172.20.4.229] ([50.233.106.125])
+        by smtp.gmail.com with ESMTPSA id kq14-20020a170903284e00b0019cf747253csm8581257plb.87.2023.03.07.07.24.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Mar 2023 07:25:00 -0800 (PST)
+Message-ID: <bad4c222-de52-625e-e73d-5997a7553a57@kernel.dk>
+Date:   Tue, 7 Mar 2023 08:24:59 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7013dea3-a026-4a0c-81e0-7ebe6f708e39@lunn.ch>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH net-next] net: reclaim skb->scm_io_uring bit
+Content-Language: en-US
+To:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+References: <20230307145959.750210-1-edumazet@google.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <20230307145959.750210-1-edumazet@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 07, 2023 at 03:33:20PM +0100, Andrew Lunn wrote:
-> > - Atomic (why only atomic?) (read) access to paged registers
+On 3/7/23 7:59 AM, Eric Dumazet wrote:
+> Commit 0091bfc81741 ("io_uring/af_unix: defer registered
+> files gc to io_uring release") added one bit to struct sk_buff.
 > 
-> I would say 'atomic' is wrong, you cannot access paged registers at
-> all.
-> 
-> > are we ok with the implications?
-> 
-> I am. Anybody doing this level of debugging should be able to
-> recompile the kernel to enable write support. It does limit debugging
-> in field, where maybe you cannot recompile the kernel, but to me, that
-> is a reasonable trade off.
+> This structure is critical for networking, and we try very hard
+> to not add bloat on it, unless absolutely required.
 
-However, it should be pointed out that disabling write support means
-that one can not even read paged registers through this interface.
+Understandable.
 
-That leads me to question the whole point of this, because as far as I
-can see, the only thing this interface would offer with writes disabled
-is the ability to read several non-paged registers consectively while
-holding the mdio bus lock. Apart from that, with writes disabled, it
-appears to offer nothing over the existing MII ioctls.
+> For instance, we can use a specific destructor as a wrapper
+> around unix_destruct_scm(), to identify skbs that unix_gc()
+> has to special case.
 
-With writes enabled, then yes, it offers a slightly better interface
-to be able to perform multiple accesses while holding the bus lock.
+Looks fine to me:
 
-In that regard, is there any point to having the configuration option
-to control whether writes are supported, or is it just better to have
-an option to enable/disable the whole interface, and taint the kernel
-on *any* use of this interface?
+Reviewed-by: Jens Axboe <axboe@kernel.dk>
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Jens Axboe
+
+
