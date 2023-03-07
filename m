@@ -2,202 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E6CD26ADED1
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 13:35:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D24F6ADEF0
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 13:41:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230151AbjCGMff (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 07:35:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56750 "EHLO
+        id S229575AbjCGMlR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 07:41:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229593AbjCGMfe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 07:35:34 -0500
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2059.outbound.protection.outlook.com [40.107.22.59])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C235D4C6D0;
-        Tue,  7 Mar 2023 04:35:29 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aJliNPtzFo3KDSim4m/rP38rV9TcRRjwF1/O92jlgbu3AZ9ApvVC3tTM3KcT/eS7JnGXaR6aLAgoahzkMXSB/sSyI5T/VDOzNqONbAvUThRPI4LggmigC0piXUi3xr8mMGxjmX0lmHSLfEns8EuTyx6FXWaZ7IiMMLJHM5z+gcGof/OP5CrQuR9zP1AwqUeKf/AN4zuEb3wnd4rwagl2VKMQbWGP5w8iKxvflP44LQ01zMRlrTQSoDmCHwpEhNLIz3QxcZn3TXzWrJmet6njnRyJHn3bMAyDTauvQOpaOqjwbTuXXTQN+F3fFyz2RGg0AuNtewA59zcMCEYkiiSKHg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JxQSvhKd7MlIaK1vDjA6iBigRIsnaD9dndT6fCNEDV4=;
- b=ZE+hy14UztAJ5z2yjWjVjDxw4tEJRccCXBokoSB1bN57H2hFkt0UAtdlMht2JGGXevQakWn18DZFTihJt7R3iCCWmIel7SDXyoTVPyHks85uWAR8BKJrKcBrL3DCO2BGgM/25+KloDeIooQpluVtv9/FHx+wCTF6Utxf0D5p+hP1hBn2O/TDv+/IP2nX2nlH6EWLncAFsH7dIocM6Fy7jp2ND11HbvpK5LE5TU75NYUv8QSiNw1OSNJ6+eolvTkxdI7O0qbuKD4esnbaiyQPsKTG3Y8yyf0y9eauaT39F8Ae4H5ZszB/wmhmFxTEKo90P23Xa3g2B7thhqpUrnxvHQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JxQSvhKd7MlIaK1vDjA6iBigRIsnaD9dndT6fCNEDV4=;
- b=s/pSMEXH2p4r+FOjUDI35sKMlCP5MS20cjyFvk9H+VsqOTBn4pq7/2vdLPGC2YGbYNyDn5xzygewYMe5Pn5QCFmAOMhN2VSnhqk3XZfPex5yzd2ZpDe/tvVS3AOwKoay2dzBaWm+K6SA2GVN1HZWA9SU/dwMCP4t8HIKcV9YJqI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
- by AS8PR04MB7669.eurprd04.prod.outlook.com (2603:10a6:20b:29b::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.29; Tue, 7 Mar
- 2023 12:35:27 +0000
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::29a3:120c:7d42:3ca8]) by AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::29a3:120c:7d42:3ca8%7]) with mapi id 15.20.6156.029; Tue, 7 Mar 2023
- 12:35:27 +0000
-Date:   Tue, 7 Mar 2023 14:35:22 +0200
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     "Song, Xiongwei" <Xiongwei.Song@windriver.com>
-Cc:     "claudiu.manoil@nxp.com" <claudiu.manoil@nxp.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: Response error to fragmented ICMP echo request
-Message-ID: <20230307123522.rtit24jseb5b2vep@skbuf>
-References: <PH0PR11MB51923E3796E4D2420C700580ECB79@PH0PR11MB5192.namprd11.prod.outlook.com>
- <PH0PR11MB51923E3796E4D2420C700580ECB79@PH0PR11MB5192.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH0PR11MB51923E3796E4D2420C700580ECB79@PH0PR11MB5192.namprd11.prod.outlook.com>
- <PH0PR11MB51923E3796E4D2420C700580ECB79@PH0PR11MB5192.namprd11.prod.outlook.com>
-X-ClientProxiedBy: VI1PR04CA0086.eurprd04.prod.outlook.com
- (2603:10a6:803:64::21) To AM0PR04MB6452.eurprd04.prod.outlook.com
- (2603:10a6:208:16d::21)
+        with ESMTP id S229524AbjCGMlQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 07:41:16 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6112E76F76
+        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 04:41:15 -0800 (PST)
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com [209.85.219.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 267DB3F11A
+        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 12:41:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1678192874;
+        bh=5dcTMuGM5x4jDH9Im/Ajb398saoasYhP635I/igmqgk=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=v2cqN46i9petUMuigMupNOqBkrHmWpHYjx2G/VUo+hTUjY1MaXsuExKaahSKcwXAb
+         orL08nSz9TQRX9ZHwp/kbx4F3dgx1ugY+UZTyFK2CdZ/j1g6ed4yurMpAmJ/86zrWw
+         4ZP/JwzM2ZTa9JZZeJkglR4IrskpU8+Im03uutuHn7iyif9WtX99NdEtdxZLbUxOSD
+         uCXrkxG8zXIY5rnOJ80vry2dTmPpsxmg3S27BK4HE2lp5XHiG106m+9wKn+tDhwCmf
+         Q0SZXv1if8PQOmfVsil6sOphyhJXYOwTxL0H0Yez7jla62VXbAUfUtOB8SfbxnWvEV
+         1Svf6SzWe3KtA==
+Received: by mail-qv1-f70.google.com with SMTP id w2-20020a0cc242000000b00583d8e55181so4910837qvh.23
+        for <netdev@vger.kernel.org>; Tue, 07 Mar 2023 04:41:14 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678192873;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=5dcTMuGM5x4jDH9Im/Ajb398saoasYhP635I/igmqgk=;
+        b=3tD5B7C5Eip2LjH5xkfYhszLAwz21y9w1/6Lr0X2e7H8WedAvagv32LvXcgJqnwTA5
+         2FzCM2cOeBNY68BE0ZRXifVLEYEZ2AgI+3vym9NFIRng0Ia02o/Ez3EhXCx3+lR3eQux
+         8DmkUbu+ugk8CFuv1b1F2K9ccuCScW0YPAZbS/YTnWjL6VIQ/0S0z7jkjtkDBQHTUY1W
+         +5QhPgs+zAmLw4t1wGpOmElCrNg7iaGBBIc/NVBz+aSi7o9cCRoUK3cwBLiCJu8lFJex
+         GgLNsOeBeVH/U4UaFzMtNYaqiJmLRUW5gmxw8PQbSPfRMfOm9x7yoy+WXID+rbfhmiUE
+         xNXg==
+X-Gm-Message-State: AO0yUKUXN8Q59m7E5Yop28aVVfgqt6MT/AJs0j5E/0JG7dHqS4p3lqur
+        ucNjWXdFBFggYLhlOhtQ5aEoRdk0fe1/wCjbX9BlM7J021oZFmgZZWj40FPVuTUBc/WZb1SoLu1
+        8jkD0a2H+z6pc6IBG95i+PJ+B28httzDNwB3Q/dKrw2oBdM+3VA==
+X-Received: by 2002:aed:27db:0:b0:3bf:da0f:ed90 with SMTP id m27-20020aed27db000000b003bfda0fed90mr3748943qtg.3.1678192873204;
+        Tue, 07 Mar 2023 04:41:13 -0800 (PST)
+X-Google-Smtp-Source: AK7set8chedSpyZZZaRafGT1LOeApVeMpQZ0D8sGlhCw7bUyERGfB8dVAwY0F0nD/btENIxFCgHxqoI2YFpwPG379FA=
+X-Received: by 2002:aed:27db:0:b0:3bf:da0f:ed90 with SMTP id
+ m27-20020aed27db000000b003bfda0fed90mr3748935qtg.3.1678192872885; Tue, 07 Mar
+ 2023 04:41:12 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|AS8PR04MB7669:EE_
-X-MS-Office365-Filtering-Correlation-Id: b0ce30f2-0946-4eb9-726e-08db1f086d59
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: npy52ROSib+oIsCsJVARcILctxnkMhvIC8IaAfvkfRkYkLZfhti/JMDTEKp9P0hkCQ+F7BR+JBPxtQQCWJ05IYCRfqPQ4f4x6CZ2vvLQyeo3s7eSr+VE0QuQfqS24TuogQ3LUr7THamCjcJe8JMP23knP0a9GBY60D4i70P11Jh/eunef7+XoZh3GzGn9gUw8KEiryp7RL0WDBVn8DB266PycL7LCwSly0LbCp5zzShY5hau5+T4uqTAvfTDPrcAS7jYUFQIxLBtbJJ6HrgON1bKKYztCPl6Ej/J+s1/5e8Vm+RX+WeOW7RIR1A7I7ADvKwlx3J8YQ67ZF1POQ7FW9w32RQP05nAwRzgg86kQxdFGDFEL4wBC6XGwF3Hwx5Uz+QF3vgPThu35+nwiQeIK24d5BZGrX4PNa2AYscUsR2Wo6DD+6eu1DuSPSUqc6Mlwbs5C4xyQWRJrizcx1Z8JQMekAvgAR/tY4lbfPCwm+cvoaO4l+ByM90GoNm4yqsbRktFfQoOu4UJL6hXOAPv780/UsejEw4dji3Y+kjqi5ydx0W5ZlkBGHBSzN34h9wcFI9xcxfsJccMJAANTnmasNqNnTILWgzzCijTGR2ph7EmUZ9YAacwZaBXpDZB5W7W9NCiUafg8wZaepsf7TGxgQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(7916004)(4636009)(376002)(39860400002)(366004)(136003)(396003)(346002)(451199018)(316002)(54906003)(38100700002)(86362001)(6506007)(26005)(6512007)(1076003)(83380400001)(9686003)(186003)(33716001)(5660300002)(8936002)(7416002)(478600001)(6486002)(4326008)(41300700001)(6666004)(44832011)(66556008)(2906002)(8676002)(6916009)(66946007)(66476007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Fn1ZTE7PAJZJM/yD0OIhwVAjnHql4wR+ak0UZYGJtngAg2ABqcfK6VJLmIGr?=
- =?us-ascii?Q?otK7nfXQoOTmBP5zFBIXumnT+8HBlB9YHCF32XUW1qbyvM3iKPOB/Pd8HFkV?=
- =?us-ascii?Q?ruFm73LnV/tCwkjZXXfmOa0v1foZ1P8SeCg54GubtSMfhR0q9+WHjMCZzzyR?=
- =?us-ascii?Q?j4ubPlHJoGy6NBLftSy6uW8HveoF6DeBEge7xlK9lAdkL3SYxUxkbY5zAyjJ?=
- =?us-ascii?Q?ajSTQT3uMEhpY3/edS71Ru7cAH9OH65L51ho13+N8UVBru3E3TvuHH4+6eMT?=
- =?us-ascii?Q?1UjQMf3GFdcHuEEe870W5OslV07MUyk9kmyNN6/iEuwKlVKVIZ23qkb82FmM?=
- =?us-ascii?Q?4K5Li6q2ojm5SuHeIiCRGOO/mr5CllrADwIlE7G1gOYHIm36R2zv8FrB3LaP?=
- =?us-ascii?Q?mm1HhhQe5CIpUorCDQJcGU81etzwMcgHC/Oib8pk++oNxqwyDASZaH0qYVRM?=
- =?us-ascii?Q?+FnSrVuhwSXVjzfT88JDzadDuCrTYyd8kK/2cVSPYxX3KwHX8wcKRp2G4JIR?=
- =?us-ascii?Q?nWSAecaiOGZzGSa2sx+jRMyycH1EHIKo5KH9J70Rfd0INzg3ThQVH79+xmxT?=
- =?us-ascii?Q?IXd4XieP7Rpl7XNfYhYsXVZEghh1ymoYxWVB/x6DhdZXxe79l1Yg2oNO0A9z?=
- =?us-ascii?Q?lZs7e7oJQ1fggoBxTEHjLY32eiAT2+G4VUc4+lNTjLHmTKCEv0lEYEnjwc9M?=
- =?us-ascii?Q?Hu26Joo1eyZLnxmFInqeO1aURlgI6CO5DDGi6mfDQm6uvrAGVdUF1zVLLrVz?=
- =?us-ascii?Q?kzoOm+YntaY6oTGmGP50lb3trawzO2rwtzYlZiswEtG6+m7TUNe81OvJzqn+?=
- =?us-ascii?Q?po7vigzqPiymzhpQWlfF0ybmJMFPpraMZ1n+BzjZsIKZ5s4/SvyUGXBAjqDS?=
- =?us-ascii?Q?1HlI/rjHQpoQlz5mwoFJ73+SaGqlZtiALLeppqGCyy02nKuZIm/esiDv+T/u?=
- =?us-ascii?Q?gAEibOUalyC3WPY1PM+c4ClU9AWchzKQvUnrtq6/lFyzayDwUCEqq+qEHtkX?=
- =?us-ascii?Q?xEOG21FZUYOn9Y9kVhyLW10P2X8bgrhEBBqHLhb6yw4feJXpSZOyYWTAAx6g?=
- =?us-ascii?Q?JHgs5TLqTRS2O/moTTlfNB9iaCGfi/WMPnMvpwEZJURImv9MMTNaDEuK3Krm?=
- =?us-ascii?Q?XQVrW7LgVXWB+ubAtNEcyFEEJw9N/8Mg3ISTB/fPkTeEZMr8wpPvr9Xj5N0B?=
- =?us-ascii?Q?oejrtL0vDvkyiTti1O1XoABcTI9TlcNSd+3jYaBDoTb4ZymfsbYVMG18/e3y?=
- =?us-ascii?Q?UBopPWo93IFgYMlQtQS1dgoYXO9m6eK6kAeIftk5mLLouVfAopXnpn8Scx1Q?=
- =?us-ascii?Q?QGiZlT9F29Sa/GLbxrZzQ8ylGrf6qTfYCGulI2IOtud10a5AvgQNGTZNvseS?=
- =?us-ascii?Q?oSZWHPaRPW0MYeo0kctgdeQBDqq2Y19guzucvVTm1JHlamJR1Vs5FWCIjjJe?=
- =?us-ascii?Q?sawZtFF0KNEhNBBIZ4eAHWsTHxOYqkjRT2kqfndL/4Bd0QLJY/AsN79tsvpX?=
- =?us-ascii?Q?GhUFqGf4DLEcVdTOAZdlvbomVXV98BPwBPwdvqE1dF+n2ymLP0IT6VA5ONJ8?=
- =?us-ascii?Q?FCmKHKaCxCaKWfHB3lSqYh7buUHrHEos7MBELtLYaflDGeAxLVwFHPGMoXpX?=
- =?us-ascii?Q?sg=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b0ce30f2-0946-4eb9-726e-08db1f086d59
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2023 12:35:27.3927
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3d2dS8opELBFG3z/FcM75F/NQKCXzcwdbsZchgse2yLWW/wJ28P7EgSH5CvwvxgudKBhXLsoCJrzln2DTF2GJg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7669
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20230303085928.4535-1-samin.guo@starfivetech.com>
+ <20230303085928.4535-12-samin.guo@starfivetech.com> <CAJM55Z_8m42vfoPDicTP18S6Z1ZXYbFeS1edTjzYVB3Kq2xFeQ@mail.gmail.com>
+ <8bd8654e-4bba-c718-4b17-5291e70f05fe@starfivetech.com>
+In-Reply-To: <8bd8654e-4bba-c718-4b17-5291e70f05fe@starfivetech.com>
+From:   Emil Renner Berthing <emil.renner.berthing@canonical.com>
+Date:   Tue, 7 Mar 2023 13:40:56 +0100
+Message-ID: <CAJM55Z8-65ENJHfSUOTd+FSNx2b-mYF1L64CKT+Gez2jK3Qr2Q@mail.gmail.com>
+Subject: Re: [PATCH v5 11/12] riscv: dts: starfive: visionfive-2-v1.2a: Add
+ gmac+phy's delay configuration
+To:     Guo Samin <samin.guo@starfivetech.com>
+Cc:     linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Yanhong Wang <yanhong.wang@starfivetech.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Xiongwei,
+On Tue, 7 Mar 2023 at 02:43, Guo Samin <samin.guo@starfivetech.com> wrote:
+> =E5=9C=A8 2023/3/6 21:00:19, Emil Renner Berthing =E5=86=99=E9=81=93:
+> > On Fri, 3 Mar 2023 at 10:01, Samin Guo <samin.guo@starfivetech.com> wro=
+te:
+> >> v1.2A gmac0 uses motorcomm YT8531(rgmii-id) PHY, and needs delay
+> >> configurations.
+> >>
+> >> v1.2A gmac1 uses motorcomm YT8512(rmii) PHY, and needs to
+> >> switch rx and rx to external clock sources.
+> >>
+> >> Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
+> >> ---
+> >>  .../starfive/jh7110-starfive-visionfive-2-v1.2a.dts | 13 ++++++++++++=
++
+> >>  1 file changed, 13 insertions(+)
+> >>
+> >> diff --git a/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2=
+-v1.2a.dts b/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2-v1.2=
+a.dts
+> >> index 4af3300f3cf3..205a13d8c8b1 100644
+> >> --- a/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2-v1.2a.=
+dts
+> >> +++ b/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2-v1.2a.=
+dts
+> >> @@ -11,3 +11,16 @@
+> >>         model =3D "StarFive VisionFive 2 v1.2A";
+> >>         compatible =3D "starfive,visionfive-2-v1.2a", "starfive,jh7110=
+";
+> >>  };
+> >> +
+> >> +&gmac1 {
+> >> +       phy-mode =3D "rmii";
+> >> +       assigned-clocks =3D <&syscrg JH7110_SYSCLK_GMAC1_TX>,
+> >> +                         <&syscrg JH7110_SYSCLK_GMAC1_RX>;
+> >> +       assigned-clock-parents =3D <&syscrg JH7110_SYSCLK_GMAC1_RMII_R=
+TX>,
+> >> +                                <&syscrg JH7110_SYSCLK_GMAC1_RMII_RTX=
+>;
+> >> +};
+> >> +
+> >> +&phy0 {
+> >> +       rx-internal-delay-ps =3D <1900>;
+> >> +       tx-internal-delay-ps =3D <1350>;
+> >> +};
+> >
+> > Here you're not specifying the internal delays for phy1 which means it
+> > defaults to 1950ps for both rx and tx. Is that right or did you mean
+> > to set them to 0 like the v1.3b phy1?
+>
+> Hi, emil, usually, only 1000M (rgmii) needs to configure the delay, and 1=
+00M(rmii) does not.
 
-On Tue, Mar 07, 2023 at 12:11:52PM +0000, Song, Xiongwei wrote:
-> ......snip......
-> failing SW:
-> rx_octets                       +64
-> rx_unicast                      +1
-> rx_frames_below_65_octets       +1
-> rx_yellow_prio_0                +1
-> *drop_yellow_prio_0              +1
-> ......snip......
-> 
-> 3). From pcap file(the pcap was collected on the senderside (VM))
-> 
-> Frame 1: 64 bytes on wire (512 bits), 64 bytes captured (512 bits)
-> Ethernet II, Src: 7c:72:6e:d4:44:5f (7c:72:6e:d4:44:5f), Dst: aa:3a:b3:e7:67:5c (aa:3a:b3:e7:67:5c)
->     Destination: aa:3a:b3:e7:67:5c (aa:3a:b3:e7:67:5c)
->     Source: 7c:72:6e:d4:44:5f (7c:72:6e:d4:44:5f)
->     Type: 802.1Q Virtual LAN (0x8100)
-> 802.1Q Virtual LAN, PRI: 6, DEI: 0, ID: 981
->     110. .... .... .... = Priority: Internetwork Control (6)
->     ...0 .... .... .... = DEI: Ineligible
-      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Ah, I see.
 
->     .... 0011 1101 0101 = ID: 981
->     Type: ARP (0x0806)
->     Padding: 0000000000000000000000000000
->     Trailer: 00000000
-> 
-> Frame 2: 46 bytes on wire (368 bits), 46 bytes captured (368 bits)
-> Ethernet II, Src: aa:3a:b3:e7:67:5c (aa:3a:b3:e7:67:5c), Dst: 7c:72:6e:d4:44:5f (7c:72:6e:d4:44:5f)
-> 802.1Q Virtual LAN, PRI: 0, DEI: 0, ID: 981
->     000. .... .... .... = Priority: Best Effort (default) (0)
->     ...0 .... .... .... = DEI: Ineligible
-      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > Also your u-boot seems to set what the linux phy driver calls
+> > motorcomm,keep-pll-enabled and motorcomm,auto-sleep-disabled for all
+> > the phys. Did you leave those out on purpose?
+>
+> Hi, Emil, We did configure motorcomm,auto-sleep-disabled for yt8512 in ub=
+oot,
+> but Yutai upstream's Linux driver only yt8521/yt8531 supports this proper=
+ty.
 
->     .... 0011 1101 0101 = ID: 981
->     Type: ARP (0x0806)
-> 
-> Frame 3: 47 bytes on wire (376 bits), 47 bytes captured (376 bits)
-> Ethernet II, Src: aa:3a:b3:e7:67:5c (aa:3a:b3:e7:67:5c), Dst: 7c:72:6e:d4:44:5f (7c:72:6e:d4:44:5f)
-> 802.1Q Virtual LAN, PRI: 0, DEI: 1, ID: 981
->     000. .... .... .... = Priority: Best Effort (default) (0)
->     ...1 .... .... .... = DEI: Eligible
-      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+I'm confused. Is Yutai also Frank Sae? Because he is the one who added
+support for the yt8531 upstream.
 
->     .... 0011 1101 0101 = ID: 981
->     Type: IPv4 (0x0800)
-> 
-> Frame 4: 46 bytes on wire (368 bits), 46 bytes captured (368 bits)
-> Ethernet II, Src: aa:3a:b3:e7:67:5c (aa:3a:b3:e7:67:5c), Dst: 7c:72:6e:d4:44:5f (7c:72:6e:d4:44:5f)
-> 802.1Q Virtual LAN, PRI: 0, DEI: 1, ID: 981
->     000. .... .... .... = Priority: Best Effort (default) (0)
->     ...1 .... .... .... = DEI: Eligible
-      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> Yt8512 is a Generic PHY driver and does not support the configuration of
+> motorcomm,auto-sleep-disabled and motorcomm,keep-pll-enabled.
 
->     .... 0011 1101 0101 = ID: 981
->     Type: IPv4 (0x0800)
-> 
-> 4). What we've found so far
-> 
-> According binary search, we found out the following commit causes this issue:
-> a4ae997adcbd("net: mscc: ocelot: initialize watermarks to sane defaults").
-> Without this commit the test case was passed.
-> 
-> Could you please take a look? Please let me know if you need more debug info.
+Right phy1 of the 1.2a might use a different phy, but I'm also talking
+about phy0 and the v1.3b which does use the yt8531 right?
 
-I've marked the DEI values in the message you posted above.
+> And without configuring these two attributes, vf2-1.2a gmac1 also works n=
+ormally.
 
-Commit a4ae997adcbd ("net: mscc: ocelot: initialize watermarks to sane defaults")
-tells the hardware to not allow frames with DEI=1 consume from the shared switch
-resources (buffers / frame references) by default. Drop Eligible Indicator = 1
-means "eligible for dropping". The only chance for DEI=1 frames to not be dropped
-is to set up a resource reservation for that stream, via the devlink-sb command.
+Yes, but what I'm worried about is that it only works because u-boot
+initialises the PHYs and ethernet may stop working if you're using a
+different bootloader or Linux gains support for resetting the PHYs
+before use.
 
-Frames 3 and 4 are sent with DEI=1 and are dropped, frames 1 and 2 are
-sent with DEI=0 and are not dropped. I'm not sure if varying the DEI
-field is part of the intentions of the test? Is there any RFC which says
-that IP fragments over VLAN should use DEI=1, or some other reason?
+>
+> Best regards,
+> Samin
+> >
+> >> --
+> >> 2.17.1
+> >>
+> >>
+> >> _______________________________________________
+> >> linux-riscv mailing list
+> >> linux-riscv@lists.infradead.org
+> >> http://lists.infradead.org/mailman/listinfo/linux-riscv
+>
+> --
+> Best regards,
+> Samin
