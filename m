@@ -2,183 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DBE6A6ADD9B
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 12:38:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58C696ADDEB
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 12:48:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231280AbjCGLia (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 06:38:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39702 "EHLO
+        id S231367AbjCGLsn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 06:48:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231287AbjCGLiJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 06:38:09 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CFF57BA0C;
-        Tue,  7 Mar 2023 03:37:34 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id cw28so50972223edb.5;
-        Tue, 07 Mar 2023 03:37:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678189051;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=Ylf/mq//lzVCs2kUwljoL1tKekI4ibQM03In0NCDXLs=;
-        b=qfmrPmJWAlfuCrezU2zfyKjyPn1k15H8+DCWstzdR9q7Zdiw4p9EkGmXZLB4rvVaxO
-         M8aFDlQU0WuJpCglA1/MTurm/Fs9mO0a+9M0rnn9YBsCoecDZZdUCH1MKo8ioElHt93f
-         LdvcbQrlXKmKTsXvH8qoi1c65T3TCx06by9wDB+/WdkF0dTci6q8qBJA1mEGeXcrmETM
-         9walOuPtXw//rddNM/yep3yIj5xNMptphS89eB4FnFz220hagzMKv6bYNHwX7TwaiQVz
-         9OuJYAvcafUDxLF1MLy+SH6LBdjtUEOuUysIHYZUbz/sp/4emVJ/sBewjMfBmXO+CS9m
-         eRDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678189051;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Ylf/mq//lzVCs2kUwljoL1tKekI4ibQM03In0NCDXLs=;
-        b=gJj9ajSheTUgF/VVbiBoqVDRQgSRZI82QgbNHnDvVKJQkWtVuuuVMDTVLX+q2GdYLZ
-         zZAGWvxb3GtdIIkHqJHrGgTElyq9viwofDBbmACsdOAM9qHHuY5joeEsaoRZWgLvfNoo
-         JiZ/nijf6hpLLPeDQR+FB5p8jrGbS8v1LIiFB3bKmOkDAmB46kdbYyNqb3RouVOddZVa
-         MQ9HBAl8QEd9gwDXIvmEcRDF74xJkNEeo6uUxO0NwLLI+JIRQBZuT3othKx+J0Ixziat
-         Y3Rw7pIT2CdM9dllc6dkcn40S8moObNwoZg4dT3qC3sYYN+MTXdTE3GvTekr1l3vzvS+
-         6yHQ==
-X-Gm-Message-State: AO0yUKUd/kAFxa+RFYnvC1lu9IVdPDilD1p5e7qNDj5nQhr58GCKv8ci
-        TJo91UesZA3+l5N3h0cD+pM=
-X-Google-Smtp-Source: AK7set+q9vyTDat0wK16qtvlKptYHYpRS/dTB7ZGYkMsDFFHqZU8dAjrdZF/YlQjZziUdW9i2UzcXA==
-X-Received: by 2002:a17:906:1317:b0:88d:d304:3433 with SMTP id w23-20020a170906131700b0088dd3043433mr14026907ejb.67.1678189051410;
-        Tue, 07 Mar 2023 03:37:31 -0800 (PST)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id q27-20020a17090622db00b008b1787ce722sm5939973eja.152.2023.03.07.03.37.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Mar 2023 03:37:31 -0800 (PST)
-Date:   Tue, 7 Mar 2023 13:37:28 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        =?utf-8?B?UmVuw6k=?= van Dorst <opensource@vdorst.com>,
-        Alexander Couzens <lynxis@fe80.eu>,
-        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
-        Richard van Schagen <richard@routerhints.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [RFC PATCH net] net: dsa: mt7530: move PLL setup out of port 6
- pad configuration
-Message-ID: <20230307113728.4lg6xqfhj5szcpd3@skbuf>
-References: <20230304125453.53476-1-arinc.unal@arinc9.com>
- <20230304125453.53476-1-arinc.unal@arinc9.com>
- <20230306154552.26o6sbwf3rfekcyz@skbuf>
- <65f84ef3-8f72-d823-e6f9-44d33a953697@arinc9.com>
- <20230306201905.yothcuxokzlk3mcq@skbuf>
- <a8ad9299-1f9f-e184-4429-eef9950e22d8@arinc9.com>
+        with ESMTP id S231350AbjCGLsW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 06:48:22 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C79A7B129;
+        Tue,  7 Mar 2023 03:47:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678189646; x=1709725646;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=ABa115dzYhbKqxSWjzfNIHa1e+/UpB5wXI8AqnFj1B8=;
+  b=ND3BhInNqYYDdwVTdXvVkZLjlzB7QOtSTX6sc5q5u8KLubZNnj4iM75f
+   UQDU/qKA+Qd7wFWVvr0Jv/DPPlZp5VmuopDndctr34otG95hhjvYP9mc3
+   xWByA5stMt19+Fuhax0v9ZxMA9YNigR7gLBG5LmGEsUCfx+yPqjjid6BX
+   H2n7Hf+Vl0pvNntWBCrqOf+Dhmv2pS5FjaoYcxroF80yl95HIp2aL8XMi
+   EDBaNdaHHe7XzqOO0tsflFlsvqsj7UKiOUmN28v/9nVFKO6u0LphbSSqT
+   o0ZrBq5jgfDzvV+Vd9sf/uSViXqTWw4ylnR0I2OGIIQU/0ul8hIcBf7ew
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="316229508"
+X-IronPort-AV: E=Sophos;i="5.98,240,1673942400"; 
+   d="scan'208";a="316229508"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2023 03:43:44 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="706777464"
+X-IronPort-AV: E=Sophos;i="5.98,240,1673942400"; 
+   d="scan'208";a="706777464"
+Received: from unknown (HELO ijarvine-MOBL2.mshome.net) ([10.237.66.32])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2023 03:43:37 -0800
+Date:   Tue, 7 Mar 2023 13:43:35 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Neeraj sanjay kale <neeraj.sanjaykale@nxp.com>
+cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "marcel@holtmann.org" <marcel@holtmann.org>,
+        "johan.hedberg@gmail.com" <johan.hedberg@gmail.com>,
+        "luiz.dentz@gmail.com" <luiz.dentz@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "alok.a.tiwari@oracle.com" <alok.a.tiwari@oracle.com>,
+        "hdanton@sina.com" <hdanton@sina.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Amitkumar Karwar <amitkumar.karwar@nxp.com>,
+        Rohit Fule <rohit.fule@nxp.com>,
+        Sherry Sun <sherry.sun@nxp.com>
+Subject: Re: [PATCH v6 3/3] Bluetooth: NXP: Add protocol support for NXP
+ Bluetooth chipsets
+In-Reply-To: <AM9PR04MB86037CDF6A032963405AF0CEE7B69@AM9PR04MB8603.eurprd04.prod.outlook.com>
+Message-ID: <48e776a1-7526-5b77-568b-322d4555a138@linux.intel.com>
+References: <20230301154514.3292154-1-neeraj.sanjaykale@nxp.com> <20230301154514.3292154-4-neeraj.sanjaykale@nxp.com> <73527cb7-6546-6c47-768c-5f4648b6d477@linux.intel.com> <AM9PR04MB86037CDF6A032963405AF0CEE7B69@AM9PR04MB8603.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <a8ad9299-1f9f-e184-4429-eef9950e22d8@arinc9.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 07, 2023 at 02:26:08PM +0300, Arınç ÜNAL wrote:
-> Port 5 as CPU port works fine with this patch. I completely removed from
-> port 6 phy modes.
+On Mon, 6 Mar 2023, Neeraj sanjay kale wrote:
+
+> Hi Ilpo,
 > 
-> With your patch on MT7621 (remember port 5 always worked on MT7623):
-> 
-> - Port 5 at rgmii as the only CPU port works, even though the PLL frequency
-> won't be set. The download/upload speed is not affected.
+> Thank you for reviewing this patch. I have resolved most of your review comments in v7 patch, and I have some clarification inline below:
 
-That's good. Empirically it seems to prove that ncpo1 only affects p6,
-which was my initial assumption.
+Further discussion below + I sent a few against v7.
 
-> - port 6 at trgmii mode won't work if the PLL frequency is not set. The
-> SoC's MAC (gmac0) won't receive anything. It checks out since setting the
-> PLL frequency is put under the "Setup the MT7530 TRGMII Tx Clock" comment.
-> So port 6 cannot properly transmit frames to the SoC's MAC.
-> 
-> - Port 6 at rgmii mode works without setting the PLL frequency. Speed is not
-> affected.
-> 
-> I commented out core_write(priv, CORE_PLL_GROUP5,
-> RG_LCDDS_PCW_NCPO1(ncpo1)); to stop setting the PLL frequency.
-> 
-> In conclusion, setting the PLL frequency is only needed for the trgmii mode,
-> so I believe we can get rid of it on other cases.
+ 
+> > > +static bool nxp_fw_change_baudrate(struct hci_dev *hdev, u16 req_len)
+> > > +{
+> > > +     struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+> > > +     struct nxp_bootloader_cmd nxp_cmd5;
+> > > +     struct uart_config uart_config;
+> > > +
+> > > +     if (req_len == sizeof(nxp_cmd5)) {
+> > > +             nxp_cmd5.header = __cpu_to_le32(5);
+> > > +             nxp_cmd5.arg = 0;
+> > > +             nxp_cmd5.payload_len = __cpu_to_le32(sizeof(uart_config));
+> > > +             nxp_cmd5.crc = swab32(crc32_be(0UL, (char *)&nxp_cmd5,
+> > > +                                            sizeof(nxp_cmd5) - 4));
+> > 
+> > swab32(crc32_be(...)) seems and odd construct instead of __cpu_to_le32().
+> Earlier I had tried using __cpu_to_le32() but that did not work. The FW expects a swapped
+> CRC value for it's header and payload data.
 
-Got it, sounds expected, then? My patch can be submitted as-is, correct?
+So the .crc member should be __be32 then?
 
-> One more thing, on MT7621, xtal matches to both HWTRAP_XTAL_40MHZ and
-> HWTRAP_XTAL_25MHZ so the final value of ncpo1 is 0x0a00. I'm not sure if
-> xtal matching both of them is the expected behaviour.
-> 
-> > diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-> > index fbf27d4ab5d9..12cea89ae0ac 100644
-> > --- a/drivers/net/dsa/mt7530.c
-> > +++ b/drivers/net/dsa/mt7530.c
-> > @@ -439,8 +439,12 @@ mt7530_pad_clk_setup(struct dsa_switch *ds, phy_interface_t interface)
-> >  			/* PLL frequency: 150MHz: 1.2GBit */
-> >  			if (xtal == HWTRAP_XTAL_40MHZ)
-> >  				ncpo1 = 0x0780;
-> > +				dev_info(priv->dev, "XTAL is 40MHz, ncpo1 is 0x0780\n");
+> > > +     serdev_device_write_buf(nxpdev->serdev, (u8 *)&nxp_cmd7,
+> > > + req_len);
+> > 
+> > Is it safe to assume req_len is small enough to not leak stack content?
+> The chip requests chunk of FW data which is never more than 2048 bytes 
+> at a time. 
 
-In the C language, you need to put brackets { } around multi-statement
-"if" blocks. Otherwise, despite the indentation, "dev_info" will be
-executed unconditionally (unlike in Python for example). There should
-also be a warning with newer gcc compilers about the misleading
-indentation not leading to the expected code.
+Eh, sizeof(*nxp_cmd7) is 16 bytes!?! Are you sure that req_len given to 
+serdev_device_write_buf() is not larger than 16 bytes?
 
-Like this:
+> > > +static bool nxp_check_boot_sign(struct btnxpuart_dev *nxpdev) {
+> > > +     int ret;
+> > > +
+> > > +     serdev_device_set_baudrate(nxpdev->serdev,
+> > HCI_NXP_PRI_BAUDRATE);
+> > > +     serdev_device_set_flow_control(nxpdev->serdev, 0);
+> > > +     set_bit(BTNXPUART_CHECK_BOOT_SIGNATURE, &nxpdev->tx_state);
+> > > +
+> > > +     ret = wait_event_interruptible_timeout(nxpdev-
+> > >check_boot_sign_wait_q,
+> > > +                                            !test_bit(BTNXPUART_CHECK_BOOT_SIGNATURE,
+> > > +                                                      &nxpdev->tx_state),
+> > > +                                            msecs_to_jiffies(1000));
+> > > +     if (ret == 0)
+> > > +             return false;
+> > > +     else
+> > > +             return true;
+> > 
+> > How does does this handle -ERESTARTSYS? But this runs in nxp_setup() so is
+> > that even relevant (I don't know).
+> This function is waits for 1 second and checks if it is receiving any bootloader signatures
+> over UART. If yes, it means FW download is needed. If no, it means FW is already present
+> on the chip, and we skip FW download.
 
-			if (xtal == HWTRAP_XTAL_40MHZ) {
-				ncpo1 = 0x0780;
-				dev_info(priv->dev, "XTAL is 40MHz, ncpo1 is 0x0780\n");
-			}
+Okay, it seems your changes had a side-effect of addressing this.
 
-> >  			if (xtal == HWTRAP_XTAL_25MHZ)
-> >  				ncpo1 = 0x0a00;
-> > +				dev_info(priv->dev, "XTAL is 25MHz, ncpo1 is 0x0a00\n");
-> > +			if (xtal == HWTRAP_XTAL_20MHZ)
-> > +				dev_info(priv->dev, "XTAL is 20MHz too\n");
-> >  		} else { /* PLL frequency: 250MHz: 2.0Gbit */
-> >  			if (xtal == HWTRAP_XTAL_40MHZ)
-> >  				ncpo1 = 0x0c80;
-> 
-> > [    0.710455] mt7530 mdio-bus:1f: MT7530 adapts as multi-chip module
-> > [    0.734419] mt7530 mdio-bus:1f: configuring for fixed/rgmii link mode
-> > [    0.741766] mt7530 mdio-bus:1f: Link is Up - 1Gbps/Full - flow control rx/tx
-> > [    0.743647] mt7530 mdio-bus:1f: configuring for fixed/trgmii link mode
-> > [    0.755422] mt7530 mdio-bus:1f: XTAL is 40MHz, ncpo1 is 0x0780
-> > [    0.761250] mt7530 mdio-bus:1f: XTAL is 25MHz, ncpo1 is 0x0a00
-> > [    0.769414] mt7530 mdio-bus:1f: Link is Up - 1Gbps/Full - flow control rx/tx
-> > [    0.772067] mt7530 mdio-bus:1f lan1 (uninitialized): PHY [mt7530-0:00] driver [MediaTek MT7530 PHY] (irq=17)
-> > [    0.788647] mt7530 mdio-bus:1f lan2 (uninitialized): PHY [mt7530-0:01] driver [MediaTek MT7530 PHY] (irq=18)
-> > [    0.800354] mt7530 mdio-bus:1f lan3 (uninitialized): PHY [mt7530-0:02] driver [MediaTek MT7530 PHY] (irq=19)
-> > [    0.812031] mt7530 mdio-bus:1f lan4 (uninitialized): PHY [mt7530-0:03] driver [MediaTek MT7530 PHY] (irq=20)
-> > [    0.823418] mtk_soc_eth 1e100000.ethernet eth1: entered promiscuous mode
-> > [    0.830250] mtk_soc_eth 1e100000.ethernet eth0: entered promiscuous mode
-> > [    0.837007] DSA: tree 0 setup
-> 
-> Thunderbird limits lines to about 72 columns, so I'm pasting as quotation
-> which seems to bypass that.
+> > > +static int nxp_enqueue(struct hci_dev *hdev, struct sk_buff *skb) {
+> > > +     struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+> > > +     struct ps_data *psdata = nxpdev->psdata;
+> > > +     struct hci_command_hdr *hdr;
+> > > +     u8 param[MAX_USER_PARAMS];
+> > > +
+> > > +     if (!nxpdev || !psdata)
+> > > +             goto free_skb;
+> > > +
+> > > +     /* if vendor commands are received from user space (e.g. hcitool),
+> > update
+> > > +      * driver flags accordingly and ask driver to re-send the command to
+> > FW.
+> > > +      */
+> > > +     if (bt_cb(skb)->pkt_type == HCI_COMMAND_PKT &&
+> > > + !psdata->driver_sent_cmd) {
+> > 
+> > Should this !psdata->driver_sent_cmd do something else than end up into a
+> > place labelled send_skb. Maybe return early (or free skb + return)?
+> > There's a comment elsewhere stating: "set flag to prevent re-sending
+> > command in nxp_enqueue."
+> I'm sorry if the comment was misleading. This flag is set to prevent nxp_enqueue() from
+> Parsing the command parameters again, and calling hci_cmd_sync_queue() again.
+> The commands sent from user space, as well as the commands sent by __hci_cmd_sync(),
+> both endup in nxp_enqueue().
+> Hope this helps!
 
-That seems to have worked, but shouldn't have been needed. I've uninstalled
-Thunderbird in favor of mutt + vim for email editing.. although, isn't
-there a Word Wrap option which you can just turn off?
+Okay, makes sense now and the logic is also clearer now. However, the
+brace blocks you added into those cases in bxp_enqueue() you should try to 
+remove. I realize you do it to avoid name collisions because you reused 
+param in each but they introduced these ugly constructs:
+	case XX:
+		{
+			...
+			goto free_skb;
+		}
+		break;
+
+-- 
+ i.
+
