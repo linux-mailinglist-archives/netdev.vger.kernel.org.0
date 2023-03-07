@@ -2,133 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5088D6AF84D
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 23:10:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E4246AF851
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 23:12:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230372AbjCGWKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 17:10:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58790 "EHLO
+        id S229820AbjCGWML (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 17:12:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231618AbjCGWKC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 17:10:02 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C005499D67;
-        Tue,  7 Mar 2023 14:09:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1678226999; x=1709762999;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Ks8peiwMHdeehdgm3BNCLpVCjBIizRLwzcw2Hv1nR/4=;
-  b=cmb7jTWMVJdxcZ2ARRznjXsK4mnxDghaZId27h5E5XkFT1uccwYvgfi3
-   3lJI/5XzEY1ysQ/u0sijX9xi6/PtCYpZKa5ppyPd/wcSRX/7vy2siADeP
-   /S0vp2/HJepQQemqvU2U5ER+FoKTXDFevdvEvzhu+cRnQQmd/TWrRE+ET
-   Fu38pvi+A7M9R9DHQ6fSZa5uM6BsadA9g1cz/xI6wjAP+bJkfnoXUHA8R
-   3icQAy8UessmlYqkW7xI5DCpr8QppgM06vesMn2ilGQbtq/UGgaNmY8GI
-   HwFIY04gqvt9XuuRcRmLcCRCOkUjkhRZ7842RC9184ZYSc5k+KLEa94Dw
-   A==;
-X-IronPort-AV: E=Sophos;i="5.98,242,1673938800"; 
-   d="scan'208";a="204184911"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Mar 2023 15:09:58 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Tue, 7 Mar 2023 15:09:54 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Tue, 7 Mar 2023 15:09:52 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <lars.povlsen@microchip.com>,
-        <Steen.Hegelund@microchip.com>, <daniel.machon@microchip.com>,
-        <UNGLinuxDriver@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next 5/5] net: lan966x: Add support for IS1 VCAP ethernet protocol types
-Date:   Tue, 7 Mar 2023 23:09:29 +0100
-Message-ID: <20230307220929.834219-6-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.38.0
-In-Reply-To: <20230307220929.834219-1-horatiu.vultur@microchip.com>
-References: <20230307220929.834219-1-horatiu.vultur@microchip.com>
+        with ESMTP id S229586AbjCGWMI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 17:12:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612ADAF0DB;
+        Tue,  7 Mar 2023 14:11:24 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6AEFDB81A40;
+        Tue,  7 Mar 2023 22:10:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF8C9C4339B;
+        Tue,  7 Mar 2023 22:10:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678227058;
+        bh=oiHmhj71omPSPmGSzsOmodxrW5pGW9mHePmvgJmZ7As=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ESNEmcOu9D0O8HKYGDlakAKeZDDgOSOGsroXbtL937IlcIRpYxzlH8ilV/ZCnKsdn
+         Hf5qnPcqX0H8jcW1cpSYmBG1AAU4A09SznWdjythesCyDxz5dezmqE8MwECNq8pRk8
+         voi0Q64t760M5bys2I0aVzDA7bkB5J/tbWFfEDFeHhOhxSqFyCSEQJ9T1z5LW0cBUz
+         kBfdD/+L+0cQAlKcNFAbYyCBjNQNSqziXaNvN0r4C2WXFPLfb1X2EbksDtATnQ9/g4
+         nh3eW4Po6sa1c5T2VhGcTo7speBu6Yxsx2IW7wKwZZeFeUG2aRENovXc0mwg96teVV
+         HkoO80t+CWEmw==
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Jiawen Wu <jiawenwu@trustnetic.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH] net: restore alpha order to Ethernet devices in config
+Date:   Tue,  7 Mar 2023 16:10:51 -0600
+Message-Id: <20230307221051.890135-1-helgaas@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IS1 VCAP has it's own list of supported ethernet protocol types which is
-different than the IS2 VCAP. Therefore separate the list of known
-protocol types based on the VCAP type.
+From: Bjorn Helgaas <bhelgaas@google.com>
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+The filename "wangxun" sorts between "intel" and "xscale", but
+xscale/Kconfig contains "Intel XScale" prompts, so Wangxun ends up in the
+wrong place in the config front-ends.
+
+Move wangxun/Kconfig so the Wangxun devices appear in order in the user
+interface.
+
+Fixes: 3ce7547e5b71 ("net: txgbe: Add build support for txgbe")
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 ---
- .../microchip/lan966x/lan966x_tc_flower.c     | 36 ++++++++++++++-----
- 1 file changed, 28 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_tc_flower.c b/drivers/net/ethernet/microchip/lan966x/lan966x_tc_flower.c
-index 570ac28736e03..47b2f7579dd23 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_tc_flower.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_tc_flower.c
-@@ -5,14 +5,34 @@
- #include "vcap_api_client.h"
- #include "vcap_tc.h"
+diff --git a/drivers/net/ethernet/Kconfig b/drivers/net/ethernet/Kconfig
+index 323ec56e8a74..bb51ac8ad1b8 100644
+--- a/drivers/net/ethernet/Kconfig
++++ b/drivers/net/ethernet/Kconfig
+@@ -84,7 +84,6 @@ source "drivers/net/ethernet/huawei/Kconfig"
+ source "drivers/net/ethernet/i825xx/Kconfig"
+ source "drivers/net/ethernet/ibm/Kconfig"
+ source "drivers/net/ethernet/intel/Kconfig"
+-source "drivers/net/ethernet/wangxun/Kconfig"
+ source "drivers/net/ethernet/xscale/Kconfig"
  
--static bool lan966x_tc_is_known_etype(u16 etype)
-+static bool lan966x_tc_is_known_etype(struct vcap_tc_flower_parse_usage *st,
-+				      u16 etype)
- {
--	switch (etype) {
--	case ETH_P_ALL:
--	case ETH_P_ARP:
--	case ETH_P_IP:
--	case ETH_P_IPV6:
--		return true;
-+	switch (st->admin->vtype) {
-+	case VCAP_TYPE_IS1:
-+		switch (etype) {
-+		case ETH_P_ALL:
-+		case ETH_P_ARP:
-+		case ETH_P_IP:
-+		case ETH_P_IPV6:
-+			return true;
-+		}
-+		break;
-+	case VCAP_TYPE_IS2:
-+		switch (etype) {
-+		case ETH_P_ALL:
-+		case ETH_P_ARP:
-+		case ETH_P_IP:
-+		case ETH_P_IPV6:
-+		case ETH_P_SNAP:
-+		case ETH_P_802_2:
-+			return true;
-+		}
-+		break;
-+	default:
-+		NL_SET_ERR_MSG_MOD(st->fco->common.extack,
-+				   "VCAP type not supported");
-+		return false;
- 	}
- 
- 	return false;
-@@ -69,7 +89,7 @@ lan966x_tc_flower_handler_basic_usage(struct vcap_tc_flower_parse_usage *st)
- 	flow_rule_match_basic(st->frule, &match);
- 	if (match.mask->n_proto) {
- 		st->l3_proto = be16_to_cpu(match.key->n_proto);
--		if (!lan966x_tc_is_known_etype(st->l3_proto)) {
-+		if (!lan966x_tc_is_known_etype(st, st->l3_proto)) {
- 			err = vcap_rule_add_key_u32(st->vrule, VCAP_KF_ETYPE,
- 						    st->l3_proto, ~0);
- 			if (err)
+ config JME
+@@ -179,6 +178,7 @@ source "drivers/net/ethernet/toshiba/Kconfig"
+ source "drivers/net/ethernet/tundra/Kconfig"
+ source "drivers/net/ethernet/vertexcom/Kconfig"
+ source "drivers/net/ethernet/via/Kconfig"
++source "drivers/net/ethernet/wangxun/Kconfig"
+ source "drivers/net/ethernet/wiznet/Kconfig"
+ source "drivers/net/ethernet/xilinx/Kconfig"
+ source "drivers/net/ethernet/xircom/Kconfig"
 -- 
-2.38.0
+2.25.1
 
