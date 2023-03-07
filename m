@@ -2,344 +2,421 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DCE46AD88F
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 08:57:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 149B86AD8D8
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 09:11:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229579AbjCGH5s convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 7 Mar 2023 02:57:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54010 "EHLO
+        id S229798AbjCGILy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 03:11:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbjCGH5r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 02:57:47 -0500
-Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA17464A8B;
-        Mon,  6 Mar 2023 23:57:44 -0800 (PST)
-Received: from EXMBX165.cuchost.com (unknown [175.102.18.54])
-        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (Client CN "EXMBX165", Issuer "EXMBX165" (not verified))
-        by ex01.ufhost.com (Postfix) with ESMTP id A2DBE24E17F;
-        Tue,  7 Mar 2023 15:57:43 +0800 (CST)
-Received: from EXMBX162.cuchost.com (172.16.6.72) by EXMBX165.cuchost.com
- (172.16.6.75) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Tue, 7 Mar
- 2023 15:57:43 +0800
-Received: from [192.168.120.42] (171.223.208.138) by EXMBX162.cuchost.com
- (172.16.6.72) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Tue, 7 Mar
- 2023 15:57:42 +0800
-Message-ID: <32fefb8d-8984-f7f6-0596-2b1d9587d951@starfivetech.com>
-Date:   Tue, 7 Mar 2023 15:57:41 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v5 06/12] net: stmmac: Add glue layer for StarFive JH7110
- SoC
-Content-Language: en-US
-To:     Emil Renner Berthing <emil.renner.berthing@canonical.com>
-CC:     <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S229757AbjCGILw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 03:11:52 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE6C410415;
+        Tue,  7 Mar 2023 00:11:27 -0800 (PST)
+X-UUID: a4aa750cbcbf11eda06fc9ecc4dadd91-20230307
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Type:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=vgduVIOHUsmEHqgZONx8uKnlTWsJSWncFzmVVWh4R04=;
+        b=WUgWrsYU4kZG7RMZ9IJwuS8qCq51Fpw4yExmwCzaAnoUHzD0KU2FqxETlzf0TBmvSUW/wSI5c9cVoEp0g93LkPH4LNng1BTx99zrer6JxzubRDP117+hayR+CPl08P0H0Ui5B1huk9T+uAbsU+vH7srDenmQ9LFBZ6hf0dCZx38=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.20,REQID:fa58624e-9b59-4247-b325-5e108002f59e,IP:0,U
+        RL:0,TC:0,Content:-25,EDM:-30,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACT
+        ION:release,TS:-55
+X-CID-META: VersionHash:25b5999,CLOUDID:5afd9327-564d-42d9-9875-7c868ee415ec,B
+        ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:2,IP:nil,UR
+        L:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0
+X-CID-BVR: 0
+X-UUID: a4aa750cbcbf11eda06fc9ecc4dadd91-20230307
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <haozhe.chang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1325799970; Tue, 07 Mar 2023 16:11:20 +0800
+Received: from mtkmbs13n1.mediatek.inc (172.21.101.193) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.25; Tue, 7 Mar 2023 16:11:19 +0800
+Received: from mcddlt001.gcn.mediatek.inc (10.19.240.15) by
+ mtkmbs13n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.1118.25 via Frontend Transport; Tue, 7 Mar 2023 16:11:17 +0800
+From:   <haozhe.chang@mediatek.com>
+To:     M Chetan Kumar <m.chetan.kumar@intel.com>,
+        Intel Corporation <linuxwwan@intel.com>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Yanhong Wang <yanhong.wang@starfivetech.com>
-References: <20230303085928.4535-1-samin.guo@starfivetech.com>
- <20230303085928.4535-7-samin.guo@starfivetech.com>
- <CAJM55Z_Ze3mD4UVtUFTRYN_n6WnobcFB5evgYZi9zBRNR2dU4w@mail.gmail.com>
- <9c9bd26c-b548-1011-9025-ae95107551ba@starfivetech.com>
- <CAJM55Z-=MKnBb02exLbpsbSTMLs=Ttwr4hM2Ck5wDLKagJ+3rg@mail.gmail.com>
-From:   Guo Samin <samin.guo@starfivetech.com>
-In-Reply-To: <CAJM55Z-=MKnBb02exLbpsbSTMLs=Ttwr4hM2Ck5wDLKagJ+3rg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Originating-IP: [171.223.208.138]
-X-ClientProxiedBy: EXCAS066.cuchost.com (172.16.6.26) To EXMBX162.cuchost.com
- (172.16.6.72)
-X-YovoleRuleAgent: yovoleflag
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        Stephan Gerhold <stephan@gerhold.net>,
+        Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>,
+        Chiranjeevi Rapolu <chiranjeevi.rapolu@linux.intel.com>,
+        Liu Haijun <haijun.liu@mediatek.com>,
+        Ricardo Martinez <ricardo.martinez@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Oliver Neukum <oneukum@suse.com>,
+        haozhe chang <haozhe.chang@mediatek.com>,
+        Shang XiaoJing <shangxiaojing@huawei.com>,
+        "open list:INTEL WWAN IOSM DRIVER" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:REMOTE PROCESSOR MESSAGING (RPMSG) WWAN CONTROL..." 
+        <linux-remoteproc@vger.kernel.org>,
+        "open list:USB SUBSYSTEM" <linux-usb@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>
+CC:     <lambert.wang@mediatek.com>, <xiayu.zhang@mediatek.com>,
+        <hua.yang@mediatek.com>
+Subject: [PATCH RESEND net-next] wwan: core: Support slicing in port TX flow of WWAN subsystem
+Date:   Tue, 7 Mar 2023 16:11:04 +0800
+Message-ID: <20230307081113.67746-1-haozhe.chang@mediatek.com>
+X-Mailer: git-send-email 2.17.0
+MIME-Version: 1.0
+Content-Type: text/plain
+X-MTK:  N
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: haozhe chang <haozhe.chang@mediatek.com>
 
+wwan_port_fops_write inputs the SKB parameter to the TX callback of
+the WWAN device driver. However, the WWAN device (e.g., t7xx) may
+have an MTU less than the size of SKB, causing the TX buffer to be
+sliced and copied once more in the WWAN device driver.
 
-在 2023/3/6 20:21:28, Emil Renner Berthing 写道:
-> On Mon, 6 Mar 2023 at 08:16, Guo Samin <samin.guo@starfivetech.com> wrote:
->> 在 2023/3/4 0:18:20, Emil Renner Berthing 写道:
->>> On Fri, 3 Mar 2023 at 10:01, Samin Guo <samin.guo@starfivetech.com> wrote:
->>>> This adds StarFive dwmac driver support on the StarFive JH7110 SoC.
->>>>
->>>> Co-developed-by: Emil Renner Berthing <kernel@esmil.dk>
->>>> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
->>>> Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
->>>> ---
->>>>  MAINTAINERS                                   |   1 +
->>>>  drivers/net/ethernet/stmicro/stmmac/Kconfig   |  12 ++
->>>>  drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
->>>>  .../ethernet/stmicro/stmmac/dwmac-starfive.c  | 125 ++++++++++++++++++
->>>>  4 files changed, 139 insertions(+)
->>>>  create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
->>>>
->>>> diff --git a/MAINTAINERS b/MAINTAINERS
->>>> index 4e236b7c7fd2..91a4f190c827 100644
->>>> --- a/MAINTAINERS
->>>> +++ b/MAINTAINERS
->>>> @@ -19916,6 +19916,7 @@ STARFIVE DWMAC GLUE LAYER
->>>>  M:     Emil Renner Berthing <kernel@esmil.dk>
->>>>  M:     Samin Guo <samin.guo@starfivetech.com>
->>>>  S:     Maintained
->>>> +F:     Documentation/devicetree/bindings/net/dwmac-starfive.c
->>>>  F:     Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml
->>>>
->>>>  STARFIVE JH71X0 CLOCK DRIVERS
->>>> diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
->>>> index f77511fe4e87..47fbccef9d04 100644
->>>> --- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
->>>> +++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
->>>> @@ -165,6 +165,18 @@ config DWMAC_SOCFPGA
->>>>           for the stmmac device driver. This driver is used for
->>>>           arria5 and cyclone5 FPGA SoCs.
->>>>
->>>> +config DWMAC_STARFIVE
->>>> +       tristate "StarFive dwmac support"
->>>> +       depends on OF  && (ARCH_STARFIVE || COMPILE_TEST)
->>>
->>> There is an extra space between "OF" and "&&" here.
->>>
->> will drop it
->>>
->>>> +       depends on STMMAC_ETH
->>>
->>> It's not visible in this patch context, but this whole config option
->>> is surrounded by "if STMMAC_ETH" and "if STMMAC_PLATFORM", so "depends
->>> on STMMAC_ETH" should not be needed.
->>>
->> will drop it.
->>>> +       default ARCH_STARFIVE
->>>
->>> This driver is not required to boot the JH7110, so we should just
->>> default to building it as a module. Eg.
->>> default m if ARCH_STARFIVE
->>
->> Yes, this driver is not required to boot the JH7110, but the network is a very basic module,
->> it seems that other dwmac-platforms have been compiled into the kernel instead of modules.
-> 
-> Right, but the defconfig should work on as many platforms as possible,
-> so if we build in every "basic" module for every platform the kernel
-> will be huge and waste a lot of memory on drivers that will never be
-> used.
-> 
-> Also even if this driver was built in the gmac0 would still not work
-> until the driver for the AON CRG is loaded, which also defaults to m
-> for the same reasons.
-> 
-OK, I will compile it into a module in the next version.
->>>
->>>> +       help
->>>> +         Support for ethernet controllers on StarFive RISC-V SoCs
->>>> +
->>>> +         This selects the StarFive platform specific glue layer support for
->>>> +         the stmmac device driver. This driver is used for StarFive JH7110
->>>> +         ethernet controller.
->>>> +
->>>>  config DWMAC_STI
->>>>         tristate "STi GMAC support"
->>>>         default ARCH_STI
->>>> diff --git a/drivers/net/ethernet/stmicro/stmmac/Makefile b/drivers/net/ethernet/stmicro/stmmac/Makefile
->>>> index 057e4bab5c08..8738fdbb4b2d 100644
->>>> --- a/drivers/net/ethernet/stmicro/stmmac/Makefile
->>>> +++ b/drivers/net/ethernet/stmicro/stmmac/Makefile
->>>> @@ -23,6 +23,7 @@ obj-$(CONFIG_DWMAC_OXNAS)     += dwmac-oxnas.o
->>>>  obj-$(CONFIG_DWMAC_QCOM_ETHQOS)        += dwmac-qcom-ethqos.o
->>>>  obj-$(CONFIG_DWMAC_ROCKCHIP)   += dwmac-rk.o
->>>>  obj-$(CONFIG_DWMAC_SOCFPGA)    += dwmac-altr-socfpga.o
->>>> +obj-$(CONFIG_DWMAC_STARFIVE)   += dwmac-starfive.o
->>>>  obj-$(CONFIG_DWMAC_STI)                += dwmac-sti.o
->>>>  obj-$(CONFIG_DWMAC_STM32)      += dwmac-stm32.o
->>>>  obj-$(CONFIG_DWMAC_SUNXI)      += dwmac-sunxi.o
->>>> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
->>>> new file mode 100644
->>>> index 000000000000..566378306f67
->>>> --- /dev/null
->>>> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
->>>> @@ -0,0 +1,125 @@
->>>> +// SPDX-License-Identifier: GPL-2.0+
->>>> +/*
->>>> + * StarFive DWMAC platform driver
->>>> + *
->>>> + * Copyright (C) 2022 StarFive Technology Co., Ltd.
->>>> + * Copyright (C) 2022 Emil Renner Berthing <kernel@esmil.dk>
->>>
->>> Sorry, after looking at my old git branches where this started as a
->>> driver for the JH7100 this should really be
->>> * Copyright (C) 2021 Emil Renner Berthing <kernel@esmil.dk>
->>> * Copyright (C) 2022 StarFive Technology Co., Ltd.
->>>
->> OK, It should be.
->>>> + */
->>>> +
->>>> +#include <linux/of_device.h>
->>>> +
->>>> +#include "stmmac_platform.h"
->>>> +
->>>> +struct starfive_dwmac {
->>>> +       struct device *dev;
->>>> +       struct clk *clk_tx;
->>>> +       struct clk *clk_gtx;
->>>
->>> This pointer is only set, but never read. Please remove it.
->>>>
->>>> +       bool tx_use_rgmii_rxin_clk;
->>>> +};
->>>> +
->>>> +static void starfive_eth_fix_mac_speed(void *priv, unsigned int speed)
->>>
->>> This should be starfive_dwmac_fix_mac_speed for consistency.
->>>
->> Sorry，I missed this, will fix next version.
->>>> +{
->>>> +       struct starfive_dwmac *dwmac = priv;
->>>> +       unsigned long rate;
->>>> +       int err;
->>>> +
->>>> +       /* Generally, the rgmii_tx clock is provided by the internal clock,
->>>> +        * which needs to match the corresponding clock frequency according
->>>> +        * to different speeds. If the rgmii_tx clock is provided by the
->>>> +        * external rgmii_rxin, there is no need to configure the clock
->>>> +        * internally, because rgmii_rxin will be adaptively adjusted.
->>>> +        */
->>>> +       if (dwmac->tx_use_rgmii_rxin_clk)
->>>> +               return;
->>>
->>> If this function is only needed in certain situations, why not just
->>> set the plat_dat->fix_mac_speed callback when it is needed?
->>>
->> Sounds good idea.
->>>> +       switch (speed) {
->>>> +       case SPEED_1000:
->>>> +               rate = 125000000;
->>>> +               break;
->>>> +       case SPEED_100:
->>>> +               rate = 25000000;
->>>> +               break;
->>>> +       case SPEED_10:
->>>> +               rate = 2500000;
->>>> +               break;
->>>> +       default:
->>>> +               dev_err(dwmac->dev, "invalid speed %u\n", speed);
->>>> +               break;
->>>> +       }
->>>> +
->>>> +       err = clk_set_rate(dwmac->clk_tx, rate);
->>>> +       if (err)
->>>> +               dev_err(dwmac->dev, "failed to set tx rate %lu\n", rate);
->>>> +}
->>>> +
->>>> +static int starfive_dwmac_probe(struct platform_device *pdev)
->>>> +{
->>>> +       struct plat_stmmacenet_data *plat_dat;
->>>> +       struct stmmac_resources stmmac_res;
->>>> +       struct starfive_dwmac *dwmac;
->>>> +       int err;
->>>> +
->>>> +       err = stmmac_get_platform_resources(pdev, &stmmac_res);
->>>> +       if (err)
->>>> +               return err;
->>>> +
->>>> +       plat_dat = stmmac_probe_config_dt(pdev, stmmac_res.mac);
->>>> +       if (IS_ERR(plat_dat)) {
->>>> +               dev_err(&pdev->dev, "dt configuration failed\n");
->>>> +               return PTR_ERR(plat_dat);
->>>> +       }
->>>> +
->>>> +       dwmac = devm_kzalloc(&pdev->dev, sizeof(*dwmac), GFP_KERNEL);
->>>> +       if (!dwmac)
->>>> +               return -ENOMEM;
->>>> +
->>>> +       dwmac->clk_tx = devm_clk_get_enabled(&pdev->dev, "tx");
->>>> +       if (IS_ERR(dwmac->clk_tx))
->>>> +               return dev_err_probe(&pdev->dev, PTR_ERR(dwmac->clk_tx),
->>>> +                                   "error getting tx clock\n");
->>>> +
->>>> +       dwmac->clk_gtx = devm_clk_get_enabled(&pdev->dev, "gtx");
->>>> +       if (IS_ERR(dwmac->clk_gtx))
->>>> +               return dev_err_probe(&pdev->dev, PTR_ERR(dwmac->clk_gtx),
->>>> +                                   "error getting gtx clock\n");
->>>> +
->>>> +       if (device_property_read_bool(&pdev->dev, "starfive,tx-use-rgmii-clk"))
->>>> +               dwmac->tx_use_rgmii_rxin_clk = true;
->>>> +
->>>> +       dwmac->dev = &pdev->dev;
->>>> +       plat_dat->fix_mac_speed = starfive_eth_fix_mac_speed;
->>>
->>> Eg.:
->>> if (!device_property_read_bool(&pdev->dev, "starfive,tx_use_rgmii_clk"))
->>>   plat_dat->fix_mac_speed = starfive_dwmac_fix_mac_speed;
->>>
->> Good idea, so we can remove flag 'tx_use_rgmii_rxin_clk' in struct starfive_dwmac.
->>>> +       plat_dat->init = NULL;
-> 
-> Btw. plat_dat is initialized by kzalloc in stmmac_probe_config_dt and
-> I can't seem to find anything that sets plat_dat->init, so I think
-> this is redundant.
-> 
->>>> +       plat_dat->bsp_priv = dwmac;
->>>> +       plat_dat->dma_cfg->dche = true;
->>>> +
->>>> +       err = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
->>>> +       if (err) {
->>>> +               stmmac_remove_config_dt(pdev, plat_dat);
->>>> +               return err;
->>>> +       }
->>>> +
->>>> +       return 0;
->>>> +}
->>>> +
->>>> +static const struct of_device_id starfive_dwmac_match[] = {
->>>> +       { .compatible = "starfive,jh7110-dwmac" },
->>>> +       { /* sentinel */ }
->>>> +};
->>>> +MODULE_DEVICE_TABLE(of, starfive_dwmac_match);
->>>> +
->>>> +static struct platform_driver starfive_dwmac_driver = {
->>>> +       .probe  = starfive_dwmac_probe,
->>>> +       .remove = stmmac_pltfr_remove,
->>>> +       .driver = {
->>>> +               .name = "starfive-dwmac",
->>>> +               .pm = &stmmac_pltfr_pm_ops,
->>>> +               .of_match_table = starfive_dwmac_match,
->>>> +       },
->>>> +};
->>>> +module_platform_driver(starfive_dwmac_driver);
->>>> +
->>>> +MODULE_LICENSE("GPL");
->>>> +MODULE_DESCRIPTION("StarFive DWMAC platform driver");
->>>> +MODULE_AUTHOR("Emil Renner Berthing <kernel@esmil.dk>");
->>>> +MODULE_AUTHOR("Samin Guo <samin.guo@starfivetech.com>");
->>>> --
->>>> 2.17.1
->>>>
->>>>
->>>> _______________________________________________
->>>> linux-riscv mailing list
->>>> linux-riscv@lists.infradead.org
->>>> http://lists.infradead.org/mailman/listinfo/linux-riscv
->> Best regards,
->> Samin
->>
->> --
->> Best regards,
->> Samin
+This patch implements the slicing in the WWAN subsystem and gives
+the WWAN devices driver the option to slice(by frag_len) or not. By
+doing so, the additional memory copy is reduced.
 
+Meanwhile, this patch gives WWAN devices driver the option to reserve
+headroom in fragments for the device-specific metadata.
+
+Signed-off-by: haozhe chang <haozhe.chang@mediatek.com>
+Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
+
+---
+Changes in v2
+  -send fragments to device driver by skb frag_list.
+
+Changes in v3
+  -move frag_len and headroom_len setting to wwan_create_port.
+
+Changes in v4
+  -change unreadable parameters to macro definition.
+
+Changes in v5
+  -optimize comments for WWAN_NO_HEADROOM, WWAN_NO_FRAGMENT.
+
+Changes in v6
+  -add reviewer to patch commit.
+---
+ drivers/net/wwan/iosm/iosm_ipc_port.c  |  3 +-
+ drivers/net/wwan/mhi_wwan_ctrl.c       |  3 +-
+ drivers/net/wwan/rpmsg_wwan_ctrl.c     |  3 +-
+ drivers/net/wwan/t7xx/t7xx_port_wwan.c | 34 +++++++--------
+ drivers/net/wwan/wwan_core.c           | 59 ++++++++++++++++++++------
+ drivers/net/wwan/wwan_hwsim.c          |  1 +
+ drivers/usb/class/cdc-wdm.c            |  3 +-
+ include/linux/wwan.h                   | 16 +++++++
+ 8 files changed, 87 insertions(+), 35 deletions(-)
+
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_port.c b/drivers/net/wwan/iosm/iosm_ipc_port.c
+index b6d81c627277..7798348f61d0 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_port.c
++++ b/drivers/net/wwan/iosm/iosm_ipc_port.c
+@@ -63,7 +63,8 @@ struct iosm_cdev *ipc_port_init(struct iosm_imem *ipc_imem,
+ 	ipc_port->ipc_imem = ipc_imem;
+ 
+ 	ipc_port->iosm_port = wwan_create_port(ipc_port->dev, port_type,
+-					       &ipc_wwan_ctrl_ops, ipc_port);
++					       &ipc_wwan_ctrl_ops, WWAN_NO_FRAGMENT,
++					       WWAN_NO_HEADROOM, ipc_port);
+ 
+ 	return ipc_port;
+ }
+diff --git a/drivers/net/wwan/mhi_wwan_ctrl.c b/drivers/net/wwan/mhi_wwan_ctrl.c
+index f7ca52353f40..c397aa53db5d 100644
+--- a/drivers/net/wwan/mhi_wwan_ctrl.c
++++ b/drivers/net/wwan/mhi_wwan_ctrl.c
+@@ -237,7 +237,8 @@ static int mhi_wwan_ctrl_probe(struct mhi_device *mhi_dev,
+ 
+ 	/* Register as a wwan port, id->driver_data contains wwan port type */
+ 	port = wwan_create_port(&cntrl->mhi_dev->dev, id->driver_data,
+-				&wwan_pops, mhiwwan);
++				&wwan_pops, WWAN_NO_FRAGMENT, WWAN_NO_HEADROOM,
++				mhiwwan);
+ 	if (IS_ERR(port)) {
+ 		kfree(mhiwwan);
+ 		return PTR_ERR(port);
+diff --git a/drivers/net/wwan/rpmsg_wwan_ctrl.c b/drivers/net/wwan/rpmsg_wwan_ctrl.c
+index 31c24420ab2e..fc6c228b7e1c 100644
+--- a/drivers/net/wwan/rpmsg_wwan_ctrl.c
++++ b/drivers/net/wwan/rpmsg_wwan_ctrl.c
+@@ -129,7 +129,8 @@ static int rpmsg_wwan_ctrl_probe(struct rpmsg_device *rpdev)
+ 
+ 	/* Register as a wwan port, id.driver_data contains wwan port type */
+ 	port = wwan_create_port(parent, rpdev->id.driver_data,
+-				&rpmsg_wwan_pops, rpwwan);
++				&rpmsg_wwan_pops, WWAN_NO_FRAGMENT,
++				WWAN_NO_HEADROOM, rpwwan);
+ 	if (IS_ERR(port))
+ 		return PTR_ERR(port);
+ 
+diff --git a/drivers/net/wwan/t7xx/t7xx_port_wwan.c b/drivers/net/wwan/t7xx/t7xx_port_wwan.c
+index 33931bfd78fd..b75bb272f861 100644
+--- a/drivers/net/wwan/t7xx/t7xx_port_wwan.c
++++ b/drivers/net/wwan/t7xx/t7xx_port_wwan.c
+@@ -54,13 +54,13 @@ static void t7xx_port_ctrl_stop(struct wwan_port *port)
+ static int t7xx_port_ctrl_tx(struct wwan_port *port, struct sk_buff *skb)
+ {
+ 	struct t7xx_port *port_private = wwan_port_get_drvdata(port);
+-	size_t len, offset, chunk_len = 0, txq_mtu = CLDMA_MTU;
+ 	const struct t7xx_port_conf *port_conf;
++	struct sk_buff *cur = skb, *cloned;
+ 	struct t7xx_fsm_ctl *ctl;
+ 	enum md_state md_state;
++	int cnt = 0, ret;
+ 
+-	len = skb->len;
+-	if (!len || !port_private->chan_enable)
++	if (!port_private->chan_enable)
+ 		return -EINVAL;
+ 
+ 	port_conf = port_private->port_conf;
+@@ -72,23 +72,21 @@ static int t7xx_port_ctrl_tx(struct wwan_port *port, struct sk_buff *skb)
+ 		return -ENODEV;
+ 	}
+ 
+-	for (offset = 0; offset < len; offset += chunk_len) {
+-		struct sk_buff *skb_ccci;
+-		int ret;
+-
+-		chunk_len = min(len - offset, txq_mtu - sizeof(struct ccci_header));
+-		skb_ccci = t7xx_port_alloc_skb(chunk_len);
+-		if (!skb_ccci)
+-			return -ENOMEM;
+-
+-		skb_put_data(skb_ccci, skb->data + offset, chunk_len);
+-		ret = t7xx_port_send_skb(port_private, skb_ccci, 0, 0);
++	while (cur) {
++		cloned = skb_clone(cur, GFP_KERNEL);
++		cloned->len = skb_headlen(cur);
++		ret = t7xx_port_send_skb(port_private, cloned, 0, 0);
+ 		if (ret) {
+-			dev_kfree_skb_any(skb_ccci);
++			dev_kfree_skb(cloned);
+ 			dev_err(port_private->dev, "Write error on %s port, %d\n",
+ 				port_conf->name, ret);
+-			return ret;
++			return cnt ? cnt + ret : ret;
+ 		}
++		cnt += cur->len;
++		if (cur == skb)
++			cur = skb_shinfo(skb)->frag_list;
++		else
++			cur = cur->next;
+ 	}
+ 
+ 	dev_kfree_skb(skb);
+@@ -154,13 +152,15 @@ static int t7xx_port_wwan_disable_chl(struct t7xx_port *port)
+ static void t7xx_port_wwan_md_state_notify(struct t7xx_port *port, unsigned int state)
+ {
+ 	const struct t7xx_port_conf *port_conf = port->port_conf;
++	unsigned int header_len = sizeof(struct ccci_header);
+ 
+ 	if (state != MD_STATE_READY)
+ 		return;
+ 
+ 	if (!port->wwan_port) {
+ 		port->wwan_port = wwan_create_port(port->dev, port_conf->port_type,
+-						   &wwan_ops, port);
++						   &wwan_ops, CLDMA_MTU - header_len,
++						   header_len, port);
+ 		if (IS_ERR(port->wwan_port))
+ 			dev_err(port->dev, "Unable to create WWWAN port %s", port_conf->name);
+ 	}
+diff --git a/drivers/net/wwan/wwan_core.c b/drivers/net/wwan/wwan_core.c
+index 62e9f7d6c9fe..8d35513bcd4c 100644
+--- a/drivers/net/wwan/wwan_core.c
++++ b/drivers/net/wwan/wwan_core.c
+@@ -67,6 +67,8 @@ struct wwan_device {
+  * @rxq: Buffer inbound queue
+  * @waitqueue: The waitqueue for port fops (read/write/poll)
+  * @data_lock: Port specific data access serialization
++ * @headroom_len: SKB reserved headroom size
++ * @frag_len: Length to fragment packet
+  * @at_data: AT port specific data
+  */
+ struct wwan_port {
+@@ -79,6 +81,8 @@ struct wwan_port {
+ 	struct sk_buff_head rxq;
+ 	wait_queue_head_t waitqueue;
+ 	struct mutex data_lock;	/* Port specific data access serialization */
++	size_t headroom_len;
++	size_t frag_len;
+ 	union {
+ 		struct {
+ 			struct ktermios termios;
+@@ -422,6 +426,8 @@ static int __wwan_port_dev_assign_name(struct wwan_port *port, const char *fmt)
+ struct wwan_port *wwan_create_port(struct device *parent,
+ 				   enum wwan_port_type type,
+ 				   const struct wwan_port_ops *ops,
++				   size_t frag_len,
++				   unsigned int headroom_len,
+ 				   void *drvdata)
+ {
+ 	struct wwan_device *wwandev;
+@@ -455,6 +461,8 @@ struct wwan_port *wwan_create_port(struct device *parent,
+ 
+ 	port->type = type;
+ 	port->ops = ops;
++	port->frag_len = frag_len ? frag_len : SIZE_MAX;
++	port->headroom_len = headroom_len;
+ 	mutex_init(&port->ops_lock);
+ 	skb_queue_head_init(&port->rxq);
+ 	init_waitqueue_head(&port->waitqueue);
+@@ -698,30 +706,53 @@ static ssize_t wwan_port_fops_read(struct file *filp, char __user *buf,
+ static ssize_t wwan_port_fops_write(struct file *filp, const char __user *buf,
+ 				    size_t count, loff_t *offp)
+ {
++	struct sk_buff *skb, *head = NULL, *tail = NULL;
+ 	struct wwan_port *port = filp->private_data;
+-	struct sk_buff *skb;
++	size_t frag_len, remain = count;
+ 	int ret;
+ 
+ 	ret = wwan_wait_tx(port, !!(filp->f_flags & O_NONBLOCK));
+ 	if (ret)
+ 		return ret;
+ 
+-	skb = alloc_skb(count, GFP_KERNEL);
+-	if (!skb)
+-		return -ENOMEM;
++	do {
++		frag_len = min(remain, port->frag_len);
++		skb = alloc_skb(frag_len + port->headroom_len, GFP_KERNEL);
++		if (!skb) {
++			ret = -ENOMEM;
++			goto freeskb;
++		}
++		skb_reserve(skb, port->headroom_len);
++
++		if (!head) {
++			head = skb;
++		} else if (!tail) {
++			skb_shinfo(head)->frag_list = skb;
++			tail = skb;
++		} else {
++			tail->next = skb;
++			tail = skb;
++		}
+ 
+-	if (copy_from_user(skb_put(skb, count), buf, count)) {
+-		kfree_skb(skb);
+-		return -EFAULT;
+-	}
++		if (copy_from_user(skb_put(skb, frag_len), buf + count - remain, frag_len)) {
++			ret = -EFAULT;
++			goto freeskb;
++		}
+ 
+-	ret = wwan_port_op_tx(port, skb, !!(filp->f_flags & O_NONBLOCK));
+-	if (ret) {
+-		kfree_skb(skb);
+-		return ret;
+-	}
++		if (skb != head) {
++			head->data_len += skb->len;
++			head->len += skb->len;
++			head->truesize += skb->truesize;
++		}
++	} while (remain -= frag_len);
++
++	ret = wwan_port_op_tx(port, head, !!(filp->f_flags & O_NONBLOCK));
++	if (!ret)
++		return count;
+ 
+-	return count;
++freeskb:
++	kfree_skb(head);
++	return ret;
+ }
+ 
+ static __poll_t wwan_port_fops_poll(struct file *filp, poll_table *wait)
+diff --git a/drivers/net/wwan/wwan_hwsim.c b/drivers/net/wwan/wwan_hwsim.c
+index ff09a8cedf93..7fb54cb51628 100644
+--- a/drivers/net/wwan/wwan_hwsim.c
++++ b/drivers/net/wwan/wwan_hwsim.c
+@@ -205,6 +205,7 @@ static struct wwan_hwsim_port *wwan_hwsim_port_new(struct wwan_hwsim_dev *dev)
+ 
+ 	port->wwan = wwan_create_port(&dev->dev, WWAN_PORT_AT,
+ 				      &wwan_hwsim_port_ops,
++				      WWAN_NO_FRAGMENT, WWAN_NO_HEADROOM,
+ 				      port);
+ 	if (IS_ERR(port->wwan)) {
+ 		err = PTR_ERR(port->wwan);
+diff --git a/drivers/usb/class/cdc-wdm.c b/drivers/usb/class/cdc-wdm.c
+index 1f0951be15ab..e0f0bc878bbd 100644
+--- a/drivers/usb/class/cdc-wdm.c
++++ b/drivers/usb/class/cdc-wdm.c
+@@ -929,7 +929,8 @@ static void wdm_wwan_init(struct wdm_device *desc)
+ 		return;
+ 	}
+ 
+-	port = wwan_create_port(&intf->dev, desc->wwanp_type, &wdm_wwan_port_ops, desc);
++	port = wwan_create_port(&intf->dev, desc->wwanp_type, &wdm_wwan_port_ops,
++				WWAN_NO_FRAGMENT, WWAN_NO_HEADROOM, desc);
+ 	if (IS_ERR(port)) {
+ 		dev_err(&intf->dev, "%s: Unable to create WWAN port\n",
+ 			dev_name(intf->usb_dev));
+diff --git a/include/linux/wwan.h b/include/linux/wwan.h
+index 5ce2acf444fb..adaf1f4a8652 100644
+--- a/include/linux/wwan.h
++++ b/include/linux/wwan.h
+@@ -62,11 +62,25 @@ struct wwan_port_ops {
+ 			    poll_table *wait);
+ };
+ 
++/*
++ * Used to indicate that the WWAN core should not fragment control packages.
++ */
++#define WWAN_NO_FRAGMENT	0
++
++/*
++ * Used to indicate that the WWAN core should not reserve headroom in control packages.
++ */
++#define WWAN_NO_HEADROOM	0
++
+ /**
+  * wwan_create_port - Add a new WWAN port
+  * @parent: Device to use as parent and shared by all WWAN ports
+  * @type: WWAN port type
+  * @ops: WWAN port operations
++ * @frag_len: WWAN port TX fragments length, if WWAN_NO_FRAGMENT is set,
++ *            the WWAN core don't fragment control packages.
++ * @headroom_len: WWAN port TX fragments reserved headroom length, if WWAN_NO_HEADROOM
++ *                is set, the WWAN core don't reserve headroom in control packages.
+  * @drvdata: Pointer to caller driver data
+  *
+  * Allocate and register a new WWAN port. The port will be automatically exposed
+@@ -84,6 +98,8 @@ struct wwan_port_ops {
+ struct wwan_port *wwan_create_port(struct device *parent,
+ 				   enum wwan_port_type type,
+ 				   const struct wwan_port_ops *ops,
++				   size_t frag_len,
++				   unsigned int headroom_len,
+ 				   void *drvdata);
+ 
+ /**
 -- 
-Best regards,
-Samin
+2.17.0
+
