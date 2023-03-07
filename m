@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 736556AEFEA
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 19:28:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E52E6AEFF1
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 19:28:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233016AbjCGS1u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 13:27:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46888 "EHLO
+        id S232917AbjCGS2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 13:28:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231384AbjCGS0j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 13:26:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A91D8C805;
-        Tue,  7 Mar 2023 10:20:42 -0800 (PST)
+        with ESMTP id S232871AbjCGS0l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 13:26:41 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 830F6ADC04;
+        Tue,  7 Mar 2023 10:20:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C53C0B819D2;
-        Tue,  7 Mar 2023 18:20:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4597FC4339B;
-        Tue,  7 Mar 2023 18:20:39 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id EEBAACE1C79;
+        Tue,  7 Mar 2023 18:20:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DB87C4339C;
+        Tue,  7 Mar 2023 18:20:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678213239;
-        bh=TljbBfxVOqKVnxlRPxJh7wfvgBgvno87gbT8Pk/fdoM=;
+        s=k20201202; t=1678213241;
+        bh=DE92hw8t8/0nODEhiHkEnnlsRI/SWQU/hTMJS+17V8U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nLJa18E5GfrF6pP384PHVfh8oe+OOxkwbv+32yIGw0SQjqXmUtY6jt3VvN1GPSKMV
-         H7lgOgmYuPktGtKoUMzG6lzjdihCOWzuihwAJ5Onu5pJ1upxPPtqzjSay+S47T/jdM
-         lMLmT9tqCwzi0/LEbReV2XQr0yEu83MVQDwHIm0+6WwJHnGA8vMZlCO6F+JQaTgnBi
-         zvkdMHD7XQZIe+C/3xdc3b7UUlx6w/RNA6mUBEYf84GscKPjhiAL6/6qOilHDDihEO
-         aySfDTZ/MQN3ddWiLBNWYB7FBS9OV2SWK6O9DiqTGke9Dtt1kSfaK2UjDHRqM51kAw
-         Z4lr9A/4VEpAA==
+        b=Utqngn8FnD1QnkNMyz105aMZWZvoOdgvgFmcIVsgKcD5AdXJc2DStIs/ktxW+sLe+
+         r/VsowUTdpMcIUhzozJxqJmvvZV+zh8rtUNF/4/LdpWjfFp5+jSK23u7xq6CJRMD0H
+         FyIj9XEzXItwjHZGittnP0uzi/r1ZeJ5OzhoKNj56q95QC5wR5RxKQPTNtbI2Dtvmh
+         CUgdJT7jpQ+Q5wLpCZITVc53nN8ZOIMlAQmzc2PE6jiKY4fUPz5A1g0qJNB6JHwE5D
+         JG9uzdfgLZz30yrSRglBnn+BWsrsyKi8Zq+Tz/1Iy/fzK84RJXv+EbRcZW4OmvOd2r
+         2WwWZo5zchL8w==
 From:   Bjorn Helgaas <helgaas@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -40,9 +40,9 @@ Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Bjorn Helgaas <bhelgaas@google.com>,
         Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 23/28] i40e: Remove unnecessary aer.h include
-Date:   Tue,  7 Mar 2023 12:19:34 -0600
-Message-Id: <20230307181940.868828-24-helgaas@kernel.org>
+Subject: [PATCH 24/28] iavf: Remove unnecessary aer.h include
+Date:   Tue,  7 Mar 2023 12:19:35 -0600
+Message-Id: <20230307181940.868828-25-helgaas@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230307181940.868828-1-helgaas@kernel.org>
 References: <20230307181940.868828-1-helgaas@kernel.org>
@@ -65,21 +65,21 @@ Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>
 Cc: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e.h | 1 -
+ drivers/net/ethernet/intel/iavf/iavf.h | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e.h b/drivers/net/ethernet/intel/i40e/i40e.h
-index 60ce4d15d82a..6e310a539467 100644
---- a/drivers/net/ethernet/intel/i40e/i40e.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e.h
-@@ -10,7 +10,6 @@
- #include <linux/errno.h>
+diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
+index 232bc61d9eee..2cdce251472c 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf.h
++++ b/drivers/net/ethernet/intel/iavf/iavf.h
+@@ -6,7 +6,6 @@
+ 
  #include <linux/module.h>
  #include <linux/pci.h>
 -#include <linux/aer.h>
  #include <linux/netdevice.h>
- #include <linux/ioport.h>
- #include <linux/iommu.h>
+ #include <linux/vmalloc.h>
+ #include <linux/interrupt.h>
 -- 
 2.25.1
 
