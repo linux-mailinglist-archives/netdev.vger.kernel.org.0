@@ -2,128 +2,255 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 034D26AE521
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 16:43:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D46126AE52B
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 16:45:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230012AbjCGPnp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 10:43:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51554 "EHLO
+        id S230237AbjCGPpa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 10:45:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229913AbjCGPno (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 10:43:44 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2121.outbound.protection.outlook.com [40.107.93.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CCC04C6EF
-        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 07:43:13 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JlW62pksPKkUFA/OhjqqM+wbScQiml+N4/a4KxqJ7C9ItgrI473NMet5TV1nDKxUnjJwZMxI5z9y8hrX4YB7R4cdL0k1dmC7Sk/Q389CLNa3gXn6ykDiH7nTPRvvxl2FWnwR94tgB97QTTFRS7KjG61Cxu3jfyWWgCorl3kb2iNeKxuzm7DRoSRX4o1lnN3hNFuNtcjtaRZLdFrbLqUiPr0WSyyO8dw4u5bQgsbmiGK/ShPVe9sciiI7gMmxjTEHcrjn6d4VOtIJSroxnLu75H8x5dpPESRaDDQPQP68MxFVwR4idFwNWe6ydKjtraWQeeJl+yyIMbG9WsLWRewyzQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Brf9VSrStiL+nau111g32fEbZIMOmBxZXkh0XmHAPzI=;
- b=DoB2XdZC8AMFAsEfWpc7QW+bRFki2qZJzOkj+3W8ezhWqkgLItOTbvTUuGw5YWEPt5KXLHVVxWLt94nPmZxV1Mc55g0IFLHzrr8xcNsntlS4ZAQb3PCzXePGZFLaFChRzC4dvmVJGa/b94SoFro0D84ePdFDKhia3nh3h9rRkPazyOjeQpR8KkwghMJv8+9qZAbWJ3CKqWy6dyvhpGE4N18s2WaVc2koo6+Rk7e7rveFF8sE+Y8LEgm0Cb83s2kL70kgyLrQXtoARqk/z0dcnmPoE5mizn16PV5sdQD8XA6eXVrO9wibpXRdGwcd2acByNpRRRTOtP1nerJP0Cq/3w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S229947AbjCGPp2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 10:45:28 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44F4D29E2D;
+        Tue,  7 Mar 2023 07:45:27 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id s11so54011758edy.8;
+        Tue, 07 Mar 2023 07:45:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Brf9VSrStiL+nau111g32fEbZIMOmBxZXkh0XmHAPzI=;
- b=jkO6Pnw2JaNiTlEsfYR6iSF/1FhvGICY4PjkV00d86ADSKOUsMf22cGXipJ25lH/84R97ZC67s6XqiG9HTBN3STcJu9CZfSVosF2GRAxmaUQpDkIVzhmOTNAWlbiJAQtaZkFFEp3X8kh+UzZEc8PXAKt4lRJ8ORozWXNEuzggHQ=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by CO6PR13MB5324.namprd13.prod.outlook.com (2603:10b6:303:14b::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.29; Tue, 7 Mar
- 2023 15:42:53 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6156.029; Tue, 7 Mar 2023
- 15:42:53 +0000
-Date:   Tue, 7 Mar 2023 16:42:47 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next] net: phy: improve phy_read_poll_timeout
-Message-ID: <ZAdbd5NLQMkCZrk1@corigine.com>
-References: <6d8274ac-4344-23b4-d9a3-cad4c39517d4@gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6d8274ac-4344-23b4-d9a3-cad4c39517d4@gmail.com>
-X-ClientProxiedBy: AS4P191CA0006.EURP191.PROD.OUTLOOK.COM
- (2603:10a6:20b:5d5::17) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=gmail.com; s=20210112; t=1678203926;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=277q2V+lY8OBSvMhlgAtku8Kf4ubYKKddk6o8q89oYY=;
+        b=bzr5gfqT3t2uS7nPD9rE876ItTBtQK2df7AJkSRTaezmgmRY6YCV7JO4ptMameVymU
+         rt2Q7lMWvhzP2coAH0YE5zXIBtDXDkI1vYC2l3TmSuSxFSwQMby4KGMy/srtW4O1lLwB
+         x7zcvN8/fQZ9unbnCX0DDwHHBe9RFkIrWsH1PDaUA33R/qHYJeAvZ9pnyMaycPFhQtlh
+         iFGq+ZffrkDga1pq8iGcyKktPHC1P1gni7DojfKyae6rsv/9r7dr92M3K860bYgGSoz3
+         Eh4DiBbq7p2F2AYqpV6UimUlj7eZFV47K5eWZSyCeN1YZnMCxlbqsOVSgbYq+yP4nIpA
+         x1LA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678203926;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=277q2V+lY8OBSvMhlgAtku8Kf4ubYKKddk6o8q89oYY=;
+        b=BVImjJhvM5i4wG1tX3Y7jca2Vi0Fuhx9sYp5Gi5zvq3XokainQC2WLzQqXSFMau5sK
+         sKIWGNq3dUp0TX1oIdgY16qeOQmrr+G6MdpFf7qwtIwlFQ1kOpMN0gZRufSaQOAZzXrf
+         BnmYXPa9HdZ99O7uZJMHIxE5Y2dYPYqByG+QXEdVFdFaBc2L0NOWVcJxY25x+SkaYn+O
+         DiO8owO+DYt3luzHm4gN4gqaRMFZMdXBsZgPoCAlluKtoRQJ80BaQAgTs+DGA4c80Kbn
+         zCJp5i8YZ580TW5ZvSFIjJaORQvfQEoJizEEAMpKDs1Qvlqb5P9Qvh9Hiy2/SnF4vTMH
+         zQCQ==
+X-Gm-Message-State: AO0yUKWv7g6GV2D4+GN6AP2J++zOwmgAN7bwuLJnDEaI8Ohiafk68MNx
+        q9IvTzJ1iVFstQ78f1Px1921ZYKf96WQaeWoK7w=
+X-Google-Smtp-Source: AK7set9VmWNhoK2WmbWREy3v2d9xaYAuWuBONaFPmQWuhaCeRhr3D30kCD5AibujLdnFbgmw3OHx8CK2xX4HzUA2hVc=
+X-Received: by 2002:a50:9f26:0:b0:4c0:1cfa:bfe1 with SMTP id
+ b35-20020a509f26000000b004c01cfabfe1mr8243289edf.6.1678203925530; Tue, 07 Mar
+ 2023 07:45:25 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CO6PR13MB5324:EE_
-X-MS-Office365-Filtering-Correlation-Id: 57a592c2-f3dc-400c-dc94-08db1f229d12
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WXx6i1rjWjChyeZLjBNU+kYWe/3zizk7Rcg/CgVt72zb3anZwlNAeKwoqd45uGYV3Dv8PRQkLibBABdfwZ9TsY7gcYNmTLle2Z9aAkLkkK3nR9w12gFcvggzf6f8F+nWKHNsGgEE9K+OwS5YONCrUymwDsDRv4Ud0Q4R4mmnSVkFDVHippbwvxqz5Mmij4LPwIN40DttIZkf6Q/CRRjlVCqVNOfhpFryevGvq/w5CbGg9VXQnd73HaVJZ/vSz3+IP+guiRlWtBABosxY8GHFmuybE6BwxgOMZuOQmS6sXnyXxEDgFcMc8StzGM6MrQ3CqCtbw3x2MPgDR0t6GXzVDku3nZqSfQBGGBc4bUiAGimrepZg/hE21loeTFmYccdL4AcsjojMu0QqfZYoRBuTuYA6nuWGzwX97Zy4UisuG8TPRHc+abafo+rlTOVsUTlBuzImIyXbjCIVcQ3C6+ZcYiXDc1G9YesuiKUBfuUCZyK57feimciNEQYY8paMfKIX8d72APQrPM1Mho8UGE1azx/2Rd4rymsZLJJAbQ+YNP09p5CvNI+ax/v3KGy27+PIcPAwsFs0W+Clcq/JtVYFwLg2lOMuF+pAVnlf1lBhCQ1MlqpH1WHYpLO1dALKwzbT8hbG8cX4VnhOwC0R8SE0fg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(136003)(39840400004)(366004)(396003)(346002)(451199018)(54906003)(316002)(86362001)(6512007)(186003)(6506007)(6666004)(2616005)(83380400001)(478600001)(36756003)(38100700002)(6486002)(44832011)(2906002)(41300700001)(8936002)(4744005)(66946007)(6916009)(8676002)(66556008)(4326008)(66476007)(5660300002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7O6dUKCkVSY0C4lt8dmSDSRoUotapf5alxUXxud3PPD6XRBIAa27p5Zwv9OC?=
- =?us-ascii?Q?BDTcUGF8VgtRiRAfo65ERfg1SuW2BoPd6mXfSmVgRZyVcIRKYA2j0Oasqwtc?=
- =?us-ascii?Q?fg25FlIBwlXqzVRIPCB3vwPDkDljwMxNbZQKbModIaIdYk3N8aCDoBHfwtKu?=
- =?us-ascii?Q?HI6GN9gTvyE1HoAFFs1JncawfCmxeNZMYpqBD7wqAMuaSCmXju4U2xJeoMjP?=
- =?us-ascii?Q?BCVy+BiGrLE4Gywvr2jshE0MtbgTdPFhhVV46+k3qEnPoQvcK0ywi1pZ8+WZ?=
- =?us-ascii?Q?q+SxgjjL6tcZwHPcz45aPw6DcYK+aZ73rtNH0hEbn/8+koeXkYvXJv/m/PLV?=
- =?us-ascii?Q?8G6RPmOQpqP3AYQTVYRKVcmmfQ7bkeUKUk8ad7wWfTc6qzy+zc0qlhHc0ybN?=
- =?us-ascii?Q?YQDSR/8hy3iZWpFdzCIKKB6WDP8egm5987WT5WWHWTBHjwJ83Us9unQ2KIUe?=
- =?us-ascii?Q?gfP0mwygMeNebvYaCYM6JYvGk4ZcbC4juscg89tMjc+GRLv2o9/dT74FkikC?=
- =?us-ascii?Q?7lIirIJGW3tnTzs2oJntqOu8EQQz84ofaxH6gYpncLkbNXfNnwvCnnROBIMg?=
- =?us-ascii?Q?S2dr3sD3tnEdZmwqzZFsXlvwzjPBXWepB3BN9/HQnss9lo0hVU75gOnO5Eky?=
- =?us-ascii?Q?eXho56N35md7ifJP+JxoKHLMneNm8TtvzTJhjzvk1vr4VPjOBdYELh5prrq5?=
- =?us-ascii?Q?yjwepYX2St2zh6CxFRClniI1GbxCRPAviGr95Yb13ancCoPB/4a6DwPr6Gun?=
- =?us-ascii?Q?EOhgKqDRiu/ENv8ESgv9TsjTZ5H/690iZorbIAgU67cqFVafaIuNbAoVRawc?=
- =?us-ascii?Q?k9IdnesFLPxnD4TUH9EXm4KZyUPFhLkILCpu9S1p7snVYI5JkzkM9jgsTIQD?=
- =?us-ascii?Q?yLA+jD1JV7NqhxKlnXQC5QkYZoTSjHY5EjBFGmhSdoKyGWSNo3hn9XvCnzkw?=
- =?us-ascii?Q?43nLdx9yJShG+oU5QRwynxla9b+u2H+AHwEaRYiqSVyqpoSjVpvar2ffpxQN?=
- =?us-ascii?Q?t8TYHkHIYpFwcq/Z/dyYqWukkN6HiGhl84x4Bx87TM7nReIZhb+2/Pdxb/F3?=
- =?us-ascii?Q?bWpnm+Nw5Kpzrwv9j2L0fCXtcgvUu7x4TvYHk0uyoip9khZOMsYy2xYbKrs3?=
- =?us-ascii?Q?HAColH4+jwtbe37cB6vooo3/u3KVGN/2FyOtsz8HgxV5kmbUOruNukpL5Jqk?=
- =?us-ascii?Q?9rvXXuzha2+R/MC6SQaOn5oW1mhenv7QdUio3rTY2uJQA1aXzIk3s4Dm7NxG?=
- =?us-ascii?Q?VuBw0AJGqhrsu0k/Qjg9V7tEMJwKewSVVu1q8oS/sulSdquNwIuzWZvaIdmL?=
- =?us-ascii?Q?7WvLeILxI6cCQaelubxPFjEtJd+2qPh8GNsTf+eJavhPCtsF0aisRQKXHAQU?=
- =?us-ascii?Q?TETP1XDOc44ZNMinjW9Nd5GC3tFlS2D3VIioFKJlCuJdTr3xcUT2IC2hqOsV?=
- =?us-ascii?Q?gukpDXCrOdqaPGwi+AUl4m+kAOYK521p06DuuDBYQsHwAzppVpg0ocZT1uEW?=
- =?us-ascii?Q?mEZjZOw2x+Vt/h9AhW3SpPZbhbrBlf8f8WgrCvBUwDDDO/QADyzmfWCIi+VV?=
- =?us-ascii?Q?srpabWBQ1Q70uldLFhr/gqJmYftkEVQvBmIBz268aJd/3DhZ140E9kfZG3T1?=
- =?us-ascii?Q?MwriG+/t/jjg9B+IfJ1lhl7y8C191O2W71Dili5O2PUOWKBiDVBglU8kv3z6?=
- =?us-ascii?Q?BKEceA=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 57a592c2-f3dc-400c-dc94-08db1f229d12
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2023 15:42:53.1427
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4mfbnvteZjlIZ7ricJl6zKmkZHrAf3oi7EzIfEjXfUecVM8W3zaxK6SAmcakewZbk1rDBhYP1vDPzoMDYBsZeb9ezRCQZ1DOLYAFQhu13V4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR13MB5324
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20230301154953.641654-1-joannelkoong@gmail.com>
+ <20230301154953.641654-10-joannelkoong@gmail.com> <20230306071006.73t5vtmxrsykw4zu@apollo>
+ <CAADnVQJ=wzztviB73jBy3+OYxUKhAX_jTGpS8Xv45vUVTDY-ZA@mail.gmail.com> <20230307102233.bemr47x625ity26z@apollo>
+In-Reply-To: <20230307102233.bemr47x625ity26z@apollo>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 7 Mar 2023 07:45:14 -0800
+Message-ID: <CAADnVQ+xOrCSwgxGQXNM5wHfOwV+x0csHfNyDYBHgyGVXgc2Ow@mail.gmail.com>
+Subject: Re: [PATCH v13 bpf-next 09/10] bpf: Add bpf_dynptr_slice and bpf_dynptr_slice_rdwr
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     Joanne Koong <joannelkoong@gmail.com>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <martin.lau@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 06, 2023 at 10:51:35PM +0100, Heiner Kallweit wrote:
-> cond sometimes is (val & MASK) what may result in a false positive
-> if val is a negative errno. We shouldn't evaluate cond if val < 0.
-> This has no functional impact here, but it's not nice.
-> Therefore switch order of the checks.
-> 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+On Tue, Mar 7, 2023 at 2:22=E2=80=AFAM Kumar Kartikeya Dwivedi <memxor@gmai=
+l.com> wrote:
+>
+> On Tue, Mar 07, 2023 at 03:23:25AM CET, Alexei Starovoitov wrote:
+> > On Sun, Mar 5, 2023 at 11:10=E2=80=AFPM Kumar Kartikeya Dwivedi
+> > <memxor@gmail.com> wrote:
+> > >
+> > > On Wed, Mar 01, 2023 at 04:49:52PM CET, Joanne Koong wrote:
+> > > > Two new kfuncs are added, bpf_dynptr_slice and bpf_dynptr_slice_rdw=
+r.
+> > > > The user must pass in a buffer to store the contents of the data sl=
+ice
+> > > > if a direct pointer to the data cannot be obtained.
+> > > >
+> > > > For skb and xdp type dynptrs, these two APIs are the only way to ob=
+tain
+> > > > a data slice. However, for other types of dynptrs, there is no
+> > > > difference between bpf_dynptr_slice(_rdwr) and bpf_dynptr_data.
+> > > >
+> > > > For skb type dynptrs, the data is copied into the user provided buf=
+fer
+> > > > if any of the data is not in the linear portion of the skb. For xdp=
+ type
+> > > > dynptrs, the data is copied into the user provided buffer if the da=
+ta is
+> > > > between xdp frags.
+> > > >
+> > > > If the skb is cloned and a call to bpf_dynptr_data_rdwr is made, th=
+en
+> > > > the skb will be uncloned (see bpf_unclone_prologue()).
+> > > >
+> > > > Please note that any bpf_dynptr_write() automatically invalidates a=
+ny prior
+> > > > data slices of the skb dynptr. This is because the skb may be clone=
+d or
+> > > > may need to pull its paged buffer into the head. As such, any
+> > > > bpf_dynptr_write() will automatically have its prior data slices
+> > > > invalidated, even if the write is to data in the skb head of an unc=
+loned
+> > > > skb. Please note as well that any other helper calls that change th=
+e
+> > > > underlying packet buffer (eg bpf_skb_pull_data()) invalidates any d=
+ata
+> > > > slices of the skb dynptr as well, for the same reasons.
+> > > >
+> > > > Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
+> > > > ---
+> > >
+> > > Sorry for chiming in late.
+> > >
+> > > I see one potential hole in bpf_dynptr_slice_rdwr. If the returned po=
+inter is
+> > > actually pointing to the stack (but verified as a PTR_TO_MEM in verif=
+ier state),
+> > > we won't reflect changes to the stack state in the verifier for write=
+s happening
+> > > through it.
+> > >
+> > > For the worst case scenario, this will basically allow overwriting va=
+lues of
+> > > spilled pointers and doing arbitrary kernel memory reads/writes. This=
+ is only an
+> > > issue when bpf_dynptr_slice_rdwr at runtime returns a pointer to the =
+supplied
+> > > buffer residing on program stack. To verify, by forcing the memcpy to=
+ buffer for
+> > > skb_header_pointer I was able to make it dereference a garbage value =
+for
+> > > l4lb_all selftest.
+> > >
+> > > --- a/kernel/bpf/helpers.c
+> > > +++ b/kernel/bpf/helpers.c
+> > > @@ -2253,7 +2253,13 @@ __bpf_kfunc void *bpf_dynptr_slice(const struc=
+t bpf_dynptr_kern *ptr, u32 offset
+> > >         case BPF_DYNPTR_TYPE_RINGBUF:
+> > >                 return ptr->data + ptr->offset + offset;
+> > >         case BPF_DYNPTR_TYPE_SKB:
+> > > -               return skb_header_pointer(ptr->data, ptr->offset + of=
+fset, len, buffer);
+> > > +       {
+> > > +               void *p =3D skb_header_pointer(ptr->data, ptr->offset=
+ + offset, len, buffer);
+> > > +               if (p =3D=3D buffer)
+> > > +                       return p;
+> > > +               memcpy(buffer, p, len);
+> > > +               return buffer;
+> > > +       }
+> > >
+> > > --- a/tools/testing/selftests/bpf/progs/test_l4lb_noinline_dynptr.c
+> > > +++ b/tools/testing/selftests/bpf/progs/test_l4lb_noinline_dynptr.c
+> > > @@ -470,7 +470,10 @@ int balancer_ingress(struct __sk_buff *ctx)
+> > >         eth =3D bpf_dynptr_slice_rdwr(&ptr, 0, buffer, sizeof(buffer)=
+);
+> > >         if (!eth)
+> > >                 return TC_ACT_SHOT;
+> > > -       eth_proto =3D eth->eth_proto;
+> > > +       *(void **)buffer =3D ctx;
+> >
+> > Great catch.
+> > To fix the issue I think we should simply disallow such
+> > stack abuse. The compiler won't be spilling registers
+> > into C array on the stack.
+> > This manual spill/fill is exploiting verifier logic.
+> > After bpf_dynptr_slice_rdwr() we can mark all slots of the
+> > buffer as STACK_POISON or some better name and
+> > reject spill into such slots.
+> >
+>
+> I agree this is simpler, but I'm not sure it will work properly. Verifier=
+ won't
+> know when the lifetime of the buffer ends, so if we disallow spills until=
+ its
+> written over it's going to be a pain for users.
+>
+> Something like:
+>
+> for (...) {
+>         char buf[64];
+>         bpf_dynptr_slice_rdwr(..., buf, 64);
+>         ...
+> }
+>
+> .. and then compiler decides to spill something where buf was located on =
+stack
+> outside the for loop. The verifier can't know when buf goes out of scope =
+to
+> unpoison the slots.
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+You're saying the "verifier doesn't know when buf ...".
+The same applies to the compiler. It has no visibility
+into what bpf_dynptr_slice_rdwr is doing.
+So it never spills into a declared C array
+as I tried to explain in the previous reply.
+Spill/fill slots are always invisible to C.
+(unless of course you do pointer arithmetic asm style)
+
+> > > +       *(void **)eth =3D (void *)0xdeadbeef;
+> > > +       ctx =3D *(void **)buffer;
+> > > +       eth_proto =3D eth->eth_proto + ctx->len;
+> > >         if (eth_proto =3D=3D bpf_htons(ETH_P_IP))
+> > >                 err =3D process_packet(&ptr, eth, nh_off, false, ctx)=
+;
+> > >
+> > > I think the proper fix is to treat it as a separate return type disti=
+nct from
+> > > PTR_TO_MEM like PTR_TO_MEM_OR_PKT (or handle PTR_TO_MEM | DYNPTR_* sp=
+ecially),
+> > > fork verifier state whenever there is a write, so that one path verif=
+ies it as
+> > > PTR_TO_PACKET, while another as PTR_TO_STACK (if buffer was a stack p=
+tr). I
+> > > think for the rest it's not a problem, but there are allow_ptr_leak c=
+hecks
+> > > applied to PTR_TO_STACK and PTR_TO_MAP_VALUE, so that needs to be rec=
+hecked.
+> > > Then we ensure that program is safe in either path.
+> > >
+> > > Also we need to fix regsafe to not consider other PTR_TO_MEMs equival=
+ent to such
+> > > a pointer. We could also fork verifier states on return, to verify ei=
+ther path
+> > > separately right from the point following the call instruction.
+> >
+> > This is too complex imo.
+>
+> A better way to phrase this is to verify with R0 =3D PTR_TO_PACKET in one=
+ path,
+> and push_stack with R0 =3D buffer's reg->type + size set to len in the ot=
+her path
+> for exploration later. In terms of verifier infra everything is there alr=
+eady,
+> it just needs to analyze both cases which fall into the regular code hand=
+ling
+> the reg->type's. Probably then no adjustments to regsafe are needed eithe=
+r. It's
+> like exploring branch instructions.
+
+I still don't like it. There is no reason to go a complex path
+when much simpler suffices.
