@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A73BE6AF8C4
-	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 23:33:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 261D56AF8D1
+	for <lists+netdev@lfdr.de>; Tue,  7 Mar 2023 23:33:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230240AbjCGWdh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 17:33:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39344 "EHLO
+        id S230433AbjCGWds (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 17:33:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230025AbjCGWdb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 17:33:31 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 298B89AA35;
-        Tue,  7 Mar 2023 14:33:30 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id m25-20020a7bcb99000000b003e7842b75f2so85150wmi.3;
-        Tue, 07 Mar 2023 14:33:30 -0800 (PST)
+        with ESMTP id S230200AbjCGWdf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 17:33:35 -0500
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 031D79BE3C;
+        Tue,  7 Mar 2023 14:33:31 -0800 (PST)
+Received: by mail-wm1-x334.google.com with SMTP id ay29-20020a05600c1e1d00b003e9f4c2b623so88358wmb.3;
+        Tue, 07 Mar 2023 14:33:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678228408;
+        d=gmail.com; s=20210112; t=1678228410;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=PNA75+ffAuv7QuOxp1Cc8LTrOxCzACAVhyEOObz9ATQ=;
-        b=Ous/JScFrx1dSu9x6+tQiT/MLYKi3xMjoh/2zzApSkvb/hTI3pwPN0Iv5VWQ/6kcLz
-         uw/bNtz9yrxt1Dm+77uj2Hij9B9Ilt/yncfd0KzeZmFqicT+I+Oml35h10/7rs+QtTig
-         f1znzcLnWi71teXhkEEhYaezDTos9OtE3JkbwXxBofL00/PYxjuyWOn2c2Pi0IEylKPd
-         CGjZaa0YCGiRVy/XrsSuX3hua0ywvkQMwFYfI9y1+I9JrcgqXZhfAnm2xp5WmjPfHO9e
-         BMj9jwEDNbPTctxTPqcfYdQRl3W3HIRXf1oDa045h9Vs81BlCdE1nQKH8V92P9TblByl
-         /SQg==
+        bh=WKaejEkwd7x7h0zVDdJBQrWswFotreBUxLmSKtjxwLI=;
+        b=di+9QEKVE16tj01XPCZMIyCFK7Anfrsm/6mIfACWi15xdVPAF2EGAhvTM9IdRpw9ci
+         te1m+VbZXvxI4235YjygsOcjBJuyKGGKx2eMeTbCKaJhDh/d1jw87//ALmRbSqc5q2+F
+         /9BvcJ4xRtTxjluUvFuoii/kKcUDAdPC750MkMuhCnr5Hziu0aCaJLPfXt5zcddcdzmf
+         chBhXASMkrZZJL1XjDH2a774Mw2lzvULIg7EYshR1e9fRj9OX8jNkayWjihhhg6NdGpX
+         yrMAq3QlBZaT0X3dHMfeipe5Y/mBJeBV8pAwjfUMi9Ohak7kxOPbCqCY5qFLyWHR9Imy
+         IAhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678228408;
+        d=1e100.net; s=20210112; t=1678228410;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=PNA75+ffAuv7QuOxp1Cc8LTrOxCzACAVhyEOObz9ATQ=;
-        b=w6MhwfQt/IvZupmv/UZBP97joijAnw1e1YFcxmUo2GlCtcxDQ5dhtSY5ICCQmOVHm7
-         H5dielbJN9punkIllVAqzpPUJLTJu2VVJcdyaQZCYH9q/Zuz4NqT97u4bI0nuHnNgtVK
-         +QLPs7PlmvjMsCs59hK0gp0TbOXomOhM3ZIQrIvcLBv3u3o1PLgvHaU/ha1xxtpRzt86
-         HrKJVdq4KxasypKOHsGKDpk0yBlfYMIi0WVm5U2xjf5sWgNAe6Uf6NscXW+SMmMIZyw0
-         gmkfgEGMwCuyN4U6OSx6NUBGP7XuNgj1MWglFaHZJovDc06VLXIhPwQN4EifAdv+bDZW
-         vAcg==
-X-Gm-Message-State: AO0yUKXoEvAMu/31pzHvhvcjpZCuvTrXkmkXSvKzERmdhvgh0loY0kuT
-        8GSuAytNCBvNuV/9i/rNEv8=
-X-Google-Smtp-Source: AK7set9RLmmfjOKKC2D+hLDppQ5/16MJZhaGu25c4q4km1PSZeLZ3CPqlu+9ygLhvoGX1Olx6hwHgw==
-X-Received: by 2002:a05:600c:a09:b0:3ea:c100:e974 with SMTP id z9-20020a05600c0a0900b003eac100e974mr15119103wmp.26.1678228408515;
-        Tue, 07 Mar 2023 14:33:28 -0800 (PST)
+        bh=WKaejEkwd7x7h0zVDdJBQrWswFotreBUxLmSKtjxwLI=;
+        b=euSdGRkinHmeu7KC+PIer1UxDErUlPgDQttpaqPio6ZJlcBjDNpG8nYWHc/J13zAJq
+         MgZoA8swcDAqpmmhb8frmI4LQS4Ib/ULA2/8j+MBtfhkRCjbKWi11rA5W9TYjNGTUYJs
+         SB+l4m7dKmB4MY3LnjlQmsB7zGfJ34p4e5amRL4FtyPJjnhBGODTKDNsVqvLHMB7vSwg
+         3LqV7qR8SOsRQzoRc3Yjml7vNulDPq3ePu2QH4SlHTJkQg7u+hHaODr5H7h1sw0NW5tE
+         7N1ZfcttDYTRQn3wBCLFy6myjGZXFxbTCu4cc3wmKtmUiXxEMJ6pi0x8FwVu48QV/fH3
+         MyhA==
+X-Gm-Message-State: AO0yUKV0sBOT68VhSG4aI2QIUgrK9zA7C27zfPlYiNPE8+dfl8bKL+L4
+        GfvZsNdWkAs0K9tTEFh2aDQ=
+X-Google-Smtp-Source: AK7set+X1R7wL4H+5FLmHv81NW3Frc4k/b4zPNyfVIi5ntM6gTNEfdWfJjKyJXPWyS8i48ZaQdOk/g==
+X-Received: by 2002:a05:600c:4ec6:b0:3e2:147f:ac16 with SMTP id g6-20020a05600c4ec600b003e2147fac16mr14763611wmq.10.1678228409772;
+        Tue, 07 Mar 2023 14:33:29 -0800 (PST)
 Received: from localhost.localdomain (93-34-89-197.ip49.fastwebnet.it. [93.34.89.197])
-        by smtp.googlemail.com with ESMTPSA id q11-20020a05600c46cb00b003dc1d668866sm19233101wmo.10.2023.03.07.14.33.27
+        by smtp.googlemail.com with ESMTPSA id q11-20020a05600c46cb00b003dc1d668866sm19233101wmo.10.2023.03.07.14.33.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Mar 2023 14:33:28 -0800 (PST)
+        Tue, 07 Mar 2023 14:33:29 -0800 (PST)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -68,9 +68,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, Lee Jones <lee@kernel.org>,
         linux-leds@vger.kernel.org
-Subject: [net-next PATCH 03/11] net: phy: Add a binding for PHY LEDs
-Date:   Tue,  7 Mar 2023 18:00:38 +0100
-Message-Id: <20230307170046.28917-4-ansuelsmth@gmail.com>
+Subject: [net-next PATCH 04/11] net: phy: phy_device: Call into the PHY driver to set LED brightness.
+Date:   Tue,  7 Mar 2023 18:00:39 +0100
+Message-Id: <20230307170046.28917-5-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230307170046.28917-1-ansuelsmth@gmail.com>
 References: <20230307170046.28917-1-ansuelsmth@gmail.com>
@@ -88,198 +88,79 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Andrew Lunn <andrew@lunn.ch>
 
-Define common binding parsing for all PHY drivers with LEDs using
-phylib. Parse the DT as part of the phy_probe and add LEDs to the
-linux LED class infrastructure. For the moment, provide a dummy
-brightness function, which will later be replaced with a call into the
-PHY driver.
+Linux LEDs can be software controlled via the brightness file in /sys.
+LED drivers need to implement a brightness_set function which the core
+will call. Implement an intermediary in phy_device, which will call
+into the phy driver if it implements the necessary function.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/phy/phy_device.c | 89 ++++++++++++++++++++++++++++++++++++
- include/linux/phy.h          | 16 +++++++
- 2 files changed, 105 insertions(+)
+ drivers/net/phy/phy_device.c | 14 +++++++++++---
+ include/linux/phy.h          |  9 +++++++++
+ 2 files changed, 20 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 9ba8f973f26f..8acade42615c 100644
+index 8acade42615c..e4df4fcb6b05 100644
 --- a/drivers/net/phy/phy_device.c
 +++ b/drivers/net/phy/phy_device.c
-@@ -19,10 +19,12 @@
- #include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/kernel.h>
-+#include <linux/list.h>
- #include <linux/mdio.h>
- #include <linux/mii.h>
- #include <linux/mm.h>
- #include <linux/module.h>
-+#include <linux/of.h>
- #include <linux/netdevice.h>
- #include <linux/phy.h>
- #include <linux/phy_led_triggers.h>
-@@ -658,6 +660,7 @@ struct phy_device *phy_device_create(struct mii_bus *bus, int addr, u32 phy_id,
- 	device_initialize(&mdiodev->dev);
- 
- 	dev->state = PHY_DOWN;
-+	INIT_LIST_HEAD(&dev->led_list);
- 
- 	mutex_init(&dev->lock);
- 	INIT_DELAYED_WORK(&dev->state_queue, phy_state_machine);
-@@ -2964,6 +2967,85 @@ static bool phy_drv_supports_irq(struct phy_driver *phydrv)
+@@ -2967,11 +2967,18 @@ static bool phy_drv_supports_irq(struct phy_driver *phydrv)
  	return phydrv->config_intr && phydrv->handle_interrupt;
  }
  
-+/* Dummy implementation until calls into PHY driver are added */
-+static int phy_led_set_brightness(struct led_classdev *led_cdev,
-+				  enum led_brightness value)
-+{
-+	return 0;
-+}
-+
-+static int of_phy_led(struct phy_device *phydev,
-+		      struct device_node *led)
-+{
-+	struct device *dev = &phydev->mdio.dev;
-+	struct led_init_data init_data = {};
-+	struct led_classdev *cdev;
-+	struct phy_led *phyled;
-+	int err;
-+
-+	phyled = devm_kzalloc(dev, sizeof(*phyled), GFP_KERNEL);
-+	if (!phyled)
-+		return -ENOMEM;
-+
-+	phyled->phydev = phydev;
-+	cdev = &phyled->led_cdev;
-+	INIT_LIST_HEAD(&phyled->led_list);
-+
-+	err = of_property_read_u32(led, "reg", &phyled->index);
-+	if (err)
-+		return err;
-+
-+	cdev->brightness_set_blocking = phy_led_set_brightness;
-+	cdev->max_brightness = 1;
-+	init_data.devicename = dev_name(&phydev->mdio.dev);
-+	init_data.fwnode = of_fwnode_handle(led);
-+
-+	err = devm_led_classdev_register_ext(dev, cdev, &init_data);
-+	if (err)
-+		return err;
-+
-+	list_add(&phyled->led_list, &phydev->led_list);
-+
-+	return 0;
-+}
-+
-+static int of_phy_leds(struct phy_device *phydev)
-+{
-+	struct device_node *node = phydev->mdio.dev.of_node;
-+	struct device_node *leds, *led;
-+	int err;
-+
-+	if (!IS_ENABLED(CONFIG_OF_MDIO))
-+		return 0;
-+
-+	if (!node)
-+		return 0;
-+
-+	leds = of_get_child_by_name(node, "leds");
-+	if (!leds)
-+		return 0;
-+
-+	for_each_available_child_of_node(leds, led) {
-+		err = of_phy_led(phydev, led);
-+		if (err)
-+			return err;
-+	}
-+
-+	return 0;
-+}
-+
-+static void phy_leds_remove(struct phy_device *phydev)
-+{
-+	struct device *dev = &phydev->mdio.dev;
-+	struct led_classdev *cdev;
-+	struct phy_led *phyled;
-+
-+	list_for_each_entry(phyled, &phydev->led_list, led_list) {
-+		cdev = &phyled->led_cdev;
-+		devm_led_classdev_unregister(dev, cdev);
-+	}
-+}
-+
- /**
-  * fwnode_mdio_find_device - Given a fwnode, find the mdio_device
-  * @fwnode: pointer to the mdio_device's fwnode
-@@ -3142,6 +3224,11 @@ static int phy_probe(struct device *dev)
- 	/* Set the state to READY by default */
- 	phydev->state = PHY_READY;
- 
-+	/* Get the LEDs from the device tree, and instantiate standard
-+	 * LEDs for them.
-+	 */
-+	of_phy_leds(phydev);
-+
- out:
- 	/* Assert the reset signal */
- 	if (err)
-@@ -3156,6 +3243,8 @@ static int phy_remove(struct device *dev)
+-/* Dummy implementation until calls into PHY driver are added */
+ static int phy_led_set_brightness(struct led_classdev *led_cdev,
+ 				  enum led_brightness value)
  {
- 	struct phy_device *phydev = to_phy_device(dev);
- 
-+	phy_leds_remove(phydev);
+-	return 0;
++	struct phy_led *phyled = to_phy_led(led_cdev);
++	struct phy_device *phydev = phyled->phydev;
++	int err;
 +
- 	cancel_delayed_work_sync(&phydev->state_queue);
++	mutex_lock(&phydev->lock);
++	err = phydev->drv->led_brightness_set(phydev, phyled->index, value);
++	mutex_unlock(&phydev->lock);
++
++	return err;
+ }
  
- 	mutex_lock(&phydev->lock);
+ static int of_phy_led(struct phy_device *phydev,
+@@ -2995,7 +3002,8 @@ static int of_phy_led(struct phy_device *phydev,
+ 	if (err)
+ 		return err;
+ 
+-	cdev->brightness_set_blocking = phy_led_set_brightness;
++	if (phydev->drv->led_brightness_set)
++		cdev->brightness_set_blocking = phy_led_set_brightness;
+ 	cdev->max_brightness = 1;
+ 	init_data.devicename = dev_name(&phydev->mdio.dev);
+ 	init_data.fwnode = of_fwnode_handle(led);
 diff --git a/include/linux/phy.h b/include/linux/phy.h
-index fbeba4fee8d4..1b1efe120f0f 100644
+index 1b1efe120f0f..83d3ed7485e0 100644
 --- a/include/linux/phy.h
 +++ b/include/linux/phy.h
-@@ -14,6 +14,7 @@
- #include <linux/compiler.h>
- #include <linux/spinlock.h>
- #include <linux/ethtool.h>
-+#include <linux/leds.h>
- #include <linux/linkmode.h>
- #include <linux/netlink.h>
- #include <linux/mdio.h>
-@@ -595,6 +596,7 @@ struct macsec_ops;
-  * @phy_num_led_triggers: Number of triggers in @phy_led_triggers
-  * @led_link_trigger: LED trigger for link up/down
-  * @last_triggered: last LED trigger for link speed
-+ * @led_list: list of PHY LED structures
-  * @master_slave_set: User requested master/slave configuration
-  * @master_slave_get: Current master/slave advertisement
-  * @master_slave_state: Current master/slave configuration
-@@ -690,6 +692,7 @@ struct phy_device {
- 
- 	struct phy_led_trigger *led_link_trigger;
- #endif
-+	struct list_head led_list;
- 
- 	/*
- 	 * Interrupt number for this PHY
-@@ -825,6 +828,19 @@ struct phy_plca_status {
- 	bool pst;
+@@ -841,6 +841,8 @@ struct phy_led {
+ 	u32 index;
  };
  
-+/* phy_led: An LED driven by the PHY
-+ *
-+ * phydev: Pointer to the PHY this LED belongs to
-+ * led_cdev: Standard LED class structure
-+ * index: Number of the LED
-+ */
-+struct phy_led {
-+	struct list_head led_list;
-+	struct phy_device *phydev;
-+	struct led_classdev led_cdev;
-+	u32 index;
-+};
++#define to_phy_led(d) container_of(d, struct phy_led, led_cdev)
 +
  /**
   * struct phy_driver - Driver structure for a particular PHY type
   *
+@@ -1063,6 +1065,13 @@ struct phy_driver {
+ 	/** @get_plca_status: Return the current PLCA status info */
+ 	int (*get_plca_status)(struct phy_device *dev,
+ 			       struct phy_plca_status *plca_st);
++
++	/* Set a PHY LED brightness. Index indicates which of the PHYs
++	 * led should be set. Value follows the standard LED class meaning,
++	 * e.g. LED_OFF, LED_HALF, LED_FULL.
++	 */
++	int (*led_brightness_set)(struct phy_device *dev,
++				  u32 index, enum led_brightness value);
+ };
+ #define to_phy_driver(d) container_of(to_mdio_common_driver(d),		\
+ 				      struct phy_driver, mdiodrv)
 -- 
 2.39.2
 
