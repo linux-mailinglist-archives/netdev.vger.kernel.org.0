@@ -2,110 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4E1D6B11C5
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 20:09:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A76806B11CB
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 20:10:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229922AbjCHTJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 14:09:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46898 "EHLO
+        id S229815AbjCHTKS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 14:10:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229705AbjCHTJW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 14:09:22 -0500
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFA8191B6C;
-        Wed,  8 Mar 2023 11:08:50 -0800 (PST)
-Received: by mail-wm1-f46.google.com with SMTP id l7-20020a05600c4f0700b003e79fa98ce1so1779391wmq.2;
-        Wed, 08 Mar 2023 11:08:50 -0800 (PST)
+        with ESMTP id S230328AbjCHTJ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 14:09:56 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F276A8389
+        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 11:09:37 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id ay14so66132098edb.11
+        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 11:09:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1678302576;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=KkeMJhDrlZR0CW+jwOzfg7rjixWcjZ+Lh7Jc51LTf60=;
+        b=B96dkgosvOFrjaliQ2bHaZnATfVIl/u0wBOla4aMLgLW9v7xGKNsAkGfFhgplw/1qx
+         9PRA7zHf3N1TVpwuke4D1gGgHY1638Z9T+V2C3Kw2LDrlUZzrs0ABAehuNtoBHXHBE4E
+         HeyUOgofgRQSJJyBL0AmFHfa8ywTIePc5ncbH6l2Q+drnSOaj08jk30dpNleG5AHJMI+
+         NfjbwhpbKbNVO4zrVwktv+RSP1Rbx3nSSh1N+TsBtdGqi8VWcJZQe6x/n+b/wk4rXXBg
+         NnF2fG7Un4CHiSilqpPlb82PHWhwybO6LviZEcqwmZXSwJ9b3Ms8elEBgzVUuYJqx4nO
+         Ev2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678302467;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=kJu5uWN4Vm4DxFmOs7QmxxPKXFfxw9DbCXPZAZPHQEI=;
-        b=gb2Qzk+t4xmMA4IGelxaE04u9qBJP9Ao+kgf3F4qfgrNFk/7adHwaCVu9ZeMvfEJOs
-         LdpeXdWThQmajxFE5gkn3gPcUCSz+O+sDe7USxBeg4zZlN3GVZ/67xLeu+wphn4MMJAD
-         7Ehn/gNDKIsIrQC/zpeEal2xIZJyJbFdOe3R3oVy42x9uvlmaZOVY8U2HJO8EhtKXFvq
-         Yrb3qlju9uvbpQu7LjS5+dYkS0NmpXsaENnkjLoBS4ftfbXg/JNH21fjq/fQ4fT//Pzw
-         kJ7gTrlqRDp0kc2ALNZl7u9lgsR/N3Tq+3ZNNOkZIPb4Wu9ioFj5TjOROtDMO+wSIo0k
-         i9nA==
-X-Gm-Message-State: AO0yUKUf3grXdnPjU2u/k+IT4WzYtJaXs2bVxz0lnfYC+bx6WUYLjHDd
-        9FEAfxRyDTxnhEFaxwXBNE8=
-X-Google-Smtp-Source: AK7set87yhq3QCTE9bjMxefGVJRrsfedTwkEpAeIYDbAeJ655+yz0av/F0NeIex9lGG7DcULHRNX1w==
-X-Received: by 2002:a05:600c:4e8c:b0:3e2:dba:7155 with SMTP id f12-20020a05600c4e8c00b003e20dba7155mr16138469wmq.20.1678302467503;
-        Wed, 08 Mar 2023 11:07:47 -0800 (PST)
-Received: from localhost (fwdproxy-cln-119.fbsv.net. [2a03:2880:31ff:77::face:b00c])
-        by smtp.gmail.com with ESMTPSA id q20-20020a1cf314000000b003db06224953sm229637wmq.41.2023.03.08.11.07.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Mar 2023 11:07:47 -0800 (PST)
-From:   Breno Leitao <leitao@debian.org>
-To:     edumazet@google.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, laurent.fasnacht@proton.ch,
-        hkchu@google.com, leit@meta.com, linux-kernel@vger.kernel.org
-Subject: [PATCH] tcp: tcp_make_synack() can be called from process context
-Date:   Wed,  8 Mar 2023 11:07:45 -0800
-Message-Id: <20230308190745.780221-1-leitao@debian.org>
-X-Mailer: git-send-email 2.34.1
+        d=1e100.net; s=20210112; t=1678302576;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=KkeMJhDrlZR0CW+jwOzfg7rjixWcjZ+Lh7Jc51LTf60=;
+        b=B7VdCQbHrrzP1FvRje2fHzowBRuI+KtcNufHDDec4MYeiGusCCXIStufLNjznEW9JU
+         T0HPQeSakT1hJAC97l1MeZXyYi7bJX6IyZqs5WZ67RXa1oOz9ZDpAs564yUd2WLSODeT
+         L6HuJ8QG+GVuWqq9nvitHJfDVnFpfF4IrEV6prKhUz2r/mOvnK4krBbf7rLedbsTfxxc
+         AyqDYM8gyu371KWsssYdXCo1p3eH4VNEr3/v30LV5h2TuTw1arU52BxIlJQVjy281h1V
+         AjVlNA9F5O5e7EcOpmxt0wh0UwWgmnYas2F8d20o/b3uoZLcsB9QPxR7CVo/XY7/qcVF
+         ZhWA==
+X-Gm-Message-State: AO0yUKXoxeEF21ZBnHrAquuQooxi+ddbJpzXXBNFFzI0EIXb3lF+yfaQ
+        D7UjcTslF3vyUydLzuqTo7Hh+Q==
+X-Google-Smtp-Source: AK7set+R6sbw18cgLNiAvl5saG3Boseyg7OJmQeoP4FW1+FdDJOmHm71GRSBxtg+nuJlzIzOZwY6oA==
+X-Received: by 2002:a17:906:da82:b0:88f:9f5e:f40 with SMTP id xh2-20020a170906da8200b0088f9f5e0f40mr27784941ejb.68.1678302576476;
+        Wed, 08 Mar 2023 11:09:36 -0800 (PST)
+Received: from ?IPV6:2a02:810d:15c0:828:ff33:9b14:bdd2:a3da? ([2a02:810d:15c0:828:ff33:9b14:bdd2:a3da])
+        by smtp.gmail.com with ESMTPSA id g10-20020a50d0ca000000b004bc9d44478fsm8601884edf.51.2023.03.08.11.09.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Mar 2023 11:09:36 -0800 (PST)
+Message-ID: <36169a8a-d418-6d7e-b64c-a7c346b9a218@linaro.org>
+Date:   Wed, 8 Mar 2023 20:09:34 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [net-next PATCH 09/11] dt-bindings: net: dsa: qca8k: add LEDs
+ definition example
+Content-Language: en-US
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, Lee Jones <lee@kernel.org>,
+        linux-leds@vger.kernel.org
+References: <20230307170046.28917-1-ansuelsmth@gmail.com>
+ <20230307170046.28917-10-ansuelsmth@gmail.com>
+ <ad43a809-b9fd-bd24-ee1a-9e509939023b@linaro.org>
+ <df6264de-36c5-41f2-a2a0-08b61d692c75@lunn.ch>
+ <5992cb0a-50a0-a19c-3ad1-03dd347a630b@linaro.org>
+ <6408dbbb.1c0a0220.a28ce.1b32@mx.google.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <6408dbbb.1c0a0220.a28ce.1b32@mx.google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tcp_rtx_synack() now could be called in process context as explained in
-0a375c822497 ("tcp: tcp_rtx_synack() can be called from process
-context").
+On 08/03/2023 20:02, Christian Marangi wrote:
+> On Wed, Mar 08, 2023 at 07:49:26PM +0100, Krzysztof Kozlowski wrote:
+>> On 08/03/2023 14:57, Andrew Lunn wrote:
+>>> On Wed, Mar 08, 2023 at 11:58:33AM +0100, Krzysztof Kozlowski wrote:
+>>>> On 07/03/2023 18:00, Christian Marangi wrote:
+>>>>> Add LEDs definition example for qca8k Switch Family to describe how they
+>>>>> should be defined for a correct usage.
+>>>>>
+>>>>> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+>>>>
+>>>> Where is the changelog? This was v8 already! What happened with all
+>>>> review, changes?
+>>>
+>>> Did you read patch 0?
+>>>
+>>> We have decided to start again, starting small and working up. This
+>>> patchset just adds plain, boring LEDs. No acceleration, on hardware
+>>> offload. Just on/off, and fixed blink.
+>>
+>> Sure, but the patch is carried over. So what happened with all its
+>> feedback? Was there or was not? How can we know?
+>>
+> 
+> The history of the old series is a bit sad, not enough review, another
+> dev asking for a different implementation and me doing an hybrid to
+> reach a common point (and then disappear intro oblivion)...
+> 
+> Short story is that this current series have nothing related to the HW
+> offload feature and only in v7 it was asked to put the LED nodes in
+> ethernet-phy.yaml
+> 
+> I can put in the cover letter of v2 of this series the changelog of the
+> previous series but they would only be related to other part that are
+> not related to this.
+> 
+> Just to give you some context and explain why the changelog was dropped.
 
-tcp_rtx_synack() might call tcp_make_synack(), which will touch per-CPU
-variables with preemption enabled. This causes the following BUG:
+I am less interested in the changelog of entire patchset but of the
+patches which are for me to review. Sending vX as v1 suggests that all
+previous review work on this patch could be in some limbo state. Maybe
+nothing happened in all previous version, but it's now my task to dig it?
 
-    BUG: using __this_cpu_add() in preemptible [00000000] code: ThriftIO1/5464
-    caller is tcp_make_synack+0x841/0xac0
-    Call Trace:
-     <TASK>
-     dump_stack_lvl+0x10d/0x1a0
-     check_preemption_disabled+0x104/0x110
-     tcp_make_synack+0x841/0xac0
-     tcp_v6_send_synack+0x5c/0x450
-     tcp_rtx_synack+0xeb/0x1f0
-     inet_rtx_syn_ack+0x34/0x60
-     tcp_check_req+0x3af/0x9e0
-     tcp_rcv_state_process+0x59b/0x2030
-     tcp_v6_do_rcv+0x5f5/0x700
-     release_sock+0x3a/0xf0
-     tcp_sendmsg+0x33/0x40
-     ____sys_sendmsg+0x2f2/0x490
-     __sys_sendmsg+0x184/0x230
-     do_syscall_64+0x3d/0x90
+This is why you have "---" for the patch changelog.
 
-Avoid calling __TCP_INC_STATS() with will touch per-cpu variables. Use
-TCP_INC_STATS() which is safe to be called from context switch.
-
-Fixes: 8336886f786f ("tcp: TCP Fast Open Server - support TFO listeners")
-Signed-off-by: Breno Leitao <leitao@debian.org>
----
- net/ipv4/tcp_output.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 71d01cf3c13e..ba839e441450 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -3605,7 +3605,7 @@ struct sk_buff *tcp_make_synack(const struct sock *sk, struct dst_entry *dst,
- 	th->window = htons(min(req->rsk_rcv_wnd, 65535U));
- 	tcp_options_write(th, NULL, &opts);
- 	th->doff = (tcp_header_size >> 2);
--	__TCP_INC_STATS(sock_net(sk), TCP_MIB_OUTSEGS);
-+	TCP_INC_STATS(sock_net(sk), TCP_MIB_OUTSEGS);
- 
- #ifdef CONFIG_TCP_MD5SIG
- 	/* Okay, we have all we need - do the md5 hash if needed */
--- 
-2.34.1
+Best regards,
+Krzysztof
 
