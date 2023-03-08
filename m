@@ -2,134 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CBF56AFED6
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 07:21:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C314F6AFEE6
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 07:27:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229844AbjCHGV4 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 8 Mar 2023 01:21:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38166 "EHLO
+        id S229743AbjCHG1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 01:27:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbjCHGVy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 01:21:54 -0500
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9937A6144;
-        Tue,  7 Mar 2023 22:21:52 -0800 (PST)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 3286LBG40015930, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 3286LBG40015930
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
-        Wed, 8 Mar 2023 14:21:11 +0800
-Received: from RTEXMBS06.realtek.com.tw (172.21.6.99) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.32; Wed, 8 Mar 2023 14:21:21 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Wed, 8 Mar 2023 14:21:20 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02]) by
- RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02%5]) with mapi id
- 15.01.2375.007; Wed, 8 Mar 2023 14:21:20 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     Martin Kaiser <martin@kaiser.cx>,
-        Jes Sorensen <Jes.Sorensen@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] wifi: rtl8xxxu: use module_usb_driver
-Thread-Topic: [PATCH] wifi: rtl8xxxu: use module_usb_driver
-Thread-Index: AQHZUS+P3Ysqvr7iGU21QASDQjl8qq7wafOA
-Date:   Wed, 8 Mar 2023 06:21:20 +0000
-Message-ID: <2126bfe772234696956fe6a94c43eebb@realtek.com>
-References: <20230307195718.168021-1-martin@kaiser.cx>
-In-Reply-To: <20230307195718.168021-1-martin@kaiser.cx>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS06.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2023/3/8_=3F=3F_02:31:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S229483AbjCHG1S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 01:27:18 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60AC9A8393;
+        Tue,  7 Mar 2023 22:27:16 -0800 (PST)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4PWj2d2hCkznWW4;
+        Wed,  8 Mar 2023 14:24:25 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Wed, 8 Mar
+ 2023 14:27:13 +0800
+Subject: Re: [PATCH bpf-next v1 1/2] xdp: recycle Page Pool backed skbs built
+ from XDP frames
+To:     Alexander Lobakin <aleksander.lobakin@intel.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Larysa Zaremba <larysa.zaremba@intel.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Song Liu <song@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20230301160315.1022488-1-aleksander.lobakin@intel.com>
+ <20230301160315.1022488-2-aleksander.lobakin@intel.com>
+ <36d42e20-b33f-5442-0db7-e9f5ef9d0941@huawei.com>
+ <dd811304-44ed-0372-8fe7-00c425a453dd@intel.com>
+ <7ffbcac4-f4f2-5579-fd55-35813fbd792c@huawei.com>
+ <9b5b88da-0d2d-d3f3-6ee1-7e4afc2e329a@intel.com>
+ <98aa093a-e772-8882-b0e3-5895fd747e59@huawei.com>
+ <0bc28bea-78f5-bcce-2d45-e6f6d1a7ed40@intel.com>
+ <605cad27-2bf3-7913-877e-d2870892ecd5@huawei.com>
+ <9e8a9346-37f4-7c5d-f1d0-cbba3de805db@intel.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <1cea3621-8f5d-ba95-1b0b-e245ce770abf@huawei.com>
+Date:   Wed, 8 Mar 2023 14:27:13 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-AntiSpam-Interceptor-Info: fallback
-X-KSE-Antivirus-Interceptor-Info: fallback
-X-KSE-AntiSpam-Interceptor-Info: fallback
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <9e8a9346-37f4-7c5d-f1d0-cbba3de805db@intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-> -----Original Message-----
-> From: Martin Kaiser <martin@kaiser.cx>
-> Sent: Wednesday, March 8, 2023 3:57 AM
-> To: Jes Sorensen <Jes.Sorensen@gmail.com>; Kalle Valo <kvalo@kernel.org>; David S. Miller
-> <davem@davemloft.net>; Eric Dumazet <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>; Paolo Abeni
-> <pabeni@redhat.com>
-> Cc: Martin Kaiser <martin@kaiser.cx>; linux-wireless@vger.kernel.org; netdev@vger.kernel.org;
-> linux-kernel@vger.kernel.org
-> Subject: [PATCH] wifi: rtl8xxxu: use module_usb_driver
+On 2023/3/8 2:14, Alexander Lobakin wrote:
+> From: Yunsheng Lin <linyunsheng@huawei.com>
+> Date: Tue, 7 Mar 2023 10:50:34 +0800
 > 
-> We can use the module_usb_driver macro instead of open-coding the driver's
-> init and exit functions. This is simpler and saves some lines of code.
-> Other realtek wireless drivers use module_usb_driver as well.
+>> On 2023/3/6 19:58, Alexander Lobakin wrote:
+>>> From: Yunsheng Lin <linyunsheng@huawei.com>
+>>> Date: Mon, 6 Mar 2023 09:09:31 +0800
 > 
-> Signed-off-by: Martin Kaiser <martin@kaiser.cx>
-
-Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
-
-
-> ---
->  .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 20 +------------------
->  1 file changed, 1 insertion(+), 19 deletions(-)
+> [...]
 > 
-> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> index e619ed21fbfe..58dbad9a14c2 100644
-> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> @@ -7455,24 +7455,6 @@ static struct usb_driver rtl8xxxu_driver = {
->         .disable_hub_initiated_lpm = 1,
->  };
+>>> Ah, from that perspective. Yes, you're probably right, but would need to
+>>> be tested anyway. I don't see any open problems with the PP recycling
+>>> right now on the lists, but someone may try to change it one day.
+>>> Anyway, this flag is only to do a quick test. We do have
+>>> sk_buff::pfmemalloc, but this flag doesn't mean every page from this skb
+>>> was pfmemalloced.
+>>
+>> The point seems to be that sk_buff::pfmemalloc allow false positive, which
+>> means skb->pfmemalloc can be set to true while every page from this skb is
+>> not pfmemalloced as you mentioned.
+>>
+>> While skb->pp_recycle can't allow false positive, if that happens, reference
+>> counting of the page will not be handled properly if pp and non-pp skb shares
+>> the page as the wireless adapter does.
 > 
-> -static int __init rtl8xxxu_module_init(void)
-> -{
-> -       int res;
-> -
-> -       res = usb_register(&rtl8xxxu_driver);
-> -       if (res < 0)
-> -               pr_err(DRIVER_NAME ": usb_register() failed (%i)\n", res);
-> -
-> -       return res;
-> -}
-> -
-> -static void __exit rtl8xxxu_module_exit(void)
-> -{
-> -       usb_deregister(&rtl8xxxu_driver);
-> -}
-> -
-> -
->  MODULE_DEVICE_TABLE(usb, dev_table);
-> 
-> -module_init(rtl8xxxu_module_init);
-> -module_exit(rtl8xxxu_module_exit);
-> +module_usb_driver(rtl8xxxu_driver);
-> --
-> 2.30.2
+> You mean false-positives in both directions? Because if ->pp_recycle is
+> set, the stack can still free non-PP pages. In the opposite case, I mean
+> when ->pp_recycle is false and an skb page belongs to a page_pool, yes,
+> there'll be issues.
 
+That may depends on what is a PP pages and what is a non-PP pages, it seems
+hard to answer now.
+
+For a skb with ->pp_recycle being true and its frag page with page->pp_magic
+being PP_SIGNATURE, when calling skb_clone()/pskb_expand_head() or
+skb_try_coalesce(), we may call __skb_frag_ref() for the frag page, which
+mean a page with page->pp_magic being PP_SIGNATURE can be both PP page
+and non-PP page at the same time. So it is important to set the ->pp_recycle
+correctly, and it seems hard to get that right from past experience，that's
+why a per page marker is suggested.
+
+
+> But I think the deal is to propagate the flag when you want to attach a
+> PP-backed page to the skb? I mean, if someone decides to mix pages with
+> different memory models, it's his responsibility to make sure everything
+> is fine, because it's not a common/intended way. Isn't it?
+> 
+>>
+>>>
+>>>>
+>>>>>
+>>>>>>
+>>>>>> Anyway, I am not sure checking ::pp_magic is correct when a
+>>>>>> page will be passing between different subsystem and back to
+>>>>>> the network stack eventually, checking ::pp_magic may not be
+>>>>>> correct if this happens.
+>>>>>>
+>>>>>> Another way is to use the bottom two bits in bv_page, see:
+>>>>>> https://www.spinics.net/lists/netdev/msg874099.html
+> 
+> This one is interesting actually. We'd only need one bit -- which is
+> 100% free and available in case of page pointers.
+> 
+>>>>>>
+>>>>>>>
+>>>>>>>>
+>>>>>>>>>  
+>>>>>>>>>  	/* Allow SKB to reuse area used by xdp_frame */
+>>>>>>>>>  	xdp_scrub_frame(xdpf);
+> 
+> [...]
+> 
+> Thanks,
+> Olek
+> 
+> .
+> 
