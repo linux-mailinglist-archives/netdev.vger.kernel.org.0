@@ -2,186 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5204D6B161B
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 00:05:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB4596B161F
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 00:06:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229977AbjCHXFB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 18:05:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37704 "EHLO
+        id S230036AbjCHXF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 18:05:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230232AbjCHXEh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 18:04:37 -0500
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2043.outbound.protection.outlook.com [40.107.7.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C01FBD4607;
-        Wed,  8 Mar 2023 15:04:04 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ecrLBOV1DbAOyeLEm5bUTImg5Juz07Dfuex+gGPoAl4puG8ehnWFuae3hcd0ueE9hdGGxX6WFnr9t07ThcKpvrtyPFpyxu8enbFBDDxExAq0ujwEQYokXq1dohkQ0j5z2ziDUOilieXVPDW85MJEgALQBcWlA/+3+d/fqXDcSIJLHX7BKOBGLqQBlNE5GhEhbzPbZOjICrJo0wqFW+Tui/IkmmG4Gq6Q65yQk/PBNvoNlCHXimJ8bcET64zQiXuJXe94BmjqcMmetsJjsISKKqrmKfP7xjB11Cdb1855qbC2inaie6+kf34chuFakQ/jL06jKARf/32k/PBHrtv4/Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=K3XYVHWXpBZxYeOC8I2IP1AmFgW1RKgDGv1y9ioZYW8=;
- b=S7sPMkgErxdf653TCCtb6mIfvOumRTuPBwbS5GWCveiDNMDvUq8dls+wAhKNdm0HzysUkJ1Ly8hb1nGioIJN1aIc71f7XhbBhiGN8+8fhiey14Q4I47jxqg4rP8Dx/Xds9tLMiMPhOBsuFWLT8CJksToCScdl+tm9h0aNKjggAy6h1xbnd1BjF8eTlGZHPJYnVUSPIxOkfVFcFLlIihIpWK0Bj0jqMlSMqDVqnJ/bv7L9Dq4f6zC2+3I1Sz2r4eASLv2JZD/cMNN5YlAXZbUxpOZNhApaR/5v/raEgX2DpKjPgESNzMp0QxjZU6Z9KdI1JJ3RrYuCkOEHqHuOTllmQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=K3XYVHWXpBZxYeOC8I2IP1AmFgW1RKgDGv1y9ioZYW8=;
- b=L29OjOxyxRE4f9vDWkt+oYT7LBCZ6xELkBfAlh9x1BjVPIx/+9Qwni1WGZsIC5mHMUDcsoZzJQL4VSwCIycsvn12iLItnu4IL+fQYCT5/cZyegIHdP89pA0tiVlHwepgDZC9o3MELeZEgUvd/nKBCSgAh7PzZCWOINscHsEaErM=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
- by VI1PR04MB6783.eurprd04.prod.outlook.com (2603:10a6:803:130::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.17; Wed, 8 Mar
- 2023 23:03:26 +0000
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::29a3:120c:7d42:3ca8]) by AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::29a3:120c:7d42:3ca8%7]) with mapi id 15.20.6178.017; Wed, 8 Mar 2023
- 23:03:26 +0000
-Date:   Thu, 9 Mar 2023 01:03:21 +0200
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     =?utf-8?B?S8O2cnk=?= Maincent <kory.maincent@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-omap@vger.kernel.org,
-        Michael Walle <michael@walle.cc>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        thomas.petazzoni@bootlin.com, Russell King <linux@armlinux.org.uk>,
+        with ESMTP id S230078AbjCHXFl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 18:05:41 -0500
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 859A4580D3;
+        Wed,  8 Mar 2023 15:05:25 -0800 (PST)
+Received: by mail-wm1-x32f.google.com with SMTP id k37so58093wms.0;
+        Wed, 08 Mar 2023 15:05:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678316724; x=1680908724;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=MrxkA4cq74hDMupjOi0zWcSJLkmKMsoUcThtRoU/3Oo=;
+        b=nnp9T1aXGbvlYvJlD99TC+T19fkjxIZZSmADG+12rqYctJe3eVYg3L38Y8SnkD49CQ
+         1gjF/uyCKT3k+OOwEJmrREG8WWwh7+Xfu01SQxHbUGdVVzfOLHi2ItZs+0i9JVDsgbIc
+         JyIENEbmQDiUYsVFKeHDd1RWVFhFDy8IqqXfdWaEc72zgb+lcdtL+xL2sC/3d420UKwe
+         lFSOSqd57sFlEFMKV5NZUEWa62VmrO+T/guun+aSOqKa4eEOtJlm1LATeVyCfrvdpgdx
+         0Qb1hZtl8DN4eR4qKnL3eb+ZYcWlcRkhaKrqc9q1yrNMjVDUHCA1L0vpPIGcKWB+CE23
+         JzNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678316724; x=1680908724;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MrxkA4cq74hDMupjOi0zWcSJLkmKMsoUcThtRoU/3Oo=;
+        b=TLUQx5Fi/T6Tzwgx5xZk9Rw3DEqzZFFk44IuVisZWz8ekS3CXjNLRLHyZnCQ4/IzEn
+         gXw6gcGYEHOs/KSBO+HvePu8Uz1dnfwXKkPOg3IpAgEWLqt8GDHS4bAKk6wbIUcq3mGu
+         KxM1gYFu+hUjlSZfYQZSNdh31j5AfvyJqisElmRlo3e6N8xsAPx53jRY6KNth2ZKrc5u
+         hKeYAF0iTOykrA/EdCW8RqhGMk57lrTGK38e2U2djaHzCI3o+T6nN33DzCnQFTe9jqti
+         nBDXJvqqux6DwijtYSP/mqQhnLCFAgNHoz0iCUViizx15u1yXJPLpRTLHJ1EoU+FVA7j
+         dW8w==
+X-Gm-Message-State: AO0yUKV5xJ/16w0o+7ECUDgqXbe7WK4CxwGfYfVEX/gmYlMvs6g6QLzr
+        KlewINiD085pjRX1wgqo+q8=
+X-Google-Smtp-Source: AK7set+71iHzT2HoiBXeCi495NcoLsl4psvqiV+FiR8SAPV3dVdxadhB54QXVl9Wg4EXh9MTD8ASYg==
+X-Received: by 2002:a05:600c:1c1e:b0:3df:f7ba:14f8 with SMTP id j30-20020a05600c1c1e00b003dff7ba14f8mr678359wms.1.1678316723831;
+        Wed, 08 Mar 2023 15:05:23 -0800 (PST)
+Received: from matrix-ESPRIMO-P710 (p57935146.dip0.t-ipconnect.de. [87.147.81.70])
+        by smtp.gmail.com with ESMTPSA id d7-20020a05600c3ac700b003e0015c8618sm754537wms.6.2023.03.08.15.05.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Mar 2023 15:05:23 -0800 (PST)
+Date:   Thu, 9 Mar 2023 00:05:21 +0100
+From:   philipp hortmann <philipp.g.hortmann@gmail.com>
+To:     Martin Kaiser <martin@kaiser.cx>
+Cc:     Jes Sorensen <Jes.Sorensen@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Minghao Chi <chi.minghao@zte.com.cn>,
-        Jie Wang <wangjie125@huawei.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Sean Anderson <sean.anderson@seco.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Marco Bonelli <marco@mebeim.net>
-Subject: Re: [PATCH v3 3/5] net: Let the active time stamping layer be
- selectable.
-Message-ID: <20230308230321.liw3v255okrhxg6s@skbuf>
-References: <20230308135936.761794-1-kory.maincent@bootlin.com>
- <20230308135936.761794-1-kory.maincent@bootlin.com>
- <20230308135936.761794-4-kory.maincent@bootlin.com>
- <20230308135936.761794-4-kory.maincent@bootlin.com>
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230308135936.761794-4-kory.maincent@bootlin.com>
- <20230308135936.761794-4-kory.maincent@bootlin.com>
-X-ClientProxiedBy: BE1P281CA0102.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:79::15) To AM0PR04MB6452.eurprd04.prod.outlook.com
- (2603:10a6:208:16d::21)
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] wifi: rtl8xxxu: use module_usb_driver
+Message-ID: <20230308230521.GA8064@matrix-ESPRIMO-P710>
+References: <20230307195718.168021-1-martin@kaiser.cx>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|VI1PR04MB6783:EE_
-X-MS-Office365-Filtering-Correlation-Id: 01c2af35-6109-41a4-404d-08db20295323
-X-LD-Processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VcA+VPibUrnxSeUW7OxcyQVHL45dtPlxOxR6fjbj4HtOznxDZwem2hyjCoU4mNHFehxit+mHCS5MYkEIdS9CY530BQW6qaKXNFUYK3cV+RxWvQsqlMnhm3bosYrnMSkPNovbET/P9SN6rvJtHuGXbMlG1MBWuXSUDbSRghAi8AcijZwyoaVzXxc7zdCfEvLIXJ1VXLZJxnDBQuCDzdSjG+s0FOuzvXkTEhXgr8AvkGcdJTwfG9aM3je0HJ/iUIDnM4USI2ozvy8kPzBNbrFfzg/0b/J1sYeWZLIu8V6VqpPoPG1OsKGxi/CUsGpm7NoXVzoFCm5DA6WxhmdyN/WsPivPBZ+w3OPz+r6CHDEgHD5U7Ay2o4jra+jsoiLEVnZk1Ky0vREi1EwggDdrwAda5PpA4jO4OqrcDqjBALrUa8/kDxphWPmqcGM++C6/31EyBEDV5gUmEbpKEzSgGHB+XEseK+247kKpRKaJLTaPJDvnxxLe6C0i/LtznCyzn8vnEPzQHvGywXId0HSTSF+SAebhvB0ZBncnW18g1gGQhn4qy6LoT4ZnSa/WAafxZCXak2iEmBR4NY2VAa1L+BLpWWXx5ZHz4EmBJXh25dtwNN/j5lfdfoXoKzr0C1/eI/AUmi86kGRB+Zz5qqFXOoUz5A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(7916004)(366004)(39860400002)(376002)(396003)(346002)(136003)(451199018)(83380400001)(66574015)(6506007)(1076003)(26005)(41300700001)(186003)(478600001)(6486002)(6666004)(6512007)(6916009)(66476007)(66556008)(86362001)(8676002)(4326008)(8936002)(2906002)(66946007)(7406005)(7416002)(9686003)(5660300002)(44832011)(38100700002)(316002)(54906003)(33716001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?I3i57d201tTOHT0YPU1kVqchozqhvNyTTTPbdDiw7uqUkMVa+TZek5wwfq?=
- =?iso-8859-1?Q?EE+h+4UKkVXeSNM/4zuV3Ou7RCLL1GNM30+qBmZ8W+eZ3Lm8LP26YP9zen?=
- =?iso-8859-1?Q?haV4qk1RezRxnrQJGkh6Ru4VN4L7cG2kz5damZeYLNpUwFnGuafVHr7gF7?=
- =?iso-8859-1?Q?Y37HMfG+zKt//VIUJ5dj5J8QG4/UcDrZ9wUmg7YEAS1tUtrMHKuYWdk8Pb?=
- =?iso-8859-1?Q?H3zXTFPjrIXcBrXQLYUr0KjMHbs7mZlx1lgfoQkR+wNOw+L0IrcLC5xSVJ?=
- =?iso-8859-1?Q?XCgcY3WRHo+Av4seRG6AsWnjmh3MIIvghmqMT8SotafFguNUo0URC4sG0A?=
- =?iso-8859-1?Q?scPefOUaMJ9DaR9D+UMtt14LHNnkNAIsIqpNHYFFbANb0iJebsgAoVWYyl?=
- =?iso-8859-1?Q?5tV1FKXrJ4VbGRyb465gv2U9jizb5Y8h1ct8JaMrOFPLAdfYT1s/7x1c36?=
- =?iso-8859-1?Q?ebOK71X4kDaFKKg7Or+fVudZC6BY8xQ/OJMrmth2cR48YH0TvNemXUA6Cn?=
- =?iso-8859-1?Q?I7Nex4gM/rcdF3KqZxGKT2iwDw6za3FkbfOfM0pYRHQC0WZ+nzn9zTrgKH?=
- =?iso-8859-1?Q?BjXaUkiBJ47n3v5GBk1m0ghIEq1loBPhD1HC58rP4vBQV1qgwJ3UgxKrO7?=
- =?iso-8859-1?Q?rsODmiE6xwjODTvEFGZohcw6paiLVeOhbRhowYj5NVyKYvXe2xCQMzfapX?=
- =?iso-8859-1?Q?czCiWiPZm2QIVWP03XpO4nGOJA8Q/9WxZjZze1hAB1GNeHz+TxOlAPbzH9?=
- =?iso-8859-1?Q?PWGCiP7comG6yqcMHgu+MrQP7aIeUP8zDwfwC96+mv8mwf6Js8ADB2+vWT?=
- =?iso-8859-1?Q?zC5C1LUayYiOmqTU4a6Z6EQjR/IoEht19Z06gOkhe4uTHXsIAuyk8jRtBh?=
- =?iso-8859-1?Q?HfBcp5cMU1UNBgso6JAYWHIxLy/+C3VdOKicgjlBTjNEhTvPFDW6woMy6p?=
- =?iso-8859-1?Q?eV/QSkoCXIrjxH3xBzVcw84H60zn14j4xALbt1aduPm+rZcp6ZwaVk6RO6?=
- =?iso-8859-1?Q?8A6TdN/m9wosptmEOozGJlbpl+EeZyerh6kBnWzW4Ux4omnVwO0isgEV6K?=
- =?iso-8859-1?Q?ZDeCY4S55aYojX30mymiODpiQXTO1iOmp1FP3zXjB5algyly6HmbL0ghJt?=
- =?iso-8859-1?Q?69U6Bif/NnOx9cVdcqXE4J/11wE9Jznq+Qwzo6HNWCKk1TNrw53C3/KyYL?=
- =?iso-8859-1?Q?P6ndbRgGuDfd5OLT2HEqDe+BBSOaz3vpr0MA/ZYLwn1IKjV3GsQgd/3Ump?=
- =?iso-8859-1?Q?Pp8Y4CM0x/fdnJYRANv8Flt/dha1ceXUqlvtUUtPFfzo+gBkq1nTnTs0iz?=
- =?iso-8859-1?Q?eVo94iMv/D3TASgd9jquge1OAH9UoTVex1RUuQV1xfW3r+XbgEBzSHbbch?=
- =?iso-8859-1?Q?c4sbek72MFz6ekpWnGQ4peOrC3GKzn5lQarvaQaHapvtdf3a43NXhX/yzf?=
- =?iso-8859-1?Q?6nxirezSzZa11+KOgqNOUwKE3JMvOwXKdW5Ym3KVFHFHyeL2VofUA4DQu6?=
- =?iso-8859-1?Q?0D+ndgI9oMCpTyk/Ch9KNda/p4Rir6UYJsv18mCtKnvH5TSwLtw0Jj/q4w?=
- =?iso-8859-1?Q?6tltQl6ih19NhSK/raR4oW7UctLbazUk9ZOtulcHjIJzAUMGg1P+UFaW8n?=
- =?iso-8859-1?Q?MXa87tKsSq64ElRCuLBpCQEmF42SVst3yAjqnREa+g7C8lzozCXRXiOw?=
- =?iso-8859-1?Q?=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 01c2af35-6109-41a4-404d-08db20295323
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2023 23:03:26.5967
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: DxQyCSHtvNDmnJnn0xaRCPIXmReLzKhjuW9NVS8cqMEkRLXR5mW4yZA2yhbF8CkEKd4Z5njp9qal5lSzLEvM7Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6783
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230307195718.168021-1-martin@kaiser.cx>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-(trimmed CC list of bouncing email addresses)
+On Tue, Mar 07, 2023 at 08:57:17PM +0100, Martin Kaiser wrote:
+> We can use the module_usb_driver macro instead of open-coding the driver's
+> init and exit functions. This is simpler and saves some lines of code.
+> Other realtek wireless drivers use module_usb_driver as well.
+> 
+> Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+> ---
+>  .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 20 +------------------
+>  1 file changed, 1 insertion(+), 19 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+> index e619ed21fbfe..58dbad9a14c2 100644
+> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+> @@ -7455,24 +7455,6 @@ static struct usb_driver rtl8xxxu_driver = {
+>  	.disable_hub_initiated_lpm = 1,
+>  };
+>  
+> -static int __init rtl8xxxu_module_init(void)
+> -{
+> -	int res;
+> -
+> -	res = usb_register(&rtl8xxxu_driver);
+> -	if (res < 0)
+> -		pr_err(DRIVER_NAME ": usb_register() failed (%i)\n", res);
+> -
+> -	return res;
+> -}
+> -
+> -static void __exit rtl8xxxu_module_exit(void)
+> -{
+> -	usb_deregister(&rtl8xxxu_driver);
+> -}
+> -
+> -
+>  MODULE_DEVICE_TABLE(usb, dev_table);
+>  
+> -module_init(rtl8xxxu_module_init);
+> -module_exit(rtl8xxxu_module_exit);
+> +module_usb_driver(rtl8xxxu_driver);
+> -- 
+> 2.30.2
 
-On Wed, Mar 08, 2023 at 02:59:27PM +0100, Köry Maincent wrote:
-> +void of_set_timestamp(struct net_device *netdev, struct phy_device *phydev)
-> +{
-> +	struct device_node *node = phydev->mdio.dev.of_node;
-> +	const struct ethtool_ops *ops = netdev->ethtool_ops;
-> +	const char *s;
-> +	enum timestamping_layer ts_layer = 0;
-> +
-> +	if (phy_has_hwtstamp(phydev))
-> +		ts_layer = PHY_TIMESTAMPING;
-> +	else if (ops->get_ts_info)
-> +		ts_layer = MAC_TIMESTAMPING;
-> +
-> +	if (of_property_read_string(node, "preferred-timestamp", &s))
-> +		goto out;
-> +
-> +	if (!s)
-> +		goto out;
-> +
-> +	if (phy_has_hwtstamp(phydev) && !strcmp(s, "phy"))
-> +		ts_layer = PHY_TIMESTAMPING;
-> +
-> +	if (ops->get_ts_info && !strcmp(s, "mac"))
-> +		ts_layer = MAC_TIMESTAMPING;
-> +
-> +out:
-> +	netdev->selected_timestamping_layer = ts_layer;
-> +}
+Tested-by: Philipp Hortmann <philipp.g.hortmann@gmail.com> # Edimax N150
 
-From previous discussions, I believe that a device tree property was
-added in order to prevent perceived performance regressions when
-timestamping support is added to a PHY driver, correct?
-
-I have a dumb question: if updating the device trees is needed in order
-to prevent these behavior changes, then how is the regression problem
-addressed for those device trees which don't contain this new property
-(all device trees)?
