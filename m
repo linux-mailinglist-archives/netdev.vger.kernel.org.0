@@ -2,115 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2480B6B10FC
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 19:26:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 315E76B111F
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 19:35:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229702AbjCHS0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 13:26:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47704 "EHLO
+        id S230129AbjCHSe6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 13:34:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbjCHS0v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 13:26:51 -0500
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C744C1C3C
-        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 10:26:50 -0800 (PST)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-5395c8fc4a1so176178967b3.5
-        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 10:26:50 -0800 (PST)
+        with ESMTP id S230140AbjCHSet (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 13:34:49 -0500
+Received: from mail-vs1-xe30.google.com (mail-vs1-xe30.google.com [IPv6:2607:f8b0:4864:20::e30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 207A85F21E
+        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 10:34:48 -0800 (PST)
+Received: by mail-vs1-xe30.google.com with SMTP id s1so16234259vsk.5
+        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 10:34:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1678300009;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=f683pxzicURAxXmgmqS7vLteyYNdzwQ20DM2v6k13W8=;
-        b=THAQ3NHm8qdpVz15oeqSmJdEX6KZ8FmlBenICaLiHkhoxzODuyUJQWaCsD9xRm9pi+
-         YgSrYsieASJOFFdQcDmQNZgFm4OIwYCtsNzbM2rp2OKJPzLk7s6IWUoLrqB6lBYJAJJZ
-         wymukh0dxLp6JXjyFTZy0SOxuwhLDfpUpUvynDMuH39A/GIqJZAfafBEiIkka5q6bwWN
-         Ltl7jBgDjcGEQvWU5icY0yefKUx6ZspeslP4IDNHI7F9ccBP9usje8uDpnO24nq6o088
-         THi40PvZr0r/r1+7qPPOPiczl0juVbS2+Ar/bm8wyPHXz90bvPehsjSP8sk6ifY9gfM/
-         /JDA==
+        d=chromium.org; s=google; t=1678300487;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=C9F1enZvKSGIFHS4e3aiA1VRNnNfG61Asy+3o9z9VzE=;
+        b=NvRD0HN9B8mPDstls48UkQEqfFQepTv7OuwyqlcYIXukeIQ3JJmoj3B+k3oi8AZMyH
+         dFpmakTIeIlJrPcIGPppO0Czi2givmZ7rX8DUBWdVzl3CSBKhTOKG3TgLVzokH9BDEMg
+         0Ae/tCc7M/scZ6mXoNEywGGKMyXuAp16lwA3s=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678300009;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=f683pxzicURAxXmgmqS7vLteyYNdzwQ20DM2v6k13W8=;
-        b=Z3q5P2ozzcnfHeOVl+S64+gtoIG17aYpUrheo4sGinp6tU7QaZgeBs9nRWhazJcScm
-         q1Owkw/YpBPHXQc257gWxifQ39zZidvkZ52fIFueTlorqizQjBA1G3+ACHZg7+kprRsF
-         QCgqNR7yQyB7NPGhq+fEmcK8OiUntgi+At7QfamOV32ZfYAcf436XPVTXexu0VGPscKz
-         4j4rNtkEaG5J1DmC3gLIBqbK2QUolo9y1XJvibPV5/poA9Im4LRiKfcgclgZqMyXhVgZ
-         uTmKDR70Ra1dk76JXiwcf3ZZhrps1S9v6zyNCUDm6TKgPg+1JLLJ3vPg943J9ne1JIKE
-         7PmA==
-X-Gm-Message-State: AO0yUKVPxxGMd8L1iYOOmcPRE6bWUDvH1m0aqSTf8rcyMlZF8hdTsmIN
-        Hao6uk65fbbvNBbRzKhrHVG6ArJ1lWRrsA==
-X-Google-Smtp-Source: AK7set+kPTWQ8Q6PIdy91ueFMDZVix/G7PuF3+A9MKOQFE477eb/Wm2ZwHuWuBB3Qf/FvNXftsqCnvzLxyK5vQ==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a05:6902:4d1:b0:8dd:4f2c:ede4 with SMTP
- id v17-20020a05690204d100b008dd4f2cede4mr11659078ybs.2.1678300009511; Wed, 08
- Mar 2023 10:26:49 -0800 (PST)
-Date:   Wed,  8 Mar 2023 18:26:48 +0000
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.40.0.rc1.284.g88254d51c5-goog
-Message-ID: <20230308182648.1150762-1-edumazet@google.com>
-Subject: [PATCH net-next] net: sched: remove qdisc_watchdog->last_expires
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        Eric Dumazet <edumazet@google.com>
+        d=1e100.net; s=20210112; t=1678300487;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=C9F1enZvKSGIFHS4e3aiA1VRNnNfG61Asy+3o9z9VzE=;
+        b=Ta+MEVaLayxgqpwZnQUIx0rD4TP0fGrTYOkre+wlOaFXhLcS+WPZ3frex9m8AlLZEy
+         KK8GesRZ8SoOUF48XSaVI5qvSDPeXOuAW7a+2NpabQofYYGzWsvlN6NyMLH5b1+okyNU
+         rMpiIpQrpjTHOd3rFXZL0MswMV3S866AK7rZ4+hRGq7/jVSIXVTcBlURfIYliuGngG58
+         MoBepg8UUSDUhJi5vXOQY/9zjIyUZdUG/H6PksLQNJ842Dd/5avlp9s43ngoG6SatwRh
+         Wabmtz0NSeC+KnK/MjWg/YZTOI5Fsd9EnFVFZx0Ysllou52anHfvjMJi9nZlBiKOgbpr
+         ngBQ==
+X-Gm-Message-State: AO0yUKVPrimTLtyxSCxkarhnuXwya4Xq8d4dwXWijYv6cIUKoyH7V20D
+        LXApWvb7Nh8/mbwd8sEWc8KCgNmzX00Z0q0y2r//OQ==
+X-Google-Smtp-Source: AK7set+8cPhuQAdLM3zB+PW2jfEvoEE/c3Gz044eevRZImhbZFwUCa9TW4KgyrSGIMQq31kIarVT1Pg4wy4Z5TqN2Rk=
+X-Received: by 2002:a67:f9d9:0:b0:420:10e:14e8 with SMTP id
+ c25-20020a67f9d9000000b00420010e14e8mr12386454vsq.1.1678300487055; Wed, 08
+ Mar 2023 10:34:47 -0800 (PST)
+MIME-Version: 1.0
+References: <20230307200502.2263655-1-grundler@chromium.org> <20230307164736.37ecb2f9@kernel.org>
+In-Reply-To: <20230307164736.37ecb2f9@kernel.org>
+From:   Grant Grundler <grundler@chromium.org>
+Date:   Wed, 8 Mar 2023 10:34:35 -0800
+Message-ID: <CANEJEGuMuA=Hvu4DO7Hj8kZLwEuNmuzesY3QbVDpECanaC4hpA@mail.gmail.com>
+Subject: Re: [PATCHv2 1/2] TEST:net: asix: fix modprobe "sysfs: cannot create
+ duplicate filename"
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Grant Grundler <grundler@chromium.org>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Eizan Miyamoto <eizan@chromium.org>,
+        netdev <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Anton Lundin <glance@acc.umu.se>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-9.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+        USER_IN_DEF_SPF_WL autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This field mirrors hrtimer softexpires, we can instead
-use the existing helpers.
+On Tue, Mar 7, 2023 at 4:47=E2=80=AFPM Jakub Kicinski <kuba@kernel.org> wro=
+te:
+>
+> On Tue,  7 Mar 2023 12:05:01 -0800 Grant Grundler wrote:
+> > Subject: [PATCHv2 1/2] TEST:net: asix: fix modprobe "sysfs: cannot crea=
+te duplicate filename"
+>
+> Why the "TEST:" prefix?
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- include/net/pkt_sched.h | 1 -
- net/sched/sch_api.c     | 6 ++++--
- 2 files changed, 4 insertions(+), 3 deletions(-)
+Sorry - that's left over from how I mark the change for testing with
+chromeos-5.15 kernel branch:
+   https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel=
+/+/4313619
 
-diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
-index 2016839991a428d951c8f7bf2e43e4cb5dd71f4c..bb0bd69fb655d462bdc49934e2e094602ab45394 100644
---- a/include/net/pkt_sched.h
-+++ b/include/net/pkt_sched.h
-@@ -64,7 +64,6 @@ static inline psched_time_t psched_get_time(void)
- }
- 
- struct qdisc_watchdog {
--	u64		last_expires;
- 	struct hrtimer	timer;
- 	struct Qdisc	*qdisc;
- };
-diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-index aba789c30a2eb50d339b8a888495b794825e1775..fdb8f429333d26a1380063445ebfc9afad3aef84 100644
---- a/net/sched/sch_api.c
-+++ b/net/sched/sch_api.c
-@@ -639,14 +639,16 @@ void qdisc_watchdog_schedule_range_ns(struct qdisc_watchdog *wd, u64 expires,
- 		return;
- 
- 	if (hrtimer_is_queued(&wd->timer)) {
-+		u64 softexpires;
-+
-+		softexpires = ktime_to_ns(hrtimer_get_softexpires(&wd->timer));
- 		/* If timer is already set in [expires, expires + delta_ns],
- 		 * do not reprogram it.
- 		 */
--		if (wd->last_expires - expires <= delta_ns)
-+		if (softexpires - expires <= delta_ns)
- 			return;
- 	}
- 
--	wd->last_expires = expires;
- 	hrtimer_start_range_ns(&wd->timer,
- 			       ns_to_ktime(expires),
- 			       delta_ns,
--- 
-2.40.0.rc1.284.g88254d51c5-goog
+I should have removed that.  I upload the change to gerrit so partners
+can easily test the same code  (e.g. coworker Eizan who is in
+Australia).
 
+If you follow the link above, you can see I'm testing a bunch of
+additional backports as well and have additional fields in the commit
+message required by chromium.org.
+
+> The patch doesn't apply cleanly, it needs to go via this tree:
+> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/
+> so rebase it onto that, please, and put [PATCH net] in the subject
+> rather than just [PATCH].
+
+Ok - thanks! Wil repost v3 against netdev/net.git/ shortly. No problem.
+
+> Keep patch 2 locally for about a week (we merge fixes and cleanup
+> branches once a week around Thu, and the two patches depend on each
+> other).
+
+Awesome! Sounds good.
+
+> Please look thru at least the tl;dr of our doc:
+> https://www.kernel.org/doc/html/next/process/maintainer-netdev.html
+
+Thanks!
+
+Because I've been "randomly" contributing to netdev for 20+ years,
+I've not looked for documentation (beyond SubmittingPatches). But I am
+quite willing to read and follow it - makes life easier for everyone.
+
+cheers,
+grant
