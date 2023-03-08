@@ -2,179 +2,312 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AB166AFE91
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 06:44:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CDED6AFE96
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 06:49:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229764AbjCHFog (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 00:44:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57664 "EHLO
+        id S229695AbjCHFtD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 00:49:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229793AbjCHFod (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 00:44:33 -0500
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2073.outbound.protection.outlook.com [40.107.94.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D3C49F227;
-        Tue,  7 Mar 2023 21:44:26 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SV+XREi2HeYrvBoN9IZCltqf9OG2Z8KqoW9PrWDTdfZQZcXy6+CLkzCa8qBtgEQOjjTkfCb14Hn5xfMG+EXE1vaxl0fLHusCfPefVYiV9oALCRlv45JsiF+Dwf6COgfy39SsskiYv24RSYrame0hCThk1LdUTotlgIordt6y/Xfuc8y/Hje97FJM/zspv9ABZymXKS0YvmmtNdknazKYQVFlduheNQloeFwqxxrqQlZntbkjMpIPstOeEDUe8X9eIR3o2SiTh9Gjj5eHquSsCiVQQoT58NI7c4/OMOGzgEfJvaSE57Wom6bpDf2Z1i9ab4s2BJ1hM9fPHYSBvJyuLQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LGQcNIIDk5kKNbMPKH2f/sBrlxLPh0Ggwde5vqsbiEI=;
- b=Nm7NXF8zQwdmLeArChUKML5LtMgncyW5eiSgXS8BR0rat9yQBZ8K9ixbHteh7S8RA4BsgUdhfvymedpyTG9vHK3qxDxEumStk37kk4sD9ekW6ZT5r8/sT1UyqKlfnlfmhvwlM65DbfBRJPRywhIIU0+kD4iEdNYrhk02EZFRHC9nMJQFfN6t9Kak+eG37GVb49sADGJo7U3HFIt8Lfx3xP/h1pKdpp5EMyJ2lpeVp0EDmuVuMKC1r2WRf8qjCBzdislF3u1SNTi5bAcVAwh0eLl1aH2BkRKd7W2pzHiCK648eHAxd3RsBWhJWrovzYyjckN4WUSK6BC6GFWHJgZ6ww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LGQcNIIDk5kKNbMPKH2f/sBrlxLPh0Ggwde5vqsbiEI=;
- b=RI4yxdKeFDyYMhKRbf414Q2147afAC0fO1vG/2MC3uBJTFxWoflhWxW0oLzx3FZX4ZLe0sqD2p8ZTbnGvoZ0ANjIqDiDsq6hzp5a7gp0TRvGjk2jssPrv4zP5tHkYeEYIKIw9wfhysO9tj/Ol99gkSYir3mJ0oarzQJPWYRFtSo=
-Received: from CY5PR15CA0027.namprd15.prod.outlook.com (2603:10b6:930:14::20)
- by PH7PR12MB6739.namprd12.prod.outlook.com (2603:10b6:510:1aa::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.16; Wed, 8 Mar
- 2023 05:44:23 +0000
-Received: from CY4PEPF0000C968.namprd02.prod.outlook.com
- (2603:10b6:930:14:cafe::f5) by CY5PR15CA0027.outlook.office365.com
- (2603:10b6:930:14::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.17 via Frontend
- Transport; Wed, 8 Mar 2023 05:44:23 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
-Received: from SATLEXMB03.amd.com (165.204.84.17) by
- CY4PEPF0000C968.mail.protection.outlook.com (10.167.241.72) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6178.12 via Frontend Transport; Wed, 8 Mar 2023 05:44:23 +0000
-Received: from SATLEXMB07.amd.com (10.181.41.45) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 7 Mar
- 2023 23:44:17 -0600
-Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB07.amd.com
- (10.181.41.45) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 7 Mar
- 2023 21:44:17 -0800
-Received: from xhdsneeli40.xilinx.com (10.180.168.240) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.34 via Frontend
- Transport; Tue, 7 Mar 2023 23:44:13 -0600
-From:   Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <robh+dt@kernel.org>,
-        <richardcochran@gmail.com>
-CC:     <krzysztof.kozlowski+dt@linaro.org>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <yangbo.lu@nxp.com>, <radhey.shyam.pandey@amd.com>,
-        <anirudha.sarangi@amd.com>, <harini.katakam@amd.com>,
-        <sarath.babu.naidu.gaddam@amd.com>, <git@amd.com>
-Subject: [PATCH net-next V3] dt-bindings: net: ethernet-controller: Add ptp-hardware-clock
-Date:   Wed, 8 Mar 2023 11:14:08 +0530
-Message-ID: <20230308054408.1353992-2-sarath.babu.naidu.gaddam@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230308054408.1353992-1-sarath.babu.naidu.gaddam@amd.com>
-References: <20230308054408.1353992-1-sarath.babu.naidu.gaddam@amd.com>
+        with ESMTP id S229456AbjCHFtC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 00:49:02 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B3B6A1FF1
+        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 21:48:59 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pZmfY-0003ya-NY; Wed, 08 Mar 2023 06:48:56 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pZmfW-0007Bs-EE; Wed, 08 Mar 2023 06:48:54 +0100
+Date:   Wed, 8 Mar 2023 06:48:54 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, Eric Dumazet <edumazet@google.com>,
+        kernel@pengutronix.de, Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next v1 2/2] net: dsa: microchip: add ETS Qdisc
+ support for KSZ9477 series
+Message-ID: <20230308054854.GC1692@pengutronix.de>
+References: <20230306124940.865233-1-o.rempel@pengutronix.de>
+ <20230306124940.865233-2-o.rempel@pengutronix.de>
+ <20230306140651.kqayqatlrccfky2b@skbuf>
+ <20230306163542.GB11936@pengutronix.de>
+ <20230307164614.jy2mzxvk3xgc4z7b@skbuf>
+ <20230307182732.GA1692@pengutronix.de>
+ <20230307185734.x2lv4j3ml3fzfzoy@skbuf>
+ <20230307195250.GB1692@pengutronix.de>
+ <20230307211134.ref5gwbv52jd473r@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000C968:EE_|PH7PR12MB6739:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3b8c057c-7c21-4fc3-a9ca-08db1f982bc6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: PEbxfh197mGa8ASh0SbzjshfluM+jzvOm/fyIZmmosJc6CPLeWYOTTEsKU2Nu7Tnx3aNnIgJ3Izinwd/70hItcQDHPOy61gBvY1f2Fu6SEp9rXJ76naoCOnP/ZKl/cDZD6sxpYlIErGub2bZFQaUiXjmfjOWx4kU8WAC6LdyDezZzUOMnF/N+18a3PuDiGtdd6SkC0Ya3PEQhRaPmWIi9GYLNSkqP3+xr1V4pTfUUYPhofg9P7l/ftYvpIXbo8VkP1sKC4Ab0C/V/fCDpfw7/mD+vvxFlrgJQbmNQH+J7+aOR9dtCSnJjlp58VGr5eVLJ0OBpZyOkq/gQn1rEaGQgSrt5DkhcbsULWhLcn8Udzc9MWZm5qEw21KhEVOMPFjcUtvN68pkVkJ1qgv6LLCdKrpBDIk8FhCDmHSXyjHAhFLyAbYtY2cDQH/nwC6kGy/4KbiQjSsOoTuey6BDJzMIx53sJEYwSBBZxN/ePZCKeFA7u+uS1Z4CtXBxDoCMqH2HYREnaQUS6vS4VMSBnUCYvSmb6gAer3/5lUsqSz/iX1sOf9q0Q7vUyxmN5zn2CQ73bYSpWrleVtOiMmpHNbKlmuPwDzO2hZkwieH1g2I8OSSzFwaPVS0AyMhX3c0qG5mgclfrkFaOfJCiC/QBvI0qJgCUxLNuS6uT+DtOXXSWmPAJ66ojnvhqJoGXvdLAALYaBm0xBhXn5u+3xvY3hkGD6kipvulIoktl+uOE6RQvlGI9y4NxHcvTIrjOuDytFIhoMRQxzAy7rzeFVElnSk0zs6mAwLkm4hXAo54UDKp706I=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(136003)(39860400002)(396003)(376002)(346002)(451199018)(40470700004)(36840700001)(46966006)(2906002)(40480700001)(40460700003)(966005)(186003)(336012)(6666004)(26005)(83380400001)(103116003)(82310400005)(426003)(47076005)(41300700001)(86362001)(70586007)(70206006)(4326008)(8676002)(110136005)(54906003)(316002)(2616005)(478600001)(1076003)(7416002)(356005)(81166007)(36756003)(36860700001)(5660300002)(82740400003)(8936002)(2101003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2023 05:44:23.1736
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3b8c057c-7c21-4fc3-a9ca-08db1f982bc6
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CY4PEPF0000C968.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6739
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20230307211134.ref5gwbv52jd473r@skbuf>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is currently no standard property to pass PTP device index
-information to ethernet driver when they are independent.
+On Tue, Mar 07, 2023 at 11:11:34PM +0200, Vladimir Oltean wrote:
+> On Tue, Mar 07, 2023 at 08:52:50PM +0100, Oleksij Rempel wrote:
+> > > > One more question is, what is actual expected behavior of mqprio if max_rate
+> > > > option is used? In my case, if max_rate is set to a queue (even to max value),
+> > > > then strict priority TSA will not work:
+> > > > queue0---max rate 100Mbit/s---\
+> > > >                                |---100Mbit/s---
+> > > > queue1---max rate 100Mbit/s---/
+> > > > 
+> > > > in this example both streams will get 49Mbit/s. My expectation of strict prio
+> > > > is that queue1 should get 100Mbit/s and queue 0Mbit/s
+> > > 
+> > > I don't understand this. Have you already implemented mqprio offloading
+> > > and this is what you observe?
+> > 
+> > Ack.
+> > 
+> > > max_rate is an option per traffic class. Are queue0 and queue1 mapped to
+> > > the same traffic class in your example, or are they not?
+> > 
+> > They are separate TCs. It is not possible to assign multiple TXQs to on TC on
+> > KSZ.
+> > 
+> > > Could you show the full ommand you ran?
+> > 
+> > tc qdisc add dev lan2 parent root handle 100 mqprio num_tc 4 map 0 1 2 3
+> > queues 1@0 1@1 1@2 1@3  hw 1 mode channel shaper bw_rlimit max_rate
+> > 70Mbit 70Mbit 70Mbit 70Mbit
+> > 
+> > lan2 is bridged with lan1 and lan3. Egress traffic on lan2 is from lan1 and lan3.
+> > For testing I use 2 iperf3 instances with different PCP values in the VLAN tag.
+> > Classification is done by HW (currently not configurable from user space)
+> 
+> Hmm, I still don't understand the question. First of all you changed the
+> data between messages - first you talk about max_rate 100 Mbps and then
+> you specify max_rate 70Mbit per traffic class. Possibly also the link
+> speeds are changed between the 2 examples. What is the link speed of the
+> egress port in the 2 examples?
 
-ptp-hardware-clock property will contain phandle to PTP clock node.
+The link is 100Mbit/s
 
-Its a generic (optional) property name to link to PTP phandle to
-Ethernet node. Any future or current ethernet drivers that need
-a reference to the PHC used on their system can simply use this
-generic property name instead of using custom property
-implementation in their device tree nodes."
+Configuring all TCs to 100Mbit will make same effect, no prioritisation
+will happen:
+ tc qdisc add dev lan2 parent root handle 100 mqprio num_tc 4 map 0 1 2 3
+ queues 1@0 1@1 1@2 1@3  hw 1 mode channel shaper bw_rlimit max_rate
+ 100Mbit 100Mbit 100Mbit 100Mbit
 
-Signed-off-by: Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
----
+> The question is phrased as "what is the actual expected behavior" - that
+> would be easy - the traffic classes corresponding to the 2 TXQs are rate
+> limited to no more than 100 Mbps each. When the total sum of bandwidth
+> consumptions exceeds the capacity of the link is when you'll start
+> seeing prioritization effects.
 
-Freescale driver currently has this implementation but it will be
-good to agree on a generic (optional) property name to link to PTP
-phandle to Ethernet node. In future or any current ethernet driver
-wants to use this method of reading the PHC index,they can simply use
-this generic name and point their own PTP clock node, instead of
-creating separate property names in each ethernet driver DT node.
+In this case and if my code is correct, rate limit can't be used for
+MQPRIO on this chip.
 
-axiethernet driver uses this method when PTP support is integrated.
+> If the question is why this doesn't happen in your case and they get
+> equal bandwidths instead (assuming you do create congestion), I don't know;
+> I have seen neither your implementation nor am I familiar with the
+> hardware.
 
-Example:
-    fman0: fman@1a00000 {
-        ptp-hardware-clock = <&ptp_timer0>;
-    }
+See the code at the end of mail.
 
-    ptp_timer0: ptp-timer@1afe000 {
-        compatible = "fsl,fman-ptp-timer";
-        reg = <0x0 0x1afe000 0x0 0x1000>;
-    }
+>  However, there are a few things I've noticed which might be of
+> help:
+> 
+> - the fact that you get 50-50 bandwidth allocation sounds an awful lot
+>   to me as if the TXQs are still operating in WRR mode and not in strict
+>   priority mode.
 
-DT information:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/arm64/boot/dts/freescale/qoriq-fman3-0.dtsi#n23
+Even not *W*RR. Configuring weight to different queues will not make
+effect as soon as rate limit is not zero.
 
-Freescale driver:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c#n407
+> - the KSZ9477 datasheet says that rate limiting is per port, and not per
+>   queue, unless Switch MAC Control 5 Register bit 3 (Queue Based Egress
+>   Rate Limit Enable) is set.
 
-Changes in V3:
-1) Updated commit description.
-2) Add Acked-by: Richard Cochran.
+This part was easy to test. By configuring different queues to different
+rate i was able to see if traffic flows trough expected queue.
+ tc qdisc add dev lan2 parent root handle 100 mqprio num_tc 4 map 0 1 2 3
+ queues 1@0 1@1 1@2 1@3  hw 1 mode channel shaper bw_rlimit max_rate
+ 10Mbit 20Mbit 30Mbit 40Mbit
 
-Changes in V2:
-1) Changed the ptimer-handle to ptp-hardware-clock based on
-   Richard Cochran's comment.
-2) Updated commit description.
----
- .../devicetree/bindings/net/ethernet-controller.yaml         | 5 +++++
- 1 file changed, 5 insertions(+)
+Since there are no queue counters, it is only way to confirm if my code
+was actually working.
 
-diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-index 00be387984ac..a97ab25b07a5 100644
---- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-+++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-@@ -161,6 +161,11 @@ properties:
-       - auto
-       - in-band-status
+> - maybe you simply failed to convert the rates properly between the unit
+>   of measurement passed by iproute2 to the unit of measurement expected
+>   by hw. Here's a random comment from the ice driver:
+> 
+> 		/* TC command takes input in K/N/Gbps or K/M/Gbit etc but
+> 		 * converts the bandwidth rate limit into Bytes/s when
+> 		 * passing it down to the driver. So convert input bandwidth
+> 		 * from Bytes/s to Kbps
+> 		 */
+
+I get expected rate per queue if rate limiting is working. But like I
+said, it is enough to set max rate limit to a queue to make strict prio
+and WRR modes do not work.
+
+This is draft code for MQPRIO. Mainline version would look a bit more
+complicated, because rate configuration is different per link speed. I
+would need to update rate config on each link up event. But, since
+prioritization is not working as soon as rate limit is configured, using
+MQPRIO make no sense any way.
+
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index e9cee0ce6b46..9a57595d3248 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -22,6 +22,7 @@
+ #include <linux/of_device.h>
+ #include <linux/of_net.h>
+ #include <linux/micrel_phy.h>
++#include <linux/units.h>
+ #include <net/dsa.h>
+ #include <net/pkt_cls.h>
+ #include <net/switchdev.h>
+@@ -3348,6 +3349,88 @@ static int ksz_tc_setup_qdisc_ets(struct dsa_switch *ds, int port,
+ 	return -EOPNOTSUPP;
+ }
  
-+  ptp-hardware-clock:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description:
-+      Specifies a reference to a node representing a IEEE1588 timer.
++static int ksz_reset_per_queue_rate_limit(struct ksz_device *dev, int port)
++{
++	int i, ret;
 +
-   fixed-link:
-     oneOf:
-       - $ref: /schemas/types.yaml#/definitions/uint32-array
--- 
-2.25.1
++	for (i = 0; i < dev->info->num_tx_queues; i++) {
++		ret = ksz_pwrite8(dev, port, KSZ9477_REG_PORT_OUT_RATE_0 + i, 0);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
++}
++
++static int ksz_setup_queue_rates(struct ksz_device *dev, int port, int queue,
++				 u64 max_rate)
++{
++	u8 val = 0;
++
++	/* Convert to from Bps to bps */
++	max_rate *= 8;
++
++	/* TODO: this conversation works only for 10 and 100Mbit links */
++	if (max_rate >= (1 * MEGA)) {
++		val = DIV_ROUND_CLOSEST_ULL(max_rate, 1 * MEGA);
++	}
++
++	return ksz_pwrite8(dev, port, KSZ9477_REG_PORT_OUT_RATE_0 + queue, val);
++}
++
++static int ksz_setup_tc_mqprio(struct dsa_switch *ds, int port,
++			       struct tc_mqprio_qopt_offload *mqprio)
++{
++	struct ksz_device *dev = ds->priv;
++	struct net_device *ndev;
++	int ret, queue;
++	u8 num_queues;
++	u8 num_tc;
++
++	mqprio->qopt.hw = TC_MQPRIO_HW_OFFLOAD_TCS;
++	ndev = ksz_port_to_netdev(dev, port);
++	num_queues = dev->info->num_tx_queues;
++	num_tc = mqprio->qopt.num_tc;
++
++	if (num_tc > num_queues)
++		return -EINVAL;
++
++	if (!num_tc) {
++		netdev_reset_tc(ndev);
++		return ksz_reset_per_queue_rate_limit(dev, port);
++	}
++
++	netdev_set_num_tc(ndev, mqprio->qopt.num_tc);
++
++	for (queue = 0; queue < mqprio->qopt.num_tc; queue++) {
++		netdev_set_tc_queue(ndev, queue, mqprio->qopt.count[queue],
++				    mqprio->qopt.offset[queue]);
++
++		ret = ksz_pwrite32(dev, port, REG_PORT_MTI_QUEUE_INDEX__4, queue);
++		if (ret)
++			return ret;
++
++		ret = ksz_setup_tc_mode(dev, port, MTI_SCHEDULE_STRICT_PRIO,
++					MTI_SHAPING_OFF);
++		if (ret)
++			return ret;
++	}
++
++	if (mqprio->shaper != TC_MQPRIO_SHAPER_BW_RATE)
++		return ksz_reset_per_queue_rate_limit(dev, port);
++
++	for (queue = 0; queue < mqprio->qopt.num_tc; queue++) {
++		ret = ksz_setup_queue_rates(dev, port, queue,
++					    mqprio->max_rate[queue]);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
++}
++
++
++
+ static int ksz_setup_tc(struct dsa_switch *ds, int port,
+ 			enum tc_setup_type type, void *type_data)
+ {
+@@ -3357,6 +3440,8 @@ static int ksz_setup_tc(struct dsa_switch *ds, int port,
+ 	case TC_SETUP_QDISC_ETS:
+ 		ksz_tc_setup_qdisc_ets(ds, 2, type_data);
+ 		return ksz_tc_setup_qdisc_ets(ds, port, type_data);
++	case TC_SETUP_QDISC_MQPRIO:
++		return ksz_setup_tc_mqprio(ds, port, type_data);
+ 	default:
+ 		return -EOPNOTSUPP;
+ 	}
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 7618a4714e06..e284538d6898 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -590,6 +590,17 @@ static inline int is_lan937x(struct ksz_device *dev)
+ 		dev->chip_id == LAN9374_CHIP_ID;
+ }
+ 
++static inline struct net_device *ksz_port_to_netdev(struct ksz_device *dev,
++						    int port)
++{
++	struct dsa_switch *ds = dev->ds;
++
++	if (!dsa_is_user_port(ds, port))
++		return NULL;
++
++	return dsa_to_port(ds, port)->slave;
++}
++
+ /* STP State Defines */
+ #define PORT_TX_ENABLE			BIT(2)
+ #define PORT_RX_ENABLE			BIT(1)
 
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
