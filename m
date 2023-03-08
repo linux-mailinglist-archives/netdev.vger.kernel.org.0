@@ -2,128 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B1806B10FA
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 19:24:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68D056B1100
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 19:27:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230136AbjCHSY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 13:24:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46200 "EHLO
+        id S229963AbjCHS1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 13:27:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230128AbjCHSYy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 13:24:54 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B7B0BAD24
-        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 10:24:52 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id i34so69364334eda.7
-        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 10:24:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112; t=1678299891;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=weUKc1gFk3YK76PmJbUQm2uDC+7qg68lF0YoPIdM38U=;
-        b=WC6qhziTG+HUxsT0RVO+qgUmADvjBEzJ1Fpg7NtZSe0zHetqM7+WrP/pLwzsNkdAId
-         MXezDcnorfkScBOMwHKZ2cL0HLFo1QUGnx6g2xcyBTcIOiG4jzWGzsL8LsHvn/ihTOXl
-         N5oRsi4aEZcWcA+7wjkztAofPpew1mXKzsJfL7g31bhDiwaIXLNazuSXkcSfvYkDGv46
-         r4ezqi9NRWAN6VCgUdMO9/i9mkkQDvDgOj00I7EBG2bFxJFt7NkxtKN4kS//LqYS4XHO
-         AwtOSuY574R8uaF9+aMfXG5mx6AfSEOlBB0PZY8p6k/5/4u2UjnATIr+qtX0YLg95pmD
-         /b4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678299891;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=weUKc1gFk3YK76PmJbUQm2uDC+7qg68lF0YoPIdM38U=;
-        b=LZr5vinOKhL2CoqER6MAB6ihPkAlN1LXMnwnVkngss90um8hCoAZuMhPzJd2uSpHeu
-         lUKYKwj3CXX9A9yfRMNvUQKaDGoiRgTlvA4FIW2GMNR9U86ZufJUQ+Y6lRjIYEfvRFf9
-         q20E4+T1AIq9Z1v2qIHMLazviqivQrkhpS66eOmzov+AvJz5fbVIoeII/1v5ovl4NuZC
-         HWHi68DUGhgTl4OCLrXKdCvNjacgevVpMFuXPoPyY0wBvoEIcvOmO4T5fvK70M64q+kz
-         +wZGnZ2HE56+fIUYMplBvC+9M7wm1HhGxFiRYaNLAlkJVdGFpLULgXOxDZAudOfC36tt
-         ASow==
-X-Gm-Message-State: AO0yUKWmQwr4goc8WPQqtcBhWMNw9wLYhzdIcoOuX7Y0lsbJS6sssCSR
-        LcDBoPVf+gRDp7LHymTbI9qeTg==
-X-Google-Smtp-Source: AK7set9A1V50i8EcdZaJaGWkZIrp3PPjL/kaKhDvd7srdZZtoempWiehnOkDGgHadpOjyfOtqGmdig==
-X-Received: by 2002:a17:906:d9c8:b0:8e1:cc38:6ab0 with SMTP id qk8-20020a170906d9c800b008e1cc386ab0mr17046218ejb.16.1678299890625;
-        Wed, 08 Mar 2023 10:24:50 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id l3-20020a1709067d4300b008e54ac90de1sm7752698ejp.74.2023.03.08.10.24.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Mar 2023 10:24:49 -0800 (PST)
-Date:   Wed, 8 Mar 2023 19:24:48 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Po-Hsu Lin <po-hsu.lin@canonical.com>
-Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, idosch@mellanox.com,
-        danieller@mellanox.com, petrm@mellanox.com, shuah@kernel.org,
-        pabeni@redhat.com, kuba@kernel.org, edumazet@google.com,
-        davem@davemloft.net
-Subject: Re: [PATCHv2] selftests: net: devlink_port_split.py: skip test if no
- suitable device available
-Message-ID: <ZAjS8OAFd++ThaHV@nanopsycho>
-References: <20230307150030.527726-1-po-hsu.lin@canonical.com>
- <ZAhV8nKuLVAQHQGl@nanopsycho>
- <CAMy_GT92sg4_JLPHvRpH542DPLbxOEYYoCMa2cnET1g8bz_R9Q@mail.gmail.com>
- <ZAh0fY4XoNcLTIOI@nanopsycho>
- <CAMy_GT_mLedbejcyTYkhEbuneuEvWycVi2orB82kC9ymXx0rng@mail.gmail.com>
+        with ESMTP id S229456AbjCHS1K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 13:27:10 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F058EC3631;
+        Wed,  8 Mar 2023 10:27:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678300029; x=1709836029;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=5xt+Oxmh4ZD99PRtVYMgcMoTdrC8s3y2I1hzYqDESF4=;
+  b=nspyLdK5mKMGDTI7D1yLYjHx8gQNWhu1yvlF1D7zDX9fcrhWtyV8cse+
+   5MsiQIkG/lZOxPgtm60zEEPo20FoLzqvEOk2eUQQV564EKuX0Z5Mbp0kZ
+   uthrBgfNGHQatgDJgVK6mH0+/tNCj+fhJfqLiH7cc4lNtpy17I8cx5gjL
+   2USyzKQ3zgpzVivB8Lfq00u2952l8XrwVnUqc8FDaTkxeLLKF/95dfHdy
+   76U8EbmTgV3Ow4CFPhDbOrkFLWzWEVRK6KgpgYkdZ3If7dfsFWvKWpQp6
+   sso397daB51yuNj1oR4VPlx0IV7Pu+42FdHg4pOyFm8/V0sjmAnzDbpc2
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="401065305"
+X-IronPort-AV: E=Sophos;i="5.98,244,1673942400"; 
+   d="scan'208";a="401065305"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2023 10:27:02 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="766100262"
+X-IronPort-AV: E=Sophos;i="5.98,244,1673942400"; 
+   d="scan'208";a="766100262"
+Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 08 Mar 2023 10:26:55 -0800
+Received: from kbuild by b613635ddfff with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pZyV5-0002Kv-0g;
+        Wed, 08 Mar 2023 18:26:55 +0000
+Date:   Thu, 9 Mar 2023 02:26:13 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     =?iso-8859-1?Q?K=F6ry?= Maincent <kory.maincent@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-omap@vger.kernel.org
+Cc:     oe-kbuild-all@lists.linux.dev, Michael Walle <michael@walle.cc>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kory Maincent <kory.maincent@bootlin.com>,
+        thomas.petazzoni@bootlin.com, Russell King <linux@armlinux.org.uk>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Minghao Chi <chi.minghao@zte.com.cn>
+Subject: Re: [PATCH v3 3/5] net: Let the active time stamping layer be
+ selectable.
+Message-ID: <202303090220.EervgFvH-lkp@intel.com>
+References: <20230308135936.761794-4-kory.maincent@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAMy_GT_mLedbejcyTYkhEbuneuEvWycVi2orB82kC9ymXx0rng@mail.gmail.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <20230308135936.761794-4-kory.maincent@bootlin.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Mar 08, 2023 at 03:37:41PM CET, po-hsu.lin@canonical.com wrote:
->On Wed, Mar 8, 2023 at 7:41 PM Jiri Pirko <jiri@resnulli.us> wrote:
->>
->> Wed, Mar 08, 2023 at 11:21:57AM CET, po-hsu.lin@canonical.com wrote:
->> >On Wed, Mar 8, 2023 at 5:31 PM Jiri Pirko <jiri@resnulli.us> wrote:
->> >>
->> >> Tue, Mar 07, 2023 at 04:00:30PM CET, po-hsu.lin@canonical.com wrote:
->> >> >The `devlink -j port show` command output may not contain the "flavour"
->> >> >key, an example from s390x LPAR with Ubuntu 22.10 (5.19.0-37-generic),
->> >> >iproute2-5.15.0:
->> >> >  {"port":{"pci/0001:00:00.0/1":{"type":"eth","netdev":"ens301"},
->> >> >           "pci/0001:00:00.0/2":{"type":"eth","netdev":"ens301d1"},
->> >> >           "pci/0002:00:00.0/1":{"type":"eth","netdev":"ens317"},
->> >> >           "pci/0002:00:00.0/2":{"type":"eth","netdev":"ens317d1"}}}
->> >>
->> >> As Jakub wrote, this is odd. Could you debug if kernel sends the flavour
->> >> attr and if not why? Also, could you try with most recent kernel?
->> >
->> >I did a quick check on another s390x LPAR instance which is running
->> >with Ubuntu 23.04 (6.1.0-16-generic) iproute2-6.1.0, there is still no
->> >"flavour" attribute.
->> >$ devlink port show
->> >pci/0001:00:00.0/1: type eth netdev ens301
->> >pci/0001:00:00.0/2: type eth netdev ens301d1
->> >pci/0002:00:00.0/1: type eth netdev ens317
->> >pci/0002:00:00.0/2: type eth netdev ens317d1
->> >
->> >The behaviour didn't change with iproute2 built from source [1]
->>
->> Could you paste output of "devlink dev info"?
->> Looks like something might be wrong in the kernel devlink/driver code.
->>
->The `devlink dev info` output is empty. The following output is from
->that Ubuntu 23.04 s390x LPAR, run as root:
-># devlink dev show
->pci/0001:00:00.0
->pci/0002:00:00.0
-># devlink dev show pci/0001:00:00.0
->pci/0001:00:00.0
-># devlink dev info
-># devlink dev info pci/0001:00:00.0
+Hi K�ry,
 
-Interesting, could you try ethtool -i to get the driver name?
+I love your patch! Perhaps something to improve:
+
+[auto build test WARNING on v6.2]
+[cannot apply to robh/for-next horms-ipvs/master net/master net-next/master linus/master v6.3-rc1 next-20230308]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/K-ry-Maincent/net-ethtool-Refactor-identical-get_ts_info-implementations/20230308-220453
+patch link:    https://lore.kernel.org/r/20230308135936.761794-4-kory.maincent%40bootlin.com
+patch subject: [PATCH v3 3/5] net: Let the active time stamping layer be selectable.
+config: riscv-allmodconfig (https://download.01.org/0day-ci/archive/20230309/202303090220.EervgFvH-lkp@intel.com/config)
+compiler: riscv64-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/d81a36f239360e7e3b9ca2633e52b3cb12205590
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review K-ry-Maincent/net-ethtool-Refactor-identical-get_ts_info-implementations/20230308-220453
+        git checkout d81a36f239360e7e3b9ca2633e52b3cb12205590
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=riscv olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/net/phy/
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202303090220.EervgFvH-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/net/phy/phy_device.c:1384:6: warning: no previous prototype for 'of_set_timestamp' [-Wmissing-prototypes]
+    1384 | void of_set_timestamp(struct net_device *netdev, struct phy_device *phydev)
+         |      ^~~~~~~~~~~~~~~~
 
 
->kernel answers: Operation not supported
->
->>
+vim +/of_set_timestamp +1384 drivers/net/phy/phy_device.c
+
+  1383	
+> 1384	void of_set_timestamp(struct net_device *netdev, struct phy_device *phydev)
+  1385	{
+  1386		struct device_node *node = phydev->mdio.dev.of_node;
+  1387		const struct ethtool_ops *ops = netdev->ethtool_ops;
+  1388		const char *s;
+  1389		enum timestamping_layer ts_layer = 0;
+  1390	
+  1391		if (phy_has_hwtstamp(phydev))
+  1392			ts_layer = PHY_TIMESTAMPING;
+  1393		else if (ops->get_ts_info)
+  1394			ts_layer = MAC_TIMESTAMPING;
+  1395	
+  1396		if (of_property_read_string(node, "preferred-timestamp", &s))
+  1397			goto out;
+  1398	
+  1399		if (!s)
+  1400			goto out;
+  1401	
+  1402		if (phy_has_hwtstamp(phydev) && !strcmp(s, "phy"))
+  1403			ts_layer = PHY_TIMESTAMPING;
+  1404	
+  1405		if (ops->get_ts_info && !strcmp(s, "mac"))
+  1406			ts_layer = MAC_TIMESTAMPING;
+  1407	
+  1408	out:
+  1409		netdev->selected_timestamping_layer = ts_layer;
+  1410	}
+  1411	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
