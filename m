@@ -2,57 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC0E06B0821
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 14:13:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9313B6B0830
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 14:14:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231533AbjCHNNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 08:13:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59882 "EHLO
+        id S231683AbjCHNNt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 08:13:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbjCHNNH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 08:13:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D1AC9C0F;
-        Wed,  8 Mar 2023 05:10:20 -0800 (PST)
+        with ESMTP id S231618AbjCHNNL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 08:13:11 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3028252F59;
+        Wed,  8 Mar 2023 05:10:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F23E617BA;
-        Wed,  8 Mar 2023 13:10:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E128EC433A4;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 34E68B81C9E;
+        Wed,  8 Mar 2023 13:10:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D4A8CC433A1;
         Wed,  8 Mar 2023 13:10:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1678281018;
-        bh=8Y4T3yo8E0yQp+AcWeUBrYSVWDuptqSmOv+yzOUy1PQ=;
+        bh=HDU5RSFrhJRyPeHHGe9PSEO9fpmqEJDVjePgAMyAk7g=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=NggUpNoW5LCwvjo04XHqqhuNOza1GMkljl0Jm1d+hGxb5jqLC+PljiH4VDuFPjHF5
-         iW+bZTSc45AReAhA538/46FJexio4KYjpC1Cx09Vbw6NNva2Q2jFbCKcOpQQdwT9jg
-         FUZ3sM3iMnZ8oxaU3w682oTBcNaV7dY8YsLXTOC48RfUrY9TBA02zXe+R1dNjd/y/8
-         hGAfcVpHONrv2Ry6yU5/2M0bpNKOWkh/tC47O+O58sQ9E6rDiVGwix7466wjEPhuNC
-         EnOQ4dmuYSlkSYT9cmzVfscuw+NIVcDOnK8L3d6MPTBCWbBoRSaDtnwtlY5lQQFn0K
-         QeeD9R7H5MpKg==
+        b=bOwDgHThICTR3yhRaANBrsC3Cp8OtkvmOo0my5DgyfeKSRp5BcEbZphH0xzYPFpG/
+         htKwOKcYPzaS8TPfgNyGOlpQ3T1R8rzB5pZwvfkC2DfFKfsqUDm9+d0LT9NZvC8mGQ
+         K0emFp5cNLZWeNPTEjxvy1PfOQkSTm8MLF/Ybe+E+HJzRtv2FT3xHwJhXIqm81qBad
+         eYyFUKlkpAG3BJtxEG/8Mbo6xYllalw68jXMZGqlgOrazXasJEssGxQm0T/MntS9Sn
+         OvQ4hoMX57uKoW9st5H2RcBrfKHxuS/mRjE4ljCldz+J+ZTFAIX8nVS8aXod13koPh
+         e4fJmk3cyZEvg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C59DCE68C16;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BAC19E61B61;
         Wed,  8 Mar 2023 13:10:18 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] emulex/benet: clean up some inconsistent indenting
+Subject: Re: [PATCH v2] dt-bindings: net: dsa: mediatek,mt7530: change some
+ descriptions to literal
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167828101880.17807.14568658802620507188.git-patchwork-notify@kernel.org>
+Message-Id: <167828101875.17807.8617360531349466866.git-patchwork-notify@kernel.org>
 Date:   Wed, 08 Mar 2023 13:10:18 +0000
-References: <20230307054138.21632-1-jiapeng.chong@linux.alibaba.com>
-In-Reply-To: <20230307054138.21632-1-jiapeng.chong@linux.alibaba.com>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     ajit.khaparde@broadcom.com, sriharsha.basavapatna@broadcom.com,
-        somnath.kotur@broadcom.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        abaci@linux.alibaba.com
+References: <20230307095619.13403-1-arinc.unal@arinc9.com>
+In-Reply-To: <20230307095619.13403-1-arinc.unal@arinc9.com>
+To:     =?utf-8?b?QXLEsW7DpyDDnE5BTCA8YXJpbmM5LnVuYWxAZ21haWwuY29tPg==?=@ci.codeaurora.org
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        angelogioacchino.delregno@collabora.com, Landen.Chao@mediatek.com,
+        dqfext@gmail.com, sean.wang@mediatek.com, arinc.unal@arinc9.com,
+        robh@kernel.org, erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -64,20 +69,21 @@ Hello:
 This patch was applied to netdev/net-next.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Tue,  7 Mar 2023 13:41:38 +0800 you wrote:
-> No functional modification involved.
+On Tue,  7 Mar 2023 12:56:19 +0300 you wrote:
+> From: Arınç ÜNAL <arinc.unal@arinc9.com>
 > 
-> drivers/net/ethernet/emulex/benet/be_cmds.c:1120 be_cmd_pmac_add() warn: inconsistent indenting.
+> The line endings must be preserved on gpio-controller, io-supply, and
+> reset-gpios properties to look proper when the YAML file is parsed.
 > 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=4396
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> Currently it's interpreted as a single line when parsed. Change the style
+> of the description of these properties to literal style to preserve the
+> line endings.
 > 
 > [...]
 
 Here is the summary with links:
-  - emulex/benet: clean up some inconsistent indenting
-    https://git.kernel.org/netdev/net-next/c/ecf729f93bd5
+  - [v2] dt-bindings: net: dsa: mediatek,mt7530: change some descriptions to literal
+    https://git.kernel.org/netdev/net-next/c/7d8c48917a95
 
 You are awesome, thank you!
 -- 
