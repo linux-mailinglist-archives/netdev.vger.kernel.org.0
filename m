@@ -2,275 +2,321 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C4AC6AFE57
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 06:26:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DAABE6AFE70
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 06:34:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229872AbjCHFZ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 00:25:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37170 "EHLO
+        id S229689AbjCHFeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 00:34:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229795AbjCHFZ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 00:25:29 -0500
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2081.outbound.protection.outlook.com [40.107.102.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A93EA1015;
-        Tue,  7 Mar 2023 21:25:20 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GTj/Im85wAzPFxUaMD76/Jj/3qa4EKCB+z5snSQl5foUc+lkdaxMuPkxEkyScbTztg7VMcVoLVTOctFSive+sH+vy/fIXblj6+Mmy+hhNY71NGk7D6/tRifJvkVnHukO4bd3tzbfkCadAKiSodAZcnifcCSgiyL59LkOg1EW0zTT22qHlkmRKsBUrsvT6yfPNudx+Bc9iEsYJtHptXsfHIT7UxAq2UpEPD7mbLARaguNjKuDZzE7KXXWsv6OFzLm554fLW14EOn6NgXLEdTzoWm5ZZcvaj5MwCYqQjRNlhOCssEcHd9XsPThE0T9rmQazJxZ2odn9DKGwPBsOQqErw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7SSq27ecIS1HmE7iwShe5NAiUkVQFdyDGPe1bJ1Mz8s=;
- b=FWLMEUZlwgs8xqypax83S3X+kWjXdHiQGOk/YEWSRQ2U6hBFaqgnui3oaBb57gF+ydS3swXvFfo1c9S5pdMUcV9NZk1RgyqkPRf/Hc2djItKGDQW4GBXhlRbhfoFqJj/KPtk2pmQz/8ro4pdvrFRPU65wEUIftG4p0wvI3ZKeK0MWr9mU7/wL3lsRdGsrVzTHkWKy23vPIXmBgDsoWqmHFOKr0/3yLi9FhO2EPh9Li5mADunOGIzpLx/XDbilxSRCH1pizXkRZ2geHVIBbIhv9Hn3zue0h268u+lUwiMsYVtAjeOclqo8bZ/YRDoKwmWtPYO53QXl0e7OSex7dZAgg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7SSq27ecIS1HmE7iwShe5NAiUkVQFdyDGPe1bJ1Mz8s=;
- b=zpuL9qhaDKFEd8DzSQo7N2L+tMrQK2DCJ3CoHulO2Y9dJvmW3M3wBzXA5MfPS+RNbW7sNsX/6exE+8Ewwkfs//ugyestT7dkAf6CSGlxqfbpA/FFt/5KkiyXN/LfqWmnv63Q1yGFnpjAPhfCVkDgxUHlM4P5Y1Jyxm6BgQYqsjs=
-Received: from BN9PR03CA0269.namprd03.prod.outlook.com (2603:10b6:408:ff::34)
- by IA1PR12MB8495.namprd12.prod.outlook.com (2603:10b6:208:44d::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.28; Wed, 8 Mar
- 2023 05:25:18 +0000
-Received: from BN8NAM11FT052.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:ff:cafe::ff) by BN9PR03CA0269.outlook.office365.com
- (2603:10b6:408:ff::34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.29 via Frontend
- Transport; Wed, 8 Mar 2023 05:25:18 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT052.mail.protection.outlook.com (10.13.177.210) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6178.16 via Frontend Transport; Wed, 8 Mar 2023 05:25:18 +0000
-Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 7 Mar
- 2023 23:25:16 -0600
-From:   Brett Creeley <brett.creeley@amd.com>
-To:     <kvm@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <alex.williamson@redhat.com>, <jgg@nvidia.com>,
-        <yishaih@nvidia.com>, <shameerali.kolothum.thodi@huawei.com>,
-        <kevin.tian@intel.com>
-CC:     <brett.creeley@amd.com>, <shannon.nelson@amd.com>,
-        <drivers@pensando.io>
-Subject: [RFC PATCH v4 7/7] vfio/pds: Add Kconfig and documentation
-Date:   Tue, 7 Mar 2023 21:24:50 -0800
-Message-ID: <20230308052450.13421-8-brett.creeley@amd.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20230308052450.13421-1-brett.creeley@amd.com>
-References: <20230308052450.13421-1-brett.creeley@amd.com>
+        with ESMTP id S229688AbjCHFeY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 00:34:24 -0500
+Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 388D28C53A
+        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 21:34:21 -0800 (PST)
+Received: by mail-il1-x12a.google.com with SMTP id t1so6074987iln.8
+        for <netdev@vger.kernel.org>; Tue, 07 Mar 2023 21:34:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google; t=1678253660;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=v9z4c06hN8Ofn0+JfpNmKdLKB7vgLw2YyZr/1q3jKM0=;
+        b=k1mUOKmRPsZtb0Zk6j4g1ODXbIwBd52mDZK6/75bwu1F9Gf95UwYp/s0FxWSUSO7in
+         yazKtdjOQRNpfpatgMr5c/h2kArJmF62y9kuJJOwMpyvP/AglTF9F+68jXRga9T6VHhQ
+         RUbaRh55yLIAGsd/4C5Pf6I75cxpD8WIKpqP0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678253660;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=v9z4c06hN8Ofn0+JfpNmKdLKB7vgLw2YyZr/1q3jKM0=;
+        b=WU0T7w4VXB0j5dRw0cwz5l8poGT6QcxdmXpEY1Mm9gbJ1siEiLn7+p01TlAS6HZ3+x
+         8FfLW7eJuc7diBJAfPi2L77jK7N7+cxpOfKHt0EZeAQJKgM+rFk6f+YXKfTeOG67scvi
+         YUinNlKVy9zH+ZwxiNQxWKprT5LfYSisI3OPcckjBf3k4vMqp82b85gbCBsTEQ3sfw1v
+         nGUbrV4cgYDvfr0ptaLjAIpQ9eUcKtvQOLfJNx2TJLhIltwZx8Y9Iwgj99eAHQd85ATp
+         n6kb74T0Wgt7TD6hpJlbR917Zh9ZfO0npKnZpCQ3WjrfPAQ3evVkWTX8Oz4cxhcW+azh
+         ml6Q==
+X-Gm-Message-State: AO0yUKWYks3QF6sjEO6nmO1ohwd4PVXbCN9XpWOpiFLUU675hxtS9GKd
+        YvXBCaNg7bmPQXBkTfhbh6RmXeAFIWVOIRYw5dN1tQ==
+X-Google-Smtp-Source: AK7set+7R82/0dDsWR5k3qzuZtrLVyGnt4h+2HlJBtJKKTAEBgaOex7VE2Bd/H7+lOu+wqhtkBpDfQ==
+X-Received: by 2002:a05:6e02:2164:b0:314:5aa:94b6 with SMTP id s4-20020a056e02216400b0031405aa94b6mr12896111ilv.24.1678253660286;
+        Tue, 07 Mar 2023 21:34:20 -0800 (PST)
+Received: from mfreemon-cf-laptop.. ([169.197.147.212])
+        by smtp.gmail.com with ESMTPSA id h17-20020a02c731000000b00375a885f908sm4585490jao.36.2023.03.07.21.34.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Mar 2023 21:34:19 -0800 (PST)
+From:   Mike Freemon <mfreemon@cloudflare.com>
+To:     netdev@vger.kernel.org
+Cc:     kernel-team@cloudflare.com,
+        "mfreemon@cloudflare.com" <mfreemon@cloudflare.com>
+Subject: [RFC PATCH v2] Add a sysctl to allow TCP window shrinking in order to honor memory limits
+Date:   Tue,  7 Mar 2023 23:33:53 -0600
+Message-Id: <20230308053353.675086-1-mfreemon@cloudflare.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT052:EE_|IA1PR12MB8495:EE_
-X-MS-Office365-Filtering-Correlation-Id: c0fe47a6-1b6f-456f-6845-08db1f958129
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: af6hKpFruq0pI/y7xQMGLRA2EVxNMnvrJUoee2h+cAhA9CKGzy13P3zrzeXIY/53N7SL0euRewI74+VcjGENpY6VJq/uoXvgEA9SxnD4mRhO37gNWnh15Tw/+qff3fdiFdd1ZnUoFwbVr5De/dmYMhqtpNRQbFhfptBk0HVM81Ju1AuLGxJRVURnzydntT39h4EZ31cJ3p4tvmG74udv+jftfLPD8vrE+w3mmjGtbEKwEmFVgSmX59i27r9xFsEOAAmxXeBFcp9JipIjaLPoB1qRczmKgABQvZ0fpj1zG675Lb9s/HfZjWfUm7gqoMCcgs3WiDyXP357VsjBIQ+SEKeODVItVjk9n+Fcv4y6cm+Ade/vxVkQuigzV+5tRZFNIpoQBPbdCYBXsX4rr2GTdOzhOq9nZMa0Gw1UAPzt4pfW9Q5VVzp+xans1fJeW2aZGsRYGJA1xBi/RU+SH+9klmVQayHGs/jSgPT5b1Ve+4ZvPkhI8xnwFvZWDsrJZ3aSshk5sndA4l09SI1btnv0IMTZ/rtLQyKHVu1Ft8JuueF0BsRdg9B9lWHPzgHvzYshEog1ikR0kSG53GD0+GOetn/1W+r4cJYs0vMg8VQc6ViGS1L5R3Dk6pJW3gY3zB9ORgJMtGyoRh/eId7kKT5x6vp97PIWstMHWBYwGy3R+vxZiKTaJWw+CouTHO1M+prhSUePnwn70iyOAMqRdKRHqsQ+1BW2kClEXGf+bIwS1qk=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(136003)(346002)(376002)(396003)(451199018)(36840700001)(46966006)(40470700004)(36756003)(316002)(110136005)(336012)(54906003)(40480700001)(82310400005)(83380400001)(86362001)(2906002)(70206006)(16526019)(40460700003)(186003)(41300700001)(70586007)(5660300002)(82740400003)(26005)(44832011)(36860700001)(8676002)(4326008)(478600001)(6666004)(1076003)(426003)(2616005)(8936002)(47076005)(81166007)(356005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2023 05:25:18.0151
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c0fe47a6-1b6f-456f-6845-08db1f958129
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT052.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8495
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add Kconfig entries and pds_vfio.rst. Also, add an entry in the
-MAINTAINERS file for this new driver.
+From: "mfreemon@cloudflare.com" <mfreemon@cloudflare.com>
 
-It's not clear where documentation for vendor specific VFIO
-drivers should live, so just re-use the current amd
-ethernet location.
+Under certain circumstances, the tcp receive buffer memory limit
+set by autotuning is ignored, and the receive buffer can grow
+unrestrained until it reaches tcp_rmem[2].
 
-Signed-off-by: Brett Creeley <brett.creeley@amd.com>
-Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
+To reproduce:  Connect a TCP session with the receiver doing
+nothing and the sender sending small packets (an infinite loop
+of socket send() with 4 bytes of payload with a sleep of 1 ms
+in between each send()).  This will fill the tcp receive buffer
+all the way to tcp_rmem[2], ignoring the autotuning limit
+(sk_rcvbuf).
+
+As a result, a host can have individual tcp sessions with receive
+buffers of size tcp_rmem[2], and the host itself can reach tcp_mem
+limits, causing the host to go into tcp memory pressure mode.
+
+The fundamental issue is the relationship between the granularity
+of the window scaling factor and the number of byte ACKed back
+to the sender.  This problem has previously been identified in
+RFC 7323, appendix F [1].
+
+The Linux kernel currently adheres to never shrinking the window.
+
+In addition to the overallocation of memory mentioned above, this
+is also functionally incorrect, because once tcp_rmem[2] is
+reached, the receiver will drop in-window packets resulting in
+retransmissions and an eventual timeout of the tcp session.  A
+receive buffer full condition should instead result in a zero
+window and an indefinite wait.
+
+In practice, this problem is largely hidden for most flows.  It
+is not applicable to mice flows.  Elephant flows can send data
+fast enough to "overrun" the sk_rcvbuf limit (in a single ACK),
+triggering a zero window.
+
+But this problem does show up for other types of flows.  Good
+examples are websockets and other type of flows that send small
+amounts of data spaced apart slightly in time.  In these cases,
+we directly encounter the problem described in [1].
+
+RFC 7323, section 2.4 [2], says there are instances when a retracted
+window can be offered, and that TCP implementations MUST ensure
+that they handle a shrinking window, as specified in RFC 1122,
+section 4.2.2.16 [3].  All prior RFCs on the topic of tcp window
+management have made clear that sender must accept a shrunk window
+from the receiver, including RFC 793 [4] and RFC 1323 [5].
+
+This patch implements the functionality to shrink the tcp window
+when necessary to keep the right edge within the memory limit set
+by autotuning (sk_rcvbuf).  This new functionality is enabled by
+setting the sysctl net.ipv4.tcp_shrink_window to 1.
+
+[1] https://www.rfc-editor.org/rfc/rfc7323#appendix-F
+[2] https://www.rfc-editor.org/rfc/rfc7323#section-2.4
+[3] https://www.rfc-editor.org/rfc/rfc1122#page-91
+[4] https://www.rfc-editor.org/rfc/rfc793
+[5] https://www.rfc-editor.org/rfc/rfc1323
+
+Signed-off-by: Mike Freemon <mfreemon@cloudflare.com>
 ---
- .../device_drivers/ethernet/amd/pds_vfio.rst  | 79 +++++++++++++++++++
- .../device_drivers/ethernet/index.rst         |  1 +
- MAINTAINERS                                   |  7 ++
- drivers/vfio/pci/Kconfig                      |  2 +
- drivers/vfio/pci/pds/Kconfig                  | 20 +++++
- 5 files changed, 109 insertions(+)
- create mode 100644 Documentation/networking/device_drivers/ethernet/amd/pds_vfio.rst
- create mode 100644 drivers/vfio/pci/pds/Kconfig
+ Documentation/networking/ip-sysctl.rst | 14 ++++++
+ include/net/netns/ipv4.h               |  2 +
+ net/ipv4/sysctl_net_ipv4.c             |  7 +++
+ net/ipv4/tcp_ipv4.c                    |  2 +
+ net/ipv4/tcp_output.c                  | 59 +++++++++++++++++++-------
+ 5 files changed, 69 insertions(+), 15 deletions(-)
 
-diff --git a/Documentation/networking/device_drivers/ethernet/amd/pds_vfio.rst b/Documentation/networking/device_drivers/ethernet/amd/pds_vfio.rst
-new file mode 100644
-index 000000000000..7bddde0c7c9d
---- /dev/null
-+++ b/Documentation/networking/device_drivers/ethernet/amd/pds_vfio.rst
-@@ -0,0 +1,79 @@
-+.. SPDX-License-Identifier: GPL-2.0+
-+.. note: can be edited and viewed with /usr/bin/formiko-vim
-+
-+==========================================================
-+PCI VFIO driver for the AMD/Pensando(R) DSC adapter family
-+==========================================================
-+
-+AMD/Pensando Linux VFIO PCI Device Driver
-+Copyright(c) 2023 Advanced Micro Devices, Inc.
-+
-+Overview
-+========
-+
-+The ``pds_vfio`` module is a PCI driver that supports Live Migration
-+capable Virtual Function (VF) devices in the DSC hardware.
-+
-+Using the device
-+================
-+
-+The pds_vfio device is enabled via multiple configuration steps and
-+depends on the ``pds_core`` driver to create and enable SR-IOV Virtual
-+Function devices.
-+
-+Shown below are the steps to bind the driver to a VF and also to the
-+associated auxiliary device created by the ``pds_core`` driver. This
-+example assumes the pds_core and pds_vfio modules are already
-+loaded.
-+
-+.. code-block:: bash
-+  :name: example-setup-script
-+
-+  #!/bin/bash
-+
-+  PF_BUS="0000:60"
-+  PF_BDF="0000:60:00.0"
-+  VF_BDF="0000:60:00.1"
-+
-+  # Prevent non-vfio VF driver from probing the VF device
-+  echo 0 > /sys/class/pci_bus/$PF_BUS/device/$PF_BDF/sriov_drivers_autoprobe
-+
-+  # Create single VF for Live Migration via VFIO
-+  echo 1 > /sys/bus/pci/drivers/pds_core/$PF_BDF/sriov_numvfs
-+
-+  # Allow the VF to be bound to the pds_vfio driver
-+  echo "pds_vfio" > /sys/class/pci_bus/$PF_BUS/device/$VF_BDF/driver_override
-+
-+  # Bind the VF to the pds_vfio driver
-+  echo "$VF_BDF" > /sys/bus/pci/drivers/pds_vfio/bind
-+
-+After performing the steps above, a file in /dev/vfio/<iommu_group>
-+should have been created.
-+
-+
-+Enabling the driver
-+===================
-+
-+The driver is enabled via the standard kernel configuration system,
-+using the make command::
-+
-+  make oldconfig/menuconfig/etc.
-+
-+The driver is located in the menu structure at:
-+
-+  -> Device Drivers
-+    -> VFIO Non-Privileged userspace driver framework
-+      -> VFIO support for PDS PCI devices
-+
-+Support
-+=======
-+
-+For general Linux networking support, please use the netdev mailing
-+list, which is monitored by Pensando personnel::
-+
-+  netdev@vger.kernel.org
-+
-+For more specific support needs, please use the Pensando driver support
-+email::
-+
-+  drivers@pensando.io
-diff --git a/Documentation/networking/device_drivers/ethernet/index.rst b/Documentation/networking/device_drivers/ethernet/index.rst
-index aae0955eb26b..0011fde1a36a 100644
---- a/Documentation/networking/device_drivers/ethernet/index.rst
-+++ b/Documentation/networking/device_drivers/ethernet/index.rst
-@@ -14,6 +14,7 @@ Contents:
-    3com/vortex
-    amazon/ena
-    amd/pds_core
-+   amd/pds_vfio
-    altera/altera_tse
-    aquantia/atlantic
-    chelsio/cxgb
-diff --git a/MAINTAINERS b/MAINTAINERS
-index edd3d562beee..19dc26552a04 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -21954,6 +21954,13 @@ S:	Maintained
- P:	Documentation/driver-api/vfio-pci-device-specific-driver-acceptance.rst
- F:	drivers/vfio/pci/*/
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index 87dd1c5283e6..67dfcadfe350 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -968,6 +968,20 @@ tcp_tw_reuse - INTEGER
+ tcp_window_scaling - BOOLEAN
+ 	Enable window scaling as defined in RFC1323.
  
-+VFIO PDS PCI DRIVER
-+M:	Brett Creeley <brett.creeley@amd.com>
-+L:	kvm@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/networking/device_drivers/ethernet/amd/pds_vfio.rst
-+F:	drivers/vfio/pci/pds/
++tcp_shrink_window - BOOLEAN
++	This changes how the TCP receive window is calculated when window
++	scaling is in effect.
 +
- VFIO PLATFORM DRIVER
- M:	Eric Auger <eric.auger@redhat.com>
- L:	kvm@vger.kernel.org
-diff --git a/drivers/vfio/pci/Kconfig b/drivers/vfio/pci/Kconfig
-index f9d0c908e738..2c3831dd60ef 100644
---- a/drivers/vfio/pci/Kconfig
-+++ b/drivers/vfio/pci/Kconfig
-@@ -59,4 +59,6 @@ source "drivers/vfio/pci/mlx5/Kconfig"
++	RFC 7323, section 2.4, says there are instances when a retracted
++	window can be offered, and that TCP implementations MUST ensure
++	that they handle a shrinking window, as specified in RFC 1122.
++
++	- 0 - Disabled.	The window is never shrunk.
++	- 1 - Enabled.	The window is shrunk when necessary to remain within
++					the memory limit set by autotuning (sk_rcvbuf).
++
++	Default: 0
++
+ tcp_wmem - vector of 3 INTEGERs: min, default, max
+ 	min: Amount of memory reserved for send buffers for TCP sockets.
+ 	Each TCP socket has rights to use it due to fact of its birth.
+diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+index db762e35aca9..fbc67afac75a 100644
+--- a/include/net/netns/ipv4.h
++++ b/include/net/netns/ipv4.h
+@@ -237,5 +237,7 @@ struct netns_ipv4 {
  
- source "drivers/vfio/pci/hisilicon/Kconfig"
+ 	atomic_t	rt_genid;
+ 	siphash_key_t	ip_id_key;
++
++	unsigned int sysctl_tcp_shrink_window;
+ };
+ #endif
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index 0d0cc4ef2b85..c6d181f79534 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -1467,6 +1467,13 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.extra1         = SYSCTL_ZERO,
+ 		.extra2         = &tcp_plb_max_cong_thresh,
+ 	},
++	{
++		.procname	= "tcp_shrink_window",
++		.data		= &init_net.ipv4.sysctl_tcp_shrink_window,
++		.maxlen		= sizeof(unsigned int),
++		.mode		= 0644,
++		.proc_handler	= proc_douintvec_minmax,
++	},
+ 	{ }
+ };
  
-+source "drivers/vfio/pci/pds/Kconfig"
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index ea370afa70ed..d976f01413d7 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -3275,6 +3275,8 @@ static int __net_init tcp_sk_init(struct net *net)
+ 	else
+ 		net->ipv4.tcp_congestion_control = &tcp_reno;
+ 
++	net->ipv4.sysctl_tcp_shrink_window = 0;
 +
- endif
-diff --git a/drivers/vfio/pci/pds/Kconfig b/drivers/vfio/pci/pds/Kconfig
-new file mode 100644
-index 000000000000..149d4986bf43
---- /dev/null
-+++ b/drivers/vfio/pci/pds/Kconfig
-@@ -0,0 +1,20 @@
-+# SPDX-License-Identifier: GPL-2.0
-+# Copyright (c) 2023 Advanced Micro Devices, Inc.
+ 	return 0;
+ }
+ 
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 71d01cf3c13e..7f7a96e797fa 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -260,8 +260,8 @@ static u16 tcp_select_window(struct sock *sk)
+ 	u32 old_win = tp->rcv_wnd;
+ 	u32 cur_win = tcp_receive_window(tp);
+ 	u32 new_win = __tcp_select_window(sk);
++	struct net *net = sock_net(sk);
+ 
+-	/* Never shrink the offered window */
+ 	if (new_win < cur_win) {
+ 		/* Danger Will Robinson!
+ 		 * Don't update rcv_wup/rcv_wnd here or else
+@@ -270,11 +270,15 @@ static u16 tcp_select_window(struct sock *sk)
+ 		 *
+ 		 * Relax Will Robinson.
+ 		 */
+-		if (new_win == 0)
+-			NET_INC_STATS(sock_net(sk),
+-				      LINUX_MIB_TCPWANTZEROWINDOWADV);
+-		new_win = ALIGN(cur_win, 1 << tp->rx_opt.rcv_wscale);
++		if (!net->ipv4.sysctl_tcp_shrink_window) {
++			/* Never shrink the offered window */
++			if (new_win == 0)
++				NET_INC_STATS(sock_net(sk),
++					      LINUX_MIB_TCPWANTZEROWINDOWADV);
++			new_win = ALIGN(cur_win, 1 << tp->rx_opt.rcv_wscale);
++		}
+ 	}
 +
-+config PDS_VFIO_PCI
-+	tristate "VFIO support for PDS PCI devices"
-+	depends on PDS_CORE
-+	depends on VFIO_PCI_CORE
-+	help
-+	  This provides generic PCI support for PDS devices using the VFIO
-+	  framework.
+ 	tp->rcv_wnd = new_win;
+ 	tp->rcv_wup = tp->rcv_nxt;
+ 
+@@ -2947,6 +2951,7 @@ u32 __tcp_select_window(struct sock *sk)
+ {
+ 	struct inet_connection_sock *icsk = inet_csk(sk);
+ 	struct tcp_sock *tp = tcp_sk(sk);
++	struct net *net = sock_net(sk);
+ 	/* MSS for the peer's data.  Previous versions used mss_clamp
+ 	 * here.  I don't know if the value based on our guesses
+ 	 * of peer's MSS is better for the performance.  It's more correct
+@@ -2968,16 +2973,24 @@ u32 __tcp_select_window(struct sock *sk)
+ 		if (mss <= 0)
+ 			return 0;
+ 	}
 +
-+	  More specific information on this driver can be
-+	  found in
-+	  <file:Documentation/networking/device_drivers/ethernet/amd/pds_vfio.rst>.
++	if (net->ipv4.sysctl_tcp_shrink_window) {
++		/* new window should always be an exact multiple of scaling factor */
++		free_space = round_down(free_space, 1 << tp->rx_opt.rcv_wscale);
++	}
 +
-+	  To compile this driver as a module, choose M here. The module
-+	  will be called pds_vfio.
+ 	if (free_space < (full_space >> 1)) {
+ 		icsk->icsk_ack.quick = 0;
+ 
+ 		if (tcp_under_memory_pressure(sk))
+ 			tcp_adjust_rcv_ssthresh(sk);
+ 
+-		/* free_space might become our new window, make sure we don't
+-		 * increase it due to wscale.
+-		 */
+-		free_space = round_down(free_space, 1 << tp->rx_opt.rcv_wscale);
++		if (!net->ipv4.sysctl_tcp_shrink_window) {
++			/* free_space might become our new window, make sure we don't
++			 * increase it due to wscale.
++			 */
++			free_space = round_down(free_space, 1 << tp->rx_opt.rcv_wscale);
++		}
+ 
+ 		/* if free space is less than mss estimate, or is below 1/16th
+ 		 * of the maximum allowed, try to move to zero-window, else
+@@ -2988,10 +3001,24 @@ u32 __tcp_select_window(struct sock *sk)
+ 		 */
+ 		if (free_space < (allowed_space >> 4) || free_space < mss)
+ 			return 0;
 +
-+	  If you don't know what to do here, say N.
-+
++		if (net->ipv4.sysctl_tcp_shrink_window && free_space < (1 << tp->rx_opt.rcv_wscale))
++			return 0;
+ 	}
+ 
+-	if (free_space > tp->rcv_ssthresh)
++	if (free_space > tp->rcv_ssthresh) {
+ 		free_space = tp->rcv_ssthresh;
++		if (net->ipv4.sysctl_tcp_shrink_window) {
++			/* new window should always be an exact multiple of scaling factor
++			 *
++			 * For this case, we ALIGN "up" (increase free_space) because
++			 * we know free_space is not zero here, it has been reduced from
++			 * the memory-based limit, and rcv_ssthresh is not a hard limit
++			 * (unlike sk_rcvbuf).
++			 */
++			free_space = ALIGN(free_space, (1 << tp->rx_opt.rcv_wscale));
++		}
++	}
+ 
+ 	/* Don't do rounding if we are using window scaling, since the
+ 	 * scaled window will not line up with the MSS boundary anyway.
+@@ -2999,11 +3026,13 @@ u32 __tcp_select_window(struct sock *sk)
+ 	if (tp->rx_opt.rcv_wscale) {
+ 		window = free_space;
+ 
+-		/* Advertise enough space so that it won't get scaled away.
+-		 * Import case: prevent zero window announcement if
+-		 * 1<<rcv_wscale > mss.
+-		 */
+-		window = ALIGN(window, (1 << tp->rx_opt.rcv_wscale));
++		if (!net->ipv4.sysctl_tcp_shrink_window) {
++			/* Advertise enough space so that it won't get scaled away.
++			 * Import case: prevent zero window announcement if
++			 * 1<<rcv_wscale > mss.
++			 */
++			window = ALIGN(window, (1 << tp->rx_opt.rcv_wscale));
++		}
+ 	} else {
+ 		window = tp->rcv_wnd;
+ 		/* Get the largest window that is a nice multiple of mss.
 -- 
-2.17.1
+2.39.2
 
