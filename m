@@ -2,62 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 902C46AFAFE
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 01:22:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 731886AFB07
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 01:23:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229662AbjCHAWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 19:22:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38958 "EHLO
+        id S229748AbjCHAXp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 19:23:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229540AbjCHAV6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 19:21:58 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77A109E06A
-        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 16:21:57 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id k10so35478496edk.13
-        for <netdev@vger.kernel.org>; Tue, 07 Mar 2023 16:21:57 -0800 (PST)
+        with ESMTP id S229866AbjCHAXm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 19:23:42 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 993BD92F31
+        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 16:23:36 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id cw28so59410660edb.5
+        for <netdev@vger.kernel.org>; Tue, 07 Mar 2023 16:23:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1678234916;
+        d=broadcom.com; s=google; t=1678235015;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=gt7EeVZ2+Aj64SMWRFqFqPbB5HgyPn/CoN+Y7SZAEWI=;
-        b=Eud3nEIvmUjaicWMTEeTR7xDXgPkBW5kcM2Olyqc3INRd5zZHv50uH1tYSnfeSGQWB
-         Y+q1+SwNdnCaSp4oWiZ0V9NanHSrz6aDQ89uT9Ch4Kx6aThbGZXtqC+0cqjTrqzVfzXk
-         Vq01AGlIgi/1sk4EsQX5g6Hg8jd/9HdT2f0V8=
+        bh=MNixlqCjOl9CCUCUT5Cjakvg7SXKrTuwbGZ3+5qvwd8=;
+        b=L1C9w32xjieixgIhAU93scIsNH+IU8qwTlHTBZu33ce3dYVbkDAKzuOVTfUAPkbAIM
+         kGg5IBCFmr6Q3GvxoCm6L1Ju78ieHXfyrJkg+a4XkDWin3hZ07Xo1yOJulSUw8qeAqPr
+         EuUTjd0wuNWHfGSPvjZUa9cgucMev4JlG3Kv0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678234916;
+        d=1e100.net; s=20210112; t=1678235015;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=gt7EeVZ2+Aj64SMWRFqFqPbB5HgyPn/CoN+Y7SZAEWI=;
-        b=y435FEnFX491mARbX+ClFP1npFeE8Tw76CFoznkPPAD506QOG5ZG/XZxW7EiwnuWTA
-         M56uiS4kjaY90ZKpUujdJTZg8wUftu/i8cWpB0D8vaI9uFmml6SgkElpHtM5FpeJhEVf
-         qRhpRagY13RnHt2PPxKcINU8BjlZ281CzqqYf8tF6PYe0neIoP/ctdSR2pWiXEvJQhZc
-         7Gy1qzhtSCRFyR6ZVrVkh8lyTt9m728aqy+OIyZAe7skH3hA5Jth8VW7LLzh1OL7fjCQ
-         1u8dHZKAsm42eCRFBSYt8hp90Nznagg1jVGONp4T6CV3aa1zoki7QDvbKdztHS5C1iXN
-         B2sA==
-X-Gm-Message-State: AO0yUKWBBJ4Xz2VPGDbK+MSYYuW89TidqLiBxCeRwC1MaUGYW61wE2pU
-        4Qy6JWMFs2rbWIaAS/VeUjBzKSVDuJeE6GksUyqi3A==
-X-Google-Smtp-Source: AK7set9gZM83S9EpQ6INd2l3Y9ySn5mSbOZ063EcuPq6WW4k+GkFU8nqru3WHAzxVm5/1GmrvzoSbG0OQk77tSQqcGY=
-X-Received: by 2002:a17:906:6d55:b0:8d0:2c55:1aa with SMTP id
- a21-20020a1709066d5500b008d02c5501aamr7422415ejt.0.1678234915790; Tue, 07 Mar
- 2023 16:21:55 -0800 (PST)
+        bh=MNixlqCjOl9CCUCUT5Cjakvg7SXKrTuwbGZ3+5qvwd8=;
+        b=XjCwVvON3IXV6mKVcy6Y6TIAbiOGXPsWlNkALmlm60AE7G4ByCh7xxow97Q/4digBW
+         jl0pVnXnXbFsz1vEqsqCsWb20o+DwtWZXOMwAloj9oDi9ZszXwm57UYC96uQhbf7/+n+
+         1Ce3FS2peai1Ahd69Kk4q/lm6U9XvNLWYnOLnvQ82OG64JA20b6XOqNpm1VxOovtmuqT
+         kOEDpAIwsiZFhG4WFfYdSSX6B1SNUNFXmol5cZKt8XNMKAMUbTAgaQGFFNPrUyOoSQI7
+         SdGpkIBdq2oJl/U7U2h70fSFm02anVQdxHFTDn7JhwlcR1o8HiXb3JwAdGYd5wOhtGFU
+         rcEQ==
+X-Gm-Message-State: AO0yUKVCtTFeq+HrRK4ybPZk57ew947gsDnKwmR8ewE1w9v6OgKkryJP
+        liPArPOtqWn4WNgOICocr7aCCMvCDhKNKAvN7nuMWg==
+X-Google-Smtp-Source: AK7set/Q/Ll51K2gMTIMgmG4j0wRR7sk0xgcPbUH6OCJ5Oj2vf7Nn7vMfIMbb0JKvWkgdq4zkXp02N6NbNL4b+Q55U0=
+X-Received: by 2002:a17:906:d041:b0:877:747d:4a82 with SMTP id
+ bo1-20020a170906d04100b00877747d4a82mr8178254ejb.0.1678235014660; Tue, 07 Mar
+ 2023 16:23:34 -0800 (PST)
 MIME-Version: 1.0
-References: <20230307181940.868828-1-helgaas@kernel.org> <20230307181940.868828-4-helgaas@kernel.org>
-In-Reply-To: <20230307181940.868828-4-helgaas@kernel.org>
+References: <20230307181940.868828-1-helgaas@kernel.org> <20230307181940.868828-6-helgaas@kernel.org>
+In-Reply-To: <20230307181940.868828-6-helgaas@kernel.org>
 From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Tue, 7 Mar 2023 16:21:43 -0800
-Message-ID: <CACKFLikL137Wi-qe4ZDG+mztpqDrysyb+=y2igMVjWg6V83i7A@mail.gmail.com>
-Subject: Re: [PATCH 03/28] bnx2: Drop redundant pci_enable_pcie_error_reporting()
+Date:   Tue, 7 Mar 2023 16:23:23 -0800
+Message-ID: <CACKFLi=_LygKq_RMKrL-UR18UNK=YB2e0v4jRU7sA=UMud7DSA@mail.gmail.com>
+Subject: Re: [PATCH 05/28] bnxt: Drop redundant pci_enable_pcie_error_reporting()
 To:     Bjorn Helgaas <helgaas@kernel.org>
 Cc:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
-        Rasesh Mody <rmody@marvell.com>, GR-Linux-NIC-Dev@marvell.com
+        linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000007784705f65884e5"
+        boundary="000000000000f0d5f905f65889ef"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
@@ -68,7 +67,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000007784705f65884e5
+--000000000000f0d5f905f65889ef
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -80,9 +79,7 @@ wrote:
 > pci_enable_pcie_error_reporting() enables the device to send ERR_*
 > Messages.  Since f26e58bf6f54 ("PCI/AER: Enable error reporting when AER =
 is
-> native"), the PCI core does this for all devices during enumeration, so t=
-he
-> driver doesn't need to do it itself.
+> native"), the PCI core does this for all devices during enumeration.
 >
 > Remove the redundant pci_enable_pcie_error_reporting() call from the
 > driver.  Also remove the corresponding pci_disable_pcie_error_reporting()
@@ -93,24 +90,13 @@ he
 e
 > AER Root Error Command register managed by the AER service driver.
 >
-> cd709aa90648 ("bnx2: Add PCI Advanced Error Reporting support.") added
-> pci_enable_pcie_error_reporting() for all devices, and c239f279e571 ("bnx=
-2:
-> Enable AER on PCIE devices only") restricted it to BNX2_CHIP_5709 devices
-> to avoid an error message when it failed on non-PCIe devices.  The PCI co=
-re
-> only enables PCIe error reporting on PCIe devices, which I assume means
-> BNX2_CHIP_5709.
->
 > Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-> Cc: Rasesh Mody <rmody@marvell.com>
-> Cc: GR-Linux-NIC-Dev@marvell.com
 > Cc: Michael Chan <michael.chan@broadcom.com>
 
 Reviewed-by: Michael Chan <michael.chan@broadcom.com>
 Thanks.
 
---00000000000007784705f65884e5
+--000000000000f0d5f905f65889ef
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -181,13 +167,13 @@ hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
 E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIB3FFnCTV8Y3iDh2qIJ53nF46hhLntsd
-tHHzFiI2f0AZMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMw
-ODAwMjE1NlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIDHvWj7S0WF8dcxMcS1e0uZ8vV60RVe/
+MeY7U33D2kiYMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMw
+ODAwMjMzNVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAfis+q8vr0RlCmdKYo6gMP0qPc9iM4yt95CmYeKhdGCEwjRq6f
-Bit2Jxm/pyayNe4BikGiMidv8Ir8PvAP4GcnyxEnkgSGfV010MkWf+QVuds5rWMrviZLdhYWQr8z
-U0OxsXKrcqWkzc7lWGVtCoMQpW0t5uNpfG3UkdQ+ixuO10sCMGSAz5x9PLsvQ0+jVTq/GvSr9T15
-lM4RR6JVGQXjZow9vlovAGJgE4vWTNGPkhzGF/v6BhuR2DANushcCGMqj4HFPLTJmq0KKtL1rtDf
-CaSw1ClRt+s3HBTfcO8z1rOsOcuXytSa1nrKvQqv8VvVf0eZrJXUD4qASWr1com8
---00000000000007784705f65884e5--
+ATANBgkqhkiG9w0BAQEFAASCAQAK4GhP5dkPCI/iyZoY3yde3cDk5n08q0HMbB+cHl6QYVGY63r8
+7KFeaLd/CbYzQEh0kj1s+iwFOkGyvC/d8qQSvs62psY7xbyey0SphDvWoOykergYUP3HSRj1v/WV
+F20NLFFdQeuwQCXamw1OtfXCA7n7vwAiKbdlrSFtpqoihGzeaIcvVof+CE2jAiN776YbfPWvLDEV
+r7Fzpr8kuDBU29zf81in6NP03FlRuavftwUyOMp23bBu/FOlLGbtfcjdmRwOC6ldyKdcfyAEbSQ3
+DHwO3Rl/X5NgszRJQDxl7i4wwPgagfMXXE2igVmTnbzzVhhPzq40B4I+u0YbM1+s
+--000000000000f0d5f905f65889ef--
