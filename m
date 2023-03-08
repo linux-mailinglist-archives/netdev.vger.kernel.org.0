@@ -2,103 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CD206B0315
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 10:40:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53B386B0355
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 10:47:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229577AbjCHJkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 04:40:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49722 "EHLO
+        id S230182AbjCHJrK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 04:47:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbjCHJkD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 04:40:03 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B834CAF761;
-        Wed,  8 Mar 2023 01:40:02 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id s20so20508657lfb.11;
-        Wed, 08 Mar 2023 01:40:02 -0800 (PST)
+        with ESMTP id S230205AbjCHJqx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 04:46:53 -0500
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AA60B8557
+        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 01:45:59 -0800 (PST)
+Received: by mail-wm1-x32b.google.com with SMTP id p16so9395918wmq.5
+        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 01:45:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678268400;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=NoHhRDqxhWq5dkj9fVOfw1WvkPwkneaT/si7dtFMPME=;
-        b=cZoxPmC83DhtmjAP5Aveqw/y9OSrO/czmNAdUC3If883SJoDiKUY9h3IkB9EeVeRMA
-         uq+fmMxEyULqkmocgUWKlHrCFYlikpeZc3zh9Jq5NTnS9fcHCYMUntYcA4yLdWTxLk+X
-         Xu6OFBSQzsZ2XyWHva5EbMQkPeNK+nFN7jZh4JhSKEAxzb7Vm+yw1IZj5sgVO1kevmSU
-         pavm3icbhonniV2oybkpE+30s7sbadObmEEM0fpDE3hGpLvJqpfxU6ckg6GWJ/nVgmKl
-         /xsN8/9a84fzSXeFvjpzHyfO1t0tiW5akm+HhZm9IdLUR6ITb5eiAfBUXhC0YfcnZaQH
-         yxAw==
+        d=google.com; s=20210112; t=1678268757;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ty12+nLrZzZRFPyE/5xCHmQ1gSeqrVNRX0+UN6AcEvs=;
+        b=Bo8R0BiS+Y8YaIo1e8mE6z62fZO2YRstGgC+BiU0UtDlAPcABLiBzqS0zpvWr5x73o
+         rQTpTCzhp1w4zQaDHomzQBkHY31p4C3jxjoE9xkxBrR9RZmR/tBIRyBPhPiisfLaFfxE
+         FNW7s7N4U3BM3m/hPK5f2Vq8dNx0xCVA/L2EEbKJv0DolomSQIk0m1FW0zhFP+stjXRs
+         ia/YQVLcN2pINSuFZeuqUEsGLAjomKGvhuIZrIW7jhLl1TW1mS/NgEAQAUcCdp05sIQj
+         ukpYpc6MJR6chPKQx6OkD0Fzv18ytjrIOIqviRaYa8g2CWPewdimxqAiWGQxlWHHuk7J
+         B9fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678268400;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=NoHhRDqxhWq5dkj9fVOfw1WvkPwkneaT/si7dtFMPME=;
-        b=kZA4v1XPUr+PBl4uZ9sEkoa/CuLCNraqybD8sBLjIeGv+o4yh2fLpd4HL/FUhhzzFx
-         IMQSE9cwE2a+UjQOx5zHIrbAtmRiqiMUgifygkkqZITEEAK7NIrK7aMzfoN23vA7IpWY
-         vT15l3VadPIRnRiBdSFvbCD6fwNrkvN7Rsc+2j2yzUCYlyVDqLHeaapsvBXQJ/3X1jUr
-         5gbwYGd0PtJ+iRJfG/r8FS4nfa4JMNJFkxA4wRlOLhfsW0QWwqnkdJIlL7K4QVWPP254
-         jr4XdgI15TYV3qLJjgntPiJCVP8OmRAbuIx0akYG9e0ijKpor2q4LUrNf4r6uQ+W9xHa
-         lggw==
-X-Gm-Message-State: AO0yUKUEtxIHkhFjH2rGNfsDE6n6zofZNynmJptdtgHIk2o6A6ph7ztH
-        d4noLYRbIVnbKDXmc0+SV7f0OnZPyUY=
-X-Google-Smtp-Source: AK7set9JF4WMLeQFvQUWIDYLr0H22AsmKbkTA4wDUDuLBz4g/8jnNaQOa3u48YW2L58+TH9d6gZPZw==
-X-Received: by 2002:ac2:489a:0:b0:4dc:807b:9040 with SMTP id x26-20020ac2489a000000b004dc807b9040mr5085438lfc.5.1678268400573;
-        Wed, 08 Mar 2023 01:40:00 -0800 (PST)
-Received: from [192.168.1.103] ([31.173.83.210])
-        by smtp.gmail.com with ESMTPSA id l3-20020a2e9083000000b00295a7f35206sm2505458ljg.48.2023.03.08.01.39.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Mar 2023 01:40:00 -0800 (PST)
-Subject: Re: [PATCH 07/11] ravb: remove R-Car H3 ES1.* handling
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        linux-renesas-soc@vger.kernel.org
-Cc:     Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230307163041.3815-1-wsa+renesas@sang-engineering.com>
- <20230307163041.3815-8-wsa+renesas@sang-engineering.com>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Message-ID: <20567076-5347-4385-db93-850b4200dfa7@gmail.com>
-Date:   Wed, 8 Mar 2023 12:39:58 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        d=1e100.net; s=20210112; t=1678268757;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ty12+nLrZzZRFPyE/5xCHmQ1gSeqrVNRX0+UN6AcEvs=;
+        b=QHnH6QEF524Mv+sO9M1PKjchz/s27ZHEDCsKO9OmKci4PjSvnXuudpHEklSuxVtDVe
+         xXNdKoLekrVBAJM5OmnmNXULSv8FbdfXTLS2doenWKkz8lYE/amaASCeGXWQ+Bzp6Wrn
+         Fi/1I3Zup4R1sUtnaeiMnmU0EBKGU81Nc9C7CYF4MXgvA4Lnjuv3jVuYq1LS0eVYteNF
+         d6GyZ+Bt3iTlLPYii4cnYSz0KmE2wGpBxwPlFjfK+3eyjs8ywptTqqvGIQKq4UU/KBjj
+         VnoGBKRmpD7F0Kq5mVp5bNLueUfKex6PYxYqksekQF7uKA/tTKzATLn74esZ/sGESpdG
+         ++tQ==
+X-Gm-Message-State: AO0yUKWpUOjGZLa5gLUAaTq7s9O8AqubkIs1hKwykmXTfXOlEG0bCifJ
+        vNDSt2uN4PvN/GcsEN8PFjjqkpfpzavRTPSdkgtqrQ==
+X-Google-Smtp-Source: AK7set+xxY1JtZ4a0+A5Ndip55cSbLE+PPFEk2K9wHakPb4oduun87X7EcgJFx0oOrF9VuSVtYF58yO02J1S9LUH8Ks=
+X-Received: by 2002:a7b:c2a2:0:b0:3eb:5a1e:d52c with SMTP id
+ c2-20020a7bc2a2000000b003eb5a1ed52cmr3657640wmk.2.1678268757575; Wed, 08 Mar
+ 2023 01:45:57 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20230307163041.3815-8-wsa+renesas@sang-engineering.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,SPF_HELO_NONE,SPF_PASS autolearn=no
+References: <20230308021153.99777-1-kerneljasonxing@gmail.com>
+In-Reply-To: <20230308021153.99777-1-kerneljasonxing@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 8 Mar 2023 10:45:45 +0100
+Message-ID: <CANn89iJXiBvLMK7uC9MHmtt7gWd50oopqBn0dEC_Per=dFbVzg@mail.gmail.com>
+Subject: Re: [PATCH v4 net-next] udp: introduce __sk_mem_schedule() usage
+To:     Jason Xing <kerneljasonxing@gmail.com>
+Cc:     simon.horman@corigine.com, willemdebruijn.kernel@gmail.com,
+        davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        Jason Xing <kernelxing@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
-X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+On Wed, Mar 8, 2023 at 3:13=E2=80=AFAM Jason Xing <kerneljasonxing@gmail.co=
+m> wrote:
+>
+> From: Jason Xing <kernelxing@tencent.com>
+>
+> Keep the accounting schema consistent across different protocols
+> with __sk_mem_schedule(). Besides, it adjusts a little bit on how
+> to calculate forward allocated memory compared to before. After
+> applied this patch, we could avoid receive path scheduling extra
+> amount of memory.
+>
+> Link: https://lore.kernel.org/lkml/20230221110344.82818-1-kerneljasonxing=
+@gmail.com/
+> Signed-off-by: Jason Xing <kernelxing@tencent.com>
+>
 
-  (Sending via Gmail account, as the OMP SMTP server rejects...) 
-
-On 3/7/23 7:30 PM, Wolfram Sang wrote:
-
-> R-Car H3 ES1.* was only available to an internal development group and
-> needed a lot of quirks and workarounds. These become a maintenance
-> burden now, so our development group decided to remove upstream support
-> and disable booting for this SoC. Public users only have ES2 onwards.
-> 
-> Reviewed-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-
-Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-
-[...]
-
-MBR, Sergey
+Reviewed-by: Eric Dumazet <edumazet@google.com>
