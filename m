@@ -2,79 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 790086B05F9
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 12:29:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18E4A6B0604
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 12:33:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229835AbjCHL3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 06:29:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51796 "EHLO
+        id S229800AbjCHLdx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 06:33:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbjCHL3i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 06:29:38 -0500
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A335943B2;
-        Wed,  8 Mar 2023 03:29:37 -0800 (PST)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 328BTQXp076832;
-        Wed, 8 Mar 2023 05:29:26 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1678274966;
-        bh=2cMU5DM06+6udjmW7+IgRRTWk2cEtyidoeYZD/UWSDo=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=wNVDvZkAslGdhcGbxufQrtGgUqLqMMBl+bWHQuMidE9bJ7nXzw9aZfcpFk0XYWxz6
-         U+I9hTmyqdXV59NRhL25bXOrl6Q47U3q/wH92/9YqXmiEpMZa3YbJz4n6Uk8C3pWdB
-         2bFWwj35q4CKp6fOw9kmHizsBpEiiVp2FzGhKSsY=
-Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 328BTQpa062350
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 8 Mar 2023 05:29:26 -0600
-Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Wed, 8
- Mar 2023 05:29:25 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Wed, 8 Mar 2023 05:29:25 -0600
-Received: from [10.24.69.114] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 328BTKrU086606;
-        Wed, 8 Mar 2023 05:29:21 -0600
-Message-ID: <a24dd8ef-e720-7bb5-b8d6-f168afd96233@ti.com>
-Date:   Wed, 8 Mar 2023 16:59:20 +0530
+        with ESMTP id S229482AbjCHLdv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 06:33:51 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F03021EBC6
+        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 03:33:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1678275183;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=4guN8DBcmt/c5sTH6jIqVcZ4QQYMDir5ghNxz4dv9I4=;
+        b=JmFv86zkq7baVQ3yQBcSWsa98NwGDMst8Vp3GG+oVrTs7YqtKHjWGLA1UGBM5xEdRiCXPH
+        YhJuVjYByDzLVnlTd04Ffa//CIP/uWdJGZEG0oyhku8PBn5rrrbW4b8siy3pcZlMRWJfvQ
+        1TPi/QnvdFcjWpD/ZWFHjNsBsd8PXjU=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-656-U-ASJTibMlSDCN0cVlE0tQ-1; Wed, 08 Mar 2023 06:32:59 -0500
+X-MC-Unique: U-ASJTibMlSDCN0cVlE0tQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8EFF5101A521;
+        Wed,  8 Mar 2023 11:32:58 +0000 (UTC)
+Received: from ihuguet-laptop.redhat.com (unknown [10.39.194.164])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C35E52026D4B;
+        Wed,  8 Mar 2023 11:32:56 +0000 (UTC)
+From:   =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
+        Tianhao Zhao <tizhao@redhat.com>,
+        Jonathan Cooper <jonathan.s.cooper@amd.com>
+Subject: [PATCH net] sfc: ef10: don't overwrite offload features at NIC reset
+Date:   Wed,  8 Mar 2023 12:32:54 +0100
+Message-Id: <20230308113254.18866-1-ihuguet@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [EXTERNAL] Re: [EXTERNAL] Re: [PATCH v3 4/6] soc: ti: pruss: Add
- helper functions to set GPI mode, MII_RT_event and XFR
-Content-Language: en-US
-To:     Roger Quadros <rogerq@kernel.org>,
-        MD Danish Anwar <danishanwar@ti.com>,
-        "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
-        "Vignesh Raghavendra" <vigneshr@ti.com>,
-        Tero Kristo <t-kristo@ti.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        "Santosh Shilimkar" <ssantosh@kernel.org>,
-        Nishanth Menon <nm@ti.com>
-CC:     <linux-remoteproc@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <srk@ti.com>, <devicetree@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-References: <20230306110934.2736465-1-danishanwar@ti.com>
- <20230306110934.2736465-5-danishanwar@ti.com>
- <2f039534-dd21-7361-0fcd-b91da1636a3a@kernel.org>
- <ed3dd4b6-658f-07d2-a055-4c38f2ec9db0@ti.com>
- <93228d2f-0fc8-0c0e-f5ea-f55ed72da908@kernel.org>
-From:   Md Danish Anwar <a0501179@ti.com>
-Organization: Texas Instruments
-In-Reply-To: <93228d2f-0fc8-0c0e-f5ea-f55ed72da908@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,137 +60,132 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+At NIC reset, some offload features related to encapsulated traffic
+might have changed (this mainly happens if the firmware-variant is
+changed with the sfboot userspace tool). Because of this, features are
+checked and set again at reset time.
 
+However, this was not done right, and some features were improperly
+overwritten at NIC reset:
+- Tunneled IPv6 segmentation was always disabled
+- Features disabled with ethtool were reenabled
+- Features that becomes unsupported after the reset were not disabled
 
-On 08/03/23 16:45, Roger Quadros wrote:
-> 
-> 
-> On 08/03/2023 11:23, Md Danish Anwar wrote:
->> Hi Roger,
->>
->> On 08/03/23 14:04, Roger Quadros wrote:
->>> Hi Danish,
->>>
->>> On 06/03/2023 13:09, MD Danish Anwar wrote:
->>>> From: Suman Anna <s-anna@ti.com>
->>>>
->>>> The PRUSS CFG module is represented as a syscon node and is currently
->>>> managed by the PRUSS platform driver. Add easy accessor functions to set
->>>> GPI mode, MII_RT event enable/disable and XFR (XIN XOUT) enable/disable
->>>> to enable the PRUSS Ethernet usecase. These functions reuse the generic
->>>> pruss_cfg_update() API function.
->>>>
->>>> Signed-off-by: Suman Anna <s-anna@ti.com>
->>>> Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
->>>> Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
->>>> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
->>>> ---
->>>>  include/linux/remoteproc/pruss.h | 55 ++++++++++++++++++++++++++++++++
->>>>  1 file changed, 55 insertions(+)
->>>>
->>>> diff --git a/include/linux/remoteproc/pruss.h b/include/linux/remoteproc/pruss.h
->>>> index d41bec448f06..7952f250301a 100644
->>>> --- a/include/linux/remoteproc/pruss.h
->>>> +++ b/include/linux/remoteproc/pruss.h
->>>> @@ -240,4 +240,59 @@ static inline bool is_pru_rproc(struct device *dev)
->>>>  	return true;
->>>>  }
->>>>  
->>>> +/**
->>>> + * pruss_cfg_gpimode() - set the GPI mode of the PRU
->>>> + * @pruss: the pruss instance handle
->>>> + * @pru_id: id of the PRU core within the PRUSS
->>>> + * @mode: GPI mode to set
->>>> + *
->>>> + * Sets the GPI mode for a given PRU by programming the
->>>> + * corresponding PRUSS_CFG_GPCFGx register
->>>> + *
->>>> + * Return: 0 on success, or an error code otherwise
->>>> + */
->>>> +static inline int pruss_cfg_gpimode(struct pruss *pruss,
->>>> +				    enum pruss_pru_id pru_id,
->>>> +				    enum pruss_gpi_mode mode)
->>>> +{
->>>> +	if (pru_id < 0 || pru_id >= PRUSS_NUM_PRUS)
->>>> +		return -EINVAL;
->>>> +
->>>
->>> Should we check for invalid gpi mode and error out if so?
->>>
->> Sure we can check for invalid gpi mode.
->>
->> Does the below code snippet looks good to you?
->>
->> 	if(mode < PRUSS_GPI_MODE_DIRECT || mode > PRUSS_GPI_MODE_MII)
-> 
-> How about?
-> 	if (mode < 0 || mode > PRUSS_GPI_MODE_MAX)
-> 
+Also, cleanup a bit the setting of other features not related to
+encapsulation. Now that Siena devices are unsupported, some checks are
+unnecessary because they're always supported in all ef10 models.
 
-Sure that would be better. But we will have to introduce PRUSS_GPI_MODE_MAX in
-the enum definition.
+Fixes: ffffd2454a7a ("sfc: correctly advertise tunneled IPv6 segmentation")
+Fixes: 24b2c3751aa3 ("sfc: advertise encapsulated offloads on EF10")
+Reported-by: Tianhao Zhao <tizhao@redhat.com>
+Suggested-by: Jonathan Cooper <jonathan.s.cooper@amd.com>
+Tested-by: Jonathan Cooper <jonathan.s.cooper@amd.com>
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/ethernet/sfc/ef10.c | 38 ++++++++++++++++++++++-----------
+ drivers/net/ethernet/sfc/efx.c  | 17 ++++++---------
+ 2 files changed, 33 insertions(+), 22 deletions(-)
 
-Also the if() should check for mode >= PRUSS_GPI_MODE_MAX so the if check will
-become,
-
-	if (mode < 0 || mode >= PRUSS_GPI_MODE_MAX)
-		return -EINVAL;
-
-enum definition,
-
-enum pruss_gpi_mode {
-	PRUSS_GPI_MODE_DIRECT = 0,
-	PRUSS_GPI_MODE_PARALLEL,
-	PRUSS_GPI_MODE_28BIT_SHIFT,
-	PRUSS_GPI_MODE_MII,
-	PRUSS_GPI_MODE_MAX,
-};
-
->> 		return -EINVAL;
->>
->>>> +	return pruss_cfg_update(pruss, PRUSS_CFG_GPCFG(pru_id),
->>>> +				PRUSS_GPCFG_PRU_GPI_MODE_MASK,
->>>> +				mode << PRUSS_GPCFG_PRU_GPI_MODE_SHIFT);
->>>> +}
->>>> +
->>>> +/**
->>>> + * pruss_cfg_miirt_enable() - Enable/disable MII RT Events
->>>> + * @pruss: the pruss instance
->>>> + * @enable: enable/disable
->>>> + *
->>>> + * Enable/disable the MII RT Events for the PRUSS.
->>>> + *
->>>> + * Return: 0 on success, or an error code otherwise
->>>> + */
->>>> +static inline int pruss_cfg_miirt_enable(struct pruss *pruss, bool enable)
->>>> +{
->>>> +	u32 set = enable ? PRUSS_MII_RT_EVENT_EN : 0;
->>>> +
->>>> +	return pruss_cfg_update(pruss, PRUSS_CFG_MII_RT,
->>>> +				PRUSS_MII_RT_EVENT_EN, set);
->>>> +}
->>>> +
->>>> +/**
->>>> + * pruss_cfg_xfr_enable() - Enable/disable XIN XOUT shift functionality
->>>> + * @pruss: the pruss instance
->>>> + * @enable: enable/disable
->>>> + *
->>>> + * Return: 0 on success, or an error code otherwise
->>>> + */
->>>> +static inline int pruss_cfg_xfr_enable(struct pruss *pruss, bool enable)
->>>> +{
->>>> +	u32 set = enable ? PRUSS_SPP_XFER_SHIFT_EN : 0;
->>>> +
->>>> +	return pruss_cfg_update(pruss, PRUSS_CFG_SPP,
->>>> +				PRUSS_SPP_XFER_SHIFT_EN, set);
->>>> +}
->>>> +
->>>>  #endif /* __LINUX_PRUSS_H */
->>>
-> 
-> cheers,
-> -roger
-
+diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+index 7022fb2005a2..d30459dbfe8f 100644
+--- a/drivers/net/ethernet/sfc/ef10.c
++++ b/drivers/net/ethernet/sfc/ef10.c
+@@ -1304,7 +1304,8 @@ static void efx_ef10_fini_nic(struct efx_nic *efx)
+ static int efx_ef10_init_nic(struct efx_nic *efx)
+ {
+ 	struct efx_ef10_nic_data *nic_data = efx->nic_data;
+-	netdev_features_t hw_enc_features = 0;
++	struct net_device *net_dev = efx->net_dev;
++	netdev_features_t tun_feats, tso_feats;
+ 	int rc;
+ 
+ 	if (nic_data->must_check_datapath_caps) {
+@@ -1349,20 +1350,30 @@ static int efx_ef10_init_nic(struct efx_nic *efx)
+ 		nic_data->must_restore_piobufs = false;
+ 	}
+ 
+-	/* add encapsulated checksum offload features */
++	/* encap features might change during reset if fw variant changed */
+ 	if (efx_has_cap(efx, VXLAN_NVGRE) && !efx_ef10_is_vf(efx))
+-		hw_enc_features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
+-	/* add encapsulated TSO features */
+-	if (efx_has_cap(efx, TX_TSO_V2_ENCAP)) {
+-		netdev_features_t encap_tso_features;
++		net_dev->hw_enc_features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
++	else
++		net_dev->hw_enc_features &= ~(NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM);
+ 
+-		encap_tso_features = NETIF_F_GSO_UDP_TUNNEL | NETIF_F_GSO_GRE |
+-			NETIF_F_GSO_UDP_TUNNEL_CSUM | NETIF_F_GSO_GRE_CSUM;
++	tun_feats = NETIF_F_GSO_UDP_TUNNEL | NETIF_F_GSO_GRE |
++		    NETIF_F_GSO_UDP_TUNNEL_CSUM | NETIF_F_GSO_GRE_CSUM;
++	tso_feats = NETIF_F_TSO | NETIF_F_TSO6;
+ 
+-		hw_enc_features |= encap_tso_features | NETIF_F_TSO;
+-		efx->net_dev->features |= encap_tso_features;
++	if (efx_has_cap(efx, TX_TSO_V2_ENCAP)) {
++		/* If this is first nic_init, or if it is a reset and a new fw
++		 * variant has added new features, enable them by default.
++		 * If the features are not new, maintain their current value.
++		 */
++		if (!(net_dev->hw_features & tun_feats))
++			net_dev->features |= tun_feats;
++		net_dev->hw_enc_features |= tun_feats | tso_feats;
++		net_dev->hw_features |= tun_feats;
++	} else {
++		net_dev->hw_enc_features &= ~(tun_feats | tso_feats);
++		net_dev->hw_features &= ~tun_feats;
++		net_dev->features &= ~tun_feats;
+ 	}
+-	efx->net_dev->hw_enc_features = hw_enc_features;
+ 
+ 	/* don't fail init if RSS setup doesn't work */
+ 	rc = efx->type->rx_push_rss_config(efx, false,
+@@ -4021,7 +4032,10 @@ static unsigned int efx_ef10_recycle_ring_size(const struct efx_nic *efx)
+ 	 NETIF_F_HW_VLAN_CTAG_FILTER |	\
+ 	 NETIF_F_IPV6_CSUM |		\
+ 	 NETIF_F_RXHASH |		\
+-	 NETIF_F_NTUPLE)
++	 NETIF_F_NTUPLE |		\
++	 NETIF_F_SG |			\
++	 NETIF_F_RXCSUM |		\
++	 NETIF_F_RXALL)
+ 
+ const struct efx_nic_type efx_hunt_a0_vf_nic_type = {
+ 	.is_vf = true,
+diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
+index 02c2adeb0a12..884d8d168862 100644
+--- a/drivers/net/ethernet/sfc/efx.c
++++ b/drivers/net/ethernet/sfc/efx.c
+@@ -1001,21 +1001,18 @@ static int efx_pci_probe_post_io(struct efx_nic *efx)
+ 	}
+ 
+ 	/* Determine netdevice features */
+-	net_dev->features |= (efx->type->offload_features | NETIF_F_SG |
+-			      NETIF_F_TSO | NETIF_F_RXCSUM | NETIF_F_RXALL);
+-	if (efx->type->offload_features & (NETIF_F_IPV6_CSUM | NETIF_F_HW_CSUM)) {
+-		net_dev->features |= NETIF_F_TSO6;
+-		if (efx_has_cap(efx, TX_TSO_V2_ENCAP))
+-			net_dev->hw_enc_features |= NETIF_F_TSO6;
+-	}
+-	/* Check whether device supports TSO */
+-	if (!efx->type->tso_versions || !efx->type->tso_versions(efx))
+-		net_dev->features &= ~NETIF_F_ALL_TSO;
++	net_dev->features |= efx->type->offload_features;
++
++	/* Add TSO features */
++	if (efx->type->tso_versions && efx->type->tso_versions(efx))
++		net_dev->features |= NETIF_F_TSO | NETIF_F_TSO6;
++
+ 	/* Mask for features that also apply to VLAN devices */
+ 	net_dev->vlan_features |= (NETIF_F_HW_CSUM | NETIF_F_SG |
+ 				   NETIF_F_HIGHDMA | NETIF_F_ALL_TSO |
+ 				   NETIF_F_RXCSUM);
+ 
++	/* Determine user configurable features */
+ 	net_dev->hw_features |= net_dev->features & ~efx->fixed_features;
+ 
+ 	/* Disable receiving frames with bad FCS, by default. */
 -- 
-Thanks and Regards,
-Danish.
+2.39.2
+
