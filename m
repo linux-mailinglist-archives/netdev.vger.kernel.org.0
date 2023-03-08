@@ -2,73 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7312B6B0195
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 09:34:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCFF16B01A0
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 09:36:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229680AbjCHIed (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 03:34:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56996 "EHLO
+        id S230447AbjCHIge (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 03:36:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230309AbjCHIdw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 03:33:52 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A12F59E5D
-        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 00:33:19 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id cw28so62524743edb.5
-        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 00:33:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678264395;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=08co5VKvgYPVtTox29HjyrCSQb3Vy/mGVljoghktoV4=;
-        b=RktQsrV345O0oMV35TGSBz9LtBaRLOQqcgQNAnjJogA8PhBr2vovnutWCXX59JsCPx
-         At9Aya/G4O17uIz/6l/3G0Qj9fFeTAUVAwRyL2igjTU8zrAA2Uc1D5OcxZ/gjCONRcnz
-         22IhU0NO9ZZRAkYc5IMRTKCHfNSV4cynVj2BCXMQhEccdPs0cbHVEOVOG8rikpoq3Xw7
-         +gbCrhgYXzpZgNyUbC4KlbXwbfcHBb8a64sJg3u0WpwKh1DQFdO2fnLAGg6RZGS/OeuL
-         AHYyxl/cQOYr9tXH2IpeKhlpAEpWtobil5DqHkfPrYeYI9jRWC5hRKd6qz0qA73X19Zz
-         NSIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678264395;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=08co5VKvgYPVtTox29HjyrCSQb3Vy/mGVljoghktoV4=;
-        b=DvZrB654YCQEOANIyQHnX3wmIwO6EWKmC/AjHLvnpXDmszF0PC5gN8siysGtFbwe+P
-         TZxiw5q1q6YJf7aqbEE0Ft3TlEJ9SkFt2p5nQWJBDeRtcWSoL30Uh9PZibKAGgt5x6Ya
-         A0Kie36+YhkivPt4jMY42wY41TikirkAM1ln1Qon74GrbnhZ1QxE6aVk1p4MJy6RRCP6
-         o76nqLHqI2dpABZDKV0HWJLokJUNnsKgBtccq0i07euDTlOqCsFwKV3d2nEEXOB2kEa+
-         LW5o8z/xpfMjQUpPRyb8mpLBRsRUQLILf35J39EDhn7kNeGz7B/YvIAQ95AiJ33OkvZw
-         JNlw==
-X-Gm-Message-State: AO0yUKUs2WDQciczGWrZ7Pdg2MF4gYwIrdWfmG2puLe58h/9eopzmki0
-        eKnqF9csckFuEELhOXwotYM=
-X-Google-Smtp-Source: AK7set++b4o7dLGBwtef5mMRLYNmum8RZJaLgm/4V6PfMcA0ADz0EXUZHCnwLd9nkw9zAREA0amj/g==
-X-Received: by 2002:a17:907:948e:b0:878:7f6e:38a7 with SMTP id dm14-20020a170907948e00b008787f6e38a7mr23083901ejc.44.1678264395054;
-        Wed, 08 Mar 2023 00:33:15 -0800 (PST)
-Received: from [192.168.0.106] ([77.126.33.94])
-        by smtp.gmail.com with ESMTPSA id f27-20020a50a6db000000b004acc61206cfsm7832880edc.33.2023.03.08.00.33.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Mar 2023 00:33:14 -0800 (PST)
-Message-ID: <e0d6760b-c571-cb1e-f47e-89a6b6376b86@gmail.com>
-Date:   Wed, 8 Mar 2023 10:33:12 +0200
+        with ESMTP id S230451AbjCHIgE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 03:36:04 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D55B3730;
+        Wed,  8 Mar 2023 00:35:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B138616EB;
+        Wed,  8 Mar 2023 08:34:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75CAAC433EF;
+        Wed,  8 Mar 2023 08:34:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678264458;
+        bh=g6FWDWTVvtbUVJ0kus/OK9I+nhtkZyDFnv104tDpUdg=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=KJayE8QeTlag7cnxN2nStkgFonskLPD56vS7wrJt+yEbZIwhYJINJVweCe2mwGX2f
+         LealC9F1CqMnXhkgKUGh/1H2M8d/N8+IAVzeFOW1tyuTTORDlUiU7EapRTleS5DdMz
+         CBfkBuiaUcm5DvlHs6UK1QFx6qN4SuZ5ai812CgrkCg3Q8mbMk6Hdkk2M7vE+d1woQ
+         EQ5o1TtFdU94PHElLD7IXLKn+GRjq1wUrvdLXq2xWIbmZe4a1rfGakc1/6q2ycFmC6
+         L91jKRyk6/z7unULkymS1imZT2yLyVsBPOB9ipPjS53SudX8BBI4h6otu2iQTIHqq0
+         TnbJ12NOPyLHw==
+Message-ID: <2f039534-dd21-7361-0fcd-b91da1636a3a@kernel.org>
+Date:   Wed, 8 Mar 2023 10:34:12 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH net] ynl: re-license uniformly under GPL-2.0 OR
- BSD-3-Clause
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v3 4/6] soc: ti: pruss: Add helper functions to set GPI
+ mode, MII_RT_event and XFR
 Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-References: <20230306200457.3903854-1-kuba@kernel.org>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <20230306200457.3903854-1-kuba@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     MD Danish Anwar <danishanwar@ti.com>,
+        "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <t-kristo@ti.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Nishanth Menon <nm@ti.com>
+Cc:     linux-remoteproc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, srk@ti.com, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20230306110934.2736465-1-danishanwar@ti.com>
+ <20230306110934.2736465-5-danishanwar@ti.com>
+From:   Roger Quadros <rogerq@kernel.org>
+In-Reply-To: <20230306110934.2736465-5-danishanwar@ti.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,24 +67,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Danish,
 
-
-On 06/03/2023 22:04, Jakub Kicinski wrote:
-> I was intending to make all the Netlink Spec code BSD-3-Clause
-> to ease the adoption but it appears that:
->   - I fumbled the uAPI and used "GPL WITH uAPI note" there
->   - it gives people pause as they expect GPL in the kernel
-> As suggested by Chuck re-license under dual. This gives us benefit
-> of full BSD freedom while fulfilling the broad "kernel is under GPL"
-> expectations.
+On 06/03/2023 13:09, MD Danish Anwar wrote:
+> From: Suman Anna <s-anna@ti.com>
 > 
-> Link: https://lore.kernel.org/all/20230304120108.05dd44c5@kernel.org/
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> --
-> CC: Tariq Toukan <tariqt@nvidia.com>
-> CC: Lorenzo Bianconi <lorenzo@kernel.org>
+> The PRUSS CFG module is represented as a syscon node and is currently
+> managed by the PRUSS platform driver. Add easy accessor functions to set
+> GPI mode, MII_RT event enable/disable and XFR (XIN XOUT) enable/disable
+> to enable the PRUSS Ethernet usecase. These functions reuse the generic
+> pruss_cfg_update() API function.
 > 
-> Tariq, Lorenzo, can I have your acks?
+> Signed-off-by: Suman Anna <s-anna@ti.com>
+> Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+> Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
 > ---
+>  include/linux/remoteproc/pruss.h | 55 ++++++++++++++++++++++++++++++++
+>  1 file changed, 55 insertions(+)
+> 
+> diff --git a/include/linux/remoteproc/pruss.h b/include/linux/remoteproc/pruss.h
+> index d41bec448f06..7952f250301a 100644
+> --- a/include/linux/remoteproc/pruss.h
+> +++ b/include/linux/remoteproc/pruss.h
+> @@ -240,4 +240,59 @@ static inline bool is_pru_rproc(struct device *dev)
+>  	return true;
+>  }
+>  
+> +/**
+> + * pruss_cfg_gpimode() - set the GPI mode of the PRU
+> + * @pruss: the pruss instance handle
+> + * @pru_id: id of the PRU core within the PRUSS
+> + * @mode: GPI mode to set
+> + *
+> + * Sets the GPI mode for a given PRU by programming the
+> + * corresponding PRUSS_CFG_GPCFGx register
+> + *
+> + * Return: 0 on success, or an error code otherwise
+> + */
+> +static inline int pruss_cfg_gpimode(struct pruss *pruss,
+> +				    enum pruss_pru_id pru_id,
+> +				    enum pruss_gpi_mode mode)
+> +{
+> +	if (pru_id < 0 || pru_id >= PRUSS_NUM_PRUS)
+> +		return -EINVAL;
+> +
 
-Acked-by: Tariq Toukan <tariqt@nvidia.com> # re-license my contributions
+Should we check for invalid gpi mode and error out if so?
+
+> +	return pruss_cfg_update(pruss, PRUSS_CFG_GPCFG(pru_id),
+> +				PRUSS_GPCFG_PRU_GPI_MODE_MASK,
+> +				mode << PRUSS_GPCFG_PRU_GPI_MODE_SHIFT);
+> +}
+> +
+> +/**
+> + * pruss_cfg_miirt_enable() - Enable/disable MII RT Events
+> + * @pruss: the pruss instance
+> + * @enable: enable/disable
+> + *
+> + * Enable/disable the MII RT Events for the PRUSS.
+> + *
+> + * Return: 0 on success, or an error code otherwise
+> + */
+> +static inline int pruss_cfg_miirt_enable(struct pruss *pruss, bool enable)
+> +{
+> +	u32 set = enable ? PRUSS_MII_RT_EVENT_EN : 0;
+> +
+> +	return pruss_cfg_update(pruss, PRUSS_CFG_MII_RT,
+> +				PRUSS_MII_RT_EVENT_EN, set);
+> +}
+> +
+> +/**
+> + * pruss_cfg_xfr_enable() - Enable/disable XIN XOUT shift functionality
+> + * @pruss: the pruss instance
+> + * @enable: enable/disable
+> + *
+> + * Return: 0 on success, or an error code otherwise
+> + */
+> +static inline int pruss_cfg_xfr_enable(struct pruss *pruss, bool enable)
+> +{
+> +	u32 set = enable ? PRUSS_SPP_XFER_SHIFT_EN : 0;
+> +
+> +	return pruss_cfg_update(pruss, PRUSS_CFG_SPP,
+> +				PRUSS_SPP_XFER_SHIFT_EN, set);
+> +}
+> +
+>  #endif /* __LINUX_PRUSS_H */
+
+cheers,
+-roger
