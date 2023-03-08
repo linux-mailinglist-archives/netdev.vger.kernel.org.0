@@ -2,80 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 457E96B00CB
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 09:21:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC0D06B00DC
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 09:22:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229832AbjCHIVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 03:21:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39588 "EHLO
+        id S229729AbjCHIWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 03:22:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229925AbjCHIUu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 03:20:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BFB9B1A68
-        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 00:20:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8153C61640
-        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 08:20:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D46DEC4339C;
-        Wed,  8 Mar 2023 08:20:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678263618;
-        bh=UC0c9Qf2wgU+mUT8wJjJSuEnuxoTYmneesuj7CNgvcU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=RUazwo1tZXDqEMtdKQCj6+xRwyFnVWUjAW8CPiOhqDZoYrs6tFJ41OgKFUzF1tZX7
-         LYS8c1hMl3Wddvz0sMVw3znBTLqO6xwv8Lalafk92wYMEpLJ7rGkON4hy9bL3b/d0i
-         u3sjjoCzJdjqvXTxJENVxXqA/FODjoOrLpCWsODR1RoLiFyjfrQI/IXa7R4Y0wyhZT
-         +2JeYHSXqeeY9UFP0Bi+Hv+o9TUoYl7dGrAR87fhAMICeqAI3+aWo15IpLhZncPKe2
-         6cQRhTSp+oaFD+9GxBPY08a3yLAiAmjUxW5rejwsC9IT1kUnZWbAiY3Qe9N0G2a2qo
-         GcFtpbvwVx/Cg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B872FE61B64;
-        Wed,  8 Mar 2023 08:20:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229846AbjCHIWb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 03:22:31 -0500
+Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 296C8B4204;
+        Wed,  8 Mar 2023 00:21:43 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VdOp-3J_1678263697;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0VdOp-3J_1678263697)
+          by smtp.aliyun-inc.com;
+          Wed, 08 Mar 2023 16:21:38 +0800
+Date:   Wed, 8 Mar 2023 16:21:36 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     Alexander H Duyck <alexander.duyck@gmail.com>
+Cc:     "D. Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com,
+        wenjia@linux.ibm.com, jaka@linux.ibm.com, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net] net/smc: fix NULL sndbuf_desc in smc_cdc_tx_handler()
+Message-ID: <ZAhFkNd0vY784uqZ@TONYMAC-ALIBABA.local>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <1678073786-110013-1-git-send-email-alibuda@linux.alibaba.com>
+ <a4a6c3381239d1297f218c5b6d01828bac016660.camel@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: phy: smsc: simplify lan95xx_config_aneg_ext
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167826361875.8176.1122275776496118992.git-patchwork-notify@kernel.org>
-Date:   Wed, 08 Mar 2023 08:20:18 +0000
-References: <3da785c7-3ef8-b5d3-89a0-340f550be3c2@gmail.com>
-In-Reply-To: <3da785c7-3ef8-b5d3-89a0-340f550be3c2@gmail.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     andrew@lunn.ch, linux@armlinux.org.uk, pabeni@redhat.com,
-        kuba@kernel.org, davem@davemloft.net, edumazet@google.com,
-        netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a4a6c3381239d1297f218c5b6d01828bac016660.camel@gmail.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Mon, 6 Mar 2023 23:10:57 +0100 you wrote:
-> lan95xx_config_aneg_ext() can be simplified by using phy_set_bits().
+On Mon, Mar 06, 2023 at 08:38:52AM -0800, Alexander H Duyck wrote:
+> On Mon, 2023-03-06 at 11:36 +0800, D. Wythe wrote:
+> > From: "D. Wythe" <alibuda@linux.alibaba.com>
+> > 
+> > When performing a stress test on SMC-R by rmmod mlx5_ib driver
+> > during the wrk/nginx test, we found that there is a probability
+> > of triggering a panic while terminating all link groups.
+> > 
+> > This issue dues to the race between smc_smcr_terminate_all()
+> > and smc_buf_create().
+> > 
+> > 			smc_smcr_terminate_all
+> > 
+> > smc_buf_create
+> > /* init */
+> > conn->sndbuf_desc = NULL;
+> > ...
+> > 
+> > 			__smc_lgr_terminate
+> > 				smc_conn_kill
+> > 					smc_close_abort
+> > 						smc_cdc_get_slot_and_msg_send
+> > 
+> > 			__softirqentry_text_start
+> > 				smc_wr_tx_process_cqe
+> > 					smc_cdc_tx_handler
+> > 						READ(conn->sndbuf_desc->len);
+> > 						/* panic dues to NULL sndbuf_desc */
+> > 
+> > conn->sndbuf_desc = xxx;
+> > 
+> > This patch tries to fix the issue by always to check the sndbuf_desc
+> > before send any cdc msg, to make sure that no null pointer is
+> > seen during cqe processing.
+> > 
+> > Fixes: 0b29ec643613 ("net/smc: immediate termination for SMCR link groups")
+> > Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
 > 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> ---
->  drivers/net/phy/smsc.c | 17 +++++++----------
->  1 file changed, 7 insertions(+), 10 deletions(-)
+> Looking at the code for __smc_buf_create it seems like you might have
+> more issues hiding in the code. From what I can tell smc_buf_get_slot
+> can only return a pointer or NULL but it is getting checked for being
+> being a PTR_ERR or IS_ERR in several spots that are likely all dead
+> code.
+> 
+> > ---
+> >  net/smc/smc_cdc.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> > 
+> > diff --git a/net/smc/smc_cdc.c b/net/smc/smc_cdc.c
+> > index 53f63bf..2f0e2ee 100644
+> > --- a/net/smc/smc_cdc.c
+> > +++ b/net/smc/smc_cdc.c
+> > @@ -114,6 +114,9 @@ int smc_cdc_msg_send(struct smc_connection *conn,
+> >  	union smc_host_cursor cfed;
+> >  	int rc;
+> >  
+> > +	if (unlikely(!READ_ONCE(conn->sndbuf_desc)))
+> > +		return -EINVAL;
+> > +
+> 
+> This return value doesn't seem right to me. Rather than en EINVAL
+> should this be something like a ENOBUFS just to make it easier to debug
+> when this issue is encountered?
+> 
 
-Here is the summary with links:
-  - [net-next] net: phy: smsc: simplify lan95xx_config_aneg_ext
-    https://git.kernel.org/netdev/net-next/c/4310e2f42030
+I agree with you. It is reasonable to use ENOBUFS here.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Thanks.
 
-
+> >  	smc_cdc_add_pending_send(conn, pend);
+> >  
+> >  	conn->tx_cdc_seq++;
+> 
