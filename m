@@ -2,75 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51FA66AFF9B
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 08:22:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1B376B006D
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 09:01:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229709AbjCHHWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 02:22:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44924 "EHLO
+        id S229999AbjCHIBL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 03:01:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229527AbjCHHWq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 02:22:46 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95120A6494;
-        Tue,  7 Mar 2023 23:22:42 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id v13so13779254ybu.0;
-        Tue, 07 Mar 2023 23:22:42 -0800 (PST)
+        with ESMTP id S229975AbjCHIBI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 03:01:08 -0500
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E82A9CFDA
+        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 00:01:00 -0800 (PST)
+Received: by mail-io1-xd2b.google.com with SMTP id f14so6482524iow.5
+        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 00:01:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678260162;
+        d=google.com; s=20210112; t=1678262459;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=hSTs7z8U4OKzKxKPcluZMUlf8OLeP+ZzGBZVTGs9IG8=;
-        b=ezycUTXAPczeGsa54dMiW5i9YpAp7Erendap2oQrGiPKz9aeDSjPolT606A3nImWR9
-         hfhG1501E2uOlAr/qmNo0Xt8FXou4/8JGqy+3GnUOn5xnyKlqjyhgQs1xVuraZusPRmK
-         TKa0IGh9sQBEvadisWhrss0JB4Lq/rzNGbz7wtWRD06LFX4Alrh0nDgEe8cYxE4EIVef
-         usAV1GSk2kqgvkhE7DZbmdtErb3RmrGrzrBZk3GBilxUafnHrqRG8Bg8WL9Gce3j14/X
-         s5ySCp6szKYl/pLPe0abrM8b9M8KE7gQn5nvhZcmd1eE53XgC7njLrIkALObS8Z1lvSn
-         OFyg==
+        bh=C0+AS3gtrUxH0AAKG/6TszL/DWdRZE8OAHj8il1hKwQ=;
+        b=QmrPHuYEKG0G19EFphK73Gi+xR/MkTBgE7KSJ7DthT2etNnXCStl7e5VFSSWfrar81
+         N+Ny3XYJl/Jhrlmur0I9gHpP9Mj4mgsw5eDh6BBSiBn8fKLkJnEIforgbzpYTPY/aZ0Z
+         s79pkb8LoAPBx9UjZZoDzP0T0ajYvPmWal/naNbIXrbxHTGpXxWysYldSrpGYtJfBf+m
+         LGr/wSVYO0aC1vFovD3ELPYbUeXL9csxOfOHBLeu++aDUr8SvjtgtxIeeoI2kIkstxi8
+         nKI5X208oWYyCAiJz4M8Ro0JOF3/eW7WJphCuvzAAjDDrfGSIjcxXSy0aqNQm6hxsHeI
+         mjMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678260162;
+        d=1e100.net; s=20210112; t=1678262459;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=hSTs7z8U4OKzKxKPcluZMUlf8OLeP+ZzGBZVTGs9IG8=;
-        b=i0qmEGY5Ima0xlEZQQbuQBwC2ksiu4nhcJ5LWcHKW93agOYGETQRyZOkx6G2KCM3VU
-         auXGFzZhbcnxupIw5PepeBueRZ8TzVmwGn3BQ11g+xitjhMkyOakOGYX73O8lPmMFzis
-         Wja6HC9/p/j0GhREVrdPhRbuUL+T04t90l+sKxOKRlgEkCxsov/2rHlmcqWC8OB3NuRF
-         lfarZ4RNsWrfSctLMqe88urXZgdLrViFbKG05cdO4HZxNp6g37WJuSkV7yNmhmqkB8Ah
-         3WO9EEQOwaQ8Ans97T9Me0bHTPDbuAcT3EmkgMx/ehI49sLNt+Vlfn5PolW1q1O3G+/H
-         Qnjw==
-X-Gm-Message-State: AO0yUKUOkeYbnlF2dbpy+uMSMVQSmk1yUdNZse+AdUy5q9W3UI9mLXF7
-        V98CkYeWAYrS63EhtTZewzRtuB4L1l0TvSAVIe+V64z6g9U=
-X-Google-Smtp-Source: AK7set8T0Kl6lvoi7bA6Bw0daXJU1J8FlrvrJ0Sk0AzSPsxy0oRyawv66Te0sLez10LpvSEEZBpt4My+bhP+uPNl3Ns=
-X-Received: by 2002:a25:8b03:0:b0:ad2:3839:f49 with SMTP id
- i3-20020a258b03000000b00ad238390f49mr10572847ybl.5.1678260161813; Tue, 07 Mar
- 2023 23:22:41 -0800 (PST)
+        bh=C0+AS3gtrUxH0AAKG/6TszL/DWdRZE8OAHj8il1hKwQ=;
+        b=i6zz/po86zZpkd2imrvNuHqdxvbajb3TwBjysJGCh54Bj1Ek6+EfBiCXxiBRKkJ58V
+         ZUM6HygaNC9+V+9YglbQPRn+35MWTlwl7m5Jb+AFZKlq41wE3UnTproK+qVT7J3B2ylu
+         LswRwUP0m+ff43vNK3b85OSsNonjs6PhHdFcCPjS2wRvS/n39qQh+bB5wwC+XP6oVkR4
+         2iGDFLqd0er0jtESOVA6rDKKotq2wTmQILA0MTmLT8joSRhkpxpzuLtoULfgF72Dp45H
+         KN8qG/pBaD+gD9mICd2S4FWwDoN7O22ZL+zkGysfMWlk296LjQKocvwIcmS/gWMAwCiI
+         yYsQ==
+X-Gm-Message-State: AO0yUKX4fGk5KaZUBHB4RqmYK1AQuU3mF40kfnnTT6qNSFsmfGyYX+7A
+        S4ub0gkZOritCNZ0z3Zo5QXqN2i5id9wgket9jloYw==
+X-Google-Smtp-Source: AK7set+DYJT3w/6Pe8aHcLLryHHPTCgfpg/e4dy2tN2xppYMj0CaA96hJGC/4xcGw+VyilaG2u20BCMeV6vLKWlB2bs=
+X-Received: by 2002:a6b:6a11:0:b0:745:68ef:e410 with SMTP id
+ x17-20020a6b6a11000000b0074568efe410mr8091493iog.0.1678262459288; Wed, 08 Mar
+ 2023 00:00:59 -0800 (PST)
 MIME-Version: 1.0
-References: <20230301154953.641654-1-joannelkoong@gmail.com>
- <20230301154953.641654-11-joannelkoong@gmail.com> <CAADnVQJCYcPnutRvjJgShAEokfrXfC4DToPOTJRuyzA1R64mBg@mail.gmail.com>
- <CAJnrk1YNMoTEaWA6=wDS3iV4sV0A-5Afnn+p50hEvX8jR6GLHw@mail.gmail.com> <20230308015500.6pycr5i4nynyu22n@heavy>
-In-Reply-To: <20230308015500.6pycr5i4nynyu22n@heavy>
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Tue, 7 Mar 2023 23:22:30 -0800
-Message-ID: <CAJnrk1Y1ONmEJpwDqGzCUmyrkDf9s_HpDhR5mW=6fNKM6PiXew@mail.gmail.com>
-Subject: Re: [PATCH v13 bpf-next 10/10] selftests/bpf: tests for using dynptrs
- to parse skb and xdp buffers
-To:     Ilya Leoshkevich <iii@linux.ibm.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <martin.lau@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>
+References: <20230302160310.923349-1-jaewan@google.com> <20230302160310.923349-2-jaewan@google.com>
+ <ZAYa4oteaDVPGOLp@corigine.com>
+In-Reply-To: <ZAYa4oteaDVPGOLp@corigine.com>
+From:   Jaewan Kim <jaewan@google.com>
+Date:   Wed, 8 Mar 2023 08:00:47 +0000
+Message-ID: <CABZjns6=CM7qYPEDnhP=ZpJqMaA=yWw6vSMPOTRnk87PsYY4yg@mail.gmail.com>
+Subject: Re: [PATCH v8 1/5] mac80211_hwsim: add PMSR capability support
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     gregkh@linuxfoundation.org, johannes@sipsolutions.net,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@android.com, adelva@google.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,80 +71,133 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 7, 2023 at 5:55=E2=80=AFPM Ilya Leoshkevich <iii@linux.ibm.com>=
- wrote:
+On Mon, Mar 6, 2023 at 4:55=E2=80=AFPM Simon Horman <simon.horman@corigine.=
+com> wrote:
 >
-> On Wed, Mar 01, 2023 at 08:28:40PM -0800, Joanne Koong wrote:
-> > On Wed, Mar 1, 2023 at 10:08=E2=80=AFAM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > On Wed, Mar 1, 2023 at 7:51=E2=80=AFAM Joanne Koong <joannelkoong@gma=
-il.com> wrote:
-> > > >
-> > > > 5) progs/dynptr_success.c
-> > > >    * Add test case "test_skb_readonly" for testing attempts at writ=
-es
-> > > >      on a prog type with read-only skb ctx.
-> > > >    * Add "test_dynptr_skb_data" for testing that bpf_dynptr_data is=
-n't
-> > > >      supported for skb progs.
-> > >
-> > > I added
-> > > +dynptr/test_dynptr_skb_data
-> > > +dynptr/test_skb_readonly
-> > > to DENYLIST.s390x and applied.
+> On Thu, Mar 02, 2023 at 04:03:06PM +0000, Jaewan Kim wrote:
+> > PMSR (a.k.a. peer measurement) is generalized measurement between two
+> > Wi-Fi devices. And currently FTM (a.k.a. fine time measurement or fligh=
+t
+> > time measurement) is the one and only measurement. FTM is measured by
+> > RTT (a.k.a. round trip time) of packets between two Wi-Fi devices.
 > >
-> > Thanks, I'm still not sure why s390x cannot load these programs. It is
-> > being loaded in the same way as other tests like
-> > test_parse_tcp_hdr_opt() are loading programs. I will keep looking
-> > some more into this
+> > Add necessary functionality to allow mac80211_hwsim to be configured wi=
+th
+> > PMSR capability. The capability is mandatory to accept incoming PMSR
+> > request because nl80211_pmsr_start() ignores incoming the request witho=
+ut
+> > the PMSR capability.
+> >
+> > In detail, add new mac80211_hwsim attribute HWSIM_ATTR_PMSR_SUPPORT.
+> > HWSIM_ATTR_PMSR_SUPPORT is used to set PMSR capability when creating a =
+new
+> > radio. To send extra capability details, HWSIM_ATTR_PMSR_SUPPORT can ha=
+ve
+> > nested PMSR capability attributes defined in the nl80211.h. Data format=
+ is
+> > the same as cfg80211_pmsr_capabilities.
+> >
+> > If HWSIM_ATTR_PMSR_SUPPORT is specified, mac80211_hwsim builds
+> > cfg80211_pmsr_capabilities and sets wiphy.pmsr_capa.
+> >
+> > Signed-off-by: Jaewan Kim <jaewan@google.com>
 >
-> Hi,
+> Thanks for your patch, a few comments below.
 >
-> I believe the culprit is:
+> > diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wirele=
+ss/mac80211_hwsim.c
+> > index 4cc4eaf80b14..79476d55c1ca 100644
+> > --- a/drivers/net/wireless/mac80211_hwsim.c
+> > +++ b/drivers/net/wireless/mac80211_hwsim.c
 >
->     insn->imm =3D BPF_CALL_IMM(bpf_dynptr_from_skb_rdonly);
+> ...
 >
-> s390x needs to know the kfunc model in order to emit the call (like
-> i386), but after this assignment it's no longer possible to look it
-> up in kfunc_tab by insn->imm. x86_64 does not need this, because its
-> ABI is exactly the same as BPF ABI.
+> > @@ -3186,6 +3218,7 @@ struct hwsim_new_radio_params {
+> >       u32 *ciphers;
+> >       u8 n_ciphers;
+> >       bool mlo;
+> > +     const struct cfg80211_pmsr_capabilities *pmsr_capa;
 >
-> The simplest solution seems to be adding an artificial kfunc_desc
-> like this:
+> nit: not related to this patch,
+>      but there are lots of holes in hwsim_new_radio_params.
+>      And, I think that all fields, other than the new pmsr_capa field,
+>      could fit into one cacheline on x86_64.
 >
->     {
->         .func_model =3D desc->func_model,  /* model must be compatible */
->         .func_id =3D 0,                    /* unused at this point */
->         .imm =3D insn->imm,                /* new target */
->         .offset =3D 0,                     /* unused at this point */
->     }
+>      I'm unsure if it is worth cleaning up or not.
 >
-> here and also after this assignment:
+> >  };
+> >
+> >  static void hwsim_mcast_config_msg(struct sk_buff *mcast_skb,
+> > @@ -3260,7 +3293,7 @@ static int append_radio_msg(struct sk_buff *skb, =
+int id,
+> >                       return ret;
+> >       }
+> >
+> > -     return 0;
+> > +     return ret;
 >
->     insn->imm =3D BPF_CALL_IMM(xdp_kfunc);
->
-> What do you think?
+> This change seems unrelated to the rest of the patch.
 
-Ohh interesting! This makes sense to me. In particular, you're
-referring to the bpf_jit_find_kfunc_model() call in bpf_jit_insn() (in
-arch/s390/net/bpf_jit_comp.c) as the one that fails out whenever
-insn->imm gets set, correct?
-
-I like your proposed solution, I agree that this looks like the
-simplest, though maybe we should replace the existing kfunc_desc
-instead of adding it so we don't have to deal with the edge case of
-reaching MAX_KFUNC_DESCS? To get the func model of the new insn->imm,
-it seems pretty straightforward, it looks like we can just use
-btf_distill_func_proto(). or call add_kfunc_call() directly, which
-would do everything needed, but adds an additional unnecessary sort
-and more overhead for replacing (eg we'd need to first swap the old
-kfunc_desc with the last tab->descs[tab->nr_descs] entry and then
-delete the old kfunc_desc before adding the new one). What are your
-thoughts?
+I asked to change this in the prior patch v3.
 
 >
-> [...]
+> >  }
+> >
+> >  static void hwsim_mcast_new_radio(int id, struct genl_info *info,
 >
-> Best regards,
-> Ilya
+> ...
+>
+> > +static int parse_pmsr_capa(const struct nlattr *pmsr_capa, struct cfg8=
+0211_pmsr_capabilities *out,
+> > +                        struct genl_info *info)
+> > +{
+> > +     struct nlattr *tb[NL80211_PMSR_ATTR_MAX + 1];
+> > +     struct nlattr *nla;
+> > +     int size;
+>  +      int ret =3D nla_parse_nested(tb, NL80211_PMSR_ATTR_MAX, pmsr_capa=
+,
+> > +                                hwsim_pmsr_capa_policy, NULL);
+> > +
+> > +     if (ret) {
+> > +             NL_SET_ERR_MSG_ATTR(info->extack, pmsr_capa, "malformed P=
+MSR capability");
+> > +             return -EINVAL;
+> > +     }
+> > +
+> > +     if (tb[NL80211_PMSR_ATTR_MAX_PEERS])
+> > +             out->max_peers =3D nla_get_u32(tb[NL80211_PMSR_ATTR_MAX_P=
+EERS]);
+> > +     out->report_ap_tsf =3D !!tb[NL80211_PMSR_ATTR_REPORT_AP_TSF];
+> > +     out->randomize_mac_addr =3D !!tb[NL80211_PMSR_ATTR_RANDOMIZE_MAC_=
+ADDR];
+> > +
+> > +     if (!tb[NL80211_PMSR_ATTR_TYPE_CAPA]) {
+> > +             NL_SET_ERR_MSG_ATTR(info->extack, tb[NL80211_PMSR_ATTR_TY=
+PE_CAPA],
+> > +                                 "malformed PMSR type");
+> > +             return -EINVAL;
+> > +     }
+> > +
+> > +     nla_for_each_nested(nla, tb[NL80211_PMSR_ATTR_TYPE_CAPA], size) {
+> > +             switch (nla_type(nla)) {
+> > +             case NL80211_PMSR_TYPE_FTM:
+> > +                     parse_ftm_capa(nla, out, info);
+> > +                     break;
+> > +             default:
+> > +                     WARN_ON(1);
+>
+> WARN_ON doesn't seem right here. I suspect that the following is more fit=
+ting.
+>
+>                 NL_SET_ERR_MSG_ATTR(...);
+>                 return -EINVAL;
+>
+
+Not using NL_SET_ERR_MSG_ATTR(...) is intended to follow the pattern
+of net/wireless/pmsr.c,
+where unknown type isn't considered as an error.
+
+--=20
+Jaewan Kim (=EA=B9=80=EC=9E=AC=EC=99=84) | Software Engineer in Google Kore=
+a |
+jaewan@google.com | +82-10-2781-5078
