@@ -2,52 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BCBF6B007E
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 09:07:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D63A6B009D
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 09:13:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229917AbjCHIHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 03:07:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45818 "EHLO
+        id S230064AbjCHINm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 03:13:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229806AbjCHIHT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 03:07:19 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F53DAF29E;
-        Wed,  8 Mar 2023 00:06:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=HiLTGh4IUiBfgFWIqr2+yw+o/vwqYzP3id5WiIDWHCQ=;
-        t=1678262817; x=1679472417; b=EPifv+R7Oh5o/gaxoj5iOCS9P/RuG73Uesms3AJf1ubN3Mf
-        7PBAabuuDBkewRGMCBKhc6uCcICcuS1MNTbKl5E3zHQPxw+a0nXxNXvHCqexNMhDnkH+1e4A0xYe3
-        fLxCW0sb2/4Ps8CEm/edF1XXm7H031A1jmPKqQk4/buZULsI/hAY0S/5kY5Tiz+uLLQhRlbNPBy5a
-        8B33yC31CLAAVw4SunfFG01h5HvKl6ruZoklfIkDRBUJxjfat4zmbF+3B2l3uqPQAhCFnPb+55BP/
-        0TDs0aT6epmAW2UiWG1fxiQyRrMnoc2koQsMaoDGqHhXxY7R5WjPYn8zz5jdNf6w==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.96)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1pZop2-00F8Xo-1s;
-        Wed, 08 Mar 2023 09:06:52 +0100
-Message-ID: <51c2b615d848c227edae52cc07df334695c7f856.camel@sipsolutions.net>
-Subject: Re: [PATCH v8 1/5] mac80211_hwsim: add PMSR capability support
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Jaewan Kim <jaewan@google.com>,
-        Simon Horman <simon.horman@corigine.com>
-Cc:     gregkh@linuxfoundation.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-team@android.com, adelva@google.com
-Date:   Wed, 08 Mar 2023 09:06:51 +0100
-In-Reply-To: <CABZjns6=CM7qYPEDnhP=ZpJqMaA=yWw6vSMPOTRnk87PsYY4yg@mail.gmail.com>
-References: <20230302160310.923349-1-jaewan@google.com>
-         <20230302160310.923349-2-jaewan@google.com> <ZAYa4oteaDVPGOLp@corigine.com>
-         <CABZjns6=CM7qYPEDnhP=ZpJqMaA=yWw6vSMPOTRnk87PsYY4yg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+        with ESMTP id S230107AbjCHIN2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 03:13:28 -0500
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF5A7C3D4;
+        Wed,  8 Mar 2023 00:13:14 -0800 (PST)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4PWlNx0ZxKz16PH9;
+        Wed,  8 Mar 2023 16:10:25 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Wed, 8 Mar
+ 2023 16:13:12 +0800
+Subject: Re: [PATCH net, stable v1 3/3] virtio_net: add checking sq is full
+ inside xdp xmit
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+CC:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        <virtualization@lists.linux-foundation.org>, <bpf@vger.kernel.org>,
+        Yichun Zhang <yichun@openresty.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        <netdev@vger.kernel.org>
+References: <20230308024935.91686-1-xuanzhuo@linux.alibaba.com>
+ <20230308024935.91686-4-xuanzhuo@linux.alibaba.com>
+ <7eea924e-5cc3-8584-af95-04587f303f8f@huawei.com>
+ <1678259647.118581-1-xuanzhuo@linux.alibaba.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <5a4564dc-af93-4305-49a4-5ca16d737bc3@huawei.com>
+Date:   Wed, 8 Mar 2023 16:13:12 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+In-Reply-To: <1678259647.118581-1-xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
         URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,77 +65,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2023-03-08 at 08:00 +0000, Jaewan Kim wrote:
-> >=20
-> > > +static int parse_pmsr_capa(const struct nlattr *pmsr_capa, struct cf=
-g80211_pmsr_capabilities *out,
-> > > +                        struct genl_info *info)
-> > > +{
-> > > +     struct nlattr *tb[NL80211_PMSR_ATTR_MAX + 1];
-> > > +     struct nlattr *nla;
-> > > +     int size;
-> >  +      int ret =3D nla_parse_nested(tb, NL80211_PMSR_ATTR_MAX, pmsr_ca=
-pa,
-> > > +                                hwsim_pmsr_capa_policy, NULL);
-> > > +
-> > > +     if (ret) {
-> > > +             NL_SET_ERR_MSG_ATTR(info->extack, pmsr_capa, "malformed=
- PMSR capability");
-> > > +             return -EINVAL;
-> > > +     }
-> > > +
-> > > +     if (tb[NL80211_PMSR_ATTR_MAX_PEERS])
-> > > +             out->max_peers =3D nla_get_u32(tb[NL80211_PMSR_ATTR_MAX=
-_PEERS]);
-> > > +     out->report_ap_tsf =3D !!tb[NL80211_PMSR_ATTR_REPORT_AP_TSF];
-> > > +     out->randomize_mac_addr =3D !!tb[NL80211_PMSR_ATTR_RANDOMIZE_MA=
-C_ADDR];
-> > > +
-> > > +     if (!tb[NL80211_PMSR_ATTR_TYPE_CAPA]) {
-> > > +             NL_SET_ERR_MSG_ATTR(info->extack, tb[NL80211_PMSR_ATTR_=
-TYPE_CAPA],
-> > > +                                 "malformed PMSR type");
-> > > +             return -EINVAL;
-> > > +     }
-> > > +
-> > > +     nla_for_each_nested(nla, tb[NL80211_PMSR_ATTR_TYPE_CAPA], size)=
- {
-> > > +             switch (nla_type(nla)) {
-> > > +             case NL80211_PMSR_TYPE_FTM:
-> > > +                     parse_ftm_capa(nla, out, info);
-> > > +                     break;
-> > > +             default:
-> > > +                     WARN_ON(1);
-> >=20
-> > WARN_ON doesn't seem right here. I suspect that the following is more f=
-itting.
-> >=20
-> >                 NL_SET_ERR_MSG_ATTR(...);
-> >                 return -EINVAL;
-> >=20
->=20
-> Not using NL_SET_ERR_MSG_ATTR(...) is intended to follow the pattern
-> of net/wireless/pmsr.c,
-> where unknown type isn't considered as an error.
+On 2023/3/8 15:14, Xuan Zhuo wrote:
+> On Wed, 8 Mar 2023 14:59:36 +0800, Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>> On 2023/3/8 10:49, Xuan Zhuo wrote:
+>>> If the queue of xdp xmit is not an independent queue, then when the xdp
+>>> xmit used all the desc, the xmit from the __dev_queue_xmit() may encounter
+>>> the following error.
+>>>
+>>> net ens4: Unexpected TXQ (0) queue failure: -28
+>>>
+>>> This patch adds a check whether sq is full in xdp xmit.
+>>>
+>>> Fixes: 56434a01b12e ("virtio_net: add XDP_TX support")
+>>> Reported-by: Yichun Zhang <yichun@openresty.com>
+>>> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+>>> Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+>>> Acked-by: Michael S. Tsirkin <mst@redhat.com>
+>>> ---
+>>>  drivers/net/virtio_net.c | 3 +++
+>>>  1 file changed, 3 insertions(+)
+>>>
+>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+>>> index 46bbddaadb0d..1a309cfb4976 100644
+>>> --- a/drivers/net/virtio_net.c
+>>> +++ b/drivers/net/virtio_net.c
+>>> @@ -767,6 +767,9 @@ static int virtnet_xdp_xmit(struct net_device *dev,
+>>>  	}
+>>>  	ret = nxmit;
+>>>
+>>> +	if (!is_xdp_raw_buffer_queue(vi, sq - vi->sq))
+>>> +		check_sq_full_and_disable(vi, dev, sq);
+>>> +
+>>
+>> Sorry if I missed something obvious here.
+>>
+>> As the comment in start_xmit(), the current skb is added to the sq->vq, so
+>> NETDEV_TX_BUSY can not be returned.
+>>
+>> 	/* If running out of space, stop queue to avoid getting packets that we
+>> 	 * are then unable to transmit.
+>> 	 * An alternative would be to force queuing layer to requeue the skb by
+>> 	 * returning NETDEV_TX_BUSY. However, NETDEV_TX_BUSY should not be
+>> 	 * returned in a normal path of operation: it means that driver is not
+>> 	 * maintaining the TX queue stop/start state properly, and causes
+>> 	 * the stack to do a non-trivial amount of useless work.
+>> 	 * Since most packets only take 1 or 2 ring slots, stopping the queue
+>> 	 * early means 16 slots are typically wasted.
+>> 	 */
+>>
+>> It there any reason not to check the sq->vq->num_free at the begin of start_xmit(),
+>> if the space is not enough for the current skb, TX queue is stopped and NETDEV_TX_BUSY
+>> is return to the stack to requeue the current skb.
+>>
+>> It seems it is the pattern that most network driver follow, and it seems we can avoid
+>> calling check_sq_full_and_disable() in this patch and not wasting 16 slots as mentioned
+>> in the comment above.
+>>
+> 
+> 
+> 
+>  * netdev_tx_t (*ndo_start_xmit)(struct sk_buff *skb,
+>  *                               struct net_device *dev);
+>  *	Called when a packet needs to be transmitted.
+>  *	Returns NETDEV_TX_OK.  Can return NETDEV_TX_BUSY, but you should stop
+>  *	the queue before that can happen; it's for obsolete devices and weird
+>  *	corner cases, but the stack really does a non-trivial amount
+>  *	of useless work if you return NETDEV_TX_BUSY.
+>  *	Required; cannot be NULL.
 
-NL80211_PMSR_ATTR_TYPE_CAPA is normally NLA_REJECT (not sent by
-userspace), you just use it here for the hwsim capabilities which makes
-sense, but it feels better to just reject unknown types.
+Thanks for the pointer. It is intersting, it seems most driver is not flollowing
+the suggestion.
 
-If you're thinking of actually using it we still have in pmsr.c this
-code:
+I found out why the above comment was added, but I am not sure I understand
+what does "non-trivial amount of useless work" means yet.
+https://lists.linuxfoundation.org/pipermail/virtualization/2015-April/029718.html
 
-        nla_for_each_nested(treq, req[NL80211_PMSR_REQ_ATTR_DATA], rem) {
-                switch (nla_type(treq)) {
-                case NL80211_PMSR_TYPE_FTM:
-                        err =3D pmsr_parse_ftm(rdev, treq, out, info);
-                        break;
-                default:
-                        NL_SET_ERR_MSG_ATTR(info->extack, treq,
-                                            "unsupported measurement type")=
-;
-                        err =3D -EINVAL;
-                }
+> 
+> It does not affect the XDP TX. It is just that there are some waste on the
+> path of the protocol stack.
+> 
+> For example, TCP will do some unnecessary work based on the return value here.
 
+I thought it was handled by the sched layer as below, TCP does not need to be
+be aware of that? Am I missed something.
 
-johannes
+https://elixir.bootlin.com/linux/v6.3-rc1/source/net/sched/sch_generic.c#L362
+
+> 
+> Thanks.
+> 
+> 
+>>
+>>>  	if (flags & XDP_XMIT_FLUSH) {
+>>>  		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq))
+>>>  			kicks = 1;
+>>>
+> 
+> .
+> 
