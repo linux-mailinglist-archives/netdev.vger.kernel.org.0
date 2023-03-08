@@ -2,150 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34B596B0A94
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 15:08:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 572CE6B0AAF
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 15:12:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232192AbjCHOIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 09:08:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48670 "EHLO
+        id S231352AbjCHOMb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 09:12:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232115AbjCHOIE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 09:08:04 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B6A49885
-        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 06:06:53 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id d41-20020a05600c4c2900b003e9e066550fso1223121wmp.4
-        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 06:06:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678284411;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=A2ALMeXKInwV18Uj5+ps6Eyw0ShOQbMyQJ8535xwOss=;
-        b=QpSk5/wcMJa6fx7GkcOZ7la3uudJwtaifNdGugGA6FCrfLy3bNykZDsSrcef5oR9vM
-         2BVs7I8uN3GkE3TzpmvE1bmVFPPxlp8y/5uvFffhkAdJD2IXnnpNsAC1bGafyUfdNZfv
-         E2q+gGRvvXtqnWHuufNxZifUKGRa88MNuzvYAJj1aTBFJcDMaRR/XLn4SmvaMj5nmsS1
-         bdXFi6GXhPbuN2+8o1TBslkoY/YGqR/CmydNLLWle/PBIZ0bCaJkvnJGWQzV0cPa7pkx
-         fJanNiGPAoMFZ7E+VAD5C0QaoZ+otS1xAHc4+DYbBJAGxT4biVcVnP3r/WOYDF50Lg6p
-         stGA==
+        with ESMTP id S232210AbjCHOLz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 09:11:55 -0500
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E621C5A18B;
+        Wed,  8 Mar 2023 06:11:07 -0800 (PST)
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-17711f56136so3904840fac.12;
+        Wed, 08 Mar 2023 06:11:07 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678284411;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=A2ALMeXKInwV18Uj5+ps6Eyw0ShOQbMyQJ8535xwOss=;
-        b=zTkGpbyJVHIgs2MxgykZ7UrK+GlEw+9yAU5JkK12/zvN2D1V6qI4eI9lLtomOjh2O1
-         qC27B1TxngcvoFhmIrJ+9NM1bPVDeAxIZGR7H8/Bkt+SkP15nxFAvVWdhsoE3HdfODYU
-         71mbIsBaDaZ36vUxlehIoO902xTyUgqFgL0tovBcelOXFeSNWUXf7mfNZvWbsFvNF71K
-         pXSoCeZ4Kdg7yeOpoljF3kphFBs+JoRPKFXQ9NZchqAn1UUqUa/MaZARCISgL770T2wF
-         +MSHQjo40eex8N94myI8QRxB2jgrns7OS4rrATKL1kmUK8a6M+nlztIyp9X8FjH4AYeP
-         lqIA==
-X-Gm-Message-State: AO0yUKVEAU4u//S8Z9/lwTapUXdU92QMTS/jxNfLsC/D0RITXz4ktici
-        e0rPvCjiHzG2w9eV8c8tJEpQUJv9yEeeYhDPww==
-X-Google-Smtp-Source: AK7set/rQ/Xaj34XGb4b+g4Dw5Z+mSJXvDc+jpH0WgPLx9+9+g7u6Jz7dPe2qdVdIT3QektBSe1LI2q0BApzGNEphks=
-X-Received: by 2002:a05:600c:1f06:b0:3df:d852:ee11 with SMTP id
- bd6-20020a05600c1f0600b003dfd852ee11mr4206786wmb.0.1678284411598; Wed, 08 Mar
- 2023 06:06:51 -0800 (PST)
+        d=1e100.net; s=20210112; t=1678284654;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=BG0LVvFn1C/Da2Gc5O3YD8isCIsXrAwtxSQEVgE87AI=;
+        b=RuXhJut4bN5ftmAJRq/9tiPeccWmierAJ/UbTICusRzkQoNjOG8YL+iO6w9GSVNIuM
+         MPtwwCiEy+25yUZFLSJsd3hKagE0EjYwuuHWlDHqKe5tzf12n1eJ8OjJtouxIvAr3QC7
+         88GZUJLP+OkfWqJCL7HTpUXun+wYZU/uG+o3MEAa5LXcru31ZdoY7MX5vzll1Rv8Dzct
+         zAzR5KnmZc84jvww4EXmvexiilrLMwn6PYBZvDlTfaWgpNgoc0KZZ7lol0aCX4VVNSwg
+         cZ+eAEv1WLNX71i5WEP4zviOzQlZyshApKdpJpw7tMGOzzPVduiQ+NL3jgxyN0jZAyhZ
+         ubGA==
+X-Gm-Message-State: AO0yUKXuLLm7p33VFPZHs4Jkv2fwt77YSwXkDWEog9cgBmjuS5E4ggJk
+        14ELtuV8z/AxECVO1tdDZw==
+X-Google-Smtp-Source: AK7set/cT2sp1M7e47IzQCQD2W8xtmPnZuAp+jI6K0s2N6oikhajQ93ypk71x4/YPZM2+Kr1qDFxTg==
+X-Received: by 2002:a05:6871:b11:b0:176:3849:4e96 with SMTP id fq17-20020a0568710b1100b0017638494e96mr10140723oab.13.1678284654485;
+        Wed, 08 Mar 2023 06:10:54 -0800 (PST)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id f8-20020a9d2c08000000b00690dc5d9b9esm6498673otb.6.2023.03.08.06.10.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Mar 2023 06:10:54 -0800 (PST)
+Received: (nullmailer pid 2719199 invoked by uid 1000);
+        Wed, 08 Mar 2023 14:10:52 -0000
+Date:   Wed, 8 Mar 2023 08:10:52 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Pavel Machek <pavel@ucw.cz>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        devicetree@vger.kernel.org, linux-wireless@vger.kernel.org,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        linux-leds@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-pm@vger.kernel.org, linux-media@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-gpio@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
+        Lee Jones <lee@kernel.org>, Kalle Valo <kvalo@kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>, linux-usb@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        alsa-devel@alsa-project.org, netdev@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Mark Brown <broonie@kernel.org>,
+        Robert Foss <rfoss@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>, linux-can@vger.kernel.org,
+        Guenter Roeck <groeck@chromium.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Benson Leung <bleung@chromium.org>, linux-i2c@vger.kernel.org,
+        Wolfgang Grandegger <wg@grandegger.com>
+Subject: Re: [PATCH] dt-bindings: Fix SPI and I2C bus node names in examples
+Message-ID: <167828463126.2715010.4541489267949266802.robh@kernel.org>
+References: <20230228215433.3944508-1-robh@kernel.org>
 MIME-Version: 1.0
-Reply-To: fernelydiane@aol.com
-From:   Diane Soto <jankolendersgroup@gmail.com>
-Date:   Wed, 8 Mar 2023 15:06:42 +0100
-Message-ID: <CAA8C46SWPD-JRWCHTx8=n8hScdciBKSTVcvh4tOgz4EwNBTUmw@mail.gmail.com>
-Subject: Hallo Liebste
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=7.6 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
-        LOTS_OF_MONEY,MONEY_FREEMAIL_REPTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_MONEY_PERCENT,T_TVD_FUZZY_SECTOR,UNDISC_FREEM,UNDISC_MONEY
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:32a listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [jankolendersgroup[at]gmail.com]
-        *  0.0 T_TVD_FUZZY_SECTOR BODY: No description available.
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        *  2.9 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-        *  1.1 MONEY_FREEMAIL_REPTO Lots of money from someone using free
-        *      email?
-        *  0.0 T_MONEY_PERCENT X% of a lot of money for you
-        *  2.0 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-X-Spam-Level: *******
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230228215433.3944508-1-robh@kernel.org>
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hallo
 
-    Mein Name ist Diana Soto. Ich bin das einzige Kind/die einzige
-Tochter des verstorbenen Ingenieurs Fredrick Soto. Mein Vater war ein
-sehr wohlhabender =C3=96l- und Gasunternehmer, er hatte auch umfangreiche
-Investitionen im Immobilien- und Agrarsektor.
+On Tue, 28 Feb 2023 15:54:33 -0600, Rob Herring wrote:
+> SPI and I2C bus node names are expected to be "spi" or "i2c",
+> respectively, with nothing else, a unit-address, or a '-N' index. A
+> pattern of 'spi0' or 'i2c0' or similar has crept in. Fix all these
+> cases. Mostly scripted with the following commands:
+> 
+> git grep -l '\si2c[0-9] {' Documentation/devicetree/ | xargs sed -i -e 's/i2c[0-9] {/i2c {/'
+> git grep -l '\sspi[0-9] {' Documentation/devicetree/ | xargs sed -i -e 's/spi[0-9] {/spi {/'
+> 
+> With this, a few errors in examples were exposed and fixed.
+> 
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+> Cc: Miguel Ojeda <ojeda@kernel.org>
+> Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+> Cc: Benson Leung <bleung@chromium.org>
+> Cc: Guenter Roeck <groeck@chromium.org>
+> Cc: Stephen Boyd <sboyd@kernel.org>
+> Cc: Andrzej Hajda <andrzej.hajda@intel.com>
+> Cc: Neil Armstrong <neil.armstrong@linaro.org>
+> Cc: Robert Foss <rfoss@kernel.org>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: Sam Ravnborg <sam@ravnborg.org>
+> Cc: MyungJoo Ham <myungjoo.ham@samsung.com>
+> Cc: Chanwoo Choi <cw00.choi@samsung.com>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Bartosz Golaszewski <brgl@bgdev.pl>
+> Cc: Pavel Machek <pavel@ucw.cz>
+> Cc: Lee Jones <lee@kernel.org>
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Wolfgang Grandegger <wg@grandegger.com>
+> Cc: Kalle Valo <kvalo@kernel.org>
+> Cc: Sebastian Reichel <sre@kernel.org>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: linux-clk@vger.kernel.org
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: linux-gpio@vger.kernel.org
+> Cc: linux-i2c@vger.kernel.org
+> Cc: linux-leds@vger.kernel.org
+> Cc: linux-media@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-can@vger.kernel.org
+> Cc: linux-wireless@vger.kernel.org
+> Cc: linux-pm@vger.kernel.org
+> Cc: alsa-devel@alsa-project.org
+> Cc: linux-usb@vger.kernel.org
+> ---
+>  .../bindings/auxdisplay/holtek,ht16k33.yaml       |  2 +-
+>  .../bindings/chrome/google,cros-ec-typec.yaml     |  2 +-
+>  .../chrome/google,cros-kbd-led-backlight.yaml     |  2 +-
+>  .../devicetree/bindings/clock/ti,lmk04832.yaml    |  2 +-
+>  .../bindings/display/bridge/analogix,anx7625.yaml |  2 +-
+>  .../bindings/display/bridge/anx6345.yaml          |  2 +-
+>  .../bindings/display/bridge/lontium,lt8912b.yaml  |  2 +-
+>  .../bindings/display/bridge/nxp,ptn3460.yaml      |  2 +-
+>  .../bindings/display/bridge/ps8640.yaml           |  2 +-
+>  .../bindings/display/bridge/sil,sii9234.yaml      |  2 +-
+>  .../bindings/display/bridge/ti,dlpc3433.yaml      |  2 +-
+>  .../bindings/display/bridge/toshiba,tc358762.yaml |  2 +-
+>  .../bindings/display/bridge/toshiba,tc358768.yaml |  2 +-
+>  .../bindings/display/panel/nec,nl8048hl11.yaml    |  2 +-
+>  .../bindings/display/solomon,ssd1307fb.yaml       |  4 ++--
+>  .../devicetree/bindings/eeprom/at25.yaml          |  2 +-
+>  .../bindings/extcon/extcon-usbc-cros-ec.yaml      |  2 +-
+>  .../bindings/extcon/extcon-usbc-tusb320.yaml      |  2 +-
+>  .../devicetree/bindings/gpio/gpio-pca9570.yaml    |  2 +-
+>  .../devicetree/bindings/gpio/gpio-pca95xx.yaml    |  8 ++++----
+>  .../bindings/i2c/google,cros-ec-i2c-tunnel.yaml   |  2 +-
+>  .../bindings/leds/cznic,turris-omnia-leds.yaml    |  2 +-
+>  .../devicetree/bindings/leds/issi,is31fl319x.yaml |  2 +-
+>  .../devicetree/bindings/leds/leds-aw2013.yaml     |  2 +-
+>  .../devicetree/bindings/leds/leds-rt4505.yaml     |  2 +-
+>  .../devicetree/bindings/leds/ti,tca6507.yaml      |  2 +-
+>  .../bindings/media/i2c/aptina,mt9p031.yaml        |  2 +-
+>  .../bindings/media/i2c/aptina,mt9v111.yaml        |  2 +-
+>  .../devicetree/bindings/media/i2c/imx219.yaml     |  2 +-
+>  .../devicetree/bindings/media/i2c/imx258.yaml     |  4 ++--
+>  .../devicetree/bindings/media/i2c/mipi-ccs.yaml   |  2 +-
+>  .../bindings/media/i2c/ovti,ov5648.yaml           |  2 +-
+>  .../bindings/media/i2c/ovti,ov772x.yaml           |  2 +-
+>  .../bindings/media/i2c/ovti,ov8865.yaml           |  2 +-
+>  .../bindings/media/i2c/ovti,ov9282.yaml           |  2 +-
+>  .../bindings/media/i2c/rda,rda5807.yaml           |  2 +-
+>  .../bindings/media/i2c/sony,imx214.yaml           |  2 +-
+>  .../bindings/media/i2c/sony,imx274.yaml           |  2 +-
+>  .../bindings/media/i2c/sony,imx334.yaml           |  2 +-
+>  .../bindings/media/i2c/sony,imx335.yaml           |  2 +-
+>  .../bindings/media/i2c/sony,imx412.yaml           |  2 +-
+>  .../devicetree/bindings/mfd/actions,atc260x.yaml  |  2 +-
+>  .../devicetree/bindings/mfd/google,cros-ec.yaml   |  6 +++---
+>  .../devicetree/bindings/mfd/ti,tps65086.yaml      |  2 +-
+>  .../devicetree/bindings/mfd/x-powers,axp152.yaml  |  4 ++--
+>  .../devicetree/bindings/net/asix,ax88796c.yaml    |  2 +-
+>  .../bindings/net/can/microchip,mcp251xfd.yaml     |  2 +-
+>  .../bindings/net/dsa/microchip,ksz.yaml           |  2 +-
+>  .../bindings/net/nfc/samsung,s3fwrn5.yaml         |  2 +-
+>  .../bindings/net/vertexcom-mse102x.yaml           |  2 +-
+>  .../bindings/net/wireless/ti,wlcore.yaml          | 10 ++++++++--
+>  .../devicetree/bindings/pinctrl/pinmux-node.yaml  |  2 +-
+>  .../bindings/pinctrl/starfive,jh7100-pinctrl.yaml |  2 +-
+>  .../devicetree/bindings/power/supply/bq2415x.yaml |  2 +-
+>  .../devicetree/bindings/power/supply/bq24190.yaml |  2 +-
+>  .../devicetree/bindings/power/supply/bq24257.yaml |  4 ++--
+>  .../devicetree/bindings/power/supply/bq24735.yaml |  2 +-
+>  .../devicetree/bindings/power/supply/bq2515x.yaml |  2 +-
+>  .../devicetree/bindings/power/supply/bq25890.yaml |  2 +-
+>  .../devicetree/bindings/power/supply/bq25980.yaml |  2 +-
+>  .../devicetree/bindings/power/supply/bq27xxx.yaml | 15 ++++++++-------
+>  .../bindings/power/supply/lltc,ltc294x.yaml       |  2 +-
+>  .../bindings/power/supply/ltc4162-l.yaml          |  2 +-
+>  .../bindings/power/supply/maxim,max14656.yaml     |  2 +-
+>  .../bindings/power/supply/maxim,max17040.yaml     |  4 ++--
+>  .../bindings/power/supply/maxim,max17042.yaml     |  2 +-
+>  .../bindings/power/supply/richtek,rt9455.yaml     |  2 +-
+>  .../bindings/power/supply/ti,lp8727.yaml          |  2 +-
+>  .../bindings/regulator/active-semi,act8865.yaml   |  2 +-
+>  .../regulator/google,cros-ec-regulator.yaml       |  2 +-
+>  .../bindings/regulator/nxp,pf8x00-regulator.yaml  |  2 +-
+>  .../devicetree/bindings/sound/everest,es8316.yaml |  2 +-
+>  .../devicetree/bindings/sound/tas2562.yaml        |  2 +-
+>  .../devicetree/bindings/sound/tas2770.yaml        |  2 +-
+>  .../devicetree/bindings/sound/tas27xx.yaml        |  2 +-
+>  .../devicetree/bindings/sound/tas5805m.yaml       |  2 +-
+>  .../devicetree/bindings/sound/tlv320adcx140.yaml  |  2 +-
+>  .../devicetree/bindings/sound/zl38060.yaml        |  2 +-
+>  .../devicetree/bindings/usb/maxim,max33359.yaml   |  2 +-
+>  .../bindings/usb/maxim,max3420-udc.yaml           |  2 +-
+>  .../bindings/usb/mediatek,mt6360-tcpc.yaml        |  2 +-
+>  .../devicetree/bindings/usb/richtek,rt1711h.yaml  |  2 +-
+>  .../devicetree/bindings/usb/richtek,rt1719.yaml   |  2 +-
+>  .../devicetree/bindings/usb/st,stusb160x.yaml     |  2 +-
+>  .../devicetree/bindings/usb/ti,hd3ss3220.yaml     |  2 +-
+>  .../devicetree/bindings/usb/ti,tps6598x.yaml      |  2 +-
+>  86 files changed, 110 insertions(+), 103 deletions(-)
+> 
 
-Mein Vater wurde von seinem b=C3=B6sen Bruder aus Eifersucht zu Tode vergif=
-tet.
+Applied, thanks!
 
-  Meine Mutter starb am 20. M=C3=A4rz 2003 bei einem schrecklichen
-Autounfall zusammen mit meinem =C3=A4lteren Bruder Jerry (7 Jahre alt) und
-meinem kleinen Bruder Alex (8 Monate alt). Ich war 3 Jahre alt, als
-diese Trag=C3=B6die meine Familie traf
-
-  bevor mein Vater in einem privaten Krankenhaus starb, rief er mich
-heimlich an sein Bett und sagte mir, dass er die Summe von
-(7.500.000,00 EUR) sieben Millionen, f=C3=BCnfhunderttausend EUR nur auf
-einem Festgeldkonto bei einer der Prime Bank hier in hat Abidjan, und
-er benutzte meinen Namen als seinen Erben / Nutznie=C3=9Fer.
-
-  Er erkl=C3=A4rte mir weiter, dass meine Onkel ihn wegen seines Reichtums
-vergiftet h=C3=A4tten. Er riet mir, einen ausl=C3=A4ndischen Partner in ein=
-em
-Land meiner Wahl zu suchen, wo ich dieses Geld =C3=BCberweisen und es f=C3=
-=BCr
-Investitionen wie Immobilien oder andere gesch=C3=A4ftliche Unternehmungen
-verwenden w=C3=BCrde, die ich mit dem ausl=C3=A4ndischen Gesch=C3=A4ftspart=
-ner
-ausgehandelt hatte.
-
-  Bitte, ich bitte Sie ehrenhaft um Ihre Hilfe auf folgende Weise:
-
-  (1) Bereitstellung eines Bankkontos, auf das dieses Geld =C3=BCberwiesen =
-wird.
-
-  (2) Als Anlageverwalter dieses Geldes zu fungieren.
-
-  (3) Eine Vereinbarung zu treffen, dass ich in Ihr Land komme und
-meine Ausbildung fortsetze
-
-  (4) Um eine Aufenthaltserlaubnis f=C3=BCr mich in Ihrem Land zu erhalten.
-
-  Au=C3=9Ferdem bin ich bereit, Ihnen 20 % des Gesamtbetrags als
-Entsch=C3=A4digung f=C3=BCr Ihre Bem=C3=BChungen / Ihren Einsatz anzubieten=
-, nachdem
-ich diesen Betrag erfolgreich auf Ihr Bankkonto =C3=BCberwiesen habe.
-
-  Bitte geben Sie Ihre M=C3=B6glichkeiten an, mich zu unterst=C3=BCtzen, da=
- ich
-glaube, dass diese Transaktion innerhalb weniger Tage abgeschlossen
-sein wird, damit Sie Ihr Interesse zeigen, mir zu helfen. Ich warte
-mit gro=C3=9Fem Interesse auf Ihre Antwort
-
-Mit freundlichen Gr=C3=BC=C3=9Fe
-Diana Soto
