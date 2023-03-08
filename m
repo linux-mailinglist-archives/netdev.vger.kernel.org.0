@@ -2,85 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B1A236B0A3E
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 15:00:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 394746B0A4A
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 15:01:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231822AbjCHOAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 09:00:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38810 "EHLO
+        id S232013AbjCHOBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 09:01:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232038AbjCHN7w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 08:59:52 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 899F1EB4C;
-        Wed,  8 Mar 2023 05:57:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Jz6A5esJGoB/TX2st4vlARhyXtWgYPbN+pN8gZv8Ils=; b=jgqAiTH5zPtcG8vtRl2xn5Kv8N
-        OqxRysdqAuTT9mmHhlZXS/TRxmjNW7aLbmLeQ1Ia5vRg3MRU/g0IHI+t8+qAzbZlcPBYhsDcV9BBC
-        HlO34A8gLVdrKhE/VuyEAgrQcLNhSF5YH/3rJB6Sr22yM3qpj693VzYe4x/zrGBXVIdI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pZuI5-006mmX-5A; Wed, 08 Mar 2023 14:57:13 +0100
-Date:   Wed, 8 Mar 2023 14:57:13 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Christian Marangi <ansuelsmth@gmail.com>,
+        with ESMTP id S231834AbjCHOBL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 09:01:11 -0500
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDAEEFF0D;
+        Wed,  8 Mar 2023 05:59:44 -0800 (PST)
+Received: (Authenticated sender: kory.maincent@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 847C51C0003;
+        Wed,  8 Mar 2023 13:59:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1678283983;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=FTBqfoX84Wuze6pyOMEwaXrXDsP6bvdwqai+tioaAFE=;
+        b=Tyhi640kB8cduEHSCqX7++WDer6tvO6G7mt1SfulRraHIqpXXOLkyZeJKeDkSEcmwbMNxp
+        YsrGves4sTnPiMqQb9WW69BU2vpCptruZRd6Zw6jpsj4NQmK/4q39XVWkj0pLkP27RG09q
+        ZN+9Rr9duzqrnyvmsR0GMqQiAo5G3+Hh2yz9jyPFLT9U1BkiLvu5Rtpl3jTCxhM7ZFO54u
+        YRoNHwyQZQ3rI/8bXKfb6S8AhM3Mw486n8uVGV9RDlSEVEE/n/lwKRCEuzPOvBq9nlLRma
+        PhJLw9j2Sbkqsrr8FbySLnTzk+vG8fAJMJ2TYSNSZH4wxnIYSOok+bUPGActAQ==
+From:   =?UTF-8?q?K=C3=B6ry=20Maincent?= <kory.maincent@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-omap@vger.kernel.org
+Cc:     Michael Walle <michael@walle.cc>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Kory Maincent <kory.maincent@bootlin.com>,
+        thomas.petazzoni@bootlin.com, Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, Lee Jones <lee@kernel.org>,
-        linux-leds@vger.kernel.org
-Subject: Re: [net-next PATCH 09/11] dt-bindings: net: dsa: qca8k: add LEDs
- definition example
-Message-ID: <df6264de-36c5-41f2-a2a0-08b61d692c75@lunn.ch>
-References: <20230307170046.28917-1-ansuelsmth@gmail.com>
- <20230307170046.28917-10-ansuelsmth@gmail.com>
- <ad43a809-b9fd-bd24-ee1a-9e509939023b@linaro.org>
+        Jonathan Corbet <corbet@lwn.net>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Jie Wang <wangjie125@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Marco Bonelli <marco@mebeim.net>,
+        Maxim Korotkov <korotkov.maxim.s@gmail.com>
+Subject: [PATCH v3 0/5] net: Make MAC/PHY time stamping selectable
+Date:   Wed,  8 Mar 2023 14:59:24 +0100
+Message-Id: <20230308135936.761794-1-kory.maincent@bootlin.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ad43a809-b9fd-bd24-ee1a-9e509939023b@linaro.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 08, 2023 at 11:58:33AM +0100, Krzysztof Kozlowski wrote:
-> On 07/03/2023 18:00, Christian Marangi wrote:
-> > Add LEDs definition example for qca8k Switch Family to describe how they
-> > should be defined for a correct usage.
-> > 
-> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> 
-> Where is the changelog? This was v8 already! What happened with all
-> review, changes?
+From: Kory Maincent <kory.maincent@bootlin.com>
 
-Did you read patch 0?
+Up until now, there was no way to let the user select the layer at
+which time stamping occurs.  The stack assumed that PHY time stamping
+is always preferred, but some MAC/PHY combinations were buggy.
 
-We have decided to start again, starting small and working up. This
-patchset just adds plain, boring LEDs. No acceleration, on hardware
-offload. Just on/off, and fixed blink.
+This series aims to allow the user to select the desired layer
+administratively.
 
-What do you think makes the patchset is not bisectable? We are happy
-to address such issues, but i did not notice anything.
+- Patch 1 refactors get_ts_info copy/paste code.
 
-    Andrew
+- Patch 2 introduces sysfs files that reflect the current, static
+  preference of PHY over MAC.
+
+- Patch 3 makes the layer selectable at run time.
+
+- Patch 4 fixes up MAC drivers that attempt to defer to the PHY layer.
+  This patch is broken out for review, but it will eventually be
+  squashed into Patch 3 after comments come in.
+
+Changes in v2:
+- Move selected_timestamping_layer variable of the concerned patch.
+- Use sysfs_streq instead of strmcmp.
+- Use the PHY timestamp only if available.
+
+Changes in v3:
+- Expose the PTP choice to ethtool instead of sysfs.
+  You can test it with the ethtool source on branch feature_ptp of:
+  https://github.com/kmaincent/ethtool
+- Added a devicetree binding to select the preferred timestamp.
+
+Kory Maincent (2):
+  net: Expose available time stamping layers to user space.
+  dt-bindings: net: phy: add timestamp preferred choice property
+
+Richard Cochran (3):
+  net: ethtool: Refactor identical get_ts_info implementations.
+  net: Let the active time stamping layer be selectable.
+  net: fix up drivers WRT phy time stamping
+
+ .../devicetree/bindings/net/ethernet-phy.yaml |  7 ++
+ Documentation/networking/ethtool-netlink.rst  |  3 +
+ drivers/net/bonding/bond_main.c               | 14 +---
+ drivers/net/ethernet/freescale/fec_main.c     | 23 +++---
+ drivers/net/ethernet/mscc/ocelot_net.c        | 21 +++---
+ drivers/net/ethernet/ti/cpsw_priv.c           | 12 ++--
+ drivers/net/ethernet/ti/netcp_ethss.c         | 26 ++-----
+ drivers/net/macvlan.c                         | 14 +---
+ drivers/net/phy/phy_device.c                  | 34 +++++++++
+ include/linux/ethtool.h                       |  8 +++
+ include/linux/netdevice.h                     |  6 ++
+ include/uapi/linux/ethtool.h                  |  3 +
+ include/uapi/linux/net_tstamp.h               |  6 ++
+ net/8021q/vlan_dev.c                          | 15 +---
+ net/core/dev_ioctl.c                          | 43 ++++++++++-
+ net/core/timestamping.c                       |  6 ++
+ net/ethtool/common.c                          | 22 ++++--
+ net/ethtool/ioctl.c                           | 71 +++++++++++++++++++
+ 18 files changed, 237 insertions(+), 97 deletions(-)
+
+-- 
+2.25.1
+
