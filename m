@@ -2,62 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67F216AFF22
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 07:54:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76C076AFF30
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 07:59:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229742AbjCHGyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 01:54:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40654 "EHLO
+        id S229717AbjCHG7m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 01:59:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229621AbjCHGyL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 01:54:11 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C23EB8B072
-        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 22:53:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678258402;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Y86pDM0nF4SS/2l52+50ptoIaTxu1jy+95EBPWqW538=;
-        b=a80conT1auGpAERooSXm2HuQGdLnDzsoI99IZTrvrtDTWs4Z76E6dkbPodxpiWTQqSndNH
-        sI79vHO5ElNpl+0Med2O2KKOmDxA9Arx8lwKsdA/13SRJPTTdxEh6EBFyZhitposAZn1CQ
-        RuBuM/TYfr0TvviZ4ldJZgudEMgxlAM=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-569-CdFfUScEPpqE7IDcFn7KSA-1; Wed, 08 Mar 2023 01:53:21 -0500
-X-MC-Unique: CdFfUScEPpqE7IDcFn7KSA-1
-Received: by mail-ed1-f72.google.com with SMTP id dn8-20020a05640222e800b004bd35dd76a9so22607286edb.13
-        for <netdev@vger.kernel.org>; Tue, 07 Mar 2023 22:53:21 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678258400;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Y86pDM0nF4SS/2l52+50ptoIaTxu1jy+95EBPWqW538=;
-        b=PCntBVUHQmMsYaIKkvQBXaLNxH8c9eG+El19Eo26jMVL7f4+tryy5Fq6A1/KqXztzJ
-         CiEfGyca3CW5nohqGQISUwO2+zPtmxh33XlS5kw2BYijmd4k1+BR1Qrqlq5BVW/8EE4Q
-         NEVIU7HksAcVMwEiEcB5qq9EHzRF0JM2HN3sjda4EDhyK9GIb1FWS3aO5yB0MV/ejBfR
-         DUXaEmA66h+33xWExZkUXdNHvKyaQBxTJgVkHyc0NxZmqmkfuu2U0SPnaN1ECZX2YxRf
-         S8o+iYnE6tmEOHQ6hPdMnm8mWDxs6XlofcaMVpSDEIdp+0rbwmGzJdkU7z6qKM7An+9d
-         uhSA==
-X-Gm-Message-State: AO0yUKXyiTMO7gHoO4IpQP2DumqLH6QQnqUPhy/FicRZZOlt4jrFGDEG
-        RZemJ8jf9DvK6aEsdDgOUGBwk2QT3/C5xjPCJO3E9QnEL8D6fdkyixVKxm6EOFvufNt3w6Nqlwc
-        jA7BvNiXbauppL422
-X-Received: by 2002:a17:907:72c7:b0:889:d156:616d with SMTP id du7-20020a17090772c700b00889d156616dmr21552341ejc.27.1678258400251;
-        Tue, 07 Mar 2023 22:53:20 -0800 (PST)
-X-Google-Smtp-Source: AK7set9xF4xRWiMSSCuL+dL3ONYy7crKcxfjeDDKfUoTwq1xZ/S/2EmD4jkVLapobwjXJ06W9xks2w==
-X-Received: by 2002:a17:907:72c7:b0:889:d156:616d with SMTP id du7-20020a17090772c700b00889d156616dmr21552324ejc.27.1678258399943;
-        Tue, 07 Mar 2023 22:53:19 -0800 (PST)
-Received: from redhat.com ([2.52.138.216])
-        by smtp.gmail.com with ESMTPSA id bn17-20020a170906c0d100b008f7f6943d1dsm7044130ejb.42.2023.03.07.22.53.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Mar 2023 22:53:19 -0800 (PST)
-Date:   Wed, 8 Mar 2023 01:53:15 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        with ESMTP id S229688AbjCHG7k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 01:59:40 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66DA6A1015;
+        Tue,  7 Mar 2023 22:59:39 -0800 (PST)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4PWjm03Rn9znWTQ;
+        Wed,  8 Mar 2023 14:56:48 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Wed, 8 Mar
+ 2023 14:59:36 +0800
+Subject: Re: [PATCH net, stable v1 3/3] virtio_net: add checking sq is full
+ inside xdp xmit
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, <netdev@vger.kernel.org>
+CC:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -66,20 +34,27 @@ Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
+        <virtualization@lists.linux-foundation.org>, <bpf@vger.kernel.org>,
         Yichun Zhang <yichun@openresty.com>,
         Alexander Duyck <alexanderduyck@fb.com>
-Subject: Re: [PATCH net, stable v1 1/3] virtio_net: reorder some funcs
-Message-ID: <20230308015204-mutt-send-email-mst@kernel.org>
 References: <20230308024935.91686-1-xuanzhuo@linux.alibaba.com>
- <20230308024935.91686-2-xuanzhuo@linux.alibaba.com>
+ <20230308024935.91686-4-xuanzhuo@linux.alibaba.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <7eea924e-5cc3-8584-af95-04587f303f8f@huawei.com>
+Date:   Wed, 8 Mar 2023 14:59:36 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230308024935.91686-2-xuanzhuo@linux.alibaba.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+In-Reply-To: <20230308024935.91686-4-xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -87,131 +62,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 08, 2023 at 10:49:33AM +0800, Xuan Zhuo wrote:
-> The purpose of this is to facilitate the subsequent addition of new
-> functions without introducing a separate declaration.
+On 2023/3/8 10:49, Xuan Zhuo wrote:
+> If the queue of xdp xmit is not an independent queue, then when the xdp
+> xmit used all the desc, the xmit from the __dev_queue_xmit() may encounter
+> the following error.
 > 
+> net ens4: Unexpected TXQ (0) queue failure: -28
+> 
+> This patch adds a check whether sq is full in xdp xmit.
+> 
+> Fixes: 56434a01b12e ("virtio_net: add XDP_TX support")
+> Reported-by: Yichun Zhang <yichun@openresty.com>
 > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-
-this one isn't for stable naturally, stable can use forward declarations
-instead.
-
+> Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+> Acked-by: Michael S. Tsirkin <mst@redhat.com>
 > ---
->  drivers/net/virtio_net.c | 92 ++++++++++++++++++++--------------------
->  1 file changed, 46 insertions(+), 46 deletions(-)
+>  drivers/net/virtio_net.c | 3 +++
+>  1 file changed, 3 insertions(+)
 > 
 > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index fb5e68ed3ec2..8b31a04052f2 100644
+> index 46bbddaadb0d..1a309cfb4976 100644
 > --- a/drivers/net/virtio_net.c
 > +++ b/drivers/net/virtio_net.c
-> @@ -545,6 +545,52 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
->  	return skb;
->  }
+> @@ -767,6 +767,9 @@ static int virtnet_xdp_xmit(struct net_device *dev,
+>  	}
+>  	ret = nxmit;
 >  
-> +static void free_old_xmit_skbs(struct send_queue *sq, bool in_napi)
-> +{
-> +	unsigned int len;
-> +	unsigned int packets = 0;
-> +	unsigned int bytes = 0;
-> +	void *ptr;
+> +	if (!is_xdp_raw_buffer_queue(vi, sq - vi->sq))
+> +		check_sq_full_and_disable(vi, dev, sq);
 > +
-> +	while ((ptr = virtqueue_get_buf(sq->vq, &len)) != NULL) {
-> +		if (likely(!is_xdp_frame(ptr))) {
-> +			struct sk_buff *skb = ptr;
-> +
-> +			pr_debug("Sent skb %p\n", skb);
-> +
-> +			bytes += skb->len;
-> +			napi_consume_skb(skb, in_napi);
-> +		} else {
-> +			struct xdp_frame *frame = ptr_to_xdp(ptr);
-> +
-> +			bytes += xdp_get_frame_len(frame);
-> +			xdp_return_frame(frame);
-> +		}
-> +		packets++;
-> +	}
-> +
-> +	/* Avoid overhead when no packets have been processed
-> +	 * happens when called speculatively from start_xmit.
-> +	 */
-> +	if (!packets)
-> +		return;
-> +
-> +	u64_stats_update_begin(&sq->stats.syncp);
-> +	sq->stats.bytes += bytes;
-> +	sq->stats.packets += packets;
-> +	u64_stats_update_end(&sq->stats.syncp);
-> +}
-> +
-> +static bool is_xdp_raw_buffer_queue(struct virtnet_info *vi, int q)
-> +{
-> +	if (q < (vi->curr_queue_pairs - vi->xdp_queue_pairs))
-> +		return false;
-> +	else if (q < vi->curr_queue_pairs)
-> +		return true;
-> +	else
-> +		return false;
-> +}
-> +
->  static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
->  				   struct send_queue *sq,
->  				   struct xdp_frame *xdpf)
-> @@ -1714,52 +1760,6 @@ static int virtnet_receive(struct receive_queue *rq, int budget,
->  	return stats.packets;
->  }
->  
-> -static void free_old_xmit_skbs(struct send_queue *sq, bool in_napi)
-> -{
-> -	unsigned int len;
-> -	unsigned int packets = 0;
-> -	unsigned int bytes = 0;
-> -	void *ptr;
-> -
-> -	while ((ptr = virtqueue_get_buf(sq->vq, &len)) != NULL) {
-> -		if (likely(!is_xdp_frame(ptr))) {
-> -			struct sk_buff *skb = ptr;
-> -
-> -			pr_debug("Sent skb %p\n", skb);
-> -
-> -			bytes += skb->len;
-> -			napi_consume_skb(skb, in_napi);
-> -		} else {
-> -			struct xdp_frame *frame = ptr_to_xdp(ptr);
-> -
-> -			bytes += xdp_get_frame_len(frame);
-> -			xdp_return_frame(frame);
-> -		}
-> -		packets++;
-> -	}
-> -
-> -	/* Avoid overhead when no packets have been processed
-> -	 * happens when called speculatively from start_xmit.
-> -	 */
-> -	if (!packets)
-> -		return;
-> -
-> -	u64_stats_update_begin(&sq->stats.syncp);
-> -	sq->stats.bytes += bytes;
-> -	sq->stats.packets += packets;
-> -	u64_stats_update_end(&sq->stats.syncp);
-> -}
-> -
-> -static bool is_xdp_raw_buffer_queue(struct virtnet_info *vi, int q)
-> -{
-> -	if (q < (vi->curr_queue_pairs - vi->xdp_queue_pairs))
-> -		return false;
-> -	else if (q < vi->curr_queue_pairs)
-> -		return true;
-> -	else
-> -		return false;
-> -}
-> -
->  static void virtnet_poll_cleantx(struct receive_queue *rq)
->  {
->  	struct virtnet_info *vi = rq->vq->vdev->priv;
-> -- 
-> 2.32.0.3.g01195cf9f
 
+Sorry if I missed something obvious here.
+
+As the comment in start_xmit(), the current skb is added to the sq->vq, so
+NETDEV_TX_BUSY can not be returned.
+
+	/* If running out of space, stop queue to avoid getting packets that we
+	 * are then unable to transmit.
+	 * An alternative would be to force queuing layer to requeue the skb by
+	 * returning NETDEV_TX_BUSY. However, NETDEV_TX_BUSY should not be
+	 * returned in a normal path of operation: it means that driver is not
+	 * maintaining the TX queue stop/start state properly, and causes
+	 * the stack to do a non-trivial amount of useless work.
+	 * Since most packets only take 1 or 2 ring slots, stopping the queue
+	 * early means 16 slots are typically wasted.
+	 */
+
+It there any reason not to check the sq->vq->num_free at the begin of start_xmit(),
+if the space is not enough for the current skb, TX queue is stopped and NETDEV_TX_BUSY
+is return to the stack to requeue the current skb.
+
+It seems it is the pattern that most network driver follow, and it seems we can avoid
+calling check_sq_full_and_disable() in this patch and not wasting 16 slots as mentioned
+in the comment above.
+
+
+>  	if (flags & XDP_XMIT_FLUSH) {
+>  		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq))
+>  			kicks = 1;
+> 
