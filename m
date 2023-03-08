@@ -2,85 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF0F06B01CB
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 09:43:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1ECC6B01EE
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 09:48:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229800AbjCHIn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 03:43:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51184 "EHLO
+        id S229851AbjCHIsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 03:48:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbjCHInZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 03:43:25 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECDEA580DA;
-        Wed,  8 Mar 2023 00:43:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 888A0616F4;
-        Wed,  8 Mar 2023 08:43:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8575CC433D2;
-        Wed,  8 Mar 2023 08:43:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678265004;
-        bh=0j3HfSMJczICakUlTxj6g1PB6nR3AicSUGjv7aiaZGM=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=oMZCEH3ask/jhqKeTpLibWmHKGD5w7f2C8IV588FGSnUBTCZb/RF3MXN0yUCEWkAd
-         4AJutLrcRDF+z7SQ1M6NWXpijLh3oxNfZ4/45ZH7z6lGffwkCvYKa9tnlnCODme06Q
-         uScSAseArAxNs4tl0hlneTerHWVkAgHkFAgwBVxIzvzue8FdaY8OsluGH0izusXYfE
-         sEgq5+jFCvNHXQY8MaDFmUlgawtuuRjBtx5/cZiM7bry23Yw3V6DjdcjJf8JUZUJJB
-         PcITZnd1DKBDEE7iiX+9/bdgIS9n++vYj/MEuFKkNnEGvYYkvijNHtNizs/cyN+EYb
-         ewT2Fwm7Cq2Fw==
-Message-ID: <264f0489-726d-de7f-1182-09d4e12f2fbd@kernel.org>
-Date:   Wed, 8 Mar 2023 10:43:18 +0200
+        with ESMTP id S229486AbjCHIsV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 03:48:21 -0500
+Received: from out30-124.freemail.mail.aliyun.com (out30-124.freemail.mail.aliyun.com [115.124.30.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0D0C8F532;
+        Wed,  8 Mar 2023 00:48:19 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R521e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VdOtWl._1678265296;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0VdOtWl._1678265296)
+          by smtp.aliyun-inc.com;
+          Wed, 08 Mar 2023 16:48:17 +0800
+Date:   Wed, 8 Mar 2023 16:48:16 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     "D. Wythe" <alibuda@linux.alibaba.com>
+Cc:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
+        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net v2] net/smc: fix NULL sndbuf_desc in
+ smc_cdc_tx_handler()
+Message-ID: <ZAhL0LXR0fUZNrxz@TONYMAC-ALIBABA.local>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <1678263432-17329-1-git-send-email-alibuda@linux.alibaba.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH v3 6/6] soc: ti: pruss: Add helper functions to get/set
- PRUSS_CFG_GPMUX
-Content-Language: en-US
-To:     MD Danish Anwar <danishanwar@ti.com>,
-        "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <t-kristo@ti.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Nishanth Menon <nm@ti.com>
-Cc:     linux-remoteproc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, srk@ti.com, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20230306110934.2736465-1-danishanwar@ti.com>
- <20230306110934.2736465-7-danishanwar@ti.com>
-From:   Roger Quadros <rogerq@kernel.org>
-In-Reply-To: <20230306110934.2736465-7-danishanwar@ti.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1678263432-17329-1-git-send-email-alibuda@linux.alibaba.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 06/03/2023 13:09, MD Danish Anwar wrote:
-> From: Tero Kristo <t-kristo@ti.com>
+On Wed, Mar 08, 2023 at 04:17:12PM +0800, D. Wythe wrote:
+> From: "D. Wythe" <alibuda@linux.alibaba.com>
 > 
-> Add two new helper functions pruss_cfg_get_gpmux() & pruss_cfg_set_gpmux()
-> to get and set the GP MUX mode for programming the PRUSS internal wrapper
-> mux functionality as needed by usecases.
+> When performing a stress test on SMC-R by rmmod mlx5_ib driver
+> during the wrk/nginx test, we found that there is a probability
+> of triggering a panic while terminating all link groups.
 > 
-> Co-developed-by: Suman Anna <s-anna@ti.com>
-> Signed-off-by: Suman Anna <s-anna@ti.com>
-> Signed-off-by: Tero Kristo <t-kristo@ti.com>
-> Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
-> Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
-> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+> This issue dues to the race between smc_smcr_terminate_all()
+> and smc_buf_create().
+> 
+> 			smc_smcr_terminate_all
+> 
+> smc_buf_create
+> /* init */
+> conn->sndbuf_desc = NULL;
+> ...
+> 
+> 			__smc_lgr_terminate
+> 				smc_conn_kill
+> 					smc_close_abort
+> 						smc_cdc_get_slot_and_msg_send
+> 
+> 			__softirqentry_text_start
+> 				smc_wr_tx_process_cqe
+> 					smc_cdc_tx_handler
+> 						READ(conn->sndbuf_desc->len);
+> 						/* panic dues to NULL sndbuf_desc */
+> 
+> conn->sndbuf_desc = xxx;
+> 
+> This patch tries to fix the issue by always to check the sndbuf_desc
+> before send any cdc msg, to make sure that no null pointer is
+> seen during cqe processing.
+> 
+> Fixes: 0b29ec643613 ("net/smc: immediate termination for SMCR link groups")
+> Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
 
-Reviewed-by: Roger Quadros <rogerq@kernel.org>
+Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
+
+Thanks.
+
+> 
+> v2 -> v1: change retval from EINVAL to ENOBUFS
+
+Better to put the changelog before Fixes tag.
+
+> 
+> ---
+>  net/smc/smc_cdc.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/net/smc/smc_cdc.c b/net/smc/smc_cdc.c
+> index 53f63bf..89105e9 100644
+> --- a/net/smc/smc_cdc.c
+> +++ b/net/smc/smc_cdc.c
+> @@ -114,6 +114,9 @@ int smc_cdc_msg_send(struct smc_connection *conn,
+>  	union smc_host_cursor cfed;
+>  	int rc;
+>  
+> +	if (unlikely(!READ_ONCE(conn->sndbuf_desc)))
+> +		return -ENOBUFS;
+> +
+>  	smc_cdc_add_pending_send(conn, pend);
+>  
+>  	conn->tx_cdc_seq++;
+> -- 
+> 1.8.3.1
