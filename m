@@ -2,71 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C08E6B12F3
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 21:22:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F2D66B1329
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 21:35:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230256AbjCHUWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 15:22:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41076 "EHLO
+        id S229936AbjCHUe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 15:34:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230252AbjCHUWb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 15:22:31 -0500
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CB58D13ED
-        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 12:22:08 -0800 (PST)
-Received: by mail-qt1-x82c.google.com with SMTP id r16so17870386qtx.9
-        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 12:22:08 -0800 (PST)
+        with ESMTP id S230360AbjCHUei (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 15:34:38 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93898CCE91
+        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 12:34:22 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id cw28so70754622edb.5
+        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 12:34:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1678306928;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=gmail.com; s=20210112; t=1678307661;
+        h=content-transfer-encoding:subject:from:cc:to:content-language
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=rlftmzmwWD7xg6TuqYacrBL3Kv3aUcQLEUBIXLbdl4E=;
-        b=fmuvGwpEqK2wrmTN7oEvW8EuzjJ7BfXV3y1geVWOsvnUBWXduth9kbw2lG/XfhxEVg
-         +I0XKF3FGdElkW5blAjff/xs1E+BNkJ5ze91E8b6QnsAl/XctXC1L28rQUJYg6Y8ivwQ
-         WSvUm2JVbze41RCJwhbodmkxkvMQnM51jEFFY=
+        bh=aVTCViV9KCP7APavv03NS1lEmiUdD59919rqFC3aoNA=;
+        b=CvpzAa2xOfm0xWNlMe4v6dfHrIGemV3lBdvCLVOwX7/hKiq1QIe6kf9xDp43Wrob/F
+         gI+wkku57swK8y7UIilWa4zpd6DgHtw+fHK3KS+nucQZzjl2aP+YbyIEhVzakmH3Oe1W
+         pO+73mR8fHaVEFuLZeP8ULiLUIt0TLF4dFXdJ0DdVHIAsmvfqEA+iyuIAkdtz5cd9pSQ
+         PS8WOK/kZr/BxoFwzE/PaZ3UERoAMk9DAyediHDzyj76XKIPy1Jgmh5HBO7D+hQ56WC8
+         DnvPvOrNW8F5T2oD8z4FtZ8l4vHcvcx1/s9Hd2ZXkE6ywgMAc2KbBapAE0bdLcEeZmTH
+         IoZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678306928;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=rlftmzmwWD7xg6TuqYacrBL3Kv3aUcQLEUBIXLbdl4E=;
-        b=4JacINfysRcTmDgVkq394H0/f17hXcJcao+ZA+rbSLAogbBOfeeqy5D/RWElZ1UYAI
-         dZALUhJIIO2NI08JNRu8qNcLyvXp/9AP/BJay1ORy+F/Kd9qcz8OCrQ6W5zc2OKtL5jO
-         Ex7mCaUJzYZoJA5IvcuFpMm6y/m+uWGjiOH4KhRdrWUl1sIMwCtgErfgh+ajqfSAWWUH
-         gWT7iDadxulpTn63xd19fobvWw0s4jqE+IojmEFuAJROUzQIMxaaQAbQFFnAoNCHFOJf
-         qptVc9xprtPg/dXaDyRxKDn2i0shx6AWwf4QwDqhvwXzwN2YgiWXHDP84zxnybw/vCXN
-         x49Q==
-X-Gm-Message-State: AO0yUKWCjuWozI+oEGLgU3kJHR3oST8WWLbOAhHIdF/gX3edWaTGC50O
-        9lY3qs0PkdoWJr26oSp/aUc4jw==
-X-Google-Smtp-Source: AK7set/HekkajRV6sKRUXEb32/ZQ6DPiE7DtaHCsLB5sc85jlj9/9XZYIN8SD55u/0yz9IxOFWQnzA==
-X-Received: by 2002:a05:622a:144c:b0:3bf:c458:3b0c with SMTP id v12-20020a05622a144c00b003bfc4583b0cmr32457997qtx.30.1678306928057;
-        Wed, 08 Mar 2023 12:22:08 -0800 (PST)
-Received: from grundler-glapstation.lan ([70.134.62.80])
-        by smtp.gmail.com with ESMTPSA id e16-20020ac84150000000b003b84b92052asm12180969qtm.57.2023.03.08.12.22.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Mar 2023 12:22:07 -0800 (PST)
-From:   Grant Grundler <grundler@chromium.org>
-To:     Oleksij Rempel <linux@rempel-privat.de>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Lukas Wunner <lukas@wunner.de>
-Cc:     Eizan Miyamoto <eizan@chromium.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Grant Grundler <grundler@chromium.org>
-Subject: [PATCHv3 net 2/2] net: asix: init mdiobus from one function
-Date:   Wed,  8 Mar 2023 12:21:59 -0800
-Message-Id: <20230308202159.2419227-2-grundler@chromium.org>
-X-Mailer: git-send-email 2.40.0.rc0.216.gc4246ad0f0-goog
-In-Reply-To: <20230308202159.2419227-1-grundler@chromium.org>
-References: <20230308202159.2419227-1-grundler@chromium.org>
+        d=1e100.net; s=20210112; t=1678307661;
+        h=content-transfer-encoding:subject:from:cc:to:content-language
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=aVTCViV9KCP7APavv03NS1lEmiUdD59919rqFC3aoNA=;
+        b=mGZfu0XEG/XA5cU9PrX0SCd7rhbxtww3snQFHWWdYU5Ewa4fIoJRiYDHQjlPnjVlPB
+         4+5Li3nE+iFS8oQ66QHeYZ6SKv4hVM6r32Kir20gwjERIyyzjOwMGe9ZkuepQm0lJMbr
+         bFHACoQ96mlJUz0hmCR+aViLf4Oj1rfhytgJSNzx4PtdfHgubUb8iwKE1ch7ecwSqSW+
+         j2KD9mXwJqckRAA5VymocsdazSdpc8KmiRwaDYflhxpxMVxoyANhXDTRDBwBzhotliHH
+         HSwr1cnEfG1lOz7W+06+7FAqbYVzA7l/FZHVsgjSp67KC4N0b4/lvmhuIcxeBWLWumyb
+         gZUA==
+X-Gm-Message-State: AO0yUKW/JRjU6RnB5byzEqaP8mbn8W5ZohjU17V0VR6hura+gO27ClTf
+        qTz7ofGDkIkdMFw/7ITJihMeMsfliWk=
+X-Google-Smtp-Source: AK7set9XsRYsXrHkQEkmYDb+oRZzPMildBIF3QuhqDEOefQQYnjlVlSNSTalsQJldk9qmFHWqZvE/w==
+X-Received: by 2002:a17:906:bfc9:b0:88d:ba89:1837 with SMTP id us9-20020a170906bfc900b0088dba891837mr21391502ejb.8.1678307660967;
+        Wed, 08 Mar 2023 12:34:20 -0800 (PST)
+Received: from ?IPV6:2a01:c22:6ed9:d400:9df:5c71:99fe:44f3? (dynamic-2a01-0c22-6ed9-d400-09df-5c71-99fe-44f3.c22.pool.telefonica.de. [2a01:c22:6ed9:d400:9df:5c71:99fe:44f3])
+        by smtp.googlemail.com with ESMTPSA id k20-20020a17090627d400b008b17ca37966sm7970205ejc.148.2023.03.08.12.34.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Mar 2023 12:34:20 -0800 (PST)
+Message-ID: <a969f012-1d3b-7a36-51cf-89a5f8f15a9b@gmail.com>
+Date:   Wed, 8 Mar 2023 21:34:13 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Content-Language: en-US
+To:     Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next] net: phy: smsc: use device_property_present in
+ smsc_phy_probe
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,78 +76,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make asix driver consistent with other drivers (e.g. tg3 and r8169) which
-use mdiobus calls: setup and tear down be handled in one function each.
+Use unified device property API.
 
-Signed-off-by: Grant Grundler <grundler@chromium.org>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/usb/asix_devices.c | 27 ++++++++++++++++-----------
- 1 file changed, 16 insertions(+), 11 deletions(-)
+ drivers/net/phy/smsc.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-V3: rebase against netdev/net.git
-    add missing whitespace around "="
-
-diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-index 538c84909913..9a1e54ef4ff0 100644
---- a/drivers/net/usb/asix_devices.c
-+++ b/drivers/net/usb/asix_devices.c
-@@ -663,7 +663,7 @@ static int asix_resume(struct usb_interface *intf)
- 	return usbnet_resume(intf);
- }
- 
--static int ax88772_init_mdio(struct usbnet *dev)
-+static int ax88772_mdio_register(struct usbnet *dev)
+diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
+index 630104c16..1c2808f74 100644
+--- a/drivers/net/phy/smsc.c
++++ b/drivers/net/phy/smsc.c
+@@ -272,7 +272,6 @@ static void smsc_get_stats(struct phy_device *phydev,
+ static int smsc_phy_probe(struct phy_device *phydev)
  {
- 	struct asix_common_private *priv = dev->driver_priv;
- 	int ret;
-@@ -683,10 +683,22 @@ static int ax88772_init_mdio(struct usbnet *dev)
- 	ret = mdiobus_register(priv->mdio);
- 	if (ret) {
- 		netdev_err(dev->net, "Could not register MDIO bus (err %d)\n", ret);
--		mdiobus_free(priv->mdio);
--		priv->mdio = NULL;
-+		goto mdio_register_err;
- 	}
+ 	struct device *dev = &phydev->mdio.dev;
+-	struct device_node *of_node = dev->of_node;
+ 	struct smsc_phy_priv *priv;
+ 	struct clk *refclk;
  
-+	priv->phydev = mdiobus_get_phy(priv->mdio, priv->phy_addr);
-+	if (!priv->phydev) {
-+		netdev_err(dev->net, "Could not find PHY\n");
-+		ret = -ENODEV;
-+		goto mdio_phy_err;
-+	}
-+
-+	return 0;
-+
-+mdio_phy_err:
-+	mdiobus_unregister(priv->mdio);
-+mdio_register_err:
-+	mdiobus_free(priv->mdio);
- 	return ret;
- }
+@@ -282,7 +281,7 @@ static int smsc_phy_probe(struct phy_device *phydev)
  
-@@ -701,13 +713,6 @@ static int ax88772_init_phy(struct usbnet *dev)
- 	struct asix_common_private *priv = dev->driver_priv;
- 	int ret;
+ 	priv->energy_enable = true;
  
--	priv->phydev = mdiobus_get_phy(priv->mdio, priv->phy_addr);
--	if (!priv->phydev) {
--		netdev_err(dev->net, "Could not find PHY\n");
--		ax88772_mdio_unregister(priv);
--		return -ENODEV;
--	}
--
- 	ret = phylink_connect_phy(priv->phylink, priv->phydev);
- 	if (ret) {
- 		netdev_err(dev->net, "Could not connect PHY\n");
-@@ -909,7 +914,7 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
- 	priv->presvd_phy_bmcr = 0;
- 	priv->presvd_phy_advertise = 0;
+-	if (of_property_read_bool(of_node, "smsc,disable-energy-detect"))
++	if (device_property_present(dev, "smsc,disable-energy-detect"))
+ 		priv->energy_enable = false;
  
--	ret = ax88772_init_mdio(dev);
-+	ret = ax88772_mdio_register(dev);
- 	if (ret)
- 		return ret;
- 
+ 	phydev->priv = priv;
 -- 
-2.40.0.rc0.216.gc4246ad0f0-goog
+2.39.2
 
