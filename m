@@ -2,121 +2,298 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 115176B0C93
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 16:24:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B16AB6B0CA8
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 16:29:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231443AbjCHPYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 10:24:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40622 "EHLO
+        id S231611AbjCHP25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 10:28:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231481AbjCHPYp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 10:24:45 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A53C8CD649;
-        Wed,  8 Mar 2023 07:24:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=CQH39Di29dr/Gqo5tr4azRM7bV/jn6BroV0Z6GxcVTQ=; b=nt4eGNU1vpmMG5CMd/ToMMa/GR
-        RqB54MsLk8c/5naFCaUuHwjQcuBI4PoZTksLoj+MlH9AnAbRCEUKeHR3BXKX3/3Eask+mj+NOjsk0
-        CDoaxiCdDHUJuJfQ0NEBnoSn9Gu19Do+TVwWbO/1nBaLD1e10I0YPIRL4oYkgBT9t8GZ8p4S3E1Op
-        jU8I3YBVKWCyQ4e5To2juv1IZ46o+rKOnRyzu7rgawD0YHypPS8u/3/GDWPfwfdlpWECVJkLRrHFT
-        eMK4SHu66d2q2ehrEqAS4j/AoNSzRv5GLIVjC9zscqbBubbsHZmDKEGVLHCcGZ3nNgt4lLGnK3Bgy
-        Pxgvt0SQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:41704)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pZved-0002qq-BO; Wed, 08 Mar 2023 15:24:35 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pZveU-0002h7-N4; Wed, 08 Mar 2023 15:24:26 +0000
-Date:   Wed, 8 Mar 2023 15:24:26 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Daniel Golle <daniel@makrotopia.org>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        with ESMTP id S231481AbjCHP2z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 10:28:55 -0500
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80FA73AD7;
+        Wed,  8 Mar 2023 07:28:53 -0800 (PST)
+Received: by mail-qv1-xf35.google.com with SMTP id m4so11313067qvq.3;
+        Wed, 08 Mar 2023 07:28:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678289333;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=bd0EmI05pCHTfIlBbUfoXj5rvm0Lfpegcu0/RFX07E0=;
+        b=oi0vouDb9vTONHCz7DWqrFJLIaUvXJ6V7s2rQfvwtAiJ+Nc3gKa8Dq81cQumK0b0Yv
+         qTrTkrQavLsdFb1wAJAGtI5rdU980XCncLXOTcn8Vc5wW3iVt6D4V5hzTXcuwN7ZPAsp
+         7cFjREFMPdLhMrof4l9PAAgUiUlIlEeirBsHN9VoM2RZgSmHSrKadxm9LYZSHCzUR8+l
+         V2+EFPjDcHOFOouYNGL5Ch7Sl01pVi4+aKmwxOVOIg0ElZZ09VIp91EG0mEG9OtYh2dZ
+         6kJ67jcK+nfw8T8rKqsxP8TjqVrHkgWkezaZdfdP6Har3eN/7qlOjyY3Zt8//YiS90aR
+         V+eA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678289333;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=bd0EmI05pCHTfIlBbUfoXj5rvm0Lfpegcu0/RFX07E0=;
+        b=N6AUWeOd0Cf2W3DsnqBm0tG/sUw9+HZDNkB4VN/mKwCcnhv4Az+P+r5dq8EQs8NofD
+         Jm1VGi1zefdHGdYRegiOodCVQOXH9KVny1GlJw2+lXtVlq8uAgY/vyxWphPZ9ijhqCBQ
+         lJkRMPNJouJG4BkGqJnfkQnNwGfwsCKdtTb5eBaoxyFH1no2XkIBuK5EP/hj14FbXOXk
+         uwik/mRE9HZ06Mhc8m2mvgsiGoDEelbC5ijpwqGNvPNPBXtoNCWN9Y4KiKdjtzTDk4rJ
+         CUfkRp9QmXLgx96YKHVTpMC8IWM91XuQlyCeWoWseuCAke9ozu/2O+Sskv4aLBldq7+1
+         EbaA==
+X-Gm-Message-State: AO0yUKUjVlSVVVBKTamkkS1oTIrw0+EgUN4XRgZ/LKlITQjVl2JjDpUh
+        3+DmQEINJT8Lic88nlKJptY=
+X-Google-Smtp-Source: AK7set/QwnmzvGEgctgtRzpXygzSgoQMuIMdEi7EGkwdBQ/fUr9GGZ7htQvDCPjxU3tNhW4OMkQOPg==
+X-Received: by 2002:a05:6214:238e:b0:56e:bb43:a07c with SMTP id fw14-20020a056214238e00b0056ebb43a07cmr30115921qvb.20.1678289332740;
+        Wed, 08 Mar 2023 07:28:52 -0800 (PST)
+Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
+        by smtp.gmail.com with ESMTPSA id t190-20020a3746c7000000b0074235745fdasm11481891qka.58.2023.03.08.07.28.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Mar 2023 07:28:52 -0800 (PST)
+Date:   Wed, 08 Mar 2023 10:28:51 -0500
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     =?UTF-8?B?S8O2cnkgTWFpbmNlbnQ=?= <kory.maincent@bootlin.com>,
         Andrew Lunn <andrew@lunn.ch>,
-        Jianhui Zhao <zhaojh329@gmail.com>,
-        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Alexander Couzens <lynxis@fe80.eu>
-Subject: Re: [PATCH net-next v12 08/18] net: ethernet: mtk_eth_soc: fix
- 1000Base-X and 2500Base-X modes
-Message-ID: <ZAioqp21521NsttV@shell.armlinux.org.uk>
-References: <ZAhzDDjZ8+gxyo3V@shell.armlinux.org.uk>
- <ZAh7hA4JuJm1b2M6@makrotopia.org>
- <ZAiCh8wkdTBT+6Id@shell.armlinux.org.uk>
- <ZAiFOTRQI36nGo+w@makrotopia.org>
- <ZAiJqvzcUob2Aafq@shell.armlinux.org.uk>
- <20230308134642.cdxqw4lxtlgfsl4g@skbuf>
- <ZAiXvNT8EzHTmFPh@shell.armlinux.org.uk>
- <ZAiciK5fElvLXYQ9@makrotopia.org>
- <ZAijM91F18lWC80+@shell.armlinux.org.uk>
- <ZAik+I1Ei+grJdUQ@makrotopia.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZAik+I1Ei+grJdUQ@makrotopia.org>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-omap@vger.kernel.org
+Cc:     Michael Walle <michael@walle.cc>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kory Maincent <kory.maincent@bootlin.com>,
+        thomas.petazzoni@bootlin.com, Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Jie Wang <wangjie125@huawei.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Marco Bonelli <marco@mebeim.net>
+Message-ID: <6408a9b3c7ae1_13061c2082a@willemb.c.googlers.com.notmuch>
+In-Reply-To: <20230308135936.761794-4-kory.maincent@bootlin.com>
+References: <20230308135936.761794-1-kory.maincent@bootlin.com>
+ <20230308135936.761794-4-kory.maincent@bootlin.com>
+Subject: RE: [PATCH v3 3/5] net: Let the active time stamping layer be
+ selectable.
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 08, 2023 at 03:08:55PM +0000, Daniel Golle wrote:
-> On Wed, Mar 08, 2023 at 03:01:07PM +0000, Russell King (Oracle) wrote:
-> > > FYI:
-> > > TP-LINK TL-SM410U 2500Base-T module:
-> > > 
-> > > sfp EE: 00000000: 03 04 07 00 00 00 00 00 00 40 00 01 1f 00 00 00  .........@......
-> > > sfp EE: 00000010: 00 00 00 00 54 50 2d 4c 49 4e 4b 20 20 20 20 20  ....TP-LINK     
-> > > sfp EE: 00000020: 20 20 20 20 00 30 b5 c2 54 4c 2d 53 4d 34 31 30      .0..TL-SM410
-> > > sfp EE: 00000030: 55 20 20 20 20 20 20 20 32 2e 30 20 00 00 00 1b  U       2.0 ....
-> > > sfp EE: 00000040: 00 08 01 00 80 ff ff ff 40 3d f0 0d c0 ff ff ff  ........@=......
-> > > sfp EE: 00000050: c8 39 7a 08 c0 ff ff ff 50 3d f0 0d c0 ff ff ff  .9z.....P=......
-> > > sfp sfp2: module TP-LINK          TL-SM410U        rev 2.0  sn 12260M4001782    dc 220622  
-> > 
-> > I'm guessing this is a module with a checksum problem...
-> 
-> No, the checksum of the TL-SM410U is correct. I have patched the kernel
-> to always dump the EEPROM, so I can share it with you.
+K=C3=B6ry Maincent wrote:
+> From: Richard Cochran <richardcochran@gmail.com>
+> =
 
-Bear in mind that I haven't spent time with the spec to manually decode
-the above, when I have tools to do that for me when given the EEPROM in
-the correct form, which is:
+> Add the ETHTOOL_SET_PTP ethtool ioctl, and add checks in the ioctl and =
+time
+> stamping paths to respect the currently selected time stamping layer.
+> =
 
-> > It would be nice to add these to my database - please send me the
-> > output of ethtool -m $iface raw on > foo.bin for each module.
+> Add a preferred-timestamp devicetree binding to select the preferred
+> hardware timestamp layer between PHY and MAC. The choice of using
+> devicetree binding has been made as the PTP precision and quality depen=
+ds
+> of external things, like adjustable clock, or the lack of a temperature=
 
-so if you can do that for me, then I can see whether it's likely that
-the patches that are already in mainline will do anything to solve
-the workaround you've had to add for the hw signals.
+> compensated crystal or specific features. Even if the preferred timesta=
+mp
+> is a configuration it is hardly related to the design oh the board.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+nit: oh -> of
+
+> =
+
+> Signed-off-by: Richard Cochran <richardcochran@gmail.com>
+> Signed-off-by: Kory Maincent <kory.maincent@bootlin.com>
+> ---
+> =
+
+> Notes:
+>     Changes in v2:
+>     - Move selected_timestamping_layer introduction in this patch.
+>     - Replace strmcmp by sysfs_streq.
+>     - Use the PHY timestamp only if available.
+>     =
+
+>     Changes in v3:
+>     - Added a devicetree binding to select the preferred timestamp
+>     - Replace the way to select timestamp through ethtool instead of sy=
+sfs
+>     You can test it with the ethtool source on branch feature_ptp of:
+>     https://github.com/kmaincent/ethtool
+> =
+
+>  Documentation/networking/ethtool-netlink.rst |  1 +
+>  drivers/net/phy/phy_device.c                 | 34 ++++++++++++++++
+>  include/linux/netdevice.h                    |  6 +++
+>  include/uapi/linux/ethtool.h                 |  1 +
+>  net/core/dev_ioctl.c                         | 43 ++++++++++++++++++--=
+
+>  net/core/timestamping.c                      |  6 +++
+>  net/ethtool/common.c                         | 16 ++++++--
+>  net/ethtool/ioctl.c                          | 41 ++++++++++++++-----
+>  8 files changed, 131 insertions(+), 17 deletions(-)
+> =
+
+> +void of_set_timestamp(struct net_device *netdev, struct phy_device *ph=
+ydev)
+> +{
+> +	struct device_node *node =3D phydev->mdio.dev.of_node;
+> +	const struct ethtool_ops *ops =3D netdev->ethtool_ops;
+> +	const char *s;
+> +	enum timestamping_layer ts_layer =3D 0;
+> +
+> +	if (phy_has_hwtstamp(phydev))
+> +		ts_layer =3D PHY_TIMESTAMPING;
+> +	else if (ops->get_ts_info)
+> +		ts_layer =3D MAC_TIMESTAMPING;
+> +
+> +	if (of_property_read_string(node, "preferred-timestamp", &s))
+> +		goto out;
+> +
+> +	if (!s)
+> +		goto out;
+> +
+> +	if (phy_has_hwtstamp(phydev) && !strcmp(s, "phy"))
+> +		ts_layer =3D PHY_TIMESTAMPING;
+> +
+> +	if (ops->get_ts_info && !strcmp(s, "mac"))
+> +		ts_layer =3D MAC_TIMESTAMPING;
+> +
+> +out:
+> +	netdev->selected_timestamping_layer =3D ts_layer;
+> +}
+> +
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index ba2bd604359d..d9a1c12fc43c 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -47,6 +47,7 @@
+>  #include <uapi/linux/netdevice.h>
+>  #include <uapi/linux/if_bonding.h>
+>  #include <uapi/linux/pkt_cls.h>
+> +#include <uapi/linux/net_tstamp.h>
+>  #include <linux/hashtable.h>
+>  #include <linux/rbtree.h>
+>  #include <net/net_trackers.h>
+> @@ -1981,6 +1982,9 @@ enum netdev_ml_priv_type {
+>   *
+>   *	@threaded:	napi threaded mode is enabled
+>   *
+> + *	@selected_timestamping_layer:	Tracks whether the MAC or the PHY
+> + *					performs packet time stamping.
+> + *
+>   *	@net_notifier_list:	List of per-net netdev notifier block
+>   *				that follow this device when it is moved
+>   *				to another network namespace.
+> @@ -2339,6 +2343,8 @@ struct net_device {
+>  	unsigned		wol_enabled:1;
+>  	unsigned		threaded:1;
+>  =
+
+> +	enum timestamping_layer selected_timestamping_layer;
+> +
+
+can perhaps be a single bit rather than an enum
+
+> +static int dev_hwtstamp_ioctl(struct net_device *dev,
+> +			      struct ifreq *ifr, unsigned int cmd)
+> +{
+> +	const struct net_device_ops *ops =3D dev->netdev_ops;
+> +	int err;
+> +
+> +	err =3D dsa_ndo_eth_ioctl(dev, ifr, cmd);
+> +	if (err =3D=3D 0 || err !=3D -EOPNOTSUPP)
+> +		return err;
+> +
+> +	if (!netif_device_present(dev))
+> +		return -ENODEV;
+> +
+> +	switch (dev->selected_timestamping_layer) {
+> +	case MAC_TIMESTAMPING:
+> +		if (ops->ndo_do_ioctl =3D=3D phy_do_ioctl) {
+> +			/* Some drivers set .ndo_do_ioctl to phy_do_ioctl. */
+> +			err =3D -EOPNOTSUPP;
+> +		} else {
+> +			err =3D ops->ndo_eth_ioctl(dev, ifr, cmd);
+> +		}
+> +		break;
+> +
+> +	case PHY_TIMESTAMPING:
+> +		if (phy_has_hwtstamp(dev->phydev)) {
+> +			err =3D phy_mii_ioctl(dev->phydev, ifr, cmd);
+> +		} else {
+> +			err =3D -ENODEV;
+> +			WARN_ON(1);
+
+Please no WARN_ON on error cases that are known to be reachable
+and can be handled safely and reported to userspace.
+
+> +		}
+> +		break;
+> +	}
+> +
+> +	return err;
+> +}
+> +
+> diff --git a/net/ethtool/common.c b/net/ethtool/common.c
+> index 64a7e05cf2c2..e55e70bdbb3c 100644
+> --- a/net/ethtool/common.c
+> +++ b/net/ethtool/common.c
+> @@ -548,10 +548,18 @@ int __ethtool_get_ts_info(struct net_device *dev,=
+ struct ethtool_ts_info *info)
+>  	memset(info, 0, sizeof(*info));
+>  	info->cmd =3D ETHTOOL_GET_TS_INFO;
+>  =
+
+> -	if (phy_has_tsinfo(phydev))
+> -		return phy_ts_info(phydev, info);
+> -	if (ops->get_ts_info)
+> -		return ops->get_ts_info(dev, info);
+> +	switch (dev->selected_timestamping_layer) {
+> +	case MAC_TIMESTAMPING:
+> +		if (ops->get_ts_info)
+> +			return ops->get_ts_info(dev, info);
+> +		break;
+> +
+> +	case PHY_TIMESTAMPING:
+> +		if (phy_has_tsinfo(phydev))
+> +			return phy_ts_info(phydev, info);
+> +		WARN_ON(1);
+> +		return -ENODEV;
+
+same
+
+> +	}
+>  =
+
+>  	info->so_timestamping =3D SOF_TIMESTAMPING_RX_SOFTWARE |
+>  				SOF_TIMESTAMPING_SOFTWARE;=
