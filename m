@@ -2,47 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7949C6B0594
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 12:14:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E49286B059B
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 12:15:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231178AbjCHLOn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 06:14:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58450 "EHLO
+        id S231255AbjCHLPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 06:15:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230326AbjCHLOl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 06:14:41 -0500
+        with ESMTP id S229492AbjCHLPf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 06:15:35 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F243C96F31;
-        Wed,  8 Mar 2023 03:14:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E99F5C10F;
+        Wed,  8 Mar 2023 03:15:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96B9BB81B29;
-        Wed,  8 Mar 2023 11:14:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A75C6C433D2;
-        Wed,  8 Mar 2023 11:14:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4579BB81B29;
+        Wed,  8 Mar 2023 11:15:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7255C433D2;
+        Wed,  8 Mar 2023 11:15:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678274076;
-        bh=ccMiXcux3iDGpJ9zg6DwkZ7guZhASt7RFzYQJF/9t+s=;
+        s=k20201202; t=1678274131;
+        bh=Xc836AV3aZd6hwPzbcQAAbiJjvAN+j1p/M2fEpvZ/UI=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=imuRQSGxW8fc16+YkypSdiDiRiwwiUq5kQ1XaM6LT0ZwSbARikUWRWFPQdnPSCuNg
-         QWwU4Yi86lUjw967W6VdYGt8DvbL0L8BytEwD7+jCzvJ/jNW47f/hxMNrPjnpWt1aV
-         GUxXZ6pnS1tOyuMDyiDihZSDBnEv+vbRkxWrcEJIRm1IjjlVC30jybvqo52Vhy41PG
-         8EjyJqWWr44SBNYUmaD2UDgl8ctT3KE11V7JGYRtSQ4B3o52KwTVby4sh3LwPIRGzK
-         2IczxarO5oAIqtvnydOVlb13YNWMtmx6kBae18CV4hAkXQthb545QONkSIPP6au+Rm
-         kdb3ukvzrJxxQ==
-Message-ID: <4b8d8b8e-9062-e4e6-770b-86bd40cc3683@kernel.org>
-Date:   Wed, 8 Mar 2023 13:14:29 +0200
+        b=NJ3VGXNCaBkpUmsG5wjJTM9WBY40XZJIzfaTOpdgShqvWojmxWSMVS+sQg4DVhvbl
+         wlYluIfwEYdiYrRA0u9PYpvI4l3u1N7iB9PR7kIrUcWvhjXgYHgmwXvhgHjqvd7Scl
+         KwqCzgOQGqox6YYol5Rzb9asqL4eCgr1u6q4mHJYOpFXOVkdNElZxUAgHT2TlSOe2H
+         ZQHEMaj2vZ6o5kUH/ARWGTLjll/OR/UetEDIedZ0R+y85zE3/yqukQByKhyM7OkCPX
+         kiTzP4Xqf45mioY92i1fg4Gs172zEAsRrA3ugQw8HNA0aaqBKYcQ9w966J0yyrdBH4
+         KDjCyafjYdGtA==
+Message-ID: <93228d2f-0fc8-0c0e-f5ea-f55ed72da908@kernel.org>
+Date:   Wed, 8 Mar 2023 13:15:24 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
-Subject: Re: [EXTERNAL] Re: [PATCH v3 5/6] soc: ti: pruss: Add helper function
- to enable OCP master ports
+Subject: Re: [EXTERNAL] Re: [PATCH v3 4/6] soc: ti: pruss: Add helper
+ functions to set GPI mode, MII_RT_event and XFR
 Content-Language: en-US
 To:     Md Danish Anwar <a0501179@ti.com>,
         MD Danish Anwar <danishanwar@ti.com>,
         "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
         Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <t-kristo@ti.com>,
         Mathieu Poirier <mathieu.poirier@linaro.org>,
         Bjorn Andersson <andersson@kernel.org>,
         Santosh Shilimkar <ssantosh@kernel.org>,
@@ -52,11 +53,11 @@ Cc:     linux-remoteproc@vger.kernel.org,
         linux-omap@vger.kernel.org, srk@ti.com, devicetree@vger.kernel.org,
         netdev@vger.kernel.org
 References: <20230306110934.2736465-1-danishanwar@ti.com>
- <20230306110934.2736465-6-danishanwar@ti.com>
- <39879d9f-041b-9156-95a5-a81702721739@kernel.org>
- <c5c2fbcc-0955-0325-ef05-289b7a339110@ti.com>
+ <20230306110934.2736465-5-danishanwar@ti.com>
+ <2f039534-dd21-7361-0fcd-b91da1636a3a@kernel.org>
+ <ed3dd4b6-658f-07d2-a055-4c38f2ec9db0@ti.com>
 From:   Roger Quadros <rogerq@kernel.org>
-In-Reply-To: <c5c2fbcc-0955-0325-ef05-289b7a339110@ti.com>
+In-Reply-To: <ed3dd4b6-658f-07d2-a055-4c38f2ec9db0@ti.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -71,242 +72,108 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 08/03/2023 13:09, Md Danish Anwar wrote:
+On 08/03/2023 11:23, Md Danish Anwar wrote:
 > Hi Roger,
 > 
-> On 08/03/23 14:11, Roger Quadros wrote:
->>
+> On 08/03/23 14:04, Roger Quadros wrote:
+>> Hi Danish,
 >>
 >> On 06/03/2023 13:09, MD Danish Anwar wrote:
 >>> From: Suman Anna <s-anna@ti.com>
 >>>
->>> The PRU-ICSS subsystem on OMAP-architecture based SoCS (AM33xx, AM437x
->>> and AM57xx SoCs) has a control bit STANDBY_INIT in the PRUSS_CFG register
->>> to initiate a Standby sequence (when set) and trigger a MStandby request
->>> to the SoC's PRCM module. This same bit is also used to enable the OCP
->>> master ports (when cleared). The clearing of the STANDBY_INIT bit requires
->>> an acknowledgment from PRCM and is done through the monitoring of the
->>> PRUSS_SYSCFG.SUB_MWAIT bit.
->>>
->>> Add a helper function pruss_cfg_ocp_master_ports() to allow the PRU
->>> client drivers to control this bit and enable or disable the firmware
->>> running on PRU cores access to any peripherals or memory to achieve
->>> desired functionality. The access is disabled by default on power-up
->>> and on any suspend (context is not maintained).
+>>> The PRUSS CFG module is represented as a syscon node and is currently
+>>> managed by the PRUSS platform driver. Add easy accessor functions to set
+>>> GPI mode, MII_RT event enable/disable and XFR (XIN XOUT) enable/disable
+>>> to enable the PRUSS Ethernet usecase. These functions reuse the generic
+>>> pruss_cfg_update() API function.
 >>>
 >>> Signed-off-by: Suman Anna <s-anna@ti.com>
 >>> Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
 >>> Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
 >>> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
 >>> ---
->>>  drivers/soc/ti/pruss.c           | 81 +++++++++++++++++++++++++++++++-
->>>  include/linux/remoteproc/pruss.h |  6 +++
->>>  2 files changed, 85 insertions(+), 2 deletions(-)
+>>>  include/linux/remoteproc/pruss.h | 55 ++++++++++++++++++++++++++++++++
+>>>  1 file changed, 55 insertions(+)
 >>>
->>> diff --git a/drivers/soc/ti/pruss.c b/drivers/soc/ti/pruss.c
->>> index 537a3910ffd8..dc3abda0b8c2 100644
->>> --- a/drivers/soc/ti/pruss.c
->>> +++ b/drivers/soc/ti/pruss.c
->>> @@ -22,14 +22,19 @@
->>>  #include <linux/remoteproc.h>
->>>  #include <linux/slab.h>
->>>  
->>> +#define SYSCFG_STANDBY_INIT	BIT(4)
->>> +#define SYSCFG_SUB_MWAIT_READY	BIT(5)
->>> +
->>>  /**
->>>   * struct pruss_private_data - PRUSS driver private data
->>>   * @has_no_sharedram: flag to indicate the absence of PRUSS Shared Data RAM
->>>   * @has_core_mux_clock: flag to indicate the presence of PRUSS core clock
->>> + * @has_ocp_syscfg: flag to indicate if OCP SYSCFG is present
->>>   */
->>>  struct pruss_private_data {
->>>  	bool has_no_sharedram;
->>>  	bool has_core_mux_clock;
->>> +	bool has_ocp_syscfg;
->>>  };
->>>  
->>>  /**
->>> @@ -205,6 +210,72 @@ int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
->>>  }
->>>  EXPORT_SYMBOL_GPL(pruss_cfg_update);
->>>  
->>> +/**
->>> + * pruss_cfg_ocp_master_ports() - configure PRUSS OCP master ports
->>> + * @pruss: the pruss instance handle
->>> + * @enable: set to true for enabling or false for disabling the OCP master ports
->>> + *
->>> + * This function programs the PRUSS_SYSCFG.STANDBY_INIT bit either to enable or
->>> + * disable the OCP master ports (applicable only on SoCs using OCP interconnect
->>> + * like the OMAP family). Clearing the bit achieves dual functionalities - one
->>> + * is to deassert the MStandby signal to the device PRCM, and the other is to
->>> + * enable OCP master ports to allow accesses outside of the PRU-ICSS. The
->>> + * function has to wait for the PRCM to acknowledge through the monitoring of
->>> + * the PRUSS_SYSCFG.SUB_MWAIT bit when enabling master ports. Setting the bit
->>> + * disables the master access, and also signals the PRCM that the PRUSS is ready
->>> + * for Standby.
->>> + *
->>> + * Return: 0 on success, or an error code otherwise. ETIMEDOUT is returned
->>> + * when the ready-state fails.
->>> + */
->>> +int pruss_cfg_ocp_master_ports(struct pruss *pruss, bool enable)
->>> +{
->>> +	int ret;
->>> +	u32 syscfg_val, i;
->>> +	const struct pruss_private_data *data;
->>> +
->>> +	if (IS_ERR_OR_NULL(pruss))
->>> +		return -EINVAL;
->>> +
->>> +	data = of_device_get_match_data(pruss->dev);
->>> +
->>> +	/* nothing to do on non OMAP-SoCs */
->>> +	if (!data || !data->has_ocp_syscfg)
->>> +		return 0;
->>> +
->>> +	/* assert the MStandby signal during disable path */
->>> +	if (!enable)
->>> +		return pruss_cfg_update(pruss, PRUSS_CFG_SYSCFG,
->>> +					SYSCFG_STANDBY_INIT,
->>> +					SYSCFG_STANDBY_INIT);
->>
->> You can omit the above if() if you just encapsulate the below in
->>
->> if (enable) {
->>
->>
-> Sure, I can omit the above if() and put the below block inside if (enable) {}.
-> 
-> Currently when API pruss_cfg_ocp_master_ports()is called with enable as false
-> i.e. disabling PRUSS OCP master ports is requested, we directly return
-> pruss_cfg_update() where as if we remove the above if() section and encapsulate
-> below block in if (enable) {}, then in disable scenario, call flow will
-> directly reach the label disable. In the label disable, we are updating cfg and
-> then returning "ret", but at this point the variable ret is not assigned.
-> 
-> To counter this should I change the label disable to below?
-> 
-> disable:
-> 	return pruss_cfg_update(pruss, PRUSS_CFG_SYSCFG, SYSCFG_STANDBY_INIT,
-> 			 SYSCFG_STANDBY_INIT);
-
-But you will loose the error code if we came here due to failure in pruss_cfg_read().
-
-It's ok, don't make the change I suggested and leave it as it is.
-
-> 
->>> +
->>> +	/* enable the OCP master ports and disable MStandby */
->>> +	ret = pruss_cfg_update(pruss, PRUSS_CFG_SYSCFG, SYSCFG_STANDBY_INIT, 0);
->>> +	if (ret)
->>> +		return ret;
->>> +
->>> +	/* wait till we are ready for transactions - delay is arbitrary */
->>> +	for (i = 0; i < 10; i++) {
->>> +		ret = pruss_cfg_read(pruss, PRUSS_CFG_SYSCFG, &syscfg_val);
->>> +		if (ret)
->>> +			goto disable;
->>> +
-> 
-> Changing the disable label will also result in losing the return value of
-> pruss_cfg_read() API call here.
-> 
->>> +		if (!(syscfg_val & SYSCFG_SUB_MWAIT_READY))
->>> +			return 0;
->>> +
->>> +		udelay(5);
->>> +	}
->>> +
->>> +	dev_err(pruss->dev, "timeout waiting for SUB_MWAIT_READY\n");
->>> +	ret = -ETIMEDOUT;
-> 
-> Changing the disable label will also result in losing ret = -ETIMEDOUT here.
-> 
->>
->> }
->>
->>> +
->>> +disable:
->>> +	pruss_cfg_update(pruss, PRUSS_CFG_SYSCFG, SYSCFG_STANDBY_INIT,
->>> +			 SYSCFG_STANDBY_INIT);
->>> +	return ret;
->>> +}
-> 
-> So should I do this modification or keep it as it is?
-> 
->>> +EXPORT_SYMBOL_GPL(pruss_cfg_ocp_master_ports);
->>> +
->>>  static void pruss_of_free_clk_provider(void *data)
->>>  {
->>>  	struct device_node *clk_mux_np = data;
->>> @@ -495,10 +566,16 @@ static int pruss_remove(struct platform_device *pdev)
->>>  /* instance-specific driver private data */
->>>  static const struct pruss_private_data am437x_pruss1_data = {
->>>  	.has_no_sharedram = false,
->>> +	.has_ocp_syscfg = true,
->>>  };
->>>  
->>>  static const struct pruss_private_data am437x_pruss0_data = {
->>>  	.has_no_sharedram = true,
->>> +	.has_ocp_syscfg = false,
->>> +};
->>> +
->>> +static const struct pruss_private_data am33xx_am57xx_data = {
->>> +	.has_ocp_syscfg = true,
->>>  };
->>
->> How about keeping platform data for different platforms separate?
->>
->> i.e. am33xx_pruss_data and am57xx_pruss_data
->>
-> 
-> Sure. I'll split am33xx_am57xx_data into am33xx_pruss_data and
-> am57xx_pruss_data as well as am65x_j721e_pruss_data into am65x_pruss_data and
-> j721e_pruss_data.
-> 
->>>  
->>>  static const struct pruss_private_data am65x_j721e_pruss_data = {
->>> @@ -506,10 +583,10 @@ static const struct pruss_private_data am65x_j721e_pruss_data = {
->>>  };
->>>  
->>>  static const struct of_device_id pruss_of_match[] = {
->>> -	{ .compatible = "ti,am3356-pruss" },
->>> +	{ .compatible = "ti,am3356-pruss", .data = &am33xx_am57xx_data },
->>>  	{ .compatible = "ti,am4376-pruss0", .data = &am437x_pruss0_data, },
->>>  	{ .compatible = "ti,am4376-pruss1", .data = &am437x_pruss1_data, },
->>> -	{ .compatible = "ti,am5728-pruss" },
->>> +	{ .compatible = "ti,am5728-pruss", .data = &am33xx_am57xx_data },
->>>  	{ .compatible = "ti,k2g-pruss" },
->>>  	{ .compatible = "ti,am654-icssg", .data = &am65x_j721e_pruss_data, },
->>>  	{ .compatible = "ti,j721e-icssg", .data = &am65x_j721e_pruss_data, },
 >>> diff --git a/include/linux/remoteproc/pruss.h b/include/linux/remoteproc/pruss.h
->>> index 7952f250301a..8cb99d3cad0d 100644
+>>> index d41bec448f06..7952f250301a 100644
 >>> --- a/include/linux/remoteproc/pruss.h
 >>> +++ b/include/linux/remoteproc/pruss.h
->>> @@ -168,6 +168,7 @@ int pruss_release_mem_region(struct pruss *pruss,
->>>  int pruss_cfg_read(struct pruss *pruss, unsigned int reg, unsigned int *val);
->>>  int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
->>>  		     unsigned int mask, unsigned int val);
->>> +int pruss_cfg_ocp_master_ports(struct pruss *pruss, bool enable);
->>>  
->>>  #else
->>>  
->>> @@ -203,6 +204,11 @@ static inline int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
->>>  	return -EOPNOTSUPP;
+>>> @@ -240,4 +240,59 @@ static inline bool is_pru_rproc(struct device *dev)
+>>>  	return true;
 >>>  }
 >>>  
->>> +static inline int pruss_cfg_ocp_master_ports(struct pruss *pruss, bool enable)
+>>> +/**
+>>> + * pruss_cfg_gpimode() - set the GPI mode of the PRU
+>>> + * @pruss: the pruss instance handle
+>>> + * @pru_id: id of the PRU core within the PRUSS
+>>> + * @mode: GPI mode to set
+>>> + *
+>>> + * Sets the GPI mode for a given PRU by programming the
+>>> + * corresponding PRUSS_CFG_GPCFGx register
+>>> + *
+>>> + * Return: 0 on success, or an error code otherwise
+>>> + */
+>>> +static inline int pruss_cfg_gpimode(struct pruss *pruss,
+>>> +				    enum pruss_pru_id pru_id,
+>>> +				    enum pruss_gpi_mode mode)
 >>> +{
->>> +	return -EOPNOTSUPP;
+>>> +	if (pru_id < 0 || pru_id >= PRUSS_NUM_PRUS)
+>>> +		return -EINVAL;
+>>> +
+>>
+>> Should we check for invalid gpi mode and error out if so?
+>>
+> Sure we can check for invalid gpi mode.
+> 
+> Does the below code snippet looks good to you?
+> 
+> 	if(mode < PRUSS_GPI_MODE_DIRECT || mode > PRUSS_GPI_MODE_MII)
+
+How about?
+	if (mode < 0 || mode > PRUSS_GPI_MODE_MAX)
+
+> 		return -EINVAL;
+> 
+>>> +	return pruss_cfg_update(pruss, PRUSS_CFG_GPCFG(pru_id),
+>>> +				PRUSS_GPCFG_PRU_GPI_MODE_MASK,
+>>> +				mode << PRUSS_GPCFG_PRU_GPI_MODE_SHIFT);
 >>> +}
 >>> +
->>>  #endif /* CONFIG_TI_PRUSS */
->>>  
->>>  #if IS_ENABLED(CONFIG_PRU_REMOTEPROC)
+>>> +/**
+>>> + * pruss_cfg_miirt_enable() - Enable/disable MII RT Events
+>>> + * @pruss: the pruss instance
+>>> + * @enable: enable/disable
+>>> + *
+>>> + * Enable/disable the MII RT Events for the PRUSS.
+>>> + *
+>>> + * Return: 0 on success, or an error code otherwise
+>>> + */
+>>> +static inline int pruss_cfg_miirt_enable(struct pruss *pruss, bool enable)
+>>> +{
+>>> +	u32 set = enable ? PRUSS_MII_RT_EVENT_EN : 0;
+>>> +
+>>> +	return pruss_cfg_update(pruss, PRUSS_CFG_MII_RT,
+>>> +				PRUSS_MII_RT_EVENT_EN, set);
+>>> +}
+>>> +
+>>> +/**
+>>> + * pruss_cfg_xfr_enable() - Enable/disable XIN XOUT shift functionality
+>>> + * @pruss: the pruss instance
+>>> + * @enable: enable/disable
+>>> + *
+>>> + * Return: 0 on success, or an error code otherwise
+>>> + */
+>>> +static inline int pruss_cfg_xfr_enable(struct pruss *pruss, bool enable)
+>>> +{
+>>> +	u32 set = enable ? PRUSS_SPP_XFER_SHIFT_EN : 0;
+>>> +
+>>> +	return pruss_cfg_update(pruss, PRUSS_CFG_SPP,
+>>> +				PRUSS_SPP_XFER_SHIFT_EN, set);
+>>> +}
+>>> +
+>>>  #endif /* __LINUX_PRUSS_H */
 >>
->> cheers,
->> -roger
-> 
 
 cheers,
 -roger
