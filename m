@@ -2,132 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA2446B0509
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 11:53:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AFFB6B052F
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 11:58:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230343AbjCHKxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 05:53:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51168 "EHLO
+        id S229608AbjCHK6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 05:58:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230523AbjCHKxR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 05:53:17 -0500
-Received: from mail-wm1-x362.google.com (mail-wm1-x362.google.com [IPv6:2a00:1450:4864:20::362])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C429439CE5
-        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 02:53:14 -0800 (PST)
-Received: by mail-wm1-x362.google.com with SMTP id c18so9529704wmr.3
-        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 02:53:14 -0800 (PST)
+        with ESMTP id S229683AbjCHK6l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 05:58:41 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 094543B3DC
+        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 02:58:37 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id j11so44507417edq.4
+        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 02:58:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dectris.com; s=google; t=1678272793;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MFnIaNLO1jYcGQ/rd76lvHww9TyGOc8wkDjH2xbQ2vY=;
-        b=cnhxBf5cTTpw1N9mDdNPt84ISNLvvjn801q368baQ2Qu3+yzPGVdIGdEPXvepil4V8
-         UHmhsTR1+SAVaXMEjPHENYMCPKGgm8U19Uj/ohgFmguOdJWr+KlHZu7MpVigjCy2tAjN
-         iDY7ixtO0z104mcy60yjjfoALQqgr5suSr338=
+        d=linaro.org; s=google; t=1678273115;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=pkhbXKH6TvRvR/JaTvTZnsr+5jgDGBxXloVUQNE5KVc=;
+        b=ASBC2IgAmDPRN2afHTelrFwdr82Fng0LjrJrbaqoGMWxykOt/DxpEyJrG6ADqqfmPE
+         1vhdhLaWqmAbnkDAH6UfYrJ0a8u5L4Gs1W3pYgBBKggeQ4PneWKnuOoUBBUyKR8uevzz
+         HKjCe/evImETMa1lBUmGf2243ZIX6bRA/aTa0rPwa0vh6ITTuIq+awcqtcRGMENn6tq7
+         0A4B7WeLoge7tvEBHtBfz++IeLXiXscLIqUhNTk406+Qdpy8Uj7bqfF9PI9wYlNhrJvj
+         a01TAZgwi/81yZTfIWGp//55dw0lY/oGCVgomnTm1PZzTlt0c/srJgtE3+8GY9gxaLlA
+         Quug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678272793;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=MFnIaNLO1jYcGQ/rd76lvHww9TyGOc8wkDjH2xbQ2vY=;
-        b=hew/gS3q7hrCopjgryumc/D91HzuczdSPyRXPsWbIBFTUD5UcQbk/JRSayv189PcP5
-         2YseuW9hKuBJB+TbuAec3dANDZ2kNQHPT5PFXHkom1TmPEmnEP2f41kzGBRWQOrROK7S
-         5lT8fdxwexhX4flke7qbZoV4R7/Zc+KiqE7XBeuBOxwwjyy1Fpsfsv7Kn4YbmDbrg56r
-         /ZpFOgwLJbmdlnYRR52Ea6wgW/k1/8mUBkArOyzKnHHN0QTEZ36NvCq6mNb6FBV3cBt6
-         y31aOkQ1WZv+qcFJ1z3rNpav6HIUCYBYLFkSyDnGQPbrV+KZ5sHdlukSB7tnpahhrw/e
-         uwYw==
-X-Gm-Message-State: AO0yUKVIubezSJhPhVwq9OvTai9SOtDTH9TZJnmL0eJ+hXCtyYUNHLKp
-        H2THNHnQPp2701+546OTl6WnnoejSpADo/ccXeIup0Yi5SzB
-X-Google-Smtp-Source: AK7set/Kr0OA0KJtw2a+BX2EdMHPKeyQkkYCTFTEZBgEbbs/r0pMvzWLlEx+48YsTajHW/JgospqlxFfBIdq
-X-Received: by 2002:a05:600c:450f:b0:3e2:19b0:887d with SMTP id t15-20020a05600c450f00b003e219b0887dmr15666002wmo.25.1678272793197;
-        Wed, 08 Mar 2023 02:53:13 -0800 (PST)
-Received: from fedora.dectris.local (dect-ch-bad-pfw.cyberlink.ch. [62.12.151.50])
-        by smtp-relay.gmail.com with ESMTPS id f11-20020adff8cb000000b002c5a302d158sm2125188wrq.51.2023.03.08.02.53.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Mar 2023 02:53:13 -0800 (PST)
-X-Relaying-Domain: dectris.com
-From:   Kal Conley <kal.conley@dectris.com>
-To:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        d=1e100.net; s=20210112; t=1678273115;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=pkhbXKH6TvRvR/JaTvTZnsr+5jgDGBxXloVUQNE5KVc=;
+        b=DoAzAgjx33iuT7kfjat2VJIzdC0RhLVKv91wzC64Zh3zhjq/BPJV7/jV9PcVB9CfYw
+         6zTQEc9zoD/M+WbVnWtKi5C3Wpu6v+GxAq3nFEKh1uNn50rZJKpdubDzw1D6vbdiULJ2
+         1uC/AuAewTCba+KyYn/ArQEU3T0Tizr09s77+zZdiIbSEadvL4e4J1ipY7bLxNwyK4YG
+         AOTygy/2SGahbfvnRVzOS3Jb+/sFIPxgnwDZ9S0i28gofGKBb3EOcv/IBzkjYNcfcc2Z
+         Pg41+c3gw3o3QaDY+YZllxvye5PIgxRQSpzrkoidOx3Y3Qkeh3PmD0NpJyYXQ9/jIpeB
+         AMSA==
+X-Gm-Message-State: AO0yUKWM+/Eq9yNmJ8YUsxJ49ijbOLY95SABByt78gG+tEHiNpIjstWO
+        Ef/qOobi/vGzEAjwdOkuhqmnEA==
+X-Google-Smtp-Source: AK7set9msbf3QPsCGQeVVSdkOYH03c1CQbyTBoKZ8sSqSqt4nbsVBAFugLfS1sFY5JLAJgN3MXIl8g==
+X-Received: by 2002:a17:906:b292:b0:8ee:72c0:6c7a with SMTP id q18-20020a170906b29200b008ee72c06c7amr14638469ejz.58.1678273115471;
+        Wed, 08 Mar 2023 02:58:35 -0800 (PST)
+Received: from ?IPV6:2a02:810d:15c0:828:ff33:9b14:bdd2:a3da? ([2a02:810d:15c0:828:ff33:9b14:bdd2:a3da])
+        by smtp.gmail.com with ESMTPSA id qt2-20020a170906ece200b008e938e98046sm7289102ejb.223.2023.03.08.02.58.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Mar 2023 02:58:35 -0800 (PST)
+Message-ID: <ad43a809-b9fd-bd24-ee1a-9e509939023b@linaro.org>
+Date:   Wed, 8 Mar 2023 11:58:33 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [net-next PATCH 09/11] dt-bindings: net: dsa: qca8k: add LEDs
+ definition example
+Content-Language: en-US
+To:     Christian Marangi <ansuelsmth@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Kal Conley <kal.conley@dectris.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] xsk: Add missing overflow check in xdp_umem_reg
-Date:   Wed,  8 Mar 2023 11:51:30 +0100
-Message-Id: <20230308105130.1113833-1-kal.conley@dectris.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230307172306.786657-1-kal.conley@dectris.com>
-References: <20230307172306.786657-1-kal.conley@dectris.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, Lee Jones <lee@kernel.org>,
+        linux-leds@vger.kernel.org
+References: <20230307170046.28917-1-ansuelsmth@gmail.com>
+ <20230307170046.28917-10-ansuelsmth@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230307170046.28917-10-ansuelsmth@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The number of chunks can overflow u32. Make sure to return -EINVAL on
-overflow.
+On 07/03/2023 18:00, Christian Marangi wrote:
+> Add LEDs definition example for qca8k Switch Family to describe how they
+> should be defined for a correct usage.
+> 
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 
-Fixes: bbff2f321a86 ("xsk: new descriptor addressing scheme")
-Signed-off-by: Kal Conley <kal.conley@dectris.com>
----
- net/xdp/xdp_umem.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+Where is the changelog? This was v8 already! What happened with all
+review, changes?
 
-diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
-index 4681e8e8ad94..02207e852d79 100644
---- a/net/xdp/xdp_umem.c
-+++ b/net/xdp/xdp_umem.c
-@@ -150,10 +150,11 @@ static int xdp_umem_account_pages(struct xdp_umem *umem)
- 
- static int xdp_umem_reg(struct xdp_umem *umem, struct xdp_umem_reg *mr)
- {
--	u32 npgs_rem, chunk_size = mr->chunk_size, headroom = mr->headroom;
- 	bool unaligned_chunks = mr->flags & XDP_UMEM_UNALIGNED_CHUNK_FLAG;
--	u64 npgs, addr = mr->addr, size = mr->len;
--	unsigned int chunks, chunks_rem;
-+	u32 chunk_size = mr->chunk_size, headroom = mr->headroom;
-+	u64 addr = mr->addr, size = mr->len;
-+	u32 chunks_rem, npgs_rem;
-+	u64 chunks, npgs;
- 	int err;
- 
- 	if (chunk_size < XDP_UMEM_MIN_CHUNK_SIZE || chunk_size > PAGE_SIZE) {
-@@ -188,8 +189,8 @@ static int xdp_umem_reg(struct xdp_umem *umem, struct xdp_umem_reg *mr)
- 	if (npgs > U32_MAX)
- 		return -EINVAL;
- 
--	chunks = (unsigned int)div_u64_rem(size, chunk_size, &chunks_rem);
--	if (chunks == 0)
-+	chunks = div_u64_rem(size, chunk_size, &chunks_rem);
-+	if (!chunks || chunks > U32_MAX)
- 		return -EINVAL;
- 
- 	if (!unaligned_chunks && chunks_rem)
-@@ -202,7 +203,7 @@ static int xdp_umem_reg(struct xdp_umem *umem, struct xdp_umem_reg *mr)
- 	umem->headroom = headroom;
- 	umem->chunk_size = chunk_size;
- 	umem->chunks = chunks;
--	umem->npgs = (u32)npgs;
-+	umem->npgs = npgs;
- 	umem->pgs = NULL;
- 	umem->user = NULL;
- 	umem->flags = mr->flags;
--- 
-2.39.2
+Best regards,
+Krzysztof
 
