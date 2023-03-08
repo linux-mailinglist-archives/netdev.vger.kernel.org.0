@@ -2,612 +2,281 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 21CCB6B12BE
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 21:15:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97A576B12B6
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 21:13:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230326AbjCHUPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 15:15:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58422 "EHLO
+        id S230168AbjCHUNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 15:13:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230162AbjCHUO3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 15:14:29 -0500
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2660CD5163
-        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 12:14:05 -0800 (PST)
-Received: by mail-pf1-x44a.google.com with SMTP id fb7-20020a056a002d8700b0061c7b700c6dso5191861pfb.13
-        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 12:14:05 -0800 (PST)
+        with ESMTP id S230163AbjCHUNs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 15:13:48 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2101.outbound.protection.outlook.com [40.107.243.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DE7461A9F;
+        Wed,  8 Mar 2023 12:13:42 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HtCuqPAPCA7tvQmqZzzUvqxRzJIyheki7hjzEVstX5yukOaN1ELY3o4Bt7W8FTU+fgPykaGF62Z4iBdOAlJW2FfF3aNMVUt1vES6AnV7cQXqVz4X1k0ttnb5B7rE5yCgP2W+EAm2l/jMMa1N/YmB9tYsVB8cf1be33fWefYWef4bUweU2E+wOFtiARu/ImE22e/3eoi8OO2ywSX4qi7s/1b6mMuU8XfCs2eLZt1wFZcQbt8MGbl01gAQnJUj85wzUdXA+/SPHEd/OZTE8UiLrZkzht6G7GJy16Mq27DdjNfqzHfm2NYaBC82bLzj1//7j9ZhiW0my9hJ2/YjOEOvCQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=woIBgvcqwKFlqVqMtvl1T53IJgFRrb4fL6j5LgmnmUw=;
+ b=i+HrZOmxpredW7Sgv7FinEke2Ja3BCdmrICw/hQnckHNIBMlq7HjdVBvjG1ONBFcz7vUb1xEdIjIH7hzWkM9nUFReYn/x66pbVGJVoHEuYgs8PtSYw9dC9I6NBf1ae3bB0inqJSdeD64ZjXqLhQPfhnsV4yOlTnfWGMaWHC6obR5FTM9T1B0eyc8Xc1FKiwsDGpy7d8tjd7UCV3bnqFCKpufAqrw6y3JBunRSaAvoAXaE4FHX1jrfCbtn2K6vBOWWXnDvQ0my+YpUAw/vt3SlkSHX5ir3T/LjeI9z1Q4xaTWNtWPKrs20oiXavjoKwMA6F7Ry87D7TlCeJnQ5in5sA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1678306444;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Wl3Anfi1TasxnCpaN64DAm0RcvRf0KDOCVe0DTdONzE=;
-        b=bDQ58FdGmQ5jXhankfuy4HFgDBizHcVcBb81rCRIy/6mXc5MKf+DFaAsiQsl/0SOh0
-         LLYCq0jqXBj3bER9QbJEnQxCFvzTZwZoFDeGoWbj2l7KxwrYIJbg6Z1DF1WKCP3w0vBx
-         +pfyb2g2rlHzfjQSNlBAfBbnRxVeZbAjPNQWmRaz97xaJ3VFPzYNvDEM6ftUt7B5Q3N1
-         rzm5BfjjEeKJcaO8IBcS45VcppXOOdxXzice0FMbGyzxzEYpTZRP4Fib53lg1rAY5svS
-         VBjVObhxHPcFDtGAcxc358OR1UzCtDZmr9fsQ2H4Hkrlc5eFvIZKKV8KBevbLCJMIXYJ
-         c+yQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678306444;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Wl3Anfi1TasxnCpaN64DAm0RcvRf0KDOCVe0DTdONzE=;
-        b=ywkAm0SG1AvT5mwOrANELtD2dgI1IyxVyPAjDMoMKb1bd0u4udhGesjw8Jvz2ES4d3
-         4EUWj1iaZIXyztD7DHACDAozGxfCL70j6ZnTtmo0HiU7jXQIMG8PDf1S9yEEJ02ktJb2
-         uYHcpnhV48Dcp7z/fpE7h3sY7CGxE3crSYdxI1Z8Mshr+8DvAl0h1N/tSZFouTLoNCY3
-         p8dPfPh0SK0wHO76Hnpsa5I98xoF/gCEtxcpx/jTl+dVqBwWdY1Y69/n6TRFHdnp34XD
-         H741EjsV22InzDPILlKdO/SA1VtmFs22KJ86JzBwa+rqNscKlIdFSNe+jmRmOn8nIuwu
-         a1vQ==
-X-Gm-Message-State: AO0yUKUSZXPgDUcmatbLmvBiYq5ifPXRF3nEDl30Wu7FRgUqKfc8fUsV
-        fxhzFygKaA/t0sS0Vr9kCgAxiDT4Sv7yGBoNtPrqyKomIq/2Ih7kgV26cM3tUlmnqnIyB3q4pJr
-        F+LbGDdpL9QxqxHVU53H261KQlMIVSbl7ygvIeydgI5BRNmmXPlkGnN50B0Zwx8sBhWnhtDVKao
-        rltQ==
-X-Google-Smtp-Source: AK7set/RjsjI2g4N8bdyvGGus8pwZUQHozxIxu+xtQubcpMxd3LjV8dK3h1JrUUcoJVKdQ20yVOuUeh6ffVjGSsRjFU=
-X-Received: from pkaligineedi.sea.corp.google.com ([2620:15c:100:202:cf18:68c8:1237:ef3])
- (user=pkaligineedi job=sendgmr) by 2002:a17:90b:3b89:b0:233:c921:ab7e with
- SMTP id pc9-20020a17090b3b8900b00233c921ab7emr9477883pjb.4.1678306444559;
- Wed, 08 Mar 2023 12:14:04 -0800 (PST)
-Date:   Wed,  8 Mar 2023 12:13:28 -0800
-In-Reply-To: <20230308201328.3094150-1-pkaligineedi@google.com>
-Mime-Version: 1.0
-References: <20230308201328.3094150-1-pkaligineedi@google.com>
-X-Mailer: git-send-email 2.40.0.rc0.216.gc4246ad0f0-goog
-Message-ID: <20230308201328.3094150-6-pkaligineedi@google.com>
-Subject: [PATCH net-next v2 5/5] gve: Add AF_XDP zero-copy support for GQI-QPL format
-From:   Praveen Kaligineedi <pkaligineedi@google.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, maciej.fijalkowski@intel.com,
-        Praveen Kaligineedi <pkaligineedi@google.com>,
-        Jeroen de Borst <jeroendb@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=woIBgvcqwKFlqVqMtvl1T53IJgFRrb4fL6j5LgmnmUw=;
+ b=ouMONSnqNo3rEFOejV+odZpkZuZotojjhyr0nF6nmzO87uTn0Smx5+9qy6qnlMV/NsseNL/r5QPFrACo30x9/Px7PWureZ5rRar6C1ayyH/N/+sh928SBOgAoaakOXb3ZrG9XdzXDA3EhAcEBkxnlj3D/l8VYIhAtwrtGTrCDMY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SA3PR13MB6282.namprd13.prod.outlook.com (2603:10b6:806:302::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.28; Wed, 8 Mar
+ 2023 20:13:39 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6156.029; Wed, 8 Mar 2023
+ 20:13:39 +0000
+Date:   Wed, 8 Mar 2023 21:13:31 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Alexander Lobakin <aleksander.lobakin@intel.com>
+Cc:     Gavin Li <gavinl@nvidia.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        roopa@nvidia.com, eng.alaamohamedsoliman.am@gmail.com,
+        bigeasy@linutronix.de, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, gavi@nvidia.com, roid@nvidia.com,
+        maord@nvidia.com, saeedm@nvidia.com
+Subject: Re: [PATCH RESEND net-next v4 0/4] net/mlx5e: Add GBP VxLAN HW
+ offload support
+Message-ID: <ZAjsa538mpnEQ/QI@corigine.com>
+References: <20230306030302.224414-1-gavinl@nvidia.com>
+ <d086da44-5027-4b43-bd04-29e030e7eac7@intel.com>
+ <1abaf06a-83fb-8865-4a6e-c6a806cce421@nvidia.com>
+ <7612377e-1dd0-1350-feb3-3a737710c261@intel.com>
+ <3ed82f97-3f92-8f61-d297-8162aaf823c6@nvidia.com>
+ <531bac44-23ba-d4f3-f350-8146b6fb063a@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <531bac44-23ba-d4f3-f350-8146b6fb063a@intel.com>
+X-ClientProxiedBy: AM0PR03CA0038.eurprd03.prod.outlook.com (2603:10a6:208::15)
+ To PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SA3PR13MB6282:EE_
+X-MS-Office365-Filtering-Correlation-Id: 00193acd-6857-439c-6cf7-08db20119ab0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: clXbwE21w3iHTnnC+93h+ViPdMI00YHPw5Xxc6xR6S6iJrke7cF6KAVT3Pmx9GHuFvP9Usgmjk7MSwln4wrxNhBifM2lGSOxN4xzrwkXgSdf70FPwzZZPXrKUeuhQkPP3JwNMxQvypELTlBOrzJiIxayEAtx6R8DBLVc8eGtE+JB8jKnQWRuOpcMWrN62mUuAqRZmL8Ao71iskHWlkNRkFuBP67i3ZZuphin01lVm4gLVgAyGniy5TS1695VWzoTawr92u1N3MyoOpyW9H9lgfnt4diCzG+UQLaNuwTZ+J3HXhMhfpY0AZcNWqlPWscNIau8Wk9UF3BpOaPsg95LDUes4z2QLy3LlOAVO0LB2CvdOaUHgx6xQZX0ZTReAkQD83hf1JNYgaCr+Xr70+WtkH8tps3v0SGiKwEA3MvsyfGlEr531Agx3qkGU9I7HFnXBn+6Rib1ee2qljgXtVUgRfmtX/IlKjjRtayqfCefY0EchA8z/DG++oSHUWWBolxRFnccxDlldYTacWi3wMCEXF1h1TDRwX1a0NaGgaQNSxtjX5VP6sfxnMyqxSC9CEJOiGT5T4ugp3gDJ4Bk/vzkETHB3MN6x0bWq0C9NYUY9dL7zBb62tPDU+QoYPyYPJp5
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(366004)(39830400003)(396003)(346002)(136003)(451199018)(8936002)(5660300002)(44832011)(7416002)(6916009)(66476007)(66556008)(4326008)(8676002)(478600001)(316002)(2906002)(66946007)(6666004)(36756003)(53546011)(6506007)(966005)(6486002)(6512007)(41300700001)(2616005)(86362001)(83380400001)(38100700002)(186003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?OE9yVi9iUW9wRlRoNmNZUjk2WkZHT1MwemhNQm1pdjdqd2NqUzNuZW9RejNk?=
+ =?utf-8?B?WHB0dUEwcGpxL3QvbmREZ2dwNmFmWExWdlQwL1lKejFMWkpNdG1mQlg2Qml3?=
+ =?utf-8?B?aWVmZ2tlK2E1eU9QaHFuVVBUaEJTUnhmTngrdGF6M0VQMjRZT3ROa0h6STY4?=
+ =?utf-8?B?VTJaN1VKT2Zma2pjMHFvTkcxK1EzaTE2SDZ6bCtzaVlvUFNvUzBvUUl3eXB1?=
+ =?utf-8?B?Qy9ucFNPVzRWakZZMkV5Q1dqUzJtWGF4eGczSFlrTDFJQkk2L0hjL2R1aDR2?=
+ =?utf-8?B?dGlEaWJXWEVIR3FqbEo2eVVMd3ZpNSswNklhd0R6blFRbHNkaWxFZGNucThs?=
+ =?utf-8?B?M2c1NDdIdVZsZHZVR1Q3RzV3eURGRFNicCtUeVZIY2NJblpPUlVJVm8zSHBm?=
+ =?utf-8?B?bUUrWWpIbUxZcHQzRGx2bGtFanZZRVp1UERKZlNkOENrMG5VaWkzMFNaQ3pl?=
+ =?utf-8?B?cFhpNXBkalZralJYeEs2b1piTGRxMW9hVlR4VHl1RWN2eXIvOFM5MURMN0NP?=
+ =?utf-8?B?eFpQcmJhOERmUTZEYWw5ZzNvaG1nWGI0MUM2ODlSOWpOUlI4RWFyb3pwUWIw?=
+ =?utf-8?B?SzJla1NjS1N1bW1ac2R1U3p2L0JVQWhwcyt4dmZCd21oTHEyNU1qaEQyZXZp?=
+ =?utf-8?B?Ym5CT0V3S3RiYmVuZnVYNVFyeXhJbjVSOVVnVTEwSUJyNFUyK3IreEJXczRx?=
+ =?utf-8?B?UFIyTVB1Z0RZaDNZSjNTclc4R3ZOVnZ4MEtZOFU1aURMSTJuU090c25wWXFz?=
+ =?utf-8?B?Q2JBZHhSUHpqZ3oxNVUrb2N0TUxLS2ttdVp3akg1bkpVL0JHZHh3bTJ3bDdD?=
+ =?utf-8?B?Y1RWYlBMSFJWQ2xrV3BmMnA0aDBFRlFPOEtmMEZrL1BlMnBwdUk5Zm1Qa1Ir?=
+ =?utf-8?B?cG9wMWpadkNRQklpV2RxRUw0d1l0S2Y3VlZscDU2REZrUHBwNCtyYkhKbDZB?=
+ =?utf-8?B?VHNNSE5oV2NnbzJUMXVpeGtIMW5tbkhKeHIzUmtWSFkvWGpZNk1RS1RrRlRj?=
+ =?utf-8?B?SmdhVHhUeitialBxdUM3OFpkN3JwUXZQRkVObFNxa0VWZFA2Z2NEZlV4eU9S?=
+ =?utf-8?B?WTRxclRFNWV5dzVvcGJzRU5HaCs1bjdxdk9ZazB4VjQyU0pnOG5COHp3a0M3?=
+ =?utf-8?B?VWxUYWRjSEIwc1JjVWRNSHVnZk9jejBMTU11dUZBamVIK0orem1NWXdGd0p1?=
+ =?utf-8?B?ZGJaa0MxWERFS0JpTDFXUXBNbzhWWjBNaG1vdzRBNElpaUFhUlN5RVcyaWJk?=
+ =?utf-8?B?ZFY1WE4zWXNxaHlZQzFCdm1mNHhmUEhXZlNiMXM4VEVNZkVaYTRSNmRtcW5l?=
+ =?utf-8?B?WWxjRnF3Z1ZFalIxb2R6Q1FRcVRUZ2RHY295M052Ym1qTnBtVXNqZmZScWNR?=
+ =?utf-8?B?N0hiQXUvQTJRU1JuUGwwaGxLWlkyNTFqQ2kyc1Q4N0FnQlNOQ2lCT2dTM0RS?=
+ =?utf-8?B?cGxEMEtBRElGRGtPY3NGVXJWbjBRNUpNZE1jaFJOYWxLZzlINjNEeU4vaDNS?=
+ =?utf-8?B?UkRwUWMvQXRDMTFKVWo1bWR6c0RLZ05DZ1dycGFKMlFQdHl4UUlWdVdJbFJD?=
+ =?utf-8?B?Ukk4eitkb09ybzV4MVRpK0FuZHNmeTNML0Q0WFVsbEIzYWZ4aVRsbytmbXR1?=
+ =?utf-8?B?YktuUlNYZ2tWUlFlRVN0Skg4TTJyNGcwU1NkM090dlk0SlNwTThsWUNXN2Ux?=
+ =?utf-8?B?QXE2NzZFVzdGMEM1bTI0TDFEdnh1K3V2aDNEYkJTWWc0SERCeEo0TGFlNjBZ?=
+ =?utf-8?B?R3grTVhpMy9nK01SdTVyNnUxTUlTMmhjdCtkaVlQbCtwTXdkbUFxdmxCU2Ri?=
+ =?utf-8?B?K2dBRFZiaUcySFJLR1RXUU12S1c3WXJkazlSMWU4OWZ2cDE3amdYYXlNWmVl?=
+ =?utf-8?B?OFNRTXJwYy92eVI5RVoybXIrOU1MZmhPU2phY1Fhb01iaUxITTkrM0J3NmdJ?=
+ =?utf-8?B?aGE4b0NSR2NFSSs3endUVUNZeFlrRFhDZlFLZU9tMjJGelpUVnNtR3dHaTho?=
+ =?utf-8?B?R1pjM28zejVWTFFMVDEvQ1dyM1lVYkhEcS9rRXNBK1pQdzFYaldyVWdvTFFz?=
+ =?utf-8?B?ajVxNmNEaGJ0dkJPTWt4cWgwSVpLMkVRbHR3YUhCQkt6S3J5NlkxaTlpSU16?=
+ =?utf-8?B?T2NJODAwandET1l1Zlo0NTVVY3FEZlJYQVYwcTZaUUtyWVdKM1lXeUpTRVAz?=
+ =?utf-8?B?d1FoNnZLeS9OSG83cnpaODZZQnAxbmgrT0FlT1Z1T05DM2F1aTloaU9IdDNP?=
+ =?utf-8?B?blFvZkJjSHdzUm41UDVxU1FRR0h3PT0=?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 00193acd-6857-439c-6cf7-08db20119ab0
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2023 20:13:38.8592
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: fTVRDIOeCJ9bXDs9mZlTrrwygJf7bQO1BQvRyBlKIX/vp8yUn3Expre3TkTPSYGROyergPhQwMZmDymvWY1T+MVbTnc3vjyFBbfAlZ4CcNo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR13MB6282
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding AF_XDP zero-copy support.
+On Wed, Mar 08, 2023 at 02:34:28PM +0100, Alexander Lobakin wrote:
+> From: Gavin Li <gavinl@nvidia.com>
+> Date: Wed, 8 Mar 2023 10:22:36 +0800
+> 
+> > 
+> > On 3/8/2023 12:58 AM, Alexander Lobakin wrote:
+> >> External email: Use caution opening links or attachments
+> >>
+> >>
+> >> From: Gavin Li <gavinl@nvidia.com>
+> >> Date: Tue, 7 Mar 2023 17:19:35 +0800
+> >>
+> >>> On 3/6/2023 10:47 PM, Alexander Lobakin wrote:
+> >>>> External email: Use caution opening links or attachments
+> >>>>
+> >>>>
+> >>>> From: Gavin Li <gavinl@nvidia.com>
+> >>>> Date: Mon, 6 Mar 2023 05:02:58 +0200
+> >>>>
+> >>>>> Patch-1: Remove unused argument from functions.
+> >>>>> Patch-2: Expose helper function vxlan_build_gbp_hdr.
+> >>>>> Patch-3: Add helper function for encap_info_equal for tunnels with
+> >>>>> options.
+> >>>>> Patch-4: Add HW offloading support for TC flows with VxLAN GBP
+> >>>>> encap/decap
+> >>>>>           in mlx ethernet driver.
+> >>>>>
+> >>>>> Gavin Li (4):
+> >>>>>     vxlan: Remove unused argument from vxlan_build_gbp_hdr( ) and
+> >>>>>       vxlan_build_gpe_hdr( )
+> >>>>> ---
+> >>>>> changelog:
+> >>>>> v2->v3
+> >>>>> - Addressed comments from Paolo Abeni
+> >>>>> - Add new patch
+> >>>>> ---
+> >>>>>     vxlan: Expose helper vxlan_build_gbp_hdr
+> >>>>> ---
+> >>>>> changelog:
+> >>>>> v1->v2
+> >>>>> - Addressed comments from Alexander Lobakin
+> >>>>> - Use const to annotate read-only the pointer parameter
+> >>>>> ---
+> >>>>>     net/mlx5e: Add helper for encap_info_equal for tunnels with
+> >>>>> options
+> >>>>> ---
+> >>>>> changelog:
+> >>>>> v3->v4
+> >>>>> - Addressed comments from Alexander Lobakin
+> >>>>> - Fix vertical alignment issue
+> >>>>> v1->v2
+> >>>>> - Addressed comments from Alexander Lobakin
+> >>>>> - Replace confusing pointer arithmetic with function call
+> >>>>> - Use boolean operator NOT to check if the function return value is
+> >>>>> not zero
+> >>>>> ---
+> >>>>>     net/mlx5e: TC, Add support for VxLAN GBP encap/decap flows offload
+> >>>>> ---
+> >>>>> changelog:
+> >>>>> v3->v4
+> >>>>> - Addressed comments from Simon Horman
+> >>>>> - Using cast in place instead of changing API
+> >>>> I don't remember me acking this. The last thing I said is that in order
+> >>>> to avoid cast-aways you need to use _Generic(). 2 times. IIRC you said
+> >>>> "Ack" and that was the last message in that thread.
+> >>>> Now this. Without me in CCs, so I noticed it accidentally.
+> >>>> ???
+> >>> Not asked by you but you said you were OK if I used cast-aways. So I did
+> >>> the
+> >>>
+> >>> change in V3 and reverted back to using cast-away in V4.
+> >> My last reply was[0]:
+> >>
+> >> "
+> >> You wouldn't need to W/A it each time in each driver, just do it once in
+> >> the inline itself.
+> >> I did it once in __skb_header_pointer()[0] to be able to pass data
+> >> pointer as const to optimize code a bit and point out explicitly that
+> >> the function doesn't modify the packet anyhow, don't see any reason to
+> >> not do the same here.
+> >> Or, as I said, you can use macros + __builtin_choose_expr() or _Generic.
+> >> container_of_const() uses the latter[1]. A __builtin_choose_expr()
+> >> variant could rely on the __same_type() macro to check whether the
+> >> pointer passed from the driver const or not.
+> >>
+> >> [...]
+> >>
+> >> [0]
+> >> https://elixir.bootlin.com/linux/v6.2-rc8/source/include/linux/skbuff.h#L3992
+> >> [1]
+> >> https://elixir.bootlin.com/linux/v6.2-rc8/source/include/linux/container_of.h#L33
+> >> "
+> >>
+> >> Where did I say here I'm fine with W/As in the drivers? I mentioned two
+> >> options: cast-away in THE GENERIC INLINE, not the driver, or, more
+> >> preferred, following the way of container_of_const().
+> >> Then your reply[1]:
+> >>
+> >> "ACK"
+> >>
+> >> What did you ack then if you picked neither of those 2 options?
+> > 
+> > I had fixed it with "cast-away in THE GENERIC INLINE" in V3 and got
+> > comments and concern
+> > 
+> > from Simon Horman. So, it was reverted.
+> > 
+> > "But I really do wonder if this patch masks rather than fixes the
+> > problem."----From Simon.
+> > 
+> > I thought you were OK to revert the changes based on the reply.
+> 
+> No I wasn't.
+> Yes, it masks, because you need to return either const or non-const
+> depending on the input pointer qualifier. container_of_const(), telling
+> this 4th time.
+> 
+> > 
+> > From my understanding, the function always return a non-const pointer
+> > regardless the type of the
+> > 
+> >  input one, which is slightly different from your examples.
+> 
+> See above.
+> 
+> > 
+> > Any comments, Simon?
+> > 
+> > If both or you are OK with option #1, I'll follow.
 
-Note: Although these changes support AF_XDP socket in zero-copy
-mode, there is still a copy happening within the driver between
-XSK buffer pool and QPL bounce buffers in GQI-QPL format.
-In GQI-QPL queue format, the driver needs to allocate a fixed size
-memory, the size specified by vNIC device, for RX/TX and register this
-memory as a bounce buffer with the vNIC device when a queue is
-created. The number of pages in the bounce buffer is limited and the
-pages need to be made available to the vNIC by copying the RX data out
-to prevent head-of-line blocking. Therefore, we cannot pass the XSK
-buffer pool to the vNIC.
+I'd like suggest moving on from the who said what aspect of this conversation.
+Clearly there has been some misunderstanding. Let's move on.
 
-The number of copies on RX path from the bounce buffer to XSK buffer is 2
-for AF_XDP copy mode (bounce buffer -> allocated page frag -> XSK buffer)
-and 1 for AF_XDP zero-copy mode (bounce buffer -> XSK buffer).
+Regarding the more technical topic of constness.
+Unless I am mistaken function in question looks like this:
 
-This patch contains the following changes:
-1) Enable and disable XSK buffer pool
-2) Copy XDP packets from QPL bounce buffers to XSK buffer on rx
-3) Copy XDP packets from XSK buffer to QPL bounce buffers and
-   ring the doorbell as part of XDP TX napi poll
-4) ndo_xsk_wakeup callback support
+static inline void *ip_tunnel_info_opts(const struct ip_tunnel_info *info)
+{
+     return info + 1;
+}
 
-Signed-off-by: Praveen Kaligineedi <pkaligineedi@google.com>
-Reviewed-by: Jeroen de Borst <jeroendb@google.com>
+My view is that if the input is const, the output should be const;
+conversely, if the output is non-const then the input should be non-const.
 
----
-Changes in v2:
-- Register xsk rxq only when XSK buff pool is enabled
-- Removed code accessing internal xsk_buff_pool fields
-- Removed sleep driven code when disabling XSK buff pool. Disable
-napi and re-enable it after disabling XSK pool.
-- Make sure that we clean up dma mappings on XSK pool disable
-- Use napi_if_scheduled_mark_missed to avoid unnecessary napi move
-to the CPU calling ndo_xsk_wakeup()
-- Provide an explanation for why the XSK buff pool cannot be passed to
-  the NIC.
----
- drivers/net/ethernet/google/gve/gve.h         |   7 +
- drivers/net/ethernet/google/gve/gve_ethtool.c |  14 +-
- drivers/net/ethernet/google/gve/gve_main.c    | 173 +++++++++++++++++-
- drivers/net/ethernet/google/gve/gve_rx.c      |  30 +++
- drivers/net/ethernet/google/gve/gve_tx.c      |  58 +++++-
- 5 files changed, 273 insertions(+), 9 deletions(-)
+It does seem to me that container_of_const has this property.
+And from that perspective may be the basis of a good solution.
 
-diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
-index f2f5ebe50284..39ce2e993877 100644
---- a/drivers/net/ethernet/google/gve/gve.h
-+++ b/drivers/net/ethernet/google/gve/gve.h
-@@ -248,6 +248,8 @@ struct gve_rx_ring {
- 
- 	/* XDP stuff */
- 	struct xdp_rxq_info xdp_rxq;
-+	struct xdp_rxq_info xsk_rxq;
-+	struct xsk_buff_pool *xsk_pool;
- 	struct page_frag_cache page_cache; /* Page cache to allocate XDP frames */
- };
- 
-@@ -275,6 +277,7 @@ struct gve_tx_buffer_state {
- 	};
- 	struct {
- 		u16 size; /* size of xmitted xdp pkt */
-+		u8 is_xsk; /* xsk buff */
- 	} xdp;
- 	union {
- 		struct gve_tx_iovec iov[GVE_TX_MAX_IOVEC]; /* segments of this pkt */
-@@ -469,6 +472,10 @@ struct gve_tx_ring {
- 	dma_addr_t q_resources_bus; /* dma address of the queue resources */
- 	dma_addr_t complq_bus_dqo; /* dma address of the dqo.compl_ring */
- 	struct u64_stats_sync statss; /* sync stats for 32bit archs */
-+	struct xsk_buff_pool *xsk_pool;
-+	u32 xdp_xsk_wakeup;
-+	u32 xdp_xsk_done;
-+	u64 xdp_xsk_sent;
- 	u64 xdp_xmit;
- 	u64 xdp_xmit_errors;
- } ____cacheline_aligned;
-diff --git a/drivers/net/ethernet/google/gve/gve_ethtool.c b/drivers/net/ethernet/google/gve/gve_ethtool.c
-index 23db0f3534a8..b18804e934d3 100644
---- a/drivers/net/ethernet/google/gve/gve_ethtool.c
-+++ b/drivers/net/ethernet/google/gve/gve_ethtool.c
-@@ -62,8 +62,8 @@ static const char gve_gstrings_rx_stats[][ETH_GSTRING_LEN] = {
- static const char gve_gstrings_tx_stats[][ETH_GSTRING_LEN] = {
- 	"tx_posted_desc[%u]", "tx_completed_desc[%u]", "tx_consumed_desc[%u]", "tx_bytes[%u]",
- 	"tx_wake[%u]", "tx_stop[%u]", "tx_event_counter[%u]",
--	"tx_dma_mapping_error[%u]",
--	"tx_xdp_xmit[%u]", "tx_xdp_xmit_errors[%u]"
-+	"tx_dma_mapping_error[%u]", "tx_xsk_wakeup[%u]",
-+	"tx_xsk_done[%u]", "tx_xsk_sent[%u]", "tx_xdp_xmit[%u]", "tx_xdp_xmit_errors[%u]"
- };
- 
- static const char gve_gstrings_adminq_stats[][ETH_GSTRING_LEN] = {
-@@ -381,13 +381,17 @@ gve_get_ethtool_stats(struct net_device *netdev,
- 					data[i++] = value;
- 				}
- 			}
-+			/* XDP xsk counters */
-+			data[i++] = tx->xdp_xsk_wakeup;
-+			data[i++] = tx->xdp_xsk_done;
- 			do {
- 				start = u64_stats_fetch_begin(&priv->tx[ring].statss);
--				data[i] = tx->xdp_xmit;
--				data[i + 1] = tx->xdp_xmit_errors;
-+				data[i] = tx->xdp_xsk_sent;
-+				data[i + 1] = tx->xdp_xmit;
-+				data[i + 2] = tx->xdp_xmit_errors;
- 			} while (u64_stats_fetch_retry(&priv->tx[ring].statss,
- 						       start));
--			i += 2; /* XDP tx counters */
-+			i += 3; /* XDP tx counters */
- 		}
- 	} else {
- 		i += num_tx_queues * NUM_GVE_TX_CNTS;
-diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
-index f0fc3b2a91ee..1dd248a5b555 100644
---- a/drivers/net/ethernet/google/gve/gve_main.c
-+++ b/drivers/net/ethernet/google/gve/gve_main.c
-@@ -17,6 +17,7 @@
- #include <linux/utsname.h>
- #include <linux/version.h>
- #include <net/sch_generic.h>
-+#include <net/xdp_sock_drv.h>
- #include "gve.h"
- #include "gve_dqo.h"
- #include "gve_adminq.h"
-@@ -1188,6 +1189,7 @@ static int gve_reg_xdp_info(struct gve_priv *priv, struct net_device *dev)
- 	struct gve_rx_ring *rx;
- 	int err = 0;
- 	int i, j;
-+	u32 tx_qid;
- 
- 	if (!priv->num_xdp_queues)
- 		return 0;
-@@ -1204,6 +1206,24 @@ static int gve_reg_xdp_info(struct gve_priv *priv, struct net_device *dev)
- 						 MEM_TYPE_PAGE_SHARED, NULL);
- 		if (err)
- 			goto err;
-+		rx->xsk_pool = xsk_get_pool_from_qid(dev, i);
-+		if (rx->xsk_pool) {
-+			err = xdp_rxq_info_reg(&rx->xsk_rxq, dev, i,
-+					       napi->napi_id);
-+			if (err)
-+				goto err;
-+			err = xdp_rxq_info_reg_mem_model(&rx->xsk_rxq,
-+							 MEM_TYPE_XSK_BUFF_POOL, NULL);
-+			if (err)
-+				goto err;
-+			xsk_pool_set_rxq_info(rx->xsk_pool,
-+					      &rx->xsk_rxq);
-+		}
-+	}
-+
-+	for (i = 0; i < priv->num_xdp_queues; i++) {
-+		tx_qid = gve_xdp_tx_queue_id(priv, i);
-+		priv->tx[tx_qid].xsk_pool = xsk_get_pool_from_qid(dev, i);
- 	}
- 	return 0;
- 
-@@ -1212,13 +1232,15 @@ static int gve_reg_xdp_info(struct gve_priv *priv, struct net_device *dev)
- 		rx = &priv->rx[j];
- 		if (xdp_rxq_info_is_reg(&rx->xdp_rxq))
- 			xdp_rxq_info_unreg(&rx->xdp_rxq);
-+		if (xdp_rxq_info_is_reg(&rx->xsk_rxq))
-+			xdp_rxq_info_unreg(&rx->xsk_rxq);
- 	}
- 	return err;
- }
- 
- static void gve_unreg_xdp_info(struct gve_priv *priv)
- {
--	int i;
-+	int i, tx_qid;
- 
- 	if (!priv->num_xdp_queues)
- 		return;
-@@ -1227,6 +1249,15 @@ static void gve_unreg_xdp_info(struct gve_priv *priv)
- 		struct gve_rx_ring *rx = &priv->rx[i];
- 
- 		xdp_rxq_info_unreg(&rx->xdp_rxq);
-+		if (rx->xsk_pool) {
-+			xdp_rxq_info_unreg(&rx->xsk_rxq);
-+			rx->xsk_pool = NULL;
-+		}
-+	}
-+
-+	for (i = 0; i < priv->num_xdp_queues; i++) {
-+		tx_qid = gve_xdp_tx_queue_id(priv, i);
-+		priv->tx[tx_qid].xsk_pool = NULL;
- 	}
- }
- 
-@@ -1450,6 +1481,140 @@ static int gve_set_xdp(struct gve_priv *priv, struct bpf_prog *prog,
- 	return err;
- }
- 
-+static int gve_xsk_pool_enable(struct net_device *dev,
-+			       struct xsk_buff_pool *pool,
-+			       u16 qid)
-+{
-+	struct gve_priv *priv = netdev_priv(dev);
-+	struct napi_struct *napi;
-+	struct gve_rx_ring *rx;
-+	int tx_qid;
-+	int err;
-+
-+	if (qid >= priv->rx_cfg.num_queues) {
-+		dev_err(&priv->pdev->dev, "xsk pool invalid qid %d", qid);
-+		return -EINVAL;
-+	}
-+	if (xsk_pool_get_rx_frame_size(pool) <
-+	     priv->dev->max_mtu + sizeof(struct ethhdr)) {
-+		dev_err(&priv->pdev->dev, "xsk pool frame_len too small");
-+		return -EINVAL;
-+	}
-+
-+	err = xsk_pool_dma_map(pool, &priv->pdev->dev,
-+			       DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_WEAK_ORDERING);
-+	if (err)
-+		return err;
-+
-+	/* If XDP prog is not installed, return */
-+	if (!priv->xdp_prog)
-+		return 0;
-+
-+	rx = &priv->rx[qid];
-+	napi = &priv->ntfy_blocks[rx->ntfy_id].napi;
-+	err = xdp_rxq_info_reg(&rx->xsk_rxq, dev, qid, napi->napi_id);
-+	if (err)
-+		goto err;
-+
-+	err = xdp_rxq_info_reg_mem_model(&rx->xsk_rxq,
-+					 MEM_TYPE_XSK_BUFF_POOL, NULL);
-+	if (err)
-+		goto err;
-+
-+	xsk_pool_set_rxq_info(pool, &rx->xsk_rxq);
-+	rx->xsk_pool = pool;
-+
-+	tx_qid = gve_xdp_tx_queue_id(priv, qid);
-+	priv->tx[tx_qid].xsk_pool = pool;
-+
-+	return 0;
-+err:
-+	if (xdp_rxq_info_is_reg(&rx->xsk_rxq))
-+		xdp_rxq_info_unreg(&rx->xsk_rxq);
-+
-+	xsk_pool_dma_unmap(pool,
-+			   DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_WEAK_ORDERING);
-+	return err;
-+}
-+
-+static int gve_xsk_pool_disable(struct net_device *dev,
-+				u16 qid)
-+{
-+	struct gve_priv *priv = netdev_priv(dev);
-+	struct napi_struct *napi_rx;
-+	struct napi_struct *napi_tx;
-+	struct xsk_buff_pool *pool;
-+	int tx_qid;
-+
-+	pool = xsk_get_pool_from_qid(dev, qid);
-+	if (!pool)
-+		return -EINVAL;
-+	if (qid >= priv->rx_cfg.num_queues)
-+		return -EINVAL;
-+
-+	/* If XDP prog is not installed, unmap DMA and return */
-+	if (!priv->xdp_prog)
-+		goto done;
-+
-+	tx_qid = gve_xdp_tx_queue_id(priv, qid);
-+	if (!netif_running(dev)) {
-+		priv->rx[qid].xsk_pool = NULL;
-+		xdp_rxq_info_unreg(&priv->rx[qid].xsk_rxq);
-+		priv->tx[tx_qid].xsk_pool = NULL;
-+		goto done;
-+	}
-+
-+	napi_rx = &priv->ntfy_blocks[priv->rx[qid].ntfy_id].napi;
-+	napi_disable(napi_rx); /* make sure current rx poll is done */
-+
-+	napi_tx = &priv->ntfy_blocks[priv->tx[tx_qid].ntfy_id].napi;
-+	napi_disable(napi_tx); /* make sure current tx poll is done */
-+
-+	priv->rx[qid].xsk_pool = NULL;
-+	xdp_rxq_info_unreg(&priv->rx[qid].xsk_rxq);
-+	priv->tx[tx_qid].xsk_pool = NULL;
-+	smp_mb(); /* Make sure it is visible to the workers on datapath */
-+
-+	napi_enable(napi_rx);
-+	if (gve_rx_work_pending(&priv->rx[qid]))
-+		napi_schedule(napi_rx);
-+
-+	napi_enable(napi_tx);
-+	if (gve_tx_clean_pending(priv, &priv->tx[tx_qid]))
-+		napi_schedule(napi_tx);
-+
-+done:
-+	xsk_pool_dma_unmap(pool,
-+			   DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_WEAK_ORDERING);
-+	return 0;
-+}
-+
-+static int gve_xsk_wakeup(struct net_device *dev, u32 queue_id, u32 flags)
-+{
-+	struct gve_priv *priv = netdev_priv(dev);
-+	int tx_queue_id = gve_xdp_tx_queue_id(priv, queue_id);
-+
-+	if (queue_id >= priv->rx_cfg.num_queues || !priv->xdp_prog)
-+		return -EINVAL;
-+
-+	if (flags & XDP_WAKEUP_TX) {
-+		struct gve_tx_ring *tx = &priv->tx[tx_queue_id];
-+		struct napi_struct *napi =
-+			&priv->ntfy_blocks[tx->ntfy_id].napi;
-+
-+		if (!napi_if_scheduled_mark_missed(napi)) {
-+			/* Call local_bh_enable to trigger SoftIRQ processing */
-+			local_bh_disable();
-+			napi_schedule(napi);
-+			local_bh_enable();
-+		}
-+
-+		tx->xdp_xsk_wakeup++;
-+	}
-+
-+	return 0;
-+}
-+
- static int verify_xdp_configuration(struct net_device *dev)
- {
- 	struct gve_priv *priv = netdev_priv(dev);
-@@ -1493,6 +1658,11 @@ static int gve_xdp(struct net_device *dev, struct netdev_bpf *xdp)
- 	switch (xdp->command) {
- 	case XDP_SETUP_PROG:
- 		return gve_set_xdp(priv, xdp->prog, xdp->extack);
-+	case XDP_SETUP_XSK_POOL:
-+		if (xdp->xsk.pool)
-+			return gve_xsk_pool_enable(dev, xdp->xsk.pool, xdp->xsk.queue_id);
-+		else
-+			return gve_xsk_pool_disable(dev, xdp->xsk.queue_id);
- 	default:
- 		return -EINVAL;
- 	}
-@@ -1694,6 +1864,7 @@ static const struct net_device_ops gve_netdev_ops = {
- 	.ndo_set_features	=	gve_set_features,
- 	.ndo_bpf		=	gve_xdp,
- 	.ndo_xdp_xmit		=	gve_xdp_xmit,
-+	.ndo_xsk_wakeup		=	gve_xsk_wakeup,
- };
- 
- static void gve_handle_status(struct gve_priv *priv, u32 status)
-diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
-index ed4b5a540e6d..d1da7413dc4d 100644
---- a/drivers/net/ethernet/google/gve/gve_rx.c
-+++ b/drivers/net/ethernet/google/gve/gve_rx.c
-@@ -10,6 +10,7 @@
- #include <linux/etherdevice.h>
- #include <linux/filter.h>
- #include <net/xdp.h>
-+#include <net/xdp_sock_drv.h>
- 
- static void gve_rx_free_buffer(struct device *dev,
- 			       struct gve_rx_slot_page_info *page_info,
-@@ -593,6 +594,31 @@ static struct sk_buff *gve_rx_skb(struct gve_priv *priv, struct gve_rx_ring *rx,
- 	return skb;
- }
- 
-+static int gve_xsk_pool_redirect(struct net_device *dev,
-+				 struct gve_rx_ring *rx,
-+				 void *data, int len,
-+				 struct bpf_prog *xdp_prog)
-+{
-+	struct xdp_buff *xdp;
-+	int err;
-+
-+	if (rx->xsk_pool->frame_len < len)
-+		return -E2BIG;
-+	xdp = xsk_buff_alloc(rx->xsk_pool);
-+	if (!xdp) {
-+		u64_stats_update_begin(&rx->statss);
-+		rx->xdp_alloc_fails++;
-+		u64_stats_update_end(&rx->statss);
-+		return -ENOMEM;
-+	}
-+	xdp->data_end = xdp->data + len;
-+	memcpy(xdp->data, data, len);
-+	err = xdp_do_redirect(dev, xdp, xdp_prog);
-+	if (err)
-+		xsk_buff_free(xdp);
-+	return err;
-+}
-+
- static int gve_xdp_redirect(struct net_device *dev, struct gve_rx_ring *rx,
- 			    struct xdp_buff *orig, struct bpf_prog *xdp_prog)
- {
-@@ -602,6 +628,10 @@ static int gve_xdp_redirect(struct net_device *dev, struct gve_rx_ring *rx,
- 	void *frame;
- 	int err;
- 
-+	if (rx->xsk_pool)
-+		return gve_xsk_pool_redirect(dev, rx, orig->data,
-+					     len, xdp_prog);
-+
- 	total_len = headroom + SKB_DATA_ALIGN(len) +
- 		SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
- 	frame = page_frag_alloc(&rx->page_cache, total_len, GFP_ATOMIC);
-diff --git a/drivers/net/ethernet/google/gve/gve_tx.c b/drivers/net/ethernet/google/gve/gve_tx.c
-index ee3844e8f538..6af9b3ad418d 100644
---- a/drivers/net/ethernet/google/gve/gve_tx.c
-+++ b/drivers/net/ethernet/google/gve/gve_tx.c
-@@ -11,6 +11,7 @@
- #include <linux/tcp.h>
- #include <linux/vmalloc.h>
- #include <linux/skbuff.h>
-+#include <net/xdp_sock_drv.h>
- 
- static inline void gve_tx_put_doorbell(struct gve_priv *priv,
- 				       struct gve_queue_resources *q_resources,
-@@ -160,6 +161,7 @@ static int gve_clean_xdp_done(struct gve_priv *priv, struct gve_tx_ring *tx,
- 	u32 clean_end = tx->done + to_do;
- 	u64 pkts = 0, bytes = 0;
- 	size_t space_freed = 0;
-+	u32 xsk_complete = 0;
- 	u32 idx;
- 
- 	for (; tx->done < clean_end; tx->done++) {
-@@ -171,6 +173,7 @@ static int gve_clean_xdp_done(struct gve_priv *priv, struct gve_tx_ring *tx,
- 
- 		bytes += info->xdp.size;
- 		pkts++;
-+		xsk_complete += info->xdp.is_xsk;
- 
- 		info->xdp.size = 0;
- 		if (info->xdp_frame) {
-@@ -181,6 +184,8 @@ static int gve_clean_xdp_done(struct gve_priv *priv, struct gve_tx_ring *tx,
- 	}
- 
- 	gve_tx_free_fifo(&tx->tx_fifo, space_freed);
-+	if (xsk_complete > 0 && tx->xsk_pool)
-+		xsk_tx_completed(tx->xsk_pool, xsk_complete);
- 	u64_stats_update_begin(&tx->statss);
- 	tx->bytes_done += bytes;
- 	tx->pkt_done += pkts;
-@@ -720,7 +725,7 @@ netdev_tx_t gve_tx(struct sk_buff *skb, struct net_device *dev)
- }
- 
- static int gve_tx_fill_xdp(struct gve_priv *priv, struct gve_tx_ring *tx,
--			   void *data, int len, void *frame_p)
-+			   void *data, int len, void *frame_p, bool is_xsk)
- {
- 	int pad, nfrags, ndescs, iovi, offset;
- 	struct gve_tx_buffer_state *info;
-@@ -732,6 +737,7 @@ static int gve_tx_fill_xdp(struct gve_priv *priv, struct gve_tx_ring *tx,
- 	info = &tx->info[reqi & tx->mask];
- 	info->xdp_frame = frame_p;
- 	info->xdp.size = len;
-+	info->xdp.is_xsk = is_xsk;
- 
- 	nfrags = gve_tx_alloc_fifo(&tx->tx_fifo, pad + len,
- 				   &info->iov[0]);
-@@ -809,7 +815,7 @@ int gve_xdp_xmit_one(struct gve_priv *priv, struct gve_tx_ring *tx,
- 	if (!gve_can_tx(tx, len))
- 		return -EBUSY;
- 
--	nsegs = gve_tx_fill_xdp(priv, tx, data, len, frame_p);
-+	nsegs = gve_tx_fill_xdp(priv, tx, data, len, frame_p, false);
- 	tx->req += nsegs;
- 
- 	return 0;
-@@ -882,11 +888,43 @@ u32 gve_tx_load_event_counter(struct gve_priv *priv,
- 	return be32_to_cpu(counter);
- }
- 
-+static int gve_xsk_tx(struct gve_priv *priv, struct gve_tx_ring *tx,
-+		      int budget)
-+{
-+	struct xdp_desc desc;
-+	int sent = 0, nsegs;
-+	void *data;
-+
-+	spin_lock(&tx->xdp_lock);
-+	while (sent < budget) {
-+		if (!gve_can_tx(tx, GVE_TX_START_THRESH))
-+			goto out;
-+
-+		if (!xsk_tx_peek_desc(tx->xsk_pool, &desc)) {
-+			tx->xdp_xsk_done = tx->xdp_xsk_wakeup;
-+			goto out;
-+		}
-+
-+		data = xsk_buff_raw_get_data(tx->xsk_pool, desc.addr);
-+		nsegs = gve_tx_fill_xdp(priv, tx, data, desc.len, NULL, true);
-+		tx->req += nsegs;
-+		sent++;
-+	}
-+out:
-+	if (sent > 0) {
-+		gve_tx_put_doorbell(priv, tx->q_resources, tx->req);
-+		xsk_tx_release(tx->xsk_pool);
-+	}
-+	spin_unlock(&tx->xdp_lock);
-+	return sent;
-+}
-+
- bool gve_xdp_poll(struct gve_notify_block *block, int budget)
- {
- 	struct gve_priv *priv = block->priv;
- 	struct gve_tx_ring *tx = block->tx;
- 	u32 nic_done;
-+	bool repoll;
- 	u32 to_do;
- 
- 	/* If budget is 0, do all the work */
-@@ -897,7 +935,21 @@ bool gve_xdp_poll(struct gve_notify_block *block, int budget)
- 	nic_done = gve_tx_load_event_counter(priv, tx);
- 	to_do = min_t(u32, (nic_done - tx->done), budget);
- 	gve_clean_xdp_done(priv, tx, to_do);
--	return nic_done != tx->done;
-+	repoll = nic_done != tx->done;
-+
-+	if (tx->xsk_pool) {
-+		int sent = gve_xsk_tx(priv, tx, budget);
-+
-+		u64_stats_update_begin(&tx->statss);
-+		tx->xdp_xsk_sent += sent;
-+		u64_stats_update_end(&tx->statss);
-+		repoll |= (sent == budget);
-+		if (xsk_uses_need_wakeup(tx->xsk_pool))
-+			xsk_set_tx_need_wakeup(tx->xsk_pool);
-+	}
-+
-+	/* If we still have work we want to repoll */
-+	return repoll;
- }
- 
- bool gve_tx_poll(struct gve_notify_block *block, int budget)
--- 
-2.40.0.rc0.216.gc4246ad0f0-goog
-
+This is my opinion. I do understand that others may have different opinions.
