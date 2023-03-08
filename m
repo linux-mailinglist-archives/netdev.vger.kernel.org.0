@@ -2,81 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E6246B00A9
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 09:16:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDE3B6B00B0
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 09:17:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229825AbjCHIQZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 03:16:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59840 "EHLO
+        id S229695AbjCHIRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 03:17:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229695AbjCHIQY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 03:16:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5DAD574D9;
-        Wed,  8 Mar 2023 00:16:23 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA162616D8;
-        Wed,  8 Mar 2023 08:16:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DFC8C433EF;
-        Wed,  8 Mar 2023 08:16:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678263382;
-        bh=aKO92MXg2jmTbgHfLTyeOk4tkfxLeY158tdu7j5zHPA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SvS6BEWEyS6V4hWqdJQw8UeOjG98vvr/Swgzv0kdDiFvN2DnJjdpZqfQ5oEYV34sV
-         drP2X+JLSXby/OQ74K75zJZ+KB4jyauoMy6i0tt/JtGPkhpvLyC5z55g3OLNLelG8C
-         ri8SSuVG2yXvd5lR1iDSYMl8H9Ouqf/5kWotRTsT882Us14AAFyESHhPUZsatE6xxo
-         DoynNZEOVeyvuA5r0yHCYwJ4DmMcukpxQizcu1kg7dSgvOsZDT9PbLId1Jnby5r+W4
-         yiikXicUykjlvDnVH04IdiUlNN0USrDcRndKMy8yZMtETaghTuHgi9IzpMt99pEgag
-         il1JUg96cAu8g==
-Date:   Wed, 8 Mar 2023 00:16:21 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Joanne Koong <joannelkoong@gmail.com>
-Cc:     bpf@vger.kernel.org, martin.lau@kernel.org, andrii@kernel.org,
-        ast@kernel.org, memxor@gmail.com, daniel@iogearbox.net,
-        netdev@vger.kernel.org, toke@kernel.org
-Subject: Re: [PATCH v13 bpf-next 00/10] Add skb + xdp dynptrs
-Message-ID: <20230308001621.432d9a1a@kernel.org>
-In-Reply-To: <20230301154953.641654-1-joannelkoong@gmail.com>
-References: <20230301154953.641654-1-joannelkoong@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S230036AbjCHIRV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 03:17:21 -0500
+Received: from out30-97.freemail.mail.aliyun.com (out30-97.freemail.mail.aliyun.com [115.124.30.97])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3257F14219;
+        Wed,  8 Mar 2023 00:17:19 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VdOgFwo_1678263432;
+Received: from j66a10360.sqa.eu95.tbsite.net(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VdOgFwo_1678263432)
+          by smtp.aliyun-inc.com;
+          Wed, 08 Mar 2023 16:17:17 +0800
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: [PATCH net v2] net/smc: fix NULL sndbuf_desc in smc_cdc_tx_handler()
+Date:   Wed,  8 Mar 2023 16:17:12 +0800
+Message-Id: <1678263432-17329-1-git-send-email-alibuda@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  1 Mar 2023 07:49:43 -0800 Joanne Koong wrote:
-> This patchset is the 2nd in the dynptr series. The 1st can be found here [0].
-> 
-> This patchset adds skb and xdp type dynptrs, which have two main benefits for
-> packet parsing:
->     * allowing operations on sizes that are not statically known at
->       compile-time (eg variable-sized accesses).
->     * more ergonomic and less brittle iteration through data (eg does not need
->       manual if checking for being within bounds of data_end)
-> 
-> When comparing the differences in runtime for packet parsing without dynptrs
-> vs. with dynptrs, there is no noticeable difference. Patch 9 contains more
-> details as well as examples of how to use skb and xdp dynptrs.
+From: "D. Wythe" <alibuda@linux.alibaba.com>
 
-Oddly I see an error trying to build net-next with clang 15.0.7,
-but I'm 90% sure that it built yesterday, has anyone seen:
+When performing a stress test on SMC-R by rmmod mlx5_ib driver
+during the wrk/nginx test, we found that there is a probability
+of triggering a panic while terminating all link groups.
 
-../kernel/bpf/verifier.c:10298:24: error: array index 16 is past the end of the array (which contains 16 elements) [-Werror,-Warray-bounds]
-                                   meta.func_id == special_kfunc_list[KF_bpf_dynptr_slice_rdwr]) {
-                                                   ^                  ~~~~~~~~~~~~~~~~~~~~~~~~
-../kernel/bpf/verifier.c:9150:1: note: array 'special_kfunc_list' declared here
-BTF_ID_LIST(special_kfunc_list)
-^
-../include/linux/btf_ids.h:207:27: note: expanded from macro 'BTF_ID_LIST'
-#define BTF_ID_LIST(name) static u32 __maybe_unused name[16];
-                          ^
-1 error generated.
+This issue dues to the race between smc_smcr_terminate_all()
+and smc_buf_create().
+
+			smc_smcr_terminate_all
+
+smc_buf_create
+/* init */
+conn->sndbuf_desc = NULL;
+...
+
+			__smc_lgr_terminate
+				smc_conn_kill
+					smc_close_abort
+						smc_cdc_get_slot_and_msg_send
+
+			__softirqentry_text_start
+				smc_wr_tx_process_cqe
+					smc_cdc_tx_handler
+						READ(conn->sndbuf_desc->len);
+						/* panic dues to NULL sndbuf_desc */
+
+conn->sndbuf_desc = xxx;
+
+This patch tries to fix the issue by always to check the sndbuf_desc
+before send any cdc msg, to make sure that no null pointer is
+seen during cqe processing.
+
+Fixes: 0b29ec643613 ("net/smc: immediate termination for SMCR link groups")
+Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+
+v2 -> v1: change retval from EINVAL to ENOBUFS
+
+---
+ net/smc/smc_cdc.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/net/smc/smc_cdc.c b/net/smc/smc_cdc.c
+index 53f63bf..89105e9 100644
+--- a/net/smc/smc_cdc.c
++++ b/net/smc/smc_cdc.c
+@@ -114,6 +114,9 @@ int smc_cdc_msg_send(struct smc_connection *conn,
+ 	union smc_host_cursor cfed;
+ 	int rc;
+ 
++	if (unlikely(!READ_ONCE(conn->sndbuf_desc)))
++		return -ENOBUFS;
++
+ 	smc_cdc_add_pending_send(conn, pend);
+ 
+ 	conn->tx_cdc_seq++;
+-- 
+1.8.3.1
+
