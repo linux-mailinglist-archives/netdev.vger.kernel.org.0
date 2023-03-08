@@ -2,214 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BF946B068D
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 13:04:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31EEC6B0693
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 13:05:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229955AbjCHMEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 07:04:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43620 "EHLO
+        id S230517AbjCHMFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 07:05:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbjCHMD7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 07:03:59 -0500
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on20715.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eab::715])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0B68B718C
-        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 04:03:57 -0800 (PST)
+        with ESMTP id S229635AbjCHMFD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 07:05:03 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2132.outbound.protection.outlook.com [40.107.220.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9507E3D920;
+        Wed,  8 Mar 2023 04:05:01 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bd5DNZ03/LCjihdwzbM9Y0AbB+UU6hNmpWdehumI9T5tYuUYFPRWS7DZQoidfxtWjseTiehKR7jHGwtWLCmsHK/Megylg3AnNz1yVmBlQW09ItnpjliQOlppq7RyNcEOnmUAxafVUNjkDviFYLgIusgvAvkG52rfrdHMJwhfl1oYRRs/meLaWJu/Myihsmtw8EwPlAJG7a0oWRZvvVBW+t/gbCQ3sBGNcjSRdh6SQJ4Nggc5prWHTXi8Un1Fb8d+MLcQtiHhT5CqkluTUEoiOnBDChFwGVxC4KXKMWWETpDZ3RJXGO9MP7/ECG/hST5wLqTdl8nHQVzJIaOajRQtJw==
+ b=GvVADyLUU8b3q0nTO+Zkg39NcufWhrlrj8Moad/X4JugBHOKByxKYlUePmUskzkO9KoOoqlvhKY4j3nPWkbFilME585IkXB90fUDoBN6wNka5gwNNGSHQQlwjuq6GEydcuRm26nbRNc/Trgfb5TbKfHY/GbRD679Sshf5d5TqnYszHDpUvy5UeTjJY8MbySkzeFwrpY9AVlf0HH9ULI3Zm0AR0SUcGBsHbcyaQ9ztUd3huNzM428lDtw7YwbrxWxo9KcU952LIF1b9GA2d8x7YEMu4SImuStrDei1byoa+6ygEkKUHx4B5xrNKNbUvf6MtzsnaONbkBVNRJRulB56Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jOcPtLYNLOo0yb84fP+mneEXqpwsbfGCgINn29PmyWI=;
- b=SI/PGgsqTwdNEPlGYjJxJRFgg1mI6m+fW1cc0Wd5u12JQBZgxtPZH6PLN3JuBq9kfo/XNk8mOYKspX3LImrHD46nD0S5etw/yP3/cV17wIzBFnLm1sKu4UKwswsqn1P952BndlNP2ePI0fTnUKU1phrB/WmDSDpV1VDytTQgALMq8sRSZWxgRMEyDH8bGy9zKf9+zpedUmAfQGPKnBwu5z4KNYfjlQo3JA7MHJ0DwpibFial2WwFPq7lU1YCe4iVi5qoeIiCsO+o37mchnc5O27kXWMvs0lXPJmC5ibn/vsxUqk71r4VVfh1URbhRVkWi6luxzKqABrO/lPrwDN9Kw==
+ bh=SB4QA/ysKhbw032u3Jn5/rA1BtBMiXrKWRj0O4QPA6k=;
+ b=T+vXgpJnU4Qtrw8XBUPO3WZ5VIdk3YRf/5/zN8aU4rsViVKq+n0r5Mu+Ms+/tDQ0n2lZ0kZKzUOWkpg6x+JEOSNKOp/enB3vGuigj9um3wQv+OUub4ivg4TXNB/ka7C5gFX2k8q9w9wKPSl4ZpSjWJopERvcfDDsukqM8zahY/4AerPGFy3R8lSWCrh6JcuiNXGQPKABtFLT9A11WgQuUp0Y6xx5s+aRFwubeplGWqztg+d4rJ4DBFYMiHQqp0JiPnPOay/dQHH/WpqjvmXbfTIwgcQdP/chglhkmX2OAKXhLGfWqvEr2IXZps92TDlpO+Qxy3wW1AXgA4MbV9FLxw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jOcPtLYNLOo0yb84fP+mneEXqpwsbfGCgINn29PmyWI=;
- b=lqHCKUGUcdnxLKs2FrrQnm0gF6TrEDFOOoghZraS1gYpD4zktqcm7iMbI9/NevInp8YA7gRRb/iHTlc4kOtHaM69TSpKwio2XVnrkmraCbq8HI8Hadj/IJlDkrj1fL8MHP6yKZEh5UXd9z9Wh+asbyaMIlUjbDbXMCE/ySLqVOk=
+ bh=SB4QA/ysKhbw032u3Jn5/rA1BtBMiXrKWRj0O4QPA6k=;
+ b=cz5HhW6T/CDHZCN2Tv+7cVNL118n8gv0rtE/goCh+Mrbjn8ik9taxHyIBc4ioua8D4fiWlwTx7yeGjb+an5agoB2x+Drl2nOtiavWZ/S8PrXEonsSmyrkKwnokvTDjZ7U2jgWGeIPQ5uT0Y/BEzxrSRRmjPw5JThatp/hxOBovQ=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by PH7PR13MB5552.namprd13.prod.outlook.com (2603:10b6:510:131::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.26; Wed, 8 Mar
- 2023 12:03:53 +0000
+ 2023 12:04:59 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6156.029; Wed, 8 Mar 2023
- 12:03:53 +0000
-Date:   Wed, 8 Mar 2023 13:03:45 +0100
+ 12:04:59 +0000
+Date:   Wed, 8 Mar 2023 13:04:50 +0100
 From:   Simon Horman <simon.horman@corigine.com>
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Cc:     netdev@vger.kernel.org, linus.walleij@linaro.org,
-        alsi@bang-olufsen.dk, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
-        krzk+dt@kernel.org, arinc.unal@arinc9.com,
-        Alexander Duyck <alexanderduyck@fb.com>
-Subject: Re: [PATCH net-next v4] net: dsa: realtek: rtl8365mb: add change_mtu
-Message-ID: <ZAh5ocHELAK9PSux@corigine.com>
-References: <20230307210245.542-1-luizluca@gmail.com>
-Content-Type: text/plain; charset=utf-8
+To:     Lin Ma <linma@zju.edu.cn>
+Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, richardcochran@gmail.com,
+        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
+        john.fastabend@gmail.com, intel-wired-lan@lists.osuosl.org,
+        pmenzel@molgen.mpg.de, regressions@lists.linux.dev,
+        vinschen@redhat.com, stable@vger.kernel.org
+Subject: Re: [PATCH v2] igb: revert rtnl_lock() that causes deadlock
+Message-ID: <ZAh54ux2b6zS2kJY@corigine.com>
+References: <ZAc/3oVos9DBx3iR@calimero.vinschen.de>
+ <20230307152917.32182-1-linma@zju.edu.cn>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230307210245.542-1-luizluca@gmail.com>
-X-ClientProxiedBy: AM0PR03CA0092.eurprd03.prod.outlook.com
- (2603:10a6:208:69::33) To PH0PR13MB4842.namprd13.prod.outlook.com
+In-Reply-To: <20230307152917.32182-1-linma@zju.edu.cn>
+X-ClientProxiedBy: AS4PR10CA0016.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5d8::8) To PH0PR13MB4842.namprd13.prod.outlook.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH7PR13MB5552:EE_
-X-MS-Office365-Filtering-Correlation-Id: 69177ba4-c8ff-4f58-d48b-08db1fcd2f52
+X-MS-Office365-Filtering-Correlation-Id: 43a553f2-3f69-40f4-a201-08db1fcd56cf
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: y6qYt11B3MfbZBUkDUTgc/lWywmmiMxCLdD7sGJJlmvJtbNVPXQva6E5UtWGHcvKeJZPU1DZvxEiLE8ikGHA3Wj2OKs4TGck3v66rOkQqBoM25Tuxy2kSnTtglRXTtWhMCZ/zvMvgQqwpOMTIezDzudN/yPVZXxBlWTm3GrcBuxvTlo1r9TyRD/jeeSOJrb4Ly7KG1CRxSG2PhAFbxrnbptjpZ0N/ypgWvBSHOGSt9mKiTcGqXo5Sz5jrPL009GAINmKun/WcK1u4UOPeG1nQW5sReLsZCENrPaOUeGlgSzjkRZwXC4BeivvcBP81eUWiHdy6GhM8TUPJUAs566rPKK6OSkTRGoeqg+QwKM+fvPFMwMl5MLJAYW63Kik9uzJR7q1wX/Xz9x+5szDAWfbzjzNgECREMeHBVzA5XtnLLVX6g2lPdCmDSho0XlgRw7+xQSUlrj+Iyu3K8cbFNAlRFX21thnNYXM4Z2OcPMZrRIzsO3wrfmHXybn0REez3Jd9yF8bigV0vOauKCysZGBDu+FfBW3Isozzxvz8rU/jFPXTZ8SE7+V6oHIa2JvRB8ktSofnvnrx96RiRC0ksgSBMgG74g4ro+OISl/mq/u6qWQ0AGz9is9py3DWzwftheCCUSBvWbKoJb7Prk3l5Rs7w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(346002)(136003)(366004)(39840400004)(376002)(451199018)(6506007)(6486002)(6512007)(6666004)(66574015)(36756003)(83380400001)(38100700002)(186003)(86362001)(2616005)(41300700001)(66556008)(4326008)(8676002)(6916009)(2906002)(66946007)(8936002)(44832011)(7416002)(5660300002)(66476007)(478600001)(316002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: VIvouxIFJ6h5AflN/MVZA1MGzzuY663kt+0TJKmvOVhZoR3YWlIa2wFkUq4E43uGJpv9GsNDQcU2iCOL5hV9o7J9iexkempwAidblZhMzt5CDp0bXVtC/Jfq+9KcIy/x6tkmP0QA1KyczeFOkl6LniUuI1Jnnyzb2rYUFMooZfPZMSk9rIP8rG7YpMNTpKrZL1ja5ekokPMCM1MR+qSstwIumCBf79Rg5ZI24vE/Dzt1R6u5LJpnNXrbr/BhpIFSwI946qoyVJL2cOJqZUSYdR8KC3syVUX5STixJ9Tw75O1LcIfxG0BK+kiy1sq6QJBV6pA+oKQp07WjZnQ8tpkEXlB9ngcOF21SCDRr8m1Sx7nx973Mhjtxqiam/YHSTvPkfp9LhsRfPTMJguSSU2jfZT65m1o3kluGgXEdwyw0aMX7A3t1drfq0dkM7g8qb6u4Y6PAf3/lrJMc/SzUq94SJddn6sStDJUO8JHaJJrJrineUjXxeSjVOLWXKKpfNhMV1y/l9Ctd6rYGnjDv9D8/ne03rwX5WXxPNngwfm8QWEsk653bVH7Ay602HJaPk9V9yTpeBAMAo0nA7dMrKtH32YXRDFZ96d9yYskefVc97mF3svqZh4BY06rKfRVo2yU
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(346002)(136003)(366004)(39840400004)(376002)(451199018)(6506007)(6486002)(6512007)(966005)(6666004)(36756003)(83380400001)(38100700002)(186003)(86362001)(2616005)(41300700001)(66556008)(4326008)(8676002)(6916009)(2906002)(66946007)(8936002)(44832011)(7416002)(5660300002)(66476007)(478600001)(316002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dXBYM0YyTm5UL3dVMHY1VFdINDdIOXlaN2xSdzZNczZLNVVGNFZ4ZHBMSTZk?=
- =?utf-8?B?RjlxTkgrVmNQNHkxajFzVUxCd1dzN2dzTDIxWnJMZElyYlkxSnl1SkUvN21k?=
- =?utf-8?B?K3llcEYvM0NHT3B6QnhJdEpuWXd4eXQ5WUpIYlVHN3hBYnlrUnRveHArQTVz?=
- =?utf-8?B?UkFwV055alg3SjMxMEF3a3VibmxNaWlHUkxkekhvanJIM2ZGajdPV1hBNkFO?=
- =?utf-8?B?RjJqaFVaM0dGcjlhclpMeHU0N1h6SUc1c3BTSE9xemZvcWdkdUF6Ty9LNmov?=
- =?utf-8?B?ellVVXAySEcrQzl4YmtleHkxNUg1M29yRXplTkZPcHpSSXNhT2lkR1diTmpo?=
- =?utf-8?B?bVZ1bEh1YURadXB5Qkp4SmNNYURvbk1RcmtzdkNOT241OWJuRWZ3dDVHM1Mz?=
- =?utf-8?B?K0FFYkxBdTlIU0czOEw2VG5XREVuQ3RWM3l6cGxtMWduaU52dllsSkZ3V1Nr?=
- =?utf-8?B?ZDNLN0VXQ3FPVUpKbzN3SmgyS3pHUXhNRWM0bU9mRkJXczYzTmZkR1A3MXVa?=
- =?utf-8?B?YUFUTUd0QXBESjhOdy9VQm9vNmx1VHV3ZUwyZmlkTi82TmJZZHNsNFRnRytG?=
- =?utf-8?B?anNLRkxTTkJSMDBvd2YrOWhHUXJ5eGI4VnY1eWlwZWVmWTM3Tmd5bVBYa0I2?=
- =?utf-8?B?Vy9tMWJ6TUZEeUkzYUFmTVRjQ240UnRKdlBhRm9YZmh3Vmt4MXgveWRrMzBJ?=
- =?utf-8?B?RHVHM2hZQXpwZUVXbXVEWkMwR2J6ZDFHNjRlQ3hnYUlsWEs2RVJ5c0wxbjFn?=
- =?utf-8?B?TExteWtYV2NGQ1NGRStmaW9qeFMzNUVCc2dNL25QK2dZNGhhUk9GWjRjcEl4?=
- =?utf-8?B?SjQwQm0yczl3d0FoUlFKbkFsVjNhZ1VqQ3pWdlJXZ3MzN3M5OXg1RGRKc2Fs?=
- =?utf-8?B?QXdYWFh2dmhWbTZkdVdpbUdRdVFGZzUvNjV6SWJrYW1lb051c2Q1YWVaUWh1?=
- =?utf-8?B?N3RXWFZwR0FnZTg4YVFSWU1Gb0xnYSt2TzVkb1dNaTUzNGV6WFhCMytScmJk?=
- =?utf-8?B?UFdkYjczQkdpWStnK3E5dmhBRzl1ZFBxVUxyTVNLNzV5ViszSTAyT3psdDZB?=
- =?utf-8?B?Ui82Q1llR3Q5UmpJeXAvcWI1OXRVVFc5TXZ3MjVkRlQwbkJ3OGtiNmsvL0Uv?=
- =?utf-8?B?V3JXbHY3dS8wb0k4Y241a3FFMVF4Z1RiUGIzMGYwYUxoSWtQNERseGtpZ3V3?=
- =?utf-8?B?WEVUelNBTnNseXFQemM3aGhVZWFnd0U5ZTN5OEpWek53WmtoSXdTQUg2Q05U?=
- =?utf-8?B?NFkrd0JIL3FxTzAyeGVWWHptMGc0T3N3YlBMQ2Z3bGFvaU1hamFUWXJKY2J2?=
- =?utf-8?B?WUdwcmwvN3RJWm1pYlhDN2FUaC9rMDdIL3BnL292OVV0T2hORXVtZTVIL2Jj?=
- =?utf-8?B?TnVwNmtyKzRieFdqYnJkK0xSRVc4WDRpV0FnWi9WTjdKdzAxcHZOdllESDZP?=
- =?utf-8?B?ZHFVU1J1QmNWQ1lHM3h5VG1QYitCWXY0cWFUNVB1dm9CbWNTTVk3d0oyRWxn?=
- =?utf-8?B?dklJZG1GYUI0Z0xmSzhydVFaUys5Z1RIU05KZ1NyWnBSbnBwRXpSQ1pINFZq?=
- =?utf-8?B?V2dTclVzam1Ob1paaGJBbmhQd1JrN21mdnlGWE8xSVNUcVk1bU9mbEIzdU1a?=
- =?utf-8?B?N21oM2l3RldWQTNMYWFWRkJNcFRkZWdjRlhhT2V3am41YU9ydmw0ZHhibXBx?=
- =?utf-8?B?NVk1TVlRYU4yNCt4eXFvRGVZajgrQnMycUZhYW15cVhabTIwVzRZZVV0UkZL?=
- =?utf-8?B?SS9rV1NNYy9WL2E0aHB0ZDRQR3RtTkp4UFRJYXpLSUFVMGhXazBxVWVPZGdL?=
- =?utf-8?B?d2VyWXh4TmxIZSt1WDZaNGNWTEsxUWlpcmxzcWdXMnFhTFlnS1U0a0s3QVF6?=
- =?utf-8?B?YUNaVG8rdy9odnlyS2JIeGE5c3BZNnBRUGJXVWt6RE5RUXRsVmR0WTFlZ3Mz?=
- =?utf-8?B?RGtQZDJvdFZNeUFpUmRwL3g4RVR0eXRmQmJkRmxqQSt4SjUrQkJhbndFdng2?=
- =?utf-8?B?cFJMY1NpZHhkeGVUUmRzV2N5eGtML2RUY1lScWYxUVBSU2orYUNkMm9DcVk2?=
- =?utf-8?B?ZXVGWlZKTHFMY2hoOTFJRFVSZ1pnODN2Q3dlY0h0QWtKckdBdXp3Vnl3ZCs3?=
- =?utf-8?B?SnVValkwN3M1RlJJczI0NGNURUs2WmhFbWhiVlRUa2l4MCtlaUk2T1RrUW5E?=
- =?utf-8?B?czJkRmhrRm5KeU0ybnhjNytob29GVjUrZHNlMDNrcTBucjVnSDdpMys2MWgx?=
- =?utf-8?B?cUdVenc4M3hRRE5qQzRoMjNVNG5RPT0=?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1d3A4WRlDNGNuUBDbDNQkvKx7RZdAg50G030JFEzUJ4+VVYXdtyhZQ5Na42a?=
+ =?us-ascii?Q?oJe7b5GAgb8zkq58BovldFylOWNsmJIU0A2TGU2txFj82iJVpyUCPzp4A8FQ?=
+ =?us-ascii?Q?yVatso1GDOSdfvBFqXhA47oEIo4HgZgUrbSDg8P/kwO1JdXp4RSO5rVfFpFk?=
+ =?us-ascii?Q?rOAHHVaT+0zYc8RwZ4sUusSSamJHI1RVHm6LLEeL5RgSun6ipn9rf3dnULdi?=
+ =?us-ascii?Q?iEVgUKX7+znpL251wQdKFsOjORJFLc274o6Mh9Qy/UcDU7ueOAgWHOKLjMqw?=
+ =?us-ascii?Q?n/XngMeTDfBvTmO/+5uUyP6by7Swx24cP3xDjgyZ9n35nMnBi7xPQ70TpMkG?=
+ =?us-ascii?Q?Zf3zKLlloKLe2ZB/iAUL92gVcU7CHeKQVSKc4JmM16UWlzg8t+zc4C6EZ4tP?=
+ =?us-ascii?Q?9YyhtU0mtbOvsUYFbrwMFmqNcZ+EJeN+xTxdpQMYs+9sr73gfRh7rjBUew3J?=
+ =?us-ascii?Q?e9hOZBJhg4X09rIhG9yuDPCHywrIWwoA86K0fFCpeaaVl3KitUP75xoKpx0R?=
+ =?us-ascii?Q?wTL18S8ML03KUgqgICvabhEffO12DSf/4WVGLgFo7yI4NX/gGwhFZbH5TIMJ?=
+ =?us-ascii?Q?GdG7ecy0SVCFPZEz09Pbm/BihmQc9oqrLM+3xLY+0/g86SgF+Br+GycoVJuX?=
+ =?us-ascii?Q?Fw6Pp8Vii3cCB37nra5le1nlo59zS43qpLmxNftbwjMwgJc/XtNmM1K3nWFb?=
+ =?us-ascii?Q?KVH2FlD+RA/RFtEf5vm6TjjfXpOHtb5PGGtWo1wzKUGEuzYNu9wh6s+tGzwB?=
+ =?us-ascii?Q?StTuvyqh/9yWfZWvaQ6+jn4wgWpWlZST9VsCW3NlJB/eqbz6pFBSt4UzSKvI?=
+ =?us-ascii?Q?czZ+ydm/TQvHgzENiz2ZB0w69AW02TQrzXu82cAwNS88D95J8zXkt4+elrVZ?=
+ =?us-ascii?Q?udsJmIeE8xAuZvtBNX6+SbVrd1Gn75KOv//8cw+G3ZqBx9suptpTcMnSqDGe?=
+ =?us-ascii?Q?9xIolJeVFFycw1SKFAAwo967FWQOeqqMgUL/h2sEcJyrLUabjowaVxMn6Oxv?=
+ =?us-ascii?Q?p+gQPPCxYWM0jip5sm5VzBerK7RCTS1xe32yiipCRWJ1typ3+MK1uYUTtuu6?=
+ =?us-ascii?Q?1ShaspY6eNoFHznUkVMDUKET9HXieW5cUUmbQsaUO8y+iYUMp7hZjjGOKCXJ?=
+ =?us-ascii?Q?jTQRHdYjjaDFOuxhfgTxTaQS4hQrdJxWvedyd44NQZeHUGtMIHV3HDg/htZn?=
+ =?us-ascii?Q?bRQfrL1ikgF4hG7dfSd1eK3o+8rIhqYgkzTVa+d9bIW74pRXis7BUBKmPnoN?=
+ =?us-ascii?Q?S8nPe/4uGKu32jZBBrcXbnNT7T2zZ7wbYnAh55PUmvvzVY9NUMIIEHXrHQJl?=
+ =?us-ascii?Q?E7WqWLk4Qk4CAVGJdA4JdWsfYxc9/wqIEcULQWRNXTS27RRVGpgUXxKapatD?=
+ =?us-ascii?Q?jxX81+ZIIzT3trpgk2o5Fv/pRCptedCNLdXJrCahdE4zYx1i366Y+Er3yu0c?=
+ =?us-ascii?Q?qS9vv1qvvE+nRyWW3msTNNjoDa/drDTBr2OzDA1IkyGuAMEPNXq9tctVrw4s?=
+ =?us-ascii?Q?uO/s/N4qr9Lb7LkMxbDBa4RDeTNU2OcZ7G4HqdjJnPD5vcWnX+ueLqTvyD7W?=
+ =?us-ascii?Q?Rdz06HA9R5EN5jpUhLXtV38xi6t0CfQzxaTO/4obHxMHJulwbo7gmdKSKVQE?=
+ =?us-ascii?Q?4Dk1N5QkO3Xb4qLY2gZpbLapP/0UGoYmzoJ9DaZRGnT/obrmLTsS942AaV7Q?=
+ =?us-ascii?Q?i6HlzA=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 69177ba4-c8ff-4f58-d48b-08db1fcd2f52
+X-MS-Exchange-CrossTenant-Network-Message-Id: 43a553f2-3f69-40f4-a201-08db1fcd56cf
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2023 12:03:53.0144
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2023 12:04:58.9668
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: bjfuN2rQhVdKKYGxvLe+fI+jSedr5vQKk+DNOi8Cv8B8W7xQ+OSobNvN4dIL4jh8pzZQBr9o2HEJ8S2NbzkgiTyMWVnuZOGTGm6HYn6xU+Y=
+X-MS-Exchange-CrossTenant-UserPrincipalName: /7fAnAwtRIoMXVc3PakCR5pPUJBE20HBFqAjPZsuqOKUCnMeZhrdwGxc7JT2o+GMzKfGhLtF0Sg86pdQnFcjY1stc1Peq+x+jkJlYpoUjho=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR13MB5552
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 07, 2023 at 06:02:46PM -0300, Luiz Angelo Daros de Luca wrote:
-> The rtl8365mb was using a fixed MTU size of 1536, which was probably
-> inspired by the rtl8366rb's initial packet size. However, unlike that
-> family, the rtl8365mb family can specify the max packet size in bytes,
-> rather than in fixed steps. The max packet size now defaults to
-> VLAN_ETH_HLEN+ETH_DATA_LEN+ETH_FCS_LEN, which is 1522 bytes.
+On Tue, Mar 07, 2023 at 11:29:17PM +0800, Lin Ma wrote:
+> The commit 6faee3d4ee8b ("igb: Add lock to avoid data race") adds
+> rtnl_lock to eliminate a false data race shown below
 > 
-> DSA calls change_mtu for the CPU port once the max MTU value among the
-> ports changes. As the max packet size is defined globally, the switch
-> is configured only when the call affects the CPU port.
+>  (FREE from device detaching)      |   (USE from netdev core)
+> igb_remove                         |  igb_ndo_get_vf_config
+>  igb_disable_sriov                 |  vf >= adapter->vfs_allocated_count?
+>   kfree(adapter->vf_data)          |
+>   adapter->vfs_allocated_count = 0 |
+>                                    |    memcpy(... adapter->vf_data[vf]
 > 
-> The available specifications do not directly define the max supported
-> packet size, but it mentions a 16k limit. This driver will use the 0x3FFF
-> limit as it is used in the vendor API code. However, the switch sets the
-> max packet size to 16368 bytes (0x3FF0) after it resets.
+> The above race will never happen and the extra rtnl_lock causes deadlock
+> below
 > 
-> change_mtu uses MTU size, or ethernet payload size, while the switch
-> works with frame size. The frame size is calculated considering the
-> ethernet header (14 bytes), a possible 802.1Q tag (4 bytes), the payload
-> size (MTU), and the Ethernet FCS (4 bytes). The CPU tag (8 bytes) is
-> consumed before the switch enforces the limit.
+> [  141.420169]  <TASK>
+> [  141.420672]  __schedule+0x2dd/0x840
+> [  141.421427]  schedule+0x50/0xc0
+> [  141.422041]  schedule_preempt_disabled+0x11/0x20
+> [  141.422678]  __mutex_lock.isra.13+0x431/0x6b0
+> [  141.423324]  unregister_netdev+0xe/0x20
+> [  141.423578]  igbvf_remove+0x45/0xe0 [igbvf]
+> [  141.423791]  pci_device_remove+0x36/0xb0
+> [  141.423990]  device_release_driver_internal+0xc1/0x160
+> [  141.424270]  pci_stop_bus_device+0x6d/0x90
+> [  141.424507]  pci_stop_and_remove_bus_device+0xe/0x20
+> [  141.424789]  pci_iov_remove_virtfn+0xba/0x120
+> [  141.425452]  sriov_disable+0x2f/0xf0
+> [  141.425679]  igb_disable_sriov+0x4e/0x100 [igb]
+> [  141.426353]  igb_remove+0xa0/0x130 [igb]
+> [  141.426599]  pci_device_remove+0x36/0xb0
+> [  141.426796]  device_release_driver_internal+0xc1/0x160
+> [  141.427060]  driver_detach+0x44/0x90
+> [  141.427253]  bus_remove_driver+0x55/0xe0
+> [  141.427477]  pci_unregister_driver+0x2a/0xa0
+> [  141.428296]  __x64_sys_delete_module+0x141/0x2b0
+> [  141.429126]  ? mntput_no_expire+0x4a/0x240
+> [  141.429363]  ? syscall_trace_enter.isra.19+0x126/0x1a0
+> [  141.429653]  do_syscall_64+0x5b/0x80
+> [  141.429847]  ? exit_to_user_mode_prepare+0x14d/0x1c0
+> [  141.430109]  ? syscall_exit_to_user_mode+0x12/0x30
+> [  141.430849]  ? do_syscall_64+0x67/0x80
+> [  141.431083]  ? syscall_exit_to_user_mode_prepare+0x183/0x1b0
+> [  141.431770]  ? syscall_exit_to_user_mode+0x12/0x30
+> [  141.432482]  ? do_syscall_64+0x67/0x80
+> [  141.432714]  ? exc_page_fault+0x64/0x140
+> [  141.432911]  entry_SYSCALL_64_after_hwframe+0x72/0xdc
 > 
-> MTU was tested up to 2018 (with 802.1Q) as that is as far as mt7620
-> (where rtl8367s is stacked) can go. The register was manually
-> manipulated byte-by-byte to ensure the MTU to frame size conversion was
-> correct. For frames without 802.1Q tag, the frame size limit will be 4
-> bytes over the required size.
+> Since the igb_disable_sriov() will call pci_disable_sriov() before
+> releasing any resources, the netdev core will synchronize the cleanup to
+> avoid any races. This patch removes the useless rtnl_(un)lock to guarantee
+> correctness.
 > 
-> There is a jumbo register, enabled by default at 6k packet size.
-> However, the jumbo settings do not seem to limit nor expand the maximum
-> tested MTU (2018), even when jumbo is disabled. More tests are needed
-> with a device that can handle larger frames.
-> 
-> Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-> Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
-> Reviewed-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-> ---
->  drivers/net/dsa/realtek/rtl8365mb.c | 40 ++++++++++++++++++++++++++---
->  1 file changed, 36 insertions(+), 4 deletions(-)
-> 
-> v3->v4:
-> - removed spurious newline after comment.
-> 
-> v2->v3:
-> - changed max frame size to 0x3FFF (used by vendor API)
-> - added info about how frame size is calculated, some more description
->   about the tests performed and the 4 extra bytes when untagged frame is
->   used.
-> 
-> v1->v2:
-> - dropped jumbo code as it was not changing the behavior (up to 2k MTU)
-> - fixed typos
-> - fixed code alignment
-> - renamed rtl8365mb_(change|max)_mtu to rtl8365mb_port_(change|max)_mtu
-> 
-> 
-> diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
-> index da31d8b839ac..41ea3b5a42b1 100644
-> --- a/drivers/net/dsa/realtek/rtl8365mb.c
-> +++ b/drivers/net/dsa/realtek/rtl8365mb.c
+> CC: stable@vger.kernel.org
+> Fixes: 6faee3d4ee8b ("igb: Add lock to avoid data race")
+> Reported-by: Corinna Vinschen <vinschen@redhat.com>
+> Link: https://lore.kernel.org/intel-wired-lan/ZAcJvkEPqWeJHO2r@calimero.vinschen.de/
+> Signed-off-by: Lin Ma <linma@zju.edu.cn>
 
-...
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-> @@ -1980,10 +2011,7 @@ static int rtl8365mb_setup(struct dsa_switch *ds)
->  		p->index = i;
->  	}
->  
-> -	/* Set maximum packet length to 1536 bytes */
-> -	ret = regmap_update_bits(priv->map, RTL8365MB_CFG0_MAX_LEN_REG,
-> -				 RTL8365MB_CFG0_MAX_LEN_MASK,
-> -				 FIELD_PREP(RTL8365MB_CFG0_MAX_LEN_MASK, 1536));
-> +	ret = rtl8365mb_port_change_mtu(ds, cpu->trap_port, ETH_DATA_LEN);
-
-Hi Luiz,
-
-Perhaps I am misreading this, perhaps it was discussed elsewhere (I did
-look), and perhaps it's not important. But prior to this
-patch a value of 1536 is used. Whereas with this patch the
-value, calculated in rtl8365mb_port_change_mtu, is
-ETH_DATA_LEN + VLAN_ETH_HLEN + ETH_FCS_LEN = 1500 + 18 + 4 = 1522.
-
->  	if (ret)
->  		goto out_teardown_irq;
->  
-
-...
