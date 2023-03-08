@@ -2,321 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DAABE6AFE70
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 06:34:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 697F46AFE8E
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 06:44:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229689AbjCHFeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 00:34:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46852 "EHLO
+        id S229718AbjCHFoU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 00:44:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229688AbjCHFeY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 00:34:24 -0500
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 388D28C53A
-        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 21:34:21 -0800 (PST)
-Received: by mail-il1-x12a.google.com with SMTP id t1so6074987iln.8
-        for <netdev@vger.kernel.org>; Tue, 07 Mar 2023 21:34:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google; t=1678253660;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=v9z4c06hN8Ofn0+JfpNmKdLKB7vgLw2YyZr/1q3jKM0=;
-        b=k1mUOKmRPsZtb0Zk6j4g1ODXbIwBd52mDZK6/75bwu1F9Gf95UwYp/s0FxWSUSO7in
-         yazKtdjOQRNpfpatgMr5c/h2kArJmF62y9kuJJOwMpyvP/AglTF9F+68jXRga9T6VHhQ
-         RUbaRh55yLIAGsd/4C5Pf6I75cxpD8WIKpqP0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678253660;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=v9z4c06hN8Ofn0+JfpNmKdLKB7vgLw2YyZr/1q3jKM0=;
-        b=WU0T7w4VXB0j5dRw0cwz5l8poGT6QcxdmXpEY1Mm9gbJ1siEiLn7+p01TlAS6HZ3+x
-         8FfLW7eJuc7diBJAfPi2L77jK7N7+cxpOfKHt0EZeAQJKgM+rFk6f+YXKfTeOG67scvi
-         YUinNlKVy9zH+ZwxiNQxWKprT5LfYSisI3OPcckjBf3k4vMqp82b85gbCBsTEQ3sfw1v
-         nGUbrV4cgYDvfr0ptaLjAIpQ9eUcKtvQOLfJNx2TJLhIltwZx8Y9Iwgj99eAHQd85ATp
-         n6kb74T0Wgt7TD6hpJlbR917Zh9ZfO0npKnZpCQ3WjrfPAQ3evVkWTX8Oz4cxhcW+azh
-         ml6Q==
-X-Gm-Message-State: AO0yUKWYks3QF6sjEO6nmO1ohwd4PVXbCN9XpWOpiFLUU675hxtS9GKd
-        YvXBCaNg7bmPQXBkTfhbh6RmXeAFIWVOIRYw5dN1tQ==
-X-Google-Smtp-Source: AK7set+7R82/0dDsWR5k3qzuZtrLVyGnt4h+2HlJBtJKKTAEBgaOex7VE2Bd/H7+lOu+wqhtkBpDfQ==
-X-Received: by 2002:a05:6e02:2164:b0:314:5aa:94b6 with SMTP id s4-20020a056e02216400b0031405aa94b6mr12896111ilv.24.1678253660286;
-        Tue, 07 Mar 2023 21:34:20 -0800 (PST)
-Received: from mfreemon-cf-laptop.. ([169.197.147.212])
-        by smtp.gmail.com with ESMTPSA id h17-20020a02c731000000b00375a885f908sm4585490jao.36.2023.03.07.21.34.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Mar 2023 21:34:19 -0800 (PST)
-From:   Mike Freemon <mfreemon@cloudflare.com>
-To:     netdev@vger.kernel.org
-Cc:     kernel-team@cloudflare.com,
-        "mfreemon@cloudflare.com" <mfreemon@cloudflare.com>
-Subject: [RFC PATCH v2] Add a sysctl to allow TCP window shrinking in order to honor memory limits
-Date:   Tue,  7 Mar 2023 23:33:53 -0600
-Message-Id: <20230308053353.675086-1-mfreemon@cloudflare.com>
-X-Mailer: git-send-email 2.39.2
+        with ESMTP id S229605AbjCHFoT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 00:44:19 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2060.outbound.protection.outlook.com [40.107.220.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE3D9CFDE;
+        Tue,  7 Mar 2023 21:44:17 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BroijTHfJ2xDfTbeSp44UPGuBhyJnNCcEiPz+chb9X7h8fI8KcsOmjzuwLRi42YsRxYX+c8eR5OWM1F9R7DlKbhq5V9ZTvRNY5b4of9jSxxL+Oi7ifhsBpTVkihVzjcxnDHgmbDjYeG594hb0Js8U0R5XPWMLv1mqx1DDLdBTFLAlrQr75F2ke1FKsEPJbJ3d9IKK9wLY/vhT5L8T9kmK5f16TF1TcgQgEwHcmMNxE86e6MpLSwQTCNxLXEB+bcD4cpOkacIMhKOgZLu9fE/zFs//DUiDNnPLR8RJrVcqCbNecz6ZgIj07mPvlnvj0rS1KR+wavhEfyqNk0Ztzwlbg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=LGQcNIIDk5kKNbMPKH2f/sBrlxLPh0Ggwde5vqsbiEI=;
+ b=VUa5lOWYaJsMfEBuzj/ObQmaYS9bTIjm74ZNri69nLsyp4Vkroqfd+SI0n7tk1Or+jPmrf6QUiGnDyHJpCleRfckpLVnX7v6O7xIOYHV9h98hMxLqvVSAovvrFgRWhrz127zgYC+lLUbP+Z+hAujpqvuDisfiRkQHuNgNiddwATfY7VdLLSh8hMTmcKLcVGAvvXB9gZUXexCrz9PmPJ/UIccCV21BwCk+VeGvTff/82Kfb+6oBJ7jsV1MmS+Cx9RKiMtB72Nqyu5HYOrMTjit685WA4w/baxlN+eD7K+JLGeQoQd70PJjVnpE/a5Hti4xklc/IRJP6GIHRylWyAImQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LGQcNIIDk5kKNbMPKH2f/sBrlxLPh0Ggwde5vqsbiEI=;
+ b=OQ9QyFNnjTPeZVIqcbqLqN7fMU1UurKkCD3tCQvKnZ50vwb7itzSvMf6/Wdk/9xNfdhK4sNlMcsIjJi5qSy4oJMofxN+zapd2R/6CiQ49c+nU5ZBrXrsLeu8rmTgsFR07C/fcpvrju5gB4Dbox9UZey8ZwiIrlGTdbvOB6loq/M=
+Received: from CY5PR15CA0030.namprd15.prod.outlook.com (2603:10b6:930:14::28)
+ by CO6PR12MB5425.namprd12.prod.outlook.com (2603:10b6:303:13e::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.29; Wed, 8 Mar
+ 2023 05:44:15 +0000
+Received: from CY4PEPF0000C968.namprd02.prod.outlook.com
+ (2603:10b6:930:14:cafe::c2) by CY5PR15CA0030.outlook.office365.com
+ (2603:10b6:930:14::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.17 via Frontend
+ Transport; Wed, 8 Mar 2023 05:44:14 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
+Received: from SATLEXMB03.amd.com (165.204.84.17) by
+ CY4PEPF0000C968.mail.protection.outlook.com (10.167.241.72) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6178.12 via Frontend Transport; Wed, 8 Mar 2023 05:44:14 +0000
+Received: from SATLEXMB08.amd.com (10.181.40.132) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 7 Mar
+ 2023 23:44:13 -0600
+Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB08.amd.com
+ (10.181.40.132) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 7 Mar
+ 2023 21:44:12 -0800
+Received: from xhdsneeli40.xilinx.com (10.180.168.240) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.34 via Frontend
+ Transport; Tue, 7 Mar 2023 23:44:08 -0600
+From:   Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <robh+dt@kernel.org>,
+        <richardcochran@gmail.com>
+CC:     <krzysztof.kozlowski+dt@linaro.org>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <yangbo.lu@nxp.com>, <radhey.shyam.pandey@amd.com>,
+        <anirudha.sarangi@amd.com>, <harini.katakam@amd.com>,
+        <sarath.babu.naidu.gaddam@amd.com>, <git@amd.com>
+Subject: [PATCH net-next V3] dt-bindings: net: ethernet-controller: Add ptp-hardware-clock
+Date:   Wed, 8 Mar 2023 11:14:07 +0530
+Message-ID: <20230308054408.1353992-1-sarath.babu.naidu.gaddam@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000C968:EE_|CO6PR12MB5425:EE_
+X-MS-Office365-Filtering-Correlation-Id: b0e75bbd-fb68-4d97-da09-08db1f982691
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: xfI2VxHALt7Jr4YzWEfXCaWLTs0fSZkvI+krqqGDZRat9ui/9/W1ZYriEPz/GEjKWRJXpv7A0TYKYCxZvG9hJObjX72UA89Ipb6XpYBhQ0EQNDX/GrvOsRcbNXH6lg4pj/tET19nd+/v/i8D5fMfkfhLMIEpPUDA3SSzyfQMdHMjyEBPMKkkmUY38esxkyOv4WEoYTNMFUx0B+CWEBdbAbAWpgoc80LQI18RtBExGM50DbgFQYUDUuS2/aHV52ScFkCe6GkpDyOft+oxOgM7CZu9KWmGBdnBcZ1vfXyjKaihR2I4DscOr3J8gBIJRdx9TxRzo+XHhFqCV63f5cbRUVzhwuuCLMzgdZjaDoyOUC52uBG9CnkvTKFjlz4LvdEoIoRfyszlNzsmCGB//vxn0r2DJp12EXmEczUANg6exR204RMQH4zIYW37+L0Z+ZKBYc6+pY0Vd5zrpM9C++dyRuqttLYH0TZ2bJ5NXKMc3lcQ/pRKtnCG4lZBHsjbnbt6BRpD24w0egMEtcSSCr04zaeybERhdjSUZWITlUwSEN+kN8fGsBKycDxHrqTvwdEfMMch70UOZBH/inKzowl5UkzTIS9Y64gDNQoV1Gvl19Uc/NUS8Jbl60oJ9ArxRoJ0/MoktOTvzQnu4qsAzKla1QhE/59kL7I1e3exGzA7YiFC1LMil49k4YdwYl7hr2rFqvhiQxh2rlHhGW6e+sEU7hrhwOBK2zyS4WnIpI1HbyVk05lcqE/Zs7XUyjyfQPOk/cxlnAZXE6qd77MQ6fWDmZI31lcMsbZ0+iQZn0Db1GA=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(376002)(136003)(396003)(346002)(451199018)(40470700004)(46966006)(36840700001)(82740400003)(36860700001)(81166007)(86362001)(103116003)(36756003)(356005)(8676002)(7416002)(5660300002)(70206006)(2906002)(4326008)(8936002)(41300700001)(70586007)(82310400005)(47076005)(40460700003)(186003)(336012)(26005)(2616005)(40480700001)(83380400001)(426003)(110136005)(54906003)(316002)(478600001)(966005)(1076003)(2101003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2023 05:44:14.4546
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b0e75bbd-fb68-4d97-da09-08db1f982691
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CY4PEPF0000C968.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR12MB5425
+X-Spam-Status: No, score=-0.6 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "mfreemon@cloudflare.com" <mfreemon@cloudflare.com>
+There is currently no standard property to pass PTP device index
+information to ethernet driver when they are independent.
 
-Under certain circumstances, the tcp receive buffer memory limit
-set by autotuning is ignored, and the receive buffer can grow
-unrestrained until it reaches tcp_rmem[2].
+ptp-hardware-clock property will contain phandle to PTP clock node.
 
-To reproduce:  Connect a TCP session with the receiver doing
-nothing and the sender sending small packets (an infinite loop
-of socket send() with 4 bytes of payload with a sleep of 1 ms
-in between each send()).  This will fill the tcp receive buffer
-all the way to tcp_rmem[2], ignoring the autotuning limit
-(sk_rcvbuf).
+Its a generic (optional) property name to link to PTP phandle to
+Ethernet node. Any future or current ethernet drivers that need
+a reference to the PHC used on their system can simply use this
+generic property name instead of using custom property
+implementation in their device tree nodes."
 
-As a result, a host can have individual tcp sessions with receive
-buffers of size tcp_rmem[2], and the host itself can reach tcp_mem
-limits, causing the host to go into tcp memory pressure mode.
-
-The fundamental issue is the relationship between the granularity
-of the window scaling factor and the number of byte ACKed back
-to the sender.  This problem has previously been identified in
-RFC 7323, appendix F [1].
-
-The Linux kernel currently adheres to never shrinking the window.
-
-In addition to the overallocation of memory mentioned above, this
-is also functionally incorrect, because once tcp_rmem[2] is
-reached, the receiver will drop in-window packets resulting in
-retransmissions and an eventual timeout of the tcp session.  A
-receive buffer full condition should instead result in a zero
-window and an indefinite wait.
-
-In practice, this problem is largely hidden for most flows.  It
-is not applicable to mice flows.  Elephant flows can send data
-fast enough to "overrun" the sk_rcvbuf limit (in a single ACK),
-triggering a zero window.
-
-But this problem does show up for other types of flows.  Good
-examples are websockets and other type of flows that send small
-amounts of data spaced apart slightly in time.  In these cases,
-we directly encounter the problem described in [1].
-
-RFC 7323, section 2.4 [2], says there are instances when a retracted
-window can be offered, and that TCP implementations MUST ensure
-that they handle a shrinking window, as specified in RFC 1122,
-section 4.2.2.16 [3].  All prior RFCs on the topic of tcp window
-management have made clear that sender must accept a shrunk window
-from the receiver, including RFC 793 [4] and RFC 1323 [5].
-
-This patch implements the functionality to shrink the tcp window
-when necessary to keep the right edge within the memory limit set
-by autotuning (sk_rcvbuf).  This new functionality is enabled by
-setting the sysctl net.ipv4.tcp_shrink_window to 1.
-
-[1] https://www.rfc-editor.org/rfc/rfc7323#appendix-F
-[2] https://www.rfc-editor.org/rfc/rfc7323#section-2.4
-[3] https://www.rfc-editor.org/rfc/rfc1122#page-91
-[4] https://www.rfc-editor.org/rfc/rfc793
-[5] https://www.rfc-editor.org/rfc/rfc1323
-
-Signed-off-by: Mike Freemon <mfreemon@cloudflare.com>
+Signed-off-by: Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>
+Acked-by: Richard Cochran <richardcochran@gmail.com>
 ---
- Documentation/networking/ip-sysctl.rst | 14 ++++++
- include/net/netns/ipv4.h               |  2 +
- net/ipv4/sysctl_net_ipv4.c             |  7 +++
- net/ipv4/tcp_ipv4.c                    |  2 +
- net/ipv4/tcp_output.c                  | 59 +++++++++++++++++++-------
- 5 files changed, 69 insertions(+), 15 deletions(-)
 
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index 87dd1c5283e6..67dfcadfe350 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -968,6 +968,20 @@ tcp_tw_reuse - INTEGER
- tcp_window_scaling - BOOLEAN
- 	Enable window scaling as defined in RFC1323.
+Freescale driver currently has this implementation but it will be
+good to agree on a generic (optional) property name to link to PTP
+phandle to Ethernet node. In future or any current ethernet driver
+wants to use this method of reading the PHC index,they can simply use
+this generic name and point their own PTP clock node, instead of
+creating separate property names in each ethernet driver DT node.
+
+axiethernet driver uses this method when PTP support is integrated.
+
+Example:
+    fman0: fman@1a00000 {
+        ptp-hardware-clock = <&ptp_timer0>;
+    }
+
+    ptp_timer0: ptp-timer@1afe000 {
+        compatible = "fsl,fman-ptp-timer";
+        reg = <0x0 0x1afe000 0x0 0x1000>;
+    }
+
+DT information:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/arm64/boot/dts/freescale/qoriq-fman3-0.dtsi#n23
+
+Freescale driver:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c#n407
+
+Changes in V3:
+1) Updated commit description.
+2) Add Acked-by: Richard Cochran.
+
+Changes in V2:
+1) Changed the ptimer-handle to ptp-hardware-clock based on
+   Richard Cochran's comment.
+2) Updated commit description.
+---
+ .../devicetree/bindings/net/ethernet-controller.yaml         | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+index 00be387984ac..a97ab25b07a5 100644
+--- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
++++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+@@ -161,6 +161,11 @@ properties:
+       - auto
+       - in-band-status
  
-+tcp_shrink_window - BOOLEAN
-+	This changes how the TCP receive window is calculated when window
-+	scaling is in effect.
++  ptp-hardware-clock:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description:
++      Specifies a reference to a node representing a IEEE1588 timer.
 +
-+	RFC 7323, section 2.4, says there are instances when a retracted
-+	window can be offered, and that TCP implementations MUST ensure
-+	that they handle a shrinking window, as specified in RFC 1122.
-+
-+	- 0 - Disabled.	The window is never shrunk.
-+	- 1 - Enabled.	The window is shrunk when necessary to remain within
-+					the memory limit set by autotuning (sk_rcvbuf).
-+
-+	Default: 0
-+
- tcp_wmem - vector of 3 INTEGERs: min, default, max
- 	min: Amount of memory reserved for send buffers for TCP sockets.
- 	Each TCP socket has rights to use it due to fact of its birth.
-diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-index db762e35aca9..fbc67afac75a 100644
---- a/include/net/netns/ipv4.h
-+++ b/include/net/netns/ipv4.h
-@@ -237,5 +237,7 @@ struct netns_ipv4 {
- 
- 	atomic_t	rt_genid;
- 	siphash_key_t	ip_id_key;
-+
-+	unsigned int sysctl_tcp_shrink_window;
- };
- #endif
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 0d0cc4ef2b85..c6d181f79534 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -1467,6 +1467,13 @@ static struct ctl_table ipv4_net_table[] = {
- 		.extra1         = SYSCTL_ZERO,
- 		.extra2         = &tcp_plb_max_cong_thresh,
- 	},
-+	{
-+		.procname	= "tcp_shrink_window",
-+		.data		= &init_net.ipv4.sysctl_tcp_shrink_window,
-+		.maxlen		= sizeof(unsigned int),
-+		.mode		= 0644,
-+		.proc_handler	= proc_douintvec_minmax,
-+	},
- 	{ }
- };
- 
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index ea370afa70ed..d976f01413d7 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -3275,6 +3275,8 @@ static int __net_init tcp_sk_init(struct net *net)
- 	else
- 		net->ipv4.tcp_congestion_control = &tcp_reno;
- 
-+	net->ipv4.sysctl_tcp_shrink_window = 0;
-+
- 	return 0;
- }
- 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 71d01cf3c13e..7f7a96e797fa 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -260,8 +260,8 @@ static u16 tcp_select_window(struct sock *sk)
- 	u32 old_win = tp->rcv_wnd;
- 	u32 cur_win = tcp_receive_window(tp);
- 	u32 new_win = __tcp_select_window(sk);
-+	struct net *net = sock_net(sk);
- 
--	/* Never shrink the offered window */
- 	if (new_win < cur_win) {
- 		/* Danger Will Robinson!
- 		 * Don't update rcv_wup/rcv_wnd here or else
-@@ -270,11 +270,15 @@ static u16 tcp_select_window(struct sock *sk)
- 		 *
- 		 * Relax Will Robinson.
- 		 */
--		if (new_win == 0)
--			NET_INC_STATS(sock_net(sk),
--				      LINUX_MIB_TCPWANTZEROWINDOWADV);
--		new_win = ALIGN(cur_win, 1 << tp->rx_opt.rcv_wscale);
-+		if (!net->ipv4.sysctl_tcp_shrink_window) {
-+			/* Never shrink the offered window */
-+			if (new_win == 0)
-+				NET_INC_STATS(sock_net(sk),
-+					      LINUX_MIB_TCPWANTZEROWINDOWADV);
-+			new_win = ALIGN(cur_win, 1 << tp->rx_opt.rcv_wscale);
-+		}
- 	}
-+
- 	tp->rcv_wnd = new_win;
- 	tp->rcv_wup = tp->rcv_nxt;
- 
-@@ -2947,6 +2951,7 @@ u32 __tcp_select_window(struct sock *sk)
- {
- 	struct inet_connection_sock *icsk = inet_csk(sk);
- 	struct tcp_sock *tp = tcp_sk(sk);
-+	struct net *net = sock_net(sk);
- 	/* MSS for the peer's data.  Previous versions used mss_clamp
- 	 * here.  I don't know if the value based on our guesses
- 	 * of peer's MSS is better for the performance.  It's more correct
-@@ -2968,16 +2973,24 @@ u32 __tcp_select_window(struct sock *sk)
- 		if (mss <= 0)
- 			return 0;
- 	}
-+
-+	if (net->ipv4.sysctl_tcp_shrink_window) {
-+		/* new window should always be an exact multiple of scaling factor */
-+		free_space = round_down(free_space, 1 << tp->rx_opt.rcv_wscale);
-+	}
-+
- 	if (free_space < (full_space >> 1)) {
- 		icsk->icsk_ack.quick = 0;
- 
- 		if (tcp_under_memory_pressure(sk))
- 			tcp_adjust_rcv_ssthresh(sk);
- 
--		/* free_space might become our new window, make sure we don't
--		 * increase it due to wscale.
--		 */
--		free_space = round_down(free_space, 1 << tp->rx_opt.rcv_wscale);
-+		if (!net->ipv4.sysctl_tcp_shrink_window) {
-+			/* free_space might become our new window, make sure we don't
-+			 * increase it due to wscale.
-+			 */
-+			free_space = round_down(free_space, 1 << tp->rx_opt.rcv_wscale);
-+		}
- 
- 		/* if free space is less than mss estimate, or is below 1/16th
- 		 * of the maximum allowed, try to move to zero-window, else
-@@ -2988,10 +3001,24 @@ u32 __tcp_select_window(struct sock *sk)
- 		 */
- 		if (free_space < (allowed_space >> 4) || free_space < mss)
- 			return 0;
-+
-+		if (net->ipv4.sysctl_tcp_shrink_window && free_space < (1 << tp->rx_opt.rcv_wscale))
-+			return 0;
- 	}
- 
--	if (free_space > tp->rcv_ssthresh)
-+	if (free_space > tp->rcv_ssthresh) {
- 		free_space = tp->rcv_ssthresh;
-+		if (net->ipv4.sysctl_tcp_shrink_window) {
-+			/* new window should always be an exact multiple of scaling factor
-+			 *
-+			 * For this case, we ALIGN "up" (increase free_space) because
-+			 * we know free_space is not zero here, it has been reduced from
-+			 * the memory-based limit, and rcv_ssthresh is not a hard limit
-+			 * (unlike sk_rcvbuf).
-+			 */
-+			free_space = ALIGN(free_space, (1 << tp->rx_opt.rcv_wscale));
-+		}
-+	}
- 
- 	/* Don't do rounding if we are using window scaling, since the
- 	 * scaled window will not line up with the MSS boundary anyway.
-@@ -2999,11 +3026,13 @@ u32 __tcp_select_window(struct sock *sk)
- 	if (tp->rx_opt.rcv_wscale) {
- 		window = free_space;
- 
--		/* Advertise enough space so that it won't get scaled away.
--		 * Import case: prevent zero window announcement if
--		 * 1<<rcv_wscale > mss.
--		 */
--		window = ALIGN(window, (1 << tp->rx_opt.rcv_wscale));
-+		if (!net->ipv4.sysctl_tcp_shrink_window) {
-+			/* Advertise enough space so that it won't get scaled away.
-+			 * Import case: prevent zero window announcement if
-+			 * 1<<rcv_wscale > mss.
-+			 */
-+			window = ALIGN(window, (1 << tp->rx_opt.rcv_wscale));
-+		}
- 	} else {
- 		window = tp->rcv_wnd;
- 		/* Get the largest window that is a nice multiple of mss.
+   fixed-link:
+     oneOf:
+       - $ref: /schemas/types.yaml#/definitions/uint32-array
 -- 
-2.39.2
+2.25.1
 
