@@ -2,130 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ABCDF6B0B6B
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 15:38:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D50B6B0BB8
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 15:46:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232091AbjCHOif (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 09:38:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48522 "EHLO
+        id S230319AbjCHOqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 09:46:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230283AbjCHOie (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 09:38:34 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A20A73B233
-        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 06:38:22 -0800 (PST)
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 4FF7841B65
-        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 14:38:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1678286301;
-        bh=TLXbWgCSumBQHNJIEiKWgsAVxLokeDk3mverzNy4nO4=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=LcjVJL5Xu+c7VDQygsgAoMQXFFHQ7BCuiGxLBAKYpi7GkVDIM5yHDfyv02/46KQbe
-         tpUU9GTC33BlrQuPZlwzOnQ3puRTDtTh42fpf4d1e6cXKbNdeHitUiwB/HiBbxeXZd
-         Yq59/ZrmLaAPASL8fRTQHi5euYvpRg3D9F7udCdF6acHApaWhArWiBn0kWGWpGa6Cb
-         GJi3rFbakC181OmdDaGU6+RWE9g366/8zJ/BU88El0YefeLk6sn1ncmy4hctUqXWXq
-         suk3NJlXq7EGl/C5DOw21GDolzPHcic9suvca/UBiaYuSeLH7lLHlawccXlgCzR0EB
-         0ec8CQBOLS4yA==
-Received: by mail-oo1-f69.google.com with SMTP id l11-20020a4a350b000000b0052522596fe5so5130570ooa.17
-        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 06:38:21 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678286300;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=TLXbWgCSumBQHNJIEiKWgsAVxLokeDk3mverzNy4nO4=;
-        b=G/vJeA2Lt1KEit2DUI9d1EZgfVtJxvvR1hny5jZWw5LVXzcP4jqghvcemrxF6jYFQq
-         LbAPHx7xAiQP29sVN8XnM5D90ycwtCgxRLCiIqQGPpnW6mDhID/36Kv17JEjLyNUbiG/
-         fsQknTLvFOhc3ywcBOIAMNndQmkuCKcipl2Flz4LklfQO+K2Y6+Jm/vTqXgrCDSdeDVK
-         FerSRVhU/xDNBlDMAgHshwQJHU94RbT9A87QLIH495qhLPQeinH1uF7sE/D5O0IScksa
-         /pJL/Rz2n28eCvXPCAkIacbHh1PMcuZLYBO1oGja1GwuU32PKM/82Qd1nzCytFrrEeHj
-         2MOQ==
-X-Gm-Message-State: AO0yUKXz2STNZwr5WZo99U5ArqKaEFLtXFrf2/5jshOHy3pBXDc2I8UY
-        U5E81MuzHKGm8W+XVDILxVYLQWVcY3TXLMFNdywFIUnRkn/HGt0izATa6mguTiJHMMiWyTVAlIL
-        qF/u2gblUUJ70FFRkLudCcsgQOFMuZ1YT/mV4Vj6/8goPZCXP
-X-Received: by 2002:a05:6830:334c:b0:690:f4b3:2e30 with SMTP id l12-20020a056830334c00b00690f4b32e30mr6444455ott.1.1678286300217;
-        Wed, 08 Mar 2023 06:38:20 -0800 (PST)
-X-Google-Smtp-Source: AK7set8CbYqlLLaLD244VOn17v7HLJivmm7bmVIFY938Bnf4+RvnLS3VZ4SIkK1X3tytbIUaLC2Bkh8F169/l5atnKY=
-X-Received: by 2002:a05:6830:334c:b0:690:f4b3:2e30 with SMTP id
- l12-20020a056830334c00b00690f4b32e30mr6444442ott.1.1678286299931; Wed, 08 Mar
- 2023 06:38:19 -0800 (PST)
+        with ESMTP id S232029AbjCHOoq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 09:44:46 -0500
+Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E705AB7C
+        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 06:43:23 -0800 (PST)
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3288MYRI003608;
+        Wed, 8 Mar 2023 06:42:31 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=s2048-2021-q4;
+ bh=dE2fYQ7o6xTrMESvnWy9rd7ugEPx9g+tSoBG7FgA9+0=;
+ b=TYl9ggXQFVEhq2slQLfMZF8O40HHCb7ymQrFgA5GmsP3I2CkS6fPrd+OQCrH0IiXd/py
+ VXuKYgBV3oyD85EbC9iZB+XEs0qv/VKQumkjita0L7NMCkKqfueWs45Khua5jPB1kNHN
+ M2oLkt7q4aT/o9MuTgaxOwC7WAievvl+X9h+FoRNrEPqPbsQ2Nom2tqjR8p29gUq3HAP
+ tcMA4Jh3LYxDZ2utrX6svisXMLBcAkdo07kuzPno3cLrtjPisYUKo1ioLAY6rHUNhBsw
+ CwXwqdvWuKzW/WhxqpmrQmTfmk2K2DGdnwMUa40HwizK03jrGhV4zFhWWt0HZ+w+dDn2 CQ== 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3p6ffbc4gr-11
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 08 Mar 2023 06:42:31 -0800
+Received: from devvm1736.cln0.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server id
+ 15.1.2507.17; Wed, 8 Mar 2023 06:42:29 -0800
+From:   Vadim Fedorenko <vadfed@meta.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        Andy Gospodarek <andrew.gospodarek@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>
+CC:     Vadim Fedorenko <vadfed@meta.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vadim Fedorenko <vadim.fedorenko@linux.dev>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH net v2] bnxt_en: reset PHC frequency in free-running mode
+Date:   Wed, 8 Mar 2023 06:42:09 -0800
+Message-ID: <20230308144209.150456-1-vadfed@meta.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20230307150030.527726-1-po-hsu.lin@canonical.com>
- <ZAhV8nKuLVAQHQGl@nanopsycho> <CAMy_GT92sg4_JLPHvRpH542DPLbxOEYYoCMa2cnET1g8bz_R9Q@mail.gmail.com>
- <ZAh0fY4XoNcLTIOI@nanopsycho>
-In-Reply-To: <ZAh0fY4XoNcLTIOI@nanopsycho>
-From:   Po-Hsu Lin <po-hsu.lin@canonical.com>
-Date:   Wed, 8 Mar 2023 22:37:41 +0800
-Message-ID: <CAMy_GT_mLedbejcyTYkhEbuneuEvWycVi2orB82kC9ymXx0rng@mail.gmail.com>
-Subject: Re: [PATCHv2] selftests: net: devlink_port_split.py: skip test if no
- suitable device available
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, idosch@mellanox.com,
-        danieller@mellanox.com, petrm@mellanox.com, shuah@kernel.org,
-        pabeni@redhat.com, kuba@kernel.org, edumazet@google.com,
-        davem@davemloft.net
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [2620:10d:c0a8:1b::d]
+X-Proofpoint-GUID: HYn_-elHqFp62oaKEMnzU0et-N5lUGfD
+X-Proofpoint-ORIG-GUID: HYn_-elHqFp62oaKEMnzU0et-N5lUGfD
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-03-08_08,2023-03-08_03,2023-02-09_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 8, 2023 at 7:41=E2=80=AFPM Jiri Pirko <jiri@resnulli.us> wrote:
->
-> Wed, Mar 08, 2023 at 11:21:57AM CET, po-hsu.lin@canonical.com wrote:
-> >On Wed, Mar 8, 2023 at 5:31=E2=80=AFPM Jiri Pirko <jiri@resnulli.us> wro=
-te:
-> >>
-> >> Tue, Mar 07, 2023 at 04:00:30PM CET, po-hsu.lin@canonical.com wrote:
-> >> >The `devlink -j port show` command output may not contain the "flavou=
-r"
-> >> >key, an example from s390x LPAR with Ubuntu 22.10 (5.19.0-37-generic)=
-,
-> >> >iproute2-5.15.0:
-> >> >  {"port":{"pci/0001:00:00.0/1":{"type":"eth","netdev":"ens301"},
-> >> >           "pci/0001:00:00.0/2":{"type":"eth","netdev":"ens301d1"},
-> >> >           "pci/0002:00:00.0/1":{"type":"eth","netdev":"ens317"},
-> >> >           "pci/0002:00:00.0/2":{"type":"eth","netdev":"ens317d1"}}}
-> >>
-> >> As Jakub wrote, this is odd. Could you debug if kernel sends the flavo=
-ur
-> >> attr and if not why? Also, could you try with most recent kernel?
-> >
-> >I did a quick check on another s390x LPAR instance which is running
-> >with Ubuntu 23.04 (6.1.0-16-generic) iproute2-6.1.0, there is still no
-> >"flavour" attribute.
-> >$ devlink port show
-> >pci/0001:00:00.0/1: type eth netdev ens301
-> >pci/0001:00:00.0/2: type eth netdev ens301d1
-> >pci/0002:00:00.0/1: type eth netdev ens317
-> >pci/0002:00:00.0/2: type eth netdev ens317d1
-> >
-> >The behaviour didn't change with iproute2 built from source [1]
->
-> Could you paste output of "devlink dev info"?
-> Looks like something might be wrong in the kernel devlink/driver code.
->
-The `devlink dev info` output is empty. The following output is from
-that Ubuntu 23.04 s390x LPAR, run as root:
-# devlink dev show
-pci/0001:00:00.0
-pci/0002:00:00.0
-# devlink dev show pci/0001:00:00.0
-pci/0001:00:00.0
-# devlink dev info
-# devlink dev info pci/0001:00:00.0
-kernel answers: Operation not supported
+When using a PHC in shared between multiple hosts, the previous
+frequency value may not be reset and could lead to host being unable to
+compensate the offset with timecounter adjustments. To avoid such state
+reset the hardware frequency of PHC to base frequency on init. Some
+refactoring is needed to make code readable.
 
->
+Fixes: 85036aee1938 ("bnxt_en: Add a non-real time mode to access NIC clock")
+Signed-off-by: Vadim Fedorenko <vadfed@meta.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  6 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  2 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 57 +++++++++++--------
+ 3 files changed, 36 insertions(+), 29 deletions(-)
+
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 5d4b1f2ebeac..8472ff79adf3 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -6989,11 +6989,9 @@ static int bnxt_hwrm_func_qcfg(struct bnxt *bp)
+ 		if (flags & FUNC_QCFG_RESP_FLAGS_FW_DCBX_AGENT_ENABLED)
+ 			bp->fw_cap |= BNXT_FW_CAP_DCBX_AGENT;
+ 	}
+-	if (BNXT_PF(bp) && (flags & FUNC_QCFG_RESP_FLAGS_MULTI_HOST)) {
++	if (BNXT_PF(bp) && (flags & FUNC_QCFG_RESP_FLAGS_MULTI_HOST))
+ 		bp->flags |= BNXT_FLAG_MULTI_HOST;
+-		if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
+-			bp->fw_cap &= ~BNXT_FW_CAP_PTP_RTC;
+-	}
++
+ 	if (flags & FUNC_QCFG_RESP_FLAGS_RING_MONITOR_ENABLED)
+ 		bp->fw_cap |= BNXT_FW_CAP_RING_MONITOR;
+ 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index dcb09fbe4007..c0628ac1b798 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -2000,6 +2000,8 @@ struct bnxt {
+ 	u32			fw_dbg_cap;
+ 
+ #define BNXT_NEW_RM(bp)		((bp)->fw_cap & BNXT_FW_CAP_NEW_RM)
++#define BNXT_PTP_USE_RTC(bp)	(!BNXT_MH(bp) && \
++				 ((bp)->fw_cap & BNXT_FW_CAP_PTP_RTC))
+ 	u32			hwrm_spec_code;
+ 	u16			hwrm_cmd_seq;
+ 	u16                     hwrm_cmd_kong_seq;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+index 4ec8bba18cdd..4ee8581b5fea 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+@@ -63,7 +63,7 @@ static int bnxt_ptp_settime(struct ptp_clock_info *ptp_info,
+ 						ptp_info);
+ 	u64 ns = timespec64_to_ns(ts);
+ 
+-	if (ptp->bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
++	if (BNXT_PTP_USE_RTC(ptp->bp))
+ 		return bnxt_ptp_cfg_settime(ptp->bp, ns);
+ 
+ 	spin_lock_bh(&ptp->ptp_lock);
+@@ -196,7 +196,7 @@ static int bnxt_ptp_adjtime(struct ptp_clock_info *ptp_info, s64 delta)
+ 	struct bnxt_ptp_cfg *ptp = container_of(ptp_info, struct bnxt_ptp_cfg,
+ 						ptp_info);
+ 
+-	if (ptp->bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
++	if (BNXT_PTP_USE_RTC(ptp->bp))
+ 		return bnxt_ptp_adjphc(ptp, delta);
+ 
+ 	spin_lock_bh(&ptp->ptp_lock);
+@@ -205,34 +205,39 @@ static int bnxt_ptp_adjtime(struct ptp_clock_info *ptp_info, s64 delta)
+ 	return 0;
+ }
+ 
++static int bnxt_ptp_adjfine_rtc(struct bnxt *bp, long scaled_ppm)
++{
++	s32 ppb = scaled_ppm_to_ppb(scaled_ppm);
++	struct hwrm_port_mac_cfg_input *req;
++	int rc;
++
++	rc = hwrm_req_init(bp, req, HWRM_PORT_MAC_CFG);
++	if (rc)
++		return rc;
++
++	req->ptp_freq_adj_ppb = cpu_to_le32(ppb);
++	req->enables = cpu_to_le32(PORT_MAC_CFG_REQ_ENABLES_PTP_FREQ_ADJ_PPB);
++	rc = hwrm_req_send(bp, req);
++	if (rc)
++		netdev_err(bp->dev,
++			   "ptp adjfine failed. rc = %d\n", rc);
++	return rc;
++}
++
+ static int bnxt_ptp_adjfine(struct ptp_clock_info *ptp_info, long scaled_ppm)
+ {
+ 	struct bnxt_ptp_cfg *ptp = container_of(ptp_info, struct bnxt_ptp_cfg,
+ 						ptp_info);
+-	struct hwrm_port_mac_cfg_input *req;
+ 	struct bnxt *bp = ptp->bp;
+-	int rc = 0;
+ 
+-	if (!(ptp->bp->fw_cap & BNXT_FW_CAP_PTP_RTC)) {
+-		spin_lock_bh(&ptp->ptp_lock);
+-		timecounter_read(&ptp->tc);
+-		ptp->cc.mult = adjust_by_scaled_ppm(ptp->cmult, scaled_ppm);
+-		spin_unlock_bh(&ptp->ptp_lock);
+-	} else {
+-		s32 ppb = scaled_ppm_to_ppb(scaled_ppm);
+-
+-		rc = hwrm_req_init(bp, req, HWRM_PORT_MAC_CFG);
+-		if (rc)
+-			return rc;
++	if (BNXT_PTP_USE_RTC(ptp->bp))
++		return bnxt_ptp_adjfine_rtc(bp, scaled_ppm);
+ 
+-		req->ptp_freq_adj_ppb = cpu_to_le32(ppb);
+-		req->enables = cpu_to_le32(PORT_MAC_CFG_REQ_ENABLES_PTP_FREQ_ADJ_PPB);
+-		rc = hwrm_req_send(ptp->bp, req);
+-		if (rc)
+-			netdev_err(ptp->bp->dev,
+-				   "ptp adjfine failed. rc = %d\n", rc);
+-	}
+-	return rc;
++	spin_lock_bh(&ptp->ptp_lock);
++	timecounter_read(&ptp->tc);
++	ptp->cc.mult = adjust_by_scaled_ppm(ptp->cmult, scaled_ppm);
++	spin_unlock_bh(&ptp->ptp_lock);
++	return 0;
+ }
+ 
+ void bnxt_ptp_pps_event(struct bnxt *bp, u32 data1, u32 data2)
+@@ -879,7 +884,7 @@ int bnxt_ptp_init_rtc(struct bnxt *bp, bool phc_cfg)
+ 	u64 ns;
+ 	int rc;
+ 
+-	if (!bp->ptp_cfg || !(bp->fw_cap & BNXT_FW_CAP_PTP_RTC))
++	if (!bp->ptp_cfg || !BNXT_PTP_USE_RTC(bp))
+ 		return -ENODEV;
+ 
+ 	if (!phc_cfg) {
+@@ -932,13 +937,15 @@ int bnxt_ptp_init(struct bnxt *bp, bool phc_cfg)
+ 	atomic_set(&ptp->tx_avail, BNXT_MAX_TX_TS);
+ 	spin_lock_init(&ptp->ptp_lock);
+ 
+-	if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC) {
++	if (BNXT_PTP_USE_RTC(ptp->bp)) {
+ 		bnxt_ptp_timecounter_init(bp, false);
+ 		rc = bnxt_ptp_init_rtc(bp, phc_cfg);
+ 		if (rc)
+ 			goto out;
+ 	} else {
+ 		bnxt_ptp_timecounter_init(bp, true);
++		if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
++			bnxt_ptp_adjfine_rtc(bp, 0);
+ 	}
+ 
+ 	ptp->ptp_info = bnxt_ptp_caps;
+-- 
+2.30.2
+
