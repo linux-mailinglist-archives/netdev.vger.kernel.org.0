@@ -2,205 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D0816B0175
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 09:31:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7312B6B0195
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 09:34:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230369AbjCHIbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 03:31:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56742 "EHLO
+        id S229680AbjCHIed (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 03:34:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230128AbjCHIap (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 03:30:45 -0500
-Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E487B3715;
-        Wed,  8 Mar 2023 00:30:18 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R831e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VdOtNzQ_1678264201;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0VdOtNzQ_1678264201)
-          by smtp.aliyun-inc.com;
-          Wed, 08 Mar 2023 16:30:02 +0800
-Date:   Wed, 8 Mar 2023 16:30:01 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     Kai <KaiShen@linux.alibaba.com>
-Cc:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
-        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: Re: [PATCH net-next v3] net/smc: Use percpu ref for wr tx reference
-Message-ID: <ZAhHiZ5/3Q3dcL4c@TONYMAC-ALIBABA.local>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <20230303082115.449-1-KaiShen@linux.alibaba.com>
+        with ESMTP id S230309AbjCHIdw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 03:33:52 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A12F59E5D
+        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 00:33:19 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id cw28so62524743edb.5
+        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 00:33:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678264395;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=08co5VKvgYPVtTox29HjyrCSQb3Vy/mGVljoghktoV4=;
+        b=RktQsrV345O0oMV35TGSBz9LtBaRLOQqcgQNAnjJogA8PhBr2vovnutWCXX59JsCPx
+         At9Aya/G4O17uIz/6l/3G0Qj9fFeTAUVAwRyL2igjTU8zrAA2Uc1D5OcxZ/gjCONRcnz
+         22IhU0NO9ZZRAkYc5IMRTKCHfNSV4cynVj2BCXMQhEccdPs0cbHVEOVOG8rikpoq3Xw7
+         +gbCrhgYXzpZgNyUbC4KlbXwbfcHBb8a64sJg3u0WpwKh1DQFdO2fnLAGg6RZGS/OeuL
+         AHYyxl/cQOYr9tXH2IpeKhlpAEpWtobil5DqHkfPrYeYI9jRWC5hRKd6qz0qA73X19Zz
+         NSIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678264395;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=08co5VKvgYPVtTox29HjyrCSQb3Vy/mGVljoghktoV4=;
+        b=DvZrB654YCQEOANIyQHnX3wmIwO6EWKmC/AjHLvnpXDmszF0PC5gN8siysGtFbwe+P
+         TZxiw5q1q6YJf7aqbEE0Ft3TlEJ9SkFt2p5nQWJBDeRtcWSoL30Uh9PZibKAGgt5x6Ya
+         A0Kie36+YhkivPt4jMY42wY41TikirkAM1ln1Qon74GrbnhZ1QxE6aVk1p4MJy6RRCP6
+         o76nqLHqI2dpABZDKV0HWJLokJUNnsKgBtccq0i07euDTlOqCsFwKV3d2nEEXOB2kEa+
+         LW5o8z/xpfMjQUpPRyb8mpLBRsRUQLILf35J39EDhn7kNeGz7B/YvIAQ95AiJ33OkvZw
+         JNlw==
+X-Gm-Message-State: AO0yUKUs2WDQciczGWrZ7Pdg2MF4gYwIrdWfmG2puLe58h/9eopzmki0
+        eKnqF9csckFuEELhOXwotYM=
+X-Google-Smtp-Source: AK7set++b4o7dLGBwtef5mMRLYNmum8RZJaLgm/4V6PfMcA0ADz0EXUZHCnwLd9nkw9zAREA0amj/g==
+X-Received: by 2002:a17:907:948e:b0:878:7f6e:38a7 with SMTP id dm14-20020a170907948e00b008787f6e38a7mr23083901ejc.44.1678264395054;
+        Wed, 08 Mar 2023 00:33:15 -0800 (PST)
+Received: from [192.168.0.106] ([77.126.33.94])
+        by smtp.gmail.com with ESMTPSA id f27-20020a50a6db000000b004acc61206cfsm7832880edc.33.2023.03.08.00.33.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Mar 2023 00:33:14 -0800 (PST)
+Message-ID: <e0d6760b-c571-cb1e-f47e-89a6b6376b86@gmail.com>
+Date:   Wed, 8 Mar 2023 10:33:12 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230303082115.449-1-KaiShen@linux.alibaba.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH net] ynl: re-license uniformly under GPL-2.0 OR
+ BSD-3-Clause
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>
+References: <20230306200457.3903854-1-kuba@kernel.org>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+In-Reply-To: <20230306200457.3903854-1-kuba@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 03, 2023 at 08:21:15AM +0000, Kai wrote:
-> The refcount wr_tx_refcnt may cause cache thrashing problems among
-> cores and we can use percpu ref to mitigate this issue here. We
-> gain some performance improvement with percpu ref here on our
-> customized smc-r verion. Applying cache alignment may also mitigate
-> this problem but it seem more reasonable to use percpu ref here.
-> We can also replace wr_reg_refcnt with one percpu reference like
-> wr_tx_refcnt.
-> 
-> redis-benchmark on smc-r with atomic wr_tx_refcnt:
-> SET: 525817.62 requests per second, p50=0.087 msec
-> GET: 570841.44 requests per second, p50=0.087 msec
-> 
-> redis-benchmark on the percpu_ref version:
-> SET: 539956.81 requests per second, p50=0.087 msec
-> GET: 587613.12 requests per second, p50=0.079 msec
 
-Does the test data need to be refreshed?
 
+On 06/03/2023 22:04, Jakub Kicinski wrote:
+> I was intending to make all the Netlink Spec code BSD-3-Clause
+> to ease the adoption but it appears that:
+>   - I fumbled the uAPI and used "GPL WITH uAPI note" there
+>   - it gives people pause as they expect GPL in the kernel
+> As suggested by Chuck re-license under dual. This gives us benefit
+> of full BSD freedom while fulfilling the broad "kernel is under GPL"
+> expectations.
 > 
-> Signed-off-by: Kai <KaiShen@linux.alibaba.com>
+> Link: https://lore.kernel.org/all/20230304120108.05dd44c5@kernel.org/
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> --
+> CC: Tariq Toukan <tariqt@nvidia.com>
+> CC: Lorenzo Bianconi <lorenzo@kernel.org>
 > 
-> v1->v2:
-> - Modify patch prefix
-> 
-> v2->v3:
-> - Make wr_reg_refcnt a percpu one as well
-> - Init percpu ref with 0 flag instead of ALLOW_REINIT flag
+> Tariq, Lorenzo, can I have your acks?
 > ---
->  net/smc/smc_core.h | 10 ++++++++--
->  net/smc/smc_wr.c   | 35 ++++++++++++++++++++++++++++-------
->  net/smc/smc_wr.h   |  5 ++---
->  3 files changed, 38 insertions(+), 12 deletions(-)
-> 
-> diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
-> index 08b457c2d294..1645fba0d2d3 100644
-> --- a/net/smc/smc_core.h
-> +++ b/net/smc/smc_core.h
-> @@ -106,7 +106,10 @@ struct smc_link {
->  	unsigned long		*wr_tx_mask;	/* bit mask of used indexes */
->  	u32			wr_tx_cnt;	/* number of WR send buffers */
->  	wait_queue_head_t	wr_tx_wait;	/* wait for free WR send buf */
-> -	atomic_t		wr_tx_refcnt;	/* tx refs to link */
-> +	struct {
-> +		struct percpu_ref	wr_tx_refs;
-> +	} ____cacheline_aligned_in_smp;
-> +	struct completion	tx_ref_comp;
 
-For the variable names suffixed with wr_*_refs, should we continue to
-use wr_*_refcnt?
-
-Thanks.
-
->  
->  	struct smc_wr_buf	*wr_rx_bufs;	/* WR recv payload buffers */
->  	struct ib_recv_wr	*wr_rx_ibs;	/* WR recv meta data */
-> @@ -122,7 +125,10 @@ struct smc_link {
->  
->  	struct ib_reg_wr	wr_reg;		/* WR register memory region */
->  	wait_queue_head_t	wr_reg_wait;	/* wait for wr_reg result */
-> -	atomic_t		wr_reg_refcnt;	/* reg refs to link */
-> +	struct {
-> +		struct percpu_ref	wr_reg_refs;
-> +	} ____cacheline_aligned_in_smp;
-> +	struct completion	reg_ref_comp;
->  	enum smc_wr_reg_state	wr_reg_state;	/* state of wr_reg request */
->  
->  	u8			gid[SMC_GID_SIZE];/* gid matching used vlan id*/
-> diff --git a/net/smc/smc_wr.c b/net/smc/smc_wr.c
-> index b0678a417e09..0021065a600a 100644
-> --- a/net/smc/smc_wr.c
-> +++ b/net/smc/smc_wr.c
-> @@ -377,12 +377,11 @@ int smc_wr_reg_send(struct smc_link *link, struct ib_mr *mr)
->  	if (rc)
->  		return rc;
->  
-> -	atomic_inc(&link->wr_reg_refcnt);
-> +	percpu_ref_get(&link->wr_reg_refs);
->  	rc = wait_event_interruptible_timeout(link->wr_reg_wait,
->  					      (link->wr_reg_state != POSTED),
->  					      SMC_WR_REG_MR_WAIT_TIME);
-> -	if (atomic_dec_and_test(&link->wr_reg_refcnt))
-> -		wake_up_all(&link->wr_reg_wait);
-> +	percpu_ref_put(&link->wr_reg_refs);
->  	if (!rc) {
->  		/* timeout - terminate link */
->  		smcr_link_down_cond_sched(link);
-> @@ -647,8 +646,10 @@ void smc_wr_free_link(struct smc_link *lnk)
->  	smc_wr_wakeup_tx_wait(lnk);
->  
->  	smc_wr_tx_wait_no_pending_sends(lnk);
-> -	wait_event(lnk->wr_reg_wait, (!atomic_read(&lnk->wr_reg_refcnt)));
-> -	wait_event(lnk->wr_tx_wait, (!atomic_read(&lnk->wr_tx_refcnt)));
-> +	percpu_ref_kill(&lnk->wr_reg_refs);
-> +	wait_for_completion(&lnk->reg_ref_comp);
-> +	percpu_ref_kill(&lnk->wr_tx_refs);
-> +	wait_for_completion(&lnk->tx_ref_comp);
->  
->  	if (lnk->wr_rx_dma_addr) {
->  		ib_dma_unmap_single(ibdev, lnk->wr_rx_dma_addr,
-> @@ -847,6 +848,20 @@ void smc_wr_add_dev(struct smc_ib_device *smcibdev)
->  	tasklet_setup(&smcibdev->send_tasklet, smc_wr_tx_tasklet_fn);
->  }
->  
-> +static void smcr_wr_tx_refs_free(struct percpu_ref *ref)
-> +{
-> +	struct smc_link *lnk = container_of(ref, struct smc_link, wr_tx_refs);
-> +
-> +	complete(&lnk->tx_ref_comp);
-> +}
-> +
-> +static void smcr_wr_reg_refs_free(struct percpu_ref *ref)
-> +{
-> +	struct smc_link *lnk = container_of(ref, struct smc_link, wr_reg_refs);
-> +
-> +	complete(&lnk->reg_ref_comp);
-> +}
-> +
->  int smc_wr_create_link(struct smc_link *lnk)
->  {
->  	struct ib_device *ibdev = lnk->smcibdev->ibdev;
-> @@ -890,9 +905,15 @@ int smc_wr_create_link(struct smc_link *lnk)
->  	smc_wr_init_sge(lnk);
->  	bitmap_zero(lnk->wr_tx_mask, SMC_WR_BUF_CNT);
->  	init_waitqueue_head(&lnk->wr_tx_wait);
-> -	atomic_set(&lnk->wr_tx_refcnt, 0);
-> +	rc = percpu_ref_init(&lnk->wr_tx_refs, smcr_wr_tx_refs_free, 0, GFP_KERNEL);
-> +	if (rc)
-> +		goto dma_unmap;
-> +	init_completion(&lnk->tx_ref_comp);
->  	init_waitqueue_head(&lnk->wr_reg_wait);
-> -	atomic_set(&lnk->wr_reg_refcnt, 0);
-> +	rc = percpu_ref_init(&lnk->wr_reg_refs, smcr_wr_reg_refs_free, 0, GFP_KERNEL);
-> +	if (rc)
-> +		goto dma_unmap;
-> +	init_completion(&lnk->reg_ref_comp);
->  	init_waitqueue_head(&lnk->wr_rx_empty_wait);
->  	return rc;
->  
-> diff --git a/net/smc/smc_wr.h b/net/smc/smc_wr.h
-> index 45e9b894d3f8..f3008dda222a 100644
-> --- a/net/smc/smc_wr.h
-> +++ b/net/smc/smc_wr.h
-> @@ -63,14 +63,13 @@ static inline bool smc_wr_tx_link_hold(struct smc_link *link)
->  {
->  	if (!smc_link_sendable(link))
->  		return false;
-> -	atomic_inc(&link->wr_tx_refcnt);
-> +	percpu_ref_get(&link->wr_tx_refs);
->  	return true;
->  }
->  
->  static inline void smc_wr_tx_link_put(struct smc_link *link)
->  {
-> -	if (atomic_dec_and_test(&link->wr_tx_refcnt))
-> -		wake_up_all(&link->wr_tx_wait);
-> +	percpu_ref_put(&link->wr_tx_refs);
->  }
->  
->  static inline void smc_wr_drain_cq(struct smc_link *lnk)
-> -- 
-> 2.31.1
+Acked-by: Tariq Toukan <tariqt@nvidia.com> # re-license my contributions
