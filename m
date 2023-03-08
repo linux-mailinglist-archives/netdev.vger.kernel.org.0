@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F1886AFE1F
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 06:13:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A57A26AFE1C
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 06:13:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229806AbjCHFNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 00:13:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52834 "EHLO
+        id S229675AbjCHFNm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 00:13:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbjCHFNn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 00:13:43 -0500
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2048.outbound.protection.outlook.com [40.107.243.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 609EF3028E
+        with ESMTP id S229477AbjCHFNk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 00:13:40 -0500
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2058.outbound.protection.outlook.com [40.107.92.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 704FF51C9B
         for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 21:13:38 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Xsc1IkubLd8lx9cyHzy03EQuFm4lvlZyix2pTpYDXwwv2aTvLOCiWOe1mXeWkLRawl48dCDgDQyU87vRwjJT4mMc3J85UhUMHvmfBwd+I9JhlpV4r12hG2C8O1QJnfO8gazk5EA5VmYZ2/0ZGgY4zFJ4RdIX+Jxo/RDGMaNT+u9iCUSNnAmKZZOoVNv3yMZ9cettP2o6g65KMjmtjbshd5Df+nSCdK+qtXWuRqNuBKJFIwH3GXI4WFrxFHW/Lrpm5fpce3GscYyKSxVErEszoX9QjI/zrTlCfwHp+CwQ2uOrYJEZckJo6m/w6hwwxy2f5/FPaq7MHBIrrGil6pQaJw==
+ b=n09xJr/gM+OxFflVu3Hpz3P+XRODPKsWkQZnYK558FZqEudqfPcXU/53i9H0eRYzFufaLJ5hKaeJtZR+9abpw/k4IUMgooEszS8QqQ0JoSJRJyevxkrpGzz+Pl+O8pMDsSTKQBrK9rwwx3SbLINYkDxJJgawdlHpig9HvhU6PTyynAS/U8TkxXisbcsKzeeQj+UerieeyH7xL1SMKSQo/ALfw67U0Av5PBhLv8saUU8jTncTqUaPiPt0vsXT5mYO2xtocqVWhJxfGAYcqNEnr40q+br38htneZUYA0EiXAwFuuonRQpKdiuvCzonjFfOf11Pl4YKouWhV/PLICZAwQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1stWRl4c8WpD3O/C3v4DlNHyJK2Lw73NcPBKP2kcJMQ=;
- b=mRZRUKyk8Yil95ZoKoy7Fffm/DQCq1FZO5os5ROwcUa1wnqucbEF22m+Ty24BAr64W59gwVINwsOpkIVPJMZWd3Q7PzrPo5MAoPmoLeKwFDPbBuu7JRGKZ40aWHy7AVSZqfXbP0mhq5HD7W0hZuPuA/M8oYhx0rgCO7hGmdwjuPiE10OKDp/lCKz4ByxqYMJynE6ElD4joD7y5G1IEGb3JZfLkXsP+DtRKdXY2NZdB21Wcq59MgJVfCSJFcHw0VBCwvWbie/OiUt/3WOszkrvXRRY7YKGGSD09eI1UhxrQWIMBYLukg1aWfnrdt0vfbrplRoWU9uP+H6MtGSUfYtJg==
+ bh=fH24t8dCm33pkvYlCBTzYnHO6G3ip05J887x7yfGmjY=;
+ b=aiwr3hzremTc0jbbF3MBfI8CMdmQOi12FBGfRB1G/0BaRnqXTiN6SEp3DmBy7nHMd+M/CFDMUofiS5HkzoUEoKB2OtFWIAoKZotR5h9lMPIo34r/x7GQz6Xaj+PHIUVDkq+yMINRmS5S2NPyHj0xu5dhmMSeSP3oJi0sbgnBwYC/zdfOwCVsV51LjdM3bYI11KzWlTqE6t6Nu/wXAWEoH4YvAfMzDQnhM4/xyNKzUw0g/CCKbfMXd8Kses8QTFpmvpUQFOoL8x0twhTJfzbox1J2w3ykDEf5Mtw3GjOas0RHaHYty4QppnNDla6KRLg/+3bsJz9eKP4ZjfyWwnJDBA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1stWRl4c8WpD3O/C3v4DlNHyJK2Lw73NcPBKP2kcJMQ=;
- b=XSJWEt9cbR28wLq5mFaWjrTQQdIQum1rCELyPvf/F4vdJ4iyinKXieiRKiS2V0cgtPteoXeIiiBU/7QumJMXsIuP43ueMdMtUf1CYRYQRTe1S+4Fa0T/CxGWMFQujoRJmqCcMuGnJYt7R1NAXpTzo1uEJby26FMZ+kgaZLiR2O4=
-Received: from BN1PR12CA0008.namprd12.prod.outlook.com (2603:10b6:408:e1::13)
- by MN2PR12MB4240.namprd12.prod.outlook.com (2603:10b6:208:1d3::14) with
+ bh=fH24t8dCm33pkvYlCBTzYnHO6G3ip05J887x7yfGmjY=;
+ b=IEVSeW7wD02leTAgmXm+rNcu9Rgawnz59zS0q7wPOBvJvTPttKJzQo5SyPL78BXdLLWdZFKVgbiurTE6WaGLXi3oY0a9pyeOy6gFglaf9QyBtky9FfMBCgtODlQkjyRqsTQ8NC/W8pdP3KfHzlBlm6FrEbFCmUnXl5ywTJKDxBM=
+Received: from BN8PR15CA0005.namprd15.prod.outlook.com (2603:10b6:408:c0::18)
+ by DS0PR12MB7802.namprd12.prod.outlook.com (2603:10b6:8:145::5) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.29; Wed, 8 Mar
- 2023 05:13:35 +0000
-Received: from BN8NAM11FT013.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:e1:cafe::fc) by BN1PR12CA0008.outlook.office365.com
- (2603:10b6:408:e1::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.28; Wed, 8 Mar
+ 2023 05:13:36 +0000
+Received: from BN8NAM11FT011.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:c0:cafe::2e) by BN8PR15CA0005.outlook.office365.com
+ (2603:10b6:408:c0::18) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.17 via Frontend
- Transport; Wed, 8 Mar 2023 05:13:35 +0000
+ Transport; Wed, 8 Mar 2023 05:13:36 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -46,20 +46,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT013.mail.protection.outlook.com (10.13.176.182) with Microsoft SMTP
+ BN8NAM11FT011.mail.protection.outlook.com (10.13.176.140) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.20.6178.17 via Frontend Transport; Wed, 8 Mar 2023 05:13:35 +0000
 Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 7 Mar
- 2023 23:13:33 -0600
+ 2023 23:13:34 -0600
 From:   Shannon Nelson <shannon.nelson@amd.com>
 To:     <shannon.nelson@amd.com>, <brett.creeley@amd.com>,
         <davem@davemloft.net>, <netdev@vger.kernel.org>, <kuba@kernel.org>
 CC:     <drivers@pensando.io>, <leon@kernel.org>, <jiri@resnulli.us>
-Subject: [PATCH RFC v4 net-next 02/13] pds_core: add devcmd device interfaces
-Date:   Tue, 7 Mar 2023 21:12:59 -0800
-Message-ID: <20230308051310.12544-3-shannon.nelson@amd.com>
+Subject: [PATCH RFC v4 net-next 03/13] pds_core: health timer and workqueue
+Date:   Tue, 7 Mar 2023 21:13:00 -0800
+Message-ID: <20230308051310.12544-4-shannon.nelson@amd.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20230308051310.12544-1-shannon.nelson@amd.com>
 References: <20230308051310.12544-1-shannon.nelson@amd.com>
@@ -70,23 +70,23 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT013:EE_|MN2PR12MB4240:EE_
-X-MS-Office365-Filtering-Correlation-Id: c68f411f-5ea1-4444-538e-08db1f93de94
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT011:EE_|DS0PR12MB7802:EE_
+X-MS-Office365-Filtering-Correlation-Id: f8c303c9-4144-425c-530d-08db1f93deb5
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HNauR6m1THT+hDjKAHmSA0uHhf40tDsjnwjQvr3mDWF6fV6y8QkM6AWRZkd+VCunG5WL04x/B4W2JVlPpq3EqERmlWlTPE1YtBTiaSwrvB/EZbF4C38MAgrYXut58scB14nR0LZyFkVfE9WkOlnccVFqG8oCksauhOwkvI7vaQirTvdohBQAmpUWoq/8kBz8akxS3bG3B0t4xoexWT6WSm80JNCfu1OrKyHU/RpVc7fXRUSlQaCdKnKgirQAAk72ApL9ytPcsU41uZy/sPt/iFtyjZov0LZizWUOExlxJPr4ZfW6S3S7lJo/82W9VvZORLQvtWuzUF+CbPusqfzyhQMz3kxwTH2qXXnUQOStR9mXrF6h9HiKR0bpIFI2iOPnRJCunDcsMh+/r5hoYBeLot/yAJs4LhLYSqrd2QhEeLxM0RbuhDFm20ScWuBGTmYA+4xnm43jfSSSZ4ws9GpFkh+oh5HJaneDxIVl+jZoGL3GyYr7IAIcXrG2Y5cTovoQWUhUDANELNmCHPP03ieZ5EuScodXRqVZ3rC8E4TE90pjxQrrkO/jfxnMpaSYi0oS98UQFXlZpC45JLkGYGbtMHG2AdiPiRmkG8urrJXtWes88euIKvn/9GKcad9x7CuSFkwbcbHdXooSkrvbQhShogHUZW5vm3HVWwRUQB1TOQucaHh+pZ3x35PbNwonbMpbIrDDtrOqy3sia/hebnGPBMn5+MNJK0foJb/m4iMk8Ns=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(346002)(396003)(376002)(136003)(39860400002)(451199018)(36840700001)(40470700004)(46966006)(5660300002)(478600001)(86362001)(336012)(426003)(47076005)(186003)(36756003)(40460700003)(26005)(1076003)(16526019)(2906002)(2616005)(30864003)(44832011)(70586007)(82310400005)(70206006)(81166007)(8676002)(4326008)(82740400003)(40480700001)(83380400001)(6666004)(8936002)(316002)(41300700001)(36860700001)(110136005)(54906003)(356005)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: ajUsuS542CCt2t2sW1tXqqe6HRxPzUQV6+OjrBq4qSiiKaDNTk55V39MCAQ65vez4H2JrkCTfMMi1Up3LSGKD+aZH/2nESjtKHiTSIei0zTvSbn8CQhLzBESrmy1s9IyAZgENre4RBSUkRYXPktCCuRqZURVaqmSiXKZkzcWDMhg5IGv3VHI1ytYgIvALKA4FBb8rrDfG50ohx+lvFjFe15b1vrXOK1Zt52qs3+qtBiG7UgO0mRd5/LK8UKFfsR4ZX+I+UANfbEtKGVk1MSVJ355lqcPxFD1zayVIaFh/YJHFd0vyV1UBJCpbEdiKOEnbqP2YBjYCJiZFpknBL6dACQBz3t6GsxyenkhIyrXuI5tW9Op0HfSEcZYGCNfWmZqgBMGUVnIHVx5uvu3x11LDJCV3cRDm9DedD4CxdhBWNeQFh+oswOamGkedTutwpbqITeNvWg8bwjpnJ9Lz3tzXj8UUMt043OcE7G/LySzGIfHOnTxVxJazvoRuVBKZ1aH4yIWzxfj8NlXu3b7rSh4H6APtOt0bXjNfGAwgSVbFg//BtaZT39t+pGf24BYT3PMnseyA/3RI55L73EtSajl2ixkNiTA1H/CAiK33R4BToX33iy9ZlMA3n/fYRaxstTb86d1C3VYTkwXhFRUe5ToURWn129aUBOaUpuuj/dZdl2RwnpYqg2pwBQYcmptCKrd/FxM71YfCWttIPRp+75QTcutEJiaNQOwutnTdBQp2tw=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(396003)(376002)(136003)(346002)(39860400002)(451199018)(46966006)(36840700001)(40470700004)(8676002)(5660300002)(70586007)(41300700001)(70206006)(54906003)(44832011)(2906002)(8936002)(4326008)(110136005)(316002)(478600001)(36860700001)(47076005)(36756003)(426003)(6666004)(26005)(1076003)(356005)(186003)(2616005)(336012)(81166007)(86362001)(82740400003)(40480700001)(82310400005)(83380400001)(40460700003)(16526019)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2023 05:13:35.7504
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2023 05:13:35.9667
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c68f411f-5ea1-4444-538e-08db1f93de94
+X-MS-Exchange-CrossTenant-Network-Message-Id: f8c303c9-4144-425c-530d-08db1f93deb5
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT013.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT011.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4240
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7802
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -97,904 +97,243 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The devcmd interface is the basic connection to the device through the
-PCI BAR for low level identification and command services.  This does
-the early device initialization and finds the identity data, and adds
-devcmd routines to be used by later driver bits.
+Add in the periodic health check and the related workqueue,
+as well as the handlers for when a FW reset is seen.
 
 Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
 ---
- drivers/net/ethernet/amd/pds_core/Makefile  |   4 +-
- drivers/net/ethernet/amd/pds_core/core.c    |  36 ++
- drivers/net/ethernet/amd/pds_core/debugfs.c |  67 ++++
- drivers/net/ethernet/amd/pds_core/dev.c     | 350 ++++++++++++++++++++
- drivers/net/ethernet/amd/pds_core/main.c    |  35 +-
- include/linux/pds/pds_common.h              |  63 ++++
- include/linux/pds/pds_core.h                |  52 +++
- include/linux/pds/pds_intr.h                | 161 +++++++++
- 8 files changed, 764 insertions(+), 4 deletions(-)
- create mode 100644 drivers/net/ethernet/amd/pds_core/core.c
- create mode 100644 drivers/net/ethernet/amd/pds_core/dev.c
- create mode 100644 include/linux/pds/pds_intr.h
+ drivers/net/ethernet/amd/pds_core/core.c | 60 ++++++++++++++++++++++++
+ drivers/net/ethernet/amd/pds_core/dev.c  |  3 ++
+ drivers/net/ethernet/amd/pds_core/main.c | 51 ++++++++++++++++++++
+ include/linux/pds/pds_core.h             | 10 ++++
+ 4 files changed, 124 insertions(+)
 
-diff --git a/drivers/net/ethernet/amd/pds_core/Makefile b/drivers/net/ethernet/amd/pds_core/Makefile
-index b4cc4b242e44..eaca8557ba66 100644
---- a/drivers/net/ethernet/amd/pds_core/Makefile
-+++ b/drivers/net/ethernet/amd/pds_core/Makefile
-@@ -4,6 +4,8 @@
- obj-$(CONFIG_PDS_CORE) := pds_core.o
- 
- pds_core-y := main.o \
--	      devlink.o
-+	      devlink.o \
-+	      dev.o \
-+	      core.o
- 
- pds_core-$(CONFIG_DEBUG_FS) += debugfs.o
 diff --git a/drivers/net/ethernet/amd/pds_core/core.c b/drivers/net/ethernet/amd/pds_core/core.c
-new file mode 100644
-index 000000000000..88a6aa42cc28
---- /dev/null
+index 88a6aa42cc28..87717bf40e80 100644
+--- a/drivers/net/ethernet/amd/pds_core/core.c
 +++ b/drivers/net/ethernet/amd/pds_core/core.c
-@@ -0,0 +1,36 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright(c) 2023 Advanced Micro Devices, Inc */
-+
-+#include <linux/pds/pds_core.h>
-+
-+int pdsc_setup(struct pdsc *pdsc, bool init)
-+{
-+	int err = 0;
-+
-+	if (init)
-+		err = pdsc_dev_init(pdsc);
-+	else
-+		err = pdsc_dev_reinit(pdsc);
-+	if (err)
-+		return err;
-+
-+	clear_bit(PDSC_S_FW_DEAD, &pdsc->state);
-+	return 0;
-+}
-+
-+void pdsc_teardown(struct pdsc *pdsc, bool removing)
-+{
-+	pdsc_devcmd_reset(pdsc);
-+
-+	if (removing) {
-+		kfree(pdsc->intr_info);
-+		pdsc->intr_info = NULL;
-+	}
-+
-+	if (pdsc->kern_dbpage) {
-+		iounmap(pdsc->kern_dbpage);
-+		pdsc->kern_dbpage = NULL;
-+	}
-+
-+	set_bit(PDSC_S_FW_DEAD, &pdsc->state);
-+}
-diff --git a/drivers/net/ethernet/amd/pds_core/debugfs.c b/drivers/net/ethernet/amd/pds_core/debugfs.c
-index c5cf01ca7853..75376c9f77cf 100644
---- a/drivers/net/ethernet/amd/pds_core/debugfs.c
-+++ b/drivers/net/ethernet/amd/pds_core/debugfs.c
-@@ -44,4 +44,71 @@ void pdsc_debugfs_del_dev(struct pdsc *pdsc)
- 	debugfs_remove_recursive(pdsc->dentry);
- 	pdsc->dentry = NULL;
+@@ -34,3 +34,63 @@ void pdsc_teardown(struct pdsc *pdsc, bool removing)
+ 
+ 	set_bit(PDSC_S_FW_DEAD, &pdsc->state);
  }
 +
-+static int identity_show(struct seq_file *seq, void *v)
++static void pdsc_fw_down(struct pdsc *pdsc)
 +{
-+	struct pdsc *pdsc = seq->private;
-+	struct pds_core_dev_identity *ident;
-+	int vt;
++	mutex_lock(&pdsc->config_lock);
 +
-+	ident = &pdsc->dev_ident;
-+
-+	seq_printf(seq, "asic_type:        0x%x\n", pdsc->dev_info.asic_type);
-+	seq_printf(seq, "asic_rev:         0x%x\n", pdsc->dev_info.asic_rev);
-+	seq_printf(seq, "serial_num:       %s\n", pdsc->dev_info.serial_num);
-+	seq_printf(seq, "fw_version:       %s\n", pdsc->dev_info.fw_version);
-+	seq_printf(seq, "fw_status:        0x%x\n",
-+		   ioread8(&pdsc->info_regs->fw_status));
-+	seq_printf(seq, "fw_heartbeat:     0x%x\n",
-+		   ioread32(&pdsc->info_regs->fw_heartbeat));
-+
-+	seq_printf(seq, "nlifs:            %d\n", le32_to_cpu(ident->nlifs));
-+	seq_printf(seq, "nintrs:           %d\n", le32_to_cpu(ident->nintrs));
-+	seq_printf(seq, "ndbpgs_per_lif:   %d\n", le32_to_cpu(ident->ndbpgs_per_lif));
-+	seq_printf(seq, "intr_coal_mult:   %d\n", le32_to_cpu(ident->intr_coal_mult));
-+	seq_printf(seq, "intr_coal_div:    %d\n", le32_to_cpu(ident->intr_coal_div));
-+
-+	seq_puts(seq, "vif_types:        ");
-+	for (vt = 0; vt < PDS_DEV_TYPE_MAX; vt++)
-+		seq_printf(seq, "%d ", le16_to_cpu(pdsc->dev_ident.vif_types[vt]));
-+	seq_puts(seq, "\n");
-+
-+	return 0;
-+}
-+DEFINE_SHOW_ATTRIBUTE(identity);
-+
-+void pdsc_debugfs_add_ident(struct pdsc *pdsc)
-+{
-+	debugfs_create_file("identity", 0400, pdsc->dentry, pdsc, &identity_fops);
-+}
-+
-+static int irqs_show(struct seq_file *seq, void *v)
-+{
-+	struct pdsc *pdsc = seq->private;
-+	struct pdsc_intr_info *intr_info;
-+	int i;
-+
-+	seq_printf(seq, "index  vector  name (nintrs %d)\n", pdsc->nintrs);
-+
-+	if (!pdsc->intr_info)
-+		return 0;
-+
-+	for (i = 0; i < pdsc->nintrs; i++) {
-+		intr_info = &pdsc->intr_info[i];
-+		if (!intr_info->vector)
-+			continue;
-+
-+		seq_printf(seq, "% 3d    % 3d     %s\n",
-+			   i, intr_info->vector, intr_info->name);
++	if (test_and_set_bit(PDSC_S_FW_DEAD, &pdsc->state)) {
++		dev_err(pdsc->dev, "%s: already happening\n", __func__);
++		mutex_unlock(&pdsc->config_lock);
++		return;
 +	}
 +
-+	return 0;
-+}
-+DEFINE_SHOW_ATTRIBUTE(irqs);
++	pdsc_teardown(pdsc, PDSC_TEARDOWN_RECOVERY);
 +
-+void pdsc_debugfs_add_irqs(struct pdsc *pdsc)
-+{
-+	debugfs_create_file("irqs", 0400, pdsc->dentry, pdsc, &irqs_fops);
++	mutex_unlock(&pdsc->config_lock);
 +}
 +
- #endif /* CONFIG_DEBUG_FS */
-diff --git a/drivers/net/ethernet/amd/pds_core/dev.c b/drivers/net/ethernet/amd/pds_core/dev.c
-new file mode 100644
-index 000000000000..7a9db1505c1f
---- /dev/null
-+++ b/drivers/net/ethernet/amd/pds_core/dev.c
-@@ -0,0 +1,350 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright(c) 2023 Advanced Micro Devices, Inc */
-+
-+#include <linux/version.h>
-+#include <linux/errno.h>
-+#include <linux/pci.h>
-+#include <linux/utsname.h>
-+
-+#include <linux/pds/pds_core.h>
-+
-+int pdsc_err_to_errno(enum pds_core_status_code code)
-+{
-+	switch (code) {
-+	case PDS_RC_SUCCESS:
-+		return 0;
-+	case PDS_RC_EVERSION:
-+	case PDS_RC_EQTYPE:
-+	case PDS_RC_EQID:
-+	case PDS_RC_EINVAL:
-+	case PDS_RC_ENOSUPP:
-+		return -EINVAL;
-+	case PDS_RC_EPERM:
-+		return -EPERM;
-+	case PDS_RC_ENOENT:
-+		return -ENOENT;
-+	case PDS_RC_EAGAIN:
-+		return -EAGAIN;
-+	case PDS_RC_ENOMEM:
-+		return -ENOMEM;
-+	case PDS_RC_EFAULT:
-+		return -EFAULT;
-+	case PDS_RC_EBUSY:
-+		return -EBUSY;
-+	case PDS_RC_EEXIST:
-+		return -EEXIST;
-+	case PDS_RC_EVFID:
-+		return -ENODEV;
-+	case PDS_RC_ECLIENT:
-+		return -ECHILD;
-+	case PDS_RC_ENOSPC:
-+		return -ENOSPC;
-+	case PDS_RC_ERANGE:
-+		return -ERANGE;
-+	case PDS_RC_BAD_ADDR:
-+		return -EFAULT;
-+	case PDS_RC_EOPCODE:
-+	case PDS_RC_EINTR:
-+	case PDS_RC_DEV_CMD:
-+	case PDS_RC_ERROR:
-+	case PDS_RC_ERDMA:
-+	case PDS_RC_EIO:
-+	default:
-+		return -EIO;
-+	}
-+}
-+
-+bool pdsc_is_fw_running(struct pdsc *pdsc)
-+{
-+	pdsc->fw_status = ioread8(&pdsc->info_regs->fw_status);
-+	pdsc->last_fw_time = jiffies;
-+	pdsc->last_hb = ioread32(&pdsc->info_regs->fw_heartbeat);
-+
-+	/* Firmware is useful only if the running bit is set and
-+	 * fw_status != 0xff (bad PCI read)
-+	 */
-+	return (pdsc->fw_status != 0xff) &&
-+		(pdsc->fw_status & PDS_CORE_FW_STS_F_RUNNING);
-+}
-+
-+bool pdsc_is_fw_good(struct pdsc *pdsc)
-+{
-+	return pdsc_is_fw_running(pdsc) &&
-+		(pdsc->fw_status & PDS_CORE_FW_STS_F_GENERATION) == pdsc->fw_generation;
-+}
-+
-+static u8 pdsc_devcmd_status(struct pdsc *pdsc)
-+{
-+	return ioread8(&pdsc->cmd_regs->comp.status);
-+}
-+
-+static bool pdsc_devcmd_done(struct pdsc *pdsc)
-+{
-+	return ioread32(&pdsc->cmd_regs->done) & PDS_CORE_DEV_CMD_DONE;
-+}
-+
-+static void pdsc_devcmd_dbell(struct pdsc *pdsc)
-+{
-+	iowrite32(0, &pdsc->cmd_regs->done);
-+	iowrite32(1, &pdsc->cmd_regs->doorbell);
-+}
-+
-+static void pdsc_devcmd_clean(struct pdsc *pdsc)
-+{
-+	iowrite32(0, &pdsc->cmd_regs->doorbell);
-+	memset_io(&pdsc->cmd_regs->cmd, 0, sizeof(pdsc->cmd_regs->cmd));
-+}
-+
-+static const char *pdsc_devcmd_str(int opcode)
-+{
-+	switch (opcode) {
-+	case PDS_CORE_CMD_NOP:
-+		return "PDS_CORE_CMD_NOP";
-+	case PDS_CORE_CMD_IDENTIFY:
-+		return "PDS_CORE_CMD_IDENTIFY";
-+	case PDS_CORE_CMD_RESET:
-+		return "PDS_CORE_CMD_RESET";
-+	case PDS_CORE_CMD_INIT:
-+		return "PDS_CORE_CMD_INIT";
-+	case PDS_CORE_CMD_FW_DOWNLOAD:
-+		return "PDS_CORE_CMD_FW_DOWNLOAD";
-+	case PDS_CORE_CMD_FW_CONTROL:
-+		return "PDS_CORE_CMD_FW_CONTROL";
-+	default:
-+		return "PDS_CORE_CMD_UNKNOWN";
-+	}
-+}
-+
-+static int pdsc_devcmd_wait(struct pdsc *pdsc, int max_seconds)
-+{
-+	struct device *dev = pdsc->dev;
-+	unsigned long start_time;
-+	unsigned long max_wait;
-+	unsigned long duration;
-+	int timeout = 0;
-+	int status = 0;
-+	int done = 0;
-+	int err = 0;
-+	int opcode;
-+
-+	opcode = ioread8(&pdsc->cmd_regs->cmd.opcode);
-+
-+	start_time = jiffies;
-+	max_wait = start_time + (max_seconds * HZ);
-+
-+	while (!done && !timeout) {
-+		done = pdsc_devcmd_done(pdsc);
-+		if (done)
-+			break;
-+
-+		timeout = time_after(jiffies, max_wait);
-+		if (timeout)
-+			break;
-+
-+		usleep_range(100, 200);
-+	}
-+	duration = jiffies - start_time;
-+
-+	if (done && duration > HZ)
-+		dev_dbg(dev, "DEVCMD %d %s after %ld secs\n",
-+			opcode, pdsc_devcmd_str(opcode), duration / HZ);
-+
-+	if (!done || timeout) {
-+		dev_err(dev, "DEVCMD %d %s timeout, done %d timeout %d max_seconds=%d\n",
-+			opcode, pdsc_devcmd_str(opcode), done, timeout,
-+			max_seconds);
-+		err = -ETIMEDOUT;
-+		pdsc_devcmd_clean(pdsc);
-+	}
-+
-+	status = pdsc_devcmd_status(pdsc);
-+	err = pdsc_err_to_errno(status);
-+	if (status != PDS_RC_SUCCESS && status != PDS_RC_EAGAIN)
-+		dev_err(dev, "DEVCMD %d %s failed, status=%d err %d %pe\n",
-+			opcode, pdsc_devcmd_str(opcode), status, err,
-+			ERR_PTR(err));
-+
-+	return err;
-+}
-+
-+int pdsc_devcmd_locked(struct pdsc *pdsc, union pds_core_dev_cmd *cmd,
-+		       union pds_core_dev_comp *comp, int max_seconds)
++static void pdsc_fw_up(struct pdsc *pdsc)
 +{
 +	int err;
 +
-+	memcpy_toio(&pdsc->cmd_regs->cmd, cmd, sizeof(*cmd));
-+	pdsc_devcmd_dbell(pdsc);
-+	err = pdsc_devcmd_wait(pdsc, max_seconds);
-+	memcpy_fromio(comp, &pdsc->cmd_regs->comp, sizeof(*comp));
++	mutex_lock(&pdsc->config_lock);
 +
-+	return err;
-+}
-+
-+int pdsc_devcmd(struct pdsc *pdsc, union pds_core_dev_cmd *cmd,
-+		union pds_core_dev_comp *comp, int max_seconds)
-+{
-+	int err;
-+
-+	mutex_lock(&pdsc->devcmd_lock);
-+	err = pdsc_devcmd_locked(pdsc, cmd, comp, max_seconds);
-+	mutex_unlock(&pdsc->devcmd_lock);
-+
-+	return err;
-+}
-+
-+int pdsc_devcmd_init(struct pdsc *pdsc)
-+{
-+	union pds_core_dev_comp comp = { 0 };
-+	union pds_core_dev_cmd cmd = {
-+		.opcode = PDS_CORE_CMD_INIT,
-+	};
-+
-+	return pdsc_devcmd(pdsc, &cmd, &comp, pdsc->devcmd_timeout);
-+}
-+
-+int pdsc_devcmd_reset(struct pdsc *pdsc)
-+{
-+	union pds_core_dev_comp comp = { 0 };
-+	union pds_core_dev_cmd cmd = {
-+		.reset.opcode = PDS_CORE_CMD_RESET,
-+	};
-+
-+	return pdsc_devcmd(pdsc, &cmd, &comp, pdsc->devcmd_timeout);
-+}
-+
-+static int pdsc_devcmd_identify_locked(struct pdsc *pdsc)
-+{
-+	union pds_core_dev_comp comp = { 0 };
-+	union pds_core_dev_cmd cmd = {
-+		.identify.opcode = PDS_CORE_CMD_IDENTIFY,
-+		.identify.ver = PDS_CORE_IDENTITY_VERSION_1,
-+	};
-+
-+	return pdsc_devcmd_locked(pdsc, &cmd, &comp, pdsc->devcmd_timeout);
-+}
-+
-+static void pdsc_init_devinfo(struct pdsc *pdsc)
-+{
-+	pdsc->dev_info.asic_type = ioread8(&pdsc->info_regs->asic_type);
-+	pdsc->dev_info.asic_rev = ioread8(&pdsc->info_regs->asic_rev);
-+	pdsc->fw_generation = PDS_CORE_FW_STS_F_GENERATION &
-+			      ioread8(&pdsc->info_regs->fw_status);
-+
-+	memcpy_fromio(pdsc->dev_info.fw_version,
-+		      pdsc->info_regs->fw_version,
-+		      PDS_CORE_DEVINFO_FWVERS_BUFLEN);
-+	pdsc->dev_info.fw_version[PDS_CORE_DEVINFO_FWVERS_BUFLEN] = 0;
-+
-+	memcpy_fromio(pdsc->dev_info.serial_num,
-+		      pdsc->info_regs->serial_num,
-+		      PDS_CORE_DEVINFO_SERIAL_BUFLEN);
-+	pdsc->dev_info.serial_num[PDS_CORE_DEVINFO_SERIAL_BUFLEN] = 0;
-+
-+	dev_dbg(pdsc->dev, "fw_version %s\n", pdsc->dev_info.fw_version);
-+}
-+
-+static int pdsc_identify(struct pdsc *pdsc)
-+{
-+	struct pds_core_drv_identity drv = { 0 };
-+	size_t sz;
-+	int err;
-+
-+	drv.drv_type = cpu_to_le32(PDS_DRIVER_LINUX);
-+	drv.kernel_ver = cpu_to_le32(LINUX_VERSION_CODE);
-+	snprintf(drv.kernel_ver_str, sizeof(drv.kernel_ver_str),
-+		 "%s %s", utsname()->release, utsname()->version);
-+	snprintf(drv.driver_ver_str, sizeof(drv.driver_ver_str),
-+		 "%s %s", PDS_CORE_DRV_NAME, utsname()->release);
-+
-+	/* Next let's get some info about the device
-+	 * We use the devcmd_lock at this level in order to
-+	 * get safe access to the cmd_regs->data before anyone
-+	 * else can mess it up
-+	 */
-+	mutex_lock(&pdsc->devcmd_lock);
-+
-+	sz = min_t(size_t, sizeof(drv), sizeof(pdsc->cmd_regs->data));
-+	memcpy_toio(&pdsc->cmd_regs->data, &drv, sz);
-+
-+	err = pdsc_devcmd_identify_locked(pdsc);
-+	if (!err) {
-+		sz = min_t(size_t, sizeof(pdsc->dev_ident), sizeof(pdsc->cmd_regs->data));
-+		memcpy_fromio(&pdsc->dev_ident, &pdsc->cmd_regs->data, sz);
-+	}
-+	mutex_unlock(&pdsc->devcmd_lock);
-+
-+	if (err) {
-+		dev_err(pdsc->dev, "Cannot identify device: %pe\n", ERR_PTR(err));
-+		return err;
++	if (!test_bit(PDSC_S_FW_DEAD, &pdsc->state)) {
++		dev_err(pdsc->dev, "%s: fw not dead\n", __func__);
++		mutex_unlock(&pdsc->config_lock);
++		return;
 +	}
 +
-+	if (isprint(pdsc->dev_info.fw_version[0]) &&
-+	    isascii(pdsc->dev_info.fw_version[0]))
-+		dev_info(pdsc->dev, "FW: %.*s\n",
-+			 (int)(sizeof(pdsc->dev_info.fw_version) - 1),
-+			 pdsc->dev_info.fw_version);
-+	else
-+		dev_info(pdsc->dev, "FW: (invalid string) 0x%02x 0x%02x 0x%02x 0x%02x ...\n",
-+			 (u8)pdsc->dev_info.fw_version[0],
-+			 (u8)pdsc->dev_info.fw_version[1],
-+			 (u8)pdsc->dev_info.fw_version[2],
-+			 (u8)pdsc->dev_info.fw_version[3]);
-+
-+	return 0;
-+}
-+
-+int pdsc_dev_reinit(struct pdsc *pdsc)
-+{
-+	pdsc_init_devinfo(pdsc);
-+
-+	return pdsc_identify(pdsc);
-+}
-+
-+int pdsc_dev_init(struct pdsc *pdsc)
-+{
-+	unsigned int nintrs;
-+	int err;
-+
-+	/* Initial init and reset of device */
-+	pdsc_init_devinfo(pdsc);
-+	pdsc->devcmd_timeout = PDS_CORE_DEVCMD_TIMEOUT;
-+
-+	err = pdsc_devcmd_reset(pdsc);
++	err = pdsc_setup(pdsc, PDSC_SETUP_RECOVERY);
 +	if (err)
-+		return err;
-+
-+	err = pdsc_identify(pdsc);
-+	if (err)
-+		return err;
-+
-+	pdsc_debugfs_add_ident(pdsc);
-+
-+	/* Now we can reserve interrupts */
-+	nintrs = le32_to_cpu(pdsc->dev_ident.nintrs);
-+	nintrs = min_t(unsigned int, num_online_cpus(), nintrs);
-+
-+	/* Get intr_info struct array for tracking */
-+	pdsc->intr_info = kcalloc(nintrs, sizeof(*pdsc->intr_info), GFP_KERNEL);
-+	if (!pdsc->intr_info) {
-+		err = -ENOSPC;
 +		goto err_out;
-+	}
 +
-+	err = pci_alloc_irq_vectors(pdsc->pdev, nintrs, nintrs, PCI_IRQ_MSIX);
-+	if (err != nintrs) {
-+		dev_err(pdsc->dev, "Can't get %d intrs from OS: %pe\n",
-+			nintrs, ERR_PTR(err));
-+		err = -ENOSPC;
-+		goto err_out;
-+	}
-+	pdsc->nintrs = nintrs;
-+	pdsc_debugfs_add_irqs(pdsc);
++	mutex_unlock(&pdsc->config_lock);
 +
-+	return 0;
++	return;
 +
 +err_out:
-+	kfree(pdsc->intr_info);
-+	pdsc->intr_info = NULL;
-+
-+	return err;
++	pdsc_teardown(pdsc, PDSC_TEARDOWN_RECOVERY);
++	mutex_unlock(&pdsc->config_lock);
 +}
++
++void pdsc_health_thread(struct work_struct *work)
++{
++	struct pdsc *pdsc = container_of(work, struct pdsc, health_work);
++	bool healthy;
++
++	healthy = pdsc_is_fw_good(pdsc);
++	dev_dbg(pdsc->dev, "%s: health %d fw_status %#02x fw_heartbeat %d\n",
++		__func__, healthy, pdsc->fw_status, pdsc->last_hb);
++
++	if (test_bit(PDSC_S_FW_DEAD, &pdsc->state)) {
++		if (healthy)
++			pdsc_fw_up(pdsc);
++	} else {
++		if (!healthy)
++			pdsc_fw_down(pdsc);
++	}
++
++	pdsc->fw_generation = pdsc->fw_status & PDS_CORE_FW_STS_F_GENERATION;
++}
+diff --git a/drivers/net/ethernet/amd/pds_core/dev.c b/drivers/net/ethernet/amd/pds_core/dev.c
+index 7a9db1505c1f..43229c149b2f 100644
+--- a/drivers/net/ethernet/amd/pds_core/dev.c
++++ b/drivers/net/ethernet/amd/pds_core/dev.c
+@@ -177,6 +177,9 @@ int pdsc_devcmd_locked(struct pdsc *pdsc, union pds_core_dev_cmd *cmd,
+ 	err = pdsc_devcmd_wait(pdsc, max_seconds);
+ 	memcpy_fromio(comp, &pdsc->cmd_regs->comp, sizeof(*comp));
+ 
++	if (err == -ENXIO || err == -ETIMEDOUT)
++		pdsc_queue_health_check(pdsc);
++
+ 	return err;
+ }
+ 
 diff --git a/drivers/net/ethernet/amd/pds_core/main.c b/drivers/net/ethernet/amd/pds_core/main.c
-index 8cb470daf166..0c63bbe8b417 100644
+index 0c63bbe8b417..ac1b30f78e0e 100644
 --- a/drivers/net/ethernet/amd/pds_core/main.c
 +++ b/drivers/net/ethernet/amd/pds_core/main.c
-@@ -151,13 +151,31 @@ static int pdsc_init_pf(struct pdsc *pdsc)
+@@ -25,6 +25,31 @@ static const struct pci_device_id pdsc_id_table[] = {
+ };
+ MODULE_DEVICE_TABLE(pci, pdsc_id_table);
+ 
++void pdsc_queue_health_check(struct pdsc *pdsc)
++{
++	unsigned long mask;
++
++	/* Don't do a check when in a transition state */
++	mask = BIT_ULL(PDSC_S_INITING_DRIVER) |
++	       BIT_ULL(PDSC_S_STOPPING_DRIVER);
++	if (pdsc->state & mask)
++		return;
++
++	/* Queue a new health check if one isn't already queued */
++	queue_work(pdsc->wq, &pdsc->health_work);
++}
++
++static void pdsc_wdtimer_cb(struct timer_list *t)
++{
++	struct pdsc *pdsc = from_timer(pdsc, t, wdtimer);
++
++	dev_dbg(pdsc->dev, "%s: jiffies %ld\n", __func__, jiffies);
++	mod_timer(&pdsc->wdtimer,
++		  round_jiffies(jiffies + pdsc->wdtimer_period));
++
++	pdsc_queue_health_check(pdsc);
++}
++
+ static void pdsc_unmap_bars(struct pdsc *pdsc)
+ {
+ 	struct pdsc_dev_bar *bars = pdsc->bars;
+@@ -135,8 +160,11 @@ static int pdsc_init_vf(struct pdsc *pdsc)
+ 	return -1;
+ }
+ 
++#define PDSC_WQ_NAME_LEN 24
++
+ static int pdsc_init_pf(struct pdsc *pdsc)
+ {
++	char wq_name[PDSC_WQ_NAME_LEN];
+ 	int err;
+ 
+ 	pcie_print_link_status(pdsc->pdev);
+@@ -151,6 +179,13 @@ static int pdsc_init_pf(struct pdsc *pdsc)
  	if (err)
  		goto err_out_release_regions;
  
--	err = pdsc_dl_register(pdsc);
-+	mutex_init(&pdsc->devcmd_lock);
-+	mutex_init(&pdsc->config_lock);
++	/* General workqueue and timer, but don't start timer yet */
++	snprintf(wq_name, sizeof(wq_name), "%s.%d", PDS_CORE_DRV_NAME, pdsc->id);
++	pdsc->wq = create_singlethread_workqueue(wq_name);
++	INIT_WORK(&pdsc->health_work, pdsc_health_thread);
++	timer_setup(&pdsc->wdtimer, pdsc_wdtimer_cb, 0);
++	pdsc->wdtimer_period = PDSC_WATCHDOG_SECS * HZ;
 +
-+	mutex_lock(&pdsc->config_lock);
-+	set_bit(PDSC_S_FW_DEAD, &pdsc->state);
-+
-+	err = pdsc_setup(pdsc, PDSC_SETUP_INIT);
- 	if (err)
- 		goto err_out_unmap_bars;
+ 	mutex_init(&pdsc->devcmd_lock);
+ 	mutex_init(&pdsc->config_lock);
  
-+	err = pdsc_dl_register(pdsc);
-+	if (err)
-+		goto err_out_teardown;
-+
-+	mutex_unlock(&pdsc->config_lock);
+@@ -167,11 +202,20 @@ static int pdsc_init_pf(struct pdsc *pdsc)
+ 
+ 	mutex_unlock(&pdsc->config_lock);
+ 
++	/* Lastly, start the health check timer */
++	mod_timer(&pdsc->wdtimer, round_jiffies(jiffies + pdsc->wdtimer_period));
 +
  	return 0;
  
-+err_out_teardown:
-+	pdsc_teardown(pdsc, PDSC_TEARDOWN_REMOVING);
+ err_out_teardown:
+ 	pdsc_teardown(pdsc, PDSC_TEARDOWN_REMOVING);
  err_out_unmap_bars:
-+	mutex_unlock(&pdsc->config_lock);
-+	mutex_destroy(&pdsc->config_lock);
-+	mutex_destroy(&pdsc->devcmd_lock);
-+	pci_free_irq_vectors(pdsc->pdev);
- 	pdsc_unmap_bars(pdsc);
- err_out_release_regions:
- 	pci_release_regions(pdsc->pdev);
-@@ -240,8 +258,19 @@ static void pdsc_remove(struct pci_dev *pdev)
- 	 */
- 	pdsc_dl_unregister(pdsc);
- 
--	pdsc_unmap_bars(pdsc);
--	pci_release_regions(pdev);
-+	if (!pdev->is_virtfn) {
-+		mutex_lock(&pdsc->config_lock);
-+		set_bit(PDSC_S_STOPPING_DRIVER, &pdsc->state);
-+
-+		pdsc_teardown(pdsc, PDSC_TEARDOWN_REMOVING);
-+		mutex_unlock(&pdsc->config_lock);
-+		mutex_destroy(&pdsc->config_lock);
-+		mutex_destroy(&pdsc->devcmd_lock);
-+
-+		pci_free_irq_vectors(pdev);
-+		pdsc_unmap_bars(pdsc);
-+		pci_release_regions(pdev);
++	del_timer_sync(&pdsc->wdtimer);
++	if (pdsc->wq) {
++		flush_workqueue(pdsc->wq);
++		destroy_workqueue(pdsc->wq);
++		pdsc->wq = NULL;
 +	}
+ 	mutex_unlock(&pdsc->config_lock);
+ 	mutex_destroy(&pdsc->config_lock);
+ 	mutex_destroy(&pdsc->devcmd_lock);
+@@ -262,6 +306,13 @@ static void pdsc_remove(struct pci_dev *pdev)
+ 		mutex_lock(&pdsc->config_lock);
+ 		set_bit(PDSC_S_STOPPING_DRIVER, &pdsc->state);
  
- 	pci_clear_master(pdev);
- 	pci_disable_device(pdev);
-diff --git a/include/linux/pds/pds_common.h b/include/linux/pds/pds_common.h
-index 023da482e320..fd889c01f24e 100644
---- a/include/linux/pds/pds_common.h
-+++ b/include/linux/pds/pds_common.h
-@@ -10,4 +10,67 @@
- #define PDS_CORE_ADDR_LEN	52
- #define PDS_CORE_ADDR_MASK	(BIT_ULL(PDS_ADDR_LEN) - 1)
- 
-+/*
-+ * enum pds_core_status_code - Device command return codes
-+ */
-+enum pds_core_status_code {
-+	PDS_RC_SUCCESS	= 0,	/* Success */
-+	PDS_RC_EVERSION	= 1,	/* Incorrect version for request */
-+	PDS_RC_EOPCODE	= 2,	/* Invalid cmd opcode */
-+	PDS_RC_EIO	= 3,	/* I/O error */
-+	PDS_RC_EPERM	= 4,	/* Permission denied */
-+	PDS_RC_EQID	= 5,	/* Bad qid */
-+	PDS_RC_EQTYPE	= 6,	/* Bad qtype */
-+	PDS_RC_ENOENT	= 7,	/* No such element */
-+	PDS_RC_EINTR	= 8,	/* operation interrupted */
-+	PDS_RC_EAGAIN	= 9,	/* Try again */
-+	PDS_RC_ENOMEM	= 10,	/* Out of memory */
-+	PDS_RC_EFAULT	= 11,	/* Bad address */
-+	PDS_RC_EBUSY	= 12,	/* Device or resource busy */
-+	PDS_RC_EEXIST	= 13,	/* object already exists */
-+	PDS_RC_EINVAL	= 14,	/* Invalid argument */
-+	PDS_RC_ENOSPC	= 15,	/* No space left or alloc failure */
-+	PDS_RC_ERANGE	= 16,	/* Parameter out of range */
-+	PDS_RC_BAD_ADDR	= 17,	/* Descriptor contains a bad ptr */
-+	PDS_RC_DEV_CMD	= 18,	/* Device cmd attempted on AdminQ */
-+	PDS_RC_ENOSUPP	= 19,	/* Operation not supported */
-+	PDS_RC_ERROR	= 29,	/* Generic error */
-+	PDS_RC_ERDMA	= 30,	/* Generic RDMA error */
-+	PDS_RC_EVFID	= 31,	/* VF ID does not exist */
-+	PDS_RC_BAD_FW	= 32,	/* FW file is invalid or corrupted */
-+	PDS_RC_ECLIENT	= 33,   /* No such client id */
-+};
++		del_timer_sync(&pdsc->wdtimer);
++		if (pdsc->wq) {
++			flush_workqueue(pdsc->wq);
++			destroy_workqueue(pdsc->wq);
++			pdsc->wq = NULL;
++		}
 +
-+enum pds_core_driver_type {
-+	PDS_DRIVER_LINUX   = 1,
-+	PDS_DRIVER_WIN     = 2,
-+	PDS_DRIVER_DPDK    = 3,
-+	PDS_DRIVER_FREEBSD = 4,
-+	PDS_DRIVER_IPXE    = 5,
-+	PDS_DRIVER_ESXI    = 6,
-+};
-+
-+#define PDS_CORE_IFNAMSIZ		16
-+
-+/**
-+ * enum pds_core_logical_qtype - Logical Queue Types
-+ * @PDS_CORE_QTYPE_ADMINQ:    Administrative Queue
-+ * @PDS_CORE_QTYPE_NOTIFYQ:   Notify Queue
-+ * @PDS_CORE_QTYPE_RXQ:       Receive Queue
-+ * @PDS_CORE_QTYPE_TXQ:       Transmit Queue
-+ * @PDS_CORE_QTYPE_EQ:        Event Queue
-+ * @PDS_CORE_QTYPE_MAX:       Max queue type supported
-+ */
-+enum pds_core_logical_qtype {
-+	PDS_CORE_QTYPE_ADMINQ  = 0,
-+	PDS_CORE_QTYPE_NOTIFYQ = 1,
-+	PDS_CORE_QTYPE_RXQ     = 2,
-+	PDS_CORE_QTYPE_TXQ     = 3,
-+	PDS_CORE_QTYPE_EQ      = 4,
-+
-+	PDS_CORE_QTYPE_MAX     = 16   /* don't change - used in struct size */
-+};
-+
-+typedef void (*pds_core_cb)(void *cb_arg);
-+
- #endif /* _PDS_COMMON_H_ */
+ 		pdsc_teardown(pdsc, PDSC_TEARDOWN_REMOVING);
+ 		mutex_unlock(&pdsc->config_lock);
+ 		mutex_destroy(&pdsc->config_lock);
 diff --git a/include/linux/pds/pds_core.h b/include/linux/pds/pds_core.h
-index 227759ad9c77..da0663925018 100644
+index da0663925018..e73af422fae0 100644
 --- a/include/linux/pds/pds_core.h
 +++ b/include/linux/pds/pds_core.h
-@@ -9,8 +9,13 @@
- 
- #include <linux/pds/pds_common.h>
- #include <linux/pds/pds_core_if.h>
-+#include <linux/pds/pds_intr.h>
+@@ -12,6 +12,8 @@
+ #include <linux/pds/pds_intr.h>
  
  #define PDSC_DRV_DESCRIPTION	"AMD/Pensando Core Driver"
-+#define PDSC_TEARDOWN_RECOVERY	false
-+#define PDSC_TEARDOWN_REMOVING	true
-+#define PDSC_SETUP_RECOVERY	false
-+#define PDSC_SETUP_INIT		true
++
++#define PDSC_WATCHDOG_SECS	5
+ #define PDSC_TEARDOWN_RECOVERY	false
+ #define PDSC_TEARDOWN_REMOVING	true
+ #define PDSC_SETUP_RECOVERY	false
+@@ -63,12 +65,17 @@ struct pdsc {
+ 	u8 fw_generation;
+ 	unsigned long last_fw_time;
+ 	u32 last_hb;
++	struct timer_list wdtimer;
++	unsigned int wdtimer_period;
++	struct work_struct health_work;
  
- struct pdsc_dev_bar {
- 	void __iomem *vaddr;
-@@ -19,6 +24,22 @@ struct pdsc_dev_bar {
- 	int res_index;
+ 	struct pdsc_devinfo dev_info;
+ 	struct pds_core_dev_identity dev_ident;
+ 	unsigned int nintrs;
+ 	struct pdsc_intr_info *intr_info;	/* array of nintrs elements */
+ 
++	struct workqueue_struct *wq;
++
+ 	unsigned int devcmd_timeout;
+ 	struct mutex devcmd_lock;	/* lock for dev_cmd operations */
+ 	struct mutex config_lock;	/* lock for configuration operations */
+@@ -81,6 +88,8 @@ struct pdsc {
+ 	u64 __iomem *kern_dbpage;
  };
  
-+struct pdsc_devinfo {
-+	u8 asic_type;
-+	u8 asic_rev;
-+	char fw_version[PDS_CORE_DEVINFO_FWVERS_BUFLEN + 1];
-+	char serial_num[PDS_CORE_DEVINFO_SERIAL_BUFLEN + 1];
-+};
++void pdsc_queue_health_check(struct pdsc *pdsc);
 +
-+#define PDSC_INTR_NAME_MAX_SZ		32
-+
-+struct pdsc_intr_info {
-+	char name[PDSC_INTR_NAME_MAX_SZ];
-+	unsigned int index;
-+	unsigned int vector;
-+	void *data;
-+};
-+
- /* No state flags set means we are in a steady running state */
- enum pdsc_state_flags {
- 	PDSC_S_FW_DEAD,		    /* fw stopped, waiting for startup or recovery */
-@@ -38,7 +59,19 @@ struct pdsc {
- 	int id;
+ struct pdsc *pdsc_dl_alloc(struct device *dev, bool is_pf);
+ void pdsc_dl_free(struct pdsc *pdsc);
+ int pdsc_dl_register(struct pdsc *pdsc);
+@@ -116,5 +125,6 @@ int pdsc_dev_init(struct pdsc *pdsc);
  
- 	unsigned long state;
-+	u8 fw_status;
-+	u8 fw_generation;
-+	unsigned long last_fw_time;
-+	u32 last_hb;
-+
-+	struct pdsc_devinfo dev_info;
-+	struct pds_core_dev_identity dev_ident;
-+	unsigned int nintrs;
-+	struct pdsc_intr_info *intr_info;	/* array of nintrs elements */
+ int pdsc_setup(struct pdsc *pdsc, bool init);
+ void pdsc_teardown(struct pdsc *pdsc, bool removing);
++void pdsc_health_thread(struct work_struct *work);
  
-+	unsigned int devcmd_timeout;
-+	struct mutex devcmd_lock;	/* lock for dev_cmd operations */
-+	struct mutex config_lock;	/* lock for configuration operations */
- 	struct pds_core_dev_info_regs __iomem *info_regs;
- 	struct pds_core_dev_cmd_regs __iomem *cmd_regs;
- 	struct pds_core_intr __iomem *intr_ctrl;
-@@ -58,11 +91,30 @@ void pdsc_debugfs_create(void);
- void pdsc_debugfs_destroy(void);
- void pdsc_debugfs_add_dev(struct pdsc *pdsc);
- void pdsc_debugfs_del_dev(struct pdsc *pdsc);
-+void pdsc_debugfs_add_ident(struct pdsc *pdsc);
-+void pdsc_debugfs_add_irqs(struct pdsc *pdsc);
- #else
- static inline void pdsc_debugfs_create(void) { }
- static inline void pdsc_debugfs_destroy(void) { }
- static inline void pdsc_debugfs_add_dev(struct pdsc *pdsc) { }
- static inline void pdsc_debugfs_del_dev(struct pdsc *pdsc) { }
-+static inline void pdsc_debugfs_add_ident(struct pdsc *pdsc) { }
-+static inline void pdsc_debugfs_add_irqs(struct pdsc *pdsc) { }
- #endif
- 
-+int pdsc_err_to_errno(enum pds_core_status_code code);
-+bool pdsc_is_fw_running(struct pdsc *pdsc);
-+bool pdsc_is_fw_good(struct pdsc *pdsc);
-+int pdsc_devcmd(struct pdsc *pdsc, union pds_core_dev_cmd *cmd,
-+		union pds_core_dev_comp *comp, int max_seconds);
-+int pdsc_devcmd_locked(struct pdsc *pdsc, union pds_core_dev_cmd *cmd,
-+		       union pds_core_dev_comp *comp, int max_seconds);
-+int pdsc_devcmd_init(struct pdsc *pdsc);
-+int pdsc_devcmd_reset(struct pdsc *pdsc);
-+int pdsc_dev_reinit(struct pdsc *pdsc);
-+int pdsc_dev_init(struct pdsc *pdsc);
-+
-+int pdsc_setup(struct pdsc *pdsc, bool init);
-+void pdsc_teardown(struct pdsc *pdsc, bool removing);
-+
  #endif /* _PDSC_H_ */
-diff --git a/include/linux/pds/pds_intr.h b/include/linux/pds/pds_intr.h
-new file mode 100644
-index 000000000000..ddabe1fdb463
---- /dev/null
-+++ b/include/linux/pds/pds_intr.h
-@@ -0,0 +1,161 @@
-+/* SPDX-License-Identifier: (GPL-2.0 OR Linux-OpenIB) OR BSD-2-Clause */
-+/* Copyright (c) 2023 Advanced Micro Devices, Inc. */
-+
-+#ifndef _PDS_INTR_H_
-+#define _PDS_INTR_H_
-+
-+/*
-+ * Interrupt control register
-+ * @coal_init:        Coalescing timer initial value, in
-+ *                    device units.  Use @identity->intr_coal_mult
-+ *                    and @identity->intr_coal_div to convert from
-+ *                    usecs to device units:
-+ *
-+ *                      coal_init = coal_usecs * coal_mutl / coal_div
-+ *
-+ *                    When an interrupt is sent the interrupt
-+ *                    coalescing timer current value
-+ *                    (@coalescing_curr) is initialized with this
-+ *                    value and begins counting down.  No more
-+ *                    interrupts are sent until the coalescing
-+ *                    timer reaches 0.  When @coalescing_init=0
-+ *                    interrupt coalescing is effectively disabled
-+ *                    and every interrupt assert results in an
-+ *                    interrupt.  Reset value: 0
-+ * @mask:             Interrupt mask.  When @mask=1 the interrupt
-+ *                    resource will not send an interrupt.  When
-+ *                    @mask=0 the interrupt resource will send an
-+ *                    interrupt if an interrupt event is pending
-+ *                    or on the next interrupt assertion event.
-+ *                    Reset value: 1
-+ * @credits:          Interrupt credits.  This register indicates
-+ *                    how many interrupt events the hardware has
-+ *                    sent.  When written by software this
-+ *                    register atomically decrements @int_credits
-+ *                    by the value written.  When @int_credits
-+ *                    becomes 0 then the "pending interrupt" bit
-+ *                    in the Interrupt Status register is cleared
-+ *                    by the hardware and any pending but unsent
-+ *                    interrupts are cleared.
-+ *                    !!!IMPORTANT!!! This is a signed register.
-+ * @flags:            Interrupt control flags
-+ *                       @unmask -- When this bit is written with a 1
-+ *                       the interrupt resource will set mask=0.
-+ *                       @coal_timer_reset -- When this
-+ *                       bit is written with a 1 the
-+ *                       @coalescing_curr will be reloaded with
-+ *                       @coalescing_init to reset the coalescing
-+ *                       timer.
-+ * @mask_on_assert:   Automatically mask on assertion.  When
-+ *                    @mask_on_assert=1 the interrupt resource
-+ *                    will set @mask=1 whenever an interrupt is
-+ *                    sent.  When using interrupts in Legacy
-+ *                    Interrupt mode the driver must select
-+ *                    @mask_on_assert=0 for proper interrupt
-+ *                    operation.
-+ * @coalescing_curr:  Coalescing timer current value, in
-+ *                    microseconds.  When this value reaches 0
-+ *                    the interrupt resource is again eligible to
-+ *                    send an interrupt.  If an interrupt event
-+ *                    is already pending when @coalescing_curr
-+ *                    reaches 0 the pending interrupt will be
-+ *                    sent, otherwise an interrupt will be sent
-+ *                    on the next interrupt assertion event.
-+ */
-+struct pds_core_intr {
-+	u32 coal_init;
-+	u32 mask;
-+	u16 credits;
-+	u16 flags;
-+#define PDS_CORE_INTR_F_UNMASK		0x0001
-+#define PDS_CORE_INTR_F_TIMER_RESET	0x0002
-+	u32 mask_on_assert;
-+	u32 coalescing_curr;
-+	u32 rsvd6[3];
-+};
-+
-+#ifndef __CHECKER__
-+static_assert(sizeof(struct pds_core_intr) == 32);
-+#endif /* __CHECKER__ */
-+
-+#define PDS_CORE_INTR_CTRL_REGS_MAX		2048
-+#define PDS_CORE_INTR_CTRL_COAL_MAX		0x3F
-+#define PDS_CORE_INTR_INDEX_NOT_ASSIGNED	-1
-+
-+struct pds_core_intr_status {
-+	u32 status[2];
-+};
-+
-+/**
-+ * enum pds_core_intr_mask_vals - valid values for mask and mask_assert.
-+ * @PDS_CORE_INTR_MASK_CLEAR:	unmask interrupt.
-+ * @PDS_CORE_INTR_MASK_SET:	mask interrupt.
-+ */
-+enum pds_core_intr_mask_vals {
-+	PDS_CORE_INTR_MASK_CLEAR	= 0,
-+	PDS_CORE_INTR_MASK_SET		= 1,
-+};
-+
-+/**
-+ * enum pds_core_intr_credits_bits - Bitwise composition of credits values.
-+ * @PDS_CORE_INTR_CRED_COUNT:	bit mask of credit count, no shift needed.
-+ * @PDS_CORE_INTR_CRED_COUNT_SIGNED: bit mask of credit count, including sign bit.
-+ * @PDS_CORE_INTR_CRED_UNMASK:	unmask the interrupt.
-+ * @PDS_CORE_INTR_CRED_RESET_COALESCE: reset the coalesce timer.
-+ * @PDS_CORE_INTR_CRED_REARM:	unmask the and reset the timer.
-+ */
-+enum pds_core_intr_credits_bits {
-+	PDS_CORE_INTR_CRED_COUNT		= 0x7fffu,
-+	PDS_CORE_INTR_CRED_COUNT_SIGNED		= 0xffffu,
-+	PDS_CORE_INTR_CRED_UNMASK		= 0x10000u,
-+	PDS_CORE_INTR_CRED_RESET_COALESCE	= 0x20000u,
-+	PDS_CORE_INTR_CRED_REARM		= (PDS_CORE_INTR_CRED_UNMASK |
-+					   PDS_CORE_INTR_CRED_RESET_COALESCE),
-+};
-+
-+static inline void pds_core_intr_coal_init(struct pds_core_intr __iomem *intr_ctrl,
-+					   u32 coal)
-+{
-+	iowrite32(coal, &intr_ctrl->coal_init);
-+}
-+
-+static inline void pds_core_intr_mask(struct pds_core_intr __iomem *intr_ctrl,
-+				      u32 mask)
-+{
-+	iowrite32(mask, &intr_ctrl->mask);
-+}
-+
-+static inline void pds_core_intr_credits(struct pds_core_intr __iomem *intr_ctrl,
-+					 u32 cred, u32 flags)
-+{
-+	if (WARN_ON_ONCE(cred > PDS_CORE_INTR_CRED_COUNT)) {
-+		cred = ioread32(&intr_ctrl->credits);
-+		cred &= PDS_CORE_INTR_CRED_COUNT_SIGNED;
-+	}
-+
-+	iowrite32(cred | flags, &intr_ctrl->credits);
-+}
-+
-+static inline void pds_core_intr_clean_flags(struct pds_core_intr __iomem *intr_ctrl,
-+					     u32 flags)
-+{
-+	u32 cred;
-+
-+	cred = ioread32(&intr_ctrl->credits);
-+	cred &= PDS_CORE_INTR_CRED_COUNT_SIGNED;
-+	cred |= flags;
-+	iowrite32(cred, &intr_ctrl->credits);
-+}
-+
-+static inline void pds_core_intr_clean(struct pds_core_intr __iomem *intr_ctrl)
-+{
-+	pds_core_intr_clean_flags(intr_ctrl, PDS_CORE_INTR_CRED_RESET_COALESCE);
-+}
-+
-+static inline void pds_core_intr_mask_assert(struct pds_core_intr __iomem *intr_ctrl,
-+					     u32 mask)
-+{
-+	iowrite32(mask, &intr_ctrl->mask_on_assert);
-+}
-+
-+#endif /* _PDS_INTR_H_ */
 -- 
 2.17.1
 
