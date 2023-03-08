@@ -2,68 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F351A6AFDC8
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 05:18:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A71CB6AFDCF
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 05:20:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229718AbjCHESZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 23:18:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56748 "EHLO
+        id S229709AbjCHEUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 23:20:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbjCHESY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 23:18:24 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582F57F03D
-        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 20:18:23 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id m8-20020a17090a4d8800b002377bced051so1084286pjh.0
-        for <netdev@vger.kernel.org>; Tue, 07 Mar 2023 20:18:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112; t=1678249102;
-        h=content-transfer-encoding:cc:to:subject:from:content-language
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=fQuVo2cMLbzqVVJUKjSu9YA4jNw9aOqhRN0Lhp4EL/Q=;
-        b=RtzJOoxI98zAFwNJeMOnSBUuTFGwY7w1lbcOwpjYTmDzZETZVXCoBlS2oLR/7guOQW
-         5ARF/HaAmXZHrDgPIGpX1IZOqp2Sy+aU+B97gPKJRWimfamkLhV82yAZ5qN9cKYe2kSm
-         PHufDwd+XL0GRA/qj2YEpBIQCNhdCE1MqNvL37teFAbhlcVO2NWRYvglzJ+/tfT65vIC
-         u1Pu7MFb4d4nxrmimxyubj3eCZ17MyjoAkUZxGbzHpFYmneS3vHHZ6xNyBOQ1t0wYCgc
-         +N7yJLHVe8NPsOvJTRmeMfMPJM8hb8e2mD0IZ8Zmaxd7Sogz0j+PrebxWh7r7Zt/Mui9
-         FdZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678249102;
-        h=content-transfer-encoding:cc:to:subject:from:content-language
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=fQuVo2cMLbzqVVJUKjSu9YA4jNw9aOqhRN0Lhp4EL/Q=;
-        b=OLnZfmaM4TrKBiU3IgW2tWaWq9Hso3iT6lhSCmMEe13134KdwsoSBU/xSVK8k5iSvo
-         HX+uGqKaDFqmYf3sTEdW4ixJXH3Dobsrq5gppT7Bd2p593IX1CFhvz/kfALViKYCp0qa
-         oyTa4jYT3mHsLGFYTTF9h5Y/+/afGgR2Nl63ZzHJDmuv8jJOsAqMK0nPWL8U/ag95ivk
-         Miev2aWHV729iIZ56rPo3UIhr6oSM2pXLZ1DnUUwszz1fF+mvwiEqx6kEU3jCXfyi2Y8
-         PUuUuSJYvyVKgkzQfJdOkouzxT3++x5/Z3EN+3t5Ruyg8fqKg4YSM783wkUnbiYh52jN
-         YVwQ==
-X-Gm-Message-State: AO0yUKXQtcLsIRT6scuuAliXFMQpHjhzwEv6tonr9QjGnzUykyB/ns1M
-        0fcXuEbMEs6Tg3pe4oWBN5xDNkm8FqGTWMH+uBQ=
-X-Google-Smtp-Source: AK7set9OGZT7YJm+qwJGgDZ/+FZ68Yv4KKRU5vzxM5AA8wrBQuS4ofodOVIL5hSc1n0WxS2/hIfRhw==
-X-Received: by 2002:a17:90a:3d83:b0:23a:8d83:5259 with SMTP id i3-20020a17090a3d8300b0023a8d835259mr1445414pjc.4.1678249102564;
-        Tue, 07 Mar 2023 20:18:22 -0800 (PST)
-Received: from [172.20.4.229] ([50.233.106.125])
-        by smtp.gmail.com with ESMTPSA id u2-20020a17090a890200b0023a71a06c86sm7731236pjn.29.2023.03.07.20.18.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Mar 2023 20:18:22 -0800 (PST)
-Message-ID: <8f859870-e6e2-09ca-9c0f-a2aa7c984fb2@kernel.dk>
-Date:   Tue, 7 Mar 2023 21:18:21 -0700
+        with ESMTP id S229651AbjCHEUS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 23:20:18 -0500
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51D899E310;
+        Tue,  7 Mar 2023 20:20:16 -0800 (PST)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 3284JkNt116986;
+        Tue, 7 Mar 2023 22:19:46 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1678249186;
+        bh=IORDEtukZF4j1fvmSt9qIQDEcCv14014bX6b0oyW4J0=;
+        h=Date:CC:Subject:To:References:From:In-Reply-To;
+        b=LS+RdFjNdUJh39dqJSR9dNpbjFm6JwXOVvpHcXIXAvCbWwvxT7bpcoPRsAbhUTor7
+         iJQ4DFXflaIsfulvU8m3G3hxARtcNgX/J4VCIVzXVqox76PkO/mdGXdibflu+ykexA
+         qO0uXUc9cHbhZNQgHEz6fUVOb0GDGucBsgw45yVc=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 3284JjDJ073294
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 7 Mar 2023 22:19:46 -0600
+Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Tue, 7
+ Mar 2023 22:19:46 -0600
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
+ Frontend Transport; Tue, 7 Mar 2023 22:19:45 -0600
+Received: from [172.24.145.61] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 3284JeXX118018;
+        Tue, 7 Mar 2023 22:19:41 -0600
+Message-ID: <28de6e62-5bc3-b986-b069-32150b0c81eb@ti.com>
+Date:   Wed, 8 Mar 2023 09:49:40 +0530
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <linux@armlinux.org.uk>, <pabeni@redhat.com>,
+        <krzysztof.kozlowski@linaro.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <nsekhar@ti.com>,
+        <rogerq@kernel.org>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
+        <s-vadapalli@ti.com>
+Subject: Re: [PATCH net-next] dt-bindings: net: ti: k3-am654-cpsw-nuss:
+ Document Serdes PHY
+To:     Rob Herring <robh@kernel.org>
+References: <20230306094750.159657-1-s-vadapalli@ti.com>
+ <20230307140139.GA48063-robh@kernel.org>
 Content-Language: en-US
-From:   Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH] tap: add support for IOCB_NOWAIT
-To:     netdev <netdev@vger.kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset=UTF-8
+From:   Siddharth Vadapalli <s-vadapalli@ti.com>
+In-Reply-To: <20230307140139.GA48063-robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,57 +73,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The tap driver already supports passing in nonblocking state based
-on O_NONBLOCK, add support for checking IOCB_NOWAIT as well. With that
-done, we can flag it with FMODE_NOWAIT as well.
+Hello Rob,
 
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+On 07/03/23 19:31, Rob Herring wrote:
+> On Mon, Mar 06, 2023 at 03:17:50PM +0530, Siddharth Vadapalli wrote:
+>> Update bindings to include Serdes PHY as an optional PHY, in addition to
+>> the existing CPSW MAC's PHY. The CPSW MAC's PHY is required while the
+>> Serdes PHY is optional. The Serdes PHY handle has to be provided only
+>> when the Serdes is being configured in a Single-Link protocol. Using the
+>> name "serdes-phy" to represent the Serdes PHY handle, the am65-cpsw-nuss
+>> driver can obtain the Serdes PHY and request the Serdes to be
+>> configured.
+>>
+>> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
+>> ---
+>>
+>> Hello,
+>>
+>> This patch corresponds to the Serdes PHY bindings that were missed out in
+>> the series at:
+>> Link: https://lore.kernel.org/r/20230104103432.1126403-1-s-vadapalli@ti.com/
+>> This was pointed out at:
+>> https://lore.kernel.org/r/CAMuHMdW5atq-FuLEL3htuE3t2uO86anLL3zeY7n1RqqMP_rH1g@mail.gmail.com/
+>>
+>>  .../bindings/net/ti,k3-am654-cpsw-nuss.yaml   | 21 +++++++++++++++++--
+>>  1 file changed, 19 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+>> index 900063411a20..fab7df437dcc 100644
+>> --- a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+>> +++ b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+>> @@ -126,8 +126,25 @@ properties:
+>>              description: CPSW port number
+>>  
+>>            phys:
+>> -            maxItems: 1
+>> -            description: phandle on phy-gmii-sel PHY
+>> +            minItems: 1
+>> +            maxItems: 2
+>> +            description:
+>> +              phandle(s) on CPSW MAC's PHY (Required) and the Serdes
+>> +              PHY (Optional). phandle to the Serdes PHY is required
+>> +              when the Serdes has to be configured in Single-Link
+>> +              configuration.
+> 
+> Like this:
+> 
+> minItems: 1
+> items:
+>   - description: CPSW MAC's PHY
+>   - description: Serdes PHY. Serdes PHY is required
+>       when the Serdes has to be configured in Single-Link
+> 
+>> +
+>> +          phy-names:
+>> +            oneOf:
+>> +              - items:
+>> +                  - const: mac-phy
+>> +                  - const: serdes-phy
+>> +              - items:
+>> +                  - const: mac-phy
+> 
+> Drop this and use minItems in 1st 'items' entry.
+> 
+>> +            description:
+>> +              Identifiers for the CPSW MAC's PHY and the Serdes PHY.
+>> +              CPSW MAC's PHY is required and therefore "mac-phy" is
+>> +              required, while "serdes-phy" is optional.
+> 
+> No need to state in plain text what the schema already says.
 
----
+Thank you for reviewing the patch. I will implement your feedback and post the
+v2 patch.
 
-diff --git a/drivers/net/tap.c b/drivers/net/tap.c
-index 8941aa199ea3..ce993cc75bf3 100644
---- a/drivers/net/tap.c
-+++ b/drivers/net/tap.c
-@@ -555,6 +555,9 @@ static int tap_open(struct inode *inode, struct file *file)
- 		goto err_put;
- 	}
- 
-+	/* tap groks IOCB_NOWAIT just fine, mark it as such */
-+	file->f_mode |= FMODE_NOWAIT;
-+
- 	dev_put(tap->dev);
- 
- 	rtnl_unlock();
-@@ -771,8 +774,12 @@ static ssize_t tap_write_iter(struct kiocb *iocb, struct iov_iter *from)
- {
- 	struct file *file = iocb->ki_filp;
- 	struct tap_queue *q = file->private_data;
-+	int noblock = 0;
-+
-+	if ((file->f_flags & O_NONBLOCK) || (iocb->ki_flags & IOCB_NOWAIT))
-+		noblock = 1;
- 
--	return tap_get_user(q, NULL, from, file->f_flags & O_NONBLOCK);
-+	return tap_get_user(q, NULL, from, noblock);
- }
- 
- /* Put packet to the user space buffer */
-@@ -888,8 +895,12 @@ static ssize_t tap_read_iter(struct kiocb *iocb, struct iov_iter *to)
- 	struct file *file = iocb->ki_filp;
- 	struct tap_queue *q = file->private_data;
- 	ssize_t len = iov_iter_count(to), ret;
-+	int noblock = 0;
-+
-+	if ((file->f_flags & O_NONBLOCK) || (iocb->ki_flags & IOCB_NOWAIT))
-+		noblock = 1;
- 
--	ret = tap_do_read(q, to, file->f_flags & O_NONBLOCK, NULL);
-+	ret = tap_do_read(q, to, noblock, NULL);
- 	ret = min_t(ssize_t, ret, len);
- 	if (ret > 0)
- 		iocb->ki_pos = ret;
-
--- 
-Jens Axboe
-
+Regards,
+Siddharth.
