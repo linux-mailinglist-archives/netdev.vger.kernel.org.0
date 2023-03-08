@@ -2,141 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 237BE6B0AB3
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 15:13:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA5116B0AB9
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 15:13:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232172AbjCHONF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 09:13:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57856 "EHLO
+        id S231922AbjCHONz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 09:13:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232217AbjCHOM1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 09:12:27 -0500
-Received: from out30-124.freemail.mail.aliyun.com (out30-124.freemail.mail.aliyun.com [115.124.30.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78C814989F;
-        Wed,  8 Mar 2023 06:11:39 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R601e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VdPs2pr_1678284694;
-Received: from 192.168.50.70(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VdPs2pr_1678284694)
-          by smtp.aliyun-inc.com;
-          Wed, 08 Mar 2023 22:11:35 +0800
-Message-ID: <b83577e6-8b0f-f8d0-150a-cfbb061adeb2@linux.alibaba.com>
-Date:   Wed, 8 Mar 2023 22:11:34 +0800
+        with ESMTP id S231899AbjCHON3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 09:13:29 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EBF25A1B6;
+        Wed,  8 Mar 2023 06:12:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=tRpfWAyAr9NJ0cUH+oJUvt5Zq2cO3qLqUNmAFfG9Mp4=; b=RJ47iD6rJBGBLbFJHKdbU2G1AQ
+        rI2unKHGX2cX9JmMhhybBVN7yYSp3+bVvPmrVHddReFLFP2657dahor6uGkgwCM98/ATjbO0XWWji
+        rbbfqHv3f0YlF11z7W0oD9sl/MzvnRJlEfBGq90/eEddeZAnaJma2Vzb5KT71sRzPFqoR0BAw5pL0
+        3Im1UvMxsEYD8mbcGN4E3I1T99gmyzwxzlkVIDJ1vbW28mwnw4MPPZQIGAwvySCWcrQB2tBkKf7NQ
+        t65/rKf+1j90ZC8slM7DRA3MzTSToOyEVqtY8ALLSCz4I0nZG8kXzzxCe23sE7/ISiWglEWbE13yS
+        J1K9XwZQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57160)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pZuWj-0002iT-7X; Wed, 08 Mar 2023 14:12:21 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pZuWb-0002eN-0y; Wed, 08 Mar 2023 14:12:13 +0000
+Date:   Wed, 8 Mar 2023 14:12:12 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Daniel Golle <daniel@makrotopia.org>, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Jianhui Zhao <zhaojh329@gmail.com>,
+        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Alexander Couzens <lynxis@fe80.eu>
+Subject: Re: [PATCH net-next v12 08/18] net: ethernet: mtk_eth_soc: fix
+ 1000Base-X and 2500Base-X modes
+Message-ID: <ZAiXvNT8EzHTmFPh@shell.armlinux.org.uk>
+References: <cover.1678201958.git.daniel@makrotopia.org>
+ <fd5c7ea79a7f84caac7d0b64b39fe5c4043edfa8.1678201958.git.daniel@makrotopia.org>
+ <ZAhzDDjZ8+gxyo3V@shell.armlinux.org.uk>
+ <ZAh7hA4JuJm1b2M6@makrotopia.org>
+ <ZAiCh8wkdTBT+6Id@shell.armlinux.org.uk>
+ <ZAiFOTRQI36nGo+w@makrotopia.org>
+ <ZAiJqvzcUob2Aafq@shell.armlinux.org.uk>
+ <20230308134642.cdxqw4lxtlgfsl4g@skbuf>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.8.0
-Subject: Re: [PATCH net v2] net/smc: fix application data exception
-Content-Language: en-US
-To:     Heiko Carstens <hca@linux.ibm.com>
-Cc:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
-        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
-        David Howells <dhowells@redhat.com>,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        Will Deacon <will.deacon@arm.com>,
-        Peter Zijlstra <peterz@infradead.org>
-References: <1676529545-32741-1-git-send-email-alibuda@linux.alibaba.com>
- <Y/5J30kmv1cPc7nE@osiris>
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-In-Reply-To: <Y/5J30kmv1cPc7nE@osiris>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-8.7 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,NORMAL_HTTP_TO_IP,NUMERIC_HTTP_ADDR,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
-        URIBL_BLOCKED,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230308134642.cdxqw4lxtlgfsl4g@skbuf>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Mar 08, 2023 at 03:46:42PM +0200, Vladimir Oltean wrote:
+> On Wed, Mar 08, 2023 at 01:12:10PM +0000, Russell King (Oracle) wrote:
+> > So, what I would want to do is to move the decision about whether
+> > the PCS should enable in-band into the phylink core code instead
+> > of these random decisions being made in each PCS.
+> > 
+> > At that point, we can then make the decision about whether the
+> > ethtool autoneg bit should affect whether the PCS uses inband
+> > depending on whether the PCS is effectively the media facing
+> > entity, or whether there is a PHY attached - and if there is a PHY
+> > attached, ask the PHY whether it will be using in-band or not.
+> > 
+> > This also would give a way to ensure that all PCS adopt the same
+> > behaviour.
+> > 
+> > Does that sound a reasonable approach?
+> > 
+> > Strangely, I already have some patches along those lines in my
+> > net-queue branch. See:
+> > 
+> > net: phylink: add helpers for decoding mode
+> > net: use phylink_mode_*() helpers
+> > net: phylink: split PCS in-band from inband mode
+> > 
+> > It's nowhere near finished though, it was just an idea back in
+> > 2021 when the problem of getting rid of differing PCS behaviours
+> > was on my mind.
+> 
+> Having looked at those patches
+> (http://git.armlinux.org.uk/cgit/linux-arm.git/commit/?h=net-queue&id=a632167d226cf95d92cd887b2f1678e1539833b1)
+> and seen the way in which they are incomplete, could you sketch here how
+> do you see an actual pcs_validate() implementation making use of the new
+> "mode" argument?
+> 
+> I'd expect there to be some logic which changes the "mode", if the PCS
+> validation with the existing one fails... or?
 
-On 3/1/23 2:37 AM, Heiko Carstens wrote:
-> On Thu, Feb 16, 2023 at 02:39:05PM +0800, D. Wythe wrote:
->> From: "D. Wythe" <alibuda@linux.alibaba.com>
->>
->> There is a certain probability that following
->> exceptions will occur in the wrk benchmark test:
->>
->> Running 10s test @ http://11.213.45.6:80
->>    8 threads and 64 connections
->>    Thread Stats   Avg      Stdev     Max   +/- Stdev
->>      Latency     3.72ms   13.94ms 245.33ms   94.17%
->>      Req/Sec     1.96k   713.67     5.41k    75.16%
->>    155262 requests in 10.10s, 23.10MB read
->> Non-2xx or 3xx responses: 3
->>
->> We will find that the error is HTTP 400 error, which is a serious
->> exception in our test, which means the application data was
->> corrupted.
->>
->> Consider the following scenarios:
->>
->> CPU0                            CPU1
->>
->> buf_desc->used = 0;
->>                                  cmpxchg(buf_desc->used, 0, 1)
->>                                  deal_with(buf_desc)
->>
->> memset(buf_desc->cpu_addr,0);
->>
->> This will cause the data received by a victim connection to be cleared,
->> thus triggering an HTTP 400 error in the server.
->>
->> This patch exchange the order between clear used and memset, add
->> barrier to ensure memory consistency.
->>
->> Fixes: 1c5526968e27 ("net/smc: Clear memory when release and reuse buffer")
->> Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
->> ---
->> v2: rebase it with latest net tree.
->>
->>   net/smc/smc_core.c | 17 ++++++++---------
->>   1 file changed, 8 insertions(+), 9 deletions(-)
->>
->> diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
->> index c305d8d..c19d4b7 100644
->> --- a/net/smc/smc_core.c
->> +++ b/net/smc/smc_core.c
->> @@ -1120,8 +1120,9 @@ static void smcr_buf_unuse(struct smc_buf_desc *buf_desc, bool is_rmb,
->>   
->>   		smc_buf_free(lgr, is_rmb, buf_desc);
->>   	} else {
->> -		buf_desc->used = 0;
->> -		memset(buf_desc->cpu_addr, 0, buf_desc->len);
->> +		/* memzero_explicit provides potential memory barrier semantics */
->> +		memzero_explicit(buf_desc->cpu_addr, buf_desc->len);
->> +		WRITE_ONCE(buf_desc->used, 0);
-> This looks odd to me. memzero_explicit() is only sort of a compiler
-> barrier, since it is a function call, but not a real memory barrier.
->
-> You may want to check Documentation/memory-barriers.txt and
-> Documentation/atomic_t.txt.
->
-> To me the proper solution looks like buf_desc->used should be converted to
-> an atomic_t, and then you could do:
->
-> 	memset(buf_desc->cpu_addr, 0, buf_desc->len);
-> 	smp_mb__before_atomic();
-> 	atomic_set(&buf_desc->used, 0);
->
-> and in a similar way use atomic_cmpxchg() instead of the now used cmpxchg()
-> for the part that sets buf_desc->used to 1.
->
-> Adding experts to cc, since s390 has such strong memory ordering semantics
-> that you can basically do whatever you want without breaking anything. So I
-> don't consider myself an expert here at all. :)
->
-> But given that this is common code, let's make sure this is really correct.
+You may notice that I explicitly didn't include the patches adding the
+mode argument to the validation path, precisely because that's an
+unanswered question.
 
-Hi  Heiko,
+I haven't done much work in this area because I gave up with trying to
+convert mv88e6xxx to phylink_pcs because it just became impossible
+due to the history of the driver - and that destroyed my motivation
+for further work, because that would mean I'd just accumulate more
+and more patches. You may have noticed that I'm hardly doing any
+development work on phylink over the last few months, instead
+concentrating on problem non-DSA network drivers.
 
-I realize that you are completely right, and I will repair this problem 
-according to your ideas.
-
-Thank you very much!!!
-
-Best wishes.
-
-D. Wythe
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
