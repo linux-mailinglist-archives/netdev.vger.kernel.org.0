@@ -2,85 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DBC56B02F2
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 10:32:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 743D46B02F9
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 10:34:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230050AbjCHJcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 04:32:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38048 "EHLO
+        id S229621AbjCHJeP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 04:34:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230119AbjCHJbw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 04:31:52 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1374FB3291
-        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 01:31:34 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id ay14so59361154edb.11
-        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 01:31:33 -0800 (PST)
+        with ESMTP id S229564AbjCHJeO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 04:34:14 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F82D95BF1
+        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 01:34:12 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id t25-20020a1c7719000000b003eb052cc5ccso792882wmi.4
+        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 01:34:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112; t=1678267892;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=YmxXJHvQxfbDrLAWch03k5xnRMut7MXIx9gMNxn4uhY=;
-        b=OJ+Fshl6p4wQwfjnQ7Wu1DMBjivuuttYpOO2S1744KYFu1VdWDzM2mrbbop/MBibWl
-         nqGh/HVAAipXTKPjazricJRIcgdWKN4zTOAEEqIE1huj8lkVYGyPvBUFpIhY+Mpw9sGT
-         kB19U5+5ugE5oE5FZNbEPqHnOpz9a12nbuUYUZ+1RU9VNO3cZIbEZQz6jm4dEcyJUTIP
-         vJ1Pe129zIOglZgs6sel8ROQuOZkqF4a0oRcA8xA24xM/Zt/+/AiJZmZ2pLbmjdK+lxg
-         G1/q8ufDsCrBPpJfwzeKRsrTPyuHmaY3hi0/JPonrNhP4IHl4DRVoA++5WsyNNflINqu
-         aFtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678267892;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=google.com; s=20210112; t=1678268051;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=YmxXJHvQxfbDrLAWch03k5xnRMut7MXIx9gMNxn4uhY=;
-        b=OG2bZjTXBuiGuzA+0eQkSp1WRi4DpRXwdy1P/7IFEwhaEO62f/A0QSDRn+CyHIx2Ps
-         AJbgDz8eyrKOI8y5909sEzB+Dxuymy0oojmNA69KnRAYkUrA12G3MiVDBLj/4GTMhZA5
-         hevWJ46XN/MnFSIuxLzgX0hVLjCoxc79kYsDGh3otCFoXFoT/Jy4kwWWG0MgmurSyvFy
-         z5hyVbsPJnYQQXfUTJhW/0jr00JiUNGRC40HbSukEy0vH7ifYVaPXCbgUVP0Qe44Ga7p
-         pMvXSvYUqYfIUdg7biMs9oTrC3COcj+jXiPhlVpbWvqwnRgXr//mwcWvVzdvzZxDxUdK
-         2EwA==
-X-Gm-Message-State: AO0yUKXsKJmX+/vv0m2VLijD/qLSGX6FyLz2Sc9svxJhp/y2vNH/u4ZK
-        p4vPz8RS4gH85wnz19IhJBJ/CQ==
-X-Google-Smtp-Source: AK7set9f9BPCcWpi1PJQqIc99NrzF34rCnuqLJbhNbcxkqwL4pDsGdVSBZfi393m/qGblUav7G30kA==
-X-Received: by 2002:a05:6402:1291:b0:4ad:66b:84a5 with SMTP id w17-20020a056402129100b004ad066b84a5mr16119629edv.22.1678267892393;
-        Wed, 08 Mar 2023 01:31:32 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id v24-20020a50d598000000b004bfc59042e5sm7858518edi.61.2023.03.08.01.31.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Mar 2023 01:31:31 -0800 (PST)
-Date:   Wed, 8 Mar 2023 10:31:30 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Po-Hsu Lin <po-hsu.lin@canonical.com>
-Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, idosch@mellanox.com,
-        danieller@mellanox.com, petrm@mellanox.com, shuah@kernel.org,
-        pabeni@redhat.com, kuba@kernel.org, edumazet@google.com,
-        davem@davemloft.net
-Subject: Re: [PATCHv2] selftests: net: devlink_port_split.py: skip test if no
- suitable device available
-Message-ID: <ZAhV8nKuLVAQHQGl@nanopsycho>
-References: <20230307150030.527726-1-po-hsu.lin@canonical.com>
+        bh=wfJ8tVzKlgE9CbCau2LvfpOtjUn9llC8iNYbOsfWj54=;
+        b=LvZ9I5f6eRY9wLbkBuoQHV+4Yiw2vCm1VrGbfrz3+q3HkdeDMUJloyKHL9aJnxG1fE
+         BidIbFR8XGcnmSv852nziXwdlOrQMAeow0RYs14t9Gm7SOjbrEyjLWCFBrx2WwCHMXnQ
+         QMOWiBagtinaEKDEhIaiCBzAigaxt2uEdfFzqwlRAtw68P/KwdSgI5o7dNxQAU44k5e1
+         r+QaXhXJ0iwz7ozBk1HaoAniD1FD6D0uij8DGWr+0io+Wr0G+X1eKY3Rf7SZy49Ka+Ic
+         eK2IrASg3lxUCOP/Z6RBShzxmg+hIzF/M3tlfqCyPwFLpf/IiTgKFFKdRMDJhA7fvPuM
+         VSYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678268051;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=wfJ8tVzKlgE9CbCau2LvfpOtjUn9llC8iNYbOsfWj54=;
+        b=lHyk5WE5SxD7CkBmef4VYeW2eiVEmanlEKYsONu/e83VmdA55RXA96W7uLuf5FoYlx
+         5Db318QXACrvpbxyV6zQjeDpfl7GnwM6iC7gWL5nGMHrJq0UbjWRC8HfK7T3i1QG0ZiP
+         0k5RKZ2J1N1ozIzH39NGQHqVDSefWowMketPh+0ZeuMA2t4Fqc/nFDFccZbBRwCTwBdw
+         fvvsi76eXOgXL9jTeYzm/9ZmUSOteQF10u57ylDDBRfajPKh4QAsfW5l3dsWx3GXCouK
+         kAOri2ofCxizKWyZjPlvSeToSesX1XSRcdpnm+lVITnZjJwc2+u9fn8cFa489JOhSe60
+         sD7w==
+X-Gm-Message-State: AO0yUKXaEDg97oGAYrAUfST8YD1MSmk15LKFb8ws9rBrqv5hr2q6Njgj
+        Xd2esdo8iHqim22spcszUbGFVwah9SeFSJhGlE3vHc5R8YoFcf/vzoc=
+X-Google-Smtp-Source: AK7set82GryJrpTa+5Tj1f2Q4fQm3TkwXuMmRqyGNAx9w47kgv5b/uASg6YANJm3Rf84X2NZyUvD4g8tDxUMCCZV8e8=
+X-Received: by 2002:a05:600c:54c4:b0:3df:e471:4ef6 with SMTP id
+ iw4-20020a05600c54c400b003dfe4714ef6mr3741558wmb.2.1678268050949; Wed, 08 Mar
+ 2023 01:34:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230307150030.527726-1-po-hsu.lin@canonical.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+References: <eb5656200d7964b2d177a36b77efa3c597d6d72d.1678267343.git.leonro@nvidia.com>
+In-Reply-To: <eb5656200d7964b2d177a36b77efa3c597d6d72d.1678267343.git.leonro@nvidia.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 8 Mar 2023 10:33:59 +0100
+Message-ID: <CANn89iLjJSAA=HFFe6ZDvcZOh24JRkHsQAcftu1FV50R6+nNAw@mail.gmail.com>
+Subject: Re: [PATCH net-next] neighbour: delete neigh_lookup_nodev as not used
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Mar 07, 2023 at 04:00:30PM CET, po-hsu.lin@canonical.com wrote:
->The `devlink -j port show` command output may not contain the "flavour"
->key, an example from s390x LPAR with Ubuntu 22.10 (5.19.0-37-generic),
->iproute2-5.15.0:
->  {"port":{"pci/0001:00:00.0/1":{"type":"eth","netdev":"ens301"},
->           "pci/0001:00:00.0/2":{"type":"eth","netdev":"ens301d1"},
->           "pci/0002:00:00.0/1":{"type":"eth","netdev":"ens317"},
->           "pci/0002:00:00.0/2":{"type":"eth","netdev":"ens317d1"}}}
+On Wed, Mar 8, 2023 at 10:23=E2=80=AFAM Leon Romanovsky <leon@kernel.org> w=
+rote:
+>
+> From: Leon Romanovsky <leonro@nvidia.com>
+>
+> neigh_lookup_nodev isn't used in the kernel after removal
+> of DECnet. So let's remove it.
+>
+> Fixes: 1202cdd66531 ("Remove DECnet support from kernel")
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 
-As Jakub wrote, this is odd. Could you debug if kernel sends the flavour
-attr and if not why? Also, could you try with most recent kernel?
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+
+Thanks.
