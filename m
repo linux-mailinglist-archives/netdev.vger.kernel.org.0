@@ -2,65 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 114126AFCC4
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 03:13:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55AEE6AFCC9
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 03:13:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229724AbjCHCNU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 21:13:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35560 "EHLO
+        id S229780AbjCHCNh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 21:13:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbjCHCNS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 21:13:18 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02CEF84F46;
-        Tue,  7 Mar 2023 18:13:17 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id h8so16283959plf.10;
-        Tue, 07 Mar 2023 18:13:16 -0800 (PST)
+        with ESMTP id S229840AbjCHCNe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 21:13:34 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D0869FE40;
+        Tue,  7 Mar 2023 18:13:29 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id o12so60068904edb.9;
+        Tue, 07 Mar 2023 18:13:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678241596;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=WUi/jbYtXBOmmnZErU5v1Etksb+Orfwsi2v3q122Dds=;
-        b=antxJzNYxwpmrrIofTxl7WnzRWnd3JangQVBLAbjPacqvRH8OoDyVIfMQ1KmzKlu3Y
-         TI3or5HSTobP9+Xiw4M/FaypOtbX6Vtpd1ed1VsAZLZ8wMRx4cTyjcwpXFfZ8i+qg2M7
-         72FUTHh+RT0lkV5IurRLWBdNSGTGcu0aX2lKNNZKnAvwXf8sZuX6yHH7GfLxdhlYjxqU
-         wDB9Zdx5mKbPMzhKYFzgl995WHSWrMlvZtO5Sh3DmiEO4TaQeQPa8f9UTjDFEIWj5aWM
-         AUM21aP1HJkaVBxyWDUKGwMaREbijqWC+OtIvsFT0k9PBRQ8fbUWXuD9D4u8ite9ww8b
-         DQJg==
+        d=gmail.com; s=20210112; t=1678241608;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uDmqpI3iGfWF0L8Eququv4XMsNLZbjQlVIecq8LOf4Y=;
+        b=HZxOwbW1wMRACfPkH0edExpU8AU3Xxo5TVuETh8nHWzzMm5JeTq9T0sfrvqwBUyxoC
+         wpgWrE4IvTpL0CIsSU24m8PFNEv0gx9JkgO2IxpjjyrT37g8lp0jmC1o76JfOMmFLjpH
+         BCy6Blu+yMjbjsflrfiO7f/Gmo061ckCYg9t6K9VyjI7ro0JpZLIWZLYSJO82Pq4mbPZ
+         Va9fDU0YDQX1kjo54drvVVrK2LsbsdFedCVgATjZpHDMEh6W8BqLHXqpdc5lQYGe1tCC
+         8Rg9M/fDIsA6+HvcXg7TBEnDSnYU7Bya1RL8gk70MzBOcAhk+Sy8wniA32Uw0Ln8H8S/
+         8GKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678241596;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=WUi/jbYtXBOmmnZErU5v1Etksb+Orfwsi2v3q122Dds=;
-        b=tOnhchhYJqBfZOQDjV8I4QykHQfiBFqQTH+ZfV8SuaT70oO13Ch2Yrh9RxDXNMeDKJ
-         /YRx20MI9ryAm6XsYHmTDTwu5uoMlvnxw6bXu4j/CEcx4HGsBgDNJfIfQezPbp7w85mS
-         qyAdUQlXrM19xLnIAzdKLtYWltXVDjs6L68qrrQD2Xg1nyfjt8iFMtiNy4/UfLh7WWB5
-         G4baqNZUU2KJ3FBavZVW1RvfWhqCHdieGZXMgJTntJ/Pg+BPC2cBa3IM4AGNj4W0+9Of
-         /DR8C0OT30w+87klrJMa0u3d6m29NViEfxHRiXS0/LEsc2ZTrR3V7hxhd6uPLA5ywPWF
-         +szw==
-X-Gm-Message-State: AO0yUKUfit+hWwNHWnhSinN0z9ubrsJWQ6GkjlMzY2HLk4yIiXaw0L52
-        RIjLvzE+jpzOoJ7uRbaR6wM=
-X-Google-Smtp-Source: AK7set/OQB7Yy/JOEV6yCQmOoRVo9Usg/OnzO5tpYPfLJSgAk4oISQSImkLWH87e/7+k3sjYSY2gFA==
-X-Received: by 2002:a05:6a20:8407:b0:cc:eb3b:56e9 with SMTP id c7-20020a056a20840700b000cceb3b56e9mr22961764pzd.1.1678241596431;
-        Tue, 07 Mar 2023 18:13:16 -0800 (PST)
-Received: from KERNELXING-MB0.tencent.com ([103.7.29.31])
-        by smtp.gmail.com with ESMTPSA id a22-20020a62bd16000000b00592eb6f239fsm8337785pff.40.2023.03.07.18.13.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Mar 2023 18:13:16 -0800 (PST)
-From:   Jason Xing <kerneljasonxing@gmail.com>
-To:     simon.horman@corigine.com, willemdebruijn.kernel@gmail.com,
-        davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, kerneljasonxing@gmail.com,
-        Jason Xing <kernelxing@tencent.com>
-Subject: [PATCH v4 net-next] udp: introduce __sk_mem_schedule() usage
-Date:   Wed,  8 Mar 2023 10:11:53 +0800
-Message-Id: <20230308021153.99777-1-kerneljasonxing@gmail.com>
-X-Mailer: git-send-email 2.33.0
+        d=1e100.net; s=20210112; t=1678241608;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=uDmqpI3iGfWF0L8Eququv4XMsNLZbjQlVIecq8LOf4Y=;
+        b=oQgEcyRP2jWdAVxKW/1SUBypVd0eUWwiQPXkM1kofwgMGrd7LMHQqnOIy2Wy1zSJfq
+         3bYotDawDZiSA3+K/R0ozykMz3Q9ueWYZgsF9iqy2Q13uMLBPelrGcdfZ1gW1uQmvUP4
+         emtfUPVNRa82EtJzHodarF093ZO8dRc4FCmmi/CZ07R2LVH+v7GN0VQ1ILXVlXiT3VPF
+         Ivvvrim+OHW5GOGmQqDEj/LDPHYmFyWZ0K7q5PnVIneeaL2GiGookyvi0O63+RExCPUQ
+         JlKiPgm8gXzvH9xhmadZCUAOlHOLl5VR+gzCU2ciTP8ZDjEthDj0BP6I0vdbiLgqIPi0
+         U+TA==
+X-Gm-Message-State: AO0yUKWGlEI+QycEzHcZD0eH7Ndk4XZoNfRVL3L99kmjUVt1/eeTubhN
+        eAZcy6i2uWxNXJQYKDuDTenGTjPtOHbN8PqsW6E=
+X-Google-Smtp-Source: AK7set+z/zraB9ppbT/i0abXK22k8L7sj7F0zNcwkSfcGkUZ+UuNb33Lv6N3tHlZ1DHmgT22Bwdp0RFFPBWzaPpZOO8=
+X-Received: by 2002:a50:8e5d:0:b0:4c8:1fda:52fd with SMTP id
+ 29-20020a508e5d000000b004c81fda52fdmr9293564edx.8.1678241608035; Tue, 07 Mar
+ 2023 18:13:28 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20230307015620.18301-1-kerneljasonxing@gmail.com> <2ad119bd1f24f408921b16eb0ebdf67935d1d880.camel@redhat.com>
+In-Reply-To: <2ad119bd1f24f408921b16eb0ebdf67935d1d880.camel@redhat.com>
+From:   Jason Xing <kerneljasonxing@gmail.com>
+Date:   Wed, 8 Mar 2023 10:12:51 +0800
+Message-ID: <CAL+tcoAejCA8jX_y+DmgcMKFMoY_1cM6+-EuT7r0QMO-5kn+dw@mail.gmail.com>
+Subject: Re: [PATCH v3 net-next] udp: introduce __sk_mem_schedule() usage
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     simon.horman@corigine.com, willemdebruijn.kernel@gmail.com,
+        davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        Jason Xing <kernelxing@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -71,78 +71,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jason Xing <kernelxing@tencent.com>
+On Tue, Mar 7, 2023 at 10:55=E2=80=AFPM Paolo Abeni <pabeni@redhat.com> wro=
+te:
+>
+> On Tue, 2023-03-07 at 09:56 +0800, Jason Xing wrote:
+> > From: Jason Xing <kernelxing@tencent.com>
+> >
+> > Keep the accounting schema consistent across different protocols
+> > with __sk_mem_schedule(). Besides, it adjusts a little bit on how
+> > to calculate forward allocated memory compared to before. After
+> > applied this patch, we could avoid receive path scheduling extra
+> > amount of memory.
+> >
+> > Link: https://lore.kernel.org/lkml/20230221110344.82818-1-kerneljasonxi=
+ng@gmail.com/
+> > Signed-off-by: Jason Xing <kernelxing@tencent.com>
+> > ---
+> > v3:
+> > 1) get rid of inline suggested by Simon Horman
+> >
+> > v2:
+> > 1) change the title and body message
+> > 2) use __sk_mem_schedule() instead suggested by Paolo Abeni
+> > ---
+> >  net/ipv4/udp.c | 31 ++++++++++++++++++-------------
+> >  1 file changed, 18 insertions(+), 13 deletions(-)
+> >
+> > diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+> > index c605d171eb2d..60473781933c 100644
+> > --- a/net/ipv4/udp.c
+> > +++ b/net/ipv4/udp.c
+> > @@ -1531,10 +1531,23 @@ static void busylock_release(spinlock_t *busy)
+> >               spin_unlock(busy);
+> >  }
+> >
+> > +static int udp_rmem_schedule(struct sock *sk, int size)
+> > +{
+> > +     int delta;
+> > +
+> > +     delta =3D size - sk->sk_forward_alloc;
+> > +     if (delta > 0 && !__sk_mem_schedule(sk, delta, SK_MEM_RECV))
+> > +             return -ENOBUFS;
+> > +
+> > +     sk->sk_forward_alloc -=3D size;
+>
+> I think it's better if you maintain the above statement outside of this
+> helper: it's a bit confusing that rmem_schedule() actually consumes fwd
+> memory.
 
-Keep the accounting schema consistent across different protocols
-with __sk_mem_schedule(). Besides, it adjusts a little bit on how
-to calculate forward allocated memory compared to before. After
-applied this patch, we could avoid receive path scheduling extra
-amount of memory.
+It does make sense.
 
-Link: https://lore.kernel.org/lkml/20230221110344.82818-1-kerneljasonxing@gmail.com/
-Signed-off-by: Jason Xing <kernelxing@tencent.com>
----
-v4:
-1) Move one statement outside of the helper suggested by Paolo Abeni
+Thanks,
+Jason
 
-v3:
-1) get rid of inline suggested by Simon Horman
-
-v2:
-1) change the title and body message
-2) use __sk_mem_schedule() instead suggested by Paolo Abeni
----
- net/ipv4/udp.c | 27 ++++++++++++++++-----------
- 1 file changed, 16 insertions(+), 11 deletions(-)
-
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index c605d171eb2d..dc8feb54d835 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -1531,10 +1531,21 @@ static void busylock_release(spinlock_t *busy)
- 		spin_unlock(busy);
- }
- 
-+static int udp_rmem_schedule(struct sock *sk, int size)
-+{
-+	int delta;
-+
-+	delta = size - sk->sk_forward_alloc;
-+	if (delta > 0 && !__sk_mem_schedule(sk, delta, SK_MEM_RECV))
-+		return -ENOBUFS;
-+
-+	return 0;
-+}
-+
- int __udp_enqueue_schedule_skb(struct sock *sk, struct sk_buff *skb)
- {
- 	struct sk_buff_head *list = &sk->sk_receive_queue;
--	int rmem, delta, amt, err = -ENOMEM;
-+	int rmem, err = -ENOMEM;
- 	spinlock_t *busy = NULL;
- 	int size;
- 
-@@ -1567,16 +1578,10 @@ int __udp_enqueue_schedule_skb(struct sock *sk, struct sk_buff *skb)
- 		goto uncharge_drop;
- 
- 	spin_lock(&list->lock);
--	if (size >= sk->sk_forward_alloc) {
--		amt = sk_mem_pages(size);
--		delta = amt << PAGE_SHIFT;
--		if (!__sk_mem_raise_allocated(sk, delta, amt, SK_MEM_RECV)) {
--			err = -ENOBUFS;
--			spin_unlock(&list->lock);
--			goto uncharge_drop;
--		}
--
--		sk->sk_forward_alloc += delta;
-+	err = udp_rmem_schedule(sk, size);
-+	if (err) {
-+		spin_unlock(&list->lock);
-+		goto uncharge_drop;
- 	}
- 
- 	sk->sk_forward_alloc -= size;
--- 
-2.37.3
-
+>
+> Side note
+>
+> Cheers,
+>
+> Paolo
+>
