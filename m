@@ -2,97 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00D906B041D
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 11:25:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC9206B043A
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 11:28:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230110AbjCHKZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 05:25:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59790 "EHLO
+        id S229652AbjCHK2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 05:28:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230417AbjCHKZ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 05:25:29 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6B72B6D1D
-        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 02:25:22 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id c18so9479737wmr.3
-        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 02:25:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112; t=1678271121;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=0nUFqTSYYlwKcBdbLdi0XKP/nnoX/eyXZwAVZjWpB0g=;
-        b=CRPN3d8ln5DVdjmWn0lQzniPy06zXgepRrqUHIrYX5wgR0GvEvbYYk9M6intl6hnzy
-         aH4kWmlBjTZen30H+E6POQGHJf+jDQE5XhTOelrBuCOlyYCx8ACHuG7BjfZuo1ZS9ZoP
-         BfZ7EUYjhVinkftFysX1F4/nsAkldBf7OgxMtnZdTmjT/OHxL9+bJVnKmbqAquEU8fMf
-         hCbSPEHfQ3dJyEMMCjrqG1Z/6LdA2cMVSdIVQgPuY5IFjpb0wqRmGg9ZcNHYP4uFahBN
-         m/GYFNAsnfS1b5EHRXVkzKk6TooV7uvXqrAywoxveA9qcXCw32lYRbEsZ/1HqFFdAPiA
-         UMjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678271121;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0nUFqTSYYlwKcBdbLdi0XKP/nnoX/eyXZwAVZjWpB0g=;
-        b=EQNYMKC6SHvzJ+EZQZ5RTdjAzdtDoYx7/44rK/bERGwzTtDOkYMmu81YbZSU+dlyGV
-         sclq3hsclO0mkfljb8cM8hrxJbleDMjtr1bocB/IXlbLoudIrXJdubD5Ijv4G1wV7PWz
-         FN8bVmbaIENGZv8+pe+LCaoXsgOSWSWSHCPXf+0cL+hGaM0F+DTDmUUFYk9CFulhGbkh
-         qyYNXHoSw5Hlwgc6EiiytSa5nJxr0zjNssXYixN1L4sF312qux4eDhURn5rRLWR7BUe/
-         J3QaPn4zWkRyUMuOwpgVb0KuJ7THoQhTZpVnVtDH6yqoMW0Sp/UxQ4R7PGm/DSMCJ1mY
-         UCYA==
-X-Gm-Message-State: AO0yUKXqZtuqQeNqtDYYvDvoN/umMe2FcBPPmySRF5YKko4waWyXzTNo
-        ep4wIp4Clsb6TPJEKPZ+NDDvkA==
-X-Google-Smtp-Source: AK7set9rqpA5aqHE2WNGit+ggW0J7JYgHOHtg5YAEOjn6HVsVKJmpalEtASlyHUxLcyA8M8vMCpVgA==
-X-Received: by 2002:a05:600c:5123:b0:3ea:ecc2:daab with SMTP id o35-20020a05600c512300b003eaecc2daabmr16862317wms.3.1678271121097;
-        Wed, 08 Mar 2023 02:25:21 -0800 (PST)
-Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
-        by smtp.gmail.com with ESMTPSA id u16-20020a5d5150000000b002c559843748sm14915809wrt.10.2023.03.08.02.25.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Mar 2023 02:25:20 -0800 (PST)
-Message-ID: <d730e5d1-7dfd-58d7-b443-20461fe98ff2@blackwall.org>
-Date:   Wed, 8 Mar 2023 12:25:19 +0200
+        with ESMTP id S230122AbjCHK2T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 05:28:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF2E415895;
+        Wed,  8 Mar 2023 02:28:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B6F6161742;
+        Wed,  8 Mar 2023 10:28:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FC6FC433EF;
+        Wed,  8 Mar 2023 10:28:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678271296;
+        bh=3ATSMMmIqMCYSoje7sUGyuaLfmmC29rxXpx9pHsAz0w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=HruyILWz2z91atQn0pwC6BOg2QeSjDMlhQO3lWI/BWDIMbwJr2oaCIdZIBC2DcyP0
+         u+Ae2g3yr4pBHVZQmMBholQIS3GswVTi2boG8yI9WPQsLlPjqV+9aP9g46stBqn1YY
+         RnakilR57CKXs4HcwNeBSRte1vHqWTPLV9daig7NJarJjEBcWb/bDxcSc4YSkgTFqs
+         bnXYhT1Hdpl88ruBJppbszXMsU3JRt2rhqmhJYL+zcJCW2KTx+XD5yNpi4D3Wr79Pt
+         hMtzzE6I8Cnr9oS/bOuhJAEsLTXZ6PzvFyKwVwBNMaX3l5aRSthccauvN7P4i/bYDP
+         OPIrVvEmqTH1Q==
+Date:   Wed, 8 Mar 2023 11:28:12 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        saeedm@nvidia.com, tariqt@nvidia.com, leon@kernel.org,
+        shayagr@amazon.com, akiyano@amazon.com, darinzon@amazon.com,
+        sgoutham@marvell.com, lorenzo.bianconi@redhat.com, toke@redhat.com,
+        teknoraver@meta.com
+Subject: Re: [PATCH net-next 1/8] tools: ynl: fix render-max for flags
+ definition
+Message-ID: <ZAhjPNfv8PVKSpw2@lore-desk>
+References: <cover.1678200041.git.lorenzo@kernel.org>
+ <b4359cc25819674de797029eb7e4a746853c1df4.1678200041.git.lorenzo@kernel.org>
+ <20230308000649.03adbcce@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH net-next] neighbour: delete neigh_lookup_nodev as not used
-Content-Language: en-US
-To:     Leon Romanovsky <leon@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leonro@nvidia.com>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-References: <eb5656200d7964b2d177a36b77efa3c597d6d72d.1678267343.git.leonro@nvidia.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <eb5656200d7964b2d177a36b77efa3c597d6d72d.1678267343.git.leonro@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,
-        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="sg26xanjhsS6mPfY"
+Content-Disposition: inline
+In-Reply-To: <20230308000649.03adbcce@kernel.org>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/03/2023 11:23, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> neigh_lookup_nodev isn't used in the kernel after removal
-> of DECnet. So let's remove it.
-> 
-> Fixes: 1202cdd66531 ("Remove DECnet support from kernel")
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> ---
->  include/net/neighbour.h |  2 --
->  net/core/neighbour.c    | 31 -------------------------------
->  2 files changed, 33 deletions(-)
-> 
 
-Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
+--sg26xanjhsS6mPfY
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+> On Tue,  7 Mar 2023 15:53:58 +0100 Lorenzo Bianconi wrote:
+> > Properly manage render-max property for flags definition type
+> > introducing mask value and setting it to (last_element << 1) - 1
+> > instead of adding max value set to last_element + 1
+> >=20
+> > Fixes: be5bea1cc0bf ("net: add basic C code generators for Netlink")
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >  tools/net/ynl/ynl-gen-c.py | 11 ++++++++---
+> >  1 file changed, 8 insertions(+), 3 deletions(-)
+> >=20
+> > diff --git a/tools/net/ynl/ynl-gen-c.py b/tools/net/ynl/ynl-gen-c.py
+> > index 274e9c566f61..f2e41dd962d4 100755
+> > --- a/tools/net/ynl/ynl-gen-c.py
+> > +++ b/tools/net/ynl/ynl-gen-c.py
+> > @@ -1995,9 +1995,14 @@ def render_uapi(family, cw):
+> > =20
+> >              if const.get('render-max', False):
+> >                  cw.nl()
+> > -                max_name =3D c_upper(name_pfx + 'max')
+> > -                cw.p('__' + max_name + ',')
+> > -                cw.p(max_name + ' =3D (__' + max_name + ' - 1)')
+> > +                if const['type'] =3D=3D 'flags':
+> > +                    max_name =3D c_upper(name_pfx + 'mask')
+> > +                    max_val =3D f' =3D {(entry.user_value() << 1) - 1}=
+,'
+>=20
+> Hm, why not use const.get_mask() here? Rather than the last entry?
 
+actually I did this change but it ended up in patch 3/8. I will fix it in v=
+2.
+
+Regards,
+Lorenzo
+
+>=20
+> > +                    cw.p(max_name + max_val)
+> > +                else:
+> > +                    max_name =3D c_upper(name_pfx + 'max')
+> > +                    cw.p('__' + max_name + ',')
+> > +                    cw.p(max_name + ' =3D (__' + max_name + ' - 1)')
+> >              cw.block_end(line=3D';')
+> >              cw.nl()
+> >          elif const['type'] =3D=3D 'const':
+>=20
+
+--sg26xanjhsS6mPfY
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCZAhjPAAKCRA6cBh0uS2t
+rMJ/AQDTcazZlObzi/XK6FpEt1hd9r+AFAoStz24EZcVcE/45AD/cH7LH7TqGQpj
+6a6P3BMfyVfOdK29ArCM8eaqVHYCXQE=
+=oW96
+-----END PGP SIGNATURE-----
+
+--sg26xanjhsS6mPfY--
