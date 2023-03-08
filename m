@@ -2,142 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D4036B0654
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 12:49:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BF946B068D
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 13:04:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230293AbjCHLtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 06:49:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50282 "EHLO
+        id S229955AbjCHMEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 07:04:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230197AbjCHLtA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 06:49:00 -0500
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2137.outbound.protection.outlook.com [40.107.101.137])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31DFA4345C;
-        Wed,  8 Mar 2023 03:48:59 -0800 (PST)
+        with ESMTP id S229635AbjCHMD7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 07:03:59 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on20715.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eab::715])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0B68B718C
+        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 04:03:57 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iv9QWotI3vB86K7bI7sUaZu1fc1cmWCh7y+9pOOr740ShX48wOB8EMTCU4noNGE1GA+Xbd/x4AR9iqUqJ8rwI76BuzLziFlJqGEiYEAnMSCbpOXh32fRrWtZZzv+FrqJQXWttAvu9RufmHcGbL7S6r0RWrjHo+/B/6CXAmGCUH+Wns/DFj9MTtlXqKBuGDjHbSJ7iNVc1lRC2Xs5CEUP34ilpOJFDgj720FnerqXEtjrx1ykXLda/8OcHrXV5c9UfZS4zBPx20D3C2gZ8XOG7nSXQZCBwSf/+EsBeUnht6p70+U2baDDLD8MrIRxhmJZtCP8VE/nd1cqR1ufz038sA==
+ b=bd5DNZ03/LCjihdwzbM9Y0AbB+UU6hNmpWdehumI9T5tYuUYFPRWS7DZQoidfxtWjseTiehKR7jHGwtWLCmsHK/Megylg3AnNz1yVmBlQW09ItnpjliQOlppq7RyNcEOnmUAxafVUNjkDviFYLgIusgvAvkG52rfrdHMJwhfl1oYRRs/meLaWJu/Myihsmtw8EwPlAJG7a0oWRZvvVBW+t/gbCQ3sBGNcjSRdh6SQJ4Nggc5prWHTXi8Un1Fb8d+MLcQtiHhT5CqkluTUEoiOnBDChFwGVxC4KXKMWWETpDZ3RJXGO9MP7/ECG/hST5wLqTdl8nHQVzJIaOajRQtJw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IBwpFfwA8+X6us5xbtWfloH0ya5VlfgnEddEHSK8MTQ=;
- b=FowT8jLOu5j8mj5BfykCjAZHASmik0F+EdGuN44k85TkutuC3Q7s+3O1HuFsPmWA81TGWYXSeaPpHMgRm42LlxC+93ACoCzwQIy3qSS+rIN6dhKX/a1Kpmx1jo8v7BLlIpKWNgP4dwzmaq9jOkoLqntT2Iu8lxoLPRjJWcK/ZaqO2xygNWGJDQQMEtfoeDwEHHDM8KmgJ1oqNsQ5SdgP/gWtp5mjPYTKFDCxzaP2FjLiBH0AQGc0rCuE7KuDyMgFleHoZ65mtswutYii8LWxkRI5/HRJGi6F26kmBJAzl6LSQ3vr59H52w00XJNfYF3/sjPmVYdHYVkXbNrftoNAcw==
+ bh=jOcPtLYNLOo0yb84fP+mneEXqpwsbfGCgINn29PmyWI=;
+ b=SI/PGgsqTwdNEPlGYjJxJRFgg1mI6m+fW1cc0Wd5u12JQBZgxtPZH6PLN3JuBq9kfo/XNk8mOYKspX3LImrHD46nD0S5etw/yP3/cV17wIzBFnLm1sKu4UKwswsqn1P952BndlNP2ePI0fTnUKU1phrB/WmDSDpV1VDytTQgALMq8sRSZWxgRMEyDH8bGy9zKf9+zpedUmAfQGPKnBwu5z4KNYfjlQo3JA7MHJ0DwpibFial2WwFPq7lU1YCe4iVi5qoeIiCsO+o37mchnc5O27kXWMvs0lXPJmC5ibn/vsxUqk71r4VVfh1URbhRVkWi6luxzKqABrO/lPrwDN9Kw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IBwpFfwA8+X6us5xbtWfloH0ya5VlfgnEddEHSK8MTQ=;
- b=q/Lw7kX2pv1jrmMgmqEPVY2wzEnK0PpS5ZVop+X4DiJlsdkX7b4lXn+u0+ZPzM8Rew87QJAIBbKkl0k7HsqYwxk9GksCUJvLqTyR7Nt9Eak2tmt6za6R+lJKvwVl4zoaei1s5uXGKpsWFpf41UEozVUseAE4Ogo1bidF7zAmefo=
+ bh=jOcPtLYNLOo0yb84fP+mneEXqpwsbfGCgINn29PmyWI=;
+ b=lqHCKUGUcdnxLKs2FrrQnm0gF6TrEDFOOoghZraS1gYpD4zktqcm7iMbI9/NevInp8YA7gRRb/iHTlc4kOtHaM69TSpKwio2XVnrkmraCbq8HI8Hadj/IJlDkrj1fL8MHP6yKZEh5UXd9z9Wh+asbyaMIlUjbDbXMCE/ySLqVOk=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH0PR13MB6061.namprd13.prod.outlook.com (2603:10b6:510:296::22) with
+ by PH7PR13MB5552.namprd13.prod.outlook.com (2603:10b6:510:131::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.17; Wed, 8 Mar
- 2023 11:48:56 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.26; Wed, 8 Mar
+ 2023 12:03:53 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6156.029; Wed, 8 Mar 2023
- 11:48:56 +0000
-Date:   Wed, 8 Mar 2023 12:48:49 +0100
+ 12:03:53 +0000
+Date:   Wed, 8 Mar 2023 13:03:45 +0100
 From:   Simon Horman <simon.horman@corigine.com>
-To:     Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Cc:     error27@gmail.com, Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        P Praneesh <quic_ppranees@quicinc.com>,
-        Karthikeyan Periyasamy <quic_periyasa@quicinc.com>,
-        Jeff Johnson <quic_jjohnson@quicinc.com>,
-        Bhagavathi Perumal S <quic_bperumal@quicinc.com>,
-        Wen Gong <quic_wgong@quicinc.com>, ath12k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] wifi: ath12k: Add missing unwind goto in
- ath12k_pci_probe()
-Message-ID: <ZAh2IeS3TnyllK33@corigine.com>
-References: <20230307104706.240119-1-harshit.m.mogalapalli@oracle.com>
-Content-Type: text/plain; charset=us-ascii
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Cc:     netdev@vger.kernel.org, linus.walleij@linaro.org,
+        alsi@bang-olufsen.dk, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
+        krzk+dt@kernel.org, arinc.unal@arinc9.com,
+        Alexander Duyck <alexanderduyck@fb.com>
+Subject: Re: [PATCH net-next v4] net: dsa: realtek: rtl8365mb: add change_mtu
+Message-ID: <ZAh5ocHELAK9PSux@corigine.com>
+References: <20230307210245.542-1-luizluca@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20230307104706.240119-1-harshit.m.mogalapalli@oracle.com>
-X-ClientProxiedBy: AM3PR05CA0156.eurprd05.prod.outlook.com
- (2603:10a6:207:3::34) To PH0PR13MB4842.namprd13.prod.outlook.com
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230307210245.542-1-luizluca@gmail.com>
+X-ClientProxiedBy: AM0PR03CA0092.eurprd03.prod.outlook.com
+ (2603:10a6:208:69::33) To PH0PR13MB4842.namprd13.prod.outlook.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH0PR13MB6061:EE_
-X-MS-Office365-Filtering-Correlation-Id: f0e07788-0f76-4528-8d62-08db1fcb1904
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH7PR13MB5552:EE_
+X-MS-Office365-Filtering-Correlation-Id: 69177ba4-c8ff-4f58-d48b-08db1fcd2f52
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: q06x8wARh2JI2Hj7ZKvZPUdvP0vkcvLdol5+hY3TBJ+kXsntB4VpwlGjlj4B/9bYFLNxgPWL7Gc5rZU5p8HtuLPGxSsTNam5inkWDiFpC9l/CXQ1orsvG90bDN3v+0KSnhpxfdKvvIxXlXoRrC2YgZt7NoGhW9eyg6gOhpCBM6lYeJuzbzKYQSScyRDZ5SniWQe2s0Bw4/ViKEmrmJYK778F0CwjMJNibQv876EJp7cP50hwKEIX4DOoDhsjckmesOvFcEEVrszGwApb771KrGqRSr6KrTOkIdHETAkjvZSKnim19B19VA00CxbNfGv+dcPfneTarF4jqUIfFihFYUTrdYeojOPkjADe4CH0BiM6cgTYhb739G0HhWoZwN1UVNfVCsGIsUgt3XjHXSTY0KItlkZZfTMvASN1vQwmlOD2zMxU4JaD3ROmuxABbdo3VTUDj9sXeoiZs5tAKgcevAUbHmED3M5PkAne9uxsoId4zzM3Jxyl6aQ/GQk+UXrnSVbxhL4zAA734zXgQvCmzLMBjj/AX/HcpE+XuPn4cpRbcE7ufSGPyZhfPOSB110wy/w66Erp0UzDVr04/TtuNhDc7aE55IkBqu3Cn46ceOnf8go3z6v1Z4hYO+rrM1Ik
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(366004)(346002)(396003)(376002)(39840400004)(451199018)(54906003)(36756003)(186003)(44832011)(4744005)(6506007)(6512007)(2906002)(966005)(8936002)(6486002)(5660300002)(7416002)(2616005)(478600001)(86362001)(6666004)(41300700001)(6916009)(4326008)(8676002)(66476007)(66946007)(66556008)(316002)(38100700002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: y6qYt11B3MfbZBUkDUTgc/lWywmmiMxCLdD7sGJJlmvJtbNVPXQva6E5UtWGHcvKeJZPU1DZvxEiLE8ikGHA3Wj2OKs4TGck3v66rOkQqBoM25Tuxy2kSnTtglRXTtWhMCZ/zvMvgQqwpOMTIezDzudN/yPVZXxBlWTm3GrcBuxvTlo1r9TyRD/jeeSOJrb4Ly7KG1CRxSG2PhAFbxrnbptjpZ0N/ypgWvBSHOGSt9mKiTcGqXo5Sz5jrPL009GAINmKun/WcK1u4UOPeG1nQW5sReLsZCENrPaOUeGlgSzjkRZwXC4BeivvcBP81eUWiHdy6GhM8TUPJUAs566rPKK6OSkTRGoeqg+QwKM+fvPFMwMl5MLJAYW63Kik9uzJR7q1wX/Xz9x+5szDAWfbzjzNgECREMeHBVzA5XtnLLVX6g2lPdCmDSho0XlgRw7+xQSUlrj+Iyu3K8cbFNAlRFX21thnNYXM4Z2OcPMZrRIzsO3wrfmHXybn0REez3Jd9yF8bigV0vOauKCysZGBDu+FfBW3Isozzxvz8rU/jFPXTZ8SE7+V6oHIa2JvRB8ktSofnvnrx96RiRC0ksgSBMgG74g4ro+OISl/mq/u6qWQ0AGz9is9py3DWzwftheCCUSBvWbKoJb7Prk3l5Rs7w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(346002)(136003)(366004)(39840400004)(376002)(451199018)(6506007)(6486002)(6512007)(6666004)(66574015)(36756003)(83380400001)(38100700002)(186003)(86362001)(2616005)(41300700001)(66556008)(4326008)(8676002)(6916009)(2906002)(66946007)(8936002)(44832011)(7416002)(5660300002)(66476007)(478600001)(316002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YzEr/+hLKzfKQ+RO1dOShHTuiB7xYSr7XGAr7E7DlrHG5LIQxmeLWgL2Asx2?=
- =?us-ascii?Q?x+zwPb0n2yp6EL239HBqQC2Og0kF4xpNBqvxBTE2Ch4FXTCYUJfBHFD1/xLd?=
- =?us-ascii?Q?J/UwBA7C6r6vJtPpTE6gSS6ZaoM2zBBUSaDnGOU133+3QH7mQjYy4Mf4mMgk?=
- =?us-ascii?Q?NwgdTUEFPjYzXHZnwQnsFO7w0bkWK2MTjNPqrPx5cecHZpTGSDhEejV2eK6Q?=
- =?us-ascii?Q?urIsXfpqtspLvIbnnrqaQ4P/P7yoL+8VmLPnkVjmOxSI0FSN8LXBXeveGzl3?=
- =?us-ascii?Q?ZjjR7GZxerIWuGJlEZN3Mmnvo+GOVU3Uc+RTbUN7w/SKb3f19SSIK6xi5ysY?=
- =?us-ascii?Q?xXvZ4iLUqSHb1gCYzUBG3MHdHpBlOV8BaqZziyzUDFzERI6Vl8TubhzXNsD/?=
- =?us-ascii?Q?mUd6NgBP0ziIBVHWQ6fesnXle7tyPvYLvhMcOKriXbfS3VWSMMjBMnE23b+N?=
- =?us-ascii?Q?h0wjj0oV+TNZamdPeAt31jkOBXq+BhGlFNHtq+KJtyMwDKmmjw7ForcG1h6I?=
- =?us-ascii?Q?lCXPfM80QWkQX8CTV9b+K5poABsdSRgZPMOW2EqghBYMxq2dO0+PoRejVKFU?=
- =?us-ascii?Q?XkQiVmW6onPPT628woWlR/3bc7KZcR3+23zQJYqUldftyGpiGMtVR2X+5/K3?=
- =?us-ascii?Q?FsPilYYHcWlAMt1IwbecYBNyRdbqjdmXesxLhSlTyWY6zOwhRmlXXdRbpEBt?=
- =?us-ascii?Q?Q1VeDcoVCX/uxkcuj6JLkJk9oXZ5OYe9WP1cgiAhtTV6Vnc+e9xuorWIVTxm?=
- =?us-ascii?Q?fKnW0hetJKCbNrYUlB+6Xds5ithKAHV3uxurpvgv9gFaPnH88t5DQDy6ksDK?=
- =?us-ascii?Q?sz/LGhy9FAShkPUQvQexqAcHpE/OQjkXZ+AdkTg1LvM/Ir4RHf6Li+1sTVnT?=
- =?us-ascii?Q?9GOxkh8KA8Oax7cckc+gB0gFvkbqqOIlrmPXMEfFmvYdMayWKMcHlZNcks1t?=
- =?us-ascii?Q?FW/LtEHqUZlVS6eWSB97x7cTFWk2qwm+8Jf6aKqrqk/Z6GOb08Ms5PqKVXR9?=
- =?us-ascii?Q?Kk5PHxoKBWWyHFwsGJBO0nAUm4SRP30FAUpwn95q+K0juUtVLA5COSSpONRO?=
- =?us-ascii?Q?A6hJzmdbEBFkao8PcWZLx5ia+EpGst49n2bGtXSIlGwFbG/NV1gTPadKXZLw?=
- =?us-ascii?Q?FpRI4aA0rxiSi7YDGPOz/+7Kl2WKpW6HrYMk25O92zH0C7kNnQ+CI5/voAJI?=
- =?us-ascii?Q?xdTnVSlMeQs1pawNppcTdm7rL3fcGSfOQCmIgsjd9Kpw72zl8BRmMYsSLkxR?=
- =?us-ascii?Q?IiiDW6je5dwqvxzoZq7SossCLvCQDNbmXIQDJufpPDHXM0WLfk3PoBTiNRPi?=
- =?us-ascii?Q?2N0RiIgRxvKrnMKOQOYp7vxB1x8QC8EBKXyqIxB5zE8l8kuZQ2OJxiyxAK5r?=
- =?us-ascii?Q?rFCOtcojIWfJW+E+D4F/S1GtdioFfjjWrwhKFz2oshL9mdwGV/WrPQBBgJr3?=
- =?us-ascii?Q?knOgvxgE0UdKKCDRn+hzJROxqK2f9Ia2w0ubX0VDaAmcF3Ml3EC7+PGKmD6Q?=
- =?us-ascii?Q?iY8eEo7/tlitvdmGRHdy56c4K9svE3scAqp72rP5r+IjZ286OUby1yuubQbn?=
- =?us-ascii?Q?vLNR6DKWRJZ1yuE45cvmI2TfomWCCb4PGVMoYdW4MsK0r3tpfrfsNt1O1wTs?=
- =?us-ascii?Q?cIPdfar8mwjIiZr4NgqCGaEAlwsO978QRwoIP5PXLGgVQs93xQy0CyFQlWy8?=
- =?us-ascii?Q?EB5SUw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dXBYM0YyTm5UL3dVMHY1VFdINDdIOXlaN2xSdzZNczZLNVVGNFZ4ZHBMSTZk?=
+ =?utf-8?B?RjlxTkgrVmNQNHkxajFzVUxCd1dzN2dzTDIxWnJMZElyYlkxSnl1SkUvN21k?=
+ =?utf-8?B?K3llcEYvM0NHT3B6QnhJdEpuWXd4eXQ5WUpIYlVHN3hBYnlrUnRveHArQTVz?=
+ =?utf-8?B?UkFwV055alg3SjMxMEF3a3VibmxNaWlHUkxkekhvanJIM2ZGajdPV1hBNkFO?=
+ =?utf-8?B?RjJqaFVaM0dGcjlhclpMeHU0N1h6SUc1c3BTSE9xemZvcWdkdUF6Ty9LNmov?=
+ =?utf-8?B?ellVVXAySEcrQzl4YmtleHkxNUg1M29yRXplTkZPcHpSSXNhT2lkR1diTmpo?=
+ =?utf-8?B?bVZ1bEh1YURadXB5Qkp4SmNNYURvbk1RcmtzdkNOT241OWJuRWZ3dDVHM1Mz?=
+ =?utf-8?B?K0FFYkxBdTlIU0czOEw2VG5XREVuQ3RWM3l6cGxtMWduaU52dllsSkZ3V1Nr?=
+ =?utf-8?B?ZDNLN0VXQ3FPVUpKbzN3SmgyS3pHUXhNRWM0bU9mRkJXczYzTmZkR1A3MXVa?=
+ =?utf-8?B?YUFUTUd0QXBESjhOdy9VQm9vNmx1VHV3ZUwyZmlkTi82TmJZZHNsNFRnRytG?=
+ =?utf-8?B?anNLRkxTTkJSMDBvd2YrOWhHUXJ5eGI4VnY1eWlwZWVmWTM3Tmd5bVBYa0I2?=
+ =?utf-8?B?Vy9tMWJ6TUZEeUkzYUFmTVRjQ240UnRKdlBhRm9YZmh3Vmt4MXgveWRrMzBJ?=
+ =?utf-8?B?RHVHM2hZQXpwZUVXbXVEWkMwR2J6ZDFHNjRlQ3hnYUlsWEs2RVJ5c0wxbjFn?=
+ =?utf-8?B?TExteWtYV2NGQ1NGRStmaW9qeFMzNUVCc2dNL25QK2dZNGhhUk9GWjRjcEl4?=
+ =?utf-8?B?SjQwQm0yczl3d0FoUlFKbkFsVjNhZ1VqQ3pWdlJXZ3MzN3M5OXg1RGRKc2Fs?=
+ =?utf-8?B?QXdYWFh2dmhWbTZkdVdpbUdRdVFGZzUvNjV6SWJrYW1lb051c2Q1YWVaUWh1?=
+ =?utf-8?B?N3RXWFZwR0FnZTg4YVFSWU1Gb0xnYSt2TzVkb1dNaTUzNGV6WFhCMytScmJk?=
+ =?utf-8?B?UFdkYjczQkdpWStnK3E5dmhBRzl1ZFBxVUxyTVNLNzV5ViszSTAyT3psdDZB?=
+ =?utf-8?B?Ui82Q1llR3Q5UmpJeXAvcWI1OXRVVFc5TXZ3MjVkRlQwbkJ3OGtiNmsvL0Uv?=
+ =?utf-8?B?V3JXbHY3dS8wb0k4Y241a3FFMVF4Z1RiUGIzMGYwYUxoSWtQNERseGtpZ3V3?=
+ =?utf-8?B?WEVUelNBTnNseXFQemM3aGhVZWFnd0U5ZTN5OEpWek53WmtoSXdTQUg2Q05U?=
+ =?utf-8?B?NFkrd0JIL3FxTzAyeGVWWHptMGc0T3N3YlBMQ2Z3bGFvaU1hamFUWXJKY2J2?=
+ =?utf-8?B?WUdwcmwvN3RJWm1pYlhDN2FUaC9rMDdIL3BnL292OVV0T2hORXVtZTVIL2Jj?=
+ =?utf-8?B?TnVwNmtyKzRieFdqYnJkK0xSRVc4WDRpV0FnWi9WTjdKdzAxcHZOdllESDZP?=
+ =?utf-8?B?ZHFVU1J1QmNWQ1lHM3h5VG1QYitCWXY0cWFUNVB1dm9CbWNTTVk3d0oyRWxn?=
+ =?utf-8?B?dklJZG1GYUI0Z0xmSzhydVFaUys5Z1RIU05KZ1NyWnBSbnBwRXpSQ1pINFZq?=
+ =?utf-8?B?V2dTclVzam1Ob1paaGJBbmhQd1JrN21mdnlGWE8xSVNUcVk1bU9mbEIzdU1a?=
+ =?utf-8?B?N21oM2l3RldWQTNMYWFWRkJNcFRkZWdjRlhhT2V3am41YU9ydmw0ZHhibXBx?=
+ =?utf-8?B?NVk1TVlRYU4yNCt4eXFvRGVZajgrQnMycUZhYW15cVhabTIwVzRZZVV0UkZL?=
+ =?utf-8?B?SS9rV1NNYy9WL2E0aHB0ZDRQR3RtTkp4UFRJYXpLSUFVMGhXazBxVWVPZGdL?=
+ =?utf-8?B?d2VyWXh4TmxIZSt1WDZaNGNWTEsxUWlpcmxzcWdXMnFhTFlnS1U0a0s3QVF6?=
+ =?utf-8?B?YUNaVG8rdy9odnlyS2JIeGE5c3BZNnBRUGJXVWt6RE5RUXRsVmR0WTFlZ3Mz?=
+ =?utf-8?B?RGtQZDJvdFZNeUFpUmRwL3g4RVR0eXRmQmJkRmxqQSt4SjUrQkJhbndFdng2?=
+ =?utf-8?B?cFJMY1NpZHhkeGVUUmRzV2N5eGtML2RUY1lScWYxUVBSU2orYUNkMm9DcVk2?=
+ =?utf-8?B?ZXVGWlZKTHFMY2hoOTFJRFVSZ1pnODN2Q3dlY0h0QWtKckdBdXp3Vnl3ZCs3?=
+ =?utf-8?B?SnVValkwN3M1RlJJczI0NGNURUs2WmhFbWhiVlRUa2l4MCtlaUk2T1RrUW5E?=
+ =?utf-8?B?czJkRmhrRm5KeU0ybnhjNytob29GVjUrZHNlMDNrcTBucjVnSDdpMys2MWgx?=
+ =?utf-8?B?cUdVenc4M3hRRE5qQzRoMjNVNG5RPT0=?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f0e07788-0f76-4528-8d62-08db1fcb1904
+X-MS-Exchange-CrossTenant-Network-Message-Id: 69177ba4-c8ff-4f58-d48b-08db1fcd2f52
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2023 11:48:56.3638
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2023 12:03:53.0144
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lpWsyds3ZFpKvauQK49S+cbWNt9nc8HuGR84h7a4F/r+8bh5hkyn/ZvhhzMf5O7SISMa8BGWxlqIZMXXZE00xoE5yojmXTuB0SsXV63Q1gQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB6061
+X-MS-Exchange-CrossTenant-UserPrincipalName: bjfuN2rQhVdKKYGxvLe+fI+jSedr5vQKk+DNOi8Cv8B8W7xQ+OSobNvN4dIL4jh8pzZQBr9o2HEJ8S2NbzkgiTyMWVnuZOGTGm6HYn6xU+Y=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR13MB5552
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 07, 2023 at 02:47:06AM -0800, Harshit Mogalapalli wrote:
-> Smatch Warns:
-> 	drivers/net/wireless/ath/ath12k/pci.c:1198 ath12k_pci_probe()
-> 	warn: missing unwind goto?
+On Tue, Mar 07, 2023 at 06:02:46PM -0300, Luiz Angelo Daros de Luca wrote:
+> The rtl8365mb was using a fixed MTU size of 1536, which was probably
+> inspired by the rtl8366rb's initial packet size. However, unlike that
+> family, the rtl8365mb family can specify the max packet size in bytes,
+> rather than in fixed steps. The max packet size now defaults to
+> VLAN_ETH_HLEN+ETH_DATA_LEN+ETH_FCS_LEN, which is 1522 bytes.
 > 
-> Store the error value in ret and use correct label with a goto.
+> DSA calls change_mtu for the CPU port once the max MTU value among the
+> ports changes. As the max packet size is defined globally, the switch
+> is configured only when the call affects the CPU port.
 > 
-> Fixes: d889913205cf ("wifi: ath12k: driver for Qualcomm Wi-Fi 7 devices")
-> Reported-by: Dan Carpenter <error27@gmail.com>
-> Link: https://lore.kernel.org/all/Y+426q6cfkEdb5Bv@kili/
-> Suggested-by: Dan Carpenter <error27@gmail.com>
-> Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+> The available specifications do not directly define the max supported
+> packet size, but it mentions a 16k limit. This driver will use the 0x3FFF
+> limit as it is used in the vendor API code. However, the switch sets the
+> max packet size to 16368 bytes (0x3FF0) after it resets.
+> 
+> change_mtu uses MTU size, or ethernet payload size, while the switch
+> works with frame size. The frame size is calculated considering the
+> ethernet header (14 bytes), a possible 802.1Q tag (4 bytes), the payload
+> size (MTU), and the Ethernet FCS (4 bytes). The CPU tag (8 bytes) is
+> consumed before the switch enforces the limit.
+> 
+> MTU was tested up to 2018 (with 802.1Q) as that is as far as mt7620
+> (where rtl8367s is stacked) can go. The register was manually
+> manipulated byte-by-byte to ensure the MTU to frame size conversion was
+> correct. For frames without 802.1Q tag, the frame size limit will be 4
+> bytes over the required size.
+> 
+> There is a jumbo register, enabled by default at 6k packet size.
+> However, the jumbo settings do not seem to limit nor expand the maximum
+> tested MTU (2018), even when jumbo is disabled. More tests are needed
+> with a device that can handle larger frames.
+> 
+> Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+> Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+> Reviewed-by: Alvin Šipraga <alsi@bang-olufsen.dk>
 > ---
-> Only Compile tested, found with Smatch.
+>  drivers/net/dsa/realtek/rtl8365mb.c | 40 ++++++++++++++++++++++++++---
+>  1 file changed, 36 insertions(+), 4 deletions(-)
+> 
+> v3->v4:
+> - removed spurious newline after comment.
+> 
+> v2->v3:
+> - changed max frame size to 0x3FFF (used by vendor API)
+> - added info about how frame size is calculated, some more description
+>   about the tests performed and the 4 extra bytes when untagged frame is
+>   used.
+> 
+> v1->v2:
+> - dropped jumbo code as it was not changing the behavior (up to 2k MTU)
+> - fixed typos
+> - fixed code alignment
+> - renamed rtl8365mb_(change|max)_mtu to rtl8365mb_port_(change|max)_mtu
+> 
+> 
+> diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
+> index da31d8b839ac..41ea3b5a42b1 100644
+> --- a/drivers/net/dsa/realtek/rtl8365mb.c
+> +++ b/drivers/net/dsa/realtek/rtl8365mb.c
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+...
 
+> @@ -1980,10 +2011,7 @@ static int rtl8365mb_setup(struct dsa_switch *ds)
+>  		p->index = i;
+>  	}
+>  
+> -	/* Set maximum packet length to 1536 bytes */
+> -	ret = regmap_update_bits(priv->map, RTL8365MB_CFG0_MAX_LEN_REG,
+> -				 RTL8365MB_CFG0_MAX_LEN_MASK,
+> -				 FIELD_PREP(RTL8365MB_CFG0_MAX_LEN_MASK, 1536));
+> +	ret = rtl8365mb_port_change_mtu(ds, cpu->trap_port, ETH_DATA_LEN);
+
+Hi Luiz,
+
+Perhaps I am misreading this, perhaps it was discussed elsewhere (I did
+look), and perhaps it's not important. But prior to this
+patch a value of 1536 is used. Whereas with this patch the
+value, calculated in rtl8365mb_port_change_mtu, is
+ETH_DATA_LEN + VLAN_ETH_HLEN + ETH_FCS_LEN = 1500 + 18 + 4 = 1522.
+
+>  	if (ret)
+>  		goto out_teardown_irq;
+>  
+
+...
