@@ -2,118 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC0D06B00DC
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 09:22:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EEE856B00E9
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 09:24:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229729AbjCHIWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 03:22:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34718 "EHLO
+        id S230183AbjCHIYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 03:24:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229846AbjCHIWb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 03:22:31 -0500
-Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 296C8B4204;
-        Wed,  8 Mar 2023 00:21:43 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VdOp-3J_1678263697;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0VdOp-3J_1678263697)
-          by smtp.aliyun-inc.com;
-          Wed, 08 Mar 2023 16:21:38 +0800
-Date:   Wed, 8 Mar 2023 16:21:36 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     Alexander H Duyck <alexander.duyck@gmail.com>
-Cc:     "D. Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com,
-        wenjia@linux.ibm.com, jaka@linux.ibm.com, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: Re: [PATCH net] net/smc: fix NULL sndbuf_desc in smc_cdc_tx_handler()
-Message-ID: <ZAhFkNd0vY784uqZ@TONYMAC-ALIBABA.local>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <1678073786-110013-1-git-send-email-alibuda@linux.alibaba.com>
- <a4a6c3381239d1297f218c5b6d01828bac016660.camel@gmail.com>
+        with ESMTP id S229751AbjCHIXp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 03:23:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8348129415;
+        Wed,  8 Mar 2023 00:23:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B28561640;
+        Wed,  8 Mar 2023 08:22:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 253BBC433D2;
+        Wed,  8 Mar 2023 08:22:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678263776;
+        bh=7l7R2JPd5pjN5M9bcebk3z9dZUb06A4xbTItl4Frs3E=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=hAeYsu/0aAEfgfmGJasT4mO1/g8n69St8evqqnJ+9X1EKDJn2nWi2e7eUGbzBnFGg
+         sFNEyTR3MN03igDvf43VaE/PQcVfgDDq38uGn1/kpSprgm+pYF4Goa1HM1F8M6BUH0
+         glzahc0L/rcWTUkY2XlYQXGmGZWMS7ILQEGWbtQ/+IGDvZ8jSbRxufa8eUjjsCuxY/
+         aRMyuzePXpSz6a+nmFW0gwF6IwdI1lCTSBS9HeMmcvUYi09MDH3DCQ0xxUWGqXUFCA
+         yZ+Sb8TErYHb9Ywl4kyYJsHMPEDxvqv6L+gZgnSRSFRBUun00QO8dDnN7NkQ1PKrSI
+         gX2Ei8ofbA2eA==
+Message-ID: <66caf88e-aaa0-26f4-ec03-597c86b99a13@kernel.org>
+Date:   Wed, 8 Mar 2023 10:22:50 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a4a6c3381239d1297f218c5b6d01828bac016660.camel@gmail.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v3 1/6] soc: ti: pruss: Add pruss_get()/put() API
+Content-Language: en-US
+To:     MD Danish Anwar <danishanwar@ti.com>,
+        "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <t-kristo@ti.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Nishanth Menon <nm@ti.com>
+Cc:     linux-remoteproc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, srk@ti.com, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20230306110934.2736465-1-danishanwar@ti.com>
+ <20230306110934.2736465-2-danishanwar@ti.com>
+From:   Roger Quadros <rogerq@kernel.org>
+In-Reply-To: <20230306110934.2736465-2-danishanwar@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 06, 2023 at 08:38:52AM -0800, Alexander H Duyck wrote:
-> On Mon, 2023-03-06 at 11:36 +0800, D. Wythe wrote:
-> > From: "D. Wythe" <alibuda@linux.alibaba.com>
-> > 
-> > When performing a stress test on SMC-R by rmmod mlx5_ib driver
-> > during the wrk/nginx test, we found that there is a probability
-> > of triggering a panic while terminating all link groups.
-> > 
-> > This issue dues to the race between smc_smcr_terminate_all()
-> > and smc_buf_create().
-> > 
-> > 			smc_smcr_terminate_all
-> > 
-> > smc_buf_create
-> > /* init */
-> > conn->sndbuf_desc = NULL;
-> > ...
-> > 
-> > 			__smc_lgr_terminate
-> > 				smc_conn_kill
-> > 					smc_close_abort
-> > 						smc_cdc_get_slot_and_msg_send
-> > 
-> > 			__softirqentry_text_start
-> > 				smc_wr_tx_process_cqe
-> > 					smc_cdc_tx_handler
-> > 						READ(conn->sndbuf_desc->len);
-> > 						/* panic dues to NULL sndbuf_desc */
-> > 
-> > conn->sndbuf_desc = xxx;
-> > 
-> > This patch tries to fix the issue by always to check the sndbuf_desc
-> > before send any cdc msg, to make sure that no null pointer is
-> > seen during cqe processing.
-> > 
-> > Fixes: 0b29ec643613 ("net/smc: immediate termination for SMCR link groups")
-> > Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
-> 
-> Looking at the code for __smc_buf_create it seems like you might have
-> more issues hiding in the code. From what I can tell smc_buf_get_slot
-> can only return a pointer or NULL but it is getting checked for being
-> being a PTR_ERR or IS_ERR in several spots that are likely all dead
-> code.
-> 
-> > ---
-> >  net/smc/smc_cdc.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> > 
-> > diff --git a/net/smc/smc_cdc.c b/net/smc/smc_cdc.c
-> > index 53f63bf..2f0e2ee 100644
-> > --- a/net/smc/smc_cdc.c
-> > +++ b/net/smc/smc_cdc.c
-> > @@ -114,6 +114,9 @@ int smc_cdc_msg_send(struct smc_connection *conn,
-> >  	union smc_host_cursor cfed;
-> >  	int rc;
-> >  
-> > +	if (unlikely(!READ_ONCE(conn->sndbuf_desc)))
-> > +		return -EINVAL;
-> > +
-> 
-> This return value doesn't seem right to me. Rather than en EINVAL
-> should this be something like a ENOBUFS just to make it easier to debug
-> when this issue is encountered?
-> 
 
-I agree with you. It is reasonable to use ENOBUFS here.
 
-Thanks.
-
-> >  	smc_cdc_add_pending_send(conn, pend);
-> >  
-> >  	conn->tx_cdc_seq++;
+On 06/03/2023 13:09, MD Danish Anwar wrote:
+> From: Tero Kristo <t-kristo@ti.com>
 > 
+> Add two new get and put API, pruss_get() and pruss_put() to the
+> PRUSS platform driver to allow client drivers to request a handle
+> to a PRUSS device. This handle will be used by client drivers to
+> request various operations of the PRUSS platform driver through
+> additional API that will be added in the following patches.
+> 
+> The pruss_get() function returns the pruss handle corresponding
+> to a PRUSS device referenced by a PRU remoteproc instance. The
+> pruss_put() is the complimentary function to pruss_get().
+> 
+> Co-developed-by: Suman Anna <s-anna@ti.com>
+> Signed-off-by: Suman Anna <s-anna@ti.com>
+> Signed-off-by: Tero Kristo <t-kristo@ti.com>
+> Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+> Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+> Signed-off-by: MD Danish Anwar <danishanwar@ti.com>
+
+Reviewed-by: Roger Quadros <rogerq@kernel.org>
