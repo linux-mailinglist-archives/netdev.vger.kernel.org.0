@@ -2,213 +2,451 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DEFC6AFEAF
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 07:00:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2043F6AFEC0
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 07:12:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229793AbjCHGAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 01:00:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47140 "EHLO
+        id S229691AbjCHGMg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 01:12:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229735AbjCHGAw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 01:00:52 -0500
-Received: from mx0b-0064b401.pphosted.com (mx0b-0064b401.pphosted.com [205.220.178.238])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14AE9A72AD;
-        Tue,  7 Mar 2023 22:00:50 -0800 (PST)
-Received: from pps.filterd (m0250812.ppops.net [127.0.0.1])
-        by mx0a-0064b401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32860J66009161;
-        Wed, 8 Mar 2023 06:00:31 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=PPS06212021;
- bh=u0aOftbte63aEf+675v+GbOdv/dZklR5ZVuts/AtG80=;
- b=fxeFvVAgDjYnfQNg9vc5YyCgHNmeu30Bzj82QI3zvBJ4V2EheaaCLJUwMC70TqYTvSUF
- RvONiYd+zfBYpk+eXJ7Ys2eo54O9gayuWsZDRx9hjeAJlx4l0lG758XBcio1NIiaE2N1
- RR+jMQ/vxYrkdH/6ADmcB0nGw/CQRDtSgOHf14xclwvwfg2Tt0za+qFTHQnZF1ccdwxE
- Hz+NfWtOjA167IOE4ak1TKFw+r2tjcS7r0qywMgPe54AHE0ty3rDv8du801p4ZCCYmY+
- JOEn1WrsdaWUyPQWEBNyk1FgOay06ZzB4jHpKvOScDDc6XNWWth+yJZKX65CbYfuFFyl XA== 
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2176.outbound.protection.outlook.com [104.47.56.176])
-        by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 3p6fg6g6yg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 08 Mar 2023 06:00:31 +0000
+        with ESMTP id S229468AbjCHGMe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 01:12:34 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2083.outbound.protection.outlook.com [40.107.220.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D0B09DE0C;
+        Tue,  7 Mar 2023 22:12:32 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FJPFiiSKdKilvUZS0kzhoSY+uvAMls/1s8dEUy23kUy4AI6ofESrqcvUAN70rxKj2GmBJKSz7abXjpbOVrV0JU780VN93HqJvETFmepkSKwsb7aCnHcDjsY73V25MMfOrp6gKpt3Hg3J0fmvEM6tvAFOYHlKQ4BdGZagHqxWiwYDSxBOitoVDC/IXjMQWn5Rs1Fjt4CsF+59O05yS1q/po6I9EPNyMEwG/M5BVFi5JxO+FBFxhEjz0/dmnfPk+Nv5LenAiZx1D7ESn4thiJD7VnW2PKQwsnY/QX8oz8OIb7SgtKpjUC6HZIPDFpWT7atCkKPXexyF2PajRGjabCpKA==
+ b=ga+Atb/ujJxFBpBhzUyhKI5RXhLbYk+OQq1zXH5RPjWgcRb3eOQEkI5JBfuvSS2WxI/IwHlKRy2MGPqzTMHVdrYCAT4XPHfCBQh/a2nJ05pvHesC9bUU8zXxflXKRSk9i+yaWNLRQC1mcC+dCB1pFwB4gafend0vbsbG57Z8JrLtimj6LN7Q19z+XPPw2EAKD1rxrACOOgYLPLJ+2UopFgDVZ1jox9eIvzxZ9H/Z11axgRm0qRVMb32lK4/qBhirXhfWxKXWyn2yG9XaPuwEQ95PDz2V0ycbzTi47lxDibZoAK6IhPAxxoyGCuuVe6LMLMEB4GWpirbhJxhi3ImBaQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=u0aOftbte63aEf+675v+GbOdv/dZklR5ZVuts/AtG80=;
- b=NzQrmXdRu0IeuXqrNAgupwQ5bGW8P6NOdAW2UcexMO2zXDIDJ9SRArnuueP1ktDkcoi0B8viUJKx/P2Pz32ty66rlMy6ouzXN/U1cl/nNYRQSrs5Os2Ch2wCCtflVhl0Q+jQDCYSoUSMggoqDYsy6UOvcUkZI01RGBhzpUKEoCwiDH7gNvnWQoVsrQ4JOiM4Jwy2fY1kTj69AmOPqHx8AIR5fQUrW1xKoq8n7WBwgE8p2k160PBNWjjtfKz2ht1fEX+ScJWbH6CXl1ylt2K7cDNEzjoM7uU9yCv7mbwOR6xbOgr8Q8x1FxOfxdfAFVgMqetXFP1qPPrLGBmJJK9okQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=windriver.com; dmarc=pass action=none
- header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
-Received: from PH0PR11MB5192.namprd11.prod.outlook.com (2603:10b6:510:3b::9)
- by LV2PR11MB5974.namprd11.prod.outlook.com (2603:10b6:408:17e::10) with
+ bh=C665DbtfGLzO3dU2mEnSEW5/EU4/YW79w6A1pGxL2VA=;
+ b=H3tfudxvu0WDq1wUSE74eYC37ZOhtZBlEGOmdxwHqJYNcnvvEdRb09u28DTpWuj0sNiV7NnA/TG8w5mqhawqlnXQSnGjMLipu+/tOV6Yr/+UuEJG6qnzi8UgjkADNTrVYM5qdELO+2wIwc26sqIdt4nHHP+YdbsqK7Qfy5Awi/Rg3oJ/lVs6G+StQ22DzGkqNYCkVsgZ+kFhso1XazlbG+Tpqi1bvl7RYOV9Vj/ZFhXn+UI8BInxDduLX/A86briOrbS9o60QQvFr442bGR9J2DinjyRZUJRhAp8crEtIho8qh7n/SVAeiSmhjZDmE8iQ7DjejUvuzzkHgHLaZUfLw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=C665DbtfGLzO3dU2mEnSEW5/EU4/YW79w6A1pGxL2VA=;
+ b=2lw4RImrVU8GFH1awldD4RVQA1XZprA9NK2aO7wgIBPt9oPU0z8aMKlq6QMa+7rV41L231aQINkcCSWTcL+mBMdS4jSYxjX6MfrICXkjw3nO2ihRj/1Jd6FlEtLq/eVv14Dsolf5N4SercZuRpZ5mmtTRISBYpG0ac0cEj0rwLo=
+Received: from BN0PR02CA0009.namprd02.prod.outlook.com (2603:10b6:408:e4::14)
+ by MW3PR12MB4537.namprd12.prod.outlook.com (2603:10b6:303:5b::22) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.28; Wed, 8 Mar
- 2023 06:00:26 +0000
-Received: from PH0PR11MB5192.namprd11.prod.outlook.com
- ([fe80::aed:f30e:f18f:c74c]) by PH0PR11MB5192.namprd11.prod.outlook.com
- ([fe80::aed:f30e:f18f:c74c%8]) with mapi id 15.20.6156.029; Wed, 8 Mar 2023
- 06:00:26 +0000
-From:   "Song, Xiongwei" <Xiongwei.Song@windriver.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-CC:     "claudiu.manoil@nxp.com" <claudiu.manoil@nxp.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: Response error to fragmented ICMP echo request
-Thread-Topic: Response error to fragmented ICMP echo request
-Thread-Index: AdlQ7X/oxr/JjbMvQfuLNLgfv6/HcAAA9G6jAACAEAAAAP8IAAAiWClw
-Date:   Wed, 8 Mar 2023 06:00:26 +0000
-Message-ID: <PH0PR11MB51929FC41163A4A930C929B9ECB49@PH0PR11MB5192.namprd11.prod.outlook.com>
-References: <PH0PR11MB51923E3796E4D2420C700580ECB79@PH0PR11MB5192.namprd11.prod.outlook.com>
- <PH0PR11MB51923E3796E4D2420C700580ECB79@PH0PR11MB5192.namprd11.prod.outlook.com>
- <20230307123522.rtit24jseb5b2vep@skbuf>
- <PH0PR11MB519201AEC268247F6890157FECB79@PH0PR11MB5192.namprd11.prod.outlook.com>
- <20230307131828.ly5zudvllke2pe4j@skbuf>
-In-Reply-To: <20230307131828.ly5zudvllke2pe4j@skbuf>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR11MB5192:EE_|LV2PR11MB5974:EE_
-x-ms-office365-filtering-correlation-id: 7a57258c-f669-4020-20ab-08db1f9a69b7
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: qJ1u4vEjslT0Rr/zMPLL37a6i+dJoMjnuwnlqNUhIalZ64Q89/3W8DZcsKcTvhXU4MJTsgZ0rJIlIU0zUwCwlDsUJkRWSCP+rjkjW32dDzh+T2gOwD9uR284uStTNCcoa/3godfAuwxSvYzd6BVc8XbIf+sjOeTspI1u8nPG/Q8QDrE7qhVsQNu9h65z+NCviAR09YhB+g2TAT/OXBRqiskLtzsd7G/6SB2GLK7bqsNtEniZvTXaYLSi7hYh6VYqJPAaXhaHdtiKfC//OcBNNRbS92VASsgLOluJqTJDZhqfvBHspmo+y8JxpQ2utLcShEqkmYS7ANfpnh38miJk/Ii9JoZiMKTGBjoJ0a8amV/XIbyqn9xfJ1RfIn68MJQZvHeeSgTbXMuwqBddur5Lmn9LwuGyo9XQdKIbsSdh7xr4BsNlNaPIujx0IXKHJyscKboWrOO9XgDKWYad4k08ats/Yh4BHr9QFOFKUYxoLVXEPju5eNAF7LMagpq2icd76eZRrjfAZ3X837fLDNuf5z0jtveL1HfsdauVVBZ3BpQyJdAkXMS30Uk5/TAtEbx29CEhfEuKocIZvB6bzUkoYy/q+KKoHSNHG7DAmQ/6wssmipHaFsjrSv+d0suDqjdDt34KU/79h0QD/H4qppqg+0gEd2ZDEN3HCtuURHfdfVOXpNHeUwuY3CwBPVtSQyCo
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5192.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(346002)(376002)(39850400004)(366004)(396003)(451199018)(316002)(54906003)(83380400001)(55016003)(86362001)(33656002)(64756008)(9686003)(966005)(186003)(41300700001)(76116006)(5660300002)(26005)(66556008)(2906002)(8676002)(66946007)(66476007)(4326008)(478600001)(6506007)(7416002)(66446008)(7696005)(8936002)(71200400001)(6916009)(122000001)(38100700002)(52536014)(38070700005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?f2mmOl7mZeCpcae9J7zrLnfs+hnwpk/KecZ555Vol6pzMmjL4JoP7/Pqkaib?=
- =?us-ascii?Q?1GgoYmDcRRV6YCzwcXaAxZHRSfFGHjz8Aj+EMCEiT1f9O8TbQT5S0cqL92Tx?=
- =?us-ascii?Q?Bs3SdYwr5J6N+X6lkUs92uv7LBzMA6hHeaKR9mOJPSEJC7ahXdCHmAl0vhQZ?=
- =?us-ascii?Q?7XZKpBVd0T3JueH+w81lDbBXeZyKOqftFC2F5h5LYSUKOcGAXrtHnRJccN1Q?=
- =?us-ascii?Q?6PXg4hSgyQsyfgk4hLFyyvoxCYQoOruL+tvUGcc0Uk6M1quBphfuyhLajQpK?=
- =?us-ascii?Q?i35zP72StoN6LGbLTp02jQXzzZvChWESZXMoj/iVUXMnb/p09NWLE4Ic6yHT?=
- =?us-ascii?Q?kIKlSb1d8G7AOxU/QPygI4yLpZDbXgJ8cWjEiJv2yZFplSwUXtuT7kgNtgJD?=
- =?us-ascii?Q?f99DrYKShtJGv2RJ/9ULk1Zt7gHAgHJ/6bdgGzSAS3SkX84s8wt3k4wun4U2?=
- =?us-ascii?Q?8fheBjFuoWcZpFz+iFgByw63ZcST0AKjiXa4796tOOttTbOOSIfBYukSejPL?=
- =?us-ascii?Q?FXzB9GuPCXx8e4yrNVIUr7kNyPo53syIwGSvkSqhOZxbkzyMxW9q24agYfFy?=
- =?us-ascii?Q?bNck/Hb38IXSDBRiGOpAGV1kJLvQ95lKyMY9k1/YsKjUWgWRrinE727ePouJ?=
- =?us-ascii?Q?Na7wK3HDNyCc2WK+K/fL8ZKvm+0jsrTk30xCkAXBxGzWgamOTkaMzT14b1TN?=
- =?us-ascii?Q?U7CpvdlkP2242zQB93OtSXcG5aNc0ToJefa5sbXDZPxEYaEUWyq/l7qzK4La?=
- =?us-ascii?Q?SC9VRbj7t0CxcI/2E2G5K2BsMgq4K0s42UiBlMwvfniXfJ7qv+Q7EYbh2sIB?=
- =?us-ascii?Q?T0vMCLRBgr1gK169/rdCxCqs4rH4jWddwWTLUcadL5g233QmiOOS+AZUAVVc?=
- =?us-ascii?Q?xPdiVqqOk0+az+Wz9yvF5INfsvpHrsHykGS8qoEVWe8uYtkk1K7eF5WY7BDM?=
- =?us-ascii?Q?C/v0htYoPt35+BMkQdtlC22H/IXZPWeEvqQTLzZdlTBysxI8ZR3sDJgMK6va?=
- =?us-ascii?Q?Vi4+u0DqsBdjqyNxnVt52VCppiMSqPHA5U1rzyrT5I7cQGd2u9Xs5LH7xmpC?=
- =?us-ascii?Q?vvyss07/LTS/0p00P88j6i3YqmNUx+gsftb86I6cGM+23wpK+2AQlSHTbcjX?=
- =?us-ascii?Q?BdtEdP9XGfcQiqN+Z0Fd4SIgKMPpzgjyt7NlJOaqTdSgVeVB1eFao0BFDHXF?=
- =?us-ascii?Q?ekZPgBZ+Sw1MdHRP+fRjeoReww/cNuyB6l85FdIi65F1eZQgMJo+R6YM3USe?=
- =?us-ascii?Q?lRjeB+7oQcaGIavK2wzLHI1Bp49N/iIQubYfxgQndUU4T/LQQSau7sSMfiwa?=
- =?us-ascii?Q?IfT6HsoucELTm6DFdbrXsKJPtMeNjsJorx2PvJoOfRPNzjcR4d0Lm3oB0BwD?=
- =?us-ascii?Q?xgA7ZHz2kO/9L+72NH20ZFvx7WsPGv0ejjB5ZuO3sgv31X52VGyyxuJiUQ3o?=
- =?us-ascii?Q?eTLEuYn1Zolplzb31prwI+S3jw+W+1BEj9zzFNN3BPL4lUxmn6RiulXz70/b?=
- =?us-ascii?Q?ms959I1F44dR49Jczr4bSVL7dromcDhJD9hBefG6Mk0UGe0/t1wprKJaZN4X?=
- =?us-ascii?Q?rYlX2KKk1Ip21IbWhyTFWhxMVnHWyfCevfR0thOdWtcuoXPl1ZmdLFuLsny4?=
- =?us-ascii?Q?+Q=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.29; Wed, 8 Mar
+ 2023 06:12:29 +0000
+Received: from BL02EPF000108EA.namprd05.prod.outlook.com
+ (2603:10b6:408:e4:cafe::6f) by BN0PR02CA0009.outlook.office365.com
+ (2603:10b6:408:e4::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.17 via Frontend
+ Transport; Wed, 8 Mar 2023 06:12:29 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
+Received: from SATLEXMB03.amd.com (165.204.84.17) by
+ BL02EPF000108EA.mail.protection.outlook.com (10.167.241.203) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6178.13 via Frontend Transport; Wed, 8 Mar 2023 06:12:28 +0000
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Wed, 8 Mar
+ 2023 00:12:27 -0600
+Received: from xhdsneeli40.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.34 via Frontend
+ Transport; Wed, 8 Mar 2023 00:12:24 -0600
+From:   Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>
+CC:     <michal.simek@xilinx.com>, <radhey.shyam.pandey@xilinx.com>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <anirudha.sarangi@amd.com>,
+        <harini.katakam@amd.com>, <sarath.babu.naidu.gaddam@amd.com>,
+        <git@amd.com>
+Subject: [PATCH net-next V7] dt-bindings: net: xlnx,axi-ethernet: convert bindings document to yaml
+Date:   Wed, 8 Mar 2023 11:42:23 +0530
+Message-ID: <20230308061223.1358637-1-sarath.babu.naidu.gaddam@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-OriginatorOrg: windriver.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5192.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7a57258c-f669-4020-20ab-08db1f9a69b7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Mar 2023 06:00:26.1778
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL02EPF000108EA:EE_|MW3PR12MB4537:EE_
+X-MS-Office365-Filtering-Correlation-Id: c1731a44-c845-43db-5541-08db1f9c1864
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QOt9cN/OreKN2/0Y25ROz6BafmSc0sJ+WH0yjGjsIJcP0EYqSd1U0ALndF3G9mtxX+U+kogovVwNhVYMVxUiFdO+9NmoZab3S8LRrw+901EOcnsGQlbgNOvnBBenWiXnLiRmB9LGTcYr18C02bIrW5b44C6qwdvzt7Nh6Ptzi5T9f83HvjuDQszUJ9w3ELmkIDBIsgv2y/2nVuBZcyjfJAJ2zez1D79t8wvgcn6rQSRdvbjHzHIuP5zAp4lw0MK1zCFLmxDvX3ltaP5Dfk3jK6BHUez6ZcV+n7g5RhUWglw+uMdb/tFIOU5vCOEHRkAGm9Ume8HwEL6ugbEirW4kDczuycgmXHKGlDa2H0XueSBrWXhZ2wCdkJlsY2ruuwxQhiPuNFeKXOBCxK8Uo9AqFWmhMIvHXAtKuefKqKCyKdLr+qHVYydYI9ZYo54lkFZTuxl/6/pxB3uBIkFwFPmfhGpzTfWH/ga4pyGZS9vqSIFlM4VNQ/Bs9RF/z6pbGrCRtsg+IBhK8xQKXTwIMneNc+hTX71AxZXGj1POAlIxcHR9DKR6ZGLxe5Jb/26M8KjER8T9l0K6jdsTgAMREqWW9b2zR7I+kviyrYk6IVd2l8fX+8cwfYK3qy3ESo3QYBO/sjXe2HSfv5SOR8Hlv4cl0bM9c8geAuxFhfU6y5VAFy+HiGenwotzyqGT/9Ij73U5fxoFE3O3AP/lovzcQCDEUh8xGc0MT2zPNDelm/q5DBwXEF/5cMzrHNdXrtWXHBttCw0YTan5rMJkf5MuYFnAcg==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(136003)(396003)(39860400002)(346002)(376002)(451199018)(40470700004)(36840700001)(46966006)(316002)(83380400001)(70586007)(103116003)(54906003)(8676002)(4326008)(70206006)(86362001)(426003)(81166007)(82310400005)(2616005)(40480700001)(336012)(356005)(186003)(36860700001)(82740400003)(36756003)(26005)(1076003)(478600001)(966005)(40460700003)(47076005)(110136005)(30864003)(5660300002)(8936002)(7416002)(2906002)(41300700001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2023 06:12:28.7176
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: x7f3DjH4WMddPMcPlp/D4H9hii6QjRA9TAnaU9wdBw8yajjVbxvJDx2Q0w/we3nBIog2x+JdlZb6cuu55RHjdCJH2zB5weAUtzd7f3qTp28=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR11MB5974
-X-Proofpoint-ORIG-GUID: r_4txWQEEV_x14eFVruKzCoT_Qh_jVDR
-X-Proofpoint-GUID: r_4txWQEEV_x14eFVruKzCoT_Qh_jVDR
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-08_02,2023-03-07_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
- mlxlogscore=999 clxscore=1015 lowpriorityscore=0 adultscore=0
- impostorscore=0 suspectscore=0 phishscore=0 spamscore=0 priorityscore=1501
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2303080051
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-Network-Message-Id: c1731a44-c845-43db-5541-08db1f9c1864
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BL02EPF000108EA.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4537
+X-Spam-Status: No, score=-0.6 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vladimir,
+From: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
 
-> On Tue, Mar 07, 2023 at 12:56:17PM +0000, Song, Xiongwei wrote:
-> > > Frames 3 and 4 are sent with DEI=3D1 and are dropped, frames 1 and 2 =
-are
-> > > sent with DEI=3D0 and are not dropped. I'm not sure if varying the DE=
-I
-> > > field is part of the intentions of the test? Is there any RFC which s=
-ays
-> > > that IP fragments over VLAN should use DEI=3D1, or some other reason?
-> >
-> > I didn't notice that. Let me check the test why set DEI=3D1.
->=20
-> Ok. It would be good to have an answer to this, because one of the
-> assumptions of that patch was that whomever sets DEI=3D1 doesn't get to
-> complain that their packets are *actually* dropped :)
+Convert the bindings document for Xilinx AXI Ethernet Subsystem
+from txt to yaml. No changes to existing binding description.
 
-We found the problem in the test:
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-        f2=3DEther(src=3D"26:84:d5:7f:7d:be", dst=3D"7C:72:6E:D4:44:C1")/Do=
-t1Q(prio=3D0, vlan=3D984)/IP(src=3D"10.225.32.20", dst=3D"10.225.32.21")/'\=
-x00\x00\x00\x00\x00\x00\x00\x00'
-        f2.frag=3D1
-=3D=3D=3D>f2.id=3D1
-        f2.proto=3D'icmp'
-        // result of f2.show()
-        ###[ Ethernet ]###
-           dst       =3D 7C:72:6E:D4:44:C1
-           src       =3D 26:84:d5:7f:7d:be
-           type      =3D 0x8100
-        ###[ 802.1Q ]###
-              prio      =3D 0
-              id        =3D 1
-              vlan      =3D 984
-              type      =3D 0x800
-        ###[ IP ]###
-                 version   =3D 4
-                 ihl       =3D None
-                 tos       =3D 0x0
-                 len       =3D None
-                 id        =3D 1
-                 flags     =3D
-                 frag      =3D 1
-                 ttl       =3D 64
-                 proto     =3D icmp
-                 chksum    =3D None
-                 src       =3D 10.225.32.20
-                 dst       =3D 10.225.32.21
-                 \options   \
-        ###[ Raw ]###
-                    load      =3D '\x00\x00\x00\x00\x00\x00\x00\x00'
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-This sets both the L2 & L3 id. L2 id is actually DEI.
-We updated the script to only set L3 id and now the test passes.
+Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Signed-off-by: Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>
+---
+Changes in V7:
+1) Addressed below review comments.
+	a) phy-mode: lists.
+	b) Update axistream-connected description.
+	c) Moved $ref: /schemas/net/ethernet-controller.yaml# to allOf.
+	d) Add type to mdio.
 
->=20
-> FWIW, if you do need to set up a reservation for traffic received on a
-> port, section 8.6.3.3.15 Buffer reservation watermarks (page 817) should
-> help with this:
-> https://www.nxp.com/docs/en/user-guide/LLDPUG_RevL5.15.71-2.2.0.pdf
+Changes in V6:
+1) Addressed below review comments.
+	a)add a $ref to ethernet-controller.yaml for pcs-handle.
+	b)Drop unused labels(axi_ethernetlite_0_mdio).
+	c)Not relevant to the binding(interrupt-parent).
 
-Thank  you so much. We don't need to set up a reservation for now, but good
-to know this.
+Changes in V5:
+1) Removed .txt file which was missed in V4
 
-Regards,
-Xiongwei
+Changes in V4:
+1)Changed the interrupts property and add allOf:if:then for it.
+
+Changes in V3:
+1) Moved RFC to PATCH.
+2) Addressed below review comments
+	a) Indentation.
+	b) maxItems:3 does not match your description.
+	c) Filename matching compatibles.
+
+Changes in V2:
+1) remove .txt and change the name of file to xlnx,axiethernet.yaml.
+2) Fix DT check warning('device_type' does not match any of the regexes:
+   'pinctrl-[0-9]+' From schema: Documentation/devicetree/bindings/net
+    /xilinx_axienet.yaml).
+---
+ .../bindings/net/xilinx_axienet.txt           | 101 ----------
+ .../bindings/net/xlnx,axi-ethernet.yaml       | 173 ++++++++++++++++++
+ MAINTAINERS                                   |   1 +
+ 3 files changed, 174 insertions(+), 101 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/xilinx_axienet.txt
+ create mode 100644 Documentation/devicetree/bindings/net/xlnx,axi-ethernet.yaml
+
+diff --git a/Documentation/devicetree/bindings/net/xilinx_axienet.txt b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
+deleted file mode 100644
+index 80e505a2fda1..000000000000
+--- a/Documentation/devicetree/bindings/net/xilinx_axienet.txt
++++ /dev/null
+@@ -1,101 +0,0 @@
+-XILINX AXI ETHERNET Device Tree Bindings
+---------------------------------------------------------
+-
+-Also called  AXI 1G/2.5G Ethernet Subsystem, the xilinx axi ethernet IP core
+-provides connectivity to an external ethernet PHY supporting different
+-interfaces: MII, GMII, RGMII, SGMII, 1000BaseX. It also includes two
+-segments of memory for buffering TX and RX, as well as the capability of
+-offloading TX/RX checksum calculation off the processor.
+-
+-Management configuration is done through the AXI interface, while payload is
+-sent and received through means of an AXI DMA controller. This driver
+-includes the DMA driver code, so this driver is incompatible with AXI DMA
+-driver.
+-
+-For more details about mdio please refer phy.txt file in the same directory.
+-
+-Required properties:
+-- compatible	: Must be one of "xlnx,axi-ethernet-1.00.a",
+-		  "xlnx,axi-ethernet-1.01.a", "xlnx,axi-ethernet-2.01.a"
+-- reg		: Address and length of the IO space, as well as the address
+-                  and length of the AXI DMA controller IO space, unless
+-                  axistream-connected is specified, in which case the reg
+-                  attribute of the node referenced by it is used.
+-- interrupts	: Should be a list of 2 or 3 interrupts: TX DMA, RX DMA,
+-		  and optionally Ethernet core. If axistream-connected is
+-		  specified, the TX/RX DMA interrupts should be on that node
+-		  instead, and only the Ethernet core interrupt is optionally
+-		  specified here.
+-- phy-handle	: Should point to the external phy device if exists. Pointing
+-		  this to the PCS/PMA PHY is deprecated and should be avoided.
+-		  See ethernet.txt file in the same directory.
+-- xlnx,rxmem	: Set to allocated memory buffer for Rx/Tx in the hardware
+-
+-Optional properties:
+-- phy-mode	: See ethernet.txt
+-- xlnx,phy-type	: Deprecated, do not use, but still accepted in preference
+-		  to phy-mode.
+-- xlnx,txcsum	: 0 or empty for disabling TX checksum offload,
+-		  1 to enable partial TX checksum offload,
+-		  2 to enable full TX checksum offload
+-- xlnx,rxcsum	: Same values as xlnx,txcsum but for RX checksum offload
+-- xlnx,switch-x-sgmii : Boolean to indicate the Ethernet core is configured to
+-		  support both 1000BaseX and SGMII modes. If set, the phy-mode
+-		  should be set to match the mode selected on core reset (i.e.
+-		  by the basex_or_sgmii core input line).
+-- clock-names: 	  Tuple listing input clock names. Possible clocks:
+-		  s_axi_lite_clk: Clock for AXI register slave interface
+-		  axis_clk: AXI4-Stream clock for TXD RXD TXC and RXS interfaces
+-		  ref_clk: Ethernet reference clock, used by signal delay
+-			   primitives and transceivers
+-		  mgt_clk: MGT reference clock (used by optional internal
+-			   PCS/PMA PHY)
+-
+-		  Note that if s_axi_lite_clk is not specified by name, the
+-		  first clock of any name is used for this. If that is also not
+-		  specified, the clock rate is auto-detected from the CPU clock
+-		  (but only on platforms where this is possible). New device
+-		  trees should specify all applicable clocks by name - the
+-		  fallbacks to an unnamed clock or to CPU clock are only for
+-		  backward compatibility.
+-- clocks: 	  Phandles to input clocks matching clock-names. Refer to common
+-		  clock bindings.
+-- axistream-connected: Reference to another node which contains the resources
+-		       for the AXI DMA controller used by this device.
+-		       If this is specified, the DMA-related resources from that
+-		       device (DMA registers and DMA TX/RX interrupts) rather
+-		       than this one will be used.
+- - mdio		: Child node for MDIO bus. Must be defined if PHY access is
+-		  required through the core's MDIO interface (i.e. always,
+-		  unless the PHY is accessed through a different bus).
+-		  Non-standard MDIO bus frequency is supported via
+-		  "clock-frequency", see mdio.yaml.
+-
+- - pcs-handle: 	  Phandle to the internal PCS/PMA PHY in SGMII or 1000Base-X
+-		  modes, where "pcs-handle" should be used to point
+-		  to the PCS/PMA PHY, and "phy-handle" should point to an
+-		  external PHY if exists.
+-
+-Example:
+-	axi_ethernet_eth: ethernet@40c00000 {
+-		compatible = "xlnx,axi-ethernet-1.00.a";
+-		device_type = "network";
+-		interrupt-parent = <&microblaze_0_axi_intc>;
+-		interrupts = <2 0 1>;
+-		clock-names = "s_axi_lite_clk", "axis_clk", "ref_clk", "mgt_clk";
+-		clocks = <&axi_clk>, <&axi_clk>, <&pl_enet_ref_clk>, <&mgt_clk>;
+-		phy-mode = "mii";
+-		reg = <0x40c00000 0x40000 0x50c00000 0x40000>;
+-		xlnx,rxcsum = <0x2>;
+-		xlnx,rxmem = <0x800>;
+-		xlnx,txcsum = <0x2>;
+-		phy-handle = <&phy0>;
+-		axi_ethernetlite_0_mdio: mdio {
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-			phy0: phy@0 {
+-				device_type = "ethernet-phy";
+-				reg = <1>;
+-			};
+-		};
+-	};
+diff --git a/Documentation/devicetree/bindings/net/xlnx,axi-ethernet.yaml b/Documentation/devicetree/bindings/net/xlnx,axi-ethernet.yaml
+new file mode 100644
+index 000000000000..80843c177029
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/xlnx,axi-ethernet.yaml
+@@ -0,0 +1,173 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/xlnx,axi-ethernet.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: AXI 1G/2.5G Ethernet Subsystem
++
++description: |
++  Also called  AXI 1G/2.5G Ethernet Subsystem, the xilinx axi ethernet IP core
++  provides connectivity to an external ethernet PHY supporting different
++  interfaces: MII, GMII, RGMII, SGMII, 1000BaseX. It also includes two
++  segments of memory for buffering TX and RX, as well as the capability of
++  offloading TX/RX checksum calculation off the processor.
++
++  Management configuration is done through the AXI interface, while payload is
++  sent and received through means of an AXI DMA controller. This driver
++  includes the DMA driver code, so this driver is incompatible with AXI DMA
++  driver.
++
++maintainers:
++  - Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
++
++properties:
++  compatible:
++    enum:
++      - xlnx,axi-ethernet-1.00.a
++      - xlnx,axi-ethernet-1.01.a
++      - xlnx,axi-ethernet-2.01.a
++
++  reg:
++    description:
++      Address and length of the IO space, as well as the address
++      and length of the AXI DMA controller IO space, unless
++      axistream-connected is specified, in which case the reg
++      attribute of the node referenced by it is used.
++    maxItems: 2
++
++  interrupts:
++    items:
++      - description: Ethernet core interrupt
++      - description: Tx DMA interrupt
++      - description: Rx DMA interrupt
++    description:
++      Ethernet core interrupt is optional. If axistream-connected property is
++      present DMA node should contains TX/RX DMA interrupts else DMA interrupt
++      resources are mentioned on ethernet node.
++    minItems: 1
++
++  phy-handle: true
++
++  xlnx,rxmem:
++    description:
++      Set to allocated memory buffer for Rx/Tx in the hardware.
++    $ref: /schemas/types.yaml#/definitions/uint32
++
++  phy-mode:
++    items:
++      - description: MII
++      - description: GMII
++      - description: RGMII
++      - description: SGMII
++      - description: 1000BaseX
++    minItems: 1
++
++  xlnx,phy-type:
++    description:
++      Do not use, but still accepted in preference to phy-mode.
++    deprecated: true
++    $ref: /schemas/types.yaml#/definitions/uint32
++
++  xlnx,txcsum:
++    description:
++      TX checksum offload. 0 or empty for disabling TX checksum offload,
++      1 to enable partial TX checksum offload and 2 to enable full TX
++      checksum offload.
++    $ref: /schemas/types.yaml#/definitions/uint32
++    enum: [0, 1, 2]
++
++  xlnx,rxcsum:
++    description:
++      RX checksum offload. 0 or empty for disabling RX checksum offload,
++      1 to enable partial RX checksum offload and 2 to enable full RX
++      checksum offload.
++    $ref: /schemas/types.yaml#/definitions/uint32
++    enum: [0, 1, 2]
++
++  xlnx,switch-x-sgmii:
++    type: boolean
++    description:
++      Indicate the Ethernet core is configured to support both 1000BaseX and
++      SGMII modes. If set, the phy-mode should be set to match the mode
++      selected on core reset (i.e. by the basex_or_sgmii core input line).
++
++  clocks:
++    items:
++      - description: Clock for AXI register slave interface.
++      - description: AXI4-Stream clock for TXD RXD TXC and RXS interfaces.
++      - description: Ethernet reference clock, used by signal delay primitives
++                     and transceivers.
++      - description: MGT reference clock (used by optional internal PCS/PMA PHY)
++
++  clock-names:
++    items:
++      - const: s_axi_lite_clk
++      - const: axis_clk
++      - const: ref_clk
++      - const: mgt_clk
++
++  axistream-connected:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: Phandle of AXI DMA controller which contains the resources
++      used by this device. If this is specified, the DMA-related resources
++      from that device (DMA registers and DMA TX/RX interrupts) rather than
++      this one will be used.
++
++  mdio:
++    type: object
++
++  pcs-handle:
++    description: Phandle to the internal PCS/PMA PHY in SGMII or 1000Base-X
++      modes, where "pcs-handle" should be used to point to the PCS/PMA PHY,
++      and "phy-handle" should point to an external PHY if exists.
++
++required:
++  - compatible
++  - interrupts
++  - reg
++  - xlnx,rxmem
++  - phy-handle
++
++allOf:
++  - $ref: /schemas/net/ethernet-controller.yaml#
++  - if:
++      required:
++        - axistream-connected
++
++    then:
++      properties:
++        interrupts:
++          minItems: 2
++          maxItems: 3
++
++    else:
++      properties:
++        interrupts:
++          maxItems: 1
++
++additionalProperties: false
++
++examples:
++  - |
++    axi_ethernet_eth: ethernet@40c00000 {
++        compatible = "xlnx,axi-ethernet-1.00.a";
++        interrupts = <2 0 1>;
++        clock-names = "s_axi_lite_clk", "axis_clk", "ref_clk", "mgt_clk";
++        clocks = <&axi_clk>, <&axi_clk>, <&pl_enet_ref_clk>, <&mgt_clk>;
++        phy-mode = "mii";
++        reg = <0x40c00000 0x40000>,<0x50c00000 0x40000>;
++        xlnx,rxcsum = <0x2>;
++        xlnx,rxmem = <0x800>;
++        xlnx,txcsum = <0x2>;
++        phy-handle = <&phy0>;
++
++        mdio {
++            #address-cells = <1>;
++            #size-cells = <0>;
++            phy0: ethernet-phy@1 {
++                device_type = "ethernet-phy";
++                reg = <1>;
++            };
++        };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2cf9eb43ed8f..0bf527552dc9 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -22895,6 +22895,7 @@ F:	drivers/iio/adc/xilinx-ams.c
+ XILINX AXI ETHERNET DRIVER
+ M:	Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+ S:	Maintained
++F:	Documentation/devicetree/bindings/net/xlnx,axi-ethernet.yaml
+ F:	drivers/net/ethernet/xilinx/xilinx_axienet*
+ 
+ XILINX CAN DRIVER
+-- 
+2.25.1
+
