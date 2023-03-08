@@ -2,174 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB4AB6AFB7C
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 01:48:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36C096AFB87
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 01:50:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229605AbjCHAsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 19:48:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51298 "EHLO
+        id S229654AbjCHAuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 19:50:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229574AbjCHAso (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 19:48:44 -0500
-Received: from mail-oo1-xc36.google.com (mail-oo1-xc36.google.com [IPv6:2607:f8b0:4864:20::c36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2994590B58
-        for <netdev@vger.kernel.org>; Tue,  7 Mar 2023 16:48:43 -0800 (PST)
-Received: by mail-oo1-xc36.google.com with SMTP id c184-20020a4a4fc1000000b005250b2dc0easo2328852oob.2
-        for <netdev@vger.kernel.org>; Tue, 07 Mar 2023 16:48:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google; t=1678236522;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4z3se1IE/EIHIkhfgNY8EkICQQtBcC8YO4t3fMUOwOE=;
-        b=oWDZGOvFRXAphCxl1DgXUC6PW9nI4pCLlcrNqQgded4g1ctLpsv3eO72MXbZs9tuTg
-         4SLwdtYmO5yVFoZiceU7J/Qrbd+CX1HE9dAVPLAJ1fKG6zH/A4VcQiX3UOMJdobQJCjw
-         3KOuTye6KS4nTDNm4X6dgS3X7/nzzANbfobmNuuFw16zA2U4ITqbHYnFU1SHd21y4miw
-         CSw/4KwzVEuWx/VMR4QrI+Cri+NJWslhpE0Ek1iyDRK/cET1uZs93SkFg2WPC5lajyg1
-         42/vxJMs1bMknLf6Y+RFnaEPloQsA79rk6z+Ml7UvwUnbx2SSlM/y6B8e8mbnN/EFBNH
-         1saA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678236522;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=4z3se1IE/EIHIkhfgNY8EkICQQtBcC8YO4t3fMUOwOE=;
-        b=4rxKQ1rGDBSBF9wReGS9DKEsozsYz+ocUTYheDCZz3os3LcMP1uDV90bgtzSi9QKqF
-         eZQJBLewzz17xQBNR5U4vvY0sN945CdlFwuFdW7DMDQrJCMu3wWj72v6Kxw608V5E5yl
-         ryo/c0tpgDvG0Yx8e6ZvI30YmSEMkZPgIZCitIZFywjJ3Ssbd8IjjTp/Ws1FjY35p3Vx
-         mKqRs01H252X0oPV3eGmjPII9a8NX2ahgvzdXDwwTk7s82hSA8QhU880PqINb5VXaK0x
-         uQeZNWPPG/NDVxDZUm6n/yjVBrviU8hkgyXC5F8YQWN6D0JTGCKSs7zjYdVTXnLwMpOv
-         p3JA==
-X-Gm-Message-State: AO0yUKUB///+uHU7i9nB1TiDtMcXLou/4/CWmV57gauqnU1P2O5BkUAy
-        11zxzuIBKSzaBtq/8YTF8r7XP4V729hk78a/RiBZZQ==
-X-Google-Smtp-Source: AK7set+ty7uVdpZ31Ug7urVUs43GJRLQ7srCKPacgjICRqJKo0JEZTgWE1J+mZI79ChefT5upbGoLwNqmagc916mLds=
-X-Received: by 2002:a4a:d62f:0:b0:525:65a1:acd9 with SMTP id
- n15-20020a4ad62f000000b0052565a1acd9mr7359903oon.0.1678236522386; Tue, 07 Mar
- 2023 16:48:42 -0800 (PST)
-MIME-Version: 1.0
-References: <20230307192927.512757-1-miquel.raynal@bootlin.com>
-In-Reply-To: <20230307192927.512757-1-miquel.raynal@bootlin.com>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Tue, 7 Mar 2023 16:48:30 -0800
-Message-ID: <CAPv3WKfmxogCggN=9PCWgaa8CXhZnaU_fzoBsF1MoBEguqakHQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: mvpp2: Defer probe if MAC address source is
- not yet ready
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Russell King <linux@armlinux.org.uk>,
+        with ESMTP id S229574AbjCHAuR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 19:50:17 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60B3259E6F;
+        Tue,  7 Mar 2023 16:50:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Q/T5ljm8LN7eH6ch+WyNNJmPboB5wqEu8gteW0WXaZ8=; b=hrq9G/3aEx0wPH6foCxe+34nsf
+        0CL6VymPt/TYQLT+ama4FVUlSwYYEblBtgvVDh5hT/BvuRdseiVYyfQkYMErGR5gRUZPI/w/qWulO
+        z0KVzZduP48fNSviq0EOp1aiCBfrCoJjMSYZxGHgeYndYu7mjGMZVx7YaSCRPiLRvsZI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pZi0B-006iqV-JE; Wed, 08 Mar 2023 01:49:55 +0100
+Date:   Wed, 8 Mar 2023 01:49:55 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, Lee Jones <lee@kernel.org>,
+        linux-leds@vger.kernel.org
+Subject: Re: [net-next PATCH 01/11] net: dsa: qca8k: add LEDs basic support
+Message-ID: <d1226e21-8150-4959-95b0-e9df2c460b81@lunn.ch>
+References: <20230307170046.28917-1-ansuelsmth@gmail.com>
+ <20230307170046.28917-2-ansuelsmth@gmail.com>
+ <b03334df-4389-44b5-ac85-8b0878c64512@lunn.ch>
+ <6407c6ea.050a0220.7c931.824f@mx.google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6407c6ea.050a0220.7c931.824f@mx.google.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, Mar 07, 2023 at 06:57:10PM +0100, Christian Marangi wrote:
+> On Wed, Mar 08, 2023 at 12:16:13AM +0100, Andrew Lunn wrote:
+> > > +qca8k_setup_led_ctrl(struct qca8k_priv *priv)
+> > > +{
+> > > +	struct fwnode_handle *ports, *port;
+> > > +	int port_num;
+> > > +	int ret;
+> > > +
+> > > +	ports = device_get_named_child_node(priv->dev, "ports");
+> > > +	if (!ports) {
+> > > +		dev_info(priv->dev, "No ports node specified in device tree!\n");
+> > > +		return 0;
+> > > +	}
+> > > +
+> > > +	fwnode_for_each_child_node(ports, port) {
+> > > +		struct fwnode_handle *phy_node, *reg_port_node = port;
+> > > +
+> > > +		phy_node = fwnode_find_reference(port, "phy-handle", 0);
+> > > +		if (!IS_ERR(phy_node))
+> > > +			reg_port_node = phy_node;
+> > 
+> > I don't understand this bit. Why are you looking at the phy-handle?
+> > 
+> > > +
+> > > +		if (fwnode_property_read_u32(reg_port_node, "reg", &port_num))
+> > > +			continue;
+> > 
+> > I would of expect port, not reg_port_node. I'm missing something
+> > here....
+> > 
+> 
+> It's really not to implement ugly things like "reg - 1"
+> 
+> On qca8k the port index goes from 0 to 6.
+> 0 is cpu port 1
+> 1 is port0 at mdio reg 0
+> 2 is port1 at mdio reg 1
+> ...
+> 6 is cpu port 2
+> 
+> Each port have a phy-handle that refer to a phy node with the correct
+> reg and that reflect the correct port index.
+> 
+> Tell me if this looks wrong, for qca8k we have qca8k_port_to_phy() and
+> at times we introduced the mdio thing to describe the port - 1 directly
+> in DT. If needed I can drop the additional fwnode and use this function
+> but I would love to use what is defined in DT thatn a simple - 1.
 
+This comes back to the off list discussion earlier today. What you
+actually have here are MAC LEDs, not PHY LEDs. They are implemented in
+the MAC, not the PHY. To the end user, it should not matter, they
+blink when you would expect.
 
-wt., 7 mar 2023 o 11:29 Miquel Raynal <miquel.raynal@bootlin.com> napisa=C5=
-=82(a):
->
-> NVMEM layouts are no longer registered early, and thus may not yet be
-> available when Ethernet drivers (or any other consumer) probe, leading
-> to possible probe deferrals errors. Forward the error code if this
-> happens. All other errors being discarded, the driver will eventually
-> use a random MAC address if no other source was considered valid (no
-> functional change on this regard).
->
-> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> ---
->  .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 24 ++++++++++++-------
->  1 file changed, 16 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/ne=
-t/ethernet/marvell/mvpp2/mvpp2_main.c
-> index 9b4ecbe4f36d..e7c7652ffac5 100644
-> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> @@ -6081,18 +6081,19 @@ static bool mvpp2_port_has_irqs(struct mvpp2 *pri=
-v,
->         return true;
->  }
->
-> -static void mvpp2_port_copy_mac_addr(struct net_device *dev, struct mvpp=
-2 *priv,
-> -                                    struct fwnode_handle *fwnode,
-> -                                    char **mac_from)
-> +static int mvpp2_port_copy_mac_addr(struct net_device *dev, struct mvpp2=
- *priv,
-> +                                   struct fwnode_handle *fwnode,
-> +                                   char **mac_from)
->  {
->         struct mvpp2_port *port =3D netdev_priv(dev);
->         char hw_mac_addr[ETH_ALEN] =3D {0};
->         char fw_mac_addr[ETH_ALEN];
-> +       int ret;
->
->         if (!fwnode_get_mac_address(fwnode, fw_mac_addr)) {
->                 *mac_from =3D "firmware node";
->                 eth_hw_addr_set(dev, fw_mac_addr);
-> -               return;
-> +               return 0;
->         }
->
->         if (priv->hw_version =3D=3D MVPP21) {
-> @@ -6100,19 +6101,24 @@ static void mvpp2_port_copy_mac_addr(struct net_d=
-evice *dev, struct mvpp2 *priv,
->                 if (is_valid_ether_addr(hw_mac_addr)) {
->                         *mac_from =3D "hardware";
->                         eth_hw_addr_set(dev, hw_mac_addr);
-> -                       return;
-> +                       return 0;
->                 }
->         }
->
->         /* Only valid on OF enabled platforms */
-> -       if (!of_get_mac_address_nvmem(to_of_node(fwnode), fw_mac_addr)) {
-> +       ret =3D of_get_mac_address_nvmem(to_of_node(fwnode), fw_mac_addr)=
-;
-> +       if (ret =3D=3D -EPROBE_DEFER)
-> +               return ret;
-> +       if (!ret) {
->                 *mac_from =3D "nvmem cell";
->                 eth_hw_addr_set(dev, fw_mac_addr);
-> -               return;
-> +               return 0;
->         }
->
->         *mac_from =3D "random";
->         eth_hw_addr_random(dev);
-> +
-> +       return 0;
->  }
->
->  static struct mvpp2_port *mvpp2_phylink_to_port(struct phylink_config *c=
-onfig)
-> @@ -6815,7 +6821,9 @@ static int mvpp2_port_probe(struct platform_device =
-*pdev,
->         mutex_init(&port->gather_stats_lock);
->         INIT_DELAYED_WORK(&port->stats_work, mvpp2_gather_hw_statistics);
->
-> -       mvpp2_port_copy_mac_addr(dev, priv, port_fwnode, &mac_from);
-> +       err =3D mvpp2_port_copy_mac_addr(dev, priv, port_fwnode, &mac_fro=
-m);
-> +       if (err < 0)
-> +               goto err_free_stats;
->
->         port->tx_ring_size =3D MVPP2_MAX_TXD_DFLT;
->         port->rx_ring_size =3D MVPP2_MAX_RXD_DFLT;
+So your addressing should be based around the MAC port number, not the
+PHY.
 
-LGTM.
+Also, at the moment, all we are adding are a bunch of LEDs. There is
+no link to a netdev at this point. At least, i don't see one. Be once
+we start using ledtrig-netdev we will need that link to a netdev. Take
+a look in my git tree at the last four patch. They add an additional
+call to get the device an LED is attached to.
 
-Reviewed-by: Marcin Wojtas <mw@semihalf.com>
-
-Thanks,
-Marcin
+     Andrew
