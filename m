@@ -2,74 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F94C6B0632
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 12:42:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B7366B0636
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 12:42:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229878AbjCHLmI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 06:42:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39008 "EHLO
+        id S230193AbjCHLme (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 06:42:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230118AbjCHLmD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 06:42:03 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE22CBD4D0
-        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 03:41:53 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id u9so64629990edd.2
-        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 03:41:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112; t=1678275712;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=Is/quSvT3TJIPDFEbm6RZXsFk8WJ06IX2kfE6yYnF3I=;
-        b=JoY9f/gwPqh8ulZsXsSOQ87r7ihrjL+906w9miXHgutvS5nyPCiFKX70IK/SUfoLAD
-         7AsGePMghdxXk/wRT85Ed0ildPaEq5dxDhiG467t0qbymo7y97hEIWkipeoGYaKZmTmj
-         iVZa6VHrf/1NS0zoKobiWAHPILBCjjXxE/rfkVpnYtGK1mPhfcFamEB0n1k05ekB/g76
-         65L7yatB5sUWUuU1iz+Yf4mDSVn9mBT5fRUSqQmgfKjMEmaZmW4PDhppk7jQGlOPj0bD
-         Ix2tPXz4k7s+tbki526dAWHYuvF74O3H2unqXz/RN5d9AF/UDS2IPqEweJve7ExeFNKg
-         3tFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678275712;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Is/quSvT3TJIPDFEbm6RZXsFk8WJ06IX2kfE6yYnF3I=;
-        b=JyqKSiDatzUlR2/4PZw2IzPODV/nrOdEMxCcxrIRqDRjBm7QEvjDta1CMbHqE3fYfL
-         hUgFE19GDpcMCSl1ToHZoExCPJH9YaRKeWaMqONHVCIdnsgTEcILk32Lgx2xf8hJKDyi
-         RtCWnPZm2Z8jCRb+Kuq/RgMy9aa0uNGc5HXHlW9rFBL22fNF7S7hlhtVw1rToNcsxFZm
-         8Ni6wH1Ed6/T0qI5ffVArmIUkv9Q7vA9d1DJBWKcho2R9XLwLwgOPWouLZ0d1iO1+Ysb
-         Uilo0f2BWWanuS/0Hm107VlhyJ5mlSUt2ZegbwajPPrzHvAkis7dtclHE6gCtzoGFF1S
-         woPA==
-X-Gm-Message-State: AO0yUKXS1S29UWD9RoG/bK5Msj+puP/6KBeh4pqMioUYhZ6h5sXLZyhI
-        9qzi3n5Jxj+spmEfxinkqKOd5g==
-X-Google-Smtp-Source: AK7set/1uwA+p1HHny45n37ykgfDDSeAWNPouc1UdQ7cJxYi4nqXIkMr1mgaN97QuJjYiLj4BlfjJw==
-X-Received: by 2002:a17:906:1c13:b0:896:427b:148 with SMTP id k19-20020a1709061c1300b00896427b0148mr16362789ejg.1.1678275712179;
-        Wed, 08 Mar 2023 03:41:52 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id y7-20020a170906470700b008ef13127b5fsm7380758ejq.29.2023.03.08.03.41.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Mar 2023 03:41:51 -0800 (PST)
-Date:   Wed, 8 Mar 2023 12:41:49 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Po-Hsu Lin <po-hsu.lin@canonical.com>
-Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, idosch@mellanox.com,
-        danieller@mellanox.com, petrm@mellanox.com, shuah@kernel.org,
-        pabeni@redhat.com, kuba@kernel.org, edumazet@google.com,
-        davem@davemloft.net
-Subject: Re: [PATCHv2] selftests: net: devlink_port_split.py: skip test if no
- suitable device available
-Message-ID: <ZAh0fY4XoNcLTIOI@nanopsycho>
-References: <20230307150030.527726-1-po-hsu.lin@canonical.com>
- <ZAhV8nKuLVAQHQGl@nanopsycho>
- <CAMy_GT92sg4_JLPHvRpH542DPLbxOEYYoCMa2cnET1g8bz_R9Q@mail.gmail.com>
+        with ESMTP id S229668AbjCHLm1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 06:42:27 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEF13BD7A2;
+        Wed,  8 Mar 2023 03:42:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5475C61773;
+        Wed,  8 Mar 2023 11:42:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A627C433D2;
+        Wed,  8 Mar 2023 11:42:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678275735;
+        bh=GS6tRvkGtq0vN1+iQ6FDOaBDA0r4jEk4oIYueLCnWjM=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=B9MDF729gBqxZMwvSLxjfF6grvy4mczrvvUSqhv/h12vJpU+USUDlVrKhuoMSSbwz
+         Vw0m/ZG3u0Mp26dt24EXuoyLX4w+OnhsVsLmWJGc5jL3L2elEToDIIa9ZC3bb2hLqK
+         79DewjzU5TQfEMTg/jNuBHPmUEcPmF47/bTobCiKUQNsCfjsSzJFkcw965FuWd3Vky
+         5qerDjXTfatAcCCFQ8zurcAGa9yj4WdT1vj7YxttFoYhodV2ogK8RWAgLFohfD54I+
+         e2etU3CoSsglY+pOURvphF3O92nfpAibR7a0mrzUZ8Fv7sD+gDSa4Ur3CK56OLMWIq
+         UlBEVYR5T59Jw==
+Message-ID: <a74e5079-d89d-2420-b6af-d630c4f04380@kernel.org>
+Date:   Wed, 8 Mar 2023 13:42:10 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAMy_GT92sg4_JLPHvRpH542DPLbxOEYYoCMa2cnET1g8bz_R9Q@mail.gmail.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [EXTERNAL] Re: [PATCH v3 3/6] soc: ti: pruss: Add
+ pruss_cfg_read()/update() API
+Content-Language: en-US
+To:     Md Danish Anwar <a0501179@ti.com>,
+        MD Danish Anwar <danishanwar@ti.com>,
+        "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Nishanth Menon <nm@ti.com>
+Cc:     linux-remoteproc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, srk@ti.com, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20230306110934.2736465-1-danishanwar@ti.com>
+ <20230306110934.2736465-4-danishanwar@ti.com>
+ <7076208d-7dca-6980-5399-498e55648740@kernel.org>
+ <afd6cd8a-8ba7-24b2-d7fc-c25a9c5f3c42@ti.com>
+From:   Roger Quadros <rogerq@kernel.org>
+In-Reply-To: <afd6cd8a-8ba7-24b2-d7fc-c25a9c5f3c42@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,33 +69,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Mar 08, 2023 at 11:21:57AM CET, po-hsu.lin@canonical.com wrote:
->On Wed, Mar 8, 2023 at 5:31 PM Jiri Pirko <jiri@resnulli.us> wrote:
+
+
+On 08/03/2023 13:36, Md Danish Anwar wrote:
+> Hi Roger,
+> 
+> On 08/03/23 13:57, Roger Quadros wrote:
+>> Hi,
 >>
->> Tue, Mar 07, 2023 at 04:00:30PM CET, po-hsu.lin@canonical.com wrote:
->> >The `devlink -j port show` command output may not contain the "flavour"
->> >key, an example from s390x LPAR with Ubuntu 22.10 (5.19.0-37-generic),
->> >iproute2-5.15.0:
->> >  {"port":{"pci/0001:00:00.0/1":{"type":"eth","netdev":"ens301"},
->> >           "pci/0001:00:00.0/2":{"type":"eth","netdev":"ens301d1"},
->> >           "pci/0002:00:00.0/1":{"type":"eth","netdev":"ens317"},
->> >           "pci/0002:00:00.0/2":{"type":"eth","netdev":"ens317d1"}}}
+>> On 06/03/2023 13:09, MD Danish Anwar wrote:
+>>> From: Suman Anna <s-anna@ti.com>
+>>>
+>>> Add two new generic API pruss_cfg_read() and pruss_cfg_update() to
+>>> the PRUSS platform driver to allow other drivers to read and program
+>>> respectively a register within the PRUSS CFG sub-module represented
+>>> by a syscon driver. This interface provides a simple way for client
 >>
->> As Jakub wrote, this is odd. Could you debug if kernel sends the flavour
->> attr and if not why? Also, could you try with most recent kernel?
->
->I did a quick check on another s390x LPAR instance which is running
->with Ubuntu 23.04 (6.1.0-16-generic) iproute2-6.1.0, there is still no
->"flavour" attribute.
->$ devlink port show
->pci/0001:00:00.0/1: type eth netdev ens301
->pci/0001:00:00.0/2: type eth netdev ens301d1
->pci/0002:00:00.0/1: type eth netdev ens317
->pci/0002:00:00.0/2: type eth netdev ens317d1
->
->The behaviour didn't change with iproute2 built from source [1]
+>> Do you really need these 2 functions to be public?
+>> I see that later patches (4-6) add APIs for doing specific things
+>> and that should be sufficient than exposing entire CFG space via
+>> pruss_cfg_read/update().
+>>
+>>
+> 
+> I think the intention here is to keep this APIs pruss_cfg_read() and
+> pruss_cfg_update() public so that other drivers can read / modify PRUSS config
+> when needed.
 
-Could you paste output of "devlink dev info"?
-Looks like something might be wrong in the kernel devlink/driver code.
+Where are these other drivers? If they don't exist then let's not make provision
+for it now.
+We can provide necessary API helpers when needed instead of letting client drivers
+do what they want as they can be misused and hard to debug.
 
+> 
+> The later patches (4-6) add APIs to do specific thing, but those APIs also
+> eventually call pruss_cfg_read/update().
 
+They can still call them but they need to be private to pruss.c
+
+> 
+>>> drivers without having them to include and parse the CFG syscon node
+>>> within their respective device nodes. Various useful registers and
+>>> macros for certain register bit-fields and their values have also
+>>> been added.
+>>>
+>>> It is the responsibility of the client drivers to reconfigure or
+>>> reset a particular register upon any failures.
+>>>
+>>> Signed-off-by: Suman Anna <s-anna@ti.com>
+>>> Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+>>> Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+>>> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+>>> ---
+>>>  drivers/soc/ti/pruss.c           |  41 +++++++++++++
+>>>  include/linux/remoteproc/pruss.h | 102 +++++++++++++++++++++++++++++++
+>>>  2 files changed, 143 insertions(+)
+>>>
+>>> diff --git a/drivers/soc/ti/pruss.c b/drivers/soc/ti/pruss.c
+>>> index c8053c0d735f..537a3910ffd8 100644
+>>> --- a/drivers/soc/ti/pruss.c
+>>> +++ b/drivers/soc/ti/pruss.c
+>>> @@ -164,6 +164,47 @@ int pruss_release_mem_region(struct pruss *pruss,
+>>>  }
+>>>  EXPORT_SYMBOL_GPL(pruss_release_mem_region);
+>>
+>> cheers,
+>> -roger
+> 
