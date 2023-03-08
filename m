@@ -2,983 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1A8A6B0307
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 10:37:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB4FF6B0311
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 10:39:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229737AbjCHJhs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 04:37:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45416 "EHLO
+        id S230059AbjCHJi6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 04:38:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229590AbjCHJhr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 04:37:47 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD51166F2
-        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 01:37:43 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id cy23so63000789edb.12
-        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 01:37:43 -0800 (PST)
+        with ESMTP id S229720AbjCHJi4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 04:38:56 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2111.outbound.protection.outlook.com [40.107.243.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D62CA2F0A;
+        Wed,  8 Mar 2023 01:38:52 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ILk7pDkLQvSif/0+znAOPsxcIAulTqlsq/a0efRlgcdmiCUXFOJPi98LFrKEsPEKNXkAiFD8KyhwVmcW17ks/ckwjdwR85T53OY1ssDLteUlxLElos0Ut1bGJcca8Lfv9DPCVuJUDSD/qh7Q8/0Nje1nua8ZxXbj/2r7Oc8WQPRCpE2u6G2jsjEzhCdOMg0e6HCgAyCkDX22s/X+yQupQI1QiiNOIgMTnRRinwIo/n2evRSrzyJyijS6YCTNuxoE4uQI5wsqtA62pklYwByTy+gqqcmbd159h95pjuuLT2IpFPLRCOPmXdW4YBDb95sjQheaR0vd/Es5KVT1WIZrCw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Ki0waFVjL66O/2Q48eer0CX+WaarIlrefGzuGwPw5oE=;
+ b=BiT4GQYV3Fpvn9Uqh9PQPf83s2g1EazVldfxkcuoxqv4aVukHaDwV7RWVZVOa0zfBh/IpaoK6NZ+Prws9818JMu6GVwQDOPcuyTNoFNn20xhtrWwV9CNrl8MxhAs44ej0iyWjYW5QeUL6ZJvvtmoG8nLYQ4Cx3iXH9hz3DEg3gqD8T3Bcr6wEHz05NZIx5V18vHsorrZsZDOHaxny6iq5zu7S7nzqMeBIkBZ/euiBAKo+krMsXCi113W37oA+6WdcQyhILhzWNuBU0s+Q8E2d6n9Ep9QWDJp/3f9xI5miK4fOpI0NEwQIwM1VGg6DdCcBSxXosyEBIBxIlL+4tJ7Eg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112; t=1678268262;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=TB6IGkJ38VcUmwvxIwGyz6JiXffo//D6UDs5i+VYB9M=;
-        b=0f8hZFDbeoAWRXbelLmsbes9y7jDrmz35Iu+zuP9yZGKKRKMwejHKBBdoEqbEdKE0a
-         W5DSpZotQFSBdVfyQw9mqXOEAUfeBJ6YVjHqjxqMjjNYLqrUOA/Sta6UrZyjowhxfrSZ
-         cCaJ31GXsRvHvM5LGhyPP9DV6ME9CG1hJNT/l2b0cV9CyYUgEqmnxo2+f2W3LQXVFdfG
-         LykFa5Jkra3k8TGwIx9Y5/0IBu7C6ObJspJQfCr/7fpgNVO0kXe5SefHk17kPGVXxPqC
-         l+hPM6d1zgeWYqeCbrKjfdVoiNmP5r3Wtm1GA3fuvZtUTbGOGMFs2Gx8h1JApe9xzSK2
-         LEtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678268262;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=TB6IGkJ38VcUmwvxIwGyz6JiXffo//D6UDs5i+VYB9M=;
-        b=yQObjUf0H5HMMcIZtfDWe52ksFzzMtmF0ZoVZDbENHcXNFlijjkKulypAcS3Oz88k9
-         aHqXeao8wKnC5NtcROXrwYScJ/OFyWtlQ84GgspNk5I8rMuVRlb+pS0dLFQgbtR7thjK
-         d10/pvk87qhBqbtL7hJYxs3enpjuzNk4G4p5T4l/b0dI7Ju70Q2kyCCg5RionZNeihP6
-         /pttaLTQhSstjXGm1STbuRXLyj9ZDTp+vOI8Eo+29BQ39erpoj8Sh77FNE8z5p77lJv2
-         SCAmVz+/77zxNLzhLB69UP2tAapo7aQwiXIwSJekYE90Kl4oVqR39UDNON5HVxeH5oVR
-         BOdA==
-X-Gm-Message-State: AO0yUKWJtgX3K54GkzobMtqX7YpxxsLyA1FkgMTsepxoET3koCR848ED
-        YaKDtvfERqCtzkkpUi81i3cXaw==
-X-Google-Smtp-Source: AK7set97Uh8aWoU2WYHlYjhObYd3MjKpbCGm3wm3DHN7KKcibry8kEp1nRcQaTVHlXyl9Ot9YMJjbQ==
-X-Received: by 2002:a17:906:2802:b0:86f:e30c:72c1 with SMTP id r2-20020a170906280200b0086fe30c72c1mr16428355ejc.8.1678268262217;
-        Wed, 08 Mar 2023 01:37:42 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id kq17-20020a170906abd100b008e82cb55195sm7173385ejb.203.2023.03.08.01.37.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Mar 2023 01:37:41 -0800 (PST)
-Date:   Wed, 8 Mar 2023 10:37:40 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Shannon Nelson <shannon.nelson@amd.com>
-Cc:     brett.creeley@amd.com, davem@davemloft.net, netdev@vger.kernel.org,
-        kuba@kernel.org, drivers@pensando.io, leon@kernel.org
-Subject: Re: [PATCH RFC v4 net-next 02/13] pds_core: add devcmd device
- interfaces
-Message-ID: <ZAhXZFABVgsVBzfF@nanopsycho>
-References: <20230308051310.12544-1-shannon.nelson@amd.com>
- <20230308051310.12544-3-shannon.nelson@amd.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ki0waFVjL66O/2Q48eer0CX+WaarIlrefGzuGwPw5oE=;
+ b=OddCB8hc41soh1Uvv68Wj6nikXmYnag4TBgmKPt12aMOGSw62AYyqm3rLaKMnp3EKrz2zrH5g2n2/TMplhOuelWDRpEOhlVHqwLrDkMG7VhnX2t2XbgBwoPxGwfaP0fDP+/YHhNlS5256ZKbd/1nm+tYYPgInJrZIk4k6ZrEJOg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by CH0PR13MB5114.namprd13.prod.outlook.com (2603:10b6:610:113::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.29; Wed, 8 Mar
+ 2023 09:38:49 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6156.029; Wed, 8 Mar 2023
+ 09:38:49 +0000
+Date:   Wed, 8 Mar 2023 10:38:42 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Aleksandr Nogikh <nogikh@google.com>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        syzbot <syzbot+bd85b31816913a32e473@syzkaller.appspotmail.com>,
+        alex.aring@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, stefan@datenfreihafen.org,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] [wpan?] general protection fault in
+ nl802154_trigger_scan
+Message-ID: <ZAhXoqIIDSn+MzDL@corigine.com>
+References: <000000000000adec0205f5ffcaf4@google.com>
+ <ZAISIS/h9UV6Ox+r@corigine.com>
+ <20230303164456.603c2ebd@xps-13>
+ <CANp29Y6aaCVVg+3ezNzaw1nqvMbZhHooZ_DQRvv5YPbOmeprag@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20230308051310.12544-3-shannon.nelson@amd.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CANp29Y6aaCVVg+3ezNzaw1nqvMbZhHooZ_DQRvv5YPbOmeprag@mail.gmail.com>
+X-ClientProxiedBy: AM4PR07CA0008.eurprd07.prod.outlook.com
+ (2603:10a6:205:1::21) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CH0PR13MB5114:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3be0a007-5f30-49e9-bf99-08db1fb8ebb2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: doSeJFVqILkLb5GaTzLZB2uL+dwfFlewJGQSFhLEQkyDbDUoDklDaJj5XfbRvPsJEC0VWlXWfJTl2PlGOVm9xXMw5MkCrDS6BOmf0UvEmE8rm4CBHw/0g5dPcql/ZYuk/8qhX5KpZsE7tmGQkbJCEzKGWqFM3OEMkenOQmU2LfGRJ/dm5SWdyrqw/nZJDec1ADPfX6N42Qw2FRc8+6S+5zlX1tXA88ALMKCW5z4Oobx6oBi4uV+Hn4TDGXYYaMpCPOD4p1k8HKH7nLxoZ4f8/Cn36KivbmGaYKiEgUgg9kFv+DMgW5esFtIBWqqFSoevSAqHzhNgYC62aHDZqYcQCnnIyF6IY2/gsmXfgHiNh+mgvl8PYmuCib3VMhlVbIlDyCuqzq5ApviG47h/ughejS7R3ZcIbFoRugk2MH1LBrhAl+eXpS+HUvCTeRaSypjSZ0FOWCDov2CKzy2Xct+2CyKydteMIPG01np85l/OyYbrwMg29Qb1B1vC7xj/p6WwOzrLJ0kQwyURXtu5HteOAA+UvXtArnc842NjwYGJ0oNIrdLrfeeIJzLFrPTcxk/AdYyZULAVksiOtNv0Z5I2+u5aZheT+K78b8qwlkxbVS3arle8VV0yT8lzvgjsUjUzsmgKAqRLIgD08c8uuUwlluxnpNUGpLCqFLndSqw/Z1E=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(39840400004)(396003)(346002)(366004)(376002)(451199018)(2906002)(2616005)(83380400001)(66574015)(44832011)(66946007)(4744005)(4326008)(7416002)(66556008)(66476007)(6916009)(5660300002)(186003)(6512007)(8676002)(36756003)(41300700001)(53546011)(8936002)(6666004)(38100700002)(6506007)(6486002)(54906003)(86362001)(478600001)(966005)(316002)(67856001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?d3RURndncXdvcEJtS282OXA4UmJJL3BxYnlabWpuOGdYSWNqZ2tCczBHNENN?=
+ =?utf-8?B?V1QzVkFXYkZZa3lIWkVNTmNWYk1UY255UlIxOHdDZTR5SEdXcmxpZHlxSitv?=
+ =?utf-8?B?bDV6aWZoMDhUZno3U21ncHJ4Z2pqMXUzKzB0cnlmQjVNTzV1SHhublBLdm1Z?=
+ =?utf-8?B?Mkc4OEZLNkhGZVpEeExNY0lGTjk1SXdVT09mVG9xYXJTQ2lpdk1iMlNxQWsz?=
+ =?utf-8?B?ZEFIOENMTnp2THhYVGNQZEp3RHhyQ2prek9aV3JVNG5YbzFuWjhtYXkzZTM0?=
+ =?utf-8?B?Wml0MVZMcFZTYWNVemdyZENrZjRGTFNCZmhKRXg1UXVjQVpPNDlWOElsSnBi?=
+ =?utf-8?B?QWpWUTNicW9yUEd5dFFOaWxpQXl6RVhwYzB2eGFJWGx0SVlvbXRrNVR4eTdP?=
+ =?utf-8?B?Q1ljVCtVeUlGUkJySmJyL2JZN0VoYWxmaFFwVVhDamlhejZrUi9lYXgrcVZR?=
+ =?utf-8?B?ZFFNTGNYTU8zbnQ1Nkd0dit3SEFJZkdmb3hzUXlhWkY2K1I2RmtzNkVaTjVQ?=
+ =?utf-8?B?Vys0cDhxSTIrby9sOG04RUdsa0d6QndqajkwZEhTM2FxaEQraG5ueGdFdmNk?=
+ =?utf-8?B?ME9QTEpoZUM1VG9JRkRPRGc3bHJUeXFmaEpUQVJ2eUpCeVNITVJtbmdTUHVn?=
+ =?utf-8?B?elUwbG9rMGxaQ3RJc1FSUkJKUFltNGRlZDhDdXJqK3R5UG84UHlmdkZDWmNm?=
+ =?utf-8?B?Q1NleUEyamJ1N1JzV2xQcTlmMGlkckhhNU1MMDVyRXpOS2JWamlxUjc3bi9h?=
+ =?utf-8?B?eXVwUmlHMWtLVTY2Q1orS2Y1ekZGenBXYjEwYzZJZlozYktBalRNZ0wxZjBi?=
+ =?utf-8?B?cUpTbFIyNHZjeTA4Z2x5TWJxYXV6Vlhtc1VFUW45QjdIeXBCdVp0L0NVWW91?=
+ =?utf-8?B?Uk9HVjlVdHNOVi95V3pjMFQ1dmdxWGNmZE1GL1NMSjVPL1R3aDZLU2xNQWlo?=
+ =?utf-8?B?VmJNQTNvVXJ2U0pySytmdWFxVTZNM1FBZ044aGRaSExkdzI5cDdsKytRaitp?=
+ =?utf-8?B?dXhHb3Jmb0xpNE42dHQ5bzl3MjNzOVpUU3VONjFuOC8wY1hrY0NHWWE4elJE?=
+ =?utf-8?B?WTNuWEoxb2l1TGNmYlo3M09oY09RL0o5T1ZSNjBaOUpVQktkeWI4cUY0cHNX?=
+ =?utf-8?B?czN6Y3M3SUw4YWl6S1N4dEVjOWpZckdUdzVScXRDbTV6R0FoODgvc3M4N0Y1?=
+ =?utf-8?B?QXZtNUEvS21SQldDUnRrQ1RNZStqL25SWTBsTDM4STk2UERmQnZLSmR2anV2?=
+ =?utf-8?B?M2dLVFozbXhueHlBUFR0aDlyN0FmVlZ1Z25rNi80c3ZDNUwzMXVOSUMwMzF4?=
+ =?utf-8?B?V25McUdpL3A2K2pQUlo5dk50cnlqYXpTaWNpVHdJSmFhYXV5MTJrSER2TmxS?=
+ =?utf-8?B?Qzd3eEljZ1NhaElFcFl5dVo3VElIN1dKbnA0VGlzOGFUcUU1OUZPZFEwWFRC?=
+ =?utf-8?B?eFZDYUVKeHFOdlJNb1diZ0dCSHpCb2x5bUdLTG94aFMyZ290RjE1bmc2a2dK?=
+ =?utf-8?B?N0M2QnJQb2VJVUpOVnV1Uld0cVBPVmFDTUxwU0hZOE4zZjJ0R3Z6MGFtRlVl?=
+ =?utf-8?B?bis1R1hPalRJL1N2L2d6WG9JeGdDRlRyVTArREx4SHlFUkRoWVVLbFpIREgz?=
+ =?utf-8?B?YU1rSXdRVTdCbmZhUHZnRTlsWVR5RDdwWEJJdmVTOVdYOCtCNnZ4cmJBM1VJ?=
+ =?utf-8?B?cVNUMUs4TGdpblY1L2RsN1U1Ums2KzlnanJpaVNvU094UXF2d0t1Ny9ncEpW?=
+ =?utf-8?B?aDhiVUdzTytNbzFCNis2dXRrQnhDWmoycDJvUjRZemJheGZKc2NVbVBGSHdo?=
+ =?utf-8?B?NExnTHYvTng0SWVNcm9EZ01IV2FrL0pHTzZvNFhIbFlrU0VCOUpUcTN3a2Uw?=
+ =?utf-8?B?T3VBTE0wd1hTRzl5MzNTMnZoL2FsUnVYSUl6V1NORVRjZk9Ccnh6OFlpUHh2?=
+ =?utf-8?B?cjF0Ris5dDBOM0hzMXJGWUsyNkxLMS9uaUg3aWFKbnRtVUltenMra3FSam9J?=
+ =?utf-8?B?TTlHdWFnZHU2YzNMNk1JMWpOVWJDTTJjbTZnMlViMXpNcTVieFNDbUVSL0I1?=
+ =?utf-8?B?QVNRU0tXV21ZYVRUZ0orQ1Vpd0J6dDlDVXAwZktwYzJCcFdSYStjTWVYT3lv?=
+ =?utf-8?B?ZDBQS25CUUY1MmpHQ3J1eVlXVGFZSDM4Rk1VbkRnZUhLTEpPYjE2SnljSStN?=
+ =?utf-8?B?TVpZYnZPWU5zL21MQzVsakp6OUlWN3hrN096aUZ5L0Qxa2k3U0svR2puK01w?=
+ =?utf-8?B?QUVNemZxRjFuUXVqL2xQMVVRaWN3PT0=?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3be0a007-5f30-49e9-bf99-08db1fb8ebb2
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2023 09:38:49.4673
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: McsTlgwWWxBzkBUJAQr4zYxVfPaApxfX98u+J1OG9sebgYadcJb1ooB17vg4gyk/DEQM4PrE1gGxh6toUUO+naXSeinEUGOqnQB+9THWwOg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR13MB5114
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Mar 08, 2023 at 06:12:59AM CET, shannon.nelson@amd.com wrote:
->The devcmd interface is the basic connection to the device through the
->PCI BAR for low level identification and command services.  This does
->the early device initialization and finds the identity data, and adds
->devcmd routines to be used by later driver bits.
->
->Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
->---
-> drivers/net/ethernet/amd/pds_core/Makefile  |   4 +-
-> drivers/net/ethernet/amd/pds_core/core.c    |  36 ++
-> drivers/net/ethernet/amd/pds_core/debugfs.c |  67 ++++
-> drivers/net/ethernet/amd/pds_core/dev.c     | 350 ++++++++++++++++++++
-> drivers/net/ethernet/amd/pds_core/main.c    |  35 +-
-> include/linux/pds/pds_common.h              |  63 ++++
-> include/linux/pds/pds_core.h                |  52 +++
-> include/linux/pds/pds_intr.h                | 161 +++++++++
-> 8 files changed, 764 insertions(+), 4 deletions(-)
-> create mode 100644 drivers/net/ethernet/amd/pds_core/core.c
-> create mode 100644 drivers/net/ethernet/amd/pds_core/dev.c
-> create mode 100644 include/linux/pds/pds_intr.h
->
->diff --git a/drivers/net/ethernet/amd/pds_core/Makefile b/drivers/net/ethernet/amd/pds_core/Makefile
->index b4cc4b242e44..eaca8557ba66 100644
->--- a/drivers/net/ethernet/amd/pds_core/Makefile
->+++ b/drivers/net/ethernet/amd/pds_core/Makefile
->@@ -4,6 +4,8 @@
-> obj-$(CONFIG_PDS_CORE) := pds_core.o
+On Tue, Mar 07, 2023 at 07:40:13PM +0100, Aleksandr Nogikh wrote:
+> [You don't often get email from nogikh@google.com. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
 > 
-> pds_core-y := main.o \
->-	      devlink.o
->+	      devlink.o \
->+	      dev.o \
->+	      core.o
+> On Sat, Mar 4, 2023 at 9:16 AM 'Miquel Raynal' via syzkaller-bugs
+> <syzkaller-bugs@googlegroups.com> wrote:
+> >
+> > > I believe this is fixed here:
+> > >
+> > > - [PATCH net] ieee802154: Prevent user from crashing the host
+> > >   https://lore.kernel.org/netdev/20230301154450.547716-1-miquel.raynal@bootlin.com/
+> > >
+> > > - pull-request: ieee802154 for net 2023-03-02
+> > >   https://lore.kernel.org/netdev/20230302153032.1312755-1-stefan@datenfreihafen.org/
+> >
+> > Hopefully, yes :)
+> >
+> > Thanks,
+> > Miquèl
 > 
-> pds_core-$(CONFIG_DEBUG_FS) += debugfs.o
->diff --git a/drivers/net/ethernet/amd/pds_core/core.c b/drivers/net/ethernet/amd/pds_core/core.c
->new file mode 100644
->index 000000000000..88a6aa42cc28
->--- /dev/null
->+++ b/drivers/net/ethernet/amd/pds_core/core.c
->@@ -0,0 +1,36 @@
->+// SPDX-License-Identifier: GPL-2.0
->+/* Copyright(c) 2023 Advanced Micro Devices, Inc */
->+
->+#include <linux/pds/pds_core.h>
->+
->+int pdsc_setup(struct pdsc *pdsc, bool init)
->+{
->+	int err = 0;
->+
->+	if (init)
->+		err = pdsc_dev_init(pdsc);
->+	else
->+		err = pdsc_dev_reinit(pdsc);
->+	if (err)
->+		return err;
->+
->+	clear_bit(PDSC_S_FW_DEAD, &pdsc->state);
->+	return 0;
->+}
->+
->+void pdsc_teardown(struct pdsc *pdsc, bool removing)
->+{
->+	pdsc_devcmd_reset(pdsc);
->+
->+	if (removing) {
->+		kfree(pdsc->intr_info);
->+		pdsc->intr_info = NULL;
->+	}
->+
->+	if (pdsc->kern_dbpage) {
->+		iounmap(pdsc->kern_dbpage);
->+		pdsc->kern_dbpage = NULL;
->+	}
->+
->+	set_bit(PDSC_S_FW_DEAD, &pdsc->state);
->+}
->diff --git a/drivers/net/ethernet/amd/pds_core/debugfs.c b/drivers/net/ethernet/amd/pds_core/debugfs.c
->index c5cf01ca7853..75376c9f77cf 100644
->--- a/drivers/net/ethernet/amd/pds_core/debugfs.c
->+++ b/drivers/net/ethernet/amd/pds_core/debugfs.c
->@@ -44,4 +44,71 @@ void pdsc_debugfs_del_dev(struct pdsc *pdsc)
-> 	debugfs_remove_recursive(pdsc->dentry);
-> 	pdsc->dentry = NULL;
-> }
->+
->+static int identity_show(struct seq_file *seq, void *v)
->+{
->+	struct pdsc *pdsc = seq->private;
->+	struct pds_core_dev_identity *ident;
->+	int vt;
->+
->+	ident = &pdsc->dev_ident;
->+
->+	seq_printf(seq, "asic_type:        0x%x\n", pdsc->dev_info.asic_type);
->+	seq_printf(seq, "asic_rev:         0x%x\n", pdsc->dev_info.asic_rev);
->+	seq_printf(seq, "serial_num:       %s\n", pdsc->dev_info.serial_num);
->+	seq_printf(seq, "fw_version:       %s\n", pdsc->dev_info.fw_version);
+> Let's tell syzbot about the fix:
+> 
+> #syz fix: ieee802154: Prevent user from crashing the host
 
-What is the exact reason of exposing this here and not trought well
-defined devlink info interface?
-
-
->+	seq_printf(seq, "fw_status:        0x%x\n",
->+		   ioread8(&pdsc->info_regs->fw_status));
->+	seq_printf(seq, "fw_heartbeat:     0x%x\n",
->+		   ioread32(&pdsc->info_regs->fw_heartbeat));
->+
->+	seq_printf(seq, "nlifs:            %d\n", le32_to_cpu(ident->nlifs));
->+	seq_printf(seq, "nintrs:           %d\n", le32_to_cpu(ident->nintrs));
->+	seq_printf(seq, "ndbpgs_per_lif:   %d\n", le32_to_cpu(ident->ndbpgs_per_lif));
->+	seq_printf(seq, "intr_coal_mult:   %d\n", le32_to_cpu(ident->intr_coal_mult));
->+	seq_printf(seq, "intr_coal_div:    %d\n", le32_to_cpu(ident->intr_coal_div));
->+
->+	seq_puts(seq, "vif_types:        ");
->+	for (vt = 0; vt < PDS_DEV_TYPE_MAX; vt++)
->+		seq_printf(seq, "%d ", le16_to_cpu(pdsc->dev_ident.vif_types[vt]));
->+	seq_puts(seq, "\n");
->+
->+	return 0;
->+}
->+DEFINE_SHOW_ATTRIBUTE(identity);
->+
->+void pdsc_debugfs_add_ident(struct pdsc *pdsc)
->+{
->+	debugfs_create_file("identity", 0400, pdsc->dentry, pdsc, &identity_fops);
->+}
->+
->+static int irqs_show(struct seq_file *seq, void *v)
->+{
->+	struct pdsc *pdsc = seq->private;
->+	struct pdsc_intr_info *intr_info;
->+	int i;
->+
->+	seq_printf(seq, "index  vector  name (nintrs %d)\n", pdsc->nintrs);
->+
->+	if (!pdsc->intr_info)
->+		return 0;
->+
->+	for (i = 0; i < pdsc->nintrs; i++) {
->+		intr_info = &pdsc->intr_info[i];
->+		if (!intr_info->vector)
->+			continue;
->+
->+		seq_printf(seq, "% 3d    % 3d     %s\n",
->+			   i, intr_info->vector, intr_info->name);
->+	}
->+
->+	return 0;
->+}
->+DEFINE_SHOW_ATTRIBUTE(irqs);
->+
->+void pdsc_debugfs_add_irqs(struct pdsc *pdsc)
->+{
->+	debugfs_create_file("irqs", 0400, pdsc->dentry, pdsc, &irqs_fops);
->+}
->+
-> #endif /* CONFIG_DEBUG_FS */
->diff --git a/drivers/net/ethernet/amd/pds_core/dev.c b/drivers/net/ethernet/amd/pds_core/dev.c
->new file mode 100644
->index 000000000000..7a9db1505c1f
->--- /dev/null
->+++ b/drivers/net/ethernet/amd/pds_core/dev.c
->@@ -0,0 +1,350 @@
->+// SPDX-License-Identifier: GPL-2.0
->+/* Copyright(c) 2023 Advanced Micro Devices, Inc */
->+
->+#include <linux/version.h>
->+#include <linux/errno.h>
->+#include <linux/pci.h>
->+#include <linux/utsname.h>
->+
->+#include <linux/pds/pds_core.h>
->+
->+int pdsc_err_to_errno(enum pds_core_status_code code)
->+{
->+	switch (code) {
->+	case PDS_RC_SUCCESS:
->+		return 0;
->+	case PDS_RC_EVERSION:
->+	case PDS_RC_EQTYPE:
->+	case PDS_RC_EQID:
->+	case PDS_RC_EINVAL:
->+	case PDS_RC_ENOSUPP:
->+		return -EINVAL;
->+	case PDS_RC_EPERM:
->+		return -EPERM;
->+	case PDS_RC_ENOENT:
->+		return -ENOENT;
->+	case PDS_RC_EAGAIN:
->+		return -EAGAIN;
->+	case PDS_RC_ENOMEM:
->+		return -ENOMEM;
->+	case PDS_RC_EFAULT:
->+		return -EFAULT;
->+	case PDS_RC_EBUSY:
->+		return -EBUSY;
->+	case PDS_RC_EEXIST:
->+		return -EEXIST;
->+	case PDS_RC_EVFID:
->+		return -ENODEV;
->+	case PDS_RC_ECLIENT:
->+		return -ECHILD;
->+	case PDS_RC_ENOSPC:
->+		return -ENOSPC;
->+	case PDS_RC_ERANGE:
->+		return -ERANGE;
->+	case PDS_RC_BAD_ADDR:
->+		return -EFAULT;
->+	case PDS_RC_EOPCODE:
->+	case PDS_RC_EINTR:
->+	case PDS_RC_DEV_CMD:
->+	case PDS_RC_ERROR:
->+	case PDS_RC_ERDMA:
->+	case PDS_RC_EIO:
->+	default:
->+		return -EIO;
->+	}
->+}
->+
->+bool pdsc_is_fw_running(struct pdsc *pdsc)
->+{
->+	pdsc->fw_status = ioread8(&pdsc->info_regs->fw_status);
->+	pdsc->last_fw_time = jiffies;
->+	pdsc->last_hb = ioread32(&pdsc->info_regs->fw_heartbeat);
->+
->+	/* Firmware is useful only if the running bit is set and
->+	 * fw_status != 0xff (bad PCI read)
->+	 */
->+	return (pdsc->fw_status != 0xff) &&
->+		(pdsc->fw_status & PDS_CORE_FW_STS_F_RUNNING);
->+}
->+
->+bool pdsc_is_fw_good(struct pdsc *pdsc)
->+{
->+	return pdsc_is_fw_running(pdsc) &&
->+		(pdsc->fw_status & PDS_CORE_FW_STS_F_GENERATION) == pdsc->fw_generation;
->+}
->+
->+static u8 pdsc_devcmd_status(struct pdsc *pdsc)
->+{
->+	return ioread8(&pdsc->cmd_regs->comp.status);
->+}
->+
->+static bool pdsc_devcmd_done(struct pdsc *pdsc)
->+{
->+	return ioread32(&pdsc->cmd_regs->done) & PDS_CORE_DEV_CMD_DONE;
->+}
->+
->+static void pdsc_devcmd_dbell(struct pdsc *pdsc)
->+{
->+	iowrite32(0, &pdsc->cmd_regs->done);
->+	iowrite32(1, &pdsc->cmd_regs->doorbell);
->+}
->+
->+static void pdsc_devcmd_clean(struct pdsc *pdsc)
->+{
->+	iowrite32(0, &pdsc->cmd_regs->doorbell);
->+	memset_io(&pdsc->cmd_regs->cmd, 0, sizeof(pdsc->cmd_regs->cmd));
->+}
->+
->+static const char *pdsc_devcmd_str(int opcode)
->+{
->+	switch (opcode) {
->+	case PDS_CORE_CMD_NOP:
->+		return "PDS_CORE_CMD_NOP";
->+	case PDS_CORE_CMD_IDENTIFY:
->+		return "PDS_CORE_CMD_IDENTIFY";
->+	case PDS_CORE_CMD_RESET:
->+		return "PDS_CORE_CMD_RESET";
->+	case PDS_CORE_CMD_INIT:
->+		return "PDS_CORE_CMD_INIT";
->+	case PDS_CORE_CMD_FW_DOWNLOAD:
->+		return "PDS_CORE_CMD_FW_DOWNLOAD";
->+	case PDS_CORE_CMD_FW_CONTROL:
->+		return "PDS_CORE_CMD_FW_CONTROL";
->+	default:
->+		return "PDS_CORE_CMD_UNKNOWN";
->+	}
->+}
->+
->+static int pdsc_devcmd_wait(struct pdsc *pdsc, int max_seconds)
->+{
->+	struct device *dev = pdsc->dev;
->+	unsigned long start_time;
->+	unsigned long max_wait;
->+	unsigned long duration;
->+	int timeout = 0;
->+	int status = 0;
->+	int done = 0;
->+	int err = 0;
->+	int opcode;
->+
->+	opcode = ioread8(&pdsc->cmd_regs->cmd.opcode);
->+
->+	start_time = jiffies;
->+	max_wait = start_time + (max_seconds * HZ);
->+
->+	while (!done && !timeout) {
->+		done = pdsc_devcmd_done(pdsc);
->+		if (done)
->+			break;
->+
->+		timeout = time_after(jiffies, max_wait);
->+		if (timeout)
->+			break;
->+
->+		usleep_range(100, 200);
->+	}
->+	duration = jiffies - start_time;
->+
->+	if (done && duration > HZ)
->+		dev_dbg(dev, "DEVCMD %d %s after %ld secs\n",
->+			opcode, pdsc_devcmd_str(opcode), duration / HZ);
->+
->+	if (!done || timeout) {
->+		dev_err(dev, "DEVCMD %d %s timeout, done %d timeout %d max_seconds=%d\n",
->+			opcode, pdsc_devcmd_str(opcode), done, timeout,
->+			max_seconds);
->+		err = -ETIMEDOUT;
->+		pdsc_devcmd_clean(pdsc);
->+	}
->+
->+	status = pdsc_devcmd_status(pdsc);
->+	err = pdsc_err_to_errno(status);
->+	if (status != PDS_RC_SUCCESS && status != PDS_RC_EAGAIN)
->+		dev_err(dev, "DEVCMD %d %s failed, status=%d err %d %pe\n",
->+			opcode, pdsc_devcmd_str(opcode), status, err,
->+			ERR_PTR(err));
->+
->+	return err;
->+}
->+
->+int pdsc_devcmd_locked(struct pdsc *pdsc, union pds_core_dev_cmd *cmd,
->+		       union pds_core_dev_comp *comp, int max_seconds)
->+{
->+	int err;
->+
->+	memcpy_toio(&pdsc->cmd_regs->cmd, cmd, sizeof(*cmd));
->+	pdsc_devcmd_dbell(pdsc);
->+	err = pdsc_devcmd_wait(pdsc, max_seconds);
->+	memcpy_fromio(comp, &pdsc->cmd_regs->comp, sizeof(*comp));
->+
->+	return err;
->+}
->+
->+int pdsc_devcmd(struct pdsc *pdsc, union pds_core_dev_cmd *cmd,
->+		union pds_core_dev_comp *comp, int max_seconds)
->+{
->+	int err;
->+
->+	mutex_lock(&pdsc->devcmd_lock);
->+	err = pdsc_devcmd_locked(pdsc, cmd, comp, max_seconds);
->+	mutex_unlock(&pdsc->devcmd_lock);
->+
->+	return err;
->+}
->+
->+int pdsc_devcmd_init(struct pdsc *pdsc)
->+{
->+	union pds_core_dev_comp comp = { 0 };
->+	union pds_core_dev_cmd cmd = {
->+		.opcode = PDS_CORE_CMD_INIT,
->+	};
->+
->+	return pdsc_devcmd(pdsc, &cmd, &comp, pdsc->devcmd_timeout);
->+}
->+
->+int pdsc_devcmd_reset(struct pdsc *pdsc)
->+{
->+	union pds_core_dev_comp comp = { 0 };
->+	union pds_core_dev_cmd cmd = {
->+		.reset.opcode = PDS_CORE_CMD_RESET,
->+	};
->+
->+	return pdsc_devcmd(pdsc, &cmd, &comp, pdsc->devcmd_timeout);
->+}
->+
->+static int pdsc_devcmd_identify_locked(struct pdsc *pdsc)
->+{
->+	union pds_core_dev_comp comp = { 0 };
->+	union pds_core_dev_cmd cmd = {
->+		.identify.opcode = PDS_CORE_CMD_IDENTIFY,
->+		.identify.ver = PDS_CORE_IDENTITY_VERSION_1,
->+	};
->+
->+	return pdsc_devcmd_locked(pdsc, &cmd, &comp, pdsc->devcmd_timeout);
->+}
->+
->+static void pdsc_init_devinfo(struct pdsc *pdsc)
->+{
->+	pdsc->dev_info.asic_type = ioread8(&pdsc->info_regs->asic_type);
->+	pdsc->dev_info.asic_rev = ioread8(&pdsc->info_regs->asic_rev);
->+	pdsc->fw_generation = PDS_CORE_FW_STS_F_GENERATION &
->+			      ioread8(&pdsc->info_regs->fw_status);
->+
->+	memcpy_fromio(pdsc->dev_info.fw_version,
->+		      pdsc->info_regs->fw_version,
->+		      PDS_CORE_DEVINFO_FWVERS_BUFLEN);
->+	pdsc->dev_info.fw_version[PDS_CORE_DEVINFO_FWVERS_BUFLEN] = 0;
->+
->+	memcpy_fromio(pdsc->dev_info.serial_num,
->+		      pdsc->info_regs->serial_num,
->+		      PDS_CORE_DEVINFO_SERIAL_BUFLEN);
->+	pdsc->dev_info.serial_num[PDS_CORE_DEVINFO_SERIAL_BUFLEN] = 0;
->+
->+	dev_dbg(pdsc->dev, "fw_version %s\n", pdsc->dev_info.fw_version);
->+}
->+
->+static int pdsc_identify(struct pdsc *pdsc)
->+{
->+	struct pds_core_drv_identity drv = { 0 };
->+	size_t sz;
->+	int err;
->+
->+	drv.drv_type = cpu_to_le32(PDS_DRIVER_LINUX);
->+	drv.kernel_ver = cpu_to_le32(LINUX_VERSION_CODE);
->+	snprintf(drv.kernel_ver_str, sizeof(drv.kernel_ver_str),
->+		 "%s %s", utsname()->release, utsname()->version);
->+	snprintf(drv.driver_ver_str, sizeof(drv.driver_ver_str),
->+		 "%s %s", PDS_CORE_DRV_NAME, utsname()->release);
-
-Why exactly are you doing this? Looks very wrong.
-
-
->+
->+	/* Next let's get some info about the device
->+	 * We use the devcmd_lock at this level in order to
->+	 * get safe access to the cmd_regs->data before anyone
->+	 * else can mess it up
->+	 */
->+	mutex_lock(&pdsc->devcmd_lock);
->+
->+	sz = min_t(size_t, sizeof(drv), sizeof(pdsc->cmd_regs->data));
->+	memcpy_toio(&pdsc->cmd_regs->data, &drv, sz);
->+
->+	err = pdsc_devcmd_identify_locked(pdsc);
->+	if (!err) {
->+		sz = min_t(size_t, sizeof(pdsc->dev_ident), sizeof(pdsc->cmd_regs->data));
->+		memcpy_fromio(&pdsc->dev_ident, &pdsc->cmd_regs->data, sz);
->+	}
->+	mutex_unlock(&pdsc->devcmd_lock);
->+
->+	if (err) {
->+		dev_err(pdsc->dev, "Cannot identify device: %pe\n", ERR_PTR(err));
->+		return err;
->+	}
->+
->+	if (isprint(pdsc->dev_info.fw_version[0]) &&
->+	    isascii(pdsc->dev_info.fw_version[0]))
->+		dev_info(pdsc->dev, "FW: %.*s\n",
->+			 (int)(sizeof(pdsc->dev_info.fw_version) - 1),
->+			 pdsc->dev_info.fw_version);
->+	else
->+		dev_info(pdsc->dev, "FW: (invalid string) 0x%02x 0x%02x 0x%02x 0x%02x ...\n",
->+			 (u8)pdsc->dev_info.fw_version[0],
->+			 (u8)pdsc->dev_info.fw_version[1],
->+			 (u8)pdsc->dev_info.fw_version[2],
->+			 (u8)pdsc->dev_info.fw_version[3]);
->+
->+	return 0;
->+}
->+
->+int pdsc_dev_reinit(struct pdsc *pdsc)
->+{
->+	pdsc_init_devinfo(pdsc);
->+
->+	return pdsc_identify(pdsc);
->+}
->+
->+int pdsc_dev_init(struct pdsc *pdsc)
->+{
->+	unsigned int nintrs;
->+	int err;
->+
->+	/* Initial init and reset of device */
->+	pdsc_init_devinfo(pdsc);
->+	pdsc->devcmd_timeout = PDS_CORE_DEVCMD_TIMEOUT;
->+
->+	err = pdsc_devcmd_reset(pdsc);
->+	if (err)
->+		return err;
->+
->+	err = pdsc_identify(pdsc);
->+	if (err)
->+		return err;
->+
->+	pdsc_debugfs_add_ident(pdsc);
->+
->+	/* Now we can reserve interrupts */
->+	nintrs = le32_to_cpu(pdsc->dev_ident.nintrs);
->+	nintrs = min_t(unsigned int, num_online_cpus(), nintrs);
->+
->+	/* Get intr_info struct array for tracking */
->+	pdsc->intr_info = kcalloc(nintrs, sizeof(*pdsc->intr_info), GFP_KERNEL);
->+	if (!pdsc->intr_info) {
->+		err = -ENOSPC;
->+		goto err_out;
->+	}
->+
->+	err = pci_alloc_irq_vectors(pdsc->pdev, nintrs, nintrs, PCI_IRQ_MSIX);
->+	if (err != nintrs) {
->+		dev_err(pdsc->dev, "Can't get %d intrs from OS: %pe\n",
->+			nintrs, ERR_PTR(err));
->+		err = -ENOSPC;
->+		goto err_out;
->+	}
->+	pdsc->nintrs = nintrs;
->+	pdsc_debugfs_add_irqs(pdsc);
->+
->+	return 0;
->+
->+err_out:
->+	kfree(pdsc->intr_info);
->+	pdsc->intr_info = NULL;
->+
->+	return err;
->+}
->diff --git a/drivers/net/ethernet/amd/pds_core/main.c b/drivers/net/ethernet/amd/pds_core/main.c
->index 8cb470daf166..0c63bbe8b417 100644
->--- a/drivers/net/ethernet/amd/pds_core/main.c
->+++ b/drivers/net/ethernet/amd/pds_core/main.c
->@@ -151,13 +151,31 @@ static int pdsc_init_pf(struct pdsc *pdsc)
-> 	if (err)
-> 		goto err_out_release_regions;
-> 
->-	err = pdsc_dl_register(pdsc);
->+	mutex_init(&pdsc->devcmd_lock);
->+	mutex_init(&pdsc->config_lock);
->+
->+	mutex_lock(&pdsc->config_lock);
->+	set_bit(PDSC_S_FW_DEAD, &pdsc->state);
->+
->+	err = pdsc_setup(pdsc, PDSC_SETUP_INIT);
-> 	if (err)
-> 		goto err_out_unmap_bars;
-> 
->+	err = pdsc_dl_register(pdsc);
->+	if (err)
->+		goto err_out_teardown;
->+
->+	mutex_unlock(&pdsc->config_lock);
->+
-> 	return 0;
-> 
->+err_out_teardown:
->+	pdsc_teardown(pdsc, PDSC_TEARDOWN_REMOVING);
-> err_out_unmap_bars:
->+	mutex_unlock(&pdsc->config_lock);
->+	mutex_destroy(&pdsc->config_lock);
->+	mutex_destroy(&pdsc->devcmd_lock);
->+	pci_free_irq_vectors(pdsc->pdev);
-> 	pdsc_unmap_bars(pdsc);
-> err_out_release_regions:
-> 	pci_release_regions(pdsc->pdev);
->@@ -240,8 +258,19 @@ static void pdsc_remove(struct pci_dev *pdev)
-> 	 */
-> 	pdsc_dl_unregister(pdsc);
-> 
->-	pdsc_unmap_bars(pdsc);
->-	pci_release_regions(pdev);
->+	if (!pdev->is_virtfn) {
->+		mutex_lock(&pdsc->config_lock);
->+		set_bit(PDSC_S_STOPPING_DRIVER, &pdsc->state);
->+
->+		pdsc_teardown(pdsc, PDSC_TEARDOWN_REMOVING);
->+		mutex_unlock(&pdsc->config_lock);
->+		mutex_destroy(&pdsc->config_lock);
->+		mutex_destroy(&pdsc->devcmd_lock);
->+
->+		pci_free_irq_vectors(pdev);
->+		pdsc_unmap_bars(pdsc);
->+		pci_release_regions(pdev);
->+	}
-> 
-> 	pci_clear_master(pdev);
-> 	pci_disable_device(pdev);
->diff --git a/include/linux/pds/pds_common.h b/include/linux/pds/pds_common.h
->index 023da482e320..fd889c01f24e 100644
->--- a/include/linux/pds/pds_common.h
->+++ b/include/linux/pds/pds_common.h
->@@ -10,4 +10,67 @@
-> #define PDS_CORE_ADDR_LEN	52
-> #define PDS_CORE_ADDR_MASK	(BIT_ULL(PDS_ADDR_LEN) - 1)
-> 
->+/*
->+ * enum pds_core_status_code - Device command return codes
->+ */
->+enum pds_core_status_code {
->+	PDS_RC_SUCCESS	= 0,	/* Success */
->+	PDS_RC_EVERSION	= 1,	/* Incorrect version for request */
->+	PDS_RC_EOPCODE	= 2,	/* Invalid cmd opcode */
->+	PDS_RC_EIO	= 3,	/* I/O error */
->+	PDS_RC_EPERM	= 4,	/* Permission denied */
->+	PDS_RC_EQID	= 5,	/* Bad qid */
->+	PDS_RC_EQTYPE	= 6,	/* Bad qtype */
->+	PDS_RC_ENOENT	= 7,	/* No such element */
->+	PDS_RC_EINTR	= 8,	/* operation interrupted */
->+	PDS_RC_EAGAIN	= 9,	/* Try again */
->+	PDS_RC_ENOMEM	= 10,	/* Out of memory */
->+	PDS_RC_EFAULT	= 11,	/* Bad address */
->+	PDS_RC_EBUSY	= 12,	/* Device or resource busy */
->+	PDS_RC_EEXIST	= 13,	/* object already exists */
->+	PDS_RC_EINVAL	= 14,	/* Invalid argument */
->+	PDS_RC_ENOSPC	= 15,	/* No space left or alloc failure */
->+	PDS_RC_ERANGE	= 16,	/* Parameter out of range */
->+	PDS_RC_BAD_ADDR	= 17,	/* Descriptor contains a bad ptr */
->+	PDS_RC_DEV_CMD	= 18,	/* Device cmd attempted on AdminQ */
->+	PDS_RC_ENOSUPP	= 19,	/* Operation not supported */
->+	PDS_RC_ERROR	= 29,	/* Generic error */
->+	PDS_RC_ERDMA	= 30,	/* Generic RDMA error */
->+	PDS_RC_EVFID	= 31,	/* VF ID does not exist */
->+	PDS_RC_BAD_FW	= 32,	/* FW file is invalid or corrupted */
->+	PDS_RC_ECLIENT	= 33,   /* No such client id */
->+};
->+
->+enum pds_core_driver_type {
->+	PDS_DRIVER_LINUX   = 1,
->+	PDS_DRIVER_WIN     = 2,
->+	PDS_DRIVER_DPDK    = 3,
->+	PDS_DRIVER_FREEBSD = 4,
->+	PDS_DRIVER_IPXE    = 5,
->+	PDS_DRIVER_ESXI    = 6,
->+};
->+
->+#define PDS_CORE_IFNAMSIZ		16
->+
->+/**
->+ * enum pds_core_logical_qtype - Logical Queue Types
->+ * @PDS_CORE_QTYPE_ADMINQ:    Administrative Queue
->+ * @PDS_CORE_QTYPE_NOTIFYQ:   Notify Queue
->+ * @PDS_CORE_QTYPE_RXQ:       Receive Queue
->+ * @PDS_CORE_QTYPE_TXQ:       Transmit Queue
->+ * @PDS_CORE_QTYPE_EQ:        Event Queue
->+ * @PDS_CORE_QTYPE_MAX:       Max queue type supported
->+ */
->+enum pds_core_logical_qtype {
->+	PDS_CORE_QTYPE_ADMINQ  = 0,
->+	PDS_CORE_QTYPE_NOTIFYQ = 1,
->+	PDS_CORE_QTYPE_RXQ     = 2,
->+	PDS_CORE_QTYPE_TXQ     = 3,
->+	PDS_CORE_QTYPE_EQ      = 4,
->+
->+	PDS_CORE_QTYPE_MAX     = 16   /* don't change - used in struct size */
->+};
->+
->+typedef void (*pds_core_cb)(void *cb_arg);
->+
-> #endif /* _PDS_COMMON_H_ */
->diff --git a/include/linux/pds/pds_core.h b/include/linux/pds/pds_core.h
->index 227759ad9c77..da0663925018 100644
->--- a/include/linux/pds/pds_core.h
->+++ b/include/linux/pds/pds_core.h
->@@ -9,8 +9,13 @@
-> 
-> #include <linux/pds/pds_common.h>
-> #include <linux/pds/pds_core_if.h>
->+#include <linux/pds/pds_intr.h>
-> 
-> #define PDSC_DRV_DESCRIPTION	"AMD/Pensando Core Driver"
->+#define PDSC_TEARDOWN_RECOVERY	false
->+#define PDSC_TEARDOWN_REMOVING	true
->+#define PDSC_SETUP_RECOVERY	false
->+#define PDSC_SETUP_INIT		true
-> 
-> struct pdsc_dev_bar {
-> 	void __iomem *vaddr;
->@@ -19,6 +24,22 @@ struct pdsc_dev_bar {
-> 	int res_index;
-> };
-> 
->+struct pdsc_devinfo {
->+	u8 asic_type;
->+	u8 asic_rev;
->+	char fw_version[PDS_CORE_DEVINFO_FWVERS_BUFLEN + 1];
->+	char serial_num[PDS_CORE_DEVINFO_SERIAL_BUFLEN + 1];
->+};
->+
->+#define PDSC_INTR_NAME_MAX_SZ		32
->+
->+struct pdsc_intr_info {
->+	char name[PDSC_INTR_NAME_MAX_SZ];
->+	unsigned int index;
->+	unsigned int vector;
->+	void *data;
->+};
->+
-> /* No state flags set means we are in a steady running state */
-> enum pdsc_state_flags {
-> 	PDSC_S_FW_DEAD,		    /* fw stopped, waiting for startup or recovery */
->@@ -38,7 +59,19 @@ struct pdsc {
-> 	int id;
-> 
-> 	unsigned long state;
->+	u8 fw_status;
->+	u8 fw_generation;
->+	unsigned long last_fw_time;
->+	u32 last_hb;
->+
->+	struct pdsc_devinfo dev_info;
->+	struct pds_core_dev_identity dev_ident;
->+	unsigned int nintrs;
->+	struct pdsc_intr_info *intr_info;	/* array of nintrs elements */
-> 
->+	unsigned int devcmd_timeout;
->+	struct mutex devcmd_lock;	/* lock for dev_cmd operations */
->+	struct mutex config_lock;	/* lock for configuration operations */
-> 	struct pds_core_dev_info_regs __iomem *info_regs;
-> 	struct pds_core_dev_cmd_regs __iomem *cmd_regs;
-> 	struct pds_core_intr __iomem *intr_ctrl;
->@@ -58,11 +91,30 @@ void pdsc_debugfs_create(void);
-> void pdsc_debugfs_destroy(void);
-> void pdsc_debugfs_add_dev(struct pdsc *pdsc);
-> void pdsc_debugfs_del_dev(struct pdsc *pdsc);
->+void pdsc_debugfs_add_ident(struct pdsc *pdsc);
->+void pdsc_debugfs_add_irqs(struct pdsc *pdsc);
-> #else
-> static inline void pdsc_debugfs_create(void) { }
-> static inline void pdsc_debugfs_destroy(void) { }
-> static inline void pdsc_debugfs_add_dev(struct pdsc *pdsc) { }
-> static inline void pdsc_debugfs_del_dev(struct pdsc *pdsc) { }
->+static inline void pdsc_debugfs_add_ident(struct pdsc *pdsc) { }
->+static inline void pdsc_debugfs_add_irqs(struct pdsc *pdsc) { }
-> #endif
-> 
->+int pdsc_err_to_errno(enum pds_core_status_code code);
->+bool pdsc_is_fw_running(struct pdsc *pdsc);
->+bool pdsc_is_fw_good(struct pdsc *pdsc);
->+int pdsc_devcmd(struct pdsc *pdsc, union pds_core_dev_cmd *cmd,
->+		union pds_core_dev_comp *comp, int max_seconds);
->+int pdsc_devcmd_locked(struct pdsc *pdsc, union pds_core_dev_cmd *cmd,
->+		       union pds_core_dev_comp *comp, int max_seconds);
->+int pdsc_devcmd_init(struct pdsc *pdsc);
->+int pdsc_devcmd_reset(struct pdsc *pdsc);
->+int pdsc_dev_reinit(struct pdsc *pdsc);
->+int pdsc_dev_init(struct pdsc *pdsc);
->+
->+int pdsc_setup(struct pdsc *pdsc, bool init);
->+void pdsc_teardown(struct pdsc *pdsc, bool removing);
->+
-> #endif /* _PDSC_H_ */
->diff --git a/include/linux/pds/pds_intr.h b/include/linux/pds/pds_intr.h
->new file mode 100644
->index 000000000000..ddabe1fdb463
->--- /dev/null
->+++ b/include/linux/pds/pds_intr.h
->@@ -0,0 +1,161 @@
->+/* SPDX-License-Identifier: (GPL-2.0 OR Linux-OpenIB) OR BSD-2-Clause */
->+/* Copyright (c) 2023 Advanced Micro Devices, Inc. */
->+
->+#ifndef _PDS_INTR_H_
->+#define _PDS_INTR_H_
->+
->+/*
->+ * Interrupt control register
->+ * @coal_init:        Coalescing timer initial value, in
->+ *                    device units.  Use @identity->intr_coal_mult
->+ *                    and @identity->intr_coal_div to convert from
->+ *                    usecs to device units:
->+ *
->+ *                      coal_init = coal_usecs * coal_mutl / coal_div
->+ *
->+ *                    When an interrupt is sent the interrupt
->+ *                    coalescing timer current value
->+ *                    (@coalescing_curr) is initialized with this
->+ *                    value and begins counting down.  No more
->+ *                    interrupts are sent until the coalescing
->+ *                    timer reaches 0.  When @coalescing_init=0
->+ *                    interrupt coalescing is effectively disabled
->+ *                    and every interrupt assert results in an
->+ *                    interrupt.  Reset value: 0
->+ * @mask:             Interrupt mask.  When @mask=1 the interrupt
->+ *                    resource will not send an interrupt.  When
->+ *                    @mask=0 the interrupt resource will send an
->+ *                    interrupt if an interrupt event is pending
->+ *                    or on the next interrupt assertion event.
->+ *                    Reset value: 1
->+ * @credits:          Interrupt credits.  This register indicates
->+ *                    how many interrupt events the hardware has
->+ *                    sent.  When written by software this
->+ *                    register atomically decrements @int_credits
->+ *                    by the value written.  When @int_credits
->+ *                    becomes 0 then the "pending interrupt" bit
->+ *                    in the Interrupt Status register is cleared
->+ *                    by the hardware and any pending but unsent
->+ *                    interrupts are cleared.
->+ *                    !!!IMPORTANT!!! This is a signed register.
->+ * @flags:            Interrupt control flags
->+ *                       @unmask -- When this bit is written with a 1
->+ *                       the interrupt resource will set mask=0.
->+ *                       @coal_timer_reset -- When this
->+ *                       bit is written with a 1 the
->+ *                       @coalescing_curr will be reloaded with
->+ *                       @coalescing_init to reset the coalescing
->+ *                       timer.
->+ * @mask_on_assert:   Automatically mask on assertion.  When
->+ *                    @mask_on_assert=1 the interrupt resource
->+ *                    will set @mask=1 whenever an interrupt is
->+ *                    sent.  When using interrupts in Legacy
->+ *                    Interrupt mode the driver must select
->+ *                    @mask_on_assert=0 for proper interrupt
->+ *                    operation.
->+ * @coalescing_curr:  Coalescing timer current value, in
->+ *                    microseconds.  When this value reaches 0
->+ *                    the interrupt resource is again eligible to
->+ *                    send an interrupt.  If an interrupt event
->+ *                    is already pending when @coalescing_curr
->+ *                    reaches 0 the pending interrupt will be
->+ *                    sent, otherwise an interrupt will be sent
->+ *                    on the next interrupt assertion event.
->+ */
->+struct pds_core_intr {
->+	u32 coal_init;
->+	u32 mask;
->+	u16 credits;
->+	u16 flags;
->+#define PDS_CORE_INTR_F_UNMASK		0x0001
->+#define PDS_CORE_INTR_F_TIMER_RESET	0x0002
->+	u32 mask_on_assert;
->+	u32 coalescing_curr;
->+	u32 rsvd6[3];
->+};
->+
->+#ifndef __CHECKER__
->+static_assert(sizeof(struct pds_core_intr) == 32);
->+#endif /* __CHECKER__ */
->+
->+#define PDS_CORE_INTR_CTRL_REGS_MAX		2048
->+#define PDS_CORE_INTR_CTRL_COAL_MAX		0x3F
->+#define PDS_CORE_INTR_INDEX_NOT_ASSIGNED	-1
->+
->+struct pds_core_intr_status {
->+	u32 status[2];
->+};
->+
->+/**
->+ * enum pds_core_intr_mask_vals - valid values for mask and mask_assert.
->+ * @PDS_CORE_INTR_MASK_CLEAR:	unmask interrupt.
->+ * @PDS_CORE_INTR_MASK_SET:	mask interrupt.
->+ */
->+enum pds_core_intr_mask_vals {
->+	PDS_CORE_INTR_MASK_CLEAR	= 0,
->+	PDS_CORE_INTR_MASK_SET		= 1,
->+};
->+
->+/**
->+ * enum pds_core_intr_credits_bits - Bitwise composition of credits values.
->+ * @PDS_CORE_INTR_CRED_COUNT:	bit mask of credit count, no shift needed.
->+ * @PDS_CORE_INTR_CRED_COUNT_SIGNED: bit mask of credit count, including sign bit.
->+ * @PDS_CORE_INTR_CRED_UNMASK:	unmask the interrupt.
->+ * @PDS_CORE_INTR_CRED_RESET_COALESCE: reset the coalesce timer.
->+ * @PDS_CORE_INTR_CRED_REARM:	unmask the and reset the timer.
->+ */
->+enum pds_core_intr_credits_bits {
->+	PDS_CORE_INTR_CRED_COUNT		= 0x7fffu,
->+	PDS_CORE_INTR_CRED_COUNT_SIGNED		= 0xffffu,
->+	PDS_CORE_INTR_CRED_UNMASK		= 0x10000u,
->+	PDS_CORE_INTR_CRED_RESET_COALESCE	= 0x20000u,
->+	PDS_CORE_INTR_CRED_REARM		= (PDS_CORE_INTR_CRED_UNMASK |
->+					   PDS_CORE_INTR_CRED_RESET_COALESCE),
->+};
->+
->+static inline void pds_core_intr_coal_init(struct pds_core_intr __iomem *intr_ctrl,
->+					   u32 coal)
->+{
->+	iowrite32(coal, &intr_ctrl->coal_init);
->+}
->+
->+static inline void pds_core_intr_mask(struct pds_core_intr __iomem *intr_ctrl,
->+				      u32 mask)
->+{
->+	iowrite32(mask, &intr_ctrl->mask);
->+}
->+
->+static inline void pds_core_intr_credits(struct pds_core_intr __iomem *intr_ctrl,
->+					 u32 cred, u32 flags)
->+{
->+	if (WARN_ON_ONCE(cred > PDS_CORE_INTR_CRED_COUNT)) {
->+		cred = ioread32(&intr_ctrl->credits);
->+		cred &= PDS_CORE_INTR_CRED_COUNT_SIGNED;
->+	}
->+
->+	iowrite32(cred | flags, &intr_ctrl->credits);
->+}
->+
->+static inline void pds_core_intr_clean_flags(struct pds_core_intr __iomem *intr_ctrl,
->+					     u32 flags)
->+{
->+	u32 cred;
->+
->+	cred = ioread32(&intr_ctrl->credits);
->+	cred &= PDS_CORE_INTR_CRED_COUNT_SIGNED;
->+	cred |= flags;
->+	iowrite32(cred, &intr_ctrl->credits);
->+}
->+
->+static inline void pds_core_intr_clean(struct pds_core_intr __iomem *intr_ctrl)
->+{
->+	pds_core_intr_clean_flags(intr_ctrl, PDS_CORE_INTR_CRED_RESET_COALESCE);
->+}
->+
->+static inline void pds_core_intr_mask_assert(struct pds_core_intr __iomem *intr_ctrl,
->+					     u32 mask)
->+{
->+	iowrite32(mask, &intr_ctrl->mask_on_assert);
->+}
->+
->+#endif /* _PDS_INTR_H_ */
->-- 
->2.17.1
->
+Thanks, I was wondering about that.
