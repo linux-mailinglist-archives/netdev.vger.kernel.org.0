@@ -2,83 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D61CD6B0223
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 09:56:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 700306B0263
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 10:07:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230290AbjCHI43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 03:56:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42270 "EHLO
+        id S229868AbjCHJHD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 04:07:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230232AbjCHI4X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 03:56:23 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3D2C98853
-        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 00:55:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678265738;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nSUxl7P5hQy+/YtrpvxvlD1qQxLj804ODoUh/9ZocfE=;
-        b=gbyqIJdwkkfrAht1WIrPhs9d2q3IfNS29MHYZ1jQfLJaNPm7j82Rlvmtx+s3P5EhXmr0d5
-        Gij5J2KZaVnATJxu4huz6oP+mBwZO7hSk4TthbhHdw7HoU7gowK1NRtqyusU7JU/01OuBf
-        ttMI3tZSLnL0vcMRYpGjfvHTNOyVsjc=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-639-Sm64YDTdMDiu0Ep2nhMo7Q-1; Wed, 08 Mar 2023 03:55:36 -0500
-X-MC-Unique: Sm64YDTdMDiu0Ep2nhMo7Q-1
-Received: by mail-qk1-f198.google.com with SMTP id ea22-20020a05620a489600b00742cec04043so9066886qkb.7
-        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 00:55:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678265736;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=nSUxl7P5hQy+/YtrpvxvlD1qQxLj804ODoUh/9ZocfE=;
-        b=zv3f1UJPsXPAuEXora6/FtcqTfa7Ssg81IjGDTQBPAZ0xJjOjcbd5R6vRcmrkMN6jc
-         ZDXPROX75CD2YtIXKwk9lb9aJHiYvnWbCkw3UKORSC6c6YLTyWPkZ77hxnjSqUq0kInZ
-         CgTn5L5BYoIHyA1750HbZQcFeuz+J+YjnU+cEz7xYrS600Cg351zypHNjIwJhc8/rh+l
-         yEWz9ThLZ6ql3oDX5HDbDXc+XltT/V8UWjMln1LS6L/ThlCghiZD6hpUAFpyIiPadFTz
-         HHTd/bSfiMI84zsYCoz59RndNEVAw3Fysb2EQBvFOb4ePPymglYd/hO/ke11oOzJEYgc
-         mMyw==
-X-Gm-Message-State: AO0yUKVqPD9uZrdMYqRfv9bST4s5LCRZVvOLhCTpFLan2oPmKdhvi1Ub
-        v5RHUGWra+t74gwJxFLVwJTxG8g5THAqTQeN2W5tTaVDdnWbVH5MGjQtWuMumKFBmlrK+zDmPhA
-        +TibbMAOGdkBW2aT7
-X-Received: by 2002:a05:622a:11c2:b0:3bd:1c0f:74f3 with SMTP id n2-20020a05622a11c200b003bd1c0f74f3mr34312762qtk.2.1678265736303;
-        Wed, 08 Mar 2023 00:55:36 -0800 (PST)
-X-Google-Smtp-Source: AK7set/LqHuuLs+iFiwPadK3SrLCod1w1FhHVbxTYMTJFEjslFMf2nSsbvaQDDBDwAJn7wd7IT5/rQ==
-X-Received: by 2002:a05:622a:11c2:b0:3bd:1c0f:74f3 with SMTP id n2-20020a05622a11c200b003bd1c0f74f3mr34312738qtk.2.1678265735941;
-        Wed, 08 Mar 2023 00:55:35 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-121-28.dyn.eolo.it. [146.241.121.28])
-        by smtp.gmail.com with ESMTPSA id d1-20020ac85ac1000000b003b9e1d3a502sm11377180qtd.54.2023.03.08.00.55.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Mar 2023 00:55:35 -0800 (PST)
-Message-ID: <f049d74b59323ed2ad16a0b52de86f157ae353ce.camel@redhat.com>
-Subject: Re: [PATCH v4 RESEND] epoll: use refcount to reduce ep_mutex
- contention
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     netdev@vger.kernel.org, Soheil Hassas Yeganeh <soheil@google.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Carlos Maiolino <cmaiolino@redhat.com>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Christian Brauner <brauner@kernel.org>,
-        linux-fsdevel@vger.kernel.org
-Date:   Wed, 08 Mar 2023 09:55:31 +0100
-In-Reply-To: <20230307133057.1904d8ffab2980f8e23ee3cc@linux-foundation.org>
-References: <e8228f0048977456466bc33b42600e929fedd319.1678213651.git.pabeni@redhat.com>
-         <20230307133057.1904d8ffab2980f8e23ee3cc@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+        with ESMTP id S230079AbjCHJGz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 04:06:55 -0500
+X-Greylist: delayed 926 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 08 Mar 2023 01:06:27 PST
+Received: from sender3-op-o19.zoho.com (sender3-op-o19.zoho.com [136.143.184.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9CBBB6D3F
+        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 01:06:27 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1678265417; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=nzA2/7aGm9uqLYDPWojlBg5rCiXMU7vgMolusMiB66EVidBr8ubCd8eBZMTIbRAcLFfqBt/lLJUoXtoH9eztT6MlCKXcZeZ+voDoOxceTLLfXcqQQcZtEMWKFOGUVy+xAPlG7NtlyAOe9sngBTqYNwqlGOGdd8Rnq/I9LFtuHkY=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1678265417; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=RegfERULej+941mOyU4tNlczm+KFqme2Zd1D/0dQ1IU=; 
+        b=kMaQa6pEwulqF0zPTD39nfyi2qxQ2XC2U7GK9liKteKIPwfw0tgQ1g5/vz+StBwNNW6Pwe7eHdKVv2OZLnS9X0Zz+OtK9pH/sw3jjpiboZTzxrbq6jqEti1Y0KjBNyInpiJySh9DWZlF75q/UTpRJBr9274Zjrw0aUuybqrCDDI=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1678265417;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:From:From:Subject:Subject:To:To:Cc:Cc:References:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=RegfERULej+941mOyU4tNlczm+KFqme2Zd1D/0dQ1IU=;
+        b=HlkNjF9v5Zf6d1Mx44X+xqW4F86Z9W/hMSv5ZqtpsEt6kER3e03w+6cQ3o9BdYud
+        Ps+OCu/I1OkytJX4hmR8X7O/IcysoaWcm4EO1vuUJ7/uuQbJd3NLYQMV6o48DGRskuc
+        Q0Garo2rY7BHFToHb1Gcs5uibkXem2ZFWQeMN/tg=
+Received: from [10.10.10.3] (212.68.60.226 [212.68.60.226]) by mx.zohomail.com
+        with SMTPS id 1678265416245518.3169018503368; Wed, 8 Mar 2023 00:50:16 -0800 (PST)
+Message-ID: <c46f5be8-2d64-65dc-33c1-a71b3d5cc70c@arinc9.com>
+Date:   Wed, 8 Mar 2023 11:50:09 +0300
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Subject: Re: [PATCH net 2/2] net: dsa: mt7530: set PLL frequency only when
+ trgmii is used
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
+        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <20230307220328.11186-1-arinc.unal@arinc9.com>
+ <20230307220328.11186-2-arinc.unal@arinc9.com>
+ <20230307233354.y3srdoggy2yzugnq@skbuf>
+Content-Language: en-US
+In-Reply-To: <20230307233354.y3srdoggy2yzugnq@skbuf>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -86,184 +78,147 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2023-03-07 at 13:30 -0800, Andrew Morton wrote:
-> On Tue,  7 Mar 2023 19:46:37 +0100 Paolo Abeni <pabeni@redhat.com> wrote:
->=20
-> > We are observing huge contention on the epmutex during an http
-> > connection/rate test:
-> >=20
-> >  83.17% 0.25%  nginx            [kernel.kallsyms]         [k] entry_SYS=
-CALL_64_after_hwframe
-> > [...]
-> >            |--66.96%--__fput
-> >                       |--60.04%--eventpoll_release_file
-> >                                  |--58.41%--__mutex_lock.isra.6
-> >                                            |--56.56%--osq_lock
-> >=20
-> > The application is multi-threaded, creates a new epoll entry for
-> > each incoming connection, and does not delete it before the
-> > connection shutdown - that is, before the connection's fd close().
-> >=20
-> > Many different threads compete frequently for the epmutex lock,
-> > affecting the overall performance.
-> >=20
-> > To reduce the contention this patch introduces explicit reference count=
-ing
-> > for the eventpoll struct. Each registered event acquires a reference,
-> > and references are released at ep_remove() time.
-> >=20
-> > Additionally, this introduces a new 'dying' flag to prevent races betwe=
-en
-> > the EP file close() and the monitored file close().
-> > ep_eventpoll_release() marks, under f_lock spinlock, each epitem as bef=
-ore
->=20
-> "as dying"?
->=20
-> > removing it, while EP file close() does not touch dying epitems.
->=20
-> The need for this dying flag is somewhat unclear to me.  I mean, if we
-> have refcounting done correctly, why the need for this flag?  Some
-> additional description of the dynamics would be helpful.
->=20
-> Methinks this flag is here to cope with the delayed freeing via
-> hlist_del_rcu(), but that's a guess?
+On 8.03.2023 02:33, Vladimir Oltean wrote:
+> On Wed, Mar 08, 2023 at 01:03:28AM +0300, arinc9.unal@gmail.com wrote:
+>> From: Arınç ÜNAL <arinc.unal@arinc9.com>
+>>
+>> As my testing on the MCM MT7530 switch on MT7621 SoC shows, setting the PLL
+>> frequency does not affect MII modes other than trgmii on port 5 and port 6.
+>> So the assumption is that the operation here called "setting the PLL
+>> frequency" actually sets the frequency of the TRGMII TX clock.
+>>
+>> Make it so that it is set only when the trgmii mode is used.
+>>
+>> Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek MT7530 switch")
+>> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+>> ---
+>>   drivers/net/dsa/mt7530.c | 2 --
+>>   1 file changed, 2 deletions(-)
+>>
+>> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+>> index b1a79460df0e..961306c1ac14 100644
+>> --- a/drivers/net/dsa/mt7530.c
+>> +++ b/drivers/net/dsa/mt7530.c
+>> @@ -430,8 +430,6 @@ mt7530_pad_clk_setup(struct dsa_switch *ds, phy_interface_t interface)
+>>   	switch (interface) {
+>>   	case PHY_INTERFACE_MODE_RGMII:
+>>   		trgint = 0;
+>> -		/* PLL frequency: 125MHz */
+>> -		ncpo1 = 0x0c80;
+>>   		break;
+>>   	case PHY_INTERFACE_MODE_TRGMII:
+>>   		trgint = 1;
+>> -- 
+>> 2.37.2
+>>
+> 
+> NACK.
+> 
+> By deleting the assignment to the ncpo1 variable, it becomes
+> uninitialized when port 6's interface mode is PHY_INTERFACE_MODE_RGMII.
+> In the C language, uninitialized variables take the value of whatever
+> memory happens to be on the stack at the address they are placed,
+> interpreted as an appropriate data type for that variable - here u32.
+> 
+> Writing the value to CORE_PLL_GROUP5 happens when the function below is
+> called, not when the "ncpo1" variable is assigned.
+> 
+> 	core_write(priv, CORE_PLL_GROUP5, RG_LCDDS_PCW_NCPO1(ncpo1));
+> 
+> It is not a good idea to write uninitialized kernel stack memory to
+> hardware registers, unless perhaps you want to use it as some sort of
+> poor quality entropy source for a random number generator...
 
-First thing first, thanks for the feedback!
+Thanks a lot for this. Now that you moved setting the core clock to
+somewhere else, I think we can run the TRGMII setup only when trgmii
+mode is used, exactly what I already explained on the patch log, with
+the diff below. This should make it so that writing the value to
+CORE_PLL_GROUP5 happens in the case where ncpo1 is always set.
 
-Both ep_clear_and_put() and eventpoll_release_file() can release the
-eventpoll struct. The second must acquire the file->f_lock spinlock to
-reach/access such struct pointer. Callers of __ep_remove need to
-acquire first the ep->mtx, so eventpoll_release_file() must release the
-spinlock after fetching the pointer and before acquiring the mutex.
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index b1a79460df0e..c2d81b7a429d 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -430,8 +430,6 @@ mt7530_pad_clk_setup(struct dsa_switch *ds, phy_interface_t interface)
+  	switch (interface) {
+  	case PHY_INTERFACE_MODE_RGMII:
+  		trgint = 0;
+-		/* PLL frequency: 125MHz */
+-		ncpo1 = 0x0c80;
+  		break;
+  	case PHY_INTERFACE_MODE_TRGMII:
+  		trgint = 1;
+@@ -462,38 +460,40 @@ mt7530_pad_clk_setup(struct dsa_switch *ds, phy_interface_t interface)
+  	mt7530_rmw(priv, MT7530_P6ECR, P6_INTF_MODE_MASK,
+  		   P6_INTF_MODE(trgint));
+  
+-	/* Lower Tx Driving for TRGMII path */
+-	for (i = 0 ; i < NUM_TRGMII_CTRL ; i++)
+-		mt7530_write(priv, MT7530_TRGMII_TD_ODT(i),
+-			     TD_DM_DRVP(8) | TD_DM_DRVN(8));
+-
+-	/* Disable MT7530 core and TRGMII Tx clocks */
+-	core_clear(priv, CORE_TRGMII_GSW_CLK_CG,
+-		   REG_GSWCK_EN | REG_TRGMIICK_EN);
+-
+-	/* Setup the MT7530 TRGMII Tx Clock */
+-	core_write(priv, CORE_PLL_GROUP5, RG_LCDDS_PCW_NCPO1(ncpo1));
+-	core_write(priv, CORE_PLL_GROUP6, RG_LCDDS_PCW_NCPO0(0));
+-	core_write(priv, CORE_PLL_GROUP10, RG_LCDDS_SSC_DELTA(ssc_delta));
+-	core_write(priv, CORE_PLL_GROUP11, RG_LCDDS_SSC_DELTA1(ssc_delta));
+-	core_write(priv, CORE_PLL_GROUP4,
+-		   RG_SYSPLL_DDSFBK_EN | RG_SYSPLL_BIAS_EN |
+-		   RG_SYSPLL_BIAS_LPF_EN);
+-	core_write(priv, CORE_PLL_GROUP2,
+-		   RG_SYSPLL_EN_NORMAL | RG_SYSPLL_VODEN |
+-		   RG_SYSPLL_POSDIV(1));
+-	core_write(priv, CORE_PLL_GROUP7,
+-		   RG_LCDDS_PCW_NCPO_CHG | RG_LCCDS_C(3) |
+-		   RG_LCDDS_PWDB | RG_LCDDS_ISO_EN);
+-
+-	/* Enable MT7530 core and TRGMII Tx clocks */
+-	core_set(priv, CORE_TRGMII_GSW_CLK_CG,
+-		 REG_GSWCK_EN | REG_TRGMIICK_EN);
+-
+-	if (!trgint)
++	if (trgint) {
++		/* Lower Tx Driving for TRGMII path */
++		for (i = 0 ; i < NUM_TRGMII_CTRL ; i++)
++			mt7530_write(priv, MT7530_TRGMII_TD_ODT(i),
++				     TD_DM_DRVP(8) | TD_DM_DRVN(8));
++
++		/* Disable MT7530 core and TRGMII Tx clocks */
++		core_clear(priv, CORE_TRGMII_GSW_CLK_CG,
++			   REG_GSWCK_EN | REG_TRGMIICK_EN);
++
++		/* Setup the MT7530 TRGMII Tx Clock */
++		core_write(priv, CORE_PLL_GROUP5, RG_LCDDS_PCW_NCPO1(ncpo1));
++		core_write(priv, CORE_PLL_GROUP6, RG_LCDDS_PCW_NCPO0(0));
++		core_write(priv, CORE_PLL_GROUP10, RG_LCDDS_SSC_DELTA(ssc_delta));
++		core_write(priv, CORE_PLL_GROUP11, RG_LCDDS_SSC_DELTA1(ssc_delta));
++		core_write(priv, CORE_PLL_GROUP4,
++			   RG_SYSPLL_DDSFBK_EN | RG_SYSPLL_BIAS_EN |
++			   RG_SYSPLL_BIAS_LPF_EN);
++		core_write(priv, CORE_PLL_GROUP2,
++			   RG_SYSPLL_EN_NORMAL | RG_SYSPLL_VODEN |
++			   RG_SYSPLL_POSDIV(1));
++		core_write(priv, CORE_PLL_GROUP7,
++			   RG_LCDDS_PCW_NCPO_CHG | RG_LCCDS_C(3) |
++			   RG_LCDDS_PWDB | RG_LCDDS_ISO_EN);
++
++		/* Enable MT7530 core and TRGMII Tx clocks */
++		core_set(priv, CORE_TRGMII_GSW_CLK_CG,
++			 REG_GSWCK_EN | REG_TRGMIICK_EN);
++	} else {
+  		for (i = 0 ; i < NUM_TRGMII_CTRL; i++)
+  			mt7530_rmw(priv, MT7530_TRGMII_RD(i),
+  				   RD_TAP_MASK, RD_TAP(16));
++	}
++
+  	return 0;
+  }
+  
 
-Meanwhile, without the 'dying' flag, ep_clear_and_put() could kick-in,
-eventually on a different CPU, drop all the ep references and free the
-struct.=C2=A0
-An alternative to the 'dying' flag would be removing the following loop
-from ep_clear_and_put():
+I'll do some tests to make sure everything works fine.
 
-	while ((rbp =3D rb_first_cached(&ep->rbr)) !=3D NULL) {
-                epi =3D rb_entry(rbp, struct epitem, rbn);
-                ep_remove_safe(ep, epi);
-                cond_resched();
-        }
-
-So that ep_clear_and_put() would not release all the ep references
-anymore. That option has the downside of keeping the ep struct alive
-for an unlimited time after ep_clear_and_put(). A previous revision of
-this patch implemented a similar behavior, but Eric Biggers noted it
-could hurt some users:
-
-https://lore.kernel.org/linux-fsdevel/Y3%2F4FW4mqY3fWRfU@sol.localdomain/
-
-Please let me know if the above is clear enough.
-
-> > The eventpoll struct is released by whoever - among EP file close() and
-> > and the monitored file close() drops its last reference.
-> >=20
-> > With all the above in place, we can drop the epmutex usage at disposal =
-time.
-> >=20
-> > Overall this produces a significant performance improvement in the
-> > mentioned connection/rate scenario: the mutex operations disappear from
-> > the topmost offenders in the perf report, and the measured connections/=
-rate
-> > grows by ~60%.
-> >=20
-> > To make the change more readable this additionally renames ep_free() to
-> > ep_clear_and_put(), and moves the actual memory cleanup in a separate
-> > ep_free() helper.
-> >=20
-> > ...
-> >=20
-> > --- a/fs/eventpoll.c
-> > +++ b/fs/eventpoll.c
-> >=20
-> > ...
-> >=20
-> > +	free_uid(ep->user);
-> > +	wakeup_source_unregister(ep->ws);
-> > +	kfree(ep);
-> > +}
-> > +
-> >  /*
-> >   * Removes a "struct epitem" from the eventpoll RB tree and deallocate=
-s
-> >   * all the associated resources. Must be called with "mtx" held.
-> > + * If the dying flag is set, do the removal only if force is true.
->=20
-> This comment describes "what" the code does, which is obvious from the
-> code anwyay.  It's better if comments describe "why" the code does what
-> it does.
-
-What about appending the following?
-
-"""
-This prevents ep_clear_and_put() from dropping all the ep references
-while running concurrently with eventpoll_release_file().
-"""
-
-(I'll keep the 'what' part to hopefully make the 'why' more clear)
-
-> > + * Returns true if the eventpoll can be disposed.
-> >   */
-> > -static int ep_remove(struct eventpoll *ep, struct epitem *epi)
-> > +static bool __ep_remove(struct eventpoll *ep, struct epitem *epi, bool=
- force)
-> >  {
-> >  	struct file *file =3D epi->ffd.file;
-> >  	struct epitems_head *to_free;
-> >=20
-> > ...
-> >=20
-> >  	/*
-> > -	 * We don't want to get "file->f_lock" because it is not
-> > -	 * necessary. It is not necessary because we're in the "struct file"
-> > -	 * cleanup path, and this means that no one is using this file anymor=
-e.
-> > -	 * So, for example, epoll_ctl() cannot hit here since if we reach thi=
-s
-> > -	 * point, the file counter already went to zero and fget() would fail=
-.
-> > -	 * The only hit might come from ep_free() but by holding the mutex
-> > -	 * will correctly serialize the operation. We do need to acquire
-> > -	 * "ep->mtx" after "epmutex" because ep_remove() requires it when cal=
-led
-> > -	 * from anywhere but ep_free().
-> > -	 *
-> > -	 * Besides, ep_remove() acquires the lock, so we can't hold it here.
-> > +	 * Use the 'dying' flag to prevent a concurrent ep_cleat_and_put() fr=
-om
->=20
-> s/cleat/clear/
->=20
-> > +	 * touching the epitems list before eventpoll_release_file() can acce=
-ss
-> > +	 * the ep->mtx.
-> >  	 */
-> > -	mutex_lock(&epmutex);
-> > -	if (unlikely(!file->f_ep)) {
-> > -		mutex_unlock(&epmutex);
-> > -		return;
-> > -	}
-> > -	hlist_for_each_entry_safe(epi, next, file->f_ep, fllink) {
-> > +again:
-> > +	spin_lock(&file->f_lock);
-> > +	if (file->f_ep && file->f_ep->first) {
-> > +		/* detach from ep tree */
->=20
-> Comment appears to be misplaced - the following code doesn't detach
-> anything?
-
-Indeed. This is a left-over from a previous revision. Can be dropped.
-
-
-I have a process question: I understand this is queued for the mm-
-nonmm-unstable branch. Should I send a v5 with the above comments
-changes or an incremental patch or something completely different?
-
-Thanks!
-
-Paolo
-
+Arınç
