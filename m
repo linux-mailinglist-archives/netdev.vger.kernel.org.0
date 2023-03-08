@@ -2,103 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C8F56B0E61
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 17:17:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D14F6B0E98
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 17:25:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231670AbjCHQR0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 11:17:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50848 "EHLO
+        id S229996AbjCHQZG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 11:25:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230400AbjCHQRF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 11:17:05 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D718C8880;
-        Wed,  8 Mar 2023 08:16:47 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id p23-20020a05600c1d9700b003ead4835046so2441305wms.0;
-        Wed, 08 Mar 2023 08:16:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678292206;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=1rLq/HYeJphIwLaIhhUVdQYGBeFy324eqdU4A/8md5w=;
-        b=TtbEhAFXqADfWWC4RtqgxN8hhY7QzPYkg4OnQmdFzqay7dSi+Sb42Ukq6GjfpUbWiH
-         SmYpb2SHAtbjbMqI/TrdtEf11KqI2JK7OWvrgi3+Z1xEvR5BSg1FefNmAQ8h2vieSHED
-         AAAGokUqWG1AENofvRdjbEj0CPme1Fzkko7VpiF0gXRMfiCJRJdIJTZYUqDzX0q5nsjH
-         Q5vx05PtWo4GbLpF6L7AboBNOPUCOmoN0/WVuNh8XIyC3ddJ1p+Z5Ff4c2t5uRooAczT
-         lEY7DNT9vwVhkI0lnoBumsZWJ+gIuZSAo9rA8h4b7RZfum/1ekcRCfRAvvNMhfdpS82B
-         49JA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678292206;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=1rLq/HYeJphIwLaIhhUVdQYGBeFy324eqdU4A/8md5w=;
-        b=MHH+IoK4PcCIVMnwf3CiPCr1i4o4BMIS90X1PWz8YM5PwbAVRcSJuWYja+9sWGYOHT
-         vVCHAdSwsxC/2gtxTu0TAVpwuewg+ulo2MCP87TpkGQaxH7YznzncV+nyy8bl2NyMi39
-         P6FRwSkArV49Z2O3duE1pgEui7xQgiL0qFwTmi2hDkyk6KnqM5aFk4xdEvBwGI3uhUlY
-         Oz6QM9CG80ztttLrcPvJX6+qWYCuRroTLSZIf3ymJFo5QGSH4Shkyeh1Tmu2db2qwMQm
-         xdcUELGhgdb7LJQxd3ZVTzJLU6ansDKwgtu4ESp4DA06uV88dEFDD7omzepvOorBe5QC
-         nc6A==
-X-Gm-Message-State: AO0yUKWirA0d5RR7zLoRJyaCACrPSwVA/KxHedwKDki0eVc0Hb6RHFiw
-        qc6vWuWREKx3k+q+KBrqbzc=
-X-Google-Smtp-Source: AK7set+5HKHeb1dFcqoQYhy1cl5gWhdTYnkY9O0CB7s2XKIIV5D3vJRwKroKtRvjuIMWHYtYmBX30g==
-X-Received: by 2002:a05:600c:3594:b0:3eb:395b:19dc with SMTP id p20-20020a05600c359400b003eb395b19dcmr16678713wmq.9.1678292206112;
-        Wed, 08 Mar 2023 08:16:46 -0800 (PST)
-Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
-        by smtp.gmail.com with ESMTPSA id m18-20020a05600c3b1200b003db0ad636d1sm22035992wms.28.2023.03.08.08.16.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Mar 2023 08:16:45 -0800 (PST)
-Subject: Re: [PATCH 18/28] sfc_ef100: Drop redundant
- pci_disable_pcie_error_reporting()
-To:     Bjorn Helgaas <helgaas@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229966AbjCHQYs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 11:24:48 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 550699C985;
+        Wed,  8 Mar 2023 08:24:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=E7fsE/PIWBnLScuWwKIke56fUTXEdQdGN990S+ann7g=; b=FFhBzhCj83fRbsk3eL7Jj3eQzr
+        E3hVZlDzmWtjHK6/n9OgdY2+iB+IC1yC91SyK3rn2K0hCtXOHvQ6YNJRdAhOCC5Fmdgfb89tXiSbt
+        k5KdG4VD1QJxke5lv2tlCLjj/jEainZmhn4mEG6eb1p6VBMMU0dr0GVi4WfvGpqExHWiql9xkhfIf
+        Wjv0eEFqqdwXP/YnSra/ul/F09khVz/KJvbyecRS6rbGjdARC1hT4ESmzHmCsJWyIjvezQxjaI1Ru
+        oX4UgKTnqoqnV6MTrh2676QOyMyRU2WHq6m/fikWZ1q4nKlRALvKeABj/o87L5NcvlRHOEqzF58FV
+        g8SWo/zA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:42346)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pZwai-0002ww-GR; Wed, 08 Mar 2023 16:24:36 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pZwaa-0002jQ-TM; Wed, 08 Mar 2023 16:24:28 +0000
+Date:   Wed, 8 Mar 2023 16:24:28 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Daniel Golle <daniel@makrotopia.org>
+Cc:     Frank Wunderlich <frank-w@public-files.de>, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>
-References: <20230307181940.868828-1-helgaas@kernel.org>
- <20230307181940.868828-19-helgaas@kernel.org>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <92c6d8e0-d131-1080-e7ce-fda97cd4a02e@gmail.com>
-Date:   Wed, 8 Mar 2023 16:16:45 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jianhui Zhao <zhaojh329@gmail.com>,
+        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
+        Alexander Couzens <lynxis@fe80.eu>
+Subject: Re: [PATCH net-next v12 09/18] net: ethernet: mtk_eth_soc: Fix link
+ status for none-SGMII modes
+Message-ID: <ZAi2vLLC7ycaTlvI@shell.armlinux.org.uk>
+References: <cover.1678201958.git.daniel@makrotopia.org>
+ <1590fb0e69f6243ac6a961b16bf7ae7534f46949.1678201958.git.daniel@makrotopia.org>
+ <ZAhzt5eIZiJUyVm7@shell.armlinux.org.uk>
+ <B69026D7-E770-4168-B1CA-54E34D52C961@public-files.de>
+ <ZAh5/+erE6yYYl7B@makrotopia.org>
 MIME-Version: 1.0
-In-Reply-To: <20230307181940.868828-19-helgaas@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ZAh5/+erE6yYYl7B@makrotopia.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/03/2023 18:19, Bjorn Helgaas wrote:
-> From: Bjorn Helgaas <bhelgaas@google.com>
+On Wed, Mar 08, 2023 at 12:05:19PM +0000, Daniel Golle wrote:
+> On Wed, Mar 08, 2023 at 12:44:57PM +0100, Frank Wunderlich wrote:
+> > Am 8. März 2023 12:38:31 MEZ schrieb "Russell King (Oracle)" <linux@armlinux.org.uk>:
+> > >On Tue, Mar 07, 2023 at 03:54:11PM +0000, Daniel Golle wrote:
+> > >> Link partner advertised link modes are not reported by the SerDes
+> > >> hardware if not operating in SGMII mode. Hence we cannot use
+> > >> phylink_mii_c22_pcs_decode_state() in this case.
+> > >> Implement reporting link and an_complete only and use speed according to
+> > >> the interface mode.
+> > >> 
+> > >> Fixes: 14a44ab0330d ("net: mtk_eth_soc: partially convert to phylink_pcs")
+> > >> Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+> > >
+> > >This has been proven to work by Frank Wunderlich last October, so by
+> > >making this change, you will be regressing his setup.
+> > 
+> > Hi
+> > 
+> > My tests were done with 1 kind of 1g fibre sfp as i only have these atm...have ordered some 2g5 rj54 ones,but don't have them yet. I'm not sure if they are working with/without sgmii (1000base-X) and if they have builtin phy.
+> > 
+> > Daniel have a lot more of different SFPs and some (especially 2g5) were not working after our pcs change.
 > 
-> 51b35a454efd ("sfc: skeleton EF100 PF driver") added a call to
-> pci_disable_pcie_error_reporting() in ef100_pci_remove().
+> Exactly. 1 GBit/s SFPs with built-in PHY and using SGMII are working
+> fine before and after conversion to phylink_pcs. 1000Base-X and
+> 2500Base-X PHYs and SFPs were broken after this.
 > 
-> Remove this call since there's no apparent reason to disable error
-> reporting when it was not previously enabled.
-> 
-> Note that since f26e58bf6f54 ("PCI/AER: Enable error reporting when AER is
-> native"), the PCI core enables PCIe error reporting for all devices during
-> enumeration, so the driver doesn't need to do it itself.
-> 
-> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-> Cc: Edward Cree <ecree.xilinx@gmail.com>
-> Cc: Martin Habets <habetsm.xilinx@gmail.com>
-> ---
+> The patch about (and the other one you already NACK'ed) fixes those
+> codepaths which were simply not used in Frank's setup.
 
-Yeah it looks like we meant to add an enable too but lost it somewhere
- in the upstreaming process.  Anyway,
-Acked-by: Edward Cree <ecree.xilinx@gmail.com>
+You're replying to "Frank" but I think the "you" you are using there
+is addressed to me.
+
+I beg to differ with your assessment over whether the code paths were
+used or not. Here's the proof from Frank's testing:
+
+https://lore.kernel.org/all/trinity-4470b00b-771b-466e-9f3a-a3df72758208-1666435920485@3c-app-gmx-bs49/
+
+The values at offset 8 (0x40e041a0) _are_ 1000base-X AN values, not
+SGMII. There are many messages in that thread showing valid 1000base-X
+AN values in register 8 (that being the local advertisement in the
+lower 16 bits, and the partner's advertisement in the upper 16 bits.
+
+The link partner in this case sent 0x40e0, which is:
+
+#define LPA_1000XFULL           0x0020  /* Can do 1000BASE-X full-duplex */
+#define LPA_1000XHALF           0x0040  /* Can do 1000BASE-X half-duplex */
+#define LPA_1000XPAUSE          0x0080  /* Can do 1000BASE-X pause     */
+#define LPA_LPACK               0x4000  /* Link partner acked us       */
+
+and our advertisement was 0x41a0:
+
+#define ADVERTISE_1000XFULL     0x0020  /* Try for 1000BASE-X full-duplex */
+#define ADVERTISE_1000XPAUSE    0x0080  /* Try for 1000BASE-X pause    */
+#define ADVERTISE_1000XPSE_ASYM 0x0100  /* Try for 1000BASE-X asym pause */
+#define ADVERTISE_LPACK         0x4000  /* Ack link partners response  */
+
+(bit 14 is managed by the PCS.)
+
+> I have a ballpark of different SFPs and MediaTek boards with different
+> PHYs here and tried all of them.
+> 
+> I have no way to tell if the SFPs and PHYs which stopped working after
+> the phylink_pcs conversion are sending valid advertisement. The only
+> other boards with SFP slots I got here are RealTek-based switches, and
+> all I can say is that on an RTL8380 based 1G switch both, the SFP
+> modules containing a PHY and operating in SGMII mode as well as the
+> ones without a PHY exposed via i2c-mdio and operating in 1000Base-X
+> mode are working fine with that switch, with both, stock firmware and
+> OpenWrt running on it.
+> 
+> However, even should they not send valid advertisement, they are very
+> common parts and they were working before and not after the change to
+> phylink_pcs, for the reasons mentioned in the description of this
+> patch.
+
+Let me re-iterate in a different way to make this crystal clear: the
+fibre SFP is completely transparent with respect to the PCS-to-PCS
+link.
+
+The clause 37 autonegotiation is between the PCS at one end and the PCS
+at the other end. The fibre SFP is not involved in it. All that fibre
+SFPs do is convert the serdes waveform into a varying optical intensity
+and back again to a serdes waveform. They do not attempt to interpret
+the waveform, but they may shape it via retimer circuitry and adjust
+the gain to provide a compliant electrical signal.
+
+So, if the PCS at the far end of the link is sending a zero
+advertisement or not sending an advertisement at all, then the LPA
+register will contain a zero irrespective of the fibre SFP module
+being used.
+
+Another case where it may give a zero value but with a copper SFP
+is if the copper SFP is using 1000base-X or SGMII but without
+sending an advertisement. As I've already stated, BCM84881 is
+known to do this, which is used on some copper SFP modules. It
+may be that some copper SFP modules have the PHY setup to use
+1000base-X but without any clause 37 advertisement - that would
+not surprise me in the least.
+
+
+I would suggest that if you replaced your mediatek board in your
+setup with something else, e.g. an Armada 388 based Clearfog board
+which is known to work correctly, used the same fibre SFPs, you'll
+find that negotiation would not complete and the link wouldn't
+come up. Then if you use the same fibre SFPs that I do at both
+ends, you'll find the same problem (because the fibre SFPs make
+no difference as far as the in-band AN is concerned.)
+
+I hope this helps.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
