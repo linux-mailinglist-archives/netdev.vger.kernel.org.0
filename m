@@ -2,132 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 55AEE6AFCC9
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 03:13:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 508926AFCD0
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 03:18:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229780AbjCHCNh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Mar 2023 21:13:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36290 "EHLO
+        id S229757AbjCHCSf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Mar 2023 21:18:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229840AbjCHCNe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 21:13:34 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D0869FE40;
-        Tue,  7 Mar 2023 18:13:29 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id o12so60068904edb.9;
-        Tue, 07 Mar 2023 18:13:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678241608;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uDmqpI3iGfWF0L8Eququv4XMsNLZbjQlVIecq8LOf4Y=;
-        b=HZxOwbW1wMRACfPkH0edExpU8AU3Xxo5TVuETh8nHWzzMm5JeTq9T0sfrvqwBUyxoC
-         wpgWrE4IvTpL0CIsSU24m8PFNEv0gx9JkgO2IxpjjyrT37g8lp0jmC1o76JfOMmFLjpH
-         BCy6Blu+yMjbjsflrfiO7f/Gmo061ckCYg9t6K9VyjI7ro0JpZLIWZLYSJO82Pq4mbPZ
-         Va9fDU0YDQX1kjo54drvVVrK2LsbsdFedCVgATjZpHDMEh6W8BqLHXqpdc5lQYGe1tCC
-         8Rg9M/fDIsA6+HvcXg7TBEnDSnYU7Bya1RL8gk70MzBOcAhk+Sy8wniA32Uw0Ln8H8S/
-         8GKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678241608;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=uDmqpI3iGfWF0L8Eququv4XMsNLZbjQlVIecq8LOf4Y=;
-        b=oQgEcyRP2jWdAVxKW/1SUBypVd0eUWwiQPXkM1kofwgMGrd7LMHQqnOIy2Wy1zSJfq
-         3bYotDawDZiSA3+K/R0ozykMz3Q9ueWYZgsF9iqy2Q13uMLBPelrGcdfZ1gW1uQmvUP4
-         emtfUPVNRa82EtJzHodarF093ZO8dRc4FCmmi/CZ07R2LVH+v7GN0VQ1ILXVlXiT3VPF
-         Ivvvrim+OHW5GOGmQqDEj/LDPHYmFyWZ0K7q5PnVIneeaL2GiGookyvi0O63+RExCPUQ
-         JlKiPgm8gXzvH9xhmadZCUAOlHOLl5VR+gzCU2ciTP8ZDjEthDj0BP6I0vdbiLgqIPi0
-         U+TA==
-X-Gm-Message-State: AO0yUKWGlEI+QycEzHcZD0eH7Ndk4XZoNfRVL3L99kmjUVt1/eeTubhN
-        eAZcy6i2uWxNXJQYKDuDTenGTjPtOHbN8PqsW6E=
-X-Google-Smtp-Source: AK7set+z/zraB9ppbT/i0abXK22k8L7sj7F0zNcwkSfcGkUZ+UuNb33Lv6N3tHlZ1DHmgT22Bwdp0RFFPBWzaPpZOO8=
-X-Received: by 2002:a50:8e5d:0:b0:4c8:1fda:52fd with SMTP id
- 29-20020a508e5d000000b004c81fda52fdmr9293564edx.8.1678241608035; Tue, 07 Mar
- 2023 18:13:28 -0800 (PST)
+        with ESMTP id S229483AbjCHCSe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Mar 2023 21:18:34 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73711A4025;
+        Tue,  7 Mar 2023 18:18:33 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F034CB81B7F;
+        Wed,  8 Mar 2023 02:18:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09CB4C433EF;
+        Wed,  8 Mar 2023 02:18:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678241910;
+        bh=6wxy5EF2hBtBjFhi7JtdgkXz1Y7l+1DAMshVMsoLgPs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=N6S4g0ysQN9ZWEuw7Xa0WDp8Q2x1gUjkBMs0lfYYYezImpxMK+J5WwX2aHfrIqIi+
+         srNRIZ6HD5mpCjUFQjyYkNBWkxG74Ssn9Su1Qm8wfSBo/rOeZibjgzStKAEIXBn4S9
+         4Wh1GC5rrwF2Y/oeE/pnS2Ll2CEULp/6Zf06d8aMoP/wEXEv7E70LRljAMuin7IPPB
+         pKu9bhciDtE3BlpkXxeFMk++18Oo8ngyvOqJMqzY6SUuYUgSYHX/DRVzeVc5R3V2rx
+         pbCGHwtGtz5g0v3wEdDgSJ4jKIIgGE8gyYUc/oXZmnayEFYwtQHm0sIHZmtFBQBRXv
+         wNwbefQkjDQyw==
+Date:   Tue, 7 Mar 2023 18:18:29 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
+        netdev@vger.kernel.org,
+        Tirthendu Sarkar <tirthendu.sarkar@intel.com>,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
+        john.fastabend@gmail.com, bpf@vger.kernel.org,
+        Chandan Kumar Rout <chandanx.rout@intel.com>
+Subject: Re: [PATCH net-next 2/8] i40e: change Rx buffer size for legacy-rx
+ to support XDP multi-buffer
+Message-ID: <20230307181829.5dcec646@kernel.org>
+In-Reply-To: <20230306210822.3381942-3-anthony.l.nguyen@intel.com>
+References: <20230306210822.3381942-1-anthony.l.nguyen@intel.com>
+        <20230306210822.3381942-3-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
-References: <20230307015620.18301-1-kerneljasonxing@gmail.com> <2ad119bd1f24f408921b16eb0ebdf67935d1d880.camel@redhat.com>
-In-Reply-To: <2ad119bd1f24f408921b16eb0ebdf67935d1d880.camel@redhat.com>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Wed, 8 Mar 2023 10:12:51 +0800
-Message-ID: <CAL+tcoAejCA8jX_y+DmgcMKFMoY_1cM6+-EuT7r0QMO-5kn+dw@mail.gmail.com>
-Subject: Re: [PATCH v3 net-next] udp: introduce __sk_mem_schedule() usage
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     simon.horman@corigine.com, willemdebruijn.kernel@gmail.com,
-        davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        Jason Xing <kernelxing@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 7, 2023 at 10:55=E2=80=AFPM Paolo Abeni <pabeni@redhat.com> wro=
-te:
->
-> On Tue, 2023-03-07 at 09:56 +0800, Jason Xing wrote:
-> > From: Jason Xing <kernelxing@tencent.com>
-> >
-> > Keep the accounting schema consistent across different protocols
-> > with __sk_mem_schedule(). Besides, it adjusts a little bit on how
-> > to calculate forward allocated memory compared to before. After
-> > applied this patch, we could avoid receive path scheduling extra
-> > amount of memory.
-> >
-> > Link: https://lore.kernel.org/lkml/20230221110344.82818-1-kerneljasonxi=
-ng@gmail.com/
-> > Signed-off-by: Jason Xing <kernelxing@tencent.com>
-> > ---
-> > v3:
-> > 1) get rid of inline suggested by Simon Horman
-> >
-> > v2:
-> > 1) change the title and body message
-> > 2) use __sk_mem_schedule() instead suggested by Paolo Abeni
-> > ---
-> >  net/ipv4/udp.c | 31 ++++++++++++++++++-------------
-> >  1 file changed, 18 insertions(+), 13 deletions(-)
-> >
-> > diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-> > index c605d171eb2d..60473781933c 100644
-> > --- a/net/ipv4/udp.c
-> > +++ b/net/ipv4/udp.c
-> > @@ -1531,10 +1531,23 @@ static void busylock_release(spinlock_t *busy)
-> >               spin_unlock(busy);
-> >  }
-> >
-> > +static int udp_rmem_schedule(struct sock *sk, int size)
-> > +{
-> > +     int delta;
-> > +
-> > +     delta =3D size - sk->sk_forward_alloc;
-> > +     if (delta > 0 && !__sk_mem_schedule(sk, delta, SK_MEM_RECV))
-> > +             return -ENOBUFS;
-> > +
-> > +     sk->sk_forward_alloc -=3D size;
->
-> I think it's better if you maintain the above statement outside of this
-> helper: it's a bit confusing that rmem_schedule() actually consumes fwd
-> memory.
+On Mon,  6 Mar 2023 13:08:16 -0800 Tony Nguyen wrote:
+> In the legacy-rx mode, driver can only configure up to 2k sized Rx buffers
+> and with the current configuration of 2k sized Rx buffers there is no way
+> to do tailroom reservation for skb_shared_info. Hence size of Rx buffers
+> is now lowered to 1664 (2k - sizeof(skb_shared_info)). Also, driver can
 
-It does make sense.
+skb_shared_info is not fixed size, the number of fragments can 
+be changed in the future. What will happen to the driver and
+this assumption, then?
 
-Thanks,
-Jason
-
->
-> Side note
->
-> Cheers,
->
-> Paolo
->
+> only chain up to 5 Rx buffers and this means max MTU supported for
+> legacy-rx is now 8320.
