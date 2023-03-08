@@ -2,69 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DE886B0624
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 12:40:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F94C6B0632
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 12:42:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229913AbjCHLjw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 06:39:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36106 "EHLO
+        id S229878AbjCHLmI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 06:42:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229881AbjCHLjo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 06:39:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38BFEB79F2;
-        Wed,  8 Mar 2023 03:39:42 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B31ADB81C29;
-        Wed,  8 Mar 2023 11:39:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 952CCC433EF;
-        Wed,  8 Mar 2023 11:39:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678275579;
-        bh=1C8N+oNcWYgkJ4s4xeYwTpBkWgvClPXBJ1vP56zGl+Y=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=jrA9cZ1cVWavfUzK+HsBMKD1A3U0PpinwY3TS/7vxa1uOVrxNhUQllLkJuPGLWanL
-         PsAvq0HgHnzn/Fljh+Fj4WFhFxxhckRkCwpn1cSiu+zyLwR/TkimrgC/zhmRLB1dpp
-         SE/SMKFLeJ2JPu/maVDDAhD5MHaq8LL00iopLONqxFnxYiQfeC5AvDsZXG1bq+1YpN
-         fa39KT+KuTeZ0YET0qSnVIQu/CznVT8Ix0DLFf3ZfqK5eixxWLLMPYfDEUAXjhAvwT
-         DF4UBJnhlQ3Y8jDlcfkyGlGvuJ9MqPLsQzUmFWtrufQMJ4D9a8YxbQaIK0VL0gHoT9
-         p00078TppPVdw==
-Message-ID: <f061fc6c-0b17-3e7f-ccae-9fb980d1e546@kernel.org>
-Date:   Wed, 8 Mar 2023 13:39:33 +0200
+        with ESMTP id S230118AbjCHLmD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 06:42:03 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE22CBD4D0
+        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 03:41:53 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id u9so64629990edd.2
+        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 03:41:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112; t=1678275712;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=Is/quSvT3TJIPDFEbm6RZXsFk8WJ06IX2kfE6yYnF3I=;
+        b=JoY9f/gwPqh8ulZsXsSOQ87r7ihrjL+906w9miXHgutvS5nyPCiFKX70IK/SUfoLAD
+         7AsGePMghdxXk/wRT85Ed0ildPaEq5dxDhiG467t0qbymo7y97hEIWkipeoGYaKZmTmj
+         iVZa6VHrf/1NS0zoKobiWAHPILBCjjXxE/rfkVpnYtGK1mPhfcFamEB0n1k05ekB/g76
+         65L7yatB5sUWUuU1iz+Yf4mDSVn9mBT5fRUSqQmgfKjMEmaZmW4PDhppk7jQGlOPj0bD
+         Ix2tPXz4k7s+tbki526dAWHYuvF74O3H2unqXz/RN5d9AF/UDS2IPqEweJve7ExeFNKg
+         3tFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678275712;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Is/quSvT3TJIPDFEbm6RZXsFk8WJ06IX2kfE6yYnF3I=;
+        b=JyqKSiDatzUlR2/4PZw2IzPODV/nrOdEMxCcxrIRqDRjBm7QEvjDta1CMbHqE3fYfL
+         hUgFE19GDpcMCSl1ToHZoExCPJH9YaRKeWaMqONHVCIdnsgTEcILk32Lgx2xf8hJKDyi
+         RtCWnPZm2Z8jCRb+Kuq/RgMy9aa0uNGc5HXHlW9rFBL22fNF7S7hlhtVw1rToNcsxFZm
+         8Ni6wH1Ed6/T0qI5ffVArmIUkv9Q7vA9d1DJBWKcho2R9XLwLwgOPWouLZ0d1iO1+Ysb
+         Uilo0f2BWWanuS/0Hm107VlhyJ5mlSUt2ZegbwajPPrzHvAkis7dtclHE6gCtzoGFF1S
+         woPA==
+X-Gm-Message-State: AO0yUKXS1S29UWD9RoG/bK5Msj+puP/6KBeh4pqMioUYhZ6h5sXLZyhI
+        9qzi3n5Jxj+spmEfxinkqKOd5g==
+X-Google-Smtp-Source: AK7set/1uwA+p1HHny45n37ykgfDDSeAWNPouc1UdQ7cJxYi4nqXIkMr1mgaN97QuJjYiLj4BlfjJw==
+X-Received: by 2002:a17:906:1c13:b0:896:427b:148 with SMTP id k19-20020a1709061c1300b00896427b0148mr16362789ejg.1.1678275712179;
+        Wed, 08 Mar 2023 03:41:52 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id y7-20020a170906470700b008ef13127b5fsm7380758ejq.29.2023.03.08.03.41.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Mar 2023 03:41:51 -0800 (PST)
+Date:   Wed, 8 Mar 2023 12:41:49 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Po-Hsu Lin <po-hsu.lin@canonical.com>
+Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org, idosch@mellanox.com,
+        danieller@mellanox.com, petrm@mellanox.com, shuah@kernel.org,
+        pabeni@redhat.com, kuba@kernel.org, edumazet@google.com,
+        davem@davemloft.net
+Subject: Re: [PATCHv2] selftests: net: devlink_port_split.py: skip test if no
+ suitable device available
+Message-ID: <ZAh0fY4XoNcLTIOI@nanopsycho>
+References: <20230307150030.527726-1-po-hsu.lin@canonical.com>
+ <ZAhV8nKuLVAQHQGl@nanopsycho>
+ <CAMy_GT92sg4_JLPHvRpH542DPLbxOEYYoCMa2cnET1g8bz_R9Q@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [EXTERNAL] Re: [EXTERNAL] Re: [PATCH v3 4/6] soc: ti: pruss: Add
- helper functions to set GPI mode, MII_RT_event and XFR
-Content-Language: en-US
-To:     Md Danish Anwar <a0501179@ti.com>,
-        MD Danish Anwar <danishanwar@ti.com>,
-        "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <t-kristo@ti.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Nishanth Menon <nm@ti.com>
-Cc:     linux-remoteproc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, srk@ti.com, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20230306110934.2736465-1-danishanwar@ti.com>
- <20230306110934.2736465-5-danishanwar@ti.com>
- <2f039534-dd21-7361-0fcd-b91da1636a3a@kernel.org>
- <ed3dd4b6-658f-07d2-a055-4c38f2ec9db0@ti.com>
- <93228d2f-0fc8-0c0e-f5ea-f55ed72da908@kernel.org>
- <a24dd8ef-e720-7bb5-b8d6-f168afd96233@ti.com>
-From:   Roger Quadros <rogerq@kernel.org>
-In-Reply-To: <a24dd8ef-e720-7bb5-b8d6-f168afd96233@ti.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAMy_GT92sg4_JLPHvRpH542DPLbxOEYYoCMa2cnET1g8bz_R9Q@mail.gmail.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,140 +77,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Wed, Mar 08, 2023 at 11:21:57AM CET, po-hsu.lin@canonical.com wrote:
+>On Wed, Mar 8, 2023 at 5:31 PM Jiri Pirko <jiri@resnulli.us> wrote:
+>>
+>> Tue, Mar 07, 2023 at 04:00:30PM CET, po-hsu.lin@canonical.com wrote:
+>> >The `devlink -j port show` command output may not contain the "flavour"
+>> >key, an example from s390x LPAR with Ubuntu 22.10 (5.19.0-37-generic),
+>> >iproute2-5.15.0:
+>> >  {"port":{"pci/0001:00:00.0/1":{"type":"eth","netdev":"ens301"},
+>> >           "pci/0001:00:00.0/2":{"type":"eth","netdev":"ens301d1"},
+>> >           "pci/0002:00:00.0/1":{"type":"eth","netdev":"ens317"},
+>> >           "pci/0002:00:00.0/2":{"type":"eth","netdev":"ens317d1"}}}
+>>
+>> As Jakub wrote, this is odd. Could you debug if kernel sends the flavour
+>> attr and if not why? Also, could you try with most recent kernel?
+>
+>I did a quick check on another s390x LPAR instance which is running
+>with Ubuntu 23.04 (6.1.0-16-generic) iproute2-6.1.0, there is still no
+>"flavour" attribute.
+>$ devlink port show
+>pci/0001:00:00.0/1: type eth netdev ens301
+>pci/0001:00:00.0/2: type eth netdev ens301d1
+>pci/0002:00:00.0/1: type eth netdev ens317
+>pci/0002:00:00.0/2: type eth netdev ens317d1
+>
+>The behaviour didn't change with iproute2 built from source [1]
+
+Could you paste output of "devlink dev info"?
+Looks like something might be wrong in the kernel devlink/driver code.
 
 
-On 08/03/2023 13:29, Md Danish Anwar wrote:
-> 
-> 
-> On 08/03/23 16:45, Roger Quadros wrote:
->>
->>
->> On 08/03/2023 11:23, Md Danish Anwar wrote:
->>> Hi Roger,
->>>
->>> On 08/03/23 14:04, Roger Quadros wrote:
->>>> Hi Danish,
->>>>
->>>> On 06/03/2023 13:09, MD Danish Anwar wrote:
->>>>> From: Suman Anna <s-anna@ti.com>
->>>>>
->>>>> The PRUSS CFG module is represented as a syscon node and is currently
->>>>> managed by the PRUSS platform driver. Add easy accessor functions to set
->>>>> GPI mode, MII_RT event enable/disable and XFR (XIN XOUT) enable/disable
->>>>> to enable the PRUSS Ethernet usecase. These functions reuse the generic
->>>>> pruss_cfg_update() API function.
->>>>>
->>>>> Signed-off-by: Suman Anna <s-anna@ti.com>
->>>>> Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
->>>>> Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
->>>>> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
->>>>> ---
->>>>>  include/linux/remoteproc/pruss.h | 55 ++++++++++++++++++++++++++++++++
->>>>>  1 file changed, 55 insertions(+)
->>>>>
->>>>> diff --git a/include/linux/remoteproc/pruss.h b/include/linux/remoteproc/pruss.h
->>>>> index d41bec448f06..7952f250301a 100644
->>>>> --- a/include/linux/remoteproc/pruss.h
->>>>> +++ b/include/linux/remoteproc/pruss.h
->>>>> @@ -240,4 +240,59 @@ static inline bool is_pru_rproc(struct device *dev)
->>>>>  	return true;
->>>>>  }
->>>>>  
->>>>> +/**
->>>>> + * pruss_cfg_gpimode() - set the GPI mode of the PRU
->>>>> + * @pruss: the pruss instance handle
->>>>> + * @pru_id: id of the PRU core within the PRUSS
->>>>> + * @mode: GPI mode to set
->>>>> + *
->>>>> + * Sets the GPI mode for a given PRU by programming the
->>>>> + * corresponding PRUSS_CFG_GPCFGx register
->>>>> + *
->>>>> + * Return: 0 on success, or an error code otherwise
->>>>> + */
->>>>> +static inline int pruss_cfg_gpimode(struct pruss *pruss,
->>>>> +				    enum pruss_pru_id pru_id,
->>>>> +				    enum pruss_gpi_mode mode)
->>>>> +{
->>>>> +	if (pru_id < 0 || pru_id >= PRUSS_NUM_PRUS)
->>>>> +		return -EINVAL;
->>>>> +
->>>>
->>>> Should we check for invalid gpi mode and error out if so?
->>>>
->>> Sure we can check for invalid gpi mode.
->>>
->>> Does the below code snippet looks good to you?
->>>
->>> 	if(mode < PRUSS_GPI_MODE_DIRECT || mode > PRUSS_GPI_MODE_MII)
->>
->> How about?
->> 	if (mode < 0 || mode > PRUSS_GPI_MODE_MAX)
->>
-> 
-> Sure that would be better. But we will have to introduce PRUSS_GPI_MODE_MAX in
-> the enum definition.
-> 
-> Also the if() should check for mode >= PRUSS_GPI_MODE_MAX so the if check will
-> become,
-> 
-> 	if (mode < 0 || mode >= PRUSS_GPI_MODE_MAX)
-> 		return -EINVAL;
-> 
-> enum definition,
-> 
-> enum pruss_gpi_mode {
-> 	PRUSS_GPI_MODE_DIRECT = 0,
-> 	PRUSS_GPI_MODE_PARALLEL,
-> 	PRUSS_GPI_MODE_28BIT_SHIFT,
-> 	PRUSS_GPI_MODE_MII,
-> 	PRUSS_GPI_MODE_MAX,
-> };
-> 
-
-Yes. Looks good.
-
->>> 		return -EINVAL;
->>>
->>>>> +	return pruss_cfg_update(pruss, PRUSS_CFG_GPCFG(pru_id),
->>>>> +				PRUSS_GPCFG_PRU_GPI_MODE_MASK,
->>>>> +				mode << PRUSS_GPCFG_PRU_GPI_MODE_SHIFT);
->>>>> +}
->>>>> +
->>>>> +/**
->>>>> + * pruss_cfg_miirt_enable() - Enable/disable MII RT Events
->>>>> + * @pruss: the pruss instance
->>>>> + * @enable: enable/disable
->>>>> + *
->>>>> + * Enable/disable the MII RT Events for the PRUSS.
->>>>> + *
->>>>> + * Return: 0 on success, or an error code otherwise
->>>>> + */
->>>>> +static inline int pruss_cfg_miirt_enable(struct pruss *pruss, bool enable)
->>>>> +{
->>>>> +	u32 set = enable ? PRUSS_MII_RT_EVENT_EN : 0;
->>>>> +
->>>>> +	return pruss_cfg_update(pruss, PRUSS_CFG_MII_RT,
->>>>> +				PRUSS_MII_RT_EVENT_EN, set);
->>>>> +}
->>>>> +
->>>>> +/**
->>>>> + * pruss_cfg_xfr_enable() - Enable/disable XIN XOUT shift functionality
->>>>> + * @pruss: the pruss instance
->>>>> + * @enable: enable/disable
->>>>> + *
->>>>> + * Return: 0 on success, or an error code otherwise
->>>>> + */
->>>>> +static inline int pruss_cfg_xfr_enable(struct pruss *pruss, bool enable)
->>>>> +{
->>>>> +	u32 set = enable ? PRUSS_SPP_XFER_SHIFT_EN : 0;
->>>>> +
->>>>> +	return pruss_cfg_update(pruss, PRUSS_CFG_SPP,
->>>>> +				PRUSS_SPP_XFER_SHIFT_EN, set);
->>>>> +}
->>>>> +
->>>>>  #endif /* __LINUX_PRUSS_H */
->>>>
->>
->> cheers,
->> -roger
-> 
