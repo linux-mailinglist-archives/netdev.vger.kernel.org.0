@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EE606B120A
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 20:31:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B556D6B120E
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 20:31:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230187AbjCHTbk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 14:31:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53136 "EHLO
+        id S230190AbjCHTbo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 14:31:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230171AbjCHTb2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 14:31:28 -0500
+        with ESMTP id S230110AbjCHTbe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 14:31:34 -0500
 Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:237:300::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B513CF0C0;
-        Wed,  8 Mar 2023 11:31:14 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A2C9CEFA0;
+        Wed,  8 Mar 2023 11:31:19 -0800 (PST)
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
         (envelope-from <fw@breakpoint.cc>)
-        id 1pZzVG-0003sZ-9p; Wed, 08 Mar 2023 20:31:10 +0100
+        id 1pZzVK-0003t3-E7; Wed, 08 Mar 2023 20:31:14 +0100
 From:   Florian Westphal <fw@strlen.de>
 To:     <netdev@vger.kernel.org>
 Cc:     Paolo Abeni <pabeni@redhat.com>,
@@ -25,9 +25,9 @@ Cc:     Paolo Abeni <pabeni@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
         <netfilter-devel@vger.kernel.org>,
         Jeremy Sowden <jeremy@azazel.net>
-Subject: [PATCH net-next 8/9] netfilter: conntrack: fix typo
-Date:   Wed,  8 Mar 2023 20:30:32 +0100
-Message-Id: <20230308193033.13965-9-fw@strlen.de>
+Subject: [PATCH net-next 9/9] netfilter: nat: fix indentation of function arguments
+Date:   Wed,  8 Mar 2023 20:30:33 +0100
+Message-Id: <20230308193033.13965-10-fw@strlen.de>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230308193033.13965-1-fw@strlen.de>
 References: <20230308193033.13965-1-fw@strlen.de>
@@ -44,27 +44,30 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jeremy Sowden <jeremy@azazel.net>
 
-There's a spelling mistake in a comment.  Fix it.
+A couple of arguments to a function call are incorrectly indented.
+Fix them.
 
 Signed-off-by: Jeremy Sowden <jeremy@azazel.net>
 Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- net/netfilter/nf_conntrack_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/netfilter/nf_nat_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index 7250082e7de5..004c54132a3b 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -1294,7 +1294,7 @@ __nf_conntrack_confirm(struct sk_buff *skb)
- }
- EXPORT_SYMBOL_GPL(__nf_conntrack_confirm);
- 
--/* Returns true if a connection correspondings to the tuple (required
-+/* Returns true if a connection corresponds to the tuple (required
-    for NAT). */
- int
- nf_conntrack_tuple_taken(const struct nf_conntrack_tuple *tuple,
+diff --git a/net/netfilter/nf_nat_core.c b/net/netfilter/nf_nat_core.c
+index e29e4ccb5c5a..ce829d434f13 100644
+--- a/net/netfilter/nf_nat_core.c
++++ b/net/netfilter/nf_nat_core.c
+@@ -549,8 +549,8 @@ get_unique_tuple(struct nf_conntrack_tuple *tuple,
+ 		if (range->flags & NF_NAT_RANGE_PROTO_SPECIFIED) {
+ 			if (!(range->flags & NF_NAT_RANGE_PROTO_OFFSET) &&
+ 			    l4proto_in_range(tuple, maniptype,
+-			          &range->min_proto,
+-			          &range->max_proto) &&
++					     &range->min_proto,
++					     &range->max_proto) &&
+ 			    (range->min_proto.all == range->max_proto.all ||
+ 			     !nf_nat_used_tuple(tuple, ct)))
+ 				return;
 -- 
 2.39.2
 
