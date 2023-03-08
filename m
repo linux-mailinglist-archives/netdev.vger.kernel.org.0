@@ -2,129 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6142A6B0EB5
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 17:27:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BD486B0EB0
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 17:27:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231270AbjCHQ1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 11:27:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38382 "EHLO
+        id S231151AbjCHQ1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 11:27:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230196AbjCHQ0l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 11:26:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 417C9AB0BD
-        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 08:25:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678292757;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9rxCu09c0NETlVwsuLK1Q55qTxLR/36qzoqgR71TIHw=;
-        b=Z/DM5KmBzKV8oyYQPbw9Ciq32AL5ZJXAGFsrF0KpxyFSPGyclKRh5/BZYiI2e4zJRxXQOG
-        HVVZasGgPpr7OrchEzqem3y7n1obELk5T6yAwdzAFg6GEwQmlWQJ+Ev0P9lWUvGiQp7/r2
-        1kFVvb/+DzJzy9IdGRk9pp41SmqjiRE=
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
- [209.85.216.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-148-xsViVbugO3mDscnUcNW-5w-1; Wed, 08 Mar 2023 11:25:56 -0500
-X-MC-Unique: xsViVbugO3mDscnUcNW-5w-1
-Received: by mail-pj1-f69.google.com with SMTP id q24-20020a17090a2e1800b00237c37964d4so1241334pjd.8
-        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 08:25:55 -0800 (PST)
+        with ESMTP id S230333AbjCHQ0i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 11:26:38 -0500
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48C31C9A7A;
+        Wed,  8 Mar 2023 08:26:32 -0800 (PST)
+Received: by mail-pj1-f54.google.com with SMTP id m8-20020a17090a4d8800b002377bced051so2977143pjh.0;
+        Wed, 08 Mar 2023 08:26:32 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678292755;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=9rxCu09c0NETlVwsuLK1Q55qTxLR/36qzoqgR71TIHw=;
-        b=0Jgu7fJ/xugP1btSVitf7Ug16lMKdOYogPTOODv09/cb0Tev9XnEf9eBfLdlk8SGn6
-         0G3xReuXFReaKCq6i+oW3/pyKQW/EiIfi68PEW16vEGUCbn6+JfXkPNdZdRItfHn8vt8
-         LQoW+Bknl8o+hJ+5DMG7eGs2tNJTlHJP8Qgzb8uK1Un3Mqp+D3bvIsf/v5oNVz+qzH9F
-         IXVKsVg6FTuZCaTJ4iDptgapCdefTZJYYa4WzXJTjo6jtUy1ndcXLXbqJK6hdMSM2PUF
-         qHI2OpcGxoJeeqE2sYjPG2gKz60z9KUxf61+LhhD3qRSCogeqxH5g6C8iYhnytZxDVSU
-         nJuQ==
-X-Gm-Message-State: AO0yUKWEC/tMMms08w+p8AzM8cXXlj1YCRuE5FL/4mcql0cvaqZVSZ+f
-        S2fLjxDDz+edLa0AVfiW/qZXxm++qQ8jFJNBn0A3j0mWTn+A371TtFaQO4Xa7o3pY24jF/Ls1xN
-        GMmWhW1XM1d/Jr0RfQj+R4Zo9cay8a5gR
-X-Received: by 2002:a62:f807:0:b0:5a9:d579:6902 with SMTP id d7-20020a62f807000000b005a9d5796902mr7832100pfh.0.1678292754867;
-        Wed, 08 Mar 2023 08:25:54 -0800 (PST)
-X-Google-Smtp-Source: AK7set+vaQev+5Pt9Z4fNcHOrzUhwcY8hETLVQ7TWcxm+gDJoVwnvii4tVx2ZUsD6hSf8Hujs8ljLqd6G1f0Mut9FEE=
-X-Received: by 2002:a62:f807:0:b0:5a9:d579:6902 with SMTP id
- d7-20020a62f807000000b005a9d5796902mr7832087pfh.0.1678292754379; Wed, 08 Mar
- 2023 08:25:54 -0800 (PST)
+        d=1e100.net; s=20210112; t=1678292791;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=LQUZMW3ATClSf/r8H/ZNppEXmMdqJP2TRdMQdlzdBEU=;
+        b=mFReNd43myvP8sDRapVG/f0Mh5fq+amruVFC0XBXIDWMXg4hfE390EbOCvAmdWYC2z
+         JChEMlSFX83AY8Q14XMcuyjQM/FJ4Bxp3kDZFHTK35PmmLvz5C72wEv0MrDRS9KCoNKR
+         fGlevMH9T2ai8edqwEocZ1S09RZRH7jhPQ2f94kq2PVA9ZA9KHXXF8VO3ekaRnhDT4YA
+         DCCzvlEy5ZuOEYUf6tfQFV8Ds7Ca0iFN38k02EAcQ/th33+GsGMi2Gzqtu7ARGitpVSW
+         l2VKMVSWP7ZTjb3aOjY5zTlzJX7+V4y1WutlEZo1EbPI5EzZ4Y8oqfE3WbiF7aoE6Rdw
+         xYlg==
+X-Gm-Message-State: AO0yUKXdwuoEJmorcKBwL3po6hFJihJMgXB7V0Mo03h09dcoNeic2veG
+        yyF3eqV4ZyL33BKd25JvmeQ=
+X-Google-Smtp-Source: AK7set/ljF2NSlK5iXBS5nOBvYwYALtBT6qGPN3NaOl9NmTJAqQftRWcEmjCkHVWk/x0lRsa1htRvA==
+X-Received: by 2002:a17:90b:1b0f:b0:237:c18d:c459 with SMTP id nu15-20020a17090b1b0f00b00237c18dc459mr19250067pjb.31.1678292791395;
+        Wed, 08 Mar 2023 08:26:31 -0800 (PST)
+Received: from localhost.localdomain ([14.4.134.166])
+        by smtp.gmail.com with ESMTPSA id mv15-20020a17090b198f00b0023087e8adf8sm9363818pjb.21.2023.03.08.08.26.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Mar 2023 08:26:31 -0800 (PST)
+From:   Leesoo Ahn <lsahn@ooseel.net>
+To:     lsahn@ooseel.net
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH net-next] net: stmmac: call stmmac_finalize_xdp_rx() on a condition
+Date:   Thu,  9 Mar 2023 01:26:18 +0900
+Message-Id: <20230308162619.329372-1-lsahn@ooseel.net>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20230308113254.18866-1-ihuguet@redhat.com> <ddf82062-8755-1980-aba7-927742fed230@gmail.com>
-In-Reply-To: <ddf82062-8755-1980-aba7-927742fed230@gmail.com>
-From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
-Date:   Wed, 8 Mar 2023 17:25:43 +0100
-Message-ID: <CACT4oudb2Jf09w62k65PLFpJyrCPnPAXc1FcVZLeB0To6OtORA@mail.gmail.com>
-Subject: Re: [PATCH net] sfc: ef10: don't overwrite offload features at NIC reset
-To:     Edward Cree <ecree.xilinx@gmail.com>
-Cc:     habetsm.xilinx@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        Tianhao Zhao <tizhao@redhat.com>,
-        Jonathan Cooper <jonathan.s.cooper@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 8, 2023 at 4:53=E2=80=AFPM Edward Cree <ecree.xilinx@gmail.com>=
- wrote:
->
-> On 08/03/2023 11:32, =C3=8D=C3=B1igo Huguet wrote:
-> > At NIC reset, some offload features related to encapsulated traffic
-> > might have changed (this mainly happens if the firmware-variant is
-> > changed with the sfboot userspace tool). Because of this, features are
-> > checked and set again at reset time.
-> >
-> > However, this was not done right, and some features were improperly
-> > overwritten at NIC reset:
-> > - Tunneled IPv6 segmentation was always disabled
-> > - Features disabled with ethtool were reenabled
-> > - Features that becomes unsupported after the reset were not disabled
-> >
-> > Also, cleanup a bit the setting of other features not related to
-> > encapsulation. Now that Siena devices are unsupported, some checks are
-> > unnecessary because they're always supported in all ef10 models.
->
-> Could you clarify what checks were removed?  All I can see is the
->  'NETIF_F_TSO6 requires NETIF_F_IPV6_CSUM' check, and Siena already
->  supported NETIF_F_IPV6_CSUM (it's only Falcon that didn't).
+The current codebase calls the function no matter net device has XDP
+programs or not. So the finalize function is being called everytime when RX
+bottom-half in progress. It needs a few machine instructions for nothing
+in the case that XDP programs are not attached at all.
 
-Yes, those are the removed checks. It's only one check, actually,
-sorry for the inaccuracy.
+Lets it call the function on a condition that if xdp_status variable has
+not zero value. That means XDP programs are attached to the net device
+and it should be finalized based on the variable.
 
-I didn't know since what device family was this supported. Then this
-check was unnecessary since the sfc_falcon split.
+The following instructions show that it's better than calling the function
+unconditionally.
 
-> Or are you also referring to some items moving from efx.c to the
->  definition of EF10_OFFLOAD_FEATURES?  That's fine and matches more
->  closely to what we do for ef100, but again the commit message could
->  explain this better.
+  0.31 │6b8:   ldr     w0, [sp, #196]
+       │    ┌──cbz     w0, 6cc
+       │    │  mov     x1, x0
+       │    │  mov     x0, x27
+       │    │→ bl     stmmac_finalize_xdp_rx
+       │6cc:└─→ldr    x1, [sp, #176]
 
-Yes, a very poor explanation. Moving those items is part of the "cleanup", =
-yes.
+with 'if (xdp_status)' statement, jump to '6cc' label if xdp_status has
+zero value.
 
-> In any case this should really be two separate patches, with the
->  cleanup part going to net-next.
+Signed-off-by: Leesoo Ahn <lsahn@ooseel.net>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-I thought about doing that, but I'm always reluctant to increase
-reviewers' work by sending small cleanups, so being small and very
-related to this patch, I included it here.
-
-> That said, the above is all nit-picky, and the fix looks good, so:
-> Acked-by: Edward Cree <ecree.xilinx@gmail.com>
->
-
-
---=20
-=C3=8D=C3=B1igo Huguet
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index e4902a7bb61e..53c6e9b3a0c2 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -5145,7 +5145,8 @@ static int stmmac_rx_zc(struct stmmac_priv *priv, int limit, u32 queue)
+ 		rx_q->state.len = len;
+ 	}
+ 
+-	stmmac_finalize_xdp_rx(priv, xdp_status);
++	if (xdp_status)
++		stmmac_finalize_xdp_rx(priv, xdp_status);
+ 
+ 	priv->xstats.rx_pkt_n += count;
+ 	priv->xstats.rxq_stats[queue].rx_pkt_n += count;
+@@ -5425,7 +5426,8 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
+ 		rx_q->state.len = len;
+ 	}
+ 
+-	stmmac_finalize_xdp_rx(priv, xdp_status);
++	if (xdp_status)
++		stmmac_finalize_xdp_rx(priv, xdp_status);
+ 
+ 	stmmac_rx_refill(priv, queue);
+ 
+-- 
+2.34.1
 
