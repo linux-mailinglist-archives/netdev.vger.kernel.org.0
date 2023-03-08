@@ -2,73 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F2D66B1329
-	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 21:35:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDD1B6B1331
+	for <lists+netdev@lfdr.de>; Wed,  8 Mar 2023 21:36:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229936AbjCHUe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 15:34:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59424 "EHLO
+        id S230120AbjCHUgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 15:36:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230360AbjCHUei (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 15:34:38 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93898CCE91
-        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 12:34:22 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id cw28so70754622edb.5
-        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 12:34:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678307661;
-        h=content-transfer-encoding:subject:from:cc:to:content-language
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=aVTCViV9KCP7APavv03NS1lEmiUdD59919rqFC3aoNA=;
-        b=CvpzAa2xOfm0xWNlMe4v6dfHrIGemV3lBdvCLVOwX7/hKiq1QIe6kf9xDp43Wrob/F
-         gI+wkku57swK8y7UIilWa4zpd6DgHtw+fHK3KS+nucQZzjl2aP+YbyIEhVzakmH3Oe1W
-         pO+73mR8fHaVEFuLZeP8ULiLUIt0TLF4dFXdJ0DdVHIAsmvfqEA+iyuIAkdtz5cd9pSQ
-         PS8WOK/kZr/BxoFwzE/PaZ3UERoAMk9DAyediHDzyj76XKIPy1Jgmh5HBO7D+hQ56WC8
-         DnvPvOrNW8F5T2oD8z4FtZ8l4vHcvcx1/s9Hd2ZXkE6ywgMAc2KbBapAE0bdLcEeZmTH
-         IoZg==
+        with ESMTP id S230249AbjCHUgQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 15:36:16 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D95CD5179
+        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 12:34:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1678307688;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Hdk7ckeqLYIwLCDmEyqXJOvt1gf7vv0upLXeTwcvE5I=;
+        b=TIq+IIZEEZaP0U6kpqopioNf8OlfTVBYPn91rYRRhAp2qGbvpJracGez0SVPs+CHGPAKE2
+        X9KQNgNArJBHz/O8fHe9XzpFBiCjKPgmaU3Pgrl52W5RjhtTFDge0M2MldeUQDtjaL6kGA
+        F9xtfuqTIJIjQGlIZdPNuSXMIARabSg=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-635-UvQHd0UiMO22c53RRqR_-A-1; Wed, 08 Mar 2023 15:34:47 -0500
+X-MC-Unique: UvQHd0UiMO22c53RRqR_-A-1
+Received: by mail-wm1-f70.google.com with SMTP id e17-20020a05600c219100b003e21fa60ec1so1268342wme.2
+        for <netdev@vger.kernel.org>; Wed, 08 Mar 2023 12:34:46 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678307661;
-        h=content-transfer-encoding:subject:from:cc:to:content-language
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=aVTCViV9KCP7APavv03NS1lEmiUdD59919rqFC3aoNA=;
-        b=mGZfu0XEG/XA5cU9PrX0SCd7rhbxtww3snQFHWWdYU5Ewa4fIoJRiYDHQjlPnjVlPB
-         4+5Li3nE+iFS8oQ66QHeYZ6SKv4hVM6r32Kir20gwjERIyyzjOwMGe9ZkuepQm0lJMbr
-         bFHACoQ96mlJUz0hmCR+aViLf4Oj1rfhytgJSNzx4PtdfHgubUb8iwKE1ch7ecwSqSW+
-         j2KD9mXwJqckRAA5VymocsdazSdpc8KmiRwaDYflhxpxMVxoyANhXDTRDBwBzhotliHH
-         HSwr1cnEfG1lOz7W+06+7FAqbYVzA7l/FZHVsgjSp67KC4N0b4/lvmhuIcxeBWLWumyb
-         gZUA==
-X-Gm-Message-State: AO0yUKW/JRjU6RnB5byzEqaP8mbn8W5ZohjU17V0VR6hura+gO27ClTf
-        qTz7ofGDkIkdMFw/7ITJihMeMsfliWk=
-X-Google-Smtp-Source: AK7set9XsRYsXrHkQEkmYDb+oRZzPMildBIF3QuhqDEOefQQYnjlVlSNSTalsQJldk9qmFHWqZvE/w==
-X-Received: by 2002:a17:906:bfc9:b0:88d:ba89:1837 with SMTP id us9-20020a170906bfc900b0088dba891837mr21391502ejb.8.1678307660967;
-        Wed, 08 Mar 2023 12:34:20 -0800 (PST)
-Received: from ?IPV6:2a01:c22:6ed9:d400:9df:5c71:99fe:44f3? (dynamic-2a01-0c22-6ed9-d400-09df-5c71-99fe-44f3.c22.pool.telefonica.de. [2a01:c22:6ed9:d400:9df:5c71:99fe:44f3])
-        by smtp.googlemail.com with ESMTPSA id k20-20020a17090627d400b008b17ca37966sm7970205ejc.148.2023.03.08.12.34.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Mar 2023 12:34:20 -0800 (PST)
-Message-ID: <a969f012-1d3b-7a36-51cf-89a5f8f15a9b@gmail.com>
-Date:   Wed, 8 Mar 2023 21:34:13 +0100
+        d=1e100.net; s=20210112; t=1678307686;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Hdk7ckeqLYIwLCDmEyqXJOvt1gf7vv0upLXeTwcvE5I=;
+        b=nkY/GZoUNp1SnrzlnbWTtzDGGjl/6aCDBRBkbwJEaeRndyt2zTrXuxMv19Jc0wPgrd
+         tysGPBpDKaepsJ9nFXTdlCmKrfNK5bUhO0TagFvLfq2OiY+UUbbi+8BCq/BVSbYoioaj
+         KdJwJ9HonFNrX1gBpxmIAj2MgwwD/wkeROoMqQRyhEX6J0TSOHZ2oqGSUoFeEhxu2w0+
+         9w3qCrha8ulUoUU54lUm2ckldZixpeXizegeS7tPn/3K07uVL63eePjVda4p+4bCyPT6
+         j0g6s6T8aVrRCyHmc3A2tlJfzbT5Krga6+047TBntBdaQqNqp8bzaAxKpA+A9vqVkFCf
+         mqjg==
+X-Gm-Message-State: AO0yUKXA5dWBW3cWMwwyBfDO3OLcEhfNZg1la/uLrxw8HEh1VPwib4tq
+        FXThNEM6QoMfmPQTvxUEQbPGLZ7r921rBkWCfDgn8rWOkj2GnyuxIHv7Tc6N6EpEga5o9bViRyY
+        K0ByEBkvEQGLL+HKi
+X-Received: by 2002:adf:e60b:0:b0:2c7:1c72:699f with SMTP id p11-20020adfe60b000000b002c71c72699fmr12351050wrm.4.1678307685838;
+        Wed, 08 Mar 2023 12:34:45 -0800 (PST)
+X-Google-Smtp-Source: AK7set9FmzZXAuBId0QOA4oZOfelEMo1fHMeBunZRomyT3/1ttx9W0b8OZAA9h7jV06Ay582RhCeug==
+X-Received: by 2002:adf:e60b:0:b0:2c7:1c72:699f with SMTP id p11-20020adfe60b000000b002c71c72699fmr12351041wrm.4.1678307685424;
+        Wed, 08 Mar 2023 12:34:45 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-121-28.dyn.eolo.it. [146.241.121.28])
+        by smtp.gmail.com with ESMTPSA id p10-20020a5d68ca000000b002c59e001631sm16443877wrw.77.2023.03.08.12.34.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Mar 2023 12:34:44 -0800 (PST)
+Message-ID: <f0c49fb4b682b81d64184d1181bc960728907474.camel@redhat.com>
+Subject: Re: [PATCH v4 RESEND] epoll: use refcount to reduce ep_mutex
+ contention
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     netdev@vger.kernel.org, Soheil Hassas Yeganeh <soheil@google.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Carlos Maiolino <cmaiolino@redhat.com>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Christian Brauner <brauner@kernel.org>,
+        linux-fsdevel@vger.kernel.org
+Date:   Wed, 08 Mar 2023 21:34:43 +0100
+In-Reply-To: <20230308104054.84612fbe99e8a57ae57b5ff0@linux-foundation.org>
+References: <e8228f0048977456466bc33b42600e929fedd319.1678213651.git.pabeni@redhat.com>
+         <20230307133057.1904d8ffab2980f8e23ee3cc@linux-foundation.org>
+         <f049d74b59323ed2ad16a0b52de86f157ae353ce.camel@redhat.com>
+         <20230308104054.84612fbe99e8a57ae57b5ff0@linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Content-Language: en-US
-To:     Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] net: phy: smsc: use device_property_present in
- smsc_phy_probe
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,34 +88,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use unified device property API.
+On Wed, 2023-03-08 at 10:40 -0800, Andrew Morton wrote:
+> On Wed, 08 Mar 2023 09:55:31 +0100 Paolo Abeni <pabeni@redhat.com> wrote:
+>=20
+> > I have a process question: I understand this is queued for the mm-
+> > nonmm-unstable branch. Should I send a v5 with the above comments
+> > changes or an incremental patch or something completely different?
+>=20
+> Either is OK.  If it's a v5 I'll usually queue a delta so people who
+> have a;ready reviewed can see what changed.  That delta is later
+> squashed and I'll use v5's changelog for the whole.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/phy/smsc.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Since even the changelog needs some fixup, I'll send a v5.
 
-diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
-index 630104c16..1c2808f74 100644
---- a/drivers/net/phy/smsc.c
-+++ b/drivers/net/phy/smsc.c
-@@ -272,7 +272,6 @@ static void smsc_get_stats(struct phy_device *phydev,
- static int smsc_phy_probe(struct phy_device *phydev)
- {
- 	struct device *dev = &phydev->mdio.dev;
--	struct device_node *of_node = dev->of_node;
- 	struct smsc_phy_priv *priv;
- 	struct clk *refclk;
- 
-@@ -282,7 +281,7 @@ static int smsc_phy_probe(struct phy_device *phydev)
- 
- 	priv->energy_enable = true;
- 
--	if (of_property_read_bool(of_node, "smsc,disable-energy-detect"))
-+	if (device_property_present(dev, "smsc,disable-energy-detect"))
- 		priv->energy_enable = false;
- 
- 	phydev->priv = priv;
--- 
-2.39.2
+Thanks,
+
+Paolo
 
