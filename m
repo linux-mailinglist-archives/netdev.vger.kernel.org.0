@@ -2,88 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E7CD6B2201
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 11:57:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 212EF6B220B
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 11:59:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231296AbjCIK5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 05:57:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38582 "EHLO
+        id S231218AbjCIK71 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 05:59:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231297AbjCIK4b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 05:56:31 -0500
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37BAEE982F
-        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 02:55:13 -0800 (PST)
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 329ALh20013922;
-        Thu, 9 Mar 2023 02:55:08 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=s2048-2021-q4;
- bh=ODN61q7IeygtRing57sYlfcuJ49t+FhakgwvNj/F8dg=;
- b=AHxjbbpooIeMY/ep+QqtDPwFnd2qSNaL7EfVNPk4r4tLgkcc5pFY7t3jpvXfpW5z/YmA
- xy/RZxN3qjVCYLlOd+YstRGkWxKx3l3bloSLAtDZE7f7QlDOeu5pduBOXgthDgKWc3NK
- 7RkwvbeBIs4hn02ccrPF7Cqa68f/S80NKkgnCw57cpnAXDND1iAJgZ9bGh6PXcMKb7hO
- XXIK+JVBeTxVChiEHtWa4MZWdvHwwKBazJCyH2eEAEDI0XDWQdPChgl7UBz8pGU0/7yF
- ZeTiBfDrzgdTYbUk2ZGLU1A9PC/4ehm6xVqElSMZjT9k9Raw1TCFSx/1O9/jD2kEi2mR 2Q== 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3p746p326j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 09 Mar 2023 02:55:08 -0800
-Received: from devvm1736.cln0.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server id
- 15.1.2507.17; Thu, 9 Mar 2023 02:54:34 -0800
-From:   Vadim Fedorenko <vadfed@meta.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-CC:     Vadim Fedorenko <vadfed@meta.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Vadim Fedorenko <vadim.fedorenko@linux.dev>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH RESEND net-next] ptp_ocp: add force_irq to xilinx_spi configuration
-Date:   Thu, 9 Mar 2023 02:54:21 -0800
-Message-ID: <20230309105421.2953451-1-vadfed@meta.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229825AbjCIK67 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 05:58:59 -0500
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 577D2EAB8C;
+        Thu,  9 Mar 2023 02:56:48 -0800 (PST)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1paDwP-0003Yr-11;
+        Thu, 09 Mar 2023 11:56:09 +0100
+Date:   Thu, 9 Mar 2023 10:54:23 +0000
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Alexander Couzens <lynxis@fe80.eu>
+Subject: [PATCH net-next v13 00/16] net: ethernet: mtk_eth_soc: various
+ enhancements
+Message-ID: <cover.1678357225.git.daniel@makrotopia.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [2620:10d:c0a8:1b::d]
-X-Proofpoint-ORIG-GUID: iarwqX0ECYOY5m0__Hm0EYYPy4yud4tW
-X-Proofpoint-GUID: iarwqX0ECYOY5m0__Hm0EYYPy4yud4tW
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-09_06,2023-03-08_03,2023-02-09_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Flashing firmware via devlink flash was failing on PTP OCP devices
-because it is using Quad SPI mode, but the driver was not properly
-behaving. With force_irq flag landed it now can be fixed.
+This series brings a variety of fixes and enhancements for mtk_eth_soc,
+adds support for the MT7981 SoC and facilitates sharing the SGMII PCS
+code between mtk_eth_soc and mt7530.
+Also prepare support for MT7988 which has been done while net-next was
+closed.
 
-Signed-off-by: Vadim Fedorenko <vadfed@meta.com>
----
- drivers/ptp/ptp_ocp.c | 1 +
- 1 file changed, 1 insertion(+)
+Note that this series depends on commit 697c3892d825
+("regmap: apply reg_base and reg_downshift for single register ops") to
+not break mt7530 pcs register access.
 
-diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index 4bbaccd543ad..2b63f3487645 100644
---- a/drivers/ptp/ptp_ocp.c
-+++ b/drivers/ptp/ptp_ocp.c
-@@ -662,6 +662,7 @@ static struct ocp_resource ocp_fb_resource[] = {
- 				.num_chipselect = 1,
- 				.bits_per_word = 8,
- 				.num_devices = 1,
-+				.force_irq = true,
- 				.devices = &(struct spi_board_info) {
- 					.modalias = "spi-nor",
- 				},
+For SGMII and 1000Base-X mode to work well it also depends on commit
+193250ace270 ("net: ethernet: mtk_eth_soc: fix RX data corruption issue")
+which has already been merged via the net tree.
+
+The whole series has been tested on MT7622+MT7531 (BPi-R64),
+MT7623+MT7530 (BPi-R2), MT7981+GPY211 (GL.iNet GL-MT3000) and
+MT7986+MT7531 (BPi-R3). On the BananaPi R3 a variete of SFP modules
+have been tested, all of them (some SGMII with PHY, others 2500Base-X
+or 1000Base-X without PHY) are working well now, however, some of them
+need manually disabling of autonegotiation for the link to come up.
+
+Changes since v12:
+ * remove patches "fixing" ????Base-X modes. Turns out the cause are
+   buggy SFP modules for which we will need to introduce quirks rather
+   than trying to address this in the Ethernet driver.
+
+Changes since v11:
+ * remove patch "net: ethernet: mtk_eth_soc: fix RX data corruption issue"
+   as it has already been merged via net tree
+ * add commits fixing 1000Base-X and 2500Base-X modes after phylink_pcs
+   conversion
+ * completely remove mtk_sgmii.c as only about 20 lines were left in that
+   file
+ * Add commits from Lorenzo for MT7988 as requested by him
+
+Changes since v10:
+ * improve mediatek,mt7981-eth dt-bindings
+ * use regmap_set_bits instead of regmap_update_bits where possible
+ * completely remove mtk_sgmii.c
+ * no need to keep struct mtk_sgmii either as it had only a single
+   element
+
+Changes since v9:
+ * fix path in mediatek,sgmiisys dt-binding
+
+Changes since v8:
+ * move mediatek,sgmiisys dt-bindings to correct net/pcs folder
+ * rebase on top of net-next/main so series applies cleanly again
+
+Changes since v7:
+ * move mediatek,sgmiisys.yaml to more appropriate folder
+ * don't include <linux/phylink.h> twice in PCS driver, sort includes
+
+Changes since v6:
+ * label MAC MCR bit 12 in 08/12, MediaTek replied explaining its function
+
+Changes since v5:
+ * drop dev pointer also from struct mtk_sgmii, pass it as function
+   parameter instead
+ * address comments left for dt-bindings
+ * minor improvements to commit messages
+
+Changes since v4:
+ * remove unused dev pointer in struct pcs_mtk_lynxi
+ * squash link timer check into correct follow-up patch
+
+Changes since v3:
+ * remove unused #define's
+ * use BMCR_* instead of #define'ing our own constants
+ * return before changing registers in case of invalid link timer
+
+Changes since v2:
+ * improve dt-bindings, convert sgmisys bindings to dt-schema yaml
+ * fix typo
+
+Changes since v1:
+ * apply reverse xmas tree everywhere
+ * improve commit descriptions
+ * add dt binding documentation
+ * various small changes addressing all comments received for v1
+
+Daniel Golle (11):
+  net: ethernet: mtk_eth_soc: add support for MT7981 SoC
+  dt-bindings: net: mediatek,net: add mt7981-eth binding
+  dt-bindings: arm: mediatek: sgmiisys: Convert to DT schema
+  dt-bindings: arm: mediatek: sgmiisys: add MT7981 SoC
+  net: ethernet: mtk_eth_soc: set MDIO bus clock frequency
+  net: ethernet: mtk_eth_soc: reset PCS state
+  net: ethernet: mtk_eth_soc: only write values if needed
+  net: ethernet: mtk_eth_soc: ppe: add support for flow accounting
+  net: pcs: add driver for MediaTek SGMII PCS
+  net: ethernet: mtk_eth_soc: switch to external PCS driver
+  net: dsa: mt7530: use external PCS driver
+
+Lorenzo Bianconi (5):
+  net: ethernet: mtk_eth_soc: add MTK_NETSYS_V1 capability bit
+  net: ethernet: mtk_eth_soc: move MAX_DEVS in mtk_soc_data
+  net: ethernet: mtk_eth_soc: rely on num_devs and remove MTK_MAC_COUNT
+  net: ethernet: mtk_eth_soc: add MTK_NETSYS_V3 capability bit
+  net: ethernet: mtk_eth_soc: convert caps in mtk_soc_data struct to u64
+
+ .../arm/mediatek/mediatek,sgmiisys.txt        |  27 --
+ .../devicetree/bindings/net/mediatek,net.yaml |  53 ++-
+ .../bindings/net/pcs/mediatek,sgmiisys.yaml   |  55 +++
+ MAINTAINERS                                   |   8 +
+ drivers/net/dsa/Kconfig                       |   1 +
+ drivers/net/dsa/mt7530.c                      | 277 ++++-----------
+ drivers/net/dsa/mt7530.h                      |  47 +--
+ drivers/net/ethernet/mediatek/Kconfig         |   2 +
+ drivers/net/ethernet/mediatek/Makefile        |   2 +-
+ drivers/net/ethernet/mediatek/mtk_eth_path.c  |  36 +-
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c   | 314 ++++++++++++++----
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h   | 207 ++++++------
+ drivers/net/ethernet/mediatek/mtk_ppe.c       | 114 ++++++-
+ drivers/net/ethernet/mediatek/mtk_ppe.h       |  25 +-
+ .../net/ethernet/mediatek/mtk_ppe_debugfs.c   |   9 +-
+ .../net/ethernet/mediatek/mtk_ppe_offload.c   |   8 +
+ drivers/net/ethernet/mediatek/mtk_ppe_regs.h  |  14 +
+ drivers/net/ethernet/mediatek/mtk_sgmii.c     | 203 -----------
+ drivers/net/pcs/Kconfig                       |   7 +
+ drivers/net/pcs/Makefile                      |   1 +
+ drivers/net/pcs/pcs-mtk-lynxi.c               | 305 +++++++++++++++++
+ include/linux/pcs/pcs-mtk-lynxi.h             |  13 +
+ 22 files changed, 1050 insertions(+), 679 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,sgmiisys.txt
+ create mode 100644 Documentation/devicetree/bindings/net/pcs/mediatek,sgmiisys.yaml
+ delete mode 100644 drivers/net/ethernet/mediatek/mtk_sgmii.c
+ create mode 100644 drivers/net/pcs/pcs-mtk-lynxi.c
+ create mode 100644 include/linux/pcs/pcs-mtk-lynxi.h
+
+
+base-commit: 46ca833c060cff588a5fc2c25a1def8a1b6284e2
 -- 
-2.30.2
+2.39.2
 
