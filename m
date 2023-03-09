@@ -2,81 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 222BE6B2351
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 12:45:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 834866B2366
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 12:49:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231628AbjCILpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 06:45:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40674 "EHLO
+        id S231510AbjCILtW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 06:49:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231698AbjCILpK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 06:45:10 -0500
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 522799FE57;
-        Thu,  9 Mar 2023 03:45:09 -0800 (PST)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 329BilmV067182;
-        Thu, 9 Mar 2023 05:44:47 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1678362288;
-        bh=/q/r+VqIDQV+nyf/HFdFt7S4d1PgKsozHa8XIbxD8aY=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=nAnAGXYW/BIh78fUHAF8Qk8hBwnEkuy5WmwDM9NDgykbzDS94TzunNiSbEHM08EZf
-         SIWLabHhn09QBlt8dfoAKNl6ODNLNseANMBusUJ7MwbOnfTuRmU91N+5Vx38gcKRZl
-         U/BcI1f82iMoQ6L9rvjidTWmPcFBFyVr70O/u3WA=
-Received: from DFLE111.ent.ti.com (dfle111.ent.ti.com [10.64.6.32])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 329BiliX027723
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 9 Mar 2023 05:44:47 -0600
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Thu, 9
- Mar 2023 05:44:47 -0600
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Thu, 9 Mar 2023 05:44:47 -0600
-Received: from [10.24.69.114] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 329BifPD012701;
-        Thu, 9 Mar 2023 05:44:42 -0600
-Message-ID: <d7f18805-7b26-e2c9-a40e-262165ec8f9b@ti.com>
-Date:   Thu, 9 Mar 2023 17:14:41 +0530
+        with ESMTP id S231506AbjCILtM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 06:49:12 -0500
+Received: from out30-112.freemail.mail.aliyun.com (out30-112.freemail.mail.aliyun.com [115.124.30.112])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAF58E6828;
+        Thu,  9 Mar 2023 03:49:08 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VdTRNaY_1678362543;
+Received: from 30.221.149.231(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VdTRNaY_1678362543)
+          by smtp.aliyun-inc.com;
+          Thu, 09 Mar 2023 19:49:04 +0800
+Message-ID: <72030784-451a-2042-cbb7-98e1f9a544d5@linux.alibaba.com>
+Date:   Thu, 9 Mar 2023 19:49:02 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [EXTERNAL] Re: [PATCH v5 1/2] dt-bindings: net: Add ICSSG
- Ethernet
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.8.0
+Subject: Re: [PATCH bpf-next v2 1/2] net/smc: Introduce BPF injection
+ capability for SMC
 Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh@kernel.org>,
-        MD Danish Anwar <danishanwar@ti.com>
-CC:     "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>, <andrew@lunn.ch>,
-        <nm@ti.com>, <ssantosh@kernel.org>, <srk@ti.com>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-References: <20230210114957.2667963-1-danishanwar@ti.com>
- <20230210114957.2667963-2-danishanwar@ti.com>
- <20230210192001.GB2923614-robh@kernel.org>
- <43df3c2c-d0d0-f2b8-cf8b-8a2453ca43b4@ti.com>
- <63dbbda7-a444-8dac-6399-45e305652155@linaro.org>
-From:   Md Danish Anwar <a0501179@ti.com>
-Organization: Texas Instruments
-In-Reply-To: <63dbbda7-a444-8dac-6399-45e305652155@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS autolearn=ham
+To:     Martin KaFai Lau <martin.lau@linux.dev>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        bpf@vger.kernel.org, kgraul@linux.ibm.com, wenjia@linux.ibm.com,
+        jaka@linux.ibm.com, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org
+References: <1676981919-64884-1-git-send-email-alibuda@linux.alibaba.com>
+ <1676981919-64884-2-git-send-email-alibuda@linux.alibaba.com>
+ <76e226e6-f3bf-f740-c86c-6ee214aff07d@linux.dev>
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+In-Reply-To: <76e226e6-f3bf-f740-c86c-6ee214aff07d@linux.dev>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -84,51 +49,223 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Krzysztof,
 
-On 07/03/23 14:28, Krzysztof Kozlowski wrote:
-> On 07/03/2023 05:57, Md Danish Anwar wrote:
->>>> +allOf:
->>>> +  - $ref: /schemas/remoteproc/ti,pru-consumer.yaml#
->>>> +
->>>> +properties:
->>>> +  compatible:
->>>> +    enum:
->>>> +      - ti,am654-icssg-prueth  # for AM65x SoC family
->>>> +
->>>> +  ti,sram:
->>>> +    $ref: /schemas/types.yaml#/definitions/phandle
->>>> +    description:
->>>> +      phandle to MSMC SRAM node
->>>
->>> I believe we have a standard 'sram' property to point to SRAM nodes 
->>> assuming this is just mmio-sram or similar.
->>>
+On 2/23/23 5:40 AM, Martin KaFai Lau wrote:
+> On 2/21/23 4:18 AM, D. Wythe wrote:
+>> From: "D. Wythe" <alibuda@linux.alibaba.com>
 >>
->> Yes, we have standard 'sram' property but Krzysztof had asked me to make the
->> sram property vendor specific in last revision of this series.
-> 
-> Sorry about that. I missed that we already have a 'sram'. The question
-> remains whether this is a phandle to MMIO SRAM or similar (sram.yaml).
-> 
-> Best regards,
-> Krzysztof
-> 
+>> This PATCH attempts to introduce BPF injection capability for SMC.
+>> As we all know that the SMC protocol is not suitable for all scenarios,
+>> especially for short-lived. However, for most applications, they cannot
+>> guarantee that there are no such scenarios at all. Therefore, apps
+>> may need some specific strategies to decide shall we need to use SMC
+>> or not, for example, apps can limit the scope of the SMC to a specific
+>> IP address or port.
+>>
+>> Based on the consideration of transparent replacement, we hope that apps
+>> can remain transparent even if they need to formulate some specific
+>> strategies for SMC using. That is, do not need to recompile their code.
+>>
+>> On the other hand, we need to ensure the scalability of strategies
+>> implementation. Although it is simple to use socket options or sysctl,
+>> it will bring more complexity to subsequent expansion.
+>>
+>> Fortunately, BPF can solve these concerns very well, users can write
+>> thire own strategies in eBPF to choose whether to use SMC or not.
+>> And it's quite easy for them to modify their strategies in the future.
+>>
+>> This PATCH implement injection capability for SMC via struct_ops.
+>> In that way, we can add new injection scenarios in the future.
+>
+> I have never used smc. I can only comment at its high level usage and 
+> details on the bpf side.
 
-The SRAM that we are using here is phandle to MMIO-SRAM only. In the example
-section you can see, sram node points to msmc_ram (ti,sram = <&msmc_ram>;) And
-msmc_ram has compatible as "mmio-sram" in k3-am65-main.dtsi [1].
 
-	msmc_ram: sram@70000000 {
-		compatible = "mmio-sram";
-		reg = <0x0 0x70000000 0x0 0x200000>;
+Hi Martin,
 
-So I can use 'sram' property as there is no need to make this as ti specific.
-Let me know if it seems good to you.
+Thank you very much for your comments and I'm very sorry for my mistakes.
 
-[1]
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/arm64/boot/dts/ti/k3-am65-main.dtsi?h=v6.3-rc1#n11
+>
+>>
+>> Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+>> ---
+>>   include/linux/btf_ids.h           |  15 +++
+>>   include/net/smc.h                 | 254 
+>> ++++++++++++++++++++++++++++++++++++++
+>>   kernel/bpf/bpf_struct_ops_types.h |   4 +
+>>   net/Makefile                      |   5 +
+>>   net/smc/af_smc.c                  |  10 +-
+>>   net/smc/bpf_smc_struct_ops.c      | 146 ++++++++++++++++++++++
+>>   net/smc/smc.h                     | 220 
+>> ---------------------------------
+>>   7 files changed, 433 insertions(+), 221 deletions(-)
+>>   create mode 100644 net/smc/bpf_smc_struct_ops.c
+>>
+>> diff --git a/include/linux/btf_ids.h b/include/linux/btf_ids.h
+>> index 3a4f7cd..25eab1e 100644
+>> --- a/include/linux/btf_ids.h
+>> +++ b/include/linux/btf_ids.h
+>> @@ -264,6 +264,21 @@ enum {
+>>   MAX_BTF_TRACING_TYPE,
+>>   };
+>>   +#if IS_ENABLED(CONFIG_SMC)
+>> +#define BTF_SMC_TYPE_xxx        \
+>> +    BTF_SMC_TYPE(BTF_SMC_TYPE_SOCK, smc_sock)        \
+>> +    BTF_SMC_TYPE(BTF_SMC_TYPE_CONNECTION, smc_connection)    \
+>> +    BTF_SMC_TYPE(BTF_SMC_TYPE_HOST_CURSOR, smc_host_cursor)
+>> +
+>> +enum {
+>> +#define BTF_SMC_TYPE(name, type) name,
+>> +BTF_SMC_TYPE_xxx
+>> +#undef BTF_SMC_TYPE
+>> +MAX_BTF_SMC_TYPE,
+>> +};
+>> +extern u32 btf_smc_ids[];
+>
+> Do all these need to be in btf_ids.h?
 
--- 
-Thanks and Regards,
-Danish.
+My original intention is to do some security checks via btf_smc_ids,
+
+but since it is not implemented at present, so it is not necessary here.
+
+>
+>> +#endif
+>> +
+>>   extern u32 btf_tracing_ids[];
+>>   extern u32 bpf_cgroup_btf_id[];
+>>   extern u32 bpf_local_storage_map_btf_id[];
+>> diff --git a/include/net/smc.h b/include/net/smc.h
+>> index 597cb93..912c269 100644
+>> --- a/include/net/smc.h
+>> +++ b/include/net/smc.h
+>
+> It is not obvious to me why the header moving is needed (from 
+> net/smc/smc.h to include/net/smc.h ?). This can use some comment in 
+> the commit message and please break it out to another patch.
+
+Got it, , I have finished the splitting.
+
+>
+> [ ... ]
+>
+>> --- a/net/Makefile
+>> +++ b/net/Makefile
+>> @@ -52,6 +52,11 @@ obj-$(CONFIG_TIPC)        += tipc/
+>>   obj-$(CONFIG_NETLABEL)        += netlabel/
+>>   obj-$(CONFIG_IUCV)        += iucv/
+>>   obj-$(CONFIG_SMC)        += smc/
+>> +ifneq ($(CONFIG_SMC),)
+>> +ifeq ($(CONFIG_BPF_SYSCALL),y)
+>> +obj-y                += smc/bpf_smc_struct_ops.o
+>
+> This will ensure bpf_smc_struct_ops.c compiled as builtin even when 
+> smc is compiled as module?
+
+Yes,  smc allow compiled as module.
+
+We are also struggling here. If you have a better way, please let me 
+know. 😁
+
+>
+>> diff --git a/net/smc/bpf_smc_struct_ops.c b/net/smc/bpf_smc_struct_ops.c
+>> new file mode 100644
+>> index 0000000..a5989b6
+>> --- /dev/null
+>> +++ b/net/smc/bpf_smc_struct_ops.c
+>> @@ -0,0 +1,146 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +
+>> +#include <linux/kernel.h>
+>> +#include <linux/bpf_verifier.h>
+>> +#include <linux/btf_ids.h>
+>> +#include <linux/bpf.h>
+>> +#include <linux/btf.h>
+>> +#include <net/sock.h>
+>> +#include <net/smc.h>
+>> +
+>> +extern struct bpf_struct_ops smc_sock_negotiator_ops;
+>> +
+>> +DEFINE_RWLOCK(smc_sock_negotiator_ops_rwlock);
+>> +struct smc_sock_negotiator_ops *negotiator;
+>
+> Is it sure one global negotiator (policy) will work for all smc_sock? 
+> or each sk should have its own negotiator and the negotiator is 
+> selected by setsockopt.
+>
+This is really a good question,  we can really consider adding an 
+independent negotiator for each sock.
+
+But just like the TCP congestion control , the global negotiator can be 
+used for sock without
+
+special requirements.
+
+
+>> +
+>> +/* convert sk to smc_sock */
+>> +static inline struct smc_sock *smc_sk(const struct sock *sk)
+>> +{
+>> +    return (struct smc_sock *)sk;
+>> +}
+>> +
+>> +/* register ops */
+>> +static inline void smc_reg_passive_sk_ops(struct 
+>> smc_sock_negotiator_ops *ops)
+>> +{
+>> +    write_lock_bh(&smc_sock_negotiator_ops_rwlock);
+>> +    negotiator = ops;
+>
+> What happens to the existing negotiator?
+
+What if we return a failure when the negotiator already exists ?
+
+>
+>> + write_unlock_bh(&smc_sock_negotiator_ops_rwlock);
+>> +}
+>> +
+>> +/* unregister ops */
+>> +static inline void smc_unreg_passive_sk_ops(struct 
+>> smc_sock_negotiator_ops *ops)
+>> +{
+>> +    write_lock_bh(&smc_sock_negotiator_ops_rwlock);
+>> +    if (negotiator == ops)
+>> +        negotiator = NULL;
+>> +    write_unlock_bh(&smc_sock_negotiator_ops_rwlock);
+>> +}
+>> +
+>> +int smc_sock_should_select_smc(const struct smc_sock *smc)
+>> +{
+>> +    int ret = SK_PASS;
+>> +
+>> +    read_lock_bh(&smc_sock_negotiator_ops_rwlock);
+>> +    if (negotiator && negotiator->negotiate)
+>> +        ret = negotiator->negotiate((struct smc_sock *)smc);
+>> +    read_unlock_bh(&smc_sock_negotiator_ops_rwlock);
+>> +    return ret;
+>> +}
+>> +EXPORT_SYMBOL_GPL(smc_sock_should_select_smc);
+>> +
+>> +void smc_sock_perform_collecting_info(const struct smc_sock *smc, 
+>> int timing)
+>> +{
+>> +    read_lock_bh(&smc_sock_negotiator_ops_rwlock);
+>> +    if (negotiator && negotiator->collect_info)
+>> +        negotiator->collect_info((struct smc_sock *)smc, timing);
+>> +    read_unlock_bh(&smc_sock_negotiator_ops_rwlock);
+>> +}
+>> +EXPORT_SYMBOL_GPL(smc_sock_perform_collecting_info);
+>> +
+>> +/* define global smc ID for smc_struct_ops */
+>> +BTF_ID_LIST_GLOBAL(btf_smc_ids, MAX_BTF_SMC_TYPE)
+>
+> How is btf_smc_ids used?
+
+Yes, it is useless here for the time being. I will remove them in the 
+new version.
+
+>
+>> +#define BTF_SMC_TYPE(name, type) BTF_ID(struct, type)
+>> +BTF_SMC_TYPE_xxx
+>> +#undef BTF_SMC_TYPE
+>> +
+>
