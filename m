@@ -2,158 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 384076B2B3C
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 17:54:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBDF16B2B55
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 17:58:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230153AbjCIQyS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 11:54:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40536 "EHLO
+        id S230250AbjCIQ6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 11:58:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230134AbjCIQxq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 11:53:46 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D30E1C94
-        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 08:43:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678380236;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gBYjTI8PgGxLAtEJnnuZ8LRWuHsJNFJKEu/Uajd9epk=;
-        b=i5E/Qs1/L41Il6Vqlc338wWnIgu9rocxzqn4tAXHTA3sTtKjRJr/N8CpAkmbTPIDzsyoAg
-        9UNvsOdGUAo8cjslAVi0XYQ6MuXK8rZmb9/i6Cy3sW0qpBnrej02sYJx4859gbkRs38tp1
-        dG7b93EysMO3AU4gzI9wRdwStuFIlPc=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-538-OyNzsve9NBiVxoBPhY-dow-1; Thu, 09 Mar 2023 11:43:55 -0500
-X-MC-Unique: OyNzsve9NBiVxoBPhY-dow-1
-Received: by mail-ed1-f69.google.com with SMTP id v11-20020a056402348b00b004ce34232666so3752732edc.3
-        for <netdev@vger.kernel.org>; Thu, 09 Mar 2023 08:43:54 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678380234;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=gBYjTI8PgGxLAtEJnnuZ8LRWuHsJNFJKEu/Uajd9epk=;
-        b=i0wvK+lqr8eD/AqVxbSyNOFsmCrppL3cDnKGKyIBtAs6cBtk+7Y8eRzB2pj6k0gsNM
-         pNweS/9SVFNtYQVyvkqdBj4UUL8daw3SQunMwDQPWzsumh26qkRD9nQ0U4P97PgHyMLd
-         EbeR3z0ZkpkvCS19qvaVQrpcYiZKJY4xPqbObPQixIo4T4JCyNFcynwix3oKgyvik0BQ
-         PCfQwCJMwLwzBsUrO5QYPytcgx5WI3LslaiJAFCXVwu6NBl4hDrVaiLBow5U081zsW+p
-         nKGNX5ag2mN7JDhSCIN+06lw6yb8wFcTP3E9E8D8AoVguvtCyiGl9/R3UMe7l5PX6A9E
-         36XQ==
-X-Gm-Message-State: AO0yUKXKeqhFWGIxX3sE5DjK70JasamzBYzatOoZQNSirDx1M2+2VheY
-        MqCPsRwiuUMzw/ZBEnqwtnREzhfK4egTKxB4O3P3qmdW8s0p6EUKCG8MZBlHlD/9DWHGM5pQAcQ
-        zhDs5DI5dgb3y9sDF
-X-Received: by 2002:aa7:d385:0:b0:4ac:d8a1:7385 with SMTP id x5-20020aa7d385000000b004acd8a17385mr22723861edq.3.1678380234023;
-        Thu, 09 Mar 2023 08:43:54 -0800 (PST)
-X-Google-Smtp-Source: AK7set+YXdWGTr+wwyLt6gx1zoE1Sr4/UFcOwc798aU7m3XxYsJQWmujjulXzcRp+Ar11o7JCqfjAg==
-X-Received: by 2002:aa7:d385:0:b0:4ac:d8a1:7385 with SMTP id x5-20020aa7d385000000b004acd8a17385mr22723846edq.3.1678380233757;
-        Thu, 09 Mar 2023 08:43:53 -0800 (PST)
-Received: from [192.168.42.100] (nat-cgn9-185-107-15-52.static.kviknet.net. [185.107.15.52])
-        by smtp.gmail.com with ESMTPSA id t30-20020a50ab5e000000b004ad601533a3sm9926098edc.55.2023.03.09.08.43.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Mar 2023 08:43:53 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <73b5076c-335b-c746-b227-0edd40435ef5@redhat.com>
-Date:   Thu, 9 Mar 2023 17:43:51 +0100
+        with ESMTP id S229798AbjCIQ5x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 11:57:53 -0500
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ABC319C79;
+        Thu,  9 Mar 2023 08:51:07 -0800 (PST)
+Received: from fpc.intra.ispras.ru (unknown [10.10.165.5])
+        by mail.ispras.ru (Postfix) with ESMTPSA id BC4AD4077AED;
+        Thu,  9 Mar 2023 16:51:05 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru BC4AD4077AED
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
+        s=default; t=1678380665;
+        bh=/fzV+lgyZY1hxeAejs+4DusbBcnz3JiFIO3akEE9M50=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dHhEqPiJPnRB6qQzvS6/kg+A7vd/YpaVYtwIEm83/GiWhf/vZGHLJNW804Gg772Er
+         JxGVwEGASwkUfsFOcwiZcJOqiKV6qo3QIzn3mVEF+8AplzBmo0PV9a4VM+pQ2I+Z4W
+         WvnlNK57zslhnzKofbgzT05Xrbr0Uqge66Y1OKfE=
+From:   Fedor Pchelkin <pchelkin@ispras.ru>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Fedor Pchelkin <pchelkin@ispras.ru>,
+        Simon Horman <simon.horman@corigine.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Minsuk Kang <linuxlovemin@yonsei.ac.kr>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        lvc-project@linuxtesting.org,
+        syzbot+1e608ba4217c96d1952f@syzkaller.appspotmail.com
+Subject: [PATCH v2] nfc: pn533: initialize struct pn533_out_arg properly
+Date:   Thu,  9 Mar 2023 19:50:50 +0300
+Message-Id: <20230309165050.207390-1-pchelkin@ispras.ru>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230308183035.0fb2febd@kernel.org>
+References: 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Cc:     brouer@redhat.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Larysa Zaremba <larysa.zaremba@intel.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Song Liu <song@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Menglong Dong <imagedong@tencent.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 0/3] xdp: recycle Page Pool backed skbs built
- from XDP frames
-Content-Language: en-US
-To:     Alexander Lobakin <aleksander.lobakin@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>
-References: <20230303133232.2546004-1-aleksander.lobakin@intel.com>
-In-Reply-To: <20230303133232.2546004-1-aleksander.lobakin@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+struct pn533_out_arg used as a temporary context for out_urb is not
+initialized properly. Its uninitialized 'phy' field can be dereferenced in
+error cases inside pn533_out_complete() callback function. It causes the
+following failure:
 
+general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+CPU: 1 PID: 0 Comm: swapper/1 Not tainted 6.2.0-rc3-next-20230110-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
+RIP: 0010:pn533_out_complete.cold+0x15/0x44 drivers/nfc/pn533/usb.c:441
+Call Trace:
+ <IRQ>
+ __usb_hcd_giveback_urb+0x2b6/0x5c0 drivers/usb/core/hcd.c:1671
+ usb_hcd_giveback_urb+0x384/0x430 drivers/usb/core/hcd.c:1754
+ dummy_timer+0x1203/0x32d0 drivers/usb/gadget/udc/dummy_hcd.c:1988
+ call_timer_fn+0x1da/0x800 kernel/time/timer.c:1700
+ expire_timers+0x234/0x330 kernel/time/timer.c:1751
+ __run_timers kernel/time/timer.c:2022 [inline]
+ __run_timers kernel/time/timer.c:1995 [inline]
+ run_timer_softirq+0x326/0x910 kernel/time/timer.c:2035
+ __do_softirq+0x1fb/0xaf6 kernel/softirq.c:571
+ invoke_softirq kernel/softirq.c:445 [inline]
+ __irq_exit_rcu+0x123/0x180 kernel/softirq.c:650
+ irq_exit_rcu+0x9/0x20 kernel/softirq.c:662
+ sysvec_apic_timer_interrupt+0x97/0xc0 arch/x86/kernel/apic/apic.c:1107
 
-On 03/03/2023 14.32, Alexander Lobakin wrote:
-> Yeah, I still remember that "Who needs cpumap nowadays" (c), but anyway.
-> 
-> __xdp_build_skb_from_frame() missed the moment when the networking stack
-> became able to recycle skb pages backed by a page_pool. This was making
-> e.g. cpumap redirect even less effective than simple %XDP_PASS. veth was
-> also affected in some scenarios.
-> A lot of drivers use skb_mark_for_recycle() already, it's been almost
-> two years and seems like there are no issues in using it in the generic
-> code too. {__,}xdp_release_frame() can be then removed as it losts its
-> last user.
-> Page Pool becomes then zero-alloc (or almost) in the abovementioned
-> cases, too. Other memory type models (who needs them at this point)
-> have no changes.
-> 
-> Some numbers on 1 Xeon Platinum core bombed with 27 Mpps of 64-byte
-> IPv6 UDP, iavf w/XDP[0] (CONFIG_PAGE_POOL_STATS is enabled):
-> 
-> Plain %XDP_PASS on baseline, Page Pool driver:
-> 
-> src cpu Rx     drops  dst cpu Rx
->    2.1 Mpps       N/A    2.1 Mpps
-> 
-> cpumap redirect (w/o leaving its node) on baseline:
+Initialize the field with the pn533_usb_phy currently used.
 
-What does it mean "without leaving its node" ?
-I interpret this means BPF program CPU redirect to "same" CPU ?
-Or does the "node" reference a NUMA node?
+Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
 
-> 
->    6.8 Mpps  5.0 Mpps    1.8 Mpps
-> 
-> cpumap redirect with skb PP recycling:
+Fixes: 9dab880d675b ("nfc: pn533: Wait for out_urb's completion in pn533_usb_send_frame()")
+Reported-by: syzbot+1e608ba4217c96d1952f@syzkaller.appspotmail.com
+Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
+---
+v2: follow reverse xmas tree ordering as suggested by Simon Horman;
+some tiny commit info updates
 
-Does this test use two CPUs?
+ drivers/nfc/pn533/usb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> 
->    7.9 Mpps  5.7 Mpps    2.2 Mpps
->                         +22% (from cpumap redir on baseline)
-> [0] https://github.com/alobakin/linux/commits/iavf-xdp
-> 
-> Alexander Lobakin (3):
->    net: page_pool, skbuff: make skb_mark_for_recycle() always available
->    xdp: recycle Page Pool backed skbs built from XDP frames
->    xdp: remove unused {__,}xdp_release_frame()
-> 
->   include/linux/skbuff.h |  4 ++--
->   include/net/xdp.h      | 29 -----------------------------
->   net/core/xdp.c         | 19 ++-----------------
->   3 files changed, 4 insertions(+), 48 deletions(-)
-> 
-> ---
->  From v1[1]:
-> * make skb_mark_for_recycle() always available, otherwise there are build
->    failures on non-PP systems (kbuild bot);
-> * 'Page Pool' -> 'page_pool' when it's about a page_pool instance, not
->    API (Jesper);
-> * expanded test system info a bit in the cover letter (Jesper).
-> 
-> [1] https://lore.kernel.org/bpf/20230301160315.1022488-1-aleksander.lobakin@intel.com
+diff --git a/drivers/nfc/pn533/usb.c b/drivers/nfc/pn533/usb.c
+index ed9c5e2cf3ad..a187f0e0b0f7 100644
+--- a/drivers/nfc/pn533/usb.c
++++ b/drivers/nfc/pn533/usb.c
+@@ -175,6 +175,7 @@ static int pn533_usb_send_frame(struct pn533 *dev,
+ 	print_hex_dump_debug("PN533 TX: ", DUMP_PREFIX_NONE, 16, 1,
+ 			     out->data, out->len, false);
+ 
++	arg.phy = phy;
+ 	init_completion(&arg.done);
+ 	cntx = phy->out_urb->context;
+ 	phy->out_urb->context = &arg;
+-- 
+2.34.1
 
