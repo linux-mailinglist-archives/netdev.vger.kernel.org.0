@@ -2,89 +2,296 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BEFD6B2E0E
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 21:01:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 021CE6B2E28
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 21:08:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230366AbjCIUAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 15:00:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50506 "EHLO
+        id S230330AbjCIUIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 15:08:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230321AbjCIUAk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 15:00:40 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D30FA8DE;
-        Thu,  9 Mar 2023 12:00:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C96DB82088;
-        Thu,  9 Mar 2023 20:00:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1429BC433D2;
-        Thu,  9 Mar 2023 20:00:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678392018;
-        bh=ghTPUr8Y9UcJYMB55rlQXEdOc5NzVVj2fiPMBgsL30M=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=caTMDFtjQSi0VwcxdjUUJh2Sm8c9jkyu8HFUs0dIdlfYQYO6ccKxhsyB0IxAy6on7
-         ruapcN8UwXlrS7o/sDZEcxURwUSAoMtp56HHsF8+PyopsK7ukJ4u3zgFE4XJy7dkNS
-         pCx2Za/HUTRJ9dtcW85QokuqgVnyj/x49coKSRg0qhbIDUembzgjLLsGMH2jMS2KS9
-         UF4VJHyPxwN7i381H6JQ9KtqKISLdRqSSFGUnTNdy0BNFJh8FEQEs6NxOHeRhlqWP6
-         PLQ0W6aHbOdW/8mOOydHqolO1dCSz3fbeMObVLf84zvN8sujVvPxCj0vYZsewfvYOs
-         QrKWeQ3ZprrUA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EADE3E4D008;
-        Thu,  9 Mar 2023 20:00:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230248AbjCIUIO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 15:08:14 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53BCA31E0D
+        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 12:08:11 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id o12so11725427edb.9
+        for <netdev@vger.kernel.org>; Thu, 09 Mar 2023 12:08:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kali.org; s=google; t=1678392490;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=rkdqh8Mn4yYVcJRbj0k73VKeCBqKduyHj6J+C4uNHbk=;
+        b=GHJNSGs0ozGdUpE1NfeN06yA+sKV9j8iM4T3MaizrYC8y3Xkguqdvt9CGLF+wVxabQ
+         GjHtzIdzGaMVhs5kRs0zcAZigoMTMgRR3rL/Un1Kdj9TWTmskh7OXWXP7oEMC1d+Gaxe
+         t/J+tUlSjq7iO4QQtq3+CIcOZzkezl1W3+2ugK7blV0TOX4eWV+IWwKc6zwt7uqdFCaM
+         iElGs/PMnlpE3t3Y/qyPUXjTpFM9GYMwcEAn/LZBqxW9FxupcNIsq5o1jzifC4uMTivz
+         UA8uNSGT+x0gFE+bF+Hw5dOyKAhBM6CGLvIFEaBLVfQV1uT2DWqpO8z3uPf9wyUfgvK0
+         ykrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678392490;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=rkdqh8Mn4yYVcJRbj0k73VKeCBqKduyHj6J+C4uNHbk=;
+        b=fOSoFGmGlwHwy2lSJSW2M8wVjselfLdPkLswe2n94FimB4ZAFohEdKlAI1MsjyadS6
+         eSNkM4Zf52hThA7fgiksZYcz+uV6nddcVm1vUov4k0MhpPXzuLYLZ16chICg8nPWPFFd
+         sf08pDEttMUhPvChvNzz+z5m3ZnzLqqT0hxDiSP3A40sNU4Y9j5bYo1LtBNP/D10zGCz
+         ibTWNSDbaRe6X1+oMFANOs8uO/RJSqiRzTz52OgvNOodOMgLRM8SUKN4ODIRNgFps719
+         Xe/5ULH9dM5XDqzvbHhlCblBFldQmzpblnuqOevqEr7QQKUCJ21/0CTImssM9UbtMYdy
+         CSEw==
+X-Gm-Message-State: AO0yUKV8Z0jLjO9pw5YvIiiR5iP950IB1wVi0fh9yNr99Mrq9xCQHqSp
+        iybHezUoYAgLVkH/gfdKfbgoqc+ZfvHrcdcAgv4d9g==
+X-Google-Smtp-Source: AK7set9FtsMby2FguByeoNJEQBInZqMAF0hTx+q7tMBEgbEGSz6VyxVYUtlDhjCvaUHueJ7BNK9KTXJ/2uQvQ7QqWB8=
+X-Received: by 2002:a17:906:310d:b0:87b:d50f:6981 with SMTP id
+ 13-20020a170906310d00b0087bd50f6981mr10758001ejx.14.1678392489733; Thu, 09
+ Mar 2023 12:08:09 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next v2 0/2] selftests/bpf: use ifname instead of ifindex
- in XDP
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167839201795.28882.17670469043875720414.git-patchwork-notify@kernel.org>
-Date:   Thu, 09 Mar 2023 20:00:17 +0000
-References: <cover.1678382940.git.lorenzo@kernel.org>
-In-Reply-To: <cover.1678382940.git.lorenzo@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        andrii@kernel.org, lorenzo.bianconi@redhat.com,
-        daniel@iogearbox.net
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230209020916.6475-1-steev@kali.org> <20230209020916.6475-5-steev@kali.org>
+ <ZAoWdR7mppnWclFr@hovoldconsulting.com>
+In-Reply-To: <ZAoWdR7mppnWclFr@hovoldconsulting.com>
+From:   Steev Klimaszewski <steev@kali.org>
+Date:   Thu, 9 Mar 2023 14:07:58 -0600
+Message-ID: <CAKXuJqgAbdALaRdcoSV+sXbGzwm6h54hZtG2rBobcGA9vyu50g@mail.gmail.com>
+Subject: Re: [PATCH v5 4/4] arm64: dts: qcom: thinkpad-x13s: Add bluetooth
+To:     Johan Hovold <johan@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Sven Peter <sven@svenpeter.dev>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        Mark Pearson <markpearson@lenovo.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Thu, Mar 9, 2023 at 11:24=E2=80=AFAM Johan Hovold <johan@kernel.org> wro=
+te:
+>
+> On Wed, Feb 08, 2023 at 08:09:16PM -0600, Steev Klimaszewski wrote:
+> > The Lenovo Thinkpad X13s has a WCN6855 Bluetooth controller on uart2,
+> > add this.
+> >
+> > Signed-off-by: Steev Klimaszewski <steev@kali.org>
+> > Link: https://lore.kernel.org/r/20230207052829.3996-5-steev@kali.org
+>
+> This link should not be needed.
+>
+> Also, please update the patch Subject to use the following prefix:
+>
+>         arm64: dts: qcom: sc8280xp-x13s: ...
+>
 
-This series was applied to bpf/bpf-next.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
+Yeah, that was me screwing up my  patch, will make those changes for v6
 
-On Thu,  9 Mar 2023 18:32:39 +0100 you wrote:
-> Use interface name instead of interface index in XDP compliance test tool logs.
-> Improve XDP compliance test tool error messages.
-> 
-> Changes since v1:
-> - split previous patch in two logically separated patches
-> 
-> Lorenzo Bianconi (2):
->   selftests/bpf: use ifname instead of ifindex in XDP compliance test
->     tool
->   selftests/bpf: improve error logs in XDP compliance test tool
-> 
-> [...]
+> > ---
+> > Changes since v4:
+> >  * Address Konrad's review comments.
+> >
+> > Changes since v3:
+> >  * Add vreg_s1c
+> >  * Add regulators and not dead code
+> >  * Fix commit message changelog
+> >
+> > Changes since v2:
+> >  * Remove dead code and add TODO comment
+> >  * Make dtbs_check happy with the pin definitions
+> >  .../qcom/sc8280xp-lenovo-thinkpad-x13s.dts    | 76 +++++++++++++++++++
+> >  1 file changed, 76 insertions(+)
+> >
+> > diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts=
+ b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
+> > index f936b020a71d..ad20cfb3a830 100644
+> > --- a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
+> > +++ b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
+> > @@ -24,6 +24,8 @@ / {
+> >       aliases {
+> >               i2c4 =3D &i2c4;
+> >               i2c21 =3D &i2c21;
+> > +             serial0 =3D &uart17;
+>
+> This is an unrelated change that does not belong in this patch.
+>
+> > +             serial1 =3D &uart2;
+> >       };
+> >
+> >       wcd938x: audio-codec {
+> > @@ -297,6 +299,15 @@ pmc8280c-rpmh-regulators {
+> >               qcom,pmic-id =3D "c";
+> >               vdd-bob-supply =3D <&vreg_vph_pwr>;
+> >
+> > +             vreg_s1c: smps1 {
+> > +                     regulator-name =3D "vreg_s1c";
+> > +                     regulator-min-microvolt =3D <1880000>;
+> > +                     regulator-max-microvolt =3D <1900000>;
+> > +                     regulator-allowed-modes =3D <RPMH_REGULATOR_MODE_=
+AUTO>,
+> > +                                               <RPMH_REGULATOR_MODE_RE=
+T>;
+> > +                     regulator-allow-set-load;
+>
+> Don't you need to specify initial-mode as well?
+>
+> > +             };
+> > +
+> >               vreg_l1c: ldo1 {
+> >                       regulator-name =3D "vreg_l1c";
+> >                       regulator-min-microvolt =3D <1800000>;
+> > @@ -712,6 +723,32 @@ &qup0 {
+> >       status =3D "okay";
+> >  };
+> >
+> > +&uart2 {
+> > +     pinctrl-0 =3D <&uart2_state>;
+> > +     pinctrl-names =3D "default";
+> > +
+> > +     status =3D "okay";
+> > +
+> > +     bluetooth {
+> > +             compatible =3D "qcom,wcn6855-bt";
+> > +
+> > +             vddio-supply =3D <&vreg_s10b>;
+> > +             vddbtcxmx-supply =3D <&vreg_s12b>;
+> > +             vddrfacmn-supply =3D <&vreg_s12b>;
+> > +             vddrfa0p8-supply =3D <&vreg_s12b>;
+> > +             vddrfa1p2-supply =3D <&vreg_s11b>;
+> > +             vddrfa1p7-supply =3D <&vreg_s1c>;
+> > +
+> > +             max-speed =3D <3200000>;
+> > +
+> > +             enable-gpios =3D <&tlmm 133 GPIO_ACTIVE_HIGH>;
+> > +             swctrl-gpios =3D <&tlmm 132 GPIO_ACTIVE_HIGH>;
+> > +
+> > +             pinctrl-0 =3D <&bt_en>;
+> > +             pinctrl-names =3D "default";
+> > +     };
+> > +};
+> > +
+> >  &qup1 {
+> >       status =3D "okay";
+> >  };
+> > @@ -720,6 +757,11 @@ &qup2 {
+> >       status =3D "okay";
+> >  };
+> >
+> > +&uart17 {
+> > +     compatible =3D "qcom,geni-debug-uart";
+> > +     status =3D "okay";
+> > +};
+>
+> This bit does not belong here either. We don't have any means of
+> accessing the debug uart on the X13s so we should probably just leave it
+> disabled.
+>
 
-Here is the summary with links:
-  - [bpf-next,v2,1/2] selftests/bpf: use ifname instead of ifindex in XDP compliance test tool
-    https://git.kernel.org/bpf/bpf-next/c/27a36bc3cdd5
-  - [bpf-next,v2,2/2] selftests/bpf: improve error logs in XDP compliance test tool
-    https://git.kernel.org/bpf/bpf-next/c/c1cd734c1bb3
+Will drop it (and the above one as well)
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> > +
+> >  &remoteproc_adsp {
+> >       firmware-name =3D "qcom/sc8280xp/LENOVO/21BX/qcadsp8280.mbn";
+> >
+> > @@ -980,6 +1022,19 @@ hastings_reg_en: hastings-reg-en-state {
+> >  &tlmm {
+> >       gpio-reserved-ranges =3D <70 2>, <74 6>, <83 4>, <125 2>, <128 2>=
+, <154 7>;
+> >
+> > +     bt_en: bt-en-state {
+>
+> As you are configuring more than one pin, please rename this as:
+>
+>         bt_default: bt-default-state
+>
+> > +             hstp-sw-ctrl-pins {
+> > +                     pins =3D "gpio132";
+> > +                     function =3D "gpio";
+>
+> You should define the bias configuration as well. I guess we need to
+> keep the default pull-down enabled.
+>
+> > +             };
+> > +
+> > +             hstp-bt-en-pins {
+> > +                     pins =3D "gpio133";
+> > +                     function =3D "gpio";
+> > +                     drive-strength =3D <16>;
+>
+> bias-disable?
+>
+> > +             };
+> > +     };
+> > +
+> >       edp_reg_en: edp-reg-en-state {
+> >               pins =3D "gpio25";
+> >               function =3D "gpio";
+> > @@ -1001,6 +1056,27 @@ i2c4_default: i2c4-default-state {
+> >               bias-disable;
+> >       };
+> >
+> > +     uart2_state: uart2-state {
+>
+> Rename this one too:
+>
+>         uart2_default: uart2-default-state
+>
+> > +             cts-pins {
+> > +                     pins =3D "gpio122";
+>
+> This should be gpio121 (gpio122 is rts).
+>
+
+You are right that it should be... however... if I actually set it to
+be 121.... bluetooth doesn't actually come up/work?
+
+> > +                     function =3D "qup2";
+> > +                     bias-disable;
+>
+> Don't we need a pull-down on this one to avoid a floating input when the
+> module is powered down?
+>
+Maybe?  I don't have access to the schematics or anything so I was
+going with the best guess based on what worked by poking and prodding.
+Will try this.
 
 
+> > +             };
+> > +
+> > +             rts-tx-pins {
+>
+> Please split this in two nodes.
+>
+> > +                     pins =3D "gpio122", "gpio123";
+> > +                     function =3D "qup2";
+> > +                     drive-strength =3D <2>;
+> > +                     bias-disable;
+> > +             };
+> > +
+> > +             rx-pins {
+> > +                     pins =3D "gpio124";
+> > +                     function =3D "qup2";
+> > +                     bias-pull-up;
+> > +             };
+> > +     };
+> > +
+> >       i2c21_default: i2c21-default-state {
+> >               pins =3D "gpio81", "gpio82";
+> >               function =3D "qup21";
+>
+> Johan
