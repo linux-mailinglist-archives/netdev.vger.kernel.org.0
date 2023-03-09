@@ -2,241 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4224D6B2AA7
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 17:24:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 080F16B2AD2
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 17:32:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229541AbjCIQYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 11:24:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46548 "EHLO
+        id S230440AbjCIQcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 11:32:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230280AbjCIQYU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 11:24:20 -0500
-Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1223C3580;
-        Thu,  9 Mar 2023 08:15:47 -0800 (PST)
-Received: by mail-pj1-f53.google.com with SMTP id y2so2579530pjg.3;
-        Thu, 09 Mar 2023 08:15:47 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678378481;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=+oerE592QWPHbjY3Z2bnGRXDZkiQxTKdoJxy35rXE2w=;
-        b=M3D9ZfllNyUl9p2Y8SYOdXGKzlQIW/pYTfyUQoZo2eohYIw/7IHwxLdBV2C7bhIR+Z
-         VKAZIQhSnvnUIHbvbXJTdx9IDmtWk1uw0Bmz/R5z/xdSsJ+ASQe5+eBq7HCbAxpcm9Nn
-         S3acXid9iJWr97xisDQcih4cw6wQV+UVKhPAeIRXEnPvbiNHXZGA16Qd52EAS8Mv+tvr
-         rcPstfT8afsvtaj/z3fK+nz/CtYZY1BJNovX2hLJN2udwpUK88QH9r/rIGt+uSZF2Hyi
-         QcQBzArVE5mRivnOZRrvYl2yEMASXpzylmJ7ICN4Njlxj9xLC3VgoPmtqzWPum7e4ryV
-         cfdg==
-X-Gm-Message-State: AO0yUKVZpfTbr2RGVM3FbFBUl0RzmM4bkOMgHh27L3LvZ1knsD/56cP8
-        LA9/0CmAR4lulikAROCU1iE3iMbhGlIExVKwXPk=
-X-Google-Smtp-Source: AK7set8EkRCqggoMBiEFWEcY9hblIvVtGJgN73q81P0AfqOHMS5pQP3ZZQSDHfIKYSlkoAtrhqLQk7XcXD4p2lXPgdU=
-X-Received: by 2002:a17:903:280f:b0:19e:f660:81ee with SMTP id
- kp15-20020a170903280f00b0019ef66081eemr2477765plb.2.1678378481209; Thu, 09
- Mar 2023 08:14:41 -0800 (PST)
+        with ESMTP id S229614AbjCIQc1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 11:32:27 -0500
+Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86C695A6F4;
+        Thu,  9 Mar 2023 08:24:12 -0800 (PST)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mx.sberdevices.ru (Postfix) with ESMTP id AABC25FD16;
+        Thu,  9 Mar 2023 19:23:24 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1678379004;
+        bh=EyTvpN4uMn4RAx5VHlCi+JShMPq/ATAlo5vfvsx5t7I=;
+        h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+        b=BOS3W4hL13GYcIkyEf3x1WCW2RO+yErg77QInwNZBjnpUAhQbMGF7l1gC1tIftnnI
+         EpBmox6JCMX26SybqWt9dYc6ySvnQo9Qtjx7BKayOFtBrlqGOqgsZZZ/62T6HUBQo7
+         sKn2yFDLYTNH+wJvjp/PNIJgaKW9oSnJtLz8d2v0i4Tk01ZNPc+TU6mjlI5GR+YM7Y
+         kqYGullPXnmaHzFW9n7PY9rZrnSC1sGO0iTSqVo0ibyriycfdtHe1yscwysUk7RIUm
+         tIsDmr2iuR2ENzXJ1fHdXoaLdGytAhkoUcufHp9HcsRH1c+Ruz70tHy7PYjS7G6Gya
+         5Y/A9sKUHpSmA==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mx.sberdevices.ru (Postfix) with ESMTP;
+        Thu,  9 Mar 2023 19:23:20 +0300 (MSK)
+Message-ID: <a1788ed6-89d4-27da-a049-99e29edea4cb@sberdevices.ru>
+Date:   Thu, 9 Mar 2023 19:20:20 +0300
 MIME-Version: 1.0
-References: <8a39f99fc28967134826dff141b51a5df824b034.1678349267.git.geert+renesas@glider.be>
-In-Reply-To: <8a39f99fc28967134826dff141b51a5df824b034.1678349267.git.geert+renesas@glider.be>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Fri, 10 Mar 2023 01:14:29 +0900
-Message-ID: <CAMZ6RqJM0x07qAFY8Zx=8QYgJ1LTMjqBPQKvdOhuQ8pL9tu-Cw@mail.gmail.com>
-Subject: Re: [PATCH] can: rcar_canfd: Print mnemotechnic error codes
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [RFC PATCH v3 0/4] several updates to virtio/vsock
+Content-Language: en-US
+To:     Stefano Garzarella <sgarzare@redhat.com>
+CC:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kernel@sberdevices.ru>, <oxffffaa@gmail.com>
+References: <0abeec42-a11d-3a51-453b-6acf76604f2e@sberdevices.ru>
+ <20230309162150.qqrlqmqghi5muucx@sgarzare-redhat>
+From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
+In-Reply-To: <20230309162150.qqrlqmqghi5muucx@sgarzare-redhat>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [172.16.1.6]
+X-ClientProxiedBy: S-MS-EXCH02.sberdevices.ru (172.16.1.5) To
+ S-MS-EXCH01.sberdevices.ru (172.16.1.4)
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/03/09 14:25:00 #20928723
+X-KSMG-AntiVirus-Status: Clean, skipped
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu. 9 Mar. 2023 at 17:10, Geert Uytterhoeven
-<geert+renesas@glider.be> wrote:
-> Replace printed numerical error codes by mnemotechnic error codes, to
-> improve the user experience in case of errors.
->
-> While at it, drop printing of an error message in case of out-of-memory,
-> as the core memory allocation code already takes care of this.
->
-> Suggested-by: Vincent Mailhol <vincent.mailhol@gmail.com>
-                                   ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Can you use my other address?
-Suggested-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-Thanks for the patch. Same as before, I have one nitpick on the
-already existing code (c.f. below). You can add my review tag in next
-version:
-Reviewed-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+On 09.03.2023 19:21, Stefano Garzarella wrote:
+> On Thu, Mar 09, 2023 at 01:10:36PM +0300, Arseniy Krasnov wrote:
+>> Hello,
+>>
+>> this patchset evolved from previous v2 version (see link below). It does
+>> several updates to virtio/vsock:
+>> 1) Changes 'virtio_transport_inc/dec_rx_pkt()' interface. Now instead of
+>>   using skbuff state ('head' and 'data' pointers) to update 'fwd_cnt'
+>>   and 'rx_bytes', integer value is passed as an input argument. This
+>>   makes code more simple, because in this case we don't need to udpate
+>>   skbuff state before calling 'virtio_transport_inc/dec_rx_pkt()'. In
+>>   more common words - we don't need to change skbuff state to update
+>>   'rx_bytes' and 'fwd_cnt' correctly.
+>> 2) For SOCK_STREAM, when copying data to user fails, current skbuff is
+>>   not dropped. Next read attempt will use same skbuff and last offset.
+>>   Instead of 'skb_dequeue()', 'skb_peek()' + '__skb_unlink()' are used.
+>>   This behaviour was implemented before skbuff support.
+>> 3) For SOCK_SEQPACKET it removes unneeded 'skb_pull()' call, because for
+>>   this type of socket each skbuff is used only once: after removing it
+>>   from socket's queue, it will be freed anyway.
+>>
+>> Test for 2) also added:
+>> Test tries to 'recv()' data to NULL buffer, then does 'recv()' with valid
+>> buffer. For SOCK_STREAM second 'recv()' must return data, because skbuff
+>> must not be dropped, but for SOCK_SEQPACKET skbuff will be dropped by
+>> kernel, and 'recv()' will return EAGAIN.
+>>
+>> Link to v1 on lore:
+>> https://lore.kernel.org/netdev/c2d3e204-89d9-88e9-8a15-3fe027e56b4b@sberdevices.ru/
+>>
+>> Link to v2 on lore:
+>> https://lore.kernel.org/netdev/a7ab414b-5e41-c7b6-250b-e8401f335859@sberdevices.ru/
+>>
+>> Change log:
+>>
+>> v1 -> v2:
+>> - For SOCK_SEQPACKET call 'skb_pull()' also in case of copy failure or
+>>   dropping skbuff (when we just waiting message end).
+>> - Handle copy failure for SOCK_STREAM in the same manner (plus free
+>>   current skbuff).
+>> - Replace bug repdroducer with new test in vsock_test.c
+>>
+>> v2 -> v3:
+>> - Replace patch which removes 'skb->len' subtraction from function
+>>   'virtio_transport_dec_rx_pkt()' with patch which updates functions
+>>   'virtio_transport_inc/dec_rx_pkt()' by passing integer argument
+>>   instead of skbuff pointer.
+>> - Replace patch which drops skbuff when copying to user fails with
+>>   patch which changes this behaviour by keeping skbuff in queue until
+>>   it has no data.
+>> - Add patch for SOCK_SEQPACKET which removes redundant 'skb_pull()'
+>>   call on read.
+>> - I remove "Fixes" tag from all patches, because all of them now change
+>>   code logic, not only fix something.
+> 
+> Yes, but they solve the problem, so we should use the tag (I think at
+> least in patch 1 and 3).
+> 
+> We usually use the tag when we are fixing a problem introduced by a
+> previous change. So we need to backport the patch to the stable branches
+> as well, and we need the tag to figure out which branches have the patch
+> or not.
+Ahh, sorry. Ok. I see now :)
 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
-> This depends on "[PATCH v2] can: rcar_canfd: Add transceiver support"
-> https://lore.kernel.org/r/e825b50a843ffe40e33f34e4d858c07c1b2ff259.1678280913.git.geert+renesas@glider.be
-> ---
->  drivers/net/can/rcar/rcar_canfd.c | 43 +++++++++++++++----------------
->  1 file changed, 21 insertions(+), 22 deletions(-)
->
-> diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
-> index 6df9a259e5e4f92c..bc75da349676d867 100644
-> --- a/drivers/net/can/rcar/rcar_canfd.c
-> +++ b/drivers/net/can/rcar/rcar_canfd.c
-> @@ -1417,20 +1417,20 @@ static int rcar_canfd_open(struct net_device *ndev)
->
->         err = phy_power_on(priv->transceiver);
->         if (err) {
-> -               netdev_err(ndev, "failed to power on PHY, error %d\n", err);
-> +               netdev_err(ndev, "failed to power on PHY, %pe\n", ERR_PTR(err));
->                 return err;
->         }
->
->         /* Peripheral clock is already enabled in probe */
->         err = clk_prepare_enable(gpriv->can_clk);
->         if (err) {
-> -               netdev_err(ndev, "failed to enable CAN clock, error %d\n", err);
-> +               netdev_err(ndev, "failed to enable CAN clock, %pe\n", ERR_PTR(err));
->                 goto out_phy;
->         }
->
->         err = open_candev(ndev);
->         if (err) {
-> -               netdev_err(ndev, "open_candev() failed, error %d\n", err);
-> +               netdev_err(ndev, "open_candev() failed, %pe\n", ERR_PTR(err));
->                 goto out_can_clock;
->         }
->
-> @@ -1731,10 +1731,9 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
->         int err = -ENODEV;
->
->         ndev = alloc_candev(sizeof(*priv), RCANFD_FIFO_DEPTH);
-> -       if (!ndev) {
-> -               dev_err(dev, "alloc_candev() failed\n");
-> +       if (!ndev)
->                 return -ENOMEM;
-> -       }
-> +
->         priv = netdev_priv(ndev);
->
->         ndev->netdev_ops = &rcar_canfd_netdev_ops;
-> @@ -1777,8 +1776,8 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
->                                        rcar_canfd_channel_err_interrupt, 0,
->                                        irq_name, priv);
->                 if (err) {
-> -                       dev_err(dev, "devm_request_irq CH Err(%d) failed, error %d\n",
-> -                               err_irq, err);
-> +                       dev_err(dev, "devm_request_irq CH Err(%d) failed, %pe\n",
-                                               ^^^^
-From the Linux coding style:
-
-  Printing numbers in parentheses (%d) adds no value and should be avoided.
-
-Ref: https://www.kernel.org/doc/html/v4.10/process/coding-style.html#printing-kernel-messages
-
-One more time, this is already existing code, so bonus points if you
-fix this as well, but I will not blame you if you feel lazy and keep
-the patch as is.
-
-> +                               err_irq, ERR_PTR(err));
->                         goto fail;
->                 }
->                 irq_name = devm_kasprintf(dev, GFP_KERNEL, "canfd.ch%d_trx",
-> @@ -1791,8 +1790,8 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
->                                        rcar_canfd_channel_tx_interrupt, 0,
->                                        irq_name, priv);
->                 if (err) {
-> -                       dev_err(dev, "devm_request_irq Tx (%d) failed, error %d\n",
-> -                               tx_irq, err);
-> +                       dev_err(dev, "devm_request_irq Tx (%d) failed, %pe\n",
-> +                               tx_irq, ERR_PTR(err));
->                         goto fail;
->                 }
->         }
-> @@ -1823,7 +1822,7 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
->         gpriv->ch[priv->channel] = priv;
->         err = register_candev(ndev);
->         if (err) {
-> -               dev_err(dev, "register_candev() failed, error %d\n", err);
-> +               dev_err(dev, "register_candev() failed, %pe\n", ERR_PTR(err));
->                 goto fail_candev;
->         }
->         dev_info(dev, "device registered (channel %u)\n", priv->channel);
-> @@ -1967,16 +1966,16 @@ static int rcar_canfd_probe(struct platform_device *pdev)
->                                        rcar_canfd_channel_interrupt, 0,
->                                        "canfd.ch_int", gpriv);
->                 if (err) {
-> -                       dev_err(dev, "devm_request_irq(%d) failed, error %d\n",
-> -                               ch_irq, err);
-> +                       dev_err(dev, "devm_request_irq(%d) failed, %pe\n",
-
-Same as above.
-
-> +                               ch_irq, ERR_PTR(err));
->                         goto fail_dev;
->                 }
->
->                 err = devm_request_irq(dev, g_irq, rcar_canfd_global_interrupt,
->                                        0, "canfd.g_int", gpriv);
->                 if (err) {
-> -                       dev_err(dev, "devm_request_irq(%d) failed, error %d\n",
-> -                               g_irq, err);
-> +                       dev_err(dev, "devm_request_irq(%d) failed, %pe\n",
-
-Same as above.
-
-> +                               g_irq, ERR_PTR(err));
->                         goto fail_dev;
->                 }
->         } else {
-> @@ -1985,8 +1984,8 @@ static int rcar_canfd_probe(struct platform_device *pdev)
->                                        "canfd.g_recc", gpriv);
->
->                 if (err) {
-> -                       dev_err(dev, "devm_request_irq(%d) failed, error %d\n",
-> -                               g_recc_irq, err);
-> +                       dev_err(dev, "devm_request_irq(%d) failed, %pe\n",
-> +                               g_recc_irq, ERR_PTR(err));
->                         goto fail_dev;
->                 }
->
-> @@ -1994,8 +1993,8 @@ static int rcar_canfd_probe(struct platform_device *pdev)
->                                        rcar_canfd_global_err_interrupt, 0,
->                                        "canfd.g_err", gpriv);
->                 if (err) {
-> -                       dev_err(dev, "devm_request_irq(%d) failed, error %d\n",
-> -                               g_err_irq, err);
-> +                       dev_err(dev, "devm_request_irq(%d) failed, %pe\n",
-
-Same as above.
-
-> +                               g_err_irq, ERR_PTR(err));
->                         goto fail_dev;
->                 }
->         }
-> @@ -2012,14 +2011,14 @@ static int rcar_canfd_probe(struct platform_device *pdev)
->         /* Enable peripheral clock for register access */
->         err = clk_prepare_enable(gpriv->clkp);
->         if (err) {
-> -               dev_err(dev, "failed to enable peripheral clock, error %d\n",
-> -                       err);
-> +               dev_err(dev, "failed to enable peripheral clock, %pe\n",
-> +                       ERR_PTR(err));
->                 goto fail_reset;
->         }
->
->         err = rcar_canfd_reset_controller(gpriv);
->         if (err) {
-> -               dev_err(dev, "reset controller failed\n");
-> +               dev_err(dev, "reset controller failed, %pe\n", ERR_PTR(err));
->                 goto fail_clk;
->         }
->
-> --
-> 2.34.1
->
+Thanks, Arseniy
+> 
+> Thanks,
+> Stefano
+> 
+>>
+>> Arseniy Krasnov (4):
+>>  virtio/vsock: don't use skbuff state to account credit
+>>  virtio/vsock: remove redundant 'skb_pull()' call
+>>  virtio/vsock: don't drop skbuff on copy failure
+>>  test/vsock: copy to user failure test
+>>
+>> net/vmw_vsock/virtio_transport_common.c |  29 +++---
+>> tools/testing/vsock/vsock_test.c        | 118 ++++++++++++++++++++++++
+>> 2 files changed, 131 insertions(+), 16 deletions(-)
+>>
+>> -- 
+>> 2.25.1
+>>
+> 
