@@ -2,71 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB9656B1924
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 03:19:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 172A66B192B
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 03:25:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230001AbjCICTw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 21:19:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45162 "EHLO
+        id S229691AbjCICZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 21:25:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230037AbjCICTu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 21:19:50 -0500
-Received: from hust.edu.cn (unknown [202.114.0.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0388FC5AE9;
-        Wed,  8 Mar 2023 18:19:48 -0800 (PST)
-Received: from localhost.localdomain ([172.16.0.254])
-        (user=dzm91@hust.edu.cn mech=LOGIN bits=0)
-        by mx1.hust.edu.cn  with ESMTP id 3292JBih021312-3292JBik021312
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Thu, 9 Mar 2023 10:19:16 +0800
-From:   Dongliang Mu <dzm91@hust.edu.cn>
-To:     Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Dongliang Mu <dzm91@hust.edu.cn>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] wifi: rtw88: fix memory leak in rtw_usb_probe()
-Date:   Thu,  9 Mar 2023 10:16:36 +0800
-Message-Id: <20230309021636.528601-1-dzm91@hust.edu.cn>
-X-Mailer: git-send-email 2.39.2
+        with ESMTP id S229484AbjCICZ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 21:25:27 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 879FABE5CF
+        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 18:25:26 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8211B619F3
+        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 02:25:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B378C433D2;
+        Thu,  9 Mar 2023 02:25:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678328724;
+        bh=52RlaBwr/I7UR/P8LyGBEdlckRATaR041hekgpmniQI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OdADgQGVgaEWtowViN4KytbNDqZCcpDVWRO660hmJS9qiGZLIClsZvE27NFaElceS
+         VUYKXsNOCJ3YVWnc2hOcgj3l9+oGg1VcapRhom4O3f1mS71AJ4cE7VNVUjBnIlRkEf
+         ifB3EQAosk/c0zL2JOvd5p45dZozM7VXF8JzWVfq59KGtjhoJVBGe+8bF+JMDtiWNx
+         srfQoGcxsgfURskC6uFCP6f1Q7QFanKjHscaU2f4erF1jQpSjsBUEUAIKr4bhgphJD
+         cwxmHwKIyE6x0x8BG8Foa7v2n78ylI+7gMM0xF7QGj1V+tvWF81Mea3xiA8zZS+/G8
+         ybOCKsr1TybGA==
+Date:   Wed, 8 Mar 2023 18:25:23 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vadim Fedorenko <vadim.fedorenko@linux.dev>
+Cc:     Vadim Fedorenko <vadfed@meta.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        netdev@vger.kernel.org
+Subject: Re: [net-next] ptp_ocp: add force_irq to xilinx_spi configuration
+Message-ID: <20230308182523.42c00e3b@kernel.org>
+In-Reply-To: <520eb192-8b56-dde1-1b37-494a0d4d14b6@linux.dev>
+References: <20230306155726.4035925-1-vadfed@meta.com>
+        <20230306124952.1b86d165@kernel.org>
+        <2c9e80b1-3afc-9b78-755b-222da349212f@linux.dev>
+        <20230306132013.6b05411e@kernel.org>
+        <20230306132200.15d2dbfb@kernel.org>
+        <520eb192-8b56-dde1-1b37-494a0d4d14b6@linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-FEAS-AUTH-USER: dzm91@hust.edu.cn
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-drivers/net/wireless/realtek/rtw88/usb.c:876 rtw_usb_probe()
-warn: 'hw' from ieee80211_alloc_hw() not released on lines: 811
+On Wed, 8 Mar 2023 19:01:22 +0000 Vadim Fedorenko wrote:
+> On 06/03/2023 21:22, Jakub Kicinski wrote:
+> > On Mon, 6 Mar 2023 13:20:13 -0800 Jakub Kicinski wrote:  
+> >> Hm, you're right. Any idea why both kbuild bot and our own CI think
+> >> this doesn't build, then?  
+> > 
+> > Probably because they both use master :S
+> > 
+> > kernel test robot folks, could you please switch from master to main
+> > as the base for networking patches?  
+> 
+> Should I re-send it? It's marked as Deffered and is not going forward...
 
-Fix this by modifying return to a goto statement.
-
-Signed-off-by: Dongliang Mu <dzm91@hust.edu.cn>
----
-v1->v2: modify the commit title
- drivers/net/wireless/realtek/rtw88/usb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/realtek/rtw88/usb.c b/drivers/net/wireless/realtek/rtw88/usb.c
-index 2a8336b1847a..68e1b782d199 100644
---- a/drivers/net/wireless/realtek/rtw88/usb.c
-+++ b/drivers/net/wireless/realtek/rtw88/usb.c
-@@ -808,7 +808,7 @@ int rtw_usb_probe(struct usb_interface *intf, const struct usb_device_id *id)
- 
- 	ret = rtw_usb_alloc_rx_bufs(rtwusb);
- 	if (ret)
--		return ret;
-+		goto err_release_hw;
- 
- 	ret = rtw_core_init(rtwdev);
- 	if (ret)
--- 
-2.39.2
-
+Yes, please, not sure why it's Deferred so let's do a resend.
