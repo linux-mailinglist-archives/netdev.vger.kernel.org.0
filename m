@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D31C46B2EB2
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 21:29:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71F1A6B2EBA
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 21:30:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229637AbjCIU3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 15:29:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60332 "EHLO
+        id S230371AbjCIUaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 15:30:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbjCIU3G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 15:29:06 -0500
+        with ESMTP id S230294AbjCIUaJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 15:30:09 -0500
 Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CA4D65AE;
-        Thu,  9 Mar 2023 12:29:03 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 768A2F8665;
+        Thu,  9 Mar 2023 12:30:05 -0800 (PST)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id 80F165FD1B;
-        Thu,  9 Mar 2023 23:29:01 +0300 (MSK)
+        by mx.sberdevices.ru (Postfix) with ESMTP id C86765FD3A;
+        Thu,  9 Mar 2023 23:30:03 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1678393741;
-        bh=qHtnZady8MO5P+SxKXbSQQ1axjJ6o1RkSBId0/l8vfY=;
+        s=mail; t=1678393803;
+        bh=7S+FEVatmyxfzv6iVztbucqvJz0EITDWICpCYpuxfvk=;
         h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type;
-        b=BM1cE+z+UXNOGOh/Z25liYbmVfs1mS1SWXYiysOj9dV1n1Cvividvl/KhRAFROcOZ
-         R5SxlhNRkIAJ95LLurt1Ssa0rzfwl/vXDns4VxeD3y6ycNwszqO0VFbvUCJOIyJF44
-         qjYVbYI8lRiJCwf5MDPvlBWArI4EPBN927KlTIn3dqh/9AVNywH1oEJMe6cwnQM5PM
-         /ZT7NvFnF2vEugClgiuFVk+iwMKuety+FZ8D1EP+mMxoS1p1JI7pJwpw4wDk68BKKa
-         GoeSdNqCa8Oi8KlymXD1Z/V+c8N2d48DF+gxUZTdyomLHNLMoXmtsbPgLGGlpInAAu
-         iLBzuKCfO0jWw==
+        b=IsAp98zzR9YAzaB3tCd01ZJDaQF5BjfswpzyfTLDIJfApCQK2ojIMCcG9iZYWV8+h
+         EsKsek2lywxioA6h5gidQqnfSyGNusHmr2nMt1zSUixdgkF4k1zrz/hzbcbZSdsmbu
+         1n091N7EkktU8FVZU7kcFzYPe3HVOILTbO8DKHbF5sZu+MKwAaMWfVjExKsKcCX53r
+         2Yvaf93Kqo8aYFPsqYRsb+9SnstdPf/cGlMZB/0jElgRhNrnuK1GRVjMz32LncoZL9
+         e/n0S/x6BpzgVhrmfS0moQIYmB8A3lbXzsqvWemzgS3OGgiDuyq/YDUHyMLcwp2tGD
+         2xmDzSXt62zVA==
 Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
         by mx.sberdevices.ru (Postfix) with ESMTP;
-        Thu,  9 Mar 2023 23:29:01 +0300 (MSK)
-Message-ID: <71a296ad-6619-c8e6-14a1-9423ac2e4841@sberdevices.ru>
-Date:   Thu, 9 Mar 2023 23:26:00 +0300
+        Thu,  9 Mar 2023 23:30:03 +0300 (MSK)
+Message-ID: <6260a6cc-bd69-72a6-8aa5-34ff68764287@sberdevices.ru>
+Date:   Thu, 9 Mar 2023 23:27:02 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
@@ -49,8 +49,7 @@ CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <kernel@sberdevices.ru>, <oxffffaa@gmail.com>,
         <avkrasnov@sberdevices.ru>
 From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
-Subject: [RFC PATCH v4 1/4] virtio/vsock: don't use skbuff state to account
- credit
+Subject: [RFC PATCH v4 2/4] virtio/vsock: remove redundant 'skb_pull()' call
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [172.16.1.6]
@@ -72,102 +71,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-'skb->len' can vary when we partially read the data, this complicates the
-calculation of credit to be updated in 'virtio_transport_inc_rx_pkt()/
-virtio_transport_dec_rx_pkt()'.
-
-Also in 'virtio_transport_dec_rx_pkt()' we were miscalculating the
-credit since 'skb->len' was redundant.
-
-For these reasons, let's replace the use of skbuff state to calculate new
-'rx_bytes'/'fwd_cnt' values with explicit value as input argument. This
-makes code more simple, because it is not needed to change skbuff state
-before each call to update 'rx_bytes'/'fwd_cnt'.
+Since we now no longer use 'skb->len' to update credit, there is no sense
+to update skbuff state, because it is used only once after dequeue to
+copy data and then will be released.
 
 Fixes: 71dc9ec9ac7d ("virtio/vsock: replace virtio_vsock_pkt with sk_buff")
 Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
 ---
- net/vmw_vsock/virtio_transport_common.c | 23 +++++++++++------------
- 1 file changed, 11 insertions(+), 12 deletions(-)
+ net/vmw_vsock/virtio_transport_common.c | 1 -
+ 1 file changed, 1 deletion(-)
 
 diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index a1581c77cf84..618680fd9906 100644
+index 618680fd9906..9a411475e201 100644
 --- a/net/vmw_vsock/virtio_transport_common.c
 +++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -241,21 +241,18 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
- }
+@@ -465,7 +465,6 @@ static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
+ 					dequeued_len = err;
+ 				} else {
+ 					user_buf_len -= bytes_to_copy;
+-					skb_pull(skb, bytes_to_copy);
+ 				}
  
- static bool virtio_transport_inc_rx_pkt(struct virtio_vsock_sock *vvs,
--					struct sk_buff *skb)
-+					u32 len)
- {
--	if (vvs->rx_bytes + skb->len > vvs->buf_alloc)
-+	if (vvs->rx_bytes + len > vvs->buf_alloc)
- 		return false;
- 
--	vvs->rx_bytes += skb->len;
-+	vvs->rx_bytes += len;
- 	return true;
- }
- 
- static void virtio_transport_dec_rx_pkt(struct virtio_vsock_sock *vvs,
--					struct sk_buff *skb)
-+					u32 len)
- {
--	int len;
--
--	len = skb_headroom(skb) - sizeof(struct virtio_vsock_hdr) - skb->len;
- 	vvs->rx_bytes -= len;
- 	vvs->fwd_cnt += len;
- }
-@@ -388,7 +385,9 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
- 		skb_pull(skb, bytes);
- 
- 		if (skb->len == 0) {
--			virtio_transport_dec_rx_pkt(vvs, skb);
-+			u32 pkt_len = le32_to_cpu(virtio_vsock_hdr(skb)->len);
-+
-+			virtio_transport_dec_rx_pkt(vvs, pkt_len);
- 			consume_skb(skb);
- 		} else {
- 			__skb_queue_head(&vvs->rx_queue, skb);
-@@ -437,17 +436,17 @@ static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
- 
- 	while (!msg_ready) {
- 		struct virtio_vsock_hdr *hdr;
-+		size_t pkt_len;
- 
- 		skb = __skb_dequeue(&vvs->rx_queue);
- 		if (!skb)
- 			break;
- 		hdr = virtio_vsock_hdr(skb);
-+		pkt_len = (size_t)le32_to_cpu(hdr->len);
- 
- 		if (dequeued_len >= 0) {
--			size_t pkt_len;
- 			size_t bytes_to_copy;
- 
--			pkt_len = (size_t)le32_to_cpu(hdr->len);
- 			bytes_to_copy = min(user_buf_len, pkt_len);
- 
- 			if (bytes_to_copy) {
-@@ -484,7 +483,7 @@ static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
- 				msg->msg_flags |= MSG_EOR;
- 		}
- 
--		virtio_transport_dec_rx_pkt(vvs, skb);
-+		virtio_transport_dec_rx_pkt(vvs, pkt_len);
- 		kfree_skb(skb);
- 	}
- 
-@@ -1040,7 +1039,7 @@ virtio_transport_recv_enqueue(struct vsock_sock *vsk,
- 
- 	spin_lock_bh(&vvs->rx_lock);
- 
--	can_enqueue = virtio_transport_inc_rx_pkt(vvs, skb);
-+	can_enqueue = virtio_transport_inc_rx_pkt(vvs, len);
- 	if (!can_enqueue) {
- 		free_pkt = true;
- 		goto out;
+ 				spin_lock_bh(&vvs->rx_lock);
 -- 
 2.25.1
