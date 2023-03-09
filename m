@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 35F986B249A
+	by mail.lfdr.de (Postfix) with ESMTP id 9C1D36B249B
 	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 13:55:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230401AbjCIMzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 07:55:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57646 "EHLO
+        id S230420AbjCIMzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 07:55:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230387AbjCIMzJ (ORCPT
+        with ESMTP id S230386AbjCIMzJ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 07:55:09 -0500
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 946FC88EE9;
-        Thu,  9 Mar 2023 04:55:06 -0800 (PST)
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE4E89F21D;
+        Thu,  9 Mar 2023 04:55:07 -0800 (PST)
 Received: from localhost.localdomain (85-222-111-42.dynamic.chello.pl [85.222.111.42])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id DA4AA85E8E;
-        Thu,  9 Mar 2023 13:55:03 +0100 (CET)
+        by phobos.denx.de (Postfix) with ESMTPSA id AD90B85E8F;
+        Thu,  9 Mar 2023 13:55:04 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1678366504;
-        bh=qWoHPsIf3pfANgKKB9K27q7gnFPLk3JK9JRFYW0OpbM=;
+        s=phobos-20191101; t=1678366505;
+        bh=CpIOKbE0Y5wx9ksqGQZuGZJ4lPgjM2I//28UAM2Yq7E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TebVQ/GmPCLNbhZqZALCY8CfnkTaG2mcPXipRBlACsmBeaDBWuTcUOnzcw5clfxOe
-         mkla6dAXJ8UwRszYR+uhjllKi6YgxmoezUzXurXJ/2LOTTMnqp4obFQ/W2qgzouj83
-         AlSw7CYoDLfYQnCVcWEKImZHS0T9Wj0yP5z31i5tToZxNfhROx4EwTIoKP/Nf+eLAK
-         ov/ocmZKcGzKQTZ7vWf1/P70Jnqt7u+MldwO6Tpaa3kLp2ySbz7ol2RFZhLOyJti4q
-         6Imit/BOr2TfozSoDy5vOpU7j1UYfvqgzFl7JvKTjs4an2v2LRlflw3yHYI3f4COWy
-         H5c9rX3MzC3kQ==
+        b=y/9xAC6xOhdc4VrCIAbi/bf9bE76WZK78E/3UQxZrWgXDFSTzZjdR8PViZ+VgwT20
+         o4P8K0PUXXIMOQBZ4EZxk1SELi2sWdt6U5XtDdCLYNgKxOW5LO3RUeXGfJXJWS8X+t
+         dxZluTGq0tBc9Ue7VqywMM6XRokE1zuuyLAF62WatDgCb5ybw1NvjoDVXsQocmlKCe
+         cbItt1H5T1APDAzEmOohHmC/W0CKir9Z3KCTFTC21DvoEYbXbur6C6WaPDzcQ4/bml
+         R6JcITLsUI4iFGpFLMxKC1bU9e6lTqCg3XJaC+eLfzy3wy6ipZChVlql5XranERmsb
+         SG8F9VrM1LiuA==
 From:   Lukasz Majewski <lukma@denx.de>
 To:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
         Russell King <linux@armlinux.org.uk>
@@ -40,11 +40,10 @@ Cc:     Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Alexander Duyck <alexander.duyck@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
         Lukasz Majewski <lukma@denx.de>
-Subject: [PATCH 2/7] net: dsa: mv88e6xxx: add support for MV88E6020 switch
-Date:   Thu,  9 Mar 2023 13:54:16 +0100
-Message-Id: <20230309125421.3900962-3-lukma@denx.de>
+Subject: [PATCH 3/7] net: dsa: mv88e6xxx: add support for MV88E6071 switch
+Date:   Thu,  9 Mar 2023 13:54:17 +0100
+Message-Id: <20230309125421.3900962-4-lukma@denx.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230309125421.3900962-1-lukma@denx.de>
 References: <20230309125421.3900962-1-lukma@denx.de>
@@ -61,25 +60,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+A mv88e6250 family (i.e. "LinkStreet") switch with 5 internal PHYs,
+2 RMIIs and no PTP support.
 
-A mv88e6250 family (i.e. "LinkStreet") switch with 2 PHY and RMII
-ports and no PTP support.
-
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 Signed-off-by: Lukasz Majewski <lukma@denx.de>
 ---
 Changes for v2:
-- Add S-o-B
 - Update commit message
-- Add information about max packet size (2048 B)
+- Add information about max frame size
 
 Changes for v3:
 - None
 
 Changes for v4:
-- Update the num_ports and num_internal_phys to be in sync with
-  88e6020 documentation
+- None
 
 Changes for v5:
 - None
@@ -90,26 +84,26 @@ Changes for v5:
  3 files changed, 23 insertions(+)
 
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index c097a0b19ba6..721bae2e579c 100644
+index 721bae2e579c..26ab4d676615 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.c
 +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -5616,6 +5616,27 @@ static const struct mv88e6xxx_ops mv88e6393x_ops = {
- };
+@@ -5637,6 +5637,27 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
+ 		.ops = &mv88e6250_ops,
+ 	},
  
- static const struct mv88e6xxx_info mv88e6xxx_table[] = {
-+	[MV88E6020] = {
-+		.prod_num = MV88E6XXX_PORT_SWITCH_ID_PROD_6020,
++	[MV88E6071] = {
++		.prod_num = MV88E6XXX_PORT_SWITCH_ID_PROD_6071,
 +		.family = MV88E6XXX_FAMILY_6250,
-+		.name = "Marvell 88E6020",
++		.name = "Marvell 88E6071",
 +		.num_databases = 64,
-+		.num_ports = 4,
-+		.num_internal_phys = 2,
++		.num_ports = 7,
++		.num_internal_phys = 5,
 +		.max_vid = 4095,
 +		.max_frame_size = 2048,
-+		.port_base_addr = 0x8,
-+		.phy_base_addr = 0x0,
-+		.global1_addr = 0xf,
-+		.global2_addr = 0x7,
++		.port_base_addr = 0x08,
++		.phy_base_addr = 0x00,
++		.global1_addr = 0x0f,
++		.global2_addr = 0x07,
 +		.age_time_coeff = 15000,
 +		.g1_irqs = 9,
 +		.g2_irqs = 5,
@@ -122,26 +116,26 @@ index c097a0b19ba6..721bae2e579c 100644
  		.prod_num = MV88E6XXX_PORT_SWITCH_ID_PROD_6085,
  		.family = MV88E6XXX_FAMILY_6097,
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index e2b88f1f8376..1690b1a0f2e7 100644
+index 1690b1a0f2e7..af42530da71e 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.h
 +++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -54,6 +54,7 @@ enum mv88e6xxx_frame_mode {
- 
+@@ -55,6 +55,7 @@ enum mv88e6xxx_frame_mode {
  /* List of supported models */
  enum mv88e6xxx_model {
-+	MV88E6020,
+ 	MV88E6020,
++	MV88E6071,
  	MV88E6085,
  	MV88E6095,
  	MV88E6097,
 diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
-index aec9d4fd20e3..169ce5b6fa31 100644
+index 169ce5b6fa31..494a221c9d9a 100644
 --- a/drivers/net/dsa/mv88e6xxx/port.h
 +++ b/drivers/net/dsa/mv88e6xxx/port.h
-@@ -111,6 +111,7 @@
- /* Offset 0x03: Switch Identifier Register */
+@@ -112,6 +112,7 @@
  #define MV88E6XXX_PORT_SWITCH_ID		0x03
  #define MV88E6XXX_PORT_SWITCH_ID_PROD_MASK	0xfff0
-+#define MV88E6XXX_PORT_SWITCH_ID_PROD_6020	0x0200
+ #define MV88E6XXX_PORT_SWITCH_ID_PROD_6020	0x0200
++#define MV88E6XXX_PORT_SWITCH_ID_PROD_6071	0x0710
  #define MV88E6XXX_PORT_SWITCH_ID_PROD_6085	0x04a0
  #define MV88E6XXX_PORT_SWITCH_ID_PROD_6095	0x0950
  #define MV88E6XXX_PORT_SWITCH_ID_PROD_6097	0x0990
