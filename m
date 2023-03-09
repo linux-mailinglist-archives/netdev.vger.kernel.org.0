@@ -2,90 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D2436B200A
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 10:30:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4D3A6B2024
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 10:33:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230256AbjCIJaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 04:30:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39986 "EHLO
+        id S230377AbjCIJdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 04:33:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230207AbjCIJaT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 04:30:19 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CFA1231F1
-        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 01:30:18 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id cy23so4304140edb.12
-        for <netdev@vger.kernel.org>; Thu, 09 Mar 2023 01:30:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112; t=1678354217;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+5GJN8BZeSAMwWXzGvcfLbjVojpW6gFlX9NTLj8w0Y4=;
-        b=RDSzAFWJ+qSIw+EFAFCEbu1W67yvwt33G4JxsmMapFqRlG3A+awCyjkx86KNwsBLpd
-         6TB987lUEtWvKv8eIRq+KtGXnP3HF1j9TtvGl2QWfrGb9SFqUkiW5Ysxr42aqu+lIBxE
-         nn7nSFmTbzgg5g+a8/u0nieiLr2wVViHkJuW2dB3RyWYTl3MWsyWb1IFGsDzMrSPP7ie
-         BkXNDPgqloCpJVZcQaCw5ASEIHyjDLvj1vHbbUNmbivrPQ+0ae3mdLp/0H3ffmAgiBfE
-         kbbnXUM+YRptwVYNg6Jv55bTZyz69qkowrkNJEEBo0UjWVQHiI+09kL10OaREFyLZhk2
-         CgHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678354217;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+5GJN8BZeSAMwWXzGvcfLbjVojpW6gFlX9NTLj8w0Y4=;
-        b=J++Ze7kpSUt+Z1D4FmmAHE0LCAwCWmVTnDHFPoSVWat5Z5ObYa9jLxXAaJ+qp9yT08
-         CakrC6XAjrvF7ZW4uxFQ0EqzZ0WQTLmREprm9uTJWVWsynbEKoky6qSAFEgSWwVwDre9
-         n08MPz5GcHPwmnSbd+wZACcVByL2MiRVtJSMjaERJNdUm1se7TLuIgJhpyyqKXwXvXsN
-         u5BYD3n5jIK74m62xTRSz1KO73RGP2LZztRNg8TBWu0c8KSxmd4ZeC+zRQMawYqaytqg
-         6zA/aDqGK99v0EEOhEY2p+9dk7UJkZX4Yr2RCrlwK132J7y8170ne3HxuMdzZJtzdFS0
-         J9WQ==
-X-Gm-Message-State: AO0yUKWjqXS7MiNzPMmL0zUTuuIpuUf+PJjzrEbjI4QeSTUCdjDKAMD2
-        7dfitz7V5pjeSfXn8vXA9jKMFg==
-X-Google-Smtp-Source: AK7set9SpcOUeCxmf8vXypuxHawhAEezKQIRhP/vpL0fr9BAteYoECEFdugpZ2c9cTTY7rPEtTMW9w==
-X-Received: by 2002:a17:906:3bc7:b0:8f0:143d:d67a with SMTP id v7-20020a1709063bc700b008f0143dd67amr20105805ejf.63.1678354216648;
-        Thu, 09 Mar 2023 01:30:16 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id l3-20020a1709067d4300b008e54ac90de1sm8542530ejp.74.2023.03.09.01.30.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Mar 2023 01:30:16 -0800 (PST)
-Date:   Thu, 9 Mar 2023 10:30:14 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Shannon Nelson <shannon.nelson@amd.com>
-Cc:     brett.creeley@amd.com, davem@davemloft.net, netdev@vger.kernel.org,
-        kuba@kernel.org, drivers@pensando.io, leon@kernel.org
-Subject: Re: [PATCH RFC v4 net-next 03/13] pds_core: health timer and
- workqueue
-Message-ID: <ZAmnJvkAe4vJHRcN@nanopsycho>
-References: <20230308051310.12544-1-shannon.nelson@amd.com>
- <20230308051310.12544-4-shannon.nelson@amd.com>
- <ZAhXycSgSiNFwpNl@nanopsycho>
- <64d72af6-66f5-ff68-f7b3-1fffba61422b@amd.com>
+        with ESMTP id S230423AbjCIJci (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 04:32:38 -0500
+Received: from out-19.mta0.migadu.com (out-19.mta0.migadu.com [91.218.175.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57582E842B
+        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 01:32:13 -0800 (PST)
+Message-ID: <38521144-ddc0-f11b-8243-636de48d0c11@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1678354331;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=LNr9cxu0GCBKIWAwZR/NKFFGpOUc6P4kqXTQa4IwM5c=;
+        b=Br48CB4dv1kckRArQKqSZcrt8UjPknVgk0wR5VlaPO1XFugOjZuYxRStiEkw8c3KcT1uxI
+        Bm/2UdviWvk6I/36QYOY4wa/DVnquihcQpDE9pJ8K8eyJo0LhieyEF/0+GhBxHTgHIBXwH
+        eexD7GeTyw6xFDCvaeLy09BJRWCsqxw=
+Date:   Thu, 9 Mar 2023 09:32:09 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <64d72af6-66f5-ff68-f7b3-1fffba61422b@amd.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net v2] bnxt_en: reset PHC frequency in free-running mode
+To:     Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        Vadim Fedorenko <vadfed@meta.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Andy Gospodarek <andrew.gospodarek@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        netdev@vger.kernel.org
+References: <20230308144209.150456-1-vadfed@meta.com>
+ <CALs4sv3+jKGA=z-Nb1akw2h1jkL6T7VLj4pV7KVsZwx1Gt+DnA@mail.gmail.com>
+Content-Language: en-US
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Vadim Fedorenko <vadim.fedorenko@linux.dev>
+In-Reply-To: <CALs4sv3+jKGA=z-Nb1akw2h1jkL6T7VLj4pV7KVsZwx1Gt+DnA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Mar 09, 2023 at 03:08:44AM CET, shannon.nelson@amd.com wrote:
->On 3/8/23 1:39 AM, Jiri Pirko wrote:
->> Wed, Mar 08, 2023 at 06:13:00AM CET, shannon.nelson@amd.com wrote:
->> > Add in the periodic health check and the related workqueue,
->> > as well as the handlers for when a FW reset is seen.
->> 
->> Why don't you use devlink health to let the user know that something odd
->> happened with HW?
->
->Just haven't gotten to that yet.
+On 09.03.2023 04:40, Pavan Chebbi wrote:
+> On Wed, Mar 8, 2023 at 8:12 PM Vadim Fedorenko <vadfed@meta.com> wrote:
+>>
+>> +static int bnxt_ptp_adjfine_rtc(struct bnxt *bp, long scaled_ppm)
+>> +{
+>> +       s32 ppb = scaled_ppm_to_ppb(scaled_ppm);
+>> +       struct hwrm_port_mac_cfg_input *req;
+>> +       int rc;
+>> +
+>> +       rc = hwrm_req_init(bp, req, HWRM_PORT_MAC_CFG);
+>> +       if (rc)
+>> +               return rc;
+>> +
+>> +       req->ptp_freq_adj_ppb = cpu_to_le32(ppb);
+>> +       req->enables = cpu_to_le32(PORT_MAC_CFG_REQ_ENABLES_PTP_FREQ_ADJ_PPB);
+>> +       rc = hwrm_req_send(bp, req);
+>> +       if (rc)
+>> +               netdev_err(bp->dev,
+>> +                          "ptp adjfine failed. rc = %d\n", rc);
+> 
+> nit: can be a single line.
+> 
+>> +       return rc;
+>> +}
+>> +
+> 
+>> @@ -932,13 +937,15 @@ int bnxt_ptp_init(struct bnxt *bp, bool phc_cfg)
+>>          atomic_set(&ptp->tx_avail, BNXT_MAX_TX_TS);
+>>          spin_lock_init(&ptp->ptp_lock);
+>>
+>> -       if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC) {
+>> +       if (BNXT_PTP_USE_RTC(ptp->bp)) {
+>>                  bnxt_ptp_timecounter_init(bp, false);
+>>                  rc = bnxt_ptp_init_rtc(bp, phc_cfg);
+>>                  if (rc)
+>>                          goto out;
+>>          } else {
+>>                  bnxt_ptp_timecounter_init(bp, true);
+>> +               if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
+> 
+> I understand from your response on v1 as to why it will not affect you
+> if a new firmware does not report RTC on MH.
+> However, once you update the fw, any subsequent kernels upgrades will
+> prevent resetting the freq stored in the PHC.
+> Would changing the check to if (BNXT_MH(bp)) instead be a better option?
 
-Please do it from start, this is exactly why devlink health was
-introduced.
+How will it affect hardware without RTC support? The one which doesn't have
+BNXT_FW_CAP_PTP_RTC in a single-host configuration. Asking because if FW will 
+not expose BNXT_FW_CAP_PTP_RTC, the check BNXT_PTP_USE_RTC() will be equal to
+!BNXT_MH() and there will be no need for additional check in this else clause.
 
->sln
->
+
+>> +                       bnxt_ptp_adjfine_rtc(bp, 0);
+>>          }
+>>
+>>          ptp->ptp_info = bnxt_ptp_caps;
+>> --
+>> 2.30.2
+>>
+
