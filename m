@@ -2,111 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 548306B2494
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 13:53:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 507936B2497
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 13:55:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230366AbjCIMx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 07:53:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55564 "EHLO
+        id S230391AbjCIMzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 07:55:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229751AbjCIMxx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 07:53:53 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 718CD7EA25
-        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 04:53:49 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id cw28so6557200edb.5
-        for <netdev@vger.kernel.org>; Thu, 09 Mar 2023 04:53:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678366428;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=BO4cSDH+yXCwg0BT3FsRcGzY/hRaLSEZ2u3ktKpW830=;
-        b=ziWmzXQIaPy8kBMFn8U4Isxw4W011yHj1C92+vFeuSCbLm9g1WT38plDvFVRGx2o5S
-         jH1jIYwIWfUyKXpXjG0iCd0INbTeBfMLPZqcssG4PoQsEdK8Jyb4w10tbvbo7KJAGLAo
-         pFDM4xc0ROwcMCFxLrlm9M3EzRaHcpy3flTaPVFeccQ/k8ig36ebRyoNPHFtI05Y40M8
-         h3WOAgENN3HpeH9bHCFz/jn5VdXSat/rXdmG9SmyHqzhRTdKP4IYg4vsLz0Q2QgHNs4i
-         LCLAY9Wsxi2U1rD8y8mVySz3tzERir1uwFjmfA5odNPSfSFs1+YeR8Qi9jjcpiN/mNL9
-         lokw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678366428;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=BO4cSDH+yXCwg0BT3FsRcGzY/hRaLSEZ2u3ktKpW830=;
-        b=SUrZsIGGCKMGIsSZhY6l/YGnPggq5S4xiusWWxiLnFCMeK2TnZ2Fmet5sNr58LiWlH
-         iQx9LkV8dZ+EJ/ybNRF1s/MI2PPEyCzvL0Smdr4qmKa7spODyelIc2tErxM3Cvwyg+bc
-         F3ojEmAzhpwd3F0VeUH6n4YPY85XgvXFSRy6HSdHoH5w6ug+3X2Cfhi/E54jxAKGnnb3
-         C/jFXcx8w5YnsKOahabP9W2YImEy3eVQDkgp3EoGLMC+9U/lDcWEj6bT55RVnVWBb+oI
-         +lwSSLlaXVcQi/JtYX5mYE8GYGa4Q5BJTSUb/vLukziukWYDfRQg9aBh8py0jwwdCJXC
-         fKdw==
-X-Gm-Message-State: AO0yUKUejbLZPBjyLQTk4wacuCNTbZWyOCLjstKCCn+bdBe6AR2mG6gg
-        THkDfaXyRjEB+2GgCHQu/bJOJg==
-X-Google-Smtp-Source: AK7set8sieCz4hwrVvbAOjrecgn2A01genzK5N4Z+WBEZA1KC00G5BKipuhwVn3ZnC5rsqEVTLYnAA==
-X-Received: by 2002:a17:906:80c1:b0:87b:d62c:d87 with SMTP id a1-20020a17090680c100b0087bd62c0d87mr22515819ejx.1.1678366427965;
-        Thu, 09 Mar 2023 04:53:47 -0800 (PST)
-Received: from ?IPV6:2a02:810d:15c0:828:7ee2:e73e:802e:45c1? ([2a02:810d:15c0:828:7ee2:e73e:802e:45c1])
-        by smtp.gmail.com with ESMTPSA id e7-20020a170906c00700b008cff300cf47sm8737117ejz.72.2023.03.09.04.53.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Mar 2023 04:53:47 -0800 (PST)
-Message-ID: <98964f70-f7f7-9560-3cfb-84eafb33a492@linaro.org>
-Date:   Thu, 9 Mar 2023 13:53:45 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [EXTERNAL] Re: [PATCH v5 1/2] dt-bindings: net: Add ICSSG
- Ethernet
-Content-Language: en-US
-To:     Md Danish Anwar <a0501179@ti.com>, Rob Herring <robh@kernel.org>,
-        MD Danish Anwar <danishanwar@ti.com>
-Cc:     "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paolo Abeni <pabeni@redhat.com>,
+        with ESMTP id S229776AbjCIMzI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 07:55:08 -0500
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EDD57E7B2;
+        Thu,  9 Mar 2023 04:55:05 -0800 (PST)
+Received: from localhost.localdomain (85-222-111-42.dynamic.chello.pl [85.222.111.42])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: lukma@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 226EC85D80;
+        Thu,  9 Mar 2023 13:55:01 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1678366502;
+        bh=Nc+BwLOgr63dxXtrojbXBp3xqZNS8g5qrEkJo497PJE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ACMGn5/OFSk2G6d7tF/DnSZYIzGKjnS429dVXcVwZzou7L4pYZX20bI+s56eZYYaW
+         2YKIgO8VqfW4Q1qIUwYI1jgF8NjdhzgSulm/pd/XrzxxYfGp8o4PI6lDUklj7agpFY
+         91cBR/ynFKHXC0KCACThdt9t/4vSK3J3pRooTWUlfPqkdmzwV06t8SwwXkbYtP9Sbv
+         2aNbUpf0RluvRa097OekfMIpDBkE69AkXKbPUwclYAOaay7F6A0tBHOC2pOfpK+0SX
+         FpCzeibzUwxoJLJksj73tB+avCulTzXKrIgme7KjFZCekcbiBul9iOh5bo3RBNgZeN
+         t5ifr9q2tBekQ==
+From:   Lukasz Majewski <lukma@denx.de>
+To:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>, andrew@lunn.ch, nm@ti.com,
-        ssantosh@kernel.org, srk@ti.com, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-References: <20230210114957.2667963-1-danishanwar@ti.com>
- <20230210114957.2667963-2-danishanwar@ti.com>
- <20230210192001.GB2923614-robh@kernel.org>
- <43df3c2c-d0d0-f2b8-cf8b-8a2453ca43b4@ti.com>
- <63dbbda7-a444-8dac-6399-45e305652155@linaro.org>
- <d7f18805-7b26-e2c9-a40e-262165ec8f9b@ti.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <d7f18805-7b26-e2c9-a40e-262165ec8f9b@ti.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukasz Majewski <lukma@denx.de>
+Subject: [PATCH 0/7] dsa: marvell: Add support for mv88e6071 and 6020 switches
+Date:   Thu,  9 Mar 2023 13:54:14 +0100
+Message-Id: <20230309125421.3900962-1-lukma@denx.de>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/03/2023 12:44, Md Danish Anwar wrote:
+This patch set provides following changes:
 
-> 
-> The SRAM that we are using here is phandle to MMIO-SRAM only. In the example
-> section you can see, sram node points to msmc_ram (ti,sram = <&msmc_ram>;) And
-> msmc_ram has compatible as "mmio-sram" in k3-am65-main.dtsi [1].
-> 
-> 	msmc_ram: sram@70000000 {
-> 		compatible = "mmio-sram";
-> 		reg = <0x0 0x70000000 0x0 0x200000>;
-> 
-> So I can use 'sram' property as there is no need to make this as ti specific.
-> Let me know if it seems good to you.
+- Provide support for mv88e6020 and mv88e6071 switch circuits (the
+  "Link Street" family of products including added earlier to this
+  driver mv88e6250 and mv88e6220).
 
-Yes, it's fine, thanks.
+- Add the max_frame size variable to specify the buffer size for the
+  maximal frame size
 
-Best regards,
-Krzysztof
+- The above change required adjusting all supported devices in the
+  mv88e6xxx driver, as the current value assignment is depending
+  on the set of provided callbacks for each switch circuit - i.e.
+  until now the value was not explicitly specified.
+
+- As the driver for Marvell's mv88e6xxx switches was rather complicated
+  the intermediate function (removed by the end of this patch set)
+  has been introduced. It was supposed to both validate the provided
+  values deduced from the code and leave a trace of the exact
+  methodology used.
+
+Lukasz Majewski (6):
+  dsa: marvell: Provide per device information about max frame size
+  net: dsa: mv88e6xxx: add support for MV88E6071 switch
+  dsa: marvell: Define .set_max_frame_size() function for mv88e6250 SoC
+    family
+  dsa: marvell: Add helper function to validate the max_frame_size
+    variable
+  dsa: marvell: Correct value of max_frame_size variable after
+    validation
+  dsa: marvell: Modify get max MTU callback to use per switch provided
+    value
+
+Matthias Schiffer (1):
+  net: dsa: mv88e6xxx: add support for MV88E6020 switch
+
+ drivers/net/dsa/mv88e6xxx/chip.c | 83 ++++++++++++++++++++++++++++++--
+ drivers/net/dsa/mv88e6xxx/chip.h |  8 +++
+ drivers/net/dsa/mv88e6xxx/port.h |  2 +
+ 3 files changed, 88 insertions(+), 5 deletions(-)
+
+-- 
+2.20.1
 
