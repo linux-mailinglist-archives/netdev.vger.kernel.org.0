@@ -2,113 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7106F6B2CB6
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 19:13:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD0F06B2CBA
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 19:15:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230326AbjCISNU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 13:13:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60682 "EHLO
+        id S229825AbjCISPW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 13:15:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229825AbjCISNR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 13:13:17 -0500
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73FE13755E;
-        Thu,  9 Mar 2023 10:13:15 -0800 (PST)
-Received: from fpc.intra.ispras.ru (unknown [10.10.165.5])
-        by mail.ispras.ru (Postfix) with ESMTPSA id A9A3B4077AEF;
-        Thu,  9 Mar 2023 18:13:13 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru A9A3B4077AEF
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
-        s=default; t=1678385593;
-        bh=Pt4ZvSVepTY4Qap6N4dhqvj205nwIIhb0xhp8AbBKag=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JjyX6FZGRXfAV1eJ7w2xkT1M7eVutjP0juq8E83h/RKgXRajAquMlxAE5WJaPuTZX
-         zrOWplieWwRHjjNBGi7akWI60MLLavNT7Q2lqzz4qZkKJlXInlwRZ5aFWbxIRlwrDk
-         owqavSuUHRgs6gN+quTzlCRgdIjVFtxQwvf5bOdo=
-From:   Fedor Pchelkin <pchelkin@ispras.ru>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org
-Cc:     Fedor Pchelkin <pchelkin@ispras.ru>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Nguyen Dinh Phi <phind.uet@gmail.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        lvc-project@linuxtesting.org,
-        syzbot+4c4ffd1e1094dae61035@syzkaller.appspotmail.com
-Subject: [PATCH 4.14/4.19/5.4/5.10/5.15 1/1] Bluetooth: hci_sock: purge socket queues in the destruct() callback
-Date:   Thu,  9 Mar 2023 21:12:51 +0300
-Message-Id: <20230309181251.479447-2-pchelkin@ispras.ru>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230309181251.479447-1-pchelkin@ispras.ru>
-References: <20230309181251.479447-1-pchelkin@ispras.ru>
+        with ESMTP id S229685AbjCISPT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 13:15:19 -0500
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56A9558C26
+        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 10:15:18 -0800 (PST)
+Received: by mail-ed1-x543.google.com with SMTP id i34so10533277eda.7
+        for <netdev@vger.kernel.org>; Thu, 09 Mar 2023 10:15:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678385717;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=3vtIQJgbAqYVFrKRDt53NZIcLU46fTuOZj8Pktv++Ns=;
+        b=B3I4H89FhVf5hzJwCcb74eksb7IsBofMCvKSV3Pelh+Nkd9VKPYzc5KfFDIVE/acNc
+         +Ln/1VJzLO5TKel/Wsd9wPkUYdB0Mpsl514WJ9mcfEtGjhzpWrMjJ0yo5bsoUOhEcmHq
+         C6lNmcNKn6ETxnTSm9JfcEQDc6zkyUwmxaw4eSEQFt5akFA0ZDQojMnEzi5bxDRm4cfE
+         QpwTg6dT06KUdDqLvkCuUc2n1bsW3uI3KslQuzMLqHJLcgw/iha8CGckZNDdbC2NPBQf
+         86JOJvcIk3Wt07/8AAc75zrFfAADeJQ2Ch6nOcB3ArzyRWsPpAUodBhwXcjh1+pVVQSh
+         Xc9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678385717;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=3vtIQJgbAqYVFrKRDt53NZIcLU46fTuOZj8Pktv++Ns=;
+        b=Lb++eHWGNPGjObmutJ+M03CnptoAyTIIWOPpoJfPw9nmGJITvUkNiZBOzslrPBKiF9
+         TT8GyEutNtt5m9ZshgwonFmquq2gYHtfUKliLZ+XWyi/TlKsy48aOf5sG32dZokY8Gwl
+         H08WHTK9KGaSvLTcqbu9oO5yTlDFtfupaWgtnaeq5ixUla7PnZAeUcGHB6f4Y1K5PlPY
+         3hVOFGWrfBpc5ffSClVNwPOlrFsLvYKzr0GPO4toqt079bULcNHD+l/t82qHxW5Xdoou
+         W+8x+Yuv9ehjQ+lUtUkCDoRKTMsVAkQtd7u/vxLrWY7NSYLb96hRblfwV080MxTEHnE7
+         1v/A==
+X-Gm-Message-State: AO0yUKVPXDGTLbqcruCCvs0BqBRc336hIGFeiFjZZXtBeFY98ljiqkJz
+        X+n0V4Oy1jVk0qtE7ifxGXRJ8xNtEb489uv9XX0=
+X-Google-Smtp-Source: AK7set8IA/EglVcgIlnr7Pf3Mielet737jSmEuZ/VvaP4fvwngzTNZaTiG0vu2IjjePDxdUfpHeVYEccwJdWAi8zt60=
+X-Received: by 2002:a17:906:747:b0:87b:dce7:c245 with SMTP id
+ z7-20020a170906074700b0087bdce7c245mr10675546ejb.3.1678385716802; Thu, 09 Mar
+ 2023 10:15:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+From:   Lara Geni <larasecuredata@gmail.com>
+Date:   Thu, 9 Mar 2023 23:45:05 +0530
+Message-ID: <CAKDenP0FWDz78_79bFJymj1OjASrc0a6he5MRGPwELGYV1rGhQ@mail.gmail.com>
+Subject: RE: NTI - American Association of Critical-Care Nurses Attendees
+ Email List-2023
+To:     Lara Geni <larasecuredata@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=2.6 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FILL_THIS_FORM,
+        FILL_THIS_FORM_LONG,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: **
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nguyen Dinh Phi <phind.uet@gmail.com>
+Hi,
 
-commit 709fca500067524381e28a5f481882930eebac88 upstream.
+Would you be interested in acquiring the American Association of
+Critical-Care Nurses  Attendees Email List-2023?
 
-The receive path may take the socket right before hci_sock_release(),
-but it may enqueue the packets to the socket queues after the call to
-skb_queue_purge(), therefore the socket can be destroyed without clear
-its queues completely.
+List Includes: Company Name, First Name, Last Name, Full Name, Contact
+Job Title, Verified Email Address, Website URL, Mailing address, Phone
+ number, Industry and many more=E2=80=A6
 
-Moving these skb_queue_purge() to the hci_sock_destruct() will fix this
-issue, because nothing is referencing the socket at this point.
+Number of Contacts: 12,639 Verified Contacts.
+Cost : $ 1,638
 
-Signed-off-by: Nguyen Dinh Phi <phind.uet@gmail.com>
-Reported-by: syzbot+4c4ffd1e1094dae61035@syzkaller.appspotmail.com
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
----
- net/bluetooth/hci_sock.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+If you=E2=80=99re interested please let me know I will assist you with furt=
+her details.
 
-diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
-index f1128c2134f0..3f92a21cabe8 100644
---- a/net/bluetooth/hci_sock.c
-+++ b/net/bluetooth/hci_sock.c
-@@ -888,10 +888,6 @@ static int hci_sock_release(struct socket *sock)
- 	}
- 
- 	sock_orphan(sk);
--
--	skb_queue_purge(&sk->sk_receive_queue);
--	skb_queue_purge(&sk->sk_write_queue);
--
- 	release_sock(sk);
- 	sock_put(sk);
- 	return 0;
-@@ -2012,6 +2008,12 @@ static int hci_sock_getsockopt(struct socket *sock, int level, int optname,
- 	return err;
- }
- 
-+static void hci_sock_destruct(struct sock *sk)
-+{
-+	skb_queue_purge(&sk->sk_receive_queue);
-+	skb_queue_purge(&sk->sk_write_queue);
-+}
-+
- static const struct proto_ops hci_sock_ops = {
- 	.family		= PF_BLUETOOTH,
- 	.owner		= THIS_MODULE,
-@@ -2065,6 +2067,7 @@ static int hci_sock_create(struct net *net, struct socket *sock, int protocol,
- 
- 	sock->state = SS_UNCONNECTED;
- 	sk->sk_state = BT_OPEN;
-+	sk->sk_destruct = hci_sock_destruct;
- 
- 	bt_sock_link(&hci_sk_list, sk);
- 	return 0;
--- 
-2.34.1
-
+Kind Regards,
+Lara Geni
+Marketing Coordinators
