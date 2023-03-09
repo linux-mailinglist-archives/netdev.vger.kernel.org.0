@@ -2,51 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F9D46B30DD
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 23:38:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CAF76B30E0
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 23:38:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231183AbjCIWiC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 17:38:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57276 "EHLO
+        id S231345AbjCIWiE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 17:38:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229956AbjCIWiA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 17:38:00 -0500
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F49CEFA5;
-        Thu,  9 Mar 2023 14:37:58 -0800 (PST)
-Received: by mail-wm1-x332.google.com with SMTP id r19-20020a05600c459300b003eb3e2a5e7bso2295603wmo.0;
-        Thu, 09 Mar 2023 14:37:58 -0800 (PST)
+        with ESMTP id S230190AbjCIWiB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 17:38:01 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCFA27A84;
+        Thu,  9 Mar 2023 14:37:59 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id j19-20020a05600c1c1300b003e9b564fae9so4765614wms.2;
+        Thu, 09 Mar 2023 14:37:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678401477;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=+YkCkrjJHa9Smmj/wJYS+f+10gt8i1v3+K2/QxqxGnI=;
-        b=eJfOsBUED3fscQrc9JaP5TBDOF3Y46ECD0kikqu0swWAEZDbr/7Q1xoNQQMrD9lNx9
-         W+PeULXJXFWvpKlIHkG8G1N4+dq2abOGvUilkFgqkJOkbqJQgihsrWMgxhWD1h+lv7nY
-         6dyS/Dy9jmBtxRcRRPGb/kpgImyrlsqpUj9okXYvbTl7hh401KTNC4ttUfg+dmHGUvdY
-         UWhybAzDCdqeU7gQNTHDu2ECQe685H3mSGscYauLFebmU0XgvwRQvKXCM5iOZG95pFWE
-         2PWBrASaBvLFoXO4HQK8q934x5quNX3HR7E41wTrSvpekIAt7WqBt5nr3Z1/lyPGG+9N
-         +dcg==
+        d=gmail.com; s=20210112; t=1678401478;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=76LV00udkXPQUwmYWl6PMAZgt1+JmaJY28CfXEIfxZA=;
+        b=kGmrRGymM4KXv3p2daK6qNA4CyjMECD39z2HhDe0pT7ZEek364CCVqdK+HgebbR3dV
+         ISnvWARvuOTIyQNnslRwauZjxVg10QJFNfnZhnLLkbJ6b9BHrTG+lKRxlHN2SIws9ZZf
+         H9fvOwlf43/Vtja+WL+PfrX9PThWjAu3H4BXXtjTLtBM1m8N4XvDYFKrDhXf3Jj2N+3j
+         VppzFhHXUx39g9BXVmliwyz4EujqWhRDv1k9LwgasM4ZFzq3ScpBu513mI9xiW411MVY
+         KFSXf7MxNJwwKtuZtZjd1cAeJGJA85tEpLspSJ490jXw9n6cHCwpaMywLIPAu7jdZ0Ij
+         t9+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678401477;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=+YkCkrjJHa9Smmj/wJYS+f+10gt8i1v3+K2/QxqxGnI=;
-        b=EccjTut2iYLcXA2ng8HW/cpBX8JrkOiPm6j3wpGMq6k0Oqlw+t05IhedOljE1Ol93t
-         vmxd+Q6wuh0iP5K5aQ6JT/601RGiMM4cfqmKtGfo0q1VbaXWbfo8/57uWySJ5EIXhpEk
-         cNQ14SYyhaA5P4AmszNAFioOmzjGDTA+3XHUZJCvv9p3WsoxIYRgnTDE2KAgA6A2CtnW
-         g+Nx6jPoOzVEgQS+1tc8F9L/NZUOWZPE1UsdPzbaq85+rgcYVaT8iRwzBtiq4uXegz1A
-         Iy6Nj1AW6xmDHL5PMFrW5wTcTwk17NyH+WbBTcOH7prBuegYCCpX9sjggDeDeiVnGRPK
-         ex+w==
-X-Gm-Message-State: AO0yUKXQh0yS85w340zxrw94hEvlIvEXoo14vVYqMSaSuvl+E9GPHhf3
-        OVZGQ/4qnEe8lPO0KWE9B8M=
-X-Google-Smtp-Source: AK7set8NHhpkF76F1n+vl6zWoM3i7+IYLzBdgq5tR6J3qDrVLnoQ2La7K2evFiIWcHcaTNKePGLOxQ==
-X-Received: by 2002:a05:600c:1e1f:b0:3eb:fc6:79cf with SMTP id ay31-20020a05600c1e1f00b003eb0fc679cfmr780797wmb.6.1678401476689;
-        Thu, 09 Mar 2023 14:37:56 -0800 (PST)
+        d=1e100.net; s=20210112; t=1678401478;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=76LV00udkXPQUwmYWl6PMAZgt1+JmaJY28CfXEIfxZA=;
+        b=L6C/v3aQPyzALM/Iu+4OKavvU+8pxwmRKDXNnTzV7VY6vL6VwIuJXUrCjerpZCRfyp
+         gFXH/+H0sZwbNz8hA8dCCwSKOFTvsKCvynutg3yCEja7IDI8RC62d46OdVX0cPce4+sr
+         eOI7lADWwiSly0QX3poWO8cSBUZHA+FPrceqJ9kvp4NqkOniELPf1OQegJWHZsc+0gDk
+         q0T3giJ/dyWGWx+RGupK1ijfuVjOoO25B3IHbCRRXyDrZ6uenzu+nKT/P8qr9BjaGvVc
+         AcGkt649SFAc8exZAnC+uo64+1pS8moJvsnsLBD3ZjhwXofkuRtQywXVjv9cjAwChiKH
+         er3w==
+X-Gm-Message-State: AO0yUKWU+z9UkuS7Xm/7GIxAvvH4XRMZeIPMJONscfE9RbxzAUFu0x02
+        L3dRn8Mj6mxxvK8vKhM8xcMWB9KkEkA=
+X-Google-Smtp-Source: AK7set8JVwiOkfqLtU4wZgr4GnlFSjgxwHxCtSXt+MOW7NV3SQg1oWLTsIOhL2hlU1AkKo44Z9o14g==
+X-Received: by 2002:a05:600c:3ca7:b0:3da:2ba4:b97 with SMTP id bg39-20020a05600c3ca700b003da2ba40b97mr120602wmb.19.1678401478052;
+        Thu, 09 Mar 2023 14:37:58 -0800 (PST)
 Received: from localhost.localdomain (93-34-89-197.ip49.fastwebnet.it. [93.34.89.197])
-        by smtp.googlemail.com with ESMTPSA id g12-20020a05600c310c00b003e209b45f6bsm1183981wmo.29.2023.03.09.14.37.55
+        by smtp.googlemail.com with ESMTPSA id g12-20020a05600c310c00b003e209b45f6bsm1183981wmo.29.2023.03.09.14.37.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Mar 2023 14:37:56 -0800 (PST)
+        Thu, 09 Mar 2023 14:37:57 -0800 (PST)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -70,10 +72,12 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         linux-arm-kernel@lists.infradead.org,
         linux-arm-msm@vger.kernel.org, Lee Jones <lee@kernel.org>,
         linux-leds@vger.kernel.org
-Subject: [net-next PATCH v2 00/14] net: Add basic LED support for switch/phy
-Date:   Thu,  9 Mar 2023 23:35:10 +0100
-Message-Id: <20230309223524.23364-1-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v2 01/14] net: dsa: qca8k: move qca8k_port_to_phy() to header
+Date:   Thu,  9 Mar 2023 23:35:11 +0100
+Message-Id: <20230309223524.23364-2-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230309223524.23364-1-ansuelsmth@gmail.com>
+References: <20230309223524.23364-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -86,76 +90,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a continue of [1]. It was decided to take a more gradual
-approach to implement LEDs support for switch and phy starting with
-basic support and then implementing the hw control part when we have all
-the prereq done.
+Move qca8k_port_to_phy() to qca8k header as it's useful for future
+reference in Switch LEDs module since the same logic is applied to get
+the right index of the switch port.
+Make it inline as it's simple function that just decrease the port.
 
-This series implements only the brightness_set() and blink_set() ops.
-An example of switch implementation is done with qca8k.
+Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+---
+ drivers/net/dsa/qca/qca8k-8xxx.c | 15 ---------------
+ drivers/net/dsa/qca/qca8k.h      | 14 ++++++++++++++
+ 2 files changed, 14 insertions(+), 15 deletions(-)
 
-For PHY a more generic approach is used with implementing the LED
-support in PHY core and with the user (in this case marvell) adding all
-the required functions.
-
-Currently we set the default-state as "keep" to not change the default
-configuration of the declared LEDs since almost every switch have a
-default configuration.
-
-[1] https://lore.kernel.org/lkml/20230216013230.22978-1-ansuelsmth@gmail.com/
-
-Changes in new series v2:
-- Add LEDs node for rb3011
-- Fix rb3011 switch node unevaluated properties while running 
-  make dtbs_check
-- Fix a copypaste error in qca8k-leds.c for port 4 required shift
-- Drop phy-handle usage for qca8k and use qca8k_port_to_phy()
-- Add review tag from Andrew
-- Add Christian Marangi SOB in each Andrew patch
-- Add extra description for dsa-port stressing that PHY have no access
-  and LED are controlled by the related MAC
-- Add missing additionalProperties for dsa-port.yaml and ethernet-phy.yaml
-
-Changes from the old v8 series:
-- Drop linux,default-trigger set to netdev.
-- Dropped every hw control related patch and implement only
-  blink_set and brightness_set
-- Add default-state to "keep" for each LED node example
-
-Andrew Lunn (6):
-  net: phy: Add a binding for PHY LEDs
-  net: phy: phy_device: Call into the PHY driver to set LED brightness.
-  net: phy: marvell: Add software control of the LEDs
-  net: phy: phy_device: Call into the PHY driver to set LED blinking.
-  net: phy: marvell: Implement led_blink_set()
-  arm: mvebu: dt: Add PHY LED support for 370-rd WAN port
-
-Christian Marangi (8):
-  net: dsa: qca8k: move qca8k_port_to_phy() to header
-  net: dsa: qca8k: add LEDs basic support
-  net: dsa: qca8k: add LEDs blink_set() support
-  dt-bindings: net: dsa: dsa-port: Document support for LEDs node
-  dt-bindings: net: dsa: qca8k: add LEDs definition example
-  arm: qcom: dt: Drop unevaluated properties in switch nodes for rb3011
-  arm: qcom: dt: Add Switch LED for each port for rb3011
-  dt-bindings: net: phy: Document support for LEDs node
-
- .../devicetree/bindings/net/dsa/dsa-port.yaml |  21 ++
- .../devicetree/bindings/net/dsa/qca8k.yaml    |  24 ++
- .../devicetree/bindings/net/ethernet-phy.yaml |  31 +++
- arch/arm/boot/dts/armada-370-rd.dts           |  14 ++
- arch/arm/boot/dts/qcom-ipq8064-rb3011.dts     | 124 ++++++++-
- drivers/net/dsa/qca/Kconfig                   |   7 +
- drivers/net/dsa/qca/Makefile                  |   1 +
- drivers/net/dsa/qca/qca8k-8xxx.c              |  19 +-
- drivers/net/dsa/qca/qca8k-leds.c              | 236 ++++++++++++++++++
- drivers/net/dsa/qca/qca8k.h                   |  83 ++++++
- drivers/net/phy/marvell.c                     |  81 +++++-
- drivers/net/phy/phy_device.c                  | 115 +++++++++
- include/linux/phy.h                           |  33 +++
- 13 files changed, 765 insertions(+), 24 deletions(-)
- create mode 100644 drivers/net/dsa/qca/qca8k-leds.c
-
+diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
+index 2f224b166bbb..8dfc5db84700 100644
+--- a/drivers/net/dsa/qca/qca8k-8xxx.c
++++ b/drivers/net/dsa/qca/qca8k-8xxx.c
+@@ -716,21 +716,6 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
+ 	return ret;
+ }
+ 
+-static u32
+-qca8k_port_to_phy(int port)
+-{
+-	/* From Andrew Lunn:
+-	 * Port 0 has no internal phy.
+-	 * Port 1 has an internal PHY at MDIO address 0.
+-	 * Port 2 has an internal PHY at MDIO address 1.
+-	 * ...
+-	 * Port 5 has an internal PHY at MDIO address 4.
+-	 * Port 6 has no internal PHY.
+-	 */
+-
+-	return port - 1;
+-}
+-
+ static int
+ qca8k_mdio_busy_wait(struct mii_bus *bus, u32 reg, u32 mask)
+ {
+diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
+index 03514f7a20be..4e48e4dd8b0f 100644
+--- a/drivers/net/dsa/qca/qca8k.h
++++ b/drivers/net/dsa/qca/qca8k.h
+@@ -422,6 +422,20 @@ struct qca8k_fdb {
+ 	u8 mac[6];
+ };
+ 
++static inline u32 qca8k_port_to_phy(int port)
++{
++	/* From Andrew Lunn:
++	 * Port 0 has no internal phy.
++	 * Port 1 has an internal PHY at MDIO address 0.
++	 * Port 2 has an internal PHY at MDIO address 1.
++	 * ...
++	 * Port 5 has an internal PHY at MDIO address 4.
++	 * Port 6 has no internal PHY.
++	 */
++
++	return port - 1;
++}
++
+ /* Common setup function */
+ extern const struct qca8k_mib_desc ar8327_mib[];
+ extern const struct regmap_access_table qca8k_readable_table;
 -- 
 2.39.2
 
