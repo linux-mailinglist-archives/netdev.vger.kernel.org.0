@@ -2,92 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33F516B204E
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 10:40:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFF216B2063
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 10:43:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230387AbjCIJkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 04:40:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57164 "EHLO
+        id S231325AbjCIJna (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 04:43:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229754AbjCIJkW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 04:40:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0FBCE6FE6
-        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 01:40:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46D9EB81EBC
-        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 09:40:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 01D04C433EF;
-        Thu,  9 Mar 2023 09:40:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678354819;
-        bh=Mm7vjJuCjPksuPI/SCzqU1/CD4qW+sVNOhnbWN2J/nA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ms4qVvZrJSYjju+jgFSP4PoasOtU+KI2GM1kP6vYSRHJqQi32KNMvp/uKn7a62EQ7
-         vcoSLrhf83K2/ycpHkX2HB/KCDBYxtuIsVMHwVLybJ5yzsC7qtIregHVlwBVJWlYHg
-         XyrvqMws0nEqIVxEqhHaAPTW5Vi9owrG/g8Ypb2Vz4in+UPgzTXuSI+unUmP1Jrlb/
-         yatY+oQp9USgQ5A5kr0k1eLelmMbJeZIWqxmtI7ry01RiZ6fqtVLOYwqgvvAbGSCU0
-         n1m1P2gND99ErSJkB1CXPKRwegf2NDwGPbJINus2thNmEo4XMhbXX40isLIovba8fz
-         2vA1hjP0j7b3Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D7D0DE61B60;
-        Thu,  9 Mar 2023 09:40:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231324AbjCIJnV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 04:43:21 -0500
+Received: from m12.mail.163.com (m12.mail.163.com [123.126.96.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 29D4C5552C;
+        Thu,  9 Mar 2023 01:43:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=1LAKM
+        8ujTmsjgTGR7X/vNMNjwpQJAdiC96EghkHvIIM=; b=V3tmhaUxN5E19Lu4oMuCu
+        C8F3LLtelKjSMeOzC9QAfey0k6++9pZ28Tki2rspG4oPrln+sox+M164Swk6qVWm
+        T8YOgTRzWTID8iPrq4QDQJJGbi33J6hlJUJT8HLI0Ahs3WMRneYY1gnEgVjIRKZX
+        tpsx4OLwTsIjieqPqbjLD0=
+Received: from leanderwang-LC2.localdomain (unknown [111.206.145.21])
+        by smtp19 (Coremail) with SMTP id R9xpCgAnKa0IqglkPaTXGw--.56707S2;
+        Thu, 09 Mar 2023 17:42:33 +0800 (CST)
+From:   Zheng Wang <zyytlz.wz@163.com>
+To:     davem@davemloft.net
+Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        hackerzheng666@gmail.com, 1395428693sheep@gmail.com,
+        alex000young@gmail.com, Zheng Wang <zyytlz.wz@163.com>
+Subject: [PATCH net]  net: ethernet: fix use after free bug in ns83820_remove_one due to race condition
+Date:   Thu,  9 Mar 2023 17:42:31 +0800
+Message-Id: <20230309094231.3808770-1-zyytlz.wz@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/4] Various mtk_eth_soc cleanups
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167835481887.13872.13425175568351731683.git-patchwork-notify@kernel.org>
-Date:   Thu, 09 Mar 2023 09:40:18 +0000
-References: <ZAdj9qUXcHUsK7Gt@shell.armlinux.org.uk>
-In-Reply-To: <ZAdj9qUXcHUsK7Gt@shell.armlinux.org.uk>
-To:     Russell King (Oracle) <linux@armlinux.org.uk>
-Cc:     daniel@makrotopia.org, nbd@nbd.name, john@phrozen.org,
-        Mark-MC.Lee@mediatek.com, matthias.bgg@gmail.com,
-        sean.wang@mediatek.com, angelogioacchino.delregno@collabora.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, lorenzo@kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-CM-TRANSID: R9xpCgAnKa0IqglkPaTXGw--.56707S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrtw45WryrZFyDWFy3KFWDCFg_yoWkXrcEg3
+        srZF4Skw4UKr1rtw4UGrsxX34jkr9Y9r9Y9rWDta9Iv343Kws5Cw1kur1fJr48uwnxJFW2
+        kry7KFyfA343AjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRKBT5JUUUUU==
+X-Originating-IP: [111.206.145.21]
+X-CM-SenderInfo: h2113zf2oz6qqrwthudrp/1tbiQgktU1aEEmftKQAAsW
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+In ns83820_init_one, dev->tq_refill was bound with queue_refill.
 
-This series was applied to netdev/net-next.git (main)
-by Paolo Abeni <pabeni@redhat.com>:
+If irq happens, it will call ns83820_irq->ns83820_do_isr.
+Then it invokes tasklet_schedule(&dev->rx_tasklet) to start
+rx_action function. And rx_action will call ns83820_rx_kick
+and finally start queue_refill function.
 
-On Tue, 7 Mar 2023 16:19:02 +0000 you wrote:
-> Here are a number of patches that do a bit of cleanup to mtk_eth_soc.
-> 
-> The first patch cleans up mtk_gmac0_rgmii_adjust(), which is the
-> troublesome function preventing the driver becoming a post-March2020
-> phylink driver. It doesn't solve that problem, merely makes the code
-> easier to follow by getting rid of repeated tenary operators.
-> 
-> [...]
+If we remove the driver without finishing the work, there
+may be a race condition between ndev, which may cause UAF
+bug.
 
-Here is the summary with links:
-  - [net-next,1/4] net: mtk_eth_soc: tidy mtk_gmac0_rgmii_adjust()
-    https://git.kernel.org/netdev/net-next/c/04eb3d1cede0
-  - [net-next,2/4] net: mtk_eth_soc: move trgmii ddr2 check to probe function
-    https://git.kernel.org/netdev/net-next/c/7910898e1b2a
-  - [net-next,3/4] net: mtk_eth_soc: remove unnecessary checks in mtk_mac_config()
-    https://git.kernel.org/netdev/net-next/c/c9f9e3a3289f
-  - [net-next,4/4] net: mtk_eth_soc: remove support for RMII and REVMII modes
-    https://git.kernel.org/netdev/net-next/c/8cd9de08ccf6
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
+---
+ drivers/net/ethernet/natsemi/ns83820.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-You are awesome, thank you!
+diff --git a/drivers/net/ethernet/natsemi/ns83820.c b/drivers/net/ethernet/natsemi/ns83820.c
+index 998586872599..285fe0fa33eb 100644
+--- a/drivers/net/ethernet/natsemi/ns83820.c
++++ b/drivers/net/ethernet/natsemi/ns83820.c
+@@ -2206,6 +2206,7 @@ static void ns83820_remove_one(struct pci_dev *pci_dev)
+ 	if (!ndev)			/* paranoia */
+ 		return;
+ 
++	cancel_work_sync(&dev->tq_refill);
+ 	ns83820_disable_interrupts(dev); /* paranoia */
+ 
+ 	unregister_netdev(ndev);
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.25.1
 
