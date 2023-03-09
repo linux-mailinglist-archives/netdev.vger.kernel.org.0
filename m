@@ -2,126 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 076BA6B1898
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 02:16:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07C6F6B189B
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 02:16:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229819AbjCIBQv convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 8 Mar 2023 20:16:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52812 "EHLO
+        id S229900AbjCIBQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 20:16:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229544AbjCIBQt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 20:16:49 -0500
-Received: from fd01.gateway.ufhost.com (fd01.gateway.ufhost.com [61.152.239.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61C5828865;
-        Wed,  8 Mar 2023 17:16:43 -0800 (PST)
-Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
-        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
-        by fd01.gateway.ufhost.com (Postfix) with ESMTP id 29B5524E041;
-        Thu,  9 Mar 2023 09:16:36 +0800 (CST)
-Received: from EXMBX162.cuchost.com (172.16.6.72) by EXMBX166.cuchost.com
- (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Thu, 9 Mar
- 2023 09:16:36 +0800
-Received: from [192.168.120.42] (171.223.208.138) by EXMBX162.cuchost.com
- (172.16.6.72) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Thu, 9 Mar
- 2023 09:16:35 +0800
-Message-ID: <2097647b-08c4-765b-990e-432961020d17@starfivetech.com>
-Date:   Thu, 9 Mar 2023 09:16:33 +0800
+        with ESMTP id S229705AbjCIBQu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 20:16:50 -0500
+Received: from out-41.mta0.migadu.com (out-41.mta0.migadu.com [91.218.175.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFD85CC320
+        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 17:16:45 -0800 (PST)
+Message-ID: <c3b8f7f1-486b-be53-5501-b35380bf238d@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1678324603;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=n/VqSdDwDxUJggwHjttxJoAar0Dhzdi2fjG4sO3x8kE=;
+        b=U9minMslNMK0aA+GXjz7cVBzoGBIMAe1LnzDP1QSJteCbrRRtZjzmgIGkbWqB67wDSQf/R
+        S+1vwUdR2Pk9k1rCvjIscjafdPKuXLL5uttBsoSYw9B8K3ma/w/2TMOK0r0v1bHkPsIlu4
+        JWitWFxHj773k9GlixQt7aO1IA57gi0=
+Date:   Wed, 8 Mar 2023 17:16:40 -0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v5 07/12] dt-bindings: net: starfive,jh7110-dwmac: Add
- starfive,syscon
+Subject: Re: [PATCH bpf-next 1/3] net: skbuff: rename
+ __pkt_vlan_present_offset to __mono_tc_offset
 Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-CC:     <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Yanhong Wang <yanhong.wang@starfivetech.com>
-References: <20230303085928.4535-1-samin.guo@starfivetech.com>
- <20230303085928.4535-8-samin.guo@starfivetech.com>
- <20230308220309.GA3914591-robh@kernel.org>
-From:   Guo Samin <samin.guo@starfivetech.com>
-In-Reply-To: <20230308220309.GA3914591-robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Originating-IP: [171.223.208.138]
-X-ClientProxiedBy: EXCAS064.cuchost.com (172.16.6.24) To EXMBX162.cuchost.com
- (172.16.6.72)
-X-YovoleRuleAgent: yovoleflag
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, bpf <bpf@vger.kernel.org>
+References: <20230308003159.441580-1-kuba@kernel.org>
+ <20230308003159.441580-2-kuba@kernel.org>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+In-Reply-To: <20230308003159.441580-2-kuba@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
--------- 原始信息 --------
-主题: Re: [PATCH v5 07/12] dt-bindings: net: starfive,jh7110-dwmac: Add starfive,syscon
-From: Rob Herring <robh@kernel.org>
-
-> On Fri, Mar 03, 2023 at 04:59:23PM +0800, Samin Guo wrote:
->> A phandle to syscon with two arguments that configure phy mode.
+On 3/7/23 4:31 PM, Jakub Kicinski wrote:
+> vlan_present is gone since
+> commit 354259fa73e2 ("net: remove skb->vlan_present")
+> rename the offset field to what BPF is currently looking
+> for in this byte - mono_delivery_time and tc_at_ingress.
 > 
-> This change belongs in patch 4.
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>   include/linux/skbuff.h                               | 4 ++--
+>   net/core/filter.c                                    | 8 ++++----
+>   tools/testing/selftests/bpf/prog_tests/ctx_rewrite.c | 6 +++---
+>   3 files changed, 9 insertions(+), 9 deletions(-)
 > 
-Thank you for pointing out that the next version will be merged into patch4
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index ff7ad331fb82..004009b3930f 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -956,7 +956,7 @@ struct sk_buff {
+>   	__u8			csum_valid:1;
+>   
+>   	/* private: */
+> -	__u8			__pkt_vlan_present_offset[0];
+> +	__u8			__mono_tc_offset[0];
+>   	/* public: */
+>   	__u8			remcsum_offload:1;
+>   	__u8			csum_complete_sw:1;
+> @@ -1080,7 +1080,7 @@ struct sk_buff {
+>   #define TC_AT_INGRESS_MASK		(1 << 7)
+>   #define SKB_MONO_DELIVERY_TIME_MASK	(1 << 5)
+>   #endif
+> -#define PKT_VLAN_PRESENT_OFFSET	offsetof(struct sk_buff, __pkt_vlan_present_offset)
+> +#define SKB_BF_MONO_TC_OFFSET		offsetof(struct sk_buff, __mono_tc_offset)
+>   
+>   #ifdef __KERNEL__
+>   /*
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 50f649f1b4a9..3370efad1dda 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -9185,7 +9185,7 @@ static struct bpf_insn *bpf_convert_tstamp_type_read(const struct bpf_insn *si,
+>   	__u8 tmp_reg = BPF_REG_AX;
+>   
+>   	*insn++ = BPF_LDX_MEM(BPF_B, tmp_reg, skb_reg,
+> -			      PKT_VLAN_PRESENT_OFFSET);
+> +			      SKB_BF_MONO_TC_OFFSET);
+>   	*insn++ = BPF_JMP32_IMM(BPF_JSET, tmp_reg,
+>   				SKB_MONO_DELIVERY_TIME_MASK, 2);
+>   	*insn++ = BPF_MOV32_IMM(value_reg, BPF_SKB_TSTAMP_UNSPEC);
+> @@ -9232,7 +9232,7 @@ static struct bpf_insn *bpf_convert_tstamp_read(const struct bpf_prog *prog,
+>   		/* AX is needed because src_reg and dst_reg could be the same */
+>   		__u8 tmp_reg = BPF_REG_AX;
+>   
+> -		*insn++ = BPF_LDX_MEM(BPF_B, tmp_reg, skb_reg, PKT_VLAN_PRESENT_OFFSET);
+> +		*insn++ = BPF_LDX_MEM(BPF_B, tmp_reg, skb_reg, SKB_BF_MONO_TC_OFFSET);
+>   		*insn++ = BPF_ALU32_IMM(BPF_AND, tmp_reg,
+>   					TC_AT_INGRESS_MASK | SKB_MONO_DELIVERY_TIME_MASK);
+>   		*insn++ = BPF_JMP32_IMM(BPF_JNE, tmp_reg,
+> @@ -9267,14 +9267,14 @@ static struct bpf_insn *bpf_convert_tstamp_write(const struct bpf_prog *prog,
+>   	if (!prog->tstamp_type_access) {
+>   		__u8 tmp_reg = BPF_REG_AX;
+>   
+> -		*insn++ = BPF_LDX_MEM(BPF_B, tmp_reg, skb_reg, PKT_VLAN_PRESENT_OFFSET);
+> +		*insn++ = BPF_LDX_MEM(BPF_B, tmp_reg, skb_reg, SKB_BF_MONO_TC_OFFSET);
+>   		/* Writing __sk_buff->tstamp as ingress, goto <clear> */
+>   		*insn++ = BPF_JMP32_IMM(BPF_JSET, tmp_reg, TC_AT_INGRESS_MASK, 1);
+>   		/* goto <store> */
+>   		*insn++ = BPF_JMP_A(2);
+>   		/* <clear>: mono_delivery_time */
+>   		*insn++ = BPF_ALU32_IMM(BPF_AND, tmp_reg, ~SKB_MONO_DELIVERY_TIME_MASK);
+> -		*insn++ = BPF_STX_MEM(BPF_B, skb_reg, tmp_reg, PKT_VLAN_PRESENT_OFFSET);
+> +		*insn++ = BPF_STX_MEM(BPF_B, skb_reg, tmp_reg, SKB_BF_MONO_TC_OFFSET);
+>   	}
+>   #endif
+>   
+> diff --git a/tools/testing/selftests/bpf/prog_tests/ctx_rewrite.c b/tools/testing/selftests/bpf/prog_tests/ctx_rewrite.c
+> index d5fe3d4b936c..ae7b6e50e405 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/ctx_rewrite.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/ctx_rewrite.c
+> @@ -68,17 +68,17 @@ static struct test_case test_cases[] = {
+>   #if defined(__x86_64__) || defined(__aarch64__)
+>   	{
+>   		N(SCHED_CLS, struct __sk_buff, tstamp),
+> -		.read  = "r11 = *(u8 *)($ctx + sk_buff::__pkt_vlan_present_offset);"
+> +		.read  = "r11 = *(u8 *)($ctx + sk_buff::__mono_tc_offset);"
+>   			 "w11 &= 160;"
 
+The mask needs to be adjusted also after patch 3. This selftest is failing: 
+https://github.com/kernel-patches/bpf/actions/runs/4369844423/jobs/7644281598
 
-Best regards,
-Samin
+>   			 "if w11 != 0xa0 goto pc+2;"
+>   			 "$dst = 0;"
+>   			 "goto pc+1;"
+>   			 "$dst = *(u64 *)($ctx + sk_buff::tstamp);",
+> -		.write = "r11 = *(u8 *)($ctx + sk_buff::__pkt_vlan_present_offset);"
+> +		.write = "r11 = *(u8 *)($ctx + sk_buff::__mono_tc_offset);"
+>   			 "if w11 & 0x80 goto pc+1;"
 
->>
->> Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
->> ---
->>  .../bindings/net/starfive,jh7110-dwmac.yaml         | 13 +++++++++++++
->>  1 file changed, 13 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml b/Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml
->> index ca49f08d50dd..79ae635db0a5 100644
->> --- a/Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml
->> +++ b/Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml
->> @@ -58,6 +58,18 @@ properties:
->>        Tx clock is provided by external rgmii clock.
->>      type: boolean
->>  
->> +  starfive,syscon:
->> +    $ref: /schemas/types.yaml#/definitions/phandle-array
->> +    items:
->> +      - items:
->> +          - description: phandle to syscon that configures phy mode
->> +          - description: Offset of phy mode selection
->> +          - description: Mask of phy mode selection
->> +    description:
->> +      A phandle to syscon with two arguments that configure phy mode.
->> +      The argument one is the offset of phy mode selection, the
->> +      argument two is the mask of phy mode selection.
->> +
->>  allOf:
->>    - $ref: snps,dwmac.yaml#
->>  
->> @@ -96,6 +108,7 @@ examples:
->>          snps,en-tx-lpi-clockgating;
->>          snps,txpbl = <16>;
->>          snps,rxpbl = <16>;
->> +        starfive,syscon = <&aon_syscon 0xc 0x1c0000>;
->>          phy-handle = <&phy0>;
->>  
->>          mdio {
->> -- 
->> 2.17.1
->>
+It probably needs to adjust here also
+
+>   			 "goto pc+2;"
+>   			 "w11 &= -33;"
+
+and here.
+
+> -			 "*(u8 *)($ctx + sk_buff::__pkt_vlan_present_offset) = r11;"
+> +			 "*(u8 *)($ctx + sk_buff::__mono_tc_offset) = r11;"
+>   			 "*(u64 *)($ctx + sk_buff::tstamp) = $src;",
+>   	},
+>   #endif
 
