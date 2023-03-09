@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8919F6B2427
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 13:27:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C02A6B2429
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 13:27:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230290AbjCIM1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 07:27:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43642 "EHLO
+        id S231167AbjCIM1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 07:27:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230246AbjCIM0h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 07:26:37 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 599DDED0F9;
-        Thu,  9 Mar 2023 04:26:27 -0800 (PST)
+        with ESMTP id S230510AbjCIM0u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 07:26:50 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED90EBAC8;
+        Thu,  9 Mar 2023 04:26:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C108BB81EF0;
-        Thu,  9 Mar 2023 12:26:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31821C4339B;
-        Thu,  9 Mar 2023 12:26:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A0685B81ED7;
+        Thu,  9 Mar 2023 12:26:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDF7EC433EF;
+        Thu,  9 Mar 2023 12:26:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678364784;
-        bh=PN17q16YFGbg8o7Lu9G/5DujjHJ3vW2SfgIQjx5BurI=;
+        s=k20201202; t=1678364788;
+        bh=o5gPeq4QDA4D5M45DH1MR6vMlCRXmlPsUa7kM4g6OJ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=raa5M5nOg5QtxdQLkZA0AB7vOk3noqSXcC0ASVCEgQM2rT63O37+QRmvlIkCkiDpj
-         svLaPGJ/KmflUMpdUb5L45I05R+ftchg/7tHGcVDKDvfG5/YIndBydMcBjUmuU0bVT
-         2dhMm3EoabuNCCNALIK9wSM5yfhQAu+lorwe8fOaWF6vZL9wl3slPguNcDAAH9P6Xx
-         Kvfb9Qs+3lllwkMa7PCpBsBm79JaE2P+/xUhC+9OIbDCs0MDSxir48x29+7VuY25Sz
-         MqA2q+gRgT0GVGvkJUTtWHLPgp7Vk1bmP7sw1yguHfeUYlOgyYRMRpVCLKJapqfYa9
-         x9ihbGb1ZTT5Q==
+        b=LNwADOzQxAcRxcbTpRkLPVOaZJx9MjkFV6oJPdzatauYHGg9O0fiXegEqakM9M8xR
+         uk6Mjr4X7UmnvfUQZboavUaSSOgQFGQJ6ADkdgN7WMLpgu+JmJux7PCKRbbnsLBw1O
+         M55JRIhYUoaoSeQigevK1X1cqDs7druoZRkSdu79+3BwzEP/R3eAdhYKpmw3e4z6eH
+         fm3Z8EMsSB7td1qQxQCXCoLp4cIiwJi4iwFtVYIap5yGb7zsA+1LxBF7HRpNVwUfnd
+         fMuhvp9Pq9icZNHwyzVVkz7XHia6NMDRLsERLS/4LKm6uDRpIDSOeLAWRSJucP3dDw
+         qetTpJXcqms1Q==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
@@ -40,16 +40,16 @@ Cc:     bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
         akiyano@amazon.com, darinzon@amazon.com, sgoutham@marvell.com,
         lorenzo.bianconi@redhat.com, toke@redhat.com, teknoraver@meta.com,
         ttoukan.linux@gmail.com
-Subject: [PATCH net v2 7/8] net/mlx5e: take into account device reconfiguration for xdp_features flag
-Date:   Thu,  9 Mar 2023 13:25:31 +0100
-Message-Id: <16c37367670903e86f863cc8c481100dd4b3a323.1678364613.git.lorenzo@kernel.org>
+Subject: [PATCH net v2 8/8] mvpp2: take care of xdp_features when reconfiguring queues
+Date:   Thu,  9 Mar 2023 13:25:32 +0100
+Message-Id: <fbee6a38c35e801036210ec27dd629d6a17030c6.1678364613.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1678364612.git.lorenzo@kernel.org>
 References: <cover.1678364612.git.lorenzo@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,157 +57,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Take into account LRO and GRO configuration setting device xdp_features
-flag. Consider channel rq_wq_type enabling rx scatter-gatter support in
-xdp_features flag and disable NETDEV_XDP_ACT_NDO_XMIT_SG since it is not
-supported yet by the driver.
-Moreover always enable NETDEV_XDP_ACT_NDO_XMIT as the ndo_xdp_xmit
-callback does not require to load a dummy xdp program on the NIC.
+From: Matteo Croce <teknoraver@meta.com>
+
+XDP is supported only if enough queues are present, so when reconfiguring
+the queues set xdp_features accordingly.
 
 Fixes: 66c0e13ad236 ("drivers: net: turn on XDP features")
-Co-developed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+Suggested-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Matteo Croce <teknoraver@meta.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |  1 +
- .../ethernet/mellanox/mlx5/core/en_ethtool.c  | 10 ++++-
- .../net/ethernet/mellanox/mlx5/core/en_main.c | 37 +++++++++++++------
- .../net/ethernet/mellanox/mlx5/core/en_rep.c  |  3 ++
- 4 files changed, 39 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index 88460b7796e5..4276c6eb6820 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -1243,6 +1243,7 @@ void mlx5e_build_nic_params(struct mlx5e_priv *priv, struct mlx5e_xsk *xsk, u16
- void mlx5e_rx_dim_work(struct work_struct *work);
- void mlx5e_tx_dim_work(struct work_struct *work);
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index 9b4ecbe4f36d..3ea00bc9b91c 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -4996,6 +4996,14 @@ static int mvpp2_bm_switch_buffers(struct mvpp2 *priv, bool percpu)
  
-+void mlx5e_set_xdp_feature(struct net_device *netdev);
- netdev_features_t mlx5e_features_check(struct sk_buff *skb,
- 				       struct net_device *netdev,
- 				       netdev_features_t features);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-index 7708acc9b2ab..79fd21ecb9cb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-@@ -1985,6 +1985,7 @@ static int set_pflag_rx_striding_rq(struct net_device *netdev, bool enable)
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
- 	struct mlx5_core_dev *mdev = priv->mdev;
- 	struct mlx5e_params new_params;
-+	int err;
- 
- 	if (enable) {
- 		/* Checking the regular RQ here; mlx5e_validate_xsk_param called
-@@ -2005,7 +2006,14 @@ static int set_pflag_rx_striding_rq(struct net_device *netdev, bool enable)
- 	MLX5E_SET_PFLAG(&new_params, MLX5E_PFLAG_RX_STRIDING_RQ, enable);
- 	mlx5e_set_rq_type(mdev, &new_params);
- 
--	return mlx5e_safe_switch_params(priv, &new_params, NULL, NULL, true);
-+	err = mlx5e_safe_switch_params(priv, &new_params, NULL, NULL, true);
-+	if (err)
-+		return err;
+ 	for (i = 0; i < priv->port_count; i++) {
+ 		port = priv->port_list[i];
++		if (percpu && port->ntxqs >= num_possible_cpus() * 2)
++			xdp_set_features_flag(port->dev,
++					      NETDEV_XDP_ACT_BASIC |
++					      NETDEV_XDP_ACT_REDIRECT |
++					      NETDEV_XDP_ACT_NDO_XMIT);
++		else
++			xdp_clear_features_flag(port->dev);
 +
-+	/* update XDP supported features */
-+	mlx5e_set_xdp_feature(netdev);
-+
-+	return 0;
- }
+ 		mvpp2_swf_bm_pool_init(port);
+ 		if (status[i])
+ 			mvpp2_open(port->dev);
+@@ -6863,13 +6871,14 @@ static int mvpp2_port_probe(struct platform_device *pdev,
  
- static int set_pflag_rx_no_csum_complete(struct net_device *netdev, bool enable)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 76a9c5194a70..51b5f3cca504 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -4004,6 +4004,25 @@ static int mlx5e_handle_feature(struct net_device *netdev,
- 	return 0;
- }
+ 	if (!port->priv->percpu_pools)
+ 		mvpp2_set_hw_csum(port, port->pool_long->id);
++	else if (port->ntxqs >= num_possible_cpus() * 2)
++		dev->xdp_features = NETDEV_XDP_ACT_BASIC |
++				    NETDEV_XDP_ACT_REDIRECT |
++				    NETDEV_XDP_ACT_NDO_XMIT;
  
-+void mlx5e_set_xdp_feature(struct net_device *netdev)
-+{
-+	struct mlx5e_priv *priv = netdev_priv(netdev);
-+	struct mlx5e_params *params = &priv->channels.params;
-+	xdp_features_t val;
-+
-+	if (params->packet_merge.type != MLX5E_PACKET_MERGE_NONE) {
-+		xdp_clear_features_flag(netdev);
-+		return;
-+	}
-+
-+	val = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-+	      NETDEV_XDP_ACT_XSK_ZEROCOPY |
-+	      NETDEV_XDP_ACT_NDO_XMIT;
-+	if (params->rq_wq_type == MLX5_WQ_TYPE_CYCLIC)
-+		val |= NETDEV_XDP_ACT_RX_SG;
-+	xdp_set_features_flag(netdev, val);
-+}
-+
- int mlx5e_set_features(struct net_device *netdev, netdev_features_t features)
- {
- 	netdev_features_t oper_features = features;
-@@ -4030,6 +4049,9 @@ int mlx5e_set_features(struct net_device *netdev, netdev_features_t features)
- 		return -EINVAL;
- 	}
+ 	dev->vlan_features |= features;
+ 	netif_set_tso_max_segs(dev, MVPP2_MAX_TSO_SEGS);
  
-+	/* update XDP supported features */
-+	mlx5e_set_xdp_feature(netdev);
-+
- 	return 0;
- }
- 
-@@ -4761,13 +4783,6 @@ static int mlx5e_xdp_set(struct net_device *netdev, struct bpf_prog *prog)
- 	if (old_prog)
- 		bpf_prog_put(old_prog);
- 
--	if (reset) {
--		if (prog)
--			xdp_features_set_redirect_target(netdev, true);
--		else
--			xdp_features_clear_redirect_target(netdev);
--	}
+-	dev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+-			    NETDEV_XDP_ACT_NDO_XMIT;
 -
- 	if (!test_bit(MLX5E_STATE_OPENED, &priv->state) || reset)
- 		goto unlock;
+ 	dev->priv_flags |= IFF_UNICAST_FLT;
  
-@@ -5163,13 +5178,10 @@ static void mlx5e_build_nic_netdev(struct net_device *netdev)
- 	netdev->features         |= NETIF_F_HIGHDMA;
- 	netdev->features         |= NETIF_F_HW_VLAN_STAG_FILTER;
- 
--	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
--			       NETDEV_XDP_ACT_XSK_ZEROCOPY |
--			       NETDEV_XDP_ACT_RX_SG;
--
- 	netdev->priv_flags       |= IFF_UNICAST_FLT;
- 
- 	netif_set_tso_max_size(netdev, GSO_MAX_SIZE);
-+	mlx5e_set_xdp_feature(netdev);
- 	mlx5e_set_netdev_dev_addr(netdev);
- 	mlx5e_macsec_build_netdev(priv);
- 	mlx5e_ipsec_build_netdev(priv);
-@@ -5241,6 +5253,9 @@ static int mlx5e_nic_init(struct mlx5_core_dev *mdev,
- 		mlx5_core_err(mdev, "TLS initialization failed, %d\n", err);
- 
- 	mlx5e_health_create_reporters(priv);
-+	/* update XDP supported features */
-+	mlx5e_set_xdp_feature(netdev);
-+
- 	return 0;
- }
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-index 9b9203443085..43fd12fb87b8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -747,6 +747,9 @@ static void mlx5e_build_rep_params(struct net_device *netdev)
- 	/* RQ */
- 	mlx5e_build_rq_params(mdev, params);
- 
-+	/* update XDP supported features */
-+	mlx5e_set_xdp_feature(netdev);
-+
- 	/* CQ moderation params */
- 	params->rx_dim_enabled = MLX5_CAP_GEN(mdev, cq_moderation);
- 	mlx5e_set_rx_cq_mode_params(params, cq_period_mode);
+ 	/* MTU range: 68 - 9704 */
 -- 
 2.39.2
 
