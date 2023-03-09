@@ -2,72 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BB626B25CE
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 14:49:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E42CD6B25D3
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 14:49:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231211AbjCINs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 08:48:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34374 "EHLO
+        id S231315AbjCINtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 08:49:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231221AbjCINsU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 08:48:20 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2083.outbound.protection.outlook.com [40.107.93.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C89721B544;
-        Thu,  9 Mar 2023 05:48:18 -0800 (PST)
+        with ESMTP id S231313AbjCINsa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 08:48:30 -0500
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2046.outbound.protection.outlook.com [40.107.100.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19CDF7BA30;
+        Thu,  9 Mar 2023 05:48:27 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GJjCAofF9JTQQtJ4i/gYed5VcgbvWKVg/EQUaYsx0tWRl60fz4NdUdbR1+ogFhMUKkEmCJtnauehvtfLOmaBL9MIa/5LtilN6HOk0TRBGv0A05k/8WwQ4g5i0T3izXyvmI1u+kAl6ajBQnLKInQ+pYEaE2AHtx9dl/8ceUu91j/wzJlJbZM10sN1LerjGBOSU2QuDLCVp75HyOWEZswpU+fYxDwDGHdi/5yJPkEgBJchN2NBQ6pwZC8sFLf2uWHCSb+UjybEw+s9wg4u7JU8YRQiQEdbW37nn6sE4Es5gBvQ58NA6uCrP4rYyn4BWIoO+1IoTqRFCTRRFZ09zFNQHw==
+ b=BMohm7F+Pxnc6M7aDi8cAjNfK/HdsFHzG4RyR7xMj0+YZAjgR6sCklxc1GuKNakh97u/DOO5eDxvbi5Z5t7T6A+NuY3PPcGdxWFpcXgCtNreB8aHYP/+fUz2DZSmdkvXWfXJvkTjDAf9Oyv8/tLKYIZ1JiELG9gcudJ4xHKjME/b5Lr8FwNE3c+PCPRobEcomm7tMRBKqUH69ZJoaXwhW/r70eqDlt00aeC1yW8lA5P4nC0rlAfxfNzn+6qFyE8msnhPWOFIbZWFN5yRbUAdRrmLLnDzbhDEurU0aDeYAwWnsFNPCZq2y20t6GWl/UoR3fkE5oWZonxMQVc72WWoDQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=l9+KU7YTv70LcPI9sTqYHjSPOzTytRYs0gJXbtLQBCw=;
- b=ghlRiI4aRxmH4giGaeu5shNjLOzPHYZrKiirrrQDHDIR5MyKUTooiRJporYsnBxlz8QfvKUdYzmhP7ST8HKcDVcVpK5yPrBe+mAgv/OMaGizdALY9RTnLXrBlR2+AvLVR2RagrccB+3/cRLMaWlRiq9rQBj2TZNL+lMDfP2OLZOsAvNJp3vG9w6WUj8Y/uuCY3IxG1u9BLXjilIzG72+b8kOMU+ITqYJFmfbuY7pco7MSENMITA4qhMXl2DDbmM8wPeoVUd1LOqO3eH9XpGKW67N8G5v2KnahzVdCi0JskF4Mq0LYweNOHovOnSqQuIrgMSXiR4b0zNbqkJ5pKInlQ==
+ bh=N179DlG4Bn/W8g7JOeG9FuYbjDYjXPaJecv7CzHK2fc=;
+ b=WUqqbGEhE2yZwjgoFDMsQdlZzgKlRiBaJPFLxHcNLXPJZnU3Xw2d1QwQhhVw/6GnQp8xPWsb8cWH7nMWgokOSUKKJPfiejs/6ZHV+qWGgdW0Dw5dvGh/pgSaVHHmfkGlEo3BjgxQbMsGvyQUiemIAsBaM29cuLIHrrWQr61UUWWDOcVBdkg1G9o4fCW5n3kIQNBn/pTt6NFc+dtGLjlJX0JtGvHsoWdS/RgmbWbnl5GMjKa4dtILRIJEPHnT15wQ8WEyet1bqaCDTC8dlM1gC/1iwbRtCV/ub78/+6VIGOJSce3z5EiJOI3eswutTrimcw0nSAaBOHrDCb2xUt2GZQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ 216.228.117.160) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=l9+KU7YTv70LcPI9sTqYHjSPOzTytRYs0gJXbtLQBCw=;
- b=hO7W2bmpp9Vy5ZQ2DEEScNuNZcY5Ocr2l/2ik/9jVIJL9bsvyOeTdFop4rgB1/cyZtWFalt++Qgh+mTq5qCoCcc1erS/VM/qqnI5N5LWDL5V53UD6BXMU3c+/7y93rNVW8zcJIRb9N/b+4lwNCm7ZDqJtr0KKldFvEQ5Z4VJKZ8nFwZQ7eLd3M3Siv/8sHp9iahQ7VqFbeGJwpdEX8EgryxQgD9WXR935jIBC2UjQ7zfkqgAw1o9XuYkXJLndomuVMfS3hZag4rFyh7F/ykqdClwGuq1DLVrKcPXZ2V3s79Ev0jb8LpO4WCSo/ZuniTJXK0kYBvq9r7LvYXRzX/nUg==
-Received: from DS7PR03CA0129.namprd03.prod.outlook.com (2603:10b6:5:3b4::14)
- by PH7PR12MB7260.namprd12.prod.outlook.com (2603:10b6:510:208::13) with
+ bh=N179DlG4Bn/W8g7JOeG9FuYbjDYjXPaJecv7CzHK2fc=;
+ b=KBQS/NrDj00aVLL7uga/WdlB6jCKzZms9A7/hOy8mnYNP06oG0ZUyYxYyzG0HK/eciN6tLrQnx/MnG3YHhS/1elRW9cpy3P8pqlv445K9ikjFlhNG83SStga7ZTiN89SAjQr4TW69TLArq5SkZVeR36Y8a/iCrABmU2GdQIT4aHP9LOC6iRZfvUkvdvOBFtxEeLOSOGsSkySj0wivub4HxWLKlqo5ZxiQNh9TyG/VRNht3GA7jZdwHvbWxyxFRxuJAGtQ7toYSYiv94O8EC39+ht0gLN5HEGDVEQDRZasUP1YhXxlcyuqYk34+DFVEtexyoOYHzTkU/SFI2ERjUQBg==
+Received: from BN9PR03CA0881.namprd03.prod.outlook.com (2603:10b6:408:13c::16)
+ by DS0PR12MB7801.namprd12.prod.outlook.com (2603:10b6:8:140::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.19; Thu, 9 Mar
- 2023 13:48:16 +0000
-Received: from DS1PEPF0000E643.namprd02.prod.outlook.com
- (2603:10b6:5:3b4:cafe::b2) by DS7PR03CA0129.outlook.office365.com
- (2603:10b6:5:3b4::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.29 via Frontend
- Transport; Thu, 9 Mar 2023 13:48:16 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.28; Thu, 9 Mar
+ 2023 13:48:24 +0000
+Received: from BN8NAM11FT096.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:13c:cafe::4a) by BN9PR03CA0881.outlook.office365.com
+ (2603:10b6:408:13c::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.19 via Frontend
+ Transport; Thu, 9 Mar 2023 13:48:24 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- DS1PEPF0000E643.mail.protection.outlook.com (10.167.17.197) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6178.13 via Frontend Transport; Thu, 9 Mar 2023 13:48:15 +0000
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ BN8NAM11FT096.mail.protection.outlook.com (10.13.177.195) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6178.19 via Frontend Transport; Thu, 9 Mar 2023 13:48:23 +0000
 Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 9 Mar 2023
- 05:48:06 -0800
+ 05:48:10 -0800
 Received: from nvidia.com (10.126.231.37) by rnnvmail201.nvidia.com
  (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Thu, 9 Mar 2023
- 05:48:03 -0800
+ 05:48:06 -0800
 From:   Gavin Li <gavinl@nvidia.com>
 To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
         <pabeni@redhat.com>, <roopa@nvidia.com>,
         <eng.alaamohamedsoliman.am@gmail.com>, <bigeasy@linutronix.de>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <gavi@nvidia.com>, <roid@nvidia.com>, <maord@nvidia.com>,
-        <saeedm@nvidia.com>, Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next v6 2/5] vxlan: Expose helper vxlan_build_gbp_hdr
-Date:   Thu, 9 Mar 2023 15:47:15 +0200
-Message-ID: <20230309134718.306570-3-gavinl@nvidia.com>
+        <saeedm@nvidia.com>
+Subject: [PATCH net-next v6 3/5] net/mlx5e: Add helper for encap_info_equal for tunnels with options
+Date:   Thu, 9 Mar 2023 15:47:16 +0200
+Message-ID: <20230309134718.306570-4-gavinl@nvidia.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230309134718.306570-1-gavinl@nvidia.com>
 References: <20230309134718.306570-1-gavinl@nvidia.com>
@@ -79,23 +79,23 @@ X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS1PEPF0000E643:EE_|PH7PR12MB7260:EE_
-X-MS-Office365-Filtering-Correlation-Id: af069598-db71-43b1-a53a-08db20a4ef06
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT096:EE_|DS0PR12MB7801:EE_
+X-MS-Office365-Filtering-Correlation-Id: f73af92b-1e5d-4eac-7d4a-08db20a4f3ce
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: XvJwr0LNTF/D2Bf08EwPfQQJ5uUXDhO60zlmsP743BjzCbRFdfmTjOhBEhgGq5P+XoOsZLJuxNdJrlGtoLtPouyLebYH38clmoX94nq4+6Vw8bTczvycysvVKe8tHFKyOVUX6qeAJpHcFnQNctgBWidLKCa/ib3eIAU1/FgRLWp/P/8iGc6Ng9g3068Tkg5GyNE3NeesD5Hhh1p7O/toVU/dXSbpaxFWSZsMINE0gCW1qqKAf1VnEKpi1UzpGEMKGNqypPVlT3PPbSMfXx9IMJL9v6Vew1dW8N7EgAaHpccAxo9sz3HFFFTDRgZ5X0Bt46VdAexyJLzZR97yA1e4SemqDG2qnnvFI6bkhqkL3OfCozmCD+eIh+eNE+TEOThVU5YM3TH7g8FhuonHkwLIpp99/9TrwMdnkT6qto8p9qBLEDzXQXqJFjnyUzYh5x6AoetsEx7RaqxsapJQ0aKrn884uvhidtuXU7FUbvPgtkyLMNJsp0zPrhGtqgM94ub267BlKvYyrN1u+YmoOqpL8hcEh5xx15P/FuayhqEORcSZXPnOPkLChngHCX3mQ0RkvUZHOfO8mPrFJiLngmHEXNsnKCgYUk6BXsMrH0/6gHL1raNJjGU9+J3GmZgF72NkKBirZgOvpoT2wErafQi5pzJexar/ZUTXh46lsfgehWU1byFnoEz5q+XtqFRjkJx28vqXgVGaHyxJmBBIS71WdeWkE9gb6Uhavge156lDgf2Xjd8uAqCI7mBJLlgqDolA
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(376002)(346002)(396003)(136003)(39860400002)(451199018)(46966006)(40470700004)(36840700001)(40460700003)(36756003)(110136005)(54906003)(478600001)(7696005)(316002)(5660300002)(2906002)(8936002)(8676002)(70206006)(70586007)(41300700001)(4326008)(82740400003)(7636003)(36860700001)(356005)(55016003)(40480700001)(86362001)(1076003)(186003)(6286002)(16526019)(6666004)(2616005)(26005)(83380400001)(82310400005)(47076005)(426003)(336012);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 0/Pkt2OGO8ynED6YA7al9FLxOmRJ4jSCyXhtfuqb5qv7jAtsiC6kUyAMG/eVuctjQppgXWAzFfPoPTtAEzA64XhmnSBRwnzcnMJO1rvOiCLNDy69qNBVS/3PG4YQQW+U8Qc0MOJiKhSv0Z4gNpxrH18KqxEIJsxUDPBKl+/95GquAdmbX8mdnKfOrqpORJiDrGrJ5+tXwlEI1pGwVHmKaZtu7SXY2QX3vdtRtTY7yANw7isK9O8y1zAvAbsfpm8b+K8OhTCWWqqqb5liaqvKEKKVgFd8YdfdS9Zz78+JkULShlLvM2ZwLsMlPRk9uWA5VeOSZsdKsTI9x5jQwdrl2UVC6QgZ1Yba2RVe6x/pWlJ4pnWNu5qtf39y0HNUKzFGs1Nre6UCqiS5Sw0R7sJOgUHMAvPzfTLygjEJfhisKHkt5/ZDApO4vQ6ZCewN25uvTzqmKMhpEV7KK3/bnXcxLDcc4LKb8WIGqsVPK+FYenVLRe8t7Y5FKpee+4e27LLu9sm3RJJHTqPkVQbcSVbjPylVYTOdUi/O/2PgDbBHPRVG5sJVuHVgLJxHHBjaQSXYwCXJTST98G2O7LWu/HlCAGA2Set3JCy0p8Gm2M+5kfhYiNRMVLUVYOKTjDpnpsND88se6ILGk+SCjoETiceZWVFvSkIjbe48sJmuJcGRZg7BzTzZC2l4C1XNWNbGm3QGPySQjcK+WTRDRAYCO50jy1m4WyENEbMQTh1s+HOCdmc1jxXtgvs3sYF/xPqhv080
+X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(376002)(39860400002)(136003)(346002)(396003)(451199018)(40470700004)(46966006)(36840700001)(86362001)(36860700001)(356005)(82740400003)(6666004)(7636003)(41300700001)(4326008)(70206006)(7696005)(36756003)(40480700001)(70586007)(8936002)(8676002)(5660300002)(2906002)(82310400005)(426003)(40460700003)(186003)(6286002)(2616005)(336012)(26005)(16526019)(83380400001)(47076005)(316002)(54906003)(478600001)(55016003)(1076003)(110136005)(107886003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2023 13:48:15.8410
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2023 13:48:23.8147
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: af069598-db71-43b1-a53a-08db20a4ef06
+X-MS-Exchange-CrossTenant-Network-Message-Id: f73af92b-1e5d-4eac-7d4a-08db20a4f3ce
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DS1PEPF0000E643.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT096.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7260
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7801
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -106,78 +106,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The function vxlan_build_gbp_hdr will be used by other modules to build
-gbp option in vxlan header according to gbp flags.
+For tunnels with options, eg, geneve and vxlan with gbp, they share the
+same way to compare the headers and options. Extract the code as a common
+function for them.
 
 Signed-off-by: Gavin Li <gavinl@nvidia.com>
 Reviewed-by: Gavi Teitz <gavi@nvidia.com>
 Reviewed-by: Roi Dayan <roid@nvidia.com>
 Reviewed-by: Maor Dickman <maord@nvidia.com>
 Acked-by: Saeed Mahameed <saeedm@nvidia.com>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
 ---
- drivers/net/vxlan/vxlan_core.c | 19 -------------------
- include/net/vxlan.h            | 19 +++++++++++++++++++
- 2 files changed, 19 insertions(+), 19 deletions(-)
+ .../ethernet/mellanox/mlx5/core/en/tc_tun.h   |  3 ++
+ .../mellanox/mlx5/core/en/tc_tun_encap.c      | 32 +++++++++++++++++++
+ .../mellanox/mlx5/core/en/tc_tun_geneve.c     | 24 +-------------
+ 3 files changed, 36 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/net/vxlan/vxlan_core.c b/drivers/net/vxlan/vxlan_core.c
-index 86967277ab97..13faab36b3e1 100644
---- a/drivers/net/vxlan/vxlan_core.c
-+++ b/drivers/net/vxlan/vxlan_core.c
-@@ -2140,25 +2140,6 @@ static bool route_shortcircuit(struct net_device *dev, struct sk_buff *skb)
- 	return false;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.h
+index b38f693bbb52..92065568bb19 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.h
+@@ -115,6 +115,9 @@ int mlx5e_tc_tun_parse_udp_ports(struct mlx5e_priv *priv,
+ bool mlx5e_tc_tun_encap_info_equal_generic(struct mlx5e_encap_key *a,
+ 					   struct mlx5e_encap_key *b);
+ 
++bool mlx5e_tc_tun_encap_info_equal_options(struct mlx5e_encap_key *a,
++					   struct mlx5e_encap_key *b,
++					   __be16 tun_flags);
+ #endif /* CONFIG_MLX5_ESWITCH */
+ 
+ #endif //__MLX5_EN_TC_TUNNEL_H__
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+index 780224fd67a1..a108e73c9f66 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+@@ -3,6 +3,7 @@
+ 
+ #include <net/fib_notifier.h>
+ #include <net/nexthop.h>
++#include <net/ip_tunnels.h>
+ #include "tc_tun_encap.h"
+ #include "en_tc.h"
+ #include "tc_tun.h"
+@@ -571,6 +572,37 @@ bool mlx5e_tc_tun_encap_info_equal_generic(struct mlx5e_encap_key *a,
+ 		a->tc_tunnel->tunnel_type == b->tc_tunnel->tunnel_type;
  }
  
--static void vxlan_build_gbp_hdr(struct vxlanhdr *vxh, struct vxlan_metadata *md)
--{
--	struct vxlanhdr_gbp *gbp;
--
--	if (!md->gbp)
--		return;
--
--	gbp = (struct vxlanhdr_gbp *)vxh;
--	vxh->vx_flags |= VXLAN_HF_GBP;
--
--	if (md->gbp & VXLAN_GBP_DONT_LEARN)
--		gbp->dont_learn = 1;
--
--	if (md->gbp & VXLAN_GBP_POLICY_APPLIED)
--		gbp->policy_applied = 1;
--
--	gbp->policy_id = htons(md->gbp & VXLAN_GBP_ID_MASK);
--}
--
- static int vxlan_build_gpe_hdr(struct vxlanhdr *vxh, __be16 protocol)
- {
- 	struct vxlanhdr_gpe *gpe = (struct vxlanhdr_gpe *)vxh;
-diff --git a/include/net/vxlan.h b/include/net/vxlan.h
-index bca5b01af247..b6d419fa7ab1 100644
---- a/include/net/vxlan.h
-+++ b/include/net/vxlan.h
-@@ -566,4 +566,23 @@ static inline bool vxlan_fdb_nh_path_select(struct nexthop *nh,
- 	return true;
- }
- 
-+static inline void vxlan_build_gbp_hdr(struct vxlanhdr *vxh, const struct vxlan_metadata *md)
++bool mlx5e_tc_tun_encap_info_equal_options(struct mlx5e_encap_key *a,
++					   struct mlx5e_encap_key *b,
++					   __be16 tun_flags)
 +{
-+	struct vxlanhdr_gbp *gbp;
++	struct ip_tunnel_info *a_info;
++	struct ip_tunnel_info *b_info;
++	bool a_has_opts, b_has_opts;
 +
-+	if (!md->gbp)
-+		return;
++	if (!mlx5e_tc_tun_encap_info_equal_generic(a, b))
++		return false;
 +
-+	gbp = (struct vxlanhdr_gbp *)vxh;
-+	vxh->vx_flags |= VXLAN_HF_GBP;
++	a_has_opts = !!(a->ip_tun_key->tun_flags & tun_flags);
++	b_has_opts = !!(b->ip_tun_key->tun_flags & tun_flags);
 +
-+	if (md->gbp & VXLAN_GBP_DONT_LEARN)
-+		gbp->dont_learn = 1;
++	/* keys are equal when both don't have any options attached */
++	if (!a_has_opts && !b_has_opts)
++		return true;
 +
-+	if (md->gbp & VXLAN_GBP_POLICY_APPLIED)
-+		gbp->policy_applied = 1;
++	if (a_has_opts != b_has_opts)
++		return false;
 +
-+	gbp->policy_id = htons(md->gbp & VXLAN_GBP_ID_MASK);
++	/* options stored in memory next to ip_tunnel_info struct */
++	a_info = container_of(a->ip_tun_key, struct ip_tunnel_info, key);
++	b_info = container_of(b->ip_tun_key, struct ip_tunnel_info, key);
++
++	return a_info->options_len == b_info->options_len &&
++	       !memcmp(ip_tunnel_info_opts(a_info),
++		       ip_tunnel_info_opts(b_info),
++		       a_info->options_len);
 +}
 +
- #endif
+ static int cmp_decap_info(struct mlx5e_decap_key *a,
+ 			  struct mlx5e_decap_key *b)
+ {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_geneve.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_geneve.c
+index 054d80c4e65c..2bcd10b6d653 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_geneve.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_geneve.c
+@@ -337,29 +337,7 @@ static int mlx5e_tc_tun_parse_geneve(struct mlx5e_priv *priv,
+ static bool mlx5e_tc_tun_encap_info_equal_geneve(struct mlx5e_encap_key *a,
+ 						 struct mlx5e_encap_key *b)
+ {
+-	struct ip_tunnel_info *a_info;
+-	struct ip_tunnel_info *b_info;
+-	bool a_has_opts, b_has_opts;
+-
+-	if (!mlx5e_tc_tun_encap_info_equal_generic(a, b))
+-		return false;
+-
+-	a_has_opts = !!(a->ip_tun_key->tun_flags & TUNNEL_GENEVE_OPT);
+-	b_has_opts = !!(b->ip_tun_key->tun_flags & TUNNEL_GENEVE_OPT);
+-
+-	/* keys are equal when both don't have any options attached */
+-	if (!a_has_opts && !b_has_opts)
+-		return true;
+-
+-	if (a_has_opts != b_has_opts)
+-		return false;
+-
+-	/* geneve options stored in memory next to ip_tunnel_info struct */
+-	a_info = container_of(a->ip_tun_key, struct ip_tunnel_info, key);
+-	b_info = container_of(b->ip_tun_key, struct ip_tunnel_info, key);
+-
+-	return a_info->options_len == b_info->options_len &&
+-		memcmp(a_info + 1, b_info + 1, a_info->options_len) == 0;
++	return mlx5e_tc_tun_encap_info_equal_options(a, b, TUNNEL_GENEVE_OPT);
+ }
+ 
+ struct mlx5e_tc_tunnel geneve_tunnel = {
 -- 
 2.31.1
 
