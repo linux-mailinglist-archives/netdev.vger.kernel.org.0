@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 179526B310A
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 23:41:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5ABA6B30E6
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 23:41:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231579AbjCIWj0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 17:39:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59478 "EHLO
+        id S231769AbjCIWkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 17:40:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231473AbjCIWi0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 17:38:26 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB535B40F;
-        Thu,  9 Mar 2023 14:38:11 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id bg16-20020a05600c3c9000b003eb34e21bdfso4792936wmb.0;
-        Thu, 09 Mar 2023 14:38:11 -0800 (PST)
+        with ESMTP id S231466AbjCIWjX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 17:39:23 -0500
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 634EFF4D91;
+        Thu,  9 Mar 2023 14:38:14 -0800 (PST)
+Received: by mail-wm1-x32b.google.com with SMTP id j19-20020a05600c191300b003eb3e1eb0caso4765769wmq.1;
+        Thu, 09 Mar 2023 14:38:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678401491;
+        d=gmail.com; s=20210112; t=1678401493;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=1wDcE5BTiRUWu5IpXdTXJGaa7mTD/67d24QZlEDxG4g=;
-        b=nMUIAGY+Atog3NJeC0iVwCtwZ33VBxWlZDHiK1JCXPVAiMdBEifjkqmkHuLqpTWJze
-         e/eyPzJmD4oJOhYkbmaXxO1B7VIY/4TlYQAsB3JSappMsobKhYB7DS1rhIkIGt0aLQom
-         FVrcGC2oCc9Y8jodqa1FIiG6EHfvLPikewd4ZbA97akUmh+vBQJyuFiGGEntB+AKJkHl
-         QMqy9Kvr5fwp3TicpklUCBp08NKSDB+ojKvwzTDt/ZU/9hXUPCAltM4kVcx6ftzSpDuH
-         +bKya8uyLA6uEtTwr0UaT2dhuruKV1CL4Jdsg6ePqdegEqICWxdw5x6o8FpVlL7VKHze
-         5T9Q==
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=y2fNz2U3Pb1myw1nW6JzmHX3WnYBSrD+c2lY+3aHW8M=;
+        b=VMC1fBG5a3K5yvny/yfu3vMpe9zjjlud0NIygPwpOwT+VmqcbqoYNNCZxsIPj/Nkuq
+         jDubkkDElPJNacWO6eQo1YxK8ryxwUlumbImj/ewzzLtsH21D1JQQvlNtzDyykixSXvz
+         VK0bWIJ4nGy52WHPf2xccFng1l8E3ro6+469igHmB3pLmFce92kjl9gWcp1LfuvXXwEe
+         vMEOXCYzGomnd+SLjdXS109KmDr7J6TAjcmjoRvobRWlQo8BbcpdPAK7H26VtO7hps9r
+         RNrhz15q+v9p5mpE8Lj4XPTHHz9I1x9wA8fcXsIvvxoETMv70L2PjDZfhpn7ET4UTBt8
+         Y+bA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678401491;
+        d=1e100.net; s=20210112; t=1678401493;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=1wDcE5BTiRUWu5IpXdTXJGaa7mTD/67d24QZlEDxG4g=;
-        b=qtXtHmt08cm4nHVcSWMsRp644uhyvXdhC38CmzjNh+1AEYrakUbm5wCmvHx2404WjT
-         crWwLNK90yFEsj3LninxjP2HW5BiyeOOe0y4yDiv8vDN/0LmS7+/5nfNfVeMFCze66JF
-         jye5IUhKB/56Bbxl3FTTtVMpfbNp54Wt5szinw0k3+JoA8R5PAjvQTYlN/4RAF8IGXl+
-         4+I25/QazOKVJKVXktAzJ+z8N1R+uW9cWoQYmM6tjY9WsQm64Wh+bbCmQrR1FauZjJ/M
-         9dHbWopWX6PQU5eq4C+rZbrgRWB6fr1RiTmpXHcgj5CMbt+Vdy5Pq+pWs6RP+k+K/hlg
-         d5zw==
-X-Gm-Message-State: AO0yUKVPUatrUTllT483HXSd4hQdliF9E0mS5+rPgi7lmnRn5d8AKfdy
-        IxdUc07sgKinbv42IF8p7ps=
-X-Google-Smtp-Source: AK7set9TlH5oqA5OMR062s7UBWc+YVnkZxNVsmcE0XNDXGzBJ3XRSGtvJ1Uzt17x8oFzG/u9Sy5sFw==
-X-Received: by 2002:a05:600c:1d88:b0:3e0:17d:aeaf with SMTP id p8-20020a05600c1d8800b003e0017daeafmr845627wms.7.1678401490932;
-        Thu, 09 Mar 2023 14:38:10 -0800 (PST)
+        bh=y2fNz2U3Pb1myw1nW6JzmHX3WnYBSrD+c2lY+3aHW8M=;
+        b=4o/3tnwfNXveZkbj2NZ+FxxuZD7wrmA/rUQ+xJyQdHykNDLvNli5y9QgDwY4WR4HbF
+         nQQJYZT0PiR+0xV1Pbc5RkoF8KkQjXUW7lUGyGrvBlAiLpgQeMwua5IaUehdR76g1eg6
+         olauaG01CIZWjFcxBbXxgc+K7TdFjxXh23HL+fvZpK0qI3Ch7qlcV8l2jsTg7TsiSCAi
+         yx96FDKs1EUYf0lR4ugaOgJ7RQ8SgHmjS2SRxSvgUv/ZtZDuOt+V0rxztYBrmq7LbxL+
+         SuPrgfG05w/iBQoS6ZKf6hx6O6qpsN5d32dQTGsvOnUQmGYL2/7cmleaKTpnFf/L+XPJ
+         NQrg==
+X-Gm-Message-State: AO0yUKVtJ34QeZyQ5UiE2RhmklA53aWCPhElmBo7QHxGNK6M9wW9u3e2
+        G8it9N+s2UOgKR0QTBRV2LNTd83uX8s=
+X-Google-Smtp-Source: AK7set/hspK7iiGUhSEhbZ7lBCAIa01AEehft+SmrwN5cdKBZQ33aj/4jlkrWC+H2tLRXXaVLFFptg==
+X-Received: by 2002:a05:600c:b8e:b0:3e0:98c:dd93 with SMTP id fl14-20020a05600c0b8e00b003e0098cdd93mr707470wmb.29.1678401492562;
+        Thu, 09 Mar 2023 14:38:12 -0800 (PST)
 Received: from localhost.localdomain (93-34-89-197.ip49.fastwebnet.it. [93.34.89.197])
-        by smtp.googlemail.com with ESMTPSA id g12-20020a05600c310c00b003e209b45f6bsm1183981wmo.29.2023.03.09.14.38.09
+        by smtp.googlemail.com with ESMTPSA id g12-20020a05600c310c00b003e209b45f6bsm1183981wmo.29.2023.03.09.14.38.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Mar 2023 14:38:10 -0800 (PST)
+        Thu, 09 Mar 2023 14:38:12 -0800 (PST)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -72,9 +72,10 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         linux-arm-kernel@lists.infradead.org,
         linux-arm-msm@vger.kernel.org, Lee Jones <lee@kernel.org>,
         linux-leds@vger.kernel.org
-Subject: [net-next PATCH v2 10/14] dt-bindings: net: dsa: qca8k: add LEDs definition example
-Date:   Thu,  9 Mar 2023 23:35:20 +0100
-Message-Id: <20230309223524.23364-11-ansuelsmth@gmail.com>
+Cc:     Jonathan McDowell <noodles@earth.li>
+Subject: [net-next PATCH v2 11/14] arm: qcom: dt: Drop unevaluated properties in switch nodes for rb3011
+Date:   Thu,  9 Mar 2023 23:35:21 +0100
+Message-Id: <20230309223524.23364-12-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230309223524.23364-1-ansuelsmth@gmail.com>
 References: <20230309223524.23364-1-ansuelsmth@gmail.com>
@@ -90,63 +91,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add LEDs definition example for qca8k Switch Family to describe how they
-should be defined for a correct usage.
+IPQ8064 MikroTik RB3011UiAS-RM DT have currently unevaluted properties
+in the 2 switch nodes. The bindings #address-cells and #size-cells are
+redundant and cause warning for 'Unevaluated properties are not
+allowed'.
 
+Drop these bindings to mute these warning as they should not be there
+from the start.
+
+Cc: Jonathan McDowell <noodles@earth.li>
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 ---
- .../devicetree/bindings/net/dsa/qca8k.yaml    | 24 +++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ arch/arm/boot/dts/qcom-ipq8064-rb3011.dts | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
-index 389892592aac..866b3cc73216 100644
---- a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
-+++ b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
-@@ -18,6 +18,8 @@ description:
-   PHY it is connected to. In this config, an internal mdio-bus is registered and
-   the MDIO master is used for communication. Mixed external and internal
-   mdio-bus configurations are not supported by the hardware.
-+  Each phy have at least 3 LEDs connected and can be declared
-+  using the standard LEDs structure.
+diff --git a/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts b/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts
+index f908889c4f95..47a5d1849c72 100644
+--- a/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts
++++ b/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts
+@@ -38,8 +38,6 @@ mdio0: mdio-0 {
  
- properties:
-   compatible:
-@@ -117,6 +119,7 @@ unevaluatedProperties: false
- examples:
-   - |
-     #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/leds/common.h>
+ 		switch0: switch@10 {
+ 			compatible = "qca,qca8337";
+-			#address-cells = <1>;
+-			#size-cells = <0>;
  
-     mdio {
-         #address-cells = <1>;
-@@ -226,6 +229,27 @@ examples:
-                     label = "lan1";
-                     phy-mode = "internal";
-                     phy-handle = <&internal_phy_port1>;
-+
-+                    leds {
-+                        #address-cells = <1>;
-+                        #size-cells = <0>;
-+
-+                        led@0 {
-+                            reg = <0>;
-+                            color = <LED_COLOR_ID_WHITE>;
-+                            function = LED_FUNCTION_LAN;
-+                            function-enumerator = <1>;
-+                            default-state = "keep";
-+                        };
-+
-+                        led@1 {
-+                            reg = <1>;
-+                            color = <LED_COLOR_ID_AMBER>;
-+                            function = LED_FUNCTION_LAN;
-+                            function-enumerator = <1>;
-+                            default-state = "keep";
-+                        };
-+                    };
-                 };
+ 			dsa,member = <0 0>;
  
-                 port@2 {
+@@ -105,8 +103,6 @@ mdio1: mdio-1 {
+ 
+ 		switch1: switch@14 {
+ 			compatible = "qca,qca8337";
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+ 
+ 			dsa,member = <1 0>;
+ 
 -- 
 2.39.2
 
