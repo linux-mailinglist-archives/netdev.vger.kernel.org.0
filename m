@@ -2,38 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C2B86B25C8
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 14:48:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18B2C6B25E8
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 14:53:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231252AbjCINsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 08:48:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33964 "EHLO
+        id S230488AbjCINxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 08:53:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230376AbjCINsK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 08:48:10 -0500
-Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24403F77B;
-        Thu,  9 Mar 2023 05:48:03 -0800 (PST)
-Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id E0C5985D80;
-        Thu,  9 Mar 2023 14:48:00 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1678369681;
-        bh=1boxd4hO5c3HbEK0rNTKI0bA3sJhy3PS11MqmylPXD8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ChBYno7LjbS+oWrxHHOZbpSSOQIBSjuQxkKUkX5Ud0zpJr3oepzIT974ajVxQeUs2
-         Bjg5zDlts+HGFqySSktK3wx1saOYd/9pyCgM9ajX1xxW7cMC2tmLpgfeCEch50O/Bb
-         I+GrhZypdOPz6bK/3H4j4jjpGGgRIzyE8WuFeXwgv9itRLTeiD43QZz1vr0OXyN9Jf
-         q/VjjPA1sm/CtMIjMCmUN3yUCJsHJZTu5/8+FUHUR7gXLGqGNFwAb//Q8YAtqNOjPr
-         HOYni4tK6ln+oRLClfPV6TSVnYmXr23UVDxqN/Nct1K5UBpR/bA9iuS1aMia8N35pO
-         B2bkFl+l++bVg==
-Date:   Thu, 9 Mar 2023 14:47:52 +0100
-From:   Lukasz Majewski <lukma@denx.de>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
+        with ESMTP id S231361AbjCINwu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 08:52:50 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6E319118;
+        Thu,  9 Mar 2023 05:52:32 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id l1so1914005wry.12;
+        Thu, 09 Mar 2023 05:52:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678369950;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=MEPzzOTco8F0XZ6j2XkzBBoW/FXirFOe4frZRxNgqgA=;
+        b=Fhdv4P1+aH4EuW26fCMYNvV2DyTsd4E3U0S6DDVGuME9pajmGk/a+oxpbhgEEduVKx
+         wA+LyDi2RUWyh77q70mi6HCYde+6NjHYh0wJAy3A3QmTiRIzfl0b2mLiuEn+/qZjg/Vy
+         /q9URBFxcbvFTYhM9uT4/aXvZDhraBwGTgxYCh9rB+c0PbJNer7+6wB93RkOqlbEBzRr
+         C6/S42ep9895fzKt9pX1sxIOPg4kGBQ6EYyuuCWle1DvkKyKCjhQAp8w9S4OEBoeSee7
+         XEpgJiJjR6RP8zI2JctCHJuj/0c9h/ZPBCHtf5GKz6DHtY+iLkNf+pZALV8XNovcKXpp
+         GtkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678369950;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MEPzzOTco8F0XZ6j2XkzBBoW/FXirFOe4frZRxNgqgA=;
+        b=j+cEcnWEpv0xwzXQnj+Sbiru3gGNXK+qshnqmq+M9XklUdXrEND0tNjSc7ii42FL5n
+         jBvailkOTWVX7caoqXqLEDf8cDN1yBNOr91uv64FbYqfsGN4cUvMiwC+PiLjcMn07wMn
+         H4KF26c52XUN6/NA+ZItEMqMWYZyqX6VMKj1kbWIGGj85hI7fOp/+YRRIg7gFpD+k4Rf
+         cl9o4oJJrTLQMfIkz+Go29yj/bqFy/grg5uViyMsxYkUQyFULBbkAr7yRo8lfZfPc0Bx
+         8pqIkG2h6R/WYeJ+OB01w1sMfhFOBuTwe4PkjWKfJd5DTDNv6Eu5Hs8fVxf9GjmdsRHQ
+         cpVQ==
+X-Gm-Message-State: AO0yUKUwLT/34ADMWNUCIwyhPpdaYfXwIzyRyxGktkKPh7BGzOgxbgMs
+        k9Ya1CTIaUzOM1JTwymsfe8=
+X-Google-Smtp-Source: AK7set+R7mRNWL8lBNiwn3d4ckYcO738CPOQt17XTJF1MKCwKj0CXWEynZhuxbeB8yAFjf2sm+d+Aw==
+X-Received: by 2002:a05:6000:43:b0:2c7:1603:16c5 with SMTP id k3-20020a056000004300b002c7160316c5mr13310641wrx.67.1678369950483;
+        Thu, 09 Mar 2023 05:52:30 -0800 (PST)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id f2-20020adfdb42000000b002c54fb024b2sm17657612wrj.61.2023.03.09.05.52.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Mar 2023 05:52:30 -0800 (PST)
+Date:   Thu, 9 Mar 2023 15:52:27 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Lukasz Majewski <lukma@denx.de>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
         Eric Dumazet <edumazet@google.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -43,91 +62,30 @@ Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH 5/7] dsa: marvell: Add helper function to validate the
  max_frame_size variable
-Message-ID: <20230309144752.5e62e037@wsk>
-In-Reply-To: <ZAnefI4vCZSIPkEK@shell.armlinux.org.uk>
+Message-ID: <20230309135227.cmn5j3tundeugyzd@skbuf>
 References: <20230309125421.3900962-1-lukma@denx.de>
-        <20230309125421.3900962-6-lukma@denx.de>
-        <ZAndSR4L1QvOFta6@shell.armlinux.org.uk>
-        <ZAnefI4vCZSIPkEK@shell.armlinux.org.uk>
-Organization: denx.de
-X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+ <20230309125421.3900962-6-lukma@denx.de>
+ <ZAndSR4L1QvOFta6@shell.armlinux.org.uk>
+ <ZAnefI4vCZSIPkEK@shell.armlinux.org.uk>
+ <20230309144752.5e62e037@wsk>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/lv_wEMCvIFJXo6OqNLGw5zo";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230309144752.5e62e037@wsk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/lv_wEMCvIFJXo6OqNLGw5zo
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Thu, Mar 09, 2023 at 02:47:52PM +0100, Lukasz Majewski wrote:
+> Ok, I will reorder those patches and submit v6.
+> 
+> Do you have any other comments regarding this patch set?
 
-Hi Russell,
-
-> On Thu, Mar 09, 2023 at 01:21:13PM +0000, Russell King (Oracle) wrote:
-> > On Thu, Mar 09, 2023 at 01:54:19PM +0100, Lukasz Majewski wrote: =20
-> > > This commit shall be regarded as a transition one, as this
-> > > function helps to validate the correctness of max_frame_size
-> > > variable added to mv88e6xxx_info structure.
-> > >=20
-> > > It is necessary to avoid regressions as manual assessment of this
-> > > value turned out to be error prone.
-> > >=20
-> > > Signed-off-by: Lukasz Majewski <lukma@denx.de>
-> > > Suggested-by: Russell King (Oracle) <linux@armlinux.org.uk> =20
-> >=20
-> > Shouldn't this be patch 2 - immediately after populating the
-> > .max_frame_size members, and before adding any additional devices? =20
->=20
-> Moreover, shouldn't the patch order be:
->=20
-> 1, 5, 6 (fixing the entry that needs it), 7 (which then gets the
-> max frame size support in place), 4 (so that .set_max_frame_size for
-> 6250 is in place), 2, 3
->=20
-> ?
->=20
-> In other words, get the new infrastructure you need in place first
-> (that being the new .max_frame_size and the .set_max_frame_size
-> function) before then adding the new support.
->=20
-
-Ok, I will reorder those patches and submit v6.
-
-Do you have any other comments regarding this patch set?
-
-
-Best regards,
-
-Lukasz Majewski
-
---
-
-DENX Software Engineering GmbH,      Managing Director: Erika Unter
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
-
---Sig_/lv_wEMCvIFJXo6OqNLGw5zo
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmQJ44gACgkQAR8vZIA0
-zr10yggAo1vG2xwQvNUMsJwxrgZuAvdCXxJe4pYukh5o564iNNp8GdUgC3JitCUZ
-B5HLPBH/d4zSqWT2S4cTHOcv1SlSQPLSK/2t6E43nqPOV9hh5HSPnxBR3qB6+Jo0
-ReB6EdCi4nlcz7gSrZ4DUwyRFzjhXSaf6GrNcvqOZI4gjczyBmuB/sm4yKfWiNXQ
-JwZ09sh8Ynv/mFs6PMVql1L/mRww0cbrysBvTal4jjOmMKpommCpOjPC6CDeYA0E
-3Q95qFkyS/4FO2uIzelJ9BCRLMaGDfu+VF2si+hgNFTvSdKb4i3C783PIru/l7cp
-Y3GRlVQoycU7ZSlelMDinvKxmJbgMw==
-=qWDo
------END PGP SIGNATURE-----
-
---Sig_/lv_wEMCvIFJXo6OqNLGw5zo--
+Please allow for at least 24 hours between reposts. I would like to look
+at this patch set too, later today or tomorrow.
