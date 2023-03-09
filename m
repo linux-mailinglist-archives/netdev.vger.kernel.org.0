@@ -2,84 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DFF216B2063
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 10:43:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0B1C6B2087
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 10:47:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231325AbjCIJna (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 04:43:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60934 "EHLO
+        id S230056AbjCIJrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 04:47:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231324AbjCIJnV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 04:43:21 -0500
-Received: from m12.mail.163.com (m12.mail.163.com [123.126.96.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 29D4C5552C;
-        Thu,  9 Mar 2023 01:43:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=1LAKM
-        8ujTmsjgTGR7X/vNMNjwpQJAdiC96EghkHvIIM=; b=V3tmhaUxN5E19Lu4oMuCu
-        C8F3LLtelKjSMeOzC9QAfey0k6++9pZ28Tki2rspG4oPrln+sox+M164Swk6qVWm
-        T8YOgTRzWTID8iPrq4QDQJJGbi33J6hlJUJT8HLI0Ahs3WMRneYY1gnEgVjIRKZX
-        tpsx4OLwTsIjieqPqbjLD0=
-Received: from leanderwang-LC2.localdomain (unknown [111.206.145.21])
-        by smtp19 (Coremail) with SMTP id R9xpCgAnKa0IqglkPaTXGw--.56707S2;
-        Thu, 09 Mar 2023 17:42:33 +0800 (CST)
-From:   Zheng Wang <zyytlz.wz@163.com>
-To:     davem@davemloft.net
-Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        hackerzheng666@gmail.com, 1395428693sheep@gmail.com,
-        alex000young@gmail.com, Zheng Wang <zyytlz.wz@163.com>
-Subject: [PATCH net]  net: ethernet: fix use after free bug in ns83820_remove_one due to race condition
-Date:   Thu,  9 Mar 2023 17:42:31 +0800
-Message-Id: <20230309094231.3808770-1-zyytlz.wz@163.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S230100AbjCIJrG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 04:47:06 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63AF3E38A8
+        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 01:46:03 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id l7-20020a05600c1d0700b003eb5e6d906bso788181wms.5
+        for <netdev@vger.kernel.org>; Thu, 09 Mar 2023 01:46:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112; t=1678355162;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=7ByKEWC2al4eO3WGl73gO3Qu6gf7BRWv6Uu6cBRRz4Q=;
+        b=SHp7EWFOp+RCs04Sq0K3DdZkvjuxmSl219/U67X2zF2O+BIkhR+F6dYilwFXN216Gf
+         yPQcx61pmaNLI1B93ZCa9iL4xy0993dqSAxIBJNgm01LcGxf1PSWR1wEy6qa36WB1RD1
+         yT3vY2+tVK+k/VwG+r3L/7xLjNrjOs2ACUZFACq/oq0dtSi5Kasx+AJA1lZwYFvNFDKZ
+         3kQSEr+FQFwj56xwhKkWl+hRKx1bGJd5r50vA7XdXh53rI23b0gEfxc6LNwrjm+sbias
+         GqRAtnDDbUcxO/GgpttDmiQF2GLZ976nkAfKtxtvAE6/uij6duviLVeVFrqpu5O+WkRp
+         B2cw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678355162;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=7ByKEWC2al4eO3WGl73gO3Qu6gf7BRWv6Uu6cBRRz4Q=;
+        b=c+Lfm40q/SMIxqFbAhGM6srjpQmO1+qTgEvZwZnNonDNzYBIRgzaWG87shAVP+ccye
+         qDD6dCpAhpbwRHAtT82N10jxCDSlUi67NiXb82iivjVGiwW+bJdNz6vkpwWFZQ2OkXNN
+         NEIJ4Ef+olUtm1FA+nY4rLltbrvIQLyaUbXhhCkjrbO/XV/1gS9LWKFn9KkaIrbYC2fo
+         zs0K0aOG+k+dzD2CrnMy9iPaXLbkt1t+gbRvuMR3gKX0wXeTyWMcvzJ4VmScqjvpMlrm
+         f+QT3unPpjGTXJZc9xWqwYLbNCcp04xFS/0+gzRd/PhzJ3bmmYxvHa1jAzWoSqP+z0Gv
+         uOJw==
+X-Gm-Message-State: AO0yUKU3rX89rvHgOVuYs29U26S3qCtDEYpEVopqtmg2nLzWHQcd/iB1
+        hx6Z4zjAPWEp00KIliz1HMRSQ6AVXo5bi7pzSqg=
+X-Google-Smtp-Source: AK7set8nKKC49FrVDccv+YmIlOYV+yfiCeCYeWkacvZgL8H/czWgD+J2n66tqM33cG9WVnfYPXqUqg==
+X-Received: by 2002:a05:600c:a08:b0:3eb:2e32:72b4 with SMTP id z8-20020a05600c0a0800b003eb2e3272b4mr18729981wmp.15.1678355161838;
+        Thu, 09 Mar 2023 01:46:01 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id o8-20020a05600c510800b003e215a796fasm2287099wms.34.2023.03.09.01.46.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Mar 2023 01:46:01 -0800 (PST)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, mst@redhat.com, jasowang@redhat.com,
+        virtualization@lists.linux-foundation.org,
+        alvaro.karsz@solid-run.com, vmireyno@marvell.com, parav@nvidia.com,
+        willemdebruijn.kernel@gmail.com
+Subject: [patch net-next v4] net: virtio_net: implement exact header length guest feature
+Date:   Thu,  9 Mar 2023 10:45:59 +0100
+Message-Id: <20230309094559.917857-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: R9xpCgAnKa0IqglkPaTXGw--.56707S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtw45WryrZFyDWFy3KFWDCFg_yoWkXrcEg3
-        srZF4Skw4UKr1rtw4UGrsxX34jkr9Y9r9Y9rWDta9Iv343Kws5Cw1kur1fJr48uwnxJFW2
-        kry7KFyfA343AjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRKBT5JUUUUU==
-X-Originating-IP: [111.206.145.21]
-X-CM-SenderInfo: h2113zf2oz6qqrwthudrp/1tbiQgktU1aEEmftKQAAsW
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In ns83820_init_one, dev->tq_refill was bound with queue_refill.
+From: Jiri Pirko <jiri@nvidia.com>
 
-If irq happens, it will call ns83820_irq->ns83820_do_isr.
-Then it invokes tasklet_schedule(&dev->rx_tasklet) to start
-rx_action function. And rx_action will call ns83820_rx_kick
-and finally start queue_refill function.
+Virtio spec introduced a feature VIRTIO_NET_F_GUEST_HDRLEN which when
+set implicates that device benefits from knowing the exact size
+of the header. For compatibility, to signal to the device that
+the header is reliable driver also needs to set this feature.
+Without this feature set by driver, device has to figure
+out the header size itself.
 
-If we remove the driver without finishing the work, there
-may be a race condition between ndev, which may cause UAF
-bug.
+Quoting the original virtio spec:
+"hdr_len is a hint to the device as to how much of the header needs to
+ be kept to copy into each packet"
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
+"a hint" might not be clear for the reader what does it mean, if it is
+"maybe like that" of "exactly like that". This feature just makes it
+crystal clear and let the device count on the hdr_len being filled up
+by the exact length of header.
+
+Also note the spec already has following note about hdr_len:
+"Due to various bugs in implementations, this field is not useful
+ as a guarantee of the transport header size."
+
+Without this feature the device needs to parse the header in core
+data path handling. Accurate information helps the device to eliminate
+such header parsing and directly use the hardware accelerators
+for GSO operation.
+
+virtio_net_hdr_from_skb() fills up hdr_len to skb_headlen(skb).
+The driver already complies to fill the correct value. Introduce the
+feature and advertise it.
+
+Note that virtio spec also includes following note for device
+implementation:
+"Caution should be taken by the implementation so as to prevent
+ a malicious driver from attacking the device by setting
+ an incorrect hdr_len."
+
+There is a plan to support this feature in our emulated device.
+A device of SolidRun offers this feature bit. They claim this feature
+will save the device a few cycles for every GSO packet.
+
+Link: https://docs.oasis-open.org/virtio/virtio/v1.2/cs01/virtio-v1.2-cs01.html#x1-230006x3
+Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+Reviewed-by: Parav Pandit <parav@nvidia.com>
+Reviewed-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Willem de Bruijn <willemb@google.com>
 ---
- drivers/net/ethernet/natsemi/ns83820.c | 1 +
- 1 file changed, 1 insertion(+)
+v3->v4:
+- fixed double "which when"
+v2->v3:
+- changed the first paragraph in patch description according to
+  Michael's suggestion
+- added Link tag with link to the spec
+v1->v2:
+- extended patch description
+---
+ drivers/net/virtio_net.c        | 6 ++++--
+ include/uapi/linux/virtio_net.h | 1 +
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/natsemi/ns83820.c b/drivers/net/ethernet/natsemi/ns83820.c
-index 998586872599..285fe0fa33eb 100644
---- a/drivers/net/ethernet/natsemi/ns83820.c
-+++ b/drivers/net/ethernet/natsemi/ns83820.c
-@@ -2206,6 +2206,7 @@ static void ns83820_remove_one(struct pci_dev *pci_dev)
- 	if (!ndev)			/* paranoia */
- 		return;
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index fb5e68ed3ec2..e85b03988733 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -62,7 +62,8 @@ static const unsigned long guest_offloads[] = {
+ 	VIRTIO_NET_F_GUEST_UFO,
+ 	VIRTIO_NET_F_GUEST_CSUM,
+ 	VIRTIO_NET_F_GUEST_USO4,
+-	VIRTIO_NET_F_GUEST_USO6
++	VIRTIO_NET_F_GUEST_USO6,
++	VIRTIO_NET_F_GUEST_HDRLEN
+ };
  
-+	cancel_work_sync(&dev->tq_refill);
- 	ns83820_disable_interrupts(dev); /* paranoia */
+ #define GUEST_OFFLOAD_GRO_HW_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
+@@ -4213,7 +4214,8 @@ static struct virtio_device_id id_table[] = {
+ 	VIRTIO_NET_F_CTRL_MAC_ADDR, \
+ 	VIRTIO_NET_F_MTU, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS, \
+ 	VIRTIO_NET_F_SPEED_DUPLEX, VIRTIO_NET_F_STANDBY, \
+-	VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT, VIRTIO_NET_F_NOTF_COAL
++	VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT, VIRTIO_NET_F_NOTF_COAL, \
++	VIRTIO_NET_F_GUEST_HDRLEN
  
- 	unregister_netdev(ndev);
+ static unsigned int features[] = {
+ 	VIRTNET_FEATURES,
+diff --git a/include/uapi/linux/virtio_net.h b/include/uapi/linux/virtio_net.h
+index b4062bed186a..12c1c9699935 100644
+--- a/include/uapi/linux/virtio_net.h
++++ b/include/uapi/linux/virtio_net.h
+@@ -61,6 +61,7 @@
+ #define VIRTIO_NET_F_GUEST_USO6	55	/* Guest can handle USOv6 in. */
+ #define VIRTIO_NET_F_HOST_USO	56	/* Host can handle USO in. */
+ #define VIRTIO_NET_F_HASH_REPORT  57	/* Supports hash report */
++#define VIRTIO_NET_F_GUEST_HDRLEN  59	/* Guest provides the exact hdr_len value. */
+ #define VIRTIO_NET_F_RSS	  60	/* Supports RSS RX steering */
+ #define VIRTIO_NET_F_RSC_EXT	  61	/* extended coalescing info */
+ #define VIRTIO_NET_F_STANDBY	  62	/* Act as standby for another device
 -- 
-2.25.1
+2.39.0
 
