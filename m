@@ -2,143 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B25396B2861
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 16:08:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40C8F6B2875
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 16:12:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231775AbjCIPH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 10:07:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40222 "EHLO
+        id S231377AbjCIPM0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 10:12:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231490AbjCIPHh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 10:07:37 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE76AF5D16
-        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 07:05:26 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id h14so2195741wru.4
-        for <netdev@vger.kernel.org>; Thu, 09 Mar 2023 07:05:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1678374325;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=fprW8tKIJpNzkLRvXOdERhC1G75znrKGsVPaP20fW+w=;
-        b=J47UBp+wxM1KsM1vSCnlEL6q+hv+bNiGs/S9ezNZ3FczAvPEOX6REYsGl9e8y7Kbgi
-         t5yvgu0EEzLYK5ax9pbvEWlXWeG4xwvYLD+iRkI4eeYAVBiwRZdxoC4hcxTKEvoxB77D
-         /XoNjLGzs1QwWmkc18cq/P6rMHkbWHCrsA+Zcvkz2HIQ1ixuuESeBlZu2fCp1dyb7itC
-         Mb/hVCNN/MEhXlOv8lfZELVazX9djURCqc4gk/Wb73mm1vW7fXkRrrjWchmb6dhl7Qr5
-         zRC+MMJLXrHpC6tLqV6PDj7t0x12U/LrM5GCNrjJ/S1qA4PeqlvyH7/0PFuXxnLyxLHx
-         VLKQ==
+        with ESMTP id S231386AbjCIPMD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 10:12:03 -0500
+Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E63A6F1873;
+        Thu,  9 Mar 2023 07:08:45 -0800 (PST)
+Received: by mail-pl1-f169.google.com with SMTP id u5so2279309plq.7;
+        Thu, 09 Mar 2023 07:08:45 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678374325;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=fprW8tKIJpNzkLRvXOdERhC1G75znrKGsVPaP20fW+w=;
-        b=j2Py7OlE0M/2bj0gP8jjU6O9y0AHYsKsPqS4da+25IEjK8zDWXGdX7iaed9e6ThsiM
-         ZlHep2aa2R6sXiUTfudRFNuly6366CU4oivV+E6KbN+UWW2Uui1bERsbbDgxxmKRWRyy
-         LfDqfFsQ0CeQm5AsuwfiS7isp61jmAoirW2EQNHc1w5cDEJbGSFhrCJpOMRC5r/sBz6o
-         92TQxfMl4WDafJh2BZRyhMqhUIqDvz8tpmqzWPmbJnqQoLPzMbhkaAqnOEvQn/rav7qk
-         kZbj1ofFM0IzBt/j6rwp3qJU0LWMKKofOytAHp0bLiHa4EjhgGmQ1O/JhyQRgZniKRXX
-         1kvA==
-X-Gm-Message-State: AO0yUKVP4NcUKZ4afEXS3ZLfgoSfObvxY9LUHX1UZOUorlcqpMnYvQAg
-        XFEroAmzz8HZrx1HYd8LG/Su0YAFlzMu2rTi1WBARQ==
-X-Google-Smtp-Source: AK7set887nr6XBTqOK05PdAz44JZdvwltzyYf1Oyh2sWKb7bxgmtbjPGrGWiHv4JHYEf8xQDCPIO/0u/eeRBu46mEwA=
-X-Received: by 2002:adf:f38d:0:b0:2cb:3b68:3a88 with SMTP id
- m13-20020adff38d000000b002cb3b683a88mr4826450wro.7.1678374325103; Thu, 09 Mar
- 2023 07:05:25 -0800 (PST)
+        d=1e100.net; s=20210112; t=1678374516;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Fb2e+/LBhqy1qArJcc0LH6ryiWZIF1fF20/FD4HTb9E=;
+        b=Nzw+qYsoiLpcjx/iCN15I/JPFId5CEOwePPK//EI15ArTM21j4sdR0Cr4gYyis9I+S
+         mAlWK2Gtiz7HRAaAWQRo4xKViUzf7XPH/oNbdgqR6FosSkI4oq0Ku+T/lUOI+wOYkcaW
+         w8MkbuzdfkFtFmftxmquiUl+BUCApZDZ1eXvaRxJz8ob7EdgEEXDqM/erB6kjzG7MxeZ
+         a1+91cGY+EwJfAN5oJsJUMuEPZnkd5tFxg+KXFA42iCNi92X4MVqfJWd3wUIqfZvUH+6
+         YSYRdZK1uS8A6xtC4PLTF6v9Cq+816LT2AnKOvnMSN3xsbAXQF84ddmRz5GXHQauTssP
+         AN9g==
+X-Gm-Message-State: AO0yUKXgU+aiaPPkmlp6Va4xe/o8f/fly617EHgSsrpuZpwe8CrYRDnp
+        pL57rQNwxV53O8YGylsoj/La+Sz+Fan62ezn
+X-Google-Smtp-Source: AK7set9HIFqs2pqzNJARvvLaNtMgezBNiDy+vAdodjLCQk1oU8pDbz1QWsU6Humo4NY5SmTPXBpv+w==
+X-Received: by 2002:a17:902:bb8c:b0:19b:c498:fd01 with SMTP id m12-20020a170902bb8c00b0019bc498fd01mr17089443pls.11.1678374516260;
+        Thu, 09 Mar 2023 07:08:36 -0800 (PST)
+Received: from [192.168.219.102] ([14.4.134.166])
+        by smtp.gmail.com with ESMTPSA id x8-20020a1709027c0800b0019ce95b1319sm11675234pll.264.2023.03.09.07.08.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Mar 2023 07:08:35 -0800 (PST)
+Message-ID: <e75d2a42-4154-e469-bbd7-9409471ab724@ooseel.net>
+Date:   Fri, 10 Mar 2023 00:08:29 +0900
 MIME-Version: 1.0
-References: <20230309134718.306570-1-gavinl@nvidia.com> <20230309134718.306570-5-gavinl@nvidia.com>
- <CANn89i+k3fcSw58owpr70eM_uSM5QUqEb_4y5wpXOKEz30+vvg@mail.gmail.com>
-In-Reply-To: <CANn89i+k3fcSw58owpr70eM_uSM5QUqEb_4y5wpXOKEz30+vvg@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 9 Mar 2023 16:05:13 +0100
-Message-ID: <CANn89iKcDNZBerR_2nEp_ryM3BVXuvr64s6tnAvizCwr=SuACg@mail.gmail.com>
-Subject: Re: [PATCH net-next v6 4/5] ip_tunnel: Preserve pointer const in ip_tunnel_info_opts
-To:     Gavin Li <gavinl@nvidia.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        roopa@nvidia.com, eng.alaamohamedsoliman.am@gmail.com,
-        bigeasy@linutronix.de, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, gavi@nvidia.com, roid@nvidia.com,
-        maord@nvidia.com, saeedm@nvidia.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH net-next] net: stmmac: call stmmac_finalize_xdp_rx() on a
+ condition
+Content-Language: en-US
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org
+References: <20230308162619.329372-1-lsahn@ooseel.net>
+ <ZAnh0TGtDkVUl/1m@corigine.com>
+From:   Leesoo Ahn <lsahn@ooseel.net>
+In-Reply-To: <ZAnh0TGtDkVUl/1m@corigine.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 9, 2023 at 3:59=E2=80=AFPM Eric Dumazet <edumazet@google.com> w=
-rote:
->
-> On Thu, Mar 9, 2023 at 2:48=E2=80=AFPM Gavin Li <gavinl@nvidia.com> wrote=
-:
-> >
-> > Change ip_tunnel_info_opts( ) from static function to macro to cast ret=
-urn
-> > value and preserve the const-ness of the pointer.
-> >
-> > Signed-off-by: Gavin Li <gavinl@nvidia.com>
-> > ---
-> >  include/net/ip_tunnels.h | 11 ++++++-----
-> >  1 file changed, 6 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/include/net/ip_tunnels.h b/include/net/ip_tunnels.h
-> > index fca357679816..3e5c102b841f 100644
-> > --- a/include/net/ip_tunnels.h
-> > +++ b/include/net/ip_tunnels.h
-> > @@ -67,6 +67,12 @@ struct ip_tunnel_key {
-> >         GENMASK((sizeof_field(struct ip_tunnel_info,            \
-> >                               options_len) * BITS_PER_BYTE) - 1, 0)
-> >
-> > +#define ip_tunnel_info_opts(info)                              \
-> > +       _Generic(info,                                          \
-> > +               const typeof(*(info)) * : ((const void *)((info) + 1)),=
-\
-> > +               default : ((void *)((info) + 1))                \
-> > +       )
-> > +
->
-> Hmm...
->
-> This looks quite dangerous, we lost type safety with the 'default'
-> case, with all these casts.
->
-> What about using something cleaner instead ?
->
-> (Not sure why we do not have an available generic helper for this kind
-> of repetitive things)
->
 
-Or more exactly :
 
-diff --git a/include/net/ip_tunnels.h b/include/net/ip_tunnels.h
-index fca3576798166416982ee6a9100b003810c49830..17fc6c8f7e0b9e5303c1fb9e5da=
-d77c5310e01a9
-100644
---- a/include/net/ip_tunnels.h
-+++ b/include/net/ip_tunnels.h
-@@ -485,10 +485,11 @@ static inline void iptunnel_xmit_stats(struct
-net_device *dev, int pkt_len)
-        }
- }
+On 23. 3. 9. 22:40, Simon Horman wrote:
+> On Thu, Mar 09, 2023 at 01:26:18AM +0900, Leesoo Ahn wrote:
+>> The current codebase calls the function no matter net device has XDP
+>> programs or not. So the finalize function is being called everytime when RX
+>> bottom-half in progress. It needs a few machine instructions for nothing
+>> in the case that XDP programs are not attached at all.
+>>
+>> Lets it call the function on a condition that if xdp_status variable has
+>> not zero value. That means XDP programs are attached to the net device
+>> and it should be finalized based on the variable.
+>>
+>> The following instructions show that it's better than calling the function
+>> unconditionally.
+>>
+>>    0.31 │6b8:   ldr     w0, [sp, #196]
+>>         │    ┌──cbz     w0, 6cc
+>>         │    │  mov     x1, x0
+>>         │    │  mov     x0, x27
+>>         │    │→ bl     stmmac_finalize_xdp_rx
+>>         │6cc:└─→ldr    x1, [sp, #176]
+>>
+>> with 'if (xdp_status)' statement, jump to '6cc' label if xdp_status has
+>> zero value.
+>>
+>> Signed-off-by: Leesoo Ahn <lsahn@ooseel.net>
+> Hi Leesoo,
+>
+> I am curious to know if you considered going a step further and using
+> a static key.
+>
+> Link: https://www.kernel.org/doc/html/latest/staging/static-keys.html
 
--static inline void *ip_tunnel_info_opts(struct ip_tunnel_info *info)
--{
--       return info + 1;
--}
-+#define ip_tunnel_info_opts(info)                                      \
-+       (_Generic(info,                                                 \
-+                const struct ip_tunnel_info * : (const void *)((info)
-+ 1),    \
-+                struct ip_tunnel_info * : (void *)((info) + 1))        \
-+       )
+Thank you for the review.
 
- static inline void ip_tunnel_info_opts_get(void *to,
-                                           const struct ip_tunnel_info *inf=
-o)
+The function must be called for only XDP_TX or XDP_REDIRECT cases.
+So using a static key doesn't look good and the commit message is not 
+clear for 'why' as well.
+I think that's why you suggested for using 'static key' by the latter 
+reason.
+
+I will edit the message and post v2 soon.
+
+Best regards,
+Leesoo
