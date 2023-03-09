@@ -2,164 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DA016B2AC8
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 17:32:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDB306B2AE0
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 17:35:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229895AbjCIQb7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 11:31:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56980 "EHLO
+        id S229654AbjCIQfN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 11:35:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230420AbjCIQbg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 11:31:36 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1EB9F2F8A
-        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 08:22:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678378918;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=LEHbZXmqj5JG1Cxdlx+rAzJmqeOLu7jI6Qgs9itxkdM=;
-        b=gIhLyJ48YQhOwjcWFcKItvomdvJalU9V/NEpo3jcUj/vej1H3asTsJunOWMqYb/Lm876rk
-        dUHyaJBUQ36+yMo2WGs78iU/I09ORjbynkKfBIJi1gjGQtmuYMbOKlHu0Qa9cljNWuhxJ2
-        DmcikqnM6TuBg+VUJ0Y2BCSqMUNQcaM=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-235-jXbo3OwbPS-pPeSu_7Igjg-1; Thu, 09 Mar 2023 11:21:57 -0500
-X-MC-Unique: jXbo3OwbPS-pPeSu_7Igjg-1
-Received: by mail-qt1-f199.google.com with SMTP id p7-20020ac84607000000b003b9b6101f65so1329206qtn.11
-        for <netdev@vger.kernel.org>; Thu, 09 Mar 2023 08:21:57 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678378916;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LEHbZXmqj5JG1Cxdlx+rAzJmqeOLu7jI6Qgs9itxkdM=;
-        b=19Rqkq2srEt74sxuFf0ILPUvj80nyMGA7LjvpGEPAAHDRdimB/4UUBqt28pl+bHwwU
-         bgtKEtv3DFomJ90IpqAUEHQPzgjwKt2IzhR4TCnDTiNOcamX+WxakZxOpj9RgWY8PB0m
-         o1RmoR2nxwm9qynDt6eUIncmrad+kbCaiElNHM7wqSEfr8V/PsDw7nCYP4Y9QIweBr9t
-         5WFH5dfPrhL7UEk9stb+1N8dRaPY/Mn2pIwt9zrZj6szsO/dsgN8m8QlGbaQJmLIwkzS
-         JrVFbecXGdB+hHN1YdXs5oCenxSfpcrRTODM6xV8DGWMyHv7GNVgX98eEXfxNbKhD0hj
-         Ev0g==
-X-Gm-Message-State: AO0yUKXNLYKGplD/BwLl/tawAh1kXM1saycjcYegLO/tY7RzySzhVBXT
-        6Bb9RxkkcpcjuZVHukXqArJaMli2tVJTS/hVhW2C50d8dQaahbwAZwTLQvHjWc9wvBlOj4VOxKU
-        QUw+QRl8AKkBTtOWv
-X-Received: by 2002:a05:622a:1a1c:b0:3b8:6788:bf25 with SMTP id f28-20020a05622a1a1c00b003b86788bf25mr37444154qtb.23.1678378916661;
-        Thu, 09 Mar 2023 08:21:56 -0800 (PST)
-X-Google-Smtp-Source: AK7set+GI92GzioBeNCbqnB3nXBd7JnBKOAfAg1RXELqlvwy47gh802YuCBcQAaesacewK2BJ1ThFw==
-X-Received: by 2002:a05:622a:1a1c:b0:3b8:6788:bf25 with SMTP id f28-20020a05622a1a1c00b003b86788bf25mr37444121qtb.23.1678378916373;
-        Thu, 09 Mar 2023 08:21:56 -0800 (PST)
-Received: from sgarzare-redhat (host-82-57-51-170.retail.telecomitalia.it. [82.57.51.170])
-        by smtp.gmail.com with ESMTPSA id t197-20020a3746ce000000b007417e60f621sm13896467qka.126.2023.03.09.08.21.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Mar 2023 08:21:55 -0800 (PST)
-Date:   Thu, 9 Mar 2023 17:21:50 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseniy Krasnov <avkrasnov@sberdevices.ru>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@sberdevices.ru, oxffffaa@gmail.com
-Subject: Re: [RFC PATCH v3 0/4] several updates to virtio/vsock
-Message-ID: <20230309162150.qqrlqmqghi5muucx@sgarzare-redhat>
-References: <0abeec42-a11d-3a51-453b-6acf76604f2e@sberdevices.ru>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+        with ESMTP id S230472AbjCIQeV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 11:34:21 -0500
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2111.outbound.protection.outlook.com [40.107.94.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BED322CA4
+        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 08:26:02 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=E8+vq4afbBCrgaDJeiXOwcPvxcFYpl7V9k+xO8OXl0hzZtpgBsGPyNWQru+XxA3JL4QAiMEU9hMH6DHOcMJ1zjdNyS+2py787RPpWQ0wMxJ6ObLnqNEAYG5Yq4keQb9jKn+yLjqbHBLf2inicKyPxPfjYFtFkozOkTnPuAdDD5at3bq/Y8r6VKKpMdncqXKa0c7doZJtuiJbK4ZfiDLdtV3d9X/hPdQF1jQTjgVIfsiZsFSNGmDLthAVek7uHiJZU7T74QF27+wb1wqeFNwCX2eu+w/p74KWVVEuBmhoDoeWXlABVMNuC2w2q5sKB+T6q1TkGuL75Giw99lv2DmJ0g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GeQiF8MfF0nQmi8pOww9MBog2DaiI+b2phe6hT1xR04=;
+ b=dqP8VOfpChM+eaNCEJa60LdA8kIPn01DrjZ/VjmlQrk6eAodSvVkeD0Yrjja+T5qBBriZok3pgHpsPkk3YGkbFYcJpR4P31X9XswqDu3qXDWTSOpdW4WbC9puPOR16TGVkMmCApZS8UvHuOD92VxWKYIp690id2ZMMKPvNgwl1n98dZ32eE8gNXCRWib+g2Hum711C+QTOU76OOdYcUoTQxXAXIX4eOPz7G3AEgyiwceQ5P3Hn88XmZx1fF5FMZtf3PFGb7+A/XOqrgwhxAXSWlf7gpm6cWbA7amASbEumrKADlFqMdpzKoUSlFoc4HpQ8+hkvQ9yOB8ohAStrrEHw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GeQiF8MfF0nQmi8pOww9MBog2DaiI+b2phe6hT1xR04=;
+ b=VLjaS0IMxMIAL9SWeUGVBNsMoRjcASYegiAc4Aw/s5YRn6aStt1e6Y7Ytywupy+BfXSzAL4WQwf864r+f//yz4HIjaKjSqVNyQ1U2Yo6F66Be3epC369sJzaftIpK7sPcZ8qHeeMYhDvG9LsjQ9aZzECG7G7L+XCZ/X6aoWYuuc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SA1PR13MB5037.namprd13.prod.outlook.com (2603:10b6:806:1aa::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.18; Thu, 9 Mar
+ 2023 16:25:43 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.019; Thu, 9 Mar 2023
+ 16:25:43 +0000
+Date:   Thu, 9 Mar 2023 17:25:33 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Shay Agroskin <shayagr@amazon.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        "Woodhouse, David" <dwmw@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        Saeed Bshara <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Arinzon, David" <darinzon@amazon.com>,
+        "Itzko, Shahar" <itzko@amazon.com>,
+        "Abboud, Osama" <osamaabb@amazon.com>
+Subject: Re: [PATCH v4 net-next 1/5] ethtool: Add support for configuring
+ tx_push_buf_len
+Message-ID: <ZAoIfZqNaCG9d/1H@corigine.com>
+References: <20230309131319.2531008-1-shayagr@amazon.com>
+ <20230309131319.2531008-2-shayagr@amazon.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0abeec42-a11d-3a51-453b-6acf76604f2e@sberdevices.ru>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230309131319.2531008-2-shayagr@amazon.com>
+X-ClientProxiedBy: AM3PR05CA0113.eurprd05.prod.outlook.com
+ (2603:10a6:207:2::15) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SA1PR13MB5037:EE_
+X-MS-Office365-Filtering-Correlation-Id: f4b9c496-aa5e-4847-ca15-08db20baed7c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: q4/Dz9l5hlPwWehyA5xY4UtD6yYd9mndROv65gVDJQC9DIayUC4i7ymdxMOIVtPxH6VR5ffGHp1UVS/uGBFWBOKTk8go6p5KPFSRFZEEvBlyVtZNQUoyYkejvcciAjy7TzZs6UAw4MP66sv/KuniKnhledun56SI+jmr0wKO6DEfpLte7YH715+tITxWmykoXkJ6YHaVveY54omzj4oaiQjBatU6HlOpTgeVe3maVQ39Z0T07UUtBMLu1xXFmDeUAYMrRZaohv9gMRLI24kmmD4TBMkpuwatXow/SbrOKLu5jfxQJWil5lD5HVeElLjZQ8OuZK/R2r7rXEE+NNavuTASedCbI94Un6oheICheVTHDS3uMy5K/N5rrn/waWDgAgPKLthYs5W5iJXMcYLimO5fNU0aOo5Jj4egIAEEHh0tm24SJoznJLLGJCtVCeBNWB8Qs9R2qs1aFToL57URV62gxbwrvPemV4Fpq7qpwd8HPcyedIme+82M9fADPVHIVYCixLIuZi+Tnd0PWnGAOjqFxWId/P6L703wd5dFuycBDEduz5VhC9mNXC04aEl4vLPLQ7CNJL14lcjUEgMAYUlseZb1ixiI5fzG7TgIxEqYOnvXNdn7BVsih9yBdbsKMEmpqsGhsVX9s4boC4cbUg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(39840400004)(376002)(136003)(346002)(396003)(451199018)(66476007)(66556008)(66946007)(316002)(41300700001)(8676002)(4326008)(54906003)(36756003)(38100700002)(8936002)(6916009)(2616005)(186003)(478600001)(5660300002)(2906002)(4744005)(44832011)(7416002)(6666004)(86362001)(6512007)(6486002)(6506007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fAI9iVQ8b8J53+nO9SNeOMwrcmh1bKO2zXYDs/5uit7YXmLtcEObochrMRly?=
+ =?us-ascii?Q?qy6NreK1Ni5K1r3yxVkZFrv6x2AABLvT8NbIy8AqkTE3Uv54aER8Ql+IYFFp?=
+ =?us-ascii?Q?c+je/Xi1+rwYOOZXk0N1t5TfaISyyVWsm++3h+Bp8bOxK2cTuCqY1zSi4aio?=
+ =?us-ascii?Q?T3OWlJvKBoZ9Cx4LQBrpRRyg1aHnp9LNPi5XACSdDJpPL3ICoVftwMAW9iPZ?=
+ =?us-ascii?Q?+o7zZKn8nciKfzjBREUmUWr0GT59WdYBwf13HBywvCjY+Y5NQzvlSwB93FNj?=
+ =?us-ascii?Q?9uOZwPla9j1Ac9+g/KRcAcSblbB0q51UMhj6oFE2nOR2xfGCckik08BFd0Mq?=
+ =?us-ascii?Q?Qvd4ZHyJxJhiqXKWUKxGC73po+/oF70GVZQrb6VmrbjIrjlv/L7YATH1acmj?=
+ =?us-ascii?Q?EeYYg8EqBz65jKL0KlTOS4ggfl2dp89twDfV5xDCbQXKECuyeuSb5t+6+gqH?=
+ =?us-ascii?Q?6EY9JZef9EjdMa8l0wMNBG9W48omEp60jY8LJg0m+DG0hev+MhN/voOgOVJc?=
+ =?us-ascii?Q?biT/XvLcwqwrkdQNSXcQPivyMCeNNHX3H2/8JXai7HOZMWSrj/wbeEeaJN/q?=
+ =?us-ascii?Q?0Rf+uTH8CewXKKPWaUQejsQI7l3I/hU5VYRyFEsrTS5tOJHv2AZdS/fLXMwJ?=
+ =?us-ascii?Q?/cOFtKAYFfMvNGdCJwLfWzhIqXXNBhJw1Lfn7JGo8qvYAe3tRYVvwHG9RH/r?=
+ =?us-ascii?Q?FBzekqNDnN/t4RnBHyc7Nm1jkc6Awpk6SH/gyZN9Ilss/GAVbav9x3Qo7XYs?=
+ =?us-ascii?Q?jA7l9IQQVjpb1q9Ead8b0qrBTn8mLoQu4UoZw3fvInJiwDroU+uMH61e+yCi?=
+ =?us-ascii?Q?J6tSiBKB0oEP5la3D473rZgNf9b0UbT3Vv9A6J8ZoRzQ+kiIahEYEXjxhBTB?=
+ =?us-ascii?Q?ND0934QiGdEXC/oeJ0VrsFMZa5ke1+HwxWNGdKwyK0MLxg5PddEMvCPApT60?=
+ =?us-ascii?Q?WzdtRI8URZDKe+8nzEGAMmKd4YV3rovo3u5X/m5Nnt8xMzCk2cG2IanS26hj?=
+ =?us-ascii?Q?wtEtWnkm6hi+K2GFAuySXbPPc43BRiNqcokLGZrHm9sB4+l5ONx8l9v3Q8cy?=
+ =?us-ascii?Q?t1QJJDq47WFFYh5YAazx8szPgaMz37OOEikQPSefCI6kZnhql56LeSBNvtnX?=
+ =?us-ascii?Q?1l7/caSZc+BJ03k5mcBgWmllhhNd4OIxL4l5liew2gmY66VK4SNug1NqNTCD?=
+ =?us-ascii?Q?Yiwr4LKmqtnAktD9bQA3Zm9f2rE0UQXU4eAytc0qQ8THtFVYuSDmIXKNPVpd?=
+ =?us-ascii?Q?sEqqPQnZlmLS963bXUMeDaMdos7pwLHoRgfzKTDYPzemAtbxPGDK+v9b8DDX?=
+ =?us-ascii?Q?nGFu4UrcainM0woKuZlPSG9VJutcFYDQI4d7OLeZLyXPGNd6db17tofYNlOH?=
+ =?us-ascii?Q?glSNB+v7WNlH0U+M3cawkn/Cyl2niG5wu7CNpvEHE1wVPCm11VIJ5OcNSm9w?=
+ =?us-ascii?Q?qCtIJkf+2+95D/U66XogMzB24BH00kHVNhEkAZCt4ZH3/linCF9vb5iSbmF6?=
+ =?us-ascii?Q?Ov8jy3FLC0sNj6+F1cwpTKsBZtZwrafDeYs+NL6TKyCnqeNG8YF4yUCfi4rV?=
+ =?us-ascii?Q?o0gwEsZItxqaat48k0R+hudSauahOKMLaAQn9lA/D6G1aphmi7goV8Mux4ax?=
+ =?us-ascii?Q?sjm2rR9wXPHOJNFUvMy1XazwRKI6ajuGlAm68yHl7x5pywn1Q7cYSyYdSIGY?=
+ =?us-ascii?Q?pEidhw=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f4b9c496-aa5e-4847-ca15-08db20baed7c
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2023 16:25:43.3283
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +fLuhQGKTZpmkHYRafmLpmhMcL+rkAEjMnE6JNy42gn2HMcXvM+tBYn5FoGHbUWpZ8+Xq9TyXeKw+nriDW//I86LaM9ZP7XWGMIqwLJqAuA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR13MB5037
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 09, 2023 at 01:10:36PM +0300, Arseniy Krasnov wrote:
->Hello,
->
->this patchset evolved from previous v2 version (see link below). It does
->several updates to virtio/vsock:
->1) Changes 'virtio_transport_inc/dec_rx_pkt()' interface. Now instead of
->   using skbuff state ('head' and 'data' pointers) to update 'fwd_cnt'
->   and 'rx_bytes', integer value is passed as an input argument. This
->   makes code more simple, because in this case we don't need to udpate
->   skbuff state before calling 'virtio_transport_inc/dec_rx_pkt()'. In
->   more common words - we don't need to change skbuff state to update
->   'rx_bytes' and 'fwd_cnt' correctly.
->2) For SOCK_STREAM, when copying data to user fails, current skbuff is
->   not dropped. Next read attempt will use same skbuff and last offset.
->   Instead of 'skb_dequeue()', 'skb_peek()' + '__skb_unlink()' are used.
->   This behaviour was implemented before skbuff support.
->3) For SOCK_SEQPACKET it removes unneeded 'skb_pull()' call, because for
->   this type of socket each skbuff is used only once: after removing it
->   from socket's queue, it will be freed anyway.
->
->Test for 2) also added:
->Test tries to 'recv()' data to NULL buffer, then does 'recv()' with valid
->buffer. For SOCK_STREAM second 'recv()' must return data, because skbuff
->must not be dropped, but for SOCK_SEQPACKET skbuff will be dropped by
->kernel, and 'recv()' will return EAGAIN.
->
->Link to v1 on lore:
->https://lore.kernel.org/netdev/c2d3e204-89d9-88e9-8a15-3fe027e56b4b@sberdevices.ru/
->
->Link to v2 on lore:
->https://lore.kernel.org/netdev/a7ab414b-5e41-c7b6-250b-e8401f335859@sberdevices.ru/
->
->Change log:
->
->v1 -> v2:
-> - For SOCK_SEQPACKET call 'skb_pull()' also in case of copy failure or
->   dropping skbuff (when we just waiting message end).
-> - Handle copy failure for SOCK_STREAM in the same manner (plus free
->   current skbuff).
-> - Replace bug repdroducer with new test in vsock_test.c
->
->v2 -> v3:
-> - Replace patch which removes 'skb->len' subtraction from function
->   'virtio_transport_dec_rx_pkt()' with patch which updates functions
->   'virtio_transport_inc/dec_rx_pkt()' by passing integer argument
->   instead of skbuff pointer.
-> - Replace patch which drops skbuff when copying to user fails with
->   patch which changes this behaviour by keeping skbuff in queue until
->   it has no data.
-> - Add patch for SOCK_SEQPACKET which removes redundant 'skb_pull()'
->   call on read.
-> - I remove "Fixes" tag from all patches, because all of them now change
->   code logic, not only fix something.
+On Thu, Mar 09, 2023 at 03:13:15PM +0200, Shay Agroskin wrote:
+> This attribute, which is part of ethtool's ring param configuration
+> allows the user to specify the maximum number of the packet's payload
+> that can be written directly to the device.
+> 
+> Example usage:
+>     # ethtool -G [interface] tx-push-buf-len [number of bytes]
+> 
+> Co-developed-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Shay Agroskin <shayagr@amazon.com>
 
-Yes, but they solve the problem, so we should use the tag (I think at
-least in patch 1 and 3).
-
-We usually use the tag when we are fixing a problem introduced by a
-previous change. So we need to backport the patch to the stable branches
-as well, and we need the tag to figure out which branches have the patch
-or not.
-
-Thanks,
-Stefano
-
->
->Arseniy Krasnov (4):
->  virtio/vsock: don't use skbuff state to account credit
->  virtio/vsock: remove redundant 'skb_pull()' call
->  virtio/vsock: don't drop skbuff on copy failure
->  test/vsock: copy to user failure test
->
-> net/vmw_vsock/virtio_transport_common.c |  29 +++---
-> tools/testing/vsock/vsock_test.c        | 118 ++++++++++++++++++++++++
-> 2 files changed, 131 insertions(+), 16 deletions(-)
->
->-- 
->2.25.1
->
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
