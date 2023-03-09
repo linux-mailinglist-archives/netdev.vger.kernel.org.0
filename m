@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD3FD6B222D
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 12:04:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 319666B2230
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 12:04:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231193AbjCILEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 06:04:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50810 "EHLO
+        id S229994AbjCILEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 06:04:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231392AbjCILDe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 06:03:34 -0500
+        with ESMTP id S230434AbjCILEF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 06:04:05 -0500
 Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B6BDEBD81;
-        Thu,  9 Mar 2023 02:59:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42885E8CED;
+        Thu,  9 Mar 2023 02:59:24 -0800 (PST)
 Received: from local
         by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
          (Exim 4.96)
         (envelope-from <daniel@makrotopia.org>)
-        id 1paDzD-0003dN-0L;
-        Thu, 09 Mar 2023 11:59:03 +0100
-Date:   Thu, 9 Mar 2023 10:57:25 +0000
+        id 1paDzV-0003dk-2k;
+        Thu, 09 Mar 2023 11:59:22 +0100
+Date:   Thu, 9 Mar 2023 10:57:44 +0000
 From:   Daniel Golle <daniel@makrotopia.org>
 To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -46,13 +46,13 @@ To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
 Cc:     =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
         Frank Wunderlich <frank-w@public-files.de>,
         Alexander Couzens <lynxis@fe80.eu>
-Subject: [PATCH net-next v13 10/16] net: ethernet: mtk_eth_soc: switch to
- external PCS driver
-Message-ID: <b61d952d5e0719e0fc6cc3b1d3576ce9aa1444f5.1678357225.git.daniel@makrotopia.org>
+Subject: [PATCH net-next v13 11/16] net: dsa: mt7530: use external PCS driver
+Message-ID: <2ac2ee40d3b0e705461b50613fda6a7edfdbc4b3.1678357225.git.daniel@makrotopia.org>
 References: <cover.1678357225.git.daniel@makrotopia.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 In-Reply-To: <cover.1678357225.git.daniel@makrotopia.org>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -62,521 +62,479 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that we got a PCS driver, use it and remove the now redundant
-PCS code and it's header macros from the Ethernet driver.
+Implement regmap access wrappers, for now only to be used by the
+pcs-mtk driver.
+Make use of external PCS driver and drop the reduntant implementation
+in mt7530.c.
+As a nice side effect the SGMII registers can now also more easily be
+inspected for debugging via /sys/kernel/debug/regmap.
 
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Tested-by: Bjørn Mork <bjorn@mork.no>
 Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 ---
- drivers/net/ethernet/mediatek/Kconfig       |   2 +
- drivers/net/ethernet/mediatek/Makefile      |   2 +-
- drivers/net/ethernet/mediatek/mtk_eth_soc.c |  61 +++++-
- drivers/net/ethernet/mediatek/mtk_eth_soc.h |  93 +--------
- drivers/net/ethernet/mediatek/mtk_sgmii.c   | 217 --------------------
- 5 files changed, 56 insertions(+), 319 deletions(-)
- delete mode 100644 drivers/net/ethernet/mediatek/mtk_sgmii.c
+ drivers/net/dsa/Kconfig  |   1 +
+ drivers/net/dsa/mt7530.c | 277 ++++++++++-----------------------------
+ drivers/net/dsa/mt7530.h |  47 +------
+ 3 files changed, 71 insertions(+), 254 deletions(-)
 
-diff --git a/drivers/net/ethernet/mediatek/Kconfig b/drivers/net/ethernet/mediatek/Kconfig
-index 97374fb3ee79..da0db417ab69 100644
---- a/drivers/net/ethernet/mediatek/Kconfig
-+++ b/drivers/net/ethernet/mediatek/Kconfig
-@@ -19,6 +19,8 @@ config NET_MEDIATEK_SOC
- 	select DIMLIB
- 	select PAGE_POOL
- 	select PAGE_POOL_STATS
+diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
+index f6f3b43dfb06..6b45fa8b6907 100644
+--- a/drivers/net/dsa/Kconfig
++++ b/drivers/net/dsa/Kconfig
+@@ -38,6 +38,7 @@ config NET_DSA_MT7530
+ 	tristate "MediaTek MT7530 and MT7531 Ethernet switch support"
+ 	select NET_DSA_TAG_MTK
+ 	select MEDIATEK_GE_PHY
 +	select PCS_MTK_LYNXI
-+	select REGMAP_MMIO
  	help
- 	  This driver supports the gigabit ethernet MACs in the
- 	  MediaTek SoC family.
-diff --git a/drivers/net/ethernet/mediatek/Makefile b/drivers/net/ethernet/mediatek/Makefile
-index 8e0c61c33ff8..03e008fbc859 100644
---- a/drivers/net/ethernet/mediatek/Makefile
-+++ b/drivers/net/ethernet/mediatek/Makefile
-@@ -4,7 +4,7 @@
- #
- 
- obj-$(CONFIG_NET_MEDIATEK_SOC) += mtk_eth.o
--mtk_eth-y := mtk_eth_soc.o mtk_sgmii.o mtk_eth_path.o mtk_ppe.o mtk_ppe_debugfs.o mtk_ppe_offload.o
-+mtk_eth-y := mtk_eth_soc.o mtk_eth_path.o mtk_ppe.o mtk_ppe_debugfs.o mtk_ppe_offload.o
- mtk_eth-$(CONFIG_NET_MEDIATEK_SOC_WED) += mtk_wed.o mtk_wed_mcu.o mtk_wed_wo.o
- ifdef CONFIG_DEBUG_FS
- mtk_eth-$(CONFIG_NET_MEDIATEK_SOC_WED) += mtk_wed_debugfs.o
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index cb503213a7e2..4d18e88aa02d 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -20,6 +20,7 @@
- #include <linux/interrupt.h>
- #include <linux/pinctrl/devinfo.h>
- #include <linux/phylink.h>
+ 	  This enables support for the MediaTek MT7530 and MT7531 Ethernet
+ 	  switch chips. Multi-chip module MT7530 in MT7621AT, MT7621DAT,
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 3a15015bc409..582ba30374c8 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -14,6 +14,7 @@
+ #include <linux/of_mdio.h>
+ #include <linux/of_net.h>
+ #include <linux/of_platform.h>
 +#include <linux/pcs/pcs-mtk-lynxi.h>
- #include <linux/jhash.h>
- #include <linux/bitfield.h>
- #include <net/dsa.h>
-@@ -437,7 +438,7 @@ static struct phylink_pcs *mtk_mac_select_pcs(struct phylink_config *config,
- 		sid = (MTK_HAS_CAPS(eth->soc->caps, MTK_SHARED_SGMII)) ?
- 		       0 : mac->id;
- 
--		return mtk_sgmii_select_pcs(eth->sgmii, sid);
-+		return eth->sgmii_pcs[sid];
- 	}
- 
- 	return NULL;
-@@ -4052,8 +4053,17 @@ static int mtk_unreg_dev(struct mtk_eth *eth)
+ #include <linux/phylink.h>
+ #include <linux/regmap.h>
+ #include <linux/regulator/consumer.h>
+@@ -2567,128 +2568,11 @@ static int mt7531_rgmii_setup(struct mt7530_priv *priv, u32 port,
  	return 0;
  }
  
-+static void mtk_sgmii_destroy(struct mtk_eth *eth)
-+{
-+	int i;
-+
-+	for (i = 0; i < MTK_MAX_DEVS; i++)
-+		mtk_pcs_lynxi_destroy(eth->sgmii_pcs[i]);
-+}
-+
- static int mtk_cleanup(struct mtk_eth *eth)
- {
-+	mtk_sgmii_destroy(eth);
- 	mtk_unreg_dev(eth);
- 	mtk_free_dev(eth);
- 	cancel_work_sync(&eth->pending_work);
-@@ -4499,6 +4509,36 @@ void mtk_eth_set_dma_device(struct mtk_eth *eth, struct device *dma_dev)
- 	rtnl_unlock();
- }
- 
-+static int mtk_sgmii_init(struct mtk_eth *eth)
-+{
-+	struct device_node *np;
-+	struct regmap *regmap;
-+	u32 flags;
-+	int i;
-+
-+	for (i = 0; i < MTK_MAX_DEVS; i++) {
-+		np = of_parse_phandle(eth->dev->of_node, "mediatek,sgmiisys", i);
-+		if (!np)
-+			break;
-+
-+		regmap = syscon_node_to_regmap(np);
-+		flags = 0;
-+		if (of_property_read_bool(np, "mediatek,pnswap"))
-+			flags |= MTK_SGMII_FLAG_PN_SWAP;
-+
-+		of_node_put(np);
-+
-+		if (IS_ERR(regmap))
-+			return PTR_ERR(regmap);
-+
-+		eth->sgmii_pcs[i] = mtk_pcs_lynxi_create(eth->dev, regmap,
-+							 eth->soc->ana_rgc3,
-+							 flags);
-+	}
-+
-+	return 0;
-+}
-+
- static int mtk_probe(struct platform_device *pdev)
- {
- 	struct resource *res = NULL;
-@@ -4562,13 +4602,7 @@ static int mtk_probe(struct platform_device *pdev)
- 	}
- 
- 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_SGMII)) {
--		eth->sgmii = devm_kzalloc(eth->dev, sizeof(*eth->sgmii),
--					  GFP_KERNEL);
--		if (!eth->sgmii)
--			return -ENOMEM;
--
--		err = mtk_sgmii_init(eth->sgmii, pdev->dev.of_node,
--				     eth->soc->ana_rgc3);
-+		err = mtk_sgmii_init(eth);
- 
- 		if (err)
- 			return err;
-@@ -4579,14 +4613,17 @@ static int mtk_probe(struct platform_device *pdev)
- 							    "mediatek,pctl");
- 		if (IS_ERR(eth->pctl)) {
- 			dev_err(&pdev->dev, "no pctl regmap found\n");
--			return PTR_ERR(eth->pctl);
-+			err = PTR_ERR(eth->pctl);
-+			goto err_destroy_sgmii;
- 		}
- 	}
- 
- 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2)) {
- 		res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--		if (!res)
--			return -EINVAL;
-+		if (!res) {
-+			err = -EINVAL;
-+			goto err_destroy_sgmii;
-+		}
- 	}
- 
- 	if (eth->soc->offload_version) {
-@@ -4745,6 +4782,8 @@ static int mtk_probe(struct platform_device *pdev)
- 	mtk_hw_deinit(eth);
- err_wed_exit:
- 	mtk_wed_exit();
-+err_destroy_sgmii:
-+	mtk_sgmii_destroy(eth);
- 
- 	return err;
- }
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index 1c7a51fccc0f..3dfa880da41a 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -509,65 +509,6 @@
- #define ETHSYS_DMA_AG_MAP_QDMA	BIT(1)
- #define ETHSYS_DMA_AG_MAP_PPE	BIT(2)
- 
--/* SGMII subsystem config registers */
--/* BMCR (low 16) BMSR (high 16) */
--#define SGMSYS_PCS_CONTROL_1	0x0
--#define SGMII_BMCR		GENMASK(15, 0)
--#define SGMII_BMSR		GENMASK(31, 16)
--#define SGMII_AN_RESTART	BIT(9)
--#define SGMII_ISOLATE		BIT(10)
--#define SGMII_AN_ENABLE		BIT(12)
--#define SGMII_LINK_STATYS	BIT(18)
--#define SGMII_AN_ABILITY	BIT(19)
--#define SGMII_AN_COMPLETE	BIT(21)
--#define SGMII_PCS_FAULT		BIT(23)
--#define SGMII_AN_EXPANSION_CLR	BIT(30)
--
--#define SGMSYS_PCS_ADVERTISE	0x8
--#define SGMII_ADVERTISE		GENMASK(15, 0)
--#define SGMII_LPA		GENMASK(31, 16)
--
--/* Register to programmable link timer, the unit in 2 * 8ns */
--#define SGMSYS_PCS_LINK_TIMER	0x18
--#define SGMII_LINK_TIMER_MASK	GENMASK(19, 0)
--#define SGMII_LINK_TIMER_DEFAULT	(0x186a0 & SGMII_LINK_TIMER_MASK)
--
--/* Register to control remote fault */
--#define SGMSYS_SGMII_MODE		0x20
--#define SGMII_IF_MODE_SGMII		BIT(0)
--#define SGMII_SPEED_DUPLEX_AN		BIT(1)
--#define SGMII_SPEED_MASK		GENMASK(3, 2)
--#define SGMII_SPEED_10			FIELD_PREP(SGMII_SPEED_MASK, 0)
--#define SGMII_SPEED_100			FIELD_PREP(SGMII_SPEED_MASK, 1)
--#define SGMII_SPEED_1000		FIELD_PREP(SGMII_SPEED_MASK, 2)
--#define SGMII_DUPLEX_HALF		BIT(4)
--#define SGMII_IF_MODE_BIT5		BIT(5)
--#define SGMII_REMOTE_FAULT_DIS		BIT(8)
--#define SGMII_CODE_SYNC_SET_VAL		BIT(9)
--#define SGMII_CODE_SYNC_SET_EN		BIT(10)
--#define SGMII_SEND_AN_ERROR_EN		BIT(11)
--#define SGMII_IF_MODE_MASK		GENMASK(5, 1)
--
--/* Register to reset SGMII design */
--#define SGMII_RESERVED_0	0x34
--#define SGMII_SW_RESET		BIT(0)
--
--/* Register to set SGMII speed, ANA RG_ Control Signals III*/
--#define SGMSYS_ANA_RG_CS3	0x2028
--#define RG_PHY_SPEED_MASK	(BIT(2) | BIT(3))
--#define RG_PHY_SPEED_1_25G	0x0
--#define RG_PHY_SPEED_3_125G	BIT(2)
--
--/* Register to power up QPHY */
--#define SGMSYS_QPHY_PWR_STATE_CTRL 0xe8
--#define	SGMII_PHYA_PWD		BIT(4)
--
--/* Register to QPHY wrapper control */
--#define SGMSYS_QPHY_WRAP_CTRL	0xec
--#define SGMII_PN_SWAP_MASK	GENMASK(1, 0)
--#define SGMII_PN_SWAP_TX_RX	(BIT(0) | BIT(1))
--#define MTK_SGMII_FLAG_PN_SWAP	BIT(0)
--
- /* Infrasys subsystem config registers */
- #define INFRA_MISC2            0x70c
- #define CO_QPHY_SEL            BIT(0)
-@@ -1104,31 +1045,6 @@ struct mtk_soc_data {
- /* currently no SoC has more than 2 macs */
- #define MTK_MAX_DEVS			2
- 
--/* struct mtk_pcs -    This structure holds each sgmii regmap and associated
-- *                     data
-- * @regmap:            The register map pointing at the range used to setup
-- *                     SGMII modes
-- * @ana_rgc3:          The offset refers to register ANA_RGC3 related to regmap
-- * @interface:         Currently configured interface mode
-- * @pcs:               Phylink PCS structure
-- * @flags:             Flags indicating hardware properties
-- */
--struct mtk_pcs {
--	struct regmap	*regmap;
--	u32             ana_rgc3;
--	phy_interface_t	interface;
--	struct phylink_pcs pcs;
--	u32		flags;
--};
--
--/* struct mtk_sgmii -  This is the structure holding sgmii regmap and its
-- *                     characteristics
-- * @pcs                Array of individual PCS structures
-- */
--struct mtk_sgmii {
--	struct mtk_pcs	pcs[MTK_MAX_DEVS];
--};
--
- /* struct mtk_eth -	This is the main datasructure for holding the state
-  *			of the driver
-  * @dev:		The device pointer
-@@ -1148,6 +1064,7 @@ struct mtk_sgmii {
-  *			MII modes
-  * @infra:              The register map pointing at the range used to setup
-  *                      SGMII and GePHY path
-+ * @sgmii_pcs:		Pointers to mtk-pcs-lynxi phylink_pcs instances
-  * @pctl:		The register map pointing at the range used to setup
-  *			GMAC port drive/slew values
-  * @dma_refcnt:		track how many netdevs are using the DMA engine
-@@ -1188,8 +1105,8 @@ struct mtk_eth {
- 	u32				msg_enable;
- 	unsigned long			sysclk;
- 	struct regmap			*ethsys;
--	struct regmap                   *infra;
--	struct mtk_sgmii                *sgmii;
-+	struct regmap			*infra;
-+	struct phylink_pcs		*sgmii_pcs[MTK_MAX_DEVS];
- 	struct regmap			*pctl;
- 	bool				hwlro;
- 	refcount_t			dma_refcnt;
-@@ -1351,10 +1268,6 @@ void mtk_stats_update_mac(struct mtk_mac *mac);
- void mtk_w32(struct mtk_eth *eth, u32 val, unsigned reg);
- u32 mtk_r32(struct mtk_eth *eth, unsigned reg);
- 
--struct phylink_pcs *mtk_sgmii_select_pcs(struct mtk_sgmii *ss, int id);
--int mtk_sgmii_init(struct mtk_sgmii *ss, struct device_node *np,
--		   u32 ana_rgc3);
--
- int mtk_gmac_sgmii_path_setup(struct mtk_eth *eth, int mac_id);
- int mtk_gmac_gephy_path_setup(struct mtk_eth *eth, int mac_id);
- int mtk_gmac_rgmii_path_setup(struct mtk_eth *eth, int mac_id);
-diff --git a/drivers/net/ethernet/mediatek/mtk_sgmii.c b/drivers/net/ethernet/mediatek/mtk_sgmii.c
-deleted file mode 100644
-index 61bd9986466a..000000000000
---- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
-+++ /dev/null
-@@ -1,217 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--// Copyright (c) 2018-2019 MediaTek Inc.
--
--/* A library for MediaTek SGMII circuit
-- *
-- * Author: Sean Wang <sean.wang@mediatek.com>
-- *
-- */
--
--#include <linux/mfd/syscon.h>
--#include <linux/of.h>
--#include <linux/phylink.h>
--#include <linux/regmap.h>
--
--#include "mtk_eth_soc.h"
--
--static struct mtk_pcs *pcs_to_mtk_pcs(struct phylink_pcs *pcs)
+-static void mt7531_pcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
+-			       phy_interface_t interface, int speed, int duplex)
 -{
--	return container_of(pcs, struct mtk_pcs, pcs);
+-	struct mt7530_priv *priv = pcs_to_mt753x_pcs(pcs)->priv;
+-	int port = pcs_to_mt753x_pcs(pcs)->port;
+-	unsigned int val;
+-
+-	/* For adjusting speed and duplex of SGMII force mode. */
+-	if (interface != PHY_INTERFACE_MODE_SGMII ||
+-	    phylink_autoneg_inband(mode))
+-		return;
+-
+-	/* SGMII force mode setting */
+-	val = mt7530_read(priv, MT7531_SGMII_MODE(port));
+-	val &= ~MT7531_SGMII_IF_MODE_MASK;
+-
+-	switch (speed) {
+-	case SPEED_10:
+-		val |= MT7531_SGMII_FORCE_SPEED_10;
+-		break;
+-	case SPEED_100:
+-		val |= MT7531_SGMII_FORCE_SPEED_100;
+-		break;
+-	case SPEED_1000:
+-		val |= MT7531_SGMII_FORCE_SPEED_1000;
+-		break;
+-	}
+-
+-	/* MT7531 SGMII 1G force mode can only work in full duplex mode,
+-	 * no matter MT7531_SGMII_FORCE_HALF_DUPLEX is set or not.
+-	 *
+-	 * The speed check is unnecessary as the MAC capabilities apply
+-	 * this restriction. --rmk
+-	 */
+-	if ((speed == SPEED_10 || speed == SPEED_100) &&
+-	    duplex != DUPLEX_FULL)
+-		val |= MT7531_SGMII_FORCE_HALF_DUPLEX;
+-
+-	mt7530_write(priv, MT7531_SGMII_MODE(port), val);
 -}
 -
--static void mtk_pcs_get_state(struct phylink_pcs *pcs,
+ static bool mt753x_is_mac_port(u32 port)
+ {
+ 	return (port == 5 || port == 6);
+ }
+ 
+-static int mt7531_sgmii_setup_mode_force(struct mt7530_priv *priv, u32 port,
+-					 phy_interface_t interface)
+-{
+-	u32 val;
+-
+-	if (!mt753x_is_mac_port(port))
+-		return -EINVAL;
+-
+-	mt7530_set(priv, MT7531_QPHY_PWR_STATE_CTRL(port),
+-		   MT7531_SGMII_PHYA_PWD);
+-
+-	val = mt7530_read(priv, MT7531_PHYA_CTRL_SIGNAL3(port));
+-	val &= ~MT7531_RG_TPHY_SPEED_MASK;
+-	/* Setup 2.5 times faster clock for 2.5Gbps data speeds with 10B/8B
+-	 * encoding.
+-	 */
+-	val |= (interface == PHY_INTERFACE_MODE_2500BASEX) ?
+-		MT7531_RG_TPHY_SPEED_3_125G : MT7531_RG_TPHY_SPEED_1_25G;
+-	mt7530_write(priv, MT7531_PHYA_CTRL_SIGNAL3(port), val);
+-
+-	mt7530_clear(priv, MT7531_PCS_CONTROL_1(port), MT7531_SGMII_AN_ENABLE);
+-
+-	/* MT7531 SGMII 1G and 2.5G force mode can only work in full duplex
+-	 * mode, no matter MT7531_SGMII_FORCE_HALF_DUPLEX is set or not.
+-	 */
+-	mt7530_rmw(priv, MT7531_SGMII_MODE(port),
+-		   MT7531_SGMII_IF_MODE_MASK | MT7531_SGMII_REMOTE_FAULT_DIS,
+-		   MT7531_SGMII_FORCE_SPEED_1000);
+-
+-	mt7530_write(priv, MT7531_QPHY_PWR_STATE_CTRL(port), 0);
+-
+-	return 0;
+-}
+-
+-static int mt7531_sgmii_setup_mode_an(struct mt7530_priv *priv, int port,
+-				      phy_interface_t interface)
+-{
+-	if (!mt753x_is_mac_port(port))
+-		return -EINVAL;
+-
+-	mt7530_set(priv, MT7531_QPHY_PWR_STATE_CTRL(port),
+-		   MT7531_SGMII_PHYA_PWD);
+-
+-	mt7530_rmw(priv, MT7531_PHYA_CTRL_SIGNAL3(port),
+-		   MT7531_RG_TPHY_SPEED_MASK, MT7531_RG_TPHY_SPEED_1_25G);
+-
+-	mt7530_set(priv, MT7531_SGMII_MODE(port),
+-		   MT7531_SGMII_REMOTE_FAULT_DIS |
+-		   MT7531_SGMII_SPEED_DUPLEX_AN);
+-
+-	mt7530_rmw(priv, MT7531_PCS_SPEED_ABILITY(port),
+-		   MT7531_SGMII_TX_CONFIG_MASK, 1);
+-
+-	mt7530_set(priv, MT7531_PCS_CONTROL_1(port), MT7531_SGMII_AN_ENABLE);
+-
+-	mt7530_set(priv, MT7531_PCS_CONTROL_1(port), MT7531_SGMII_AN_RESTART);
+-
+-	mt7530_write(priv, MT7531_QPHY_PWR_STATE_CTRL(port), 0);
+-
+-	return 0;
+-}
+-
+-static void mt7531_pcs_an_restart(struct phylink_pcs *pcs)
+-{
+-	struct mt7530_priv *priv = pcs_to_mt753x_pcs(pcs)->priv;
+-	int port = pcs_to_mt753x_pcs(pcs)->port;
+-	u32 val;
+-
+-	/* Only restart AN when AN is enabled */
+-	val = mt7530_read(priv, MT7531_PCS_CONTROL_1(port));
+-	if (val & MT7531_SGMII_AN_ENABLE) {
+-		val |= MT7531_SGMII_AN_RESTART;
+-		mt7530_write(priv, MT7531_PCS_CONTROL_1(port), val);
+-	}
+-}
+-
+ static int
+ mt7531_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+ 		  phy_interface_t interface)
+@@ -2711,11 +2595,11 @@ mt7531_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+ 		phydev = dp->slave->phydev;
+ 		return mt7531_rgmii_setup(priv, port, interface, phydev);
+ 	case PHY_INTERFACE_MODE_SGMII:
+-		return mt7531_sgmii_setup_mode_an(priv, port, interface);
+ 	case PHY_INTERFACE_MODE_NA:
+ 	case PHY_INTERFACE_MODE_1000BASEX:
+ 	case PHY_INTERFACE_MODE_2500BASEX:
+-		return mt7531_sgmii_setup_mode_force(priv, port, interface);
++		/* handled in SGMII PCS driver */
++		return 0;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -2740,11 +2624,11 @@ mt753x_phylink_mac_select_pcs(struct dsa_switch *ds, int port,
+ 
+ 	switch (interface) {
+ 	case PHY_INTERFACE_MODE_TRGMII:
++		return &priv->pcs[port].pcs;
+ 	case PHY_INTERFACE_MODE_SGMII:
+ 	case PHY_INTERFACE_MODE_1000BASEX:
+ 	case PHY_INTERFACE_MODE_2500BASEX:
+-		return &priv->pcs[port].pcs;
+-
++		return priv->ports[port].sgmii_pcs;
+ 	default:
+ 		return NULL;
+ 	}
+@@ -2982,86 +2866,6 @@ static void mt7530_pcs_get_state(struct phylink_pcs *pcs,
+ 		state->pause |= MLO_PAUSE_TX;
+ }
+ 
+-static int
+-mt7531_sgmii_pcs_get_state_an(struct mt7530_priv *priv, int port,
 -			      struct phylink_link_state *state)
 -{
--	struct mtk_pcs *mpcs = pcs_to_mtk_pcs(pcs);
--	unsigned int bm, adv;
+-	u32 status, val;
+-	u16 config_reg;
 -
--	/* Read the BMSR and LPA */
--	regmap_read(mpcs->regmap, SGMSYS_PCS_CONTROL_1, &bm);
--	regmap_read(mpcs->regmap, SGMSYS_PCS_ADVERTISE, &adv);
+-	status = mt7530_read(priv, MT7531_PCS_CONTROL_1(port));
+-	state->link = !!(status & MT7531_SGMII_LINK_STATUS);
+-	state->an_complete = !!(status & MT7531_SGMII_AN_COMPLETE);
+-	if (state->interface == PHY_INTERFACE_MODE_SGMII &&
+-	    (status & MT7531_SGMII_AN_ENABLE)) {
+-		val = mt7530_read(priv, MT7531_PCS_SPEED_ABILITY(port));
+-		config_reg = val >> 16;
 -
--	phylink_mii_c22_pcs_decode_state(state, FIELD_GET(SGMII_BMSR, bm),
--					 FIELD_GET(SGMII_LPA, adv));
--}
--
--static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
--			  phy_interface_t interface,
--			  const unsigned long *advertising,
--			  bool permit_pause_to_mac)
--{
--	bool mode_changed = false, changed, use_an;
--	struct mtk_pcs *mpcs = pcs_to_mtk_pcs(pcs);
--	unsigned int rgc3, sgm_mode, bmcr;
--	int advertise, link_timer;
--
--	advertise = phylink_mii_c22_pcs_encode_advertisement(interface,
--							     advertising);
--	if (advertise < 0)
--		return advertise;
--
--	/* Clearing IF_MODE_BIT0 switches the PCS to BASE-X mode, and
--	 * we assume that fixes it's speed at bitrate = line rate (in
--	 * other words, 1000Mbps or 2500Mbps).
--	 */
--	if (interface == PHY_INTERFACE_MODE_SGMII) {
--		sgm_mode = SGMII_IF_MODE_SGMII;
--		if (phylink_autoneg_inband(mode)) {
--			sgm_mode |= SGMII_REMOTE_FAULT_DIS |
--				    SGMII_SPEED_DUPLEX_AN;
--			use_an = true;
--		} else {
--			use_an = false;
--		}
--	} else if (phylink_autoneg_inband(mode)) {
--		/* 1000base-X or 2500base-X autoneg */
--		sgm_mode = SGMII_REMOTE_FAULT_DIS;
--		use_an = linkmode_test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
--					   advertising);
--	} else {
--		/* 1000base-X or 2500base-X without autoneg */
--		sgm_mode = 0;
--		use_an = false;
--	}
--
--	if (use_an) {
--		bmcr = SGMII_AN_ENABLE;
--	} else {
--		bmcr = 0;
--	}
--
--	if (mpcs->interface != interface) {
--		link_timer = phylink_get_link_timer_ns(interface);
--		if (link_timer < 0)
--			return link_timer;
--
--		/* PHYA power down */
--		regmap_update_bits(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL,
--				   SGMII_PHYA_PWD, SGMII_PHYA_PWD);
--
--		/* Reset SGMII PCS state */
--		regmap_update_bits(mpcs->regmap, SGMII_RESERVED_0,
--				   SGMII_SW_RESET, SGMII_SW_RESET);
--
--		if (mpcs->flags & MTK_SGMII_FLAG_PN_SWAP)
--			regmap_update_bits(mpcs->regmap, SGMSYS_QPHY_WRAP_CTRL,
--					   SGMII_PN_SWAP_MASK,
--					   SGMII_PN_SWAP_TX_RX);
--
--		if (interface == PHY_INTERFACE_MODE_2500BASEX)
--			rgc3 = RG_PHY_SPEED_3_125G;
--		else
--			rgc3 = 0;
--
--		/* Configure the underlying interface speed */
--		regmap_update_bits(mpcs->regmap, mpcs->ana_rgc3,
--				   RG_PHY_SPEED_3_125G, rgc3);
--
--		/* Setup the link timer */
--		regmap_write(mpcs->regmap, SGMSYS_PCS_LINK_TIMER, link_timer / 2 / 8);
--
--		mpcs->interface = interface;
--		mode_changed = true;
--	}
--
--	/* Update the advertisement, noting whether it has changed */
--	regmap_update_bits_check(mpcs->regmap, SGMSYS_PCS_ADVERTISE,
--				 SGMII_ADVERTISE, advertise, &changed);
--
--	/* Update the sgmsys mode register */
--	regmap_update_bits(mpcs->regmap, SGMSYS_SGMII_MODE,
--			   SGMII_REMOTE_FAULT_DIS | SGMII_SPEED_DUPLEX_AN |
--			   SGMII_IF_MODE_SGMII, sgm_mode);
--
--	/* Update the BMCR */
--	regmap_update_bits(mpcs->regmap, SGMSYS_PCS_CONTROL_1,
--			   SGMII_AN_ENABLE, bmcr);
--
--	/* Release PHYA power down state
--	 * Only removing bit SGMII_PHYA_PWD isn't enough.
--	 * There are cases when the SGMII_PHYA_PWD register contains 0x9 which
--	 * prevents SGMII from working. The SGMII still shows link but no traffic
--	 * can flow. Writing 0x0 to the PHYA_PWD register fix the issue. 0x0 was
--	 * taken from a good working state of the SGMII interface.
--	 * Unknown how much the QPHY needs but it is racy without a sleep.
--	 * Tested on mt7622 & mt7986.
--	 */
--	usleep_range(50, 100);
--	regmap_write(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL, 0);
--
--	return changed || mode_changed;
--}
--
--static void mtk_pcs_restart_an(struct phylink_pcs *pcs)
--{
--	struct mtk_pcs *mpcs = pcs_to_mtk_pcs(pcs);
--
--	regmap_update_bits(mpcs->regmap, SGMSYS_PCS_CONTROL_1,
--			   SGMII_AN_RESTART, SGMII_AN_RESTART);
--}
--
--static void mtk_pcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
--			    phy_interface_t interface, int speed, int duplex)
--{
--	struct mtk_pcs *mpcs = pcs_to_mtk_pcs(pcs);
--	unsigned int sgm_mode;
--
--	if (!phylink_autoneg_inband(mode)) {
--		/* Force the speed and duplex setting */
--		if (speed == SPEED_10)
--			sgm_mode = SGMII_SPEED_10;
--		else if (speed == SPEED_100)
--			sgm_mode = SGMII_SPEED_100;
--		else
--			sgm_mode = SGMII_SPEED_1000;
--
--		if (duplex != DUPLEX_FULL)
--			sgm_mode |= SGMII_DUPLEX_HALF;
--
--		regmap_update_bits(mpcs->regmap, SGMSYS_SGMII_MODE,
--				   SGMII_DUPLEX_HALF | SGMII_SPEED_MASK,
--				   sgm_mode);
--	}
--}
--
--static const struct phylink_pcs_ops mtk_pcs_ops = {
--	.pcs_get_state = mtk_pcs_get_state,
--	.pcs_config = mtk_pcs_config,
--	.pcs_an_restart = mtk_pcs_restart_an,
--	.pcs_link_up = mtk_pcs_link_up,
--};
--
--int mtk_sgmii_init(struct mtk_sgmii *ss, struct device_node *r, u32 ana_rgc3)
--{
--	struct device_node *np;
--	int i;
--
--	for (i = 0; i < MTK_MAX_DEVS; i++) {
--		np = of_parse_phandle(r, "mediatek,sgmiisys", i);
--		if (!np)
+-		switch (config_reg & LPA_SGMII_SPD_MASK) {
+-		case LPA_SGMII_1000:
+-			state->speed = SPEED_1000;
 -			break;
+-		case LPA_SGMII_100:
+-			state->speed = SPEED_100;
+-			break;
+-		case LPA_SGMII_10:
+-			state->speed = SPEED_10;
+-			break;
+-		default:
+-			dev_err(priv->dev, "invalid sgmii PHY speed\n");
+-			state->link = false;
+-			return -EINVAL;
+-		}
 -
--		ss->pcs[i].ana_rgc3 = ana_rgc3;
--		ss->pcs[i].regmap = syscon_node_to_regmap(np);
--
--		ss->pcs[i].flags = 0;
--		if (of_property_read_bool(np, "mediatek,pnswap"))
--			ss->pcs[i].flags |= MTK_SGMII_FLAG_PN_SWAP;
--
--		of_node_put(np);
--		if (IS_ERR(ss->pcs[i].regmap))
--			return PTR_ERR(ss->pcs[i].regmap);
--
--		ss->pcs[i].pcs.ops = &mtk_pcs_ops;
--		ss->pcs[i].pcs.poll = true;
--		ss->pcs[i].interface = PHY_INTERFACE_MODE_NA;
+-		if (config_reg & LPA_SGMII_FULL_DUPLEX)
+-			state->duplex = DUPLEX_FULL;
+-		else
+-			state->duplex = DUPLEX_HALF;
 -	}
 -
 -	return 0;
 -}
 -
--struct phylink_pcs *mtk_sgmii_select_pcs(struct mtk_sgmii *ss, int id)
+-static void
+-mt7531_sgmii_pcs_get_state_inband(struct mt7530_priv *priv, int port,
+-				  struct phylink_link_state *state)
 -{
--	if (!ss->pcs[id].regmap)
--		return NULL;
+-	unsigned int val;
 -
--	return &ss->pcs[id].pcs;
+-	val = mt7530_read(priv, MT7531_PCS_CONTROL_1(port));
+-	state->link = !!(val & MT7531_SGMII_LINK_STATUS);
+-	if (!state->link)
+-		return;
+-
+-	state->an_complete = state->link;
+-
+-	if (state->interface == PHY_INTERFACE_MODE_2500BASEX)
+-		state->speed = SPEED_2500;
+-	else
+-		state->speed = SPEED_1000;
+-
+-	state->duplex = DUPLEX_FULL;
+-	state->pause = MLO_PAUSE_NONE;
 -}
+-
+-static void mt7531_pcs_get_state(struct phylink_pcs *pcs,
+-				 struct phylink_link_state *state)
+-{
+-	struct mt7530_priv *priv = pcs_to_mt753x_pcs(pcs)->priv;
+-	int port = pcs_to_mt753x_pcs(pcs)->port;
+-
+-	if (state->interface == PHY_INTERFACE_MODE_SGMII) {
+-		mt7531_sgmii_pcs_get_state_an(priv, port, state);
+-		return;
+-	} else if ((state->interface == PHY_INTERFACE_MODE_1000BASEX) ||
+-		   (state->interface == PHY_INTERFACE_MODE_2500BASEX)) {
+-		mt7531_sgmii_pcs_get_state_inband(priv, port, state);
+-		return;
+-	}
+-
+-	state->link = false;
+-}
+-
+ static int mt753x_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
+ 			     phy_interface_t interface,
+ 			     const unsigned long *advertising,
+@@ -3081,18 +2885,57 @@ static const struct phylink_pcs_ops mt7530_pcs_ops = {
+ 	.pcs_an_restart = mt7530_pcs_an_restart,
+ };
+ 
+-static const struct phylink_pcs_ops mt7531_pcs_ops = {
+-	.pcs_validate = mt753x_pcs_validate,
+-	.pcs_get_state = mt7531_pcs_get_state,
+-	.pcs_config = mt753x_pcs_config,
+-	.pcs_an_restart = mt7531_pcs_an_restart,
+-	.pcs_link_up = mt7531_pcs_link_up,
++static int mt7530_regmap_read(void *context, unsigned int reg, unsigned int *val)
++{
++	struct mt7530_priv *priv = context;
++
++	*val = mt7530_read(priv, reg);
++	return 0;
++};
++
++static int mt7530_regmap_write(void *context, unsigned int reg, unsigned int val)
++{
++	struct mt7530_priv *priv = context;
++
++	mt7530_write(priv, reg, val);
++	return 0;
++};
++
++static int mt7530_regmap_update_bits(void *context, unsigned int reg,
++				     unsigned int mask, unsigned int val)
++{
++	struct mt7530_priv *priv = context;
++
++	mt7530_rmw(priv, reg, mask, val);
++	return 0;
++};
++
++static const struct regmap_bus mt7531_regmap_bus = {
++	.reg_write = mt7530_regmap_write,
++	.reg_read = mt7530_regmap_read,
++	.reg_update_bits = mt7530_regmap_update_bits,
++};
++
++#define MT7531_PCS_REGMAP_CONFIG(_name, _reg_base) \
++	{				\
++		.name = _name,		\
++		.reg_bits = 16,		\
++		.val_bits = 32,		\
++		.reg_stride = 4,	\
++		.reg_base = _reg_base,	\
++		.max_register = 0x17c,	\
++	}
++
++static const struct regmap_config mt7531_pcs_config[] = {
++	MT7531_PCS_REGMAP_CONFIG("port5", MT7531_SGMII_REG_BASE(5)),
++	MT7531_PCS_REGMAP_CONFIG("port6", MT7531_SGMII_REG_BASE(6)),
+ };
+ 
+ static int
+ mt753x_setup(struct dsa_switch *ds)
+ {
+ 	struct mt7530_priv *priv = ds->priv;
++	struct regmap *regmap;
+ 	int i, ret;
+ 
+ 	/* Initialise the PCS devices */
+@@ -3100,8 +2943,6 @@ mt753x_setup(struct dsa_switch *ds)
+ 		priv->pcs[i].pcs.ops = priv->info->pcs_ops;
+ 		priv->pcs[i].priv = priv;
+ 		priv->pcs[i].port = i;
+-		if (mt753x_is_mac_port(i))
+-			priv->pcs[i].pcs.poll = 1;
+ 	}
+ 
+ 	ret = priv->info->sw_setup(ds);
+@@ -3116,6 +2957,16 @@ mt753x_setup(struct dsa_switch *ds)
+ 	if (ret && priv->irq)
+ 		mt7530_free_irq_common(priv);
+ 
++	if (priv->id == ID_MT7531)
++		for (i = 0; i < 2; i++) {
++			regmap = devm_regmap_init(ds->dev,
++						  &mt7531_regmap_bus, priv,
++						  &mt7531_pcs_config[i]);
++			priv->ports[5 + i].sgmii_pcs =
++				mtk_pcs_lynxi_create(ds->dev, regmap,
++						     MT7531_PHYA_CTRL_SIGNAL3, 0);
++		}
++
+ 	return ret;
+ }
+ 
+@@ -3211,7 +3062,7 @@ static const struct mt753x_info mt753x_table[] = {
+ 	},
+ 	[ID_MT7531] = {
+ 		.id = ID_MT7531,
+-		.pcs_ops = &mt7531_pcs_ops,
++		.pcs_ops = &mt7530_pcs_ops,
+ 		.sw_setup = mt7531_setup,
+ 		.phy_read_c22 = mt7531_ind_c22_phy_read,
+ 		.phy_write_c22 = mt7531_ind_c22_phy_write,
+@@ -3321,7 +3172,7 @@ static void
+ mt7530_remove(struct mdio_device *mdiodev)
+ {
+ 	struct mt7530_priv *priv = dev_get_drvdata(&mdiodev->dev);
+-	int ret = 0;
++	int ret = 0, i;
+ 
+ 	if (!priv)
+ 		return;
+@@ -3340,6 +3191,10 @@ mt7530_remove(struct mdio_device *mdiodev)
+ 		mt7530_free_irq(priv);
+ 
+ 	dsa_unregister_switch(priv->ds);
++
++	for (i = 0; i < 2; ++i)
++		mtk_pcs_lynxi_destroy(priv->ports[5 + i].sgmii_pcs);
++
+ 	mutex_destroy(&priv->reg_mutex);
+ }
+ 
+diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+index 6b2fc6290ea8..c5d29f3fc1d8 100644
+--- a/drivers/net/dsa/mt7530.h
++++ b/drivers/net/dsa/mt7530.h
+@@ -364,47 +364,8 @@ enum mt7530_vlan_port_acc_frm {
+ 					 CCR_TX_OCT_CNT_BAD)
+ 
+ /* MT7531 SGMII register group */
+-#define MT7531_SGMII_REG_BASE		0x5000
+-#define MT7531_SGMII_REG(p, r)		(MT7531_SGMII_REG_BASE + \
+-					((p) - 5) * 0x1000 + (r))
+-
+-/* Register forSGMII PCS_CONTROL_1 */
+-#define MT7531_PCS_CONTROL_1(p)		MT7531_SGMII_REG(p, 0x00)
+-#define  MT7531_SGMII_LINK_STATUS	BIT(18)
+-#define  MT7531_SGMII_AN_ENABLE		BIT(12)
+-#define  MT7531_SGMII_AN_RESTART	BIT(9)
+-#define  MT7531_SGMII_AN_COMPLETE	BIT(21)
+-
+-/* Register for SGMII PCS_SPPED_ABILITY */
+-#define MT7531_PCS_SPEED_ABILITY(p)	MT7531_SGMII_REG(p, 0x08)
+-#define  MT7531_SGMII_TX_CONFIG_MASK	GENMASK(15, 0)
+-#define  MT7531_SGMII_TX_CONFIG		BIT(0)
+-
+-/* Register for SGMII_MODE */
+-#define MT7531_SGMII_MODE(p)		MT7531_SGMII_REG(p, 0x20)
+-#define  MT7531_SGMII_REMOTE_FAULT_DIS	BIT(8)
+-#define  MT7531_SGMII_IF_MODE_MASK	GENMASK(5, 1)
+-#define  MT7531_SGMII_FORCE_DUPLEX	BIT(4)
+-#define  MT7531_SGMII_FORCE_SPEED_MASK	GENMASK(3, 2)
+-#define  MT7531_SGMII_FORCE_SPEED_1000	BIT(3)
+-#define  MT7531_SGMII_FORCE_SPEED_100	BIT(2)
+-#define  MT7531_SGMII_FORCE_SPEED_10	0
+-#define  MT7531_SGMII_SPEED_DUPLEX_AN	BIT(1)
+-
+-enum mt7531_sgmii_force_duplex {
+-	MT7531_SGMII_FORCE_FULL_DUPLEX = 0,
+-	MT7531_SGMII_FORCE_HALF_DUPLEX = 0x10,
+-};
+-
+-/* Fields of QPHY_PWR_STATE_CTRL */
+-#define MT7531_QPHY_PWR_STATE_CTRL(p)	MT7531_SGMII_REG(p, 0xe8)
+-#define  MT7531_SGMII_PHYA_PWD		BIT(4)
+-
+-/* Values of SGMII SPEED */
+-#define MT7531_PHYA_CTRL_SIGNAL3(p)	MT7531_SGMII_REG(p, 0x128)
+-#define  MT7531_RG_TPHY_SPEED_MASK	(BIT(2) | BIT(3))
+-#define  MT7531_RG_TPHY_SPEED_1_25G	0x0
+-#define  MT7531_RG_TPHY_SPEED_3_125G	BIT(2)
++#define MT7531_SGMII_REG_BASE(p)	(0x5000 + ((p) - 5) * 0x1000)
++#define MT7531_PHYA_CTRL_SIGNAL3	0x128
+ 
+ /* Register for system reset */
+ #define MT7530_SYS_CTRL			0x7000
+@@ -703,13 +664,13 @@ struct mt7530_fdb {
+  * @pm:		The matrix used to show all connections with the port.
+  * @pvid:	The VLAN specified is to be considered a PVID at ingress.  Any
+  *		untagged frames will be assigned to the related VLAN.
+- * @vlan_filtering: The flags indicating whether the port that can recognize
+- *		    VLAN-tagged frames.
++ * @sgmii_pcs:	Pointer to PCS instance for SerDes ports
+  */
+ struct mt7530_port {
+ 	bool enable;
+ 	u32 pm;
+ 	u16 pvid;
++	struct phylink_pcs *sgmii_pcs;
+ };
+ 
+ /* Port 5 interface select definitions */
 -- 
 2.39.2
 
