@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D9366B249E
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 13:55:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35F986B249A
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 13:55:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230495AbjCIMzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 07:55:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57652 "EHLO
+        id S230401AbjCIMzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 07:55:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229927AbjCIMzK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 07:55:10 -0500
-Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9489F8C5A0;
-        Thu,  9 Mar 2023 04:55:07 -0800 (PST)
+        with ESMTP id S230387AbjCIMzJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 07:55:09 -0500
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 946FC88EE9;
+        Thu,  9 Mar 2023 04:55:06 -0800 (PST)
 Received: from localhost.localdomain (85-222-111-42.dynamic.chello.pl [85.222.111.42])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 0AE6885E7B;
+        by phobos.denx.de (Postfix) with ESMTPSA id DA4AA85E8E;
         Thu,  9 Mar 2023 13:55:03 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1678366503;
-        bh=t175zUR0JS2y8jH+2a8DPk99nDwK2HWMrLZdfrlhGrg=;
+        s=phobos-20191101; t=1678366504;
+        bh=qWoHPsIf3pfANgKKB9K27q7gnFPLk3JK9JRFYW0OpbM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zleKWsSuWv1eHOZljNQ+wGhh9ph+fpm7VA8kUewhGTVxlnqugo5YCL1qoN7Orj+wA
-         XMSZqnCiJR+sqjlFeEgheKHq7B5ozsi6BxmtWn/FyFCCZCw5DLZSNICBm43DFaAWwX
-         2BgluYehPMRjJBDSG9wM4uhsyBoek8bZCXzmKTaPDHWaOPHLkw/eF4JnpT30ydvwxk
-         bJStDR4QRWwkewOYxvdfx4bmFZgE4EFRYtyLEa9KAvVjnIJAh98Dw+/smB8f2gDKp8
-         7iafwwwq+1tUK7P8dsmXrnTC9XPbyq4ZmmmfHfRxsDOkaBKPqBZV9ndCQRsEvse9z1
-         ycqeCzqMH0O9g==
+        b=TebVQ/GmPCLNbhZqZALCY8CfnkTaG2mcPXipRBlACsmBeaDBWuTcUOnzcw5clfxOe
+         mkla6dAXJ8UwRszYR+uhjllKi6YgxmoezUzXurXJ/2LOTTMnqp4obFQ/W2qgzouj83
+         AlSw7CYoDLfYQnCVcWEKImZHS0T9Wj0yP5z31i5tToZxNfhROx4EwTIoKP/Nf+eLAK
+         ov/ocmZKcGzKQTZ7vWf1/P70Jnqt7u+MldwO6Tpaa3kLp2ySbz7ol2RFZhLOyJti4q
+         6Imit/BOr2TfozSoDy5vOpU7j1UYfvqgzFl7JvKTjs4an2v2LRlflw3yHYI3f4COWy
+         H5c9rX3MzC3kQ==
 From:   Lukasz Majewski <lukma@denx.de>
 To:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
         Russell King <linux@armlinux.org.uk>
@@ -40,10 +40,11 @@ Cc:     Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Alexander Duyck <alexander.duyck@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
         Lukasz Majewski <lukma@denx.de>
-Subject: [PATCH 1/7] dsa: marvell: Provide per device information about max frame size
-Date:   Thu,  9 Mar 2023 13:54:15 +0100
-Message-Id: <20230309125421.3900962-2-lukma@denx.de>
+Subject: [PATCH 2/7] net: dsa: mv88e6xxx: add support for MV88E6020 switch
+Date:   Thu,  9 Mar 2023 13:54:16 +0100
+Message-Id: <20230309125421.3900962-3-lukma@denx.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230309125421.3900962-1-lukma@denx.de>
 References: <20230309125421.3900962-1-lukma@denx.de>
@@ -60,319 +61,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Different Marvell DSA switches support different size of max frame
-bytes to be sent. This value corresponds to the memory allocated
-in switch to store single frame.
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 
-For example mv88e6185 supports max 1632 bytes, which is now in-driver
-standard value. On the other hand - mv88e6250 supports 2048 bytes.
-To be more interesting - devices supporting jumbo frames - use yet
-another value (10240 bytes)
+A mv88e6250 family (i.e. "LinkStreet") switch with 2 PHY and RMII
+ports and no PTP support.
 
-As this value is internal and may be different for each switch IC,
-new entry in struct mv88e6xxx_info has been added to store it.
-
-This commit doesn't change the code functionality - it just provides
-the max frame size value explicitly - up till now it has been
-assigned depending on the callback provided by the switch driver
-(e.g. .set_max_frame_size, .port_set_jumbo_size).
-
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 Signed-off-by: Lukasz Majewski <lukma@denx.de>
-
 ---
 Changes for v2:
-- Define max_frame_size with default value of 1632 bytes,
-- Set proper value for the mv88e6250 switch SoC (linkstreet) family
+- Add S-o-B
+- Update commit message
+- Add information about max packet size (2048 B)
 
 Changes for v3:
-- Add default value for 1632B of the max frame size (to avoid problems
-  with not defined values)
+- None
 
 Changes for v4:
-- Rework the mv88e6xxx_get_max_mtu() by using per device defined
-  max_frame_size value
-
-- Add WARN_ON_ONCE() when max_frame_size is not defined
-
-- Add description for the new 'max_frame_size' member of mv88e6xxx_info
+- Update the num_ports and num_internal_phys to be in sync with
+  88e6020 documentation
 
 Changes for v5:
-- Move some code fragments (like get_mtu callback changes) to separate
-  patches
+- None
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 31 +++++++++++++++++++++++++++++++
- drivers/net/dsa/mv88e6xxx/chip.h |  6 ++++++
- 2 files changed, 37 insertions(+)
+ drivers/net/dsa/mv88e6xxx/chip.c | 21 +++++++++++++++++++++
+ drivers/net/dsa/mv88e6xxx/chip.h |  1 +
+ drivers/net/dsa/mv88e6xxx/port.h |  1 +
+ 3 files changed, 23 insertions(+)
 
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 0a5d6c7bb128..c097a0b19ba6 100644
+index c097a0b19ba6..721bae2e579c 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.c
 +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -5626,6 +5626,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_internal_phys = 5,
- 		.max_vid = 4095,
- 		.max_sid = 63,
-+		.max_frame_size = 1522,
- 		.port_base_addr = 0x10,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -5648,6 +5649,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_ports = 11,
- 		.num_internal_phys = 0,
- 		.max_vid = 4095,
-+		.max_frame_size = 1632,
- 		.port_base_addr = 0x10,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -5669,6 +5671,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_internal_phys = 8,
- 		.max_vid = 4095,
- 		.max_sid = 63,
-+		.max_frame_size = 1632,
- 		.port_base_addr = 0x10,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -5693,6 +5696,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_internal_phys = 5,
- 		.max_vid = 4095,
- 		.max_sid = 63,
-+		.max_frame_size = 1632,
- 		.port_base_addr = 0x10,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -5716,6 +5720,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_ports = 8,
- 		.num_internal_phys = 0,
- 		.max_vid = 4095,
-+		.max_frame_size = 10240,
- 		.port_base_addr = 0x10,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -5738,6 +5743,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_gpio = 11,
- 		.max_vid = 4095,
- 		.max_sid = 63,
-+		.max_frame_size = 10240,
- 		.port_base_addr = 0x10,
- 		.phy_base_addr = 0x10,
- 		.global1_addr = 0x1b,
-@@ -5762,6 +5768,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_internal_phys = 5,
- 		.max_vid = 4095,
- 		.max_sid = 63,
-+		.max_frame_size = 1632,
- 		.port_base_addr = 0x10,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -5787,6 +5794,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_internal_phys = 0,
- 		.max_vid = 4095,
- 		.max_sid = 63,
-+		.max_frame_size = 1632,
- 		.port_base_addr = 0x10,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -5811,6 +5819,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_internal_phys = 5,
- 		.max_vid = 4095,
- 		.max_sid = 63,
-+		.max_frame_size = 10240,
- 		.port_base_addr = 0x10,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -5836,6 +5845,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_gpio = 15,
- 		.max_vid = 4095,
- 		.max_sid = 63,
-+		.max_frame_size = 10240,
- 		.port_base_addr = 0x10,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -5860,6 +5870,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_internal_phys = 5,
- 		.max_vid = 4095,
- 		.max_sid = 63,
-+		.max_frame_size = 10240,
- 		.port_base_addr = 0x10,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -5885,6 +5896,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_gpio = 15,
- 		.max_vid = 4095,
- 		.max_sid = 63,
-+		.max_frame_size = 10240,
- 		.port_base_addr = 0x10,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -5908,6 +5920,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_ports = 10,
- 		.num_internal_phys = 0,
- 		.max_vid = 4095,
-+		.max_frame_size = 1632,
- 		.port_base_addr = 0x10,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -5931,6 +5944,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_gpio = 16,
- 		.max_vid = 8191,
- 		.max_sid = 63,
-+		.max_frame_size = 10240,
- 		.port_base_addr = 0x0,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -5955,6 +5969,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_gpio = 16,
- 		.max_vid = 8191,
- 		.max_sid = 63,
-+		.max_frame_size = 1522,
- 		.port_base_addr = 0x0,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -5978,6 +5993,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_internal_phys = 9,
- 		.max_vid = 8191,
- 		.max_sid = 63,
-+		.max_frame_size = 1522,
- 		.port_base_addr = 0x0,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -6001,6 +6017,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_internal_phys = 9,
- 		.max_vid = 8191,
- 		.max_sid = 63,
-+		.max_frame_size = 1522,
- 		.port_base_addr = 0x0,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -6024,6 +6041,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_internal_phys = 9,
- 		.max_vid = 8191,
- 		.max_sid = 63,
-+		.max_frame_size = 1522,
- 		.port_base_addr = 0x0,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -6051,6 +6069,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_internal_phys = 2,
- 		.invalid_port_mask = BIT(2) | BIT(3) | BIT(4),
- 		.max_vid = 4095,
+@@ -5616,6 +5616,27 @@ static const struct mv88e6xxx_ops mv88e6393x_ops = {
+ };
+ 
+ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
++	[MV88E6020] = {
++		.prod_num = MV88E6XXX_PORT_SWITCH_ID_PROD_6020,
++		.family = MV88E6XXX_FAMILY_6250,
++		.name = "Marvell 88E6020",
++		.num_databases = 64,
++		.num_ports = 4,
++		.num_internal_phys = 2,
++		.max_vid = 4095,
 +		.max_frame_size = 2048,
- 		.port_base_addr = 0x08,
- 		.phy_base_addr = 0x00,
- 		.global1_addr = 0x0f,
-@@ -6075,6 +6094,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_gpio = 15,
- 		.max_vid = 4095,
- 		.max_sid = 63,
-+		.max_frame_size = 10240,
- 		.port_base_addr = 0x10,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -6098,6 +6118,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_ports = 7,
- 		.num_internal_phys = 5,
- 		.max_vid = 4095,
-+		.max_frame_size = 2048,
- 		.port_base_addr = 0x08,
- 		.phy_base_addr = 0x00,
- 		.global1_addr = 0x0f,
-@@ -6121,6 +6142,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_gpio = 16,
- 		.max_vid = 8191,
- 		.max_sid = 63,
-+		.max_frame_size = 1522,
- 		.port_base_addr = 0x0,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -6145,6 +6167,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_internal_phys = 5,
- 		.num_gpio = 15,
- 		.max_vid = 4095,
-+		.max_frame_size = 10240,
- 		.port_base_addr = 0x10,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -6170,6 +6193,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_internal_phys = 5,
- 		.num_gpio = 15,
- 		.max_vid = 4095,
-+		.max_frame_size = 10240,
- 		.port_base_addr = 0x10,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -6195,6 +6219,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_gpio = 11,
- 		.max_vid = 4095,
- 		.max_sid = 63,
-+		.max_frame_size = 10240,
- 		.port_base_addr = 0x10,
- 		.phy_base_addr = 0x10,
- 		.global1_addr = 0x1b,
-@@ -6220,6 +6245,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_internal_phys = 5,
- 		.max_vid = 4095,
- 		.max_sid = 63,
-+		.max_frame_size = 10240,
- 		.port_base_addr = 0x10,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -6244,6 +6270,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_internal_phys = 5,
- 		.max_vid = 4095,
- 		.max_sid = 63,
-+		.max_frame_size = 10240,
- 		.port_base_addr = 0x10,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -6269,6 +6296,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_gpio = 15,
- 		.max_vid = 4095,
- 		.max_sid = 63,
-+		.max_frame_size = 10240,
- 		.port_base_addr = 0x10,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -6294,6 +6322,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_gpio = 16,
- 		.max_vid = 8191,
- 		.max_sid = 63,
-+		.max_frame_size = 10240,
- 		.port_base_addr = 0x0,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -6319,6 +6348,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_gpio = 16,
- 		.max_vid = 8191,
- 		.max_sid = 63,
-+		.max_frame_size = 10240,
- 		.port_base_addr = 0x0,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
-@@ -6343,6 +6373,7 @@ static const struct mv88e6xxx_info mv88e6xxx_table[] = {
- 		.num_internal_phys = 9,
- 		.max_vid = 8191,
- 		.max_sid = 63,
-+		.max_frame_size = 10240,
- 		.port_base_addr = 0x0,
- 		.phy_base_addr = 0x0,
- 		.global1_addr = 0x1b,
++		.port_base_addr = 0x8,
++		.phy_base_addr = 0x0,
++		.global1_addr = 0xf,
++		.global2_addr = 0x7,
++		.age_time_coeff = 15000,
++		.g1_irqs = 9,
++		.g2_irqs = 5,
++		.atu_move_port_mask = 0xf,
++		.dual_chip = true,
++		.ops = &mv88e6250_ops,
++	},
++
+ 	[MV88E6085] = {
+ 		.prod_num = MV88E6XXX_PORT_SWITCH_ID_PROD_6085,
+ 		.family = MV88E6XXX_FAMILY_6097,
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index da6e1339f809..e2b88f1f8376 100644
+index e2b88f1f8376..1690b1a0f2e7 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.h
 +++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -132,6 +132,12 @@ struct mv88e6xxx_info {
- 	unsigned int num_gpio;
- 	unsigned int max_vid;
- 	unsigned int max_sid;
-+
-+	/* Max Frame Size.
-+	 * This value corresponds to the memory allocated in switch internal
-+	 * memory to store single frame.
-+	 */
-+	unsigned int max_frame_size;
- 	unsigned int port_base_addr;
- 	unsigned int phy_base_addr;
- 	unsigned int global1_addr;
+@@ -54,6 +54,7 @@ enum mv88e6xxx_frame_mode {
+ 
+ /* List of supported models */
+ enum mv88e6xxx_model {
++	MV88E6020,
+ 	MV88E6085,
+ 	MV88E6095,
+ 	MV88E6097,
+diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
+index aec9d4fd20e3..169ce5b6fa31 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.h
++++ b/drivers/net/dsa/mv88e6xxx/port.h
+@@ -111,6 +111,7 @@
+ /* Offset 0x03: Switch Identifier Register */
+ #define MV88E6XXX_PORT_SWITCH_ID		0x03
+ #define MV88E6XXX_PORT_SWITCH_ID_PROD_MASK	0xfff0
++#define MV88E6XXX_PORT_SWITCH_ID_PROD_6020	0x0200
+ #define MV88E6XXX_PORT_SWITCH_ID_PROD_6085	0x04a0
+ #define MV88E6XXX_PORT_SWITCH_ID_PROD_6095	0x0950
+ #define MV88E6XXX_PORT_SWITCH_ID_PROD_6097	0x0990
 -- 
 2.20.1
 
