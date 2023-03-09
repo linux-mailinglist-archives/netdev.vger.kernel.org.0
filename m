@@ -2,47 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 092C76B1939
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 03:32:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D90496B193C
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 03:34:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229691AbjCICck (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Mar 2023 21:32:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58880 "EHLO
+        id S229845AbjCICes (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Mar 2023 21:34:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229558AbjCICcj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 21:32:39 -0500
+        with ESMTP id S229542AbjCICer (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Mar 2023 21:34:47 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4764A9F06F;
-        Wed,  8 Mar 2023 18:32:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A37B82377
+        for <netdev@vger.kernel.org>; Wed,  8 Mar 2023 18:34:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D76B761A01;
-        Thu,  9 Mar 2023 02:32:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C17C8C433D2;
-        Thu,  9 Mar 2023 02:32:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DA71619E4
+        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 02:34:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA5F2C433EF;
+        Thu,  9 Mar 2023 02:34:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678329157;
-        bh=WDIzNaCnMgf9e8ImKQVv8UsiZdziknmkM1n23FD5XO4=;
+        s=k20201202; t=1678329285;
+        bh=jx6nY2JVt6L6luYz3YH5FIcJBV4dwIZNlMQXLmY4LVs=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uCYhb3wvRO+4KuGHlAGo7egmXEcNUSAHfPD7OpZup/zvxwe0DmsymSRch7zT9HD1N
-         gEbY93JiI/MRPIZIUeIsVzAb3ieVd1CCRUbwzPDx4FiPpoIT6zN/OAXCuaUCyV99xU
-         cHow912na0SoT/eXlCQkmwbk+QELuEPA7vnOODGl5o5fUA+CcguOAyYUEPLHSJJ8d5
-         kSG2apbFVRCq7T1C6dFOuCGUUsfkj/YwBL0XYq9bJ/EhijhagXwagOcD2nABxDzp3f
-         7ItfvuwH+kGcTRvGp35aGEb3KHiD+Y1Xmwt/ZK12TjaNvPvuQmoUbBJQ8YJX/oAl7b
-         T3FII0XRg5xQw==
-Date:   Wed, 8 Mar 2023 18:32:35 -0800
+        b=eEwtwzcWFCRDod614+HiA+LDwik/bUETu9raUfGXITxGF83JM81ljO8YRrcaLAIdv
+         6tzne85iyUnf8O32/MjzJiLcUUmNChkIepZ+JfMBT++N6hXI2PQXtDsYR2Wctr1xH1
+         +61f8eWGR3XlUh6VyNVBVCjyV8aqh6IQeunxGtu0HFdXvZaC3LLfz0wHBneCKS2+cr
+         AcjchoeWJVU0/Rq5nXohvWFgKJ7Jm81bsMYtrPcEtu0JOL5JvD0YT3Awg/OST9sgw7
+         xqfDKcg4lSlZHjzzmjsu/MFJlW4ro5cXrNUhDEeVJVfWQv1P5Vnshiw3fvVdKmENRK
+         ZoGiXrgdjY99g==
+Date:   Wed, 8 Mar 2023 18:34:43 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sai Krishna <saikrishnag@marvell.com>
-Cc:     <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <sgoutham@marvell.com>, <sumang@marvell.com>,
-        <richardcochran@gmail.com>
-Subject: Re: [net PATCH v3] octeontx2-af: Unlock contexts in the queue
- context cache in case of fault detection
-Message-ID: <20230308183235.06f3e506@kernel.org>
-In-Reply-To: <20230307104908.3391164-1-saikrishnag@marvell.com>
-References: <20230307104908.3391164-1-saikrishnag@marvell.com>
+To:     Shay Agroskin <shayagr@amazon.com>
+Cc:     David Miller <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        "Woodhouse, David" <dwmw@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        Saeed Bshara <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Arinzon, David" <darinzon@amazon.com>,
+        "Itzko, Shahar" <itzko@amazon.com>,
+        "Abboud, Osama" <osamaabb@amazon.com>
+Subject: Re: [PATCH RFC v3 net-next 0/5] Add tx push buf len param to
+ ethtool
+Message-ID: <20230308183443.5284c51b@kernel.org>
+In-Reply-To: <20230307102458.2756297-1-shayagr@amazon.com>
+References: <20230307102458.2756297-1-shayagr@amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,14 +67,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 7 Mar 2023 16:19:08 +0530 Sai Krishna wrote:
-> From: Suman Ghosh <sumang@marvell.com>
-> 
-> NDC caches contexts of frequently used queue's (Rx and Tx queues)
-> contexts. Due to a HW errata when NDC detects fault/poision while
-> accessing contexts it could go into an illegal state where a cache
-> line could get locked forever. To makesure all cache lines in NDC
-> are available for optimum performance upon fault/lockerror/posion
-> errors scan through all cache lines in NDC and clear the lock bit.
+On Tue, 7 Mar 2023 12:24:53 +0200 Shay Agroskin wrote:
+> Changed since v2:
+> - Added a check that the driver advertises support for TX push buffer
+>   instead of defaulting the response to 0.
+> - Moved cosmetic changes to their own commits
+> - Removed usage of gotos which goes against Linux coding style
+> - Make ENA driver reject an attempt to configure TX push buffer when
+>   it's not supported (no LLQ is used)
 
-Applied to net, thanks!
+LGTM!
+
+Feel free to add my:
+
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+
+On patch one, because checkpatch will complain otherwise.
+
+And repost as non-RFC.
