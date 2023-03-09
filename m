@@ -2,359 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 14EC86B3030
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 23:07:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20CD26B3086
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 23:26:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229835AbjCIWHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 17:07:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37400 "EHLO
+        id S230217AbjCIWZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 17:25:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbjCIWHT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 17:07:19 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 321EEF4D80
-        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 14:07:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678399638; x=1709935638;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=pvrs6gN6tQUWzpTy9Ky0/oYeg5Bla85SOnReqc4ODwk=;
-  b=ZEmsnEDCQDN/hEtbqKrZEFfNtxSyf5OfxVBmlgVHtYrYOh+QKZOPDxYf
-   +YsQTfAE7G4hUIGpdk3xbO4Oz2JiH/A/V1ctzw7z/2w1V2SE7Q0BjZCMk
-   PFLzDupe+/t38dq2cqW385XTocjEDn86bj5tnQQLKbI4Da/9yZnUxwedN
-   Bxx2nQ9jrztxTmUzmJ/tpC6VUgFwNdbAi+cxGz/hpfoNXVdEmPaxrKifB
-   NQYOZWPKe7bpkkjpOPnFVrgRIL7WZk0obTy8RUaMFP3s3jVFtMvVQkk2C
-   B4WiSMsHl2DFayP669x1uIsb6Ty+qh3u8lwZAGRFzmk3U0yMOZucZoTwa
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="316978136"
-X-IronPort-AV: E=Sophos;i="5.98,247,1673942400"; 
-   d="scan'208";a="316978136"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 14:07:17 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="851678115"
-X-IronPort-AV: E=Sophos;i="5.98,247,1673942400"; 
-   d="scan'208";a="851678115"
-Received: from msu-dell.jf.intel.com ([10.166.233.5])
-  by orsmga005.jf.intel.com with ESMTP; 09 Mar 2023 14:07:17 -0800
-From:   Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     kuba@kernel.org, mkubecek@suse.cz, sridhar.samudrala@intel.com,
-        anthony.l.nguyen@intel.com
-Subject: [PATCH net-next] ethtool: add netlink support for rss set
-Date:   Thu,  9 Mar 2023 14:05:44 -0800
-Message-Id: <20230309220544.177248-1-sudheer.mogilappagari@intel.com>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S229722AbjCIWZw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 17:25:52 -0500
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2063.outbound.protection.outlook.com [40.107.102.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A706D62855
+        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 14:25:50 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NVwK0jA2CI30lr73IZpQvWpRYr9RiPsavh3BJmwfKRq/PyQhTJmLW0NxxW651VwsWLoH2sD3BY7lFYXkbnufnXj6o5Q3rZ7vFBptR7z1CcEgU367Styk8oaJUF//Tc/Onk/jVH1HS4VPtKRAS/EVera+V9vYbwqcXVb4s7AaTuf1A8YILqvq302YIYh83DzmNXZFHOUVwC7nT557pJWL7EGXTQyhtD/CPZ6R/cgA8j5GPe7Q0jMcLVqXRaejVZ3HESNqhQXljf17ggPZkK/vmhM4BYh9OL2itfcnnBxU2IDiwEjKWZTAWXyFlDsFVPtM3YZsslTNXlCp+e6NdsFODA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Y0HP6XI4ED/F5Cxmj//k6c22P3/XNiL3J7NzurWs38I=;
+ b=jtuVzsLSvxYHRLMpbS1GfSW2I/VXa/4JM/QRbpmTYPpmtJpt0tKZeZZ1TCCuQo8SzSf9azqrQwdE6lSAxxn5oL+YK7rZCyb63uu+/xdLdQz7nSwjYwr9F9SUUhdDuHVFwlFjmcoJfIKkokuALpv5EdqSFhNVFhzKrnIpbcsRWkLHoq2VbpNlRANBXltu1HAgUDAvujnhwfRWhQMhI5qUX/LZTlcttvO/gYsMSMxi3muVF8XoZtibgjPsOvDf1peF7KRDx2rmtV1Br4ZkxesYeY4+E29gn1qHhnxVERVb4wOVK3Sq2yCGT7RllIlfuqxYIC5XETQRU6tEWcBeITTdIg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Y0HP6XI4ED/F5Cxmj//k6c22P3/XNiL3J7NzurWs38I=;
+ b=WZEgmC+Iutgp/PpJsM3L2IpYt1Zyql/k/UDv77c6R6Omtk6PR7CLKfHGrbWKmrVaYXs/fFENdldJC2AvMcZm/GylFLJFce16NgnZwMF1vDgoXvqOpPorlie1ZnV7FsOYEqehdjxFPiuZ6Sei9ln9HN9hh2tQGPuaRJdor2kl/hE=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS0PR12MB6583.namprd12.prod.outlook.com (2603:10b6:8:d1::12) by
+ PH0PR12MB7816.namprd12.prod.outlook.com (2603:10b6:510:28c::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.18; Thu, 9 Mar
+ 2023 22:25:47 +0000
+Received: from DS0PR12MB6583.namprd12.prod.outlook.com
+ ([fe80::f6fc:b028:b0da:afab]) by DS0PR12MB6583.namprd12.prod.outlook.com
+ ([fe80::f6fc:b028:b0da:afab%9]) with mapi id 15.20.6156.029; Thu, 9 Mar 2023
+ 22:25:46 +0000
+Message-ID: <eaf01c4a-f2e8-714c-81fa-3add0b776d73@amd.com>
+Date:   Thu, 9 Mar 2023 14:25:43 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.8.0
+Subject: Re: [PATCH RFC v4 net-next 02/13] pds_core: add devcmd device
+ interfaces
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     brett.creeley@amd.com, davem@davemloft.net, netdev@vger.kernel.org,
+        kuba@kernel.org, drivers@pensando.io, leon@kernel.org
+References: <20230308051310.12544-1-shannon.nelson@amd.com>
+ <20230308051310.12544-3-shannon.nelson@amd.com> <ZAhXZFABVgsVBzfF@nanopsycho>
+ <02b934ee-edd9-08f1-3571-5efe7687b546@amd.com> <ZAmm/bUs8FbWn+wp@nanopsycho>
+Content-Language: en-US
+From:   Shannon Nelson <shannon.nelson@amd.com>
+In-Reply-To: <ZAmm/bUs8FbWn+wp@nanopsycho>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BYAPR02CA0015.namprd02.prod.outlook.com
+ (2603:10b6:a02:ee::28) To DS0PR12MB6583.namprd12.prod.outlook.com
+ (2603:10b6:8:d1::12)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS0PR12MB6583:EE_|PH0PR12MB7816:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1374c125-8339-4f39-e262-08db20ed3a95
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5/WVs57MNgzBK/7BOLA0QGmwHtLDqhUr8IOE41QldovYMFjiRfHXi63bx/YASpwdGFLYbW9KVTWUYx6oYwzJnQdk9MAy1T/rIUhwKpRk8RkpV2UUSmE4+nMYr8pwHsx4SSQRoQF6sXZ/fGr3sYO+Fn0zQAGlVlTet2uRLF5xXnL8tbJES+87N/5Q7QqmOGhUJLPezVUttsXghZ71ZjzfK2huxoTrePU+9R3CkRWNKBDintImUbYtt47RtCJ09FugdP3lsWZoxad4yp7aGdo71Gqflrus+V9dZymcTT5WBASrVnFtLJDgSk14qJY5XXsBL9dy7YssJFADCc6CtJxPp0CMFKvdPv+X52GXoJASC2Fxhu/Gq+BBmvQggie+R2vmHHFHDsQ83mnvGM+/X6kMT7OkLi+Vm+rK3I/g6TQLqajbfmL0uwzI3E37wrMYI8P2V6TPqubVpPZQ5R8f0NeCD2ksbShyrDkv7JOUef5ISEqNq2KIbNL1fg89oD13T/INNCHzOc1ljIa7a3OhNVfR5wBbxL5uJ+AtRY9ii2fvzbwQtlbQlvRG5PdX+9C2wD5uIyHU6BlBS6nycsh3W0mueYSA8B5rGqpY76eanbceLRvkkGgxl2MXnZH1GU+RCT9UF/k13r6b2oZHcdl4XrfWTP5P4UzDfM9qbrgktDN/q/CTBK7hnZ30ClBvhu9FR1n+rv0vuoUeRY/C7Ix3vl0ecKCFtsS909oPtOdEmwk1VDA=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR12MB6583.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(136003)(346002)(39860400002)(366004)(396003)(451199018)(6666004)(36756003)(6486002)(478600001)(5660300002)(316002)(2906002)(44832011)(66556008)(8676002)(66476007)(4326008)(66946007)(41300700001)(6916009)(8936002)(6506007)(26005)(31696002)(86362001)(38100700002)(6512007)(2616005)(186003)(53546011)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YndzQzBJcnBBRDZkOFRKY1g5YUlKWkJ6eTlOb0N6SHpOMTh6UnRzUlBldG5J?=
+ =?utf-8?B?ZnJ5QWtnbSszSjEvQm5FUGxPVGlJTXBJeHZWRm9qOGp5ZzVZbzVMSFdEc2ZN?=
+ =?utf-8?B?RlFCaWpoTis0dTUxaFlpdWNHVlQzVHJhL1pvUWU5YmgzM015NitIQ0FRQmlz?=
+ =?utf-8?B?bUczc1JDUlFCbDEzY09xT0lldnpOa1V3aS9EVDd1dzN2ZHV0cTgxekZGRUpt?=
+ =?utf-8?B?czFXckRERHZVY0g0K0FEVThseERubWl3R3o3WHJRMVdPb2ExaklLN0ErbDRB?=
+ =?utf-8?B?cFdYN0ZYVWd6cDV1Z1EySFhudm1TZkw3Y0hDTCtjSGFteEFZN05GdFpINnU4?=
+ =?utf-8?B?OE1zMlN3ZzEyczhycW82TDNwcEdnTGU5cXRQbU9QTU53VHJ6TUJ6Vi92VDcv?=
+ =?utf-8?B?RkVLQjBlaEFocGJFYWE3UDcwUUxzc1NLa21NYmhoemJGSlR6VXlablcwUTVU?=
+ =?utf-8?B?QXBQTUFtOWlyVnZiTGJ4cVV6MndtRFl6S1dlQ0V2cGhsOFdFaHVYOWpvUXFo?=
+ =?utf-8?B?T3hRazF3NlRDajRaZ09YT3lJQVk4T0pHdEN3aDQxamQxOWxLU0tsOXdPd1lp?=
+ =?utf-8?B?QnhpMHJYSDdORUd3R1dPMzh6cVo2Qk84ekNwWlZuaEVWT0dEOUlhNUFjYkVS?=
+ =?utf-8?B?ZDZwc3JWWUd6aDFmZ1NWV3l4VExCN0EwU3VLQmpOSHNmNVBYeHErWERiaWls?=
+ =?utf-8?B?d1BNSVkrTi9mM1RtSVRXWUhsNWNMcVFSNFJDVnhhYXZBWXRjazBOV1huS2lk?=
+ =?utf-8?B?ZkNMZE5BUWwyV0xFeHJyWEoxMXZwckFOQnVwWFRYMGhOZDloaERTVDE5ZldN?=
+ =?utf-8?B?R0h3SmRuamplbjlsQXIzS1RmMVFBN1h1NDRmZG4rbXZLZ1J4OWJ6dXhuWjZw?=
+ =?utf-8?B?WHlGZFdBNVoxM2IvNUdKeDJGVkFiZ1JyUDFLL3JyODBuV2x2QjN2MnBIT21v?=
+ =?utf-8?B?T3VOWXplNkc0b2o0YVJhTDBVVk5GWFNGNzd4cEpxS01LRjE2R3BIeUUxQzIw?=
+ =?utf-8?B?RU9iVjQvcFp4ZVpSYkM0YkFuUXl6M2Z6aVRqQjVCOUVPVzdFelc4ZnQ2bVdQ?=
+ =?utf-8?B?dEFCaDl1eGl5ajZ2VEc3VGh1K1ROSm50RjRpa2lEM2xzZngwaEJHOG83QVls?=
+ =?utf-8?B?c3htM0czbTRSZlIrcGUxemxoQ0lGVkFRMW5pSXZlTk9uNzFVLy9EdkdIdzR2?=
+ =?utf-8?B?KytHQnBSYXBpcThFL3ZBOTM0U2FZY0ZwVmViVi9aa0hZTkNoQnFZV0oyR1Qz?=
+ =?utf-8?B?NVJaNUVEZ0wwdUoyemFNSnJwRmJ1N3YzZncwYWtHUGUyNG85dTBOb2dJeEox?=
+ =?utf-8?B?N2p5ZExTTU9jZ0F6ei9vZVFIQmZCWDNzVzNWeVZvRUJ1VGVjRGZXcmthcGwv?=
+ =?utf-8?B?SnNhRkczOE1BZE91cGxMNU9vWXhiRllENXA5UnhTcHA4N1BrbGhacm1wNTNw?=
+ =?utf-8?B?c25JZ05BWDh1Vkh6ODNlMThVYmdwWmVqMDVJdHJjcy9oM2I0QklFbThCbXpa?=
+ =?utf-8?B?eHpLa2oxODdpREd1V014aURYTEhXZG04L2RUNzV3RmhTZzBkVS9IaXd6VmhV?=
+ =?utf-8?B?U0tweE9HRGI2K3FoT1pkY1NjSktIZDJYaFRhajU3QzY1MjlNTWM4THRRemFn?=
+ =?utf-8?B?MjVpMyt4cllMb0NNZnNhdkYvR1g0NzN1NjBUTjQ2NjdUTytHZU5rTjMwelJD?=
+ =?utf-8?B?YjJtNUZldTJCY2RXRXBSMjkwVzFxK2ZNYXdmWDlTVmRqbnMrRTVwTXJZdk44?=
+ =?utf-8?B?SVBMR0Vyb0crOGp2SlhxRTROdEhsT3NjbTFFVmdTaUIwZ2FGeTlFanhidzdu?=
+ =?utf-8?B?MEpRWXk3UGYzSHdqQVM5dkFvL1JlSGVwTENGaVdWQ1NqaDU4T2R2bzlxYlRU?=
+ =?utf-8?B?TzdYUEU2bG02KzNKOW9DQTNDcFVzQ01zdkE2RzJNODk4WG9IQ1ljOFpFM2ZM?=
+ =?utf-8?B?ampITllZenNZNDZUSVdFcFhEcFhjRXJoTTczL1lYcHdROFpBTnZVZ2o5enpZ?=
+ =?utf-8?B?dWhUNlFaMGROL25WQVppTDZsRmcya2loZ1N1OURLNVE0VXU0UitPa0ZkYVZW?=
+ =?utf-8?B?RGwya2RTZEtHTWhBNE9vMW5YMXV6bXRKQldhVEx0RFord0xHVVBSZUp3aW56?=
+ =?utf-8?Q?V3n90RqygyMCGzOqCGueM/sun?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1374c125-8339-4f39-e262-08db20ed3a95
+X-MS-Exchange-CrossTenant-AuthSource: DS0PR12MB6583.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2023 22:25:46.7483
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: C20jDhEaIWsLNFyKtPQ08nT42cpFOgsMy6IWHfNGcPOl/FC5+7+7NL3lTc9ogBFbIgfL2gZ1rDtg45oxhK9DCw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB7816
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add netlink based support for "ethtool -X <dev>" command by
-implementing ETHTOOL_MSG_RSS_SET netlink message. This is
-equivalent to functionality provided via ETHTOOL_SRSSH in
-ioctl path. It allows creation and deletion of RSS context
-and modifying RSS table, hash key and hash function of an
-interface.
+On 3/9/23 1:29 AM, Jiri Pirko wrote:
+> Thu, Mar 09, 2023 at 03:05:13AM CET, shannon.nelson@amd.com wrote:
+>> On 3/8/23 1:37 AM, Jiri Pirko wrote:
+>>> Wed, Mar 08, 2023 at 06:12:59AM CET, shannon.nelson@amd.com wrote:
+> 
+> [..]
+> 
+> 
+>>>> +static int identity_show(struct seq_file *seq, void *v)
+>>>> +{
+>>>> +      struct pdsc *pdsc = seq->private;
+>>>> +      struct pds_core_dev_identity *ident;
+>>>> +      int vt;
+>>>> +
+>>>> +      ident = &pdsc->dev_ident;
+>>>> +
+>>>> +      seq_printf(seq, "asic_type:        0x%x\n", pdsc->dev_info.asic_type);
+>>>> +      seq_printf(seq, "asic_rev:         0x%x\n", pdsc->dev_info.asic_rev);
+>>>> +      seq_printf(seq, "serial_num:       %s\n", pdsc->dev_info.serial_num);
+>>>> +      seq_printf(seq, "fw_version:       %s\n", pdsc->dev_info.fw_version);
+>>>
+>>> What is the exact reason of exposing this here and not trought well
+>>> defined devlink info interface?
+>>
+>> These do show up in devlink dev info eventually, but that isn't for another
+>> couple of patches.  This gives us info here for debugging the earlier patches
+>> if needed.
+> 
+> Implement it properly from the start and avoid these, please.
 
-Functionality is backward compatible with the one available
-in ioctl path but enables addition of new RSS context based
-parameters in future.
+Sure, I'll drop these in the next rev.
 
-Signed-off-by: Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
----
- Documentation/networking/ethtool-netlink.rst |  31 ++++
- include/uapi/linux/ethtool_netlink.h         |   3 +
- net/ethtool/netlink.c                        |   7 +
- net/ethtool/netlink.h                        |   2 +
- net/ethtool/rss.c                            | 155 +++++++++++++++++++
- 5 files changed, 198 insertions(+)
-
-diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
-index e1bc6186d7ea..e03228978d1a 100644
---- a/Documentation/networking/ethtool-netlink.rst
-+++ b/Documentation/networking/ethtool-netlink.rst
-@@ -223,6 +223,7 @@ Userspace to kernel:
-   ``ETHTOOL_MSG_PSE_SET``               set PSE parameters
-   ``ETHTOOL_MSG_PSE_GET``               get PSE parameters
-   ``ETHTOOL_MSG_RSS_GET``               get RSS settings
-+  ``ETHTOOL_MSG_RSS_SET``               set RSS settings
-   ``ETHTOOL_MSG_MM_GET``                get MAC merge layer state
-   ``ETHTOOL_MSG_MM_SET``                set MAC merge layer parameters
-   ===================================== =================================
-@@ -1756,6 +1757,36 @@ being used. Current supported options are toeplitz, xor or crc32.
- ETHTOOL_A_RSS_INDIR attribute returns RSS indrection table where each byte
- indicates queue number.
- 
-+RSS_SET
-+=======
-+
-+Update indirection table, hash key and hash function of a RSS context.
-+similar to ``ETHTOOL_SRSSH`` ioctl request.
-+
-+Request contents:
-+
-+=====================================  ======  ==========================
-+  ``ETHTOOL_A_RSS_HEADER``             nested  request header
-+  ``ETHTOOL_A_RSS_CONTEXT``            u32     context number
-+  ``ETHTOOL_A_RSS_HFUNC``              u32     RSS hash func
-+  ``ETHTOOL_A_RSS_INDIR``              binary  Indir table bytes
-+  ``ETHTOOL_A_RSS_HKEY``               binary  Hash key bytes
-+  ``ETHTOOL_A_RSS_DELETE``             u8      context delete flag
-+=====================================  ======  ==========================
-+
-+Kernel response contents:
-+
-+=====================================  ======  ==========================
-+  ``ETHTOOL_A_RSS_HEADER``             nested  reply header
-+  ``ETHTOOL_A_RSS_CONTEXT``            u32     context number created
-+=====================================  ======  ==========================
-+
-+RSS context value of ETH_RXFH_CONTEXT_ALLOC indicates creation of new
-+context. Response contains newly created context number or same context
-+number as request. ETHTOOL_A_RSS_HFUNC attribute is bitmap indicating
-+the hash function being used. Current supported options are toeplitz,
-+xor or crc32.
-+
- PLCA_GET_CFG
- ============
- 
-diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
-index d39ce21381c5..56c4e8570dc6 100644
---- a/include/uapi/linux/ethtool_netlink.h
-+++ b/include/uapi/linux/ethtool_netlink.h
-@@ -52,6 +52,7 @@ enum {
- 	ETHTOOL_MSG_PSE_GET,
- 	ETHTOOL_MSG_PSE_SET,
- 	ETHTOOL_MSG_RSS_GET,
-+	ETHTOOL_MSG_RSS_SET,
- 	ETHTOOL_MSG_PLCA_GET_CFG,
- 	ETHTOOL_MSG_PLCA_SET_CFG,
- 	ETHTOOL_MSG_PLCA_GET_STATUS,
-@@ -104,6 +105,7 @@ enum {
- 	ETHTOOL_MSG_MODULE_NTF,
- 	ETHTOOL_MSG_PSE_GET_REPLY,
- 	ETHTOOL_MSG_RSS_GET_REPLY,
-+	ETHTOOL_MSG_RSS_SET_REPLY,
- 	ETHTOOL_MSG_PLCA_GET_CFG_REPLY,
- 	ETHTOOL_MSG_PLCA_GET_STATUS_REPLY,
- 	ETHTOOL_MSG_PLCA_NTF,
-@@ -906,6 +908,7 @@ enum {
- 	ETHTOOL_A_RSS_HFUNC,		/* u32 */
- 	ETHTOOL_A_RSS_INDIR,		/* binary */
- 	ETHTOOL_A_RSS_HKEY,		/* binary */
-+	ETHTOOL_A_RSS_DELETE,		/* u8 */
- 
- 	__ETHTOOL_A_RSS_CNT,
- 	ETHTOOL_A_RSS_MAX = (__ETHTOOL_A_RSS_CNT - 1),
-diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
-index 08120095cc68..22177883438b 100644
---- a/net/ethtool/netlink.c
-+++ b/net/ethtool/netlink.c
-@@ -1115,6 +1115,13 @@ static const struct genl_ops ethtool_genl_ops[] = {
- 		.policy = ethnl_rss_get_policy,
- 		.maxattr = ARRAY_SIZE(ethnl_rss_get_policy) - 1,
- 	},
-+	{
-+		.cmd	= ETHTOOL_MSG_RSS_SET,
-+		.flags	= GENL_UNS_ADMIN_PERM,
-+		.doit	= ethnl_set_rss,
-+		.policy = ethnl_rss_set_policy,
-+		.maxattr = ARRAY_SIZE(ethnl_rss_set_policy) - 1,
-+	},
- 	{
- 		.cmd	= ETHTOOL_MSG_PLCA_GET_CFG,
- 		.doit	= ethnl_default_doit,
-diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
-index f7b189ed96b2..67d7e4e5b916 100644
---- a/net/ethtool/netlink.h
-+++ b/net/ethtool/netlink.h
-@@ -436,6 +436,7 @@ extern const struct nla_policy ethnl_module_set_policy[ETHTOOL_A_MODULE_POWER_MO
- extern const struct nla_policy ethnl_pse_get_policy[ETHTOOL_A_PSE_HEADER + 1];
- extern const struct nla_policy ethnl_pse_set_policy[ETHTOOL_A_PSE_MAX + 1];
- extern const struct nla_policy ethnl_rss_get_policy[ETHTOOL_A_RSS_CONTEXT + 1];
-+extern const struct nla_policy ethnl_rss_set_policy[ETHTOOL_A_RSS_MAX + 1];
- extern const struct nla_policy ethnl_plca_get_cfg_policy[ETHTOOL_A_PLCA_HEADER + 1];
- extern const struct nla_policy ethnl_plca_set_cfg_policy[ETHTOOL_A_PLCA_MAX + 1];
- extern const struct nla_policy ethnl_plca_get_status_policy[ETHTOOL_A_PLCA_HEADER + 1];
-@@ -443,6 +444,7 @@ extern const struct nla_policy ethnl_mm_get_policy[ETHTOOL_A_MM_HEADER + 1];
- extern const struct nla_policy ethnl_mm_set_policy[ETHTOOL_A_MM_MAX + 1];
- 
- int ethnl_set_features(struct sk_buff *skb, struct genl_info *info);
-+int ethnl_set_rss(struct sk_buff *skb, struct genl_info *info);
- int ethnl_act_cable_test(struct sk_buff *skb, struct genl_info *info);
- int ethnl_act_cable_test_tdr(struct sk_buff *skb, struct genl_info *info);
- int ethnl_tunnel_info_doit(struct sk_buff *skb, struct genl_info *info);
-diff --git a/net/ethtool/rss.c b/net/ethtool/rss.c
-index be260ab34e58..f19e4baa83e2 100644
---- a/net/ethtool/rss.c
-+++ b/net/ethtool/rss.c
-@@ -154,3 +154,158 @@ const struct ethnl_request_ops ethnl_rss_request_ops = {
- 	.fill_reply		= rss_fill_reply,
- 	.cleanup_data		= rss_cleanup_data,
- };
-+
-+/* RSS_SET */
-+
-+const struct nla_policy ethnl_rss_set_policy[] = {
-+	[ETHTOOL_A_RSS_HEADER] = NLA_POLICY_NESTED(ethnl_header_policy),
-+	[ETHTOOL_A_RSS_CONTEXT] = { .type = NLA_U32 },
-+	[ETHTOOL_A_RSS_HFUNC]	= { .type = NLA_U32 },
-+	[ETHTOOL_A_RSS_INDIR]	= { .type = NLA_BINARY },
-+	[ETHTOOL_A_RSS_HKEY]	= { .type = NLA_BINARY },
-+	[ETHTOOL_A_RSS_DELETE]	= { .type = NLA_U8 },
-+};
-+
-+static int srss_send_reply(struct net_device *dev, struct genl_info *info,
-+			   u32 rss_context)
-+{
-+	struct sk_buff *rskb;
-+	void *reply_payload;
-+	int reply_len;
-+	int ret;
-+
-+	reply_len = ethnl_reply_header_size() +
-+		    nla_total_size(sizeof(u32)); /* RSS_CONTEXT */
-+
-+	rskb = ethnl_reply_init(reply_len, dev, ETHTOOL_MSG_RSS_SET_REPLY,
-+				ETHTOOL_A_RSS_HEADER, info, &reply_payload);
-+
-+	ret = nla_put_u32(rskb, ETHTOOL_A_RSS_CONTEXT, rss_context);
-+	if (ret < 0)
-+		goto nla_put_failure;
-+
-+	genlmsg_end(rskb, reply_payload);
-+	ret = genlmsg_reply(rskb, info);
-+	return ret;
-+
-+nla_put_failure:
-+	nlmsg_free(rskb);
-+	WARN_ONCE(1, "calculated message payload length (%d) not sufficient\n",
-+		  reply_len);
-+	GENL_SET_ERR_MSG(info, "failed to send reply message");
-+	return ret;
-+}
-+
-+int ethnl_set_rss(struct sk_buff *skb, struct genl_info *info)
-+{
-+	struct ethnl_req_info req_info = {};
-+	u32 rss_hfunc = 0, rss_context = 0;
-+	u32 hkey_bytes = 0, indir_size = 0;
-+	struct nlattr **tb = info->attrs;
-+	const struct ethtool_ops *ops;
-+	struct ethtool_rxnfc rx_rings;
-+	struct net_device *dev;
-+	u32 *rss_indir = NULL;
-+	u8 *rss_hkey = NULL;
-+	u32 delete = false;
-+	bool mod = false;
-+	int ret, i;
-+
-+	ret = ethnl_parse_header_dev_get(&req_info,
-+					 tb[ETHTOOL_A_RSS_HEADER],
-+					 genl_info_net(info), info->extack,
-+					 true);
-+	if (ret < 0)
-+		return ret;
-+
-+	dev = req_info.dev;
-+	ops = dev->ethtool_ops;
-+	if (!ops->get_rxnfc || !ops->set_rxfh) {
-+		ret = -EOPNOTSUPP;
-+		goto out_dev;
-+	}
-+
-+	rtnl_lock();
-+	ret = ethnl_ops_begin(dev);
-+	if (ret < 0)
-+		goto out_rtnl;
-+
-+	ethnl_update_u32(&rss_context, tb[ETHTOOL_A_RSS_CONTEXT], &mod);
-+	if (rss_context && !ops->set_rxfh_context) {
-+		ret = -EOPNOTSUPP;
-+		goto out_ops;
-+	}
-+
-+	ethnl_update_bool32(&delete, tb[ETHTOOL_A_RSS_DELETE], &mod);
-+	ethnl_update_u32(&rss_hfunc, tb[ETHTOOL_A_RSS_HFUNC], &mod);
-+
-+	if (tb[ETHTOOL_A_RSS_HKEY]) {
-+		if (ops->get_rxfh_key_size)
-+			hkey_bytes = ops->get_rxfh_key_size(dev);
-+
-+		if (!hkey_bytes ||
-+		    nla_len(tb[ETHTOOL_A_RSS_HKEY]) != hkey_bytes) {
-+			ret = -EINVAL;
-+			goto out_free;
-+		}
-+
-+		rss_hkey = kzalloc(hkey_bytes, GFP_KERNEL);
-+		if (!rss_hkey) {
-+			ret = -ENOMEM;
-+			goto out_free;
-+		}
-+		ethnl_update_binary(rss_hkey, hkey_bytes,
-+				    tb[ETHTOOL_A_RSS_HKEY], &mod);
-+	}
-+
-+	if (tb[ETHTOOL_A_RSS_INDIR]) {
-+		u32 indir_bytes;
-+
-+		if (ops->get_rxfh_indir_size)
-+			indir_size = ops->get_rxfh_indir_size(dev);
-+
-+		indir_bytes = indir_size * sizeof(u32);
-+		if (!indir_bytes ||
-+		    nla_len(tb[ETHTOOL_A_RSS_INDIR]) != indir_bytes) {
-+			ret = -EINVAL;
-+			goto out_free;
-+		}
-+
-+		rss_indir = kzalloc(indir_bytes, GFP_KERNEL);
-+		if (!rss_indir) {
-+			ret = -ENOMEM;
-+			goto out_free;
-+		}
-+		ethnl_update_binary(rss_indir, indir_bytes,
-+				    tb[ETHTOOL_A_RSS_INDIR], &mod);
-+
-+		/* Validate ring indices */
-+		rx_rings.cmd = ETHTOOL_GRXRINGS;
-+		ret = ops->get_rxnfc(dev, &rx_rings, NULL);
-+		if (ret)
-+			goto out_free;
-+
-+		for (i = 0; i < indir_size; i++)
-+			if (rss_indir[i] >= rx_rings.data)
-+				goto out_free;
-+	}
-+
-+	if (rss_context)
-+		ret = ops->set_rxfh_context(dev, rss_indir, rss_hkey, rss_hfunc,
-+					    &rss_context, delete);
-+	else
-+		ret = ops->set_rxfh(dev, rss_indir, rss_hkey, rss_hfunc);
-+
-+	srss_send_reply(dev, info, rss_context);
-+
-+out_free:
-+	kfree(rss_hkey);
-+	kfree(rss_indir);
-+out_ops:
-+	ethnl_ops_complete(dev);
-+out_rtnl:
-+	rtnl_unlock();
-+out_dev:
-+	ethnl_parse_header_dev_put(&req_info);
-+	return ret;
-+}
--- 
-2.31.1
-
+sln
