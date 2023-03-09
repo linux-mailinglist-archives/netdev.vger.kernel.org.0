@@ -2,88 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C0EA06B2FC9
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 22:47:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1ECC06B2FE2
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 22:54:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230335AbjCIVrd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 16:47:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37400 "EHLO
+        id S230373AbjCIVyS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 16:54:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230015AbjCIVrb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 16:47:31 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23076F2094
-        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 13:47:30 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id n6so3500022plf.5
-        for <netdev@vger.kernel.org>; Thu, 09 Mar 2023 13:47:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112; t=1678398449;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rKDfFwZhmkmLZDm9l0rTqpnlaQMPI2SK9ENmYxDocYA=;
-        b=4+WzIuT39d2r7aXEN8eJDwYbv2g6cMlRaLqhnYPhzyZb5R0ozDt6W5b8DDCRNEpjqR
-         hbmAIvsBcMEVF9wJ6J8Sc6NJUBW5+741tfUMHziM4LOMqJyH4Qpwve0MQThAA23NDlfd
-         8bEiCN8kzkzVV385innEIVdzvEI/hDnkQPPzZPb26ztSRl5u2jsKB84L+u3EZKUKOGmK
-         q67qmjDM54y/AWq13QjUE6AobOTtu6FfRvJIrQst2aBc/FmahUaW4vjyCKolXG7MtFOw
-         YAj0n77u2HIc0OPKZAY0NxJp4ONqELEgexwt9Sby56Wymc5OXqU7Kik8YxkF9dn2U0n1
-         1d5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678398449;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=rKDfFwZhmkmLZDm9l0rTqpnlaQMPI2SK9ENmYxDocYA=;
-        b=cTkHg1+eObPPgKtzSA1QGgujstdcdtSN7I8gwpeK30DFOfKeIC3zHOapD9sKPRWtUY
-         QcKAcBg6rOFh7CM6JLuA12yapjuGKJvOFhkpN2N894nIwCwXAO8IEer2R1MBNkjBPrJx
-         yMWWMhTYClrvE0F7tMCEPAGZX5dq9F69fQ57aS21RaegK7UY4xO6+T+Lp/ChLLhvrZMV
-         uj0cDTA5Lfe8WkFh4oX7RVXaJzbhHooC/nbqse4R3zTjdfFX60XThXCWaX5pTul+NT86
-         0wH3CEyT09xxsMcR6Hy4Jgm4qhcJ1/ngvES9V90HzGB7+XKCm/Q6nddzI3NNm3pH3Oaw
-         1bXA==
-X-Gm-Message-State: AO0yUKUotOr2XcVrRMd44qrmyZtcW8vwAMAbbD1fUXV7D/iuNccaAy+B
-        oXiBAGySJSvx53iL3YZD6x2XlQG5udvu4pdxTzh6Eg==
-X-Google-Smtp-Source: AK7set9F+iAY3qJdHLt98/pE7EzhmhW1yYufMFhGjn7Z8NS5RrY7x2uYHYt8T3MWkhU+J/713JokSA==
-X-Received: by 2002:a17:90b:1e0a:b0:234:c07f:c04d with SMTP id pg10-20020a17090b1e0a00b00234c07fc04dmr23480224pjb.49.1678398449550;
-        Thu, 09 Mar 2023 13:47:29 -0800 (PST)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id o12-20020a17090ab88c00b00234a2f6d9c0sm32721pjr.57.2023.03.09.13.47.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Mar 2023 13:47:29 -0800 (PST)
-Date:   Thu, 9 Mar 2023 13:47:27 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     kuba@kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] man/netem: rework man page
-Message-ID: <20230309134727.340b9520@hermes.local>
-In-Reply-To: <ZAnrnrKzuE3Mj8K7@corigine.com>
-References: <20230308184702.157483-1-stephen@networkplumber.org>
-        <ZAnrnrKzuE3Mj8K7@corigine.com>
+        with ESMTP id S230151AbjCIVyQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 16:54:16 -0500
+Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F244F0FEE
+        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 13:54:10 -0800 (PST)
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 329Lr2Ud022470;
+        Thu, 9 Mar 2023 13:54:05 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=s2048-2021-q4;
+ bh=+kR9YUdwl0ofMokwJo3dFJUFniVfzV4yeWs3yW5mDTw=;
+ b=GFe1B8+Dus+SxrTJSFk5RpA0bFb6DRafrvPsH92+kLoS5EEqspr8pBSZ/oLpK3+1mM3T
+ ZQtFPom4hWmjAao1TV1FQnrNR154fIY6NL3TVQYZ37XblWOu7NedvmTqY62JXAqee30P
+ M8+F8hfdSjeipqgHN2i4g3W254CDUKhG9/1k6TLrm4kfND8P3IjPKtneBxNEKZDqcliE
+ 0ZgLTNLqE5m2b7rM5uQbsPtqAAFdtFH7/wLhGvNaaFTImWmbbQ+1HKg2JqIDuvdz3EEC
+ 0u8IW3BXp+o3nPbY3xX+2epeS7l3DIFiGFHid1NuHocdOk/UHZVF32GkmlXIk1dygw2t Ig== 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3p7cp3vnp1-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 09 Mar 2023 13:54:05 -0800
+Received: from devvm1736.cln0.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server id
+ 15.1.2507.17; Thu, 9 Mar 2023 13:54:02 -0800
+From:   Vadim Fedorenko <vadfed@meta.com>
+To:     Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andy Gospodarek <andrew.gospodarek@broadcom.com>,
+        "Michael Chan" <michael.chan@broadcom.com>
+CC:     Vadim Fedorenko <vadfed@meta.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vadim Fedorenko <vadim.fedorenko@linux.dev>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH net v3] bnxt_en: reset PHC frequency in free-running mode
+Date:   Thu, 9 Mar 2023 13:53:47 -0800
+Message-ID: <20230309215347.2764771-1-vadfed@meta.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [2620:10d:c085:208::f]
+X-Proofpoint-GUID: UVZZAsXiRjBorBDgkqFo_RoKit3fafS2
+X-Proofpoint-ORIG-GUID: UVZZAsXiRjBorBDgkqFo_RoKit3fafS2
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-03-09_12,2023-03-09_01,2023-02-09_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 9 Mar 2023 15:22:22 +0100
-Simon Horman <simon.horman@corigine.com> wrote:
+When using a PHC in shared between multiple hosts, the previous
+frequency value may not be reset and could lead to host being unable to
+compensate the offset with timecounter adjustments. To avoid such state
+reset the hardware frequency of PHC to zero on init. Some refactoring is
+needed to make code readable.
 
-> On Wed, Mar 08, 2023 at 10:47:02AM -0800, Stephen Hemminger wrote:
-> > Cleanup and rewrite netem man page.
-> > Incorporate the examples from the old LF netem wiki
-> > so that it can be removed/deprecated.
-> > 
-> > Reported-by: Jakub Kicinski <kuba@kernel.org>
-> > Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>  
-> 
-> Thanks Stephen,
-> 
-> some minor editing suggestions from my side.
+Fixes: 85036aee1938 ("bnxt_en: Add a non-real time mode to access NIC clock")
+Signed-off-by: Vadim Fedorenko <vadfed@meta.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  6 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  2 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 60 ++++++++++---------
+ 3 files changed, 37 insertions(+), 31 deletions(-)
 
-Thanks for the review comments, which I incorporated before
-pushing the final version.
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 808236dc898b..e2e2c986c82b 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -6990,11 +6990,9 @@ static int bnxt_hwrm_func_qcfg(struct bnxt *bp)
+ 		if (flags & FUNC_QCFG_RESP_FLAGS_FW_DCBX_AGENT_ENABLED)
+ 			bp->fw_cap |= BNXT_FW_CAP_DCBX_AGENT;
+ 	}
+-	if (BNXT_PF(bp) && (flags & FUNC_QCFG_RESP_FLAGS_MULTI_HOST)) {
++	if (BNXT_PF(bp) && (flags & FUNC_QCFG_RESP_FLAGS_MULTI_HOST))
+ 		bp->flags |= BNXT_FLAG_MULTI_HOST;
+-		if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
+-			bp->fw_cap &= ~BNXT_FW_CAP_PTP_RTC;
+-	}
++
+ 	if (flags & FUNC_QCFG_RESP_FLAGS_RING_MONITOR_ENABLED)
+ 		bp->fw_cap |= BNXT_FW_CAP_RING_MONITOR;
+ 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index dcb09fbe4007..c0628ac1b798 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -2000,6 +2000,8 @@ struct bnxt {
+ 	u32			fw_dbg_cap;
+ 
+ #define BNXT_NEW_RM(bp)		((bp)->fw_cap & BNXT_FW_CAP_NEW_RM)
++#define BNXT_PTP_USE_RTC(bp)	(!BNXT_MH(bp) && \
++				 ((bp)->fw_cap & BNXT_FW_CAP_PTP_RTC))
+ 	u32			hwrm_spec_code;
+ 	u16			hwrm_cmd_seq;
+ 	u16                     hwrm_cmd_kong_seq;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+index 4ec8bba18cdd..a96adde97e60 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+@@ -63,7 +63,7 @@ static int bnxt_ptp_settime(struct ptp_clock_info *ptp_info,
+ 						ptp_info);
+ 	u64 ns = timespec64_to_ns(ts);
+ 
+-	if (ptp->bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
++	if (BNXT_PTP_USE_RTC(ptp->bp))
+ 		return bnxt_ptp_cfg_settime(ptp->bp, ns);
+ 
+ 	spin_lock_bh(&ptp->ptp_lock);
+@@ -196,7 +196,7 @@ static int bnxt_ptp_adjtime(struct ptp_clock_info *ptp_info, s64 delta)
+ 	struct bnxt_ptp_cfg *ptp = container_of(ptp_info, struct bnxt_ptp_cfg,
+ 						ptp_info);
+ 
+-	if (ptp->bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
++	if (BNXT_PTP_USE_RTC(ptp->bp))
+ 		return bnxt_ptp_adjphc(ptp, delta);
+ 
+ 	spin_lock_bh(&ptp->ptp_lock);
+@@ -205,34 +205,39 @@ static int bnxt_ptp_adjtime(struct ptp_clock_info *ptp_info, s64 delta)
+ 	return 0;
+ }
+ 
++static int bnxt_ptp_adjfine_rtc(struct bnxt *bp, long scaled_ppm)
++{
++	s32 ppb = scaled_ppm_to_ppb(scaled_ppm);
++	struct hwrm_port_mac_cfg_input *req;
++	int rc;
++
++	rc = hwrm_req_init(bp, req, HWRM_PORT_MAC_CFG);
++	if (rc)
++		return rc;
++
++	req->ptp_freq_adj_ppb = cpu_to_le32(ppb);
++	req->enables = cpu_to_le32(PORT_MAC_CFG_REQ_ENABLES_PTP_FREQ_ADJ_PPB);
++	rc = hwrm_req_send(bp, req);
++	if (rc)
++		netdev_err(bp->dev,
++			   "ptp adjfine failed. rc = %d\n", rc);
++	return rc;
++}
++
+ static int bnxt_ptp_adjfine(struct ptp_clock_info *ptp_info, long scaled_ppm)
+ {
+ 	struct bnxt_ptp_cfg *ptp = container_of(ptp_info, struct bnxt_ptp_cfg,
+ 						ptp_info);
+-	struct hwrm_port_mac_cfg_input *req;
+ 	struct bnxt *bp = ptp->bp;
+-	int rc = 0;
+ 
+-	if (!(ptp->bp->fw_cap & BNXT_FW_CAP_PTP_RTC)) {
+-		spin_lock_bh(&ptp->ptp_lock);
+-		timecounter_read(&ptp->tc);
+-		ptp->cc.mult = adjust_by_scaled_ppm(ptp->cmult, scaled_ppm);
+-		spin_unlock_bh(&ptp->ptp_lock);
+-	} else {
+-		s32 ppb = scaled_ppm_to_ppb(scaled_ppm);
+-
+-		rc = hwrm_req_init(bp, req, HWRM_PORT_MAC_CFG);
+-		if (rc)
+-			return rc;
++	if (BNXT_PTP_USE_RTC(bp))
++		return bnxt_ptp_adjfine_rtc(bp, scaled_ppm);
+ 
+-		req->ptp_freq_adj_ppb = cpu_to_le32(ppb);
+-		req->enables = cpu_to_le32(PORT_MAC_CFG_REQ_ENABLES_PTP_FREQ_ADJ_PPB);
+-		rc = hwrm_req_send(ptp->bp, req);
+-		if (rc)
+-			netdev_err(ptp->bp->dev,
+-				   "ptp adjfine failed. rc = %d\n", rc);
+-	}
+-	return rc;
++	spin_lock_bh(&ptp->ptp_lock);
++	timecounter_read(&ptp->tc);
++	ptp->cc.mult = adjust_by_scaled_ppm(ptp->cmult, scaled_ppm);
++	spin_unlock_bh(&ptp->ptp_lock);
++	return 0;
+ }
+ 
+ void bnxt_ptp_pps_event(struct bnxt *bp, u32 data1, u32 data2)
+@@ -879,7 +884,7 @@ int bnxt_ptp_init_rtc(struct bnxt *bp, bool phc_cfg)
+ 	u64 ns;
+ 	int rc;
+ 
+-	if (!bp->ptp_cfg || !(bp->fw_cap & BNXT_FW_CAP_PTP_RTC))
++	if (!bp->ptp_cfg || !BNXT_PTP_USE_RTC(bp))
+ 		return -ENODEV;
+ 
+ 	if (!phc_cfg) {
+@@ -932,13 +937,14 @@ int bnxt_ptp_init(struct bnxt *bp, bool phc_cfg)
+ 	atomic_set(&ptp->tx_avail, BNXT_MAX_TX_TS);
+ 	spin_lock_init(&ptp->ptp_lock);
+ 
+-	if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC) {
++	if (BNXT_MH(bp)) {
++		bnxt_ptp_timecounter_init(bp, true);
++		bnxt_ptp_adjfine_rtc(bp, 0);
++	} else {
+ 		bnxt_ptp_timecounter_init(bp, false);
+ 		rc = bnxt_ptp_init_rtc(bp, phc_cfg);
+ 		if (rc)
+ 			goto out;
+-	} else {
+-		bnxt_ptp_timecounter_init(bp, true);
+ 	}
+ 
+ 	ptp->ptp_info = bnxt_ptp_caps;
+-- 
+2.34.1
+
