@@ -2,176 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C6B56B2E65
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 21:17:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D93426B2EB0
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 21:28:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230375AbjCIURM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 15:17:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40664 "EHLO
+        id S230153AbjCIU2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 15:28:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbjCIURL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 15:17:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D96A8FAF9C;
-        Thu,  9 Mar 2023 12:17:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35750B82088;
-        Thu,  9 Mar 2023 20:17:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5D2DC433D2;
-        Thu,  9 Mar 2023 20:17:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678393026;
-        bh=AxPkaTQ5XSyjeKrf8KIM8TXtkH+rCYG8xnFHZi7SSwc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=oh2T/2hCd9q8JKRAcfLyxoXAUk0589rZ7ocIi40cUPf3lcDKHW1EBjO1kiPTGYAY3
-         YjP+BhoLg4qXFJvASdWF0ZpoTLs0pmLgvX+nmrIWHjoXYr2yzf9kCyluSTkv2/NMdE
-         EJPt2syt+ewx8Vu0jDVHtPvnicthxlWub/ro92xknQXlT66MKCJRwbpHctle/0avA2
-         GfIJhJVo/hhQp+ZZR0EfHzWOvp3Ry0iOXz/sviLy9HsGaXOaCh7lxGjuH2ghlj+1/a
-         kexfQQR+OJ1QzIu7P7AwMBM+MP2ZiMOVzzo4nKdjXRughVfK0G3blq/uqVs2FltDhM
-         rbDpH4rPUXkvQ==
-Date:   Thu, 9 Mar 2023 14:17:05 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     hkallweit1@gmail.com, nic_swsd@realtek.com, bhelgaas@google.com,
-        koba.ko@canonical.com, acelan.kao@canonical.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, sathyanarayanan.kuppuswamy@linux.intel.com,
-        vidyas@nvidia.com, rafael.j.wysocki@intel.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pci@vger.kernel.org
-Subject: Re: [PATCH net-next v9 3/5] r8169: Consider chip-specific ASPM can
- be enabled on more cases
-Message-ID: <20230309201705.GA1165139@bhelgaas>
+        with ESMTP id S229910AbjCIU2P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 15:28:15 -0500
+Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E719FB27B;
+        Thu,  9 Mar 2023 12:27:50 -0800 (PST)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mx.sberdevices.ru (Postfix) with ESMTP id 6291C5FD1B;
+        Thu,  9 Mar 2023 23:27:47 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1678393667;
+        bh=uFGjRE3j4zXGby/VPz50ex9laPK7eGiO5HSk7DnBtqc=;
+        h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type;
+        b=S+IWTg0K3yV1PAswja5K2KTn/lLdiLh6OT5XMtSIUAMk6729yecIJTRGwx02pHsdJ
+         CIZnY+XqUktXAIpx1CPXVoNcnOdS9dJ+Zlw9TS1afVPT84Nr0GBg7Dl3mWy4Dk+0fD
+         2EccLw68tNixnisjXc4YNjl7XknO36vDXSyMxaaefYPwMdKDtNaCSvQ3jsCmgk3LBw
+         1HRl0U1UwEcyOcHS/S6eYjcpu3fFwK8CWhn1TnvlBE2UW2NTOwFVdTDnJtzJvb67kT
+         nxaYtrKlinP6cMV9izsvGSuctwEnjy1jn8X0ZgB46sVau02+Q3h78lWX+XuAK+CO2v
+         C5Q+V+GmF8faA==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mx.sberdevices.ru (Postfix) with ESMTP;
+        Thu,  9 Mar 2023 23:27:43 +0300 (MSK)
+Message-ID: <1804d100-1652-d463-8627-da93cb61144e@sberdevices.ru>
+Date:   Thu, 9 Mar 2023 23:24:42 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230225034635.2220386-4-kai.heng.feng@canonical.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Content-Language: en-US
+To:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>
+CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kernel@sberdevices.ru>, <oxffffaa@gmail.com>,
+        <avkrasnov@sberdevices.ru>
+From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
+Subject: [RFC PATCH v4 0/4] several updates to virtio/vsock
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.16.1.6]
+X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
+ S-MS-EXCH01.sberdevices.ru (172.16.1.4)
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/03/09 18:14:00 #20929517
+X-KSMG-AntiVirus-Status: Clean, skipped
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 25, 2023 at 11:46:33AM +0800, Kai-Heng Feng wrote:
-> To really enable ASPM on r8169 NICs, both standard PCIe ASPM and
-> chip-specific ASPM have to be enabled at the same time.
-> 
-> Before enabling ASPM at chip side, make sure the following conditions
-> are met:
-> 1) Use pcie_aspm_support_enabled() to check if ASPM is disabled by
->    kernel parameter.
-> 2) Use pcie_aspm_capable() to see if the device is capable to perform
->    PCIe ASPM.
-> 3) Check the return value of pci_disable_link_state(). If it's -EPERM,
->    it means BIOS doesn't grant ASPM control to OS, and device should use
->    the ASPM setting as is.
-> 
-> Consider ASPM is manageable when those conditions are met.
-> 
-> While at it, disable ASPM at chip-side for TX timeout reset, since
-> pci_disable_link_state() doesn't have any effect when OS isn't granted
-> with ASPM control.
+Hello,
 
-1) "While at it, ..." is always a hint that maybe this part could be
-split to a separate patch.
+this patchset evolved from previous v2 version (see link below). It does
+several updates to virtio/vsock:
+1) Changes 'virtio_transport_inc/dec_rx_pkt()' interface. Now instead of
+   using skbuff state ('head' and 'data' pointers) to update 'fwd_cnt'
+   and 'rx_bytes', integer value is passed as an input argument. This
+   makes code more simple, because in this case we don't need to update
+   skbuff state before calling 'virtio_transport_inc/dec_rx_pkt()'. In
+   more common words - we don't need to change skbuff state to update
+   'rx_bytes' and 'fwd_cnt' correctly.
+2) For SOCK_STREAM, when copying data to user fails, current skbuff is
+   not dropped. Next read attempt will use same skbuff and last offset.
+   Instead of 'skb_dequeue()', 'skb_peek()' + '__skb_unlink()' are used.
+   This behaviour was implemented before skbuff support.
+3) For SOCK_SEQPACKET it removes unneeded 'skb_pull()' call, because for
+   this type of socket each skbuff is used only once: after removing it
+   from socket's queue, it will be freed anyway.
 
-2) The mix of chip-specific and standard PCIe ASPM configuration is a
-mess.  Does it *have* to be intermixed at run-time, or could all the
-chip-specific stuff be done once, e.g., maybe chip-specific ASPM
-enable could be done at probe-time, and then all subsequent ASPM
-configuration could done via the standard PCIe registers?
+Test for 2) also added:
+Test tries to 'recv()' data to NULL buffer, then does 'recv()' with valid
+buffer. For SOCK_STREAM second 'recv()' must return data, because skbuff
+must not be dropped, but for SOCK_SEQPACKET skbuff will be dropped by
+kernel, and 'recv()' will return EAGAIN.
 
-I.e., does the chip work correctly if chip-specific ASPM is enabled,
-but standard PCIe ASPM config is *disabled*?
+Link to v1 on lore:
+https://lore.kernel.org/netdev/c2d3e204-89d9-88e9-8a15-3fe027e56b4b@sberdevices.ru/
 
-The ASPM sysfs controls [1] assume that L0s, L1, L1.1, L1.2 can all be
-controlled simply by using the standard PCIe registers.  If that's not
-the case for r8169, things will break when people use the sysfs knobs.
+Link to v2 on lore:
+https://lore.kernel.org/netdev/a7ab414b-5e41-c7b6-250b-e8401f335859@sberdevices.ru/
 
-Bjorn
+Link to v3 on lore:
+https://lore.kernel.org/netdev/0abeec42-a11d-3a51-453b-6acf76604f2e@sberdevices.ru/
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/ABI/testing/sysfs-bus-pci?id=v6.2#n420
+Change log:
 
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> ---
-> v9:
->  - No change.
-> 
-> v8:
->  - Enable chip-side ASPM only when PCIe ASPM is already available.
->  - Wording.
-> 
-> v7:
->  - No change.
-> 
-> v6:
->  - Unconditionally enable chip-specific ASPM.
-> 
-> v5:
->  - New patch.
-> 
->  drivers/net/ethernet/realtek/r8169_main.c | 22 ++++++++++++++++++----
->  1 file changed, 18 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> index 45147a1016bec..a857650c2e82b 100644
-> --- a/drivers/net/ethernet/realtek/r8169_main.c
-> +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> @@ -2675,8 +2675,11 @@ static void rtl_disable_exit_l1(struct rtl8169_private *tp)
->  
->  static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
->  {
-> -	/* Don't enable ASPM in the chip if OS can't control ASPM */
-> -	if (enable && tp->aspm_manageable) {
-> +	/* Skip if PCIe ASPM isn't possible */
-> +	if (!tp->aspm_manageable)
-> +		return;
-> +
-> +	if (enable) {
->  		RTL_W8(tp, Config5, RTL_R8(tp, Config5) | ASPM_en);
->  		RTL_W8(tp, Config2, RTL_R8(tp, Config2) | ClkReqEn);
->  
-> @@ -4545,8 +4548,13 @@ static void rtl_task(struct work_struct *work)
->  		/* ASPM compatibility issues are a typical reason for tx timeouts */
->  		ret = pci_disable_link_state(tp->pci_dev, PCIE_LINK_STATE_L1 |
->  							  PCIE_LINK_STATE_L0S);
-> +
-> +		/* OS may not be granted to control PCIe ASPM, prevent the driver from using it */
-> +		tp->aspm_manageable = 0;
-> +
->  		if (!ret)
->  			netdev_warn_once(tp->dev, "ASPM disabled on Tx timeout\n");
-> +
->  		goto reset;
->  	}
->  
-> @@ -5227,13 +5235,19 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->  	 * Chips from RTL8168h partially have issues with L1.2, but seem
->  	 * to work fine with L1 and L1.1.
->  	 */
-> -	if (rtl_aspm_is_safe(tp))
-> +	if (!pcie_aspm_support_enabled() || !pcie_aspm_capable(pdev))
-> +		rc = -EINVAL;
-> +	else if (rtl_aspm_is_safe(tp))
->  		rc = 0;
->  	else if (tp->mac_version >= RTL_GIGA_MAC_VER_46)
->  		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1_2);
->  	else
->  		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
-> -	tp->aspm_manageable = !rc;
-> +
-> +	/* -EPERM means BIOS doesn't grant OS ASPM control, ASPM should be use
-> +	 * as is. Honor it.
-> +	 */
-> +	tp->aspm_manageable = (rc == -EPERM) ? 1 : !rc;
->  
->  	tp->dash_type = rtl_check_dash(tp);
->  
-> -- 
-> 2.34.1
-> 
+v1 -> v2:
+ - For SOCK_SEQPACKET call 'skb_pull()' also in case of copy failure or
+   dropping skbuff (when we just waiting message end).
+ - Handle copy failure for SOCK_STREAM in the same manner (plus free
+   current skbuff).
+ - Replace bug repdroducer with new test in vsock_test.c
+
+v2 -> v3:
+ - Replace patch which removes 'skb->len' subtraction from function
+   'virtio_transport_dec_rx_pkt()' with patch which updates functions
+   'virtio_transport_inc/dec_rx_pkt()' by passing integer argument
+   instead of skbuff pointer.
+ - Replace patch which drops skbuff when copying to user fails with
+   patch which changes this behaviour by keeping skbuff in queue until
+   it has no data.
+ - Add patch for SOCK_SEQPACKET which removes redundant 'skb_pull()'
+   call on read.
+ - I remove "Fixes" tag from all patches, because all of them now change
+   code logic, not only fix something.
+
+v3 -> v4:
+ - Update commit messages in all patches except test.
+ - Add "Fixes" tag to all patches except test.
+
+Arseniy Krasnov (4):
+  virtio/vsock: don't use skbuff state to account credit
+  virtio/vsock: remove redundant 'skb_pull()' call
+  virtio/vsock: don't drop skbuff on copy failure
+  test/vsock: copy to user failure test
+
+ net/vmw_vsock/virtio_transport_common.c |  29 +++---
+ tools/testing/vsock/vsock_test.c        | 118 ++++++++++++++++++++++++
+ 2 files changed, 131 insertions(+), 16 deletions(-)
+
+-- 
+2.25.1
