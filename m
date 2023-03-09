@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F9826B2823
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 16:03:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B25396B2861
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 16:08:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232231AbjCIPDh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 10:03:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58114 "EHLO
+        id S231775AbjCIPH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 10:07:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231985AbjCIPDL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 10:03:11 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9439EF4009
-        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 07:00:05 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id bg16-20020a05600c3c9000b003eb34e21bdfso3832965wmb.0
-        for <netdev@vger.kernel.org>; Thu, 09 Mar 2023 07:00:05 -0800 (PST)
+        with ESMTP id S231490AbjCIPHh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 10:07:37 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE76AF5D16
+        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 07:05:26 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id h14so2195741wru.4
+        for <netdev@vger.kernel.org>; Thu, 09 Mar 2023 07:05:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1678374004;
+        d=google.com; s=20210112; t=1678374325;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=GuhiEyg3TRhHUVkG+NKXf46bKixySUYoSTIqBrMpU+M=;
-        b=lX1PlFkAngKb7MFgPhVXevH8/WdulpngrDR+sczcPwIuo8+D3sbohyinmYLT+cI86F
-         4DWd99PrTP7htcM5EsY4XhiJZaSpu5wZwinvhebXGHlZCmogZziTchD8C/EK5C6Zjv2+
-         Gdo9rxnwwtsEYQCVAlFkBAutS+vKHjn8dxd3czJUvvcV9mz5ljBxRzbUm4PkmPqurjZm
-         yKrRnk7I2VANZMHH96OnRvMG8jFE1rOop5Hn6UswGgB5N+A6ExyAuxKgx67OXs/UggIF
-         aZcnD6H+ayT/2uiQKjIpm1xNN6gEr0LvARCpO+krOPhbXxHpdNOoZCke+Y5L2ubUtUBY
-         8NpQ==
+        bh=fprW8tKIJpNzkLRvXOdERhC1G75znrKGsVPaP20fW+w=;
+        b=J47UBp+wxM1KsM1vSCnlEL6q+hv+bNiGs/S9ezNZ3FczAvPEOX6REYsGl9e8y7Kbgi
+         t5yvgu0EEzLYK5ax9pbvEWlXWeG4xwvYLD+iRkI4eeYAVBiwRZdxoC4hcxTKEvoxB77D
+         /XoNjLGzs1QwWmkc18cq/P6rMHkbWHCrsA+Zcvkz2HIQ1ixuuESeBlZu2fCp1dyb7itC
+         Mb/hVCNN/MEhXlOv8lfZELVazX9djURCqc4gk/Wb73mm1vW7fXkRrrjWchmb6dhl7Qr5
+         zRC+MMJLXrHpC6tLqV6PDj7t0x12U/LrM5GCNrjJ/S1qA4PeqlvyH7/0PFuXxnLyxLHx
+         VLKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678374004;
+        d=1e100.net; s=20210112; t=1678374325;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=GuhiEyg3TRhHUVkG+NKXf46bKixySUYoSTIqBrMpU+M=;
-        b=Cmvt6O+QRj+YbwtPJ9ScTAYr4CwiieVkNbvxDh3AYauVvHOmPq+6Rh8si285TlnMxK
-         aYpJ/k9twkY+IzmlcIMfcttppsOMviZzVzXx3gzZwuPGxBdThvfnEZ/oQbHerT8ZXfNr
-         6unRSy99BIerHP/d/vnCazJ8VFpm2fIDKLNkgxWgjsNiCR/jxMitR0/PlhdMuy/b+NOB
-         BTJj9fEeylsJRLTiaNYl2+mFmRfH5Ci2aQDSKBDt+v7ic3SuclhQiyEl2P/t4q4Kfyik
-         01R6oRjurZCPjcOs1rkCkfeOsaZdAe5j74IzJmf+CYIxKrNLEXCmVCC1ltH6e/BdEyx7
-         N4tg==
-X-Gm-Message-State: AO0yUKXONK0f9cyFZYdK0jCZUwD3xnPWznSpLp8Bjfdx3S0Wznj7v/Dc
-        2KUTgSRzHEsnhaOhr9uWx68/h7fwo3iBnglFwIFPrQ==
-X-Google-Smtp-Source: AK7set+YsrtV4FrTEitgWrBNKT+JMiShWnzq7diqZJ4gTWES+NP51LT+UJhZ6HLLRBytcazxtIeiB0JIjWMOe3NtAwI=
-X-Received: by 2002:a05:600c:1:b0:3eb:5824:f0ec with SMTP id
- g1-20020a05600c000100b003eb5824f0ecmr5183814wmc.2.1678374003898; Thu, 09 Mar
- 2023 07:00:03 -0800 (PST)
+        bh=fprW8tKIJpNzkLRvXOdERhC1G75znrKGsVPaP20fW+w=;
+        b=j2Py7OlE0M/2bj0gP8jjU6O9y0AHYsKsPqS4da+25IEjK8zDWXGdX7iaed9e6ThsiM
+         ZlHep2aa2R6sXiUTfudRFNuly6366CU4oivV+E6KbN+UWW2Uui1bERsbbDgxxmKRWRyy
+         LfDqfFsQ0CeQm5AsuwfiS7isp61jmAoirW2EQNHc1w5cDEJbGSFhrCJpOMRC5r/sBz6o
+         92TQxfMl4WDafJh2BZRyhMqhUIqDvz8tpmqzWPmbJnqQoLPzMbhkaAqnOEvQn/rav7qk
+         kZbj1ofFM0IzBt/j6rwp3qJU0LWMKKofOytAHp0bLiHa4EjhgGmQ1O/JhyQRgZniKRXX
+         1kvA==
+X-Gm-Message-State: AO0yUKVP4NcUKZ4afEXS3ZLfgoSfObvxY9LUHX1UZOUorlcqpMnYvQAg
+        XFEroAmzz8HZrx1HYd8LG/Su0YAFlzMu2rTi1WBARQ==
+X-Google-Smtp-Source: AK7set887nr6XBTqOK05PdAz44JZdvwltzyYf1Oyh2sWKb7bxgmtbjPGrGWiHv4JHYEf8xQDCPIO/0u/eeRBu46mEwA=
+X-Received: by 2002:adf:f38d:0:b0:2cb:3b68:3a88 with SMTP id
+ m13-20020adff38d000000b002cb3b683a88mr4826450wro.7.1678374325103; Thu, 09 Mar
+ 2023 07:05:25 -0800 (PST)
 MIME-Version: 1.0
 References: <20230309134718.306570-1-gavinl@nvidia.com> <20230309134718.306570-5-gavinl@nvidia.com>
-In-Reply-To: <20230309134718.306570-5-gavinl@nvidia.com>
+ <CANn89i+k3fcSw58owpr70eM_uSM5QUqEb_4y5wpXOKEz30+vvg@mail.gmail.com>
+In-Reply-To: <CANn89i+k3fcSw58owpr70eM_uSM5QUqEb_4y5wpXOKEz30+vvg@mail.gmail.com>
 From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 9 Mar 2023 15:59:51 +0100
-Message-ID: <CANn89i+k3fcSw58owpr70eM_uSM5QUqEb_4y5wpXOKEz30+vvg@mail.gmail.com>
+Date:   Thu, 9 Mar 2023 16:05:13 +0100
+Message-ID: <CANn89iKcDNZBerR_2nEp_ryM3BVXuvr64s6tnAvizCwr=SuACg@mail.gmail.com>
 Subject: Re: [PATCH net-next v6 4/5] ip_tunnel: Preserve pointer const in ip_tunnel_info_opts
 To:     Gavin Li <gavinl@nvidia.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
@@ -72,45 +73,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 9, 2023 at 2:48=E2=80=AFPM Gavin Li <gavinl@nvidia.com> wrote:
+On Thu, Mar 9, 2023 at 3:59=E2=80=AFPM Eric Dumazet <edumazet@google.com> w=
+rote:
 >
-> Change ip_tunnel_info_opts( ) from static function to macro to cast retur=
-n
-> value and preserve the const-ness of the pointer.
+> On Thu, Mar 9, 2023 at 2:48=E2=80=AFPM Gavin Li <gavinl@nvidia.com> wrote=
+:
+> >
+> > Change ip_tunnel_info_opts( ) from static function to macro to cast ret=
+urn
+> > value and preserve the const-ness of the pointer.
+> >
+> > Signed-off-by: Gavin Li <gavinl@nvidia.com>
+> > ---
+> >  include/net/ip_tunnels.h | 11 ++++++-----
+> >  1 file changed, 6 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/include/net/ip_tunnels.h b/include/net/ip_tunnels.h
+> > index fca357679816..3e5c102b841f 100644
+> > --- a/include/net/ip_tunnels.h
+> > +++ b/include/net/ip_tunnels.h
+> > @@ -67,6 +67,12 @@ struct ip_tunnel_key {
+> >         GENMASK((sizeof_field(struct ip_tunnel_info,            \
+> >                               options_len) * BITS_PER_BYTE) - 1, 0)
+> >
+> > +#define ip_tunnel_info_opts(info)                              \
+> > +       _Generic(info,                                          \
+> > +               const typeof(*(info)) * : ((const void *)((info) + 1)),=
+\
+> > +               default : ((void *)((info) + 1))                \
+> > +       )
+> > +
 >
-> Signed-off-by: Gavin Li <gavinl@nvidia.com>
-> ---
->  include/net/ip_tunnels.h | 11 ++++++-----
->  1 file changed, 6 insertions(+), 5 deletions(-)
+> Hmm...
 >
-> diff --git a/include/net/ip_tunnels.h b/include/net/ip_tunnels.h
-> index fca357679816..3e5c102b841f 100644
-> --- a/include/net/ip_tunnels.h
-> +++ b/include/net/ip_tunnels.h
-> @@ -67,6 +67,12 @@ struct ip_tunnel_key {
->         GENMASK((sizeof_field(struct ip_tunnel_info,            \
->                               options_len) * BITS_PER_BYTE) - 1, 0)
+> This looks quite dangerous, we lost type safety with the 'default'
+> case, with all these casts.
 >
-> +#define ip_tunnel_info_opts(info)                              \
-> +       _Generic(info,                                          \
-> +               const typeof(*(info)) * : ((const void *)((info) + 1)),\
-> +               default : ((void *)((info) + 1))                \
-> +       )
-> +
+> What about using something cleaner instead ?
+>
+> (Not sure why we do not have an available generic helper for this kind
+> of repetitive things)
+>
 
-Hmm...
-
-This looks quite dangerous, we lost type safety with the 'default'
-case, with all these casts.
-
-What about using something cleaner instead ?
-
-(Not sure why we do not have an available generic helper for this kind
-of repetitive things)
+Or more exactly :
 
 diff --git a/include/net/ip_tunnels.h b/include/net/ip_tunnels.h
-index fca3576798166416982ee6a9100b003810c49830..7f26e07c5f3059d426b31529e4d=
-1c3adec23d70f
+index fca3576798166416982ee6a9100b003810c49830..17fc6c8f7e0b9e5303c1fb9e5da=
+d77c5310e01a9
 100644
 --- a/include/net/ip_tunnels.h
 +++ b/include/net/ip_tunnels.h
@@ -123,10 +132,11 @@ net_device *dev, int pkt_len)
 -{
 -       return info + 1;
 -}
-+#define ip_tunnel_info_opts(info)                              \
-+       (_Generic(info,                                         \
-+                const struct ip_tunnel_info * : ((info) + 1),  \
-+                struct ip_tunnel_info * : ((info) + 1))        \
++#define ip_tunnel_info_opts(info)                                      \
++       (_Generic(info,                                                 \
++                const struct ip_tunnel_info * : (const void *)((info)
++ 1),    \
++                struct ip_tunnel_info * : (void *)((info) + 1))        \
 +       )
 
  static inline void ip_tunnel_info_opts_get(void *to,
