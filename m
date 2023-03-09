@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 466D36B3129
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 23:42:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 179526B310A
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 23:41:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231348AbjCIWjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 17:39:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33298 "EHLO
+        id S231579AbjCIWj0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 17:39:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231527AbjCIWi4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 17:38:56 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D24C5D880;
+        with ESMTP id S231473AbjCIWi0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 17:38:26 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB535B40F;
         Thu,  9 Mar 2023 14:38:11 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id l7-20020a05600c1d0700b003eb5e6d906bso2248645wms.5;
+Received: by mail-wm1-x32a.google.com with SMTP id bg16-20020a05600c3c9000b003eb34e21bdfso4792936wmb.0;
         Thu, 09 Mar 2023 14:38:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678401489;
+        d=gmail.com; s=20210112; t=1678401491;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=WgoBUd5mOfOzbUIgE9ennXfu8Bk6ZG8n46SEtwJM8yA=;
-        b=H+NsYENR+8EzbAxFKg+zIE/cBeVSmrDAAzXByhMLc8G2et1gp51FNU0M66oY4Rb+0c
-         f7TB14Z6bW/0FhzqUOlPJnDoSBcGUOgIdolmunAjYFtmcQ1MlFfIqxIf3avdkA7IbRJZ
-         Llzz+Se3pMWOF+i24TcNidZ4QBnJc25hrrBbrkfHKjRnh1aexUealsE/XtsmfGoBeX1q
-         /bEoWAt0z1cHWdD5GUNojHoR2OG4P+byRrLt+FfPMKg9sV+xIgcPqmRQINdhT4Os3KeC
-         XazOQ0Mvfaljp/ahmfO7IeN4mA15gpqKEcjqG7hb6vGm7bCOKeQib1FD3RIsbbeDLb7V
-         ZTjw==
+        bh=1wDcE5BTiRUWu5IpXdTXJGaa7mTD/67d24QZlEDxG4g=;
+        b=nMUIAGY+Atog3NJeC0iVwCtwZ33VBxWlZDHiK1JCXPVAiMdBEifjkqmkHuLqpTWJze
+         e/eyPzJmD4oJOhYkbmaXxO1B7VIY/4TlYQAsB3JSappMsobKhYB7DS1rhIkIGt0aLQom
+         FVrcGC2oCc9Y8jodqa1FIiG6EHfvLPikewd4ZbA97akUmh+vBQJyuFiGGEntB+AKJkHl
+         QMqy9Kvr5fwp3TicpklUCBp08NKSDB+ojKvwzTDt/ZU/9hXUPCAltM4kVcx6ftzSpDuH
+         +bKya8uyLA6uEtTwr0UaT2dhuruKV1CL4Jdsg6ePqdegEqICWxdw5x6o8FpVlL7VKHze
+         5T9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678401489;
+        d=1e100.net; s=20210112; t=1678401491;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=WgoBUd5mOfOzbUIgE9ennXfu8Bk6ZG8n46SEtwJM8yA=;
-        b=wUYzShfb9FWa0kfH7Vr9tCB4vRwA8naHzA9QR9CISqn0NHilKKaKctGkbnkb2JC2yG
-         f0z0MTXl/6ldyCEGkWOVHY84IYgrfV7szo2BIvZcc8Wfx6Fc0pZgjiBuDDyuFq81rc8a
-         mLt0IFaOAVldEbN0CvhpU26yMQwO2BO2UK/vBzYGr7pnzoim7EWx5loW4QpuXLYpqx65
-         Sbeba5CyXGkyS965d7kcdjVDa806LmsPltWi9gBwAAiaXeGGJ42QX5MpeJj2kxz98gBH
-         cod6vWaMwMAH3A9S1MbsypWJhCKVqXFYjsFRLXlw5nEpX7XPOXJKdxSDsxSgVy0rLEML
-         +prQ==
-X-Gm-Message-State: AO0yUKX0xAdRvo+S6YQZIRnNse0i9dUnonl1Ol0JG7rQFxBj0XtmwFHQ
-        75qakF4SFOi0VWYU2JkLWbU=
-X-Google-Smtp-Source: AK7set/xkJYrlukP7VDZms/s2HBBUZPEGkDWRfMfDWH8VQaTTTwHp82KiOOoKZQUXJb+Z/YqGSPV4Q==
-X-Received: by 2002:a1c:e913:0:b0:3eb:3912:5ae9 with SMTP id q19-20020a1ce913000000b003eb39125ae9mr689396wmc.24.1678401489517;
-        Thu, 09 Mar 2023 14:38:09 -0800 (PST)
+        bh=1wDcE5BTiRUWu5IpXdTXJGaa7mTD/67d24QZlEDxG4g=;
+        b=qtXtHmt08cm4nHVcSWMsRp644uhyvXdhC38CmzjNh+1AEYrakUbm5wCmvHx2404WjT
+         crWwLNK90yFEsj3LninxjP2HW5BiyeOOe0y4yDiv8vDN/0LmS7+/5nfNfVeMFCze66JF
+         jye5IUhKB/56Bbxl3FTTtVMpfbNp54Wt5szinw0k3+JoA8R5PAjvQTYlN/4RAF8IGXl+
+         4+I25/QazOKVJKVXktAzJ+z8N1R+uW9cWoQYmM6tjY9WsQm64Wh+bbCmQrR1FauZjJ/M
+         9dHbWopWX6PQU5eq4C+rZbrgRWB6fr1RiTmpXHcgj5CMbt+Vdy5Pq+pWs6RP+k+K/hlg
+         d5zw==
+X-Gm-Message-State: AO0yUKVPUatrUTllT483HXSd4hQdliF9E0mS5+rPgi7lmnRn5d8AKfdy
+        IxdUc07sgKinbv42IF8p7ps=
+X-Google-Smtp-Source: AK7set9TlH5oqA5OMR062s7UBWc+YVnkZxNVsmcE0XNDXGzBJ3XRSGtvJ1Uzt17x8oFzG/u9Sy5sFw==
+X-Received: by 2002:a05:600c:1d88:b0:3e0:17d:aeaf with SMTP id p8-20020a05600c1d8800b003e0017daeafmr845627wms.7.1678401490932;
+        Thu, 09 Mar 2023 14:38:10 -0800 (PST)
 Received: from localhost.localdomain (93-34-89-197.ip49.fastwebnet.it. [93.34.89.197])
-        by smtp.googlemail.com with ESMTPSA id g12-20020a05600c310c00b003e209b45f6bsm1183981wmo.29.2023.03.09.14.38.08
+        by smtp.googlemail.com with ESMTPSA id g12-20020a05600c310c00b003e209b45f6bsm1183981wmo.29.2023.03.09.14.38.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Mar 2023 14:38:09 -0800 (PST)
+        Thu, 09 Mar 2023 14:38:10 -0800 (PST)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -72,9 +72,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         linux-arm-kernel@lists.infradead.org,
         linux-arm-msm@vger.kernel.org, Lee Jones <lee@kernel.org>,
         linux-leds@vger.kernel.org
-Subject: [net-next PATCH v2 09/14] dt-bindings: net: dsa: dsa-port: Document support for LEDs node
-Date:   Thu,  9 Mar 2023 23:35:19 +0100
-Message-Id: <20230309223524.23364-10-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v2 10/14] dt-bindings: net: dsa: qca8k: add LEDs definition example
+Date:   Thu,  9 Mar 2023 23:35:20 +0100
+Message-Id: <20230309223524.23364-11-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230309223524.23364-1-ansuelsmth@gmail.com>
 References: <20230309223524.23364-1-ansuelsmth@gmail.com>
@@ -90,51 +90,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Document support for LEDs node in dsa port.
-Switch may support different LEDs that can be configured for different
-operation like blinking on traffic event or port link.
-
-Also add some Documentation to describe the difference of these nodes
-compared to PHY LEDs, since dsa-port LEDs are controllable by the switch
-regs and the possible intergated PHY doesn't have control on them.
+Add LEDs definition example for qca8k Switch Family to describe how they
+should be defined for a correct usage.
 
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 ---
- .../devicetree/bindings/net/dsa/dsa-port.yaml | 21 +++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ .../devicetree/bindings/net/dsa/qca8k.yaml    | 24 +++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml b/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
-index 480120469953..1bf4151e5155 100644
---- a/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
-+++ b/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
-@@ -59,6 +59,27 @@ properties:
-       - rtl8_4t
-       - seville
+diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
+index 389892592aac..866b3cc73216 100644
+--- a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
++++ b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
+@@ -18,6 +18,8 @@ description:
+   PHY it is connected to. In this config, an internal mdio-bus is registered and
+   the MDIO master is used for communication. Mixed external and internal
+   mdio-bus configurations are not supported by the hardware.
++  Each phy have at least 3 LEDs connected and can be declared
++  using the standard LEDs structure.
  
-+  leds:
-+    type: object
-+    description:
-+      Describes the LEDs associated by the Switch Port and controllable
-+      in its MACs. These LEDs are not integrated in the PHY and PHY
-+      doesn't have any control on them. Switch regs are used to control
-+      these Switch Port LEDs.
+ properties:
+   compatible:
+@@ -117,6 +119,7 @@ unevaluatedProperties: false
+ examples:
+   - |
+     #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/leds/common.h>
+ 
+     mdio {
+         #address-cells = <1>;
+@@ -226,6 +229,27 @@ examples:
+                     label = "lan1";
+                     phy-mode = "internal";
+                     phy-handle = <&internal_phy_port1>;
 +
-+    properties:
-+      '#address-cells':
-+        const: 1
++                    leds {
++                        #address-cells = <1>;
++                        #size-cells = <0>;
 +
-+      '#size-cells':
-+        const: 0
++                        led@0 {
++                            reg = <0>;
++                            color = <LED_COLOR_ID_WHITE>;
++                            function = LED_FUNCTION_LAN;
++                            function-enumerator = <1>;
++                            default-state = "keep";
++                        };
 +
-+    patternProperties:
-+      '^led(@[a-f0-9]+)?$':
-+        $ref: /schemas/leds/common.yaml#
-+
-+    additionalProperties: false
-+
- # CPU and DSA ports must have phylink-compatible link descriptions
- if:
-   oneOf:
++                        led@1 {
++                            reg = <1>;
++                            color = <LED_COLOR_ID_AMBER>;
++                            function = LED_FUNCTION_LAN;
++                            function-enumerator = <1>;
++                            default-state = "keep";
++                        };
++                    };
+                 };
+ 
+                 port@2 {
 -- 
 2.39.2
 
