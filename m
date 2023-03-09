@@ -2,39 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5921E6B2612
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 15:00:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3B9A6B2641
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 15:07:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230274AbjCIOAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 09:00:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56172 "EHLO
+        id S230468AbjCIOHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 09:07:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230261AbjCIOAE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 09:00:04 -0500
-Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA663F2C2C;
-        Thu,  9 Mar 2023 05:57:46 -0800 (PST)
-Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 97C1F85D9D;
-        Thu,  9 Mar 2023 14:57:44 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1678370265;
-        bh=IIMy00Ky4xp4+QCxuvzVq69EvAYijO3Bk+ry+Rh2Bpc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZLU6L3cC7SoBXTNhNplQw1b973ft8yJNDScMAlw8ulNWDjFDyzdBcJLSzuFJ2nE1w
-         Kk+QRYB9q752yHpWOSyxRhKB1BaoIJZuF+OcSn6keykSCxBGdI1GmM+gUFAFmh6rwH
-         qiUXPhNX08G+Fv8OaDaYJJcZhascCZNkMNpPlxSGVyouDKhKP1qk5bRHI+swFFMAyO
-         E9fiswzQ0AAvOMBTaRBM5Y00N5zZjZ6XJOyWNl8YutGKj/CDRLsFTxROkSxhqzzvAd
-         mEnoaSn8VXwIDh1F7LWINVoXura/T9VVV3ZkvMc3z7FpzV4RMLc5v2Jb+Fzf5MuIiy
-         j9btLLYFyF5Ng==
-Date:   Thu, 9 Mar 2023 14:57:43 +0100
-From:   Lukasz Majewski <lukma@denx.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S231629AbjCIOGs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 09:06:48 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52879F28A4;
+        Thu,  9 Mar 2023 06:05:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=p4LnmBBm9xWxd/0OIEuDKqlIYCXfSPwHaLZhH3s8UOo=; b=F47G2uyR+Jrm+i/8eW+b5JtJP9
+        ef7vZt+p0VTUWMgbngoSIyNGpjiXLA6xUUIhv/3AP+tuAnGNJdg+oWgaVXzG/JEQNowqtrgFxrJXX
+        +OyoAqthc2VcO7owirtp05KDOUqDWB9eDyCAgBdvWA1SQPmBCSaSv4s+7vnrMUCTj7Sx0OTf6s5GT
+        mtDHPTG64FJ1vbKQjRHBaMOSCzuiLACVZb+FScCsm9i6qTgzExU96ZoVsk4w3IWxYHmxnfTmPeyfU
+        dTfeP1ak5/HdivIpefmnktH30tX9o+w+yz+XTWP+bNw8ux/O5gCqDYkWjCahfMKCsC41pwU/Ej3ev
+        CcfDonEg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:39770)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1paGtJ-0004jI-Av; Thu, 09 Mar 2023 14:05:09 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1paGtH-0003i8-7D; Thu, 09 Mar 2023 14:05:07 +0000
+Date:   Thu, 9 Mar 2023 14:05:07 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Lukasz Majewski <lukma@denx.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -42,73 +45,76 @@ Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
         Paolo Abeni <pabeni@redhat.com>,
         Alexander Duyck <alexander.duyck@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5/7] dsa: marvell: Add helper function to validate the
- max_frame_size variable
-Message-ID: <20230309145743.48caafec@wsk>
-In-Reply-To: <20230309135227.cmn5j3tundeugyzd@skbuf>
+Subject: Re: [PATCH 6/7] dsa: marvell: Correct value of max_frame_size
+ variable after validation
+Message-ID: <ZAnnk5MZc0w4VkDE@shell.armlinux.org.uk>
 References: <20230309125421.3900962-1-lukma@denx.de>
-        <20230309125421.3900962-6-lukma@denx.de>
-        <ZAndSR4L1QvOFta6@shell.armlinux.org.uk>
-        <ZAnefI4vCZSIPkEK@shell.armlinux.org.uk>
-        <20230309144752.5e62e037@wsk>
-        <20230309135227.cmn5j3tundeugyzd@skbuf>
-Organization: denx.de
-X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+ <20230309125421.3900962-7-lukma@denx.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/1s53T+t7kl2/Y69l+BA56cz";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
-X-Virus-Status: Clean
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230309125421.3900962-7-lukma@denx.de>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/1s53T+t7kl2/Y69l+BA56cz
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Thu, Mar 09, 2023 at 01:54:20PM +0100, Lukasz Majewski wrote:
+> Running of the mv88e6xxx_validate_frame_size() function provided following
+> results:
+> 
+> [    1.585565] BUG: Marvell 88E6020 has differing max_frame_size: 1632 != 2048
+> [    1.592540] BUG: Marvell 88E6071 has differing max_frame_size: 1632 != 2048
+> 		^------ Correct -> mv88e6250 family max frame size = 2048B
+> 
+> [    1.599507] BUG: Marvell 88E6085 has differing max_frame_size: 1632 != 1522
+> [    1.606476] BUG: Marvell 88E6165 has differing max_frame_size: 1522 != 1632
+> [    1.613445] BUG: Marvell 88E6190X has differing max_frame_size: 10240 != 1522
+> [    1.620590] BUG: Marvell 88E6191X has differing max_frame_size: 10240 != 1522
+> [    1.627730] BUG: Marvell 88E6193X has differing max_frame_size: 10240 != 1522
+> 		^------ Needs to be fixed!!!
+> 
+> [    1.634871] BUG: Marvell 88E6220 has differing max_frame_size: 1632 != 2048
+> [    1.641842] BUG: Marvell 88E6250 has differing max_frame_size: 1632 != 2048
+> 		^------ Correct -> mv88e6250 family max frame size = 2048B
 
-Hi Vladimir,
+If I understand this correctly, in patch 4, you add a call to the 6250
+family to call mv88e6185_g1_set_max_frame_size(), which sets a bit
+called MV88E6185_G1_CTL1_MAX_FRAME_1632 if the frame size is larger
+than 1518.
 
-> On Thu, Mar 09, 2023 at 02:47:52PM +0100, Lukasz Majewski wrote:
-> > Ok, I will reorder those patches and submit v6.
-> >=20
-> > Do you have any other comments regarding this patch set? =20
->=20
-> Please allow for at least 24 hours between reposts. I would like to
-> look at this patch set too, later today or tomorrow.
+However, you're saying that 6250 has a frame size of 2048. That's fine,
+but it makes MV88E6185_G1_CTL1_MAX_FRAME_1632 rather misleading as a
+definition. While the bit may increase the frame size, I think if we're
+going to do this, then this definition ought to be renamed.
 
-Ok. No problem.
+That said, I would like Andrew and Vladimir's thoughts on this too.
 
+Finally, I would expect, if this series was done the way I suggested,
+that patch 1 should set the max frame size according to how the
+existing code works, which means patch 2, being the validation patch,
+should be completely silent if patch 1 is correct - and that's the
+entire point of validating. It's to make sure that patch 1 is
+correct.
 
-Best regards,
+If it isn't correct, then patch 1 is wrong and should be updated.
 
-Lukasz Majewski
+Essentially, this patch should only exist if the values we are using
+today are actually incorrect.
 
---
+To put this another way, the conversion from our existing way of
+determining the max mtu to using the .max_frame_size method should be
+an entire no-op from the driver operation point of view. Then any
+errors in those values should be fixed and explained in a separate
+commit. Then the new support added.
 
-DENX Software Engineering GmbH,      Managing Director: Erika Unter
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
+At least that's how I see it. Andrew and Vladimir may disagree.
 
---Sig_/1s53T+t7kl2/Y69l+BA56cz
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmQJ5dcACgkQAR8vZIA0
-zr1UWQgA4G25Vom+4ffMW7XidW8kBeBlYppPillW5YNNe8kZCp2tgALehwOanDR7
-vTmzOuoVThjkGpZom/PveC+c/ml4cN2Z3cGjZ3LDFlA1sHo28eQyjdTXfMWI1XoI
-qdjYkpOUiH48VfLse5w7R8n1RTIQeFOaonjPAZVxAZnAfS6cGO4Xkuk8zd36KLPE
-4xBi1bxNUdcIGKoik8LKOAJ5po1Q6OM0Typm5esmo8E4MY1AiBrvgsEkYX7WZ+BP
-F6GmuR+QXX9PFBkEPB2d6888I6W5VUF8/XqtHfOmvNmyKZ8KdftBPyjtyAb5Uitb
-YHc1wnEMPWbVK+wmtokapfGke7G2uA==
-=bFta
------END PGP SIGNATURE-----
-
---Sig_/1s53T+t7kl2/Y69l+BA56cz--
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
