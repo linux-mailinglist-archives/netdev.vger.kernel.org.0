@@ -2,248 +2,294 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7D696B2277
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 12:17:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 090226B22B3
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 12:22:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229735AbjCILR0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 06:17:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43570 "EHLO
+        id S229952AbjCILWT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 06:22:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231486AbjCILRI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 06:17:08 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B95938B43;
-        Thu,  9 Mar 2023 03:13:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=MIME-Version:Content-Type:References:
-        In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=gtavzcqZk5Zl9ysCGiQF3rnSUaKgPTCxP+s+4fBTsBE=; b=bsPdVTrqGCKfHujhjf3H05b23l
-        1NctJS6auuGsbVi8Du374jWi/gB7BS49Ivq4PSiyukHl0pM0cwhOAoqSMuljQPZxD+ISjDRI5QkJF
-        odxOrNgFy3piLCOqI6XxfbuKtunexjDS3nd703kVJAU/+eu62IVP5si049W5WduBWtq5lhN9ev+ce
-        L73Vq7JPJqPYuKJqV/alOK52uzsgeiUiOnrjeLSx8XPQUQ3DFPGqsdR+qn90YATTtxx4N2gb1wE3V
-        RKhubfxe8qbbP1XaQ4tt1ZSpT860GLIbcB6+QukdnK8NJk0/AOUtBG0DyjhYyIFEvJWSVXL1kOAQN
-        iUUzaDKg==;
-Received: from [2001:8b0:10b:5:e62f:87cb:46b1:1399] (helo=u3832b3a9db3152.ant.amazon.com)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1paEBw-008Lpg-5e; Thu, 09 Mar 2023 11:12:12 +0000
-Message-ID: <a23a36ccb8e1ad05e12a4c4192cdd98267591556.camel@infradead.org>
-Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified
- range to map as encrypted
-From:   David Woodhouse <dwmw2@infradead.org>
-To:     Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@intel.com>
-Cc:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        Sean Christopherson <seanjc@google.com>,
-        "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
-        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "sathyanarayanan.kuppuswamy@linux.intel.com" 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        "ak@linux.intel.com" <ak@linux.intel.com>,
-        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-        "jane.chu@oracle.com" <jane.chu@oracle.com>,
-        "tony.luck@intel.com" <tony.luck@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Date:   Thu, 09 Mar 2023 11:12:10 +0000
-In-Reply-To: <20230306215104.GEZAZgSPa4qBBu9lRd@fat_crate.local>
-References: <BYAPR21MB16880EC9C85EC9343F9AF178D7A19@BYAPR21MB1688.namprd21.prod.outlook.com>
-         <Y++VSZNAX9Cstbqo@zn.tnic> <Y/aTmL5Y8DtOJu9w@google.com>
-         <Y/aYQlQzRSEH5II/@zn.tnic> <Y/adN3GQJTdDPmS8@google.com>
-         <Y/ammgkyo3QVon+A@zn.tnic> <Y/a/lzOwqMjOUaYZ@google.com>
-         <Y/dDvTMrCm4GFsvv@zn.tnic>
-         <BYAPR21MB1688F68888213E5395396DD9D7AB9@BYAPR21MB1688.namprd21.prod.outlook.com>
-         <255249f2-47af-07b7-d9d9-9edfdd108348@intel.com>
-         <20230306215104.GEZAZgSPa4qBBu9lRd@fat_crate.local>
-Content-Type: multipart/signed; micalg="sha-256"; protocol="application/pkcs7-signature";
-        boundary="=-aAuCihJhJxj+VLtIgtiP"
-User-Agent: Evolution 3.44.4-0ubuntu1 
+        with ESMTP id S231400AbjCILWB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 06:22:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 834A0DDF34;
+        Thu,  9 Mar 2023 03:18:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8E14B81EE3;
+        Thu,  9 Mar 2023 11:18:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30F9FC433EF;
+        Thu,  9 Mar 2023 11:18:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678360688;
+        bh=HZ223M8cnHrjBGIpobPcXc4CwG9s1VHSbiqCjj8QMGI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=HO6PRo+Fz5z9H8ej/B+YZmCOtLfgNYpM7FJMO4GpWs1GpYZ/2PoUe7SM3oLWXSZqi
+         vXMXcp4ZiwG5kw4+pqzedAnFjKXgWEhPcrL3zYxOCxM4ZGz/bfSPepb/hTYeZKkm5J
+         VF2RvbkklHbiJ/aEXEP0sltv2mXHxjezxn9LLm2QwG/f/dXblvHM6Jko1jHbrYR/ef
+         1AFNGcW5uScLyQB4kcLOZsnqm+BMFqsEIFGv0ZQXN/3AN/W5ouP6iy0YQirC1aUEDj
+         jD9ogLgPm4hD38Q72F4QgSs3ky2TqKAsh5xg6jAUxnkvDqiORmFyLkhPp/+RH/Sd6F
+         szFKoNFCTeAzA==
+Date:   Thu, 9 Mar 2023 12:18:03 +0100
+From:   Christian Brauner <brauner@kernel.org>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, Soheil Hassas Yeganeh <soheil@google.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Carlos Maiolino <cmaiolino@redhat.com>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>, linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH v5] epoll: use refcount to reduce ep_mutex contention
+Message-ID: <20230309111803.2z242amw4f5nwfwu@wittgenstein>
+References: <323de732635cc3513c1837c6cbb98f012174f994.1678312201.git.pabeni@redhat.com>
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <323de732635cc3513c1837c6cbb98f012174f994.1678312201.git.pabeni@redhat.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Mar 08, 2023 at 10:51:31PM +0100, Paolo Abeni wrote:
+> We are observing huge contention on the epmutex during an http
+> connection/rate test:
+> 
+>  83.17% 0.25%  nginx            [kernel.kallsyms]         [k] entry_SYSCALL_64_after_hwframe
+> [...]
+>            |--66.96%--__fput
+>                       |--60.04%--eventpoll_release_file
+>                                  |--58.41%--__mutex_lock.isra.6
+>                                            |--56.56%--osq_lock
+> 
+> The application is multi-threaded, creates a new epoll entry for
+> each incoming connection, and does not delete it before the
+> connection shutdown - that is, before the connection's fd close().
+> 
+> Many different threads compete frequently for the epmutex lock,
+> affecting the overall performance.
+> 
+> To reduce the contention this patch introduces explicit reference counting
+> for the eventpoll struct. Each registered event acquires a reference,
+> and references are released at ep_remove() time.
+> 
+> The eventpoll struct is released by whoever - among EP file close() and
+> and the monitored file close() drops its last reference.
+> 
+> Additionally, this introduces a new 'dying' flag to prevent races between
+> the EP file close() and the monitored file close().
+> ep_eventpoll_release() marks, under f_lock spinlock, each epitem as dying
+> before removing it, while EP file close() does not touch dying epitems.
+> 
+> The above is needed as both close operations could run concurrently and
+> drop the EP reference acquired via the epitem entry. Without the above
+> flag, the monitored file close() could reach the EP struct via the epitem
+> list while the epitem is still listed and then try to put it after its
+> disposal.
+> 
+> An alternative could be avoiding touching the references acquired via
+> the epitems at EP file close() time, but that could leave the EP struct
+> alive for potentially unlimited time after EP file close(), with nasty
+> side effects.
+> 
+> With all the above in place, we can drop the epmutex usage at disposal time.
+> 
+> Overall this produces a significant performance improvement in the
+> mentioned connection/rate scenario: the mutex operations disappear from
+> the topmost offenders in the perf report, and the measured connections/rate
+> grows by ~60%.
+> 
+> To make the change more readable this additionally renames ep_free() to
+> ep_clear_and_put(), and moves the actual memory cleanup in a separate
+> ep_free() helper.
+> 
+> Tested-by: Xiumei Mu <xmu@redhiat.com>
 
---=-aAuCihJhJxj+VLtIgtiP
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Is that a typo "redhiat" in the mail?
 
-On Mon, 2023-03-06 at 22:51 +0100, Borislav Petkov wrote:
-> On Thu, Feb 23, 2023 at 12:27:50PM -0800, Dave Hansen wrote:
-> > On 2/23/23 12:01, Michael Kelley (LINUX) wrote:
-> > > Dave Hansen:=C2=A0 Are you also OK with Sean's proposal?=C2=A0 Lookin=
-g for consensus
-> > > here ....
-> >=20
-> > Yeah, I'm generally OK with it as long as Borislav is.
->=20
-> Right, I think we're ok with the following basic rules:
->=20
-> - pure arch/x86/ code should use the x86_platform function pointers to
-> =C2=A0 query hypervisor capabilities/peculiarities
->=20
-> - cc_platform_has() should be used in generic/driver code as it
-> =C2=A0 abstracts away the underlying platform better. IOW, querying
-> =C2=A0 x86_platform.... in generic, platform-agnostic driver code looks w=
-eird to
-> =C2=A0 say the least
->=20
-> The hope is that those two should be enough to support most guest types
-> and not let the zoo get too much out of hand...
->=20
-> Thx.
+> Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+> Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> ---
+> This revision does not introduce any code change, it hopefully
+> clarifies the 'dying' flag role and a few comments, as per Andrew
+> suggestion.
+> 
+>     v4 repost at:
+>     https://lore.kernel.org/linux-fsdevel/f0c49fb4b682b81d64184d1181bc960728907474.camel@redhat.com/T/#t
+> 
+>     v4 at:
+>     https://lore.kernel.org/linux-fsdevel/9d8ad7995e51ad3aecdfe6f7f9e72231b8c9d3b5.1671569682.git.pabeni@redhat.com/
+> 
+>     v3 at:
+>     https://lore.kernel.org/linux-fsdevel/1aedd7e87097bc4352ba658ac948c585a655785a.1669657846.git.pabeni@redhat.com/
+> 
+>     v2 at:
+>     https://lore.kernel.org/linux-fsdevel/f35e58ed5af8131f0f402c3dc6c3033fa96d1843.1669312208.git.pabeni@redhat.com/
+> 
+>     v1 at:
+>     https://lore.kernel.org/linux-fsdevel/f35e58ed5af8131f0f402c3dc6c3033fa96d1843.1669312208.git.pabeni@redhat.com/
+> 
+>     Previous related effort at:
+>     https://lore.kernel.org/linux-fsdevel/20190727113542.162213-1-cj.chengjian@huawei.com/
+>     https://lkml.org/lkml/2017/10/28/81
+> ---
+>  fs/eventpoll.c | 186 +++++++++++++++++++++++++++++++------------------
+>  1 file changed, 117 insertions(+), 69 deletions(-)
+> 
+> diff --git a/fs/eventpoll.c b/fs/eventpoll.c
+> index 64659b110973..2b01fc05c307 100644
+> --- a/fs/eventpoll.c
+> +++ b/fs/eventpoll.c
+> @@ -57,13 +57,7 @@
+>   * we need a lock that will allow us to sleep. This lock is a
+>   * mutex (ep->mtx). It is acquired during the event transfer loop,
+>   * during epoll_ctl(EPOLL_CTL_DEL) and during eventpoll_release_file().
+> - * Then we also need a global mutex to serialize eventpoll_release_file()
+> - * and ep_free().
+> - * This mutex is acquired by ep_free() during the epoll file
+> - * cleanup path and it is also acquired by eventpoll_release_file()
+> - * if a file has been pushed inside an epoll set and it is then
+> - * close()d without a previous call to epoll_ctl(EPOLL_CTL_DEL).
+> - * It is also acquired when inserting an epoll fd onto another epoll
+> + * The epmutex is acquired when inserting an epoll fd onto another epoll
+>   * fd. We do this so that we walk the epoll tree and ensure that this
+>   * insertion does not create a cycle of epoll file descriptors, which
+>   * could lead to deadlock. We need a global mutex to prevent two
+> @@ -153,6 +147,13 @@ struct epitem {
+>  	/* The file descriptor information this item refers to */
+>  	struct epoll_filefd ffd;
+>  
+> +	/*
+> +	 * Protected by file->f_lock, true for to-be-released epitem already
+> +	 * removed from the "struct file" items list; together with
+> +	 * eventpoll->refcount orchestrates "struct eventpoll" disposal
+> +	 */
+> +	bool dying;
+> +
+>  	/* List containing poll wait queues */
+>  	struct eppoll_entry *pwqlist;
+>  
+> @@ -217,6 +218,12 @@ struct eventpoll {
+>  	u64 gen;
+>  	struct hlist_head refs;
+>  
+> +	/*
+> +	 * usage count, used together with epitem->dying to
+> +	 * orchestrate the disposal of this struct
+> +	 */
+> +	refcount_t refcount;
+> +
+>  #ifdef CONFIG_NET_RX_BUSY_POLL
+>  	/* used to track busy poll napi_id */
+>  	unsigned int napi_id;
+> @@ -240,9 +247,7 @@ struct ep_pqueue {
+>  /* Maximum number of epoll watched descriptors, per user */
+>  static long max_user_watches __read_mostly;
+>  
+> -/*
+> - * This mutex is used to serialize ep_free() and eventpoll_release_file().
+> - */
+> +/* Used for cycles detection */
+>  static DEFINE_MUTEX(epmutex);
+>  
+>  static u64 loop_check_gen = 0;
+> @@ -557,8 +562,7 @@ static void ep_remove_wait_queue(struct eppoll_entry *pwq)
+>  
+>  /*
+>   * This function unregisters poll callbacks from the associated file
+> - * descriptor.  Must be called with "mtx" held (or "epmutex" if called from
+> - * ep_free).
+> + * descriptor.  Must be called with "mtx" held.
+>   */
+>  static void ep_unregister_pollwait(struct eventpoll *ep, struct epitem *epi)
+>  {
+> @@ -681,11 +685,40 @@ static void epi_rcu_free(struct rcu_head *head)
+>  	kmem_cache_free(epi_cache, epi);
+>  }
+>  
+> +static void ep_get(struct eventpoll *ep)
+> +{
+> +	refcount_inc(&ep->refcount);
+> +}
+> +
+> +/*
+> + * Returns true if the event poll can be disposed
+> + */
+> +static bool ep_refcount_dec_and_test(struct eventpoll *ep)
+> +{
+> +	if (!refcount_dec_and_test(&ep->refcount))
+> +		return false;
+> +
+> +	WARN_ON_ONCE(!RB_EMPTY_ROOT(&ep->rbr.rb_root));
+> +	return true;
+> +}
+> +
+> +static void ep_free(struct eventpoll *ep)
+> +{
+> +	mutex_destroy(&ep->mtx);
+> +	free_uid(ep->user);
+> +	wakeup_source_unregister(ep->ws);
+> +	kfree(ep);
+> +}
+> +
+>  /*
+>   * Removes a "struct epitem" from the eventpoll RB tree and deallocates
+>   * all the associated resources. Must be called with "mtx" held.
+> + * If the dying flag is set, do the removal only if force is true.
+> + * This prevents ep_clear_and_put() from dropping all the ep references
+> + * while running concurrently with eventpoll_release_file().
+> + * Returns true if the eventpoll can be disposed.
+>   */
+> -static int ep_remove(struct eventpoll *ep, struct epitem *epi)
+> +static bool __ep_remove(struct eventpoll *ep, struct epitem *epi, bool force)
+>  {
+>  	struct file *file = epi->ffd.file;
+>  	struct epitems_head *to_free;
+> @@ -700,6 +733,11 @@ static int ep_remove(struct eventpoll *ep, struct epitem *epi)
+>  
+>  	/* Remove the current item from the list of epoll hooks */
+>  	spin_lock(&file->f_lock);
+> +	if (epi->dying && !force) {
+> +		spin_unlock(&file->f_lock);
+> +		return false;
+> +	}
 
-In=20
-https://lore.kernel.org/all/20230308171328.1562857-13-usama.arif@bytedance.=
-com/
-I added an sev_es_active() helper for x86 code.
+It's a bit unfortunate that we have to acquire the spinlock just to immediately
+having to drop it. Slighly ugly but workable could be but that depends on how
+likely we find it that we end up with !force and a dying fd...
 
-Is that consistent with the vision here, or should I do something different=
+completely untested:
+
+diff --git a/fs/eventpoll.c b/fs/eventpoll.c
+index 2b01fc05c307..1e1eff049174 100644
+--- a/fs/eventpoll.c
++++ b/fs/eventpoll.c
+@@ -731,6 +731,10 @@ static bool __ep_remove(struct eventpoll *ep, struct epitem *epi, bool force)
+         */
+        ep_unregister_pollwait(ep, epi);
+
++       /* racy check to avoid having to acquire the spinlock */
++       if (!force && READ_ONCE(epi->dying) == true)
++               return false;
++
+        /* Remove the current item from the list of epoll hooks */
+        spin_lock(&file->f_lock);
+        if (epi->dying && !force) {
+@@ -951,7 +955,7 @@ void eventpoll_release_file(struct file *file)
+        spin_lock(&file->f_lock);
+        if (file->f_ep && file->f_ep->first) {
+                epi = hlist_entry(file->f_ep->first, struct epitem, fllink);
+-               epi->dying = true;
++               WRITE_ONCE(epi->dying, true);
+                spin_unlock(&file->f_lock);
+
+                /*
+
 ?
-
-
---=-aAuCihJhJxj+VLtIgtiP
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCEkQw
-ggYQMIID+KADAgECAhBNlCwQ1DvglAnFgS06KwZPMA0GCSqGSIb3DQEBDAUAMIGIMQswCQYDVQQG
-EwJVUzETMBEGA1UECBMKTmV3IEplcnNleTEUMBIGA1UEBxMLSmVyc2V5IENpdHkxHjAcBgNVBAoT
-FVRoZSBVU0VSVFJVU1QgTmV0d29yazEuMCwGA1UEAxMlVVNFUlRydXN0IFJTQSBDZXJ0aWZpY2F0
-aW9uIEF1dGhvcml0eTAeFw0xODExMDIwMDAwMDBaFw0zMDEyMzEyMzU5NTlaMIGWMQswCQYDVQQG
-EwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYD
-VQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50
-aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAyjztlApB/975Rrno1jvm2pK/KxBOqhq8gr2+JhwpKirSzZxQgT9tlC7zl6hn1fXjSo5MqXUf
-ItMltrMaXqcESJuK8dtK56NCSrq4iDKaKq9NxOXFmqXX2zN8HHGjQ2b2Xv0v1L5Nk1MQPKA19xeW
-QcpGEGFUUd0kN+oHox+L9aV1rjfNiCj3bJk6kJaOPabPi2503nn/ITX5e8WfPnGw4VuZ79Khj1YB
-rf24k5Ee1sLTHsLtpiK9OjG4iQRBdq6Z/TlVx/hGAez5h36bBJMxqdHLpdwIUkTqT8se3ed0PewD
-ch/8kHPo5fZl5u1B0ecpq/sDN/5sCG52Ds+QU5O5EwIDAQABo4IBZDCCAWAwHwYDVR0jBBgwFoAU
-U3m/WqorSs9UgOHYm8Cd8rIDZsswHQYDVR0OBBYEFAnA8vwL2pTbX/4r36iZQs/J4K0AMA4GA1Ud
-DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEF
-BQcDBDARBgNVHSAECjAIMAYGBFUdIAAwUAYDVR0fBEkwRzBFoEOgQYY/aHR0cDovL2NybC51c2Vy
-dHJ1c3QuY29tL1VTRVJUcnVzdFJTQUNlcnRpZmljYXRpb25BdXRob3JpdHkuY3JsMHYGCCsGAQUF
-BwEBBGowaDA/BggrBgEFBQcwAoYzaHR0cDovL2NydC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJT
-QUFkZFRydXN0Q0EuY3J0MCUGCCsGAQUFBzABhhlodHRwOi8vb2NzcC51c2VydHJ1c3QuY29tMA0G
-CSqGSIb3DQEBDAUAA4ICAQBBRHUAqznCFfXejpVtMnFojADdF9d6HBA4kMjjsb0XMZHztuOCtKF+
-xswhh2GqkW5JQrM8zVlU+A2VP72Ky2nlRA1GwmIPgou74TZ/XTarHG8zdMSgaDrkVYzz1g3nIVO9
-IHk96VwsacIvBF8JfqIs+8aWH2PfSUrNxP6Ys7U0sZYx4rXD6+cqFq/ZW5BUfClN/rhk2ddQXyn7
-kkmka2RQb9d90nmNHdgKrwfQ49mQ2hWQNDkJJIXwKjYA6VUR/fZUFeCUisdDe/0ABLTI+jheXUV1
-eoYV7lNwNBKpeHdNuO6Aacb533JlfeUHxvBz9OfYWUiXu09sMAviM11Q0DuMZ5760CdO2VnpsXP4
-KxaYIhvqPqUMWqRdWyn7crItNkZeroXaecG03i3mM7dkiPaCkgocBg0EBYsbZDZ8bsG3a08LwEsL
-1Ygz3SBsyECa0waq4hOf/Z85F2w2ZpXfP+w8q4ifwO90SGZZV+HR/Jh6rEaVPDRF/CEGVqR1hiuQ
-OZ1YL5ezMTX0ZSLwrymUE0pwi/KDaiYB15uswgeIAcA6JzPFf9pLkAFFWs1QNyN++niFhsM47qod
-x/PL+5jR87myx5uYdBEQkkDc+lKB1Wct6ucXqm2EmsaQ0M95QjTmy+rDWjkDYdw3Ms6mSWE3Bn7i
-5ZgtwCLXgAIe5W8mybM2JzCCBhQwggT8oAMCAQICEQDGvhmWZ0DEAx0oURL6O6l+MA0GCSqGSIb3
-DQEBCwUAMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYD
-VQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28g
-UlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTIyMDEwNzAw
-MDAwMFoXDTI1MDEwNjIzNTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9y
-ZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALQ3GpC2bomUqk+91wLYBzDMcCj5C9m6
-oZaHwvmIdXftOgTbCJXADo6G9T7BBAebw2JV38EINgKpy/ZHh7htyAkWYVoFsFPrwHounto8xTsy
-SSePMiPlmIdQ10BcVSXMUJ3Juu16GlWOnAMJY2oYfEzmE7uT9YgcBqKCo65pTFmOnR/VVbjJk4K2
-xE34GC2nAdUQkPFuyaFisicc6HRMOYXPuF0DuwITEKnjxgNjP+qDrh0db7PAjO1D4d5ftfrsf+kd
-RR4gKVGSk8Tz2WwvtLAroJM4nXjNPIBJNT4w/FWWc/5qPHJy2U+eITZ5LLE5s45mX2oPFknWqxBo
-bQZ8a9dsZ3dSPZBvE9ZrmtFLrVrN4eo1jsXgAp1+p7bkfqd3BgBEmfsYWlBXO8rVXfvPgLs32VdV
-NZxb/CDWPqBsiYv0Hv3HPsz07j5b+/cVoWqyHDKzkaVbxfq/7auNVRmPB3v5SWEsH8xi4Bez2V9U
-KxfYCnqsjp8RaC2/khxKt0A552Eaxnz/4ly/2C7wkwTQnBmdlFYhAflWKQ03Ufiu8t3iBE3VJbc2
-5oMrglj7TRZrmKq3CkbFnX0fyulB+kHimrt6PIWn7kgyl9aelIl6vtbhMA+l0nfrsORMa4kobqQ5
-C5rveVgmcIad67EDa+UqEKy/GltUwlSh6xy+TrK1tzDvAgMBAAGjggHMMIIByDAfBgNVHSMEGDAW
-gBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUzMeDMcimo0oz8o1R1Nver3ZVpSkwDgYD
-VR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYwFAYIKwYBBQUHAwQGCCsGAQUFBwMC
-MEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYBBQUHAgEWF2h0dHBzOi8vc2VjdGln
-by5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9jcmwuc2VjdGlnby5jb20vU2VjdGln
-b1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcmwwgYoGCCsGAQUFBwEB
-BH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdvLmNvbS9TZWN0aWdvUlNBQ2xpZW50
-QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAjBggrBgEFBQcwAYYXaHR0cDovL29j
-c3Auc2VjdGlnby5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5mcmFkZWFkLm9yZzANBgkqhkiG9w0B
-AQsFAAOCAQEAyW6MUir5dm495teKqAQjDJwuFCi35h4xgnQvQ/fzPXmtR9t54rpmI2TfyvcKgOXp
-qa7BGXNFfh1JsqexVkIqZP9uWB2J+uVMD+XZEs/KYNNX2PvIlSPrzIB4Z2wyIGQpaPLlYflrrVFK
-v9CjT2zdqvy2maK7HKOQRt3BiJbVG5lRiwbbygldcALEV9ChWFfgSXvrWDZspnU3Gjw/rMHrGnql
-Htlyebp3pf3fSS9kzQ1FVtVIDrL6eqhTwJxe+pXSMMqFiN0whpBtXdyDjzBtQTaZJ7zTT/vlehc/
-tDuqZwGHm/YJy883Ll+GP3NvOkgaRGWEuYWJJ6hFCkXYjyR9IzCCBhQwggT8oAMCAQICEQDGvhmW
-Z0DEAx0oURL6O6l+MA0GCSqGSIb3DQEBCwUAMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3Jl
-YXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0
-ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJl
-IEVtYWlsIENBMB4XDTIyMDEwNzAwMDAwMFoXDTI1MDEwNjIzNTk1OVowJDEiMCAGCSqGSIb3DQEJ
-ARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALQ3
-GpC2bomUqk+91wLYBzDMcCj5C9m6oZaHwvmIdXftOgTbCJXADo6G9T7BBAebw2JV38EINgKpy/ZH
-h7htyAkWYVoFsFPrwHounto8xTsySSePMiPlmIdQ10BcVSXMUJ3Juu16GlWOnAMJY2oYfEzmE7uT
-9YgcBqKCo65pTFmOnR/VVbjJk4K2xE34GC2nAdUQkPFuyaFisicc6HRMOYXPuF0DuwITEKnjxgNj
-P+qDrh0db7PAjO1D4d5ftfrsf+kdRR4gKVGSk8Tz2WwvtLAroJM4nXjNPIBJNT4w/FWWc/5qPHJy
-2U+eITZ5LLE5s45mX2oPFknWqxBobQZ8a9dsZ3dSPZBvE9ZrmtFLrVrN4eo1jsXgAp1+p7bkfqd3
-BgBEmfsYWlBXO8rVXfvPgLs32VdVNZxb/CDWPqBsiYv0Hv3HPsz07j5b+/cVoWqyHDKzkaVbxfq/
-7auNVRmPB3v5SWEsH8xi4Bez2V9UKxfYCnqsjp8RaC2/khxKt0A552Eaxnz/4ly/2C7wkwTQnBmd
-lFYhAflWKQ03Ufiu8t3iBE3VJbc25oMrglj7TRZrmKq3CkbFnX0fyulB+kHimrt6PIWn7kgyl9ae
-lIl6vtbhMA+l0nfrsORMa4kobqQ5C5rveVgmcIad67EDa+UqEKy/GltUwlSh6xy+TrK1tzDvAgMB
-AAGjggHMMIIByDAfBgNVHSMEGDAWgBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUzMeD
-Mcimo0oz8o1R1Nver3ZVpSkwDgYDVR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYw
-FAYIKwYBBQUHAwQGCCsGAQUFBwMCMEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYB
-BQUHAgEWF2h0dHBzOi8vc2VjdGlnby5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9j
-cmwuc2VjdGlnby5jb20vU2VjdGlnb1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1h
-aWxDQS5jcmwwgYoGCCsGAQUFBwEBBH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdv
-LmNvbS9TZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAj
-BggrBgEFBQcwAYYXaHR0cDovL29jc3Auc2VjdGlnby5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
-cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAyW6MUir5dm495teKqAQjDJwuFCi35h4xgnQv
-Q/fzPXmtR9t54rpmI2TfyvcKgOXpqa7BGXNFfh1JsqexVkIqZP9uWB2J+uVMD+XZEs/KYNNX2PvI
-lSPrzIB4Z2wyIGQpaPLlYflrrVFKv9CjT2zdqvy2maK7HKOQRt3BiJbVG5lRiwbbygldcALEV9Ch
-WFfgSXvrWDZspnU3Gjw/rMHrGnqlHtlyebp3pf3fSS9kzQ1FVtVIDrL6eqhTwJxe+pXSMMqFiN0w
-hpBtXdyDjzBtQTaZJ7zTT/vlehc/tDuqZwGHm/YJy883Ll+GP3NvOkgaRGWEuYWJJ6hFCkXYjyR9
-IzGCBMcwggTDAgEBMIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVz
-dGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMT
-NVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA
-xr4ZlmdAxAMdKFES+jupfjANBglghkgBZQMEAgEFAKCCAeswGAYJKoZIhvcNAQkDMQsGCSqGSIb3
-DQEHATAcBgkqhkiG9w0BCQUxDxcNMjMwMzA5MTExMjEwWjAvBgkqhkiG9w0BCQQxIgQgsXlFxdbI
-FWtuMf8xQhe8xmaB7tqV2UVT2MGXFXiaF8Awgb0GCSsGAQQBgjcQBDGBrzCBrDCBljELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYG
-A1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVTZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVu
-dGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAMa+GZZnQMQDHShREvo7qX4wgb8GCyqGSIb3
-DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVy
-MRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNl
-Y3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAxr4Z
-lmdAxAMdKFES+jupfjANBgkqhkiG9w0BAQEFAASCAgCDAIuQ8GhCZamxdLtH0m4TkSF0iCpvIIr0
-fQLRfKEnpqG5ziCc49oWINc28txvLrn4orR60AoV5puV7vR8fRDruPY/BtUa6TVIb7rL1ZU/xU8U
-5V+TGwuQIimv5ekPn1CLFCkQv5Mj6i196gTUDnMqxUtm9GvC+SyeJVtouxwGjUK+t+7jU2Is8vHq
-CkLQqVxXeSemUrBR91L807X3X0Ol0bU6H29QxYA92KiYhvXc/aMUh+AiO3t8FC33mLrm9rCTPHfh
-3jHRb/c/jZXu8lBmSTbRrEh+AnQWYxWWw2cqV+XEX/OU0lmgXaaHLLBpFZztSIjppGGRVT4U2nRa
-1IUL1QJtv2WhoLUPYtuuXJG0/gIu3qVxQ3iIpc1wenzp+/HAVr/Izw7gol+A3kDa5y6vRRhhluSy
-G2ud4LakRCPWlGuNQNwFyT8JCwsiaHnKGU4nkHuq6/f6z3W7M7Q9IqyhVbGml20Tc6VsolgUzu9o
-HfPl1a01EQTxHEDpxSVYs/+l+Zmfa4ZS/PFRQZYjLPtjYEE+JkbBdadVDP4wQthfzCawgDCwsyUV
-9dLejn3e4naZ/HSAj3NY2ve6RNkeg4sucDxmP5V4XCaaz2jYd/QJXznFID+3MC0cI27pJjtHxTJe
-B2EetMOT4Fl8x2jLP/VDWbnWtJvmbKoxcM8PltFsRQAAAAAAAA==
-
-
---=-aAuCihJhJxj+VLtIgtiP--
