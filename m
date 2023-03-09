@@ -2,65 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10F636B1FE8
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 10:24:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66B976B2006
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 10:30:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229613AbjCIJYd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 04:24:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58464 "EHLO
+        id S229874AbjCIJ36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 04:29:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231190AbjCIJYY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 04:24:24 -0500
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 945FFCF99C
-        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 01:24:17 -0800 (PST)
-Received: by mail-lf1-x131.google.com with SMTP id s22so1416673lfi.9
-        for <netdev@vger.kernel.org>; Thu, 09 Mar 2023 01:24:17 -0800 (PST)
+        with ESMTP id S230002AbjCIJ3k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 04:29:40 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA1DD67736
+        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 01:29:37 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id ec29so4391597edb.6
+        for <netdev@vger.kernel.org>; Thu, 09 Mar 2023 01:29:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678353855;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=AcT19OGeCXcddBBv+J56CnwZ9qcDY3TnNTEK+oHPc5I=;
-        b=VofMylTYg2ZR/KmV1vN4m0ZdpC3Vw1B7GIeuWKpfKZi4ve58voVtUEYtVg76NKvbnO
-         waA/0knO67WJOtfM/Zzvir4luFEL9+GLSbpJsog+9hDkEvHon1aSDsrCpBX0RBqvAtbq
-         7yhedQrZiF2bEMAsLbnoLZCYUESYISzitKTYiqRLnqFwt4JKJRg2JrDr4EO57MUvMkmc
-         2+iB4pLS91QZMI+39wSntsEvYIova7bD7Jc/jH75sXs8xL4wiEWs5v1DDWXPOT8Rgiig
-         icD8uYuZjT9NZIkZiHH2kJyjwP2Q6XoNVTZuKHJOM2SINXQ+L7c5Ex6+y8IwB4HUTdFl
-         vhtQ==
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112; t=1678354176;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=9lxTz1XA1XqHiv1JrpSHXqzz9osoooJiJz3ckinOVoU=;
+        b=NhHILSo3XFgH7N7eKZ5jxHYm15cSgRxXk/yJ56YX7RFK1PPnDWCMLrnFsdfXdncfUx
+         M+DmpqH+i0oJiwN1NwjoC/D3ARBIv6TrmUxUIPJgYMmbzo/y7LIfQtRv7sQI6i4Newgn
+         wJfvfgWdoG5vUr20rwgqxhgIj8di5nM6vC/ueerhD3BHajLZUs5oTnIzgwNLWmyjkg5Z
+         rrYd445EpfFBvtLgJKNlMTjYPPj1KuXMkoQWqryDqdB5xl18nILtYo9CAsX8iRqHWyOx
+         OR6DxZldntfIzZ2PuSgRhcUdsiA5WOuGB0cdW2DwhE5a8xZmH6rGNny94DnPHuQgE8Uh
+         52gw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678353855;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=AcT19OGeCXcddBBv+J56CnwZ9qcDY3TnNTEK+oHPc5I=;
-        b=hv7mrBE87PPurZj73J5TJrFHfhGTZuQIwa9xuAZuOgBeMZjMbjP1ZmZZ0bia8aCT3d
-         R8QFuuiez1XqZEgX77CnZgjs0JbyTazRnfO3Zm4l5GG6hYLz72cIw7SJT8K5fJh9hcBd
-         QXTJZRUza4rEP7WorM+7CMafF+PfzWEIp91DN0UrEZYG5Z85/X/wj23rSw6DN7jWQN+E
-         IdWVIY4tC6cOZizrN1o4c1JlnMCRF89D1WWLyFfCj7NS4E+2XMcdvl+uITeWufVbz2yz
-         x8+eZA4hPB3kXI168fzhl9MEXmQHMbW54a5Si8sI4k4O5sRp3YeLh0ZYchOpLOvQ1WIG
-         M5dQ==
-X-Gm-Message-State: AO0yUKVIZXVJ/fjqHvUjqV107ijDW+qaH3OJfsI8mxyHAvvkW5F26HUI
-        4xx0LhUQkcN1aDZMyERjGVzYlE5ysn2pnw==
-X-Google-Smtp-Source: AK7set8EtUQdKWT+Yu3ad1NpG5Eghk0/JCpxoPllzloXdqR0C52hA5QtVlOJjVbFRBclsUP0K0Ck1Q==
-X-Received: by 2002:ac2:5a4c:0:b0:4dc:7ff4:83f9 with SMTP id r12-20020ac25a4c000000b004dc7ff483f9mr6160282lfn.16.1678353855417;
-        Thu, 09 Mar 2023 01:24:15 -0800 (PST)
-Received: from oss-build.. (3peqmh0.ip.hatteland.com. [46.250.209.192])
-        by smtp.gmail.com with ESMTPSA id g12-20020a19ee0c000000b004db45ae3aa8sm2599824lfb.50.2023.03.09.01.24.14
+        d=1e100.net; s=20210112; t=1678354176;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=9lxTz1XA1XqHiv1JrpSHXqzz9osoooJiJz3ckinOVoU=;
+        b=PJL6OctclrLdNI9m3tn2QB7BCk1/pGfKVzlJs5y3M77s1ptDeVKy35oGu6X+B1IE+J
+         ZMusLA151kvmbC4VDb5IgmG7YkE5SyZASCpueq1ms8nnzrXQmvVBA3oX5UENMbnlEENd
+         XeTlU+MMwhTGUIaDwaubcYpHbQMAEdXDNUxAL54FEvlE9l8vYO7iH4ig7gPp4Fjhao8R
+         cFgqCSMKEcEv+iZLmOt6gu678Zfms0L4WZpYfqROsVMq/GhYucKCARpRIOtX506GdqF3
+         Jc++3NyAMD3nmDZCm7ymiabG6wwlMxY/DGVahfKtPv+AIiJGTuva6pKE2bI8LxogSJqe
+         5KcQ==
+X-Gm-Message-State: AO0yUKVSvxAYrPEM784tjxVtIiE7a0+meQTafPTHKwXapkTYyHPWLCoX
+        thJkZUjtU8dWBOK9tnL20j+UMQ==
+X-Google-Smtp-Source: AK7set/JD7XQ66C7cR0MD2QCkMMg+hNZC6DMMaWQWHajmC4c8mBUEqEqFsAYzWhKcAW7995LUYoV4A==
+X-Received: by 2002:a17:907:a0b:b0:8b2:7567:9c30 with SMTP id bb11-20020a1709070a0b00b008b275679c30mr30416063ejc.59.1678354175925;
+        Thu, 09 Mar 2023 01:29:35 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id r17-20020a50aad1000000b004bfa4f747d2sm9300126edc.54.2023.03.09.01.29.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Mar 2023 01:24:14 -0800 (PST)
-From:   Kristian Overskeid <koverskeid@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     m-karicheri2@ti.com, bigeasy@linutronix.de, yuehaibing@huawei.com,
-        arvid.brodin@alten.se, Kristian Overskeid <koverskeid@gmail.com>
-Subject: [PATCH v2] net: hsr: Don't log netdev_err message on unknown prp dst node
-Date:   Thu,  9 Mar 2023 10:23:02 +0100
-Message-Id: <20230309092302.179586-1-koverskeid@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Thu, 09 Mar 2023 01:29:34 -0800 (PST)
+Date:   Thu, 9 Mar 2023 10:29:33 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Shannon Nelson <shannon.nelson@amd.com>
+Cc:     brett.creeley@amd.com, davem@davemloft.net, netdev@vger.kernel.org,
+        kuba@kernel.org, drivers@pensando.io, leon@kernel.org
+Subject: Re: [PATCH RFC v4 net-next 02/13] pds_core: add devcmd device
+ interfaces
+Message-ID: <ZAmm/bUs8FbWn+wp@nanopsycho>
+References: <20230308051310.12544-1-shannon.nelson@amd.com>
+ <20230308051310.12544-3-shannon.nelson@amd.com>
+ <ZAhXZFABVgsVBzfF@nanopsycho>
+ <02b934ee-edd9-08f1-3571-5efe7687b546@amd.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <02b934ee-edd9-08f1-3571-5efe7687b546@amd.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,34 +73,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If no frames has been exchanged with a node for HSR_NODE_FORGET_TIME, the
-node will be deleted from the node_db list. If a frame is sent to the node
-after it is deleted, a netdev_err message for each slave interface is
-produced. This should not happen with dan nodes because of supervision
-frames, but can happen often with san nodes, which clutters the kernel
-log. Since the hsr protocol does not support sans, this is only relevant
-for the prp protocol.
+Thu, Mar 09, 2023 at 03:05:13AM CET, shannon.nelson@amd.com wrote:
+>On 3/8/23 1:37 AM, Jiri Pirko wrote:
+>> Wed, Mar 08, 2023 at 06:12:59AM CET, shannon.nelson@amd.com wrote:
 
-Signed-off-by: Kristian Overskeid <koverskeid@gmail.com>
----
- V1 -> V2: Addressed review comments
- 
- net/hsr/hsr_framereg.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+[..]
 
-diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
-index 00db74d96583..b77f1189d19d 100644
---- a/net/hsr/hsr_framereg.c
-+++ b/net/hsr/hsr_framereg.c
-@@ -415,7 +415,7 @@ void hsr_addr_subst_dest(struct hsr_node *node_src, struct sk_buff *skb,
- 	node_dst = find_node_by_addr_A(&port->hsr->node_db,
- 				       eth_hdr(skb)->h_dest);
- 	if (!node_dst) {
--		if (net_ratelimit())
-+		if (port->hsr->prot_version != PRP_V1 && net_ratelimit())
- 			netdev_err(skb->dev, "%s: Unknown node\n", __func__);
- 		return;
- 	}
--- 
-2.34.1
 
+>> > +static int identity_show(struct seq_file *seq, void *v)
+>> > +{
+>> > +      struct pdsc *pdsc = seq->private;
+>> > +      struct pds_core_dev_identity *ident;
+>> > +      int vt;
+>> > +
+>> > +      ident = &pdsc->dev_ident;
+>> > +
+>> > +      seq_printf(seq, "asic_type:        0x%x\n", pdsc->dev_info.asic_type);
+>> > +      seq_printf(seq, "asic_rev:         0x%x\n", pdsc->dev_info.asic_rev);
+>> > +      seq_printf(seq, "serial_num:       %s\n", pdsc->dev_info.serial_num);
+>> > +      seq_printf(seq, "fw_version:       %s\n", pdsc->dev_info.fw_version);
+>> 
+>> What is the exact reason of exposing this here and not trought well
+>> defined devlink info interface?
+>
+>These do show up in devlink dev info eventually, but that isn't for another
+>couple of patches.  This gives us info here for debugging the earlier patches
+>if needed.
+
+Implement it properly from the start and avoid these, please.
+
+
+>
+>> 
+>> 
+>> > +      seq_printf(seq, "fw_status:        0x%x\n",
+>> > +                 ioread8(&pdsc->info_regs->fw_status));
+>> > +      seq_printf(seq, "fw_heartbeat:     0x%x\n",
+>> > +                 ioread32(&pdsc->info_regs->fw_heartbeat));
+>> > +
+
+
+[..]
+
+>> > +static int pdsc_identify(struct pdsc *pdsc)
+>> > +{
+>> > +      struct pds_core_drv_identity drv = { 0 };
+>> > +      size_t sz;
+>> > +      int err;
+>> > +
+>> > +      drv.drv_type = cpu_to_le32(PDS_DRIVER_LINUX);
+>> > +      drv.kernel_ver = cpu_to_le32(LINUX_VERSION_CODE);
+>> > +      snprintf(drv.kernel_ver_str, sizeof(drv.kernel_ver_str),
+>> > +               "%s %s", utsname()->release, utsname()->version);
+>> > +      snprintf(drv.driver_ver_str, sizeof(drv.driver_ver_str),
+>> > +               "%s %s", PDS_CORE_DRV_NAME, utsname()->release);
+>> 
+>> Why exactly are you doing this? Looks very wrong.
+>
+>This helps us when debugging on the DSC side - we can see which host driver
+>is using the interface (PXE, Linux, etc).  This is modeled from what we have
+>in our out-of-tree ionic driver interface, but I need to trim it down to be
+>less snoopy.
+
+Device should not care who is on the other side in my opinion. Jakub,
+any thoughts?
+
+>
+>sln
