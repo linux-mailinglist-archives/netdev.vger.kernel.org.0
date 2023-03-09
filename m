@@ -2,61 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8809B6B27EC
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 15:54:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EF226B27F2
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 15:54:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232221AbjCIOyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 09:54:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35868 "EHLO
+        id S232229AbjCIOyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 09:54:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232091AbjCIOxF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 09:53:05 -0500
-Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00FBAF0FD7
-        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 06:51:12 -0800 (PST)
-Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-17683b570b8so2493762fac.13
-        for <netdev@vger.kernel.org>; Thu, 09 Mar 2023 06:51:12 -0800 (PST)
+        with ESMTP id S232163AbjCIOxn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 09:53:43 -0500
+Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F71CF2FA0
+        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 06:51:20 -0800 (PST)
+Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-17638494edbso2510632fac.10
+        for <netdev@vger.kernel.org>; Thu, 09 Mar 2023 06:51:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google; t=1678373472;
+        d=tessares.net; s=google; t=1678373479;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=7aVI4e2OdlOYVuMUfrd7oCECSdqBtHFzJOKgjTLxG8Y=;
-        b=tGsVthprhw/reHeu0kXsKQ3G4aAujKF/o6r1dMxPdSzLo1GiCnsDQ0KP9zqhy4akt+
-         ukd3KSdcnCj5w52bz0EPCD3kMAKw5C3kJrMv5cwpujHZdeqj0rbb1f4oTlWaPgoie+Fi
-         oqPWTGV7PEU+54huXmLOmPhHK9oZpLdrMFhz5v/1emVPZghgLVbJwEnmNuyF1WtChcS0
-         kfeqgsjC7b22IuH3T+k+40V+QXjkkeG0yKo+dMARhKjOqsRoGsUwOZwVSXLT1dk7xng0
-         HWI4UHtO28QAfPRmmLK0F28oPs0iOV1/3ETbHznFLB/PNBCR1vSv0sR6kYQmnLM54Ji0
-         j0qw==
+        bh=jzm/x7TOjLOgi7CwKs4YCZ1LBGnvx2xB9lo0ysTnYvA=;
+        b=H4PVIGDTl6WnZIPkjc+EFidMIA/6sgQ8MLWYqnDcXuN8hA6Qfw54b0x9GKQmCs98R6
+         OVI2quuA1TxFEl6utPmQQ41Xik06vszzJ4jDmqkCQyWducURrSp6FHKyJ+d8aCBeDD7e
+         WFnRNbfgRhHTpDKtFmaeMOF64z4wjvyfYKXFuvMBHnT+X//VITbr8y0e65CEvs1u4cbV
+         Vae9aasikEPye6Moacpey80/g3Z1PmWsL4kjOjmt54pD5HewSgVMFDphEBt26OCG71Bp
+         5lKP4wnu6U6vj/ghMghMU0qvCuhwhRh+rJX3TRGGntswCK7rdtsFc8r1QaxMgzmMGe2m
+         CPbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678373472;
+        d=1e100.net; s=20210112; t=1678373479;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=7aVI4e2OdlOYVuMUfrd7oCECSdqBtHFzJOKgjTLxG8Y=;
-        b=F9Af3KzdFUiiJ1l2SZk/T0dIfd1wvX4Kw/RChf9SDK+P9pI85P8kOWfGtmwynYLCz/
-         +uMRN1Qmqxbtp+f4C8cn0Cr66ymTvlCRwE3QwQohVBS8Ppoi98Pc+i6gYRRMcI1OAD1q
-         +7YkjLnClG5OpzA9/+CmkIbL9w3Rh6JfoS6ls8LjKcqIqOXFjCaGldFgGovPB6weICW/
-         dxmmr2QAYBUZvu2/KBps2bZhQgICf+U6E+8SetNeEo2LzIhNYizvzCaudniPxg6TRpQo
-         lh2byh7CLg8sv3L7+pQopyB7Kk7qMTsEbYGbuj5XIy9nH9lMlzN1FMCuunj30Afy1xF1
-         B87Q==
-X-Gm-Message-State: AO0yUKU2RTfROV7Ocn/PHdTLvX01SGPwYlQRRtNu1UxtnKkqstmRJeLe
-        ePhhbBI98XF4zl8HS6b9YNBYhg==
-X-Google-Smtp-Source: AK7set/BxsPcC+kHi85xoG6nN7cO/XktZA2laWYayamgxbuDGcc1aRzL0J6Z81vp8brLfoyc73CXcA==
-X-Received: by 2002:a05:6870:ac1e:b0:172:a40f:5ff7 with SMTP id kw30-20020a056870ac1e00b00172a40f5ff7mr13766983oab.15.1678373470400;
-        Thu, 09 Mar 2023 06:51:10 -0800 (PST)
+        bh=jzm/x7TOjLOgi7CwKs4YCZ1LBGnvx2xB9lo0ysTnYvA=;
+        b=Zi2IVufn0mipAcsN7tyeWd03B7dPevF34df1SD2aTXDXd6KE3vbpRILtA8GCJCr5g3
+         0Oc2ifQ3y4hYcmoMDYVWFiHvKN2cOxR1NPzqkUTDe3rPvOJ+E4VvSlF1zBf1GBsNAbP/
+         oIyAr+KJ5ExxR5oQvwo/AXzZB5l2GIaKug1zxBFIdWDu5aqvQDUSVlAnWQZUrGf8HDL8
+         wATI9v8mTdY2x0hjklUCTYlLkwLA/EJfZMrgD8dEGhIXX+dQN9WMnOthf4mrfPNFCUOF
+         xmE5WUciWmwrofOxIlDrUXkuvlwqqcbJ1TArB/qc8J+OJ/gZ8dQp7PEYL3EL0SOZJIbZ
+         9q0w==
+X-Gm-Message-State: AO0yUKWBwy8eUqQOW2X/DvEvTaszdw3LsDjgcTsVUz80B10c16RsqHro
+        MTJvcWDiC7ZaQvHHT2dftYqaYA==
+X-Google-Smtp-Source: AK7set9GO0zxZyi7mefBy78H7fTBv+s+weKltD5HfFkitvia0cbS4wrAj2uYkuZMQfIaQ5I5Z1fUeQ==
+X-Received: by 2002:a05:6871:285:b0:172:45ff:6293 with SMTP id i5-20020a056871028500b0017245ff6293mr13952175oae.26.1678373478812;
+        Thu, 09 Mar 2023 06:51:18 -0800 (PST)
 Received: from vdi08.nix.tessares.net (static.219.156.76.144.clients.your-server.de. [144.76.156.219])
-        by smtp.gmail.com with ESMTPSA id ax39-20020a05687c022700b0016b0369f08fsm7351116oac.15.2023.03.09.06.51.02
+        by smtp.gmail.com with ESMTPSA id ax39-20020a05687c022700b0016b0369f08fsm7351116oac.15.2023.03.09.06.51.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Mar 2023 06:51:10 -0800 (PST)
+        Thu, 09 Mar 2023 06:51:18 -0800 (PST)
 From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Date:   Thu, 09 Mar 2023 15:50:02 +0100
-Subject: [PATCH net v2 6/8] mptcp: add ro_after_init for
- tcp{,v6}_prot_override
+Date:   Thu, 09 Mar 2023 15:50:03 +0100
+Subject: [PATCH net v2 7/8] mptcp: avoid setting TCP_CLOSE state twice
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230227-upstream-net-20230227-mptcp-fixes-v2-6-47c2e95eada9@tessares.net>
+Message-Id: <20230227-upstream-net-20230227-mptcp-fixes-v2-7-47c2e95eada9@tessares.net>
 References: <20230227-upstream-net-20230227-mptcp-fixes-v2-0-47c2e95eada9@tessares.net>
 In-Reply-To: <20230227-upstream-net-20230227-mptcp-fixes-v2-0-47c2e95eada9@tessares.net>
 To:     mptcp@lists.linux.dev, "David S. Miller" <davem@davemloft.net>,
@@ -71,73 +70,61 @@ To:     mptcp@lists.linux.dev, "David S. Miller" <davem@davemloft.net>,
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-kselftest@vger.kernel.org,
         Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Geliang Tang <geliang.tang@suse.com>, stable@vger.kernel.org
+        stable@vger.kernel.org
 X-Mailer: b4 0.12.1
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1660;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=963;
  i=matthieu.baerts@tessares.net; h=from:subject:message-id;
- bh=jwqxBRvOjpFpJeOhBbQNAMdCMsCRiyb+3+BlXnlrYos=;
- b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBkCfIhvNkzCHxVtYQT3XvqIPehwKS4POj6L7ylM
- Oq6BtJKQB2JAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCZAnyIQAKCRD2t4JPQmmg
- c/zGEACqL6+KKaSjgkuLXw9CX+Naqdq9ZO96zwpEXD95zrKUK4O8JaHHSLNyzKq2NksdN2iRwhZ
- 7oj2fI8FvM8nguDeHJiGuVFewPfMJBtz+DW4sqf/+Sq4TUlZCMNwIpizXW153YGZL9JE5B5xqYs
- FFWqRTBMSRlVyubNDj6heuregejJ2Vwvf6voTRb83e67ueY9fGG8BPhVxl224aZcEK0Q7ToDRVp
- Utrkr7QFId9CYkRdXst2qrWcM/QsLbJJ21IwgXQuepgOB2tMtbYkAjpWfRieUuhTPCDrqw078+L
- hVg8gr6iFvBWecQUE6bQpqM20Tfpq2OxyYpHTzPBy2+Z3ZBsNeNlru/VBXHOyDbRk24z3XqWYXz
- MueoJdJ4o1rFgpLYgrYGsnTDX228EOkG0vKs8ZAaXSFZ5IPGX7shVBsH/IZ84fdhAMtivP/WAXI
- 6bkTzSB8sH0D9c/kQWd0CFwHPHBg/c75C9Jz+uGEUXjUJebvqaXEMgkA/lI9IGsCc+b9cn/55qw
- /HXEUy7bjKFRJKFuVtetgL8+hn9tANC0g4uF8DfInATFIch2IUGR6zgkMq5hiHOuT3um7qRkvm1
- Q0WbH6u3/OdBAO8L+hMiKx+ALYG2iNcXBinxP4k47I8XBgux36FUMdargEBkINqaglBHHLeBSkC
- q1JUskp+9rIuAyQ==
+ bh=YhQrvwLHpqWFuACAI0OELxustQ1PVT1SBUl80EUsJ68=;
+ b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBkCfIhVzi8yguOmSTvdyb8Fy2uvF6oIcbmQZxef
+ 8MjZTpDu0OJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCZAnyIQAKCRD2t4JPQmmg
+ cxQSEAC4h1EXetyTEuncZ+ZrvfqSoNohT6csTHKoNAOLWuSclc59xfJaNgQIAwPM7xwuUWM7W2U
+ exMVLsI/GsR40waIDVGGUMRg5xCaLmv7KbImOzKLMLkKmRrWMxh91KMu40MCX28+AciHyVE0wfy
+ hechXKwj8Y7kKHbbXUci4IzgwKQB0yHzMbBokX5cgdUdtsnLR2S5PPA3Vf8Aab9YuKYoUZG+aEz
+ hxvIRyHAhH3sxN5tFr7+ulbbV6dCHORkjvVEpl2D4WYfNcmDnDzOdSFE4TgylW9TSed+5rSn+na
+ SVZFWh1RG35f2lY4WMBxUC2RcEdtvchCEtyAh/ap2a083hgL+1mbzpcWBh5osPhXDXbhmWlcrIp
+ BJaNNIANTekYvltIiNBs3hKyb0uefUG004sa7HZ0hSB+GZ8eEOp+NAYciFhicjK2sGRIb0Pp4ZE
+ XG9laaTdW56tm/lh1jYVKY6clGMg7AfRcOpfZmfaa44esDWF1F4/4oCp2608iWNZEjo3a5I6yfk
+ LvaforUNuJR5142U+zVtKkwc8X3xKzYwUn+JfNHCgem/AZn8JoMN0+yk6MkYWQ0sX6Vx6Z8sloO
+ qb0+x87j//OOxFenXNscRCMYVBH0iGpDvu5pu7UQdpIxGtNNOAjwCyu0oq77pTlmOhBNWKJy42M
+ WHNWz+uJ35COdTw==
 X-Developer-Key: i=matthieu.baerts@tessares.net; a=openpgp;
  fpr=E8CB85F76877057A6E27F77AF6B7824F4269A073
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Geliang Tang <geliang.tang@suse.com>
+tcp_set_state() is called from tcp_done() already.
 
-Add __ro_after_init labels for the variables tcp_prot_override and
-tcpv6_prot_override, just like other variables adjacent to them, to
-indicate that they are initialised from the init hooks and no writes
-occur afterwards.
+There is then no need to first set the state to TCP_CLOSE, then call
+tcp_done().
 
-Fixes: b19bc2945b40 ("mptcp: implement delegated actions")
+Fixes: d582484726c4 ("mptcp: fix fallback for MP_JOIN subflows")
 Cc: stable@vger.kernel.org
-Fixes: 51fa7f8ebf0e ("mptcp: mark ops structures as ro_after_init")
-Signed-off-by: Geliang Tang <geliang.tang@suse.com>
-Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/362
+Acked-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 ---
- net/mptcp/subflow.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/mptcp/subflow.c | 1 -
+ 1 file changed, 1 deletion(-)
 
 diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 9c57575df84c..2aadc8733369 100644
+index 2aadc8733369..a0041360ee9d 100644
 --- a/net/mptcp/subflow.c
 +++ b/net/mptcp/subflow.c
-@@ -628,7 +628,7 @@ static struct request_sock_ops mptcp_subflow_v6_request_sock_ops __ro_after_init
- static struct tcp_request_sock_ops subflow_request_sock_ipv6_ops __ro_after_init;
- static struct inet_connection_sock_af_ops subflow_v6_specific __ro_after_init;
- static struct inet_connection_sock_af_ops subflow_v6m_specific __ro_after_init;
--static struct proto tcpv6_prot_override;
-+static struct proto tcpv6_prot_override __ro_after_init;
+@@ -406,7 +406,6 @@ void mptcp_subflow_reset(struct sock *ssk)
+ 	/* must hold: tcp_done() could drop last reference on parent */
+ 	sock_hold(sk);
  
- static int subflow_v6_conn_request(struct sock *sk, struct sk_buff *skb)
- {
-@@ -926,7 +926,7 @@ static struct sock *subflow_syn_recv_sock(const struct sock *sk,
- }
- 
- static struct inet_connection_sock_af_ops subflow_specific __ro_after_init;
--static struct proto tcp_prot_override;
-+static struct proto tcp_prot_override __ro_after_init;
- 
- enum mapping_status {
- 	MAPPING_OK,
+-	tcp_set_state(ssk, TCP_CLOSE);
+ 	tcp_send_active_reset(ssk, GFP_ATOMIC);
+ 	tcp_done(ssk);
+ 	if (!test_and_set_bit(MPTCP_WORK_CLOSE_SUBFLOW, &mptcp_sk(sk)->flags) &&
 
 -- 
 2.39.2
