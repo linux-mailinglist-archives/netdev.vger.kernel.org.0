@@ -2,71 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AA1E6B231F
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 12:35:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 222BE6B2351
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 12:45:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231400AbjCILfN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 06:35:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54228 "EHLO
+        id S231628AbjCILpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 06:45:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbjCILfM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 06:35:12 -0500
+        with ESMTP id S231698AbjCILpK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 06:45:10 -0500
 Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6BF85FEB0;
-        Thu,  9 Mar 2023 03:35:09 -0800 (PST)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 329BYu2C065254;
-        Thu, 9 Mar 2023 05:34:56 -0600
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 522799FE57;
+        Thu,  9 Mar 2023 03:45:09 -0800 (PST)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 329BilmV067182;
+        Thu, 9 Mar 2023 05:44:47 -0600
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1678361696;
-        bh=iX7y3Z0tBRNNQCGKDp9Uv30r+tezSHa9h/x0ELZdFOU=;
+        s=ti-com-17Q1; t=1678362288;
+        bh=/q/r+VqIDQV+nyf/HFdFt7S4d1PgKsozHa8XIbxD8aY=;
         h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=ODStmCmYnXJEu4Sg5+R8o7IloBIFmO9LWNtS2Gs19J4sED9hm3roD/HwqkWqsI+X2
-         9K2IyEzzog/RDd1HhMrXRxjoE35g3yHbFlN9LB58Of3VyITz4OvgXWeMuBabiipRHJ
-         st0VGIH5lbCaKHB2+gCzR4ARQxZ99Yqn+91DYPVs=
-Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 329BYuNw017261
+        b=nAnAGXYW/BIh78fUHAF8Qk8hBwnEkuy5WmwDM9NDgykbzDS94TzunNiSbEHM08EZf
+         SIWLabHhn09QBlt8dfoAKNl6ODNLNseANMBusUJ7MwbOnfTuRmU91N+5Vx38gcKRZl
+         U/BcI1f82iMoQ6L9rvjidTWmPcFBFyVr70O/u3WA=
+Received: from DFLE111.ent.ti.com (dfle111.ent.ti.com [10.64.6.32])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 329BiliX027723
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 9 Mar 2023 05:34:56 -0600
-Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+        Thu, 9 Mar 2023 05:44:47 -0600
+Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Thu, 9
- Mar 2023 05:34:55 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
+ Mar 2023 05:44:47 -0600
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Thu, 9 Mar 2023 05:34:56 -0600
+ Frontend Transport; Thu, 9 Mar 2023 05:44:47 -0600
 Received: from [10.24.69.114] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 329BYo7K025813;
-        Thu, 9 Mar 2023 05:34:51 -0600
-Message-ID: <9c866140-6ca6-3594-95b5-5a7a37ce9c05@ti.com>
-Date:   Thu, 9 Mar 2023 17:04:50 +0530
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 329BifPD012701;
+        Thu, 9 Mar 2023 05:44:42 -0600
+Message-ID: <d7f18805-7b26-e2c9-a40e-262165ec8f9b@ti.com>
+Date:   Thu, 9 Mar 2023 17:14:41 +0530
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
-Subject: Re: [EXTERNAL] Re: [PATCH v3 5/6] soc: ti: pruss: Add helper function
- to enable OCP master ports
+Subject: Re: [EXTERNAL] Re: [PATCH v5 1/2] dt-bindings: net: Add ICSSG
+ Ethernet
 Content-Language: en-US
-To:     Tony Lindgren <tony@atomide.com>,
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh@kernel.org>,
         MD Danish Anwar <danishanwar@ti.com>
 CC:     "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
         Roger Quadros <rogerq@kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>,
         Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <t-kristo@ti.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        "Bjorn Andersson" <andersson@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Nishanth Menon <nm@ti.com>, <linux-remoteproc@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <srk@ti.com>, <devicetree@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-References: <20230306110934.2736465-1-danishanwar@ti.com>
- <20230306110934.2736465-6-danishanwar@ti.com>
- <20230309070450.GE7501@atomide.com>
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>, <andrew@lunn.ch>,
+        <nm@ti.com>, <ssantosh@kernel.org>, <srk@ti.com>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-omap@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+References: <20230210114957.2667963-1-danishanwar@ti.com>
+ <20230210114957.2667963-2-danishanwar@ti.com>
+ <20230210192001.GB2923614-robh@kernel.org>
+ <43df3c2c-d0d0-f2b8-cf8b-8a2453ca43b4@ti.com>
+ <63dbbda7-a444-8dac-6399-45e305652155@linaro.org>
 From:   Md Danish Anwar <a0501179@ti.com>
 Organization: Texas Instruments
-In-Reply-To: <20230309070450.GE7501@atomide.com>
+In-Reply-To: <63dbbda7-a444-8dac-6399-45e305652155@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
@@ -80,96 +84,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Tony,
+Hi Krzysztof,
 
-On 09/03/23 12:34, Tony Lindgren wrote:
-> Hi,
+On 07/03/23 14:28, Krzysztof Kozlowski wrote:
+> On 07/03/2023 05:57, Md Danish Anwar wrote:
+>>>> +allOf:
+>>>> +  - $ref: /schemas/remoteproc/ti,pru-consumer.yaml#
+>>>> +
+>>>> +properties:
+>>>> +  compatible:
+>>>> +    enum:
+>>>> +      - ti,am654-icssg-prueth  # for AM65x SoC family
+>>>> +
+>>>> +  ti,sram:
+>>>> +    $ref: /schemas/types.yaml#/definitions/phandle
+>>>> +    description:
+>>>> +      phandle to MSMC SRAM node
+>>>
+>>> I believe we have a standard 'sram' property to point to SRAM nodes 
+>>> assuming this is just mmio-sram or similar.
+>>>
+>>
+>> Yes, we have standard 'sram' property but Krzysztof had asked me to make the
+>> sram property vendor specific in last revision of this series.
 > 
-> * MD Danish Anwar <danishanwar@ti.com> [230306 11:10]:
->> From: Suman Anna <s-anna@ti.com>
->> +/**
->> + * pruss_cfg_ocp_master_ports() - configure PRUSS OCP master ports
->> + * @pruss: the pruss instance handle
->> + * @enable: set to true for enabling or false for disabling the OCP master ports
->> + *
->> + * This function programs the PRUSS_SYSCFG.STANDBY_INIT bit either to enable or
->> + * disable the OCP master ports (applicable only on SoCs using OCP interconnect
->> + * like the OMAP family). Clearing the bit achieves dual functionalities - one
->> + * is to deassert the MStandby signal to the device PRCM, and the other is to
->> + * enable OCP master ports to allow accesses outside of the PRU-ICSS. The
->> + * function has to wait for the PRCM to acknowledge through the monitoring of
->> + * the PRUSS_SYSCFG.SUB_MWAIT bit when enabling master ports. Setting the bit
->> + * disables the master access, and also signals the PRCM that the PRUSS is ready
->> + * for Standby.
->> + *
->> + * Return: 0 on success, or an error code otherwise. ETIMEDOUT is returned
->> + * when the ready-state fails.
->> + */
->> +int pruss_cfg_ocp_master_ports(struct pruss *pruss, bool enable)
->> +{
->> +	int ret;
->> +	u32 syscfg_val, i;
->> +	const struct pruss_private_data *data;
->> +
->> +	if (IS_ERR_OR_NULL(pruss))
->> +		return -EINVAL;
->> +
->> +	data = of_device_get_match_data(pruss->dev);
->> +
->> +	/* nothing to do on non OMAP-SoCs */
->> +	if (!data || !data->has_ocp_syscfg)
->> +		return 0;
->> +
->> +	/* assert the MStandby signal during disable path */
->> +	if (!enable)
->> +		return pruss_cfg_update(pruss, PRUSS_CFG_SYSCFG,
->> +					SYSCFG_STANDBY_INIT,
->> +					SYSCFG_STANDBY_INIT);
->> +
->> +	/* enable the OCP master ports and disable MStandby */
->> +	ret = pruss_cfg_update(pruss, PRUSS_CFG_SYSCFG, SYSCFG_STANDBY_INIT, 0);
->> +	if (ret)
->> +		return ret;
->> +
->> +	/* wait till we are ready for transactions - delay is arbitrary */
->> +	for (i = 0; i < 10; i++) {
->> +		ret = pruss_cfg_read(pruss, PRUSS_CFG_SYSCFG, &syscfg_val);
->> +		if (ret)
->> +			goto disable;
->> +
->> +		if (!(syscfg_val & SYSCFG_SUB_MWAIT_READY))
->> +			return 0;
->> +
->> +		udelay(5);
->> +	}
->> +
->> +	dev_err(pruss->dev, "timeout waiting for SUB_MWAIT_READY\n");
->> +	ret = -ETIMEDOUT;
->> +
->> +disable:
->> +	pruss_cfg_update(pruss, PRUSS_CFG_SYSCFG, SYSCFG_STANDBY_INIT,
->> +			 SYSCFG_STANDBY_INIT);
->> +	return ret;
->> +}
->> +EXPORT_SYMBOL_GPL(pruss_cfg_ocp_master_ports);
+> Sorry about that. I missed that we already have a 'sram'. The question
+> remains whether this is a phandle to MMIO SRAM or similar (sram.yaml).
 > 
-> The above you should no longer be needed, see for example am33xx-l4.dtsi
-> for pruss_tm: target-module@300000. The SYSCFG register is managed by
-> drivers/bus/ti-sysc.c using compatible "ti,sysc-pruss", and the "sysc"
-> reg-names property. So when any of the child devices do pm_runtime_get()
-> related functions, the PRUSS top level interconnect target module is
-> automatically enabled and disabled as needed.
+> Best regards,
+> Krzysztof
 > 
-> If there's something still missing like dts configuration for some SoCs,
-> or quirk handling in ti-sysc.c, let's fix those instead so we can avoid
-> exporting a custom function for pruss_cfg_ocp_master_ports.
-> 
-> Regards,
-> 
-> Tony
 
-I will remove this patch in the next revision of this series as it is no longer
-needed.
+The SRAM that we are using here is phandle to MMIO-SRAM only. In the example
+section you can see, sram node points to msmc_ram (ti,sram = <&msmc_ram>;) And
+msmc_ram has compatible as "mmio-sram" in k3-am65-main.dtsi [1].
+
+	msmc_ram: sram@70000000 {
+		compatible = "mmio-sram";
+		reg = <0x0 0x70000000 0x0 0x200000>;
+
+So I can use 'sram' property as there is no need to make this as ti specific.
+Let me know if it seems good to you.
+
+[1]
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/arm64/boot/dts/ti/k3-am65-main.dtsi?h=v6.3-rc1#n11
 
 -- 
 Thanks and Regards,
