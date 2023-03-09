@@ -2,102 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 60A3B6B2DFB
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 20:54:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BEFD6B2E0E
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 21:01:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230164AbjCITyJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 14:54:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40644 "EHLO
+        id S230366AbjCIUAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 15:00:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229651AbjCITyH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 14:54:07 -0500
-Received: from mail-vs1-xe30.google.com (mail-vs1-xe30.google.com [IPv6:2607:f8b0:4864:20::e30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 849A462328
-        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 11:54:06 -0800 (PST)
-Received: by mail-vs1-xe30.google.com with SMTP id f13so2674917vsg.6
-        for <netdev@vger.kernel.org>; Thu, 09 Mar 2023 11:54:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1678391645;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RqpcGDTF9TvNcH8vUk4y3HxaqWz3ChIQXFNytcqy8nU=;
-        b=OJbln4sdUL4EAT7TMgmdVYhV87K5DCcUK1N6+s4b6mo9FsSNTACJr8B67kxGsBmgAo
-         GcY7w0Mdqf0D+1c4yh6n1ULBJUXd1SI97oywSezgjCGdhd8deH6bTizYEtqVtlJ21zkO
-         2kycYb+om4iP4IdH/xivp18F5koYqU0fjFJaI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678391645;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=RqpcGDTF9TvNcH8vUk4y3HxaqWz3ChIQXFNytcqy8nU=;
-        b=Ma09HftDl59tIHSk8kC3t44jfndjhPWyoFqDF73U3UQnAJYejGtB7HPWlWTal9z4Ot
-         bqmvnsXmBZJa0ITwwd0D72M6xNWsVt00MWyMiBC/2sFdx6teAz14vwMFOc5H4Fa334Kq
-         auvqja4O4/mzoxiEY9aEj2A9zGcqRQOUa56fKf/vavUGOicCJfk9Tqq7uuwphu98ZTdw
-         Thfj4pOFKMMZ138YsjxwsMSm2chMiwKwFF0GBSr6dCffkE9MOrVAK8NvKBjoqnrErTuJ
-         XbWOSfAdc42xbXtivVNIT4ZNfdxvcvI6j4GvHVPzhSC6JXllYK/454H2kCB+85DV6ko5
-         E9jA==
-X-Gm-Message-State: AO0yUKVgY5r1xFbDCuMD0RnJyqKnHtv+8bZC+THHwZ1Qn15O5DhFoi1l
-        wjjfJgGMGQhA72HMcA8ywvbRYAZOFP2/wKMfanSbsg==
-X-Google-Smtp-Source: AK7set8IhMjIfSIqc5tWtr8EnGWBjwWQ1Qw4o1RTQNtpBk0PXRu13Gppe1EWsTNPEF2TEFMhKolo/tokyByyIxtxAxo=
-X-Received: by 2002:a05:6102:3167:b0:421:a2e2:cf30 with SMTP id
- l7-20020a056102316700b00421a2e2cf30mr15502192vsm.5.1678391645507; Thu, 09 Mar
- 2023 11:54:05 -0800 (PST)
+        with ESMTP id S230321AbjCIUAk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 15:00:40 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D30FA8DE;
+        Thu,  9 Mar 2023 12:00:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6C96DB82088;
+        Thu,  9 Mar 2023 20:00:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1429BC433D2;
+        Thu,  9 Mar 2023 20:00:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678392018;
+        bh=ghTPUr8Y9UcJYMB55rlQXEdOc5NzVVj2fiPMBgsL30M=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=caTMDFtjQSi0VwcxdjUUJh2Sm8c9jkyu8HFUs0dIdlfYQYO6ccKxhsyB0IxAy6on7
+         ruapcN8UwXlrS7o/sDZEcxURwUSAoMtp56HHsF8+PyopsK7ukJ4u3zgFE4XJy7dkNS
+         pCx2Za/HUTRJ9dtcW85QokuqgVnyj/x49coKSRg0qhbIDUembzgjLLsGMH2jMS2KS9
+         UF4VJHyPxwN7i381H6JQ9KtqKISLdRqSSFGUnTNdy0BNFJh8FEQEs6NxOHeRhlqWP6
+         PLQ0W6aHbOdW/8mOOydHqolO1dCSz3fbeMObVLf84zvN8sujVvPxCj0vYZsewfvYOs
+         QrKWeQ3ZprrUA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EADE3E4D008;
+        Thu,  9 Mar 2023 20:00:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20230308202159.2419227-1-grundler@chromium.org>
- <20230308202159.2419227-2-grundler@chromium.org> <ZAnBCQsv7tTBIUP1@nanopsycho>
- <CANEJEGuK-=tTBXG6FpC4aBb7KbsNZng2-Rmi0k6BJJ7An=Pyxw@mail.gmail.com> <07dd1c76-68a1-4c2f-98fe-7c25118eaff9@lunn.ch>
-In-Reply-To: <07dd1c76-68a1-4c2f-98fe-7c25118eaff9@lunn.ch>
-From:   Grant Grundler <grundler@chromium.org>
-Date:   Thu, 9 Mar 2023 11:53:54 -0800
-Message-ID: <CANEJEGurX3Kr30Dv5_LzxN+shYuWXxxbEJG1MOgOOhpAq1WzLA@mail.gmail.com>
-Subject: Re: [PATCHv3 net 2/2] net: asix: init mdiobus from one function
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Grant Grundler <grundler@chromium.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Eizan Miyamoto <eizan@chromium.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-9.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_SPF_WL
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next v2 0/2] selftests/bpf: use ifname instead of ifindex
+ in XDP
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167839201795.28882.17670469043875720414.git-patchwork-notify@kernel.org>
+Date:   Thu, 09 Mar 2023 20:00:17 +0000
+References: <cover.1678382940.git.lorenzo@kernel.org>
+In-Reply-To: <cover.1678382940.git.lorenzo@kernel.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        andrii@kernel.org, lorenzo.bianconi@redhat.com,
+        daniel@iogearbox.net
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 9, 2023 at 11:30=E2=80=AFAM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > I hope the maintainers can apply both to net-next and only apply the
-> > first to net branch.
->
-> Hi Grant
->
-> Please take a look at
-> https://www.kernel.org/doc/html/latest/process/maintainer-netdev.html
->
-> Please submit the first patch to net. Then wait a week for net to be
-> merged into net-next, and submit the second patch to net-next.
+Hello:
 
-Thanks Andrew!
-I read maintainer-netdev.html when Jakub pointed me at it a few days
-ago. He also instructed me to use "net" but didn't specify for the
-second patch - so I assumed both patches.
+This series was applied to bpf/bpf-next.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
 
-I'll follow your instructions and repost to net-next once the first
-patch has been merged.
+On Thu,  9 Mar 2023 18:32:39 +0100 you wrote:
+> Use interface name instead of interface index in XDP compliance test tool logs.
+> Improve XDP compliance test tool error messages.
+> 
+> Changes since v1:
+> - split previous patch in two logically separated patches
+> 
+> Lorenzo Bianconi (2):
+>   selftests/bpf: use ifname instead of ifindex in XDP compliance test
+>     tool
+>   selftests/bpf: improve error logs in XDP compliance test tool
+> 
+> [...]
 
-cheers,
-grant
+Here is the summary with links:
+  - [bpf-next,v2,1/2] selftests/bpf: use ifname instead of ifindex in XDP compliance test tool
+    https://git.kernel.org/bpf/bpf-next/c/27a36bc3cdd5
+  - [bpf-next,v2,2/2] selftests/bpf: improve error logs in XDP compliance test tool
+    https://git.kernel.org/bpf/bpf-next/c/c1cd734c1bb3
 
->
->        Andrew
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
