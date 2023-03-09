@@ -2,114 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A4D3A6B2024
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 10:33:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7A366B2029
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 10:33:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230377AbjCIJdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 04:33:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43018 "EHLO
+        id S230527AbjCIJdj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 04:33:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230423AbjCIJci (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 04:32:38 -0500
-Received: from out-19.mta0.migadu.com (out-19.mta0.migadu.com [91.218.175.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57582E842B
-        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 01:32:13 -0800 (PST)
-Message-ID: <38521144-ddc0-f11b-8243-636de48d0c11@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1678354331;
+        with ESMTP id S231243AbjCIJdZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 04:33:25 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF01E982D
+        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 01:32:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1678354336;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=LNr9cxu0GCBKIWAwZR/NKFFGpOUc6P4kqXTQa4IwM5c=;
-        b=Br48CB4dv1kckRArQKqSZcrt8UjPknVgk0wR5VlaPO1XFugOjZuYxRStiEkw8c3KcT1uxI
-        Bm/2UdviWvk6I/36QYOY4wa/DVnquihcQpDE9pJ8K8eyJo0LhieyEF/0+GhBxHTgHIBXwH
-        eexD7GeTyw6xFDCvaeLy09BJRWCsqxw=
-Date:   Thu, 9 Mar 2023 09:32:09 +0000
+        bh=sQ+J/SIf2Lwzsd+AvJuj8Brejkg7/l6hsC8VV8+8W1M=;
+        b=Lgc+Uyry8nh+xzHEt4bEc75oJxL0B9rJSx+Nv29OEEngdWlObB8yg9R/nqSM6ZFqiiISpp
+        nLNBqAL5fEL8ONmbqWDTmoITkrBDPc+IM9g5WEjCDD34Wt0V3iWk510hhqEDvKa/3IKg9t
+        g3yxXa+ZPj2ZPhv8WScudUiO6WKwoSU=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-369-sF7mdhvLPdy9lRBeD5uvpg-1; Thu, 09 Mar 2023 04:32:14 -0500
+X-MC-Unique: sF7mdhvLPdy9lRBeD5uvpg-1
+Received: by mail-ed1-f72.google.com with SMTP id ec11-20020a0564020d4b00b004e2cb85c8bcso2066885edb.16
+        for <netdev@vger.kernel.org>; Thu, 09 Mar 2023 01:32:14 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678354333;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=sQ+J/SIf2Lwzsd+AvJuj8Brejkg7/l6hsC8VV8+8W1M=;
+        b=t1F0HeYh8cwMc0quYVu0xP93zvL6dt40VVwOlpsX2BO7wALvEa/vMm5YdCURzSoi4r
+         w5lbU1D+Vulbg6mv8ggyfj0DiCw/w9aB+YLKQjB0OKiR3DTUkR/biQs+wvMtOLYA0cyF
+         Cm2aITpPRMsoMRdbvfo4ItMjKssz3GNh9FhFeRiazSet2FV3R2jK9lXNqHxrbftZ9cUZ
+         +EADIPBxQYzv7loEd6rHvUkgd3UBoHgSDLPJVC1SC/eAma8K41XdppoTHflymwQ7vmB1
+         XjxDed+wPtae/mwuk868XCedWXeDW45MOmpadOFvceEJFcm3eeDP3Kl9SZ96dfmBVqTS
+         5/pQ==
+X-Gm-Message-State: AO0yUKXSJSZ/OyHUL8jpa9AVc8i891K3yYuODpy0bhpXeQUOaGmQ25jA
+        ZicOuA/elgUrDNJ6TuoLo5z6u/koXlMp2UizGVl9OH+eeAw9iQ/R1sgmktG2eFC6RHe7M1L13gm
+        akj90vnGEDC59Sl41
+X-Received: by 2002:aa7:da0a:0:b0:4af:7bdc:188e with SMTP id r10-20020aa7da0a000000b004af7bdc188emr25673774eds.16.1678354333817;
+        Thu, 09 Mar 2023 01:32:13 -0800 (PST)
+X-Google-Smtp-Source: AK7set9Zcc4VfH+adkU4CX8s8G2r+r/hbCkiRw8tT7qROHeFsFcauVxjL7MeoaeJyJi8J5zGFtIfvg==
+X-Received: by 2002:aa7:da0a:0:b0:4af:7bdc:188e with SMTP id r10-20020aa7da0a000000b004af7bdc188emr25673759eds.16.1678354333521;
+        Thu, 09 Mar 2023 01:32:13 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c32:7800:5bfa:a036:83f0:f9ec? (2001-1c00-0c32-7800-5bfa-a036-83f0-f9ec.cable.dynamic.v6.ziggo.nl. [2001:1c00:c32:7800:5bfa:a036:83f0:f9ec])
+        by smtp.gmail.com with ESMTPSA id t26-20020a1709060c5a00b008ec793ac3f4sm8527194ejf.192.2023.03.09.01.32.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Mar 2023 01:32:13 -0800 (PST)
+Message-ID: <9398f15b-6c50-b7ef-1886-c3c78f075e72@redhat.com>
+Date:   Thu, 9 Mar 2023 10:32:12 +0100
 MIME-Version: 1.0
-Subject: Re: [PATCH net v2] bnxt_en: reset PHC frequency in free-running mode
-To:     Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        Vadim Fedorenko <vadfed@meta.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Andy Gospodarek <andrew.gospodarek@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        netdev@vger.kernel.org
-References: <20230308144209.150456-1-vadfed@meta.com>
- <CALs4sv3+jKGA=z-Nb1akw2h1jkL6T7VLj4pV7KVsZwx1Gt+DnA@mail.gmail.com>
-Content-Language: en-US
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Vadim Fedorenko <vadim.fedorenko@linux.dev>
-In-Reply-To: <CALs4sv3+jKGA=z-Nb1akw2h1jkL6T7VLj4pV7KVsZwx1Gt+DnA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v8 00/13] Adds support for PHY LEDs with offload triggers
+Content-Language: en-US, nl
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        John Crispin <john@phrozen.org>, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        Tim Harvey <tharvey@gateworks.com>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        Bagas Sanjaya <bagasdotme@gmail.com>,
+        Arun.Ramadoss@microchip.com
+References: <20230216013230.22978-1-ansuelsmth@gmail.com>
+ <CACRpkda30Ky5oYPn_nGWGOzT5ntZYdE3gafrs7D27ZHxgGuO8A@mail.gmail.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <CACRpkda30Ky5oYPn_nGWGOzT5ntZYdE3gafrs7D27ZHxgGuO8A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09.03.2023 04:40, Pavan Chebbi wrote:
-> On Wed, Mar 8, 2023 at 8:12 PM Vadim Fedorenko <vadfed@meta.com> wrote:
->>
->> +static int bnxt_ptp_adjfine_rtc(struct bnxt *bp, long scaled_ppm)
->> +{
->> +       s32 ppb = scaled_ppm_to_ppb(scaled_ppm);
->> +       struct hwrm_port_mac_cfg_input *req;
->> +       int rc;
->> +
->> +       rc = hwrm_req_init(bp, req, HWRM_PORT_MAC_CFG);
->> +       if (rc)
->> +               return rc;
->> +
->> +       req->ptp_freq_adj_ppb = cpu_to_le32(ppb);
->> +       req->enables = cpu_to_le32(PORT_MAC_CFG_REQ_ENABLES_PTP_FREQ_ADJ_PPB);
->> +       rc = hwrm_req_send(bp, req);
->> +       if (rc)
->> +               netdev_err(bp->dev,
->> +                          "ptp adjfine failed. rc = %d\n", rc);
-> 
-> nit: can be a single line.
-> 
->> +       return rc;
->> +}
->> +
-> 
->> @@ -932,13 +937,15 @@ int bnxt_ptp_init(struct bnxt *bp, bool phc_cfg)
->>          atomic_set(&ptp->tx_avail, BNXT_MAX_TX_TS);
->>          spin_lock_init(&ptp->ptp_lock);
->>
->> -       if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC) {
->> +       if (BNXT_PTP_USE_RTC(ptp->bp)) {
->>                  bnxt_ptp_timecounter_init(bp, false);
->>                  rc = bnxt_ptp_init_rtc(bp, phc_cfg);
->>                  if (rc)
->>                          goto out;
->>          } else {
->>                  bnxt_ptp_timecounter_init(bp, true);
->> +               if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
-> 
-> I understand from your response on v1 as to why it will not affect you
-> if a new firmware does not report RTC on MH.
-> However, once you update the fw, any subsequent kernels upgrades will
-> prevent resetting the freq stored in the PHC.
-> Would changing the check to if (BNXT_MH(bp)) instead be a better option?
+Hi,
 
-How will it affect hardware without RTC support? The one which doesn't have
-BNXT_FW_CAP_PTP_RTC in a single-host configuration. Asking because if FW will 
-not expose BNXT_FW_CAP_PTP_RTC, the check BNXT_PTP_USE_RTC() will be equal to
-!BNXT_MH() and there will be no need for additional check in this else clause.
+On 3/9/23 10:09, Linus Walleij wrote:
+> Hi Christian,
+> 
+> thanks for your patch!
+> 
+> On Thu, Feb 16, 2023 at 2:36 AM Christian Marangi <ansuelsmth@gmail.com> wrote:
+> 
+>> The current idea is:
+>> - LED driver implement 3 API (hw_control_status/start/stop).
+>>   They are used to put the LED in hardware mode and to configure the
+>>   various trigger.
+>> - We have hardware triggers that are used to expose to userspace the
+>>   supported hardware mode and set the hardware mode on trigger
+>>   activation.
+>> - We can also have triggers that both support hardware and software mode.
+>> - The LED driver will declare each supported hardware blink mode and
+>>   communicate with the trigger all the supported blink modes that will
+>>   be available by sysfs.
+>> - A trigger will use blink_set to configure the blink mode to active
+>>   in hardware mode.
+>> - On hardware trigger activation, only the hardware mode is enabled but
+>>   the blink modes are not configured. The LED driver should reset any
+>>   link mode active by default.
+> 
+> The series looks good as a start.
+> There are some drivers and HW definitions etc for switch-controlled
+> LEDs, which is great.
+> 
+> I am a bit reluctant on the ambition to rely on configuration from sysfs
+> for the triggers, and I am also puzzled to how a certain trigger on a
+> certain LED is going to associate itself with, say, a certain port.
+> 
+> I want to draw your attention to this recently merged patch series
+> from Hans de Goede:
+> https://lore.kernel.org/linux-leds/20230120114524.408368-1-hdegoede@redhat.com/
+> 
+> This adds the devm_led_get() API which works similar to getting
+> regulators, clocks, GPIOs or any other resources.
+> 
+> It is not yet (I think) hooked into the device tree framework, but it
+> supports software nodes so adding DT handling should be sort of
+> trivial.
+
+That series contains this (unmerged) patch to hookup DT handling:
+
+https://lore.kernel.org/linux-leds/20230120114524.408368-6-hdegoede@redhat.com/
+
+this was not merged because there are no current users, but adding
+support is as easy as picking up that patch :)
+
+Note there also already is a devicetree *only*:
+
+struct led_classdev *of_led_get(struct device_node *np, int index);
+
+Since I was working on a x86/ACPI platform I needed something more
+generic though and ideally new code would use the generic approach.
+
+Regards,
+
+Hans
 
 
->> +                       bnxt_ptp_adjfine_rtc(bp, 0);
->>          }
->>
->>          ptp->ptp_info = bnxt_ptp_caps;
->> --
->> 2.30.2
->>
+
+
+
+> 
+> I think the ambition should be something like this (conjured example)
+> for a DSA switch:
+> 
+>     platform {
+>             switch {
+>                     compatible = "foo";
+> 
+>                     leds {
+>                             #address-cells = <1>;
+>                             #size-cells = <0>;
+>                             led0: led@0 {
+>                                     reg = <0>;
+>                                     color =...
+>                                     function = ...
+>                                     function-enumerator = ...
+>                                     default-state = ...
+>                             };
+>                             led1: led@1 {
+>                                     reg = <1>;
+>                                     color =...
+>                                     function = ...
+>                                     function-enumerator = ...
+>                                     default-state = ...
+>                             };
+>                     };
+> 
+>                     ports {
+>                             #address-cells = <1>;
+>                             #size-cells = <0>;
+>                             port@0 {
+>                                     reg = <0>;
+>                                     label = "lan0";
+>                                     phy-handle = <&phy0>;
+>                                     leds = <&led0>;
+>                             };
+>                             port@1 {
+>                                     reg = <1>;
+>                                     label = "lan1";
+>                                     phy-handle = <&phy1>;
+>                                     leds = <&led0>;
+>                             };
+>                     };
+> 
+>                     mdio {
+>                             compatible = "foo-mdio";
+>                             #address-cells = <1>;
+>                             #size-cells = <0>;
+> 
+>                             phy0: ethernet-phy@0 {
+>                                     reg = <0>;
+>                             };
+>                             phy1: ethernet-phy@1 {
+>                                     reg = <1>;
+>                             };
+>                     };
+>             };
+>     };
+> 
+> I am not the man to tell whether the leds = <&led0>; phandle should be on
+> the port or actually on the phy, it may even vary. You guys know the answer
+> to this.
+> 
+> But certainly something like this resource phandle will be necessary to
+> assign the right LED to the right port or phy, I hope you were not going
+> to rely on strings and naming conventions?
+> 
+> Yours,
+> Linus Walleij
+> 
 
