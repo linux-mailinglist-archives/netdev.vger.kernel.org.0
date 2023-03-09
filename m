@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D6276B1C39
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 08:25:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01D6C6B1C3C
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 08:27:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229935AbjCIHZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 02:25:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43326 "EHLO
+        id S229892AbjCIH1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 02:27:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229644AbjCIHZs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 02:25:48 -0500
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E24E45C13A;
-        Wed,  8 Mar 2023 23:25:47 -0800 (PST)
-Received: by mail-pg1-x533.google.com with SMTP id y19so505407pgk.5;
-        Wed, 08 Mar 2023 23:25:47 -0800 (PST)
+        with ESMTP id S230113AbjCIH1K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 02:27:10 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70E1ADAB97;
+        Wed,  8 Mar 2023 23:27:08 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id ce8-20020a17090aff0800b0023a61cff2c6so5441073pjb.0;
+        Wed, 08 Mar 2023 23:27:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678346747;
+        d=gmail.com; s=20210112; t=1678346828;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=WPQMej7KLmYsLHqJdkvoOENmhsOZSLZwLrCj7NjeNPQ=;
-        b=Gm3KltXYMqXM9PpoXaSbH0syDlzDq9Va5QE0Jt8nZyq53bviDuO2Imgk+NQkGsi/aF
-         W768jlFmRoxiDK2daAo0Oee1jdgV/vso+GbqI4yEdN7BxpC61mdhE+UQO+H7a2nek66f
-         09jIz2eMzsLMTn3DEUAk9iF5AbxnBUc3MhpfuXt3tiGOG5HYjw2LY2PkMGUEm3iFTOvn
-         3zq+udoAVWeGRuPNKDwVe3JfL6BAa8X2yWZETiqKxYcgjWyJcUYTukYqnxCpzVhzd2TZ
-         uqWGZbjD2BLtOlc10OoowZPg8RW0wY6Tu8G0HwGaUIUC0NlM3TOKZGAjcP0AY4jRjh0v
-         +z5w==
+        bh=CJHzsaxOituYDBkxOA8H81vwLH3ZviXpLecRvt7q+4o=;
+        b=FhiF1bkIirhXX6zU1PYQDdyHDWrRZAVxDmgaiuyVy/G5zTxdknvqDQd2qQGbFKEF8l
+         5pyrCJ5zPE0vQGooY0Xfz0Ac+OVH3fpkXkoBJJVBBD88eCVhRRIUBn+ENARTNH2bI3dC
+         KVeCPVKk9hinoPfDuurpXdTOFZoT0S+7FrIICYy3nt9h33HcSm00AsqiGZD9nKaDtGpm
+         OR1PZnp/p6+ePj5ADaRp0oHO/7WkhS4t2mjRnypLM+jUYPwJiytZQqz4foFpWXhyIWWi
+         ebo3udUah9AJHHRd/ZUdZ30Qs/5+Rf/tqqbIRSvJ+oMF4OOL8KwOepLd3Q372C18Pc7x
+         WDQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678346747;
+        d=1e100.net; s=20210112; t=1678346828;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=WPQMej7KLmYsLHqJdkvoOENmhsOZSLZwLrCj7NjeNPQ=;
-        b=e+PB/9XyFgqXe7m/GdEJgPYvvOY3qg31WqFGla/dWM4BPh2p93IGNFY1iIuyG7ktFa
-         HAb9QMJYYGqU5j+6laI2BeHbYMrQ0NuITD+C+L0Mke7vL4G8Oq4ScDp8vYtxVa1oHLSL
-         qaBS9VE9iuumWkxsVustFbBDSvgliVbSGtJvySyCfJBEb9YHhJXAif+/muQfpnAc6ogS
-         BZM8uHcm9n7E/gQVgH1QadgpYJJIkKuTcD1wXpse1vVniJHLbMzoYTgePIW9gKJxK0Wh
-         FgF0ivYBcDuY4NiYdj1dCZJLBf6qV1Nza91Y+0ft75jWJBqKvvHQX6SyghlaRShHviRF
-         CshA==
-X-Gm-Message-State: AO0yUKUhCMycm5RCGuxkKGy44ABfO6HZddquIjEVuTjmggKwHSuzmSd5
-        hMoT2DYO7Hs1SsQMwuJlY8OkT+fpIHkejaszIdE=
-X-Google-Smtp-Source: AK7set+i8KrnF9mVLoLp7v2nGxm54qHjaPZn01vom8u8xIv/ykq5uYOfW331kcdc6khbmA4ahyw+Sb5RyLfaeCnwkKg=
-X-Received: by 2002:a62:d41a:0:b0:5a8:e197:736f with SMTP id
- a26-20020a62d41a000000b005a8e197736fmr8811750pfh.0.1678346747330; Wed, 08 Mar
- 2023 23:25:47 -0800 (PST)
+        bh=CJHzsaxOituYDBkxOA8H81vwLH3ZviXpLecRvt7q+4o=;
+        b=TRDnJnWxnqCYGYyKGLJnl5x3ctFYkkL/ckz6+Yw3L3mkEDMN1wdo6/JZhDGg8DnY53
+         O/VTS/7c/r0rMX/A3SjIBdeXigD8RKcAbfikBL0pX8MAW3UOmj7EgGYsH4fE25gs+35w
+         K57DEWrDFv+0Uz++htpzUDhquY8+oXDRYFc+CLlEhFMcN36zS3lXitTWmXqicX6IMuUZ
+         dF9cmMNta6R+ceDiwhMGdJyvDfRB864mezkwa3OnVK+V79YL3aLTlTVtEeqIqdNaBeHF
+         3VNZ6KoNsWEIkFB6qKTTosH76j9bImGQp2JXI60mWqDzKHJOEuEZ2BM4yRfYceWvw0KL
+         mVRA==
+X-Gm-Message-State: AO0yUKVdUlUCHxdet5Ekw3AJ2z+xUeLjVN/vhIPU5Nw8uyU7AcdA16La
+        Abj/juhezk+0+X7hrNPKY/RqKIMaODM3UrKMu5c=
+X-Google-Smtp-Source: AK7set/FlFpnQ7TXKx5oEOQ4GI/7HbhMjyIjqIVdCgszs0y16a7MjMC58+BqhJVX8tsNVesGvOBSCiL25Q3SzrH4ek8=
+X-Received: by 2002:a17:90a:ea0b:b0:237:5e4c:7d78 with SMTP id
+ w11-20020a17090aea0b00b002375e4c7d78mr7669919pjy.9.1678346827909; Wed, 08 Mar
+ 2023 23:27:07 -0800 (PST)
 MIME-Version: 1.0
 References: <20230309035641.3439953-1-zyytlz.wz@163.com> <ec579c96-9955-f317-b37a-4f3fcd0c206e@huawei.com>
-In-Reply-To: <ec579c96-9955-f317-b37a-4f3fcd0c206e@huawei.com>
+ <c9bafa3d-12ba-e9fe-8606-8160a8c42517@huawei.com>
+In-Reply-To: <c9bafa3d-12ba-e9fe-8606-8160a8c42517@huawei.com>
 From:   Zheng Hacker <hackerzheng666@gmail.com>
-Date:   Thu, 9 Mar 2023 15:25:33 +0800
-Message-ID: <CAJedcCw=XmZzP+wBQRmVrtM-ns9Gs0uvxGowTn-QfQ4QJ0Upyw@mail.gmail.com>
+Date:   Thu, 9 Mar 2023 15:26:54 +0800
+Message-ID: <CAJedcCyUW7h+5AY8BRN13S3wEMXM2tv0ioxFF3nKKM88g7Zmtw@mail.gmail.com>
 Subject: Re: [PATCH] net: calxeda: fix race condition in xgmac_remove due to
  unfinshed work
 To:     Yunsheng Lin <linyunsheng@huawei.com>
@@ -72,70 +73,27 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Yunsheng Lin <linyunsheng@huawei.com> =E4=BA=8E2023=E5=B9=B43=E6=9C=889=E6=
-=97=A5=E5=91=A8=E5=9B=9B 14:24=E5=86=99=E9=81=93=EF=BC=9A
+=97=A5=E5=91=A8=E5=9B=9B 14:27=E5=86=99=E9=81=93=EF=BC=9A
 >
-> On 2023/3/9 11:56, Zheng Wang wrote:
-> > In xgmac_probe, the priv->tx_timeout_work is bound with
-> > xgmac_tx_timeout_work. In xgmac_remove, if there is an
-> > unfinished work, there might be a race condition that
-> > priv->base was written byte after iounmap it.
+> On 2023/3/9 14:23, Yunsheng Lin wrote:
+> > On 2023/3/9 11:56, Zheng Wang wrote:
+> >> In xgmac_probe, the priv->tx_timeout_work is bound with
+> >> xgmac_tx_timeout_work. In xgmac_remove, if there is an
+> >> unfinished work, there might be a race condition that
+> >> priv->base was written byte after iounmap it.
+> >>
+> >> Fix it by finishing the work before cleanup.
 > >
-> > Fix it by finishing the work before cleanup.
->
-> This should go to net branch, so title should be:
->
->  [PATCH net] net: calxeda: fix race condition in xgmac_remove due to unfi=
-nshed work
->
-
-Sorry for the confusion.
-
-> From history commit, it seems more common to use "net: calxedaxgmac" inst=
-ead of
-> "net: calxeda", I am not sure which one is better.
->
-> Also there should be a Fixes tag for net branch, maybe:
->
-> Fixes: 8746f671ef04 ("net: calxedaxgmac: fix race between xgmac_tx_comple=
-te and xgmac_tx_err")
->
->
-
-Yes, I was eager to report the fix and ignored that. Thanks for
-pointing that out.
-
+> > This should go to net branch, so title should be:
 > >
-> > Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
-> > ---
-> >  drivers/net/ethernet/calxeda/xgmac.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/drivers/net/ethernet/calxeda/xgmac.c b/drivers/net/etherne=
-t/calxeda/xgmac.c
-> > index f4f87dfa9687..94c3804001e3 100644
-> > --- a/drivers/net/ethernet/calxeda/xgmac.c
-> > +++ b/drivers/net/ethernet/calxeda/xgmac.c
-> > @@ -1831,6 +1831,7 @@ static int xgmac_remove(struct platform_device *p=
-dev)
-> >       /* Free the IRQ lines */
-> >       free_irq(ndev->irq, ndev);
-> >       free_irq(priv->pmt_irq, ndev);
-> > +     cancel_work_sync(&priv->tx_timeout_work);
+> >  [PATCH net] net: calxeda: fix race condition in xgmac_remove due to un=
+finshed work
 >
-> It seems the blow function need to stop the dev_watchdog() from
-> calling dev->netdev_ops->ndo_tx_timeout before calling
-> cancel_work_sync(&priv->tx_timeout_work), otherwise the
-> dev_watchdog() may trigger the priv->tx_timeout_work to run again.
+> typo error:
+> unfinshed -> unfinished
 >
->         netif_carrier_off(ndev);
->         netif_tx_disable(ndev);
->
-> >
-> >       unregister_netdev(ndev);
-> >       netif_napi_del(&priv->napi);
-> >
 
-Yes, I agree with that. Thanks for your advice. I learned a lot from it.
+Got it. Will correct it in the next version of patch.
 
-Best regards,
+Thanks,
 Zheng
