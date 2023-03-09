@@ -2,191 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF26F6B277B
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 15:44:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED1C86B27C9
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 15:52:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232011AbjCIOog (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 09:44:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51484 "EHLO
+        id S231985AbjCIOwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 09:52:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231941AbjCIOoV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 09:44:21 -0500
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 648735CEEA;
-        Thu,  9 Mar 2023 06:44:00 -0800 (PST)
-Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        with ESMTP id S231976AbjCIOvh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 09:51:37 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06738F4039;
+        Thu,  9 Mar 2023 06:50:11 -0800 (PST)
+Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 8EFF485DCF;
-        Thu,  9 Mar 2023 15:43:57 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1678373038;
-        bh=uNtxW9PuxNtEv8F6P5VbTBX0XdsaKqaHd1sSxeSAaeI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PnG3ERWl0DqjDLxsRsMaXInt1x+2rI4yBcJI4qOnGLs0IqbtgTKvwd4glK8jpXLdW
-         hWayVmaY5GkfOemI9glBY5WltAQEmjjHadyfpkfg3f6I7EYZb0KQfNNQJjhrguMHH4
-         5dcVqzdPhasr7+Fhsq5/kL0WYmtoInnl9y7EVbBkx1X7XgKDVJi6DMX7TsbkY6tAdW
-         3nL3KiMTEsrBcfu03WAcrsMJyHHHDHCbxt7zqXDF1sgwNkqKlz1174dhYkWHsps2wG
-         1UAy73iRoifxhjwnV4y2FSbi0GoR9Jea/ojU1XTB0jOGKnXVVeNtlnaLXw7MMVCRSY
-         Fj7QsGrhW3PAA==
-Date:   Thu, 9 Mar 2023 15:43:50 +0100
-From:   Lukasz Majewski <lukma@denx.de>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 6/7] dsa: marvell: Correct value of max_frame_size
- variable after validation
-Message-ID: <20230309154350.0bdc54c8@wsk>
-In-Reply-To: <ZAnnk5MZc0w4VkDE@shell.armlinux.org.uk>
-References: <20230309125421.3900962-1-lukma@denx.de>
-        <20230309125421.3900962-7-lukma@denx.de>
-        <ZAnnk5MZc0w4VkDE@shell.armlinux.org.uk>
-Organization: denx.de
-X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 0AC781EC06C0;
+        Thu,  9 Mar 2023 15:45:09 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1678373109;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=If/RB/hr/c7VUMqd+cgR77ldxUk5sLws7vhF9to8FDQ=;
+        b=jus71OLR74X/1ogUazggcBxXv8CUTmUJ1nEFSUoX3c2qdRny1LQLWh9C1o6fblZiFQqeMB
+        aZ1BaeLhfeAOgz3a0/k6Rz9q2rDEQvgImmdDPFWDJaDR93eM4YldkMU+jxzTn4PyNgGxpp
+        Pgtvm//JDTh8xON5nJ7CO7crxDtsGkY=
+Date:   Thu, 9 Mar 2023 15:45:05 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
+Cc:     Tom Lendacky <thomas.lendacky@amd.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Dave Hansen <dave.hansen@intel.com>,
+        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        Sean Christopherson <seanjc@google.com>,
+        "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "sathyanarayanan.kuppuswamy@linux.intel.com" 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        "ak@linux.intel.com" <ak@linux.intel.com>,
+        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
+        "jane.chu@oracle.com" <jane.chu@oracle.com>,
+        "tony.luck@intel.com" <tony.luck@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
+ to map as encrypted
+Message-ID: <20230309144505.GEZAnw8QpyOyMpCD4r@fat_crate.local>
+References: <Y/ammgkyo3QVon+A@zn.tnic>
+ <Y/a/lzOwqMjOUaYZ@google.com>
+ <Y/dDvTMrCm4GFsvv@zn.tnic>
+ <BYAPR21MB1688F68888213E5395396DD9D7AB9@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <255249f2-47af-07b7-d9d9-9edfdd108348@intel.com>
+ <20230306215104.GEZAZgSPa4qBBu9lRd@fat_crate.local>
+ <a23a36ccb8e1ad05e12a4c4192cdd98267591556.camel@infradead.org>
+ <20230309115937.GAZAnKKRef99EwOu/S@fat_crate.local>
+ <a4fc8686-f82d-370e-309f-d6d3fc0568e8@amd.com>
+ <ZAnu/Um+4qq4Owuh@8bytes.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/vs=WVZeAS0owu99XcNnn3P=";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ZAnu/Um+4qq4Owuh@8bytes.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/vs=WVZeAS0owu99XcNnn3P=
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Thu, Mar 09, 2023 at 03:36:45PM +0100, Jörg Rödel wrote:
+> Yes, that is right. The key is mainly for the NMI entry path which can
+> be performance relevant in some situations. For SEV-ES some special
+> handling is needed there to re-enable NMIs and adjust the #VC stack in
+> case it was raised on the VC-handlers entry path.
 
-Hi Russell,
+So the performance argument is meh. That key will be replaced by
 
-> On Thu, Mar 09, 2023 at 01:54:20PM +0100, Lukasz Majewski wrote:
-> > Running of the mv88e6xxx_validate_frame_size() function provided
-> > following results:
-> >=20
-> > [    1.585565] BUG: Marvell 88E6020 has differing max_frame_size:
-> > 1632 !=3D 2048 [    1.592540] BUG: Marvell 88E6071 has differing
-> > max_frame_size: 1632 !=3D 2048 ^------ Correct -> mv88e6250 family
-> > max frame size =3D 2048B
-> >=20
-> > [    1.599507] BUG: Marvell 88E6085 has differing max_frame_size:
-> > 1632 !=3D 1522 [    1.606476] BUG: Marvell 88E6165 has differing
-> > max_frame_size: 1522 !=3D 1632 [    1.613445] BUG: Marvell 88E6190X
-> > has differing max_frame_size: 10240 !=3D 1522 [    1.620590] BUG:
-> > Marvell 88E6191X has differing max_frame_size: 10240 !=3D 1522 [
-> > 1.627730] BUG: Marvell 88E6193X has differing max_frame_size: 10240
-> > !=3D 1522 ^------ Needs to be fixed!!!
-> >=20
-> > [    1.634871] BUG: Marvell 88E6220 has differing max_frame_size:
-> > 1632 !=3D 2048 [    1.641842] BUG: Marvell 88E6250 has differing
-> > max_frame_size: 1632 !=3D 2048 ^------ Correct -> mv88e6250 family
-> > max frame size =3D 2048B =20
->=20
-> If I understand this correctly, in patch 4, you add a call to the 6250
-> family to call mv88e6185_g1_set_max_frame_size(), which sets a bit
-> called MV88E6185_G1_CTL1_MAX_FRAME_1632 if the frame size is larger
-> than 1518.
+	if (cc_vendor == CC_VENDOR_AMD &&
+	    cc_platform_has(CC_ATTR_GUEST_STATE_ENCRYPT)
 
-Yes, correct.
+which is something like 4 insns or so. Tops.
 
->=20
-> However, you're saying that 6250 has a frame size of 2048. That's
-> fine, but it makes MV88E6185_G1_CTL1_MAX_FRAME_1632 rather misleading
-> as a definition. While the bit may increase the frame size, I think
-> if we're going to do this, then this definition ought to be renamed.
->=20
+Haven't looked yet but it should be cheap.
 
-I thought about rename, but then I've double checked; register offset
-and exact bit definition is the same as for 6185, so to avoid
-unnecessary code duplication - I've reused the existing function.
+-- 
+Regards/Gruss,
+    Boris.
 
-Maybe comment would be just enough?
-
-> That said, I would like Andrew and Vladimir's thoughts on this too.
->=20
-
-Ok.
-
-> Finally, I would expect, if this series was done the way I suggested,
-> that patch 1 should set the max frame size according to how the
-> existing code works, which means patch 2, being the validation patch,
-> should be completely silent if patch 1 is correct - and that's the
-> entire point of validating. It's to make sure that patch 1 is
-> correct.
-
-Ok.
-
->=20
-> If it isn't correct, then patch 1 is wrong and should be updated.
->=20
-
-Please correct my understanding - I do see two approaches here:
-
-
-A. In patch 1 I do set the max_frame_size values (deduced). Then I add
-validation function (patch 2). This function shows "BUG:...." only when
-we do have a mismatch. In patch 3 I do correct the max_frame_size
-values (according to validation function) and remove the validation
-function. This is how it is done in v5 and is going to be done in v6.
-
-
-B. Having showed the v5 in public, the validation function is known.
-Then I do prepare v6 with only patch 1 having correct values (from the
-outset) and provide in the commit message the code for validation
-function. Then patch 2 and 3 (validation function and the corrected
-values of max_frame_size) can be omitted in v6.
-
-For me it would be better to choose approach B.
-
-> Essentially, this patch should only exist if the values we are using
-> today are actually incorrect.
->=20
-> To put this another way, the conversion from our existing way of
-> determining the max mtu to using the .max_frame_size method should be
-> an entire no-op from the driver operation point of view. Then any
-> errors in those values should be fixed and explained in a separate
-> commit. Then the new support added.
->=20
-> At least that's how I see it. Andrew and Vladimir may disagree.
->=20
-
-
-
-
-Best regards,
-
-Lukasz Majewski
-
---
-
-DENX Software Engineering GmbH,      Managing Director: Erika Unter
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
-
---Sig_/vs=WVZeAS0owu99XcNnn3P=
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmQJ8KcACgkQAR8vZIA0
-zr2jWQgA4WKkrUiFVA73xvGMMbixVLICXasATf2ikEGYpEvO0gVpgzmnsqXcqjVR
-SEcESCbtpI2XqpsL/HL7zgXCLIQKZ8xIXxLcPF5z4QX9iB95VfCmL6mg4xsuDo4O
-gm9dx5X8wnoLCBlOFsno4qTLWoS5ltiGwjwqIAK57lFyecn8QA7R7hU0FEDapmMu
-Fy6WcXziRc1mkNBPq3RgjnA1Jv/DmaJakzS8uQ1TJAtC6/6WR474oCdOqsRlL1gd
-xDLOrbWQctI2LgwgHbdA7B4VvzsZnTYsHgcbEShDvVDophEuwCz5IdKdtytYBdli
-FPGt1l6uqZjSuqGWBRp99erjzjU//A==
-=RA20
------END PGP SIGNATURE-----
-
---Sig_/vs=WVZeAS0owu99XcNnn3P=--
+https://people.kernel.org/tglx/notes-about-netiquette
