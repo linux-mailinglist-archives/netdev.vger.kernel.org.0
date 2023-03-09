@@ -2,51 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A8EB66B21E0
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 11:52:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E7CD6B2201
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 11:57:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230293AbjCIKwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 05:52:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58712 "EHLO
+        id S231296AbjCIK5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 05:57:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230252AbjCIKwf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 05:52:35 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C032EE774E;
-        Thu,  9 Mar 2023 02:52:33 -0800 (PST)
-Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4PXQtF73snz16NkZ;
-        Thu,  9 Mar 2023 18:49:41 +0800 (CST)
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Thu, 9 Mar
- 2023 18:52:31 +0800
-Subject: Re: [PATCH] virtio_net: Use NETDEV_TX_BUSY when has no buf to send
-To:     Angus Chen <angus.chen@jaguarmicro.com>, <mst@redhat.com>,
-        <jasowang@redhat.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <ast@kernel.org>, <daniel@iogearbox.net>, <hawk@kernel.org>,
-        <john.fastabend@gmail.com>
-CC:     <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bpf@vger.kernel.org>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-References: <20230309074952.975-1-angus.chen@jaguarmicro.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <866b9077-1600-4c93-3da8-4006cbf6abe7@huawei.com>
-Date:   Thu, 9 Mar 2023 18:52:30 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        with ESMTP id S231297AbjCIK4b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 05:56:31 -0500
+Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37BAEE982F
+        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 02:55:13 -0800 (PST)
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 329ALh20013922;
+        Thu, 9 Mar 2023 02:55:08 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=s2048-2021-q4;
+ bh=ODN61q7IeygtRing57sYlfcuJ49t+FhakgwvNj/F8dg=;
+ b=AHxjbbpooIeMY/ep+QqtDPwFnd2qSNaL7EfVNPk4r4tLgkcc5pFY7t3jpvXfpW5z/YmA
+ xy/RZxN3qjVCYLlOd+YstRGkWxKx3l3bloSLAtDZE7f7QlDOeu5pduBOXgthDgKWc3NK
+ 7RkwvbeBIs4hn02ccrPF7Cqa68f/S80NKkgnCw57cpnAXDND1iAJgZ9bGh6PXcMKb7hO
+ XXIK+JVBeTxVChiEHtWa4MZWdvHwwKBazJCyH2eEAEDI0XDWQdPChgl7UBz8pGU0/7yF
+ ZeTiBfDrzgdTYbUk2ZGLU1A9PC/4ehm6xVqElSMZjT9k9Raw1TCFSx/1O9/jD2kEi2mR 2Q== 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3p746p326j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 09 Mar 2023 02:55:08 -0800
+Received: from devvm1736.cln0.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server id
+ 15.1.2507.17; Thu, 9 Mar 2023 02:54:34 -0800
+From:   Vadim Fedorenko <vadfed@meta.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+CC:     Vadim Fedorenko <vadfed@meta.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vadim Fedorenko <vadim.fedorenko@linux.dev>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH RESEND net-next] ptp_ocp: add force_irq to xilinx_spi configuration
+Date:   Thu, 9 Mar 2023 02:54:21 -0800
+Message-ID: <20230309105421.2953451-1-vadfed@meta.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-In-Reply-To: <20230309074952.975-1-angus.chen@jaguarmicro.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [2620:10d:c0a8:1b::d]
+X-Proofpoint-ORIG-GUID: iarwqX0ECYOY5m0__Hm0EYYPy4yud4tW
+X-Proofpoint-GUID: iarwqX0ECYOY5m0__Hm0EYYPy4yud4tW
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-03-09_06,2023-03-08_03,2023-02-09_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -54,37 +63,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023/3/9 15:49, Angus Chen wrote:
-> Don't consume skb if virtqueue_add return -ENOSPC.
+Flashing firmware via devlink flash was failing on PTP OCP devices
+because it is using Quad SPI mode, but the driver was not properly
+behaving. With force_irq flag landed it now can be fixed.
 
-Is this fixing the same out of space problem caused by
-xdp xmit as Xuan Zhuo is fixing, or it is fixing a different
-case?
+Signed-off-by: Vadim Fedorenko <vadfed@meta.com>
+---
+ drivers/ptp/ptp_ocp.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-https://lore.kernel.org/netdev/20230308071921-mutt-send-email-mst@kernel.org/T/#mc4c5766a59fb8be988bb6a4dfa48f49e58df3ea6
+diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
+index 4bbaccd543ad..2b63f3487645 100644
+--- a/drivers/ptp/ptp_ocp.c
++++ b/drivers/ptp/ptp_ocp.c
+@@ -662,6 +662,7 @@ static struct ocp_resource ocp_fb_resource[] = {
+ 				.num_chipselect = 1,
+ 				.bits_per_word = 8,
+ 				.num_devices = 1,
++				.force_irq = true,
+ 				.devices = &(struct spi_board_info) {
+ 					.modalias = "spi-nor",
+ 				},
+-- 
+2.30.2
 
-> 
-> Signed-off-by: Angus Chen <angus.chen@jaguarmicro.com>
-> ---
->  drivers/net/virtio_net.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index fb5e68ed3ec2..4096ea3d2eb6 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -1980,7 +1980,7 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
->  				 qnum, err);
->  		dev->stats.tx_dropped++;
->  		dev_kfree_skb_any(skb);
-
-Returning NETDEV_TX_BUSY will caused stack to requeue the skb
-and send it again when space is available, but you have freed the skb here,
-isn't this cause use-after-free problem?
-
-> -		return NETDEV_TX_OK;
-> +		return (err == -ENOSPC) ? NETDEV_TX_BUSY : NETDEV_TX_OK;
->  	}
->  
->  	/* Don't wait up for transmitted skbs to be freed. */
-> 
