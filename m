@@ -2,150 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 345206B1C86
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 08:40:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 386A66B1C8D
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 08:42:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229720AbjCIHk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 02:40:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38682 "EHLO
+        id S229945AbjCIHmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 02:42:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbjCIHk0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 02:40:26 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D6785A5E;
-        Wed,  8 Mar 2023 23:40:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D0A561A38;
-        Thu,  9 Mar 2023 07:40:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C79A9C433D2;
-        Thu,  9 Mar 2023 07:40:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678347623;
-        bh=HHYt8aLbuz6IkOfI+LhZEtJr3IrwCVJJ/+VHPDerd9I=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=WWPk3rpjhXS8Pe/26VtnKCNwxZ0rHPPuWD/ExvR4vsiNIfCyq47kGQt/HgS9jZQql
-         objQ1HyVarLMAKrdj2L4TnugQwbme5vwr+waQUIRqmYUHIN4kdj8M8WPMi+8VWlQzB
-         2JCbyRJxw5+kuhCdB2Sy1tp2H9JnZXe8szA2YAyIWLQ6WgILO9tPNX0TE4GVeGOsWR
-         GEJQR+5zjik4LlZD5+HCLAV73OmHS1DoUkYkklgUCX4P/w1iwXDGdlHmnmlqExrm0a
-         aySBuZ5tueldk46sz1zykxQoUxKa70kcnK8zIhhV4DI/w/7SHbwrqr/qajPU1qODk+
-         jwCMhFaICRHqg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A1B08E61B6E;
-        Thu,  9 Mar 2023 07:40:23 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229720AbjCIHml (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 02:42:41 -0500
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56DB8D23BF;
+        Wed,  8 Mar 2023 23:42:40 -0800 (PST)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3296GsNW021127;
+        Thu, 9 Mar 2023 07:42:28 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=RoC+uC7saLpOIXp3icf+Szui9QrpVF5FNTNBBrnLy/w=;
+ b=bTPGXh91b+jZft1LIhi9giAlDHM6mG/ZMCNMhMAyfl7qfmVDjwvDlnc8lELz7uJmktNs
+ 2Z7NIfGJhspo/QsSE+55WFdjot9/O/DcJ2DCUvmEukzfc7U5/49loVxCXAYRpoBnn+mY
+ STWMaqlikDqN5ke49HBmbAoPFISoiwTr4/C/rf6BXBNc4TCvlOSJxT0OgzvX8xV3TDbt
+ cbKaPiZ1oRgllcvkuy+Fqc29Tjjk/VB8VQc0Vos81S9Rhf5/NxzLmciWBtxpn24Kjr/y
+ jyMdDuhx53ZP/SVTg9jO3k66cLX2Zsr2i0wyVWZqhwR2FRay0GAPKNYCUETPbCJo8TJN wA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3p6suksssk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 09 Mar 2023 07:42:27 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 3297gRHw033166;
+        Thu, 9 Mar 2023 07:42:27 GMT
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3p6suksss8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 09 Mar 2023 07:42:27 +0000
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 3297MgAg011849;
+        Thu, 9 Mar 2023 07:42:26 GMT
+Received: from smtprelay03.wdc07v.mail.ibm.com ([9.208.129.113])
+        by ppma04dal.us.ibm.com (PPS) with ESMTPS id 3p6gbv9pvg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 09 Mar 2023 07:42:26 +0000
+Received: from smtpav04.dal12v.mail.ibm.com (smtpav04.dal12v.mail.ibm.com [10.241.53.103])
+        by smtprelay03.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 3297gOtP27460116
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 9 Mar 2023 07:42:24 GMT
+Received: from smtpav04.dal12v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 565AA58062;
+        Thu,  9 Mar 2023 07:42:24 +0000 (GMT)
+Received: from smtpav04.dal12v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EE07158056;
+        Thu,  9 Mar 2023 07:42:22 +0000 (GMT)
+Received: from [9.211.95.207] (unknown [9.211.95.207])
+        by smtpav04.dal12v.mail.ibm.com (Postfix) with ESMTP;
+        Thu,  9 Mar 2023 07:42:22 +0000 (GMT)
+Message-ID: <a25e7463-6998-03c0-01c8-4b5ec98a1cc9@linux.ibm.com>
+Date:   Thu, 9 Mar 2023 08:42:22 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 00/28] PCI/AER: Remove redundant Device Control Error
- Reporting Enable
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167834762365.29033.5915436899896564508.git-patchwork-notify@kernel.org>
-Date:   Thu, 09 Mar 2023 07:40:23 +0000
-References: <20230307181940.868828-1-helgaas@kernel.org>
-In-Reply-To: <20230307181940.868828-1-helgaas@kernel.org>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bhelgaas@google.com,
-        aayarekar@marvell.com, ajit.khaparde@broadcom.com,
-        aelior@marvell.com, chris.snook@gmail.com, dmichail@fungible.com,
-        ecree.xilinx@gmail.com, jesse.brandeburg@intel.com,
-        jiawenwu@trustnetic.com, manishc@marvell.com,
-        habetsm.xilinx@gmail.com, mengyuanlou@net-swift.com,
-        michael.chan@broadcom.com, rahulv@marvell.com, rajur@chelsio.com,
-        rmody@marvell.com, salil.mehta@huawei.com, shshaikh@marvell.com,
-        somnath.kotur@broadcom.com, sriharsha.basavapatna@broadcom.com,
-        skalluru@marvell.com, anthony.l.nguyen@intel.com,
-        vburru@marvell.com, yisen.zhuang@huawei.com,
-        GR-Linux-NIC-Dev@marvell.com, intel-wired-lan@lists.osuosl.org
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.8.0
+Subject: Re: [PATCH net v2] net/smc: fix NULL sndbuf_desc in
+ smc_cdc_tx_handler()
+To:     "D. Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com,
+        jaka@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+References: <1678263432-17329-1-git-send-email-alibuda@linux.alibaba.com>
+From:   Wenjia Zhang <wenjia@linux.ibm.com>
+In-Reply-To: <1678263432-17329-1-git-send-email-alibuda@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: WHvSgYz6Ob9qDWXanNUrnVuHk5dKhgwR
+X-Proofpoint-ORIG-GUID: COdodf5lJpnDLBB3t0aEQs6RG3uGH18l
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-03-09_04,2023-03-08_03,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxscore=0
+ spamscore=0 malwarescore=0 clxscore=1015 lowpriorityscore=0 bulkscore=0
+ impostorscore=0 priorityscore=1501 adultscore=0 mlxlogscore=999
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2303090059
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This series was applied to netdev/net-next.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue,  7 Mar 2023 12:19:11 -0600 you wrote:
-> From: Bjorn Helgaas <bhelgaas@google.com>
+On 08.03.23 09:17, D. Wythe wrote:
+> From: "D. Wythe" <alibuda@linux.alibaba.com>
 > 
-> Since f26e58bf6f54 ("PCI/AER: Enable error reporting when AER is native"),
-> which appeared in v6.0, the PCI core has enabled PCIe error reporting for
-> all devices during enumeration.
+> When performing a stress test on SMC-R by rmmod mlx5_ib driver
+> during the wrk/nginx test, we found that there is a probability
+> of triggering a panic while terminating all link groups.
 > 
-> Remove driver code to do this and remove unnecessary includes of
-> <linux/aer.h> from several other drivers.
+> This issue dues to the race between smc_smcr_terminate_all()
+> and smc_buf_create().
 > 
-> [...]
+> 			smc_smcr_terminate_all
+> 
+> smc_buf_create
+> /* init */
+> conn->sndbuf_desc = NULL;
+> ...
+> 
+> 			__smc_lgr_terminate
+> 				smc_conn_kill
+> 					smc_close_abort
+> 						smc_cdc_get_slot_and_msg_send
+> 
+> 			__softirqentry_text_start
+> 				smc_wr_tx_process_cqe
+> 					smc_cdc_tx_handler
+> 						READ(conn->sndbuf_desc->len);
+> 						/* panic dues to NULL sndbuf_desc */
+> 
+> conn->sndbuf_desc = xxx;
+> 
+> This patch tries to fix the issue by always to check the sndbuf_desc
+> before send any cdc msg, to make sure that no null pointer is
+> seen during cqe processing.
+> 
+> Fixes: 0b29ec643613 ("net/smc: immediate termination for SMCR link groups")
+> Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+> 
 
-Here is the summary with links:
-  - [01/28] alx: Drop redundant pci_enable_pcie_error_reporting()
-    https://git.kernel.org/netdev/net-next/c/1de2a84dd060
-  - [02/28] be2net: Drop redundant pci_enable_pcie_error_reporting()
-    https://git.kernel.org/netdev/net-next/c/b4e24578b484
-  - [03/28] bnx2: Drop redundant pci_enable_pcie_error_reporting()
-    https://git.kernel.org/netdev/net-next/c/5f00358b5e90
-  - [04/28] bnx2x: Drop redundant pci_enable_pcie_error_reporting()
-    https://git.kernel.org/netdev/net-next/c/2fba753cc9b5
-  - [05/28] bnxt: Drop redundant pci_enable_pcie_error_reporting()
-    https://git.kernel.org/netdev/net-next/c/5f29b73d4eba
-  - [06/28] cxgb4: Drop redundant pci_enable_pcie_error_reporting()
-    https://git.kernel.org/netdev/net-next/c/ca7f175fc24e
-  - [07/28] net/fungible: Drop redundant pci_enable_pcie_error_reporting()
-    https://git.kernel.org/netdev/net-next/c/49f79ac22f89
-  - [08/28] net: hns3: remove unnecessary aer.h include
-    https://git.kernel.org/netdev/net-next/c/c183033f631a
-  - [09/28] netxen_nic: Drop redundant pci_enable_pcie_error_reporting()
-    https://git.kernel.org/netdev/net-next/c/2d0e0372069d
-  - [10/28] octeon_ep: Drop redundant pci_enable_pcie_error_reporting()
-    https://git.kernel.org/netdev/net-next/c/fe3f4c292da1
-  - [11/28] qed: Drop redundant pci_enable_pcie_error_reporting()
-    https://git.kernel.org/netdev/net-next/c/1263c7b78315
-  - [12/28] net: qede: Remove unnecessary aer.h include
-    https://git.kernel.org/netdev/net-next/c/5f1fbdc168f4
-  - [13/28] qlcnic: Drop redundant pci_enable_pcie_error_reporting()
-    https://git.kernel.org/netdev/net-next/c/95e35f599407
-  - [14/28] qlcnic: Remove unnecessary aer.h include
-    https://git.kernel.org/netdev/net-next/c/e07ce5567194
-  - [15/28] sfc: Drop redundant pci_enable_pcie_error_reporting()
-    https://git.kernel.org/netdev/net-next/c/bdedf705688c
-  - [16/28] sfc: falcon: Drop redundant pci_enable_pcie_error_reporting()
-    https://git.kernel.org/netdev/net-next/c/4ac9272691a4
-  - [17/28] sfc/siena: Drop redundant pci_enable_pcie_error_reporting()
-    https://git.kernel.org/netdev/net-next/c/ecded61ceb89
-  - [18/28] sfc_ef100: Drop redundant pci_disable_pcie_error_reporting()
-    https://git.kernel.org/netdev/net-next/c/c39abdd396bc
-  - [19/28] net: ngbe: Drop redundant pci_enable_pcie_error_reporting()
-    https://git.kernel.org/netdev/net-next/c/a7edf8e5142f
-  - [20/28] net: txgbe: Drop redundant pci_enable_pcie_error_reporting()
-    https://git.kernel.org/netdev/net-next/c/1fccc781bf7e
-  - [21/28] e1000e: Remove unnecessary aer.h include
-    https://git.kernel.org/netdev/net-next/c/ab76f2bff0f3
-  - [22/28] fm10k: Remove unnecessary aer.h include
-    https://git.kernel.org/netdev/net-next/c/8be901a6715f
-  - [23/28] i40e: Remove unnecessary aer.h include
-    https://git.kernel.org/netdev/net-next/c/acd2bb015fae
-  - [24/28] iavf: Remove unnecessary aer.h include
-    https://git.kernel.org/netdev/net-next/c/495b72c79302
-  - [25/28] ice: Remove unnecessary aer.h include
-    https://git.kernel.org/netdev/net-next/c/ddd652ef30e3
-  - [26/28] igb: Remove unnecessary aer.h include
-    https://git.kernel.org/netdev/net-next/c/648a2020fdac
-  - [27/28] igc: Remove unnecessary aer.h include
-    https://git.kernel.org/netdev/net-next/c/1530522f101f
-  - [28/28] ixgbe: Remove unnecessary aer.h include
-    https://git.kernel.org/netdev/net-next/c/f3468e394439
+Thanks for the fix!
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Reviewed-by: Wenjia Zhang <wenjia@linux.ibm.com>
 
-
+> v2 -> v1: change retval from EINVAL to ENOBUFS
+> 
+> ---
+>   net/smc/smc_cdc.c | 3 +++
+>   1 file changed, 3 insertions(+)
+> 
+> diff --git a/net/smc/smc_cdc.c b/net/smc/smc_cdc.c
+> index 53f63bf..89105e9 100644
+> --- a/net/smc/smc_cdc.c
+> +++ b/net/smc/smc_cdc.c
+> @@ -114,6 +114,9 @@ int smc_cdc_msg_send(struct smc_connection *conn,
+>   	union smc_host_cursor cfed;
+>   	int rc;
+>   
+> +	if (unlikely(!READ_ONCE(conn->sndbuf_desc)))
+> +		return -ENOBUFS;
+> +
+>   	smc_cdc_add_pending_send(conn, pend);
+>   
+>   	conn->tx_cdc_seq++;
