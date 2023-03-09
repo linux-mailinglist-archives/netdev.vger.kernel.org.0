@@ -2,155 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EEDD6B1DAC
-	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 09:17:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 137516B1DB2
+	for <lists+netdev@lfdr.de>; Thu,  9 Mar 2023 09:18:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229910AbjCIIRY convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 9 Mar 2023 03:17:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41326 "EHLO
+        id S230296AbjCIISL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 03:18:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230027AbjCIIRF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 03:17:05 -0500
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CAE250F8D;
-        Thu,  9 Mar 2023 00:13:16 -0800 (PST)
-Received: by mail-qt1-f170.google.com with SMTP id r16so1135691qtx.9;
-        Thu, 09 Mar 2023 00:13:16 -0800 (PST)
+        with ESMTP id S230161AbjCIIRv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 03:17:51 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC70420A2D;
+        Thu,  9 Mar 2023 00:14:22 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id n18so1053128ybm.10;
+        Thu, 09 Mar 2023 00:14:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678349619;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=57n/+LRRePFei+PwepmtWg52Mbl3H508qcWE1bJ1n8Q=;
+        b=P9LtjoQu1DvX9A7HMv9CDKOFrd+Sn6iBl85R0e/rBAUtKr3mz/e1x7rRh4sccuDBFx
+         94rdxoZxOY34KJtYSMNNdpsWB74IEzblhrO0powjy5gg93WtG8Yt6LrfufCp4q7KnHA7
+         k7jdIt5IPlJbwmIPRykCnvSmgC6DjFmjrVnyS2oCdHwMqUaDAHPpcBMBFJSsACpTM/zM
+         Ymi0k8DFahDMXTfJWU701i1IJEClhCBdbR2pXS42EOiGUIJatg4+ek0/OZYXBaFgL3PH
+         p80fFHeJvNtRa0L45/r1gc1y61xDL2xKrUjUSyiDfy+myvFqsUAhZljyjjq/XhBM9xcB
+         UzhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678349554;
+        d=1e100.net; s=20210112; t=1678349619;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=p+1xOKbrywXjEK6z9y1/Q9rNoAtKiRUOKGVYgkwDhuM=;
-        b=N10kkF73X6/cGILt9pBg7ob9k58LQI0Zwmt2YLBYzBad6JpnY42/QJlNUswgMKUXvW
-         U6pTDp5JgXPA4qalF8Ka5UaW7p8vCshvFYCl5oiCcGvyiZfhSIe9X1YG4qORHc+buhSu
-         kdppqGDXIjyAqAwuib8bYlH3/HDjIhZbRI7UwNEGTVcCCbk//Tw7KKAKjvXBLKPy7zsN
-         /jM3rWJyhi87Pw//2kqWWYlc/uGfGQY9mtW9Bvc55CmfPCYs3j/OFShTs2g1fjIGlMRC
-         eKihbYlVVUkwj4BEj8CGzo4uioKnOCB+5DTkkwZhmuslBAuiKcWYJ4XUSN1vaDvSB72S
-         uKvQ==
-X-Gm-Message-State: AO0yUKVfCkKqPwISYKChRiWqdaXDIbBXE/slELgbU/AXewtXck1hV5PN
-        ViamSuVXKGKlca3+w1AmuegfWfNDSXI0r2IQ
-X-Google-Smtp-Source: AK7set8wfaaHUeOCLG4dTj7ZI19vy+QTZODNFf/3enh9PvcO5/s+yyg05hKW/km+x0WYaPo9huMYsg==
-X-Received: by 2002:a05:622a:341:b0:3b8:6075:5d16 with SMTP id r1-20020a05622a034100b003b860755d16mr35193875qtw.56.1678349554574;
-        Thu, 09 Mar 2023 00:12:34 -0800 (PST)
-Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com. [209.85.128.174])
-        by smtp.gmail.com with ESMTPSA id u2-20020a37ab02000000b007423caef02fsm12874582qke.122.2023.03.09.00.12.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Mar 2023 00:12:34 -0800 (PST)
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-536bf92b55cso20418547b3.12;
-        Thu, 09 Mar 2023 00:12:33 -0800 (PST)
-X-Received: by 2002:a81:f105:0:b0:538:49a4:b1e0 with SMTP id
- h5-20020a81f105000000b0053849a4b1e0mr15534773ywm.2.1678349553687; Thu, 09 Mar
- 2023 00:12:33 -0800 (PST)
+        bh=57n/+LRRePFei+PwepmtWg52Mbl3H508qcWE1bJ1n8Q=;
+        b=cR2A919EIh1rULntTRoMaZ3YXKrnKeRWZnQEh+ckL/nUwgOQi1gZX6AzUsBMKUvqPr
+         sJ47Sm8x73YAvb2VsVNvNCkX3DB2OLsF9ZWvfQUYlyxZ6oqCRnzEYMWkzNzEK8yLWQP0
+         75unFGM0zjCNaEV0EvJt0314EpzmlGqxkOPP7GBeZQbEWcPjT9sH2mUMqHOOtQOS3Chx
+         yeXLkee16RjByiQGOau1hni3ANpwXtc9bHq57oBEOPZc5jREB8+VaWsYB42ITy52ufok
+         4Q8+kIiIFVezw8u++lIyC9epH//en3ax95SklEs3vjfmqZA6H+szFMiI9jWREonWic9B
+         30GQ==
+X-Gm-Message-State: AO0yUKX/BSP3FIIxxPV1tEIGqcB7f2bBybpZtscwilprTwYYJzCVRvaF
+        WzU08/KiN6OEfHZ0hMErrtELfsEl8hBBD88hdcU=
+X-Google-Smtp-Source: AK7set+pn50q0Ebz4sv6D+0H35hXEv+QeO9rvQNcMPWOgnWCDY2Gg9fn/GNcFvCYxZ5D792KYM5d5HDidsHFjNM+S0o=
+X-Received: by 2002:a25:8d88:0:b0:b17:e69b:b82a with SMTP id
+ o8-20020a258d88000000b00b17e69bb82amr3823298ybl.8.1678349619399; Thu, 09 Mar
+ 2023 00:13:39 -0800 (PST)
 MIME-Version: 1.0
-References: <e825b50a843ffe40e33f34e4d858c07c1b2ff259.1678280913.git.geert+renesas@glider.be>
- <CAMZ6RqJ-3fyLFMjuyq4euNB-1sz0sBU5YswMeRduXO4TJ1QmLw@mail.gmail.com>
-In-Reply-To: <CAMZ6RqJ-3fyLFMjuyq4euNB-1sz0sBU5YswMeRduXO4TJ1QmLw@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 9 Mar 2023 09:12:22 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWo_A8aeHS7Dy5X-6BEqUrwq5KGxnt4HDiLgfo-SaaYSg@mail.gmail.com>
-Message-ID: <CAMuHMdWo_A8aeHS7Dy5X-6BEqUrwq5KGxnt4HDiLgfo-SaaYSg@mail.gmail.com>
-Subject: Re: [PATCH v2] can: rcar_canfd: Add transceiver support
-To:     Vincent Mailhol <vincent.mailhol@gmail.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Simon Horman <simon.horman@corigine.com>
+References: <20230301154953.641654-1-joannelkoong@gmail.com>
+ <20230301154953.641654-11-joannelkoong@gmail.com> <CAADnVQJCYcPnutRvjJgShAEokfrXfC4DToPOTJRuyzA1R64mBg@mail.gmail.com>
+ <CAJnrk1YNMoTEaWA6=wDS3iV4sV0A-5Afnn+p50hEvX8jR6GLHw@mail.gmail.com>
+ <20230308015500.6pycr5i4nynyu22n@heavy> <CAJnrk1Y1ONmEJpwDqGzCUmyrkDf9s_HpDhR5mW=6fNKM6PiXew@mail.gmail.com>
+ <c27727cfabced2b9207eabbba71bed158ca35eec.camel@linux.ibm.com>
+In-Reply-To: <c27727cfabced2b9207eabbba71bed158ca35eec.camel@linux.ibm.com>
+From:   Joanne Koong <joannelkoong@gmail.com>
+Date:   Thu, 9 Mar 2023 00:13:28 -0800
+Message-ID: <CAJnrk1Za8KaAq4=v7X=YEHRu5jc3upR059AcY9eanr-v_9VSqg@mail.gmail.com>
+Subject: Re: [PATCH v13 bpf-next 10/10] selftests/bpf: tests for using dynptrs
+ to parse skb and xdp buffers
+To:     Ilya Leoshkevich <iii@linux.ibm.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <martin.lau@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vincent,
-
-On Wed, Mar 8, 2023 at 4:55 PM Vincent Mailhol
-<vincent.mailhol@gmail.com> wrote:
-> On Wed. 8 Mar. 2023 at 22:20, Geert Uytterhoeven
-> <geert+renesas@glider.be> wrote:
-> > Add support for CAN transceivers described as PHYs.
-> >
-> > While simple CAN transceivers can do without, this is needed for CAN
-> > transceivers like NXP TJR1443 that need a configuration step (like
-> > pulling standby or enable lines), and/or impose a bitrate limit.
-> >
-> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > Reviewed-by: Simon Horman <simon.horman@corigine.com>
+On Wed, Mar 8, 2023 at 6:24=E2=80=AFAM Ilya Leoshkevich <iii@linux.ibm.com>=
+ wrote:
 >
-> I have one nitpick (see below). Aside from that:
-> Reviewed-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-
-Thanks!
-
->
-> > ---
-> > v2:
-> >   - Add Reviewed-by.
-> > ---
-> >  drivers/net/can/rcar/rcar_canfd.c | 30 +++++++++++++++++++++++++-----
-> >  1 file changed, 25 insertions(+), 5 deletions(-)
+> On Tue, 2023-03-07 at 23:22 -0800, Joanne Koong wrote:
+> > On Tue, Mar 7, 2023 at 5:55=E2=80=AFPM Ilya Leoshkevich <iii@linux.ibm.=
+com>
+> > wrote:
+> > >
+> > > On Wed, Mar 01, 2023 at 08:28:40PM -0800, Joanne Koong wrote:
+> > > > On Wed, Mar 1, 2023 at 10:08=E2=80=AFAM Alexei Starovoitov
+> > > > <alexei.starovoitov@gmail.com> wrote:
+> > > > >
+> > > > > On Wed, Mar 1, 2023 at 7:51=E2=80=AFAM Joanne Koong
+> > > > > <joannelkoong@gmail.com> wrote:
+> > > > > >
+> > > > > > 5) progs/dynptr_success.c
+> > > > > >    * Add test case "test_skb_readonly" for testing attempts
+> > > > > > at writes
+> > > > > >      on a prog type with read-only skb ctx.
+> > > > > >    * Add "test_dynptr_skb_data" for testing that
+> > > > > > bpf_dynptr_data isn't
+> > > > > >      supported for skb progs.
+> > > > >
+> > > > > I added
+> > > > > +dynptr/test_dynptr_skb_data
+> > > > > +dynptr/test_skb_readonly
+> > > > > to DENYLIST.s390x and applied.
+> > > >
+> > > > Thanks, I'm still not sure why s390x cannot load these programs.
+> > > > It is
+> > > > being loaded in the same way as other tests like
+> > > > test_parse_tcp_hdr_opt() are loading programs. I will keep
+> > > > looking
+> > > > some more into this
+> > >
+> > > Hi,
+> > >
+> > > I believe the culprit is:
+> > >
+> > >     insn->imm =3D BPF_CALL_IMM(bpf_dynptr_from_skb_rdonly);
+> > >
+> > > s390x needs to know the kfunc model in order to emit the call (like
+> > > i386), but after this assignment it's no longer possible to look it
+> > > up in kfunc_tab by insn->imm. x86_64 does not need this, because
+> > > its
+> > > ABI is exactly the same as BPF ABI.
+> > >
+> > > The simplest solution seems to be adding an artificial kfunc_desc
+> > > like this:
+> > >
+> > >     {
+> > >         .func_model =3D desc->func_model,  /* model must be
+> > > compatible */
+> > >         .func_id =3D 0,                    /* unused at this point */
+> > >         .imm =3D insn->imm,                /* new target */
+> > >         .offset =3D 0,                     /* unused at this point */
+> > >     }
+> > >
+> > > here and also after this assignment:
+> > >
+> > >     insn->imm =3D BPF_CALL_IMM(xdp_kfunc);
+> > >
+> > > What do you think?
 > >
-> > diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
-> > index ef4e1b9a9e1ee280..6df9a259e5e4f92c 100644
-> > --- a/drivers/net/can/rcar/rcar_canfd.c
-> > +++ b/drivers/net/can/rcar/rcar_canfd.c
-> > @@ -35,6 +35,7 @@
-> >  #include <linux/netdevice.h>
-> >  #include <linux/of.h>
-> >  #include <linux/of_device.h>
-> > +#include <linux/phy/phy.h>
-> >  #include <linux/platform_device.h>
-> >  #include <linux/reset.h>
-> >  #include <linux/types.h>
-> > @@ -530,6 +531,7 @@ struct rcar_canfd_channel {
-> >         struct net_device *ndev;
-> >         struct rcar_canfd_global *gpriv;        /* Controller reference */
-> >         void __iomem *base;                     /* Register base address */
-> > +       struct phy *transceiver;                /* Optional transceiver */
-> >         struct napi_struct napi;
-> >         u32 tx_head;                            /* Incremented on xmit */
-> >         u32 tx_tail;                            /* Incremented on xmit done */
-> > @@ -1413,11 +1415,17 @@ static int rcar_canfd_open(struct net_device *ndev)
-> >         struct rcar_canfd_global *gpriv = priv->gpriv;
-> >         int err;
-> >
-> > +       err = phy_power_on(priv->transceiver);
-> > +       if (err) {
-> > +               netdev_err(ndev, "failed to power on PHY, error %d\n", err);
-> > +               return err;
-> > +       }
-> > +
-> >         /* Peripheral clock is already enabled in probe */
-> >         err = clk_prepare_enable(gpriv->can_clk);
-> >         if (err) {
-> >                 netdev_err(ndev, "failed to enable CAN clock, error %d\n", err);
->                                                                       ^^
+> > Ohh interesting! This makes sense to me. In particular, you're
+> > referring to the bpf_jit_find_kfunc_model() call in bpf_jit_insn()
+> > (in
+> > arch/s390/net/bpf_jit_comp.c) as the one that fails out whenever
+> > insn->imm gets set, correct?
 >
-> Nitpick: can you print the mnemotechnic instead of the error value?
+> Precisely.
 >
->                 netdev_err(ndev, "failed to enable CAN clock, error
-> %pe\n", ERR_PTR(err));
+> > I like your proposed solution, I agree that this looks like the
+> > simplest, though maybe we should replace the existing kfunc_desc
+> > instead of adding it so we don't have to deal with the edge case of
+> > reaching MAX_KFUNC_DESCS? To get the func model of the new insn->imm,
+>
+> I wonder whether replacement is safe? This would depend on the
+> following functions returning the same value for the same inputs:
+>
+> - may_access_direct_pkt_data() - this looks ok;
+> - bpf_dev_bound_resolve_kfunc() - I'm not so sure, any insights?
 
-Thanks for the suggestion!
+For the bpf_dev_bound_resolve_kfunc() case (in fixup_kfunc_call()), I
+think directly replacing the kfunc_desc here is okay because
+bpf_dev_bound_resolve_kfunc() is findingthe target device-specific
+version of the kfunc (if it exists) to replace the generic version of
+the kfunc with, and we're using that target device-specific version of
+the kfunc as the new updated insn->imm to call
 
-As you're pointing to pre-existing code, and there are several cases
-like that, I sent a follow-up patch to fix all of them at once:
-https://lore.kernel.org/r/8a39f99fc28967134826dff141b51a5df824b034.1678349267.git.geert+renesas@glider.be
+>
+> If it's not, then MAX_KFUNC_DESCS indeed becomes a concern.
+>
+> > it seems pretty straightforward, it looks like we can just use
+> > btf_distill_func_proto(). or call add_kfunc_call() directly, which
+> > would do everything needed, but adds an additional unnecessary sort
+> > and more overhead for replacing (eg we'd need to first swap the old
+> > kfunc_desc with the last tab->descs[tab->nr_descs] entry and then
+> > delete the old kfunc_desc before adding the new one). What are your
+> > thoughts?
+>
+> Is there a way to find BTF by function pointer?
+> IIUC bpf_dev_bound_resolve_kfunc() can return many different things,
+> and btf_distill_func_proto() and add_kfunc_call() need BTF.
+> A straightforward way that immediately comes to mind is to do kallsyms
+> lookup and then resolve by name, but this sounds clumsy.
+>
 
-Gr{oetje,eeting}s,
+I'm not sure whether there's a way to find the function's BTF by its
+pointer, but I think maybe we can use the vmlinux btf (which we can
+get through the bpf_get_btf_vmlinux() api) to get the func proto?
 
-                        Geert
+>
+>
+> I've been looking into this in context of fixing (kfunc
+> __bpf_call_base) not fitting into 32 bits on s390x. A solution that
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Sorry, I'm not fully understanding - can you elaborate a little on
+what the issue is? why doesn't the __bpf_call_base address fit on
+s390x? my understanding is that s390x is a 64-bit architecture?
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> would solve both problems that I'm currently thinking about is to
+> associate
+>
+> struct {
+>     struct btf_func_model *m;
+>     unsigned long addr;
+> } kfunc_callee;
+>
+> with every insn - during verification it could live in
+> bpf_insn_aux_data, during jiting in bpf_prog, and afterwards it can
+> be freed. Any thoughts about this?
