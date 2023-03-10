@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C60116B541F
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 23:16:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E32606B5416
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 23:16:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231814AbjCJWQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 17:16:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46510 "EHLO
+        id S231557AbjCJWQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 17:16:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231634AbjCJWQT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 17:16:19 -0500
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C1CC144178;
-        Fri, 10 Mar 2023 14:16:17 -0800 (PST)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32ALi0Op014913;
-        Fri, 10 Mar 2023 22:15:57 GMT
+        with ESMTP id S231495AbjCJWQQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 17:16:16 -0500
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA4B513F54B;
+        Fri, 10 Mar 2023 14:16:14 -0800 (PST)
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32ALhxT1026800;
+        Fri, 10 Mar 2023 22:15:58 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=corp-2022-7-12;
- bh=uBlMdD7r1eIccZBQ2mT5dGoN2iebPaDSiGe5Dh8nfOk=;
- b=P6djNuwI1m0QuxDQh9o5r3DwvqepmKuomSKRQm64ltkMc878UZ5ABtAJNDapkNE8Me3U
- CfHNsC9xb0XmM4ErbJKx6svibahFvBlRruzYftD64Vd/UuacKnFSLRPlHTRSKtszFhMH
- j+nCoHlJLuED5OjGlSrW+foi9EfPvOsyKb0YVfmfYQgeA5OtxdtP/1xHtdX3BLJtvpcH
- 1E0RtDEO7jKIU/PUo0LUrpBcbUlyNjj+c3d3ALyF9z394q0FJUywjmRJXN/nj7MU1wjE
- 7oUqOs5iEZyk9GSh25Hsuc9kefC3Og6udJ6zXNuU7CK5py3fslelFvJlyedu+0S73U23 9A== 
+ bh=qNitOfdyftQUtr/OK4KHEeLFBABIkHQ2N6q3MIkFuhs=;
+ b=F7gUrThlexIh/9AAwj4bMKQZ3L+1mQkaQVUqKoqTOtNTd0K8O764s0Obu8+cCCOuWE4i
+ iX78MMFH9+qBYYtIeKdGVhf8ytDZYzHqogXFqSEMEEpAxZ5QnJ8gsKO+EC66NTslGObg
+ hvjfLxZsOl0Q97PTzVtBUcRlgNnMik6eVNrIymfQvS4yhctkAju96dvSOWQI6AgXCNY/
+ mH7HrvakLfD1VpO1jS8aBabX8rC4rI3Ra48LV8SiRDG3oMa8qbU8Z+C66XdGrm5PtwVb
+ Jej3FoKjZZR3cnPtYaKEQDTsvym0kVAWL2bL9NzIJ3Z7P8H61/uAeXUt1M99ZXtbF0pr jw== 
 Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3p416wxc8v-1
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3p417cp9hw-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 10 Mar 2023 22:15:56 +0000
+        Fri, 10 Mar 2023 22:15:58 +0000
 Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 32ALelle031645;
-        Fri, 10 Mar 2023 22:15:56 GMT
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 32AM3Xxu031713;
+        Fri, 10 Mar 2023 22:15:57 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3p6feqs9sr-1
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3p6feqs9t9-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 10 Mar 2023 22:15:56 +0000
+        Fri, 10 Mar 2023 22:15:57 +0000
 Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32AMFrOx028711;
-        Fri, 10 Mar 2023 22:15:55 GMT
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32AMFrP1028711;
+        Fri, 10 Mar 2023 22:15:56 GMT
 Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.129.136.47])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3p6feqs9nh-3;
-        Fri, 10 Mar 2023 22:15:55 +0000
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3p6feqs9nh-4;
+        Fri, 10 Mar 2023 22:15:56 +0000
 From:   Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
 To:     davem@davemloft.net
 Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
@@ -51,9 +51,9 @@ Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
         socketcan@hartkopp.net, petrm@nvidia.com,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         anjali.k.kulkarni@oracle.com
-Subject: [PATCH v1 2/5] connector/cn_proc: Add filtering to fix some bugs
-Date:   Fri, 10 Mar 2023 14:15:44 -0800
-Message-Id: <20230310221547.3656194-3-anjali.k.kulkarni@oracle.com>
+Subject: [PATCH v1 3/5] connector/cn_proc: Test code for proc connector
+Date:   Fri, 10 Mar 2023 14:15:45 -0800
+Message-Id: <20230310221547.3656194-4-anjali.k.kulkarni@oracle.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230310221547.3656194-1-anjali.k.kulkarni@oracle.com>
 References: <20230310221547.3656194-1-anjali.k.kulkarni@oracle.com>
@@ -66,11 +66,11 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 spam
  mlxlogscore=999 suspectscore=0 malwarescore=0 mlxscore=0 adultscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
  definitions=main-2303100177
-X-Proofpoint-GUID: mjOixkxXrRr-Kyi4NpG8a4ICe-efpavc
-X-Proofpoint-ORIG-GUID: mjOixkxXrRr-Kyi4NpG8a4ICe-efpavc
+X-Proofpoint-GUID: 0T6jrbKdKirA9gnVy04BivXvtHhUm9BP
+X-Proofpoint-ORIG-GUID: 0T6jrbKdKirA9gnVy04BivXvtHhUm9BP
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,286 +78,282 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-One bug is if there are more than one listeners for the proc connector
-messages, and one of them deregisters for listening using
-PROC_CN_MCAST_IGNORE, they will still get all proc connector messages,
-as long as there is another listener.
-
-Another issue is if one client calls PROC_CN_MCAST_LISTEN, and another
-one calls PROC_CN_MCAST_IGNORE, then both will end up not getting any
-messages.
-
-This patch adds filtering and drops packet if client has sent
-PROC_CN_MCAST_IGNORE. This data is stored in the client socket's
-sk_user_data. In addition, we only increment or decrement
-proc_event_num_listeners once per client. This fixes the above issues.
+Test code for proc connector.
 
 Signed-off-by: Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
 ---
- drivers/connector/cn_proc.c   | 53 ++++++++++++++++++++++++++++-------
- drivers/connector/connector.c | 12 +++++---
- drivers/w1/w1_netlink.c       |  6 ++--
- include/linux/connector.h     |  6 +++-
- include/uapi/linux/cn_proc.h  | 43 ++++++++++++++++------------
- net/netlink/af_netlink.c      | 10 +++++--
- 6 files changed, 93 insertions(+), 37 deletions(-)
+ samples/connector/proc_filter.c | 262 ++++++++++++++++++++++++++++++++
+ 1 file changed, 262 insertions(+)
+ create mode 100644 samples/connector/proc_filter.c
 
-diff --git a/drivers/connector/cn_proc.c b/drivers/connector/cn_proc.c
-index ccac1c453080..84f38d2bd4b9 100644
---- a/drivers/connector/cn_proc.c
-+++ b/drivers/connector/cn_proc.c
-@@ -48,6 +48,21 @@ static DEFINE_PER_CPU(struct local_event, local_event) = {
- 	.lock = INIT_LOCAL_LOCK(lock),
- };
- 
-+static int cn_filter(struct sock *dsk, struct sk_buff *skb, void *data)
+diff --git a/samples/connector/proc_filter.c b/samples/connector/proc_filter.c
+new file mode 100644
+index 000000000000..25202f5bc126
+--- /dev/null
++++ b/samples/connector/proc_filter.c
+@@ -0,0 +1,262 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++#include <sys/types.h>
++#include <sys/epoll.h>
++#include <sys/socket.h>
++#include <linux/netlink.h>
++#include <linux/connector.h>
++#include <linux/cn_proc.h>
++
++#include <stddef.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <unistd.h>
++#include <strings.h>
++#include <errno.h>
++#include <signal.h>
++
++#define NL_MESSAGE_SIZE (sizeof(struct nlmsghdr) + sizeof(struct cn_msg) + \
++			 sizeof(int))
++
++#define MAX_EVENTS 1
++
++#ifdef ENABLE_PRINTS
++#define Printf printf
++#else
++#define Printf
++#endif
++
++volatile static int interrupted;
++static int nl_sock, ret_errno, tcount;
++static struct epoll_event evn;
++
++int send_message(enum proc_cn_mcast_op mcast_op)
 +{
-+	enum proc_cn_mcast_op mc_op;
++	char buff[NL_MESSAGE_SIZE];
++	struct nlmsghdr *hdr;
++	struct cn_msg *msg;
 +
-+	if (!dsk)
-+		return 0;
++	hdr = (struct nlmsghdr *)buff;
++	hdr->nlmsg_len = NL_MESSAGE_SIZE;
++	hdr->nlmsg_type = NLMSG_DONE;
++	hdr->nlmsg_flags = 0;
++	hdr->nlmsg_seq = 0;
++	hdr->nlmsg_pid = getpid();
 +
-+	mc_op = ((struct proc_input *)(dsk->sk_user_data))->mcast_op;
++	msg = (struct cn_msg *)NLMSG_DATA(hdr);
++	msg->id.idx = CN_IDX_PROC;
++	msg->id.val = CN_VAL_PROC;
++	msg->seq = 0;
++	msg->ack = 0;
++	msg->flags = 0;
 +
-+	if (mc_op == PROC_CN_MCAST_IGNORE)
-+		return 1;
++	msg->len = sizeof(int);
++	*(int *)msg->data = mcast_op;
 +
++	if (send(nl_sock, hdr, hdr->nlmsg_len, 0) == -1) {
++		ret_errno = errno;
++		perror("send failed");
++		return -3;
++	}
 +	return 0;
 +}
 +
- static inline void send_msg(struct cn_msg *msg)
- {
- 	local_lock(&local_event.lock);
-@@ -61,7 +76,8 @@ static inline void send_msg(struct cn_msg *msg)
- 	 *
- 	 * If cn_netlink_send() fails, the data is not sent.
- 	 */
--	cn_netlink_send(msg, 0, CN_IDX_PROC, GFP_NOWAIT);
-+	cn_netlink_send_mult(msg, msg->len, 0, CN_IDX_PROC, GFP_NOWAIT,
-+			     cn_filter, NULL);
- 
- 	local_unlock(&local_event.lock);
- }
-@@ -346,11 +362,9 @@ static void cn_proc_ack(int err, int rcvd_seq, int rcvd_ack)
- static void cn_proc_mcast_ctl(struct cn_msg *msg,
- 			      struct netlink_skb_parms *nsp)
- {
--	enum proc_cn_mcast_op *mc_op = NULL;
--	int err = 0;
--
--	if (msg->len != sizeof(*mc_op))
--		return;
-+	enum proc_cn_mcast_op mc_op = 0, prev_mc_op = 0;
-+	int err = 0, initial = 0;
-+	struct sock *sk = NULL;
- 
- 	/* 
- 	 * Events are reported with respect to the initial pid
-@@ -367,13 +381,32 @@ static void cn_proc_mcast_ctl(struct cn_msg *msg,
- 		goto out;
- 	}
- 
--	mc_op = (enum proc_cn_mcast_op *)msg->data;
--	switch (*mc_op) {
-+	if (msg->len == sizeof(mc_op))
-+		mc_op = *((enum proc_cn_mcast_op *)msg->data);
-+	else
-+		return;
++int register_proc_netlink(int *efd, enum proc_cn_mcast_op mcast_op)
++{
++	struct sockaddr_nl sa_nl;
++	int err = 0, epoll_fd;
 +
-+	if (nsp->sk) {
-+		sk = nsp->sk;
-+		if (sk->sk_user_data == NULL) {
-+			sk->sk_user_data = kzalloc(sizeof(struct proc_input),
-+						   GFP_KERNEL);
-+			initial = 1;
-+		} else {
-+			prev_mc_op =
-+			((struct proc_input *)(sk->sk_user_data))->mcast_op;
-+		}
-+		((struct proc_input *)(sk->sk_user_data))->mcast_op = mc_op;
++	nl_sock = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_CONNECTOR);
++
++	if (nl_sock == -1) {
++		ret_errno = errno;
++		perror("socket failed");
++		return -1;
 +	}
 +
-+	switch (mc_op) {
- 	case PROC_CN_MCAST_LISTEN:
--		atomic_inc(&proc_event_num_listeners);
-+		if (initial || (prev_mc_op != PROC_CN_MCAST_LISTEN))
-+			atomic_inc(&proc_event_num_listeners);
- 		break;
- 	case PROC_CN_MCAST_IGNORE:
--		atomic_dec(&proc_event_num_listeners);
-+		if (!initial && (prev_mc_op != PROC_CN_MCAST_IGNORE))
-+			atomic_dec(&proc_event_num_listeners);
- 		break;
- 	default:
- 		err = EINVAL;
-diff --git a/drivers/connector/connector.c b/drivers/connector/connector.c
-index 48ec7ce6ecac..1b7851b1aa0f 100644
---- a/drivers/connector/connector.c
-+++ b/drivers/connector/connector.c
-@@ -59,7 +59,9 @@ static int cn_already_initialized;
-  * both, or if both are zero then the group is looked up and sent there.
-  */
- int cn_netlink_send_mult(struct cn_msg *msg, u16 len, u32 portid, u32 __group,
--	gfp_t gfp_mask)
-+	gfp_t gfp_mask,
-+	int (*filter)(struct sock *dsk, struct sk_buff *skb, void *data),
-+	void *filter_data)
- {
- 	struct cn_callback_entry *__cbq;
- 	unsigned int size;
-@@ -110,8 +112,9 @@ int cn_netlink_send_mult(struct cn_msg *msg, u16 len, u32 portid, u32 __group,
- 	NETLINK_CB(skb).dst_group = group;
- 
- 	if (group)
--		return netlink_broadcast(dev->nls, skb, portid, group,
--					 gfp_mask);
-+		return netlink_broadcast_filtered(dev->nls, skb, portid, group,
-+						  gfp_mask, filter,
-+						  (void *)filter_data);
- 	return netlink_unicast(dev->nls, skb, portid,
- 			!gfpflags_allow_blocking(gfp_mask));
- }
-@@ -121,7 +124,8 @@ EXPORT_SYMBOL_GPL(cn_netlink_send_mult);
- int cn_netlink_send(struct cn_msg *msg, u32 portid, u32 __group,
- 	gfp_t gfp_mask)
- {
--	return cn_netlink_send_mult(msg, msg->len, portid, __group, gfp_mask);
-+	return cn_netlink_send_mult(msg, msg->len, portid, __group, gfp_mask,
-+				    NULL, NULL);
- }
- EXPORT_SYMBOL_GPL(cn_netlink_send);
- 
-diff --git a/drivers/w1/w1_netlink.c b/drivers/w1/w1_netlink.c
-index db110cc442b1..691978cddab7 100644
---- a/drivers/w1/w1_netlink.c
-+++ b/drivers/w1/w1_netlink.c
-@@ -65,7 +65,8 @@ static void w1_unref_block(struct w1_cb_block *block)
- 		u16 len = w1_reply_len(block);
- 		if (len) {
- 			cn_netlink_send_mult(block->first_cn, len,
--				block->portid, 0, GFP_KERNEL);
-+					     block->portid, 0,
-+					     GFP_KERNEL, NULL, NULL);
- 		}
- 		kfree(block);
- 	}
-@@ -83,7 +84,8 @@ static void w1_reply_make_space(struct w1_cb_block *block, u16 space)
- {
- 	u16 len = w1_reply_len(block);
- 	if (len + space >= block->maxlen) {
--		cn_netlink_send_mult(block->first_cn, len, block->portid, 0, GFP_KERNEL);
-+		cn_netlink_send_mult(block->first_cn, len, block->portid,
-+				     0, GFP_KERNEL, NULL, NULL);
- 		block->first_cn->len = 0;
- 		block->cn = NULL;
- 		block->msg = NULL;
-diff --git a/include/linux/connector.h b/include/linux/connector.h
-index 487350bb19c3..1336a5e7dd2f 100644
---- a/include/linux/connector.h
-+++ b/include/linux/connector.h
-@@ -96,7 +96,11 @@ void cn_del_callback(const struct cb_id *id);
-  *
-  * If there are no listeners for given group %-ESRCH can be returned.
-  */
--int cn_netlink_send_mult(struct cn_msg *msg, u16 len, u32 portid, u32 group, gfp_t gfp_mask);
-+int cn_netlink_send_mult(struct cn_msg *msg, u16 len, u32 portid,
-+			 u32 group, gfp_t gfp_mask,
-+			 int (*filter)(struct sock *dsk, struct sk_buff *skb,
-+				       void *data),
-+			 void *filter_data);
- 
- /**
-  * cn_netlink_send - Sends message to the specified groups.
-diff --git a/include/uapi/linux/cn_proc.h b/include/uapi/linux/cn_proc.h
-index db210625cee8..6a06fb424313 100644
---- a/include/uapi/linux/cn_proc.h
-+++ b/include/uapi/linux/cn_proc.h
-@@ -30,6 +30,30 @@ enum proc_cn_mcast_op {
- 	PROC_CN_MCAST_IGNORE = 2
- };
- 
-+enum proc_cn_event {
-+	/* Use successive bits so the enums can be used to record
-+	 * sets of events as well
-+	 */
-+	PROC_EVENT_NONE = 0x00000000,
-+	PROC_EVENT_FORK = 0x00000001,
-+	PROC_EVENT_EXEC = 0x00000002,
-+	PROC_EVENT_UID  = 0x00000004,
-+	PROC_EVENT_GID  = 0x00000040,
-+	PROC_EVENT_SID  = 0x00000080,
-+	PROC_EVENT_PTRACE = 0x00000100,
-+	PROC_EVENT_COMM = 0x00000200,
-+	/* "next" should be 0x00000400 */
-+	/* "last" is the last process event: exit,
-+	 * while "next to last" is coredumping event
-+	 */
-+	PROC_EVENT_COREDUMP = 0x40000000,
-+	PROC_EVENT_EXIT = 0x80000000
-+};
++	bzero(&sa_nl, sizeof(sa_nl));
++	sa_nl.nl_family = AF_NETLINK;
++	sa_nl.nl_groups = CN_IDX_PROC;
++	sa_nl.nl_pid    = getpid();
 +
-+struct proc_input {
-+	enum proc_cn_mcast_op mcast_op;
-+};
++	if (bind(nl_sock, (struct sockaddr *)&sa_nl, sizeof(sa_nl)) == -1) {
++		ret_errno = errno;
++		perror("bind failed");
++		return -2;
++	}
 +
- /*
-  * From the user's point of view, the process
-  * ID is the thread group ID and thread ID is the internal
-@@ -44,24 +68,7 @@ enum proc_cn_mcast_op {
-  */
- 
- struct proc_event {
--	enum what {
--		/* Use successive bits so the enums can be used to record
--		 * sets of events as well
--		 */
--		PROC_EVENT_NONE = 0x00000000,
--		PROC_EVENT_FORK = 0x00000001,
--		PROC_EVENT_EXEC = 0x00000002,
--		PROC_EVENT_UID  = 0x00000004,
--		PROC_EVENT_GID  = 0x00000040,
--		PROC_EVENT_SID  = 0x00000080,
--		PROC_EVENT_PTRACE = 0x00000100,
--		PROC_EVENT_COMM = 0x00000200,
--		/* "next" should be 0x00000400 */
--		/* "last" is the last process event: exit,
--		 * while "next to last" is coredumping event */
--		PROC_EVENT_COREDUMP = 0x40000000,
--		PROC_EVENT_EXIT = 0x80000000
--	} what;
-+	enum proc_cn_event what;
- 	__u32 cpu;
- 	__u64 __attribute__((aligned(8))) timestamp_ns;
- 		/* Number of nano seconds since system boot */
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index 003c7e6ec9be..b311375b8c4c 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -63,6 +63,7 @@
- #include <linux/net_namespace.h>
- #include <linux/nospec.h>
- #include <linux/btf_ids.h>
-+#include <linux/connector.h>
- 
- #include <net/net_namespace.h>
- #include <net/netns/generic.h>
-@@ -767,9 +768,14 @@ static int netlink_release(struct socket *sock)
- 	/* must not acquire netlink_table_lock in any way again before unbind
- 	 * and notifying genetlink is done as otherwise it might deadlock
- 	 */
--	if (nlk->netlink_unbind) {
-+	if (nlk->netlink_unbind && nlk->groups) {
- 		int i;
--
-+		if (sk->sk_protocol == NETLINK_CONNECTOR) {
-+			if (test_bit(CN_IDX_PROC - 1, nlk->groups)) {
-+				kfree(sk->sk_user_data);
-+				sk->sk_user_data = NULL;
-+			}
++	epoll_fd = epoll_create1(EPOLL_CLOEXEC);
++	if (epoll_fd < 0) {
++		ret_errno = errno;
++		perror("epoll_create1 failed");
++		return -2;
++	}
++
++	err = send_message(mcast_op);
++	if (err < 0)
++		return err;
++
++	evn.events = EPOLLIN;
++	evn.data.fd = nl_sock;
++	if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, nl_sock, &evn) < 0) {
++		ret_errno = errno;
++		perror("epoll_ctl failed");
++		return -3;
++	}
++	*efd = epoll_fd;
++	return 0;
++}
++
++static void sigint(__attribute__((__always_unused)) int sig)
++{
++	interrupted = 1;
++}
++
++int handle_packet(char *buff, int fd, struct proc_event *event)
++{
++	struct nlmsghdr *hdr;
++
++	hdr = (struct nlmsghdr *)buff;
++
++	if (hdr->nlmsg_type == NLMSG_ERROR) {
++		perror("NLMSG_ERROR error\n");
++		return -3;
++	} else if (hdr->nlmsg_type == NLMSG_DONE) {
++		event = (struct proc_event *)
++			((struct cn_msg *)NLMSG_DATA(hdr))->data;
++		tcount++;
++		switch (event->what) {
++		case PROC_EVENT_EXIT:
++			Printf("Exit process %d (tgid %d) with code %d, signal %d\n",
++			       event->event_data.exit.process_pid,
++			       event->event_data.exit.process_tgid,
++			       event->event_data.exit.exit_code,
++			       event->event_data.exit.exit_signal);
++			break;
++		case PROC_EVENT_FORK:
++			Printf("Fork process %d (tgid %d), parent %d (tgid %d)\n",
++			       event->event_data.fork.child_pid,
++			       event->event_data.fork.child_tgid,
++			       event->event_data.fork.parent_pid,
++			       event->event_data.fork.parent_tgid);
++			break;
++		case PROC_EVENT_EXEC:
++			Printf("Exec process %d (tgid %d)\n",
++			       event->event_data.exec.process_pid,
++			       event->event_data.exec.process_tgid);
++			break;
++		case PROC_EVENT_UID:
++			Printf("UID process %d (tgid %d) uid %d euid %d\n",
++			       event->event_data.id.process_pid,
++			       event->event_data.id.process_tgid,
++			       event->event_data.id.r.ruid,
++			       event->event_data.id.e.euid);
++			break;
++		case PROC_EVENT_GID:
++			Printf("GID process %d (tgid %d) gid %d egid %d\n",
++			       event->event_data.id.process_pid,
++			       event->event_data.id.process_tgid,
++			       event->event_data.id.r.rgid,
++			       event->event_data.id.e.egid);
++			break;
++		case PROC_EVENT_SID:
++			Printf("SID process %d (tgid %d)\n",
++			       event->event_data.sid.process_pid,
++			       event->event_data.sid.process_tgid);
++			break;
++		case PROC_EVENT_PTRACE:
++			Printf("Ptrace process %d (tgid %d), Tracer %d (tgid %d)\n",
++			       event->event_data.ptrace.process_pid,
++			       event->event_data.ptrace.process_tgid,
++			       event->event_data.ptrace.tracer_pid,
++			       event->event_data.ptrace.tracer_tgid);
++			break;
++		case PROC_EVENT_COMM:
++			Printf("Comm process %d (tgid %d) comm %s\n",
++			       event->event_data.comm.process_pid,
++			       event->event_data.comm.process_tgid,
++			       event->event_data.comm.comm);
++			break;
++		case PROC_EVENT_COREDUMP:
++			Printf("Coredump process %d (tgid %d) parent %d, (tgid %d)\n",
++			       event->event_data.coredump.process_pid,
++			       event->event_data.coredump.process_tgid,
++			       event->event_data.coredump.parent_pid,
++			       event->event_data.coredump.parent_tgid);
++			break;
++		default:
++			break;
 +		}
- 		for (i = 0; i < nlk->ngroups; i++)
- 			if (test_bit(i, nlk->groups))
- 				nlk->netlink_unbind(sock_net(sk), i + 1);
++	}
++	return 0;
++}
++
++int handle_events(int epoll_fd, struct proc_event *pev)
++{
++	char buff[CONNECTOR_MAX_MSG_SIZE];
++	struct epoll_event ev[MAX_EVENTS];
++	int i, event_count = 0, err = 0;
++
++	event_count = epoll_wait(epoll_fd, ev, MAX_EVENTS, -1);
++	if (event_count < 0) {
++		ret_errno = errno;
++		if (ret_errno != EINTR)
++			perror("epoll_wait failed");
++		return -3;
++	}
++	for (i = 0; i < event_count; i++) {
++		if (!(ev[i].events & EPOLLIN))
++			continue;
++		if (recv(ev[i].data.fd, buff, sizeof(buff), 0) == -1) {
++			ret_errno = errno;
++			perror("recv failed");
++			return -3;
++		}
++		err = handle_packet(buff, ev[i].data.fd, pev);
++		if (err < 0)
++			return err;
++	}
++	return 0;
++}
++
++int main(int argc, char *argv[])
++{
++	int epoll_fd, err;
++	struct proc_event proc_ev;
++
++	signal(SIGINT, sigint);
++
++	err = register_proc_netlink(&epoll_fd, PROC_CN_MCAST_LISTEN);
++	if (err < 0) {
++		if (err == -2)
++			close(nl_sock);
++		if (err == -3) {
++			close(nl_sock);
++			close(epoll_fd);
++		}
++		exit(1);
++	}
++
++	while (!interrupted) {
++		err = handle_events(epoll_fd, &proc_ev);
++		if (err < 0) {
++			if (ret_errno == EINTR)
++				continue;
++			if (err == -2)
++				close(nl_sock);
++			if (err == -3) {
++				close(nl_sock);
++				close(epoll_fd);
++			}
++			exit(1);
++		}
++	}
++
++	send_message(PROC_CN_MCAST_IGNORE);
++
++	close(epoll_fd);
++	close(nl_sock);
++
++	printf("Done total count: %d\n", tcount);
++	exit(0);
++}
 -- 
 2.31.1
 
