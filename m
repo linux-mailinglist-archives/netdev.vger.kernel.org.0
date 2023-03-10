@@ -2,107 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74ED16B3BF1
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 11:23:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B1646B3C2A
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 11:32:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230469AbjCJKXa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 05:23:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46618 "EHLO
+        id S231285AbjCJKcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 05:32:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230404AbjCJKX0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 05:23:26 -0500
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 953A419C67
-        for <netdev@vger.kernel.org>; Fri, 10 Mar 2023 02:23:14 -0800 (PST)
-Received: by mail-qk1-x741.google.com with SMTP id g20so1760850qkm.7
-        for <netdev@vger.kernel.org>; Fri, 10 Mar 2023 02:23:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678443793;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=pyILUwa0Z6Xv6XvO9j9B6myvIlhq3c07p0l3fgO9YMc=;
-        b=HCnJmRMgkGQUVbKm5gHkqTQDSMZ+HjAameRU+VVoClL0sCXvvsZFWBxFeuYQ8FeT0m
-         hnoraSilj6d2OyabHQ5K16hU+P9+0WWJWjIdNuY5fFsa4iQwwYZR7L8JlFmyVwrpvBkn
-         xSaL5OsJ8Ju9yb/BsG3YxxKRcokffIZzaEaBe3/UH5+nY5/Gw/wg0gGs+eXxMqpcnUq9
-         WklS3MFD4ewCGpYceCgUJAB1Gnu9Ohv3EZwxcZ00eag4mFH1Jga9RT3O5xhfNG02O+MN
-         vUolgkNL1JjiUc4H7yLqhe6Pw/refXpydzhZmflGVSmrZRwqWq0eyowyrgcYS/ew1HHk
-         pdlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678443793;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=pyILUwa0Z6Xv6XvO9j9B6myvIlhq3c07p0l3fgO9YMc=;
-        b=IuhT4kBQhw1rR1T5x+xk5rlNsqpBe+t6mKaXE5RDrDQKkyNFWgPFfn33TTmMg540UW
-         5IBF9KDtuWddNIozCMklkxZ3G3D8APeVuMxAQUt0FDGhTfXkwfWLlEh0B93h6TQT5n3t
-         XHuODamoZbEjM+S68Wk0lUcqDPg5wsgnaes6766Qd1CSOT3Tv4l164tM5Rre9qOQrWmA
-         K5/UDfnZe4eJZlOTWTcdBE4vUjPqfJOWZctyudUMi127sBMXW3zNPwBdwww6Rv1naOn/
-         nCq3VhuVdHILMUyMRd05xhcWAWWICXt9TeS0kK14BnXQY8ptTBGMFyHAFchLpeBSoCYe
-         V5Tg==
-X-Gm-Message-State: AO0yUKUJFVW5bDMVVJZ1UsbZ7ez0xZZS1TqD83Qa8sJIVEsyrsdnj1EG
-        UZXjIR0bYJrGVhe50vA4KY/q3U8jlR7ZZDMskGg=
-X-Google-Smtp-Source: AK7set/Jabu2IeOiWn0MhJaAI9pacg+c0mRTns25vItB0qPxJovHvlMZekUj+XZpXNKZjhJWU5orf5+YzrIhqslv9bY=
-X-Received: by 2002:a05:620a:2215:b0:742:cbfd:33b8 with SMTP id
- m21-20020a05620a221500b00742cbfd33b8mr516664qkh.9.1678443793693; Fri, 10 Mar
- 2023 02:23:13 -0800 (PST)
+        with ESMTP id S231140AbjCJKcS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 05:32:18 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E00B1111FF;
+        Fri, 10 Mar 2023 02:32:15 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 4FCF020652;
+        Fri, 10 Mar 2023 10:32:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1678444334; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=+UxaHT8mKSvWC1QwdfPHOIKK79hhmlWoe1rpbrZg63I=;
+        b=Pi4jmECIhq9mt7ExG5YPIfVLCnWAsu13s1ZcnGG8QMsXvppeWz1uSPuiQAAUb4TWtAnyIK
+        FFaCIxvGmlNxUZwx+6E7paW4fJEQ4r+txzLRaCowoeYJsr2zCk53dGc5tmS0m3rN5Lr0/K
+        Kt/Mg6W6ijqhwCTTXPogOO/aOCVXxr0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1678444334;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=+UxaHT8mKSvWC1QwdfPHOIKK79hhmlWoe1rpbrZg63I=;
+        b=qc9mtv8oEd3rdK+9AU0fRFP6mEP8TogXgGtqfBKs7DxeOUmeHcrefoqf50gZ3br6pltm6a
+        mpmzxQWPR95dfxBA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E502D13592;
+        Fri, 10 Mar 2023 10:32:13 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id bBceNy0HC2SsXQAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Fri, 10 Mar 2023 10:32:13 +0000
+From:   Vlastimil Babka <vbabka@suse.cz>
+To:     Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Pekka Enberg <penberg@kernel.org>
+Cc:     Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        rcu@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: [PATCH 0/7] remove SLOB and allow kfree() with kmem_cache_alloc()
+Date:   Fri, 10 Mar 2023 11:32:02 +0100
+Message-Id: <20230310103210.22372-1-vbabka@suse.cz>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Received: by 2002:a0c:eb47:0:b0:572:4a3d:39cf with HTTP; Fri, 10 Mar 2023
- 02:23:13 -0800 (PST)
-Reply-To: chantalls306@gmail.com
-From:   "L.S Chantal" <adamgold9805@gmail.com>
-Date:   Fri, 10 Mar 2023 10:23:13 +0000
-Message-ID: <CAFoXcHff+3iUNrwd6f9eZqqJ1etOWcON7RjV5zeOXOOvpw6MZw@mail.gmail.com>
-Subject: hello
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=7.7 required=5.0 tests=BAYES_99,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:741 listed in]
-        [list.dnswl.org]
-        *  3.5 BAYES_99 BODY: Bayes spam probability is 99 to 100%
-        *      [score: 0.9950]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [adamgold9805[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [adamgold9805[at]gmail.com]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [chantalls306[at]gmail.com]
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  2.9 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *******
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello dear, how are you?
+Also in git:
+https://git.kernel.org/vbabka/h/slab-remove-slob-v1r1
 
+The SLOB allocator was deprecated in 6.2 so I think we can start
+exposing the complete removal in for-next and aim at 6.4 if there are no
+complaints.
 
-You are compensated for the amount of =E2=82=AC5.5 million in this.
-Payment will be issued on the atm visa card and sent.
-To you from Santander Bank We need your address and address.
-whatsapp number
+Besides code cleanup, the main immediate benefit will be allowing
+kfree() family of function to work on kmem_cache_alloc() objects (Patch
+7), which was incompatible with SLOB.
 
+This includes kfree_rcu() so I've updated the comment there to remove
+the mention of potential future addition of kmem_cache_free_rcu() as
+there should be no need for that now.
 
+Otherwise it's straightforward. Patch 2 is a cleanup in net area, that I
+can either handle in slab tree or submit in net after SLOB is removed.
+Another cleanup in tomoyo is already in the tomoyo tree as that didn't
+need to wait until SLOB removal.
 
-thank you
+Vlastimil Babka (7):
+  mm/slob: remove CONFIG_SLOB
+  net: skbuff: remove SLOB-specific ifdefs
+  mm, page_flags: remove PG_slob_free
+  mm, pagemap: remove SLOB and SLQB from comments and documentation
+  mm/slab: remove CONFIG_SLOB code from slab common code
+  mm/slob: remove slob.c
+  mm/slab: document kfree() as allowed for kmem_cache_alloc() objects
+
+ Documentation/admin-guide/mm/pagemap.rst     |   6 +-
+ Documentation/core-api/memory-allocation.rst |  15 +-
+ fs/proc/page.c                               |   5 +-
+ include/linux/page-flags.h                   |   4 -
+ include/linux/rcupdate.h                     |   6 +-
+ include/linux/slab.h                         |  39 -
+ init/Kconfig                                 |   2 +-
+ kernel/configs/tiny.config                   |   1 -
+ mm/Kconfig                                   |  22 -
+ mm/Makefile                                  |   1 -
+ mm/slab.h                                    |  61 --
+ mm/slab_common.c                             |   7 +-
+ mm/slob.c                                    | 757 -------------------
+ net/core/skbuff.c                            |  16 -
+ tools/mm/page-types.c                        |   6 +-
+ 15 files changed, 23 insertions(+), 925 deletions(-)
+ delete mode 100644 mm/slob.c
+
+-- 
+2.39.2
+
