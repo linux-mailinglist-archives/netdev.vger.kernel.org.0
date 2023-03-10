@@ -2,257 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BD366B5494
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 23:38:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0916F6B54BA
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 23:43:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230203AbjCJWiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 17:38:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60806 "EHLO
+        id S231732AbjCJWnc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 17:43:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230297AbjCJWiN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 17:38:13 -0500
-Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E4473BDBF;
-        Fri, 10 Mar 2023 14:38:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1678487892; x=1710023892;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=4Ah8kgw+7F5+l+p1/S9MDspeHNTTxxxtpxdebEtglq0=;
-  b=BP57SktkS25gmmdAcjktPyKix7xHJiY9I9wNl9I+To8eH1Sg2soQiXBV
-   Jz3FnBn6/vHX0Al7Fu8FLuR3888y9yNAO1L9xgqGjUUu0X1Vd8fwUzG9r
-   MAzpsHwzrp9Ifg6ftRxUpxchNRNr2mNFF77D9nD33yFnnVTV97yxhWCv+
-   s=;
-X-IronPort-AV: E=Sophos;i="5.98,251,1673913600"; 
-   d="scan'208";a="305948878"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-a65ebc6e.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2023 22:38:08 +0000
-Received: from EX19MTAUWC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1e-m6i4x-a65ebc6e.us-east-1.amazon.com (Postfix) with ESMTPS id 6528763E62;
-        Fri, 10 Mar 2023 22:38:06 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.25; Fri, 10 Mar 2023 22:38:04 +0000
-Received: from 88665a182662.ant.amazon.com.com (10.106.100.20) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.24; Fri, 10 Mar 2023 22:38:01 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <kuniyu@amazon.com>
-CC:     <kuba@kernel.org>, <martin.lau@kernel.org>,
-        <netdev@vger.kernel.org>, <pholzing@redhat.com>,
-        <regressions@lists.linux.dev>, <stable@vger.kernel.org>
-Subject: Re: [REGRESSION] v6.1+ bind() does not fail with EADDRINUSE if dual stack is bound
-Date:   Fri, 10 Mar 2023 14:37:52 -0800
-Message-ID: <20230310223752.31024-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230310212547.25491-1-kuniyu@amazon.com>
-References: <20230310212547.25491-1-kuniyu@amazon.com>
+        with ESMTP id S232017AbjCJWmy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 17:42:54 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7548F14DA3F
+        for <netdev@vger.kernel.org>; Fri, 10 Mar 2023 14:42:28 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1palQh-0002d9-AB; Fri, 10 Mar 2023 23:41:39 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1palQe-003GqF-FD; Fri, 10 Mar 2023 23:41:36 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1palQd-003uES-O4; Fri, 10 Mar 2023 23:41:35 +0100
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Stuart Yoder <stuyoder@gmail.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Roy Pledge <Roy.Pledge@nxp.com>, Li Yang <leoyang.li@nxp.com>,
+        =?utf-8?q?Horia_Geant=C4=83?= <horia.geanta@nxp.com>,
+        Pankaj Gupta <pankaj.gupta@nxp.com>,
+        Gaurav Jain <gaurav.jain@nxp.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vinod Koul <vkoul@kernel.org>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Yangbo Lu <yangbo.lu@nxp.com>,
+        Diana Craciun <diana.craciun@oss.nxp.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>
+Cc:     kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
+        dmaengine@vger.kernel.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: [PATCH 0/6] bus: fsl-mc: Make remove function return void
+Date:   Fri, 10 Mar 2023 23:41:22 +0100
+Message-Id: <20230310224128.2638078-1-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1698; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=9JhTrjmQKjtQFlUasQrySTFuLZLu/NtOD5qmM4eufeE=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBkC7H+eh7sOlGHBG4L1QyBTw+rzQkNoN+qxvPCW eOgwZqzcbSJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCZAux/gAKCRDB/BR4rcrs CbK0B/0cW9Eel9XtT+/ciaqOL8Ou4+Z2zYziEPD7ScbF4q+swN4VVcdYcsxqOOR5SiCfeGux/vG nfJ22a6m2IawQ7zblHVSfehklr+v3pYyUgmnGpbO5okqmN/5jUpGzX065Jj5HYNwZAslY6DAflI D5Ck9zcwuJo37fBXnMh2xpLh7KcYnpLZ5pqRB7J21MV8GIG74zP6OK4PeYlRknsbM0JK4bxYke/ tM6VZ35AX9hYDbmv+HLyVdwO4NLT3cOwA+5Jq4gUz+86LDPobXlAeUjXFOBmILtaEfOPHG8f9+Y 3mUfL1lOujCuuV9tHfDxz2xosDkMqNZKtFI0Gu2kAo5I3Wig
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.106.100.20]
-X-ClientProxiedBy: EX19D044UWB002.ant.amazon.com (10.13.139.188) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-Date:   Fri, 10 Mar 2023 13:25:47 -0800
-> From:   Paul Holzinger <pholzing@redhat.com>
-> Date:   Fri, 10 Mar 2023 17:01:31 +0100
-> > Hi all,
-> > 
-> > there seems to be a regression which allows you to bind the same port 
-> > twice when the first bind call bound to all ip addresses (i. e. dual stack).
-> > 
-> > A second bind call for the same port will succeed if you try to bind to 
-> > a specific ipv4 (e. g. 127.0.0.1), binding to 0.0.0.0 or an ipv6 address 
-> > fails correctly with EADDRINUSE.
-> > 
-> > I included a small c program below to show the issue. Normally the 
-> > second bind call should fail, this was the case before v6.1.
-> > 
-> > 
-> > I bisected the regression to commit 5456262d2baa ("net: Fix incorrect 
-> > address comparison when searching for a bind2 bucket").
-> > 
-> > I also checked that the issue is still present in v6.3-rc1.
-> 
-> Thanks for the detailed report.
-> 
-> It seems we should take care of the special case in
-> inet_bind2_bucket_match_addr_any().
+Hello,
 
-I confimed this change fixes the regression.
-I'll check other paths that 5456262d2baa touched.
+many bus remove functions return an integer which is a historic
+misdesign that makes driver authors assume that there is some kind of
+error handling in the upper layers. This is wrong however and returning
+and error code only yields an error message.
 
----8<---
-diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index e41fdc38ce19..62c5f7501571 100644
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -828,8 +828,15 @@ bool inet_bind2_bucket_match_addr_any(const struct inet_bind2_bucket *tb, const
- #if IS_ENABLED(CONFIG_IPV6)
- 	struct in6_addr addr_any = {};
- 
--	if (sk->sk_family != tb->family)
--		return false;
-+	if (sk->sk_family != tb->family) {
-+		if (sk->sk_family == AF_INET6)
-+			return net_eq(ib2_net(tb), net) && tb->port == port &&
-+				tb->l3mdev == l3mdev && tb->rcv_saddr == 0;
-+		else
-+			return net_eq(ib2_net(tb), net) && tb->port == port &&
-+				tb->l3mdev == l3mdev &&
-+				ipv6_addr_equal(&tb->v6_rcv_saddr, &in6addr_any);
-+	}
- 
- 	if (sk->sk_family == AF_INET6)
- 		return net_eq(ib2_net(tb), net) && tb->port == port &&
----8<---
+This series improves the fsl-mc bus by changing the remove callback to
+return no value instead. As a preparation all drivers are changed to
+return zero before so that they don't trigger the error message.
+
+Best regards
+Uwe
+
+Uwe Kleine-König (6):
+  bus: fsl-mc: Only warn once about errors on device unbind
+  bus: fsl-mc: dprc: Push down error message from fsl_mc_driver_remove()
+  bus: fsl-mc: fsl-mc-allocator: Drop if block with always wrong
+    condition
+  bus: fsl-mc: fsl-mc-allocator: Improve error reporting
+  soc: fsl: dpio: Suppress duplicated error reporting on device remove
+  bus: fsl-mc: Make remove function return void
+
+ drivers/bus/fsl-mc/dprc-driver.c              | 12 ++++-----
+ drivers/bus/fsl-mc/fsl-mc-allocator.c         | 27 ++++++++++---------
+ drivers/bus/fsl-mc/fsl-mc-bus.c               |  7 +----
+ drivers/crypto/caam/caamalg_qi2.c             |  4 +--
+ drivers/dma/fsl-dpaa2-qdma/dpaa2-qdma.c       |  4 +--
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |  4 +--
+ .../net/ethernet/freescale/dpaa2/dpaa2-ptp.c  |  4 +--
+ .../ethernet/freescale/dpaa2/dpaa2-switch.c   |  4 +--
+ drivers/soc/fsl/dpio/dpio-driver.c            |  8 +-----
+ drivers/vfio/fsl-mc/vfio_fsl_mc.c             |  3 +--
+ include/linux/fsl/mc.h                        |  2 +-
+ 11 files changed, 28 insertions(+), 51 deletions(-)
 
 
-Tested:
+base-commit: fe15c26ee26efa11741a7b632e9f23b01aca4cc6
+-- 
+2.39.1
 
----8<---
->>> from socket import *
->>> 
->>> s = socket(AF_INET6, SOCK_STREAM, 0)
->>> s2 = socket(AF_INET, SOCK_STREAM, 0)
->>> 
->>> s.bind(('::', 0))
->>> s
-<socket.socket fd=3, family=AddressFamily.AF_INET6, type=SocketKind.SOCK_STREAM, proto=0, laddr=('::', 53147, 0, 0)>
->>> 
->>> s2.bind(('0.0.0.0', s.getsockname()[1]))
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-OSError: [Errno 98] Address already in use
->>> s2.bind(('127.0.0.1', s.getsockname()[1]))
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-OSError: [Errno 98] Address already in use
->>> 
->>> 
->>> s3 = socket(AF_INET, SOCK_STREAM, 0)
->>> s4 = socket(AF_INET6, SOCK_STREAM, 0)
->>> 
->>> s3.bind(('0.0.0.0', 0))
->>> s3
-<socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('0.0.0.0', 58359)>
->>> 
->>> s4.bind(('::0', s3.getsockname()[1]))
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-OSError: [Errno 98] Address already in use
->>> s4.bind(('::1', s3.getsockname()[1]))
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-OSError: [Errno 98] Address already in use
----8<---
-
-Thanks,
-Kuniyuki
-
-
-> 
-> I'll fix it.
-> 
-> Thanks,
-> Kuniyuki
-> 
-> > 
-> > 
-> > Original report: https://github.com/containers/podman/issues/17719
-> > 
-> > #regzbot introduced: 5456262d2baa
-> > 
-> > 
-> > ```
-> > 
-> > #include <sys/socket.h>
-> > #include <sys/un.h>
-> > #include <stdlib.h>
-> > #include <stdio.h>
-> > #include <netinet/in.h>
-> > #include <unistd.h>
-> > 
-> > int main(int argc, char *argv[])
-> > {
-> >      int ret, sock1, sock2;
-> >      struct sockaddr_in6 addr;
-> >      struct sockaddr_in addr2;
-> > 
-> >      sock1 = socket(AF_INET6, SOCK_STREAM, 0);
-> >      if (sock1 == -1)
-> >      {
-> >          perror("socket1");
-> >          exit(1);
-> >      }
-> >      sock2 = socket(AF_INET, SOCK_STREAM, 0);
-> >      if (sock2 == -1)
-> >      {
-> >          perror("socket2");
-> >          exit(1);
-> >      }
-> > 
-> >      memset(&addr, 0, sizeof(addr));
-> >      addr.sin6_family = AF_INET6;
-> >      addr.sin6_addr = in6addr_any;
-> >      addr.sin6_port = htons(8080);
-> > 
-> >      memset(&addr2, 0, sizeof(addr2));
-> >      addr2.sin_family = AF_INET;
-> >      addr2.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-> >      addr2.sin_port = htons(8080);
-> > 
-> >      ret = bind(sock1, (struct sockaddr *)&addr, sizeof(addr));
-> >      if (ret == -1)
-> >      {
-> >          perror("bind1");
-> >          exit(1);
-> >      }
-> >      printf("bind1 ret: %d\n", ret);
-> > 
-> >      if ((listen(sock1, 5)) != 0)
-> >      {
-> >          perror("listen1");
-> >          exit(1);
-> >      }
-> > 
-> >      ret = bind(sock2, (struct sockaddr *)&addr2, sizeof(addr2));
-> >      if (ret == -1)
-> >      {
-> >          perror("bind2");
-> >          exit(1);
-> >      }
-> >      printf("bind2 ret: %d\n", ret);
-> > 
-> >      if ((listen(sock2, 5)) != 0)
-> >      {
-> >          perror("listen2");
-> >          exit(1);
-> >      }
-> > 
-> >      // uncomment pause() to see with ss -tlpn the bound ports
-> >      // pause();
-> > 
-> >      return 0;
-> > }
-> > 
-> > ```
-> > 
-> > 
-> > Best regards,
-> > 
-> > Paul
