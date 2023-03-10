@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD9936B51F5
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 21:30:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8E216B51F6
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 21:30:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231565AbjCJUaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 15:30:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39388 "EHLO
+        id S229890AbjCJUaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 15:30:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231435AbjCJU3z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 15:29:55 -0500
+        with ESMTP id S231557AbjCJU34 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 15:29:56 -0500
 Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9405B11880F;
-        Fri, 10 Mar 2023 12:29:53 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id s11so25417088edy.8;
-        Fri, 10 Mar 2023 12:29:53 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 393EF118825;
+        Fri, 10 Mar 2023 12:29:54 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id cw28so25457731edb.5;
+        Fri, 10 Mar 2023 12:29:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=googlemail.com; s=20210112; t=1678480192;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=72WtqG0+vnMEFpCrkfHg3PJtuN3M4VluH6MP9rrJ3h4=;
-        b=WkmHqfHpqC+lA+QimyYp+n185h9AJ9904POoOGwDrSr+7AGpnG59t/KKgffNZJkiRs
-         c1eGR0rj44Vf4xY8vmjhx6sXGVmv3Nf4ekW5QZNr3d8d9qX/c7kq1zwvmqFsgKdNxCMd
-         PITVjMLd8yaql2akPxuf66SfkR47XK6dMJ7otqM1ClybFoYAtS3g6SxLouDKtBhHcxFB
-         SDFYjIzBziqYtVZBiySTkzEav5pzoRaOfetWKqPe3dFJ2KSBlm/9suVi3IecbKueiHIh
-         UGY4lE4aNFhz9Qe+yvHRzpRVv1gh7NQJ4anPuJ1twTXlmaNSvjaPnilMf7oDW8naaVYS
-         rBsQ==
+        bh=40umXtXsxbekuBH113oFvL37RvGW89qIxw/va4fYZ3g=;
+        b=FvsdRI+X9p9TR+9ONWNwgfY4huS8PeOK+QkWbO4scGNFTH3DoAs4mh5pZLiUkN1n2w
+         N+dN8PlkU6UronoX6BR0vhqBP9b++gyXZ5K2rm+cWVxkX+6XOP+T84qxH3jhXWm6ovTa
+         0CsxYmnoQZyBpMQ4+qiQF/C+wTWi/Y3MKtVn82Aw2+GvsXRt1gbLwPaql21ymKSuyQeK
+         o0d/PMWgdezDcrtpuE4bnpipXHs3WGPzoyNubkSC3hyKL3ko4M3KLVjCCY23TMwF/HLG
+         fr8MV/IwcrAo0hYsEDRgkb8lP42MnbAWpQxvBnBBZaAV71KMpgkZPjk8P/0isMuRtqNu
+         AbEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112; t=1678480192;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=72WtqG0+vnMEFpCrkfHg3PJtuN3M4VluH6MP9rrJ3h4=;
-        b=pCq3mKXFwmgNtYTCGRT3XyOdgxKSAvrpp9eC5WR32Uhum8WuMazkTAOuIEpOtYGv1r
-         D1DmqloZPP8qhuTL13SjfyATyM2pfHMxlqQ6XmEZpYye9DRlZxMN7JJhLgIaplmCXu92
-         8Bkx9oKmf8yDlrP9I62L7OhP7/nRfTYjRuXvVAhCS0hdAIFX9VUwJojv37cvuIY7TFeW
-         ar+ZHeyc7qqPfGwiYQBPLCBxgmTtjBz6Z5NUCT2+aKwmFaQoGMjL/Dtw+zeIijZR1uu3
-         siqV+V+ormK0iyXm/bH/80vy3xtUENHwBfq6PZOMm3q6Pp5lm+VQ5YRIvfP/61dlPIUl
-         lvEQ==
-X-Gm-Message-State: AO0yUKX7AJZOeo0JPRuRee3dITIt2PfNnpfmRtG2MwxZUVEKyc4Vdwt5
-        JpuP6vL+XrAum7AHhNcMG3ax5VpkFe8=
-X-Google-Smtp-Source: AK7set8B3NdjiLpt+D458HcmzbqBUhgvDXJLC9ZR9evV7RhHG3amnrJvmDUpmVj3tOzSusKpZMyR9A==
-X-Received: by 2002:a17:906:b88c:b0:8cf:fda0:5b9b with SMTP id hb12-20020a170906b88c00b008cffda05b9bmr3477171ejb.22.1678480191751;
-        Fri, 10 Mar 2023 12:29:51 -0800 (PST)
+        bh=40umXtXsxbekuBH113oFvL37RvGW89qIxw/va4fYZ3g=;
+        b=Ck07YLCUGTMJwm5bZTI+Mx68KHbDwIpjP9zb6TY3+8kB+CJFr2AOmLvMTMeW/Wx02/
+         ANioHz8aWqKFl3R7hisHKNf91cQ55yBP5HxyscpHF8iFnM9kuWD3gnCQJzZDps/1JiL8
+         zeQcf8aMeZQ2lqjwcldGzvmHkwf5y+Jr5301Y0aRJHXPCe2PIMNyZicjzfPw0w8bzXk4
+         iEBThJv8wuBIub8ZuKTrCX4pG7Ht6OnAvY1j+Tc2yT6Tf5udNt8T4zQKLXWZ7ebF7dHW
+         2GmdPiVa7OBI1b21cvlImzjcNB+mkfFIKzhtpHqiOmWJftRuKH/3YKrtlN7caxhr8rFg
+         b1LA==
+X-Gm-Message-State: AO0yUKWLyoqkF3V2hv/BJnyYjWzyFXU+2nUubpHLGD2yOal8zURLUv9X
+        aczZtZR6Z4yYC7Bgskp52WoSNSGEdxE=
+X-Google-Smtp-Source: AK7set+A4PPh6FAFiOZRL2w/y4xVvRvTUJ9Y9+4vfuCU2IlAlIAfw+w6h9h6UmPxVz67k5ACXkRgew==
+X-Received: by 2002:a17:906:3044:b0:8af:2f5e:93e3 with SMTP id d4-20020a170906304400b008af2f5e93e3mr2819712ejd.29.1678480192627;
+        Fri, 10 Mar 2023 12:29:52 -0800 (PST)
 Received: from localhost.localdomain (dynamic-2a01-0c23-b84f-c400-0000-0000-0000-079c.c23.pool.telefonica.de. [2a01:c23:b84f:c400::79c])
-        by smtp.googlemail.com with ESMTPSA id md10-20020a170906ae8a00b008e34bcd7940sm259047ejb.132.2023.03.10.12.29.50
+        by smtp.googlemail.com with ESMTPSA id md10-20020a170906ae8a00b008e34bcd7940sm259047ejb.132.2023.03.10.12.29.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Mar 2023 12:29:51 -0800 (PST)
+        Fri, 10 Mar 2023 12:29:52 -0800 (PST)
 From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 To:     linux-wireless@vger.kernel.org
 Cc:     Yan-Hsuan Chuang <tony0620emma@gmail.com>,
@@ -60,9 +60,9 @@ Cc:     Yan-Hsuan Chuang <tony0620emma@gmail.com>,
         Neo Jou <neojou@gmail.com>, Pkshih <pkshih@realtek.com>,
         Jernej Skrabec <jernej.skrabec@gmail.com>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH v2 RFC 7/9] wifi: rtw88: Add support for the SDIO based RTL8822BS chipset
-Date:   Fri, 10 Mar 2023 21:29:20 +0100
-Message-Id: <20230310202922.2459680-8-martin.blumenstingl@googlemail.com>
+Subject: [PATCH v2 RFC 8/9] wifi: rtw88: Add support for the SDIO based RTL8822CS chipset
+Date:   Fri, 10 Mar 2023 21:29:21 +0100
+Message-Id: <20230310202922.2459680-9-martin.blumenstingl@googlemail.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230310202922.2459680-1-martin.blumenstingl@googlemail.com>
 References: <20230310202922.2459680-1-martin.blumenstingl@googlemail.com>
@@ -78,12 +78,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Wire up RTL8822CS chipset support using the new rtw88 SDIO HCI code as
+well as the existing RTL8822C chipset code.
 
-Wire up RTL8822BS chipset support using the new rtw88 SDIO HCI code as
-well as the existing RTL8822B chipset code.
-
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 ---
 Changes since v1:
@@ -92,86 +89,86 @@ Changes since v1:
 
  drivers/net/wireless/realtek/rtw88/Kconfig    | 11 ++++++
  drivers/net/wireless/realtek/rtw88/Makefile   |  3 ++
- .../net/wireless/realtek/rtw88/rtw8822bs.c    | 35 +++++++++++++++++++
+ .../net/wireless/realtek/rtw88/rtw8822cs.c    | 35 +++++++++++++++++++
  3 files changed, 49 insertions(+)
- create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822bs.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822cs.c
 
 diff --git a/drivers/net/wireless/realtek/rtw88/Kconfig b/drivers/net/wireless/realtek/rtw88/Kconfig
-index cdf9cb478ee2..0cfc68dcc416 100644
+index 0cfc68dcc416..6b65da81127f 100644
 --- a/drivers/net/wireless/realtek/rtw88/Kconfig
 +++ b/drivers/net/wireless/realtek/rtw88/Kconfig
-@@ -45,6 +45,17 @@ config RTW88_8822BE
+@@ -78,6 +78,17 @@ config RTW88_8822CE
  
  	  802.11ac PCIe wireless network adapter
  
-+config RTW88_8822BS
-+	tristate "Realtek 8822BS SDIO wireless network adapter"
++config RTW88_8822CS
++	tristate "Realtek 8822CS SDIO wireless network adapter"
 +	depends on MMC
 +	select RTW88_CORE
 +	select RTW88_SDIO
-+	select RTW88_8822B
++	select RTW88_8822C
 +	help
-+	  Select this option will enable support for 8822BS chipset
++	  Select this option will enable support for 8822CS chipset
 +
 +	  802.11ac SDIO wireless network adapter
 +
- config RTW88_8822BU
- 	tristate "Realtek 8822BU USB wireless network adapter"
+ config RTW88_8822CU
+ 	tristate "Realtek 8822CU USB wireless network adapter"
  	depends on USB
 diff --git a/drivers/net/wireless/realtek/rtw88/Makefile b/drivers/net/wireless/realtek/rtw88/Makefile
-index 892cad60ba31..2b8f4dd9707f 100644
+index 2b8f4dd9707f..6105c2745bda 100644
 --- a/drivers/net/wireless/realtek/rtw88/Makefile
 +++ b/drivers/net/wireless/realtek/rtw88/Makefile
-@@ -26,6 +26,9 @@ rtw88_8822b-objs		:= rtw8822b.o rtw8822b_table.o
- obj-$(CONFIG_RTW88_8822BE)	+= rtw88_8822be.o
- rtw88_8822be-objs		:= rtw8822be.o
+@@ -38,6 +38,9 @@ rtw88_8822c-objs		:= rtw8822c.o rtw8822c_table.o
+ obj-$(CONFIG_RTW88_8822CE)	+= rtw88_8822ce.o
+ rtw88_8822ce-objs		:= rtw8822ce.o
  
-+obj-$(CONFIG_RTW88_8822BS)	+= rtw88_8822bs.o
-+rtw88_8822bs-objs		:= rtw8822bs.o
++obj-$(CONFIG_RTW88_8822CS)	+= rtw88_8822cs.o
++rtw88_8822cs-objs		:= rtw8822cs.o
 +
- obj-$(CONFIG_RTW88_8822BU)	+= rtw88_8822bu.o
- rtw88_8822bu-objs		:= rtw8822bu.o
+ obj-$(CONFIG_RTW88_8822CU)	+= rtw88_8822cu.o
+ rtw88_8822cu-objs		:= rtw8822cu.o
  
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822bs.c b/drivers/net/wireless/realtek/rtw88/rtw8822bs.c
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822cs.c b/drivers/net/wireless/realtek/rtw88/rtw8822cs.c
 new file mode 100644
-index 000000000000..76645e7a6bc7
+index 000000000000..db8984b67f89
 --- /dev/null
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8822bs.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8822cs.c
 @@ -0,0 +1,35 @@
 +// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-+/* Copyright(c) Jernej Skrabec <jernej.skrabec@gmail.com>
++/* Copyright(c) Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 + */
 +
 +#include <linux/mmc/sdio_func.h>
 +#include <linux/mmc/sdio_ids.h>
 +#include <linux/module.h>
 +#include "sdio.h"
-+#include "rtw8822b.h"
++#include "rtw8822c.h"
 +
-+static const struct sdio_device_id rtw_8822bs_id_table[] =  {
++static const struct sdio_device_id rtw_8822cs_id_table[] =  {
 +	{
 +		SDIO_DEVICE(SDIO_VENDOR_ID_REALTEK,
-+			    SDIO_DEVICE_ID_REALTEK_RTW8822BS),
-+		.driver_data = (kernel_ulong_t)&rtw8822b_hw_spec,
++			    SDIO_DEVICE_ID_REALTEK_RTW8822CS),
++		.driver_data = (kernel_ulong_t)&rtw8822c_hw_spec,
 +	},
 +	{}
 +};
-+MODULE_DEVICE_TABLE(sdio, rtw_8822bs_id_table);
++MODULE_DEVICE_TABLE(sdio, rtw_8822cs_id_table);
 +
-+static struct sdio_driver rtw_8822bs_driver = {
-+	.name = "rtw_8822bs",
++static struct sdio_driver rtw_8822cs_driver = {
++	.name = "rtw_8822cs",
 +	.probe = rtw_sdio_probe,
 +	.remove = rtw_sdio_remove,
-+	.id_table = rtw_8822bs_id_table,
++	.id_table = rtw_8822cs_id_table,
 +	.drv = {
 +		.pm = &rtw_sdio_pm_ops,
 +		.shutdown = rtw_sdio_shutdown,
 +	}
 +};
-+module_sdio_driver(rtw_8822bs_driver);
++module_sdio_driver(rtw_8822cs_driver);
 +
-+MODULE_AUTHOR("Jernej Skrabec <jernej.skrabec@gmail.com>");
-+MODULE_DESCRIPTION("Realtek 802.11ac wireless 8822bs driver");
++MODULE_AUTHOR("Martin Blumenstingl <martin.blumenstingl@googlemail.com>");
++MODULE_DESCRIPTION("Realtek 802.11ac wireless 8822cs driver");
 +MODULE_LICENSE("Dual BSD/GPL");
 -- 
 2.39.2
