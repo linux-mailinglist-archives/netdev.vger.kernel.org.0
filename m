@@ -2,80 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A2D16B379B
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 08:43:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B500C6B37A6
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 08:46:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230431AbjCJHnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 02:43:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35922 "EHLO
+        id S229754AbjCJHqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 02:46:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230332AbjCJHmk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 02:42:40 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F55115B40;
-        Thu,  9 Mar 2023 23:41:07 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S229652AbjCJHqD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 02:46:03 -0500
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB3FD3B3FD
+        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 23:45:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1678434309; x=1709970309;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=z91X3tMJiBai9L+GYTYXMNhmzQTiOYex0ekL7SgTIJk=;
+  b=h6Y+ej+5Y5cnYF+QxZSeA//Dop27m+y1p1hjO0rk5RNInLgEM5zGDIud
+   4qFCdO9Ia2pAEytpUZEhFT2yDpZOFDWaaqMZCBJ/3dh0rTPIMp7Wvt3R0
+   NKfQBRMbGqqQ/w5X9NpUH1j4HU3fPOejWZ6bS/Uu5FnU2K6rsRD1FM2dq
+   tzTIMFH/fBEHtY3M54ZzK73EPFvaLwayA/TTckl/YuRv8wTl7Iup3N3D2
+   7B8qcEBfJ62A96nBNnqBlXdI+h1luE8vwlJyXGLnN9NbrC2iV6bipD/aw
+   VEUbJBhcgosOO32TIn5vSWLmoeYtq0UKH6azmiP65Dh3ErDEb8Ovx9E0Y
+   A==;
+X-IronPort-AV: E=Sophos;i="5.98,249,1673910000"; 
+   d="scan'208";a="29596762"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 10 Mar 2023 08:45:07 +0100
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Fri, 10 Mar 2023 08:45:07 +0100
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Fri, 10 Mar 2023 08:45:07 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1678434307; x=1709970307;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=z91X3tMJiBai9L+GYTYXMNhmzQTiOYex0ekL7SgTIJk=;
+  b=LBjydBAkFujR7esHURlehmspnK//v/gu4qh/mIhIr5yaVWRhr1e1RZN3
+   Irou0BKGlLEB3zqR0FhNwjrA3W4/xkswP1Cdsm8UAQp6ms0CUoIhiW/QF
+   9WOaVHwmuJbE5CKEi1sM8GqPfVSrUBOiAy01V+GRwSS/Z45foADem4kzE
+   aYOV8b9E9h2lOXQHNw/eyKPalHC+rlNIM1aOTvZxyTbwp6UVnOfIrdJ8K
+   C4DXdqkmvBfK3Ovuh5UeWIbJd5HS2LUyOn9a8GpJOoug+CGAexQgUYshe
+   jsmjvt1xIqk58UVw1xrvzh3/p95zZFQmYY80SsQSgdaNYY9x2uATNY8b3
+   g==;
+X-IronPort-AV: E=Sophos;i="5.98,249,1673910000"; 
+   d="scan'208";a="29596761"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 10 Mar 2023 08:45:07 +0100
+Received: from steina-w.tq-net.de (unknown [10.123.53.21])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E857160D33;
-        Fri, 10 Mar 2023 07:41:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1D5DC433EF;
-        Fri, 10 Mar 2023 07:41:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678434066;
-        bh=eGYo2HGiIrhHhNGu5gvFXCgJy95UosT0qU4XI+CCKrE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SB60Fuu7NQvJpLD7LgZbrLArLDLrrPCKGTVSssy5ViwHjdzgvluWu9L5UtD0SMVJL
-         r8tSY9CSPF1Ie1IeARgco/2Nh4xeYMaILRUCAlXrCUz9adbDtwA28M3X1eXxXEt5P1
-         Fo/gIF+3CVJQgcwWPSpk40YbTktG3FKrtlMXqnJTXwJC/AFZ3NtXIGsfqKr0uViSNU
-         sJURCtRh1Y0NCu8v0CyrceRUDtRBZTHRwtKULhCpusvjhvuf/QgNVea6JESylp6Dgl
-         4QY6dHX81PCpyqGFLHyI8Tsu0Pizqokyh9fQf5sh98/rhc/ju9xuxCHoO630JvQ0OC
-         A6h5kzzzbOqyg==
-Date:   Thu, 9 Mar 2023 23:41:04 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Maxim Korotkov <korotkov.maxim.s@gmail.com>
-Cc:     Rasesh Mody <rmody@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
-        "David S. Miller" <davem@davemloft.net>,
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id F00C9280056;
+        Fri, 10 Mar 2023 08:45:06 +0100 (CET)
+From:   Alexander Stein <alexander.stein@ew.tq-group.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Michael Chan <mchan@broadcom.com>,
-        Vadim Fedorenko <vadim.fedorenko@linux.dev>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lvc-project@linuxtesting.org
-Subject: Re: [PATCH net-next] bnx2: remove deadcode in bnx2_init_cpus()
-Message-ID: <20230309234104.79286da7@kernel.org>
-In-Reply-To: <9b367837-4bf0-1802-e753-6eca37e105b9@gmail.com>
-References: <20230309174231.3135-1-korotkov.maxim.s@gmail.com>
-        <20230309225710.78cd606c@kernel.org>
-        <9b367837-4bf0-1802-e753-6eca37e105b9@gmail.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
+        netdev@vger.kernel.org
+Subject: [PATCH v2 1/1] net: phy: dp83867: Disable IRQs on suspend
+Date:   Fri, 10 Mar 2023 08:45:00 +0100
+Message-Id: <20230310074500.3472858-1-alexander.stein@ew.tq-group.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 10 Mar 2023 10:33:46 +0300 Maxim Korotkov wrote:
->   Path with error handling was deleted in 57579f7629a3 ("bnx2: Use 
-> request_firmware()"). This patch is needed to improving readability.
-> Now checking the value of the return value is misleading when reading 
-> the code.
-> Do I need to add this argument to the patch description?
+Before putting the PHY into IEEE power down mode, disable IRQs to
+prevent accessing the PHY once MDIO has already been shutdown.
 
-Yes please. 
+Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+---
+Changes in v2:
+* Directly call dp83867_config_intr
+* Call genphy_resume after enabling IRQs again
+* Removed superfluous empty line
 
-> I also forgot to add mark Reviewed-by: Leon Romanovsky 
-> <leonro@nvidia.com> from the previous iteration
+ drivers/net/phy/dp83867.c | 28 ++++++++++++++++++++++++++--
+ 1 file changed, 26 insertions(+), 2 deletions(-)
 
-So this is not the first revision? Please add Leon's tag and an
-appropriate vN. e.g. [PATCH net-next v2].
+diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
+index 89cd821f1f46..5821f04c69dc 100644
+--- a/drivers/net/phy/dp83867.c
++++ b/drivers/net/phy/dp83867.c
+@@ -693,6 +693,30 @@ static int dp83867_of_init(struct phy_device *phydev)
+ }
+ #endif /* CONFIG_OF_MDIO */
+ 
++static int dp83867_suspend(struct phy_device *phydev)
++{
++	/* Disable PHY Interrupts */
++	if (phy_interrupt_is_valid(phydev)) {
++		phydev->interrupts = PHY_INTERRUPT_DISABLED;
++		dp83867_config_intr(phydev);
++	}
++
++	return genphy_suspend(phydev);
++}
++
++static int dp83867_resume(struct phy_device *phydev)
++{
++	/* Enable PHY Interrupts */
++	if (phy_interrupt_is_valid(phydev)) {
++		phydev->interrupts = PHY_INTERRUPT_ENABLED;
++		dp83867_config_intr(phydev);
++	}
++
++	genphy_resume(phydev);
++
++	return 0;
++}
++
+ static int dp83867_probe(struct phy_device *phydev)
+ {
+ 	struct dp83867_private *dp83867;
+@@ -968,8 +992,8 @@ static struct phy_driver dp83867_driver[] = {
+ 		.config_intr	= dp83867_config_intr,
+ 		.handle_interrupt = dp83867_handle_interrupt,
+ 
+-		.suspend	= genphy_suspend,
+-		.resume		= genphy_resume,
++		.suspend	= dp83867_suspend,
++		.resume		= dp83867_resume,
+ 
+ 		.link_change_notify = dp83867_link_change_notify,
+ 		.set_loopback	= dp83867_loopback,
+-- 
+2.34.1
 
-In general we don't encourage cleanup of this sort because the number
-of int functions which always return 0 is rather large in the kernel,
-but if you already got an ack from Leon we'll consider it, so please
-adjust and repost.
