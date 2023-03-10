@@ -2,355 +2,653 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36B4A6B35E0
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 06:05:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8CEB6B35E7
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 06:06:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229809AbjCJFFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 00:05:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51198 "EHLO
+        id S229900AbjCJFGh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 00:06:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbjCJFFI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 00:05:08 -0500
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B66E8D8871
-        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 21:04:57 -0800 (PST)
-Received: by mail-pg1-x52b.google.com with SMTP id s17so2404178pgv.4
-        for <netdev@vger.kernel.org>; Thu, 09 Mar 2023 21:04:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1678424697;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=qCiuzwXBkUvrJuZx24vS+2W+HBJcG7KZZUa5pdlENUk=;
-        b=YEsONYDXi0VeeV9RmELF6OAzKBM+Y6Hop9I5uyo89iUjPteKOIX7B2uFMSP6ueAyOB
-         5OiXNTwb6b4rAEBgOFuympkQwI2i9AfxqvBb7tVrXnFa8nD/g4v4Jrhsaz5Q8oy+hPud
-         dA9LsIPg6MF3oQ/QvEznpEb/ZcOGJUqHEAPWA=
+        with ESMTP id S229659AbjCJFGH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 00:06:07 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F238F0FF4
+        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 21:05:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1678424716;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=j9kx14cOBeOwYfDhESSA0OePt79Hb99P01lR+fSR4n4=;
+        b=JPdGxW7PUe96l3emxKcyLUe5cxxH/+4VcUU0xgiAsFb3YkrryWbaip+l5eCttd2n/j3bZZ
+        hOte7+m5xhmwtYzZRI+wXZkBWITFvWwMOksBZTTHI2mKW/GVFr/e8Rbh0ucMpP3A/MxgaQ
+        3V0yQnMT/V0i556VTpXOiaVDBMaEGM8=
+Received: from mail-oa1-f71.google.com (mail-oa1-f71.google.com
+ [209.85.160.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-75-PZ6h4hDUM9u7cevOWHRUQQ-1; Fri, 10 Mar 2023 00:05:15 -0500
+X-MC-Unique: PZ6h4hDUM9u7cevOWHRUQQ-1
+Received: by mail-oa1-f71.google.com with SMTP id 586e51a60fabf-17679dc6e16so2232507fac.7
+        for <netdev@vger.kernel.org>; Thu, 09 Mar 2023 21:05:15 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678424697;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=qCiuzwXBkUvrJuZx24vS+2W+HBJcG7KZZUa5pdlENUk=;
-        b=NOVM3YWNF//HHS39N71+otbItH+j9nHhSFQ92rIZb/FjxEOch3+nMigbfiOMMFBkrK
-         7xMLuPBS6TJzjKwF62VPU0I5ct4hjxZdqhTFQiPBd8FrB89AvMhxnbBArYbRwWC95zF1
-         NKSbnR+ZxxD2WUIzmj9uO0F0e4QTgdPyRb8m8J2fALI/1YRv0ycNJ6YFCnloJSsNn7nh
-         GzPXOhuSvvDnL3qFiyofChiOVRqxkqenJhhXvL07konBoxs6c+L+6OrDRPlI1adpinOw
-         4FnxMQnrSMkINTV0KhiHCY8K1E7y4Rl3rso33Hrfc3SpjwKYV4OXViImZ66BzErE9IQo
-         XphA==
-X-Gm-Message-State: AO0yUKUL6bNFpBYM0NdfoTnfHxi4nU4oG9+fumy0xNl5hxcUaGU/Uwtx
-        k7Q9FSpZ7ENjZ+bTvpbmMJsRE/L4pi7/d6nMQc7RrA==
-X-Google-Smtp-Source: AK7set+Tee8punGB9ya1brzqPiCwjQZ5vUn3tJD76UdbrjaS/+z7GY1Fo99bqb2PSW3UUm5K6rspy/bgZx/3Zx2qYPk=
-X-Received: by 2002:a62:d115:0:b0:593:af1e:15b with SMTP id
- z21-20020a62d115000000b00593af1e015bmr9882566pfg.4.1678424696985; Thu, 09 Mar
- 2023 21:04:56 -0800 (PST)
+        d=1e100.net; s=20210112; t=1678424714;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=j9kx14cOBeOwYfDhESSA0OePt79Hb99P01lR+fSR4n4=;
+        b=LO850r/68ngDJ6HvFYANJlOHvclP+ry6f7nM2RzjyO/UR57w7QohhWbN96IchB9CEf
+         2KNhLeZGGovw4PSnpCZ8GowFPCNwuhVcXM9VKvX/eaZziytDplLsvrxh3xZ6oFymz2EG
+         5swjzt25P6bNrbou8iKQKa81QxEZ9F/9nKfu4zvyl1xmTXRZAJC/HloSyPqtPZanZ5LL
+         BVe9nqaMP/yZ8GqVbeWQSsw8SDo2wBISmwsPHYoNoU27rnUMai4hawhN1upoRLirk5FU
+         akbkhAzG9zosVg2EEClykit+cP80T2rB/Pm+HJK59fxf/RTGkr4btBFCdBCiJurWatry
+         e3bg==
+X-Gm-Message-State: AO0yUKVeBgUgOHa+7zTKf7H7sCPKTOssKe5/V2QrnIoMnTgAPvsL5A6r
+        OQ9KStMh2jyX2qTISRy/yMNLCmneXRL9vgh3/yaNKsNLzwjma6SetRnC/aT3ZGhIlgNBlPVEdmZ
+        axjxJuYGZ8R/i6NLw28Qjz4QPLiHlYpLM
+X-Received: by 2002:a05:6808:45:b0:384:27f0:bd0a with SMTP id v5-20020a056808004500b0038427f0bd0amr7442279oic.9.1678424714385;
+        Thu, 09 Mar 2023 21:05:14 -0800 (PST)
+X-Google-Smtp-Source: AK7set/oE9nncWtTmpBXW9hMdJU3matvUyYuTnzMN/w12/txIETirBefSBIfAwdNFAcxHHOqAaaoEkc/BCo0xxWjRu0=
+X-Received: by 2002:a05:6808:45:b0:384:27f0:bd0a with SMTP id
+ v5-20020a056808004500b0038427f0bd0amr7442258oic.9.1678424713993; Thu, 09 Mar
+ 2023 21:05:13 -0800 (PST)
 MIME-Version: 1.0
-References: <20230309215347.2764771-1-vadfed@meta.com>
-In-Reply-To: <20230309215347.2764771-1-vadfed@meta.com>
-From:   Pavan Chebbi <pavan.chebbi@broadcom.com>
-Date:   Fri, 10 Mar 2023 10:34:45 +0530
-Message-ID: <CALs4sv2cg9ojQNn+V0sVDCW0b-ukL3xZ4jgm5qcVbx232vzJNQ@mail.gmail.com>
-Subject: Re: [PATCH net v3] bnxt_en: reset PHC frequency in free-running mode
-To:     Vadim Fedorenko <vadfed@meta.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Andy Gospodarek <andrew.gospodarek@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
+References: <20230307113621.64153-1-gautam.dawar@amd.com> <20230307113621.64153-10-gautam.dawar@amd.com>
+In-Reply-To: <20230307113621.64153-10-gautam.dawar@amd.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Fri, 10 Mar 2023 13:05:02 +0800
+Message-ID: <CACGkMEvpK4P1TTAO2bZ+YMXuNFMk_hJHQBPszCwOTzbQX70s7w@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 09/14] sfc: implement device status related
+ vdpa config operations
+To:     Gautam Dawar <gautam.dawar@amd.com>
+Cc:     linux-net-drivers@amd.com, Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
         Richard Cochran <richardcochran@gmail.com>,
-        Vadim Fedorenko <vadim.fedorenko@linux.dev>,
-        netdev@vger.kernel.org
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000e0449005f684b382"
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        eperezma@redhat.com, harpreet.anand@amd.com, tanuj.kamde@amd.com,
+        koushik.dutta@amd.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000e0449005f684b382
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, Mar 10, 2023 at 3:24=E2=80=AFAM Vadim Fedorenko <vadfed@meta.com> w=
-rote:
+On Tue, Mar 7, 2023 at 7:38=E2=80=AFPM Gautam Dawar <gautam.dawar@amd.com> =
+wrote:
 >
-> When using a PHC in shared between multiple hosts, the previous
-> frequency value may not be reset and could lead to host being unable to
-> compensate the offset with timecounter adjustments. To avoid such state
-> reset the hardware frequency of PHC to zero on init. Some refactoring is
-> needed to make code readable.
+> vDPA config opertions to handle get/set device status and device
+> reset have been implemented. Also .suspend config operation is
+> implemented to support Live Migration.
 >
-> Fixes: 85036aee1938 ("bnxt_en: Add a non-real time mode to access NIC clo=
-ck")
-> Signed-off-by: Vadim Fedorenko <vadfed@meta.com>
+> Signed-off-by: Gautam Dawar <gautam.dawar@amd.com>
 > ---
->  drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  6 +-
->  drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  2 +
->  drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 60 ++++++++++---------
->  3 files changed, 37 insertions(+), 31 deletions(-)
+>  drivers/net/ethernet/sfc/ef100_vdpa.c     |  16 +-
+>  drivers/net/ethernet/sfc/ef100_vdpa.h     |   2 +
+>  drivers/net/ethernet/sfc/ef100_vdpa_ops.c | 367 ++++++++++++++++++++--
+>  3 files changed, 355 insertions(+), 30 deletions(-)
 >
-> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethe=
-rnet/broadcom/bnxt/bnxt.c
-> index 808236dc898b..e2e2c986c82b 100644
-> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> @@ -6990,11 +6990,9 @@ static int bnxt_hwrm_func_qcfg(struct bnxt *bp)
->                 if (flags & FUNC_QCFG_RESP_FLAGS_FW_DCBX_AGENT_ENABLED)
->                         bp->fw_cap |=3D BNXT_FW_CAP_DCBX_AGENT;
->         }
-> -       if (BNXT_PF(bp) && (flags & FUNC_QCFG_RESP_FLAGS_MULTI_HOST)) {
-> +       if (BNXT_PF(bp) && (flags & FUNC_QCFG_RESP_FLAGS_MULTI_HOST))
->                 bp->flags |=3D BNXT_FLAG_MULTI_HOST;
-> -               if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
-> -                       bp->fw_cap &=3D ~BNXT_FW_CAP_PTP_RTC;
-> -       }
+> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.c b/drivers/net/ethernet=
+/sfc/ef100_vdpa.c
+> index c66e5aef69ea..4ba57827a6cd 100644
+> --- a/drivers/net/ethernet/sfc/ef100_vdpa.c
+> +++ b/drivers/net/ethernet/sfc/ef100_vdpa.c
+> @@ -68,9 +68,14 @@ static int vdpa_allocate_vis(struct efx_nic *efx, unsi=
+gned int *allocated_vis)
+>
+>  static void ef100_vdpa_delete(struct efx_nic *efx)
+>  {
+> +       struct vdpa_device *vdpa_dev;
 > +
->         if (flags & FUNC_QCFG_RESP_FLAGS_RING_MONITOR_ENABLED)
->                 bp->fw_cap |=3D BNXT_FW_CAP_RING_MONITOR;
+>         if (efx->vdpa_nic) {
+> +               vdpa_dev =3D &efx->vdpa_nic->vdpa_dev;
+> +               ef100_vdpa_reset(vdpa_dev);
+> +
+>                 /* replace with _vdpa_unregister_device later */
+> -               put_device(&efx->vdpa_nic->vdpa_dev.dev);
+> +               put_device(&vdpa_dev->dev);
+>         }
+>         efx_mcdi_free_vis(efx);
+>  }
+> @@ -171,6 +176,15 @@ static struct ef100_vdpa_nic *ef100_vdpa_create(stru=
+ct efx_nic *efx,
+>                 }
+>         }
 >
-> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethe=
-rnet/broadcom/bnxt/bnxt.h
-> index dcb09fbe4007..c0628ac1b798 100644
-> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-> @@ -2000,6 +2000,8 @@ struct bnxt {
->         u32                     fw_dbg_cap;
+> +       rc =3D devm_add_action_or_reset(&efx->pci_dev->dev,
+> +                                     ef100_vdpa_irq_vectors_free,
+> +                                     efx->pci_dev);
+> +       if (rc) {
+> +               pci_err(efx->pci_dev,
+> +                       "Failed adding devres for freeing irq vectors\n")=
+;
+> +               goto err_put_device;
+> +       }
+> +
+>         rc =3D get_net_config(vdpa_nic);
+>         if (rc)
+>                 goto err_put_device;
+> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.h b/drivers/net/ethernet=
+/sfc/ef100_vdpa.h
+> index 348ca8a7404b..58791402e454 100644
+> --- a/drivers/net/ethernet/sfc/ef100_vdpa.h
+> +++ b/drivers/net/ethernet/sfc/ef100_vdpa.h
+> @@ -149,6 +149,8 @@ int ef100_vdpa_register_mgmtdev(struct efx_nic *efx);
+>  void ef100_vdpa_unregister_mgmtdev(struct efx_nic *efx);
+>  void ef100_vdpa_irq_vectors_free(void *data);
+>  int ef100_vdpa_init_vring(struct ef100_vdpa_nic *vdpa_nic, u16 idx);
+> +void ef100_vdpa_irq_vectors_free(void *data);
+> +int ef100_vdpa_reset(struct vdpa_device *vdev);
 >
->  #define BNXT_NEW_RM(bp)                ((bp)->fw_cap & BNXT_FW_CAP_NEW_R=
-M)
-> +#define BNXT_PTP_USE_RTC(bp)   (!BNXT_MH(bp) && \
-> +                                ((bp)->fw_cap & BNXT_FW_CAP_PTP_RTC))
->         u32                     hwrm_spec_code;
->         u16                     hwrm_cmd_seq;
->         u16                     hwrm_cmd_kong_seq;
-> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/=
-ethernet/broadcom/bnxt/bnxt_ptp.c
-> index 4ec8bba18cdd..a96adde97e60 100644
-> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-> @@ -63,7 +63,7 @@ static int bnxt_ptp_settime(struct ptp_clock_info *ptp_=
-info,
->                                                 ptp_info);
->         u64 ns =3D timespec64_to_ns(ts);
->
-> -       if (ptp->bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
-> +       if (BNXT_PTP_USE_RTC(ptp->bp))
->                 return bnxt_ptp_cfg_settime(ptp->bp, ns);
->
->         spin_lock_bh(&ptp->ptp_lock);
-> @@ -196,7 +196,7 @@ static int bnxt_ptp_adjtime(struct ptp_clock_info *pt=
-p_info, s64 delta)
->         struct bnxt_ptp_cfg *ptp =3D container_of(ptp_info, struct bnxt_p=
-tp_cfg,
->                                                 ptp_info);
->
-> -       if (ptp->bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
-> +       if (BNXT_PTP_USE_RTC(ptp->bp))
->                 return bnxt_ptp_adjphc(ptp, delta);
->
->         spin_lock_bh(&ptp->ptp_lock);
-> @@ -205,34 +205,39 @@ static int bnxt_ptp_adjtime(struct ptp_clock_info *=
-ptp_info, s64 delta)
->         return 0;
+>  static inline bool efx_vdpa_is_little_endian(struct ef100_vdpa_nic *vdpa=
+_nic)
+>  {
+> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa_ops.c b/drivers/net/ethe=
+rnet/sfc/ef100_vdpa_ops.c
+> index 0051c4c0e47c..95a2177f85a2 100644
+> --- a/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
+> +++ b/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
+> @@ -22,11 +22,6 @@ static struct ef100_vdpa_nic *get_vdpa_nic(struct vdpa=
+_device *vdev)
+>         return container_of(vdev, struct ef100_vdpa_nic, vdpa_dev);
 >  }
 >
-> +static int bnxt_ptp_adjfine_rtc(struct bnxt *bp, long scaled_ppm)
+> -void ef100_vdpa_irq_vectors_free(void *data)
+> -{
+> -       pci_free_irq_vectors(data);
+> -}
+> -
+>  static int create_vring_ctx(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
+>  {
+>         struct efx_vring_ctx *vring_ctx;
+> @@ -52,14 +47,6 @@ static void delete_vring_ctx(struct ef100_vdpa_nic *vd=
+pa_nic, u16 idx)
+>         vdpa_nic->vring[idx].vring_ctx =3D NULL;
+>  }
+>
+> -static void reset_vring(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
+> -{
+> -       vdpa_nic->vring[idx].vring_type =3D EF100_VDPA_VQ_NTYPES;
+> -       vdpa_nic->vring[idx].vring_state =3D 0;
+> -       vdpa_nic->vring[idx].last_avail_idx =3D 0;
+> -       vdpa_nic->vring[idx].last_used_idx =3D 0;
+> -}
+> -
+>  int ef100_vdpa_init_vring(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
+>  {
+>         u32 offset;
+> @@ -103,6 +90,236 @@ static bool is_qid_invalid(struct ef100_vdpa_nic *vd=
+pa_nic, u16 idx,
+>         return false;
+>  }
+>
+> +static void irq_vring_fini(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
 > +{
-> +       s32 ppb =3D scaled_ppm_to_ppb(scaled_ppm);
-> +       struct hwrm_port_mac_cfg_input *req;
+> +       struct ef100_vdpa_vring_info *vring =3D &vdpa_nic->vring[idx];
+> +       struct pci_dev *pci_dev =3D vdpa_nic->efx->pci_dev;
+> +
+> +       devm_free_irq(&pci_dev->dev, vring->irq, vring);
+> +       vring->irq =3D -EINVAL;
+> +}
+> +
+> +static irqreturn_t vring_intr_handler(int irq, void *arg)
+> +{
+> +       struct ef100_vdpa_vring_info *vring =3D arg;
+> +
+> +       if (vring->cb.callback)
+> +               return vring->cb.callback(vring->cb.private);
+> +
+> +       return IRQ_NONE;
+> +}
+> +
+> +static int ef100_vdpa_irq_vectors_alloc(struct pci_dev *pci_dev, u16 nvq=
+s)
+> +{
 > +       int rc;
 > +
-> +       rc =3D hwrm_req_init(bp, req, HWRM_PORT_MAC_CFG);
-> +       if (rc)
-> +               return rc;
-> +
-> +       req->ptp_freq_adj_ppb =3D cpu_to_le32(ppb);
-> +       req->enables =3D cpu_to_le32(PORT_MAC_CFG_REQ_ENABLES_PTP_FREQ_AD=
-J_PPB);
-> +       rc =3D hwrm_req_send(bp, req);
-> +       if (rc)
-> +               netdev_err(bp->dev,
-> +                          "ptp adjfine failed. rc =3D %d\n", rc);
+> +       rc =3D pci_alloc_irq_vectors(pci_dev, nvqs, nvqs, PCI_IRQ_MSIX);
+> +       if (rc < 0)
+> +               pci_err(pci_dev,
+> +                       "Failed to alloc %d IRQ vectors, err:%d\n", nvqs,=
+ rc);
 > +       return rc;
 > +}
 > +
->  static int bnxt_ptp_adjfine(struct ptp_clock_info *ptp_info, long scaled=
-_ppm)
->  {
->         struct bnxt_ptp_cfg *ptp =3D container_of(ptp_info, struct bnxt_p=
-tp_cfg,
->                                                 ptp_info);
-> -       struct hwrm_port_mac_cfg_input *req;
->         struct bnxt *bp =3D ptp->bp;
-> -       int rc =3D 0;
->
-> -       if (!(ptp->bp->fw_cap & BNXT_FW_CAP_PTP_RTC)) {
-> -               spin_lock_bh(&ptp->ptp_lock);
-> -               timecounter_read(&ptp->tc);
-> -               ptp->cc.mult =3D adjust_by_scaled_ppm(ptp->cmult, scaled_=
-ppm);
-> -               spin_unlock_bh(&ptp->ptp_lock);
-> -       } else {
-> -               s32 ppb =3D scaled_ppm_to_ppb(scaled_ppm);
-> -
-> -               rc =3D hwrm_req_init(bp, req, HWRM_PORT_MAC_CFG);
-> -               if (rc)
-> -                       return rc;
-> +       if (BNXT_PTP_USE_RTC(bp))
-> +               return bnxt_ptp_adjfine_rtc(bp, scaled_ppm);
->
-> -               req->ptp_freq_adj_ppb =3D cpu_to_le32(ppb);
-> -               req->enables =3D cpu_to_le32(PORT_MAC_CFG_REQ_ENABLES_PTP=
-_FREQ_ADJ_PPB);
-> -               rc =3D hwrm_req_send(ptp->bp, req);
-> -               if (rc)
-> -                       netdev_err(ptp->bp->dev,
-> -                                  "ptp adjfine failed. rc =3D %d\n", rc)=
-;
-> -       }
-> -       return rc;
-> +       spin_lock_bh(&ptp->ptp_lock);
-> +       timecounter_read(&ptp->tc);
-> +       ptp->cc.mult =3D adjust_by_scaled_ppm(ptp->cmult, scaled_ppm);
-> +       spin_unlock_bh(&ptp->ptp_lock);
+> +void ef100_vdpa_irq_vectors_free(void *data)
+> +{
+> +       pci_free_irq_vectors(data);
+> +}
+> +
+> +static int irq_vring_init(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
+> +{
+> +       struct ef100_vdpa_vring_info *vring =3D &vdpa_nic->vring[idx];
+> +       struct pci_dev *pci_dev =3D vdpa_nic->efx->pci_dev;
+> +       int irq;
+> +       int rc;
+> +
+> +       snprintf(vring->msix_name, 256, "x_vdpa[%s]-%d\n",
+> +                pci_name(pci_dev), idx);
+> +       irq =3D pci_irq_vector(pci_dev, idx);
+> +       rc =3D devm_request_irq(&pci_dev->dev, irq, vring_intr_handler, 0=
+,
+> +                             vring->msix_name, vring);
+> +       if (rc)
+> +               pci_err(pci_dev,
+> +                       "devm_request_irq failed for vring %d, rc %d\n",
+> +                       idx, rc);
+> +       else
+> +               vring->irq =3D irq;
+> +
+> +       return rc;
+> +}
+> +
+> +static int delete_vring(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
+> +{
+> +       struct efx_vring_dyn_cfg vring_dyn_cfg;
+> +       int rc;
+> +
+> +       if (!(vdpa_nic->vring[idx].vring_state & EF100_VRING_CREATED))
+> +               return 0;
+> +
+> +       rc =3D efx_vdpa_vring_destroy(vdpa_nic->vring[idx].vring_ctx,
+> +                                   &vring_dyn_cfg);
+> +       if (rc)
+> +               dev_err(&vdpa_nic->vdpa_dev.dev,
+> +                       "%s: delete vring failed index:%u, err:%d\n",
+> +                       __func__, idx, rc);
+> +       vdpa_nic->vring[idx].last_avail_idx =3D vring_dyn_cfg.avail_idx;
+> +       vdpa_nic->vring[idx].last_used_idx =3D vring_dyn_cfg.used_idx;
+> +       vdpa_nic->vring[idx].vring_state &=3D ~EF100_VRING_CREATED;
+> +
+> +       irq_vring_fini(vdpa_nic, idx);
+> +
+> +       return rc;
+> +}
+> +
+> +static void ef100_vdpa_kick_vq(struct vdpa_device *vdev, u16 idx)
+> +{
+> +       struct ef100_vdpa_nic *vdpa_nic =3D get_vdpa_nic(vdev);
+> +       u32 idx_val;
+> +
+> +       if (is_qid_invalid(vdpa_nic, idx, __func__))
+> +               return;
+> +
+> +       if (!(vdpa_nic->vring[idx].vring_state & EF100_VRING_CREATED))
+> +               return;
+> +
+> +       idx_val =3D idx;
+> +       _efx_writed(vdpa_nic->efx, cpu_to_le32(idx_val),
+> +                   vdpa_nic->vring[idx].doorbell_offset);
+> +}
+> +
+> +static bool can_create_vring(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
+> +{
+> +       if (vdpa_nic->vring[idx].vring_state =3D=3D EF100_VRING_CONFIGURE=
+D &&
+> +           vdpa_nic->status & VIRTIO_CONFIG_S_DRIVER_OK &&
+> +           !(vdpa_nic->vring[idx].vring_state & EF100_VRING_CREATED))
+> +               return true;
+> +
+> +       return false;
+> +}
+> +
+> +static int create_vring(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
+> +{
+> +       struct efx_vring_dyn_cfg vring_dyn_cfg;
+> +       struct efx_vring_cfg vring_cfg;
+> +       int rc;
+> +
+> +       rc =3D irq_vring_init(vdpa_nic, idx);
+> +       if (rc) {
+> +               dev_err(&vdpa_nic->vdpa_dev.dev,
+> +                       "%s: irq_vring_init failed. index:%u, err:%d\n",
+> +                       __func__, idx, rc);
+> +               return rc;
+> +       }
+> +       vring_cfg.desc =3D vdpa_nic->vring[idx].desc;
+> +       vring_cfg.avail =3D vdpa_nic->vring[idx].avail;
+> +       vring_cfg.used =3D vdpa_nic->vring[idx].used;
+> +       vring_cfg.size =3D vdpa_nic->vring[idx].size;
+> +       vring_cfg.features =3D vdpa_nic->features;
+> +       vring_cfg.msix_vector =3D idx;
+> +       vring_dyn_cfg.avail_idx =3D vdpa_nic->vring[idx].last_avail_idx;
+> +       vring_dyn_cfg.used_idx =3D vdpa_nic->vring[idx].last_used_idx;
+> +
+> +       rc =3D efx_vdpa_vring_create(vdpa_nic->vring[idx].vring_ctx,
+> +                                  &vring_cfg, &vring_dyn_cfg);
+> +       if (rc) {
+> +               dev_err(&vdpa_nic->vdpa_dev.dev,
+> +                       "%s: vring_create failed index:%u, err:%d\n",
+> +                       __func__, idx, rc);
+> +               goto err_vring_create;
+> +       }
+> +       vdpa_nic->vring[idx].vring_state |=3D EF100_VRING_CREATED;
+> +
+> +       /* A VQ kick allows the device to read the avail_idx, which will =
+be
+> +        * required at the destination after live migration.
+> +        */
+> +       ef100_vdpa_kick_vq(&vdpa_nic->vdpa_dev, idx);
+> +
 > +       return 0;
+> +
+> +err_vring_create:
+> +       irq_vring_fini(vdpa_nic, idx);
+> +       return rc;
+> +}
+> +
+> +static void reset_vring(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
+> +{
+> +       delete_vring(vdpa_nic, idx);
+> +       vdpa_nic->vring[idx].vring_type =3D EF100_VDPA_VQ_NTYPES;
+> +       vdpa_nic->vring[idx].vring_state =3D 0;
+> +       vdpa_nic->vring[idx].last_avail_idx =3D 0;
+> +       vdpa_nic->vring[idx].last_used_idx =3D 0;
+> +}
+> +
+> +static void ef100_reset_vdpa_device(struct ef100_vdpa_nic *vdpa_nic)
+> +{
+> +       int i;
+> +
+> +       WARN_ON(!mutex_is_locked(&vdpa_nic->lock));
+> +
+> +       if (!vdpa_nic->status)
+> +               return;
+> +
+> +       vdpa_nic->vdpa_state =3D EF100_VDPA_STATE_INITIALIZED;
+> +       vdpa_nic->status =3D 0;
+> +       vdpa_nic->features =3D 0;
+> +       for (i =3D 0; i < (vdpa_nic->max_queue_pairs * 2); i++)
+> +               reset_vring(vdpa_nic, i);
+> +       ef100_vdpa_irq_vectors_free(vdpa_nic->efx->pci_dev);
+> +}
+> +
+> +/* May be called under the rtnl lock */
+> +int ef100_vdpa_reset(struct vdpa_device *vdev)
+> +{
+> +       struct ef100_vdpa_nic *vdpa_nic =3D get_vdpa_nic(vdev);
+> +
+> +       /* vdpa device can be deleted anytime but the bar_config
+> +        * could still be vdpa and hence efx->state would be STATE_VDPA.
+> +        * Accordingly, ensure vdpa device exists before reset handling
+> +        */
+> +       if (!vdpa_nic)
+> +               return -ENODEV;
+> +
+> +       mutex_lock(&vdpa_nic->lock);
+> +       ef100_reset_vdpa_device(vdpa_nic);
+> +       mutex_unlock(&vdpa_nic->lock);
+> +       return 0;
+> +}
+> +
+> +static int start_vdpa_device(struct ef100_vdpa_nic *vdpa_nic)
+> +{
+> +       struct efx_nic *efx =3D vdpa_nic->efx;
+> +       struct ef100_nic_data *nic_data;
+> +       int i, j;
+> +       int rc;
+> +
+> +       nic_data =3D efx->nic_data;
+> +       rc =3D ef100_vdpa_irq_vectors_alloc(efx->pci_dev,
+> +                                         vdpa_nic->max_queue_pairs * 2);
+> +       if (rc < 0) {
+> +               pci_err(efx->pci_dev,
+> +                       "vDPA IRQ alloc failed for vf: %u err:%d\n",
+> +                       nic_data->vf_index, rc);
+> +               return rc;
+> +       }
+> +
+> +       for (i =3D 0; i < (vdpa_nic->max_queue_pairs * 2); i++) {
+> +               if (can_create_vring(vdpa_nic, i)) {
+> +                       rc =3D create_vring(vdpa_nic, i);
+> +                       if (rc)
+> +                               goto clear_vring;
+> +               }
+> +       }
+> +
+> +       vdpa_nic->vdpa_state =3D EF100_VDPA_STATE_STARTED;
+
+It looks to me that this duplicates with the DRIVER_OK status bit.
+
+> +       return 0;
+> +
+> +clear_vring:
+> +       for (j =3D 0; j < i; j++)
+> +               delete_vring(vdpa_nic, j);
+> +
+> +       ef100_vdpa_irq_vectors_free(efx->pci_dev);
+> +       return rc;
+> +}
+> +
+>  static int ef100_vdpa_set_vq_address(struct vdpa_device *vdev,
+>                                      u16 idx, u64 desc_area, u64 driver_a=
+rea,
+>                                      u64 device_area)
+> @@ -144,22 +361,6 @@ static void ef100_vdpa_set_vq_num(struct vdpa_device=
+ *vdev, u16 idx, u32 num)
+>         mutex_unlock(&vdpa_nic->lock);
 >  }
 >
->  void bnxt_ptp_pps_event(struct bnxt *bp, u32 data1, u32 data2)
-> @@ -879,7 +884,7 @@ int bnxt_ptp_init_rtc(struct bnxt *bp, bool phc_cfg)
->         u64 ns;
->         int rc;
+> -static void ef100_vdpa_kick_vq(struct vdpa_device *vdev, u16 idx)
+> -{
+> -       struct ef100_vdpa_nic *vdpa_nic =3D get_vdpa_nic(vdev);
+> -       u32 idx_val;
+> -
+> -       if (is_qid_invalid(vdpa_nic, idx, __func__))
+> -               return;
+> -
+> -       if (!(vdpa_nic->vring[idx].vring_state & EF100_VRING_CREATED))
+> -               return;
+> -
+> -       idx_val =3D idx;
+> -       _efx_writed(vdpa_nic->efx, cpu_to_le32(idx_val),
+> -                   vdpa_nic->vring[idx].doorbell_offset);
+> -}
+> -
+>  static void ef100_vdpa_set_vq_cb(struct vdpa_device *vdev, u16 idx,
+>                                  struct vdpa_callback *cb)
+>  {
+> @@ -176,6 +377,7 @@ static void ef100_vdpa_set_vq_ready(struct vdpa_devic=
+e *vdev, u16 idx,
+>                                     bool ready)
+>  {
+>         struct ef100_vdpa_nic *vdpa_nic =3D get_vdpa_nic(vdev);
+> +       int rc;
 >
-> -       if (!bp->ptp_cfg || !(bp->fw_cap & BNXT_FW_CAP_PTP_RTC))
-> +       if (!bp->ptp_cfg || !BNXT_PTP_USE_RTC(bp))
->                 return -ENODEV;
->
->         if (!phc_cfg) {
-> @@ -932,13 +937,14 @@ int bnxt_ptp_init(struct bnxt *bp, bool phc_cfg)
->         atomic_set(&ptp->tx_avail, BNXT_MAX_TX_TS);
->         spin_lock_init(&ptp->ptp_lock);
->
-> -       if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC) {
-> +       if (BNXT_MH(bp)) {
-
-Using BNXT_MH(bp) inside bnxt_ptp_init() will not work because
-bnxt_ptp_init() is being called much before we determine it is an MH
-system.
-I may have alluded to this change in v2 comments but I realize that we
-don't have the MH determined yet. I am sure your test would not pass
-with this patch.
-We plan to make that change in the upstream driver to move the
-bnxt_ptp_init() to a later point, after we know the type of host.
-For now, I think you can simply call bnxt_ptp_adjfine_rtc(bp, 0); when
-you see it is a non-RTC host. Much like in v2, except the condition.
-
-if (BNXT_PTP_USE_RTC(ptp->bp)) {
-        bnxt_ptp_timecounter_init(bp, false);
-        rc =3D bnxt_ptp_init_rtc(bp, phc_cfg);
-        if (rc)
-           goto out;
-} else {
-        bnxt_ptp_timecounter_init(bp, true);
-        bnxt_ptp_adjfine_rtc(bp, 0);
-}
-
-Rest everything looks OK.
-
-> +               bnxt_ptp_timecounter_init(bp, true);
-> +               bnxt_ptp_adjfine_rtc(bp, 0);
-> +       } else {
->                 bnxt_ptp_timecounter_init(bp, false);
->                 rc =3D bnxt_ptp_init_rtc(bp, phc_cfg);
->                 if (rc)
->                         goto out;
-> -       } else {
-> -               bnxt_ptp_timecounter_init(bp, true);
+>         if (is_qid_invalid(vdpa_nic, idx, __func__))
+>                 return;
+> @@ -184,9 +386,21 @@ static void ef100_vdpa_set_vq_ready(struct vdpa_devi=
+ce *vdev, u16 idx,
+>         if (ready) {
+>                 vdpa_nic->vring[idx].vring_state |=3D
+>                                         EF100_VRING_READY_CONFIGURED;
+> +               if (vdpa_nic->vdpa_state =3D=3D EF100_VDPA_STATE_STARTED =
+&&
+> +                   can_create_vring(vdpa_nic, idx)) {
+> +                       rc =3D create_vring(vdpa_nic, idx);
+> +                       if (rc)
+> +                               /* Rollback ready configuration
+> +                                * So that the above layer driver
+> +                                * can make another attempt to set ready
+> +                                */
+> +                               vdpa_nic->vring[idx].vring_state &=3D
+> +                                       ~EF100_VRING_READY_CONFIGURED;
+> +               }
+>         } else {
+>                 vdpa_nic->vring[idx].vring_state &=3D
+>                                         ~EF100_VRING_READY_CONFIGURED;
+> +               delete_vring(vdpa_nic, idx);
+>         }
+>         mutex_unlock(&vdpa_nic->lock);
+>  }
+> @@ -296,6 +510,12 @@ static u64 ef100_vdpa_get_device_features(struct vdp=
+a_device *vdev)
 >         }
 >
->         ptp->ptp_info =3D bnxt_ptp_caps;
+>         features |=3D BIT_ULL(VIRTIO_NET_F_MAC);
+> +       /* As QEMU SVQ doesn't implement the following features,
+> +        * masking them off to allow Live Migration
+> +        */
+> +       features &=3D ~BIT_ULL(VIRTIO_F_IN_ORDER);
+> +       features &=3D ~BIT_ULL(VIRTIO_F_ORDER_PLATFORM);
+
+It's better not to work around userspace bugs in the kernel. We should
+fix Qemu instead.
+
+> +
+>         return features;
+>  }
+>
+> @@ -356,6 +576,77 @@ static u32 ef100_vdpa_get_vendor_id(struct vdpa_devi=
+ce *vdev)
+>         return EF100_VDPA_VENDOR_ID;
+>  }
+>
+> +static u8 ef100_vdpa_get_status(struct vdpa_device *vdev)
+> +{
+> +       struct ef100_vdpa_nic *vdpa_nic =3D get_vdpa_nic(vdev);
+> +       u8 status;
+> +
+> +       mutex_lock(&vdpa_nic->lock);
+> +       status =3D vdpa_nic->status;
+> +       mutex_unlock(&vdpa_nic->lock);
+> +       return status;
+> +}
+> +
+> +static void ef100_vdpa_set_status(struct vdpa_device *vdev, u8 status)
+> +{
+> +       struct ef100_vdpa_nic *vdpa_nic =3D get_vdpa_nic(vdev);
+> +       u8 new_status;
+> +       int rc;
+> +
+> +       mutex_lock(&vdpa_nic->lock);
+> +       if (!status) {
+> +               dev_info(&vdev->dev,
+> +                        "%s: Status received is 0. Device reset being do=
+ne\n",
+> +                        __func__);
+
+This is trigger-able by the userspace. It might be better to use
+dev_dbg() instead.
+
+> +               ef100_reset_vdpa_device(vdpa_nic);
+> +               goto unlock_return;
+> +       }
+> +       new_status =3D status & ~vdpa_nic->status;
+> +       if (new_status =3D=3D 0) {
+> +               dev_info(&vdev->dev,
+> +                        "%s: New status same as current status\n", __fun=
+c__);
+
+Same here.
+
+> +               goto unlock_return;
+> +       }
+> +       if (new_status & VIRTIO_CONFIG_S_FAILED) {
+> +               ef100_reset_vdpa_device(vdpa_nic);
+> +               goto unlock_return;
+> +       }
+> +
+> +       if (new_status & VIRTIO_CONFIG_S_ACKNOWLEDGE) {
+> +               vdpa_nic->status |=3D VIRTIO_CONFIG_S_ACKNOWLEDGE;
+> +               new_status &=3D ~VIRTIO_CONFIG_S_ACKNOWLEDGE;
+> +       }
+> +       if (new_status & VIRTIO_CONFIG_S_DRIVER) {
+> +               vdpa_nic->status |=3D VIRTIO_CONFIG_S_DRIVER;
+> +               new_status &=3D ~VIRTIO_CONFIG_S_DRIVER;
+> +       }
+> +       if (new_status & VIRTIO_CONFIG_S_FEATURES_OK) {
+> +               vdpa_nic->status |=3D VIRTIO_CONFIG_S_FEATURES_OK;
+> +               vdpa_nic->vdpa_state =3D EF100_VDPA_STATE_NEGOTIATED;
+
+It might be better to explain the reason we need to track another
+state in vdpa_state instead of simply using the device status.
+
+> +               new_status &=3D ~VIRTIO_CONFIG_S_FEATURES_OK;
+> +       }
+> +       if (new_status & VIRTIO_CONFIG_S_DRIVER_OK &&
+> +           vdpa_nic->vdpa_state =3D=3D EF100_VDPA_STATE_NEGOTIATED) {
+> +               vdpa_nic->status |=3D VIRTIO_CONFIG_S_DRIVER_OK;
+> +               rc =3D start_vdpa_device(vdpa_nic);
+> +               if (rc) {
+> +                       dev_err(&vdpa_nic->vdpa_dev.dev,
+> +                               "%s: vDPA device failed:%d\n", __func__, =
+rc);
+> +                       vdpa_nic->status &=3D ~VIRTIO_CONFIG_S_DRIVER_OK;
+> +                       goto unlock_return;
+> +               }
+> +               new_status &=3D ~VIRTIO_CONFIG_S_DRIVER_OK;
+> +       }
+> +       if (new_status) {
+> +               dev_warn(&vdev->dev,
+> +                        "%s: Mismatch Status: %x & State: %u\n",
+> +                        __func__, new_status, vdpa_nic->vdpa_state);
+> +       }
+> +
+> +unlock_return:
+> +       mutex_unlock(&vdpa_nic->lock);
+> +}
+> +
+>  static size_t ef100_vdpa_get_config_size(struct vdpa_device *vdev)
+>  {
+>         return sizeof(struct virtio_net_config);
+> @@ -393,6 +684,20 @@ static void ef100_vdpa_set_config(struct vdpa_device=
+ *vdev, unsigned int offset,
+>                 vdpa_nic->mac_configured =3D true;
+>  }
+>
+> +static int ef100_vdpa_suspend(struct vdpa_device *vdev)
+> +{
+> +       struct ef100_vdpa_nic *vdpa_nic =3D get_vdpa_nic(vdev);
+> +       int i, rc;
+> +
+> +       mutex_lock(&vdpa_nic->lock);
+> +       for (i =3D 0; i < (vdpa_nic->max_queue_pairs * 2); i++) {
+> +               rc =3D delete_vring(vdpa_nic, i);
+
+Note that the suspension matters for the whole device. It means the
+config space should not be changed. But the code here only suspends
+the vring, is this intended?
+
+Reset may have the same issue.
+
+Thanks
+
+
+> +               if (rc)
+> +                       break;
+> +       }
+> +       mutex_unlock(&vdpa_nic->lock);
+> +       return rc;
+> +}
+>  static void ef100_vdpa_free(struct vdpa_device *vdev)
+>  {
+>         struct ef100_vdpa_nic *vdpa_nic =3D get_vdpa_nic(vdev);
+> @@ -428,9 +733,13 @@ const struct vdpa_config_ops ef100_vdpa_config_ops =
+=3D {
+>         .get_vq_num_max      =3D ef100_vdpa_get_vq_num_max,
+>         .get_device_id       =3D ef100_vdpa_get_device_id,
+>         .get_vendor_id       =3D ef100_vdpa_get_vendor_id,
+> +       .get_status          =3D ef100_vdpa_get_status,
+> +       .set_status          =3D ef100_vdpa_set_status,
+> +       .reset               =3D ef100_vdpa_reset,
+>         .get_config_size     =3D ef100_vdpa_get_config_size,
+>         .get_config          =3D ef100_vdpa_get_config,
+>         .set_config          =3D ef100_vdpa_set_config,
+>         .get_generation      =3D NULL,
+> +       .suspend             =3D ef100_vdpa_suspend,
+>         .free                =3D ef100_vdpa_free,
+>  };
 > --
-> 2.34.1
+> 2.30.1
 >
 
---000000000000e0449005f684b382
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-OltyqaGBuzv+bJTUL+bmV7E4QBLIqGt4jVr1R9hJdH6KxXwJdyfHZ9C6qXmoe2NQhiFUyBOJ0wgk
-dB9Z1IU7nCwvNKYg2JMoJs93tIgbhPJg/D7pqW8gabkCAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
-BB0wG4EZcGF2YW4uY2hlYmJpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
-HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUEV6y/89alKPoFbKUaJXsvWu5
-fdowDQYJKoZIhvcNAQELBQADggEBAEHSIB6g652wVb+r2YCmfHW47Jo+5TuCBD99Hla8PYhaWGkd
-9HIyD3NPhb6Vb6vtMWJW4MFGQF42xYRrAS4LZj072DuMotr79rI09pbOiWg0FlRRFt6R9vgUgebu
-pWSH7kmwVXcPtY94XSMMak4b7RSKig2mKbHDpD4bC7eGlwl5RxzYkgrHtMNRmHmQor5Nvqe52cFJ
-25Azqtwvjt5nbrEd81iBmboNTEnLaKuxbbCtLaMEP8xKeDjAKnNOqHUMps0AsQT8c0EGq39YHpjp
-Wn1l67VU0rMShbEFsiUf9WYgE677oinpdm0t2mdCjxr35tryxptoTZXKHDxr/Yy6l6ExggJtMIIC
-aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
-EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwV/XkICjVscn4SNZMw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEICHRcWnloZiWjqdmIzUsW8UpOi6BYIav
-+j+lKFp7FXxcMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMx
-MDA1MDQ1N1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAalk2ULY02BuKrTM/LLCIZLT9VqXK1lQ2dDa0NXt0E4X723rAb
-MbTtEIEcypKNR/xWCQ5XBaW/jUt2A6V9xXZhGHLki4Jvk1AIOLknbp5vPjv6nr1vAUb5DdRBGbW2
-LZZ8J+ZQhrLSWcIR6s9LB518aFs2ZL/XSeVdcUi2EtP4+bL+G1nQGutqiDJMBzY/SSrn1jJL+XOS
-BQGIygLLh8dTt/W7aa6pnfjqQf3iTFhycxXsU79hREEZIOnOez7BIuI2vXKLi5v87cHqZD51jFZc
-JeNntGR/34S0mtpdFnGlRFbzpZQHmSAT5QBIL/h8fVJvlkZmzq6qLhcXhxHpQtdW
---000000000000e0449005f684b382--
