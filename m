@@ -2,145 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEA1D6B3B3A
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 10:47:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2FEF6B3B47
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 10:48:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230381AbjCJJrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 04:47:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41304 "EHLO
+        id S231356AbjCJJsh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 04:48:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbjCJJqv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 04:46:51 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 056C0DD34F
-        for <netdev@vger.kernel.org>; Fri, 10 Mar 2023 01:46:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678441560;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EK9itzNwztWEWdddqk8IMFWiym6+vyjgRi28eISez9E=;
-        b=i8sCGw5oHBzJ1hPO5xt0Pjo0Q/DFUX395zov0etcLDQEjYUvM4yILpBy1Pm26FPcVLOe+P
-        1Pj77p/tqZ4cd6EMu44S2hPh2P5o1OgBKfADqTSfozPTbiGvdUeNZDLXFAJPosYDLdup0G
-        RC7kQpdmqSNwAKzRG6IiHq0SEEsywvQ=
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com
- [209.85.161.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-492-OmtoCFBJPDyu-27TJE-XTA-1; Fri, 10 Mar 2023 04:45:58 -0500
-X-MC-Unique: OmtoCFBJPDyu-27TJE-XTA-1
-Received: by mail-oo1-f72.google.com with SMTP id t2-20020a4ad0a2000000b00517879b32dfso1483325oor.22
-        for <netdev@vger.kernel.org>; Fri, 10 Mar 2023 01:45:58 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678441557;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=EK9itzNwztWEWdddqk8IMFWiym6+vyjgRi28eISez9E=;
-        b=sctd/CRUKxgnJKOlehA5/AgJSQKRwLJPKhsBxYBy6arTfeuVyuLoKSBpc0Cwut6hrN
-         Nv+svefOeYEA7gSrpfzOz+rm9rlKhFP2YODQFw6htjRukp9IFbwl18c/LfylWeRFgIPb
-         usrGStArWs1Cvhl5dT/wo02qxvZuJYuaOo8pNqxbEFEfMP1MlBHK81TJC2uKqber634J
-         Degu/FQfNceO2NikG6+RlqCsk/aBSOBE2zb8fWCnMuFpVQTECmOyxKB4+1dcEgggyKEc
-         q4zhIcuJgdhdfdr19zTx7Ggf38Jk5wMDOBLIYwcQk7pTE3NHjfqlRWJZqGFdRLMVlMy6
-         pFZw==
-X-Gm-Message-State: AO0yUKW7N4TXKnJ4dJk516v86osZvII5ncHuta1OrUoA5wXO/C+R97H4
-        kE/qxOjxKoKbp64txuF9xG3iSEvT5H0ow2gGME5EraNWZX1U23frYGWXHiO6TtBNE4c/74gSk1L
-        We6ClASttXvFVnCNzQWUn3VPrrAQBLJ4u
-X-Received: by 2002:a05:6870:703:b0:172:cef0:4549 with SMTP id ea3-20020a056870070300b00172cef04549mr8547611oab.9.1678441557607;
-        Fri, 10 Mar 2023 01:45:57 -0800 (PST)
-X-Google-Smtp-Source: AK7set8wFTyGoabixP5OFNVzySToAyCse4a2PQn/SiQim9SvqUPTZJzF14tUdNW7G51x0q/0hGPiEqTsuhQVjiiGEfc=
-X-Received: by 2002:a05:6870:703:b0:172:cef0:4549 with SMTP id
- ea3-20020a056870070300b00172cef04549mr8547605oab.9.1678441557382; Fri, 10 Mar
- 2023 01:45:57 -0800 (PST)
+        with ESMTP id S229917AbjCJJsc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 04:48:32 -0500
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1CC565446;
+        Fri, 10 Mar 2023 01:47:58 -0800 (PST)
+Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: lukma@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id D5BA385A2E;
+        Fri, 10 Mar 2023 10:47:55 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1678441676;
+        bh=AtAyJXZxxLAkbb+4sWsugabeLxh6plYeWu7LMmy0eP8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=K8hAI/cK3xa5dry/OinyifD99bGQUclOZ9TVe4vVTBsFt1T5JH7EsLujp+wZw3Qc3
+         zOkkysg+yqY8m5LAXUfGpdebX3/d5z+LidTnNuJgvxfm9oMP1OeRYCo5riMbg8VyiW
+         wBnz9Z4hxJkVeu9/zUgevGTLlNd/vKtx6fXCWzYUcNi0GaqaiU8dflxVMcCIrnL8EI
+         1SLrkgXfBhcAuAlgDuVoeV/GQglf/dvW3m9nKwu4k3Her3GU4jw1jg4Ejk/uohfRmW
+         Cekh4i0WWWKyzF+eJd1fPHPdiPb84WSUP3BalEj64CZE7M8QhJ9b6bar/e+yhk1U+v
+         o5bE7rT7XtfjQ==
+Date:   Fri, 10 Mar 2023 10:47:55 +0100
+From:   Lukasz Majewski <lukma@denx.de>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 6/7] dsa: marvell: Correct value of max_frame_size
+ variable after validation
+Message-ID: <20230310104755.79b24384@wsk>
+In-Reply-To: <ZAn7vkjj0bYdZnhz@shell.armlinux.org.uk>
+References: <20230309125421.3900962-1-lukma@denx.de>
+        <20230309125421.3900962-7-lukma@denx.de>
+        <ZAnnk5MZc0w4VkDE@shell.armlinux.org.uk>
+        <20230309154350.0bdc54c8@wsk>
+        <ZAn7vkjj0bYdZnhz@shell.armlinux.org.uk>
+Organization: denx.de
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20230207120843.1580403-1-sunnanyong@huawei.com>
- <Y+7G+tiBCjKYnxcZ@nvidia.com> <20230217051158-mutt-send-email-mst@kernel.org>
- <Y+92c9us3HVjO2Zq@nvidia.com> <CACGkMEsVBhxtpUFs7TrQzAecO8kK_NR+b1EvD2H7MjJ+2aEKJw@mail.gmail.com>
- <20230310034101-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230310034101-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Fri, 10 Mar 2023 17:45:46 +0800
-Message-ID: <CACGkMEsr3xSa=1WtU35CepWSJ8CK9g4nGXgmHS_9D09LHi7H8g@mail.gmail.com>
-Subject: Re: [PATCH v2] vhost/vdpa: Add MSI translation tables to iommu for
- software-managed MSI
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jason Gunthorpe <jgg@nvidia.com>,
-        Nanyong Sun <sunnanyong@huawei.com>, joro@8bytes.org,
-        will@kernel.org, robin.murphy@arm.com, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        wangrong68@huawei.com, Cindy Lu <lulu@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/ZHcuUdRLWXX3ZTVqfJr0udO";
+ protocol="application/pgp-signature"; micalg=pgp-sha512
+X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 10, 2023 at 4:41=E2=80=AFPM Michael S. Tsirkin <mst@redhat.com>=
- wrote:
->
-> On Mon, Feb 20, 2023 at 10:37:18AM +0800, Jason Wang wrote:
-> > On Fri, Feb 17, 2023 at 8:43 PM Jason Gunthorpe <jgg@nvidia.com> wrote:
-> > >
-> > > On Fri, Feb 17, 2023 at 05:12:29AM -0500, Michael S. Tsirkin wrote:
-> > > > On Thu, Feb 16, 2023 at 08:14:50PM -0400, Jason Gunthorpe wrote:
-> > > > > On Tue, Feb 07, 2023 at 08:08:43PM +0800, Nanyong Sun wrote:
-> > > > > > From: Rong Wang <wangrong68@huawei.com>
-> > > > > >
-> > > > > > Once enable iommu domain for one device, the MSI
-> > > > > > translation tables have to be there for software-managed MSI.
-> > > > > > Otherwise, platform with software-managed MSI without an
-> > > > > > irq bypass function, can not get a correct memory write event
-> > > > > > from pcie, will not get irqs.
-> > > > > > The solution is to obtain the MSI phy base address from
-> > > > > > iommu reserved region, and set it to iommu MSI cookie,
-> > > > > > then translation tables will be created while request irq.
-> > > > >
-> > > > > Probably not what anyone wants to hear, but I would prefer we not=
- add
-> > > > > more uses of this stuff. It looks like we have to get rid of
-> > > > > iommu_get_msi_cookie() :\
-> > > > >
-> > > > > I'd like it if vdpa could move to iommufd not keep copying stuff =
-from
-> > > > > it..
-> > > >
-> > > > Absolutely but when is that happening?
-> > >
-> > > Don't know, I think it has to come from the VDPA maintainers, Nicolin
-> > > made some drafts but wasn't able to get it beyond that.
-> >
-> > Cindy (cced) will carry on the work.
-> >
-> > Thanks
->
-> Hmm didn't see anything yet. Nanyong Sun maybe you can take a look?
+--Sig_/ZHcuUdRLWXX3ZTVqfJr0udO
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Just to clarify, Cindy will work on the iommufd conversion for
-vhost-vDPA, the changes are non-trivial and may take time. Before we
-are able to achieve that,  I think we still need something like this
-patch to make vDPA work on software managed MSI platforms.
+Hi Russell,
 
-Maybe Nanyong can post a new version that addresses the comment so far?
+> On Thu, Mar 09, 2023 at 03:43:50PM +0100, Lukasz Majewski wrote:
+> > Hi Russell,
+> >=20
+> > Please correct my understanding - I do see two approaches here:
+> >=20
+> > A. In patch 1 I do set the max_frame_size values (deduced). Then I
+> > add validation function (patch 2). This function shows "BUG:...."
+> > only when we do have a mismatch. In patch 3 I do correct the
+> > max_frame_size values (according to validation function) and remove
+> > the validation function. This is how it is done in v5 and is going
+> > to be done in v6. =20
+>=20
+> I don't see much point in adding the validation, then correcting the
+> values that were added in patch 1 that were identified by patch 2 in
+> patch 3 - because that means patch 1's deduction was incorrect in
+> some way.
 
-Thanks
+Yes. I do agree.
 
->
-> > >
-> > > Please have people who need more iommu platform enablement to pick it
-> > > up instead of merging hacks like this..
-> > >
-> > > We are very close to having nested translation on ARM so anyone who i=
-s
-> > > serious about VDPA on ARM is going to need iommufd anyhow.
-> > >
-> > > Jason
-> > >
->
+>=20
+> If there is any correction to be done, then it should be:
+>=20
+> patch 1 - add the max_frame_size values
+> patch 2 - add validation (which should not produce any errors)
+> patch 3 - convert to use max_frame_size, and remove validation,
+> stating that the validation had no errors
+> patch 4 (if necessary) - corrections to max_frame_size values if they
+>   are actually incorrect (in other words, they were buggy before patch
+>   1.)
+> patch 5 onwards - the rest of the series.
+>=20
 
+Ok. I will restructure patches to follow above scheme.
+
+> > B. Having showed the v5 in public, the validation function is known.
+> > Then I do prepare v6 with only patch 1 having correct values (from
+> > the outset) and provide in the commit message the code for
+> > validation function. Then patch 2 and 3 (validation function and
+> > the corrected values of max_frame_size) can be omitted in v6.
+> >=20
+> > For me it would be better to choose approach B. =20
+>=20
+> I would suggest that is acceptable for the final round of patches, but
+> I'm wary about saying "yes" to it because... what if something changes
+> in that table between the time you've validated it, and when it
+> eventually gets accepted.
+
+The "peace" of changes for this code is rather slow, so the risk is
+minimal.
+
+Moreover, next ICs added would _require_ to have the max_frame_size
+field set (the WARN_ON() clause).
+
+> Keeping the validation code means that
+> during the review of the series, and subsequent updates onto net-next
+> (which should of course include re-running the validation code) we
+> can be more certain that nothing has changed that would impact it.
+>=20
+> What I worry about is if something changes, the patch adding the
+> values mis-patches (e.g. due to other changes - much of the context
+> for each hunk is quite similar) then we will have quite a problem to
+> sort it out.
+>=20
+
+Ok. I hope that we will avoid this threat.
+
+
+Best regards,
+
+Lukasz Majewski
+
+--
+
+DENX Software Engineering GmbH,      Managing Director: Erika Unter
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
+
+--Sig_/ZHcuUdRLWXX3ZTVqfJr0udO
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmQK/MsACgkQAR8vZIA0
+zr3NxwgAs7xRh+00Knb97P5Wd9XHBQTDtazIpZGz1ajSPwu0nsB96aA34yZfFg+R
+fl81Jk9gflwdtGyUJNuH8nGX99jBXC5PfmGourdifsxg+3tBiNGdnpLA7qZZJahi
+ydoEv60QUMVdXaMjno/xwRwsTeujt6s43FQ2rlngS+cp76whk0Um6IQZEbAUBuKy
+Pfe3JTC/1YQIufghnbDy/uN509cJWfnIZJ/trFytk0byVIT+yQq2sNzQN/HnnD8j
+8SLYElVIo5fgMo9/QyO4/YAsT+lqtyqSKWqolJZ8HQLEryFn7aUgTgVj1gZebB68
+amJlUSuk8psGIqGr2Gq/rddCLWUSlQ==
+=lABy
+-----END PGP SIGNATURE-----
+
+--Sig_/ZHcuUdRLWXX3ZTVqfJr0udO--
