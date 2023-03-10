@@ -2,98 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A7D26B3ED9
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 13:12:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BAB1F6B3EEF
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 13:15:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229476AbjCJMME (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 07:12:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36382 "EHLO
+        id S230134AbjCJMPY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 07:15:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230197AbjCJMLr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 07:11:47 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ECBDF9EF2;
-        Fri, 10 Mar 2023 04:11:06 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id bx12so4807270wrb.11;
-        Fri, 10 Mar 2023 04:11:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678450264;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=rlBeRbSvFIrZXSgMo0k6lv6ditnNPYMt98nq+fqCams=;
-        b=Qk7rWQ9Jc/uVlT41FlTDG2bqsywBJPY43r20sJrLQPkTulwpBHZ06Ec7DpJ+Uo/+NG
-         yvu5zWX1pi66zi5trrmf0k3ABW2Zwyf9nyAq9C6xQSfT+uVtt2cdCXc7rX7QjyKvRzOt
-         rsV4IFdxoZK7ZcGbZoNghn7Bnofm5AoVhrGcD7IX7llWE6sfZnwnLJ9qqrvuHUgUdJ14
-         iSzVYmTl63e174/K785ADYAydKaBT8c0MRfb9RsYT+h5wGV3oZMlt956VV5LvGI2p8f8
-         bF4J5l7xYnP6s3t+oXGmCQIqdn/F31UGTGUldkhuURlXgKkHWqxmvrnQ4PiJq4YvWfwo
-         alNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678450264;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=rlBeRbSvFIrZXSgMo0k6lv6ditnNPYMt98nq+fqCams=;
-        b=sdmhWioXJ2vCo41skUcFSmDiqFcMfSQ9knD60mJMGdox4OOCnpxeO1/AZClK0Raxg7
-         qrbJUyISK5SHIlmq73nx2aLRKJav4EpfGThxrBumiOFYi6aBRhk9maI8ToTRGONvm/nW
-         EzhrKZcZ2oSaw1hlcbdGwVbFf7kqwc3UTLOgznJrtJc39/vmeVydswCM9rubkEGlHbUe
-         4Rxv5FVYy2ROyr3wlnqQtdTdxrHwjFNTB24rzO9d6lQZzhPKlrAHhF9hzn8dPnxoKHzL
-         MXQY5b9FWZoHNl1Uo8WBDSHFXy4yHXvB8bu2DJt4JXqEJe8JMgnkHNXmRP3pxvW2jfid
-         gpJg==
-X-Gm-Message-State: AO0yUKV4gi7ybl/rb5VhwdQ7v8AGJDdGinziRF3/VyQipgeQaCrh8Kjv
-        lq4ABWolvhVLf1cLFYXr03s=
-X-Google-Smtp-Source: AK7set/aYzm+ywlxjxmDFOlQLxb0vdqvAVhyfDahFxWjRUfayMsOT/Y6SVoIn7NIRHJitKbIQ7o+Rg==
-X-Received: by 2002:a5d:5232:0:b0:2c8:4bca:7fc2 with SMTP id i18-20020a5d5232000000b002c84bca7fc2mr19225235wra.4.1678450264347;
-        Fri, 10 Mar 2023 04:11:04 -0800 (PST)
-Received: from atlantis.lan (255.red-79-146-124.dynamicip.rima-tde.net. [79.146.124.255])
-        by smtp.gmail.com with ESMTPSA id f1-20020a1c6a01000000b003b47b80cec3sm2727289wmc.42.2023.03.10.04.11.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Mar 2023 04:11:03 -0800 (PST)
-From:   =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
-        <noltari@gmail.com>
-To:     f.fainelli@gmail.com, jonas.gorski@gmail.com, andrew@lunn.ch,
-        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
-        <noltari@gmail.com>
-Subject: [PATCH] net: dsa: b53: mmap: fix device tree support
-Date:   Fri, 10 Mar 2023 13:10:59 +0100
-Message-Id: <20230310121059.4498-1-noltari@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S229885AbjCJMPX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 07:15:23 -0500
+Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C035AEE282;
+        Fri, 10 Mar 2023 04:15:20 -0800 (PST)
+Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 8AC87B8B;
+        Fri, 10 Mar 2023 13:15:16 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
+        t=1678450516;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ksiA2zxyIIXuXWaNTFlfyJw/hUgGVKsFuq59jCd+r4E=;
+        b=fltrcmQT6B8k+hGlfi2WLwYDjB4aso1Sxu7yQmAcnzym7FKHneedP+v7hh6fUsPgFckTKL
+        DwXrSPEmHUjiZrFszRh8cSOvUWEFjZZSsIixknhPpNd0MTU42iu9gN7HE6gNyRO9O7dY4H
+        bgUyv+RGv+/MindDlMxveDV3SAwmEQpmoyJVaJeYJwJWGwf9FhL8iGAHa1aNWLcPG8cdKS
+        xkn5FyA0BbYtExxnDNDwldGjmVG8aRIWquF3OwnD2ohKeeAvGJcjsgwqqcOPRIpIl0izdV
+        e18jtYFCm+BjUelIJBKpxNpwKqYf9fdTcHMlXQwfnrmhCZKZor9Z5bw8tXFcqg==
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Date:   Fri, 10 Mar 2023 13:15:16 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     =?UTF-8?Q?K=C3=B6ry_Maincent?= <kory.maincent@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-omap@vger.kernel.org,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        thomas.petazzoni@bootlin.com, Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Minghao Chi <chi.minghao@zte.com.cn>,
+        Jie Wang <wangjie125@huawei.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Sean Anderson <sean.anderson@seco.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Marco Bonelli <marco@mebeim.net>
+Subject: Re: [PATCH v3 3/5] net: Let the active time stamping layer be
+ selectable.
+In-Reply-To: <20230310113533.l7flaoli7y3bmlnr@skbuf>
+References: <20230308135936.761794-1-kory.maincent@bootlin.com>
+ <20230308135936.761794-1-kory.maincent@bootlin.com>
+ <20230308135936.761794-4-kory.maincent@bootlin.com>
+ <20230308135936.761794-4-kory.maincent@bootlin.com>
+ <20230308230321.liw3v255okrhxg6s@skbuf>
+ <20230310114852.3cef643d@kmaincent-XPS-13-7390>
+ <20230310113533.l7flaoli7y3bmlnr@skbuf>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <b4ebfd3770ffa5ad1233d2b5e79499ee@walle.cc>
+X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-B53_CPU_PORT should also be enabled in order to get a working switch.
+[+ Horatiu]
 
-Fixes: a5538a777b73 ("net: dsa: b53: mmap: Add device tree support")
-Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
----
- drivers/net/dsa/b53/b53_mmap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Am 2023-03-10 12:35, schrieb Vladimir Oltean:
+> On Fri, Mar 10, 2023 at 11:48:52AM +0100, Köry Maincent wrote:
+>> > From previous discussions, I believe that a device tree property was
+>> > added in order to prevent perceived performance regressions when
+>> > timestamping support is added to a PHY driver, correct?
+>> 
+>> Yes, i.e. to select the default and better timestamp on a board.
+> 
+> Is there a way to unambiguously determine the "better" timestamping on 
+> a board?
+> 
+> Is it plausible that over time, when PTP timestamping matures and,
+> for example, MDIO devices get support for PTP_SYS_OFFSET_EXTENDED
+> (an attempt was here: https://lkml.org/lkml/2019/8/16/638), the
+> relationship between PTP clock qualities changes, and so does the
+> preference change?
+> 
+>> > I have a dumb question: if updating the device trees is needed in order
+>> > to prevent these behavior changes, then how is the regression problem
+>> > addressed for those device trees which don't contain this new property
+>> > (all device trees)?
+>> 
+>> On that case there is not really solution,
+> 
+> If it's not really a solution, then doesn't this fail at its primary
+> purpose of preventing regressions?
+> 
+>> but be aware that CONFIG_PHY_TIMESTAMPING need to be activated to
+>> allow timestamping on the PHY. Currently in mainline only few (3)
+>> defconfig have it enabled so it is really not spread,
+> 
+> Do distribution kernels use the defconfigs from the kernel, or do they
+> just enable as many options that sound good as possible?
+> 
+>> maybe I could add more documentation to prevent further regression
+>> issue when adding support of timestamp to a PHY driver.
+> 
+> My opinion is that either the problem was not correctly identified,
+> or the proposed solution does not address that problem.
+> 
+> What I believe is the problem is that adding support for PHY 
+> timestamping
+> to a PHY driver will cause a behavior change for existing systems which
+> are deployed with that PHY.
+> 
+> If I had a multi-port NIC where all ports share the same PHC, I would
+> want to create a boundary clock with it. I can do that just fine when
+> using MAC timestamping. But assume someone adds support for PHY
+> timestamping and the kernel switches to using PHY timestamps by 
+> default.
+> Now I need to keep in sync the PHCs of the PHYs, something which was
+> implicit before (all ports shared the same PHC). I have done nothing
+> incorrectly, yet my deployment doesn't work anymore. This is just an
+> example. It doesn't sound like a good idea in general for new features
+> to cause a behavior change by default.
+> 
+> Having identified that as the problem, I guess the solution should be
+> to stop doing that (and even though a PHY driver supports timestamping,
+> keep using the MAC timestamping by default).
+> 
+> There is a slight inconvenience caused by the fact that there are
+> already PHY drivers using PHY timestamping, and those may have been
+> introduced into deployments with PHY timestamping. We cannot change the
+> default behavior for those either. There are 5 such PHY drivers today
+> (I've grepped for mii_timestamper in drivers/net/phy).
+> 
+> I would suggest that the kernel implements a short whitelist of 5
+> entries containing PHY driver names, which are compared against
+> netdev->phydev->drv->name (with the appropriate NULL pointer checks).
+> Matches will default to PHY timestamping. Otherwise, the new default
+> will be to keep the behavior as if PHY timestamping doesn't exist
+> (MAC still provides the timestamps), and the user needs to select the
+> PHY as the timestamping source explicitly.
+> 
+> Thoughts?
 
-diff --git a/drivers/net/dsa/b53/b53_mmap.c b/drivers/net/dsa/b53/b53_mmap.c
-index e968322dfbf0..24ea2e19dfa6 100644
---- a/drivers/net/dsa/b53/b53_mmap.c
-+++ b/drivers/net/dsa/b53/b53_mmap.c
-@@ -263,7 +263,7 @@ static int b53_mmap_probe_of(struct platform_device *pdev,
- 		if (of_property_read_u32(of_port, "reg", &reg))
- 			continue;
- 
--		if (reg < B53_CPU_PORT)
-+		if (reg <= B53_CPU_PORT)
- 			pdata->enabled_ports |= BIT(reg);
- 	}
- 
--- 
-2.30.2
+While I agree in principle (I have suggested to make MAC timestamping
+the default before), I see a problem with the recent LAN8814 PHY
+timestamping support, which will likely be released with 6.3. That
+would now switch the timestamping to PHY timestamping for our board
+(arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt-8g.dts). I could
+argue that is a regression for our board iff NETWORK_PHY_TIMESTAMPING
+is enabled. Honestly, I don't know how to proceed here and haven't
+tried to replicate the regression due to limited time. Assuming,
+that I can show it is a regression, what would be the solution then,
+reverting the commit? Horatiu, any ideas?
 
+I digress from the original problem a bit. But if there would be such
+a whitelist, I'd propose that it won't contain the lan8814 driver.
+
+Other than that, I guess I have to put some time into testing
+before it's too late.
+
+-michael
