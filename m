@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91D526B5418
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 23:16:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C60116B541F
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 23:16:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231682AbjCJWQX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 17:16:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46332 "EHLO
+        id S231814AbjCJWQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 17:16:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231599AbjCJWQQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 17:16:16 -0500
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B98F7136FCA;
-        Fri, 10 Mar 2023 14:16:14 -0800 (PST)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32ALhsWu026773;
-        Fri, 10 Mar 2023 22:15:56 GMT
+        with ESMTP id S231634AbjCJWQT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 17:16:19 -0500
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C1CC144178;
+        Fri, 10 Mar 2023 14:16:17 -0800 (PST)
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32ALi0Op014913;
+        Fri, 10 Mar 2023 22:15:57 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=corp-2022-7-12;
- bh=eaW63H5WYY0jeCFNsqmZWFmy2A0ZfYVHoEKBNGRcozA=;
- b=gO4oGQ20MThbf5ZSpPHwMelBXTsrpfRhD05zn2SQtsSu+0ONbjWINM5isPF666p1AH+7
- Olfj1DOISrZuowUZbDrGpyDd3r+FdcQOixWzpH8jAkpfbOyLWIPtQ8aY3fYQMFfwQ5nY
- lHD2lEEe58H+onst+avtJPDq/XfZ5aq/dC0b1JUAhF5m8b2LQOsO3Qx4USXIX2AdNw0+
- 5+2khnOpW+Nw8YAxaXq1E1bHbhTYFUjv/JacKwCr9lqXDUzRnPcwuo/zQs5R1kWlc9pf
- XjiSKiXo5fqUpS3lfJcQYGbZTuqw64HFiMZobBm+sSET7JnXcVK/GpH5dLJPYrnGb4NT MQ== 
+ bh=uBlMdD7r1eIccZBQ2mT5dGoN2iebPaDSiGe5Dh8nfOk=;
+ b=P6djNuwI1m0QuxDQh9o5r3DwvqepmKuomSKRQm64ltkMc878UZ5ABtAJNDapkNE8Me3U
+ CfHNsC9xb0XmM4ErbJKx6svibahFvBlRruzYftD64Vd/UuacKnFSLRPlHTRSKtszFhMH
+ j+nCoHlJLuED5OjGlSrW+foi9EfPvOsyKb0YVfmfYQgeA5OtxdtP/1xHtdX3BLJtvpcH
+ 1E0RtDEO7jKIU/PUo0LUrpBcbUlyNjj+c3d3ALyF9z394q0FJUywjmRJXN/nj7MU1wjE
+ 7oUqOs5iEZyk9GSh25Hsuc9kefC3Og6udJ6zXNuU7CK5py3fslelFvJlyedu+0S73U23 9A== 
 Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3p417cp9hv-1
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3p416wxc8v-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
         Fri, 10 Mar 2023 22:15:56 +0000
 Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 32AM4FaM031459;
-        Fri, 10 Mar 2023 22:15:55 GMT
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 32ALelle031645;
+        Fri, 10 Mar 2023 22:15:56 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3p6feqs9s5-1
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3p6feqs9sr-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 10 Mar 2023 22:15:55 +0000
+        Fri, 10 Mar 2023 22:15:56 +0000
 Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32AMFrOv028711;
-        Fri, 10 Mar 2023 22:15:54 GMT
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32AMFrOx028711;
+        Fri, 10 Mar 2023 22:15:55 GMT
 Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.129.136.47])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3p6feqs9nh-2;
-        Fri, 10 Mar 2023 22:15:54 +0000
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3p6feqs9nh-3;
+        Fri, 10 Mar 2023 22:15:55 +0000
 From:   Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
 To:     davem@davemloft.net
 Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
@@ -51,9 +51,9 @@ Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
         socketcan@hartkopp.net, petrm@nvidia.com,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         anjali.k.kulkarni@oracle.com
-Subject: [PATCH v1 1/5] netlink: Reverse the patch which removed filtering
-Date:   Fri, 10 Mar 2023 14:15:43 -0800
-Message-Id: <20230310221547.3656194-2-anjali.k.kulkarni@oracle.com>
+Subject: [PATCH v1 2/5] connector/cn_proc: Add filtering to fix some bugs
+Date:   Fri, 10 Mar 2023 14:15:44 -0800
+Message-Id: <20230310221547.3656194-3-anjali.k.kulkarni@oracle.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230310221547.3656194-1-anjali.k.kulkarni@oracle.com>
 References: <20230310221547.3656194-1-anjali.k.kulkarni@oracle.com>
@@ -66,8 +66,8 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 spam
  mlxlogscore=999 suspectscore=0 malwarescore=0 mlxscore=0 adultscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
  definitions=main-2303100177
-X-Proofpoint-GUID: LBlGDv1AlfA9IyiA-Lq_Xq8-cd2RDTSq
-X-Proofpoint-ORIG-GUID: LBlGDv1AlfA9IyiA-Lq_Xq8-cd2RDTSq
+X-Proofpoint-GUID: mjOixkxXrRr-Kyi4NpG8a4ICe-efpavc
+X-Proofpoint-ORIG-GUID: mjOixkxXrRr-Kyi4NpG8a4ICe-efpavc
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
@@ -78,97 +78,286 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To use filtering at the connector & cn_proc layers, we need to enable
-filtering in the netlink layer. This reverses the patch which removed
-netlink filtering:
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=549017aa1bb7`
+One bug is if there are more than one listeners for the proc connector
+messages, and one of them deregisters for listening using
+PROC_CN_MCAST_IGNORE, they will still get all proc connector messages,
+as long as there is another listener.
+
+Another issue is if one client calls PROC_CN_MCAST_LISTEN, and another
+one calls PROC_CN_MCAST_IGNORE, then both will end up not getting any
+messages.
+
+This patch adds filtering and drops packet if client has sent
+PROC_CN_MCAST_IGNORE. This data is stored in the client socket's
+sk_user_data. In addition, we only increment or decrement
+proc_event_num_listeners once per client. This fixes the above issues.
 
 Signed-off-by: Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
 ---
- include/linux/netlink.h  |  5 +++++
- net/netlink/af_netlink.c | 25 +++++++++++++++++++++++--
- 2 files changed, 28 insertions(+), 2 deletions(-)
+ drivers/connector/cn_proc.c   | 53 ++++++++++++++++++++++++++++-------
+ drivers/connector/connector.c | 12 +++++---
+ drivers/w1/w1_netlink.c       |  6 ++--
+ include/linux/connector.h     |  6 +++-
+ include/uapi/linux/cn_proc.h  | 43 ++++++++++++++++------------
+ net/netlink/af_netlink.c      | 10 +++++--
+ 6 files changed, 93 insertions(+), 37 deletions(-)
 
-diff --git a/include/linux/netlink.h b/include/linux/netlink.h
-index c43ac7690eca..866bbc5a4c8d 100644
---- a/include/linux/netlink.h
-+++ b/include/linux/netlink.h
-@@ -206,6 +206,11 @@ bool netlink_strict_get_check(struct sk_buff *skb);
- int netlink_unicast(struct sock *ssk, struct sk_buff *skb, __u32 portid, int nonblock);
- int netlink_broadcast(struct sock *ssk, struct sk_buff *skb, __u32 portid,
- 		      __u32 group, gfp_t allocation);
-+int netlink_broadcast_filtered(struct sock *ssk, struct sk_buff *skb,
-+			       __u32 portid, __u32 group, gfp_t allocation,
-+			       int (*filter)(struct sock *dsk,
-+					     struct sk_buff *skb, void *data),
-+			       void *filter_data);
- int netlink_set_err(struct sock *ssk, __u32 portid, __u32 group, int code);
- int netlink_register_notifier(struct notifier_block *nb);
- int netlink_unregister_notifier(struct notifier_block *nb);
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index c64277659753..003c7e6ec9be 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -1432,6 +1432,8 @@ struct netlink_broadcast_data {
- 	int delivered;
- 	gfp_t allocation;
- 	struct sk_buff *skb, *skb2;
-+	int (*tx_filter)(struct sock *dsk, struct sk_buff *skb, void *data);
-+	void *tx_data;
+diff --git a/drivers/connector/cn_proc.c b/drivers/connector/cn_proc.c
+index ccac1c453080..84f38d2bd4b9 100644
+--- a/drivers/connector/cn_proc.c
++++ b/drivers/connector/cn_proc.c
+@@ -48,6 +48,21 @@ static DEFINE_PER_CPU(struct local_event, local_event) = {
+ 	.lock = INIT_LOCAL_LOCK(lock),
  };
  
- static void do_one_broadcast(struct sock *sk,
-@@ -1485,6 +1487,11 @@ static void do_one_broadcast(struct sock *sk,
- 			p->delivery_failure = 1;
++static int cn_filter(struct sock *dsk, struct sk_buff *skb, void *data)
++{
++	enum proc_cn_mcast_op mc_op;
++
++	if (!dsk)
++		return 0;
++
++	mc_op = ((struct proc_input *)(dsk->sk_user_data))->mcast_op;
++
++	if (mc_op == PROC_CN_MCAST_IGNORE)
++		return 1;
++
++	return 0;
++}
++
+ static inline void send_msg(struct cn_msg *msg)
+ {
+ 	local_lock(&local_event.lock);
+@@ -61,7 +76,8 @@ static inline void send_msg(struct cn_msg *msg)
+ 	 *
+ 	 * If cn_netlink_send() fails, the data is not sent.
+ 	 */
+-	cn_netlink_send(msg, 0, CN_IDX_PROC, GFP_NOWAIT);
++	cn_netlink_send_mult(msg, msg->len, 0, CN_IDX_PROC, GFP_NOWAIT,
++			     cn_filter, NULL);
+ 
+ 	local_unlock(&local_event.lock);
+ }
+@@ -346,11 +362,9 @@ static void cn_proc_ack(int err, int rcvd_seq, int rcvd_ack)
+ static void cn_proc_mcast_ctl(struct cn_msg *msg,
+ 			      struct netlink_skb_parms *nsp)
+ {
+-	enum proc_cn_mcast_op *mc_op = NULL;
+-	int err = 0;
+-
+-	if (msg->len != sizeof(*mc_op))
+-		return;
++	enum proc_cn_mcast_op mc_op = 0, prev_mc_op = 0;
++	int err = 0, initial = 0;
++	struct sock *sk = NULL;
+ 
+ 	/* 
+ 	 * Events are reported with respect to the initial pid
+@@ -367,13 +381,32 @@ static void cn_proc_mcast_ctl(struct cn_msg *msg,
  		goto out;
  	}
-+	if (p->tx_filter && p->tx_filter(sk, p->skb2, p->tx_data)) {
-+		kfree_skb(p->skb2);
-+		p->skb2 = NULL;
-+		goto out;
-+	}
- 	if (sk_filter(sk, p->skb2)) {
- 		kfree_skb(p->skb2);
- 		p->skb2 = NULL;
-@@ -1507,8 +1514,12 @@ static void do_one_broadcast(struct sock *sk,
- 	sock_put(sk);
- }
  
--int netlink_broadcast(struct sock *ssk, struct sk_buff *skb, u32 portid,
--		      u32 group, gfp_t allocation)
-+int netlink_broadcast_filtered(struct sock *ssk, struct sk_buff *skb,
-+			       u32 portid,
-+			       u32 group, gfp_t allocation,
-+			       int (*filter)(struct sock *dsk,
-+					     struct sk_buff *skb, void *data),
-+			       void *filter_data)
- {
- 	struct net *net = sock_net(ssk);
- 	struct netlink_broadcast_data info;
-@@ -1527,6 +1538,8 @@ int netlink_broadcast(struct sock *ssk, struct sk_buff *skb, u32 portid,
- 	info.allocation = allocation;
- 	info.skb = skb;
- 	info.skb2 = NULL;
-+	info.tx_filter = filter;
-+	info.tx_data = filter_data;
- 
- 	/* While we sleep in clone, do not allow to change socket list */
- 
-@@ -1552,6 +1565,14 @@ int netlink_broadcast(struct sock *ssk, struct sk_buff *skb, u32 portid,
- 	}
- 	return -ESRCH;
- }
-+EXPORT_SYMBOL(netlink_broadcast_filtered);
+-	mc_op = (enum proc_cn_mcast_op *)msg->data;
+-	switch (*mc_op) {
++	if (msg->len == sizeof(mc_op))
++		mc_op = *((enum proc_cn_mcast_op *)msg->data);
++	else
++		return;
 +
-+int netlink_broadcast(struct sock *ssk, struct sk_buff *skb, u32 portid,
-+		      u32 group, gfp_t allocation)
-+{
-+	return netlink_broadcast_filtered(ssk, skb, portid, group, allocation,
-+					  NULL, NULL);
-+}
- EXPORT_SYMBOL(netlink_broadcast);
++	if (nsp->sk) {
++		sk = nsp->sk;
++		if (sk->sk_user_data == NULL) {
++			sk->sk_user_data = kzalloc(sizeof(struct proc_input),
++						   GFP_KERNEL);
++			initial = 1;
++		} else {
++			prev_mc_op =
++			((struct proc_input *)(sk->sk_user_data))->mcast_op;
++		}
++		((struct proc_input *)(sk->sk_user_data))->mcast_op = mc_op;
++	}
++
++	switch (mc_op) {
+ 	case PROC_CN_MCAST_LISTEN:
+-		atomic_inc(&proc_event_num_listeners);
++		if (initial || (prev_mc_op != PROC_CN_MCAST_LISTEN))
++			atomic_inc(&proc_event_num_listeners);
+ 		break;
+ 	case PROC_CN_MCAST_IGNORE:
+-		atomic_dec(&proc_event_num_listeners);
++		if (!initial && (prev_mc_op != PROC_CN_MCAST_IGNORE))
++			atomic_dec(&proc_event_num_listeners);
+ 		break;
+ 	default:
+ 		err = EINVAL;
+diff --git a/drivers/connector/connector.c b/drivers/connector/connector.c
+index 48ec7ce6ecac..1b7851b1aa0f 100644
+--- a/drivers/connector/connector.c
++++ b/drivers/connector/connector.c
+@@ -59,7 +59,9 @@ static int cn_already_initialized;
+  * both, or if both are zero then the group is looked up and sent there.
+  */
+ int cn_netlink_send_mult(struct cn_msg *msg, u16 len, u32 portid, u32 __group,
+-	gfp_t gfp_mask)
++	gfp_t gfp_mask,
++	int (*filter)(struct sock *dsk, struct sk_buff *skb, void *data),
++	void *filter_data)
+ {
+ 	struct cn_callback_entry *__cbq;
+ 	unsigned int size;
+@@ -110,8 +112,9 @@ int cn_netlink_send_mult(struct cn_msg *msg, u16 len, u32 portid, u32 __group,
+ 	NETLINK_CB(skb).dst_group = group;
  
- struct netlink_set_err_data {
+ 	if (group)
+-		return netlink_broadcast(dev->nls, skb, portid, group,
+-					 gfp_mask);
++		return netlink_broadcast_filtered(dev->nls, skb, portid, group,
++						  gfp_mask, filter,
++						  (void *)filter_data);
+ 	return netlink_unicast(dev->nls, skb, portid,
+ 			!gfpflags_allow_blocking(gfp_mask));
+ }
+@@ -121,7 +124,8 @@ EXPORT_SYMBOL_GPL(cn_netlink_send_mult);
+ int cn_netlink_send(struct cn_msg *msg, u32 portid, u32 __group,
+ 	gfp_t gfp_mask)
+ {
+-	return cn_netlink_send_mult(msg, msg->len, portid, __group, gfp_mask);
++	return cn_netlink_send_mult(msg, msg->len, portid, __group, gfp_mask,
++				    NULL, NULL);
+ }
+ EXPORT_SYMBOL_GPL(cn_netlink_send);
+ 
+diff --git a/drivers/w1/w1_netlink.c b/drivers/w1/w1_netlink.c
+index db110cc442b1..691978cddab7 100644
+--- a/drivers/w1/w1_netlink.c
++++ b/drivers/w1/w1_netlink.c
+@@ -65,7 +65,8 @@ static void w1_unref_block(struct w1_cb_block *block)
+ 		u16 len = w1_reply_len(block);
+ 		if (len) {
+ 			cn_netlink_send_mult(block->first_cn, len,
+-				block->portid, 0, GFP_KERNEL);
++					     block->portid, 0,
++					     GFP_KERNEL, NULL, NULL);
+ 		}
+ 		kfree(block);
+ 	}
+@@ -83,7 +84,8 @@ static void w1_reply_make_space(struct w1_cb_block *block, u16 space)
+ {
+ 	u16 len = w1_reply_len(block);
+ 	if (len + space >= block->maxlen) {
+-		cn_netlink_send_mult(block->first_cn, len, block->portid, 0, GFP_KERNEL);
++		cn_netlink_send_mult(block->first_cn, len, block->portid,
++				     0, GFP_KERNEL, NULL, NULL);
+ 		block->first_cn->len = 0;
+ 		block->cn = NULL;
+ 		block->msg = NULL;
+diff --git a/include/linux/connector.h b/include/linux/connector.h
+index 487350bb19c3..1336a5e7dd2f 100644
+--- a/include/linux/connector.h
++++ b/include/linux/connector.h
+@@ -96,7 +96,11 @@ void cn_del_callback(const struct cb_id *id);
+  *
+  * If there are no listeners for given group %-ESRCH can be returned.
+  */
+-int cn_netlink_send_mult(struct cn_msg *msg, u16 len, u32 portid, u32 group, gfp_t gfp_mask);
++int cn_netlink_send_mult(struct cn_msg *msg, u16 len, u32 portid,
++			 u32 group, gfp_t gfp_mask,
++			 int (*filter)(struct sock *dsk, struct sk_buff *skb,
++				       void *data),
++			 void *filter_data);
+ 
+ /**
+  * cn_netlink_send - Sends message to the specified groups.
+diff --git a/include/uapi/linux/cn_proc.h b/include/uapi/linux/cn_proc.h
+index db210625cee8..6a06fb424313 100644
+--- a/include/uapi/linux/cn_proc.h
++++ b/include/uapi/linux/cn_proc.h
+@@ -30,6 +30,30 @@ enum proc_cn_mcast_op {
+ 	PROC_CN_MCAST_IGNORE = 2
+ };
+ 
++enum proc_cn_event {
++	/* Use successive bits so the enums can be used to record
++	 * sets of events as well
++	 */
++	PROC_EVENT_NONE = 0x00000000,
++	PROC_EVENT_FORK = 0x00000001,
++	PROC_EVENT_EXEC = 0x00000002,
++	PROC_EVENT_UID  = 0x00000004,
++	PROC_EVENT_GID  = 0x00000040,
++	PROC_EVENT_SID  = 0x00000080,
++	PROC_EVENT_PTRACE = 0x00000100,
++	PROC_EVENT_COMM = 0x00000200,
++	/* "next" should be 0x00000400 */
++	/* "last" is the last process event: exit,
++	 * while "next to last" is coredumping event
++	 */
++	PROC_EVENT_COREDUMP = 0x40000000,
++	PROC_EVENT_EXIT = 0x80000000
++};
++
++struct proc_input {
++	enum proc_cn_mcast_op mcast_op;
++};
++
+ /*
+  * From the user's point of view, the process
+  * ID is the thread group ID and thread ID is the internal
+@@ -44,24 +68,7 @@ enum proc_cn_mcast_op {
+  */
+ 
+ struct proc_event {
+-	enum what {
+-		/* Use successive bits so the enums can be used to record
+-		 * sets of events as well
+-		 */
+-		PROC_EVENT_NONE = 0x00000000,
+-		PROC_EVENT_FORK = 0x00000001,
+-		PROC_EVENT_EXEC = 0x00000002,
+-		PROC_EVENT_UID  = 0x00000004,
+-		PROC_EVENT_GID  = 0x00000040,
+-		PROC_EVENT_SID  = 0x00000080,
+-		PROC_EVENT_PTRACE = 0x00000100,
+-		PROC_EVENT_COMM = 0x00000200,
+-		/* "next" should be 0x00000400 */
+-		/* "last" is the last process event: exit,
+-		 * while "next to last" is coredumping event */
+-		PROC_EVENT_COREDUMP = 0x40000000,
+-		PROC_EVENT_EXIT = 0x80000000
+-	} what;
++	enum proc_cn_event what;
+ 	__u32 cpu;
+ 	__u64 __attribute__((aligned(8))) timestamp_ns;
+ 		/* Number of nano seconds since system boot */
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index 003c7e6ec9be..b311375b8c4c 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -63,6 +63,7 @@
+ #include <linux/net_namespace.h>
+ #include <linux/nospec.h>
+ #include <linux/btf_ids.h>
++#include <linux/connector.h>
+ 
+ #include <net/net_namespace.h>
+ #include <net/netns/generic.h>
+@@ -767,9 +768,14 @@ static int netlink_release(struct socket *sock)
+ 	/* must not acquire netlink_table_lock in any way again before unbind
+ 	 * and notifying genetlink is done as otherwise it might deadlock
+ 	 */
+-	if (nlk->netlink_unbind) {
++	if (nlk->netlink_unbind && nlk->groups) {
+ 		int i;
+-
++		if (sk->sk_protocol == NETLINK_CONNECTOR) {
++			if (test_bit(CN_IDX_PROC - 1, nlk->groups)) {
++				kfree(sk->sk_user_data);
++				sk->sk_user_data = NULL;
++			}
++		}
+ 		for (i = 0; i < nlk->ngroups; i++)
+ 			if (test_bit(i, nlk->groups))
+ 				nlk->netlink_unbind(sock_net(sk), i + 1);
 -- 
 2.31.1
 
