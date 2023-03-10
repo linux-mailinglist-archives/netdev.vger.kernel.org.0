@@ -2,133 +2,615 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 357416B450B
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 15:30:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0DF36B459D
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 15:35:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232524AbjCJOai (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 09:30:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55706 "EHLO
+        id S232578AbjCJOfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 09:35:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232505AbjCJOaQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 09:30:16 -0500
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2095.outbound.protection.outlook.com [40.107.237.95])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B52FF4D87;
-        Fri, 10 Mar 2023 06:29:04 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PvYTcOIUCChG3I7p/lRXAtOD4YxJjJqKKCy4pAov+vty+tl+ehnvL/1B7JxNu2PHQJkpOfJMVzdpiKbJR18XS3zSzMxy3v7dbyBU1XblNGfrK4ncM0v68ADmhWDNQUUAcPLbLxD2nzO34VATgoIDtcGQeec4YrNzUNvgReoQNUh2QBHezIOOmgZ9g5vCyR48m85hgQHsxMjdduTZI6zWENSvB6ZzVRF8NgI84SISQkxI958Vp1YJAwfuGGQw/YYjCIRj2m1wnTAL2xXX8U3JwUq0+l9ZhS2Xtvit+XVm5bl4Zs0mo8umjA34Qpc6Y5vcBVef1NzsIlZY8h0CSF6c7g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6ybqA30W45pYwAr/5w7CqzvPvYLuMWbJFkoayKaHQKw=;
- b=hBBqQTsudAyyVYbxpMB47/42aKVMhFD2NDeJ8HS/7ZpCk/WuDaJHkvBdeAiGJqJTDZuwl0TLUf6oDYk8ly1hVAPSixdxM4peiElz0hBDC6b1g1V2Jm9yqogvcAWUOwkHNRKOHd+AUJANo6uWZ5IZNZEsj0UEokVWzDNDy01gTMYlFssp6xs3Tsd7R7TE/RpnEMvCnUbkC76MOkAjHddfc9ej1NvnusZkFoVgHzZfXkkvMrTrhI/zKVG0OpHzmFy29dz/u2lPxnq19Co3VLgmitsQ3KrQMrezUCKGkdsSaUfvoVKwMX2XE8w/5GtZcFLzSzR0qpcp8FC57PzehRTd2Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S232528AbjCJOfO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 09:35:14 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30C87F5A9E
+        for <netdev@vger.kernel.org>; Fri, 10 Mar 2023 06:35:12 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id y11so5779583plg.1
+        for <netdev@vger.kernel.org>; Fri, 10 Mar 2023 06:35:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6ybqA30W45pYwAr/5w7CqzvPvYLuMWbJFkoayKaHQKw=;
- b=Y1n+B/S/2QRj7g50GiJz+wbq9ZYnRotC84EOCwO0hHRowAlzzpTriloDyngxfaWblJ/GWyhnQfxRxJg9KznS053IMXPY31kro8q5guUhYTeJFvMHtNEVZPWwkDcPCe3PZTzwZBuZ3JN1zc6ZhfWry5S3O3D+duaTrDKqGznKdOw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH0PR13MB6108.namprd13.prod.outlook.com (2603:10b6:510:29b::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.19; Fri, 10 Mar
- 2023 14:28:59 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.020; Fri, 10 Mar 2023
- 14:28:59 +0000
-Date:   Fri, 10 Mar 2023 15:28:51 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>
-Cc:     Ariel Elior <aelior@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kernel@collabora.com,
-        kernel-janitors@vger.kernel.org, aleksander.lobakin@intel.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v3] qede: remove linux/version.h and
- linux/compiler.h
-Message-ID: <ZAs+o2UaD/nCF/Cf@corigine.com>
-References: <20230309225206.2473644-1-usama.anjum@collabora.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230309225206.2473644-1-usama.anjum@collabora.com>
-X-ClientProxiedBy: AS4P195CA0036.EURP195.PROD.OUTLOOK.COM
- (2603:10a6:20b:65a::29) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=gmail.com; s=20210112; t=1678458911;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=/bv+GyAoyDDfO3N2AMozwUdXoXFdGzXqe9XafBlqVIQ=;
+        b=oyu28llO12pBbyVxElj2u4tEXvyqzbnzWqdCX86jl1Zn4kH9tFgzPk0Oh0fAWhkXB4
+         Gsnnbmc7MPQ0xAtAYKnlwmhtT+o1sPrPWtQwUCKvwOsvpT6oLuHMgE3rlAd+7DoXqx4m
+         tyl+IuuG4xbzJfaZRpbUT1Q9VL9m2fx/vDxaXulHwFlkGeEfxH3yZJibmH/7AqbZZYaK
+         brEQEo9FB5pPHYt/CN/0ovBKpcsPHBp/vPISfUfF35yVBSDTUMV6k5uJoUDFhyirVIpE
+         XAEGNG60W2Ycq4CIYQZI+VcE62NltUj/fcq8HlwA1vQd0tk7eHmv3trZnwhRpJu1L3PO
+         6Y/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678458911;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=/bv+GyAoyDDfO3N2AMozwUdXoXFdGzXqe9XafBlqVIQ=;
+        b=BWYutWHf71+M6TWu0UjcJ+nxmkZ0upcAvSneL76UFknTBJyOaP3AI4/ky7GQ2OWPjh
+         O0ph9VO3eXn4z11mtfSAu38bR+1/MOmKd72lmlQfhr5Y4FVrgMR1IypFyJOtKWFLPdgs
+         4g+pDdEt0yhkFU81NzcPhe/Zr7F+PWdZpRLQtAtlnji0KF/BIAgryooytiOvDd4gtLkb
+         BkRwWSBGfXnEVJ4OZjkEgK+8Jd7uW0uON90yZCldIEiwjPdyhM/tcKYAicTXv+cqxBvH
+         Ar8jHhtzNqP1RHx939hMz3fcIBgNarq7zpkobcc3AjJXnpH7kLSskQsMEsF/83kw648G
+         Iupw==
+X-Gm-Message-State: AO0yUKUnG2w07cGvxX0aE9kCX24j+4gdexixYzmsDV2Nw2PFxwlD2Wac
+        WpVrNDDS+bdEtknNdToiAvi/rvsjAmxH/Y3BJpGN4N8SbSg=
+X-Google-Smtp-Source: AK7set+DU22iRFWz6tnCTU4JcJ1x01Up6rAuvv7D6WTAm73LXFfSKuWH0j+dstcOvLL7UES1Q6b7u+XEf3Yc04jjieU=
+X-Received: by 2002:a17:90b:3c50:b0:230:b3dd:9c16 with SMTP id
+ pm16-20020a17090b3c5000b00230b3dd9c16mr968943pjb.3.1678458911351; Fri, 10 Mar
+ 2023 06:35:11 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH0PR13MB6108:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6c496397-895c-4afe-ea9f-08db2173c98c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: yfDR2F8B0W/80bbbOQAu/KYM1PU/KtqYCIIkxAh07EpXe9rxf4VyvUY0bpr24A+k48coZe4UggbOgZa2xuEPuMkONzXiS9gBxXxz8kog0oIP3du+0pD2MnoicNrsuP+n8pE4o7jG1VmvDJhZ81C1ZCspUHnH7W3BG47S2+2WMvpH/x1Xj9lL+aczBPtykzclOWAKU9sgflGLaR4zZv8d6M0vW2OAlVyvOSYuYJEo/PRmqKNl30qlh3Gc2Kh3ytACi+IPMN4wXvYdlgeVoVd3rtn8V7/V7Hz+3/UziBmJDAv3ssde00qY01CTqt+175nTtH/ka4puzPHU0Gg13uyMUFrd/bmxVLEab0qZDC4yI3iOVg9F0TkjOBZDrvXbNit+16lxln+rHMMjc0pz3DvenzdGnkqUu0wNlWq+l9RVezkk+eUc9vDLoNAoJK2CYGmFHUg4lrxVuvL1mrK7FavksmXDuYQl9xGjKAcZmAehvLxt+C64wZ6nZrWcHNmH62S4mIFfdf2RwrQtIgdZzgEVh7FmZS8bZnLm648mYcLkRjX1wnZOOvJwCADf0Qes0HbgKapmY3UHkuh3eb8b0TsmstT+mLHRqBsNpvZMW1AdjGI3aoELX0eYeaU4fL4tIMYw+Lk5WaMx8uMfCHNxSzoc1w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(136003)(39840400004)(366004)(346002)(396003)(451199018)(8936002)(36756003)(4744005)(5660300002)(7416002)(6506007)(6666004)(38100700002)(186003)(2616005)(86362001)(6512007)(54906003)(316002)(8676002)(4326008)(66946007)(6916009)(41300700001)(66556008)(66476007)(478600001)(6486002)(2906002)(44832011);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?o5sL0KNEQ3hRdAJAnY/mapjqjniteZ6/YMIo7KqF9aCw4L7NI5yaVurQ22ao?=
- =?us-ascii?Q?hc98E9UN5/nTdJ86jl+W99GOPRtPtbgi8FAyXIHnGO1ID2v58y//5hJVJf8e?=
- =?us-ascii?Q?Rn6pJCVSSyjXOGDMmVrwNfeLvqinoZad4RuWOrEYmd9Xku6DwENa/N8iBBg7?=
- =?us-ascii?Q?HfFrZ9evStZ5MtKBwNlr1ZU8F2dud4m7lysi/4vWxAN+cxSKfqoP7Sxt/s3E?=
- =?us-ascii?Q?855AavPLAozBKvAeIiqrdxIdhdpTcJjm9VRtxilNS558118D/AEr2iXHEmCB?=
- =?us-ascii?Q?xX65AXUd2ookq6ilF5ey0fRMEErmaDDL5X2pP2XEJTpui0E15GsKy3KDkwK/?=
- =?us-ascii?Q?mlCBDetn4Z+bg54cBwgjyroq4SDiCuldWkzifVrt1VHY29LHv+SOnXcg+riU?=
- =?us-ascii?Q?8Oa1xp67RpVPbTCMbKFegt6npAMQ5Zh88Xo7TxeFG5YdoTgsgax67rnsFvDW?=
- =?us-ascii?Q?2avERSKcCTHEvGZNVZn5BB3+8cemYdLdOJN8fL1qYAZt4DtcJVeOhK18ZaBl?=
- =?us-ascii?Q?vwletwzf73YqYdCf4TTpW54HcelLUnQLf8chrEy4EYVzb8uRPp+bAIbWbDgQ?=
- =?us-ascii?Q?b53qTnFkBilfUTr6cGVVXdoPtAsyds9zZ7ac6vdIdRbxLRMyg0smEoDHpl1P?=
- =?us-ascii?Q?Up/t3kD3kJKNFlc6RKtG1yICnpImzU/xWTIVPuN7S1etLV9VZ9TPrja04JNE?=
- =?us-ascii?Q?PXSjGpvdFb90IImrmdkzKItTxwya+GP9TEVmA749gZfDdTi9U6CEGTKxy58Q?=
- =?us-ascii?Q?jV/lG8gSu+nVMTu3ZtOgIAUYOoZSkR4queTC8IV94hN1h/xXwQIuLXxwAgyV?=
- =?us-ascii?Q?uRXNLtSHSSCd75MImho+/tC/BxNbMlGJQO4iFDkqu+9I7JU2Ao8rWp8Ej8Ga?=
- =?us-ascii?Q?oTuEwBsF8IuXQ6j8zC2KpqAUKVGheNSa2/Zvqstu+L2qOA5w667gURUkebR/?=
- =?us-ascii?Q?6PiVHOHPEt5gW+ji2q7MI+I5+xPeWDzTCTMGz5np5ECvI8eLd979f3woqmiZ?=
- =?us-ascii?Q?9IMRNU/o8mtZlTTgYK6fwEMCMDoDDpVtxrK34TQhFeJ6MYrQBOsHOTZAcSXB?=
- =?us-ascii?Q?c7whOxNxXYyVN8X4/QusoDu4u3YBu1hKRASOM+7bBEyR3XZZVuz+KEbnQwZG?=
- =?us-ascii?Q?g25zWcXrW1Bgk0nZiQ6N75LA2URgbFbSaGIyxnAXMSNgHK35vEQnuk/O3m1d?=
- =?us-ascii?Q?CHA/eXaoLyqQqGD1bADUMIsqeyqS57x6tj/lLp8NJTdfRhkDO5Y7+19jPAOQ?=
- =?us-ascii?Q?NreDQX8oxXCfhpWA1gTPHfWWm17XsJiVZ8WCYv3/d096s0dD+4HUSRh20f83?=
- =?us-ascii?Q?vYlr4dTjG2T/sUqQPAlz/IquvgMudSkSE+f+rJYgmdLO0WBFC+UxMBDUgu+v?=
- =?us-ascii?Q?zdIqMKTyMgTmDiqKKz8usQQb66o//iCsQw1D6vPlW6rkXqhkt/KwAGGPEpzi?=
- =?us-ascii?Q?81zszydhdMjrczxnaJvb1AiLl4iF5XU989n9XH4aTpYlVakY+Ahny2E1Gfpm?=
- =?us-ascii?Q?NDUee5r16f8YhG734ZhOuDL/V2of8856xdxkymbYZ20Fyp1SxTKbeZkX1FBe?=
- =?us-ascii?Q?WaDgY3S2SaWM14B5xxENpr9lyT3f6HxXLdn/4YycWhkGC0iKu+LgKdXbGeNO?=
- =?us-ascii?Q?uHDE3jYJvIfaCQOrNQL8E+WTX36IHWvC6T2h4A0MpO7IyLL6hz8H8AjQzTc4?=
- =?us-ascii?Q?rBQLsA=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6c496397-895c-4afe-ea9f-08db2173c98c
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2023 14:28:59.1342
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 00+8ni/Nr/66BDxeGPcbhT3F3ldJldu4UGdUykAbTEuHajX6ei/TumfMkaI/mhGpQzcp84xFUFVHz57BaGH+q2fUmvipMHKsrd1br26p5yw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB6108
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+From:   mingkun bian <bianmingkun@gmail.com>
+Date:   Fri, 10 Mar 2023 22:35:00 +0800
+Message-ID: <CAL87dS3NZugHYL0X4QhOs5=PJ3T=Tk32wWNw7cKmskWwGq-DJQ@mail.gmail.com>
+Subject: [ISSUE]soft lockup in __inet_lookup_established() function which one
+ sock exist in two hash buckets(tcp_hashinfo.ehash)
+To:     netdev@vger.kernel.org, kerneljasonxing@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 10, 2023 at 03:52:05AM +0500, Muhammad Usama Anjum wrote:
-> make versioncheck reports the following:
-> ./drivers/net/ethernet/qlogic/qede/qede.h: 10 linux/version.h not needed.
-> ./drivers/net/ethernet/qlogic/qede/qede_ethtool.c: 7 linux/version.h not needed.
-> 
-> So remove linux/version.h from both of these files. Also remove
-> linux/compiler.h while at it as it is also not being used.
-> 
-> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Hi,
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+    I have encountered the same issue which causes loop in
+__inet_lookup_established for 22 seconds, then kernel crash,
+similarly, we have thousands of devices with heavy network traffic,
+but only a few of them crash every day due to this reason.
 
+    https://lore.kernel.org/lkml/CAL+tcoDAY=3DQ5pohEPgkBTNghxTb0AhmbQD58dPD=
+ghyxmrcWMRQ@mail.gmail.com/T/#mb7b613de68d86c9a302ccf227292ac273cbe7f7c
+
+    Kernel version is 4.18.0, I analyzed the vmcore and find the point
+of infinite loop is that one sock1 pointers exist in two hash
+buckets(tcp_hashinfo.ehash),
+
+    tcp_hashinfo.ehash is as following:
+    buckets0:
+    buckets1:->sock1*->0x31(sock1->sk_nulls_node.next =3D 0x31, which
+means that sock1* is the end of buckets1), sock1* should not be here
+at buckets1,the real vmcore also has only one sock* in buckets1.
+    buckets2:
+    buckets3:->sock1*->0x31, sock1* is in the correct position at buckets3
+    buckets4:->sock2*
+    ...
+    buckets:N->sockn*
+
+    then a skb(inet_ehashfn=3D0x1) came, it matched to buckets1, and the
+condition validation(sk->sk_hash !=3D hash) failed, then entered
+condition validation(get_nulls_value(node) !=3D slot) ,
+    get_nulls_value(node) =3D 3
+    slot =3D 1
+    finally, go to begin, and infinite loop.
+
+    begin:
+    sk_nulls_for_each_rcu(sk, node, &head->chain) {
+    if (sk->sk_hash !=3D hash)
+        continue;
+    }
+    ...
+    if (get_nulls_value(node) !=3D slot)
+        goto begin;
+
+   why does sock1 can exist in two hash buckets, are there some
+scenarios where the sock is not deleted from the tcp_hashinfo.ehash
+before sk_free?
+
+
+  The detailed three vmcore information is as follow=EF=BC=9A
+  vmcore1' info:
+  1. print the skb, skb is 0xffff94824975e000 which stored in stack.
+crash> p *(struct tcphdr *)(((struct
+sk_buff*)0xffff94824975e000)->head + ((struct
+sk_buff*)0xffff94824975e000)->transport_header)
+  $4 =3D {
+  source =3D 24125,
+  dest =3D 47873,
+  seq =3D 4005063716,
+  ack_seq =3D 1814397867,
+  res1 =3D 0,
+  doff =3D 8,
+  fin =3D 0,
+  syn =3D 0,
+  rst =3D 0,
+  psh =3D 1,
+  ack =3D 1,
+  urg =3D 0,
+  ece =3D 0,
+  cwr =3D 0,
+  window =3D 33036,
+  check =3D 19975,
+  urg_ptr =3D 0
+}
+2. print the sock1, tcp is in TIME_WAIT,the detailed analysis process
+is as follows:
+a. R14 is 0xffffad2e0dc8a210, which is &hashinfo->ehash[slot],crash> p
+*((struct inet_ehash_bucket*)0xffffad2e0dc8a210)
+$14 =3D {
+  chain =3D {
+    first =3D 0xffff9483ba400f48
+  }
+}
+b. sock* =3D 0xffff9483ba400f48 - offset(sock, sk_nulls_node) =3D
+0xffff9483ba400ee0we can see sock->sk_nulls_node is
+skc_nulls_node =3D {
+        next =3D 0x4efbf,
+        pprev =3D 0xffffad2e0dd2cef8
+      }
+c. skb inet_ehashfn is 0x13242 which is in R15sock->skc_node is
+0x4efbf, then its real slot is 0x4efbf >> 1 =3D 0x277dfthen
+bukets[0x277df] is(0x277df - 0x13242) * 8 + 0xffffad2e0dc8a210 =3D
+0xFFFFAD2E0DD2CEF8
+
+d. print bukets[0x277df], find 0xffff9483ba400f48 is the same  as
+bukets[0x13242]crash> p *((struct
+inet_ehash_bucket*)0xFFFFAD2E0DD2CEF8)
+$32 =3D {
+  chain =3D {
+    first =3D 0xffff9483ba400f48
+  }
+}
+crash> p *((struct inet_timewait_sock*)0xffff9483ba400ee0)
+$5 =3D {
+  __tw_common =3D {
+    {
+      skc_addrpair =3D 1901830485687183552,
+      {
+        skc_daddr =3D 442804416,
+        skc_rcv_saddr =3D 442804416
+      }
+    },
+    {
+      skc_hash =3D 2667739103,
+      skc_u16hashes =3D {30687, 40706}
+    },
+    {
+      skc_portpair =3D 3817294857,
+      {
+        skc_dport =3D 19465,
+        skc_num =3D 58247
+      }
+    },
+    skc_family =3D 2,
+    skc_state =3D 6 '\006',
+    skc_reuse =3D 0 '\000',
+    skc_reuseport =3D 0 '\000',
+    skc_ipv6only =3D 0 '\000',
+    skc_net_refcnt =3D 0 '\000',
+    skc_bound_dev_if =3D 0,
+    {
+      skc_bind_node =3D {
+        next =3D 0x0,
+        pprev =3D 0xffff9492a8950538
+      },
+      skc_portaddr_node =3D {
+        next =3D 0x0,
+        pprev =3D 0xffff9492a8950538
+      }
+    },
+    skc_prot =3D 0xffffffff9b9a9840,
+    skc_net =3D {
+      net =3D 0xffffffff9b9951c0
+    },
+    skc_v6_daddr =3D {
+      in6_u =3D {
+        u6_addr8 =3D
+"\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000",
+        u6_addr16 =3D {0, 0, 0, 0, 0, 0, 0, 0},
+        u6_addr32 =3D {0, 0, 0, 0}
+      }
+    },
+    skc_v6_rcv_saddr =3D {
+      in6_u =3D {
+        u6_addr8 =3D
+"\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000",
+        u6_addr16 =3D {0, 0, 0, 0, 0, 0, 0, 0},
+        u6_addr32 =3D {0, 0, 0, 0}
+      }
+    },
+    skc_cookie =3D {
+      counter =3D 0
+    },
+    {
+      skc_flags =3D 18446744072025102208,
+      skc_listener =3D 0xffffffff9b995780,
+      skc_tw_dr =3D 0xffffffff9b995780
+    },
+    skc_dontcopy_begin =3D 0xffff9483ba400f48,
+    {
+      skc_node =3D {
+        next =3D 0x4efbf,
+        pprev =3D 0xffffad2e0dd2cef8
+      },
+      skc_nulls_node =3D {
+        next =3D 0x4efbf,
+        pprev =3D 0xffffad2e0dd2cef8
+      }
+    },
+    skc_tx_queue_mapping =3D 0,
+    skc_rx_queue_mapping =3D 0,
+    {
+      skc_incoming_cpu =3D -1680142171,
+      skc_rcv_wnd =3D 2614825125,
+      skc_tw_rcv_nxt =3D 2614825125
+    },
+    skc_refcnt =3D {
+      refs =3D {
+        counter =3D 3
+      }
+    },
+    skc_dontcopy_end =3D 0xffff9483ba400f64,
+    {
+      skc_rxhash =3D 320497927,
+      skc_window_clamp =3D 320497927,
+      skc_tw_snd_nxt =3D 320497927
+    }
+  },
+  tw_mark =3D 0,
+  tw_substate =3D 6 '\006',
+  tw_rcv_wscale =3D 10 '\n',
+  tw_sport =3D 34787,
+  tw_kill =3D 0,
+  tw_transparent =3D 0,
+  tw_flowlabel =3D 0,
+  tw_pad =3D 0,
+  tw_tos =3D 0,
+  tw_timer =3D {
+    entry =3D {
+      next =3D 0xffff9483ba401d48,
+      pprev =3D 0xffff9481680177f8
+    },
+    expires =3D 52552264960,
+    function =3D 0xffffffff9ad67ba0,
+    flags =3D 1339031587,
+    rh_reserved1 =3D 0,
+    rh_reserved2 =3D 0,
+    rh_reserved3 =3D 0,
+    rh_reserved4 =3D 0
+  },
+  tw_tb =3D 0xffff9492a8950500
+}
+3.call stack
+[48256841.222682]  panic+0xe8/0x25c
+[48256841.222766]  ? secondary_startup_64+0xb6/0xc0
+[48256841.222853]  watchdog_timer_fn+0x209/0x210
+[48256841.222939]  ? watchdog+0x30/0x30
+[48256841.223027]  __hrtimer_run_queues+0xe5/0x260
+[48256841.223117]  hrtimer_interrupt+0x122/0x270
+[48256841.223209]  ? sched_clock+0x5/0x10
+[48256841.223296]  smp_apic_timer_interrupt+0x6a/0x140
+[48256841.223384]  apic_timer_interrupt+0xf/0x20
+[48256841.223471] RIP: 0010:__inet_lookup_established+0xe9/0x170
+[48256841.223562] Code: f6 74 33 44 3b 62 a4 75 3d 48 3b 6a 98 75 37
+8b 42 ac 85 c0 75 24 4c 3b 6a c8 75 2a 5b 5d 41 5c 41 5d 41 5e 48 89
+f8 41 5f c3 <48> d1 ea 49 39 d7 0f 85 5a ff ff ff 31 ff eb e2 39 44 24
+38 74 d6
+[48256841.224242] RSP: 0018:ffff9497e0e83bf8 EFLAGS: 00000202
+ORIG_RAX: ffffffffffffff13
+[48256841.224904] RAX: ffffad2e0dbf1000 RBX: 0000000088993242 RCX:
+0000000034d20a82
+[48256841.225576] RDX: 000000000004efbf RSI: 00000000527c6da0 RDI:
+0000000000000000
+[48256841.226268] RBP: 1e31b4763470e11b R08: 0000000001bb5e3d R09:
+00000000000001bb
+[48256841.226969] R10: 0000000000005429 R11: 0000000000000000 R12:
+0000000001bb5e3d
+[48256841.227646] R13: ffffffff9b9951c0 R14: ffffad2e0dc8a210 R15:
+0000000000013242
+[48256841.228330]  ? apic_timer_interrupt+0xa/0x20
+[48256841.228714]  ? __inet_lookup_established+0x3f/0x170
+[48256841.229097]  tcp_v4_early_demux+0xb0/0x170
+[48256841.229487]  ip_rcv_finish+0x17c/0x430
+[48256841.229865]  ip_rcv+0x27c/0x380
+[48256841.230242]  __netif_receive_skb_core+0x9e9/0xac0
+[48256841.230623]  ? inet_gro_receive+0x21b/0x2d0
+[48256841.230999]  ? recalibrate_cpu_khz+0x10/0x10
+[48256841.231378]  netif_receive_skb_internal+0x42/0xf0
+[48256841.231777]  napi_gro_receive+0xbf/0xe0
+
+
+vmcore2' info:
+ 1. print the skb
+crash> p *(struct tcphdr *)(((struct
+sk_buff*)0xffff9d60c008b500)->head + ((struct
+sk_buff*)0xffff9d60c008b500)->transport_header)
+$28 =3D {
+  source =3D 35911,
+  dest =3D 20480,
+  seq =3D 1534560442,
+  ack_seq =3D 0,
+  res1 =3D 0,
+  doff =3D 10,
+  fin =3D 0,
+  syn =3D 1,
+  rst =3D 0,
+  psh =3D 0,
+  ack =3D 0,
+  urg =3D 0,
+  ece =3D 0,
+  cwr =3D 0,
+  window =3D 65535,
+  check =3D 56947,
+  urg_ptr =3D 0
+}
+2. print the sock1, tcp is in TIME_WAIT, but the sock is ipv4, I do
+not know why skc_v6_daddr and rh_reserved is not zero, maybe memory
+out of bounds?
+crash> p *((struct inet_timewait_sock*)0xFFFF9D6F1997D540)
+$29 =3D {
+  __tw_common =3D {
+    {
+      skc_addrpair =3D 388621010873919680,
+      {
+        skc_daddr =3D 426027200,
+        skc_rcv_saddr =3D 90482880
+      }
+    },
+    {
+      skc_hash =3D 884720419,
+      skc_u16hashes =3D {49955, 13499}
+    },
+    {
+      skc_portpair =3D 156018620,
+      {
+        skc_dport =3D 42940,
+        skc_num =3D 2380
+      }
+    },
+    skc_family =3D 2,
+    skc_state =3D 6 '\006',
+    skc_reuse =3D 1 '\001',
+    skc_reuseport =3D 0 '\000',
+    skc_ipv6only =3D 0 '\000',
+    skc_net_refcnt =3D 0 '\000',
+    skc_bound_dev_if =3D 0,
+    {
+      skc_bind_node =3D {
+        next =3D 0xffff9d8993851448,
+        pprev =3D 0xffff9d89c3510458
+      },
+      skc_portaddr_node =3D {
+        next =3D 0xffff9d8993851448,
+        pprev =3D 0xffff9d89c3510458
+      }
+    },
+    skc_prot =3D 0xffffffff9c7a9840,
+    skc_net =3D {
+      net =3D 0xffffffff9c7951c0
+    },
+    skc_v6_daddr =3D {
+      in6_u =3D {
+        u6_addr8 =3D "$P=EE=A4=86\325\001\354M\213D\021p\323\337\n",
+        u6_addr16 =3D {20516, 42222, 54662, 60417, 35661, 4420, 54128, 2783=
+},
+        u6_addr32 =3D {2767081508, 3959543174, 289704781, 182440816}
+      }
+    },
+    skc_v6_rcv_saddr =3D {
+      in6_u =3D {
+        u6_addr8 =3D "=CB=B2\231=C2=AA\212*pzf\212\277\325\065=D8=84",
+        u6_addr16 =3D {45771, 49817, 35498, 28714, 26234, 49034, 13781, 340=
+08},
+        u6_addr32 =3D {3264852683, 1881836202, 3213518458, 2228762069}
+      }
+    },
+    skc_cookie =3D {
+      counter =3D 0
+    },
+    {
+      skc_flags =3D 18446744072039782272,
+      skc_listener =3D 0xffffffff9c795780,
+      skc_tw_dr =3D 0xffffffff9c795780
+    },
+    skc_dontcopy_begin =3D 0xffff9d6f1997d5a8,
+    {
+      skc_node =3D {
+        next =3D 0x78647,
+        pprev =3D 0xffffb341cddea918
+      },
+      skc_nulls_node =3D {
+        next =3D 0x78647,
+        pprev =3D 0xffffb341cddea918
+      }
+    },
+    skc_tx_queue_mapping =3D 51317,
+    skc_rx_queue_mapping =3D 9071,
+    {
+      skc_incoming_cpu =3D -720721118,
+      skc_rcv_wnd =3D 3574246178,
+      skc_tw_rcv_nxt =3D 3574246178
+    },
+    skc_refcnt =3D {
+      refs =3D {
+        counter =3D 3
+      }
+    },
+    skc_dontcopy_end =3D 0xffff9d6f1997d5c4,
+    {
+      skc_rxhash =3D 2663156681,
+      skc_window_clamp =3D 2663156681,
+      skc_tw_snd_nxt =3D 2663156681
+    }
+  },
+  tw_mark =3D 0,
+  tw_substate =3D 6 '\006',
+  tw_rcv_wscale =3D 10 '\n',
+  tw_sport =3D 19465,
+  tw_kill =3D 0,
+  tw_transparent =3D 0,
+  tw_flowlabel =3D 201048,
+  tw_pad =3D 1,
+  tw_tos =3D 0,
+  tw_timer =3D {
+    entry =3D {
+      next =3D 0xffff9d6f1997d4c8,
+      pprev =3D 0xffff9d6f1997c6f8
+    },
+    expires =3D 52813074277,
+    function =3D 0xffffffff9bb67ba0,
+    flags =3D 1313865770,
+    rh_reserved1 =3D 14775289730400096190,
+    rh_reserved2 =3D 10703603942626563734,
+    rh_reserved3 =3D 17306812468345150807,
+    rh_reserved4 =3D 9531906593543422642
+  },
+  tw_tb =3D 0xffff9d897232a500
+}
+
+vmcore3' info:
+1. print the skbcrash> p *(struct tcphdr *)(((struct
+sk_buff*)0xffffa039e93aaf00)->head + ((struct
+sk_buff*)0xffffa039e93aaf00)->transport_header)
+$6 =3D {
+  source =3D 9269,
+  dest =3D 47873,
+  seq =3D 147768854,
+  ack_seq =3D 1282978926,
+  res1 =3D 0,
+  doff =3D 5,
+  fin =3D 0,
+  syn =3D 0,
+  rst =3D 0,
+  psh =3D 0,
+  ack =3D 1,
+  urg =3D 0,
+  ece =3D 0,
+  cwr =3D 0,
+  window =3D 47146,
+  check =3D 55446,
+  urg_ptr =3D 0
+}
+2. print the sock1, tcp is in TIME_WAIT
+crash> p *((struct inet_timewait_sock*)0xFFFFA0444BAADBA0)
+$7 =3D {
+  __tw_common =3D {
+    {
+      skc_addrpair =3D 2262118455826491584,
+      {
+        skc_daddr =3D 392472768,
+        skc_rcv_saddr =3D 526690496
+      }
+    },
+    {
+      skc_hash =3D 382525308,
+      skc_u16hashes =3D {57212, 5836}
+    },
+    {
+      skc_portpair =3D 1169509385,
+      {
+        skc_dport =3D 19465,
+        skc_num =3D 17845
+      }
+    },
+    skc_family =3D 2,
+    skc_state =3D 6 '\006',
+    skc_reuse =3D 0 '\000',
+    skc_reuseport =3D 0 '\000',
+    skc_ipv6only =3D 0 '\000',
+    skc_net_refcnt =3D 0 '\000',
+    skc_bound_dev_if =3D 0,
+    {
+      skc_bind_node =3D {
+        next =3D 0x0,
+        pprev =3D 0xffffa0528fefba98
+      },
+      skc_portaddr_node =3D {
+        next =3D 0x0,
+        pprev =3D 0xffffa0528fefba98
+      }
+    },
+    skc_prot =3D 0xffffffffa33a9840,
+    skc_net =3D {
+      net =3D 0xffffffffa33951c0
+    },
+    skc_v6_daddr =3D {
+      in6_u =3D {
+        u6_addr8 =3D
+"\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000",
+        u6_addr16 =3D {0, 0, 0, 0, 0, 0, 0, 0},
+        u6_addr32 =3D {0, 0, 0, 0}
+      }
+    },
+    skc_v6_rcv_saddr =3D {
+      in6_u =3D {
+        u6_addr8 =3D
+"\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000",
+        u6_addr16 =3D {0, 0, 0, 0, 0, 0, 0, 0},
+        u6_addr32 =3D {0, 0, 0, 0}
+      }
+    },
+    skc_cookie =3D {
+      counter =3D 20818915981
+    },
+    {
+      skc_flags =3D 18446744072153028480,
+      skc_listener =3D 0xffffffffa3395780,
+      skc_tw_dr =3D 0xffffffffa3395780
+    },
+    skc_dontcopy_begin =3D 0xffffa0444baadc08,
+    {
+      skc_node =3D {
+        next =3D 0x9bef9,
+        pprev =3D 0xffffb36fcde60be0
+      },
+      skc_nulls_node =3D {
+        next =3D 0x9bef9,
+        pprev =3D 0xffffb36fcde60be0
+      }
+    },
+    skc_tx_queue_mapping =3D 0,
+    skc_rx_queue_mapping =3D 0,
+    {
+      skc_incoming_cpu =3D -2041214926,
+      skc_rcv_wnd =3D 2253752370,
+      skc_tw_rcv_nxt =3D 2253752370
+    },
+    skc_refcnt =3D {
+      refs =3D {
+        counter =3D 3
+      }
+    },
+    skc_dontcopy_end =3D 0xffffa0444baadc24,
+    {
+      skc_rxhash =3D 653578381,
+      skc_window_clamp =3D 653578381,
+      skc_tw_snd_nxt =3D 653578381
+    }
+  },
+  tw_mark =3D 0,
+  tw_substate =3D 6 '\006',
+  tw_rcv_wscale =3D 10 '\n',
+  tw_sport =3D 46405,
+  tw_kill =3D 0,
+  tw_transparent =3D 0,
+  tw_flowlabel =3D 0,
+  tw_pad =3D 0,
+  tw_tos =3D 0,
+  tw_timer =3D {
+    entry =3D {
+      next =3D 0xffffa0444baac808,
+      pprev =3D 0xffffa0388b5477f8
+    },
+    expires =3D 33384532933,
+    function =3D 0xffffffffa2767ba0,
+    flags =3D 1313865761,
+    rh_reserved1 =3D 0,
+    rh_reserved2 =3D 0,
+    rh_reserved3 =3D 0,
+    rh_reserved4 =3D 0
+  },
+  tw_tb =3D 0xffffa05cc8322d40
+}
