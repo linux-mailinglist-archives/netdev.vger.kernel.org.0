@@ -2,89 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BE946B4DA2
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 17:51:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E1716B4DA6
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 17:53:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230309AbjCJQv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 11:51:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40334 "EHLO
+        id S231312AbjCJQxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 11:53:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231429AbjCJQuh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 11:50:37 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D834111694
-        for <netdev@vger.kernel.org>; Fri, 10 Mar 2023 08:47:53 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id u3-20020a17090a450300b00239db6d7d47so5718533pjg.4
-        for <netdev@vger.kernel.org>; Fri, 10 Mar 2023 08:47:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112; t=1678466873;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UOq3+9hhBwKi8YAI1z5pWNSeEpaondyeR0mS3XKyWRY=;
-        b=Q6rCUM9FtS9KAQBZ+MORtxJfGK7ZyAS6xKFO6c0qd8N8/MDS7S84NClUoWxENsjHlM
-         musI+Zp9WmVbnuMrFYfbsgVumbO3n/MADHyKsNNZejszs++T3wknF3KjmV/R2ibTBFMO
-         1koO+R9pfzVlbN1yk2jJ1TCKWlJsnuA0DaBL2eNtn8yc6VQtEkT9own78qLnO/ddBd1B
-         bpUkXaE0fZzniUZBqyvTzufDCgZAhTe/+BflMKrQ0LyYvZqwg2YdZ6o/DYi4w7WxkLIx
-         ysggd9pSIq+FQKguKysj0dJilwQF44aGZywPvxm1LU1ICU8WKsSX9wtsIKAMYL508ME0
-         HpvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678466873;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=UOq3+9hhBwKi8YAI1z5pWNSeEpaondyeR0mS3XKyWRY=;
-        b=dFn0/RmVtQpgMyArwdBz5kw1RzGY/MXVv3/cpStgJC2GRt956jgGICf8Kimqno1cH+
-         zXMSlpf/RdrSjit2vaoJUDOspHnF0aKaITo70OzaUCLlRYiPMTsbOoneUSsYzpk7Lk44
-         ol2sXmV4AXgwfs9L9jA9yqt5pnht9bACaFtq7Vp8I4YdLTwIojrUa37G3uZzKe0Z+k33
-         R3D1AXylb7F76iWftluKbH8bkl3+Et/FnPfZV3X43vZhmkayhuaIYTnlcu2OOGwNkIgm
-         xtWuZ1iAlMQTr1rn4wONvr/sfQhc/XTOcMnKOSkd8yZq1gXRauPq+fWUzWDfcnktXnq2
-         k9ow==
-X-Gm-Message-State: AO0yUKXKdeXbC5AkOOh/aGlUJyyqXwZifiBdyBDzijIIW2y7ptw3Mp3N
-        iPv9iBhGSdM3GbsPkmDjM9msqA==
-X-Google-Smtp-Source: AK7set84KeoRRQtWag/SgYIwQfVfzAYFqVwC7ZtcpaO6AVmM4Exa37I4oTpkg7netGGhyU7YN3LG9A==
-X-Received: by 2002:a05:6a20:6d04:b0:cd:929d:280a with SMTP id fv4-20020a056a206d0400b000cd929d280amr21362288pzb.18.1678466872708;
-        Fri, 10 Mar 2023 08:47:52 -0800 (PST)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id j9-20020aa78d09000000b005a8c60ce93bsm42686pfe.149.2023.03.10.08.47.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Mar 2023 08:47:52 -0800 (PST)
-Date:   Fri, 10 Mar 2023 08:47:50 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Kui-Feng Lee <kuifeng@meta.com>
-Cc:     <bpf@vger.kernel.org>, <ast@kernel.org>, <martin.lau@linux.dev>,
-        <song@kernel.org>, <kernel-team@meta.com>, <andrii@kernel.org>,
-        <sdf@google.com>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v6 2/8] net: Update an existing TCP congestion
- control algorithm.
-Message-ID: <20230310084750.482e633e@hermes.local>
-In-Reply-To: <20230310043812.3087672-3-kuifeng@meta.com>
-References: <20230310043812.3087672-1-kuifeng@meta.com>
-        <20230310043812.3087672-3-kuifeng@meta.com>
+        with ESMTP id S231277AbjCJQxD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 11:53:03 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F38331314C2
+        for <netdev@vger.kernel.org>; Fri, 10 Mar 2023 08:50:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=fk8eUHUpP4rATEiPERqsMzQrRrydxsbaKXJ3VW/oOzA=; b=ml
+        y/c4YVdVwaaU6ocdhZpBSqKukXOB0EXQUlN0+sL+nnhNyz7ijZYP6oj8RjEacVU66WLOa9wQaq7uM
+        ccQIch9+EYDjIK5WM7VQkjOfxPe5dHfdInOlTAcCB48ISBk0OZGxaRGE5dvKjKqhGL1lfJs624QJJ
+        qq/A6ExS/iEyW0Y=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pafwh-006zu8-VA; Fri, 10 Mar 2023 17:50:19 +0100
+Date:   Fri, 10 Mar 2023 17:50:19 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Parthiban.Veerasooran@microchip.com
+Cc:     netdev@vger.kernel.org, Jan.Huber@microchip.com,
+        Thorsten.Kummermehr@microchip.com
+Subject: Re: RFC: Adding Microchip's LAN865x 10BASE-T1S MAC-PHY driver
+ support to Linux
+Message-ID: <b971e2ef-5e4d-4300-b813-97ebd18ba54c@lunn.ch>
+References: <076fbcec-27e9-7dc2-14cb-4b0a9331b889@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <076fbcec-27e9-7dc2-14cb-4b0a9331b889@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 9 Mar 2023 20:38:07 -0800
-Kui-Feng Lee <kuifeng@meta.com> wrote:
-
-> This feature lets you immediately transition to another congestion
-> control algorithm or implementation with the same name.  Once a name
-> is updated, new connections will apply this new algorithm.
+On Fri, Mar 10, 2023 at 11:13:23AM +0000, Parthiban.Veerasooran@microchip.com wrote:
+> Hi All,
 > 
-> Signed-off-by: Kui-Feng Lee <kuifeng@meta.com>
+> I would like to add Microchip's LAN865x 10BASE-T1S MAC-PHY driver 
+> support to Linux kernel.
+> (Product link: https://www.microchip.com/en-us/product/LAN8650)
+> 
+> The LAN8650 combines a Media Access Controller (MAC) and an Ethernet PHY 
+> to access 10BASE‑T1S networks. The common standard Serial Peripheral 
+> Interface (SPI) is used so that the transfer of Ethernet packets and 
+> LAN8650 control/status commands are performed over a single, serial 
+> interface.
+> 
+> Ethernet packets are segmented and transferred over the serial interface
+> according to the OPEN Alliance 10BASE‑T1x MAC‑PHY Serial Interface 
+> specification designed by TC6.
+> (link: https://www.opensig.org/Automotive-Ethernet-Specifications/)
+> The serial interface protocol can simultaneously transfer both transmit 
+> and receive packets between the host and the LAN8650.
+> 
+> Basically the driver comprises of two parts. One part is to interface 
+> with networking subsystem and SPI subsystem. The other part is a TC6 
+> state machine which implements the Ethernet packets segmentation 
+> according to OPEN Alliance 10BASE‑T1x MAC‑PHY Serial Interface 
+> specification.
 
-What is the use case and userspace API for this?
-The congestion control algorithm normally doesn't allow this because
-algorithm specific variables (current state of connection) may not
-work with another algorithm.
+I only spent about 5 minutes glancing through the standards document,
+but i guess i would disagree with this. I would say 90% is shared code
+which probably wants to live in net/ethernet, and the remaining 10% is
+code for where the silicon vendor has extra registers that need to be
+used, workarounds for silicon bugs, etc. I guess hardware statistics
+would also be in this part of code, since they don't seem to be in the
+standard.
 
-Seems like you are opening Pandora's box here.
+Please also make sure you keep with the Linux network architecture. I
+would expect the shared code includes a linux MDIO bus driver, so the
+existing PHY drivers can be used. PTP time stamping should be done the
+standard Linux way. PLCA is configured using the netlink methods
+recently added, etc. And it looks like all this should be in the
+shared code, since it is all part of the standard.
+
+	 Andrew
+
+	 
