@@ -2,244 +2,638 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 448436B52E3
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 22:30:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7208C6B52EB
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 22:38:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231823AbjCJVao (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 16:30:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36970 "EHLO
+        id S231426AbjCJViZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 16:38:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231803AbjCJVaR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 16:30:17 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4339524BE8;
-        Fri, 10 Mar 2023 13:30:00 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id ec29so25969593edb.6;
-        Fri, 10 Mar 2023 13:30:00 -0800 (PST)
+        with ESMTP id S230311AbjCJViY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 16:38:24 -0500
+Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19E905ADCF
+        for <netdev@vger.kernel.org>; Fri, 10 Mar 2023 13:38:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678483798;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=zZ0s8gjUFPxIfG2G29b8+19vW1FL5pCSINNtGY1nwoQ=;
-        b=LNlbDQJJKmsrOS5yvDSMCOHzeP3P7vcZQzPA44QsNB8Ev28/TLps3k+8TGtm7kmVHx
-         beK1sDN/SGISK11GiGeRBVTz8VDfdcoqsaWBG/X71UXAP0by44BJV6abQXlyx3VTaPjO
-         ta5kV/tA83wYC0lxF8Cf+AZv/TOBomEZwkp6ApfaqjZrkA6HaSlZQAlHm2sp3FLzwWOr
-         SGU/Ff5UGY9tKtgPCoAMQ6C+DjA0btn2yYrLvoy0HUI/42rvI7ZQwbZn1btEbhKa62m5
-         DIt6SuFAyPv6IPDmitlhyBvCntimp6veWrzh1IzRTagLwmVhUTKbNK4XMKuvbMk2gSOC
-         z0Pw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678483798;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=zZ0s8gjUFPxIfG2G29b8+19vW1FL5pCSINNtGY1nwoQ=;
-        b=cFYwKohtlD0llaW+JTs7cPbhL6cbyVk3o8abnWfrJ0Mo3yhvVLalz9BUVHalvp9zKR
-         nfMrSK9byaRcIidTzRAgkruSawDl6ggNwbVFSH80qjvDk74TS+CzSXFPDWFRd09ZMKPI
-         0tuefvNJnkTDgt1F1LjE6vgoIwYuscun3OFs33nh7sLrmO8+4whEV3SkUIt382n7IB0j
-         6XEM1WDdEOpYaYfNwxsp/jnSy9/YHKak1qlfKd+T1mM8B+M1LE1Nkfalu549Cbt/JInk
-         EVaDXe5T1T7thF3kcrTXOCR/TRkEx2s4jUnEYzQ1KwQ+QhfiQ8CoUKIa2oplzX62W1f8
-         2sBw==
-X-Gm-Message-State: AO0yUKXFXo+aAsxLD+ArxSiSHQOjHBwo9uWI0KbNVmRQE/XTIUBcprGs
-        zNHsYiKSo7XlZFzEinU+Y2MpoPbtq0bW8PB3WdKS2BdG
-X-Google-Smtp-Source: AK7set/ZaeztZ4WAGh0k7iEzUu9m6CtWZ12yWy6r5oXeI+ISMmw06LIUxcI1ulmwr4YpnBelzzdj0/QKjVVDor2kkLs=
-X-Received: by 2002:a17:906:328c:b0:8b1:79ef:6923 with SMTP id
- 12-20020a170906328c00b008b179ef6923mr12768496ejw.15.1678483798523; Fri, 10
- Mar 2023 13:29:58 -0800 (PST)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1678484302; x=1710020302;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=RDIn1zqM7OGJXXpldbTXQ8oJ5t1TY9Z6ypLagRiIU9U=;
+  b=qF4BU0Soo4PvxWgMbaQE0dQFGbMETdRWrCk4VffokaeIXms1pvVmQnS8
+   jmdEXyBC7UyYbW5TV4AdAHZuYFJiglD1AnhS0Ru5RFRejmrGU9OYyR5uz
+   4xfSa+w7RNdsdSSWe9isNWCta9Z/8+SPANvwnTn+naPv/SNbWCaN7qAYQ
+   o=;
+X-IronPort-AV: E=Sophos;i="5.98,250,1673913600"; 
+   d="scan'208";a="1111528550"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-m6i4x-54a853e6.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2023 21:38:16 +0000
+Received: from EX19MTAUWA002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1a-m6i4x-54a853e6.us-east-1.amazon.com (Postfix) with ESMTPS id A337C44352;
+        Fri, 10 Mar 2023 21:38:15 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWA002.ant.amazon.com (10.250.64.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.22; Fri, 10 Mar 2023 21:38:15 +0000
+Received: from 88665a182662.ant.amazon.com (10.106.100.20) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.24; Fri, 10 Mar 2023 21:38:12 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <bianmingkun@gmail.com>
+CC:     <kerneljasonxing@gmail.com>, <netdev@vger.kernel.org>,
+        <kuniyu@amazon.com>
+Subject: Re: [ISSUE]soft lockup in __inet_lookup_established() function which one sock exist in two hash buckets(tcp_hashinfo.ehash)
+Date:   Fri, 10 Mar 2023 13:38:04 -0800
+Message-ID: <20230310213804.26304-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <CAL87dS0sSsKQOcf22gcHuHu7PjG_j1uiOx-AfRKdT7rznVfJ6Q@mail.gmail.com>
+References: <CAL87dS0sSsKQOcf22gcHuHu7PjG_j1uiOx-AfRKdT7rznVfJ6Q@mail.gmail.com>
 MIME-Version: 1.0
-References: <20230301154953.641654-1-joannelkoong@gmail.com>
- <20230301154953.641654-10-joannelkoong@gmail.com> <20230306071006.73t5vtmxrsykw4zu@apollo>
- <CAADnVQJ=wzztviB73jBy3+OYxUKhAX_jTGpS8Xv45vUVTDY-ZA@mail.gmail.com>
- <20230307102233.bemr47x625ity26z@apollo> <CAADnVQ+xOrCSwgxGQXNM5wHfOwV+x0csHfNyDYBHgyGVXgc2Ow@mail.gmail.com>
- <20230307173529.gi2crls7fktn6uox@apollo> <CAEf4Bza4N6XtXERkL+41F+_UsTT=T4B3gt0igP5mVVrzr9abXw@mail.gmail.com>
- <20230310211541.schh7iyrqgbgfaay@macbook-pro-6.dhcp.thefacebook.com>
-In-Reply-To: <20230310211541.schh7iyrqgbgfaay@macbook-pro-6.dhcp.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 10 Mar 2023 13:29:45 -0800
-Message-ID: <CAEf4BzYo-8ckyi-aogvW9HijNh+Z81CE__mWtmVJtCzuY+oECA@mail.gmail.com>
-Subject: Re: [PATCH v13 bpf-next 09/10] bpf: Add bpf_dynptr_slice and bpf_dynptr_slice_rdwr
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Joanne Koong <joannelkoong@gmail.com>,
-        bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <martin.lau@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.106.100.20]
+X-ClientProxiedBy: EX19D040UWB002.ant.amazon.com (10.13.138.89) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 10, 2023 at 1:15=E2=80=AFPM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Tue, Mar 07, 2023 at 04:01:28PM -0800, Andrii Nakryiko wrote:
-> > > > >
-> > > > > I agree this is simpler, but I'm not sure it will work properly. =
-Verifier won't
-> > > > > know when the lifetime of the buffer ends, so if we disallow spil=
-ls until its
-> > > > > written over it's going to be a pain for users.
-> > > > >
-> > > > > Something like:
-> > > > >
-> > > > > for (...) {
-> > > > >         char buf[64];
-> > > > >         bpf_dynptr_slice_rdwr(..., buf, 64);
-> > > > >         ...
-> > > > > }
-> > > > >
-> > > > > .. and then compiler decides to spill something where buf was loc=
-ated on stack
-> > > > > outside the for loop. The verifier can't know when buf goes out o=
-f scope to
-> > > > > unpoison the slots.
-> > > >
-> > > > You're saying the "verifier doesn't know when buf ...".
-> > > > The same applies to the compiler. It has no visibility
-> > > > into what bpf_dynptr_slice_rdwr is doing.
-> > >
-> > > That is true, it can't assume anything about the side effects. But I =
-am talking
-> > > about the point in the program when the buffer object no longer lives=
-. Use of
-> > > the escaped pointer to such an object any longer is UB. The compiler =
-is well
-> > > within its rights to reuse its stack storage at that point, including=
- for
-> > > spilling registers. Which is why "outside the for loop" in my earlier=
- reply.
-> > >
-> > > > So it never spills into a declared C array
-> > > > as I tried to explain in the previous reply.
-> > > > Spill/fill slots are always invisible to C.
-> > > > (unless of course you do pointer arithmetic asm style)
-> > >
-> > > When the declared array's lifetime ends, it can.
-> > > https://godbolt.org/z/Ez7v4xfnv
-> > >
-> > > The 2nd call to bar as part of unrolled loop happens with fp-8, then =
-it calls
-> > > baz, spills r0 to fp-8, and calls bar again with fp-8.
->
-> Right. If user writes such program and does explicit store of spillable
-> pointer into a stack.
-> I was talking about compiler generated spill/fill and I still believe
-> that compiler will not be reusing variable's stack memory for them.
->
-> > >
-> > > If such a stack slot is STACK_POISON, verifier will reject this progr=
-am.
->
-> Yes and I think it's an ok trade-off.
-> The user has to specifically code such program to hit this issue.
-> I don't think we will see this in practice.
-> If we do we can consider a more complex fix.
+From:   mingkun bian <bianmingkun@gmail.com>
+Date:   Fri, 10 Mar 2023 22:51:31 +0800
+> Hi,
+> 
+>     I am sorry to submit the same post, because the format of the
+> previous post is wrong.
+> 
+>     I have encountered the same issue which causes loop in
+> __inet_lookup_established for 22 seconds, then kernel crash,
+> similarly, we have thousands of devices with heavy network traffic,
+> but only a few of them crash every day due to this reason.
+> 
+>  https://lore.kernel.org/lkml/CAL+tcoDAY=Q5pohEPgkBTNghxTb0AhmbQD58dPDghyxmrcWMRQ@mail.gmail.com/T/#mb7b613de68d86c9a302ccf227292ac273cbe7f7c
+> 
+>     Kernel version is 4.18.0, I analyzed the vmcore and find the point
 
-I was just debugging (a completely unrelated) issue where two
-completely independent functions, with different local variables, were
-reusing the same stack slots just because of them being inlined in
-parent functions. So stack reuse happens all the time, unfortunately.
-It's not always obvious or malicious.
+Thanks for the report, but you should not use 4.18.0 at least, which
+is no longer supported.  Could you try reproducing it on the net-next
+tree or another stable versions listed below ?
 
->
-> > >
-> > > >
-> > > > > > > +       *(void **)eth =3D (void *)0xdeadbeef;
-> > > > > > > +       ctx =3D *(void **)buffer;
-> > > > > > > +       eth_proto =3D eth->eth_proto + ctx->len;
-> > > > > > >         if (eth_proto =3D=3D bpf_htons(ETH_P_IP))
-> > > > > > >                 err =3D process_packet(&ptr, eth, nh_off, fal=
-se, ctx);
-> > > > > > >
-> > > > > > > I think the proper fix is to treat it as a separate return ty=
-pe distinct from
-> > > > > > > PTR_TO_MEM like PTR_TO_MEM_OR_PKT (or handle PTR_TO_MEM | DYN=
-PTR_* specially),
-> > > > > > > fork verifier state whenever there is a write, so that one pa=
-th verifies it as
-> > > > > > > PTR_TO_PACKET, while another as PTR_TO_STACK (if buffer was a=
- stack ptr). I
-> > > > > > > think for the rest it's not a problem, but there are allow_pt=
-r_leak checks
-> > > > > > > applied to PTR_TO_STACK and PTR_TO_MAP_VALUE, so that needs t=
-o be rechecked.
-> > > > > > > Then we ensure that program is safe in either path.
-> > > > > > >
-> > > > > > > Also we need to fix regsafe to not consider other PTR_TO_MEMs=
- equivalent to such
-> > > > > > > a pointer. We could also fork verifier states on return, to v=
-erify either path
-> > > > > > > separately right from the point following the call instructio=
-n.
-> > > > > >
-> > > > > > This is too complex imo.
-> > > > >
-> > > > > A better way to phrase this is to verify with R0 =3D PTR_TO_PACKE=
-T in one path,
-> > > > > and push_stack with R0 =3D buffer's reg->type + size set to len i=
-n the other path
-> > > > > for exploration later. In terms of verifier infra everything is t=
-here already,
-> > > > > it just needs to analyze both cases which fall into the regular c=
-ode handling
-> > > > > the reg->type's. Probably then no adjustments to regsafe are need=
-ed either. It's
-> > > > > like exploring branch instructions.
-> > > >
-> > > > I still don't like it. There is no reason to go a complex path
-> > > > when much simpler suffices.
-> >
-> > This issue you are discussing is the reason we don't support
-> > bpf_dynptr_from_mem() taking PTR_TO_STACK (which is a pity, but we
-> > postponed it initially).
-> >
-> > I've been thinking about something along the lines of STACK_POISON,
-> > but remembering associated id/ref_obj_id. When ref is released, turn
-> > STACK_POISON to STACK_MISC. If it's bpf_dynptr_slice_rdrw() or
-> > bpf_dynptr_from_mem(), which don't have ref_obj_id, they still have ID
-> > associated with returned pointer, so can we somehow incorporate that?
->
-> There is dynptr_id in PTR_TO_MEM that is used by destroy_if_dynptr_stack_=
-slot(),
-> but I don't see how we can use it to help this case.
-> imo plain STACK_POISON that is overwriteable by STACK_MISC/STACK_ZERO
-> should be good enough in practice.
+https://www.kernel.org/category/releases.html
 
-That's basically what I'm proposing, except when this overwrite
-happens we have to go and invalidate all the PTR_TO_MEM references
-that are pointing to that stack slot. E.g., in the below case
-(assuming we allow LOCAL dynptr to be constructed from stack)
+Thanks,
+Kuniyuki
 
-char buf[256], *p;
-struct bpf_dynptr dptr;
 
-bpf_dynptr_from_mem(buf, buf+256, &dptr);
-
-p =3D bpf_dynptr_data(&dptr, 128, 16); /* get 16-byte slice into buf, at
-offset 128 */
-
-/* buf[128] through buf[128+16] are STACK_POISON */
-
-buf[128] =3D 123;
-
-So here is where the problem happens. Should we invalidate just p
-here? Or entire dptr? Haven't thought much about details, but
-something like that. It was getting messy when we started to think
-about this with Joanne.
-
->
-> We can potentially do some liveness trick. When PTR_TO_MEM with dynptr_id=
- becomes
-> REG_LIVE_DONE we can convert STACK_POISON. But I'd go with the simplest a=
-pproach first.
+> of infinite loop is that one sock1 pointers exist in two hash
+> buckets(tcp_hashinfo.ehash),
+> 
+>     tcp_hashinfo.ehash is as following:
+>     buckets0:
+>     buckets1:->sock1*->0x31(sock1->sk_nulls_node.next = 0x31, which
+> means that sock1* is the end of buckets1), sock1* should not be here
+> at buckets1,the real vmcore also has only one sock* in buckets1.
+>     buckets2:
+>     buckets3:->sock1*->0x31, sock1* is in the correct position at buckets3
+>     buckets4:->sock2*
+>     ...
+>     buckets:N->sockn*
+> 
+>     then a skb(inet_ehashfn=0x1) came, it matched to buckets1, and the
+> condition validation(sk->sk_hash != hash) failed, then entered
+> condition validation(get_nulls_value(node) != slot) ,
+>     get_nulls_value(node) = 3
+>     slot = 1
+>     finally, go to begin, and infinite loop.
+> 
+>     begin:
+>     sk_nulls_for_each_rcu(sk, node, &head->chain) {
+>     if (sk->sk_hash != hash)
+>         continue;
+>     }
+>     ...
+>     if (get_nulls_value(node) != slot)
+>         goto begin;
+> 
+>    why does sock1 can exist in two hash buckets, are there some
+> scenarios where the sock is not deleted from the tcp_hashinfo.ehash
+> before sk_free?
+> 
+> 
+>   The detailed three vmcore information is as follow：
+>   vmcore1' info:
+>   1. print the skb, skb is 0xffff94824975e000 which stored in stack.
+> 
+>    crash> p *(struct tcphdr *)(((struct
+> sk_buff*)0xffff94824975e000)->head + ((struct
+> sk_buff*)0xffff94824975e000)->transport_header)
+>   $4 = {
+>   source = 24125,
+>   dest = 47873,
+>   seq = 4005063716,
+>   ack_seq = 1814397867,
+>   res1 = 0,
+>   doff = 8,
+>   fin = 0,
+>   syn = 0,
+>   rst = 0,
+>   psh = 1,
+>   ack = 1,
+>   urg = 0,
+>   ece = 0,
+>   cwr = 0,
+>   window = 33036,
+>   check = 19975,
+>   urg_ptr = 0
+> }
+> 
+> 2. print the sock1, tcp is in TIME_WAIT,the detailed analysis process
+> is as follows:
+> a. R14 is 0xffffad2e0dc8a210, which is &hashinfo->ehash[slot].
+> 
+> crash> p *((struct inet_ehash_bucket*)0xffffad2e0dc8a210)
+> $14 = {
+>   chain = {
+>     first = 0xffff9483ba400f48
+>   }
+> }
+> 
+> b. sock* = 0xffff9483ba400f48 - offset(sock, sk_nulls_node) = 0xffff9483ba400ee0
+> 
+> we can see sock->sk_nulls_node is:
+>   skc_nulls_node = {
+>         next = 0x4efbf,
+>         pprev = 0xffffad2e0dd2cef8
+>       }
+> 
+> c. skb inet_ehashfn is 0x13242 which is in R15.
+> 
+> sock->skc_node is 0x4efbf, then its real slot is 0x4efbf >> 1 = 0x277df
+> then bukets[0x277df] is (0x277df - 0x13242) * 8 + 0xffffad2e0dc8a210 =
+> 0xFFFFAD2E0DD2CEF8
+> 
+> d. print bukets[0x277df], find 0xffff9483ba400f48 is the same  as
+> bukets[0x13242]
+> 
+> crash> p *((struct inet_ehash_bucket*)0xFFFFAD2E0DD2CEF8)
+> $32 = {
+>   chain = {
+>     first = 0xffff9483ba400f48
+>   }
+> }
+> 
+> crash> p *((struct inet_timewait_sock*)0xffff9483ba400ee0)
+> $5 = {
+>   __tw_common = {
+>     {
+>       skc_addrpair = 1901830485687183552,
+>       {
+>         skc_daddr = 442804416,
+>         skc_rcv_saddr = 442804416
+>       }
+>     },
+>     {
+>       skc_hash = 2667739103,
+>       skc_u16hashes = {30687, 40706}
+>     },
+>     {
+>       skc_portpair = 3817294857,
+>       {
+>         skc_dport = 19465,
+>         skc_num = 58247
+>       }
+>     },
+>     skc_family = 2,
+>     skc_state = 6 '\006',
+>     skc_reuse = 0 '\000',
+>     skc_reuseport = 0 '\000',
+>     skc_ipv6only = 0 '\000',
+>     skc_net_refcnt = 0 '\000',
+>     skc_bound_dev_if = 0,
+>     {
+>       skc_bind_node = {
+>         next = 0x0,
+>         pprev = 0xffff9492a8950538
+>       },
+>       skc_portaddr_node = {
+>         next = 0x0,
+>         pprev = 0xffff9492a8950538
+>       }
+>     },
+>     skc_prot = 0xffffffff9b9a9840,
+>     skc_net = {
+>       net = 0xffffffff9b9951c0
+>     },
+>     skc_v6_daddr = {
+>       in6_u = {
+>         u6_addr8 =
+> "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000",
+>         u6_addr16 = {0, 0, 0, 0, 0, 0, 0, 0},
+>         u6_addr32 = {0, 0, 0, 0}
+>       }
+>     },
+>     skc_v6_rcv_saddr = {
+>       in6_u = {
+>         u6_addr8 =
+> "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000",
+>         u6_addr16 = {0, 0, 0, 0, 0, 0, 0, 0},
+>         u6_addr32 = {0, 0, 0, 0}
+>       }
+>     },
+>     skc_cookie = {
+>       counter = 0
+>     },
+>     {
+>       skc_flags = 18446744072025102208,
+>       skc_listener = 0xffffffff9b995780,
+>       skc_tw_dr = 0xffffffff9b995780
+>     },
+>     skc_dontcopy_begin = 0xffff9483ba400f48,
+>     {
+>       skc_node = {
+>         next = 0x4efbf,
+>         pprev = 0xffffad2e0dd2cef8
+>       },
+>       skc_nulls_node = {
+>         next = 0x4efbf,
+>         pprev = 0xffffad2e0dd2cef8
+>       }
+>     },
+>     skc_tx_queue_mapping = 0,
+>     skc_rx_queue_mapping = 0,
+>     {
+>       skc_incoming_cpu = -1680142171,
+>       skc_rcv_wnd = 2614825125,
+>       skc_tw_rcv_nxt = 2614825125
+>     },
+>     skc_refcnt = {
+>       refs = {
+>         counter = 3
+>       }
+>     },
+>     skc_dontcopy_end = 0xffff9483ba400f64,
+>     {
+>       skc_rxhash = 320497927,
+>       skc_window_clamp = 320497927,
+>       skc_tw_snd_nxt = 320497927
+>     }
+>   },
+>   tw_mark = 0,
+>   tw_substate = 6 '\006',
+>   tw_rcv_wscale = 10 '\n',
+>   tw_sport = 34787,
+>   tw_kill = 0,
+>   tw_transparent = 0,
+>   tw_flowlabel = 0,
+>   tw_pad = 0,
+>   tw_tos = 0,
+>   tw_timer = {
+>     entry = {
+>       next = 0xffff9483ba401d48,
+>       pprev = 0xffff9481680177f8
+>     },
+>     expires = 52552264960,
+>     function = 0xffffffff9ad67ba0,
+>     flags = 1339031587,
+>     rh_reserved1 = 0,
+>     rh_reserved2 = 0,
+>     rh_reserved3 = 0,
+>     rh_reserved4 = 0
+>   },
+>   tw_tb = 0xffff9492a8950500
+> }
+> 3.call stack
+> [48256841.222682]  panic+0xe8/0x25c
+> [48256841.222766]  ? secondary_startup_64+0xb6/0xc0
+> [48256841.222853]  watchdog_timer_fn+0x209/0x210
+> [48256841.222939]  ? watchdog+0x30/0x30
+> [48256841.223027]  __hrtimer_run_queues+0xe5/0x260
+> [48256841.223117]  hrtimer_interrupt+0x122/0x270
+> [48256841.223209]  ? sched_clock+0x5/0x10
+> [48256841.223296]  smp_apic_timer_interrupt+0x6a/0x140
+> [48256841.223384]  apic_timer_interrupt+0xf/0x20
+> [48256841.223471] RIP: 0010:__inet_lookup_established+0xe9/0x170
+> [48256841.223562] Code: f6 74 33 44 3b 62 a4 75 3d 48 3b 6a 98 75 37
+> 8b 42 ac 85 c0 75 24 4c 3b 6a c8 75 2a 5b 5d 41 5c 41 5d 41 5e 48 89
+> f8 41 5f c3 <48> d1 ea 49 39 d7 0f 85 5a ff ff ff 31 ff eb e2 39 44 24
+> 38 74 d6
+> [48256841.224242] RSP: 0018:ffff9497e0e83bf8 EFLAGS: 00000202
+> ORIG_RAX: ffffffffffffff13
+> [48256841.224904] RAX: ffffad2e0dbf1000 RBX: 0000000088993242 RCX:
+> 0000000034d20a82
+> [48256841.225576] RDX: 000000000004efbf RSI: 00000000527c6da0 RDI:
+> 0000000000000000
+> [48256841.226268] RBP: 1e31b4763470e11b R08: 0000000001bb5e3d R09:
+> 00000000000001bb
+> [48256841.226969] R10: 0000000000005429 R11: 0000000000000000 R12:
+> 0000000001bb5e3d
+> [48256841.227646] R13: ffffffff9b9951c0 R14: ffffad2e0dc8a210 R15:
+> 0000000000013242
+> [48256841.228330]  ? apic_timer_interrupt+0xa/0x20
+> [48256841.228714]  ? __inet_lookup_established+0x3f/0x170
+> [48256841.229097]  tcp_v4_early_demux+0xb0/0x170
+> [48256841.229487]  ip_rcv_finish+0x17c/0x430
+> [48256841.229865]  ip_rcv+0x27c/0x380
+> [48256841.230242]  __netif_receive_skb_core+0x9e9/0xac0
+> [48256841.230623]  ? inet_gro_receive+0x21b/0x2d0
+> [48256841.230999]  ? recalibrate_cpu_khz+0x10/0x10
+> [48256841.231378]  netif_receive_skb_internal+0x42/0xf0
+> [48256841.231777]  napi_gro_receive+0xbf/0xe0
+> 
+> 
+> vmcore2' info:
+>  1. print the skb
+> crash> p *(struct tcphdr *)(((struct
+> sk_buff*)0xffff9d60c008b500)->head + ((struct
+> sk_buff*)0xffff9d60c008b500)->transport_header)
+> $28 = {
+>   source = 35911,
+>   dest = 20480,
+>   seq = 1534560442,
+>   ack_seq = 0,
+>   res1 = 0,
+>   doff = 10,
+>   fin = 0,
+>   syn = 1,
+>   rst = 0,
+>   psh = 0,
+>   ack = 0,
+>   urg = 0,
+>   ece = 0,
+>   cwr = 0,
+>   window = 65535,
+>   check = 56947,
+>   urg_ptr = 0
+> }
+> 2. print the sock1, tcp is in TIME_WAIT, but the sock is ipv4, I do
+> not know why skc_v6_daddr and rh_reserved is not zero, maybe memory
+> out of bounds?
+> crash> p *((struct inet_timewait_sock*)0xFFFF9D6F1997D540)
+> $29 = {
+>   __tw_common = {
+>     {
+>       skc_addrpair = 388621010873919680,
+>       {
+>         skc_daddr = 426027200,
+>         skc_rcv_saddr = 90482880
+>       }
+>     },
+>     {
+>       skc_hash = 884720419,
+>       skc_u16hashes = {49955, 13499}
+>     },
+>     {
+>       skc_portpair = 156018620,
+>       {
+>         skc_dport = 42940,
+>         skc_num = 2380
+>       }
+>     },
+>     skc_family = 2,
+>     skc_state = 6 '\006',
+>     skc_reuse = 1 '\001',
+>     skc_reuseport = 0 '\000',
+>     skc_ipv6only = 0 '\000',
+>     skc_net_refcnt = 0 '\000',
+>     skc_bound_dev_if = 0,
+>     {
+>       skc_bind_node = {
+>         next = 0xffff9d8993851448,
+>         pprev = 0xffff9d89c3510458
+>       },
+>       skc_portaddr_node = {
+>         next = 0xffff9d8993851448,
+>         pprev = 0xffff9d89c3510458
+>       }
+>     },
+>     skc_prot = 0xffffffff9c7a9840,
+>     skc_net = {
+>       net = 0xffffffff9c7951c0
+>     },
+>     skc_v6_daddr = {
+>       in6_u = {
+>         u6_addr8 = "$P\325\001\354M\213D\021p\323\337\n",
+>         u6_addr16 = {20516, 42222, 54662, 60417, 35661, 4420, 54128, 2783},
+>         u6_addr32 = {2767081508, 3959543174, 289704781, 182440816}
+>       }
+>     },
+>     skc_v6_rcv_saddr = {
+>       in6_u = {
+>         u6_addr8 = "˲\231ª\212*pzf\212\277\325\065؄",
+>         u6_addr16 = {45771, 49817, 35498, 28714, 26234, 49034, 13781, 34008},
+>         u6_addr32 = {3264852683, 1881836202, 3213518458, 2228762069}
+>       }
+>     },
+>     skc_cookie = {
+>       counter = 0
+>     },
+>     {
+>       skc_flags = 18446744072039782272,
+>       skc_listener = 0xffffffff9c795780,
+>       skc_tw_dr = 0xffffffff9c795780
+>     },
+>     skc_dontcopy_begin = 0xffff9d6f1997d5a8,
+>     {
+>       skc_node = {
+>         next = 0x78647,
+>         pprev = 0xffffb341cddea918
+>       },
+>       skc_nulls_node = {
+>         next = 0x78647,
+>         pprev = 0xffffb341cddea918
+>       }
+>     },
+>     skc_tx_queue_mapping = 51317,
+>     skc_rx_queue_mapping = 9071,
+>     {
+>       skc_incoming_cpu = -720721118,
+>       skc_rcv_wnd = 3574246178,
+>       skc_tw_rcv_nxt = 3574246178
+>     },
+>     skc_refcnt = {
+>       refs = {
+>         counter = 3
+>       }
+>     },
+>     skc_dontcopy_end = 0xffff9d6f1997d5c4,
+>     {
+>       skc_rxhash = 2663156681,
+>       skc_window_clamp = 2663156681,
+>       skc_tw_snd_nxt = 2663156681
+>     }
+>   },
+>   tw_mark = 0,
+>   tw_substate = 6 '\006',
+>   tw_rcv_wscale = 10 '\n',
+>   tw_sport = 19465,
+>   tw_kill = 0,
+>   tw_transparent = 0,
+>   tw_flowlabel = 201048,
+>   tw_pad = 1,
+>   tw_tos = 0,
+>   tw_timer = {
+>     entry = {
+>       next = 0xffff9d6f1997d4c8,
+>       pprev = 0xffff9d6f1997c6f8
+>     },
+>     expires = 52813074277,
+>     function = 0xffffffff9bb67ba0,
+>     flags = 1313865770,
+>     rh_reserved1 = 14775289730400096190,
+>     rh_reserved2 = 10703603942626563734,
+>     rh_reserved3 = 17306812468345150807,
+>     rh_reserved4 = 9531906593543422642
+>   },
+>   tw_tb = 0xffff9d897232a500
+> }
+> 
+> vmcore3' info:
+> 1. print the skbcrash> p *(struct tcphdr *)(((struct
+> sk_buff*)0xffffa039e93aaf00)->head + ((struct
+> sk_buff*)0xffffa039e93aaf00)->transport_header)
+> $6 = {
+>   source = 9269,
+>   dest = 47873,
+>   seq = 147768854,
+>   ack_seq = 1282978926,
+>   res1 = 0,
+>   doff = 5,
+>   fin = 0,
+>   syn = 0,
+>   rst = 0,
+>   psh = 0,
+>   ack = 1,
+>   urg = 0,
+>   ece = 0,
+>   cwr = 0,
+>   window = 47146,
+>   check = 55446,
+>   urg_ptr = 0
+> }
+> 2. print the sock1, tcp is in TIME_WAIT
+> crash> p *((struct inet_timewait_sock*)0xFFFFA0444BAADBA0)
+> $7 = {
+>   __tw_common = {
+>     {
+>       skc_addrpair = 2262118455826491584,
+>       {
+>         skc_daddr = 392472768,
+>         skc_rcv_saddr = 526690496
+>       }
+>     },
+>     {
+>       skc_hash = 382525308,
+>       skc_u16hashes = {57212, 5836}
+>     },
+>     {
+>       skc_portpair = 1169509385,
+>       {
+>         skc_dport = 19465,
+>         skc_num = 17845
+>       }
+>     },
+>     skc_family = 2,
+>     skc_state = 6 '\006',
+>     skc_reuse = 0 '\000',
+>     skc_reuseport = 0 '\000',
+>     skc_ipv6only = 0 '\000',
+>     skc_net_refcnt = 0 '\000',
+>     skc_bound_dev_if = 0,
+>     {
+>       skc_bind_node = {
+>         next = 0x0,
+>         pprev = 0xffffa0528fefba98
+>       },
+>       skc_portaddr_node = {
+>         next = 0x0,
+>         pprev = 0xffffa0528fefba98
+>       }
+>     },
+>     skc_prot = 0xffffffffa33a9840,
+>     skc_net = {
+>       net = 0xffffffffa33951c0
+>     },
+>     skc_v6_daddr = {
+>       in6_u = {
+>         u6_addr8 =
+> "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000",
+>         u6_addr16 = {0, 0, 0, 0, 0, 0, 0, 0},
+>         u6_addr32 = {0, 0, 0, 0}
+>       }
+>     },
+>     skc_v6_rcv_saddr = {
+>       in6_u = {
+>         u6_addr8 =
+> "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000",
+>         u6_addr16 = {0, 0, 0, 0, 0, 0, 0, 0},
+>         u6_addr32 = {0, 0, 0, 0}
+>       }
+>     },
+>     skc_cookie = {
+>       counter = 20818915981
+>     },
+>     {
+>       skc_flags = 18446744072153028480,
+>       skc_listener = 0xffffffffa3395780,
+>       skc_tw_dr = 0xffffffffa3395780
+>     },
+>     skc_dontcopy_begin = 0xffffa0444baadc08,
+>     {
+>       skc_node = {
+>         next = 0x9bef9,
+>         pprev = 0xffffb36fcde60be0
+>       },
+>       skc_nulls_node = {
+>         next = 0x9bef9,
+>         pprev = 0xffffb36fcde60be0
+>       }
+>     },
+>     skc_tx_queue_mapping = 0,
+>     skc_rx_queue_mapping = 0,
+>     {
+>       skc_incoming_cpu = -2041214926,
+>       skc_rcv_wnd = 2253752370,
+>       skc_tw_rcv_nxt = 2253752370
+>     },
+>     skc_refcnt = {
+>       refs = {
+>         counter = 3
+>       }
+>     },
+>     skc_dontcopy_end = 0xffffa0444baadc24,
+>     {
+>       skc_rxhash = 653578381,
+>       skc_window_clamp = 653578381,
+>       skc_tw_snd_nxt = 653578381
+>     }
+>   },
+>   tw_mark = 0,
+>   tw_substate = 6 '\006',
+>   tw_rcv_wscale = 10 '\n',
+>   tw_sport = 46405,
+>   tw_kill = 0,
+>   tw_transparent = 0,
+>   tw_flowlabel = 0,
+>   tw_pad = 0,
+>   tw_tos = 0,
+>   tw_timer = {
+>     entry = {
+>       next = 0xffffa0444baac808,
+>       pprev = 0xffffa0388b5477f8
+>     },
+>     expires = 33384532933,
+>     function = 0xffffffffa2767ba0,
+>     flags = 1313865761,
+>     rh_reserved1 = 0,
+>     rh_reserved2 = 0,
+>     rh_reserved3 = 0,
+>     rh_reserved4 = 0
+>   },
+>   tw_tb = 0xffffa05cc8322d40
+> }
