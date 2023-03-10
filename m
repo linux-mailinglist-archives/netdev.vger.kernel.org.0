@@ -2,126 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81A656B3361
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 01:58:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 136806B3374
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 02:02:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229941AbjCJA6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 19:58:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60054 "EHLO
+        id S229706AbjCJBCc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 20:02:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbjCJA6W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 19:58:22 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 817DC27D5A;
-        Thu,  9 Mar 2023 16:58:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=vjW6QtxHv/QHaq/NXjZ9ZAchd2L2TcgKdY+7ifJRM3o=; b=3jinkUGJMgNUX/yYpsH83fW+B8
-        ltXGet1yysa3E0N5nzid+/80PNSR/J8Dp59mC0596V1lKD0sW7hj2IWonzUq4B7bF+N/7LVbaBns3
-        bvRP2gpMwcsa4NG6vWVCfZwN1WQ1mKvO4KVKGsG1dHMge4QL1dJ8y7xzuARPhC6b5qBU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1paR5F-006viw-J1; Fri, 10 Mar 2023 01:58:09 +0100
-Date:   Fri, 10 Mar 2023 01:58:09 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        with ESMTP id S229654AbjCJBCa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 20:02:30 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F306115B73;
+        Thu,  9 Mar 2023 17:02:26 -0800 (PST)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4PXnks5rRbznVNR;
+        Fri, 10 Mar 2023 08:59:33 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Fri, 10 Mar
+ 2023 09:02:24 +0800
+Subject: Re: [PATCH net] vmxnet3: use gro callback when UPT is enabled
+To:     Ronak Doshi <doshir@vmware.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        Pv-drivers <Pv-drivers@vmware.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, Lee Jones <lee@kernel.org>,
-        linux-leds@vger.kernel.org
-Subject: Re: [net-next PATCH v2 02/14] net: dsa: qca8k: add LEDs basic support
-Message-ID: <98054351-b124-467c-9be6-d8a7c357c268@lunn.ch>
-References: <20230309223524.23364-1-ansuelsmth@gmail.com>
- <20230309223524.23364-3-ansuelsmth@gmail.com>
- <a8c60aa6-2a89-4b2e-b773-224c6a5b03c0@lunn.ch>
- <640a7775.5d0a0220.110eb.3e41@mx.google.com>
+        Guolin Yang <gyang@vmware.com>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20230308222504.25675-1-doshir@vmware.com>
+ <e3768ae9-6a2b-3b5e-9381-21407f96dd63@huawei.com>
+ <4DF8ED21-92C2-404F-9766-691AEA5C4E8B@vmware.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <252026f5-f979-2c8d-90d9-7ba396d495c8@huawei.com>
+Date:   Fri, 10 Mar 2023 09:02:23 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <640a7775.5d0a0220.110eb.3e41@mx.google.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <4DF8ED21-92C2-404F-9766-691AEA5C4E8B@vmware.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > +static enum led_brightness
-> > > +qca8k_led_brightness_get(struct qca8k_led *led)
-> > > +{
-> > > +	struct qca8k_led_pattern_en reg_info;
-> > > +	struct qca8k_priv *priv = led->priv;
-> > > +	u32 val;
-> > > +	int ret;
-> > > +
-> > > +	qca8k_get_enable_led_reg(led->port_num, led->led_num, &reg_info);
-> > > +
-> > > +	ret = regmap_read(priv->regmap, reg_info.reg, &val);
-> > > +	if (ret)
-> > > +		return 0;
-> > > +
-> > > +	val >>= reg_info.shift;
-> > > +
-> > > +	if (led->port_num == 0 || led->port_num == 4) {
-> > > +		val &= QCA8K_LED_PATTERN_EN_MASK;
-> > > +		val >>= QCA8K_LED_PATTERN_EN_SHIFT;
-> > > +	} else {
-> > > +		val &= QCA8K_LED_PHY123_PATTERN_EN_MASK;
-> > > +	}
-> > > +
-> > > +	return val > 0 ? 1 : 0;
-> > > +}
-> > 
-> > What will this return when in the future you add hardware offload, and
-> > the LED is actually blinking because of frames being sent etc?
-> > 
-> > Is it better to not implement _get() when it is unclear what it should
-> > return when offload is in operation?
-> > 
+On 2023/3/10 6:50, Ronak Doshi wrote:
 > 
-> My idea was that anything that is not 'always off' will have brightness
-> 1. So also in accelerated blink brightness should be 1.
+> ﻿> > On 3/8/23, 4:34 PM, "Yunsheng Lin" <linyunsheng@huawei.com <mailto:linyunsheng@huawei.com>> wrote:
+>>>
+>>> - if (adapter->netdev->features & NETIF_F_LRO)
+>>> + /* Use GRO callback if UPT is enabled */
+>>> + if ((adapter->netdev->features & NETIF_F_LRO) && !rq->shared->updateRxProd)
+>>>
+>>>
+>> If UPT devicve does not support LRO, why not just clear the NETIF_F_LRO from
+>> adapter->netdev->features?
+>>
+>>
+>> With above change, it seems that LRO is supported for user' POV, but the GRO
+>> is actually being done.
+>>
+>>
+>> Also, if NETIF_F_LRO is set, do we need to clear the NETIF_F_GRO bit, so that
+>> there is no confusion for user?
 > 
-> My idea of get was that it should reflect if the led is active or always
-> off. Is it wrong?
- 
-brigntness_get seems to be used in two situations:
+> We cannot clear LRO bit as the virtual nic can run in either emulation or UPT mode.
+> When the vnic switches the mode between UPT and emulation, the guest vm is not
+> notified. Hence, we use updateRxProd which is shared in datapath to check what mode
+> is being run.
 
-When the LED is first registered, it can be called to get the current
-state of the LED. This then initialized cdev->brightness.
+So it is a run time thing? What happens if some LRO'ed packet is put in the rx queue,
+and the the vnic switches the mode to UPT, is it ok for those LRO'ed packets to go through
+the software GSO processing? If yes, why not just call napi_gro_receive() for LRO case too?
 
-When the brightness sysfs file is read, there is first a call to
-brightness_get to allow it to update the value in cdev->brightness
-before returning the value in the read.
+Looking closer, it seems vnic is implementing hw GRO from driver' view, as the driver is
+setting skb_shinfo(skb)->gso_* accordingly:
 
-I think always returning 1 could be confusing. Take the example that
-the LED is indicating link, there is no link, so it is off. Yet a read
-of the brightness sysfs file will return 1?
+https://elixir.bootlin.com/linux/latest/source/drivers/net/vmxnet3/vmxnet3_drv.c#L1665
 
-I would say, it either needs to return the instantaneous brightness,
-or it should not be implemented at all. When we come to implement
-offloading, we might want to consider hiding the brightness sysfs
-file. But we can solve that later.
+In that case, you may call napi_gro_receive() for those GRO'ed skb too, see:
 
-      Andrew
+https://lore.kernel.org/netdev/166479721495.20474.5436625882203781290.git-patchwork-notify@kernel.org/T/
+
+> 
+> Also, we plan to add an event to notify the guest about this but that is for separate patch
+> and may take some time.
+> 
+> Thanks, 
+> Ronak 
+> 
