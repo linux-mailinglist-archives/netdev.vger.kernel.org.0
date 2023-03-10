@@ -2,67 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EA0E6B3D68
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 12:13:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 298516B3D6C
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 12:14:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229959AbjCJLNT convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 10 Mar 2023 06:13:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52050 "EHLO
+        id S230174AbjCJLNx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 06:13:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230419AbjCJLNM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 06:13:12 -0500
-Received: from fd01.gateway.ufhost.com (fd01.gateway.ufhost.com [61.152.239.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07DE835245;
-        Fri, 10 Mar 2023 03:13:07 -0800 (PST)
-Received: from EXMBX165.cuchost.com (unknown [175.102.18.54])
-        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (Client CN "EXMBX165", Issuer "EXMBX165" (not verified))
-        by fd01.gateway.ufhost.com (Postfix) with ESMTP id 5D2AF24E13A;
-        Fri, 10 Mar 2023 19:13:06 +0800 (CST)
-Received: from EXMBX162.cuchost.com (172.16.6.72) by EXMBX165.cuchost.com
- (172.16.6.75) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 10 Mar
- 2023 19:13:06 +0800
-Received: from [192.168.120.42] (171.223.208.138) by EXMBX162.cuchost.com
- (172.16.6.72) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 10 Mar
- 2023 19:13:05 +0800
-Message-ID: <fd75b81f-9d9d-b6f7-02b2-06d982204cdc@starfivetech.com>
-Date:   Fri, 10 Mar 2023 19:13:04 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v5 06/12] net: stmmac: Add glue layer for StarFive JH7110
- SoC
+        with ESMTP id S230139AbjCJLNc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 06:13:32 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 956022332C
+        for <netdev@vger.kernel.org>; Fri, 10 Mar 2023 03:13:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1678446806; x=1709982806;
+  h=from:to:cc:subject:date:message-id:content-id:
+   content-transfer-encoding:mime-version;
+  bh=B6/UxYfyvkPaa/QYU3JbA9OQ+3g5KY8mRJ/mighHzfE=;
+  b=C6IXFXt4w8peJY++bG4rX9VSSDeuSSm3UsZZbnuBCc3S7Y6hyaUcv77Z
+   hzpkTTbI5Qg8xxUVsCpC++v3tMMEQNgfJBXYbmafkDvJh6nUVhr2I1WFH
+   j+FJ4+gRIu8CNQCB6cqjJo0bVH3Gd8GmFbNKafFPZLlA5+9Th5LK+xIkf
+   /fPPyhzp5iaJAsLfcIU24u6e3EsWokef51I2IClAVu0ghb9MhHMoSHtLo
+   kw5Doo/HErBlysQZu1s/4B2KizJUNyEs10ki0Y4BzyQsiJ+7ZH9uxnZgS
+   ZRvYtFYv55NBBQ6BQ8ye5PTicIlRgYKyJeyr6pUvYW6T1Qr3uJeBjfP+h
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.98,249,1673938800"; 
+   d="scan'208";a="204175821"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Mar 2023 04:13:26 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Fri, 10 Mar 2023 04:13:25 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Fri, 10 Mar 2023 04:13:25 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=djFWows5zomvSu1bX3cTw1VrcdTnBhUYhahinsSgcRn9LKA0P0UgvOHmk81aZClLciry1XD1NJ5CDnHX6iHc0porxyi9c4S3Ome/J2QAwvltAWzOGdABuYRazFJkyLcH6cAbXJeDeyZs1psJOI0z3VS/50y9TmOWzu9lsG7Cew2yBJUoiW4VaHM+Pnc1UA+h5quANo1KHC3Xiqah3EzYvNefOGiKU0Fire9yo0WpAzcCQDqSDg0n1XVKKqVPgfOmfzWQ+T2iynPL5bUYxUPgeH8nioUqS/KfgW6LR502pKKlwnunIr7O6mRBvnBvGfm2noYJqKRTm0oUcSkzlZODUA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=B6/UxYfyvkPaa/QYU3JbA9OQ+3g5KY8mRJ/mighHzfE=;
+ b=eNCaukdnlyOvR2to+kR88mWKqG9DBrnlfmHBVMMdIflqszfyJNn67RPwuspS8BLfW9eGzLw+mYk3WMWw5QQ7tUbMTcVn0XPIJP1vP5wykn1FVqQKMUzwsn5x4v6fybGcgoaAGT3OsgKTJacAqYXl/N85ZK8XGxf0DEUYNDb2fW+TZBGQa5WaCmMNf68x3GZMSwfBU4tTNvvVlzOwqFdzVLmPa2TB7EeSIRPLrZ3TfL2jjp+KA7OxO9DodZGFald0jorkkFYYoWiGgQviMd3uTbfvumrLgR51MDx2dgIwcrGlurONAxIdKs43/7+NZLXklUsgRL8sDZlWMb7nwm01RA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=B6/UxYfyvkPaa/QYU3JbA9OQ+3g5KY8mRJ/mighHzfE=;
+ b=LiCPOPO28W4KuWD5uzDwQTcntrXk8Z7Fmd3Cdv2y4g7fkSUDMOHwE+rbmc6cm+et2eNnVy3oBovm1Rze8mHCCF9+GFOPTZdm0YqTlVzTR+o/EqoRzUiHnk+IsacJiblmzcSkR8R1HAx904UzC/X9hvMMqRRsqZ0d3TTwEOgJpXo=
+Received: from DM6PR11MB3532.namprd11.prod.outlook.com (2603:10b6:5:70::25) by
+ BL1PR11MB5399.namprd11.prod.outlook.com (2603:10b6:208:318::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.20; Fri, 10 Mar
+ 2023 11:13:23 +0000
+Received: from DM6PR11MB3532.namprd11.prod.outlook.com
+ ([fe80::3b71:50e4:3319:f0af]) by DM6PR11MB3532.namprd11.prod.outlook.com
+ ([fe80::3b71:50e4:3319:f0af%7]) with mapi id 15.20.6178.019; Fri, 10 Mar 2023
+ 11:13:23 +0000
+From:   <Parthiban.Veerasooran@microchip.com>
+To:     <netdev@vger.kernel.org>
+CC:     <Jan.Huber@microchip.com>, <Thorsten.Kummermehr@microchip.com>
+Subject: RFC: Adding Microchip's LAN865x 10BASE-T1S MAC-PHY driver support to
+ Linux
+Thread-Topic: RFC: Adding Microchip's LAN865x 10BASE-T1S MAC-PHY driver
+ support to Linux
+Thread-Index: AQHZU0FTEZHSNZuyO0uD/AKM9obf7w==
+Date:   Fri, 10 Mar 2023 11:13:23 +0000
+Message-ID: <076fbcec-27e9-7dc2-14cb-4b0a9331b889@microchip.com>
+Accept-Language: en-US
 Content-Language: en-US
-To:     Emil Renner Berthing <emil.renner.berthing@canonical.com>
-CC:     <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Yanhong Wang <yanhong.wang@starfivetech.com>
-References: <20230303085928.4535-1-samin.guo@starfivetech.com>
- <20230303085928.4535-7-samin.guo@starfivetech.com>
- <CAJM55Z_YUXbny3NR7xLRu1ekzkgOsx2wgBWmCoQ5peMkN+fV_Q@mail.gmail.com>
- <CAJM55Z-xojA5onmQu+suwaB2F4e8imBRqVFeLScuZQ1ixdv_EA@mail.gmail.com>
- <49bf9e1d-95ac-8cf5-ca43-43bb82ace690@starfivetech.com>
- <CAJM55Z9EwR_zmtBwvue+dSQ+ngiOdVqbFmuK9wiN3bm0i1LHqA@mail.gmail.com>
-From:   Guo Samin <samin.guo@starfivetech.com>
-In-Reply-To: <CAJM55Z9EwR_zmtBwvue+dSQ+ngiOdVqbFmuK9wiN3bm0i1LHqA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Originating-IP: [171.223.208.138]
-X-ClientProxiedBy: EXCAS064.cuchost.com (172.16.6.24) To EXMBX162.cuchost.com
- (172.16.6.72)
-X-YovoleRuleAgent: yovoleflag
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM6PR11MB3532:EE_|BL1PR11MB5399:EE_
+x-ms-office365-filtering-correlation-id: fdc77bec-75d0-48b8-2eea-08db2158766f
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 8ZHHmM1BC79bH6DZrbDEdtvO25fzSM6jZBGqSAB6GSeQ0U2dpJtudEYFA18E15cJtXi8mL8Xs6ztcdCjWoHRzp4ZOZbrf07UcAMx4s4UZOoKAznq2kvQIC+4aQ/oPOwL6bu0Q3f8ngrV7pPFi6gC8yYu4IoSqEWwtWKuHBFEURlnFMAbvlxcYm9/PAcoIyKRwEFaGiNnrdf6cbCe69cu+564nwEGPLBGAqVJ0xE/kyyzHpmhcCb5qWl/nU1ZdFlTe9gqmq5PC+HOG3S8CS1I+j5fRFSEZ8FhY0DMqn6f6vb/dHT+EdJK1DR+UHZo0z+74asbtzPLRz8JuZ8rw7xqvfT1ixXUnvJW6hU3/zEwyGOrAhh76G4HM8CbEx/1wpH9hG4QqYG/GrFs4HUqD78SuXzJdsbkmN8PwSjAi0R/EdYd/ODYGbX8KoBZeo9xZ5Drnp1CLAVsGOxIA+KcWojv0FsXBKZS3JbVwpYaBPpEu+4QH+VUmdFTTbVq7AOAtgUu6+trlWeHUhdzGbtAQxyc2wF5RFi/P/U0h0WxVm1tldRl97atWh5JZAKhSFMNoqtBTOqvzQ1fMpcqVYRGGLSwtJNPTd2bo/e6XGtjjmZpe+GmLwuMWdacnCTU0MCS4wGX6rS8QcRly+yTsd+tQdQ76mcjG9RTYmGOIsbunKLOh+j2iQUGWVpXD9zK12Mw99806lpGveuEcURsYtgu1s3oKg8RaaPPFHEXjlmuP0wJ5EN0jKyxyHNfhxpxrwU6e6Z+
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3532.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(136003)(396003)(366004)(376002)(39860400002)(346002)(451199018)(31686004)(107886003)(83380400001)(36756003)(478600001)(91956017)(54906003)(122000001)(38070700005)(316002)(38100700002)(71200400001)(6486002)(966005)(2616005)(6506007)(6512007)(186003)(26005)(76116006)(5660300002)(2906002)(64756008)(66476007)(66556008)(8936002)(66446008)(6916009)(8676002)(41300700001)(31696002)(66946007)(86362001)(4326008)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?MW5pejJQNjBDbEVNczRkK25xTStUVVlmWXJLcUNRdVorSW14NzJsMHhnc21m?=
+ =?utf-8?B?VTVXZE0xUlFRdy9IK0EzbTJQbEtqMVBGRDNzcXovWWtRSnNzaDVPaFhPWGUw?=
+ =?utf-8?B?cWljSlZSRk40cVhuSjVNMGxXeUFDdTZtblVRb1V1OTIxTXVtN1RmUTZXTG1r?=
+ =?utf-8?B?WkJGQS9BdDk0SEZ5WVlmSUluaGFUYktPdVBrZGR2Z2diUk9TRjhLR2dhYUxV?=
+ =?utf-8?B?RlE5TlQ4QzkwY2hMVnE4MzVtV3ZWd0lJQWZTd01ZSkJuTGZyd28rWWkvZ0hm?=
+ =?utf-8?B?b1hxenNEcklrRWJtcTNwUWthVmt5YW5TU1d0Q0hpYzNxZlpOYTNLWkVXcjRx?=
+ =?utf-8?B?VzFpUndWYUVXcEVFMmZ5TTNZYUF3Rkp5eHlLNUxvLzVzVUQ4REEzZFBXS3l2?=
+ =?utf-8?B?dmVQM3FTY2VpVE9SaTRCLzVkYmFqV2VvSTFxZWdmbTB6VGF4cGlrZ2dPUW9G?=
+ =?utf-8?B?SjJXZ2YvY0JlUm02Nk53SlE5Z3BtdElCUlVaeFJ2eXJHdDhPZDlhbUxIYmNw?=
+ =?utf-8?B?RVE3cXdhN3c0MnFZVnduRVNDMkJOWFRNckFDQVRZOXppTGkySXBIOEpUenBL?=
+ =?utf-8?B?cU5tQzRxSlFMU0htdk1mL0lZUEhWMXJ1SmF5b09aelhIY0tuKzlFNm1rWEN4?=
+ =?utf-8?B?QnR1NXVHbUxOQ2dTbTdSaHlDbWc2U29GaGVKWkIxUGZGVFlwNmgzVC9GTCtZ?=
+ =?utf-8?B?VThQQUFpbWQybkJtMUFrdHMzQXg1UDlYWTYvc2RNalJiV0ZXUlNabVZKWWZr?=
+ =?utf-8?B?dnBuMkQ4bEFoU2dsZmNZNjBpMDAva1dQOHZ5UCtFQ3pqb01JU1d3cTQvVnRH?=
+ =?utf-8?B?RHB3SFZEaGt3TjZxOWpEUUM5VWZyc2RvUGMzbitpK2tHMEdTOElHTEYrL3oz?=
+ =?utf-8?B?ZklXcVBTSU1mbG5FVFFraU5oYzdLUFFoTUhJZnZvVVZJMmVJRm5yN2hTK1JX?=
+ =?utf-8?B?NFZqOUlvbHdFV1lUZzR2Q1JKOXpxWjJyRVEwWTRjNStYblVvVHlveVRJcUcz?=
+ =?utf-8?B?dzNFMFRzd2xZR2lKV29MazNNVlFUbXBlZlVUemJ0YmJHakxPTGZmcHhtY0Zi?=
+ =?utf-8?B?UmpMcUFabTc3UXdmbERuL0x6MXU2K0w4dmdVejRWeHJxYTVkdFc3V3lFLy93?=
+ =?utf-8?B?U21Yc01OdUQzc01nblA4cG5icnJZTHk5bFdyS01JY3o0WWV1YTlWRjVTYmh2?=
+ =?utf-8?B?QWtyYkc5VjdZY0gvejIxQ0s2ZlpkdVF1OW52aTFybXpKVjNNL2ZBdW1Udmlm?=
+ =?utf-8?B?SURyaVhZbXZpUUgyY0pOYVc1b3dVWFI5ZzlPbzVzZEFaS2QwSEtXZnRMUG1X?=
+ =?utf-8?B?OFJnSnViSTY5b0FISU14Yzd6V3JEenhFSHNaaDdLWHk3QkM2bk1OOFI4R0VO?=
+ =?utf-8?B?bGdDWUVDQThkejkrbm1RdVkraU1GYnN6QkVrZVpHbSs3U0NyeEhXQXYvd1My?=
+ =?utf-8?B?V1g2cXRpRzN2SXllenJNTU5nRk1mQkErQXlaSi9aZi9GbWJIR2dVQ1h4cTU0?=
+ =?utf-8?B?Rzh1SjFGQnYzOHZGMkdOVUlCT2E4UEF0Z2ppWWNaNjAvNjNabzRjeS8rTUpw?=
+ =?utf-8?B?TzIvWDRLTUNYQ0RBbWFwNERaSWg2clVOVDFvQ3JMeUNiY3hVb3p6S1pDTkp6?=
+ =?utf-8?B?UUROdVU4c21QbURCSFdNMktEd2RxZmJLRjAvTmZRYlBmcDE1c2ppWFNoZFA0?=
+ =?utf-8?B?MmF6Tk55TDlnRjBBVkZnWkRxSkp5WGxQQjlFK3NmRnhZNFl3bzRkd3dHRkc2?=
+ =?utf-8?B?dUs1Rk5UYWx0NGpVSUJmY041WlRkaWVjRjhVM01UaVZnd3hsamJVZFVYa1ZU?=
+ =?utf-8?B?azVOaSthbGFXMmxkZGluUUJ4SGQzZS9XYjJxSGR1OEd0dUFsMVloSTA4NzhP?=
+ =?utf-8?B?OEp1NmszOTNncFJ4QVVkVkthNlFDZVhjVGx3cjZ1M016TTkwS1lOZ0JwakM1?=
+ =?utf-8?B?eDcxUXVhQ1BURmRKUXlJejhVSWZDbElQdHF4bXZwalBURjZwV3djclZydzda?=
+ =?utf-8?B?Qi9MQ1R4NmdJTFE0ZnJGdFpXNW9KeEFPbVdjaExBdTlBN05RanVFbkpUajRY?=
+ =?utf-8?B?bzVVUFhQKyt6Z25XUkYvenRTbnVPbUx5QlRLcE1pSVdEanNlR0tSang0VEVv?=
+ =?utf-8?B?UnoxYnphTGJLWWRqeksvcVhVd0o4YWNPV1QwdWJPcjJhTzJIcnJlaUJGc0kv?=
+ =?utf-8?Q?h0LvEkRFoWPrmGyHYve11NQ=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <C2190A0C62C6B64D9E685EE18C9F3EA6@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3532.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fdc77bec-75d0-48b8-2eea-08db2158766f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Mar 2023 11:13:23.0268
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 0cru1j+TeOQIH9Zbunq+o1TciYe/VY598ePWb8j8bUebFbEHGbzWG888TyMD7VYLeRZJ6zbJrtFAqiFCccnFY7GAng/IyrMt5pknwpCnzQE8meWmwxQndixzubU/jvfa
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5399
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -71,343 +152,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
--------- 原始信息 --------
-主题: Re: [PATCH v5 06/12] net: stmmac: Add glue layer for StarFive JH7110 SoC
-From: Emil Renner Berthing <emil.renner.berthing@canonical.com>
-收件人: Guo Samin <samin.guo@starfivetech.com>
-日期: 2023/3/10
-
-> On Fri, 10 Mar 2023 at 02:55, Guo Samin <samin.guo@starfivetech.com> wrote:
->> -------- 原始信息 --------
->> 主题: Re: [PATCH v5 06/12] net: stmmac: Add glue layer for StarFive JH7110 SoC
->> From: Emil Renner Berthing <emil.renner.berthing@canonical.com>
->> 收件人: Samin Guo <samin.guo@starfivetech.com>
->> 日期: 2023/3/10
->>
->>> On Fri, 10 Mar 2023 at 01:02, Emil Renner Berthing
->>> <emil.renner.berthing@canonical.com> wrote:
->>>> On Fri, 3 Mar 2023 at 10:01, Samin Guo <samin.guo@starfivetech.com> wrote:
->>>>>
->>>>> This adds StarFive dwmac driver support on the StarFive JH7110 SoC.
->>>>>
->>>>> Co-developed-by: Emil Renner Berthing <kernel@esmil.dk>
->>>>> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
->>>>> Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
->>>>> ---
->>>>>  MAINTAINERS                                   |   1 +
->>>>>  drivers/net/ethernet/stmicro/stmmac/Kconfig   |  12 ++
->>>>>  drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
->>>>>  .../ethernet/stmicro/stmmac/dwmac-starfive.c  | 125 ++++++++++++++++++
->>>>>  4 files changed, 139 insertions(+)
->>>>>  create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
->>>>>
->>>>> diff --git a/MAINTAINERS b/MAINTAINERS
->>>>> index 4e236b7c7fd2..91a4f190c827 100644
->>>>> --- a/MAINTAINERS
->>>>> +++ b/MAINTAINERS
->>>>> @@ -19916,6 +19916,7 @@ STARFIVE DWMAC GLUE LAYER
->>>>>  M:     Emil Renner Berthing <kernel@esmil.dk>
->>>>>  M:     Samin Guo <samin.guo@starfivetech.com>
->>>>>  S:     Maintained
->>>>> +F:     Documentation/devicetree/bindings/net/dwmac-starfive.c
->>>>>  F:     Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml
->>>>>
->>>>>  STARFIVE JH71X0 CLOCK DRIVERS
->>>>> diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
->>>>> index f77511fe4e87..47fbccef9d04 100644
->>>>> --- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
->>>>> +++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
->>>>> @@ -165,6 +165,18 @@ config DWMAC_SOCFPGA
->>>>>           for the stmmac device driver. This driver is used for
->>>>>           arria5 and cyclone5 FPGA SoCs.
->>>>>
->>>>> +config DWMAC_STARFIVE
->>>>> +       tristate "StarFive dwmac support"
->>>>> +       depends on OF  && (ARCH_STARFIVE || COMPILE_TEST)
->>>>> +       depends on STMMAC_ETH
->>>>> +       default ARCH_STARFIVE
->>>>> +       help
->>>>> +         Support for ethernet controllers on StarFive RISC-V SoCs
->>>>> +
->>>>> +         This selects the StarFive platform specific glue layer support for
->>>>> +         the stmmac device driver. This driver is used for StarFive JH7110
->>>>> +         ethernet controller.
->>>>> +
->>>>>  config DWMAC_STI
->>>>>         tristate "STi GMAC support"
->>>>>         default ARCH_STI
->>>>> diff --git a/drivers/net/ethernet/stmicro/stmmac/Makefile b/drivers/net/ethernet/stmicro/stmmac/Makefile
->>>>> index 057e4bab5c08..8738fdbb4b2d 100644
->>>>> --- a/drivers/net/ethernet/stmicro/stmmac/Makefile
->>>>> +++ b/drivers/net/ethernet/stmicro/stmmac/Makefile
->>>>> @@ -23,6 +23,7 @@ obj-$(CONFIG_DWMAC_OXNAS)     += dwmac-oxnas.o
->>>>>  obj-$(CONFIG_DWMAC_QCOM_ETHQOS)        += dwmac-qcom-ethqos.o
->>>>>  obj-$(CONFIG_DWMAC_ROCKCHIP)   += dwmac-rk.o
->>>>>  obj-$(CONFIG_DWMAC_SOCFPGA)    += dwmac-altr-socfpga.o
->>>>> +obj-$(CONFIG_DWMAC_STARFIVE)   += dwmac-starfive.o
->>>>>  obj-$(CONFIG_DWMAC_STI)                += dwmac-sti.o
->>>>>  obj-$(CONFIG_DWMAC_STM32)      += dwmac-stm32.o
->>>>>  obj-$(CONFIG_DWMAC_SUNXI)      += dwmac-sunxi.o
->>>>> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
->>>>> new file mode 100644
->>>>> index 000000000000..566378306f67
->>>>> --- /dev/null
->>>>> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
->>>>> @@ -0,0 +1,125 @@
->>>>> +// SPDX-License-Identifier: GPL-2.0+
->>>>> +/*
->>>>> + * StarFive DWMAC platform driver
->>>>> + *
->>>>> + * Copyright (C) 2022 StarFive Technology Co., Ltd.
->>>>> + * Copyright (C) 2022 Emil Renner Berthing <kernel@esmil.dk>
->>>>> + *
->>>>> + */
->>>>> +
->>>>> +#include <linux/of_device.h>
->>>>> +
->>>>> +#include "stmmac_platform.h"
->>>>> +
->>>>> +struct starfive_dwmac {
->>>>> +       struct device *dev;
->>>>> +       struct clk *clk_tx;
->>>>> +       struct clk *clk_gtx;
->>>>> +       bool tx_use_rgmii_rxin_clk;
->>>>> +};
->>>>> +
->>>>> +static void starfive_eth_fix_mac_speed(void *priv, unsigned int speed)
->>>>> +{
->>>>> +       struct starfive_dwmac *dwmac = priv;
->>>>> +       unsigned long rate;
->>>>> +       int err;
->>>>> +
->>>>> +       /* Generally, the rgmii_tx clock is provided by the internal clock,
->>>>> +        * which needs to match the corresponding clock frequency according
->>>>> +        * to different speeds. If the rgmii_tx clock is provided by the
->>>>> +        * external rgmii_rxin, there is no need to configure the clock
->>>>> +        * internally, because rgmii_rxin will be adaptively adjusted.
->>>>> +        */
->>>>> +       if (dwmac->tx_use_rgmii_rxin_clk)
->>>>> +               return;
->>>>> +
->>>>> +       switch (speed) {
->>>>> +       case SPEED_1000:
->>>>> +               rate = 125000000;
->>>>> +               break;
->>>>> +       case SPEED_100:
->>>>> +               rate = 25000000;
->>>>> +               break;
->>>>> +       case SPEED_10:
->>>>> +               rate = 2500000;
->>>>> +               break;
->>>>> +       default:
->>>>> +               dev_err(dwmac->dev, "invalid speed %u\n", speed);
->>>>> +               break;
->>>>> +       }
->>>>> +
->>>>> +       err = clk_set_rate(dwmac->clk_tx, rate);
->>>>
->>>> Hi Samin,
->>>>
->>>> I tried exercising this code by forcing the interface to downgrade
->>>> from 1000Mbps to 100Mbps (ethtool -s end0 speed 100), and it doesn't
->>>> seem to work. The reason is that clk_tx is a mux, and when you call
->>>> clk_set_rate it will try to find the parent with the closest clock
->>>> rate instead of adjusting the current parent as is needed here.
->>>> However that is easily fixed by calling clk_set_rate on clk_gtx which
->>>> is just a gate that *will* propagate the rate change to the parent.
->>>>
->>>> With this change, this piece of code and downgrading from 1000Mbps to
->>>> 100Mbps works on the JH7100. However on the JH7110 there is a second
->>>> problem. The parent of clk_gtx, confusingly called
->>>> clk_gmac{0,1}_gtxclk is a divider (and gate) that takes the 1GHz PLL0
->>>> clock and divides it by some integer. But according to [1] it can at
->>>> most divide by 15 which is not enough to generate the 25MHz clock
->>>> needed for 100Mbps. So now I wonder how this is supposed to work on
->>>> the JH7110.
->>>>
->>>> [1]: https://doc-en.rvspace.org/JH7110/TRM/JH7110_TRM/sys_crg.html#sys_crg__section_skz_fxm_wsb
->>>
->>> Ah, I see now that gmac0_gtxclk is only used by gmac0 on the
->>> VisionFive 2 v1.2A, where I think it's a known problem that only
->>> 1000Mbps works.
->>> On the 1.3B this function is not used at all, and I guess it also
->>> ought to be skipped for gmac1 of the 1.2A using the rmii interface so
->>> it doesn't risk changing the parent of the tx clock.
->>>
->> Hi Emil,
->>
->> V1.2A gmac0 only supports 1000M due to known problem, and v1.2A gmac1 supports 100M/10M.
->>
->> V1.2A gmac1 uses a parent clock from gmac1_rmii_rtx, whose parent clock is from external phy clock gmac1_rmii_refin (fixed is 50M).
->> The default frequency division value of gmac1_rmii_rtx is 2, so it can work in 100M mode. （clk_tx: 50/2=25M ===> 100M mode）.
->> When gmac1 switches to 10M mode, the clock frequency of gmac1_rmii_rtx needs to be modified to 2.5M.
->> So,if 1.2A gmac1 is skipped the starfive_eth_fix_mac_speed, 10M mode will be unavailable.
->>
->>         gmac1_rmii_refin（50M) ==> gmac1_rmii_rtx（div 2, by default) ==>  clk_tx (25M)  （100M mode）
->>         gmac1_rmii_refin（50M）==> gmac1_rmii_rtx（div 20) ==> clk_tx (2.5M)  （10M mode）
->>
-> 
-> I see. So on the JH7110 it is only when using gmac{0,1}_rmii_rtx ->
-> clk_tx with the rmii interface that this function is needed?
-> 
-> As noted above using the current fix_mac_speed with gmac{0,1}_gtxclk
-> -> clk_tx will produce wrong results, so for the VF2 v1.2A you
-> probably just want something like this in the device tree
-> &gmac0 {
->   assigned-clocks = <&aoncrg JH7110_AONCLK_GMAC0_TX>, <&syscrg
-> JH7110_SYSCLK_GMAC0_GTXCLK>;
->   assigned-clock-parents = <&syscrg JH7110_SYSCLK_GMAC0_GTXCLK>;
->   assigned-clock-rates = <0> <125000000>;
-> };
-> 
-> ..and then don't set the fix_mac_speed callback.
-> 
-
-Hi Emil,
-
-This works on v1.2a with gmac0, but gmac1 does not. gmac1 have to setting the fix_mac_speed as mentioned above。
-
-Moreover，fix_mac_speed is also can be used on JH7100 I guess.
-So, keeping fix_mac_speed callback can make the code more compatible?
-
-Best regards,
-Samin
-
->> Of course, as you mentioned earlier, we need to add gmac1_clk_tx uses CLK_SET_RATE_PARENT flag.
-> 
-> Yes, I'm not too sure how clk_set_rate on mux'es are supposed to work,
-> but if you can convince Hal and Stephen (the clock maintainer) that
-> clk_set_rate should always propagate the rate change to the current
-> parent, then I'm fine with it.
-> I tested it with CLK_SET_RATE_PARENT flag in gmacX_clk_tx with HAL's clktree driver,
-Setting the frequency of gmacX_clk_tx can take effect on clk_rmii_rtx.
-
-Tested on v1.2A:
-# mount -t debugfs none /sys/kernel/debug
-# cat /sys/kernel/debug/clk/gmac1_tx/clk_parent 
-gmac1_rmii_rtx
-# cat /sys/kernel/debug/clk/gmac1_tx/clk_rate
-25000000
-# cat /sys/kernel/debug/clk/gmac1_rmii_rtx/clk_rate 
-25000000
-# ethtool -s eth1 speed 10 duplex full
-# starfive-dwmac 16040000.ethernet eth1: Link is Down
-  starfive-dwmac 16040000.ethernet eth1: Link is Up - 10Mbps/Full - flow control rx/tx
-# cat /sys/kernel/debug/clk/gmac1_tx/clk_rate
-2500000
-# cat /sys/kernel/debug/clk/gmac1_rmii_rtx/clk_rate
-2500000
-
-
-In addition, I have tested that all the following modes can work:
-For v1.2A:
-gmac0: 1000M
-gmac1: 100M/10M
-
-For v1.3B:
-gmac0: 1000M/100M/10M
-gmac1: 1000M/100M/10M
-
-Best regards,
-Samin
-
-> Alternatively you can add an optional clock to the bindings, and only
-> if the optional clock is set then set the fix_mac_speed callback to
-> modify the rate of that clock. This way you won't need the special
-> "starfive,tx-use-rgmii-clk" flag either.
-> 
-> /Emil
->>
->> Best regards,
->> Samin
->>
->>>>> +       if (err)
->>>>> +               dev_err(dwmac->dev, "failed to set tx rate %lu\n", rate);
->>>>> +}
->>>>> +
->>>>> +static int starfive_dwmac_probe(struct platform_device *pdev)
->>>>> +{
->>>>> +       struct plat_stmmacenet_data *plat_dat;
->>>>> +       struct stmmac_resources stmmac_res;
->>>>> +       struct starfive_dwmac *dwmac;
->>>>> +       int err;
->>>>> +
->>>>> +       err = stmmac_get_platform_resources(pdev, &stmmac_res);
->>>>> +       if (err)
->>>>> +               return err;
->>>>> +
->>>>> +       plat_dat = stmmac_probe_config_dt(pdev, stmmac_res.mac);
->>>>> +       if (IS_ERR(plat_dat)) {
->>>>> +               dev_err(&pdev->dev, "dt configuration failed\n");
->>>>> +               return PTR_ERR(plat_dat);
->>>>> +       }
->>>>> +
->>>>> +       dwmac = devm_kzalloc(&pdev->dev, sizeof(*dwmac), GFP_KERNEL);
->>>>> +       if (!dwmac)
->>>>> +               return -ENOMEM;
->>>>> +
->>>>> +       dwmac->clk_tx = devm_clk_get_enabled(&pdev->dev, "tx");
->>>>> +       if (IS_ERR(dwmac->clk_tx))
->>>>> +               return dev_err_probe(&pdev->dev, PTR_ERR(dwmac->clk_tx),
->>>>> +                                   "error getting tx clock\n");
->>>>> +
->>>>> +       dwmac->clk_gtx = devm_clk_get_enabled(&pdev->dev, "gtx");
->>>>> +       if (IS_ERR(dwmac->clk_gtx))
->>>>> +               return dev_err_probe(&pdev->dev, PTR_ERR(dwmac->clk_gtx),
->>>>> +                                   "error getting gtx clock\n");
->>>>> +
->>>>> +       if (device_property_read_bool(&pdev->dev, "starfive,tx-use-rgmii-clk"))
->>>>> +               dwmac->tx_use_rgmii_rxin_clk = true;
->>>>> +
->>>>> +       dwmac->dev = &pdev->dev;
->>>>> +       plat_dat->fix_mac_speed = starfive_eth_fix_mac_speed;
->>>>> +       plat_dat->init = NULL;
->>>>> +       plat_dat->bsp_priv = dwmac;
->>>>> +       plat_dat->dma_cfg->dche = true;
->>>>> +
->>>>> +       err = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
->>>>> +       if (err) {
->>>>> +               stmmac_remove_config_dt(pdev, plat_dat);
->>>>> +               return err;
->>>>> +       }
->>>>> +
->>>>> +       return 0;
->>>>> +}
->>>>> +
->>>>> +static const struct of_device_id starfive_dwmac_match[] = {
->>>>> +       { .compatible = "starfive,jh7110-dwmac" },
->>>>> +       { /* sentinel */ }
->>>>> +};
->>>>> +MODULE_DEVICE_TABLE(of, starfive_dwmac_match);
->>>>> +
->>>>> +static struct platform_driver starfive_dwmac_driver = {
->>>>> +       .probe  = starfive_dwmac_probe,
->>>>> +       .remove = stmmac_pltfr_remove,
->>>>> +       .driver = {
->>>>> +               .name = "starfive-dwmac",
->>>>> +               .pm = &stmmac_pltfr_pm_ops,
->>>>> +               .of_match_table = starfive_dwmac_match,
->>>>> +       },
->>>>> +};
->>>>> +module_platform_driver(starfive_dwmac_driver);
->>>>> +
->>>>> +MODULE_LICENSE("GPL");
->>>>> +MODULE_DESCRIPTION("StarFive DWMAC platform driver");
->>>>> +MODULE_AUTHOR("Emil Renner Berthing <kernel@esmil.dk>");
->>>>> +MODULE_AUTHOR("Samin Guo <samin.guo@starfivetech.com>");
->>>>> --
->>>>> 2.17.1
->>>>>
->>>>>
->>>>> _______________________________________________
->>>>> linux-riscv mailing list
->>>>> linux-riscv@lists.infradead.org
->>>>> http://lists.infradead.org/mailman/listinfo/linux-riscv
->>
->>
-
--- 
-Best regards,
-Samin
+SGkgQWxsLA0KDQpJIHdvdWxkIGxpa2UgdG8gYWRkIE1pY3JvY2hpcCdzIExBTjg2NXggMTBCQVNF
+LVQxUyBNQUMtUEhZIGRyaXZlciANCnN1cHBvcnQgdG8gTGludXgga2VybmVsLg0KKFByb2R1Y3Qg
+bGluazogaHR0cHM6Ly93d3cubWljcm9jaGlwLmNvbS9lbi11cy9wcm9kdWN0L0xBTjg2NTApDQoN
+ClRoZSBMQU44NjUwIGNvbWJpbmVzIGEgTWVkaWEgQWNjZXNzIENvbnRyb2xsZXIgKE1BQykgYW5k
+IGFuIEV0aGVybmV0IFBIWSANCnRvIGFjY2VzcyAxMEJBU0XigJFUMVMgbmV0d29ya3MuIFRoZSBj
+b21tb24gc3RhbmRhcmQgU2VyaWFsIFBlcmlwaGVyYWwgDQpJbnRlcmZhY2UgKFNQSSkgaXMgdXNl
+ZCBzbyB0aGF0IHRoZSB0cmFuc2ZlciBvZiBFdGhlcm5ldCBwYWNrZXRzIGFuZCANCkxBTjg2NTAg
+Y29udHJvbC9zdGF0dXMgY29tbWFuZHMgYXJlIHBlcmZvcm1lZCBvdmVyIGEgc2luZ2xlLCBzZXJp
+YWwgDQppbnRlcmZhY2UuDQoNCkV0aGVybmV0IHBhY2tldHMgYXJlIHNlZ21lbnRlZCBhbmQgdHJh
+bnNmZXJyZWQgb3ZlciB0aGUgc2VyaWFsIGludGVyZmFjZQ0KYWNjb3JkaW5nIHRvIHRoZSBPUEVO
+IEFsbGlhbmNlIDEwQkFTReKAkVQxeCBNQUPigJFQSFkgU2VyaWFsIEludGVyZmFjZSANCnNwZWNp
+ZmljYXRpb24gZGVzaWduZWQgYnkgVEM2Lg0KKGxpbms6IGh0dHBzOi8vd3d3Lm9wZW5zaWcub3Jn
+L0F1dG9tb3RpdmUtRXRoZXJuZXQtU3BlY2lmaWNhdGlvbnMvKQ0KVGhlIHNlcmlhbCBpbnRlcmZh
+Y2UgcHJvdG9jb2wgY2FuIHNpbXVsdGFuZW91c2x5IHRyYW5zZmVyIGJvdGggdHJhbnNtaXQgDQph
+bmQgcmVjZWl2ZSBwYWNrZXRzIGJldHdlZW4gdGhlIGhvc3QgYW5kIHRoZSBMQU44NjUwLg0KDQpC
+YXNpY2FsbHkgdGhlIGRyaXZlciBjb21wcmlzZXMgb2YgdHdvIHBhcnRzLiBPbmUgcGFydCBpcyB0
+byBpbnRlcmZhY2UgDQp3aXRoIG5ldHdvcmtpbmcgc3Vic3lzdGVtIGFuZCBTUEkgc3Vic3lzdGVt
+LiBUaGUgb3RoZXIgcGFydCBpcyBhIFRDNiANCnN0YXRlIG1hY2hpbmUgd2hpY2ggaW1wbGVtZW50
+cyB0aGUgRXRoZXJuZXQgcGFja2V0cyBzZWdtZW50YXRpb24gDQphY2NvcmRpbmcgdG8gT1BFTiBB
+bGxpYW5jZSAxMEJBU0XigJFUMXggTUFD4oCRUEhZIFNlcmlhbCBJbnRlcmZhY2UgDQpzcGVjaWZp
+Y2F0aW9uLg0KDQpUaGUgaWRlYSBiZWhpbmQgdGhlIFRDNiBzdGF0ZSBtYWNoaW5lIGltcGxlbWVu
+dGF0aW9uIGlzIHRvIG1ha2UgaXQgYXMgYSANCmdlbmVyaWMgbGlicmFyeSBhbmQgcGxhdGZvcm0g
+aW5kZXBlbmRlbnQuIEEgc2V0IG9mIEFQSSdzIHByb3ZpZGVkIGJ5IA0KdGhpcyBUQzYgc3RhdGUg
+bWFjaGluZSBsaWJyYXJ5IGNhbiBiZSB1c2VkIGJ5IHRoZSAxMEJBU0UtVDF4IE1BQy1QSFkgDQpk
+cml2ZXJzIHRvIHNlZ21lbnQgdGhlIEV0aGVybmV0IHBhY2tldHMgYWNjb3JkaW5nIHRvIHRoZSBP
+UEVOIEFsbGlhbmNlIA0KMTBCQVNF4oCRVDF4IE1BQ+KAkVBIWSBTZXJpYWwgSW50ZXJmYWNlIHNw
+ZWNpZmljYXRpb24uDQoNCldpdGggdGhlIGFib3ZlIGluZm9ybWF0aW9uLCBraW5kbHkgcHJvdmlk
+ZSB5b3VyIHZhbHVhYmxlIGZlZWRiYWNrIG9uIG15IA0KYmVsb3cgcXVlcmllcy4NCg0KQ2FuIHdl
+IGtlZXAgdGhpcyBUQzYgc3RhdGUgbWFjaGluZSB3aXRoaW4gdGhlIExBTjg2NXggZHJpdmVyIG9y
+IGFzIGEgDQpzZXBhcmF0ZSBnZW5lcmljIGxpYnJhcnkgYWNjZXNzaWJsZSBmb3Igb3RoZXIgMTBC
+QVNFLVQxeCBNQUMtUEhZIGRyaXZlcnMgDQphcyB3ZWxsPw0KDQpJZiB5b3UgcmVjb21tZW5kIHRv
+IGhhdmUgdGhhdCBhcyBhIHNlcGFyYXRlIGdlbmVyaWMgbGlicmFyeSB0aGVuIGNvdWxkIA0KeW91
+IHBsZWFzZSBhZHZpY2Ugb24gd2hhdCBpcyB0aGUgYmVzdCB3YXkgdG8gZG8gdGhhdCBpbiBrZXJu
+ZWw/DQoNCkkgYW0gdmVyeSBpbnRlcmVzdGVkIHRvIGhlYXIgeW91ciBvcGluaW9uIG9uIHRoaXMg
+dG9waWMuIFBsZWFzZSBsZXQgbWUgDQprbm93IGluIGNhc2UgeW91IG5lZWQgbW9yZSBpbmZvcm1h
+dGlvbiBvbiB0aGlzLg0KDQpCZXN0IFJlZ2FyZHMsDQpQYXJ0aGliYW4gVg0K
