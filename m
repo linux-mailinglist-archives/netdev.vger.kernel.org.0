@@ -2,55 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A16566B3793
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 08:41:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A2D16B379B
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 08:43:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230366AbjCJHli (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 02:41:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35930 "EHLO
+        id S230431AbjCJHnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 02:43:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230389AbjCJHkv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 02:40:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A742F104922;
-        Thu,  9 Mar 2023 23:40:23 -0800 (PST)
+        with ESMTP id S230332AbjCJHmk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 02:42:40 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F55115B40;
+        Thu,  9 Mar 2023 23:41:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C6ECB821DF;
-        Fri, 10 Mar 2023 07:40:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 00BDDC4331D;
-        Fri, 10 Mar 2023 07:40:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E857160D33;
+        Fri, 10 Mar 2023 07:41:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1D5DC433EF;
+        Fri, 10 Mar 2023 07:41:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678434021;
-        bh=aMCZFZWpmUkhd0ND1FCMjMn88Z7Y4ZjzuCO60/lYc4A=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=D4jumGUIuPDqMysUrmpKCWrQc2eYJPyIatStLlcvumrOQEh8lxhAHL5KytRr+KSXb
-         5eIp1vu5JuUu4FTPA+l0Jl0SnZtOkagZD9XyA/Cw782FwiPta9eoRQlZARgYi/6exA
-         Irb2++tOB/76Ma08X2hBfvQ3uphOG6pCu2gyEdPgcyPFgltvmUybu7Gv/RsvwVF0gv
-         25fjKTgBuGzRiHDvV1VPchbi+pBWJbjXn0E5p1JGLa9IWckZBNutmHOsupew+KV3ms
-         8kI7nkQjqU8NRCkCiMO7BumjfSTwyhgOj6ccrcgjau0WflVZQ6ImRlRA5Y/3d4MC4E
-         BrXWXEzR4Y6IA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D6DE6E270C7;
-        Fri, 10 Mar 2023 07:40:20 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1678434066;
+        bh=eGYo2HGiIrhHhNGu5gvFXCgJy95UosT0qU4XI+CCKrE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SB60Fuu7NQvJpLD7LgZbrLArLDLrrPCKGTVSssy5ViwHjdzgvluWu9L5UtD0SMVJL
+         r8tSY9CSPF1Ie1IeARgco/2Nh4xeYMaILRUCAlXrCUz9adbDtwA28M3X1eXxXEt5P1
+         Fo/gIF+3CVJQgcwWPSpk40YbTktG3FKrtlMXqnJTXwJC/AFZ3NtXIGsfqKr0uViSNU
+         sJURCtRh1Y0NCu8v0CyrceRUDtRBZTHRwtKULhCpusvjhvuf/QgNVea6JESylp6Dgl
+         4QY6dHX81PCpyqGFLHyI8Tsu0Pizqokyh9fQf5sh98/rhc/ju9xuxCHoO630JvQ0OC
+         A6h5kzzzbOqyg==
+Date:   Thu, 9 Mar 2023 23:41:04 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Maxim Korotkov <korotkov.maxim.s@gmail.com>
+Cc:     Rasesh Mody <rmody@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Michael Chan <mchan@broadcom.com>,
+        Vadim Fedorenko <vadim.fedorenko@linux.dev>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lvc-project@linuxtesting.org
+Subject: Re: [PATCH net-next] bnx2: remove deadcode in bnx2_init_cpus()
+Message-ID: <20230309234104.79286da7@kernel.org>
+In-Reply-To: <9b367837-4bf0-1802-e753-6eca37e105b9@gmail.com>
+References: <20230309174231.3135-1-korotkov.maxim.s@gmail.com>
+        <20230309225710.78cd606c@kernel.org>
+        <9b367837-4bf0-1802-e753-6eca37e105b9@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v4 net-next] udp: introduce __sk_mem_schedule() usage
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167843402087.26917.6747945848629021248.git-patchwork-notify@kernel.org>
-Date:   Fri, 10 Mar 2023 07:40:20 +0000
-References: <20230308021153.99777-1-kerneljasonxing@gmail.com>
-In-Reply-To: <20230308021153.99777-1-kerneljasonxing@gmail.com>
-To:     Jason Xing <kerneljasonxing@gmail.com>
-Cc:     simon.horman@corigine.com, willemdebruijn.kernel@gmail.com,
-        davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        kernelxing@tencent.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,29 +60,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Fri, 10 Mar 2023 10:33:46 +0300 Maxim Korotkov wrote:
+>   Path with error handling was deleted in 57579f7629a3 ("bnx2: Use 
+> request_firmware()"). This patch is needed to improving readability.
+> Now checking the value of the return value is misleading when reading 
+> the code.
+> Do I need to add this argument to the patch description?
 
-This patch was applied to netdev/net-next.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
+Yes please. 
 
-On Wed,  8 Mar 2023 10:11:53 +0800 you wrote:
-> From: Jason Xing <kernelxing@tencent.com>
-> 
-> Keep the accounting schema consistent across different protocols
-> with __sk_mem_schedule(). Besides, it adjusts a little bit on how
-> to calculate forward allocated memory compared to before. After
-> applied this patch, we could avoid receive path scheduling extra
-> amount of memory.
-> 
-> [...]
+> I also forgot to add mark Reviewed-by: Leon Romanovsky 
+> <leonro@nvidia.com> from the previous iteration
 
-Here is the summary with links:
-  - [v4,net-next] udp: introduce __sk_mem_schedule() usage
-    https://git.kernel.org/netdev/net-next/c/fd9c31f83441
+So this is not the first revision? Please add Leon's tag and an
+appropriate vN. e.g. [PATCH net-next v2].
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+In general we don't encourage cleanup of this sort because the number
+of int functions which always return 0 is rather large in the kernel,
+but if you already got an ack from Leon we'll consider it, so please
+adjust and repost.
