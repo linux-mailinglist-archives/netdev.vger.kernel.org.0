@@ -2,112 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 655676B5368
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 22:51:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B21C26B5378
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 22:54:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232206AbjCJVve (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 16:51:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43422 "EHLO
+        id S232152AbjCJVyd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 16:54:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231572AbjCJVuy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 16:50:54 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAE13126EF
-        for <netdev@vger.kernel.org>; Fri, 10 Mar 2023 13:48:05 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id k10so26010376edk.13
-        for <netdev@vger.kernel.org>; Fri, 10 Mar 2023 13:48:05 -0800 (PST)
+        with ESMTP id S231846AbjCJVyF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 16:54:05 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4671F13B956;
+        Fri, 10 Mar 2023 13:50:39 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id k10so26029558edk.13;
+        Fri, 10 Mar 2023 13:50:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678484813;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=gmail.com; s=20210112; t=1678484956;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=lzFx8euiB+sc2RTiijtv6CruVrC3VvrxIigbNh0lHCw=;
-        b=ousR3cOJbxC6x+UkyFQcWklCFj80NWbEJGdyDrSjeFRWdxuO7XkM0J4FPY/a+Re+ud
-         ZpQPSczG8puqE9oD4FbTWjxSyafng0QhvyE3rX2OhSQboWmKHtyqLje+08ogR2ZXDZF/
-         Hapo4z9OPfoaqBiFcu+qSq9P8cOSrWQz62T+DqqBW62Bier/CICZrks4KZkbSAqP8aOe
-         JWzDx2VsbmooiWLykyWUZcSZvQJ6a7Ef/Q0Ln6RJugf7UTqAvF9v2V6OasRULflKUcFj
-         f4e2VCpmVGy0HqNMsyeM0Od6H2sF0vA3caiLz1yNPppZ3c2+KRXn7MZubpIOVnj+0YHH
-         6mpg==
+        bh=RoV3PGMyV6NfLVhZbTRmImIRKH3YuVH2//UBu/EBkeo=;
+        b=W9R1mfWb0/925s+VFRjlti8HVHv1zwtbU/bIDxjxLDk2LqStCvhUqVJ8LRxY3jbER7
+         Cqxyu/czJC5731sdFb+BihnAZam6dTIiho8ITsbxCXrJZ+/YKjjK+/c+onLHXVZNaPZr
+         jAy0JBhBZ4Kl/u8uBuleOiClq1xZRrIOsCiGC9Fi/xEEigVFcLv88x8Qt2jiFVGjfnDO
+         hB8225x88+QIn2djeCAixK81Dz3nY4u5znfyHNhvXo6z+TIGMtD38CtGHtGrSt/C2Ruc
+         ms0WsdvTj8sf9lfxr0eVtdBpF/ykoKneHMPdAR95ZW4bCsTTHcYeJNFnQQ/LANws6qnR
+         P5Mw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678484813;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20210112; t=1678484956;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=lzFx8euiB+sc2RTiijtv6CruVrC3VvrxIigbNh0lHCw=;
-        b=c5o0j3VAhjobnzdbji9UQBuV4xLPF8RQRrybRdbGLKuunq0BXa/4idifA41xZFYBLP
-         yM/QGYej4ncnwdD0WuN2M410YfWEisIIf/Kzi78fr9CnfQJqBsZzNA4v3SmJPX2q4yNN
-         LAkZe4t0jyo3em9N9uP+RtPoZxM4gKVUQJecEFuLsxD977/ZpCyygtxSp3vA4g9XDuzO
-         j7AyhfPFo2puaN+lufOE2aUubP3iO1UEkcxNVijw8Jx0VWji4BgX3D7T/Ch+wjPS3JhO
-         nVXKwPOEZGmx8zGccrUdklxY6LJn9HuQlMbFDLacma8a6apdk2FkjTgCydoMC+ndxEQR
-         gH1Q==
-X-Gm-Message-State: AO0yUKX1zHeMQCCuDR0pVoF8v8WIVAW7JT8NSpKyAs2TpxM3wVwm/nke
-        swx3iRzoKj4WhiRRF8gJV1Yjrw==
-X-Google-Smtp-Source: AK7set8nWd2eBnYgMGQTtXIPbx0OtD6V7+vbCi+nDaI+pK1IzlYRDbizlxwOP2yZnDYzFE6FeI/EFw==
-X-Received: by 2002:a05:6402:1a4d:b0:4a2:223d:4514 with SMTP id bf13-20020a0564021a4d00b004a2223d4514mr25732913edb.8.1678484813196;
-        Fri, 10 Mar 2023 13:46:53 -0800 (PST)
-Received: from krzk-bin.. ([2a02:810d:15c0:828:34:52e3:a77e:cac5])
-        by smtp.gmail.com with ESMTPSA id t5-20020a50ab45000000b004bf7905559asm488088edc.44.2023.03.10.13.46.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Mar 2023 13:46:52 -0800 (PST)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Byungho An <bh74.an@samsung.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 5/5] net: ni: drop of_match_ptr for ID table
-Date:   Fri, 10 Mar 2023 22:46:32 +0100
-Message-Id: <20230310214632.275648-5-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230310214632.275648-1-krzysztof.kozlowski@linaro.org>
-References: <20230310214632.275648-1-krzysztof.kozlowski@linaro.org>
+        bh=RoV3PGMyV6NfLVhZbTRmImIRKH3YuVH2//UBu/EBkeo=;
+        b=PC0axxorOYnOIo+mCKEXt8u7s1l4CLVKXt9P8W3hD9WvfH4iiEMjCtfjIioGTMgf2q
+         crCNemDTNhppAK86gxjEa4p7h2KRqHidHF7XCP9mw+FDyO9Z+0mkFdkYfZVI+htghlQQ
+         jECpHO5LrbnPzSPE/0F9WNjNA4hOZOV+a1vPWEUaK7oKJVS+tS0Ebdp8fIoNExnCpe3d
+         rsn0wbbEI7I/mdlnbbVckmNIILTYxSKxoGVeOgMkWncMTu+sNvjlHvf22j+aMwFIRDJh
+         lqPrsXVmYPTwX1IafOYa5meaYnj9LXRKG/X9vdSIflHQrbFwXxd7fd0fUg0NIOXb4Hc5
+         TwXQ==
+X-Gm-Message-State: AO0yUKXt3jkCzzydQvgH8czjnlcX+2xia1NLmB4estM/ah6FeGI8wIiw
+        Zf9CzG/BygTA536TM6ii1OUxwcGk6uhpV7ZOFwwFwb3F8Xo=
+X-Google-Smtp-Source: AK7set/r+8y4v2aT9Vo81gFbH3ZZE/p1ZeEFHpm/ivOsz150OD8iU1bcoIsYDvWGYh1gKqeSRitdVyoPbAWIV9Dzd88=
+X-Received: by 2002:a17:906:5910:b0:8b1:78b8:4207 with SMTP id
+ h16-20020a170906591000b008b178b84207mr14168104ejq.3.1678484956094; Fri, 10
+ Mar 2023 13:49:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20230301154953.641654-1-joannelkoong@gmail.com>
+ <20230301154953.641654-10-joannelkoong@gmail.com> <20230306071006.73t5vtmxrsykw4zu@apollo>
+ <CAADnVQJ=wzztviB73jBy3+OYxUKhAX_jTGpS8Xv45vUVTDY-ZA@mail.gmail.com>
+ <20230307102233.bemr47x625ity26z@apollo> <CAADnVQ+xOrCSwgxGQXNM5wHfOwV+x0csHfNyDYBHgyGVXgc2Ow@mail.gmail.com>
+ <20230307173529.gi2crls7fktn6uox@apollo> <CAEf4Bza4N6XtXERkL+41F+_UsTT=T4B3gt0igP5mVVrzr9abXw@mail.gmail.com>
+ <20230310211541.schh7iyrqgbgfaay@macbook-pro-6.dhcp.thefacebook.com> <20230310213839.zsiz7sky7q3zmjcp@apollo>
+In-Reply-To: <20230310213839.zsiz7sky7q3zmjcp@apollo>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 10 Mar 2023 13:49:04 -0800
+Message-ID: <CAADnVQJXwDLNsJ9GW4cZM44=gCsqm_tVkQ+eyaH_vpehNyVzcw@mail.gmail.com>
+Subject: Re: [PATCH v13 bpf-next 09/10] bpf: Add bpf_dynptr_slice and bpf_dynptr_slice_rdwr
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Joanne Koong <joannelkoong@gmail.com>,
+        bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <martin.lau@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver can match only via the DT table so the table should be always
-used and the of_match_ptr does not have any sense (this also allows ACPI
-matching via PRP0001, even though it is not relevant here).
+On Fri, Mar 10, 2023 at 1:38=E2=80=AFPM Kumar Kartikeya Dwivedi
+<memxor@gmail.com> wrote:
+>
+> On Fri, Mar 10, 2023 at 10:15:41PM CET, Alexei Starovoitov wrote:
+> > On Tue, Mar 07, 2023 at 04:01:28PM -0800, Andrii Nakryiko wrote:
+> > > > > >
+> > > > > > I agree this is simpler, but I'm not sure it will work properly=
+. Verifier won't
+> > > > > > know when the lifetime of the buffer ends, so if we disallow sp=
+ills until its
+> > > > > > written over it's going to be a pain for users.
+> > > > > >
+> > > > > > Something like:
+> > > > > >
+> > > > > > for (...) {
+> > > > > >         char buf[64];
+> > > > > >         bpf_dynptr_slice_rdwr(..., buf, 64);
+> > > > > >         ...
+> > > > > > }
+> > > > > >
+> > > > > > .. and then compiler decides to spill something where buf was l=
+ocated on stack
+> > > > > > outside the for loop. The verifier can't know when buf goes out=
+ of scope to
+> > > > > > unpoison the slots.
+> > > > >
+> > > > > You're saying the "verifier doesn't know when buf ...".
+> > > > > The same applies to the compiler. It has no visibility
+> > > > > into what bpf_dynptr_slice_rdwr is doing.
+> > > >
+> > > > That is true, it can't assume anything about the side effects. But =
+I am talking
+> > > > about the point in the program when the buffer object no longer liv=
+es. Use of
+> > > > the escaped pointer to such an object any longer is UB. The compile=
+r is well
+> > > > within its rights to reuse its stack storage at that point, includi=
+ng for
+> > > > spilling registers. Which is why "outside the for loop" in my earli=
+er reply.
+> > > >
+> > > > > So it never spills into a declared C array
+> > > > > as I tried to explain in the previous reply.
+> > > > > Spill/fill slots are always invisible to C.
+> > > > > (unless of course you do pointer arithmetic asm style)
+> > > >
+> > > > When the declared array's lifetime ends, it can.
+> > > > https://godbolt.org/z/Ez7v4xfnv
+> > > >
+> > > > The 2nd call to bar as part of unrolled loop happens with fp-8, the=
+n it calls
+> > > > baz, spills r0 to fp-8, and calls bar again with fp-8.
+> >
+> > Right. If user writes such program and does explicit store of spillable
+> > pointer into a stack.
+> > I was talking about compiler generated spill/fill and I still believe
+> > that compiler will not be reusing variable's stack memory for them.
+> >
+>
+> But that example on godbolt is about the _compiler_ doing spill into a
+> variable's stack memory, once it is dead. There is no explicit store to s=
+pill
+> from the user happening there.
 
-  drivers/net/ethernet/ni/nixge.c:1253:34: error: ‘nixge_dt_ids’ defined but not used [-Werror=unused-const-variable=]
-
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- drivers/net/ethernet/ni/nixge.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/ni/nixge.c b/drivers/net/ethernet/ni/nixge.c
-index 56e02cba0b8a..0fd156286d4d 100644
---- a/drivers/net/ethernet/ni/nixge.c
-+++ b/drivers/net/ethernet/ni/nixge.c
-@@ -1422,7 +1422,7 @@ static struct platform_driver nixge_driver = {
- 	.remove		= nixge_remove,
- 	.driver		= {
- 		.name		= "nixge",
--		.of_match_table	= of_match_ptr(nixge_dt_ids),
-+		.of_match_table	= nixge_dt_ids,
- 	},
- };
- module_platform_driver(nixge_driver);
--- 
-2.34.1
-
+Where do you see it?
+It's
+p =3D baz();
+and subsequent &p.
+That is user requested store.
+Your example has other undefined behavior.
+I tweaked it like this for clarity:
+https://godbolt.org/z/qhcKdeWjb
