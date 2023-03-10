@@ -2,192 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F3C346B401C
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 14:19:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A67D06B405D
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 14:25:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229956AbjCJNTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 08:19:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56952 "EHLO
+        id S230002AbjCJNZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 08:25:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230013AbjCJNTg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 08:19:36 -0500
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0D0A14EA7;
-        Fri, 10 Mar 2023 05:19:31 -0800 (PST)
-Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        with ESMTP id S229804AbjCJNZh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 08:25:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DF465A181;
+        Fri, 10 Mar 2023 05:25:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id A61BD85F02;
-        Fri, 10 Mar 2023 14:19:29 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1678454370;
-        bh=T1qPTroUrw41HD5Kfj4vg6ghP9BlWSvXjEv3ypvyj5c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QHfYaLYyxqDHW8ytxTby+1NIJqQSwyu0oR1Esw5TZcBoz5N/6ty8j0oEzgXDnVr2S
-         sQ78rBpdcU6x59RStvVoIsUDUzGxgW9xxpjyJjd3LfLXv6IRGWnIC+gHrkjrswl+y/
-         eR8CtJILtoIOyaLWpskCbBynYkBPvLypxTcZXBvhHMZoio7+02jeV+gnCMrYXFc3qD
-         QLHpeNnVKt3zi7BeQMVzKVcUsqYsbAck7JhTb8nv05DIQG4smZVbClhqhjsmG3J5Mm
-         Bvo/clTF+7wBHmiQ58wLkZ8w4K4/Ag+b+YpvkLizP6dMJ5PbTafVJ4/+afrKo3PMVF
-         rSvhc5e+XAv/g==
-Date:   Fri, 10 Mar 2023 14:19:28 +0100
-From:   Lukasz Majewski <lukma@denx.de>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 6/7] dsa: marvell: Correct value of max_frame_size
- variable after validation
-Message-ID: <20230310141928.00b08422@wsk>
-In-Reply-To: <ZAsdN3j8IrL0Pn0J@shell.armlinux.org.uk>
-References: <20230309125421.3900962-1-lukma@denx.de>
-        <20230309125421.3900962-7-lukma@denx.de>
-        <ZAnnk5MZc0w4VkDE@shell.armlinux.org.uk>
-        <20230309154350.0bdc54c8@wsk>
-        <0959097a-35cb-48c1-8e88-5e6c1269852d@lunn.ch>
-        <20230310125346.13f93f78@wsk>
-        <ZAsdN3j8IrL0Pn0J@shell.armlinux.org.uk>
-Organization: denx.de
-X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C389961743;
+        Fri, 10 Mar 2023 13:23:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAD5DC433D2;
+        Fri, 10 Mar 2023 13:23:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678454621;
+        bh=JxGawBRBiAOKWI5mLLvbiOwWip4wIDn5bcx4U5k5Nkw=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=nJ80UnqY7geRXzONADjCSgCs2PTfGcUUR3qPrctyesUDIck0YSBHRNbYu1ajilYq7
+         lZvbNJ+YUFxK5yqdzVksIHiQT6U/XIKt0wpnp29IV2wNpIdSE4Ug6rl9emMFjCWACa
+         2RTCzQU4znfxqahoGfB4ruot4XQzewlrqsrVvK3GYsGOM972CvQDp1m+kKxv74S9UY
+         1FAVhLtvkJ65oGHRW/4MyrS4nm/lRVcoUIW6iTlaZyEJNFui1LFeAWuu9E6l8gPJQg
+         V6ykPimE4c4oVP0mBRZ9fFstknXkh9oi4JBfwfY3GJkSRy6wS2ImQsux+NnFImGhog
+         ML4HFt+sPST4Q==
+Message-ID: <46415d8e-3c92-d489-3f44-01a586160082@kernel.org>
+Date:   Fri, 10 Mar 2023 15:23:34 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/aAiJ219S1SCy7CqP8Ir=2Hx";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [EXTERNAL] Re: [EXTERNAL] Re: [PATCH v3 3/6] soc: ti: pruss: Add
+ pruss_cfg_read()/update() API
+To:     Md Danish Anwar <a0501179@ti.com>,
+        MD Danish Anwar <danishanwar@ti.com>,
+        "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Nishanth Menon <nm@ti.com>
+Cc:     linux-remoteproc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, srk@ti.com, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20230306110934.2736465-1-danishanwar@ti.com>
+ <20230306110934.2736465-4-danishanwar@ti.com>
+ <7076208d-7dca-6980-5399-498e55648740@kernel.org>
+ <afd6cd8a-8ba7-24b2-d7fc-c25a9c5f3c42@ti.com>
+ <a74e5079-d89d-2420-b6af-d630c4f04380@kernel.org>
+ <a4395259-9b83-1101-7c4c-d8a36c3600eb@ti.com>
+ <367f6b50-e4cc-c3eb-e8e9-dabd4e044530@ti.com>
+Content-Language: en-US
+From:   Roger Quadros <rogerq@kernel.org>
+In-Reply-To: <367f6b50-e4cc-c3eb-e8e9-dabd4e044530@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/aAiJ219S1SCy7CqP8Ir=2Hx
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi Danish,
 
-Hi Russell,
+On 10/03/2023 13:53, Md Danish Anwar wrote:
+> Hi Roger,
+> 
+> On 09/03/23 17:00, Md Danish Anwar wrote:
+>> Hi Roger,
+>>
+>> On 08/03/23 17:12, Roger Quadros wrote:
+>>>
+>>>
+>>> On 08/03/2023 13:36, Md Danish Anwar wrote:
+>>>> Hi Roger,
+>>>>
+>>>> On 08/03/23 13:57, Roger Quadros wrote:
+>>>>> Hi,
+>>>>>
+>>>>> On 06/03/2023 13:09, MD Danish Anwar wrote:
+>>>>>> From: Suman Anna <s-anna@ti.com>
+>>>>>>
+>>>>>> Add two new generic API pruss_cfg_read() and pruss_cfg_update() to
+>>>>>> the PRUSS platform driver to allow other drivers to read and program
+>>>>>> respectively a register within the PRUSS CFG sub-module represented
+>>>>>> by a syscon driver. This interface provides a simple way for client
+>>>>>
+>>>>> Do you really need these 2 functions to be public?
+>>>>> I see that later patches (4-6) add APIs for doing specific things
+>>>>> and that should be sufficient than exposing entire CFG space via
+>>>>> pruss_cfg_read/update().
+>>>>>
+>>>>>
+>>>>
+>>>> I think the intention here is to keep this APIs pruss_cfg_read() and
+>>>> pruss_cfg_update() public so that other drivers can read / modify PRUSS config
+>>>> when needed.
+>>>
+>>> Where are these other drivers? If they don't exist then let's not make provision
+>>> for it now.
+>>> We can provide necessary API helpers when needed instead of letting client drivers
+>>> do what they want as they can be misused and hard to debug.
+>>>
+>>
+>> The ICSSG Ethernet driver uses pruss_cfg_update() API. It is posted upstream in
+>> the series [1]. The ethernet driver series is dependent on this series. In
+>> series [1] we are using pruss_cfg_update() in icssg_config.c file,
+>> icssg_config() API.
 
-> On Fri, Mar 10, 2023 at 12:53:46PM +0100, Lukasz Majewski wrote:
-> > Hi Andrew,
-> >  =20
-> > > > > If I understand this correctly, in patch 4, you add a call to
-> > > > > the 6250 family to call mv88e6185_g1_set_max_frame_size(),
-> > > > > which sets a bit called MV88E6185_G1_CTL1_MAX_FRAME_1632 if
-> > > > > the frame size is larger than 1518.   =20
-> > > >=20
-> > > > Yes, correct.
-> > > >    =20
-> > > > >=20
-> > > > > However, you're saying that 6250 has a frame size of 2048.
-> > > > > That's fine, but it makes MV88E6185_G1_CTL1_MAX_FRAME_1632
-> > > > > rather misleading as a definition. While the bit may increase
-> > > > > the frame size, I think if we're going to do this, then this
-> > > > > definition ought to be renamed.  =20
-> > > >=20
-> > > > I thought about rename, but then I've double checked; register
-> > > > offset and exact bit definition is the same as for 6185, so to
-> > > > avoid unnecessary code duplication - I've reused the existing
-> > > > function.
-> > > >=20
-> > > > Maybe comment would be just enough?   =20
-> > >=20
-> > > The driver takes care with its namespace in order to add per
-> > > switch family defines. So you can add
-> > > MV88E6250_G1_CTL1_MAX_FRAME_2048. It does not matter if it is the
-> > > same bit. You can also add a mv88e6250_g1_set_max_frame_size()
-> > > and it also does not matter if it is in effect the same as
-> > > mv88e6185_g1_set_max_frame_size().
-> > >=20
-> > > We should always make the driver understandably first, compact and
-> > > without redundancy second. We are then less likely to get into
-> > > situations like this again where it is not clear what MTU a device
-> > > actually supports because the code is cryptic. =20
-> >=20
-> > Ok, I will add new function.
-> >=20
-> > Thanks for hints. =20
->=20
-> It may be worth doing:
->=20
-> static int mv88e6xxx_g1_modify(struct mv88e6xxx_chip *chip, int reg,
-> 			       u16 mask, u16 val)
-> {
-> 	int addr =3D chip->info->global1_addr;
-> 	int err;
-> 	u16 v;
->=20
-> 	err =3D mv88e6xxx_read(chip, addr, reg, &v);
-> 	if (err < 0)
-> 		return err;
->=20
-> 	v =3D (v & ~mask) | val;
->=20
-> 	return mv88e6xxx_write(chip, addr, reg, v);
-> }
->=20
-> Then, mv88e6185_g1_set_max_frame_size() becomes:
->=20
-> int mv88e6185_g1_set_max_frame_size(struct mv88e6xxx_chip *chip, int
-> mtu) {
-> 	u16 val =3D 0;
->=20
-> 	if (mtu + ETH_HLEN + ETH_FCS_LEN > 1518)
-> 		val =3D MV88E6185_G1_CTL1_MAX_FRAME_1632;
->=20
-> 	return mv88e6xxx_g1_modify(chip, MV88E6XXX_G1_CTL1,
-> 				   MV88E6185_G1_CTL1_MAX_FRAME_1632,
-> val); }
->=20
+You can instead add a new API on what exactly you want it to do rather than exposing
+entire CFG space.
 
-Yes, correct.
+>>
+>> So for this, the API pruss_cfg_update() needs to be public.
+>>
+>> [1] https://lore.kernel.org/all/20230210114957.2667963-3-danishanwar@ti.com/
+>>
+> 
+> I will keep this patch as it is as pruss_cfg_update() needs to be public for
+> ICSSG Ethernet driver and pruss_cfg_read() is kind of a complementary function
+> to update. I will do required changes in other patches and send next revision
+> if that's OK with you. Please let me know.
+> 
+>>>>
+>>>> The later patches (4-6) add APIs to do specific thing, but those APIs also
+>>>> eventually call pruss_cfg_read/update().
+>>>
+>>> They can still call them but they need to be private to pruss.c
+>>>
+>>>>
+>>>>>> drivers without having them to include and parse the CFG syscon node
+>>>>>> within their respective device nodes. Various useful registers and
+>>>>>> macros for certain register bit-fields and their values have also
+>>>>>> been added.
+>>>>>>
+>>>>>> It is the responsibility of the client drivers to reconfigure or
+>>>>>> reset a particular register upon any failures.
+>>>>>>
+>>>>>> Signed-off-by: Suman Anna <s-anna@ti.com>
+>>>>>> Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+>>>>>> Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+>>>>>> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+>>>>>> ---
+>>>>>>  drivers/soc/ti/pruss.c           |  41 +++++++++++++
+>>>>>>  include/linux/remoteproc/pruss.h | 102 +++++++++++++++++++++++++++++++
+>>>>>>  2 files changed, 143 insertions(+)
+>>>>>>
+>>>>>> diff --git a/drivers/soc/ti/pruss.c b/drivers/soc/ti/pruss.c
+>>>>>> index c8053c0d735f..537a3910ffd8 100644
+>>>>>> --- a/drivers/soc/ti/pruss.c
+>>>>>> +++ b/drivers/soc/ti/pruss.c
+>>>>>> @@ -164,6 +164,47 @@ int pruss_release_mem_region(struct pruss *pruss,
+>>>>>>  }
+>>>>>>  EXPORT_SYMBOL_GPL(pruss_release_mem_region);
+>>>>>
 
-> The 6250 variant becomes similar.
->=20
-> We can also think about converting all those other read-modify-writes
-> to use mv88e6xxx_g1_modify().
->=20
-> The strange thing is... we already have mv88e6xxx_g1_ctl2_mask() which
-> is an implementation of mv88e6xxx_g1_modify() specifically for
-> MV88E6XXX_G1_CTL2 register, although it uses (val & mask) rather than
-> just val. That wouldn't be necessary if the bitfield macros (e.g.
-> FIELD_PREP() were used rather than explicit __bf_shf().
->=20
-
-I do have the impression that major refactoring of the mv6xxx driver
-would be welcome...
-
-
-Best regards,
-
-Lukasz Majewski
-
---
-
-DENX Software Engineering GmbH,      Managing Director: Erika Unter
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
-
---Sig_/aAiJ219S1SCy7CqP8Ir=2Hx
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmQLLmAACgkQAR8vZIA0
-zr15EQgA0yZDpPb/UbKFQTl0gCCg94biTlYLgVqpjHqax+hhsgCx69Zla2jAV16e
-cGSNsOctFiJTSc7YI3KQQN6o7M1qV5foywwN9ob8UgKzQDDFdZvUWa0JhSQLp7rw
-UhEEA3wTY7RYiEGKjAXBHbxjMsAok+RlOGUakUzuiZjpfLtHnSDz91OyEIKFCOtc
-Qb/nDUGeq55777JmHmxrHpU8YgkV5wA0yRQbkjxN+/cFR9+Td4Dh17jizYOE0160
-neChoGoW+4TsMTLg3lP4n/6IU046IZ79aNZzDGKTO0FRNZeNXI3HTSDXUC6WnxSK
-WDG3qV5hX//iklNHHHhFsnHRlJp0EQ==
-=zMRB
------END PGP SIGNATURE-----
-
---Sig_/aAiJ219S1SCy7CqP8Ir=2Hx--
+cheers,
+-roger
