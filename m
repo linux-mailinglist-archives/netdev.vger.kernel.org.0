@@ -2,62 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E9CD6B4D1C
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 17:36:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A3186B4D53
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 17:41:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231313AbjCJQgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 11:36:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56138 "EHLO
+        id S230305AbjCJQl2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 11:41:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233733AbjCJQfg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 11:35:36 -0500
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 579784AFD1;
-        Fri, 10 Mar 2023 08:33:14 -0800 (PST)
-Received: by mail-pg1-x532.google.com with SMTP id q189so3368444pga.9;
-        Fri, 10 Mar 2023 08:33:14 -0800 (PST)
+        with ESMTP id S229928AbjCJQlK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 11:41:10 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F540119415;
+        Fri, 10 Mar 2023 08:38:26 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id h8so6161412plf.10;
+        Fri, 10 Mar 2023 08:38:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678465993;
+        d=gmail.com; s=20210112; t=1678466302;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=wHjXS14Qn++SsDvoDYoTNjUowoiY9kx0S+3ZTEOxEoE=;
-        b=WVnJliibCm9uDAcG4S3LXCQ1UqCQHLBglJ8CUFGXV3OK4Mg9gURKC1wm8AqbTuqpt4
-         x2A6akGX6omQE2Khd6+t9sjWsXNAHPdDzSvfheTEnbSB2onBS4tihbB1IWWca86hvK+4
-         HVFQ5+iQa5xBe/TnYyrxbUT8t7Gm9nvsFs/Sz7+ta1O37/b5VWJTSQsp/hYeDvUd9oWS
-         fXQfwwUKQa4z8ah5mnSQjlgYrfRod0d0gBOspxOL8L/42BQ1AJoF6UPIo1Z75UbtGnk9
-         7pXx6T2t6SBaYDu62fW56IZA72EAJCEbO3vUqx8E9PV4L/MSoBborPpqINMcKFVFtwxo
-         i/mg==
+        bh=QVoDt8UjEaPrFLKqSBNQ8tDd7rlJV/H36JbOoKuTkzQ=;
+        b=owzHLqT4lTivzNESaa0zBhjQKEZb39AwND+OwtyUfsHyI1ul4saBZhHUxVxjvHOvF2
+         4KOavY5DPo/hLz/qEOSAbWkBCIQJsu7CpFBwr6jPmVBxf0SRMphVI7Lw0UFlJVS/6O3P
+         tGZuO490D/GSG8PMgme+r7SA5ykVf5xIz7bArmdjVMkfDTCPUV8MaADwXhE7uvFasmh1
+         1W75hWjlJkQqJk4NJWZNvG024xeS455UIyBOm89R8wlFxJH6BYRlnpCCOsHnz4A9mMZA
+         LdqyeTIU+bGnE7imFXz70zTvfB0n9mu1XySDr1ncBtanv2JE/CNDuIEij6ex02EfyqXi
+         GNNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678465993;
+        d=1e100.net; s=20210112; t=1678466302;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=wHjXS14Qn++SsDvoDYoTNjUowoiY9kx0S+3ZTEOxEoE=;
-        b=ifSVR+/q4KgCRf9Z2Mr2LTIl+KNbm1wEyuqZrv7EQf/AaK4P7Rr7WGFe/f7ng4meU9
-         pkzwgz+dhOQe0/tBTti7tbeDciLpmuSbp4uurouIzAGJLhBwPRae2rXvtk2EvCAhYwj8
-         wr/h2Z4AEhLujpBp6TQhsfUhGG3+a6A2UA58M2ERl/3RyXiQgNDk76LfQ2oTB6Pma/xP
-         PQpeG1g4aAdhkKkXOTnh/59qLd1uFHYW4OUA2hwdz/bcMADwWeibpqwNhuHpdIBqRd4E
-         qm0fIbO1cXGdq+r7Uk7v8SzwDkAhg468K44Nm8QIHe4pYGcA+3FOIANoy7jMlvTUiqro
-         B69g==
-X-Gm-Message-State: AO0yUKWgDgmnnFo2E/dHJJLzFKvLJ9tcs+plofTQBnHSnuGJrWgXMumG
-        2xOQ3ex9o69+1ysx/43EhW0AvDBC4JkkVQVZ3+E=
-X-Google-Smtp-Source: AK7set8KUCyyYdE1HG4AxpSGGPoHQqlcnaRFnzaz+he0dAOhdfMi8eF8TJ79Ti/B5I/j+duOFM2tnWoJ6pMBoPHJ+3A=
-X-Received: by 2002:a63:b003:0:b0:503:91ff:8dd8 with SMTP id
- h3-20020a63b003000000b0050391ff8dd8mr9094781pgf.4.1678465993615; Fri, 10 Mar
- 2023 08:33:13 -0800 (PST)
+        bh=QVoDt8UjEaPrFLKqSBNQ8tDd7rlJV/H36JbOoKuTkzQ=;
+        b=0Azb6BQ3Dh636KmYCokejjNXTU8yqCKkzZ0u+pjqAfdUSu8AlS8O8/579tEqOy64mN
+         ct0oZZz9FvLnhC3Y7h0qwENlnJlztngsOp5QevLYN0andaNgu8khKSoIXSjJztETxEt7
+         +6iN5L+bklj84/OpFOJUkI+3Eidv3hUE3mADzG3BcTnUcfdSjWoTsQO6VDxaPeqmZ30I
+         pjRLhBoXSZiTA2d6CZUEGSjysAKyxIRumStlgGMH0Jk9XUYgCnXDWq9RxX7HeOb8OGhb
+         q8fwaCLgUTNpBP+mQuUZrkQN2mr2ZqpC7CBqkfjA/vyImchZFB6XnNlF/h891J+agJ5G
+         ipsg==
+X-Gm-Message-State: AO0yUKVm31VOnGjyiJsn9YkeTMQ7+iETBuB8Bc31QREZBJNUv95SgtK9
+        Ie3YBUp4egsr4hJjmei9H3OJr2l/7MdDOiYsjjg=
+X-Google-Smtp-Source: AK7set9j940Iu26+zJhUp/L79gAyfXMI1228dqulhEw0DuzOaBgPcqJDS5bQ1t7lXpJEd8PrVCJeuzt0Um0TzVkJheA=
+X-Received: by 2002:a17:902:684d:b0:19c:cf99:11f7 with SMTP id
+ f13-20020a170902684d00b0019ccf9911f7mr10385024pln.0.1678466302633; Fri, 10
+ Mar 2023 08:38:22 -0800 (PST)
 MIME-Version: 1.0
-References: <20230309100248.3831498-1-zyytlz.wz@163.com> <9054b170-8ed2-445c-6150-82f98af5808b@omp.ru>
-In-Reply-To: <9054b170-8ed2-445c-6150-82f98af5808b@omp.ru>
+References: <20230309100248.3831498-1-zyytlz.wz@163.com> <cca0b40b-d6f8-54c7-1e46-83cb62d0a2f1@huawei.com>
+In-Reply-To: <cca0b40b-d6f8-54c7-1e46-83cb62d0a2f1@huawei.com>
 From:   Zheng Hacker <hackerzheng666@gmail.com>
-Date:   Sat, 11 Mar 2023 00:33:01 +0800
-Message-ID: <CAJedcCyTn3eM7ptFbW+WPQNC4jaxe=JF5kkWxC3bpnwRA91g-Q@mail.gmail.com>
+Date:   Sat, 11 Mar 2023 00:38:10 +0800
+Message-ID: <CAJedcCy2n9jHm+uS5RG1T7u8aK8RazrzrC-sQhxFQ_v_ZphjWA@mail.gmail.com>
 Subject: Re: [PATCH net] net: ravb: Fix possible UAF bug in ravb_remove
-To:     Sergey Shtylyov <s.shtylyov@omp.ru>
-Cc:     Zheng Wang <zyytlz.wz@163.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        1395428693sheep@gmail.com, alex000young@gmail.com
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     Zheng Wang <zyytlz.wz@163.com>, s.shtylyov@omp.ru,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, 1395428693sheep@gmail.com,
+        alex000young@gmail.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -70,35 +71,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sergey Shtylyov <s.shtylyov@omp.ru> =E4=BA=8E2023=E5=B9=B43=E6=9C=889=E6=97=
-=A5=E5=91=A8=E5=9B=9B 23:47=E5=86=99=E9=81=93=EF=BC=9A
+Yunsheng Lin <linyunsheng@huawei.com> =E4=BA=8E2023=E5=B9=B43=E6=9C=8810=E6=
+=97=A5=E5=91=A8=E4=BA=94 09:12=E5=86=99=E9=81=93=EF=BC=9A
 >
-> Hello!
->
-> On 3/9/23 1:02 PM, Zheng Wang wrote:
->
+> On 2023/3/9 18:02, Zheng Wang wrote:
 > > In ravb_probe, priv->work was bound with ravb_tx_timeout_work.
 > > If timeout occurs, it will start the work. And if we call
 > > ravb_remove without finishing the work, ther may be a use
+>
+> ther -> there
+>
+
+Sorry about the typo, will correct it in the next version.
+
 > > after free bug on ndev.
->
->    Have you actually encountered it?
-
-Sorry, I haven't encountered it. All of the analysis is based on
-static analysis.
-
->
+> >
 > > Fix it by finishing the job before cleanup in ravb_remove.
 > >
 > > Fixes: c156633f1353 ("Renesas Ethernet AVB driver proper")
->
->    Hm... sorry about that. :-)
->
 > > Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
->
-> Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
->
-> [...]
+> > ---
+> >  drivers/net/ethernet/renesas/ravb_main.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
 > > diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/eth=
 ernet/renesas/ravb_main.c
 > > index 0f54849a3823..07a08e72f440 100644
@@ -111,15 +106,21 @@ ev)
 > >
 > > +     cancel_work_sync(&priv->work);
 >
->    I think we need an empty line here...
-
-Yes, will add it in the next version of patch.
+> As your previous patch, I still do not see anything stopping
+> dev_watchdog() from calling dev->netdev_ops->ndo_tx_timeout
+> after cancel_work_sync(), maybe I missed something obvious
+> here?
+>
+Yes, that's a keyed suggestion. I was hurry to report the issue today
+so wrote with many mistakes.
+Thanks agagin for the advice. I will review other patch carefully.
 
 Best regards,
 Zheng
 
 >
+
 > >       /* Stop PTP Clock driver */
 > >       if (info->ccc_gac)
 > >               ravb_ptp_stop(ndev);
->
+> >
