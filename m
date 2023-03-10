@@ -2,89 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5D106B3387
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 02:12:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D22BA6B33A7
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 02:31:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229708AbjCJBMo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Mar 2023 20:12:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48096 "EHLO
+        id S229890AbjCJBbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Mar 2023 20:31:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbjCJBMn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 20:12:43 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 213D57FD6B;
-        Thu,  9 Mar 2023 17:12:42 -0800 (PST)
-Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4PXp1n1jCBzKmRs;
-        Fri, 10 Mar 2023 09:12:29 +0800 (CST)
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Fri, 10 Mar
- 2023 09:12:38 +0800
-Subject: Re: [PATCH net] net: ravb: Fix possible UAF bug in ravb_remove
-To:     Zheng Wang <zyytlz.wz@163.com>, <s.shtylyov@omp.ru>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <hackerzheng666@gmail.com>,
-        <1395428693sheep@gmail.com>, <alex000young@gmail.com>
-References: <20230309100248.3831498-1-zyytlz.wz@163.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <cca0b40b-d6f8-54c7-1e46-83cb62d0a2f1@huawei.com>
-Date:   Fri, 10 Mar 2023 09:12:37 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        with ESMTP id S229546AbjCJBbw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Mar 2023 20:31:52 -0500
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 490C2F6C67
+        for <netdev@vger.kernel.org>; Thu,  9 Mar 2023 17:31:51 -0800 (PST)
+Received: by mail-qt1-x82c.google.com with SMTP id c18so4265491qte.5
+        for <netdev@vger.kernel.org>; Thu, 09 Mar 2023 17:31:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=joelfernandes.org; s=google; t=1678411910;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=p9ofmXvi+yoEOTwnWtynDgK6IduRelA0tIhKQl7CdJ0=;
+        b=CJxs5Lm5QHQiquo4AjG5aaAVH5OhqI/2GaIz7xKhQCv5L93fTHuoAlZV9Gbitb2cfX
+         CBMq+NiVL3zFSA3n2CND0pLPRYIoGwn3fq+ggxyeqaj5wyFyfZjExYDDIEQwgS/vQEEC
+         0zhNVdHBKJDJB13tv1+mV7aosZqxR50uKMbNM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678411910;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=p9ofmXvi+yoEOTwnWtynDgK6IduRelA0tIhKQl7CdJ0=;
+        b=k34yeBn7UZQiA4BzfJAzbCf+9ANhKpLpgKMaw2kQHH52DmeVfZ/pSi75xLlKCZ9Gf5
+         SWVXMFPsUINfwxTWeYE7IF0jhRv4iddWPJ+2jo269FcweNdtDiPPRtrLzQSereL2XQwT
+         /xhzWK8hr9zL0PUJBfK77a/DaJh2I7qJWi41Qm4GlrprC41A800speMNJ96MHLk1AuVg
+         cubGVXbiYYDMn1B4Z0XyywtB/ZRobbyznmeO9fHj53jlbbdbkzSyWKjz0JqMjfSLbSS6
+         VqzMtgcl4xi5yFjb0EJyDFmVE8EJW/kIEkHRGGICM+dcDBiR1FUjX8q6+YZ9WJw2Tb45
+         g7aQ==
+X-Gm-Message-State: AO0yUKUH7WCFjoOmRBxmAxKqfxdy+vrigZqLojHSC/RUUQyDAaywez3V
+        ZEUWAlMXTzXEGJOMJ5RYKAwVmA==
+X-Google-Smtp-Source: AK7set8CodEww+oJHx4uqK72YvDkSaUODFTaCcQVaKEOvvPIVqD7s5xth57+TKwSz+3SyIrjgQzrfg==
+X-Received: by 2002:ac8:594f:0:b0:3b8:68ef:d538 with SMTP id 15-20020ac8594f000000b003b868efd538mr4968923qtz.52.1678411910365;
+        Thu, 09 Mar 2023 17:31:50 -0800 (PST)
+Received: from joelboxx.c.googlers.com.com (129.239.188.35.bc.googleusercontent.com. [35.188.239.129])
+        by smtp.gmail.com with ESMTPSA id o21-20020a374115000000b0071a02d712b0sm356522qka.99.2023.03.09.17.31.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Mar 2023 17:31:49 -0800 (PST)
+From:   "Joel Fernandes (Google)" <joel@joelfernandes.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     "Joel Fernandes (Google)" <joel@joelfernandes.org>,
+        Alexander Aring <alex.aring@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-wpan@vger.kernel.org,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        boqun.feng@gmail.com, paulmck@kernel.org, urezki@gmail.com
+Subject: [PATCH] mac802154: Rename kfree_rcu() to kvfree_rcu_mightsleep()
+Date:   Fri, 10 Mar 2023 01:31:44 +0000
+Message-Id: <20230310013144.970964-1-joel@joelfernandes.org>
+X-Mailer: git-send-email 2.40.0.rc1.284.g88254d51c5-goog
 MIME-Version: 1.0
-In-Reply-To: <20230309100248.3831498-1-zyytlz.wz@163.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023/3/9 18:02, Zheng Wang wrote:
-> In ravb_probe, priv->work was bound with ravb_tx_timeout_work.
-> If timeout occurs, it will start the work. And if we call
-> ravb_remove without finishing the work, ther may be a use
+The k[v]free_rcu() macro's single-argument form is deprecated.
+Therefore switch to the new k[v]free_rcu_mightsleep() variant. The goal
+is to avoid accidental use of the single-argument forms, which can
+introduce functionality bugs in atomic contexts and latency bugs in
+non-atomic contexts.
 
-ther -> there
+The callers are holding a mutex so the context allows blocking. Hence
+using the API with a single argument will be fine, but use its new name.
 
-> after free bug on ndev.
-> 
-> Fix it by finishing the job before cleanup in ravb_remove.
-> 
-> Fixes: c156633f1353 ("Renesas Ethernet AVB driver proper")
-> Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
-> ---
->  drivers/net/ethernet/renesas/ravb_main.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-> index 0f54849a3823..07a08e72f440 100644
-> --- a/drivers/net/ethernet/renesas/ravb_main.c
-> +++ b/drivers/net/ethernet/renesas/ravb_main.c
-> @@ -2892,6 +2892,7 @@ static int ravb_remove(struct platform_device *pdev)
->  	struct ravb_private *priv = netdev_priv(ndev);
->  	const struct ravb_hw_info *info = priv->info;
->  
-> +	cancel_work_sync(&priv->work);
+There is no functionality change with this patch.
 
-As your previous patch, I still do not see anything stopping
-dev_watchdog() from calling dev->netdev_ops->ndo_tx_timeout
-after cancel_work_sync(), maybe I missed something obvious
-here?
+Fixes: 57588c71177f ("mac802154: Handle passive scanning")
+Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
+---
+Please Ack the patch but we can carry it through the RCU tree as well if
+needed, as it is not a bug per-se and we are not dropping the old API before
+the next release.
 
+ net/mac802154/scan.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
->  	/* Stop PTP Clock driver */
->  	if (info->ccc_gac)
->  		ravb_ptp_stop(ndev);
-> 
+diff --git a/net/mac802154/scan.c b/net/mac802154/scan.c
+index 9b0933a185eb..5c191bedd72c 100644
+--- a/net/mac802154/scan.c
++++ b/net/mac802154/scan.c
+@@ -52,7 +52,7 @@ static int mac802154_scan_cleanup_locked(struct ieee802154_local *local,
+ 	request = rcu_replace_pointer(local->scan_req, NULL, 1);
+ 	if (!request)
+ 		return 0;
+-	kfree_rcu(request);
++	kvfree_rcu_mightsleep(request);
+ 
+ 	/* Advertize first, while we know the devices cannot be removed */
+ 	if (aborted)
+@@ -403,7 +403,7 @@ int mac802154_stop_beacons_locked(struct ieee802154_local *local,
+ 	request = rcu_replace_pointer(local->beacon_req, NULL, 1);
+ 	if (!request)
+ 		return 0;
+-	kfree_rcu(request);
++	kvfree_rcu_mightsleep(request);
+ 
+ 	nl802154_beaconing_done(wpan_dev);
+ 
+-- 
+2.40.0.rc1.284.g88254d51c5-goog
