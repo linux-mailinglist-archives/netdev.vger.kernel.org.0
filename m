@@ -2,317 +2,358 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E20796B3E92
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 13:02:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C799B6B3E97
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 13:02:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229924AbjCJMCH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 07:02:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46668 "EHLO
+        id S230039AbjCJMCr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 07:02:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229603AbjCJMCF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 07:02:05 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9EE3B9C95;
-        Fri, 10 Mar 2023 04:02:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Content-Type:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-To:Resent-Cc:
-        Resent-Message-ID:In-Reply-To:References;
-        bh=JW6mpsY6t2RcRbcj/8ifzBWs4WP38P09E10y7mHzgEU=; t=1678449723; x=1679659323; 
-        b=KKrVqDf81RA76xyvkilWmwIWwto77U20FMsjoVsSoBWxsW9RalKBXvjI+av2Vf+tKKTkbAscrs1
-        9RhM9bCFdpHFS9u+FtavICx2rV6qb7nk+djIGIohuK0fVCZ+YMXSq8GJFPziT05WyktHqc+Fl4hRO
-        PiHzFqVs2nOxNc9hg+sCXQWmcLtW2uE8hzJF+pMFVOS3vKg0V4bjiE4ddeguz6JlAieFEvnUqvUHg
-        PanFWGIbkJb7NaFRxC3p5hzqmddnOOFmoVqSdDZQ4DA/DyxoEcKER6Ep+nlyu1H8NSiuwTsYOxC/x
-        bveWzUzLsA+YjaPqAXEKIN2qLoyR/JSspX/w==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.96)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1pabRi-00H0lf-0R;
-        Fri, 10 Mar 2023 13:02:02 +0100
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Subject: pull-request: wireless-next-2023-03-10
-Date:   Fri, 10 Mar 2023 13:01:58 +0100
-Message-Id: <20230310120159.36518-1-johannes@sipsolutions.net>
-X-Mailer: git-send-email 2.39.2
+        with ESMTP id S230106AbjCJMCm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 07:02:42 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C61EF6B6F;
+        Fri, 10 Mar 2023 04:02:39 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id k10so19353707edk.13;
+        Fri, 10 Mar 2023 04:02:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678449757;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=QOa3OHMvLNrNfz5ZWfMnTS8rtqZhy0qS3igt7Lniq2Y=;
+        b=hk4CwKnPH99sfna6fp1wUEulY1pKhBrlM/dSWySTyugPPE2vW5uPC4eJcAt7sQfLnD
+         vCOVV2VjpbHbjfXWT+j3OhVXzGahZirCgvJt5qjqoNBJSbgWNIy6Hun62VAZd4qwpdE9
+         0MSO3H+81TQlwmVP+q3cH11v6OE0gwML52+A4ugeC5Z4ILTjggtai2BUGjASPVl2y9Hm
+         cmLHh5Ak2D/jT+QMwORYLtA3eWWG4tYNM0kgjPVTXh525OJ0tmwJi+ZUWVjc/Hh4hmz2
+         QAE+i/7WpHYiJBXseLslCclGIVnJoxcGVi3oNKCPgEnylw53VnLUSlwL7DG6lhppeHZg
+         bbew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678449757;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=QOa3OHMvLNrNfz5ZWfMnTS8rtqZhy0qS3igt7Lniq2Y=;
+        b=oxPnqkhPMS58anzpYvvzgNPg43RXiDZUejd7CtdR566rbYUU8SG4qKlDaWFHj5IRQf
+         EEW65aVDGdHb1hF0+XeoMmZ2KAXSzJGkZC+L+s9tkqma+wZ9d9XEgiusR2Uivmee44no
+         1tYOSNxW+ACnjH10BgnJQNX1b9KPXQk3d/rZYIVHt9w7OdsTtVu3L0BIBfgFLClgCKdW
+         FHOFxHFxzrwyMAYLh2HuIQ7bQ+GZnWBM1OpzHzgAtSZYOAOBAWNjZbqfsLo5cA7VczMG
+         nYEyDm3EYOjZXOt9KDLbavQivnUnXve0XuUCypKmIsLPuROXE+hfkbnadsAFDXAfMDBl
+         pkgQ==
+X-Gm-Message-State: AO0yUKXTtHVgyfXWAZCRM93dyzCe++4MTKh602dYGhkUfpu8C+mnKOxs
+        PCSHG7Hez6eVE7dJisldgP0=
+X-Google-Smtp-Source: AK7set+jyfXVJwl3h3cWH/7wjbwURG3FqCugDcrUWFsIPv/cbzwzAZ97JGlo1GGSYxPvkM67jw3vwA==
+X-Received: by 2002:a05:6402:188:b0:4a3:43c1:8430 with SMTP id r8-20020a056402018800b004a343c18430mr1386558edv.4.1678449757500;
+        Fri, 10 Mar 2023 04:02:37 -0800 (PST)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id h13-20020a170906854d00b008e125ee7be4sm877794ejy.176.2023.03.10.04.02.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Mar 2023 04:02:37 -0800 (PST)
+Date:   Fri, 10 Mar 2023 14:02:35 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Lukasz Majewski <lukma@denx.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Russell King <linux@armlinux.org.uk>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/7] dsa: marvell: Provide per device information about
+ max frame size
+Message-ID: <20230310120235.2cjxauvqxyei45li@skbuf>
+References: <20230309125421.3900962-1-lukma@denx.de>
+ <20230309125421.3900962-2-lukma@denx.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230309125421.3900962-2-lukma@denx.de>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thu, Mar 09, 2023 at 01:54:15PM +0100, Lukasz Majewski wrote:
+> Different Marvell DSA switches support different size of max frame
+> bytes to be sent. This value corresponds to the memory allocated
+> in switch to store single frame.
+> 
+> For example mv88e6185 supports max 1632 bytes, which is now in-driver
+> standard value.
 
-And for wireless-next, here's a bigger pull request, though
-I expect much more iwlwifi work in the near future.
+What is the criterion based on which 1632 is the "in-driver standard value"?
 
-Please pull and let me know if there's any problem.
+> On the other hand - mv88e6250 supports 2048 bytes.
 
-Thanks,
-johannes
+What you mean to suggest here is that, using the current classification
+from mv88e6xxx_get_max_mtu(), mv88e6250 falls into the "none of the above"
+bucket, for which the driver returns 1522 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN // 1492.
+But it truly supports a maximum frame length of 2048, per your research.
+
+The problem is that I needed to spend 30 minutes to understand this, and
+the true motivation for this patch.
+
+> To be more interesting - devices supporting jumbo frames - use yet
+> another value (10240 bytes)
+
+What's interesting about this?
+
+> 
+> As this value is internal and may be different for each switch IC,
+> new entry in struct mv88e6xxx_info has been added to store it.
+
+You need to provide a justification for why the existing code structure
+is not good enough.
+
+> 
+> This commit doesn't change the code functionality - it just provides
+> the max frame size value explicitly - up till now it has been
+> assigned depending on the callback provided by the switch driver
+> (e.g. .set_max_frame_size, .port_set_jumbo_size).
+> 
+> Signed-off-by: Lukasz Majewski <lukma@denx.de>
+> 
+> ---
+> Changes for v2:
+> - Define max_frame_size with default value of 1632 bytes,
+> - Set proper value for the mv88e6250 switch SoC (linkstreet) family
+> 
+> Changes for v3:
+> - Add default value for 1632B of the max frame size (to avoid problems
+>   with not defined values)
+> 
+> Changes for v4:
+> - Rework the mv88e6xxx_get_max_mtu() by using per device defined
+>   max_frame_size value
+> 
+> - Add WARN_ON_ONCE() when max_frame_size is not defined
+> 
+> - Add description for the new 'max_frame_size' member of mv88e6xxx_info
+> 
+> Changes for v5:
+> - Move some code fragments (like get_mtu callback changes) to separate
+>   patches
+
+you have change log up to v5, but your subject prefix is [PATCH 1/7]
+which implies v1?
+
+> ---
+>  drivers/net/dsa/mv88e6xxx/chip.c | 31 +++++++++++++++++++++++++++++++
+>  drivers/net/dsa/mv88e6xxx/chip.h |  6 ++++++
+>  2 files changed, 37 insertions(+)
+> 
+> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+> index 0a5d6c7bb128..c097a0b19ba6 100644
+> --- a/drivers/net/dsa/mv88e6xxx/chip.c
+> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
+
+It would be good if the commit message contained the procedure based on
+which you had made these changes - and preferably they were mechanical.
+Having a small C program written would be absolutely ideal.
+This is so that reviewers wouldn't have to do it in parallel...
+
+My analysis has determined the following 3 categories:
+
+static int mv88e6xxx_get_max_mtu(struct dsa_switch *ds, int port)
+{
+	struct mv88e6xxx_chip *chip = ds->priv;
+
+	if (chip->info->ops->port_set_jumbo_size)
+		return 10240 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN; // 10210
+	else if (chip->info->ops->set_max_frame_size)
+		return 1632 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN; // 1602
+	return 1522 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN; // 1492
+}
+
+By ops:
+
+port_set_jumbo_size:
+static const struct mv88e6xxx_ops mv88e6131_ops = {
+static const struct mv88e6xxx_ops mv88e6141_ops = {
+static const struct mv88e6xxx_ops mv88e6171_ops = {
+static const struct mv88e6xxx_ops mv88e6172_ops = {
+static const struct mv88e6xxx_ops mv88e6175_ops = {
+static const struct mv88e6xxx_ops mv88e6176_ops = {
+static const struct mv88e6xxx_ops mv88e6190_ops = {
+static const struct mv88e6xxx_ops mv88e6190x_ops = {
+static const struct mv88e6xxx_ops mv88e6240_ops = {
+static const struct mv88e6xxx_ops mv88e6320_ops = {
+static const struct mv88e6xxx_ops mv88e6321_ops = {
+static const struct mv88e6xxx_ops mv88e6341_ops = {
+static const struct mv88e6xxx_ops mv88e6350_ops = {
+static const struct mv88e6xxx_ops mv88e6351_ops = {
+static const struct mv88e6xxx_ops mv88e6352_ops = {
+static const struct mv88e6xxx_ops mv88e6390_ops = {
+static const struct mv88e6xxx_ops mv88e6390x_ops = {
+static const struct mv88e6xxx_ops mv88e6393x_ops = {
+
+set_max_frame_size:
+static const struct mv88e6xxx_ops mv88e6085_ops = {
+static const struct mv88e6xxx_ops mv88e6095_ops = {
+static const struct mv88e6xxx_ops mv88e6097_ops = {
+static const struct mv88e6xxx_ops mv88e6123_ops = {
+static const struct mv88e6xxx_ops mv88e6161_ops = {
+static const struct mv88e6xxx_ops mv88e6185_ops = {
+
+none of the above:
+static const struct mv88e6xxx_ops mv88e6165_ops = {
+static const struct mv88e6xxx_ops mv88e6191_ops = {
+static const struct mv88e6xxx_ops mv88e6250_ops = {
+static const struct mv88e6xxx_ops mv88e6290_ops = {
 
 
+By info:
 
-The following changes since commit f2b6cfda76d2119871e10fa01ecdc7178401ef22:
+port_set_jumbo_size (10240):
+	[MV88E6131] = {
+	[MV88E6141] = {
+	[MV88E6171] = {
+	[MV88E6172] = {
+	[MV88E6175] = {
+	[MV88E6176] = {
+	[MV88E6190] = {
+	[MV88E6190X] = {
+	[MV88E6240] = {
+	[MV88E6320] = {
+	[MV88E6321] = {
+	[MV88E6341] = {
+	[MV88E6350] = {
+	[MV88E6351] = {
+	[MV88E6352] = {
+	[MV88E6390] = {
+	[MV88E6390X] = {
+	[MV88E6191X] = {
+	[MV88E6193X] = {
+	[MV88E6393X] = {
 
-  net/mlx5e: Align IPsec ASO result memory to be as required by hardware (2023-02-20 16:52:56 -0800)
+set_max_frame_size (1632):
+	[MV88E6085] = {
+	[MV88E6095] = {
+	[MV88E6097] = {
+	[MV88E6123] = {
+	[MV88E6161] = {
+	[MV88E6185] = {
 
-are available in the Git repository at:
+none of the above (1522):
+	[MV88E6165] = {
+	[MV88E6191] = {
+	[MV88E6220] = {
+	[MV88E6250] = {
+	[MV88E6290] = {
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git tags/wireless-next-2023-03-10
 
-for you to fetch changes up to da1185449c669076276027c600666286124eef9f:
+Whereas your analysis seems to have determined this:
 
-  wifi: iwlwifi: mvm: fix EOF bit reporting (2023-03-07 22:14:15 +0100)
+port_set_jumbo_size (10240):
+	[MV88E6131] = {
+	[MV88E6141] = {
+	[MV88E6171] = {
+	[MV88E6172] = {
+	[MV88E6175] = {
+	[MV88E6176] = {
+	[MV88E6190] = {
+	[MV88E6240] = {
+	[MV88E6320] = {
+	[MV88E6321] = {
+	[MV88E6341] = {
+	[MV88E6350] = {
+	[MV88E6351] = {
+	[MV88E6352] = {
+	[MV88E6390] = {
+	[MV88E6390X] = {
+	[MV88E6393X] = {
 
-----------------------------------------------------------------
-wireless-next patches for 6.4
+set_max_frame_size (1632):
+	[MV88E6095] = {
+	[MV88E6097] = {
+	[MV88E6123] = {
+	[MV88E6161] = {
+	[MV88E6165] = {
+	[MV88E6185] = {
 
-Major changes:
+none of the above (1522):
+	[MV88E6085] = {
+	[MV88E6190X] = {
+	[MV88E6191] = {
+	[MV88E6191X] = {
+	[MV88E6193X] = {
+	[MV88E6290] = {
 
-cfg80211
- * 6 GHz improvements
- * HW timestamping support
- * support for randomized auth/deauth TA for PASN privacy
-   (also for mac80211)
+what's up with these?! (no max_frame_size)
+	[MV88E6220] = {
+	[MV88E6250] = {
 
-mac80211
- * radiotap TLV and EHT support for the iwlwifi sniffer
- * HW timestamping support
- * per-link debugfs for multi-link
 
-brcmfmac
- * support for Apple (M1 Pro/Max) devices
+So our analysis differs for:
 
-iwlwifi
- * support for a few new devices
- * EHT sniffer support
+MV88E6190X (I say 10240, you say 1522)
+MV88E6191X (I say 10240, you say 1522)
+MV88E6193X (I say 10240, you say 1522)
+MV88E6085 (I say 1632, you say 1522)
+MV88E6165 (I say 1522, you say 1632)
+MV88E6220 (I say 1522, not clear what you say)
+MV88E6250 (I say 1522, not clear what you say)
 
-rtw88
- * better support for some SDIO devices
-   (e.g. MAC address from efuse)
+Double-checking with the code, I believe my analysis to be the correct one...
 
-rtw89
- * HW scan support for 8852b
- * better support for 6 GHz scanning
 
-----------------------------------------------------------------
-Alon Giladi (1):
-      wifi: iwlwifi: mvm: allow Microsoft to use TAS
+I have also noticed that you have not acted upon my previous review comment:
+https://patchwork.kernel.org/project/netdevbpf/patch/20230106101651.1137755-1-lukma@denx.de/
 
-Avraham Stern (2):
-      wifi: nl80211: add a command to enable/disable HW timestamping
-      wifi: mac80211: add support for set_hw_timestamp command
+| 1522 - 30 = 1492.
+| 
+| I don't believe that there are switches which don't support the standard
+| MTU of 1500 ?!
+| 
+| >  		.port_base_addr = 0x10,
+| >  		.phy_base_addr = 0x0,
+| >  		.global1_addr = 0x1b,
+| 
+| Note that I see this behavior isn't new. But I've simulated it, and it
+| will produce the following messages on probe:
+| 
+| [    7.425752] mscc_felix 0000:00:00.5 swp0 (uninitialized): PHY [0000:00:00.3:10] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+| [    7.437516] mscc_felix 0000:00:00.5: nonfatal error -34 setting MTU to 1500 on port 0
+| [    7.588585] mscc_felix 0000:00:00.5 swp1 (uninitialized): PHY [0000:00:00.3:11] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+| [    7.600433] mscc_felix 0000:00:00.5: nonfatal error -34 setting MTU to 1500 on port 1
+| [    7.752613] mscc_felix 0000:00:00.5 swp2 (uninitialized): PHY [0000:00:00.3:12] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+| [    7.764457] mscc_felix 0000:00:00.5: nonfatal error -34 setting MTU to 1500 on port 2
+| [    7.900771] mscc_felix 0000:00:00.5 swp3 (uninitialized): PHY [0000:00:00.3:13] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+| [    7.912501] mscc_felix 0000:00:00.5: nonfatal error -34 setting MTU to 1500 on port 3
+| 
+| I wonder, shouldn't we first fix that, and apply this patch set afterwards?
 
-Benjamin Berg (3):
-      wifi: mac80211: add pointer from bss_conf to vif
-      wifi: mac80211: remove SMPS from AP debugfs
-      wifi: mac80211: add netdev per-link debugfs data and driver hook
+I guess I will have to fix this now, since you haven't done it.
 
-Bitterblue Smith (1):
-      wifi: rtl8xxxu: Remove always true condition in rtl8xxxu_print_chipinfo
+> diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
+> index da6e1339f809..e2b88f1f8376 100644
+> --- a/drivers/net/dsa/mv88e6xxx/chip.h
+> +++ b/drivers/net/dsa/mv88e6xxx/chip.h
+> @@ -132,6 +132,12 @@ struct mv88e6xxx_info {
+>  	unsigned int num_gpio;
+>  	unsigned int max_vid;
+>  	unsigned int max_sid;
+> +
+> +	/* Max Frame Size.
+> +	 * This value corresponds to the memory allocated in switch internal
+> +	 * memory to store single frame.
+> +	 */
 
-Chih-Kang Chang (1):
-      wifi: rtw89: fix SER L1 might stop entering LPS issue
+What is the source of this definition?
 
-Chin-Yen Lee (1):
-      wifi: rtw89: add tx_wake notify for 8852B
+I'm asking because I know of other switches where the internal memory
+allocation scheme has nothing to do with the frame size. Instead, there
+are SRAM cells of fixed and small size (say 60 octets) chained together.
 
-Christophe JAILLET (1):
-      wifi: wfx: Remove some dead code
-
-Golan Ben Ami (2):
-      wifi: iwlwifi: reduce verbosity of some logging events
-      wifi: iwlwifi: Add support for B step of BnJ-Fm4
-
-Hector Martin (13):
-      wifi: brcmfmac: acpi: Add support for fetching Apple ACPI properties
-      wifi: brcmfmac: pcie: Provide a buffer of random bytes to the device
-      wifi: brcmfmac: chip: Only disable D11 cores; handle an arbitrary number
-      wifi: brcmfmac: chip: Handle 1024-unit sizes for TCM blocks
-      wifi: brcmfmac: cfg80211: Add support for scan params v2
-      wifi: brcmfmac: feature: Add support for setting feats based on WLC version
-      wifi: brcmfmac: cfg80211: Add support for PMKID_V3 operations
-      wifi: brcmfmac: cfg80211: Pass the PMK in binary instead of hex
-      wifi: brcmfmac: pcie: Add IDs/properties for BCM4387
-      wifi: brcmfmac: common: Add support for downloading TxCap blobs
-      wifi: brcmfmac: pcie: Load and provide TxCap blobs
-      wifi: brcmfmac: common: Add support for external calibration blobs
-      wifi: brcmfmac: pcie: Add BCM4378B3 support
-
-Ilan Peer (3):
-      wifi: nl80211: Update the documentation of NL80211_SCAN_FLAG_COLOCATED_6GHZ
-      wifi: mac80211_hwsim: Indicate support for NL80211_EXT_FEATURE_SCAN_MIN_PREQ_CONTENT
-      wifi: iwlwifi: Do not include radiotap EHT user info if not needed
-
-Jacob Keller (1):
-      wifi: nl80211: convert cfg80211_scan_request allocation to *_size macros
-
-Jiapeng Chong (2):
-      wifi: rtlwifi: rtl8192de: Remove the unused variable bcnfunc_enable
-      wifi: rtlwifi: rtl8192se: Remove some unused variables
-
-Johannes Berg (11):
-      wifi: mac80211: adjust scan cancel comment/check
-      wifi: mac80211: check key taint for beacon protection
-      wifi: mac80211: allow beacon protection HW offload
-      wifi: cfg80211/mac80211: report link ID on control port RX
-      wifi: mac80211: warn only once on AP probe
-      wifi: mac80211: mlme: remove pointless sta check
-      wifi: mac80211: simplify reasoning about EHT capa handling
-      wifi: mac80211: fix ieee80211_link_set_associated() type
-      wifi: iwlwifi: mvm: avoid UB shift of snif_queue
-      wifi: iwlwifi: mvm: make flush code a bit clearer
-      wifi: iwlwifi: mvm: fix EOF bit reporting
-
-John Keeping (1):
-      wifi: brcmfmac: support CQM RSSI notification with older firmware
-
-Konrad Dybcio (1):
-      wifi: brcmfmac: pcie: Add 4359C0 firmware definition
-
-Lu jicong (1):
-      wifi: rtlwifi: rtl8192ce: fix dealing empty EEPROM values
-
-Martin Blumenstingl (7):
-      wifi: rtw88: mac: Add support for the SDIO HCI in rtw_pwr_seq_parser()
-      wifi: rtw88: mac: Add SDIO HCI support in the TX/page table setup
-      wifi: rtw88: rtw8821c: Implement RTL8821CS (SDIO) efuse parsing
-      wifi: rtw88: rtw8822b: Implement RTL8822BS (SDIO) efuse parsing
-      wifi: rtw88: rtw8822c: Implement RTL8822CS (SDIO) efuse parsing
-      wifi: rtw88: mac: Return the original error from rtw_pwr_seq_parser()
-      wifi: rtw88: mac: Return the original error from rtw_mac_power_switch()
-
-Mordechay Goodstein (19):
-      wifi: mac80211: clear all bits that relate rtap fields on skb
-      wifi: wireless: return primary channel regardless of DUP
-      wifi: wireless: correct primary channel validation on 6 GHz
-      wifi: wireless: cleanup unused function parameters
-      wifi: radiotap: Add EHT radiotap definitions
-      wifi: mac80211: add support for driver adding radiotap TLVs
-      wifi: iwlwifi: mvm: add LSIG info to radio tap info in EHT
-      wifi: iwlwifi: mvm: mark mac header with no data frames
-      wifi: radiotap: separate vendor TLV into header/content
-      wifi: iwlwifi: mvm: add an helper function radiotap TLVs
-      wifi: iwlwifi: mvm: add EHT radiotap info based on rate_n_flags
-      wifi: iwlwifi: mvm: add all EHT based on data0 info from HW
-      wifi: iwlwifi: mvm: rename define to generic name
-      wifi: iwlwifi: mvm: decode USIG_B1_B7 RU to nl80211 RU width
-      wifi: iwlwifi: mvm: parse FW frame metadata for EHT sniffer mode
-      wifi: iwlwifi: mvm: add primary 80 known for EHT radiotap
-      wifi: iwlwifi: rs-fw: break out for unsupported bandwidth
-      wifi: iwlwifi: mvm: clean up duplicated defines
-      wifi: iwlwifi: mvm: add EHT RU allocation to radiotap
-
-Mukesh Sisodiya (2):
-      wifi: iwlwifi: Adding the code to get RF name for MsP device
-      wifi: iwlwifi: Update logs for yoyo reset sw changes
-
-Ping-Ke Shih (2):
-      wifi: rtl8xxxu: 8188e: parse single one element of RA report for station mode
-      wifi: rtw89: 8852b: enable hw_scan support
-
-Po-Hao Huang (3):
-      wifi: rtw89: add RNR support for 6 GHz scan
-      wifi: rtw89: adjust channel encoding to common function
-      wifi: rtw89: 8852b: add channel encoding for hw_scan
-
-Ryder Lee (3):
-      wifi: mac80211: introduce ieee80211_refresh_tx_agg_session_timer()
-      wifi: mac80211: add EHT MU-MIMO related flags in ieee80211_bss_conf
-      wifi: mac80211: add LDPC related flags in ieee80211_bss_conf
-
-Veerendranath Jakkam (1):
-      wifi: nl80211: Add support for randomizing TA of auth and deauth frames
-
-Zong-Zhe Yang (2):
-      wifi: rtw89: fw: configure CRASH_TRIGGER feature for 8852B
-      wifi: rtw89: refine FW feature judgement on packet drop
-
- .../wireless/broadcom/brcm80211/brcmfmac/Makefile  |   2 +
- .../wireless/broadcom/brcm80211/brcmfmac/acpi.c    |  51 ++
- .../net/wireless/broadcom/brcm80211/brcmfmac/bus.h |   1 +
- .../broadcom/brcm80211/brcmfmac/cfg80211.c         | 324 +++++++----
- .../wireless/broadcom/brcm80211/brcmfmac/chip.c    |  25 +-
- .../wireless/broadcom/brcm80211/brcmfmac/common.c  | 118 +++-
- .../wireless/broadcom/brcm80211/brcmfmac/common.h  |  11 +
- .../wireless/broadcom/brcm80211/brcmfmac/feature.c |  49 ++
- .../wireless/broadcom/brcm80211/brcmfmac/feature.h |   6 +-
- .../broadcom/brcm80211/brcmfmac/fwil_types.h       | 157 +++++-
- .../net/wireless/broadcom/brcm80211/brcmfmac/of.c  |   7 +
- .../wireless/broadcom/brcm80211/brcmfmac/pcie.c    |  61 ++-
- .../broadcom/brcm80211/include/brcm_hw_ids.h       |   2 +
- drivers/net/wireless/intel/iwlwifi/cfg/22000.c     |  12 +
- drivers/net/wireless/intel/iwlwifi/fw/api/rs.h     |  27 +-
- drivers/net/wireless/intel/iwlwifi/fw/api/rx.h     |  84 ++-
- drivers/net/wireless/intel/iwlwifi/fw/rs.c         |   4 +-
- drivers/net/wireless/intel/iwlwifi/iwl-config.h    |   1 +
- drivers/net/wireless/intel/iwlwifi/iwl-csr.h       |   1 +
- drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c   |  26 +-
- drivers/net/wireless/intel/iwlwifi/mvm/fw.c        |   5 +
- drivers/net/wireless/intel/iwlwifi/mvm/mac-ctxt.c  |  10 +-
- drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c  |  30 +-
- drivers/net/wireless/intel/iwlwifi/mvm/mvm.h       |   5 +
- drivers/net/wireless/intel/iwlwifi/mvm/rs-fw.c     |   8 +-
- drivers/net/wireless/intel/iwlwifi/mvm/rs.c        |  17 +-
- drivers/net/wireless/intel/iwlwifi/mvm/rx.c        |   8 +-
- drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c      | 601 ++++++++++++++++++++-
- drivers/net/wireless/intel/iwlwifi/mvm/tx.c        |   7 +-
- drivers/net/wireless/intel/iwlwifi/pcie/drv.c      |   5 +
- .../net/wireless/intel/iwlwifi/pcie/trans-gen2.c   |   5 +-
- drivers/net/wireless/mac80211_hwsim.c              |  52 +-
- .../net/wireless/realtek/rtl8xxxu/rtl8xxxu_8188e.c |  12 +-
- .../net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c  |   6 +-
- .../net/wireless/realtek/rtlwifi/rtl8192ce/hw.c    |  25 +-
- .../net/wireless/realtek/rtlwifi/rtl8192de/hw.c    |   6 -
- .../net/wireless/realtek/rtlwifi/rtl8192se/hw.c    |   9 -
- drivers/net/wireless/realtek/rtw88/mac.c           |  17 +-
- drivers/net/wireless/realtek/rtw88/rtw8821c.c      |   9 +
- drivers/net/wireless/realtek/rtw88/rtw8821c.h      |   6 +
- drivers/net/wireless/realtek/rtw88/rtw8822b.c      |   9 +
- drivers/net/wireless/realtek/rtw88/rtw8822b.h      |   8 +-
- drivers/net/wireless/realtek/rtw88/rtw8822c.c      |   9 +
- drivers/net/wireless/realtek/rtw88/rtw8822c.h      |   8 +-
- drivers/net/wireless/realtek/rtw89/core.c          |  35 +-
- drivers/net/wireless/realtek/rtw89/core.h          |   2 +-
- drivers/net/wireless/realtek/rtw89/fw.c            | 145 ++++-
- drivers/net/wireless/realtek/rtw89/fw.h            |   7 +
- drivers/net/wireless/realtek/rtw89/mac.c           |   2 +-
- drivers/net/wireless/realtek/rtw89/mac80211.c      |   2 +-
- drivers/net/wireless/realtek/rtw89/phy.c           |  72 +++
- drivers/net/wireless/realtek/rtw89/phy.h           |   3 +
- drivers/net/wireless/realtek/rtw89/rtw8852b.c      |  12 +-
- drivers/net/wireless/realtek/rtw89/rtw8852c.c      |  74 +--
- drivers/net/wireless/realtek/rtw89/ser.c           |   5 +
- drivers/net/wireless/silabs/wfx/main.c             |  10 +-
- include/net/cfg80211.h                             |  36 +-
- include/net/ieee80211_radiotap.h                   | 215 +++++++-
- include/net/mac80211.h                             |  92 ++--
- include/uapi/linux/nl80211.h                       |  37 +-
- net/mac80211/agg-tx.c                              |  17 +
- net/mac80211/cfg.c                                 |  46 +-
- net/mac80211/debugfs_netdev.c                      | 223 ++++++--
- net/mac80211/debugfs_netdev.h                      |  16 +
- net/mac80211/driver-ops.c                          |  25 +-
- net/mac80211/driver-ops.h                          |  16 +
- net/mac80211/ieee80211_i.h                         |   4 +
- net/mac80211/link.c                                |   5 +
- net/mac80211/mlme.c                                |   6 +-
- net/mac80211/rx.c                                  |  93 ++--
- net/mac80211/scan.c                                |   8 +-
- net/mac80211/tx.c                                  |  10 +
- net/wireless/mlme.c                                |  55 +-
- net/wireless/nl80211.c                             |  78 ++-
- net/wireless/rdev-ops.h                            |  17 +
- net/wireless/scan.c                                |  38 +-
- net/wireless/trace.h                               |  36 +-
- 77 files changed, 2645 insertions(+), 643 deletions(-)
- create mode 100644 drivers/net/wireless/broadcom/brcm80211/brcmfmac/acpi.c
-
+> +	unsigned int max_frame_size;
+>  	unsigned int port_base_addr;
+>  	unsigned int phy_base_addr;
+>  	unsigned int global1_addr;
+> -- 
+> 2.20.1
+> 
