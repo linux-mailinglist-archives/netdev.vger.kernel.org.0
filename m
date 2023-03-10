@@ -2,182 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 861E76B52CB
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 22:26:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 448436B52E3
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 22:30:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231821AbjCJV0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 16:26:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58692 "EHLO
+        id S231823AbjCJVao (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 16:30:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231818AbjCJV0G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 16:26:06 -0500
-Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F56FDDB0F;
-        Fri, 10 Mar 2023 13:26:04 -0800 (PST)
+        with ESMTP id S231803AbjCJVaR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 16:30:17 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4339524BE8;
+        Fri, 10 Mar 2023 13:30:00 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id ec29so25969593edb.6;
+        Fri, 10 Mar 2023 13:30:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1678483565; x=1710019565;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=vrPJVdcUit+S8FGoD3UECE020RNm4lbU5S9sF3HNvCE=;
-  b=CBrpRl1dUmdTFtWzEzOj2ZCPZ8MYi6+wh6aqVkd4JlzpPs0Oiq/+SSZE
-   kpIaEO0xM4tBf1wBG0o8ViLqsRu3VWvANq1a0+i0c4DfafwJX9GzAKNX8
-   qKkWjtRkzxeyip7DlpdXFUC7rqlpeweDuq173gAA22AOFOCOO76aY6cEt
-   I=;
-X-IronPort-AV: E=Sophos;i="5.98,250,1673913600"; 
-   d="scan'208";a="317225453"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2a-m6i4x-3ef535ca.us-west-2.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2023 21:25:59 +0000
-Received: from EX19MTAUWC001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2a-m6i4x-3ef535ca.us-west-2.amazon.com (Postfix) with ESMTPS id ABED260D8B;
-        Fri, 10 Mar 2023 21:25:58 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.25; Fri, 10 Mar 2023 21:25:58 +0000
-Received: from 88665a182662.ant.amazon.com (10.106.100.20) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.24; Fri, 10 Mar 2023 21:25:55 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <pholzing@redhat.com>
-CC:     <kuba@kernel.org>, <martin.lau@kernel.org>,
-        <netdev@vger.kernel.org>, <regressions@lists.linux.dev>,
-        <stable@vger.kernel.org>, <kuniyu@amazon.com>
-Subject: Re: [REGRESSION] v6.1+ bind() does not fail with EADDRINUSE if dual stack is bound
-Date:   Fri, 10 Mar 2023 13:25:47 -0800
-Message-ID: <20230310212547.25491-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <e21bf153-80b0-9ec0-15ba-e04a4ad42c34@redhat.com>
-References: <e21bf153-80b0-9ec0-15ba-e04a4ad42c34@redhat.com>
+        d=gmail.com; s=20210112; t=1678483798;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=zZ0s8gjUFPxIfG2G29b8+19vW1FL5pCSINNtGY1nwoQ=;
+        b=LNlbDQJJKmsrOS5yvDSMCOHzeP3P7vcZQzPA44QsNB8Ev28/TLps3k+8TGtm7kmVHx
+         beK1sDN/SGISK11GiGeRBVTz8VDfdcoqsaWBG/X71UXAP0by44BJV6abQXlyx3VTaPjO
+         ta5kV/tA83wYC0lxF8Cf+AZv/TOBomEZwkp6ApfaqjZrkA6HaSlZQAlHm2sp3FLzwWOr
+         SGU/Ff5UGY9tKtgPCoAMQ6C+DjA0btn2yYrLvoy0HUI/42rvI7ZQwbZn1btEbhKa62m5
+         DIt6SuFAyPv6IPDmitlhyBvCntimp6veWrzh1IzRTagLwmVhUTKbNK4XMKuvbMk2gSOC
+         z0Pw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678483798;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=zZ0s8gjUFPxIfG2G29b8+19vW1FL5pCSINNtGY1nwoQ=;
+        b=cFYwKohtlD0llaW+JTs7cPbhL6cbyVk3o8abnWfrJ0Mo3yhvVLalz9BUVHalvp9zKR
+         nfMrSK9byaRcIidTzRAgkruSawDl6ggNwbVFSH80qjvDk74TS+CzSXFPDWFRd09ZMKPI
+         0tuefvNJnkTDgt1F1LjE6vgoIwYuscun3OFs33nh7sLrmO8+4whEV3SkUIt382n7IB0j
+         6XEM1WDdEOpYaYfNwxsp/jnSy9/YHKak1qlfKd+T1mM8B+M1LE1Nkfalu549Cbt/JInk
+         EVaDXe5T1T7thF3kcrTXOCR/TRkEx2s4jUnEYzQ1KwQ+QhfiQ8CoUKIa2oplzX62W1f8
+         2sBw==
+X-Gm-Message-State: AO0yUKXFXo+aAsxLD+ArxSiSHQOjHBwo9uWI0KbNVmRQE/XTIUBcprGs
+        zNHsYiKSo7XlZFzEinU+Y2MpoPbtq0bW8PB3WdKS2BdG
+X-Google-Smtp-Source: AK7set/ZaeztZ4WAGh0k7iEzUu9m6CtWZ12yWy6r5oXeI+ISMmw06LIUxcI1ulmwr4YpnBelzzdj0/QKjVVDor2kkLs=
+X-Received: by 2002:a17:906:328c:b0:8b1:79ef:6923 with SMTP id
+ 12-20020a170906328c00b008b179ef6923mr12768496ejw.15.1678483798523; Fri, 10
+ Mar 2023 13:29:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.106.100.20]
-X-ClientProxiedBy: EX19D044UWB003.ant.amazon.com (10.13.139.168) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20230301154953.641654-1-joannelkoong@gmail.com>
+ <20230301154953.641654-10-joannelkoong@gmail.com> <20230306071006.73t5vtmxrsykw4zu@apollo>
+ <CAADnVQJ=wzztviB73jBy3+OYxUKhAX_jTGpS8Xv45vUVTDY-ZA@mail.gmail.com>
+ <20230307102233.bemr47x625ity26z@apollo> <CAADnVQ+xOrCSwgxGQXNM5wHfOwV+x0csHfNyDYBHgyGVXgc2Ow@mail.gmail.com>
+ <20230307173529.gi2crls7fktn6uox@apollo> <CAEf4Bza4N6XtXERkL+41F+_UsTT=T4B3gt0igP5mVVrzr9abXw@mail.gmail.com>
+ <20230310211541.schh7iyrqgbgfaay@macbook-pro-6.dhcp.thefacebook.com>
+In-Reply-To: <20230310211541.schh7iyrqgbgfaay@macbook-pro-6.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 10 Mar 2023 13:29:45 -0800
+Message-ID: <CAEf4BzYo-8ckyi-aogvW9HijNh+Z81CE__mWtmVJtCzuY+oECA@mail.gmail.com>
+Subject: Re: [PATCH v13 bpf-next 09/10] bpf: Add bpf_dynptr_slice and bpf_dynptr_slice_rdwr
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Joanne Koong <joannelkoong@gmail.com>,
+        bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <martin.lau@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Paul Holzinger <pholzing@redhat.com>
-Date:   Fri, 10 Mar 2023 17:01:31 +0100
-> Hi all,
-> 
-> there seems to be a regression which allows you to bind the same port 
-> twice when the first bind call bound to all ip addresses (i. e. dual stack).
-> 
-> A second bind call for the same port will succeed if you try to bind to 
-> a specific ipv4 (e. g. 127.0.0.1), binding to 0.0.0.0 or an ipv6 address 
-> fails correctly with EADDRINUSE.
-> 
-> I included a small c program below to show the issue. Normally the 
-> second bind call should fail, this was the case before v6.1.
-> 
-> 
-> I bisected the regression to commit 5456262d2baa ("net: Fix incorrect 
-> address comparison when searching for a bind2 bucket").
-> 
-> I also checked that the issue is still present in v6.3-rc1.
+On Fri, Mar 10, 2023 at 1:15=E2=80=AFPM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Tue, Mar 07, 2023 at 04:01:28PM -0800, Andrii Nakryiko wrote:
+> > > > >
+> > > > > I agree this is simpler, but I'm not sure it will work properly. =
+Verifier won't
+> > > > > know when the lifetime of the buffer ends, so if we disallow spil=
+ls until its
+> > > > > written over it's going to be a pain for users.
+> > > > >
+> > > > > Something like:
+> > > > >
+> > > > > for (...) {
+> > > > >         char buf[64];
+> > > > >         bpf_dynptr_slice_rdwr(..., buf, 64);
+> > > > >         ...
+> > > > > }
+> > > > >
+> > > > > .. and then compiler decides to spill something where buf was loc=
+ated on stack
+> > > > > outside the for loop. The verifier can't know when buf goes out o=
+f scope to
+> > > > > unpoison the slots.
+> > > >
+> > > > You're saying the "verifier doesn't know when buf ...".
+> > > > The same applies to the compiler. It has no visibility
+> > > > into what bpf_dynptr_slice_rdwr is doing.
+> > >
+> > > That is true, it can't assume anything about the side effects. But I =
+am talking
+> > > about the point in the program when the buffer object no longer lives=
+. Use of
+> > > the escaped pointer to such an object any longer is UB. The compiler =
+is well
+> > > within its rights to reuse its stack storage at that point, including=
+ for
+> > > spilling registers. Which is why "outside the for loop" in my earlier=
+ reply.
+> > >
+> > > > So it never spills into a declared C array
+> > > > as I tried to explain in the previous reply.
+> > > > Spill/fill slots are always invisible to C.
+> > > > (unless of course you do pointer arithmetic asm style)
+> > >
+> > > When the declared array's lifetime ends, it can.
+> > > https://godbolt.org/z/Ez7v4xfnv
+> > >
+> > > The 2nd call to bar as part of unrolled loop happens with fp-8, then =
+it calls
+> > > baz, spills r0 to fp-8, and calls bar again with fp-8.
+>
+> Right. If user writes such program and does explicit store of spillable
+> pointer into a stack.
+> I was talking about compiler generated spill/fill and I still believe
+> that compiler will not be reusing variable's stack memory for them.
+>
+> > >
+> > > If such a stack slot is STACK_POISON, verifier will reject this progr=
+am.
+>
+> Yes and I think it's an ok trade-off.
+> The user has to specifically code such program to hit this issue.
+> I don't think we will see this in practice.
+> If we do we can consider a more complex fix.
 
-Thanks for the detailed report.
+I was just debugging (a completely unrelated) issue where two
+completely independent functions, with different local variables, were
+reusing the same stack slots just because of them being inlined in
+parent functions. So stack reuse happens all the time, unfortunately.
+It's not always obvious or malicious.
 
-It seems we should take care of the special case in
-inet_bind2_bucket_match_addr_any().
+>
+> > >
+> > > >
+> > > > > > > +       *(void **)eth =3D (void *)0xdeadbeef;
+> > > > > > > +       ctx =3D *(void **)buffer;
+> > > > > > > +       eth_proto =3D eth->eth_proto + ctx->len;
+> > > > > > >         if (eth_proto =3D=3D bpf_htons(ETH_P_IP))
+> > > > > > >                 err =3D process_packet(&ptr, eth, nh_off, fal=
+se, ctx);
+> > > > > > >
+> > > > > > > I think the proper fix is to treat it as a separate return ty=
+pe distinct from
+> > > > > > > PTR_TO_MEM like PTR_TO_MEM_OR_PKT (or handle PTR_TO_MEM | DYN=
+PTR_* specially),
+> > > > > > > fork verifier state whenever there is a write, so that one pa=
+th verifies it as
+> > > > > > > PTR_TO_PACKET, while another as PTR_TO_STACK (if buffer was a=
+ stack ptr). I
+> > > > > > > think for the rest it's not a problem, but there are allow_pt=
+r_leak checks
+> > > > > > > applied to PTR_TO_STACK and PTR_TO_MAP_VALUE, so that needs t=
+o be rechecked.
+> > > > > > > Then we ensure that program is safe in either path.
+> > > > > > >
+> > > > > > > Also we need to fix regsafe to not consider other PTR_TO_MEMs=
+ equivalent to such
+> > > > > > > a pointer. We could also fork verifier states on return, to v=
+erify either path
+> > > > > > > separately right from the point following the call instructio=
+n.
+> > > > > >
+> > > > > > This is too complex imo.
+> > > > >
+> > > > > A better way to phrase this is to verify with R0 =3D PTR_TO_PACKE=
+T in one path,
+> > > > > and push_stack with R0 =3D buffer's reg->type + size set to len i=
+n the other path
+> > > > > for exploration later. In terms of verifier infra everything is t=
+here already,
+> > > > > it just needs to analyze both cases which fall into the regular c=
+ode handling
+> > > > > the reg->type's. Probably then no adjustments to regsafe are need=
+ed either. It's
+> > > > > like exploring branch instructions.
+> > > >
+> > > > I still don't like it. There is no reason to go a complex path
+> > > > when much simpler suffices.
+> >
+> > This issue you are discussing is the reason we don't support
+> > bpf_dynptr_from_mem() taking PTR_TO_STACK (which is a pity, but we
+> > postponed it initially).
+> >
+> > I've been thinking about something along the lines of STACK_POISON,
+> > but remembering associated id/ref_obj_id. When ref is released, turn
+> > STACK_POISON to STACK_MISC. If it's bpf_dynptr_slice_rdrw() or
+> > bpf_dynptr_from_mem(), which don't have ref_obj_id, they still have ID
+> > associated with returned pointer, so can we somehow incorporate that?
+>
+> There is dynptr_id in PTR_TO_MEM that is used by destroy_if_dynptr_stack_=
+slot(),
+> but I don't see how we can use it to help this case.
+> imo plain STACK_POISON that is overwriteable by STACK_MISC/STACK_ZERO
+> should be good enough in practice.
 
-I'll fix it.
+That's basically what I'm proposing, except when this overwrite
+happens we have to go and invalidate all the PTR_TO_MEM references
+that are pointing to that stack slot. E.g., in the below case
+(assuming we allow LOCAL dynptr to be constructed from stack)
 
-Thanks,
-Kuniyuki
+char buf[256], *p;
+struct bpf_dynptr dptr;
 
-> 
-> 
-> Original report: https://github.com/containers/podman/issues/17719
-> 
-> #regzbot introduced: 5456262d2baa
-> 
-> 
-> ```
-> 
-> #include <sys/socket.h>
-> #include <sys/un.h>
-> #include <stdlib.h>
-> #include <stdio.h>
-> #include <netinet/in.h>
-> #include <unistd.h>
-> 
-> int main(int argc, char *argv[])
-> {
->      int ret, sock1, sock2;
->      struct sockaddr_in6 addr;
->      struct sockaddr_in addr2;
-> 
->      sock1 = socket(AF_INET6, SOCK_STREAM, 0);
->      if (sock1 == -1)
->      {
->          perror("socket1");
->          exit(1);
->      }
->      sock2 = socket(AF_INET, SOCK_STREAM, 0);
->      if (sock2 == -1)
->      {
->          perror("socket2");
->          exit(1);
->      }
-> 
->      memset(&addr, 0, sizeof(addr));
->      addr.sin6_family = AF_INET6;
->      addr.sin6_addr = in6addr_any;
->      addr.sin6_port = htons(8080);
-> 
->      memset(&addr2, 0, sizeof(addr2));
->      addr2.sin_family = AF_INET;
->      addr2.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
->      addr2.sin_port = htons(8080);
-> 
->      ret = bind(sock1, (struct sockaddr *)&addr, sizeof(addr));
->      if (ret == -1)
->      {
->          perror("bind1");
->          exit(1);
->      }
->      printf("bind1 ret: %d\n", ret);
-> 
->      if ((listen(sock1, 5)) != 0)
->      {
->          perror("listen1");
->          exit(1);
->      }
-> 
->      ret = bind(sock2, (struct sockaddr *)&addr2, sizeof(addr2));
->      if (ret == -1)
->      {
->          perror("bind2");
->          exit(1);
->      }
->      printf("bind2 ret: %d\n", ret);
-> 
->      if ((listen(sock2, 5)) != 0)
->      {
->          perror("listen2");
->          exit(1);
->      }
-> 
->      // uncomment pause() to see with ss -tlpn the bound ports
->      // pause();
-> 
->      return 0;
-> }
-> 
-> ```
-> 
-> 
-> Best regards,
-> 
-> Paul
+bpf_dynptr_from_mem(buf, buf+256, &dptr);
+
+p =3D bpf_dynptr_data(&dptr, 128, 16); /* get 16-byte slice into buf, at
+offset 128 */
+
+/* buf[128] through buf[128+16] are STACK_POISON */
+
+buf[128] =3D 123;
+
+So here is where the problem happens. Should we invalidate just p
+here? Or entire dptr? Haven't thought much about details, but
+something like that. It was getting messy when we started to think
+about this with Joanne.
+
+>
+> We can potentially do some liveness trick. When PTR_TO_MEM with dynptr_id=
+ becomes
+> REG_LIVE_DONE we can convert STACK_POISON. But I'd go with the simplest a=
+pproach first.
