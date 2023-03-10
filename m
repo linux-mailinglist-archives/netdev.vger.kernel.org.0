@@ -2,260 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1315A6B3F1F
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 13:26:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E2076B3F21
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 13:27:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230337AbjCJM0O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 07:26:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32908 "EHLO
+        id S230189AbjCJM1t convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 10 Mar 2023 07:27:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229613AbjCJM0N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 07:26:13 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BECE77E03;
-        Fri, 10 Mar 2023 04:26:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=fQbnxGWIn7ewdJdpt4RNhPAsOmwBkoOJSG1XRnEXKRI=; b=RuqTzG9KdOS2vfZfAG6lwaJrBX
-        YPHZFs3t6frx5tV7NFLUj/vqeexDNyTUquvui2zQKfnJ7rKpDb92DsmkqGaqJqAVM2DNuGLyZ2T/i
-        uJhTe7RKhqXB94xojv2KHCscJmURv44XLaOAMKKH9ks/SYR4bGHRFbXbFpyaHQQ9qIajoH5XIGkcD
-        EgXeJRal/OI8lxa8NPK5w+MiOupN0Z4xvGhuoJy+hgK1xvpl6HuVMa6luC9gHDgbnQOemU4ZHVbyC
-        szC/Rbh4yQENbIHM0vJDdlWTZ/Me0HH3ePqEYVQwpXlD9Lo5NAkolM2t90tA4uRv3ldnAsgNR8PcE
-        vfZyQmPA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52538)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pabov-0006ej-5B; Fri, 10 Mar 2023 12:26:01 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pabot-0004gP-Qy; Fri, 10 Mar 2023 12:25:59 +0000
-Date:   Fri, 10 Mar 2023 12:25:59 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Lukasz Majewski <lukma@denx.de>, Andrew Lunn <andrew@lunn.ch>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/7] dsa: marvell: Provide per device information about
- max frame size
-Message-ID: <ZAsh12DdwDfKUW8F@shell.armlinux.org.uk>
-References: <20230309125421.3900962-1-lukma@denx.de>
- <20230309125421.3900962-2-lukma@denx.de>
- <20230310120235.2cjxauvqxyei45li@skbuf>
+        with ESMTP id S229547AbjCJM1r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 07:27:47 -0500
+Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CFA977E00
+        for <netdev@vger.kernel.org>; Fri, 10 Mar 2023 04:27:46 -0800 (PST)
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-260-riZug3RDPRWdpqJIvDTFgQ-1; Fri, 10 Mar 2023 07:27:41 -0500
+X-MC-Unique: riZug3RDPRWdpqJIvDTFgQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 67EA385D060;
+        Fri, 10 Mar 2023 12:27:41 +0000 (UTC)
+Received: from p1.redhat.com (unknown [10.39.192.120])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7634240C83B6;
+        Fri, 10 Mar 2023 12:27:40 +0000 (UTC)
+From:   Stefan Assmann <sassmann@kpanic.de>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        patryk.piotrowski@intel.com, slawomirx.laba@intel.com,
+        sassmann@kpanic.de
+Subject: [PATCH net] iavf: fix hang on reboot with ice
+Date:   Fri, 10 Mar 2023 13:26:53 +0100
+Message-Id: <20230310122653.1116051-1-sassmann@kpanic.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230310120235.2cjxauvqxyei45li@skbuf>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kpanic.de
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252; x-default=true
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 10, 2023 at 02:02:35PM +0200, Vladimir Oltean wrote:
-> By ops:
-> 
-> port_set_jumbo_size:
-> static const struct mv88e6xxx_ops mv88e6131_ops = {
-> static const struct mv88e6xxx_ops mv88e6141_ops = {
-> static const struct mv88e6xxx_ops mv88e6171_ops = {
-> static const struct mv88e6xxx_ops mv88e6172_ops = {
-> static const struct mv88e6xxx_ops mv88e6175_ops = {
-> static const struct mv88e6xxx_ops mv88e6176_ops = {
-> static const struct mv88e6xxx_ops mv88e6190_ops = {
-> static const struct mv88e6xxx_ops mv88e6190x_ops = {
-> static const struct mv88e6xxx_ops mv88e6240_ops = {
-> static const struct mv88e6xxx_ops mv88e6320_ops = {
-> static const struct mv88e6xxx_ops mv88e6321_ops = {
-> static const struct mv88e6xxx_ops mv88e6341_ops = {
-> static const struct mv88e6xxx_ops mv88e6350_ops = {
-> static const struct mv88e6xxx_ops mv88e6351_ops = {
-> static const struct mv88e6xxx_ops mv88e6352_ops = {
-> static const struct mv88e6xxx_ops mv88e6390_ops = {
-> static const struct mv88e6xxx_ops mv88e6390x_ops = {
-> static const struct mv88e6xxx_ops mv88e6393x_ops = {
-> 
-> set_max_frame_size:
-> static const struct mv88e6xxx_ops mv88e6085_ops = {
-> static const struct mv88e6xxx_ops mv88e6095_ops = {
-> static const struct mv88e6xxx_ops mv88e6097_ops = {
-> static const struct mv88e6xxx_ops mv88e6123_ops = {
-> static const struct mv88e6xxx_ops mv88e6161_ops = {
-> static const struct mv88e6xxx_ops mv88e6185_ops = {
-> 
-> none of the above:
-> static const struct mv88e6xxx_ops mv88e6165_ops = {
-> static const struct mv88e6xxx_ops mv88e6191_ops = {
-> static const struct mv88e6xxx_ops mv88e6250_ops = {
-> static const struct mv88e6xxx_ops mv88e6290_ops = {
-> 
-> 
-> By info:
-> 
-> port_set_jumbo_size (10240):
-> 	[MV88E6131] = {
-> 	[MV88E6141] = {
-> 	[MV88E6171] = {
-> 	[MV88E6172] = {
-> 	[MV88E6175] = {
-> 	[MV88E6176] = {
-> 	[MV88E6190] = {
-> 	[MV88E6190X] = {
-> 	[MV88E6240] = {
-> 	[MV88E6320] = {
-> 	[MV88E6321] = {
-> 	[MV88E6341] = {
-> 	[MV88E6350] = {
-> 	[MV88E6351] = {
-> 	[MV88E6352] = {
-> 	[MV88E6390] = {
-> 	[MV88E6390X] = {
-> 	[MV88E6191X] = {
-> 	[MV88E6193X] = {
-> 	[MV88E6393X] = {
-> 
-> set_max_frame_size (1632):
-> 	[MV88E6085] = {
-> 	[MV88E6095] = {
-> 	[MV88E6097] = {
-> 	[MV88E6123] = {
-> 	[MV88E6161] = {
-> 	[MV88E6185] = {
-> 
-> none of the above (1522):
-> 	[MV88E6165] = {
-> 	[MV88E6191] = {
-> 	[MV88E6220] = {
-> 	[MV88E6250] = {
-> 	[MV88E6290] = {
-> 
-> 
-> Whereas your analysis seems to have determined this:
-> 
-> port_set_jumbo_size (10240):
-> 	[MV88E6131] = {
-> 	[MV88E6141] = {
-> 	[MV88E6171] = {
-> 	[MV88E6172] = {
-> 	[MV88E6175] = {
-> 	[MV88E6176] = {
-> 	[MV88E6190] = {
-> 	[MV88E6240] = {
-> 	[MV88E6320] = {
-> 	[MV88E6321] = {
-> 	[MV88E6341] = {
-> 	[MV88E6350] = {
-> 	[MV88E6351] = {
-> 	[MV88E6352] = {
-> 	[MV88E6390] = {
-> 	[MV88E6390X] = {
-> 	[MV88E6393X] = {
-> 
-> set_max_frame_size (1632):
-> 	[MV88E6095] = {
-> 	[MV88E6097] = {
-> 	[MV88E6123] = {
-> 	[MV88E6161] = {
-> 	[MV88E6165] = {
-> 	[MV88E6185] = {
-> 
-> none of the above (1522):
-> 	[MV88E6085] = {
-> 	[MV88E6190X] = {
-> 	[MV88E6191] = {
-> 	[MV88E6191X] = {
-> 	[MV88E6193X] = {
-> 	[MV88E6290] = {
-> 
-> what's up with these?! (no max_frame_size)
-> 	[MV88E6220] = {
-> 	[MV88E6250] = {
-> 
-> 
-> So our analysis differs for:
-> 
-> MV88E6190X (I say 10240, you say 1522)
-> MV88E6191X (I say 10240, you say 1522)
-> MV88E6193X (I say 10240, you say 1522)
-> MV88E6085 (I say 1632, you say 1522)
-> MV88E6165 (I say 1522, you say 1632)
-> MV88E6220 (I say 1522, not clear what you say)
-> MV88E6250 (I say 1522, not clear what you say)
-> 
-> Double-checking with the code, I believe my analysis to be the correct one...
+When a system with E810 with existing VFs gets rebooted the following
+hang may be observed.
 
-This is similar analysis to what I did for a previous patch set, and
-came to the conclusion that we need code in the driver to validate
-that the addition of these values is in fact correct. See my previous
-reviews and my recommendations on how to structure these patch sets,
-so we as reviewers don't _have_ to go to this level of verification.
+ Pid 1 is hung in iavf_remove(), part of a network driver:
+ PID: 1        TASK: ffff965400e5a340  CPU: 24   COMMAND: "systemd-shutdow"
+  #0 [ffffaad04005fa50] __schedule at ffffffff8b3239cb
+  #1 [ffffaad04005fae8] schedule at ffffffff8b323e2d
+  #2 [ffffaad04005fb00] schedule_hrtimeout_range_clock at ffffffff8b32cebc
+  #3 [ffffaad04005fb80] usleep_range_state at ffffffff8b32c930
+  #4 [ffffaad04005fbb0] iavf_remove at ffffffffc12b9b4c [iavf]
+  #5 [ffffaad04005fbf0] pci_device_remove at ffffffff8add7513
+  #6 [ffffaad04005fc10] device_release_driver_internal at ffffffff8af08baa
+  #7 [ffffaad04005fc40] pci_stop_bus_device at ffffffff8adcc5fc
+  #8 [ffffaad04005fc60] pci_stop_and_remove_bus_device at ffffffff8adcc81e
+  #9 [ffffaad04005fc70] pci_iov_remove_virtfn at ffffffff8adf9429
+ #10 [ffffaad04005fca8] sriov_disable at ffffffff8adf98e4
+ #11 [ffffaad04005fcc8] ice_free_vfs at ffffffffc04bb2c8 [ice]
+ #12 [ffffaad04005fd10] ice_remove at ffffffffc04778fe [ice]
+ #13 [ffffaad04005fd38] ice_shutdown at ffffffffc0477946 [ice]
+ #14 [ffffaad04005fd50] pci_device_shutdown at ffffffff8add58f1
+ #15 [ffffaad04005fd70] device_shutdown at ffffffff8af05386
+ #16 [ffffaad04005fd98] kernel_restart at ffffffff8a92a870
+ #17 [ffffaad04005fda8] __do_sys_reboot at ffffffff8a92abd6
+ #18 [ffffaad04005fee0] do_syscall_64 at ffffffff8b317159
+ #19 [ffffaad04005ff08] __context_tracking_enter at ffffffff8b31b6fc
+ #20 [ffffaad04005ff18] syscall_exit_to_user_mode at ffffffff8b31b50d
+ #21 [ffffaad04005ff28] do_syscall_64 at ffffffff8b317169
+ #22 [ffffaad04005ff50] entry_SYSCALL_64_after_hwframe at ffffffff8b40009b
+     RIP: 00007f1baa5c13d7  RSP: 00007fffbcc55a98  RFLAGS: 00000202
+     RAX: ffffffffffffffda  RBX: 0000000000000000  RCX: 00007f1baa5c13d7
+     RDX: 0000000001234567  RSI: 0000000028121969  RDI: 00000000fee1dead
+     RBP: 00007fffbcc55ca0   R8: 0000000000000000   R9: 00007fffbcc54e90
+     R10: 00007fffbcc55050  R11: 0000000000000202  R12: 0000000000000005
+     R13: 0000000000000000  R14: 00007fffbcc55af0  R15: 0000000000000000
+     ORIG_RAX: 00000000000000a9  CS: 0033  SS: 002b
 
-> I have also noticed that you have not acted upon my previous review comment:
-> https://patchwork.kernel.org/project/netdevbpf/patch/20230106101651.1137755-1-lukma@denx.de/
-> 
-> | 1522 - 30 = 1492.
-> | 
-> | I don't believe that there are switches which don't support the standard
-> | MTU of 1500 ?!
-> | 
-> | >  		.port_base_addr = 0x10,
-> | >  		.phy_base_addr = 0x0,
-> | >  		.global1_addr = 0x1b,
-> | 
-> | Note that I see this behavior isn't new. But I've simulated it, and it
-> | will produce the following messages on probe:
-> | 
-> | [    7.425752] mscc_felix 0000:00:00.5 swp0 (uninitialized): PHY [0000:00:00.3:10] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
-> | [    7.437516] mscc_felix 0000:00:00.5: nonfatal error -34 setting MTU to 1500 on port 0
-> | [    7.588585] mscc_felix 0000:00:00.5 swp1 (uninitialized): PHY [0000:00:00.3:11] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
-> | [    7.600433] mscc_felix 0000:00:00.5: nonfatal error -34 setting MTU to 1500 on port 1
-> | [    7.752613] mscc_felix 0000:00:00.5 swp2 (uninitialized): PHY [0000:00:00.3:12] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
-> | [    7.764457] mscc_felix 0000:00:00.5: nonfatal error -34 setting MTU to 1500 on port 2
-> | [    7.900771] mscc_felix 0000:00:00.5 swp3 (uninitialized): PHY [0000:00:00.3:13] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
-> | [    7.912501] mscc_felix 0000:00:00.5: nonfatal error -34 setting MTU to 1500 on port 3
-> | 
-> | I wonder, shouldn't we first fix that, and apply this patch set afterwards?
-> 
-> I guess I will have to fix this now, since you haven't done it.
+During reboot all drivers PM shutdown callbacks are invoked.
+In iavf_shutdown() the adapter state is changed to __IAVF_REMOVE.
+In ice_shutdown() the call chain above is executed, which at some point
+calls iavf_remove(). However iavf_remove() expects the VF to be in one
+of the states __IAVF_RUNNING, __IAVF_DOWN or __IAVF_INIT_FAILED. If
+that's not the case it sleeps forever.
+So if iavf_shutdown() gets invoked before ice_shutdown() the system will
+hang indefinitely because the adapter is already in state __IAVF_REMOVE.
 
-I'm sorry, but why is this Lukasz's problem to fix? If it's broken today
-when using mv88e6xxx with this PHY, and Lukasz doesn't have this PHY,
-why does Lukasz have to solve this?
+Fix this by adding __IAVF_REMOVE to the list of allowed states in
+iavf_remove().
 
-> > +
-> > +	/* Max Frame Size.
-> > +	 * This value corresponds to the memory allocated in switch internal
-> > +	 * memory to store single frame.
-> > +	 */
-> 
-> What is the source of this definition?
-> 
-> I'm asking because I know of other switches where the internal memory
-> allocation scheme has nothing to do with the frame size. Instead, there
-> are SRAM cells of fixed and small size (say 60 octets) chained together.
+Fixes: 974578017fc1 ("iavf: Add waiting so the port is initialized in remove")
+Reported-by: Marius Cornea <mcornea@redhat.com>
+Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
+---
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-The switch documentation only really talks about maximum frame sizes
-that the switch can handle, with a few bits that configure what the
-maximum frame size is. We also know how large the SRAM is, but how
-the SRAM is allocated to packets is for Marvell engineers to know
-and not us mere mortals.
-
-So, the base definition for this is the information provided in the
-switch documentation.
-
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index 3273aeb8fa67..83ef3a343ef0 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -5062,7 +5062,8 @@ static void iavf_remove(struct pci_dev *pdev)
+ 		mutex_lock(&adapter->crit_lock);
+ 		if (adapter->state == __IAVF_RUNNING ||
+ 		    adapter->state == __IAVF_DOWN ||
+-		    adapter->state == __IAVF_INIT_FAILED) {
++		    adapter->state == __IAVF_INIT_FAILED ||
++		    adapter->state == __IAVF_REMOVE) {
+ 			mutex_unlock(&adapter->crit_lock);
+ 			break;
+ 		}
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.39.1
+
