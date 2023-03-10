@@ -2,73 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64E106B3BEB
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 11:22:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA4086B3BEF
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 11:23:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230123AbjCJKWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 05:22:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44472 "EHLO
+        id S230039AbjCJKXN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 05:23:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229876AbjCJKWr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 05:22:47 -0500
-Received: from sender4-op-o10.zoho.com (sender4-op-o10.zoho.com [136.143.188.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F0DE107D57;
-        Fri, 10 Mar 2023 02:22:46 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1678443709; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=HL+mpXGzO2n7kJaxMGabVrdt2/v6BkB2ZR/vv8rP62hVVUq1cUqFkNYCJYKH+TUiEu2hMRjHQkoT8hWamap6Pb2fcoRMq8pcrr03F1PcvHzg/6QAew9TMfvBBe/0GsrDUveieeVLz2amzjVJnAcOs8iYs9fulZyE4pPSBfn3OEM=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1678443709; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=sHc02Bqeqt1C7WoOr04FIucmx4YqEdZ758jRMdp13wE=; 
-        b=Y22bKSpl27BBAE3xiJq4eySja+X1LXUCk84XWQ9xJxU5ZhxDYKDuNQgi30CdR4Qmi81uJt7iPFOsdm8HTOF2bF49rWpb9fJRmsqltD7QwoZLN8mEkdvzpiFuBVMT8nDz1dFOJ4dxw7wr+X8CsWLjqcXTYd+Z7/Im6gDoXsN7Osw=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1678443709;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=sHc02Bqeqt1C7WoOr04FIucmx4YqEdZ758jRMdp13wE=;
-        b=ZEp9c76ztW+EY2sBxsB0ZbRii7UfhZARUXcD5EwDOLnVkq3N0KUICVSvhQI/Yw08
-        lKzHSphzlYRg7yrM5TfYhx75SChUBflWi1D60BHpYUSBoXTZLEoFrb8TjHy5XaRcu6E
-        Sv8+1P3qBWwcCfW3GU2UFZvQVaBexivs/JDPf/Ps=
-Received: from [10.10.10.3] (212.68.60.226 [212.68.60.226]) by mx.zohomail.com
-        with SMTPS id 1678443708111445.26386587299385; Fri, 10 Mar 2023 02:21:48 -0800 (PST)
-Message-ID: <10f872cc-b502-61ca-aefa-3047a9dfe5cd@arinc9.com>
-Date:   Fri, 10 Mar 2023 13:21:42 +0300
+        with ESMTP id S230000AbjCJKXL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 05:23:11 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861B2E5021;
+        Fri, 10 Mar 2023 02:23:03 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id y2so4874252pjg.3;
+        Fri, 10 Mar 2023 02:23:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678443783;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=qFmfnzJtjeGDe7BE2KF+y8kTx97aE6GIls5Ec122EsQ=;
+        b=UK0slwaJ3tvOwEa0urOTQddEFuNoqxCU4VdnnUnIgRrI4TGw4PPIC6woAfBmwVdHlw
+         QrzgsDDUjDnJ4dHzhzB4vJ96otKQJRWXJPs5OFPpqYh+8nBV3CBxuYfS0FbHhWSNrBmJ
+         Upx3JDomZsuKhZKvpPVyhoSiTvZlKJnf0eIxE1urT/qhHxAM4IU8fS7p0yFmvM5gvNU+
+         weLmC3hXcq8P4Xf8BmREeh1z2S+Xe/MTjGoNJMoO0AvLDFtiHnnLMdhzDao2cj97eLrm
+         i1RuF8GA7oRaDO8VCpZ6Kvc5C7i0ENm01HsMop2R+9cOvVrWlK5T839EnKhXkvGCCs/0
+         yUWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678443783;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=qFmfnzJtjeGDe7BE2KF+y8kTx97aE6GIls5Ec122EsQ=;
+        b=LD1RTbisMOIU4sRWSzjkbj45M+ItF2N6w02oLDkXvxMKPuA7oDM2XXbegYq3RL8aW8
+         3TodXI3WoX9gWCpiy4nI8a+c0J8WJdAMnTm+cBoJ1bQMCuNScNbYx5TfDdOLU2M0pLST
+         KlUOTTB5VFiHouFvhgukqZ5WwHRtwnten3e5eOFM/f1oAz3DWaEM51F82qRkCjjCrzhH
+         rf7dqxFGSyDG+atNPjTonYMq//5CZG7WaIFNRxrt82TqvkLkda2ekqlX4JpO9vaX1RCO
+         H3Dx0hN1V4OVHr5reflD7rvbWHVjBlt2XUNN4Gd7ecCzKPB+0hzJ9fSXxlmPWtzF121B
+         AVDA==
+X-Gm-Message-State: AO0yUKUNlHxiGNfTUCdAdoYfhKLfuLo86+HQusp/oBhL7KsS80UywlLh
+        FeGsmvCHjWv1zy+tanWQ17Q=
+X-Google-Smtp-Source: AK7set914/0LxIQtmrcUWYbk7Imqff9dPd0+ZwULPS5HR26HZr2buHSN5W+2BSSpDvMCQUGIuNQgWg==
+X-Received: by 2002:a17:903:283:b0:19d:1871:3bfa with SMTP id j3-20020a170903028300b0019d18713bfamr30286335plr.27.1678443782999;
+        Fri, 10 Mar 2023 02:23:02 -0800 (PST)
+Received: from localhost ([137.184.7.236])
+        by smtp.gmail.com with ESMTPSA id c7-20020a170902d48700b0019b06263bcasm1119035plg.247.2023.03.10.02.23.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Mar 2023 02:23:02 -0800 (PST)
+From:   Gencen Gan <u202011061@gmail.com>
+To:     Chas Williams <3chas3@gmail.com>
+Cc:     Ganliber <u202011061@gmail.com>, Dongliang Mu <dzm91@hust.edu.cn>,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] atm: he: fix potential ioremap leak of membase in he_dev
+Date:   Fri, 10 Mar 2023 18:22:56 +0800
+Message-Id: <20230310102256.1130846-1-u202011061@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH v3 net 2/2] net: dsa: mt7530: set PLL frequency and trgmii
- only when trgmii is used
-To:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, erkin.bozoglu@xeront.com,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20230310073338.5836-1-arinc.unal@arinc9.com>
- <20230310073338.5836-2-arinc.unal@arinc9.com>
-Content-Language: en-US
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <20230310073338.5836-2-arinc.unal@arinc9.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,116 +69,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10.03.2023 10:33, arinc9.unal@gmail.com wrote:
-> From: Arınç ÜNAL <arinc.unal@arinc9.com>
-> 
-> As my testing on the MCM MT7530 switch on MT7621 SoC shows, setting the PLL
-> frequency does not affect MII modes other than trgmii on port 5 and port 6.
-> So the assumption is that the operation here called "setting the PLL
-> frequency" actually sets the frequency of the TRGMII TX clock.
-> 
-> Make it so that it and the rest of the trgmii setup run only when the
-> trgmii mode is used.
-> 
-> Tested rgmii and trgmii modes of port 6 on MCM MT7530 on MT7621AT Unielec
-> U7621-06 and standalone MT7530 on MT7623NI Bananapi BPI-R2.
-> 
-> Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek MT7530 switch")
-> Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> ---
->   drivers/net/dsa/mt7530.c | 62 ++++++++++++++++++++--------------------
->   1 file changed, 31 insertions(+), 31 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-> index b1a79460df0e..c2d81b7a429d 100644
-> --- a/drivers/net/dsa/mt7530.c
-> +++ b/drivers/net/dsa/mt7530.c
-> @@ -430,8 +430,6 @@ mt7530_pad_clk_setup(struct dsa_switch *ds, phy_interface_t interface)
->   	switch (interface) {
->   	case PHY_INTERFACE_MODE_RGMII:
->   		trgint = 0;
-> -		/* PLL frequency: 125MHz */
-> -		ncpo1 = 0x0c80;
->   		break;
->   	case PHY_INTERFACE_MODE_TRGMII:
->   		trgint = 1;
-> @@ -462,38 +460,40 @@ mt7530_pad_clk_setup(struct dsa_switch *ds, phy_interface_t interface)
->   	mt7530_rmw(priv, MT7530_P6ECR, P6_INTF_MODE_MASK,
->   		   P6_INTF_MODE(trgint));
->   
-> -	/* Lower Tx Driving for TRGMII path */
-> -	for (i = 0 ; i < NUM_TRGMII_CTRL ; i++)
-> -		mt7530_write(priv, MT7530_TRGMII_TD_ODT(i),
-> -			     TD_DM_DRVP(8) | TD_DM_DRVN(8));
-> -
-> -	/* Disable MT7530 core and TRGMII Tx clocks */
-> -	core_clear(priv, CORE_TRGMII_GSW_CLK_CG,
-> -		   REG_GSWCK_EN | REG_TRGMIICK_EN);
-> -
-> -	/* Setup the MT7530 TRGMII Tx Clock */
-> -	core_write(priv, CORE_PLL_GROUP5, RG_LCDDS_PCW_NCPO1(ncpo1));
-> -	core_write(priv, CORE_PLL_GROUP6, RG_LCDDS_PCW_NCPO0(0));
-> -	core_write(priv, CORE_PLL_GROUP10, RG_LCDDS_SSC_DELTA(ssc_delta));
-> -	core_write(priv, CORE_PLL_GROUP11, RG_LCDDS_SSC_DELTA1(ssc_delta));
-> -	core_write(priv, CORE_PLL_GROUP4,
-> -		   RG_SYSPLL_DDSFBK_EN | RG_SYSPLL_BIAS_EN |
-> -		   RG_SYSPLL_BIAS_LPF_EN);
-> -	core_write(priv, CORE_PLL_GROUP2,
-> -		   RG_SYSPLL_EN_NORMAL | RG_SYSPLL_VODEN |
-> -		   RG_SYSPLL_POSDIV(1));
-> -	core_write(priv, CORE_PLL_GROUP7,
-> -		   RG_LCDDS_PCW_NCPO_CHG | RG_LCCDS_C(3) |
-> -		   RG_LCDDS_PWDB | RG_LCDDS_ISO_EN);
-> -
-> -	/* Enable MT7530 core and TRGMII Tx clocks */
-> -	core_set(priv, CORE_TRGMII_GSW_CLK_CG,
-> -		 REG_GSWCK_EN | REG_TRGMIICK_EN);
-> -
-> -	if (!trgint)
-> +	if (trgint) {
-> +		/* Lower Tx Driving for TRGMII path */
-> +		for (i = 0 ; i < NUM_TRGMII_CTRL ; i++)
-> +			mt7530_write(priv, MT7530_TRGMII_TD_ODT(i),
-> +				     TD_DM_DRVP(8) | TD_DM_DRVN(8));
-> +
-> +		/* Disable MT7530 core and TRGMII Tx clocks */
-> +		core_clear(priv, CORE_TRGMII_GSW_CLK_CG,
-> +			   REG_GSWCK_EN | REG_TRGMIICK_EN);
-> +
-> +		/* Setup the MT7530 TRGMII Tx Clock */
-> +		core_write(priv, CORE_PLL_GROUP5, RG_LCDDS_PCW_NCPO1(ncpo1));
-> +		core_write(priv, CORE_PLL_GROUP6, RG_LCDDS_PCW_NCPO0(0));
-> +		core_write(priv, CORE_PLL_GROUP10, RG_LCDDS_SSC_DELTA(ssc_delta));
-> +		core_write(priv, CORE_PLL_GROUP11, RG_LCDDS_SSC_DELTA1(ssc_delta));
-> +		core_write(priv, CORE_PLL_GROUP4,
-> +			   RG_SYSPLL_DDSFBK_EN | RG_SYSPLL_BIAS_EN |
-> +			   RG_SYSPLL_BIAS_LPF_EN);
-> +		core_write(priv, CORE_PLL_GROUP2,
-> +			   RG_SYSPLL_EN_NORMAL | RG_SYSPLL_VODEN |
-> +			   RG_SYSPLL_POSDIV(1));
-> +		core_write(priv, CORE_PLL_GROUP7,
-> +			   RG_LCDDS_PCW_NCPO_CHG | RG_LCCDS_C(3) |
-> +			   RG_LCDDS_PWDB | RG_LCDDS_ISO_EN);
-> +
-> +		/* Enable MT7530 core and TRGMII Tx clocks */
-> +		core_set(priv, CORE_TRGMII_GSW_CLK_CG,
-> +			 REG_GSWCK_EN | REG_TRGMIICK_EN);
-> +	} else {
->   		for (i = 0 ; i < NUM_TRGMII_CTRL; i++)
->   			mt7530_rmw(priv, MT7530_TRGMII_RD(i),
->   				   RD_TAP_MASK, RD_TAP(16));
+From: Ganliber <u202011061@gmail.com>
 
-This code runs if the phy mode is not trgmii. Other than trgmii, only 
-the rgmii mode is supported on the hardware so this runs when the rgmii 
-mode is used on port 6.
+In the function he_start() in drivers/atm/he.c, there
+is no unmapping of he_dev->membase in the branch that
+exits due to an error like reset failure, which may 
+cause a memory leak.
 
-I've tested the rgmii mode on MCM and standalone MT7530 without running 
-this code and it works fine. Close to gigabit download/upload speed and 
-no packet loss. I don't understand why the TRGMII RX registers are 
-modified when the trgmii mode is not used at all.
+Signed-off-by: Ganliber <u202011061@gmail.com>
+Reviewed-by: Dongliang Mu <dzm91@hust.edu.cn>
+---
+ drivers/atm/he.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-I don't suppose anyone from MediaTek would clarify, so this presumably 
-dead code will remain.
+diff --git a/drivers/atm/he.c b/drivers/atm/he.c
+index ad91cc6a34fc..2d12b46aa5bd 100644
+--- a/drivers/atm/he.c
++++ b/drivers/atm/he.c
+@@ -1058,6 +1058,7 @@ static int he_start(struct atm_dev *dev)
+ 	status = he_readl(he_dev, RESET_CNTL);
+ 	if ((status & BOARD_RST_STATUS) == 0) {
+ 		hprintk("reset failed\n");
++		iounmap(he_dev->membase);
+ 		return -EINVAL;
+ 	}
+ 
+@@ -1114,8 +1115,10 @@ static int he_start(struct atm_dev *dev)
+ 	he_writel(he_dev, lb_swap, LB_SWAP);
+ 
+ 	/* 4.10 initialize the interrupt queues */
+-	if ((err = he_init_irq(he_dev)) != 0)
++	if ((err = he_init_irq(he_dev)) != 0) {
++		iounmap(he_dev->membase);
+ 		return err;
++	}
+ 
+ 	/* 4.11 enable pci bus controller state machines */
+ 	host_cntl |= (OUTFF_ENB | CMDFF_ENB |
+@@ -1165,6 +1168,7 @@ static int he_start(struct atm_dev *dev)
+ 
+ 	if (nvpibits != -1 && nvcibits != -1 && nvpibits+nvcibits != HE_MAXCIDBITS) {
+ 		hprintk("nvpibits + nvcibits != %d\n", HE_MAXCIDBITS);
++		iounmap(he_dev->membase);
+ 		return -ENODEV;
+ 	}
+ 
+@@ -1413,8 +1417,10 @@ static int he_start(struct atm_dev *dev)
+ 
+ 	/* 5.1.8 cs block connection memory initialization */
+ 	
+-	if (he_init_cs_block_rcm(he_dev) < 0)
++	if (he_init_cs_block_rcm(he_dev) < 0) {
++		iounmap(he_dev->membase);
+ 		return -ENOMEM;
++	}
+ 
+ 	/* 5.1.10 initialize host structures */
+ 
+@@ -1424,13 +1430,16 @@ static int he_start(struct atm_dev *dev)
+ 					   sizeof(struct he_tpd), TPD_ALIGNMENT, 0);
+ 	if (he_dev->tpd_pool == NULL) {
+ 		hprintk("unable to create tpd dma_pool\n");
++		iounmap(he_dev->membase);
+ 		return -ENOMEM;         
+ 	}
+ 
+ 	INIT_LIST_HEAD(&he_dev->outstanding_tpds);
+ 
+-	if (he_init_group(he_dev, 0) != 0)
++	if (he_init_group(he_dev, 0) != 0) {
++		iounmap(he_dev->membase);
+ 		return -ENOMEM;
++	}
+ 
+ 	for (group = 1; group < HE_NUM_GROUPS; ++group) {
+ 		he_writel(he_dev, 0x0, G0_RBPS_S + (group * 32));
+@@ -1465,6 +1474,7 @@ static int he_start(struct atm_dev *dev)
+ 					 &he_dev->hsp_phys, GFP_KERNEL);
+ 	if (he_dev->hsp == NULL) {
+ 		hprintk("failed to allocate host status page\n");
++		iounmap(he_dev->membase);
+ 		return -ENOMEM;
+ 	}
+ 	he_writel(he_dev, he_dev->hsp_phys, HSP_BA);
+-- 
+2.34.1
 
-Arınç
