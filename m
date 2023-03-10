@@ -2,122 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FD0F6B3E60
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 12:50:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2249E6B3E73
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 12:54:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229967AbjCJLuc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 06:50:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56516 "EHLO
+        id S229546AbjCJLyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 06:54:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbjCJLua (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 06:50:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4732DD2931;
-        Fri, 10 Mar 2023 03:50:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F35A0B8227D;
-        Fri, 10 Mar 2023 11:50:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2575FC433EF;
-        Fri, 10 Mar 2023 11:50:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1678449026;
-        bh=ShH9wDesH9cSa0+T/1FM84u8M0DlMaUCnHiJVbgwCxs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RVNQukfhdzZ+DIfAu93gX4IdJuNmQ9kkAUWvW750qXADAj1E+Fs6k6t84tS9zRSz7
-         iF8k8c5PI5Vmka4MkufRf3XoIa8OXEy9dbyQSl6QZlnKHuuqTdZlpEV2CieCB6050I
-         9oiukxnIT629hs68aRsiIxEwvjYPKJ1YHL9p9wf8=
-Date:   Fri, 10 Mar 2023 12:50:23 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Fedor Pchelkin <pchelkin@ispras.ru>
-Cc:     stable@vger.kernel.org, Marcel Holtmann <marcel@holtmann.org>,
-        Nguyen Dinh Phi <phind.uet@gmail.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        lvc-project@linuxtesting.org,
-        syzbot+4c4ffd1e1094dae61035@syzkaller.appspotmail.com
-Subject: Re: [PATCH 4.14/4.19/5.4/5.10/5.15 1/1] Bluetooth: hci_sock: purge
- socket queues in the destruct() callback
-Message-ID: <ZAsZf4BvErezNB7Z@kroah.com>
-References: <20230309181251.479447-1-pchelkin@ispras.ru>
- <20230309181251.479447-2-pchelkin@ispras.ru>
+        with ESMTP id S229469AbjCJLyD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 06:54:03 -0500
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7450AC2237;
+        Fri, 10 Mar 2023 03:54:00 -0800 (PST)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 32ABro76127449;
+        Fri, 10 Mar 2023 05:53:50 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1678449230;
+        bh=QSIrK2hf0RVPY4b/FgB+Q97RERaUbLYuYjYCaB2CdYQ=;
+        h=Date:Subject:From:To:CC:References:In-Reply-To;
+        b=USybG5S2djIhE2wGOt/XlHuHsO3yvv7Mxug4un46WUoMCM+2BK8kU+nJm28KePPeR
+         0QYi884r64b+bJo6keFHmWj6YHAcQvcr7aCB9tzjNQnyKZNp3aq6a+l8nxiQebyHr6
+         H3XE4NII6n3IBMG9S7N3C3sFtD5GnOB57F4Se5Eo=
+Received: from DLEE111.ent.ti.com (dlee111.ent.ti.com [157.170.170.22])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 32ABronN096866
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 10 Mar 2023 05:53:50 -0600
+Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE111.ent.ti.com
+ (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Fri, 10
+ Mar 2023 05:53:50 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
+ Frontend Transport; Fri, 10 Mar 2023 05:53:50 -0600
+Received: from [10.24.69.114] (ileaxei01-snat.itg.ti.com [10.180.69.5])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 32ABrj67017278;
+        Fri, 10 Mar 2023 05:53:45 -0600
+Message-ID: <367f6b50-e4cc-c3eb-e8e9-dabd4e044530@ti.com>
+Date:   Fri, 10 Mar 2023 17:23:44 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230309181251.479447-2-pchelkin@ispras.ru>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [EXTERNAL] Re: [EXTERNAL] Re: [PATCH v3 3/6] soc: ti: pruss: Add
+ pruss_cfg_read()/update() API
+Content-Language: en-US
+From:   Md Danish Anwar <a0501179@ti.com>
+To:     Roger Quadros <rogerq@kernel.org>,
+        MD Danish Anwar <danishanwar@ti.com>,
+        "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Nishanth Menon <nm@ti.com>
+CC:     <linux-remoteproc@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
+        <srk@ti.com>, <devicetree@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+References: <20230306110934.2736465-1-danishanwar@ti.com>
+ <20230306110934.2736465-4-danishanwar@ti.com>
+ <7076208d-7dca-6980-5399-498e55648740@kernel.org>
+ <afd6cd8a-8ba7-24b2-d7fc-c25a9c5f3c42@ti.com>
+ <a74e5079-d89d-2420-b6af-d630c4f04380@kernel.org>
+ <a4395259-9b83-1101-7c4c-d8a36c3600eb@ti.com>
+Organization: Texas Instruments
+In-Reply-To: <a4395259-9b83-1101-7c4c-d8a36c3600eb@ti.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 09, 2023 at 09:12:51PM +0300, Fedor Pchelkin wrote:
-> From: Nguyen Dinh Phi <phind.uet@gmail.com>
+Hi Roger,
+
+On 09/03/23 17:00, Md Danish Anwar wrote:
+> Hi Roger,
 > 
-> commit 709fca500067524381e28a5f481882930eebac88 upstream.
+> On 08/03/23 17:12, Roger Quadros wrote:
+>>
+>>
+>> On 08/03/2023 13:36, Md Danish Anwar wrote:
+>>> Hi Roger,
+>>>
+>>> On 08/03/23 13:57, Roger Quadros wrote:
+>>>> Hi,
+>>>>
+>>>> On 06/03/2023 13:09, MD Danish Anwar wrote:
+>>>>> From: Suman Anna <s-anna@ti.com>
+>>>>>
+>>>>> Add two new generic API pruss_cfg_read() and pruss_cfg_update() to
+>>>>> the PRUSS platform driver to allow other drivers to read and program
+>>>>> respectively a register within the PRUSS CFG sub-module represented
+>>>>> by a syscon driver. This interface provides a simple way for client
+>>>>
+>>>> Do you really need these 2 functions to be public?
+>>>> I see that later patches (4-6) add APIs for doing specific things
+>>>> and that should be sufficient than exposing entire CFG space via
+>>>> pruss_cfg_read/update().
+>>>>
+>>>>
+>>>
+>>> I think the intention here is to keep this APIs pruss_cfg_read() and
+>>> pruss_cfg_update() public so that other drivers can read / modify PRUSS config
+>>> when needed.
+>>
+>> Where are these other drivers? If they don't exist then let's not make provision
+>> for it now.
+>> We can provide necessary API helpers when needed instead of letting client drivers
+>> do what they want as they can be misused and hard to debug.
+>>
 > 
-> The receive path may take the socket right before hci_sock_release(),
-> but it may enqueue the packets to the socket queues after the call to
-> skb_queue_purge(), therefore the socket can be destroyed without clear
-> its queues completely.
+> The ICSSG Ethernet driver uses pruss_cfg_update() API. It is posted upstream in
+> the series [1]. The ethernet driver series is dependent on this series. In
+> series [1] we are using pruss_cfg_update() in icssg_config.c file,
+> icssg_config() API.
 > 
-> Moving these skb_queue_purge() to the hci_sock_destruct() will fix this
-> issue, because nothing is referencing the socket at this point.
+> So for this, the API pruss_cfg_update() needs to be public.
 > 
-> Signed-off-by: Nguyen Dinh Phi <phind.uet@gmail.com>
-> Reported-by: syzbot+4c4ffd1e1094dae61035@syzkaller.appspotmail.com
-> Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
-> ---
->  net/bluetooth/hci_sock.c | 11 +++++++----
->  1 file changed, 7 insertions(+), 4 deletions(-)
-> 
-> diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
-> index f1128c2134f0..3f92a21cabe8 100644
-> --- a/net/bluetooth/hci_sock.c
-> +++ b/net/bluetooth/hci_sock.c
-> @@ -888,10 +888,6 @@ static int hci_sock_release(struct socket *sock)
->  	}
->  
->  	sock_orphan(sk);
-> -
-> -	skb_queue_purge(&sk->sk_receive_queue);
-> -	skb_queue_purge(&sk->sk_write_queue);
-> -
->  	release_sock(sk);
->  	sock_put(sk);
->  	return 0;
-> @@ -2012,6 +2008,12 @@ static int hci_sock_getsockopt(struct socket *sock, int level, int optname,
->  	return err;
->  }
->  
-> +static void hci_sock_destruct(struct sock *sk)
-> +{
-> +	skb_queue_purge(&sk->sk_receive_queue);
-> +	skb_queue_purge(&sk->sk_write_queue);
-> +}
-> +
->  static const struct proto_ops hci_sock_ops = {
->  	.family		= PF_BLUETOOTH,
->  	.owner		= THIS_MODULE,
-> @@ -2065,6 +2067,7 @@ static int hci_sock_create(struct net *net, struct socket *sock, int protocol,
->  
->  	sock->state = SS_UNCONNECTED;
->  	sk->sk_state = BT_OPEN;
-> +	sk->sk_destruct = hci_sock_destruct;
->  
->  	bt_sock_link(&hci_sk_list, sk);
->  	return 0;
-> -- 
-> 2.34.1
+> [1] https://lore.kernel.org/all/20230210114957.2667963-3-danishanwar@ti.com/
 > 
 
-Now queued up, thanks.
+I will keep this patch as it is as pruss_cfg_update() needs to be public for
+ICSSG Ethernet driver and pruss_cfg_read() is kind of a complementary function
+to update. I will do required changes in other patches and send next revision
+if that's OK with you. Please let me know.
 
-greg k-h
+>>>
+>>> The later patches (4-6) add APIs to do specific thing, but those APIs also
+>>> eventually call pruss_cfg_read/update().
+>>
+>> They can still call them but they need to be private to pruss.c
+>>
+>>>
+>>>>> drivers without having them to include and parse the CFG syscon node
+>>>>> within their respective device nodes. Various useful registers and
+>>>>> macros for certain register bit-fields and their values have also
+>>>>> been added.
+>>>>>
+>>>>> It is the responsibility of the client drivers to reconfigure or
+>>>>> reset a particular register upon any failures.
+>>>>>
+>>>>> Signed-off-by: Suman Anna <s-anna@ti.com>
+>>>>> Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+>>>>> Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+>>>>> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+>>>>> ---
+>>>>>  drivers/soc/ti/pruss.c           |  41 +++++++++++++
+>>>>>  include/linux/remoteproc/pruss.h | 102 +++++++++++++++++++++++++++++++
+>>>>>  2 files changed, 143 insertions(+)
+>>>>>
+>>>>> diff --git a/drivers/soc/ti/pruss.c b/drivers/soc/ti/pruss.c
+>>>>> index c8053c0d735f..537a3910ffd8 100644
+>>>>> --- a/drivers/soc/ti/pruss.c
+>>>>> +++ b/drivers/soc/ti/pruss.c
+>>>>> @@ -164,6 +164,47 @@ int pruss_release_mem_region(struct pruss *pruss,
+>>>>>  }
+>>>>>  EXPORT_SYMBOL_GPL(pruss_release_mem_region);
+>>>>
+>>>> cheers,
+>>>> -roger
+>>>
+> 
+
+-- 
+Thanks and Regards,
+Danish.
