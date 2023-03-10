@@ -2,84 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E9B96B376B
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 08:33:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93CC56B376E
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 08:34:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229614AbjCJHd4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 02:33:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49458 "EHLO
+        id S229963AbjCJHeC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 02:34:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229612AbjCJHdt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 02:33:49 -0500
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1C16DDF3D;
-        Thu,  9 Mar 2023 23:33:47 -0800 (PST)
-Received: by mail-wm1-x336.google.com with SMTP id j19-20020a05600c1c1300b003e9b564fae9so5306733wms.2;
-        Thu, 09 Mar 2023 23:33:47 -0800 (PST)
+        with ESMTP id S229952AbjCJHdu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 02:33:50 -0500
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2303E41B61;
+        Thu,  9 Mar 2023 23:33:49 -0800 (PST)
+Received: by mail-lf1-x129.google.com with SMTP id j11so5418817lfg.13;
+        Thu, 09 Mar 2023 23:33:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678433626;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=w1qQOPUYZltp62usDX13u0lfSl6bY/5+CW4Brvbfffs=;
-        b=qGCFeI2uqTNIpuk4x4yI01LMktwcIsPFqS6d7dSQ61jZXyA0sm5CKaie+4FhNm8xig
-         guwmjxnV/UyBRNKxExDQZ7e7+WrHvR7BDnlzrI0BpqXkCeE2UYwV7zvkV8zDXTf3bMQF
-         6o1OzgUtsGCuFm25+oaHLGwLclmGjSGTK8Q83uOeGK8R6/2Dx4Zy0sezKPjBlyBT63jG
-         lGAq5gxKDe5ZAIcviO1IXpfj97Q9DyOkvY9/lbIkLaHYODABPpkj631SZLGh31D603UT
-         7WkoTraZV7kSTsfjhsWUa5o0QtA+GHRw/9icYx7mzC7BslR/A3bDermFZ9abXMSewRz6
-         oTWg==
+        d=gmail.com; s=20210112; t=1678433627;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=IJoJsZm0fPLQWz7IZmUxRuApQGalUJu4dW7JDfWoa4o=;
+        b=RHHm6DUnAQCa+s0mSaRtu2OezhYS4oDWb2F8frhHf59KAqOZYG7zK7o6rrCnqlFqBT
+         xwBAEwG15HzPeeBrhXNjNjoMdgh8KumhdLwb/7HHSFhE0C6IJ9YeowLJnEjoJXotrfRP
+         bnYOdcdCfM1rpsTTWHZ8HRVT4Jx/8xOsro223I6tAv9t5+4AlfGBIuYqeLYTiAmnL8io
+         13izbwuE8Ywq67lVz/B54wnYdM5S5nKwdfQK+vqZEEctD6zm0Vk8q7lXvt3ERgQbVwd3
+         ftEgqWVqbDbbiwVhGr6Y/idUYaoKj/Ub23tV3VS3LvfdMvKsIW8X+qGO0ui5e1w37KWb
+         EvnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678433626;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=w1qQOPUYZltp62usDX13u0lfSl6bY/5+CW4Brvbfffs=;
-        b=27ysCY1t/tpvbTfIl2hc+c3hhcDJG7uCY0DKEviY62o1ryPkO47OEHxsoshA7Rrh/2
-         AZ5276+MpzhlRZhil0p0BSRXHsvXV6BcPsIcYqkE9IOK2cLW3W+/VtKFCcmtjUgYjZGU
-         RqlZMas4ojki8Y21ZnjNA9eL+QVGLd93IiNmtp7lR1tqbjpXR6wLUyCCBT2QYl/RBHBC
-         6I4PIBgyT5Bdv8lPICynDSPOO8H7K1/qTOoHr4QCenAjFW0SfADQVVPYApp2CarE+1P0
-         KzCtOEFRrxYSHNP6foDc86iJ7Aj+5FNaPkVTmhGeeXXhX5wFn4P8v5Q6G4lClz2b4lKD
-         oIqw==
-X-Gm-Message-State: AO0yUKUgXxnLPu/lkIuSRhaC0Ai0LwLrRqZJSB/Dvg17nzsDDnB8ZXld
-        CaYhbcSKkmB+liVNNVlAFyc=
-X-Google-Smtp-Source: AK7set++j3HjZjV2R6SCTjuiZsJUwAPEIbbQJZLscHhcR/855Ychfiok3Wx21zhrfFuBw8+bVXZhcg==
-X-Received: by 2002:a05:600c:474d:b0:3eb:39e2:915b with SMTP id w13-20020a05600c474d00b003eb39e2915bmr1654219wmo.31.1678433626057;
-        Thu, 09 Mar 2023 23:33:46 -0800 (PST)
-Received: from arinc9-PC.lan ([212.68.60.226])
-        by smtp.gmail.com with ESMTPSA id bi11-20020a05600c3d8b00b003daffc2ecdesm2023129wmb.13.2023.03.09.23.33.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Mar 2023 23:33:45 -0800 (PST)
-From:   arinc9.unal@gmail.com
-X-Google-Original-From: arinc.unal@arinc9.com
-To:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        d=1e100.net; s=20210112; t=1678433627;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=IJoJsZm0fPLQWz7IZmUxRuApQGalUJu4dW7JDfWoa4o=;
+        b=uIPgUrzUgNai5Vml8d+1MF/nWCEEAVvTHLhFRjV2Mgh0uA6b4xE9E4kYs8pDx/0rz0
+         SGpQ4onb6pDNPX5wTD7Y+7RIbqS+YgMMG+r7KgkVuMeuesOnGN1aG/kTrlj1wxIR4vtL
+         SSiVrPPuf01glKiqcdJgGnXbpK6GsQ131yawD30p0rFeJzCZ+ba0gMqSbpfaZe08koOH
+         vONLxTXd/wvtH2yEMmSzXzScmU8SwPse0UFfTWQlidlbcu42Q0vgcBuz0F4LIUIMEC8U
+         4GCSHp4JuFr9IK0y6b4dVtRfkRQVOPQHIhgeImJVdHHqz0rFqKbUldrcE+gv5I11CaMX
+         lpMw==
+X-Gm-Message-State: AO0yUKUP1DoUON6aux3R4J8inN+Wqg0Al4WGUX2X7gO1zBw+EkPpCu3N
+        KAyIRZVAnWKoR4I+0z2hWC/bTuTw1HmtpIFdvLSghg==
+X-Google-Smtp-Source: AK7set83+nm8Nr4hhVncbwXK+iak2RBf8wJd9tgD+cJc2Kow9bcwYwL+CkdbJj9/yuA1Q7ez5xiZMw==
+X-Received: by 2002:ac2:532b:0:b0:4dd:af74:fe1a with SMTP id f11-20020ac2532b000000b004ddaf74fe1amr6778332lfh.48.1678433627309;
+        Thu, 09 Mar 2023 23:33:47 -0800 (PST)
+Received: from [172.25.56.57] ([212.22.67.162])
+        by smtp.gmail.com with ESMTPSA id o3-20020ac24943000000b004db3aa3c542sm160083lfi.47.2023.03.09.23.33.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Mar 2023 23:33:47 -0800 (PST)
+Message-ID: <9b367837-4bf0-1802-e753-6eca37e105b9@gmail.com>
+Date:   Fri, 10 Mar 2023 10:33:46 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH net-next] bnx2: remove deadcode in bnx2_init_cpus()
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Rasesh Mody <rmody@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
-        netdev@vger.kernel.org, erkin.bozoglu@xeront.com,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH v3 net 2/2] net: dsa: mt7530: set PLL frequency and trgmii only when trgmii is used
-Date:   Fri, 10 Mar 2023 10:33:38 +0300
-Message-Id: <20230310073338.5836-2-arinc.unal@arinc9.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20230310073338.5836-1-arinc.unal@arinc9.com>
-References: <20230310073338.5836-1-arinc.unal@arinc9.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Michael Chan <mchan@broadcom.com>,
+        Vadim Fedorenko <vadim.fedorenko@linux.dev>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lvc-project@linuxtesting.org
+References: <20230309174231.3135-1-korotkov.maxim.s@gmail.com>
+ <20230309225710.78cd606c@kernel.org>
+Content-Language: en-US
+From:   Maxim Korotkov <korotkov.maxim.s@gmail.com>
+In-Reply-To: <20230309225710.78cd606c@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -88,109 +81,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arınç ÜNAL <arinc.unal@arinc9.com>
-
-As my testing on the MCM MT7530 switch on MT7621 SoC shows, setting the PLL
-frequency does not affect MII modes other than trgmii on port 5 and port 6.
-So the assumption is that the operation here called "setting the PLL
-frequency" actually sets the frequency of the TRGMII TX clock.
-
-Make it so that it and the rest of the trgmii setup run only when the
-trgmii mode is used.
-
-Tested rgmii and trgmii modes of port 6 on MCM MT7530 on MT7621AT Unielec
-U7621-06 and standalone MT7530 on MT7623NI Bananapi BPI-R2.
-
-Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek MT7530 switch")
-Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
----
- drivers/net/dsa/mt7530.c | 62 ++++++++++++++++++++--------------------
- 1 file changed, 31 insertions(+), 31 deletions(-)
-
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index b1a79460df0e..c2d81b7a429d 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -430,8 +430,6 @@ mt7530_pad_clk_setup(struct dsa_switch *ds, phy_interface_t interface)
- 	switch (interface) {
- 	case PHY_INTERFACE_MODE_RGMII:
- 		trgint = 0;
--		/* PLL frequency: 125MHz */
--		ncpo1 = 0x0c80;
- 		break;
- 	case PHY_INTERFACE_MODE_TRGMII:
- 		trgint = 1;
-@@ -462,38 +460,40 @@ mt7530_pad_clk_setup(struct dsa_switch *ds, phy_interface_t interface)
- 	mt7530_rmw(priv, MT7530_P6ECR, P6_INTF_MODE_MASK,
- 		   P6_INTF_MODE(trgint));
- 
--	/* Lower Tx Driving for TRGMII path */
--	for (i = 0 ; i < NUM_TRGMII_CTRL ; i++)
--		mt7530_write(priv, MT7530_TRGMII_TD_ODT(i),
--			     TD_DM_DRVP(8) | TD_DM_DRVN(8));
--
--	/* Disable MT7530 core and TRGMII Tx clocks */
--	core_clear(priv, CORE_TRGMII_GSW_CLK_CG,
--		   REG_GSWCK_EN | REG_TRGMIICK_EN);
--
--	/* Setup the MT7530 TRGMII Tx Clock */
--	core_write(priv, CORE_PLL_GROUP5, RG_LCDDS_PCW_NCPO1(ncpo1));
--	core_write(priv, CORE_PLL_GROUP6, RG_LCDDS_PCW_NCPO0(0));
--	core_write(priv, CORE_PLL_GROUP10, RG_LCDDS_SSC_DELTA(ssc_delta));
--	core_write(priv, CORE_PLL_GROUP11, RG_LCDDS_SSC_DELTA1(ssc_delta));
--	core_write(priv, CORE_PLL_GROUP4,
--		   RG_SYSPLL_DDSFBK_EN | RG_SYSPLL_BIAS_EN |
--		   RG_SYSPLL_BIAS_LPF_EN);
--	core_write(priv, CORE_PLL_GROUP2,
--		   RG_SYSPLL_EN_NORMAL | RG_SYSPLL_VODEN |
--		   RG_SYSPLL_POSDIV(1));
--	core_write(priv, CORE_PLL_GROUP7,
--		   RG_LCDDS_PCW_NCPO_CHG | RG_LCCDS_C(3) |
--		   RG_LCDDS_PWDB | RG_LCDDS_ISO_EN);
--
--	/* Enable MT7530 core and TRGMII Tx clocks */
--	core_set(priv, CORE_TRGMII_GSW_CLK_CG,
--		 REG_GSWCK_EN | REG_TRGMIICK_EN);
--
--	if (!trgint)
-+	if (trgint) {
-+		/* Lower Tx Driving for TRGMII path */
-+		for (i = 0 ; i < NUM_TRGMII_CTRL ; i++)
-+			mt7530_write(priv, MT7530_TRGMII_TD_ODT(i),
-+				     TD_DM_DRVP(8) | TD_DM_DRVN(8));
-+
-+		/* Disable MT7530 core and TRGMII Tx clocks */
-+		core_clear(priv, CORE_TRGMII_GSW_CLK_CG,
-+			   REG_GSWCK_EN | REG_TRGMIICK_EN);
-+
-+		/* Setup the MT7530 TRGMII Tx Clock */
-+		core_write(priv, CORE_PLL_GROUP5, RG_LCDDS_PCW_NCPO1(ncpo1));
-+		core_write(priv, CORE_PLL_GROUP6, RG_LCDDS_PCW_NCPO0(0));
-+		core_write(priv, CORE_PLL_GROUP10, RG_LCDDS_SSC_DELTA(ssc_delta));
-+		core_write(priv, CORE_PLL_GROUP11, RG_LCDDS_SSC_DELTA1(ssc_delta));
-+		core_write(priv, CORE_PLL_GROUP4,
-+			   RG_SYSPLL_DDSFBK_EN | RG_SYSPLL_BIAS_EN |
-+			   RG_SYSPLL_BIAS_LPF_EN);
-+		core_write(priv, CORE_PLL_GROUP2,
-+			   RG_SYSPLL_EN_NORMAL | RG_SYSPLL_VODEN |
-+			   RG_SYSPLL_POSDIV(1));
-+		core_write(priv, CORE_PLL_GROUP7,
-+			   RG_LCDDS_PCW_NCPO_CHG | RG_LCCDS_C(3) |
-+			   RG_LCDDS_PWDB | RG_LCDDS_ISO_EN);
-+
-+		/* Enable MT7530 core and TRGMII Tx clocks */
-+		core_set(priv, CORE_TRGMII_GSW_CLK_CG,
-+			 REG_GSWCK_EN | REG_TRGMIICK_EN);
-+	} else {
- 		for (i = 0 ; i < NUM_TRGMII_CTRL; i++)
- 			mt7530_rmw(priv, MT7530_TRGMII_RD(i),
- 				   RD_TAP_MASK, RD_TAP(16));
-+	}
-+
- 	return 0;
- }
- 
--- 
-2.37.2
-
+On 10.03.2023 09:57, Jakub Kicinski wrote:
+> On Thu,  9 Mar 2023 20:42:31 +0300 Maxim Korotkov wrote:
+>> The load_cpu_fw function has no error return code
+>> and always returns zero. Checking the value returned by
+>> this function does not make sense.
+>> As a result, bnx2_init_cpus() will also return only zero
+>> Therefore, it will be safe to change the type of functions
+>> to void and remove checking
+> 
+> True, but you need to tell the reader why you're making the change.
+> One of the impossible-to-hit error handling paths is missing unwind
+> or some such?
+  Path with error handling was deleted in 57579f7629a3 ("bnx2: Use 
+request_firmware()"). This patch is needed to improving readability.
+Now checking the value of the return value is misleading when reading 
+the code.
+Do I need to add this argument to the patch description?
+I also forgot to add mark Reviewed-by: Leon Romanovsky 
+<leonro@nvidia.com> from the previous iteration
