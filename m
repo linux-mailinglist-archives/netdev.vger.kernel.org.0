@@ -2,213 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 60CA26B4FE6
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 19:19:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE9E46B4FEC
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 19:20:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230243AbjCJSS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 13:18:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40808 "EHLO
+        id S231338AbjCJSUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 13:20:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229827AbjCJSSz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 13:18:55 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on20721.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e8a::721])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 014C7F6B40;
-        Fri, 10 Mar 2023 10:18:54 -0800 (PST)
+        with ESMTP id S229708AbjCJSUH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 13:20:07 -0500
+Received: from EUR02-VI1-obe.outbound.protection.outlook.com (mail-vi1eur02on2043.outbound.protection.outlook.com [40.107.241.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA17310284F;
+        Fri, 10 Mar 2023 10:20:04 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HC2nDV9z6t1FIq+Ib2VnfxNWeqvhFXrZRsF/ZGPwS19ASw884N2nkMwk4w8Ofy5ylmLSGJ52NrABcQOVoDyfvv6arEuwIX4qLfdIsucgpGnCWzlb0N60RmHjg8SqZFVTrHHbv73ynvOxyEGbXYOVuB8leVtlNAM2Wa6jgIZ03UP5MbAj6s/Jj7EcgA3Fnp2Zgg03wOcW5MdruaG+otJfkr4X5sk4ilAFDVIy4tm26G0yElKts2eNLe+05xLHDMe5hde8DhUeB37KItIJUJ/cljnCyT4EKUVvxelIQ/5fvPjLEx1fi9YazDG0AtsM0qNV22jKxGc2lQ5Fl/0E3XhjWg==
+ b=n6/kpIApRABpnu5L6mDF1YxCB+Yts6izOG6epOrgT49OMyivm1jYeQFIHEicT/G3fXdPo20soYIkWN9pHf01Sdo4BQxVCqAsuUehB5YEfrbYfVoI1HUKVy8oktSN0F5i+Umgqyc8qBiUNNZ/ideo44kDburO+590eBLnW7Q9Fhle3UViJMAJdVv4QdRINDZ31NTGWajKsKI54ba3xEY6CyTDIurX1RY/279AEmWt8GhIAS/mB+BbpiEN1kE07QqFzhcVjb1/EPssm945yHrkXjqtG52rOF9A4kS4lpLF1eU26MGiFlIhBF7dynEF6v7Ww7fk5+E9tYO43R1OdHf+Gg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IItsG2DopOyVR2EhLh0oWEKnw1GHLQuOGMNbGjCloEc=;
- b=RJjZlCfpk++cGGLuH21poOO2ooZwrW6JSm3C6qm7SUeS2FoptiuSrT8LcoryR7g/D4xZUor+K2Fh1Sp798S1orfEH6ReaiQUpkp839d2AgK+ZHoSwtoseZJpxVSTSXjqmkvzYrcReK4ReU0ScUamjDVhV7z+vxHAWFwydleJmGcFVCW8BHDb+g/lUJr823YkFu2t/99LrJ9w1ZKI0nCj5gnnTEC7vNSNCZWnhohjrjNkEmdUq/ou7WWKBPZfLDdBMjJ2agmS7rPuSGZBqQcExGGst8T4oXxm5ERcJsXgyvzB2C+5yBQijc6ampMpxpsEFAin3SAq+LcQBrqWpxutFg==
+ bh=sr6KC+yyaQtkygcR2njzgAGJY3nOTwLhdjUm2Cl0IKw=;
+ b=K3V4CwMmf3DvA78jHKlr6ddj6rIRbrbvs05ypneDJ90IXm509oMnHyPnIpd35YqkuNL/bF2apHqjvUNYYzU9cSPnrWUA8NK2Csl+rGngbBQ782A9VJ1Z7kO3qINYEGxuFUcO8VXdYnj0oXT75TAQ5zDBzLoAXzwiFYmo4LNju9aG9OAcGJ81MZ9At1qa0KiNNud2agBIwi4BYC56D2fkffqW/2GNql+jvF0eaWQfHavlUsXBOnUQ2sjXTRBLlkx+difc6jCoZjYHsEtv34X6pRx71QUuvBBj8hgaGIO/d2Opgo8d+DbGbO5cubW4VXpw7i03jFeb7zaY6oZ/kDYftQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IItsG2DopOyVR2EhLh0oWEKnw1GHLQuOGMNbGjCloEc=;
- b=jhiiDCrTcAwZQGDiIsIEMYO2I4g0yDLR8bG8tusNCtE3C+JPojfTB+zeqXJa3w1B165XdwFMwQSwIAUy1S0ZhsoXHOSmwGn8hJ8nP6dsEz7Sr4cwQDXPbeiQzadBGbz3ek/9gshm3hGy3MDAVq+qth2qkT2Osx+rZMT1W4SGwKM=
+ bh=sr6KC+yyaQtkygcR2njzgAGJY3nOTwLhdjUm2Cl0IKw=;
+ b=S/2raSl5WsNsnZ5+8CejLihcOwngG3LogcGuLWvW/GuuyuNK2kJqWoEl4lJ2AzRtKV0l0SlT/NqtSt6kizLqiAXnFHI0Yq0T6I7swO5Iql41nkgT9jlnWPTMyHA5vdTMDppDzeEoDMj9T4LX3PjcW8pobVE+V5X+oEtE7zR3v0k=
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BL0PR13MB4483.namprd13.prod.outlook.com (2603:10b6:208:1ce::17) with
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM9PR04MB8603.eurprd04.prod.outlook.com (2603:10a6:20b:43a::10)
+ by DB9PR04MB9704.eurprd04.prod.outlook.com (2603:10a6:10:303::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.19; Fri, 10 Mar
- 2023 18:18:49 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.020; Fri, 10 Mar 2023
- 18:18:49 +0000
-Date:   Fri, 10 Mar 2023 19:18:42 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net-next v5 1/1] net: dsa: hellcreek: Get rid of custom
- led_init_default_state_get()
-Message-ID: <ZAt0gqmOifS65Z91@corigine.com>
-References: <20230310163855.21757-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230310163855.21757-1-andriy.shevchenko@linux.intel.com>
-X-ClientProxiedBy: AM0PR10CA0020.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:208:17c::30) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.16; Fri, 10 Mar
+ 2023 18:20:01 +0000
+Received: from AM9PR04MB8603.eurprd04.prod.outlook.com
+ ([fe80::45d2:ce51:a1c4:8762]) by AM9PR04MB8603.eurprd04.prod.outlook.com
+ ([fe80::45d2:ce51:a1c4:8762%5]) with mapi id 15.20.6178.019; Fri, 10 Mar 2023
+ 18:20:01 +0000
+From:   Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, marcel@holtmann.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        alok.a.tiwari@oracle.com, hdanton@sina.com,
+        ilpo.jarvinen@linux.intel.com, leon@kernel.org
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-serial@vger.kernel.org, amitkumar.karwar@nxp.com,
+        rohit.fule@nxp.com, sherry.sun@nxp.com, neeraj.sanjaykale@nxp.com
+Subject: [PATCH v8 0/3] Add support for NXP bluetooth chipsets
+Date:   Fri, 10 Mar 2023 23:49:18 +0530
+Message-Id: <20230310181921.1437890-1-neeraj.sanjaykale@nxp.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR04CA0195.apcprd04.prod.outlook.com
+ (2603:1096:4:14::33) To AM9PR04MB8603.eurprd04.prod.outlook.com
+ (2603:10a6:20b:43a::10)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BL0PR13MB4483:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6f1f7ffa-09f6-4f33-c18b-08db2193e52d
+X-MS-TrafficTypeDiagnostic: AM9PR04MB8603:EE_|DB9PR04MB9704:EE_
+X-MS-Office365-Filtering-Correlation-Id: 504f06c0-740c-4cd0-6732-08db21940fef
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: RX3kSso8q0OhEESGYXOKONe9qwQFjfD2on7iJnrIfNeLMPSysY8DVSA1xISLKk0oNV5F1RG5oqz9WYsWKgS2gxlcI/nQH1W8kHMiqKxd8jKZukXNHt5b4gR3IrivhJYuKsd003WaWjv3rTVPuQcnpS0Bstd+Cvzghirg/UomgueCTg+aREmKXmnRaEf58O80fN/Dgc1cYbrKEFQY8yxLMgX9ZwS/d5rDRVvMKTML/aHHLBq9LhVXaBGoaIQlslRej3La64zrUSkCrfXFmiuPNwTudWqKxg9vt0hK2EUehkb5h54vEZ9cBHLLBDYeYdQ9XKWgRlPDs9eHc8zvGJHyqHkqk9wB/rYM5vOE3bPIvCCfNC/DOS4EfaxgFa9z2TAwLJI2E4O9jejvVlQmD3aaiNa5iwOkI8yr9EhjvyA/GqB/HSF5/sfF49LqQQYH52/TZY+svHubDGxa9Sw5xPRM4MeeWC16APPqHCO/i8ri7vIlJmw9syBz53urbiUJu8UFPDfprSNk8dyMjVsDIjypIm4huEuslOYMg3x37qoaD5TwjYpDpBybnV4+A5KfZ5g/drtI9EJt1cltyKOcoEpAC4iuhDbl7CYJ1KezGhXdTEhJutuHlGNzLdYeR+dLMOIOkw3YKs3MGEAnlvB71viz5dEoPVNXEa1DCtr3KKuSLfko2JdO3apPXd6CCyNT/gdp
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39830400003)(376002)(366004)(136003)(396003)(346002)(451199018)(2906002)(83380400001)(44832011)(36756003)(7416002)(5660300002)(8676002)(66476007)(66556008)(66946007)(41300700001)(8936002)(478600001)(6916009)(4326008)(316002)(38100700002)(86362001)(54906003)(2616005)(6512007)(186003)(6666004)(6486002)(6506007)(26583001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: uo+AFwO/zNXdcWRjuX+my7lPpZtUgPzibPSDhjniYTlgTGo+Uhy7CRbXRdq6zFRkoHj4AX6MMt3wga5Lmh+3ZGaX92gPL/7pWOhnjRXsXbFVm2Bsq0hNwXgdLmQAmAF4yJvY8hU37iMq2Ni5ZDjLl892PmfGEw9KSQA5Q6ns/jLln3e99H72nrBWY6z/x6hOsOQSCVkqqX62i/7EVAluT/JixrENeAmg3TBEpP0cWlbzL131JGmwUhjujgYKfF8IU4Ymur6r0k23xI6JBZubnBB62qGwtcJAXcG7XBxZGmekSTk8mfe3uGwd6CKICQi98gtD9h27TOq4c3Q4V0R9dqO7cCEk/FVeSADCwFVlUoXkq6os7fTBJ+IYeUiGqmkP0sXmWDEetluoGg8EEUFLDnhyw7+yg5JQSpsmTQMaZtanVoIOrmjcSLU0JzzJOfpBqMiNy/rHoMswRe/lMOoDVeOPReW3juIh/N2ZXXUfk/KwuBF4oy06sxUokidh4HNX1uh6J0QpntMG+l2k2vdtugIqMM96jxzz7PlVfaZonXuyYLWRewPFcSJ4NpXdkeClipWHzjzd2+9fOlxB5EYHTxIR/u98L8k7zZYjCxPTLKCckHX5l7S7wapiJWqB+TsG0cXdcsKCJRs3W1zRKjdA9yOWCIX53H/NqvHBZZmuXlX+/6z2aZxSsnmhlPdP70ZK/YdjIvg9t5Bj3WEKZUMhEdd8gbFHAWWQSDu4rNdayO8=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8603.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(136003)(396003)(366004)(39860400002)(376002)(451199018)(66946007)(66476007)(66556008)(1076003)(6512007)(6506007)(316002)(38100700002)(26005)(8676002)(36756003)(7416002)(478600001)(6666004)(8936002)(2906002)(5660300002)(6486002)(921005)(52116002)(86362001)(83380400001)(4326008)(2616005)(38350700002)(41300700001)(186003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6TaAWtb5PfJC4DZevRen3jhtJur1Z7XdRWEx3+ZjhT04CwcPa9T/KMykQYa+?=
- =?us-ascii?Q?XSLiiQuEo2d/v5fl4DNC+X2lEbiuK8hb07zCe+Cg0dZLh8Wa8K74nXJbrVCE?=
- =?us-ascii?Q?RxwUjXGGEsrnl2kiz0gQEoUmzifKA0fkIRvgomPFIH9GCI2yqMJyl+iq3PXw?=
- =?us-ascii?Q?Q73TNuYq+E+bfIR40nqfGnXjyJvi25Fjdul6STQrau0B0l/LcdpFEJmrH06O?=
- =?us-ascii?Q?XwIA1imI15AdZBlSQhAHJUuVaAEf1mEZcvi7J2e9bVCMoQpUaaACSJz4NkCU?=
- =?us-ascii?Q?BWrYGBZphQ5Rp8C6AhLBlQw11zXVkxXFlMFGIhesabpIRO7pFbOOlPgHzM9h?=
- =?us-ascii?Q?tGugF4+anFsxYIwpjbUkt9xzRUFiC3da+K5rYJ8asyUsCfE66kS8I5I7kUEr?=
- =?us-ascii?Q?EKIKuDN9vP4XURPlonzkUJz+lZ3qU+zE3kaJ+wSyqSrikFFjCdFB1D4EWVDV?=
- =?us-ascii?Q?hPT40PczQUVbnWmjdHEiM4x656UUdaJ6oBaOymoQSYQy+w6mhq4JseYncvDz?=
- =?us-ascii?Q?exLAjhim38IFGnVVpjOo29FBphYNv/c8auE6hu2AxSA0PTYvRWGPkMATdnGW?=
- =?us-ascii?Q?Nb6W5sWFS9gxUl2hNY07ggT6aJtguXrg2WQH015uHr4tzCXg5EPlCc5VGd6V?=
- =?us-ascii?Q?rIsKcha8RBlbrCtAOkboD/MZkRpaevjaLJNvjTldotgKP1Bd8+IiLWX5HXsR?=
- =?us-ascii?Q?KrNsGGOYDdtb8zyIIhTw33l8y4jqFekKAYq8ADX+NxI3ldU3wgpjEgxkKpFV?=
- =?us-ascii?Q?0Op7ad+q7CjmCZyCmkQiPOB7pelcaO9LVsNBJwIX88mMBCbG3OdJ7cUC1uUp?=
- =?us-ascii?Q?5QMhIlbg8vJlBTDjalUP+HeR7jcdwtIBGuKqX8sQ73LaS3YE5vdGkEYjJsG7?=
- =?us-ascii?Q?L3pvE+IAzrZ8kzMIDzbplIeloTd9iEXfyBq2zsBIwcB3hRVeUSsyGNKZ2oYX?=
- =?us-ascii?Q?JVSoCKsv85Fx2soZfAg0ZnhXKcJZq37iJl6uHVPbYhqkumgi6YDcqtAIjnVI?=
- =?us-ascii?Q?nO4o7hVMmzL9oxP1jDFek8/wIWH209BPHNa1hEpOJ8stpDkeRUAnzH70qdF+?=
- =?us-ascii?Q?skMo5yghmidZqCADXf4G2AxuhPYGmZ5nQIoq9xriJiOebvJtszKgodAAHKNl?=
- =?us-ascii?Q?0AgABylcdrYdgKknf6JpCENWoZ6atr0APCOqW1gXRJMYz8d4UYi4sM4U0UbE?=
- =?us-ascii?Q?tPTMklCnMO4yLHpaUeGU5+acLzNspMMK9b+oi5VNmvt6QcOngyfSHas68s9/?=
- =?us-ascii?Q?xvEdP57SR5c2ndgBRXNuypo1Kp7Xhta3fqpV6sX6pNLcLtx2005pspUBHoVr?=
- =?us-ascii?Q?LvNi3g5uiOCdwhqTgGyUs2+C9SvG5LXW2cD6lhC3YLiUTqZ9Jn4cG4oUcqMy?=
- =?us-ascii?Q?mXgu/KXdzpupK8CUVMDrhW30H7IEEnGAZik9Nb+hhHN9h8R+jouSzKZFdKnR?=
- =?us-ascii?Q?i6UtRmTlp4YnENcxGWjnmMsGi2FwYJl3131QEz+kwRn4HI32pcH6ong1OWOt?=
- =?us-ascii?Q?y14NfOSR1l8sN5rsLaQLEd0jZRH4abRVmzqRXRBIPc2i30mSWIF5BD8/TJsj?=
- =?us-ascii?Q?wpD76eqUXAhVcKLbchJ+gGXGVN43WLvApPTufuAIEiHyK529KZJSuYqLPb0R?=
- =?us-ascii?Q?GfXDtgRzgSCjPNS9VenU6xn6V7y10kBHSw6VeXYwl5wNh+K76iMZREh8gf3B?=
- =?us-ascii?Q?yH5nvw=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6f1f7ffa-09f6-4f33-c18b-08db2193e52d
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Xl2+xHfJ+mpgccVizYuT8IMOvDv9px6c8g7Wd8mqJ5G1EG9ClgTku64encEG?=
+ =?us-ascii?Q?M8akua5/cMIXd2ebC2WIOTQ675C4yR0PHSWJEAGDEZJQRDrK5pjYYx229ZgQ?=
+ =?us-ascii?Q?cv8/8cSCcFOqDrV6Xe1lSCgvVZOclGYe6/p6Ru4nnJNz5BGHlh85BbYjnbEm?=
+ =?us-ascii?Q?xlGvcSLTgdlOlINPUzEtjbnF+AZTian9v9Ilgx12Yew+xTt1xYFtlhrIU15J?=
+ =?us-ascii?Q?QB29WhMbLOkB9q+jU5AsjEKoraYDBMsEpCFRAXXaRbCMZAUOd30y3IFCcc4x?=
+ =?us-ascii?Q?f27javeidULQZhL9pCtd7h+dq9Pb4b5PmJ4FuKdKyHjRmGb5pAiRpX69oOXk?=
+ =?us-ascii?Q?jmESCZBEik1NxX6+g6fXq4qWfKtGRD5r/6DMs07cCx0Gsh8+sO/u+3GebF3r?=
+ =?us-ascii?Q?lxS23ID1gQDpext1Vp0FDkj4o4KaV/gxhIHpBrqSn3J9OrNeBv1UPMiSAl2F?=
+ =?us-ascii?Q?5zI8mDWqkce+p8S8jQW7LEJ1OHTN/Q54gsFHkGyxCqIEG7xgDAshMXEjEPOE?=
+ =?us-ascii?Q?LRDRnzqiMoTK4RV5nuMl+WcF2WCOoEBqE7LC3MKWqxgt4YHlY+mTN/hmct3+?=
+ =?us-ascii?Q?ohYmRUA6SDtHgXM9d6/D3CLL0xStCMz7cCGIsbSTlNsmNM1iSr2CM3LeqAyE?=
+ =?us-ascii?Q?SZCVuee8wbgwvaneTBIqtpLAK97+u72Ccvy1d/KQkIyz8vwkMUa8Tzg5YznD?=
+ =?us-ascii?Q?JT+cgSzGozG3gjkvVthsAy9hdnu0MBlmaxc/ijew/zMdxkczrcXUUI1qQZJS?=
+ =?us-ascii?Q?IUfI+zJ/kr/xSfdPLhxTXjYjnxRf3anHIwMgcCjHAZKrwkAhU2/+SVWW7I5j?=
+ =?us-ascii?Q?lTOSjOKcaWgwh0QiH7LG69Y5gvJUb1w8bPNLp/meZuKta6ikJTsqqdH1SOMf?=
+ =?us-ascii?Q?VFUdEpglGjWkaHTQ3AB/9SIp5sRmT4e+Dwt1Cb2JFDOc2/R4nBTw8r2D7GkF?=
+ =?us-ascii?Q?TxNV7QqmEnkVsKri9V2U3VDOjbbtOiXgoXInmRzPm3aVnSJq+WCBqjqA1F68?=
+ =?us-ascii?Q?xn8LcKW9WbmdH9g5Mi46wpkkYhvcvuIayzl0DYcrJ9zUcpfwWDl3BSX7uhHh?=
+ =?us-ascii?Q?XVZUVmLtxnHoJlicyOi10HVK3HLiKkwsEaFF8GR/X83Ee5WgUFwO7VZkpwbx?=
+ =?us-ascii?Q?t5yjM9UCbi2nkLJwyNTqTF+LljH7CcnJpSu+2/KWTGKq0sUHAwJBEliG4Dto?=
+ =?us-ascii?Q?Km4IRoUpf+ejlpi4ZOgnNj4CI7tFgqU7kKWk+ufLvZxib4ENhpA3onnZ5D5B?=
+ =?us-ascii?Q?3iyDgR59pRNApH8trwBk6HthVrdgVLhGNzFoOXw3VW9jSqLt5vBQ0enlqUJA?=
+ =?us-ascii?Q?obODGTFNQ6XE7e2NUh8T/bHe9Kykg3w0PVfbjhMrY96wOE2/S1CGtqt+bNPf?=
+ =?us-ascii?Q?pYtCqnqBH7QbJyKuYOfRYVtm92Opq9jgNz2t4PR/OeQBagCG6soqQYNWVbxP?=
+ =?us-ascii?Q?7F+q65GQWFrw8myyeiB5Yu0wQgY3OD31WikMtadD4pQ/4OPAy61BCUsneV+4?=
+ =?us-ascii?Q?XOM2YxCjhHnR6tAMOv1Obfjr6m9AHoxdcy+DGR+lK4ZLeecUKb3xKxKCxAfb?=
+ =?us-ascii?Q?qJNITUuTuhnI/kZ4Miv2q04cfycO9dCkEMF7IY07rVu4IdREqBrzBw4VSLA0?=
+ =?us-ascii?Q?ew=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 504f06c0-740c-4cd0-6732-08db21940fef
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8603.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2023 18:18:49.6647
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2023 18:20:01.1624
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Ax6l/8vniRAJsOuVBiOQqOZTbchpwEDYaER/FENgy9O/X+XvO8Gy1O27ng1JaCcRf2uG/vFo0dKLQPm+WfKAEjLWHW18ykiorlU/FUacXh8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR13MB4483
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no
-        version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: q0C7AvIy81k8GbRGKuTjraJ3Q9m1jmy2OSgZiB4yayo7qeYOCnkdH9WbmsXkFMnwXqbmV3t/ODAEcjlwFWA48Yvdsg+tOKpSRzqb9kYO0W8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB9704
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 10, 2023 at 06:38:55PM +0200, Andy Shevchenko wrote:
-> LED core provides a helper to parse default state from firmware node.
-> Use it instead of custom implementation.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
-> ---
-> v5: resent after v6.3-rc1 with proper net-next prefix
->  drivers/net/dsa/hirschmann/hellcreek_ptp.c | 45 ++++++++++++----------
->  1 file changed, 24 insertions(+), 21 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/hirschmann/hellcreek_ptp.c b/drivers/net/dsa/hirschmann/hellcreek_ptp.c
-> index b28baab6d56a..793b2c296314 100644
-> --- a/drivers/net/dsa/hirschmann/hellcreek_ptp.c
-> +++ b/drivers/net/dsa/hirschmann/hellcreek_ptp.c
-> @@ -297,7 +297,8 @@ static enum led_brightness hellcreek_led_is_gm_get(struct led_classdev *ldev)
->  static int hellcreek_led_setup(struct hellcreek *hellcreek)
->  {
->  	struct device_node *leds, *led = NULL;
-> -	const char *label, *state;
-> +	enum led_default_state state;
-> +	const char *label;
->  	int ret = -EINVAL;
->  
->  	of_node_get(hellcreek->dev->of_node);
-> @@ -318,16 +319,17 @@ static int hellcreek_led_setup(struct hellcreek *hellcreek)
->  	ret = of_property_read_string(led, "label", &label);
->  	hellcreek->led_sync_good.name = ret ? "sync_good" : label;
->  
-> -	ret = of_property_read_string(led, "default-state", &state);
-> -	if (!ret) {
-> -		if (!strcmp(state, "on"))
-> -			hellcreek->led_sync_good.brightness = 1;
-> -		else if (!strcmp(state, "off"))
-> -			hellcreek->led_sync_good.brightness = 0;
-> -		else if (!strcmp(state, "keep"))
-> -			hellcreek->led_sync_good.brightness =
-> -				hellcreek_get_brightness(hellcreek,
-> -							 STATUS_OUT_SYNC_GOOD);
-> +	state = led_init_default_state_get(of_fwnode_handle(led));
-> +	switch (state) {
-> +	case LEDS_DEFSTATE_ON:
-> +		hellcreek->led_sync_good.brightness = 1;
-> +		break;
-> +	case LEDS_DEFSTATE_KEEP:
-> +		hellcreek->led_sync_good.brightness =
-> +				hellcreek_get_brightness(hellcreek, STATUS_OUT_SYNC_GOOD);
+This patch adds a driver for NXP bluetooth chipsets.
 
-nit: I think < 80 columns wide is still preferred for network code
+The driver is based on H4 protocol, and uses serdev APIs. It supports host
+to chip power save feature, which is signalled by the host by asserting
+break over UART TX lines, to put the chip into sleep state.
 
-> +		break;
-> +	default:
-> +		hellcreek->led_sync_good.brightness = 0;
->  	}
->  
->  	hellcreek->led_sync_good.max_brightness = 1;
-> @@ -344,16 +346,17 @@ static int hellcreek_led_setup(struct hellcreek *hellcreek)
->  	ret = of_property_read_string(led, "label", &label);
->  	hellcreek->led_is_gm.name = ret ? "is_gm" : label;
->  
-> -	ret = of_property_read_string(led, "default-state", &state);
-> -	if (!ret) {
-> -		if (!strcmp(state, "on"))
-> -			hellcreek->led_is_gm.brightness = 1;
-> -		else if (!strcmp(state, "off"))
-> -			hellcreek->led_is_gm.brightness = 0;
-> -		else if (!strcmp(state, "keep"))
-> -			hellcreek->led_is_gm.brightness =
-> -				hellcreek_get_brightness(hellcreek,
-> -							 STATUS_OUT_IS_GM);
-> +	state = led_init_default_state_get(of_fwnode_handle(led));
-> +	switch (state) {
-> +	case LEDS_DEFSTATE_ON:
-> +		hellcreek->led_is_gm.brightness = 1;
-> +		break;
-> +	case LEDS_DEFSTATE_KEEP:
-> +		hellcreek->led_is_gm.brightness =
-> +				hellcreek_get_brightness(hellcreek, STATUS_OUT_IS_GM);
-> +		break;
-> +	default:
-> +		hellcreek->led_is_gm.brightness = 0;
->  	}
+To support this feature, break_ctl has also been added to serdev-tty along
+with a new serdev API serdev_device_break_ctl().
 
-This seems to duplicate the logic in the earlier hunk of this patch.
-Could it be moved into a helper?
+This driver is capable of downloading firmware into the chip over UART.
 
->  
->  	hellcreek->led_is_gm.max_brightness = 1;
-> -- 
-> 2.39.1
-> 
+The document specifying device tree bindings for this driver is also
+included in this patch series.
+
+Neeraj Sanjay Kale (3):
+  serdev: Add method to assert break signal over tty UART port
+  dt-bindings: net: bluetooth: Add NXP bluetooth support
+  Bluetooth: NXP: Add protocol support for NXP Bluetooth chipsets
+
+ .../net/bluetooth/nxp,88w8987-bt.yaml         |   46 +
+ MAINTAINERS                                   |    7 +
+ drivers/bluetooth/Kconfig                     |   11 +
+ drivers/bluetooth/Makefile                    |    1 +
+ drivers/bluetooth/btnxpuart.c                 | 1293 +++++++++++++++++
+ drivers/tty/serdev/core.c                     |   11 +
+ drivers/tty/serdev/serdev-ttyport.c           |   12 +
+ include/linux/serdev.h                        |    6 +
+ 8 files changed, 1387 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/bluetooth/nxp,88w8987-bt.yaml
+ create mode 100644 drivers/bluetooth/btnxpuart.c
+
+-- 
+2.34.1
+
