@@ -2,415 +2,628 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE58B6B48CD
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 16:06:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2AD56B48F6
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 16:08:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233535AbjCJPG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 10:06:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32770 "EHLO
+        id S233517AbjCJPIX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 10:08:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233214AbjCJPGd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 10:06:33 -0500
-Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26D6A26C0F;
-        Fri, 10 Mar 2023 06:59:34 -0800 (PST)
-Received: by mail-ot1-x32c.google.com with SMTP id f19-20020a9d5f13000000b00693ce5a2f3eso3053323oti.8;
-        Fri, 10 Mar 2023 06:59:34 -0800 (PST)
+        with ESMTP id S233621AbjCJPHy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 10:07:54 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 673F513688F
+        for <netdev@vger.kernel.org>; Fri, 10 Mar 2023 07:00:43 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id p6so5890226plf.0
+        for <netdev@vger.kernel.org>; Fri, 10 Mar 2023 07:00:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678460380;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=LDCbCEhqd/jioVFDhBLHo8nAEDU22qfueh73Jdf/C6E=;
+        b=Mu6GvZf8gFi3R6QC4asMatL1rFWUm7QG7FgOpe9DIIiBGwmqPgVKXKADRPtjwPZlU6
+         u8bo95QWbFDTXsq4eLzAT8acsP90hS8teQa0PzEOUp96gcPqPhygnHcaqod/8kyfFmJk
+         q2+OLpUZTIDwhVpKpXTtwaJBTbfHcz+NvzLxIiYWmGFOI9uemlHrAanchVYnV9f9gN3G
+         nUpjFDuBU05GsawqlPMVJ96XckL61tUS8AuW2Z2q1ibelpqjpHP9a7ZTexbPOZtCgdlZ
+         CgpUDC8nS1HQsHvfmO5Xa/25LOQeIaneICSntHzWK67zY4YcGgxmyAKt+ZXyaeee2glb
+         Yrwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678460252;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=1e100.net; s=20210112; t=1678460380;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=Siol0BKXbXdJTIj3lC8otnnA/7HJbspF3Iuig65XYfo=;
-        b=n8tkLL+Wy5elZE41i+wNIN3VaWEiVcT7qo7/8bGI/gw6o3LgtEpmaMHtEA9zcXrSTy
-         bTApAaajnU4b3OQMK2NQ9bTF8oAJHAAGNNXjoeY65kgEQN4icDc5I5ApMq/qt32CtNUl
-         9VbU52k+VIQ+9IqSNXhLTsneaZHqaBBWojoirFA1oiyfOVENucb3DCGdvvYQjj1ccin4
-         lxZgAmzNXG8fkSmqa2A3gb9J5YPe4Bui2HSf4feLhFS5CesjxXAajb1TTTLg9XC75PQo
-         h4UyITtX9XK/6T26+LcW1/x34nYc09ZG2JxjPZklt19ayKeV2kMN6mA4PTM3cTJJcYuf
-         7eEQ==
-X-Gm-Message-State: AO0yUKWWHpMrmpwAGhNVL2f155JYdEqYXufJrI1wQfPn4GhvrXs2Kcr4
-        lhgqezVstbSfO0BQU8OGCmCyGy0iTA==
-X-Google-Smtp-Source: AK7set82bK+DCb6HkLyh9PPuqHg2n52w1M30t6Sf+VNlG0JPxQvhh/HoCxYFawXdJvHz/XmevzbyRw==
-X-Received: by 2002:a05:6871:71e:b0:176:3c95:e94f with SMTP id f30-20020a056871071e00b001763c95e94fmr16647092oap.20.1678459727966;
-        Fri, 10 Mar 2023 06:48:47 -0800 (PST)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id h4-20020a05687003c400b0017703cd8ff6sm122056oaf.7.2023.03.10.06.48.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Mar 2023 06:48:47 -0800 (PST)
-Received: (nullmailer pid 1544240 invoked by uid 1000);
-        Fri, 10 Mar 2023 14:47:18 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Wei Fang <wei.fang@nxp.com>,
-        Shenwei Wang <shenwei.wang@nxp.com>,
-        Clark Wang <xiaoning.wang@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Francois Romieu <romieu@fr.zoreil.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Zhao Qiang <qiang.zhao@nxp.com>, Kalle Valo <kvalo@kernel.org>,
-        Samuel Mendoza-Jonas <sam@mendozajonas.com>
-Cc:     devicetree@vger.kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-wireless@vger.kernel.org
-Subject: [PATCH] net: Use of_property_read_bool() for boolean properties
-Date:   Fri, 10 Mar 2023 08:47:16 -0600
-Message-Id: <20230310144718.1544169-1-robh@kernel.org>
-X-Mailer: git-send-email 2.39.2
+        bh=LDCbCEhqd/jioVFDhBLHo8nAEDU22qfueh73Jdf/C6E=;
+        b=f3+WGp2+tAt1b2dk668HJO6G8TCNd1qBc+CpipAcuVCAeYBCLw8Tq9qStN0F+ip+vg
+         yGilV/+mNNfQ+DRGfFGoX58NOt7CjwrbvdboMeGeXLJ38GtVVsPfZsGLFayBk9hBi9l1
+         VVw78mU55YzAOP/i7m2YCGaMQYpHcx4V4w0MFRkOuuyhZsTEGSjwBRBflmkdPurQ/PKm
+         hG+O70g2oHP09zBrwuoep+ds4k4A+Mglj31RpSFt+jyNaV6IEIjqjqPwJl5YkHg44duR
+         qCsL3oqiKr1odseODV+44+7SIUAReTR365iDaP4Z+YOVv7Ms6XlZi0zxCTgOaZERQ2sx
+         IL8w==
+X-Gm-Message-State: AO0yUKVTUl+glNahOzcuS1AQcZMfE4iwGgl71rYhdEXf7H52dP0eafm5
+        Kl/8wTdUlEvifxq3pfNm4/ki2clQYavMahxUNa4437T5Kgw=
+X-Google-Smtp-Source: AK7set9Nrdgh3giQElaS2dzInqTPInLGH0NwhCmwa+KzTfCPX3UlY7ba74rZhpIh6uvAEPJwEDh9UwJ2JLeVMGMWi5g=
+X-Received: by 2002:a65:6a84:0:b0:503:25f0:9cc5 with SMTP id
+ q4-20020a656a84000000b0050325f09cc5mr9238395pgu.2.1678459902664; Fri, 10 Mar
+ 2023 06:51:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+From:   mingkun bian <bianmingkun@gmail.com>
+Date:   Fri, 10 Mar 2023 22:51:31 +0800
+Message-ID: <CAL87dS0sSsKQOcf22gcHuHu7PjG_j1uiOx-AfRKdT7rznVfJ6Q@mail.gmail.com>
+Subject: [ISSUE]soft lockup in __inet_lookup_established() function which one
+ sock exist in two hash buckets(tcp_hashinfo.ehash)
+To:     netdev@vger.kernel.org, kerneljasonxing@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is preferred to use typed property access functions (i.e.
-of_property_read_<type> functions) rather than low-level
-of_get_property/of_find_property functions for reading properties.
-Convert reading boolean properties to to of_property_read_bool().
+Hi,
 
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- drivers/net/can/cc770/cc770_platform.c          | 12 ++++++------
- drivers/net/ethernet/cadence/macb_main.c        |  2 +-
- drivers/net/ethernet/davicom/dm9000.c           |  4 ++--
- drivers/net/ethernet/freescale/fec_main.c       |  2 +-
- drivers/net/ethernet/freescale/fec_mpc52xx.c    |  2 +-
- drivers/net/ethernet/freescale/gianfar.c        |  4 ++--
- drivers/net/ethernet/ibm/emac/core.c            |  8 ++++----
- drivers/net/ethernet/ibm/emac/rgmii.c           |  2 +-
- drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c |  3 +--
- drivers/net/ethernet/sun/niu.c                  |  2 +-
- drivers/net/ethernet/ti/cpsw-phy-sel.c          |  3 +--
- drivers/net/ethernet/ti/netcp_ethss.c           |  8 +++-----
- drivers/net/ethernet/via/via-velocity.c         |  3 +--
- drivers/net/ethernet/xilinx/ll_temac_main.c     |  9 ++++-----
- drivers/net/wan/fsl_ucc_hdlc.c                  | 11 +++--------
- drivers/net/wireless/ti/wlcore/spi.c            |  3 +--
- net/ncsi/ncsi-manage.c                          |  4 ++--
- 17 files changed, 35 insertions(+), 47 deletions(-)
+    I am sorry to submit the same post, because the format of the
+previous post is wrong.
 
-diff --git a/drivers/net/can/cc770/cc770_platform.c b/drivers/net/can/cc770/cc770_platform.c
-index 8d916e2ee6c2..8dcc32e4e30e 100644
---- a/drivers/net/can/cc770/cc770_platform.c
-+++ b/drivers/net/can/cc770/cc770_platform.c
-@@ -93,20 +93,20 @@ static int cc770_get_of_node_data(struct platform_device *pdev,
- 	if (priv->can.clock.freq > 8000000)
- 		priv->cpu_interface |= CPUIF_DMC;
- 
--	if (of_get_property(np, "bosch,divide-memory-clock", NULL))
-+	if (of_property_read_bool(np, "bosch,divide-memory-clock"))
- 		priv->cpu_interface |= CPUIF_DMC;
--	if (of_get_property(np, "bosch,iso-low-speed-mux", NULL))
-+	if (of_property_read_bool(np, "bosch,iso-low-speed-mux"))
- 		priv->cpu_interface |= CPUIF_MUX;
- 
- 	if (!of_get_property(np, "bosch,no-comperator-bypass", NULL))
- 		priv->bus_config |= BUSCFG_CBY;
--	if (of_get_property(np, "bosch,disconnect-rx0-input", NULL))
-+	if (of_property_read_bool(np, "bosch,disconnect-rx0-input"))
- 		priv->bus_config |= BUSCFG_DR0;
--	if (of_get_property(np, "bosch,disconnect-rx1-input", NULL))
-+	if (of_property_read_bool(np, "bosch,disconnect-rx1-input"))
- 		priv->bus_config |= BUSCFG_DR1;
--	if (of_get_property(np, "bosch,disconnect-tx1-output", NULL))
-+	if (of_property_read_bool(np, "bosch,disconnect-tx1-output"))
- 		priv->bus_config |= BUSCFG_DT1;
--	if (of_get_property(np, "bosch,polarity-dominant", NULL))
-+	if (of_property_read_bool(np, "bosch,polarity-dominant"))
- 		priv->bus_config |= BUSCFG_POL;
- 
- 	prop = of_get_property(np, "bosch,clock-out-frequency", &prop_size);
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 6e141a8bbf43..66e30561569e 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -4990,7 +4990,7 @@ static int macb_probe(struct platform_device *pdev)
- 		bp->jumbo_max_len = macb_config->jumbo_max_len;
- 
- 	bp->wol = 0;
--	if (of_get_property(np, "magic-packet", NULL))
-+	if (of_property_read_bool(np, "magic-packet"))
- 		bp->wol |= MACB_WOL_HAS_MAGIC_PACKET;
- 	device_set_wakeup_capable(&pdev->dev, bp->wol & MACB_WOL_HAS_MAGIC_PACKET);
- 
-diff --git a/drivers/net/ethernet/davicom/dm9000.c b/drivers/net/ethernet/davicom/dm9000.c
-index b21e56de6167..05a89ab6766c 100644
---- a/drivers/net/ethernet/davicom/dm9000.c
-+++ b/drivers/net/ethernet/davicom/dm9000.c
-@@ -1393,9 +1393,9 @@ static struct dm9000_plat_data *dm9000_parse_dt(struct device *dev)
- 	if (!pdata)
- 		return ERR_PTR(-ENOMEM);
- 
--	if (of_find_property(np, "davicom,ext-phy", NULL))
-+	if (of_property_read_bool(np, "davicom,ext-phy"))
- 		pdata->flags |= DM9000_PLATF_EXT_PHY;
--	if (of_find_property(np, "davicom,no-eeprom", NULL))
-+	if (of_property_read_bool(np, "davicom,no-eeprom"))
- 		pdata->flags |= DM9000_PLATF_NO_EEPROM;
- 
- 	ret = of_get_mac_address(np, pdata->dev_addr);
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index c73e25f8995e..f3b16a6673e2 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -4251,7 +4251,7 @@ fec_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto failed_ipc_init;
- 
--	if (of_get_property(np, "fsl,magic-packet", NULL))
-+	if (of_property_read_bool(np, "fsl,magic-packet"))
- 		fep->wol_flag |= FEC_WOL_HAS_MAGIC_PACKET;
- 
- 	ret = fec_enet_init_stop_mode(fep, np);
-diff --git a/drivers/net/ethernet/freescale/fec_mpc52xx.c b/drivers/net/ethernet/freescale/fec_mpc52xx.c
-index a7f4c3c29f3e..b88816b71ddf 100644
---- a/drivers/net/ethernet/freescale/fec_mpc52xx.c
-+++ b/drivers/net/ethernet/freescale/fec_mpc52xx.c
-@@ -937,7 +937,7 @@ static int mpc52xx_fec_probe(struct platform_device *op)
- 	priv->phy_node = of_parse_phandle(np, "phy-handle", 0);
- 
- 	/* the 7-wire property means don't use MII mode */
--	if (of_find_property(np, "fsl,7-wire-mode", NULL)) {
-+	if (of_property_read_bool(np, "fsl,7-wire-mode")) {
- 		priv->seven_wire_mode = 1;
- 		dev_info(&ndev->dev, "using 7-wire PHY mode\n");
- 	}
-diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
-index b2def295523a..38d5013c6fed 100644
---- a/drivers/net/ethernet/freescale/gianfar.c
-+++ b/drivers/net/ethernet/freescale/gianfar.c
-@@ -787,10 +787,10 @@ static int gfar_of_init(struct platform_device *ofdev, struct net_device **pdev)
- 	else
- 		priv->interface = gfar_get_interface(dev);
- 
--	if (of_find_property(np, "fsl,magic-packet", NULL))
-+	if (of_property_read_bool(np, "fsl,magic-packet"))
- 		priv->device_flags |= FSL_GIANFAR_DEV_HAS_MAGIC_PACKET;
- 
--	if (of_get_property(np, "fsl,wake-on-filer", NULL))
-+	if (of_property_read_bool(np, "fsl,wake-on-filer"))
- 		priv->device_flags |= FSL_GIANFAR_DEV_HAS_WAKE_ON_FILER;
- 
- 	priv->phy_node = of_parse_phandle(np, "phy-handle", 0);
-diff --git a/drivers/net/ethernet/ibm/emac/core.c b/drivers/net/ethernet/ibm/emac/core.c
-index 9b08e41ccc29..c97095abd26a 100644
---- a/drivers/net/ethernet/ibm/emac/core.c
-+++ b/drivers/net/ethernet/ibm/emac/core.c
-@@ -2939,9 +2939,9 @@ static int emac_init_config(struct emac_instance *dev)
- 	}
- 
- 	/* Fixup some feature bits based on the device tree */
--	if (of_get_property(np, "has-inverted-stacr-oc", NULL))
-+	if (of_property_read_bool(np, "has-inverted-stacr-oc"))
- 		dev->features |= EMAC_FTR_STACR_OC_INVERT;
--	if (of_get_property(np, "has-new-stacr-staopc", NULL))
-+	if (of_property_read_bool(np, "has-new-stacr-staopc"))
- 		dev->features |= EMAC_FTR_HAS_NEW_STACR;
- 
- 	/* CAB lacks the appropriate properties */
-@@ -3042,7 +3042,7 @@ static int emac_probe(struct platform_device *ofdev)
- 	 * property here for now, but new flat device trees should set a
- 	 * status property to "disabled" instead.
- 	 */
--	if (of_get_property(np, "unused", NULL) || !of_device_is_available(np))
-+	if (of_property_read_bool(np, "unused") || !of_device_is_available(np))
- 		return -ENODEV;
- 
- 	/* Find ourselves in the bootlist if we are there */
-@@ -3333,7 +3333,7 @@ static void __init emac_make_bootlist(void)
- 
- 		if (of_match_node(emac_match, np) == NULL)
- 			continue;
--		if (of_get_property(np, "unused", NULL))
-+		if (of_property_read_bool(np, "unused"))
- 			continue;
- 		idx = of_get_property(np, "cell-index", NULL);
- 		if (idx == NULL)
-diff --git a/drivers/net/ethernet/ibm/emac/rgmii.c b/drivers/net/ethernet/ibm/emac/rgmii.c
-index 242ef976fd15..50358cf00130 100644
---- a/drivers/net/ethernet/ibm/emac/rgmii.c
-+++ b/drivers/net/ethernet/ibm/emac/rgmii.c
-@@ -242,7 +242,7 @@ static int rgmii_probe(struct platform_device *ofdev)
- 	}
- 
- 	/* Check for RGMII flags */
--	if (of_get_property(ofdev->dev.of_node, "has-mdio", NULL))
-+	if (of_property_read_bool(ofdev->dev.of_node, "has-mdio"))
- 		dev->flags |= EMAC_RGMII_FLAG_HAS_MDIO;
- 
- 	/* CAB lacks the right properties, fix this up */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
-index ac8580f501e2..ac550d1ac015 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
-@@ -213,8 +213,7 @@ imx_dwmac_parse_dt(struct imx_priv_data *dwmac, struct device *dev)
- 	struct device_node *np = dev->of_node;
- 	int err = 0;
- 
--	if (of_get_property(np, "snps,rmii_refclk_ext", NULL))
--		dwmac->rmii_refclk_ext = true;
-+	dwmac->rmii_refclk_ext = of_property_read_bool(np, "snps,rmii_refclk_ext");
- 
- 	dwmac->clk_tx = devm_clk_get(dev, "tx");
- 	if (IS_ERR(dwmac->clk_tx)) {
-diff --git a/drivers/net/ethernet/sun/niu.c b/drivers/net/ethernet/sun/niu.c
-index e6144d963eaa..ab8b09a9ef61 100644
---- a/drivers/net/ethernet/sun/niu.c
-+++ b/drivers/net/ethernet/sun/niu.c
-@@ -9271,7 +9271,7 @@ static int niu_get_of_props(struct niu *np)
- 	if (model)
- 		strcpy(np->vpd.model, model);
- 
--	if (of_find_property(dp, "hot-swappable-phy", NULL)) {
-+	if (of_property_read_bool(dp, "hot-swappable-phy")) {
- 		np->flags |= (NIU_FLAGS_10G | NIU_FLAGS_FIBER |
- 			NIU_FLAGS_HOTPLUG_PHY);
- 	}
-diff --git a/drivers/net/ethernet/ti/cpsw-phy-sel.c b/drivers/net/ethernet/ti/cpsw-phy-sel.c
-index e8f38e3f7706..25e707d7b87c 100644
---- a/drivers/net/ethernet/ti/cpsw-phy-sel.c
-+++ b/drivers/net/ethernet/ti/cpsw-phy-sel.c
-@@ -226,8 +226,7 @@ static int cpsw_phy_sel_probe(struct platform_device *pdev)
- 	if (IS_ERR(priv->gmii_sel))
- 		return PTR_ERR(priv->gmii_sel);
- 
--	if (of_find_property(pdev->dev.of_node, "rmii-clock-ext", NULL))
--		priv->rmii_clock_external = true;
-+	priv->rmii_clock_external = of_property_read_bool(pdev->dev.of_node, "rmii-clock-ext");
- 
- 	dev_set_drvdata(&pdev->dev, priv);
- 
-diff --git a/drivers/net/ethernet/ti/netcp_ethss.c b/drivers/net/ethernet/ti/netcp_ethss.c
-index 751fb0bc65c5..2adf82a32bf6 100644
---- a/drivers/net/ethernet/ti/netcp_ethss.c
-+++ b/drivers/net/ethernet/ti/netcp_ethss.c
-@@ -3583,13 +3583,11 @@ static int gbe_probe(struct netcp_device *netcp_device, struct device *dev,
- 	/* init the hw stats lock */
- 	spin_lock_init(&gbe_dev->hw_stats_lock);
- 
--	if (of_find_property(node, "enable-ale", NULL)) {
--		gbe_dev->enable_ale = true;
-+	gbe_dev->enable_ale = of_property_read_bool(node, "enable-ale");
-+	if (gbe_dev->enable_ale)
- 		dev_info(dev, "ALE enabled\n");
--	} else {
--		gbe_dev->enable_ale = false;
-+	else
- 		dev_dbg(dev, "ALE bypass enabled*\n");
--	}
- 
- 	ret = of_property_read_u32(node, "tx-queue",
- 				   &gbe_dev->tx_queue_id);
-diff --git a/drivers/net/ethernet/via/via-velocity.c b/drivers/net/ethernet/via/via-velocity.c
-index a502812ac418..86f7843b4591 100644
---- a/drivers/net/ethernet/via/via-velocity.c
-+++ b/drivers/net/ethernet/via/via-velocity.c
-@@ -2709,8 +2709,7 @@ static int velocity_get_platform_info(struct velocity_info *vptr)
- 	struct resource res;
- 	int ret;
- 
--	if (of_get_property(vptr->dev->of_node, "no-eeprom", NULL))
--		vptr->no_eeprom = 1;
-+	vptr->no_eeprom = of_property_read_bool(vptr->dev->of_node, "no-eeprom");
- 
- 	ret = of_address_to_resource(vptr->dev->of_node, 0, &res);
- 	if (ret) {
-diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
-index 1066420d6a83..e0ac1bcd9925 100644
---- a/drivers/net/ethernet/xilinx/ll_temac_main.c
-+++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
-@@ -1455,12 +1455,11 @@ static int temac_probe(struct platform_device *pdev)
- 	 * endianness mode.  Default for OF devices is big-endian.
- 	 */
- 	little_endian = false;
--	if (temac_np) {
--		if (of_get_property(temac_np, "little-endian", NULL))
--			little_endian = true;
--	} else if (pdata) {
-+	if (temac_np)
-+		little_endian = of_property_read_bool(temac_np, "little-endian");
-+	else if (pdata)
- 		little_endian = pdata->reg_little_endian;
--	}
-+
- 	if (little_endian) {
- 		lp->temac_ior = _temac_ior_le;
- 		lp->temac_iow = _temac_iow_le;
-diff --git a/drivers/net/wan/fsl_ucc_hdlc.c b/drivers/net/wan/fsl_ucc_hdlc.c
-index 1c53b5546927..47c2ad7a3e42 100644
---- a/drivers/net/wan/fsl_ucc_hdlc.c
-+++ b/drivers/net/wan/fsl_ucc_hdlc.c
-@@ -1177,14 +1177,9 @@ static int ucc_hdlc_probe(struct platform_device *pdev)
- 	uhdlc_priv->dev = &pdev->dev;
- 	uhdlc_priv->ut_info = ut_info;
- 
--	if (of_get_property(np, "fsl,tdm-interface", NULL))
--		uhdlc_priv->tsa = 1;
--
--	if (of_get_property(np, "fsl,ucc-internal-loopback", NULL))
--		uhdlc_priv->loopback = 1;
--
--	if (of_get_property(np, "fsl,hdlc-bus", NULL))
--		uhdlc_priv->hdlc_bus = 1;
-+	uhdlc_priv->tsa = of_property_read_bool(np, "fsl,tdm-interface");
-+	uhdlc_priv->loopback = of_property_read_bool(np, "fsl,ucc-internal-loopback");
-+	uhdlc_priv->hdlc_bus = of_property_read_bool(np, "fsl,hdlc-bus");
- 
- 	if (uhdlc_priv->tsa == 1) {
- 		utdm = kzalloc(sizeof(*utdm), GFP_KERNEL);
-diff --git a/drivers/net/wireless/ti/wlcore/spi.c b/drivers/net/wireless/ti/wlcore/spi.c
-index 2d2edddc77bd..3f88e6a0a510 100644
---- a/drivers/net/wireless/ti/wlcore/spi.c
-+++ b/drivers/net/wireless/ti/wlcore/spi.c
-@@ -447,8 +447,7 @@ static int wlcore_probe_of(struct spi_device *spi, struct wl12xx_spi_glue *glue,
- 	dev_info(&spi->dev, "selected chip family is %s\n",
- 		 pdev_data->family->name);
- 
--	if (of_find_property(dt_node, "clock-xtal", NULL))
--		pdev_data->ref_clock_xtal = true;
-+	pdev_data->ref_clock_xtal = of_property_read_bool(dt_node, "clock-xtal");
- 
- 	/* optional clock frequency params */
- 	of_property_read_u32(dt_node, "ref-clock-frequency",
-diff --git a/net/ncsi/ncsi-manage.c b/net/ncsi/ncsi-manage.c
-index 80713febfac6..d9da942ad53d 100644
---- a/net/ncsi/ncsi-manage.c
-+++ b/net/ncsi/ncsi-manage.c
-@@ -1803,8 +1803,8 @@ struct ncsi_dev *ncsi_register_dev(struct net_device *dev,
- 	pdev = to_platform_device(dev->dev.parent);
- 	if (pdev) {
- 		np = pdev->dev.of_node;
--		if (np && (of_get_property(np, "mellanox,multi-host", NULL) ||
--			   of_get_property(np, "mlx,multi-host", NULL)))
-+		if (np && (of_property_read_bool(np, "mellanox,multi-host") ||
-+			   of_property_read_bool(np, "mlx,multi-host")))
- 			ndp->mlx_multi_host = true;
- 	}
- 
--- 
-2.39.2
+    I have encountered the same issue which causes loop in
+__inet_lookup_established for 22 seconds, then kernel crash,
+similarly, we have thousands of devices with heavy network traffic,
+but only a few of them crash every day due to this reason.
 
+ https://lore.kernel.org/lkml/CAL+tcoDAY=3DQ5pohEPgkBTNghxTb0AhmbQD58dPDghy=
+xmrcWMRQ@mail.gmail.com/T/#mb7b613de68d86c9a302ccf227292ac273cbe7f7c
+
+    Kernel version is 4.18.0, I analyzed the vmcore and find the point
+of infinite loop is that one sock1 pointers exist in two hash
+buckets(tcp_hashinfo.ehash),
+
+    tcp_hashinfo.ehash is as following:
+    buckets0:
+    buckets1:->sock1*->0x31(sock1->sk_nulls_node.next =3D 0x31, which
+means that sock1* is the end of buckets1), sock1* should not be here
+at buckets1,the real vmcore also has only one sock* in buckets1.
+    buckets2:
+    buckets3:->sock1*->0x31, sock1* is in the correct position at buckets3
+    buckets4:->sock2*
+    ...
+    buckets:N->sockn*
+
+    then a skb(inet_ehashfn=3D0x1) came, it matched to buckets1, and the
+condition validation(sk->sk_hash !=3D hash) failed, then entered
+condition validation(get_nulls_value(node) !=3D slot) ,
+    get_nulls_value(node) =3D 3
+    slot =3D 1
+    finally, go to begin, and infinite loop.
+
+    begin:
+    sk_nulls_for_each_rcu(sk, node, &head->chain) {
+    if (sk->sk_hash !=3D hash)
+        continue;
+    }
+    ...
+    if (get_nulls_value(node) !=3D slot)
+        goto begin;
+
+   why does sock1 can exist in two hash buckets, are there some
+scenarios where the sock is not deleted from the tcp_hashinfo.ehash
+before sk_free?
+
+
+  The detailed three vmcore information is as follow=EF=BC=9A
+  vmcore1' info:
+  1. print the skb, skb is 0xffff94824975e000 which stored in stack.
+
+   crash> p *(struct tcphdr *)(((struct
+sk_buff*)0xffff94824975e000)->head + ((struct
+sk_buff*)0xffff94824975e000)->transport_header)
+  $4 =3D {
+  source =3D 24125,
+  dest =3D 47873,
+  seq =3D 4005063716,
+  ack_seq =3D 1814397867,
+  res1 =3D 0,
+  doff =3D 8,
+  fin =3D 0,
+  syn =3D 0,
+  rst =3D 0,
+  psh =3D 1,
+  ack =3D 1,
+  urg =3D 0,
+  ece =3D 0,
+  cwr =3D 0,
+  window =3D 33036,
+  check =3D 19975,
+  urg_ptr =3D 0
+}
+
+2. print the sock1, tcp is in TIME_WAIT,the detailed analysis process
+is as follows:
+a. R14 is 0xffffad2e0dc8a210, which is &hashinfo->ehash[slot].
+
+crash> p *((struct inet_ehash_bucket*)0xffffad2e0dc8a210)
+$14 =3D {
+  chain =3D {
+    first =3D 0xffff9483ba400f48
+  }
+}
+
+b. sock* =3D 0xffff9483ba400f48 - offset(sock, sk_nulls_node) =3D 0xffff948=
+3ba400ee0
+
+we can see sock->sk_nulls_node is:
+  skc_nulls_node =3D {
+        next =3D 0x4efbf,
+        pprev =3D 0xffffad2e0dd2cef8
+      }
+
+c. skb inet_ehashfn is 0x13242 which is in R15.
+
+sock->skc_node is 0x4efbf, then its real slot is 0x4efbf >> 1 =3D 0x277df
+then bukets[0x277df] is (0x277df - 0x13242) * 8 + 0xffffad2e0dc8a210 =3D
+0xFFFFAD2E0DD2CEF8
+
+d. print bukets[0x277df], find 0xffff9483ba400f48 is the same  as
+bukets[0x13242]
+
+crash> p *((struct inet_ehash_bucket*)0xFFFFAD2E0DD2CEF8)
+$32 =3D {
+  chain =3D {
+    first =3D 0xffff9483ba400f48
+  }
+}
+
+crash> p *((struct inet_timewait_sock*)0xffff9483ba400ee0)
+$5 =3D {
+  __tw_common =3D {
+    {
+      skc_addrpair =3D 1901830485687183552,
+      {
+        skc_daddr =3D 442804416,
+        skc_rcv_saddr =3D 442804416
+      }
+    },
+    {
+      skc_hash =3D 2667739103,
+      skc_u16hashes =3D {30687, 40706}
+    },
+    {
+      skc_portpair =3D 3817294857,
+      {
+        skc_dport =3D 19465,
+        skc_num =3D 58247
+      }
+    },
+    skc_family =3D 2,
+    skc_state =3D 6 '\006',
+    skc_reuse =3D 0 '\000',
+    skc_reuseport =3D 0 '\000',
+    skc_ipv6only =3D 0 '\000',
+    skc_net_refcnt =3D 0 '\000',
+    skc_bound_dev_if =3D 0,
+    {
+      skc_bind_node =3D {
+        next =3D 0x0,
+        pprev =3D 0xffff9492a8950538
+      },
+      skc_portaddr_node =3D {
+        next =3D 0x0,
+        pprev =3D 0xffff9492a8950538
+      }
+    },
+    skc_prot =3D 0xffffffff9b9a9840,
+    skc_net =3D {
+      net =3D 0xffffffff9b9951c0
+    },
+    skc_v6_daddr =3D {
+      in6_u =3D {
+        u6_addr8 =3D
+"\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000",
+        u6_addr16 =3D {0, 0, 0, 0, 0, 0, 0, 0},
+        u6_addr32 =3D {0, 0, 0, 0}
+      }
+    },
+    skc_v6_rcv_saddr =3D {
+      in6_u =3D {
+        u6_addr8 =3D
+"\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000",
+        u6_addr16 =3D {0, 0, 0, 0, 0, 0, 0, 0},
+        u6_addr32 =3D {0, 0, 0, 0}
+      }
+    },
+    skc_cookie =3D {
+      counter =3D 0
+    },
+    {
+      skc_flags =3D 18446744072025102208,
+      skc_listener =3D 0xffffffff9b995780,
+      skc_tw_dr =3D 0xffffffff9b995780
+    },
+    skc_dontcopy_begin =3D 0xffff9483ba400f48,
+    {
+      skc_node =3D {
+        next =3D 0x4efbf,
+        pprev =3D 0xffffad2e0dd2cef8
+      },
+      skc_nulls_node =3D {
+        next =3D 0x4efbf,
+        pprev =3D 0xffffad2e0dd2cef8
+      }
+    },
+    skc_tx_queue_mapping =3D 0,
+    skc_rx_queue_mapping =3D 0,
+    {
+      skc_incoming_cpu =3D -1680142171,
+      skc_rcv_wnd =3D 2614825125,
+      skc_tw_rcv_nxt =3D 2614825125
+    },
+    skc_refcnt =3D {
+      refs =3D {
+        counter =3D 3
+      }
+    },
+    skc_dontcopy_end =3D 0xffff9483ba400f64,
+    {
+      skc_rxhash =3D 320497927,
+      skc_window_clamp =3D 320497927,
+      skc_tw_snd_nxt =3D 320497927
+    }
+  },
+  tw_mark =3D 0,
+  tw_substate =3D 6 '\006',
+  tw_rcv_wscale =3D 10 '\n',
+  tw_sport =3D 34787,
+  tw_kill =3D 0,
+  tw_transparent =3D 0,
+  tw_flowlabel =3D 0,
+  tw_pad =3D 0,
+  tw_tos =3D 0,
+  tw_timer =3D {
+    entry =3D {
+      next =3D 0xffff9483ba401d48,
+      pprev =3D 0xffff9481680177f8
+    },
+    expires =3D 52552264960,
+    function =3D 0xffffffff9ad67ba0,
+    flags =3D 1339031587,
+    rh_reserved1 =3D 0,
+    rh_reserved2 =3D 0,
+    rh_reserved3 =3D 0,
+    rh_reserved4 =3D 0
+  },
+  tw_tb =3D 0xffff9492a8950500
+}
+3.call stack
+[48256841.222682]  panic+0xe8/0x25c
+[48256841.222766]  ? secondary_startup_64+0xb6/0xc0
+[48256841.222853]  watchdog_timer_fn+0x209/0x210
+[48256841.222939]  ? watchdog+0x30/0x30
+[48256841.223027]  __hrtimer_run_queues+0xe5/0x260
+[48256841.223117]  hrtimer_interrupt+0x122/0x270
+[48256841.223209]  ? sched_clock+0x5/0x10
+[48256841.223296]  smp_apic_timer_interrupt+0x6a/0x140
+[48256841.223384]  apic_timer_interrupt+0xf/0x20
+[48256841.223471] RIP: 0010:__inet_lookup_established+0xe9/0x170
+[48256841.223562] Code: f6 74 33 44 3b 62 a4 75 3d 48 3b 6a 98 75 37
+8b 42 ac 85 c0 75 24 4c 3b 6a c8 75 2a 5b 5d 41 5c 41 5d 41 5e 48 89
+f8 41 5f c3 <48> d1 ea 49 39 d7 0f 85 5a ff ff ff 31 ff eb e2 39 44 24
+38 74 d6
+[48256841.224242] RSP: 0018:ffff9497e0e83bf8 EFLAGS: 00000202
+ORIG_RAX: ffffffffffffff13
+[48256841.224904] RAX: ffffad2e0dbf1000 RBX: 0000000088993242 RCX:
+0000000034d20a82
+[48256841.225576] RDX: 000000000004efbf RSI: 00000000527c6da0 RDI:
+0000000000000000
+[48256841.226268] RBP: 1e31b4763470e11b R08: 0000000001bb5e3d R09:
+00000000000001bb
+[48256841.226969] R10: 0000000000005429 R11: 0000000000000000 R12:
+0000000001bb5e3d
+[48256841.227646] R13: ffffffff9b9951c0 R14: ffffad2e0dc8a210 R15:
+0000000000013242
+[48256841.228330]  ? apic_timer_interrupt+0xa/0x20
+[48256841.228714]  ? __inet_lookup_established+0x3f/0x170
+[48256841.229097]  tcp_v4_early_demux+0xb0/0x170
+[48256841.229487]  ip_rcv_finish+0x17c/0x430
+[48256841.229865]  ip_rcv+0x27c/0x380
+[48256841.230242]  __netif_receive_skb_core+0x9e9/0xac0
+[48256841.230623]  ? inet_gro_receive+0x21b/0x2d0
+[48256841.230999]  ? recalibrate_cpu_khz+0x10/0x10
+[48256841.231378]  netif_receive_skb_internal+0x42/0xf0
+[48256841.231777]  napi_gro_receive+0xbf/0xe0
+
+
+vmcore2' info:
+ 1. print the skb
+crash> p *(struct tcphdr *)(((struct
+sk_buff*)0xffff9d60c008b500)->head + ((struct
+sk_buff*)0xffff9d60c008b500)->transport_header)
+$28 =3D {
+  source =3D 35911,
+  dest =3D 20480,
+  seq =3D 1534560442,
+  ack_seq =3D 0,
+  res1 =3D 0,
+  doff =3D 10,
+  fin =3D 0,
+  syn =3D 1,
+  rst =3D 0,
+  psh =3D 0,
+  ack =3D 0,
+  urg =3D 0,
+  ece =3D 0,
+  cwr =3D 0,
+  window =3D 65535,
+  check =3D 56947,
+  urg_ptr =3D 0
+}
+2. print the sock1, tcp is in TIME_WAIT, but the sock is ipv4, I do
+not know why skc_v6_daddr and rh_reserved is not zero, maybe memory
+out of bounds?
+crash> p *((struct inet_timewait_sock*)0xFFFF9D6F1997D540)
+$29 =3D {
+  __tw_common =3D {
+    {
+      skc_addrpair =3D 388621010873919680,
+      {
+        skc_daddr =3D 426027200,
+        skc_rcv_saddr =3D 90482880
+      }
+    },
+    {
+      skc_hash =3D 884720419,
+      skc_u16hashes =3D {49955, 13499}
+    },
+    {
+      skc_portpair =3D 156018620,
+      {
+        skc_dport =3D 42940,
+        skc_num =3D 2380
+      }
+    },
+    skc_family =3D 2,
+    skc_state =3D 6 '\006',
+    skc_reuse =3D 1 '\001',
+    skc_reuseport =3D 0 '\000',
+    skc_ipv6only =3D 0 '\000',
+    skc_net_refcnt =3D 0 '\000',
+    skc_bound_dev_if =3D 0,
+    {
+      skc_bind_node =3D {
+        next =3D 0xffff9d8993851448,
+        pprev =3D 0xffff9d89c3510458
+      },
+      skc_portaddr_node =3D {
+        next =3D 0xffff9d8993851448,
+        pprev =3D 0xffff9d89c3510458
+      }
+    },
+    skc_prot =3D 0xffffffff9c7a9840,
+    skc_net =3D {
+      net =3D 0xffffffff9c7951c0
+    },
+    skc_v6_daddr =3D {
+      in6_u =3D {
+        u6_addr8 =3D "$P=EE=A4=86\325\001\354M\213D\021p\323\337\n",
+        u6_addr16 =3D {20516, 42222, 54662, 60417, 35661, 4420, 54128, 2783=
+},
+        u6_addr32 =3D {2767081508, 3959543174, 289704781, 182440816}
+      }
+    },
+    skc_v6_rcv_saddr =3D {
+      in6_u =3D {
+        u6_addr8 =3D "=CB=B2\231=C2=AA\212*pzf\212\277\325\065=D8=84",
+        u6_addr16 =3D {45771, 49817, 35498, 28714, 26234, 49034, 13781, 340=
+08},
+        u6_addr32 =3D {3264852683, 1881836202, 3213518458, 2228762069}
+      }
+    },
+    skc_cookie =3D {
+      counter =3D 0
+    },
+    {
+      skc_flags =3D 18446744072039782272,
+      skc_listener =3D 0xffffffff9c795780,
+      skc_tw_dr =3D 0xffffffff9c795780
+    },
+    skc_dontcopy_begin =3D 0xffff9d6f1997d5a8,
+    {
+      skc_node =3D {
+        next =3D 0x78647,
+        pprev =3D 0xffffb341cddea918
+      },
+      skc_nulls_node =3D {
+        next =3D 0x78647,
+        pprev =3D 0xffffb341cddea918
+      }
+    },
+    skc_tx_queue_mapping =3D 51317,
+    skc_rx_queue_mapping =3D 9071,
+    {
+      skc_incoming_cpu =3D -720721118,
+      skc_rcv_wnd =3D 3574246178,
+      skc_tw_rcv_nxt =3D 3574246178
+    },
+    skc_refcnt =3D {
+      refs =3D {
+        counter =3D 3
+      }
+    },
+    skc_dontcopy_end =3D 0xffff9d6f1997d5c4,
+    {
+      skc_rxhash =3D 2663156681,
+      skc_window_clamp =3D 2663156681,
+      skc_tw_snd_nxt =3D 2663156681
+    }
+  },
+  tw_mark =3D 0,
+  tw_substate =3D 6 '\006',
+  tw_rcv_wscale =3D 10 '\n',
+  tw_sport =3D 19465,
+  tw_kill =3D 0,
+  tw_transparent =3D 0,
+  tw_flowlabel =3D 201048,
+  tw_pad =3D 1,
+  tw_tos =3D 0,
+  tw_timer =3D {
+    entry =3D {
+      next =3D 0xffff9d6f1997d4c8,
+      pprev =3D 0xffff9d6f1997c6f8
+    },
+    expires =3D 52813074277,
+    function =3D 0xffffffff9bb67ba0,
+    flags =3D 1313865770,
+    rh_reserved1 =3D 14775289730400096190,
+    rh_reserved2 =3D 10703603942626563734,
+    rh_reserved3 =3D 17306812468345150807,
+    rh_reserved4 =3D 9531906593543422642
+  },
+  tw_tb =3D 0xffff9d897232a500
+}
+
+vmcore3' info:
+1. print the skbcrash> p *(struct tcphdr *)(((struct
+sk_buff*)0xffffa039e93aaf00)->head + ((struct
+sk_buff*)0xffffa039e93aaf00)->transport_header)
+$6 =3D {
+  source =3D 9269,
+  dest =3D 47873,
+  seq =3D 147768854,
+  ack_seq =3D 1282978926,
+  res1 =3D 0,
+  doff =3D 5,
+  fin =3D 0,
+  syn =3D 0,
+  rst =3D 0,
+  psh =3D 0,
+  ack =3D 1,
+  urg =3D 0,
+  ece =3D 0,
+  cwr =3D 0,
+  window =3D 47146,
+  check =3D 55446,
+  urg_ptr =3D 0
+}
+2. print the sock1, tcp is in TIME_WAIT
+crash> p *((struct inet_timewait_sock*)0xFFFFA0444BAADBA0)
+$7 =3D {
+  __tw_common =3D {
+    {
+      skc_addrpair =3D 2262118455826491584,
+      {
+        skc_daddr =3D 392472768,
+        skc_rcv_saddr =3D 526690496
+      }
+    },
+    {
+      skc_hash =3D 382525308,
+      skc_u16hashes =3D {57212, 5836}
+    },
+    {
+      skc_portpair =3D 1169509385,
+      {
+        skc_dport =3D 19465,
+        skc_num =3D 17845
+      }
+    },
+    skc_family =3D 2,
+    skc_state =3D 6 '\006',
+    skc_reuse =3D 0 '\000',
+    skc_reuseport =3D 0 '\000',
+    skc_ipv6only =3D 0 '\000',
+    skc_net_refcnt =3D 0 '\000',
+    skc_bound_dev_if =3D 0,
+    {
+      skc_bind_node =3D {
+        next =3D 0x0,
+        pprev =3D 0xffffa0528fefba98
+      },
+      skc_portaddr_node =3D {
+        next =3D 0x0,
+        pprev =3D 0xffffa0528fefba98
+      }
+    },
+    skc_prot =3D 0xffffffffa33a9840,
+    skc_net =3D {
+      net =3D 0xffffffffa33951c0
+    },
+    skc_v6_daddr =3D {
+      in6_u =3D {
+        u6_addr8 =3D
+"\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000",
+        u6_addr16 =3D {0, 0, 0, 0, 0, 0, 0, 0},
+        u6_addr32 =3D {0, 0, 0, 0}
+      }
+    },
+    skc_v6_rcv_saddr =3D {
+      in6_u =3D {
+        u6_addr8 =3D
+"\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000",
+        u6_addr16 =3D {0, 0, 0, 0, 0, 0, 0, 0},
+        u6_addr32 =3D {0, 0, 0, 0}
+      }
+    },
+    skc_cookie =3D {
+      counter =3D 20818915981
+    },
+    {
+      skc_flags =3D 18446744072153028480,
+      skc_listener =3D 0xffffffffa3395780,
+      skc_tw_dr =3D 0xffffffffa3395780
+    },
+    skc_dontcopy_begin =3D 0xffffa0444baadc08,
+    {
+      skc_node =3D {
+        next =3D 0x9bef9,
+        pprev =3D 0xffffb36fcde60be0
+      },
+      skc_nulls_node =3D {
+        next =3D 0x9bef9,
+        pprev =3D 0xffffb36fcde60be0
+      }
+    },
+    skc_tx_queue_mapping =3D 0,
+    skc_rx_queue_mapping =3D 0,
+    {
+      skc_incoming_cpu =3D -2041214926,
+      skc_rcv_wnd =3D 2253752370,
+      skc_tw_rcv_nxt =3D 2253752370
+    },
+    skc_refcnt =3D {
+      refs =3D {
+        counter =3D 3
+      }
+    },
+    skc_dontcopy_end =3D 0xffffa0444baadc24,
+    {
+      skc_rxhash =3D 653578381,
+      skc_window_clamp =3D 653578381,
+      skc_tw_snd_nxt =3D 653578381
+    }
+  },
+  tw_mark =3D 0,
+  tw_substate =3D 6 '\006',
+  tw_rcv_wscale =3D 10 '\n',
+  tw_sport =3D 46405,
+  tw_kill =3D 0,
+  tw_transparent =3D 0,
+  tw_flowlabel =3D 0,
+  tw_pad =3D 0,
+  tw_tos =3D 0,
+  tw_timer =3D {
+    entry =3D {
+      next =3D 0xffffa0444baac808,
+      pprev =3D 0xffffa0388b5477f8
+    },
+    expires =3D 33384532933,
+    function =3D 0xffffffffa2767ba0,
+    flags =3D 1313865761,
+    rh_reserved1 =3D 0,
+    rh_reserved2 =3D 0,
+    rh_reserved3 =3D 0,
+    rh_reserved4 =3D 0
+  },
+  tw_tb =3D 0xffffa05cc8322d40
+}
