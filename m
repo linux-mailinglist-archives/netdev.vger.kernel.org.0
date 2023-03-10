@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B9D56B3C3B
-	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 11:32:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8524B6B3C38
+	for <lists+netdev@lfdr.de>; Fri, 10 Mar 2023 11:32:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231377AbjCJKcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 05:32:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59228 "EHLO
+        id S231510AbjCJKcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 05:32:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231259AbjCJKcV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 05:32:21 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE76C110285;
+        with ESMTP id S231192AbjCJKcU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 05:32:20 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B46AA111685;
         Fri, 10 Mar 2023 02:32:16 -0800 (PST)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 05EA922A63;
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 3BDB120655;
         Fri, 10 Mar 2023 10:32:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
         t=1678444335; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ynur/BmfAMIVmRdtwJq2oWLnRqKGEqStLCEoP0mvCEk=;
-        b=QZUez2xQfWCqt88eXGyNmcCVFR+o4XrrQNVUvQAQC/gEF+ZnoGWlvqfW173ZktqDIya0KM
-        u7XqzWIx/f89HNDO83sLN6bThJZxwxp1m/86qDIFrPF8PQS+hjBI21MXT96fg2uEKNHTqg
-        3VIb01dFL8+mA7J4ebsbtB44Rhs+7+s=
+        bh=SABMsfykBuZLlX/EID5G4jmWDCswPlY6bB+XmpUmDDI=;
+        b=foj1gEREC5pFoZcss66MTasW9SmKGZ8VO45QQ5RxFr2/gbLbCBrgbYL8TlQQxufdOQ3EFE
+        czVB8jboaSapWQSAvTbgzlr6p+6za4Flui5sC1W23abuExTqIegh6cm1gPfGqBzmxekr0H
+        TCUXtSdOonDGjPPPUlKUoc9FsmC5aAE=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
         s=susede2_ed25519; t=1678444335;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ynur/BmfAMIVmRdtwJq2oWLnRqKGEqStLCEoP0mvCEk=;
-        b=6Z79qYSGrVUYEvCogt8O06nAIvmuaiI9MxaAVBbTvrKtYfNLDNSRW2zjRe6BzTeZchX+gP
-        1d3ni6+77ilnXoCA==
+        bh=SABMsfykBuZLlX/EID5G4jmWDCswPlY6bB+XmpUmDDI=;
+        b=JCOpFCvpQJqkp5/VtYAnLRuXjAB156OkLDECkwvRNK9kuNoHX2iWKKVfw/Gx5/VOde/eYE
+        9dMcNAa9idgNdMBg==
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C9A91139F9;
-        Fri, 10 Mar 2023 10:32:14 +0000 (UTC)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0984B13592;
+        Fri, 10 Mar 2023 10:32:15 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id WEKPMC4HC2SsXQAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Fri, 10 Mar 2023 10:32:14 +0000
+        id 6Ay0AS8HC2SsXQAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Fri, 10 Mar 2023 10:32:15 +0000
 From:   Vlastimil Babka <vbabka@suse.cz>
 To:     Christoph Lameter <cl@linux.com>,
         David Rientjes <rientjes@google.com>,
@@ -60,87 +60,72 @@ Cc:     Hyeonggon Yoo <42.hyeyoo@gmail.com>,
         linux-kernel@vger.kernel.org, patches@lists.linux.dev,
         netdev@vger.kernel.org, linux-doc@vger.kernel.org,
         Vlastimil Babka <vbabka@suse.cz>
-Subject: [PATCH 3/7] mm, page_flags: remove PG_slob_free
-Date:   Fri, 10 Mar 2023 11:32:05 +0100
-Message-Id: <20230310103210.22372-4-vbabka@suse.cz>
+Subject: [PATCH 4/7] mm, pagemap: remove SLOB and SLQB from comments and documentation
+Date:   Fri, 10 Mar 2023 11:32:06 +0100
+Message-Id: <20230310103210.22372-5-vbabka@suse.cz>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230310103210.22372-1-vbabka@suse.cz>
 References: <20230310103210.22372-1-vbabka@suse.cz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_SOFTFAIL,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With SLOB removed we no longer need the PG_slob_free alias for
-PG_private. Also update tools/mm/page-types.
+SLOB has been removed and SLQB never merged, so remove their mentions
+from comments and documentation of pagemap.
 
 Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
 ---
- include/linux/page-flags.h | 4 ----
- tools/mm/page-types.c      | 6 +-----
- 2 files changed, 1 insertion(+), 9 deletions(-)
+ Documentation/admin-guide/mm/pagemap.rst | 6 +++---
+ fs/proc/page.c                           | 5 ++---
+ 2 files changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
-index a7e3a3405520..2bdc41cb0594 100644
---- a/include/linux/page-flags.h
-+++ b/include/linux/page-flags.h
-@@ -174,9 +174,6 @@ enum pageflags {
- 	/* Remapped by swiotlb-xen. */
- 	PG_xen_remapped = PG_owner_priv_1,
- 
--	/* SLOB */
--	PG_slob_free = PG_private,
--
- #ifdef CONFIG_MEMORY_FAILURE
+diff --git a/Documentation/admin-guide/mm/pagemap.rst b/Documentation/admin-guide/mm/pagemap.rst
+index b5f970dc91e7..bb4aa897a773 100644
+--- a/Documentation/admin-guide/mm/pagemap.rst
++++ b/Documentation/admin-guide/mm/pagemap.rst
+@@ -91,9 +91,9 @@ Short descriptions to the page flags
+    The page is being locked for exclusive access, e.g. by undergoing read/write
+    IO.
+ 7 - SLAB
+-   The page is managed by the SLAB/SLOB/SLUB/SLQB kernel memory allocator.
+-   When compound page is used, SLUB/SLQB will only set this flag on the head
+-   page; SLOB will not flag it at all.
++   The page is managed by the SLAB/SLUB kernel memory allocator.
++   When compound page is used, either will only set this flag on the head
++   page..
+ 10 - BUDDY
+     A free memory block managed by the buddy system allocator.
+     The buddy system organizes free memory in blocks of various orders.
+diff --git a/fs/proc/page.c b/fs/proc/page.c
+index 6249c347809a..1356aeffd8dc 100644
+--- a/fs/proc/page.c
++++ b/fs/proc/page.c
+@@ -125,7 +125,7 @@ u64 stable_page_flags(struct page *page)
  	/*
- 	 * Compound pages. Stored in first tail page's flags.
-@@ -483,7 +480,6 @@ PAGEFLAG(Active, active, PF_HEAD) __CLEARPAGEFLAG(Active, active, PF_HEAD)
- PAGEFLAG(Workingset, workingset, PF_HEAD)
- 	TESTCLEARFLAG(Workingset, workingset, PF_HEAD)
- __PAGEFLAG(Slab, slab, PF_NO_TAIL)
--__PAGEFLAG(SlobFree, slob_free, PF_NO_TAIL)
- PAGEFLAG(Checked, checked, PF_NO_COMPOUND)	   /* Used by some filesystems */
+ 	 * pseudo flags for the well known (anonymous) memory mapped pages
+ 	 *
+-	 * Note that page->_mapcount is overloaded in SLOB/SLUB/SLQB, so the
++	 * Note that page->_mapcount is overloaded in SLAB/SLUB, so the
+ 	 * simple test in page_mapped() is not enough.
+ 	 */
+ 	if (!PageSlab(page) && page_mapped(page))
+@@ -166,8 +166,7 @@ u64 stable_page_flags(struct page *page)
  
- /* Xen */
-diff --git a/tools/mm/page-types.c b/tools/mm/page-types.c
-index 381dcc00cb62..8d5595b6c59f 100644
---- a/tools/mm/page-types.c
-+++ b/tools/mm/page-types.c
-@@ -85,7 +85,6 @@
-  */
- #define KPF_ANON_EXCLUSIVE	47
- #define KPF_READAHEAD		48
--#define KPF_SLOB_FREE		49
- #define KPF_SLUB_FROZEN		50
- #define KPF_SLUB_DEBUG		51
- #define KPF_FILE		61
-@@ -141,7 +140,6 @@ static const char * const page_flag_names[] = {
- 
- 	[KPF_ANON_EXCLUSIVE]	= "d:anon_exclusive",
- 	[KPF_READAHEAD]		= "I:readahead",
--	[KPF_SLOB_FREE]		= "P:slob_free",
- 	[KPF_SLUB_FROZEN]	= "A:slub_frozen",
- 	[KPF_SLUB_DEBUG]	= "E:slub_debug",
- 
-@@ -478,10 +476,8 @@ static uint64_t expand_overloaded_flags(uint64_t flags, uint64_t pme)
- 	if ((flags & BIT(ANON)) && (flags & BIT(MAPPEDTODISK)))
- 		flags ^= BIT(MAPPEDTODISK) | BIT(ANON_EXCLUSIVE);
- 
--	/* SLOB/SLUB overload several page flags */
-+	/* SLUB overloads several page flags */
- 	if (flags & BIT(SLAB)) {
--		if (flags & BIT(PRIVATE))
--			flags ^= BIT(PRIVATE) | BIT(SLOB_FREE);
- 		if (flags & BIT(ACTIVE))
- 			flags ^= BIT(ACTIVE) | BIT(SLUB_FROZEN);
- 		if (flags & BIT(ERROR))
+ 	/*
+ 	 * Caveats on high order pages: page->_refcount will only be set
+-	 * -1 on the head page; SLUB/SLQB do the same for PG_slab;
+-	 * SLOB won't set PG_slab at all on compound pages.
++	 * -1 on the head page; SLAB/SLUB do the same for PG_slab;
+ 	 */
+ 	if (PageBuddy(page))
+ 		u |= 1 << KPF_BUDDY;
 -- 
 2.39.2
 
