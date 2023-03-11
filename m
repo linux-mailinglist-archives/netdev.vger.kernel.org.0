@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD0816B5FA6
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 19:19:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4B146B5FAA
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 19:19:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230407AbjCKSTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 13:19:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60418 "EHLO
+        id S230517AbjCKSTg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 13:19:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230057AbjCKST1 (ORCPT
+        with ESMTP id S230431AbjCKST1 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 13:19:27 -0500
 Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 685B162DBD;
-        Sat, 11 Mar 2023 10:19:14 -0800 (PST)
-Received: by mail-qt1-x836.google.com with SMTP id d7so9229892qtr.12;
-        Sat, 11 Mar 2023 10:19:14 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98D1E59400;
+        Sat, 11 Mar 2023 10:19:15 -0800 (PST)
+Received: by mail-qt1-x836.google.com with SMTP id l13so9304741qtv.3;
+        Sat, 11 Mar 2023 10:19:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678558753;
+        d=gmail.com; s=20210112; t=1678558754;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=9HJSpBLuc5WAYQT0d5gHGocIKuW88IDo8QVVL/Yyfo0=;
-        b=m+l435cHxQhLH0tNw1oNRMVT1tHv3pnuaPpuYVgR/Z957DT7LDuqkxOQAwZc3ZVWkq
-         cBg3013DTUq+kIHi6wfdxc/ikBQ37daEM9+XxzCaDJcUGiWtWFRcJ7yVAz6zFxVWaX0U
-         AxKCkin/os4RGQG1koC6pq4hN65YUt6V4+zjeZSsztnYfJ682rD6VPL+C6bO5OgqCsJj
-         /jBf4b6NWAqXHQYXDq1adyodQ1LH46cAZkqBEAep1aSy9Pz18mEeNgzz4JzUUvnrHC5d
-         w1I5wfFIm1J8ziPo5FGJAWtsAreuVyr5e2kt2uZTpc0NTDlISYGOwzFTGDr3dlu2go8f
-         SkTA==
+        bh=9PXLPzAtfehW08ZAXdSsYNbiCMYMth6hztWbsXm+Zsw=;
+        b=SjvtErNmNuy5VCX0Ca+cNk4paRYsuCvEaTwQ3Xf4mtDdJBzBgOEhWwri+gl3uJl5cC
+         pxjz1p27Xdl6vIJftlWoY7B1hUN1phH0LY2oQtjP7ppp2sKe2bJUSfGMbfb9rY+6mxYC
+         TrUr0VxXfCbqCbV6ZYatpmyryGUDTPpRSQlRAbxO5gnC4S8v5c+5WqY2HGJzCk21qvLu
+         y+loy/vIU8u0P3ndocyl9NEMmcfoFFSapL9jNyarjWsYDTcrGu6TqDOMKBHat5T1y8yV
+         lqkBFvcOCCxRyUexYT7mHIU9HzZXqVng2GfZf8zVj/UOz9qnIGSxtWnOV9g0Z/mbi/0i
+         KCvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678558753;
+        d=1e100.net; s=20210112; t=1678558754;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=9HJSpBLuc5WAYQT0d5gHGocIKuW88IDo8QVVL/Yyfo0=;
-        b=UP1bTM4Y7IIl9ddCGZIS2fif2RNGsEGuS0GPJSwWdOPI89wsVKRvuC89hA/q7lYRr0
-         4ihqB2TTPYq5KtdTsn3KLj+1voW9Jcpc8/C1ToIYLjGiCNcvYM2MqrKKkVf3ka9WPDQh
-         GQstiPABnAr0kjm5N2TodfLuwetd5V4jKa4VO572oZQXLGTR+gWEq0Ea1iWRURETif+M
-         jTZHOnKkshaWo6BQSZIfEKPixgADfFs3Yy5UY6nv2GkdYYaS2dJ2yeONqAIvnp6oyuAz
-         KyjROLy0obMc2cjpdYh4Ex4BMJdKpgEzbEQajXw7TDqEgog2p08Cqsv8eOcWxb2+Le3A
-         NloA==
-X-Gm-Message-State: AO0yUKXMuxK7NsBNLipAMjjvcwmr+aOFGtu6UzHrAG+K0+XvGPxUyslW
-        MFnkO4Eousn2njc1QesjsgI=
-X-Google-Smtp-Source: AK7set8lWHmo78EJVakk9gY6CsSv2Zrhf54XldyaBWWJYbgYH+1FyYzmMQTIPgAmCOE6CYuvXFnxaA==
-X-Received: by 2002:ac8:7d0e:0:b0:3b9:b7c9:f0d1 with SMTP id g14-20020ac87d0e000000b003b9b7c9f0d1mr18274659qtb.39.1678558753561;
-        Sat, 11 Mar 2023 10:19:13 -0800 (PST)
+        bh=9PXLPzAtfehW08ZAXdSsYNbiCMYMth6hztWbsXm+Zsw=;
+        b=VYOsvZO6sKv6JWCJcqCFQZr9/bZDoEDxxot3xtm7iGbUGEt1bUfLrxlULWy+lEf8g1
+         ajOc3JcvdMkb2QSBADGHj9ytF10dX4Qf2jpkMWoiqKU1Asu5lSCCqqb7Gb3suUGMOBKi
+         EyKUMY3wZTlMxLiFJhXV7ERUQz4PaAEf1bXLIOWz7YmcoNx/MeNt7f7Gsj2dWtYGKjsZ
+         xB4gsU/1vhLhwvF0nx+m1GMYIaMcBhhq8bmwfHW3oHGZnIqT7EAH/0B8h6u9lrHvZ+sI
+         Zv1J59SpO3KdQHVIrJS+omasFj3UfEbIX0Nyxz/+2rGcuD2wJoYwp0LkTeH0Acobi6Vg
+         yZww==
+X-Gm-Message-State: AO0yUKW2jqGJgvaGo51yt8oZsbvXbaqaRRxgYpAR/Y1MCZMNeA8UrCXw
+        jK0izTr0SVgUh2bY4kRwCvg=
+X-Google-Smtp-Source: AK7set/oTG2zBactjb5RHftrC5+lfbtLdHBQ0FgcPWQfnsR53fFBtbCSrF5PW9KZSaxBi6QpGVkKXQ==
+X-Received: by 2002:a05:622a:1a86:b0:3bf:c355:9ad4 with SMTP id s6-20020a05622a1a8600b003bfc3559ad4mr50184397qtc.34.1678558754691;
+        Sat, 11 Mar 2023 10:19:14 -0800 (PST)
 Received: from localhost (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
-        by smtp.gmail.com with UTF8SMTPSA id x27-20020a05620a0b5b00b0074230493ccfsm2147528qkg.73.2023.03.11.10.19.12
+        by smtp.gmail.com with UTF8SMTPSA id s20-20020a37a914000000b00741a984943fsm2213341qke.40.2023.03.11.10.19.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 11 Mar 2023 10:19:13 -0800 (PST)
+        Sat, 11 Mar 2023 10:19:14 -0800 (PST)
 From:   Sean Anderson <seanga2@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -57,9 +57,9 @@ To:     "David S . Miller" <davem@davemloft.net>,
 Cc:     linux-kernel@vger.kernel.org,
         Simon Horman <simon.horman@corigine.com>,
         Sean Anderson <seanga2@gmail.com>
-Subject: [PATCH net-next v2 5/9] net: sunhme: Switch SBUS to devres
-Date:   Sat, 11 Mar 2023 13:19:01 -0500
-Message-Id: <20230311181905.3593904-6-seanga2@gmail.com>
+Subject: [PATCH net-next v2 6/9] net: sunhme: Consolidate mac address initialization
+Date:   Sat, 11 Mar 2023 13:19:02 -0500
+Message-Id: <20230311181905.3593904-7-seanga2@gmail.com>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20230311181905.3593904-1-seanga2@gmail.com>
 References: <20230311181905.3593904-1-seanga2@gmail.com>
@@ -75,227 +75,373 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The PCI half of this driver was converted in commit 914d9b2711dd ("sunhme:
-switch to devres"). Do the same for the SBUS half.
+The mac address initialization is braodly the same between PCI and SBUS,
+and one was clearly copied from the other. Consolidate them. We still have
+to have some ifdefs because pci_(un)map_rom is only implemented for PCI,
+and idprom is only implemented for SPARC.
 
 Signed-off-by: Sean Anderson <seanga2@gmail.com>
 ---
 
 (no changes since v1)
 
- drivers/net/ethernet/sun/sunhme.c | 118 +++++++++---------------------
- 1 file changed, 35 insertions(+), 83 deletions(-)
+ drivers/net/ethernet/sun/sunhme.c | 282 ++++++++++++++----------------
+ 1 file changed, 134 insertions(+), 148 deletions(-)
 
 diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
-index a6c4cb4f99f3..24101d3d5f85 100644
+index 24101d3d5f85..c4280bce69d4 100644
 --- a/drivers/net/ethernet/sun/sunhme.c
 +++ b/drivers/net/ethernet/sun/sunhme.c
-@@ -2313,29 +2313,28 @@ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
+@@ -2304,6 +2304,133 @@ static const struct net_device_ops hme_netdev_ops = {
+ 	.ndo_validate_addr	= eth_validate_addr,
+ };
+ 
++#ifdef CONFIG_PCI
++static int is_quattro_p(struct pci_dev *pdev)
++{
++	struct pci_dev *busdev = pdev->bus->self;
++	struct pci_dev *this_pdev;
++	int n_hmes;
++
++	if (!busdev || busdev->vendor != PCI_VENDOR_ID_DEC ||
++	    busdev->device != PCI_DEVICE_ID_DEC_21153)
++		return 0;
++
++	n_hmes = 0;
++	list_for_each_entry(this_pdev, &pdev->bus->devices, bus_list) {
++		if (this_pdev->vendor == PCI_VENDOR_ID_SUN &&
++		    this_pdev->device == PCI_DEVICE_ID_SUN_HAPPYMEAL)
++			n_hmes++;
++	}
++
++	if (n_hmes != 4)
++		return 0;
++
++	return 1;
++}
++
++/* Fetch MAC address from vital product data of PCI ROM. */
++static int find_eth_addr_in_vpd(void __iomem *rom_base, int len, int index, unsigned char *dev_addr)
++{
++	int this_offset;
++
++	for (this_offset = 0x20; this_offset < len; this_offset++) {
++		void __iomem *p = rom_base + this_offset;
++
++		if (readb(p + 0) != 0x90 ||
++		    readb(p + 1) != 0x00 ||
++		    readb(p + 2) != 0x09 ||
++		    readb(p + 3) != 0x4e ||
++		    readb(p + 4) != 0x41 ||
++		    readb(p + 5) != 0x06)
++			continue;
++
++		this_offset += 6;
++		p += 6;
++
++		if (index == 0) {
++			int i;
++
++			for (i = 0; i < 6; i++)
++				dev_addr[i] = readb(p + i);
++			return 1;
++		}
++		index--;
++	}
++	return 0;
++}
++
++static void __maybe_unused get_hme_mac_nonsparc(struct pci_dev *pdev,
++						unsigned char *dev_addr)
++{
++	size_t size;
++	void __iomem *p = pci_map_rom(pdev, &size);
++
++	if (p) {
++		int index = 0;
++		int found;
++
++		if (is_quattro_p(pdev))
++			index = PCI_SLOT(pdev->devfn);
++
++		found = readb(p) == 0x55 &&
++			readb(p + 1) == 0xaa &&
++			find_eth_addr_in_vpd(p, (64 * 1024), index, dev_addr);
++		pci_unmap_rom(pdev, p);
++		if (found)
++			return;
++	}
++
++	/* Sun MAC prefix then 3 random bytes. */
++	dev_addr[0] = 0x08;
++	dev_addr[1] = 0x00;
++	dev_addr[2] = 0x20;
++	get_random_bytes(&dev_addr[3], 3);
++}
++#endif /* !(CONFIG_SPARC) */
++
++static void happy_meal_addr_init(struct happy_meal *hp,
++				 struct device_node *dp, int qfe_slot)
++{
++	int i;
++
++	for (i = 0; i < 6; i++) {
++		if (macaddr[i] != 0)
++			break;
++	}
++
++	if (i < 6) { /* a mac address was given */
++		u8 addr[ETH_ALEN];
++
++		for (i = 0; i < 6; i++)
++			addr[i] = macaddr[i];
++		eth_hw_addr_set(hp->dev, addr);
++		macaddr[5]++;
++	} else {
++#ifdef CONFIG_SPARC
++		const unsigned char *addr;
++		int len;
++
++		/* If user did not specify a MAC address specifically, use
++		 * the Quattro local-mac-address property...
++		 */
++		if (qfe_slot != -1) {
++			addr = of_get_property(dp, "local-mac-address", &len);
++			if (addr && len == 6) {
++				eth_hw_addr_set(hp->dev, addr);
++				return;
++			}
++		}
++
++		eth_hw_addr_set(hp->dev, idprom->id_ethaddr);
++#else
++		u8 addr[ETH_ALEN];
++
++		get_hme_mac_nonsparc(hp->happy_dev, addr);
++		eth_hw_addr_set(hp->dev, addr);
++#endif
++	}
++}
++
+ #ifdef CONFIG_SBUS
+ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
+ {
+@@ -2311,8 +2438,7 @@ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
+ 	struct quattro *qp = NULL;
+ 	struct happy_meal *hp;
  	struct net_device *dev;
- 	int i, qfe_slot = -1;
- 	u8 addr[ETH_ALEN];
--	int err = -ENODEV;
-+	int err;
+-	int i, qfe_slot = -1;
+-	u8 addr[ETH_ALEN];
++	int qfe_slot = -1;
+ 	int err;
  
  	sbus_dp = op->dev.parent->of_node;
- 
- 	/* We can match PCI devices too, do not accept those here. */
- 	if (!of_node_name_eq(sbus_dp, "sbus") && !of_node_name_eq(sbus_dp, "sbi"))
--		return err;
-+		return -ENODEV;
- 
- 	if (is_qfe) {
- 		qp = quattro_sbus_find(op);
- 		if (qp == NULL)
--			goto err_out;
-+			return -ENODEV;
- 		for (qfe_slot = 0; qfe_slot < 4; qfe_slot++)
- 			if (qp->happy_meals[qfe_slot] == NULL)
- 				break;
- 		if (qfe_slot == 4)
--			goto err_out;
-+			return -ENODEV;
- 	}
- 
--	err = -ENOMEM;
--	dev = alloc_etherdev(sizeof(struct happy_meal));
-+	dev = devm_alloc_etherdev(&op->dev, sizeof(struct happy_meal));
- 	if (!dev)
--		goto err_out;
-+		return -ENOMEM;
+@@ -2337,34 +2463,11 @@ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
+ 		return -ENOMEM;
  	SET_NETDEV_DEV(dev, &op->dev);
  
- 	/* If user did not specify a MAC address specifically, use
-@@ -2369,46 +2368,45 @@ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
+-	/* If user did not specify a MAC address specifically, use
+-	 * the Quattro local-mac-address property...
+-	 */
+-	for (i = 0; i < 6; i++) {
+-		if (macaddr[i] != 0)
+-			break;
+-	}
+-	if (i < 6) { /* a mac address was given */
+-		for (i = 0; i < 6; i++)
+-			addr[i] = macaddr[i];
+-		eth_hw_addr_set(dev, addr);
+-		macaddr[5]++;
+-	} else {
+-		const unsigned char *addr;
+-		int len;
+-
+-		addr = of_get_property(dp, "local-mac-address", &len);
+-
+-		if (qfe_slot != -1 && addr && len == ETH_ALEN)
+-			eth_hw_addr_set(dev, addr);
+-		else
+-			eth_hw_addr_set(dev, idprom->id_ethaddr);
+-	}
+-
+ 	hp = netdev_priv(dev);
+-
++	hp->dev = dev;
+ 	hp->happy_dev = op;
+ 	hp->dma_dev = &op->dev;
++	happy_meal_addr_init(hp, dp, qfe_slot);
  
  	spin_lock_init(&hp->happy_lock);
  
--	err = -ENODEV;
- 	if (qp != NULL) {
- 		hp->qfe_parent = qp;
- 		hp->qfe_ent = qfe_slot;
- 		qp->happy_meals[qfe_slot] = dev;
- 	}
+@@ -2442,7 +2545,6 @@ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
  
--	hp->gregs = of_ioremap(&op->resource[0], 0,
--			       GREG_REG_SIZE, "HME Global Regs");
--	if (!hp->gregs) {
-+	hp->gregs = devm_platform_ioremap_resource(op, 0);
-+	if (IS_ERR(hp->gregs)) {
- 		dev_err(&op->dev, "Cannot map global registers.\n");
--		goto err_out_free_netdev;
-+		err = PTR_ERR(hp->gregs);
-+		goto err_out_clear_quattro;
- 	}
+ 	timer_setup(&hp->happy_timer, happy_meal_timer, 0);
  
--	hp->etxregs = of_ioremap(&op->resource[1], 0,
--				 ETX_REG_SIZE, "HME TX Regs");
--	if (!hp->etxregs) {
-+	hp->etxregs = devm_platform_ioremap_resource(op, 1);
-+	if (IS_ERR(hp->etxregs)) {
- 		dev_err(&op->dev, "Cannot map MAC TX registers.\n");
--		goto err_out_iounmap;
-+		err = PTR_ERR(hp->etxregs);
-+		goto err_out_clear_quattro;
- 	}
- 
--	hp->erxregs = of_ioremap(&op->resource[2], 0,
--				 ERX_REG_SIZE, "HME RX Regs");
--	if (!hp->erxregs) {
-+	hp->erxregs = devm_platform_ioremap_resource(op, 2);
-+	if (IS_ERR(hp->erxregs)) {
- 		dev_err(&op->dev, "Cannot map MAC RX registers.\n");
--		goto err_out_iounmap;
-+		err = PTR_ERR(hp->erxregs);
-+		goto err_out_clear_quattro;
- 	}
- 
--	hp->bigmacregs = of_ioremap(&op->resource[3], 0,
--				    BMAC_REG_SIZE, "HME BIGMAC Regs");
--	if (!hp->bigmacregs) {
-+	hp->bigmacregs = devm_platform_ioremap_resource(op, 3);
-+	if (IS_ERR(hp->bigmacregs)) {
- 		dev_err(&op->dev, "Cannot map BIGMAC registers.\n");
--		goto err_out_iounmap;
-+		err = PTR_ERR(hp->bigmacregs);
-+		goto err_out_clear_quattro;
- 	}
- 
--	hp->tcvregs = of_ioremap(&op->resource[4], 0,
--				 TCVR_REG_SIZE, "HME Tranceiver Regs");
--	if (!hp->tcvregs) {
-+	hp->tcvregs = devm_platform_ioremap_resource(op, 4);
-+	if (IS_ERR(hp->tcvregs)) {
- 		dev_err(&op->dev, "Cannot map TCVR registers.\n");
--		goto err_out_iounmap;
-+		err = PTR_ERR(hp->tcvregs);
-+		goto err_out_clear_quattro;
- 	}
- 
- 	hp->hm_revision = of_getintprop_default(dp, "hm-rev", 0xff);
-@@ -2428,13 +2426,12 @@ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
- 	hp->happy_bursts = of_getintprop_default(sbus_dp,
- 						 "burst-sizes", 0x00);
- 
--	hp->happy_block = dma_alloc_coherent(hp->dma_dev,
--					     PAGE_SIZE,
--					     &hp->hblock_dvma,
--					     GFP_ATOMIC);
--	err = -ENOMEM;
--	if (!hp->happy_block)
--		goto err_out_iounmap;
-+	hp->happy_block = dmam_alloc_coherent(&op->dev, PAGE_SIZE,
-+					      &hp->hblock_dvma, GFP_KERNEL);
-+	if (!hp->happy_block) {
-+		err = -ENOMEM;
-+		goto err_out_clear_quattro;
-+	}
- 
- 	/* Force check of the link first time we are brought up. */
- 	hp->linkcheck = 0;
-@@ -2472,10 +2469,10 @@ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
- 	happy_meal_set_initial_advertisement(hp);
- 	spin_unlock_irq(&hp->happy_lock);
- 
--	err = register_netdev(hp->dev);
-+	err = devm_register_netdev(&op->dev, dev);
- 	if (err) {
- 		dev_err(&op->dev, "Cannot register net device, aborting.\n");
--		goto err_out_free_coherent;
-+		goto err_out_clear_quattro;
- 	}
- 
- 	platform_set_drvdata(op, hp);
-@@ -2490,31 +2487,9 @@ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
- 
- 	return 0;
- 
--err_out_free_coherent:
--	dma_free_coherent(hp->dma_dev,
--			  PAGE_SIZE,
--			  hp->happy_block,
--			  hp->hblock_dvma);
--
--err_out_iounmap:
--	if (hp->gregs)
--		of_iounmap(&op->resource[0], hp->gregs, GREG_REG_SIZE);
--	if (hp->etxregs)
--		of_iounmap(&op->resource[1], hp->etxregs, ETX_REG_SIZE);
--	if (hp->erxregs)
--		of_iounmap(&op->resource[2], hp->erxregs, ERX_REG_SIZE);
--	if (hp->bigmacregs)
--		of_iounmap(&op->resource[3], hp->bigmacregs, BMAC_REG_SIZE);
--	if (hp->tcvregs)
--		of_iounmap(&op->resource[4], hp->tcvregs, TCVR_REG_SIZE);
--
-+err_out_clear_quattro:
- 	if (qp)
- 		qp->happy_meals[qfe_slot] = NULL;
--
--err_out_free_netdev:
--	free_netdev(dev);
--
--err_out:
- 	return err;
- }
+-	hp->dev = dev;
+ 	dev->netdev_ops = &hme_netdev_ops;
+ 	dev->watchdog_timeo = 5*HZ;
+ 	dev->ethtool_ops = &hme_ethtool_ops;
+@@ -2495,104 +2597,17 @@ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
  #endif
-@@ -2892,28 +2867,6 @@ static int hme_sbus_probe(struct platform_device *op)
- 	return happy_meal_sbus_probe_one(op, is_qfe);
- }
  
--static int hme_sbus_remove(struct platform_device *op)
+ #ifdef CONFIG_PCI
+-#ifndef CONFIG_SPARC
+-static int is_quattro_p(struct pci_dev *pdev)
 -{
--	struct happy_meal *hp = platform_get_drvdata(op);
--	struct net_device *net_dev = hp->dev;
+-	struct pci_dev *busdev = pdev->bus->self;
+-	struct pci_dev *this_pdev;
+-	int n_hmes;
 -
--	unregister_netdev(net_dev);
+-	if (busdev == NULL ||
+-	    busdev->vendor != PCI_VENDOR_ID_DEC ||
+-	    busdev->device != PCI_DEVICE_ID_DEC_21153)
+-		return 0;
 -
--	of_iounmap(&op->resource[0], hp->gregs, GREG_REG_SIZE);
--	of_iounmap(&op->resource[1], hp->etxregs, ETX_REG_SIZE);
--	of_iounmap(&op->resource[2], hp->erxregs, ERX_REG_SIZE);
--	of_iounmap(&op->resource[3], hp->bigmacregs, BMAC_REG_SIZE);
--	of_iounmap(&op->resource[4], hp->tcvregs, TCVR_REG_SIZE);
--	dma_free_coherent(hp->dma_dev,
--			  PAGE_SIZE,
--			  hp->happy_block,
--			  hp->hblock_dvma);
+-	n_hmes = 0;
+-	list_for_each_entry(this_pdev, &pdev->bus->devices, bus_list) {
+-		if (this_pdev->vendor == PCI_VENDOR_ID_SUN &&
+-		    this_pdev->device == PCI_DEVICE_ID_SUN_HAPPYMEAL)
+-			n_hmes++;
+-	}
 -
--	free_netdev(net_dev);
+-	if (n_hmes != 4)
+-		return 0;
 -
+-	return 1;
+-}
+-
+-/* Fetch MAC address from vital product data of PCI ROM. */
+-static int find_eth_addr_in_vpd(void __iomem *rom_base, int len, int index, unsigned char *dev_addr)
+-{
+-	int this_offset;
+-
+-	for (this_offset = 0x20; this_offset < len; this_offset++) {
+-		void __iomem *p = rom_base + this_offset;
+-
+-		if (readb(p + 0) != 0x90 ||
+-		    readb(p + 1) != 0x00 ||
+-		    readb(p + 2) != 0x09 ||
+-		    readb(p + 3) != 0x4e ||
+-		    readb(p + 4) != 0x41 ||
+-		    readb(p + 5) != 0x06)
+-			continue;
+-
+-		this_offset += 6;
+-		p += 6;
+-
+-		if (index == 0) {
+-			int i;
+-
+-			for (i = 0; i < 6; i++)
+-				dev_addr[i] = readb(p + i);
+-			return 1;
+-		}
+-		index--;
+-	}
 -	return 0;
 -}
 -
- static const struct of_device_id hme_sbus_match[] = {
- 	{
- 		.name = "SUNW,hme",
-@@ -2937,7 +2890,6 @@ static struct platform_driver hme_sbus_driver = {
- 		.of_match_table = hme_sbus_match,
- 	},
- 	.probe		= hme_sbus_probe,
--	.remove		= hme_sbus_remove,
- };
+-static void get_hme_mac_nonsparc(struct pci_dev *pdev, unsigned char *dev_addr)
+-{
+-	size_t size;
+-	void __iomem *p = pci_map_rom(pdev, &size);
+-
+-	if (p) {
+-		int index = 0;
+-		int found;
+-
+-		if (is_quattro_p(pdev))
+-			index = PCI_SLOT(pdev->devfn);
+-
+-		found = readb(p) == 0x55 &&
+-			readb(p + 1) == 0xaa &&
+-			find_eth_addr_in_vpd(p, (64 * 1024), index, dev_addr);
+-		pci_unmap_rom(pdev, p);
+-		if (found)
+-			return;
+-	}
+-
+-	/* Sun MAC prefix then 3 random bytes. */
+-	dev_addr[0] = 0x08;
+-	dev_addr[1] = 0x00;
+-	dev_addr[2] = 0x20;
+-	get_random_bytes(&dev_addr[3], 3);
+-}
+-#endif /* !(CONFIG_SPARC) */
+-
+ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 				const struct pci_device_id *ent)
+ {
+ 	struct quattro *qp = NULL;
+-#ifdef CONFIG_SPARC
+-	struct device_node *dp;
+-#endif
++	struct device_node *dp = NULL;
+ 	struct happy_meal *hp;
+ 	struct net_device *dev;
+ 	void __iomem *hpreg_base;
+ 	struct resource *hpreg_res;
+-	int i, qfe_slot = -1;
++	int qfe_slot = -1;
+ 	char prom_name[64];
+-	u8 addr[ETH_ALEN];
+ 	int err;
  
- static int __init happy_meal_sbus_init(void)
+ 	/* Now make sure pci_dev cookie is there. */
+@@ -2635,7 +2650,7 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 	SET_NETDEV_DEV(dev, &pdev->dev);
+ 
+ 	hp = netdev_priv(dev);
+-
++	hp->dev = dev;
+ 	hp->happy_dev = pdev;
+ 	hp->dma_dev = &pdev->dev;
+ 
+@@ -2671,35 +2686,7 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 		goto err_out_clear_quattro;
+ 	}
+ 
+-	for (i = 0; i < 6; i++) {
+-		if (macaddr[i] != 0)
+-			break;
+-	}
+-	if (i < 6) { /* a mac address was given */
+-		for (i = 0; i < 6; i++)
+-			addr[i] = macaddr[i];
+-		eth_hw_addr_set(dev, addr);
+-		macaddr[5]++;
+-	} else {
+-#ifdef CONFIG_SPARC
+-		const unsigned char *addr;
+-		int len;
+-
+-		if (qfe_slot != -1 &&
+-		    (addr = of_get_property(dp, "local-mac-address", &len))
+-			!= NULL &&
+-		    len == 6) {
+-			eth_hw_addr_set(dev, addr);
+-		} else {
+-			eth_hw_addr_set(dev, idprom->id_ethaddr);
+-		}
+-#else
+-		u8 addr[ETH_ALEN];
+-
+-		get_hme_mac_nonsparc(pdev, addr);
+-		eth_hw_addr_set(dev, addr);
+-#endif
+-	}
++	happy_meal_addr_init(hp, dp, qfe_slot);
+ 
+ 	/* Layout registers. */
+ 	hp->gregs      = (hpreg_base + 0x0000UL);
+@@ -2748,7 +2735,6 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 	timer_setup(&hp->happy_timer, happy_meal_timer, 0);
+ 
+ 	hp->irq = pdev->irq;
+-	hp->dev = dev;
+ 	dev->netdev_ops = &hme_netdev_ops;
+ 	dev->watchdog_timeo = 5*HZ;
+ 	dev->ethtool_ops = &hme_ethtool_ops;
 -- 
 2.37.1
 
