@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C7CB6B5EF8
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 18:34:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09F4F6B5EFC
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 18:34:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230318AbjCKReJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 12:34:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59548 "EHLO
+        id S229589AbjCKReY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 12:34:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230190AbjCKRdd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 12:33:33 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C484329410
-        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 09:33:22 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id s11so33017031edy.8
-        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 09:33:22 -0800 (PST)
+        with ESMTP id S230146AbjCKRdl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 12:33:41 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D823341B47
+        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 09:33:23 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id x3so32951342edb.10
+        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 09:33:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678556002;
+        d=linaro.org; s=google; t=1678556003;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=N0eIoQUlzBtNWdRZyomXaxMeOe08r5W6w3hU8zY2eLk=;
-        b=jQv/WlnODqsuHQabO1Micpq/pDWNovtU717/W3OPhTC7u6X2YK4ju3WLG6Dm2OWE1v
-         pMN87UD+/bZt6J5qcdcLAtM30x0ExopjeMuP0dvT7u7VCie9RtQLTKSIEuWWVaDUdvJh
-         AYvwEgUM5QDD3GArtIZvjbEj3KPJWwzHEl/Aa0GzUjLP3DlqbkQXnHkegC9HSFMWaorc
-         UWoZ+l9TcZ+pzB/pvnati+hCDNrdfcFMgj6Y9pqjBjheJLgtrJJ4NBM9lJc9VWC3f8Kg
-         yQXysQJfPkDAiJ2NqrSQtD32pdqe4mhGoetw0i3OUc30EoGH3NmEm8sn6cW2L2A11F8T
-         sKJQ==
+        bh=WPTGdDBL8b40RCmwJ/SrwI24KRXn2ceVZMzb8HuniE8=;
+        b=RMJAnx3hUX085h7uK4IIPYlR6BkBWKb5DISi3/TVx4WOj/hDyJWkXczuc21LYAj0bi
+         JFsb8UepMLGx27vo9e0YBpvvBVNLE7TOTPUeD+QnrUhpEc4E9YNnxBxfUnxS8L+6zYee
+         /1ZtE4e0/oDtGyVdDMZRk6nhskr6FtM64OeH08pmk7ebmJFsWegZOBmtoEmFmhD5MCyW
+         07DkfNibueSpCDZXxY2zE/1f0qn42HXUETAdmSiF6YY/aFy+FXCS5jQWLdEerElZf/MH
+         KrfpfAWWtlmEXKFk8G+lGrsf/m6qj4IFk2p5/pZPJX9PcOflu0mYW/Q39HydYMdnWy4Y
+         SGOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678556002;
+        d=1e100.net; s=20210112; t=1678556003;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=N0eIoQUlzBtNWdRZyomXaxMeOe08r5W6w3hU8zY2eLk=;
-        b=57IMINISNVdJlsm9psOdgqdh6I4tK3vItQg0mOiMlgQovOwCHDqE4b6pkmiOAt8CjE
-         stdoDCniE/TQFOGsmW9vdXmRzf/JBzl7oKuzZhAfQlXR1X7JoA9/aC6pFdtnrSlTPj0E
-         DXq5rGSSQ3cFfuJ1Y+4ReG+zMbw9EU2fZNIRdR/4bqe5hpO2F6WQR/duruk+285kdjb7
-         cJlv+8xVo9WzpsUHg4J84JknYMQiQeo1J+YHrQ5DdPtkvvoetRZvSFsUv6sfNK3plPoO
-         zfU9fYGk6p/fvDmejOWaBHFTJQA6gF69lT+lUSD1A8fThNgH14uFc2m1ocTUpAAlmFBh
-         6ZtA==
-X-Gm-Message-State: AO0yUKXacZ2UdS2X4cRkczhL6pliduh73/6pfBIMpn4/+u2ZHd6vfyzB
-        Hy+oRRWF2jmeLw6o7oaCXxaH6A==
-X-Google-Smtp-Source: AK7set+Gav2lc+k6TaNhMqr6MQ7LBRUpCtyMan24OMdeglwwbEjp77cTDzo8yi4QIiHgdjmq562JTA==
-X-Received: by 2002:a05:6402:384:b0:4af:6aa6:12d3 with SMTP id o4-20020a056402038400b004af6aa612d3mr23926913edv.40.1678556002238;
-        Sat, 11 Mar 2023 09:33:22 -0800 (PST)
+        bh=WPTGdDBL8b40RCmwJ/SrwI24KRXn2ceVZMzb8HuniE8=;
+        b=B6YOrzSJcC9CwEEtlOupFYSf20zpVTxWWS2TFgfWSlPrmg/JmiE/lt/Xr+vAVZTSW+
+         05+I5l45E967T5kymxRAai2qsZ439m3u2oDT/K01WH0yJ4goI61fcAa35CnEtl9PU1fE
+         z58wIIOPHtPOmszZ4PlPD4o+uNQpU+b+R1SjfiZZPfDpzdN9UKhRkhCcWXA1qwnzcwWt
+         CPj3FpUjvXHCdmmOXQ8DPg5m8uSuSo88rLbyR3hT7p2lA7rjSmE1rqr404WYGRcjC3G9
+         FQ1YLHVNEQ8CzqbQEjVk5e18q1Xo6I90pWba4qLFbUlaGNfwyXQamONBz0SdhZQceFfj
+         qr7g==
+X-Gm-Message-State: AO0yUKVM04XJEAQKmCOHX8ixkqAyfLpfvvL6FQj2+RSbP2oxEAJUr4Se
+        +lBwrzlTWaxBMNx2r49vUvPFKw==
+X-Google-Smtp-Source: AK7set8LcQuAvpdmH4YyQTjnOklUnNTtB1MERqqJcYlJGMRUuqDen6lOHZY7vAex7tGlhIdRelAcYw==
+X-Received: by 2002:a05:6402:70f:b0:4af:7390:b488 with SMTP id w15-20020a056402070f00b004af7390b488mr27475483edx.40.1678556003405;
+        Sat, 11 Mar 2023 09:33:23 -0800 (PST)
 Received: from krzk-bin.. ([2a02:810d:15c0:828:6927:e94d:fc63:9d6e])
-        by smtp.gmail.com with ESMTPSA id k15-20020a50ce4f000000b004d8287c775fsm1440885edj.8.2023.03.11.09.33.21
+        by smtp.gmail.com with ESMTPSA id k15-20020a50ce4f000000b004d8287c775fsm1440885edj.8.2023.03.11.09.33.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Mar 2023 09:33:21 -0800 (PST)
+        Sat, 11 Mar 2023 09:33:23 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -71,9 +71,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-wpan@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 08/12] net: ieee802154: mcr20a: drop of_match_ptr for ID table
-Date:   Sat, 11 Mar 2023 18:32:59 +0100
-Message-Id: <20230311173303.262618-8-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 09/12] net: ieee802154: at86rf230: drop of_match_ptr for ID table
+Date:   Sat, 11 Mar 2023 18:33:00 +0100
+Message-Id: <20230311173303.262618-9-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230311173303.262618-1-krzysztof.kozlowski@linaro.org>
 References: <20230311173303.262618-1-krzysztof.kozlowski@linaro.org>
@@ -94,26 +94,26 @@ The driver will match mostly by DT table (even thought there is regular
 ID table) so there is little benefit in of_match_ptr (this also allows
 ACPI matching via PRP0001, even though it might not be relevant here).
 
-  drivers/net/ieee802154/mcr20a.c:1340:34: error: ‘mcr20a_of_match’ defined but not used [-Werror=unused-const-variable=]
+  drivers/net/ieee802154/at86rf230.c:1644:34: error: ‘at86rf230_of_match’ defined but not used [-Werror=unused-const-variable=]
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/net/ieee802154/mcr20a.c | 2 +-
+ drivers/net/ieee802154/at86rf230.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ieee802154/mcr20a.c b/drivers/net/ieee802154/mcr20a.c
-index f53d185e0568..87abe3b46316 100644
---- a/drivers/net/ieee802154/mcr20a.c
-+++ b/drivers/net/ieee802154/mcr20a.c
-@@ -1352,7 +1352,7 @@ MODULE_DEVICE_TABLE(spi, mcr20a_device_id);
- static struct spi_driver mcr20a_driver = {
- 	.id_table = mcr20a_device_id,
+diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
+index 62b984f84d9f..164c7f605af5 100644
+--- a/drivers/net/ieee802154/at86rf230.c
++++ b/drivers/net/ieee802154/at86rf230.c
+@@ -1662,7 +1662,7 @@ MODULE_DEVICE_TABLE(spi, at86rf230_device_id);
+ static struct spi_driver at86rf230_driver = {
+ 	.id_table = at86rf230_device_id,
  	.driver = {
--		.of_match_table = of_match_ptr(mcr20a_of_match),
-+		.of_match_table = mcr20a_of_match,
- 		.name	= "mcr20a",
+-		.of_match_table = of_match_ptr(at86rf230_of_match),
++		.of_match_table = at86rf230_of_match,
+ 		.name	= "at86rf230",
  	},
- 	.probe      = mcr20a_probe,
+ 	.probe      = at86rf230_probe,
 -- 
 2.34.1
 
