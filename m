@@ -2,146 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BE626B6149
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 22:56:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6EF96B6181
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 23:37:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229783AbjCKV42 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 16:56:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48086 "EHLO
+        id S229908AbjCKWhG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 17:37:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbjCKV41 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 16:56:27 -0500
-Received: from EUR02-DB5-obe.outbound.protection.outlook.com (mail-db5eur02on2061e.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe12::61e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D921700;
-        Sat, 11 Mar 2023 13:56:26 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=G5BCypw2pgB0iBKKlV/Q8OqRXN//pOERY6X8Wro7GXHtRXTU0lyTsWTZVjoK3xsW+T5ZJwtH/LjTXiT9mGWETuXJBOhm9++A7nuuCFznF3L9C8qeCj4IsQrzd0jk7JH3qf8cnEF3TTHDybdkJvGatAEDC8Q0RRDZIf7lnbjzXxt1RGVJQHU2eELqYVZLiNHC1YYocJIvvxka+JHCIj7HCLE5AVygpfmY9zcMZYmlYNkovYxEhevYTuHMGqf7Kt6R/h//SeAJIMf4DYrYWyGSnmHS25KG8RBqYGSufFCUN80vEJLeRMDMKHJvJqESEY14d7WZ1WPHtnzyQjcPawZ83w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GEfpjX3hqVHgdSrTg/UfV31iyPxD2qRgCn8ekoQ4Cxk=;
- b=aUEMeATOYs74xbytFRCOso4UWWZD8H4bgFdV+6S2Ibao3tvzD91q7MkEQXl5jZPco3tQJaIqsMOGH0+a4noGUJqroHmOHnpw1iKWVz/i/ViTFvhdbEFxjKhfjlogNnoH3438DSS/ZPvsH2P0dfg2nR5zUUwZzUoEmEuY7Sd0kcXqkZ71GPQJVSeDIhT3xfRtcagbngUwMWTC/+6uNdwuA0dGfmE4N8cS4K7zlsOORQfzxEyDbwp+O33lFJ84WY2Ccnf/dIUic0Lh1hAljYBrGIdN/sVaQMfR95VGGYd+i4dv9yxypznkbLoNBdFnpbJuiQKe8JcHRXiePAdZTE1CNQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GEfpjX3hqVHgdSrTg/UfV31iyPxD2qRgCn8ekoQ4Cxk=;
- b=QsVeTy3N5iJ/yZ3cJ8sRxhequhtosgrTr2mig3qGyHznKp4HsHuNais7Sd0kelAEZJv3O0qgJ8QUFVlHXjgrMWAUYbmsxlu26KJEK6zFD+BWMUrJYzxiMP7fu7DssnpiVbA2CtxqaI7PpOSz1UHmvBD9ir60fFg6Kyev29D9XAc=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
- by DB9PR04MB8480.eurprd04.prod.outlook.com (2603:10a6:10:2c6::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.23; Sat, 11 Mar
- 2023 21:56:21 +0000
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::29a3:120c:7d42:3ca8]) by AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::29a3:120c:7d42:3ca8%7]) with mapi id 15.20.6178.023; Sat, 11 Mar 2023
- 21:56:21 +0000
-Date:   Sat, 11 Mar 2023 23:56:16 +0200
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229819AbjCKWhF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 17:37:05 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C97186C6B1
+        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 14:37:03 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id u5so9210481plq.7
+        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 14:37:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678574223;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=SYLtAvS71e9DHRZ1YQA8wj6OoQkLOOK2heLI6XLCAs8=;
+        b=n8l1vjJQj9erKBjQnBYSL+MjW7sIKwLjFT9LFk0jjJWMsXHtra0Zc38Tao1weW9pNy
+         ObMbL06DC99jiQ1qnPdhLf1+5FtWDnKCiWFdWe4UruUiXG84v5+0vNaq67coIz3xA3Nu
+         NFUxOVVWCq65idLNRhyOSWOrwcN/RWqeUMYVj+eSs35ndyGWL0amVGRAnu78PjAqZ9We
+         M37OVGI1JkPOTy3poZBZYOoxblVOFW12grnUZxxKdL1+tiVxW6qOonPDql78/clPwg33
+         PDYXjwGUAcScWtrwODoTKwRJ5VTFo4rkuu+mCVAsjOs+N7f0J4UegPeFhN+i0OJSiVQY
+         HdCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678574223;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=SYLtAvS71e9DHRZ1YQA8wj6OoQkLOOK2heLI6XLCAs8=;
+        b=BDc9ze8vbWT60U4F9LeF8+2uzSz4nOePQUunYZtX/bFVO7u5Ve9z7N+sviCo4mcrEt
+         kHw1rOj3kwvdvAUubyj4S9l7v0ypt6djeoQSl0lE5h6Ggo5yLXXUpUzlb/5BmsqSyyuF
+         9SsHNhXYlfqank1avJWMyQ/fmMC6f4guCTllpXLz5ajvgjGLOzZFFbiAwTEW75Yjky0w
+         lOjqYGlOx3MXnaZfcStEfn3iUtxf9EtlXBqUVWVUkH4Ey/1fOkdHVigCDSM2eTGSclPd
+         KL3919WKGnFLSuoWuUip1jObran8gnnRc6ukErSyw1b9OjZSPfL/FVwcVSt5bVlfUBqU
+         sXRA==
+X-Gm-Message-State: AO0yUKWSFzZEAB55XZPhoxrSQTYOq9moCgTZ8zMz8GNepy0i/mww5aOO
+        3QkVbto+DwZCga3v3TYZyXA=
+X-Google-Smtp-Source: AK7set+jbRPLp0rdAonZPkzgrGK5KNzWWr/6P009Cv8XwA4dj8IroNDNZjFGcMHFqK775OR+3J7mPg==
+X-Received: by 2002:a17:902:b203:b0:19a:ae30:3a42 with SMTP id t3-20020a170902b20300b0019aae303a42mr4918309plr.21.1678574222815;
+        Sat, 11 Mar 2023 14:37:02 -0800 (PST)
+Received: from [192.168.0.128] ([98.97.116.32])
+        by smtp.googlemail.com with ESMTPSA id li14-20020a170903294e00b0019a84b88f7csm2003564plb.27.2023.03.11.14.37.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Mar 2023 14:37:01 -0800 (PST)
+Message-ID: <64932ccc97c3bd2ab7fac6216e465550107b7fa4.camel@gmail.com>
+Subject: Re: [PATCH net v8 1/2] net/ps3_gelic_net: Fix RX sk_buff length
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     Geoff Levand <geoff@infradead.org>, netdev@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Gerhard Engleder <gerhard@engleder-embedded.com>,
-        Amritha Nambiar <amritha.nambiar@intel.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ferenc Fejes <ferenc.fejes@ericsson.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        Pranavi Somisetty <pranavi.somisetty@amd.com>,
-        Harini Katakam <harini.katakam@amd.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
-        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 00/13] Add tc-mqprio and tc-taprio support
- for preemptible traffic classes
-Message-ID: <20230311215616.jdh6qy6uuwwt5re7@skbuf>
-References: <20230220122343.1156614-1-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230220122343.1156614-1-vladimir.oltean@nxp.com>
-X-ClientProxiedBy: BE1P281CA0035.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:22::12) To AM0PR04MB6452.eurprd04.prod.outlook.com
- (2603:10a6:208:16d::21)
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Date:   Sat, 11 Mar 2023 14:37:00 -0800
+In-Reply-To: <4581be2478ecc3292a3864e24fe9a42dac533b89.1678570942.git.geoff@infradead.org>
+References: <cover.1678570942.git.geoff@infradead.org>
+         <4581be2478ecc3292a3864e24fe9a42dac533b89.1678570942.git.geoff@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|DB9PR04MB8480:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5945690f-33b3-42f3-4f54-08db227b7307
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: aR/Uy4+bjBXAHj2yiw0Y0IKAK1ExVq0kj+KnyVH2dg0ZffvYOY2DOP6tSNhWr7/AMNvTweDrVGnK7taAnIzKKj+fHMESPK9g03En2CZcNljzCXeuMes21k3om1DtZgJ/p67someDyZr3l6R4B10MAHDfkdRyRw+ipOUx8KoMnm3xkEK8wff3CSClZokfWmlrDukpzpplYvfcp37vC9SdsjXe1/S/ENF66r16c/WmhzTePuUKMVFH8mm+neTBFSW72mmvYNtDUxOtVYV8H2h5Qjz8eJBBwNxOlYUF58FOMkwxFXBLQMMoVxw3aQ9MPWtDcQ247gpGMXv4px9Qzjfh8xlIYU+owef3kFsmq9/D1BmVnzMBdpJHxOxMIkIcOl9HD/y6OjjxsM9FNxJmNLglhaD/bS1jhOCHEQw/D9A03xJpXinx+XzVJWVQDCY7GDlCP5YPhXOsL4HA1V71e3IeMUy5w8BqAOyYAqVLHX1QBE9kO5Vfqjd//216e47u8pDO7FHNiecsNTzyD0O9R+FcVTGBzRAnsI2Q/wiqpjAJs6rlR47eJFdCh1V5dkAr3kdYA5A2UvEn1sPv23+0ILuN/ViJ3XdZrAAGjtp2e5lDl3LeBRFvlrJOfuQ91LAb8jXgL0Eqhq5dtm+tcAV921N4OA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(7916004)(366004)(39860400002)(396003)(376002)(346002)(136003)(451199018)(5660300002)(7416002)(44832011)(4744005)(54906003)(186003)(478600001)(6666004)(1076003)(26005)(6506007)(6486002)(6512007)(33716001)(9686003)(6916009)(4326008)(66476007)(66556008)(66946007)(8676002)(8936002)(41300700001)(86362001)(316002)(38100700002)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?CzoV9+HkbSydvi9p8A+mhqrW2noxBz+7iRqgV5xF9glH1QAcHnzTLKTXw2+z?=
- =?us-ascii?Q?Hc6JF/b0KqWtH73uSBIfZAjoH+Aaszk2w/HcfrvvvZHs5v/laJQtyDQNDqMj?=
- =?us-ascii?Q?AlM4l/sDaGdcP9bDdCB4cqv422kQbDb4jUF5IrN9OFLih0cKQKByswvCZntw?=
- =?us-ascii?Q?YTQGCebhPiMCZ5MhZfVwOgMV3Bzh8zMB5gW+ND5Z/cJCpySH/eXUc2IJYzOJ?=
- =?us-ascii?Q?l/iqGIQW3Jj5N3ZbpOJaiuUM8QMdNsAaLGzVjBcmnkxaKWbXd69SQIA6DH9M?=
- =?us-ascii?Q?9MoQOgpSTzmYRHMyIMJ/riiyxV3h9iHwvoVnILMgY+dqEswcKEfZ/ETQ3dLa?=
- =?us-ascii?Q?FM8Vuhx4wvZcVyjOr3CwQcT+J6uX4IALVOHeuxK48odN54pT00jTYNv7+/k3?=
- =?us-ascii?Q?KlCFGLQBlnjXuHiTRFAEECafDz+XSaoIKVhHbXc0nRmay9/YK03owEIKd/k5?=
- =?us-ascii?Q?vc1dUWAlLYsyzEE+4n6SS5vi0PvyIq0mAD7RRMDaRv6ss2bPK+VUzBvLrnXn?=
- =?us-ascii?Q?kH7SXOC6xardC7Wi4Lgt/htgsEPDGv7/dba76N8MJ36Qpj7nfGwQMcxwnPcB?=
- =?us-ascii?Q?NsMzHEIA1eBWpEI3TOZKnglPz0QGM50+lvSFrk9/Cyx4xCGdxeWQyG2H1wLm?=
- =?us-ascii?Q?GekntmXBF6RoFImoj6bC1oQwpWOByCcZIpfr9+cjCNtIv1cnyfvrE6HLycaY?=
- =?us-ascii?Q?6cPYSBEZ6Vs/udfMdCfWphHRhYrndRROcoIeggVKj4i2VC3o/a2Te+Uyz1zz?=
- =?us-ascii?Q?XFujH5BmSmPUS7IBKwxuxyuwvSDq8nPWzrw+m7rE98Yka7Cvf0hucYGvGtYx?=
- =?us-ascii?Q?NTzx44q/C5sVGA+OXkcFuDJqozmJVHvcoTsVYZnH7LpeoqLSnQ2YAP54EwiL?=
- =?us-ascii?Q?2dSLJ8FwMCGHjhTt8q4ax3V2fLVHxdSsim2wr15WieY0mKYou5szas70E2mb?=
- =?us-ascii?Q?EFE6CZPakz1qz1VoWlWboGfaL7mKJhOMhRzBfcY80RnWVEpRITgwCuSfsvcQ?=
- =?us-ascii?Q?Rz02B4jzvNQixG5bRSZ09x+UHwTRJPVRNIaUCTd2qqiEuUG4p8I8rxJflR1x?=
- =?us-ascii?Q?e3u9Qfp8WWN+AG4ri4OBhqtDFWsi+R92buPq4R2hnGnzOpdzV/tYRHT8fYXu?=
- =?us-ascii?Q?B17U7nrwE4C1n7bso2Wc3d93NaavUXEOV0idb5eEJw5hME838rbcn6u8oP3i?=
- =?us-ascii?Q?I6UmkZ2+btyqF0jfjG4+/femzhqUM0gHuKno9oFo6XDVj1cahvhwFgjDwXPp?=
- =?us-ascii?Q?f320jynabRJe3kioFHqZB0vw9RJXqnjjBZhdyq3wgbTEvDIoPerPgPodrVZ+?=
- =?us-ascii?Q?t6rruGmNxzwSqH7YNsYbWtHjBrKIDUhhlq2p6OHkVsMFHi9bZOXPyeXaHOMl?=
- =?us-ascii?Q?uP9cvAaeQYojGa8UVkMOgggXNIWUnT4u8nweBqAiINIGL1wn7RVZJCltWBHy?=
- =?us-ascii?Q?wRYxpBImcIAiMhN9bqmB5m9qX750tA+fAQWUewzZ/xJcfeHdyYxhmBHdGeMW?=
- =?us-ascii?Q?tXfMeumv4Pn2yGROUVHXft0AEvZOr4suEnxoGUvW5ivg1WE5wyGZci/3t2oX?=
- =?us-ascii?Q?lk7idSt9w9j9LP+loRnGFnDrv4VS73iZaBCHEryyaTYAJ83OwMkcMQdXSvGb?=
- =?us-ascii?Q?Aw=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5945690f-33b3-42f3-4f54-08db227b7307
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2023 21:56:21.1112
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +OVppawY2mGxOgQbyoZr3FuISBRMapVJTFUN7i0390EHdIqykGvOMrDkm6y/BGUJjS1stEEOUj6bE94n+3AbkA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB8480
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,SPF_HELO_PASS,
-        T_SPF_PERMERROR,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 20, 2023 at 02:23:30PM +0200, Vladimir Oltean wrote:
-> This series proposes that we use the Qdisc layer, through separate
-> (albeit very similar) UAPI in mqprio and taprio, and that both these
-> Qdiscs pass the information down to the offloading device driver through
-> the common mqprio offload structure (which taprio also passes).
+On Sat, 2023-03-11 at 21:46 +0000, Geoff Levand wrote:
+> The Gelic Ethernet device needs to have the RX sk_buffs aligned to
+> GELIC_NET_RXBUF_ALIGN, and also the length of the RX sk_buffs must
+> be a multiple of GELIC_NET_RXBUF_ALIGN.
+>=20
+> The current Gelic Ethernet driver was not allocating sk_buffs large
+> enough to allow for this alignment.
+>=20
+> Also, correct the maximum and minimum MTU sizes, and add a new
+> preprocessor macro for the maximum frame size, GELIC_NET_MAX_FRAME.
+>=20
+> Fixes various randomly occurring runtime network errors.
+>=20
+> Fixes: 02c1889166b4 ("ps3: gigabit ethernet driver for PS3, take3")
+> Signed-off-by: Geoff Levand <geoff@infradead.org>
+> ---
+>  drivers/net/ethernet/toshiba/ps3_gelic_net.c | 21 +++++++++++---------
+>  drivers/net/ethernet/toshiba/ps3_gelic_net.h |  5 +++--
+>  2 files changed, 15 insertions(+), 11 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_net.c b/drivers/net/e=
+thernet/toshiba/ps3_gelic_net.c
+> index cf8de8a7a8a1..56557fc8d18a 100644
+> --- a/drivers/net/ethernet/toshiba/ps3_gelic_net.c
+> +++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
+> @@ -44,6 +44,14 @@ MODULE_AUTHOR("SCE Inc.");
+>  MODULE_DESCRIPTION("Gelic Network driver");
+>  MODULE_LICENSE("GPL");
+> =20
+> +/**
+> + * Gelic RX sk_buffs must be aligned to GELIC_NET_RXBUF_ALIGN and the le=
+ngth
+> + * must be a multiple of GELIC_NET_RXBUF_ALIGN.
+> + */
+> +
+> +static const unsigned int gelic_rx_skb_size =3D
+> +	ALIGN(GELIC_NET_MAX_FRAME, GELIC_NET_RXBUF_ALIGN) +
+> +	GELIC_NET_RXBUF_ALIGN - 1;
+>=20
 
-Are there any comments before I resend this? So far I have no changes
-planned for v4.
+After a bit more digging I now understand the need for the
+"GELIC_NET_RXBUF_ALIGN - 1". It shouldn't be added here. The device
+will not be able to DMA into it. It is being used to align the buffer
+itself to 128B. I am assuming it must be 128B aligned in BOTH size and
+offset.
+
+>  /* set irq_mask */
+>  int gelic_card_set_irq_mask(struct gelic_card *card, u64 mask)
+> @@ -370,21 +378,16 @@ static int gelic_descr_prepare_rx(struct gelic_card=
+ *card,
+>  				  struct gelic_descr *descr)
+>  {
+>  	int offset;
+> -	unsigned int bufsize;
+> =20
+>  	if (gelic_descr_get_status(descr) !=3D  GELIC_DESCR_DMA_NOT_IN_USE)
+>  		dev_info(ctodev(card), "%s: ERROR status\n", __func__);
+> -	/* we need to round up the buffer size to a multiple of 128 */
+> -	bufsize =3D ALIGN(GELIC_NET_MAX_MTU, GELIC_NET_RXBUF_ALIGN);
+> =20
+> -	/* and we need to have it 128 byte aligned, therefore we allocate a
+> -	 * bit more */
+> -	descr->skb =3D dev_alloc_skb(bufsize + GELIC_NET_RXBUF_ALIGN - 1);
+> +	descr->skb =3D netdev_alloc_skb(*card->netdev, gelic_rx_skb_size);
+
+I would leave the "+  GELIC_NET_RXBUF_ALIGN - 1" here. so it should be
+	descr->skb =3D netdev_alloc_skb(*card->netdev, 	=09
+				      gelic_rx_skb_size +
+				      GELIC_NET_RXBUF_ALIGN - 1);
+
+Also I would leav the comment as it makes it a bit clearer what is
+going on here.
+
+>  	if (!descr->skb) {
+>  		descr->buf_addr =3D 0; /* tell DMAC don't touch memory */
+>  		return -ENOMEM;
+>  	}
+> -	descr->buf_size =3D cpu_to_be32(bufsize);
+> +	descr->buf_size =3D cpu_to_be32(gelic_rx_skb_size);
+>  	descr->dmac_cmd_status =3D 0;
+>  	descr->result_size =3D 0;
+>  	descr->valid_size =3D 0;
+
+The part I missed was the lines of code that didn't make it into the
+patch that like between the two code blocks here above and below. They
+are doing an AND with your align mask and then adding the difference to
+the skb reserve to pad it to be 128B aligned.
+
+> @@ -397,7 +400,7 @@ static int gelic_descr_prepare_rx(struct gelic_card *=
+card,
+>  	/* io-mmu-map the skb */
+>  	descr->buf_addr =3D cpu_to_be32(dma_map_single(ctodev(card),
+>  						     descr->skb->data,
+> -						     GELIC_NET_MAX_MTU,
+> +						     gelic_rx_skb_size,
+>  						     DMA_FROM_DEVICE));
+>  	if (!descr->buf_addr) {
+>  		dev_kfree_skb_any(descr->skb);
+> @@ -915,7 +918,7 @@ static void gelic_net_pass_skb_up(struct gelic_descr =
+*descr,
+>  	data_error =3D be32_to_cpu(descr->data_error);
+>  	/* unmap skb buffer */
+>  	dma_unmap_single(ctodev(card), be32_to_cpu(descr->buf_addr),
+> -			 GELIC_NET_MAX_MTU,
+> +			 gelic_rx_skb_size,
+>  			 DMA_FROM_DEVICE);
+> =20
+>  	skb_put(skb, be32_to_cpu(descr->valid_size)?
+> diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_net.h b/drivers/net/e=
+thernet/toshiba/ps3_gelic_net.h
+> index 68f324ed4eaf..0d98defb011e 100644
+> --- a/drivers/net/ethernet/toshiba/ps3_gelic_net.h
+> +++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.h
+> @@ -19,8 +19,9 @@
+>  #define GELIC_NET_RX_DESCRIPTORS        128 /* num of descriptors */
+>  #define GELIC_NET_TX_DESCRIPTORS        128 /* num of descriptors */
+> =20
+> -#define GELIC_NET_MAX_MTU               VLAN_ETH_FRAME_LEN
+> -#define GELIC_NET_MIN_MTU               VLAN_ETH_ZLEN
+> +#define GELIC_NET_MAX_FRAME             2312
+> +#define GELIC_NET_MAX_MTU               2294
+> +#define GELIC_NET_MIN_MTU               64
+>  #define GELIC_NET_RXBUF_ALIGN           128
+>  #define GELIC_CARD_RX_CSUM_DEFAULT      1 /* hw chksum */
+>  #define GELIC_NET_WATCHDOG_TIMEOUT      5*HZ
+
