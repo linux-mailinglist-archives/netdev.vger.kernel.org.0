@@ -2,90 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8688B6B5F62
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 18:51:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67EB26B5F4B
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 18:45:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229912AbjCKRvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 12:51:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41410 "EHLO
+        id S230139AbjCKRpX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 12:45:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229743AbjCKRvX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 12:51:23 -0500
-Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DFF5C1D935;
-        Sat, 11 Mar 2023 09:51:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=nEs+j
-        bQk2CXHBtfuuqY4p/NZW1T29Vk/1s0r2vqHCWs=; b=Xh7ubRi8IHS3SUq1ux0iS
-        5vCsyR42i/q7S253g/abdYDv7NlnLtWB8t/Ts6hMXd0mt4plwBbGriucFesYOv0M
-        xEebE2XOWrpaHvloKBzEXF23AnKTdAvMWOrS0rziaj3QLtHN3OpVv8/YW+Sr/dbj
-        /WvNB0j6cDDkzQkRxSirio=
-Received: from leanderwang-LC2.localdomain (unknown [111.206.145.21])
-        by zwqz-smtp-mta-g4-0 (Coremail) with SMTP id _____wD3zFFyuwxk7EH4Cw--.18794S2;
-        Sun, 12 Mar 2023 01:33:38 +0800 (CST)
-From:   Zheng Wang <zyytlz.wz@163.com>
-To:     s.shtylyov@omp.ru
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, hackerzheng666@gmail.com,
-        1395428693sheep@gmail.com, alex000young@gmail.com,
-        Zheng Wang <zyytlz.wz@163.com>
-Subject: [net PATCH v2] net: ravb: Fix possible UAF bug in ravb_remove
-Date:   Sun, 12 Mar 2023 01:33:37 +0800
-Message-Id: <20230311173337.3958819-1-zyytlz.wz@163.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S231183AbjCKRpJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 12:45:09 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 763F41EBF4
+        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 09:45:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=P8spk824Nhe44bQqZ1slzLgZj/JIvgjB6T3wYUPRS3s=; b=Q2
+        Rl8jMYEw+EVLgpx38fBXNhGBeKJvd0CCjXb7GhC9aB8Upa/VT13o4RtR6cw47byXmPHG+ngNIVGNy
+        8mqZOP8GEDvA4TyBCZuPK/drww9bhh2Z4GELfEkSqGVevT93bTDBtyfBTRr/liv41Tg72zQzM9EOm
+        sLKGrWkeWAMK2h0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pb3HB-0074fP-Kp; Sat, 11 Mar 2023 18:45:01 +0100
+Date:   Sat, 11 Mar 2023 18:45:01 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Parthiban.Veerasooran@microchip.com, allan.nielsen@microchip.com
+Cc:     netdev@vger.kernel.org, Jan.Huber@microchip.com,
+        Thorsten.Kummermehr@microchip.com
+Subject: Re: RFC: Adding Microchip's LAN865x 10BASE-T1S MAC-PHY driver
+ support to Linux
+Message-ID: <76afad2d-33ab-4bfa-baf9-2f7a0a4aa134@lunn.ch>
+References: <076fbcec-27e9-7dc2-14cb-4b0a9331b889@microchip.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: _____wD3zFFyuwxk7EH4Cw--.18794S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7CF1DZF1Dur1Uuw13WFWxZwb_yoW8Jw15p3
-        9xKa4ruws5tr1UWa1xGws7ZFWrG3WUKr9I9FWxAw4FvasayF1DXr1FgFW0yw1UJrWDtFya
-        vrWjvw1xu3WDAa7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pElkssUUUUU=
-X-Originating-IP: [111.206.145.21]
-X-CM-SenderInfo: h2113zf2oz6qqrwthudrp/1tbiQhMvU1aEEn9-dAAAsZ
-X-Spam-Status: No, score=-0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_VALIDITY_RPBL,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+In-Reply-To: <076fbcec-27e9-7dc2-14cb-4b0a9331b889@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In ravb_probe, priv->work was bound with ravb_tx_timeout_work.
-If timeout occurs, it will start the work. And if we call
-ravb_remove without finishing the work, there may be a
-use-after-free bug on ndev.
+Hi Allan
 
-Fix it by finishing the job before cleanup in ravb_remove.
+It has been a long time since we talked, maybe 2019 at the Linux
+Plumbers conference.... And then PTP discussions etc.
 
-Fixes: c156633f1353 ("Renesas Ethernet AVB driver proper")
-Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
-Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
----
-v2:
-- stop dev_watchdog so that handle no more timeout work suggested by Yunsheng Lin,
-add an empty line to make code clear suggested by Sergey Shtylyov
----
- drivers/net/ethernet/renesas/ravb_main.c | 4 ++++
- 1 file changed, 4 insertions(+)
+It seems like Sparx5 is going well, along with felix, seville, etc.
 
-diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-index 0f54849a3823..eb63ea788e19 100644
---- a/drivers/net/ethernet/renesas/ravb_main.c
-+++ b/drivers/net/ethernet/renesas/ravb_main.c
-@@ -2892,6 +2892,10 @@ static int ravb_remove(struct platform_device *pdev)
- 	struct ravb_private *priv = netdev_priv(ndev);
- 	const struct ravb_hw_info *info = priv->info;
- 
-+	netif_carrier_off(ndev);
-+	netif_tx_disable(ndev);
-+	cancel_work_sync(&priv->work);
-+	
- 	/* Stop PTP Clock driver */
- 	if (info->ccc_gac)
- 		ravb_ptp_stop(ndev);
--- 
-2.25.1
+On Fri, Mar 10, 2023 at 11:13:23AM +0000, Parthiban.Veerasooran@microchip.com wrote:
+> Hi All,
+> 
+> I would like to add Microchip's LAN865x 10BASE-T1S MAC-PHY driver 
+> support to Linux kernel.
+> (Product link: https://www.microchip.com/en-us/product/LAN8650)
+> 
+> The LAN8650 combines a Media Access Controller (MAC) and an Ethernet PHY 
+> to access 10BASE‑T1S networks. The common standard Serial Peripheral 
+> Interface (SPI) is used so that the transfer of Ethernet packets and 
+> LAN8650 control/status commands are performed over a single, serial 
+> interface.
+> 
+> Ethernet packets are segmented and transferred over the serial interface
+> according to the OPEN Alliance 10BASE‑T1x MAC‑PHY Serial Interface 
+> specification designed by TC6.
+> (link: https://www.opensig.org/Automotive-Ethernet-Specifications/)
+> The serial interface protocol can simultaneously transfer both transmit 
+> and receive packets between the host and the LAN8650.
+> 
+> Basically the driver comprises of two parts. One part is to interface 
+> with networking subsystem and SPI subsystem. The other part is a TC6 
+> state machine which implements the Ethernet packets segmentation 
+> according to OPEN Alliance 10BASE‑T1x MAC‑PHY Serial Interface 
+> specification.
+> 
+> The idea behind the TC6 state machine implementation is to make it as a 
+> generic library and platform independent. A set of API's provided by 
+> this TC6 state machine library can be used by the 10BASE-T1x MAC-PHY 
+> drivers to segment the Ethernet packets according to the OPEN Alliance 
+> 10BASE‑T1x MAC‑PHY Serial Interface specification.
+> 
+> With the above information, kindly provide your valuable feedback on my 
+> below queries.
+> 
+> Can we keep this TC6 state machine within the LAN865x driver or as a 
+> separate generic library accessible for other 10BASE-T1x MAC-PHY drivers 
+> as well?
+> 
+> If you recommend to have that as a separate generic library then could 
+> you please advice on what is the best way to do that in kernel?
 
+Microchip is getting more and more involved in mainline. Jakub
+publishes some developers statistics for netdev:
+
+https://lwn.net/Articles/918007/
+
+It shows Microchip are near the top for code contributions. Which is
+great. However, as a reviewer, i see the quality really varies. Given
+how active Microchip is within Linux, the netdev community, and to
+some extent Linux as a whole, expects a company like Microchip to
+build up its internal resources to offer training and Mentoring to
+mainline developers, rather than expect the community to do that
+work. Does such a thing exist within Microchip? Could you point
+Parthiban towards a mentor who can help guide the work adding generic
+support for the OPEN Alliance 10BASE-T1x MAC-PHY Serial Interface and
+the LAN8650/1 specific bits? If not, could Steen Hegelund or Horatiu
+Vultur make some time available to be a mentor?
+
+Thanks
+	Andrew
