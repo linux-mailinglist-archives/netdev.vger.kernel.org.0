@@ -2,161 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 82C8E6B5E37
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 17:58:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEA366B5E5D
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 18:09:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229722AbjCKQ6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 11:58:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59120 "EHLO
+        id S229810AbjCKRJf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 12:09:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229637AbjCKQ6k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 11:58:40 -0500
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 523C228233;
-        Sat, 11 Mar 2023 08:58:39 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id o11-20020a05600c4fcb00b003eb33ea29a8so5340133wmq.1;
-        Sat, 11 Mar 2023 08:58:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678553918;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=gYhtny07TgU/2ARSSXxzlAUf+ZdBTw7Jk0REUrzBi5M=;
-        b=g1Ky/AWpsS1E+b7CNk4RhT7HQwmjKG4eIkUG91eD/6ZvkJpk89jBiE78whHU9LZzAT
-         SScGIBfAqGhiKuE/caiS1RqlvrMsKnI7mepFOxB74DXVYcUp9Xa64oIa1h8peIeTETUK
-         NqsZaAtbKCfXuMdqYQjyrOWLgqeaXeyaBSqQPezwivUVGYIknkwA/UHEhUu+LgdT/rxm
-         tOomq/k1/baTEZbbDFS5YsXhlTQ4nzrz89e2ZDpxLs6M8aK6GjPZa0ekdAs4lJIyICsg
-         AzQibdncDpJWblecrYBRKwYlIAahCSdJd9SQJTKt4//Me3v3xkLg9q8ANzJdwBLRoCpM
-         15UQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678553918;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gYhtny07TgU/2ARSSXxzlAUf+ZdBTw7Jk0REUrzBi5M=;
-        b=alC1LGK3+feYfsBPIX8I6RDeCdoZViZjmT68cTuRq1FfzCV9VV0EkRX7sfv403KyHY
-         bI+9oxLieNnwVa4pbCJENL9mlfIBNHnfTh1POMtej4wUP3XqMoh8ed3LrcMVGzo/ig38
-         rrSikKI/5C2Gunnq4AivIgORo4K6kGzFhy6ZR5LaRd8hFITXEYlDZpJ1qKqlPdjtZWS7
-         lOLDUBtSeiqzTCrCajDq6m9f5UGyT3MxQlAknV/dVcX6Td1vEid0m0WTVs2ghwjaJw2U
-         ZEW/kyIh+yG+qVkuJKDzweqhnyXC0a3uGDQPuXtNi7/JxvhHUM1RJ5b1XtVS5xAY7QrO
-         1OMQ==
-X-Gm-Message-State: AO0yUKWMiMrsk1ANkw8XicSC2yw21SL42uoD1xTxUUcDn+K6M8HzfHm2
-        FJpGu4fa6b3ZbettmQWcoydr4wRloifVwmV1
-X-Google-Smtp-Source: AK7set+b/i/qqjMwDoYcKIR6gfrtfJ19XtiYu2ZwWCRUYh/AL6/DrVFeYPMKKYXR5zOd3doURYBATw==
-X-Received: by 2002:a05:600c:190b:b0:3e8:490b:e28b with SMTP id j11-20020a05600c190b00b003e8490be28bmr6254311wmq.25.1678553917694;
-        Sat, 11 Mar 2023 08:58:37 -0800 (PST)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id f22-20020a1cc916000000b003df5be8987esm3259673wmb.20.2023.03.11.08.58.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Mar 2023 08:58:37 -0800 (PST)
-Date:   Sat, 11 Mar 2023 19:58:32 +0300
-From:   Dan Carpenter <error27@gmail.com>
-To:     Sumitra Sharma <sumitraartsy@gmail.com>
-Cc:     outreachy@lists.linux.dev, manishc@marvell.com,
-        GR-Linux-NIC-Dev@marvell.com, coiby.xu@gmail.com,
-        gregkh@linuxfoundation.org, netdev@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Staging: qlge: Fix indentation in conditional statement
-Message-ID: <cf0bf6c1-30fb-4c63-9c17-575c87c986e3@kili.mountain>
-References: <20230311152453.GA23588@ubuntu>
+        with ESMTP id S229469AbjCKRJe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 12:09:34 -0500
+Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.214])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6E356EC5D;
+        Sat, 11 Mar 2023 09:09:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=39auS
+        PKZnuBFBnPRBUd+UqjHniwggSni0+AncM3Q90Q=; b=MgFxzSOphnh2TvTOZcyXM
+        /0HLGVK9wyERR9QjaAT6qbabX1S47rSnXpoubTvXMmmPy5PhhNWpBvIVwrxKxy8T
+        P+J4sO7HqQRSUFEoKulAk5Lwim1iFpKLS6jj9sq1dp6M+yeTyjbqGeQZj6HsDyl7
+        VI7gsS6Ks4jt3xoN5WZ8pU=
+Received: from leanderwang-LC2.localdomain (unknown [111.206.145.21])
+        by zwqz-smtp-mta-g0-0 (Coremail) with SMTP id _____wAnnhaVtQxkNp8CDA--.24226S2;
+        Sun, 12 Mar 2023 01:08:37 +0800 (CST)
+From:   Zheng Wang <zyytlz.wz@163.com>
+To:     davem@davemloft.net
+Cc:     simon.horman@corigine.com, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, petrm@nvidia.com, thomas.lendacky@amd.com,
+        wsa+renesas@sang-engineering.com, leon@kernel.org,
+        shayagr@amazon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, hackerzheng666@gmail.com,
+        1395428693sheep@gmail.com, alex000young@gmail.com,
+        Zheng Wang <zyytlz.wz@163.com>
+Subject: [PATCH v2] xirc2ps_cs: Fix use after free bug in xirc2ps_detach
+Date:   Sun, 12 Mar 2023 01:08:36 +0800
+Message-Id: <20230311170836.3919005-1-zyytlz.wz@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230311152453.GA23588@ubuntu>
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: _____wAnnhaVtQxkNp8CDA--.24226S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7WrWxuF4xKrW5Aw4UCr48WFg_yoW8GFyUpr
+        WDJay5Zr4kXwsIvw4xJrWUJF15Was3Kayjgr93C3yFgrn8ArWqgr1rKayjgFyxArWkZF13
+        Arn09ryxWF1DAFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0ziYLv_UUUUU=
+X-Originating-IP: [111.206.145.21]
+X-CM-SenderInfo: h2113zf2oz6qqrwthudrp/xtbBzhkvU2I0XmjvDwAAsr
+X-Spam-Status: No, score=-0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_VALIDITY_RPBL,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 11, 2023 at 07:24:53AM -0800, Sumitra Sharma wrote:
-> Add tabs/spaces in conditional statements in qlge_dbg.c to fix the
-> indentation.
-> 
-> Signed-off-by: Sumitra Sharma <sumitraartsy@gmail.com>
-> ---
->  drivers/staging/qlge/qlge_dbg.c | 35 +++++++++++++++------------------
->  1 file changed, 16 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/staging/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
-> index b190a2993033..c7e865f515cf 100644
-> --- a/drivers/staging/qlge/qlge_dbg.c
-> +++ b/drivers/staging/qlge/qlge_dbg.c
-> @@ -351,26 +351,23 @@ static int qlge_get_xgmac_regs(struct qlge_adapter *qdev, u32 *buf,
->  		/* We're reading 400 xgmac registers, but we filter out
->  		 * several locations that are non-responsive to reads.
->  		 */
-> -		if (i == 0x00000114 ||
-> -		    i == 0x00000118 ||
-> -			i == 0x0000013c ||
-> -			i == 0x00000140 ||
+In xirc2ps_probe, the local->tx_timeout_task was bounded
+with xirc2ps_tx_timeout_task. When timeout occurs,
+it will call xirc_tx_timeout->schedule_work to start the
+work.
 
-You've written this on top of the other patch which we're not going
-to apply so it's not going to work.
+When we call xirc2ps_detach to remove the driver, there
+may be a sequence as follows:
 
-> -			(i > 0x00000150 && i < 0x000001fc) ||
-> -			(i > 0x00000278 && i < 0x000002a0) ||
-> -			(i > 0x000002c0 && i < 0x000002cf) ||
-> -			(i > 0x000002dc && i < 0x000002f0) ||
-> -			(i > 0x000003c8 && i < 0x00000400) ||
-> -			(i > 0x00000400 && i < 0x00000410) ||
-> -			(i > 0x00000410 && i < 0x00000420) ||
-> -			(i > 0x00000420 && i < 0x00000430) ||
-> -			(i > 0x00000430 && i < 0x00000440) ||
-> -			(i > 0x00000440 && i < 0x00000450) ||
-> -			(i > 0x00000450 && i < 0x00000500) ||
-> -			(i > 0x0000054c && i < 0x00000568) ||
-> -			(i > 0x000005c8 && i < 0x00000600)) {
-> +		if ((i == 0x00000114) || (i == 0x00000118) ||
-> +		    (i == 0x0000013c) || (i == 0x00000140) ||
+Stop responding to timeout tasks and complete scheduled
+tasks before cleanup in xirc2ps_detach, which will fix
+the problem.
 
-If we could have applied the patch then I wouldn't comment here.  But
-since you're going to have to redo it anyway...  I would probably have
-kept these on separate lines.
+CPU0                  CPU1
 
-		if ((i == 0x00000114) ||
-		    (i == 0x00000118) ||
-		    (i == 0x0000013c) ||
-	            (i == 0x00000140) ||
-		    (i > 0x00000150 && i < 0x000001fc) ||
-		    (i > 0x00000278 && i < 0x000002a0) ||
+                    |xirc2ps_tx_timeout_task
+xirc2ps_detach      |
+  free_netdev       |
+    kfree(dev);     |
+                    |
+                    | do_reset
+                    |   //use dev
 
-I like that you are looking around and making changes, like this but to
-me it seems more readable if 0x114 0x118 etc are all in the same
-column.
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
+---
+v2:
+- fix indentation error suggested by Simon Horman,
+and stop the timeout tasks  suggested by Yunsheng Lin
+---
+ drivers/net/ethernet/xircom/xirc2ps_cs.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-> +		    (i > 0x00000150 && i < 0x000001fc) ||
-> +		    (i > 0x00000278 && i < 0x000002a0) ||
-> +		    (i > 0x000002c0 && i < 0x000002cf) ||
-> +		    (i > 0x000002dc && i < 0x000002f0) ||
-> +		    (i > 0x000003c8 && i < 0x00000400) ||
-> +		    (i > 0x00000400 && i < 0x00000410) ||
-> +		    (i > 0x00000410 && i < 0x00000420) ||
-> +		    (i > 0x00000420 && i < 0x00000430) ||
-> +		    (i > 0x00000430 && i < 0x00000440) ||
-> +		    (i > 0x00000440 && i < 0x00000450) ||
-> +		    (i > 0x00000450 && i < 0x00000500) ||
-> +		    (i > 0x0000054c && i < 0x00000568) ||
-> +		    (i > 0x000005c8 && i < 0x00000600)) {
->  			if (other_function)
-> -				status =
-> -				qlge_read_other_func_xgmac_reg(qdev, i, buf);
-> +				status = qlge_read_other_func_xgmac_reg(qdev, i, buf);
-
-This change wasn't described in the commit message.  This change is a
-borderline situation on the one thing per patch rule.  We would
-probably allow it under certain circumstances if it were described
-correctly in the commit message.  But with Outreachy we're crazy strict
-about stuff like this.  Just send it as a separate patch.
-
-So now this is a v2 patch situation.  Outreachy has their own docs.  But
-I have a blog about this which is super short.
-https://staticthinking.wordpress.com/2022/07/27/how-to-send-a-v2-patch/
-
-
-regards,
-dan carpenter
+diff --git a/drivers/net/ethernet/xircom/xirc2ps_cs.c b/drivers/net/ethernet/xircom/xirc2ps_cs.c
+index 894e92ef415b..c77ca11d9497 100644
+--- a/drivers/net/ethernet/xircom/xirc2ps_cs.c
++++ b/drivers/net/ethernet/xircom/xirc2ps_cs.c
+@@ -503,6 +503,11 @@ static void
+ xirc2ps_detach(struct pcmcia_device *link)
+ {
+     struct net_device *dev = link->priv;
++		struct local_info *local = netdev_priv(dev);
++
++		netif_carrier_off(dev);
++		netif_tx_disable(dev);
++		cancel_work_sync(&local->tx_timeout_task);
+ 
+     dev_dbg(&link->dev, "detach\n");
+ 
+-- 
+2.25.1
 
