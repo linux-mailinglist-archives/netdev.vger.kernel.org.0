@@ -2,112 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A16DB6B5D62
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 16:40:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B4186B5D66
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 16:43:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229656AbjCKPkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 10:40:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52912 "EHLO
+        id S230032AbjCKPne (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 10:43:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbjCKPkQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 10:40:16 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55C7E584A4;
-        Sat, 11 Mar 2023 07:40:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=L1cjWa/ZkeQ8ynLS3HKj8W+1nV4bPBS6kn+zz6pEL5o=; b=lDIfeYMpfdi1Shz/zgmeAVzusF
-        x0OEDGQ7Z6xWJV0WYKAedb45mhigl1d3v7Rp4+oxS6/c7dG4Gtq5h8DXWBlX2hNo1fHCotl1eOB/J
-        GWSyM2lJOXImtgRMI7Ct7afh4KEiz7rG2+6+STKjo44VLsu9aDw855+FMSxYMvtefYn8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pb1Jo-0074HD-9X; Sat, 11 Mar 2023 16:39:36 +0100
-Date:   Sat, 11 Mar 2023 16:39:36 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Klaus Kudielka <klaus.kudielka@gmail.com>
-Cc:     Michael Walle <michael@walle.cc>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Felix Fietkau <nbd@nbd.name>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-aspeed@lists.ozlabs.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: Re: [PATCH net-next v2 4/6] net: mdio: scan bus based on bus
- capabilities for C22 and C45
-Message-ID: <a57a216d-ff5a-46e6-9780-e53772dcefc8@lunn.ch>
-References: <100c439a-2a4d-4cb2-96f2-5bf273e2121a@lunn.ch>
- <712bc92ca6d576f33f63f1e9c2edf0030b10d3ae.camel@gmail.com>
- <db6b8a09-b680-4baa-8963-d355ad29eb09@lunn.ch>
- <0e10aa8492eadb587949d8744b56fccaabbd183b.camel@gmail.com>
- <72530e86-9ba9-4a01-9cd2-68835ecae7a0@lunn.ch>
- <09d65e1ee0679e1e74b4f3a5a4c55bd48332f043.camel@gmail.com>
- <70f5bca0-322c-4bae-b880-742e56365abe@lunn.ch>
- <10da10caea22a8f5da8f1779df3e13b948e8a363.camel@gmail.com>
- <4abd56aa-5b9f-4e16-b0ca-11989bb8c764@lunn.ch>
- <bff0e542b8c04980e9e3af1d3e6bf739c87eb514.camel@gmail.com>
+        with ESMTP id S229810AbjCKPnc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 10:43:32 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B24B726CDC
+        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 07:43:29 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id cn21so2169124edb.0
+        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 07:43:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1678549408;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=joefQDumS5DAEug0aZemuXUZtj8AzGARl18WyLpCzIM=;
+        b=DGDcAxUp+bLWAmNzmfOwGpGCJaSQM7d0nEuc7q+J3VArbV/wz0SQnQHNByGf8jJIGc
+         FMbNjljsJQiDkiUsk/ErLLxySK5ObggKRsG3pZ0p6kOWY1BM2EdKYWnLcURT2oBJ1x/m
+         HyAOzZ9K48nD09XaEpXJihHclNPGpX3X+PGiniJCpLrwXwAOAnWFR+17+efivj89IZtX
+         1VjCeP8OMrLyDIpKMBoIOabrqmLdN3X+zhkdgcf+YV22AFllSe6pOibZyIn5IeHjrPHR
+         KqaToW3JLXMqoil/0fSztggAayKqiDrOUC7khnSYP56WKP4tQMEU8f6MaNDD0JJtx6uW
+         5NHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678549408;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=joefQDumS5DAEug0aZemuXUZtj8AzGARl18WyLpCzIM=;
+        b=3ppX4ByZdFb4EMNjkuuq18Gex5UL2BNHGrTzj5+PuaAH+MUhpXovmA4a0y1Aw3pK1R
+         B5RMnFonieFro7Cbcp6K3PQf5pFYMd41r70h9RSkx1pzzer4ONcPZYLtEC8MgC+reslb
+         AOu5cX5Vj4nB2XsFwEmUtZ2Sh71dhG4djylO06sSwZKhIRTQbgwk07eATNzmIPW37UZc
+         3QOQp7VhLGShVP9kjettD12AiWUZZ4zEFT3/AIPg9fkEW5G3VhQ0TVxgF0Mc2FJUeNpp
+         ie94Rl7IqbgEuaFCF7lYD5O3Lb8NJm5h3SuT0lxobLAHtZj//wjAez2L+UEElO1R0v0A
+         qfCg==
+X-Gm-Message-State: AO0yUKWHlLDEiaxyTcJc3xhWhOj1SEBK3EXfewIcsdwErpSoT7+22AfJ
+        bf0Iqop+HDtpfLCcyST9FSvepQ==
+X-Google-Smtp-Source: AK7set+SYz5w+m7N9cpwUO+BTOJg00mFqXkmIwLNwt6Hbg+I/FT8TbgGXCvZl9e8K3Kg1qnTzDE0BA==
+X-Received: by 2002:aa7:cd55:0:b0:4c0:e156:7954 with SMTP id v21-20020aa7cd55000000b004c0e1567954mr22784637edw.34.1678549408198;
+        Sat, 11 Mar 2023 07:43:28 -0800 (PST)
+Received: from ?IPV6:2a02:810d:15c0:828:6927:e94d:fc63:9d6e? ([2a02:810d:15c0:828:6927:e94d:fc63:9d6e])
+        by smtp.gmail.com with ESMTPSA id g8-20020a1709065d0800b008def483cf79sm1190278ejt.168.2023.03.11.07.43.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 11 Mar 2023 07:43:27 -0800 (PST)
+Message-ID: <75f4c8a8-c0ec-a2e9-ec81-23cebef59c19@linaro.org>
+Date:   Sat, 11 Mar 2023 16:43:26 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bff0e542b8c04980e9e3af1d3e6bf739c87eb514.camel@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH 1/2] dt-bindings: net: ti: k3-am654-cpsw-nuss: Drop pinmux
+ header
+To:     Nishanth Menon <nm@ti.com>, Sekhar Nori <nsekhar@ti.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, Tero Kristo <kristo@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>
+References: <20230311131325.9750-1-nm@ti.com>
+ <20230311131325.9750-2-nm@ti.com>
+Content-Language: en-US
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230311131325.9750-2-nm@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 11, 2023 at 07:49:23AM +0100, Klaus Kudielka wrote:
-> On Sat, 2023-03-11 at 00:49 +0100, Andrew Lunn wrote:
-> > > Yes, that helps. Primarily, because mdiobus_scan_bus_c45 now is called only once,
-> > > and at least some things are done in parallel.
-> > 
-> > Great. Could you cook up a proper patch and submit it?
-> 
-> I can give it a try. The commit message will be from my perspective,
-> and the change Suggested-By you.
+On 11/03/2023 14:13, Nishanth Menon wrote:
+> Drop the pinmux header reference. Examples should just show the node
+> definition.
 
-The commit message is fine.
+You could mention that it is not used.
 
-I have one more idea which can speed things up. The scanning of the
-MDIO bus works in two different ways depending on if there is a DT
-node, describing what should be found on the bus. For mv88e6xxx, using
-DT is optional. Some boards do, some don't.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-If there is a DT node, only the addresses listed in DT are scanned.
 
-If there is no DT node, by default, all 32 addresses on the bus are
-scanned. However, DSA makes another assumption. There is a one to one
-mapping between port number and PHY address on the MDIO bus. Port 0
-uses MDIO address 0. Port 7 uses MDIO address 7 etc. If you have an 8
-port switch, there is no point scanning addresses 8 to 31, they will
-never be used.
 
-The mdio bus structure has a member phy_mask. This is a bitmap. If bit
-N is set, address N is not scanned. So i suggest you extend
-mv88e6xxx_mdio_register() to set phy_mask based on
-mv88e6xxx_num_ports(chip).
+Best regards,
+Krzysztof
 
-	Andrew
