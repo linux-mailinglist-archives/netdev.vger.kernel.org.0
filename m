@@ -2,170 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 919DD6B608E
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 21:34:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FEEC6B6091
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 21:35:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229867AbjCKUem (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 15:34:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34018 "EHLO
+        id S229897AbjCKUfr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 15:35:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229927AbjCKUek (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 15:34:40 -0500
-Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E69C37AB8;
-        Sat, 11 Mar 2023 12:34:26 -0800 (PST)
-Received: from local
-        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-         (Exim 4.96)
-        (envelope-from <daniel@makrotopia.org>)
-        id 1pb5v0-0002Ly-19;
-        Sat, 11 Mar 2023 21:34:18 +0100
-Date:   Sat, 11 Mar 2023 20:34:12 +0000
-From:   Daniel Golle <daniel@makrotopia.org>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Jianhui Zhao <zhaojh329@gmail.com>,
-        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
-        Alexander Couzens <lynxis@fe80.eu>
-Subject: Re: Aw: Re: [PATCH net-next v12 08/18] net: ethernet: mtk_eth_soc:
- fix 1000Base-X and 2500Base-X modes
-Message-ID: <ZAzlxF6LaMSdOdIL@makrotopia.org>
-References: <20230308134642.cdxqw4lxtlgfsl4g@skbuf>
- <ZAiXvNT8EzHTmFPh@shell.armlinux.org.uk>
- <ZAiciK5fElvLXYQ9@makrotopia.org>
- <ZAijM91F18lWC80+@shell.armlinux.org.uk>
- <ZAik+I1Ei+grJdUQ@makrotopia.org>
- <ZAioqp21521NsttV@shell.armlinux.org.uk>
- <trinity-79e9f0b8-a267-4bf9-a3d4-1ec691eb5238-1678536337569@3c-app-gmx-bs24>
- <trinity-a69cee2e-40c5-44b5-ac97-2cb35e1d2462-1678541173568@3c-app-gmx-bs24>
- <ZAyVbzuKq2haFfQa@makrotopia.org>
- <ZAzeZwT3JJK42ANn@shell.armlinux.org.uk>
+        with ESMTP id S229680AbjCKUfq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 15:35:46 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10ECF20541;
+        Sat, 11 Mar 2023 12:35:45 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id e13so8003870wro.10;
+        Sat, 11 Mar 2023 12:35:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678566943;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=B9SEaDPKriAiDKyfkIslt2zjnxJG5SwQ9dwP0X6YQpw=;
+        b=P17DKkJxPQ9l1ObzWD8RqtwNAAyx5Jclhvbf4ojZYLSUAqy6tM/Xb0kUCIUhD3eGCw
+         u9kl6JCvWwxH5iWTMz4K0UaUzqMmfb+A7wtdWVP7d9vJnSCx8nqd43IADJsRgcmITOK9
+         tIKibCilEyhns2bFJsilp+KpLRYhIboYUWBPVyd27Wu0pyBBMQ/Q60clpTp8g/CVxo+Y
+         dXcgALHFby7wR0mM7oj8kvSODHZodutjTBxhMYDRyI6zxBdACNEe5JCT+gpuBHg/Iw4i
+         zXHlTnoAtQjDizFQ51DvlYU7+PbhONhzpUuB9hTZfgXVh0klDjMMQi6dN8NTsFKvg5Va
+         LByg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678566943;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=B9SEaDPKriAiDKyfkIslt2zjnxJG5SwQ9dwP0X6YQpw=;
+        b=RwdwIxyoPK93wRgEBh8w6Y92R1mwS/Ec4VNv1qbhQXCxT7dKGdUnup1LM7NBZbLOBb
+         TqgHN4MjTSqk0BUb2waFDmNDP6+8tvE/rBlccN0rzST0RtNHMV13ur2pgWcaRv3Y4xpx
+         XCE+wxxablIpWIwkMZlG5+xG8g9ofmcvNm6TWI5M8e1RLeoQYyz5J26fCNJD8uWTNFzR
+         rMJ11RM3tmLeivxSfX8OK8SucnEDe3xsj9iTFxzp1qTs4wY5SgiTQQCRykufl3zsLQ/P
+         6LkHGZIFygzcZQZjJ8sSOxKCKV38nOfosbAIUYqeN/hgK3YwfO6g0pv31RO3M8ReJcAI
+         r9Dw==
+X-Gm-Message-State: AO0yUKWifOzfGzDtaO3wxdfkPVKj85J32TxFaKGlqyDHxqmB4jE6wJqo
+        uKujTBWU+cPvtn1BttBh6JiGolT11n3MEw==
+X-Google-Smtp-Source: AK7set99MMxWgK/IQCvaGY4dgmRdox1pfzG2vmBzGe7HwmF6uoQMjL09Ni97QHEGy55MDtsIiuk9ow==
+X-Received: by 2002:adf:edc8:0:b0:2c7:adb:db9 with SMTP id v8-20020adfedc8000000b002c70adb0db9mr18668917wro.63.1678566943294;
+        Sat, 11 Mar 2023 12:35:43 -0800 (PST)
+Received: from suse.localnet (host-79-35-102-94.retail.telecomitalia.it. [79.35.102.94])
+        by smtp.gmail.com with ESMTPSA id z17-20020a5d44d1000000b002c5691f13eesm3232321wrr.50.2023.03.11.12.35.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Mar 2023 12:35:42 -0800 (PST)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     error27@gmail.com, Sumitra Sharma <sumitraartsy@gmail.com>
+Cc:     GR-Linux-NIC-Dev@marvell.com, coiby.xu@gmail.com,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev, manishc@marvell.com,
+        netdev@vger.kernel.org, outreachy@lists.linux.dev
+Subject: Re: [PATCH] Staging: qlge: Remove parenthesis around single condition
+Date:   Sat, 11 Mar 2023 21:35:41 +0100
+Message-ID: <1713523.QkHrqEjB74@suse>
+In-Reply-To: <20230311144318.GC14247@ubuntu>
+References: <20230311144318.GC14247@ubuntu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ZAzeZwT3JJK42ANn@shell.armlinux.org.uk>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 11, 2023 at 08:02:47PM +0000, Russell King (Oracle) wrote:
-> On Sat, Mar 11, 2023 at 02:51:27PM +0000, Daniel Golle wrote:
-> > On Sat, Mar 11, 2023 at 02:26:13PM +0100, Frank Wunderlich wrote:
-> > > > Gesendet: Samstag, 11. März 2023 um 13:05 Uhr
-> > > > Von: "Frank Wunderlich" <frank-w@public-files.de>
-> > > > > Gesendet: Mittwoch, 08. März 2023 um 16:24 Uhr
-> > > > > Von: "Russell King (Oracle)" <linux@armlinux.org.uk>
-> > > > > > > It would be nice to add these to my database - please send me the
-> > > > > > > output of ethtool -m $iface raw on > foo.bin for each module.
-> > > > > 
-> > > > > so if you can do that for me, then I can see whether it's likely that
-> > > > > the patches that are already in mainline will do anything to solve
-> > > > > the workaround you've had to add for the hw signals.
-> > > > 
-> > > > i got the 2.5G copper sfps, and tried them...they work well with the v12 (including this patch), but not in v13...
-> > > > 
-> > > > i dumped the eeprom like you mention for your database:
-> > > > 
-> > > > $ hexdump -C 2g5_sfp.bin 
-> > > > 00000000  03 04 07 00 01 00 00 00  00 02 00 05 19 00 00 00  |................|
-> > > > 00000010  1e 14 00 00 4f 45 4d 20  20 20 20 20 20 20 20 20  |....OEM         |
-> > > > 00000020  20 20 20 20 00 00 00 00  53 46 50 2d 32 2e 35 47  |    ....SFP-2.5G|
-> > > > 00000030  2d 54 20 20 20 20 20 20  31 2e 30 20 03 52 00 19  |-T      1.0 .R..|
-> > > > 00000040  00 1a 00 00 53 4b 32 33  30 31 31 31 30 30 30 38  |....SK2301110008|
-> > > > 00000050  20 20 20 20 32 33 30 31  31 30 20 20 68 f0 01 e8  |    230110  h...|
-> > > > 00000060  00 00 11 37 4f 7a dc ff  3d c0 6e 74 9b 7c 06 ca  |...7Oz..=.nt.|..|
-> > > > 00000070  e1 d0 f9 00 00 00 00 00  00 00 00 00 08 f0 fc 64  |...............d|
-> > > > 00000080  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
-> > > > *
-> > > > 00000100  5f 00 ce 00 5a 00 d3 00  8c a0 75 30 88 b8 79 18  |_...Z.....u0..y.|
-> > > > 00000110  1d 4c 01 f4 19 64 03 e8  4d f0 06 30 3d e8 06 f2  |.L...d..M..0=...|
-> > > > 00000120  2b d4 00 c7 27 10 00 df  00 00 00 00 00 00 00 00  |+...'...........|
-> > > > 00000130  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
-> > > > 00000140  00 00 00 00 3f 80 00 00  00 00 00 00 01 00 00 00  |....?...........|
-> > > > 00000150  01 00 00 00 01 00 00 00  01 00 00 00 00 00 00 f1  |................|
-> > > > 00000160  29 1a 82 41 0b b8 13 88  0f a0 ff ff ff ff 80 ff  |)..A............|
-> > > > 00000170  00 00 ff ff 00 00 ff ff  04 ff ff ff ff ff ff 00  |................|
-> > > > 00000180  43 4e 53 38 54 55 54 41  41 43 33 30 2d 31 34 31  |CNS8TUTAAC30-141|
-> > > > 00000190  30 2d 30 34 56 30 34 20  49 fb 46 00 00 00 00 29  |0-04V04 I.F....)|
-> > > > 000001a0  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
-> > > > 000001b0  00 00 00 00 00 00 00 00  00 00 00 00 00 00 aa aa  |................|
-> > > > 000001c0  47 4c 43 2d 54 20 20 20  20 20 20 20 20 20 20 20  |GLC-T           |
-> > > > 000001d0  20 20 20 20 20 20 20 20  20 20 20 20 20 20 20 97  |               .|
-> > > > 000001e0  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
-> > > > 000001f0  00 00 00 00 00 00 00 00  00 40 00 40 00 00 00 00  |.........@.@....|
-> > > > 
-> > > > how can we add a quirk to support this?
-> > > 
-> > > tried to add the quirk like this onto v13
-> > > 
-> > > --- a/drivers/net/phy/sfp.c
-> > > +++ b/drivers/net/phy/sfp.c
-> > > @@ -403,6 +403,8 @@ static const struct sfp_quirk sfp_quirks[] = {
-> > >         SFP_QUIRK_F("OEM", "RTSFP-10G", sfp_fixup_rollball_cc),
-> > >         SFP_QUIRK_F("Turris", "RTSFP-10", sfp_fixup_rollball),
-> > >         SFP_QUIRK_F("Turris", "RTSFP-10G", sfp_fixup_rollball),
-> > > +
-> > > +       SFP_QUIRK_M("OEM", "SFP-2.5G-T", sfp_quirk_2500basex),
-> > >  };
-> > > 
-> > > but still no link...
-> > > 
-> > > how can i verify the quirk was applied? see only this in dmesg:
-> > > 
-> > > [    2.192274] sfp sfp-1: module OEM              SFP-2.5G-T       rev 1.0  sn SK2301110008     dc 230110  
-> > > 
-> > > also tried to force speed (module should support 100/1000/2500), but it seems i can set speed option only on
-> > > gmac (eth1) and not on the sfp (phy).
-> > > 
-> > > i guess between mac and sfp speed is always 2500base-X and after the phy (if there is any) the link speed is
-> > > maybe different.
-> > 
-> > As discussed in the previous iteration of the series where I suggested to
-> > add work-arounds disabling in-band AN for 1000Base-X and 2500Base-X having
-> > those will also affect fiber transceivers which transparently pass-through
-> > the electrical SerDes signal into light. Russell explained it very well
-> > and I now agree that a good solution would be to add a new SFP quirk
-> > indicating that a SFP module got a "hidden" PHY which doesn't like in-band
-> > autonegotiation.
+On sabato 11 marzo 2023 15:43:18 CET Sumitra Sharma wrote:
+> Hi Dan,
 > 
-> I do not believe that fibre SFPs have hidden PHYs that disrupt the
-> autonegotiation. What makes you think that they do?
+> Your suggestion for correcting the indentation to
+> "[tab][tab][space][space][space][space](i ==." conflicts with the
+> statement "Outside of comments, documentation and except in Kconfig,
+> spaces are never used for indentation" written in
+> https://elixir.bootlin.com/linux/latest/source/Documentation/process/coding-style.rst
+>
 
-This is not a fiber SFP, but rather a 2500Base-T RJ-45 module.
-Hence it quite certainly has some kind of PHY.
+I just saw that you use to read .rst files. Attention!
+These are source files from which human readable documentation is made.
 
-> Do you have
-> autonegotiation working with some fibre SFP modules but not other
-> fibre modules?
+They may contain directives which don't show a large part of the content you 
+are interested in, which is only included when you run "make html", "make pdf" 
+and similar commands.
 
-I've tried only with one 1000Base-SX module and can confirm (like
-Frank already did in your previous discussion some weeks ago) that
-with that autonegotiation is working fine. Only those RJ-45 which
-do not expose the PHY via i2c-mdio are problematic apparently, as
-Linux/phylink *assumes* that they do in-band AN, but at least some
-of them don't.
+Obviously, I'm talking about something that is _not_ related to your patch or 
+this thread. I'm just concerned that candidates won't be able to find the 
+information they're looking for and thus miss out on important information 
+that Ira and I have asked candidates to study (if they're interested in 
+applying to our project). 
+
+In any case, the study of a certain number of pages of the Kernel 
+documentation is always necessary, whatever project one wishes to undertake.
+
+To better understand what I'm talking about, take the Highmem documentation as 
+an example and compare the .rst file and the .html file. You will understand 
+why I am strongly encouraging you and all other applicants not to use 
+elixir.bootlin.com for study.
+
+Please compare the content (or at least the number of sections and lines) of 
+following .rst file at
+
+https://elixir.bootlin.com/linux/v6.3-rc1/source/Documentation/mm/highmem.rst
+
+with the human readable counterpart at 
+
+https://docs.kernel.org/mm/highmem.html
+
+Can you see how many information you may miss by reading an .rst file without 
+any knowledge of its syntax?
+
+Thanks,
+
+Fabio
+
+PS: I don't know why you went to the documentation source files. I see no 
+reason other than the need to work on patches for the source document.
+
+I'd like to invite you to patch the style guide that Dan suggested to you in 
+this same thread.
+
+But I'm not asking you to spend time on that patch during this contribution 
+period because you still have a lot to do before the period expires.
+
+If you want, you could take care of that patch after the contribution period 
+has ended and while you are waiting for the outcome of the selection. If so, 
+study the syntax of the .rst format carefully.
+
+In the "real" kernel (I mean anywhere outside of drivers/staging), you might 
+not always get the custom help of the same kind you can count on here. 
+However, those who intend to go further, regardless of the current project, 
+sooner or later will have to face the world outside :-)
+
+>
+> However, If you still recommend to correct the indentation in the manner
+> "[tab][tab][space][space][space][space](i ==." Should I create a
+> patch for the same?
+> 
+> Regards,
+> 
+> Sumitra
+
+
+
+
