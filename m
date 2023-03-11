@@ -2,362 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC1966B5935
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 08:10:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 593A16B5937
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 08:10:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229846AbjCKHKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 02:10:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37470 "EHLO
+        id S230141AbjCKHKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 02:10:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbjCKHJ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 02:09:58 -0500
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2126.outbound.protection.outlook.com [40.107.6.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F391A121151
-        for <netdev@vger.kernel.org>; Fri, 10 Mar 2023 23:09:55 -0800 (PST)
+        with ESMTP id S230123AbjCKHKR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 02:10:17 -0500
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on0710.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe0c::710])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D995126997
+        for <netdev@vger.kernel.org>; Fri, 10 Mar 2023 23:10:13 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Xly07D241JAgj0bhhjNp+YxS7oXWy6A1d/OjfjyjQOrw0ghpVVqo3ad42A9dL8SSTyokfwMrEKzjUuimCJJKSIgb6oMS0xorU5r+cAmHwK+gi6WLV7576Xn/AOEzxEWgjMWBk7JCr/h2Am6f0QwYD8udDU9zfs3XV78cpxgug5DZMQ9CpvRZL3++2tpvTCKSa5QoIpVHmHyb07sRXyRCcQNV6xSaLayBm9wr/BtUEdhP/8Fp6Q+MeDtOm+SVaaN09dnaP35BC1rSgPDS0UCYJRmrVHJp13VX6K/NxtsfuNLEICZwqNs5MHX8x6rZWhu9ZjI1O9lFsfwDbrxYfqIz7g==
+ b=KpbHIQVNQY2BArf7bOAjPtxAaYB75cgo3+0QgbXxP+3Lwgssxfi2vr3vTyCJFrxVjH+bXLbbZf4q+OMrWaj7GjW8SZogNzX61oqHuLqn8nceANoCnId0ESrzdZ5latzhFcGJEZqXLV+ITeRpNlrDtgURVyfqPXcx1/fja6YfPIDRUO6yBEo0jwlT8x/peMt58NvI1RNoEUZ1DwSOPTvVqqSWIaH2NyTq1r0qKJQw6/3OIXPeKA3Ocuc05fe9CK7VNVFHdOJmU1qLA0K/HmOlavonze132K3EQZeqMsgkjUrCQ0rgWPvZMNmnq2nIkEvmzCVsUXIvnrRIqN+rfQheYQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jpKFD/+pnUDqo/OkQLbPd946HTVU8IUwIrpmiP8wz9E=;
- b=KY4ueIzkYlXjEDkN0fHLLbVxwB3Xu+XbUc6QBUgxDfyhp8btTJF12lPCLHqOVtiPGqkInD9UKz66qMMhDWOzSfWm5tg1/F9VeVChXQFFOwjElD6aKOFWl6EHFjX7WcVTWkRH8oz1qr4EihxEY2L3Z/0GpB54hXxCrecLVkhVrKGH2wEVZzwrJ6auq+JcgLaOqHmgbh1WlV0HQgVxML53PWPImVcTWdaI0BbiyFL7yIAnu20U2BC666xzd9U7czyPNc48kkZBwq8ZNMNVfnqKln7ZpdcO9Z6CDhfhk/fH5gHqzxbQIWJfx8458e6gweykR0ra3axqOHQmcUgbjv/kBQ==
+ bh=Ewla3xlPz3IkHQ96Ou/bjxzxEGpyn5gfUT7Y/2nerTs=;
+ b=d6x9lwBcMHHS3ckY7hV6VV1g22BpY3unICIIHgMEF4m26Fk8GP/Cm6UA2wpMFdym6ssoZH4K98zzBTLEWCqp9ESRl4hGKy55H+a7rd3wAmpdmNVIoH3vBWk8yTjlK1tr5lwJ/yVpmfVKWH+DAgOCexniuxVeYsqcKBUCSinrD0g+ODz5TpIaoV+BfHaFNzvpVWtge6MX6GSncOTokh5XDi9r8TM9wa84GHaTUe4xGMfVaSIOGgcAfJZ42mRYWKQvdN4zrwjGFRHz/5P2EU+K2YT2Mux68DTjAeTIBBRVdtVyCqTQ4wn5DiHO7AGF4hWwgVRFItrb5348Er4mES186A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=voleatech.de; dmarc=pass action=none header.from=voleatech.de;
  dkim=pass header.d=voleatech.de; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=voleatech.de;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jpKFD/+pnUDqo/OkQLbPd946HTVU8IUwIrpmiP8wz9E=;
- b=Bc8A7ExfsldPddMnA1D/l+HaTJMMixfCfumqeNzsfaxflsb5u53422RZvOnsVhFImBD3b7xsyDJPYrhagImUIGFP4F4Q1E3KVluDtMarvJrj3WyfLMqHHJRGF7Rn0RAWrcr/9oixE70fXxuTOCkJwhq9hcavBXDkLXkL1dVXdpo=
+ bh=Ewla3xlPz3IkHQ96Ou/bjxzxEGpyn5gfUT7Y/2nerTs=;
+ b=KnoxBCbUgaX48AQ0E6ICkIn9ftM3tXtAifLwIkPE0Q81WkTmte9QbDT+lYPhlugR6/+knA6Npamy6S4V4vpE7QMqpUrbW1YzdUnhKLlFBDLBDtBayPFB7NtMd8SF0BdaEl6TlW/z0kd82ha0lFFCO4pkWMeCRIcCNrOrmFOu9Xg=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=voleatech.de;
 Received: from AM9PR05MB8857.eurprd05.prod.outlook.com (2603:10a6:20b:438::20)
  by PAXPR05MB9410.eurprd05.prod.outlook.com (2603:10a6:102:2c1::8) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.22; Sat, 11 Mar
- 2023 07:09:52 +0000
+ 2023 07:10:09 +0000
 Received: from AM9PR05MB8857.eurprd05.prod.outlook.com
  ([fe80::3fdc:3007:ffee:3c4d]) by AM9PR05MB8857.eurprd05.prod.outlook.com
  ([fe80::3fdc:3007:ffee:3c4d%9]) with mapi id 15.20.6178.022; Sat, 11 Mar 2023
- 07:09:52 +0000
-Date:   Sat, 11 Mar 2023 08:09:48 +0100
+ 07:10:09 +0000
+Date:   Sat, 11 Mar 2023 08:10:05 +0100
 From:   Sven Auhagen <Sven.Auhagen@voleatech.de>
 To:     netdev@vger.kernel.org
 Cc:     mw@semihalf.com, linux@armlinux.org.uk, kuba@kernel.org,
         davem@davemloft.net, maxime.chevallier@bootlin.com
-Subject: [PATCH 1/3] net: mvpp2: classifier flow remove tagged
-Message-ID: <20230311070948.k3jyklkkhnsvngrc@Svens-MacBookPro.local>
+Subject: [PATCH 2/3] net: mvpp2: parser fix QinQ
+Message-ID: <20230311071005.enqji2btj35ewx53@Svens-MacBookPro.local>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-ClientProxiedBy: FR0P281CA0127.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:97::8) To AM9PR05MB8857.eurprd05.prod.outlook.com
+X-ClientProxiedBy: FR0P281CA0072.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:49::9) To AM9PR05MB8857.eurprd05.prod.outlook.com
  (2603:10a6:20b:438::20)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AM9PR05MB8857:EE_|PAXPR05MB9410:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2070f48d-852e-4e97-3009-08db21ff9c21
+X-MS-Office365-Filtering-Correlation-Id: 6553ed84-26b3-4ed1-627e-08db21ffa678
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4EZHMDpfTLSQCByPQnsZHIsVYatgKfjZbK/6IP+pkpyfO1pOSpqrDNRwHnJG6wmAx0EJl3/FpyZ8fW7+sT2r9guPy5RSPJ0N/2lKcamJb+3RYixO94rxfeCcbMd0lvpwcHiryWOSA7cWBwsxh5DvQ6/cQ2sBa1Bqs09pbX/MmYed6GCeONUabebpmQh7u+nX7ZYjWfGqSomzELuIY1lpv5n6Na31M/Rj9CqqerQPFuy2kMjVzKlAqPiD/N2x00pOZ7wdPQdfWBTwyaG+O0w96xoM3im65J7SRyod2BiYycipeCokOBkef15VXzHmJHtqdclMIlzyevAtKzdDAKVjmNsm0F1ivbt8HkBeAs8dkd8sovw3cjWQ2IP+igfg6zM16Esm9APvpBB7zp3gWshIsY9afJl5Ue9EIHW5GpmJo67P5n7n7dmwMYA6AeOzJdkF6igBa051TBlumdYcbCZSRg1UoT/Zn1vNAykF8McenLbYiRoWlAw3NDu9WxZ4yFGWEt6nNlEwRaLV/Suitbh5UztUF8qvBypgaDPOGnHEtOY7oGgW4wkWhz1RLiyn4IqgvwisusJUoPV3U0EL6nIBnlP2a5xnfSRXphjfSnhPTS2iJOUokkAAZ/BpYydqeK0qRaxYa7+HA4JRqDL3Lb/ixg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR05MB8857.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(366004)(39840400004)(136003)(376002)(346002)(451199018)(86362001)(38100700002)(2906002)(41300700001)(8936002)(5660300002)(6512007)(6506007)(1076003)(9686003)(186003)(26005)(6666004)(316002)(66946007)(66556008)(66476007)(8676002)(6916009)(6486002)(478600001)(4326008);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: o+j6+0lyK33lTW0el/LmzH9IS0vDu4mkdLhM14Ayfb/lAtwVrH6iQ0BZ3OUyYC34N+cDXZhjb8qhy4XBVPHBdutNHcY4dW6vTZz9o+5WYrSGF90oWq5BHIN+BdL9uZPWph2R7oUgXSIwII9KVzxduXwecmYeW4dYEplHJHOvnKUpg/S+UcMSkAfvHJrgUSXeJOT8fZaM8ckHhti00ONN20Edx7sz3I+MZAPz8InWcu0K/15j+Lu89xTmFYlbatzP0j9W9V2+b3IwcZ289ULML+C3Xx8MIvRRNF8WFcHRkVev6d6MK6MRIw3OcjVlcdIhnxVtbWk5bOWFF1zpj+D0YzUT5i0dztx4F7kOe771vug8zvNyLJItHerWwQUzJLmqDRwm/TRtZZSklG/pVtfjqd89OZFkzglOQHYOWL9A4pxzBvQYHzP/+L3rwAx77nUCT7uInqBYMnRlUFaqNFOI6I2kZs6jFb66VNR5Lk1YmsbyFKp21slB64351suun59YI7kc41ShJTNQ8WPGL5hDufWyzbc9gg75HKkdbP/74fF+4XSMK6+L7jS0i+IUZ79fQfpOOBFaqf8AeNL7VCb+QGAQFJH4nv4JMm7f5RK+9h2bOojs/D/QBBqWXfLmIvLmcCh9/WXbkxYcGgsLhWkBqw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR05MB8857.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(366004)(39840400004)(136003)(376002)(346002)(451199018)(86362001)(38100700002)(2906002)(41300700001)(4744005)(8936002)(5660300002)(6512007)(6506007)(1076003)(9686003)(186003)(26005)(83380400001)(6666004)(316002)(66946007)(66556008)(66476007)(8676002)(6916009)(6486002)(478600001)(4326008);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?T165TA5aW64FZQkjBbaSK3F2mquQtIoMZvmDjnvS+UvQB0PEWxAU9D4ldDMz?=
- =?us-ascii?Q?XDC63PSSfx4eXWaQ9wXaZLlPVOSBlia4J+HwXAQav+Id9wF5izVIR2HoRAhD?=
- =?us-ascii?Q?OuKp7lsP2zxPPQwS8w0iC45k0b8cEeIbF3P4qk3XIFhyhWbay1gp0Q5EF7X/?=
- =?us-ascii?Q?B+wttdD1WWV7KPn45znplOmJSoXeOqW313BKG2FFaqLrGLDFbM48Oblk7XNg?=
- =?us-ascii?Q?uZt1Cys2C91HnqFcOG5O82WEO8ViyGBLu+Eillytb1o+uD40WIh6gjRGz+lY?=
- =?us-ascii?Q?vQ9yYvckIXB0ZGAymdphw33YEhMM1xzRyg4Cm56nLiojJLO/r0qfp0S4slkY?=
- =?us-ascii?Q?x3f7kdzD/F3WYiLn6vP7belevt2lXkvT6rYCS7ubWqqvqr/JGXmGURgQAdre?=
- =?us-ascii?Q?yFfcfrx45wayCqOd3jqtIyG9gDxY6J80NZIbLkTfmtSLjduTtPHibfNu0P4E?=
- =?us-ascii?Q?HCvj0rnwW1+AY4oCI9EkwAuTlemM5E6hIz5dvwuJ2nW4MuBFYMbBVC971GeA?=
- =?us-ascii?Q?yppprTa6dV/n9OpQlZWWa8c2Eag7C4jRlX3UMIXVbfyU90Ubqo4C8ql0/2zw?=
- =?us-ascii?Q?X3rQOP8K8/Xyb/+lK5+5//ZuytfUK/GWVnLSQ1oZ1n6w3fA80LrnhceQGKbP?=
- =?us-ascii?Q?/uOTUg8dmf+/Fn/1C/M4jewXmbZdMqfZ0uFAorizxd8ZMuf3fVcYbsEPwEua?=
- =?us-ascii?Q?XNrVHD8TPSJSlWKqDyH34f9IJAkQdvaSNlOqBGpC04IcWUdp8qKigh4wAW99?=
- =?us-ascii?Q?9CnjS0RB257++k9gpnoFiA0xbTII+HZ8wtSzEs7ZXwfgaSIOYtMzKGv/Agar?=
- =?us-ascii?Q?FCJ/uGICUR/RZphTFyBkCeX/oV4sSqI+9fqJesggbZj7pc/kTlUWwEHNF3RO?=
- =?us-ascii?Q?lOPT+VKgoKqpZu5fe6Ciy8Y9QAMF9lAwBksbFMbakB8n5PF5R93pZDuzsKRm?=
- =?us-ascii?Q?RNMyJwLrNCiXlWhX32fPWTe3w1rU1gGg/S9IVyuoSoJ5yS4Oggi2gFTDLvor?=
- =?us-ascii?Q?ekeopyOBTdn3YZT5oVdKEN8j0/Rbe1ddUG2AdwrfpTpBaNouGem075+jik2e?=
- =?us-ascii?Q?4JzZ3seT5bG61Pdip4f/58LhgQPGNok8aQzZKeJ88UsuqzftOGm4sGVWk1Ad?=
- =?us-ascii?Q?od9xkgPYEibEfyaUhQvgZHGilfgEws61GT2mo4I1Fjysn1lqClEilS4fFoBu?=
- =?us-ascii?Q?sNz0aCJYO5Tku9GrBBV3WPGoipLtTerUy+bs6B7aiGwusaajIRyjS8jziPob?=
- =?us-ascii?Q?MeFbDME0qYCjG2gZ6UDtreAexUw9o9lTD8AtvO9SdzltoDNHH/N1BB7FzZny?=
- =?us-ascii?Q?tzTlQT+QIIXyPlNty7lQjDdijqNNGJ7ssANynDOlpNulCGmL+ZVjutc5zyDh?=
- =?us-ascii?Q?hfkeLAHC6QubzfUxOHDdOawZ52RJlmi/OyriK5i5gDeJk/hqAlZBi2dKGjzO?=
- =?us-ascii?Q?b5Mu+U3zPUe3sfYnhNahVs9d8RaZ7QqSJHjbmcA8f7N9ihTXTKGvJAMDmlCT?=
- =?us-ascii?Q?/DmV2q7nrdgzL3Xsp2GAiNr6FXx3bJp+6jKt7bAy+UuOvSaeHwQh8H6Nr+zD?=
- =?us-ascii?Q?ifUz829hcj/OHUH9oMRkpSY2knB9OADmB2kwX7UFofn3FI4r3FccYUXd8OA6?=
- =?us-ascii?Q?0g=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?eB8fG0jxKkoWk7WXMdjCFulIpY8CVutJauTLTwQ8FJARr3X3B7G+BW+a0UPm?=
+ =?us-ascii?Q?+6bYlkR2DC4KhtZ2A3lu0593wZsGOwlpNFQjR5KyZP6TnyXvMuqJfhhOMQCp?=
+ =?us-ascii?Q?Fws9RV6XP5gbtwL0RvY8HzjpGe8YvtE/Pyio8TRmvOxH4tqbUMAtL2D0G1dP?=
+ =?us-ascii?Q?o17JTI8flJDY13tZw8m0vw316uxFkhdgK91H8GG2VzvpvZniihcULy+jrhrU?=
+ =?us-ascii?Q?kHcGz407EFzqXmZ2qvgjk/LQuH/BRf1EbUKDLC8a/R63NQNb1nt+iLP/7rUa?=
+ =?us-ascii?Q?Zdnj35EGpDjbtgKVYDsMfo/6i3OwH4cqs4ZR0jkXn3DrtCASg5xvb0k6FXga?=
+ =?us-ascii?Q?ojLlPBRt6GckvmItfoIUUvp8C2Xndu8W3HL4A8IJSFEkTszFAYGScSA3M+Fj?=
+ =?us-ascii?Q?ofwCsHUP80x6zgGYdNaVRnxjSyMuOUGbY/A4xOUcNPFk8gVEMrgVl5aY0QZg?=
+ =?us-ascii?Q?tKrMW7i9uouU9wIoQryAHepK+xzPytgWUmuwex7EC7D2HaMIjFaB74zZnAqu?=
+ =?us-ascii?Q?HxORn9NGRZfkij3lOeMAofdIf3Rp7ml15dy8GjpoSXsQ477FDA7aJEEHaDBu?=
+ =?us-ascii?Q?o+EYay0er/HAXH0eOGP9d41Y00ZpIT4yJtnOXpi+hnbQuuZ9iNJvOC98bHfL?=
+ =?us-ascii?Q?WkP98vyQ1HBE3kJi6jGV19rAozZaPvNcZvQa67TCAzQ2ExsC+gPD51QO9o3s?=
+ =?us-ascii?Q?Fk5W2iXx89cRY+LsDIBC/3g+TqFK7vony2E6TzUJNireGP3ig/Y3I6Q+riy1?=
+ =?us-ascii?Q?LldQqe74sA5/Ffq5yITwJRJwudVnFPb46lHNMerxFXZdJJ2JEu21IYA9LnO+?=
+ =?us-ascii?Q?XIJE7dQGGoH5MmUKMSNsTZGjNG/GhJtqOU3vE/ifI+qrR1xpQZrTvfZ+tfaU?=
+ =?us-ascii?Q?QxH/LccZcxoeoM5+SYjLrGoUV8cs8j+g7AS8qUtenNIG5fAOgzaoyhFX3FDW?=
+ =?us-ascii?Q?pshWLIFGfZNBmIUQBpNhEYij/D/vJdjh0QPFg9/yLnSTpePOh7LkJ2kBcw6Q?=
+ =?us-ascii?Q?OSCKppPCEsR/DCte1oiLUE0Pi1dbkp/soyoiqTJNEFxuNugUkgIQB9q/5AtW?=
+ =?us-ascii?Q?S6rRRW3nlzkwlZuIWJr/gRMI+93bSbn5+bdI2h8ACwaLPoNXsO5bfgk/9nyP?=
+ =?us-ascii?Q?IFYaiMMc09twyU/7ORZBP/vFHzSNG1N+ssulpQM/ZtDyVn8Pm7CpQDkj0jLH?=
+ =?us-ascii?Q?Kpcf7H8VA0QNiyMY+S6t5k1aCo45/uTT3ny6h6BpisdcQzM0QKbt2YUo8V3t?=
+ =?us-ascii?Q?lcrJetb+ePTPjbauMjehw/C3BOcnyYJWY2WXtHi/UZrKre785rtLDRcBePsa?=
+ =?us-ascii?Q?xtomm8nPPBHimpi//S5m26M1y13ZcChJHEHGdEog0zfSd30UOqUIm/Xlpbk3?=
+ =?us-ascii?Q?k/GsqdQB4ME/lIYhjkOGDdCQJDXTPcC5qjI3qz6Ipibug1Awrf3AfcF40H8R?=
+ =?us-ascii?Q?EsPCIii6r9cPCjiBwF1fq9XhxZsZzQaulHoHTSnje/KOgZmOQY0XAtYCX02Z?=
+ =?us-ascii?Q?KuSq2VAC0jHIcPMz/iof2tXooQFI+sNI15JWJf1ysSMJXArAdW2WDZPXwsYd?=
+ =?us-ascii?Q?KNBEAaee9x2qNFo18oF2xRXGSv6LTJbvvRN4Kj3JADnIu1MbyKjo+am/Ag5x?=
+ =?us-ascii?Q?2w=3D=3D?=
 X-OriginatorOrg: voleatech.de
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2070f48d-852e-4e97-3009-08db21ff9c21
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6553ed84-26b3-4ed1-627e-08db21ffa678
 X-MS-Exchange-CrossTenant-AuthSource: AM9PR05MB8857.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2023 07:09:52.3949
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2023 07:10:09.7591
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: b82a99f6-7981-4a72-9534-4d35298f847b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7UnvVJQqovsFOEMxOIJRwwl8CfjvsB5MPZ0h8Wz8X8NN+vLwntlaLlSM6ENzSkq1dwr3ANUmoKUukxZDzT4v4gI0I7WceiJAg7wjs9Bid60=
+X-MS-Exchange-CrossTenant-UserPrincipalName: wrcwXfqyyfYRxDkegtOUSEoYhJkwOIrABGNDi1yU0WRfo+XF+tTDFasd7XF1BUpNBE4b5fScg639nnAghNx6bykC3yN6DSUhc4eZzg6Es9E=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR05MB9410
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,UPPERCASE_50_75,URIBL_BLOCKED
-        autolearn=no autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The classifier attribute MVPP22_CLS_HEK_TAGGED
-has no effect in the definition and is filtered out by default.
-
-Even if it is applied to the classifier, it would discard double
-or tripple tagged vlans.
-
-Also add missing IP Fragmentation Flag.
+The mvpp2 parser entry for QinQ has the inner and outer VLAN
+in the wrong order.
+Fix the problem by swapping them.
 
 Signed-off-by: Sven Auhagen <sven.auhagen@voleatech.de>
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c
-index 41d935d1aaf6..efdf8d30f438 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c
-@@ -44,17 +44,17 @@ static const struct mvpp2_cls_flow cls_flows[MVPP2_N_PRS_FLOWS] = {
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
+index 75ba57bd1d46..ed8be396428b 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
+@@ -1539,8 +1539,8 @@ static int mvpp2_prs_vlan_init(struct platform_device *pdev, struct mvpp2 *priv)
+ 	if (!priv->prs_double_vlans)
+ 		return -ENOMEM;
  
- 	/* TCP over IPv4 flows, Not fragmented, with vlan tag */
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_TCP4, MVPP2_FL_IP4_TCP_NF_TAG,
--		       MVPP22_CLS_HEK_IP4_5T | MVPP22_CLS_HEK_TAGGED,
-+		       MVPP22_CLS_HEK_IP4_5T,
- 		       MVPP2_PRS_RI_L3_IP4 | MVPP2_PRS_RI_L4_TCP,
- 		       MVPP2_PRS_IP_MASK),
- 
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_TCP4, MVPP2_FL_IP4_TCP_NF_TAG,
--		       MVPP22_CLS_HEK_IP4_5T | MVPP22_CLS_HEK_TAGGED,
-+		       MVPP22_CLS_HEK_IP4_5T,
- 		       MVPP2_PRS_RI_L3_IP4_OPT | MVPP2_PRS_RI_L4_TCP,
- 		       MVPP2_PRS_IP_MASK),
- 
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_TCP4, MVPP2_FL_IP4_TCP_NF_TAG,
--		       MVPP22_CLS_HEK_IP4_5T | MVPP22_CLS_HEK_TAGGED,
-+		       MVPP22_CLS_HEK_IP4_5T,
- 		       MVPP2_PRS_RI_L3_IP4_OTHER | MVPP2_PRS_RI_L4_TCP,
- 		       MVPP2_PRS_IP_MASK),
- 
-@@ -62,35 +62,38 @@ static const struct mvpp2_cls_flow cls_flows[MVPP2_N_PRS_FLOWS] = {
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_TCP4, MVPP2_FL_IP4_TCP_FRAG_UNTAG,
- 		       MVPP22_CLS_HEK_IP4_2T,
- 		       MVPP2_PRS_RI_VLAN_NONE | MVPP2_PRS_RI_L3_IP4 |
--		       MVPP2_PRS_RI_L4_TCP,
-+		       MVPP2_PRS_RI_IP_FRAG_TRUE | MVPP2_PRS_RI_L4_TCP,
- 		       MVPP2_PRS_IP_MASK | MVPP2_PRS_RI_VLAN_MASK),
- 
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_TCP4, MVPP2_FL_IP4_TCP_FRAG_UNTAG,
- 		       MVPP22_CLS_HEK_IP4_2T,
- 		       MVPP2_PRS_RI_VLAN_NONE | MVPP2_PRS_RI_L3_IP4_OPT |
--		       MVPP2_PRS_RI_L4_TCP,
-+		       MVPP2_PRS_RI_IP_FRAG_TRUE | MVPP2_PRS_RI_L4_TCP,
- 		       MVPP2_PRS_IP_MASK | MVPP2_PRS_RI_VLAN_MASK),
- 
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_TCP4, MVPP2_FL_IP4_TCP_FRAG_UNTAG,
- 		       MVPP22_CLS_HEK_IP4_2T,
- 		       MVPP2_PRS_RI_VLAN_NONE | MVPP2_PRS_RI_L3_IP4_OTHER |
--		       MVPP2_PRS_RI_L4_TCP,
-+		       MVPP2_PRS_RI_IP_FRAG_TRUE | MVPP2_PRS_RI_L4_TCP,
- 		       MVPP2_PRS_IP_MASK | MVPP2_PRS_RI_VLAN_MASK),
- 
- 	/* TCP over IPv4 flows, fragmented, with vlan tag */
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_TCP4, MVPP2_FL_IP4_TCP_FRAG_TAG,
--		       MVPP22_CLS_HEK_IP4_2T | MVPP22_CLS_HEK_TAGGED,
--		       MVPP2_PRS_RI_L3_IP4 | MVPP2_PRS_RI_L4_TCP,
-+		       MVPP22_CLS_HEK_IP4_2T,
-+		       MVPP2_PRS_RI_L3_IP4 | MVPP2_PRS_RI_IP_FRAG_TRUE |
-+			   MVPP2_PRS_RI_L4_TCP,
- 		       MVPP2_PRS_IP_MASK),
- 
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_TCP4, MVPP2_FL_IP4_TCP_FRAG_TAG,
--		       MVPP22_CLS_HEK_IP4_2T | MVPP22_CLS_HEK_TAGGED,
--		       MVPP2_PRS_RI_L3_IP4_OPT | MVPP2_PRS_RI_L4_TCP,
-+		       MVPP22_CLS_HEK_IP4_2T,
-+		       MVPP2_PRS_RI_L3_IP4_OPT | MVPP2_PRS_RI_IP_FRAG_TRUE |
-+			   MVPP2_PRS_RI_L4_TCP,
- 		       MVPP2_PRS_IP_MASK),
- 
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_TCP4, MVPP2_FL_IP4_TCP_FRAG_TAG,
--		       MVPP22_CLS_HEK_IP4_2T | MVPP22_CLS_HEK_TAGGED,
--		       MVPP2_PRS_RI_L3_IP4_OTHER | MVPP2_PRS_RI_L4_TCP,
-+		       MVPP22_CLS_HEK_IP4_2T,
-+		       MVPP2_PRS_RI_L3_IP4_OTHER | MVPP2_PRS_RI_IP_FRAG_TRUE |
-+			   MVPP2_PRS_RI_L4_TCP,
- 		       MVPP2_PRS_IP_MASK),
- 
- 	/* UDP over IPv4 flows, Not fragmented, no vlan tag */
-@@ -114,17 +117,17 @@ static const struct mvpp2_cls_flow cls_flows[MVPP2_N_PRS_FLOWS] = {
- 
- 	/* UDP over IPv4 flows, Not fragmented, with vlan tag */
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_UDP4, MVPP2_FL_IP4_UDP_NF_TAG,
--		       MVPP22_CLS_HEK_IP4_5T | MVPP22_CLS_HEK_TAGGED,
-+		       MVPP22_CLS_HEK_IP4_5T,
- 		       MVPP2_PRS_RI_L3_IP4 | MVPP2_PRS_RI_L4_UDP,
- 		       MVPP2_PRS_IP_MASK),
- 
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_UDP4, MVPP2_FL_IP4_UDP_NF_TAG,
--		       MVPP22_CLS_HEK_IP4_5T | MVPP22_CLS_HEK_TAGGED,
-+		       MVPP22_CLS_HEK_IP4_5T,
- 		       MVPP2_PRS_RI_L3_IP4_OPT | MVPP2_PRS_RI_L4_UDP,
- 		       MVPP2_PRS_IP_MASK),
- 
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_UDP4, MVPP2_FL_IP4_UDP_NF_TAG,
--		       MVPP22_CLS_HEK_IP4_5T | MVPP22_CLS_HEK_TAGGED,
-+		       MVPP22_CLS_HEK_IP4_5T,
- 		       MVPP2_PRS_RI_L3_IP4_OTHER | MVPP2_PRS_RI_L4_UDP,
- 		       MVPP2_PRS_IP_MASK),
- 
-@@ -132,35 +135,38 @@ static const struct mvpp2_cls_flow cls_flows[MVPP2_N_PRS_FLOWS] = {
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_UDP4, MVPP2_FL_IP4_UDP_FRAG_UNTAG,
- 		       MVPP22_CLS_HEK_IP4_2T,
- 		       MVPP2_PRS_RI_VLAN_NONE | MVPP2_PRS_RI_L3_IP4 |
--		       MVPP2_PRS_RI_L4_UDP,
-+		       MVPP2_PRS_RI_IP_FRAG_TRUE | MVPP2_PRS_RI_L4_UDP,
- 		       MVPP2_PRS_IP_MASK | MVPP2_PRS_RI_VLAN_MASK),
- 
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_UDP4, MVPP2_FL_IP4_UDP_FRAG_UNTAG,
- 		       MVPP22_CLS_HEK_IP4_2T,
- 		       MVPP2_PRS_RI_VLAN_NONE | MVPP2_PRS_RI_L3_IP4_OPT |
--		       MVPP2_PRS_RI_L4_UDP,
-+		       MVPP2_PRS_RI_IP_FRAG_TRUE | MVPP2_PRS_RI_L4_UDP,
- 		       MVPP2_PRS_IP_MASK | MVPP2_PRS_RI_VLAN_MASK),
- 
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_UDP4, MVPP2_FL_IP4_UDP_FRAG_UNTAG,
- 		       MVPP22_CLS_HEK_IP4_2T,
- 		       MVPP2_PRS_RI_VLAN_NONE | MVPP2_PRS_RI_L3_IP4_OTHER |
--		       MVPP2_PRS_RI_L4_UDP,
-+		       MVPP2_PRS_RI_IP_FRAG_TRUE | MVPP2_PRS_RI_L4_UDP,
- 		       MVPP2_PRS_IP_MASK | MVPP2_PRS_RI_VLAN_MASK),
- 
- 	/* UDP over IPv4 flows, fragmented, with vlan tag */
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_UDP4, MVPP2_FL_IP4_UDP_FRAG_TAG,
--		       MVPP22_CLS_HEK_IP4_2T | MVPP22_CLS_HEK_TAGGED,
--		       MVPP2_PRS_RI_L3_IP4 | MVPP2_PRS_RI_L4_UDP,
-+		       MVPP22_CLS_HEK_IP4_2T,
-+		       MVPP2_PRS_RI_L3_IP4 | MVPP2_PRS_RI_IP_FRAG_TRUE |
-+			   MVPP2_PRS_RI_L4_UDP,
- 		       MVPP2_PRS_IP_MASK),
- 
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_UDP4, MVPP2_FL_IP4_UDP_FRAG_TAG,
--		       MVPP22_CLS_HEK_IP4_2T | MVPP22_CLS_HEK_TAGGED,
--		       MVPP2_PRS_RI_L3_IP4_OPT | MVPP2_PRS_RI_L4_UDP,
-+		       MVPP22_CLS_HEK_IP4_2T,
-+		       MVPP2_PRS_RI_L3_IP4_OPT | MVPP2_PRS_RI_IP_FRAG_TRUE |
-+			   MVPP2_PRS_RI_L4_UDP,
- 		       MVPP2_PRS_IP_MASK),
- 
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_UDP4, MVPP2_FL_IP4_UDP_FRAG_TAG,
--		       MVPP22_CLS_HEK_IP4_2T | MVPP22_CLS_HEK_TAGGED,
--		       MVPP2_PRS_RI_L3_IP4_OTHER | MVPP2_PRS_RI_L4_UDP,
-+		       MVPP22_CLS_HEK_IP4_2T,
-+		       MVPP2_PRS_RI_L3_IP4_OTHER | MVPP2_PRS_RI_IP_FRAG_TRUE |
-+			   MVPP2_PRS_RI_L4_UDP,
- 		       MVPP2_PRS_IP_MASK),
- 
- 	/* TCP over IPv6 flows, not fragmented, no vlan tag */
-@@ -178,12 +184,12 @@ static const struct mvpp2_cls_flow cls_flows[MVPP2_N_PRS_FLOWS] = {
- 
- 	/* TCP over IPv6 flows, not fragmented, with vlan tag */
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_TCP6, MVPP2_FL_IP6_TCP_NF_TAG,
--		       MVPP22_CLS_HEK_IP6_5T | MVPP22_CLS_HEK_TAGGED,
-+		       MVPP22_CLS_HEK_IP6_5T,
- 		       MVPP2_PRS_RI_L3_IP6 | MVPP2_PRS_RI_L4_TCP,
- 		       MVPP2_PRS_IP_MASK),
- 
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_TCP6, MVPP2_FL_IP6_TCP_NF_TAG,
--		       MVPP22_CLS_HEK_IP6_5T | MVPP22_CLS_HEK_TAGGED,
-+		       MVPP22_CLS_HEK_IP6_5T,
- 		       MVPP2_PRS_RI_L3_IP6_EXT | MVPP2_PRS_RI_L4_TCP,
- 		       MVPP2_PRS_IP_MASK),
- 
-@@ -202,13 +208,13 @@ static const struct mvpp2_cls_flow cls_flows[MVPP2_N_PRS_FLOWS] = {
- 
- 	/* TCP over IPv6 flows, fragmented, with vlan tag */
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_TCP6, MVPP2_FL_IP6_TCP_FRAG_TAG,
--		       MVPP22_CLS_HEK_IP6_2T | MVPP22_CLS_HEK_TAGGED,
-+		       MVPP22_CLS_HEK_IP6_2T,
- 		       MVPP2_PRS_RI_L3_IP6 | MVPP2_PRS_RI_IP_FRAG_TRUE |
- 		       MVPP2_PRS_RI_L4_TCP,
- 		       MVPP2_PRS_IP_MASK),
- 
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_TCP6, MVPP2_FL_IP6_TCP_FRAG_TAG,
--		       MVPP22_CLS_HEK_IP6_2T | MVPP22_CLS_HEK_TAGGED,
-+		       MVPP22_CLS_HEK_IP6_2T,
- 		       MVPP2_PRS_RI_L3_IP6_EXT | MVPP2_PRS_RI_IP_FRAG_TRUE |
- 		       MVPP2_PRS_RI_L4_TCP,
- 		       MVPP2_PRS_IP_MASK),
-@@ -228,12 +234,12 @@ static const struct mvpp2_cls_flow cls_flows[MVPP2_N_PRS_FLOWS] = {
- 
- 	/* UDP over IPv6 flows, not fragmented, with vlan tag */
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_UDP6, MVPP2_FL_IP6_UDP_NF_TAG,
--		       MVPP22_CLS_HEK_IP6_5T | MVPP22_CLS_HEK_TAGGED,
-+		       MVPP22_CLS_HEK_IP6_5T,
- 		       MVPP2_PRS_RI_L3_IP6 | MVPP2_PRS_RI_L4_UDP,
- 		       MVPP2_PRS_IP_MASK),
- 
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_UDP6, MVPP2_FL_IP6_UDP_NF_TAG,
--		       MVPP22_CLS_HEK_IP6_5T | MVPP22_CLS_HEK_TAGGED,
-+		       MVPP22_CLS_HEK_IP6_5T,
- 		       MVPP2_PRS_RI_L3_IP6_EXT | MVPP2_PRS_RI_L4_UDP,
- 		       MVPP2_PRS_IP_MASK),
- 
-@@ -252,13 +258,13 @@ static const struct mvpp2_cls_flow cls_flows[MVPP2_N_PRS_FLOWS] = {
- 
- 	/* UDP over IPv6 flows, fragmented, with vlan tag */
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_UDP6, MVPP2_FL_IP6_UDP_FRAG_TAG,
--		       MVPP22_CLS_HEK_IP6_2T | MVPP22_CLS_HEK_TAGGED,
-+		       MVPP22_CLS_HEK_IP6_2T,
- 		       MVPP2_PRS_RI_L3_IP6 | MVPP2_PRS_RI_IP_FRAG_TRUE |
- 		       MVPP2_PRS_RI_L4_UDP,
- 		       MVPP2_PRS_IP_MASK),
- 
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_UDP6, MVPP2_FL_IP6_UDP_FRAG_TAG,
--		       MVPP22_CLS_HEK_IP6_2T | MVPP22_CLS_HEK_TAGGED,
-+		       MVPP22_CLS_HEK_IP6_2T,
- 		       MVPP2_PRS_RI_L3_IP6_EXT | MVPP2_PRS_RI_IP_FRAG_TRUE |
- 		       MVPP2_PRS_RI_L4_UDP,
- 		       MVPP2_PRS_IP_MASK),
-@@ -279,15 +285,15 @@ static const struct mvpp2_cls_flow cls_flows[MVPP2_N_PRS_FLOWS] = {
- 
- 	/* IPv4 flows, with vlan tag */
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_IP4, MVPP2_FL_IP4_TAG,
--		       MVPP22_CLS_HEK_IP4_2T | MVPP22_CLS_HEK_TAGGED,
-+		       MVPP22_CLS_HEK_IP4_2T,
- 		       MVPP2_PRS_RI_L3_IP4,
- 		       MVPP2_PRS_RI_L3_PROTO_MASK),
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_IP4, MVPP2_FL_IP4_TAG,
--		       MVPP22_CLS_HEK_IP4_2T | MVPP22_CLS_HEK_TAGGED,
-+		       MVPP22_CLS_HEK_IP4_2T,
- 		       MVPP2_PRS_RI_L3_IP4_OPT,
- 		       MVPP2_PRS_RI_L3_PROTO_MASK),
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_IP4, MVPP2_FL_IP4_TAG,
--		       MVPP22_CLS_HEK_IP4_2T | MVPP22_CLS_HEK_TAGGED,
-+		       MVPP22_CLS_HEK_IP4_2T,
- 		       MVPP2_PRS_RI_L3_IP4_OTHER,
- 		       MVPP2_PRS_RI_L3_PROTO_MASK),
- 
-@@ -303,11 +309,11 @@ static const struct mvpp2_cls_flow cls_flows[MVPP2_N_PRS_FLOWS] = {
- 
- 	/* IPv6 flows, with vlan tag */
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_IP6, MVPP2_FL_IP6_TAG,
--		       MVPP22_CLS_HEK_IP6_2T | MVPP22_CLS_HEK_TAGGED,
-+		       MVPP22_CLS_HEK_IP6_2T,
- 		       MVPP2_PRS_RI_L3_IP6,
- 		       MVPP2_PRS_RI_L3_PROTO_MASK),
- 	MVPP2_DEF_FLOW(MVPP22_FLOW_IP6, MVPP2_FL_IP6_TAG,
--		       MVPP22_CLS_HEK_IP6_2T | MVPP22_CLS_HEK_TAGGED,
-+		       MVPP22_CLS_HEK_IP6_2T,
- 		       MVPP2_PRS_RI_L3_IP6,
- 		       MVPP2_PRS_RI_L3_PROTO_MASK),
- 
+-	/* Double VLAN: 0x8100, 0x88A8 */
+-	err = mvpp2_prs_double_vlan_add(priv, ETH_P_8021Q, ETH_P_8021AD,
++	/* Double VLAN: 0x88A8, 0x8100 */
++	err = mvpp2_prs_double_vlan_add(priv, ETH_P_8021AD, ETH_P_8021Q,
+ 					MVPP2_PRS_PORT_MASK);
+ 	if (err)
+ 		return err;
 -- 
 2.33.1
 
