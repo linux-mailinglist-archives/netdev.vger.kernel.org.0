@@ -2,124 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 71E446B5D48
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 16:18:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A659F6B5D4B
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 16:20:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230336AbjCKPSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 10:18:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48874 "EHLO
+        id S230390AbjCKPTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 10:19:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229791AbjCKPSF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 10:18:05 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C843C10A88;
-        Sat, 11 Mar 2023 07:18:03 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id ce8-20020a17090aff0800b0023a61cff2c6so10090266pjb.0;
-        Sat, 11 Mar 2023 07:18:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678547883;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=vzL0lKQA7Qxou/xZXI6wkc7TkinivUbSS7RQX8UnPsM=;
-        b=p6l8O63x+x3Q2LUDQ3HlrBHvQtlU5v4UezfcX7HxRInV8MkJ//yj01Fw9vrEDtNRBa
-         lwG9sPxEZdfbqgXC4II3ri4yc83g2Yg4a6BAixUz3dlMrqdEFijhekqfZOOBbKGHhwye
-         Xs5hQ8RTrRMfBux9kgpTUFBNO0w5JYfpLxptquaoMkFo37rkSD7yQBIWMZ0v/JSW6jWY
-         VtCO4JuefR7yhA0+lBKsgVnoo/YfJ48/shsr3GedmOA/acC/SgSPRpP2YRLNcrP8/g6k
-         NdhpSKlRfKoIGSgsFVEqIxem7giPHnpOh8OdcDd1GKObrf02FDXiOAfFSubAfW/fXMK0
-         qnxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678547883;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=vzL0lKQA7Qxou/xZXI6wkc7TkinivUbSS7RQX8UnPsM=;
-        b=ZjyMeCoTECo9p6ofpbVZ2NvH8pDRI3loJ91n/epLtC8S85uzJqHYhktEAOBbqn//at
-         X26oFL503qCty5twi3NKAg5R1AsEa/Op/XU7sG013r/OXwFTXnqIBM1b5Fm9CbOh5ACe
-         lq1ti1Tqc7GmdBZnM4uIrww8dFxVlncnmsL8NrvnyBvFO5sa2UDt1uD3t09yBW29ZRT5
-         wJl4Ni6Vpo5x3sLT3jc+FOAqCElwiA1CYmZksTRZ4io3HhD4cNPBbM1lD1bn/XkdgAbV
-         7SLz9r+Mh7nk4AnLZlUVkpXZ5VQP8dNos0nb9pt8fueQE90+GvDrpzTUQfKZEAkap1Tn
-         QZRA==
-X-Gm-Message-State: AO0yUKWDsughvy6rdOfRb8IQ6VrDp85hw5pv9GMb4nx8RSXTlyIsN/yj
-        EWY1Gl5WcZU19ynicpOE8yk=
-X-Google-Smtp-Source: AK7set/KJWGZB1W8/CipRrS+KK/oKGcA4x7I2P/qKdRWMqJjvvL1fwfFfQf2bwm9TJQ9AjddMrG8vw==
-X-Received: by 2002:a17:902:ec84:b0:19c:c87b:4740 with SMTP id x4-20020a170902ec8400b0019cc87b4740mr33928704plg.34.1678547882857;
-        Sat, 11 Mar 2023 07:18:02 -0800 (PST)
-Received: from KERNELXING-MB0.tencent.com ([114.253.32.213])
-        by smtp.gmail.com with ESMTPSA id o11-20020a170902d4cb00b00194caf3e975sm1670922plg.208.2023.03.11.07.18.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Mar 2023 07:18:02 -0800 (PST)
-From:   Jason Xing <kerneljasonxing@gmail.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kerneljasonxing@gmail.com, Jason Xing <kernelxing@tencent.com>
-Subject: [PATCH net-next] net-sysfs: display two backlog queue len separately
-Date:   Sat, 11 Mar 2023 23:17:56 +0800
-Message-Id: <20230311151756.83302-1-kerneljasonxing@gmail.com>
-X-Mailer: git-send-email 2.33.0
+        with ESMTP id S230001AbjCKPTw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 10:19:52 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4441064AAC;
+        Sat, 11 Mar 2023 07:19:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=CBIHH9XG4nVS2bo3uP1GEXEkJNI0edg39kNsKztVQlk=; b=l4EjBefxpGWGF2I882PqNfNHfr
+        SQcMBUSWRaxbqFS0QJjhz5ZCNhwpds6Z/gxSjq4P9JrzRll90EflueF5UqPq1t0JSa+DgIT4I09yp
+        DgbiDNgLCOVlBgyFK9KDL4Mqkgfl/MVry2wWZ9EY9l28okHIys5j2gJ+RqYhbSYtkt8k=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pb10Z-0074Ef-9u; Sat, 11 Mar 2023 16:19:43 +0100
+Date:   Sat, 11 Mar 2023 16:19:43 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Klaus Kudielka <klaus.kudielka@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] net: dsa: mv88e6xxx: move call to
+ mv88e6xxx_mdios_register()
+Message-ID: <98767929-b401-402b-8e6b-d997cf27bfb0@lunn.ch>
+References: <20230311094141.34578-1-klaus.kudielka@gmail.com>
+ <20230311094141.34578-2-klaus.kudielka@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230311094141.34578-2-klaus.kudielka@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jason Xing <kernelxing@tencent.com>
+On Sat, Mar 11, 2023 at 10:41:41AM +0100, Klaus Kudielka wrote:
+> >From commit 1a136ca2e089 ("net: mdio: scan bus based on bus capabilities
+> for C22 and C45") onwards, mdiobus_scan_bus_c45() is being called on buses
+> with MDIOBUS_NO_CAP. On a Turris Omnia (Armada 385, 88E6176 switch), this
+> causes a significant increase of boot time, from 1.6 seconds, to 6.3
+> seconds. The boot time stated here is until start of /init.
+> 
+> Further testing revealed that the C45 scan is indeed expensive (around
+> 2.7 seconds, due to a huge number of bus transactions), and called twice.
+> 
+> It was suggested, to call mv88e6xxx_mdios_register() at the beginning of
+> mv88e6xxx_setup(), and mv88e6xxx_mdios_unregister() at the end of
+> mv88e6xxx_teardown(). This is accomplished by this patch.
+> 
+> Testing on the Turris Omnia revealed, that this improves the situation.
+> Now mdiobus_scan_bus_c45() is called only once, ending up in a boot time
+> of 4.3 seconds.
 
-Sometimes we need to know which one of backlog queue can be exactly
-long enough to cause some latency when debugging this part is needed.
-Thus, we can then separate the display of both.
+For those who are interested, here is a bit of background on why this
+change reduces the number of bus scans.
 
-Signed-off-by: Jason Xing <kernelxing@tencent.com>
----
- net/core/net-procfs.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+The MAC driver probes, which i think in this case is mvneta. Part way
+through its probe, it registers its MDIO bus. That triggers a scan of
+its bus, and the switch is found. The mv88e6xxx driver is then loaded
+and its probe function called. towards the end of the mv88e6xxxx probe
+function, it registers its MDIO bus. That causes a scan of the
+switches MDIO bus. Which is slow. After the scan completes, the
+mv88e6xxx probe continues, and registers the switch with DSA core. The
+core then parses the DT binding for the switch and looks for the
+master ethernet interface. That is the interface which mvneta
+provides. But mvneta is still only part way through its probe. It has
+not yet registered its interface with the netdev core. So the DSA core
+fails to find it and return EPROBE_DEFER. This causes the mv88e6xxx
+driver to unwind its probe. The mvneat then gets a chance to finish
+its probe and register its netdev. Some timer later, the driver core
+runs the probes again for those drivers which returned EPROBE_DEFER,
+mv88e6xxx registers its MDIO bus again, another scan is performed, the
+switch is registered with the code, and this time the master device is
+available, so things continue. The DSA core then calls the drivers
+.setup() callback to get the switch into a usable state.
 
-diff --git a/net/core/net-procfs.c b/net/core/net-procfs.c
-index 1ec23bf8b05c..97a304e1957a 100644
---- a/net/core/net-procfs.c
-+++ b/net/core/net-procfs.c
-@@ -115,10 +115,14 @@ static int dev_seq_show(struct seq_file *seq, void *v)
- 	return 0;
- }
- 
--static u32 softnet_backlog_len(struct softnet_data *sd)
-+static u32 softnet_input_pkt_queue_len(struct softnet_data *sd)
- {
--	return skb_queue_len_lockless(&sd->input_pkt_queue) +
--	       skb_queue_len_lockless(&sd->process_queue);
-+	return skb_queue_len_lockless(&sd->input_pkt_queue);
-+}
-+
-+static u32 softnet_process_queue_len(struct softnet_data *sd)
-+{
-+	return skb_queue_len_lockless(&sd->process_queue);
- }
- 
- static struct softnet_data *softnet_get_online(loff_t *pos)
-@@ -169,12 +173,15 @@ static int softnet_seq_show(struct seq_file *seq, void *v)
- 	 * mapping the data a specific CPU
- 	 */
- 	seq_printf(seq,
--		   "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x\n",
-+		   "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x "
-+		   "%08x %08x\n",
- 		   sd->processed, sd->dropped, sd->time_squeeze, 0,
- 		   0, 0, 0, 0, /* was fastroute */
- 		   0,	/* was cpu_collision */
- 		   sd->received_rps, flow_limit_count,
--		   softnet_backlog_len(sd), (int)seq->index);
-+		   0,	/* was len of two backlog queues */
-+		   (int)seq->index,
-+		   softnet_input_pkt_queue_len(sd), softnet_process_queue_len(sd));
- 	return 0;
- }
- 
--- 
-2.37.3
+I think what remains in the probe function is cheap, so it can
+probable stay there and be done twice. But it might be worth putting
+in a few printks to get some time stamps and see if anything is
+expensive.
 
+>  static int mv88e6xxx_setup(struct dsa_switch *ds)
+> @@ -3889,6 +3892,10 @@ static int mv88e6xxx_setup(struct dsa_switch *ds)
+>  	int err;
+>  	int i;
+>  
+> +	err = mv88e6xxx_mdios_register(chip);
+> +	if (err)
+> +		return err;
+> +
+>  	chip->ds = ds;
+>  	ds->slave_mii_bus = mv88e6xxx_default_mdio_bus(chip);
+
+Other calls in mv88e6xxx_setup() can fail, so you need to extend the
+cleanup to remove the mdio bus on failure.
+
+	Andrew
