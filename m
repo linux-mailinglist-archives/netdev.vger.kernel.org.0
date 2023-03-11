@@ -2,116 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CE7B6B60BD
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 21:56:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 400F76B60E6
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 22:16:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229914AbjCKU4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 15:56:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38344 "EHLO
+        id S229830AbjCKVQr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 16:16:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229694AbjCKU4q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 15:56:46 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7FC44C6F6;
-        Sat, 11 Mar 2023 12:56:44 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id fd5so274443edb.7;
-        Sat, 11 Mar 2023 12:56:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112; t=1678568203;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wG89qGDC53apMqtBOHTRtgFqgYqAhyr7mdrOysqyOUk=;
-        b=ZKfWGHw6RRcpr6YKONN9XeUHZ5IAiAD2mfB6TNmsxLwfetbah0ZXY5eTWMcljMaP27
-         8IV61+03NE4F+X5MHzGWo+j/mNpAPg07OGJSBhKEAdZ3rXI6Z0xH0EhQROvX3X/L1Myl
-         IwsnuHDdvzIIs25yvEvBhTkOxrmlOCh+6yDnexHlkSCBkQwyq9Psp8uqXBecjM7/2n8M
-         56OkJE9FmrtDA6xTYyJqlV52uDW9cqkJOClmmBp62w8fWKUccuOk7u+33f+sCsVQ0HyM
-         rsUnx0VtNY0pOio4j9i07+NmuuYgJnfUGpmAWDwMQPAu2g7OJA0hTDeV5ZJFynzq01Oz
-         jqNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678568203;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=wG89qGDC53apMqtBOHTRtgFqgYqAhyr7mdrOysqyOUk=;
-        b=5y2tSvNU4H11Run4AdFe4OOun1dmMyQ4N/2L1pEmRck0KlUOZO3iAsULwwHEdF+wYP
-         Cg+o1XUcoHbhnIUrVgj0DsC3mXZmiAr/uNYOgF3w98lrpqX7DYwSMUsfagF9vXW39ebF
-         UiCh9uim5piSok/26ewZ1OAEWYv/S9L53TCj7GizjzCu2+WPF5Y5zN3g2BJ/PnYPof8g
-         dVawhIPxtegUsvQoPBwIpspLr8WKVCzp+asydg6ZMqouzLGF3D+VPubLbysQUfiWGRxG
-         UVWX+rbBoWxcJgJ7wIV+lgR1Sy9H59vuyL1BmziqQ8lgDiJQZt95zf2RRaJ3j9hh+MZs
-         o5Xg==
-X-Gm-Message-State: AO0yUKURr62jkHsqPAvTR7h28JSM8/LKicXToRJ6dYP0fHXE7mTTRb3K
-        Za+ii6zu0BBP+IQNUwkQ/HIpfnC2RGYIf6mDumk=
-X-Google-Smtp-Source: AK7set+fjGgwpMDd9lM1+8OU+R3Kaa85CmMo0pVrMx2+MYZcrTHwZ7KlV4WOukKoD1BbZY72PNg6s9uocAsnrptj7XE=
-X-Received: by 2002:a17:906:3002:b0:8dc:6674:5bac with SMTP id
- 2-20020a170906300200b008dc66745bacmr15580598ejz.4.1678568203082; Sat, 11 Mar
- 2023 12:56:43 -0800 (PST)
+        with ESMTP id S229437AbjCKVQp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 16:16:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DDCD7203C;
+        Sat, 11 Mar 2023 13:16:44 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D13460DF7;
+        Sat, 11 Mar 2023 21:16:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74CADC433EF;
+        Sat, 11 Mar 2023 21:16:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678569403;
+        bh=+DzB7/8CoWnkO/XRI1leyDdvUnpN9ch8MSd2GNMDJTM=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=MtiLuqbg+ewNrORM7gYuVWtDY1WITP8fnDMohaMDfvWiK44HvE3TXPL+xscranYBF
+         yf1cemIotmGqM2ROCJKFIbsDGJT3UhZqQwDXgx6UPzbcJrejJnMC8imhMQDvh/3otz
+         wQ6QvUFpmKZqwcQ0FlnWNou2FH119vYfI+6XYOoc4Eq2rGIbp0vxaPq+RgishnR9ku
+         DRAHcvNCbawn8KZYF6NlW5WDU1hyJ4TX6kHb4jQ03jf2xQJXjTCRrFF2p/607748IQ
+         RgZSHqHtQF0djp0rR09WieyymQvaZ306PNgk7wdUdd9UxHPOis6usgGrTDI1JSrbQM
+         TV9gW7JLoVEeg==
+From:   Mark Brown <broonie@kernel.org>
+To:     miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
+        jic23@kernel.org, pratyush@kernel.org, sanju.mehta@amd.com,
+        chin-ting_kuo@aspeedtech.com, clg@kaod.org, kdasu.kdev@gmail.com,
+        f.fainelli@gmail.com, rjui@broadcom.com, sbranden@broadcom.com,
+        eajames@linux.ibm.com, olteanv@gmail.com, han.xu@nxp.com,
+        john.garry@huawei.com, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        khilman@baylibre.com, matthias.bgg@gmail.com, haibo.chen@nxp.com,
+        linus.walleij@linaro.org, daniel@zonque.org,
+        haojian.zhuang@gmail.com, robert.jarzmik@free.fr,
+        agross@kernel.org, heiko@sntech.de, krzysztof.kozlowski@linaro.org,
+        andi@etezian.org, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, wens@csie.org,
+        jernej.skrabec@gmail.com, samuel@sholland.org,
+        masahisa.kojima@linaro.org, jaswinder.singh@linaro.org,
+        rostedt@goodmis.org, mingo@redhat.com, l.stelmach@samsung.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, alex.aring@gmail.com, stefan@datenfreihafen.org,
+        kvalo@kernel.org, james.schulman@cirrus.com,
+        david.rhodes@cirrus.com, tanureal@opensource.cirrus.com,
+        rf@opensource.cirrus.com, perex@perex.cz, tiwai@suse.com,
+        npiggin@gmail.com, christophe.leroy@csgroup.eu, mpe@ellerman.id.au,
+        oss@buserror.net, windhl@126.com, yangyingliang@huawei.com,
+        Tudor Ambarus <tudor.ambarus@linaro.org>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
+Cc:     git@amd.com, linux-spi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, joel@jms.id.au, andrew@aj.id.au,
+        radu_nicolae.pirea@upb.ro, nicolas.ferre@microchip.com,
+        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
+        bcm-kernel-feedback-list@broadcom.com, fancer.lancer@gmail.com,
+        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        jbrunet@baylibre.com, martin.blumenstingl@googlemail.com,
+        avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
+        venture@google.com, yuenn@google.com, benjaminfair@google.com,
+        yogeshgaur.83@gmail.com, konrad.dybcio@somainline.org,
+        alim.akhtar@samsung.com, ldewangan@nvidia.com,
+        thierry.reding@gmail.com, jonathanh@nvidia.com,
+        michal.simek@amd.com, linux-aspeed@lists.ozlabs.org,
+        openbmc@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-rockchip@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
+        netdev@vger.kernel.org, linux-wpan@vger.kernel.org,
+        libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
+        linux-mtd@lists.infradead.org, lars@metafoo.de,
+        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
+        michael@walle.cc, palmer@dabbelt.com,
+        linux-riscv@lists.infradead.org, alsa-devel@alsa-project.org,
+        patches@opensource.cirrus.com, linuxppc-dev@lists.ozlabs.org,
+        amitrkcian2002@gmail.com
+In-Reply-To: <20230210193647.4159467-1-amit.kumar-mahapatra@amd.com>
+References: <20230210193647.4159467-1-amit.kumar-mahapatra@amd.com>
+Subject: Re: (subset) [PATCH v4 00/15] spi: Add support for
+ stacked/parallel memories
+Message-Id: <167856937606.964268.6047676283886463336.b4-ty@kernel.org>
+Date:   Sat, 11 Mar 2023 21:16:16 +0000
 MIME-Version: 1.0
-References: <20230310202922.2459680-1-martin.blumenstingl@googlemail.com> <174f91fc-7629-e380-4ca1-56eb39ea24ea@lwfinger.net>
-In-Reply-To: <174f91fc-7629-e380-4ca1-56eb39ea24ea@lwfinger.net>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Sat, 11 Mar 2023 21:56:32 +0100
-Message-ID: <CAFBinCAn7zD-sF+5B1OHztaijt6OHFZWHM-ayxYY0=z0zkaJCg@mail.gmail.com>
-Subject: Re: [PATCH v2 RFC 0/9] rtw88: Add SDIO support
-To:     Larry Finger <Larry.Finger@lwfinger.net>
-Cc:     linux-wireless@vger.kernel.org,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-mmc@vger.kernel.org, Chris Morgan <macroalpha82@gmail.com>,
-        Nitin Gupta <nitin.gupta981@gmail.com>,
-        Neo Jou <neojou@gmail.com>, Pkshih <pkshih@realtek.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Mailer: b4 0.13-dev-2eb1a
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Larry,
+On Sat, 11 Feb 2023 01:06:31 +0530, Amit Kumar Mahapatra wrote:
+> This patch is in the continuation to the discussions which happened on
+> 'commit f89504300e94 ("spi: Stacked/parallel memories bindings")' for
+> adding dt-binding support for stacked/parallel memories.
+> 
+> This patch series updated the spi-nor, spi core and the spi drivers
+> to add stacked and parallel memories support.
+> 
+> [...]
 
-On Sat, Mar 11, 2023 at 3:16=E2=80=AFAM Larry Finger <Larry.Finger@lwfinger=
-.net> wrote:
-[...]
-> I am not qualified to review the code, but I am integrating this version =
-into my
-> rtw88 repo at GitHub.com.
->
-> It is essential that a successful build is possible after every patch is =
-applied
-> so that an arbitrary bisection will not fail to build. This patch series =
-fails
-> after #2 is committed. File mac.c needs symbol SDIO_LOCAL_OFFSET, which w=
-as
-> moved from mac.h to sdio.h. I resolved this be including sdio.h in mac.c.=
- This
-> breaks #3, where you add the include to mac.c. It needs to happen one pat=
-ch earlier.
-Thank you for spotting and reporting this issue! You are right with
-this, I'll add the sdio.h include to mac.c with patch 2 to resolve
-this issue as you suggested.
+Applied to
 
-> The other problem for my repo is that it cannot modify
-> include/linux/mmc/sdio_ids.h, thus I have to create a local sdio_ids.h to
-> contain the new definitions. Once your patches are in the kernel, I will =
-be able
-> to eliminate this work around.
-You can also modify the three SDIO driver files (rtw8821cs.c,
-rtw8822bs.c, rtw8822cs.c) and use the literal IDs there if you have to
-patch those files anyways.
+   broonie/spi.git for-next
 
-> I do not have any rtw88 SDIO devices, thus I will not be able to test, bu=
-t I
-> will pass any information that I get from my users.
-That sounds great - thank you!
+Thanks!
 
+[01/15] spi: Replace all spi->chip_select and spi->cs_gpiod references with function call
+        commit: 9e264f3f85a56cc109cc2d6010a48aa89d5c1ff1
+[02/15] net: Replace all spi->chip_select and spi->cs_gpiod references with function call
+        commit: 25fd0550d9b9c92288a17fb7d605cdcdb4a65a64
+[03/15] iio: imu: Replace all spi->chip_select and spi->cs_gpiod references with function call
+        commit: 0183f81fce154ae1d4df2bb28d22ad6612317148
+[04/15] mtd: devices: Replace all spi->chip_select and spi->cs_gpiod references with function call
+        commit: 0817bcef53e4e3df23c023eddaa2b35b7288400e
+[05/15] staging: Replace all spi->chip_select and spi->cs_gpiod references with function call
+        commit: caa9d3475b1c5566f0272273c147cc9b72f2be28
+[06/15] platform/x86: serial-multi-instantiate: Replace all spi->chip_select and spi->cs_gpiod references with function call
+        commit: e20451f44ca33ec40422e9868775e117ef2da935
+[07/15] powerpc/83xx/mpc832x_rdb: Replace all spi->chip_select references with function call
+        commit: 3aba06a9fee04f6fefa9df71d3ee27dd4c464ad5
+[08/15] ALSA: hda: cs35l41: Replace all spi->chip_select references with function call
+        commit: 06b5e53c8b2b016e06a53ab6f01006ca7bbfa5df
+[09/15] spi: Add stacked and parallel memories support in SPI core
+        (no commit info)
 
-Best regards,
-Martin
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
+
