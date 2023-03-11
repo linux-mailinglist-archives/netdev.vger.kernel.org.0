@@ -2,52 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 96B3E6B56C9
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 01:38:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF3756B572C
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 01:56:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229645AbjCKAic (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 19:38:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48672 "EHLO
+        id S231145AbjCKA4z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 19:56:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229706AbjCKAi3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 19:38:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC16F9EEF;
-        Fri, 10 Mar 2023 16:38:27 -0800 (PST)
+        with ESMTP id S230206AbjCKA4V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 19:56:21 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0CAD42BFA;
+        Fri, 10 Mar 2023 16:55:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BBBCF61D5B;
-        Sat, 11 Mar 2023 00:38:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BACB0C433EF;
-        Sat, 11 Mar 2023 00:38:25 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BF3C6CE2B86;
+        Sat, 11 Mar 2023 00:50:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3475DC433A8;
+        Sat, 11 Mar 2023 00:50:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678495106;
-        bh=d9ekWnm/uAZDtQ6nx3R4q1sbibkqvgFUKQWut/P1z78=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fyOqXarPUn6EGSSH6geMM5QnN0G4CVvd5Zhfr7stRqk+V/FoZNobW80/4fdfmQ64U
-         tOR/+gMGOmRIMLAyVTZXN0lSp8KhO8SQK6KsLoUHhLPvL9yMxkFD387MzM35LUIWjF
-         dYiEbtKGfm56MIGen5upwS+6Bpz6h7xJA2xGH5vSjP12pqIa2RX63KviLP/QexNRB6
-         a7FWkRWUXvMtQeGqH26vi3oVbeVwiTtwoZMWheDAvGDAxsiZHNTrvWJCizesK8xQSG
-         rAap2H9d7oPrt/GDx1PLW+jtQ43WGoHJMMygE87AjD49wTNFDB4zyt5dTeaU4JhLXg
-         HMJqQfPfe6OkQ==
-Date:   Fri, 10 Mar 2023 16:38:24 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
-        <richardcochran@gmail.com>
-Subject: Re: [PATCH net-next v3] net: phy: micrel: Add support for
- PTP_PF_PEROUT for lan8841
-Message-ID: <20230310163824.5f5f653e@kernel.org>
-In-Reply-To: <20230307214402.793057-1-horatiu.vultur@microchip.com>
-References: <20230307214402.793057-1-horatiu.vultur@microchip.com>
+        s=k20201202; t=1678495819;
+        bh=dAkz0u2ZcVcgnkbevyZA/41VUY4q2eV4N5qD0eF+670=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=QGizU2h894QvdFJsS46fCnx7n66Evy32dtQ2WRT0V2AFsuXgQrWlxBinkLO28eGZI
+         woS1ux8IGHadJJi2/VFR0269pX6BUIi9+lkzU1ZdlKSqzaIX7nPqa8jAHjZwRLGz20
+         tlTQXwT4hVeoSldvyIw5a0QB2++aKoEzE8DFtxAZO+mLhE/R00pIRKlnEChy8hD0hC
+         b9UnOiY8K+ydCJDewcpHewOR5AkSVZIgSZZPz0j7o2PjgbQB4fg9TQpKetIVhaGHiO
+         gGiU7HbUB4QdlORBEclX19v3z5+PYMsrlHb6jTYOoQSuJ+6i050euKTsYqV5FbB1Q2
+         ZoBw+HRqhd4Uw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1D77EE21EEB;
+        Sat, 11 Mar 2023 00:50:19 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net, stable v1 0/3] add checking sq is full inside xdp xmit
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167849581911.26321.1114806973395785134.git-patchwork-notify@kernel.org>
+Date:   Sat, 11 Mar 2023 00:50:19 +0000
+References: <20230308024935.91686-1-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <20230308024935.91686-1-xuanzhuo@linux.alibaba.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     netdev@vger.kernel.org, mst@redhat.com, jasowang@redhat.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
+        yichun@openresty.com, alexanderduyck@fb.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,29 +59,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 7 Mar 2023 22:44:02 +0100 Horatiu Vultur wrote:
-> Lan8841 has 10 GPIOs and it has 2 events(EVENT_A and EVENT_B). It is
-> possible to assigned the 2 events to any of the GPIOs, but a GPIO can
-> have only 1 event at a time.
-> These events are used to generate periodic signals. It is possible to
-> configure the length, the start time and the period of the signal by
-> configuring the event.
-> Currently the SW uses only EVENT_A to generate the perout.
-> 
-> These events are generated by comparing the target time with the PHC
-> time. In case the PHC time is changed to a value bigger than the target
-> time + reload time, then it would generate only 1 event and then it
-> would stop because target time + reload time is small than PHC time.
-> Therefore it is required to change also the target time every time when
-> the PHC is changed. The same will apply also when the PHC time is
-> changed to a smaller value.
-> 
-> This was tested using:
-> testptp -L 6,2
-> testptp -p 1000000000 -w 200000000
+Hello:
 
-AFAICT enabling a new output will steal the event from the previous one.
-Is this normal / expected? Should you be checking if any output is
-active and refuse to enable another GPIO if so?
+This series was applied to netdev/net.git (main)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Richard, does the patch look good to you?
+On Wed,  8 Mar 2023 10:49:32 +0800 you wrote:
+> If the queue of xdp xmit is not an independent queue, then when the xdp
+> xmit used all the desc, the xmit from the __dev_queue_xmit() may encounter
+> the following error.
+> 
+> net ens4: Unexpected TXQ (0) queue failure: -28
+> 
+> This patch adds a check whether sq is full in XDP Xmit.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,stable,v1,1/3] virtio_net: reorder some funcs
+    https://git.kernel.org/netdev/net/c/25074a44ac4e
+  - [net,stable,v1,2/3] virtio_net: separate the logic of checking whether sq is full
+    https://git.kernel.org/netdev/net/c/b8ef4809bc7f
+  - [net,stable,v1,3/3] virtio_net: add checking sq is full inside xdp xmit
+    https://git.kernel.org/netdev/net/c/cd1c604aa1d8
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
