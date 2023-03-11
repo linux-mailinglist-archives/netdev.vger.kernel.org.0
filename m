@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A37A6B6224
-	for <lists+netdev@lfdr.de>; Sun, 12 Mar 2023 00:40:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC78D6B622E
+	for <lists+netdev@lfdr.de>; Sun, 12 Mar 2023 00:40:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229854AbjCKXj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 18:39:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40640 "EHLO
+        id S229713AbjCKXkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 18:40:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229600AbjCKXjx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 18:39:53 -0500
+        with ESMTP id S229742AbjCKXjy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 18:39:54 -0500
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED49636080;
-        Sat, 11 Mar 2023 15:39:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BAD23669B;
+        Sat, 11 Mar 2023 15:39:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Sender:Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
         Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=JMrOLqBblBfuXk+q4S5+9mk7xuUL4OAY5iCRONC3a9s=; b=0/v+R9IPFNWntmPcpjlL15fvu0
-        M9xKiq+QbXN/d482W6msoOVilIoSDxS6zD+KWQYLwFqAyJFglZ3gUZtDiwfFfduWCLFPaw6VjUeNk
-        9f1Kyh2tlwgXefYF7pp9X8Cs4VTBlf9KKyPIGPzNB5o/kLgICWnys1NQ3A+DKX7YPEwxE/Sk7LZEV
-        pPtNaqNjM7Req9EYo+ZQz16QrY8zJTGdFaQEwWqWcOe0PBfnZwqyE5ExmRqRJlQOoPoqtA+CibPWs
-        BbCxQIELVWbqhsDH2sBlR4rffpOdSv9NltJzxoiZXnDAoM5u19nczIzz72xBuVPWgk83tqM9wc5AR
-        jAYCzgIg==;
+        bh=NyzvMGDdE58I8HPSATmgnyV0KqBaQSH9+ozf8EmTmiA=; b=oS4yMIs9QRvW/zUO51HWEeG4Rn
+        V/4cVRVP0y3c8hrggtZfRj+HZNPddfYXEsV1xyx3i4GTwBGasNbuXvw8m7LChPeXOU8FR/OSRohME
+        Y7B/+oPcwEnz7KNfUtct3ARK8lVkBQqTiYdEOtwZkyUsFVY9MlEmD/piiGsoYFdZM0t2MW50Wv6wF
+        1hyqhaFGjiLNF9YZlMbIPStiOAOK9IlJ7S8qy+sclXlow4RTh6ZOYYCzag3PXlQGdnvkjtVTg6jH8
+        jZAuV4hfi09B1FbGmgFGN459kfvV60lGo9oItn1cYoJQ0ssPj9qaba0ekXCpsChJI0yVZNRhCBjfn
+        jS3y/hDg==;
 Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pb8oT-001UJm-1w; Sat, 11 Mar 2023 23:39:45 +0000
+        id 1pb8oT-001UJo-3W; Sat, 11 Mar 2023 23:39:45 +0000
 From:   Luis Chamberlain <mcgrof@kernel.org>
 To:     chuck.lever@oracle.com, jlayton@kernel.org,
         trond.myklebust@hammerspace.com, anna@kernel.org,
@@ -35,9 +35,9 @@ Cc:     ebiederm@xmission.com, keescook@chromium.org, yzaikin@google.com,
         j.granados@samsung.com, patches@lists.linux.dev,
         linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>
-Subject: [PATCH v3 3/5] sunrpc: simplify one-level sysctl registration for xs_tunables_table
-Date:   Sat, 11 Mar 2023 15:39:42 -0800
-Message-Id: <20230311233944.354858-4-mcgrof@kernel.org>
+Subject: [PATCH v3 4/5] sunrpc: move sunrpc_table and proc routines above
+Date:   Sat, 11 Mar 2023 15:39:43 -0800
+Message-Id: <20230311233944.354858-5-mcgrof@kernel.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20230311233944.354858-1-mcgrof@kernel.org>
 References: <20230311233944.354858-1-mcgrof@kernel.org>
@@ -54,54 +54,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is no need to declare an extra tables to just create directory,
-this can be easily be done with a prefix path with register_sysctl().
-
-Simplify this registration.
+No need to do a forward declaration for sunrpc_table, just move
+the sysctls up as everyone else does it. This will make the next
+change easier to read. This change produces no functional changes.
 
 Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
 ---
- net/sunrpc/xprtsock.c | 13 ++-----------
- 1 file changed, 2 insertions(+), 11 deletions(-)
+ net/sunrpc/sysctl.c | 35 ++++++++++++++++-------------------
+ 1 file changed, 16 insertions(+), 19 deletions(-)
 
-diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
-index aaa5b2741b79..46bbd6230650 100644
---- a/net/sunrpc/xprtsock.c
-+++ b/net/sunrpc/xprtsock.c
-@@ -77,7 +77,7 @@ static unsigned int xs_tcp_fin_timeout __read_mostly = XS_TCP_LINGER_TO;
+diff --git a/net/sunrpc/sysctl.c b/net/sunrpc/sysctl.c
+index 3aad6ef18504..afdfcc5403af 100644
+--- a/net/sunrpc/sysctl.c
++++ b/net/sunrpc/sysctl.c
+@@ -40,25 +40,6 @@ EXPORT_SYMBOL_GPL(nlm_debug);
  
- /*
-  * We can register our own files under /proc/sys/sunrpc by
-- * calling register_sysctl_table() again.  The files in that
-+ * calling register_sysctl() again.  The files in that
-  * directory become the union of all files registered there.
-  *
-  * We simply need to make sure that we don't collide with
-@@ -157,15 +157,6 @@ static struct ctl_table xs_tunables_table[] = {
- 	{ },
+ #if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+ 
+-static struct ctl_table_header *sunrpc_table_header;
+-static struct ctl_table sunrpc_table[];
+-
+-void
+-rpc_register_sysctl(void)
+-{
+-	if (!sunrpc_table_header)
+-		sunrpc_table_header = register_sysctl_table(sunrpc_table);
+-}
+-
+-void
+-rpc_unregister_sysctl(void)
+-{
+-	if (sunrpc_table_header) {
+-		unregister_sysctl_table(sunrpc_table_header);
+-		sunrpc_table_header = NULL;
+-	}
+-}
+-
+ static int proc_do_xprt(struct ctl_table *table, int write,
+ 			void *buffer, size_t *lenp, loff_t *ppos)
+ {
+@@ -142,6 +123,7 @@ proc_dodebug(struct ctl_table *table, int write, void *buffer, size_t *lenp,
+ 	return 0;
+ }
+ 
++static struct ctl_table_header *sunrpc_table_header;
+ 
+ static struct ctl_table debug_table[] = {
+ 	{
+@@ -190,4 +172,19 @@ static struct ctl_table sunrpc_table[] = {
+ 	{ }
  };
  
--static struct ctl_table sunrpc_table[] = {
--	{
--		.procname	= "sunrpc",
--		.mode		= 0555,
--		.child		= xs_tunables_table
--	},
--	{ },
--};
--
- /*
-  * Wait duration for a reply from the RPC portmapper.
-  */
-@@ -3174,7 +3165,7 @@ static struct xprt_class	xs_bc_tcp_transport = {
- int init_socket_xprt(void)
- {
- 	if (!sunrpc_table_header)
--		sunrpc_table_header = register_sysctl_table(sunrpc_table);
-+		sunrpc_table_header = register_sysctl("sunrpc", xs_tunables_table);
- 
- 	xprt_register_transport(&xs_local_transport);
- 	xprt_register_transport(&xs_udp_transport);
++void
++rpc_register_sysctl(void)
++{
++	if (!sunrpc_table_header)
++		sunrpc_table_header = register_sysctl_table(sunrpc_table);
++}
++
++void
++rpc_unregister_sysctl(void)
++{
++	if (sunrpc_table_header) {
++		unregister_sysctl_table(sunrpc_table_header);
++		sunrpc_table_header = NULL;
++	}
++}
+ #endif
 -- 
 2.39.1
 
