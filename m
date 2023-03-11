@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B7836B5FAC
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 19:19:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 942496B5FB0
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 19:19:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231132AbjCKSTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 13:19:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60454 "EHLO
+        id S230174AbjCKSTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 13:19:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230001AbjCKST2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 13:19:28 -0500
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC74E5F534;
-        Sat, 11 Mar 2023 10:19:17 -0800 (PST)
-Received: by mail-qt1-x82d.google.com with SMTP id r5so9301241qtp.4;
-        Sat, 11 Mar 2023 10:19:17 -0800 (PST)
+        with ESMTP id S230470AbjCKSTa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 13:19:30 -0500
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E42595B419;
+        Sat, 11 Mar 2023 10:19:18 -0800 (PST)
+Received: by mail-qv1-xf33.google.com with SMTP id y3so5761223qvn.4;
+        Sat, 11 Mar 2023 10:19:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678558757;
+        d=gmail.com; s=20210112; t=1678558758;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=b1/QWyN+1rTXKKFO+psZRLLz7sEIRxuKnLx8615NJfo=;
-        b=kABZzwS+f+kxgP9qwE6a+QVqZVqf36WgUvect6GHtczuVX4Qapk42L4yTC4j5D5AB4
-         J2tdU5cGVZPgQvxhG5qd+qZScQ9RRGO+cwnEPil80cwXQwaZJEXzFe17Mdm6yLO4u0ra
-         T1KFnDGSJNDLULtOUA7smYUdgJnlWz2JRakfyEUMvQNEGOtA6e/5IW8z7pDIeB+70u73
-         zLWBFHMMmuC3Xm6OgmrWb5usN2064QNflN1dYt106ZGzRhXxsnPb5P1aq1nNeNNZB3Bo
-         QMb++LDw6p+3yLEYSw37dzXMqGM8JzMjSR8EycSrEFRfIUsI87tAiRz4lcHLAEvqzjEi
-         7XJw==
+        bh=+9qc042YGsZJMxlp8gBrIPO5C05rmMgtPlJZkGwaGiY=;
+        b=GbPae1jg3ObtbqHz9p8sGK0acHd0Q95uJetufdC84Ma4+lIRPr5S8w/Puozgee9zPH
+         GBvm11j6nufguY5QiVCmjmgE9Me3Mhd7OkaeklYXzPSMm34A2awhkt8Yik0z5cNm41iv
+         OW50SWy2scYNf+Tg8CsH9X7cKXpPvqzdqPp9MQIQnOWHKjIlyuffBBmENIqTU3buOm5j
+         ntKx+/9YDl/k5U+KxeWAM+YUhGjhqotE48IiRS9kB3/348/c1fJO/Nm4EiUiSDffO7Xz
+         DawrM42qPWkTCm3ein+y2LDM1XdXT8v0BtEBr5Pqd8Ooo+enaYncN+d9Dx7axF3oENS8
+         L6+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678558757;
+        d=1e100.net; s=20210112; t=1678558758;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=b1/QWyN+1rTXKKFO+psZRLLz7sEIRxuKnLx8615NJfo=;
-        b=oum5x5zPF74iLXOSg0BZTVuDybqm3cmSpy75wu7MsRBl/pEgIB/NUWeTIjsFCcQbpW
-         Gyyq4eSpVhnmNaTKO6bjvDys3/ExXsTFg0mDNLuzSyNzwPgE+1r8mLoCwQsWx9BZEViU
-         a0A2Ec7SvacS4n5+Bj3oKloCb/GssuH2vdX+A+W/VXhFaeh17jmff5MfIh8BWAit+8nc
-         q7fXa6SZHtRisAMV+Pjy2wbPNfn3GyRP72yf7Jv31sJyZyBjKmeTeIYcYbor6kXghOIv
-         NW/rlRfKAMaWSJ7VKr3zk5ho4m5WE2cfKvMhi2y+aJH+SCFkrkWoydhWwlD+yTMTO3ee
-         /CrA==
-X-Gm-Message-State: AO0yUKX52h75x+KromRr8HmJlsjPV0E9S46q6u8fKiC1XAhP/JvpLFt2
-        CKEQk29fuIHBKertDi66QmY=
-X-Google-Smtp-Source: AK7set95h1GZcZZjolX4JBnLly9/5WpT8elYlHe/moPp1qEFMSttHOD5qgn3Z2K9ct9duQ1fLrzFvQ==
-X-Received: by 2002:ac8:5acd:0:b0:3bf:b896:ff72 with SMTP id d13-20020ac85acd000000b003bfb896ff72mr51235588qtd.68.1678558756856;
-        Sat, 11 Mar 2023 10:19:16 -0800 (PST)
+        bh=+9qc042YGsZJMxlp8gBrIPO5C05rmMgtPlJZkGwaGiY=;
+        b=B5p2hYZzR54bpUCx7D99jhAWNTox61intjOJGBX1Zkqr3Vqq4oLBUd9rBOFYNuZUnJ
+         FWEcElvPMUrlefbxIfH8OHhGLWP/ldvAtlHMnq9PKMpl8SqCPviQug6z4c+cyPSx5A9k
+         6ux17dvOixrg9wxyRgNYEwwgUnCN3WRdvVm1zMI8kWY7zd3N8LnoF52RDecYVEmXbsq/
+         AdpxW0WSOlCFf+mlHQSJJdbo4Jn5hE5IQt+EqW6EQX89GaSvUQWTz+khoKWmqmSOoUkH
+         Has75tVEwiLx3TpNgAWMocya9Ly/Z10r4xxr8LbZfazSx0RBa/2RS42a5YfW5n1IEhLo
+         7oCg==
+X-Gm-Message-State: AO0yUKXqfjpV13boaUNl6BVbQn+rBncs3lO8dets6d858Xdk/XSGhdKK
+        ICbaQtNETzVJvUrCEGtVyjo=
+X-Google-Smtp-Source: AK7set+/8Mn/M3ucLyCcVBqPfTCtMDgcR1XTePfBwt8MJFHhv4pVj9Ac8rg0RtO336LNfRskJVSCNg==
+X-Received: by 2002:a05:6214:2523:b0:56e:a290:aa92 with SMTP id gg3-20020a056214252300b0056ea290aa92mr5846280qvb.9.1678558757972;
+        Sat, 11 Mar 2023 10:19:17 -0800 (PST)
 Received: from localhost (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
-        by smtp.gmail.com with UTF8SMTPSA id i3-20020a37b803000000b007424239e4casm2162172qkf.117.2023.03.11.10.19.16
+        by smtp.gmail.com with UTF8SMTPSA id y12-20020ac8524c000000b003b643951117sm2252556qtn.38.2023.03.11.10.19.17
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 11 Mar 2023 10:19:16 -0800 (PST)
+        Sat, 11 Mar 2023 10:19:17 -0800 (PST)
 From:   Sean Anderson <seanga2@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -57,9 +57,9 @@ To:     "David S . Miller" <davem@davemloft.net>,
 Cc:     linux-kernel@vger.kernel.org,
         Simon Horman <simon.horman@corigine.com>,
         Sean Anderson <seanga2@gmail.com>
-Subject: [PATCH net-next v2 8/9] net: sunhme: Inline error returns
-Date:   Sat, 11 Mar 2023 13:19:04 -0500
-Message-Id: <20230311181905.3593904-9-seanga2@gmail.com>
+Subject: [PATCH net-next v2 9/9] net: sunhme: Consolidate common probe tasks
+Date:   Sat, 11 Mar 2023 13:19:05 -0500
+Message-Id: <20230311181905.3593904-10-seanga2@gmail.com>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20230311181905.3593904-1-seanga2@gmail.com>
 References: <20230311181905.3593904-1-seanga2@gmail.com>
@@ -75,67 +75,242 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The err_out label used to have cleanup. Now that it just returns, inline it
-everywhere.
+Most of the second half of the PCI/SBUS probe functions are the same.
+Consolidate them into a common function.
 
 Signed-off-by: Sean Anderson <seanga2@gmail.com>
 ---
 
-Changes in v2:
-- New
+(no changes since v1)
 
- drivers/net/ethernet/sun/sunhme.c | 19 ++++++-------------
- 1 file changed, 6 insertions(+), 13 deletions(-)
+ drivers/net/ethernet/sun/sunhme.c | 183 ++++++++++++------------------
+ 1 file changed, 71 insertions(+), 112 deletions(-)
 
 diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
-index 41b2f941c607..0b903ece624a 100644
+index 0b903ece624a..5c66efe93fd0 100644
 --- a/drivers/net/ethernet/sun/sunhme.c
 +++ b/drivers/net/ethernet/sun/sunhme.c
-@@ -2622,30 +2622,25 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+@@ -2430,6 +2430,71 @@ static void happy_meal_addr_init(struct happy_meal *hp,
+ 	}
+ }
  
- 	err = pcim_enable_device(pdev);
- 	if (err)
--		goto err_out;
-+		return err;
- 	pci_set_master(pdev);
- 
- 	if (!strcmp(prom_name, "SUNW,qfe") || !strcmp(prom_name, "qfe")) {
- 		qp = quattro_pci_find(pdev);
--		if (IS_ERR(qp)) {
--			err = PTR_ERR(qp);
--			goto err_out;
--		}
-+		if (IS_ERR(qp))
-+			return PTR_ERR(qp);
- 
- 		for (qfe_slot = 0; qfe_slot < 4; qfe_slot++)
- 			if (!qp->happy_meals[qfe_slot])
- 				goto found_slot;
- 
--		err = -ENODEV;
--		goto err_out;
-+		return -ENODEV;
++static int happy_meal_common_probe(struct happy_meal *hp,
++				   struct device_node *dp, int minor_rev)
++{
++	struct net_device *dev = hp->dev;
++	int err;
++
++#ifdef CONFIG_SPARC
++	hp->hm_revision = of_getintprop_default(dp, "hm-rev", 0xff);
++	if (hp->hm_revision == 0xff)
++		hp->hm_revision = 0xc0 | minor_rev;
++#else
++	/* works with this on non-sparc hosts */
++	hp->hm_revision = 0x20;
++#endif
++
++	/* Now enable the feature flags we can. */
++	if (hp->hm_revision == 0x20 || hp->hm_revision == 0x21)
++		hp->happy_flags |= HFLAG_20_21;
++	else if (hp->hm_revision != 0xa0)
++		hp->happy_flags |= HFLAG_NOT_A0;
++
++	hp->happy_block = dmam_alloc_coherent(hp->dma_dev, PAGE_SIZE,
++					      &hp->hblock_dvma, GFP_KERNEL);
++	if (!hp->happy_block)
++		return -ENOMEM;
++
++	/* Force check of the link first time we are brought up. */
++	hp->linkcheck = 0;
++
++	/* Force timer state to 'asleep' with count of zero. */
++	hp->timer_state = asleep;
++	hp->timer_ticks = 0;
++
++	timer_setup(&hp->happy_timer, happy_meal_timer, 0);
++
++	dev->netdev_ops = &hme_netdev_ops;
++	dev->watchdog_timeo = 5 * HZ;
++	dev->ethtool_ops = &hme_ethtool_ops;
++
++	/* Happy Meal can do it all... */
++	dev->hw_features = NETIF_F_SG | NETIF_F_HW_CSUM;
++	dev->features |= dev->hw_features | NETIF_F_RXCSUM;
++
++#if defined(CONFIG_SBUS) && defined(CONFIG_PCI)
++	/* Hook up SBUS register/descriptor accessors. */
++	hp->read_desc32 = sbus_hme_read_desc32;
++	hp->write_txd = sbus_hme_write_txd;
++	hp->write_rxd = sbus_hme_write_rxd;
++	hp->read32 = sbus_hme_read32;
++	hp->write32 = sbus_hme_write32;
++#endif
++
++	/* Grrr, Happy Meal comes up by default not advertising
++	 * full duplex 100baseT capabilities, fix this.
++	 */
++	spin_lock_irq(&hp->happy_lock);
++	happy_meal_set_initial_advertisement(hp);
++	spin_unlock_irq(&hp->happy_lock);
++
++	err = devm_register_netdev(hp->dma_dev, dev);
++	if (err)
++		dev_err(hp->dma_dev, "Cannot register net device, aborting.\n");
++	return err;
++}
++
+ #ifdef CONFIG_SBUS
+ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
+ {
+@@ -2511,70 +2576,18 @@ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
+ 		goto err_out_clear_quattro;
  	}
  
- found_slot:
- 	dev = devm_alloc_etherdev(&pdev->dev, sizeof(struct happy_meal));
--	if (!dev) {
--		err = -ENOMEM;
--		goto err_out;
--	}
-+	if (!dev)
-+		return -ENOMEM;
- 	SET_NETDEV_DEV(dev, &pdev->dev);
- 
- 	hp = netdev_priv(dev);
-@@ -2793,8 +2788,6 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
- err_out_clear_quattro:
- 	if (qp != NULL)
- 		qp->happy_meals[qfe_slot] = NULL;
+-	hp->hm_revision = of_getintprop_default(dp, "hm-rev", 0xff);
+-	if (hp->hm_revision == 0xff)
+-		hp->hm_revision = 0xa0;
 -
--err_out:
- 	return err;
- }
+-	/* Now enable the feature flags we can. */
+-	if (hp->hm_revision == 0x20 || hp->hm_revision == 0x21)
+-		hp->happy_flags = HFLAG_20_21;
+-	else if (hp->hm_revision != 0xa0)
+-		hp->happy_flags = HFLAG_NOT_A0;
+-
+ 	if (qp != NULL)
+ 		hp->happy_flags |= HFLAG_QUATTRO;
+ 
++	hp->irq = op->archdata.irqs[0];
++
+ 	/* Get the supported DVMA burst sizes from our Happy SBUS. */
+ 	hp->happy_bursts = of_getintprop_default(sbus_dp,
+ 						 "burst-sizes", 0x00);
+ 
+-	hp->happy_block = dmam_alloc_coherent(&op->dev, PAGE_SIZE,
+-					      &hp->hblock_dvma, GFP_KERNEL);
+-	if (!hp->happy_block) {
+-		err = -ENOMEM;
++	err = happy_meal_common_probe(hp, dp, 0);
++	if (err)
+ 		goto err_out_clear_quattro;
+-	}
+-
+-	/* Force check of the link first time we are brought up. */
+-	hp->linkcheck = 0;
+-
+-	/* Force timer state to 'asleep' with count of zero. */
+-	hp->timer_state = asleep;
+-	hp->timer_ticks = 0;
+-
+-	timer_setup(&hp->happy_timer, happy_meal_timer, 0);
+-
+-	dev->netdev_ops = &hme_netdev_ops;
+-	dev->watchdog_timeo = 5*HZ;
+-	dev->ethtool_ops = &hme_ethtool_ops;
+-
+-	/* Happy Meal can do it all... */
+-	dev->hw_features = NETIF_F_SG | NETIF_F_HW_CSUM;
+-	dev->features |= dev->hw_features | NETIF_F_RXCSUM;
+-
+-	hp->irq = op->archdata.irqs[0];
+-
+-#if defined(CONFIG_SBUS) && defined(CONFIG_PCI)
+-	/* Hook up SBUS register/descriptor accessors. */
+-	hp->read_desc32 = sbus_hme_read_desc32;
+-	hp->write_txd = sbus_hme_write_txd;
+-	hp->write_rxd = sbus_hme_write_rxd;
+-	hp->read32 = sbus_hme_read32;
+-	hp->write32 = sbus_hme_write32;
+-#endif
+-
+-	/* Grrr, Happy Meal comes up by default not advertising
+-	 * full duplex 100baseT capabilities, fix this.
+-	 */
+-	spin_lock_irq(&hp->happy_lock);
+-	happy_meal_set_initial_advertisement(hp);
+-	spin_unlock_irq(&hp->happy_lock);
+-
+-	err = devm_register_netdev(&op->dev, dev);
+-	if (err) {
+-		dev_err(&op->dev, "Cannot register net device, aborting.\n");
+-		goto err_out_clear_quattro;
+-	}
+ 
+ 	platform_set_drvdata(op, hp);
+ 
+@@ -2689,21 +2702,6 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 	hp->bigmacregs = (hpreg_base + 0x6000UL);
+ 	hp->tcvregs    = (hpreg_base + 0x7000UL);
+ 
+-#ifdef CONFIG_SPARC
+-	hp->hm_revision = of_getintprop_default(dp, "hm-rev", 0xff);
+-	if (hp->hm_revision == 0xff)
+-		hp->hm_revision = 0xc0 | (pdev->revision & 0x0f);
+-#else
+-	/* works with this on non-sparc hosts */
+-	hp->hm_revision = 0x20;
+-#endif
+-
+-	/* Now enable the feature flags we can. */
+-	if (hp->hm_revision == 0x20 || hp->hm_revision == 0x21)
+-		hp->happy_flags = HFLAG_20_21;
+-	else if (hp->hm_revision != 0xa0 && hp->hm_revision != 0xc0)
+-		hp->happy_flags = HFLAG_NOT_A0;
+-
+ 	if (qp != NULL)
+ 		hp->happy_flags |= HFLAG_QUATTRO;
+ 
+@@ -2714,50 +2712,11 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 	/* Assume PCI happy meals can handle all burst sizes. */
+ 	hp->happy_bursts = DMA_BURSTBITS;
+ #endif
+-
+-	hp->happy_block = dmam_alloc_coherent(&pdev->dev, PAGE_SIZE,
+-					      &hp->hblock_dvma, GFP_KERNEL);
+-	if (!hp->happy_block) {
+-		err = -ENOMEM;
+-		goto err_out_clear_quattro;
+-	}
+-
+-	hp->linkcheck = 0;
+-	hp->timer_state = asleep;
+-	hp->timer_ticks = 0;
+-
+-	timer_setup(&hp->happy_timer, happy_meal_timer, 0);
+-
+ 	hp->irq = pdev->irq;
+-	dev->netdev_ops = &hme_netdev_ops;
+-	dev->watchdog_timeo = 5*HZ;
+-	dev->ethtool_ops = &hme_ethtool_ops;
+ 
+-	/* Happy Meal can do it all... */
+-	dev->hw_features = NETIF_F_SG | NETIF_F_HW_CSUM;
+-	dev->features |= dev->hw_features | NETIF_F_RXCSUM;
+-
+-#if defined(CONFIG_SBUS) && defined(CONFIG_PCI)
+-	/* Hook up PCI register/descriptor accessors. */
+-	hp->read_desc32 = pci_hme_read_desc32;
+-	hp->write_txd = pci_hme_write_txd;
+-	hp->write_rxd = pci_hme_write_rxd;
+-	hp->read32 = pci_hme_read32;
+-	hp->write32 = pci_hme_write32;
+-#endif
+-
+-	/* Grrr, Happy Meal comes up by default not advertising
+-	 * full duplex 100baseT capabilities, fix this.
+-	 */
+-	spin_lock_irq(&hp->happy_lock);
+-	happy_meal_set_initial_advertisement(hp);
+-	spin_unlock_irq(&hp->happy_lock);
+-
+-	err = devm_register_netdev(&pdev->dev, dev);
+-	if (err) {
+-		dev_err(&pdev->dev, "Cannot register net device, aborting.\n");
++	err = happy_meal_common_probe(hp, dp, pdev->revision & 0x0f);
++	if (err)
+ 		goto err_out_clear_quattro;
+-	}
+ 
+ 	pci_set_drvdata(pdev, hp);
  
 -- 
 2.37.1
