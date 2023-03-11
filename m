@@ -2,115 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 365CD6B616E
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 23:18:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 554E36B6110
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 22:41:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230040AbjCKWS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 17:18:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51638 "EHLO
+        id S229752AbjCKVlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 16:41:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbjCKWSx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 17:18:53 -0500
-X-Greylist: delayed 2487 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 11 Mar 2023 14:18:51 PST
-Received: from mx23lb.world4you.com (mx23lb.world4you.com [81.19.149.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC5D730288;
-        Sat, 11 Mar 2023 14:18:50 -0800 (PST)
+        with ESMTP id S229543AbjCKVlT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 16:41:19 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EF6C580DF
+        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 13:41:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=tTU8edbQ8WhDCPaKCQrG3SKzi8q7/ZcWvfsOl5UYY7E=; b=OpfregP54/us2Paze67Z1R8u/L
-        83k8qLcAuOeWv9SXkEyswUPj4ZXl3NvAMJdOzGlNumsvzgfiNpawGMI7xBRKpADTYmWMpHzOYmyZQ
-        3FYzNtFLBFGQvNd8psaD9nXxonEZEcbvkgmINCRukVcVTAoJftf9uzZ15LYSYeULYU4Q=;
-Received: from [88.117.63.48] (helo=hornet.engleder.at)
-        by mx23lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gerhard@engleder-embedded.com>)
-        id 1pb6u0-0005IZ-2S; Sat, 11 Mar 2023 22:37:20 +0100
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
-        song@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
-        toke@redhat.com, Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [RFC PATCH net] bpf: Fix unregister memory model in BPF_PROG_RUN in test runner
-Date:   Sat, 11 Mar 2023 22:37:09 +0100
-Message-Id: <20230311213709.42625-1-gerhard@engleder-embedded.com>
-X-Mailer: git-send-email 2.30.2
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:References:Cc:To:Subject:From:MIME-Version:Date:Message-ID:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=QYdHd+aYOrFc1fCnHOv/r8e3i54B2FPD2t32pyTPCwU=; b=C0dW921fXJPPsrxruWkMon8D6F
+        2kYDp7kCIQtAd1MD7sfPiibIrYMJqG3/RzkW8B1ptmJw+7tB3G2e6eL/vFzqi2SxJk+NPEcJGXlny
+        daWBOCMIA+KG0L7c8eHw68B56tjxR+TBzYL7O5qH5QmK7zgM7n23ABamf+K7GPklk0j7rwB7wva5A
+        ArVLPzD3WQmzW4oPOSRb08zqlI+R5a71/ukmkKOkHT+zzfQ/8FPnZX9ClaDRTiNJ7qFMox7FT2mkm
+        8H8NoM1rNxvM/2c7m1AMU4+2L6wyhdeloLfgz+4+9Nz7A/6/ASQhgadStUqu5/yF2iuxYXfamB+qY
+        1zckmHSw==;
+Received: from 108-90-42-56.lightspeed.sntcca.sbcglobal.net ([108.90.42.56] helo=[192.168.1.80])
+        by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+        id 1pb6xM-000p6r-23;
+        Sat, 11 Mar 2023 21:40:51 +0000
+Message-ID: <8b281e5c-d330-a412-f477-59c32a3b6a85@infradead.org>
+Date:   Sat, 11 Mar 2023 13:40:43 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-AV-Do-Run: Yes
-X-ACL-Warn: X-W4Y-Internal
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+From:   Geoff Levand <geoff@infradead.org>
+Subject: Re: [PATCH net v7 1/2] net/ps3_gelic_net: Fix RX sk_buff length
+To:     Alexander H Duyck <alexander.duyck@gmail.com>,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Paolo Abeni <pabeni@redhat.com>
+References: <cover.1677981671.git.geoff@infradead.org>
+ <22d742b4e7d11ff48e8c40e39db3c776e495abe2.1677981671.git.geoff@infradead.org>
+ <4dfe231890d9b29f90d90f98d0898dcd7910f25a.camel@gmail.com>
+Content-Language: en-US
+In-Reply-To: <4dfe231890d9b29f90d90f98d0898dcd7910f25a.camel@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After executing xdp-trafficgen the following kernel output appeared:
-[  214.564375] page_pool_release_retry() stalled pool shutdown 64 inflight 60 sec
+Hi,
 
-xdp_test_run_batch() in combination with xdp-trafficgen uses a batch
-size of 64. So it seems that a single batch does find its way back to
-the page pool. I checked my tsnep driver, but the page pool entries were
-not lost in the driver according to my analysis.
+On 3/6/23 07:54, Alexander H Duyck wrote:
+> On Sun, 2023-03-05 at 02:08 +0000, Geoff Levand wrote:
+>> The Gelic Ethernet device needs to have the RX sk_buffs aligned to
+>> GELIC_NET_RXBUF_ALIGN, and also the length of the RX sk_buffs must
+>> be a multiple of GELIC_NET_RXBUF_ALIGN.
+>>
+>> The current Gelic Ethernet driver was not allocating sk_buffs large
+>> enough to allow for this alignment.
+>>
+>> Also, correct the maximum and minimum MTU sizes, and add a new
+>> preprocessor macro for the maximum frame size, GELIC_NET_MAX_FRAME.
+>>
+>> Fixes various randomly occurring runtime network errors.
+>>
+>> Fixes: 02c1889166b4 ("ps3: gigabit ethernet driver for PS3, take3")
+>> Signed-off-by: Geoff Levand <geoff@infradead.org>
+>> ---
+>>  drivers/net/ethernet/toshiba/ps3_gelic_net.c | 10 ++++++----
+>>  drivers/net/ethernet/toshiba/ps3_gelic_net.h |  5 +++--
+>>  2 files changed, 9 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_net.c b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
+>> index cf8de8a7a8a1..b0ebe0e603b4 100644
+>> --- a/drivers/net/ethernet/toshiba/ps3_gelic_net.c
+>> +++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
+>> @@ -375,11 +375,13 @@ static int gelic_descr_prepare_rx(struct gelic_card *card,
+>>  	if (gelic_descr_get_status(descr) !=  GELIC_DESCR_DMA_NOT_IN_USE)
+>>  		dev_info(ctodev(card), "%s: ERROR status\n", __func__);
+>>  	/* we need to round up the buffer size to a multiple of 128 */
+>> -	bufsize = ALIGN(GELIC_NET_MAX_MTU, GELIC_NET_RXBUF_ALIGN);
+>> +	bufsize = (GELIC_NET_MAX_FRAME + GELIC_NET_RXBUF_ALIGN - 1) &
+>> +		(~(GELIC_NET_RXBUF_ALIGN - 1));
+> 
+> Why did you stop using ALIGN? What you coded looks exactly like what
+> the code for ALIGN does. From what I can tell you just need to replace
+> GELIC_NET_MAX_MTU with GELIC_NET_MAX_FRAME.
 
-Executing xdp-trafficgen with n=1000 resulted in this output:
-[  251.652376] page_pool_release_retry() stalled pool shutdown 40 inflight 60 sec
+OK, I'll use ALIGN for the next patch set.
+   
+>>  	/* and we need to have it 128 byte aligned, therefore we allocate a
+>>  	 * bit more */
+>> -	descr->skb = dev_alloc_skb(bufsize + GELIC_NET_RXBUF_ALIGN - 1);
+>> +	descr->skb = netdev_alloc_skb(*card->netdev, bufsize +
+>> +		GELIC_NET_RXBUF_ALIGN - 1);
+> 
+> This wrapping doesn't look right to me. Also why add the align value
+> again here? I would think that it being added above should have taken
+> care of what you needed. Are you adding any data beyond the end of what
+> is DMAed into the frame?
 
-Executing xdp-trafficgen with n=10000 resulted in this output:
-[  267.332374] page_pool_release_retry() stalled pool shutdown 16 inflight 60 sec
-
-So interestingly in both cases the last batch with a size lower than 64
-does not find its way back to the page pool. So what's the problem with
-the last batch?
-
-After xdp_test_run_batch() clean up is done in xdp_test_run_teardown()
-no matter if page pool entries are still in flight. No problem for
-page_pool_destroy() as the page pool is released later when no entries
-are in flight.
-
-With commit 425d239379db0 unregistering memory model has been added to
-xdp_test_run_teardown(). Otherwise the page pool would not be released.
-But xdp_unreg_mem_model() resets the memory model type immediately to 0
-(which is actually MEM_TYPE_PAGE_SHARED). So the memory model type
-MEM_TYPE_PAGE_POOL is lost and any inflight page pool entries have no
-chance to find its way back to the page pool. I assume that's the reason
-why the last batch does not find its way back to the page pool.
-
-A simple sleep before xdp_unreg_mem_model() solved this problem, but
-this is no valid fix of course. It needs to be ensured that the memory
-model is not in use anymore. This is the case when the page pool has no
-entries in flight.
-
-How could it be ensured that a call to xdp_unreg_mem_model() is safe?
-In my opinion drivers suffer the same problem. Is there a pattern how
-this can be solved? Or did I misinterprete something?
-
-Fixes: 425d239379db0 ("bpf: Fix release of page_pool in BPF_PROG_RUN in test runner")
-Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
----
- net/bpf/test_run.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index b766a84c8536..eaccfdab0be3 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -202,6 +202,8 @@ static int xdp_test_run_setup(struct xdp_test_data *xdp, struct xdp_buff *orig_c
+This is just a straight copy of what is done in the spider net driver.
+As I mentioned in the comment of this patch, the DMA buffer must be a
+multiple of GELIC_NET_RXBUF_ALIGN, and that is what that extra
+'GELIC_NET_RXBUF_ALIGN - 1' is for.
  
- static void xdp_test_run_teardown(struct xdp_test_data *xdp)
- {
-+	usleep_range(10000, 11000);
-+
- 	xdp_unreg_mem_model(&xdp->mem);
- 	page_pool_destroy(xdp->pp);
- 	kfree(xdp->frames);
--- 
-2.30.2
+>>  	if (!descr->skb) {
+>>  		descr->buf_addr = 0; /* tell DMAC don't touch memory */
+>>  		return -ENOMEM;
+>> @@ -397,7 +399,7 @@ static int gelic_descr_prepare_rx(struct gelic_card *card,
+>>  	/* io-mmu-map the skb */
+>>  	descr->buf_addr = cpu_to_be32(dma_map_single(ctodev(card),
+>>  						     descr->skb->data,
+>> -						     GELIC_NET_MAX_MTU,
+>> +						     GELIC_NET_MAX_FRAME,
+>>  						     DMA_FROM_DEVICE));
+> 
+> Rather than using the define GELIC_NET_MAX_FRAME, why not just use
+> bufsize since that is what you actually have allocated for receive?
+
+Again, this is a straight copy of what is done in the spider net driver.
+It does seem like using bufsize would be better, so I'll change that.
+
+>>  	if (!descr->buf_addr) {
+>>  		dev_kfree_skb_any(descr->skb);
+>> @@ -915,7 +917,7 @@ static void gelic_net_pass_skb_up(struct gelic_descr *descr,
+>>  	data_error = be32_to_cpu(descr->data_error);
+>>  	/* unmap skb buffer */
+>>  	dma_unmap_single(ctodev(card), be32_to_cpu(descr->buf_addr),
+>> -			 GELIC_NET_MAX_MTU,
+>> +			 GELIC_NET_MAX_FRAME,
+>>  			 DMA_FROM_DEVICE);
+> 
+> I suppose my suggestion above would cause a problem here since you
+> would need to also define buffer size here. However since it looks like
+> you are adding a define below anyway maybe you should just look at
+> adding a new RX_BUFSZ define and just drop bufsize completely.
+
+I think making bufsize a static const would be better, since it
+would avoid using the pre-processor.
+
+>>  	skb_put(skb, be32_to_cpu(descr->valid_size)?
+>> diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_net.h b/drivers/net/ethernet/toshiba/ps3_gelic_net.h
+>> index 68f324ed4eaf..0d98defb011e 100644
+>> --- a/drivers/net/ethernet/toshiba/ps3_gelic_net.h
+>> +++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.h
+>> @@ -19,8 +19,9 @@
+>>  #define GELIC_NET_RX_DESCRIPTORS        128 /* num of descriptors */
+>>  #define GELIC_NET_TX_DESCRIPTORS        128 /* num of descriptors */
+>>  
+>> -#define GELIC_NET_MAX_MTU               VLAN_ETH_FRAME_LEN
+>> -#define GELIC_NET_MIN_MTU               VLAN_ETH_ZLEN
+>> +#define GELIC_NET_MAX_FRAME             2312
+>> +#define GELIC_NET_MAX_MTU               2294
+>> +#define GELIC_NET_MIN_MTU               64
+>>  #define GELIC_NET_RXBUF_ALIGN           128
+>>  #define GELIC_CARD_RX_CSUM_DEFAULT      1 /* hw chksum */
+>>  #define GELIC_NET_WATCHDOG_TIMEOUT      5*HZ
+> 
+> Since you are adding defines why not just add:
+> #define GELIC_NET_RX_BUFSZ \
+> 	ALIGN(GELIC_NET_MAX_FRAME, GELIC_NET_RXBUF_ALIGN)
+
+Thanks for the review.
+
+-Geoff
 
