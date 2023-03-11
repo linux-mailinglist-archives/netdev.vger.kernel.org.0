@@ -2,70 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FEEC6B6091
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 21:35:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 043096B6093
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 21:37:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229897AbjCKUfr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 15:35:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35312 "EHLO
+        id S229867AbjCKUhv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 15:37:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229680AbjCKUfq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 15:35:46 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10ECF20541;
-        Sat, 11 Mar 2023 12:35:45 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id e13so8003870wro.10;
-        Sat, 11 Mar 2023 12:35:44 -0800 (PST)
+        with ESMTP id S229589AbjCKUhu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 15:37:50 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B7EC5DC84;
+        Sat, 11 Mar 2023 12:37:49 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id bw19so7997030wrb.13;
+        Sat, 11 Mar 2023 12:37:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678566943;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=B9SEaDPKriAiDKyfkIslt2zjnxJG5SwQ9dwP0X6YQpw=;
-        b=P17DKkJxPQ9l1ObzWD8RqtwNAAyx5Jclhvbf4ojZYLSUAqy6tM/Xb0kUCIUhD3eGCw
-         u9kl6JCvWwxH5iWTMz4K0UaUzqMmfb+A7wtdWVP7d9vJnSCx8nqd43IADJsRgcmITOK9
-         tIKibCilEyhns2bFJsilp+KpLRYhIboYUWBPVyd27Wu0pyBBMQ/Q60clpTp8g/CVxo+Y
-         dXcgALHFby7wR0mM7oj8kvSODHZodutjTBxhMYDRyI6zxBdACNEe5JCT+gpuBHg/Iw4i
-         zXHlTnoAtQjDizFQ51DvlYU7+PbhONhzpUuB9hTZfgXVh0klDjMMQi6dN8NTsFKvg5Va
-         LByg==
+        d=gmail.com; s=20210112; t=1678567068;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=+0kS7aVJWn2QRxzhK3/aqBqmHgTgSZuYdBYMBRoKq/8=;
+        b=Qm6k/ImzwAlyuiPoeFuH3k0SUoxzoxnjGF9VQuItbR0sfiqm/2awfdOdhvX9Eb1KG6
+         9uJY68wqVjwxoVDKI0J1Wp74etF2pmcWaNCKjAD2nHTtnbUk/E1GV9Cf7HOd1ZoYFjLp
+         97UwV0+A6pb6YPzQ92Ax9zk1RlBoXRAkhNqt9E42ZU/vwgjwXe3zfQI4LsI8cY/7LFf5
+         R5snYkexAuB8tGNxgD/D0HMQtfn218tJL7j+zqQdpCBs1sF2EL1Sne5cIHoEey0Ih6Eu
+         ZiKnwtD1XDf1szsy7cYWjXUZq+QGE749aczcdYZ671yRtmoRDB4wDWfPTKfQvOOYqua1
+         XbqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678566943;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=B9SEaDPKriAiDKyfkIslt2zjnxJG5SwQ9dwP0X6YQpw=;
-        b=RwdwIxyoPK93wRgEBh8w6Y92R1mwS/Ec4VNv1qbhQXCxT7dKGdUnup1LM7NBZbLOBb
-         TqgHN4MjTSqk0BUb2waFDmNDP6+8tvE/rBlccN0rzST0RtNHMV13ur2pgWcaRv3Y4xpx
-         XCE+wxxablIpWIwkMZlG5+xG8g9ofmcvNm6TWI5M8e1RLeoQYyz5J26fCNJD8uWTNFzR
-         rMJ11RM3tmLeivxSfX8OK8SucnEDe3xsj9iTFxzp1qTs4wY5SgiTQQCRykufl3zsLQ/P
-         6LkHGZIFygzcZQZjJ8sSOxKCKV38nOfosbAIUYqeN/hgK3YwfO6g0pv31RO3M8ReJcAI
-         r9Dw==
-X-Gm-Message-State: AO0yUKWifOzfGzDtaO3wxdfkPVKj85J32TxFaKGlqyDHxqmB4jE6wJqo
-        uKujTBWU+cPvtn1BttBh6JiGolT11n3MEw==
-X-Google-Smtp-Source: AK7set99MMxWgK/IQCvaGY4dgmRdox1pfzG2vmBzGe7HwmF6uoQMjL09Ni97QHEGy55MDtsIiuk9ow==
-X-Received: by 2002:adf:edc8:0:b0:2c7:adb:db9 with SMTP id v8-20020adfedc8000000b002c70adb0db9mr18668917wro.63.1678566943294;
-        Sat, 11 Mar 2023 12:35:43 -0800 (PST)
-Received: from suse.localnet (host-79-35-102-94.retail.telecomitalia.it. [79.35.102.94])
-        by smtp.gmail.com with ESMTPSA id z17-20020a5d44d1000000b002c5691f13eesm3232321wrr.50.2023.03.11.12.35.41
+        d=1e100.net; s=20210112; t=1678567068;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=+0kS7aVJWn2QRxzhK3/aqBqmHgTgSZuYdBYMBRoKq/8=;
+        b=RbJraohICM7niT1Nr0BemUwxs4B+IGYv+pqwRIb2hHRWLfjqtUPKVMF4Tw2F9WNTiG
+         Yb4ko6YyhAyRT6kD6uQvY89wNTVoTJ7kdt+mf1d/hO1fEBTpqzLYSE+qCZpeWWbeEP1+
+         GpU3u/ZizPAymGS2y02t6gEn6nOrH3+jCZly9LgKJ+lvRfcnWOpc1JIiPgKYYwJT8Mp8
+         6GflvrZWRwjEMx3MgAQHOC1DnZlkcwfi/EhT1XOWnUwUCDkqOZIrY9UsdypvBEUQFhXz
+         2xS25Y3SacNHZy1BCM14WBXI782uO4zmQhSbnNQN/l3sQfq3cLG6s6ulkRSqqvEpj0YC
+         Tw7A==
+X-Gm-Message-State: AO0yUKUtGoExYE1UCjZWax5v5qA9wENrrAIIsJ0DFhF0nxpPAiYzM/ov
+        /7NRb5IBe8cLe7Xtd+PKZRs=
+X-Google-Smtp-Source: AK7set998zBaWk9BpBD6UqWjkC4AP/SpwMf7Z9hn7bpKjBWbP0akzJJnVjysT7bvrTQpVYtMG68K5w==
+X-Received: by 2002:adf:e60b:0:b0:2ca:9950:718 with SMTP id p11-20020adfe60b000000b002ca99500718mr20262213wrm.52.1678567067886;
+        Sat, 11 Mar 2023 12:37:47 -0800 (PST)
+Received: from mars.. ([2a02:168:6806:0:cb1:a328:ee29:2bd6])
+        by smtp.gmail.com with ESMTPSA id x6-20020adff646000000b002c5694aef92sm3257615wrp.21.2023.03.11.12.37.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Mar 2023 12:35:42 -0800 (PST)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     error27@gmail.com, Sumitra Sharma <sumitraartsy@gmail.com>
-Cc:     GR-Linux-NIC-Dev@marvell.com, coiby.xu@gmail.com,
-        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev, manishc@marvell.com,
-        netdev@vger.kernel.org, outreachy@lists.linux.dev
-Subject: Re: [PATCH] Staging: qlge: Remove parenthesis around single condition
-Date:   Sat, 11 Mar 2023 21:35:41 +0100
-Message-ID: <1713523.QkHrqEjB74@suse>
-In-Reply-To: <20230311144318.GC14247@ubuntu>
-References: <20230311144318.GC14247@ubuntu>
+        Sat, 11 Mar 2023 12:37:47 -0800 (PST)
+From:   Klaus Kudielka <klaus.kudielka@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Klaus Kudielka <klaus.kudielka@gmail.com>
+Subject: [PATCH net-next v2 3/3] net: dsa: mv88e6xxx: mask apparently non-existing phys during probing
+Date:   Sat, 11 Mar 2023 21:37:36 +0100
+Message-Id: <20230311203736.156664-1-klaus.kudielka@gmail.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,80 +75,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On sabato 11 marzo 2023 15:43:18 CET Sumitra Sharma wrote:
-> Hi Dan,
-> 
-> Your suggestion for correcting the indentation to
-> "[tab][tab][space][space][space][space](i ==." conflicts with the
-> statement "Outside of comments, documentation and except in Kconfig,
-> spaces are never used for indentation" written in
-> https://elixir.bootlin.com/linux/latest/source/Documentation/process/coding-style.rst
->
+To avoid excessive mdio bus transactions during probing, mask all phy
+addresses that do not exist (there is a 1:1 mapping between switch port
+number and phy address).
 
-I just saw that you use to read .rst files. Attention!
-These are source files from which human readable documentation is made.
+Suggested-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Klaus Kudielka <klaus.kudielka@gmail.com>
+---
+v2: Patch is new
 
-They may contain directives which don't show a large part of the content you 
-are interested in, which is only included when you run "make html", "make pdf" 
-and similar commands.
+ drivers/net/dsa/mv88e6xxx/chip.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Obviously, I'm talking about something that is _not_ related to your patch or 
-this thread. I'm just concerned that candidates won't be able to find the 
-information they're looking for and thus miss out on important information 
-that Ira and I have asked candidates to study (if they're interested in 
-applying to our project). 
-
-In any case, the study of a certain number of pages of the Kernel 
-documentation is always necessary, whatever project one wishes to undertake.
-
-To better understand what I'm talking about, take the Highmem documentation as 
-an example and compare the .rst file and the .html file. You will understand 
-why I am strongly encouraging you and all other applicants not to use 
-elixir.bootlin.com for study.
-
-Please compare the content (or at least the number of sections and lines) of 
-following .rst file at
-
-https://elixir.bootlin.com/linux/v6.3-rc1/source/Documentation/mm/highmem.rst
-
-with the human readable counterpart at 
-
-https://docs.kernel.org/mm/highmem.html
-
-Can you see how many information you may miss by reading an .rst file without 
-any knowledge of its syntax?
-
-Thanks,
-
-Fabio
-
-PS: I don't know why you went to the documentation source files. I see no 
-reason other than the need to work on patches for the source document.
-
-I'd like to invite you to patch the style guide that Dan suggested to you in 
-this same thread.
-
-But I'm not asking you to spend time on that patch during this contribution 
-period because you still have a lot to do before the period expires.
-
-If you want, you could take care of that patch after the contribution period 
-has ended and while you are waiting for the outcome of the selection. If so, 
-study the syntax of the .rst format carefully.
-
-In the "real" kernel (I mean anywhere outside of drivers/staging), you might 
-not always get the custom help of the same kind you can count on here. 
-However, those who intend to go further, regardless of the current project, 
-sooner or later will have to face the world outside :-)
-
->
-> However, If you still recommend to correct the indentation in the manner
-> "[tab][tab][space][space][space][space](i ==." Should I create a
-> patch for the same?
-> 
-> Regards,
-> 
-> Sumitra
-
-
-
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 29b0f3bb1c..c52798d9ce 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -3797,6 +3797,7 @@ static int mv88e6xxx_mdio_register(struct mv88e6xxx_chip *chip,
+ 	bus->read_c45 = mv88e6xxx_mdio_read_c45;
+ 	bus->write_c45 = mv88e6xxx_mdio_write_c45;
+ 	bus->parent = chip->dev;
++	bus->phy_mask = GENMASK(31, mv88e6xxx_num_ports(chip));
+ 
+ 	if (!external) {
+ 		err = mv88e6xxx_g2_irq_mdio_setup(chip, bus);
+-- 
+2.39.2
 
