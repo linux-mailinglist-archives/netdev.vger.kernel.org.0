@@ -2,289 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 95EB36B5B73
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 13:07:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81AEC6B5B86
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 13:15:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229994AbjCKMHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 07:07:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51126 "EHLO
+        id S229685AbjCKMPi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 07:15:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229958AbjCKMHD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 07:07:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 751A411F631;
-        Sat, 11 Mar 2023 04:06:58 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45C45B8253D;
-        Sat, 11 Mar 2023 12:06:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69BDEC433D2;
-        Sat, 11 Mar 2023 12:06:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678536414;
-        bh=2M+sg4TU2SXNAZOw21xnHl7W71SdvtY6IWxfePY4G4c=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=mWnRud+y6Xx+7VXOUE0VSvOWleJ52YqCdyFoNPMnlEbzKPyWh3ZNebH0uIQvhIClQ
-         NNPl7o1KAy4FPoNeuQuyio5eEP2MEnwT3xZIgoYxvGx2a/6hwOT89zdBvjcHyyzs64
-         qv6sYz42vaPkmT/9UKACcgkfQ5f4JgtJmvkvJ5koSHZTy5ZPN+S39Qmojjx1dDO/fG
-         fCEIbjExIGjh41wbXHolYQUUqCLxOpDhJ6f+pr8+VV2PXFmr3fhWKsifVfT06AAWG7
-         jN5XsRr5rjF/kNp6KdGpnxs1UHwtRgD+SHhualNesP8ObIw/tUCRuSu2uyaiUzxD67
-         J1mMRwEvBwrNQ==
-Message-ID: <ba703ed6-e91d-5128-f1a4-1667125c531e@kernel.org>
-Date:   Sat, 11 Mar 2023 14:06:48 +0200
+        with ESMTP id S229555AbjCKMPh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 07:15:37 -0500
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2116.outbound.protection.outlook.com [40.107.237.116])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09B138F711
+        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 04:15:36 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bJ9MqT7eUbJ13WeY2LiteqTB1bzzS687e2ogUPfAM+//rDKCj2KEnhurmPm3NqjvC8/t7dzxkKIoPsF8uL7Em7qvPxyGu0rYDSDMYwu8FavsY8XfGem30OTibL552x6DpyFp1/2+cBMiEJcyJW/PWhe5G/eTwijWbTdPSXpS3nifZpUtIGFVIDeDxqUlug4Tr9h/Puj/dtW6yioVxqAsSopc2n8+kIu5y2rOrpzW5zxP6ZF5lYJmmA6G1rL/i3sThzt/nTxdbNszjDrYh+ZKhbDrc2MUWLU2NlJR08huC8jGzOzZ9rLhcgi4XjiOtoYw74t46yIue0PR2LOeK8uAUg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=d0nlTH6aFbxLGIHvGDCiOXeh+d/ZjK0Ivl1vqIJhjyI=;
+ b=WWMt9gcIjTkTta7XdkOhoUqB1RzLZpJy9pLCISjmiqRwP1pKY71Jm7+Ahm6wjJ7nN77rLMhKO1Gp3tOkvjsv7HNIPGjLN2daUhupes8z1HiQrVGpXFFCWeJbRJ7uPGG7KhlzdPDVk+o9sRalmfUrBpASPgDcZgeL1nB/OhoTtk1/n8Ddm92rFo6L9+GQNw+674UsJYJszP1q43WvvwE132WAX9zea5XNbOyT4txcS3B7TcjNYrJnRDWSi9PWekQJRYiAolRUs7fOOQdOXZ4utkT+q4rawu3EnXLTCRLOQKKpxq04fTmjj92Ohe+1rciq33Dl7q+VDNV5CWfya+ylrg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=d0nlTH6aFbxLGIHvGDCiOXeh+d/ZjK0Ivl1vqIJhjyI=;
+ b=ZXrOO3CPJOjBah975sN+PJpTIpmYbhnudyb/+8FvtnolQ5Nl1Y0lyhwy/hLGYRroOpQDNva/ieyFQjxUf03MLdCKIlLbjZYNgnnq6t/gH3NL0Q5qN9yJ9VRQpGXCTipxoaduHtFuRY8I6qcxKdXnjnbnDv+D4SUb93hPMbkw2mw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by CO3PR13MB5751.namprd13.prod.outlook.com (2603:10b6:303:175::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.22; Sat, 11 Mar
+ 2023 12:15:31 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.020; Sat, 11 Mar 2023
+ 12:15:31 +0000
+Date:   Sat, 11 Mar 2023 13:15:24 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Hao Lan <lanhao@huawei.com>
+Cc:     andrew@lunn.ch, davem@davemloft.net, kuba@kernel.org,
+        alexander.duyck@gmail.com, yisen.zhuang@huawei.com,
+        salil.mehta@huawei.com, edumazet@google.com, pabeni@redhat.com,
+        richardcochran@gmail.com, shenjian15@huawei.com,
+        netdev@vger.kernel.org, wangjie125@huawei.com
+Subject: Re: [PATCH v3 net-next] net: hns3: support wake on lan configuration
+ and query
+Message-ID: <ZAxw3PWVLiGQtTMS@corigine.com>
+References: <20230310081404.947-1-lanhao@huawei.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230310081404.947-1-lanhao@huawei.com>
+X-ClientProxiedBy: AS4P190CA0028.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5d0::17) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [EXTERNAL] Re: [EXTERNAL] Re: [EXTERNAL] Re: [PATCH v3 3/6] soc:
- ti: pruss: Add pruss_cfg_read()/update() API
-Content-Language: en-US
-To:     Md Danish Anwar <a0501179@ti.com>,
-        MD Danish Anwar <danishanwar@ti.com>,
-        "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Nishanth Menon <nm@ti.com>
-Cc:     linux-remoteproc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, srk@ti.com, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20230306110934.2736465-1-danishanwar@ti.com>
- <20230306110934.2736465-4-danishanwar@ti.com>
- <7076208d-7dca-6980-5399-498e55648740@kernel.org>
- <afd6cd8a-8ba7-24b2-d7fc-c25a9c5f3c42@ti.com>
- <a74e5079-d89d-2420-b6af-d630c4f04380@kernel.org>
- <a4395259-9b83-1101-7c4c-d8a36c3600eb@ti.com>
- <367f6b50-e4cc-c3eb-e8e9-dabd4e044530@ti.com>
- <46415d8e-3c92-d489-3f44-01a586160082@kernel.org>
- <1c1e67fd-1eaa-30f5-8b2a-41a7e3ff664a@ti.com>
-From:   Roger Quadros <rogerq@kernel.org>
-In-Reply-To: <1c1e67fd-1eaa-30f5-8b2a-41a7e3ff664a@ti.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CO3PR13MB5751:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0bd52ace-3768-4d6c-b02e-08db222a4eb1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: JkfXZlixsEQODm2afL7FCI7K7VJqWMpJ88IzOlU2ODrUJbHk3fMsVroK/jLGbzi2bnnq1Vge/AW29PD8w/r2cpgpkOPZmeSg1RTADK9jJbfrbzSLFJNuaJvDJrxjoCcuEKmVakU+YD2/i6nFrLfC6//qWhoEAz0q0vgk1KQWLvsKJKXRMl++jY6f8Vp4fMoCcPp0ivbqIOVcBIOPPeoYZFENrXdppiNOE3u3/BcdI4KeC4OHOUoKk1tiXm61NTzWwpduXdBtTuBKkgURqAK0RoYE4rYrYN4X5BBK9UXBAb6fN/Si+TaOkktY19OL6DSb0ajI4mG+C61PPGJNlU2mVn7YLiqajQxd2VtsyUGbVOIQAo8qF7N1IsdjUMAksPUYGdrHH/wijqSXnRDQSXzE8gmdQZ5pQ3Q9LOP98MwT/XOg+8V2ZDc7/5cQh8tx6WhVAQNVNdhYYOwk3wJ8hFnLg3s2qv5+xD8mqAzP8+Tco1stLFNknhrw/woF10iro8LrI76wQiN5eaSDyDAk3/DykXBEiISplhkg9d1nPObHhN7mJUI8ocMN4+EnajtTfXlYCokE4Ndr4fFZHFoQ5soLPLnRM6h42slNSLXqiNDGuiJUIbUBuebheZnb74je24CF/UZGU5xpwNVYA3CmAZiJ8w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(39840400004)(366004)(136003)(376002)(346002)(451199018)(36756003)(316002)(478600001)(6486002)(7416002)(5660300002)(2906002)(8936002)(66946007)(4326008)(66476007)(8676002)(66556008)(44832011)(6916009)(41300700001)(86362001)(38100700002)(6512007)(6506007)(186003)(2616005)(6666004)(83380400001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?JFwDs8WYQwytPyh8o+XBCd6UdTsf9xqaiVvu45H6SZCVjSsdQDjNmmv1VfZo?=
+ =?us-ascii?Q?HU8o5iouD8JhMhTxE4FmlKZgKqshK5K9+3Ivi8W/GNq/ut+vMM/hrk2Rp6J5?=
+ =?us-ascii?Q?7WOZ7AKdIkiTPI1YiIKAPFFN8nDWYZ84AqjLtZPAk2OtXMra96+S2CSNPxwV?=
+ =?us-ascii?Q?Xmk8szvT6+4pc+VUbO0EYWPUi3WUjrAK5nn+i8Qv/sThDFzDUnRh5Rj+ySKl?=
+ =?us-ascii?Q?TgR40sEKFfdAxOm1vzqyfzzOuAvypeqAt+mB+UiBXkn2Iifc5g1YpgBnUU9n?=
+ =?us-ascii?Q?ydjYCkaum8lxLAaFILy3oYDCOhTxjO6qbhXAbeYx2eyvhmPJur/7Xzf5qxbq?=
+ =?us-ascii?Q?t6i2B9acnp2spO+Jz2TV94JziinKRuCODAK1zGqO5DSMNUd4eCJgD2O4IDKU?=
+ =?us-ascii?Q?BBF5HIpuE4u+ep8DlzhxcK3iOwbMB5Iwv1Wosl46E8aW2gZRJ0dj+YYnO4Id?=
+ =?us-ascii?Q?CSZuTpO6voDJm2rbgFq/ZXN2g2B6SJSy811poQgRxOdUse170kFt9cTM9wsW?=
+ =?us-ascii?Q?d15HAFCvmcXYZiId3b8IYUPa45DRMYGZJsLeLfF6FYeozX/qMdZKHugLx8FM?=
+ =?us-ascii?Q?S5oj8GxrVuT6lsZHr20GamVygWhfbA4Cu5fVut5APHLiH7KBPjzKyQaEZ+ic?=
+ =?us-ascii?Q?pUMbJkAB2DQhNP6ChaH+RRiwzmbnWPgLi/pMga+HdGGAnV0avr5LTmCosHW8?=
+ =?us-ascii?Q?MoYexbnmwoulBvCF5t0UFwF6yrIyfa4tz9w9MMy9K/+KK2LdyNY355YPiSPr?=
+ =?us-ascii?Q?ItQivExlhTt4bWsklteDzAQjGm+/qu47QJzB/Hh76fgDGdN8bTmljt3PjZvH?=
+ =?us-ascii?Q?aERywoyZpul8jtKQ7UZX2kMi/PLtHQ7bXVK9Qjw8Uq23ToPXRRzf1LYZ534+?=
+ =?us-ascii?Q?/pEHMlNnTJuNFSJhV7NdQu2eythMNX+lZ8FBb2PGK55W2wdeoY1wjN22sz0Y?=
+ =?us-ascii?Q?MpXc28/VXs4f4znzjgItoyJ99n6YLWwzyP4dU6nEPIbY+Q2+TTmRjnQYaoe2?=
+ =?us-ascii?Q?Wi0NscU2oChx5RFExH/ZKms2VVbosJ81LM+HPnpjvrYOn6on+jsvf2Aa5BGk?=
+ =?us-ascii?Q?ByRkv6DZ+/gCI/ioyanPlF2teIKgWaLw4NQbSsmmPRB9tIXkyhqYstqsMgmd?=
+ =?us-ascii?Q?cXj8Yjm9IDwgaROUaitMdGX7hYOqznYPJ3CsL/WHJPROb4xlsdndeXgxLm3p?=
+ =?us-ascii?Q?UhGPhMQEh1f+uqAgZSjYLiQptH5sE9LE/wPHgSbPP0fVHZ/0eQFD2GAda9FP?=
+ =?us-ascii?Q?Og/UXs2/J6WyGg9F4/9RT/Oj55HYrEUvWZAYGLocK5dQWuA86535QWUB9p6Y?=
+ =?us-ascii?Q?pbd/xVxDJnHEu+PdYf3tCssC2tUt7+TjGgP+ZfSM6cF+lI2Xwq5wJBW2XZ7r?=
+ =?us-ascii?Q?iC6lzBQGePveOuEsIq1FkcXXfkZg9M+7HXiosO/GkYyMZqs7P4qOPoUZYNmv?=
+ =?us-ascii?Q?QPUV/qY+7z4lNB9H+dHoyOVLRuQHabCBcr6jQ06RSTPJIlWhWRJcDTyNtZQy?=
+ =?us-ascii?Q?LXz0cMwYBLayNSC6Y1n0S6Czu8blNUvlZzTnrCcnRwTEUe/DSMCIHYFIIY5i?=
+ =?us-ascii?Q?J8KaK6twFih5t+5FbQfG8PZtwBVjqYMwL4AHBHHVPXnxP2hki8glI8cxY/l9?=
+ =?us-ascii?Q?B392zQlLkw7yiTQxOcubdFcNE7CRc3QeBZ6ig6my6oszRdym9nLmHqMJp1AT?=
+ =?us-ascii?Q?T49slA=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0bd52ace-3768-4d6c-b02e-08db222a4eb1
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2023 12:15:31.2619
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Fia7AjyH75VMRub/G48ummI460mznESMMPY5vR7OFSUOUC+0V3sW1HpcNm428ax3DwRiBxITBEtMinLUFkAaQVUr8UGnQ8HnAedOTQWcvBs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO3PR13MB5751
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Danish,
+On Fri, Mar 10, 2023 at 04:14:04PM +0800, Hao Lan wrote:
+> The HNS3 driver supports Wake-on-LAN, which can wake up
+> the server from power off state to power on state by magic
+> packet or magic security packet.
+> 
+> ChangeLog:
+> v1->v2:
+> Deleted the debugfs function that overlaps with the ethtool function
+> from suggestion of Andrew Lunn.
+> 
+> v2->v3:
+> Return the wol configuration stored in driver,
+> suggested by Alexander H Duyck.
+> 
+> Signed-off-by: Hao Lan <lanhao@huawei.com>
 
-On 10/03/2023 17:36, Md Danish Anwar wrote:
-> Hi Roger,
-> 
-> On 10/03/23 18:53, Roger Quadros wrote:
->> Hi Danish,
->>
->> On 10/03/2023 13:53, Md Danish Anwar wrote:
->>> Hi Roger,
->>>
->>> On 09/03/23 17:00, Md Danish Anwar wrote:
->>>> Hi Roger,
->>>>
->>>> On 08/03/23 17:12, Roger Quadros wrote:
->>>>>
->>>>>
->>>>> On 08/03/2023 13:36, Md Danish Anwar wrote:
->>>>>> Hi Roger,
->>>>>>
->>>>>> On 08/03/23 13:57, Roger Quadros wrote:
->>>>>>> Hi,
->>>>>>>
->>>>>>> On 06/03/2023 13:09, MD Danish Anwar wrote:
->>>>>>>> From: Suman Anna <s-anna@ti.com>
->>>>>>>>
->>>>>>>> Add two new generic API pruss_cfg_read() and pruss_cfg_update() to
->>>>>>>> the PRUSS platform driver to allow other drivers to read and program
->>>>>>>> respectively a register within the PRUSS CFG sub-module represented
->>>>>>>> by a syscon driver. This interface provides a simple way for client
->>>>>>>
->>>>>>> Do you really need these 2 functions to be public?
->>>>>>> I see that later patches (4-6) add APIs for doing specific things
->>>>>>> and that should be sufficient than exposing entire CFG space via
->>>>>>> pruss_cfg_read/update().
->>>>>>>
->>>>>>>
->>>>>>
->>>>>> I think the intention here is to keep this APIs pruss_cfg_read() and
->>>>>> pruss_cfg_update() public so that other drivers can read / modify PRUSS config
->>>>>> when needed.
->>>>>
->>>>> Where are these other drivers? If they don't exist then let's not make provision
->>>>> for it now.
->>>>> We can provide necessary API helpers when needed instead of letting client drivers
->>>>> do what they want as they can be misused and hard to debug.
->>>>>
->>>>
->>>> The ICSSG Ethernet driver uses pruss_cfg_update() API. It is posted upstream in
->>>> the series [1]. The ethernet driver series is dependent on this series. In
->>>> series [1] we are using pruss_cfg_update() in icssg_config.c file,
->>>> icssg_config() API.
->>
->> You can instead add a new API on what exactly you want it to do rather than exposing
->> entire CFG space.
->>
-> 
-> Sure.
-> 
-> In icssg_config.c, a call to pruss_cfg_update() is made to enable XFR shift for
-> PRU and RTU,
-> 
-> 	/* enable XFR shift for PRU and RTU */
-> 	mask = PRUSS_SPP_XFER_SHIFT_EN | PRUSS_SPP_RTU_XFR_SHIFT_EN;
-> 	pruss_cfg_update(prueth->pruss, PRUSS_CFG_SPP, mask, mask);
-> 
-> I will add the below API as part of Patch 4 of the series. We'll call this API
-> and entire CFG space will not be exposed.
-> 
-> /**
->  * pruss_cfg_xfr_pru_rtu_enable() - Enable/disable XFR shift for PRU and RTU
->  * @pruss: the pruss instance
->  * @enable: enable/disable
->  *
->  * Return: 0 on success, or an error code otherwise
->  */
-> static inline int pruss_cfg_xfr_pru_rtu_enable(struct pruss *pruss, bool enable)
-> {
-> 	u32 mask = PRUSS_SPP_XFER_SHIFT_EN | PRUSS_SPP_RTU_XFR_SHIFT_EN;
-> 	u32 set = enable ? mask : 0;
-> 
-> 	return pruss_cfg_update(pruss, PRUSS_CFG_SPP, mask, set);
-> }
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-I would suggest to make separate APIs for PRU XFR vs RTU XFR.
+...
 
-> 
-> To make pruss_cfg_update() and pruss_cfg_read() API internal to pruss.c, I will
-> add the below change to pruss.h file and pruss.c file. Let me know if this
-> change looks okay to you.
-> 
-> diff --git a/drivers/soc/ti/pruss.c b/drivers/soc/ti/pruss.c
-> 
-> index 537a3910ffd8..9f01c8809deb 100644
-> 
-> --- a/drivers/soc/ti/pruss.c
-> 
-> +++ b/drivers/soc/ti/pruss.c
-> 
-> @@ -182,7 +182,6 @@ int pruss_cfg_read(struct pruss *pruss, unsigned int reg,
-> unsigned int *val)
-
-Need to declare this as 'static'.
-
-> 
-> 
-> 
->         return regmap_read(pruss->cfg_regmap, reg, val);
-> 
+> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+> index 55306fe8a540..10de2b4c401b 100644
+> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+> @@ -2063,6 +2063,31 @@ static int hns3_get_link_ext_state(struct net_device *netdev,
+>  	return -ENODATA;
 >  }
-> 
-> -EXPORT_SYMBOL_GPL(pruss_cfg_read);
-> 
-> 
-> 
->  /**
-> 
->   * pruss_cfg_update() - configure a PRUSS CFG sub-module register
-> 
-> @@ -203,7 +202,6 @@ int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
+>  
+> +static void hns3_get_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
+> +{
+> +	struct hnae3_handle *handle = hns3_get_handle(netdev);
+> +	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(handle->pdev);
+> +	const struct hnae3_ae_ops *ops = handle->ae_algo->ops;
 
-this as well.
+nit: the local variable declarations could be reverse xmas tree
+     - longest line to shortest line. One option being:
 
-> 
-> 
-> 
->         return regmap_update_bits(pruss->cfg_regmap, reg, mask, val);
-> 
->  }
-> 
-> -EXPORT_SYMBOL_GPL(pruss_cfg_update);
-> 
-> 
-> 
->  static void pruss_of_free_clk_provider(void *data)
-> 
->  {
-> 
-> diff --git a/include/linux/remoteproc/pruss.h b/include/linux/remoteproc/pruss.h
-> 
-> index d41bec448f06..12ef10b9fe9a 100644
-> 
-> --- a/include/linux/remoteproc/pruss.h
-> 
-> +++ b/include/linux/remoteproc/pruss.h
-> 
-> @@ -165,9 +165,6 @@ int pruss_request_mem_region(struct pruss *pruss, enum
-> pruss_mem mem_id,
-> 
->                              struct pruss_mem_region *region);
-> 
->  int pruss_release_mem_region(struct pruss *pruss,
-> 
->                              struct pruss_mem_region *region);
-> 
-> -int pruss_cfg_read(struct pruss *pruss, unsigned int reg, unsigned int *val);
-> 
-> -int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
-> 
-> -                    unsigned int mask, unsigned int val);
-> 
-> 
-> 
->  #else
-> 
-> 
-> 
-> @@ -191,18 +188,6 @@ static inline int pruss_release_mem_region(struct pruss
-> *pruss,
-> 
->         return -EOPNOTSUPP;
-> 
->  }
-> 
-> 
-> 
-> -static inline int pruss_cfg_read(struct pruss *pruss, unsigned int reg,
-> 
-> -                                unsigned int *val)
-> 
-> -{
-> 
-> -       return -EOPNOTSUPP;
-> 
-> -}
-> 
-> -
-> 
-> -static inline int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
-> 
-> -                                  unsigned int mask, unsigned int val)
-> 
-> -{
-> 
-> -       return -EOPNOTSUPP;
-> 
-> -}
-> 
-> -
-> 
->  #endif /* CONFIG_TI_PRUSS */
-> 
-> 
-> 
->  #if IS_ENABLED(CONFIG_PRU_REMOTEPROC)
-> 
-> 
-> Please have a look and let me know if above API and code changes looks OK to you.
-> 
+	const struct hnae3_ae_ops *ops;
+	struct hnae3_handle *handle;
+	struct hnae3_ae_dev *ae_dev;
 
-Rest looks OK.
+	handle = hns3_get_handle(netdev);
+	ae_dev = pci_get_drvdata(handle->pdev);
+	ops = handle->ae_algo->ops;
 
-cheers,
--roger
+Likewise elsewhere in this patch.
