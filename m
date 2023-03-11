@@ -2,106 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF0646B608A
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 21:32:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 919DD6B608E
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 21:34:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229942AbjCKUc2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 15:32:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55542 "EHLO
+        id S229867AbjCKUem (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 15:34:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229910AbjCKUcY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 15:32:24 -0500
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 317D26EBA2;
-        Sat, 11 Mar 2023 12:32:22 -0800 (PST)
-Received: by mail-wm1-x330.google.com with SMTP id p16so5520063wmq.5;
-        Sat, 11 Mar 2023 12:32:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678566740;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+0kS7aVJWn2QRxzhK3/aqBqmHgTgSZuYdBYMBRoKq/8=;
-        b=Des4jwYTOyK0w+CSUeBjA8GQUVC6GH07szSLdPl5GmR3KoARotp2M+8bDrX7I0/BKw
-         LrzUhIXhlFvyDFfzoOAnrScOyWP37jnULP621Y7hTSEmk38nb9/TpiDgbraLjJogMcy4
-         iWpZgBLkLrk5pKfKTwY3WYLAIjJrRZm6xgTwlub7rhaPhvX4Hh+P8qYf+6z7OJNQaOUZ
-         xgCE86nMh/sfO6b9VtfrNuuJaZCEMO/xXt7xr0ltz19EYZp3HS+n6gqmEl2mhgOxNDRu
-         10rgnDv7NhBSZMm8MeSQNRrtqFgJ9IzplnXzEe0HmnzhK1roPqTaKGxdZ3AWBwo+1Z3F
-         f2Rw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678566740;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=+0kS7aVJWn2QRxzhK3/aqBqmHgTgSZuYdBYMBRoKq/8=;
-        b=ZytGFteQ6mHyu5Y10Vavk/Kput9+5CLy4rbTR8dEmpPcbC8gs4O7cASqd4weARsY8B
-         OZHvQvdkLqn0zHqcqLW+yhR/ZePobyzJA3h0GTN9bY8wj35rbC0Dv1tOYyEIaf7hEuH3
-         p1k3R8OhW9zifhn97LjBqiVwaUiMTC9p6a49fZ3hUojzDjYCMw6uW4Q9WJjvl7NOrDjZ
-         +efOtXBlvHKPCdTQ0skPzhA5SaI6PGphfakBp4qq3TPlcXy6mSAS+Wc8VzTS7ZPMH7Ez
-         WX6WWWgqqqXpnpmw82rXN7MPUDOtjabS5C/5zHn0RzBzLh7tlZkP4/NR18J8YRMnQr0p
-         dp1A==
-X-Gm-Message-State: AO0yUKWrQgMQR5A/mr/FKESa3tULoZNufV+ZtbKWQULT1zckXkkYc3pZ
-        Pq9eoyYnQTQlGiZ3tfZUjIY=
-X-Google-Smtp-Source: AK7set9qnsniMJHBuh+hg9gSiuN6l0ykRvaspRnEDHdfjs2BjTyEkGLcdwA4iNN/mmZqxwol/rX0Kg==
-X-Received: by 2002:a05:600c:4690:b0:3ea:f6c4:305e with SMTP id p16-20020a05600c469000b003eaf6c4305emr6746861wmo.38.1678566740639;
-        Sat, 11 Mar 2023 12:32:20 -0800 (PST)
-Received: from mars.. ([2a02:168:6806:0:cb1:a328:ee29:2bd6])
-        by smtp.gmail.com with ESMTPSA id t17-20020a05600c451100b003dc434b39c7sm4524319wmo.0.2023.03.11.12.32.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Mar 2023 12:32:20 -0800 (PST)
-From:   Klaus Kudielka <klaus.kudielka@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S229927AbjCKUek (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 15:34:40 -0500
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E69C37AB8;
+        Sat, 11 Mar 2023 12:34:26 -0800 (PST)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1pb5v0-0002Ly-19;
+        Sat, 11 Mar 2023 21:34:18 +0100
+Date:   Sat, 11 Mar 2023 20:34:12 +0000
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Klaus Kudielka <klaus.kudielka@gmail.com>
-Subject: [PATCH net-next v2 3/3] net: dsa: mv88e6xxx: mask apparently non-existing phys during probing
-Date:   Sat, 11 Mar 2023 21:31:32 +0100
-Message-Id: <20230311203132.156467-4-klaus.kudielka@gmail.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230311203132.156467-1-klaus.kudielka@gmail.com>
-References: <20230311203132.156467-1-klaus.kudielka@gmail.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Jianhui Zhao <zhaojh329@gmail.com>,
+        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
+        Alexander Couzens <lynxis@fe80.eu>
+Subject: Re: Aw: Re: [PATCH net-next v12 08/18] net: ethernet: mtk_eth_soc:
+ fix 1000Base-X and 2500Base-X modes
+Message-ID: <ZAzlxF6LaMSdOdIL@makrotopia.org>
+References: <20230308134642.cdxqw4lxtlgfsl4g@skbuf>
+ <ZAiXvNT8EzHTmFPh@shell.armlinux.org.uk>
+ <ZAiciK5fElvLXYQ9@makrotopia.org>
+ <ZAijM91F18lWC80+@shell.armlinux.org.uk>
+ <ZAik+I1Ei+grJdUQ@makrotopia.org>
+ <ZAioqp21521NsttV@shell.armlinux.org.uk>
+ <trinity-79e9f0b8-a267-4bf9-a3d4-1ec691eb5238-1678536337569@3c-app-gmx-bs24>
+ <trinity-a69cee2e-40c5-44b5-ac97-2cb35e1d2462-1678541173568@3c-app-gmx-bs24>
+ <ZAyVbzuKq2haFfQa@makrotopia.org>
+ <ZAzeZwT3JJK42ANn@shell.armlinux.org.uk>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <ZAzeZwT3JJK42ANn@shell.armlinux.org.uk>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To avoid excessive mdio bus transactions during probing, mask all phy
-addresses that do not exist (there is a 1:1 mapping between switch port
-number and phy address).
+On Sat, Mar 11, 2023 at 08:02:47PM +0000, Russell King (Oracle) wrote:
+> On Sat, Mar 11, 2023 at 02:51:27PM +0000, Daniel Golle wrote:
+> > On Sat, Mar 11, 2023 at 02:26:13PM +0100, Frank Wunderlich wrote:
+> > > > Gesendet: Samstag, 11. März 2023 um 13:05 Uhr
+> > > > Von: "Frank Wunderlich" <frank-w@public-files.de>
+> > > > > Gesendet: Mittwoch, 08. März 2023 um 16:24 Uhr
+> > > > > Von: "Russell King (Oracle)" <linux@armlinux.org.uk>
+> > > > > > > It would be nice to add these to my database - please send me the
+> > > > > > > output of ethtool -m $iface raw on > foo.bin for each module.
+> > > > > 
+> > > > > so if you can do that for me, then I can see whether it's likely that
+> > > > > the patches that are already in mainline will do anything to solve
+> > > > > the workaround you've had to add for the hw signals.
+> > > > 
+> > > > i got the 2.5G copper sfps, and tried them...they work well with the v12 (including this patch), but not in v13...
+> > > > 
+> > > > i dumped the eeprom like you mention for your database:
+> > > > 
+> > > > $ hexdump -C 2g5_sfp.bin 
+> > > > 00000000  03 04 07 00 01 00 00 00  00 02 00 05 19 00 00 00  |................|
+> > > > 00000010  1e 14 00 00 4f 45 4d 20  20 20 20 20 20 20 20 20  |....OEM         |
+> > > > 00000020  20 20 20 20 00 00 00 00  53 46 50 2d 32 2e 35 47  |    ....SFP-2.5G|
+> > > > 00000030  2d 54 20 20 20 20 20 20  31 2e 30 20 03 52 00 19  |-T      1.0 .R..|
+> > > > 00000040  00 1a 00 00 53 4b 32 33  30 31 31 31 30 30 30 38  |....SK2301110008|
+> > > > 00000050  20 20 20 20 32 33 30 31  31 30 20 20 68 f0 01 e8  |    230110  h...|
+> > > > 00000060  00 00 11 37 4f 7a dc ff  3d c0 6e 74 9b 7c 06 ca  |...7Oz..=.nt.|..|
+> > > > 00000070  e1 d0 f9 00 00 00 00 00  00 00 00 00 08 f0 fc 64  |...............d|
+> > > > 00000080  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+> > > > *
+> > > > 00000100  5f 00 ce 00 5a 00 d3 00  8c a0 75 30 88 b8 79 18  |_...Z.....u0..y.|
+> > > > 00000110  1d 4c 01 f4 19 64 03 e8  4d f0 06 30 3d e8 06 f2  |.L...d..M..0=...|
+> > > > 00000120  2b d4 00 c7 27 10 00 df  00 00 00 00 00 00 00 00  |+...'...........|
+> > > > 00000130  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+> > > > 00000140  00 00 00 00 3f 80 00 00  00 00 00 00 01 00 00 00  |....?...........|
+> > > > 00000150  01 00 00 00 01 00 00 00  01 00 00 00 00 00 00 f1  |................|
+> > > > 00000160  29 1a 82 41 0b b8 13 88  0f a0 ff ff ff ff 80 ff  |)..A............|
+> > > > 00000170  00 00 ff ff 00 00 ff ff  04 ff ff ff ff ff ff 00  |................|
+> > > > 00000180  43 4e 53 38 54 55 54 41  41 43 33 30 2d 31 34 31  |CNS8TUTAAC30-141|
+> > > > 00000190  30 2d 30 34 56 30 34 20  49 fb 46 00 00 00 00 29  |0-04V04 I.F....)|
+> > > > 000001a0  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+> > > > 000001b0  00 00 00 00 00 00 00 00  00 00 00 00 00 00 aa aa  |................|
+> > > > 000001c0  47 4c 43 2d 54 20 20 20  20 20 20 20 20 20 20 20  |GLC-T           |
+> > > > 000001d0  20 20 20 20 20 20 20 20  20 20 20 20 20 20 20 97  |               .|
+> > > > 000001e0  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+> > > > 000001f0  00 00 00 00 00 00 00 00  00 40 00 40 00 00 00 00  |.........@.@....|
+> > > > 
+> > > > how can we add a quirk to support this?
+> > > 
+> > > tried to add the quirk like this onto v13
+> > > 
+> > > --- a/drivers/net/phy/sfp.c
+> > > +++ b/drivers/net/phy/sfp.c
+> > > @@ -403,6 +403,8 @@ static const struct sfp_quirk sfp_quirks[] = {
+> > >         SFP_QUIRK_F("OEM", "RTSFP-10G", sfp_fixup_rollball_cc),
+> > >         SFP_QUIRK_F("Turris", "RTSFP-10", sfp_fixup_rollball),
+> > >         SFP_QUIRK_F("Turris", "RTSFP-10G", sfp_fixup_rollball),
+> > > +
+> > > +       SFP_QUIRK_M("OEM", "SFP-2.5G-T", sfp_quirk_2500basex),
+> > >  };
+> > > 
+> > > but still no link...
+> > > 
+> > > how can i verify the quirk was applied? see only this in dmesg:
+> > > 
+> > > [    2.192274] sfp sfp-1: module OEM              SFP-2.5G-T       rev 1.0  sn SK2301110008     dc 230110  
+> > > 
+> > > also tried to force speed (module should support 100/1000/2500), but it seems i can set speed option only on
+> > > gmac (eth1) and not on the sfp (phy).
+> > > 
+> > > i guess between mac and sfp speed is always 2500base-X and after the phy (if there is any) the link speed is
+> > > maybe different.
+> > 
+> > As discussed in the previous iteration of the series where I suggested to
+> > add work-arounds disabling in-band AN for 1000Base-X and 2500Base-X having
+> > those will also affect fiber transceivers which transparently pass-through
+> > the electrical SerDes signal into light. Russell explained it very well
+> > and I now agree that a good solution would be to add a new SFP quirk
+> > indicating that a SFP module got a "hidden" PHY which doesn't like in-band
+> > autonegotiation.
+> 
+> I do not believe that fibre SFPs have hidden PHYs that disrupt the
+> autonegotiation. What makes you think that they do?
 
-Suggested-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Klaus Kudielka <klaus.kudielka@gmail.com>
----
-v2: Patch is new
+This is not a fiber SFP, but rather a 2500Base-T RJ-45 module.
+Hence it quite certainly has some kind of PHY.
 
- drivers/net/dsa/mv88e6xxx/chip.c | 1 +
- 1 file changed, 1 insertion(+)
+> Do you have
+> autonegotiation working with some fibre SFP modules but not other
+> fibre modules?
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 29b0f3bb1c..c52798d9ce 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3797,6 +3797,7 @@ static int mv88e6xxx_mdio_register(struct mv88e6xxx_chip *chip,
- 	bus->read_c45 = mv88e6xxx_mdio_read_c45;
- 	bus->write_c45 = mv88e6xxx_mdio_write_c45;
- 	bus->parent = chip->dev;
-+	bus->phy_mask = GENMASK(31, mv88e6xxx_num_ports(chip));
- 
- 	if (!external) {
- 		err = mv88e6xxx_g2_irq_mdio_setup(chip, bus);
--- 
-2.39.2
-
+I've tried only with one 1000Base-SX module and can confirm (like
+Frank already did in your previous discussion some weeks ago) that
+with that autonegotiation is working fine. Only those RJ-45 which
+do not expose the PHY via i2c-mdio are problematic apparently, as
+Linux/phylink *assumes* that they do in-band AN, but at least some
+of them don't.
