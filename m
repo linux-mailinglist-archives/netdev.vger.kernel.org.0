@@ -2,118 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67EB26B5F4B
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 18:45:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C1216B5F4D
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 18:46:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230139AbjCKRpX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 12:45:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59172 "EHLO
+        id S229906AbjCKRqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 12:46:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231183AbjCKRpJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 12:45:09 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 763F41EBF4
-        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 09:45:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=P8spk824Nhe44bQqZ1slzLgZj/JIvgjB6T3wYUPRS3s=; b=Q2
-        Rl8jMYEw+EVLgpx38fBXNhGBeKJvd0CCjXb7GhC9aB8Upa/VT13o4RtR6cw47byXmPHG+ngNIVGNy
-        8mqZOP8GEDvA4TyBCZuPK/drww9bhh2Z4GELfEkSqGVevT93bTDBtyfBTRr/liv41Tg72zQzM9EOm
-        sLKGrWkeWAMK2h0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pb3HB-0074fP-Kp; Sat, 11 Mar 2023 18:45:01 +0100
-Date:   Sat, 11 Mar 2023 18:45:01 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Parthiban.Veerasooran@microchip.com, allan.nielsen@microchip.com
-Cc:     netdev@vger.kernel.org, Jan.Huber@microchip.com,
-        Thorsten.Kummermehr@microchip.com
-Subject: Re: RFC: Adding Microchip's LAN865x 10BASE-T1S MAC-PHY driver
- support to Linux
-Message-ID: <76afad2d-33ab-4bfa-baf9-2f7a0a4aa134@lunn.ch>
-References: <076fbcec-27e9-7dc2-14cb-4b0a9331b889@microchip.com>
+        with ESMTP id S229478AbjCKRqM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 12:46:12 -0500
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B71D5AB47
+        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 09:46:09 -0800 (PST)
+Received: by mail-qt1-x831.google.com with SMTP id r16so9194998qtx.9
+        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 09:46:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=joelfernandes.org; s=google; t=1678556768;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=pc/briERt9FJh5C2XHv6CkT7y+2L+qDGLr//rdnKvrc=;
+        b=ULSh+fxLXFnj1HeU5iXIrGG67yAFGF10F55yq0NsfeTWnm44/u0UfhMnE+St+Ysh7N
+         qtdpRavL5uAi/iKad2szMWWIhWukADvlQFgfvFzwFEDkTqZLKmVsli6agC6yFfncnqya
+         cARLfAFQYgWBAriYjGkW26SPcDGN1++br5pwI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678556768;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pc/briERt9FJh5C2XHv6CkT7y+2L+qDGLr//rdnKvrc=;
+        b=N2P6ruKo8mTxGqcLFyuD310JgzXtMDSk1ZvBBxTfqNLFHi2obiMdR1Sjmiv/m7vEXR
+         nJIi1KpjdoVrdd6CyQVQmvHwCUdHlLjuvo2L8lW6odSamBArPnjdu+1SA49jyaa5K9rL
+         z8ta9GQbA35sX31RaQJ+mXe573N5YMLN5vfZE/8iKbknQ0h5yS1TJdSMa28VZsc+gFVJ
+         pizuoAxRM1HxEzJEIENx6HEtRAPkVPXd3wfn5OPx96a02Wr3SbIzDIFw1eg2DA9xeHDw
+         EEOyxW19/eeeKb/6OTauaSLDvRX0xkrgrPhghuVSKoW+AzmKHDIMNBOV9EQ29FKsa+So
+         LqUQ==
+X-Gm-Message-State: AO0yUKVzObhR0qJqQQEfX13IAc2rf4lbkqpLux4oTA8qTvz6iEJGJEIT
+        tsa2yQTNtNAZVAsW73ea96cx3A==
+X-Google-Smtp-Source: AK7set8hO6t/689Jo5lexMAWJLjyP9W1ozTlFEuJIaQWqb2VSTGPGIps96hAqM4nkVkd27Fz0MHIWQ==
+X-Received: by 2002:a05:622a:1042:b0:3b8:6b74:8ac3 with SMTP id f2-20020a05622a104200b003b86b748ac3mr13608691qte.28.1678556768494;
+        Sat, 11 Mar 2023 09:46:08 -0800 (PST)
+Received: from localhost (129.239.188.35.bc.googleusercontent.com. [35.188.239.129])
+        by smtp.gmail.com with ESMTPSA id z4-20020ac84304000000b003c03b33e6f5sm2184179qtm.90.2023.03.11.09.46.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Mar 2023 09:46:07 -0800 (PST)
+Date:   Sat, 11 Mar 2023 17:46:07 +0000
+From:   Joel Fernandes <joel@joelfernandes.org>
+To:     David Howells <dhowells@redhat.com>
+Cc:     "Paul E. McKenney" <paulmck@kernel.org>, rcu@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-team@meta.com,
+        rostedt@goodmis.org, Marc Dionne <marc.dionne@auristor.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-afs@lists.infradead.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH rcu 14/16] rxrpc: Use call_rcu_hurry() instead of
+ call_rcu()
+Message-ID: <20230311174607.GA2293352@google.com>
+References: <CAEXW_YSd3dyxHxnU1EuER+xyBGGatONzPovphFX5K9seSbkdkg@mail.gmail.com>
+ <20221130181316.GA1012431@paulmck-ThinkPad-P17-Gen-1>
+ <20221130181325.1012760-14-paulmck@kernel.org>
+ <CAEXW_YS1nfsV_ohXDaB1i2em=+0KP1DofktS24oGFa4wPAbiiw@mail.gmail.com>
+ <639433.1669835344@warthog.procyon.org.uk>
+ <658624.1669849522@warthog.procyon.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <076fbcec-27e9-7dc2-14cb-4b0a9331b889@microchip.com>
+In-Reply-To: <658624.1669849522@warthog.procyon.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Allan
+On Wed, Nov 30, 2022 at 11:05:22PM +0000, David Howells wrote:
+> Joel Fernandes <joel@joelfernandes.org> wrote:
+[...] 
+> > After your patch, you are still doing a wake up in your call_rcu() callback:
+> >
+> > - ASSERTCMP(refcount_read(&conn->ref), ==, 0);
+> > + if (atomic_dec_and_test(&rxnet->nr_conns))
+> > +    wake_up_var(&rxnet->nr_conns);
+> > +}
+> > 
+> > Are you saying the code can now tolerate delays? What if the RCU
+> > callback is invoked after arbitrarily long delays making the sleeping
+> > process to wait?
+> 
+> True.  But that now only holds up the destruction of a net namespace and the
+> removal of the rxrpc module.
 
-It has been a long time since we talked, maybe 2019 at the Linux
-Plumbers conference.... And then PTP discussions etc.
+I am guessing not destructing the net namespace soon enough is not an issue.
+I do remember (in a different patch) that not tearing down networking things
+have a weird side effect to tools that require state to disappear..
 
-It seems like Sparx5 is going well, along with felix, seville, etc.
+> > If you agree, you can convert the call_rcu() to call_rcu_hurry() in
+> > your patch itself. Would you be willing to do that? If not, that's
+> > totally OK and I can send a patch later once yours is in (after
+> > further testing).
+> 
+> I can add it to part 4 (see my rxrpc-ringless-5 branch) if it is necessary.
 
-On Fri, Mar 10, 2023 at 11:13:23AM +0000, Parthiban.Veerasooran@microchip.com wrote:
-> Hi All,
-> 
-> I would like to add Microchip's LAN865x 10BASE-T1S MAC-PHY driver 
-> support to Linux kernel.
-> (Product link: https://www.microchip.com/en-us/product/LAN8650)
-> 
-> The LAN8650 combines a Media Access Controller (MAC) and an Ethernet PHY 
-> to access 10BASE‑T1S networks. The common standard Serial Peripheral 
-> Interface (SPI) is used so that the transfer of Ethernet packets and 
-> LAN8650 control/status commands are performed over a single, serial 
-> interface.
-> 
-> Ethernet packets are segmented and transferred over the serial interface
-> according to the OPEN Alliance 10BASE‑T1x MAC‑PHY Serial Interface 
-> specification designed by TC6.
-> (link: https://www.opensig.org/Automotive-Ethernet-Specifications/)
-> The serial interface protocol can simultaneously transfer both transmit 
-> and receive packets between the host and the LAN8650.
-> 
-> Basically the driver comprises of two parts. One part is to interface 
-> with networking subsystem and SPI subsystem. The other part is a TC6 
-> state machine which implements the Ethernet packets segmentation 
-> according to OPEN Alliance 10BASE‑T1x MAC‑PHY Serial Interface 
-> specification.
-> 
-> The idea behind the TC6 state machine implementation is to make it as a 
-> generic library and platform independent. A set of API's provided by 
-> this TC6 state machine library can be used by the 10BASE-T1x MAC-PHY 
-> drivers to segment the Ethernet packets according to the OPEN Alliance 
-> 10BASE‑T1x MAC‑PHY Serial Interface specification.
-> 
-> With the above information, kindly provide your valuable feedback on my 
-> below queries.
-> 
-> Can we keep this TC6 state machine within the LAN865x driver or as a 
-> separate generic library accessible for other 10BASE-T1x MAC-PHY drivers 
-> as well?
-> 
-> If you recommend to have that as a separate generic library then could 
-> you please advice on what is the best way to do that in kernel?
+I am guessing the conversion to call_rcu_hurry() is still not necessary here,
+if it is then consider the conversion.
 
-Microchip is getting more and more involved in mainline. Jakub
-publishes some developers statistics for netdev:
+But yeah feel free to ignore this, I am just pinging here so that it did not
+slip through the cracks.
 
-https://lwn.net/Articles/918007/
+thanks,
 
-It shows Microchip are near the top for code contributions. Which is
-great. However, as a reviewer, i see the quality really varies. Given
-how active Microchip is within Linux, the netdev community, and to
-some extent Linux as a whole, expects a company like Microchip to
-build up its internal resources to offer training and Mentoring to
-mainline developers, rather than expect the community to do that
-work. Does such a thing exist within Microchip? Could you point
-Parthiban towards a mentor who can help guide the work adding generic
-support for the OPEN Alliance 10BASE-T1x MAC-PHY Serial Interface and
-the LAN8650/1 specific bits? If not, could Steen Hegelund or Horatiu
-Vultur make some time available to be a mentor?
+ - Joel
 
-Thanks
-	Andrew
