@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA0FC6B5EEC
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 18:33:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2E6B6B5EED
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 18:33:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230126AbjCKRdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 12:33:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58210 "EHLO
+        id S229550AbjCKRdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 12:33:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230089AbjCKRd3 (ORCPT
+        with ESMTP id S230101AbjCKRd3 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 12:33:29 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BBBE2940C
-        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 09:33:18 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id k10so32933031edk.13
-        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 09:33:17 -0800 (PST)
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA02F227B1
+        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 09:33:19 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id da10so33111404edb.3
+        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 09:33:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678555996;
+        d=linaro.org; s=google; t=1678555998;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=cV5jhwqAFb9J/sgkVfjUP7KhaalS+CKZT6hVt29t4R8=;
-        b=MYvjilFcpCdittD302lL2YjMwJ2qvaM+TOfrxTuATwXHJ1CfzEjqOmvaSvScCqmkin
-         pTnDZ5d2rOiT4dU1dZdXkgCPw+Covleytz7abYY23PlkYjskdqFG39/Y7ZSCIpoxgXlf
-         PeXzpD5kSyI+JJmWgeCFORKW1S9np8HnYzatbTyNAthhVQzk9si2w3X8tLVL3QW+VvVZ
-         ucE+S8IILRThkeL4sB1bDjwNLZa/k37MagG/E41twesL3QAeTRhWuv+B7FtdiicQVIW5
-         7m7opj8Qi4+juTxzE+C0FUuMelNeoewwPeqTez0Fwm5ZNQR0j+3L6jIcetbH+ngR/aLF
-         V6wA==
+        bh=nKur1r8OlOPHhO+W1SjiqgXs8kEkxFQEfXcxEmmOXUc=;
+        b=k4Ti0rLnAWzmjDi7tWIcZx1FgUvGaYLD9CMX5Z4+jDpBipnLP+u8k1HeOmYB76PjqT
+         wEu3FEQZHVG8ZpXSbrEZ3uEIq44dE1l7UIs6yoBhWaD7HllMVCzkAyDj+1hS4Yjlbnan
+         l+9tDD7Y7A69//Cb0hV+luAlqtKGEg3lx0V82txAOxivF5XHSBmTRwMSmUKsPevtdK9S
+         SViEPZi46I+SZU+M5TyvP5UfFy/c9YY/z6NKbL/u+RIRU0YLrvhWrTecZMJlzeOFrsXr
+         S6qT43NZ5c/4m9ae4itCdHuKaTHdsT0FPBxXzAlYmPtLHl84lLisXDaVKG7+MkktVgNZ
+         5zJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678555996;
+        d=1e100.net; s=20210112; t=1678555998;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=cV5jhwqAFb9J/sgkVfjUP7KhaalS+CKZT6hVt29t4R8=;
-        b=BG54dvkFs6tNPi7ty6NFzzhRJiD3BztjlX9b+19qBT24dFrVSbKuvhoDJuoFrgfTUy
-         iW58jhegjraq56ngR9JOKbew9rfaaL+fHce9DS5wwHoMvwWN5kWfqD8m86F37078YdPj
-         bqBi98leeoDDD+Y9yNgO6+CGwWIp/8k+q79aNBCB5/9xvhqcEoocvYA8T3NJpUrH3g+9
-         Swq05qOyb3RVatsZmibUgzuNiFpaNCtpe9zrdLH7aZ46rGCbqIqC2R4Gq7RnlrVfituv
-         VICW6lh77JsM//hS0HHUmV3sl9hD8vQlSslVTa+KI4Ve3tCQCqu3VHokKEhkfMGEYiTo
-         Hlcg==
-X-Gm-Message-State: AO0yUKVXSpbSmcUd/XHlXTdcwYEODqWJzBiZpfMruwHE6YD35OL7d50X
-        7LSlo3uVIazxKu1J8khLsFrgWg==
-X-Google-Smtp-Source: AK7set/PA0/E9yFuXJbNrBsBaZOrTV+sx32D7gEew2JFPqh8HWaLIK52psR0MV7S5RRnbLvgEyjCBA==
-X-Received: by 2002:a05:6402:35a:b0:4ab:4dc6:6f8c with SMTP id r26-20020a056402035a00b004ab4dc66f8cmr28767868edw.4.1678555996559;
-        Sat, 11 Mar 2023 09:33:16 -0800 (PST)
+        bh=nKur1r8OlOPHhO+W1SjiqgXs8kEkxFQEfXcxEmmOXUc=;
+        b=HOv1SJClj7OYHsecBqQ5HO/gsBEO+SNDMhoLXeWWl0Vs8FoCjTXeU1/p+EnDN5FBV7
+         /bdNCXZYBPtvAQQxfybjEQiRX6BpvuLiGI3f7RnQNwLW+4blKe1QCBusEJ7XTyJ8Cfy2
+         iZ1E6FEhAzljot+2w9nuCHgreiWIUmRuBf2NOz3kYNdhSWUirVgT9JA/xHDndscn2U/z
+         aTyOCNg3lIbA98AXgP4mfhbT/PjhRes9GYshARalynno3DFGGrS3pOmzf/TNZFe1+/SZ
+         HvhC3O6bdoMr+Asa0tEnzczD6y2ZlUM4Hfm6pdbtBqUoz7+JKCXYeOKrL6Yk2cXCkARG
+         77jg==
+X-Gm-Message-State: AO0yUKV39z7LnXuWdX+16NQE2qMd433Zu/flooFPmddFU9LdaoDdzqKX
+        wmvmea//7WrQL45UN+o0XmoGXAFbV7A1tanxmwc=
+X-Google-Smtp-Source: AK7set+7UkOx/2YMNdMbGIWOGP5Y0f4Tdf6ivMioIVg2xYb8RrkCWLmuL1/fIFWs5ACOFrdzbgdPgA==
+X-Received: by 2002:a17:906:fe44:b0:8e6:bcb6:469e with SMTP id wz4-20020a170906fe4400b008e6bcb6469emr33549135ejb.0.1678555998342;
+        Sat, 11 Mar 2023 09:33:18 -0800 (PST)
 Received: from krzk-bin.. ([2a02:810d:15c0:828:6927:e94d:fc63:9d6e])
-        by smtp.gmail.com with ESMTPSA id k15-20020a50ce4f000000b004d8287c775fsm1440885edj.8.2023.03.11.09.33.14
+        by smtp.gmail.com with ESMTPSA id k15-20020a50ce4f000000b004d8287c775fsm1440885edj.8.2023.03.11.09.33.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Mar 2023 09:33:16 -0800 (PST)
+        Sat, 11 Mar 2023 09:33:18 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -71,9 +71,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-wpan@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 04/12] net: dsa: ksz9477: drop of_match_ptr for ID table
-Date:   Sat, 11 Mar 2023 18:32:55 +0100
-Message-Id: <20230311173303.262618-4-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 05/12] net: dsa: ocelot: drop of_match_ptr for ID table
+Date:   Sat, 11 Mar 2023 18:32:56 +0100
+Message-Id: <20230311173303.262618-5-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230311173303.262618-1-krzysztof.kozlowski@linaro.org>
 References: <20230311173303.262618-1-krzysztof.kozlowski@linaro.org>
@@ -90,30 +90,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver will match mostly by DT table (even thought there is regular
-ID table) so there is little benefit in of_match_ptr (this also allows
-ACPI matching via PRP0001, even though it might not be relevant here).
+The driver can match only via the DT table so the table should be always
+used and the of_match_ptr does not have any sense (this also allows ACPI
+matching via PRP0001, even though it might not be relevant here).
 
-  drivers/net/dsa/microchip/ksz9477_i2c.c:84:34: error: ‘ksz9477_dt_ids’ defined but not used [-Werror=unused-const-variable=]
+  drivers/net/dsa/ocelot/ocelot_ext.c:143:34: error: ‘ocelot_ext_switch_of_match’ defined but not used [-Werror=unused-const-variable=]
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/net/dsa/microchip/ksz9477_i2c.c | 2 +-
+ drivers/net/dsa/ocelot/ocelot_ext.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz9477_i2c.c b/drivers/net/dsa/microchip/ksz9477_i2c.c
-index e315f669ec06..97a317263a2f 100644
---- a/drivers/net/dsa/microchip/ksz9477_i2c.c
-+++ b/drivers/net/dsa/microchip/ksz9477_i2c.c
-@@ -117,7 +117,7 @@ MODULE_DEVICE_TABLE(of, ksz9477_dt_ids);
- static struct i2c_driver ksz9477_i2c_driver = {
+diff --git a/drivers/net/dsa/ocelot/ocelot_ext.c b/drivers/net/dsa/ocelot/ocelot_ext.c
+index 063150659816..228737a32080 100644
+--- a/drivers/net/dsa/ocelot/ocelot_ext.c
++++ b/drivers/net/dsa/ocelot/ocelot_ext.c
+@@ -149,7 +149,7 @@ MODULE_DEVICE_TABLE(of, ocelot_ext_switch_of_match);
+ static struct platform_driver ocelot_ext_switch_driver = {
  	.driver = {
- 		.name	= "ksz9477-switch",
--		.of_match_table = of_match_ptr(ksz9477_dt_ids),
-+		.of_match_table = ksz9477_dt_ids,
+ 		.name = "ocelot-ext-switch",
+-		.of_match_table = of_match_ptr(ocelot_ext_switch_of_match),
++		.of_match_table = ocelot_ext_switch_of_match,
  	},
- 	.probe_new = ksz9477_i2c_probe,
- 	.remove	= ksz9477_i2c_remove,
+ 	.probe = ocelot_ext_probe,
+ 	.remove = ocelot_ext_remove,
 -- 
 2.34.1
 
