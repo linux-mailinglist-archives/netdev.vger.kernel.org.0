@@ -2,75 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A261F6B5D2D
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 16:08:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71E446B5D48
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 16:18:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230302AbjCKPHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 10:07:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60724 "EHLO
+        id S230336AbjCKPSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 10:18:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230293AbjCKPHa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 10:07:30 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4E1011FFA5;
-        Sat, 11 Mar 2023 07:07:28 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id y2so7999222pjg.3;
-        Sat, 11 Mar 2023 07:07:28 -0800 (PST)
+        with ESMTP id S229791AbjCKPSF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 10:18:05 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C843C10A88;
+        Sat, 11 Mar 2023 07:18:03 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id ce8-20020a17090aff0800b0023a61cff2c6so10090266pjb.0;
+        Sat, 11 Mar 2023 07:18:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678547248;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=BTYm5QGSmqNPaawCK164RDl98EMhzIVLGc5pEB+PM4Y=;
-        b=iOoWgc7Ro33vRBji+0er3hEoOHjNICAgGXl66WRneGRajIhamEpxMwmY5UAvgOYpL8
-         S4azH0ByIbZn5E2BUlOn2UdDi4RjH4iShWCk33bryJbBwEjHECmbr1CWo/j6wlxzVQqM
-         Nm5XsVAOlrcEe72aZIhYxJmaETntzXuxgOoDWCdIPxsKHDjduX96aS0DEASqtWYBZTEt
-         2eGvOu/XF6m37YUnRJ6ZkdQ7ZC18+3lgLgV8kZ84aGj97cAU5ejHSxGMmUrdycURJk1W
-         ac+sSr9d0j/ZtJ+cjup34imfoZVaeF100AtDZwRWKIvQIVr/iQ3Nt/XZKXOaqHd9LPNJ
-         MFhQ==
+        d=gmail.com; s=20210112; t=1678547883;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=vzL0lKQA7Qxou/xZXI6wkc7TkinivUbSS7RQX8UnPsM=;
+        b=p6l8O63x+x3Q2LUDQ3HlrBHvQtlU5v4UezfcX7HxRInV8MkJ//yj01Fw9vrEDtNRBa
+         lwG9sPxEZdfbqgXC4II3ri4yc83g2Yg4a6BAixUz3dlMrqdEFijhekqfZOOBbKGHhwye
+         Xs5hQ8RTrRMfBux9kgpTUFBNO0w5JYfpLxptquaoMkFo37rkSD7yQBIWMZ0v/JSW6jWY
+         VtCO4JuefR7yhA0+lBKsgVnoo/YfJ48/shsr3GedmOA/acC/SgSPRpP2YRLNcrP8/g6k
+         NdhpSKlRfKoIGSgsFVEqIxem7giPHnpOh8OdcDd1GKObrf02FDXiOAfFSubAfW/fXMK0
+         qnxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678547248;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=BTYm5QGSmqNPaawCK164RDl98EMhzIVLGc5pEB+PM4Y=;
-        b=YGFwsH023mMm0Dg2PuZ7Kaf/bA6M/8DXDuJtZkAn/71YAOU53vI+9HqQ9a+pzw1IFf
-         H9NpqLXhpXKpQYhwymGaKcQyYBxm5Z+bxKV2B7OrCBtGHRJ1MDV2dXY1lcxSc05LNvvF
-         PDWjt0+cpwp8eew3xzMFITqf1cjqhcQx/VHPGTTuS1l4fhZC39lRKeShuGw4TKBb+C0o
-         8n4VYBQqLVANk667hSHFAsFCSzB3IAXSt74e1//2PVIdTvcZj+99kYYLm3B5MZYaDp/9
-         VVV20r1PE2ya1B8XDFCujj1JIHhUv7ZnYZiJT+QQmir8fwYImDW9niJFiwom93lGLxxQ
-         B17Q==
-X-Gm-Message-State: AO0yUKX2ELz5pOkIzbrEvSfzVX7UZSoNflgKz0IGr0nTyvveguUMgiiP
-        muMeMrXt9QSgidU5hrkn33E=
-X-Google-Smtp-Source: AK7set+0yKRcjc0Fp+jBIUP+MwPFuya0/0SZZ94Q0bijsCCf1hOR6ek44+DNgoUKd9oj9KSbs470xA==
-X-Received: by 2002:a17:902:db11:b0:19d:7a4:4063 with SMTP id m17-20020a170902db1100b0019d07a44063mr33645410plx.46.1678547248097;
-        Sat, 11 Mar 2023 07:07:28 -0800 (PST)
-Received: from skynet-linux.local ([2a09:bac5:3b4c:11c3::1c5:3f])
-        by smtp.googlemail.com with ESMTPSA id c10-20020a63d50a000000b00502fdc789c5sm1676470pgg.27.2023.03.11.07.07.23
+        d=1e100.net; s=20210112; t=1678547883;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=vzL0lKQA7Qxou/xZXI6wkc7TkinivUbSS7RQX8UnPsM=;
+        b=ZjyMeCoTECo9p6ofpbVZ2NvH8pDRI3loJ91n/epLtC8S85uzJqHYhktEAOBbqn//at
+         X26oFL503qCty5twi3NKAg5R1AsEa/Op/XU7sG013r/OXwFTXnqIBM1b5Fm9CbOh5ACe
+         lq1ti1Tqc7GmdBZnM4uIrww8dFxVlncnmsL8NrvnyBvFO5sa2UDt1uD3t09yBW29ZRT5
+         wJl4Ni6Vpo5x3sLT3jc+FOAqCElwiA1CYmZksTRZ4io3HhD4cNPBbM1lD1bn/XkdgAbV
+         7SLz9r+Mh7nk4AnLZlUVkpXZ5VQP8dNos0nb9pt8fueQE90+GvDrpzTUQfKZEAkap1Tn
+         QZRA==
+X-Gm-Message-State: AO0yUKWDsughvy6rdOfRb8IQ6VrDp85hw5pv9GMb4nx8RSXTlyIsN/yj
+        EWY1Gl5WcZU19ynicpOE8yk=
+X-Google-Smtp-Source: AK7set/KJWGZB1W8/CipRrS+KK/oKGcA4x7I2P/qKdRWMqJjvvL1fwfFfQf2bwm9TJQ9AjddMrG8vw==
+X-Received: by 2002:a17:902:ec84:b0:19c:c87b:4740 with SMTP id x4-20020a170902ec8400b0019cc87b4740mr33928704plg.34.1678547882857;
+        Sat, 11 Mar 2023 07:18:02 -0800 (PST)
+Received: from KERNELXING-MB0.tencent.com ([114.253.32.213])
+        by smtp.gmail.com with ESMTPSA id o11-20020a170902d4cb00b00194caf3e975sm1670922plg.208.2023.03.11.07.18.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Mar 2023 07:07:27 -0800 (PST)
-From:   Sireesh Kodali <sireeshkodali1@gmail.com>
-To:     loic.poulain@linaro.org, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, linux-kernel@vger.kernel.org
-Cc:     Vladimir Lypak <vladimir.lypak@gmail.com>,
-        Sireesh Kodali <sireeshkodali1@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 1/1] net: wireless: ath: wcn36xx: add support for pronto-v3
-Date:   Sat, 11 Mar 2023 20:36:47 +0530
-Message-Id: <20230311150647.22935-2-sireeshkodali1@gmail.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230311150647.22935-1-sireeshkodali1@gmail.com>
-References: <20230311150647.22935-1-sireeshkodali1@gmail.com>
+        Sat, 11 Mar 2023 07:18:02 -0800 (PST)
+From:   Jason Xing <kerneljasonxing@gmail.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kerneljasonxing@gmail.com, Jason Xing <kernelxing@tencent.com>
+Subject: [PATCH net-next] net-sysfs: display two backlog queue len separately
+Date:   Sat, 11 Mar 2023 23:17:56 +0800
+Message-Id: <20230311151756.83302-1-kerneljasonxing@gmail.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,152 +69,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Lypak <vladimir.lypak@gmail.com>
+From: Jason Xing <kernelxing@tencent.com>
 
-Pronto v3 has a different DXE address than prior Pronto versions. This
-patch changes the macro to return the correct register address based on
-the pronto version.
+Sometimes we need to know which one of backlog queue can be exactly
+long enough to cause some latency when debugging this part is needed.
+Thus, we can then separate the display of both.
 
-Signed-off-by: Vladimir Lypak <vladimir.lypak@gmail.com>
-Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
+Signed-off-by: Jason Xing <kernelxing@tencent.com>
 ---
- drivers/net/wireless/ath/wcn36xx/dxe.c     | 23 +++++++++++-----------
- drivers/net/wireless/ath/wcn36xx/dxe.h     |  4 ++--
- drivers/net/wireless/ath/wcn36xx/main.c    |  1 +
- drivers/net/wireless/ath/wcn36xx/wcn36xx.h |  1 +
- 4 files changed, 16 insertions(+), 13 deletions(-)
+ net/core/net-procfs.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/wcn36xx/dxe.c b/drivers/net/wireless/ath/wcn36xx/dxe.c
-index 4e9e13941c8f..9013f056eecb 100644
---- a/drivers/net/wireless/ath/wcn36xx/dxe.c
-+++ b/drivers/net/wireless/ath/wcn36xx/dxe.c
-@@ -112,8 +112,8 @@ int wcn36xx_dxe_alloc_ctl_blks(struct wcn36xx *wcn)
- 	wcn->dxe_rx_l_ch.desc_num = WCN36XX_DXE_CH_DESC_NUMB_RX_L;
- 	wcn->dxe_rx_h_ch.desc_num = WCN36XX_DXE_CH_DESC_NUMB_RX_H;
- 
--	wcn->dxe_tx_l_ch.dxe_wq =  WCN36XX_DXE_WQ_TX_L;
--	wcn->dxe_tx_h_ch.dxe_wq =  WCN36XX_DXE_WQ_TX_H;
-+	wcn->dxe_tx_l_ch.dxe_wq =  WCN36XX_DXE_WQ_TX_L(wcn);
-+	wcn->dxe_tx_h_ch.dxe_wq =  WCN36XX_DXE_WQ_TX_H(wcn);
- 
- 	wcn->dxe_tx_l_ch.ctrl_bd = WCN36XX_DXE_CTRL_TX_L_BD;
- 	wcn->dxe_tx_h_ch.ctrl_bd = WCN36XX_DXE_CTRL_TX_H_BD;
-@@ -165,8 +165,9 @@ void wcn36xx_dxe_free_ctl_blks(struct wcn36xx *wcn)
- 	wcn36xx_dxe_free_ctl_block(&wcn->dxe_rx_h_ch);
+diff --git a/net/core/net-procfs.c b/net/core/net-procfs.c
+index 1ec23bf8b05c..97a304e1957a 100644
+--- a/net/core/net-procfs.c
++++ b/net/core/net-procfs.c
+@@ -115,10 +115,14 @@ static int dev_seq_show(struct seq_file *seq, void *v)
+ 	return 0;
  }
  
--static int wcn36xx_dxe_init_descs(struct device *dev, struct wcn36xx_dxe_ch *wcn_ch)
-+static int wcn36xx_dxe_init_descs(struct wcn36xx *wcn, struct wcn36xx_dxe_ch *wcn_ch)
+-static u32 softnet_backlog_len(struct softnet_data *sd)
++static u32 softnet_input_pkt_queue_len(struct softnet_data *sd)
  {
-+	struct device *dev = wcn->dev;
- 	struct wcn36xx_dxe_desc *cur_dxe = NULL;
- 	struct wcn36xx_dxe_desc *prev_dxe = NULL;
- 	struct wcn36xx_dxe_ctl *cur_ctl = NULL;
-@@ -190,11 +191,11 @@ static int wcn36xx_dxe_init_descs(struct device *dev, struct wcn36xx_dxe_ch *wcn
- 		switch (wcn_ch->ch_type) {
- 		case WCN36XX_DXE_CH_TX_L:
- 			cur_dxe->ctrl = WCN36XX_DXE_CTRL_TX_L;
--			cur_dxe->dst_addr_l = WCN36XX_DXE_WQ_TX_L;
-+			cur_dxe->dst_addr_l = WCN36XX_DXE_WQ_TX_L(wcn);
- 			break;
- 		case WCN36XX_DXE_CH_TX_H:
- 			cur_dxe->ctrl = WCN36XX_DXE_CTRL_TX_H;
--			cur_dxe->dst_addr_l = WCN36XX_DXE_WQ_TX_H;
-+			cur_dxe->dst_addr_l = WCN36XX_DXE_WQ_TX_H(wcn);
- 			break;
- 		case WCN36XX_DXE_CH_RX_L:
- 			cur_dxe->ctrl = WCN36XX_DXE_CTRL_RX_L;
-@@ -914,7 +915,7 @@ int wcn36xx_dxe_init(struct wcn36xx *wcn)
- 	/***************************************/
- 	/* Init descriptors for TX LOW channel */
- 	/***************************************/
--	ret = wcn36xx_dxe_init_descs(wcn->dev, &wcn->dxe_tx_l_ch);
-+	ret = wcn36xx_dxe_init_descs(wcn, &wcn->dxe_tx_l_ch);
- 	if (ret) {
- 		dev_err(wcn->dev, "Error allocating descriptor\n");
- 		return ret;
-@@ -928,14 +929,14 @@ int wcn36xx_dxe_init(struct wcn36xx *wcn)
- 	/* Program DMA destination addr for TX LOW */
- 	wcn36xx_dxe_write_register(wcn,
- 		WCN36XX_DXE_CH_DEST_ADDR_TX_L,
--		WCN36XX_DXE_WQ_TX_L);
-+		WCN36XX_DXE_WQ_TX_L(wcn));
+-	return skb_queue_len_lockless(&sd->input_pkt_queue) +
+-	       skb_queue_len_lockless(&sd->process_queue);
++	return skb_queue_len_lockless(&sd->input_pkt_queue);
++}
++
++static u32 softnet_process_queue_len(struct softnet_data *sd)
++{
++	return skb_queue_len_lockless(&sd->process_queue);
+ }
  
- 	wcn36xx_dxe_read_register(wcn, WCN36XX_DXE_REG_CH_EN, &reg_data);
+ static struct softnet_data *softnet_get_online(loff_t *pos)
+@@ -169,12 +173,15 @@ static int softnet_seq_show(struct seq_file *seq, void *v)
+ 	 * mapping the data a specific CPU
+ 	 */
+ 	seq_printf(seq,
+-		   "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x\n",
++		   "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x "
++		   "%08x %08x\n",
+ 		   sd->processed, sd->dropped, sd->time_squeeze, 0,
+ 		   0, 0, 0, 0, /* was fastroute */
+ 		   0,	/* was cpu_collision */
+ 		   sd->received_rps, flow_limit_count,
+-		   softnet_backlog_len(sd), (int)seq->index);
++		   0,	/* was len of two backlog queues */
++		   (int)seq->index,
++		   softnet_input_pkt_queue_len(sd), softnet_process_queue_len(sd));
+ 	return 0;
+ }
  
- 	/***************************************/
- 	/* Init descriptors for TX HIGH channel */
- 	/***************************************/
--	ret = wcn36xx_dxe_init_descs(wcn->dev, &wcn->dxe_tx_h_ch);
-+	ret = wcn36xx_dxe_init_descs(wcn, &wcn->dxe_tx_h_ch);
- 	if (ret) {
- 		dev_err(wcn->dev, "Error allocating descriptor\n");
- 		goto out_err_txh_ch;
-@@ -950,14 +951,14 @@ int wcn36xx_dxe_init(struct wcn36xx *wcn)
- 	/* Program DMA destination addr for TX HIGH */
- 	wcn36xx_dxe_write_register(wcn,
- 		WCN36XX_DXE_CH_DEST_ADDR_TX_H,
--		WCN36XX_DXE_WQ_TX_H);
-+		WCN36XX_DXE_WQ_TX_H(wcn));
- 
- 	wcn36xx_dxe_read_register(wcn, WCN36XX_DXE_REG_CH_EN, &reg_data);
- 
- 	/***************************************/
- 	/* Init descriptors for RX LOW channel */
- 	/***************************************/
--	ret = wcn36xx_dxe_init_descs(wcn->dev, &wcn->dxe_rx_l_ch);
-+	ret = wcn36xx_dxe_init_descs(wcn, &wcn->dxe_rx_l_ch);
- 	if (ret) {
- 		dev_err(wcn->dev, "Error allocating descriptor\n");
- 		goto out_err_rxl_ch;
-@@ -988,7 +989,7 @@ int wcn36xx_dxe_init(struct wcn36xx *wcn)
- 	/***************************************/
- 	/* Init descriptors for RX HIGH channel */
- 	/***************************************/
--	ret = wcn36xx_dxe_init_descs(wcn->dev, &wcn->dxe_rx_h_ch);
-+	ret = wcn36xx_dxe_init_descs(wcn, &wcn->dxe_rx_h_ch);
- 	if (ret) {
- 		dev_err(wcn->dev, "Error allocating descriptor\n");
- 		goto out_err_rxh_ch;
-diff --git a/drivers/net/wireless/ath/wcn36xx/dxe.h b/drivers/net/wireless/ath/wcn36xx/dxe.h
-index 26a31edf52e9..dd8c684a3ba7 100644
---- a/drivers/net/wireless/ath/wcn36xx/dxe.h
-+++ b/drivers/net/wireless/ath/wcn36xx/dxe.h
-@@ -135,8 +135,8 @@ H2H_TEST_RX_TX = DMA2
- 	WCN36xx_DXE_CTRL_ENDIANNESS)
- 
- /* TODO This must calculated properly but not hardcoded */
--#define WCN36XX_DXE_WQ_TX_L			0x17
--#define WCN36XX_DXE_WQ_TX_H			0x17
-+#define WCN36XX_DXE_WQ_TX_L(wcn)    ((wcn)->is_pronto_v3 ? 0x6 : 0x17)
-+#define WCN36XX_DXE_WQ_TX_H(wcn)    ((wcn)->is_pronto_v3 ? 0x6 : 0x17)
- #define WCN36XX_DXE_WQ_RX_L			0xB
- #define WCN36XX_DXE_WQ_RX_H			0x4
- 
-diff --git a/drivers/net/wireless/ath/wcn36xx/main.c b/drivers/net/wireless/ath/wcn36xx/main.c
-index 3b79cc1c7c5b..8dbd115a393c 100644
---- a/drivers/net/wireless/ath/wcn36xx/main.c
-+++ b/drivers/net/wireless/ath/wcn36xx/main.c
-@@ -1508,6 +1508,7 @@ static int wcn36xx_platform_get_resources(struct wcn36xx *wcn,
- 	}
- 
- 	wcn->is_pronto = !!of_device_is_compatible(mmio_node, "qcom,pronto");
-+	wcn->is_pronto_v3 = !!of_device_is_compatible(mmio_node, "qcom,pronto-v3-pil");
- 
- 	/* Map the CCU memory */
- 	index = of_property_match_string(mmio_node, "reg-names", "ccu");
-diff --git a/drivers/net/wireless/ath/wcn36xx/wcn36xx.h b/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
-index 9aa08b636d08..ff4a8e5d7209 100644
---- a/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
-+++ b/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
-@@ -217,6 +217,7 @@ struct wcn36xx {
- 	u8			fw_major;
- 	u32			fw_feat_caps[WCN36XX_HAL_CAPS_SIZE];
- 	bool			is_pronto;
-+	bool			is_pronto_v3;
- 
- 	/* extra byte for the NULL termination */
- 	u8			crm_version[WCN36XX_HAL_VERSION_LENGTH + 1];
 -- 
-2.39.2
+2.37.3
 
