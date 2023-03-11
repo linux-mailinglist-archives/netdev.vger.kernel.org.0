@@ -2,107 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEA366B5E5D
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 18:09:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28A8E6B5E80
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 18:14:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229810AbjCKRJf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 12:09:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46928 "EHLO
+        id S229960AbjCKROP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 12:14:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbjCKRJe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 12:09:34 -0500
-Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.214])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6E356EC5D;
-        Sat, 11 Mar 2023 09:09:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=39auS
-        PKZnuBFBnPRBUd+UqjHniwggSni0+AncM3Q90Q=; b=MgFxzSOphnh2TvTOZcyXM
-        /0HLGVK9wyERR9QjaAT6qbabX1S47rSnXpoubTvXMmmPy5PhhNWpBvIVwrxKxy8T
-        P+J4sO7HqQRSUFEoKulAk5Lwim1iFpKLS6jj9sq1dp6M+yeTyjbqGeQZj6HsDyl7
-        VI7gsS6Ks4jt3xoN5WZ8pU=
-Received: from leanderwang-LC2.localdomain (unknown [111.206.145.21])
-        by zwqz-smtp-mta-g0-0 (Coremail) with SMTP id _____wAnnhaVtQxkNp8CDA--.24226S2;
-        Sun, 12 Mar 2023 01:08:37 +0800 (CST)
-From:   Zheng Wang <zyytlz.wz@163.com>
-To:     davem@davemloft.net
-Cc:     simon.horman@corigine.com, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, petrm@nvidia.com, thomas.lendacky@amd.com,
-        wsa+renesas@sang-engineering.com, leon@kernel.org,
-        shayagr@amazon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, hackerzheng666@gmail.com,
-        1395428693sheep@gmail.com, alex000young@gmail.com,
-        Zheng Wang <zyytlz.wz@163.com>
-Subject: [PATCH v2] xirc2ps_cs: Fix use after free bug in xirc2ps_detach
-Date:   Sun, 12 Mar 2023 01:08:36 +0800
-Message-Id: <20230311170836.3919005-1-zyytlz.wz@163.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229933AbjCKROO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 12:14:14 -0500
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B36B56FB
+        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 09:14:12 -0800 (PST)
+Received: by mail-pl1-x631.google.com with SMTP id u5so8757543plq.7
+        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 09:14:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112; t=1678554851;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=TOKGow/mO9jpNc8gyiIeqT76HvA8+ciKGvap6neQtLg=;
+        b=yJiZLQha3nB0hAHFQp9VXnUdnoUsZXC5K7tGx+JqI7BAu7IJSR1x7U7FVPH8s74TqT
+         DXt8PvA9yA+OaReqJwnXYsUWaafY8MfasdQ+hEisuk+NXAoTQ7QOQlFTIchEO2CIa3M2
+         3D5oXzqnvdXjaYdX5lxaZmVqDPbGfDvA2JCayXcm7QyfyzcHID/lpQBgqnoAvxNZgT4E
+         642nH9+0Sd+7BoY3rly6+o4UEAQ3UXJysbkIAko3GHApXkiEWy7PbFFpD6jLBLFae0XA
+         BmuT6eJPSJYSblVOzuT5ZJcpaKMrcc/3GZ6wMPUq0ry6dKtdWQwscP6tVRlF3S2kskch
+         hu3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678554851;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=TOKGow/mO9jpNc8gyiIeqT76HvA8+ciKGvap6neQtLg=;
+        b=jSzfJJJ4PGJLT1CMwi6hHzSkp7UYOk03OuEUvGUi5N5x62PXQ11ZN26E86WSuQsK3o
+         FdluC2GQlQliAhDxkyQuAZ8QrJ0hxC2YBeChbKbidaoLDivOPoSK9KmxsAoYg0cOHcG9
+         8UFWL/8PMuywW9spTUwLafRzGD28rWYNRUNU990YEXBL1E06qa+yqkYHSpfqw8mTrZK+
+         8iQnKj8xMcH2RNvq7MUaM1YJ0Wxml2az0EAfWJg/0UkU14nh/w4fMskP2aJvOwL3i4cw
+         rr3PVpx2DO4c7HyB+9MiiBgYcpIt/JpCvB8bUTFO8loSbh6/Ht75FYY2cRB45K6ZnGvp
+         Ldvg==
+X-Gm-Message-State: AO0yUKV0Kn2E6AZSASCKAq97s0Vdq3sZRuq81m+GkwiaqNfZ1s6O/EAo
+        XDywXyDs49JokLlPPobrxUfcwg==
+X-Google-Smtp-Source: AK7set+P2NvIbojvM+8gOZPt4aOld2GWsyXU4p7Q06ZatC0junkHBHw7lV2yhgvk/Q9jJm+KfBHlTQ==
+X-Received: by 2002:a17:903:1c1:b0:19e:72c5:34df with SMTP id e1-20020a17090301c100b0019e72c534dfmr34384572plh.52.1678554851742;
+        Sat, 11 Mar 2023 09:14:11 -0800 (PST)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id ld14-20020a170902face00b0019f387f2dc3sm198752plb.24.2023.03.11.09.14.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Mar 2023 09:14:11 -0800 (PST)
+Date:   Sat, 11 Mar 2023 09:14:09 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jason Xing <kerneljasonxing@gmail.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com, kuniyu@amazon.com,
+        liuhangbin@gmail.com, xiangxia.m.yue@gmail.com, jiri@nvidia.com,
+        andy.ren@getcruise.com, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jason Xing <kernelxing@tencent.com>
+Subject: Re: [PATCH net-next] net: introduce budget_squeeze to help us tune
+ rx behavior
+Message-ID: <20230311091409.4f125e53@hermes.local>
+In-Reply-To: <20230311163614.92296-1-kerneljasonxing@gmail.com>
+References: <20230311163614.92296-1-kerneljasonxing@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: _____wAnnhaVtQxkNp8CDA--.24226S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7WrWxuF4xKrW5Aw4UCr48WFg_yoW8GFyUpr
-        WDJay5Zr4kXwsIvw4xJrWUJF15Was3Kayjgr93C3yFgrn8ArWqgr1rKayjgFyxArWkZF13
-        Arn09ryxWF1DAFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0ziYLv_UUUUU=
-X-Originating-IP: [111.206.145.21]
-X-CM-SenderInfo: h2113zf2oz6qqrwthudrp/xtbBzhkvU2I0XmjvDwAAsr
-X-Spam-Status: No, score=-0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_VALIDITY_RPBL,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In xirc2ps_probe, the local->tx_timeout_task was bounded
-with xirc2ps_tx_timeout_task. When timeout occurs,
-it will call xirc_tx_timeout->schedule_work to start the
-work.
+On Sun, 12 Mar 2023 00:36:14 +0800
+Jason Xing <kerneljasonxing@gmail.com> wrote:
 
-When we call xirc2ps_detach to remove the driver, there
-may be a sequence as follows:
+> -	for (;;) {
+> +	for (; is_continue;) {
 
-Stop responding to timeout tasks and complete scheduled
-tasks before cleanup in xirc2ps_detach, which will fix
-the problem.
 
-CPU0                  CPU1
+Easier to read this as a
+ 	while (is_continue) {
 
-                    |xirc2ps_tx_timeout_task
-xirc2ps_detach      |
-  free_netdev       |
-    kfree(dev);     |
-                    |
-                    | do_reset
-                    |   //use dev
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
----
-v2:
-- fix indentation error suggested by Simon Horman,
-and stop the timeout tasks  suggested by Yunsheng Lin
----
- drivers/net/ethernet/xircom/xirc2ps_cs.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/net/ethernet/xircom/xirc2ps_cs.c b/drivers/net/ethernet/xircom/xirc2ps_cs.c
-index 894e92ef415b..c77ca11d9497 100644
---- a/drivers/net/ethernet/xircom/xirc2ps_cs.c
-+++ b/drivers/net/ethernet/xircom/xirc2ps_cs.c
-@@ -503,6 +503,11 @@ static void
- xirc2ps_detach(struct pcmcia_device *link)
- {
-     struct net_device *dev = link->priv;
-+		struct local_info *local = netdev_priv(dev);
-+
-+		netif_carrier_off(dev);
-+		netif_tx_disable(dev);
-+		cancel_work_sync(&local->tx_timeout_task);
- 
-     dev_dbg(&link->dev, "detach\n");
- 
--- 
-2.25.1
-
+but what is wrong with using break; instead?
