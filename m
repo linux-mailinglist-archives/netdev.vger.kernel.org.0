@@ -2,111 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75D276B6081
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 21:30:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06D706B6086
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 21:32:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229604AbjCKUax (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 15:30:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53836 "EHLO
+        id S229884AbjCKUcX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 15:32:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbjCKUav (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 15:30:51 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DFFE6C883;
-        Sat, 11 Mar 2023 12:30:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=eLT0g8df7rYJKk6srMN+2cPVnZ9SiqxI4tMkh+EKbMo=; b=iUx42NHgule7LbFVNnod+IFhFa
-        3qN42IDNyqQRllsJFaRM4ky8bNMMVQqgnBPhJz6kIPfU+k3CQpqlWCKfeU5CDinu7NmKvwe+IH/X5
-        fZyWoRJ5wESuKjnkTxUvA0HzCh8hJNpPlwkdvcC4iRs2WfJRT/SYogB6eu98W5QuvWd75OLW0aaEo
-        70OHY+Clm5QYxRgY5wq6g/u+zPa9pUgcfGjpBH8bECtgJ4wBsj1JP4hriCyHVu2yLJ5YHC1pV9ngW
-        s+N0VDbxjq5HkyNVawyVcI7JqQ+WeOPtPr89/vxr5Y6hl9C5RJc8jIoGUjJbBRI5jau41He6NvnQO
-        8IvfgMZA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:60470)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pb5rY-0000Pm-BR; Sat, 11 Mar 2023 20:30:44 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pb5rT-00060X-PH; Sat, 11 Mar 2023 20:30:39 +0000
-Date:   Sat, 11 Mar 2023 20:30:39 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     Daniel Golle <daniel@makrotopia.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229768AbjCKUcW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 15:32:22 -0500
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BAC46E6A2;
+        Sat, 11 Mar 2023 12:32:20 -0800 (PST)
+Received: by mail-wr1-x42e.google.com with SMTP id f11so7998741wrv.8;
+        Sat, 11 Mar 2023 12:32:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678566739;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=68SOf0uLJuHjIMu1OsjsJ4D0I1tz4+lC1OJ1oPaWRu0=;
+        b=gTzP74pGi+v8bjINEolo9wKKKDz8UZGVBUmlmlB/P3xpFP4JtWqQ5yCtvKfqT/K9wv
+         wO4rdprJ0WxtPUYP9Cf8IOExDAH8oOYNEhDH8lXbzyxAkOYuzIjkUkzP9AUIm1hh0GTt
+         yJsmJV9dLkzU+KWK/9mQJqG4zYyniFqIC08/wDcUf5n6lmCHdYJUPHqBEhGDntYYUFRO
+         Z+elmqqdCxZE2RgNUnlfjo+4lLttP8yYpgJL3lBGA7Xb4rOWwUy14/k9tS0PJgfPYqYo
+         gxzq6WIPMTbjasCS3CbeI9hgRlasv+pMroW62Sux+6S2j8s7VIJyyjRg8Lea9b65wUbd
+         xpIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678566739;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=68SOf0uLJuHjIMu1OsjsJ4D0I1tz4+lC1OJ1oPaWRu0=;
+        b=HLVgcDsBwaBY/2n6tpc9Q/rnw4ezwyA5Sjus8IkapWPYuaCRZnGkVAIjO7WV2eAJj0
+         TgOwNGFBCRCzm8A/UVL0BfzTbisgbI0AzaTT8NhvNHkWXJgf4Fk2nB5WDYCrXrGmQsDX
+         /WbqAnG0bjSk3yzhdA2+VeO23tyuPJEo6SYBZAThDqMBxwsDk2SUUiXmJOlshSzawzai
+         SLIuA64gXjHefl3PK5bTRbu2UwTVywR/iA4Skl3uXDH4kD565x+5/wRqmwuDnKItMZBH
+         2ro0+IMQtO4d6gxAi/GVNALJNhjT6u+4R+SK5wU/o9dWD9LF9cjFqS/N2fLF7O4ugDC6
+         0XLg==
+X-Gm-Message-State: AO0yUKUw3Pr8jrMOxFeLz9p4K68qoGeEX8ThPkknZmmFJiJJhXfGvxAe
+        U2e/p1MoLiRoUbmgdRUswew=
+X-Google-Smtp-Source: AK7set8WKxnjxI0kyuJomCuyV7+EVlCMTGJj92DOj7Sepntvi/Re0o1ott42cHMOqdY2OQeM9gAS8Q==
+X-Received: by 2002:a5d:4566:0:b0:2c7:dec:77a8 with SMTP id a6-20020a5d4566000000b002c70dec77a8mr18412706wrc.57.1678566738671;
+        Sat, 11 Mar 2023 12:32:18 -0800 (PST)
+Received: from mars.. ([2a02:168:6806:0:cb1:a328:ee29:2bd6])
+        by smtp.gmail.com with ESMTPSA id t17-20020a05600c451100b003dc434b39c7sm4524319wmo.0.2023.03.11.12.32.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Mar 2023 12:32:18 -0800 (PST)
+From:   Klaus Kudielka <klaus.kudielka@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Jianhui Zhao <zhaojh329@gmail.com>,
-        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
-        Alexander Couzens <lynxis@fe80.eu>
-Subject: Re: Re: [PATCH net-next v12 08/18] net: ethernet: mtk_eth_soc: fix
- 1000Base-X and 2500Base-X modes
-Message-ID: <ZAzk71mTxgV/pRxC@shell.armlinux.org.uk>
-References: <ZAiJqvzcUob2Aafq@shell.armlinux.org.uk>
- <20230308134642.cdxqw4lxtlgfsl4g@skbuf>
- <ZAiXvNT8EzHTmFPh@shell.armlinux.org.uk>
- <ZAiciK5fElvLXYQ9@makrotopia.org>
- <ZAijM91F18lWC80+@shell.armlinux.org.uk>
- <ZAik+I1Ei+grJdUQ@makrotopia.org>
- <ZAioqp21521NsttV@shell.armlinux.org.uk>
- <trinity-79e9f0b8-a267-4bf9-a3d4-1ec691eb5238-1678536337569@3c-app-gmx-bs24>
- <ZAzd1A0SAKZK0hF5@shell.armlinux.org.uk>
- <4B891976-C29E-4D98-B604-3AC4507D3661@public-files.de>
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Klaus Kudielka <klaus.kudielka@gmail.com>
+Subject: [PATCH net-next v2 0/3] net: dsa: mv88e6xxx: accelerate C45 scan
+Date:   Sat, 11 Mar 2023 21:31:29 +0100
+Message-Id: <20230311203132.156467-1-klaus.kudielka@gmail.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <4B891976-C29E-4D98-B604-3AC4507D3661@public-files.de>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 11, 2023 at 09:21:47PM +0100, Frank Wunderlich wrote:
-> Am 11. März 2023 21:00:20 MEZ schrieb "Russell King (Oracle)" <linux@armlinux.org.uk>:
-> >On Sat, Mar 11, 2023 at 01:05:37PM +0100, Frank Wunderlich wrote:
-> 
-> >> i got the 2.5G copper sfps, and tried them...they work well with the v12 (including this patch), but not in v13... 
-> 
-> >> how can we add a quirk to support this?
-> >
-> >Why does it need a quirk?
-> 
-> To disable the inband-mode for this 2.5g copper
-> sfp. But have not found a way to set a flag which i
-> can grab in phylink.
+Starting with commit 1a136ca2e089 ("net: mdio: scan bus based on bus
+capabilities for C22 and C45"), mdiobus_scan_bus_c45() is being called on
+buses with MDIOBUS_NO_CAP. On a Turris Omnia (Armada 385, 88E6176 switch),
+this causes a significant increase of boot time, from 1.6 seconds, to 6.3
+seconds. The boot time stated here is until start of /init.
 
-We could make sfp_parse_support() set Autoneg, Pause, and Asym_Pause
-in "modes" at the top of that function, and then use the SFP modes
-quirk to clear the Autoneg bit for this SFP. Would that work for you?
+Further testing revealed that the C45 scan is indeed expensive (around
+2.7 seconds, due to a huge number of bus transactions), and called twice.
+
+Two things were suggested:
+(1) to move the expensive call of mv88e6xxx_mdios_register() from
+    mv88e6xxx_probe() to mv88e6xxx_setup().
+(2) to mask apparently non-existing phys during probing.
+
+With those two changes, boot time on the Turris Omnia is back to normal.
+
+Patch #1 is preparatory code movement, without functional change.
+The remaining two patches implement the suggestions above.
+
+Link: https://lore.kernel.org/lkml/449bde236c08d5ab5e54abd73b645d8b29955894.camel@gmail.com/
+
+Changes in v2:
+Add cover letter
+Extend the cleanup in mv88e6xxx_setup() to remove the mdio bus on failure 
+Add separate patch for phy masking
+
+Klaus Kudielka (3):
+  net: dsa: mv88e6xxx: re-order functions
+  net: dsa: mv88e6xxx: move call to mv88e6xxx_mdios_register()
+  net: dsa: mv88e6xxx: mask apparently non-existing phys during probing
+
+ drivers/net/dsa/mv88e6xxx/chip.c | 381 ++++++++++++++++---------------
+ 1 file changed, 192 insertions(+), 189 deletions(-)
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.39.2
+
