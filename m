@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0297F6B5C28
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 14:13:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86D326B5C22
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 14:13:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230071AbjCKNNx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 08:13:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50076 "EHLO
+        id S229876AbjCKNNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 08:13:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229872AbjCKNNu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 08:13:50 -0500
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BAF1F4010;
-        Sat, 11 Mar 2023 05:13:48 -0800 (PST)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 32BDDQDD069314;
+        with ESMTP id S229469AbjCKNNt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 08:13:49 -0500
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 339BAF0FFA;
+        Sat, 11 Mar 2023 05:13:47 -0800 (PST)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 32BDDQI6087811;
         Sat, 11 Mar 2023 07:13:26 -0600
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
         s=ti-com-17Q1; t=1678540406;
-        bh=UH5FY4fr60bN/vvaymUr93ONSchdoiNAbwtq+FANNYY=;
-        h=From:To:CC:Subject:Date;
-        b=smZJixvZsH1PgjqkMJJMZT2XPKxh2jLIh28PAWkw75cnf0JQbINSZH8ui2nVX56E8
-         FrfqCDSZhjx305I/tgDc1rEbv8sSylCYW3qwtvv0Ta819VHTvoV1NrOxorYZrLjTW1
-         X2Rp0BSFOkbHAK75IxCSNBnKkqUpSEqRkNAlmeqQ=
-Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 32BDDQDG041947
+        bh=kEYDSV6Gh2DW14CuXdqw8T1zKsiopR7bs8xtVKOlGYM=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=pOw1S8yQ9Iy7K/XZJyyL1r9f2y+6Lepf4WkVSbBCVgLe6gd9q8udo0vKBFoh8yFhM
+         M7p30PpNImBqvHalGis0F7wVbeki5pA0ZFmqfm6NvI9rydurWPitKwsmOJPkEywj8f
+         a4Tofw+/2PEWyFcoJSn7phWMLLYNNsqrsHndJOvY=
+Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 32BDDQrY012210
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
         Sat, 11 Mar 2023 07:13:26 -0600
-Received: from DLEE112.ent.ti.com (157.170.170.23) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
+Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Sat, 11
  Mar 2023 07:13:25 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Sat, 11 Mar 2023 07:13:25 -0600
-Received: from localhost (ileaxei01-snat.itg.ti.com [10.180.69.5])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 32BDDPxF007407;
-        Sat, 11 Mar 2023 07:13:25 -0600
+ Frontend Transport; Sat, 11 Mar 2023 07:13:26 -0600
+Received: from localhost (ileaxei01-snat2.itg.ti.com [10.180.69.6])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 32BDDQiV016530;
+        Sat, 11 Mar 2023 07:13:26 -0600
 From:   Nishanth Menon <nm@ti.com>
 To:     Sekhar Nori <nsekhar@ti.com>,
         Linus Walleij <linus.walleij@linaro.org>,
@@ -54,10 +54,12 @@ CC:     <linux-gpio@vger.kernel.org>,
         <netdev@vger.kernel.org>, Tero Kristo <kristo@kernel.org>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         Nishanth Menon <nm@ti.com>
-Subject: [PATCH 0/2] dt-bindings: pinctrl: ti-k3: Move k3.h to arch specific
-Date:   Sat, 11 Mar 2023 07:13:23 -0600
-Message-ID: <20230311131325.9750-1-nm@ti.com>
+Subject: [PATCH 1/2] dt-bindings: net: ti: k3-am654-cpsw-nuss: Drop pinmux header
+Date:   Sat, 11 Mar 2023 07:13:24 -0600
+Message-ID: <20230311131325.9750-2-nm@ti.com>
 X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20230311131325.9750-1-nm@ti.com>
+References: <20230311131325.9750-1-nm@ti.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -72,32 +74,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Drop the pinmux header reference. Examples should just show the node
+definition.
 
-As discussed in [1], lets do some basic cleanups and move pin ctrl
-definitions to arch folder.
+Signed-off-by: Nishanth Menon <nm@ti.com>
+---
 
-Base: next-20230310
+Looks like there are regressions in this yaml file already when checked
+with dt_bindings_check, but that is a seperate activity of it's own.
 
-Nishanth Menon (2):
-  dt-bindings: net: ti: k3-am654-cpsw-nuss: Drop pinmux header
-  dt-bindings: pinctrl: Move k3.h to arch
+If net maintainers are OK, I'd like to pick this up as part of the
+pinctrl fixes series for next..
 
- .../devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml      | 1 -
- MAINTAINERS                                                 | 1 -
- arch/arm64/boot/dts/ti/k3-am62.dtsi                         | 3 ++-
- arch/arm64/boot/dts/ti/k3-am62a.dtsi                        | 3 ++-
- arch/arm64/boot/dts/ti/k3-am64.dtsi                         | 3 ++-
- arch/arm64/boot/dts/ti/k3-am65.dtsi                         | 3 ++-
- arch/arm64/boot/dts/ti/k3-j7200.dtsi                        | 3 ++-
- arch/arm64/boot/dts/ti/k3-j721e.dtsi                        | 3 ++-
- arch/arm64/boot/dts/ti/k3-j721s2.dtsi                       | 3 ++-
- arch/arm64/boot/dts/ti/k3-j784s4.dtsi                       | 3 ++-
- .../pinctrl/k3.h => arch/arm64/boot/dts/ti/k3-pinctrl.h     | 6 +++---
- 11 files changed, 19 insertions(+), 13 deletions(-)
- rename include/dt-bindings/pinctrl/k3.h => arch/arm64/boot/dts/ti/k3-pinctrl.h (94%)
+ Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml | 1 -
+ 1 file changed, 1 deletion(-)
 
-[1] https://lore.kernel.org/all/c4d53e9c-dac0-8ccc-dc86-faada324beba@linaro.org/
+diff --git a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+index 900063411a20..837d6db299c4 100644
+--- a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
++++ b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+@@ -222,7 +222,6 @@ additionalProperties: false
+ 
+ examples:
+   - |
+-    #include <dt-bindings/pinctrl/k3.h>
+     #include <dt-bindings/soc/ti,sci_pm_domain.h>
+     #include <dt-bindings/net/ti-dp83867.h>
+     #include <dt-bindings/interrupt-controller/irq.h>
 -- 
 2.37.2
 
