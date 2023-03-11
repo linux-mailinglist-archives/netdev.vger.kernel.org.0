@@ -2,52 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D27356B56C0
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 01:33:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96B3E6B56C9
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 01:38:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231405AbjCKAdF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Mar 2023 19:33:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60468 "EHLO
+        id S229645AbjCKAic (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Mar 2023 19:38:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231478AbjCKAcu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 19:32:50 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78116140880
-        for <netdev@vger.kernel.org>; Fri, 10 Mar 2023 16:31:34 -0800 (PST)
+        with ESMTP id S229706AbjCKAi3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Mar 2023 19:38:29 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC16F9EEF;
+        Fri, 10 Mar 2023 16:38:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B6C57CE2B53
-        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 00:30:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id ACCBEC4339B;
-        Sat, 11 Mar 2023 00:30:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BBBCF61D5B;
+        Sat, 11 Mar 2023 00:38:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BACB0C433EF;
+        Sat, 11 Mar 2023 00:38:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678494617;
-        bh=6LTt2nEwlFtx4vLFtDToP2glfhY4r3OCvCwKaN+X96s=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=T/b2l0r1K1/n641DRWUCWABnUKrexY7E+bt8/MAnWK+3TdDFb+vioPw6hIzdRuVpv
-         gaomOa40m4m1eELVKk5e0dju4A9ixdtA2wNFHzPK8RDMuYYeSZQyQ0gthrJuuUIbb6
-         2NqB7F8kJkrtPPkIoHlJpirWlWF9E1gtyjFLK25uBZvtZx5xvx8d9MIecNQqlXNn/j
-         qmYKAasaiOnjElerSp51OzrKXGcj8WB8gnRQbDFYs5LMFnulgPPflRVL68+E4vco1J
-         FWF6gklAhTZuyEKVUn1oWO8dL0v3Ni+G4uwDwDojLOnxUbPZWhblZJOfJ90zBmPnd0
-         VRiXxYdNkvKpQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 890DCE61B66;
-        Sat, 11 Mar 2023 00:30:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1678495106;
+        bh=d9ekWnm/uAZDtQ6nx3R4q1sbibkqvgFUKQWut/P1z78=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fyOqXarPUn6EGSSH6geMM5QnN0G4CVvd5Zhfr7stRqk+V/FoZNobW80/4fdfmQ64U
+         tOR/+gMGOmRIMLAyVTZXN0lSp8KhO8SQK6KsLoUHhLPvL9yMxkFD387MzM35LUIWjF
+         dYiEbtKGfm56MIGen5upwS+6Bpz6h7xJA2xGH5vSjP12pqIa2RX63KviLP/QexNRB6
+         a7FWkRWUXvMtQeGqH26vi3oVbeVwiTtwoZMWheDAvGDAxsiZHNTrvWJCizesK8xQSG
+         rAap2H9d7oPrt/GDx1PLW+jtQ43WGoHJMMygE87AjD49wTNFDB4zyt5dTeaU4JhLXg
+         HMJqQfPfe6OkQ==
+Date:   Fri, 10 Mar 2023 16:38:24 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
+        <richardcochran@gmail.com>
+Subject: Re: [PATCH net-next v3] net: phy: micrel: Add support for
+ PTP_PF_PEROUT for lan8841
+Message-ID: <20230310163824.5f5f653e@kernel.org>
+In-Reply-To: <20230307214402.793057-1-horatiu.vultur@microchip.com>
+References: <20230307214402.793057-1-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: mvpp2: Defer probe if MAC address source is not
- yet ready
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167849461755.17032.13638100422486547595.git-patchwork-notify@kernel.org>
-Date:   Sat, 11 Mar 2023 00:30:17 +0000
-References: <20230307192927.512757-1-miquel.raynal@bootlin.com>
-In-Reply-To: <20230307192927.512757-1-miquel.raynal@bootlin.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     mw@semihalf.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -57,28 +55,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Tue,  7 Mar 2023 20:29:27 +0100 you wrote:
-> NVMEM layouts are no longer registered early, and thus may not yet be
-> available when Ethernet drivers (or any other consumer) probe, leading
-> to possible probe deferrals errors. Forward the error code if this
-> happens. All other errors being discarded, the driver will eventually
-> use a random MAC address if no other source was considered valid (no
-> functional change on this regard).
+On Tue, 7 Mar 2023 22:44:02 +0100 Horatiu Vultur wrote:
+> Lan8841 has 10 GPIOs and it has 2 events(EVENT_A and EVENT_B). It is
+> possible to assigned the 2 events to any of the GPIOs, but a GPIO can
+> have only 1 event at a time.
+> These events are used to generate periodic signals. It is possible to
+> configure the length, the start time and the period of the signal by
+> configuring the event.
+> Currently the SW uses only EVENT_A to generate the perout.
 > 
-> [...]
+> These events are generated by comparing the target time with the PHC
+> time. In case the PHC time is changed to a value bigger than the target
+> time + reload time, then it would generate only 1 event and then it
+> would stop because target time + reload time is small than PHC time.
+> Therefore it is required to change also the target time every time when
+> the PHC is changed. The same will apply also when the PHC time is
+> changed to a smaller value.
+> 
+> This was tested using:
+> testptp -L 6,2
+> testptp -p 1000000000 -w 200000000
 
-Here is the summary with links:
-  - [net-next] net: mvpp2: Defer probe if MAC address source is not yet ready
-    https://git.kernel.org/netdev/net-next/c/cc4342f60f1a
+AFAICT enabling a new output will steal the event from the previous one.
+Is this normal / expected? Should you be checking if any output is
+active and refuse to enable another GPIO if so?
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Richard, does the patch look good to you?
