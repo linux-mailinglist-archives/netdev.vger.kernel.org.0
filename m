@@ -2,102 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D6C16B5F74
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 18:58:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2298F6B5F7F
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 19:04:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230207AbjCKR6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 12:58:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51148 "EHLO
+        id S230261AbjCKSEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 13:04:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229998AbjCKR6E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 12:58:04 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D3006EB8;
-        Sat, 11 Mar 2023 09:58:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=0SuW2teqPrJO0c83NljG0OZlfdMMqc0MljQGQttnRBc=; b=sQgqYODQW6+hMJ349CW0h7g+VR
-        3Fe0n53zYw4LUHpulr7v4SlGWofZ+pTierKd0l12AlOJHuQ83eUj4tqvSX2kf3tIqqPt9FIaXRhD0
-        wSdBUNnELsujz4wEPv/XasLijg7mlCDwN6Ew8wMg804jluCcCj9BJ8BV77MNfamkkpo8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pb3TD-0074hS-FW; Sat, 11 Mar 2023 18:57:27 +0100
-Date:   Sat, 11 Mar 2023 18:57:27 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Klaus Kudielka <klaus.kudielka@gmail.com>
-Cc:     Michael Walle <michael@walle.cc>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Felix Fietkau <nbd@nbd.name>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-aspeed@lists.ozlabs.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: Re: [PATCH net-next v2 4/6] net: mdio: scan bus based on bus
- capabilities for C22 and C45
-Message-ID: <f70aa0ea-5d8e-4cc3-bd5e-5b4a79d67281@lunn.ch>
-References: <0e10aa8492eadb587949d8744b56fccaabbd183b.camel@gmail.com>
- <72530e86-9ba9-4a01-9cd2-68835ecae7a0@lunn.ch>
- <09d65e1ee0679e1e74b4f3a5a4c55bd48332f043.camel@gmail.com>
- <70f5bca0-322c-4bae-b880-742e56365abe@lunn.ch>
- <10da10caea22a8f5da8f1779df3e13b948e8a363.camel@gmail.com>
- <4abd56aa-5b9f-4e16-b0ca-11989bb8c764@lunn.ch>
- <bff0e542b8c04980e9e3af1d3e6bf739c87eb514.camel@gmail.com>
- <a57a216d-ff5a-46e6-9780-e53772dcefc8@lunn.ch>
- <2f64385a350359c5755eb4d2479e2efef7a96216.camel@gmail.com>
- <49a9154ae4e2b3e6bc85e560368f6474f97cea88.camel@gmail.com>
+        with ESMTP id S230095AbjCKSEi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 13:04:38 -0500
+Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 812AD50996;
+        Sat, 11 Mar 2023 10:04:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=C7fD2
+        xpk7NTbx5k6GnhNQoHvfkr24LqkPt+Xv71fq70=; b=oqSt28aNE+4ZKP8FCVlB2
+        PH9BOTQS6uYCmhqHN1EwNicuJpNzHHIczkP2TLFmdbHS93VXqUtmm4TWW6s+S4UN
+        LXgcuRyw0BHbjPM/78CMuGPWn+IgK6ZrmCLnIaBEcTIFnR69DMA6o+SMOoCgZE9I
+        GWZb7JCFMFM/1rbVQSrl9k=
+Received: from leanderwang-LC2.localdomain (unknown [111.206.145.21])
+        by zwqz-smtp-mta-g2-4 (Coremail) with SMTP id _____wAHVO2WwgxkGhAgDA--.10863S2;
+        Sun, 12 Mar 2023 02:04:06 +0800 (CST)
+From:   Zheng Wang <zyytlz.wz@163.com>
+To:     davem@davemloft.net
+Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        mkl@pengutronix.de, j.neuschaefer@gmx.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linyunsheng@huawei.com,
+        hackerzheng666@gmail.com, 1395428693sheep@gmail.com,
+        alex000young@gmail.com, Zheng Wang <zyytlz.wz@163.com>
+Subject: [PATCH net v2] net: calxedaxgmac: fix race condition in xgmac_remove due to  unfinished work
+Date:   Sun, 12 Mar 2023 02:04:04 +0800
+Message-Id: <20230311180404.4007176-1-zyytlz.wz@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <49a9154ae4e2b3e6bc85e560368f6474f97cea88.camel@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: _____wAHVO2WwgxkGhAgDA--.10863S2
+X-Coremail-Antispam: 1Uf129KBjvdXoW7Jry5Kw1kAF18GF1fCr45Wrg_yoWkKwcEga
+        s293WxGw4UJF1vka1kCr4UZry8t3Wq9w1rXryIgrWa93sxJr1xXrs7uFy7JF45Ww1DGry7
+        WFnIyrWSyw1jqjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRKPfHUUUUUU==
+X-Originating-IP: [111.206.145.21]
+X-CM-SenderInfo: h2113zf2oz6qqrwthudrp/1tbiGhMvU1aEEiTKVgACsP
+X-Spam-Status: No, score=-0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_VALIDITY_RPBL,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Well, maybe I misunderstood the argument with DT completely, so I gave it a try:
-> 
-> --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> @@ -3797,6 +3797,7 @@ static int mv88e6xxx_mdio_register(struct mv88e6xxx_chip *chip,
->         bus->read_c45 = mv88e6xxx_mdio_read_c45;
->         bus->write_c45 = mv88e6xxx_mdio_write_c45;
->         bus->parent = chip->dev;
-> +       bus->phy_mask = GENMASK(31, mv88e6xxx_num_ports(chip));
->  
->         if (!external) {
->                 err = mv88e6xxx_g2_irq_mdio_setup(chip, bus);
-> 
-> > 
-> 
-> Now THAT one makes a difference! With this on top, I'm back at normal boot time!
-> I hope this is what you had in mind?
+In xgmac_probe, the priv->tx_timeout_work is bound with
+xgmac_tx_timeout_work. In xgmac_remove, if there is an
+unfinished work, there might be a race condition that
+priv->base was written byte after iounmap it.
 
-Yep, that is what i meant. Please could you also submit a patch for this?
+Fix it by finishing the work before cleanup.
 
-     Andrew
+Fixes: 8746f671ef04 ("net: calxedaxgmac: fix race between xgmac_tx_complete and xgmac_tx_err")
+Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
+---
+v2:
+- fix typo,add Fixes label and stop dev_watchdog so that it will handle no more timeout work suggested by Yunsheng Lin
+---
+ drivers/net/ethernet/calxeda/xgmac.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/net/ethernet/calxeda/xgmac.c b/drivers/net/ethernet/calxeda/xgmac.c
+index f4f87dfa9687..f0880538f6f3 100644
+--- a/drivers/net/ethernet/calxeda/xgmac.c
++++ b/drivers/net/ethernet/calxeda/xgmac.c
+@@ -1832,6 +1832,10 @@ static int xgmac_remove(struct platform_device *pdev)
+ 	free_irq(ndev->irq, ndev);
+ 	free_irq(priv->pmt_irq, ndev);
+ 
++	netif_carrier_off(ndev);
++	netif_tx_disable(ndev);
++	cancel_work_sync(&priv->tx_timeout_work);
++
+ 	unregister_netdev(ndev);
+ 	netif_napi_del(&priv->napi);
+ 
+-- 
+2.25.1
 
