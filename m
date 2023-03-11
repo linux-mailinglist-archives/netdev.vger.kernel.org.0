@@ -2,161 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD6646B60F2
-	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 22:17:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 365CD6B616E
+	for <lists+netdev@lfdr.de>; Sat, 11 Mar 2023 23:18:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229766AbjCKVRW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Mar 2023 16:17:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40218 "EHLO
+        id S230040AbjCKWS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Mar 2023 17:18:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229552AbjCKVRT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 16:17:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7BBD72B23;
-        Sat, 11 Mar 2023 13:17:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9FF83B80735;
-        Sat, 11 Mar 2023 21:17:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B025C433A8;
-        Sat, 11 Mar 2023 21:16:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678569432;
-        bh=nxjIZb2lDBuKK2G4lNzbnKP45y5UoeG95pRVo5INiRE=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=bvzKGPqJVg2bAaBl8LvuSNq4FE4F8OHaj0dxY1RmvBRvrUteeh49EnCBFgpLpsimi
-         X9QjmQX5ru5ARgvQanZf4uxwTdtbSXJBvWNRv/d86I7owOd9TPANApjMIEt8UOom/V
-         rlpKM3DSWdmGVC5sTOOGKI7C35EJY3xqnU9SQBlbwRy+sPkyfeO2xcIoXPdhr3KG5S
-         maSO5XBX1iOLzTj27xMUWw1Z5Arz1xysQ8bAZkDXGqorBZ3q1BRVnKovYh/ImB0NqZ
-         5jPOxe6cAx/K/KlowItsOB1tQgOaqn0wX00B/jAga6Qsnzqoh25kwlapaLa6EQAQNP
-         eT/NzyqjKOROw==
-From:   Mark Brown <broonie@kernel.org>
-To:     miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
-        jic23@kernel.org, pratyush@kernel.org, Sanju.Mehta@amd.com,
-        chin-ting_kuo@aspeedtech.com, clg@kaod.org, kdasu.kdev@gmail.com,
-        f.fainelli@gmail.com, rjui@broadcom.com, sbranden@broadcom.com,
-        eajames@linux.ibm.com, olteanv@gmail.com, han.xu@nxp.com,
-        john.garry@huawei.com, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        khilman@baylibre.com, matthias.bgg@gmail.com, haibo.chen@nxp.com,
-        linus.walleij@linaro.org, daniel@zonque.org,
-        haojian.zhuang@gmail.com, robert.jarzmik@free.fr,
-        agross@kernel.org, heiko@sntech.de, krzysztof.kozlowski@linaro.org,
-        andi@etezian.org, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, wens@csie.org,
-        jernej.skrabec@gmail.com, samuel@sholland.org,
-        masahisa.kojima@linaro.org, jaswinder.singh@linaro.org,
-        rostedt@goodmis.org, mingo@redhat.com, l.stelmach@samsung.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, alex.aring@gmail.com, stefan@datenfreihafen.org,
-        kvalo@kernel.org, james.schulman@cirrus.com,
-        david.rhodes@cirrus.com, tanureal@opensource.cirrus.com,
-        rf@opensource.cirrus.com, perex@perex.cz, tiwai@suse.com,
-        npiggin@gmail.com, christophe.leroy@csgroup.eu, mpe@ellerman.id.au,
-        oss@buserror.net, windhl@126.com, yangyingliang@huawei.com,
-        william.zhang@broadcom.com, kursad.oney@broadcom.com,
-        jonas.gorski@gmail.com, anand.gore@broadcom.com, rafal@milecki.pl,
-        Tudor Ambarus <tudor.ambarus@linaro.org>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
-Cc:     git@amd.com, linux-spi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, joel@jms.id.au, andrew@aj.id.au,
-        radu_nicolae.pirea@upb.ro, nicolas.ferre@microchip.com,
-        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
-        bcm-kernel-feedback-list@broadcom.com, fancer.lancer@gmail.com,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        jbrunet@baylibre.com, martin.blumenstingl@googlemail.com,
-        avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        yogeshgaur.83@gmail.com, konrad.dybcio@somainline.org,
-        alim.akhtar@samsung.com, ldewangan@nvidia.com,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        michal.simek@amd.com, linux-aspeed@lists.ozlabs.org,
-        openbmc@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wpan@vger.kernel.org,
-        libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
-        linux-mtd@lists.infradead.org, lars@metafoo.de,
-        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
-        michael@walle.cc, palmer@dabbelt.com,
-        linux-riscv@lists.infradead.org, alsa-devel@alsa-project.org,
-        patches@opensource.cirrus.com, linuxppc-dev@lists.ozlabs.org,
-        amitrkcian2002@gmail.com
-In-Reply-To: <20230310173217.3429788-1-amit.kumar-mahapatra@amd.com>
-References: <20230310173217.3429788-1-amit.kumar-mahapatra@amd.com>
-Subject: Re: (subset) [PATCH V6 00/15] Add support for stacked/parallel
- memories
-Message-Id: <167856940280.964268.10660159170818600511.b4-ty@kernel.org>
-Date:   Sat, 11 Mar 2023 21:16:42 +0000
+        with ESMTP id S229519AbjCKWSx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Mar 2023 17:18:53 -0500
+X-Greylist: delayed 2487 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 11 Mar 2023 14:18:51 PST
+Received: from mx23lb.world4you.com (mx23lb.world4you.com [81.19.149.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC5D730288;
+        Sat, 11 Mar 2023 14:18:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=tTU8edbQ8WhDCPaKCQrG3SKzi8q7/ZcWvfsOl5UYY7E=; b=OpfregP54/us2Paze67Z1R8u/L
+        83k8qLcAuOeWv9SXkEyswUPj4ZXl3NvAMJdOzGlNumsvzgfiNpawGMI7xBRKpADTYmWMpHzOYmyZQ
+        3FYzNtFLBFGQvNd8psaD9nXxonEZEcbvkgmINCRukVcVTAoJftf9uzZ15LYSYeULYU4Q=;
+Received: from [88.117.63.48] (helo=hornet.engleder.at)
+        by mx23lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <gerhard@engleder-embedded.com>)
+        id 1pb6u0-0005IZ-2S; Sat, 11 Mar 2023 22:37:20 +0100
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
+        song@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
+        toke@redhat.com, Gerhard Engleder <gerhard@engleder-embedded.com>
+Subject: [RFC PATCH net] bpf: Fix unregister memory model in BPF_PROG_RUN in test runner
+Date:   Sat, 11 Mar 2023 22:37:09 +0100
+Message-Id: <20230311213709.42625-1-gerhard@engleder-embedded.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Mailer: b4 0.13-dev-2eb1a
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-AV-Do-Run: Yes
+X-ACL-Warn: X-W4Y-Internal
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 10 Mar 2023 23:02:02 +0530, Amit Kumar Mahapatra wrote:
-> This patch is in the continuation to the discussions which happened on
-> 'commit f89504300e94 ("spi: Stacked/parallel memories bindings")' for
-> adding dt-binding support for stacked/parallel memories.
-> 
-> This patch series updated the spi-nor, spi core and the spi drivers
-> to add stacked and parallel memories support.
-> 
-> [...]
+After executing xdp-trafficgen the following kernel output appeared:
+[  214.564375] page_pool_release_retry() stalled pool shutdown 64 inflight 60 sec
 
-Applied to
+xdp_test_run_batch() in combination with xdp-trafficgen uses a batch
+size of 64. So it seems that a single batch does find its way back to
+the page pool. I checked my tsnep driver, but the page pool entries were
+not lost in the driver according to my analysis.
 
-   broonie/spi.git for-next
+Executing xdp-trafficgen with n=1000 resulted in this output:
+[  251.652376] page_pool_release_retry() stalled pool shutdown 40 inflight 60 sec
 
-Thanks!
+Executing xdp-trafficgen with n=10000 resulted in this output:
+[  267.332374] page_pool_release_retry() stalled pool shutdown 16 inflight 60 sec
 
-[01/15] spi: Replace all spi->chip_select and spi->cs_gpiod references with function call
-        commit: 9e264f3f85a56cc109cc2d6010a48aa89d5c1ff1
-[02/15] net: Replace all spi->chip_select and spi->cs_gpiod references with function call
-        commit: 25fd0550d9b9c92288a17fb7d605cdcdb4a65a64
-[03/15] iio: imu: Replace all spi->chip_select and spi->cs_gpiod references with function call
-        commit: 0183f81fce154ae1d4df2bb28d22ad6612317148
-[04/15] mtd: devices: Replace all spi->chip_select and spi->cs_gpiod references with function call
-        commit: 0817bcef53e4e3df23c023eddaa2b35b7288400e
-[05/15] staging: Replace all spi->chip_select and spi->cs_gpiod references with function call
-        commit: caa9d3475b1c5566f0272273c147cc9b72f2be28
-[06/15] platform/x86: serial-multi-instantiate: Replace all spi->chip_select and spi->cs_gpiod references with function call
-        commit: e20451f44ca33ec40422e9868775e117ef2da935
-[07/15] powerpc/83xx/mpc832x_rdb: Replace all spi->chip_select references with function call
-        commit: 3aba06a9fee04f6fefa9df71d3ee27dd4c464ad5
-[08/15] ALSA: hda: cs35l41: Replace all spi->chip_select references with function call
-        commit: 06b5e53c8b2b016e06a53ab6f01006ca7bbfa5df
+So interestingly in both cases the last batch with a size lower than 64
+does not find its way back to the page pool. So what's the problem with
+the last batch?
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+After xdp_test_run_batch() clean up is done in xdp_test_run_teardown()
+no matter if page pool entries are still in flight. No problem for
+page_pool_destroy() as the page pool is released later when no entries
+are in flight.
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
+With commit 425d239379db0 unregistering memory model has been added to
+xdp_test_run_teardown(). Otherwise the page pool would not be released.
+But xdp_unreg_mem_model() resets the memory model type immediately to 0
+(which is actually MEM_TYPE_PAGE_SHARED). So the memory model type
+MEM_TYPE_PAGE_POOL is lost and any inflight page pool entries have no
+chance to find its way back to the page pool. I assume that's the reason
+why the last batch does not find its way back to the page pool.
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
+A simple sleep before xdp_unreg_mem_model() solved this problem, but
+this is no valid fix of course. It needs to be ensured that the memory
+model is not in use anymore. This is the case when the page pool has no
+entries in flight.
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
+How could it be ensured that a call to xdp_unreg_mem_model() is safe?
+In my opinion drivers suffer the same problem. Is there a pattern how
+this can be solved? Or did I misinterprete something?
 
-Thanks,
-Mark
+Fixes: 425d239379db0 ("bpf: Fix release of page_pool in BPF_PROG_RUN in test runner")
+Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+---
+ net/bpf/test_run.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+index b766a84c8536..eaccfdab0be3 100644
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -202,6 +202,8 @@ static int xdp_test_run_setup(struct xdp_test_data *xdp, struct xdp_buff *orig_c
+ 
+ static void xdp_test_run_teardown(struct xdp_test_data *xdp)
+ {
++	usleep_range(10000, 11000);
++
+ 	xdp_unreg_mem_model(&xdp->mem);
+ 	page_pool_destroy(xdp->pp);
+ 	kfree(xdp->frames);
+-- 
+2.30.2
 
