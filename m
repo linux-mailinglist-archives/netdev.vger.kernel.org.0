@@ -2,100 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD7936B63E4
-	for <lists+netdev@lfdr.de>; Sun, 12 Mar 2023 10:04:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89B876B6444
+	for <lists+netdev@lfdr.de>; Sun, 12 Mar 2023 10:51:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229494AbjCLJER (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Mar 2023 05:04:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55814 "EHLO
+        id S229677AbjCLJvj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Mar 2023 05:51:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbjCLJEQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Mar 2023 05:04:16 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0044F38B67;
-        Sun, 12 Mar 2023 01:04:14 -0800 (PST)
-Received: by mail-wm1-x32d.google.com with SMTP id l7-20020a05600c1d0700b003eb5e6d906bso5975172wms.5;
-        Sun, 12 Mar 2023 01:04:14 -0800 (PST)
+        with ESMTP id S229437AbjCLJvh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Mar 2023 05:51:37 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93DB52E820;
+        Sun, 12 Mar 2023 01:51:36 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id bg16-20020a05600c3c9000b003eb34e21bdfso8985304wmb.0;
+        Sun, 12 Mar 2023 01:51:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678611853;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=Pc80kOGlqxH4dxS+XiPVwGBzRY6XRSb/pMTBjXDBKDE=;
-        b=C3cg//7XD2AcK5g+5oCgxoHKpG4SvHhXCR6v3qVBpiEF+WUBvq8ZZ5tLZALnAauFJj
-         rEjcj8NQdRwYA4ux+JtDErrDB5Nzgzw/AjFO7u0h0p6bfBrcaoPow6njYj1Dpibayb5/
-         rgQXZOJX2QpGVTOFfuhNc4VViO3V+jQGWDutKXSO3z29+LOIX7NHJe8BgWUeV0Qk+DSk
-         mMlP6cSn2QTc59qxxyX991VOGeYMydMOolYIb9WD2htJwDY+uEmUa0Eg8folOgr2R58c
-         RDylORvHuf3pHLcGdHNCl4UQ7gXNtsoP/5FQmSl+eZlfQ7tij9W7fxrqeMU92uRl/3o4
-         YRng==
+        d=gmail.com; s=20210112; t=1678614695;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=xYJHI/EfuMD9TjucsF8nMSkY3NaUSb9pPppxfCuZDtQ=;
+        b=OiBlMquFJnyyh0cAOpI2tT1Me3j63TVo647wS6ZQswQBwnUeQ8LgvVpjlys9jG25og
+         vdv8uSLoo7AUTayhdsyH1O8dgkDZ37x328pHo08RFZ5Xuk/48Rcop4yvzh0A1gy1Txj5
+         EtIVxwohuMaInKlyst/QMyenkSXOSuVw31f7OPghF6U1B0J8u+HLKPplK7EnA0jNDZEw
+         yiUrWFpjtDT+fuQLwUaFWwQBXHuGnrpWPT266/16zOwe4Gj8iDI38YvDWqogbhEyC0f9
+         pcG7CecBK8fm/W49akwnJhN7juow123XP57SY5v3uApZwwOppBnuEImLdsoQ5sCavKSY
+         k0Tg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678611853;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Pc80kOGlqxH4dxS+XiPVwGBzRY6XRSb/pMTBjXDBKDE=;
-        b=E5osqA3tpkPOBbBiKi9e9UEKj7Oyvb5Y0D1yPTG76rQU26E0W3elcq0JHsbkXJiFID
-         W4Ns/CqMaZYP4r7cxTfRkuF5YCjEpXZR+XMAj1I9vxY4iPRpWy21jH4tFyjnsDSNYzpb
-         SuP+o2Kcs1T7oEmqHJoMYqTy5y2vMNzCapSC/EsuTXHRQJ0HhkXy+J2Fxe9NQjxtFonY
-         b8D27lEOWlbHmd4WP3w+YypNCuzW1L2LAJv5M+TRbk+i0k76Iqeof6tnl8MYmVbzPDSH
-         w7J6t3zppfBUxEfwfoHzh3/HKAF2XD5XSDccix2WmRvfm98MAKBJygcYOiFgjhYY5wg8
-         ANKg==
-X-Gm-Message-State: AO0yUKVMpYxBRsBMMpws+Nh4EwAV4DD1v/IVyt/1yAprLz2j19eElSne
-        VE20AZYzHcBOVTyQqDYFeQA=
-X-Google-Smtp-Source: AK7set+ky1MP5G4zegthCZnFjMiOBM5971of0IvZsyf8jSOYuUK5Q1+66wGmT3hiJ3eY3UnFWhYJRw==
-X-Received: by 2002:a05:600c:1d02:b0:3e9:c2f4:8ad4 with SMTP id l2-20020a05600c1d0200b003e9c2f48ad4mr7065700wms.8.1678611853347;
-        Sun, 12 Mar 2023 01:04:13 -0800 (PST)
-Received: from ?IPv6:2a02:168:6806:0:b020:289a:731d:fbb8? ([2a02:168:6806:0:b020:289a:731d:fbb8])
-        by smtp.gmail.com with ESMTPSA id p23-20020a1c7417000000b003e11f280b8bsm5233062wmc.44.2023.03.12.01.04.11
+        d=1e100.net; s=20210112; t=1678614695;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xYJHI/EfuMD9TjucsF8nMSkY3NaUSb9pPppxfCuZDtQ=;
+        b=AIJGNr3fKy7mv27FW+safLY55QzLiqLh8yJyiRvshXp1qFyMt4FRF4Ax8OB7PlMJp1
+         H9GQ+3pokH0aiSQlOX12sSFdMVg7Z64CJRlQVxbL1zKA4k0OR0ekiQTPeJ1X/WlnBBa+
+         4MSMNn8KKDxHRpJLASHNNB2VZCByADJlOPnH7xEzd8qlznoJ1OYqVtZzkj6rXxsS3XWb
+         yOHG2H/OfY2KFFkWY2IZXsYgpRoyt+NtWv3D6zkKI32QLF2YgrV5tcDwPi+tZ0qFonuf
+         tMzcsSCp2R86G/mQ2eBLUGcj4KqFR0te9TqqDjbAcAcuPVKIKA8F3UY1YfWHvjETYBAB
+         crkA==
+X-Gm-Message-State: AO0yUKXKXnFVP5mC7ak2XNlOnSc0LKoMy6Zgv3Q+rZhwJ9IX5IwO/a8P
+        XAX508tASAbgtTFcSmcHDXE=
+X-Google-Smtp-Source: AK7set8I3/sMJfHoJWj4ZIL2psjhEh4qxAjjoLRfwfTwFlR33kxlCpaOUoNVNDvt8zsUZAGLuExwBQ==
+X-Received: by 2002:a05:600c:45d2:b0:3ed:1fa1:73c5 with SMTP id s18-20020a05600c45d200b003ed1fa173c5mr1583270wmo.27.1678614694886;
+        Sun, 12 Mar 2023 01:51:34 -0800 (PST)
+Received: from kernel.org ([46.120.23.99])
+        by smtp.gmail.com with ESMTPSA id hn4-20020a05600ca38400b003dc1d668866sm5407218wmb.10.2023.03.12.01.51.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Mar 2023 01:04:12 -0800 (PST)
-Message-ID: <0a1ec04fe494fcd8c68d03e4f544d7162c0e4f39.camel@gmail.com>
-Subject: Re: [PATCH net-next v2 4/6] net: mdio: scan bus based on bus
- capabilities for C22 and C45
-From:   Klaus Kudielka <klaus.kudielka@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Michael Walle <michael@walle.cc>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        Sun, 12 Mar 2023 01:51:34 -0800 (PST)
+Date:   Sun, 12 Mar 2023 11:51:29 +0200
+From:   Mike Rapoport <mike.rapoport@gmail.com>
+To:     Vlastimil Babka <vbabka@suse.cz>
+Cc:     Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        rcu@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Felix Fietkau <nbd@nbd.name>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-aspeed@lists.ozlabs.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-Date:   Sun, 12 Mar 2023 10:04:11 +0100
-In-Reply-To: <29ee3cc4-a1d6-4a07-8d90-4b2f26059e7d@lunn.ch>
-References: <db6b8a09-b680-4baa-8963-d355ad29eb09@lunn.ch>
-         <0e10aa8492eadb587949d8744b56fccaabbd183b.camel@gmail.com>
-         <72530e86-9ba9-4a01-9cd2-68835ecae7a0@lunn.ch>
-         <09d65e1ee0679e1e74b4f3a5a4c55bd48332f043.camel@gmail.com>
-         <70f5bca0-322c-4bae-b880-742e56365abe@lunn.ch>
-         <10da10caea22a8f5da8f1779df3e13b948e8a363.camel@gmail.com>
-         <4abd56aa-5b9f-4e16-b0ca-11989bb8c764@lunn.ch>
-         <bff0e542b8c04980e9e3af1d3e6bf739c87eb514.camel@gmail.com>
-         <a57a216d-ff5a-46e6-9780-e53772dcefc8@lunn.ch>
-         <2f64385a350359c5755eb4d2479e2efef7a96216.camel@gmail.com>
-         <29ee3cc4-a1d6-4a07-8d90-4b2f26059e7d@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4-1 
+        Joel Fernandes <joel@joelfernandes.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH 0/7] remove SLOB and allow kfree() with kmem_cache_alloc()
+Message-ID: <ZA2gofYkXRcJ8cLA@kernel.org>
+References: <20230310103210.22372-1-vbabka@suse.cz>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230310103210.22372-1-vbabka@suse.cz>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -106,37 +92,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2023-03-12 at 03:53 +0100, Andrew Lunn wrote:
-> >=20
-> > What you are proposing here would not show any improvement on the
-> > Omnia, as only the 6 ports would be scanned - right?=20
->=20
-> Correct. But their also should not of been any noticeable slow down,
-> because there should not be any additional scanning when everything is
-> described in DT. And the move of the MDIO bus registration from probe
-> to setup should actually make it faster than before.
->=20
+Hi Vlastimil,
 
-But then, why *do* I see such a big difference on the Omnia?
+On Fri, Mar 10, 2023 at 11:32:02AM +0100, Vlastimil Babka wrote:
+> Also in git:
+> https://git.kernel.org/vbabka/h/slab-remove-slob-v1r1
+> 
+> The SLOB allocator was deprecated in 6.2 so I think we can start
+> exposing the complete removal in for-next and aim at 6.4 if there are no
+> complaints.
+> 
+> Besides code cleanup, the main immediate benefit will be allowing
+> kfree() family of function to work on kmem_cache_alloc() objects (Patch
+> 7), which was incompatible with SLOB.
+> 
+> This includes kfree_rcu() so I've updated the comment there to remove
+> the mention of potential future addition of kmem_cache_free_rcu() as
+> there should be no need for that now.
+> 
+> Otherwise it's straightforward. Patch 2 is a cleanup in net area, that I
+> can either handle in slab tree or submit in net after SLOB is removed.
+> Another cleanup in tomoyo is already in the tomoyo tree as that didn't
+> need to wait until SLOB removal.
+> 
+> Vlastimil Babka (7):
+>   mm/slob: remove CONFIG_SLOB
+>   net: skbuff: remove SLOB-specific ifdefs
+>   mm, page_flags: remove PG_slob_free
+>   mm, pagemap: remove SLOB and SLQB from comments and documentation
+>   mm/slab: remove CONFIG_SLOB code from slab common code
+>   mm/slob: remove slob.c
+>   mm/slab: document kfree() as allowed for kmem_cache_alloc() objects
+> 
+>  Documentation/admin-guide/mm/pagemap.rst     |   6 +-
+>  Documentation/core-api/memory-allocation.rst |  15 +-
+>  fs/proc/page.c                               |   5 +-
+>  include/linux/page-flags.h                   |   4 -
+>  include/linux/rcupdate.h                     |   6 +-
+>  include/linux/slab.h                         |  39 -
+>  init/Kconfig                                 |   2 +-
+>  kernel/configs/tiny.config                   |   1 -
+>  mm/Kconfig                                   |  22 -
+>  mm/Makefile                                  |   1 -
+>  mm/slab.h                                    |  61 --
+>  mm/slab_common.c                             |   7 +-
+>  mm/slob.c                                    | 757 -------------------
+>  net/core/skbuff.c                            |  16 -
+>  tools/mm/page-types.c                        |   6 +-
+>  15 files changed, 23 insertions(+), 925 deletions(-)
+>  delete mode 100644 mm/slob.c
 
-mdiobus_scan_bus_c45() takes:
-~2.7 seconds without phy_mask patch
-~0.2 seconds with phy_mask patch
+git grep -in slob still gives a couple of matches. I've dropped the
+irrelevant ones it it left me with these:
 
-(It's not a big deal, but somehow strange)
+CREDITS:14:D: SLOB slab allocator
+kernel/trace/ring_buffer.c:358: * Also stolen from mm/slob.c. Thanks to Mathieu Desnoyers for pointing
+mm/Kconfig:251:    SLOB allocator and is not recommended for systems with more than
+mm/Makefile:25:KCOV_INSTRUMENT_slob.o := n
+ 
+Except the comment in kernel/trace/ring_buffer.c all are trivial.
 
-Regards, Klaus
+As for the comment in ring_buffer.c, it looks completely irrelevant at this
+point.
 
+@Steve?
 
-PS: There was another open question: How long does the first
-unsuccessful mv88e6xxx_probe() take, when calling
-mv88e6xxx_mdios_register() from mv88e6xxx_setup()?
+> -- 
+> 2.39.2
+> 
 
-I would say "negligible":
-
-[    0.194414] mv88e6085 f1072004.mdio-mii:10: *** mv88e6xxx_probe call ***
-[    0.194739] mv88e6085 f1072004.mdio-mii:10: switch 0x1760 detected: Marv=
-ell 88E6176, revision 1
-[    0.208163] mv88e6085 f1072004.mdio-mii:10: *** mv88e6xxx_probe return -=
-517 ***
-
+-- 
+Sincerely yours,
+Mike.
