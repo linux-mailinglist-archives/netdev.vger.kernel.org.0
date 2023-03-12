@@ -2,139 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47EF56B6B16
-	for <lists+netdev@lfdr.de>; Sun, 12 Mar 2023 21:29:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 378176B6B9C
+	for <lists+netdev@lfdr.de>; Sun, 12 Mar 2023 21:58:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230309AbjCLU3Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Mar 2023 16:29:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38240 "EHLO
+        id S231610AbjCLU60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Mar 2023 16:58:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229829AbjCLU3X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Mar 2023 16:29:23 -0400
-Received: from EUR02-DB5-obe.outbound.protection.outlook.com (mail-db5eur02on20706.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe12::706])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E56A0360BF;
-        Sun, 12 Mar 2023 13:29:21 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QZwxqKxNQsWZb5APVqOoC136MSo6U3wglKqoAQ/tywNvjY84K9IRs1MVGtPSmfmgCArEFXBufs1R2VMYvUuwuJpeuwNwH50lRCC3eNPpvqaUsbIqe75GESg9k6lb+JrbkyDsUGlrWSiPnW5t9rXJum7sjsHxtWRzguf/7F+YtH0jCTNFMIZ+BzdxjPc8ZHUNAcALsJOc3V5hx+1oGHDUA//uEMYPq+b/H3cN0VAjkRotKo24JnqWCxLCNSItVvXKcpu/Rbz/SL97Va4iyM3F+Uuyz9YmPffjFAglwd/Y3fYfq1LprQox3xSOjEWa/YndidvYTYCb/fJhdlNnKBKF7g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5LisvGa9e8IwQ+yW6USXElxPovCTIBslRZbcMxS/2dc=;
- b=ImQgcgf5pFZ08ZNknJzhONtLf0xrD+zVq897DKvWq2RzSFLMDrpSqN0H9sQadhIBigkHInjLD535s8Yv/0RfqoM0M7ZspybTGI/U80bao4mesrt8Bc2fQx425E4ED/WKatAb//lPVCJfgKLpMPot7sA2HYyUTvHklvhXKC9/UUjXbJj1viDB4osc7Y+DlPp4mXymrlPDlgkWOuA89qcQD2SFkgP2zj8m0K08TlRayF42S6+x3lie6BeEzK9qwcvR8kfYFy+9fwaiVZlBORv8D+HQem4frxa26KxZjs4Cgi/Y4uDxYnaxeOrF4+yamTLFJzXkQFbMkuVeouTy6IHa/A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bang-olufsen.dk; dmarc=pass action=none
- header.from=bang-olufsen.dk; dkim=pass header.d=bang-olufsen.dk; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bang-olufsen.dk;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5LisvGa9e8IwQ+yW6USXElxPovCTIBslRZbcMxS/2dc=;
- b=Ufaa9BY3LNIPi6DgtWceel9dcE9CmtJxbEBJZnDf5nv5jsNmDo2bqRIK9rkCuQ/oXOQOgWwRecUqNs1tWLRwyiZcMk94yJCkLb6ua94/ltYMsasYXqwmLuiPMmTOnfXVYNReykh0ROlnsrJ7hMn7/QWBYpshmCg6h4WPNxwvSXA=
-Received: from VI1PR03MB3950.eurprd03.prod.outlook.com (2603:10a6:803:75::30)
- by AS2PR03MB8906.eurprd03.prod.outlook.com (2603:10a6:20b:5f1::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.23; Sun, 12 Mar
- 2023 20:29:17 +0000
-Received: from VI1PR03MB3950.eurprd03.prod.outlook.com
- ([fe80::c9cc:aef7:363b:9c91]) by VI1PR03MB3950.eurprd03.prod.outlook.com
- ([fe80::c9cc:aef7:363b:9c91%4]) with mapi id 15.20.6178.024; Sun, 12 Mar 2023
- 20:29:16 +0000
-From:   =?utf-8?B?QWx2aW4gxaBpcHJhZ2E=?= <ALSI@bang-olufsen.dk>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>
-Subject: Re: [PATCH net-next] net: lan966x: Change lan966x_police_del return
- type
-Thread-Topic: [PATCH net-next] net: lan966x: Change lan966x_police_del return
- type
-Thread-Index: AQHZVSFQDt83Tmd9vkqaj+iIv88iYw==
-Date:   Sun, 12 Mar 2023 20:29:16 +0000
-Message-ID: <20230312202915.47jc6ko4fs3hngyd@bang-olufsen.dk>
-References: <20230312195155.1492881-1-horatiu.vultur@microchip.com>
-In-Reply-To: <20230312195155.1492881-1-horatiu.vultur@microchip.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bang-olufsen.dk;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: VI1PR03MB3950:EE_|AS2PR03MB8906:EE_
-x-ms-office365-filtering-correlation-id: 558efcb1-dbc2-47f4-855a-08db23387350
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: lDKJ6qTdXzeuGiEuqZDrLoV5nRGTHAh+23Z5laq2+kQAKt6BS11+dr2abJ/mZzoZOLgb+VRLvSzKtg2cVx53wuU4G1jZ/9ObG9JuP4+86l90AtCk3XcHHl50a9RQv2Xn3+lRnkwbOnJBh94fZ8bqe3P3E4ClNETK5XO6gyGgFS8Do1yKW+aMNRMQ63x0LNBkcKCuuqQu7jqxv9qiupQ3sAh/UaK90dMmf8wBOiPRHcFi7zeyXpJdRGOzHKZeaX5i5mOvfzoQGQ8dUG60uk7Wv71AehhInNZZcytNG5RUgayEzPom0O0iDO4WWLkx/QArEGlbf8DrP0VAQTNhR2s/uVDZj5QY0+wRMCf0NIjzX9aoUFsZRetibmlzQBzEEYxQ+qZMuh/BJGmRuNS1QeWPLITKgf7EoaweMK04PCF+OpSVUbEz69R2+byWJUZ5wt+dpUkJ4EsmzOhaff16OxDU4ef6iOKTLVjrReeFH1+na/AXN7z8gLKhV+lVagPUuHh+n/Rd0g076KfdTxySEpdVLqzQgYl++dP2bgW0SJLNxa3buzH4Kl0RRS5e3H+K/1k6NknDVvW9fZuO/ymqqC6Ca1ZdBxqCigdGo5+8okccBcfif/BX9+ubk0WvMUqr/mVewAchjWWDw3yaaQXlMwq4FFy2zR5m+JGSsh/1cKxqoIu5SyIiklGNm3o92h+FCiiWqpYEKtSFw+Or3OYspxoyfw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR03MB3950.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(366004)(376002)(346002)(39850400004)(136003)(451199018)(5660300002)(85202003)(4744005)(85182001)(36756003)(83380400001)(478600001)(71200400001)(6512007)(1076003)(6506007)(26005)(6486002)(2616005)(186003)(76116006)(6916009)(91956017)(38070700005)(4326008)(64756008)(66446008)(66556008)(66946007)(8676002)(66476007)(8976002)(8936002)(41300700001)(86362001)(54906003)(38100700002)(316002)(122000001)(2906002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?ZDlYWWtRZDFqSTl4dFppYitUNUF4WnpNSDF0WS80NTlKNG1iU1pwSEZhRW9L?=
- =?utf-8?B?eHlMNmp3ZTVkV3FSVkpyNm0xRzVmTUV6d1V6cE5QMlg2N1ZDbmZrMTJuSGh0?=
- =?utf-8?B?WWFIdXZJN09LcjlQOWg0ajl5YTVkK21zVDVFYy9JQzdCV0krS3JTSmlFaVUv?=
- =?utf-8?B?NkF5ck1MZ0xKa0lQZFVZWGd0NmFWTS9JRHRjSlFneklYb3hGbnlBQndWeFpI?=
- =?utf-8?B?bmFiREFxMWdhK25qYmQ4eUVzLzZhN1hUdTkvTy82Tk9maGlxR0U1bkJiQ2N1?=
- =?utf-8?B?alNQdTdRREZUTDdtNVJvNkxoU3YwTlVpdkVtUER3dUVXRHBYQzhWQktLOVN0?=
- =?utf-8?B?UThDalJWQldBSEwxWldsRFlZVG5pQWQ5VG5zMEQ2R0x4NzZiRDByWUNuU0RS?=
- =?utf-8?B?TmpOa2RLWU5oQURzZ2VKeVJvNW9jbXRHY3NGTWNiYVA4UVh1VjViVWZPd2tv?=
- =?utf-8?B?SFRGSjNQYm9vRW1Fd05ha1pIOUp1eUZoS2dGaHlNbFhWanpZS2xjMVhQUU1H?=
- =?utf-8?B?c0NabmFFYnk4R2xqV2RMQ0J6bmx5RDRrUytuNy96VXFGQWYwS0FlU0dmYWlL?=
- =?utf-8?B?ZXRlS2xBYWZPbmJSUzBuUnQrdmsweWxLTVhiUGhPbzJVazdsVXdwem9mSm5B?=
- =?utf-8?B?RnE5a3RjdW1oUEIxS0o2Ti9jWW85QXJhMjRUckwzMDB0dzRZekhTUzBlb0E5?=
- =?utf-8?B?U0VJb1c4b29jREVYN1dvUXlkQzJyd2hmUGNMY0M5UXlTaDFPdmU4eU9uZ000?=
- =?utf-8?B?UXlTcll0V1l3Q0JydC9LSGxNOU55cU5ZVmdtbFZ0TkFUTEh6WmNZMC9xbzNY?=
- =?utf-8?B?UVZ0cTBhS2xqWDJXbGxlWVAwWGNuUDRtVGNLZ0VtZEcxOGFSSjZLeGFsZUw5?=
- =?utf-8?B?VGpZODFGOVpJYmsxY21oVVdaOEVCaTVsODQ1cWgrc2NTbkR6b2hCMmxKd1V2?=
- =?utf-8?B?ZW5wMzBieHlpem13RW4xUHdGWGZIWUtGZG9mSkVwSVduSXk2ekVlVHM4UU1H?=
- =?utf-8?B?STVZVzRUKy9Gb2hPZVFlenhMUVdINFNTOW1aQjNCc3RtcGpvY1hURFd1cWdM?=
- =?utf-8?B?aEI5RG5XbTFwSWZBWUo0Zml5TlZwcG9Ybzg5SVNOZko3cm1vVGVVM0xnQU9t?=
- =?utf-8?B?ZjFzSGVGeFREVEhaNHZsRENGdVNYQXBMVndSaDE0QW5oRGdyejZ4QVRzQXpv?=
- =?utf-8?B?SGZuSkhpUEVRTzJCbklWbGVVRXlYN0dmMnB6RVV6enlkQlU5ZW5QRmtwcVFK?=
- =?utf-8?B?UHZzT3RjYmNIZTVhdmloaEc3ZGVxa05XQ2xhRTF0WitFU0IwMXkydmExc1pm?=
- =?utf-8?B?M1o2bmtKMER5OXZEeHdwTXVCMjhBY3gvTkZsd1B1VUFZZC9LTDJYOVBHTC83?=
- =?utf-8?B?ZDlkSG0rTHFKY3hoODE3ZXVaM05nSlpEWkRZZnlBeFJlR25SVzBheUZrTDUr?=
- =?utf-8?B?SFUySWNMc2paVTFQY0UxaFdqMVRYbTVqMUNpd3dCNTRLSkFxdER5ZFd2VC9y?=
- =?utf-8?B?cjBKTWI5SzR1aHdTN1d3UUNIL0ZJOGxaVmtna3Vjd2QzcHJ6aGc0dk5XWlk4?=
- =?utf-8?B?UDV0cW1sOG9NZW9FclhDbjBXZUYyeHRmMUVHZENzK3BtOHdNcHBOSi81akF6?=
- =?utf-8?B?S0VJNG9rNC9iUUxyV1dTU2JHalFwd1JUbjhvakdlNE45NDBQYW1maTJzWTdq?=
- =?utf-8?B?bk1ob3A1NWVweXlSeGVIS0NidzIxRDUzWWIwWGU3aEo2Qnd3a3dwMGNCTFVh?=
- =?utf-8?B?cTJFV0NwbEcwaEZ6Z3Y0MnJlUzZMNlZ4cVdOT1dqOStNT0ZMcWkrSEpyY0pt?=
- =?utf-8?B?SGFwd3kxMHpuR1dmcmV3NGlQd0h4VzNjbUkyUERmREtUQ1hNb3ZraUI4cktU?=
- =?utf-8?B?elg2UFFqZXEzNzgvMWh5M2U3citKMS9iS3V5VERlcnUvMjhaSUlFZm4ySU9B?=
- =?utf-8?B?dE5TR3ZDUmJWczA3U245OXR1ZlFwTnhiVXRka0c1RitOYVpKWmVFb3dlNWFF?=
- =?utf-8?B?N09YOGdwdWN3bHNpTmh3aEszRDVqNkhNbzhPclNwSExSUG9ZZ1YxUlJDUWt3?=
- =?utf-8?B?Vml5T2VQVzFSMmtqYXFoUnVxRVlsMDZJSjQyOTJzM3ZtTHE3ZEdIVkUraTNr?=
- =?utf-8?B?NEp2WHFhbW9rVU5JTVppUGZmTWVDcnZPMjlDOUpDRXJmRnNzcHZLUmNjdXdD?=
- =?utf-8?B?SGc9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <62AFE947E3B8AE4EBCBAC18AD9142617@eurprd03.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        with ESMTP id S229853AbjCLU6X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Mar 2023 16:58:23 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4B7D15C80
+        for <netdev@vger.kernel.org>; Sun, 12 Mar 2023 13:58:20 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id g10so12171005eda.1
+        for <netdev@vger.kernel.org>; Sun, 12 Mar 2023 13:58:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112; t=1678654700;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=c0hrdGshSEKU/aDGpMVr9ifjI9zSeyi2imIJNOgONEw=;
+        b=gVKqQlRhKYq4IDY4I8bp+kvtDgtpmgMQv7yLR34fYGkp70h8Xw2XtqM6s9oFldkY4A
+         iAnoBMQ2lI3mXaGRdHKJeu33VetbNJLUV/7UbP35ifxSzLt9R/iJnfIcbbOc5dlGH/7x
+         rkBmQtZi0/w7Mg+TBq2fXBq+lrSjP5LsfEx8wEPTOb5aAUXppcU2Kxs6pCXl12m/u2zJ
+         QZOFaDaBPvegIVCoHgKnatAcwGTpzUfdEsoWOX1Wfmqb7EYCmG0AUvPQSR9sb2ICacjD
+         sIF60Tl1LhesG7t4/A34jpHQABM2E09guOfAOrKK8ZGk9PvYRU62R6sN9jSWd1rl6/4q
+         90Yg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678654700;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=c0hrdGshSEKU/aDGpMVr9ifjI9zSeyi2imIJNOgONEw=;
+        b=4UlSieeclK8IS/D7xgGXKuw/yqSQthHHOEbiHl2j/xYt7LkF0Nhg4p16aySgy4QeqA
+         Kd2s8Cq/7kqCjcyTIktaltChH3EQIl9guO9DYJ/RfILpwOQbvNHLWaXtH9F+Sa0I8EQp
+         HhpRQxhpu9XtIXJLQ6Bv0VFba7FqHn4/S5k8gKyrd0si4g1KmAPvzM9jMOUD+hmDyidm
+         w0UgA3YmjaP8WZN/aAoXjivMUOVke+JQfXaFjyMz8+WX+FHj+v8wHc10ON8W78bIcVpg
+         d+RoCgY3O4TUhgLgob/clL17aomOPzutCqn8AkjwWLx/Ik/YkWn30RB8lfSZN5P/8KrG
+         +/sw==
+X-Gm-Message-State: AO0yUKXvbJnfIdi7p8ajlaDSf1UPeho7DV/IHefjXZFAyPTJzwe7Ogo5
+        9HAV9XUQH0wrygmHHnlVHgIFew==
+X-Google-Smtp-Source: AK7set8eFHxtqPSMhjQCnJNzoGMeukA2iqoVkwxekrwvDCX4ZkYzoC4SmNFoW97oexxty8ci+bgYpw==
+X-Received: by 2002:a17:907:110b:b0:921:d539:1a3a with SMTP id qu11-20020a170907110b00b00921d5391a3amr4991203ejb.58.1678654700104;
+        Sun, 12 Mar 2023 13:58:20 -0700 (PDT)
+Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
+        by smtp.gmail.com with ESMTPSA id hv12-20020a17090760cc00b008b17cc28d3dsm2591795ejc.20.2023.03.12.13.58.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 12 Mar 2023 13:58:19 -0700 (PDT)
+Message-ID: <d7a740f1-99e9-6947-06ef-3139198730f7@blackwall.org>
+Date:   Sun, 12 Mar 2023 22:58:18 +0200
 MIME-Version: 1.0
-X-OriginatorOrg: bang-olufsen.dk
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR03MB3950.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 558efcb1-dbc2-47f4-855a-08db23387350
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Mar 2023 20:29:16.2229
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 210d08b8-83f7-470a-bc96-381193ca14a1
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 9Gy8BrakC1iSufM6jJrmqz3zS2ip8L6aSS6BANfxnArs6xQTAqFdWjDT5iZA8um3ye+M3Ggn3rFphshG+DcpXA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS2PR03MB8906
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH net] bonding: Fix warning in default_device_exit_batch()
+Content-Language: en-US
+To:     Shigeru Yoshida <syoshida@redhat.com>, j.vosburgh@gmail.com,
+        andy@greyhouse.net
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        syzbot+9dfc3f3348729cc82277@syzkaller.appspotmail.com
+References: <20230312152158.995043-1-syoshida@redhat.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20230312152158.995043-1-syoshida@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,
+        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gU3VuLCBNYXIgMTIsIDIwMjMgYXQgMDg6NTE6NTVQTSArMDEwMCwgSG9yYXRpdSBWdWx0dXIg
-d3JvdGU6DQo+IEFzIHRoZSBmdW5jdGlvbiBhbHdheXMgcmV0dXJucyAwIGNoYW5nZSB0aGUgcmV0
-dXJuIHR5cGUgdG8gYmUNCj4gdm9pZCBpbnN0ZWFkIG9mIGludC4gSW4gdGhpcyB3YXkgYWxzbyBy
-ZW1vdmUgYSB3cm9uZyBtZXNzYWdlDQo+IGluIGNhc2Ugb2YgZXJyb3Igd2hpY2ggd291bGQgbmV2
-ZXIgaGFwcGVuLg0KPiANCj4gU2lnbmVkLW9mZi1ieTogSG9yYXRpdSBWdWx0dXIgPGhvcmF0aXUu
-dnVsdHVyQG1pY3JvY2hpcC5jb20+DQo+IC0tLQ0KDQpSZXZpZXdlZC1ieTogQWx2aW4gxaBpcHJh
-Z2EgPGFsc2lAYmFuZy1vbHVmc2VuLmRrPg==
+On 12/03/2023 17:21, Shigeru Yoshida wrote:
+> syzbot reported warning in default_device_exit_batch() like below [1]:
+> 
+> WARNING: CPU: 1 PID: 56 at net/core/dev.c:10867 unregister_netdevice_many_notify+0x14cf/0x19f0 net/core/dev.c:10867
+> ...
+> Call Trace:
+>  <TASK>
+>  unregister_netdevice_many net/core/dev.c:10897 [inline]
+>  default_device_exit_batch+0x451/0x5b0 net/core/dev.c:11350
+>  ops_exit_list+0x125/0x170 net/core/net_namespace.c:174
+>  cleanup_net+0x4ee/0xb10 net/core/net_namespace.c:613
+>  process_one_work+0x9bf/0x1820 kernel/workqueue.c:2390
+>  worker_thread+0x669/0x1090 kernel/workqueue.c:2537
+>  kthread+0x2e8/0x3a0 kernel/kthread.c:376
+>  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
+>  </TASK>
+> 
+> For bond devices which also has a master device, IFF_SLAVE flag is
+> cleared at err_undo_flags label in bond_enslave() if it is not
+> ARPHRD_ETHER type.  In this case, __bond_release_one() is not called
+> when bond_netdev_event() received NETDEV_UNREGISTER event.  This
+> causes the above warning.
+> 
+> This patch fixes this issue by setting IFF_SLAVE flag at
+> err_undo_flags label in bond_enslave() if the bond device has a master
+> device.
+> 
+
+The proper way is to check if the bond device had the IFF_SLAVE flag before the
+ether_setup() call which clears it, and restore it after.
+
+> Fixes: 7d5cd2ce5292 ("bonding: correctly handle bonding type change on enslave failure")
+> Cc: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+> Link: https://syzkaller.appspot.com/bug?id=391c7b1f6522182899efba27d891f1743e8eb3ef [1]
+> Reported-by: syzbot+9dfc3f3348729cc82277@syzkaller.appspotmail.com
+> Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
+> ---
+>  drivers/net/bonding/bond_main.c | 2 ++
+>  include/net/bonding.h           | 5 +++++
+>  2 files changed, 7 insertions(+)
+> 
+> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+> index 00646aa315c3..1a8b59e1468d 100644
+> --- a/drivers/net/bonding/bond_main.c
+> +++ b/drivers/net/bonding/bond_main.c
+> @@ -2291,6 +2291,8 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
+>  			dev_close(bond_dev);
+>  			ether_setup(bond_dev);
+>  			bond_dev->flags |= IFF_MASTER;
+> +			if (bond_has_master(bond))
+> +				bond_dev->flags |= IFF_SLAVE;
+>  			bond_dev->priv_flags &= ~IFF_TX_SKB_SHARING;
+>  		}
+>  	}
+> diff --git a/include/net/bonding.h b/include/net/bonding.h
+> index ea36ab7f9e72..ed0b49501fad 100644
+> --- a/include/net/bonding.h
+> +++ b/include/net/bonding.h
+> @@ -57,6 +57,11 @@
+>  
+>  #define bond_has_slaves(bond) !list_empty(bond_slave_list(bond))
+>  
+> +/* master list primitives */
+> +#define bond_master_list(bond) (&(bond)->dev->adj_list.upper)
+> +
+> +#define bond_has_master(bond) !list_empty(bond_master_list(bond))
+> +
+
+This is not the proper way to check for a master device.
+
+>  /* IMPORTANT: bond_first/last_slave can return NULL in case of an empty list */
+>  #define bond_first_slave(bond) \
+>  	(bond_has_slaves(bond) ? \
+
+The device flags are wrong because of ether_setup() which clears IFF_SLAVE, we should
+just check if it was present before and restore it after the ether_setup() call.
+
+I'll send a fix tomorrow after testing it.
+
+Thanks,
+ Nik
+
