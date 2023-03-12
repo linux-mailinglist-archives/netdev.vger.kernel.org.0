@@ -2,195 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1645A6B635F
-	for <lists+netdev@lfdr.de>; Sun, 12 Mar 2023 06:41:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 021F26B6376
+	for <lists+netdev@lfdr.de>; Sun, 12 Mar 2023 07:20:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229623AbjCLFlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Mar 2023 00:41:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37834 "EHLO
+        id S229637AbjCLGTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Mar 2023 01:19:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229494AbjCLFlg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Mar 2023 00:41:36 -0500
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B82E25C101
-        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 21:41:34 -0800 (PST)
-Received: by mail-qt1-x82d.google.com with SMTP id cf14so10140415qtb.10
-        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 21:41:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678599694;
-        h=content-transfer-encoding:content-language:to:subject:from
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=zHkHjtpa1dte9e5s2DF92iQamRtTNVGyILA/iw2j5L4=;
-        b=eUbzxm0znkmPQpUFXAMzDxxtyzU2ga/3Zgt9DYZrVNd8izg0etzMy5f/5rW0BowLsF
-         b3m1CIsMOTFIpBWNdAj63cGTKgUd8c4J0a5zT90IgafP+jwchMi5JU3PmsyquEjsDicN
-         AATY8vdmpE99lNWhjiw1+tthOTnTLnpv+y36cRafPc/8Zg45cVpUDqcHJTtqdNC84OZ7
-         QI/B2KfNFp0biRnvEoHGmBXgH6YuCRwDn8GBIyeCOC/Mg5gl8RdlShLbQfHYlY3EpGgM
-         hNN5nYY3mUxJCKEEmNImGUB9GsR4OWp8R3ev8kSiip0d3UoygygYVM8YVW5VtLZC9374
-         PQqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678599694;
-        h=content-transfer-encoding:content-language:to:subject:from
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=zHkHjtpa1dte9e5s2DF92iQamRtTNVGyILA/iw2j5L4=;
-        b=0e6wHBXFEkPECyKmUgC6O0m1e59K6GmqF98zojma+N4Fr07qXw7ITTMnSyLxVhdY9d
-         IORGONZfKG3/PSjRc5W1LdfiC8bwLO3ZrP6fnvMND7StPlkG3pQJyCsVrS08dSEZ8ytP
-         CaUw6kfhjl1KnK+oek+M7PyxvQxX2Q+rswB8pn56iij32jhmYrcZ/DG9hWKkn8KbWsnm
-         C8YlcD5OCGKv1Lxp+7AqSSk2t9Fexzbxnz9OTYtQfeNAaHGamA8aJ34SIEUTMaSTUfuS
-         xK3WmbsyisNC2fMcVEh+0vjMAmnx4OoKlV90fBv8j35VhARP0d9Y0v50HzsLnCG/WDVf
-         LRCA==
-X-Gm-Message-State: AO0yUKU71k9ZxZw1WX9xmI/oz0VkOEiO8RsHVfYJKlbQ613U7bRA6kuC
-        IoatYMFf9NJhVClLNm2dOhw=
-X-Google-Smtp-Source: AK7set/P/xh67sBZ3IMS5H0MXz75ZRlxZ0K3FrtU7VCi56sBAHm4mf0HAlLoYJldhTwLwaVSWVYX/Q==
-X-Received: by 2002:a05:622a:15c6:b0:3bf:e39f:a9aa with SMTP id d6-20020a05622a15c600b003bfe39fa9aamr58099826qty.27.1678599693752;
-        Sat, 11 Mar 2023 21:41:33 -0800 (PST)
-Received: from ?IPV6:2607:fea8:1b9f:c5b0::349? ([2607:fea8:1b9f:c5b0::349])
-        by smtp.gmail.com with ESMTPSA id fp5-20020a05622a508500b003b0b903720esm3091281qtb.13.2023.03.11.21.41.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 11 Mar 2023 21:41:33 -0800 (PST)
-Message-ID: <cd306c78-14a6-bebb-e174-2917734b4799@gmail.com>
-Date:   Sun, 12 Mar 2023 00:41:32 -0500
+        with ESMTP id S229534AbjCLGTB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Mar 2023 01:19:01 -0500
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAE6B2E0DD
+        for <netdev@vger.kernel.org>; Sat, 11 Mar 2023 22:18:59 -0800 (PST)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 4345D5C008D
+        for <netdev@vger.kernel.org>; Sun, 12 Mar 2023 01:18:59 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Sun, 12 Mar 2023 01:18:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nikishkin.pw; h=
+        cc:content-type:content-type:date:date:from:from:in-reply-to
+        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
+         s=fm2; t=1678601939; x=1678688339; bh=FiNll7pNqCedshBGZzCnQzktK
+        TmqDFHb0xrX7+bSwbo=; b=aKAQj145zWmcoVFU5Ycr4Z6kCljTWw/nRyfnE+FoI
+        UD7nfJb0+jFTLf97mLc70rp26Ri5erNJrSMTMb/6QCUc1H/Ge1g+oQBeqXR+8m9k
+        I2DaqoaW/VDw7icPaT0Nrqft7KI4x9NpxEwYLWhgylKy9/GHHcdsZODnNKwpkqeO
+        k18m/LGDP11LOi+cszDxpj1dwXVb5plZt7FH7VIrCAssRD4fdNZzKfMvCj+8ztZ+
+        1QfgnMK2+5/3e4uBXdjilBAVUviLSh0eOaIs7WUp1L8Y0rWDQt0YzJdhmYiym+4e
+        dXIjCuFnpSZjOkoOAisi1xWsMbBuKe7dPCY1y5ml0Wqkw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:content-type:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
+        1678601939; x=1678688339; bh=FiNll7pNqCedshBGZzCnQzktKTmqDFHb0xr
+        X7+bSwbo=; b=P4OpCuREQpF1skNzF6ux5QB0bAeHfVWzPBvZ/MCwyqoPYQVnr3D
+        XdUHDJULAsFhVr7uHfZLaZoLGr6+K86t66zras5gL1gaqfvphW8HB5dUVQN9rLnu
+        U22Rx/kK6akR/0pWUfP0ghGXG23U+4T00VuIGEaTB0ZJ6YGW4diaS6bfWAYS3/ME
+        I9MeCF4/lH0ijJ+YNtdE1JOMcTk2OcpNfbThKxo+tkaqSvnKGjJd/jYTJo5RL3Ik
+        ZV1cnWerFDTSDu2Ov0xIphQ12TlBNeZRYFvxsnd2EiKQHuv1g83MSMISdgfnB2AO
+        HuosT3p4k214mxL4lzRCacC6YirywSjXVwQ==
+X-ME-Sender: <xms:024NZNcm1J2VFLPnU9wW5y4kyNxSkIIGmNMzu6mYrGmVPMJcyKvGww>
+    <xme:024NZLPPY1Z5P3bs2hFFELBDf4yDNNjfFB80zNNAK_35anJt7DVddxH3fGAfb-7Sp
+    AIm8Ds9E6VR37D6Nrg>
+X-ME-Received: <xmr:024NZGiZfh-3_1p_F02eR466aOQqPusmmA0fvRKebm6VmzDooOvkU3docxA4mOeo78Hy5OVzFKE>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvddvuddgledvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucgfrhhlucfvnfffucdludehmdenucfjughrpegfhf
+    fvufffkfggtgesthdtredttdertdenucfhrhhomhepgghlrgguihhmihhrucfpihhkihhs
+    hhhkihhnuceovhhlrgguihhmihhrsehnihhkihhshhhkihhnrdhpfieqnecuggftrfgrth
+    htvghrnhepjeelveeugfffffeffffgkedthfeflefgheefieehtdekjeejhfduffeffeef
+    ieefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepvh
+    hlrgguihhmihhrsehnihhkihhshhhkihhnrdhpfi
+X-ME-Proxy: <xmx:024NZG8tfgfFej27swQ-YjawrnqhX8uxHrnnB3BjCzjbm4c2s-azaQ>
+    <xmx:024NZJvWIu4u1cXK0GJnh3OBkT8x4mcERoN42oVqTk3XqogQlfT06g>
+    <xmx:024NZFE-b3NdfIXsTEYWCozBHzLLXQH3mDtm4SPBL7s680CAzBdVnw>
+    <xmx:024NZO4lgcJszh75qy2BXOLnOhxyjlIj3Uy7mXPtz4quZsKUyXe1WQ>
+Feedback-ID: id3b446c5:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA for
+ <netdev@vger.kernel.org>; Sun, 12 Mar 2023 01:18:57 -0500 (EST)
+User-agent: mu4e 1.8.6; emacs 29.0.50
+From:   Vladimir Nikishkin <vladimir@nikishkin.pw>
+To:     netdev@vger.kernel.org
+Subject: [PATCH net-next v1 1/1] vxlan: Make vxlan try without a local
+ bypass, if bypass fails.
+Date:   Sun, 12 Mar 2023 14:07:05 +0800
+Message-ID: <871qluxzyy.fsf@laptop.lockywolf.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-From:   Etienne Champetier <champetier.etienne@gmail.com>
-Subject: mv88e6xxx / MV88E6176 + VLAN-aware unusable in 5.15.98 (ok in
- 5.10.168) (resend)
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Linux Netdev List <netdev@vger.kernel.org>
-Content-Language: en-US, fr-FR
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-(properly formatted this time)
+From: Vladimir Nikishkin <vladimir@nikishkin.pw>
+Date: Sun, 19 Feb 2023 21:24:49 +0800
+Subject: [PATCH net-next v1 1/1] vxlan: Make vxlan try without a local bypass, if bypass fails.
+Signed-off-by: Vladimir Nikishkin <vladimir@nikishkin.pw>
+From 8650e2e742b7a2cd6c35d1c034084b9f68e0f112 Mon Sep 17 00:00:00 2001
+In vxlan_core, if an fdb entry is pointing to a local
+address with some port, the system tries to get the packet to
+deliver the packet to the vxlan directly, bypassing the network
+stack.
 
-Hello Vladimir, Tobias,
+This patch makes it still try canonical delivery, if there is no
+linux kernel vxlan listening on this port. This will be useful
+for the cases when there is some userspace daemon expecting
+vxlan packets for post-processing, or some other implementation
+of vxlan.
 
-Sending this email to both of you as reverting some of your patches 'fix' the issues I'm seeing.
-I'm slowly investigating a regression in OpenWrt going from 22.03 (5.10.168 + some backports)
-to current master (5.15.98 + some backports). Using my Turris Omnia (MV88E6176) with the following network config:
+---
+ drivers/net/vxlan/vxlan_core.c | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
-# bridge vlan
-port              vlan-id
-lan0              6 PVID Egress Untagged
-lan1              5 PVID Egress Untagged
-lan2              4 PVID Egress Untagged
-lan3              3 PVID Egress Untagged
-lan4              2 PVID Egress Untagged
-br-lan            2
-                   3
-                   4
-                   5
-                   6
-wlan1             3 PVID Egress Untagged
-wlan1-1           5 PVID Egress Untagged
-wlan1-2           6 PVID Egress Untagged
-wlan0             2 PVID Egress Untagged
+diff --git a/drivers/net/vxlan/vxlan_core.c b/drivers/net/vxlan/vxlan_core.c
+index b1b179effe2a..0379902da766 100644
+--- a/drivers/net/vxlan/vxlan_core.c
++++ b/drivers/net/vxlan/vxlan_core.c
+@@ -2422,19 +2422,13 @@ static int encap_bypass_if_local(struct sk_buff *skb, struct net_device *dev,
+ 	if (rt_flags & RTCF_LOCAL &&
+ 	    !(rt_flags & (RTCF_BROADCAST | RTCF_MULTICAST))) {
+ 		struct vxlan_dev *dst_vxlan;
+-
+-		dst_release(dst);
+ 		dst_vxlan = vxlan_find_vni(vxlan->net, dst_ifindex, vni,
+ 					   daddr->sa.sa_family, dst_port,
+ 					   vxlan->cfg.flags);
+ 		if (!dst_vxlan) {
+-			dev->stats.tx_errors++;
+-			vxlan_vnifilter_count(vxlan, vni, NULL,
+-					      VXLAN_VNI_STATS_TX_ERRORS, 0);
+-			kfree_skb(skb);
+-
+-			return -ENOENT;
++			return 0;
+ 		}
++		dst_release(dst);
+ 		vxlan_encap_bypass(skb, vxlan, dst_vxlan, vni, true);
+ 		return 1;
+ 	}
+-- 
+2.35.7
 
-I get tagged frame with VID 3 on lan4 (at least some multicast & broadcast), but lan4 is not a member of VLAN 3
-Also unicast frames from wifi to lan4 exit tagged with VID 2, broadcast frames are fine (verifed with scapy)
-Reverting
-5bded8259ee3 "net: dsa: mv88e6xxx: isolate the ATU databases of standalone and bridged ports" from Vladimir
-and
-b80dc51b72e2 "net: dsa: mv88e6xxx: Only allow LAG offload on supported hardware"
-57e661aae6a8 "net: dsa: mv88e6xxx: Link aggregation support"
-from Tobias allow me to get back to 5.10 behavior / working system.
 
-On the OpenWrt side, 5.15 is the latest supported kernel, so I was not able to try more recent for now.
-
-I'm happy to try to backport any patches that can help fix or narrow down the issue, or provide more infos / tests results.
-
-These issues affect other devices using mv88e6xxx: https://github.com/openwrt/openwrt/issues/11877
-In the Github issue the reporter note that first packet is not tagged and the following are.
-
-Here a diff of "mv88e6xxx_dump --vtu --ports --global1 --global2" between 5.10 and 5.15 (without revert)
-
-@@ -9,18 +9,18 @@
-  05 Port control 1         0000 0000 0000 0000 0000 0000 0000
-  06 Port base VLAN map     007e 007d 007b 0077 006f 005f 003f
-  07 Def VLAN ID & Prio     0006 0005 0004 0003 0002 0000 0000
--08 Port control 2         0c80 0c80 0c80 0c80 0c80 1080 2080
-+08 Port control 2         0c80 0c80 0c80 0c80 0c80 1080 1080
-  09 Egress rate control    0001 0001 0001 0001 0001 0001 0001
-  0a Egress rate control 2  0000 0000 0000 0000 0000 0000 0000
--0b Port association vec   1001 1002 1004 1008 1010 1000 1000
-+0b Port association vec   1001 1002 1004 1008 1010 1020 1040
-  0c Port ATU control       0000 0000 0000 0000 0000 0000 0000
-  0d Override               0000 0000 0000 0000 0000 0000 0000
-  0e Policy control         0000 0000 0000 0000 0000 0000 0000
-  0f Port ether type        9100 9100 9100 9100 9100 dada dada
-  10 In discard low         0000 0000 0000 0000 0000 0000 0000
-  11 In discard high        0000 0000 0000 0000 0000 0000 0000
--12 In filtered            0000 0000 0000 0000 0000 0000 0000
--13 RX frame count         0000 0000 0000 008c 0000 021a 0000
-+12 In filtered            0000 0000 0000 0003 0000 0000 0000
-+13 RX frame count         0000 0000 0000 008e 0000 04dd 0000
-  14 Reserved               0000 0000 0000 0000 0000 0000 0000
-  15 Reserved               0000 0000 0000 0000 0000 0000 0000
-  16 LED control            0000 0000 0000 0000 0000 0000 0000
-@@ -39,22 +39,23 @@
-  	T - a member, egress tagged
-  	X - not a member, Ingress frames with VID discarded
-  P  VID 0123456  FID  SID QPrio FPrio VidPolicy
--0    1 XXXXXVV    1    0     -     -     0
--0    2 XXXXUVV    6    0     -     -     0
--0    3 XXXUXVV    5    0     -     -     0
--0    4 XXUXXVV    4    0     -     -     0
--0    5 XUXXXVV    3    0     -     -     0
--0    6 UXXXXVV    2    0     -     -     0
-+0    1 XXXXXVV    2    0     -     -     0
-+0    2 XXXXUVV    7    0     -     -     0
-+0    3 XXXUXVV    6    0     -     -     0
-+0    4 XXUXXVV    5    0     -     -     0
-+0    5 XUXXXVV    4    0     -     -     0
-+0    6 UXXXXVV    3    0     -     -     0
-+0 4095 UUUUUVV    1    0     -     -     0
-  Global1:
-  00 Global status                    c814
--01 ATU FID                          0006
--02 VTU FID                          0002
-+01 ATU FID                          0007
-+02 VTU FID                          0001
-  03 VTU SID                          0000
-  04 Global control                   40a8
--05 VTU operations                   4000
--06 VTU VID                          0fff
--07 VTU/STU Data 0-3                 3331
--08 VTU/STU Data 4-6                 0303
-+05 VTU operations                   4043
-+06 VTU VID                          1fff
-+07 VTU/STU Data 0-3                 1111
-+08 VTU/STU Data 4-6                 0111
-  09 Reserved                         0000
-  0a ATU control                      0149
-  0b ATU operations                   4000
-@@ -90,10 +91,10 @@
-  08 Trunk mapping                    7800
-  09 Ingress rate command             1600
-  0a Ingress rate data                0000
--0b Cross chip port VLAN addr        31ff
--0c Cross chip port VLAN data        0000
--0d Switch MAC/WoL/WoF               05c5
--0e ATU Stats                        000f
-+0b Cross chip port VLAN addr        3010
-+0c Cross chip port VLAN data        007f
-+0d Switch MAC/WoL/WoF               05fe
-+0e ATU Stats                        001f
-  0f Priority override table          0f00
-  10 Reserved                         0000
-  11 Reserved                         0000
-
-Thanks in advance
-Etienne
+-- 
+Your sincerely,
+Vladimir Nikishkin (MiEr, lockywolf)
+(Laptop)
+--
+Fastmail.
 
