@@ -2,123 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 671AF6B64D8
-	for <lists+netdev@lfdr.de>; Sun, 12 Mar 2023 11:18:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFB2E6B64DF
+	for <lists+netdev@lfdr.de>; Sun, 12 Mar 2023 11:20:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229901AbjCLKS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Mar 2023 06:18:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52302 "EHLO
+        id S229933AbjCLKUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Mar 2023 06:20:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229891AbjCLKSX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Mar 2023 06:18:23 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C631715560
-        for <netdev@vger.kernel.org>; Sun, 12 Mar 2023 03:18:20 -0700 (PDT)
-Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1pbIlX-0001NV-KV; Sun, 12 Mar 2023 11:17:23 +0100
-Received: from pengutronix.de (unknown [IPv6:2a00:20:4047:f0aa:709:fab:bab8:4a48])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 8D95418F886;
-        Sun, 12 Mar 2023 10:16:59 +0000 (UTC)
-Date:   Sun, 12 Mar 2023 11:16:56 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        with ESMTP id S229614AbjCLKUn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Mar 2023 06:20:43 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDE7E2E837
+        for <netdev@vger.kernel.org>; Sun, 12 Mar 2023 03:20:41 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id r15so10453096edq.11
+        for <netdev@vger.kernel.org>; Sun, 12 Mar 2023 03:20:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1678616440;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=sbAbzZV/Xdq9oZ9db4qjyR7OAM8ISoHuQdD7Lk6uW9o=;
+        b=LeLPC3EEhzxRNxvRCH+b+d4kEih+ehxEiG2rXL5qSEAcOttdU4aXULt0tsRKPuCza3
+         a4zWL1S0wbIAisSm1DpkMjY03lTS4tPihYnhk7Gm1YjQK92APvyRcC8nklG3T6yGr/eB
+         cmYfO6IiI+lSpBExN9SZvLO/BEW9t7S9V6roCvbfm71F6OeinZvpXv7YsdI2sq3n5y3S
+         naTpfbe8huSCsAPBspw/c++7JG8ovvFyJ2lQXDxaVxcosqunaSAQHdVFkePGJafuZDC5
+         vyVlxtg9tFQUmMVIORvjh8TnVayopqMNlt8dEzQ3SyBjXt+WBr/6pGANCLgwwSdGLEtV
+         M0Yg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678616440;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=sbAbzZV/Xdq9oZ9db4qjyR7OAM8ISoHuQdD7Lk6uW9o=;
+        b=XfWQFMnISADoo//2D6VfyO5uG/PVFNUbuX9fyFX3KWiXJeVTWmFx4Y6G7pNVM6Q9ei
+         yqrq08NHBa+8K+QxonjOaftkBCCD/mhFAgjcjNN5y6yxgJLjQkjRWPGt20+Ocf4Q9XcB
+         90U6hmAivaSRQ0b/BvJR5+Lj3N5aIQAB4M5dSeXSAwspKLkmfnGMcCzbijRSJBi0fx8l
+         MDEDh2lvm0qHMfJmU7NiJuOy7Bzwmwu4EBEetw14ImTUf2m4UVPulKUVn+RCBdLkt3lJ
+         6ibdDEZmoP95b5ANqmfPCHTYO7zc1yUsy+NRhnsqgf1VAWGRmEbbRWcbkeKs0DU0frep
+         vOUw==
+X-Gm-Message-State: AO0yUKXmf2C+R+GpYAZ8qLT3gNZgLbBg0DuQYDrfKNJyQniqWBojpk3S
+        ITMewSxMfrhy3AXO8ATVqoavqQ==
+X-Google-Smtp-Source: AK7set+j33mKv17cplWRaB2equIU/hTxgso/6lGoUsSghTcqcj9a6GMBKe+/zu/1DFJTN0Bl7w55cw==
+X-Received: by 2002:a17:907:6ea6:b0:8b1:7dea:cc40 with SMTP id sh38-20020a1709076ea600b008b17deacc40mr37985220ejc.9.1678616440275;
+        Sun, 12 Mar 2023 03:20:40 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:d9f6:3e61:beeb:295a? ([2a02:810d:15c0:828:d9f6:3e61:beeb:295a])
+        by smtp.gmail.com with ESMTPSA id u21-20020a17090657d500b008b69aa62efcsm2094661ejr.62.2023.03.12.03.20.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 12 Mar 2023 03:20:39 -0700 (PDT)
+Message-ID: <d9b197c8-56fe-b59d-5fca-bc863ac1e7ed@linaro.org>
+Date:   Sun, 12 Mar 2023 11:20:38 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH 01/12] net: dsa: lantiq_gswip: mark OF related data as
+ maybe unused
+Content-Language: en-US
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Wei Fang <wei.fang@nxp.com>,
-        Shenwei Wang <shenwei.wang@nxp.com>,
-        Clark Wang <xiaoning.wang@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Francois Romieu <romieu@fr.zoreil.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Zhao Qiang <qiang.zhao@nxp.com>, Kalle Valo <kvalo@kernel.org>,
-        Samuel Mendoza-Jonas <sam@mendozajonas.com>,
-        devicetree@vger.kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-wireless@vger.kernel.org
-Subject: Re: [PATCH] net: Use of_property_read_bool() for boolean properties
-Message-ID: <20230312101656.6vugofe3ejtovnks@pengutronix.de>
-References: <20230310144718.1544169-1-robh@kernel.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="56s4oxy73xinyvne"
-Content-Disposition: inline
-In-Reply-To: <20230310144718.1544169-1-robh@kernel.org>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-wpan@vger.kernel.org
+References: <20230311173303.262618-1-krzysztof.kozlowski@linaro.org>
+ <20230311181434.lycxr5h2f6xcmwdj@skbuf>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230311181434.lycxr5h2f6xcmwdj@skbuf>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 11/03/2023 19:14, Vladimir Oltean wrote:
+> On Sat, Mar 11, 2023 at 06:32:52PM +0100, Krzysztof Kozlowski wrote:
+>> The driver can be compile tested with !CONFIG_OF making certain data
+>> unused:
+>>
+>>   drivers/net/dsa/lantiq_gswip.c:1888:34: error: ‘xway_gphy_match’ defined but not used [-Werror=unused-const-variable=]
+>>
+>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>> ---
+> 
+> Do you happen to have any context as to why of_match_node() without
+> CONFIG_OF is implemented as:
+> 
+> #define of_match_node(_matches, _node)	NULL
+> 
+> and not as:
+> 
+> static inline const struct of_device_id *
+> of_match_node(const struct of_device_id *matches,
+> 	      const struct device_node *node)
+> {
+> 	return NULL;
+> }
+> 
+> ?
+> 
+> Generally, the static inline shim function model is nicer, because it
+> allows us to not scatter __maybe_unused all around.
 
---56s4oxy73xinyvne
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Sorry, I don't follow. I don't touch that wrappers, just fix errors
+related to OF device ID tables, although in few cases it is indeed
+related to of_match_node.
 
-On 10.03.2023 08:47:16, Rob Herring wrote:
-> It is preferred to use typed property access functions (i.e.
-> of_property_read_<type> functions) rather than low-level
-> of_get_property/of_find_property functions for reading properties.
-> Convert reading boolean properties to to of_property_read_bool().
->=20
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->  drivers/net/can/cc770/cc770_platform.c          | 12 ++++++------
+Best regards,
+Krzysztof
 
-Acked-by: Marc Kleine-Budde <mkl@pengutronix.de> # for net/can
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---56s4oxy73xinyvne
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmQNppYACgkQvlAcSiqK
-BOih8Af/YX2B3N5FsBIZG4yqpr++vgKc4n7OnSLKeurhmc0xDoCskNspwUZEwQMx
-qH0NpgRO8lQRNavcmnZCXsQNyaDN+MZisfJf/6ok61y5S2klIpM53ExvbwwG3bMN
-s4yVdfQC6+OXVLKbp8zOkZvkjIJ8WPXROJs7co0Vwpw+6ISlaBCr1tNOyaQ8pG1I
-okCqcVtkxS7Oq972YEV14iIgJkqaIhjVDuCQib7hRPf3AQOf4HVwSOdRmKQSpa2J
-JoiV0ENG22zhLQ10qSyttO6mLAyAfF63yU4gNr8Qr4HFfMu2GrnhlI5mhVJAsBET
-xkYmWkJD8zscCZtljlR5NmYU9uO/sA==
-=0vPJ
------END PGP SIGNATURE-----
-
---56s4oxy73xinyvne--
