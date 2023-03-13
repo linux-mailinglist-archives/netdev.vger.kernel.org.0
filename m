@@ -2,681 +2,701 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62AE06B7780
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 13:30:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E07FA6B7798
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 13:34:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229742AbjCMMa5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 08:30:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55422 "EHLO
+        id S229830AbjCMMej (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 08:34:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229665AbjCMMa4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 08:30:56 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82A534109F
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 05:30:48 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id u32so4875244ybi.6
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 05:30:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1678710647;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=fhBPwWSqwICLNYvvKIsFYodaKJz1yYijaHek0r6/xc8=;
-        b=BoadWKNF3DdiM9tlZdu1HPZpcVuj7fcum6FlaPxjgB3MQxaVmXu7eiytS4Lj4caoOE
-         WTqZhEcd3LMco9UmYjZdANIb215S0Eka4/0Q7lkiG3pHfYzpKDvZyOVo8M5CekVMpQ56
-         x/mXdAMaSPWoMnx2BdaIeMtgbFHdqMy9Hxzb7vCGSw1y81nPYQz4l+J4nEXLw9MRAlk3
-         DIdul104g8zB/+QX9CpEXWAvqu4tY2d8f6Wpof66PeW8ynrYJC9J17eFYsjbf9cPaA9A
-         tZRej8LSK85wam/4HixRUy8WIvFd0b7K25WU4hWWFsmnSp/bYEjRZTUIYP7tiBVWrhW+
-         j3Dg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678710647;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=fhBPwWSqwICLNYvvKIsFYodaKJz1yYijaHek0r6/xc8=;
-        b=NmJk+OzmVExIJQE7DFXwqCnHfTig/mhl5dnx8W8ehM2Sxwf6PTaJI/E3df+Z7xmlsz
-         joFO/Ef9cRjiCSkxdxHmjJ6tliAqff9jdEyyYQ5pUgVbhP9T7hgpN5RIjVZDBxRbF741
-         2BsL9Cqyx62nEGlVWtoMaZe3zDvF6MiaFU/fKKCW43D7ZivzjDdYq5Y42JMDSLAw/paW
-         6wFA+yxbyORVi8UTw07YilETghRZhIxVDGeOrxj3f5B/tOGHIegroCzYp3mwyT5st22w
-         pTdP1jcPRsYsjtQRZCQxSp+lkJ1mvhj0ZdcLI18QHKDA/9FQZK2auCYNRglPiJnkW7pv
-         1qUw==
-X-Gm-Message-State: AO0yUKX/CRUzQMKFmWmKsDETupXr6lgUOGHaTVZJNVSz25hT2J954puM
-        bU/FSQGf5CIaoIvz97uMpOivahj/syH4BqoxMy1A5/5Dv7yFgnCQcQM0RA==
-X-Google-Smtp-Source: AK7set8v6S33AGoyAqC+0PFI0CnjRy0elGX5c7b3G7ovBt5cLZaoVw5ZoP9fI6Ub/K8h7klZxBLdKwGc1rmn8N7zWKY=
-X-Received: by 2002:a05:6902:151:b0:afa:d8b5:8e82 with SMTP id
- p17-20020a056902015100b00afad8b58e82mr18848733ybh.6.1678710647348; Mon, 13
- Mar 2023 05:30:47 -0700 (PDT)
+        with ESMTP id S229805AbjCMMeg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 08:34:36 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 054DE37713;
+        Mon, 13 Mar 2023 05:34:14 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=huOQVll3cEQbRM6rztHqYpgMilCw60SRG5brgKgqZ78WkDNvfhEvRHSDOjC4Z5wD/6HyZ3UzpXcwiKEOOa0qeVZXPE4arZz6Sl8xqX/wS90hdCBPtd8dGcGmXpLRsGcVt1qOnsOD9vYCXozljPH9NgMLILhjqH/EzhAM7GEJW5jhi9x92QI5r793OMYN9FfWV1VnY/yybsqYnGFBp2g78RhXpHY6XodgLQItoqmjZFFEvXakScYmpihxEjo2+H2qoOA53AOnCwJ8cCeCT+hA4mllXCamatsNd5jY+kdgiu5HvKOYB9x3JrfXh6bioUpubPARZVHh17N9HqdJHxiDbQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Pt3Z6FDtfi9epoV25p2vf6wCm4G3MWyHp42fBpgHD7Q=;
+ b=c0fqnTsrXhty1wwM4LWGoP/McZ9OKxyXqOJxIs/wglb5f52NkUNUfSd1+oNgHKH9hhdu9wQlxyENFPh/vJ8Ctss+fCTsg+Dvr1exo7zNac/hJvU1x7ute6x/zSHEpkVBTLeMUIihpws3hM4s1E5csGJL4kv+oyvZq1qilnZ4znIBglg+cS4Eupy7tQfJm5ojxl2ywH9o2KQEQjSCoXyq5jeNRd/JZ8SNFWBiPV8uothCWQVtYfJLxnl5Vg0Xbt/Gp/xo2h6h9946V2gA9aDCt+NRD1rly/CMk4WWDEOAqUfojiY4yRcBuxgauXXwagNkyYaVjAEBvOdPg8OMNE5/xw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Pt3Z6FDtfi9epoV25p2vf6wCm4G3MWyHp42fBpgHD7Q=;
+ b=a2Wv3ohqsC3mM9I+wS8UhAOuh9949J2t5d0MzHNUHu21Py8DbAVj99YjNPOjR9RNn5bpq5ZvQtlY0OPdd0KOVA/acjblmtrWstPnMMH8CQEwu0+SH4JWK92/iV43E47+Nx+6W4WpsERLfezelMywsy4jcMuLzkd/xB/3A6OraG4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BL1PR12MB5825.namprd12.prod.outlook.com (2603:10b6:208:394::20)
+ by DM6PR12MB4353.namprd12.prod.outlook.com (2603:10b6:5:2a6::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.24; Mon, 13 Mar
+ 2023 12:33:52 +0000
+Received: from BL1PR12MB5825.namprd12.prod.outlook.com
+ ([fe80::7222:fe4b:effd:b732]) by BL1PR12MB5825.namprd12.prod.outlook.com
+ ([fe80::7222:fe4b:effd:b732%5]) with mapi id 15.20.6178.024; Mon, 13 Mar 2023
+ 12:33:52 +0000
+Message-ID: <7522e236-3105-bc1d-6c14-6fba82703abc@amd.com>
+Date:   Mon, 13 Mar 2023 18:03:38 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH net-next v2 08/14] sfc: implement vdpa vring config
+ operations
+Content-Language: en-US
+To:     Jason Wang <jasowang@redhat.com>,
+        Gautam Dawar <gautam.dawar@amd.com>
+Cc:     linux-net-drivers@amd.com, Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        eperezma@redhat.com, harpreet.anand@amd.com, tanuj.kamde@amd.com,
+        koushik.dutta@amd.com
+References: <20230307113621.64153-1-gautam.dawar@amd.com>
+ <20230307113621.64153-9-gautam.dawar@amd.com>
+ <CACGkMEut9FY-2OYnAQPr_wGpcpVc3yurOA+imQARzVcMeuTH1A@mail.gmail.com>
+From:   Gautam Dawar <gdawar@amd.com>
+In-Reply-To: <CACGkMEut9FY-2OYnAQPr_wGpcpVc3yurOA+imQARzVcMeuTH1A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: PN2PR01CA0239.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:eb::18) To BL1PR12MB5825.namprd12.prod.outlook.com
+ (2603:10b6:208:394::20)
 MIME-Version: 1.0
-References: <CAL87dS0sSsKQOcf22gcHuHu7PjG_j1uiOx-AfRKdT7rznVfJ6Q@mail.gmail.com>
- <20230310213804.26304-1-kuniyu@amazon.com> <CAL87dS3Brkkbi-j-_W3LYORWJ+VOXockpiBwNZQ84rWk+o8SXw@mail.gmail.com>
-In-Reply-To: <CAL87dS3Brkkbi-j-_W3LYORWJ+VOXockpiBwNZQ84rWk+o8SXw@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 13 Mar 2023 05:30:36 -0700
-Message-ID: <CANn89iK4+SoBG3QwvumauH+X8GOxWZyd8S7YC_bFC-3AW8H-aA@mail.gmail.com>
-Subject: Re: [ISSUE]soft lockup in __inet_lookup_established() function which
- one sock exist in two hash buckets(tcp_hashinfo.ehash)
-To:     mingkun bian <bianmingkun@gmail.com>
-Cc:     Kuniyuki Iwashima <kuniyu@amazon.com>, kerneljasonxing@gmail.com,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5825:EE_|DM6PR12MB4353:EE_
+X-MS-Office365-Filtering-Correlation-Id: 65c66ab4-5693-4a01-ac20-08db23bf341a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2Ur4bCAZsG6+GJtPcg+7QCkMM6JHpq87c+BL/5eZpLhjtAhlFts2Q8o4buKXb0zm8hZHVmUBeWoZ4XAKviuGZv1Qy9ONoih5Ja1x4vcD6n0QbeT9b6y1LLfiywT65XOPNWMMGYEEEV9U9KGhiVSZ3ofd4aStCFKbbEy4LgiBaqiJlHmdOFH7Te9udQnWcV73ZxNxDjJShwtnXhPDZ8U0giQ/BxAy99T7oQp8EsVD5vz5u3sYZ1y2ekf8olSfsHHZErjJlFIQOnbQNFk7lxJqstA2nm1oJ/JoXBWHtoSdFbROGoXwn0/a809zd2+kgf/SzmmKN5iJtT6c5Bt+cosNAKE16F7MLggTyh+3FUuC2GUa22PHaWnqRAOKN8uSIiZnRI1b/RuHcR9tLNu66C48W/EarR45li9T3CuR8N/FkW174eXKywPVrp2jHPXiBwMbXMBzDUY61TmykbgcmZUMOOtXJQ848sSlqKv1lQnOV1BvfPt5gg0fbqT3TRMVGmUpXLgm5KBbN2CM/MrLDsOd0jCyfEQOP2RNdtF7b9rm/zvG8jGUxPDJTpWrbjDK1LyaeMMO8UUn3OOL3c7M7vNrNohEbgmQZxeFDGyYzKvdqyGb0diRVsFGNpH/vfVVhSfz4SLOgzkJhEIPsozUDly0YymKD0rLz/2b7oYUjE6//nYGLJuIKYXMN6CodnJxioAEZoW1gahng99XC37iIBjgh8XwRseNVf3gI170tF2fdEc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR12MB5825.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(366004)(136003)(396003)(346002)(39860400002)(451199018)(6666004)(83380400001)(110136005)(316002)(38100700002)(26005)(478600001)(6636002)(54906003)(8936002)(186003)(5660300002)(6506007)(36756003)(6512007)(53546011)(4326008)(7416002)(8676002)(66556008)(66946007)(66476007)(31696002)(41300700001)(2616005)(30864003)(6486002)(2906002)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SUY2ODI0RHRaMFMrT2RnRnJuTmZMZmFjUEttVEhFVGFGYzFTb0c2ZERVWVcx?=
+ =?utf-8?B?WjdFZSthMzBKa3lGekVYK0R0WURpWXVIVzFWcVREQVphL1B3RkI4RGVZKy8y?=
+ =?utf-8?B?VFhDaXliNkF5WEl2VTQ0T3ArWnk0ZjRuU0paL3ZFQ3BMalQ1VmNDQjIza3BN?=
+ =?utf-8?B?Mmk3K2xDbXhidXZiNVlTckJlZlZGVS9YdnJ3MExBN3c0WmE2ZFMzSWFJNUcv?=
+ =?utf-8?B?RmFWMUNPbXVmVG1CcUc4QndkdUptekY3Y2IwUllwWUNWd2hMMG9pWDI4SU5m?=
+ =?utf-8?B?ZGd1Tnc2OG5aZGE4ZTlQZHc0M1NkcGZJN1FpY1R2QkY5R3BLek8xOS9pUDRV?=
+ =?utf-8?B?V09rNW1HYU00NnRhR3pWZVZNMThlNjRXRW1EbndRS1FrVHowUGxmcS9iNmhv?=
+ =?utf-8?B?ZWVIcEhxUWk3OHh4WW51cXlBMXE4ZDR2SDVvSTJNYU9VMnIzRUEybzB2V3dZ?=
+ =?utf-8?B?cElOQVNNcmdiRjFOS2dkeSttd1dFdlJIYmdWT0swb0ZPNTFrRW84NHQxNUVD?=
+ =?utf-8?B?K3NsakhJNGJUb0JhV25sYll3cmY3U2x1YUN2bTdVdC9uTFJlRHhrcGhkTlZ2?=
+ =?utf-8?B?T2VQZFlremo3b2l3ZXZOQkFkYmlQS2dpTTZIZm1pS1VZcmlTbE90Vll5bVh6?=
+ =?utf-8?B?L294SHgyM3lYSkN5YWFYSm5jcE8rQ3RkVG01dW1Vc2xha1BmU1FzRldzdkNr?=
+ =?utf-8?B?RlZaSklQYmp3VERkVHlCL25YRmhtSHpDY3QrU0ZjcE1tU2IvYmJpci82WXhr?=
+ =?utf-8?B?aFBmdmdxRTVlc0IxcHhjZXM1dHNjZHZHOXlRT3ZyM25oSWJQU05mSmI4N2gw?=
+ =?utf-8?B?TE4xMnJXTDN2MGpZVThkQnVJb3M5ZEQ4Vndmbk1vbFlpcUZHcFVYMlM1L3Ji?=
+ =?utf-8?B?SlpKVVlqeXpWajdoTWExclRNbDRUbFlJNmE2UmZ0SnRXQjA4dUdyQXd0Wld5?=
+ =?utf-8?B?bFlaazlxdjZxQ0pHOWJGWmgvV3MzY3FZM0FxRG4wSXlSRnNuSGtJQ1lmaE4x?=
+ =?utf-8?B?MzhweHIraDl3b2s3VmhJNjdFM29nTWU5TUNqUkI1cTJtdG1GQkRiUFFiclht?=
+ =?utf-8?B?Y3ZPRGRpV212RVh2bERRZjltN050b0Y2QkJ2c2k1K3pmRnAwQ2VSQjhGVjNC?=
+ =?utf-8?B?ZHlidVJudExSZGhDenR6MnhGWW9uZHNXTGYzYWl1ZU45eHF0aUZPeVF4RWY2?=
+ =?utf-8?B?WGJaRnkvUjkwdERDUno1RVg3NUFCbkc0UlVMTlpmdER3YzAwS0RYVXpXS0U3?=
+ =?utf-8?B?VVVHY01VNXRETjFMUzcwQm1LaXlkSStYa2xiTFQ0TEVMT3doeks3MlFjenIx?=
+ =?utf-8?B?WHp3MGJiQVY1VjZMRW15YVNzNXZwTHo2SzZZK3JWMTFIQ2FWWHByci9kcXVC?=
+ =?utf-8?B?ZTNrd0NyMlFXdExFWU5iT2xpbWllYTRTNitWUjN0QlJvaGIxL3Jrd2grNlk3?=
+ =?utf-8?B?MHpubjkyRVh4R2NuNkc4NEE2TzNmdXJLRHZxSEVTNm5wZktJajBia1NEN1RH?=
+ =?utf-8?B?QXNISUxpY2wrTjg0elVRYUwrR1k2Q2VxWkE1dllZb2NkSTZUd0l4d2tVMkNB?=
+ =?utf-8?B?UHBKMTB0ZmNNZ0w3c3pJOGl6RjNnZm1EbTlCTCtBZzNjRVZRaWJiWEF0K29Q?=
+ =?utf-8?B?MENJcDRTYWgweVd2cURuVGpuUkx4ZXBYaFZJbFZ1QW1mU1QzdWRHWEVZMGtH?=
+ =?utf-8?B?UkdoaEVzQzFDMWdYSE5Dc2F4UFBrdjltVFdqU3gxOWx0ZmxlLzY3OHBweDVS?=
+ =?utf-8?B?ZjBsWDBzbHhYcU4wdEh1WFVKUWhzNTMxbXVBQXY5WGYreHNMQm1JbHFyWUYx?=
+ =?utf-8?B?OGxqdWQxMENWaFBmWUNIL2JPbkVnUkhxeVBtUlJIc2owbGxWalB3NkVscW0z?=
+ =?utf-8?B?RmxHT1JJZTBzb0dHUTUwUTVGYU5UUnFaN2ZDSzhIU09VUkFSZHdUa1lVKzlI?=
+ =?utf-8?B?Nm5XWmYreHhLblVDZU9SREZKL2tCSE5TVElNTWhHTlZXaG1ncUhIYVVKUEVV?=
+ =?utf-8?B?alMzR2NVM1NySC9aT3ZqK3UvL3JWd21jaTZ2YXg0Tm9hOVE0SnpsRmU1STZ3?=
+ =?utf-8?B?Nm03TmVXU0pQdGc4dmo2UE5UOHYzRzJiY05LS2N4L0FqcTdkYjhKbk5iRVJH?=
+ =?utf-8?Q?FjXbqwS+40hg3VQn3yarQ/f6N?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 65c66ab4-5693-4a01-ac20-08db23bf341a
+X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5825.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Mar 2023 12:33:52.6206
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: N14Bue4Fg5DAijfkH+yUH6rhk7/p5PC/pkPJFC/7UP8e7LzV7leMR/Gsu5zgXGc4
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4353
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 10, 2023 at 10:46=E2=80=AFPM mingkun bian <bianmingkun@gmail.co=
-m> wrote:
+
+On 3/10/23 10:34, Jason Wang wrote:
+> Caution: This message originated from an External Source. Use proper caution when opening attachments, clicking links, or responding.
 >
-> Hi,
 >
->     I am sorry that a newer kernel is not available to us for a period
-> of time for other reasons, this issue is still found in 4.19 of arm,
-> maybe this issue has nothing to do with kernel version, please tell me
-> if you find any patch about this issue.
+> On Tue, Mar 7, 2023 at 7:37 PM Gautam Dawar <gautam.dawar@amd.com> wrote:
+>> This patch implements the vDPA config operations related to
+>> virtqueues or vrings. These include setting vring address,
+>> getting vq state, operations to enable/disable a vq etc.
+>> The resources required for vring operations eg. VI, interrupts etc.
+>> are also allocated.
+>>
+>> Signed-off-by: Gautam Dawar <gautam.dawar@amd.com>
+>> ---
+>>   drivers/net/ethernet/sfc/ef100_vdpa.c     |  46 +++-
+>>   drivers/net/ethernet/sfc/ef100_vdpa.h     |  54 +++++
+>>   drivers/net/ethernet/sfc/ef100_vdpa_ops.c | 275 ++++++++++++++++++++++
+>>   3 files changed, 374 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.c b/drivers/net/ethernet/sfc/ef100_vdpa.c
+>> index 4c5a98c9d6c3..c66e5aef69ea 100644
+>> --- a/drivers/net/ethernet/sfc/ef100_vdpa.c
+>> +++ b/drivers/net/ethernet/sfc/ef100_vdpa.c
+>> @@ -14,6 +14,7 @@
+>>   #include "ef100_vdpa.h"
+>>   #include "mcdi_vdpa.h"
+>>   #include "mcdi_filters.h"
+>> +#include "mcdi_functions.h"
+>>   #include "ef100_netdev.h"
+>>
+>>   static struct virtio_device_id ef100_vdpa_id_table[] = {
+>> @@ -47,12 +48,31 @@ int ef100_vdpa_init(struct efx_probe_data *probe_data)
+>>          return rc;
+>>   }
+>>
+>> +static int vdpa_allocate_vis(struct efx_nic *efx, unsigned int *allocated_vis)
+>> +{
+>> +       /* The first VI is reserved for MCDI
+>> +        * 1 VI each for rx + tx ring
+>> +        */
+>> +       unsigned int max_vis = 1 + EF100_VDPA_MAX_QUEUES_PAIRS;
+>> +       unsigned int min_vis = 1 + 1;
+>> +       int rc;
+>> +
+>> +       rc = efx_mcdi_alloc_vis(efx, min_vis, max_vis,
+>> +                               NULL, allocated_vis);
+>> +       if (!rc)
+>> +               return rc;
+>> +       if (*allocated_vis < min_vis)
+>> +               return -ENOSPC;
+>> +       return 0;
+>> +}
+>> +
+>>   static void ef100_vdpa_delete(struct efx_nic *efx)
+>>   {
+>>          if (efx->vdpa_nic) {
+>>                  /* replace with _vdpa_unregister_device later */
+>>                  put_device(&efx->vdpa_nic->vdpa_dev.dev);
+>>          }
+>> +       efx_mcdi_free_vis(efx);
+>>   }
+>>
+>>   void ef100_vdpa_fini(struct efx_probe_data *probe_data)
+>> @@ -104,9 +124,19 @@ static struct ef100_vdpa_nic *ef100_vdpa_create(struct efx_nic *efx,
+>>   {
+>>          struct ef100_nic_data *nic_data = efx->nic_data;
+>>          struct ef100_vdpa_nic *vdpa_nic;
+>> +       unsigned int allocated_vis;
+>>          int rc;
+>> +       u8 i;
+>>
+>>          nic_data->vdpa_class = dev_type;
+>> +       rc = vdpa_allocate_vis(efx, &allocated_vis);
+>> +       if (rc) {
+>> +               pci_err(efx->pci_dev,
+>> +                       "%s Alloc VIs failed for vf:%u error:%d\n",
+>> +                        __func__, nic_data->vf_index, rc);
+>> +               return ERR_PTR(rc);
+>> +       }
+>> +
+>>          vdpa_nic = vdpa_alloc_device(struct ef100_vdpa_nic,
+>>                                       vdpa_dev, &efx->pci_dev->dev,
+>>                                       &ef100_vdpa_config_ops,
+>> @@ -117,7 +147,8 @@ static struct ef100_vdpa_nic *ef100_vdpa_create(struct efx_nic *efx,
+>>                          "vDPA device allocation failed for vf: %u\n",
+>>                          nic_data->vf_index);
+>>                  nic_data->vdpa_class = EF100_VDPA_CLASS_NONE;
+>> -               return ERR_PTR(-ENOMEM);
+>> +               rc = -ENOMEM;
+>> +               goto err_alloc_vis_free;
+>>          }
+>>
+>>          mutex_init(&vdpa_nic->lock);
+>> @@ -125,11 +156,21 @@ static struct ef100_vdpa_nic *ef100_vdpa_create(struct efx_nic *efx,
+>>          vdpa_nic->vdpa_dev.dma_dev = &efx->pci_dev->dev;
+>>          vdpa_nic->vdpa_dev.mdev = efx->mgmt_dev;
+>>          vdpa_nic->efx = efx;
+>> +       vdpa_nic->max_queue_pairs = allocated_vis - 1;
+>>          vdpa_nic->pf_index = nic_data->pf_index;
+>>          vdpa_nic->vf_index = nic_data->vf_index;
+>>          vdpa_nic->vdpa_state = EF100_VDPA_STATE_INITIALIZED;
+>>          vdpa_nic->mac_address = (u8 *)&vdpa_nic->net_config.mac;
+>>
+>> +       for (i = 0; i < (2 * vdpa_nic->max_queue_pairs); i++) {
+>> +               rc = ef100_vdpa_init_vring(vdpa_nic, i);
+>> +               if (rc) {
+>> +                       pci_err(efx->pci_dev,
+>> +                               "vring init idx: %u failed, rc: %d\n", i, rc);
+>> +                       goto err_put_device;
+>> +               }
+>> +       }
+>> +
+>>          rc = get_net_config(vdpa_nic);
+>>          if (rc)
+>>                  goto err_put_device;
+>> @@ -146,6 +187,9 @@ static struct ef100_vdpa_nic *ef100_vdpa_create(struct efx_nic *efx,
+>>   err_put_device:
+>>          /* put_device invokes ef100_vdpa_free */
+>>          put_device(&vdpa_nic->vdpa_dev.dev);
+>> +
+>> +err_alloc_vis_free:
+>> +       efx_mcdi_free_vis(efx);
+>>          return ERR_PTR(rc);
+>>   }
+>>
+>> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.h b/drivers/net/ethernet/sfc/ef100_vdpa.h
+>> index dcf4a8156415..348ca8a7404b 100644
+>> --- a/drivers/net/ethernet/sfc/ef100_vdpa.h
+>> +++ b/drivers/net/ethernet/sfc/ef100_vdpa.h
+>> @@ -32,6 +32,21 @@
+>>   /* Alignment requirement of the Virtqueue */
+>>   #define EF100_VDPA_VQ_ALIGN 4096
+>>
+>> +/* Vring configuration definitions */
+>> +#define EF100_VRING_ADDRESS_CONFIGURED 0x1
+>> +#define EF100_VRING_SIZE_CONFIGURED 0x10
+>> +#define EF100_VRING_READY_CONFIGURED 0x100
+>> +#define EF100_VRING_CONFIGURED (EF100_VRING_ADDRESS_CONFIGURED | \
+>> +                               EF100_VRING_SIZE_CONFIGURED | \
+>> +                               EF100_VRING_READY_CONFIGURED)
+>> +#define EF100_VRING_CREATED 0x1000
+>> +
+>> +/* Maximum size of msix name */
+>> +#define EF100_VDPA_MAX_MSIX_NAME_SIZE 256
+>> +
+>> +/* Default high IOVA for MCDI buffer */
+>> +#define EF100_VDPA_IOVA_BASE_ADDR 0x20000000000
+>> +
+>>   /**
+>>    * enum ef100_vdpa_nic_state - possible states for a vDPA NIC
+>>    *
+>> @@ -57,6 +72,41 @@ enum ef100_vdpa_vq_type {
+>>          EF100_VDPA_VQ_NTYPES
+>>   };
+>>
+>> +/**
+>> + * struct ef100_vdpa_vring_info - vDPA vring data structure
+>> + *
+>> + * @desc: Descriptor area address of the vring
+>> + * @avail: Available area address of the vring
+>> + * @used: Device area address of the vring
+>> + * @size: Number of entries in the vring
+>> + * @vring_state: bit map to track vring configuration
+>> + * @last_avail_idx: last available index of the vring
+>> + * @last_used_idx: last used index of the vring
+>> + * @doorbell_offset: doorbell offset
+>> + * @doorbell_offset_valid: true if @doorbell_offset is updated
+>> + * @vring_type: type of vring created
+>> + * @vring_ctx: vring context information
+>> + * @msix_name: device name for vring irq handler
+>> + * @irq: irq number for vring irq handler
+>> + * @cb: callback for vring interrupts
+>> + */
+>> +struct ef100_vdpa_vring_info {
+>> +       dma_addr_t desc;
+>> +       dma_addr_t avail;
+>> +       dma_addr_t used;
+>> +       u32 size;
+>> +       u16 vring_state;
+>> +       u32 last_avail_idx;
+>> +       u32 last_used_idx;
+>> +       u32 doorbell_offset;
+>> +       bool doorbell_offset_valid;
+>> +       enum ef100_vdpa_vq_type vring_type;
+>> +       struct efx_vring_ctx *vring_ctx;
+>> +       char msix_name[EF100_VDPA_MAX_MSIX_NAME_SIZE];
+>> +       u32 irq;
+>> +       struct vdpa_callback cb;
+>> +};
+>> +
+>>   /**
+>>    *  struct ef100_vdpa_nic - vDPA NIC data structure
+>>    *
+>> @@ -70,6 +120,7 @@ enum ef100_vdpa_vq_type {
+>>    * @features: negotiated feature bits
+>>    * @max_queue_pairs: maximum number of queue pairs supported
+>>    * @net_config: virtio_net_config data
+>> + * @vring: vring information of the vDPA device.
+>>    * @mac_address: mac address of interface associated with this vdpa device
+>>    * @mac_configured: true after MAC address is configured
+>>    * @cfg_cb: callback for config change
+>> @@ -86,6 +137,7 @@ struct ef100_vdpa_nic {
+>>          u64 features;
+>>          u32 max_queue_pairs;
+>>          struct virtio_net_config net_config;
+>> +       struct ef100_vdpa_vring_info vring[EF100_VDPA_MAX_QUEUES_PAIRS * 2];
+>>          u8 *mac_address;
+>>          bool mac_configured;
+>>          struct vdpa_callback cfg_cb;
+>> @@ -95,6 +147,8 @@ int ef100_vdpa_init(struct efx_probe_data *probe_data);
+>>   void ef100_vdpa_fini(struct efx_probe_data *probe_data);
+>>   int ef100_vdpa_register_mgmtdev(struct efx_nic *efx);
+>>   void ef100_vdpa_unregister_mgmtdev(struct efx_nic *efx);
+>> +void ef100_vdpa_irq_vectors_free(void *data);
+>> +int ef100_vdpa_init_vring(struct ef100_vdpa_nic *vdpa_nic, u16 idx);
+>>
+>>   static inline bool efx_vdpa_is_little_endian(struct ef100_vdpa_nic *vdpa_nic)
+>>   {
+>> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa_ops.c b/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
+>> index a2364ef9f492..0051c4c0e47c 100644
+>> --- a/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
+>> +++ b/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
+>> @@ -9,13 +9,270 @@
+>>
+>>   #include <linux/vdpa.h>
+>>   #include "ef100_vdpa.h"
+>> +#include "io.h"
+>>   #include "mcdi_vdpa.h"
+>>
+>> +/* Get the queue's function-local index of the associated VI
+>> + * virtqueue number queue 0 is reserved for MCDI
+>> + */
+>> +#define EFX_GET_VI_INDEX(vq_num) (((vq_num) / 2) + 1)
+>> +
+>>   static struct ef100_vdpa_nic *get_vdpa_nic(struct vdpa_device *vdev)
+>>   {
+>>          return container_of(vdev, struct ef100_vdpa_nic, vdpa_dev);
+>>   }
+>>
+>> +void ef100_vdpa_irq_vectors_free(void *data)
+>> +{
+>> +       pci_free_irq_vectors(data);
+>> +}
+>> +
+>> +static int create_vring_ctx(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
+>> +{
+>> +       struct efx_vring_ctx *vring_ctx;
+>> +       u32 vi_index;
+>> +
+>> +       if (idx % 2) /* Even VQ for RX and odd for TX */
+>> +               vdpa_nic->vring[idx].vring_type = EF100_VDPA_VQ_TYPE_NET_TXQ;
+>> +       else
+>> +               vdpa_nic->vring[idx].vring_type = EF100_VDPA_VQ_TYPE_NET_RXQ;
+>> +       vi_index = EFX_GET_VI_INDEX(idx);
+>> +       vring_ctx = efx_vdpa_vring_init(vdpa_nic->efx, vi_index,
+>> +                                       vdpa_nic->vring[idx].vring_type);
+>> +       if (IS_ERR(vring_ctx))
+>> +               return PTR_ERR(vring_ctx);
+>> +
+>> +       vdpa_nic->vring[idx].vring_ctx = vring_ctx;
+>> +       return 0;
+>> +}
+>> +
+>> +static void delete_vring_ctx(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
+>> +{
+>> +       efx_vdpa_vring_fini(vdpa_nic->vring[idx].vring_ctx);
+>> +       vdpa_nic->vring[idx].vring_ctx = NULL;
+>> +}
+>> +
+>> +static void reset_vring(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
+>> +{
+>> +       vdpa_nic->vring[idx].vring_type = EF100_VDPA_VQ_NTYPES;
+>> +       vdpa_nic->vring[idx].vring_state = 0;
+>> +       vdpa_nic->vring[idx].last_avail_idx = 0;
+>> +       vdpa_nic->vring[idx].last_used_idx = 0;
+>> +}
+>> +
+>> +int ef100_vdpa_init_vring(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
+>> +{
+>> +       u32 offset;
+>> +       int rc;
+>> +
+>> +       vdpa_nic->vring[idx].irq = -EINVAL;
+>> +       rc = create_vring_ctx(vdpa_nic, idx);
+>> +       if (rc) {
+>> +               dev_err(&vdpa_nic->vdpa_dev.dev,
+>> +                       "%s: create_vring_ctx failed, idx:%u, err:%d\n",
+>> +                       __func__, idx, rc);
+>> +               return rc;
+>> +       }
+>> +
+>> +       rc = efx_vdpa_get_doorbell_offset(vdpa_nic->vring[idx].vring_ctx,
+>> +                                         &offset);
+>> +       if (rc) {
+>> +               dev_err(&vdpa_nic->vdpa_dev.dev,
+>> +                       "%s: get_doorbell failed idx:%u, err:%d\n",
+>> +                       __func__, idx, rc);
+>> +               goto err_get_doorbell_offset;
+>> +       }
+>> +       vdpa_nic->vring[idx].doorbell_offset = offset;
+>> +       vdpa_nic->vring[idx].doorbell_offset_valid = true;
+>> +
+>> +       return 0;
+>> +
+>> +err_get_doorbell_offset:
+>> +       delete_vring_ctx(vdpa_nic, idx);
+>> +       return rc;
+>> +}
+>> +
+>> +static bool is_qid_invalid(struct ef100_vdpa_nic *vdpa_nic, u16 idx,
+>> +                          const char *caller)
+>> +{
+>> +       if (unlikely(idx >= (vdpa_nic->max_queue_pairs * 2))) {
+>> +               dev_err(&vdpa_nic->vdpa_dev.dev,
+>> +                       "%s: Invalid qid %u\n", caller, idx);
+>> +               return true;
+>> +       }
+>> +       return false;
+>> +}
+>> +
+>> +static int ef100_vdpa_set_vq_address(struct vdpa_device *vdev,
+>> +                                    u16 idx, u64 desc_area, u64 driver_area,
+>> +                                    u64 device_area)
+>> +{
+>> +       struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
+>> +
+>> +       if (is_qid_invalid(vdpa_nic, idx, __func__))
+>> +               return -EINVAL;
+>> +
+>> +       mutex_lock(&vdpa_nic->lock);
+>> +       vdpa_nic->vring[idx].desc = desc_area;
+>> +       vdpa_nic->vring[idx].avail = driver_area;
+>> +       vdpa_nic->vring[idx].used = device_area;
+>> +       vdpa_nic->vring[idx].vring_state |= EF100_VRING_ADDRESS_CONFIGURED;
+>> +       mutex_unlock(&vdpa_nic->lock);
+>> +       return 0;
+>> +}
+>> +
+>> +static void ef100_vdpa_set_vq_num(struct vdpa_device *vdev, u16 idx, u32 num)
+>> +{
+>> +       struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
+>> +
+>> +       if (is_qid_invalid(vdpa_nic, idx, __func__))
+>> +               return;
+>> +
+>> +       if (!is_power_of_2(num)) {
+>> +               dev_err(&vdev->dev, "%s: Index:%u size:%u not power of 2\n",
+>> +                       __func__, idx, num);
+>> +               return;
+>> +       }
+> Note that this is not a requirement for packed virtqueue.
 >
-
-The 'maybe' question needs to be answered by you...
-
-4.19 is too vague.
-
-Also you mention arm, but your crash output refers to x86_64.
-
-What exact kernel version have you tried ?
-
-
-> Thanks.
+> """
+> Queue Size corresponds to the maximum number of descriptors in the
+> virtqueue5. The Queue Size value does not have to be a power of 2.
+> """
+Yes, but we are using split vrings and virtio spec states "Queue Size 
+value is always a power of 2" for Split virtqueues.
 >
-> On Sat, 11 Mar 2023 at 05:38, Kuniyuki Iwashima <kuniyu@amazon.com> wrote=
-:
-> >
-> > From:   mingkun bian <bianmingkun@gmail.com>
-> > Date:   Fri, 10 Mar 2023 22:51:31 +0800
-> > > Hi,
-> > >
-> > >     I am sorry to submit the same post, because the format of the
-> > > previous post is wrong.
-> > >
-> > >     I have encountered the same issue which causes loop in
-> > > __inet_lookup_established for 22 seconds, then kernel crash,
-> > > similarly, we have thousands of devices with heavy network traffic,
-> > > but only a few of them crash every day due to this reason.
-> > >
-> > >  https://lore.kernel.org/lkml/CAL+tcoDAY=3DQ5pohEPgkBTNghxTb0AhmbQD58=
-dPDghyxmrcWMRQ@mail.gmail.com/T/#mb7b613de68d86c9a302ccf227292ac273cbe7f7c
-> > >
-> > >     Kernel version is 4.18.0, I analyzed the vmcore and find the poin=
-t
-> >
-> > Thanks for the report, but you should not use 4.18.0 at least, which
-> > is no longer supported.  Could you try reproducing it on the net-next
-> > tree or another stable versions listed below ?
-> >
-> > https://www.kernel.org/category/releases.html
-> >
-> > Thanks,
-> > Kuniyuki
-> >
-> >
-> > > of infinite loop is that one sock1 pointers exist in two hash
-> > > buckets(tcp_hashinfo.ehash),
-> > >
-> > >     tcp_hashinfo.ehash is as following:
-> > >     buckets0:
-> > >     buckets1:->sock1*->0x31(sock1->sk_nulls_node.next =3D 0x31, which
-> > > means that sock1* is the end of buckets1), sock1* should not be here
-> > > at buckets1,the real vmcore also has only one sock* in buckets1.
-> > >     buckets2:
-> > >     buckets3:->sock1*->0x31, sock1* is in the correct position at buc=
-kets3
-> > >     buckets4:->sock2*
-> > >     ...
-> > >     buckets:N->sockn*
-> > >
-> > >     then a skb(inet_ehashfn=3D0x1) came, it matched to buckets1, and =
-the
-> > > condition validation(sk->sk_hash !=3D hash) failed, then entered
-> > > condition validation(get_nulls_value(node) !=3D slot) ,
-> > >     get_nulls_value(node) =3D 3
-> > >     slot =3D 1
-> > >     finally, go to begin, and infinite loop.
-> > >
-> > >     begin:
-> > >     sk_nulls_for_each_rcu(sk, node, &head->chain) {
-> > >     if (sk->sk_hash !=3D hash)
-> > >         continue;
-> > >     }
-> > >     ...
-> > >     if (get_nulls_value(node) !=3D slot)
-> > >         goto begin;
-> > >
-> > >    why does sock1 can exist in two hash buckets, are there some
-> > > scenarios where the sock is not deleted from the tcp_hashinfo.ehash
-> > > before sk_free?
-> > >
-> > >
-> > >   The detailed three vmcore information is as follow=EF=BC=9A
-> > >   vmcore1' info:
-> > >   1. print the skb, skb is 0xffff94824975e000 which stored in stack.
-> > >
-> > >    crash> p *(struct tcphdr *)(((struct
-> > > sk_buff*)0xffff94824975e000)->head + ((struct
-> > > sk_buff*)0xffff94824975e000)->transport_header)
-> > >   $4 =3D {
-> > >   source =3D 24125,
-> > >   dest =3D 47873,
-> > >   seq =3D 4005063716,
-> > >   ack_seq =3D 1814397867,
-> > >   res1 =3D 0,
-> > >   doff =3D 8,
-> > >   fin =3D 0,
-> > >   syn =3D 0,
-> > >   rst =3D 0,
-> > >   psh =3D 1,
-> > >   ack =3D 1,
-> > >   urg =3D 0,
-> > >   ece =3D 0,
-> > >   cwr =3D 0,
-> > >   window =3D 33036,
-> > >   check =3D 19975,
-> > >   urg_ptr =3D 0
-> > > }
-> > >
-> > > 2. print the sock1, tcp is in TIME_WAIT,the detailed analysis process
-> > > is as follows:
-> > > a. R14 is 0xffffad2e0dc8a210, which is &hashinfo->ehash[slot].
-> > >
-> > > crash> p *((struct inet_ehash_bucket*)0xffffad2e0dc8a210)
-> > > $14 =3D {
-> > >   chain =3D {
-> > >     first =3D 0xffff9483ba400f48
-> > >   }
-> > > }
-> > >
-> > > b. sock* =3D 0xffff9483ba400f48 - offset(sock, sk_nulls_node) =3D 0xf=
-fff9483ba400ee0
-> > >
-> > > we can see sock->sk_nulls_node is:
-> > >   skc_nulls_node =3D {
-> > >         next =3D 0x4efbf,
-> > >         pprev =3D 0xffffad2e0dd2cef8
-> > >       }
-> > >
-> > > c. skb inet_ehashfn is 0x13242 which is in R15.
-> > >
-> > > sock->skc_node is 0x4efbf, then its real slot is 0x4efbf >> 1 =3D 0x2=
-77df
-> > > then bukets[0x277df] is (0x277df - 0x13242) * 8 + 0xffffad2e0dc8a210 =
-=3D
-> > > 0xFFFFAD2E0DD2CEF8
-> > >
-> > > d. print bukets[0x277df], find 0xffff9483ba400f48 is the same  as
-> > > bukets[0x13242]
-> > >
-> > > crash> p *((struct inet_ehash_bucket*)0xFFFFAD2E0DD2CEF8)
-> > > $32 =3D {
-> > >   chain =3D {
-> > >     first =3D 0xffff9483ba400f48
-> > >   }
-> > > }
-> > >
-> > > crash> p *((struct inet_timewait_sock*)0xffff9483ba400ee0)
-> > > $5 =3D {
-> > >   __tw_common =3D {
-> > >     {
-> > >       skc_addrpair =3D 1901830485687183552,
-> > >       {
-> > >         skc_daddr =3D 442804416,
-> > >         skc_rcv_saddr =3D 442804416
-> > >       }
-> > >     },
-> > >     {
-> > >       skc_hash =3D 2667739103,
-> > >       skc_u16hashes =3D {30687, 40706}
-> > >     },
-> > >     {
-> > >       skc_portpair =3D 3817294857,
-> > >       {
-> > >         skc_dport =3D 19465,
-> > >         skc_num =3D 58247
-> > >       }
-> > >     },
-> > >     skc_family =3D 2,
-> > >     skc_state =3D 6 '\006',
-> > >     skc_reuse =3D 0 '\000',
-> > >     skc_reuseport =3D 0 '\000',
-> > >     skc_ipv6only =3D 0 '\000',
-> > >     skc_net_refcnt =3D 0 '\000',
-> > >     skc_bound_dev_if =3D 0,
-> > >     {
-> > >       skc_bind_node =3D {
-> > >         next =3D 0x0,
-> > >         pprev =3D 0xffff9492a8950538
-> > >       },
-> > >       skc_portaddr_node =3D {
-> > >         next =3D 0x0,
-> > >         pprev =3D 0xffff9492a8950538
-> > >       }
-> > >     },
-> > >     skc_prot =3D 0xffffffff9b9a9840,
-> > >     skc_net =3D {
-> > >       net =3D 0xffffffff9b9951c0
-> > >     },
-> > >     skc_v6_daddr =3D {
-> > >       in6_u =3D {
-> > >         u6_addr8 =3D
-> > > "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000",
-> > >         u6_addr16 =3D {0, 0, 0, 0, 0, 0, 0, 0},
-> > >         u6_addr32 =3D {0, 0, 0, 0}
-> > >       }
-> > >     },
-> > >     skc_v6_rcv_saddr =3D {
-> > >       in6_u =3D {
-> > >         u6_addr8 =3D
-> > > "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000",
-> > >         u6_addr16 =3D {0, 0, 0, 0, 0, 0, 0, 0},
-> > >         u6_addr32 =3D {0, 0, 0, 0}
-> > >       }
-> > >     },
-> > >     skc_cookie =3D {
-> > >       counter =3D 0
-> > >     },
-> > >     {
-> > >       skc_flags =3D 18446744072025102208,
-> > >       skc_listener =3D 0xffffffff9b995780,
-> > >       skc_tw_dr =3D 0xffffffff9b995780
-> > >     },
-> > >     skc_dontcopy_begin =3D 0xffff9483ba400f48,
-> > >     {
-> > >       skc_node =3D {
-> > >         next =3D 0x4efbf,
-> > >         pprev =3D 0xffffad2e0dd2cef8
-> > >       },
-> > >       skc_nulls_node =3D {
-> > >         next =3D 0x4efbf,
-> > >         pprev =3D 0xffffad2e0dd2cef8
-> > >       }
-> > >     },
-> > >     skc_tx_queue_mapping =3D 0,
-> > >     skc_rx_queue_mapping =3D 0,
-> > >     {
-> > >       skc_incoming_cpu =3D -1680142171,
-> > >       skc_rcv_wnd =3D 2614825125,
-> > >       skc_tw_rcv_nxt =3D 2614825125
-> > >     },
-> > >     skc_refcnt =3D {
-> > >       refs =3D {
-> > >         counter =3D 3
-> > >       }
-> > >     },
-> > >     skc_dontcopy_end =3D 0xffff9483ba400f64,
-> > >     {
-> > >       skc_rxhash =3D 320497927,
-> > >       skc_window_clamp =3D 320497927,
-> > >       skc_tw_snd_nxt =3D 320497927
-> > >     }
-> > >   },
-> > >   tw_mark =3D 0,
-> > >   tw_substate =3D 6 '\006',
-> > >   tw_rcv_wscale =3D 10 '\n',
-> > >   tw_sport =3D 34787,
-> > >   tw_kill =3D 0,
-> > >   tw_transparent =3D 0,
-> > >   tw_flowlabel =3D 0,
-> > >   tw_pad =3D 0,
-> > >   tw_tos =3D 0,
-> > >   tw_timer =3D {
-> > >     entry =3D {
-> > >       next =3D 0xffff9483ba401d48,
-> > >       pprev =3D 0xffff9481680177f8
-> > >     },
-> > >     expires =3D 52552264960,
-> > >     function =3D 0xffffffff9ad67ba0,
-> > >     flags =3D 1339031587,
-> > >     rh_reserved1 =3D 0,
-> > >     rh_reserved2 =3D 0,
-> > >     rh_reserved3 =3D 0,
-> > >     rh_reserved4 =3D 0
-> > >   },
-> > >   tw_tb =3D 0xffff9492a8950500
-> > > }
-> > > 3.call stack
-> > > [48256841.222682]  panic+0xe8/0x25c
-> > > [48256841.222766]  ? secondary_startup_64+0xb6/0xc0
-> > > [48256841.222853]  watchdog_timer_fn+0x209/0x210
-> > > [48256841.222939]  ? watchdog+0x30/0x30
-> > > [48256841.223027]  __hrtimer_run_queues+0xe5/0x260
-> > > [48256841.223117]  hrtimer_interrupt+0x122/0x270
-> > > [48256841.223209]  ? sched_clock+0x5/0x10
-> > > [48256841.223296]  smp_apic_timer_interrupt+0x6a/0x140
-> > > [48256841.223384]  apic_timer_interrupt+0xf/0x20
-> > > [48256841.223471] RIP: 0010:__inet_lookup_established+0xe9/0x170
-> > > [48256841.223562] Code: f6 74 33 44 3b 62 a4 75 3d 48 3b 6a 98 75 37
-> > > 8b 42 ac 85 c0 75 24 4c 3b 6a c8 75 2a 5b 5d 41 5c 41 5d 41 5e 48 89
-> > > f8 41 5f c3 <48> d1 ea 49 39 d7 0f 85 5a ff ff ff 31 ff eb e2 39 44 2=
-4
-> > > 38 74 d6
-> > > [48256841.224242] RSP: 0018:ffff9497e0e83bf8 EFLAGS: 00000202
-> > > ORIG_RAX: ffffffffffffff13
-> > > [48256841.224904] RAX: ffffad2e0dbf1000 RBX: 0000000088993242 RCX:
-> > > 0000000034d20a82
-> > > [48256841.225576] RDX: 000000000004efbf RSI: 00000000527c6da0 RDI:
-> > > 0000000000000000
-> > > [48256841.226268] RBP: 1e31b4763470e11b R08: 0000000001bb5e3d R09:
-> > > 00000000000001bb
-> > > [48256841.226969] R10: 0000000000005429 R11: 0000000000000000 R12:
-> > > 0000000001bb5e3d
-> > > [48256841.227646] R13: ffffffff9b9951c0 R14: ffffad2e0dc8a210 R15:
-> > > 0000000000013242
-> > > [48256841.228330]  ? apic_timer_interrupt+0xa/0x20
-> > > [48256841.228714]  ? __inet_lookup_established+0x3f/0x170
-> > > [48256841.229097]  tcp_v4_early_demux+0xb0/0x170
-> > > [48256841.229487]  ip_rcv_finish+0x17c/0x430
-> > > [48256841.229865]  ip_rcv+0x27c/0x380
-> > > [48256841.230242]  __netif_receive_skb_core+0x9e9/0xac0
-> > > [48256841.230623]  ? inet_gro_receive+0x21b/0x2d0
-> > > [48256841.230999]  ? recalibrate_cpu_khz+0x10/0x10
-> > > [48256841.231378]  netif_receive_skb_internal+0x42/0xf0
-> > > [48256841.231777]  napi_gro_receive+0xbf/0xe0
-> > >
-> > >
-> > > vmcore2' info:
-> > >  1. print the skb
-> > > crash> p *(struct tcphdr *)(((struct
-> > > sk_buff*)0xffff9d60c008b500)->head + ((struct
-> > > sk_buff*)0xffff9d60c008b500)->transport_header)
-> > > $28 =3D {
-> > >   source =3D 35911,
-> > >   dest =3D 20480,
-> > >   seq =3D 1534560442,
-> > >   ack_seq =3D 0,
-> > >   res1 =3D 0,
-> > >   doff =3D 10,
-> > >   fin =3D 0,
-> > >   syn =3D 1,
-> > >   rst =3D 0,
-> > >   psh =3D 0,
-> > >   ack =3D 0,
-> > >   urg =3D 0,
-> > >   ece =3D 0,
-> > >   cwr =3D 0,
-> > >   window =3D 65535,
-> > >   check =3D 56947,
-> > >   urg_ptr =3D 0
-> > > }
-> > > 2. print the sock1, tcp is in TIME_WAIT, but the sock is ipv4, I do
-> > > not know why skc_v6_daddr and rh_reserved is not zero, maybe memory
-> > > out of bounds?
-> > > crash> p *((struct inet_timewait_sock*)0xFFFF9D6F1997D540)
-> > > $29 =3D {
-> > >   __tw_common =3D {
-> > >     {
-> > >       skc_addrpair =3D 388621010873919680,
-> > >       {
-> > >         skc_daddr =3D 426027200,
-> > >         skc_rcv_saddr =3D 90482880
-> > >       }
-> > >     },
-> > >     {
-> > >       skc_hash =3D 884720419,
-> > >       skc_u16hashes =3D {49955, 13499}
-> > >     },
-> > >     {
-> > >       skc_portpair =3D 156018620,
-> > >       {
-> > >         skc_dport =3D 42940,
-> > >         skc_num =3D 2380
-> > >       }
-> > >     },
-> > >     skc_family =3D 2,
-> > >     skc_state =3D 6 '\006',
-> > >     skc_reuse =3D 1 '\001',
-> > >     skc_reuseport =3D 0 '\000',
-> > >     skc_ipv6only =3D 0 '\000',
-> > >     skc_net_refcnt =3D 0 '\000',
-> > >     skc_bound_dev_if =3D 0,
-> > >     {
-> > >       skc_bind_node =3D {
-> > >         next =3D 0xffff9d8993851448,
-> > >         pprev =3D 0xffff9d89c3510458
-> > >       },
-> > >       skc_portaddr_node =3D {
-> > >         next =3D 0xffff9d8993851448,
-> > >         pprev =3D 0xffff9d89c3510458
-> > >       }
-> > >     },
-> > >     skc_prot =3D 0xffffffff9c7a9840,
-> > >     skc_net =3D {
-> > >       net =3D 0xffffffff9c7951c0
-> > >     },
-> > >     skc_v6_daddr =3D {
-> > >       in6_u =3D {
-> > >         u6_addr8 =3D "$P=EE=A4=86\325\001\354M\213D\021p\323\337\n",
-> > >         u6_addr16 =3D {20516, 42222, 54662, 60417, 35661, 4420, 54128=
-, 2783},
-> > >         u6_addr32 =3D {2767081508, 3959543174, 289704781, 182440816}
-> > >       }
-> > >     },
-> > >     skc_v6_rcv_saddr =3D {
-> > >       in6_u =3D {
-> > >         u6_addr8 =3D "=CB=B2\231=C2=AA\212*pzf\212\277\325\065=D8=84"=
-,
-> > >         u6_addr16 =3D {45771, 49817, 35498, 28714, 26234, 49034, 1378=
-1, 34008},
-> > >         u6_addr32 =3D {3264852683, 1881836202, 3213518458, 2228762069=
-}
-> > >       }
-> > >     },
-> > >     skc_cookie =3D {
-> > >       counter =3D 0
-> > >     },
-> > >     {
-> > >       skc_flags =3D 18446744072039782272,
-> > >       skc_listener =3D 0xffffffff9c795780,
-> > >       skc_tw_dr =3D 0xffffffff9c795780
-> > >     },
-> > >     skc_dontcopy_begin =3D 0xffff9d6f1997d5a8,
-> > >     {
-> > >       skc_node =3D {
-> > >         next =3D 0x78647,
-> > >         pprev =3D 0xffffb341cddea918
-> > >       },
-> > >       skc_nulls_node =3D {
-> > >         next =3D 0x78647,
-> > >         pprev =3D 0xffffb341cddea918
-> > >       }
-> > >     },
-> > >     skc_tx_queue_mapping =3D 51317,
-> > >     skc_rx_queue_mapping =3D 9071,
-> > >     {
-> > >       skc_incoming_cpu =3D -720721118,
-> > >       skc_rcv_wnd =3D 3574246178,
-> > >       skc_tw_rcv_nxt =3D 3574246178
-> > >     },
-> > >     skc_refcnt =3D {
-> > >       refs =3D {
-> > >         counter =3D 3
-> > >       }
-> > >     },
-> > >     skc_dontcopy_end =3D 0xffff9d6f1997d5c4,
-> > >     {
-> > >       skc_rxhash =3D 2663156681,
-> > >       skc_window_clamp =3D 2663156681,
-> > >       skc_tw_snd_nxt =3D 2663156681
-> > >     }
-> > >   },
-> > >   tw_mark =3D 0,
-> > >   tw_substate =3D 6 '\006',
-> > >   tw_rcv_wscale =3D 10 '\n',
-> > >   tw_sport =3D 19465,
-> > >   tw_kill =3D 0,
-> > >   tw_transparent =3D 0,
-> > >   tw_flowlabel =3D 201048,
-> > >   tw_pad =3D 1,
-> > >   tw_tos =3D 0,
-> > >   tw_timer =3D {
-> > >     entry =3D {
-> > >       next =3D 0xffff9d6f1997d4c8,
-> > >       pprev =3D 0xffff9d6f1997c6f8
-> > >     },
-> > >     expires =3D 52813074277,
-> > >     function =3D 0xffffffff9bb67ba0,
-> > >     flags =3D 1313865770,
-> > >     rh_reserved1 =3D 14775289730400096190,
-> > >     rh_reserved2 =3D 10703603942626563734,
-> > >     rh_reserved3 =3D 17306812468345150807,
-> > >     rh_reserved4 =3D 9531906593543422642
-> > >   },
-> > >   tw_tb =3D 0xffff9d897232a500
-> > > }
-> > >
-> > > vmcore3' info:
-> > > 1. print the skbcrash> p *(struct tcphdr *)(((struct
-> > > sk_buff*)0xffffa039e93aaf00)->head + ((struct
-> > > sk_buff*)0xffffa039e93aaf00)->transport_header)
-> > > $6 =3D {
-> > >   source =3D 9269,
-> > >   dest =3D 47873,
-> > >   seq =3D 147768854,
-> > >   ack_seq =3D 1282978926,
-> > >   res1 =3D 0,
-> > >   doff =3D 5,
-> > >   fin =3D 0,
-> > >   syn =3D 0,
-> > >   rst =3D 0,
-> > >   psh =3D 0,
-> > >   ack =3D 1,
-> > >   urg =3D 0,
-> > >   ece =3D 0,
-> > >   cwr =3D 0,
-> > >   window =3D 47146,
-> > >   check =3D 55446,
-> > >   urg_ptr =3D 0
-> > > }
-> > > 2. print the sock1, tcp is in TIME_WAIT
-> > > crash> p *((struct inet_timewait_sock*)0xFFFFA0444BAADBA0)
-> > > $7 =3D {
-> > >   __tw_common =3D {
-> > >     {
-> > >       skc_addrpair =3D 2262118455826491584,
-> > >       {
-> > >         skc_daddr =3D 392472768,
-> > >         skc_rcv_saddr =3D 526690496
-> > >       }
-> > >     },
-> > >     {
-> > >       skc_hash =3D 382525308,
-> > >       skc_u16hashes =3D {57212, 5836}
-> > >     },
-> > >     {
-> > >       skc_portpair =3D 1169509385,
-> > >       {
-> > >         skc_dport =3D 19465,
-> > >         skc_num =3D 17845
-> > >       }
-> > >     },
-> > >     skc_family =3D 2,
-> > >     skc_state =3D 6 '\006',
-> > >     skc_reuse =3D 0 '\000',
-> > >     skc_reuseport =3D 0 '\000',
-> > >     skc_ipv6only =3D 0 '\000',
-> > >     skc_net_refcnt =3D 0 '\000',
-> > >     skc_bound_dev_if =3D 0,
-> > >     {
-> > >       skc_bind_node =3D {
-> > >         next =3D 0x0,
-> > >         pprev =3D 0xffffa0528fefba98
-> > >       },
-> > >       skc_portaddr_node =3D {
-> > >         next =3D 0x0,
-> > >         pprev =3D 0xffffa0528fefba98
-> > >       }
-> > >     },
-> > >     skc_prot =3D 0xffffffffa33a9840,
-> > >     skc_net =3D {
-> > >       net =3D 0xffffffffa33951c0
-> > >     },
-> > >     skc_v6_daddr =3D {
-> > >       in6_u =3D {
-> > >         u6_addr8 =3D
-> > > "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000",
-> > >         u6_addr16 =3D {0, 0, 0, 0, 0, 0, 0, 0},
-> > >         u6_addr32 =3D {0, 0, 0, 0}
-> > >       }
-> > >     },
-> > >     skc_v6_rcv_saddr =3D {
-> > >       in6_u =3D {
-> > >         u6_addr8 =3D
-> > > "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000",
-> > >         u6_addr16 =3D {0, 0, 0, 0, 0, 0, 0, 0},
-> > >         u6_addr32 =3D {0, 0, 0, 0}
-> > >       }
-> > >     },
-> > >     skc_cookie =3D {
-> > >       counter =3D 20818915981
-> > >     },
-> > >     {
-> > >       skc_flags =3D 18446744072153028480,
-> > >       skc_listener =3D 0xffffffffa3395780,
-> > >       skc_tw_dr =3D 0xffffffffa3395780
-> > >     },
-> > >     skc_dontcopy_begin =3D 0xffffa0444baadc08,
-> > >     {
-> > >       skc_node =3D {
-> > >         next =3D 0x9bef9,
-> > >         pprev =3D 0xffffb36fcde60be0
-> > >       },
-> > >       skc_nulls_node =3D {
-> > >         next =3D 0x9bef9,
-> > >         pprev =3D 0xffffb36fcde60be0
-> > >       }
-> > >     },
-> > >     skc_tx_queue_mapping =3D 0,
-> > >     skc_rx_queue_mapping =3D 0,
-> > >     {
-> > >       skc_incoming_cpu =3D -2041214926,
-> > >       skc_rcv_wnd =3D 2253752370,
-> > >       skc_tw_rcv_nxt =3D 2253752370
-> > >     },
-> > >     skc_refcnt =3D {
-> > >       refs =3D {
-> > >         counter =3D 3
-> > >       }
-> > >     },
-> > >     skc_dontcopy_end =3D 0xffffa0444baadc24,
-> > >     {
-> > >       skc_rxhash =3D 653578381,
-> > >       skc_window_clamp =3D 653578381,
-> > >       skc_tw_snd_nxt =3D 653578381
-> > >     }
-> > >   },
-> > >   tw_mark =3D 0,
-> > >   tw_substate =3D 6 '\006',
-> > >   tw_rcv_wscale =3D 10 '\n',
-> > >   tw_sport =3D 46405,
-> > >   tw_kill =3D 0,
-> > >   tw_transparent =3D 0,
-> > >   tw_flowlabel =3D 0,
-> > >   tw_pad =3D 0,
-> > >   tw_tos =3D 0,
-> > >   tw_timer =3D {
-> > >     entry =3D {
-> > >       next =3D 0xffffa0444baac808,
-> > >       pprev =3D 0xffffa0388b5477f8
-> > >     },
-> > >     expires =3D 33384532933,
-> > >     function =3D 0xffffffffa2767ba0,
-> > >     flags =3D 1313865761,
-> > >     rh_reserved1 =3D 0,
-> > >     rh_reserved2 =3D 0,
-> > >     rh_reserved3 =3D 0,
-> > >     rh_reserved4 =3D 0
-> > >   },
-> > >   tw_tb =3D 0xffffa05cc8322d40
-> > > }
+>> +       if (num > EF100_VDPA_VQ_NUM_MAX_SIZE) {
+>> +               dev_err(&vdev->dev, "%s: Index:%u size:%u more than max:%u\n",
+>> +                       __func__, idx, num, EF100_VDPA_VQ_NUM_MAX_SIZE);
+>> +               return;
+>> +       }
+>> +       mutex_lock(&vdpa_nic->lock);
+>> +       vdpa_nic->vring[idx].size  = num;
+>> +       vdpa_nic->vring[idx].vring_state |= EF100_VRING_SIZE_CONFIGURED;
+>> +       mutex_unlock(&vdpa_nic->lock);
+>> +}
+>> +
+>> +static void ef100_vdpa_kick_vq(struct vdpa_device *vdev, u16 idx)
+>> +{
+>> +       struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
+>> +       u32 idx_val;
+>> +
+>> +       if (is_qid_invalid(vdpa_nic, idx, __func__))
+>> +               return;
+>> +
+>> +       if (!(vdpa_nic->vring[idx].vring_state & EF100_VRING_CREATED))
+>> +               return;
+> In which case could we hit this condition?
+I've noticed this condition in regular testing with vhost-vdpa. The 
+first couple of kick_vq calls arrive when the HW queues aren't created 
+yet. .I think userspace assumes queues to be ready soon after sending 
+DRIVER_OK. However, there is a little time window between that and when 
+the HW VQs are actually ready for datapath.
+>
+>> +
+>> +       idx_val = idx;
+>> +       _efx_writed(vdpa_nic->efx, cpu_to_le32(idx_val),
+>> +                   vdpa_nic->vring[idx].doorbell_offset);
+>> +}
+>> +
+>> +static void ef100_vdpa_set_vq_cb(struct vdpa_device *vdev, u16 idx,
+>> +                                struct vdpa_callback *cb)
+>> +{
+>> +       struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
+>> +
+>> +       if (is_qid_invalid(vdpa_nic, idx, __func__))
+>> +               return;
+>> +
+>> +       if (cb)
+>> +               vdpa_nic->vring[idx].cb = *cb;
+>> +}
+>> +
+>> +static void ef100_vdpa_set_vq_ready(struct vdpa_device *vdev, u16 idx,
+>> +                                   bool ready)
+>> +{
+>> +       struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
+>> +
+>> +       if (is_qid_invalid(vdpa_nic, idx, __func__))
+>> +               return;
+>> +
+>> +       mutex_lock(&vdpa_nic->lock);
+>> +       if (ready) {
+>> +               vdpa_nic->vring[idx].vring_state |=
+>> +                                       EF100_VRING_READY_CONFIGURED;
+> I think it would be sufficient to have EF100_VRING_READY_CONFIGURED
+> here. With this set, the device can think the vq configuration is done
+> by the driver.
+>
+> Or is there anything special for size and num?
+The virtqueue is considered ready for datapath when it is fully 
+configured (both size and address set and enabled with set_vq_ready). 
+Depending on merely the queue enable (EF100_VRING_READY_CONFIGURED) 
+would assume valid values for vq size and addresses, which we wish to avoid.
+>
+> Thanks
+>
+>
+>> +       } else {
+>> +               vdpa_nic->vring[idx].vring_state &=
+>> +                                       ~EF100_VRING_READY_CONFIGURED;
+>> +       }
+>> +       mutex_unlock(&vdpa_nic->lock);
+>> +}
+>> +
+>> +static bool ef100_vdpa_get_vq_ready(struct vdpa_device *vdev, u16 idx)
+>> +{
+>> +       struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
+>> +       bool ready;
+>> +
+>> +       if (is_qid_invalid(vdpa_nic, idx, __func__))
+>> +               return false;
+>> +
+>> +       mutex_lock(&vdpa_nic->lock);
+>> +       ready = vdpa_nic->vring[idx].vring_state & EF100_VRING_READY_CONFIGURED;
+>> +       mutex_unlock(&vdpa_nic->lock);
+>> +       return ready;
+>> +}
+>> +
+>> +static int ef100_vdpa_set_vq_state(struct vdpa_device *vdev, u16 idx,
+>> +                                  const struct vdpa_vq_state *state)
+>> +{
+>> +       struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
+>> +
+>> +       if (is_qid_invalid(vdpa_nic, idx, __func__))
+>> +               return -EINVAL;
+>> +
+>> +       mutex_lock(&vdpa_nic->lock);
+>> +       vdpa_nic->vring[idx].last_avail_idx = state->split.avail_index;
+>> +       vdpa_nic->vring[idx].last_used_idx = state->split.avail_index;
+>> +       mutex_unlock(&vdpa_nic->lock);
+>> +       return 0;
+>> +}
+>> +
+>> +static int ef100_vdpa_get_vq_state(struct vdpa_device *vdev,
+>> +                                  u16 idx, struct vdpa_vq_state *state)
+>> +{
+>> +       struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
+>> +
+>> +       if (is_qid_invalid(vdpa_nic, idx, __func__))
+>> +               return -EINVAL;
+>> +
+>> +       mutex_lock(&vdpa_nic->lock);
+>> +       state->split.avail_index = (u16)vdpa_nic->vring[idx].last_used_idx;
+>> +       mutex_unlock(&vdpa_nic->lock);
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +static struct vdpa_notification_area
+>> +               ef100_vdpa_get_vq_notification(struct vdpa_device *vdev,
+>> +                                              u16 idx)
+>> +{
+>> +       struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
+>> +       struct vdpa_notification_area notify_area = {0, 0};
+>> +
+>> +       if (is_qid_invalid(vdpa_nic, idx, __func__))
+>> +               goto end;
+>> +
+>> +       mutex_lock(&vdpa_nic->lock);
+>> +       notify_area.addr = (uintptr_t)(vdpa_nic->efx->membase_phys +
+>> +                               vdpa_nic->vring[idx].doorbell_offset);
+>> +       /* VDPA doorbells are at a stride of VI/2
+>> +        * One VI stride is shared by both rx & tx doorbells
+>> +        */
+>> +       notify_area.size = vdpa_nic->efx->vi_stride / 2;
+>> +       mutex_unlock(&vdpa_nic->lock);
+>> +
+>> +end:
+>> +       return notify_area;
+>> +}
+>> +
+>> +static int ef100_get_vq_irq(struct vdpa_device *vdev, u16 idx)
+>> +{
+>> +       struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
+>> +       u32 irq;
+>> +
+>> +       if (is_qid_invalid(vdpa_nic, idx, __func__))
+>> +               return -EINVAL;
+>> +
+>> +       mutex_lock(&vdpa_nic->lock);
+>> +       irq = vdpa_nic->vring[idx].irq;
+>> +       mutex_unlock(&vdpa_nic->lock);
+>> +
+>> +       return irq;
+>> +}
+>> +
+>>   static u32 ef100_vdpa_get_vq_align(struct vdpa_device *vdev)
+>>   {
+>>          return EF100_VDPA_VQ_ALIGN;
+>> @@ -80,6 +337,8 @@ static void ef100_vdpa_set_config_cb(struct vdpa_device *vdev,
+>>
+>>          if (cb)
+>>                  vdpa_nic->cfg_cb = *cb;
+>> +       else
+>> +               memset(&vdpa_nic->cfg_cb, 0, sizeof(vdpa_nic->cfg_cb));
+>>   }
+>>
+>>   static u16 ef100_vdpa_get_vq_num_max(struct vdpa_device *vdev)
+>> @@ -137,14 +396,30 @@ static void ef100_vdpa_set_config(struct vdpa_device *vdev, unsigned int offset,
+>>   static void ef100_vdpa_free(struct vdpa_device *vdev)
+>>   {
+>>          struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
+>> +       int i;
+>>
+>>          if (vdpa_nic) {
+>> +               for (i = 0; i < (vdpa_nic->max_queue_pairs * 2); i++) {
+>> +                       reset_vring(vdpa_nic, i);
+>> +                       if (vdpa_nic->vring[i].vring_ctx)
+>> +                               delete_vring_ctx(vdpa_nic, i);
+>> +               }
+>>                  mutex_destroy(&vdpa_nic->lock);
+>>                  vdpa_nic->efx->vdpa_nic = NULL;
+>>          }
+>>   }
+>>
+>>   const struct vdpa_config_ops ef100_vdpa_config_ops = {
+>> +       .set_vq_address      = ef100_vdpa_set_vq_address,
+>> +       .set_vq_num          = ef100_vdpa_set_vq_num,
+>> +       .kick_vq             = ef100_vdpa_kick_vq,
+>> +       .set_vq_cb           = ef100_vdpa_set_vq_cb,
+>> +       .set_vq_ready        = ef100_vdpa_set_vq_ready,
+>> +       .get_vq_ready        = ef100_vdpa_get_vq_ready,
+>> +       .set_vq_state        = ef100_vdpa_set_vq_state,
+>> +       .get_vq_state        = ef100_vdpa_get_vq_state,
+>> +       .get_vq_notification = ef100_vdpa_get_vq_notification,
+>> +       .get_vq_irq          = ef100_get_vq_irq,
+>>          .get_vq_align        = ef100_vdpa_get_vq_align,
+>>          .get_device_features = ef100_vdpa_get_device_features,
+>>          .set_driver_features = ef100_vdpa_set_driver_features,
+>> --
+>> 2.30.1
+>>
