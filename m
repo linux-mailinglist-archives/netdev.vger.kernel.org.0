@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 563196BCE75
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 12:37:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B6126BCE77
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 12:37:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230338AbjCPLhp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 07:37:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57540 "EHLO
+        id S230348AbjCPLhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 07:37:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230286AbjCPLhi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 07:37:38 -0400
+        with ESMTP id S229729AbjCPLhl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 07:37:41 -0400
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B2F7C3CE;
-        Thu, 16 Mar 2023 04:37:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BEA6C97DC;
+        Thu, 16 Mar 2023 04:37:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678966639; x=1710502639;
+  t=1678966649; x=1710502649;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=q3tc4GYyiOU2uNgooS6P06z+EYUuo4vPnkgkpRpdBNI=;
-  b=QsKq0t16YCaK/nzD1pqEgMFFza1HZlxPt1p/Nz0MF1QnpKGvKa9L30I1
-   iH4fXbRxyipIWmREfnrp0oaupwiROHlVzLz94nSKQ2k2Y1QS550Cj/PcJ
-   PbdyNfP5QvUFxJdtSwWSY7ZLC4mfdrRJUoT8iFgoMUbiMoMggd3T6SBba
-   r7Dp+D6SKp30OA/HlcODUZJaWkrArOyXBkbE5LWvDgmk9v68wDFdRbodq
-   Rk9IK5q+l4AAxjdqTmkPqI4KAz4lYLy+sq3Zzhffu9rUZ/cN8cpoTJfZ4
-   ODIyXr1Ha/8mSsDmpiJkovAAwa/1G7L/VnKvtj6V6nQeUwLEqhQKk2c6l
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="340320585"
+  bh=g5nPL1hfwFccNcFtYw7ZevITqww5GF47MwYYKvo0Lf4=;
+  b=a/AEq4Cscfqgxmz08a7zmzea0EubpN0ZZRQIa5pPPSi0Md9JhfL18j+g
+   RaBDANv+KTESvwdlx8vuZyyo59KAfH0evXjlLh7gnEvhEGaVb+x2HGmH7
+   +k0A2LGl8onP63xjtFUgzSaE07p84Kd+mams/bTgc9Eo28HRTWuQ3NlFx
+   7pE7CNeJeQyCuydTaDOZ4HkT5m4qbZCXuhJk73vD8voZoiA0Vi9NDE+9+
+   +Hn4GtAK+lXirZh/3+X3yBACRWL3OqNLfPMdb6rrWbAuIq0JGHcXGUEGC
+   sHe4C2w+g+Jru4SG26k/rOG4ep3Tb2MGVfnmgw5+gza16FE/5OJ9Zs7bf
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="340320609"
 X-IronPort-AV: E=Sophos;i="5.98,265,1673942400"; 
-   d="scan'208";a="340320585"
+   d="scan'208";a="340320609"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2023 04:37:18 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2023 04:37:22 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="1009190173"
+X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="1009190188"
 X-IronPort-AV: E=Sophos;i="5.98,265,1673942400"; 
-   d="scan'208";a="1009190173"
+   d="scan'208";a="1009190188"
 Received: from irvmail002.ir.intel.com ([10.43.11.120])
-  by fmsmga005.fm.intel.com with ESMTP; 16 Mar 2023 04:37:15 -0700
+  by fmsmga005.fm.intel.com with ESMTP; 16 Mar 2023 04:37:18 -0700
 Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail002.ir.intel.com (Postfix) with ESMTP id 4B9824FEA1;
-        Mon, 13 Mar 2023 21:44:00 +0000 (GMT)
+        by irvmail002.ir.intel.com (Postfix) with ESMTP id 7800D4FEA2;
+        Mon, 13 Mar 2023 21:44:01 +0000 (GMT)
 From:   Alexander Lobakin <aleksander.lobakin@intel.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -59,10 +59,11 @@ Cc:     Alexander Lobakin <aleksander.lobakin@intel.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v3 1/4] selftests/bpf: robustify test_xdp_do_redirect with more payload magics
-Date:   Mon, 13 Mar 2023 22:42:57 +0100
-Message-Id: <20230313214300.1043280-2-aleksander.lobakin@intel.com>
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH bpf-next v3 2/4] net: page_pool, skbuff: make skb_mark_for_recycle() always available
+Date:   Mon, 13 Mar 2023 22:42:58 +0100
+Message-Id: <20230313214300.1043280-3-aleksander.lobakin@intel.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230313214300.1043280-1-aleksander.lobakin@intel.com>
 References: <20230313214300.1043280-1-aleksander.lobakin@intel.com>
@@ -77,130 +78,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, the test relies on that only dropped ("xmitted") frames will
-be recycled and if a frame became an skb, it will be freed later by the
-stack and never come back to its page_pool.
-So, it easily gets broken by trying to recycle skbs[0]:
+skb_mark_for_recycle() is guarded with CONFIG_PAGE_POOL, this creates
+unneeded complication when using it in the generic code. For now, it's
+only used in the drivers always selecting Page Pool, so this works.
+Move the guards so that preprocessor will cut out only the operation
+itself and the function will still be a noop on !PAGE_POOL systems,
+but available there as well.
+No functional changes.
 
-  test_xdp_do_redirect:PASS:pkt_count_xdp 0 nsec
-  test_xdp_do_redirect:FAIL:pkt_count_zero unexpected pkt_count_zero:
-actual 9936 != expected 2
-  test_xdp_do_redirect:PASS:pkt_count_tc 0 nsec
-
-That huge mismatch happened because after the TC ingress hook zeroes the
-magic, the page gets recycled when skb is freed, not returned to the MM
-layer. "Live frames" mode initializes only new pages and keeps the
-recycled ones as is by design, so they appear with zeroed magic on the
-Rx path again.
-Expand the possible magic values from two: 0 (was "xmitted"/dropped or
-did hit the TC hook) and 0x42 (hit the input XDP prog) to three: the new
-one will mark frames hit the TC hook, so that they will elide both
-@pkt_count_zero and @pkt_count_xdp. They can then be recycled to their
-page_pool or returned to the page allocator, this won't affect the
-counters anyhow. Just make sure to mark them as "input" (0x42) when they
-appear on the Rx path again.
-Also make an enum from those magics, so that they will be always visible
-and can be changed in just one place anytime. This also eases adding any
-new marks later on.
-
-Link: https://github.com/kernel-patches/bpf/actions/runs/4386538411/jobs/7681081789
+Reported-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/oe-kbuild-all/202303020342.Wi2PRFFH-lkp@intel.com
 Signed-off-by: Alexander Lobakin <aleksander.lobakin@intel.com>
 ---
- .../bpf/progs/test_xdp_do_redirect.c          | 36 +++++++++++++------
- 1 file changed, 26 insertions(+), 10 deletions(-)
+ include/linux/skbuff.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/progs/test_xdp_do_redirect.c b/tools/testing/selftests/bpf/progs/test_xdp_do_redirect.c
-index 77a123071940..cd2d4e3258b8 100644
---- a/tools/testing/selftests/bpf/progs/test_xdp_do_redirect.c
-+++ b/tools/testing/selftests/bpf/progs/test_xdp_do_redirect.c
-@@ -4,6 +4,19 @@
- 
- #define ETH_ALEN 6
- #define HDR_SZ (sizeof(struct ethhdr) + sizeof(struct ipv6hdr) + sizeof(struct udphdr))
-+
-+/**
-+ * enum frame_mark - magics to distinguish page/packet paths
-+ * @MARK_XMIT: page was recycled due to the frame being "xmitted" by the NIC.
-+ * @MARK_IN: frame is being processed by the input XDP prog.
-+ * @MARK_SKB: frame did hit the TC ingress hook as an skb.
-+ */
-+enum frame_mark {
-+	MARK_XMIT	= 0U,
-+	MARK_IN		= 0x42,
-+	MARK_SKB	= 0x45,
-+};
-+
- const volatile int ifindex_out;
- const volatile int ifindex_in;
- const volatile __u8 expect_dst[ETH_ALEN];
-@@ -34,10 +47,10 @@ int xdp_redirect(struct xdp_md *xdp)
- 	if (*metadata != 0x42)
- 		return XDP_ABORTED;
- 
--	if (*payload == 0) {
--		*payload = 0x42;
-+	if (*payload == MARK_XMIT)
- 		pkts_seen_zero++;
--	}
-+
-+	*payload = MARK_IN;
- 
- 	if (bpf_xdp_adjust_meta(xdp, 4))
- 		return XDP_ABORTED;
-@@ -51,7 +64,7 @@ int xdp_redirect(struct xdp_md *xdp)
- 	return ret;
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index fe661011644b..3f3a2a82a86b 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -5069,12 +5069,12 @@ static inline u64 skb_get_kcov_handle(struct sk_buff *skb)
+ #endif
  }
  
--static bool check_pkt(void *data, void *data_end)
-+static bool check_pkt(void *data, void *data_end, const __u32 mark)
+-#ifdef CONFIG_PAGE_POOL
+ static inline void skb_mark_for_recycle(struct sk_buff *skb)
  {
- 	struct ipv6hdr *iph = data + sizeof(struct ethhdr);
- 	__u8 *payload = data + HDR_SZ;
-@@ -59,13 +72,13 @@ static bool check_pkt(void *data, void *data_end)
- 	if (payload + 1 > data_end)
- 		return false;
++#ifdef CONFIG_PAGE_POOL
+ 	skb->pp_recycle = 1;
+-}
+ #endif
++}
  
--	if (iph->nexthdr != IPPROTO_UDP || *payload != 0x42)
-+	if (iph->nexthdr != IPPROTO_UDP || *payload != MARK_IN)
- 		return false;
- 
- 	/* reset the payload so the same packet doesn't get counted twice when
- 	 * it cycles back through the kernel path and out the dst veth
- 	 */
--	*payload = 0;
-+	*payload = mark;
- 	return true;
- }
- 
-@@ -75,11 +88,11 @@ int xdp_count_pkts(struct xdp_md *xdp)
- 	void *data = (void *)(long)xdp->data;
- 	void *data_end = (void *)(long)xdp->data_end;
- 
--	if (check_pkt(data, data_end))
-+	if (check_pkt(data, data_end, MARK_XMIT))
- 		pkts_seen_xdp++;
- 
--	/* Return XDP_DROP to make sure the data page is recycled, like when it
--	 * exits a physical NIC. Recycled pages will be counted in the
-+	/* Return %XDP_DROP to recycle the data page with %MARK_XMIT, like
-+	 * it exited a physical NIC. Those pages will be counted in the
- 	 * pkts_seen_zero counter above.
- 	 */
- 	return XDP_DROP;
-@@ -91,9 +104,12 @@ int tc_count_pkts(struct __sk_buff *skb)
- 	void *data = (void *)(long)skb->data;
- 	void *data_end = (void *)(long)skb->data_end;
- 
--	if (check_pkt(data, data_end))
-+	if (check_pkt(data, data_end, MARK_SKB))
- 		pkts_seen_tc++;
- 
-+	/* Will be either recycled or freed, %MARK_SKB makes sure it won't
-+	 * hit any of the counters above.
-+	 */
- 	return 0;
- }
- 
+ #endif	/* __KERNEL__ */
+ #endif	/* _LINUX_SKBUFF_H */
 -- 
 2.39.2
 
