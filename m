@@ -2,69 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4563F6B70BD
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 09:00:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 134BC6B70D6
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 09:06:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229897AbjCMIAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 04:00:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60412 "EHLO
+        id S230123AbjCMIGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 04:06:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230480AbjCMH7k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 03:59:40 -0400
-Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74B9157D31
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 00:57:03 -0700 (PDT)
-Received: by mail-vs1-xe35.google.com with SMTP id o2so10168326vss.8
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 00:57:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1678694216;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=sysjgo1iroCq1PGPMcxHYcJ58uKAcoIBYkmm2Rx4bGI=;
-        b=KXhC1FXwnQwj0EnHEzCNw1VYze6E0LuW8PPX6sopnLlckYDSosuKzcY8pr5ECtZQ2O
-         UbqKVnxWY+GAl/HmTUClofet7Jr3db4XpG4V6K0K4mEzFsonLNrNis3yEsyjD3WlVymx
-         x3SIZwD2oKJm1+eHGkya5Y+xscxc4AsgWpBIVoYKMBpaZSPUTITSVUaUXRbkajVbCYhC
-         k0s3pFz+t5UQnF6KN7MYJfYrcmSI9hXIeapA4m/LldlDR54UAM1mNZYDzSMiBAZ3+O3Y
-         WcTn4adlUaE9eq14qNRNg2JohCMyGDQ5ok1feQhldl9PZxwzeXZUI0QzbN8EdePuKpL3
-         CynQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678694216;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=sysjgo1iroCq1PGPMcxHYcJ58uKAcoIBYkmm2Rx4bGI=;
-        b=VbkVSvn9ENaVLFoee9E817qd7S/xr5Q/AyvadVayGmkohFeA3U4yU48UIkWPx9TKK5
-         aTWGIxV6FMUuaynOeSSwm9WoLWXONX5a14Ih00Ya6t/xhLLE8mE+2aBZ68t48RfXZ9sg
-         g335sX68jRuWYSLdWeGNz25D7+nFMiFZ6PKm/wSuQq0TGdD5+YAfv5nJmI6xhXdYi2aW
-         en3lcI6g956IU39gSJ+FPwnuh89kENxebbUHtBa3kwuhxUMTmUfkRHm6mmbP/WBGtVIT
-         pZO3OEb36uRjQHkXEeaUd0wQTjEc8cSY4izMVjJhRhGd9EZ7w4hBFoe1jTx62ArXvMxb
-         u7vQ==
-X-Gm-Message-State: AO0yUKWjzm99A4J2NY7Z+Navu/VODXNUky2Z/CJISbnxlA9ahPxfdQNf
-        x/IeLpzKL0yT9Nfj9NZ/I9UkONe861/1YrQJFXiktg==
-X-Google-Smtp-Source: AK7set8CBieS6yjL4waHMsMpatn9duc3lZELrYwe4073Ne76dis4CR3fyYId9ouuyZvVVwgFMhknjo1N1mEz6NVHpsw=
-X-Received: by 2002:a67:7305:0:b0:411:c666:583b with SMTP id
- o5-20020a677305000000b00411c666583bmr21778072vsc.5.1678694216402; Mon, 13 Mar
- 2023 00:56:56 -0700 (PDT)
+        with ESMTP id S230118AbjCMIGB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 04:06:01 -0400
+Received: from out187-15.us.a.mail.aliyun.com (out187-15.us.a.mail.aliyun.com [47.90.187.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A1B27DB9
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 01:02:58 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R241e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018047211;MF=amy.saq@antgroup.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---.RmW7Hqs_1678694406;
+Received: from 30.46.242.109(mailfrom:amy.saq@antgroup.com fp:SMTPD_---.RmW7Hqs_1678694406)
+          by smtp.aliyun-inc.com;
+          Mon, 13 Mar 2023 16:00:07 +0800
+Message-ID: <17bc8313-7217-a2c9-cb12-fd0777c0d20d@antgroup.com>
+Date:   Mon, 13 Mar 2023 16:00:06 +0800
 MIME-Version: 1.0
-References: <20230302160310.923349-1-jaewan@google.com> <ZADgBqP57XcW3/tH@kroah.com>
- <87cz5mz04t.fsf@kernel.org> <CABZjns4xYjcn4CQzEoiozz9j7mKF0py0WE+AZ2Koi9Vz3khVLQ@mail.gmail.com>
- <87lek7pnh8.fsf@kernel.org>
-In-Reply-To: <87lek7pnh8.fsf@kernel.org>
-From:   Jaewan Kim <jaewan@google.com>
-Date:   Mon, 13 Mar 2023 16:56:45 +0900
-Message-ID: <CABZjns52wcHwofKqkh1Q2wM7VfgU93z7e94K04akeHHm1v82iw@mail.gmail.com>
-Subject: Re: [PATCH v8 0/5] mac80211_hwsim: Add PMSR support
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     Greg KH <gregkh@linuxfoundation.org>, johannes@sipsolutions.net,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-team@android.com, adelva@google.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.7.2
+Subject: Re: [PATCH v4] net/packet: support mergeable feature of virtio
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     <netdev@vger.kernel.org>, <willemdebruijn.kernel@gmail.com>,
+        <davem@davemloft.net>, <jasowang@redhat.com>,
+        "=?UTF-8?B?6LCI6Ym06ZSL?=" <henry.tjf@antgroup.com>
+References: <1678689073-101893-1-git-send-email-amy.saq@antgroup.com>
+ <20230313024705-mutt-send-email-mst@kernel.org>
+From:   "=?UTF-8?B?5rKI5a6J55CqKOWHm+eOpSk=?=" <amy.saq@antgroup.com>
+In-Reply-To: <20230313024705-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,31 +43,358 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 8, 2023 at 7:05=E2=80=AFPM Kalle Valo <kvalo@kernel.org> wrote:
->
-> Jaewan Kim <jaewan@google.com> writes:
->
-> > Sorry about the inconvenience.
-> > I checked all patchset comments and also got internal reviews,
-> > but forgot to double check in the cover letter.
-> >
-> > Should I send another patchset just for cover-letter?
-> > Otherwise let me keep this as of now, unless I need to send another pat=
-chset.
->
-> Please don't use HTML, our lists drop all HTML mail.
->
-> --
-> https://patchwork.kernel.org/project/linux-wireless/list/
->
-> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpa=
-tches
 
-Sorry about any inconvenience caused by my mistake.
-Uploaded a new patchset without 'CL', and also double checked 'plain
-text mode' before replying.
+在 2023/3/13 下午2:51, Michael S. Tsirkin 写道:
+> On Mon, Mar 13, 2023 at 02:31:13PM +0800, 沈安琪(凛玥) wrote:
+>> From: Jianfeng Tan <henry.tjf@antgroup.com>
+>>
+>> Packet sockets, like tap, can be used as the backend for kernel vhost.
+>> In packet sockets, virtio net header size is currently hardcoded to be
+>> the size of struct virtio_net_hdr, which is 10 bytes; however, it is not
+>> always the case: some virtio features, such as mrg_rxbuf, need virtio
+>> net headers to be 12-byte long.
+>>
+>> Mergeable buffers, as a virtio feature, is worthy of supporting: packets
+>> that are larger than one-mbuf size will be dropped in vhost worker's
+>> handle_rx if mrg_rxbuf feature is not used, but large packets
+>> cannot be avoided and increasing mbuf's size is not economical.
+>>
+>> With this virtio feature enabled by virtio-user, packet sockets with
+>> hardcoded 10-byte virtio net header will parse mac head incorrectly in
+>> packet_snd by taking the last two bytes of virtio net header as part of
+>> mac header.
+>> This incorrect mac header parsing will cause packet to be dropped due to
+>> invalid ether head checking in later under-layer device packet receiving.
+>>
+>> By adding extra field vnet_hdr_sz with utilizing holes in struct
+>> packet_sock to record currently used virtio net header size and supporting
+>> extra sockopt PACKET_VNET_HDR_SZ to set specified vnet_hdr_sz, packet
+>> sockets can know the exact length of virtio net header that virtio user
+>> gives.
+>> In packet_snd, tpacket_snd and packet_recvmsg, instead of using
+>> hardcoded virtio net header size, it can get the exact vnet_hdr_sz from
+>> corresponding packet_sock, and parse mac header correctly based on this
+>> information to avoid the packets being mistakenly dropped.
+>>
+>> Signed-off-by: Jianfeng Tan <henry.tjf@antgroup.com>
+>> Co-developed-by: Anqi Shen <amy.saq@antgroup.com>
+>> Signed-off-by: Anqi Shen <amy.saq@antgroup.com>
+>> ---
+>>
+>> V3 -> V4:
+>> * read po->vnet_hdr_sz once during vnet_hdr_sz and use vnet_hdr_sz locally
+>> to avoid race condition;
+> Wait a second. What kind of race condition? And what happens if
+> it does trigger? By once do you mean this:
+> 	int vnet_hdr_sz = po->vnet_hdr_sz;
+> ?  This is not guaranteed to read the value once, compiler is free
+> to read as many times as it likes.
+>
+> See e.g. memory barriers doc:
+>
+>   (*) It _must_not_ be assumed that the compiler will do what you want
+>       with memory references that are not protected by READ_ONCE() and
+>       WRITE_ONCE().  Without them, the compiler is within its rights to
+>       do all sorts of "creative" transformations, which are covered in
+>       the COMPILER BARRIER section.
+>
 
---=20
-Jaewan Kim (=EA=B9=80=EC=9E=AC=EC=99=84) | Software Engineer in Google Kore=
-a |
-jaewan@google.com | +82-10-2781-5078
+The expression "read once" may be a little confused here. The race 
+condition we want to avoid is:
+
+if (po->vnet_hdr_sz != 0) {
+	vnet_hdr_sz = po->vnet_hdr_sz;
+	...
+}
+
+Here we read po->vnet_hdr_sz for if condition first and then read it again to assign the value of vnet_hdr_sz; according to Willem's comment here, it might be a race condition with an update to virtio net header length, causing the vnet header size we used to check in if condition is not exactly the value we use as vnet_hdr_sz later.
+
+
+>
+>> * modify how to check non-zero po->vnet_hdr_sz;
+>> * separate vnet_hdr_sz as a u8 field in struct packet_sock instead of 8-bit
+>> in an int field.
+>>
+>>   include/uapi/linux/if_packet.h |  1 +
+>>   net/packet/af_packet.c         | 87 +++++++++++++++++++++++++++---------------
+>>   net/packet/diag.c              |  2 +-
+>>   net/packet/internal.h          |  2 +-
+>>   4 files changed, 59 insertions(+), 33 deletions(-)
+>>
+>> diff --git a/include/uapi/linux/if_packet.h b/include/uapi/linux/if_packet.h
+>> index 78c981d..9efc423 100644
+>> --- a/include/uapi/linux/if_packet.h
+>> +++ b/include/uapi/linux/if_packet.h
+>> @@ -59,6 +59,7 @@ struct sockaddr_ll {
+>>   #define PACKET_ROLLOVER_STATS		21
+>>   #define PACKET_FANOUT_DATA		22
+>>   #define PACKET_IGNORE_OUTGOING		23
+>> +#define PACKET_VNET_HDR_SZ		24
+>>   
+>>   #define PACKET_FANOUT_HASH		0
+>>   #define PACKET_FANOUT_LB		1
+>> diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+>> index 8ffb19c..06b9893 100644
+>> --- a/net/packet/af_packet.c
+>> +++ b/net/packet/af_packet.c
+>> @@ -2092,18 +2092,18 @@ static unsigned int run_filter(struct sk_buff *skb,
+>>   }
+>>   
+>>   static int packet_rcv_vnet(struct msghdr *msg, const struct sk_buff *skb,
+>> -			   size_t *len)
+>> +			   size_t *len, int vnet_hdr_sz)
+>>   {
+>> -	struct virtio_net_hdr vnet_hdr;
+>> +	struct virtio_net_hdr_mrg_rxbuf vnet_hdr = { .num_buffers = 0 };
+>>   
+>> -	if (*len < sizeof(vnet_hdr))
+>> +	if (*len < vnet_hdr_sz)
+>>   		return -EINVAL;
+>> -	*len -= sizeof(vnet_hdr);
+>> +	*len -= vnet_hdr_sz;
+>>   
+>> -	if (virtio_net_hdr_from_skb(skb, &vnet_hdr, vio_le(), true, 0))
+>> +	if (virtio_net_hdr_from_skb(skb, (struct virtio_net_hdr *)&vnet_hdr, vio_le(), true, 0))
+>>   		return -EINVAL;
+>>   
+>> -	return memcpy_to_msg(msg, (void *)&vnet_hdr, sizeof(vnet_hdr));
+>> +	return memcpy_to_msg(msg, (void *)&vnet_hdr, vnet_hdr_sz);
+>>   }
+>>   
+>>   /*
+>> @@ -2253,6 +2253,7 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
+>>   	bool is_drop_n_account = false;
+>>   	unsigned int slot_id = 0;
+>>   	bool do_vnet = false;
+>> +	int vnet_hdr_sz;
+>>   
+>>   	/* struct tpacket{2,3}_hdr is aligned to a multiple of TPACKET_ALIGNMENT.
+>>   	 * We may add members to them until current aligned size without forcing
+>> @@ -2310,8 +2311,9 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
+>>   		netoff = TPACKET_ALIGN(po->tp_hdrlen +
+>>   				       (maclen < 16 ? 16 : maclen)) +
+>>   				       po->tp_reserve;
+>> -		if (po->has_vnet_hdr) {
+>> -			netoff += sizeof(struct virtio_net_hdr);
+>> +		vnet_hdr_sz = po->vnet_hdr_sz;
+>> +		if (vnet_hdr_sz) {
+>> +			netoff += vnet_hdr_sz;
+>>   			do_vnet = true;
+>>   		}
+>>   		macoff = netoff - maclen;
+>> @@ -2552,16 +2554,27 @@ static int __packet_snd_vnet_parse(struct virtio_net_hdr *vnet_hdr, size_t len)
+>>   }
+>>   
+>>   static int packet_snd_vnet_parse(struct msghdr *msg, size_t *len,
+>> -				 struct virtio_net_hdr *vnet_hdr)
+>> +				 struct virtio_net_hdr *vnet_hdr, int vnet_hdr_sz)
+>>   {
+>> -	if (*len < sizeof(*vnet_hdr))
+>> +	int ret;
+>> +
+>> +	if (*len < vnet_hdr_sz)
+>>   		return -EINVAL;
+>> -	*len -= sizeof(*vnet_hdr);
+>> +	*len -= vnet_hdr_sz;
+>>   
+>>   	if (!copy_from_iter_full(vnet_hdr, sizeof(*vnet_hdr), &msg->msg_iter))
+>>   		return -EFAULT;
+>>   
+>> -	return __packet_snd_vnet_parse(vnet_hdr, *len);
+>> +	ret = __packet_snd_vnet_parse(vnet_hdr, *len);
+>> +
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	/* move iter to point to the start of mac header */
+>> +	if (vnet_hdr_sz != sizeof(struct virtio_net_hdr))
+>> +		iov_iter_advance(&msg->msg_iter, vnet_hdr_sz - sizeof(struct virtio_net_hdr));
+>> +
+>> +	return 0;
+>>   }
+>>   
+>>   static int tpacket_fill_skb(struct packet_sock *po, struct sk_buff *skb,
+>> @@ -2730,6 +2743,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+>>   	int status = TP_STATUS_AVAILABLE;
+>>   	int hlen, tlen, copylen = 0;
+>>   	long timeo = 0;
+>> +	int vnet_hdr_sz = po->vnet_hdr_sz;
+>>   
+>>   	mutex_lock(&po->pg_vec_lock);
+>>   
+>> @@ -2780,7 +2794,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+>>   	size_max = po->tx_ring.frame_size
+>>   		- (po->tp_hdrlen - sizeof(struct sockaddr_ll));
+>>   
+>> -	if ((size_max > dev->mtu + reserve + VLAN_HLEN) && !po->has_vnet_hdr)
+>> +	if ((size_max > dev->mtu + reserve + VLAN_HLEN) && !vnet_hdr_sz)
+>>   		size_max = dev->mtu + reserve + VLAN_HLEN;
+>>   
+>>   	reinit_completion(&po->skb_completion);
+>> @@ -2809,10 +2823,10 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+>>   		status = TP_STATUS_SEND_REQUEST;
+>>   		hlen = LL_RESERVED_SPACE(dev);
+>>   		tlen = dev->needed_tailroom;
+>> -		if (po->has_vnet_hdr) {
+>> +		if (vnet_hdr_sz) {
+>>   			vnet_hdr = data;
+>> -			data += sizeof(*vnet_hdr);
+>> -			tp_len -= sizeof(*vnet_hdr);
+>> +			data += vnet_hdr_sz;
+>> +			tp_len -= vnet_hdr_sz;
+>>   			if (tp_len < 0 ||
+>>   			    __packet_snd_vnet_parse(vnet_hdr, tp_len)) {
+>>   				tp_len = -EINVAL;
+>> @@ -2837,7 +2851,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+>>   					  addr, hlen, copylen, &sockc);
+>>   		if (likely(tp_len >= 0) &&
+>>   		    tp_len > dev->mtu + reserve &&
+>> -		    !po->has_vnet_hdr &&
+>> +		    !vnet_hdr_sz &&
+>>   		    !packet_extra_vlan_len_allowed(dev, skb))
+>>   			tp_len = -EMSGSIZE;
+>>   
+>> @@ -2856,7 +2870,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+>>   			}
+>>   		}
+>>   
+>> -		if (po->has_vnet_hdr) {
+>> +		if (vnet_hdr_sz) {
+>>   			if (virtio_net_hdr_to_skb(skb, vnet_hdr, vio_le())) {
+>>   				tp_len = -EINVAL;
+>>   				goto tpacket_error;
+>> @@ -2946,7 +2960,7 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+>>   	struct virtio_net_hdr vnet_hdr = { 0 };
+>>   	int offset = 0;
+>>   	struct packet_sock *po = pkt_sk(sk);
+>> -	bool has_vnet_hdr = false;
+>> +	int vnet_hdr_sz = po->vnet_hdr_sz;
+>>   	int hlen, tlen, linear;
+>>   	int extra_len = 0;
+>>   
+>> @@ -2990,11 +3004,11 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+>>   
+>>   	if (sock->type == SOCK_RAW)
+>>   		reserve = dev->hard_header_len;
+>> -	if (po->has_vnet_hdr) {
+>> -		err = packet_snd_vnet_parse(msg, &len, &vnet_hdr);
+>> +
+>> +	if (vnet_hdr_sz) {
+>> +		err = packet_snd_vnet_parse(msg, &len, &vnet_hdr, vnet_hdr_sz);
+>>   		if (err)
+>>   			goto out_unlock;
+>> -		has_vnet_hdr = true;
+>>   	}
+>>   
+>>   	if (unlikely(sock_flag(sk, SOCK_NOFCS))) {
+>> @@ -3064,11 +3078,11 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+>>   
+>>   	packet_parse_headers(skb, sock);
+>>   
+>> -	if (has_vnet_hdr) {
+>> +	if (vnet_hdr_sz) {
+>>   		err = virtio_net_hdr_to_skb(skb, &vnet_hdr, vio_le());
+>>   		if (err)
+>>   			goto out_free;
+>> -		len += sizeof(vnet_hdr);
+>> +		len += vnet_hdr_sz;
+>>   		virtio_net_hdr_set_proto(skb, &vnet_hdr);
+>>   	}
+>>   
+>> @@ -3410,7 +3424,7 @@ static int packet_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+>>   	struct sock *sk = sock->sk;
+>>   	struct sk_buff *skb;
+>>   	int copied, err;
+>> -	int vnet_hdr_len = 0;
+>> +	int vnet_hdr_len = pkt_sk(sk)->vnet_hdr_sz;
+>>   	unsigned int origlen = 0;
+>>   
+>>   	err = -EINVAL;
+>> @@ -3451,11 +3465,10 @@ static int packet_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+>>   
+>>   	packet_rcv_try_clear_pressure(pkt_sk(sk));
+>>   
+>> -	if (pkt_sk(sk)->has_vnet_hdr) {
+>> -		err = packet_rcv_vnet(msg, skb, &len);
+>> +	if (vnet_hdr_len) {
+>> +		err = packet_rcv_vnet(msg, skb, &len, vnet_hdr_len);
+>>   		if (err)
+>>   			goto out_free;
+>> -		vnet_hdr_len = sizeof(struct virtio_net_hdr);
+>>   	}
+>>   
+>>   	/* You lose any data beyond the buffer you gave. If it worries
+>> @@ -3921,8 +3934,9 @@ static void packet_flush_mclist(struct sock *sk)
+>>   		return 0;
+>>   	}
+>>   	case PACKET_VNET_HDR:
+>> +	case PACKET_VNET_HDR_SZ:
+>>   	{
+>> -		int val;
+>> +		int val, hdr_len;
+>>   
+>>   		if (sock->type != SOCK_RAW)
+>>   			return -EINVAL;
+>> @@ -3931,11 +3945,19 @@ static void packet_flush_mclist(struct sock *sk)
+>>   		if (copy_from_sockptr(&val, optval, sizeof(val)))
+>>   			return -EFAULT;
+>>   
+>> +		hdr_len = val ? sizeof(struct virtio_net_hdr) : 0;
+>> +		if (optname == PACKET_VNET_HDR_SZ) {
+>> +			if (val && val != sizeof(struct virtio_net_hdr) &&
+>> +			    val != sizeof(struct virtio_net_hdr_mrg_rxbuf))
+>> +				return -EINVAL;
+>> +			hdr_len = val;
+>> +		}
+>> +
+>>   		lock_sock(sk);
+>>   		if (po->rx_ring.pg_vec || po->tx_ring.pg_vec) {
+>>   			ret = -EBUSY;
+>>   		} else {
+>> -			po->has_vnet_hdr = !!val;
+>> +			po->vnet_hdr_sz = hdr_len;
+>>   			ret = 0;
+>>   		}
+>>   		release_sock(sk);
+>> @@ -4068,7 +4090,10 @@ static int packet_getsockopt(struct socket *sock, int level, int optname,
+>>   		val = po->origdev;
+>>   		break;
+>>   	case PACKET_VNET_HDR:
+>> -		val = po->has_vnet_hdr;
+>> +		val = !!po->vnet_hdr_sz;
+>> +		break;
+>> +	case PACKET_VNET_HDR_SZ:
+>> +		val = po->vnet_hdr_sz;
+>>   		break;
+>>   	case PACKET_VERSION:
+>>   		val = po->tp_version;
+>> diff --git a/net/packet/diag.c b/net/packet/diag.c
+>> index 07812ae..dfec603 100644
+>> --- a/net/packet/diag.c
+>> +++ b/net/packet/diag.c
+>> @@ -27,7 +27,7 @@ static int pdiag_put_info(const struct packet_sock *po, struct sk_buff *nlskb)
+>>   		pinfo.pdi_flags |= PDI_AUXDATA;
+>>   	if (po->origdev)
+>>   		pinfo.pdi_flags |= PDI_ORIGDEV;
+>> -	if (po->has_vnet_hdr)
+>> +	if (po->vnet_hdr_sz)
+>>   		pinfo.pdi_flags |= PDI_VNETHDR;
+>>   	if (po->tp_loss)
+>>   		pinfo.pdi_flags |= PDI_LOSS;
+>> diff --git a/net/packet/internal.h b/net/packet/internal.h
+>> index 48af35b..154c6bb 100644
+>> --- a/net/packet/internal.h
+>> +++ b/net/packet/internal.h
+>> @@ -119,9 +119,9 @@ struct packet_sock {
+>>   	unsigned int		running;	/* bind_lock must be held */
+>>   	unsigned int		auxdata:1,	/* writer must hold sock lock */
+>>   				origdev:1,
+>> -				has_vnet_hdr:1,
+>>   				tp_loss:1,
+>>   				tp_tx_has_off:1;
+>> +	u8			vnet_hdr_sz;
+>>   	int			pressure;
+>>   	int			ifindex;	/* bound device		*/
+>>   	__be16			num;
+>> -- 
+>> 1.8.3.1
