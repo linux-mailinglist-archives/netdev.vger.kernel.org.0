@@ -2,284 +2,246 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFF6E6B7A16
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 15:15:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 582836B7A1A
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 15:15:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231331AbjCMOPM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 10:15:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41602 "EHLO
+        id S231337AbjCMOPp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 10:15:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231387AbjCMOOy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 10:14:54 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2059.outbound.protection.outlook.com [40.107.22.59])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A046122A27;
-        Mon, 13 Mar 2023 07:14:39 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RDZyZTv6baM0RRyjra9I4VTHHV5iZAGOsG+a0RYvoOvWLNlZbvgB9J5FjqG5rdQbb4hCz3cinja0qAC2fY6D4gL8gewLUGx8ClwNlWaoqxi8Qv9E7aQSzjV3wOlSPOk0fE3LRurjXCptpDcuzIDb+U/JQDwxygWV1JnCiLMYCICmQqFtDpJh/+IJnVtQMRXW+86eVUwsnhuAIO2pgUFc/mHB4377dej+WLa4/6KSb0xWxMg/Zi3CAt0S99mvCR357AVJjS1PZ+SUowbjto7+DrU6jpwgSVBLwppRpFXZLUVqJa4wbd4wmGTcMsHARuJJ//U7yb/s2LnfeCpYpB9+uw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZLSdXiKIPS+b00eRSw5gLuoBRub/Q3juC2oAcjYajpc=;
- b=h0WaTv8TNGA5fdcE7KxjQFkjOwAYGKIwSaIyQ8j2WEwCEHliECZ8nkYVEI70A/2hvu9UrHii2Mlose+XyN8ZQ13ZzliWKRkjKR6AnqTpo0bnbDZGBPUhBC6delFo9aQPs656hDSrnzD+u3E7XuU++5VaC3nEMet6FOE/IFQjQP0kFWy2ex421F/Ov50EUjLtQEYrSsKUb1MZGfovLUeyUE/Cdkbpmxqnd/sJajnsETtb2Liu4+sqzJKz1FmhEdM00NtdvvMgEn1rMc/SmMwmP+GXSR2sC71maLtpljO6SoOrzBqn5QU3FP/A1vT+Axu6KYWPxgeC2Bdfg2qdyemrYw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZLSdXiKIPS+b00eRSw5gLuoBRub/Q3juC2oAcjYajpc=;
- b=QC+weVCEzdEH6SuU0TVxnI7l9/POpChG6jOR3/wMG16GVuz3LscnualkOIxmiJPMJ02/42r4W8SOlwvVZWcoEh8DKPOkielN8EUb4gHhFs2T1R+OI1bYGtPHBMbUZgSCQqysX9bbT/XHwcQBS9C7lC6lm9Nlj9qmhkLMUXnjroQ=
-Received: from AM9PR04MB8603.eurprd04.prod.outlook.com (2603:10a6:20b:43a::10)
- by GV1PR04MB9117.eurprd04.prod.outlook.com (2603:10a6:150:24::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.24; Mon, 13 Mar
- 2023 14:14:36 +0000
-Received: from AM9PR04MB8603.eurprd04.prod.outlook.com
- ([fe80::45d2:ce51:a1c4:8762]) by AM9PR04MB8603.eurprd04.prod.outlook.com
- ([fe80::45d2:ce51:a1c4:8762%5]) with mapi id 15.20.6178.024; Mon, 13 Mar 2023
- 14:14:36 +0000
-From:   Neeraj sanjay kale <neeraj.sanjaykale@nxp.com>
-To:     Simon Horman <simon.horman@corigine.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "marcel@holtmann.org" <marcel@holtmann.org>,
-        "johan.hedberg@gmail.com" <johan.hedberg@gmail.com>,
-        "luiz.dentz@gmail.com" <luiz.dentz@gmail.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "alok.a.tiwari@oracle.com" <alok.a.tiwari@oracle.com>,
-        "hdanton@sina.com" <hdanton@sina.com>,
-        "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Amitkumar Karwar <amitkumar.karwar@nxp.com>,
-        Rohit Fule <rohit.fule@nxp.com>,
-        Sherry Sun <sherry.sun@nxp.com>
-Subject: Re: [PATCH v8 1/3] serdev: Add method to assert break signal over tty
- UART port
-Thread-Topic: [PATCH v8 1/3] serdev: Add method to assert break signal over
- tty UART port
-Thread-Index: AQHZVbYkxiQfQDJFrkKHI7fmrvbkoA==
-Date:   Mon, 13 Mar 2023 14:14:36 +0000
-Message-ID: <AM9PR04MB86030F36CD0C202F26566B42E7B99@AM9PR04MB8603.eurprd04.prod.outlook.com>
-References: <20230310181921.1437890-1-neeraj.sanjaykale@nxp.com>
- <20230310181921.1437890-2-neeraj.sanjaykale@nxp.com>
- <ZAx1JOvjgOOYCNY9@corigine.com>
- <AM9PR04MB8603EDB41582B5B816993B12E7B89@AM9PR04MB8603.eurprd04.prod.outlook.com>
- <ZA4kG1gG2qoEGZLK@corigine.com>
- <AM9PR04MB8603CD84C41775AE83CCDB88E7B99@AM9PR04MB8603.eurprd04.prod.outlook.com>
- <ZA8RsRtUuCc++wb6@corigine.com>
-In-Reply-To: <ZA8RsRtUuCc++wb6@corigine.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: AM9PR04MB8603:EE_|GV1PR04MB9117:EE_
-x-ms-office365-filtering-correlation-id: 1d7182e5-cb93-4402-97be-08db23cd46da
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Nannq2IFweK9Q5VYsbUC3X2uL44dveVi7VT0uPLaA7mqQrlDfLVsrhohZuTmfj/AgxbyAH/EQVKA+hurI2ek4ZMKyb3ISIlaXA7MO2Bake88dPgKW6JIiD5sUkGQd5eA/fWuAtiGVgWx3H409R6bZMONFf8NSbApIZ8gLkZgKGp1+pfupZsFh5xZB5rLZQMOQt4GjgBVNwZCoKKVQcjhCwg17mJWdrUzToX/uHfImvPAR3hAIySPNZ7CJeRZzKQ5HLXHUPbpkDf7fcrJ2zw979VjCyOiFJDMdxdGaRb8Y3PVza79R7MqMEltZJj2Lt+V3UUKojM7Yzc8I50Onqsh5z9HjE9Q90EUflJTpSdGgckxgGLwfjcoIOElYSUZrwHiVoyBFtY7bBoSdjYdBGs4ANOUmsC1K+1yEZbAW/DvD1nZ5vdn1s4bet0LOKzzZ7qwAEmI6yEWHOPfeO94TVObgZFL7tMvsdeJZ5AxVJ3DMOEHnQ4IjrSHMqMCd/8GHhmFC1w7gnX8Ha7NQKoXBfTJTKY90VmyTPBK9C/QlBzXis0t++B+zTxBcxQgm1VtdADKYJL9u+IWkjfXmDsijdKsGF3/2lAKtPxNucz+FSuk0C53qwaXJYI2lozzllgLvxRCiHB8X888YY9p19CJWPrZo54eCu88ijqwQb0lzDSLy0clF20n882nVIvQe507eYnC
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8603.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(396003)(366004)(346002)(136003)(39860400002)(451199018)(45080400002)(7696005)(76116006)(2906002)(71200400001)(41300700001)(8676002)(66446008)(66556008)(64756008)(55016003)(66476007)(33656002)(4326008)(478600001)(316002)(66946007)(54906003)(86362001)(6916009)(122000001)(38100700002)(966005)(38070700005)(5660300002)(55236004)(26005)(6506007)(186003)(9686003)(7416002)(8936002)(52536014)(83380400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?LGO1ACUaUnpp+vMCHM2OqjbociJChB+vkVpZqaE+1cfRK/pmBiZDdo3Ar4AN?=
- =?us-ascii?Q?p9IpkK5lt4+dOHVRWzds+scammCFGDXB74OgdAKuEc7bFSeOAtsy4SyxOzu9?=
- =?us-ascii?Q?nNgqVLntfkSYfvuXs9lLtHK9V94kbEPV0TGaPJ2HCSEBB73oFuJDEPNqDXQq?=
- =?us-ascii?Q?59A+tRdOwmFeFGMNCi8gWo74/gcbi27rg9s0sJ/5ep7hrm3+U/wzkAi1XpHp?=
- =?us-ascii?Q?LNog3mNAM6n9wPUa+YNuES4O7mT5aGGG4/zucW6wdnfyfpBlaInhjYjVQLKx?=
- =?us-ascii?Q?zY+GCGZkHNzxUovuZraRRl3pUyEso19BPQ0WdI5HH2GoBSlyQxFcGIH1CGAr?=
- =?us-ascii?Q?6IRbm8om2kwlW81YR68xvbVpngRNINlVCh3LHgIzBvPPSj4jlZb/FJwlfKNv?=
- =?us-ascii?Q?Yf11OGoXVj0bX4jbu1tx1P+Mmqo5DVLCwq0taSJtOWKAO4YyhTW1F97voc7q?=
- =?us-ascii?Q?UoZsXhr7hHxxh2r3gYaY/c/ISuqPnG7aLlaF4agMIG36fWHbDbvoFbt5qFcL?=
- =?us-ascii?Q?+QH7XDK2wpVfBhHX4XZcGJFRT5/5cjzo5puX/4tnezCfGCj5fNRE8hY0kM3U?=
- =?us-ascii?Q?s0vpGQZWTuXzFu5nyEv2MekjqVtgDzfyGBXOl7R8C5ci7wIiieSfeTgI85Rg?=
- =?us-ascii?Q?xjpJh8Nv7L9o9mxQmVDm35h939BU+OWmn5Ql04ShKa/3CoxGlQ/p6Z5q9Bng?=
- =?us-ascii?Q?jeR8QYzL4uWpipA3rOsXTG0zztiwOwqOcV+qso4lgUKdg1+G38Af113j52io?=
- =?us-ascii?Q?yJVG/Y/SMjSWSD1yqHMSAkTbZ0Y4MpVRRKFgmyXNhQyPl7kyzzN3j4kP8l7L?=
- =?us-ascii?Q?rmqBDG0oW8xhmtmn3PNGYbTKdv91Itk8O3gD+wAYRwFrrdCCb6O8jeZcU3gi?=
- =?us-ascii?Q?baaug7GaDykXFT96nW6kdSxWXgzYd9sO35xpb6xaYaZCqfKACmTHkNtwjDZ3?=
- =?us-ascii?Q?yHZNC67z1Ar26RuqDofI4lce0EXKcElwuaPhwmhqh0vr8GvRuUiTcLPWKC0M?=
- =?us-ascii?Q?ZUQ+9tA903rRAt9hoGJEbKjNR9UKUvJqA/Sp4m5qONK4ul7qtr4LSgA2zQBS?=
- =?us-ascii?Q?K+uI89XZYqfNEiyZ92HYBHbaS3eOgtLlkFebQnimht1iKuNJjwF3aeGC4Txz?=
- =?us-ascii?Q?1HFElELSVbYYmCrxP7CGt6ux+BoNwZkIf+4cmT6LeYa/hQ1kH57+eOtO0Qpf?=
- =?us-ascii?Q?BRHf47FVNK1XZS0anusjrc/O+ADDw1KHeo1MRcLvchcsjvahx44FF1Aj9sBa?=
- =?us-ascii?Q?gEKkhjvykj2NRX+1hMqKh61/8b+puD7SXS4BTEtthKw+LroOppxJZphV+xtF?=
- =?us-ascii?Q?8NgLeQIJcy4yTOgj9QsLRmurtd50AiLA4vfv1LGIFGlGcmNYe+IVvyLU8QU+?=
- =?us-ascii?Q?WowbChPWUwv6lx7I1Nq/y5swAvrQlLKyp5zt3x5K+sgwAonwB2Vifojr4Tax?=
- =?us-ascii?Q?g2x3Fbwy1bi22tdfdY3quAlUAck6k4T1g243vOKwS2pxmQ+4reN/r62G9qLb?=
- =?us-ascii?Q?AKhY579YrO0IuPAe9jqDWxua6mBjQnpzOrZwlsaSYWt9kXvEYAmxNZue3Pm9?=
- =?us-ascii?Q?UBrcE5UFsWnQUw8WjJE407L5/+GlgrmrnROF4ld7DIP6m4SrQFZrb2c9M4SN?=
- =?us-ascii?Q?lQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S231360AbjCMOPS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 10:15:18 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D344F9748
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 07:15:11 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id j11so49324093edq.4
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 07:15:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares.net; s=google; t=1678716910;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=4PHJYVH99Do/5J8cDluPXksbxlGbfusUlZhEuplxKuM=;
+        b=jr4KFH6vvQ0OfZUho2a3tQYxaB3sHJxR065KTUC2WiSyq63kUmzAEk2hk9OjETRJUL
+         v+MShgNFwdLHg0DA1v5WwiCTYN3mAO7Mc4bZRQioZC4H3Qgn8l5Tvnq/4XCWiYF+jMMo
+         X9fQf7qOq+bd113ZeokoOYjMk5Uz7U6AXguUUdBIxAZJN4I3kVRK33HqxORzLLyjU8mD
+         JYJZ1ZMtuCKgm7osNSugdjOh/sGijgfsfKvneNCxO6R8JD7unGrQ4iQojsVTNsskfzIF
+         pfkfDE6jpHY3QZ7kiMnl+GvgL7bZ9O2smdJ3csei2shSis62maD6SnD1RQrUuTewBWvt
+         FlJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678716910;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=4PHJYVH99Do/5J8cDluPXksbxlGbfusUlZhEuplxKuM=;
+        b=O2IBN0ZDdepKE78DdVh+F/6gevezvXtNVsbXIZbzGEljS2Kk/iGDkwKDD30AFx12e+
+         vcOei0DgGDhApfXJSb/MVqeMt3IN8ybRyZHGuOkMg2bE4Baj6caXAu5zGmuCFl724BME
+         JTTvZLYs6S+KD0yp9fokxYgKD0FX3FdKLgW5xETCNUOQfXtsV3Ytcxov8GImaw6pJzkj
+         mMVLEmCLLcsLTW7vHBZBxfG6pXmnCsEq1ejV6cdKH2YvQtQU/FS5yhG/alq1dXX/dWhj
+         NhtwUzqNvIgNT3raFNOtHnxVgDPJnSxd3T/PJUniijbXU9e72Pj9T9rTuOh9jq72sk+I
+         g89g==
+X-Gm-Message-State: AO0yUKWSDkgiu5hblmQlwIVu/T+PCet9KxaLS3MWNLfk3KZN+61Bet/6
+        lFaPQVD4HVkYHq3TzZFpFtQdAg==
+X-Google-Smtp-Source: AK7set8NEqWfvHfTvAP6xz+oRM6ONdT82xerBqwsW9T3wRyM6+7jJtzNqLvHx7DfKqK3maxBK9NkQQ==
+X-Received: by 2002:a17:907:97d5:b0:927:6d5d:ae1e with SMTP id js21-20020a17090797d500b009276d5dae1emr6085237ejc.28.1678716909954;
+        Mon, 13 Mar 2023 07:15:09 -0700 (PDT)
+Received: from [10.44.2.5] ([81.246.10.41])
+        by smtp.gmail.com with ESMTPSA id oz38-20020a1709077da600b009255b14e91dsm2147172ejc.46.2023.03.13.07.15.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Mar 2023 07:15:09 -0700 (PDT)
+Message-ID: <f5167659-99d7-04a1-2175-60ff1dabae71@tessares.net>
+Date:   Mon, 13 Mar 2023 15:15:08 +0100
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8603.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1d7182e5-cb93-4402-97be-08db23cd46da
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Mar 2023 14:14:36.6430
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: LgCjtOZiUSAnTriWEcXIE1gqZuXbPaFFxphZfSK2djkv8ZvVlA6kB6CT2jaLXTwJ2Fp/EfyQclrgpO/zJ5fAOvZkeZultKFW6RYVez72sK8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR04MB9117
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH net v2 6/8] veth: take into account device reconfiguration
+ for xdp_features flag
+Content-Language: en-GB
+To:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        saeedm@nvidia.com, leon@kernel.org, shayagr@amazon.com,
+        akiyano@amazon.com, darinzon@amazon.com, sgoutham@marvell.com,
+        lorenzo.bianconi@redhat.com, toke@redhat.com, teknoraver@meta.com,
+        ttoukan.linux@gmail.com
+References: <cover.1678364612.git.lorenzo@kernel.org>
+ <f20cfdb08d7357b0853d25be3b34ace4408693be.1678364613.git.lorenzo@kernel.org>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+In-Reply-To: <f20cfdb08d7357b0853d25be3b34ace4408693be.1678364613.git.lorenzo@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Simon,
+Hi Lorenzo,
 
-> > > > > > diff --git a/include/linux/serdev.h b/include/linux/serdev.h
-> > > > > > index
-> > > > > > 66f624fc618c..c065ef1c82f1 100644
-> > > > > > --- a/include/linux/serdev.h
-> > > > > > +++ b/include/linux/serdev.h
-> > > > >
-> > > > > ...
-> > > > >
-> > > > > > @@ -255,6 +257,10 @@ static inline int
-> > > > > > serdev_device_set_tiocm(struct serdev_device *serdev, int set, =
- {
-> > > > > >       return -ENOTSUPP;
-> > > > > >  }
-> > > > > > +static inline int serdev_device_break_ctl(struct
-> > > > > > +serdev_device *serdev, int break_state) {
-> > > > > > +     return -EOPNOTSUPP;
-> > > > >
-> > > > > Is the use of -EOPNOTSUPP intentional here?
-> > > > > I see -ENOTSUPP is used elsewhere in this file.
-> > > > I was suggested to use - EOPNOTSUPP instead of - ENOTSUPP by the
-> > > > check
-> > > patch scripts and by Leon Romanovsky.
-> > > > https://eur01.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2=
-F
-> > > >
-> patc%2F&data=3D05%7C01%7Cneeraj.sanjaykale%40nxp.com%7Cd6011072c88
-> 94
-> > > >
-> b141a3008db23bb5bc0%7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C0
-> %7C6
-> > > >
-> 38143059832335354%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwM
-> DAiLCJQ
-> > > >
-> IjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata
-> =3Dk
-> > > >
-> gk6w%2Fn2d3rNx%2FXe1rLfN0U%2BeTBJTxztSRUEUW2Noqk%3D&reserved=3D
-> 0
-> > > >
-> > >
-> hwork.kernel.org%2Fproject%2Fbluetooth%2Fpatch%2F20230130180504.202
-> > > 944
-> > > > 0-2-
-> > >
-> neeraj.sanjaykale%40nxp.com%2F&data=3D05%7C01%7Cneeraj.sanjaykale%40
-> > > >
-> > >
-> nxp.com%7Cf2ae2c9ad3c243df2c1a08db232dc0f1%7C686ea1d3bc2b4c6fa92
-> > > cd99c5
-> > > >
-> > >
-> c301635%7C0%7C0%7C638142451647332825%7CUnknown%7CTWFpbGZsb3
-> > > d8eyJWIjoiM
-> > > >
-> > >
-> C4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000
-> > > %7C%7C
-> > > > %7C&sdata=3D6cF0gipe4kkwYI6txo0vs8vnmF8azCO6gxQ%2F6Tdyd%2Fw%
-> 3D
-> > > &reserved=3D
-> > > > 0
-> > > >
-> > > > ENOTSUPP is not a standard error code and should be avoided in new
-> > > patches.
-> > > > See:
-> > > > https://eur01.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2=
-F
-> > > >
-> lore%2F&data=3D05%7C01%7Cneeraj.sanjaykale%40nxp.com%7Cd6011072c88
-> 94
-> > > >
-> b141a3008db23bb5bc0%7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C0
-> %7C6
-> > > >
-> 38143059832335354%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwM
-> DAiLCJQ
-> > > >
-> IjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata
-> =3D9
-> > > >
-> wojVR7aEgzoeajvy%2FMAkSqAYGBkxrJZtyxlvIpeZ%2Bw%3D&reserved=3D0
-> > > > .kernel.org%2Fnetdev%2F20200510182252.GA411829%40lunn.ch%2F&
-> data
-> > > =3D05%7C
-> > > >
-> > >
-> 01%7Cneeraj.sanjaykale%40nxp.com%7Cf2ae2c9ad3c243df2c1a08db232dc0f
-> > > 1%7C
-> > > >
-> > >
-> 686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C0%7C638142451647332825%
-> > > 7CUnknow
-> > > >
-> > >
-> n%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1ha
-> > > WwiLC
-> > > >
-> > >
-> JXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=3DwFgYY6VnZ8BBn6Wme8%2BYj
-> > > aJRy98qyPnUy
-> > > > XC8iCFCv5k%3D&reserved=3D0
-> > >
-> > > Thanks.
-> > >
-> > > I agree that EOPNOTSUPP is preferable.
-> > > But my question is if we chose to use it in this case, even if it is
-> > > inconsistent with similar code in the same file/API.
-> > > If so, then I have no objections.
-> >
-> > No, it was just to satisfy the check patch error and Leon's comment. Th=
-e
-> driver is happy to check if the serdev returned success or not, and simpl=
-y
-> print the error code during driver debug.
-> > Do you think this should be reverted to ENOTSUPP to maintain consistenc=
-y?
->=20
-> My _opinion_, is that first prize would be converting existing instances =
-of
-> ENOTSUPP in this file to EOPNOTSUPP. And then use EOPNOTSUPP going
-> forward. And that second prize would be for your patch to use ENOTSUPP.
-> Because I think there is a value consistency.
->=20
-> But I do see why you have done things the way you have.
-> And I don't necessarily think it is wrong.
+On 09/03/2023 13:25, Lorenzo Bianconi wrote:
+> Take into account tx/rx queues reconfiguration setting device
+> xdp_features flag. Moreover consider NETIF_F_GRO flag in order to enable
+> ndo_xdp_xmit callback.
+> 
+> Fixes: 66c0e13ad236 ("drivers: net: turn on XDP features")
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 
-When you put it that way, how can I say no to a first prize! :D
-I have replaced all instances of ENOTSUPP with EOPNOTSUPP in these 2 files =
-after making sure none of the functions returning it has a check for ENOTSU=
-PP.
-It seems most of the instances do not check for a return value anyways.
-Please check v9 patch for the changes.
+Thank you for the modification.
 
-Thanks
-Neeraj
+Unfortunately, 'git bisect' just told me this modification is the origin
+of a new WARN when using veth in a netns:
+
+
+###################### 8< ######################
+
+=============================
+WARNING: suspicious RCU usage
+6.3.0-rc1-00144-g064d70527aaa #149 Not tainted
+-----------------------------
+drivers/net/veth.c:1265 suspicious rcu_dereference_check() usage!
+
+other info that might help us debug this:
+
+
+rcu_scheduler_active = 2, debug_locks = 1
+1 lock held by ip/135:
+#0: ffffffff8dc4b108 (rtnl_mutex){+.+.}-{3:3}, at: rtnetlink_rcv_msg
+(net/core/rtnetlink.c:6172)
+
+stack backtrace:
+CPU: 1 PID: 135 Comm: ip Not tainted 6.3.0-rc1-00144-g064d70527aaa #149
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1
+04/01/2014
+Call Trace:
+ <TASK>
+dump_stack_lvl (lib/dump_stack.c:107)
+lockdep_rcu_suspicious (include/linux/context_tracking.h:152)
+veth_set_xdp_features (drivers/net/veth.c:1265 (discriminator 9))
+veth_newlink (drivers/net/veth.c:1892)
+? veth_set_features (drivers/net/veth.c:1774)
+? kasan_save_stack (mm/kasan/common.c:47)
+? kasan_save_stack (mm/kasan/common.c:46)
+? kasan_set_track (mm/kasan/common.c:52)
+? alloc_netdev_mqs (include/linux/slab.h:737)
+? rcu_read_lock_sched_held (kernel/rcu/update.c:125)
+? trace_kmalloc (include/trace/events/kmem.h:54)
+? __xdp_rxq_info_reg (net/core/xdp.c:188)
+? alloc_netdev_mqs (net/core/dev.c:10657)
+? rtnl_create_link (net/core/rtnetlink.c:3312)
+rtnl_newlink_create (net/core/rtnetlink.c:3440)
+? rtnl_link_get_net_capable.constprop.0 (net/core/rtnetlink.c:3391)
+__rtnl_newlink (net/core/rtnetlink.c:3657)
+? lock_downgrade (kernel/locking/lockdep.c:5321)
+? rtnl_link_unregister (net/core/rtnetlink.c:3487)
+rtnl_newlink (net/core/rtnetlink.c:3671)
+rtnetlink_rcv_msg (net/core/rtnetlink.c:6174)
+? rtnl_link_fill (net/core/rtnetlink.c:6070)
+? mark_usage (kernel/locking/lockdep.c:4914)
+? mark_usage (kernel/locking/lockdep.c:4914)
+netlink_rcv_skb (net/netlink/af_netlink.c:2574)
+? rtnl_link_fill (net/core/rtnetlink.c:6070)
+? netlink_ack (net/netlink/af_netlink.c:2551)
+? lock_acquire (kernel/locking/lockdep.c:467)
+? net_generic (include/linux/rcupdate.h:805)
+? netlink_deliver_tap (include/linux/rcupdate.h:805)
+netlink_unicast (net/netlink/af_netlink.c:1340)
+? netlink_attachskb (net/netlink/af_netlink.c:1350)
+netlink_sendmsg (net/netlink/af_netlink.c:1942)
+? netlink_unicast (net/netlink/af_netlink.c:1861)
+? netlink_unicast (net/netlink/af_netlink.c:1861)
+sock_sendmsg (net/socket.c:727)
+____sys_sendmsg (net/socket.c:2501)
+? kernel_sendmsg (net/socket.c:2448)
+? __copy_msghdr (net/socket.c:2428)
+___sys_sendmsg (net/socket.c:2557)
+? mark_usage (kernel/locking/lockdep.c:4914)
+? do_recvmmsg (net/socket.c:2544)
+? lock_acquire (kernel/locking/lockdep.c:467)
+? find_held_lock (kernel/locking/lockdep.c:5159)
+? __lock_release (kernel/locking/lockdep.c:5345)
+? __might_fault (mm/memory.c:5625)
+? lock_downgrade (kernel/locking/lockdep.c:5321)
+? __fget_light (include/linux/atomic/atomic-arch-fallback.h:227)
+__sys_sendmsg (include/linux/file.h:31)
+? __sys_sendmsg_sock (net/socket.c:2572)
+? rseq_get_rseq_cs (kernel/rseq.c:275)
+? lockdep_hardirqs_on_prepare.part.0 (kernel/locking/lockdep.c:4263)
+do_syscall_64 (arch/x86/entry/common.c:50)
+entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
+RIP: 0033:0x7f0d1aadeb17
+Code: 0f 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b9 0f 1f 00 f3 0f 1e
+fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 2e 00 00 00 0f 05 <48> 3d 00
+f0 ff ff 77 51 c3 48 83 ec 28 89 54 24 1c 48 89 74 24 10
+All code
+========
+   0:   0f 00                   (bad)
+   2:   f7 d8                   neg    %eax
+   4:   64 89 02                mov    %eax,%fs:(%rdx)
+   7:   48 c7 c0 ff ff ff ff    mov    $0xffffffffffffffff,%rax
+   e:   eb b9                   jmp    0xffffffffffffffc9
+  10:   0f 1f 00                nopl   (%rax)
+  13:   f3 0f 1e fa             endbr64
+  17:   64 8b 04 25 18 00 00    mov    %fs:0x18,%eax
+  1e:   00
+  1f:   85 c0                   test   %eax,%eax
+  21:   75 10                   jne    0x33
+  23:   b8 2e 00 00 00          mov    $0x2e,%eax
+  28:   0f 05                   syscall
+  2a:*  48 3d 00 f0 ff ff       cmp    $0xfffffffffffff000,%rax
+<-- trapping instruction
+  30:   77 51                   ja     0x83
+  32:   c3                      ret
+  33:   48 83 ec 28             sub    $0x28,%rsp
+  37:   89 54 24 1c             mov    %edx,0x1c(%rsp)
+  3b:   48 89 74 24 10          mov    %rsi,0x10(%rsp)
+
+Code starting with the faulting instruction
+===========================================
+   0:   48 3d 00 f0 ff ff       cmp    $0xfffffffffffff000,%rax
+   6:   77 51                   ja     0x59
+   8:   c3                      ret
+   9:   48 83 ec 28             sub    $0x28,%rsp
+   d:   89 54 24 1c             mov    %edx,0x1c(%rsp)
+  11:   48 89 74 24 10          mov    %rsi,0x10(%rsp)
+RSP: 002b:00007ffca3305d48 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000640f2bb2 RCX: 00007f0d1aadeb17
+RDX: 0000000000000000 RSI: 00007ffca3305db0 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000001 R09: 00007ffca3304ae0
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000001
+R13: 00007ffca3305eb4 R14: 00007ffca3305e80 R15: 0000561e28bf5020
+ </TASK>
+ip (135) used greatest stack depth: 24544 bytes left
+
+###################### 8< ######################
+
+
+I can reproduce the issue on the "net" tree with just these 3 commands:
+
+# ip netns add ns1
+# ip netns add ns2
+# ip link add ns1eth1 netns ns1 type veth peer name ns2eth1 netns ns2
+
+Without this commit fccca038f300 ("veth: take into account device
+reconfiguration for xdp_features flag"), I don't have the issue.
+
+For more details about the issue detected by CIs validating our MPTCP
+tree, including kconfig and vmlinux if needed:
+
+  https://github.com/multipath-tcp/mptcp_net-next/issues/372
+
+
+Do you mind looking at this regression please? :)
+
+
+On our side, we will revert this patch in our tree for the moment to
+unblock our CI jobs.
+
+Cheers,
+Matt
+-- 
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
