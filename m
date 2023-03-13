@@ -2,112 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D59AF6B7205
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 10:06:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FAB96B7202
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 10:05:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231173AbjCMJGc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 05:06:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54238 "EHLO
+        id S230460AbjCMJFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 05:05:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230005AbjCMJGN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 05:06:13 -0400
-Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.215])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1F5F2126DA;
-        Mon, 13 Mar 2023 02:03:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Gp4+C
-        4gCMjSOFnYU898NA74fjHaBuOlyPKxcR6f/MrM=; b=KGETv7MYHU+IHxw98BaBR
-        VDQdxpMYuwdI1zU0dSr77DawJfbRVpRuAa0fgLiQwAxWr3trRXIyDtCzcrX1TD5f
-        naMFYoZ39uhUIHbo6a2mEgnQ3hC+dMZ3QXhHe4GFxefMpqA3DwnqwItVIKaYqQYU
-        gXBFT+1IfXoEjwX0xtGnXQ=
-Received: from leanderwang-LC2.localdomain (unknown [111.206.145.21])
-        by zwqz-smtp-mta-g0-3 (Coremail) with SMTP id _____wDXOaAT5g5kXWohAA--.8836S2;
-        Mon, 13 Mar 2023 17:00:04 +0800 (CST)
-From:   Zheng Wang <zyytlz.wz@163.com>
-To:     ericvh@gmail.com
-Cc:     lucho@ionkov.net, asmadeus@codewreck.org, linux_oss@crudebyte.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, v9fs-developer@lists.sourceforge.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        hackerzheng666@gmail.com, 1395428693sheep@gmail.com,
-        alex000young@gmail.com, Zheng Wang <zyytlz.wz@163.com>
-Subject: [PATCH net v2] 9p/xen : Fix use after free bug in xen_9pfs_front_remove due  to race condition
-Date:   Mon, 13 Mar 2023 17:00:02 +0800
-Message-Id: <20230313090002.3308025-1-zyytlz.wz@163.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S231300AbjCMJFA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 05:05:00 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACDAACC2B;
+        Mon, 13 Mar 2023 02:02:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678698122; x=1710234122;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=pI4nUmeEVLC3M5pHVpsWX+NZs0JcgtOBrvHpvPUR7eg=;
+  b=EkhYi4RdBGdu3QgJdPFU/U+D88BS49AMSYSHC2XBho2cfDU3Ge44RBDq
+   QsvK/lFQGNXk0lXJHa0+l7qHjRz4W9NbT3ADJZTP/kja/Pe0u7wZeYGG4
+   ekunyiW/i1B4j7atJrvxy2m8MSC/fB3kjnU9XUX3UzeDMpbqopuNbvkPE
+   1exz+sX50KN8HzhdVAeK4b6PQ9p302dvKp6je0oWhkLI0zeqc9Lw8rhPt
+   ysCAiWn1R0GTIyowZbjGC4Gzz/DocdOPTlkPge8TgrxHtiD8+xgKJ6c+w
+   wAvqOW0FMZ0DeiYOQpa2YQWW9Bh1y9yLKaYddXeNcuNmBkWImSaWV+MHr
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10647"; a="339468051"
+X-IronPort-AV: E=Sophos;i="5.98,256,1673942400"; 
+   d="scan'208";a="339468051"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2023 02:01:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10647"; a="628552130"
+X-IronPort-AV: E=Sophos;i="5.98,256,1673942400"; 
+   d="scan'208";a="628552130"
+Received: from etsykuno-mobl2.ccr.corp.intel.com ([10.252.47.211])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2023 02:01:52 -0700
+Date:   Mon, 13 Mar 2023 11:01:47 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, marcel@holtmann.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, alok.a.tiwari@oracle.com,
+        hdanton@sina.com, leon@kernel.org, Netdev <netdev@vger.kernel.org>,
+        devicetree@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        linux-bluetooth@vger.kernel.org,
+        linux-serial <linux-serial@vger.kernel.org>,
+        amitkumar.karwar@nxp.com, rohit.fule@nxp.com, sherry.sun@nxp.com
+Subject: Re: [PATCH v8 3/3] Bluetooth: NXP: Add protocol support for NXP
+ Bluetooth chipsets
+In-Reply-To: <20230310181921.1437890-4-neeraj.sanjaykale@nxp.com>
+Message-ID: <52e8d148-8b0-c0f7-5f27-716ec2d247e0@linux.intel.com>
+References: <20230310181921.1437890-1-neeraj.sanjaykale@nxp.com> <20230310181921.1437890-4-neeraj.sanjaykale@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: _____wDXOaAT5g5kXWohAA--.8836S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7tF15Cw48JFy5Kr1kWF4DJwb_yoW8Xw1xpa
-        nakFWrAFyUA3WjyFsYyas7G3WrCw4rGr1Iga12kw4fJr98Jry8XFZ5t34Yg345Ar4YqF1r
-        Cw1UWFWDJFWDZw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0ziID73UUUUU=
-X-Originating-IP: [111.206.145.21]
-X-CM-SenderInfo: h2113zf2oz6qqrwthudrp/1tbiXRoxU1WBo5B68QAAsJ
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/mixed; boundary="8323329-1117770723-1678698117=:2573"
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In xen_9pfs_front_probe, it calls xen_9pfs_front_alloc_dataring
-to init priv->rings and bound &ring->work with p9_xen_response.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-When it calls xen_9pfs_front_event_handler to handle IRQ requests,
-it will finally call schedule_work to start the work.
+--8323329-1117770723-1678698117=:2573
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-When we call xen_9pfs_front_remove to remove the driver, there
-may be a sequence as follows:
+On Fri, 10 Mar 2023, Neeraj Sanjay Kale wrote:
 
-Fix it by finishing the work before cleanup in xen_9pfs_front_free.
+> This adds a driver based on serdev driver for the NXP BT serial protocol
+> based on running H:4, which can enable the built-in Bluetooth device
+> inside an NXP BT chip.
+> 
+> This driver has Power Save feature that will put the chip into sleep state
+> whenever there is no activity for 2000ms, and will be woken up when any
+> activity is to be initiated over UART.
+> 
+> This driver enables the power save feature by default by sending the vendor
+> specific commands to the chip during setup.
+> 
+> During setup, the driver checks if a FW is already running on the chip
+> by waiting for the bootloader signature, and downloads device specific FW
+> file into the chip over UART if bootloader signature is received..
+> 
+> Signed-off-by: Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+> ---
 
-Note that, this bug is found by static analysis, which might be
-false positive.
+> v8: Move bootloader signature handling to a separate function. Add
+> select CRC32 to Kconfig file. (Ilpo Järvinen)
 
-CPU0                  CPU1
+> +config BT_NXPUART
+> +	tristate "NXP protocol support"
+> +	depends on SERIAL_DEV_BUS
+> +	help
+> +	  NXP is serial driver required for NXP Bluetooth
+> +	  devices with UART interface.
+> +
+> +	  Say Y here to compile support for NXP Bluetooth UART device into
+> +	  the kernel, or say M here to compile as a module (btnxpuart).
+> +
+> +
 
-                     |p9_xen_response
-xen_9pfs_front_remove|
-  xen_9pfs_front_free|
-kfree(priv)          |
-//free priv          |
-                     |p9_tag_lookup
-                     |//use priv->client
+The select change in not there.
 
-Fixes: 71ebd71921e4 ("xen/9pfs: connect to the backend")
-Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
----
-v2:
-- fix type error of ring found by kernel test robot
----
- net/9p/trans_xen.c | 5 +++++
- 1 file changed, 5 insertions(+)
 
-diff --git a/net/9p/trans_xen.c b/net/9p/trans_xen.c
-index c64050e839ac..83764431c066 100644
---- a/net/9p/trans_xen.c
-+++ b/net/9p/trans_xen.c
-@@ -274,12 +274,17 @@ static const struct xenbus_device_id xen_9pfs_front_ids[] = {
- static void xen_9pfs_front_free(struct xen_9pfs_front_priv *priv)
- {
- 	int i, j;
-+	struct xen_9pfs_dataring *ring = NULL;
- 
- 	write_lock(&xen_9pfs_lock);
- 	list_del(&priv->list);
- 	write_unlock(&xen_9pfs_lock);
- 
- 	for (i = 0; i < priv->num_rings; i++) {
-+		/*cancel work*/
-+		ring = &priv->rings[i];
-+		cancel_work_sync(&ring->work);
-+
- 		if (!priv->rings[i].intf)
- 			break;
- 		if (priv->rings[i].irq > 0)
 -- 
-2.25.1
+ i.
 
+--8323329-1117770723-1678698117=:2573--
