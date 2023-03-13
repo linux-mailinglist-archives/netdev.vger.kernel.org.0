@@ -2,142 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B6BA66B70D0
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 09:06:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9842B6B70DA
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 09:07:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229559AbjCMIGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 04:06:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42702 "EHLO
+        id S230394AbjCMIH2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 04:07:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229514AbjCMIFi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 04:05:38 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE6B159419;
-        Mon, 13 Mar 2023 01:02:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678694555; x=1710230555;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=uhBtqsa1AIy5YV1rBDSt/rXxAQ/955DS3N8XQfdem04=;
-  b=VcOTkdqBdHUvHJrIgHxUZZ8wSWBE5LbVCBBEnW9h0PmxWN7nSAwWBk7h
-   Y4RvjrpnjYxQusQEHnEtguTo618ejs3p6lEHrMcBxdtwt3aRuCo31F/kc
-   fuscOQn6xzopRCrICi67nRTtt8ak4okjlOD7TimV59UaKm9nbvUHxYWI1
-   6unt3bHev5uB101hoczS8XMm6AfzwUiMyOL/hJ4a0PlDv0IsEHRO63SFD
-   AlJNkRyVNs0VXN2d9+U69zx2Rl3LPTeGKOgC5gL5BtzYfYjZo56C1mEt3
-   PlEBiWJoVKER9SJz2w6jTRs4Z2+NH6cFGnCJVGGhJc0HwoxbNce16nq6C
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10647"; a="337107425"
-X-IronPort-AV: E=Sophos;i="5.98,256,1673942400"; 
-   d="scan'208";a="337107425"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2023 01:02:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10647"; a="747518016"
-X-IronPort-AV: E=Sophos;i="5.98,256,1673942400"; 
-   d="scan'208";a="747518016"
-Received: from mike-ilbpg1.png.intel.com ([10.88.227.76])
-  by fmsmga004.fm.intel.com with ESMTP; 13 Mar 2023 01:02:14 -0700
-From:   Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Looi Hong Aun <hong.aun.looi@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Lai Peter Jun Ann <peter.jun.ann.lai@intel.com>
-Subject: [PATCH net 2/2] net: stmmac: move fixed-link support fixup code
-Date:   Mon, 13 Mar 2023 16:01:35 +0800
-Message-Id: <20230313080135.2952774-3-michael.wei.hong.sit@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230313080135.2952774-1-michael.wei.hong.sit@intel.com>
-References: <20230313080135.2952774-1-michael.wei.hong.sit@intel.com>
+        with ESMTP id S229742AbjCMIG6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 04:06:58 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73D6D8A53
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 01:04:36 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id p16so7214456wmq.5
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 01:04:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares.net; s=google; t=1678694675;
+        h=in-reply-to:from:content-language:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=HvC0W03zYk4hR2w7J8T+RUoaA0jU84QBNCQ+UXgjkc4=;
+        b=ZpYHhdhR7QJbjSUL7L6N/XkxKNF1HM5Aa4NLp487qVPRAKZ3T92s/O1QnzGc00zhsP
+         NHEV5WAd/zMRrOfbMjLFQmCfkALOWwUCvYOCx3idYevbWu+ep8Dbkv6UuSbGCSfC9o9W
+         bz0C+0BbTx9hWgIBeUZa63501EukzFYzQOOI+MLIJahJpwRvJFIYd3zErrs/vAh2TLiv
+         4VmOmtjznRsfthqgaqoa3/Lwg9tOBDSrE6LWWeg/KNpKHuNCx8TiEhZiIsOoW5kHfL3b
+         KcbSEdZ8jg9eyJVxygkdYO5ZU0k9ZQnzMEWZPicMBASKVJBzj1lxiWQN64dLtA2RFN+Q
+         9wSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678694675;
+        h=in-reply-to:from:content-language:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=HvC0W03zYk4hR2w7J8T+RUoaA0jU84QBNCQ+UXgjkc4=;
+        b=nw2iiVgAhJCfY23asBNJ8Y07eXWTke0S0+60Bk4kUI07i1wvABgeyF1JhvsbDLIuuJ
+         6aMzGu/kSPDg2joBhCvMibYxuBsDHPrdjLztaL1p//P3x2lYr5OYsHd3071+ip26z1fM
+         tWiqBhQVzyYWtUOiBUmn/TFgK+fd74ACF4NpHi8e4hRU4I5hK3XR5WqmUYlG0uDg8cBJ
+         RCmxBt521sLzW6mZ0RJBeTYaSmYiQ0cSH7h4qb84QOxqnoFNYGzqNwWMEp5CxJkO12MO
+         o2UGU8aE51iuF4BoTk0AG2sEoCcpi3543v0RDUCdYcgZcTjGybG4KzN/pS1spG8YYCzY
+         fC5g==
+X-Gm-Message-State: AO0yUKXB/Z8J3g/yEXyjAIYgZe/R7BaPruzGFlUbsYai2CiIzRMrVE9M
+        9+/R0otw6SFGCUwZpg7opoKYxqFvSqOb0AYlQa4=
+X-Google-Smtp-Source: AK7set/caMzMtwpEGnKz4lJ5BYolxDau4FEwNK2QaS95qEFuyWLJyDaVoU87QIbLddnMaum890JfQg==
+X-Received: by 2002:a05:600c:3c9e:b0:3e1:f8af:8772 with SMTP id bg30-20020a05600c3c9e00b003e1f8af8772mr9616059wmb.9.1678694674778;
+        Mon, 13 Mar 2023 01:04:34 -0700 (PDT)
+Received: from ?IPV6:2a02:578:8593:1200:610b:b98a:1680:79a? ([2a02:578:8593:1200:610b:b98a:1680:79a])
+        by smtp.gmail.com with ESMTPSA id 10-20020a05600c22ca00b003eb3933ef10sm8098228wmg.46.2023.03.13.01.04.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Mar 2023 01:04:34 -0700 (PDT)
+Content-Type: multipart/mixed; boundary="------------BN05b59QBxweVj2jyGSFeb48"
+Message-ID: <be8f3f53-e1aa-1983-e8fb-9eb55c929da5@tessares.net>
+Date:   Mon, 13 Mar 2023 09:04:33 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: pull-request: wireless-2023-03-10: manual merge
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20230310114647.35422-1-johannes@sipsolutions.net>
+Content-Language: en-GB
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+In-Reply-To: <20230310114647.35422-1-johannes@sipsolutions.net>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-xpcs_an_inband value is updated in the speed_mode_2500 function
-which turns on the xpcs_an_inband mode.
+This is a multi-part message in MIME format.
+--------------BN05b59QBxweVj2jyGSFeb48
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Moving the fixed-link fixup code to right before phylink setup to
-ensure no more fixup will affect the fixed-link mode configurations.
+Hi Johannes,
 
-Fixes: 72edaf39fc65 ("stmmac: intel: add phy-mode and fixed-link ACPI _DSD setting support")
-Signed-off-by: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 11 -----------
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 15 +++++++++++++++
- 2 files changed, 15 insertions(+), 11 deletions(-)
+(+cc Jakub and Stephen)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 7deb1f817dac..d02db2b529b9 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -592,17 +592,6 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
- 		plat->mdio_bus_data->xpcs_an_inband = true;
- 	}
- 
--	/* For fixed-link setup, we clear xpcs_an_inband */
--	if (fwnode) {
--		struct fwnode_handle *fixed_node;
--
--		fixed_node = fwnode_get_named_child_node(fwnode, "fixed-link");
--		if (fixed_node)
--			plat->mdio_bus_data->xpcs_an_inband = false;
--
--		fwnode_handle_put(fixed_node);
--	}
--
- 	/* Ensure mdio bus scan skips intel serdes and pcs-xpcs */
- 	plat->mdio_bus_data->phy_mask = 1 << INTEL_MGBE_ADHOC_ADDR;
- 	plat->mdio_bus_data->phy_mask |= 1 << INTEL_MGBE_XPCS_ADDR;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 398adcd68ee8..5a9abafba490 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -7064,6 +7064,7 @@ int stmmac_dvr_probe(struct device *device,
- 		     struct stmmac_resources *res)
- {
- 	struct net_device *ndev = NULL;
-+	struct fwnode_handle *fwnode;
- 	struct stmmac_priv *priv;
- 	u32 rxq;
- 	int i, ret = 0;
-@@ -7306,6 +7307,20 @@ int stmmac_dvr_probe(struct device *device,
- 			goto error_xpcs_setup;
- 	}
- 
-+	/* For fixed-link setup, we clear xpcs_an_inband */
-+	if (!fwnode)
-+		fwnode = dev_fwnode(priv->device);
-+
-+	if (fwnode) {
-+		struct fwnode_handle *fixed_node;
-+
-+		fixed_node = fwnode_get_named_child_node(fwnode, "fixed-link");
-+		if (fixed_node)
-+			priv->plat->mdio_bus_data->xpcs_an_inband = false;
-+
-+		fwnode_handle_put(fixed_node);
-+	}
-+
- 	ret = stmmac_phy_setup(priv);
- 	if (ret) {
- 		netdev_err(ndev, "failed to setup phy (%d)\n", ret);
+On 10/03/2023 12:46, Johannes Berg wrote:
+> Hi,
+> 
+> For now in wireless we only have a few fixes for some
+> recently reported (and mostly recently introduced)
+> problems.
+
+(...)
+
+> Johannes Berg (4):
+>       wifi: nl80211: fix NULL-ptr deref in offchan check
+>       wifi: nl80211: fix puncturing bitmap policy
+
+FYI, we got a small conflict when merging -net in net-next in the MPTCP
+tree due to this patch applied in -net:
+
+  b27f07c50a73 ("wifi: nl80211: fix puncturing bitmap policy")
+
+and this one from net-next:
+
+  cbbaf2bb829b ("wifi: nl80211: add a command to enable/disable HW
+timestamping")
+
+The conflict has been resolved on our side[1] by keeping the
+modifications from both sides and the resolution we suggest is attached
+to this email.
+
+Cheers,
+Matt
+
+[1] https://github.com/multipath-tcp/mptcp_net-next/commit/a95a213e49af
 -- 
-2.34.1
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
+--------------BN05b59QBxweVj2jyGSFeb48
+Content-Type: text/x-patch; charset=UTF-8;
+ name="a95a213e49afeb23fc8f6ce561366886e31b5692.patch"
+Content-Disposition: attachment;
+ filename="a95a213e49afeb23fc8f6ce561366886e31b5692.patch"
+Content-Transfer-Encoding: base64
 
+ZGlmZiAtLWNjIG5ldC93aXJlbGVzcy9ubDgwMjExLmMKaW5kZXggMGEzMWIxZDI4NDVkLDRm
+NjMwNTllZmQ4MS4uYmZhMTVkZWZjMDRlCi0tLSBhL25ldC93aXJlbGVzcy9ubDgwMjExLmMK
+KysrIGIvbmV0L3dpcmVsZXNzL25sODAyMTEuYwpAQEAgLTgwNSwxMCAtODEwLDggKzgxMCwx
+MSBAQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBubGFfcG9saWN5IG5sODAyMTFfCiAgCVtOTDgw
+MjExX0FUVFJfTUxEX0FERFJdID0gTkxBX1BPTElDWV9FWEFDVF9MRU4oRVRIX0FMRU4pLAog
+IAlbTkw4MDIxMV9BVFRSX01MT19TVVBQT1JUXSA9IHsgLnR5cGUgPSBOTEFfRkxBRyB9LAog
+IAlbTkw4MDIxMV9BVFRSX01BWF9OVU1fQUtNX1NVSVRFU10gPSB7IC50eXBlID0gTkxBX1JF
+SkVDVCB9LAotIAlbTkw4MDIxMV9BVFRSX1BVTkNUX0JJVE1BUF0gPSBOTEFfUE9MSUNZX1JB
+TkdFKE5MQV9VOCwgMCwgMHhmZmZmKSwKKyAJW05MODAyMTFfQVRUUl9QVU5DVF9CSVRNQVBd
+ID0KKyAJCU5MQV9QT0xJQ1lfRlVMTF9SQU5HRShOTEFfVTMyLCAmbmw4MDIxMV9wdW5jdF9i
+aXRtYXBfcmFuZ2UpLAogKwogKwlbTkw4MDIxMV9BVFRSX01BWF9IV19USU1FU1RBTVBfUEVF
+UlNdID0geyAudHlwZSA9IE5MQV9VMTYgfSwKICsJW05MODAyMTFfQVRUUl9IV19USU1FU1RB
+TVBfRU5BQkxFRF0gPSB7IC50eXBlID0gTkxBX0ZMQUcgfSwKICB9OwogIAogIC8qIHBvbGlj
+eSBmb3IgdGhlIGtleSBhdHRyaWJ1dGVzICovCg==
+
+--------------BN05b59QBxweVj2jyGSFeb48--
