@@ -2,53 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 131C46B85EE
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 00:15:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF0916B8607
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 00:20:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229864AbjCMXPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 19:15:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44308 "EHLO
+        id S230061AbjCMXUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 19:20:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229619AbjCMXPO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 19:15:14 -0400
+        with ESMTP id S229818AbjCMXUT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 19:20:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E151166F;
-        Mon, 13 Mar 2023 16:15:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EAEF59417
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 16:20:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D02AA6154C;
-        Mon, 13 Mar 2023 23:15:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95F01C433EF;
-        Mon, 13 Mar 2023 23:15:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ADD1061552
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 23:20:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 11BA1C4339B;
+        Mon, 13 Mar 2023 23:20:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678749312;
-        bh=GNirMZNzwE42rc8bV27DJryZ+n2qiDsEJipahtuktTg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=iPpTrfxaIiIljSq+2ssQkQurwUKHlFeKp9G1+IuRWYnkevDVtgkOOycGqGjrIXe5B
-         K+heAy4iD5u0/ZtQghl9vfUAJmaT2+W+wK83/BguqE+Goq6GMNaweDSs/1ECqvI0dT
-         hQgTDQiGgY2lhbPkocJKtB6mMh+Lhjh9L0S7aH27v+KFCwouyBpS2zIo8mwQAjuLmX
-         gWUrQDkxbMvaT42kjmhtOeRy/Fnhcih+AWHRH3k05Q2G32lN45z4OnmEmsOZBuMgiN
-         VdFmr7FIaTXPY13+n/QtMHqoraIKnrw567LrFVrXUBOP9KqT6tukIUKeKwm3GJD1jH
-         rpDIlt7DX0tDA==
-Date:   Mon, 13 Mar 2023 16:15:10 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>
-Cc:     <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <michal.simek@xilinx.com>, <radhey.shyam.pandey@xilinx.com>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <anirudha.sarangi@amd.com>,
-        <harini.katakam@amd.com>, <git@amd.com>
-Subject: Re: [PATCH net-next V7] dt-bindings: net: xlnx,axi-ethernet:
- convert bindings document to yaml
-Message-ID: <20230313161510.540f6653@kernel.org>
-In-Reply-To: <20230308061223.1358637-1-sarath.babu.naidu.gaddam@amd.com>
-References: <20230308061223.1358637-1-sarath.babu.naidu.gaddam@amd.com>
+        s=k20201202; t=1678749618;
+        bh=wS2yyNYTZuA4Q/mmHf+Y46aW2zaP2IbSLf6oWqb5qr8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=NbKgpGb4hoZi+qHaOx2QQARUQSxsuh63IHycPC/zkFfMp/2B5wCIh7+DrQ6Nm65mP
+         U//77j1s2qzvgLP+XrQdhkoXrj3IPUhmt2JCPqsBwgvpJ5N4Kcmr9hekAH5odQ1vSH
+         TBhNSxFNU81BxqKS7KWscGtKRXpRa4UwfM4pv4RE+IMgshzBz8TOA+n8BPi2KjofsZ
+         E7h4Qi4Qz3JxstP6STlrjbUpwGgdpn/0vPc6YkSN2l4YjoAidhP/qozzVwbJrCLdVj
+         Ju4H5RU7dvTuh7emkk32OUeN6zf8tTmYB5CntKQ5qo5dSQVGU+CgXdiTuOqkRwREu+
+         zfaCADRFb3AlQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E2F56E66CBF;
+        Mon, 13 Mar 2023 23:20:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] net: phy: smsc: use device_property_present in
+ smsc_phy_probe
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167874961792.24202.9061823773020541798.git-patchwork-notify@kernel.org>
+Date:   Mon, 13 Mar 2023 23:20:17 +0000
+References: <a969f012-1d3b-7a36-51cf-89a5f8f15a9b@gmail.com>
+In-Reply-To: <a969f012-1d3b-7a36-51cf-89a5f8f15a9b@gmail.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     linux@armlinux.org.uk, andrew@lunn.ch, pabeni@redhat.com,
+        edumazet@google.com, kuba@kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,14 +57,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 8 Mar 2023 11:42:23 +0530 Sarath Babu Naidu Gaddam wrote:
-> From: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-> 
-> Convert the bindings document for Xilinx AXI Ethernet Subsystem
-> from txt to yaml. No changes to existing binding description.
-> 
-> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-> Signed-off-by: Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>
+Hello:
 
-Rob, Krzysztof, looks good?
+This patch was applied to netdev/net-next.git (main)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Wed, 8 Mar 2023 21:34:13 +0100 you wrote:
+> Use unified device property API.
+> 
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> ---
+>  drivers/net/phy/smsc.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+
+Here is the summary with links:
+  - [net-next] net: phy: smsc: use device_property_present in smsc_phy_probe
+    https://git.kernel.org/netdev/net-next/c/90c7dd32652b
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
