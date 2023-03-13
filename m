@@ -2,476 +2,339 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85FF96B6DA4
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 03:53:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D84E86B6DDB
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 04:13:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229833AbjCMCx1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Mar 2023 22:53:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49464 "EHLO
+        id S229835AbjCMDNM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Mar 2023 23:13:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbjCMCx0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Mar 2023 22:53:26 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48A6E1C581;
-        Sun, 12 Mar 2023 19:53:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678676004; x=1710212004;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=lKN5zaTETGpzfME7Yx5S1i0miknVEBNUTa5BrkMxFTA=;
-  b=lzG5ketd3gFpnT5VEaWrwJlVvh0GdXEWZcfKVXxLTAXdylycgbZRHwx/
-   8L3L24+MhAg6D5asPI9wRsWEiyukZw+dFy9accM3b6RuAq2+/x93PdsYi
-   0W4z5Si/hOJI9aVEJ55/9QSmuRlxdUUCB65JC2azUjeluxxtfIEqShX7O
-   +5NpzSn3MRpjxU6Od+xpbsqfjd/LoBXkSgTrForl6SSBtJpmznCDz7QNK
-   uplc9KvwkUJ8ct3kWIieRJHb6P0WgxnisWwifOqK6QrXTs0zHKQj69LrV
-   n930RvMl4q6jUdFP02EdrgB/2KKOB6Kg39lsbNd5Luo6HYJhqNhBFrDa9
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10647"; a="317435692"
-X-IronPort-AV: E=Sophos;i="5.98,254,1673942400"; 
-   d="scan'208";a="317435692"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2023 19:53:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10647"; a="678525412"
-X-IronPort-AV: E=Sophos;i="5.98,254,1673942400"; 
-   d="scan'208";a="678525412"
-Received: from unknown (HELO zj-fpga-amt.sh.intel.com) ([10.238.175.104])
-  by orsmga002.jf.intel.com with ESMTP; 12 Mar 2023 19:53:20 -0700
-From:   Tianfei Zhang <tianfei.zhang@intel.com>
-To:     netdev@vger.kernel.org, linux-fpga@vger.kernel.org,
-        richardcochran@gmail.com
-Cc:     ilpo.jarvinen@linux.intel.com, andriy.shevchenko@linux.intel.com,
-        russell.h.weight@intel.com, matthew.gerlach@linux.intel.com,
-        pierre-louis.bossart@linux.intel.com, vinicius.gomes@intel.com,
-        Tianfei Zhang <tianfei.zhang@intel.com>,
-        Raghavendra Khadatare <raghavendrax.anand.khadatare@intel.com>
-Subject: [PATCH v1] ptp: add ToD device driver for Intel FPGA cards
-Date:   Sun, 12 Mar 2023 23:02:39 -0400
-Message-Id: <20230313030239.886816-1-tianfei.zhang@intel.com>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S229437AbjCMDNK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Mar 2023 23:13:10 -0400
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AFE361AA
+        for <netdev@vger.kernel.org>; Sun, 12 Mar 2023 20:13:04 -0700 (PDT)
+Received: by mail-qt1-x830.google.com with SMTP id z6so11979452qtv.0
+        for <netdev@vger.kernel.org>; Sun, 12 Mar 2023 20:13:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678677183;
+        h=content-transfer-encoding:in-reply-to:cc:content-language
+         :references:to:subject:from:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=whWyeqitWsphyJd54vhyIkUgbH8sKt8CqjF2EH5msyU=;
+        b=TTivJ5ntWUxiwVQ9DdKz++5fvwrha6j/+hDy9q2REXWQXE2SXBn+vHmgPus7NvVM8E
+         18nM2Ni/VO43pKez1mBVQDrHllDlryV65CvfZHiejgM60Zl0gN3+NW471IeaXG0XfTsX
+         8nF1bgerqEJkhG17qEEjvY3NEO1UujxEBPsYfKP8AzxjxhKzmaAp3sLs9pyYYDFAupos
+         GfanMa6xpi4kXcKKL3DMZ1nWges0l8Axt1r+Q8CWAgy8NcmN9Axnl4m8PBalli6OfKrV
+         v3K7Ury074sHMoeb50+mr3nq1ciGAzAPVOPDNqIS6202CmSg5hFny0PbzaXY+jdiktkC
+         qDsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678677183;
+        h=content-transfer-encoding:in-reply-to:cc:content-language
+         :references:to:subject:from:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=whWyeqitWsphyJd54vhyIkUgbH8sKt8CqjF2EH5msyU=;
+        b=bKruHkwkp/Llqc2MMTivvFQJDqRTKQY7Updx2aExqlTpnChBdNNAOF5IReERpIj54h
+         qxpQSdhLaT8fIliYJFHfJerzBbIlB6cZv506/FgDaJPmNmHG+i0uN9FIu3XiCqDkvYfQ
+         YQrq7FVJGs/QsDmw57wrYDbrxH/Bmg/1IZytgwJTXkdYEHNu4fzyVbKh1PXJ/cy+zbZT
+         wV6pYNOFEcrtrlIcuPyPMltX8HuaKxnA9isj5G1v0MbA2PWX2HNm4m+X3IWbCfMcqG5Y
+         35OVE/MqpXbJgan5wQuFIru6G0bM6aa9Q6mbDPF2zEqKkwMo1+iveJuw6oBnCnDRA1vm
+         XlEg==
+X-Gm-Message-State: AO0yUKUlVYCqlEYE+8wKX1Ra51zU95QJ7/fHZpYvviXacu9Oy76rhcWI
+        VSNNg0wdUR7/ofhi/iDih0GQkYwSfrk=
+X-Google-Smtp-Source: AK7set/X9uwiD1TVwgqNqoiF7NPoBHapm5qJuaWiTTIyHDeHZGCWlK3p9X03r4Q8ipGxqohu592h0A==
+X-Received: by 2002:a05:622a:609:b0:3bf:c388:cbea with SMTP id z9-20020a05622a060900b003bfc388cbeamr58884713qta.43.1678677183647;
+        Sun, 12 Mar 2023 20:13:03 -0700 (PDT)
+Received: from ?IPV6:2607:fea8:1b9f:c5b0::4c4? ([2607:fea8:1b9f:c5b0::4c4])
+        by smtp.gmail.com with ESMTPSA id i14-20020ac8764e000000b003c034837d8fsm4710207qtr.33.2023.03.12.20.13.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 12 Mar 2023 20:13:03 -0700 (PDT)
+Message-ID: <da4c461c-324f-76e3-b114-4579bbb60172@gmail.com>
+Date:   Sun, 12 Mar 2023 23:13:02 -0400
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+From:   Etienne Champetier <champetier.etienne@gmail.com>
+Subject: Re: mv88e6xxx / MV88E6176 + VLAN-aware unusable in 5.15.98 (ok in
+ 5.10.168) (resend)
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+References: <cd306c78-14a6-bebb-e174-2917734b4799@gmail.com>
+ <87edpudv9c.fsf@waldekranz.com>
+Content-Language: en-US, fr-FR
+Cc:     Linux Netdev List <netdev@vger.kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+In-Reply-To: <87edpudv9c.fsf@waldekranz.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding a DFL (Device Feature List) device driver of ToD device for
-Intel FPGA cards.
 
-The Intel FPGA Time of Day(ToD) IP within the FPGA DFL bus is exposed
-as PTP Hardware clock(PHC) device to the Linux PTP stack to synchronize
-the system clock to its ToD information using phc2sys utility of the
-Linux PTP stack. The DFL is a hardware List within FPGA, which defines
-a linked list of feature headers within the device MMIO space to provide
-an extensible way of adding subdevice features.
+Le 12/03/2023 à 08:11, Tobias Waldekranz a écrit :
+> On sön, mar 12, 2023 at 00:41, Etienne Champetier 
+> <champetier.etienne@gmail.com> wrote:
+>> (properly formatted this time)
+>>
+>> Hello Vladimir, Tobias,
+>>
+>> Sending this email to both of you as reverting some of your patches 
+>> 'fix' the issues I'm seeing.
+>> I'm slowly investigating a regression in OpenWrt going from 22.03 
+>> (5.10.168 + some backports)
+>> to current master (5.15.98 + some backports). Using my Turris Omnia 
+>> (MV88E6176) with the following network config:
+>>
+>> # bridge vlan
+>> port vlan-id
+>> lan0 6 PVID Egress Untagged
+>> lan1 5 PVID Egress Untagged
+>> lan2 4 PVID Egress Untagged
+>> lan3 3 PVID Egress Untagged
+>> lan4 2 PVID Egress Untagged
+>> br-lan 2
+>> 3
+>> 4
+>> 5
+>> 6
+>> wlan1 3 PVID Egress Untagged
+>> wlan1-1 5 PVID Egress Untagged
+>> wlan1-2 6 PVID Egress Untagged
+>> wlan0 2 PVID Egress Untagged
+>>
+>> I get tagged frame with VID 3 on lan4 (at least some multicast & 
+>> broadcast), but lan4 is not a member of VLAN 3
+> Are these packets being sent to the CPU with a FORWARD tag or TO_CPU? If
+> it is the latter, what is the CPU_CODE set to? Better yet, could you
+> post some output from `tcpdump -Q in -evnli <YOUR-DSA-INTERFACE>`?
 
-Signed-off-by: Raghavendra Khadatare <raghavendrax.anand.khadatare@intel.com>
-Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
----
- MAINTAINERS               |   7 +
- drivers/ptp/Kconfig       |  13 ++
- drivers/ptp/Makefile      |   1 +
- drivers/ptp/ptp_dfl_tod.c | 334 ++++++++++++++++++++++++++++++++++++++
- 4 files changed, 355 insertions(+)
- create mode 100644 drivers/ptp/ptp_dfl_tod.c
+To clear out some possible confusion, I capturing on a laptop connected 
+to lan4, not using `tcpdump -i lan4`
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index ec57c42ed544..584979abbd92 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -15623,6 +15623,13 @@ L:	netdev@vger.kernel.org
- S:	Maintained
- F:	drivers/ptp/ptp_ocp.c
- 
-+INTEL PTP DFL ToD DRIVER
-+M:	Tianfei Zhang <tianfei.zhang@intel.com>
-+L:	linux-fpga@vger.kernel.org
-+L:	netdev@vger.kernel.org
-+S:	Maintained
-+F:	drivers/ptp/ptp_dfl_tod.c
-+
- OPENCORES I2C BUS DRIVER
- M:	Peter Korsgaard <peter@korsgaard.com>
- M:	Andrew Lunn <andrew@lunn.ch>
-diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
-index fe4971b65c64..e0d6f136ee46 100644
---- a/drivers/ptp/Kconfig
-+++ b/drivers/ptp/Kconfig
-@@ -186,4 +186,17 @@ config PTP_1588_CLOCK_OCP
- 
- 	  More information is available at http://www.timingcard.com/
- 
-+config PTP_DFL_TOD
-+	tristate "FPGA DFL ToD Driver"
-+	depends on FPGA_DFL
-+	help
-+	  The DFL (Device Feature List) device driver for the Intel ToD
-+	  (Time-of-Day) device in FPGA card. The ToD IP within the FPGA
-+	  is exposed as PTP Hardware Clock (PHC) device to the Linux PTP
-+	  stack to synchronize the system clock to its ToD information
-+	  using phc2sys utility of the Linux PTP stack.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called ptp_dfl_tod.
-+
- endmenu
-diff --git a/drivers/ptp/Makefile b/drivers/ptp/Makefile
-index 28a6fe342d3e..553f18bf3c83 100644
---- a/drivers/ptp/Makefile
-+++ b/drivers/ptp/Makefile
-@@ -18,3 +18,4 @@ obj-$(CONFIG_PTP_1588_CLOCK_IDTCM)	+= ptp_clockmatrix.o
- obj-$(CONFIG_PTP_1588_CLOCK_IDT82P33)	+= ptp_idt82p33.o
- obj-$(CONFIG_PTP_1588_CLOCK_VMW)	+= ptp_vmw.o
- obj-$(CONFIG_PTP_1588_CLOCK_OCP)	+= ptp_ocp.o
-+obj-$(CONFIG_PTP_DFL_TOD)		+= ptp_dfl_tod.o
-diff --git a/drivers/ptp/ptp_dfl_tod.c b/drivers/ptp/ptp_dfl_tod.c
-new file mode 100644
-index 000000000000..d9fbdfc53bd8
---- /dev/null
-+++ b/drivers/ptp/ptp_dfl_tod.c
-@@ -0,0 +1,334 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * DFL device driver for Time-of-Day (ToD) private feature
-+ *
-+ * Copyright (C) 2023 Intel Corporation
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/delay.h>
-+#include <linux/dfl.h>
-+#include <linux/gcd.h>
-+#include <linux/iopoll.h>
-+#include <linux/module.h>
-+#include <linux/ptp_clock_kernel.h>
-+#include <linux/spinlock.h>
-+#include <linux/units.h>
-+
-+#define FME_FEATURE_ID_TOD		0x22
-+
-+/* ToD clock register space. */
-+#define TOD_CLK_FREQ			0x038
-+
-+/*
-+ * The read sequence of ToD timestamp registers: TOD_NANOSEC, TOD_SECONDSL and
-+ * TOD_SECONDSH, because there is a hardware snapshot whenever the TOD_NANOSEC
-+ * register is read.
-+ *
-+ * The ToD IP requires writing registers in the reverse order to the read sequence.
-+ * The timestamp is corrected when the TOD_NANOSEC register is written, so the
-+ * sequence of write TOD registers: TOD_SECONDSH, TOD_SECONDSL and TOD_NANOSEC.
-+ */
-+#define TOD_SECONDSH			0x100
-+#define TOD_SECONDSL			0x104
-+#define TOD_NANOSEC			0x108
-+#define TOD_PERIOD			0x110
-+#define TOD_ADJUST_PERIOD		0x114
-+#define TOD_ADJUST_COUNT		0x118
-+#define TOD_DRIFT_ADJUST		0x11c
-+#define TOD_DRIFT_ADJUST_RATE		0x120
-+#define PERIOD_FRAC_OFFSET		16
-+#define SECONDS_MSB			GENMASK_ULL(47, 32)
-+#define SECONDS_LSB			GENMASK_ULL(31, 0)
-+#define TOD_SECONDSH_SEC_MSB		GENMASK_ULL(15, 0)
-+
-+#define CAL_SECONDS(m, l)		((FIELD_GET(TOD_SECONDSH_SEC_MSB, (m)) << 32) | (l))
-+
-+#define TOD_PERIOD_MASK		GENMASK_ULL(19, 0)
-+#define TOD_PERIOD_MAX			FIELD_MAX(TOD_PERIOD_MASK)
-+#define TOD_PERIOD_MIN			0
-+#define TOD_DRIFT_ADJUST_MASK		GENMASK_ULL(15, 0)
-+#define TOD_DRIFT_ADJUST_FNS_MAX	FIELD_MAX(TOD_DRIFT_ADJUST_MASK)
-+#define TOD_DRIFT_ADJUST_RATE_MAX	TOD_DRIFT_ADJUST_FNS_MAX
-+#define TOD_ADJUST_COUNT_MASK		GENMASK_ULL(19, 0)
-+#define TOD_ADJUST_COUNT_MAX		FIELD_MAX(TOD_ADJUST_COUNT_MASK)
-+#define TOD_ADJUST_INTERVAL_US		1000
-+#define TOD_ADJUST_MS			\
-+		(((TOD_PERIOD_MAX >> 16) + 1) * (TOD_ADJUST_COUNT_MAX + 1))
-+#define TOD_ADJUST_MS_MAX		(TOD_ADJUST_MS / MICRO)
-+#define TOD_ADJUST_MAX_US		(TOD_ADJUST_MS_MAX * USEC_PER_MSEC)
-+#define TOD_MAX_ADJ			(500 * MEGA)
-+
-+struct dfl_tod {
-+	struct ptp_clock_info ptp_clock_ops;
-+	struct device *dev;
-+	struct ptp_clock *ptp_clock;
-+
-+	/* ToD Clock address space */
-+	void __iomem *tod_ctrl;
-+
-+	/* ToD clock registers protection */
-+	spinlock_t tod_lock;
-+};
-+
-+/*
-+ * A fine ToD HW clock offset adjustment. To perform the fine offset adjustment, the
-+ * adjust_period and adjust_count argument are used to update the TOD_ADJUST_PERIOD
-+ * and TOD_ADJUST_COUNT register for in hardware. The dt->tod_lock spinlock must be
-+ * held when calling this function.
-+ */
-+static int fine_adjust_tod_clock(struct dfl_tod *dt, u32 adjust_period,
-+				 u32 adjust_count)
-+{
-+	void __iomem *base = dt->tod_ctrl;
-+	u32 val;
-+
-+	writel(adjust_period, base + TOD_ADJUST_PERIOD);
-+	writel(adjust_count, base + TOD_ADJUST_COUNT);
-+
-+	/* Wait for present offset adjustment update to complete */
-+	return readl_poll_timeout(base + TOD_ADJUST_COUNT, val, !val, TOD_ADJUST_INTERVAL_US,
-+				  TOD_ADJUST_MAX_US);
-+}
-+
-+/*
-+ * A coarse ToD HW clock offset adjustment.
-+ * The coarse time adjustment performs by adding or subtracting the delta value
-+ * from the current ToD HW clock time.
-+ */
-+static int coarse_adjust_tod_clock(struct dfl_tod *dt, s64 delta)
-+{
-+	u32 seconds_msb, seconds_lsb, nanosec;
-+	void __iomem *base = dt->tod_ctrl;
-+	u64 seconds, now;
-+
-+	if (delta == 0)
-+		return 0;
-+
-+	nanosec = readl(base + TOD_NANOSEC);
-+	seconds_lsb = readl(base + TOD_SECONDSL);
-+	seconds_msb = readl(base + TOD_SECONDSH);
-+
-+	/* Calculate new time */
-+	seconds = CAL_SECONDS(seconds_msb, seconds_lsb);
-+	now = seconds * NSEC_PER_SEC + nanosec + delta;
-+
-+	seconds = div_u64_rem(now, NSEC_PER_SEC, &nanosec);
-+	seconds_msb = FIELD_GET(SECONDS_MSB, seconds);
-+	seconds_lsb = FIELD_GET(SECONDS_LSB, seconds);
-+
-+	writel(seconds_msb, base + TOD_SECONDSH);
-+	writel(seconds_lsb, base + TOD_SECONDSL);
-+	writel(nanosec, base + TOD_NANOSEC);
-+
-+	return 0;
-+}
-+
-+static int dfl_tod_adjust_fine(struct ptp_clock_info *ptp, long scaled_ppm)
-+{
-+	struct dfl_tod *dt = container_of(ptp, struct dfl_tod, ptp_clock_ops);
-+	u32 tod_period, tod_rem, tod_drift_adjust_fns, tod_drift_adjust_rate;
-+	void __iomem *base = dt->tod_ctrl;
-+	unsigned long flags, rate;
-+	u64 ppb;
-+
-+	/* Get the clock rate from clock frequency register offset */
-+	rate = readl(base + TOD_CLK_FREQ);
-+
-+	/* add GIGA as nominal ppb */
-+	ppb = scaled_ppm_to_ppb(scaled_ppm) + GIGA;
-+
-+	tod_period = div_u64_rem(ppb << PERIOD_FRAC_OFFSET, rate, &tod_rem);
-+	if (tod_period > TOD_PERIOD_MAX)
-+		return -ERANGE;
-+
-+	/*
-+	 * The drift of ToD adjusted periodically by adding a drift_adjust_fns
-+	 * correction value every drift_adjust_rate count of clock cycles.
-+	 */
-+	tod_drift_adjust_fns = tod_rem / gcd(tod_rem, rate);
-+	tod_drift_adjust_rate = rate / gcd(tod_rem, rate);
-+
-+	while ((tod_drift_adjust_fns > TOD_DRIFT_ADJUST_FNS_MAX) ||
-+	       (tod_drift_adjust_rate > TOD_DRIFT_ADJUST_RATE_MAX)) {
-+		tod_drift_adjust_fns >>= 1;
-+		tod_drift_adjust_rate >>= 1;
-+	}
-+
-+	if (tod_drift_adjust_fns == 0)
-+		tod_drift_adjust_rate = 0;
-+
-+	spin_lock_irqsave(&dt->tod_lock, flags);
-+	writel(tod_period, base + TOD_PERIOD);
-+	writel(0, base + TOD_ADJUST_PERIOD);
-+	writel(0, base + TOD_ADJUST_COUNT);
-+	writel(tod_drift_adjust_fns, base + TOD_DRIFT_ADJUST);
-+	writel(tod_drift_adjust_rate, base + TOD_DRIFT_ADJUST_RATE);
-+	spin_unlock_irqrestore(&dt->tod_lock, flags);
-+
-+	return 0;
-+}
-+
-+static int dfl_tod_adjust_time(struct ptp_clock_info *ptp, s64 delta)
-+{
-+	struct dfl_tod *dt = container_of(ptp, struct dfl_tod, ptp_clock_ops);
-+	u32 period, diff, rem, rem_period, adj_period;
-+	void __iomem *base = dt->tod_ctrl;
-+	unsigned long flags;
-+	bool neg_adj;
-+	u64 count;
-+	int ret;
-+
-+	neg_adj = delta < 0;
-+	if (neg_adj)
-+		delta = -delta;
-+
-+	spin_lock_irqsave(&dt->tod_lock, flags);
-+
-+	/*
-+	 * Get the maximum possible value of the Period register offset
-+	 * adjustment in nanoseconds scale. This depends on the current
-+	 * Period register setting and the maximum and minimum possible
-+	 * values of the Period register.
-+	 */
-+	period = readl(base + TOD_PERIOD);
-+
-+	if (neg_adj) {
-+		diff = (period - TOD_PERIOD_MIN) >> PERIOD_FRAC_OFFSET;
-+		adj_period = period - (diff << PERIOD_FRAC_OFFSET);
-+		rem_period = period - (rem << PERIOD_FRAC_OFFSET);
-+	} else {
-+		diff = (TOD_PERIOD_MAX - period) >> PERIOD_FRAC_OFFSET;
-+		adj_period = period + (diff << PERIOD_FRAC_OFFSET);
-+		rem_period = period + (rem << PERIOD_FRAC_OFFSET);
-+	}
-+
-+	ret = 0;
-+
-+	/* Find the number of cycles required for the time adjustment */
-+	count = div_u64_rem(delta, diff, &rem);
-+
-+	if (count > TOD_ADJUST_COUNT_MAX) {
-+		ret = coarse_adjust_tod_clock(dt, delta);
-+	} else {
-+		/* Adjust the period by count cycles to adjust the time */
-+		if (count)
-+			ret = fine_adjust_tod_clock(dt, adj_period, count);
-+
-+		/* If there is a remainder, adjust the period for an additional cycle */
-+		if (rem)
-+			ret = fine_adjust_tod_clock(dt, rem_period, 1);
-+	}
-+
-+	spin_unlock_irqrestore(&dt->tod_lock, flags);
-+
-+	return ret;
-+}
-+
-+static int dfl_tod_get_timex(struct ptp_clock_info *ptp, struct timespec64 *ts,
-+			     struct ptp_system_timestamp *sts)
-+{
-+	struct dfl_tod *dt = container_of(ptp, struct dfl_tod, ptp_clock_ops);
-+	u32 seconds_msb, seconds_lsb, nanosec;
-+	void __iomem *base = dt->tod_ctrl;
-+	unsigned long flags;
-+	u64 seconds;
-+
-+	spin_lock_irqsave(&dt->tod_lock, flags);
-+	ptp_read_system_prets(sts);
-+	nanosec = readl(base + TOD_NANOSEC);
-+	seconds_lsb = readl(base + TOD_SECONDSL);
-+	seconds_msb = readl(base + TOD_SECONDSH);
-+	ptp_read_system_postts(sts);
-+	spin_unlock_irqrestore(&dt->tod_lock, flags);
-+
-+	seconds = CAL_SECONDS(seconds_msb, seconds_lsb);
-+
-+	ts->tv_nsec = nanosec;
-+	ts->tv_sec = seconds;
-+
-+	return 0;
-+}
-+
-+static int dfl_tod_set_time(struct ptp_clock_info *ptp,
-+			    const struct timespec64 *ts)
-+{
-+	struct dfl_tod *dt = container_of(ptp, struct dfl_tod, ptp_clock_ops);
-+	u32 seconds_msb = FIELD_GET(SECONDS_MSB, ts->tv_sec);
-+	u32 seconds_lsb = FIELD_GET(SECONDS_LSB, ts->tv_sec);
-+	u32 nanosec = FIELD_GET(SECONDS_LSB, ts->tv_nsec);
-+	void __iomem *base = dt->tod_ctrl;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&dt->tod_lock, flags);
-+	writel(seconds_msb, base + TOD_SECONDSH);
-+	writel(seconds_lsb, base + TOD_SECONDSL);
-+	writel(nanosec, base + TOD_NANOSEC);
-+	spin_unlock_irqrestore(&dt->tod_lock, flags);
-+
-+	return 0;
-+}
-+
-+static struct ptp_clock_info dfl_tod_clock_ops = {
-+	.owner = THIS_MODULE,
-+	.name = "dfl_tod",
-+	.max_adj = TOD_MAX_ADJ,
-+	.adjfine = dfl_tod_adjust_fine,
-+	.adjtime = dfl_tod_adjust_time,
-+	.gettimex64 = dfl_tod_get_timex,
-+	.settime64 = dfl_tod_set_time,
-+};
-+
-+static int dfl_tod_probe(struct dfl_device *ddev)
-+{
-+	struct device *dev = &ddev->dev;
-+	struct dfl_tod *dt;
-+
-+	dt = devm_kzalloc(dev, sizeof(*dt), GFP_KERNEL);
-+	if (!dt)
-+		return -ENOMEM;
-+
-+	dt->tod_ctrl = devm_ioremap_resource(dev, &ddev->mmio_res);
-+	if (IS_ERR(dt->tod_ctrl))
-+		return PTR_ERR(dt->tod_ctrl);
-+
-+	dt->dev = dev;
-+	spin_lock_init(&dt->tod_lock);
-+	dev_set_drvdata(dev, dt);
-+
-+	dt->ptp_clock_ops = dfl_tod_clock_ops;
-+
-+	dt->ptp_clock = ptp_clock_register(&dt->ptp_clock_ops, dev);
-+	if (IS_ERR(dt->ptp_clock))
-+		return dev_err_probe(dt->dev, PTR_ERR(dt->ptp_clock),
-+				     "Unable to register PTP clock\n");
-+
-+	return 0;
-+}
-+
-+static void dfl_tod_remove(struct dfl_device *ddev)
-+{
-+	struct dfl_tod *dt = dev_get_drvdata(&ddev->dev);
-+
-+	ptp_clock_unregister(dt->ptp_clock);
-+}
-+
-+static const struct dfl_device_id dfl_tod_ids[] = {
-+	{ FME_ID, FME_FEATURE_ID_TOD },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(dfl, dfl_tod_ids);
-+
-+static struct dfl_driver dfl_tod_driver = {
-+	.drv = {
-+		.name = "dfl-tod",
-+	},
-+	.id_table = dfl_tod_ids,
-+	.probe = dfl_tod_probe,
-+	.remove = dfl_tod_remove,
-+};
-+module_dfl_driver(dfl_tod_driver);
-+
-+MODULE_DESCRIPTION("FPGA DFL ToD driver");
-+MODULE_AUTHOR("Intel Corporation");
-+MODULE_LICENSE("GPL");
+On the router,
+root@turris:~# tcpdump -Q out -evnli eth1
+tcpdump: listening on eth1, link-type DSA_TAG_EDSA (Marvell EDSA), 
+snapshot length 262144 bytes
+02:26:36.735092 c8:4a:a0:b7:1e:d7 > 33:33:00:01:00:02, Marvell EDSA 
+ethertype 0xdada (Unknown), rsvd 0 0, mode Forward, dev 1, port 0, 
+tagged, VID 3, FPri 0, ethertype IPv6 (0x86dd), length 118: ...
+02:26:38.524915 ca:d0:2c:4f:ed:bb > 01:00:5e:7f:ff:fa, Marvell EDSA 
+ethertype 0xdada (Unknown), rsvd 0 0, mode Forward, dev 1, port 0, 
+tagged, VID 2, FPri 0, ethertype IPv4 (0x0800), length 175: ...
+02:26:38.825569 ca:d0:2c:4f:ed:bb > 01:00:5e:7f:ff:fa, Marvell EDSA 
+ethertype 0xdada (Unknown), rsvd 0 0, mode Forward, dev 1, port 0, 
+tagged, VID 2, FPri 0, ethertype IPv4 (0x0800), length 175: ...
+02:26:39.124409 ca:d0:2c:4f:ed:bb > 01:00:5e:7f:ff:fa, Marvell EDSA 
+ethertype 0xdada (Unknown), rsvd 0 0, mode Forward, dev 1, port 0, 
+tagged, VID 2, FPri 0, ethertype IPv4 (0x0800), length 175: ...
+02:26:40.186939 d8:58:d7:00:4e:39 > ff:ff:ff:ff:ff:ff, Marvell EDSA 
+ethertype 0xdada (Unknown), rsvd 0 0, mode Forward, dev 1, port 0, 
+tagged, VID 3, FPri 0, ethertype ARP (0x0806), length 50: ...
+02:26:41.218401 d8:58:d7:00:4e:39 > ff:ff:ff:ff:ff:ff, Marvell EDSA 
+ethertype 0xdada (Unknown), rsvd 0 0, mode Forward, dev 1, port 0, 
+tagged, VID 3, FPri 0, ethertype ARP (0x0806), length 50: ...
+02:26:42.258393 d8:58:d7:00:4e:39 > ff:ff:ff:ff:ff:ff, Marvell EDSA 
+ethertype 0xdada (Unknown), rsvd 0 0, mode Forward, dev 1, port 0, 
+tagged, VID 3, FPri 0, ethertype ARP (0x0806), length 50: ...
 
-base-commit: eeac8ede17557680855031c6f305ece2378af326
--- 
-2.38.1
+On the laptop
 
+[root@echampetier ~]# tcpdump -evnli enp0s31f6 -Q in
+dropped privs to tcpdump
+tcpdump: listening on enp0s31f6, link-type EN10MB (Ethernet), snapshot 
+length 262144 bytes
+22:26:36.757382 c8:4a:a0:b7:1e:d7 > 33:33:00:01:00:02, ethertype 802.1Q 
+(0x8100), length 114: vlan 3, p 0, ethertype IPv6 (0x86dd), ...
+22:26:38.547328 ca:d0:2c:4f:ed:bb > 01:00:5e:7f:ff:fa, ethertype IPv4 
+(0x0800), length 167: ...
+22:26:38.847746 ca:d0:2c:4f:ed:bb > 01:00:5e:7f:ff:fa, ethertype IPv4 
+(0x0800), length 167: ...
+22:26:39.146702 ca:d0:2c:4f:ed:bb > 01:00:5e:7f:ff:fa, ethertype IPv4 
+(0x0800), length 167: ...
+22:26:40.209365 d8:58:d7:00:4e:39 > ff:ff:ff:ff:ff:ff, ethertype 802.1Q 
+(0x8100), length 60: vlan 3, p 0, ethertype ARP (0x0806), ...
+22:26:41.240603 d8:58:d7:00:4e:39 > ff:ff:ff:ff:ff:ff, ethertype 802.1Q 
+(0x8100), length 60: vlan 3, p 0, ethertype ARP (0x0806), ...
+22:26:42.280428 d8:58:d7:00:4e:39 > ff:ff:ff:ff:ff:ff, ethertype 802.1Q 
+(0x8100), length 60: vlan 3, p 0, ethertype ARP (0x0806), ...
+
+
+>> Also unicast frames from wifi to lan4 exit tagged with VID 2, 
+>> broadcast frames are fine (verifed with scapy)
+> If you're capturing on the lan4 interface, this is to be expected.
+
+As clarified, I'm capturing on a laptop connected to lan4
+
+> When forwarding offloading is enabled. In order for the tag driver to
+> generate the correct DSA tag, we need to know to which VLAN the packet
+> belongs (there could be more than one VLAN configured to egress
+> untagged). Since a FORWARD tag is (should be) generated, the switch will
+> handle the stripping of the VLAN tag for untagged members.
+>
+> If you tcpdump at the DSA interface, are the packet sent to the switch
+> with a FORWARD tag or FROM_CPU?
+
+If the dst mac is not in `bridge fdb` / the ATU, frame arrives untagged 
+(as they should)
+root@turris:~# tcpdump -Q out -evnli eth1
+tcpdump: listening on eth1, link-type DSA_TAG_EDSA (Marvell EDSA), 
+snapshot length 262144 bytes
+02:39:02.835931 44:85:00:cf:86:45 > ff:ff:ff:ff:ff:ff, Marvell EDSA 
+ethertype 0xdada (Unknown), rsvd 0 0, mode Forward, dev 1, port 0, 
+tagged, VID 2, FPri 0, ethertype ARP (0x0806), length 50: Ethernet (len 
+6), IPv4 (len 4), Request who-has 5.6.7.8 tell 1.2.3.4, length 28
+02:39:04.089792 44:85:00:cf:86:45 > 50:7b:9d:f0:06:4e, Marvell EDSA 
+ethertype 0xdada (Unknown), rsvd 0 0, mode Forward, dev 1, port 0, 
+tagged, VID 2, FPri 0, ethertype ARP (0x0806), length 50: Ethernet (len 
+6), IPv4 (len 4), Request who-has 5.6.7.8 tell 1.2.3.4, length 28
+[root@echampetier ~]# tcpdump -evnnli enp0s31f6 -Q in
+tcpdump: listening on enp0s31f6, link-type EN10MB (Ethernet), snapshot 
+length 262144 bytes
+22:39:02.859622 44:85:00:cf:86:45 > ff:ff:ff:ff:ff:ff, ethertype ARP 
+(0x0806), length 60: Ethernet (len 6), IPv4 (len 4), Request who-has 
+5.6.7.8 tell 1.2.3.4, length 46
+22:39:04.113555 44:85:00:cf:86:45 > 50:7b:9d:f0:06:4e, ethertype ARP 
+(0x0806), length 60: Ethernet (len 6), IPv4 (len 4), Request who-has 
+5.6.7.8 tell 1.2.3.4, length 46
+
+If the dst is not silent / present in `bridge fdb` / the ATU
+root@turris:~# bridge fdb | grep ^50
+50:7b:9d:f0:06:4e dev lan4 vlan 2 master br-lan
+50:7b:9d:f0:06:4e dev lan4 vlan 2 self
+(I see some entries with offload, not this one)
+
+root@turris:~# mv88e6xxx_dump --atu
+FID MAC T 0123456 Prio State
+7 50:7b:9d:f0:06:4e 00001000000 0 Age 7
+
+then we have
+02:47:13.427645 44:85:00:cf:86:45 > ff:ff:ff:ff:ff:ff, Marvell EDSA 
+ethertype 0xdada (Unknown), rsvd 0 0, mode Forward, dev 1, port 0, 
+tagged, VID 2, FPri 0, ethertype ARP (0x0806), length 50: Ethernet (len 
+6), IPv4 (len 4), Request who-has 5.6.7.8 tell 1.2.3.4, length 28
+02:47:14.409168 44:85:00:cf:86:45 > 50:7b:9d:f0:06:4e, Marvell EDSA 
+ethertype 0xdada (Unknown), rsvd 0 0, mode From CPU, target dev 0, port 
+4, tagged, VID 2, FPri 0, ethertype ARP (0x0806), length 50: Ethernet 
+(len 6), IPv4 (len 4), Request who-has 5.6.7.8 tell 1.2.3.4, length 28
+02:47:15.383509 44:85:00:cf:86:45 > ff:ff:ff:ff:ff:ff, Marvell EDSA 
+ethertype 0xdada (Unknown), rsvd 0 0, mode Forward, dev 1, port 0, 
+tagged, VID 2, FPri 0, ethertype ARP (0x0806), length 50: Ethernet (len 
+6), IPv4 (len 4), Request who-has 5.6.7.8 tell 1.2.3.4, length 28
+
+22:47:13.440691 44:85:00:cf:86:45 > ff:ff:ff:ff:ff:ff, ethertype ARP 
+(0x0806), length 60: Ethernet (len 6), IPv4 (len 4), Request who-has 
+5.6.7.8 tell 1.2.3.4, length 46
+22:47:14.422167 44:85:00:cf:86:45 > 50:7b:9d:f0:06:4e, ethertype 802.1Q 
+(0x8100), length 60: vlan 2, p 0, ethertype ARP (0x0806), Ethernet (len 
+6), IPv4 (len 4), Request who-has 5.6.7.8 tell 1.2.3.4, length 42
+22:47:15.396450 44:85:00:cf:86:45 > ff:ff:ff:ff:ff:ff, ethertype ARP 
+(0x0806), length 60: Ethernet (len 6), IPv4 (len 4), Request who-has 
+5.6.7.8 tell 1.2.3.4, length 46
+
+
+>> Reverting
+>> 5bded8259ee3 "net: dsa: mv88e6xxx: isolate the ATU databases of 
+>> standalone and bridged ports" from Vladimir
+>> and
+>> b80dc51b72e2 "net: dsa: mv88e6xxx: Only allow LAG offload on 
+>> supported hardware"
+>> 57e661aae6a8 "net: dsa: mv88e6xxx: Link aggregation support"
+>> from Tobias allow me to get back to 5.10 behavior / working system.
+>>
+>> On the OpenWrt side, 5.15 is the latest supported kernel, so I was 
+>> not able to try more recent for now.
+>>
+>> I'm happy to try to backport any patches that can help fix or narrow 
+>> down the issue, or provide more infos / tests results.
+>>
+>> These issues affect other devices using mv88e6xxx: 
+>> https://github.com/openwrt/openwrt/issues/11877
+>> In the Github issue the reporter note that first packet is not tagged 
+>> and the following are.
+>>
+>> Here a diff of "mv88e6xxx_dump --vtu --ports --global1 --global2" 
+>> between 5.10 and 5.15 (without revert)
+>>
+>> @@ -9,18 +9,18 @@
+>> 05 Port control 1 0000 0000 0000 0000 0000 0000 0000
+>> 06 Port base VLAN map 007e 007d 007b 0077 006f 005f 003f
+>> 07 Def VLAN ID & Prio 0006 0005 0004 0003 0002 0000 0000
+>> -08 Port control 2 0c80 0c80 0c80 0c80 0c80 1080 2080
+>> +08 Port control 2 0c80 0c80 0c80 0c80 0c80 1080 1080
+>> 09 Egress rate control 0001 0001 0001 0001 0001 0001 0001
+>> 0a Egress rate control 2 0000 0000 0000 0000 0000 0000 0000
+>> -0b Port association vec 1001 1002 1004 1008 1010 1000 1000
+>> +0b Port association vec 1001 1002 1004 1008 1010 1020 1040
+>> 0c Port ATU control 0000 0000 0000 0000 0000 0000 0000
+>> 0d Override 0000 0000 0000 0000 0000 0000 0000
+>> 0e Policy control 0000 0000 0000 0000 0000 0000 0000
+>> 0f Port ether type 9100 9100 9100 9100 9100 dada dada
+>> 10 In discard low 0000 0000 0000 0000 0000 0000 0000
+>> 11 In discard high 0000 0000 0000 0000 0000 0000 0000
+>> -12 In filtered 0000 0000 0000 0000 0000 0000 0000
+>> -13 RX frame count 0000 0000 0000 008c 0000 021a 0000
+>> +12 In filtered 0000 0000 0000 0003 0000 0000 0000
+>> +13 RX frame count 0000 0000 0000 008e 0000 04dd 0000
+>> 14 Reserved 0000 0000 0000 0000 0000 0000 0000
+>> 15 Reserved 0000 0000 0000 0000 0000 0000 0000
+>> 16 LED control 0000 0000 0000 0000 0000 0000 0000
+>> @@ -39,22 +39,23 @@
+>> T - a member, egress tagged
+>> X - not a member, Ingress frames with VID discarded
+>> P VID 0123456 FID SID QPrio FPrio VidPolicy
+>> -0 1 XXXXXVV 1 0 - - 0
+>> -0 2 XXXXUVV 6 0 - - 0
+>> -0 3 XXXUXVV 5 0 - - 0
+>> -0 4 XXUXXVV 4 0 - - 0
+>> -0 5 XUXXXVV 3 0 - - 0
+>> -0 6 UXXXXVV 2 0 - - 0
+>> +0 1 XXXXXVV 2 0 - - 0
+>> +0 2 XXXXUVV 7 0 - - 0
+>> +0 3 XXXUXVV 6 0 - - 0
+>> +0 4 XXUXXVV 5 0 - - 0
+>> +0 5 XUXXXVV 4 0 - - 0
+>> +0 6 UXXXXVV 3 0 - - 0
+>> +0 4095 UUUUUVV 1 0 - - 0
+>> Global1:
+>> 00 Global status c814
+>> -01 ATU FID 0006
+>> -02 VTU FID 0002
+>> +01 ATU FID 0007
+>> +02 VTU FID 0001
+>> 03 VTU SID 0000
+>> 04 Global control 40a8
+>> -05 VTU operations 4000
+>> -06 VTU VID 0fff
+>> -07 VTU/STU Data 0-3 3331
+>> -08 VTU/STU Data 4-6 0303
+>> +05 VTU operations 4043
+>> +06 VTU VID 1fff
+>> +07 VTU/STU Data 0-3 1111
+>> +08 VTU/STU Data 4-6 0111
+>> 09 Reserved 0000
+>> 0a ATU control 0149
+>> 0b ATU operations 4000
+>> @@ -90,10 +91,10 @@
+>> 08 Trunk mapping 7800
+>> 09 Ingress rate command 1600
+>> 0a Ingress rate data 0000
+>> -0b Cross chip port VLAN addr 31ff
+>> -0c Cross chip port VLAN data 0000
+>> -0d Switch MAC/WoL/WoF 05c5
+>> -0e ATU Stats 000f
+>> +0b Cross chip port VLAN addr 3010
+>> +0c Cross chip port VLAN data 007f
+>> +0d Switch MAC/WoL/WoF 05fe
+>> +0e ATU Stats 001f
+>> 0f Priority override table 0f00
+>> 10 Reserved 0000
+>> 11 Reserved 0000
+>>
+>> Thanks in advance
+>> Etienne
