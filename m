@@ -2,175 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E52146BB3BD
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 13:56:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 581F56BB4C9
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 14:35:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232933AbjCOM4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 08:56:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38258 "EHLO
+        id S232267AbjCONfp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 09:35:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233114AbjCOM4j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 08:56:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5222211655
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 05:55:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678884954;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=JaBgEDKfqWmVcH7ueaHiA2NEn4sgat0tMV862oPXgr4=;
-        b=Iw4FYWWyUweuveIjmyV7BhU3HmCyG7I9Pr8o+X5wfKnCm+HBMEQ60Yh5lIR2aVUv6i6JB9
-        ajf1VST82QDNrITlrDE+nHTAq5A/z6EKcsLL6xcRWCFUKIAXDG9OzlAYizV0hCmMfdJqHf
-        1PoiC6t4yFJvkk3TWL2c0O2pCScfOd4=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-382-eaW8nbLHM-SUABsQohllMQ-1; Wed, 15 Mar 2023 08:55:53 -0400
-X-MC-Unique: eaW8nbLHM-SUABsQohllMQ-1
-Received: by mail-ed1-f71.google.com with SMTP id r19-20020a50aad3000000b005002e950cd3so793914edc.11
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 05:55:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678884952;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=JaBgEDKfqWmVcH7ueaHiA2NEn4sgat0tMV862oPXgr4=;
-        b=U+lWug3NB4cJUdXuHFYaJoIfXxT2Jey+FLKiHd8qLF/dOsR04VVYGCXiFicerbNGL5
-         ia7ilHvtBEsvJF9cMj9hDvQcXfvlb5HkURKbXVKb3CdgzkZrqcMMS3JnJwkh3gWlOuyz
-         evNaJjZ/iC76NrtY1KuruunZD7ElmWq8tmDShVexxUfzvmCzl8KoQPIyI3ZcnKjs1hjI
-         YVjRlQb7irbl7qzfFcjN2UwZ3JL6S6KJdVl9YOlfjwNXFY0wOdj86A2ZBuosyxbdsark
-         i07afD0Tqd7AWm97h/nhiDR0ilZsR0GBt5Rb+o2raMotZvJoXoWFiyYrNscncaoRTwSy
-         ovRQ==
-X-Gm-Message-State: AO0yUKVubGxMNVglxWYV0BNqW9Cvt1gSyNe3HlksJ2r9onD0E2LnHNXe
-        v1N0FRKDOlmlDFUcWKD5Qay8PaCnfjNcQGR4nRj6wxahjmLfaugOFZyRNT26due+PZ//f06FAlK
-        GO4TTNsH0WcU3U3I+
-X-Received: by 2002:a17:906:5619:b0:879:ec1a:4ac with SMTP id f25-20020a170906561900b00879ec1a04acmr5309060ejq.76.1678884951903;
-        Wed, 15 Mar 2023 05:55:51 -0700 (PDT)
-X-Google-Smtp-Source: AK7set92+fL8QpbWwG+iI45Vn0TA6DxsDamjpdhTlTEPG3PQ6xgwPGl4kxnIJbzVvn7UQ+LQTs+EeQ==
-X-Received: by 2002:a17:906:5619:b0:879:ec1a:4ac with SMTP id f25-20020a170906561900b00879ec1a04acmr5309031ejq.76.1678884951493;
-        Wed, 15 Mar 2023 05:55:51 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id qa17-20020a170907869100b008cecb8f374asm2498501ejc.0.2023.03.15.05.55.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Mar 2023 05:55:51 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 355E69E2E8C; Wed, 15 Mar 2023 13:55:50 +0100 (CET)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Igor Russkikh <irusskikh@marvell.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Taehee Yoo <ap420073@gmail.com>
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Freysteinn Alfredsson <Freysteinn.Alfredsson@kau.se>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH net] net: atlantic: Fix crash when XDP is enabled but no program is loaded
-Date:   Wed, 15 Mar 2023 13:55:38 +0100
-Message-Id: <20230315125539.103319-1-toke@redhat.com>
-X-Mailer: git-send-email 2.39.2
+        with ESMTP id S232342AbjCONfi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 09:35:38 -0400
+X-Greylist: delayed 115215 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 15 Mar 2023 06:35:21 PDT
+Received: from defaultworkshop.klidefectmanagement.com.novalocal (unknown [103.30.145.160])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 882499545B
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 06:35:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=asda.co.uk;
+        s=x; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Message-ID:Date:
+        Subject:To:From:Reply-To:Sender:Cc:Content-ID:Content-Description:Resent-Date
+        :Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+        References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+        List-Owner:List-Archive; bh=LnN9480GzZGP7yJza5rlHZqEXGLGuOT7VbwXOO8knRk=; b=J
+        zTvUOPklYGQ4+QVM5ROwJao1sB/mNhuyVzv2QPom/moqf1HDs8h42iY5GLxzfPYBsaOLvu+jWr2Bp
+        PPxuCengx3PRFtULtp7XoOiEHMHp2+jhWWy2UlQyDauvF2Bw/tyNJZBrl4u2kEmUY5wpNH/8m7dGZ
+        J+KFzyVVbXN2WvJQ=;
+Received: from ec2-52-11-215-80.us-west-2.compute.amazonaws.com ([52.11.215.80] helo=asda.co.uk)
+        by defaultworkshop.klidefectmanagement.com.novalocal with esmtpa (Exim 4.94.2)
+        (envelope-from <sales1@asda.co.uk>)
+        id 1pblrA-0005E3-11
+        for netdev@vger.kernel.org; Tue, 14 Mar 2023 00:21:08 +0700
+Reply-To: sales@asda-c.com
+From:   ASDA Stores Limited <sales1@asda.co.uk>
+To:     netdev@vger.kernel.org
+Subject: First quarter procurement order/enquiry
+Date:   13 Mar 2023 17:21:07 +0000
+Message-ID: <20230313152049.F9F92419954EACAE@asda.co.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=4.7 required=5.0 tests=BAYES_50,DKIM_INVALID,
+        DKIM_SIGNED,KHOP_HELO_FCRDNS,MAY_BE_FORGED,PDS_RDNS_DYNAMIC_FP,
+        RCVD_IN_VALIDITY_RPBL,RDNS_DYNAMIC,SPF_HELO_NONE,SPF_NONE,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The aq_xdp_run_prog() function falls back to the XDP_ABORTED action
-handler (using a goto) if the operations for any of the other actions fail.
-The XDP_ABORTED handler in turn calls the bpf_warn_invalid_xdp_action()
-tracepoint. However, the function also jumps into the XDP_PASS helper if no
-XDP program is loaded on the device, which means the XDP_ABORTED handler
-can be run with a NULL program pointer. This results in a NULL pointer
-deref because the tracepoint dereferences the 'prog' pointer passed to it.
+Dear netdev
+I'm a procurement manager  with ASDA Group (the owners of ASDA=20
+Stores) and your company product has caught our interest.=20
+Therefore, we request you send
+list and prices of your hot selling items (products) for our=20
+evaluation/pick.
 
-This situation can happen in multiple ways:
-- If a packet arrives between the removal of the program from the interface
-  and the static_branch_dec() in aq_xdp_setup()
-- If there are multiple devices using the same driver in the system and
-  one of them has an XDP program loaded and the other does not.
+Soon as we receive your reply, we shall send you our company=20
+profile and buying proposal. You can also check our website below=20
+for detailed info of our purchase area and trading capacity.
 
-Fix this by refactoring the aq_xdp_run_prog() function to remove the 'goto
-pass' handling if there is no XDP program loaded. Instead, factor out the
-skb building in a separate small helper function.
+Your immediate response E-mail:  sales@asda-c.com   shall be=20
+appreciated.
 
-Fixes: 26efaef759a1 ("net: atlantic: Implement xdp data plane")
-Reported-by: Freysteinn Alfredsson <Freysteinn.Alfredsson@kau.se>
-Tested-by: Freysteinn Alfredsson <Freysteinn.Alfredsson@kau.se>
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
- .../net/ethernet/aquantia/atlantic/aq_ring.c  | 28 ++++++++++++++-----
- 1 file changed, 21 insertions(+), 7 deletions(-)
+Best Wishes
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-index 1e8d902e1c8e..7f933175cbda 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-@@ -412,6 +412,25 @@ int aq_xdp_xmit(struct net_device *dev, int num_frames,
- 	return num_frames - drop;
- }
- 
-+static struct sk_buff *aq_xdp_build_skb(struct xdp_buff *xdp,
-+					struct net_device *dev,
-+					struct aq_ring_buff_s *buff)
-+{
-+	struct xdp_frame *xdpf;
-+	struct sk_buff *skb;
-+
-+	xdpf = xdp_convert_buff_to_frame(xdp);
-+	if (unlikely(!xdpf))
-+		return NULL;
-+
-+	skb = xdp_build_skb_from_frame(xdpf, dev);
-+	if (!skb)
-+		return NULL;
-+
-+	aq_get_rxpages_xdp(buff, xdp);
-+	return skb;
-+}
-+
- static struct sk_buff *aq_xdp_run_prog(struct aq_nic_s *aq_nic,
- 				       struct xdp_buff *xdp,
- 				       struct aq_ring_s *rx_ring,
-@@ -431,7 +450,7 @@ static struct sk_buff *aq_xdp_run_prog(struct aq_nic_s *aq_nic,
- 
- 	prog = READ_ONCE(rx_ring->xdp_prog);
- 	if (!prog)
--		goto pass;
-+		return aq_xdp_build_skb(xdp, aq_nic->ndev, buff);
- 
- 	prefetchw(xdp->data_hard_start); /* xdp_frame write */
- 
-@@ -442,17 +461,12 @@ static struct sk_buff *aq_xdp_run_prog(struct aq_nic_s *aq_nic,
- 	act = bpf_prog_run_xdp(prog, xdp);
- 	switch (act) {
- 	case XDP_PASS:
--pass:
--		xdpf = xdp_convert_buff_to_frame(xdp);
--		if (unlikely(!xdpf))
--			goto out_aborted;
--		skb = xdp_build_skb_from_frame(xdpf, aq_nic->ndev);
-+		skb = aq_xdp_build_skb(xdp, aq_nic->ndev, buff);
- 		if (!skb)
- 			goto out_aborted;
- 		u64_stats_update_begin(&rx_ring->stats.rx.syncp);
- 		++rx_ring->stats.rx.xdp_pass;
- 		u64_stats_update_end(&rx_ring->stats.rx.syncp);
--		aq_get_rxpages_xdp(buff, xdp);
- 		return skb;
- 	case XDP_TX:
- 		xdpf = xdp_convert_buff_to_frame(xdp);
--- 
-2.39.2
-
+Ms Stelle Montgomery
+Purchasing Dept.
+ASDA Stores Limited
+Tel:  +44 7418367220
+WhatsApp: + 44-7502985874
+Website: www.asda.com
