@@ -2,111 +2,256 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE2366B72A4
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 10:33:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8B8A6B72B7
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 10:35:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231276AbjCMJdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 05:33:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50568 "EHLO
+        id S231322AbjCMJfb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 05:35:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229956AbjCMJcl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 05:32:41 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD40A4D2B4;
-        Mon, 13 Mar 2023 02:31:52 -0700 (PDT)
-Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1pbeWz-0007Gj-RS; Mon, 13 Mar 2023 10:31:49 +0100
-Message-ID: <05ad6c8c-0573-b1b3-d8bd-62175f9bd9f3@leemhuis.info>
-Date:   Mon, 13 Mar 2023 10:31:49 +0100
+        with ESMTP id S231422AbjCMJfA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 05:35:00 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6535915170;
+        Mon, 13 Mar 2023 02:33:09 -0700 (PDT)
+Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4PZrz23NrRz6J70K;
+        Mon, 13 Mar 2023 17:32:14 +0800 (CST)
+Received: from [10.123.123.126] (10.123.123.126) by
+ lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Mon, 13 Mar 2023 09:33:01 +0000
+Message-ID: <7598f777-8458-0984-b058-2026d8163d3a@huawei.com>
+Date:   Mon, 13 Mar 2023 12:33:00 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Content-Language: en-US, de-DE
-From:   "Linux regression tracking (Thorsten Leemhuis)" 
-        <regressions@leemhuis.info>
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>
-Cc:     primalmotion@pm.me,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux kernel regressions list <regressions@lists.linux.dev>,
-        Kalle Valo <kvalo@kernel.org>, netdev <netdev@vger.kernel.org>
-Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>
-Subject: [regression] Bug 217183 - AR9462/ath9k: running wifi scan freezes the
- laptop
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1678699913;1fa1f308;
-X-HE-SMSGID: 1pbeWz-0007Gj-RS
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v9 08/12] landlock: Add network rules and TCP hooks
+ support
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+        <artem.kuzin@huawei.com>
+References: <20230116085818.165539-1-konstantin.meskhidze@huawei.com>
+ <20230116085818.165539-9-konstantin.meskhidze@huawei.com>
+ <5198f456-91f5-5c65-76c2-45b82ccb05eb@digikod.net>
+From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+In-Reply-To: <5198f456-91f5-5c65-76c2-45b82ccb05eb@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.123.123.126]
+X-ClientProxiedBy: lhrpeml100005.china.huawei.com (7.191.160.25) To
+ lhrpeml500004.china.huawei.com (7.191.163.9)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, Thorsten here, the Linux kernel's regression tracker.
 
-I noticed a regression report in bugzilla.kernel.org. As many (most?)
-kernel developer don't keep an eye on it, I decided to forward it by
-mail. Quoting from https://bugzilla.kernel.org/show_bug.cgi?id=217183 :
 
->  primalmotion@pm.me 2023-03-12 19:27:05 UTC
+2/10/2023 8:39 PM, Mickaël Salaün пишет:
 > 
-> Since 6.2.1 (and onward), running a wifi scan freezes the laptop completely. The screen is frozen, caps lock led is on, and there's nothing left to do but force reboot.
+> On 16/01/2023 09:58, Konstantin Meskhidze wrote:
+>> This commit adds network rules support in the ruleset management
+>> helpers and the landlock_create_ruleset syscall.
+>> Refactor user space API to support network actions. Add new network
+>> access flags, network rule and network attributes. Increment Landlock
+>> ABI version. Expand access_masks_t to u32 to be sure network access
+>> rights can be stored. Implement socket_bind() and socket_connect()
+>> LSM hooks, which enable to restrict TCP socket binding and connection
+>> to specific ports.
+>> 
+>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>> ---
+>> 
+>> Changes since v8:
+>> * Squashes commits.
+>> * Refactors commit message.
+>> * Changes UAPI port field to __be16.
+>> * Changes logic of bind/connect hooks with AF_UNSPEC families.
+>> * Adds address length checking.
+>> * Minor fixes.
+>> 
+>> Changes since v7:
+>> * Squashes commits.
+>> * Increments ABI version to 4.
+>> * Refactors commit message.
+>> * Minor fixes.
+>> 
+>> Changes since v6:
+>> * Renames landlock_set_net_access_mask() to landlock_add_net_access_mask()
+>>    because it OR values.
+>> * Makes landlock_add_net_access_mask() more resilient incorrect values.
+>> * Refactors landlock_get_net_access_mask().
+>> * Renames LANDLOCK_MASK_SHIFT_NET to LANDLOCK_SHIFT_ACCESS_NET and use
+>>    LANDLOCK_NUM_ACCESS_FS as value.
+>> * Updates access_masks_t to u32 to support network access actions.
+>> * Refactors landlock internal functions to support network actions with
+>>    landlock_key/key_type/id types.
+>> 
+>> Changes since v5:
+>> * Gets rid of partial revert from landlock_add_rule
+>> syscall.
+>> * Formats code with clang-format-14.
+>> 
+>> Changes since v4:
+>> * Refactors landlock_create_ruleset() - splits ruleset and
+>> masks checks.
+>> * Refactors landlock_create_ruleset() and landlock mask
+>> setters/getters to support two rule types.
+>> * Refactors landlock_add_rule syscall add_rule_path_beneath
+>> function by factoring out get_ruleset_from_fd() and
+>> landlock_put_ruleset().
+>> 
+>> Changes since v3:
+>> * Splits commit.
+>> * Adds network rule support for internal landlock functions.
+>> * Adds set_mask and get_mask for network.
+>> * Adds rb_root root_net_port.
 > 
-> Step to reproduce:
-> 1) iwctl station wlan0 scan
+> [...]
 > 
-> This works just fine on 6.1.12 and below. 
-> This is 100% reproducible. 
+>> +static int check_socket_access(const struct landlock_ruleset *const domain,
+>> +			       struct sockaddr *address, __be16 port,
+>> +			       access_mask_t access_request)
+>> +{
+>> +	bool allowed = false;
+>> +	layer_mask_t layer_masks[LANDLOCK_NUM_ACCESS_NET] = {};
+>> +	const struct landlock_rule *rule;
+>> +	access_mask_t handled_access;
+>> +	const struct landlock_id id = {
+>> +		.key.data = port,
+>> +		.type = LANDLOCK_KEY_NET_PORT,
+>> +	};
+>> +
+>> +	if (WARN_ON_ONCE(!domain))
+>> +		return 0;
+>> +	if (WARN_ON_ONCE(domain->num_layers < 1))
+>> +		return -EACCES;
+>> +
+>> +	switch (address->sa_family) {
+>> +	case AF_UNSPEC:
+>> +		/*
+>> +		 * Connecting to an address with AF_UNSPEC dissolves the TCP
+>> +		 * association, which have the same effect as closing the
+>> +		 * connection while retaining the socket object (i.e., the file
+>> +		 * descriptor).  As for dropping privileges, closing
+>> +		 * connections is always allowed.
+>> +		 */
+>> +		if (access_request == LANDLOCK_ACCESS_NET_CONNECT_TCP)
+>> +			return 0;
+>> +
+>> +		/*
+>> +		 * For compatibility reason, accept AF_UNSPEC for bind
+>> +		 * accesses (mapped to AF_INET) only if the address is
+>> +		 * INADDR_ANY (cf. __inet_bind).  Checking the address is
+>> +		 * required to not wrongfully return -EACCES instead of
+>> +		 * -EAFNOSUPPORT.
+>> +		 */
+>> +		if (access_request == LANDLOCK_ACCESS_NET_BIND_TCP) {
+>> +			const struct sockaddr_in *const sockaddr =
+>> +				(struct sockaddr_in *)address;
+>> +
+>> +			if (sockaddr->sin_addr.s_addr != htonl(INADDR_ANY))
+>> +				return -EAFNOSUPPORT;
+>> +		}
+>> +
+>> +		fallthrough;
+>> +	case AF_INET:
+>> +#if IS_ENABLED(CONFIG_IPV6)
+>> +	case AF_INET6:
+>> +#endif
+>> +		rule = landlock_find_rule(domain, id);
+>> +		handled_access = landlock_init_layer_masks(
+>> +			domain, access_request, &layer_masks,
+>> +			LANDLOCK_KEY_NET_PORT);
+>> +		allowed = landlock_unmask_layers(rule, handled_access,
+>> +						 &layer_masks,
+>> +						 ARRAY_SIZE(layer_masks));
+>> +
+>> +		fallthrough;
 > 
-> I can't find any relevant log. I tried to collect dmesg and journalctl -k while I was performing the command, but the laptop freezes before I can get anything.
+> You can remove this fallthrough.
 > 
-> Card: Qualcomm Atheros AR9462 Wireless Network Adapter (rev 01)
-> Driver: ath9k
 > 
-> module parameters:
-> /sys/module/ath9k/parameters/blink 0
-> /sys/module/ath9k/parameters/bt_ant_diversity 0
-> /sys/module/ath9k/parameters/btcoex_enable 1
-> /sys/module/ath9k/parameters/led_active_high -1
-> /sys/module/ath9k/parameters/ps_enable 1
-> /sys/module/ath9k/parameters/use_chanctx 0
-> /sys/module/ath9k/parameters/use_msi 0
+>> +	}
+>> +	return allowed ? 0 : -EACCES;
+>> +}
+>> +
+>> +static u16 get_port(const struct sockaddr *const address)
+>> +{
+>> +	/* Gets port value in host byte order. */
+>> +	switch (address->sa_family) {
+>> +	case AF_UNSPEC:
+>> +	case AF_INET: {
+>> +		const struct sockaddr_in *const sockaddr =
+>> +			(struct sockaddr_in *)address;
+>> +		return sockaddr->sin_port;
+>> +	}
+>> +#if IS_ENABLED(CONFIG_IPV6)
+>> +	case AF_INET6: {
+>> +		const struct sockaddr_in6 *const sockaddr_ip6 =
+>> +			(struct sockaddr_in6 *)address;
+>> +		return sockaddr_ip6->sin6_port;
+>> +	}
+>> +#endif
+>> +	}
+>> +	WARN_ON_ONCE(1);
+>> +	return 0;
+>> +}
+>> +
+>> +static int hook_socket_bind(struct socket *sock, struct sockaddr *address,
+>> +			    int addrlen)
+>> +{
+>> +	int ret;
+>> +	const struct landlock_ruleset *const dom =
+>> +		landlock_get_current_domain();
 > 
-> Let me know if you need any additional logs from other places I don't know
+> landlock_get_current_domain() should only be called by a
+> get_current_net_domain() wrapper that checks if the current domain
+> handles network accesses. See get_current_fs_domain() in patch 2/12.
 
-See the ticket for more details.
+   Hi Mickaël.
+   I have question:
 
+   static access_mask_t
+get_raw_handled_fs_accesses(const struct landlock_ruleset *const domain)
+{
+	access_mask_t access_dom = 0;
+	size_t layer_level;
 
-[TLDR for the rest of this mail: I'm adding this report to the list of
-tracked Linux kernel regressions; the text you find below is based on a
-few templates paragraphs you might have encountered already in similar
-form.]
+	for (layer_level = 0; layer_level < domain->num_layers; layer_level++)
+		access_dom |=
+			landlock_get_raw_fs_access_mask(domain, layer_level);
+	return access_dom & LANDLOCK_MASK_ACCESS_FS;
+}
 
-BTW, let me use this mail to also add the report to the list of tracked
-regressions to ensure it's doesn't fall through the cracks:
+landlock_get_raw_fs_access_mask() function is already mask by 
+LANDLOCK_MASK_ACCESS_FS. We could get rid of access_dom masking.
+What do you think?
 
-#regzbot introduced: v6.1..v6.2
-https://bugzilla.kernel.org/show_bug.cgi?id=217183
-#regzbot title: net: wifi: ath9k: wifi scan freezes laptop
-#regzbot ignore-activity
-
-This isn't a regression? This issue or a fix for it are already
-discussed somewhere else? It was fixed already? You want to clarify when
-the regression started to happen? Or point out I got the title or
-something else totally wrong? Then just reply and tell me -- ideally
-while also telling regzbot about it, as explained by the page listed in
-the footer of this mail.
-
-Developers: When fixing the issue, remember to add 'Link:' tags pointing
-to the report (e.g. the buzgzilla ticket and maybe this mail as well, if
-this thread sees some discussion). See page linked in footer for details.
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
---
-Everything you wanna know about Linux kernel regression tracking:
-https://linux-regtracking.leemhuis.info/about/#tldr
-If I did something stupid, please tell me, as explained on that page.
+> 
+> 
+>> +
+>> +	if (!dom)
+>> +		return 0;
+>> +
+>> +	/* Check if it's a TCP socket. */
+>> +	if (sock->type != SOCK_STREAM)
+>> +		return 0;
+>> +
+>> +	ret = check_addrlen(address, addrlen);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	return check_socket_access(dom, address, get_port(address),
+>> +				   LANDLOCK_ACCESS_NET_BIND_TCP);
+>> +}
+> .
