@@ -2,129 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 156BB6B7229
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 10:10:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41EA66B7231
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 10:11:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231240AbjCMJKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 05:10:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35902 "EHLO
+        id S230463AbjCMJL2 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 13 Mar 2023 05:11:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231235AbjCMJKa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 05:10:30 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5268AD21;
-        Mon, 13 Mar 2023 02:10:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1678698602; x=1710234602;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=YivqxS+zeFWZMfPdu5ClCSUPNAcBM+7zK7hLm2cpsW4=;
-  b=YvKAV2+yIUJ4Xr1ZHuwqJv40zlJF+SYCOcCMJbdckABCCzZJumm3oF4m
-   yIHWnwdCHJ+mZCV35h9+APqwpJ+LOQEWw15LbypXY9dGRp29ALC8xBErP
-   zYh4VPE1ZhjhizyY6soCSjppW5u/bq3pOQ1jP32UhxGXK9lC7rAl23wNC
-   PtkrYIHvA8C08QKfiwOL7PVwQJkoViZxhiwqihq+AxJMNArjFQgSK2QlA
-   eG2aMXqFxHbS69hkqXjcSKC0GlCi5kSoRrI/xdN58Wuu4UCTSceOQ5ASz
-   Dmo1BtHXxBYoZyWtVT83BBiFFscouuR8oGetW5jg+S2v3zW+OiSbPlvpS
-   g==;
-X-IronPort-AV: E=Sophos;i="5.98,256,1673938800"; 
-   d="scan'208";a="205062965"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Mar 2023 02:10:01 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+        with ESMTP id S230400AbjCMJLL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 05:11:11 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF5A123843;
+        Mon, 13 Mar 2023 02:10:37 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 32D9AEyeC027431, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 32D9AEyeC027431
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
+        Mon, 13 Mar 2023 17:10:14 +0800
+Received: from RTEXMBS01.realtek.com.tw (172.21.6.94) by
+ RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Mon, 13 Mar 2023 02:09:47 -0700
-Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
- Transport; Mon, 13 Mar 2023 02:09:40 -0700
-Message-ID: <21d44d0b-05c0-1912-15de-a5c74d3ff4c6@microchip.com>
-Date:   Mon, 13 Mar 2023 10:09:37 +0100
+ 15.1.2507.17; Mon, 13 Mar 2023 17:10:26 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Mon, 13 Mar 2023 17:10:25 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02]) by
+ RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02%5]) with mapi id
+ 15.01.2375.007; Mon, 13 Mar 2023 17:10:25 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        Chris Morgan <macroalpha82@gmail.com>,
+        "Nitin Gupta" <nitin.gupta981@gmail.com>,
+        Neo Jou <neojou@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Subject: RE: [PATCH v2 RFC 4/9] wifi: rtw88: main: Add the {cpwm,rpwm}_addr for SDIO based chipsets
+Thread-Topic: [PATCH v2 RFC 4/9] wifi: rtw88: main: Add the {cpwm,rpwm}_addr
+ for SDIO based chipsets
+Thread-Index: AQHZU48SdtX/WI2DU0aZPhruQY8nsa74b0Vw
+Date:   Mon, 13 Mar 2023 09:10:25 +0000
+Message-ID: <dd4d6f75b52749c4bc34330dc4342883@realtek.com>
+References: <20230310202922.2459680-1-martin.blumenstingl@googlemail.com>
+ <20230310202922.2459680-5-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20230310202922.2459680-5-martin.blumenstingl@googlemail.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS01.realtek.com.tw, 9
+x-kse-antispam-interceptor-info: fallback
+x-kse-antivirus-interceptor-info: fallback
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH] net: Use of_property_read_bool() for boolean properties
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Wei Fang <wei.fang@nxp.com>,
-        Shenwei Wang <shenwei.wang@nxp.com>,
-        Clark Wang <xiaoning.wang@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "Giuseppe Cavallaro" <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        "Pengutronix Kernel Team" <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Francois Romieu <romieu@fr.zoreil.com>,
-        "Michal Simek" <michal.simek@xilinx.com>,
-        Zhao Qiang <qiang.zhao@nxp.com>, Kalle Valo <kvalo@kernel.org>,
-        Samuel Mendoza-Jonas <sam@mendozajonas.com>
-CC:     <devicetree@vger.kernel.org>, <linux-can@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-omap@vger.kernel.org>, <linuxppc-dev@lists.ozlabs.org>,
-        <linux-wireless@vger.kernel.org>
-References: <20230310144718.1544169-1-robh@kernel.org>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-In-Reply-To: <20230310144718.1544169-1-robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/03/2023 at 15:47, Rob Herring wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+
+
+> -----Original Message-----
+> From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Sent: Saturday, March 11, 2023 4:29 AM
+> To: linux-wireless@vger.kernel.org
+> Cc: Yan-Hsuan Chuang <tony0620emma@gmail.com>; Kalle Valo <kvalo@kernel.org>; Ulf Hansson
+> <ulf.hansson@linaro.org>; linux-kernel@vger.kernel.org; netdev@vger.kernel.org;
+> linux-mmc@vger.kernel.org; Chris Morgan <macroalpha82@gmail.com>; Nitin Gupta <nitin.gupta981@gmail.com>;
+> Neo Jou <neojou@gmail.com>; Ping-Ke Shih <pkshih@realtek.com>; Jernej Skrabec <jernej.skrabec@gmail.com>;
+> Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Subject: [PATCH v2 RFC 4/9] wifi: rtw88: main: Add the {cpwm,rpwm}_addr for SDIO based chipsets
 > 
-> It is preferred to use typed property access functions (i.e.
-> of_property_read_<type> functions) rather than low-level
-> of_get_property/of_find_property functions for reading properties.
-> Convert reading boolean properties to to of_property_read_bool().
+> Initialize the rpwm_addr and cpwm_addr for power-saving support on SDIO
+> based chipsets.
 > 
-> Signed-off-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 > ---
->   drivers/net/can/cc770/cc770_platform.c          | 12 ++++++------
->   drivers/net/ethernet/cadence/macb_main.c        |  2 +-
-
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-
->   drivers/net/ethernet/davicom/dm9000.c           |  4 ++--
-
-[..]
-
-> --- a/drivers/net/ethernet/cadence/macb_main.c
-> +++ b/drivers/net/ethernet/cadence/macb_main.c
-> @@ -4990,7 +4990,7 @@ static int macb_probe(struct platform_device *pdev)
->                  bp->jumbo_max_len = macb_config->jumbo_max_len;
+> Changes since v1:
+> - none
 > 
->          bp->wol = 0;
-> -       if (of_get_property(np, "magic-packet", NULL))
-> +       if (of_property_read_bool(np, "magic-packet"))
->                  bp->wol |= MACB_WOL_HAS_MAGIC_PACKET;
->          device_set_wakeup_capable(&pdev->dev, bp->wol & MACB_WOL_HAS_MAGIC_PACKET);
+> 
 
-[..]
+I suggest not to remove "---" here, or you add "---" for your changelog.
+This doesn't not affect the result, just looks a little odd.  
 
--- 
-Nicolas Ferre
+>  drivers/net/wireless/realtek/rtw88/main.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
+> index b2e78737bd5d..cdc4703ead5f 100644
+> --- a/drivers/net/wireless/realtek/rtw88/main.c
+> +++ b/drivers/net/wireless/realtek/rtw88/main.c
+> @@ -18,6 +18,7 @@
+>  #include "debug.h"
+>  #include "bf.h"
+>  #include "sar.h"
+> +#include "sdio.h"
+> 
+>  bool rtw_disable_lps_deep_mode;
+>  EXPORT_SYMBOL(rtw_disable_lps_deep_mode);
+> @@ -1785,6 +1786,10 @@ static int rtw_chip_parameter_setup(struct rtw_dev *rtwdev)
+>                 rtwdev->hci.rpwm_addr = 0x03d9;
+>                 rtwdev->hci.cpwm_addr = 0x03da;
+>                 break;
+> +       case RTW_HCI_TYPE_SDIO:
+> +               rtwdev->hci.rpwm_addr = REG_SDIO_HRPWM1;
+> +               rtwdev->hci.cpwm_addr = REG_SDIO_HCPWM1_V2;
+> +               break;
+>         case RTW_HCI_TYPE_USB:
+>                 rtwdev->hci.rpwm_addr = 0xfe58;
+>                 rtwdev->hci.cpwm_addr = 0xfe57;
+> --
+> 2.39.2
 
