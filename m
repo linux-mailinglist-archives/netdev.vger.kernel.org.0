@@ -2,99 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E8A3F6B8471
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 23:02:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22A466B847D
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 23:08:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230141AbjCMWCr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 18:02:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34116 "EHLO
+        id S230141AbjCMWIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 18:08:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229792AbjCMWCq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 18:02:46 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 055AA8E3CE;
-        Mon, 13 Mar 2023 15:02:09 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id fd5so20685870edb.7;
-        Mon, 13 Mar 2023 15:02:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678744927;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Mw1oEi8x/spO3700iwhP/jHnat9etEwB+9anearFVJA=;
-        b=fj6u1aQxH9kGPaKnJutlfly8rY6Tc8nh4BcbFxBESqOMta+tzIkiA5zoCXjdXgjgrh
-         RhjB8Zbz0MIKzFYb3UcWnBzLY9jnAQRfQ/iIIrjXUBw95GbuDE8LUe6vc+aMMb1dwMrT
-         kVgRGTMxzSKVE7KkrImNiO4BoRkxC2o3n+CB1ewOwUyZKGlB3t1S06M4J7zblQD3GG3n
-         +7lweClsM+xNdXyg7+EvaK/bP2EXFYBBXnyKR119TuWkdu3VZQLwbG/xHWj8ZmjNHYXB
-         duSPTTPMu1EWShnpnuKMEqGakpHY+tOHrFZH62nxjYuGwqNTA/2GHrCT+GnWoyzkFb35
-         LwwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678744927;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Mw1oEi8x/spO3700iwhP/jHnat9etEwB+9anearFVJA=;
-        b=rzEpM6OjeCTwvSyUEhn6g5RHNXR4roH8GuQPhgHt8oyet4yMYd/2cXs6ro0kmAQJ8t
-         X2Yz8lfTUbNzlT1I3iDULGcHTjpa3EAPeTCy5WFZ+bHhGFdEpNtX33hxsanWgXPtGkbq
-         dYwV8iSw3CMjCoh6R2K6KwnY1kgY6ilXhwNIdAbvs9uDR1pU2+2Z3EsAXirKMDxv3vW6
-         59oEMr5Lbcc3LD3hWct7qy+TrG80jqsTLO5SI7mHv3A2TtkbqHPruCiSylogN5oq9MEm
-         GbtIaIYtHJ1JsL9o4IV1KZbftTSGRQTdK2tbnksakVfq6pBFWVXYW4uOa/Fq43fOPMI2
-         j7Vw==
-X-Gm-Message-State: AO0yUKXtU3LGx4EDFi/mjr3QvOyzXRfnXyvjkco4/Golcoc6pdN9ttqe
-        J1YPzKlz6BAnU1KBQ3zwgGM=
-X-Google-Smtp-Source: AK7set9x1DX7dDQFEd4i4rUbnBF0FHxshk+8AZoqwn1xBH6Tcg/UJhbAVYe8kIgUcX7lZc5W+uhfcA==
-X-Received: by 2002:a05:6402:188:b0:4a3:43c1:8430 with SMTP id r8-20020a056402018800b004a343c18430mr13073923edv.4.1678744927024;
-        Mon, 13 Mar 2023 15:02:07 -0700 (PDT)
-Received: from localhost.localdomain (077222238142.warszawa.vectranet.pl. [77.222.238.142])
-        by smtp.googlemail.com with ESMTPSA id r9-20020a50c009000000b004c13fe8fabfsm246146edb.84.2023.03.13.15.02.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Mar 2023 15:02:06 -0700 (PDT)
-From:   Szymon Heidrich <szymon.heidrich@gmail.com>
-To:     steve.glendinning@shawell.net, UNGLinuxDriver@microchip.com,
-        davem@davemloft.net, edumazet@google.com
-Cc:     kuba@kernel.org, pabeni@redhat.com, szymon.heidrich@gmail.com,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: usb: smsc95xx: Limit packet length to skb->len
-Date:   Mon, 13 Mar 2023 23:01:24 +0100
-Message-Id: <20230313220124.52437-1-szymon.heidrich@gmail.com>
-X-Mailer: git-send-email 2.39.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229627AbjCMWIP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 18:08:15 -0400
+Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7940F222DB;
+        Mon, 13 Mar 2023 15:08:13 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id C6820C009; Mon, 13 Mar 2023 23:08:11 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1678745291; bh=+3hvHtxOKm+x6xuyu0609vnA9psaq5/XZ9w8PURWMRU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Q+2XhhEmo/HDRno8AcK7DIjIlwDBBoI9AjEIliJyR3jmF+Tcrw/QNSnpg5zmoPyGs
+         zgvmeDVWk4QBnDDbDxvMBvJyFR2ArH90Q0pL/xDLXD1c5i+ItneOwPw6ofzh13Abg5
+         mmpc2ERt94S4gUIWMWTqG9d07BmqM5RZ7LorNsR/7J5u7D7tHy7ousQLhbG4xlfTr5
+         83LG1XRtL9wEwDxxwwqT7tB2ygiBhAqP+hSWpU4XcauoFKk5+yehHhf19DWLsTDZ1+
+         1wR6mQTd5x4WE0swSdMwBc6bwH9ZAMsrpRb4T7+/bGydM3WJ1/PtU5vqal1Up+yUyL
+         DMfCjbo3U17gw==
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 8E47AC009;
+        Mon, 13 Mar 2023 23:08:06 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1678745290; bh=+3hvHtxOKm+x6xuyu0609vnA9psaq5/XZ9w8PURWMRU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rcbznV7IIhDUoiRMQf+9vd8Sj3wcDKpZ+Cy0hZ3mqu41tU4AP6shdcIuZc/VTPKi4
+         GG9CQ2i8yR8P5QwdHxsV50BSKxAM2aZnBEiWErmcj9XF387Nvg3HOOHa4Umow75y5o
+         t3UF7DmTP1lARsf0T4cLPpRW7suxpSBcc1SixliJFc5gwo2MB9s8cHw/dHZ2AhspqS
+         mR8hU62q1V3+MfSXLNfFmDaPiVOvbn8qzSOKaB/zrUIfC97rkHM3TlCkBdR8UqTPn7
+         C6Y633Qb3S/UOxn5ZaUvUZVff+TtMbF8zsXDhomvmK0ANSmA9/knZaQFIJqnFNsKNm
+         XJ8RD08WOMuYA==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 86503e90;
+        Mon, 13 Mar 2023 22:08:03 +0000 (UTC)
+Date:   Tue, 14 Mar 2023 07:07:48 +0900
+From:   asmadeus@codewreck.org
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Zheng Wang <zyytlz.wz@163.com>, ericvh@gmail.com,
+        lucho@ionkov.net, linux_oss@crudebyte.com, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, hackerzheng666@gmail.com,
+        1395428693sheep@gmail.com, alex000young@gmail.com
+Subject: Re: [PATCH net v2] 9p/xen : Fix use after free bug in
+ xen_9pfs_front_remove due  to race condition
+Message-ID: <ZA+etMBFSw/999Aq@codewreck.org>
+References: <20230313090002.3308025-1-zyytlz.wz@163.com>
+ <ZA8rDCw+mJmyETEx@localhost.localdomain>
+ <20230313143054.538565ac@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20230313143054.538565ac@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Packet length retrieved from skb data may be larger than
-the actual socket buffer length (up to 1526 bytes). In such
-case the cloned skb passed up the network stack will leak
-kernel memory contents.
+Jakub Kicinski wrote on Mon, Mar 13, 2023 at 02:30:54PM -0700:
+> On Mon, 13 Mar 2023 14:54:20 +0100 Michal Swiatkowski wrote:
+> > >  	for (i = 0; i < priv->num_rings; i++) {
+> > > +		/*cancel work*/  
+> > It isn't needed I think, the function cancel_work_sync() tells everything
+> > here.
+> 
+> Note that 9p is more storage than networking, so this patch is likely
+> to go via a different tree than us.
 
-Fixes: 2f7ca802bdae ("net: Add SMSC LAN9500 USB2.0 10/100 ethernet adapter driver")
-Signed-off-by: Szymon Heidrich <szymon.heidrich@gmail.com>
----
- drivers/net/usb/smsc95xx.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Any review done is useful anyway ;)
 
-diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
-index 32d2c60d3..ba766bdb2 100644
---- a/drivers/net/usb/smsc95xx.c
-+++ b/drivers/net/usb/smsc95xx.c
-@@ -1851,7 +1851,8 @@ static int smsc95xx_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
- 			}
- 		} else {
- 			/* ETH_FRAME_LEN + 4(CRC) + 2(COE) + 4(Vlan) */
--			if (unlikely(size > (ETH_FRAME_LEN + 12))) {
-+			if (unlikely(size > (ETH_FRAME_LEN + 12) ||
-+				     size > skb->len)) {
- 				netif_dbg(dev, rx_err, dev->net,
- 					  "size err header=0x%08x\n", header);
- 				return 0;
+Either Eric or me will take the patch, but in the past such fixes have
+sometimes also been taken into the net tree; honestly I wouldn't mind a
+bit more "rule" here as it's a bit weird that some of our patches are Cc
+to fsdevel@ (fs/ from fs/9p) and the other half netdev@ (net/ from
+net/9p), but afaict the MAINTAINERS syntax doesn't have a way of
+excluding e.g. net/9p from the `NETWORKING [GENERAL]` group so I guess
+we just have to live with that.
+
+There's little enough volume and netdev automation sends a mail when a
+patch is picked up, so as long as there's no conflict (large majority of
+the cases) such fixes can go either way as far as I'm concerned.
+
 -- 
-2.39.2
-
+Dominique
