@@ -2,82 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE1E36B7288
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 10:28:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE2366B72A4
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 10:33:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230201AbjCMJ2i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 05:28:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43246 "EHLO
+        id S231276AbjCMJdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 05:33:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbjCMJ23 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 05:28:29 -0400
-Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E06E59F5;
-        Mon, 13 Mar 2023 02:28:26 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 38905D5A;
-        Mon, 13 Mar 2023 10:28:22 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1678699702;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=skyNVaDreGk4up3teBKgNO9R6cLkCNyVzzbEod9/6Rg=;
-        b=DVcf4ZYa6wHEiz4Cd/JqkKPK/bVkzbgR3vXVxQqyCz4xPnSTc5hFMWAWK1G2kM2Da2tOh8
-        1mqgEdMcSlshmtEWuUN//iZmO+qU7y7ww+jT+VU0aA4kn0bmh+3tuMo8CClkhCv37vNcQJ
-        2cyomQpVH3QWY8r5C67IBT3S4jSHwUCgODwpX7OQOfcFCe3SkM5yDTc6b5UkmJnXoFsz9G
-        +GtrMbMWOSiSJ/7lWGUHuGApEZlqEVj2WNwUhIahXmmKzWlzUmzS24azUvR4HGMSB/j5n8
-        reQW0KXi3WnoOadzpI3qw7SUtMmAKyJCWEfx0uO9Y3y14/l0u1C08rFx0hL58g==
-From:   Michael Walle <michael@walle.cc>
-To:     andrew@lunn.ch, Linus Walleij <linus.walleij@linaro.org>
-Cc:     Arun.Ramadoss@microchip.com, alexander.stein@ew.tq-group.com,
-        ansuelsmth@gmail.com, bagasdotme@gmail.com, corbet@lwn.net,
-        davem@davemloft.net, devicetree@vger.kernel.org,
-        edumazet@google.com, f.fainelli@gmail.com, hdegoede@redhat.com,
-        hkallweit1@gmail.com, jacek.anaszewski@gmail.com, john@phrozen.org,
-        krzysztof.kozlowski+dt@linaro.org, kuba@kernel.org, lee@kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, olteanv@gmail.com, pabeni@redhat.com,
-        pavel@ucw.cz, rasmus.villemoes@prevas.dk,
-        rmk+kernel@armlinux.org.uk, robh+dt@kernel.org,
-        tharvey@gateworks.com, Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH v8 00/13] Adds support for PHY LEDs with offload triggers
-Date:   Mon, 13 Mar 2023 10:28:15 +0100
-Message-Id: <20230313092815.496442-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <576d57cb-481c-46ba-9e3b-d3b7e3a4ec69@lunn.ch>
-References: <576d57cb-481c-46ba-9e3b-d3b7e3a4ec69@lunn.ch>
+        with ESMTP id S229956AbjCMJcl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 05:32:41 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD40A4D2B4;
+        Mon, 13 Mar 2023 02:31:52 -0700 (PDT)
+Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1pbeWz-0007Gj-RS; Mon, 13 Mar 2023 10:31:49 +0100
+Message-ID: <05ad6c8c-0573-b1b3-d8bd-62175f9bd9f3@leemhuis.info>
+Date:   Mon, 13 Mar 2023 10:31:49 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam: Yes
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Content-Language: en-US, de-DE
+From:   "Linux regression tracking (Thorsten Leemhuis)" 
+        <regressions@leemhuis.info>
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>
+Cc:     primalmotion@pm.me,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux kernel regressions list <regressions@lists.linux.dev>,
+        Kalle Valo <kvalo@kernel.org>, netdev <netdev@vger.kernel.org>
+Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>
+Subject: [regression] Bug 217183 - AR9462/ath9k: running wifi scan freezes the
+ laptop
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1678699913;1fa1f308;
+X-HE-SMSGID: 1pbeWz-0007Gj-RS
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > I think there will be a day when a switch without LED controller appears,
-> > but the system has a few LEDs for the ports connected to an
-> > arbitrary GPIO controller, and then we will need this. But we have
-> > not seen that yet :)
+Hi, Thorsten here, the Linux kernel's regression tracker.
+
+I noticed a regression report in bugzilla.kernel.org. As many (most?)
+kernel developer don't keep an eye on it, I decided to forward it by
+mail. Quoting from https://bugzilla.kernel.org/show_bug.cgi?id=217183 :
+
+>  primalmotion@pm.me 2023-03-12 19:27:05 UTC
 > 
-> The microchip sparx5 might be going in that direction. It has what
-> looks like a reasonably generic sgpio controller:
-> drivers/pinctrl/pinctrl-microchip-sgpio.c
+> Since 6.2.1 (and onward), running a wifi scan freezes the laptop completely. The screen is frozen, caps lock led is on, and there's nothing left to do but force reboot.
+> 
+> Step to reproduce:
+> 1) iwctl station wlan0 scan
+> 
+> This works just fine on 6.1.12 and below. 
+> This is 100% reproducible. 
+> 
+> I can't find any relevant log. I tried to collect dmesg and journalctl -k while I was performing the command, but the laptop freezes before I can get anything.
+> 
+> Card: Qualcomm Atheros AR9462 Wireless Network Adapter (rev 01)
+> Driver: ath9k
+> 
+> module parameters:
+> /sys/module/ath9k/parameters/blink 0
+> /sys/module/ath9k/parameters/bt_ant_diversity 0
+> /sys/module/ath9k/parameters/btcoex_enable 1
+> /sys/module/ath9k/parameters/led_active_high -1
+> /sys/module/ath9k/parameters/ps_enable 1
+> /sys/module/ath9k/parameters/use_chanctx 0
+> /sys/module/ath9k/parameters/use_msi 0
+> 
+> Let me know if you need any additional logs from other places I don't know
 
-That gpio controller supports both, some kind of hardware controlled
-and pure software controlled mode. AFAIK the driver only supports
-software controlled mode (yet?). In any case, our board
-(arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt.dtsi) is broken in
-a way that we are forced to use the software controlled mode anyway.
-Therefore, there is already such a board ;)
+See the ticket for more details.
 
--michael
+
+[TLDR for the rest of this mail: I'm adding this report to the list of
+tracked Linux kernel regressions; the text you find below is based on a
+few templates paragraphs you might have encountered already in similar
+form.]
+
+BTW, let me use this mail to also add the report to the list of tracked
+regressions to ensure it's doesn't fall through the cracks:
+
+#regzbot introduced: v6.1..v6.2
+https://bugzilla.kernel.org/show_bug.cgi?id=217183
+#regzbot title: net: wifi: ath9k: wifi scan freezes laptop
+#regzbot ignore-activity
+
+This isn't a regression? This issue or a fix for it are already
+discussed somewhere else? It was fixed already? You want to clarify when
+the regression started to happen? Or point out I got the title or
+something else totally wrong? Then just reply and tell me -- ideally
+while also telling regzbot about it, as explained by the page listed in
+the footer of this mail.
+
+Developers: When fixing the issue, remember to add 'Link:' tags pointing
+to the report (e.g. the buzgzilla ticket and maybe this mail as well, if
+this thread sees some discussion). See page linked in footer for details.
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+--
+Everything you wanna know about Linux kernel regression tracking:
+https://linux-regtracking.leemhuis.info/about/#tldr
+If I did something stupid, please tell me, as explained on that page.
