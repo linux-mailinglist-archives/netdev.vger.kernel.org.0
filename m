@@ -2,84 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ABE5C6B7D28
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 17:13:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9CB56B7D26
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 17:13:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229918AbjCMQNq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 12:13:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54518 "EHLO
+        id S231260AbjCMQN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 12:13:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230523AbjCMQNe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 12:13:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E135077CA6
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 09:12:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678723960;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4/7ewzBQiiKI8nU3w0jBFH3Rlbl9oB7oX/86v//b4bc=;
-        b=QGvibqH8LwORDzLqKbcA3JrdtcKyTdqaP3gpYurRwtny+qerCw/WcZmmut2a06gg8/+z2y
-        4cTFxAaJSLoSXH4M44z2zRSq487RX8QMpiTQ5HUGqcf78Iy6kwSRyasabP79NpHsi1fBDb
-        WOp6N0e4jK+CXniCWGs54mR63NbMTxA=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-173-5-hlTgw3M1GnqYJyp6HKJQ-1; Mon, 13 Mar 2023 12:12:38 -0400
-X-MC-Unique: 5-hlTgw3M1GnqYJyp6HKJQ-1
-Received: by mail-wm1-f70.google.com with SMTP id m28-20020a05600c3b1c00b003e7d4662b83so8022248wms.0
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 09:12:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678723957;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=4/7ewzBQiiKI8nU3w0jBFH3Rlbl9oB7oX/86v//b4bc=;
-        b=AgnGfHdboEkRgdIM8zpm4J9I37byIuiqDZOrU17X3NHiluEZ+/2kigFwaidDX6svUl
-         jQbWTS9U/uWsma+LG5gIxnwniN+s0K9OZxaX2luj80DT/5BBK4Lda7enSCYDCD6BleNn
-         XmuZ/9tA8KJP21X35hPaFw69qOkH70L97mZuBjgqUXxMYaEiGao5Sagb6oroljMTbgwm
-         raIidteam4RuuDbN8jqSLobXGeEJQP1IAQKFsCN22p1Q5okM6apCBpyX6xaVcLSW9fw7
-         E7DGvmSHBNHFNJWmouPvMO5s+nTlghKPJBh8Rs5es21/WB5Vqy4xIxphKcnUfvLIaotv
-         N20Q==
-X-Gm-Message-State: AO0yUKWEUbOOeqGaZaPGS7ipPpKPmc33kHVll1fqA31RCvJfn8M1bcao
-        r5TK82Bv4f17V/btvg0Get3qdmDJzJJjypwJoQ+IqZaXRuaRQO+V2Y1TrvJvMXWKTQ2ng5osrgR
-        iZrJJF+2UctMdKIj+
-X-Received: by 2002:a05:600c:600a:b0:3de:d52:2cd2 with SMTP id az10-20020a05600c600a00b003de0d522cd2mr11574644wmb.4.1678723957561;
-        Mon, 13 Mar 2023 09:12:37 -0700 (PDT)
-X-Google-Smtp-Source: AK7set8PGQpyZrsjfGoQFw9JO1/n4HBNdmx1u6vP6YR0wemSKF6AhEgAELSf57FYMFtplgK4bQtb9w==
-X-Received: by 2002:a05:600c:600a:b0:3de:d52:2cd2 with SMTP id az10-20020a05600c600a00b003de0d522cd2mr11574632wmb.4.1678723957274;
-        Mon, 13 Mar 2023 09:12:37 -0700 (PDT)
-Received: from [192.168.188.25] ([80.243.52.133])
-        by smtp.gmail.com with ESMTPSA id j5-20020a05600c1c0500b003eb2e33f327sm439551wms.2.2023.03.13.09.12.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Mar 2023 09:12:36 -0700 (PDT)
-Message-ID: <d39f0806-cbe7-52ae-2271-67e365315018@redhat.com>
-Date:   Mon, 13 Mar 2023 17:12:35 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v1 net 1/2] tcp: Fix bind() conflict check for dual-stack
- wildcard address.
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@kernel.org>
-Cc:     Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org,
-        Martin KaFai Lau <martin.lau@kernel.org>
-References: <20230312031904.4674-1-kuniyu@amazon.com>
- <20230312031904.4674-2-kuniyu@amazon.com>
+        with ESMTP id S229958AbjCMQNV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 12:13:21 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2066.outbound.protection.outlook.com [40.107.243.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 939B52057D
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 09:13:17 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=C3jhbWFQaE6UV70yuOOmtdvQmNV0y6Ee76xmBl+Jd9DODi0+6ohXolw2R1gCO4ZIRkIOhLYXqtCxJXKB/AQrPOFnYiqfUJilKnmZUOGT+zFGrEwfcjRCCs206MCYnYf3i3b1eHR7PnwuFlJxqGyEMDHqUopx2rZ4kLheU1t3MX9eyciIz4eERVK7tx2bNEJJTA6TRJT/gbsXtcDqcXfQZSQ2i7gDikuTywf6D0foyfxTKIfDnH6HXHJ2rR2Y53PLDkS9ODTBOrh/maYxBAQqXs82oZJvzrJXR46RcJ5AXcZya+EjazhJ/oSobXqzUW7VnKwG04g2yasJKvbl1zfEUA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2Wj/7K3LDRrOwczr8GxsaY7uVqs3gQiJ71gz8wY4wxI=;
+ b=CnPoeCDGriDrGH480DZs0GAJ6xiLTM1kUAwxgidXM/7800chMfj8c2hSKdr7O2kDNIgr8jFaZ7wfFALZtQXi5ZJ4bCl9UbtLfT0MJk6KTH8W4hnvMkgvvlftMBHGYbUgh3BL3aovGeVcWuGjByYRd/Vu4a1YiDmRxPx+26jtgdd2k1yYmOJvlDsRLl14YgpsoS8aKfPQidN/lBZjviWw/3qEEpLS582f4u/r+BTG7tMp+8WfIDeOKfncwn4A3HAzlqHxse6eCJCbMpwByXhfAjZJFj+NKQW+AtjqeS/I/BogbQgTwieWWSgz4fBEyWtwIx0mhtgKYUtzkbtKcd3YwQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2Wj/7K3LDRrOwczr8GxsaY7uVqs3gQiJ71gz8wY4wxI=;
+ b=b+QERDpnI+bP+L619dQYTWfTziT8/FUFZuGdPpCww+za6EMKRGBQZLlos4sAlGuY8bNEDkWI5mC/5P9VERdbA9YSBcP9FtglzzC+z94W9dbq2BqF6zNBppvVopyOMWhRalSiWOm4Yipjsia1BjSNdqBsqXxv8WqPRb+Hk23FxnE=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS0PR12MB6583.namprd12.prod.outlook.com (2603:10b6:8:d1::12) by
+ IA1PR12MB6356.namprd12.prod.outlook.com (2603:10b6:208:3e0::5) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6178.24; Mon, 13 Mar 2023 16:13:15 +0000
+Received: from DS0PR12MB6583.namprd12.prod.outlook.com
+ ([fe80::f6fc:b028:b0da:afab]) by DS0PR12MB6583.namprd12.prod.outlook.com
+ ([fe80::f6fc:b028:b0da:afab%8]) with mapi id 15.20.6178.024; Mon, 13 Mar 2023
+ 16:13:15 +0000
+Message-ID: <37fd08f6-0608-c6a3-28f0-63d05eaf0a40@amd.com>
+Date:   Mon, 13 Mar 2023 09:13:11 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.8.0
+Subject: Re: [PATCH RFC v2 virtio 1/7] pds_vdpa: Add new vDPA driver for
+ AMD/Pensando DSC
 Content-Language: en-US
-From:   Paul Holzinger <pholzing@redhat.com>
-In-Reply-To: <20230312031904.4674-2-kuniyu@amazon.com>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     jasowang@redhat.com, mst@redhat.com,
+        virtualization@lists.linux-foundation.org, brett.creeley@amd.com,
+        davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        drivers@pensando.io
+References: <20230309013046.23523-1-shannon.nelson@amd.com>
+ <20230309013046.23523-2-shannon.nelson@amd.com>
+ <ZA3cYPoWQCjYoB3g@corigine.com> <ZA3jKuMlr/kBQNml@corigine.com>
+From:   Shannon Nelson <shannon.nelson@amd.com>
+In-Reply-To: <ZA3jKuMlr/kBQNml@corigine.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+X-ClientProxiedBy: BY3PR04CA0025.namprd04.prod.outlook.com
+ (2603:10b6:a03:217::30) To DS0PR12MB6583.namprd12.prod.outlook.com
+ (2603:10b6:8:d1::12)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS0PR12MB6583:EE_|IA1PR12MB6356:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6c12b544-3a74-44dc-2f44-08db23ddd98c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: x4cBq6QojRhQ23auD/6qEtREpwhuTLMCDWVtqXvGNu961yqtQxh63N6eF4qsAAAM9bbR7YVG+FUtHzmy/dkm3iUaW+fWqfLPcuuQhVdAoB/7OzqjsGcJPDDesMx1oRuApmI/bbjmzboV+/gnJZSh/DfFm03bLa8IKIzvnbFXLT0mTf4/GjrjIv1vdiB8s60zRzXlXTyEspjFbxPc6m3Gd2xaEcctp7LnhfU4oTns+VZ7EjbyUO7Ljqi+ddZViyhiOo4GPSos+YiAnsbkBLdT6Lwv9AXj8yyFR7Icvb0P+rjMMzSv+0jiGaMvorc7e/ohj2b4bygug6flpFOmR7pUq/z87V/NKhKaOe3Pw4vZvJIn8KTsjXeBzb0IREXwj3NkErUvCtcrLHr1/xI+1L6znhHzenyjDuODySl+0vm6bu0e7jJ3O3hK0L2r6EaruzbDZjJm1RJI9Mq0idjUXu2rZutsC+CP3Zti2idTMhc8ZXq0FELOhPhJ5fYuBfxJ60wymUdmOdPlrc829CGYoeFKg+uhovkfLYTNI/32crWYu/E+AL8dlwWFhBqO8kQlqlsujNWmSSXaO4svTKFZXe0uEB1fDdnGqds7/9cwk9VS2iZeO/djWGfxWSgoinIBBWBafAsgYl5244+7RSeHzf14wejZJO7DwmXqtFRiqVx7EJ3BzPTcAA3Hf9z9jrl9tWS6/SE63zrdJghNBFyFxp9m3XGi4YKZtPEC4+fCoa2QppM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR12MB6583.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(39860400002)(346002)(396003)(376002)(136003)(451199018)(31686004)(8936002)(6916009)(478600001)(41300700001)(4326008)(66556008)(66946007)(66476007)(8676002)(36756003)(86362001)(31696002)(38100700002)(6506007)(26005)(53546011)(6486002)(6666004)(186003)(5660300002)(44832011)(2906002)(316002)(6512007)(83380400001)(2616005)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RkFEODBJSElpZ1B0V0JRSmZnUzVRaXpQaTZ4YWFQdURYTDltSHFieHpRL0Zj?=
+ =?utf-8?B?R2lXaVhHQllSVzIyU2FXLzNSd2hIc3NTWDJDanM2aExER2FkaVY1WGZaUXNH?=
+ =?utf-8?B?alZtK1lrUy9OM1drUm1JNHM5dHhJeTJNd3kwQkVHU21ndXpQQXV3M2J6Nllt?=
+ =?utf-8?B?aEVIUnlkOTRFVXErVnQ1cHREVnl1SURuSUkzcFVETWNiRFF3bngzb25ERy9B?=
+ =?utf-8?B?d2pRMVppSnd2RE5SYW5UWm5uS0FsYU1nZmFPeU1wMVZ3ZDNqUW1YWVZTS0Rx?=
+ =?utf-8?B?MWNNZGZYSkFkZCt3eHZUV2xUNDUvQkQ1aVdPenJoT3IrWG5jYUpkdzErR2Fo?=
+ =?utf-8?B?Mm9majV5MStkc0RYenN6M3hpQ1daQXhwbzFCVXh0ZlRGSHdWaVQ5YmRJZXNw?=
+ =?utf-8?B?NHA3aHJjN1lPblJGN1FZV3V5d0ozN1dXdEJIUXlUNEY2ZzFQdkdIQnJ3Z2tO?=
+ =?utf-8?B?OTA0RWs1L2EyTmIxbUxuY05KTmdTZ2o0cjU0eGd3QURLaHJPdjFPaDZOOEpX?=
+ =?utf-8?B?cDJZMVFER1VqcjMxYU5YZC92U2dmQk9jSmM2djdPZ2p0cEtWcEZuUll3OExm?=
+ =?utf-8?B?a0ZDbWhneitjUXJvcEF4YjRkYW02SSs3eE9CMmh1VlNpTVBvWVFCMmdIdENU?=
+ =?utf-8?B?Lytpa3FIT2xtOUdFTTNrd0dTdmNCYkpiai9sV1pVbFhML2gvbHNWZERWWUZ3?=
+ =?utf-8?B?VFIvaWRlZlNYcnVsNHVyNHZaVENkNTQ1TzBRNnc4RlVtelhmYVdTdjhWSVFo?=
+ =?utf-8?B?dnJtd1NnMERSdDB3UHpOdmtZZllrYkR6Tm9KVE42Ynp6TkVMczFuVWZqWXhl?=
+ =?utf-8?B?clhqaVVpREZGcit6U2FSelFRUGtiSzZaY1FPS2NETnVrRHBJN1dpVU5DV05X?=
+ =?utf-8?B?MjAvVjY1NmRRcDRNWDdTOVRFQkF6VFhFV0I3NThrbmk5cnBxTzkwRFYrWFEx?=
+ =?utf-8?B?QXZDankwR2trcjRpU3ZIaVlTM01Cem5ZamNSSWxJbkZBWFhVOVdDMjBwYnFM?=
+ =?utf-8?B?Tlh5dTRHRm1GZXNTVDNhWFRzd3NtcWpHaDVNNnJVOUQxZWpqMDA1aDlSTDZP?=
+ =?utf-8?B?MGpMVXI3aFlqcXdOUG9LRnlIVklJUjcraGlLcFlCV0VVSGRxblhhb0hLVGxl?=
+ =?utf-8?B?UjNZT0FMMEg2QWFaRUNjZy82RkM5M1hmUjRjOXMvV2daTmdCOTdiVytQcDU4?=
+ =?utf-8?B?YTNWYzNOaFRNdXhUUkJTckw2b21ST1l2aTdSbFZIVHI3STRiYWJzVnJyL3h6?=
+ =?utf-8?B?SlY1Q0NkVlVvUDd2SkZXSGk3VkpycTFuSlduUDV5QXNUK09CdlM0TWVLYjJ1?=
+ =?utf-8?B?aDZDOG0rdmZaMnJTNXJJUTZ3ZGtkVDh2N3ZsdFAyZVEwNVA1di85MjRxMWVH?=
+ =?utf-8?B?UTFNS1RiOHJsTzFURXdQSWNJSzVUV3FIZ3dmK1VhOVRXVFJSU2xSbXZNNVBl?=
+ =?utf-8?B?WkdJenpHK0lIclJEejE3TVdZZ1hPSkRQRCtkeExVZi9WSG94cUFZWitvWFpr?=
+ =?utf-8?B?ZHg2ejFrRTlhdDNnWXZ5VEJwbmxxNXpJS0xiWWkzM20reFRiaHdoQkh1NjVE?=
+ =?utf-8?B?SEl1UlB3OExsd1pDSUhFQjE4T3doK2c4cy96aVU5d0lubjdST1Y3blBwWTFN?=
+ =?utf-8?B?dXhiN2pnblU5UThKc0xwZlpRdmF6T2gzZWY0WE4xS1F1cmhpRTYrMk8xano1?=
+ =?utf-8?B?TFhTY2pJN0VmRkJPZ1JHY1dqZ0hoMVNkRGxwZVU4RnpxUlJpd1l1emxCYVE2?=
+ =?utf-8?B?TXJuZFVNRnhOdmg2WTFZdjZYeGwwQ2RzdEczYzZUdDNxcnhwbVpwZmd4cHNB?=
+ =?utf-8?B?OGdsT05NTjQzOHN5c1FGU2ZOUUhnTjhEZ0dRNWJRajYrQ25OWi9JZnlYLzVH?=
+ =?utf-8?B?Q0NsT25ORFFqVk9hVGgxSW9sQjUzRm0zUmZGTEhVMncrTER4V3NobXFQRzQ5?=
+ =?utf-8?B?MS9VTGNDMWJZZGJqZWRkeWNlSUJSYzJpYnJIRUxzazh1b0JVdVpDZE5OR2NJ?=
+ =?utf-8?B?SXpncGY0R01zL052UExtdzNXazEzNEZVZlhQOXo5U0ZvWk02NnNZOXk5OWg2?=
+ =?utf-8?B?RFBVbjdQQ3Yxb0g3eVdSa2VOajRvaHpTdWFjRFRUc2FPK1JPWXpQUkliQXJY?=
+ =?utf-8?Q?yGKOGcvGEaewzRsdAeRCNZ4Q6?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6c12b544-3a74-44dc-2f44-08db23ddd98c
+X-MS-Exchange-CrossTenant-AuthSource: DS0PR12MB6583.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Mar 2023 16:13:14.9519
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Brvc+LHNIFxMQgKFEoX1cDVefg/m5eTAr6d+UcK2AF3j1cZW+mQ3mofS/bxStiOeJmxlSGON7z6OeWVuwsS6lA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6356
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -87,66 +127,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks Kuniyuki, patch works for me.
+On 3/12/23 7:35 AM, Simon Horman wrote:
+> On Sun, Mar 12, 2023 at 03:06:39PM +0100, Simon Horman wrote:
+>> On Wed, Mar 08, 2023 at 05:30:40PM -0800, Shannon Nelson wrote:
+>>> This is the initial auxiliary driver framework for a new vDPA
+>>> device driver, an auxiliary_bus client of the pds_core driver.
+>>> The pds_core driver supplies the PCI services for the VF device
+>>> and for accessing the adminq in the PF device.
+>>>
+>>> This patch adds the very basics of registering for the auxiliary
+>>> device, setting up debugfs entries, and registering with devlink.
+>>>
+>>> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
+>>
+>> ...
+>>
+>>> diff --git a/drivers/vdpa/pds/Makefile b/drivers/vdpa/pds/Makefile
+>>> new file mode 100644
+>>> index 000000000000..a9cd2f450ae1
+>>> --- /dev/null
+>>> +++ b/drivers/vdpa/pds/Makefile
+>>> @@ -0,0 +1,8 @@
+>>> +# SPDX-License-Identifier: GPL-2.0-only
+>>> +# Copyright(c) 2023 Advanced Micro Devices, Inc
+>>> +
+>>> +obj-$(CONFIG_PDS_VDPA) := pds_vdpa.o
+>>> +
+>>> +pds_vdpa-y := aux_drv.o
+>>> +
+>>> +pds_vdpa-$(CONFIG_DEBUG_FS) += debugfs.o
+>>> diff --git a/drivers/vdpa/pds/aux_drv.c b/drivers/vdpa/pds/aux_drv.c
+>>> new file mode 100644
+>>> index 000000000000..b3f36170253c
+>>> --- /dev/null
+>>> +++ b/drivers/vdpa/pds/aux_drv.c
+>>> @@ -0,0 +1,99 @@
+>>> +// SPDX-License-Identifier: GPL-2.0-only
+>>> +/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+>>> +
+>>> +#include <linux/auxiliary_bus.h>
+>>> +
+>>> +#include <linux/pds/pds_core.h>
+>>
+>> Perhaps I'm missing something obvious, but
+>> pds_core.h doesn't exist (yet).
+> 
+> The obvious thing that I was missing is that it is added by
+> 
+> * [PATCH RFC v4 net-next 00/13] pds_core driver
 
-On 12/03/2023 04:19, Kuniyuki Iwashima wrote:
-> Paul Holzinger reported [0] that commit 5456262d2baa ("net: Fix
-> incorrect address comparison when searching for a bind2 bucket")
-> introduced a bind() regression.  Paul also gave a nice repro that
-> calls two types of bind() on the same port, both of which now
-> succeed, but the second call should fail:
->
->    bind(fd1, ::, port) + bind(fd2, 127.0.0.1, port)
->
-> The cited commit added address family tests in three functions to
-> fix the uninit-value KMSAN report. [1]  However, the test added to
-> inet_bind2_bucket_match_addr_any() removed a necessary conflict
-> check; the dual-stack wildcard address no longer conflicts with
-> an IPv4 non-wildcard address.
->
-> If tb->family is AF_INET6 and sk->sk_family is AF_INET in
-> inet_bind2_bucket_match_addr_any(), we still need to check
-> if tb has the dual-stack wildcard address.
->
-> Note that the IPv4 wildcard address does not conflict with
-> IPv6 non-wildcard addresses.
->
-> [0]: https://lore.kernel.org/netdev/e21bf153-80b0-9ec0-15ba-e04a4ad42c34@redhat.com/
-> [1]: https://lore.kernel.org/netdev/CAG_fn=Ud3zSW7AZWXc+asfMhZVL5ETnvuY44Pmyv4NPv-ijN-A@mail.gmail.com/
->
-> Fixes: 5456262d2baa ("net: Fix incorrect address comparison when searching for a bind2 bucket")
-> Reported-by: Paul Holzinger <pholzing@redhat.com>
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> ---
-> Cc: Martin KaFai Lau <martin.lau@kernel.org>
-> ---
-> Some cleanup patches will be posted against net-next later:
->
->    * s/addr_any/in6addr_any/
->    * Remove duplicated tests for net, port, and l3mdev.
-> ---
->   net/ipv4/inet_hashtables.c | 8 +++++++-
->   1 file changed, 7 insertions(+), 1 deletion(-)
->
-> diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-> index e41fdc38ce19..6edae3886885 100644
-> --- a/net/ipv4/inet_hashtables.c
-> +++ b/net/ipv4/inet_hashtables.c
-> @@ -828,8 +828,14 @@ bool inet_bind2_bucket_match_addr_any(const struct inet_bind2_bucket *tb, const
->   #if IS_ENABLED(CONFIG_IPV6)
->   	struct in6_addr addr_any = {};
->   
-> -	if (sk->sk_family != tb->family)
-> +	if (sk->sk_family != tb->family) {
-> +		if (sk->sk_family == AF_INET)
-> +			return net_eq(ib2_net(tb), net) && tb->port == port &&
-> +				tb->l3mdev == l3mdev &&
-> +				ipv6_addr_equal(&tb->v6_rcv_saddr, &addr_any);
-> +
->   		return false;
-> +	}
->   
->   	if (sk->sk_family == AF_INET6)
->   		return net_eq(ib2_net(tb), net) && tb->port == port &&
-Tested-by: Paul Holzinger <pholzing@redhat.com>
+Sorry about that - I can try to make that dependency more obvious in the 
+next round.
 
+sln
