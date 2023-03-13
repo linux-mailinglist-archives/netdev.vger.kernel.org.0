@@ -2,89 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F13946B6F4E
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 06:53:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDBDA6B6F5C
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 07:04:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229633AbjCMFxJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 01:53:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39170 "EHLO
+        id S229561AbjCMGEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 02:04:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbjCMFxH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 01:53:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF3949029;
-        Sun, 12 Mar 2023 22:53:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7AC6B80DDC;
-        Mon, 13 Mar 2023 05:53:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 143CFC433D2;
-        Mon, 13 Mar 2023 05:52:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678686781;
-        bh=fKbUh9P1CYdgNOyUqjuVHWtV/UeXm6zn5tamtvw/WfE=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=evAQ3fgS4zslKxiKpjkeq8ORk6XSkx6/dxGV49rHK9KaQAcoeEjyNbFZqycugobeD
-         L+Lw1I5fL94VdcznObeWwvhQHbKiH1+YI65cB1z54CaBAcic62Dgj4IXW2w+A3El+X
-         iNEyGGvfzkMOoeni3iOfOpog/kbGw9yX2uwBrXsk94gb+clnYq/Qp08CTc5Dm/26A5
-         uY1irwcZIxitYGR2/Zvlxdjb+83HhKwgq8fKNgmeJYmckL2vAJAzvAsrAaBGNLBcX3
-         kBgzDhGYyOCD1xrjZ7qKZExGYidwMTdDDWFGNeeBoHSZ2DUQP2cJiw5cU/SvDaAami
-         ylof7UXYIKYBQ==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Sireesh Kodali <sireeshkodali1@gmail.com>
-Cc:     loic.poulain@linaro.org, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        linux-kernel@vger.kernel.org,
-        Vladimir Lypak <vladimir.lypak@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH 1/1] net: wireless: ath: wcn36xx: add support for pronto-v3
-References: <20230311150647.22935-1-sireeshkodali1@gmail.com>
-        <20230311150647.22935-2-sireeshkodali1@gmail.com>
-Date:   Mon, 13 Mar 2023 07:52:54 +0200
-In-Reply-To: <20230311150647.22935-2-sireeshkodali1@gmail.com> (Sireesh
-        Kodali's message of "Sat, 11 Mar 2023 20:36:47 +0530")
-Message-ID: <87y1o1xknd.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S229494AbjCMGEc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 02:04:32 -0400
+Received: from out30-101.freemail.mail.aliyun.com (out30-101.freemail.mail.aliyun.com [115.124.30.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EC273432C;
+        Sun, 12 Mar 2023 23:04:29 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R981e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=kaishen@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VdguB9l_1678687466;
+Received: from localhost(mailfrom:KaiShen@linux.alibaba.com fp:SMTPD_---0VdguB9l_1678687466)
+          by smtp.aliyun-inc.com;
+          Mon, 13 Mar 2023 14:04:27 +0800
+From:   Kai <KaiShen@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: [PATCH net-next v4] net/smc: Use percpu ref for wr tx reference
+Date:   Mon, 13 Mar 2023 06:04:25 +0000
+Message-Id: <20230313060425.115939-1-KaiShen@linux.alibaba.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sireesh Kodali <sireeshkodali1@gmail.com> writes:
+The refcount wr_tx_refcnt may cause cache thrashing problems among
+cores and we can use percpu ref to mitigate this issue here. We
+gain some performance improvement with percpu ref here on our
+customized smc-r verion. Applying cache alignment may also mitigate
+this problem but it seem more reasonable to use percpu ref here.
+We can also replace wr_reg_refcnt with one percpu reference like
+wr_tx_refcnt.
 
-> From: Vladimir Lypak <vladimir.lypak@gmail.com>
->
-> Pronto v3 has a different DXE address than prior Pronto versions. This
-> patch changes the macro to return the correct register address based on
-> the pronto version.
->
-> Signed-off-by: Vladimir Lypak <vladimir.lypak@gmail.com>
-> Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
-> ---
->  drivers/net/wireless/ath/wcn36xx/dxe.c     | 23 +++++++++++-----------
->  drivers/net/wireless/ath/wcn36xx/dxe.h     |  4 ++--
->  drivers/net/wireless/ath/wcn36xx/main.c    |  1 +
->  drivers/net/wireless/ath/wcn36xx/wcn36xx.h |  1 +
->  4 files changed, 16 insertions(+), 13 deletions(-)
+redis-benchmark on smc-r with atomic wr_tx_refcnt:
+SET: 525707.06 requests per second, p50=0.087 msec
+GET: 554877.38 requests per second, p50=0.087 msec
 
-The title should be:
+redis-benchmark on the percpu_ref version:
+SET: 540482.06 requests per second, p50=0.087 msec
+GET: 570711.12 requests per second, p50=0.079 msec
 
-wifi: wcn36xx: add support for pronto-v3
+Cases are like "redis-benchmark -h x.x.x.x -q -t set,get -P 1 -n
+5000000 -c 50 -d 10 --threads 4".
 
-I can fix that, no need to resend because of this.
+Signed-off-by: Kai <KaiShen@linux.alibaba.com>
 
+v1->v2:
+- Modify patch prefix
+
+v2->v3:
+- Make wr_reg_refcnt a percpu one as well
+- Init percpu ref with 0 flag instead of ALLOW_REINIT flag
+
+v3->v4:
+- Update performance data, this data may differ from previous data
+  as I ran cases on other machines
+---
+ net/smc/smc_core.h | 10 ++++++++--
+ net/smc/smc_wr.c   | 35 ++++++++++++++++++++++++++++-------
+ net/smc/smc_wr.h   |  5 ++---
+ 3 files changed, 38 insertions(+), 12 deletions(-)
+
+diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
+index 08b457c2d294..1645fba0d2d3 100644
+--- a/net/smc/smc_core.h
++++ b/net/smc/smc_core.h
+@@ -106,7 +106,10 @@ struct smc_link {
+ 	unsigned long		*wr_tx_mask;	/* bit mask of used indexes */
+ 	u32			wr_tx_cnt;	/* number of WR send buffers */
+ 	wait_queue_head_t	wr_tx_wait;	/* wait for free WR send buf */
+-	atomic_t		wr_tx_refcnt;	/* tx refs to link */
++	struct {
++		struct percpu_ref	wr_tx_refs;
++	} ____cacheline_aligned_in_smp;
++	struct completion	tx_ref_comp;
+ 
+ 	struct smc_wr_buf	*wr_rx_bufs;	/* WR recv payload buffers */
+ 	struct ib_recv_wr	*wr_rx_ibs;	/* WR recv meta data */
+@@ -122,7 +125,10 @@ struct smc_link {
+ 
+ 	struct ib_reg_wr	wr_reg;		/* WR register memory region */
+ 	wait_queue_head_t	wr_reg_wait;	/* wait for wr_reg result */
+-	atomic_t		wr_reg_refcnt;	/* reg refs to link */
++	struct {
++		struct percpu_ref	wr_reg_refs;
++	} ____cacheline_aligned_in_smp;
++	struct completion	reg_ref_comp;
+ 	enum smc_wr_reg_state	wr_reg_state;	/* state of wr_reg request */
+ 
+ 	u8			gid[SMC_GID_SIZE];/* gid matching used vlan id*/
+diff --git a/net/smc/smc_wr.c b/net/smc/smc_wr.c
+index b0678a417e09..0021065a600a 100644
+--- a/net/smc/smc_wr.c
++++ b/net/smc/smc_wr.c
+@@ -377,12 +377,11 @@ int smc_wr_reg_send(struct smc_link *link, struct ib_mr *mr)
+ 	if (rc)
+ 		return rc;
+ 
+-	atomic_inc(&link->wr_reg_refcnt);
++	percpu_ref_get(&link->wr_reg_refs);
+ 	rc = wait_event_interruptible_timeout(link->wr_reg_wait,
+ 					      (link->wr_reg_state != POSTED),
+ 					      SMC_WR_REG_MR_WAIT_TIME);
+-	if (atomic_dec_and_test(&link->wr_reg_refcnt))
+-		wake_up_all(&link->wr_reg_wait);
++	percpu_ref_put(&link->wr_reg_refs);
+ 	if (!rc) {
+ 		/* timeout - terminate link */
+ 		smcr_link_down_cond_sched(link);
+@@ -647,8 +646,10 @@ void smc_wr_free_link(struct smc_link *lnk)
+ 	smc_wr_wakeup_tx_wait(lnk);
+ 
+ 	smc_wr_tx_wait_no_pending_sends(lnk);
+-	wait_event(lnk->wr_reg_wait, (!atomic_read(&lnk->wr_reg_refcnt)));
+-	wait_event(lnk->wr_tx_wait, (!atomic_read(&lnk->wr_tx_refcnt)));
++	percpu_ref_kill(&lnk->wr_reg_refs);
++	wait_for_completion(&lnk->reg_ref_comp);
++	percpu_ref_kill(&lnk->wr_tx_refs);
++	wait_for_completion(&lnk->tx_ref_comp);
+ 
+ 	if (lnk->wr_rx_dma_addr) {
+ 		ib_dma_unmap_single(ibdev, lnk->wr_rx_dma_addr,
+@@ -847,6 +848,20 @@ void smc_wr_add_dev(struct smc_ib_device *smcibdev)
+ 	tasklet_setup(&smcibdev->send_tasklet, smc_wr_tx_tasklet_fn);
+ }
+ 
++static void smcr_wr_tx_refs_free(struct percpu_ref *ref)
++{
++	struct smc_link *lnk = container_of(ref, struct smc_link, wr_tx_refs);
++
++	complete(&lnk->tx_ref_comp);
++}
++
++static void smcr_wr_reg_refs_free(struct percpu_ref *ref)
++{
++	struct smc_link *lnk = container_of(ref, struct smc_link, wr_reg_refs);
++
++	complete(&lnk->reg_ref_comp);
++}
++
+ int smc_wr_create_link(struct smc_link *lnk)
+ {
+ 	struct ib_device *ibdev = lnk->smcibdev->ibdev;
+@@ -890,9 +905,15 @@ int smc_wr_create_link(struct smc_link *lnk)
+ 	smc_wr_init_sge(lnk);
+ 	bitmap_zero(lnk->wr_tx_mask, SMC_WR_BUF_CNT);
+ 	init_waitqueue_head(&lnk->wr_tx_wait);
+-	atomic_set(&lnk->wr_tx_refcnt, 0);
++	rc = percpu_ref_init(&lnk->wr_tx_refs, smcr_wr_tx_refs_free, 0, GFP_KERNEL);
++	if (rc)
++		goto dma_unmap;
++	init_completion(&lnk->tx_ref_comp);
+ 	init_waitqueue_head(&lnk->wr_reg_wait);
+-	atomic_set(&lnk->wr_reg_refcnt, 0);
++	rc = percpu_ref_init(&lnk->wr_reg_refs, smcr_wr_reg_refs_free, 0, GFP_KERNEL);
++	if (rc)
++		goto dma_unmap;
++	init_completion(&lnk->reg_ref_comp);
+ 	init_waitqueue_head(&lnk->wr_rx_empty_wait);
+ 	return rc;
+ 
+diff --git a/net/smc/smc_wr.h b/net/smc/smc_wr.h
+index 45e9b894d3f8..f3008dda222a 100644
+--- a/net/smc/smc_wr.h
++++ b/net/smc/smc_wr.h
+@@ -63,14 +63,13 @@ static inline bool smc_wr_tx_link_hold(struct smc_link *link)
+ {
+ 	if (!smc_link_sendable(link))
+ 		return false;
+-	atomic_inc(&link->wr_tx_refcnt);
++	percpu_ref_get(&link->wr_tx_refs);
+ 	return true;
+ }
+ 
+ static inline void smc_wr_tx_link_put(struct smc_link *link)
+ {
+-	if (atomic_dec_and_test(&link->wr_tx_refcnt))
+-		wake_up_all(&link->wr_tx_wait);
++	percpu_ref_put(&link->wr_tx_refs);
+ }
+ 
+ static inline void smc_wr_drain_cq(struct smc_link *lnk)
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.31.1
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
