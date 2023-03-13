@@ -2,127 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AE436B7DA1
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 17:33:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 465F76B7D9C
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 17:33:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231349AbjCMQdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 12:33:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33382 "EHLO
+        id S230458AbjCMQdF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 12:33:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230450AbjCMQdV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 12:33:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C67F87B4A8;
-        Mon, 13 Mar 2023 09:32:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 309D961361;
-        Mon, 13 Mar 2023 16:31:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F364C433EF;
-        Mon, 13 Mar 2023 16:31:48 +0000 (UTC)
-Date:   Mon, 13 Mar 2023 12:31:47 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Mike Rapoport <mike.rapoport@gmail.com>
-Cc:     Vlastimil Babka <vbabka@suse.cz>, Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        rcu@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, patches@lists.linux.dev,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        with ESMTP id S230303AbjCMQdB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 12:33:01 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 132B35D8AB;
+        Mon, 13 Mar 2023 09:32:22 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id j11so51107765edq.4;
+        Mon, 13 Mar 2023 09:32:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678725117;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=izuBuxwdIPWQ5BlFBYrEudMxJy/3eKoBODl3Q7pVmOg=;
+        b=TO9SHC1L76A030IlfBQdRZXsYVblsYUnuEnrg9Jp7bigY9gICjXS9gpdz0+2hHzq9O
+         QbhwIllnbRszvTC3+1rjU+Htx/GQft05w9puK7+zIogdV/oGgv3QsuiCUe0NcZRdhg0I
+         /bvqDVSy6HcrWvfcb9Ujwz+VZw7RQbuGk/QYI3Nkgz6dJqqCy8yjzJN+bJtWx6dKr/cr
+         supZ31QqVRdXJfyvYX4dN8CA3Bm2fCEKBe3IU7ROZAi7UM3K3pXCW3RN+yacyGDFfuI/
+         1k4/G0b8NWV1tFRTySYJl0TlT2IlmKqlboe07fqOm2cPIcX1QzpQExVMKKSuzybgy4dT
+         Yv8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678725117;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=izuBuxwdIPWQ5BlFBYrEudMxJy/3eKoBODl3Q7pVmOg=;
+        b=uLYaxK+8HdGR0tiNSkkQeAiQ45ZNIzhGisXKSZQtPMzfe/zz801WmF/haInCBWxhoJ
+         YGPkoSGfv7gDT+28p8VrbMPuujLdYu7GrPzs56mCJ06CZtF6Oy7zDD28UxlTdMnvQtqU
+         8YW5rF17DBMbSP+WRr1oefr66QvuvBh1angPSeQrOHpTPmW9Xk0b7T4Hbb1jJEuJJBXH
+         PrqNKUv57L4ztFr5LY0dDtJCBtiD0ho5qsN5cEcFpel57XCrgGEWBo9o1rNOztL2CQT7
+         CdwdIYK4Sop2sv8+n1MtAA1qJT27y6gj/9sCFgKNtkYwpGvbj9yn6uRzAui8i+KMcc1d
+         OlZw==
+X-Gm-Message-State: AO0yUKVCxFuFSCQnmnOY8sRuD/0KXwoAOL11bc7wurCE6QfiL254UUZb
+        JM0NZEE9tbXbca559/rJzIGwE/m2aS7WJZdH
+X-Google-Smtp-Source: AK7set/EfQ2Eu+Z0rlqqlk9uoROfYt6ba42FXHP99LpzKZ2/SvQ9MQr3forX2MDa4CtuYQQWwKeLtw==
+X-Received: by 2002:a17:906:308e:b0:8b1:3ba7:723b with SMTP id 14-20020a170906308e00b008b13ba7723bmr32930522ejv.30.1678725116892;
+        Mon, 13 Mar 2023 09:31:56 -0700 (PDT)
+Received: from [127.0.1.1] (i130160.upc-i.chello.nl. [62.195.130.160])
+        by smtp.googlemail.com with ESMTPSA id lc22-20020a170906dff600b00922b009fc79sm2816144ejc.164.2023.03.13.09.31.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Mar 2023 09:31:56 -0700 (PDT)
+From:   Jakob Koschel <jkl820.git@gmail.com>
+Date:   Mon, 13 Mar 2023 17:31:50 +0100
+Subject: [PATCH net] ice: fix invalid check for empty list in
+ ice_sched_assoc_vsi_to_agg()
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20230301-ice-fix-invalid-iterator-found-check-v1-1-87c26deed999@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAPVPD2QC/x2NQQ7CMAwEv1L5jKW0gQtfQRycxCEW4CCnrZCq/
+ p2U42i0sxs0NuEG12ED41WaVO0wngaIhfTBKKkzTG7yzrsRJTJm+aLoSi9JKDMbzdUw10UTxsL
+ xiY48X8LZpxw89FSgxhiMNJYj9qbWV4f4GPfY//8GyjPc9/0H8Gx3HpQAAAA=
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Subject: Re: [PATCH 0/7] remove SLOB and allow kfree() with
- kmem_cache_alloc()
-Message-ID: <20230313123147.6d28c47e@gandalf.local.home>
-In-Reply-To: <ZA2gofYkXRcJ8cLA@kernel.org>
-References: <20230310103210.22372-1-vbabka@suse.cz>
-        <ZA2gofYkXRcJ8cLA@kernel.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Pietro Borrello <borrello@diag.uniroma1.it>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jkl820.git@gmail.com>
+X-Mailer: b4 0.12.1
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1678725116; l=2303;
+ i=jkl820.git@gmail.com; s=20230112; h=from:subject:message-id;
+ bh=WjMjEPfty/nItSmP8wasMGB1SdFJhn1Xtbp3MghZjCI=;
+ b=jGby7KQI+wBKqCv86pOj7AXtN0VEVq+RnsbhBAVivykpoAIcDyFE8MHkejVkEKHqLu2yKKv3bC2G
+ 706m/EvgBNjfklWYHPdDXUUnsN/0U77WE5aZpZW+GW19dbh6e313
+X-Developer-Key: i=jkl820.git@gmail.com; a=ed25519;
+ pk=rcRpP90oZXet9udPj+2yOibfz31aYv8tpf0+ZYOQhyA=
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 12 Mar 2023 11:51:29 +0200
-Mike Rapoport <mike.rapoport@gmail.com> wrote:
+The code implicitly assumes that the list iterator finds a correct
+handle. If 'vsi_handle' is not found the 'old_agg_vsi_info' was
+pointing to an bogus memory location. For safety a separate list
+iterator variable should be used to make the != NULL check on
+'old_agg_vsi_info' correct under any circumstances.
 
-> git grep -in slob still gives a couple of matches. I've dropped the
-> irrelevant ones it it left me with these:
-> 
-> CREDITS:14:D: SLOB slab allocator
-> kernel/trace/ring_buffer.c:358: * Also stolen from mm/slob.c. Thanks to Mathieu Desnoyers for pointing
-> mm/Kconfig:251:    SLOB allocator and is not recommended for systems with more than
-> mm/Makefile:25:KCOV_INSTRUMENT_slob.o := n
->  
-> Except the comment in kernel/trace/ring_buffer.c all are trivial.
-> 
-> As for the comment in ring_buffer.c, it looks completely irrelevant at this
-> point.
-> 
-> @Steve?
+Additionally Linus proposed to avoid any use of the list iterator
+variable after the loop, in the attempt to move the list iterator
+variable declaration into the macro to avoid any potential misuse after
+the loop. Using it in a pointer comparision after the loop is undefined
+behavior and should be omitted if possible [1].
 
-You want me to remember something I wrote almost 15 years ago? I think I
-understand that comment as much as you do. Yeah, that was when I was still
-learning to write comments for my older self to understand, and I failed
-miserably!
+Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
+Signed-off-by: Jakob Koschel <jkl820.git@gmail.com>
+---
+ drivers/net/ethernet/intel/ice/ice_sched.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-But git history comes to the rescue. The commit that added that comment was:
+diff --git a/drivers/net/ethernet/intel/ice/ice_sched.c b/drivers/net/ethernet/intel/ice/ice_sched.c
+index 4eca8d195ef0..b7682de0ae05 100644
+--- a/drivers/net/ethernet/intel/ice/ice_sched.c
++++ b/drivers/net/ethernet/intel/ice/ice_sched.c
+@@ -2788,7 +2788,7 @@ static int
+ ice_sched_assoc_vsi_to_agg(struct ice_port_info *pi, u32 agg_id,
+ 			   u16 vsi_handle, unsigned long *tc_bitmap)
+ {
+-	struct ice_sched_agg_vsi_info *agg_vsi_info, *old_agg_vsi_info = NULL;
++	struct ice_sched_agg_vsi_info *agg_vsi_info, *iter, *old_agg_vsi_info = NULL;
+ 	struct ice_sched_agg_info *agg_info, *old_agg_info;
+ 	struct ice_hw *hw = pi->hw;
+ 	int status = 0;
+@@ -2806,11 +2806,13 @@ ice_sched_assoc_vsi_to_agg(struct ice_port_info *pi, u32 agg_id,
+ 	if (old_agg_info && old_agg_info != agg_info) {
+ 		struct ice_sched_agg_vsi_info *vtmp;
+ 
+-		list_for_each_entry_safe(old_agg_vsi_info, vtmp,
++		list_for_each_entry_safe(iter, vtmp,
+ 					 &old_agg_info->agg_vsi_list,
+ 					 list_entry)
+-			if (old_agg_vsi_info->vsi_handle == vsi_handle)
++			if (iter->vsi_handle == vsi_handle) {
++				old_agg_vsi_info = iter;
+ 				break;
++			}
+ 	}
+ 
+ 	/* check if entry already exist */
 
-ed56829cb3195 ("ring_buffer: reset buffer page when freeing")
+---
+base-commit: eeac8ede17557680855031c6f305ece2378af326
+change-id: 20230301-ice-fix-invalid-iterator-found-check-0a3e5b43dfb3
 
-This was at a time when it was suggested to me to use the struct page
-directly in the ring buffer and where we could do fun "tricks" for
-"performance". (I was never really for this, but I wasn't going to argue).
+Best regards,
+-- 
+Jakob Koschel <jkl820.git@gmail.com>
 
-And the code in question then had:
-
-/*
- * Also stolen from mm/slob.c. Thanks to Mathieu Desnoyers for pointing
- * this issue out.
- */
-static inline void free_buffer_page(struct buffer_page *bpage)
-{
-        reset_page_mapcount(&bpage->page);
-        bpage->page.mapping = NULL;
-        __free_page(&bpage->page);
-}
-
-
-But looking at commit: e4c2ce82ca27 ("ring_buffer: allocate buffer page
-pointer")
-
-It was finally decided that method was not safe, and we should not be using
-struct page but just allocate an actual page (much safer!).
-
-I never got rid of the comment, which was more about that
-"reset_page_mapcount()", and should have been deleted back then.
-
-Just remove that comment. And you could even add:
-
-Suggested-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Fixes: e4c2ce82ca27 ("ring_buffer: allocate buffer page pointer")
-
--- Steve
