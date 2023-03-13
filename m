@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EDAC06B8237
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 21:07:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DE546B8268
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 21:12:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229961AbjCMUH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 16:07:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35156 "EHLO
+        id S229805AbjCMUMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 16:12:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229743AbjCMUHz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 16:07:55 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D44087377;
-        Mon, 13 Mar 2023 13:07:46 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id k10so53395541edk.13;
-        Mon, 13 Mar 2023 13:07:46 -0700 (PDT)
+        with ESMTP id S229864AbjCMUMS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 16:12:18 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D77187D81;
+        Mon, 13 Mar 2023 13:11:56 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id x3so53498070edb.10;
+        Mon, 13 Mar 2023 13:11:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112; t=1678738065;
+        d=googlemail.com; s=20210112; t=1678738314;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=GiBmsXv0ePWzwqyMcIjHrkWJHCEm3Erfo/N/cMfRs98=;
-        b=JbOChwnBmnyovZLjPqQNJBf2FzE26m9XBea2+vx42DAnQmPUIVq974tbH+3tDBR3Rl
-         ppWlyq9WHW4HDlg9phiT/4QnJUTQcB3Yl3QXTkrSgkZ6hTKzDrx9Z+QcWFbAKWVwtIbr
-         U12wKHwDxE5yxE337J7LG53q3c6sSuf3Knf1xmxiOZVkQUOIZxUrH1fWT6bjDnWBVK7j
-         hzcUU9zfyXu9NigaS3Wfz1o6CCUqgcFFATBpiwiIgSfcOYN97W0+zWFEqx+ZFdZjgUo5
-         uovLBx/8AFMJupN92HJl7f3ANKTO+3OZE8rHNFKaLYpbFPI1YyoTes8Vb3xk4ZFFmgtu
-         Y0cQ==
+        bh=IhNghR12Doc7EYuGR8r4Vteb6OOTNo1fI6PKH8ZpZK0=;
+        b=gonHkX7Yhe72Ie531l/HxB0Vd26zSeA4TGU3AoW1HEATK5jseXU3RGul1Z4oo9/X4A
+         oIv3rd6pQsJokXef2rVXAuZxYO8LYsK1khitF++SayAlYXbbenAMkWQa5hCtwCXV5b1e
+         FBBZpQlwljguIskB3xiapTEz5F56IZkqFTRAIxQKzFJeh8fnWZjnhm2WnE3UsnQ2cX+1
+         3vs5Wy7UhfYnEYgoNMJYBVbp6BIxKuvnlBoFR73+rr9IkPYfyMLG+BFDqcePvl6LDM1F
+         Yoe1ik1yZyj0GADpi0bnnSI0n+0ZZVtVTrE8KwjpD/bhRdgdTZ9KjZmTqzt3WAAu1F5j
+         KNUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678738065;
+        d=1e100.net; s=20210112; t=1678738314;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=GiBmsXv0ePWzwqyMcIjHrkWJHCEm3Erfo/N/cMfRs98=;
-        b=l5THbEe2XqK19RIu0CZoRGd7xnDz2D43c/yWPoAHWuKpgexkBepBiF/sUMHvKHXL8M
-         zJtxQVtzSJoAY3HXW9Fn04sqfh8pTt+SFTJwyBTfTv5EyMGbnbnjY7bTdnIYmntUppeH
-         F3KuoOuK4O7zwgvrVMh0dilAvRRLTSSPFq+36/T35uyx4HAhPbWHKhhycxCcutkvS9TP
-         77GyXKX7PCOiYELfOcddKNlA73TQAG1uC+P8rGdWxwTLn+qcfNJbzLUDyZ9PCErjmKTI
-         wpLZ1yqKG3x/nEpXKN7aSqGrU5vQ/fVY44NbEOVm+Xffzwxq3L/BbX3WOJ0GDutI+sFy
-         /dTg==
-X-Gm-Message-State: AO0yUKWjWRnGugwCGRNYZoLw5J6if/pDs6wZRiRophDTA73qzraQxUAm
-        4LmmliV/xTe/uMUwE6IEXOAeTPYplsCfzqBeWJiJe0nPmOw=
-X-Google-Smtp-Source: AK7set8jeKafsOelcj8LqLf4chBnnzqFG3jevgBC418WgFcnc7dLfrVFu6YBx6SDoeTt9JSf7zj+8fKZiTdLusmFmBs=
-X-Received: by 2002:a17:906:27ce:b0:91f:a4b8:9a4a with SMTP id
- k14-20020a17090627ce00b0091fa4b89a4amr4792596ejc.6.1678738064856; Mon, 13 Mar
- 2023 13:07:44 -0700 (PDT)
+        bh=IhNghR12Doc7EYuGR8r4Vteb6OOTNo1fI6PKH8ZpZK0=;
+        b=8HGGtD4rWnWnkewLZUte/zB8bW9wMuiFVyn/Xn4+TqEl+bi99kordV8Fsda05e5aOJ
+         oeCl2cjErh72YwB344ZOhha7wgm6UljsuxFT0mjF6wuQHed9XTo4Ml8GhR5GCZB1aHB/
+         ImADtk8Ulo+W54fMQTWj0j4Pa3Q+dhWY7hMjEME2gYv/5shczKoF1LXB1Fv4qz/fnEPz
+         tKB0sQThpaZn2s179lu/Ug9zT9NdIEih0w+gY53TarH65fPZt9qas8X+ezcIRuzLysLn
+         OBLqB9HroDmgSFVf37gDeb+admzlNUAkwJ9AYjW4PMJ3802SeXbWuceGv0MF6Ux92gVk
+         px8g==
+X-Gm-Message-State: AO0yUKWOd5eC/JJ8PvC5QaPldaD3HpTrP9+jUUiX5TkhxATRnoF8lRRE
+        9/Fmv9RbB4SlRcQ5kkUXARah34rxAwZTo5D/iFg=
+X-Google-Smtp-Source: AK7set/DTcyZfjovezCMaS0m/zslIPL2EYyyypZPlsR45JWZYAH35nG/3f4bbTQcodJEiI2AwpZZ5m7541l8Pwgw8O4=
+X-Received: by 2002:a50:9f04:0:b0:4fa:3c0b:73f with SMTP id
+ b4-20020a509f04000000b004fa3c0b073fmr4720292edf.4.1678738314232; Mon, 13 Mar
+ 2023 13:11:54 -0700 (PDT)
 MIME-Version: 1.0
 References: <20230310202922.2459680-1-martin.blumenstingl@googlemail.com>
- <20230310202922.2459680-2-martin.blumenstingl@googlemail.com> <14619a051589472292f8270c2c291204@realtek.com>
-In-Reply-To: <14619a051589472292f8270c2c291204@realtek.com>
+ <20230310202922.2459680-4-martin.blumenstingl@googlemail.com> <7330960d32664bf0bce8446aa93d10c8@realtek.com>
+In-Reply-To: <7330960d32664bf0bce8446aa93d10c8@realtek.com>
 From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Mon, 13 Mar 2023 21:07:33 +0100
-Message-ID: <CAFBinCBpeOH4tzrqHxPQ475=HLOWDKfJYLEEigfTmTJwQbGAAw@mail.gmail.com>
-Subject: Re: [PATCH v2 RFC 1/9] wifi: rtw88: Clear RTW_FLAG_POWERON early in rtw_mac_power_switch()
+Date:   Mon, 13 Mar 2023 21:11:43 +0100
+Message-ID: <CAFBinCA-OHPbwdxdDe50og787LMSnbPhYbsRL6UzQUhxWgxWbQ@mail.gmail.com>
+Subject: Re: [PATCH v2 RFC 3/9] wifi: rtw88: mac: Support SDIO specific bits
+ in the power on sequence
 To:     Ping-Ke Shih <pkshih@realtek.com>
 Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
         Yan-Hsuan Chuang <tony0620emma@gmail.com>,
@@ -80,28 +81,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello Ping-Ke,
 
-On Mon, Mar 13, 2023 at 3:29=E2=80=AFAM Ping-Ke Shih <pkshih@realtek.com> w=
-rote:
+On Mon, Mar 13, 2023 at 10:05=E2=80=AFAM Ping-Ke Shih <pkshih@realtek.com> =
+wrote:
 [...]
-> > +       if (!pwr_on)
-> > +               clear_bit(RTW_FLAG_POWERON, rtwdev->flags);
-> > +
 > >         pwr_seq =3D pwr_on ? chip->pwr_on_seq : chip->pwr_off_seq;
 > >         ret =3D rtw_pwr_seq_parser(rtwdev, pwr_seq);
-> >         if (ret)
+> > -       if (ret)
+> > -               return ret;
+> > +
+> > +       if (rtw_hci_type(rtwdev) =3D=3D RTW_HCI_TYPE_SDIO)
+> > +               rtw_write32(rtwdev, REG_SDIO_HIMR, imr);
+> >
+> >         if (pwr_on)
+> >                 set_bit(RTW_FLAG_POWERON, rtwdev->flags);
 >
-> This patch changes the behavior if rtw_pwr_seq_parser() returns error whi=
-le
-> doing power-off, but I dig and think further about this case hardware sta=
-ys in
-> abnormal state. I think it would be fine to see this state as POWER_OFF.
-> Do you agree this as well?
-I agree with you. Also I think I should have made it clearer in the
-description of the patch that I'm potentially changing the behavior
-(and that this is not an issue in my opinion).
-If there's any problem during the power on/off sequence then we can't
-be fully sure about the power state.
-If you have any suggestions how to improve this then please let me know.
+> If failed to power on, it still set RTW_FLAG_POWERON. Is it reasonable?
+That sounds very reasonable to me!
+
+> Did you meet real problem here?
+>
+> Maybe, here can be
+>
+>          if (pwr_on && !ret)
+>                  set_bit(RTW_FLAG_POWERON, rtwdev->flags);
+I can't remember any issue that I've seen. I'll verify this at the end
+of the week (until then I am pretty busy with my daytime job) and then
+go with your suggestion.
+Thanks again as always - your feedback is really appreciated!
+
+Also thank you for commenting on the other patches. I'll take a closer
+look at your feedback at the end of the week and send another version
+of this series.
 
 
 Best regards,
