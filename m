@@ -2,52 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 587246B7F54
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 18:22:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45D476B7EA2
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 18:03:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231463AbjCMRWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 13:22:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42924 "EHLO
+        id S230081AbjCMRDQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 13:03:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231526AbjCMRVp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 13:21:45 -0400
-Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.214])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 92E9E7EA2D;
-        Mon, 13 Mar 2023 10:20:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=eLJUV
-        6sjqfvqr0F03Ruwnu9Zfyv3B41EL3cm8DE360Q=; b=Rq7/INmZhRuUz7zMSWFOv
-        FpClKUpVM8om0Z91hkaERbkX7bqlunG0xfvS3YvbEzHSu/itud0cFhGYWUe46OnN
-        FhdneKlDi+SzZYW7HCCIk3sNbxpzMjzsAQz9rA/JX2S3N9A1fxoT86KI9WtgHPi9
-        ztHBjLTScGPtjDGhmevdl0=
-Received: from leanderwang-LC2.localdomain (unknown [111.206.145.21])
-        by zwqz-smtp-mta-g4-3 (Coremail) with SMTP id _____wD3UUyAVg9kwRISAA--.11282S2;
-        Tue, 14 Mar 2023 00:59:45 +0800 (CST)
-From:   Zheng Wang <zyytlz.wz@163.com>
-To:     ericvh@gmail.com
-Cc:     michal.swiatkowski@linux.intel.com, lucho@ionkov.net,
-        asmadeus@codewreck.org, linux_oss@crudebyte.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, v9fs-developer@lists.sourceforge.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        hackerzheng666@gmail.com, 1395428693sheep@gmail.com,
-        alex000young@gmail.com, Zheng Wang <zyytlz.wz@163.com>
-Subject: [PATCH net v3] 9p/xen : Fix use after free bug in xen_9pfs_front_remove  due  to race condition
-Date:   Tue, 14 Mar 2023 00:59:41 +0800
-Message-Id: <20230313165941.3772964-1-zyytlz.wz@163.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S230394AbjCMRDB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 13:03:01 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60FE07202B
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 10:02:03 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id h97so5645240ybi.5
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 10:02:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1678726873;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+3LTJVQ8I7Md44dC0AzAPJrh+kx0iHH3FkY/zz5mmQk=;
+        b=JwLRo2H8LkJNs/lKAF6GdiW8kBrP8YKe0c1h4gZE3oielQ93KgRC1nL6EjJqq129DC
+         jfaNiHgX7XdNlGa9VCpA8YKqSS2iG2XCcGwLWzgNXcn9JUqoj1/cEl1l8Ucc0W/JtTFu
+         w/+Y4bWJ24PZWIAjZglJYiY5fOGNGqF6nn2CNUq7d076DU6syh6loYSM5ffLemCY0DwV
+         +3Gc42Wqb6E5Wy3Vk+OjLJMhw1czabLk+TX65vHhZmt3CmL1xn5glbUpqCKBytxUUKD2
+         TQx2XS230JoWCsmh/H1Lsjl6Ri+c7EsDYCerBly880SkmAUGtoRobNhdEWT0CpsoCPBy
+         smGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678726873;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=+3LTJVQ8I7Md44dC0AzAPJrh+kx0iHH3FkY/zz5mmQk=;
+        b=MA/Kt2K/pseqMZYw4xv4kCGmaJISdjp0ZANesvEfYR9fOzuTO+EWACJkpHYdGk2zIc
+         afg3lTp0k29CfqRJ5IKzQLY6GoMLsJ++75dHGyZAvRMwLe9gtOTCL13mxc1iYFA6w9fE
+         woZiWaVAg5nCl8yTQghtCb4nC+iCCEMtXOoa+MS+ldwqTUhwdLZqwVde0W0RHubpYoyg
+         8/c+PEDYqG3UrL0msllvW1GVURC3/+R/8Qk4BgR5MhahqyYCTCLb26f73HxipcAakeHC
+         au6uURuRIjqzLUWMZo+dvqi6k9eph4Xt9+4LBXBMb+grDOi5eJJRkQF9/h2bH3fXuleD
+         4Fcw==
+X-Gm-Message-State: AO0yUKUDG2GPMM3bt7jX/ssbwhMSjVv5PuQfohPoeFKrV4SWNMsJ0mrw
+        HaH3iQKQQsWuR3PbYKW/Zv3L6LVlensgB1quOrijsw==
+X-Google-Smtp-Source: AK7set9AGI9Yup843jOL+BxMIvnxdJnpdOzdNn1Qgz4OEl6d5d4kvCTnls97Ui1PaHdghV59qsWHM/i0zXaplRzioT0=
+X-Received: by 2002:a05:6902:524:b0:ab8:1ed9:cfc5 with SMTP id
+ y4-20020a056902052400b00ab81ed9cfc5mr21762528ybs.6.1678726872826; Mon, 13 Mar
+ 2023 10:01:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: _____wD3UUyAVg9kwRISAA--.11282S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7tF15Cw48JFy5Kr1kWF4DJwb_yoW8Xw43pa
-        naka15CFy8AF10yFsYy3WxJ3WFkw48Gr1Iga12kw4fJr98Zry8XFZ5t34Yga4UArs0qF4r
-        Cw1jgFWDGFWDA3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zE2YLtUUUUU=
-X-Originating-IP: [111.206.145.21]
-X-CM-SenderInfo: h2113zf2oz6qqrwthudrp/1tbiXRQxU1WBo5PgAwABst
-X-Spam-Status: No, score=-0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_MSPIKE_H2,
-        RCVD_IN_VALIDITY_RPBL,SPF_HELO_NONE,SPF_PASS autolearn=no
+References: <20230313162520.GA17199@debian> <20230313162956.GA17242@debian>
+In-Reply-To: <20230313162956.GA17242@debian>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 13 Mar 2023 10:01:01 -0700
+Message-ID: <CANn89iJfnK1q51ushoN-H4h8DCZBrbvwLB8JCyS6z3ViQczVVw@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] gro: decrease size of CB
+To:     Richard Gobert <richardbgobert@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        dsahern@kernel.org, alexanderduyck@fb.com, lucien.xin@gmail.com,
+        lixiaoyan@google.com, iwienand@redhat.com, leon@kernel.org,
+        ye.xingchen@zte.com.cn, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,59 +72,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In xen_9pfs_front_probe, it calls xen_9pfs_front_alloc_dataring
-to init priv->rings and bound &ring->work with p9_xen_response.
+On Mon, Mar 13, 2023 at 9:30=E2=80=AFAM Richard Gobert <richardbgobert@gmai=
+l.com> wrote:
+>
+> The GRO control block (NAPI_GRO_CB) is currently at its maximum size.  Th=
+is
+> commit reduces its size by putting two groups of fields that are used onl=
+y
+> at different times into a union.
+>
+> Specifically, the fields frag0 and frag0_len are the fields that make up
+> the frag0 optimisation mechanism, which is used during the initial parsin=
+g
+> of the SKB.
 
-When it calls xen_9pfs_front_event_handler to handle IRQ requests,
-it will finally call schedule_work to start the work.
+Note that these fields could also be stored in some auto variable,
+instead of skb.
 
-When we call xen_9pfs_front_remove to remove the driver, there
-may be a sequence as follows:
+>
+> The fields last and age are used after the initial parsing, while the SKB
+> is stored in the GRO list, waiting for other packets to arrive.
+>
+> There was one location in dev_gro_receive that modified the frag0 fields
+> after setting last and age. I changed this accordingly without altering t=
+he
+> code behaviour.
+>
+> Signed-off-by: Richard Gobert <richardbgobert@gmail.com>
+> ---
 
-Fix it by finishing the work before cleanup in xen_9pfs_front_free.
+SGTM, thanks.
 
-Note that, this bug is found by static analysis, which might be
-false positive.
-
-CPU0                  CPU1
-
-                     |p9_xen_response
-xen_9pfs_front_remove|
-  xen_9pfs_front_free|
-kfree(priv)          |
-//free priv          |
-                     |p9_tag_lookup
-                     |//use priv->client
-
-Fixes: 71ebd71921e4 ("xen/9pfs: connect to the backend")
-Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
----
-v3:
-- remove unnecessary comment and move definition to the
-for loop suggested by Michal Swiatkowski
-
-v2:
-- fix type error of ring found by kernel test robot
----
- net/9p/trans_xen.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/net/9p/trans_xen.c b/net/9p/trans_xen.c
-index c64050e839ac..df467ffb52d0 100644
---- a/net/9p/trans_xen.c
-+++ b/net/9p/trans_xen.c
-@@ -280,6 +280,10 @@ static void xen_9pfs_front_free(struct xen_9pfs_front_priv *priv)
- 	write_unlock(&xen_9pfs_lock);
- 
- 	for (i = 0; i < priv->num_rings; i++) {
-+		struct xen_9pfs_dataring *ring = &priv->rings[i];
-+
-+		cancel_work_sync(&ring->work);
-+
- 		if (!priv->rings[i].intf)
- 			break;
- 		if (priv->rings[i].irq > 0)
--- 
-2.25.1
-
+Reviewed-by: Eric Dumazet <edumazet@google.com>
