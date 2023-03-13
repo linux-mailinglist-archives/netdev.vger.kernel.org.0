@@ -2,223 +2,347 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B94076B81E4
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 20:54:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E67E46B8230
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 21:06:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230062AbjCMTyp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 15:54:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43388 "EHLO
+        id S229649AbjCMUGT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 16:06:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229988AbjCMTyo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 15:54:44 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C8CD30B18;
-        Mon, 13 Mar 2023 12:54:42 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id cy23so53267291edb.12;
-        Mon, 13 Mar 2023 12:54:42 -0700 (PDT)
+        with ESMTP id S229531AbjCMUGS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 16:06:18 -0400
+Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79D7661A90
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 13:06:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678737282;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=hTglOzPQxV2ZuftBtVzhxCqyC3HbKgEioLlxEWe4OF8=;
-        b=JttE3gmIYlCcKby2+xgkbT/lIs9POUazUWd3uxDJGEB9Dx8dLmf2aR+BbgiM6/A552
-         S2eMTPgQMcK2HBVbLD15dZ+agSY9Oi89Kt9h8s1KawGLE7rRS0rKgeGWmeLtEp6RsRK5
-         F15ZbSUZgyrx7/NGApTktSKHlkWsseHpvxceEoIpSrv5qSJ4ICWdhmSSvnKnqBzFyx3X
-         VPkT+iNISkCPyxobTIud1DRInQTEWfFu8yBB3e0TOa+It+WKNheLJsn/vWRLwAZB5nTd
-         yipnKMAIn/yRWThYlUPpTyGVAZWmJXsd0V+CPdpkmocbqHdY0Lux9z7I+Ma63PYdQchc
-         xxxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678737282;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hTglOzPQxV2ZuftBtVzhxCqyC3HbKgEioLlxEWe4OF8=;
-        b=aNYC2FrskWvvOFTaPAtklEZjh3bmDJeoKTa+Mt6ravTpMmEsmy90jUqSdxPEKbbUIo
-         2iTqPpq8cS+m1H5s4Vm4n4czHouRqfj64wNq0mFISA+q7LTAHeY8KKqUAiQr8Y+OGgum
-         Yqd7iCbu9S9AcwAq9a++ucs4O6AMeQe1ubl3ztB42EX/CGfPlQurorRbHWXCM5BKhLt0
-         4BkbSkqP0rJdl8JhCfNXF8KX4Kbn9xtnm2+cc8EuEbb90WOcaRNhNChDOwtRvxOnO60x
-         Bu7YPmZ+CgZuW5HgVd3eWmLS2fCT21A3dQ5jkbtRCr5zv28UcUHW/UVqewRbAWR56ZEn
-         TbOQ==
-X-Gm-Message-State: AO0yUKUMUkcZWr2tcmdlD3uWrcGWswOkjLkTM0q4Z8T6rl+hED4wK18J
-        2MFOt48YSbEv3QIzqN9GfoA=
-X-Google-Smtp-Source: AK7set+K12/AxM41nagz1zoXa7jEp5xLjOwzrSoHPukoLxiDyfAjCyQAQhmQZ/fLI0iE8JirjODBeg==
-X-Received: by 2002:a17:906:b14f:b0:8b1:7de9:b38c with SMTP id bt15-20020a170906b14f00b008b17de9b38cmr32962382ejb.52.1678737281797;
-        Mon, 13 Mar 2023 12:54:41 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id mh19-20020a170906eb9300b009200601ea12sm161969ejb.208.2023.03.13.12.54.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Mar 2023 12:54:41 -0700 (PDT)
-Date:   Mon, 13 Mar 2023 21:54:39 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Klaus Kudielka <klaus.kudielka@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 2/3] net: dsa: mv88e6xxx: move call to
- mv88e6xxx_mdios_register()
-Message-ID: <20230313195439.7yiwktvrgmcepv4n@skbuf>
-References: <20230311203132.156467-1-klaus.kudielka@gmail.com>
- <20230311203132.156467-3-klaus.kudielka@gmail.com>
- <20230311224951.kqcihlralwehfvaj@skbuf>
- <98315424312f6f6abca771d27a78b2e41dcb6d6a.camel@gmail.com>
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1678737977; x=1710273977;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ADmqjwKIBQazpXj2teRRWy2ggTVdGClQa19UiXo4hAg=;
+  b=g6cLO4xCibqPgU34lPdnDFUEcyY3daNP9EC+IkpPaHi6OKATVFdANFJU
+   WwNxdbXhaw8nt1YkdzCe8ORbJrMbVIeZJXSEAInCgi0Rv5Ga2Gd0dWvX1
+   E1enWn/KtKpTt4A0FGmcGmvZfPJvyWnFgopvclIJHDG0MbKz7sAfhV6qj
+   k=;
+X-IronPort-AV: E=Sophos;i="5.98,257,1673913600"; 
+   d="scan'208";a="306698267"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-b538c141.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2023 20:06:13 +0000
+Received: from EX19MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1e-m6i4x-b538c141.us-east-1.amazon.com (Postfix) with ESMTPS id 561FCA480C;
+        Mon, 13 Mar 2023 20:06:12 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWB001.ant.amazon.com (10.250.64.248) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.25; Mon, 13 Mar 2023 20:06:11 +0000
+Received: from 88665a182662.ant.amazon.com.com (10.142.135.145) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.24;
+ Mon, 13 Mar 2023 20:06:09 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <mfreemon@cloudflare.com>
+CC:     <kernel-team@cloudflare.com>, <netdev@vger.kernel.org>,
+        <kuniyu@amazon.com>
+Subject: Re: [RFC PATCH v2] Add a sysctl to allow TCP window shrinking in order to honor memory limits
+Date:   Mon, 13 Mar 2023 13:06:01 -0700
+Message-ID: <20230313200601.46663-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230308053353.675086-1-mfreemon@cloudflare.com>
+References: <20230308053353.675086-1-mfreemon@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <98315424312f6f6abca771d27a78b2e41dcb6d6a.camel@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.142.135.145]
+X-ClientProxiedBy: EX19D036UWB003.ant.amazon.com (10.13.139.172) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 12, 2023 at 11:15:15AM +0100, Klaus Kudielka wrote:
-> Just trying to reproduce this on the Omnia (with the whole series applied, plus some
-> *** debug *** messages concerning timing). But all seems to be good here:
+From:   Mike Freemon <mfreemon@cloudflare.com>
+Date:   Tue,  7 Mar 2023 23:33:53 -0600
+> From: "mfreemon@cloudflare.com" <mfreemon@cloudflare.com>
+> 
+> Under certain circumstances, the tcp receive buffer memory limit
+> set by autotuning is ignored, and the receive buffer can grow
+> unrestrained until it reaches tcp_rmem[2].
+> 
+> To reproduce:  Connect a TCP session with the receiver doing
+> nothing and the sender sending small packets (an infinite loop
+> of socket send() with 4 bytes of payload with a sleep of 1 ms
+> in between each send()).  This will fill the tcp receive buffer
+> all the way to tcp_rmem[2], ignoring the autotuning limit
+> (sk_rcvbuf).
+> 
+> As a result, a host can have individual tcp sessions with receive
+> buffers of size tcp_rmem[2], and the host itself can reach tcp_mem
+> limits, causing the host to go into tcp memory pressure mode.
+> 
+> The fundamental issue is the relationship between the granularity
+> of the window scaling factor and the number of byte ACKed back
+> to the sender.  This problem has previously been identified in
+> RFC 7323, appendix F [1].
+> 
+> The Linux kernel currently adheres to never shrinking the window.
+> 
+> In addition to the overallocation of memory mentioned above, this
+> is also functionally incorrect, because once tcp_rmem[2] is
+> reached, the receiver will drop in-window packets resulting in
+> retransmissions and an eventual timeout of the tcp session.  A
+> receive buffer full condition should instead result in a zero
+> window and an indefinite wait.
+> 
+> In practice, this problem is largely hidden for most flows.  It
+> is not applicable to mice flows.  Elephant flows can send data
+> fast enough to "overrun" the sk_rcvbuf limit (in a single ACK),
+> triggering a zero window.
+> 
+> But this problem does show up for other types of flows.  Good
+> examples are websockets and other type of flows that send small
+> amounts of data spaced apart slightly in time.  In these cases,
+> we directly encounter the problem described in [1].
+> 
+> RFC 7323, section 2.4 [2], says there are instances when a retracted
+> window can be offered, and that TCP implementations MUST ensure
+> that they handle a shrinking window, as specified in RFC 1122,
+> section 4.2.2.16 [3].  All prior RFCs on the topic of tcp window
+> management have made clear that sender must accept a shrunk window
+> from the receiver, including RFC 793 [4] and RFC 1323 [5].
+> 
+> This patch implements the functionality to shrink the tcp window
+> when necessary to keep the right edge within the memory limit set
+> by autotuning (sk_rcvbuf).  This new functionality is enabled by
+> setting the sysctl net.ipv4.tcp_shrink_window to 1.
+> 
+> [1] https://www.rfc-editor.org/rfc/rfc7323#appendix-F
+> [2] https://www.rfc-editor.org/rfc/rfc7323#section-2.4
+> [3] https://www.rfc-editor.org/rfc/rfc1122#page-91
+> [4] https://www.rfc-editor.org/rfc/rfc793
+> [5] https://www.rfc-editor.org/rfc/rfc1323
+> 
+> Signed-off-by: Mike Freemon <mfreemon@cloudflare.com>
+> ---
+>  Documentation/networking/ip-sysctl.rst | 14 ++++++
+>  include/net/netns/ipv4.h               |  2 +
+>  net/ipv4/sysctl_net_ipv4.c             |  7 +++
+>  net/ipv4/tcp_ipv4.c                    |  2 +
+>  net/ipv4/tcp_output.c                  | 59 +++++++++++++++++++-------
+>  5 files changed, 69 insertions(+), 15 deletions(-)
+> 
+> diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+> index 87dd1c5283e6..67dfcadfe350 100644
+> --- a/Documentation/networking/ip-sysctl.rst
+> +++ b/Documentation/networking/ip-sysctl.rst
+> @@ -968,6 +968,20 @@ tcp_tw_reuse - INTEGER
+>  tcp_window_scaling - BOOLEAN
+>  	Enable window scaling as defined in RFC1323.
+>  
+> +tcp_shrink_window - BOOLEAN
+> +	This changes how the TCP receive window is calculated when window
+> +	scaling is in effect.
+> +
+> +	RFC 7323, section 2.4, says there are instances when a retracted
+> +	window can be offered, and that TCP implementations MUST ensure
+> +	that they handle a shrinking window, as specified in RFC 1122.
+> +
+> +	- 0 - Disabled.	The window is never shrunk.
+> +	- 1 - Enabled.	The window is shrunk when necessary to remain within
+> +					the memory limit set by autotuning (sk_rcvbuf).
+> +
+> +	Default: 0
+> +
+>  tcp_wmem - vector of 3 INTEGERs: min, default, max
+>  	min: Amount of memory reserved for send buffers for TCP sockets.
+>  	Each TCP socket has rights to use it due to fact of its birth.
+> diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+> index db762e35aca9..fbc67afac75a 100644
+> --- a/include/net/netns/ipv4.h
+> +++ b/include/net/netns/ipv4.h
+> @@ -237,5 +237,7 @@ struct netns_ipv4 {
+>  
+>  	atomic_t	rt_genid;
+>  	siphash_key_t	ip_id_key;
+> +
+> +	unsigned int sysctl_tcp_shrink_window;
 
-Thanks for testing.
+u8 can be used instead.
+Also, please try filling a (hot if appropriate) hole.
 
-So yeah, as I was saying, on Turris MOX with 3 DSA switches, your patch
-set does not work as intended. We also need the patch below (placed as
-patch 1/4) in order for that configuration to have internal PHY
-interrupts after the driver unbind/bind procedure is applied to one of
-the switches.
-
-From my perspective you can pick up this patch, apply your sign off to
-it, and send v3 right away.
+  $ pahole -C netns_ipv4 net/ipv4/sysctl_net_ipv4.o
 
 
-From 46512c8033c931bc0e416cec7a14c310aac56a57 Mon Sep 17 00:00:00 2001
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
-Date: Mon, 13 Mar 2023 21:24:08 +0200
-Subject: [PATCH] net: dsa: mv88e6xxx: don't dispose of Global2 IRQ mappings
- from mdiobus code
+>  };
+>  #endif
+> diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+> index 0d0cc4ef2b85..c6d181f79534 100644
+> --- a/net/ipv4/sysctl_net_ipv4.c
+> +++ b/net/ipv4/sysctl_net_ipv4.c
+> @@ -1467,6 +1467,13 @@ static struct ctl_table ipv4_net_table[] = {
+>  		.extra1         = SYSCTL_ZERO,
+>  		.extra2         = &tcp_plb_max_cong_thresh,
+>  	},
+> +	{
+> +		.procname	= "tcp_shrink_window",
+> +		.data		= &init_net.ipv4.sysctl_tcp_shrink_window,
+> +		.maxlen		= sizeof(unsigned int),
 
-irq_find_mapping() does not need irq_dispose_mapping(), only
-irq_create_mapping() does.
+s/unsigned int/u8/
 
-Calling irq_dispose_mapping() from mv88e6xxx_g2_irq_mdio_free() and from
-the error path of mv88e6xxx_g2_irq_mdio_setup() effectively means that
-the mdiobus logic (for internal PHY interrupts) is disposing of a
-hwirq->virq mapping which it is not responsible of (but instead, the
-function pair mv88e6xxx_g2_irq_setup() + mv88e6xxx_g2_irq_free() is).
+> +		.mode		= 0644,
+> +		.proc_handler	= proc_douintvec_minmax,
 
-With the current code structure, this isn't such a huge problem, because
-mv88e6xxx_g2_irq_mdio_free() is called relatively close to the real
-owner of the IRQ mappings:
+You can use u8 handler with min/max.
 
-mv88e6xxx_remove()
--> mv88e6xxx_unregister_switch()
--> mv88e6xxx_mdios_unregister()
-   -> mv88e6xxx_g2_irq_mdio_free()
--> mv88e6xxx_g2_irq_free()
+		.proc_handler   = proc_dou8vec_minmax,
+		.extra1         = SYSCTL_ZERO,
+                .extra2         = SYSCTL_ONE,
 
-and the switch isn't 'live' in any way such that it would be able of
-generating interrupts at this point (mv88e6xxx_unregister_switch() has
-been called).
+> +	},
+>  	{ }
+>  };
+>  
+> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+> index ea370afa70ed..d976f01413d7 100644
+> --- a/net/ipv4/tcp_ipv4.c
+> +++ b/net/ipv4/tcp_ipv4.c
+> @@ -3275,6 +3275,8 @@ static int __net_init tcp_sk_init(struct net *net)
+>  	else
+>  		net->ipv4.tcp_congestion_control = &tcp_reno;
+>  
+> +	net->ipv4.sysctl_tcp_shrink_window = 0;
+> +
+>  	return 0;
+>  }
+>  
+> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+> index 71d01cf3c13e..7f7a96e797fa 100644
+> --- a/net/ipv4/tcp_output.c
+> +++ b/net/ipv4/tcp_output.c
+> @@ -260,8 +260,8 @@ static u16 tcp_select_window(struct sock *sk)
+>  	u32 old_win = tp->rcv_wnd;
+>  	u32 cur_win = tcp_receive_window(tp);
+>  	u32 new_win = __tcp_select_window(sk);
+> +	struct net *net = sock_net(sk);
+>  
+> -	/* Never shrink the offered window */
+>  	if (new_win < cur_win) {
+>  		/* Danger Will Robinson!
+>  		 * Don't update rcv_wup/rcv_wnd here or else
+> @@ -270,11 +270,15 @@ static u16 tcp_select_window(struct sock *sk)
+>  		 *
+>  		 * Relax Will Robinson.
+>  		 */
+> -		if (new_win == 0)
+> -			NET_INC_STATS(sock_net(sk),
+> -				      LINUX_MIB_TCPWANTZEROWINDOWADV);
+> -		new_win = ALIGN(cur_win, 1 << tp->rx_opt.rcv_wscale);
+> +		if (!net->ipv4.sysctl_tcp_shrink_window) {
 
-However, there is a desire to split mv88e6xxx_mdios_unregister() and
-mv88e6xxx_g2_irq_free() such that mv88e6xxx_mdios_unregister() only gets
-called from mv88e6xxx_teardown(). This is much more problematic, as can
-be seen below.
+Let's use READ_ONCE() to silence KCSAN when reading sysctl knobs.
+Same for other readers.
 
-In a cross-chip scenario (say 3 switches d0032004.mdio-mii:10,
-d0032004.mdio-mii:11 and d0032004.mdio-mii:12 which form a single DSA
-tree), it is possible to unbind the device driver from a single switch
-(say d0032004.mdio-mii:10).
+Thanks,
+Kuniyuki
 
-When that happens, mv88e6xxx_remove() will be called for just that one
-switch, and this will call mv88e6xxx_unregister_switch() which will tear
-down the entire tree (calling mv88e6xxx_teardown() for all 3 switches).
 
-Assuming mv88e6xxx_mdios_unregister() was moved to mv88e6xxx_teardown(),
-at this stage, all 3 switches will have called irq_dispose_mapping() on
-their mdiobus virqs.
-
-When we bind again the device driver to d0032004.mdio-mii:10,
-mv88e6xxx_probe() is called for it, which calls dsa_register_switch().
-The DSA tree is now complete again, and mv88e6xxx_setup() is called for
-all 3 switches.
-
-Also assuming that mv88e6xxx_mdios_register() is moved to
-mv88e6xxx_setup() (the 2 assumptions go together), at this point,
-d0032004.mdio-mii:11 and d0032004.mdio-mii:12 don't have an IRQ mapping
-for the internal PHYs anymore, as they've disposed of it in
-mv88e6xxx_teardown(). Whereas switch d0032004.mdio-mii:10 has re-created
-it, because its code path comes from mv88e6xxx_probe().
-
-Simply put, this change prepares the driver to handle the movement of
-mv88e6xxx_mdios_register() to mv88e6xxx_setup() for cross-chip DSA trees.
-
-Also, the code being deleted was partially wrong anyway (in a way which
-may have hidden this other issue). mv88e6xxx_g2_irq_mdio_setup()
-populates bus->irq[] starting with offset chip->info->phy_base_addr, but
-the teardown path doesn't apply that offset too. So it disposes of virq
-0 for phy = [ 0, phy_base_addr ).
-
-All switch families have phy_base_addr = 0, except for MV88E6141 and
-MV88E6341 which have it as 0x10. I guess those families would have
-happened to work by mistake in cross-chip scenarios too.
-
-I'm deleting the body of mv88e6xxx_g2_irq_mdio_free() but leaving its
-call sites and prototype in place. This is because, if we ever need to
-add back some teardown procedure in the future, it will be perhaps
-error-prone to deduce the proper call sites again. Whereas like this,
-no extra code should get generated, it shouldn't bother anybody.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/dsa/mv88e6xxx/global2.c | 20 ++++----------------
- 1 file changed, 4 insertions(+), 16 deletions(-)
-
-diff --git a/drivers/net/dsa/mv88e6xxx/global2.c b/drivers/net/dsa/mv88e6xxx/global2.c
-index ed3b2f88e783..a26546d3d7b5 100644
---- a/drivers/net/dsa/mv88e6xxx/global2.c
-+++ b/drivers/net/dsa/mv88e6xxx/global2.c
-@@ -1176,31 +1176,19 @@ int mv88e6xxx_g2_irq_setup(struct mv88e6xxx_chip *chip)
- int mv88e6xxx_g2_irq_mdio_setup(struct mv88e6xxx_chip *chip,
- 				struct mii_bus *bus)
- {
--	int phy, irq, err, err_phy;
-+	int phy, irq;
- 
- 	for (phy = 0; phy < chip->info->num_internal_phys; phy++) {
- 		irq = irq_find_mapping(chip->g2_irq.domain, phy);
--		if (irq < 0) {
--			err = irq;
--			goto out;
--		}
-+		if (irq < 0)
-+			return irq;
-+
- 		bus->irq[chip->info->phy_base_addr + phy] = irq;
- 	}
- 	return 0;
--out:
--	err_phy = phy;
--
--	for (phy = 0; phy < err_phy; phy++)
--		irq_dispose_mapping(bus->irq[phy]);
--
--	return err;
- }
- 
- void mv88e6xxx_g2_irq_mdio_free(struct mv88e6xxx_chip *chip,
- 				struct mii_bus *bus)
- {
--	int phy;
--
--	for (phy = 0; phy < chip->info->num_internal_phys; phy++)
--		irq_dispose_mapping(bus->irq[phy]);
- }
--- 
-2.34.1
-
+> +			/* Never shrink the offered window */
+> +			if (new_win == 0)
+> +				NET_INC_STATS(sock_net(sk),
+> +					      LINUX_MIB_TCPWANTZEROWINDOWADV);
+> +			new_win = ALIGN(cur_win, 1 << tp->rx_opt.rcv_wscale);
+> +		}
+>  	}
+> +
+>  	tp->rcv_wnd = new_win;
+>  	tp->rcv_wup = tp->rcv_nxt;
+>  
+> @@ -2947,6 +2951,7 @@ u32 __tcp_select_window(struct sock *sk)
+>  {
+>  	struct inet_connection_sock *icsk = inet_csk(sk);
+>  	struct tcp_sock *tp = tcp_sk(sk);
+> +	struct net *net = sock_net(sk);
+>  	/* MSS for the peer's data.  Previous versions used mss_clamp
+>  	 * here.  I don't know if the value based on our guesses
+>  	 * of peer's MSS is better for the performance.  It's more correct
+> @@ -2968,16 +2973,24 @@ u32 __tcp_select_window(struct sock *sk)
+>  		if (mss <= 0)
+>  			return 0;
+>  	}
+> +
+> +	if (net->ipv4.sysctl_tcp_shrink_window) {
+> +		/* new window should always be an exact multiple of scaling factor */
+> +		free_space = round_down(free_space, 1 << tp->rx_opt.rcv_wscale);
+> +	}
+> +
+>  	if (free_space < (full_space >> 1)) {
+>  		icsk->icsk_ack.quick = 0;
+>  
+>  		if (tcp_under_memory_pressure(sk))
+>  			tcp_adjust_rcv_ssthresh(sk);
+>  
+> -		/* free_space might become our new window, make sure we don't
+> -		 * increase it due to wscale.
+> -		 */
+> -		free_space = round_down(free_space, 1 << tp->rx_opt.rcv_wscale);
+> +		if (!net->ipv4.sysctl_tcp_shrink_window) {
+> +			/* free_space might become our new window, make sure we don't
+> +			 * increase it due to wscale.
+> +			 */
+> +			free_space = round_down(free_space, 1 << tp->rx_opt.rcv_wscale);
+> +		}
+>  
+>  		/* if free space is less than mss estimate, or is below 1/16th
+>  		 * of the maximum allowed, try to move to zero-window, else
+> @@ -2988,10 +3001,24 @@ u32 __tcp_select_window(struct sock *sk)
+>  		 */
+>  		if (free_space < (allowed_space >> 4) || free_space < mss)
+>  			return 0;
+> +
+> +		if (net->ipv4.sysctl_tcp_shrink_window && free_space < (1 << tp->rx_opt.rcv_wscale))
+> +			return 0;
+>  	}
+>  
+> -	if (free_space > tp->rcv_ssthresh)
+> +	if (free_space > tp->rcv_ssthresh) {
+>  		free_space = tp->rcv_ssthresh;
+> +		if (net->ipv4.sysctl_tcp_shrink_window) {
+> +			/* new window should always be an exact multiple of scaling factor
+> +			 *
+> +			 * For this case, we ALIGN "up" (increase free_space) because
+> +			 * we know free_space is not zero here, it has been reduced from
+> +			 * the memory-based limit, and rcv_ssthresh is not a hard limit
+> +			 * (unlike sk_rcvbuf).
+> +			 */
+> +			free_space = ALIGN(free_space, (1 << tp->rx_opt.rcv_wscale));
+> +		}
+> +	}
+>  
+>  	/* Don't do rounding if we are using window scaling, since the
+>  	 * scaled window will not line up with the MSS boundary anyway.
+> @@ -2999,11 +3026,13 @@ u32 __tcp_select_window(struct sock *sk)
+>  	if (tp->rx_opt.rcv_wscale) {
+>  		window = free_space;
+>  
+> -		/* Advertise enough space so that it won't get scaled away.
+> -		 * Import case: prevent zero window announcement if
+> -		 * 1<<rcv_wscale > mss.
+> -		 */
+> -		window = ALIGN(window, (1 << tp->rx_opt.rcv_wscale));
+> +		if (!net->ipv4.sysctl_tcp_shrink_window) {
+> +			/* Advertise enough space so that it won't get scaled away.
+> +			 * Import case: prevent zero window announcement if
+> +			 * 1<<rcv_wscale > mss.
+> +			 */
+> +			window = ALIGN(window, (1 << tp->rx_opt.rcv_wscale));
+> +		}
+>  	} else {
+>  		window = tp->rcv_wnd;
+>  		/* Get the largest window that is a nice multiple of mss.
+> -- 
+> 2.39.2
