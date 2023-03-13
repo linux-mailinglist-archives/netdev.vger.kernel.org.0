@@ -2,114 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B11F46B6F1F
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 06:36:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66E3C6B6F4A
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 06:52:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229494AbjCMFgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 01:36:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49408 "EHLO
+        id S229571AbjCMFv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 01:51:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbjCMFgT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 01:36:19 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 593C03BDA5
-        for <netdev@vger.kernel.org>; Sun, 12 Mar 2023 22:36:18 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pbaqv-0002kl-Pu; Mon, 13 Mar 2023 06:36:09 +0100
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pbaqt-0002nD-HR; Mon, 13 Mar 2023 06:36:07 +0100
-Date:   Mon, 13 Mar 2023 06:36:07 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Arun.Ramadoss@microchip.com
-Cc:     olteanv@gmail.com, andrew@lunn.ch, f.fainelli@gmail.com,
-        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Woojung.Huh@microchip.com, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net-next v3 2/2] net: dsa: microchip: add ETS Qdisc
- support for KSZ9477 series
-Message-ID: <20230313053607.GD29822@pengutronix.de>
-References: <20230310090809.220764-1-o.rempel@pengutronix.de>
- <20230310090809.220764-3-o.rempel@pengutronix.de>
- <1b07b82f8692f5eb5134f78dad4cbcb3110224b2.camel@microchip.com>
+        with ESMTP id S229473AbjCMFv6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 01:51:58 -0400
+Received: from out0-199.mail.aliyun.com (out0-199.mail.aliyun.com [140.205.0.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC7F3D91F
+        for <netdev@vger.kernel.org>; Sun, 12 Mar 2023 22:51:56 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R881e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018047206;MF=amy.saq@antgroup.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---.RmKDfrD_1678686713;
+Received: from 30.46.242.109(mailfrom:amy.saq@antgroup.com fp:SMTPD_---.RmKDfrD_1678686713)
+          by smtp.aliyun-inc.com;
+          Mon, 13 Mar 2023 13:51:53 +0800
+Message-ID: <153e2ebb-cdd9-7c51-e39c-2cb9affbbb14@antgroup.com>
+Date:   Mon, 13 Mar 2023 13:51:53 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1b07b82f8692f5eb5134f78dad4cbcb3110224b2.camel@microchip.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.7.2
+Subject: Re: [PATCH v3] net/packet: support mergeable feature of virtio
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        netdev@vger.kernel.org
+Cc:     <mst@redhat.com>, <davem@davemloft.net>, <jasowang@redhat.com>,
+        "=?UTF-8?B?6LCI6Ym06ZSL?=" <henry.tjf@antgroup.com>
+References: <1678168911-337042-1-git-send-email-amy.saq@antgroup.com>
+ <64075d1f7ccfc_efd1020865@willemb.c.googlers.com.notmuch>
+ <a55816a9-073b-c030-f7f8-19588124e08b@antgroup.com>
+ <6409f8bf71c9e_1abbab2088e@willemb.c.googlers.com.notmuch>
+ <9ff86804-fe40-6e03-7ed4-6b431220e202@antgroup.com>
+ <640b465b85d3e_1dc964208be@willemb.c.googlers.com.notmuch>
+From:   "=?UTF-8?B?5rKI5a6J55CqKOWHm+eOpSk=?=" <amy.saq@antgroup.com>
+In-Reply-To: <640b465b85d3e_1dc964208be@willemb.c.googlers.com.notmuch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 13, 2023 at 03:34:16AM +0000, Arun.Ramadoss@microchip.com wrote:
-> Hi Oleksij,
-> On Fri, 2023-03-10 at 10:08 +0100, Oleksij Rempel wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you
-> > know the content is safe
-> > 
-> > Add ETS Qdisc support for KSZ9477 of switches. Current implementation
-> > is
-> > limited to strict priority mode.
-> > 
-> > Tested on KSZ8563R with following configuration:
-> > tc qdisc replace dev lan2 root handle 1: ets strict 4 \
-> >   priomap 3 3 2 2 1 1 0 0
-> > ip link add link lan2 name v1 type vlan id 1 \
-> >   egress-qos-map 0:0 1:1 2:2 3:3 4:4 5:5 6:6 7:7
-> > 
-> > and patched iperf3 version:
-> > https://github.com/esnet/iperf/pull/1476
-> > iperf3 -c 172.17.0.1 -b100M  -l1472 -t100 -u -R --sock-prio 2
-> > 
-> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > ---
-> >  drivers/net/dsa/microchip/ksz_common.c | 218
-> > +++++++++++++++++++++++++
-> >  drivers/net/dsa/microchip/ksz_common.h |  12 ++
-> >  2 files changed, 230 insertions(+)
-> > 
-> > diff --git a/drivers/net/dsa/microchip/ksz_common.c
-> > b/drivers/net/dsa/microchip/ksz_common.c
-> > index ae05fe0b0a81..54d75ec22ef0 100644
-> > --- a/drivers/net/dsa/microchip/ksz_common.c
-> > +++ b/drivers/net/dsa/microchip/ksz_common.c
-> > @@ -1087,6 +1087,7 @@ const struct ksz_chip_data ksz_switch_chips[] =
-> > {
-> >                 .port_nirqs = 3,
-> >                 .num_tx_queues = 4,
-> >                 .tc_cbs_supported = true,
-> > +               .tc_ets_supported = true,
-> 
-> Whether the switch which are supporting cbs will also support ets or
-> not. If CBS and ETS are related, then is it possible to use single flag
-> controlling both the feature. I could infer that switch which has
-> tc_cbs_supported  true, also has tc_ets_supported also true.
-> 
-> If both are different, patch looks good to me.
 
-Both are different. For example on ksz8 switches it is possible to
-implement tc-etc but not tc-cbs.
+在 2023/3/10 下午11:01, Willem de Bruijn 写道:
+> 沈安琪(凛玥) wrote:
+>> 在 2023/3/9 下午11:18, Willem de Bruijn 写道:
+>>> 沈安琪(凛玥) wrote:
+>>>> 在 2023/3/7 下午11:49, Willem de Bruijn 写道:
+>>>>> 沈安琪(凛玥) wrote:
+>>>>>> From: Jianfeng Tan <henry.tjf@antgroup.com>
+>>>>>>
+>>>>>> Packet sockets, like tap, can be used as the backend for kernel vhost.
+>>>>>> In packet sockets, virtio net header size is currently hardcoded to be
+>>>>>> the size of struct virtio_net_hdr, which is 10 bytes; however, it is not
+>>>>>> always the case: some virtio features, such as mrg_rxbuf, need virtio
+>>>>>> net header to be 12-byte long.
+>>>>>>
+>>>>>> Mergeable buffers, as a virtio feature, is worthy of supporting: packets
+>>>>>> that are larger than one-mbuf size will be dropped in vhost worker's
+>>>>>> handle_rx if mrg_rxbuf feature is not used, but large packets
+>>>>>> cannot be avoided and increasing mbuf's size is not economical.
+>>>>>>
+>>>>>> With this mergeable feature enabled by virtio-user, packet sockets with
+>>>>>> hardcoded 10-byte virtio net header will parse mac head incorrectly in
+>>>>>> packet_snd by taking the last two bytes of virtio net header as part of
+>>>>>> mac header.
+>>>>>> This incorrect mac header parsing will cause packet to be dropped due to
+>>>>>> invalid ether head checking in later under-layer device packet receiving.
+>>>>>>
+>>>>>> By adding extra field vnet_hdr_sz with utilizing holes in struct
+>>>>>> packet_sock to record currently used virtio net header size and supporting
+>>>>>> extra sockopt PACKET_VNET_HDR_SZ to set specified vnet_hdr_sz, packet
+>>>>>> sockets can know the exact length of virtio net header that virtio user
+>>>>>> gives.
+>>>>>> In packet_snd, tpacket_snd and packet_recvmsg, instead of using
+>>>>>> hardcoded virtio net header size, it can get the exact vnet_hdr_sz from
+>>>>>> corresponding packet_sock, and parse mac header correctly based on this
+>>>>>> information to avoid the packets being mistakenly dropped.
+>>>>>>
+>>>>>> Besides, has_vnet_hdr field in struct packet_sock is removed since all
+>>>>>> the information it provides is covered by vnet_hdr_sz field: a packet
+>>>>>> socket has a vnet header if and only if its vnet_hdr_sz is not zero.
+>>>>>>
+>>>>>> Signed-off-by: Jianfeng Tan <henry.tjf@antgroup.com>
+>>>>>> Co-developed-by: Anqi Shen <amy.saq@antgroup.com>
+>>>>>> Signed-off-by: Anqi Shen <amy.saq@antgroup.com>
+>>>>>> ---
+>>>>>> diff --git a/net/packet/internal.h b/net/packet/internal.h
+>>>>>> index 48af35b..9b52d93 100644
+>>>>>> --- a/net/packet/internal.h
+>>>>>> +++ b/net/packet/internal.h
+>>>>>> @@ -119,9 +119,9 @@ struct packet_sock {
+>>>>>>     	unsigned int		running;	/* bind_lock must be held */
+>>>>>>     	unsigned int		auxdata:1,	/* writer must hold sock lock */
+>>>>>>     				origdev:1,
+>>>>>> -				has_vnet_hdr:1,
+>>>>>>     				tp_loss:1,
+>>>>>> -				tp_tx_has_off:1;
+>>>>>> +				tp_tx_has_off:1,
+>>>>>> +				vnet_hdr_sz:8;
+>>>>> just a separate u8 variable , rather than 8 bits in a u32.
+>>>>>
+>>>>>>     	int			pressure;
+>>>>>>     	int			ifindex;	/* bound device		*/
+>>>> We plan to add
+>>>>
+>>>> +	   u8	vnet_hdr_sz:8;
+>>>>
+>>>> here.
+>>>> Is this a proper place to add this field to make sure the cacheline will not be broken?
+>>> When in doubt, use pahole (`pahole -C packet_sock net/packet/af_packet.o`).
+>>>
+>>> There currently is a 27-bit hole before pressure. That would be a good spot.
+>>
+>> Thanks for the advice! We will try the tool.
+>>
+>> Besides, we wonder whether it will be better to use unsigned char or u8
+>> here to be more consistent with other fields.
+> u8 is good
 
-Regatds,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+Got it. Thanks. We will address the comments and send out v4 soon.
+
