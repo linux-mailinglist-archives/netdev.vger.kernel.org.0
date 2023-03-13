@@ -2,74 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C4D026B830A
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 21:47:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68E596B8331
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 21:56:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229932AbjCMUq7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 16:46:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51312 "EHLO
+        id S229800AbjCMU4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 16:56:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229619AbjCMUq4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 16:46:56 -0400
+        with ESMTP id S229516AbjCMU4s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 16:56:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B01CB7C973
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 13:46:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E0A81CD1
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 13:56:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 46DD7614C7
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 20:46:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C828C433D2;
-        Mon, 13 Mar 2023 20:46:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FABB61468
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 20:56:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B9FFC433D2;
+        Mon, 13 Mar 2023 20:56:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678740414;
-        bh=z5io68AxXIcUrFhzQ2G53H24PW5Wg88DDApGnm2cpMY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=FyN4QnaNV1CItgZ70PqdnES6tApr0E1kkJL0ltcs3gMqaqwv6vnu52S9iy0bJo6YO
-         R9fobCVxSI2dcckNFHvYP68pWLrjnFbDpqkwh8HvlDzu0yFZGRNMy/91BRNZE0E8KF
-         fIFBI83NnUkvMWpHGwfKYkhaf1oUr9ki4ANIynYlEiU1LFptae1cE8Z+V16scbAat7
-         H8rtAogWo6SBxNXO/2JXcQIQRRkRMmavfDm+RTSKK9//K3Iiqox9ryJgm4nfiu1WJS
-         bGzjRAZwVqrMj+zJmDXcufYZtZ8xBv/8+ryoWFXE1PQXR04t88nRTZ/QIFE1wUjV9s
-         hfRUtXVg4uDvA==
-Message-ID: <0121dad1-8ae4-9b05-7d26-1afba472340f@kernel.org>
-Date:   Mon, 13 Mar 2023 14:46:53 -0600
+        s=k20201202; t=1678741006;
+        bh=eidNKinYLbSYCW/7JBmA+DqDOlj6BxT/8lPP0eclIaA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MtrPfOaXMHTKaVzRMc1nn3R7RKbhMRZlNCWe5Cs2R5e+N+sp8nDPr3cyEr3KZEz/W
+         9ISSiyX3XLVtqgwNYuK1ddSH5opblkAKnPMr5BzkIFk5r98Z0li+0+cVWITsvoOKtP
+         dwp0B3pJorFbxsA21KXSqLnrhZguKL1VCWCb+Qgatf6pxyR98RNp9Nih7Zq1AmoNtz
+         BDjJx8Vq1SzQ5/Y9A67/ftgtK6xpk2n9FgdzjBtiPvRGVzSn7bXEOcDm7tceu/TYuO
+         PvUL8X9Yq179eOBbvyDqD+HgGbosZBFAWmiBOEPmYHZyOkYSKpbvxcXgA7D+cVf9cf
+         o77Dos+2QvELw==
+Date:   Mon, 13 Mar 2023 13:56:40 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, alexanderduyck@fb.com, roman.gushchin@linux.dev
+Subject: Re: [RFC net-next 1/3] net: provide macros for commonly copied
+ lockless queue stop/wake code
+Message-ID: <20230313135640.3a511db0@kernel.org>
+In-Reply-To: <20230312184515.5eabc8df@hermes.local>
+References: <20230311050130.115138-1-kuba@kernel.org>
+        <20230311082826.3d2050c9@hermes.local>
+        <640e7e633acec_24c5ed2088c@willemb.c.googlers.com.notmuch>
+        <20230312184515.5eabc8df@hermes.local>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.7.2
-Subject: Re: [PATCH net-next 2/2] ipv6: remove one read_lock()/read_unlock()
- pair in rt6_check_neigh()
-Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com
-References: <20230313201732.887488-1-edumazet@google.com>
- <20230313201732.887488-3-edumazet@google.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20230313201732.887488-3-edumazet@google.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/13/23 2:17 PM, Eric Dumazet wrote:
-> rt6_check_neigh() uses read_lock() to protect n->nud_state reading.
+On Sun, 12 Mar 2023 18:45:15 -0700 Stephen Hemminger wrote:
+> > > Could any of these be inline functions instead for type safety?    
+> > 
+> > I suppose not because of the condition that is evaluated.  
 > 
-> This seems overkill and causes false sharing.
-> 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> ---
->  net/ipv6/route.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
+> It is more that the condition needs to evaluated after some other
+> pre-conditions.
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
-
+Right, I think I could slice off individual chunks and wrap them in
+static inlines, but I reckon the result is relatively readable now?
