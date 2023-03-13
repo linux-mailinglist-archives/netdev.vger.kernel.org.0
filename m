@@ -2,206 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F4676B7D94
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 17:31:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C06156B7D9A
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 17:32:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229740AbjCMQbo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 12:31:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58332 "EHLO
+        id S229709AbjCMQcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 12:32:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230520AbjCMQbj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 12:31:39 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24B1B29152;
-        Mon, 13 Mar 2023 09:31:10 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id bg16-20020a05600c3c9000b003eb34e21bdfso11378746wmb.0;
-        Mon, 13 Mar 2023 09:31:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678725037;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:to:from:date:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ow5ddn/QIqSEjhFdfrsof6If8oZqPbR/1miA6Uf+y4s=;
-        b=hXUJ8G8u99JemF+XggUGaKU8N5ufna6rkuxsR1qr1ojG3YHxaw2zCNyD6XHKqhWj8a
-         Rfy9vY55sJQgtD/zTMbrHjLOS9H6qgh67ahYEPG44r7BYkppe0BCzrDzmDHm/7b7xtWP
-         KbPpAu+NQG9w1vWwdVZndrC+E0udy27kBF31YaSVWYIuTC05/CUxh2nPcqrIQW1bc7XB
-         M9+A+WAUEwGGaSI8YHmat4eVhFWT8tdS4Y1TLvC3PMDIcv2FZQ4NMT6YbdJdbV9a+T2Q
-         /Ex9ZAusj0OlQ2zsfbdss6AGly0rnGOjYqCGZMtmosbQKoIZffwCikhP/FWFtd6i0Zyw
-         G7yQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678725037;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ow5ddn/QIqSEjhFdfrsof6If8oZqPbR/1miA6Uf+y4s=;
-        b=bhKrgc3iHNo5dktWM3mL0V0w2N5vE3tKSeUJEV6QpprPOaWm3Pms/qhMsBbqy9VHYu
-         npPBBLdhoLVGhl8JhtczbEmcUiUThxOMp5XL8AFWkJMs7YmHtZEvm1l9zteUCMS9p4ww
-         eWr16D069snEkYS7Arhw1NOJ0nJ4zIL+A4gQSnVBkcCgWgBa3HSxuZ183LuIh3F3XjQw
-         cvhuC+p3R3wGtySGEdevut4/gq3nu//9e2cpt/pRw2rR0rk+P58JS3ZR3cSen7J5Av6a
-         rMHdq5D0ITVE4h0g+RqNe3J3NyIi8qwOKPsDTFLYYhVVZTo5mqaEINV9kYpgwCfxj25S
-         dsnA==
-X-Gm-Message-State: AO0yUKXG4RWWMn6PAMDFxAlW/ANPkE0QEegctP25vL+v10gHW4XBUYY/
-        J5w5/6W0wInBLYLONSq8Y1k=
-X-Google-Smtp-Source: AK7set+uN+/BQvRb1liJQqw+zu4o8XunYhXXwk8r79WdJXX3CcAtAph6IBIOFlGhk7U781UZgYYyWw==
-X-Received: by 2002:a05:600c:6008:b0:3ea:f883:180 with SMTP id az8-20020a05600c600800b003eaf8830180mr11487218wmb.7.1678725037448;
-        Mon, 13 Mar 2023 09:30:37 -0700 (PDT)
-Received: from debian ([89.238.191.199])
-        by smtp.gmail.com with ESMTPSA id q17-20020a05600c46d100b003dc1d668866sm255701wmo.10.2023.03.13.09.30.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Mar 2023 09:30:37 -0700 (PDT)
-Date:   Mon, 13 Mar 2023 17:30:01 +0100
-From:   Richard Gobert <richardbgobert@gmail.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, dsahern@kernel.org, alexanderduyck@fb.com,
-        lucien.xin@gmail.com, lixiaoyan@google.com, iwienand@redhat.com,
-        leon@kernel.org, ye.xingchen@zte.com.cn, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 1/2] gro: decrease size of CB
-Message-ID: <20230313162956.GA17242@debian>
-References: <20230313162520.GA17199@debian>
+        with ESMTP id S229921AbjCMQcS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 12:32:18 -0400
+Received: from out-54.mta1.migadu.com (out-54.mta1.migadu.com [IPv6:2001:41d0:203:375::36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68F1D7B49A
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 09:31:48 -0700 (PDT)
+Message-ID: <676cedac-4116-4ce9-d954-3d268f671283@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1678725080;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NI+w+5gLyWQ+Td5N4A59FroOKRI3K/F0wnImo9z2ap4=;
+        b=WByPILZijfg5R+QnACDGa9kaxOGi0a1kjvBuGQM+oUT2jH8JES+d72Eq7X0SWu6rr521V2
+        G/uMUiS/5yVjpaFmKsb8PzuxSWqqhePHiIyhVv/jZdfML+MOrq0g/2pSxIDfCTEg7D0MmA
+        TXagoURNDIpdQAA3/zFih7AdUXHdor8=
+Date:   Mon, 13 Mar 2023 16:31:17 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230313162520.GA17199@debian>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Subject: Re: [PATCH RFC v6 0/6] Create common DPLL/clock configuration API
+Content-Language: en-US
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Vadim Fedorenko <vadfed@meta.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>, poros@redhat.com,
+        mschmidt@redhat.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
+References: <20230312022807.278528-1-vadfed@meta.com>
+ <ZA8VAzAhaXK3hg04@nanopsycho>
+ <eb738303-b95c-408c-448d-0ebf983df01f@linux.dev>
+ <ZA9N2W35/7hH0wd2@nanopsycho>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Vadim Fedorenko <vadim.fedorenko@linux.dev>
+In-Reply-To: <ZA9N2W35/7hH0wd2@nanopsycho>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The GRO control block (NAPI_GRO_CB) is currently at its maximum size.  This
-commit reduces its size by putting two groups of fields that are used only
-at different times into a union.
+On 13/03/2023 16:22, Jiri Pirko wrote:
+> Mon, Mar 13, 2023 at 04:33:13PM CET, vadim.fedorenko@linux.dev wrote:
+>> On 13/03/2023 12:20, Jiri Pirko wrote:
+>>> Sun, Mar 12, 2023 at 03:28:01AM CET, vadfed@meta.com wrote:
+>>>> Implement common API for clock/DPLL configuration and status reporting.
+>>>> The API utilises netlink interface as transport for commands and event
+>>>> notifications. This API aim to extend current pin configuration and
+>>>> make it flexible and easy to cover special configurations.
+>>>
+>>> Could you please put here some command line examples to work with this?
+>>
+>> We don't have open-source tools ready right now for specific hardware, but
+>> with YAML spec published you can use in-kernel tool to manipulate the values,
+>> i.e.:
+>>
+>> ./tools/net/ynl/cli.py --spec Documentation/netlink/specs/dpll.yaml --dump
+>> device-get
+>> ./tools/net/ynl/cli.py --spec Documentation/netlink/specs/dpll.yaml --do
+>> device-get --json '{"id": 0}'
+>> ./tools/net/ynl/cli.py --spec Documentation/netlink/specs/dpll.yaml --dump
+>> pin-get
+>> ./tools/net/ynl/cli.py --spec Documentation/netlink/specs/dpll.yaml --do
+>> pin-get --json '{"id": 0, "pin-idx":1}'
+>> ./tools/net/ynl/cli.py --spec Documentation/netlink/specs/dpll.yaml --do
+>> pin-set --json '{"id":0, "pin-idx":1, "pin-frequency":1}'
+> 
+> Yep, that is exactly what I was asking for. Thanks.
+> Please try to extend it a bit and add to the cover letter. Gives people
+> better understanding of how this works.
 
-Specifically, the fields frag0 and frag0_len are the fields that make up
-the frag0 optimisation mechanism, which is used during the initial parsing
-of the SKB.
+Sure, will extend the cover letter in the next version, thanks!
 
-The fields last and age are used after the initial parsing, while the SKB
-is stored in the GRO list, waiting for other packets to arrive.
+> 
+>>
+>>>
+>>>>
+>>>> v5 -> v6:
+>>>> * rework pin part to better fit shared pins use cases
+>>>> * add YAML spec to easy generate user-space apps
+>>>> * simple implementation in ptp_ocp is back again
+>>>> v4 -> v5:
+>>>> * fix code issues found during last reviews:
+>>>>     - replace cookie with clock id
+>>>> 	 - follow one naming schema in dpll subsys
+>>>> 	 - move function comments to dpll_core.c, fix exports
+>>>> 	 - remove single-use helper functions
+>>>> 	 - merge device register with alloc
+>>>>     - lock and unlock mutex on dpll device release
+>>>>     - move dpll_type to uapi header
+>>>>     - rename DPLLA_DUMP_FILTER to DPLLA_FILTER
+>>>>     - rename dpll_pin_state to dpll_pin_mode
+>>>>     - rename DPLL_MODE_FORCED to DPLL_MODE_MANUAL
+>>>>     - remove DPLL_CHANGE_PIN_TYPE enum value
+>>>> * rewrite framework once again (Arkadiusz)
+>>>>     - add clock class:
+>>>>       Provide userspace with clock class value of DPLL with dpll device dump
+>>>>       netlink request. Clock class is assigned by driver allocating a dpll
+>>>>       device. Clock class values are defined as specified in:
+>>>>       ITU-T G.8273.2/Y.1368.2 recommendation.
+>>>>     - dpll device naming schema use new pattern:
+>>>> 	   "dpll_%s_%d_%d", where:
+>>>>         - %s - dev_name(parent) of parent device,
+>>>>         - %d (1) - enum value of dpll type,
+>>>>         - %d (2) - device index provided by parent device.
+>>>>     - new muxed/shared pin registration:
+>>>> 	   Let the kernel module to register a shared or muxed pin without finding
+>>>>       it or its parent. Instead use a parent/shared pin description to find
+>>>>       correct pin internally in dpll_core, simplifing a dpll API
+>>>> * Implement complex DPLL design in ice driver (Arkadiusz)
+>>>> * Remove ptp_ocp driver from the series for now
+>>>> v3 -> v4:
+>>>> * redesign framework to make pins dynamically allocated (Arkadiusz)
+>>>> * implement shared pins (Arkadiusz)
+>>>> v2 -> v3:
+>>>> * implement source select mode (Arkadiusz)
+>>>> * add documentation
+>>>> * implementation improvements (Jakub)
+>>>> v1 -> v2:
+>>>> * implement returning supported input/output types
+>>>> * ptp_ocp: follow suggestions from Jonathan
+>>>> * add linux-clk mailing list
+>>>> v0 -> v1:
+>>>> * fix code style and errors
+>>>> * add linux-arm mailing list
+>>>>
+>>>> Arkadiusz Kubalewski (3):
+>>>>    dpll: spec: Add Netlink spec in YAML
+>>>>    ice: add admin commands to access cgu configuration
+>>>>    ice: implement dpll interface to control cgu
+>>>>
+>>>> Vadim Fedorenko (3):
+>>>>    dpll: Add DPLL framework base functions
+>>>>    dpll: documentation on DPLL subsystem interface
+>>>>    ptp_ocp: implement DPLL ops
+>>>>
+>>>> Documentation/netlink/specs/dpll.yaml         |  514 +++++
+>>>> Documentation/networking/dpll.rst             |  347 ++++
+>>>> Documentation/networking/index.rst            |    1 +
+>>>> MAINTAINERS                                   |    9 +
+>>>> drivers/Kconfig                               |    2 +
+>>>> drivers/Makefile                              |    1 +
+>>>> drivers/dpll/Kconfig                          |    7 +
+>>>> drivers/dpll/Makefile                         |   10 +
+>>>> drivers/dpll/dpll_core.c                      |  835 ++++++++
+>>>> drivers/dpll/dpll_core.h                      |   99 +
+>>>> drivers/dpll/dpll_netlink.c                   | 1065 ++++++++++
+>>>> drivers/dpll/dpll_netlink.h                   |   30 +
+>>>> drivers/dpll/dpll_nl.c                        |  126 ++
+>>>> drivers/dpll/dpll_nl.h                        |   42 +
+>>>> drivers/net/ethernet/intel/Kconfig            |    1 +
+>>>> drivers/net/ethernet/intel/ice/Makefile       |    3 +-
+>>>> drivers/net/ethernet/intel/ice/ice.h          |    5 +
+>>>> .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  240 ++-
+>>>> drivers/net/ethernet/intel/ice/ice_common.c   |  467 +++++
+>>>> drivers/net/ethernet/intel/ice/ice_common.h   |   43 +
+>>>> drivers/net/ethernet/intel/ice/ice_dpll.c     | 1845 +++++++++++++++++
+>>>> drivers/net/ethernet/intel/ice/ice_dpll.h     |   96 +
+>>>> drivers/net/ethernet/intel/ice/ice_lib.c      |   17 +-
+>>>> drivers/net/ethernet/intel/ice/ice_main.c     |    7 +
+>>>> drivers/net/ethernet/intel/ice/ice_ptp_hw.c   |  411 ++++
+>>>> drivers/net/ethernet/intel/ice/ice_ptp_hw.h   |  240 +++
+>>>> drivers/net/ethernet/intel/ice/ice_type.h     |    1 +
+>>>> drivers/ptp/Kconfig                           |    1 +
+>>>> drivers/ptp/ptp_ocp.c                         |  206 +-
+>>>> include/linux/dpll.h                          |  284 +++
+>>>> include/uapi/linux/dpll.h                     |  196 ++
+>>>> 31 files changed, 7135 insertions(+), 16 deletions(-)
+>>>> create mode 100644 Documentation/netlink/specs/dpll.yaml
+>>>> create mode 100644 Documentation/networking/dpll.rst
+>>>> create mode 100644 drivers/dpll/Kconfig
+>>>> create mode 100644 drivers/dpll/Makefile
+>>>> create mode 100644 drivers/dpll/dpll_core.c
+>>>> create mode 100644 drivers/dpll/dpll_core.h
+>>>> create mode 100644 drivers/dpll/dpll_netlink.c
+>>>> create mode 100644 drivers/dpll/dpll_netlink.h
+>>>> create mode 100644 drivers/dpll/dpll_nl.c
+>>>> create mode 100644 drivers/dpll/dpll_nl.h
+>>>> create mode 100644 drivers/net/ethernet/intel/ice/ice_dpll.c
+>>>> create mode 100644 drivers/net/ethernet/intel/ice/ice_dpll.h
+>>>> create mode 100644 include/linux/dpll.h
+>>>> create mode 100644 include/uapi/linux/dpll.h
+>>>>
+>>>> -- 
+>>>> 2.34.1
+>>>>
+>>
 
-There was one location in dev_gro_receive that modified the frag0 fields
-after setting last and age. I changed this accordingly without altering the
-code behaviour.
-
-Signed-off-by: Richard Gobert <richardbgobert@gmail.com>
----
- include/net/gro.h | 26 ++++++++++++++++----------
- net/core/gro.c    | 18 +++++++++++-------
- 2 files changed, 27 insertions(+), 17 deletions(-)
-
-diff --git a/include/net/gro.h b/include/net/gro.h
-index a4fab706240d..7b47dd6ce94f 100644
---- a/include/net/gro.h
-+++ b/include/net/gro.h
-@@ -11,11 +11,23 @@
- #include <net/udp.h>
- 
- struct napi_gro_cb {
--	/* Virtual address of skb_shinfo(skb)->frags[0].page + offset. */
--	void	*frag0;
-+	union {
-+		struct {
-+			/* Virtual address of skb_shinfo(skb)->frags[0].page + offset. */
-+			void	*frag0;
- 
--	/* Length of frag0. */
--	unsigned int frag0_len;
-+			/* Length of frag0. */
-+			unsigned int frag0_len;
-+		};
-+
-+		struct {
-+			/* used in skb_gro_receive() slow path */
-+			struct sk_buff *last;
-+
-+			/* jiffies when first packet was created/queued */
-+			unsigned long age;
-+		};
-+	};
- 
- 	/* This indicates where we are processing relative to skb->data. */
- 	int	data_offset;
-@@ -32,9 +44,6 @@ struct napi_gro_cb {
- 	/* Used in ipv6_gro_receive() and foo-over-udp */
- 	u16	proto;
- 
--	/* jiffies when first packet was created/queued */
--	unsigned long age;
--
- /* Used in napi_gro_cb::free */
- #define NAPI_GRO_FREE             1
- #define NAPI_GRO_FREE_STOLEN_HEAD 2
-@@ -77,9 +86,6 @@ struct napi_gro_cb {
- 
- 	/* used to support CHECKSUM_COMPLETE for tunneling protocols */
- 	__wsum	csum;
--
--	/* used in skb_gro_receive() slow path */
--	struct sk_buff *last;
- };
- 
- #define NAPI_GRO_CB(skb) ((struct napi_gro_cb *)(skb)->cb)
-diff --git a/net/core/gro.c b/net/core/gro.c
-index a606705a0859..b1fdabd414a5 100644
---- a/net/core/gro.c
-+++ b/net/core/gro.c
-@@ -460,6 +460,14 @@ static void gro_pull_from_frag0(struct sk_buff *skb, int grow)
- 	}
- }
- 
-+static inline void gro_try_pull_from_frag0(struct sk_buff *skb)
-+{
-+	int grow = skb_gro_offset(skb) - skb_headlen(skb);
-+
-+	if (grow > 0)
-+		gro_pull_from_frag0(skb, grow);
-+}
-+
- static void gro_flush_oldest(struct napi_struct *napi, struct list_head *head)
- {
- 	struct sk_buff *oldest;
-@@ -489,7 +497,6 @@ static enum gro_result dev_gro_receive(struct napi_struct *napi, struct sk_buff
- 	struct sk_buff *pp = NULL;
- 	enum gro_result ret;
- 	int same_flow;
--	int grow;
- 
- 	if (netif_elide_gro(skb->dev))
- 		goto normal;
-@@ -564,17 +571,13 @@ static enum gro_result dev_gro_receive(struct napi_struct *napi, struct sk_buff
- 	else
- 		gro_list->count++;
- 
-+	gro_try_pull_from_frag0(skb);
- 	NAPI_GRO_CB(skb)->age = jiffies;
- 	NAPI_GRO_CB(skb)->last = skb;
- 	if (!skb_is_gso(skb))
- 		skb_shinfo(skb)->gso_size = skb_gro_len(skb);
- 	list_add(&skb->list, &gro_list->list);
- 	ret = GRO_HELD;
--
--pull:
--	grow = skb_gro_offset(skb) - skb_headlen(skb);
--	if (grow > 0)
--		gro_pull_from_frag0(skb, grow);
- ok:
- 	if (gro_list->count) {
- 		if (!test_bit(bucket, &napi->gro_bitmask))
-@@ -587,7 +590,8 @@ static enum gro_result dev_gro_receive(struct napi_struct *napi, struct sk_buff
- 
- normal:
- 	ret = GRO_NORMAL;
--	goto pull;
-+	gro_try_pull_from_frag0(skb);
-+	goto ok;
- }
- 
- struct packet_offload *gro_find_receive_by_type(__be16 type)
--- 
-2.36.1
