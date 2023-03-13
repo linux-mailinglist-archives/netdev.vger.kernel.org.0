@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A6956B8551
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 23:53:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68CFE6B8554
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 23:53:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230337AbjCMWxT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 18:53:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58332 "EHLO
+        id S230355AbjCMWxc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 18:53:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230028AbjCMWxC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 18:53:02 -0400
+        with ESMTP id S230111AbjCMWxD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 18:53:03 -0400
 Received: from post.baikalelectronics.com (post.baikalelectronics.com [213.79.110.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4DC321F91E;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4D96672BB;
         Mon, 13 Mar 2023 15:52:18 -0700 (PDT)
 Received: from post.baikalelectronics.com (localhost.localdomain [127.0.0.1])
-        by post.baikalelectronics.com (Proxmox) with ESMTP id 400C2E0EBA;
-        Tue, 14 Mar 2023 01:51:19 +0300 (MSK)
+        by post.baikalelectronics.com (Proxmox) with ESMTP id 2E4DEE0EBC;
+        Tue, 14 Mar 2023 01:51:21 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         baikalelectronics.ru; h=cc:cc:content-transfer-encoding
         :content-type:content-type:date:from:from:in-reply-to:message-id
         :mime-version:references:reply-to:subject:subject:to:to; s=post;
-         bh=PASsM/qfytAun14hsPY6sUMJYcEqmLZqm6dqWbnuxRA=; b=TYulQ7oyCxwP
-        l8kO9WtAJOQtyUQbXYI5ug1OyfFfbKc8kdd2sW63nLwgtUQMhLdfXklH3Hkl1u2W
-        fgFpp+5LmNn3Pk8DLmUcG6CknbLkCM64WrO1izL+BuMToAp7kYHPYURWbEjaVi/M
-        TCatUUJUHhwO/Lu+B9F/ebAdo9H2pEQ=
+         bh=Y6oIna2GYsMa/tMSylL09FYzZvzOQ9lU2CFxdQGOfk0=; b=SKtYgXiuZg8S
+        apeiyaaMAoOItS4nHGsGT8jBPqU1dYK1JbgTyXFxti7Ojg7do32VL0YqEt4XFiK2
+        pfM82JbaZ0/G9zbTCQXLz06JusQB2qt1BNst8Aubak4/rko4X7Jvu77e2LUs6WPB
+        mwRvjSNsFz50lqF06FtsQrT3c8Dsi5Y=
 Received: from mail.baikal.int (mail.baikal.int [192.168.51.25])
-        by post.baikalelectronics.com (Proxmox) with ESMTP id C1FC6E0E6A;
-        Tue, 14 Mar 2023 01:51:18 +0300 (MSK)
+        by post.baikalelectronics.com (Proxmox) with ESMTP id A1151E0EBB;
+        Tue, 14 Mar 2023 01:51:20 +0300 (MSK)
 Received: from localhost (10.8.30.10) by mail (192.168.51.25) with Microsoft
- SMTP Server (TLS) id 15.0.1395.4; Tue, 14 Mar 2023 01:51:18 +0300
+ SMTP Server (TLS) id 15.0.1395.4; Tue, 14 Mar 2023 01:51:19 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
@@ -53,9 +53,9 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next 08/16] dt-bindings: net: dwmac: Drop prop names from snps,axi-config description
-Date:   Tue, 14 Mar 2023 01:50:55 +0300
-Message-ID: <20230313225103.30512-9-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH net-next 09/16] dt-bindings: net: dwmac: Prohibit additional props in AXI-config
+Date:   Tue, 14 Mar 2023 01:50:56 +0300
+Message-ID: <20230313225103.30512-10-Sergey.Semin@baikalelectronics.ru>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230313225103.30512-1-Sergey.Semin@baikalelectronics.ru>
 References: <20230313225103.30512-1-Sergey.Semin@baikalelectronics.ru>
@@ -73,46 +73,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The property is supposed to contain a phandle reference to the DT-node
-with the AXI-bus parameters. Such DT-node is described in the same
-DT-bindings schema by means of the sub-node with the name
-"stmmac-axi-config". Similarly to MTL Tx/Rx config phandle properties
-let's drop the target DT-node properties list from the "snps,axi-config"
-property description since having that duplicate is not only pointless,
-but also worsens the bindings maintainability by causing a need to support
-the two identical lists. Instead the reference to the target DT-node is
-added to the description.
+Currently DT-schema of the AXI-bus config sub-node prohibits to have
+unknown properties by using the unevaluatedProperties property. It's
+overkill for the sub-node which doesn't use any combining schemas
+keywords (allOf, anyOf, etc). Instead more natural is to use
+additionalProperties to prohibit for that.
 
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 ---
- .../devicetree/bindings/net/snps,dwmac.yaml        | 14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
+ Documentation/devicetree/bindings/net/snps,dwmac.yaml | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-index 01f385867c3a..89be67e55c3e 100644
+index 89be67e55c3e..d1b2910b799b 100644
 --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
 +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-@@ -98,17 +98,9 @@ properties:
-   snps,axi-config:
-     $ref: /schemas/types.yaml#/definitions/phandle
-     description:
--      AXI BUS Mode parameters. Phandle to a node that can contain the
--      following properties
--        * snps,lpi_en, enable Low Power Interface
--        * snps,xit_frm, unlock on WoL
--        * snps,wr_osr_lmt, max write outstanding req. limit
--        * snps,rd_osr_lmt, max read outstanding req. limit
--        * snps,kbbe, do not cross 1KiB boundary.
--        * snps,blen, this is a vector of supported burst length.
--        * snps,fb, fixed-burst
--        * snps,mb, mixed-burst
--        * snps,rb, rebuild INCRx Burst
-+      AXI BUS Mode parameters. Phandle to a node that
-+      implements the 'stmmac-axi-config' object described in
-+      this binding.
+@@ -466,7 +466,6 @@ properties:
  
-   snps,mtl-rx-config:
-     $ref: /schemas/types.yaml#/definitions/phandle
+   stmmac-axi-config:
+     type: object
+-    unevaluatedProperties: false
+     description:
+       AXI BUS Mode parameters.
+ 
+@@ -518,6 +517,8 @@ properties:
+         description:
+           rebuild INCRx Burst
+ 
++    additionalProperties: false
++
+ required:
+   - compatible
+   - reg
 -- 
 2.39.2
 
