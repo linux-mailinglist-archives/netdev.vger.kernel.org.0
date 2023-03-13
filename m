@@ -2,141 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD99D6B721D
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 10:10:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 156BB6B7229
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 10:10:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230005AbjCMJKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 05:10:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35906 "EHLO
+        id S231240AbjCMJKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 05:10:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230479AbjCMJJr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 05:09:47 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A16D156159;
-        Mon, 13 Mar 2023 02:08:41 -0700 (PDT)
+        with ESMTP id S231235AbjCMJKa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 05:10:30 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5268AD21;
+        Mon, 13 Mar 2023 02:10:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678698521; x=1710234521;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=cq6QdrMcR3tA5ptzjJyzksVlZ4tZ93rLnwQheu8e54Q=;
-  b=Ulprt4xM1tdMpTmsVc/JhnJCDDu7xcaQMYLK1tFy8h5QObEKk8Lxi81d
-   ZDEZ6fkxzRuarFY14o47BFptora5h9+uCnjKRcYSMXrecuyY9eKqEma0a
-   hNapvJEs6r2nzS8tLtDENtOkS0qHPk1KQoNX3/qBxL6IOuSrDGIEWXxro
-   lph5kq0QGotjl8zs/2JmnMUrdnxzERCPjxILAMGLjvnf4Wa8p281ksCjj
-   /DnX/56pB5fmD7vvvu/R/jjjs8kxtTczOUBWssSl4VszH4AHWN93cCuIq
-   f8R7TLuusmleCJikVnQNq53Kg0JDdoCu6UlzaZPzAa+J1aQiP5l7Y6FDE
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10647"; a="423363959"
-X-IronPort-AV: E=Sophos;i="5.98,256,1673942400"; 
-   d="scan'208";a="423363959"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2023 02:08:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10647"; a="680950602"
-X-IronPort-AV: E=Sophos;i="5.98,256,1673942400"; 
-   d="scan'208";a="680950602"
-Received: from etsykuno-mobl2.ccr.corp.intel.com ([10.252.47.211])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2023 02:08:35 -0700
-Date:   Mon, 13 Mar 2023 11:08:33 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Neeraj sanjay kale <neeraj.sanjaykale@nxp.com>
-cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "marcel@holtmann.org" <marcel@holtmann.org>,
-        "johan.hedberg@gmail.com" <johan.hedberg@gmail.com>,
-        "luiz.dentz@gmail.com" <luiz.dentz@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "alok.a.tiwari@oracle.com" <alok.a.tiwari@oracle.com>,
-        "hdanton@sina.com" <hdanton@sina.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Amitkumar Karwar <amitkumar.karwar@nxp.com>,
-        Rohit Fule <rohit.fule@nxp.com>,
-        Sherry Sun <sherry.sun@nxp.com>
-Subject: Re: [PATCH v6 3/3] Bluetooth: NXP: Add protocol support for NXP
- Bluetooth chipsets
-In-Reply-To: <AM9PR04MB8603D2F3E3CDC714BDACECC0E7BA9@AM9PR04MB8603.eurprd04.prod.outlook.com>
-Message-ID: <11c7e098-19c8-6961-5369-214bc948bc37@linux.intel.com>
-References: <20230301154514.3292154-1-neeraj.sanjaykale@nxp.com> <20230301154514.3292154-4-neeraj.sanjaykale@nxp.com> <73527cb7-6546-6c47-768c-5f4648b6d477@linux.intel.com> <AM9PR04MB86037CDF6A032963405AF0CEE7B69@AM9PR04MB8603.eurprd04.prod.outlook.com>
- <48e776a1-7526-5b77-568b-322d4555a138@linux.intel.com> <AM9PR04MB8603D2F3E3CDC714BDACECC0E7BA9@AM9PR04MB8603.eurprd04.prod.outlook.com>
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1678698602; x=1710234602;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=YivqxS+zeFWZMfPdu5ClCSUPNAcBM+7zK7hLm2cpsW4=;
+  b=YvKAV2+yIUJ4Xr1ZHuwqJv40zlJF+SYCOcCMJbdckABCCzZJumm3oF4m
+   yIHWnwdCHJ+mZCV35h9+APqwpJ+LOQEWw15LbypXY9dGRp29ALC8xBErP
+   zYh4VPE1ZhjhizyY6soCSjppW5u/bq3pOQ1jP32UhxGXK9lC7rAl23wNC
+   PtkrYIHvA8C08QKfiwOL7PVwQJkoViZxhiwqihq+AxJMNArjFQgSK2QlA
+   eG2aMXqFxHbS69hkqXjcSKC0GlCi5kSoRrI/xdN58Wuu4UCTSceOQ5ASz
+   Dmo1BtHXxBYoZyWtVT83BBiFFscouuR8oGetW5jg+S2v3zW+OiSbPlvpS
+   g==;
+X-IronPort-AV: E=Sophos;i="5.98,256,1673938800"; 
+   d="scan'208";a="205062965"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Mar 2023 02:10:01 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Mon, 13 Mar 2023 02:09:47 -0700
+Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
+ Transport; Mon, 13 Mar 2023 02:09:40 -0700
+Message-ID: <21d44d0b-05c0-1912-15de-a5c74d3ff4c6@microchip.com>
+Date:   Mon, 13 Mar 2023 10:09:37 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH] net: Use of_property_read_bool() for boolean properties
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Wei Fang <wei.fang@nxp.com>,
+        Shenwei Wang <shenwei.wang@nxp.com>,
+        Clark Wang <xiaoning.wang@nxp.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "Giuseppe Cavallaro" <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        "Pengutronix Kernel Team" <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Francois Romieu <romieu@fr.zoreil.com>,
+        "Michal Simek" <michal.simek@xilinx.com>,
+        Zhao Qiang <qiang.zhao@nxp.com>, Kalle Valo <kvalo@kernel.org>,
+        Samuel Mendoza-Jonas <sam@mendozajonas.com>
+CC:     <devicetree@vger.kernel.org>, <linux-can@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-omap@vger.kernel.org>, <linuxppc-dev@lists.ozlabs.org>,
+        <linux-wireless@vger.kernel.org>
+References: <20230310144718.1544169-1-robh@kernel.org>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+In-Reply-To: <20230310144718.1544169-1-robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 10 Mar 2023, Neeraj sanjay kale wrote:
-
-> Hi Ilpo,
+On 10/03/2023 at 15:47, Rob Herring wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
 > 
-> I have resolved most of your comments in v8 patch, and I have few things to discuss regarding the v6 patch.
+> It is preferred to use typed property access functions (i.e.
+> of_property_read_<type> functions) rather than low-level
+> of_get_property/of_find_property functions for reading properties.
+> Convert reading boolean properties to to of_property_read_bool().
 > 
-> > > > > +static bool nxp_fw_change_baudrate(struct hci_dev *hdev, u16
-> > > > > +req_len) {
-> > > > > +     struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
-> > > > > +     struct nxp_bootloader_cmd nxp_cmd5;
-> > > > > +     struct uart_config uart_config;
-> > > > > +
-> > > > > +     if (req_len == sizeof(nxp_cmd5)) {
-> > > > > +             nxp_cmd5.header = __cpu_to_le32(5);
-> > > > > +             nxp_cmd5.arg = 0;
-> > > > > +             nxp_cmd5.payload_len = __cpu_to_le32(sizeof(uart_config));
-> > > > > +             nxp_cmd5.crc = swab32(crc32_be(0UL, (char *)&nxp_cmd5,
-> > > > > +                                            sizeof(nxp_cmd5) -
-> > > > > + 4));
-> > > >
-> > > > swab32(crc32_be(...)) seems and odd construct instead of
-> > __cpu_to_le32().
-> > > Earlier I had tried using __cpu_to_le32() but that did not work. The
-> > > FW expects a swapped CRC value for it's header and payload data.
-> > 
-> > So the .crc member should be __be32 then?
-> > 
-> I disagree with using __be32.
-> I have simplified this part of the code in v8 patch, please do check it out.
-> So the CRC part of the data structure will remain __le32, and will be sent over UART to the chip in Little Endian format.
-> It's just that the FW expects the CRC to be byte-swapped. 
-> Technically it is big endian format, but you may think of it as a "+1 level" of encryption (although it isn't).
-> So defining this structure member as __be32 can create more questions 
-> than answers, leading to more confusion. 
-> If it helps, I have also added a small comment in there to signify that 
-> the FW  expects CRC in byte swapped method.
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>   drivers/net/can/cc770/cc770_platform.c          | 12 ++++++------
+>   drivers/net/ethernet/cadence/macb_main.c        |  2 +-
 
-I'd have still put the member as __be32 and commented the swap expectation 
-there. But it's not an end of the world even in the current form.
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 
-> > > > > +     serdev_device_write_buf(nxpdev->serdev, (u8 *)&nxp_cmd7,
-> > > > > + req_len);
-> > > >
-> > > > Is it safe to assume req_len is small enough to not leak stack content?
-> > > The chip requests chunk of FW data which is never more than 2048 bytes
-> > > at a time.
-> > 
-> > Eh, sizeof(*nxp_cmd7) is 16 bytes!?! Are you sure that req_len given to
-> > serdev_device_write_buf() is not larger than 16 bytes?
-> > 
-> I have now replaced req_len with sizeof(<struct>).
-> There is also a check in the beginning of the function to return if req_len is not 16 bytes.
+>   drivers/net/ethernet/davicom/dm9000.c           |  4 ++--
 
-Ah, I'd missed that check for some reason.
+[..]
 
+> --- a/drivers/net/ethernet/cadence/macb_main.c
+> +++ b/drivers/net/ethernet/cadence/macb_main.c
+> @@ -4990,7 +4990,7 @@ static int macb_probe(struct platform_device *pdev)
+>                  bp->jumbo_max_len = macb_config->jumbo_max_len;
+> 
+>          bp->wol = 0;
+> -       if (of_get_property(np, "magic-packet", NULL))
+> +       if (of_property_read_bool(np, "magic-packet"))
+>                  bp->wol |= MACB_WOL_HAS_MAGIC_PACKET;
+>          device_set_wakeup_capable(&pdev->dev, bp->wol & MACB_WOL_HAS_MAGIC_PACKET);
+
+[..]
 
 -- 
- i.
+Nicolas Ferre
 
