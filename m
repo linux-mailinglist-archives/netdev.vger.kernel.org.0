@@ -2,276 +2,364 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0BE46B6F78
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 07:31:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57C046B6F7A
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 07:31:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229623AbjCMGbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 02:31:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54616 "EHLO
+        id S229561AbjCMGb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 02:31:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbjCMGbQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 02:31:16 -0400
-Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 251CC3C7BA;
-        Sun, 12 Mar 2023 23:31:15 -0700 (PDT)
-Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-5416698e889so101178117b3.2;
-        Sun, 12 Mar 2023 23:31:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678689074;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tVvEXOwwcCLieV+gx+xRsObQHo3VPjPNz9fudKQ9POE=;
-        b=M4o2KJ8vK6HBC57ZXv22ky+cjosm+bNFxVhhd533teJqIV6GFBCDcTlNQmWihViM73
-         WK596dG+EPANvUFFKmHj/QXv3XPKAX3TxESvQt6RzGRVrZzjZCUKGmoYx0bHbc8qWo3i
-         USXI+GA9PtyLg2YqGeIatmYrnSM1SK37o7buN1kY2xBJaZ3AmDPkff8VXaGGO5q7Yjfu
-         4RoTu9RTsHbyb15VIzK7mIJ2YTi2qOaHMYmtzcn6Lb5kDs3y7o/y9VDiq9lx3Yy5D3kE
-         BtR2OMD/3BMhReByo1d4Mcmn78lZh+qARGYas+GskCJ3+FCvJS5V0fhLVG9f21GnM4Zz
-         L5Vg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678689074;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tVvEXOwwcCLieV+gx+xRsObQHo3VPjPNz9fudKQ9POE=;
-        b=WxVhXvl4g1DB1hy78aVqo9fF5zZGx93G+M9uqzdq5ySzToLyc0M0c+sH8zZUTQWqnh
-         6ZXQlJQpbwPxrs9wjnh9unvdY9KMknvC+L3GyLhbIlZirjSBodF16oZmts+VxsFnF93M
-         PMrb4oGgqPXc1K0iHVU/DYqx6FU8946Sy1W5AAo+AkpJSPj/dRg4Fp9WRoPLH0+MLt/3
-         c8k19SIMbMbXzIbRe2ZNfgGTGDo3Pr3Auot/AeQyzvJc7HjTQwC5sWdV6sLZAqZ8aFAW
-         92SJq6ov5JnPRcKsS7mLhCM0j6R0mbxPLBAM6jOYJZXiWV6n9y+UH5BGOYOlW07zfyle
-         S49g==
-X-Gm-Message-State: AO0yUKXpMvq6HFEXshLqDJQMc9fEg65KJN0cpg4kWztOPbe4yhgIiUoj
-        AlGum+hSRbfDCh9CVYE7itEi9ix7ejyT40NPHGtTF954
-X-Google-Smtp-Source: AK7set9BBMmj78Y6Wp/9t6Y9IcInjSLdkCCh5DRxKMdnHwI8ExD9mt0mZvOPsD4sESaDk3TSaDBLLhOtSuzeiCi3evc=
-X-Received: by 2002:a81:af59:0:b0:535:5e8c:65ef with SMTP id
- x25-20020a81af59000000b005355e8c65efmr21077857ywj.6.1678689074169; Sun, 12
- Mar 2023 23:31:14 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230301154953.641654-1-joannelkoong@gmail.com>
- <20230301154953.641654-10-joannelkoong@gmail.com> <20230306071006.73t5vtmxrsykw4zu@apollo>
- <CAADnVQJ=wzztviB73jBy3+OYxUKhAX_jTGpS8Xv45vUVTDY-ZA@mail.gmail.com>
- <20230307102233.bemr47x625ity26z@apollo> <CAADnVQ+xOrCSwgxGQXNM5wHfOwV+x0csHfNyDYBHgyGVXgc2Ow@mail.gmail.com>
- <20230307173529.gi2crls7fktn6uox@apollo> <CAEf4Bza4N6XtXERkL+41F+_UsTT=T4B3gt0igP5mVVrzr9abXw@mail.gmail.com>
- <20230310211541.schh7iyrqgbgfaay@macbook-pro-6.dhcp.thefacebook.com>
- <CAEf4BzYo-8ckyi-aogvW9HijNh+Z81CE__mWtmVJtCzuY+oECA@mail.gmail.com> <CAADnVQLBDNqqfoNOV=mPxvsMdXLJCK_g1qmHjqxo=PED_vbhuw@mail.gmail.com>
-In-Reply-To: <CAADnVQLBDNqqfoNOV=mPxvsMdXLJCK_g1qmHjqxo=PED_vbhuw@mail.gmail.com>
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Sun, 12 Mar 2023 23:31:03 -0700
-Message-ID: <CAJnrk1YCbLxcKT_FY_UdO9YBOz9fTyFQFTB8P0_2swPc39egvg@mail.gmail.com>
-Subject: Re: [PATCH v13 bpf-next 09/10] bpf: Add bpf_dynptr_slice and bpf_dynptr_slice_rdwr
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <martin.lau@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229711AbjCMGbW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 02:31:22 -0400
+Received: from out0-194.mail.aliyun.com (out0-194.mail.aliyun.com [140.205.0.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C913A3C7AF
+        for <netdev@vger.kernel.org>; Sun, 12 Mar 2023 23:31:17 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R231e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018047209;MF=amy.saq@antgroup.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---.RmOYwXP_1678689074;
+Received: from localhost(mailfrom:amy.saq@antgroup.com fp:SMTPD_---.RmOYwXP_1678689074)
+          by smtp.aliyun-inc.com;
+          Mon, 13 Mar 2023 14:31:15 +0800
+From:   "=?UTF-8?B?5rKI5a6J55CqKOWHm+eOpSk=?=" <amy.saq@antgroup.com>
+To:     netdev@vger.kernel.org
+Cc:     <willemdebruijn.kernel@gmail.com>, <mst@redhat.com>,
+        <davem@davemloft.net>, <jasowang@redhat.com>,
+        "=?UTF-8?B?6LCI6Ym06ZSL?=" <henry.tjf@antgroup.com>,
+        "=?UTF-8?B?5rKI5a6J55CqKOWHm+eOpSk=?=" <amy.saq@antgroup.com>
+Subject: [PATCH v4] net/packet: support mergeable feature of virtio
+Date:   Mon, 13 Mar 2023 14:31:13 +0800
+Message-Id: <1678689073-101893-1-git-send-email-amy.saq@antgroup.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 10, 2023 at 1:55=E2=80=AFPM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Fri, Mar 10, 2023 at 1:30=E2=80=AFPM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Fri, Mar 10, 2023 at 1:15=E2=80=AFPM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > On Tue, Mar 07, 2023 at 04:01:28PM -0800, Andrii Nakryiko wrote:
-> > > > > > >
-> > > > > > > I agree this is simpler, but I'm not sure it will work proper=
-ly. Verifier won't
-> > > > > > > know when the lifetime of the buffer ends, so if we disallow =
-spills until its
-> > > > > > > written over it's going to be a pain for users.
-> > > > > > >
-> > > > > > > Something like:
-> > > > > > >
-> > > > > > > for (...) {
-> > > > > > >         char buf[64];
-> > > > > > >         bpf_dynptr_slice_rdwr(..., buf, 64);
-> > > > > > >         ...
-> > > > > > > }
-> > > > > > >
-> > > > > > > .. and then compiler decides to spill something where buf was=
- located on stack
-> > > > > > > outside the for loop. The verifier can't know when buf goes o=
-ut of scope to
-> > > > > > > unpoison the slots.
-> > > > > >
-> > > > > > You're saying the "verifier doesn't know when buf ...".
-> > > > > > The same applies to the compiler. It has no visibility
-> > > > > > into what bpf_dynptr_slice_rdwr is doing.
-> > > > >
-> > > > > That is true, it can't assume anything about the side effects. Bu=
-t I am talking
-> > > > > about the point in the program when the buffer object no longer l=
-ives. Use of
-> > > > > the escaped pointer to such an object any longer is UB. The compi=
-ler is well
-> > > > > within its rights to reuse its stack storage at that point, inclu=
-ding for
-> > > > > spilling registers. Which is why "outside the for loop" in my ear=
-lier reply.
-> > > > >
-> > > > > > So it never spills into a declared C array
-> > > > > > as I tried to explain in the previous reply.
-> > > > > > Spill/fill slots are always invisible to C.
-> > > > > > (unless of course you do pointer arithmetic asm style)
-> > > > >
-> > > > > When the declared array's lifetime ends, it can.
-> > > > > https://godbolt.org/z/Ez7v4xfnv
-> > > > >
-> > > > > The 2nd call to bar as part of unrolled loop happens with fp-8, t=
-hen it calls
-> > > > > baz, spills r0 to fp-8, and calls bar again with fp-8.
-> > >
-> > > Right. If user writes such program and does explicit store of spillab=
-le
-> > > pointer into a stack.
-> > > I was talking about compiler generated spill/fill and I still believe
-> > > that compiler will not be reusing variable's stack memory for them.
-> > >
-> > > > >
-> > > > > If such a stack slot is STACK_POISON, verifier will reject this p=
-rogram.
-> > >
-> > > Yes and I think it's an ok trade-off.
-> > > The user has to specifically code such program to hit this issue.
-> > > I don't think we will see this in practice.
-> > > If we do we can consider a more complex fix.
-> >
-> > I was just debugging (a completely unrelated) issue where two
-> > completely independent functions, with different local variables, were
-> > reusing the same stack slots just because of them being inlined in
-> > parent functions. So stack reuse happens all the time, unfortunately.
-> > It's not always obvious or malicious.
->
-> Right. Stack reuse happens for variables all the time.
-> I'm still arguing that compile internal spill/fill is coming
-> from different slots.
->
-> When clang compiles the kernel it prints:
-> ../kernel/bpf/verifier.c:18017:5: warning: stack frame size (2296)
-> exceeds limit (2048) in 'bpf_check' [-Wframe-larger-than]
-> int bpf_check(struct bpf_prog **prog, union bpf_attr *attr, bpfptr_t uatt=
-r)
->     ^
-> 572/2296 (24.91%) spills, 1724/2296 (75.09%) variables
->
-> spills and variables are different areas.
->
-> > >
-> > > > >
-> > > > > >
-> > > > > > > > > +       *(void **)eth =3D (void *)0xdeadbeef;
-> > > > > > > > > +       ctx =3D *(void **)buffer;
-> > > > > > > > > +       eth_proto =3D eth->eth_proto + ctx->len;
-> > > > > > > > >         if (eth_proto =3D=3D bpf_htons(ETH_P_IP))
-> > > > > > > > >                 err =3D process_packet(&ptr, eth, nh_off,=
- false, ctx);
-> > > > > > > > >
-> > > > > > > > > I think the proper fix is to treat it as a separate retur=
-n type distinct from
-> > > > > > > > > PTR_TO_MEM like PTR_TO_MEM_OR_PKT (or handle PTR_TO_MEM |=
- DYNPTR_* specially),
-> > > > > > > > > fork verifier state whenever there is a write, so that on=
-e path verifies it as
-> > > > > > > > > PTR_TO_PACKET, while another as PTR_TO_STACK (if buffer w=
-as a stack ptr). I
-> > > > > > > > > think for the rest it's not a problem, but there are allo=
-w_ptr_leak checks
-> > > > > > > > > applied to PTR_TO_STACK and PTR_TO_MAP_VALUE, so that nee=
-ds to be rechecked.
-> > > > > > > > > Then we ensure that program is safe in either path.
-> > > > > > > > >
-> > > > > > > > > Also we need to fix regsafe to not consider other PTR_TO_=
-MEMs equivalent to such
-> > > > > > > > > a pointer. We could also fork verifier states on return, =
-to verify either path
-> > > > > > > > > separately right from the point following the call instru=
-ction.
-> > > > > > > >
-> > > > > > > > This is too complex imo.
-> > > > > > >
-> > > > > > > A better way to phrase this is to verify with R0 =3D PTR_TO_P=
-ACKET in one path,
-> > > > > > > and push_stack with R0 =3D buffer's reg->type + size set to l=
-en in the other path
-> > > > > > > for exploration later. In terms of verifier infra everything =
-is there already,
-> > > > > > > it just needs to analyze both cases which fall into the regul=
-ar code handling
-> > > > > > > the reg->type's. Probably then no adjustments to regsafe are =
-needed either. It's
-> > > > > > > like exploring branch instructions.
-> > > > > >
-> > > > > > I still don't like it. There is no reason to go a complex path
-> > > > > > when much simpler suffices.
-> > > >
-> > > > This issue you are discussing is the reason we don't support
-> > > > bpf_dynptr_from_mem() taking PTR_TO_STACK (which is a pity, but we
-> > > > postponed it initially).
-> > > >
-> > > > I've been thinking about something along the lines of STACK_POISON,
-> > > > but remembering associated id/ref_obj_id. When ref is released, tur=
-n
-> > > > STACK_POISON to STACK_MISC. If it's bpf_dynptr_slice_rdrw() or
-> > > > bpf_dynptr_from_mem(), which don't have ref_obj_id, they still have=
- ID
-> > > > associated with returned pointer, so can we somehow incorporate tha=
-t?
-> > >
-> > > There is dynptr_id in PTR_TO_MEM that is used by destroy_if_dynptr_st=
-ack_slot(),
-> > > but I don't see how we can use it to help this case.
-> > > imo plain STACK_POISON that is overwriteable by STACK_MISC/STACK_ZERO
-> > > should be good enough in practice.
-> >
-> > That's basically what I'm proposing, except when this overwrite
-> > happens we have to go and invalidate all the PTR_TO_MEM references
-> > that are pointing to that stack slot. E.g., in the below case
-> > (assuming we allow LOCAL dynptr to be constructed from stack)
-> >
-> > char buf[256], *p;
-> > struct bpf_dynptr dptr;
-> >
-> > bpf_dynptr_from_mem(buf, buf+256, &dptr);
-> >
-> > p =3D bpf_dynptr_data(&dptr, 128, 16); /* get 16-byte slice into buf, a=
-t
-> > offset 128 */
-> >
-> > /* buf[128] through buf[128+16] are STACK_POISON */
-> >
-> > buf[128] =3D 123;
-> >
-> > So here is where the problem happens. Should we invalidate just p
-> > here? Or entire dptr? Haven't thought much about details, but
-> > something like that. It was getting messy when we started to think
-> > about this with Joanne.
->
-> Let's table dynptr_from_mem for a second and solve
-> bpf_dynptr_slice_rdrw first, since I'm getting confused.
->
-> For bpf_dynptr_slice_rdrw we can mark buffer[] in stack as
-> poisoned with dynptr_id =3D=3D R0's PTR_TO_MEM dynptr_id.
-> Then as soon as first spillable reg touches that poisoned stack area
-> we can invalidate all PTR_TO_MEM's with that dynptr_id.
+From: Jianfeng Tan <henry.tjf@antgroup.com>
 
-Okay, this makes sense to me. are you already currently working or
-planning to work on a fix for this Kumar, or should i take a stab at
-it?
+Packet sockets, like tap, can be used as the backend for kernel vhost.
+In packet sockets, virtio net header size is currently hardcoded to be
+the size of struct virtio_net_hdr, which is 10 bytes; however, it is not
+always the case: some virtio features, such as mrg_rxbuf, need virtio
+net headers to be 12-byte long.
+
+Mergeable buffers, as a virtio feature, is worthy of supporting: packets
+that are larger than one-mbuf size will be dropped in vhost worker's
+handle_rx if mrg_rxbuf feature is not used, but large packets
+cannot be avoided and increasing mbuf's size is not economical.
+
+With this virtio feature enabled by virtio-user, packet sockets with
+hardcoded 10-byte virtio net header will parse mac head incorrectly in
+packet_snd by taking the last two bytes of virtio net header as part of
+mac header.
+This incorrect mac header parsing will cause packet to be dropped due to
+invalid ether head checking in later under-layer device packet receiving.
+
+By adding extra field vnet_hdr_sz with utilizing holes in struct
+packet_sock to record currently used virtio net header size and supporting
+extra sockopt PACKET_VNET_HDR_SZ to set specified vnet_hdr_sz, packet
+sockets can know the exact length of virtio net header that virtio user
+gives.
+In packet_snd, tpacket_snd and packet_recvmsg, instead of using
+hardcoded virtio net header size, it can get the exact vnet_hdr_sz from
+corresponding packet_sock, and parse mac header correctly based on this
+information to avoid the packets being mistakenly dropped.
+
+Signed-off-by: Jianfeng Tan <henry.tjf@antgroup.com>
+Co-developed-by: Anqi Shen <amy.saq@antgroup.com>
+Signed-off-by: Anqi Shen <amy.saq@antgroup.com>
+---
+
+V3 -> V4:
+* read po->vnet_hdr_sz once during vnet_hdr_sz and use vnet_hdr_sz locally 
+to avoid race condition;
+* modify how to check non-zero po->vnet_hdr_sz;
+* separate vnet_hdr_sz as a u8 field in struct packet_sock instead of 8-bit
+in an int field.
+
+ include/uapi/linux/if_packet.h |  1 +
+ net/packet/af_packet.c         | 87 +++++++++++++++++++++++++++---------------
+ net/packet/diag.c              |  2 +-
+ net/packet/internal.h          |  2 +-
+ 4 files changed, 59 insertions(+), 33 deletions(-)
+
+diff --git a/include/uapi/linux/if_packet.h b/include/uapi/linux/if_packet.h
+index 78c981d..9efc423 100644
+--- a/include/uapi/linux/if_packet.h
++++ b/include/uapi/linux/if_packet.h
+@@ -59,6 +59,7 @@ struct sockaddr_ll {
+ #define PACKET_ROLLOVER_STATS		21
+ #define PACKET_FANOUT_DATA		22
+ #define PACKET_IGNORE_OUTGOING		23
++#define PACKET_VNET_HDR_SZ		24
+ 
+ #define PACKET_FANOUT_HASH		0
+ #define PACKET_FANOUT_LB		1
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index 8ffb19c..06b9893 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -2092,18 +2092,18 @@ static unsigned int run_filter(struct sk_buff *skb,
+ }
+ 
+ static int packet_rcv_vnet(struct msghdr *msg, const struct sk_buff *skb,
+-			   size_t *len)
++			   size_t *len, int vnet_hdr_sz)
+ {
+-	struct virtio_net_hdr vnet_hdr;
++	struct virtio_net_hdr_mrg_rxbuf vnet_hdr = { .num_buffers = 0 };
+ 
+-	if (*len < sizeof(vnet_hdr))
++	if (*len < vnet_hdr_sz)
+ 		return -EINVAL;
+-	*len -= sizeof(vnet_hdr);
++	*len -= vnet_hdr_sz;
+ 
+-	if (virtio_net_hdr_from_skb(skb, &vnet_hdr, vio_le(), true, 0))
++	if (virtio_net_hdr_from_skb(skb, (struct virtio_net_hdr *)&vnet_hdr, vio_le(), true, 0))
+ 		return -EINVAL;
+ 
+-	return memcpy_to_msg(msg, (void *)&vnet_hdr, sizeof(vnet_hdr));
++	return memcpy_to_msg(msg, (void *)&vnet_hdr, vnet_hdr_sz);
+ }
+ 
+ /*
+@@ -2253,6 +2253,7 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
+ 	bool is_drop_n_account = false;
+ 	unsigned int slot_id = 0;
+ 	bool do_vnet = false;
++	int vnet_hdr_sz;
+ 
+ 	/* struct tpacket{2,3}_hdr is aligned to a multiple of TPACKET_ALIGNMENT.
+ 	 * We may add members to them until current aligned size without forcing
+@@ -2310,8 +2311,9 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
+ 		netoff = TPACKET_ALIGN(po->tp_hdrlen +
+ 				       (maclen < 16 ? 16 : maclen)) +
+ 				       po->tp_reserve;
+-		if (po->has_vnet_hdr) {
+-			netoff += sizeof(struct virtio_net_hdr);
++		vnet_hdr_sz = po->vnet_hdr_sz;
++		if (vnet_hdr_sz) {
++			netoff += vnet_hdr_sz;
+ 			do_vnet = true;
+ 		}
+ 		macoff = netoff - maclen;
+@@ -2552,16 +2554,27 @@ static int __packet_snd_vnet_parse(struct virtio_net_hdr *vnet_hdr, size_t len)
+ }
+ 
+ static int packet_snd_vnet_parse(struct msghdr *msg, size_t *len,
+-				 struct virtio_net_hdr *vnet_hdr)
++				 struct virtio_net_hdr *vnet_hdr, int vnet_hdr_sz)
+ {
+-	if (*len < sizeof(*vnet_hdr))
++	int ret;
++
++	if (*len < vnet_hdr_sz)
+ 		return -EINVAL;
+-	*len -= sizeof(*vnet_hdr);
++	*len -= vnet_hdr_sz;
+ 
+ 	if (!copy_from_iter_full(vnet_hdr, sizeof(*vnet_hdr), &msg->msg_iter))
+ 		return -EFAULT;
+ 
+-	return __packet_snd_vnet_parse(vnet_hdr, *len);
++	ret = __packet_snd_vnet_parse(vnet_hdr, *len);
++
++	if (ret)
++		return ret;
++
++	/* move iter to point to the start of mac header */
++	if (vnet_hdr_sz != sizeof(struct virtio_net_hdr))
++		iov_iter_advance(&msg->msg_iter, vnet_hdr_sz - sizeof(struct virtio_net_hdr));
++
++	return 0;
+ }
+ 
+ static int tpacket_fill_skb(struct packet_sock *po, struct sk_buff *skb,
+@@ -2730,6 +2743,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+ 	int status = TP_STATUS_AVAILABLE;
+ 	int hlen, tlen, copylen = 0;
+ 	long timeo = 0;
++	int vnet_hdr_sz = po->vnet_hdr_sz;
+ 
+ 	mutex_lock(&po->pg_vec_lock);
+ 
+@@ -2780,7 +2794,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+ 	size_max = po->tx_ring.frame_size
+ 		- (po->tp_hdrlen - sizeof(struct sockaddr_ll));
+ 
+-	if ((size_max > dev->mtu + reserve + VLAN_HLEN) && !po->has_vnet_hdr)
++	if ((size_max > dev->mtu + reserve + VLAN_HLEN) && !vnet_hdr_sz)
+ 		size_max = dev->mtu + reserve + VLAN_HLEN;
+ 
+ 	reinit_completion(&po->skb_completion);
+@@ -2809,10 +2823,10 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+ 		status = TP_STATUS_SEND_REQUEST;
+ 		hlen = LL_RESERVED_SPACE(dev);
+ 		tlen = dev->needed_tailroom;
+-		if (po->has_vnet_hdr) {
++		if (vnet_hdr_sz) {
+ 			vnet_hdr = data;
+-			data += sizeof(*vnet_hdr);
+-			tp_len -= sizeof(*vnet_hdr);
++			data += vnet_hdr_sz;
++			tp_len -= vnet_hdr_sz;
+ 			if (tp_len < 0 ||
+ 			    __packet_snd_vnet_parse(vnet_hdr, tp_len)) {
+ 				tp_len = -EINVAL;
+@@ -2837,7 +2851,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+ 					  addr, hlen, copylen, &sockc);
+ 		if (likely(tp_len >= 0) &&
+ 		    tp_len > dev->mtu + reserve &&
+-		    !po->has_vnet_hdr &&
++		    !vnet_hdr_sz &&
+ 		    !packet_extra_vlan_len_allowed(dev, skb))
+ 			tp_len = -EMSGSIZE;
+ 
+@@ -2856,7 +2870,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+ 			}
+ 		}
+ 
+-		if (po->has_vnet_hdr) {
++		if (vnet_hdr_sz) {
+ 			if (virtio_net_hdr_to_skb(skb, vnet_hdr, vio_le())) {
+ 				tp_len = -EINVAL;
+ 				goto tpacket_error;
+@@ -2946,7 +2960,7 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+ 	struct virtio_net_hdr vnet_hdr = { 0 };
+ 	int offset = 0;
+ 	struct packet_sock *po = pkt_sk(sk);
+-	bool has_vnet_hdr = false;
++	int vnet_hdr_sz = po->vnet_hdr_sz;
+ 	int hlen, tlen, linear;
+ 	int extra_len = 0;
+ 
+@@ -2990,11 +3004,11 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+ 
+ 	if (sock->type == SOCK_RAW)
+ 		reserve = dev->hard_header_len;
+-	if (po->has_vnet_hdr) {
+-		err = packet_snd_vnet_parse(msg, &len, &vnet_hdr);
++
++	if (vnet_hdr_sz) {
++		err = packet_snd_vnet_parse(msg, &len, &vnet_hdr, vnet_hdr_sz);
+ 		if (err)
+ 			goto out_unlock;
+-		has_vnet_hdr = true;
+ 	}
+ 
+ 	if (unlikely(sock_flag(sk, SOCK_NOFCS))) {
+@@ -3064,11 +3078,11 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+ 
+ 	packet_parse_headers(skb, sock);
+ 
+-	if (has_vnet_hdr) {
++	if (vnet_hdr_sz) {
+ 		err = virtio_net_hdr_to_skb(skb, &vnet_hdr, vio_le());
+ 		if (err)
+ 			goto out_free;
+-		len += sizeof(vnet_hdr);
++		len += vnet_hdr_sz;
+ 		virtio_net_hdr_set_proto(skb, &vnet_hdr);
+ 	}
+ 
+@@ -3410,7 +3424,7 @@ static int packet_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ 	struct sock *sk = sock->sk;
+ 	struct sk_buff *skb;
+ 	int copied, err;
+-	int vnet_hdr_len = 0;
++	int vnet_hdr_len = pkt_sk(sk)->vnet_hdr_sz;
+ 	unsigned int origlen = 0;
+ 
+ 	err = -EINVAL;
+@@ -3451,11 +3465,10 @@ static int packet_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ 
+ 	packet_rcv_try_clear_pressure(pkt_sk(sk));
+ 
+-	if (pkt_sk(sk)->has_vnet_hdr) {
+-		err = packet_rcv_vnet(msg, skb, &len);
++	if (vnet_hdr_len) {
++		err = packet_rcv_vnet(msg, skb, &len, vnet_hdr_len);
+ 		if (err)
+ 			goto out_free;
+-		vnet_hdr_len = sizeof(struct virtio_net_hdr);
+ 	}
+ 
+ 	/* You lose any data beyond the buffer you gave. If it worries
+@@ -3921,8 +3934,9 @@ static void packet_flush_mclist(struct sock *sk)
+ 		return 0;
+ 	}
+ 	case PACKET_VNET_HDR:
++	case PACKET_VNET_HDR_SZ:
+ 	{
+-		int val;
++		int val, hdr_len;
+ 
+ 		if (sock->type != SOCK_RAW)
+ 			return -EINVAL;
+@@ -3931,11 +3945,19 @@ static void packet_flush_mclist(struct sock *sk)
+ 		if (copy_from_sockptr(&val, optval, sizeof(val)))
+ 			return -EFAULT;
+ 
++		hdr_len = val ? sizeof(struct virtio_net_hdr) : 0;
++		if (optname == PACKET_VNET_HDR_SZ) {
++			if (val && val != sizeof(struct virtio_net_hdr) &&
++			    val != sizeof(struct virtio_net_hdr_mrg_rxbuf))
++				return -EINVAL;
++			hdr_len = val;
++		}
++
+ 		lock_sock(sk);
+ 		if (po->rx_ring.pg_vec || po->tx_ring.pg_vec) {
+ 			ret = -EBUSY;
+ 		} else {
+-			po->has_vnet_hdr = !!val;
++			po->vnet_hdr_sz = hdr_len;
+ 			ret = 0;
+ 		}
+ 		release_sock(sk);
+@@ -4068,7 +4090,10 @@ static int packet_getsockopt(struct socket *sock, int level, int optname,
+ 		val = po->origdev;
+ 		break;
+ 	case PACKET_VNET_HDR:
+-		val = po->has_vnet_hdr;
++		val = !!po->vnet_hdr_sz;
++		break;
++	case PACKET_VNET_HDR_SZ:
++		val = po->vnet_hdr_sz;
+ 		break;
+ 	case PACKET_VERSION:
+ 		val = po->tp_version;
+diff --git a/net/packet/diag.c b/net/packet/diag.c
+index 07812ae..dfec603 100644
+--- a/net/packet/diag.c
++++ b/net/packet/diag.c
+@@ -27,7 +27,7 @@ static int pdiag_put_info(const struct packet_sock *po, struct sk_buff *nlskb)
+ 		pinfo.pdi_flags |= PDI_AUXDATA;
+ 	if (po->origdev)
+ 		pinfo.pdi_flags |= PDI_ORIGDEV;
+-	if (po->has_vnet_hdr)
++	if (po->vnet_hdr_sz)
+ 		pinfo.pdi_flags |= PDI_VNETHDR;
+ 	if (po->tp_loss)
+ 		pinfo.pdi_flags |= PDI_LOSS;
+diff --git a/net/packet/internal.h b/net/packet/internal.h
+index 48af35b..154c6bb 100644
+--- a/net/packet/internal.h
++++ b/net/packet/internal.h
+@@ -119,9 +119,9 @@ struct packet_sock {
+ 	unsigned int		running;	/* bind_lock must be held */
+ 	unsigned int		auxdata:1,	/* writer must hold sock lock */
+ 				origdev:1,
+-				has_vnet_hdr:1,
+ 				tp_loss:1,
+ 				tp_tx_has_off:1;
++	u8			vnet_hdr_sz;
+ 	int			pressure;
+ 	int			ifindex;	/* bound device		*/
+ 	__be16			num;
+-- 
+1.8.3.1
+
