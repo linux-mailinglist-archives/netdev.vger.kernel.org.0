@@ -2,121 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB5686B7742
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 13:13:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A49D6B7758
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 13:20:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229754AbjCMMNH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 08:13:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54236 "EHLO
+        id S229754AbjCMMUh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 08:20:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229682AbjCMMNC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 08:13:02 -0400
-Received: from wnew4-smtp.messagingengine.com (wnew4-smtp.messagingengine.com [64.147.123.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B33F63C01;
-        Mon, 13 Mar 2023 05:12:57 -0700 (PDT)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-        by mailnew.west.internal (Postfix) with ESMTP id 23BFD2B065EF;
-        Mon, 13 Mar 2023 08:12:51 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute6.internal (MEProxy); Mon, 13 Mar 2023 08:12:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:content-type:date:date:feedback-id:feedback-id
-        :from:from:in-reply-to:in-reply-to:message-id:mime-version
-        :references:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
-        1678709570; x=1678716770; bh=9ui9bmvE5i4u3m/ARdGTj1kwQVPleXj0Y6d
-        rKORRRdE=; b=WUMIR8yT/f22HAwm5Aovj8/OD54RFZFtg8maPs6wmZCp79zQwk2
-        KXXos4GzGqFt9BvscL4OqD1szAu52+4XSWc70eThQIbOjMYwZktDXpc6sewkt1Kt
-        IQuP4iYISi11UCu5EGR4vK5yWqNX2bodRIrhiIzD8dN8e71kC3/T2BSIfwW08q6w
-        sOm3bg2DJDrZhG+CaHwhggasxpIKKspowN8iOVbGD4wmr4U7d7yXFVs0egsFMhvn
-        UsjuDboWzqQ2sXYU5zIgUDAHiJdHRUHwGuGMtE45ml6QdWmA9inGrWaPjlIGdGG0
-        U0zNusFrFDr6WwzqNo4fbbk7d4LWnEmsQdw==
-X-ME-Sender: <xms:QBMPZAGuXJ6KHpEM2zLBqBMUhtupMv-AYvRIxQsCT9c2WXj_KrL9yw>
-    <xme:QBMPZJUYrUCR9v9niZxHAtNQXDXMuRJOeUTfDrNQL5AMpWp5_gRyUgARVG6AJt5MB
-    8V-REv7A00LtEU>
-X-ME-Received: <xmr:QBMPZKKtheRiAdEM52XhXs5g2XlATNLs-UmEZDpDXOxzcEYr2b_RExlVS0qy>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvddvgedgfeeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggugfgjsehtkeertddttddunecuhfhrohhmpefkugho
-    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrg
-    htthgvrhhnpeegheekuddvueejvddtvdfgtddvgfevudektddtteevuddvkeetveeftdev
-    ueejveenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    hiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:QBMPZCHmJTlQSPmNn5mFwF98VfTp58Lr3edQLA0SKWtFi27UqxeHjg>
-    <xmx:QBMPZGVmlGLnYUi0bAWfEBuENurj0LmBoTEnwljNdphwsJYoJ_5spg>
-    <xmx:QBMPZFPzMMmiZLpPDr-Ymi2cASyz9VcV8XLgDOWfjhFRevVEG5aPmw>
-    <xmx:QhMPZBQ3z4tvEYR1IPnmOsVCvIChQHU9DB0qKJv1fRScLdvuwmt2Jm_iXJ0>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 13 Mar 2023 08:12:47 -0400 (EDT)
-Date:   Mon, 13 Mar 2023 14:12:44 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     rafael@kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, rui.zhang@intel.com,
-        Raju Rangoju <rajur@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Peter Kaestle <peter@piie.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Amit Kucheria <amitk@kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Broadcom Kernel Team <bcm-kernel-feedback-list@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Lukasz Luba <lukasz.luba@arm.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Thara Gopinath <thara.gopinath@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Niklas =?iso-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>,
-        Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Eduardo Valentin <edubezval@gmail.com>,
-        Keerthy <j-keerthy@ti.com>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Antoine Tenart <atenart@kernel.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Dmitry Osipenko <digetx@gmail.com>, netdev@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-omap@vger.kernel.org,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        danieller@nvidia.com, vadimp@nvidia.com, petrm@nvidia.com
-Subject: Re: [PATCH v8 01/29] thermal/core: Add a generic
- thermal_zone_get_trip() function
-Message-ID: <ZA8TPDpEVanOpjEp@shredder>
-References: <20221003092602.1323944-1-daniel.lezcano@linaro.org>
- <20221003092602.1323944-2-daniel.lezcano@linaro.org>
- <ZA3CFNhU4AbtsP4G@shredder>
- <f78e6b70-a963-c0ca-a4b2-0d4c6aeef1fb@linaro.org>
+        with ESMTP id S229748AbjCMMUd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 08:20:33 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3E4B52F72;
+        Mon, 13 Mar 2023 05:20:31 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id j11so47901447edq.4;
+        Mon, 13 Mar 2023 05:20:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678710030;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=U9QeXAHeMugQluXQmQ0vDaleIoBtKB5Ww7MDNzTXkTs=;
+        b=aNQgexFo/zLOjD/VvwQqH0QucmBFS3mLE36uRYn2rNfW6ikWMyBB9lxb/MEQ7E/rEX
+         Lv2urpDe5MELhQqne/Pnvo9lj911dX+owC8PbleYhKMTCvSbDTy6zV2u35ywbeEr84zT
+         LL7lXVekdfbCGe1ssZTGOkkuqJjfZhsI1m/DUxaFxc5kNfqMBD7bfI66DAjueQ3gVvpi
+         bvknJbkHGMvtNCNtQ/RuZinjXgVa98B/xhLVUd8FWkKtpcbfDF+JjOWBQtCYKDn7qF4H
+         8VXKzJdbBW5eLwRNFxiNJFwwP6w6xwoTtZ/PFms0E20vM7VqEgDrIfZdX/07rs+Z8FlA
+         XrgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678710030;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=U9QeXAHeMugQluXQmQ0vDaleIoBtKB5Ww7MDNzTXkTs=;
+        b=GW8kfuMGRxGeEiK6YhoUGcdjCsOk5vLz08NrP65rxIvZduPPHHn5DcVVHeMrkxU6cm
+         QlmXU09Vy1QcCHpP6Ma6g4XNrTxNiCtY9eSHKCL7dPMfWT6+MbzZB5JmzOxie/NHAfdm
+         59ik0JsuS8PNS8w68p/r5egM+K3E9V6rs+aUF+4fY+gKuxrSX79srYmcmIza9NtO9hne
+         DZCsVZj6nT71d5iEx0afgqP/5Pa1MjRegOhYrnVUi45fTvsvxV8UNAmdsPJzHpBTFiCk
+         5zXXa2gViHOoafUCX2nD9L1HS4ZpFC2k/DY1m+0vzgjKABn5PYJ60kOopLSQte5KMBXV
+         9R9w==
+X-Gm-Message-State: AO0yUKV+jYba/fcvjKwXZEcCFP1C/EJmVL1tLI3tq6lG/BXIU3gd5R7n
+        lhmGCg4NxUw0a0GNo+jjMS7TZQrmC+RFPnpRljg=
+X-Google-Smtp-Source: AK7set8o+aFFFn6E49sD+TH2pPUAA1oNe7C77j1nrEz47+vNPIxudd7nb7GNX3PO/mlB2+SlIqLS5Fmck2j5jvCYhe4=
+X-Received: by 2002:a17:906:6d5a:b0:922:26ae:c68c with SMTP id
+ a26-20020a1709066d5a00b0092226aec68cmr3781992ejt.5.1678710030117; Mon, 13 Mar
+ 2023 05:20:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f78e6b70-a963-c0ca-a4b2-0d4c6aeef1fb@linaro.org>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE autolearn=ham
+References: <20230311151756.83302-1-kerneljasonxing@gmail.com>
+ <ZA4huzYKK/tdT3Ep@corigine.com> <CAL+tcoDi5fVWjyTX6wjJGKrszqL6JWkEgDBajhZchYSW7kyhGQ@mail.gmail.com>
+ <ZA8S14QtdBduQEVq@corigine.com>
+In-Reply-To: <ZA8S14QtdBduQEVq@corigine.com>
+From:   Jason Xing <kerneljasonxing@gmail.com>
+Date:   Mon, 13 Mar 2023 20:19:53 +0800
+Message-ID: <CAL+tcoAmWU0w5dJ6_fL9yp1sMOF3px-n=H=kqaWwosHuzvijqA@mail.gmail.com>
+Subject: Re: [PATCH net-next] net-sysfs: display two backlog queue len separately
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jason Xing <kernelxing@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -124,35 +71,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 13, 2023 at 11:45:41AM +0100, Daniel Lezcano wrote:
-> Thanks for reporting this, I think the fix you are proposing is correct
-> regarding the previous behavior.
-> 
-> However, I disagree with the commit 81ad4276b505, because it defines the
-> zero as an invalid trip point. But some platforms have warming devices, when
-> the temperature is too cold, eg 0°C, we enable the warming device in order
-> to stay in the functioning temperature range.
-> 
-> Other devices can do the same with negative temperature values.
-> 
-> This feature is not yet upstream and the rework of the trip point should
-> allow proper handling of cold trip points.
-> 
-> If you can send the change to fix the regression that would be great.
+On Mon, Mar 13, 2023 at 8:11=E2=80=AFPM Simon Horman <simon.horman@corigine=
+.com> wrote:
+>
+> On Mon, Mar 13, 2023 at 09:55:37AM +0800, Jason Xing wrote:
+> > On Mon, Mar 13, 2023 at 3:02=E2=80=AFAM Simon Horman <simon.horman@cori=
+gine.com> wrote:
+> > >
+> > > On Sat, Mar 11, 2023 at 11:17:56PM +0800, Jason Xing wrote:
+> > > > From: Jason Xing <kernelxing@tencent.com>
+> > > >
+> > > > Sometimes we need to know which one of backlog queue can be exactly
+> > > > long enough to cause some latency when debugging this part is neede=
+d.
+> > > > Thus, we can then separate the display of both.
+> > > >
+> > > > Signed-off-by: Jason Xing <kernelxing@tencent.com>
+> > > > ---
+> > > >  net/core/net-procfs.c | 17 ++++++++++++-----
+> > > >  1 file changed, 12 insertions(+), 5 deletions(-)
+> > > >
+> > > > diff --git a/net/core/net-procfs.c b/net/core/net-procfs.c
+> > > > index 1ec23bf8b05c..97a304e1957a 100644
+> > > > --- a/net/core/net-procfs.c
+> > > > +++ b/net/core/net-procfs.c
+> > > > @@ -115,10 +115,14 @@ static int dev_seq_show(struct seq_file *seq,=
+ void *v)
+> > > >       return 0;
+> > > >  }
+> > > >
+> > > > -static u32 softnet_backlog_len(struct softnet_data *sd)
+> > > > +static u32 softnet_input_pkt_queue_len(struct softnet_data *sd)
+> > > >  {
+> > > > -     return skb_queue_len_lockless(&sd->input_pkt_queue) +
+> > > > -            skb_queue_len_lockless(&sd->process_queue);
+> > > > +     return skb_queue_len_lockless(&sd->input_pkt_queue);
+> > > > +}
+> > > > +
+> > > > +static u32 softnet_process_queue_len(struct softnet_data *sd)
+> > > > +{
+> > > > +     return skb_queue_len_lockless(&sd->process_queue);
+> > > >  }
+> > > >
+> > > >  static struct softnet_data *softnet_get_online(loff_t *pos)
+> > > > @@ -169,12 +173,15 @@ static int softnet_seq_show(struct seq_file *=
+seq, void *v)
+> > > >        * mapping the data a specific CPU
+> > > >        */
+> > > >       seq_printf(seq,
+> > > > -                "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x=
+ %08x %08x %08x\n",
+> > > > +                "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x=
+ %08x %08x %08x "
+> > > > +                "%08x %08x\n",
+> > > >                  sd->processed, sd->dropped, sd->time_squeeze, 0,
+> > > >                  0, 0, 0, 0, /* was fastroute */
+> > > >                  0,   /* was cpu_collision */
+> > > >                  sd->received_rps, flow_limit_count,
+> > > > -                softnet_backlog_len(sd), (int)seq->index);
+> > > > +                0,   /* was len of two backlog queues */
+> > > > +                (int)seq->index,
+> > >
+> > > nit: I think you could avoid this cast by using %llx as the format sp=
+ecifier.
+> >
+> > I'm not sure if I should change this format since the above line is
+> > introduced in commit 7d58e6555870d ('net-sysfs: add backlog len and
+> > CPU id to softnet data').
+> > The seq->index here manifests which cpu it uses, so it can be
+> > displayed in 'int' format. Meanwhile, using %8x to output is much
+> > cleaner if the user executes 'cat /proc/net/softnet_stat'.
+> >
+> > What do you think about this?
+>
+> I think %08llx might be a good way to go.
+> But perhaps I'm missing something wrt to changing user-facing output.
+>
+> In any case, this is more a suggestion than a request for a change.
 
-Thanks for the reply. Will send you the fix later this week. I want to
-test it across all of our systems.
+Ah, now I see. Thanks again for your review and suggestion :)
 
-> 
-> But keep in mind, the driver is assuming an internal thermal framework
-> behavior. The trips_disabled is only to overcome a trip point description
-> bug and you should not rely on it as well as not changing the trip points on
-> the fly after they are registered.
-> 
-> Actually, the mlxsw driver should just build a valid array of trip points
-> without 0°C trip point and pass it to
-> thermal_zone_device_register_with_trips(). That would be a proper change
-> without relying on a side effect of the thermal trip bug 0°C workaround.
-
-Understood. Will check with Vadim what we can do in order not to rely on
-this behavior.
+Thanks,
+Jason
