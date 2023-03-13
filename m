@@ -2,65 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 169086B7C3A
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 16:42:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CEBE6B7C52
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 16:46:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229813AbjCMPmD convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 13 Mar 2023 11:42:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59610 "EHLO
+        id S230054AbjCMPqe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 11:46:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbjCMPmB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 11:42:01 -0400
-Received: from us-smtp-delivery-44.mimecast.com (unknown [207.211.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 248CA37F0D
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 08:41:58 -0700 (PDT)
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-607-cZ6hFkaTPp2gw_6VnXUfeA-1; Mon, 13 Mar 2023 11:41:41 -0400
-X-MC-Unique: cZ6hFkaTPp2gw_6VnXUfeA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 455781C08789;
-        Mon, 13 Mar 2023 15:41:40 +0000 (UTC)
-Received: from hog (unknown [10.39.192.141])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 41CD6406AA66;
-        Mon, 13 Mar 2023 15:41:38 +0000 (UTC)
-Date:   Mon, 13 Mar 2023 16:41:36 +0100
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Vadim Fedorenko <vfedorenko@novek.ru>,
-        Frantisek Krenzelok <fkrenzel@redhat.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Apoorv Kothari <apoorvko@amazon.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
-        Gal Pressman <gal@nvidia.com>,
-        Marcel Holtmann <marcel@holtmann.org>
-Subject: Re: [PATCH net-next v2 0/5] tls: implement key updates for TLS1.3
-Message-ID: <ZA9EMJgoNsxfOhwV@hog>
-References: <cover.1676052788.git.sd@queasysnail.net>
- <20230214210811.448b5ec4@kernel.org>
- <Y+0Wjrc9shLkH+Gg@hog>
- <20230215111020.0c843384@kernel.org>
- <Y+1pX/vL8t2nU00c@hog>
- <20230215195748.23a6da87@kernel.org>
- <Y+5Yd/8tjCQNOF31@hog>
- <20230221191944.4d162ec7@kernel.org>
- <Y/eT/M+b6jUtTdng@hog>
- <20230223092945.435b10ea@kernel.org>
+        with ESMTP id S229899AbjCMPqd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 11:46:33 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF795D45D;
+        Mon, 13 Mar 2023 08:46:32 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id h12-20020a17090aea8c00b0023d1311fab3so2575068pjz.1;
+        Mon, 13 Mar 2023 08:46:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678722392;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=zDyOkoFnhZROPctgeWISqNuHE+Oq1ns/S8cynzzVLLQ=;
+        b=SZy093BBwASY2LmXz6fWeD2QN3KkuTZE8AZRG6U9RCkjysmUWW2hLKo1dQuwQb/uzU
+         /chwQhlAtbMZVSrj/1loXOvr6mUH1EA4co9ZSwSuEuwbSDrN870b3UhbuSMBmbWTkx7t
+         MKb0Em2KyOKa/sb39onVU/5BXDKbiU+/eqyBB+QERd+vQbRI1vOzofvr33u5KcuqhABd
+         P7HwsHv3oW2enBtVBzvTB6qpoxFLqAllo69JEkbz+IpKTnD1xKBgUuLUKK5ahZ1+yznh
+         HOmFLgDRWZlDzHZY6fgzrTdT6emIv/T7a7AS27u+X+1qENm0PF+5k9Udir3lTLzg6iex
+         3D9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678722392;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=zDyOkoFnhZROPctgeWISqNuHE+Oq1ns/S8cynzzVLLQ=;
+        b=I/xbP93TzIrMumtw+TeoOJi+6CjY5O4veukCHLEicb3TEFYq1iUIt1HPg+spxlK8Pv
+         cmPEO/UFwqoIW1EETT03PnBTlpB6YrKajmd8D/TClmvA6vuyMFjgOP06e3IT4VK4jD5x
+         GDZd8HCoz4iesh89qgQslZzP2vSppaXOqu7/PhZhSgafSOhbxXIj9IMvAlYgihf0Fz1S
+         TGcdhWhEZnviCWSang7uEZ+g4PPUL4MwXZrCSTB+PxqCScEARw2WgSohibcM0oUVNo+7
+         CUg4JWEUFyAW8xRn/dmGy0/SYvUIrXZ4ftq61Nh5fIQYIhuyYK6FHo8wJB2l/MIz/oo0
+         /2kg==
+X-Gm-Message-State: AO0yUKUNao6UpzO9AwDWT32PMWOGhDBcF8iOPQiiSyNmtpGo9jKtL0Nt
+        whg7aOQC+Z+WL1S75/wkHI8=
+X-Google-Smtp-Source: AK7set/PzQK6v+D13DwO2XP5KhnGB9fm2o4OFc6rwAKhDceSoLF6j9djA69o4q7HHFFtl6GFJS6kYw==
+X-Received: by 2002:a17:902:b20d:b0:1a0:4046:23f2 with SMTP id t13-20020a170902b20d00b001a0404623f2mr3760708plr.56.1678722392278;
+        Mon, 13 Mar 2023 08:46:32 -0700 (PDT)
+Received: from ?IPV6:2620:10d:c085:21c8::1441? ([2620:10d:c090:400::5:37cf])
+        by smtp.gmail.com with ESMTPSA id kc7-20020a17090333c700b0019cbe436b87sm59388plb.81.2023.03.13.08.46.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Mar 2023 08:46:31 -0700 (PDT)
+Message-ID: <ec19df13-0f0a-d05b-f2a2-6e8cfe072fa5@gmail.com>
+Date:   Mon, 13 Mar 2023 08:46:26 -0700
 MIME-Version: 1.0
-In-Reply-To: <20230223092945.435b10ea@kernel.org>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Type: text/plain; charset=UTF-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-0.5 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_VALIDITY_RPBL,RDNS_NONE,SPF_HELO_NONE,SPF_NONE autolearn=no
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH bpf-next v6 2/8] net: Update an existing TCP congestion
+ control algorithm.
+Content-Language: en-US, en-ZW
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        Kui-Feng Lee <kuifeng@meta.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, martin.lau@linux.dev,
+        song@kernel.org, kernel-team@meta.com, andrii@kernel.org,
+        sdf@google.com, netdev@vger.kernel.org
+References: <20230310043812.3087672-1-kuifeng@meta.com>
+ <20230310043812.3087672-3-kuifeng@meta.com>
+ <20230310084750.482e633e@hermes.local>
+From:   Kui-Feng Lee <sinquersw@gmail.com>
+In-Reply-To: <20230310084750.482e633e@hermes.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,93 +79,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2023-02-23, 09:29:45 -0800, Jakub Kicinski wrote:
-> On Thu, 23 Feb 2023 17:27:40 +0100 Sabrina Dubroca wrote:
-> > Installing the key in HW and re-enabling the offload will need to
-> > happen via the icsk_clean_acked callback. We'll need a workqueue so
-> > that we don't actually talk to the driver from softirq.
+
+
+On 3/10/23 08:47, Stephen Hemminger wrote:
+> On Thu, 9 Mar 2023 20:38:07 -0800
+> Kui-Feng Lee <kuifeng@meta.com> wrote:
 > 
-> Installing from icsk_clean_acked won't win us anything, right?
-> We'll only need the key once the next sendmsg() comes, what's
-> pushed to TCP with swenc is already out of our hands.
-
-Avoiding an unpredictable slowdown on the sendmsg() call? We can deal
-with that later if it turns out to be an issue. I simply didn't think
-of deferring to the next sendmsg().
-
-> > Then, we have to handle a failure to install the key. Since we're not
-> > installing it in HW immediately during setsockopt, notifying userspace
-> > of a rekey failure is more complicated. Maybe we can do a
-> > rekey_prepare during the setsocktopt, and then the actual rekey is an
-> > operation that cannot fail?
+>> This feature lets you immediately transition to another congestion
+>> control algorithm or implementation with the same name.  Once a name
+>> is updated, new connections will apply this new algorithm.
+>>
+>> Signed-off-by: Kui-Feng Lee <kuifeng@meta.com>
 > 
-> TLS offload silently falls back to SW on any errors. So that's fine.
-> Just bump a counter. User/infra must be tracking error counters in 
-> our current design already.
+> What is the use case and userspace API for this?
+> The congestion control algorithm normally doesn't allow this because
+> algorithm specific variables (current state of connection) may not
+> work with another algorithm.
 
-True. User might be a bit surprised by "well it was offloaded and now
-it's not", but ok.
+Only new connections will apply the new algorithm, while
+existing connections keep using the algorithm applied. It shouldn't
+have the per-connection state/variable issue you mentioned.
 
-> > > Important consideration is making the non-rekey path as fast as
-> > > possible (given rekeying is extremely rare). Looking at skb->decrypted
-> > > should be very fast but we can possibly fit some other indication of
-> > > "are we rekeying" into another already referenced cache line.
-> > > We definitely don't want to have to look up the record to know what
-> > > state we're in.
-> > > 
-> > > The fallback can't use AES-NI (it's in sirq context) so it's slower 
-> > > than SW encrypt before queuing to TCP. Hence my first thought is using
-> > > SW crypto for new key and let the traffic we already queued with old
-> > > key drain leveraging HW crypto. But as I said the impact on performance
-> > > when not rekeying is more important, and so is driver simplicity.  
-> > 
-> > Right, sorry, full tls_sw path and not the existing fallback.
-> > 
-> > Changing the socket ops back and forth between the HW and SW variants
-> > worries me, because we only lock the socket once we have entered
-> > tls_{device,sw}_sendmsg. So I think we have to stay on the _device ops
-> > even during the SW crypto phase of the rekey, and let that call into
-> > the SW variant after locking the socket and making sure we're in a
-> > rekey.
+It will be used to upgrade an existing algorithm to a new version.
+The userspace API is used in the 8th patch of this patchset.
+One of examples in the testcase is
+
+   link = bpf_map__attach_struct_ops(skel->maps.ca_update_1);
+   .......
+   err = bpf_link__update_map(link, skel->maps.ca_update_2);
+
+Calling bpf_link__update_map(...) will register ca_pupdate_2 and
+unregister ca_update_1 with the same name
+in one call.  However, the existing connections that has applied
+ca_update_1 keep using the algorithm except someone call
+setsockopt(TCP_CONGESTION, ...) on them.
+
+
+
 > 
-> Fair point :S
-> 
-> > > > Don't we have that already? If there's a retransmit while we're
-> > > > setting the TX key in HW, data that was queued on the socket before
-> > > > (and shouldn't be encrypted at all) would also be encrypted
-> > > > otherwise. Or is it different with rekey?  
-> > > 
-> > > We have a "start marker" record which is supposed to indicate that
-> > > anything before it has already been encrypted. The driver is programmed
-> > > with the start seq no, when it sees a packet from before this seq no
-> > > it checks if a record exists, finds its before the start marker and
-> > > sends the data as is.  
-> > 
-> > Yes, I was looking into that earlier this week. I think we could reuse
-> > a similar mechanism for rekeying. tls_dev_add takes tcp_sk->write_seq,
-> > we could have a tls_dev_rekey op passing the new key and new write_seq
-> > to the driver. I think we can also reuse the ->eor trick from
-> > tls_set_device_offload, and we wouldn't have to look at
-> > skb->decrypted. Close and push the current SW record, mark ->eor, pass
-> > write_seq to the driver along with the key. Also pretty close to what
-> > tls_device_resync_tx does.
-> 
-> That sounds like you'd expose the rekeying logic to the drivers?
-> New op, having to track seq#...
-
-Well, we have to call into the drivers to install the key, whether
-that's a new rekey op, or adding an update argument to ->tls_dev_add,
-or letting the driver guess that it's a rekey (or ignore that and just
-install the key if rekey vs initial key isn't a meaningful
-distinction).
-
-We already feed drivers the seq# with ->tls_dev_add, so passing it for
-rekeys as well is not a big change.
-
-Does that seem problematic? Adding a rekey op seemed more natural to
-me than simply using the existing _del + _add ops, but maybe we can
-get away with just using those two ops.
-
--- 
-Sabrina
+> Seems like you are opening Pandora's box here.
 
