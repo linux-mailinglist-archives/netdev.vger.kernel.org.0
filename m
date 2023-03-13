@@ -2,287 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC80B6B81D6
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 20:45:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B94076B81E4
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 20:54:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229910AbjCMTpt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 15:45:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58710 "EHLO
+        id S230062AbjCMTyp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 15:54:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229953AbjCMTpp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 15:45:45 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C4A1838AF;
-        Mon, 13 Mar 2023 12:45:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678736743; x=1710272743;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=fN5Chzb8FnAtH4KzGN4wwWTtdzSM6pQ/yGXVLgtj/4U=;
-  b=Gi7bcj4P0Z1JQ/+zf0pNCQ0T92qNzeJ6V9Wsy7VZzIRVogWp0QOUUT6j
-   5dBQpyl6Pfb+seTypaTk49J0PyB7xq9t9rlhkd/blM5N8rLutRtEHIX0n
-   Vt8wgJck9vbLP302Xd5xWFrAIJ2fJOYo6YKV2/UR7fabzEyIKS6iNrASw
-   bmhpEDkMFugO9SaOY1aTfIN8SSncDsR/nMv6mOELnim5SY3IVWdsbP5kt
-   CDncy4uhz5YvCuhdvWv3QtaqYPlmypSAxCHehbEmvucO37C3JhU/9UfD6
-   XDxaArQib9vxs3gVtSnUl7277hE+a5qLGqCdfCVZMoP45OcDaAyJenfVg
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="337268369"
-X-IronPort-AV: E=Sophos;i="5.98,257,1673942400"; 
-   d="scan'208";a="337268369"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2023 12:45:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="743015510"
-X-IronPort-AV: E=Sophos;i="5.98,257,1673942400"; 
-   d="scan'208";a="743015510"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmsmga008.fm.intel.com with ESMTP; 13 Mar 2023 12:45:42 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Mon, 13 Mar 2023 12:45:42 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21 via Frontend Transport; Mon, 13 Mar 2023 12:45:42 -0700
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (104.47.51.44) by
- edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.21; Mon, 13 Mar 2023 12:45:42 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=O60fN7363BGxC0wYOSNiMWvYMR018JNN5m+fu9GWvEabCkctZPLmsM4xoD5bUtvtvYpHqkSkzZVyrmRdjATjf7SzkXXxRX0jyEMhnOCrQd/h0q9eWyyRVtJUSizy4reZp8kl1fgApZjILg6gh70Z0TZ8nnwZlT1QaMuGzYSWMo4KGss+8tZTtXHN7zKFYuAtL6T5vaJAa7EgU0x0b8zb/7MpKhX6hUNwf81xdwKvkfjJXwpS6Nj3rGb1r2b0dazfpKwWjZgZSOKrquu7SjUDMyaoIOuqatVN+3G/hVYqbQD1Rz2ySMTUJoX9qQAp0RfxEOcfoYmZQBGBw3DdgFC7CQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uu+VuwFVd/BwYOx7LSpEMdV2LZ5/MIUiln+GpOVQ9N0=;
- b=QdYfTeG1xSVu+J3mn3ckoamtpOiGJEo4T29Gk8NGcyO7V8oOqN67KyCEP0+O14MhBulJJCqcf2eC8mDbsbGwrhCPYaTGnFHw4m75wh8Dm+UjySq2FVUHO/SG45GpDLgf9T6oHFOE/OmiGREnJ5EE7Iy6VtYElrPfWVlf3ab5D0kF4jiIlM3t2sKm7oabuVPTzaZFgjdRL5WYWNomJYsqGv6AkP+7yuphpCNDg3AxZCKEXB8phFwaGiMv9Ps0xHzy3MkiOp4w1cnx9IQc4RoqV/dC9r/V6n2oZTdjVid1RJrevN4GoCSIYz01FJrIX/OEaPlcPavpy9DtFbn8XfEgJw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM6PR11MB2937.namprd11.prod.outlook.com (2603:10b6:5:62::13) by
- SA2PR11MB5065.namprd11.prod.outlook.com (2603:10b6:806:115::7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6178.24; Mon, 13 Mar 2023 19:45:40 +0000
-Received: from DM6PR11MB2937.namprd11.prod.outlook.com
- ([fe80::cece:5e80:b74f:9448]) by DM6PR11MB2937.namprd11.prod.outlook.com
- ([fe80::cece:5e80:b74f:9448%7]) with mapi id 15.20.6178.024; Mon, 13 Mar 2023
- 19:45:40 +0000
-Date:   Mon, 13 Mar 2023 20:45:23 +0100
-From:   Michal Kubiak <michal.kubiak@intel.com>
-To:     Jaewan Kim <jaewan@google.com>
-CC:     <gregkh@linuxfoundation.org>, <johannes@sipsolutions.net>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <kernel-team@android.com>, <adelva@google.com>
-Subject: Re: [PATCH v9 4/5] mac80211_hwsim: add PMSR abort support via virtio
-Message-ID: <ZA99U1TMrUfZhk4G@localhost.localdomain>
-References: <20230313075326.3594869-1-jaewan@google.com>
- <20230313075326.3594869-5-jaewan@google.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20230313075326.3594869-5-jaewan@google.com>
-X-ClientProxiedBy: DB8PR03CA0013.eurprd03.prod.outlook.com
- (2603:10a6:10:be::26) To DM6PR11MB2937.namprd11.prod.outlook.com
- (2603:10b6:5:62::13)
+        with ESMTP id S229988AbjCMTyo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 15:54:44 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C8CD30B18;
+        Mon, 13 Mar 2023 12:54:42 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id cy23so53267291edb.12;
+        Mon, 13 Mar 2023 12:54:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678737282;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=hTglOzPQxV2ZuftBtVzhxCqyC3HbKgEioLlxEWe4OF8=;
+        b=JttE3gmIYlCcKby2+xgkbT/lIs9POUazUWd3uxDJGEB9Dx8dLmf2aR+BbgiM6/A552
+         S2eMTPgQMcK2HBVbLD15dZ+agSY9Oi89Kt9h8s1KawGLE7rRS0rKgeGWmeLtEp6RsRK5
+         F15ZbSUZgyrx7/NGApTktSKHlkWsseHpvxceEoIpSrv5qSJ4ICWdhmSSvnKnqBzFyx3X
+         VPkT+iNISkCPyxobTIud1DRInQTEWfFu8yBB3e0TOa+It+WKNheLJsn/vWRLwAZB5nTd
+         yipnKMAIn/yRWThYlUPpTyGVAZWmJXsd0V+CPdpkmocbqHdY0Lux9z7I+Ma63PYdQchc
+         xxxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678737282;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hTglOzPQxV2ZuftBtVzhxCqyC3HbKgEioLlxEWe4OF8=;
+        b=aNYC2FrskWvvOFTaPAtklEZjh3bmDJeoKTa+Mt6ravTpMmEsmy90jUqSdxPEKbbUIo
+         2iTqPpq8cS+m1H5s4Vm4n4czHouRqfj64wNq0mFISA+q7LTAHeY8KKqUAiQr8Y+OGgum
+         Yqd7iCbu9S9AcwAq9a++ucs4O6AMeQe1ubl3ztB42EX/CGfPlQurorRbHWXCM5BKhLt0
+         4BkbSkqP0rJdl8JhCfNXF8KX4Kbn9xtnm2+cc8EuEbb90WOcaRNhNChDOwtRvxOnO60x
+         Bu7YPmZ+CgZuW5HgVd3eWmLS2fCT21A3dQ5jkbtRCr5zv28UcUHW/UVqewRbAWR56ZEn
+         TbOQ==
+X-Gm-Message-State: AO0yUKUMUkcZWr2tcmdlD3uWrcGWswOkjLkTM0q4Z8T6rl+hED4wK18J
+        2MFOt48YSbEv3QIzqN9GfoA=
+X-Google-Smtp-Source: AK7set+K12/AxM41nagz1zoXa7jEp5xLjOwzrSoHPukoLxiDyfAjCyQAQhmQZ/fLI0iE8JirjODBeg==
+X-Received: by 2002:a17:906:b14f:b0:8b1:7de9:b38c with SMTP id bt15-20020a170906b14f00b008b17de9b38cmr32962382ejb.52.1678737281797;
+        Mon, 13 Mar 2023 12:54:41 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id mh19-20020a170906eb9300b009200601ea12sm161969ejb.208.2023.03.13.12.54.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Mar 2023 12:54:41 -0700 (PDT)
+Date:   Mon, 13 Mar 2023 21:54:39 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Klaus Kudielka <klaus.kudielka@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 2/3] net: dsa: mv88e6xxx: move call to
+ mv88e6xxx_mdios_register()
+Message-ID: <20230313195439.7yiwktvrgmcepv4n@skbuf>
+References: <20230311203132.156467-1-klaus.kudielka@gmail.com>
+ <20230311203132.156467-3-klaus.kudielka@gmail.com>
+ <20230311224951.kqcihlralwehfvaj@skbuf>
+ <98315424312f6f6abca771d27a78b2e41dcb6d6a.camel@gmail.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR11MB2937:EE_|SA2PR11MB5065:EE_
-X-MS-Office365-Filtering-Correlation-Id: ee721a88-8de2-4150-1bbf-08db23fb85e0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GPJGe6zgr6lwaZzcA1rJTAMZYfABA7ojl5qofdBC1NBgYutZ2HceAqEDyp9j4tkS1Xq5tXPauFg2snhh1uQES87WQAWgU+4gUON+ez7qHlWW6RlVQAQGhJ9M2qDa3yW5SkkY23b3+zXn9V6S6LesjsFjDzzzN4+VS4d682Q/T5tjHO5ic4wgEUoW+5QYc6UzNVK7XL5mxmUM1sYaYineP3cwWoaUPT+1QPrxeTB7+Ky79G3q9zG9Qt/7qS9Fi1bgPQzdCraDYPhZEmyK57ErBk7QJk60FZS9iqJSOtBINahMLSeG6WyvEPq1tQWxwol5uK3Yr3v7MC7Tv+O9oXvrEkUn71u1PJj+tNAsDetkIMNs+lc0w9D+1gahribojtvaoA/ET5DHWT7w8WnVvPMIrJMJjByo0Yp5s1/Xihv6QV2/L28K/mGIN+XvuexMRYEMUxhEAYMAFu8toGnNDf0TsL7qHYveXgXfIUi95z35TprVZuHoB0L5cO5mUJc150OYh0Y4y+5u0qPWzkVf5fsxEQWeX53/t2EdbqcN5mgCSXGGpCMavvMreVdPHpFY8YaSbopnp2K+vOLizXrn4cPeNZ9KaczeUxZtQ0SN4JqTI1+AT3ytbYZWP0f1OcHgMhUYztZfoLiD0yew37mAu80oOw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2937.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(346002)(376002)(366004)(136003)(39860400002)(396003)(451199018)(8936002)(41300700001)(478600001)(4326008)(66946007)(8676002)(66556008)(66476007)(6916009)(86362001)(38100700002)(82960400001)(6506007)(6512007)(186003)(6486002)(6666004)(9686003)(26005)(5660300002)(44832011)(2906002)(316002)(83380400001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?xwF+Isk7PJIPrdIKX+KRdv7w3e7wSHueHF5AWoqey0SQu225ErjuDbYIgu0K?=
- =?us-ascii?Q?G5vnQCZYkddesvvlMp2XrLAcCA9sfGwat8s2S08yCbourDTV9ElMjCXrN5Bu?=
- =?us-ascii?Q?/zUpUcrVl1Sh6RGNfqUK1+fEGyLttL5w9ds2O3AwlIaZ3V5cwDpo+UsZbH9O?=
- =?us-ascii?Q?4SpgT5EvuHB4yr5a68g0wIUmf+4/w0TlJDR3yYD3tVFlZP+0QkZMZ9oIBcNh?=
- =?us-ascii?Q?PY1gceYQ5vSSJKaVUT0e9vEj1tCqT7D8/nuKcjW8o1wHoTU27DDwLtEoEVdn?=
- =?us-ascii?Q?9FEHtMXyJb8h6OOUH6cEEWRRhPF4q+ht00bPyZTVm037giOkUowtyfnPG5lV?=
- =?us-ascii?Q?BC0JmLo4ZhU2WFm/A1gJL1Z0E1/4M34b7223pukU2QsI7MjxQ/aSBMQlopxh?=
- =?us-ascii?Q?Tuc5GUrfGZYGtWiRRReiPmDdMgyXbVWh92LNnzRnRsGRU7fOXQ0q4pFAXFzn?=
- =?us-ascii?Q?OVI+mZta69Fem+AN4723dN9dDn6aFn/rQRzL1+/s7SFEMpJDSuvrIuoy2Utx?=
- =?us-ascii?Q?5v/oI9ArvnorTs5ds0PyY2XrRdJlTuQLija13ZpKIl9I6s47j4M47TrnPFmL?=
- =?us-ascii?Q?Es4mF+C5eQAbXEubSz1w1J8p5hBPPakdDjAoOFofAkIeQFhtr98c6Ffk5+7y?=
- =?us-ascii?Q?weO3ebtc+QTnnmYWQRv9ftmms3yx4HySLMCFHdM9m70PNSApQwljIgqeQkFU?=
- =?us-ascii?Q?SrqQ2cHtSoWOHOKnygQKQR237PWlOWNVRRurq5L8KXSULE07HaSRxr7LiK9S?=
- =?us-ascii?Q?qqBq3J0aPonDB2w/64o7BvNVVINSHueyNqCW54BXgX7FHNCXiCxo1owHyxWh?=
- =?us-ascii?Q?Y3HqlZCNd283jiK0rBJfiyF+y6wuLabPkMdAcYOD6sBsIx4bnuFF9Zk75Ke5?=
- =?us-ascii?Q?hM5k41nKdkxZARUBQcfljBdQDPblnYSUOhUleG4al3CaVaXbJyzoRmoDw94H?=
- =?us-ascii?Q?vVsafu7gLNtuR4Dr7oNXmBggM4M7Iyrtl5BJBXxg+invtTXEYexxsGQJyhZ3?=
- =?us-ascii?Q?t/WsFSspjMNPzwbs+PY3g61wVsRj3nkOaEv/GnaR9c9t2SGxp83dz7xUTUZ1?=
- =?us-ascii?Q?w5OUT3OdHE49VPDt6+cAlGujgPKqExfwvPyXX/eCauLqSguqXJ2weB4oEaOt?=
- =?us-ascii?Q?8DMu9NZvhMVM9OElq6kbTf4KZDvj0B3R3LX/7/0XCHgsMTCLdOj/DbNHU+TJ?=
- =?us-ascii?Q?rGPUoUXCuMoues5U2C8nIccyH7gLrEprrdeDFDwgD28d2a5UgfhCL647lTcB?=
- =?us-ascii?Q?esOyfZBLOV9cv5fb4lalL+FrV7PnbejRbblPMbg4oMnTD62OhA8ZOdmJ+oKw?=
- =?us-ascii?Q?Wob+gngSv29p/JoCLkv6vpViEEwN7i024vI/BxodzR37XYFCnVqOdE9zLjwz?=
- =?us-ascii?Q?xPWVS8jbR7HOiZ81/8lhKRNrEE78EkhqIY1CQLfPYVBoUlP1Og8HkvdCQ6L6?=
- =?us-ascii?Q?U3Iuv3oPAWI1BFO7Ik9Rr/dJ6YiixCgU8vAN/GF1WyQGz2C64FEejQyLEPU+?=
- =?us-ascii?Q?v8LV1804lTYfg+VSnPcyz0XUTkcpiTVerAqyy4VMoLLrujOhux2m+ROS99AH?=
- =?us-ascii?Q?QeNuFvtZiX1mdcykNZWCOGiKcbwdLh7mrBDtyIOvzxIpEEBGFbUFXXXniCS/?=
- =?us-ascii?Q?xw=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: ee721a88-8de2-4150-1bbf-08db23fb85e0
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB2937.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Mar 2023 19:45:39.9283
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eTw+nzcjizTueldMwE0Uz6mi/Lenkeex20VqhOIPKXZ4LTA5Nhn0hOaghj1b/rZRIwi0eqbjBgP8Lfyd/XAHvw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB5065
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <98315424312f6f6abca771d27a78b2e41dcb6d6a.camel@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 13, 2023 at 07:53:25AM +0000, Jaewan Kim wrote:
-> PMSR (a.k.a. peer measurement) is generalized measurement between two
-> devices with Wi-Fi support. And currently FTM (a.k.a. fine time
-> measurement or flight time measurement) is the one and only measurement.
-> 
-> Add necessary functionalities for mac80211_hwsim to abort previous PMSR
-> request. The abortion request is sent to the wmedium where the PMSR request
-> is actually handled.
-> 
-> In detail, add new mac80211_hwsim command HWSIM_CMD_ABORT_PMSR. When
-> mac80211_hwsim receives the PMSR abortion request via
-> ieee80211_ops.abort_pmsr, the received cfg80211_pmsr_request is resent to
-> the wmediumd with command HWSIM_CMD_ABORT_PMSR and attribute
-> HWSIM_ATTR_PMSR_REQUEST. The attribute is formatted as the same way as
-> nl80211_pmsr_start() expects.
-> 
-> Signed-off-by: Jaewan Kim <jaewan@google.com>
-> ---
-> V7 -> V8: Rewrote commit msg
-> V7: Initial commit (split from previously large patch)
-> ---
->  drivers/net/wireless/mac80211_hwsim.c | 61 +++++++++++++++++++++++++++
->  drivers/net/wireless/mac80211_hwsim.h |  2 +
->  2 files changed, 63 insertions(+)
-> 
-> diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-> index a692d9c95566..8f699dfab77a 100644
-> --- a/drivers/net/wireless/mac80211_hwsim.c
-> +++ b/drivers/net/wireless/mac80211_hwsim.c
-> @@ -3343,6 +3343,66 @@ static int mac80211_hwsim_start_pmsr(struct ieee80211_hw *hw,
->  	return err;
->  }
->  
-> +static void mac80211_hwsim_abort_pmsr(struct ieee80211_hw *hw,
-> +				      struct ieee80211_vif *vif,
-> +				      struct cfg80211_pmsr_request *request)
-> +{
-> +	struct mac80211_hwsim_data *data = hw->priv;
-> +	u32 _portid = READ_ONCE(data->wmediumd);
-> +	struct sk_buff *skb = NULL;
-> +	int err = 0;
-> +	void *msg_head;
-> +	struct nlattr *pmsr;
+On Sun, Mar 12, 2023 at 11:15:15AM +0100, Klaus Kudielka wrote:
+> Just trying to reproduce this on the Omnia (with the whole series applied, plus some
+> *** debug *** messages concerning timing). But all seems to be good here:
 
-Please use RCT style.
+Thanks for testing.
 
-> +
-> +	if (!_portid && !hwsim_virtio_enabled)
-> +		return;
-> +
-> +	mutex_lock(&data->mutex);
-> +
-> +	if (data->pmsr_request != request) {
-> +		err = -EINVAL;
-> +		goto out_err;
-> +	}
-> +
-> +	if (err)
-> +		return;
+So yeah, as I was saying, on Turris MOX with 3 DSA switches, your patch
+set does not work as intended. We also need the patch below (placed as
+patch 1/4) in order for that configuration to have internal PHY
+interrupts after the driver unbind/bind procedure is applied to one of
+the switches.
 
-Redundant code - err is always zero in this place, isn't it?
+From my perspective you can pick up this patch, apply your sign off to
+it, and send v3 right away.
 
-> +
-> +	skb = genlmsg_new(GENLMSG_DEFAULT_SIZE, GFP_KERNEL);
-> +	if (!skb)
-> +		return;
 
-Return from the function while the mutex is still locked.
-I guess 'goto' should be used here like for other checks in this
-function.
+From 46512c8033c931bc0e416cec7a14c310aac56a57 Mon Sep 17 00:00:00 2001
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Date: Mon, 13 Mar 2023 21:24:08 +0200
+Subject: [PATCH] net: dsa: mv88e6xxx: don't dispose of Global2 IRQ mappings
+ from mdiobus code
 
-> +
-> +	msg_head = genlmsg_put(skb, 0, 0, &hwsim_genl_family, 0, HWSIM_CMD_ABORT_PMSR);
-> +
-> +	if (nla_put(skb, HWSIM_ATTR_ADDR_TRANSMITTER, ETH_ALEN, data->addresses[1].addr))
-> +		goto out_err;
-> +
-> +	pmsr = nla_nest_start(skb, HWSIM_ATTR_PMSR_REQUEST);
-> +	if (!pmsr) {
-> +		err = -ENOMEM;
-> +		goto out_err;
-> +	}
-> +
-> +	err = mac80211_hwsim_send_pmsr_request(skb, request);
-> +	if (err)
-> +		goto out_err;
-> +
-> +	err = nla_nest_end(skb, pmsr);
-> +	if (err)
-> +		goto out_err;
-> +
-> +	genlmsg_end(skb, msg_head);
-> +	if (hwsim_virtio_enabled)
-> +		hwsim_tx_virtio(data, skb);
-> +	else
-> +		hwsim_unicast_netgroup(data, skb, _portid);
-> +
-> +out_err:
-> +	if (err && skb)
-> +		nlmsg_free(skb);
+irq_find_mapping() does not need irq_dispose_mapping(), only
+irq_create_mapping() does.
 
-I suggest to reorganize that code (or at least rename the label "out_err"
-to "out" maybe?) to separate error path and normal path more clearly.
+Calling irq_dispose_mapping() from mv88e6xxx_g2_irq_mdio_free() and from
+the error path of mv88e6xxx_g2_irq_mdio_setup() effectively means that
+the mdiobus logic (for internal PHY interrupts) is disposing of a
+hwirq->virq mapping which it is not responsible of (but instead, the
+function pair mv88e6xxx_g2_irq_setup() + mv88e6xxx_g2_irq_free() is).
 
-> +
-> +	mutex_unlock(&data->mutex);
-> +}
-> +
->  #define HWSIM_COMMON_OPS					\
->  	.tx = mac80211_hwsim_tx,				\
->  	.wake_tx_queue = ieee80211_handle_wake_tx_queue,	\
-> @@ -3367,6 +3427,7 @@ static int mac80211_hwsim_start_pmsr(struct ieee80211_hw *hw,
->  	.get_et_stats = mac80211_hwsim_get_et_stats,		\
->  	.get_et_strings = mac80211_hwsim_get_et_strings,	\
->  	.start_pmsr = mac80211_hwsim_start_pmsr,		\
-> +	.abort_pmsr = mac80211_hwsim_abort_pmsr,
->  
->  #define HWSIM_NON_MLO_OPS					\
->  	.sta_add = mac80211_hwsim_sta_add,			\
-> diff --git a/drivers/net/wireless/mac80211_hwsim.h b/drivers/net/wireless/mac80211_hwsim.h
-> index 98e586a56582..383f3e39c911 100644
-> --- a/drivers/net/wireless/mac80211_hwsim.h
-> +++ b/drivers/net/wireless/mac80211_hwsim.h
-> @@ -83,6 +83,7 @@ enum hwsim_tx_control_flags {
->   *	are the same as to @HWSIM_CMD_ADD_MAC_ADDR.
->   * @HWSIM_CMD_START_PMSR: request to start peer measurement with the
->   *	%HWSIM_ATTR_PMSR_REQUEST.
-> + * @HWSIM_CMD_ABORT_PMSR: abort previously sent peer measurement
->   * @__HWSIM_CMD_MAX: enum limit
->   */
->  enum {
-> @@ -96,6 +97,7 @@ enum {
->  	HWSIM_CMD_ADD_MAC_ADDR,
->  	HWSIM_CMD_DEL_MAC_ADDR,
->  	HWSIM_CMD_START_PMSR,
-> +	HWSIM_CMD_ABORT_PMSR,
->  	__HWSIM_CMD_MAX,
->  };
->  #define HWSIM_CMD_MAX (_HWSIM_CMD_MAX - 1)
-> -- 
-> 2.40.0.rc1.284.g88254d51c5-goog
-> 
+With the current code structure, this isn't such a huge problem, because
+mv88e6xxx_g2_irq_mdio_free() is called relatively close to the real
+owner of the IRQ mappings:
+
+mv88e6xxx_remove()
+-> mv88e6xxx_unregister_switch()
+-> mv88e6xxx_mdios_unregister()
+   -> mv88e6xxx_g2_irq_mdio_free()
+-> mv88e6xxx_g2_irq_free()
+
+and the switch isn't 'live' in any way such that it would be able of
+generating interrupts at this point (mv88e6xxx_unregister_switch() has
+been called).
+
+However, there is a desire to split mv88e6xxx_mdios_unregister() and
+mv88e6xxx_g2_irq_free() such that mv88e6xxx_mdios_unregister() only gets
+called from mv88e6xxx_teardown(). This is much more problematic, as can
+be seen below.
+
+In a cross-chip scenario (say 3 switches d0032004.mdio-mii:10,
+d0032004.mdio-mii:11 and d0032004.mdio-mii:12 which form a single DSA
+tree), it is possible to unbind the device driver from a single switch
+(say d0032004.mdio-mii:10).
+
+When that happens, mv88e6xxx_remove() will be called for just that one
+switch, and this will call mv88e6xxx_unregister_switch() which will tear
+down the entire tree (calling mv88e6xxx_teardown() for all 3 switches).
+
+Assuming mv88e6xxx_mdios_unregister() was moved to mv88e6xxx_teardown(),
+at this stage, all 3 switches will have called irq_dispose_mapping() on
+their mdiobus virqs.
+
+When we bind again the device driver to d0032004.mdio-mii:10,
+mv88e6xxx_probe() is called for it, which calls dsa_register_switch().
+The DSA tree is now complete again, and mv88e6xxx_setup() is called for
+all 3 switches.
+
+Also assuming that mv88e6xxx_mdios_register() is moved to
+mv88e6xxx_setup() (the 2 assumptions go together), at this point,
+d0032004.mdio-mii:11 and d0032004.mdio-mii:12 don't have an IRQ mapping
+for the internal PHYs anymore, as they've disposed of it in
+mv88e6xxx_teardown(). Whereas switch d0032004.mdio-mii:10 has re-created
+it, because its code path comes from mv88e6xxx_probe().
+
+Simply put, this change prepares the driver to handle the movement of
+mv88e6xxx_mdios_register() to mv88e6xxx_setup() for cross-chip DSA trees.
+
+Also, the code being deleted was partially wrong anyway (in a way which
+may have hidden this other issue). mv88e6xxx_g2_irq_mdio_setup()
+populates bus->irq[] starting with offset chip->info->phy_base_addr, but
+the teardown path doesn't apply that offset too. So it disposes of virq
+0 for phy = [ 0, phy_base_addr ).
+
+All switch families have phy_base_addr = 0, except for MV88E6141 and
+MV88E6341 which have it as 0x10. I guess those families would have
+happened to work by mistake in cross-chip scenarios too.
+
+I'm deleting the body of mv88e6xxx_g2_irq_mdio_free() but leaving its
+call sites and prototype in place. This is because, if we ever need to
+add back some teardown procedure in the future, it will be perhaps
+error-prone to deduce the proper call sites again. Whereas like this,
+no extra code should get generated, it shouldn't bother anybody.
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/net/dsa/mv88e6xxx/global2.c | 20 ++++----------------
+ 1 file changed, 4 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/net/dsa/mv88e6xxx/global2.c b/drivers/net/dsa/mv88e6xxx/global2.c
+index ed3b2f88e783..a26546d3d7b5 100644
+--- a/drivers/net/dsa/mv88e6xxx/global2.c
++++ b/drivers/net/dsa/mv88e6xxx/global2.c
+@@ -1176,31 +1176,19 @@ int mv88e6xxx_g2_irq_setup(struct mv88e6xxx_chip *chip)
+ int mv88e6xxx_g2_irq_mdio_setup(struct mv88e6xxx_chip *chip,
+ 				struct mii_bus *bus)
+ {
+-	int phy, irq, err, err_phy;
++	int phy, irq;
+ 
+ 	for (phy = 0; phy < chip->info->num_internal_phys; phy++) {
+ 		irq = irq_find_mapping(chip->g2_irq.domain, phy);
+-		if (irq < 0) {
+-			err = irq;
+-			goto out;
+-		}
++		if (irq < 0)
++			return irq;
++
+ 		bus->irq[chip->info->phy_base_addr + phy] = irq;
+ 	}
+ 	return 0;
+-out:
+-	err_phy = phy;
+-
+-	for (phy = 0; phy < err_phy; phy++)
+-		irq_dispose_mapping(bus->irq[phy]);
+-
+-	return err;
+ }
+ 
+ void mv88e6xxx_g2_irq_mdio_free(struct mv88e6xxx_chip *chip,
+ 				struct mii_bus *bus)
+ {
+-	int phy;
+-
+-	for (phy = 0; phy < chip->info->num_internal_phys; phy++)
+-		irq_dispose_mapping(bus->irq[phy]);
+ }
+-- 
+2.34.1
+
