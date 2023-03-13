@@ -2,154 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 21BA86B7B62
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 16:01:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D57016B7B64
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 16:02:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230247AbjCMPBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 11:01:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45604 "EHLO
+        id S229977AbjCMPCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 11:02:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230488AbjCMPBl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 11:01:41 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2128.outbound.protection.outlook.com [40.107.237.128])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98766D339;
-        Mon, 13 Mar 2023 08:01:13 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cHM9FEG3l6SmrbO7LnL0Q0Umd8x2uXS4GYML3WGDZ4ElBd263kajCwPGgMyzPxmTfk+EP5eh7kZdN5bXDpmENblp6EI2RHDLC07VpFFEtGcYgXkGnW7roR7RiutpPKqq4Br77af+p0NcYAcRbNLSaRTqoFOz8UFvh7EX4aXCGAKkgevuD29HfiAqWfIqbmhwZb6UvFnRHrhX8ZC+AWUd07nDcFXUvn1BJfuAIKD095TTJkxSencG07yp5g2mAnb7dSB9oP4+amQz9lTarz9lujcwOhY0D2w7K6jDnzWWhNVrmeyj9RqwfcooYV1NttaewApQujBf4I2IHDlkHekuAw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JS4BIBFoPj2EGOX7tLbb28jrjP+zGBl1ANWAf3MtL/I=;
- b=i6JMGRirf1+qpuRVxqKaAqQb5yEnPXVaTsOMN9Mk7V1v2twBZsPtYmTRQe4CVi1pEC/mh1/9oP8bw+gTdgfgfYh37Xs0imemOGZAA5QvfEL/P4ffphMT7xBNlxUp1i5Mr0J8qktyG5nZQI1+wzyRM2hF9JdzobsWg5WfusEk2xloqm/8OvTTRHMVPcirvY7tWdzpGXf9ob6VghWDyVR3n0Lc2LmeZJ2G+0u8Ngcw/S39uB+CCWolDG+rg1f2BlwAmOpeTqPZsBLj7lxZwMxGkEOk4LE/rw8S+Np1MnjWRrP7z1228/cB+sq9208eIWYoEEBgTeaqUFQG6c1zBFI7TA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S231645AbjCMPCF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 11:02:05 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A0BE5982F;
+        Mon, 13 Mar 2023 08:01:39 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id cy23so49816093edb.12;
+        Mon, 13 Mar 2023 08:01:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JS4BIBFoPj2EGOX7tLbb28jrjP+zGBl1ANWAf3MtL/I=;
- b=ooez4cxk5fMtSTFUlrkiFikDG3ZUB2nKm8XsCAnSqqG87ejBPuSS2hV5dTqjLyN8wR/6m3QOrEC63Ppbl9tW261lZ+IvjQ7Y7WScAAhcSlKIUBkflx3twQB+pkEZz/saFeonQ/a3GtHAoVWGi0GEnL8umCDZsuzziuFoXewRLNI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by DM6PR13MB3908.namprd13.prod.outlook.com (2603:10b6:5:2a0::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.24; Mon, 13 Mar
- 2023 15:00:52 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.024; Mon, 13 Mar 2023
- 15:00:51 +0000
-Date:   Mon, 13 Mar 2023 16:00:41 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        d=gmail.com; s=20210112; t=1678719698;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=opk2j4mTiChxadvVvJSsh0ztBAk6zLEmYsL/2LoqTrE=;
+        b=LQ/3bfI5AFdhqbQE8Ce851NO9smEguJCxeK+QenfI/YTuanFD+0Uq1WT1xRobEqfPO
+         RlSIo0m2kGsIBwzqK/7CZQte0Ez2CEwSmyj6PYhhGtqUVvcdCGIQ6s5KAdXP/a1rKPlW
+         f4HB3sZBPwJihtgwLTbrNGnX5b2bOw67cDED4FF3ZZ+N54lN7lA528kvdBZ6fVuo7c2D
+         ktbBFHytmeu02Z4zEgy5YA4RDu5dhQZB9ZnAeazQhS95a7tWH7/k3LMcZAsQq7n7zzAp
+         miQnf7FOgYc0PspQiiB0d5AkDxqVj65c1TNOSOrojAZ8sLD3TZfI+NrE+wjKWMQvrKVS
+         cJVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678719698;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=opk2j4mTiChxadvVvJSsh0ztBAk6zLEmYsL/2LoqTrE=;
+        b=7V1pfd9sMRr+S2tfwq4UUJK/G3arVbzVnnA+qkhdIdOX8FeXcTaoI1PL6fx0yzOdKG
+         nxl4UfTVctknkVJdIRNNiyeWwT/EA7zvU8bu+JhKieVVarHvSUt0XvnqKBYQ0upEksOy
+         lF+/6MzkrvhKtWNzj4MNvnvxsimemSJAlOOjAZrLXjyQ8j/+pAO7bNquf6hNnjacL8X3
+         S7FgWFpUramZjnhUiCxhM1KXZ3A6owEKzgYmVpRg3S120uV+yq38MqGIlAtEFhdySKnc
+         74lPOXQmMBfAt4LhRyWFmkOj3v8XIHlsSSbi+b7umbJ+TJeJ3ChqRCJvKD+Y0/WiPrAz
+         XHYg==
+X-Gm-Message-State: AO0yUKV4ozawEEohRHPslrdCWrpgT8CxuQipJzIi5xgKQeEtaETI5ses
+        6U3b76VqpdkGh/r03Z29b8U=
+X-Google-Smtp-Source: AK7set/o+ql8sCTwAkdpoUmDp4HM6QSBxKAM4wbd/fHpxjLYvrbnMwhfWHUMAHzJc5G97sFqGdGNYw==
+X-Received: by 2002:a17:906:c9c2:b0:8a0:7158:15dc with SMTP id hk2-20020a170906c9c200b008a0715815dcmr32058065ejb.74.1678719697636;
+        Mon, 13 Mar 2023 08:01:37 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id q21-20020a170906389500b008b907006d5dsm3557136ejd.173.2023.03.13.08.01.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Mar 2023 08:01:37 -0700 (PDT)
+Date:   Mon, 13 Mar 2023 17:01:35 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Lukasz Majewski <lukma@denx.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Russell King <linux@armlinux.org.uk>,
         Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Gerhard Engleder <gerhard@engleder-embedded.com>,
-        Amritha Nambiar <amritha.nambiar@intel.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ferenc Fejes <ferenc.fejes@ericsson.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        Pranavi Somisetty <pranavi.somisetty@amd.com>,
-        Harini Katakam <harini.katakam@amd.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
-        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 00/13] Add tc-mqprio and tc-taprio support
- for preemptible traffic classes
-Message-ID: <ZA86mThUeARDfnN/@corigine.com>
-References: <20230220122343.1156614-1-vladimir.oltean@nxp.com>
- <20230311215616.jdh6qy6uuwwt5re7@skbuf>
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/7] dsa: marvell: Provide per device information about
+ max frame size
+Message-ID: <20230313150135.not6e3x2j4624tpg@skbuf>
+References: <20230309125421.3900962-1-lukma@denx.de>
+ <20230309125421.3900962-2-lukma@denx.de>
+ <20230310120235.2cjxauvqxyei45li@skbuf>
+ <20230310141719.7f691b45@wsk>
+ <20230310154511.yqf3ykknnwe22b77@skbuf>
+ <20230312165550.6349a400@wsk>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230311215616.jdh6qy6uuwwt5re7@skbuf>
-X-ClientProxiedBy: AS4P190CA0022.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:20b:5d0::14) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM6PR13MB3908:EE_
-X-MS-Office365-Filtering-Correlation-Id: e260b754-eac2-42cb-10c4-08db23d3bc35
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZSM6C7F/u6688sO/QCfxYI2uojoBberZY9up21jvU9LNRnWEf+LKjASl6+37hs5clNPhdnAKbpRgrqQvH8zAOXMJcWiSrRDhy2m3h2XViRYI4v6uJ8jME+xbCBNR3nAJDFEjIdWlBrMBppxox5fMTvrvWYO/MqkPXoH2QVDcyg1U1M+Ue3T7F7DDgP0H82nLMY89R06juIvM4q7+e4RA/NPhOK3H8o5W0IzgQuDEdrgBy5owwPyjLKeYvthXneL1ZZ5L0zRSHQj8QgH7eD8zGrkUGh9mZbKJstJj2QVfbx5EMsc4t6zOGPNvP39aFMrWRe6ps+Vkr0bazjH5WDIDpbSKzWLOuSkMuGf5p1BuGQ2ubzXUl0ATmUxvIZdIhXFufKyBBxPY/fwdiPoZ1jVzqSgKBRYZ4pswktOKp+lP3I7Mw7ZX62tXmxMVt5dNk3Rp37/uoFKQ4RzgfE15C8CIcnHFq4Hv3Opmgz7ppkr/A5Uj6VEGKjLDKNi4/tl1KuasppLhPKb7iiW19F593Z8Ya0DLR6cWE9lPisrytQky7+NW8wC/d8sSxrLIj2dAa5qVkha7fxikbQTdxws1VhZvFaT+rkRn1jElKuLdzRdx0zdnoqnb9j+Nb8yWFNE/oyDXbAT7Ieb7e5UEEh2poKC+XQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(376002)(39840400004)(346002)(366004)(136003)(451199018)(54906003)(41300700001)(478600001)(8936002)(8676002)(66556008)(66476007)(66946007)(4326008)(6916009)(86362001)(36756003)(38100700002)(6506007)(186003)(6666004)(6512007)(7416002)(44832011)(5660300002)(4744005)(2906002)(316002)(6486002)(83380400001)(2616005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LBAmU27zQ12px9H95+f9dY67JmR+ayzdWJ6HVLZrkfadaNqwtTwhWMm7ji0t?=
- =?us-ascii?Q?SJDKCjMwl8HRogc35G5Df87KaI4wkOTF7GiGqZkoBJAEbxJDdoieV3jA9a46?=
- =?us-ascii?Q?MiLpG838oIrvQVpuCcZJILn53hct/ZUFU3t+2qiE3UnZ0l5exRp6OMywZT5U?=
- =?us-ascii?Q?2dy1V767XvCpaxP+eqHvoH2b5JW0P+xB0VPal+8lXbAhgTyuDIXQ82k6NqVj?=
- =?us-ascii?Q?sbF7QrvT/4ATYv1oWSH4dediivgeYAw5xxN6Wm3fN0WKALBbz2jbCxudIfek?=
- =?us-ascii?Q?IdFWX8URj2VxcKFe62EVVo18LWEsWwIi19DtPiKesKTRNbvIKDHn3ZqgYT9j?=
- =?us-ascii?Q?Wi6fXTEqkwoQRa+zTz3q7ph3+FYKhD1SrpOa3QBTIwizfj7JEA8D7kltJKBp?=
- =?us-ascii?Q?ETdea5jmLmmGCmk9XlWV0GfARhuuhQZaxCv8wY+M/5g+Q5tFLjqID176MDmd?=
- =?us-ascii?Q?dQ+N3P/f7srRzadFjDNiCyoqYUy/6Ok7yaYMtR296v/zvYZJmPZNFAXTqvQU?=
- =?us-ascii?Q?Ewc6haZ8QTfjadNH/b8Py7HZHEb32EqkeqXll72e4jgtu9qkfOUL9AcmwmWb?=
- =?us-ascii?Q?l0nZgNdSahHmxNwIf5bqUXYhyh4Sx4vIxA1ruYV0rYmTPSTNmbBo7CJ+VFxl?=
- =?us-ascii?Q?dACd/9chnHtg/+OxryD1Zfp2ilWQRroNNcVcGRJqStQ7PHKlZH9A6B3OR2pv?=
- =?us-ascii?Q?jmFld9MTTs3E97X1SrEciTsyaBbYlS9ehD6J/hnz5vukhfy6nU5bCoHaPwYw?=
- =?us-ascii?Q?lvhgpksOotC+QmkUTFadisOI2UtlooD2JVXWIlVcpMECErauSzrq0MI0kPeC?=
- =?us-ascii?Q?ThLZfFXskTyz/IMRPKWetyh21XjxEs6cn1IWM3phs3ilZr/6ZwzhZmzNkq2t?=
- =?us-ascii?Q?g0NAXhcVC1Y3blO+4whV7981ku/y8VdBmblqLAVDr0LFZureDund3FKUPjB/?=
- =?us-ascii?Q?utQIsw+LEDxcKD1RGjUKrs398JF1UHBZR0IrQ3DkHhfmkDrTztf8knjJitAY?=
- =?us-ascii?Q?sqUaQu/pKXBDj3VLDMKSLMSbuAHRfsxkBaDDTK26p7dd1HwfFdktVtQ/kANJ?=
- =?us-ascii?Q?HhZXwqf5LXRzSeykEC7qdxkrqXRkldR1U6aRktZuIqJgH6qgC/RQGhaHOYMK?=
- =?us-ascii?Q?6kAcmTNYd7byfVUfspuzQmw3snAwocIv4NMPtVAUy5fjAiss4gHcdWYwPRs0?=
- =?us-ascii?Q?n5YmOlmuNqrhVePHS/Eu8Mdkxg0KnUpyxgyNOW8Tm6FBAl6ihyvC1L12CBD4?=
- =?us-ascii?Q?/3Ug/hgMknOn1xKDzK3bA0ZioWoaWaSHZ/FSkyzVbEzOPtVbqEcf73RRnKsa?=
- =?us-ascii?Q?Xu6cIJpbC4fD0Xz4u1h3WZgXx/kLLaHJTLOPNbAAREnF2r2sapIgMN1ZcROq?=
- =?us-ascii?Q?3+aJkGPLde/xNv0puWiaxi7+2dm4u8fb1ShB8x2tRdebZL1SAa2L/snf3JXJ?=
- =?us-ascii?Q?dMq5V7MSFo05cQBOP7X6omMCfZGPmV9jcG+EN/G6dusU9AMnLFb07YNwzFxZ?=
- =?us-ascii?Q?wdj0gZEuF2BNwlSwJT02iIXV7fjQhICMu4N2QKYvVR2CPB0d2X+zLLQM8bQe?=
- =?us-ascii?Q?yxr9sxDEtq6XOZ/BOqlwUIakXGWQ8VNfbysy3Or1MvT8CDQVBDJNU5urWWK8?=
- =?us-ascii?Q?UnUuoHp1n41J/RbCWpu1o/vKwFGETFbTIalWhRsStX3bpgrrlUhUIKDkZdJX?=
- =?us-ascii?Q?jS4QJg=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e260b754-eac2-42cb-10c4-08db23d3bc35
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Mar 2023 15:00:51.0097
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: bhEC8hOldTx9/rmuN26SwQn5RH38FkCNt6hafYy0PJPUtpCdRiYF3iQtLASqeYojYPTx5ZqARA9oUbHOllvkOqioToT5N2NGSX3yma5Y18U=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR13MB3908
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230312165550.6349a400@wsk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 11, 2023 at 11:56:16PM +0200, Vladimir Oltean wrote:
-> On Mon, Feb 20, 2023 at 02:23:30PM +0200, Vladimir Oltean wrote:
-> > This series proposes that we use the Qdisc layer, through separate
-> > (albeit very similar) UAPI in mqprio and taprio, and that both these
-> > Qdiscs pass the information down to the offloading device driver through
-> > the common mqprio offload structure (which taprio also passes).
+On Sun, Mar 12, 2023 at 04:55:50PM +0100, Lukasz Majewski wrote:
+> > What I was talking about is this:
+> > https://patchwork.kernel.org/project/netdevbpf/patch/20230309125421.3900962-2-lukma@denx.de/#25245979
+> > and Russell now seems to agree with me that it should be addressed
+> > separately,
 > 
-> Are there any comments before I resend this? So far I have no changes
-> planned for v4.
+> Ok.
+> 
+> > and prior to the extra development work done here.
+> 
+> Why? Up till mine patch set was introduced the problem was unnoticed.
+> Could this be fixed after it is applied?
 
-FWIIW, I am now reviewing v3 - I missed that only the first patch was
-was applied when the message from patch bot arrived. So far I
-am up to patch 08/13 and nothing stands out so far. And I can just as
-easily review v4.
+I have already explained why, here:
+
+| in principle no one has to solve it. It would be good to not move
+| around broken code if we know it's broken, is what I'm saying. This is
+| because eventually, someone who *is* affected *will* want to fix it, and
+| that fix will conflict with the refactoring.
+
+Translated/rephrased.
+
+The 1492 max_mtu issue for MV88E6165, MV88E6191, MV88E6220, MV88E6250
+and MV88E6290 was introduced, according to my code analysis, by commit
+b9c587fed61c ("dsa: mv88e6xxx: Include tagger overhead when setting MTU
+for DSA and CPU ports").
+
+That patch, having a Fixes: tag of 1baf0fac10fb ("net: dsa: mv88e6xxx:
+Use chip-wide max frame size for MTU"), was backported to all stable
+kernel trees which included commit 1baf0fac10fb.
+
+Running "git tag --contains 1baf0fac10fb", I see that it was first
+included in kernel tag v5.9. I deduce that commit b9c587fed61c ("dsa:
+mv88e6xxx: Include tagger overhead when setting MTU for DSA and CPU
+ports") was also backported to all stable branches more recent than the
+v5.9 tag.
+
+Consulting https://www.kernel.org/ and https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/,
+I can see that the branches linux-6.2.y, linux-6.1.y, linux-5.15.y and
+linux-5.10.y are still maintained by the linux-stable repository, and
+contain commit b9c587fed61c (either directly or through backports).
+
+As hinted at by Documentation/process/maintainer-netdev.rst but perhaps
+insufficiently clarified, bug fixes to code maintained by netdev go to
+the "main" branch of https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git,
+a git tree which tracks the main branch of Linus Torvalds (which today
+is in the v6.3 release candidates). From there, patches are
+automatically backported by the linux-stable maintainers.
+
+The problem with you making changes to code which was pointed out as
+incorrect is that these changes will land in net-next.git, in kernel
+v6.4 at the earliest.
+
+Assuming somebody else will fix the 1492 MTU issue, there are 2 distinct
+moments when that can occur, relative to when the net-next pull request
+is sent to Linus Torvalds' main branch:
+
+1. before the net-next pull request. In that case, one of the netdev
+   maintainers will have to manually resolve the conflict between one of
+   net.git or Linus Torvalds' git tree.
+
+2. after the net-next pull request was accepted. What will happen is
+   that net.git will merge with Linus Torvalds' changes, and it will no
+   longer contain the same code as on branches 6.2, 6.1, 5.15 and 5.10,
+   but rather, the code with your changes. But it is always net.git that
+   someone has to develop against when submitting the 1492 MTU change.
+   That fix cannot apply any further than the net-next pull request,
+   which is the v6.4-rc1 tag at the earliest.
+
+   So, for the bug fix for 1492 MTU to reach the stable branches which
+   are still maintained by then, 2 strategies will be taken into
+   consideration:
+
+   - the conflicting changes (yours) are also backported along with the
+     real bug fix. This is because linux-stable has a preference to not
+     diverge from the code in the main branch, and would rather backport
+     more than less, to achieve that. But your patch set is quite noisy.
+     It touches the entire mv88e6xxx_table[] of switches. It is hard to
+     predict how well this chain of dependencies will get backported all
+     the way down to linux-5.10.y. If any switch family was added to
+     this table since v5.10, then the backporting of your changes would
+     also conflict with that addition.
+
+   - if the linux-stable team gives up with the backporting, an email
+     will be sent letting the people know, and a manually created series
+     of backports can be submitted for direct inclusion into the stable
+     trees.
+
+As you can see, the complexity of fixing code in stable that has been
+changed in mainline is quite a bit higher than fixing it before changing it.
+Also, the result is not as clean, if you add third-party backports into
+the equation. For example, someone takes a linux-6.1.y stable kernel
+from the future (with the 1492 MTU issue solved) and wants to backport
+v6.4 material, which includes your changes. It will conflict, because
+there is no linear history. The only way to achieve linear history is to
+fix the buggy code before changing it.
+
+To your point that it's not you who chose the 1492 MTU bug but rather
+that it chose you, I'm not trying to minimize that, except that I need
+to point out that things like this are to be expected when you are
+working on a project where you aren't the only contributor.
+
+Since we are already so deep in process-related explanations, I don't
+know how aware you are of what fixing the 1492 MTU bug entails.
+One would have to prepare a patch that limits the max_mtu to ETH_DATA_LEN
+for the switch families where MTU changing is not possible. Once that
+gets reviewed and accepted, one would need to wait for no longer than
+the next Thursday (when the net.git pull request is sent, and net.git is
+merged back into net-next.git, for history linearization), then work on
+net-next.git can resume.
