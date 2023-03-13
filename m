@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C47CE6B8452
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 22:57:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54C646B8455
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 22:57:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229662AbjCMV5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 17:57:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52426 "EHLO
+        id S230083AbjCMV5u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 17:57:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229743AbjCMV5R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 17:57:17 -0400
+        with ESMTP id S230176AbjCMV5l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 17:57:41 -0400
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F344B8F530;
-        Mon, 13 Mar 2023 14:57:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A82A9009A;
+        Mon, 13 Mar 2023 14:57:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678744627; x=1710280627;
+  t=1678744633; x=1710280633;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=WV2QgxuHT3p8j+KGI77slUqYCqNGD1cnP+Xz71qqoTc=;
-  b=MyGi+7i6tdmk2MU1rQoilOIcb3i+ftu+R7cev1k6nvB9N8j/eiX/7ikb
-   TiPcIU7Ig5DuB++0TdD9NV3UN6ccz22Wb8klZRgFHW6YcEGV+OmLLLH40
-   2l785/t4u6TOCdwYywj1pqhFuvMVovd5kBqEcTgw01qRx0ZiHsJtco/9M
-   ZF4PnY9aMGL/ezotL0/DNKOrTlMThy0MXAQZEpJy6cOuYW9sB6r/H6/VE
-   MdtqaIoF0PI9XBylFd5uazqtjXDQL0nWu1VhZxC2fGqQ/YCd8YLoj5jVg
-   vmszJNbLngkz84v1cFJJgQGRiSv7HHkxKyN0Ku2eY7oy7cGAS+L3DmFsj
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="364928655"
+  bh=ZFpBMYKp7Vej9uaBP1GUTHm12MmkAD4Atk8fjSWwcN0=;
+  b=G3oUjM/jERp3N2bTKOWoilQ2IctW14Ps+K4Mcv1YLoDbbTIJANpA6zXc
+   RLvy2YcMFSHDzyoW8J3FF/fGK2wCh6Jy9K/DYYABPFfWM+GzZ2pZqX/B9
+   g+ffd26W2112hUHd8vSLt+Ney4AhPhgsEVlojSFfHH4TWyzHZCikyhTAU
+   rIU3Gt4vAc3gfrSlSJ58xoCOwHSwdqvl3x1WPSgKKpTC3XdTbtF9avD4Z
+   WcCMKaPjuKrmYj14P+gUzQxUsQ76gw+UT3Lk/zpJdyWHv6VFhg9cMeI7/
+   /k42A/NbWzlB1clUGuvNEJTNdEM01edRRPalrdR8OdlkGRlfhZ1McC6oP
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="364928677"
 X-IronPort-AV: E=Sophos;i="5.98,258,1673942400"; 
-   d="scan'208";a="364928655"
+   d="scan'208";a="364928677"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2023 14:57:07 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2023 14:57:11 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="747750981"
+X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="747750987"
 X-IronPort-AV: E=Sophos;i="5.98,258,1673942400"; 
-   d="scan'208";a="747750981"
+   d="scan'208";a="747750987"
 Received: from newjersey.igk.intel.com ([10.102.20.203])
-  by fmsmga004.fm.intel.com with ESMTP; 13 Mar 2023 14:57:03 -0700
+  by fmsmga004.fm.intel.com with ESMTP; 13 Mar 2023 14:57:07 -0700
 From:   Alexander Lobakin <aleksander.lobakin@intel.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -57,9 +57,9 @@ Cc:     Alexander Lobakin <aleksander.lobakin@intel.com>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>, bpf@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v3 3/4] xdp: recycle Page Pool backed skbs built from XDP frames
-Date:   Mon, 13 Mar 2023 22:55:52 +0100
-Message-Id: <20230313215553.1045175-4-aleksander.lobakin@intel.com>
+Subject: [PATCH bpf-next v3 4/4] xdp: remove unused {__,}xdp_release_frame()
+Date:   Mon, 13 Mar 2023 22:55:53 +0100
+Message-Id: <20230313215553.1045175-5-aleksander.lobakin@intel.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230313215553.1045175-1-aleksander.lobakin@intel.com>
 References: <20230313215553.1045175-1-aleksander.lobakin@intel.com>
@@ -75,41 +75,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-__xdp_build_skb_from_frame() state(d):
-
-/* Until page_pool get SKB return path, release DMA here */
-
-Page Pool got skb pages recycling in April 2021, but missed this
-function.
-
-xdp_release_frame() is relevant only for Page Pool backed frames and it
-detaches the page from the corresponding page_pool in order to make it
-freeable via page_frag_free(). It can instead just mark the output skb
-as eligible for recycling if the frame is backed by a pp. No change for
-other memory model types (the same condition check as before).
-cpumap redirect and veth on Page Pool drivers now become zero-alloc (or
-almost).
+__xdp_build_skb_from_frame() was the last user of
+{__,}xdp_release_frame(), which detaches pages from the page_pool.
+All the consumers now recycle Page Pool skbs and page, except mlx5,
+stmmac and tsnep drivers, which use page_pool_release_page() directly
+(might change one day). It's safe to assume this functionality is not
+needed anymore and can be removed (in favor of recycling).
 
 Signed-off-by: Alexander Lobakin <aleksander.lobakin@intel.com>
 ---
- net/core/xdp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/net/xdp.h | 29 -----------------------------
+ net/core/xdp.c    | 15 ---------------
+ 2 files changed, 44 deletions(-)
 
+diff --git a/include/net/xdp.h b/include/net/xdp.h
+index d517bfac937b..5393b3ebe56e 100644
+--- a/include/net/xdp.h
++++ b/include/net/xdp.h
+@@ -317,35 +317,6 @@ void xdp_flush_frame_bulk(struct xdp_frame_bulk *bq);
+ void xdp_return_frame_bulk(struct xdp_frame *xdpf,
+ 			   struct xdp_frame_bulk *bq);
+ 
+-/* When sending xdp_frame into the network stack, then there is no
+- * return point callback, which is needed to release e.g. DMA-mapping
+- * resources with page_pool.  Thus, have explicit function to release
+- * frame resources.
+- */
+-void __xdp_release_frame(void *data, struct xdp_mem_info *mem);
+-static inline void xdp_release_frame(struct xdp_frame *xdpf)
+-{
+-	struct xdp_mem_info *mem = &xdpf->mem;
+-	struct skb_shared_info *sinfo;
+-	int i;
+-
+-	/* Curr only page_pool needs this */
+-	if (mem->type != MEM_TYPE_PAGE_POOL)
+-		return;
+-
+-	if (likely(!xdp_frame_has_frags(xdpf)))
+-		goto out;
+-
+-	sinfo = xdp_get_shared_info_from_frame(xdpf);
+-	for (i = 0; i < sinfo->nr_frags; i++) {
+-		struct page *page = skb_frag_page(&sinfo->frags[i]);
+-
+-		__xdp_release_frame(page_address(page), mem);
+-	}
+-out:
+-	__xdp_release_frame(xdpf->data, mem);
+-}
+-
+ static __always_inline unsigned int xdp_get_frame_len(struct xdp_frame *xdpf)
+ {
+ 	struct skb_shared_info *sinfo;
 diff --git a/net/core/xdp.c b/net/core/xdp.c
-index 8c92fc553317..a2237cfca8e9 100644
+index a2237cfca8e9..8d3ad315f18d 100644
 --- a/net/core/xdp.c
 +++ b/net/core/xdp.c
-@@ -658,8 +658,8 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
- 	 * - RX ring dev queue index	(skb_record_rx_queue)
- 	 */
+@@ -531,21 +531,6 @@ void xdp_return_buff(struct xdp_buff *xdp)
+ }
+ EXPORT_SYMBOL_GPL(xdp_return_buff);
  
--	/* Until page_pool get SKB return path, release DMA here */
--	xdp_release_frame(xdpf);
-+	if (xdpf->mem.type == MEM_TYPE_PAGE_POOL)
-+		skb_mark_for_recycle(skb);
- 
- 	/* Allow SKB to reuse area used by xdp_frame */
- 	xdp_scrub_frame(xdpf);
+-/* Only called for MEM_TYPE_PAGE_POOL see xdp.h */
+-void __xdp_release_frame(void *data, struct xdp_mem_info *mem)
+-{
+-	struct xdp_mem_allocator *xa;
+-	struct page *page;
+-
+-	rcu_read_lock();
+-	xa = rhashtable_lookup(mem_id_ht, &mem->id, mem_id_rht_params);
+-	page = virt_to_head_page(data);
+-	if (xa)
+-		page_pool_release_page(xa->page_pool, page);
+-	rcu_read_unlock();
+-}
+-EXPORT_SYMBOL_GPL(__xdp_release_frame);
+-
+ void xdp_attachment_setup(struct xdp_attachment_info *info,
+ 			  struct netdev_bpf *bpf)
+ {
 -- 
 2.39.2
 
