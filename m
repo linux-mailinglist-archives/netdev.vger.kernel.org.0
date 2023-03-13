@@ -2,178 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F2DB06B80E4
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 19:41:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99FE56B80FB
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 19:44:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230327AbjCMSlX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 14:41:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58418 "EHLO
+        id S230474AbjCMSoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 14:44:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230341AbjCMSlV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 14:41:21 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 099994EDF;
-        Mon, 13 Mar 2023 11:40:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=public-files.de;
-        s=s31663417; t=1678732740; i=frank-w@public-files.de;
-        bh=vnVRR7H0dRwp116/xX+I5PhqibcTnq0j1/I79a6rbt4=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=bAYgS+SOutp5qT7W189Mtkc/EoCKBYaYiOk7mJhTFnnWzQnI2BaBDc3xmC7xEjR55
-         Oqgy98Xc4DvUC4wNHlnYoDuFEKlyhuftCu04f12kp/g5P4NOSrHNPkIBWIpPCXeO/w
-         24I3jL7tx6CbdBu04xnzL9qyrmS+a2yquhN9XCty6iIB5E8wGhkZ1NYPG/eq97sFl+
-         68xdKYZryviFvQ4MaAvrKAK3x1HNRwcVG8SaUnglbXtV2ldXuOym1LzHXY65ZrpB6l
-         a71LWsYYIar84zB5/joWn9CiZ2TW7eS2OZhl5Qmn4dt4a771C17IUIjfKKlLfW6vWd
-         kl0aLAL0suL1A==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [217.61.158.159] ([217.61.158.159]) by web-mail.gmx.net
- (3c-app-gmx-bs66.server.lan [172.19.170.210]) (via HTTP); Mon, 13 Mar 2023
- 19:39:00 +0100
-MIME-Version: 1.0
-Message-ID: <trinity-93681801-f99c-40e2-9fbd-45888b3069aa-1678732740564@3c-app-gmx-bs66>
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Daniel Golle <daniel@makrotopia.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229790AbjCMSof (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 14:44:35 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on20725.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eaa::725])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 307897F024;
+        Mon, 13 Mar 2023 11:43:54 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=el/6kz1arwAiRR+jb/wIQRpwqWDPabnbk5uwlS+ZkyBo/6OqtbtFMZmz2PI5LpXw38cOoMrJ6eNLRabKtXkZpLn5btrM8uCLOh5+1g25A+y9P9xFGlt7kor3LX6qbtjkpDB8OpgHcL23eSweLLNe/Yq+jkECk9B33I/PozZ0Hv+xVFbcJ0Vd+LOgj0//tLAA+O3BefVBP0yeOdMLrVjP1LsfJqmZRkNV3AN6JQfc31FZdAo131WWduiRs/NhAQ0zRuG/04K7n9HF9zza7N+yOR0y4VfiVo0Or+//iy61d32+QjDcmA1lWL/lYl1AuFLuoe7615IAtK1DV+hrnboRSg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=AtY5Ncp8w6rTRdFzbDJ8YosVUDDzAgTiu3P6To0P3J4=;
+ b=a3mKCgNJzAoYzlxvS/fEhsXEzOdNYXmDfKhBdklo64etD7xpml30TBx8p/DMtkfdY6bZb4ygo61BFnnsd05kowr+LlaLoxx+MqiBcX7Dom0+0LfySfcjX5B4XaszwZrR8gZ3GNUw9U+cW0MPSrfPPeRcJtIG0Wkdt3poIM7VWE7WY2svaslwT/wAQqJTBC6c/zHGtaqvyn9rDmRdtDAeHw28LQBbif4jFNB+WZHUBbYMHSXK3zsEsEa8LJo1Fu+QBPM15GBW0FgciguxsHLka7GujfLr/1OizNs+1lK46XDO8Cj7gbRRZSd2UNiu1BuSDevMxopjhHwqSz/LjapGrw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AtY5Ncp8w6rTRdFzbDJ8YosVUDDzAgTiu3P6To0P3J4=;
+ b=FvQIr263yJnSTiB5ajxt4ihu+r/yXCRePo93/qLhYXVkgegTwfJPGGLk16Rv5+Lc+fiYcdzuaQ9BYgGzST7qZBcMhj/lNEtXafHXqzwXuLE6WFOuXcIYjD8TxVl6UVJcCqo6wRmjgXEDm8nR/lgV/AH70pA3PFBQeS2HWyIrCFc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by CO1PR13MB4999.namprd13.prod.outlook.com (2603:10b6:303:f5::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.24; Mon, 13 Mar
+ 2023 18:42:54 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.024; Mon, 13 Mar 2023
+ 18:42:54 +0000
+Date:   Mon, 13 Mar 2023 19:42:48 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Josef Miegl <josef@miegl.cz>
+Cc:     Eyal Birger <eyal.birger@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Jianhui Zhao <zhaojh329@gmail.com>,
-        =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
-        Alexander Couzens <lynxis@fe80.eu>
-Subject: Aw: Re: Re: Re: [PATCH net-next v12 08/18] net: ethernet:
- mtk_eth_soc: fix 1000Base-X and 2500Base-X modes
-Content-Type: text/plain; charset=UTF-8
-Date:   Mon, 13 Mar 2023 19:39:00 +0100
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <ZA8B/kI0fLx4gkQm@shell.armlinux.org.uk>
-References: <ZAiciK5fElvLXYQ9@makrotopia.org>
- <ZAijM91F18lWC80+@shell.armlinux.org.uk> <ZAik+I1Ei+grJdUQ@makrotopia.org>
- <ZAioqp21521NsttV@shell.armlinux.org.uk>
- <trinity-79e9f0b8-a267-4bf9-a3d4-1ec691eb5238-1678536337569@3c-app-gmx-bs24>
- <ZAzd1A0SAKZK0hF5@shell.armlinux.org.uk>
- <4B891976-C29E-4D98-B604-3AC4507D3661@public-files.de>
- <ZAzk71mTxgV/pRxC@shell.armlinux.org.uk>
- <trinity-8577978d-1c11-4f6d-ae11-aef37e8b78b0-1678624836722@3c-app-gmx-bap51>
- <ZA4wlQ8P48aDhDly@shell.armlinux.org.uk>
- <ZA8B/kI0fLx4gkQm@shell.armlinux.org.uk>
-Content-Transfer-Encoding: quoted-printable
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:F36nI6lCjaGvE9iW/olT5af3T1lus8s5NdMk0i96PzDNje8Vgi1yT25FZOFvH+go4cfu8
- YF62npVZCcSjOJ13eNpaTbRKX3znmrvyt0mqt4/MNYM9b0KhSLgyhOwmIZhZmZ9epDly86fXGEqq
- XKnvQWEubkZhGuY33qIcJSsLMb19ufLMD+ZxxazCKVZkAMpUCW2nYR6yJKUlCzlD1lzJuhJjZquy
- 97SP44YGQ9o0fYSgebLfZoWAN6YaEayFRJFdQ4JRhq+IHExjdFa6PYn1LlLdyorC908iZ73wivem
- Bs=
-UI-OutboundReport: notjunk:1;M01:P0:A3Bhvf3YgSA=;DYQ3ENw4UTM7sRf0hpJwY5A5OQ6
- U71Dm0loE5cbRcAVkWmRiLqeImB56sd3lV0XbRk+El2+yb8MCcznUrZaPN7eSa2jD+enh12Kx
- eQv9w4r7TSedZw5NOI5QC8E9Tvhkc+RVvy12JVtknPdR7VqTR2lVZE/QnqwBViym5XiYEIZJx
- ei+wB43UaImFCUAliSsArVDSJU2CxsIWPhuFVXnYsaVkxSeHuwvSRbAqUJQtwO4oSfZFhL6+r
- 3//nmLzSe+tOCY8377SUPRTX+dcVFveo1g+RWLLAnsRjsGVxfzjURTWfSNq8ibRC6if33tCw5
- fUSlsIOhHS98X5R/eUnBzMJkHQiXKva8g3XLNISQQWNiBfC82m9VZvyTFPiO2BxnEeJRHJPI0
- E+m5K+h0a445r9k2ozN/llRggXrZbA3TraY1EbWbqOYLp5P7T9ipjcndX8xMooye8w1VtOmgG
- jgf6KynlEyYXJl9WvlfHpqsj0HtweQV7wILLoawvdQHLRqB+Mk8yOggKPBMrecaK+smnSa4UU
- fQKpJRRHccWf9qaykgWsD1As18vUl9krRuLefH9VxKZZVt1fHgELxlF5oHRhzaKBuOEXzPTka
- G7QTGsETK3ziOUJwEzHVCk8Kb4Q5chZTNCm6YH/LE1v2Wjc6BPkut94nQMADSwsIi07ywq0eU
- rTDLiIGYwKFG6dAe4x3DGzGgEfsR/SJOmITMr5xd+Bd6rY9G6tZvoA/fds4vPVgB1aT1GDiZr
- hkwPKRlwOHOJODPAkJ3ziACrxxGtJmh37NymUdCid84MwRKLOJS2UgZXuC+PuNTB4wO+kCx4A
- 2yUIjwRzH4WUmfD+UwG96AUrk5Vlpso1drid14mPw0qfg=
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] net: geneve: set IFF_POINTOPOINT with
+ IFLA_GENEVE_INNER_PROTO_INHERIT
+Message-ID: <ZA9uqAPhmUyYPcdo@corigine.com>
+References: <20230312164557.55354-1-josef@miegl.cz>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230312164557.55354-1-josef@miegl.cz>
+X-ClientProxiedBy: AS4P190CA0026.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5d0::13) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CO1PR13MB4999:EE_
+X-MS-Office365-Filtering-Correlation-Id: b17e30b9-4c0f-4c9a-6901-08db23f2c186
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ZqtFejp6/sUR+uyBXuXFr7KV7IFKIU4tb+lAkYzgOK5mhfWgcTEcMVSIWF32b9WG47hClQ7rj5AClrgyt128iHXF8Qs8MZnImJSnRTpE3n5uHDkkPVNWx6IEuNqlmQEbbHRF0PXcgrBRoHm6AubjSLU40eyOKJycq6Tu1qkanyi82lEEB54kEiuWAi3AUjtrDZeLrgDjSOZhClVf50dYscf0rWcCZR9f+t+FD8p8GXOZ91NbpbF5mBUxzX/+ZAFo2qsxCZ46HRtKwaYXel9uo88eWMa4rlbDzLTZjVkP7EWFx1UftEBhtRO0PFdSoVoExCnPbXgzFI5iiJpTdQCZLhgbXT/DAty3QR53Vo5Yb0tkECai6d0Cvtcd4kridcGFj4HkpG4jhYB70UAnklOueFIP2akxwF1WK5AfMvR4IlhR9wcDQXXC4EYKQaUUO/eT/WZSiIwnEaCl4lGLABJjabrt3hP4WGddelxofnWCPCjjvmSzXv+7XwLDp/F4GhCH7BpgAtGSxL7F8+US6kPC3nPeFp54EFRjUvl/C+r1AtOBhF+bEXZw1fTxAL8RPl2RE1BOUA1M3IaNl3UKbwiEPnV5rGfI5lLrihfLRy+0xheLFm0BjJtUQ7l3ja4S0pwOdEaKpvesFJtx8MGgn8zXnXLutwEsqP1SueCt3OOiPTDlYGs5Q5lem8rxf5/JXiaC
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(136003)(39840400004)(396003)(346002)(376002)(451199018)(6916009)(4326008)(5660300002)(8936002)(2616005)(186003)(41300700001)(6512007)(6506007)(36756003)(86362001)(4744005)(44832011)(2906002)(83380400001)(66476007)(66556008)(8676002)(6486002)(66946007)(54906003)(316002)(478600001)(38100700002)(6666004);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cLZSiKG4UwQBD81c+k32/QIbVjapwsUORxra33oAzhwzqOomoVhi8l0CLgV1?=
+ =?us-ascii?Q?x4R8TV5ovxcuBdvBlPw+rx/EAl8W0vKvrxuieuA2+WFpCeTIoYKSmwwwlgyr?=
+ =?us-ascii?Q?EUBrIQNGqvDMAyb0CLBXsab/IOrK9fMyMKUO2Ix+NFtdbgb+D+0OIO8wchpR?=
+ =?us-ascii?Q?qAqX6E3YVb+ZdKZNmhn27EkG3Q9e2v/W7SJMx0xVNDDnR1mDw0mqfQRD0X25?=
+ =?us-ascii?Q?ltR8jfN6vqOt8FeeqeETr04e6bf/4Z2q8puCZcMqzNPsGZhWQq/n7UokEvr/?=
+ =?us-ascii?Q?Gbigzh2ZEk1lLF7CzF1z3JGrDURytHsQAmjRLu1loQuwwnKgIeec2r6ap4N0?=
+ =?us-ascii?Q?/yT+TZcCHMpUlz/yZdVu/B709ljC9h2flNdbkKmobVYYyP+b7B/DnPepKeJH?=
+ =?us-ascii?Q?yeCzOypGQY0+DSzno39KBzkoaFnI+zFJh2lbhXbPg+RJmE2Y3srbjgXtgewQ?=
+ =?us-ascii?Q?CE4y3VjrMWmYaJ72R1n9TgqAR9DsvDqvTCKqDUydBH+Dtev1mzv3KtmbEN+K?=
+ =?us-ascii?Q?6696CosG64uapFPQZhiLhilUr1NiJzZVWsx+82TM5ena+WDYz5HA+LcOT+IW?=
+ =?us-ascii?Q?QMPE2DU2sAo+70ysIMbBD3t9Z7+fmiYhFY8i2vcxnEG/wR1ny52IjptErYIo?=
+ =?us-ascii?Q?xAGsS4x6maJafIdCLhv+h8xVygyf+swI30jwJ1G4JAXQAVrNZhXoDvzCBu2u?=
+ =?us-ascii?Q?GjXy9uK9dXTdBiYVIJ+JWc3bjCymVh9j7VQFQYqTZH+Xa3vwpIAs6lGxSVbc?=
+ =?us-ascii?Q?sO7n94jWQHXAr9G5GcAQHnc9mV6jqag7cLVGUn2X3johpnw7tc9WuPMT4O8E?=
+ =?us-ascii?Q?wRQsv4T8KjRzaxrewWm+zXY69v/qeX7NpuKX60IGUzpStJu7rxgLux5DbCiv?=
+ =?us-ascii?Q?+8KtQ6fjRkdql7uJD/YinQJeMLNgDymCdTJB0rjKv3Gd0N15S4EYM4PqJdfh?=
+ =?us-ascii?Q?tR9hBvuGAxoyail22dFl4ZRnfZVErxkzforW54/BH4Cdu3cFvPq1Nt1ot8jH?=
+ =?us-ascii?Q?8u4q3Z8fqsJWrt99riWvKbm1FxJAxerP7D1IG5haSiBvmGMiqAQom3O0eNwR?=
+ =?us-ascii?Q?R9feoWkf2+YgtqOIhJM8FJSK9k1Qn0khDJvEbR2ztCUGi7nejChiMc83PI9w?=
+ =?us-ascii?Q?StoqlRxUw5Tl+EtZO8/thB+21ukNlrOHls+8MHmnaOd1Yf+8n6jEz5me8P53?=
+ =?us-ascii?Q?z3X52HmiXFiDnCQYQbJEMJPV+vpJNeMEGYkDTPOwJQ8NVgk+8KhucexwKSw4?=
+ =?us-ascii?Q?06R+F+jX3bEUSwhgwVt9iw/Qbk9KqOASWQzmpwFN1nt7yUfNbKTWNuuOfL3K?=
+ =?us-ascii?Q?WKpnf8tjrpyzkIe69FSpWJjZWMqZeNJaDuW9/EXLSn7sK7IG9uYHIr2Gbw4O?=
+ =?us-ascii?Q?r8CXhBANSpsltud1IGva8oKYmjvW5wJm9YcjhuOtNs30W9WxNXuUcYU+NJ/w?=
+ =?us-ascii?Q?mvEeEpMGLIgW74p0/ShbasF0SYMqK/nvv+G/o/9ODPArpm4f0/4eXzLFvQjW?=
+ =?us-ascii?Q?yBf6sBmNATKy4DKYTU0BG4fh64BeofyilHfnAIMElm1gLOiuCmnk85fRESD0?=
+ =?us-ascii?Q?uuSilrnKaFtjBMcegH+u1XG7ykX9WypuT86v8Ij3UCp1a6PCkVNWsMNW9APG?=
+ =?us-ascii?Q?cH1KVEKHWvFjfX6hjN9SPzl/bHb3oXI31MHMgKz5FTurP+GycjFJ8gsmc+yf?=
+ =?us-ascii?Q?hraTPQ=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b17e30b9-4c0f-4c9a-6901-08db23f2c186
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Mar 2023 18:42:54.1269
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: aTi+IWQXml8mz+vBoXqczoK1NRDNfOAI59k5n4ag/1wS4KObbkHoK0F9Aa6Pf2EfuKZ0PpxzZwntVPrDe03Xtu/mQi74bw1zUz2T9Qf5vaM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR13MB4999
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Gesendet: Montag, 13=2E M=C3=A4rz 2023 um 11:59 Uhr
-> Von: "Russell King (Oracle)" <linux@armlinux=2Eorg=2Euk>
+On Sun, Mar 12, 2023 at 05:45:57PM +0100, Josef Miegl wrote:
+> The GENEVE tunnel used with IFLA_GENEVE_INNER_PROTO_INHERIT is
+> point-to-point, so set IFF_POINTOPOINT to reflect that.
+> 
+> Signed-off-by: Josef Miegl <josef@miegl.cz>
 
-> Since describing what I wanted you to test didn't work, here's a patch
-> instead, based upon the quirk that you provided (which is what I'd have
-> written anyway)=2E Add a "#define DEBUG" to the top of
-> drivers/net/phy/phylink=2Ec in addition to applying this patch, and plea=
-se
-> test the resulting kernel, sending me the resulting kernel messages, and
-> also reporting whether this works or not=2E
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-Hi
-
-thx for the patch=2E=2E=2Esorry for misunderstanding=2E i thought the sfp =
-quirk only sets a flag and i need to change
-something in phylink=2Ec to do the same as done on userspace, so i tried t=
-o simulate the userspace call there only for testing=2E
-
-here relevant parts of debug
-
-[    1=2E990637] sfp sfp-1: module OEM              SFP-2=2E5G-T       rev=
- 1=2E0  sn SK2301110008     dc 230110 =20
-[    2=2E000147] mtk_soc_eth 15100000=2Eethernet eth1: optical SFP: interf=
-aces=3D[mac=3D2-4,21-22, sfp=3D]
-
-[   56=2E321102] mtk_soc_eth 15100000=2Eethernet eth1: configuring for inb=
-and/2500base-x link mode
-[   56=2E329543] mtk_soc_eth 15100000=2Eethernet eth1: major config 2500ba=
-se-x
-[   56=2E336144] mtk_soc_eth 15100000=2Eethernet eth1: phylink_mac_config:=
- mode=3Dinband/2500base-x/Unknown/Unknown/none adv=3D00,00000000,00000000,0=
-000e240 pause=3D04 link=3D0 an=3D1
-
-full log here:
-
-https://pastebin=2Ecom/vaXtXFY8
-
-unfortunately this does not bring link up
-
-root@bpi-r3:~# ethtool eth1
-Settings for eth1:
-        Supported ports: [ MII ]
-        Supported link modes:   2500baseX/Full
-        Supported pause frame use: Symmetric Receive-only
-        Supports auto-negotiation: Yes
-        Supported FEC modes: Not reported
-        Advertised link modes:  2500baseX/Full
-        Advertised pause frame use: Symmetric Receive-only
-        Advertised auto-negotiation: Yes
-        Advertised FEC modes: Not reported
-        Speed: Unknown!
-        Duplex: Unknown! (255)
-        Auto-negotiation: on
-        Port: MII
-        PHYAD: 0
-        Transceiver: internal
-        Current message level: 0x000000ff (255)
-                               drv probe link timer ifdown ifup rx_err tx_=
-err
-        Link detected: no
-
-also after calling this link does not came up
-
-root@bpi-r3:~# ethtool -s eth1 autoneg off
-[  542=2E690293] mtk_soc_eth 15100000=2Eethernet eth1: phylink_change_inba=
-nd_advert: mode=3Dinband/2500base-x adv=3D00,00000000,00000000,0000e200 pau=
-se=3D04
-
-so it looks like it needs to be configured first in inband mode and then a=
-utoneg needs to be disabled=2E
-
-regards Frank
-
+> ---
+>  drivers/net/geneve.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
+> index 32684e94eb4f..78f9d588f712 100644
+> --- a/drivers/net/geneve.c
+> +++ b/drivers/net/geneve.c
+> @@ -1421,7 +1421,7 @@ static int geneve_configure(struct net *net, struct net_device *dev,
+>  		dev->type = ARPHRD_NONE;
+>  		dev->hard_header_len = 0;
+>  		dev->addr_len = 0;
+> -		dev->flags = IFF_NOARP;
+> +		dev->flags = IFF_POINTOPOINT | IFF_NOARP;
+>  	}
+>  
+>  	err = register_netdevice(dev);
+> -- 
+> 2.37.1
+> 
