@@ -2,52 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 395396B7E33
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 17:55:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5008F6B7E95
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 18:01:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230043AbjCMQz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 12:55:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49474 "EHLO
+        id S231513AbjCMRAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 13:00:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229638AbjCMQz1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 12:55:27 -0400
-Received: from m12.mail.163.com (m12.mail.163.com [123.126.96.234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5E451BDC4;
-        Mon, 13 Mar 2023 09:55:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Gp4+C
-        4gCMjSOFnYU898NA74fjHaBuOlyPKxcR6f/MrM=; b=Mwf+eTe2nN7fRcXTeJvog
-        0A+1C9oC4RclkEh258y4fsai2vTmg/I3WbiEcIgKflUhdyJBWfePd2M+Nh8X83n5
-        YUyXXDuMnkblAmkNrMN6VjIwbrxyAyLCws9eMUCp9mnP8V3A9R53dKnwnPobwIZp
-        PnhnqQlFKpb4+70wZgarf0=
-Received: from leanderwang-LC2.localdomain (unknown [111.206.145.21])
-        by smtp20 (Coremail) with SMTP id H91pCgAX2q4xVQ9knpkGHg--.37518S2;
-        Tue, 14 Mar 2023 00:54:09 +0800 (CST)
-From:   Zheng Wang <zyytlz.wz@163.com>
-To:     ericvh@gmail.com
-Cc:     michal.swiatkowski@linux.intel.com, lucho@ionkov.net,
-        asmadeus@codewreck.org, linux_oss@crudebyte.com,
+        with ESMTP id S231674AbjCMRAF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 13:00:05 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77221366A1
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 09:58:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1678726640;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=t5POBg1qZ82GqoEDaDaIA79xn4Mgw94E10MmvGFG+QA=;
+        b=UCSmaXaGHUsmxostezSfNGm2h5CB0G88EFirpB43bzQR9V9vIOplKH1G6lkne+3Lko3CUg
+        wzaFSfeD5UmTo4lnW3+ONt2MrfX1mAHN4ub3Cku164pS8RNe+iixDjIhhWmUNalzRQc8Bx
+        F2HbHlRiR37JDrhiRt8Nzt9g5Yw52lk=
+Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com
+ [209.85.160.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-640-np4f9jJJM2m917RDrBVhgA-1; Mon, 13 Mar 2023 12:57:18 -0400
+X-MC-Unique: np4f9jJJM2m917RDrBVhgA-1
+Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-1777653e2c4so4715481fac.1
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 09:57:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678726638;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=t5POBg1qZ82GqoEDaDaIA79xn4Mgw94E10MmvGFG+QA=;
+        b=IHpc+6diyGBbT8Jc2ebT0QHSfNOSIi7/2L0hR16HsiZR3WZDDEcC5wxzrXsizbyLAP
+         JlY+Dke+c0FBO12k3FNbTEtHzS33iBdr+YvZwlJZ4hNNACEYgD/vQEZElBqLyan+FIpr
+         kcsanA1JrihiVYXTwb+o3zcym1GY76+29F66OXT2e7PE2Qso3+F+XNUSVj9ZPkWhfQQ8
+         +jfVT9SRCe+83108JNZwRhVu1RF5nCHMAIArmnkXc9YzDeq/A7un7M2ygJWfRXvQfkpt
+         gdbkNFHYo+DxtzIJO9MIIExhLVlsfinGQLpFPktxvduBAZVEoeOfMUAqtDLw2A/AY7/c
+         xHlg==
+X-Gm-Message-State: AO0yUKUcE5xAsUQfsVu7E/ZJOn2bF7aYD/d+9jPJ2I7ZjKPr/0oujZDe
+        JjLu0eFeNfklnH/b6UMpws8iRD0tGvITh1e+jBrhB8KlhHA0Wj2mAJnCg39PBSHgd1jNtxnWWhI
+        Mh6U9hNuiA5QuOEGo
+X-Received: by 2002:a05:6808:150:b0:37f:b1d6:9f3c with SMTP id h16-20020a056808015000b0037fb1d69f3cmr17439023oie.46.1678726637932;
+        Mon, 13 Mar 2023 09:57:17 -0700 (PDT)
+X-Google-Smtp-Source: AK7set/DcZ9ZIOTk8pbqQbIpqBKMFacVCaRW/B1/QFZ8b2XK2GO2nvasDBBZ4a2w0GAU24OnbrYXGg==
+X-Received: by 2002:a05:6808:150:b0:37f:b1d6:9f3c with SMTP id h16-20020a056808015000b0037fb1d69f3cmr17438954oie.46.1678726636191;
+        Mon, 13 Mar 2023 09:57:16 -0700 (PDT)
+Received: from halaney-x13s.attlocal.net ([2600:1700:1ff0:d0e0::21])
+        by smtp.gmail.com with ESMTPSA id o2-20020acad702000000b00384d3003fa3sm3365273oig.26.2023.03.13.09.57.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Mar 2023 09:57:15 -0700 (PDT)
+From:   Andrew Halaney <ahalaney@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
         davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, v9fs-developer@lists.sourceforge.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        hackerzheng666@gmail.com, 1395428693sheep@gmail.com,
-        alex000young@gmail.com, Zheng Wang <zyytlz.wz@163.com>
-Subject: [PATCH net v2] 9p/xen : Fix use after free bug in xen_9pfs_front_remove due  to race condition
-Date:   Tue, 14 Mar 2023 00:54:07 +0800
-Message-Id: <20230313165407.3766584-1-zyytlz.wz@163.com>
-X-Mailer: git-send-email 2.25.1
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, vkoul@kernel.org,
+        bhupesh.sharma@linaro.org, mturquette@baylibre.com,
+        sboyd@kernel.org, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        mcoquelin.stm32@gmail.com, richardcochran@gmail.com,
+        linux@armlinux.org.uk, veekhee@apple.com,
+        tee.min.tan@linux.intel.com, mohammad.athari.ismail@intel.com,
+        jonathanh@nvidia.com, ruppala@nvidia.com, bmasney@redhat.com,
+        andrey.konovalov@linaro.org, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, ncai@quicinc.com,
+        jsuraj@qti.qualcomm.com, hisunil@quicinc.com,
+        Andrew Halaney <ahalaney@redhat.com>
+Subject: [PATCH net-next 00/11] Add EMAC3 support for sa8540p-ride
+Date:   Mon, 13 Mar 2023 11:56:09 -0500
+Message-Id: <20230313165620.128463-1-ahalaney@redhat.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
+Content-type: text/plain
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: H91pCgAX2q4xVQ9knpkGHg--.37518S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7tF15Cw48JFy5Kr1kWF4DJwb_yoW8Xw1xpa
-        nakFWrAFyUA3WjyFsYyas7G3WrCw4rGr1Iga12kw4fJr98Jry8XFZ5t34Yg345Ar4YqF1r
-        Cw1UWFWDJFWDZw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zE6pBkUUUUU=
-X-Originating-IP: [111.206.145.21]
-X-CM-SenderInfo: h2113zf2oz6qqrwthudrp/xtbBzhExU2I0XnvQXwAAsB
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,61 +91,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In xen_9pfs_front_probe, it calls xen_9pfs_front_alloc_dataring
-to init priv->rings and bound &ring->work with p9_xen_response.
+This is a forward port / upstream refactor of code delivered
+downstream by Qualcomm over at [0] to enable the DWMAC5 based
+implementation called EMAC3 on the sa8540p-ride dev board.
 
-When it calls xen_9pfs_front_event_handler to handle IRQ requests,
-it will finally call schedule_work to start the work.
+From what I can tell with the board schematic in hand,
+as well as the code delivered, the main changes needed are:
 
-When we call xen_9pfs_front_remove to remove the driver, there
-may be a sequence as follows:
+    1. A new address space layout for /dwmac5/EMAC3 MTL/DMA regs
+    2. A new programming sequence required for the EMAC3 base platforms
 
-Fix it by finishing the work before cleanup in xen_9pfs_front_free.
+This series makes those adaptations as well as other housekeeping items
+such as converting dt-bindings to yaml, adding clock descriptions, etc.
 
-Note that, this bug is found by static analysis, which might be
-false positive.
+[0] https://git.codelinaro.org/clo/la/kernel/ark-5.14/-/commit/510235ad02d7f0df478146fb00d7a4ba74821b17
 
-CPU0                  CPU1
+Thanks,
+Andrew
 
-                     |p9_xen_response
-xen_9pfs_front_remove|
-  xen_9pfs_front_free|
-kfree(priv)          |
-//free priv          |
-                     |p9_tag_lookup
-                     |//use priv->client
+Bhupesh Sharma (3):
+  dt-bindings: net: snps,dwmac: Update interrupt-names
+  dt-bindings: net: snps,dwmac: Add Qualcomm Ethernet ETHQOS compatibles
+  dt-bindings: net: qcom,ethqos: Convert bindings to yaml
 
-Fixes: 71ebd71921e4 ("xen/9pfs: connect to the backend")
-Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
----
-v2:
-- fix type error of ring found by kernel test robot
----
- net/9p/trans_xen.c | 5 +++++
- 1 file changed, 5 insertions(+)
+Brian Masney (1):
+  net: stmmac: Add EMAC3 variant of dwmac4
 
-diff --git a/net/9p/trans_xen.c b/net/9p/trans_xen.c
-index c64050e839ac..83764431c066 100644
---- a/net/9p/trans_xen.c
-+++ b/net/9p/trans_xen.c
-@@ -274,12 +274,17 @@ static const struct xenbus_device_id xen_9pfs_front_ids[] = {
- static void xen_9pfs_front_free(struct xen_9pfs_front_priv *priv)
- {
- 	int i, j;
-+	struct xen_9pfs_dataring *ring = NULL;
- 
- 	write_lock(&xen_9pfs_lock);
- 	list_del(&priv->list);
- 	write_unlock(&xen_9pfs_lock);
- 
- 	for (i = 0; i < priv->num_rings; i++) {
-+		/*cancel work*/
-+		ring = &priv->rings[i];
-+		cancel_work_sync(&ring->work);
-+
- 		if (!priv->rings[i].intf)
- 			break;
- 		if (priv->rings[i].irq > 0)
+ .../devicetree/bindings/net/qcom,ethqos.txt   |  66 ----
+ .../devicetree/bindings/net/qcom,ethqos.yaml  | 113 ++++++
+ .../devicetree/bindings/net/snps,dwmac.yaml   |  11 +-
+ MAINTAINERS                                   |   2 +-
+ arch/arm64/boot/dts/qcom/sa8540p-ride.dts     | 181 ++++++++++
+ arch/arm64/boot/dts/qcom/sc8280xp.dtsi        |  53 +++
+ drivers/clk/qcom/gcc-sc8280xp.c               |  18 +
+ .../stmicro/stmmac/dwmac-qcom-ethqos.c        | 161 ++++++---
+ drivers/net/ethernet/stmicro/stmmac/dwmac4.h  |  32 +-
+ .../net/ethernet/stmicro/stmmac/dwmac4_core.c | 190 ++++++++--
+ .../net/ethernet/stmicro/stmmac/dwmac4_dma.c  | 336 ++++++++++++++----
+ .../net/ethernet/stmicro/stmmac/dwmac4_dma.h  |  38 ++
+ .../net/ethernet/stmicro/stmmac/dwmac4_lib.c  | 144 ++++++--
+ drivers/net/ethernet/stmicro/stmmac/hwif.c    |  29 +-
+ drivers/net/ethernet/stmicro/stmmac/hwif.h    |   2 +
+ .../ethernet/stmicro/stmmac/stmmac_ethtool.c  |   6 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |  17 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_mdio.c |   9 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_ptp.c  |   4 +-
+ include/dt-bindings/clock/qcom,gcc-sc8280xp.h |   2 +
+ include/linux/stmmac.h                        |   1 +
+ 21 files changed, 1164 insertions(+), 251 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/qcom,ethqos.txt
+ create mode 100644 Documentation/devicetree/bindings/net/qcom,ethqos.yaml
+
 -- 
-2.25.1
+2.39.2
 
