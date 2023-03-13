@@ -2,101 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 356C36B7E4A
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 17:57:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D8F76B7E5A
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 17:59:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231477AbjCMQ5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 12:57:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52242 "EHLO
+        id S230203AbjCMQ7D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 12:59:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231375AbjCMQ5E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 12:57:04 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34BF65504B;
-        Mon, 13 Mar 2023 09:56:43 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id ay18so8057900pfb.2;
-        Mon, 13 Mar 2023 09:56:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678726602;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=HaV/+YukF9fT9fud42iokP2NQAvW1bVr66fpL0PEARs=;
-        b=kB6oE5AAjFAcjGKrhJ/lB5gxApvHCDri2aS+7ma0lgfqI+f8Hrw5eh8cb0kQnNhokr
-         MD75RticHcRvy47ovyCkOgAXgiB0CZE2Siibx7xZ0QZNXiP5lC6+/BHWDe87HpgolJGR
-         S37RoM2khOliB/iG0f6zVhsBodhw3hvbXe2ryit+ABbTRMFevQHy9ijO2nSC51jaus4T
-         L8Chce50S5SCzqi4SWulsQ2xr/bofwKDPtOoNzzH/+WwFKzeEr4MmP2MhkitcubeBc7M
-         SqFZS+cLX9r5OcP+ICLEKrxTcCbRdzqkscedb2nw0Xf59UE9MDa1YD9GM5X96vUXPQly
-         ERUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678726602;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=HaV/+YukF9fT9fud42iokP2NQAvW1bVr66fpL0PEARs=;
-        b=TY+IJAnic1uv1eG8DnXPeB1+njSY4FI1LUnFh7D3Cz0SrTrEE0H7jkoPogxfx+OhQv
-         cRVqK/XkbLJBy6CGAe7945GEFFOR88eiBWGaMXqRItqEmoPOnjtdNGCEvcZ4nnVpYht1
-         58DSPMCt5I+IU+WZvxzPgDWE/5uojDUGsab9tbiiuOBUY3roRyvZy7CbdQcYjAmRq32l
-         nVOU+cWRY65p/Ep6d25UT2tNjGljjlvim1dC+KSqxbXqlLd6UoTir9SSILA0rCHd5o1d
-         bf6gEo7HUFKAsv7BFBYjBfGzoRSOB1eMXbDRQBcUms5SMUd5VHguZuh8KReHyMyfx6SQ
-         hufw==
-X-Gm-Message-State: AO0yUKUgPOr0l5Tl7Pf0oj0uSll11MMNE7DlWUg2ry4V/G9qk6Ni5k0H
-        uHdUaiNkh4HG13cMNBolhiVqA5MHBK5XpkBNplc=
-X-Google-Smtp-Source: AK7set8VRFOtLY8qVIfm5icjabtDYuZtkmF+Cytw1G/oVWBUTt79Sg9pV/dNK6OGyM3m8fVj1NCKwnb8QtYutfzppjY=
-X-Received: by 2002:a63:f0a:0:b0:502:f5c8:a00c with SMTP id
- e10-20020a630f0a000000b00502f5c8a00cmr11257951pgl.9.1678726602586; Mon, 13
- Mar 2023 09:56:42 -0700 (PDT)
+        with ESMTP id S229958AbjCMQ7C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 12:59:02 -0400
+Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1EE454C26;
+        Mon, 13 Mar 2023 09:58:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=LPnq8
+        bkoN5jsFP/Rx6L5bokstFhujUhLLbUiFn+wSu0=; b=hN9UR0vgXxAf25NbGUdd/
+        2nV1L/WAiDZIPp8LJPjnwGdNLMxqyKsUB5SVc6Co33mXFI+rmFDTA6GaojngyKdT
+        X8AAZK5aLaPrS1WT889NPdTm2U0YeyQOFne1AK2kmX/hPoOWm8YyA/BN9dsbZnWQ
+        KQA2ISmN8fErV1Xc9VG68g=
+Received: from leanderwang-LC2.localdomain (unknown [111.206.145.21])
+        by zwqz-smtp-mta-g2-3 (Coremail) with SMTP id _____wCX6mgSVg9kk1wSAA--.12738S2;
+        Tue, 14 Mar 2023 00:57:54 +0800 (CST)
+From:   Zheng Wang <zyytlz.wz@163.com>
+To:     krzysztof.kozlowski@linaro.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        hackerzheng666@gmail.com, 1395428693sheep@gmail.com,
+        alex000young@gmail.com, Zheng Wang <zyytlz.wz@163.com>
+Subject: [PATCH] nfc: st-nci: Fix use after free bug in ndlc_remove due to race condition
+Date:   Tue, 14 Mar 2023 00:57:52 +0800
+Message-Id: <20230313165752.3771096-1-zyytlz.wz@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20230312160837.2040857-1-zyytlz.wz@163.com> <a16b8715-2962-4094-4d50-59d673f455e2@linaro.org>
-In-Reply-To: <a16b8715-2962-4094-4d50-59d673f455e2@linaro.org>
-From:   Zheng Hacker <hackerzheng666@gmail.com>
-Date:   Tue, 14 Mar 2023 00:56:31 +0800
-Message-ID: <CAJedcCz1vazA0NPrA69C0DqqTM742YwNXMshwY_9Uiy08XEtOg@mail.gmail.com>
-Subject: Re: [PATCH] nfc: st-nci: Fix use after free bug in ndlc_remove due to
- race condition
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Zheng Wang <zyytlz.wz@163.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, 1395428693sheep@gmail.com,
-        alex000young@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: _____wCX6mgSVg9kk1wSAA--.12738S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7WFyrJFyrKw4xJw1fWw4Uurg_yoW8WF18pr
+        ZxWryfuFyrGF4FvFZ7WF4UGF1YkwsrtryDt3y3W343ZFnayrs0qr92yFW5uF1IqF4IqFWI
+        y3yjq3Z8J3WkCa7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0ziHmh7UUUUU=
+X-Originating-IP: [111.206.145.21]
+X-CM-SenderInfo: h2113zf2oz6qqrwthudrp/1tbiXAwxU1Xl56QT-QABsu
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> =E4=BA=8E2023=E5=B9=B4=
-3=E6=9C=8813=E6=97=A5=E5=91=A8=E4=B8=80 14:52=E5=86=99=E9=81=93=EF=BC=9A
->
-> On 12/03/2023 17:08, Zheng Wang wrote:
-> > This bug influences both st_nci_i2c_remove and st_nci_spi_remove.
-> > Take st_nci_i2c_remove as an example.
-> >
-> > In st_nci_i2c_probe, it called ndlc_probe and bound &ndlc->sm_work
-> > with llt_ndlc_sm_work.
-> >
-> > When it calls ndlc_recv or timeout handler, it will finally call
-> > schedule_work to start the work.
-> >
-> > When we call st_nci_i2c_remove to remove the driver, there
-> > may be a sequence as follows:
-> >
-> > Fix it by finishing the work before cleanup in ndlc_remove
->
->
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->
+This bug influences both st_nci_i2c_remove and st_nci_spi_remove.
+Take st_nci_i2c_remove as an example.
 
-Thanks for the detailed review.
+In st_nci_i2c_probe, it called ndlc_probe and bound &ndlc->sm_work
+with llt_ndlc_sm_work.
 
-Best regards,
-Zheng
+When it calls ndlc_recv or timeout handler, it will finally call
+schedule_work to start the work.
 
-> Best regards,
-> Krzysztof
->
+When we call st_nci_i2c_remove to remove the driver, there
+may be a sequence as follows:
+
+Fix it by finishing the work before cleanup in ndlc_remove
+
+CPU0                  CPU1
+
+                    |llt_ndlc_sm_work
+st_nci_i2c_remove   |
+  ndlc_remove       |
+     st_nci_remove  |
+     nci_free_device|
+     kfree(ndev)    |
+//free ndlc->ndev   |
+                    |llt_ndlc_rcv_queue
+                    |nci_recv_frame
+                    |//use ndlc->ndev
+
+Fixes: 35630df68d60 ("NFC: st21nfcb: Add driver for STMicroelectronics ST21NFCB NFC chip")
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
+---
+ drivers/nfc/st-nci/ndlc.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/nfc/st-nci/ndlc.c b/drivers/nfc/st-nci/ndlc.c
+index 755460a73c0d..d2aa9f766738 100644
+--- a/drivers/nfc/st-nci/ndlc.c
++++ b/drivers/nfc/st-nci/ndlc.c
+@@ -282,13 +282,15 @@ EXPORT_SYMBOL(ndlc_probe);
+ 
+ void ndlc_remove(struct llt_ndlc *ndlc)
+ {
+-	st_nci_remove(ndlc->ndev);
+-
+ 	/* cancel timers */
+ 	del_timer_sync(&ndlc->t1_timer);
+ 	del_timer_sync(&ndlc->t2_timer);
+ 	ndlc->t2_active = false;
+ 	ndlc->t1_active = false;
++	/* cancel work */
++	cancel_work_sync(&ndlc->sm_work);
++
++	st_nci_remove(ndlc->ndev);
+ 
+ 	skb_queue_purge(&ndlc->rcv_q);
+ 	skb_queue_purge(&ndlc->send_q);
+-- 
+2.25.1
+
