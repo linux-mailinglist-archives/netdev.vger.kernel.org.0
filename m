@@ -2,141 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9842B6B70DA
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 09:07:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C39A26B70DC
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 09:08:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230394AbjCMIH2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 04:07:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42912 "EHLO
+        id S229712AbjCMIH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 04:07:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229742AbjCMIG6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 04:06:58 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73D6D8A53
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 01:04:36 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id p16so7214456wmq.5
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 01:04:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google; t=1678694675;
-        h=in-reply-to:from:content-language:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=HvC0W03zYk4hR2w7J8T+RUoaA0jU84QBNCQ+UXgjkc4=;
-        b=ZpYHhdhR7QJbjSUL7L6N/XkxKNF1HM5Aa4NLp487qVPRAKZ3T92s/O1QnzGc00zhsP
-         NHEV5WAd/zMRrOfbMjLFQmCfkALOWwUCvYOCx3idYevbWu+ep8Dbkv6UuSbGCSfC9o9W
-         bz0C+0BbTx9hWgIBeUZa63501EukzFYzQOOI+MLIJahJpwRvJFIYd3zErrs/vAh2TLiv
-         4VmOmtjznRsfthqgaqoa3/Lwg9tOBDSrE6LWWeg/KNpKHuNCx8TiEhZiIsOoW5kHfL3b
-         KcbSEdZ8jg9eyJVxygkdYO5ZU0k9ZQnzMEWZPicMBASKVJBzj1lxiWQN64dLtA2RFN+Q
-         9wSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678694675;
-        h=in-reply-to:from:content-language:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=HvC0W03zYk4hR2w7J8T+RUoaA0jU84QBNCQ+UXgjkc4=;
-        b=nw2iiVgAhJCfY23asBNJ8Y07eXWTke0S0+60Bk4kUI07i1wvABgeyF1JhvsbDLIuuJ
-         6aMzGu/kSPDg2joBhCvMibYxuBsDHPrdjLztaL1p//P3x2lYr5OYsHd3071+ip26z1fM
-         tWiqBhQVzyYWtUOiBUmn/TFgK+fd74ACF4NpHi8e4hRU4I5hK3XR5WqmUYlG0uDg8cBJ
-         RCmxBt521sLzW6mZ0RJBeTYaSmYiQ0cSH7h4qb84QOxqnoFNYGzqNwWMEp5CxJkO12MO
-         o2UGU8aE51iuF4BoTk0AG2sEoCcpi3543v0RDUCdYcgZcTjGybG4KzN/pS1spG8YYCzY
-         fC5g==
-X-Gm-Message-State: AO0yUKXB/Z8J3g/yEXyjAIYgZe/R7BaPruzGFlUbsYai2CiIzRMrVE9M
-        9+/R0otw6SFGCUwZpg7opoKYxqFvSqOb0AYlQa4=
-X-Google-Smtp-Source: AK7set/caMzMtwpEGnKz4lJ5BYolxDau4FEwNK2QaS95qEFuyWLJyDaVoU87QIbLddnMaum890JfQg==
-X-Received: by 2002:a05:600c:3c9e:b0:3e1:f8af:8772 with SMTP id bg30-20020a05600c3c9e00b003e1f8af8772mr9616059wmb.9.1678694674778;
-        Mon, 13 Mar 2023 01:04:34 -0700 (PDT)
-Received: from ?IPV6:2a02:578:8593:1200:610b:b98a:1680:79a? ([2a02:578:8593:1200:610b:b98a:1680:79a])
-        by smtp.gmail.com with ESMTPSA id 10-20020a05600c22ca00b003eb3933ef10sm8098228wmg.46.2023.03.13.01.04.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Mar 2023 01:04:34 -0700 (PDT)
-Content-Type: multipart/mixed; boundary="------------BN05b59QBxweVj2jyGSFeb48"
-Message-ID: <be8f3f53-e1aa-1983-e8fb-9eb55c929da5@tessares.net>
-Date:   Mon, 13 Mar 2023 09:04:33 +0100
+        with ESMTP id S230390AbjCMIH2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 04:07:28 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C7A328851
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 01:05:58 -0700 (PDT)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4PZq053qYPz17KLj;
+        Mon, 13 Mar 2023 16:03:01 +0800 (CST)
+Received: from [10.67.102.37] (10.67.102.37) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Mon, 13 Mar
+ 2023 16:05:55 +0800
+Subject: Re: [PATCH v3 net-next] net: hns3: support wake on lan configuration
+ and query
+To:     Simon Horman <simon.horman@corigine.com>
+References: <20230310081404.947-1-lanhao@huawei.com>
+ <ZAxw3PWVLiGQtTMS@corigine.com>
+CC:     <andrew@lunn.ch>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <alexander.duyck@gmail.com>, <yisen.zhuang@huawei.com>,
+        <salil.mehta@huawei.com>, <edumazet@google.com>,
+        <pabeni@redhat.com>, <richardcochran@gmail.com>,
+        <shenjian15@huawei.com>, <netdev@vger.kernel.org>,
+        <wangjie125@huawei.com>
+From:   Hao Lan <lanhao@huawei.com>
+Message-ID: <3e2be728-cb68-36cf-0dd4-a62ba5601cea@huawei.com>
+Date:   Mon, 13 Mar 2023 16:05:55 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: pull-request: wireless-2023-03-10: manual merge
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20230310114647.35422-1-johannes@sipsolutions.net>
-Content-Language: en-GB
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-In-Reply-To: <20230310114647.35422-1-johannes@sipsolutions.net>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <ZAxw3PWVLiGQtTMS@corigine.com>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.37]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------BN05b59QBxweVj2jyGSFeb48
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Thanks for your suggestion. Generally I follow the reverse xmas tree style
+for readability. But for this case, whether it looks a bit bloated ?
 
-Hi Johannes,
-
-(+cc Jakub and Stephen)
-
-On 10/03/2023 12:46, Johannes Berg wrote:
-> Hi,
-> 
-> For now in wireless we only have a few fixes for some
-> recently reported (and mostly recently introduced)
-> problems.
-
-(...)
-
-> Johannes Berg (4):
->       wifi: nl80211: fix NULL-ptr deref in offchan check
->       wifi: nl80211: fix puncturing bitmap policy
-
-FYI, we got a small conflict when merging -net in net-next in the MPTCP
-tree due to this patch applied in -net:
-
-  b27f07c50a73 ("wifi: nl80211: fix puncturing bitmap policy")
-
-and this one from net-next:
-
-  cbbaf2bb829b ("wifi: nl80211: add a command to enable/disable HW
-timestamping")
-
-The conflict has been resolved on our side[1] by keeping the
-modifications from both sides and the resolution we suggest is attached
-to this email.
-
-Cheers,
-Matt
-
-[1] https://github.com/multipath-tcp/mptcp_net-next/commit/a95a213e49af
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
---------------BN05b59QBxweVj2jyGSFeb48
-Content-Type: text/x-patch; charset=UTF-8;
- name="a95a213e49afeb23fc8f6ce561366886e31b5692.patch"
-Content-Disposition: attachment;
- filename="a95a213e49afeb23fc8f6ce561366886e31b5692.patch"
-Content-Transfer-Encoding: base64
-
-ZGlmZiAtLWNjIG5ldC93aXJlbGVzcy9ubDgwMjExLmMKaW5kZXggMGEzMWIxZDI4NDVkLDRm
-NjMwNTllZmQ4MS4uYmZhMTVkZWZjMDRlCi0tLSBhL25ldC93aXJlbGVzcy9ubDgwMjExLmMK
-KysrIGIvbmV0L3dpcmVsZXNzL25sODAyMTEuYwpAQEAgLTgwNSwxMCAtODEwLDggKzgxMCwx
-MSBAQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBubGFfcG9saWN5IG5sODAyMTFfCiAgCVtOTDgw
-MjExX0FUVFJfTUxEX0FERFJdID0gTkxBX1BPTElDWV9FWEFDVF9MRU4oRVRIX0FMRU4pLAog
-IAlbTkw4MDIxMV9BVFRSX01MT19TVVBQT1JUXSA9IHsgLnR5cGUgPSBOTEFfRkxBRyB9LAog
-IAlbTkw4MDIxMV9BVFRSX01BWF9OVU1fQUtNX1NVSVRFU10gPSB7IC50eXBlID0gTkxBX1JF
-SkVDVCB9LAotIAlbTkw4MDIxMV9BVFRSX1BVTkNUX0JJVE1BUF0gPSBOTEFfUE9MSUNZX1JB
-TkdFKE5MQV9VOCwgMCwgMHhmZmZmKSwKKyAJW05MODAyMTFfQVRUUl9QVU5DVF9CSVRNQVBd
-ID0KKyAJCU5MQV9QT0xJQ1lfRlVMTF9SQU5HRShOTEFfVTMyLCAmbmw4MDIxMV9wdW5jdF9i
-aXRtYXBfcmFuZ2UpLAogKwogKwlbTkw4MDIxMV9BVFRSX01BWF9IV19USU1FU1RBTVBfUEVF
-UlNdID0geyAudHlwZSA9IE5MQV9VMTYgfSwKICsJW05MODAyMTFfQVRUUl9IV19USU1FU1RB
-TVBfRU5BQkxFRF0gPSB7IC50eXBlID0gTkxBX0ZMQUcgfSwKICB9OwogIAogIC8qIHBvbGlj
-eSBmb3IgdGhlIGtleSBhdHRyaWJ1dGVzICovCg==
-
---------------BN05b59QBxweVj2jyGSFeb48--
+On 2023/3/11 20:15, Simon Horman wrote:
+> Simon Horman <simon.horman@corigine.com>
+> On Fri, Mar 10, 2023 at 04:14:04PM +0800, Hao Lan wrote:
+> > The HNS3 driver supports Wake-on-LAN, which can wake up
+> > the server from power off state to power on state by magic
+> > packet or magic security packet.
+> >
+> > ChangeLog:
+> > v1->v2:
+> > Deleted the debugfs function that overlaps with the ethtool function
+> > from suggestion of Andrew Lunn.
+> >
+> > v2->v3:
+> > Return the wol configuration stored in driver,
+> > suggested by Alexander H Duyck.
+> >
+> > Signed-off-by: Hao Lan <lanhao@huawei.com>
+>
+> Reviewed-by: Simon Horman <simon.horman@corigine.com>
+>
+> ...
+>
+> > diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+> > index 55306fe8a540..10de2b4c401b 100644
+> > --- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+> > +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+> > @@ -2063,6 +2063,31 @@ static int hns3_get_link_ext_state(struct net_device *netdev,
+> >  	return -ENODATA;
+> >  }
+> >
+> > +static void hns3_get_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
+> > +{
+> > +	struct hnae3_handle *handle = hns3_get_handle(netdev);
+> > +	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(handle->pdev);
+> > +	const struct hnae3_ae_ops *ops = handle->ae_algo->ops;
+>
+> nit: the local variable declarations could be reverse xmas tree
+>      - longest line to shortest line. One option being:
+>
+> 	const struct hnae3_ae_ops *ops;
+> 	struct hnae3_handle *handle;
+> 	struct hnae3_ae_dev *ae_dev;
+>
+> 	handle = hns3_get_handle(netdev);
+> 	ae_dev = pci_get_drvdata(handle->pdev);
+> 	ops = handle->ae_algo->ops;
+>
+> Likewise elsewhere in this patch.
+> .
