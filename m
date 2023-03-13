@@ -2,199 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7A946B7F37
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 18:17:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 012646B7F4B
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 18:19:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230293AbjCMRRm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 13:17:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40212 "EHLO
+        id S231294AbjCMRS5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 13:18:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231572AbjCMRRe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 13:17:34 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29E7E4690;
-        Mon, 13 Mar 2023 10:17:02 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id t15so12021445wrz.7;
-        Mon, 13 Mar 2023 10:17:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678727776;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=47d6taB7/MZ6YZbSesVGjWTXifSAYTZlkflqE0tXlfM=;
-        b=Yq+O+O/j6/AxYf44A9hDFiCW0W92T6XjbAiMJV2vJK1leFN5jYpefJ/oqX6jfbggbS
-         GlqBFkCO9VZPLBsVpsSndWwgVCjLKs0CU/zdUV/aRtglqI5vbfLpZbamMvu3xPPpxehQ
-         UC0JdKeCx6tIBKakeuhdq4CSOHumnHZzpTjAIu9BdnTWsk2qdwmsMc/oyhKRBZIx0wy+
-         a7Ad3WB5ymtjDmaM3YUQw6A01NBcILiePMhfdRNtfjRrEQ3k8s/ah3jjMgXVzLqFIFGf
-         XT231hoXeB9qBtfMHspRGzqgR8UUZc/VRtFVdrS1s0dmsNJoAPArmd5vPapLfDbB0Kfb
-         5XgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678727776;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=47d6taB7/MZ6YZbSesVGjWTXifSAYTZlkflqE0tXlfM=;
-        b=xU48qSU8rgRLT9NEfM/PHMXWjk8k9HZBQaJXm9IqDtMTUhABrEDkaIfXNDkg91A836
-         MhH0W7oaIZRYzBxymE1LT+2ZMAuuoZnH+88DWgLNskc6OJzAhGm6SxBWsvxDT5ZD8Vu+
-         x7kjg8SzSDoWAzNY/JhFiqcfQZiDn2FXScOWd1//vquRP2A8C8Vlbusm295odyhyDVxB
-         i5sDv8hd7Oo7OWeRLTiZvdzgZqEP9Yg0k8Qb3q3CCAK7oUKEj5oGVEH8XhFBAgT5rzms
-         9yLbJWD6Cv61FZRjchZK/0wcT1eV1JG78xB8DOY/k0A42cuo+r24q86e9FECLALuXcF8
-         sJqw==
-X-Gm-Message-State: AO0yUKWL+2PFGXxN3SX4JgpcQkg+CN+7NyoCBgcI/8sIGAeVpHWtR4y/
-        xJvZZW2QZDRaWy3LyJdTNlYVK92XTKW1+Ah6Fnc=
-X-Google-Smtp-Source: AK7set8lxbNMKIKwoVxMiSXTcq+UiBKK0Gj1lKTABg5wdq3FcR72lilFXdQfWnuRjRuOHLMdecY/hfHlARsqjJmdwsY=
-X-Received: by 2002:adf:f452:0:b0:2ce:a631:4a0 with SMTP id
- f18-20020adff452000000b002cea63104a0mr1173907wrp.14.1678727776071; Mon, 13
- Mar 2023 10:16:16 -0700 (PDT)
+        with ESMTP id S231598AbjCMRSI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 13:18:08 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 920E6C662;
+        Mon, 13 Mar 2023 10:17:39 -0700 (PDT)
+Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Pb3Gj4JKvz6J7lN;
+        Tue, 14 Mar 2023 01:16:29 +0800 (CST)
+Received: from [10.123.123.126] (10.123.123.126) by
+ lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Mon, 13 Mar 2023 17:16:43 +0000
+Message-ID: <c20fc9eb-518e-84b4-0dd5-7b97c0825259@huawei.com>
+Date:   Mon, 13 Mar 2023 20:16:42 +0300
 MIME-Version: 1.0
-References: <20230311151756.83302-1-kerneljasonxing@gmail.com>
- <CANn89iKWewG7JZXQ=bmab9rSXUs_P5fX-BQ792QjYuH151DV-g@mail.gmail.com>
- <CAL+tcoAchbTk9ibrAVH-bZ-0KHJ8g3XnsQHFWiBosyNgYJtymA@mail.gmail.com> <CANn89i+uS7-mA227g6yJfTK4ugdA82z+PLV9_74f1dBMo_OhEg@mail.gmail.com>
-In-Reply-To: <CANn89i+uS7-mA227g6yJfTK4ugdA82z+PLV9_74f1dBMo_OhEg@mail.gmail.com>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Tue, 14 Mar 2023 01:15:39 +0800
-Message-ID: <CAL+tcoCsQ18ae+hUwqFigerJQfhrusuOOC63Wc+ZGyGWEvSFBQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] net-sysfs: display two backlog queue len separately
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Xing <kernelxing@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v9 00/12] Network support for Landlock
+Content-Language: ru
+To:     =?UTF-8?Q?G=c3=bcnther_Noack?= <gnoack3000@gmail.com>
+CC:     <mic@digikod.net>, <willemdebruijn.kernel@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+        <artem.kuzin@huawei.com>
+References: <20230116085818.165539-1-konstantin.meskhidze@huawei.com>
+ <Y/fl5iEbkL5Pj5cJ@galopp>
+From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+In-Reply-To: <Y/fl5iEbkL5Pj5cJ@galopp>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.123.123.126]
+X-ClientProxiedBy: lhrpeml500005.china.huawei.com (7.191.163.240) To
+ lhrpeml500004.china.huawei.com (7.191.163.9)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 13, 2023 at 11:59=E2=80=AFPM Eric Dumazet <edumazet@google.com>=
- wrote:
->
-> On Mon, Mar 13, 2023 at 6:16=E2=80=AFAM Jason Xing <kerneljasonxing@gmail=
-.com> wrote:
-> >
-> > On Mon, Mar 13, 2023 at 8:34=E2=80=AFPM Eric Dumazet <edumazet@google.c=
-om> wrote:
-> > >
-> > > On Sat, Mar 11, 2023 at 7:18=E2=80=AFAM Jason Xing <kerneljasonxing@g=
-mail.com> wrote:
-> > > >
-> > > > From: Jason Xing <kernelxing@tencent.com>
-> > > >
-> > > > Sometimes we need to know which one of backlog queue can be exactly
-> > > > long enough to cause some latency when debugging this part is neede=
-d.
-> > > > Thus, we can then separate the display of both.
-> > > >
-> > > > Signed-off-by: Jason Xing <kernelxing@tencent.com>
-> > > > ---
-> > > >  net/core/net-procfs.c | 17 ++++++++++++-----
-> > > >  1 file changed, 12 insertions(+), 5 deletions(-)
-> > > >
-> > > > diff --git a/net/core/net-procfs.c b/net/core/net-procfs.c
-> > > > index 1ec23bf8b05c..97a304e1957a 100644
-> > > > --- a/net/core/net-procfs.c
-> > > > +++ b/net/core/net-procfs.c
-> > > > @@ -115,10 +115,14 @@ static int dev_seq_show(struct seq_file *seq,=
- void *v)
-> > > >         return 0;
-> > > >  }
-> > > >
-> > > > -static u32 softnet_backlog_len(struct softnet_data *sd)
-> > > > +static u32 softnet_input_pkt_queue_len(struct softnet_data *sd)
-> > > >  {
-> > > > -       return skb_queue_len_lockless(&sd->input_pkt_queue) +
-> > > > -              skb_queue_len_lockless(&sd->process_queue);
-> > > > +       return skb_queue_len_lockless(&sd->input_pkt_queue);
-> > > > +}
-> > > > +
-> > > > +static u32 softnet_process_queue_len(struct softnet_data *sd)
-> > > > +{
-> > > > +       return skb_queue_len_lockless(&sd->process_queue);
-> > > >  }
-> > > >
-> > > >  static struct softnet_data *softnet_get_online(loff_t *pos)
-> > > > @@ -169,12 +173,15 @@ static int softnet_seq_show(struct seq_file *=
-seq, void *v)
-> > > >          * mapping the data a specific CPU
-> > > >          */
-> > > >         seq_printf(seq,
-> > > > -                  "%08x %08x %08x %08x %08x %08x %08x %08x %08x %0=
-8x %08x %08x %08x\n",
-> > > > +                  "%08x %08x %08x %08x %08x %08x %08x %08x %08x %0=
-8x %08x %08x %08x "
-> > > > +                  "%08x %08x\n",
-> > > >                    sd->processed, sd->dropped, sd->time_squeeze, 0,
-> > > >                    0, 0, 0, 0, /* was fastroute */
-> > > >                    0,   /* was cpu_collision */
-> > > >                    sd->received_rps, flow_limit_count,
-> > > > -                  softnet_backlog_len(sd), (int)seq->index);
-> > > > +                  0,   /* was len of two backlog queues */
-> > >
-> > > You can not pretend the sum is zero, some user space tools out there
-> > > would be fooled.
-> > >
-> > > > +                  (int)seq->index,
-> > > > +                  softnet_input_pkt_queue_len(sd), softnet_process=
-_queue_len(sd));
-> > > >         return 0;
-> > > >  }
-> > > >
-> > > > --
-> > > > 2.37.3
-> > > >
-> > >
-> > > In general I would prefer we no longer change this file.
-> >
-> > Fine. Since now, let this legacy file be one part of history.
-> >
-> > >
-> > > Perhaps add a tracepoint instead ?
-> >
-> > Thanks, Eric. It's one good idea. It seems acceptable if we only need
-> > to trace two separate backlog queues where it can probably hit the
-> > limit, say, in the enqueue_to_backlog().
->
->
-[...]
-> Note that enqueue_to_backlog() already uses a specific kfree_skb_reason()=
- reason
-> (SKB_DROP_REASON_CPU_BACKLOG) so existing infrastructure should work just=
- fine.
 
-Sure, I noticed that. It traces all the kfree_skb paths, not only
-softnet_data. If it isn't proper, what would you recommend where to
-put the trace function into? Now I'm thinking of resorting to the
-legacy file we discussed above :(
 
->
->
-> >
-> > Similarly I decide to write another two tracepoints of time_squeeze
-> > and budget_squeeze which I introduced to distinguish from time_squeeze
-> > as the below link shows:
-> > https://lore.kernel.org/lkml/CAL+tcoAwodpnE2NjMLPhBbmHUvmKMgSykqx0EQ4YZ=
-aQHjrx0Hw@mail.gmail.com/.
-> > For that change, any suggestions are deeply welcome :)
-> >
->
-> For your workloads to hit these limits enough for you to be worried,
-> it looks like you are not using any scaling stuff documented
-> in Documentation/networking/scaling.rst
+2/24/2023 1:17 AM, Günther Noack пишет:
+> Hello Konstantin!
+> 
+> Sorry for asking such fundamental questions again so late in the review.
+> 
+> After playing with patch V9 with the Go-Landlock library, I'm still
+> having trouble understanding these questions -- they probably have
+> good answers, but I also did not see them explained in the
+> documentation. Maybe it would help to clarify it there?
+> 
+> * What is the use case for permitting processes to connect to a given
+>    TCP port, but leaving unspecified what the IP address is?
+> 
+>    Example: If a Landlock ruleset permits connecting to TCP port 53,
+>    that makes it possible to talk to any IP address on the internet (at
+>    least if the process runs on a normal Linux desktop machine), and we
+>    can't really control whether that is the system's proper (TCP-)DNS
+>    server or whether that is an attacker-controlled service for
+>    accepting leaked secrets from the process...?
+> 
+>    Is the plan that IP address support should be added in a follow-up
+>    patch?  Will it become part of the landlock_net_service_attr struct?
 
-Thanks for the guidance. Scaling is a good way to go really. But I
-just would like to separate these two kinds of limits to watch them
-closely. More often we cannot decide to adjust accurately which one
-should be adjusted. Time squeeze may not be clear and we cannot
-randomly write a larger number into both proc files which may do harm
-to some external customers unless we can show some proof to them.
+      In the beginning I introduced the idea with IP address to
+Mickaël but he suggested to use port-based granularity. So with ports 
+it's worth using Landlock in containerized applications working within 
+one IP address. Anyway it's possible to use netfilter to control 
+incoming traffic. It's a good question - we should discuss it carefuly.
+> 
+> * Given the list of obscure network protocols listed in the socket(2)
+>    man page, I find it slightly weird to have rules for the use of TCP,
+>    but to leave less prominent protocols unrestricted.
+> 
+>    For example, a process with an enabled Landlock network ruleset may
+>    connect only to certain TCP ports, but at the same time it can
+>    happily use Bluetooth/CAN bus/DECnet/IPX or other protocols?
 
-Maybe I got something wrong. If adding some tracepoints for those
-limits in softnet_data is not elegant, please enlighten me :)
+      We also have started a discussion about UDP protocol, but it's 
+more complicated since UDP sockets does not establish connections 
+between each other. There is a performance problem on the first place here.
 
-Thanks,
-Jason
+I'm not familiar with Bluetooth/CAN bus/DECnet/IPX but let's discuss it.
+Any ideas here?
+
+> 
+>    I'm mentioning these more obscure protocols, because I doubt that
+>    Landlock will grow more sophisticated support for them anytime soon,
+>    so maybe the best option would be to just make it possible to
+>    disable these?  Is that also part of the plan?
+> 
+>    (I think there would be a lot of value in restricting network
+>    access, even when it's done very broadly.  There are many programs
+>    that don't need network at all, and among those that do need
+>    network, most only require IP networking.
+> 
+>    Btw, the argument for more broad disabling of network access was
+>    already made at https://cr.yp.to/unix/disablenetwork.html in the
+>    past.)
+      Thanks for the link. I will read it.
+> 
+> * This one is more of an implementation question: I don't understand
+>    why we are storing the networking rules in the same RB tree as the
+>    file system rules. - It looks a bit like "YAGNI" to me...?
+
+      Actually network rules are stored in a different RB tree.
+      You can check it in struct landlock_ruleset (ruleset.h):
+      - struct rb_root root_inodeis for fs rules
+
+      - struct rb_root root_net_port is for network rules;
+> 
+>    Would it be more efficient to keep the file system rules in the
+>    existing RB tree, and store the networking rules *separately* next
+>    to it in a different RB tree, or even in a more optimized data
+>    structure? In pseudocode:
+> 
+>      struct fast_lookup_int_set bind_tcp_ports;
+>      struct fast_lookup_int_set connect_tcp_ports;
+>      struct landlock_rb_tree fs_rules;
+> 
+>    It seems that there should be a data structure that supports this
+>    well and which uses the fact that we only need to store small
+>    integers?
+
+      Thnaks for the question. From my point of view it depends on a 
+real scenario - how many ports we want to allow by Landlock for a 
+proccess - thousands, hundreds or less. If it's just 10 ports - do we 
+really need some optimized data structure? Do we get some performance 
+gain here?
+What do you think?
+> 
+> Thanks,
+> –Günther
+> 
+> P.S.: Apologies if some of it was discussed previously. I did my best
+> to catch up on previous threads, but it's long, and it's possible that
+> I missed parts of the discussion.
+> 
+> On Mon, Jan 16, 2023 at 04:58:06PM +0800, Konstantin Meskhidze wrote:
+>> Hi,
+>> This is a new V9 patch related to Landlock LSM network confinement.
+>> It is based on the landlock's -next branch on top of v6.2-rc3 kernel version:
+>> https://git.kernel.org/pub/scm/linux/kernel/git/mic/linux.git/log/?h=next
+>> 
+>> It brings refactoring of previous patch version V8.
+>> Mostly there are fixes of logic and typos, adding new tests.
+>> 
+>> All test were run in QEMU evironment and compiled with
+>>  -static flag.
+>>  1. network_test: 32/32 tests passed.
+>>  2. base_test: 7/7 tests passed.
+>>  3. fs_test: 78/78 tests passed.
+>>  4. ptrace_test: 8/8 tests passed.
+>> 
+>> Previous versions:
+>> v8: https://lore.kernel.org/linux-security-module/20221021152644.155136-1-konstantin.meskhidze@huawei.com/
+>> v7: https://lore.kernel.org/linux-security-module/20220829170401.834298-1-konstantin.meskhidze@huawei.com/
+>> v6: https://lore.kernel.org/linux-security-module/20220621082313.3330667-1-konstantin.meskhidze@huawei.com/
+>> v5: https://lore.kernel.org/linux-security-module/20220516152038.39594-1-konstantin.meskhidze@huawei.com
+>> v4: https://lore.kernel.org/linux-security-module/20220309134459.6448-1-konstantin.meskhidze@huawei.com/
+>> v3: https://lore.kernel.org/linux-security-module/20220124080215.265538-1-konstantin.meskhidze@huawei.com/
+>> v2: https://lore.kernel.org/linux-security-module/20211228115212.703084-1-konstantin.meskhidze@huawei.com/
+>> v1: https://lore.kernel.org/linux-security-module/20211210072123.386713-1-konstantin.meskhidze@huawei.com/
+>> 
+>> Konstantin Meskhidze (11):
+>>   landlock: Make ruleset's access masks more generic
+>>   landlock: Refactor landlock_find_rule/insert_rule
+>>   landlock: Refactor merge/inherit_ruleset functions
+>>   landlock: Move and rename umask_layers() and init_layer_masks()
+>>   landlock: Refactor _unmask_layers() and _init_layer_masks()
+>>   landlock: Refactor landlock_add_rule() syscall
+>>   landlock: Add network rules and TCP hooks support
+>>   selftests/landlock: Share enforce_ruleset()
+>>   selftests/landlock: Add 10 new test suites dedicated to network
+>>   samples/landlock: Add network demo
+>>   landlock: Document Landlock's network support
+>> 
+>> Mickaël Salaün (1):
+>>   landlock: Allow filesystem layout changes for domains without such
+>>     rule type
+>> 
+>>  Documentation/userspace-api/landlock.rst     |   72 +-
+>>  include/uapi/linux/landlock.h                |   49 +
+>>  samples/landlock/sandboxer.c                 |  131 +-
+>>  security/landlock/Kconfig                    |    1 +
+>>  security/landlock/Makefile                   |    2 +
+>>  security/landlock/fs.c                       |  255 ++--
+>>  security/landlock/limits.h                   |    7 +-
+>>  security/landlock/net.c                      |  200 +++
+>>  security/landlock/net.h                      |   26 +
+>>  security/landlock/ruleset.c                  |  409 +++++--
+>>  security/landlock/ruleset.h                  |  185 ++-
+>>  security/landlock/setup.c                    |    2 +
+>>  security/landlock/syscalls.c                 |  165 ++-
+>>  tools/testing/selftests/landlock/base_test.c |    2 +-
+>>  tools/testing/selftests/landlock/common.h    |   10 +
+>>  tools/testing/selftests/landlock/config      |    4 +
+>>  tools/testing/selftests/landlock/fs_test.c   |   75 +-
+>>  tools/testing/selftests/landlock/net_test.c  | 1157 ++++++++++++++++++
+>>  18 files changed, 2398 insertions(+), 354 deletions(-)
+>>  create mode 100644 security/landlock/net.c
+>>  create mode 100644 security/landlock/net.h
+>>  create mode 100644 tools/testing/selftests/landlock/net_test.c
+>> 
+>> -- 
+>> 2.25.1
+>> 
+> .
