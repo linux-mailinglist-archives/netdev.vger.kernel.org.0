@@ -2,60 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 989366B7933
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 14:41:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CAE16B7938
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 14:42:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229673AbjCMNlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 09:41:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37354 "EHLO
+        id S229977AbjCMNmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 09:42:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229982AbjCMNlL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 09:41:11 -0400
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D212E62B74
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 06:41:08 -0700 (PDT)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-5418d54d77bso70765137b3.12
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 06:41:08 -0700 (PDT)
+        with ESMTP id S229722AbjCMNmN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 09:42:13 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6578462D9E
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 06:42:04 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id q16so11369122wrw.2
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 06:42:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678714868;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=hh5Gq5jvSdqyypbXy3QpzhbIlDjwPC5f0GUbw4Q2RfM=;
-        b=X9a1W9MrC8fDjGhbphRa0SUWLiAolOM1k8sZDwL/H1ioq/F4N3vXUH8gjll9uEDO7p
-         MIv6Hg4qt2j/b4jz3q4D9yD4hgiQY5J+hVufZuZPxjk4RICsoQ0c6iq5BWHwOahlfUwR
-         UzjVFxJhn3VYi+CDla44A6CJzNLUU6fYlBqzFTWGDGWv9GJAyhmAtRZyce5dWpgAIeb+
-         H7wFSY4rkaTruzcXpWUVTXx7qWqXAJSnqT4whRlj9ugGl/2sIR13TRQlizyDH55sd6K6
-         /nMzERMDkIjwvp2Un6U7RsHTkqcXnKmkXzWPZNWPVpVeoptSoDgNea2WYILLItSz2ofB
-         VZjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678714868;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112; t=1678714922;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=hh5Gq5jvSdqyypbXy3QpzhbIlDjwPC5f0GUbw4Q2RfM=;
-        b=Bjsc60krqH4M3OkGJIkqNhyJkNqPEpfhazABXAHYiBRNLnpgHsveDp7UvTxrtD8G8j
-         Si14Vv7DKBskNqVmm+OAEJZWnrtdjRfxdK9zdPy6OXzJusscc7gJ4FMXW9jjhL7kLDIL
-         csgz2uFOOfCurdAGVghcvuQZUiKGgTNCuvFwnvza0lTfZf8QZz4ADWCuPQ2SFFkFr5m4
-         bDiooo2v/WTjCTA2sbtkmNi0hEJHeBA2F3IOkKw4/VMn2U8cN5VODfHlSjGltBHxlpGx
-         44ibz/Q/HL6kbkALaWp0YJTsfv8Mpfm5e+wi1lukaYC9RcaH5efnkagIa2WdoUZApkJf
-         SBTg==
-X-Gm-Message-State: AO0yUKXPWBsDBw559ZGDgUIv4aNTgjwsd8dv0OFMTphL6cV8RKxEcXbv
-        I4/VQj9/d7d3KUnQwwX7cnqAaTgXZzn9z2Y0exT3jcDuhAc=
-X-Google-Smtp-Source: AK7set/lbHvE0HsiZhDrVY9dy552AZn4XUzxRwafWzsA5QfujsdmtvYGmfI2Snm8uocQBtrCm9G5rr8KF0yxipZqbDE=
-X-Received: by 2002:a81:a906:0:b0:52e:d2a7:1ba1 with SMTP id
- g6-20020a81a906000000b0052ed2a71ba1mr22456938ywh.1.1678714867688; Mon, 13 Mar
- 2023 06:41:07 -0700 (PDT)
+        bh=RhjHJBnam+mAiyjkCppW94+bwBEENAyEUbj4u0UUHGw=;
+        b=u8kSOiCxamEX/o2dNIfn76IACrRExQbgI20PcUKgLOT21daGswIYkH7y4e705qHc84
+         KZoACiq5OzPYZxs4Cs7L1OdfdY+i8tAgR55nay0/NfcPugriZ8dTNOtbMTqUE+TnS00o
+         00PNiJ0hHEvg67LI/EDAHieU5ceud3+G2T3A+wmhmXwcVjw0fKjWdzHHCGwO89kwQRf4
+         8kAJw46yBAFIEKB+F8g6LoFyrnEe2JWdIXwG2VgXT/G80QV3Z0ZVrTZDdTY2fLeJcLYe
+         Ov2aEBhudcjUMxOttyRVP26K2YY+/uaOygNHRu7ErezMfb9CnAbc8VZfaW2uidhDn2OV
+         94qA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678714923;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=RhjHJBnam+mAiyjkCppW94+bwBEENAyEUbj4u0UUHGw=;
+        b=daibrRR9nsLtZkaNZ8YQ1QvXVCWZApWFwoZEM6lHV3zcwfkU7lnwazDdJBNrYoAM9E
+         R9Tq+iQ7hYO2wfnthH4UuatcctzoFPME8ZQN95h1kBLGSkfB0EDmwFcdVMPH0fbQyxsD
+         rHLFgntLWKrbmPfiMSdEe0dmb9AR5TjRyXxYMOVPAQ3YahhN6IapJcRLENdjizjLPUP9
+         +jPIenF28auGs1D2/9zuuCvtccwdVrvCKUdbOYlLR/8jDGIAf0IGSfwAlDXTYGx8iUqG
+         0M+MPIL6/89hob8ODNWhZqyg7/yQoNIiMzOSwgt3AtQ6dR0GKLeqpZVctsjwcGZqwlJ7
+         ZeOA==
+X-Gm-Message-State: AO0yUKXAMDSbeT0prhLXxQrSfoh+dcUoBWVdgQIZKF+0SszTsK5HMINt
+        9u/1/091kzZFoZzS2mgyfWpm4g9M4n4h2WDo+Qw=
+X-Google-Smtp-Source: AK7set+/c786VIH8IVDv7VAuTxHlmUWpQK8GNqr4nYBxGqOk8sKEc5STEMei7I8BiVbu6TfZgYeMHA==
+X-Received: by 2002:adf:f446:0:b0:2c7:ae2:56df with SMTP id f6-20020adff446000000b002c70ae256dfmr21111847wrp.70.1678714922646;
+        Mon, 13 Mar 2023 06:42:02 -0700 (PDT)
+Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
+        by smtp.gmail.com with ESMTPSA id p6-20020adfce06000000b002ce72cff2ecsm8011778wrn.72.2023.03.13.06.42.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Mar 2023 06:42:02 -0700 (PDT)
+Message-ID: <e87c9c3d-2235-7800-e1ce-8495efdc0284@blackwall.org>
+Date:   Mon, 13 Mar 2023 15:42:01 +0200
 MIME-Version: 1.0
-From:   Turritopsis Dohrnii Teo En Ming <tdtemccnp@gmail.com>
-Date:   Mon, 13 Mar 2023 21:40:57 +0800
-Message-ID: <CAD3upLsLPF3nYdD1HHhqiweXt8zzOLKWpdPwuUKrccc1x33XBQ@mail.gmail.com>
-Subject: Fortigate Firewall Setup SOP Draft 13 Mar 2023
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH net 0/2] bonding: properly restore flags when non-eth dev
+ enslave fails
+Content-Language: en-US
 To:     netdev@vger.kernel.org
-Cc:     ceo@teo-en-ming-corp.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=1.8 required=5.0 tests=BAYES_20,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_RANDOM_ENVFROM,
-        HK_RANDOM_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+Cc:     syoshida@redhat.com, j.vosburgh@gmail.com, andy@greyhouse.net,
+        kuba@kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        edumazet@google.com,
+        syzbot+9dfc3f3348729cc82277@syzkaller.appspotmail.com
+References: <20230313132834.946360-1-razor@blackwall.org>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20230313132834.946360-1-razor@blackwall.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,
+        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,161 +77,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Subject: Fortigate Firewall Setup SOP Draft 13 Mar 2023
+On 13/03/2023 15:28, Nikolay Aleksandrov wrote:
+> Hi,
+> A bug was reported by syzbot[1] that causes a warning and a myriad of
+> other potential issues if a bond that is also a slave fails to enslave a
+> non-eth device. Patch 01 fixes the bug and patch 02 adds a selftest for
+> bond flags restoration in such cases. For more information please see
+> commit descriptions.
+> 
+> Thanks,
+>  Nik
+> 
+> [1] https://syzkaller.appspot.com/bug?id=391c7b1f6522182899efba27d891f1743e8eb3ef
+> 
+> Nikolay Aleksandrov (2):
+>   bonding: restore bond's IFF_SLAVE flag if a non-eth dev
+>     enslave fails
+>   selftests: rtnetlink: add a bond test trying to enslave non-eth dev
+> 
+>  drivers/net/bonding/bond_main.c          |  8 +++++-
+>  tools/testing/selftests/net/rtnetlink.sh | 36 ++++++++++++++++++++++++
+>  2 files changed, 43 insertions(+), 1 deletion(-)
+> 
 
-Collated by: Mr. Turritopsis Dohrnii Teo En Ming
-Country: Singapore
-Date: 13 Mar 2023 Monday
-Time: 9:21 PM GMT+8 Singapore
+Self-NAK, apologies for the noise. I'll send a v2 with the selftest adjusted to
+always to attempt a cleanup after printing the errors regardless if the system hangs.
 
-01. Register the brand new Fortigate firewall at https://support.fortinet.com
-
-02. Key in the Contract Registration Code. This is very important.
-
-03. Upgrade firewall firmware to the latest version.
-
-04. Set hostname.
-XXX-FWXX
-
-05. Set regional date/time. Time zone is important.
-
-06. Enable admin disclaimer page.
-config system global
-set pre-login-banner enable
-
-07. Create firewall super-admin accounts.
-a. admin
-b. xx-admin
-c. si-company
-d. abctech
-
-08. Configure WAN1 interface.
-Most business broadband plans are using DHCP.
-
-09. Enable FTM / SNMP / SSH / HTTPS for WAN1 interface.
-
-10. Configure default static route.
-
-11. Configure LAN interface.
-Optional: DHCP Server
-
-12. Set DHCP lease time to 14400.
-
-13. Configure HTTPS port for firewall web admin to 64444.
-
-14. Configure SSL port for VPN to 443.
-
-15. Configure LDAP Server.
-
-16. Create Address Objects.
-
-17. Create Address Groups.
-
-18. Configure firewall policies for LAN to WAN (outgoing internet access).
-
-19. Configure and apply security profiles to above firewall policies.
-
-20. Create Virtual IPs.
-
-21. Create custom services.
-
-22. Create service groups.
-
-23. Create firewall policies for port forwarding (WAN to LAN).
-
-24. Configure other firewall policies.
-
-25. Disable FortiCloud auto-join.
-config system fortiguard
-set auto-join-forticloud disable
-end
-
-26. Configure FTM Push.
-config system ftm-push
-set server-port 4433
-set server x.x.x.x (WAN1 public address)
-set status enable
-
-27. Remove existing firewall/router and connect brand new Fortigate
-firewall to the internet.
-
-28. Configure FortiGuard DDNS.
-xxx-fw.fortiddns.com
-
-29. Configure DNS.
-
-30. Activate FortiToken.
-
-31. Create SSL VPN Group.
-
-32. Create SSL VPN Users (local or LDAP).
-
-33. Configure 2FA for SSL VPN Users.
-
-34. Create SSL-VPN Portals.
-
-35. Configure SSL VPN Settings (split or full tunneling).
-
-36. Configure firewall policies for SSL VPN to LAN.
-Optionally configure firewall policies for SSL VPN to WAN (if full tunneling).
-
-37. Configure C-NetMOS Network Monitoring Service.
-configure log syslogd setting
-set status enable
-set server "a.b.c.d"
-set mode legacy-reliable
-set port 601
-set facility auth
-end
-
-38. Apply hardening steps (Systems Integrator's Internal Document).
-
-39. Convert SOHO wireless router to access point mode.
-
-40. Configure and apply security profiles (REMINDER).
-
-Testing
-=======
-
-1. Internet access for all users.
-
-2. VPN connection using FortiToken.
-
-Documentation
-==============
-
-Firewall documentation for administrator (settings / policies / VPN).
-
-User Training
-==============
-
-A. For Administrator
-====================
-
-1. How to access Fortigate firewall URL.
-
-2. How to add/remove/reassign FortiToken.
-
-3. How to add/remove VPN users.
-
-4. How to generate usage report for Government PSG Grant.
-
-B. For End User
-================
-
-1. How to connect to VPN.
-
-2. How to use FortiToken.
-
-3. How to connect company laptop to VPN.
-
-===EOF===
-
-
-
-
-REFERENCES
-===========
-
-[1] https://pastebin.com/raw/yg0QUcv6
-[2] https://controlc.com/85e667fb
