@@ -2,81 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4065C6B6D08
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 02:20:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4F0A6B6D09
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 02:22:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229829AbjCMBUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Mar 2023 21:20:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51666 "EHLO
+        id S229826AbjCMBWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Mar 2023 21:22:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229826AbjCMBUc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Mar 2023 21:20:32 -0400
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5537836086;
-        Sun, 12 Mar 2023 18:20:29 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=kaishen@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VdeSqPR_1678670425;
-Received: from 30.221.113.94(mailfrom:KaiShen@linux.alibaba.com fp:SMTPD_---0VdeSqPR_1678670425)
-          by smtp.aliyun-inc.com;
-          Mon, 13 Mar 2023 09:20:26 +0800
-Message-ID: <43cd6283-c8c4-7764-f828-39a59596e33c@linux.alibaba.com>
-Date:   Mon, 13 Mar 2023 09:20:25 +0800
+        with ESMTP id S229516AbjCMBWd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Mar 2023 21:22:33 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2719636085;
+        Sun, 12 Mar 2023 18:22:32 -0700 (PDT)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4PZf2Z432vz17KSQ;
+        Mon, 13 Mar 2023 09:19:34 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Mon, 13 Mar
+ 2023 09:22:07 +0800
+Subject: Re: [PATCH net v2] net: calxedaxgmac: fix race condition in
+ xgmac_remove due to unfinished work
+To:     Zheng Wang <zyytlz.wz@163.com>, <davem@davemloft.net>
+CC:     <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <mkl@pengutronix.de>, <j.neuschaefer@gmx.net>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <hackerzheng666@gmail.com>, <1395428693sheep@gmail.com>,
+        <alex000young@gmail.com>
+References: <20230311180404.4007176-1-zyytlz.wz@163.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <6f0dc4f0-8a1a-9512-01f8-71b0ce6024ea@huawei.com>
+Date:   Mon, 13 Mar 2023 09:22:07 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.8.0
-From:   Kai <KaiShen@linux.alibaba.com>
-Subject: Re: [PATCH net-next v3] net/smc: Use percpu ref for wr tx reference
-To:     Tony Lu <tonylu@linux.alibaba.com>
-Cc:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
-        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <20230303082115.449-1-KaiShen@linux.alibaba.com>
- <ZAhHiZ5/3Q3dcL4c@TONYMAC-ALIBABA.local>
+In-Reply-To: <20230311180404.4007176-1-zyytlz.wz@163.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-In-Reply-To: <ZAhHiZ5/3Q3dcL4c@TONYMAC-ALIBABA.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 2023/3/12 2:04, Zheng Wang wrote:
+> In xgmac_probe, the priv->tx_timeout_work is bound with
+> xgmac_tx_timeout_work. In xgmac_remove, if there is an
+> unfinished work, there might be a race condition that
+> priv->base was written byte after iounmap it.
+> 
+> Fix it by finishing the work before cleanup.
+> 
+> Fixes: 8746f671ef04 ("net: calxedaxgmac: fix race between xgmac_tx_complete and xgmac_tx_err")
+> Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
 
 
-On 3/8/23 4:30 PM, Tony Lu wrote:
->> redis-benchmark on smc-r with atomic wr_tx_refcnt:
->> SET: 525817.62 requests per second, p50=0.087 msec
->> GET: 570841.44 requests per second, p50=0.087 msec
->>
->> redis-benchmark on the percpu_ref version:
->> SET: 539956.81 requests per second, p50=0.087 msec
->> GET: 587613.12 requests per second, p50=0.079 msec
+LGTM.
+Reviewed-by: Yunsheng Lin <linyunsheng@huawei.com>
+
+> ---
+> v2:
+> - fix typo,add Fixes label and stop dev_watchdog so that it will handle no more timeout work suggested by Yunsheng Lin
+> ---
+>  drivers/net/ethernet/calxeda/xgmac.c | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
-> Does the test data need to be refreshed?
+> diff --git a/drivers/net/ethernet/calxeda/xgmac.c b/drivers/net/ethernet/calxeda/xgmac.c
+> index f4f87dfa9687..f0880538f6f3 100644
+> --- a/drivers/net/ethernet/calxeda/xgmac.c
+> +++ b/drivers/net/ethernet/calxeda/xgmac.c
+> @@ -1832,6 +1832,10 @@ static int xgmac_remove(struct platform_device *pdev)
+>  	free_irq(ndev->irq, ndev);
+>  	free_irq(priv->pmt_irq, ndev);
+>  
+> +	netif_carrier_off(ndev);
+> +	netif_tx_disable(ndev);
+> +	cancel_work_sync(&priv->tx_timeout_work);
+> +
+>  	unregister_netdev(ndev);
+>  	netif_napi_del(&priv->napi);
+>  
 > 
-Will do.
->> diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
->> index 08b457c2d294..1645fba0d2d3 100644
->> --- a/net/smc/smc_core.h
->> +++ b/net/smc/smc_core.h
->> @@ -106,7 +106,10 @@ struct smc_link {
->>   	unsigned long		*wr_tx_mask;	/* bit mask of used indexes */
->>   	u32			wr_tx_cnt;	/* number of WR send buffers */
->>   	wait_queue_head_t	wr_tx_wait;	/* wait for free WR send buf */
->> -	atomic_t		wr_tx_refcnt;	/* tx refs to link */
->> +	struct {
->> +		struct percpu_ref	wr_tx_refs;
->> +	} ____cacheline_aligned_in_smp;
->> +	struct completion	tx_ref_comp;
-> 
-> For the variable names suffixed with wr_*_refs, should we continue to
-> use wr_*_refcnt?
-> 
-> Thanks.
-In my opinion, we can't get the count of the percpu reference until it 
-we start to destroy it. So maybe using wr_*_refcnt here is more 
-appropriate？
