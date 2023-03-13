@@ -2,256 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D8B8A6B72B7
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 10:35:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A4D16B72BC
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 10:37:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231322AbjCMJfb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 05:35:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50438 "EHLO
+        id S230173AbjCMJhE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 05:37:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231422AbjCMJfA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 05:35:00 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6535915170;
-        Mon, 13 Mar 2023 02:33:09 -0700 (PDT)
-Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4PZrz23NrRz6J70K;
-        Mon, 13 Mar 2023 17:32:14 +0800 (CST)
-Received: from [10.123.123.126] (10.123.123.126) by
- lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Mon, 13 Mar 2023 09:33:01 +0000
-Message-ID: <7598f777-8458-0984-b058-2026d8163d3a@huawei.com>
-Date:   Mon, 13 Mar 2023 12:33:00 +0300
+        with ESMTP id S230449AbjCMJgt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 05:36:49 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FD4D56524;
+        Mon, 13 Mar 2023 02:34:55 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id e15-20020a17090ac20f00b0023d1b009f52so946244pjt.2;
+        Mon, 13 Mar 2023 02:34:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678700089;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ZXdchWGvpYYUnRnDN5ksYkh2pmYAg17MIrwTAg/AU7w=;
+        b=D+kS+Em66tsW1DnCr1bjb3GHPLYA9muY+RQn7gWEjW7Wcrdhk0A0/jTF80jfUdBxW4
+         bwlobc/p3gpheh1Gn6MJuuG++V47qlCbxDbmb3CYrs+fQ0CoWUjf/6JDHx1qm/FTaKDU
+         AZv2cyxCCJVaOoLzcpQLcZ/e6RSvnPxq6fCz6zRm2tO6TL1DOZG+7KT51C8n1GN3S2kl
+         abvWrv2N+CrFhWxcbekq6cAjSKR8vXX6T/5Z7DVdsziEDmUjBbPxSl0Y4hGQyB+ZI7bU
+         Ij8Z9gQe0z5tL0ElFZTc7smxQXAMA09uEp4oVgStYnWinlc0LE0f0mkADohXsglMl6tw
+         IPiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678700089;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ZXdchWGvpYYUnRnDN5ksYkh2pmYAg17MIrwTAg/AU7w=;
+        b=Fjrhz28XNq9s5r9e0zi6N0B8newwSwu8qE1BvuIVhRL1qia5n0cbsowx3Hgo8VIy2T
+         AA2oB0AZxeJJmltYIBiCdT03G0BEhMz2nxCm3wlbC2Z3ZMVNgPww+tnhAMoh8pB/ADzZ
+         KWSfxj8O+0bZzR2xU3wNMjcZymFt1Dte1t55ndH8JsPxlGQaRVViERudmeK9z2vkEdDU
+         99wTOLqlqkex/ni21GHImYX35f+T7VXUmU5AxVIYGb7dvGmmqih3rcYScaK+cCN7T9M9
+         5Bf2lotiKnE0CIWkIr34EeHDAOEEa49hTc4hIVVJf74d10kv8YD+/Pxyg84WnD1nQfkB
+         sMNw==
+X-Gm-Message-State: AO0yUKWK0cw8QC999p+K6PQw/dL/aWMmwWxrSQqMpTfx6XIzgsZwXVuI
+        tZoF3xGT/1C3cbUe3SFWuJ+8Bszne60E78THl5k=
+X-Google-Smtp-Source: AK7set/gfywg6ehGXdfiz6oa3IZ3JzD0sx/FyV+qZYGZy3UjOHsFfYQAeqyulBFbvq/EvkE/ZxK0u8hC+qORX2ZBCRk=
+X-Received: by 2002:a17:903:2890:b0:19f:2554:2886 with SMTP id
+ ku16-20020a170903289000b0019f25542886mr2432770plb.0.1678700089583; Mon, 13
+ Mar 2023 02:34:49 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v9 08/12] landlock: Add network rules and TCP hooks
- support
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
-        <artem.kuzin@huawei.com>
-References: <20230116085818.165539-1-konstantin.meskhidze@huawei.com>
- <20230116085818.165539-9-konstantin.meskhidze@huawei.com>
- <5198f456-91f5-5c65-76c2-45b82ccb05eb@digikod.net>
-From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-In-Reply-To: <5198f456-91f5-5c65-76c2-45b82ccb05eb@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.123.123.126]
-X-ClientProxiedBy: lhrpeml100005.china.huawei.com (7.191.160.25) To
- lhrpeml500004.china.huawei.com (7.191.163.9)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20230311180630.4011201-1-zyytlz.wz@163.com> <57f6d87e-8bfb-40fc-7724-89676c2e75ef@huawei.com>
+ <CAJedcCy8QOCv3SC-Li2JkaFEQydTDd1aiY77BHn7ht0Y8r1nUA@mail.gmail.com> <43a4a617-2633-a501-6fd1-b2495aed90f7@huawei.com>
+In-Reply-To: <43a4a617-2633-a501-6fd1-b2495aed90f7@huawei.com>
+From:   Zheng Hacker <hackerzheng666@gmail.com>
+Date:   Mon, 13 Mar 2023 17:34:36 +0800
+Message-ID: <CAJedcCwK_WtyDTTpLV0Cp0KLRSaVjCw_LUS6LKUbyYpia96wWw@mail.gmail.com>
+Subject: Re: [PATCH net v3] net: ravb: Fix possible UAF bug in ravb_remove
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     Zheng Wang <zyytlz.wz@163.com>, s.shtylyov@omp.ru,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, 1395428693sheep@gmail.com,
+        alex000young@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Yunsheng Lin <linyunsheng@huawei.com> =E4=BA=8E2023=E5=B9=B43=E6=9C=8813=E6=
+=97=A5=E5=91=A8=E4=B8=80 11:32=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On 2023/3/13 11:02, Zheng Hacker wrote:
+> > Yunsheng Lin <linyunsheng@huawei.com> =E4=BA=8E2023=E5=B9=B43=E6=9C=881=
+3=E6=97=A5=E5=91=A8=E4=B8=80 09:15=E5=86=99=E9=81=93=EF=BC=9A
+> >>
+> >> On 2023/3/12 2:06, Zheng Wang wrote:
+> >>> In ravb_probe, priv->work was bound with ravb_tx_timeout_work.
+> >>> If timeout occurs, it will start the work. And if we call
+> >>> ravb_remove without finishing the work, there may be a
+> >>> use-after-free bug on ndev.
+> >>>
+> >>> Fix it by finishing the job before cleanup in ravb_remove.
+> >>>
+> >>> Fixes: c156633f1353 ("Renesas Ethernet AVB driver proper")
+> >>> Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
+> >>> Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+> >>> ---
+> >>> v3:
+> >>> - fix typo in commit message
+> >>> v2:
+> >>> - stop dev_watchdog so that handle no more timeout work suggested by =
+Yunsheng Lin,
+> >>> add an empty line to make code clear suggested by Sergey Shtylyov
+> >>> ---
+> >>>  drivers/net/ethernet/renesas/ravb_main.c | 4 ++++
+> >>>  1 file changed, 4 insertions(+)
+> >>>
+> >>> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/e=
+thernet/renesas/ravb_main.c
+> >>> index 0f54849a3823..eb63ea788e19 100644
+> >>> --- a/drivers/net/ethernet/renesas/ravb_main.c
+> >>> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+> >>> @@ -2892,6 +2892,10 @@ static int ravb_remove(struct platform_device =
+*pdev)
+> >>>       struct ravb_private *priv =3D netdev_priv(ndev);
+> >>>       const struct ravb_hw_info *info =3D priv->info;
+> >>>
+> >>> +     netif_carrier_off(ndev);
+> >>> +     netif_tx_disable(ndev);
+> >>> +     cancel_work_sync(&priv->work);
+> >>
+> >> LGTM.
+> >> Reviewed-by: Yunsheng Lin <linyunsheng@huawei.com>
+> >>
+> >> As noted by Sergey, ravb_remove() and ravb_close() may
+> >> share the same handling, but may require some refactoring
+> >> in order to do that. So for a fix, it seems the easiest
+> >> way to just add the handling here.
+> >
+> > Dear Yunsheng,
+> >
+> > I think Sergey is right for I've seen other drivers' same handling
+> > logic. Do you think we should try to move the cancel-work-related code
+> > from ravb_remove to ravb_close funtion?
+> > Appreciate for your precise advice.
+>
+> As Sergey question "can ravb_remove() be called without ravb_close()
+> having been called on the bound devices?"
+> If I understand it correctly, I think ravb_remove() can be called
+> without ravb_close() having been called on the bound devices. I am
+> happy to be corrected if I am wrong.
+>
 
+Hi Yunsheng,
 
-2/10/2023 8:39 PM, Mickaël Salaün пишет:
-> 
-> On 16/01/2023 09:58, Konstantin Meskhidze wrote:
->> This commit adds network rules support in the ruleset management
->> helpers and the landlock_create_ruleset syscall.
->> Refactor user space API to support network actions. Add new network
->> access flags, network rule and network attributes. Increment Landlock
->> ABI version. Expand access_masks_t to u32 to be sure network access
->> rights can be stored. Implement socket_bind() and socket_connect()
->> LSM hooks, which enable to restrict TCP socket binding and connection
->> to specific ports.
->> 
->> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
->> ---
->> 
->> Changes since v8:
->> * Squashes commits.
->> * Refactors commit message.
->> * Changes UAPI port field to __be16.
->> * Changes logic of bind/connect hooks with AF_UNSPEC families.
->> * Adds address length checking.
->> * Minor fixes.
->> 
->> Changes since v7:
->> * Squashes commits.
->> * Increments ABI version to 4.
->> * Refactors commit message.
->> * Minor fixes.
->> 
->> Changes since v6:
->> * Renames landlock_set_net_access_mask() to landlock_add_net_access_mask()
->>    because it OR values.
->> * Makes landlock_add_net_access_mask() more resilient incorrect values.
->> * Refactors landlock_get_net_access_mask().
->> * Renames LANDLOCK_MASK_SHIFT_NET to LANDLOCK_SHIFT_ACCESS_NET and use
->>    LANDLOCK_NUM_ACCESS_FS as value.
->> * Updates access_masks_t to u32 to support network access actions.
->> * Refactors landlock internal functions to support network actions with
->>    landlock_key/key_type/id types.
->> 
->> Changes since v5:
->> * Gets rid of partial revert from landlock_add_rule
->> syscall.
->> * Formats code with clang-format-14.
->> 
->> Changes since v4:
->> * Refactors landlock_create_ruleset() - splits ruleset and
->> masks checks.
->> * Refactors landlock_create_ruleset() and landlock mask
->> setters/getters to support two rule types.
->> * Refactors landlock_add_rule syscall add_rule_path_beneath
->> function by factoring out get_ruleset_from_fd() and
->> landlock_put_ruleset().
->> 
->> Changes since v3:
->> * Splits commit.
->> * Adds network rule support for internal landlock functions.
->> * Adds set_mask and get_mask for network.
->> * Adds rb_root root_net_port.
-> 
-> [...]
-> 
->> +static int check_socket_access(const struct landlock_ruleset *const domain,
->> +			       struct sockaddr *address, __be16 port,
->> +			       access_mask_t access_request)
->> +{
->> +	bool allowed = false;
->> +	layer_mask_t layer_masks[LANDLOCK_NUM_ACCESS_NET] = {};
->> +	const struct landlock_rule *rule;
->> +	access_mask_t handled_access;
->> +	const struct landlock_id id = {
->> +		.key.data = port,
->> +		.type = LANDLOCK_KEY_NET_PORT,
->> +	};
->> +
->> +	if (WARN_ON_ONCE(!domain))
->> +		return 0;
->> +	if (WARN_ON_ONCE(domain->num_layers < 1))
->> +		return -EACCES;
->> +
->> +	switch (address->sa_family) {
->> +	case AF_UNSPEC:
->> +		/*
->> +		 * Connecting to an address with AF_UNSPEC dissolves the TCP
->> +		 * association, which have the same effect as closing the
->> +		 * connection while retaining the socket object (i.e., the file
->> +		 * descriptor).  As for dropping privileges, closing
->> +		 * connections is always allowed.
->> +		 */
->> +		if (access_request == LANDLOCK_ACCESS_NET_CONNECT_TCP)
->> +			return 0;
->> +
->> +		/*
->> +		 * For compatibility reason, accept AF_UNSPEC for bind
->> +		 * accesses (mapped to AF_INET) only if the address is
->> +		 * INADDR_ANY (cf. __inet_bind).  Checking the address is
->> +		 * required to not wrongfully return -EACCES instead of
->> +		 * -EAFNOSUPPORT.
->> +		 */
->> +		if (access_request == LANDLOCK_ACCESS_NET_BIND_TCP) {
->> +			const struct sockaddr_in *const sockaddr =
->> +				(struct sockaddr_in *)address;
->> +
->> +			if (sockaddr->sin_addr.s_addr != htonl(INADDR_ANY))
->> +				return -EAFNOSUPPORT;
->> +		}
->> +
->> +		fallthrough;
->> +	case AF_INET:
->> +#if IS_ENABLED(CONFIG_IPV6)
->> +	case AF_INET6:
->> +#endif
->> +		rule = landlock_find_rule(domain, id);
->> +		handled_access = landlock_init_layer_masks(
->> +			domain, access_request, &layer_masks,
->> +			LANDLOCK_KEY_NET_PORT);
->> +		allowed = landlock_unmask_layers(rule, handled_access,
->> +						 &layer_masks,
->> +						 ARRAY_SIZE(layer_masks));
->> +
->> +		fallthrough;
-> 
-> You can remove this fallthrough.
-> 
-> 
->> +	}
->> +	return allowed ? 0 : -EACCES;
->> +}
->> +
->> +static u16 get_port(const struct sockaddr *const address)
->> +{
->> +	/* Gets port value in host byte order. */
->> +	switch (address->sa_family) {
->> +	case AF_UNSPEC:
->> +	case AF_INET: {
->> +		const struct sockaddr_in *const sockaddr =
->> +			(struct sockaddr_in *)address;
->> +		return sockaddr->sin_port;
->> +	}
->> +#if IS_ENABLED(CONFIG_IPV6)
->> +	case AF_INET6: {
->> +		const struct sockaddr_in6 *const sockaddr_ip6 =
->> +			(struct sockaddr_in6 *)address;
->> +		return sockaddr_ip6->sin6_port;
->> +	}
->> +#endif
->> +	}
->> +	WARN_ON_ONCE(1);
->> +	return 0;
->> +}
->> +
->> +static int hook_socket_bind(struct socket *sock, struct sockaddr *address,
->> +			    int addrlen)
->> +{
->> +	int ret;
->> +	const struct landlock_ruleset *const dom =
->> +		landlock_get_current_domain();
-> 
-> landlock_get_current_domain() should only be called by a
-> get_current_net_domain() wrapper that checks if the current domain
-> handles network accesses. See get_current_fs_domain() in patch 2/12.
+I'm still not sure. I'll look at code more carefully and see if there
+is more proof about it.
+And as I'm not familiar with the related code, let's see how Sergey thnks.
 
-   Hi Mickaël.
-   I have question:
+> Yes, you can call *_close() directly in *_remove(), but that may
+> require some refactoring and a lot of testing.
 
-   static access_mask_t
-get_raw_handled_fs_accesses(const struct landlock_ruleset *const domain)
-{
-	access_mask_t access_dom = 0;
-	size_t layer_level;
+>
+> Also, if you found the bug through some static analysis, it may
+> be better to make it clear in the commit log and share some info
+> about the static analysis, which I suppose it is a tool?
 
-	for (layer_level = 0; layer_level < domain->num_layers; layer_level++)
-		access_dom |=
-			landlock_get_raw_fs_access_mask(domain, layer_level);
-	return access_dom & LANDLOCK_MASK_ACCESS_FS;
-}
+Yes, I'll append this msg to commit msg later.
 
-landlock_get_raw_fs_access_mask() function is already mask by 
-LANDLOCK_MASK_ACCESS_FS. We could get rid of access_dom masking.
-What do you think?
+> >
+> >>
+> >>> +
+> >>>       /* Stop PTP Clock driver */
+> >>>       if (info->ccc_gac)
+> >>>               ravb_ptp_stop(ndev);
+> >>>
+> > .
+> >
 
-> 
-> 
->> +
->> +	if (!dom)
->> +		return 0;
->> +
->> +	/* Check if it's a TCP socket. */
->> +	if (sock->type != SOCK_STREAM)
->> +		return 0;
->> +
->> +	ret = check_addrlen(address, addrlen);
->> +	if (ret)
->> +		return ret;
->> +
->> +	return check_socket_access(dom, address, get_port(address),
->> +				   LANDLOCK_ACCESS_NET_BIND_TCP);
->> +}
-> .
+Best regards,
+Zheng
