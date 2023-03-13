@@ -2,193 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D57016B7B64
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 16:02:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 063E76B7B6B
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 16:03:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229977AbjCMPCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 11:02:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47236 "EHLO
+        id S231656AbjCMPDX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 11:03:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231645AbjCMPCF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 11:02:05 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A0BE5982F;
-        Mon, 13 Mar 2023 08:01:39 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id cy23so49816093edb.12;
-        Mon, 13 Mar 2023 08:01:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678719698;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=opk2j4mTiChxadvVvJSsh0ztBAk6zLEmYsL/2LoqTrE=;
-        b=LQ/3bfI5AFdhqbQE8Ce851NO9smEguJCxeK+QenfI/YTuanFD+0Uq1WT1xRobEqfPO
-         RlSIo0m2kGsIBwzqK/7CZQte0Ez2CEwSmyj6PYhhGtqUVvcdCGIQ6s5KAdXP/a1rKPlW
-         f4HB3sZBPwJihtgwLTbrNGnX5b2bOw67cDED4FF3ZZ+N54lN7lA528kvdBZ6fVuo7c2D
-         ktbBFHytmeu02Z4zEgy5YA4RDu5dhQZB9ZnAeazQhS95a7tWH7/k3LMcZAsQq7n7zzAp
-         miQnf7FOgYc0PspQiiB0d5AkDxqVj65c1TNOSOrojAZ8sLD3TZfI+NrE+wjKWMQvrKVS
-         cJVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678719698;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=opk2j4mTiChxadvVvJSsh0ztBAk6zLEmYsL/2LoqTrE=;
-        b=7V1pfd9sMRr+S2tfwq4UUJK/G3arVbzVnnA+qkhdIdOX8FeXcTaoI1PL6fx0yzOdKG
-         nxl4UfTVctknkVJdIRNNiyeWwT/EA7zvU8bu+JhKieVVarHvSUt0XvnqKBYQ0upEksOy
-         lF+/6MzkrvhKtWNzj4MNvnvxsimemSJAlOOjAZrLXjyQ8j/+pAO7bNquf6hNnjacL8X3
-         S7FgWFpUramZjnhUiCxhM1KXZ3A6owEKzgYmVpRg3S120uV+yq38MqGIlAtEFhdySKnc
-         74lPOXQmMBfAt4LhRyWFmkOj3v8XIHlsSSbi+b7umbJ+TJeJ3ChqRCJvKD+Y0/WiPrAz
-         XHYg==
-X-Gm-Message-State: AO0yUKV4ozawEEohRHPslrdCWrpgT8CxuQipJzIi5xgKQeEtaETI5ses
-        6U3b76VqpdkGh/r03Z29b8U=
-X-Google-Smtp-Source: AK7set/o+ql8sCTwAkdpoUmDp4HM6QSBxKAM4wbd/fHpxjLYvrbnMwhfWHUMAHzJc5G97sFqGdGNYw==
-X-Received: by 2002:a17:906:c9c2:b0:8a0:7158:15dc with SMTP id hk2-20020a170906c9c200b008a0715815dcmr32058065ejb.74.1678719697636;
-        Mon, 13 Mar 2023 08:01:37 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id q21-20020a170906389500b008b907006d5dsm3557136ejd.173.2023.03.13.08.01.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Mar 2023 08:01:37 -0700 (PDT)
-Date:   Mon, 13 Mar 2023 17:01:35 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Lukasz Majewski <lukma@denx.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Russell King <linux@armlinux.org.uk>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        with ESMTP id S231596AbjCMPDN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 11:03:13 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D321115C
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 08:02:41 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=K9ZJlM7pLCAKWboAUjVJ8bW59hCiTmJyd+qePe0UkXXJ2XFNa1qMNgHkmNKRi8vRm4hoWrWNQfPJY5yjnXoYnolv1f3UaFH2xte3YY+dVge4041mB19+osd91z1Z+WZI1upOrC1LGbrqHyF1ngN6tSH5WmNwebEj2CyluaFo7aX72/cGELrGfOfF595wuB05ycOo/KYNs2hpMwvZaP30KPkrGGqrxRBhR4KStsiax7U6rTxhidUa8M1w7ClJW26eOaowQf4qU0WrjXHD37i6oYSeDEuaId3Oj2EWvTfFlQAaWOw1/xA9as8rLpdSQgUoMqV8wW9O6+/3oi/kUaMmBQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MDVjL8r8/PVXGeAxLJc8oDxKNtzEd01y+07wVbk2FKY=;
+ b=HOxRFVn2nxOEAyCAB3JxzdlyofkpC4gogIUbrPLO48R9+Fr1DsaKbSmPT3Qs/IcQBApRO1PRjiXl0UCTJ6wB3PKgah0zEV1w4nfhX0x5MtHCOYmOyZmM5GdFusUHdCAvwTCC6rT7YEVC5FD7HaTqKZx8SBrtm1crc+lCo9mAo9GA5M84XNilU/6mzZeqvMlb79TTRaSLUNIsmQmiQ8b8/1Rif5BUdUYsbV9mKY6iQ/25pKdLMhVybvfBIdAQyvbUn5J3dioJCvaMqYcThMFi5IclvZRk3DLwsuwIC2bW+LtxwdehK2oFTeNsrNKIDp1GgwifdAxF3ocdD2tmmQ84tQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MDVjL8r8/PVXGeAxLJc8oDxKNtzEd01y+07wVbk2FKY=;
+ b=FzyXaH8KO1i4JX/A2liWYtbW+L6c2sRKtlyTjZOKXs3/SmqZD7FnYOFKaS/n0MHJBbKHWo7KIAWPwEO3TBZfvUJjveQYpPeWRtyL2/ikMRF2O38fs0tJvgCGJmxA7Jn52B/1DsLM4Ftdazib01TdvUAN7zvK1Chw44D90lOuYmVjyHq2xU6zM5xbzBAKDq0ZjBdknT/n4W8e8nW/PaN7deiskBv+rDb+8ezoZ496gps7Fxa1K8RbmxLxbuo45BMrAAqVf/w9sf01Vi4bToiBfQPbS5t2GILJcgTaigD9k8ohJMY3RI3Nn/OZ14KWtwtz1uT7dRgkILXpGjCwrGpb/w==
+Received: from MW4PR03CA0294.namprd03.prod.outlook.com (2603:10b6:303:b5::29)
+ by SJ2PR12MB7847.namprd12.prod.outlook.com (2603:10b6:a03:4d2::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.22; Mon, 13 Mar
+ 2023 15:02:28 +0000
+Received: from CO1NAM11FT022.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b5:cafe::9d) by MW4PR03CA0294.outlook.office365.com
+ (2603:10b6:303:b5::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.25 via Frontend
+ Transport; Mon, 13 Mar 2023 15:02:28 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CO1NAM11FT022.mail.protection.outlook.com (10.13.175.199) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6178.24 via Frontend Transport; Mon, 13 Mar 2023 15:02:28 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Mon, 13 Mar 2023
+ 08:02:05 -0700
+Received: from yaviefel (10.126.231.37) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Mon, 13 Mar
+ 2023 08:02:02 -0700
+References: <cover.1678448186.git.petrm@nvidia.com>
+ <20230310171257.0127e74c@kernel.org>
+User-agent: mu4e 1.6.6; emacs 28.1
+From:   Petr Machata <petrm@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Petr Machata <petrm@nvidia.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/7] dsa: marvell: Provide per device information about
- max frame size
-Message-ID: <20230313150135.not6e3x2j4624tpg@skbuf>
-References: <20230309125421.3900962-1-lukma@denx.de>
- <20230309125421.3900962-2-lukma@denx.de>
- <20230310120235.2cjxauvqxyei45li@skbuf>
- <20230310141719.7f691b45@wsk>
- <20230310154511.yqf3ykknnwe22b77@skbuf>
- <20230312165550.6349a400@wsk>
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Ido Schimmel <idosch@nvidia.com>, <mlxsw@nvidia.com>
+Subject: Re: [PATCH net-next 0/5] net: Extend address label support
+Date:   Mon, 13 Mar 2023 14:26:56 +0100
+In-Reply-To: <20230310171257.0127e74c@kernel.org>
+Message-ID: <87sfe8sniw.fsf@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230312165550.6349a400@wsk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.126.231.37]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT022:EE_|SJ2PR12MB7847:EE_
+X-MS-Office365-Filtering-Correlation-Id: 594af7e5-a959-45d2-c587-08db23d3f6c7
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: xz6GGgjv7IoI36N5w1snmJjNDrzZNfAPpmPUhp6m5p2RN+LWSNdiZy3n1IUY5yO4rumH97EJBSGFWvBH2Gl28MKmF878N1hz/iCBnCblqq3zeZHa5z+8o2c5/tTMBn3BBnDmbdPRS796G7Kzvj9OgNldULqFKgpxKZTQa/knIDBmYLpoMsn5qyJzjkw75iWeyrNvw7emM0rr1OJ0JCtEDlcL04M9duYTGDgvQhSvj4VbXiLqJs5E0iO/BKnQPHKmN7ChnPivC5pz31SzzH4nIFu0ys5KCm3DDoIFgytqrtxvw/9ujvMJ6HirlZDRZtYlRsZNDKLMQJFvVI51fo3ic1T/paMmJ9jB0k/JyBNdngtm4Ryxj+vJK0u4rxXsoXkaTgNuNlZsdrzkNNrOHFv9sMcRQNFGgrcb1ZHQPR2qL61FaNRXjXMEJcinz6b4pbrepDvqbGAKoh1zTLRXF0cQZQ8i5XvTjlRYcHIqDLUBrh76xLp7GGd0AnrndRxFlGkBn6JsADzPrkuGJxaZ326xdxP9MCercQu8lyLnEoFUXhv3NR1NeXZk5+PyRFDSSn+6EAvywKRsHhsD597GglpLE2s0Tvs48rSzNWh6f0sBO2Yk1OuTyhaLR9GyxM0tnNa7sHUgeUYrFJ+xr5cJ5zeOvkK99U43HobqmI/Ukqi1PkKudA4trJ2KamuLTh6KegEAWPmpKJnZCEHDxdl4QMMEGVom5jCInpcEaexuLT3Ov3xJF2J0FEmUBPfalG/21/o3
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(346002)(376002)(39860400002)(396003)(136003)(451199018)(36840700001)(46966006)(40470700004)(478600001)(356005)(4326008)(70586007)(6916009)(8676002)(16526019)(70206006)(82740400003)(7636003)(54906003)(5660300002)(36860700001)(316002)(40460700003)(8936002)(2616005)(186003)(26005)(82310400005)(41300700001)(83380400001)(426003)(336012)(40480700001)(86362001)(36756003)(47076005)(2906002)(107886003)(6666004);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Mar 2023 15:02:28.7009
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 594af7e5-a959-45d2-c587-08db23d3f6c7
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT022.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB7847
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 12, 2023 at 04:55:50PM +0100, Lukasz Majewski wrote:
-> > What I was talking about is this:
-> > https://patchwork.kernel.org/project/netdevbpf/patch/20230309125421.3900962-2-lukma@denx.de/#25245979
-> > and Russell now seems to agree with me that it should be addressed
-> > separately,
-> 
-> Ok.
-> 
-> > and prior to the extra development work done here.
-> 
-> Why? Up till mine patch set was introduced the problem was unnoticed.
-> Could this be fixed after it is applied?
 
-I have already explained why, here:
+Jakub Kicinski <kuba@kernel.org> writes:
 
-| in principle no one has to solve it. It would be good to not move
-| around broken code if we know it's broken, is what I'm saying. This is
-| because eventually, someone who *is* affected *will* want to fix it, and
-| that fix will conflict with the refactoring.
+> On Fri, 10 Mar 2023 12:44:53 +0100 Petr Machata wrote:
+>> IPv4 addresses can be tagged with label strings. Unlike IPv6 addrlabels,
+>> which are used for prioritization of IPv6 addresses, these "ip address
+>> labels" are simply tags that the userspace can assign to IP addresses
+>> arbitrarily.
+>> 
+>> IPv4 has had support for these tags since before Linux was tracked in GIT.
+>> However it has never been possible to change the label after it is once
+>> defined. This limits usefulness of this feature. A userspace that wants to
+>> change a label might drop and recreate the address, but that disrupts
+>> routing and is just impractical.
+>> 
+>> IPv6 addresses lack support for address labels (in the sense of address
+>> tags) altogether.
+>> 
+>> In this patchset, extend IPv4 to allow changing the label defined at an
+>> address (in patch #1). Then, in patches #2 and #3, extend IPv6 with a suite
+>> of address label operations fully analogous with those defined for IPv4.
+>> Then in patches #4 and #5 add selftest coverage for the feature.
+>
+> Feels a bit like we're missing motivation for this change.
+> I thought address labels were legacy cruft.
 
-Translated/rephrased.
+The immutability and lack of IPv6 support is seriously limiting, so the
+fact nobody is using this is not that surprising.
 
-The 1492 max_mtu issue for MV88E6165, MV88E6191, MV88E6220, MV88E6250
-and MV88E6290 was introduced, according to my code analysis, by commit
-b9c587fed61c ("dsa: mv88e6xxx: Include tagger overhead when setting MTU
-for DSA and CPU ports").
+> Also the usual concern about allowing to change things is that some
+> user space will assume it's immutable. The label could until this 
+> set be used as part of a stable key, right?
 
-That patch, having a Fixes: tag of 1baf0fac10fb ("net: dsa: mv88e6xxx:
-Use chip-wide max frame size for MTU"), was backported to all stable
-kernel trees which included commit 1baf0fac10fb.
+Maybe. But to change a label, you need to be an admin, so yeah, you can
+screw things up if you want to. You could e.g. delete the address
+outright. In the end it should be on me as an admin to run a stack that
+is not stumbling over itself.
 
-Running "git tag --contains 1baf0fac10fb", I see that it was first
-included in kernel tag v5.9. I deduce that commit b9c587fed61c ("dsa:
-mv88e6xxx: Include tagger overhead when setting MTU for DSA and CPU
-ports") was also backported to all stable branches more recent than the
-v5.9 tag.
+As for the motivation: the use case we are eying in particular is
+advertisement of MLAG anycast addresses. One label would be used to mark
+anycast addresses if they shouldn't be advertised by the routing stack
+yet, a different label for those that can be advertised. Which labels
+mean what would be a protocol between the two daemons involved.
 
-Consulting https://www.kernel.org/ and https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/,
-I can see that the branches linux-6.2.y, linux-6.1.y, linux-5.15.y and
-linux-5.10.y are still maintained by the linux-stable repository, and
-contain commit b9c587fed61c (either directly or through backports).
-
-As hinted at by Documentation/process/maintainer-netdev.rst but perhaps
-insufficiently clarified, bug fixes to code maintained by netdev go to
-the "main" branch of https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git,
-a git tree which tracks the main branch of Linus Torvalds (which today
-is in the v6.3 release candidates). From there, patches are
-automatically backported by the linux-stable maintainers.
-
-The problem with you making changes to code which was pointed out as
-incorrect is that these changes will land in net-next.git, in kernel
-v6.4 at the earliest.
-
-Assuming somebody else will fix the 1492 MTU issue, there are 2 distinct
-moments when that can occur, relative to when the net-next pull request
-is sent to Linus Torvalds' main branch:
-
-1. before the net-next pull request. In that case, one of the netdev
-   maintainers will have to manually resolve the conflict between one of
-   net.git or Linus Torvalds' git tree.
-
-2. after the net-next pull request was accepted. What will happen is
-   that net.git will merge with Linus Torvalds' changes, and it will no
-   longer contain the same code as on branches 6.2, 6.1, 5.15 and 5.10,
-   but rather, the code with your changes. But it is always net.git that
-   someone has to develop against when submitting the 1492 MTU change.
-   That fix cannot apply any further than the net-next pull request,
-   which is the v6.4-rc1 tag at the earliest.
-
-   So, for the bug fix for 1492 MTU to reach the stable branches which
-   are still maintained by then, 2 strategies will be taken into
-   consideration:
-
-   - the conflicting changes (yours) are also backported along with the
-     real bug fix. This is because linux-stable has a preference to not
-     diverge from the code in the main branch, and would rather backport
-     more than less, to achieve that. But your patch set is quite noisy.
-     It touches the entire mv88e6xxx_table[] of switches. It is hard to
-     predict how well this chain of dependencies will get backported all
-     the way down to linux-5.10.y. If any switch family was added to
-     this table since v5.10, then the backporting of your changes would
-     also conflict with that addition.
-
-   - if the linux-stable team gives up with the backporting, an email
-     will be sent letting the people know, and a manually created series
-     of backports can be submitted for direct inclusion into the stable
-     trees.
-
-As you can see, the complexity of fixing code in stable that has been
-changed in mainline is quite a bit higher than fixing it before changing it.
-Also, the result is not as clean, if you add third-party backports into
-the equation. For example, someone takes a linux-6.1.y stable kernel
-from the future (with the 1492 MTU issue solved) and wants to backport
-v6.4 material, which includes your changes. It will conflict, because
-there is no linear history. The only way to achieve linear history is to
-fix the buggy code before changing it.
-
-To your point that it's not you who chose the 1492 MTU bug but rather
-that it chose you, I'm not trying to minimize that, except that I need
-to point out that things like this are to be expected when you are
-working on a project where you aren't the only contributor.
-
-Since we are already so deep in process-related explanations, I don't
-know how aware you are of what fixing the 1492 MTU bug entails.
-One would have to prepare a patch that limits the max_mtu to ETH_DATA_LEN
-for the switch families where MTU changing is not possible. Once that
-gets reviewed and accepted, one would need to wait for no longer than
-the next Thursday (when the net.git pull request is sent, and net.git is
-merged back into net-next.git, for history linearization), then work on
-net-next.git can resume.
+Other userspace stacks might use this to their own ends to annotate sets
+of addresses according to their needs. Like they can today, if the sets
+only involve IPv4 addresses that never migrate from set to set :)
