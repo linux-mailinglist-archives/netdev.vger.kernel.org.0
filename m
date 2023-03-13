@@ -2,70 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 504406B8058
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 19:25:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A57C6B8075
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 19:27:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230115AbjCMSZQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 14:25:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50568 "EHLO
+        id S230025AbjCMS1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 14:27:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229749AbjCMSZL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 14:25:11 -0400
-Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D607260ABB
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 11:24:52 -0700 (PDT)
-Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-176d1a112bfso14706744fac.5
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 11:24:52 -0700 (PDT)
+        with ESMTP id S230380AbjCMS0k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 14:26:40 -0400
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A015383154
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 11:25:41 -0700 (PDT)
+Received: by mail-oi1-x234.google.com with SMTP id c11so10119801oiw.2
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 11:25:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112; t=1678731892;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112; t=1678731940;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=NvskvxnEgt1jVZHQCOShUEBE6+EoupeUdjLizfOxNyU=;
-        b=m3m7hbLwBmSjoGNJ+WzW/dK61vU3qrLVbxQEaA8X5YTGu3GDRhymAzFTIn2ObJ0SOu
-         m5XUpu8OcJbugKNqJukCqB0tIdPUA62m9S/CykzKiyDwGuM9RLbyDb9R2+ZPKPee2u/J
-         4Bw1UJN7/pTRvF1TKG6lmKhOGIhhJ8XRonG34vL0wXOmRlm4vp0eej6zzZu1a2Zi8ES7
-         N8C8/wGE7qRzmlxMgb7rxwFuopCLX/lyF4o+/TVuLqhNS3NSuCmPPgE+0wmgfH1gEwQG
-         jwyvT9OSrqopDpJUYXGMqCnj7qvNVKn1pqzhaXvQlvipJr9WWWdY+er+YoDq6nqeqNyw
-         ETyg==
+        bh=qt8GzsWVwQf48KJF/w2M1cY91OaUYyKxO7BVQ0dcWE4=;
+        b=Wrc3QnEtJot/S114qt2x0Z1AugqZH50+MrSOmYONv2Oxr/LBrw8NYVj3mZyYAytbZK
+         7m2rujiMn5Mp1/CLMqzJdKea13wUorU64ONoOMldAMCz9VCpa2QMwpN1gp04vCAgFRFR
+         e7MgumlzaMm33VjdlYCU/EprubOYonDQiiBcuXRcZ8ryeEmAxba7uzp6wm5ExYXWKTsT
+         1lb9KiqbLAZ4QYKYrw2bI3nZLMgkS5MnB0ansRAn9WHWSD4KkKwQX/+wjrgr3VFjd0Os
+         oSKjeqcGS2SRH+B/lJDz69/J8yimKdJhih3BKykHb3M2gAAOYG+Z7tk0ZtUAoVccjrba
+         yvFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678731892;
+        d=1e100.net; s=20210112; t=1678731940;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=NvskvxnEgt1jVZHQCOShUEBE6+EoupeUdjLizfOxNyU=;
-        b=1D8kJkoK4XkTcIGOBsJgnwfE3S/eWHapdEurh5pakvEp0ggFEkgg+Jv1QGcnsCsoBx
-         fCTx6PBfSZ3wJCxbnOownOy5R4WeOV0YeVkeZNniGH2ror19fcF8hVTt82eHgFPMWTVT
-         VheJN61AIZZM3SKG9YvAPsDuO8e3auSzuUxxVoa6n/l8jL3pgUMYbt+PVGvWct7d8WCM
-         muYDzziQraoBRribjP3pDqoD8EMfdYj8HbErXsbRQ4ttF5tuFY41nyjAvMtgmZtPU8jR
-         JGTgghCER75874fMF5iID/1TwMhzTO1mRsu7Dy6FJ4L12Q0SU8V3SZ7hnXuVKL/2DX2r
-         J5ig==
-X-Gm-Message-State: AO0yUKVo8S+K7C1HNRlHiQ/TAz3PHXno3QCHnv5isUcVVY3ZEYA6U3is
-        N19FoPVEKLrX7V62JIqmxqPrTA==
-X-Google-Smtp-Source: AK7set948xn+TIEumUdjTPjVEQ8hLVLNEDd/bG3rCUtpJyO3mlDug8UYSTbo4SJjrZxlIHEPdlqiNg==
-X-Received: by 2002:a05:6870:f20a:b0:177:9467:6e17 with SMTP id t10-20020a056870f20a00b0017794676e17mr5575052oao.44.1678731892226;
-        Mon, 13 Mar 2023 11:24:52 -0700 (PDT)
+        bh=qt8GzsWVwQf48KJF/w2M1cY91OaUYyKxO7BVQ0dcWE4=;
+        b=ArpAWTQe9n4N6VeT52UuTp2TeAYYZ8XbfyqR0O6PP1Mt3VO+dxqHuihrTiNHIcCxO3
+         DZoYqaDQXWaOBXBnfC1nqn2eo9r/gnGDIqORevNjeXLP6MAGFfE8ky46h25UZc07ejsI
+         ADb5hn6H2kWPnpGTrfaf3uWR6/o1RBeM0TNu1k6N3AUo/Pq9yfa1yiZH+uXE4dp33Tj3
+         ATZ4x4nDh5MYEoGCCraRcs7S1fTEhqZb5yoZZ+oha/OB/k1rwZDoAWVNTfcyWQ3s50j2
+         xIQRUvBNVjRs84j0ajJ8MI8o91KWCSUTZRZ3eTVWqO8cmcoGTG4u5UjCsmsXG9S3ZsKc
+         LCHQ==
+X-Gm-Message-State: AO0yUKWEolUiWyvpNP2QfwRwRofbj5JQHOmo1ktslle2pFv6shvbEyJ5
+        5gTGd8MPNI0gKwjM7I2FPtFGlQ==
+X-Google-Smtp-Source: AK7set9IO45+0J+kpkPi3ethqLJpol5BchcKFrfVEcofUbOjFVLEtB5gQRayJI320yC1OEjACUal7g==
+X-Received: by 2002:a05:6808:8d7:b0:384:3b4e:4adc with SMTP id k23-20020a05680808d700b003843b4e4adcmr15817691oij.43.1678731940362;
+        Mon, 13 Mar 2023 11:25:40 -0700 (PDT)
 Received: from ?IPV6:2804:14d:5c5e:4698:49ae:9f38:271d:6240? ([2804:14d:5c5e:4698:49ae:9f38:271d:6240])
-        by smtp.gmail.com with ESMTPSA id g5-20020a056870a70500b00172721f6cd5sm264467oam.16.2023.03.13.11.24.49
+        by smtp.gmail.com with ESMTPSA id w20-20020a4a2754000000b0051ac0f54447sm165970oow.33.2023.03.13.11.25.37
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Mar 2023 11:24:51 -0700 (PDT)
-Message-ID: <dbdb0bf7-2bc6-4002-d7f2-e561d6120856@mojatatu.com>
-Date:   Mon, 13 Mar 2023 15:24:47 -0300
+        Mon, 13 Mar 2023 11:25:40 -0700 (PDT)
+Message-ID: <8274ae94-a7e5-3a47-3884-2f7d222d4d25@mojatatu.com>
+Date:   Mon, 13 Mar 2023 15:25:36 -0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
-Subject: Re: [PATCH net-next 3/3] net/sched: act_pedit: rate limit datapath
- messages
+Subject: Re: [PATCH net-next 1/3] net/sched: act_pedit: use extack in 'ex'
+ parsing errors
 Content-Language: en-US
 To:     Simon Horman <simon.horman@corigine.com>
 Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
         jiri@resnulli.us, davem@davemloft.net, edumazet@google.com,
         kuba@kernel.org, pabeni@redhat.com
 References: <20230309185158.310994-1-pctammela@mojatatu.com>
- <20230309185158.310994-4-pctammela@mojatatu.com>
- <ZAs83FgjdfizV3Nh@corigine.com>
+ <20230309185158.310994-2-pctammela@mojatatu.com>
+ <ZAs8Wc14R3hE/Z4z@corigine.com>
 From:   Pedro Tammela <pctammela@mojatatu.com>
-In-Reply-To: <ZAs83FgjdfizV3Nh@corigine.com>
+In-Reply-To: <ZAs8Wc14R3hE/Z4z@corigine.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -77,52 +77,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/03/2023 11:21, Simon Horman wrote:
-> On Thu, Mar 09, 2023 at 03:51:58PM -0300, Pedro Tammela wrote:
->> Unbounded info messages in the pedit datapath can flood the printk ring buffer quite easily
->> depending on the action created. As these messages are informational, usually printing
->> some, not all, is enough to bring attention to the real issue.
-> 
-> Would this reasoning also apply to other TC actions?
-
-Hi Simon,
-
-So far, the only action that has datapath pr_info() messages is pedit.
-This seems like it comes from the old days, according to git.
-
-> 
+On 10/03/2023 11:19, Simon Horman wrote:
+> On Thu, Mar 09, 2023 at 03:51:56PM -0300, Pedro Tammela wrote:
+>> We have extack available when parsing 'ex' keys, so pass it to
+>> tcf_pedit_keys_ex_parse and add more detailed error messages.
+>> While at it, remove redundant code from the 'err_out' label code path.
+>>
 >> Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
 >> Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
->> ---
->>   net/sched/act_pedit.c | 17 +++++++----------
->>   1 file changed, 7 insertions(+), 10 deletions(-)
->>
->> diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
->> index e42cbfc369ff..b5a8fc19ee55 100644
->> --- a/net/sched/act_pedit.c
->> +++ b/net/sched/act_pedit.c
->> @@ -388,9 +388,8 @@ TC_INDIRECT_SCOPE int tcf_pedit_act(struct sk_buff *skb,
->>   		}
->>   
->>   		rc = pedit_skb_hdr_offset(skb, htype, &hoffset);
->> -		if (rc) {
->> -			pr_info("tc action pedit bad header type specified (0x%x)\n",
->> -				htype);
->> +		if (unlikely(rc)) {
 > 
-> Do you really need unlikely() here (and no where else?)
-
-This case in particular is already checked in the netlink parsing code 
-on create/update.
-I was gonna delete the condition initially but then thought of hiding it 
-under an unlikely branch.
-As for the other branches, I didn't see much of a reason.
-
+> Some errors in tcf_pedit_keys_ex_parse() result in extact being set.
+> And some don't.
 > 
->> +			pr_info_ratelimited("tc action pedit bad header type specified (0x%x)\n", htype);
->>   			goto bad;
->>   		}
->>   
-> 
-> ...
+> Is that intentional?
 
+Good point, I will add more messages.
