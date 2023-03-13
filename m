@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BDBD56B854C
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 23:53:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A6956B8551
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 23:53:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229709AbjCMWxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 18:53:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58644 "EHLO
+        id S230337AbjCMWxT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 18:53:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230239AbjCMWwx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 18:52:53 -0400
+        with ESMTP id S230028AbjCMWxC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 18:53:02 -0400
 Received: from post.baikalelectronics.com (post.baikalelectronics.com [213.79.110.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AB5FF92272;
-        Mon, 13 Mar 2023 15:52:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4DC321F91E;
+        Mon, 13 Mar 2023 15:52:18 -0700 (PDT)
 Received: from post.baikalelectronics.com (localhost.localdomain [127.0.0.1])
-        by post.baikalelectronics.com (Proxmox) with ESMTP id 6A534E0EB9;
-        Tue, 14 Mar 2023 01:51:17 +0300 (MSK)
+        by post.baikalelectronics.com (Proxmox) with ESMTP id 400C2E0EBA;
+        Tue, 14 Mar 2023 01:51:19 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         baikalelectronics.ru; h=cc:cc:content-transfer-encoding
         :content-type:content-type:date:from:from:in-reply-to:message-id
         :mime-version:references:reply-to:subject:subject:to:to; s=post;
-         bh=t+BAksoLBvMdwjNyusiVd/cmC45uPfYJG0wpU1gUAzE=; b=VwmsGuVUNydU
-        G1jwN8znsKEGQL7LviWXUesb9dR4Mcm2/X5qs2TvvH3QffaRl+yD14Nzmc5OZFwt
-        5bgKDRCopxdaAs2Fs5XZ0ay/GbC/ub03giIsaBK09s4pS1Uk7YGtJoV3QNXvvqE/
-        +tHOJr3agN5ynKCmYHGY22s2mVLpvc8=
+         bh=PASsM/qfytAun14hsPY6sUMJYcEqmLZqm6dqWbnuxRA=; b=TYulQ7oyCxwP
+        l8kO9WtAJOQtyUQbXYI5ug1OyfFfbKc8kdd2sW63nLwgtUQMhLdfXklH3Hkl1u2W
+        fgFpp+5LmNn3Pk8DLmUcG6CknbLkCM64WrO1izL+BuMToAp7kYHPYURWbEjaVi/M
+        TCatUUJUHhwO/Lu+B9F/ebAdo9H2pEQ=
 Received: from mail.baikal.int (mail.baikal.int [192.168.51.25])
-        by post.baikalelectronics.com (Proxmox) with ESMTP id 4DF0EE0E6A;
-        Tue, 14 Mar 2023 01:51:17 +0300 (MSK)
+        by post.baikalelectronics.com (Proxmox) with ESMTP id C1FC6E0E6A;
+        Tue, 14 Mar 2023 01:51:18 +0300 (MSK)
 Received: from localhost (10.8.30.10) by mail (192.168.51.25) with Microsoft
- SMTP Server (TLS) id 15.0.1395.4; Tue, 14 Mar 2023 01:51:16 +0300
+ SMTP Server (TLS) id 15.0.1395.4; Tue, 14 Mar 2023 01:51:18 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
@@ -52,10 +52,10 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Rob Herring <robh@kernel.org>
-Subject: [PATCH net-next 07/16] dt-bindings: net: dwmac: Add Tx/Rx clock sources
-Date:   Tue, 14 Mar 2023 01:50:54 +0300
-Message-ID: <20230313225103.30512-8-Sergey.Semin@baikalelectronics.ru>
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next 08/16] dt-bindings: net: dwmac: Drop prop names from snps,axi-config description
+Date:   Tue, 14 Mar 2023 01:50:55 +0300
+Message-ID: <20230313225103.30512-9-Sergey.Semin@baikalelectronics.ru>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230313225103.30512-1-Sergey.Semin@baikalelectronics.ru>
 References: <20230313225103.30512-1-Sergey.Semin@baikalelectronics.ru>
@@ -73,49 +73,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Generic DW *MAC can be connected to an external Transmit and Receive clock
-generators. Add the corresponding clocks description and clock-names to
-the generic bindings schema so new DW *MAC-based bindings wouldn't declare
-its own names of the same clocks.
+The property is supposed to contain a phandle reference to the DT-node
+with the AXI-bus parameters. Such DT-node is described in the same
+DT-bindings schema by means of the sub-node with the name
+"stmmac-axi-config". Similarly to MTL Tx/Rx config phandle properties
+let's drop the target DT-node properties list from the "snps,axi-config"
+property description since having that duplicate is not only pointless,
+but also worsens the bindings maintainability by causing a need to support
+the two identical lists. Instead the reference to the target DT-node is
+added to the description.
 
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- .../devicetree/bindings/net/snps,dwmac.yaml        | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ .../devicetree/bindings/net/snps,dwmac.yaml        | 14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-index 3e3fbc1dfafa..01f385867c3a 100644
+index 01f385867c3a..89be67e55c3e 100644
 --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
 +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-@@ -47,6 +47,18 @@ properties:
-           MCI, CSR and SMA interfaces run on this clock. If it's omitted,
-           the CSR interfaces are considered as synchronous to the system
-           clock domain.
-+      - description:
-+          GMAC Tx clock or so called Transmit clock. The clock is supplied
-+          by an external with respect to the DW MAC clock generator.
-+          The clock source and its frequency depends on the DW MAC xMII mode.
-+          In case if it's supplied by PHY/SerDes this property can be
-+          omitted.
-+      - description:
-+          GMAC Rx clock or so called Receive clock. The clock is supplied
-+          by an external with respect to the DW MAC clock generator.
-+          The clock source and its frequency depends on the DW MAC xMII mode.
-+          In case if it's supplied by PHY/SerDes or it's synchronous to
-+          the Tx clock this property can be omitted.
-       - description:
-           PTP reference clock. This clock is used for programming the
-           Timestamp Addend Register. If not passed then the system
-@@ -60,6 +72,8 @@ properties:
-       enum:
-         - stmmaceth
-         - pclk
-+        - tx
-+        - rx
-         - ptp_ref
+@@ -98,17 +98,9 @@ properties:
+   snps,axi-config:
+     $ref: /schemas/types.yaml#/definitions/phandle
+     description:
+-      AXI BUS Mode parameters. Phandle to a node that can contain the
+-      following properties
+-        * snps,lpi_en, enable Low Power Interface
+-        * snps,xit_frm, unlock on WoL
+-        * snps,wr_osr_lmt, max write outstanding req. limit
+-        * snps,rd_osr_lmt, max read outstanding req. limit
+-        * snps,kbbe, do not cross 1KiB boundary.
+-        * snps,blen, this is a vector of supported burst length.
+-        * snps,fb, fixed-burst
+-        * snps,mb, mixed-burst
+-        * snps,rb, rebuild INCRx Burst
++      AXI BUS Mode parameters. Phandle to a node that
++      implements the 'stmmac-axi-config' object described in
++      this binding.
  
-   resets:
+   snps,mtl-rx-config:
+     $ref: /schemas/types.yaml#/definitions/phandle
 -- 
 2.39.2
 
