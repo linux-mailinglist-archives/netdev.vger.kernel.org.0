@@ -2,71 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E711F6B6D2C
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 02:45:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E128A6B6D3B
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 02:56:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229561AbjCMBpU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Mar 2023 21:45:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53266 "EHLO
+        id S229535AbjCMB4Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Mar 2023 21:56:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229673AbjCMBpT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Mar 2023 21:45:19 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6718028E60
-        for <netdev@vger.kernel.org>; Sun, 12 Mar 2023 18:45:18 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id k2so3395992pll.8
-        for <netdev@vger.kernel.org>; Sun, 12 Mar 2023 18:45:18 -0700 (PDT)
+        with ESMTP id S229437AbjCMB4Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Mar 2023 21:56:16 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B8DC29403;
+        Sun, 12 Mar 2023 18:56:15 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id j11so42745216edq.4;
+        Sun, 12 Mar 2023 18:56:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112; t=1678671918;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+        d=gmail.com; s=20210112; t=1678672573;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=l/teKmbpmy22WNMm+OqWLJZWRohd3TxS0uZa160A0cY=;
-        b=F+VCdwhem3AtLBGzk6Okrf6Zy6oL5Z6C+/7vgBadUKPTsNDsA30SMYruShSlAlwNHX
-         II5jNHy5803U9Hwse0+vAegpTgX8DkW90Qp94KLsRKfZ5XemKCtlaTDMTtuuYgEmmXrj
-         jlHnS8xkoD8JTp99rpazvXhacH6Hq1mcpmvAtxLSuL1hfSV+fVcFpTg2bsPbdpPTeh81
-         BNinyb+s9hISlBlWTDXgbR384gbC4ssBl+yibawAtnLcKxafdNZU1g4sOaJREK71hMpB
-         pycx1wTz6Wy71WbPxkFNTMi4dHslDFMC9Fj9bUNtW/7fi4k3LBO4BPV6Ns+D+W8XQ5rs
-         Kdmg==
+        bh=kWK9l6oO63fsuYbhxw+2itoc1uIny5FLOrsGgX9Wzz0=;
+        b=oXnTMU9xWdaJ54cug1P2DyGEqBGgaJj1loGiv526Boo7pTw4RCdpTimgwutbr/6ZIr
+         bRDcCwt0BFMDnXexx5BlG/McxTEvoQJk5R4LWVY16y69l1yZV5sr+Cp1rrD51dRYp62v
+         4wFM6h0/NEpP6FJAQnPTBUgAVaH+bBH5YbC4wj2KIw+BRdoYw4OexVLiLwZtrSzEpUvq
+         4qLWRVj8TPdID8k3DS07ca5ijUgq0eBKA9tZFI3MmUf3dEbRYdkAqknyTfyVF/s7GV8I
+         Fqh3rVNZSFmQh4tHErt0i5vDEsz6YrFZjG9mn9DeuAm4ZbpED/vVI+fc71bFrctKc7Yd
+         E/cA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678671918;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20210112; t=1678672573;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=l/teKmbpmy22WNMm+OqWLJZWRohd3TxS0uZa160A0cY=;
-        b=hQPrXnSoSke8sd0IT5qcPWTgADuWfJaeAh1fL7A9+mQic05Cvot4SbV7QYZTLZg33x
-         E+mfSnlpkTwNc2O3qjErL14/1hmCzhDRyr4IuojTj2LhSWFrEnBPbvsZchnMQpxDLLKM
-         72KD/4VlF0Vav/JtgCsf0oLnWQ4VQsDzFyWcD6YUtIlNMyMf/uDp7KgKklolNFQMDXQ4
-         YOItyWxgTSfAnJepWnLmpVWF3Jhhqz77msF2LugaLiN89LD1p42At4Oz44P4RMJdltMi
-         ZXZqJgrdtbYnIqOgILERyS0bvxKyK+ND3RY98VB7yD2fpkpGaoO6rXzFM1+5RViW4Du1
-         KzEg==
-X-Gm-Message-State: AO0yUKUS2RS2iFVMz+YILuMm1j24d//g7m8HANggofQ5Fr7ND7DJz/YH
-        49uNea/tuzuDlm4+SVGwEBRMzQ==
-X-Google-Smtp-Source: AK7set+q+08krZRAjcByYifACSLOl0MDeD5DF4BnW5+oOrRRvHA/IvtTJfkqgZPG9Y8jBiiQwO74SQ==
-X-Received: by 2002:a17:903:485:b0:19e:898f:8815 with SMTP id jj5-20020a170903048500b0019e898f8815mr28089043plb.9.1678671917861;
-        Sun, 12 Mar 2023 18:45:17 -0700 (PDT)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id f59-20020a17090a704100b0023b3a9fa603sm2750089pjk.55.2023.03.12.18.45.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Mar 2023 18:45:17 -0700 (PDT)
-Date:   Sun, 12 Mar 2023 18:45:15 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        alexanderduyck@fb.com, roman.gushchin@linux.dev
-Subject: Re: [RFC net-next 1/3] net: provide macros for commonly copied
- lockless queue stop/wake code
-Message-ID: <20230312184515.5eabc8df@hermes.local>
-In-Reply-To: <640e7e633acec_24c5ed2088c@willemb.c.googlers.com.notmuch>
-References: <20230311050130.115138-1-kuba@kernel.org>
-        <20230311082826.3d2050c9@hermes.local>
-        <640e7e633acec_24c5ed2088c@willemb.c.googlers.com.notmuch>
+        bh=kWK9l6oO63fsuYbhxw+2itoc1uIny5FLOrsGgX9Wzz0=;
+        b=iv75QxaVtS6lNU5TGiSaX+JhChanapbdgBEUvvassMyMXOmag8DfD+UpWkJvIU/mSJ
+         VQPqlmKXZArmDEib4luz3gvNQ0hV+zLpsQuTeozzZ5aQvgg9xdql6pD01iPOr+wVUNMx
+         UwYZTwSSj6KrzGFBXbpB30lj1g6HzWMGIGjFoGdeT3kinNGOnDRmzpvM0XLrMnNSw+42
+         3bX6MHPuTBIwN1sm4ePnrJuG56OcpPI3E/0m67K13N2rnT7wq8D4OhMZk3lA/sITcDf8
+         zplNkLPWhSsLt/D50kRmTU5R0pEIKdG+ptuOZCsyQKCQRQvyQiHGldlYjBDAgFz3XKFM
+         wkxQ==
+X-Gm-Message-State: AO0yUKUAFr3/f32Q4MenuCitSDB4XgfLIjd19H1wQeFz8SumoYvpJfaG
+        IuNrPifSOitjF+oc4RWZ4HdQQIthSfiJjiOXThM=
+X-Google-Smtp-Source: AK7set/MTjxsChf+B5WhVnnNN8MlSbOTlXD6uA5tgzkdHL4q+18DOSUu+HV1VZLKY1E9llgUoKg6aNs6AmuOdMcIX40=
+X-Received: by 2002:a17:906:b256:b0:924:32b2:e3d1 with SMTP id
+ ce22-20020a170906b25600b0092432b2e3d1mr1968310ejb.3.1678672573448; Sun, 12
+ Mar 2023 18:56:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20230311151756.83302-1-kerneljasonxing@gmail.com> <ZA4huzYKK/tdT3Ep@corigine.com>
+In-Reply-To: <ZA4huzYKK/tdT3Ep@corigine.com>
+From:   Jason Xing <kerneljasonxing@gmail.com>
+Date:   Mon, 13 Mar 2023 09:55:37 +0800
+Message-ID: <CAL+tcoDi5fVWjyTX6wjJGKrszqL6JWkEgDBajhZchYSW7kyhGQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] net-sysfs: display two backlog queue len separately
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jason Xing <kernelxing@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,25 +69,83 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 12 Mar 2023 21:37:39 -0400
-Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
+On Mon, Mar 13, 2023 at 3:02=E2=80=AFAM Simon Horman <simon.horman@corigine=
+.com> wrote:
+>
+> On Sat, Mar 11, 2023 at 11:17:56PM +0800, Jason Xing wrote:
+> > From: Jason Xing <kernelxing@tencent.com>
+> >
+> > Sometimes we need to know which one of backlog queue can be exactly
+> > long enough to cause some latency when debugging this part is needed.
+> > Thus, we can then separate the display of both.
+> >
+> > Signed-off-by: Jason Xing <kernelxing@tencent.com>
+> > ---
+> >  net/core/net-procfs.c | 17 ++++++++++++-----
+> >  1 file changed, 12 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/net/core/net-procfs.c b/net/core/net-procfs.c
+> > index 1ec23bf8b05c..97a304e1957a 100644
+> > --- a/net/core/net-procfs.c
+> > +++ b/net/core/net-procfs.c
+> > @@ -115,10 +115,14 @@ static int dev_seq_show(struct seq_file *seq, voi=
+d *v)
+> >       return 0;
+> >  }
+> >
+> > -static u32 softnet_backlog_len(struct softnet_data *sd)
+> > +static u32 softnet_input_pkt_queue_len(struct softnet_data *sd)
+> >  {
+> > -     return skb_queue_len_lockless(&sd->input_pkt_queue) +
+> > -            skb_queue_len_lockless(&sd->process_queue);
+> > +     return skb_queue_len_lockless(&sd->input_pkt_queue);
+> > +}
+> > +
+> > +static u32 softnet_process_queue_len(struct softnet_data *sd)
+> > +{
+> > +     return skb_queue_len_lockless(&sd->process_queue);
+> >  }
+> >
+> >  static struct softnet_data *softnet_get_online(loff_t *pos)
+> > @@ -169,12 +173,15 @@ static int softnet_seq_show(struct seq_file *seq,=
+ void *v)
+> >        * mapping the data a specific CPU
+> >        */
+> >       seq_printf(seq,
+> > -                "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08=
+x %08x %08x\n",
+> > +                "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08=
+x %08x %08x "
+> > +                "%08x %08x\n",
+> >                  sd->processed, sd->dropped, sd->time_squeeze, 0,
+> >                  0, 0, 0, 0, /* was fastroute */
+> >                  0,   /* was cpu_collision */
+> >                  sd->received_rps, flow_limit_count,
+> > -                softnet_backlog_len(sd), (int)seq->index);
+> > +                0,   /* was len of two backlog queues */
+> > +                (int)seq->index,
+>
+> nit: I think you could avoid this cast by using %llx as the format specif=
+ier.
 
-> Stephen Hemminger wrote:
-> > On Fri, 10 Mar 2023 21:01:28 -0800
-> > Jakub Kicinski <kuba@kernel.org> wrote:
-> >   
-> > > A lot of drivers follow the same scheme to stop / start queues
-> > > without introducing locks between xmit and NAPI tx completions.
-> > > I'm guessing they all copy'n'paste each other's code.
-> > > 
-> > > Smaller drivers shy away from the scheme and introduce a lock
-> > > which may cause deadlocks in netpoll.
-> > > 
-> > > Provide macros which encapsulate the necessary logic.  
-> > 
-> > Could any of these be inline functions instead for type safety?  
-> 
-> I suppose not because of the condition that is evaluated.
+I'm not sure if I should change this format since the above line is
+introduced in commit 7d58e6555870d ('net-sysfs: add backlog len and
+CPU id to softnet data').
+The seq->index here manifests which cpu it uses, so it can be
+displayed in 'int' format. Meanwhile, using %8x to output is much
+cleaner if the user executes 'cat /proc/net/softnet_stat'.
 
-It is more that the condition needs to evaluated after some other
-pre-conditions.
+What do you think about this?
+
+Thanks,
+Jason
+
+>
+> > +                softnet_input_pkt_queue_len(sd), softnet_process_queue=
+_len(sd));
+> >       return 0;
+> >  }
+> >
+> > --
+> > 2.37.3
+> >
