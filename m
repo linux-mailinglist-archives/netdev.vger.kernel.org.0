@@ -2,204 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C06156B7D9A
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 17:32:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E60496B7D98
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 17:32:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229709AbjCMQcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 12:32:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59528 "EHLO
+        id S230139AbjCMQcU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 12:32:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229921AbjCMQcS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 12:32:18 -0400
-Received: from out-54.mta1.migadu.com (out-54.mta1.migadu.com [IPv6:2001:41d0:203:375::36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68F1D7B49A
+        with ESMTP id S229689AbjCMQcR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 12:32:17 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 178E57B48D
         for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 09:31:48 -0700 (PDT)
-Message-ID: <676cedac-4116-4ce9-d954-3d268f671283@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1678725080;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NI+w+5gLyWQ+Td5N4A59FroOKRI3K/F0wnImo9z2ap4=;
-        b=WByPILZijfg5R+QnACDGa9kaxOGi0a1kjvBuGQM+oUT2jH8JES+d72Eq7X0SWu6rr521V2
-        G/uMUiS/5yVjpaFmKsb8PzuxSWqqhePHiIyhVv/jZdfML+MOrq0g/2pSxIDfCTEg7D0MmA
-        TXagoURNDIpdQAA3/zFih7AdUXHdor8=
-Date:   Mon, 13 Mar 2023 16:31:17 +0000
+Received: by mail-ed1-x52d.google.com with SMTP id ek18so19958396edb.6
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 09:31:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares.net; s=google; t=1678725080;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=iC/9rxrLtt9j5YQSFIj4r+xqIhr4OIPVnE5VID9BZVo=;
+        b=YtADCUojuhirIfFRQL1K75A264lIItj+966LATxLRu6s7fqnP9LTwc+RnSBOr2EcbT
+         E9kGP2na4r89BHbgbTu7AZ1e5R+jpSnaB0D+TpNokmpEjrkwQP1lBU1uvUz0s8u7y3LR
+         5Fh+7q0UUy/aXKPe3Ahm+SWO46nK/U11SFIGasx2DnETfMGQUVbeq+JTp+mBpSLB/INF
+         tAvd5mVQKWBnACY+0rdmyJFUjWUtDgiw9T+nRsuzS9o+njas4jw2XdW6qfzy0GeDSTqv
+         uoipGOIKoNrL6oWZgqXGCp9qIilYErr0QQwMNpC24KPCzTPF6G30PkHQkm0kAmuqInLZ
+         6XOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678725080;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=iC/9rxrLtt9j5YQSFIj4r+xqIhr4OIPVnE5VID9BZVo=;
+        b=kvP3/EGIVBnNTtUSjn1adddbWsZpHZAxb1mJqH/aEA05ZG521e/9MVC0dwpvoUmz/y
+         b7RlikY57+VtDhDTzNRDSLQZo0XGvLX543VreDEU88Ojr3Dz4oC2aWyNw8eFyrfs+6RB
+         4WMfFL4wI+g4WmJT0CBsRzr4sIUmFCgLsEcjbOzQvDORn91s+T7iSiBmRF49mnLxFe76
+         IERm0sV6mjH627eExuN4rlz+GQvJGA6GxL0oys0DG4jUUaMptVL+8INiErI38Fwz1ys5
+         q8fTGho+72xAlRyVrwO0jbSaHgyxRJ0Xnz69pE3h6GB6RldIJYC5jygI7H/nzGJJgsbJ
+         B5Ow==
+X-Gm-Message-State: AO0yUKWv6nmgljzD96S5lT2RZZfK05gk/cRh/9UaxxIUl1Wcba4k+TPc
+        L7Sm/CPApLfHL6br2vbrkadkXg==
+X-Google-Smtp-Source: AK7set+PlugTltwa4XqV6a/Qhb5TzyW/J1rlDrVJgoGyg5zLPsyfQOG83Zh0xrpRM/pyV7uWxPOa3A==
+X-Received: by 2002:a05:6402:7d3:b0:4b0:87ec:2b98 with SMTP id u19-20020a05640207d300b004b087ec2b98mr33964833edy.16.1678725080373;
+        Mon, 13 Mar 2023 09:31:20 -0700 (PDT)
+Received: from [10.44.2.5] ([81.246.10.41])
+        by smtp.gmail.com with ESMTPSA id pw23-20020a17090720b700b008f398f25beesm3629029ejb.189.2023.03.13.09.31.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Mar 2023 09:31:20 -0700 (PDT)
+Message-ID: <284f332d-675c-6d7f-94f0-5d8a944ea075@tessares.net>
+Date:   Mon, 13 Mar 2023 17:31:19 +0100
 MIME-Version: 1.0
-Subject: Re: [PATCH RFC v6 0/6] Create common DPLL/clock configuration API
-Content-Language: en-US
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Vadim Fedorenko <vadfed@meta.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>, poros@redhat.com,
-        mschmidt@redhat.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
-References: <20230312022807.278528-1-vadfed@meta.com>
- <ZA8VAzAhaXK3hg04@nanopsycho>
- <eb738303-b95c-408c-448d-0ebf983df01f@linux.dev>
- <ZA9N2W35/7hH0wd2@nanopsycho>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Vadim Fedorenko <vadim.fedorenko@linux.dev>
-In-Reply-To: <ZA9N2W35/7hH0wd2@nanopsycho>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH net v2 6/8] veth: take into account device reconfiguration
+ for xdp_features flag
+Content-Language: en-GB
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com, saeedm@nvidia.com,
+        leon@kernel.org, shayagr@amazon.com, akiyano@amazon.com,
+        darinzon@amazon.com, sgoutham@marvell.com,
+        lorenzo.bianconi@redhat.com, toke@redhat.com, teknoraver@meta.com,
+        ttoukan.linux@gmail.com
+References: <cover.1678364612.git.lorenzo@kernel.org>
+ <f20cfdb08d7357b0853d25be3b34ace4408693be.1678364613.git.lorenzo@kernel.org>
+ <f5167659-99d7-04a1-2175-60ff1dabae71@tessares.net>
+ <CANn89i+4F0QUqyDTqJ8GWrWvGnTyLTxja2hbL1W_rVdMqqmxaQ@mail.gmail.com>
+ <CANn89iL=zQQygGg4mkAG+MES6-CpkYBL5KY+kn4j=hAowexVZw@mail.gmail.com>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+In-Reply-To: <CANn89iL=zQQygGg4mkAG+MES6-CpkYBL5KY+kn4j=hAowexVZw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 13/03/2023 16:22, Jiri Pirko wrote:
-> Mon, Mar 13, 2023 at 04:33:13PM CET, vadim.fedorenko@linux.dev wrote:
->> On 13/03/2023 12:20, Jiri Pirko wrote:
->>> Sun, Mar 12, 2023 at 03:28:01AM CET, vadfed@meta.com wrote:
->>>> Implement common API for clock/DPLL configuration and status reporting.
->>>> The API utilises netlink interface as transport for commands and event
->>>> notifications. This API aim to extend current pin configuration and
->>>> make it flexible and easy to cover special configurations.
+Hi Eric,
+
+On 13/03/2023 16:53, Eric Dumazet wrote:
+> On Mon, Mar 13, 2023 at 8:50 AM Eric Dumazet <edumazet@google.com> wrote:
+>>
+>> On Mon, Mar 13, 2023 at 7:15 AM Matthieu Baerts
+>> <matthieu.baerts@tessares.net> wrote:
 >>>
->>> Could you please put here some command line examples to work with this?
->>
->> We don't have open-source tools ready right now for specific hardware, but
->> with YAML spec published you can use in-kernel tool to manipulate the values,
->> i.e.:
->>
->> ./tools/net/ynl/cli.py --spec Documentation/netlink/specs/dpll.yaml --dump
->> device-get
->> ./tools/net/ynl/cli.py --spec Documentation/netlink/specs/dpll.yaml --do
->> device-get --json '{"id": 0}'
->> ./tools/net/ynl/cli.py --spec Documentation/netlink/specs/dpll.yaml --dump
->> pin-get
->> ./tools/net/ynl/cli.py --spec Documentation/netlink/specs/dpll.yaml --do
->> pin-get --json '{"id": 0, "pin-idx":1}'
->> ./tools/net/ynl/cli.py --spec Documentation/netlink/specs/dpll.yaml --do
->> pin-set --json '{"id":0, "pin-idx":1, "pin-frequency":1}'
-> 
-> Yep, that is exactly what I was asking for. Thanks.
-> Please try to extend it a bit and add to the cover letter. Gives people
-> better understanding of how this works.
-
-Sure, will extend the cover letter in the next version, thanks!
-
-> 
->>
+>>> Hi Lorenzo,
 >>>
+>>> On 09/03/2023 13:25, Lorenzo Bianconi wrote:
+>>>> Take into account tx/rx queues reconfiguration setting device
+>>>> xdp_features flag. Moreover consider NETIF_F_GRO flag in order to enable
+>>>> ndo_xdp_xmit callback.
 >>>>
->>>> v5 -> v6:
->>>> * rework pin part to better fit shared pins use cases
->>>> * add YAML spec to easy generate user-space apps
->>>> * simple implementation in ptp_ocp is back again
->>>> v4 -> v5:
->>>> * fix code issues found during last reviews:
->>>>     - replace cookie with clock id
->>>> 	 - follow one naming schema in dpll subsys
->>>> 	 - move function comments to dpll_core.c, fix exports
->>>> 	 - remove single-use helper functions
->>>> 	 - merge device register with alloc
->>>>     - lock and unlock mutex on dpll device release
->>>>     - move dpll_type to uapi header
->>>>     - rename DPLLA_DUMP_FILTER to DPLLA_FILTER
->>>>     - rename dpll_pin_state to dpll_pin_mode
->>>>     - rename DPLL_MODE_FORCED to DPLL_MODE_MANUAL
->>>>     - remove DPLL_CHANGE_PIN_TYPE enum value
->>>> * rewrite framework once again (Arkadiusz)
->>>>     - add clock class:
->>>>       Provide userspace with clock class value of DPLL with dpll device dump
->>>>       netlink request. Clock class is assigned by driver allocating a dpll
->>>>       device. Clock class values are defined as specified in:
->>>>       ITU-T G.8273.2/Y.1368.2 recommendation.
->>>>     - dpll device naming schema use new pattern:
->>>> 	   "dpll_%s_%d_%d", where:
->>>>         - %s - dev_name(parent) of parent device,
->>>>         - %d (1) - enum value of dpll type,
->>>>         - %d (2) - device index provided by parent device.
->>>>     - new muxed/shared pin registration:
->>>> 	   Let the kernel module to register a shared or muxed pin without finding
->>>>       it or its parent. Instead use a parent/shared pin description to find
->>>>       correct pin internally in dpll_core, simplifing a dpll API
->>>> * Implement complex DPLL design in ice driver (Arkadiusz)
->>>> * Remove ptp_ocp driver from the series for now
->>>> v3 -> v4:
->>>> * redesign framework to make pins dynamically allocated (Arkadiusz)
->>>> * implement shared pins (Arkadiusz)
->>>> v2 -> v3:
->>>> * implement source select mode (Arkadiusz)
->>>> * add documentation
->>>> * implementation improvements (Jakub)
->>>> v1 -> v2:
->>>> * implement returning supported input/output types
->>>> * ptp_ocp: follow suggestions from Jonathan
->>>> * add linux-clk mailing list
->>>> v0 -> v1:
->>>> * fix code style and errors
->>>> * add linux-arm mailing list
->>>>
->>>> Arkadiusz Kubalewski (3):
->>>>    dpll: spec: Add Netlink spec in YAML
->>>>    ice: add admin commands to access cgu configuration
->>>>    ice: implement dpll interface to control cgu
->>>>
->>>> Vadim Fedorenko (3):
->>>>    dpll: Add DPLL framework base functions
->>>>    dpll: documentation on DPLL subsystem interface
->>>>    ptp_ocp: implement DPLL ops
->>>>
->>>> Documentation/netlink/specs/dpll.yaml         |  514 +++++
->>>> Documentation/networking/dpll.rst             |  347 ++++
->>>> Documentation/networking/index.rst            |    1 +
->>>> MAINTAINERS                                   |    9 +
->>>> drivers/Kconfig                               |    2 +
->>>> drivers/Makefile                              |    1 +
->>>> drivers/dpll/Kconfig                          |    7 +
->>>> drivers/dpll/Makefile                         |   10 +
->>>> drivers/dpll/dpll_core.c                      |  835 ++++++++
->>>> drivers/dpll/dpll_core.h                      |   99 +
->>>> drivers/dpll/dpll_netlink.c                   | 1065 ++++++++++
->>>> drivers/dpll/dpll_netlink.h                   |   30 +
->>>> drivers/dpll/dpll_nl.c                        |  126 ++
->>>> drivers/dpll/dpll_nl.h                        |   42 +
->>>> drivers/net/ethernet/intel/Kconfig            |    1 +
->>>> drivers/net/ethernet/intel/ice/Makefile       |    3 +-
->>>> drivers/net/ethernet/intel/ice/ice.h          |    5 +
->>>> .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  240 ++-
->>>> drivers/net/ethernet/intel/ice/ice_common.c   |  467 +++++
->>>> drivers/net/ethernet/intel/ice/ice_common.h   |   43 +
->>>> drivers/net/ethernet/intel/ice/ice_dpll.c     | 1845 +++++++++++++++++
->>>> drivers/net/ethernet/intel/ice/ice_dpll.h     |   96 +
->>>> drivers/net/ethernet/intel/ice/ice_lib.c      |   17 +-
->>>> drivers/net/ethernet/intel/ice/ice_main.c     |    7 +
->>>> drivers/net/ethernet/intel/ice/ice_ptp_hw.c   |  411 ++++
->>>> drivers/net/ethernet/intel/ice/ice_ptp_hw.h   |  240 +++
->>>> drivers/net/ethernet/intel/ice/ice_type.h     |    1 +
->>>> drivers/ptp/Kconfig                           |    1 +
->>>> drivers/ptp/ptp_ocp.c                         |  206 +-
->>>> include/linux/dpll.h                          |  284 +++
->>>> include/uapi/linux/dpll.h                     |  196 ++
->>>> 31 files changed, 7135 insertions(+), 16 deletions(-)
->>>> create mode 100644 Documentation/netlink/specs/dpll.yaml
->>>> create mode 100644 Documentation/networking/dpll.rst
->>>> create mode 100644 drivers/dpll/Kconfig
->>>> create mode 100644 drivers/dpll/Makefile
->>>> create mode 100644 drivers/dpll/dpll_core.c
->>>> create mode 100644 drivers/dpll/dpll_core.h
->>>> create mode 100644 drivers/dpll/dpll_netlink.c
->>>> create mode 100644 drivers/dpll/dpll_netlink.h
->>>> create mode 100644 drivers/dpll/dpll_nl.c
->>>> create mode 100644 drivers/dpll/dpll_nl.h
->>>> create mode 100644 drivers/net/ethernet/intel/ice/ice_dpll.c
->>>> create mode 100644 drivers/net/ethernet/intel/ice/ice_dpll.h
->>>> create mode 100644 include/linux/dpll.h
->>>> create mode 100644 include/uapi/linux/dpll.h
->>>>
->>>> -- 
->>>> 2.34.1
->>>>
+>>>> Fixes: 66c0e13ad236 ("drivers: net: turn on XDP features")
+>>>> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+>>>
+>>> Thank you for the modification.
+>>>
+>>> Unfortunately, 'git bisect' just told me this modification is the origin
+>>> of a new WARN when using veth in a netns:
+>>>
+>>>
+>>> ###################### 8< ######################
+>>>
+>>> =============================
+>>> WARNING: suspicious RCU usage
+>>> 6.3.0-rc1-00144-g064d70527aaa #149 Not tainted
+>>> -----------------------------
+>>> drivers/net/veth.c:1265 suspicious rcu_dereference_check() usage!
+>>>
+>>> other info that might help us debug this:
+>>>
 >>
+>> Same observation here, I am releasing a syzbot report with a repro.
+>>
+>>
+> 
+> I guess a fix would be:
+> 
+> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+> index 293dc3b2c84a6c1931e8df42cdcd5f2798004f3c..4da74ac27f9a2425d8d3f4ffcc93f453bd58e3a5
+> 100644
+> --- a/drivers/net/veth.c
+> +++ b/drivers/net/veth.c
+> @@ -1262,7 +1262,7 @@ static void veth_set_xdp_features(struct net_device *dev)
+>         struct veth_priv *priv = netdev_priv(dev);
+>         struct net_device *peer;
+> 
+> -       peer = rcu_dereference(priv->peer);
+> +       peer = rtnl_dereference(priv->peer);
+>         if (peer && peer->real_num_tx_queues <= dev->real_num_rx_queues) {
+>                 xdp_features_t val = NETDEV_XDP_ACT_BASIC |
+>                                      NETDEV_XDP_ACT_REDIRECT |
+> 
 
+Thank you for having looked!
+
+This patch avoids the warning on our side.
+
+Cheers,
+Matt
+-- 
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
