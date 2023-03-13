@@ -2,90 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 197E46B6E4F
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 05:08:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D571F6B6E56
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 05:15:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229801AbjCMEIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 00:08:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36096 "EHLO
+        id S229831AbjCMEPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 00:15:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229656AbjCMEIO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 00:08:14 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 892E6126F0;
-        Sun, 12 Mar 2023 21:08:05 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id l1so10006529wry.12;
-        Sun, 12 Mar 2023 21:08:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678680484;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=RXawRAIx6eV02ZRwEf548kRyk9SYqMQfx4NlySQytTE=;
-        b=T2Mu5LLg9zR4w6aWywuDnjoLsVB4yDtMBxPBqdwyxu7Nt2WOi1/kJhHzXtcvqybDGS
-         5iDfKFaICH9zfDB5doQqMk0bS0uReZ8kocbni52uHh6vpbFuBSAsHGslHd4LjJdfvGtM
-         DAYERWYHbYlgXniKC+RtBXtk/vziyUng21FAAXzzEjPa+9nM4REORWAR/m/K/xCMS8nu
-         hZ61EmbfuuENAc0TolbgpAvyCFwp9CNMubIGWRwV/dTmChlHBlk6YQ295ZoQCLImkAGY
-         7qQQ8eItjIzLhB0GhGhQnNy5uSEToLu3sbOpARRPhxlGcV1P6HWWnUUl/jbxztILHNeO
-         V9xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678680484;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RXawRAIx6eV02ZRwEf548kRyk9SYqMQfx4NlySQytTE=;
-        b=H0ueauyW3AnbG1GLry8huYsXWyx0zVLQfpAcJbt2cajiD+SYlf5NGixdAMKXvaiN9V
-         U3Jvi5c3EChFyDIJHmVG1mKSWYmzRNlxSsWE50YioSDQAbWWGuNPQgXRP6ag1MOtNpb6
-         SORs0KbXIipa9AjZE9tWq0e4JLNnQl/vm/X0lx3wvTnFbdE1zahHNEuyh8fGJ1IqRFt2
-         1ijU30sdm5K5y1QRmpOcYdqljTIV7vde+5cA/yE7vs/cNMPf5Q/NavNNMiNrYcrPz2Yj
-         4PL+Q0Y/tm2JMR63jY01QCBYAepbw40Uuy/A3KbhEFclPYs7pEMTTy/DCSJI2m1MHIfp
-         6Vvw==
-X-Gm-Message-State: AO0yUKU9hMRmv5KvW6/hvQhS9pCa2DpT61iBxUxRruS4MqWuV3IggRtH
-        RNwpx/45ttjQ9nmWs4qpEgM=
-X-Google-Smtp-Source: AK7set9+WsyZG21rsmESra4j4bSnsngTAgejgwTYjtFpDitqwE9s2K61t/ygvGVNn18m0Falc0sVfQ==
-X-Received: by 2002:adf:dbc3:0:b0:2ca:e856:5a4 with SMTP id e3-20020adfdbc3000000b002cae85605a4mr6552429wrj.26.1678680483923;
-        Sun, 12 Mar 2023 21:08:03 -0700 (PDT)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id x1-20020adff641000000b002c70c99db74sm6639829wrp.86.2023.03.12.21.08.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Mar 2023 21:08:03 -0700 (PDT)
-Date:   Mon, 13 Mar 2023 07:07:58 +0300
-From:   Dan Carpenter <error27@gmail.com>
-To:     Sumitra Sharma <sumitraartsy@gmail.com>
-Cc:     outreachy@lists.linux.dev, GR-Linux-NIC-Dev@marvell.com,
-        coiby.xu@gmail.com, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        manishc@marvell.com, netdev@vger.kernel.org
-Subject: Re: [PATCH v2] Staging: qlge: Fix indentation in conditional
- statement
-Message-ID: <87174bba-201f-42f1-9e36-5c330351201a@kili.mountain>
-References: <20230311172540.GA24832@ubuntu>
+        with ESMTP id S229656AbjCMEPE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 00:15:04 -0400
+Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C12152886E;
+        Sun, 12 Mar 2023 21:15:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=SHitx
+        /p2v515lWIUtrn7VLSosh3Eis87AfBcSEwzhzA=; b=jxU/5wgcfYNdDyK7u6Hjc
+        DjkHb77etGnELIsNQN/ri/2VB+L9s/MYXYheXz0Ie/NKcr0oPNGpYrCMCrYdSea0
+        eK9QeazJYKHM0Ig3giywQfJpnz36lEWQR2jw08WBNSaWKG2YaWNnlLzlPGeR+lLX
+        FYeMbjn3pEWORK8silVnt8=
+Received: from leanderwang-LC2.localdomain (unknown [111.206.145.21])
+        by zwqz-smtp-mta-g4-0 (Coremail) with SMTP id _____wBXdh_Rog5kJ4YGAA--.1868S2;
+        Mon, 13 Mar 2023 12:13:05 +0800 (CST)
+From:   Zheng Wang <zyytlz.wz@163.com>
+To:     ericvh@gmail.com
+Cc:     lucho@ionkov.net, asmadeus@codewreck.org, linux_oss@crudebyte.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, v9fs-developer@lists.sourceforge.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        hackerzheng666@gmail.com, 1395428693sheep@gmail.com,
+        alex000young@gmail.com, Zheng Wang <zyytlz.wz@163.com>
+Subject: [PATCH net] 9p/xen : Fix use after free bug in xen_9pfs_front_remove due to race condition
+Date:   Mon, 13 Mar 2023 12:13:03 +0800
+Message-Id: <20230313041303.3158458-1-zyytlz.wz@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230311172540.GA24832@ubuntu>
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: _____wBXdh_Rog5kJ4YGAA--.1868S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7tF15Cw48JFy5tr1xuF45Wrg_yoW8WF4Upa
+        1Skrn5AFyqya1YyFsYy3WxJ3WYkw4rGr1Iga12kw4fJr98Ary8XrZ5tr1Yg34UAr4YqF4r
+        Gw1DXa98JFZrAw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0ziaZXrUUUUU=
+X-Originating-IP: [111.206.145.21]
+X-CM-SenderInfo: h2113zf2oz6qqrwthudrp/1tbiXQ8xU1WBo41K9wABs2
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 11, 2023 at 09:25:40AM -0800, Sumitra Sharma wrote:
-> Add tabs/spaces in conditional statements in qlge_dbg.c to fix the
-> indentation.
-> 
-> Signed-off-by: Sumitra Sharma <sumitraartsy@gmail.com>
-> ---
->  v2: Fix indentation in conditional statement, noted by Dan Carpenter
->  <error27@gmail.com>
->  
+In xen_9pfs_front_probe, it calls xen_9pfs_front_alloc_dataring
+to init priv->rings and bound &ring->work with p9_xen_response.
 
-This doesn't apply.  You need to start from a fresh git tree.  Please
-read my whole earlier email again.
+When it calls xen_9pfs_front_event_handler to handle IRQ requests,
+it will finally call schedule_work to start the work.
 
-regards,
-dan carpenter
+When we call xen_9pfs_front_remove to remove the driver, there
+may be a sequence as follows:
+
+Fix it by finishing the work before cleanup in xen_9pfs_front_free.
+
+Note that, this bug is found by static analysis, which might be
+false positive.
+
+CPU0                  CPU1
+
+                     |p9_xen_response
+xen_9pfs_front_remove|
+  xen_9pfs_front_free|
+kfree(priv)          |
+//free priv          |
+                     |p9_tag_lookup
+                     |//use priv->client
+
+Fixes: 71ebd71921e4 ("xen/9pfs: connect to the backend")
+Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
+---
+ net/9p/trans_xen.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/net/9p/trans_xen.c b/net/9p/trans_xen.c
+index c64050e839ac..60adb3aadd63 100644
+--- a/net/9p/trans_xen.c
++++ b/net/9p/trans_xen.c
+@@ -274,16 +274,21 @@ static const struct xenbus_device_id xen_9pfs_front_ids[] = {
+ static void xen_9pfs_front_free(struct xen_9pfs_front_priv *priv)
+ {
+ 	int i, j;
++	struct xen_9pfs_dataring *ring = NULL;
+ 
+ 	write_lock(&xen_9pfs_lock);
+ 	list_del(&priv->list);
+ 	write_unlock(&xen_9pfs_lock);
+ 
+ 	for (i = 0; i < priv->num_rings; i++) {
++		ring = priv->rings[i];
+ 		if (!priv->rings[i].intf)
+ 			break;
+ 		if (priv->rings[i].irq > 0)
+ 			unbind_from_irqhandler(priv->rings[i].irq, priv->dev);
++
++		cancel_work_sync(&ring->work);
++
+ 		if (priv->rings[i].data.in) {
+ 			for (j = 0;
+ 			     j < (1 << priv->rings[i].intf->ring_order);
+-- 
+2.25.1
 
