@@ -2,121 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81DCF6B8086
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 19:29:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C92946B80CC
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 19:33:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229987AbjCMS3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 14:29:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60758 "EHLO
+        id S231515AbjCMSdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 14:33:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229919AbjCMS3c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 14:29:32 -0400
-Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBC201420A;
-        Mon, 13 Mar 2023 11:28:50 -0700 (PDT)
-Received: from [172.18.236.247] (unknown [46.183.103.17])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        with ESMTP id S231489AbjCMSdT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 14:33:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FF9E85B21;
+        Mon, 13 Mar 2023 11:31:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id E9CF361CC457B;
-        Mon, 13 Mar 2023 19:27:01 +0100 (CET)
-Message-ID: <12d1ab7d-c4fd-44b5-7e53-e80cd4b00a21@molgen.mpg.de>
-Date:   Mon, 13 Mar 2023 19:26:57 +0100
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 60BC661484;
+        Mon, 13 Mar 2023 18:30:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FA3AC433EF;
+        Mon, 13 Mar 2023 18:30:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1678732256;
+        bh=sdMhGh/v0S4uLhhMgXoZcxTftjLcVbQ0JldvEDTZ1yE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=h/hI9tL/g1oKZX9SamcN3M5/Phk2olRLoatPJFm31YFAUcAsHgxSUO3k5HrcUFBGR
+         oTFlhpdu5AzaDPUsg8JPv2FLzqxqaON2iQZQPmb/f7IuSBmUXQAln9+7wnXBsgdkfo
+         ujvYCBIj/MpDkfXQafdJ925ZIXxw9Js6vvSnB+k8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     rafael@kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH 31/36] vhost-vdpa: vhost_vdpa_alloc_domain() should be using a const struct bus_type *
+Date:   Mon, 13 Mar 2023 19:29:13 +0100
+Message-Id: <20230313182918.1312597-31-gregkh@linuxfoundation.org>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230313182918.1312597-1-gregkh@linuxfoundation.org>
+References: <20230313182918.1312597-1-gregkh@linuxfoundation.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [Intel-wired-lan] [PATCH net] ice: fix invalid check for empty
- list in ice_sched_assoc_vsi_to_agg()
-Content-Language: en-US
-To:     Jakob Koschel <jkl820.git@gmail.com>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Pietro Borrello <borrello@diag.uniroma1.it>,
-        linux-kernel@vger.kernel.org, "Bos, H.J." <h.j.bos@vu.nl>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        intel-wired-lan@lists.osuosl.org
-References: <20230301-ice-fix-invalid-iterator-found-check-v1-1-87c26deed999@gmail.com>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <20230301-ice-fix-invalid-iterator-found-check-v1-1-87c26deed999@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_SBL_CSS,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1408; i=gregkh@linuxfoundation.org; h=from:subject; bh=sdMhGh/v0S4uLhhMgXoZcxTftjLcVbQ0JldvEDTZ1yE=; b=owGbwMvMwCRo6H6F97bub03G02pJDCn82TUvbDoStjD0i/1v+vmN+6FAU3bEc8GDO0VEeJmnK n3uEcvoiGVhEGRikBVTZPmyjefo/opDil6Gtqdh5rAygQxh4OIUgIlE/mOYp+sx9Tebv8y3yUbr ta71fL9koRnIzzDfQ/VD509tq8Db9tk3zRNct9fM6dcHAA==
+X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Jakob,
+The function, vhost_vdpa_alloc_domain(), has a pointer to a struct
+bus_type, but it should be constant as the function it passes it to
+expects it to be const, and the vhost code does not modify it in any
+way.
 
+Cc: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Jason Wang <jasowang@redhat.com>
+Cc: kvm@vger.kernel.org
+Cc: virtualization@lists.linux-foundation.org
+Cc: netdev@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+Note, this is a patch that is a prepatory cleanup as part of a larger
+series of patches that is working on resolving some old driver core
+design mistakes.  It will build and apply cleanly on top of 6.3-rc2 on
+its own, but I'd prefer if I could take it through my driver-core tree
+so that the driver core changes can be taken through there for 6.4-rc1.
 
-Thank you for the patch.
+ drivers/vhost/vdpa.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Am 13.03.23 um 17:31 schrieb Jakob Koschel:
-> The code implicitly assumes that the list iterator finds a correct
-> handle. If 'vsi_handle' is not found the 'old_agg_vsi_info' was
-> pointing to an bogus memory location. For safety a separate list
-> iterator variable should be used to make the != NULL check on
-> 'old_agg_vsi_info' correct under any circumstances.
-> 
-> Additionally Linus proposed to avoid any use of the list iterator
-> variable after the loop, in the attempt to move the list iterator
-> variable declaration into the macro to avoid any potential misuse after
-> the loop. Using it in a pointer comparision after the loop is undefined
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index dc12dbd5b43b..08c7cb3399fc 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -1140,7 +1140,7 @@ static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
+ 	struct vdpa_device *vdpa = v->vdpa;
+ 	const struct vdpa_config_ops *ops = vdpa->config;
+ 	struct device *dma_dev = vdpa_get_dma_dev(vdpa);
+-	struct bus_type *bus;
++	const struct bus_type *bus;
+ 	int ret;
+ 
+ 	/* Device want to do DMA by itself */
+-- 
+2.39.2
 
-compar*i*son
-
-> behavior and should be omitted if possible [1].
-
-(It took me a short time to find the reference number at the end of the 
-URL.)
-
-> Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
-> Signed-off-by: Jakob Koschel <jkl820.git@gmail.com>
-> ---
->   drivers/net/ethernet/intel/ice/ice_sched.c | 8 +++++---
->   1 file changed, 5 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/ice/ice_sched.c b/drivers/net/ethernet/intel/ice/ice_sched.c
-> index 4eca8d195ef0..b7682de0ae05 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_sched.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_sched.c
-> @@ -2788,7 +2788,7 @@ static int
->   ice_sched_assoc_vsi_to_agg(struct ice_port_info *pi, u32 agg_id,
->   			   u16 vsi_handle, unsigned long *tc_bitmap)
->   {
-> -	struct ice_sched_agg_vsi_info *agg_vsi_info, *old_agg_vsi_info = NULL;
-> +	struct ice_sched_agg_vsi_info *agg_vsi_info, *iter, *old_agg_vsi_info = NULL;
->   	struct ice_sched_agg_info *agg_info, *old_agg_info;
->   	struct ice_hw *hw = pi->hw;
->   	int status = 0;
-> @@ -2806,11 +2806,13 @@ ice_sched_assoc_vsi_to_agg(struct ice_port_info *pi, u32 agg_id,
->   	if (old_agg_info && old_agg_info != agg_info) {
->   		struct ice_sched_agg_vsi_info *vtmp;
->   
-> -		list_for_each_entry_safe(old_agg_vsi_info, vtmp,
-> +		list_for_each_entry_safe(iter, vtmp,
->   					 &old_agg_info->agg_vsi_list,
->   					 list_entry)
-> -			if (old_agg_vsi_info->vsi_handle == vsi_handle)
-> +			if (iter->vsi_handle == vsi_handle) {
-> +				old_agg_vsi_info = iter;
->   				break;
-> +			}
->   	}
->   
->   	/* check if entry already exist */
-
-Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
-
-
-Kind regards,
-
-Paul
