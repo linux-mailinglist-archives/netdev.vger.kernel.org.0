@@ -2,155 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C7ECC6B7D67
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 17:26:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 752AC6B7D69
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 17:26:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230224AbjCMQ0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 12:26:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47138 "EHLO
+        id S231166AbjCMQ0N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 12:26:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbjCMQ0L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 12:26:11 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0421F360AB;
-        Mon, 13 Mar 2023 09:26:10 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id j19-20020a05600c191300b003eb3e1eb0caso11339642wmq.1;
-        Mon, 13 Mar 2023 09:26:09 -0700 (PDT)
+        with ESMTP id S230355AbjCMQ0M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 12:26:12 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2093.outbound.protection.outlook.com [40.107.92.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF95F2DE41
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 09:26:11 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LjU447DOlaOHypZ8WpRBZCY1FJnn8LPKTAe8j2Ih3S8MZdJFA5EU82kZHxWI3nVwotOJpym9PSi6X483Lj0A90c5hk9ejEfEOgdEniikg2RlWMiQpUz1v9e68kdVckEL9nyOuQr9ga4wER7WdSjRbaOW7e89+0tHt/yfG8S5tReRBzhbi8+1HsmmyccHvcvN2UZqQ9g+3uPut7AvC7j9dbO0vW7rBzcSBxyalQcNeJDsVMVoFhDnlBuLiIwcUUntkJWrID8uIQxG+VvgwDm0rArXq1bylY/UIfg5mAOOMtLrG15vKOOSypsljbO8yKOvcKwHAWg0GR0OAbQqsROr0w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RaiTWc1TBAi5d1rLuyLL3Bni4jqnqiB7HmeC9LT6Wkw=;
+ b=FPH+XkvuuYsZqnm1TY0qtGdpY0dLj0Orz7hO0Vz3VOP+XnrP17+2s33ZcQ4JctvVNbKVTQote/rDO/CC8nl8y1dQocO37IWIULXyKoM3UOa1VGiBbacJH1tj9DtdrMpOKTrk/qSOyGhjgijLgUK5ZixPqhJWVwne7EzFaW2QNfvcHZ1ci/hHD4KQmJbim+p7qkxxsgw12Cl8ljz7g2W0yYbz3TDTSgJFNYf46IUcytSVKyghZiHP0bVoq4kjsUAWvsKo72eVQ4pSVX/7AvaQG73OLBaAS5ndcDMUANMmnjZtokDpx+ay+4bIL74dspJ8rvPGgLocb0whjxw2XBPsjQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678724768;
-        h=user-agent:content-disposition:mime-version:message-id:subject:to
-         :from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=PTS3TvsaI19NjFQi3zg5TWV9y2d9pm99dtScZ0oVUQo=;
-        b=MuzLAXw50lYgGq40JnV3ctiw64T+L0DmnFMGIUr74EXpJ1c1Cf92k88ATt63trzuD4
-         3Ts1bfT5aOCpk2r5lG9G55Nz96/L82e8oeWcRvgxxN8fcC8Z8X3fulaDW0wt/aF2nivK
-         89mWOw2EWXhZ4s6Vb4bECSLNN3Y9RaY8qYGFtmet92jDu5uU6Lkdm0ozclknqq6jJsj1
-         dbQ2EJgrmk81ru5lKHHG3L/9yXCQpaKq9QlREw6gCH1ILdqSvm7j+/Zdz0gZou0R606G
-         r1Q81R2Jk6b64LP6Z4wAPdqtsw6soJ4qdT4GFWLMWnXxPMfornvexuQDSla2ptsk16wb
-         EIkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678724768;
-        h=user-agent:content-disposition:mime-version:message-id:subject:to
-         :from:date:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=PTS3TvsaI19NjFQi3zg5TWV9y2d9pm99dtScZ0oVUQo=;
-        b=x415K3jtkhazseO4ecpOtI30qatxvkXasc+IFK+hwvg+tu0V3PDj6f54vZ5PD3xwc2
-         Ooj8WJGpccmY+IoEC66Y32l4c3BuVfOWteJnv+qiPKRZwDKc/GIkgH71GnkIYcIDIPV4
-         e8kiSkJsvLwlUkLCaEJe2ldDvauF7TPxUzSDJEzLhxkEEiWzspHZqHpZTbxaSpO3ZSxE
-         VZH/n7rBffjsY77VELQRc1Z/a4JROlq/Srcz4v6jLuZYZQEapNNCU62x0XKluG8Zq8Wl
-         lFqNiu4zLQcYpqiW1yghVRfsXh6j1Xx+SfL6wFQpMJrmPJKg9+7/Qpv2/Dx2o/ASkaFt
-         VUQQ==
-X-Gm-Message-State: AO0yUKUEmDmRkr9OhfWnn72BSBU2ojskFXGT8Nx2/lKJ30KZfVVXJGfv
-        etJ5Y0foWzPNI5SXscvBDV0=
-X-Google-Smtp-Source: AK7set8wDucz4hPvGRBd6pLsS8FtDu1eAKAN6WORwSdEAt/PlxgAMfgosxlY/7X6SbGrmESuVNo6rQ==
-X-Received: by 2002:a05:600c:19cf:b0:3eb:3cc9:9f85 with SMTP id u15-20020a05600c19cf00b003eb3cc99f85mr12199068wmq.26.1678724768377;
-        Mon, 13 Mar 2023 09:26:08 -0700 (PDT)
-Received: from debian ([89.238.191.199])
-        by smtp.gmail.com with ESMTPSA id ja9-20020a05600c556900b003ed29f4e45esm282700wmb.0.2023.03.13.09.25.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Mar 2023 09:26:08 -0700 (PDT)
-Date:   Mon, 13 Mar 2023 17:25:34 +0100
-From:   Richard Gobert <richardbgobert@gmail.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, dsahern@kernel.org, alexanderduyck@fb.com,
-        richardbgobert@gmail.com, lucien.xin@gmail.com,
-        lixiaoyan@google.com, iwienand@redhat.com, leon@kernel.org,
-        ye.xingchen@zte.com.cn, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 0/2] gro: optimise redundant parsing of packets
-Message-ID: <20230313162520.GA17199@debian>
-MIME-Version: 1.0
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RaiTWc1TBAi5d1rLuyLL3Bni4jqnqiB7HmeC9LT6Wkw=;
+ b=Yv0cahuwprdQm5RKA4NuM46VgCaJuoHpioCtAfJINgFh6+4tN/9kjQi2WHHs/08LWgMeTco92N9Th4hFif5f0++GEefjTuwLrcDhut8nMvWjeU9QFnyD1tW3iJiC/vtIZqJE2VHkeW9DrzKa2xXEuhFhRvd7DbacZjHQAu3t8ek=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by CO1PR13MB4936.namprd13.prod.outlook.com (2603:10b6:303:fb::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.24; Mon, 13 Mar
+ 2023 16:26:07 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.024; Mon, 13 Mar 2023
+ 16:26:07 +0000
+Date:   Mon, 13 Mar 2023 17:26:01 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Shannon Nelson <shannon.nelson@amd.com>
+Cc:     jasowang@redhat.com, mst@redhat.com,
+        virtualization@lists.linux-foundation.org, brett.creeley@amd.com,
+        davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        drivers@pensando.io
+Subject: Re: [PATCH RFC v2 virtio 1/7] pds_vdpa: Add new vDPA driver for
+ AMD/Pensando DSC
+Message-ID: <ZA9OmfdYIosUrKAa@corigine.com>
+References: <20230309013046.23523-1-shannon.nelson@amd.com>
+ <20230309013046.23523-2-shannon.nelson@amd.com>
+ <ZA3cYPoWQCjYoB3g@corigine.com>
+ <ZA3jKuMlr/kBQNml@corigine.com>
+ <37fd08f6-0608-c6a3-28f0-63d05eaf0a40@amd.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <37fd08f6-0608-c6a3-28f0-63d05eaf0a40@amd.com>
+X-ClientProxiedBy: AS4P251CA0012.EURP251.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5d2::13) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CO1PR13MB4936:EE_
+X-MS-Office365-Filtering-Correlation-Id: e0feb100-d10e-4ecc-c33a-08db23dfa604
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: exDXoeMfUmab8q0VOpbmXDGrTEMnY6rNbP6X2w9a7FfIfWOoZkC1yY3nLdqoBx9/3NZQQjcfha7A7ZVfjIFD5B3sZuD5d6gZS7r74gHPjTU/NWdGMm4SuiQWdbbiz/Du6eDl19lHtdNEkPPtIEFA7tcs7FDm9PdTPGX2rO1As4mttCpn4OELJXYQKVmcU9Yy4xhSiUN/CRpIMxrcr1fY3zXa5QpiBxnLloqM3a5qq3aghVVdZDSQUrbYmIn5Vo9MmyBgZtyfKahONZ8Sd/FEyOkaudBe2WdkqNWncqn2FH3HK0scPfHWsUeeMNxlBOZr92BhyKXdXjgwao0P0ovvTJfjGtwZXOouloEVzJOBf13k709SQhJP/xz4Qikr56cQiBMaGv3SreOa1oOH+zhhqyt+JJPA73dhXmyexDw/s3CmY+wdvYnE9+ff/ipV/Q2r6zYa0EsCJYs0xX5r1yjweOcc1M822srKbCQvTQEW0HCm3hECNUQ8KAi4xLop6+872BSoU1gtOWEWT6ys/oEDmmhzI4BKf6gPwB6BhXq4nTM4RYRHlWBLsPcN31nKzEk87A6UFRyrLNIDZkWdIpI6gF09R0zwWgH8YMjMF2xQQl39J63Sn6vIcCHPCc4wcrtDGzu0xq482rQWIN4nEmyA6A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39840400004)(366004)(376002)(396003)(136003)(346002)(451199018)(41300700001)(478600001)(8936002)(66556008)(8676002)(66476007)(6916009)(66946007)(4326008)(86362001)(36756003)(38100700002)(6512007)(6666004)(53546011)(186003)(6506007)(44832011)(5660300002)(2906002)(316002)(6486002)(83380400001)(2616005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?D2jaYPLze58sEay6B7m322lyIurGuBNY+FXbQahp7PO9JgiVp8UdGqSgNKhJ?=
+ =?us-ascii?Q?4Dd7KAiMj/co8NHbgPQ97WO16JuKQqr0NRHYmofvToEdIdVi8+KQR9TQEv9o?=
+ =?us-ascii?Q?QYzVHkB67UIzXBhqa9rsVDq5+WFKHwAr+M83emuXIhXV2cDi/CTyUqc4wibf?=
+ =?us-ascii?Q?4Sjk+KrNkSV+EpLV/Fgkkg8UDVowPo01d8t83XvrlDWn/Iqv7A+8MUWL2GmR?=
+ =?us-ascii?Q?0p8Tc7Sd6RmuILUpK+N2h//EaP5FFNWai1MXudi7qus4oRxPk823zOBhvK31?=
+ =?us-ascii?Q?oE08R7fzfhZBF+dp7M9C81uPu1ZkzA8/p5RTI0O7QxP+4UXE5z+TEF/GqKUh?=
+ =?us-ascii?Q?xpkde2sXKkpgGvvfjJOYUyunVzcWHl/IP6Wk+cS5h+kg5NP9zh82JqqQH/mZ?=
+ =?us-ascii?Q?PqBHUXc0Y7VpcUna3Jv71NATpsE2Ij20gGd3tjoOXQllbCzEHSnpYsA/DXks?=
+ =?us-ascii?Q?AhP6RthA31gtlv9Xt6F37HJY0d0R9q+Doh8z6T+uVkTTc5Vi//qJziWZ3W5l?=
+ =?us-ascii?Q?abhwQVloolq9CUxynAnSQQ6SDMRdXZkHC39vjysySQzsYmoU4GAhErr+//kg?=
+ =?us-ascii?Q?y9d4loxMMymUd4IlFMdQ5I+56193/8NalyKId+Jw+D66FnHTeRfYtxKwJEu4?=
+ =?us-ascii?Q?C8eAm7/Skp1kVnmu3Tv0zI9/VIqFvGrCnOU8NxVaqZ4TdbRj5Ge/GPQbR7+x?=
+ =?us-ascii?Q?sZ5ELw9XvaQdaQWYJB2VQsqwD+O14qQQzTz1jzh4UFGzMiQjXo6znydC826L?=
+ =?us-ascii?Q?4WiK0PHzy1H7SAeZaocsWwQXqoklQiLaJUc6biwkfSYnYWv/263KqmA4D8nB?=
+ =?us-ascii?Q?rxbswikjYIp9kGahPqK2NeIEXhNQmY+BqlfA+dM8FBWXI6yzJdoqvPLbWZSS?=
+ =?us-ascii?Q?dkrauyIz8WP7R8tHmYTBaoS7vEbunOKmEX1kSdeZYLZo+mbuSjrgEoiWfBkg?=
+ =?us-ascii?Q?ROBrn6tstGo4PykaYAyBZKfJzP1YK59YH6kIiDvRNR0nc9GkjoJHxmji/pW6?=
+ =?us-ascii?Q?Epg/aaxt/z9zllUzGuahzyqZCQ1fD6BrO2EdCNiYJW8sGIiDeQ0tlLJr9kVT?=
+ =?us-ascii?Q?bAXivB2xo46Wmox7kFFegEqHMHIc8ulDIQaxGnJu1GvBoApy9YTe9sbBIfIX?=
+ =?us-ascii?Q?NnPpy/SOsr1qlTHbc30aj/H3dGvCiL+8zqMHxv163ylMr6l9QfXPbaY7j6aG?=
+ =?us-ascii?Q?iNiSy+eNG9G/xqFwla1XNsQSkIQFEoc6nApCnjy25Xzfr/RnH97ryO8Yk45n?=
+ =?us-ascii?Q?Fcga8VexPVD5ZM658qSACMDw9LCiW1WtW9vcnbavy5nejWupK73LN4oLOUwh?=
+ =?us-ascii?Q?wZRTWOqMOxpHMyzhcNYehiIQFuN6kMg2DtNJqawooRHubhJ7n1PgOO9PAimX?=
+ =?us-ascii?Q?GaKqzS3ZaG8z7xDfFOZojguqnSF0eY+DCTvLMUShDlvyP5Lm7Y2q6DPlFNnr?=
+ =?us-ascii?Q?5oZf0VBfiPoE1Sn/VzCRas3dKlvaWh61zqZjb9nBUAyGDsvGPWJnu5EiXiwr?=
+ =?us-ascii?Q?5zviWcD7PsgNqJrsH5jO1c3KYyxo45/YANk1NZ8oUK58aetv/eE0XhAvWUr3?=
+ =?us-ascii?Q?r+VLE0aiQIqnsrtPcO1++gsnNSAYTC9+Tk0UentmdEQcWG1pKPiLQXNPYWNK?=
+ =?us-ascii?Q?cK9U+MaspBtfZq8uHACeiiFAwl+nPrl/NSF45uxQpoS7cP0UeEIeYNiEsQ4O?=
+ =?us-ascii?Q?AzfW8g=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e0feb100-d10e-4ecc-c33a-08db23dfa604
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Mar 2023 16:26:07.4628
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: EvYhTVZR7ZJaW2mCtg4bYRIsjT7Y6qhrh4WjUZKZkycQH8w5+znPjcNJmLUgpMRpl4hyKbYQGhGJnzaI99FHFPABhKbX3rE6Lq0C76FLwFI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR13MB4936
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently the IPv6 extension headers are parsed twice: first in
-ipv6_gro_receive, and then again in ipv6_gro_complete.
+On Mon, Mar 13, 2023 at 09:13:11AM -0700, Shannon Nelson wrote:
+> On 3/12/23 7:35 AM, Simon Horman wrote:
+> > On Sun, Mar 12, 2023 at 03:06:39PM +0100, Simon Horman wrote:
+> > > On Wed, Mar 08, 2023 at 05:30:40PM -0800, Shannon Nelson wrote:
+> > > > This is the initial auxiliary driver framework for a new vDPA
+> > > > device driver, an auxiliary_bus client of the pds_core driver.
+> > > > The pds_core driver supplies the PCI services for the VF device
+> > > > and for accessing the adminq in the PF device.
+> > > > 
+> > > > This patch adds the very basics of registering for the auxiliary
+> > > > device, setting up debugfs entries, and registering with devlink.
+> > > > 
+> > > > Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
+> > > 
+> > > ...
+> > > 
+> > > > diff --git a/drivers/vdpa/pds/Makefile b/drivers/vdpa/pds/Makefile
+> > > > new file mode 100644
+> > > > index 000000000000..a9cd2f450ae1
+> > > > --- /dev/null
+> > > > +++ b/drivers/vdpa/pds/Makefile
+> > > > @@ -0,0 +1,8 @@
+> > > > +# SPDX-License-Identifier: GPL-2.0-only
+> > > > +# Copyright(c) 2023 Advanced Micro Devices, Inc
+> > > > +
+> > > > +obj-$(CONFIG_PDS_VDPA) := pds_vdpa.o
+> > > > +
+> > > > +pds_vdpa-y := aux_drv.o
+> > > > +
+> > > > +pds_vdpa-$(CONFIG_DEBUG_FS) += debugfs.o
+> > > > diff --git a/drivers/vdpa/pds/aux_drv.c b/drivers/vdpa/pds/aux_drv.c
+> > > > new file mode 100644
+> > > > index 000000000000..b3f36170253c
+> > > > --- /dev/null
+> > > > +++ b/drivers/vdpa/pds/aux_drv.c
+> > > > @@ -0,0 +1,99 @@
+> > > > +// SPDX-License-Identifier: GPL-2.0-only
+> > > > +/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+> > > > +
+> > > > +#include <linux/auxiliary_bus.h>
+> > > > +
+> > > > +#include <linux/pds/pds_core.h>
+> > > 
+> > > Perhaps I'm missing something obvious, but
+> > > pds_core.h doesn't exist (yet).
+> > 
+> > The obvious thing that I was missing is that it is added by
+> > 
+> > * [PATCH RFC v4 net-next 00/13] pds_core driver
+> 
+> Sorry about that - I can try to make that dependency more obvious in the
+> next round.
 
-By using the new ->transport_proto and ->network_proto fields, and also
-storing the size of the network header, we can avoid parsing a second time
-during the gro complete phase.
-
-The first commit frees up space in the GRO CB. The second commit reduces
-the redundant parsing during the complete phase, using the freed CB space.
-
-In addition, the second commit contains a fix for a potential future
-problem in BIG TCP, which is detailed in the commit message itself.
-
-Performance tests for TCP stream over IPv6 with extension headers
-demonstrate rx improvement of ~0.7%.
-
-For the benchmarks, I used 100Gbit NIC mlx5 single-core (power management
-off), turboboost off.
-
-Typical IPv6 traffic (zero extension headers):
-
-    for i in {1..5}; do netperf -t TCP_STREAM -H 2001:db8:2:2::2 -l 90 | tail -1; done
-    # before
-    131072  16384  16384    90.00    16391.20
-    131072  16384  16384    90.00    16403.50
-    131072  16384  16384    90.00    16403.30
-    131072  16384  16384    90.00    16397.84
-    131072  16384  16384    90.00    16398.00
-
-    # after
-    131072  16384  16384    90.00    16399.85
-    131072  16384  16384    90.00    16392.37
-    131072  16384  16384    90.00    16403.06
-    131072  16384  16384    90.00    16406.97
-    131072  16384  16384    90.00    16406.09
-
-IPv6 over IPv6 traffic:
-
-    for i in {1..5}; do netperf -t TCP_STREAM -H 4001:db8:2:2::2 -l 90 | tail -1; done
-    # before
-    131072  16384  16384    90.00    14791.61
-    131072  16384  16384    90.00    14791.66
-    131072  16384  16384    90.00    14783.47
-    131072  16384  16384    90.00    14810.17
-    131072  16384  16384    90.00    14806.15
-
-    # after
-    131072  16384  16384    90.00    14793.49
-    131072  16384  16384    90.00    14816.10
-    131072  16384  16384    90.00    14818.41
-    131072  16384  16384    90.00    14780.35
-    131072  16384  16384    90.00    14800.48
-
-IPv6 traffic with varying extension headers:
-
-    for i in {1..5}; do netperf -t TCP_STREAM -H 2001:db8:2:2::2 -l 90 | tail -1; done
-    # before
-    131072  16384  16384    90.00    14812.37
-    131072  16384  16384    90.00    14813.04
-    131072  16384  16384    90.00    14802.54
-    131072  16384  16384    90.00    14804.06
-    131072  16384  16384    90.00    14819.08
-
-    # after
-    131072  16384  16384    90.00    14927.11
-    131072  16384  16384    90.00    14910.45
-    131072  16384  16384    90.00    14917.36
-    131072  16384  16384    90.00    14916.53
-    131072  16384  16384    90.00    14928.88
-
-Richard Gobert (2):
-  gro: decrease size of CB
-  gro: optimise redundant parsing of packets
-
- include/net/gro.h      | 33 ++++++++++++++++++++++++---------
- net/core/gro.c         | 18 +++++++++++-------
- net/ethernet/eth.c     | 14 +++++++++++---
- net/ipv6/ip6_offload.c | 20 +++++++++++++++-----
- 4 files changed, 61 insertions(+), 24 deletions(-)
-
--- 
-2.36.1
+That might be a good idea.
+But I am likewise sorry for jumping the gun with my email yesterday.
