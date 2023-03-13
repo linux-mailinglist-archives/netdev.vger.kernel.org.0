@@ -2,88 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB5B56B6E18
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 04:46:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C375F6B6E1E
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 04:47:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229988AbjCMDqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Mar 2023 23:46:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33864 "EHLO
+        id S230063AbjCMDq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Mar 2023 23:46:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229932AbjCMDqN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Mar 2023 23:46:13 -0400
-Received: from out30-97.freemail.mail.aliyun.com (out30-97.freemail.mail.aliyun.com [115.124.30.97])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95D0B3BD9D;
-        Sun, 12 Mar 2023 20:46:11 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=kaishen@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VdfE4BM_1678679168;
-Received: from 30.221.113.94(mailfrom:KaiShen@linux.alibaba.com fp:SMTPD_---0VdfE4BM_1678679168)
-          by smtp.aliyun-inc.com;
-          Mon, 13 Mar 2023 11:46:09 +0800
-Message-ID: <9e38121a-14ab-5ee4-b379-ad10371392f0@linux.alibaba.com>
-Date:   Mon, 13 Mar 2023 11:46:07 +0800
+        with ESMTP id S229997AbjCMDqv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Mar 2023 23:46:51 -0400
+Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C563B232;
+        Sun, 12 Mar 2023 20:46:48 -0700 (PDT)
+Received: from EXMBX165.cuchost.com (unknown [175.102.18.54])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (Client CN "EXMBX165", Issuer "EXMBX165" (not verified))
+        by ex01.ufhost.com (Postfix) with ESMTP id 5280D24E1BD;
+        Mon, 13 Mar 2023 11:46:47 +0800 (CST)
+Received: from EXMBX162.cuchost.com (172.16.6.72) by EXMBX165.cuchost.com
+ (172.16.6.75) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Mon, 13 Mar
+ 2023 11:46:47 +0800
+Received: from starfive-sdk.starfivetech.com (171.223.208.138) by
+ EXMBX162.cuchost.com (172.16.6.72) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.42; Mon, 13 Mar 2023 11:46:46 +0800
+From:   Samin Guo <samin.guo@starfivetech.com>
+To:     <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Yanhong Wang <yanhong.wang@starfivetech.com>,
+        Samin Guo <samin.guo@starfivetech.com>
+Subject: [PATCH v6 0/8] Add Ethernet driver for StarFive JH7110 SoC
+Date:   Mon, 13 Mar 2023 11:46:37 +0800
+Message-ID: <20230313034645.5469-1-samin.guo@starfivetech.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.8.0
-Subject: Re: [PATCH net-next v3] net/smc: Use percpu ref for wr tx reference
-Content-Language: en-US
-From:   Kai <KaiShen@linux.alibaba.com>
-To:     Tony Lu <tonylu@linux.alibaba.com>
-Cc:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
-        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <20230303082115.449-1-KaiShen@linux.alibaba.com>
- <ZAhHiZ5/3Q3dcL4c@TONYMAC-ALIBABA.local>
- <43cd6283-c8c4-7764-f828-39a59596e33c@linux.alibaba.com>
-In-Reply-To: <43cd6283-c8c4-7764-f828-39a59596e33c@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [171.223.208.138]
+X-ClientProxiedBy: EXCAS061.cuchost.com (172.16.6.21) To EXMBX162.cuchost.com
+ (172.16.6.72)
+X-YovoleRuleAgent: yovoleflag
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This series adds ethernet support for the StarFive JH7110 RISC-V SoC.
+The series includes MAC driver. The MAC version is dwmac-5.20 (from
+Synopsys DesignWare). For more information and support, you can visit
+RVspace wiki[1].
+
+You can simply review or test the patches at the link [2].
+
+This patchset should be applied after the patchset [3] [4].
+[1]: https://wiki.rvspace.org/
+[2]: https://github.com/SaminGuo/linux/tree/vf2-6.3rc1-gmac
+[3]: https://patchwork.kernel.org/project/linux-riscv/cover/20230311090733.56918-1-hal.feng@starfivetech.com
+[4]: https://github.com/SaminGuo/linux/commit/fa57aaedb3c195bab99ac351a8e44664ae819bf2
+
+Changes since v5:
+- Droped "depends on STMMAC_ETH" and compiled DWMAC_STARFIVE to m by default (by Emil)
+- Removed clk_gtx in struct starfive_dwmac due to this pointer is only set, but never read. (by Emil)
+- Only setting the plat_dat->fix_mac_speed callback when it is needed (by Emil)
+- Moved mdio/phy nodes from SOC .dtsi into board .dtsi (by Andrew)
+- Modified the parameters passed by starfive,syscon (by Andrew && Emil)
+    <syscon, offset, mask>  ==>  <syscon, offset, shift>
+- Optimized the patchs(Fewer patches from 12 to 8)
+    1)merged patch-7 into patch-4 (by Rob)
+    2)merged patch-9 into patch-5
+    2)merged patch-11,12 into patch-10
+    3)Adjusted the patchs order
+- Fixed the unevaluatedProperties property from true to false (by Rob)
+- Replaced contains:enum with items:const for reset-names in snps,dwmac.yaml (by Rob)
+- Tested-by: Tommaso Merciai <tomm.merciai@gmail.com>
+- Rebased on tag v6.3-rc1
+
+Changes history:
+
+Changes since v4:
+- Supported both visionfive 2 v1.2A and visionfive 2 v1.3B.
+- Reworded the maxitems number of resets property in 'snps,dwmac.yaml'.
+- Suggested by Emil, dropped the _PLAT/_plat from the config/function/struct/file names.
+- Suggested by Emil, added MODULE_DEVICE_TABLE().
+- Suggested by Emil, dropped clk_gtxclk and use clk_tx_inv to set the clock frequency.
+- Added phy interface mode configuration function.
+- Rebased on tag v6.2.
+
+Changes since v3:
+- Reworded the maxitems number of resets property in 'snps,dwmac.yaml'
+- Removed the unused code in 'dwmac-starfive-plat.c'.
+- Reworded the return statement in 'starfive_eth_plat_fix_mac_speed' function.
+
+Changes since v2:
+- Renamed the dt-bindings 'starfive,jh71x0-dwmac.yaml' to 'starfive,jh7110-dwmac.yaml'.
+- Reworded the commit messages.
+- Reworded the example context in the dt-binding 'starfive,jh7110-dwmac.yaml'.
+- Removed "starfive,jh7100-dwmac" compatible string and special initialization of jh7100.
+- Removed the parts of YT8531,so dropped patch 5 and 6.
+- Reworded the maxitems number of resets property in 'snps,dwmac.yaml'.
+
+Changes since v1:
+- Recovered the author of the 1st and 3rd patches back to Emil Renner Berthing.
+- Added a new patch to update maxitems number of resets property in 'snps,dwmac.yaml'.
+- Fixed the check errors reported by "make dt_binding_check".
+- Renamed the dt-binding 'starfive,dwmac-plat.yaml' to 'starfive,jh71x0-dwmac.yaml'.
+- Updated the example context in the dt-binding 'starfive,jh71x0-dwmac.yaml'.
+- Added new dt-binding 'motorcomm,yt8531.yaml' to describe details of phy clock
+  delay configuration parameters.
+- Added more comments for PHY driver setting. For more details, see
+  'motorcomm,yt8531.yaml'.
+- Moved mdio device tree node from 'jh7110-starfive-visionfive-v2.dts' to 'jh7110.dtsi'.
+- Re-worded the commit message of several patches.
+- Renamed all the functions with starfive_eth_plat prefix in 'dwmac-starfive-plat.c'.
+- Added "starfive,jh7100-dwmac" compatible string and special init to support JH7100.
+
+Previous versions:
+v1 - https://patchwork.kernel.org/project/linux-riscv/cover/20221201090242.2381-1-yanhong.wang@starfivetech.com/
+v2 - https://patchwork.kernel.org/project/linux-riscv/cover/20221216070632.11444-1-yanhong.wang@starfivetech.com/
+v3 - https://patchwork.kernel.org/project/linux-riscv/cover/20230106030001.1952-1-yanhong.wang@starfivetech.com/
+v4 - https://patchwork.kernel.org/project/linux-riscv/cover/20230118061701.30047-1-yanhong.wang@starfivetech.com/
+v5 - https://patchwork.kernel.org/project/netdevbpf/cover/20230303085928.4535-1-samin.guo@starfivetech.com/
 
 
-On 3/13/23 9:20 AM, Kai wrote:
-> 
-> 
-> On 3/8/23 4:30 PM, Tony Lu wrote:
->>> redis-benchmark on smc-r with atomic wr_tx_refcnt:
->>> SET: 525817.62 requests per second, p50=0.087 msec
->>> GET: 570841.44 requests per second, p50=0.087 msec
->>>
->>> redis-benchmark on the percpu_ref version:
->>> SET: 539956.81 requests per second, p50=0.087 msec
->>> GET: 587613.12 requests per second, p50=0.079 msec
->>
->> Does the test data need to be refreshed?
->>
-> Will do.
->>> diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
->>> index 08b457c2d294..1645fba0d2d3 100644
->>> --- a/net/smc/smc_core.h
->>> +++ b/net/smc/smc_core.h
->>> @@ -106,7 +106,10 @@ struct smc_link {
->>>       unsigned long        *wr_tx_mask;    /* bit mask of used 
->>> indexes */
->>>       u32            wr_tx_cnt;    /* number of WR send buffers */
->>>       wait_queue_head_t    wr_tx_wait;    /* wait for free WR send 
->>> buf */
->>> -    atomic_t        wr_tx_refcnt;    /* tx refs to link */
->>> +    struct {
->>> +        struct percpu_ref    wr_tx_refs;
->>> +    } ____cacheline_aligned_in_smp;
->>> +    struct completion    tx_ref_comp;
->>
->> For the variable names suffixed with wr_*_refs, should we continue to
->> use wr_*_refcnt?
->>
->> Thanks.
-> In my opinion, we can't get the count of the percpu reference until it 
-> we start to destroy it. So maybe using wr_*_refcnt here is more 
-> appropriate？
-I mean wr_*_refs here. Sorry for the mistake.
+Emil Renner Berthing (2):
+  dt-bindings: net: snps,dwmac: Add dwmac-5.20 version
+  net: stmmac: platform: Add snps,dwmac-5.20 IP compatible string
+
+Samin Guo (5):
+  dt-bindings: net: snps,dwmac: Add 'ahb' reset/reset-name
+  net: stmmac: Add glue layer for StarFive JH7110 SoC
+  net: stmmac: starfive_dmac: Add phy interface settings
+  riscv: dts: starfive: jh7110: Add ethernet device nodes
+  riscv: dts: starfive: visionfive 2: Add configuration of gmac and phy
+
+Yanhong Wang (1):
+  dt-bindings: net: Add support StarFive dwmac
+
+ .../devicetree/bindings/net/snps,dwmac.yaml   |  17 +-
+ .../bindings/net/starfive,jh7110-dwmac.yaml   | 130 ++++++++++++++
+ MAINTAINERS                                   |   7 +
+ .../jh7110-starfive-visionfive-2-v1.2a.dts    |  13 ++
+ .../jh7110-starfive-visionfive-2-v1.3b.dts    |  27 +++
+ .../jh7110-starfive-visionfive-2.dtsi         |  32 ++++
+ arch/riscv/boot/dts/starfive/jh7110.dtsi      |  69 +++++++
+ drivers/net/ethernet/stmicro/stmmac/Kconfig   |  12 ++
+ drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
+ .../ethernet/stmicro/stmmac/dwmac-starfive.c  | 168 ++++++++++++++++++
+ .../ethernet/stmicro/stmmac/stmmac_platform.c |   3 +-
+ 11 files changed, 474 insertions(+), 5 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml
+ create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
+
+
+base-commit: 8ca09d5fa3549d142c2080a72a4c70ce389163cd
+prerequisite-patch-id: 46cc850aa0e9e03ccf5ed23d8458babfca3d71af
+prerequisite-patch-id: a6975e61ee5803fbd74b1c21ab925fd81c3c0eab
+prerequisite-patch-id: ac150a8c622e858e088df8121093d448df49c245
+prerequisite-patch-id: 044263ef2fb9f1e5a586edbf85d5f67814a28430
+prerequisite-patch-id: 89f049f951e5acf75aab92541992f816fd0acc0d
+prerequisite-patch-id: 9f3dbc9073eee89134e68977e941e457593c2757
+prerequisite-patch-id: 8600b156a235be2b3db53be3f834e7a370e2cfb9
+prerequisite-patch-id: 1b2d0982b18da060c82134f05bf3ce16425bac8d
+prerequisite-patch-id: 090ba4b78d47bc19204916e76fdbc70021785388
+prerequisite-patch-id: a5d9e0f7d4f8163f566678894cf693015119f2d9
+prerequisite-patch-id: 4c12d958e3a3d629d86dddb1e4f099d8909393e0
+prerequisite-patch-id: bb939c0c7c26b08addfccd890f9d3974b6eaec53
+prerequisite-patch-id: 8f5c66dfb14403424044192f6fa05b347ad356a7
+prerequisite-patch-id: fd93763b95469912bde9bdfa4cd827c8d5dba9c6
+prerequisite-patch-id: 6987950c2eb4b3773b2df8f7934eff434244aeab
+prerequisite-patch-id: 258ea5f9b8bf41b6981345dcc81795f25865d38f
+prerequisite-patch-id: 8b6f2c9660c0ac0ee4e73e4c21aca8e6b75e81b9
+prerequisite-patch-id: dbb0c0151b8bdf093e6ce79fd2fe3f60791a6e0b
+prerequisite-patch-id: e7773c977a7b37692e9792b21cc4f17fa58f9215
+prerequisite-patch-id: d57e95d31686772abc4c4d5aa1cadc344dc293cd
+prerequisite-patch-id: 9f911969d0a550648493952c99096d26e05d4d83
+prerequisite-patch-id: 1be0fb49e0fbe293ca8fa94601e191b13c8c67d9
+prerequisite-patch-id: a8340aa3403658e8275d0da0038c2d49bc79843a
+--
+2.17.1
+
