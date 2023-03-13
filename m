@@ -2,151 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E60496B7D98
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 17:32:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AE436B7DA1
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 17:33:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230139AbjCMQcU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 12:32:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59358 "EHLO
+        id S231349AbjCMQdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 12:33:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229689AbjCMQcR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 12:32:17 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 178E57B48D
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 09:31:48 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id ek18so19958396edb.6
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 09:31:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google; t=1678725080;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=iC/9rxrLtt9j5YQSFIj4r+xqIhr4OIPVnE5VID9BZVo=;
-        b=YtADCUojuhirIfFRQL1K75A264lIItj+966LATxLRu6s7fqnP9LTwc+RnSBOr2EcbT
-         E9kGP2na4r89BHbgbTu7AZ1e5R+jpSnaB0D+TpNokmpEjrkwQP1lBU1uvUz0s8u7y3LR
-         5Fh+7q0UUy/aXKPe3Ahm+SWO46nK/U11SFIGasx2DnETfMGQUVbeq+JTp+mBpSLB/INF
-         tAvd5mVQKWBnACY+0rdmyJFUjWUtDgiw9T+nRsuzS9o+njas4jw2XdW6qfzy0GeDSTqv
-         uoipGOIKoNrL6oWZgqXGCp9qIilYErr0QQwMNpC24KPCzTPF6G30PkHQkm0kAmuqInLZ
-         6XOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678725080;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=iC/9rxrLtt9j5YQSFIj4r+xqIhr4OIPVnE5VID9BZVo=;
-        b=kvP3/EGIVBnNTtUSjn1adddbWsZpHZAxb1mJqH/aEA05ZG521e/9MVC0dwpvoUmz/y
-         b7RlikY57+VtDhDTzNRDSLQZo0XGvLX543VreDEU88Ojr3Dz4oC2aWyNw8eFyrfs+6RB
-         4WMfFL4wI+g4WmJT0CBsRzr4sIUmFCgLsEcjbOzQvDORn91s+T7iSiBmRF49mnLxFe76
-         IERm0sV6mjH627eExuN4rlz+GQvJGA6GxL0oys0DG4jUUaMptVL+8INiErI38Fwz1ys5
-         q8fTGho+72xAlRyVrwO0jbSaHgyxRJ0Xnz69pE3h6GB6RldIJYC5jygI7H/nzGJJgsbJ
-         B5Ow==
-X-Gm-Message-State: AO0yUKWv6nmgljzD96S5lT2RZZfK05gk/cRh/9UaxxIUl1Wcba4k+TPc
-        L7Sm/CPApLfHL6br2vbrkadkXg==
-X-Google-Smtp-Source: AK7set+PlugTltwa4XqV6a/Qhb5TzyW/J1rlDrVJgoGyg5zLPsyfQOG83Zh0xrpRM/pyV7uWxPOa3A==
-X-Received: by 2002:a05:6402:7d3:b0:4b0:87ec:2b98 with SMTP id u19-20020a05640207d300b004b087ec2b98mr33964833edy.16.1678725080373;
-        Mon, 13 Mar 2023 09:31:20 -0700 (PDT)
-Received: from [10.44.2.5] ([81.246.10.41])
-        by smtp.gmail.com with ESMTPSA id pw23-20020a17090720b700b008f398f25beesm3629029ejb.189.2023.03.13.09.31.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Mar 2023 09:31:20 -0700 (PDT)
-Message-ID: <284f332d-675c-6d7f-94f0-5d8a944ea075@tessares.net>
-Date:   Mon, 13 Mar 2023 17:31:19 +0100
+        with ESMTP id S230450AbjCMQdV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 12:33:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C67F87B4A8;
+        Mon, 13 Mar 2023 09:32:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 309D961361;
+        Mon, 13 Mar 2023 16:31:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F364C433EF;
+        Mon, 13 Mar 2023 16:31:48 +0000 (UTC)
+Date:   Mon, 13 Mar 2023 12:31:47 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Mike Rapoport <mike.rapoport@gmail.com>
+Cc:     Vlastimil Babka <vbabka@suse.cz>, Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        rcu@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Subject: Re: [PATCH 0/7] remove SLOB and allow kfree() with
+ kmem_cache_alloc()
+Message-ID: <20230313123147.6d28c47e@gandalf.local.home>
+In-Reply-To: <ZA2gofYkXRcJ8cLA@kernel.org>
+References: <20230310103210.22372-1-vbabka@suse.cz>
+        <ZA2gofYkXRcJ8cLA@kernel.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH net v2 6/8] veth: take into account device reconfiguration
- for xdp_features flag
-Content-Language: en-GB
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com, saeedm@nvidia.com,
-        leon@kernel.org, shayagr@amazon.com, akiyano@amazon.com,
-        darinzon@amazon.com, sgoutham@marvell.com,
-        lorenzo.bianconi@redhat.com, toke@redhat.com, teknoraver@meta.com,
-        ttoukan.linux@gmail.com
-References: <cover.1678364612.git.lorenzo@kernel.org>
- <f20cfdb08d7357b0853d25be3b34ace4408693be.1678364613.git.lorenzo@kernel.org>
- <f5167659-99d7-04a1-2175-60ff1dabae71@tessares.net>
- <CANn89i+4F0QUqyDTqJ8GWrWvGnTyLTxja2hbL1W_rVdMqqmxaQ@mail.gmail.com>
- <CANn89iL=zQQygGg4mkAG+MES6-CpkYBL5KY+kn4j=hAowexVZw@mail.gmail.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-In-Reply-To: <CANn89iL=zQQygGg4mkAG+MES6-CpkYBL5KY+kn4j=hAowexVZw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+On Sun, 12 Mar 2023 11:51:29 +0200
+Mike Rapoport <mike.rapoport@gmail.com> wrote:
 
-On 13/03/2023 16:53, Eric Dumazet wrote:
-> On Mon, Mar 13, 2023 at 8:50 AM Eric Dumazet <edumazet@google.com> wrote:
->>
->> On Mon, Mar 13, 2023 at 7:15 AM Matthieu Baerts
->> <matthieu.baerts@tessares.net> wrote:
->>>
->>> Hi Lorenzo,
->>>
->>> On 09/03/2023 13:25, Lorenzo Bianconi wrote:
->>>> Take into account tx/rx queues reconfiguration setting device
->>>> xdp_features flag. Moreover consider NETIF_F_GRO flag in order to enable
->>>> ndo_xdp_xmit callback.
->>>>
->>>> Fixes: 66c0e13ad236 ("drivers: net: turn on XDP features")
->>>> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
->>>
->>> Thank you for the modification.
->>>
->>> Unfortunately, 'git bisect' just told me this modification is the origin
->>> of a new WARN when using veth in a netns:
->>>
->>>
->>> ###################### 8< ######################
->>>
->>> =============================
->>> WARNING: suspicious RCU usage
->>> 6.3.0-rc1-00144-g064d70527aaa #149 Not tainted
->>> -----------------------------
->>> drivers/net/veth.c:1265 suspicious rcu_dereference_check() usage!
->>>
->>> other info that might help us debug this:
->>>
->>
->> Same observation here, I am releasing a syzbot report with a repro.
->>
->>
+> git grep -in slob still gives a couple of matches. I've dropped the
+> irrelevant ones it it left me with these:
 > 
-> I guess a fix would be:
+> CREDITS:14:D: SLOB slab allocator
+> kernel/trace/ring_buffer.c:358: * Also stolen from mm/slob.c. Thanks to Mathieu Desnoyers for pointing
+> mm/Kconfig:251:    SLOB allocator and is not recommended for systems with more than
+> mm/Makefile:25:KCOV_INSTRUMENT_slob.o := n
+>  
+> Except the comment in kernel/trace/ring_buffer.c all are trivial.
 > 
-> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> index 293dc3b2c84a6c1931e8df42cdcd5f2798004f3c..4da74ac27f9a2425d8d3f4ffcc93f453bd58e3a5
-> 100644
-> --- a/drivers/net/veth.c
-> +++ b/drivers/net/veth.c
-> @@ -1262,7 +1262,7 @@ static void veth_set_xdp_features(struct net_device *dev)
->         struct veth_priv *priv = netdev_priv(dev);
->         struct net_device *peer;
+> As for the comment in ring_buffer.c, it looks completely irrelevant at this
+> point.
 > 
-> -       peer = rcu_dereference(priv->peer);
-> +       peer = rtnl_dereference(priv->peer);
->         if (peer && peer->real_num_tx_queues <= dev->real_num_rx_queues) {
->                 xdp_features_t val = NETDEV_XDP_ACT_BASIC |
->                                      NETDEV_XDP_ACT_REDIRECT |
-> 
+> @Steve?
 
-Thank you for having looked!
+You want me to remember something I wrote almost 15 years ago? I think I
+understand that comment as much as you do. Yeah, that was when I was still
+learning to write comments for my older self to understand, and I failed
+miserably!
 
-This patch avoids the warning on our side.
+But git history comes to the rescue. The commit that added that comment was:
 
-Cheers,
-Matt
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+ed56829cb3195 ("ring_buffer: reset buffer page when freeing")
+
+This was at a time when it was suggested to me to use the struct page
+directly in the ring buffer and where we could do fun "tricks" for
+"performance". (I was never really for this, but I wasn't going to argue).
+
+And the code in question then had:
+
+/*
+ * Also stolen from mm/slob.c. Thanks to Mathieu Desnoyers for pointing
+ * this issue out.
+ */
+static inline void free_buffer_page(struct buffer_page *bpage)
+{
+        reset_page_mapcount(&bpage->page);
+        bpage->page.mapping = NULL;
+        __free_page(&bpage->page);
+}
+
+
+But looking at commit: e4c2ce82ca27 ("ring_buffer: allocate buffer page
+pointer")
+
+It was finally decided that method was not safe, and we should not be using
+struct page but just allocate an actual page (much safer!).
+
+I never got rid of the comment, which was more about that
+"reset_page_mapcount()", and should have been deleted back then.
+
+Just remove that comment. And you could even add:
+
+Suggested-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Fixes: e4c2ce82ca27 ("ring_buffer: allocate buffer page pointer")
+
+-- Steve
