@@ -2,105 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 45D476B7EA2
-	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 18:03:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 978066B7EA9
+	for <lists+netdev@lfdr.de>; Mon, 13 Mar 2023 18:04:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230081AbjCMRDQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 13:03:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60062 "EHLO
+        id S229622AbjCMREg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 13:04:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230394AbjCMRDB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 13:03:01 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60FE07202B
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 10:02:03 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id h97so5645240ybi.5
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 10:02:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1678726873;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+3LTJVQ8I7Md44dC0AzAPJrh+kx0iHH3FkY/zz5mmQk=;
-        b=JwLRo2H8LkJNs/lKAF6GdiW8kBrP8YKe0c1h4gZE3oielQ93KgRC1nL6EjJqq129DC
-         jfaNiHgX7XdNlGa9VCpA8YKqSS2iG2XCcGwLWzgNXcn9JUqoj1/cEl1l8Ucc0W/JtTFu
-         w/+Y4bWJ24PZWIAjZglJYiY5fOGNGqF6nn2CNUq7d076DU6syh6loYSM5ffLemCY0DwV
-         +3Gc42Wqb6E5Wy3Vk+OjLJMhw1czabLk+TX65vHhZmt3CmL1xn5glbUpqCKBytxUUKD2
-         TQx2XS230JoWCsmh/H1Lsjl6Ri+c7EsDYCerBly880SkmAUGtoRobNhdEWT0CpsoCPBy
-         smGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678726873;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=+3LTJVQ8I7Md44dC0AzAPJrh+kx0iHH3FkY/zz5mmQk=;
-        b=MA/Kt2K/pseqMZYw4xv4kCGmaJISdjp0ZANesvEfYR9fOzuTO+EWACJkpHYdGk2zIc
-         afg3lTp0k29CfqRJ5IKzQLY6GoMLsJ++75dHGyZAvRMwLe9gtOTCL13mxc1iYFA6w9fE
-         woZiWaVAg5nCl8yTQghtCb4nC+iCCEMtXOoa+MS+ldwqTUhwdLZqwVde0W0RHubpYoyg
-         8/c+PEDYqG3UrL0msllvW1GVURC3/+R/8Qk4BgR5MhahqyYCTCLb26f73HxipcAakeHC
-         au6uURuRIjqzLUWMZo+dvqi6k9eph4Xt9+4LBXBMb+grDOi5eJJRkQF9/h2bH3fXuleD
-         4Fcw==
-X-Gm-Message-State: AO0yUKUDG2GPMM3bt7jX/ssbwhMSjVv5PuQfohPoeFKrV4SWNMsJ0mrw
-        HaH3iQKQQsWuR3PbYKW/Zv3L6LVlensgB1quOrijsw==
-X-Google-Smtp-Source: AK7set9AGI9Yup843jOL+BxMIvnxdJnpdOzdNn1Qgz4OEl6d5d4kvCTnls97Ui1PaHdghV59qsWHM/i0zXaplRzioT0=
-X-Received: by 2002:a05:6902:524:b0:ab8:1ed9:cfc5 with SMTP id
- y4-20020a056902052400b00ab81ed9cfc5mr21762528ybs.6.1678726872826; Mon, 13 Mar
- 2023 10:01:12 -0700 (PDT)
+        with ESMTP id S229494AbjCMREf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 13:04:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E66B4CA13;
+        Mon, 13 Mar 2023 10:03:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC789B81196;
+        Mon, 13 Mar 2023 17:02:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE23BC433D2;
+        Mon, 13 Mar 2023 17:02:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1678726960;
+        bh=m+gRAhlextJ5L3RQ/bBFFeXPwv/jmWB+9pPPrZ6G7oc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=wRrvxR41W/OTafoGGoOFgb+vILnavvFRIgPbOL1KzCCyk8FkjKehv0p6Za0KfThf2
+         mYplghwkEV0VhE7mLzBGndZIaSsI+1BEgHN1aB3kRT0fPSLyiWhsEwVl9iAoSM8T5q
+         a38u3kBmOPKon1E7641F8I/fiSEaLO3D45ZF4UXI=
+Date:   Mon, 13 Mar 2023 18:02:37 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jorge Merlino <jorge.merlino@canonical.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] Add symlink in /sys/class/net for interface altnames
+Message-ID: <ZA9XLfunTLtQJNCf@kroah.com>
+References: <20230313164903.839-1-jorge.merlino@canonical.com>
 MIME-Version: 1.0
-References: <20230313162520.GA17199@debian> <20230313162956.GA17242@debian>
-In-Reply-To: <20230313162956.GA17242@debian>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 13 Mar 2023 10:01:01 -0700
-Message-ID: <CANn89iJfnK1q51ushoN-H4h8DCZBrbvwLB8JCyS6z3ViQczVVw@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] gro: decrease size of CB
-To:     Richard Gobert <richardbgobert@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        dsahern@kernel.org, alexanderduyck@fb.com, lucien.xin@gmail.com,
-        lixiaoyan@google.com, iwienand@redhat.com, leon@kernel.org,
-        ye.xingchen@zte.com.cn, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230313164903.839-1-jorge.merlino@canonical.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 13, 2023 at 9:30=E2=80=AFAM Richard Gobert <richardbgobert@gmai=
-l.com> wrote:
->
-> The GRO control block (NAPI_GRO_CB) is currently at its maximum size.  Th=
-is
-> commit reduces its size by putting two groups of fields that are used onl=
-y
-> at different times into a union.
->
-> Specifically, the fields frag0 and frag0_len are the fields that make up
-> the frag0 optimisation mechanism, which is used during the initial parsin=
-g
-> of the SKB.
-
-Note that these fields could also be stored in some auto variable,
-instead of skb.
-
->
-> The fields last and age are used after the initial parsing, while the SKB
-> is stored in the GRO list, waiting for other packets to arrive.
->
-> There was one location in dev_gro_receive that modified the frag0 fields
-> after setting last and age. I changed this accordingly without altering t=
-he
-> code behaviour.
->
-> Signed-off-by: Richard Gobert <richardbgobert@gmail.com>
+On Mon, Mar 13, 2023 at 01:49:03PM -0300, Jorge Merlino wrote:
+> Currently interface altnames behave almost the same as the interface
+> principal name. One difference is that the not have a symlink in
+> /sys/class/net as the principal has.
+> This was mentioned as a TODO item in the original commit:
+> https://lore.kernel.org/netdev/20190719110029.29466-1-jiri@resnulli.us
+> This patch adds that symlink when an altname is created and removes it
+> when the altname is deleted.
+> 
+> Signed-off-by: Jorge Merlino <jorge.merlino@canonical.com>
 > ---
+>  drivers/base/core.c    | 22 ++++++++++++++++++++++
+>  include/linux/device.h |  3 +++
+>  net/core/dev.c         | 11 +++++++++++
+>  3 files changed, 36 insertions(+)
+> 
+> diff --git a/drivers/base/core.c b/drivers/base/core.c
+> index e54a10b5d..165f51438 100644
+> --- a/drivers/base/core.c
+> +++ b/drivers/base/core.c
+> @@ -4223,6 +4223,28 @@ void root_device_unregister(struct device *dev)
+>  }
+>  EXPORT_SYMBOL_GPL(root_device_unregister);
+>  
+> +/**
+> + * device_add_altname_symlink - add a symlink in /sys/class/net for a device
 
-SGTM, thanks.
+If this is only for networking devices, why are you accepting any device
+pointer?
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+> + * altname
+> + * @dev: device getting a new altname
+> + * @altname: new altname
+> + */
+> +int device_add_altname_symlink(struct device *dev, const char *altname)
+> +{
+> +	return sysfs_create_link(&dev->class->p->subsys.kobj, &dev->kobj,
+
+That's a deep -> chain, are you _SURE_ that is going to work properly?
+You just want a link in the subsystem directory, so why not pass in the
+class/subsystem instead?
+
+
+> +			altname);
+> +}
+> +
+> +/**
+> + * device_remove_altname_symlink - remove device altname symlink from
+> + * /sys/class/net
+> + * @dev: device losing an altname
+> + * @altname: removed altname
+> + */
+> +void device_remove_altname_symlink(struct device *dev, const char *altname)
+> +{
+> +	sysfs_delete_link(&dev->class->p->subsys.kobj, &dev->kobj, altname);
+
+Same here, why not pass in the class?
+
+> +}
+>  
+>  static void device_create_release(struct device *dev)
+>  {
+> diff --git a/include/linux/device.h b/include/linux/device.h
+> index 1508e637b..658d4d743 100644
+> --- a/include/linux/device.h
+> +++ b/include/linux/device.h
+> @@ -986,6 +986,9 @@ struct device *__root_device_register(const char *name, struct module *owner);
+>  
+>  void root_device_unregister(struct device *root);
+>  
+> +int device_add_altname_symlink(struct device *dev, const char *altname);
+> +void device_remove_altname_symlink(struct device *dev, const char *altname);
+> +
+>  static inline void *dev_get_platdata(const struct device *dev)
+>  {
+>  	return dev->platform_data;
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 253584777..b40ed0b21 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -150,6 +150,7 @@
+>  #include <linux/pm_runtime.h>
+>  #include <linux/prandom.h>
+>  #include <linux/once_lite.h>
+> +#include <linux/device.h>
+>  
+>  #include "dev.h"
+>  #include "net-sysfs.h"
+> @@ -328,6 +329,7 @@ int netdev_name_node_alt_create(struct net_device *dev, const char *name)
+>  {
+>  	struct netdev_name_node *name_node;
+>  	struct net *net = dev_net(dev);
+> +	int ret;
+>  
+>  	name_node = netdev_name_node_lookup(net, name);
+>  	if (name_node)
+> @@ -339,6 +341,11 @@ int netdev_name_node_alt_create(struct net_device *dev, const char *name)
+>  	/* The node that holds dev->name acts as a head of per-device list. */
+>  	list_add_tail(&name_node->list, &dev->name_node->list);
+>  
+> +#ifdef CONFIG_SYSFS
+> +	ret = device_add_altname_symlink(&dev->dev, name);
+
+Why do you need a #ifdef?  Put the proper #ifdef in the .h file please.
+
+> +	if (ret)
+> +		netdev_info(dev, "Unable to create symlink for altname: %d\n", ret);
+
+info level for an error?
+
+> +#endif
+>  	return 0;
+>  }
+>  
+> @@ -366,6 +373,10 @@ int netdev_name_node_alt_destroy(struct net_device *dev, const char *name)
+>  
+>  	__netdev_name_node_alt_destroy(name_node);
+>  
+> +#ifdef CONFIG_SYSFS
+> +	device_remove_altname_symlink(&dev->dev, name);
+> +#endif
+
+Again, no #ifdef should be needed.
+
+thanks,
+
+greg k-h
