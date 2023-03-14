@@ -2,100 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 915DC6B9DD0
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 19:04:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 967116B9DD4
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 19:04:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230373AbjCNSEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 14:04:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48518 "EHLO
+        id S230414AbjCNSEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 14:04:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229665AbjCNSEh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 14:04:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC66A0F16;
-        Tue, 14 Mar 2023 11:04:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 055FB6187A;
-        Tue, 14 Mar 2023 18:04:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09E3FC433D2;
-        Tue, 14 Mar 2023 18:04:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678817075;
-        bh=wu6X3gPI/hIU0QOGg6AY3AuhGQQOgWXBa5uRUVDWnnA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sr0CSaRyqsbLYuxEs73gvW0v9Bv+eX56sZNzyAp5yiOHoOFZ/6wiKH09+sSM83VYt
-         ouomMg+sw6PeEskYx2DJ5Ib4aRRwdJLBxZiseKWxZNtDZepQ0LwMVeGCEYEUXRjwPB
-         9SRBEHzJ3JES3myjQI/EsOBgavNQb5KcGVJ5bIkOcjGdiMz1Cw4Hx+1q8260ePFp6a
-         rCjEfhI5QEYZ8ca05nQJpi3PEUA4+2nx0OowQtBdxnqnNCkz3F/AwDCUVmHOUcKBiY
-         7wDMFeRQH5wfKhe5jOmgfWJd33SnzXGqd3xM8RgswSMlRh1etiLVy2ej+ds9Mq+6h7
-         kTSYsKv67J5Fw==
-Date:   Tue, 14 Mar 2023 18:04:30 +0000
-From:   Lee Jones <lee@kernel.org>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Tung Nguyen <tung.q.nguyen@dektech.com.au>, stable@vger.kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net
-Subject: Re: [STABLE REQUEST] tipc: improve function tipc_wait_for_cond()
-Message-ID: <20230314180430.GY9667@google.com>
-References: <20190219042048.23243-1-tung.q.nguyen@dektech.com.au>
- <20190219042048.23243-2-tung.q.nguyen@dektech.com.au>
- <20230314174537.GA1642994@google.com>
- <ZBC1opyrsZkYb3Gb@kroah.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ZBC1opyrsZkYb3Gb@kroah.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S230341AbjCNSEq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 14:04:46 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83CB7A227E;
+        Tue, 14 Mar 2023 11:04:43 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id f6-20020a17090ac28600b0023b9bf9eb63so7700292pjt.5;
+        Tue, 14 Mar 2023 11:04:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678817083;
+        h=in-reply-to:references:cc:to:from:subject:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=LhkqZnqi4qAtizU4572s8HvBrOs+BKkBUUx8Pw/CxoE=;
+        b=c+bqi0+JT0vFttYQOJNb2Ic8oXew+4kVrOfaOg2xmKcSnIJGx8Xdup0UqdRMf5dUL/
+         VXnIwtxX8GUo5A/VCv/a1GdjFn+bVBwjwpQWJ+cBu4m8UDKCSgyM85Tky+TPPcAKxJ5u
+         zgcblZlJgNoLW7myn3aU7skEOqxcInk7L6AutT4PaAUUVmIuwsj/OYzILLkiTg3Ba3dB
+         9hgNY7Ov7+wipUdyvfB3eIhzBOMv4ECgzsjOn8DQTTf0ARtqe/urPO5SKeQ3zyPGTElS
+         sYqbcKzAM8zqZ0nVEIAIjOcgEufwNUNZV2AlNOAa0jEIT0Uw3t31/toYwjk0pMp35RN9
+         mr0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678817083;
+        h=in-reply-to:references:cc:to:from:subject:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=LhkqZnqi4qAtizU4572s8HvBrOs+BKkBUUx8Pw/CxoE=;
+        b=V0mFcpaPJhzdSnj75qHj9CJ9K8Ob8Ies5aVYSNB9gZGb5kt/iK39NYvrVTSCn0PiGF
+         0SotEjYZxXx1tnNX3X1ZrrYPGH3f0JTF6fWKyarqU2eX2xSoLIMAQQjBBapkwyU3I8Lk
+         gbuNzTjKd/GDJFEwUBw2DkkA4jIuXHpL7hYb7kSRhk3PdzGEPYd6DMUL/bWihsz1jFsY
+         K0G6J89cXwHvRx25g7XoC8YTHtArhzmGfFthLkDeJdjR1HSUp95SQZOdbaE3JPfVlL6b
+         iZe9im4b1NpqPx2DISYjePVW9Mg8H/daB6QfWBbIxFtyhnwJIMrFYldkOpF0iKDqA/4W
+         5CKA==
+X-Gm-Message-State: AO0yUKUi3d+rxwClt8SkFSY8ccIRirVdDbi2Izqixt5zTg3Gz+5WI0g5
+        17TWpcBTcRPoMk1BxJ2cDMFByrTdgp2rIg==
+X-Google-Smtp-Source: AK7set/Q4wjxBNdIbzLMNPHBJLoPlDOxzT2y2XfcmTUJEuKzLqd9pAGYJBuO2TmWnQULlcfzobJ/Hg==
+X-Received: by 2002:a05:6a20:3942:b0:cd:fe1b:df8 with SMTP id r2-20020a056a20394200b000cdfe1b0df8mr44681233pzg.56.1678817082638;
+        Tue, 14 Mar 2023 11:04:42 -0700 (PDT)
+Received: from localhost ([2406:7400:61:629c:58fb:a2bd:8b99:bfe0])
+        by smtp.gmail.com with ESMTPSA id d16-20020a631d10000000b004fbd021bad6sm1880819pgd.38.2023.03.14.11.04.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Mar 2023 11:04:42 -0700 (PDT)
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date:   Tue, 14 Mar 2023 23:34:37 +0530
+Message-Id: <CR6AZI7T6X51.AX26VA80VSUW@skynet-linux>
+Subject: Re: [PATCH 1/1] net: wireless: ath: wcn36xx: add support for
+ pronto-v3
+From:   "Sireesh Kodali" <sireeshkodali1@gmail.com>
+To:     "Loic Poulain" <loic.poulain@linaro.org>
+Cc:     <wcn36xx@lists.infradead.org>, <linux-wireless@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <~postmarketos/upstreaming@lists.sr.ht>,
+        <linux-kernel@vger.kernel.org>,
+        "Vladimir Lypak" <vladimir.lypak@gmail.com>,
+        "Kalle Valo" <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>
+X-Mailer: aerc 0.14.0
+References: <20230311150647.22935-1-sireeshkodali1@gmail.com>
+ <20230311150647.22935-2-sireeshkodali1@gmail.com>
+ <CAMZdPi_uBLutBejSV1fz5p9GYqHYd75VTAePtndUnsu=JypdTQ@mail.gmail.com>
+In-Reply-To: <CAMZdPi_uBLutBejSV1fz5p9GYqHYd75VTAePtndUnsu=JypdTQ@mail.gmail.com>
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 14 Mar 2023, Greg KH wrote:
-
-> On Tue, Mar 14, 2023 at 05:45:37PM +0000, Lee Jones wrote:
-> > Dear Stable,
+On Tue Mar 14, 2023 at 2:19 PM IST, Loic Poulain wrote:
+> On Sat, 11 Mar 2023 at 16:07, Sireesh Kodali <sireeshkodali1@gmail.com> w=
+rote:
 > >
-> > > Commit 844cf763fba6 ("tipc: make macro tipc_wait_for_cond() smp safe")
-> > > replaced finish_wait() with remove_wait_queue() but still used
-> > > prepare_to_wait(). This causes unnecessary conditional
-> > > checking  before adding to wait queue in prepare_to_wait().
-> > >
-> > > This commit replaces prepare_to_wait() with add_wait_queue()
-> > > as the pair function with remove_wait_queue().
-> > >
-> > > Acked-by: Ying Xue <ying.xue@windriver.com>
-> > > Acked-by: Jon Maloy <jon.maloy@ericsson.com>
-> > > Signed-off-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
-> > > ---
-> > >  net/tipc/socket.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > >
-> > > diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-> > > index 1217c90a363b..81b87916a0eb 100644
-> > > --- a/net/tipc/socket.c
-> > > +++ b/net/tipc/socket.c
-> > > @@ -388,7 +388,7 @@ static int tipc_sk_sock_err(struct socket *sock, long *timeout)
-> > >  		rc_ = tipc_sk_sock_err((sock_), timeo_);		       \
-> > >  		if (rc_)						       \
-> > >  			break;						       \
-> > > -		prepare_to_wait(sk_sleep(sk_), &wait_, TASK_INTERRUPTIBLE);    \
-> > > +		add_wait_queue(sk_sleep(sk_), &wait_);                         \
-> > >  		release_sock(sk_);					       \
-> > >  		*(timeo_) = wait_woken(&wait_, TASK_INTERRUPTIBLE, *(timeo_)); \
-> > >  		sched_annotate_sleep();				               \
+> > From: Vladimir Lypak <vladimir.lypak@gmail.com>
 > >
-> > Could we have this ol' classic backported to v4.19 and v4.14 please?
+> > Pronto v3 has a different DXE address than prior Pronto versions. This
+> > patch changes the macro to return the correct register address based on
+> > the pronto version.
+> >
+> > Signed-off-by: Vladimir Lypak <vladimir.lypak@gmail.com>
+> > Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
 >
-> What is the git commit id?
+> Acked-by: Loic Poulain <loic.poulain@linaro.org>
+>
+> Could you also submit a change for the new 'qcom,pronto-v3-pil'
+> compatible in the related devicetree documentation ?
+> (bindings/remoteproc/qcom,wcnss-pil.txt)
 
-Sorry, it's 223b7329ec6a0.
-
---
-Lee Jones [李琼斯]
+The changes to the device tree were only recently merged
+LKML link: https://lkml.org/lkml/2022/9/30/1502
