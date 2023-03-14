@@ -2,78 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C2846B9A65
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 16:53:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C05176B9A6E
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 16:56:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231469AbjCNPxD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 11:53:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53378 "EHLO
+        id S230229AbjCNP4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 11:56:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231441AbjCNPxA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 11:53:00 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2A6EB3712
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 08:52:30 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id j11so63900954edq.4
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 08:52:30 -0700 (PDT)
+        with ESMTP id S229537AbjCNP4F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 11:56:05 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C215261B6;
+        Tue, 14 Mar 2023 08:56:03 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id az3-20020a05600c600300b003ed2920d585so3598421wmb.2;
+        Tue, 14 Mar 2023 08:56:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678809149;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Zg/dbJqx6C7WUc0OA0EewndlIUFYWOD5txSdJQdofgE=;
-        b=yP9Owfjo7PGRIP3B1HLP+d1MYxOHfoc9ijHXD+z7wWi9d3lgFnDRzQYw8DUlAG+rPo
-         jsOJbsKpbB2kx+ZKt9HmL/daQOii/q8YjwtzXC2Wl/YEdq1DVCLiuK1ken1LjCGPBQHv
-         8C9rpqYS3OSPyET/LGqcguh4LMMBgryr7aEW/22UqjuugjEiCnqTgs1rLt1SEkHzHADG
-         SBaHRR9WqywGtdFOKHOwUwLWr802MLmvlWupgRNw5L6k8aehiHgkI7iRUe6RVquTscDu
-         LVe+bCHma+dk8aYllgGyj7+Vdwk6jAV2/hxNMvMF0iUcW72bZfM/kzC/vboVUshEAJ0b
-         7uCA==
+        d=gmail.com; s=20210112; t=1678809362;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=UdFrsIiMjK7zaFiXvxcoT7MBwZbH3B8JzNWjOBYQLBA=;
+        b=c9i1YHKLupsH6aV0Q0n8iAxu9I4j2VznRLgPrZIVnNZv4UmKK7RIy18hZXxnRLAGGj
+         cOXaGdQ724hFoazysdmsot1vsjuhZ6WPr98Itz+rdcPG30R+2h1gKQTNx6tO+J0Jq0AQ
+         ZhkDEvpiGMs1Rk6UGCJ5cbDyALNv/PWd7/TmfQsUdqVfhERPphR4yqwMHvIfoB57OAmX
+         KOBNsZO3yjPu19W0R0SVP2kpHRWqCkbj6aHG0XVIeFF55Ja5o6YEsd8wkZIrynr0dyzk
+         bU3483lb0Wy6/lvHokXf8TsG9nfr684HVCNXElGyTXbgrJZVmnRigh+CKicAqCOD8rla
+         gFHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678809149;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Zg/dbJqx6C7WUc0OA0EewndlIUFYWOD5txSdJQdofgE=;
-        b=6jMXXxHQD82q6zGn1s8lLarjZvqXJUpWkxSZ4QHuhwWyetjiS/E+7W9UAQ150efJMP
-         rd/nbahnE7nv5vNvpN6eqNe8LwQ4a2LWt3tAJn/Y7tBStH94a99YptHrLTgD7D99VXeu
-         ne4mTfvtdlF0cyKhN0ns+u3bpUINwzK8c2KZfDyNlRbXPyRE7NfKVmvok5y+t+vC5zu/
-         pFZ7LAkT7BI0BZpMjNWEwbKnfKPvkobCfUIczL9bWfqMJ2Xbmx+Wc5Ow1F6NV/SyFsJl
-         rATYh7/Pi8PPM0wDV2aDcsmL14/AKUlRGodc3mDcb2MGYHc1ubqT2VdghsoIiH11rZdR
-         X3/Q==
-X-Gm-Message-State: AO0yUKWZjAk0bWc8k2bQrRnoNxcjPUOVUUpPjjCvogEh3qpcgPd1wW2Z
-        exiTxDoyVwGHxW2TZR2lx6doHg==
-X-Google-Smtp-Source: AK7set8sczpur0csEsVFPsaUidWA5OBlNs02kM223Cbb9T4gydo9WzUp9PB+4f/EVPEN0CpPIDSa1g==
-X-Received: by 2002:aa7:c245:0:b0:4ac:c44e:a493 with SMTP id y5-20020aa7c245000000b004acc44ea493mr37940365edo.2.1678809149107;
-        Tue, 14 Mar 2023 08:52:29 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:59be:4b3f:994b:e78c? ([2a02:810d:15c0:828:59be:4b3f:994b:e78c])
-        by smtp.gmail.com with ESMTPSA id le20-20020a170906ae1400b00921c608b737sm1297788ejb.126.2023.03.14.08.52.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Mar 2023 08:52:28 -0700 (PDT)
-Message-ID: <b919ce2b-7f0f-a0ea-1ac8-ccc8d0c1b11b@linaro.org>
-Date:   Tue, 14 Mar 2023 16:52:27 +0100
+        d=1e100.net; s=20210112; t=1678809362;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=UdFrsIiMjK7zaFiXvxcoT7MBwZbH3B8JzNWjOBYQLBA=;
+        b=HfV22WsKbFkUJ4wLVFeLdBCToDRe+ahqGzJADiZ40wsawaZvfP82p9zwO2rM85Thxb
+         pIJQqjduGVhGNhDkvlhW7nBJlcA3Uba6A5o4j6UQzD+YIL4V7Sz079szT5oYdqD8tIx8
+         D+3ctsTabECl4+SJfy7JKFjhZxUl6I3y5K5J6rLLvl86DXaN4sO00mzlTdsK7MjUOSm5
+         PkEMNP1d3qL9ycHzrmSyNNycnETuLj8LWvYxJpu8KTlFb4UnqocRo51YTnXnG/qcosAr
+         WIWIb2Pyfli8ypigNiS90xilTKGlEtVR65/maZlWYi/n4thswpVtk/MjUcH/goOZYByJ
+         xdZw==
+X-Gm-Message-State: AO0yUKUC2A3imm2SrUD11QTmzlvX6GJIl5xrWQ3jYMA4MiLy9ay4vYkW
+        VKcEi6JeNkDawzJg2/oFf+A=
+X-Google-Smtp-Source: AK7set/Lgtpm4cGMphDCSdbjIzZZ7CRihdQqUuTpFwZgD8GavCor/+cPXMZElp42Yt9hHPsIQZqW9w==
+X-Received: by 2002:a05:600c:4fd1:b0:3db:15b1:fb28 with SMTP id o17-20020a05600c4fd100b003db15b1fb28mr16057636wmq.19.1678809362169;
+        Tue, 14 Mar 2023 08:56:02 -0700 (PDT)
+Received: from debian ([89.238.191.199])
+        by smtp.gmail.com with ESMTPSA id l17-20020a7bc351000000b003e21f959453sm3172879wmj.32.2023.03.14.08.55.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Mar 2023 08:56:01 -0700 (PDT)
+Date:   Tue, 14 Mar 2023 16:55:47 +0100
+From:   Richard Gobert <richardbgobert@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        dsahern@kernel.org, alexanderduyck@fb.com, lucien.xin@gmail.com,
+        lixiaoyan@google.com, iwienand@redhat.com, leon@kernel.org,
+        ye.xingchen@zte.com.cn, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] gro: optimise redundant parsing of packets
+Message-ID: <20230314155544.GA17833@debian>
+References: <20230313162520.GA17199@debian>
+ <20230313164541.GA17394@debian>
+ <CANn89i+a-d6e3_6PpKckC149_O87GWeUAhe6ztOh62b1fcvBbw@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH net-next V7] dt-bindings: net: xlnx,axi-ethernet: convert
- bindings document to yaml
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>
-Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        michal.simek@xilinx.com, radhey.shyam.pandey@xilinx.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        anirudha.sarangi@amd.com, harini.katakam@amd.com, git@amd.com
-References: <20230308061223.1358637-1-sarath.babu.naidu.gaddam@amd.com>
- <20230313161510.540f6653@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230313161510.540f6653@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89i+a-d6e3_6PpKckC149_O87GWeUAhe6ztOh62b1fcvBbw@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,21 +77,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/03/2023 00:15, Jakub Kicinski wrote:
-> On Wed, 8 Mar 2023 11:42:23 +0530 Sarath Babu Naidu Gaddam wrote:
->> From: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
->>
->> Convert the bindings document for Xilinx AXI Ethernet Subsystem
->> from txt to yaml. No changes to existing binding description.
->>
->> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
->> Signed-off-by: Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>
+> >
+> > Currently the IPv6 extension headers are parsed twice: first in
+> > ipv6_gro_receive, and then again in ipv6_gro_complete.
+> >
+> > By using the new ->transport_proto field, and also storing the size of the
+> > network header, we can avoid parsing extension headers a second time in
+> > ipv6_gro_complete (which saves multiple memory dereferences and conditional
+> > checks inside ipv6_exthdrs_len for a varying amount of extension headers in
+> > IPv6 packets).
+> >
+> > The implementation had to handle both inner and outer layers in case of
+> > encapsulation (as they can't use the same field). I've applied a similar
+> > optimisation to Ethernet.
+> >
+> > Performance tests for TCP stream over IPv6 with a varying amount of
+> > extension headers demonstrate throughput improvement of ~0.7%.
+> >
+> > In addition, I fixed a potential future problem:
 > 
-> Rob, Krzysztof, looks good?
+> I would remove all this block.
+> 
+> We fix current problems, not future hypothetical ones.
+> 
 
-Thanks for ping, unfortunately needs some changes or clarifications. I
-responded with review.
+I agree, I did it primarily to avoid an additional branch (the logic
+remains exactly the same). I'll remove this part from the commit message.
 
-Best regards,
-Krzysztof
 
+> >  - The call to skb_set_inner_network_header at the beginning of
+> >    ipv6_gro_complete calculates inner_network_header based on skb->data by
+> >    calling skb_set_inner_network_header, and setting it to point to the
+> >    beginning of the ip header.
+> >  - If a packet is going to be handled by BIG TCP, the following code block
+> >    is going to shift the packet header, and skb->data is going to be
+> >    changed as well.
+> >
+> > When the two flows are combined, inner_network_header will point to the
+> > wrong place - which might happen if encapsulation of BIG TCP will be
+> > supported in the future.
+> >
+> > The fix is to place the whole encapsulation branch after the BIG TCP code
+> > block. This way, if encapsulation of BIG TCP will be supported,
+> > inner_network_header will still be calculated with the correct value of
+> > skb->data.
+> 
+> We do not support encapsulated BIG TCP yet.
+> We will do this later, and whoever does it will make sure to also support GRO.
+> 
+> > Also, by arranging the code that way, the optimisation does not
+> > add an additional branch.
+> >
+> > Signed-off-by: Richard Gobert <richardbgobert@gmail.com>
+> > ---
+> >
+> 
+> Can you give us a good explanation of why extension headers are used exactly ?
+> 
+> I am not sure we want to add code to GRO for something that 99.99% of
+> us do not use.
+
+IMO, some common use cases that will benefit from this patch are:
+- Parsing of BIG TCP packets which include a hbh ext hdr.
+- dstopts and routing ext hdrs that are used for Mobile IPv6 features.
+
+Generally, when a packet includes ext hdrs we will avoid the recalculation
+of the ext hdrs len. When there are no ext hdrs, we will not call the
+ipv6_exthdrs_len function so the performance isn't negatively impacted
+(potentially even saving some opcodes in ipv6_exthdrs_len).
