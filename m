@@ -2,102 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B6376B9B72
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 17:29:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96C446B9B79
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 17:30:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229827AbjCNQ3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 12:29:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41470 "EHLO
+        id S229698AbjCNQ37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 12:29:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230072AbjCNQ3G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 12:29:06 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C0B4AB
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 09:28:40 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id v16so14965350wrn.0
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 09:28:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678811318;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=088HML2+yaR7fPL/wnUjkyP/4ibGlSpntDG0tuLos2Y=;
-        b=faTt21JFeC6psA9UEvePBpZs5Z+GwElAjeKDdLU7mpBxYhOWPXHWvFifiLGKQpCZdm
-         phLhuwfRKI1WrXyEJcwNtecS4uf8LaU2SpMBkDcCygLmtWRndStnA9kvt4pDdJ9qTwvy
-         lA7B5JHkHYspWu5r9I3DjLUIzoAr8/kVWfdpRVljrwyrKIJI66BGmrD0LqIlg8i+7TAj
-         wC5NleF/PzjIlu8+iBST4R/CaUUyQ2RAm2q8bjMTYnDJuvtx3o7iNiTDHb8BJIYGK7qY
-         MwQuIAp13eQDOe3J21I/E1q1nv+bqNas/hEJpGtpuabAWBlHScN2PYfqvNJzyiS4/D8b
-         R/fQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678811318;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=088HML2+yaR7fPL/wnUjkyP/4ibGlSpntDG0tuLos2Y=;
-        b=E4YmLQj4M/T+ULmejZTJrqU48Sc4GMNok9TaHJRBYjppqXt26QEZm3ZjfLGcmv4Ii5
-         dEb3JgcIaFB3cZfiDwCIOK10obako7LnmywiLECq6Zieo9Zjqo1IPeX4ZHQ7ksT7NlYm
-         V7UXfbTDJdkFAs+UKpzhYloheVA/Nh0RnyGldeTO2M+rEg8iCH+ybc2VP2PtrStS10I1
-         rV5U3e1uj5915/4Q6O8Q+5UE6VCwKEEBSXZ9v9oXpSBfOOlI3zocQa3XuCX0CQkJLlIS
-         HuJO4lDwUTVOEX+IWwq6gouUQFVQrqonofyXXJX7EZCt0vte19S7pXgdZj+AqtsKhgEX
-         DX0w==
-X-Gm-Message-State: AO0yUKWHXd9xX0maFIQ52RiJa2P7aqsMRrAK6J8hPbi1E+RtorUM0GIL
-        rj0Z6n3XCjRiz2JliRHt3jU=
-X-Google-Smtp-Source: AK7set9TxsVRlRNLTCDl1vTwQ5CVCILh2GdW+VQbdjjFWFV3xeIEIv6Vw94Q4WBhwRUllmpPgopqeA==
-X-Received: by 2002:a5d:634e:0:b0:2c9:850c:6b13 with SMTP id b14-20020a5d634e000000b002c9850c6b13mr27477980wrw.67.1678811318507;
-        Tue, 14 Mar 2023 09:28:38 -0700 (PDT)
-Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
-        by smtp.gmail.com with ESMTPSA id e6-20020adffc46000000b002c561805a4csm2478418wrs.45.2023.03.14.09.28.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Mar 2023 09:28:38 -0700 (PDT)
-Subject: Re: [PATCH RESEND net-next v4 2/4] sfc: allow insertion of filters
- for unicast PTP
-To:     =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>,
-        habetsm.xilinx@gmail.com, richardcochran@gmail.com
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        Yalin Li <yalli@redhat.com>
-References: <20230314100925.12040-1-ihuguet@redhat.com>
- <20230314100925.12040-3-ihuguet@redhat.com>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <1b25b297-e427-9c83-89ee-80efc6f206eb@gmail.com>
-Date:   Tue, 14 Mar 2023 16:28:37 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        with ESMTP id S230083AbjCNQ3g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 12:29:36 -0400
+Received: from andre.telenet-ops.be (andre.telenet-ops.be [IPv6:2a02:1800:120:4::f00:15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA771E1E1
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 09:29:31 -0700 (PDT)
+Received: from ramsan.of.borg ([84.195.187.55])
+        by andre.telenet-ops.be with bizsmtp
+        id YGVU2900C1C8whw01GVUy1; Tue, 14 Mar 2023 17:29:28 +0100
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtp (Exim 4.95)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1pc7W6-00CBb7-3J;
+        Tue, 14 Mar 2023 17:29:27 +0100
+Received: from geert by rox.of.borg with local (Exim 4.95)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1pc7Wh-00BzlG-FX;
+        Tue, 14 Mar 2023 17:29:27 +0100
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH v3] can: rcar_canfd: Improve error messages
+Date:   Tue, 14 Mar 2023 17:29:25 +0100
+Message-Id: <70d430248415a3304573df4faec19f6a3135db28.1678811267.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-In-Reply-To: <20230314100925.12040-3-ihuguet@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/03/2023 10:09, Íñigo Huguet wrote:
-> Add a second list for unicast filters and generalize the
-> efx_ptp_insert/remove_filters functions to allow acting in any of the 2
-> lists.
-> 
-> No filters for unicast are inserted yet. That will be done in the next
-> patch.
-> 
-> The reason to use 2 different lists instead of a single one is that, in
-> next patches, we will want to check if unicast filters are already added
-> and if they're expired. We don't need that for multicast filters.
-> 
-> Reported-by: Yalin Li <yalli@redhat.com>
-> Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+Improve printed error messages:
+  - Replace numerical error codes by mnemotechnic error codes, to
+    improve the user experience in case of errors,
+  - Drop parentheses around printed numbers, cfr.
+    Documentation/process/coding-style.rst,
+  - Drop printing of an error message in case of out-of-memory, as the
+    core memory allocation code already takes care of this.
 
-Acked-by: Edward Cree <ecree.xilinx@gmail.com>
+Suggested-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+v3:
+  - Add missing SoB,
 
-> -static void efx_ptp_remove_multicast_filters(struct efx_nic *efx)
-> +static void efx_ptp_remove_filters(struct efx_nic *efx,
-> +				   struct list_head *ptp_list)
+v2:
+  - This is v2 of "[PATCH] can: rcar_canfd: Print mnemotechnic error
+    codes".  I haven't added any tags given on v1, as half of the
+    printed message changed.
 
-Personally I'd name these something like filter_list rather than
- ptp_list, but no need to respin just for that.
+This depends on "[PATCH v2] can: rcar_canfd: Add transceiver support"
+https://lore.kernel.org/r/e825b50a843ffe40e33f34e4d858c07c1b2ff259.1678280913.git.geert+renesas@glider.be
+---
+ drivers/net/can/rcar/rcar_canfd.c | 43 +++++++++++++++----------------
+ 1 file changed, 21 insertions(+), 22 deletions(-)
+
+diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
+index 6df9a259e5e4f92c..ecdb8ffe2f670c9b 100644
+--- a/drivers/net/can/rcar/rcar_canfd.c
++++ b/drivers/net/can/rcar/rcar_canfd.c
+@@ -1417,20 +1417,20 @@ static int rcar_canfd_open(struct net_device *ndev)
+ 
+ 	err = phy_power_on(priv->transceiver);
+ 	if (err) {
+-		netdev_err(ndev, "failed to power on PHY, error %d\n", err);
++		netdev_err(ndev, "failed to power on PHY, %pe\n", ERR_PTR(err));
+ 		return err;
+ 	}
+ 
+ 	/* Peripheral clock is already enabled in probe */
+ 	err = clk_prepare_enable(gpriv->can_clk);
+ 	if (err) {
+-		netdev_err(ndev, "failed to enable CAN clock, error %d\n", err);
++		netdev_err(ndev, "failed to enable CAN clock, %pe\n", ERR_PTR(err));
+ 		goto out_phy;
+ 	}
+ 
+ 	err = open_candev(ndev);
+ 	if (err) {
+-		netdev_err(ndev, "open_candev() failed, error %d\n", err);
++		netdev_err(ndev, "open_candev() failed, %pe\n", ERR_PTR(err));
+ 		goto out_can_clock;
+ 	}
+ 
+@@ -1731,10 +1731,9 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
+ 	int err = -ENODEV;
+ 
+ 	ndev = alloc_candev(sizeof(*priv), RCANFD_FIFO_DEPTH);
+-	if (!ndev) {
+-		dev_err(dev, "alloc_candev() failed\n");
++	if (!ndev)
+ 		return -ENOMEM;
+-	}
++
+ 	priv = netdev_priv(ndev);
+ 
+ 	ndev->netdev_ops = &rcar_canfd_netdev_ops;
+@@ -1777,8 +1776,8 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
+ 				       rcar_canfd_channel_err_interrupt, 0,
+ 				       irq_name, priv);
+ 		if (err) {
+-			dev_err(dev, "devm_request_irq CH Err(%d) failed, error %d\n",
+-				err_irq, err);
++			dev_err(dev, "devm_request_irq CH Err %d failed, %pe\n",
++				err_irq, ERR_PTR(err));
+ 			goto fail;
+ 		}
+ 		irq_name = devm_kasprintf(dev, GFP_KERNEL, "canfd.ch%d_trx",
+@@ -1791,8 +1790,8 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
+ 				       rcar_canfd_channel_tx_interrupt, 0,
+ 				       irq_name, priv);
+ 		if (err) {
+-			dev_err(dev, "devm_request_irq Tx (%d) failed, error %d\n",
+-				tx_irq, err);
++			dev_err(dev, "devm_request_irq Tx %d failed, %pe\n",
++				tx_irq, ERR_PTR(err));
+ 			goto fail;
+ 		}
+ 	}
+@@ -1823,7 +1822,7 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
+ 	gpriv->ch[priv->channel] = priv;
+ 	err = register_candev(ndev);
+ 	if (err) {
+-		dev_err(dev, "register_candev() failed, error %d\n", err);
++		dev_err(dev, "register_candev() failed, %pe\n", ERR_PTR(err));
+ 		goto fail_candev;
+ 	}
+ 	dev_info(dev, "device registered (channel %u)\n", priv->channel);
+@@ -1967,16 +1966,16 @@ static int rcar_canfd_probe(struct platform_device *pdev)
+ 				       rcar_canfd_channel_interrupt, 0,
+ 				       "canfd.ch_int", gpriv);
+ 		if (err) {
+-			dev_err(dev, "devm_request_irq(%d) failed, error %d\n",
+-				ch_irq, err);
++			dev_err(dev, "devm_request_irq %d failed, %pe\n",
++				ch_irq, ERR_PTR(err));
+ 			goto fail_dev;
+ 		}
+ 
+ 		err = devm_request_irq(dev, g_irq, rcar_canfd_global_interrupt,
+ 				       0, "canfd.g_int", gpriv);
+ 		if (err) {
+-			dev_err(dev, "devm_request_irq(%d) failed, error %d\n",
+-				g_irq, err);
++			dev_err(dev, "devm_request_irq %d failed, %pe\n",
++				g_irq, ERR_PTR(err));
+ 			goto fail_dev;
+ 		}
+ 	} else {
+@@ -1985,8 +1984,8 @@ static int rcar_canfd_probe(struct platform_device *pdev)
+ 				       "canfd.g_recc", gpriv);
+ 
+ 		if (err) {
+-			dev_err(dev, "devm_request_irq(%d) failed, error %d\n",
+-				g_recc_irq, err);
++			dev_err(dev, "devm_request_irq %d failed, %pe\n",
++				g_recc_irq, ERR_PTR(err));
+ 			goto fail_dev;
+ 		}
+ 
+@@ -1994,8 +1993,8 @@ static int rcar_canfd_probe(struct platform_device *pdev)
+ 				       rcar_canfd_global_err_interrupt, 0,
+ 				       "canfd.g_err", gpriv);
+ 		if (err) {
+-			dev_err(dev, "devm_request_irq(%d) failed, error %d\n",
+-				g_err_irq, err);
++			dev_err(dev, "devm_request_irq %d failed, %pe\n",
++				g_err_irq, ERR_PTR(err));
+ 			goto fail_dev;
+ 		}
+ 	}
+@@ -2012,14 +2011,14 @@ static int rcar_canfd_probe(struct platform_device *pdev)
+ 	/* Enable peripheral clock for register access */
+ 	err = clk_prepare_enable(gpriv->clkp);
+ 	if (err) {
+-		dev_err(dev, "failed to enable peripheral clock, error %d\n",
+-			err);
++		dev_err(dev, "failed to enable peripheral clock, %pe\n",
++			ERR_PTR(err));
+ 		goto fail_reset;
+ 	}
+ 
+ 	err = rcar_canfd_reset_controller(gpriv);
+ 	if (err) {
+-		dev_err(dev, "reset controller failed\n");
++		dev_err(dev, "reset controller failed, %pe\n", ERR_PTR(err));
+ 		goto fail_clk;
+ 	}
+ 
+-- 
+2.34.1
+
