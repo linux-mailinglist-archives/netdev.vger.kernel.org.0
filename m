@@ -2,79 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4606B6B96DE
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 14:53:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A42946B96E1
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 14:54:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230509AbjCNNxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 09:53:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47162 "EHLO
+        id S232480AbjCNNyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 09:54:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230451AbjCNNxI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 09:53:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F99CA42F0
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 06:50:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D0F8961753
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 13:50:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2DD2C433D2;
-        Tue, 14 Mar 2023 13:50:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678801811;
-        bh=YyUX+jsHMMPFtQ/UEDF6Nver4I3rrxbsbyr9rDD2Yno=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IWx/A/9p6oAr2jpmB1J0bOsOQOSrvpBHX/eBBqTer8OXEyLYGRHtdK70EhywvdoLo
-         8LM9o+iOf/JW0eJuyJkGAntdhL/ik/OPrfYL+BDqUESUEzXnIildozVVwBkkpZOg5Y
-         fhF7m/jBp1jZ3Rvf4ZsK7czceJGn/aUgqJ8g80ryanJITXKaIqB74Ac/+9hgUQL2XC
-         XE5eiWm627UMVzweWfZ0i1PbZgJm5z9VpVlzAnBliH5VhBd0TGldHtU2OSkzPBgHUx
-         RWC/rKARVCR2eETFSwvhIiV/PoRgzfKydO9cUglqRqP1guMhGaQu006Ef/QD2bwwZ/
-         x4OF4J3P/bvuQ==
-Date:   Tue, 14 Mar 2023 15:50:07 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, netdev@vger.kernel.org,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Marek Szlosek <marek.szlosek@intel.com>
-Subject: Re: [PATCH net-next 07/14] ice: initialize mailbox snapshot earlier
- in PF init
-Message-ID: <20230314135007.GJ36557@unreal>
-References: <20230313182123.483057-1-anthony.l.nguyen@intel.com>
- <20230313182123.483057-8-anthony.l.nguyen@intel.com>
+        with ESMTP id S232531AbjCNNxr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 09:53:47 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19D77AFBA2
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 06:51:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=bT4k9qsG6+FCIYpUk0NWmZqk6hZPvzSVggqHGxbRIFw=; b=waK5M153mlcCob4e1tZxpzb6is
+        bcUCEFimiCuMXgoKwMzOYYpRcYGxc+ePHXf4UhFCrZPOXZYzBHkybgP9jphInfSbjEd49ZK8pSttW
+        hgq0jP2N2HdsMyLOYzZLwEgh7BdvYz5uDbfBacZFZD1HwaP6Cha3VaEoLnmfjQZ9squc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pc53J-007ICE-K5; Tue, 14 Mar 2023 14:50:57 +0100
+Date:   Tue, 14 Mar 2023 14:50:57 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Xu Liang <lxu@maxlinear.com>
+Cc:     hkallweit1@gmail.com, netdev@vger.kernel.org, davem@davemloft.net,
+        kuba@kernel.org, linux@armlinux.org.uk, hmehrtens@maxlinear.com,
+        tmohren@maxlinear.com, rtanwar@maxlinear.com,
+        mohammad.athari.ismail@intel.com, edumazet@google.com,
+        michael@walle.cc, pabeni@redhat.com
+Subject: Re: [PATCH net-next v4] net: phy: mxl-gpy: enhance delay time
+ required by loopback disable function
+Message-ID: <67a3a8f3-5bee-4379-890a-6c8e8be391a8@lunn.ch>
+References: <20230314093648.44510-1-lxu@maxlinear.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230313182123.483057-8-anthony.l.nguyen@intel.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230314093648.44510-1-lxu@maxlinear.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 13, 2023 at 11:21:16AM -0700, Tony Nguyen wrote:
-> From: Jacob Keller <jacob.e.keller@intel.com>
-> 
-> Now that we no longer depend on the number of VFs being allocated, we can
-> move the ice_mbx_init_snapshot function earlier. This will be required by
-> Scalable IOV as we will not be calling ice_sriov_configure for Scalable
-> VFs.
-> 
-> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-> Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-> Tested-by: Marek Szlosek <marek.szlosek@intel.com>
-> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-> ---
->  drivers/net/ethernet/intel/ice/ice_main.c   | 1 +
->  drivers/net/ethernet/intel/ice/ice_sriov.c  | 2 --
->  drivers/net/ethernet/intel/ice/ice_vf_mbx.h | 4 ++++
->  3 files changed, 5 insertions(+), 2 deletions(-)
-> 
+> +	/* It takes 3 seconds to fully switch out of loopback mode before
+> +	 * it can safely re-enter loopback mode. Record the time when
+> +	 * loopback is disabled. Check and wait if necessary before loopback
+> +	 * is enabled.
+> +	 */
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Is there are restriction about entering loopback mode within the first
+3 seconds after power on? 
+
+> +	bool lb_dis_chk;
+> +	u64 lb_dis_to;
+>  };
+>  
+>  static const struct {
+> @@ -769,18 +777,34 @@ static void gpy_get_wol(struct phy_device *phydev,
+>  
+>  static int gpy_loopback(struct phy_device *phydev, bool enable)
+>  {
+> +	struct gpy_priv *priv = phydev->priv;
+> +	u16 set = 0;
+>  	int ret;
+>  
+> -	ret = phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK,
+> -			 enable ? BMCR_LOOPBACK : 0);
+> -	if (!ret) {
+> -		/* It takes some time for PHY device to switch
+> -		 * into/out-of loopback mode.
+> +	if (enable) {
+> +		/* wait until 3 seconds from last disable */
+> +		if (priv->lb_dis_chk && time_is_after_jiffies64(priv->lb_dis_to))
+> +			msleep(jiffies64_to_msecs(priv->lb_dis_to - get_jiffies_64()));
+> +
+> +		priv->lb_dis_chk = false;
+> +		set = BMCR_LOOPBACK;
+
+Maybe this can be simplified by setting priv->lb_dis_to =
+get_jiffies_64() + HZ * 3 in _probe(). Then you don't need
+priv->lb_dis_chk.
+
+	Andrew
