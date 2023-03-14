@@ -2,116 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F2C636BA23D
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 23:17:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C61D26BA245
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 23:18:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231317AbjCNWRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 18:17:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48290 "EHLO
+        id S230312AbjCNWSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 18:18:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231475AbjCNWRX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 18:17:23 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 534F63D900
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 15:16:37 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pcCvN-0007Qo-3e; Tue, 14 Mar 2023 23:15:17 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pcCvG-004Afk-5X; Tue, 14 Mar 2023 23:15:10 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pcCvF-004vG9-JQ; Tue, 14 Mar 2023 23:15:09 +0100
-Date:   Tue, 14 Mar 2023 23:15:08 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Wei Fang <wei.fang@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Wolfram Sang <wsa@kernel.org>,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Mark Brown <broonie@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     netdev@vger.kernel.org, Shenwei Wang <shenwei.wang@nxp.com>,
-        Clark Wang <xiaoning.wang@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>, kernel@pengutronix.de
-Subject: Re: [PATCH net-next 4/9] net: fec: Convert to platform remove
- callback returning void
-Message-ID: <20230314221508.lhumfl3y3qrybqj2@pengutronix.de>
-References: <20230313103653.2753139-1-u.kleine-koenig@pengutronix.de>
- <20230313103653.2753139-5-u.kleine-koenig@pengutronix.de>
+        with ESMTP id S230152AbjCNWS0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 18:18:26 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B9A8279BF;
+        Tue, 14 Mar 2023 15:17:43 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id x22so5901612wmj.3;
+        Tue, 14 Mar 2023 15:17:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678832188;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=0cgXw1zWR3UzIeNQHSkd/Pe/JYZucLUkg0+siqDji1Q=;
+        b=WiWabfdsc40Hw03sHacABR/DpeHPE1ytk52ltiIHJyYU96rC0iS1lraEKpFNPMr7fC
+         t88zt7gAQUBBIRqrgzPkQWQDI8IBIwbBSQ44S9GXEjINbumyhcaty1H8Wl8mk8TP7vah
+         R+sSYxV3pSFKpraUvvKNT26Tl4bm9IX1cxQTO0YuTtRAf1JyKECbjwfkxjSm3C79t2zu
+         WimroFz4zBdQaqQbKrHUb+k9u1UDe/t+bGf+sTOFdiO/SY1n3N2Yrx3e1ZAduqS48kT2
+         rVHJ3JqaH5emYPmU4Xh0N/DVVXcX1nJMZW+nmKAVSR8mX825oNgoQNZkzjKn0xyWZeQC
+         H2Bw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678832188;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0cgXw1zWR3UzIeNQHSkd/Pe/JYZucLUkg0+siqDji1Q=;
+        b=Ct1PlmvaVcbQoeH9hfGxx3WtOqbmA98mfvhdjtVZJgFxqMIhL0WoDVPrGTJVIrBjHC
+         nDCGFHrt9R1F0uPSlDc8KV+AeI77VNtg5zVR4Hi15nEwJ1VbpjfJxGczoWzyjoIykye/
+         ezFZLyhcW74mBDTuzOCDQbF46kKtQ7frSgqYnkQI795BKlw7Zo6CDNeDE1fWjpTkIV1N
+         yzr2au/BF9Fttzhn+zrrk2c02ta3d9Os1Fs1n9dWka1aZ0GdygDZKxO4Fxw/iGzbLzSk
+         rG8sBZ+1YKwEtWTC3RQf9FV+Zn0q6/syeGhRtg2ZJbp7QM8zCY0QKjVwiV1SFbJXzpXX
+         aBhQ==
+X-Gm-Message-State: AO0yUKXc7RD7fxrQBCEwCBBr2sPkPC81qEUilArgOjYH42IkbpRgrcHa
+        mb03ZJ4ki5YpCAIG2IRJTy0=
+X-Google-Smtp-Source: AK7set/LqyA4KOXjYW3gB61Tg1NOLoBdeKaWngQqOyAVUSHmnZgHB0VC+IljqkqXyulD+UybQrzJww==
+X-Received: by 2002:a05:600c:1546:b0:3ed:22f2:554c with SMTP id f6-20020a05600c154600b003ed22f2554cmr8549449wmg.29.1678832188560;
+        Tue, 14 Mar 2023 15:16:28 -0700 (PDT)
+Received: from localhost (host86-146-209-214.range86-146.btcentralplus.com. [86.146.209.214])
+        by smtp.gmail.com with ESMTPSA id 4-20020a05600c22c400b003e00c453447sm3977442wmg.48.2023.03.14.15.16.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Mar 2023 15:16:27 -0700 (PDT)
+Date:   Tue, 14 Mar 2023 22:16:26 +0000
+From:   Lorenzo Stoakes <lstoakes@gmail.com>
+To:     Vlastimil Babka <vbabka@suse.cz>
+Cc:     Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        rcu@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCH 4/7] mm, pagemap: remove SLOB and SLQB from comments and
+ documentation
+Message-ID: <a901f00e-99df-4fed-8117-e3735ec7df59@lucifer.local>
+References: <20230310103210.22372-1-vbabka@suse.cz>
+ <20230310103210.22372-5-vbabka@suse.cz>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="2k66syviotczz2nl"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230313103653.2753139-5-u.kleine-koenig@pengutronix.de>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20230310103210.22372-5-vbabka@suse.cz>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Mar 10, 2023 at 11:32:06AM +0100, Vlastimil Babka wrote:
+> SLOB has been removed and SLQB never merged, so remove their mentions
+> from comments and documentation of pagemap.
+>
+> Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+> ---
+>  Documentation/admin-guide/mm/pagemap.rst | 6 +++---
+>  fs/proc/page.c                           | 5 ++---
+>  2 files changed, 5 insertions(+), 6 deletions(-)
+>
+> diff --git a/Documentation/admin-guide/mm/pagemap.rst b/Documentation/admin-guide/mm/pagemap.rst
+> index b5f970dc91e7..bb4aa897a773 100644
+> --- a/Documentation/admin-guide/mm/pagemap.rst
+> +++ b/Documentation/admin-guide/mm/pagemap.rst
+> @@ -91,9 +91,9 @@ Short descriptions to the page flags
+>     The page is being locked for exclusive access, e.g. by undergoing read/write
+>     IO.
+>  7 - SLAB
+> -   The page is managed by the SLAB/SLOB/SLUB/SLQB kernel memory allocator.
+> -   When compound page is used, SLUB/SLQB will only set this flag on the head
+> -   page; SLOB will not flag it at all.
+> +   The page is managed by the SLAB/SLUB kernel memory allocator.
+> +   When compound page is used, either will only set this flag on the head
+> +   page..
 
---2k66syviotczz2nl
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I mean, perhaps the nittiest of nits but probably that '..' is unintended.
 
-Hello,
+>  10 - BUDDY
+>      A free memory block managed by the buddy system allocator.
+>      The buddy system organizes free memory in blocks of various orders.
+> diff --git a/fs/proc/page.c b/fs/proc/page.c
+> index 6249c347809a..1356aeffd8dc 100644
+> --- a/fs/proc/page.c
+> +++ b/fs/proc/page.c
+> @@ -125,7 +125,7 @@ u64 stable_page_flags(struct page *page)
+>  	/*
+>  	 * pseudo flags for the well known (anonymous) memory mapped pages
+>  	 *
+> -	 * Note that page->_mapcount is overloaded in SLOB/SLUB/SLQB, so the
+> +	 * Note that page->_mapcount is overloaded in SLAB/SLUB, so the
+>  	 * simple test in page_mapped() is not enough.
+>  	 */
+>  	if (!PageSlab(page) && page_mapped(page))
+> @@ -166,8 +166,7 @@ u64 stable_page_flags(struct page *page)
+>
+>  	/*
+>  	 * Caveats on high order pages: page->_refcount will only be set
+> -	 * -1 on the head page; SLUB/SLQB do the same for PG_slab;
+> -	 * SLOB won't set PG_slab at all on compound pages.
+> +	 * -1 on the head page; SLAB/SLUB do the same for PG_slab;
 
-On Mon, Mar 13, 2023 at 11:36:48AM +0100, Uwe Kleine-K=F6nig wrote:
-> The .remove() callback for a platform driver returns an int which makes
-> many driver authors wrongly assume it's possible to do error handling by
-> returning an error code. However the value returned is (mostly) ignored
-> and this typically results in resource leaks. To improve here there is a
-> quest to make the remove callback return void. In the first step of this
-> quest all drivers are converted to .remove_new() which already returns
-> void.
->=20
-> Trivially convert this driver from always returning zero in the remove
-> callback to the void returning variant.
->=20
-> Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+Nice catch on the redundant reference to the mysterous SLQB (+ above) :)
 
-FTR: This patch depends on patch 2 of this series which has issues. So
-please drop this patch, too. Taking the other 7 patches should be fine
-(unless some more issues are discovered of course).
+>  	 */
+>  	if (PageBuddy(page))
+>  		u |= 1 << KPF_BUDDY;
+> --
+> 2.39.2
+>
 
-Best regards
-Uwe
+Otherwise looks good to me,
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---2k66syviotczz2nl
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmQQ8ekACgkQwfwUeK3K
-7AmJzwf6AqdmPgWtFz2BvFhLiYVByFd/VUF0ElPQ+jfG2/pNZFpEROtlIgAvC4U+
-TOZLYZ9fPSd7GZhPDPMdmjV2Hsf0W+BkAbhoq763hxFPuAMzKc+I5VgsIuhFw0Js
-HTTC0IOSWqBZsMq645pT3DBY2yADDbHq3OTBpDHvdVttW/L/X3RgGu7zQf9KsVWx
-LEzMzGlyrjm59/gyGRAkkg186MzIP4XV7S2rNTQ0l7T0+0H+uC/EIkmwjzzrK6Hc
-ZBow9PmoZ2O1NQTt/k/wx9fsjpkZirOrPay89NR1D2UNcytEwCTBqSdVMfrbxfmG
-eGYXF2oLa+LfXBioNmVR+un3DRRWXA==
-=BzD+
------END PGP SIGNATURE-----
-
---2k66syviotczz2nl--
+Acked-by: Lorenzo Stoakes <lstoakes@gmail.com>
