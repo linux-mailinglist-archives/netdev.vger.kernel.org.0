@@ -2,93 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 90FD06B95BC
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 14:14:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7987F6B957C
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 14:07:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232386AbjCNNN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 09:13:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40564 "EHLO
+        id S232190AbjCNNHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 09:07:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232242AbjCNNNg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 09:13:36 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BD0C9FBFC;
-        Tue, 14 Mar 2023 06:10:21 -0700 (PDT)
-Received: from maxwell.localdomain ([109.43.51.107]) by
- mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MkYkC-1qO0UO1e0M-00m3Lr; Tue, 14 Mar 2023 13:39:46 +0100
-From:   Jochen Henneberg <jh@henneberg-systemdesign.com>
-To:     netdev@vger.kernel.org
-Cc:     Jochen Henneberg <jh@henneberg-systemdesign.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
+        with ESMTP id S232000AbjCNNGz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 09:06:55 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F0364267
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 06:03:40 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1pc44R-0002yc-00;
+        Tue, 14 Mar 2023 13:48:03 +0100
+Date:   Tue, 14 Mar 2023 12:47:59 +0000
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     Felix Fietkau <nbd@nbd.name>
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net 2/2] net: stmmac: Premature loop termination check was ignored
-Date:   Tue, 14 Mar 2023 13:37:59 +0100
-Message-Id: <20230314123759.132521-3-jh@henneberg-systemdesign.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230314123759.132521-1-jh@henneberg-systemdesign.com>
-References: <20230314123759.132521-1-jh@henneberg-systemdesign.com>
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [BUG] MTK SoC Ethernet throughput TX only ~620Mbit/s since
+ 6.2-rc1
+Message-ID: <ZBBs/xE0+ULtJNIJ@makrotopia.org>
+References: <trinity-92c3826f-c2c8-40af-8339-bc6d0d3ffea4-1678213958520@3c-app-gmx-bs16>
+ <4a229d53-f058-115a-afc6-dd544a0dedf2@nbd.name>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:l1W1LjxOLRyxarFh4d7uXBRK1UHreknpzqZxegOM2jODzpg/YnC
- 9we6QMFFMqqrvH21mCENI6V0GewVL31+FUjESlQG/GgCnknsFYczuD3QVxAowBFgssxKeKC
- BvP40Y6ELDXd3GZ27r2KYfUuPWtMiyJOvLPWLgjjxUnr2hsS6L6ExUn8v0AUlKJ591P77sJ
- 29IArAxiVdxnm/YEFKiCg==
-UI-OutboundReport: notjunk:1;M01:P0:ALkaqJksCBY=;UNJi6nd3DKRNOsPUSg2Y1GXX0u6
- 1coJnSy7MjETLQHEvuK9ywdKPTbvXS66imF0ekDSU5EWzMqeulqgrLB7mVcSdAXH5iYgsMIxM
- LotuqDwvC0xR06FG8kheFe40Zg7KGAwompEBMQfb7tAOHvewSp/6MumxfpQU5k6Hn7xAf+Lm6
- cCPRdJZX38lp+1mw2FNL/y3wXyyULHHdJwJJDI2ewx2vv3b9QzkB+mrYcBMbcMiWP8FSZcS7l
- C43xi7YEW9a1q3JYvx5wmBJtN9Pvf32cjqrXYovFuLvz7fRvSzhz7+zkcKjbPx3TMY2RctZxh
- M44RfssRkJmRKf4X0FxBdQ8rtWUSVXQifNg3fzrnfmXARmRt67VBFfiadjbQ+oRjhWZ9i8zwC
- z7VcNZ/Tjr1+2ehHceriKEEZRRAtOr0dYlYDu5LTLdFOXLXiPOzFc3yaSh04AD3Qbqx/j6WX9
- WH8Jv9MGERxKdSZuxljZTJ3ZqCsEVJPI92I2XenxmHQNCwHMLSZiAJxgoYPDQx4CoqxxhJUeI
- Z6eG482F4kG7BPdMqogBkBrYkm5YGFXaGskjNzDLT0AYlmzEILvb3aGkxi5otf/OWeO2dq7O6
- N0qdv1/b+FByC37Uj2ETGS1wT26B2kewQFkQ7ghUKsDG3P0EzkUVFk7mRAbjPFmi9snDFLUh/
- 4zwbgq/IMNikStvlmyfKAiO2hPlkMfl3iVGDrJslbw==
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4a229d53-f058-115a-afc6-dd544a0dedf2@nbd.name>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The premature loop termination check makes sense only in case of the
-jump to read_again where the count may have been updated. But
-read_again did not include the check.
+Hi Felix,
 
-Fixes: bba2556efad6 ("net: stmmac: Enable RX via AF_XDP zero-copy")
-Signed-off-by: Jochen Henneberg <jh@henneberg-systemdesign.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Tue, Mar 14, 2023 at 11:30:53AM +0100, Felix Fietkau wrote:
+> On 07.03.23 19:32, Frank Wunderlich wrote:
+> > Hi,
+> > 
+> > i've noticed that beginning on 6.2-rc1 the throughput on my Bananapi-R2 and Bananapi-R3 goes from 940Mbit/s down do 620Mbit/s since 6.2-rc1.
+> > Only TX (from SBC PoV) is affected, RX is still 940Mbit/s.
+> > 
+> > i bisected this to this commit:
+> > 
+> > f63959c7eec3151c30a2ee0d351827b62e742dcb ("net: ethernet: mtk_eth_soc: implement multi-queue support for per-port queues")
+> > 
+> > Daniel reported me that this is known so far and they need assistance from MTK and i should report it officially.
+> > 
+> > As far as i understand it the commit should fix problems with clients using non-GBE speeds (10/100 Mbit/s) on the Gbit-capable dsa
+> > interfaces (mt753x connected) behind the mac, but now the Gigabit speed is no more reached.
+> > I see no CRC/dropped packets, retransmitts or similar.
+> > 
+> > after reverting the commit above i get 940Mbit like in rx direction, but this will introduce the problems mentioned above so this not a complete fix.
+> I don't have a BPI-R2, but I tested on BPI-R3 and can't reproduce this
+> issue. Do you see it on all ports, or only on specific ones?
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index ea51c7c93101..4886668a54c5 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -5031,10 +5031,10 @@ static int stmmac_rx_zc(struct stmmac_priv *priv, int limit, u32 queue)
- 			len = 0;
- 		}
- 
-+read_again:
- 		if (count >= limit)
- 			break;
- 
--read_again:
- 		buf1_len = 0;
- 		entry = next_entry;
- 		buf = &rx_q->buf_pool[entry];
--- 
-2.39.2
+I also can't reproduce this if unsing any of the gigE ports wired via
+MT7531 on the R3. However, I can reproduce the issue if using a 1 GBit/s
+SFP module in slot SFP1 of the R3 (connected directly to GMAC2/eth1).
 
+Users have reported this also to be a problem also on MT7622 on devices
+directly connecting a PHY (and not using MT7531).
+
+In all cases, reverting the commit above fixes the issue.
+
+
+Cheers
+
+
+Daniel
