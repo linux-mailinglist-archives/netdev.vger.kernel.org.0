@@ -2,199 +2,234 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C4B76B93DD
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 13:34:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 541286B93F9
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 13:36:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229932AbjCNMeN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 08:34:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41232 "EHLO
+        id S231277AbjCNMgs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 08:36:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229801AbjCNMeM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 08:34:12 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FC135A90A;
-        Tue, 14 Mar 2023 05:33:46 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id x3so61296080edb.10;
-        Tue, 14 Mar 2023 05:33:45 -0700 (PDT)
+        with ESMTP id S230111AbjCNMgr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 08:36:47 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EA949CBDF
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 05:36:11 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id j19-20020a05600c191300b003eb3e1eb0caso13047271wmq.1
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 05:36:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678797142;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=zrMC9KwaSjXs9wLyBZxtxGqFGtsGSBGVUQRPCzl8eEM=;
-        b=ErxBV6U52wuVRLabo6aedVoGLUP4Zuqq3dTUJYVarscscv0SfZt3Qs2d1+ICVmaZoU
-         hMuT8pqlSzWngK5RlX4V+4/KecTjzDXow8BOgOpDdR/X7DUPg+FYLFlkeakXi9KFdxz1
-         seIYsn8lNm+skgbk4YjRDVR96zyn3vjI6ImJHlaL3GyJpNPYlf783L+O8PeCy14ck3Uy
-         RZrVkkw+BbLSRYaU1uE9O+diLwB+BnZ2RbmtwD3GoLgOsBUnkYpVrLc/KwrSOyLqrb9A
-         LQ6ArBkuIdBT4EheCiPP7TpxyykMdAAAYIM0+3PVjrbb13Bf9qAn6ve7gJ75kuBZzBAj
-         Vvnw==
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112; t=1678797310;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=pVIp7g2q/w3gUgwbSlzaQV0hcNAj9gmmGMjepwJpv3k=;
+        b=sdUFUS6f0j2hkY1uaDLCJzh0NMjGoPd/Jat9dLhOac0kesFPsmEk85dxcVzFTs6/30
+         3zJzSAMeRm2fZTcJeqGg6SC6MP95smAzjdo6EJttmteQVv66pTDbqoDLSnI4EwGVLgbA
+         1pi7GIe9fel8lKxC4TP2RgpUCozojgCf9Lgw9I/al/k3OIaDakqu8EtpgHM0Jz6Q3c8+
+         HfhXTq6SmbDOLNZyEorVzPoLF/bCW3O2FnpUrUZT3lbXCzOoCZ7KX9tj9cmWduG5R1Se
+         JZw17vISJbZ+dYMJ/w5DdjC2zpzidlbwgNH6EdzeserXDbgeNcjOiB6zMUysol0A0+6U
+         Djmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678797142;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=zrMC9KwaSjXs9wLyBZxtxGqFGtsGSBGVUQRPCzl8eEM=;
-        b=KBK3VhfyTwjNGtY18aB6iQxwlfJcxwUJ2oRyXwL2o+GA7YKHwou2vHigx8pUMpIauC
-         J6a+BCynstMDc9v8f00xMjz9/anjf7zNI/3MftgbeRvcByf/7Q2+dnWSay4bhlCnsm9W
-         rMPbM5gfJY/KJufMl2B45aj8X2dZj6yd4EtuuHQgoQjQY1Qn5ugcelEv/lyyyYgchhdL
-         nXkyAwdtYwp6Gt5plwnwkbYQVmK1MK3qiLB0ZEDA2B54uTBQ1y3p1k0tMrPbLYhIJ3WO
-         k5TlbDnLvM7nn1/TsQGq+vExeJFAJBMMbrpqCaxDfxJRFlHkojwjT54vwSfTpG+TmB33
-         U5Yg==
-X-Gm-Message-State: AO0yUKXSZ1fjdD0ZZW2smoqPQQ2uIfP7lcW8oJBuMzwZO286E0qL43uU
-        xLixx0deN7VKrYpl9AfoRG2Bei4EWYuRjrVezhE=
-X-Google-Smtp-Source: AK7set96ntz0wwf9F3ExaDsu5J8vo4QfmtKqdpA+G+2YJmIcf2a3AuQl2nM1cmB8ZqQyRF/jOE/l8Wh2VKTV5WDVluM=
-X-Received: by 2002:a17:906:518:b0:8dd:70a:3a76 with SMTP id
- j24-20020a170906051800b008dd070a3a76mr1139314eja.11.1678797142335; Tue, 14
- Mar 2023 05:32:22 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1678797310;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=pVIp7g2q/w3gUgwbSlzaQV0hcNAj9gmmGMjepwJpv3k=;
+        b=fAJtTgfg6X4BmEqy14zC1OLHhmg1wb/ehPQiYRrzc4MtBgon0zamtLHkA6BZrLO18G
+         74Dyn2pGX706gUx7lALr1X6xVhoeyhqwF1I62EpC8UyI4u7kGw3kDLks0nxpdIbyzx4J
+         vQ7E5Lli4BiqYbKQ0Toa9EPnwPRy7gjZvbG+4LeSc+deA9ep5K8zjqGHMgklV5/NgQKX
+         AfHqppevunMxo0YAD5+3B84QtQrnz4ayaASI+nfWwybUUsLhBFkbeFVhEJim7oPiYnZ8
+         f8TyB6aFFTOV4bieZE2cE1aeUnKDRhcs+HyLV94oqexH7apHi5CjzEzdtnFk6SrwhtZ6
+         gYHg==
+X-Gm-Message-State: AO0yUKWHovE0iSOOBkV5iHxgg9c4qOqXmiffiWH1+YNOr81sr5QtI96j
+        lZ0SE1atHEmhLH6LiCQjkcKAnQ==
+X-Google-Smtp-Source: AK7set//pIrcp8jUcf3JgMEK728z52zYkDOMryFo5bY5BGzgnMFiLeyAGc3+wkIA5dYYCN+dvceKbA==
+X-Received: by 2002:a1c:f614:0:b0:3ea:fc95:7bf with SMTP id w20-20020a1cf614000000b003eafc9507bfmr14768496wmc.30.1678797309920;
+        Tue, 14 Mar 2023 05:35:09 -0700 (PDT)
+Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
+        by smtp.gmail.com with ESMTPSA id f3-20020a0560001b0300b002c559626a50sm2067133wrz.13.2023.03.14.05.35.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Mar 2023 05:35:09 -0700 (PDT)
+Message-ID: <e695257a-58e2-c676-95cd-77df5c2b68cf@blackwall.org>
+Date:   Tue, 14 Mar 2023 14:35:08 +0200
 MIME-Version: 1.0
-References: <20230314030532.9238-1-kerneljasonxing@gmail.com>
- <20230314030532.9238-3-kerneljasonxing@gmail.com> <ZBBir/hjHRJz6Laf@corigine.com>
-In-Reply-To: <ZBBir/hjHRJz6Laf@corigine.com>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Tue, 14 Mar 2023 20:31:46 +0800
-Message-ID: <CAL+tcoAhRKEengF_st9Owu9=LTj9+_UH2ToU8osgd4LcFD=bvg@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 2/2] net: introduce budget_squeeze to help us
- tune rx behavior
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com,
-        stephen@networkplumber.org, sinquersw@gmail.com,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jason Xing <kernelxing@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH net-next 09/11] vxlan: Add MDB data path support
+Content-Language: en-US
+To:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, roopa@nvidia.com, petrm@nvidia.com,
+        mlxsw@nvidia.com
+References: <20230313145349.3557231-1-idosch@nvidia.com>
+ <20230313145349.3557231-10-idosch@nvidia.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20230313145349.3557231-10-idosch@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,
+        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 14, 2023 at 8:04=E2=80=AFPM Simon Horman <simon.horman@corigine=
-.com> wrote:
->
-> On Tue, Mar 14, 2023 at 11:05:32AM +0800, Jason Xing wrote:
-> > From: Jason Xing <kernelxing@tencent.com>
-> >
-> > When we encounter some performance issue and then get lost on how
-> > to tune the budget limit and time limit in net_rx_action() function,
-> > we can separately counting both of them to avoid the confusion.
-> >
-> > Signed-off-by: Jason Xing <kernelxing@tencent.com>
->
-> As per my comment on patch 1/2, I'd drop the "/* keep it untouched */"
-> comment.
+On 13/03/2023 16:53, Ido Schimmel wrote:
+> Integrate MDB support into the Tx path of the VXLAN driver, allowing it
+> to selectively forward IP multicast traffic according to the matched MDB
+> entry.
+> 
+> If MDB entries are configured (i.e., 'VXLAN_F_MDB' is set) and the
+> packet is an IP multicast packet, perform up to three different lookups
+> according to the following priority:
+> 
+> 1. For an (S, G) entry, using {Source VNI, Source IP, Destination IP}.
+> 2. For a (*, G) entry, using {Source VNI, Destination IP}.
+> 3. For the catchall MDB entry (0.0.0.0 or ::), using the source VNI.
+> 
+> The catchall MDB entry is similar to the catchall FDB entry
+> (00:00:00:00:00:00) that is currently used to transmit BUM (broadcast,
+> unknown unicast and multicast) traffic. However, unlike the catchall FDB
+> entry, this entry is only used to transmit unregistered IP multicast
+> traffic that is not link-local. Therefore, when configured, the catchall
+> FDB entry will only transmit BULL (broadcast, unknown unicast,
+> link-local multicast) traffic.
+> 
+> The catchall MDB entry is useful in deployments where inter-subnet
+> multicast forwarding is used and not all the VTEPs in a tenant domain
+> are members in all the broadcast domains. In such deployments it is
+> advantageous to transmit BULL (broadcast, unknown unicast and link-local
+> multicast) and unregistered IP multicast traffic on different tunnels.
+> If the same tunnel was used, a VTEP only interested in IP multicast
+> traffic would also pull all the BULL traffic and drop it as it is not a
+> member in the originating broadcast domain [1].
+> 
+> If the packet did not match an MDB entry (or if the packet is not an IP
+> multicast packet), return it to the Tx path, allowing it to be forwarded
+> according to the FDB.
+> 
+> If the packet did match an MDB entry, forward it to the associated
+> remote VTEPs. However, if the entry is a (*, G) entry and the associated
+> remote is in INCLUDE mode, then skip over it as the source IP is not in
+> its source list (otherwise the packet would have matched on an (S, G)
+> entry). Similarly, if the associated remote is marked as BLOCKED (can
+> only be set on (S, G) entries), then skip over it as well as the remote
+> is in EXCLUDE mode and the source IP is in its source list.
+> 
+> [1] https://datatracker.ietf.org/doc/html/draft-ietf-bess-evpn-irb-mcast#section-2.6
+> 
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> ---
+>  drivers/net/vxlan/vxlan_core.c    |  15 ++++
+>  drivers/net/vxlan/vxlan_mdb.c     | 114 ++++++++++++++++++++++++++++++
+>  drivers/net/vxlan/vxlan_private.h |   6 ++
+>  3 files changed, 135 insertions(+)
+> 
+[snip]> diff --git a/drivers/net/vxlan/vxlan_mdb.c b/drivers/net/vxlan/vxlan_mdb.c
+> index b32b1fb4a74a..ea63c5178718 100644
+> --- a/drivers/net/vxlan/vxlan_mdb.c
+> +++ b/drivers/net/vxlan/vxlan_mdb.c
+> @@ -1298,6 +1298,120 @@ int vxlan_mdb_del(struct net_device *dev, struct nlattr *tb[],
+>  	return err;
+>  }
+>  
+> +struct vxlan_mdb_entry *vxlan_mdb_entry_skb_get(struct vxlan_dev *vxlan,
+> +						struct sk_buff *skb,
+> +						__be32 src_vni)
+> +{
+> +	struct vxlan_mdb_entry *mdb_entry;
+> +	struct vxlan_mdb_entry_key group;
+> +
+> +	if (!is_multicast_ether_addr(eth_hdr(skb)->h_dest) ||
+> +	    is_broadcast_ether_addr(eth_hdr(skb)->h_dest))
+> +		return NULL;
+> +
+> +	/* When not in collect metadata mode, 'src_vni' is zero, but MDB
+> +	 * entries are stored with the VNI of the VXLAN device.
+> +	 */
+> +	if (!(vxlan->cfg.flags & VXLAN_F_COLLECT_METADATA))
+> +		src_vni = vxlan->default_dst.remote_vni;
+> +
+> +	memset(&group, 0, sizeof(group));
+> +	group.vni = src_vni;
+> +
+> +	switch (ntohs(skb->protocol)) {
 
-I think you're right. I'll drop this.
+drop the ntohs and..
 
-Thanks,
-Jason
+> +	case ETH_P_IP:
 
->
-> That notwithstanding:
->
-> Reviewed-by: Simon Horman <simon.horman@corigine.com>
->
-> > ---
-> > v2:
-> > 1) change the coding style suggested by Stephen and Simon
-> > 2) Keep the display of the old data (time_squeeze) untouched suggested
-> > by Kui-Feng
-> > Link: https://lore.kernel.org/lkml/20230311163614.92296-1-kerneljasonxi=
-ng@gmail.com/
-> > ---
-> >  include/linux/netdevice.h |  1 +
-> >  net/core/dev.c            | 12 ++++++++----
-> >  net/core/net-procfs.c     |  9 ++++++---
-> >  3 files changed, 15 insertions(+), 7 deletions(-)
-> >
-> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> > index 6a14b7b11766..5736311a2133 100644
-> > --- a/include/linux/netdevice.h
-> > +++ b/include/linux/netdevice.h
-> > @@ -3157,6 +3157,7 @@ struct softnet_data {
-> >       /* stats */
-> >       unsigned int            processed;
-> >       unsigned int            time_squeeze;
-> > +     unsigned int            budget_squeeze;
-> >  #ifdef CONFIG_RPS
-> >       struct softnet_data     *rps_ipi_list;
-> >  #endif
-> > diff --git a/net/core/dev.c b/net/core/dev.c
-> > index 253584777101..1518a366783b 100644
-> > --- a/net/core/dev.c
-> > +++ b/net/core/dev.c
-> > @@ -6637,6 +6637,7 @@ static __latent_entropy void net_rx_action(struct=
- softirq_action *h)
-> >       unsigned long time_limit =3D jiffies +
-> >               usecs_to_jiffies(READ_ONCE(netdev_budget_usecs));
-> >       int budget =3D READ_ONCE(netdev_budget);
-> > +     bool done =3D false;
-> >       LIST_HEAD(list);
-> >       LIST_HEAD(repoll);
-> >
-> > @@ -6644,7 +6645,7 @@ static __latent_entropy void net_rx_action(struct=
- softirq_action *h)
-> >       list_splice_init(&sd->poll_list, &list);
-> >       local_irq_enable();
-> >
-> > -     for (;;) {
-> > +     while (!done) {
-> >               struct napi_struct *n;
-> >
-> >               skb_defer_free_flush(sd);
-> > @@ -6662,10 +6663,13 @@ static __latent_entropy void net_rx_action(stru=
-ct softirq_action *h)
-> >                * Allow this to run for 2 jiffies since which will allow
-> >                * an average latency of 1.5/HZ.
-> >                */
-> > -             if (unlikely(budget <=3D 0 ||
-> > -                          time_after_eq(jiffies, time_limit))) {
-> > +             if (unlikely(budget <=3D 0)) {
-> > +                     sd->budget_squeeze++;
-> > +                     done =3D true;
-> > +             }
-> > +             if (unlikely(time_after_eq(jiffies, time_limit))) {
-> >                       sd->time_squeeze++;
-> > -                     break;
-> > +                     done =3D true;
-> >               }
-> >       }
-> >
-> > diff --git a/net/core/net-procfs.c b/net/core/net-procfs.c
-> > index 2809b663e78d..25810ee46a04 100644
-> > --- a/net/core/net-procfs.c
-> > +++ b/net/core/net-procfs.c
-> > @@ -179,14 +179,17 @@ static int softnet_seq_show(struct seq_file *seq,=
- void *v)
-> >        */
-> >       seq_printf(seq,
-> >                  "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08=
-x %08x %08x "
-> > -                "%08x %08x\n",
-> > -                sd->processed, sd->dropped, sd->time_squeeze, 0,
-> > +                "%08x %08x %08x %08x\n",
-> > +                sd->processed, sd->dropped,
-> > +                sd->time_squeeze + sd->budget_squeeze, /* keep it unto=
-uched */
-> > +                0,
-> >                  0, 0, 0, 0, /* was fastroute */
-> >                  0,   /* was cpu_collision */
-> >                  sd->received_rps, flow_limit_count,
-> >                  softnet_backlog_len(sd),     /* keep it untouched */
-> >                  (int)seq->index,
-> > -                softnet_input_pkt_queue_len(sd), softnet_process_queue=
-_len(sd));
-> > +                softnet_input_pkt_queue_len(sd), softnet_process_queue=
-_len(sd),
-> > +                sd->time_squeeze, sd->budget_squeeze);
-> >       return 0;
-> >  }
-> >
-> > --
-> > 2.37.3
-> >
+htons(ETH_P_IP)
+
+> +		if (!pskb_may_pull(skb, sizeof(struct iphdr)))
+> +			return NULL;
+> +		group.dst.sa.sa_family = AF_INET;
+> +		group.dst.sin.sin_addr.s_addr = ip_hdr(skb)->daddr;
+> +		group.src.sa.sa_family = AF_INET;
+> +		group.src.sin.sin_addr.s_addr = ip_hdr(skb)->saddr;
+> +		break;
+> +#if IS_ENABLED(CONFIG_IPV6)
+> +	case ETH_P_IPV6:
+
+htons(ETH_P_IPV6)
+
+> +		if (!pskb_may_pull(skb, sizeof(struct ipv6hdr)))
+> +			return NULL;
+> +		group.dst.sa.sa_family = AF_INET6;
+> +		group.dst.sin6.sin6_addr = ipv6_hdr(skb)->daddr;
+> +		group.src.sa.sa_family = AF_INET6;
+> +		group.src.sin6.sin6_addr = ipv6_hdr(skb)->saddr;
+> +		break;
+> +#endif
+> +	default:
+> +		return NULL;
+> +	}
+> +
+> +	mdb_entry = vxlan_mdb_entry_lookup(vxlan, &group);
+> +	if (mdb_entry)
+> +		return mdb_entry;
+> +
+> +	memset(&group.src, 0, sizeof(group.src));
+> +	mdb_entry = vxlan_mdb_entry_lookup(vxlan, &group);
+> +	if (mdb_entry)
+> +		return mdb_entry;
+> +
+> +	/* No (S, G) or (*, G) found. Look up the all-zeros entry, but only if
+> +	 * the destination IP address is not link-local multicast since we want
+> +	 * to transmit such traffic together with broadcast and unknown unicast
+> +	 * traffic.
+> +	 */
+> +	switch (ntohs(skb->protocol)) {
+> +	case ETH_P_IP:
+
+ditto
+
+> +		if (ipv4_is_local_multicast(group.dst.sin.sin_addr.s_addr))
+> +			return NULL;
+> +		group.dst.sin.sin_addr.s_addr = 0;
+> +		break;
+> +#if IS_ENABLED(CONFIG_IPV6)
+> +	case ETH_P_IPV6:
+
+ditto
+
+> +		if (ipv6_addr_type(&group.dst.sin6.sin6_addr) &
+> +		    IPV6_ADDR_LINKLOCAL)
+> +			return NULL;
+> +		memset(&group.dst.sin6.sin6_addr, 0,
+> +		       sizeof(group.dst.sin6.sin6_addr));
+> +		break;
+> +#endif
+> +	default:
+> +		return NULL;
+> +	}
+> +
+> +	return vxlan_mdb_entry_lookup(vxlan, &group);
+> +}
+> +
+[snip]
+
