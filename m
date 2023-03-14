@@ -2,40 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 82F686B911A
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 12:08:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2EE46B9129
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 12:10:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230261AbjCNLHs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 07:07:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36520 "EHLO
+        id S230525AbjCNLKP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 07:10:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229712AbjCNLHr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 07:07:47 -0400
+        with ESMTP id S231343AbjCNLKH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 07:10:07 -0400
 Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1DDB7C941;
-        Tue, 14 Mar 2023 04:07:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E98B787374;
+        Tue, 14 Mar 2023 04:09:39 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id 1614A5FD60;
-        Tue, 14 Mar 2023 14:06:34 +0300 (MSK)
+        by mx.sberdevices.ru (Postfix) with ESMTP id 756585FD61;
+        Tue, 14 Mar 2023 14:08:58 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1678791994;
-        bh=uFGjRE3j4zXGby/VPz50ex9laPK7eGiO5HSk7DnBtqc=;
+        s=mail; t=1678792138;
+        bh=3iLPJaGeMrLb7xNjIHjUqhJAp4hqvLxn8oJMxDMG6R0=;
         h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type;
-        b=D+6neNLvcq2F0mTaKnS3JgbC53RCnVNJaQhxTlMGHK56FI1x7H6pw4gM0Q9Yo9wVw
-         8FBDBPyCOSORW384Hxd0CM910AFcWUeaMt5oDMu1NDpvKzT1Lh2fgSUUF6agtZRpFA
-         71g8hJGb2u7IiDJJlNkAsjcEnNZFO8fxGtn4KC8oeyl2XZXsnjgs4r3GoVa+pPqWHC
-         gDggQ093V6UL04TWuUAIjOcSstYVZqzKvWw8OqPI67yLAa0DQw+e5jBTDz6zVh4EPx
-         0hCJNRQE5pJPMtYxNkGkQJ8ujuZNExoQJzZgQlzRLneFknS57LgnjrhGeqo7fgYCO2
-         Ol0Av5lsmjNXA==
+        b=ZgOUElosaYO1LiE/XLPSTYPW8MI+wAI/CjoI8nuhTTrvUFAXhYE/6VEqPFAv4g5PE
+         7KXqzQn4ydLgwWZwY9xdupYJ7BQ6eU5ia8bnc0IxBjxHm4QNOgsu7HgGx6Qo85UfBi
+         WbJgm85f86qF9vXcnQXPr8QU3y/3yGGlbEW5GeEN/U+BUhSm9KVGvsIopqUgYAC6+q
+         +wDZRQEeTShF3yU3lg9X19etZlN014G85/7yI991rUUj46AzRF8wGlVFWldYCv/nLG
+         IAzrZVjLahNj0IhXxRZOX12fKImKqNJ7RM6fThhe5hX8tEfUgsrCXX3WHWkyL1HI8n
+         Q/PuaLB1CledQ==
 Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
         by mx.sberdevices.ru (Postfix) with ESMTP;
-        Tue, 14 Mar 2023 14:06:33 +0300 (MSK)
-Message-ID: <1bfcb7fd-bce3-30cf-8a58-8baa57b7345c@sberdevices.ru>
-Date:   Tue, 14 Mar 2023 14:03:23 +0300
+        Tue, 14 Mar 2023 14:08:57 +0300 (MSK)
+Message-ID: <92bc3587-6994-e003-5ec5-252c1961d8ec@sberdevices.ru>
+Date:   Tue, 14 Mar 2023 14:05:48 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
 Content-Language: en-US
+In-Reply-To: <1bfcb7fd-bce3-30cf-8a58-8baa57b7345c@sberdevices.ru>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -48,11 +49,12 @@ CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <kernel@sberdevices.ru>, <oxffffaa@gmail.com>,
         <avkrasnov@sberdevices.ru>
 From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
-Subject: [PATCH RESEND net v4 0/4] several updates to virtio/vsock
+Subject: [PATCH RESEND net v4 1/4] virtio/vsock: don't use skbuff state to
+ account credit
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [172.16.1.6]
-X-ClientProxiedBy: S-MS-EXCH02.sberdevices.ru (172.16.1.5) To
+X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
  S-MS-EXCH01.sberdevices.ru (172.16.1.4)
 X-KSMG-Rule-ID: 4
 X-KSMG-Message-Action: clean
@@ -70,75 +72,103 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+'skb->len' can vary when we partially read the data, this complicates the
+calculation of credit to be updated in 'virtio_transport_inc_rx_pkt()/
+virtio_transport_dec_rx_pkt()'.
 
-this patchset evolved from previous v2 version (see link below). It does
-several updates to virtio/vsock:
-1) Changes 'virtio_transport_inc/dec_rx_pkt()' interface. Now instead of
-   using skbuff state ('head' and 'data' pointers) to update 'fwd_cnt'
-   and 'rx_bytes', integer value is passed as an input argument. This
-   makes code more simple, because in this case we don't need to update
-   skbuff state before calling 'virtio_transport_inc/dec_rx_pkt()'. In
-   more common words - we don't need to change skbuff state to update
-   'rx_bytes' and 'fwd_cnt' correctly.
-2) For SOCK_STREAM, when copying data to user fails, current skbuff is
-   not dropped. Next read attempt will use same skbuff and last offset.
-   Instead of 'skb_dequeue()', 'skb_peek()' + '__skb_unlink()' are used.
-   This behaviour was implemented before skbuff support.
-3) For SOCK_SEQPACKET it removes unneeded 'skb_pull()' call, because for
-   this type of socket each skbuff is used only once: after removing it
-   from socket's queue, it will be freed anyway.
+Also in 'virtio_transport_dec_rx_pkt()' we were miscalculating the
+credit since 'skb->len' was redundant.
 
-Test for 2) also added:
-Test tries to 'recv()' data to NULL buffer, then does 'recv()' with valid
-buffer. For SOCK_STREAM second 'recv()' must return data, because skbuff
-must not be dropped, but for SOCK_SEQPACKET skbuff will be dropped by
-kernel, and 'recv()' will return EAGAIN.
+For these reasons, let's replace the use of skbuff state to calculate new
+'rx_bytes'/'fwd_cnt' values with explicit value as input argument. This
+makes code more simple, because it is not needed to change skbuff state
+before each call to update 'rx_bytes'/'fwd_cnt'.
 
-Link to v1 on lore:
-https://lore.kernel.org/netdev/c2d3e204-89d9-88e9-8a15-3fe027e56b4b@sberdevices.ru/
+Fixes: 71dc9ec9ac7d ("virtio/vsock: replace virtio_vsock_pkt with sk_buff")
+Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+---
+ net/vmw_vsock/virtio_transport_common.c | 23 +++++++++++------------
+ 1 file changed, 11 insertions(+), 12 deletions(-)
 
-Link to v2 on lore:
-https://lore.kernel.org/netdev/a7ab414b-5e41-c7b6-250b-e8401f335859@sberdevices.ru/
-
-Link to v3 on lore:
-https://lore.kernel.org/netdev/0abeec42-a11d-3a51-453b-6acf76604f2e@sberdevices.ru/
-
-Change log:
-
-v1 -> v2:
- - For SOCK_SEQPACKET call 'skb_pull()' also in case of copy failure or
-   dropping skbuff (when we just waiting message end).
- - Handle copy failure for SOCK_STREAM in the same manner (plus free
-   current skbuff).
- - Replace bug repdroducer with new test in vsock_test.c
-
-v2 -> v3:
- - Replace patch which removes 'skb->len' subtraction from function
-   'virtio_transport_dec_rx_pkt()' with patch which updates functions
-   'virtio_transport_inc/dec_rx_pkt()' by passing integer argument
-   instead of skbuff pointer.
- - Replace patch which drops skbuff when copying to user fails with
-   patch which changes this behaviour by keeping skbuff in queue until
-   it has no data.
- - Add patch for SOCK_SEQPACKET which removes redundant 'skb_pull()'
-   call on read.
- - I remove "Fixes" tag from all patches, because all of them now change
-   code logic, not only fix something.
-
-v3 -> v4:
- - Update commit messages in all patches except test.
- - Add "Fixes" tag to all patches except test.
-
-Arseniy Krasnov (4):
-  virtio/vsock: don't use skbuff state to account credit
-  virtio/vsock: remove redundant 'skb_pull()' call
-  virtio/vsock: don't drop skbuff on copy failure
-  test/vsock: copy to user failure test
-
- net/vmw_vsock/virtio_transport_common.c |  29 +++---
- tools/testing/vsock/vsock_test.c        | 118 ++++++++++++++++++++++++
- 2 files changed, 131 insertions(+), 16 deletions(-)
-
+diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+index a1581c77cf84..618680fd9906 100644
+--- a/net/vmw_vsock/virtio_transport_common.c
++++ b/net/vmw_vsock/virtio_transport_common.c
+@@ -241,21 +241,18 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
+ }
+ 
+ static bool virtio_transport_inc_rx_pkt(struct virtio_vsock_sock *vvs,
+-					struct sk_buff *skb)
++					u32 len)
+ {
+-	if (vvs->rx_bytes + skb->len > vvs->buf_alloc)
++	if (vvs->rx_bytes + len > vvs->buf_alloc)
+ 		return false;
+ 
+-	vvs->rx_bytes += skb->len;
++	vvs->rx_bytes += len;
+ 	return true;
+ }
+ 
+ static void virtio_transport_dec_rx_pkt(struct virtio_vsock_sock *vvs,
+-					struct sk_buff *skb)
++					u32 len)
+ {
+-	int len;
+-
+-	len = skb_headroom(skb) - sizeof(struct virtio_vsock_hdr) - skb->len;
+ 	vvs->rx_bytes -= len;
+ 	vvs->fwd_cnt += len;
+ }
+@@ -388,7 +385,9 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
+ 		skb_pull(skb, bytes);
+ 
+ 		if (skb->len == 0) {
+-			virtio_transport_dec_rx_pkt(vvs, skb);
++			u32 pkt_len = le32_to_cpu(virtio_vsock_hdr(skb)->len);
++
++			virtio_transport_dec_rx_pkt(vvs, pkt_len);
+ 			consume_skb(skb);
+ 		} else {
+ 			__skb_queue_head(&vvs->rx_queue, skb);
+@@ -437,17 +436,17 @@ static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
+ 
+ 	while (!msg_ready) {
+ 		struct virtio_vsock_hdr *hdr;
++		size_t pkt_len;
+ 
+ 		skb = __skb_dequeue(&vvs->rx_queue);
+ 		if (!skb)
+ 			break;
+ 		hdr = virtio_vsock_hdr(skb);
++		pkt_len = (size_t)le32_to_cpu(hdr->len);
+ 
+ 		if (dequeued_len >= 0) {
+-			size_t pkt_len;
+ 			size_t bytes_to_copy;
+ 
+-			pkt_len = (size_t)le32_to_cpu(hdr->len);
+ 			bytes_to_copy = min(user_buf_len, pkt_len);
+ 
+ 			if (bytes_to_copy) {
+@@ -484,7 +483,7 @@ static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
+ 				msg->msg_flags |= MSG_EOR;
+ 		}
+ 
+-		virtio_transport_dec_rx_pkt(vvs, skb);
++		virtio_transport_dec_rx_pkt(vvs, pkt_len);
+ 		kfree_skb(skb);
+ 	}
+ 
+@@ -1040,7 +1039,7 @@ virtio_transport_recv_enqueue(struct vsock_sock *vsk,
+ 
+ 	spin_lock_bh(&vvs->rx_lock);
+ 
+-	can_enqueue = virtio_transport_inc_rx_pkt(vvs, skb);
++	can_enqueue = virtio_transport_inc_rx_pkt(vvs, len);
+ 	if (!can_enqueue) {
+ 		free_pkt = true;
+ 		goto out;
 -- 
 2.25.1
