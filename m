@@ -2,57 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A48916BA21B
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 23:13:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D9D96BA222
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 23:14:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231459AbjCNWNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 18:13:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40428 "EHLO
+        id S231443AbjCNWO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 18:14:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231395AbjCNWM6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 18:12:58 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D09F53700;
-        Tue, 14 Mar 2023 15:11:32 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id p16so11352122wmq.5;
-        Tue, 14 Mar 2023 15:11:32 -0700 (PDT)
+        with ESMTP id S231314AbjCNWOK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 18:14:10 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4263323DB5;
+        Tue, 14 Mar 2023 15:13:19 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id o11-20020a05600c4fcb00b003eb33ea29a8so11182837wmq.1;
+        Tue, 14 Mar 2023 15:13:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678831847;
+        d=gmail.com; s=20210112; t=1678831913;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=XOm5rYLYVzCqPgdOgZlYvvxQEGH2cR4WoabHTdB2XTc=;
-        b=jEzZzddbSnH6HLoRTbU0J41xJ6EwUSMB1obXmPgFsYPLyylYewJRGT6bdusBGKQlhs
-         qqua4VFJpoPfxTvR1HAj2ErF7WaukuiWa3xN/27SorHhN6w+2zs+hdS8IGQxrKGb4UXq
-         ZAWy+j8TKthIx6xUAUTviRPkfbWcL4gBErnh1zBE/e4KVVgounC6ZJIPrAnUXKcheFpd
-         7ELASOoDJ3suifJZ+gAlKmvKs+jPUsP5a19PGWC0UaWHKgQotdcUu7cpL4l4Lg7rCtmQ
-         h4qIWHjMof6LgwHaOeTZDiaR8UEpw7aaN//D7fL413Ek3hoYAPH0iEu9vWP4J2zKdF5A
-         suoQ==
+        bh=SekFEmAeK9leXCVtEJ/5RiO3jcSsl6NVfTaRrfrZ9J0=;
+        b=oPNWwBITue+0q+Gxhr58U1kNBLFxTO1MPp56f9Y+lN6aB40OfQA+HcognUG0yf4pmn
+         e2gFvCzgqkNE6DheOGDTX0/va4sOjqSyisTfHD+971zqRBaQclJWHRyep4Ubzuh3yQXD
+         PoP/JZglgDGJzPNLExl32duTvYBCrew7Gy6GazTQgjn56B9PfHWeIh2JJ6dNHCx6nStX
+         SyYgktXbqCSlyFfVei4/hSS3w2rWnzrT0enOosoLz03a8OsbGSrYqpYavBHJzPR94Xoi
+         zC+uHX4ceP0QL57R6SRib0pqx13y0moaj+EMNnhezYvMliREdD7Kc1djkgAfXkvd3NRf
+         EGJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678831847;
+        d=1e100.net; s=20210112; t=1678831913;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=XOm5rYLYVzCqPgdOgZlYvvxQEGH2cR4WoabHTdB2XTc=;
-        b=Mzqp8F/yWHcC3Se9aDLLEHf8/c+twWI/jnJwlVqrZtno9eyEKcCR/JcHJBT4iuJn+K
-         9s1ihKgEKu4dzhDWoxMPi7Jd1e2mYYXiGIZp0MU2VWQ42e1i89V9go3p+oSkLh25q9tO
-         BECMsZM0+kcPeO93p8YoqvKt+vf4t7pCuz0X2Yzy8RTAfo7L0VA8KOZYQyHNDzvnmgll
-         IIfjX/jGoSR9dzZDljElifZG51HMI9/EXqeIyf28Y08IGwcBqVBDwXxaYaAUxB4oGRxQ
-         a78gvwBX5oTFPD2WBpijMplavjN+mc8uHWvRmcH9gj/Yo2T4buvX8PWOj65JjwbErTiP
-         sOHg==
-X-Gm-Message-State: AO0yUKXksodV2MrbYi5QG+gLZJlY960M5gJvI6xGDDBALN3a5P2zQMe6
-        GrKb2xMajCtdYQIS+B+0tuI=
-X-Google-Smtp-Source: AK7set/LLjuI1UJN7XrwhAnLm6yhPHUm3AdRkBcTVIEVq6SVbL08lC3lUyr8ctQdrpwYwuUYEFzSvw==
-X-Received: by 2002:a05:600c:4f91:b0:3eb:29fe:7b9e with SMTP id n17-20020a05600c4f9100b003eb29fe7b9emr15098520wmq.17.1678831846616;
-        Tue, 14 Mar 2023 15:10:46 -0700 (PDT)
+        bh=SekFEmAeK9leXCVtEJ/5RiO3jcSsl6NVfTaRrfrZ9J0=;
+        b=pB1AeW4XclKCcyVMETIxLjwzBsLzrd9k+trKqGwCjBSj22EBQWUDYPBZwYddj1aqx3
+         TvME97nbSGdD1UYtw++oZ2aXN5uVfQUd0zNihHRyotLQHruDGoq032i7lZcefzd++4NX
+         krMz9NaOGoReb4S+DAYtvkvIfieWfDkiR+ukJaouDz/2vLVPDi3geHna+U3zvd40YCnQ
+         Txcn2icHFx8nzga30XbCOpbRxFfKAa5TC20LaSvA2u03TcTdKvptMkK3PvPUK62oT0oh
+         P6yI5Yn6WU9NE4YAIg5wKpe97Eqa+Y/vloPTF3o3ZQXQa4XpDujBeJgAukNZXNgd5IKZ
+         mXJg==
+X-Gm-Message-State: AO0yUKUyhE204/LlrAWjuzWXfeTzE6hyZd8FtgAaFiMY2zlu8J/ddJke
+        C+1JDyQkWWemevUOIDB1djM=
+X-Google-Smtp-Source: AK7set867EXlhkXXBMVZCE2npmcXP0xJU5GRhkg31e64K452iGc8VYDPMj8kt4wPWuhgptenPGsmDA==
+X-Received: by 2002:a05:600c:1c95:b0:3e2:1ef0:f585 with SMTP id k21-20020a05600c1c9500b003e21ef0f585mr16262253wms.2.1678831913150;
+        Tue, 14 Mar 2023 15:11:53 -0700 (PDT)
 Received: from localhost (host86-146-209-214.range86-146.btcentralplus.com. [86.146.209.214])
-        by smtp.gmail.com with ESMTPSA id n17-20020a05600c3b9100b003ebff290a52sm4522859wms.28.2023.03.14.15.10.45
+        by smtp.gmail.com with ESMTPSA id l8-20020a05600c4f0800b003db01178b62sm4438120wmq.40.2023.03.14.15.11.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Mar 2023 15:10:45 -0700 (PDT)
-Date:   Tue, 14 Mar 2023 22:10:45 +0000
+        Tue, 14 Mar 2023 15:11:52 -0700 (PDT)
+Date:   Tue, 14 Mar 2023 22:11:51 +0000
 From:   Lorenzo Stoakes <lstoakes@gmail.com>
 To:     Vlastimil Babka <vbabka@suse.cz>
-Cc:     Mike Rapoport <mike.rapoport@gmail.com>,
-        Christoph Lameter <cl@linux.com>,
+Cc:     Christoph Lameter <cl@linux.com>,
         David Rientjes <rientjes@google.com>,
         Joonsoo Kim <iamjoonsoo.kim@lge.com>,
         Pekka Enberg <penberg@kernel.org>,
@@ -61,30 +60,15 @@ Cc:     Mike Rapoport <mike.rapoport@gmail.com>,
         Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
         rcu@vger.kernel.org, linux-fsdevel@vger.kernel.org,
         linux-kernel@vger.kernel.org, patches@lists.linux.dev,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [PATCH 0/7] remove SLOB and allow kfree() with kmem_cache_alloc()
-Message-ID: <eeb8c896-120f-482f-97c0-0cff22a53e0f@lucifer.local>
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCH 1/7] mm/slob: remove CONFIG_SLOB
+Message-ID: <4e936740-1f1c-4dd2-968b-b781ee2bfc6a@lucifer.local>
 References: <20230310103210.22372-1-vbabka@suse.cz>
- <ZA2gofYkXRcJ8cLA@kernel.org>
- <93d33f35-fc5e-3ab2-1ac0-891f018b4b06@suse.cz>
+ <20230310103210.22372-2-vbabka@suse.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <93d33f35-fc5e-3ab2-1ac0-891f018b4b06@suse.cz>
+In-Reply-To: <20230310103210.22372-2-vbabka@suse.cz>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -95,10 +79,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 13, 2023 at 05:36:44PM +0100, Vlastimil Babka wrote:
-> > git grep -in slob still gives a couple of matches. I've dropped the
-> > irrelevant ones it it left me with these:
+On Fri, Mar 10, 2023 at 11:32:03AM +0100, Vlastimil Babka wrote:
+> Remove SLOB from Kconfig and Makefile. Everything under #ifdef
+> CONFIG_SLOB, and mm/slob.c is now dead code.
+>
+> Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+> ---
+>  init/Kconfig               |  2 +-
+>  kernel/configs/tiny.config |  1 -
+>  mm/Kconfig                 | 22 ----------------------
+>  mm/Makefile                |  1 -
+>  4 files changed, 1 insertion(+), 25 deletions(-)
+>
+> diff --git a/init/Kconfig b/init/Kconfig
+> index 1fb5f313d18f..72ac3f66bc27 100644
+> --- a/init/Kconfig
+> +++ b/init/Kconfig
+> @@ -973,7 +973,7 @@ config MEMCG
+>
+>  config MEMCG_KMEM
+>  	bool
+> -	depends on MEMCG && !SLOB
+> +	depends on MEMCG
+>  	default y
+>
+>  config BLK_CGROUP
+> diff --git a/kernel/configs/tiny.config b/kernel/configs/tiny.config
+> index c2f9c912df1c..144b2bd86b14 100644
+> --- a/kernel/configs/tiny.config
+> +++ b/kernel/configs/tiny.config
+> @@ -7,6 +7,5 @@ CONFIG_KERNEL_XZ=y
+>  # CONFIG_KERNEL_LZO is not set
+>  # CONFIG_KERNEL_LZ4 is not set
+>  # CONFIG_SLAB is not set
+> -# CONFIG_SLOB_DEPRECATED is not set
+>  CONFIG_SLUB=y
+>  CONFIG_SLUB_TINY=y
+> diff --git a/mm/Kconfig b/mm/Kconfig
+> index 4751031f3f05..669399ab693c 100644
+> --- a/mm/Kconfig
+> +++ b/mm/Kconfig
+> @@ -238,30 +238,8 @@ config SLUB
+>  	   and has enhanced diagnostics. SLUB is the default choice for
+>  	   a slab allocator.
+>
+> -config SLOB_DEPRECATED
+> -	depends on EXPERT
+> -	bool "SLOB (Simple Allocator - DEPRECATED)"
+> -	depends on !PREEMPT_RT
+> -	help
+> -	   Deprecated and scheduled for removal in a few cycles. SLUB
+> -	   recommended as replacement. CONFIG_SLUB_TINY can be considered
+> -	   on systems with 16MB or less RAM.
+> -
+> -	   If you need SLOB to stay, please contact linux-mm@kvack.org and
+> -	   people listed in the SLAB ALLOCATOR section of MAINTAINERS file,
+> -	   with your use case.
+> -
+> -	   SLOB replaces the stock allocator with a drastically simpler
+> -	   allocator. SLOB is generally more space efficient but
+> -	   does not perform as well on large systems.
+> -
+>  endchoice
+>
+> -config SLOB
+> -	bool
+> -	default y
+> -	depends on SLOB_DEPRECATED
+> -
+>  config SLUB_TINY
+>  	bool "Configure SLUB for minimal memory footprint"
+>  	depends on SLUB && EXPERT
+> diff --git a/mm/Makefile b/mm/Makefile
+> index 8e105e5b3e29..2d9c1e7f6085 100644
+> --- a/mm/Makefile
+> +++ b/mm/Makefile
+> @@ -81,7 +81,6 @@ obj-$(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP)	+= hugetlb_vmemmap.o
+>  obj-$(CONFIG_NUMA) 	+= mempolicy.o
+>  obj-$(CONFIG_SPARSEMEM)	+= sparse.o
+>  obj-$(CONFIG_SPARSEMEM_VMEMMAP) += sparse-vmemmap.o
+> -obj-$(CONFIG_SLOB) += slob.o
+>  obj-$(CONFIG_MMU_NOTIFIER) += mmu_notifier.o
+>  obj-$(CONFIG_KSM) += ksm.o
+>  obj-$(CONFIG_PAGE_POISONING) += page_poison.o
+> --
+> 2.39.2
+>
 
-I see an #ifdef in security/tomoyo/common.h which I guess is not really
-relevant? And certainly not harmful in practice. Thought might be nice to
-eliminate the last reference to CONFIG_SLOB in the kernel :)
+Looks good to me too,
+
+Acked-by: Lorenzo Stoakes <lstoakes@gmail.com>
