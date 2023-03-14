@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0441F6B9090
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 11:50:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5EE56B909B
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 11:51:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230235AbjCNKuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 06:50:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56076 "EHLO
+        id S230184AbjCNKvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 06:51:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230498AbjCNKt6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 06:49:58 -0400
+        with ESMTP id S230242AbjCNKur (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 06:50:47 -0400
 Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A1A19CFDA;
-        Tue, 14 Mar 2023 03:49:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F3F99C17;
+        Tue, 14 Mar 2023 03:50:22 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id 16DDD5FD1B;
-        Tue, 14 Mar 2023 13:49:08 +0300 (MSK)
+        by mx.sberdevices.ru (Postfix) with ESMTP id D5BAF5FD5D;
+        Tue, 14 Mar 2023 13:50:10 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1678790948;
-        bh=O9gE/e3yodgY9/2lXhwQfpuuKkQb1WuGw0jqX7CdLPE=;
+        s=mail; t=1678791010;
+        bh=PF6KHzan4mSy2kGESR6B1xvrFo2PxPLxBlkqc63AEv0=;
         h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type;
-        b=Olm0J031XNxDpWpsClTgF5zygiodMekRLoQWGsVHm6GDSK4wEesNNXaLKosZTZIQO
-         ibh/Gggnm9e63G+MancnN7GVOib51Jz4Yty5LGp1pEfYPIDIswAr3PWJuWHa1wUXkD
-         YyC4tvb6UfsUi0DJgKdQviCds7q5tRG1VqTJxjIImrMLUueCJ1JC8LnFrSdWwGO+O+
-         BPg0LeFSmW7Nt/TJrx7jy3FD+a/9ZOdAuq90c7alBWg87vdOQ+TviO2LkJ0f2C9a7F
-         v5RplooPIgu513nIni6MH72oLlu/ICJ3AjkKvwYjad1/Vy9C1FIlQz7yG5la1K178C
-         N5YrKn2oraNzA==
+        b=FBXLcVMzO5ObhSajVTiWCdadt8ErDm9Ksh+JuT51Ug7NgKKD5FrrDbyNeIV970kgP
+         0KWkDf4oYupOTyc2ELK916qVjsDSMZB+ONIFxZ3oFvN8ifEZLdmgPg50JHxmWRN5Rq
+         IPiHvpIfq9LMrsZ2hfMmABMCr5rtM1Fn1G9ZF8VvN4yub79ybXGGvYbH8kxC0wM8MK
+         1EYIv3dZYO4TKV8ubyb/RnjMjfJjLg9IIEjW1inyYNsOUR/r6F0XYE32zvrYo3bLbC
+         IG6OyPQ+gJAhn8aDhyZ5cmlRg10Aa/KU9z10mjaZ5wXY2Y1rwnJuy25j53BOgvmGiy
+         H87vHwlttFnag==
 Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
         by mx.sberdevices.ru (Postfix) with ESMTP;
-        Tue, 14 Mar 2023 13:49:07 +0300 (MSK)
-Message-ID: <677f4431-d678-543c-c4aa-e237f5f36a80@sberdevices.ru>
-Date:   Tue, 14 Mar 2023 13:45:58 +0300
+        Tue, 14 Mar 2023 13:50:10 +0300 (MSK)
+Message-ID: <95dae024-a3f0-32e6-97a8-afde6bea9740@sberdevices.ru>
+Date:   Tue, 14 Mar 2023 13:47:01 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
@@ -49,11 +49,11 @@ CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <kernel@sberdevices.ru>, <oxffffaa@gmail.com>,
         <avkrasnov@sberdevices.ru>
 From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
-Subject: [PATCH net v4 3/4] virtio/vsock: don't drop skbuff on copy failure
+Subject: [PATCH net v4 4/4] test/vsock: copy to user failure test
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [172.16.1.6]
-X-ClientProxiedBy: S-MS-EXCH02.sberdevices.ru (172.16.1.5) To
+X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
  S-MS-EXCH01.sberdevices.ru (172.16.1.4)
 X-KSMG-Rule-ID: 4
 X-KSMG-Message-Action: clean
@@ -71,42 +71,153 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This returns behaviour of SOCK_STREAM read as before skbuff usage. When
-copying to user fails current skbuff won't be dropped, but returned to
-sockets's queue. Technically instead of 'skb_dequeue()', 'skb_peek()' is
-called and when skbuff becomes empty, it is removed from queue by
-'__skb_unlink()'.
+This adds SOCK_STREAM and SOCK_SEQPACKET tests for invalid buffer case.
+It tries to read data to NULL buffer (data already presents in socket's
+queue), then uses valid buffer. For SOCK_STREAM second read must return
+data, because skbuff is not dropped, but for SOCK_SEQPACKET skbuff will
+be dropped by kernel, and 'recv()' will return EAGAIN.
 
-Fixes: 71dc9ec9ac7d ("virtio/vsock: replace virtio_vsock_pkt with sk_buff")
 Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
 Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 ---
- net/vmw_vsock/virtio_transport_common.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ tools/testing/vsock/vsock_test.c | 118 +++++++++++++++++++++++++++++++
+ 1 file changed, 118 insertions(+)
 
-diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index 9a411475e201..6564192e7f20 100644
---- a/net/vmw_vsock/virtio_transport_common.c
-+++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -364,7 +364,7 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
+diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
+index 67e9f9df3a8c..3de10dbb50f5 100644
+--- a/tools/testing/vsock/vsock_test.c
++++ b/tools/testing/vsock/vsock_test.c
+@@ -860,6 +860,114 @@ static void test_stream_poll_rcvlowat_client(const struct test_opts *opts)
+ 	close(fd);
+ }
  
- 	spin_lock_bh(&vvs->rx_lock);
- 	while (total < len && !skb_queue_empty(&vvs->rx_queue)) {
--		skb = __skb_dequeue(&vvs->rx_queue);
-+		skb = skb_peek(&vvs->rx_queue);
- 
- 		bytes = len - total;
- 		if (bytes > skb->len)
-@@ -388,9 +388,8 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
- 			u32 pkt_len = le32_to_cpu(virtio_vsock_hdr(skb)->len);
- 
- 			virtio_transport_dec_rx_pkt(vvs, pkt_len);
-+			__skb_unlink(skb, &vvs->rx_queue);
- 			consume_skb(skb);
--		} else {
--			__skb_queue_head(&vvs->rx_queue, skb);
- 		}
- 	}
++#define INV_BUF_TEST_DATA_LEN 512
++
++static void test_inv_buf_client(const struct test_opts *opts, bool stream)
++{
++	unsigned char data[INV_BUF_TEST_DATA_LEN] = {0};
++	ssize_t ret;
++	int fd;
++
++	if (stream)
++		fd = vsock_stream_connect(opts->peer_cid, 1234);
++	else
++		fd = vsock_seqpacket_connect(opts->peer_cid, 1234);
++
++	if (fd < 0) {
++		perror("connect");
++		exit(EXIT_FAILURE);
++	}
++
++	control_expectln("SENDDONE");
++
++	/* Use invalid buffer here. */
++	ret = recv(fd, NULL, sizeof(data), 0);
++	if (ret != -1) {
++		fprintf(stderr, "expected recv(2) failure, got %zi\n", ret);
++		exit(EXIT_FAILURE);
++	}
++
++	if (errno != ENOMEM) {
++		fprintf(stderr, "unexpected recv(2) errno %d\n", errno);
++		exit(EXIT_FAILURE);
++	}
++
++	ret = recv(fd, data, sizeof(data), MSG_DONTWAIT);
++
++	if (stream) {
++		/* For SOCK_STREAM we must continue reading. */
++		if (ret != sizeof(data)) {
++			fprintf(stderr, "expected recv(2) success, got %zi\n", ret);
++			exit(EXIT_FAILURE);
++		}
++		/* Don't check errno in case of success. */
++	} else {
++		/* For SOCK_SEQPACKET socket's queue must be empty. */
++		if (ret != -1) {
++			fprintf(stderr, "expected recv(2) failure, got %zi\n", ret);
++			exit(EXIT_FAILURE);
++		}
++
++		if (errno != EAGAIN) {
++			fprintf(stderr, "unexpected recv(2) errno %d\n", errno);
++			exit(EXIT_FAILURE);
++		}
++	}
++
++	control_writeln("DONE");
++
++	close(fd);
++}
++
++static void test_inv_buf_server(const struct test_opts *opts, bool stream)
++{
++	unsigned char data[INV_BUF_TEST_DATA_LEN] = {0};
++	ssize_t res;
++	int fd;
++
++	if (stream)
++		fd = vsock_stream_accept(VMADDR_CID_ANY, 1234, NULL);
++	else
++		fd = vsock_seqpacket_accept(VMADDR_CID_ANY, 1234, NULL);
++
++	if (fd < 0) {
++		perror("accept");
++		exit(EXIT_FAILURE);
++	}
++
++	res = send(fd, data, sizeof(data), 0);
++	if (res != sizeof(data)) {
++		fprintf(stderr, "unexpected send(2) result %zi\n", res);
++		exit(EXIT_FAILURE);
++	}
++
++	control_writeln("SENDDONE");
++
++	control_expectln("DONE");
++
++	close(fd);
++}
++
++static void test_stream_inv_buf_client(const struct test_opts *opts)
++{
++	test_inv_buf_client(opts, true);
++}
++
++static void test_stream_inv_buf_server(const struct test_opts *opts)
++{
++	test_inv_buf_server(opts, true);
++}
++
++static void test_seqpacket_inv_buf_client(const struct test_opts *opts)
++{
++	test_inv_buf_client(opts, false);
++}
++
++static void test_seqpacket_inv_buf_server(const struct test_opts *opts)
++{
++	test_inv_buf_server(opts, false);
++}
++
+ static struct test_case test_cases[] = {
+ 	{
+ 		.name = "SOCK_STREAM connection reset",
+@@ -920,6 +1028,16 @@ static struct test_case test_cases[] = {
+ 		.run_client = test_seqpacket_bigmsg_client,
+ 		.run_server = test_seqpacket_bigmsg_server,
+ 	},
++	{
++		.name = "SOCK_STREAM test invalid buffer",
++		.run_client = test_stream_inv_buf_client,
++		.run_server = test_stream_inv_buf_server,
++	},
++	{
++		.name = "SOCK_SEQPACKET test invalid buffer",
++		.run_client = test_seqpacket_inv_buf_client,
++		.run_server = test_seqpacket_inv_buf_server,
++	},
+ 	{},
+ };
  
 -- 
 2.25.1
