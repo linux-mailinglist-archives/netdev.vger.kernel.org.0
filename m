@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DCF86B9D74
+	by mail.lfdr.de (Postfix) with ESMTP id 31F596B9D73
 	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 18:50:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229866AbjCNRuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 13:50:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50268 "EHLO
+        id S230515AbjCNRuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 13:50:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230426AbjCNRt6 (ORCPT
+        with ESMTP id S230409AbjCNRt6 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 13:49:58 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6885EA7287
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 10:49:56 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC193A0299
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 10:49:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 464E4CE1695
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65608B81AD2
         for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 17:49:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67946C4339B;
-        Tue, 14 Mar 2023 17:49:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 277F1C4339E;
+        Tue, 14 Mar 2023 17:49:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678816192;
-        bh=OhCG+HoqPYpf382jXR9O8a+Pon3qXkWhaZMmPLQLyOc=;
+        s=k20201202; t=1678816193;
+        bh=QI0REZcOh44FM7aKWHCQJTQ3mpucARZBLrNAUDWnVSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p2HBHGeVHY12BWs2Gh6CgImXKFMTaKXHDYK0TFvbCPZkvidwniHo9tSO52c2igKzC
-         dQeN3R2LQxDtQ1NPMb2TBRonD+M6fbkXXI+tyocwlqxubIptp9pB1M8QOX8WKzZbki
-         q20A1UanJBz/kycyIx4/Q/Q3dR8dJ33e5TTSAT0pVHjf1SAdSL+m+kh+5T7pYroqIE
-         4CRkszD06z1UbOXFvicP0sBhPw7gfVCUvJM+zKrjNgUwPl9Vms0Ynzw4W0TZCIRnMx
-         Dlp7Bl7+6QkqAApAXHzvtafX6OEBvu0mUc/j388rRxuFGT1KtzF2faP0JJ4/J4/Gfg
-         SBW7BOxXRenvw==
+        b=uH7ouhOPn3/s7mGZHCNzarRqH9ZN4YB8bJ01ZOvHPl6mH1G+EqvGBA9/YuhUoIQOv
+         Q4QZYEWq3S7j8MPdI9ymbcE87VnKmEcdYeCRPHmI+WjGmpIQ29Au00GcVLYyCkJmCB
+         Hi1QY3gQr5wsVkQhsj1+YJONg7DYxDDz4LpYqUBaLqTbbcXKV5e4g6ymI8ClDgtBZt
+         dKf0E/uDd4htYKnhk+EWQIMTJYKhHnJ+Mk94E5mTkPL9e3hS5q6jr8dGPknaHO7jXf
+         rR1qIqNVD/1TZuMrVvTHU6+Eovwevq4fgox6eHDHqpqyoykfKwBAWN9Xo1Y01cpgq6
+         DJRgpeuwaLBQA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -38,17 +38,18 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
-        Maor Dickman <maord@nvidia.com>, Roi Dayan <roid@nvidia.com>
-Subject: [net 06/14] net/mlx5: E-switch, Fix missing set of split_count when forward to ovs internal port
-Date:   Tue, 14 Mar 2023 10:49:32 -0700
-Message-Id: <20230314174940.62221-7-saeed@kernel.org>
+        Paul Blakey <paulb@nvidia.com>, Chris Mi <cmi@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>
+Subject: [net 07/14] net/mlx5e: Fix cleanup null-ptr deref on encap lock
+Date:   Tue, 14 Mar 2023 10:49:33 -0700
+Message-Id: <20230314174940.62221-8-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230314174940.62221-1-saeed@kernel.org>
 References: <20230314174940.62221-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,35 +57,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maor Dickman <maord@nvidia.com>
+From: Paul Blakey <paulb@nvidia.com>
 
-Rules with mirror actions are split to two FTEs when the actions after the mirror
-action contains pedit, vlan push/pop or ct. Forward to ovs internal port adds
-implicit header rewrite (pedit) but missing trigger to do split.
+During module is unloaded while a peer tc flow is still offloaded,
+first the peer uplink rep profile is changed to a nic profile, and so
+neigh encap lock is destroyed. Next during unload, the VF reps netdevs
+are unregistered which causes the original non-peer tc flow to be deleted,
+which deletes the peer flow. The peer flow deletion detaches the encap
+entry and try to take the already destroyed encap lock, causing the
+below trace.
 
-Fix by setting split_count when forwarding to ovs internal port which
-will trigger split in mirror rules.
+Fix this by clearing peer flows during tc eswitch cleanup
+(mlx5e_tc_esw_cleanup()).
 
-Fixes: 27484f7170ed ("net/mlx5e: Offload tc rules that redirect to ovs internal port")
-Signed-off-by: Maor Dickman <maord@nvidia.com>
+Relevant trace:
+[ 4316.837128] BUG: kernel NULL pointer dereference, address: 00000000000001d8
+[ 4316.842239] RIP: 0010:__mutex_lock+0xb5/0xc40
+[ 4316.851897] Call Trace:
+[ 4316.852481]  <TASK>
+[ 4316.857214]  mlx5e_rep_neigh_entry_release+0x93/0x790 [mlx5_core]
+[ 4316.858258]  mlx5e_rep_encap_entry_detach+0xa7/0xf0 [mlx5_core]
+[ 4316.859134]  mlx5e_encap_dealloc+0xa3/0xf0 [mlx5_core]
+[ 4316.859867]  clean_encap_dests.part.0+0x5c/0xe0 [mlx5_core]
+[ 4316.860605]  mlx5e_tc_del_fdb_flow+0x32a/0x810 [mlx5_core]
+[ 4316.862609]  __mlx5e_tc_del_fdb_peer_flow+0x1a2/0x250 [mlx5_core]
+[ 4316.863394]  mlx5e_tc_del_flow+0x(/0x630 [mlx5_core]
+[ 4316.864090]  mlx5e_flow_put+0x5f/0x100 [mlx5_core]
+[ 4316.864771]  mlx5e_delete_flower+0x4de/0xa40 [mlx5_core]
+[ 4316.865486]  tc_setup_cb_reoffload+0x20/0x80
+[ 4316.865905]  fl_reoffload+0x47c/0x510 [cls_flower]
+[ 4316.869181]  tcf_block_playback_offloads+0x91/0x1d0
+[ 4316.869649]  tcf_block_unbind+0xe7/0x1b0
+[ 4316.870049]  tcf_block_offload_cmd.isra.0+0x1ee/0x270
+[ 4316.879266]  tcf_block_offload_unbind+0x61/0xa0
+[ 4316.879711]  __tcf_block_put+0xa4/0x310
+
+Fixes: 04de7dda7394 ("net/mlx5e: Infrastructure for duplicated offloading of TC flows")
+Fixes: 1418ddd96afd ("net/mlx5e: Duplicate offloaded TC eswitch rules under uplink LAG")
+Signed-off-by: Paul Blakey <paulb@nvidia.com>
+Reviewed-by: Chris Mi <cmi@nvidia.com>
 Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 70b8d2dfa751..90944bf271ce 100644
+index 90944bf271ce..cc35cbc9934d 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -4304,6 +4304,7 @@ int mlx5e_set_fwd_to_int_port_actions(struct mlx5e_priv *priv,
+@@ -5464,6 +5464,16 @@ int mlx5e_tc_esw_init(struct mlx5_rep_uplink_priv *uplink_priv)
  
- 	esw_attr->dest_int_port = dest_int_port;
- 	esw_attr->dests[out_index].flags |= MLX5_ESW_DEST_CHAIN_WITH_SRC_PORT_CHANGE;
-+	esw_attr->split_count = out_index;
+ void mlx5e_tc_esw_cleanup(struct mlx5_rep_uplink_priv *uplink_priv)
+ {
++	struct mlx5e_rep_priv *rpriv;
++	struct mlx5_eswitch *esw;
++	struct mlx5e_priv *priv;
++
++	rpriv = container_of(uplink_priv, struct mlx5e_rep_priv, uplink_priv);
++	priv = netdev_priv(rpriv->netdev);
++	esw = priv->mdev->priv.eswitch;
++
++	mlx5e_tc_clean_fdb_peer_flows(esw);
++
+ 	mlx5e_tc_tun_cleanup(uplink_priv->encap);
  
- 	/* Forward to root fdb for matching against the new source vport */
- 	attr->dest_chain = 0;
+ 	mapping_destroy(uplink_priv->tunnel_enc_opts_mapping);
 -- 
 2.39.2
 
