@@ -2,74 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9ABF6B89EB
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 05:55:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AD5A6B8A18
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 06:09:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230051AbjCNEzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 00:55:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49984 "EHLO
+        id S229735AbjCNFJv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 01:09:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbjCNEzC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 00:55:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2D6F26CEA
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 21:54:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678769651;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mhbeQsCOWkBmfbdwAK6IkHvnb648Y/rpGHwMeBRvTFU=;
-        b=CifTnEFe9qkDYFQsR3/zb0dGmRhS/M+CKN4CE0x6EkI69/IzDUZEtU40WTXssM0li1RUl9
-        rg6J5Uw3pCcoH11QVMgbpLnaPeBIFAbmkjImDoR3coJPtgp9I+peHhusbZ5H5uB5jfFdfg
-        zK+6YhXTeEEOUrMmhXnJT6ikmI5RcHM=
-Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com
- [209.85.210.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-556-nnWgTqHENKKr9CJmUuw-Xg-1; Tue, 14 Mar 2023 00:54:10 -0400
-X-MC-Unique: nnWgTqHENKKr9CJmUuw-Xg-1
-Received: by mail-ot1-f72.google.com with SMTP id p21-20020a9d6955000000b00696141d38e6so690627oto.8
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 21:54:10 -0700 (PDT)
+        with ESMTP id S230020AbjCNFJu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 01:09:50 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9882D5A910;
+        Mon, 13 Mar 2023 22:09:48 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id s17so8213825pgv.4;
+        Mon, 13 Mar 2023 22:09:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678770588;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=kJwe1EkC8J3zS8Wr9IC+xL9zZ1GIIZJktIybcPhN72o=;
+        b=TmbgJE70HU8Dd9gu6wAm994jqb8A93QmQvhbg5AYaMTrbW0IHRL+JT/KNmwX0/xpR0
+         3+/wJnr627UZt8dwFicghcjITvtnDphsuBz7CmB8wHrHNG0AXFqnC6t2asTDLBLRC+Bu
+         PezmZ6CcthSs3aJUScLLMW2QlG3vyEUJzKd1SFgj4njb5OK/wsWs3ZYeM0OUghG47Jiw
+         KYXVSwRj+Y2BsW+tN6mRdf/OMWlXDqCwqd6sOLewbinS7GfbqNT5GOXVLqOi9gHT2nv/
+         HuoP9RYwsautN2Rz1wySpwH1u2QE9oPerK8mVpkx9S+rvzCsS4a+MTD55chBA3mx/IV7
+         Ta8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678769649;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mhbeQsCOWkBmfbdwAK6IkHvnb648Y/rpGHwMeBRvTFU=;
-        b=ld2JVkwwbKJs4wDAXNqE2ZFiLa1DR0vihQm2AwY6SNhVe6zQzBIOQ9U4mWgdZJcH7O
-         FEa38KkuFQMIDMN7dr7Iesmt+9h1VHeejtZ1uDs1JwUjwRgkAppY/3O21nx0edvbehFj
-         690cbAz6Ci7GMg9BxN+zAaTc5NHhdDZwJfaC/ofSyqTQIsYM0KtbyRV/Xx6UP3uuhDMl
-         /jQJshE7E6apaGmw41EohddS22Y7A3A7qtEJ2hoFX+sLfBFaubErPFTPknBB3mYCc/Ui
-         95LbVDf23FiYPZWgPD7K/zoyd6n6I3xP2PjxkANjMpRynbk8/7VgJj58uen1qcaf9fwS
-         iNXQ==
-X-Gm-Message-State: AO0yUKXAznJG2Ze/dZodeXEYO6Chdt4UIlNDtnEIzo/KjJMC56w4GoD1
-        3v/hjOWtYR8n5mlRcy70E03KrRnlugO6ujqvks236SJFrU7Zi4v6Niz6Hz+az4D/Yu6oLDGLv0a
-        WZZF85CVyko5MWn4xHOlSP36YkRL6zkgg
-X-Received: by 2002:a05:6870:5147:b0:177:b9c0:bcba with SMTP id z7-20020a056870514700b00177b9c0bcbamr2444288oak.3.1678769649246;
-        Mon, 13 Mar 2023 21:54:09 -0700 (PDT)
-X-Google-Smtp-Source: AK7set+nRM380JVzXg4oGG6ZzdC0Wyk+h+IHs+whvfeimKYfKtBA7Fkefnns9aW+jmQB5Dnx/xRGCvWfvJjeLfw2NKQ=
-X-Received: by 2002:a05:6870:5147:b0:177:b9c0:bcba with SMTP id
- z7-20020a056870514700b00177b9c0bcbamr2444279oak.3.1678769648938; Mon, 13 Mar
- 2023 21:54:08 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230302113421.174582-1-sgarzare@redhat.com> <20230302113421.174582-5-sgarzare@redhat.com>
-In-Reply-To: <20230302113421.174582-5-sgarzare@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Tue, 14 Mar 2023 12:53:57 +0800
-Message-ID: <CACGkMEui+-8JcTOsF+=b3W7oduMLsaL3Y7upUDmAMu4zPcrQTg@mail.gmail.com>
-Subject: Re: [PATCH v2 4/8] vringh: support VA with iotlb
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
-        eperezma@redhat.com, netdev@vger.kernel.org, stefanha@redhat.com,
-        linux-kernel@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        d=1e100.net; s=20210112; t=1678770588;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=kJwe1EkC8J3zS8Wr9IC+xL9zZ1GIIZJktIybcPhN72o=;
+        b=v6iViVowmKMRbUAEax/vU5uN/Z7j3CcvHoinpuxoMGGeWPMTnjlCbFpdFre8JIJK/E
+         SMLo13ErxxbgZTf+gTyeYSiWf/K2hxksALUxs7MuValo2cK1/S1ZVT9IPTXT/vVcm7Be
+         tHQj+5m5rrxZUpciFO0KT7xeGN6Kjaiwwrd7ie3UT/9tOzjjS6mhNoWKm95HQyOZia07
+         iB4kU+uB5XhOhc8hBwP9JeZ0MDjKXdhe6dr8WwdD30Yru76NdIn8D4v+f66GQ8XWZuGQ
+         VzGp7DrAp1do4/anO8vpgMYTYIxlOVHJAsqIYzwfVGc9JZIypJt4n6Fg3+D/K0xDNmnW
+         hASw==
+X-Gm-Message-State: AO0yUKUqYPZ1mXqKWSc84xA6Xop9vEIanz9RL8RGnRzEtC+l9dbymSnr
+        W7plFJXeD380VdaBjNDvi8CAnQhVLuk=
+X-Google-Smtp-Source: AK7set8mKI5+zTeXQ0Jx2tZuCR9srHojnIsVXKy4IiVuimsx6xrFtdP0m+3jjJcMup3DyzCaE6ETWw==
+X-Received: by 2002:a62:1d0b:0:b0:5df:421d:1962 with SMTP id d11-20020a621d0b000000b005df421d1962mr25570030pfd.2.1678770588027;
+        Mon, 13 Mar 2023 22:09:48 -0700 (PDT)
+Received: from localhost ([98.97.116.12])
+        by smtp.gmail.com with ESMTPSA id k17-20020aa792d1000000b005a84ef49c63sm542888pfa.214.2023.03.13.22.09.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Mar 2023 22:09:47 -0700 (PDT)
+Date:   Mon, 13 Mar 2023 22:09:45 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        intel-wired-lan@lists.osuosl.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        anthony.l.nguyen@intel.com, magnus.karlsson@intel.com,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Message-ID: <64100199e8980_425812081b@john.notmuch>
+In-Reply-To: <20230216122839.6878-1-maciej.fijalkowski@intel.com>
+References: <20230216122839.6878-1-maciej.fijalkowski@intel.com>
+Subject: RE: [PATCH intel-net] ice: xsk: disable txq irq before flushing hw
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,470 +74,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 2, 2023 at 7:35=E2=80=AFPM Stefano Garzarella <sgarzare@redhat.=
-com> wrote:
->
-> vDPA supports the possibility to use user VA in the iotlb messages.
-> So, let's add support for user VA in vringh to use it in the vDPA
-> simulators.
->
-> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> ---
->
-> Notes:
->     v2:
->     - replace kmap_atomic() with kmap_local_page() [see previous patch]
->     - fix cast warnings when build with W=3D1 C=3D1
->
->  include/linux/vringh.h            |   5 +-
->  drivers/vdpa/mlx5/net/mlx5_vnet.c |   2 +-
->  drivers/vdpa/vdpa_sim/vdpa_sim.c  |   4 +-
->  drivers/vhost/vringh.c            | 247 ++++++++++++++++++++++++------
->  4 files changed, 205 insertions(+), 53 deletions(-)
->
-> diff --git a/include/linux/vringh.h b/include/linux/vringh.h
-> index 1991a02c6431..d39b9f2dcba0 100644
-> --- a/include/linux/vringh.h
-> +++ b/include/linux/vringh.h
-> @@ -32,6 +32,9 @@ struct vringh {
->         /* Can we get away with weak barriers? */
->         bool weak_barriers;
->
-> +       /* Use user's VA */
-> +       bool use_va;
-> +
->         /* Last available index we saw (ie. where we're up to). */
->         u16 last_avail_idx;
->
-> @@ -279,7 +282,7 @@ void vringh_set_iotlb(struct vringh *vrh, struct vhos=
-t_iotlb *iotlb,
->                       spinlock_t *iotlb_lock);
->
->  int vringh_init_iotlb(struct vringh *vrh, u64 features,
-> -                     unsigned int num, bool weak_barriers,
-> +                     unsigned int num, bool weak_barriers, bool use_va,
->                       struct vring_desc *desc,
->                       struct vring_avail *avail,
->                       struct vring_used *used);
-> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/ml=
-x5_vnet.c
-> index 3a0e721aef05..babc8dd171a6 100644
-> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> @@ -2537,7 +2537,7 @@ static int setup_cvq_vring(struct mlx5_vdpa_dev *mv=
-dev)
->
->         if (mvdev->actual_features & BIT_ULL(VIRTIO_NET_F_CTRL_VQ))
->                 err =3D vringh_init_iotlb(&cvq->vring, mvdev->actual_feat=
-ures,
-> -                                       MLX5_CVQ_MAX_ENT, false,
-> +                                       MLX5_CVQ_MAX_ENT, false, false,
->                                         (struct vring_desc *)(uintptr_t)c=
-vq->desc_addr,
->                                         (struct vring_avail *)(uintptr_t)=
-cvq->driver_addr,
->                                         (struct vring_used *)(uintptr_t)c=
-vq->device_addr);
-> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdp=
-a_sim.c
-> index 6a0a65814626..481eb156658b 100644
-> --- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> @@ -60,7 +60,7 @@ static void vdpasim_queue_ready(struct vdpasim *vdpasim=
-, unsigned int idx)
->         struct vdpasim_virtqueue *vq =3D &vdpasim->vqs[idx];
->         uint16_t last_avail_idx =3D vq->vring.last_avail_idx;
->
-> -       vringh_init_iotlb(&vq->vring, vdpasim->features, vq->num, true,
-> +       vringh_init_iotlb(&vq->vring, vdpasim->features, vq->num, true, f=
-alse,
->                           (struct vring_desc *)(uintptr_t)vq->desc_addr,
->                           (struct vring_avail *)
->                           (uintptr_t)vq->driver_addr,
-> @@ -81,7 +81,7 @@ static void vdpasim_vq_reset(struct vdpasim *vdpasim,
->         vq->cb =3D NULL;
->         vq->private =3D NULL;
->         vringh_init_iotlb(&vq->vring, vdpasim->dev_attr.supported_feature=
-s,
-> -                         VDPASIM_QUEUE_MAX, false, NULL, NULL, NULL);
-> +                         VDPASIM_QUEUE_MAX, false, false, NULL, NULL, NU=
-LL);
->
->         vq->vring.notify =3D NULL;
->  }
-> diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
-> index 0ba3ef809e48..61c79cea44ca 100644
-> --- a/drivers/vhost/vringh.c
-> +++ b/drivers/vhost/vringh.c
-> @@ -1094,15 +1094,99 @@ EXPORT_SYMBOL(vringh_need_notify_kern);
->
->  #if IS_REACHABLE(CONFIG_VHOST_IOTLB)
->
-> -static int iotlb_translate(const struct vringh *vrh,
-> -                          u64 addr, u64 len, u64 *translated,
-> -                          struct bio_vec iov[],
-> -                          int iov_size, u32 perm)
-> +static int iotlb_translate_va(const struct vringh *vrh,
-> +                             u64 addr, u64 len, u64 *translated,
-> +                             struct iovec iov[],
-> +                             int iov_size, u32 perm)
->  {
->         struct vhost_iotlb_map *map;
->         struct vhost_iotlb *iotlb =3D vrh->iotlb;
-> +       u64 s =3D 0, last =3D addr + len - 1;
->         int ret =3D 0;
-> +
-> +       spin_lock(vrh->iotlb_lock);
-> +
-> +       while (len > s) {
-> +               u64 size;
-> +
-> +               if (unlikely(ret >=3D iov_size)) {
-> +                       ret =3D -ENOBUFS;
-> +                       break;
-> +               }
-> +
-> +               map =3D vhost_iotlb_itree_first(iotlb, addr, last);
-> +               if (!map || map->start > addr) {
-> +                       ret =3D -EINVAL;
-> +                       break;
-> +               } else if (!(map->perm & perm)) {
-> +                       ret =3D -EPERM;
-> +                       break;
-> +               }
-> +
-> +               size =3D map->size - addr + map->start;
-> +               iov[ret].iov_len =3D min(len - s, size);
-> +               iov[ret].iov_base =3D (void __user *)(unsigned long)
-> +                                   (map->addr + addr - map->start);
-> +               s +=3D size;
-> +               addr +=3D size;
-> +               ++ret;
-> +       }
-> +
-> +       spin_unlock(vrh->iotlb_lock);
-> +
-> +       if (translated)
-> +               *translated =3D min(len, s);
-> +
-> +       return ret;
-> +}
-> +
-> +static inline int copy_from_va(const struct vringh *vrh, void *dst, void=
- *src,
-> +                              u64 len, u64 *translated)
-> +{
-> +       struct iovec iov[16];
-> +       struct iov_iter iter;
-> +       int ret;
-> +
-> +       ret =3D iotlb_translate_va(vrh, (u64)(uintptr_t)src, len, transla=
-ted, iov,
-> +                                ARRAY_SIZE(iov), VHOST_MAP_RO);
-> +       if (ret =3D=3D -ENOBUFS)
-> +               ret =3D ARRAY_SIZE(iov);
-> +       else if (ret < 0)
-> +               return ret;
-> +
-> +       iov_iter_init(&iter, ITER_SOURCE, iov, ret, *translated);
-> +
-> +       return copy_from_iter(dst, *translated, &iter);
-> +}
-> +
-> +static inline int copy_to_va(const struct vringh *vrh, void *dst, void *=
-src,
-> +                            u64 len, u64 *translated)
-> +{
-> +       struct iovec iov[16];
-> +       struct iov_iter iter;
-> +       int ret;
-> +
-> +       ret =3D iotlb_translate_va(vrh, (u64)(uintptr_t)dst, len, transla=
-ted, iov,
-> +                                ARRAY_SIZE(iov), VHOST_MAP_WO);
-> +       if (ret =3D=3D -ENOBUFS)
-> +               ret =3D ARRAY_SIZE(iov);
-> +       else if (ret < 0)
-> +               return ret;
-> +
-> +       iov_iter_init(&iter, ITER_DEST, iov, ret, *translated);
-> +
-> +       return copy_to_iter(src, *translated, &iter);
-> +}
-> +
-> +static int iotlb_translate_pa(const struct vringh *vrh,
-> +                             u64 addr, u64 len, u64 *translated,
-> +                             struct bio_vec iov[],
-> +                             int iov_size, u32 perm)
-> +{
-> +       struct vhost_iotlb_map *map;
-> +       struct vhost_iotlb *iotlb =3D vrh->iotlb;
->         u64 s =3D 0, last =3D addr + len - 1;
-> +       int ret =3D 0;
->
->         spin_lock(vrh->iotlb_lock);
->
-> @@ -1141,28 +1225,61 @@ static int iotlb_translate(const struct vringh *v=
-rh,
->         return ret;
->  }
->
-> +static inline int copy_from_pa(const struct vringh *vrh, void *dst, void=
- *src,
-> +                              u64 len, u64 *translated)
-> +{
-> +       struct bio_vec iov[16];
-> +       struct iov_iter iter;
-> +       int ret;
-> +
-> +       ret =3D iotlb_translate_pa(vrh, (u64)(uintptr_t)src, len, transla=
-ted, iov,
-> +                                ARRAY_SIZE(iov), VHOST_MAP_RO);
-> +       if (ret =3D=3D -ENOBUFS)
-> +               ret =3D ARRAY_SIZE(iov);
-> +       else if (ret < 0)
-> +               return ret;
-> +
-> +       iov_iter_bvec(&iter, ITER_SOURCE, iov, ret, *translated);
-> +
-> +       return copy_from_iter(dst, *translated, &iter);
-> +}
-> +
-> +static inline int copy_to_pa(const struct vringh *vrh, void *dst, void *=
-src,
-> +                            u64 len, u64 *translated)
-> +{
-> +       struct bio_vec iov[16];
-> +       struct iov_iter iter;
-> +       int ret;
-> +
-> +       ret =3D iotlb_translate_pa(vrh, (u64)(uintptr_t)dst, len, transla=
-ted, iov,
-> +                                ARRAY_SIZE(iov), VHOST_MAP_WO);
-> +       if (ret =3D=3D -ENOBUFS)
-> +               ret =3D ARRAY_SIZE(iov);
-> +       else if (ret < 0)
-> +               return ret;
-> +
-> +       iov_iter_bvec(&iter, ITER_DEST, iov, ret, *translated);
-> +
-> +       return copy_to_iter(src, *translated, &iter);
-> +}
-> +
->  static inline int copy_from_iotlb(const struct vringh *vrh, void *dst,
->                                   void *src, size_t len)
->  {
->         u64 total_translated =3D 0;
->
->         while (total_translated < len) {
-> -               struct bio_vec iov[16];
-> -               struct iov_iter iter;
->                 u64 translated;
->                 int ret;
->
-> -               ret =3D iotlb_translate(vrh, (u64)(uintptr_t)src,
-> -                                     len - total_translated, &translated=
-,
-> -                                     iov, ARRAY_SIZE(iov), VHOST_MAP_RO)=
-;
-> -               if (ret =3D=3D -ENOBUFS)
-> -                       ret =3D ARRAY_SIZE(iov);
-> -               else if (ret < 0)
-> -                       return ret;
-> -
-> -               iov_iter_bvec(&iter, ITER_SOURCE, iov, ret, translated);
-> +               if (vrh->use_va) {
-> +                       ret =3D copy_from_va(vrh, dst, src,
-> +                                          len - total_translated, &trans=
-lated);
-> +               } else {
-> +                       ret =3D copy_from_pa(vrh, dst, src,
-> +                                          len - total_translated, &trans=
-lated);
-> +               }
->
-> -               ret =3D copy_from_iter(dst, translated, &iter);
->                 if (ret < 0)
->                         return ret;
->
-> @@ -1180,22 +1297,17 @@ static inline int copy_to_iotlb(const struct vrin=
-gh *vrh, void *dst,
->         u64 total_translated =3D 0;
->
->         while (total_translated < len) {
-> -               struct bio_vec iov[16];
-> -               struct iov_iter iter;
->                 u64 translated;
->                 int ret;
->
-> -               ret =3D iotlb_translate(vrh, (u64)(uintptr_t)dst,
-> -                                     len - total_translated, &translated=
-,
-> -                                     iov, ARRAY_SIZE(iov), VHOST_MAP_WO)=
-;
-> -               if (ret =3D=3D -ENOBUFS)
-> -                       ret =3D ARRAY_SIZE(iov);
-> -               else if (ret < 0)
-> -                       return ret;
-> -
-> -               iov_iter_bvec(&iter, ITER_DEST, iov, ret, translated);
-> +               if (vrh->use_va) {
-> +                       ret =3D copy_to_va(vrh, dst, src,
-> +                                        len - total_translated, &transla=
-ted);
-> +               } else {
-> +                       ret =3D copy_to_pa(vrh, dst, src,
-> +                                        len - total_translated, &transla=
-ted);
-> +               }
->
-> -               ret =3D copy_to_iter(src, translated, &iter);
->                 if (ret < 0)
->                         return ret;
->
-> @@ -1210,20 +1322,37 @@ static inline int copy_to_iotlb(const struct vrin=
-gh *vrh, void *dst,
->  static inline int getu16_iotlb(const struct vringh *vrh,
->                                u16 *val, const __virtio16 *p)
->  {
-> -       struct bio_vec iov;
-> -       void *kaddr, *from;
->         int ret;
->
->         /* Atomic read is needed for getu16 */
-> -       ret =3D iotlb_translate(vrh, (u64)(uintptr_t)p, sizeof(*p), NULL,
-> -                             &iov, 1, VHOST_MAP_RO);
-> -       if (ret < 0)
-> -               return ret;
-> +       if (vrh->use_va) {
-> +               struct iovec iov;
-> +               __virtio16 tmp;
-> +
-> +               ret =3D iotlb_translate_va(vrh, (u64)(uintptr_t)p, sizeof=
-(*p),
-> +                                        NULL, &iov, 1, VHOST_MAP_RO);
-> +               if (ret < 0)
-> +                       return ret;
+Maciej Fijalkowski wrote:
+> ice_qp_dis() intends to stop a given queue pair that is a target of xsk
+> pool attach/detach. One of the steps is to disable interrupts on these
+> queues. It currently is broken in a way that txq irq is turned off
+> *after* HW flush which in turn takes no effect.
+> 
+> ice_qp_dis():
+> -> ice_qvec_dis_irq()
+> --> disable rxq irq
+> --> flush hw
+> -> ice_vsi_stop_tx_ring()
+> -->disable txq irq
+> 
+> Below splat can be triggered by following steps:
+> - start xdpsock WITHOUT loading xdp prog
+> - run xdp_rxq_info with XDP_TX action on this interface
+> - start traffic
+> - terminate xdpsock
+> 
+> [  256.312485] BUG: kernel NULL pointer dereference, address: 0000000000000018
+> [  256.319560] #PF: supervisor read access in kernel mode
+> [  256.324775] #PF: error_code(0x0000) - not-present page
+> [  256.329994] PGD 0 P4D 0
+> [  256.332574] Oops: 0000 [#1] PREEMPT SMP NOPTI
+> [  256.337006] CPU: 3 PID: 32 Comm: ksoftirqd/3 Tainted: G           OE      6.2.0-rc5+ #51
+> [  256.345218] Hardware name: Intel Corporation S2600WFT/S2600WFT, BIOS SE5C620.86B.02.01.0008.031920191559 03/19/2019
+> [  256.355807] RIP: 0010:ice_clean_rx_irq_zc+0x9c/0x7d0 [ice]
+> [  256.361423] Code: b7 8f 8a 00 00 00 66 39 ca 0f 84 f1 04 00 00 49 8b 47 40 4c 8b 24 d0 41 0f b7 45 04 66 25 ff 3f 66 89 04 24 0f 84 85 02 00 00 <49> 8b 44 24 18 0f b7 14 24 48 05 00 01 00 00 49 89 04 24 49 89 44
+> [  256.380463] RSP: 0018:ffffc900088bfd20 EFLAGS: 00010206
+> [  256.385765] RAX: 000000000000003c RBX: 0000000000000035 RCX: 000000000000067f
+> [  256.393012] RDX: 0000000000000775 RSI: 0000000000000000 RDI: ffff8881deb3ac80
+> [  256.400256] RBP: 000000000000003c R08: ffff889847982710 R09: 0000000000010000
+> [  256.407500] R10: ffffffff82c060c0 R11: 0000000000000004 R12: 0000000000000000
+> [  256.414746] R13: ffff88811165eea0 R14: ffffc9000d255000 R15: ffff888119b37600
+> [  256.421990] FS:  0000000000000000(0000) GS:ffff8897e0cc0000(0000) knlGS:0000000000000000
+> [  256.430207] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  256.436036] CR2: 0000000000000018 CR3: 0000000005c0a006 CR4: 00000000007706e0
+> [  256.443283] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [  256.450527] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> [  256.457770] PKRU: 55555554
+> [  256.460529] Call Trace:
+> [  256.463015]  <TASK>
+> [  256.465157]  ? ice_xmit_zc+0x6e/0x150 [ice]
+> [  256.469437]  ice_napi_poll+0x46d/0x680 [ice]
+> [  256.473815]  ? _raw_spin_unlock_irqrestore+0x1b/0x40
+> [  256.478863]  __napi_poll+0x29/0x160
+> [  256.482409]  net_rx_action+0x136/0x260
+> [  256.486222]  __do_softirq+0xe8/0x2e5
+> [  256.489853]  ? smpboot_thread_fn+0x2c/0x270
+> [  256.494108]  run_ksoftirqd+0x2a/0x50
+> [  256.497747]  smpboot_thread_fn+0x1c1/0x270
+> [  256.501907]  ? __pfx_smpboot_thread_fn+0x10/0x10
+> [  256.506594]  kthread+0xea/0x120
+> [  256.509785]  ? __pfx_kthread+0x10/0x10
+> [  256.513597]  ret_from_fork+0x29/0x50
+> [  256.517238]  </TASK>
+> 
+> In fact, irqs were not disabled and napi managed to be scheduled and run
+> while xsk_pool pointer was still valid, but SW ring of xdp_buff pointers
+> was already freed.
+> 
+> To fix this, call ice_qvec_dis_irq() after ice_vsi_stop_tx_ring(). Also
+> while at it, remove redundant ice_clean_rx_ring() call - this is handled
+> in ice_qp_clean_rings().
+> 
+> Fixes: 2d4238f55697 ("ice: Add support for AF_XDP")
+> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-Nit: since we have copy_to_va/copy_to_pa variants, let's introduce
-getu16_iotlb_va/pa variants?
+Looks reasonable to me for what its worth.
 
->
-> -       kaddr =3D kmap_local_page(iov.bv_page);
-> -       from =3D kaddr + iov.bv_offset;
-> -       *val =3D vringh16_to_cpu(vrh, READ_ONCE(*(__virtio16 *)from));
-> -       kunmap_local(kaddr);
-> +               ret =3D __get_user(tmp, (__virtio16 __user *)iov.iov_base=
-);
-> +               if (ret)
-> +                       return ret;
-> +
-> +               *val =3D vringh16_to_cpu(vrh, tmp);
-> +       } else {
-> +               struct bio_vec iov;
-> +               void *kaddr, *from;
-> +
-> +               ret =3D iotlb_translate_pa(vrh, (u64)(uintptr_t)p, sizeof=
-(*p),
-> +                                        NULL, &iov, 1, VHOST_MAP_RO);
-> +               if (ret < 0)
-> +                       return ret;
-> +
-> +               kaddr =3D kmap_local_page(iov.bv_page);
-
-If we decide to have a use_va switch, is kmap_local_page() still required h=
-ere?
-
-Other looks good.
-
-Thanks
-
-> +               from =3D kaddr + iov.bv_offset;
-> +               *val =3D vringh16_to_cpu(vrh, READ_ONCE(*(__virtio16 *)fr=
-om));
-> +               kunmap_local(kaddr);
-> +       }
->
->         return 0;
->  }
-> @@ -1231,20 +1360,37 @@ static inline int getu16_iotlb(const struct vring=
-h *vrh,
->  static inline int putu16_iotlb(const struct vringh *vrh,
->                                __virtio16 *p, u16 val)
->  {
-> -       struct bio_vec iov;
-> -       void *kaddr, *to;
->         int ret;
->
->         /* Atomic write is needed for putu16 */
-> -       ret =3D iotlb_translate(vrh, (u64)(uintptr_t)p, sizeof(*p), NULL,
-> -                             &iov, 1, VHOST_MAP_WO);
-> -       if (ret < 0)
-> -               return ret;
-> +       if (vrh->use_va) {
-> +               struct iovec iov;
-> +               __virtio16 tmp;
->
-> -       kaddr =3D kmap_local_page(iov.bv_page);
-> -       to =3D kaddr + iov.bv_offset;
-> -       WRITE_ONCE(*(__virtio16 *)to, cpu_to_vringh16(vrh, val));
-> -       kunmap_local(kaddr);
-> +               ret =3D iotlb_translate_va(vrh, (u64)(uintptr_t)p, sizeof=
-(*p),
-> +                                        NULL, &iov, 1, VHOST_MAP_RO);
-> +               if (ret < 0)
-> +                       return ret;
-> +
-> +               tmp =3D cpu_to_vringh16(vrh, val);
-> +
-> +               ret =3D __put_user(tmp, (__virtio16 __user *)iov.iov_base=
-);
-> +               if (ret)
-> +                       return ret;
-> +       } else {
-> +               struct bio_vec iov;
-> +               void *kaddr, *to;
-> +
-> +               ret =3D iotlb_translate_pa(vrh, (u64)(uintptr_t)p, sizeof=
-(*p), NULL,
-> +                                        &iov, 1, VHOST_MAP_WO);
-> +               if (ret < 0)
-> +                       return ret;
-> +
-> +               kaddr =3D kmap_local_page(iov.bv_page);
-> +               to =3D kaddr + iov.bv_offset;
-> +               WRITE_ONCE(*(__virtio16 *)to, cpu_to_vringh16(vrh, val));
-> +               kunmap_local(kaddr);
-> +       }
->
->         return 0;
->  }
-> @@ -1306,6 +1452,7 @@ static inline int putused_iotlb(const struct vringh=
- *vrh,
->   * @features: the feature bits for this ring.
->   * @num: the number of elements.
->   * @weak_barriers: true if we only need memory barriers, not I/O.
-> + * @use_va: true if IOTLB contains user VA
->   * @desc: the userpace descriptor pointer.
->   * @avail: the userpace avail pointer.
->   * @used: the userpace used pointer.
-> @@ -1313,11 +1460,13 @@ static inline int putused_iotlb(const struct vrin=
-gh *vrh,
->   * Returns an error if num is invalid.
->   */
->  int vringh_init_iotlb(struct vringh *vrh, u64 features,
-> -                     unsigned int num, bool weak_barriers,
-> +                     unsigned int num, bool weak_barriers, bool use_va,
->                       struct vring_desc *desc,
->                       struct vring_avail *avail,
->                       struct vring_used *used)
->  {
-> +       vrh->use_va =3D use_va;
-> +
->         return vringh_init_kern(vrh, features, num, weak_barriers,
->                                 desc, avail, used);
->  }
-> --
-> 2.39.2
->
-
+Acked-by: John Fastabend <john.fastabend@gmail.com>
