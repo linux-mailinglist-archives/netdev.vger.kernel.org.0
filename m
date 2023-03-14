@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AAF66B9B29
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 17:19:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEB526B9B27
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 17:19:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231454AbjCNQTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 12:19:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45430 "EHLO
+        id S229722AbjCNQS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 12:18:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230505AbjCNQSC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 12:18:02 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5849BB0495;
-        Tue, 14 Mar 2023 09:17:38 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id t15so14876016wrz.7;
-        Tue, 14 Mar 2023 09:17:38 -0700 (PDT)
+        with ESMTP id S231448AbjCNQSE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 12:18:04 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B33C4B2555;
+        Tue, 14 Mar 2023 09:17:39 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id t15so14876087wrz.7;
+        Tue, 14 Mar 2023 09:17:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678810656;
+        d=gmail.com; s=20210112; t=1678810658;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=y2fNz2U3Pb1myw1nW6JzmHX3WnYBSrD+c2lY+3aHW8M=;
-        b=fERp4iruASNfxlqoL+2/uJaSk630G6zW0nonVIurn4lJbM7HvCO2FPDN8Ob+V1CMFx
-         NFHbly9IqL8GUDuao2aY9Y3pEa11UIUNIVNWjKApIxBpmJDeola6BChjVoR4iBBrvm+h
-         3wnajXUD3V0UTaaK680PyCyMGERWSJhZ27ubjRMPiDvGBpzZu0Q3xempGHjP3C/Nkih9
-         k85bXltxGU8vURynM8WR5tAPLj2BSbi6qQJ3ZErR5YfxfTdBLG6zR6c3DTEjgNep6wkH
-         PRiFDvmjqkDa2F2a8zbatHBaIChk/fx5cxfUcWEaEtymZJuiIDsSznlzQUE7JnzyytNt
-         uxXg==
+        bh=4yEvSncVqO5CEElyQ6q0WPYP3z8pHrofnI3Ooo06uR0=;
+        b=K+mLMUl0yoH5CirM02UvggJLlSVXwFmixzghnFZQfwQxlZ4QvmI7bl9d/svg/6pmMp
+         aDULurfPwfxvXNqYpSlDfCQjFrO0nnzvnXcEDbw0SOX+3zQY1iHLYhUiaGhWhe234DEs
+         Md5SPcTHRbnoBNCKsDwEjWmDRiMppyPqKNGCllPkhUe2SPOgOu5GUBulS+qQ0SBiMuI3
+         H2d8Y0bvzw4rBcWkaZBNxzGrkjXJTqui1j6xiG2AxvupTtdTE5v3+D9fzMoJvPwAhSCo
+         Kkcf//mL9Lyc+oKVhfhrrc0YoNC5tqKFb8wNaz0XJYH4IE+LKXLfJWdTduA2rgY3V4hD
+         a/Pw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678810656;
+        d=1e100.net; s=20210112; t=1678810658;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=y2fNz2U3Pb1myw1nW6JzmHX3WnYBSrD+c2lY+3aHW8M=;
-        b=GGNG/tbhNuUz6srqe77d9nCCI03g8hp1OQGF/ZyLB6VysxAI9scYhNM9ov87aXZA1h
-         rLeTjQ4k33r1pMGHY3esZO5p17uxBvyN2IVsw38w/uStySdo6P06RlIKBpH3e6MhOtwl
-         rUS2Q/ZIQ9ODKNAcH6f3xqULUKLsNjnKDh9iyPhVY8KVWO6407MXjsZHI+mZJc7daAw9
-         XFHcJOgYyClCudoSU5stb61Nz5ZSiqy3HYXTTw5Wg05xgE6ZgKnV9sQd8joNFGQUCPQX
-         Teb4GHjh7RnSLlux4nSJziwa09kT108uErZ0WE/DSMoGwmcyAk0NZUDv7bJ6lpK03/8m
-         E4ng==
-X-Gm-Message-State: AO0yUKXwfvTPiHJjMAC8q70p0wDkexpfNyVYpky4CfQt+0ZlIQ5aOadF
-        qUR5mjSGIJRAbLqXlE4a/vk=
-X-Google-Smtp-Source: AK7set8OmkyrcEEY5FRJaMu61OHDe2VDvEr3q/jSO2OWbisf89FSxvWA5j1zHZW+ngu9DyDZ2I/fvg==
-X-Received: by 2002:a5d:6641:0:b0:2ce:a825:e0a1 with SMTP id f1-20020a5d6641000000b002cea825e0a1mr6915000wrw.14.1678810656579;
-        Tue, 14 Mar 2023 09:17:36 -0700 (PDT)
+        bh=4yEvSncVqO5CEElyQ6q0WPYP3z8pHrofnI3Ooo06uR0=;
+        b=STOUgshWYrfSzQAT6iCjef7OIntOY+QQaBkik/PlsM65Jq6einqG/IEd8YGLk6B/7N
+         Gcgq+WdnhZo06UZ6I0VsQ8i57lOrmsk5jFyyDGrJ9p7dnOF91wPqVV0aKQhug8LqK/i8
+         c+eEjdCR+sl7aizt1je17szzlgWApZ6n2a/jRPqDaIW62YvYynZy9oPFlIlcTaueTako
+         PIIugcWoQdCPsNi37FGzlHZEFkdHN8UUNkcY8OkDwz8LZro/OTNSgmfUJVWXokpKEC2W
+         Rcn8IJFhw9Hp9rKnSg2LyGrSKhEWz0GVRUKez9wFkUdAq7tbSAzQ600XE8oxZonxwmmv
+         2S/g==
+X-Gm-Message-State: AO0yUKV5lNSOeGl4rR1/cwVb2hMOCDcI/42kigaMv6eNtr9Zmom2wI7M
+        gtihjQEKpqQaMy4BlkxM61M=
+X-Google-Smtp-Source: AK7set+q1pki70n1ymc46lf0MXKuI84bGML7ZPXJbNEMqNYR9zZe3I9xajlWlLZS/BM5t0Kr88ZOXg==
+X-Received: by 2002:a05:6000:12c9:b0:2cc:4dad:e484 with SMTP id l9-20020a05600012c900b002cc4dade484mr24744498wrx.42.1678810658079;
+        Tue, 14 Mar 2023 09:17:38 -0700 (PDT)
 Received: from localhost.localdomain (93-34-89-197.ip49.fastwebnet.it. [93.34.89.197])
-        by smtp.googlemail.com with ESMTPSA id a16-20020a5d4570000000b002c5539171d1sm2426821wrc.41.2023.03.14.09.17.35
+        by smtp.googlemail.com with ESMTPSA id a16-20020a5d4570000000b002c5539171d1sm2426821wrc.41.2023.03.14.09.17.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Mar 2023 09:17:36 -0700 (PDT)
+        Tue, 14 Mar 2023 09:17:37 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -73,9 +73,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         linux-arm-msm@vger.kernel.org, Lee Jones <lee@kernel.org>,
         linux-leds@vger.kernel.org
 Cc:     Jonathan McDowell <noodles@earth.li>
-Subject: [net-next PATCH v3 11/14] arm: qcom: dt: Drop unevaluated properties in switch nodes for rb3011
-Date:   Tue, 14 Mar 2023 11:15:13 +0100
-Message-Id: <20230314101516.20427-12-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v3 12/14] arm: qcom: dt: Add Switch LED for each port for rb3011
+Date:   Tue, 14 Mar 2023 11:15:14 +0100
+Message-Id: <20230314101516.20427-13-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230314101516.20427-1-ansuelsmth@gmail.com>
 References: <20230314101516.20427-1-ansuelsmth@gmail.com>
@@ -91,42 +91,207 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IPQ8064 MikroTik RB3011UiAS-RM DT have currently unevaluted properties
-in the 2 switch nodes. The bindings #address-cells and #size-cells are
-redundant and cause warning for 'Unevaluated properties are not
-allowed'.
+Add Switch LED for each port for MikroTik RB3011UiAS-RM.
 
-Drop these bindings to mute these warning as they should not be there
-from the start.
+MikroTik RB3011UiAS-RM is a 10 port device with 2 qca8337 switch chips
+connected.
+
+It was discovered that in the hardware design all 3 Switch LED trace of
+the related port is connected to the same LED. This was discovered by
+setting to 'always on' the related led in the switch regs and noticing
+that all 3 LED for the specific port (for example for port 1) cause the
+connected LED for port 1 to turn on. As an extra test we tried enabling
+2 different LED for the port resulting in the LED turned off only if
+every led in the reg was off.
+
+Aside from this funny and strange hardware implementation, the device
+itself have one green LED for each port, resulting in 10 green LED one
+for each of the 10 supported port.
 
 Cc: Jonathan McDowell <noodles@earth.li>
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 ---
- arch/arm/boot/dts/qcom-ipq8064-rb3011.dts | 4 ----
- 1 file changed, 4 deletions(-)
+ arch/arm/boot/dts/qcom-ipq8064-rb3011.dts | 120 ++++++++++++++++++++++
+ 1 file changed, 120 insertions(+)
 
 diff --git a/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts b/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts
-index f908889c4f95..47a5d1849c72 100644
+index 47a5d1849c72..472b5a2912a1 100644
 --- a/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts
 +++ b/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts
-@@ -38,8 +38,6 @@ mdio0: mdio-0 {
+@@ -65,26 +65,86 @@ fixed-link {
+ 				port@1 {
+ 					reg = <1>;
+ 					label = "sw1";
++
++					leds {
++						#address-cells = <1>;
++						#size-cells = <0>;
++
++						led@0 {
++							reg = <0>;
++							color = <LED_COLOR_ID_GREEN>;
++							function = LED_FUNCTION_LAN;
++							function-enumerator = <1>;
++						};
++					};
+ 				};
  
- 		switch0: switch@10 {
- 			compatible = "qca,qca8337";
--			#address-cells = <1>;
--			#size-cells = <0>;
+ 				port@2 {
+ 					reg = <2>;
+ 					label = "sw2";
++
++					leds {
++						#address-cells = <1>;
++						#size-cells = <0>;
++
++						led@0 {
++							reg = <0>;
++							color = <LED_COLOR_ID_GREEN>;
++							function = LED_FUNCTION_LAN;
++							function-enumerator = <2>;
++						};
++					};
+ 				};
  
- 			dsa,member = <0 0>;
+ 				port@3 {
+ 					reg = <3>;
+ 					label = "sw3";
++
++					leds {
++						#address-cells = <1>;
++						#size-cells = <0>;
++
++						led@0 {
++							reg = <0>;
++							color = <LED_COLOR_ID_GREEN>;
++							function = LED_FUNCTION_LAN;
++							function-enumerator = <3>;
++						};
++					};
+ 				};
  
-@@ -105,8 +103,6 @@ mdio1: mdio-1 {
+ 				port@4 {
+ 					reg = <4>;
+ 					label = "sw4";
++
++					leds {
++						#address-cells = <1>;
++						#size-cells = <0>;
++
++						led@0 {
++							reg = <0>;
++							color = <LED_COLOR_ID_GREEN>;
++							function = LED_FUNCTION_LAN;
++							function-enumerator = <4>;
++						};
++					};
+ 				};
  
- 		switch1: switch@14 {
- 			compatible = "qca,qca8337";
--			#address-cells = <1>;
--			#size-cells = <0>;
+ 				port@5 {
+ 					reg = <5>;
+ 					label = "sw5";
++
++					leds {
++						#address-cells = <1>;
++						#size-cells = <0>;
++
++						led@0 {
++							reg = <0>;
++							color = <LED_COLOR_ID_GREEN>;
++							function = LED_FUNCTION_LAN;
++							function-enumerator = <5>;
++						};
++					};
+ 				};
+ 			};
+ 		};
+@@ -130,26 +190,86 @@ fixed-link {
+ 				port@1 {
+ 					reg = <1>;
+ 					label = "sw6";
++
++					leds {
++						#address-cells = <1>;
++						#size-cells = <0>;
++
++						led@0 {
++							reg = <0>;
++							color = <LED_COLOR_ID_GREEN>;
++							function = LED_FUNCTION_LAN;
++							function-enumerator = <6>;
++						};
++					};
+ 				};
  
- 			dsa,member = <1 0>;
+ 				port@2 {
+ 					reg = <2>;
+ 					label = "sw7";
++
++					leds {
++						#address-cells = <1>;
++						#size-cells = <0>;
++
++						led@0 {
++							reg = <0>;
++							color = <LED_COLOR_ID_GREEN>;
++							function = LED_FUNCTION_LAN;
++							function-enumerator = <7>;
++						};
++					};
+ 				};
  
+ 				port@3 {
+ 					reg = <3>;
+ 					label = "sw8";
++
++					leds {
++						#address-cells = <1>;
++						#size-cells = <0>;
++
++						led@0 {
++							reg = <0>;
++							color = <LED_COLOR_ID_GREEN>;
++							function = LED_FUNCTION_LAN;
++							function-enumerator = <8>;
++						};
++					};
+ 				};
+ 
+ 				port@4 {
+ 					reg = <4>;
+ 					label = "sw9";
++
++					leds {
++						#address-cells = <1>;
++						#size-cells = <0>;
++
++						led@0 {
++							reg = <0>;
++							color = <LED_COLOR_ID_GREEN>;
++							function = LED_FUNCTION_LAN;
++							function-enumerator = <9>;
++						};
++					};
+ 				};
+ 
+ 				port@5 {
+ 					reg = <5>;
+ 					label = "sw10";
++
++					leds {
++						#address-cells = <1>;
++						#size-cells = <0>;
++
++						led@0 {
++							reg = <0>;
++							color = <LED_COLOR_ID_GREEN>;
++							function = LED_FUNCTION_LAN;
++							function-enumerator = <10>;
++						};
++					};
+ 				};
+ 			};
+ 		};
 -- 
 2.39.2
 
