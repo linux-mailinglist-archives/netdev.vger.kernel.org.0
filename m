@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A4316B8AC4
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 06:43:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 100EB6B8ABB
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 06:43:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230354AbjCNFnp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 01:43:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35904 "EHLO
+        id S230319AbjCNFn3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 01:43:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230270AbjCNFnU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 01:43:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D1BB848D7
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 22:43:08 -0700 (PDT)
+        with ESMTP id S230215AbjCNFnQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 01:43:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F0B76AA
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 22:42:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21A8DB81899
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 680A9615E2
         for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 05:42:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B102BC433EF;
-        Tue, 14 Mar 2023 05:42:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACF94C4339C;
+        Tue, 14 Mar 2023 05:42:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678772573;
-        bh=6YRAP0WvpCe5ZWvd6zW/WmOPfMYnDHNTBUSXpWWEIDk=;
+        s=k20201202; t=1678772574;
+        bh=n67fZDivsFvETMiNLD6tiMKvA/8eUyInrERK3WhUIDY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W3cavGBZyOIBQPUhzaRwOMiZiChkCa3xhZNzLcMOLhjek6uAp/pnqembmDUd9FdS3
-         8S6mBTn3wAQPf+b6iYMzeTNnQRN/J/9G+hUFSNcoWkCwIbpcKoT+dAIwhKOuAMmQjz
-         8pTDLECChEObjwT8l4ssy6qktyJ/SSB6yW+3ggE9ec/WVuvV2Bjw6yKtiPDj3PXoEe
-         IRtmnVt67AnSW2vuyftNQnMHvH2WzBVlsdtBVt22M5vd0Hv67J1rK26b0dmqqjvvN3
-         afd6ba2yEsah3foLksQRrazakzSNo0yAmJA2cIIP3ZOrYEWVF+kyK17J95228Fcrp+
-         PaFN6vzAnmfFQ==
+        b=HcCyLGdw3bFU92Ni2EPdiQGt8AXj1tkK6fW+ZYw/baqza8doHDQxIjDKVTtZ1KA0r
+         Rs/eMCJyW0DaF7+lZWsbL6t36brC9TviF8yVsm5vALAHMK6OtHZz0+et9LBsvp7c4K
+         Jvn70pU7qZMlWzCZSpYmUpfv3aCWE/e7HbhdDSxEmH2guxuC2o27E84zbdAEQxzMeu
+         QHOFreogPhc9/hoN7p2ok93UogV0G0IjrYg2dhfid5jejQ6qrRYzoP200qE1ndvMUD
+         GSwedv5xzaX8aFSlYI6aHIclTUz6VYX3qfaKAun8WFrorxnBH34fPr1K8cK3zlpD1k
+         5k4z4Dym50FEQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -38,16 +38,16 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>, Gal Pressman <gal@nvidia.com>
-Subject: [net-next 10/15] net/mlx5: Move needed PTYS functions to core layer
-Date:   Mon, 13 Mar 2023 22:42:29 -0700
-Message-Id: <20230314054234.267365-11-saeed@kernel.org>
+Subject: [net-next 11/15] net/mlx5e: Add devlink hairpin queues parameters
+Date:   Mon, 13 Mar 2023 22:42:30 -0700
+Message-Id: <20230314054234.267365-12-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230314054234.267365-1-saeed@kernel.org>
 References: <20230314054234.267365-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,536 +57,313 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Gal Pressman <gal@nvidia.com>
 
-Downstream patches require devlink params to access the PTYS register,
-move the needed functions from mlx5e to the core layer.
+We refer to a TC NIC rule that involves forwarding as "hairpin".
+Hairpin queues are mlx5 hardware specific implementation for hardware
+forwarding of such packets.
+
+Per the discussion in [1], move the hairpin queues control (number and
+size) from debugfs to devlink.
+
+Expose two devlink params:
+- hairpin_num_queues: control the number of hairpin queues
+- hairpin_queue_size: control the size (in packets) of the hairpin queues
+
+[1] https://lore.kernel.org/all/20230111194608.7f15b9a1@kernel.org/
 
 Signed-off-by: Gal Pressman <gal@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/params.c   |   2 +-
- .../net/ethernet/mellanox/mlx5/core/en/port.c | 157 +-----------------
- .../net/ethernet/mellanox/mlx5/core/en/port.h |  14 --
- .../ethernet/mellanox/mlx5/core/en_ethtool.c  |  12 +-
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   |   2 +-
- .../net/ethernet/mellanox/mlx5/core/esw/qos.c |   2 +-
- .../net/ethernet/mellanox/mlx5/core/port.c    | 151 +++++++++++++++++
- include/linux/mlx5/port.h                     |  16 ++
- 8 files changed, 179 insertions(+), 177 deletions(-)
+ .../ethernet/mellanox/mlx5/devlink.rst        | 35 ++++++++++
+ Documentation/networking/devlink/mlx5.rst     | 12 ++++
+ .../net/ethernet/mellanox/mlx5/core/devlink.c | 66 +++++++++++++++++++
+ .../net/ethernet/mellanox/mlx5/core/devlink.h |  2 +
+ .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 50 ++++++--------
+ 5 files changed, 134 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-index a21bd1179477..561da78d3b5c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-@@ -553,7 +553,7 @@ bool slow_pci_heuristic(struct mlx5_core_dev *mdev)
- 	u32 link_speed = 0;
- 	u32 pci_bw = 0;
+diff --git a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5/devlink.rst b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5/devlink.rst
+index 9b5c40ba7f0d..0995e4e5acd7 100644
+--- a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5/devlink.rst
++++ b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5/devlink.rst
+@@ -122,6 +122,41 @@ users try to enable them.
  
--	mlx5e_port_max_linkspeed(mdev, &link_speed);
-+	mlx5_port_max_linkspeed(mdev, &link_speed);
- 	pci_bw = pcie_bandwidth_available(mdev->pdev, NULL, NULL, NULL);
- 	mlx5_core_dbg_once(mdev, "Max link speed = %d, PCI BW = %d\n",
- 			   link_speed, pci_bw);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/port.c b/drivers/net/ethernet/mellanox/mlx5/core/en/port.c
-index 505ba41195b9..dbe2b19a9570 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/port.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/port.c
-@@ -32,101 +32,6 @@
+     $ devlink dev eswitch set pci/0000:06:00.0 mode switchdev
  
- #include "port.h"
- 
--/* speed in units of 1Mb */
--static const u32 mlx5e_link_speed[MLX5E_LINK_MODES_NUMBER] = {
--	[MLX5E_1000BASE_CX_SGMII] = 1000,
--	[MLX5E_1000BASE_KX]       = 1000,
--	[MLX5E_10GBASE_CX4]       = 10000,
--	[MLX5E_10GBASE_KX4]       = 10000,
--	[MLX5E_10GBASE_KR]        = 10000,
--	[MLX5E_20GBASE_KR2]       = 20000,
--	[MLX5E_40GBASE_CR4]       = 40000,
--	[MLX5E_40GBASE_KR4]       = 40000,
--	[MLX5E_56GBASE_R4]        = 56000,
--	[MLX5E_10GBASE_CR]        = 10000,
--	[MLX5E_10GBASE_SR]        = 10000,
--	[MLX5E_10GBASE_ER]        = 10000,
--	[MLX5E_40GBASE_SR4]       = 40000,
--	[MLX5E_40GBASE_LR4]       = 40000,
--	[MLX5E_50GBASE_SR2]       = 50000,
--	[MLX5E_100GBASE_CR4]      = 100000,
--	[MLX5E_100GBASE_SR4]      = 100000,
--	[MLX5E_100GBASE_KR4]      = 100000,
--	[MLX5E_100GBASE_LR4]      = 100000,
--	[MLX5E_100BASE_TX]        = 100,
--	[MLX5E_1000BASE_T]        = 1000,
--	[MLX5E_10GBASE_T]         = 10000,
--	[MLX5E_25GBASE_CR]        = 25000,
--	[MLX5E_25GBASE_KR]        = 25000,
--	[MLX5E_25GBASE_SR]        = 25000,
--	[MLX5E_50GBASE_CR2]       = 50000,
--	[MLX5E_50GBASE_KR2]       = 50000,
--};
--
--static const u32 mlx5e_ext_link_speed[MLX5E_EXT_LINK_MODES_NUMBER] = {
--	[MLX5E_SGMII_100M]			= 100,
--	[MLX5E_1000BASE_X_SGMII]		= 1000,
--	[MLX5E_5GBASE_R]			= 5000,
--	[MLX5E_10GBASE_XFI_XAUI_1]		= 10000,
--	[MLX5E_40GBASE_XLAUI_4_XLPPI_4]		= 40000,
--	[MLX5E_25GAUI_1_25GBASE_CR_KR]		= 25000,
--	[MLX5E_50GAUI_2_LAUI_2_50GBASE_CR2_KR2]	= 50000,
--	[MLX5E_50GAUI_1_LAUI_1_50GBASE_CR_KR]	= 50000,
--	[MLX5E_CAUI_4_100GBASE_CR4_KR4]		= 100000,
--	[MLX5E_100GAUI_2_100GBASE_CR2_KR2]	= 100000,
--	[MLX5E_200GAUI_4_200GBASE_CR4_KR4]	= 200000,
--	[MLX5E_400GAUI_8]			= 400000,
--	[MLX5E_100GAUI_1_100GBASE_CR_KR]	= 100000,
--	[MLX5E_200GAUI_2_200GBASE_CR2_KR2]	= 200000,
--	[MLX5E_400GAUI_4_400GBASE_CR4_KR4]	= 400000,
--};
--
--bool mlx5e_ptys_ext_supported(struct mlx5_core_dev *mdev)
--{
--	struct mlx5e_port_eth_proto eproto;
--	int err;
--
--	if (MLX5_CAP_PCAM_FEATURE(mdev, ptys_extended_ethernet))
--		return true;
--
--	err = mlx5_port_query_eth_proto(mdev, 1, true, &eproto);
--	if (err)
--		return false;
--
--	return !!eproto.cap;
--}
--
--static void mlx5e_port_get_speed_arr(struct mlx5_core_dev *mdev,
--				     const u32 **arr, u32 *size,
--				     bool force_legacy)
--{
--	bool ext = force_legacy ? false : mlx5e_ptys_ext_supported(mdev);
--
--	*size = ext ? ARRAY_SIZE(mlx5e_ext_link_speed) :
--		      ARRAY_SIZE(mlx5e_link_speed);
--	*arr  = ext ? mlx5e_ext_link_speed : mlx5e_link_speed;
--}
--
--int mlx5_port_query_eth_proto(struct mlx5_core_dev *dev, u8 port, bool ext,
--			      struct mlx5e_port_eth_proto *eproto)
--{
--	u32 out[MLX5_ST_SZ_DW(ptys_reg)];
--	int err;
--
--	if (!eproto)
--		return -EINVAL;
--
--	err = mlx5_query_port_ptys(dev, out, sizeof(out), MLX5_PTYS_EN, port);
--	if (err)
--		return err;
--
--	eproto->cap   = MLX5_GET_ETH_PROTO(ptys_reg, out, ext,
--					   eth_proto_capability);
--	eproto->admin = MLX5_GET_ETH_PROTO(ptys_reg, out, ext, eth_proto_admin);
--	eproto->oper  = MLX5_GET_ETH_PROTO(ptys_reg, out, ext, eth_proto_oper);
--	return 0;
--}
--
- void mlx5_port_query_eth_autoneg(struct mlx5_core_dev *dev, u8 *an_status,
- 				 u8 *an_disable_cap, u8 *an_disable_admin)
- {
-@@ -172,30 +77,14 @@ int mlx5_port_set_eth_ptys(struct mlx5_core_dev *dev, bool an_disable,
- 			    sizeof(out), MLX5_REG_PTYS, 0, 1);
- }
- 
--u32 mlx5e_port_ptys2speed(struct mlx5_core_dev *mdev, u32 eth_proto_oper,
--			  bool force_legacy)
--{
--	unsigned long temp = eth_proto_oper;
--	const u32 *table;
--	u32 speed = 0;
--	u32 max_size;
--	int i;
--
--	mlx5e_port_get_speed_arr(mdev, &table, &max_size, force_legacy);
--	i = find_first_bit(&temp, max_size);
--	if (i < max_size)
--		speed = table[i];
--	return speed;
--}
--
- int mlx5e_port_linkspeed(struct mlx5_core_dev *mdev, u32 *speed)
- {
--	struct mlx5e_port_eth_proto eproto;
-+	struct mlx5_port_eth_proto eproto;
- 	bool force_legacy = false;
- 	bool ext;
- 	int err;
- 
--	ext = mlx5e_ptys_ext_supported(mdev);
-+	ext = mlx5_ptys_ext_supported(mdev);
- 	err = mlx5_port_query_eth_proto(mdev, 1, ext, &eproto);
- 	if (err)
- 		goto out;
-@@ -205,7 +94,7 @@ int mlx5e_port_linkspeed(struct mlx5_core_dev *mdev, u32 *speed)
- 		if (err)
- 			goto out;
- 	}
--	*speed = mlx5e_port_ptys2speed(mdev, eproto.oper, force_legacy);
-+	*speed = mlx5_port_ptys2speed(mdev, eproto.oper, force_legacy);
- 	if (!(*speed))
- 		err = -EINVAL;
- 
-@@ -213,46 +102,6 @@ int mlx5e_port_linkspeed(struct mlx5_core_dev *mdev, u32 *speed)
- 	return err;
- }
- 
--int mlx5e_port_max_linkspeed(struct mlx5_core_dev *mdev, u32 *speed)
--{
--	struct mlx5e_port_eth_proto eproto;
--	u32 max_speed = 0;
--	const u32 *table;
--	u32 max_size;
--	bool ext;
--	int err;
--	int i;
--
--	ext = mlx5e_ptys_ext_supported(mdev);
--	err = mlx5_port_query_eth_proto(mdev, 1, ext, &eproto);
--	if (err)
--		return err;
--
--	mlx5e_port_get_speed_arr(mdev, &table, &max_size, false);
--	for (i = 0; i < max_size; ++i)
--		if (eproto.cap & MLX5E_PROT_MASK(i))
--			max_speed = max(max_speed, table[i]);
--
--	*speed = max_speed;
--	return 0;
--}
--
--u32 mlx5e_port_speed2linkmodes(struct mlx5_core_dev *mdev, u32 speed,
--			       bool force_legacy)
--{
--	u32 link_modes = 0;
--	const u32 *table;
--	u32 max_size;
--	int i;
--
--	mlx5e_port_get_speed_arr(mdev, &table, &max_size, force_legacy);
--	for (i = 0; i < max_size; ++i) {
--		if (table[i] == speed)
--			link_modes |= MLX5E_PROT_MASK(i);
--	}
--	return link_modes;
--}
--
- int mlx5e_port_query_pbmc(struct mlx5_core_dev *mdev, void *out)
- {
- 	int sz = MLX5_ST_SZ_BYTES(pbmc_reg);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/port.h b/drivers/net/ethernet/mellanox/mlx5/core/en/port.h
-index 3f474e370828..d1da225f35da 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/port.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/port.h
-@@ -36,25 +36,11 @@
- #include <linux/mlx5/driver.h>
- #include "en.h"
- 
--struct mlx5e_port_eth_proto {
--	u32 cap;
--	u32 admin;
--	u32 oper;
--};
--
--int mlx5_port_query_eth_proto(struct mlx5_core_dev *dev, u8 port, bool ext,
--			      struct mlx5e_port_eth_proto *eproto);
- void mlx5_port_query_eth_autoneg(struct mlx5_core_dev *dev, u8 *an_status,
- 				 u8 *an_disable_cap, u8 *an_disable_admin);
- int mlx5_port_set_eth_ptys(struct mlx5_core_dev *dev, bool an_disable,
- 			   u32 proto_admin, bool ext);
--u32 mlx5e_port_ptys2speed(struct mlx5_core_dev *mdev, u32 eth_proto_oper,
--			  bool force_legacy);
- int mlx5e_port_linkspeed(struct mlx5_core_dev *mdev, u32 *speed);
--int mlx5e_port_max_linkspeed(struct mlx5_core_dev *mdev, u32 *speed);
--u32 mlx5e_port_speed2linkmodes(struct mlx5_core_dev *mdev, u32 speed,
--			       bool force_legacy);
--bool mlx5e_ptys_ext_supported(struct mlx5_core_dev *mdev);
- int mlx5e_port_query_pbmc(struct mlx5_core_dev *mdev, void *out);
- int mlx5e_port_set_pbmc(struct mlx5_core_dev *mdev, void *in);
- int mlx5e_port_query_sbpr(struct mlx5_core_dev *mdev, u32 desc, u8 dir,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-index 7708acc9b2ab..53c35147f29b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-@@ -220,7 +220,7 @@ static void mlx5e_ethtool_get_speed_arr(struct mlx5_core_dev *mdev,
- 					struct ptys2ethtool_config **arr,
- 					u32 *size)
- {
--	bool ext = mlx5e_ptys_ext_supported(mdev);
-+	bool ext = mlx5_ptys_ext_supported(mdev);
- 
- 	*arr = ext ? ptys2ext_ethtool_table : ptys2legacy_ethtool_table;
- 	*size = ext ? ARRAY_SIZE(ptys2ext_ethtool_table) :
-@@ -895,7 +895,7 @@ static void get_speed_duplex(struct net_device *netdev,
- 	if (!netif_carrier_ok(netdev))
- 		goto out;
- 
--	speed = mlx5e_port_ptys2speed(priv->mdev, eth_proto_oper, force_legacy);
-+	speed = mlx5_port_ptys2speed(priv->mdev, eth_proto_oper, force_legacy);
- 	if (!speed) {
- 		if (data_rate_oper)
- 			speed = 100 * data_rate_oper;
-@@ -980,7 +980,7 @@ static void get_lp_advertising(struct mlx5_core_dev *mdev, u32 eth_proto_lp,
- 			       struct ethtool_link_ksettings *link_ksettings)
- {
- 	unsigned long *lp_advertising = link_ksettings->link_modes.lp_advertising;
--	bool ext = mlx5e_ptys_ext_supported(mdev);
-+	bool ext = mlx5_ptys_ext_supported(mdev);
- 
- 	ptys2ethtool_adver_link(lp_advertising, eth_proto_lp, ext);
- }
-@@ -1160,7 +1160,7 @@ int mlx5e_ethtool_set_link_ksettings(struct mlx5e_priv *priv,
- 				     const struct ethtool_link_ksettings *link_ksettings)
- {
- 	struct mlx5_core_dev *mdev = priv->mdev;
--	struct mlx5e_port_eth_proto eproto;
-+	struct mlx5_port_eth_proto eproto;
- 	const unsigned long *adver;
- 	bool an_changes = false;
- 	u8 an_disable_admin;
-@@ -1180,7 +1180,7 @@ int mlx5e_ethtool_set_link_ksettings(struct mlx5e_priv *priv,
- 	autoneg = link_ksettings->base.autoneg;
- 	speed = link_ksettings->base.speed;
- 
--	ext_supported = mlx5e_ptys_ext_supported(mdev);
-+	ext_supported = mlx5_ptys_ext_supported(mdev);
- 	ext = ext_requested(autoneg, adver, ext_supported);
- 	if (!ext_supported && ext)
- 		return -EOPNOTSUPP;
-@@ -1194,7 +1194,7 @@ int mlx5e_ethtool_set_link_ksettings(struct mlx5e_priv *priv,
- 		goto out;
- 	}
- 	link_modes = autoneg == AUTONEG_ENABLE ? ethtool2ptys_adver_func(adver) :
--		mlx5e_port_speed2linkmodes(mdev, speed, !ext);
-+		mlx5_port_speed2linkmodes(mdev, speed, !ext);
- 
- 	err = mlx5e_speed_validate(priv->netdev, ext, link_modes, autoneg);
- 	if (err)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 70b8d2dfa751..79dd8ad5ede7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -1108,7 +1108,7 @@ mlx5e_hairpin_params_init(struct mlx5e_hairpin_params *hairpin_params,
- 
- 	hairpin_params->mdev = mdev;
- 	/* set hairpin pair per each 50Gbs share of the link */
--	mlx5e_port_max_linkspeed(mdev, &link_speed);
-+	mlx5_port_max_linkspeed(mdev, &link_speed);
- 	link_speed = max_t(u32, link_speed, 50000);
- 	link_speed64 = link_speed;
- 	do_div(link_speed64, 50000);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
-index 75015d370922..7c79476cc5f9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
-@@ -744,7 +744,7 @@ static int esw_qos_devlink_rate_to_mbps(struct mlx5_core_dev *mdev, const char *
- 	u64 value;
- 	int err;
- 
--	err = mlx5e_port_max_linkspeed(mdev, &link_speed_max);
-+	err = mlx5_port_max_linkspeed(mdev, &link_speed_max);
- 	if (err) {
- 		NL_SET_ERR_MSG_MOD(extack, "Failed to get link maximum speed");
- 		return err;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/port.c b/drivers/net/ethernet/mellanox/mlx5/core/port.c
-index a1548e6bfb35..0daeb4b72cca 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/port.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/port.c
-@@ -1054,3 +1054,154 @@ int mlx5_query_dscp2prio(struct mlx5_core_dev *mdev, u8 *dscp2prio)
- 	kfree(out);
- 	return err;
- }
++hairpin_num_queues: Number of hairpin queues
++--------------------------------------------
++We refer to a TC NIC rule that involves forwarding as "hairpin".
 +
-+/* speed in units of 1Mb */
-+static const u32 mlx5e_link_speed[MLX5E_LINK_MODES_NUMBER] = {
-+	[MLX5E_1000BASE_CX_SGMII] = 1000,
-+	[MLX5E_1000BASE_KX]       = 1000,
-+	[MLX5E_10GBASE_CX4]       = 10000,
-+	[MLX5E_10GBASE_KX4]       = 10000,
-+	[MLX5E_10GBASE_KR]        = 10000,
-+	[MLX5E_20GBASE_KR2]       = 20000,
-+	[MLX5E_40GBASE_CR4]       = 40000,
-+	[MLX5E_40GBASE_KR4]       = 40000,
-+	[MLX5E_56GBASE_R4]        = 56000,
-+	[MLX5E_10GBASE_CR]        = 10000,
-+	[MLX5E_10GBASE_SR]        = 10000,
-+	[MLX5E_10GBASE_ER]        = 10000,
-+	[MLX5E_40GBASE_SR4]       = 40000,
-+	[MLX5E_40GBASE_LR4]       = 40000,
-+	[MLX5E_50GBASE_SR2]       = 50000,
-+	[MLX5E_100GBASE_CR4]      = 100000,
-+	[MLX5E_100GBASE_SR4]      = 100000,
-+	[MLX5E_100GBASE_KR4]      = 100000,
-+	[MLX5E_100GBASE_LR4]      = 100000,
-+	[MLX5E_100BASE_TX]        = 100,
-+	[MLX5E_1000BASE_T]        = 1000,
-+	[MLX5E_10GBASE_T]         = 10000,
-+	[MLX5E_25GBASE_CR]        = 25000,
-+	[MLX5E_25GBASE_KR]        = 25000,
-+	[MLX5E_25GBASE_SR]        = 25000,
-+	[MLX5E_50GBASE_CR2]       = 50000,
-+	[MLX5E_50GBASE_KR2]       = 50000,
-+};
++Hairpin queues are mlx5 hardware specific implementation for hardware
++forwarding of such packets.
 +
-+static const u32 mlx5e_ext_link_speed[MLX5E_EXT_LINK_MODES_NUMBER] = {
-+	[MLX5E_SGMII_100M] = 100,
-+	[MLX5E_1000BASE_X_SGMII] = 1000,
-+	[MLX5E_5GBASE_R] = 5000,
-+	[MLX5E_10GBASE_XFI_XAUI_1] = 10000,
-+	[MLX5E_40GBASE_XLAUI_4_XLPPI_4] = 40000,
-+	[MLX5E_25GAUI_1_25GBASE_CR_KR] = 25000,
-+	[MLX5E_50GAUI_2_LAUI_2_50GBASE_CR2_KR2] = 50000,
-+	[MLX5E_50GAUI_1_LAUI_1_50GBASE_CR_KR] = 50000,
-+	[MLX5E_CAUI_4_100GBASE_CR4_KR4] = 100000,
-+	[MLX5E_100GAUI_2_100GBASE_CR2_KR2] = 100000,
-+	[MLX5E_200GAUI_4_200GBASE_CR4_KR4] = 200000,
-+	[MLX5E_400GAUI_8] = 400000,
-+	[MLX5E_100GAUI_1_100GBASE_CR_KR] = 100000,
-+	[MLX5E_200GAUI_2_200GBASE_CR2_KR2] = 200000,
-+	[MLX5E_400GAUI_4_400GBASE_CR4_KR4] = 400000,
-+};
++- Show the number of hairpin queues::
 +
-+int mlx5_port_query_eth_proto(struct mlx5_core_dev *dev, u8 port, bool ext,
-+			      struct mlx5_port_eth_proto *eproto)
++    $ devlink dev param show pci/0000:06:00.0 name hairpin_num_queues
++      pci/0000:06:00.0:
++        name hairpin_num_queues type driver-specific
++          values:
++            cmode driverinit value 2
++
++- Change the number of hairpin queues::
++
++    $ devlink dev param set pci/0000:06:00.0 name hairpin_num_queues value 4 cmode driverinit
++
++hairpin_queue_size: Size of the hairpin queues
++----------------------------------------------
++Control the size of the hairpin queues.
++
++- Show the size of the hairpin queues::
++
++    $ devlink dev param show pci/0000:06:00.0 name hairpin_queue_size
++      pci/0000:06:00.0:
++        name hairpin_queue_size type driver-specific
++          values:
++            cmode driverinit value 1024
++
++- Change the size (in packets) of the hairpin queues::
++
++    $ devlink dev param set pci/0000:06:00.0 name hairpin_queue_size value 512 cmode driverinit
++
+ Health reporters
+ ================
+ 
+diff --git a/Documentation/networking/devlink/mlx5.rst b/Documentation/networking/devlink/mlx5.rst
+index 3321117cf605..202798d6501e 100644
+--- a/Documentation/networking/devlink/mlx5.rst
++++ b/Documentation/networking/devlink/mlx5.rst
+@@ -72,6 +72,18 @@ parameters.
+ 
+        Default: disabled
+ 
++   * - ``hairpin_num_queues``
++     - u32
++     - driverinit
++     - We refer to a TC NIC rule that involves forwarding as "hairpin".
++       Hairpin queues are mlx5 hardware specific implementation for hardware
++       forwarding of such packets.
++
++       Control the number of hairpin queues.
++   * - ``hairpin_queue_size``
++     - u32
++     - driverinit
++     - Control the size (in packets) of the hairpin queues.
+ 
+ The ``mlx5`` driver supports reloading via ``DEVLINK_CMD_RELOAD``
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+index b7784e02c2dd..1ee2a472e1d2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+@@ -494,6 +494,61 @@ static int mlx5_devlink_eq_depth_validate(struct devlink *devlink, u32 id,
+ 	return (val.vu32 >= 64 && val.vu32 <= 4096) ? 0 : -EINVAL;
+ }
+ 
++static int
++mlx5_devlink_hairpin_num_queues_validate(struct devlink *devlink, u32 id,
++					 union devlink_param_value val,
++					 struct netlink_ext_ack *extack)
 +{
-+	u32 out[MLX5_ST_SZ_DW(ptys_reg)];
-+	int err;
++	return val.vu32 ? 0 : -EINVAL;
++}
 +
-+	if (!eproto)
++static int
++mlx5_devlink_hairpin_queue_size_validate(struct devlink *devlink, u32 id,
++					 union devlink_param_value val,
++					 struct netlink_ext_ack *extack)
++{
++	struct mlx5_core_dev *dev = devlink_priv(devlink);
++	u32 val32 = val.vu32;
++
++	if (!is_power_of_2(val32)) {
++		NL_SET_ERR_MSG_MOD(extack, "Value is not power of two");
 +		return -EINVAL;
-+
-+	err = mlx5_query_port_ptys(dev, out, sizeof(out), MLX5_PTYS_EN, port);
-+	if (err)
-+		return err;
-+
-+	eproto->cap   = MLX5_GET_ETH_PROTO(ptys_reg, out, ext,
-+					   eth_proto_capability);
-+	eproto->admin = MLX5_GET_ETH_PROTO(ptys_reg, out, ext, eth_proto_admin);
-+	eproto->oper  = MLX5_GET_ETH_PROTO(ptys_reg, out, ext, eth_proto_oper);
-+	return 0;
-+}
-+
-+bool mlx5_ptys_ext_supported(struct mlx5_core_dev *mdev)
-+{
-+	struct mlx5_port_eth_proto eproto;
-+	int err;
-+
-+	if (MLX5_CAP_PCAM_FEATURE(mdev, ptys_extended_ethernet))
-+		return true;
-+
-+	err = mlx5_port_query_eth_proto(mdev, 1, true, &eproto);
-+	if (err)
-+		return false;
-+
-+	return !!eproto.cap;
-+}
-+
-+static void mlx5e_port_get_speed_arr(struct mlx5_core_dev *mdev,
-+				     const u32 **arr, u32 *size,
-+				     bool force_legacy)
-+{
-+	bool ext = force_legacy ? false : mlx5_ptys_ext_supported(mdev);
-+
-+	*size = ext ? ARRAY_SIZE(mlx5e_ext_link_speed) :
-+		      ARRAY_SIZE(mlx5e_link_speed);
-+	*arr  = ext ? mlx5e_ext_link_speed : mlx5e_link_speed;
-+}
-+
-+u32 mlx5_port_ptys2speed(struct mlx5_core_dev *mdev, u32 eth_proto_oper,
-+			 bool force_legacy)
-+{
-+	unsigned long temp = eth_proto_oper;
-+	const u32 *table;
-+	u32 speed = 0;
-+	u32 max_size;
-+	int i;
-+
-+	mlx5e_port_get_speed_arr(mdev, &table, &max_size, force_legacy);
-+	i = find_first_bit(&temp, max_size);
-+	if (i < max_size)
-+		speed = table[i];
-+	return speed;
-+}
-+
-+u32 mlx5_port_speed2linkmodes(struct mlx5_core_dev *mdev, u32 speed,
-+			      bool force_legacy)
-+{
-+	u32 link_modes = 0;
-+	const u32 *table;
-+	u32 max_size;
-+	int i;
-+
-+	mlx5e_port_get_speed_arr(mdev, &table, &max_size, force_legacy);
-+	for (i = 0; i < max_size; ++i) {
-+		if (table[i] == speed)
-+			link_modes |= MLX5E_PROT_MASK(i);
 +	}
-+	return link_modes;
-+}
 +
-+int mlx5_port_max_linkspeed(struct mlx5_core_dev *mdev, u32 *speed)
-+{
-+	struct mlx5_port_eth_proto eproto;
-+	u32 max_speed = 0;
-+	const u32 *table;
-+	u32 max_size;
-+	bool ext;
-+	int err;
-+	int i;
++	if (val32 > BIT(MLX5_CAP_GEN(dev, log_max_hairpin_num_packets))) {
++		NL_SET_ERR_MSG_FMT_MOD(
++			extack, "Maximum hairpin queue size is %lu",
++			BIT(MLX5_CAP_GEN(dev, log_max_hairpin_num_packets)));
++		return -EINVAL;
++	}
 +
-+	ext = mlx5_ptys_ext_supported(mdev);
-+	err = mlx5_port_query_eth_proto(mdev, 1, ext, &eproto);
-+	if (err)
-+		return err;
-+
-+	mlx5e_port_get_speed_arr(mdev, &table, &max_size, false);
-+	for (i = 0; i < max_size; ++i)
-+		if (eproto.cap & MLX5E_PROT_MASK(i))
-+			max_speed = max(max_speed, table[i]);
-+
-+	*speed = max_speed;
 +	return 0;
 +}
-diff --git a/include/linux/mlx5/port.h b/include/linux/mlx5/port.h
-index e96ee1e348cb..98b2e1e149f9 100644
---- a/include/linux/mlx5/port.h
-+++ b/include/linux/mlx5/port.h
-@@ -141,6 +141,12 @@ enum mlx5_ptys_width {
- 	MLX5_PTYS_WIDTH_12X	= 1 << 4,
++
++static void mlx5_devlink_hairpin_params_init_values(struct devlink *devlink)
++{
++	struct mlx5_core_dev *dev = devlink_priv(devlink);
++	union devlink_param_value value;
++	u64 link_speed64;
++	u32 link_speed;
++
++	/* set hairpin pair per each 50Gbs share of the link */
++	mlx5_port_max_linkspeed(dev, &link_speed);
++	link_speed = max_t(u32, link_speed, 50000);
++	link_speed64 = link_speed;
++	do_div(link_speed64, 50000);
++
++	value.vu32 = link_speed64;
++	devl_param_driverinit_value_set(
++		devlink, MLX5_DEVLINK_PARAM_ID_HAIRPIN_NUM_QUEUES, value);
++
++	value.vu32 =
++		BIT(min_t(u32, 16 - MLX5_MPWRQ_MIN_LOG_STRIDE_SZ(dev),
++			  MLX5_CAP_GEN(dev, log_max_hairpin_num_packets)));
++	devl_param_driverinit_value_set(
++		devlink, MLX5_DEVLINK_PARAM_ID_HAIRPIN_QUEUE_SIZE, value);
++}
++
+ static const struct devlink_param mlx5_devlink_params[] = {
+ 	DEVLINK_PARAM_GENERIC(ENABLE_ROCE, BIT(DEVLINK_PARAM_CMODE_DRIVERINIT),
+ 			      NULL, NULL, mlx5_devlink_enable_roce_validate),
+@@ -547,6 +602,14 @@ static void mlx5_devlink_set_params_init_values(struct devlink *devlink)
+ static const struct devlink_param mlx5_devlink_eth_params[] = {
+ 	DEVLINK_PARAM_GENERIC(ENABLE_ETH, BIT(DEVLINK_PARAM_CMODE_DRIVERINIT),
+ 			      NULL, NULL, NULL),
++	DEVLINK_PARAM_DRIVER(MLX5_DEVLINK_PARAM_ID_HAIRPIN_NUM_QUEUES,
++			     "hairpin_num_queues", DEVLINK_PARAM_TYPE_U32,
++			     BIT(DEVLINK_PARAM_CMODE_DRIVERINIT), NULL, NULL,
++			     mlx5_devlink_hairpin_num_queues_validate),
++	DEVLINK_PARAM_DRIVER(MLX5_DEVLINK_PARAM_ID_HAIRPIN_QUEUE_SIZE,
++			     "hairpin_queue_size", DEVLINK_PARAM_TYPE_U32,
++			     BIT(DEVLINK_PARAM_CMODE_DRIVERINIT), NULL, NULL,
++			     mlx5_devlink_hairpin_queue_size_validate),
  };
  
-+struct mlx5_port_eth_proto {
-+	u32 cap;
-+	u32 admin;
-+	u32 oper;
-+};
+ static int mlx5_devlink_eth_params_register(struct devlink *devlink)
+@@ -567,6 +630,9 @@ static int mlx5_devlink_eth_params_register(struct devlink *devlink)
+ 	devl_param_driverinit_value_set(devlink,
+ 					DEVLINK_PARAM_GENERIC_ID_ENABLE_ETH,
+ 					value);
 +
- #define MLX5E_PROT_MASK(link_mode) (1U << link_mode)
- #define MLX5_GET_ETH_PROTO(reg, out, ext, field)	\
- 	(ext ? MLX5_GET(reg, out, ext_##field) :	\
-@@ -218,4 +224,14 @@ int mlx5_set_trust_state(struct mlx5_core_dev *mdev, u8 trust_state);
- int mlx5_query_trust_state(struct mlx5_core_dev *mdev, u8 *trust_state);
- int mlx5_set_dscp2prio(struct mlx5_core_dev *mdev, u8 dscp, u8 prio);
- int mlx5_query_dscp2prio(struct mlx5_core_dev *mdev, u8 *dscp2prio);
++	mlx5_devlink_hairpin_params_init_values(devlink);
 +
-+int mlx5_port_query_eth_proto(struct mlx5_core_dev *dev, u8 port, bool ext,
-+			      struct mlx5_port_eth_proto *eproto);
-+bool mlx5_ptys_ext_supported(struct mlx5_core_dev *mdev);
-+u32 mlx5_port_ptys2speed(struct mlx5_core_dev *mdev, u32 eth_proto_oper,
-+			 bool force_legacy);
-+u32 mlx5_port_speed2linkmodes(struct mlx5_core_dev *mdev, u32 speed,
-+			      bool force_legacy);
-+int mlx5_port_max_linkspeed(struct mlx5_core_dev *mdev, u32 *speed);
+ 	return 0;
+ }
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.h b/drivers/net/ethernet/mellanox/mlx5/core/devlink.h
+index 212b12424146..5dcfb4d86d8a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.h
+@@ -12,6 +12,8 @@ enum mlx5_devlink_param_id {
+ 	MLX5_DEVLINK_PARAM_ID_ESW_LARGE_GROUP_NUM,
+ 	MLX5_DEVLINK_PARAM_ID_ESW_PORT_METADATA,
+ 	MLX5_DEVLINK_PARAM_ID_ESW_MULTIPORT,
++	MLX5_DEVLINK_PARAM_ID_HAIRPIN_NUM_QUEUES,
++	MLX5_DEVLINK_PARAM_ID_HAIRPIN_QUEUE_SIZE,
+ };
+ 
+ struct mlx5_trap_ctx {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 79dd8ad5ede7..2e6351ef4d9c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -44,6 +44,7 @@
+ #include <net/bareudp.h>
+ #include <net/bonding.h>
+ #include <net/dst_metadata.h>
++#include "devlink.h"
+ #include "en.h"
+ #include "en/tc/post_act.h"
+ #include "en/tc/act_stats.h"
+@@ -73,12 +74,6 @@
+ #define MLX5E_TC_TABLE_NUM_GROUPS 4
+ #define MLX5E_TC_TABLE_MAX_GROUP_SIZE BIT(18)
+ 
+-struct mlx5e_hairpin_params {
+-	struct mlx5_core_dev *mdev;
+-	u32 num_queues;
+-	u32 queue_size;
+-};
+-
+ struct mlx5e_tc_table {
+ 	/* Protects the dynamic assignment of the t parameter
+ 	 * which is the nic tc root table.
+@@ -101,7 +96,6 @@ struct mlx5e_tc_table {
+ 
+ 	struct mlx5_tc_ct_priv         *ct;
+ 	struct mapping_ctx             *mapping;
+-	struct mlx5e_hairpin_params    hairpin_params;
+ 	struct dentry                  *dfs_root;
+ 
+ 	/* tc action stats */
+@@ -1099,33 +1093,15 @@ static void mlx5e_tc_debugfs_init(struct mlx5e_tc_table *tc,
+ 			    &debugfs_hairpin_table_dump_fops);
+ }
+ 
+-static void
+-mlx5e_hairpin_params_init(struct mlx5e_hairpin_params *hairpin_params,
+-			  struct mlx5_core_dev *mdev)
+-{
+-	u64 link_speed64;
+-	u32 link_speed;
+-
+-	hairpin_params->mdev = mdev;
+-	/* set hairpin pair per each 50Gbs share of the link */
+-	mlx5_port_max_linkspeed(mdev, &link_speed);
+-	link_speed = max_t(u32, link_speed, 50000);
+-	link_speed64 = link_speed;
+-	do_div(link_speed64, 50000);
+-	hairpin_params->num_queues = link_speed64;
+-
+-	hairpin_params->queue_size =
+-		BIT(min_t(u32, 16 - MLX5_MPWRQ_MIN_LOG_STRIDE_SZ(mdev),
+-			  MLX5_CAP_GEN(mdev, log_max_hairpin_num_packets)));
+-}
+-
+ static int mlx5e_hairpin_flow_add(struct mlx5e_priv *priv,
+ 				  struct mlx5e_tc_flow *flow,
+ 				  struct mlx5e_tc_flow_parse_attr *parse_attr,
+ 				  struct netlink_ext_ack *extack)
+ {
+ 	struct mlx5e_tc_table *tc = mlx5e_fs_get_tc(priv->fs);
++	struct devlink *devlink = priv_to_devlink(priv->mdev);
+ 	int peer_ifindex = parse_attr->mirred_ifindex[0];
++	union devlink_param_value val = {};
+ 	struct mlx5_hairpin_params params;
+ 	struct mlx5_core_dev *peer_mdev;
+ 	struct mlx5e_hairpin_entry *hpe;
+@@ -1182,7 +1158,14 @@ static int mlx5e_hairpin_flow_add(struct mlx5e_priv *priv,
+ 		 hash_hairpin_info(peer_id, match_prio));
+ 	mutex_unlock(&tc->hairpin_tbl_lock);
+ 
+-	params.log_num_packets = ilog2(tc->hairpin_params.queue_size);
++	err = devl_param_driverinit_value_get(
++		devlink, MLX5_DEVLINK_PARAM_ID_HAIRPIN_QUEUE_SIZE, &val);
++	if (err) {
++		err = -ENOMEM;
++		goto out_err;
++	}
 +
- #endif /* __MLX5_PORT_H__ */
++	params.log_num_packets = ilog2(val.vu32);
+ 	params.log_data_size =
+ 		clamp_t(u32,
+ 			params.log_num_packets +
+@@ -1191,7 +1174,14 @@ static int mlx5e_hairpin_flow_add(struct mlx5e_priv *priv,
+ 			MLX5_CAP_GEN(priv->mdev, log_max_hairpin_wq_data_sz));
+ 
+ 	params.q_counter = priv->q_counter;
+-	params.num_channels = tc->hairpin_params.num_queues;
++	err = devl_param_driverinit_value_get(
++		devlink, MLX5_DEVLINK_PARAM_ID_HAIRPIN_NUM_QUEUES, &val);
++	if (err) {
++		err = -ENOMEM;
++		goto out_err;
++	}
++
++	params.num_channels = val.vu32;
+ 
+ 	hp = mlx5e_hairpin_create(priv, &params, peer_ifindex);
+ 	hpe->hp = hp;
+@@ -5289,8 +5279,6 @@ int mlx5e_tc_nic_init(struct mlx5e_priv *priv)
+ 	tc->ct = mlx5_tc_ct_init(priv, tc->chains, &tc->mod_hdr,
+ 				 MLX5_FLOW_NAMESPACE_KERNEL, tc->post_act);
+ 
+-	mlx5e_hairpin_params_init(&tc->hairpin_params, dev);
+-
+ 	tc->netdevice_nb.notifier_call = mlx5e_tc_netdev_event;
+ 	err = register_netdevice_notifier_dev_net(priv->netdev,
+ 						  &tc->netdevice_nb,
 -- 
 2.39.2
 
