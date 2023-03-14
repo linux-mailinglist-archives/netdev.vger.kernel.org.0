@@ -2,164 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EE426B870C
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 01:37:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F399E6B86F9
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 01:36:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230370AbjCNAh1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 20:37:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54608 "EHLO
+        id S229740AbjCNAgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 20:36:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230365AbjCNAgv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 20:36:51 -0400
-Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C05AF8C957;
-        Mon, 13 Mar 2023 17:36:25 -0700 (PDT)
-Received: from local
-        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-         (Exim 4.96)
-        (envelope-from <daniel@makrotopia.org>)
-        id 1pbseN-0005N8-10;
-        Tue, 14 Mar 2023 01:36:23 +0100
-Date:   Tue, 14 Mar 2023 00:34:45 +0000
-From:   Daniel Golle <daniel@makrotopia.org>
-To:     devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S230125AbjCNAg2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 20:36:28 -0400
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2AEE7EA24;
+        Mon, 13 Mar 2023 17:36:16 -0700 (PDT)
+Received: by mail-qt1-x829.google.com with SMTP id d7so15136834qtr.12;
+        Mon, 13 Mar 2023 17:36:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678754176;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=XhfIn2HcwqtkizAMvb7UpCgDBNvQEGGusrAkHrnQFYk=;
+        b=gazA4rmxDuGY7o1Qrj9Gb+ii3zIY2n/j4mRvZyJmNoiV/e+q/Voe7z1olpJlNmMF58
+         vHGmKpj//qpkkjjKYmeCp3WdK4KYi5BQVFAdte8/7X/HBlpcJSQQVVN84XfnoNfXMGIa
+         kx29is3e48zIpydD1zNs1ix7hk42Gc10XFwhEt9QldUATBT7YodcTj2JGGAQoyr5hGdp
+         fIx3nUo4ziu457UfcpyqkefylhB56Pjg7t8YYVOh12hbGtdRmN2VSva7oOi8PFEZrpEd
+         FVDbhsyS7BzSdhdfW94n/mv8cGkWzcQndIqI3ur4VN6Mg+fX8vs1/8poZaxBebEoGy2B
+         cKMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678754176;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=XhfIn2HcwqtkizAMvb7UpCgDBNvQEGGusrAkHrnQFYk=;
+        b=4bKlzOdKnmgDQrbMHvelk1vZfHSi+JqCPM0ZvuV0Wh8fZFeD17OzD2bTbGu4MYU/K1
+         1uopuzv1TW28CVEI2bfH8/7xYtPT2rBJ6iauRB/WCMUUvH1vlEmxnTJ5VDPc9ENBMlrm
+         Y5g/Kvs/j4B6xcBOqwK2gMG6GUaJ0bTs63Q2IP28M5ZbxksTL9yIsr3fRPYutdIpSppD
+         gEgETfHmm/rFcmL5LeWGeCIvov1S+Dj8n+T+T9SNZhmuyaOfoCp8Qt+aWfL4S+QdydfC
+         K0dD4/MOVXGeakkz1O0tHTYDuis2UJptl8XAX/CWGrz6TWNmVj9hvNwz616FptrcvA5M
+         TRXQ==
+X-Gm-Message-State: AO0yUKUcgdNvkhWYyX49JR60pSf08kerP0NkROKJWEEFEhSf39TNZ6iU
+        JeXuY3t2aJH2n7N2rJnh9hYXpUzZKciTgw==
+X-Google-Smtp-Source: AK7set/HiNgJbX931LFgYaaYVLqwynKhnSSWm2Gp8Qogkh3VEwWYEme5npo5FkjQqUkcrT/rfYddTw==
+X-Received: by 2002:ac8:5a55:0:b0:3b8:49bb:16c3 with SMTP id o21-20020ac85a55000000b003b849bb16c3mr55302737qta.28.1678754175889;
+        Mon, 13 Mar 2023 17:36:15 -0700 (PDT)
+Received: from localhost (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
+        by smtp.gmail.com with UTF8SMTPSA id t190-20020a37aac7000000b0071a291f0a4asm724621qke.27.2023.03.13.17.36.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Mar 2023 17:36:15 -0700 (PDT)
+From:   Sean Anderson <seanga2@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Alexander Couzens <lynxis@fe80.eu>
-Subject: [PATCH 2/2] net: ethernet: mtk_eth_soc: only write values if needed
-Message-ID: <01f36b75fbce5003c45b0e1798bf3146b3896d63.1678753669.git.daniel@makrotopia.org>
-References: <cover.1678753669.git.daniel@makrotopia.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     Simon Horman <simon.horman@corigine.com>,
+        linux-kernel@vger.kernel.org, Sean Anderson <seanga2@gmail.com>,
+        debian-sparc@lists.debian.org, rescue@sunhelp.org, sparc@gentoo.org
+Subject: [PATCH net-next v3 0/9] net: sunhme: Probe/IRQ cleanups
+Date:   Mon, 13 Mar 2023 20:36:04 -0400
+Message-Id: <20230314003613.3874089-1-seanga2@gmail.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <cover.1678753669.git.daniel@makrotopia.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Only restart auto-negotiation and write link timer if actually
-necessary. This prevents losing the link in case of minor
-changes.
+Well, I've had these patches kicking around in my tree since last October, so I
+guess I had better get around to posting them. This series is mainly a
+cleanup/consolidation of the probe process, with some interrupt changes as well.
+Some of these changes are SBUS- (AKA SPARC-) specific, so this should really get
+some testing there as well to ensure nothing breaks. I've CC'd a few SPARC
+mailing lists in hopes that someone there can try this out. I also have an SBUS
+card I ordered by mistake if anyone has a SPARC computer but lacks this card.
 
-Fixes: 7e538372694b ("net: ethernet: mediatek: Re-add support SGMII")
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Tested-by: Bjørn Mork <bjorn@mork.no>
-Signed-off-by: Daniel Golle <daniel@makrotopia.org>
----
- drivers/net/ethernet/mediatek/mtk_sgmii.c | 24 +++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+I had originally planned on adding phylib support to this driver in the hopes of
+being able to use real phy drivers, but I don't think I'm going to end up doing
+that. I wanted to be able to use an external (homegrown) phy, but as it turns
+out you can't buy MII cables in $CURRENTYEAR for under $250 a pop, and even if
+you could get them you can't buy the connectors either. Oh well...
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_sgmii.c b/drivers/net/ethernet/mediatek/mtk_sgmii.c
-index 612f65bb0345..83976dc86887 100644
---- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
-+++ b/drivers/net/ethernet/mediatek/mtk_sgmii.c
-@@ -38,20 +38,16 @@ static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
- 			  const unsigned long *advertising,
- 			  bool permit_pause_to_mac)
- {
-+	bool mode_changed = false, changed, use_an;
- 	struct mtk_pcs *mpcs = pcs_to_mtk_pcs(pcs);
- 	unsigned int rgc3, sgm_mode, bmcr;
- 	int advertise, link_timer;
--	bool changed, use_an;
- 
- 	advertise = phylink_mii_c22_pcs_encode_advertisement(interface,
- 							     advertising);
- 	if (advertise < 0)
- 		return advertise;
- 
--	link_timer = phylink_get_link_timer_ns(interface);
--	if (link_timer < 0)
--		return link_timer;
--
- 	/* Clearing IF_MODE_BIT0 switches the PCS to BASE-X mode, and
- 	 * we assume that fixes it's speed at bitrate = line rate (in
- 	 * other words, 1000Mbps or 2500Mbps).
-@@ -77,13 +73,16 @@ static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
- 	}
- 
- 	if (use_an) {
--		/* FIXME: Do we need to set AN_RESTART here? */
--		bmcr = SGMII_AN_RESTART | SGMII_AN_ENABLE;
-+		bmcr = SGMII_AN_ENABLE;
- 	} else {
- 		bmcr = 0;
- 	}
- 
- 	if (mpcs->interface != interface) {
-+		link_timer = phylink_get_link_timer_ns(interface);
-+		if (link_timer < 0)
-+			return link_timer;
-+
- 		/* PHYA power down */
- 		regmap_update_bits(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL,
- 				   SGMII_PHYA_PWD, SGMII_PHYA_PWD);
-@@ -101,16 +100,17 @@ static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
- 		regmap_update_bits(mpcs->regmap, mpcs->ana_rgc3,
- 				   RG_PHY_SPEED_3_125G, rgc3);
- 
-+		/* Setup the link timer */
-+		regmap_write(mpcs->regmap, SGMSYS_PCS_LINK_TIMER, link_timer / 2 / 8);
-+
- 		mpcs->interface = interface;
-+		mode_changed = true;
- 	}
- 
- 	/* Update the advertisement, noting whether it has changed */
- 	regmap_update_bits_check(mpcs->regmap, SGMSYS_PCS_ADVERTISE,
- 				 SGMII_ADVERTISE, advertise, &changed);
- 
--	/* Setup the link timer and QPHY power up inside SGMIISYS */
--	regmap_write(mpcs->regmap, SGMSYS_PCS_LINK_TIMER, link_timer / 2 / 8);
--
- 	/* Update the sgmsys mode register */
- 	regmap_update_bits(mpcs->regmap, SGMSYS_SGMII_MODE,
- 			   SGMII_REMOTE_FAULT_DIS | SGMII_SPEED_DUPLEX_AN |
-@@ -118,7 +118,7 @@ static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
- 
- 	/* Update the BMCR */
- 	regmap_update_bits(mpcs->regmap, SGMSYS_PCS_CONTROL_1,
--			   SGMII_AN_RESTART | SGMII_AN_ENABLE, bmcr);
-+			   SGMII_AN_ENABLE, bmcr);
- 
- 	/* Release PHYA power down state
- 	 * Only removing bit SGMII_PHYA_PWD isn't enough.
-@@ -132,7 +132,7 @@ static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
- 	usleep_range(50, 100);
- 	regmap_write(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL, 0);
- 
--	return changed;
-+	return changed || mode_changed;
- }
- 
- static void mtk_pcs_restart_an(struct phylink_pcs *pcs)
+Changes in v3:
+- Incorporate a fix from another series into this commit
+
+Changes in v2:
+- Move happy_meal_begin_auto_negotiation earlier and remove forward declaration
+- Make some more includes common
+- Clean up mac address init
+- Inline error returns
+
+Sean Anderson (9):
+  net: sunhme: Just restart autonegotiation if we can't bring the link
+    up
+  net: sunhme: Remove residual polling code
+  net: sunhme: Unify IRQ requesting
+  net: sunhme: Alphabetize includes
+  net: sunhme: Switch SBUS to devres
+  net: sunhme: Consolidate mac address initialization
+  net: sunhme: Clean up mac address init
+  net: sunhme: Inline error returns
+  net: sunhme: Consolidate common probe tasks
+
+ drivers/net/ethernet/sun/sunhme.c | 1161 ++++++++++-------------------
+ drivers/net/ethernet/sun/sunhme.h |    6 +-
+ 2 files changed, 415 insertions(+), 752 deletions(-)
+
 -- 
-2.39.2
+2.37.1
 
