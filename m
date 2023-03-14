@@ -2,196 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 804EF6B9994
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 16:36:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D45B36B9980
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 16:36:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231873AbjCNPgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 11:36:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44176 "EHLO
+        id S231880AbjCNPgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 11:36:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231874AbjCNPf6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 11:35:58 -0400
-Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE3D2884F
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 08:35:02 -0700 (PDT)
-Received: by mail-ot1-x330.google.com with SMTP id b26-20020a9d755a000000b006972b28ae37so1190251otl.4
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 08:35:02 -0700 (PDT)
+        with ESMTP id S231690AbjCNPfK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 11:35:10 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2112.outbound.protection.outlook.com [40.107.223.112])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 006AFA7A88;
+        Tue, 14 Mar 2023 08:34:33 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WhJuZQW2BGhv8CL/2tkuyKaPPhH1UltlN1//r4/QdL626+VE19ArroC7kH5gXQgHP4Mv57oxE7YgHRJuucCqstaFJjdP63VHNwaa62arvB0J7iDev8r2RmJR4PfilB6bKkf7ZqjIoE1/ZER+GjBHcykVIyO6J47rOKq0MV5tmgHM2WLMcf8ednBGJ4b0KpXPpXyuKZ9DSPV6bFZYWzIwxsZunWemkV8w6TPWEcG20B0GtdfSkC9WbiQAs0Eh0eyL6sm228VtXeu5qsXXS9R6WIisol9k6TeMaN7Cog6XzBn93tZSzqw+/IZFOgqiFMQygZD5ZJojbOrNz2RSA5mmkA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QFNsUTpSnm8yKzHPY+fp1Yf0tpPUua3q34AWIRnHe68=;
+ b=l5dOEarKwAWmNZUiO9eF7NjmDryEXzf5P5UvnOYWFT2bTyG3hGcjJKm83DwZwGQmcwkfXqUzq1EonD2wXI6czwowZG5/1P/sQpcbaTE6xJkWG8Esnqi8P8z6gYhMrv9LeKntAu07bik2jUF0mZIsqzsYP8G+LDyNtPrhIBQWHbJsV+o8GCktKlwyWM+vBR5GGhoct2HR/Hev+nuUr5uBBQdCfv3bZxkmancyLeUKAgqDw3Xl/vAML2+yFMv8LxOl0AVIZe3Q/+CAK6PUIbPvvpDFtfNK+aAnnwDt/MTdyiUcnWG6ZJBQF1JU+hJsU3ahmAHnQ75vJMgm6hfDh2SlWw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google; t=1678808094;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LXF/sgIHn5IY/DFNG1dgAypPPI+KWpv/ETLtS0j9Gbs=;
-        b=IWUTCcHQjUi+pqw4fI/GIVwJJSKTLtj/WYk7MGzuHfeIKPwvR5jLu2DS/BJHNXY7dn
-         WDeRJiJl47VPSKCxy0aLVwb8L19WAUFb17AZ6Xu+Vf4H5E7WL/1ZT51uriXqhUoO5isS
-         nnu3Uvy0ZRpJZNMyOKg6Mdwq89KYKwJDqa0P0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678808094;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=LXF/sgIHn5IY/DFNG1dgAypPPI+KWpv/ETLtS0j9Gbs=;
-        b=e3aCBBF0xwt+vTZUW4mKxsolor/GzL9nOYr2nuf2MelXAMdUUkWUic0/m3s9neeaBR
-         GeWKWk5pH1C5rkq46F/POFN47C6f9URLfXxMSQf5mjI8GtCnRaDulPjp4x4+QQp1h2qy
-         3wKqSXR/OFI0SUgVoiFdGZeJ/P32RyL5RKHVpq9nBm4a8i8DASf5EjXqwih3r2GFcosU
-         JuW6iNGPngoPiroUYDCtsLlabjKmwAj7nu8LTZROjDAYCAqdeoXwbNmnO0UZxLAoRhJU
-         IzGoSUJbvms88fv7QApZ34blkCzR+CNZaVlOahqgY8z9IcZqXFtbI5VnxfH/v16Fda+h
-         0MPA==
-X-Gm-Message-State: AO0yUKUrc5kV/9sCZfjqONt5jOnm+sYtMuYg3u6NitnGo7Zj1wmPaGkZ
-        DLHJrw0y/2JGBAqiv0VhDgsWMQ==
-X-Google-Smtp-Source: AK7set91vc8MbNbQSVG1q1MhN6sYhj1Rx/7InNJR/wggV2TUV8x+xX22ckKqB3U4MlO3gFG6q7FzCQ==
-X-Received: by 2002:a05:6830:4123:b0:684:ac9d:1a17 with SMTP id w35-20020a056830412300b00684ac9d1a17mr9915686ott.3.1678808094577;
-        Tue, 14 Mar 2023 08:34:54 -0700 (PDT)
-Received: from JNXK7M3.. ([2a09:bac5:bf22:96::f:316])
-        by smtp.gmail.com with ESMTPSA id a22-20020a9d4716000000b00693ea7bfdc2sm1180855otf.76.2023.03.14.08.34.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Mar 2023 08:34:54 -0700 (PDT)
-From:   Shawn Bohrer <sbohrer@cloudflare.com>
-To:     toshiaki.makita1@gmail.com
-Cc:     toke@kernel.org, makita.toshiaki@lab.ntt.co.jp,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@cloudflare.com, lorenzo@kernel.org,
-        Shawn Bohrer <sbohrer@cloudflare.com>
-Subject: [PATCH] veth: Fix use after free in XDP_REDIRECT
-Date:   Tue, 14 Mar 2023 10:33:51 -0500
-Message-Id: <20230314153351.2201328-1-sbohrer@cloudflare.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <ZBCSAsUBeNvTPj/s@JNXK7M3>
-References: <ZBCSAsUBeNvTPj/s@JNXK7M3>
-MIME-Version: 1.0
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QFNsUTpSnm8yKzHPY+fp1Yf0tpPUua3q34AWIRnHe68=;
+ b=aoJBkS7xAC+NVQ4Z3YJmrjBL/jjnqPzb3ceo4BGi4/wTR9KRdbKCiDi/lK24od1VPgZFo6D4eBmmMoSG5qvY29aEH6GiwgS24YbFAn2C9EPOWqD3JbNx2PIEahdn/Tw0xP7sAWILsGlQc+0Dtdan+8uW949EHHrWPSaLqic0fYI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by MW4PR10MB6395.namprd10.prod.outlook.com
+ (2603:10b6:303:1ea::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.24; Tue, 14 Mar
+ 2023 15:34:15 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::1897:6663:87ba:c8fa]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::1897:6663:87ba:c8fa%4]) with mapi id 15.20.6178.023; Tue, 14 Mar 2023
+ 15:34:14 +0000
+Date:   Tue, 14 Mar 2023 08:34:10 -0700
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-wpan@vger.kernel.org
+Subject: Re: [PATCH 05/12] net: dsa: ocelot: drop of_match_ptr for ID table
+Message-ID: <ZBCT8iB/vzOHrv3B@colin-ia-desktop>
+References: <20230311173303.262618-1-krzysztof.kozlowski@linaro.org>
+ <20230311173303.262618-5-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20230311173303.262618-5-krzysztof.kozlowski@linaro.org>
+X-ClientProxiedBy: BYAPR11CA0100.namprd11.prod.outlook.com
+ (2603:10b6:a03:f4::41) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWHPR1001MB2351:EE_|MW4PR10MB6395:EE_
+X-MS-Office365-Filtering-Correlation-Id: 438cb48d-ffe4-46b0-a471-08db24a190e6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8sSijxcdflSZqi4NlrtXgBgI0LDf9YavIgYFuKv4sZakndck7EIMvhr+d7HXfKV5VFQ37dpkx/9VeC5eMQqyk42YdgPdpivj3nMBluh57KDtEMJ32/RIIqRSVDymaJQSEiHf2wlmzxQfkdVnLqSzkq2JKoVOYMT/S1jlEqRrUsK+A3Kg/m3/cwZbAOlXdxAl3xjVFIZNCHRjuZDQCeLJq5lIFL0gvZOSmXnM8hM+ryQgKNdbF5EypCdNeQDhDj4uqyr9U6Qvmh/y9AqDXVdxFOOevkmMqqWl983wKivDZbUBl5vdlCWYDeI80UxPdXG+CgLPMjY0hRcjJwgXhjHK533TDV05n8L2DDY3B2NoFHPganfPIy/QKxSyHwKeJr9uJYT04li7q//+rjzZ6fr6yIT4+P8xn6fAsfc692PHi796GFIO7JRgK4e5JQKQlwQNSPJe8NyFJlgTe90aE1rtkkTh+9jSZjTTU/sfLvmQa7cYwzfmksL3sKZSc4tuzRhmYd5aEySY/hyQExymWJimzCl21HBNpOnzFqddcuoRk9+0kaO1vfwCvXNTgo2QXyvJ9YlrsTUiKjOz3jhEJXlkRj71ZYDaA2Ai86UzbVMDL8QXrvReVsy9tx7pIzdmBoDJGGYyWg777ABfqWkJ3N15ZA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(7916004)(39840400004)(346002)(376002)(136003)(396003)(366004)(451199018)(6916009)(41300700001)(5660300002)(9686003)(4326008)(8936002)(186003)(7416002)(6512007)(26005)(6506007)(86362001)(33716001)(44832011)(2906002)(83380400001)(6486002)(8676002)(66476007)(6666004)(54906003)(316002)(66946007)(478600001)(66556008)(38100700002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?aURhNzFBZTZlTDZCWTlRRFlCM21IYjVlU1ZncENMVlVKQUZQUVZoaHk0TjdX?=
+ =?utf-8?B?eFR6aEpwbEJzOUNacWxPWGVMMFFGUXEwaG15RmJmT0Mydllmc0pETzA2VWYw?=
+ =?utf-8?B?ckRuVGc5aXY0a0NDQkFKVUx0cDA2NWdEbDEyQkJWME9hY2lIaEZ4a2s1cVVp?=
+ =?utf-8?B?T2hoeWN5d0pLTjlOSFJYRnoyc0RibkNuVUF6c09pOVlJMm1iZytYK1ozVTQ0?=
+ =?utf-8?B?ZEFRdnNKNjZVVHZoOGduTytxWDZGby9pM1FacWpYQ2FENTc4VzlsMXMrU2dW?=
+ =?utf-8?B?YWZha1gwR2VYajVibUxiSVE2bVY2TWZRYkNQY3d4L3MwSVBxUldrOG4xbjZF?=
+ =?utf-8?B?SDBzdlMrVzZKWUJrNGdrNVVhUTRrY3RmTmxzSFgzSm9Qc1dhbWdjTE5hemdR?=
+ =?utf-8?B?SFVhb3YrTWptd0VqZ3VEYTY3NVdheUJPVm1IREw0TWl0Y1lwN2U2UG9yU3Fm?=
+ =?utf-8?B?NUhZbVZhQkdqQVlJbkxFV1pWb1lueno4Y0dqQVlNL3dnVmtpVjRjWWFDL3Y1?=
+ =?utf-8?B?cHc4MjhEUjh3dGdoYnA4ZEdZNlRjaS9HdHdpWjdlOGxXdWF1UGM3dUpYcFZa?=
+ =?utf-8?B?T2FYRFEvQ3cwd0Fwcm5OOGdYclhhUHVmYm5GYjcxNEJic0ZnZVJJM2hpUGNB?=
+ =?utf-8?B?ZC9hYUtiTE9idFN5K2xlUnoyemVXYmlXR0tlZ2Q1QjFRekh1Qm9LcnNFRjJi?=
+ =?utf-8?B?TzJycENWOVZ4TVBPTlU2ckRpZmFJUWc4RVJoMEVKaDN3c2J2TGlaU2FNclNF?=
+ =?utf-8?B?YTB2T2Z0a0VYbXdORS80Tk1WNXpoYjFyWXBkYzYycnVpZWZ0dVZHeExhdXJ4?=
+ =?utf-8?B?dHdUdUF5Ukxla3F1emE3bkhqSERjSXYzUE1ibTI2Vlh6Uk53ZjdFTEhxYVFx?=
+ =?utf-8?B?d2hFV1A5U1hrbzhiWFl4cHVXUGFCM2NCcEY5ZFdSaHVtdVAxVjNqR1FZQTVW?=
+ =?utf-8?B?YXJPZjd0S2VFVm5kMXNoOS9mZ3h3OU9hS1lEcnY4cWRlUmFML2dHTWVPR09r?=
+ =?utf-8?B?Z0NFeXAwaDVoMk9tVWxMZDErS1Z6QUJHS0c2Z21BVHJ5cjBZMjJmTzBJSlBW?=
+ =?utf-8?B?aDFWOXhPeTRDZmZnYUlMMTF2RVdxdHZoQkpIY0lPTmJsenRZYjdraERxZVMr?=
+ =?utf-8?B?L1hjZTJqWm9qeW9DWmg4N3B6ZHY1OEJ4K3pDYnNDN0oxb0xFVE1JNjhERW01?=
+ =?utf-8?B?bGQ1YnhoQXhVSDIxNHVSUk43dnZmb01KVldYRHlDWVJ3L3N1RTZYRE80YkRE?=
+ =?utf-8?B?TVoycHluaFF4NmZTNnIvMDJoc29BRHdHZFZ3UU16dlJmdUwraEFLNG54Nys3?=
+ =?utf-8?B?NU84TmgxRkcvQkpXNnpqb1l1MVd1dys0eTVwVit6Sit3WGJueEJpa2RyVW5T?=
+ =?utf-8?B?V1d6VUZETUhmTkFWZ1MvR3poKzRxTS9GVllQa2tKbzZ5Q1R6SitEVEtZa1o1?=
+ =?utf-8?B?MEJnOHptMlB6dTNEQ3d4NWNzVXdzclJ4ekpseUhjdVpGbUxkNTdrcWlDWjJo?=
+ =?utf-8?B?QVo5VitlOUxsQXdiNCtyMnNqK3QxdEZ4cng4ditndkxTVHFIbW9FZW9USEE1?=
+ =?utf-8?B?enluaEhLdFhUZVBlUWVZY2kzSXdNLythYVFWdEJVd0o3Q2dqbGxOY3FMOXA2?=
+ =?utf-8?B?dCtlVDNkY0hkWjhNQ2pGaDFRckNkNy9JMGphTjJQT0hVNzlVaFlNSmxEQ0xv?=
+ =?utf-8?B?b2ZsVTI1elZiZzZhYU9DMG9lNmltNHZ1ckNUdE1GQWdZYXNsazJtS0k5ZDJh?=
+ =?utf-8?B?R2hDcjJJKzlpTVQxWlNyTU5UZzB1RzZYMWJvYVhlRVduaWNvSTRJNDl3cFBp?=
+ =?utf-8?B?bE1wNjJKbjBHZ3BLc2NEcUM4amt6K0ZVQ2phcVIyYzEzMzEzYmNVMUQrU3Yw?=
+ =?utf-8?B?T0YwVzFKRE9jY0FwQmJrbE1sS2tneldrM0FmSHcwRERQdCtBSXVOTExzWUE1?=
+ =?utf-8?B?Yk5Gc1NRN3R3MW1kVFFHb3QzU1VURHVGOHFKeUlNUnYwSzlUbHZoUTF2cURG?=
+ =?utf-8?B?VVpNYnlSUjdvWW81dlQ2aEhBS09KRk94RzdvcHM4S3hTenlnWVdXZEY1Yy92?=
+ =?utf-8?B?ME9ONnRSME1yNG1sdW93Z0ZLeUZuZm9EVUNXTHlSSDF4U0ZlbkdNQkNXNzlh?=
+ =?utf-8?B?TkJ5RTYyL0hoSXlwSmJYc1d5eTB3VlNVRzd2WmJMd0M5RWtpTG5lQmtHbW9W?=
+ =?utf-8?Q?Rp6Qqr5fmeWw3G53sJR80eI=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 438cb48d-ffe4-46b0-a471-08db24a190e6
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Mar 2023 15:34:14.6019
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6947RnQSyD/E3WPnhHitkh/UcB8dDpL1pX/VM8zixYpyo8A8PBcx2Y1sBuvRgunXIzjLIauZ2c534C5MQ+MyYjLkQI50hGpCZ7BT1AcGYtA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR10MB6395
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-718a18a0c8a67f97781e40bdef7cdd055c430996 "veth: Rework veth_xdp_rcv_skb
-in order to accept non-linear skb" introduced a bug where it tried to
-use pskb_expand_head() if the headroom was less than
-XDP_PACKET_HEADROOM.  This however uses kmalloc to expand the head,
-which will later allow consume_skb() to free the skb while is it still
-in use by AF_XDP.
+On Sat, Mar 11, 2023 at 06:32:56PM +0100, Krzysztof Kozlowski wrote:
+> The driver can match only via the DT table so the table should be always
+> used and the of_match_ptr does not have any sense (this also allows ACPI
+> matching via PRP0001, even though it might not be relevant here).
+> 
+>   drivers/net/dsa/ocelot/ocelot_ext.c:143:34: error: ‘ocelot_ext_switch_of_match’ defined but not used [-Werror=unused-const-variable=]
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  drivers/net/dsa/ocelot/ocelot_ext.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/dsa/ocelot/ocelot_ext.c b/drivers/net/dsa/ocelot/ocelot_ext.c
+> index 063150659816..228737a32080 100644
+> --- a/drivers/net/dsa/ocelot/ocelot_ext.c
+> +++ b/drivers/net/dsa/ocelot/ocelot_ext.c
+> @@ -149,7 +149,7 @@ MODULE_DEVICE_TABLE(of, ocelot_ext_switch_of_match);
+>  static struct platform_driver ocelot_ext_switch_driver = {
+>  	.driver = {
+>  		.name = "ocelot-ext-switch",
+> -		.of_match_table = of_match_ptr(ocelot_ext_switch_of_match),
+> +		.of_match_table = ocelot_ext_switch_of_match,
+>  	},
+>  	.probe = ocelot_ext_probe,
+>  	.remove = ocelot_ext_remove,
+> -- 
+> 2.34.1
+> 
 
-Previously if the headroom was less than XDP_PACKET_HEADROOM we
-continued on to allocate a new skb from pages so this restores that
-behavior.
-
-BUG: KASAN: use-after-free in __xsk_rcv+0x18d/0x2c0
-Read of size 78 at addr ffff888976250154 by task napi/iconduit-g/148640
-
-CPU: 5 PID: 148640 Comm: napi/iconduit-g Kdump: loaded Tainted: G           O       6.1.4-cloudflare-kasan-2023.1.2 #1
-Hardware name: Quanta Computer Inc. QuantaPlex T41S-2U/S2S-MB, BIOS S2S_3B10.03 06/21/2018
-Call Trace:
-  <TASK>
-  dump_stack_lvl+0x34/0x48
-  print_report+0x170/0x473
-  ? __xsk_rcv+0x18d/0x2c0
-  kasan_report+0xad/0x130
-  ? __xsk_rcv+0x18d/0x2c0
-  kasan_check_range+0x149/0x1a0
-  memcpy+0x20/0x60
-  __xsk_rcv+0x18d/0x2c0
-  __xsk_map_redirect+0x1f3/0x490
-  ? veth_xdp_rcv_skb+0x89c/0x1ba0 [veth]
-  xdp_do_redirect+0x5ca/0xd60
-  veth_xdp_rcv_skb+0x935/0x1ba0 [veth]
-  ? __netif_receive_skb_list_core+0x671/0x920
-  ? veth_xdp+0x670/0x670 [veth]
-  veth_xdp_rcv+0x304/0xa20 [veth]
-  ? do_xdp_generic+0x150/0x150
-  ? veth_xdp_rcv_one+0xde0/0xde0 [veth]
-  ? _raw_spin_lock_bh+0xe0/0xe0
-  ? newidle_balance+0x887/0xe30
-  ? __perf_event_task_sched_in+0xdb/0x800
-  veth_poll+0x139/0x571 [veth]
-  ? veth_xdp_rcv+0xa20/0xa20 [veth]
-  ? _raw_spin_unlock+0x39/0x70
-  ? finish_task_switch.isra.0+0x17e/0x7d0
-  ? __switch_to+0x5cf/0x1070
-  ? __schedule+0x95b/0x2640
-  ? io_schedule_timeout+0x160/0x160
-  __napi_poll+0xa1/0x440
-  napi_threaded_poll+0x3d1/0x460
-  ? __napi_poll+0x440/0x440
-  ? __kthread_parkme+0xc6/0x1f0
-  ? __napi_poll+0x440/0x440
-  kthread+0x2a2/0x340
-  ? kthread_complete_and_exit+0x20/0x20
-  ret_from_fork+0x22/0x30
-  </TASK>
-
-Freed by task 148640:
-  kasan_save_stack+0x23/0x50
-  kasan_set_track+0x21/0x30
-  kasan_save_free_info+0x2a/0x40
-  ____kasan_slab_free+0x169/0x1d0
-  slab_free_freelist_hook+0xd2/0x190
-  __kmem_cache_free+0x1a1/0x2f0
-  skb_release_data+0x449/0x600
-  consume_skb+0x9f/0x1c0
-  veth_xdp_rcv_skb+0x89c/0x1ba0 [veth]
-  veth_xdp_rcv+0x304/0xa20 [veth]
-  veth_poll+0x139/0x571 [veth]
-  __napi_poll+0xa1/0x440
-  napi_threaded_poll+0x3d1/0x460
-  kthread+0x2a2/0x340
-  ret_from_fork+0x22/0x30
-
-The buggy address belongs to the object at ffff888976250000
-  which belongs to the cache kmalloc-2k of size 2048
-The buggy address is located 340 bytes inside of
-  2048-byte region [ffff888976250000, ffff888976250800)
-
-The buggy address belongs to the physical page:
-page:00000000ae18262a refcount:2 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x976250
-head:00000000ae18262a order:3 compound_mapcount:0 compound_pincount:0
-flags: 0x2ffff800010200(slab|head|node=0|zone=2|lastcpupid=0x1ffff)
-raw: 002ffff800010200 0000000000000000 dead000000000122 ffff88810004cf00
-raw: 0000000000000000 0000000080080008 00000002ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
-  ffff888976250000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-  ffff888976250080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> ffff888976250100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                                                  ^
-  ffff888976250180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-  ffff888976250200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-
-Fixes: 718a18a0c8a6 ("veth: Rework veth_xdp_rcv_skb in order to accept non-linear skb")
-Signed-off-by: Shawn Bohrer <sbohrer@cloudflare.com>
----
- drivers/net/veth.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
-
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index 1bb54de7124d..6b10aa3883c5 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -708,7 +708,7 @@ static int veth_convert_skb_to_xdp_buff(struct veth_rq *rq,
- 	u32 frame_sz;
- 
- 	if (skb_shared(skb) || skb_head_is_locked(skb) ||
--	    skb_shinfo(skb)->nr_frags) {
-+	    skb_shinfo(skb)->nr_frags || skb_headroom(skb) < XDP_PACKET_HEADROOM) {
- 		u32 size, len, max_head_size, off;
- 		struct sk_buff *nskb;
- 		struct page *page;
-@@ -773,9 +773,6 @@ static int veth_convert_skb_to_xdp_buff(struct veth_rq *rq,
- 
- 		consume_skb(skb);
- 		skb = nskb;
--	} else if (skb_headroom(skb) < XDP_PACKET_HEADROOM &&
--		   pskb_expand_head(skb, VETH_XDP_HEADROOM, 0, GFP_ATOMIC)) {
--		goto drop;
- 	}
- 
- 	/* SKB "head" area always have tailroom for skb_shared_info */
--- 
-2.34.1
-
+Acked-by: Colin Foster <colin.foster@in-advantage.com>
