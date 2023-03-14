@@ -2,73 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFBF66B86EF
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 01:33:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 610396B86F3
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 01:36:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229685AbjCNAdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 20:33:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49614 "EHLO
+        id S229869AbjCNAgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 20:36:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229482AbjCNAdj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 20:33:39 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBAA24E5F2;
-        Mon, 13 Mar 2023 17:33:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 05488CE12B6;
-        Tue, 14 Mar 2023 00:33:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F35DC433EF;
-        Tue, 14 Mar 2023 00:33:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678754012;
-        bh=cH5ifKhaPTxmo5PLQqb/zyvosbof39I56R0h8FeXNC8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MWHTgNVysvGjziEGiHAVw0H11Ss6i2K9/V0AHyBe0VrnjIpjvHLF8AuYrqC6sbeyJ
-         gCNvV1voB/XNqllE7i4DZQDzE/J2tgOPkDLNBmS/uUls8on5U6a9Pt0BvTbEyfXpbq
-         fh2Xgq3Y5sQzK3aYWrz2dGXEoSM+SFjT9Z/1/m5tSGhjc2cpaVQMAf5AKcKSK+hlbv
-         MlMVXcjPLSveeB3ivGze5jPwwiI0XmuomPrWketrXPjHDezhEXrXZiAs3mhBKjTlzU
-         OmPQgxldMpUWJG4RKTjyFJpVB0eACQG895WTA8yoqarRDNsOIUXsGDO1pw92rs6ViL
-         bVuetgTiB+euw==
-Date:   Mon, 13 Mar 2023 17:33:30 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Samin Guo <samin.guo@starfivetech.com>
-Cc:     <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
+        with ESMTP id S229516AbjCNAgA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 20:36:00 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0940E65134;
+        Mon, 13 Mar 2023 17:35:54 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1pbsdl-0005Ll-0T;
+        Tue, 14 Mar 2023 01:35:45 +0100
+Date:   Tue, 14 Mar 2023 00:34:05 +0000
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
+        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Yanhong Wang <yanhong.wang@starfivetech.com>
-Subject: Re: [PATCH v6 0/8] Add Ethernet driver for StarFive JH7110 SoC
-Message-ID: <20230313173330.797bf8e7@kernel.org>
-In-Reply-To: <20230313034645.5469-1-samin.guo@starfivetech.com>
-References: <20230313034645.5469-1-samin.guo@starfivetech.com>
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Alexander Couzens <lynxis@fe80.eu>
+Subject: [PATCH net 0/2] net: ethernet: mtk_eth_soc: minor SGMII fixes
+Message-ID: <cover.1678753669.git.daniel@makrotopia.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 13 Mar 2023 11:46:37 +0800 Samin Guo wrote:
-> This series adds ethernet support for the StarFive JH7110 RISC-V SoC.
-> The series includes MAC driver. The MAC version is dwmac-5.20 (from
-> Synopsys DesignWare). For more information and support, you can visit
-> RVspace wiki[1].
+This small series brings two minor fixes for the SGMII unit found in
+MediaTek's router SoCs.
 
-I'm guessing the first 6 patches need to go via networking and patches
-7 and 8 via riscv trees? Please repost those separately, otherwise
-the series won't apply and relevant CIs can't run on it.
+The first patch resets the PCS internal state machine on major
+configuration changes, just like it is also done in MediaTek's SDK.
+
+The second patch makes sure we only write values and restart AN if
+actually needed, thus preventing unnesseray loss of an existing link
+in some cases.
+
+Both patches have previously been submitted as part of the series
+"net: ethernet: mtk_eth_soc: various enhancements" which grew a bit
+too big and it has correctly been criticized that some of the patches
+should rather go as fixes to net-next.
+
+This new series tries to address this.
+
+Daniel Golle (2):
+  net: ethernet: mtk_eth_soc: reset PCS state
+  net: ethernet: mtk_eth_soc: only write values if needed
+
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h |  4 +++
+ drivers/net/ethernet/mediatek/mtk_sgmii.c   | 28 ++++++++++++---------
+ 2 files changed, 20 insertions(+), 12 deletions(-)
+
+
+base-commit: 512dd354718b98c60d4ff6017ff8c9f66c10d03f
+-- 
+2.39.2
