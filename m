@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ADAFC6B9484
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 13:46:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B74DE6B9481
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 13:46:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230253AbjCNMqo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 08:46:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33138 "EHLO
+        id S232025AbjCNMqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 08:46:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231480AbjCNMpo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 08:45:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB3F4A21B2;
-        Tue, 14 Mar 2023 05:44:43 -0700 (PDT)
+        with ESMTP id S232036AbjCNMpn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 08:45:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8094C99D75;
+        Tue, 14 Mar 2023 05:44:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 392EE61771;
-        Tue, 14 Mar 2023 12:43:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90AC2C4339B;
-        Tue, 14 Mar 2023 12:43:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3BE13B8190C;
+        Tue, 14 Mar 2023 12:43:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAA4EC433D2;
+        Tue, 14 Mar 2023 12:43:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678797818;
-        bh=+c45SjTlnq+NXIqIkShpUo9G/Gb3Q2yw0iHlcuh/bBw=;
+        s=k20201202; t=1678797837;
+        bh=u62PHWIrN6HTCJZD7dyHy2je/j/PdhGkuo2ogWvA/hw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XvgZnGCmS8AUwxKFAVrPcHYr6G65PvoqWSNNYHYG3dI4mXT36w7qasGDd22FiRUQ+
-         PDq/ox3djVePAT8OWHCXdVuIe3J9boHvsWynrq43UM0323vrzHYr2PaRaocmsV1Msm
-         bk6wkxV+Vnwx+RBaZkEx4ISRc55qlP/XS/O2l6FrPHlpDP++JX+9f7Cp/T5lgCM9Jz
-         Azj8SRvR7KTdXIYt+5495vtPt/k7tXWfKOa4ALphoUT6lUda884gnkLAmhPVnaAiD4
-         wleCYG6DVqnKngUPwJPo1o/66kyEZ3iaP2h5feXGeW8KROX0Ql7gQPhg8u6/DTk+SV
-         oo7rvGGQKxsaw==
+        b=FoYosMUUOcZrDv3Yr1r8YIhEbDmFKgxdvFJM2ziYnBIDE7IGcvu3ofA/yCCSZnVsp
+         vXL/ZzDRGN2UWrKVDLUbeRCm8mf3PSM96Z27RAECN95+oR4yocQOYkClCyxiiDkwTX
+         q3XTrSfNlZo6c148JKgx6/zMVS05/jTrV4BHqg8LLO1wLidE8EYTgNWc6g3fRovys9
+         wj2flqG50fJiG/Mp0ubjiABJEJgBRrekv+8X5rJySTRQrN2rgKH1DXjIq1UgJDR7Ju
+         qHZCsalDa3/QoSWpI7t7lLHkxv+yBsrGXXzkgDEkr3bDCt1U9/gSMcEzgbPUfKF7fn
+         GBgZr7TXJ/v5A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Eric Van Hensbergen <ericvh@kernel.org>,
@@ -38,12 +38,12 @@ Cc:     Eric Van Hensbergen <ericvh@kernel.org>,
         Sasha Levin <sashal@kernel.org>, ericvh@gmail.com,
         rminnich@sandia.gov, lucho@ionkov.net, davem@davemloft.net,
         v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.1 09/13] net/9p: fix bug in client create for .L
-Date:   Tue, 14 Mar 2023 08:43:21 -0400
-Message-Id: <20230314124325.470931-9-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 08/10] net/9p: fix bug in client create for .L
+Date:   Tue, 14 Mar 2023 08:43:42 -0400
+Message-Id: <20230314124344.471127-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230314124325.470931-1-sashal@kernel.org>
-References: <20230314124325.470931-1-sashal@kernel.org>
+In-Reply-To: <20230314124344.471127-1-sashal@kernel.org>
+References: <20230314124344.471127-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -74,10 +74,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/9p/client.c b/net/9p/client.c
-index 554a4b11f4fec..af59c3f2ec2e7 100644
+index 08e0c9990af06..c4c1e44cd7ca3 100644
 --- a/net/9p/client.c
 +++ b/net/9p/client.c
-@@ -1284,7 +1284,7 @@ int p9_client_create_dotl(struct p9_fid *ofid, const char *name, u32 flags,
+@@ -1315,7 +1315,7 @@ int p9_client_create_dotl(struct p9_fid *ofid, const char *name, u32 flags,
  		 qid->type, qid->path, qid->version, iounit);
  
  	memmove(&ofid->qid, qid, sizeof(struct p9_qid));
