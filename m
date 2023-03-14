@@ -2,366 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 364956BA074
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 21:11:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 457F66BA07C
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 21:13:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230464AbjCNULN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 16:11:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54036 "EHLO
+        id S231142AbjCNUN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 16:13:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230051AbjCNULL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 16:11:11 -0400
-Received: from domac.alu.hr (domac.alu.unizg.hr [161.53.235.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5426B168A0;
-        Tue, 14 Mar 2023 13:11:08 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by domac.alu.hr (Postfix) with ESMTP id DBCB8604F7;
-        Tue, 14 Mar 2023 21:11:05 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
-        t=1678824665; bh=5kcXTSkgYUUoUVIK1nOhMOEpYpLIqELNd1sc4GcGIb8=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Uy5z9Pd9Nz6e9EC4hOcz1EBxaJHqkyFXQsqNW28LxXIOZoU6iS5//89VcrC9kfXO8
-         5Qr2tOUbc0QZ/E+ba2MQD0r0YvJftdQQfhOhY+xZBBH8oC5tgWfnwGwoaQvF2CZgju
-         wYbfYEeGKEAa+1E0+/C4eRjUjeqKi7JC2AViMI79y8cwiIOAQyxW0TqgXd6vARvJRD
-         IWDsLPg6wz7wxLNorcrnwYSqCOiOdUiIHMsuNeVkdqrfYEjn0zs8IDwPImkk9fJm3Q
-         Rvgl7DXqJCscGrxCgoYh7mWZRB5WkYtx8Jyhcb+Ij09BwIqvRg0vqf4OP0T05V1GS/
-         WfVmcTHxknkew==
-X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
-Received: from domac.alu.hr ([127.0.0.1])
-        by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id TeKHyCoNftv9; Tue, 14 Mar 2023 21:11:02 +0100 (CET)
-Received: from [192.168.1.4] (unknown [77.237.109.125])
-        by domac.alu.hr (Postfix) with ESMTPSA id 9BF0F604F3;
-        Tue, 14 Mar 2023 21:11:01 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
-        t=1678824662; bh=5kcXTSkgYUUoUVIK1nOhMOEpYpLIqELNd1sc4GcGIb8=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=cWDFELt/X0fIYp7BqlRDJtvTSy5w1LXiuDLQoox8bmZqYwWqmfkozc+jaJR1ePAMJ
-         7Rpz7Jhzj01wMtR9h7+bSEXOnaDjXlCG+z7+kMxku0VqC1M1JYRHCSpH1k8XEqudgt
-         XgV8/WQvW0tbhOdJjJ83cgw9QII10txxFhEYTjr065hzAl1fKQt1Pw2LV3Ygm2NJGd
-         ouf4jsgI2Kvgn5iAFjgEIt1cxNbCJrW2ZTgLcfYJgwR+drAsqm9hP43SGLTueAKA4l
-         tzL5/b/AP3HSh1DnFnrbR2LRzSpR2aQakHm6PS+/Xy7SB9KlLEs07ZuMWfv+Inw1CH
-         fyzHtY9bk92vg==
-Message-ID: <910f9616-fdcc-51bd-786d-8ecc9f4b5179@alu.unizg.hr>
-Date:   Tue, 14 Mar 2023 21:10:55 +0100
+        with ESMTP id S230395AbjCNUNW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 16:13:22 -0400
+Received: from mail-il1-f179.google.com (mail-il1-f179.google.com [209.85.166.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0BC71969E;
+        Tue, 14 Mar 2023 13:13:14 -0700 (PDT)
+Received: by mail-il1-f179.google.com with SMTP id j6so4793095ilr.7;
+        Tue, 14 Mar 2023 13:13:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678824794;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=CJlM3chLn2hYsljtdG2Gsvt+783JHIg7bd5IO9aY9nI=;
+        b=2gwgZdKQFNu5DSKff+6jfaXg8i+D6yAnCSA1A9jKLoWb5Y9wO2fNkCdR+90FfhZkAu
+         s74pIC/aVjtGGeoL3Pd0r2M/UimlB/nyG8HIg0AAM9tQ1n4iQSRznfj5GuEJLoRNi7XF
+         riaI31Scxt+Je7OYeWGEi2BwetTNuj6Al35V3VOn7wRCBCYqjr/eLtoQ/fQSdPrMbuk7
+         wPbM05IhhfaUOvBRJlviCcgZZhOhsWI7NeHYJyeJS0Pxa7Ft8mTxgSrjDxRVRFop7u0d
+         OYLCXjJ82v2pSalJbChOySpX1a36bJwdy/MuDzftdOK6JUWaZNrSeb3wC9aqEqbzaYck
+         ShMQ==
+X-Gm-Message-State: AO0yUKUiNDRkltLMLxsq4pN0WJAGxh5wfAqqjke5Mwnobn4zh6SryG3o
+        4r1sL+ucDPJfLzNV5QLnhY2VGPtaaw==
+X-Google-Smtp-Source: AK7set9K4OXj5mFkbJbzAE5PFyZYK2s4RSbidcBMbfRzBKgYZAYAC+nEZtrczmuTAg708d10IQiiRw==
+X-Received: by 2002:a92:7302:0:b0:315:6fc5:ea46 with SMTP id o2-20020a927302000000b003156fc5ea46mr2893332ilc.2.1678824793715;
+        Tue, 14 Mar 2023 13:13:13 -0700 (PDT)
+Received: from robh_at_kernel.org ([64.188.179.249])
+        by smtp.gmail.com with ESMTPSA id e20-20020a056638021400b0040611a31d5fsm361854jaq.80.2023.03.14.13.13.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Mar 2023 13:13:13 -0700 (PDT)
+Received: (nullmailer pid 995516 invoked by uid 1000);
+        Tue, 14 Mar 2023 20:13:12 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v2 1/2] nfc: mrvl: Move platform_data struct into driver
+Date:   Tue, 14 Mar 2023 15:13:08 -0500
+Message-Id: <20230314201309.995421-1-robh@kernel.org>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: BUG: selftest/net/tun: Hang in unregister_netdevice
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        linux-kernel@vger.kernel.org
-References: <a0734a6b-9491-b43a-6dff-4d3498faee2e@alu.unizg.hr>
- <d7a64812-73db-feb2-e6d6-e1d8c09a6fed@alu.unizg.hr>
- <27769d34-521c-f0ef-b6c2-6bd452e4f9bf@alu.unizg.hr>
- <CANn89iKi67YScgt5R0nHNAobjnSubBK6KsR9Ryoqu5ai4Opyrw@mail.gmail.com>
-Content-Language: en-US, hr
-From:   Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
-In-Reply-To: <CANn89iKi67YScgt5R0nHNAobjnSubBK6KsR9Ryoqu5ai4Opyrw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14. 03. 2023. 17:02, Eric Dumazet wrote:
-> On Tue, Mar 14, 2023 at 9:01 AM Mirsad Todorovac
-> <mirsad.todorovac@alu.unizg.hr> wrote:
-> 
->> After a while, kernel message start looping:
->>
->>   kernel:unregister_netdevice: waiting for tap0 to become free. Usage count = 3
->>
->> Message from syslogd@pc-mtodorov at Mar 14 16:57:15 ...
->>   kernel:unregister_netdevice: waiting for tap0 to become free. Usage count = 3
->>
->> Message from syslogd@pc-mtodorov at Mar 14 16:57:24 ...
->>   kernel:unregister_netdevice: waiting for tap0 to become free. Usage count = 3
->>
->> Message from syslogd@pc-mtodorov at Mar 14 16:57:26 ...
->>   kernel:unregister_netdevice: waiting for tap0 to become free. Usage count = 3
->>
->> This hangs processes until very late stage of shutdown.
->>
->> I can confirm that CONFIG_DEBUG_{KOBJECT,KOBJECT_RELEASE}=y were the only changes
->> to .config in between builds.
->>
->> Best regards,
->> Mirsad
->>
-> 
-> Try adding in your config
-> 
-> CONFIG_NET_DEV_REFCNT_TRACKER=y
-> CONFIG_NET_NS_REFCNT_TRACKER=y
-> 
-> Thanks.
+There are no users of nfcmrvl platform_data struct outside of the
+driver and none will be added, so move it into the driver.
 
-Not at all.
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+ drivers/nfc/nfcmrvl/nfcmrvl.h         | 30 +++++++++++++++--
+ include/linux/platform_data/nfcmrvl.h | 48 ---------------------------
+ 2 files changed, 28 insertions(+), 50 deletions(-)
+ delete mode 100644 include/linux/platform_data/nfcmrvl.h
 
-According to the info here: https://cateee.net/lkddb/web-lkddb/NET_DEV_REFCNT_TRACKER.html
-no kerenel param was needed.
-
-I have got the same hang, and additional debug information appears to be this
-(in /var/log/messages):
-
-Mar 14 20:58:20 pc-mtodorov kernel: unregister_netdevice: waiting for tap0 to become free. Usage count = 3
-Mar 14 20:58:20 pc-mtodorov kernel: leaked reference.
-Mar 14 20:58:20 pc-mtodorov kernel: net_rx_queue_update_kobjects+0x75/0x1d0
-Mar 14 20:58:20 pc-mtodorov kernel: netif_set_real_num_rx_queues+0x5b/0xb0
-Mar 14 20:58:20 pc-mtodorov kernel: tun_attach+0x1ec/0x5a0
-Mar 14 20:58:20 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:58:20 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:58:20 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:58:20 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:58:20 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-Mar 14 20:58:20 pc-mtodorov kernel: leaked reference.
-Mar 14 20:58:20 pc-mtodorov kernel: netdev_queue_update_kobjects+0x86/0x190
-Mar 14 20:58:20 pc-mtodorov kernel: netif_set_real_num_tx_queues+0x86/0x250
-Mar 14 20:58:20 pc-mtodorov kernel: tun_attach+0x1d7/0x5a0
-Mar 14 20:58:20 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:58:20 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:58:20 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:58:20 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:58:20 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-Mar 14 20:58:20 pc-mtodorov kernel: unregister_netdevice: waiting for tap0 to become free. Usage count = 3
-Mar 14 20:58:20 pc-mtodorov kernel: leaked reference.
-Mar 14 20:58:20 pc-mtodorov kernel: net_rx_queue_update_kobjects+0x75/0x1d0
-Mar 14 20:58:20 pc-mtodorov kernel: netif_set_real_num_rx_queues+0x5b/0xb0
-Mar 14 20:58:20 pc-mtodorov kernel: tun_attach+0x1ec/0x5a0
-Mar 14 20:58:20 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:58:20 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:58:20 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:58:20 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:58:20 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-Mar 14 20:58:20 pc-mtodorov kernel: leaked reference.
-Mar 14 20:58:20 pc-mtodorov kernel: netdev_queue_update_kobjects+0x86/0x190
-Mar 14 20:58:20 pc-mtodorov kernel: netif_set_real_num_tx_queues+0x86/0x250
-Mar 14 20:58:20 pc-mtodorov kernel: tun_attach+0x1d7/0x5a0
-Mar 14 20:58:20 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:58:20 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:58:20 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:58:20 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:58:20 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-Mar 14 20:58:30 pc-mtodorov kernel: unregister_netdevice: waiting for tap0 to become free. Usage count = 3
-Mar 14 20:58:30 pc-mtodorov kernel: leaked reference.
-Mar 14 20:58:30 pc-mtodorov kernel: net_rx_queue_update_kobjects+0x75/0x1d0
-Mar 14 20:58:30 pc-mtodorov kernel: netif_set_real_num_rx_queues+0x5b/0xb0
-Mar 14 20:58:30 pc-mtodorov kernel: tun_attach+0x1ec/0x5a0
-Mar 14 20:58:30 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:58:30 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:58:30 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:58:30 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:58:30 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-Mar 14 20:58:30 pc-mtodorov kernel: leaked reference.
-Mar 14 20:58:30 pc-mtodorov kernel: netdev_queue_update_kobjects+0x86/0x190
-Mar 14 20:58:30 pc-mtodorov kernel: netif_set_real_num_tx_queues+0x86/0x250
-Mar 14 20:58:30 pc-mtodorov kernel: tun_attach+0x1d7/0x5a0
-Mar 14 20:58:30 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:58:30 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:58:30 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:58:30 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:58:30 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-Mar 14 20:58:30 pc-mtodorov kernel: unregister_netdevice: waiting for tap0 to become free. Usage count = 3
-Mar 14 20:58:30 pc-mtodorov kernel: leaked reference.
-Mar 14 20:58:30 pc-mtodorov kernel: net_rx_queue_update_kobjects+0x75/0x1d0
-Mar 14 20:58:30 pc-mtodorov kernel: netif_set_real_num_rx_queues+0x5b/0xb0
-Mar 14 20:58:30 pc-mtodorov kernel: tun_attach+0x1ec/0x5a0
-Mar 14 20:58:30 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:58:30 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:58:30 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:58:30 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:58:30 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-Mar 14 20:58:30 pc-mtodorov kernel: leaked reference.
-Mar 14 20:58:30 pc-mtodorov kernel: netdev_queue_update_kobjects+0x86/0x190
-Mar 14 20:58:30 pc-mtodorov kernel: netif_set_real_num_tx_queues+0x86/0x250
-Mar 14 20:58:30 pc-mtodorov kernel: tun_attach+0x1d7/0x5a0
-Mar 14 20:58:30 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:58:30 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:58:30 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:58:30 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:58:30 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-Mar 14 20:58:40 pc-mtodorov kernel: unregister_netdevice: waiting for tap0 to become free. Usage count = 3
-Mar 14 20:58:40 pc-mtodorov kernel: leaked reference.
-Mar 14 20:58:40 pc-mtodorov kernel: net_rx_queue_update_kobjects+0x75/0x1d0
-Mar 14 20:58:40 pc-mtodorov kernel: netif_set_real_num_rx_queues+0x5b/0xb0
-Mar 14 20:58:40 pc-mtodorov kernel: tun_attach+0x1ec/0x5a0
-Mar 14 20:58:40 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:58:40 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:58:40 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:58:40 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:58:40 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-Mar 14 20:58:40 pc-mtodorov kernel: leaked reference.
-Mar 14 20:58:40 pc-mtodorov kernel: netdev_queue_update_kobjects+0x86/0x190
-Mar 14 20:58:40 pc-mtodorov kernel: netif_set_real_num_tx_queues+0x86/0x250
-Mar 14 20:58:40 pc-mtodorov kernel: tun_attach+0x1d7/0x5a0
-Mar 14 20:58:40 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:58:40 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:58:40 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:58:40 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:58:40 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-Mar 14 20:58:40 pc-mtodorov kernel: unregister_netdevice: waiting for tap0 to become free. Usage count = 3
-Mar 14 20:58:40 pc-mtodorov kernel: leaked reference.
-Mar 14 20:58:40 pc-mtodorov kernel: net_rx_queue_update_kobjects+0x75/0x1d0
-Mar 14 20:58:40 pc-mtodorov kernel: netif_set_real_num_rx_queues+0x5b/0xb0
-Mar 14 20:58:40 pc-mtodorov kernel: tun_attach+0x1ec/0x5a0
-Mar 14 20:58:40 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:58:40 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:58:40 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:58:40 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:58:40 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-Mar 14 20:58:40 pc-mtodorov kernel: leaked reference.
-Mar 14 20:58:40 pc-mtodorov kernel: netdev_queue_update_kobjects+0x86/0x190
-Mar 14 20:58:40 pc-mtodorov kernel: netif_set_real_num_tx_queues+0x86/0x250
-Mar 14 20:58:40 pc-mtodorov kernel: tun_attach+0x1d7/0x5a0
-Mar 14 20:58:40 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:58:40 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:58:40 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:58:40 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:58:40 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-Mar 14 20:58:50 pc-mtodorov kernel: unregister_netdevice: waiting for tap0 to become free. Usage count = 3
-Mar 14 20:58:50 pc-mtodorov kernel: leaked reference.
-Mar 14 20:58:50 pc-mtodorov kernel: net_rx_queue_update_kobjects+0x75/0x1d0
-Mar 14 20:58:50 pc-mtodorov kernel: netif_set_real_num_rx_queues+0x5b/0xb0
-Mar 14 20:58:50 pc-mtodorov kernel: tun_attach+0x1ec/0x5a0
-Mar 14 20:58:50 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:58:50 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:58:50 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:58:50 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:58:50 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-Mar 14 20:58:50 pc-mtodorov kernel: leaked reference.
-Mar 14 20:58:50 pc-mtodorov kernel: netdev_queue_update_kobjects+0x86/0x190
-Mar 14 20:58:50 pc-mtodorov kernel: netif_set_real_num_tx_queues+0x86/0x250
-Mar 14 20:58:50 pc-mtodorov kernel: tun_attach+0x1d7/0x5a0
-Mar 14 20:58:50 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:58:50 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:58:50 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:58:50 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:58:50 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-Mar 14 20:58:50 pc-mtodorov kernel: unregister_netdevice: waiting for tap0 to become free. Usage count = 3
-Mar 14 20:58:50 pc-mtodorov kernel: leaked reference.
-Mar 14 20:58:50 pc-mtodorov kernel: net_rx_queue_update_kobjects+0x75/0x1d0
-Mar 14 20:58:50 pc-mtodorov kernel: netif_set_real_num_rx_queues+0x5b/0xb0
-Mar 14 20:58:50 pc-mtodorov kernel: tun_attach+0x1ec/0x5a0
-Mar 14 20:58:50 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:58:50 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:58:50 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:58:50 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:58:50 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-Mar 14 20:58:50 pc-mtodorov kernel: leaked reference.
-Mar 14 20:58:50 pc-mtodorov kernel: netdev_queue_update_kobjects+0x86/0x190
-Mar 14 20:58:50 pc-mtodorov kernel: netif_set_real_num_tx_queues+0x86/0x250
-Mar 14 20:58:50 pc-mtodorov kernel: tun_attach+0x1d7/0x5a0
-Mar 14 20:58:50 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:58:50 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:58:50 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:58:50 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:58:50 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-Mar 14 20:58:57 pc-mtodorov kernel: kmemleak: 1 new suspected memory leaks (see /sys/kernel/debug/kmemleak)
-Mar 14 20:59:00 pc-mtodorov kernel: unregister_netdevice: waiting for tap0 to become free. Usage count = 3
-Mar 14 20:59:00 pc-mtodorov kernel: leaked reference.
-Mar 14 20:59:00 pc-mtodorov kernel: net_rx_queue_update_kobjects+0x75/0x1d0
-Mar 14 20:59:00 pc-mtodorov kernel: netif_set_real_num_rx_queues+0x5b/0xb0
-Mar 14 20:59:00 pc-mtodorov kernel: tun_attach+0x1ec/0x5a0
-Mar 14 20:59:00 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:59:00 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:59:00 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:59:00 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:59:00 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-Mar 14 20:59:00 pc-mtodorov kernel: leaked reference.
-Mar 14 20:59:00 pc-mtodorov kernel: netdev_queue_update_kobjects+0x86/0x190
-Mar 14 20:59:00 pc-mtodorov kernel: netif_set_real_num_tx_queues+0x86/0x250
-Mar 14 20:59:00 pc-mtodorov kernel: tun_attach+0x1d7/0x5a0
-Mar 14 20:59:00 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:59:00 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:59:00 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:59:00 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:59:00 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-Mar 14 20:59:01 pc-mtodorov kernel: unregister_netdevice: waiting for tap0 to become free. Usage count = 3
-Mar 14 20:59:01 pc-mtodorov kernel: leaked reference.
-Mar 14 20:59:01 pc-mtodorov kernel: net_rx_queue_update_kobjects+0x75/0x1d0
-Mar 14 20:59:01 pc-mtodorov kernel: netif_set_real_num_rx_queues+0x5b/0xb0
-Mar 14 20:59:01 pc-mtodorov kernel: tun_attach+0x1ec/0x5a0
-Mar 14 20:59:01 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:59:01 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:59:01 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:59:01 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:59:01 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-Mar 14 20:59:01 pc-mtodorov kernel: leaked reference.
-Mar 14 20:59:01 pc-mtodorov kernel: netdev_queue_update_kobjects+0x86/0x190
-Mar 14 20:59:01 pc-mtodorov kernel: netif_set_real_num_tx_queues+0x86/0x250
-Mar 14 20:59:01 pc-mtodorov kernel: tun_attach+0x1d7/0x5a0
-Mar 14 20:59:01 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:59:01 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:59:01 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:59:01 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:59:01 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-Mar 14 20:59:10 pc-mtodorov kernel: unregister_netdevice: waiting for tap0 to become free. Usage count = 3
-Mar 14 20:59:10 pc-mtodorov kernel: leaked reference.
-Mar 14 20:59:10 pc-mtodorov kernel: net_rx_queue_update_kobjects+0x75/0x1d0
-Mar 14 20:59:10 pc-mtodorov kernel: netif_set_real_num_rx_queues+0x5b/0xb0
-Mar 14 20:59:10 pc-mtodorov kernel: tun_attach+0x1ec/0x5a0
-Mar 14 20:59:10 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:59:10 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:59:10 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:59:10 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:59:10 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-Mar 14 20:59:10 pc-mtodorov kernel: leaked reference.
-Mar 14 20:59:10 pc-mtodorov kernel: netdev_queue_update_kobjects+0x86/0x190
-Mar 14 20:59:10 pc-mtodorov kernel: netif_set_real_num_tx_queues+0x86/0x250
-Mar 14 20:59:10 pc-mtodorov kernel: tun_attach+0x1d7/0x5a0
-Mar 14 20:59:10 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:59:10 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:59:10 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:59:10 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:59:10 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-Mar 14 20:59:11 pc-mtodorov kernel: unregister_netdevice: waiting for tap0 to become free. Usage count = 3
-Mar 14 20:59:11 pc-mtodorov kernel: leaked reference.
-Mar 14 20:59:11 pc-mtodorov kernel: net_rx_queue_update_kobjects+0x75/0x1d0
-Mar 14 20:59:11 pc-mtodorov kernel: netif_set_real_num_rx_queues+0x5b/0xb0
-Mar 14 20:59:11 pc-mtodorov kernel: tun_attach+0x1ec/0x5a0
-Mar 14 20:59:11 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:59:11 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:59:11 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:59:11 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:59:11 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-Mar 14 20:59:11 pc-mtodorov kernel: leaked reference.
-Mar 14 20:59:11 pc-mtodorov kernel: netdev_queue_update_kobjects+0x86/0x190
-Mar 14 20:59:11 pc-mtodorov kernel: netif_set_real_num_tx_queues+0x86/0x250
-Mar 14 20:59:11 pc-mtodorov kernel: tun_attach+0x1d7/0x5a0
-Mar 14 20:59:11 pc-mtodorov kernel: __tun_chr_ioctl+0xa58/0x17d0
-Mar 14 20:59:11 pc-mtodorov kernel: tun_chr_ioctl+0x17/0x20
-Mar 14 20:59:11 pc-mtodorov kernel: __x64_sys_ioctl+0x97/0xd0
-Mar 14 20:59:11 pc-mtodorov kernel: do_syscall_64+0x5c/0x90
-Mar 14 20:59:11 pc-mtodorov kernel: entry_SYSCALL_64_after_hwframe+0x72/0xdc
-[root@pc-mtodorov marvin]# 
-
-I see those "leaked reference" lines are being printed here:
-https://elixir.bootlin.com/linux/v6.3-rc2/source/lib/ref_tracker.c#L55
-
-However, it is beyond the scope of my knowledge to track the actual leak.
-
-Hope this helps.
-
-Best regards,
-Mirsad
-
--- 
-Mirsad Goran Todorovac
-Sistem inženjer
-Grafički fakultet | Akademija likovnih umjetnosti
-Sveučilište u Zagrebu
+diff --git a/drivers/nfc/nfcmrvl/nfcmrvl.h b/drivers/nfc/nfcmrvl/nfcmrvl.h
+index 165bd0a95190..0f22b3233f73 100644
+--- a/drivers/nfc/nfcmrvl/nfcmrvl.h
++++ b/drivers/nfc/nfcmrvl/nfcmrvl.h
+@@ -8,8 +8,6 @@
+ #ifndef _NFCMRVL_H_
+ #define _NFCMRVL_H_
  
-System engineer
-Faculty of Graphic Arts | Academy of Fine Arts
-University of Zagreb, Republic of Croatia
-The European Union
+-#include <linux/platform_data/nfcmrvl.h>
+-
+ #include "fw_dnld.h"
+ 
+ /* Define private flags: */
+@@ -50,6 +48,34 @@ enum nfcmrvl_phy {
+ 	NFCMRVL_PHY_SPI		= 3,
+ };
+ 
++struct nfcmrvl_platform_data {
++	/*
++	 * Generic
++	 */
++
++	/* GPIO that is wired to RESET_N signal */
++	int reset_n_io;
++	/* Tell if transport is muxed in HCI one */
++	unsigned int hci_muxed;
++
++	/*
++	 * UART specific
++	 */
++
++	/* Tell if UART needs flow control at init */
++	unsigned int flow_control;
++	/* Tell if firmware supports break control for power management */
++	unsigned int break_control;
++
++
++	/*
++	 * I2C specific
++	 */
++
++	unsigned int irq;
++	unsigned int irq_polarity;
++};
++
+ struct nfcmrvl_private {
+ 
+ 	unsigned long flags;
+diff --git a/include/linux/platform_data/nfcmrvl.h b/include/linux/platform_data/nfcmrvl.h
+deleted file mode 100644
+index 9e75ac8d19be..000000000000
+--- a/include/linux/platform_data/nfcmrvl.h
++++ /dev/null
+@@ -1,48 +0,0 @@
+-/*
+- * Copyright (C) 2015, Marvell International Ltd.
+- *
+- * This software file (the "File") is distributed by Marvell International
+- * Ltd. under the terms of the GNU General Public License Version 2, June 1991
+- * (the "License").  You may use, redistribute and/or modify this File in
+- * accordance with the terms and conditions of the License, a copy of which
+- * is available on the worldwide web at
+- * http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
+- *
+- * THE FILE IS DISTRIBUTED AS-IS, WITHOUT WARRANTY OF ANY KIND, AND THE
+- * IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE
+- * ARE EXPRESSLY DISCLAIMED.  The License provides additional details about
+- * this warranty disclaimer.
+- */
+-
+-#ifndef _NFCMRVL_PTF_H_
+-#define _NFCMRVL_PTF_H_
+-
+-struct nfcmrvl_platform_data {
+-	/*
+-	 * Generic
+-	 */
+-
+-	/* GPIO that is wired to RESET_N signal */
+-	int reset_n_io;
+-	/* Tell if transport is muxed in HCI one */
+-	unsigned int hci_muxed;
+-
+-	/*
+-	 * UART specific
+-	 */
+-
+-	/* Tell if UART needs flow control at init */
+-	unsigned int flow_control;
+-	/* Tell if firmware supports break control for power management */
+-	unsigned int break_control;
+-
+-
+-	/*
+-	 * I2C specific
+-	 */
+-
+-	unsigned int irq;
+-	unsigned int irq_polarity;
+-};
+-
+-#endif /* _NFCMRVL_PTF_H_ */
+-- 
+2.39.2
 
