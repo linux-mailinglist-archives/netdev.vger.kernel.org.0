@@ -2,77 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D911D6B966F
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 14:38:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A589E6B95E5
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 14:19:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231781AbjCNNiu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 09:38:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43854 "EHLO
+        id S231881AbjCNNTP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 09:19:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229960AbjCNNi3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 09:38:29 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 890B3F772
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 06:35:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        from:to:cc:subject:date:message-id:in-reply-to:references
-        :mime-version:content-transfer-encoding; s=k1; bh=SsTC9UU9wdPdSI
-        0PbPhntycZBlShn3e/V5pFPLMU5/8=; b=ZvcXfLKABiDC9npZb4SVa4ELduNGUH
-        JYWlTOq5gC2b1Av3MwV0fQnLvYANm1jrF0pT40lXXp0CxRsKZsy3vYQ9Tq9h8aJr
-        28EY9RgVIc3Y//DR8263wPxS2Mdmzx+kTMLxVu0VBVJZZG9mv8UlX+qnZXcuzzXG
-        m9CExX8bF7Wg4=
-Received: (qmail 3111703 invoked from network); 14 Mar 2023 14:14:58 +0100
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 14 Mar 2023 14:14:58 +0100
-X-UD-Smtp-Session: l3s3148p1@fFKrA9z2ts0ujnvb
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-renesas-soc@vger.kernel.org, kernel@pengutronix.de,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S231944AbjCNNSk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 09:18:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FF519000;
+        Tue, 14 Mar 2023 06:15:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A30C961773;
+        Tue, 14 Mar 2023 13:14:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0021FC433EF;
+        Tue, 14 Mar 2023 13:14:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678799698;
+        bh=d77Zybmz4sMXlH9Uze1IGl0BLqEQ0muIDiBx2/KvyFw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=s3P9qxlj3N/eljo6oOWlngBZnv9pJ0zX3qrjpuGGatfcUK7gG6TVlKD3w/sUeEHy6
+         a9o7KvJvc9k2AZywk6SYJl3TurpHS+NtbNIF8RFpd2bDUPB4Fy90E6NblP0cyiVdH2
+         up5o+6+m2lwHPFPr26CZSEjmq5yoDDM7v2mZ8Q4qrvvAUi6PGNIx5ss5usxFk+fp44
+         4N2RdZxMTPRGzaUS9e5Xr17UJ3maWlhFYaSPkjKBoqkFE7z5c9NqgKI64wua62D/SJ
+         dbx+X2mTP1qazBFTO+hi48ZyGeSIQmOzGluViHzmarrvjEJKO2+0uEcF2aAnmvAVVF
+         neqpIOyXd3n2g==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1pc4VU-0007QP-Ei; Tue, 14 Mar 2023 14:16:01 +0100
+Date:   Tue, 14 Mar 2023 14:16:00 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Steev Klimaszewski <steev@kali.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 4/4] smsc911x: add FIXME to move 'mac_managed_pm' to probe
-Date:   Tue, 14 Mar 2023 14:14:42 +0100
-Message-Id: <20230314131443.46342-5-wsa+renesas@sang-engineering.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230314131443.46342-1-wsa+renesas@sang-engineering.com>
-References: <20230314131443.46342-1-wsa+renesas@sang-engineering.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Sven Peter <sven@svenpeter.dev>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        Mark Pearson <markpearson@lenovo.com>,
+        Tim Jiang <quic_tjiang@quicinc.com>
+Subject: Re: [PATCH v5 2/4] Bluetooth: hci_qca: Add support for QTI Bluetooth
+ chip wcn6855
+Message-ID: <ZBBzkMd0hHYOz8Vd@hovoldconsulting.com>
+References: <20230209020916.6475-1-steev@kali.org>
+ <20230209020916.6475-3-steev@kali.org>
+ <ZAoS1T9m1lI21Cvn@hovoldconsulting.com>
+ <CAKXuJqhEKB7cuVhEzObbFyYHyKj87M8iWVaoz7gkhS2OQ9tTBA@mail.gmail.com>
+ <ZArb/ZQEmfGDjYyc@hovoldconsulting.com>
+ <CAKXuJqhe3z0XrLCMZ3vc3+Ug-rMjayNuMAvh+ucuUkZQpQdb2A@mail.gmail.com>
+ <ZBBP/S8OM0t6p57E@hovoldconsulting.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE,
-        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZBBP/S8OM0t6p57E@hovoldconsulting.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Renesas hardware, we had issues because the above flag was set during
-'open'. It was concluded that it needs to be set during 'probe'. It
-looks like SMS911x needs the same fix but I can't test it because I
-don't have the hardware. At least, leave a note about the issue.
+On Tue, Mar 14, 2023 at 11:44:14AM +0100, Johan Hovold wrote:
+> On Sun, Mar 12, 2023 at 10:18:48PM -0500, Steev Klimaszewski wrote:
 
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
----
- drivers/net/ethernet/smsc/smsc911x.c | 1 +
- 1 file changed, 1 insertion(+)
+> > Works, but, not quite well, and with the nvm bits from Tim's patch, we
+> > end up getting closer?  I think that is the best way to put it.  With
+> > what we currently have, we end up loading hpnv21.bin for our nvm patch
+> > file, however, we actually want (at least on my Thinkpad X13s) the
+> > .b8c file from the Windows partition for our nvm patch; With the b8c
+> > file symlinked to .bin with just my patch set, I am able to connect a
+> > pair of Air Pods Gen1 to the ThinkPad and play back audio, as well as
+> > use them for input.  With the .bin file that comes from
+> > linux-firmware, they will still connect, however, they will randomly
+> > disconnect, as well as the audio output is all garbled.
+> 
+> Hmm. Ok, but then we need to ask Lenovo and Qualcomm to release the
+> firmware files we need for the X13s. Until then using your patch and
+> "hpnv21.bin" at least works to some extent.
+> 
+> I could connect to one bluetooth speaker without noticing any problems,
+> but I did indeed get some garbled output when connecting to another. I
+> have not tried the .b8c file yet though, so this could possibly be some
+> other incompatibility issue.
 
-diff --git a/drivers/net/ethernet/smsc/smsc911x.c b/drivers/net/ethernet/smsc/smsc911x.c
-index a2e511912e6a..745e0180eb34 100644
---- a/drivers/net/ethernet/smsc/smsc911x.c
-+++ b/drivers/net/ethernet/smsc/smsc911x.c
-@@ -1038,6 +1038,7 @@ static int smsc911x_mii_probe(struct net_device *dev)
- 	}
- 
- 	/* Indicate that the MAC is responsible for managing PHY PM */
-+	/* FIXME: should be set right after mdiobus is registered */
- 	phydev->mac_managed_pm = true;
- 	phy_attached_info(phydev);
- 
--- 
-2.30.2
+I just tried with the hpnv21.b8c from the (somewhat old) windows
+installation on my x13s, but the bluetooth speaker that produced garbled
+output with the firmware from linux-firmware still does so with the
+windows file.
 
+Johan
