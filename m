@@ -2,222 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD1D46B913D
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 12:13:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 209906B9149
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 12:14:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230457AbjCNLNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 07:13:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48646 "EHLO
+        id S231217AbjCNLOo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 07:14:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229692AbjCNLNq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 07:13:46 -0400
-Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D0523871;
-        Tue, 14 Mar 2023 04:13:09 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id D4B005FD61;
-        Tue, 14 Mar 2023 14:12:36 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1678792356;
-        bh=PF6KHzan4mSy2kGESR6B1xvrFo2PxPLxBlkqc63AEv0=;
-        h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type;
-        b=V97g7Z1PcFuaP3jAELaZ84GVI5pDoM8EOmkpq8+lOcs+OMb0qD7kDdVlR+7AxGHXH
-         tjk+J+D7PLCtAQ31welKzgyI6um2mq65G4aIWqpM61x0cLdd3sxJrA5ndauyCs0wRm
-         Wktr7R+/rGBfyt1qiSV1t0iA5X012pkc0ZBeI1htiRXUFwK2na4VFACipsiCBHYPb8
-         9P5zQ0sskM5xkPjaJEK/dylaX+HQF/nZ1Lllk6qCu14tWkToJJIE1hCKXQmL7qcsRV
-         798VsI0I628PC074hPtzYbxdcUurtj1Pgq2THTWJw3CwobyPRsrbbTM7VtIg2aRpaI
-         6tphEyEywXFqg==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mx.sberdevices.ru (Postfix) with ESMTP;
-        Tue, 14 Mar 2023 14:12:36 +0300 (MSK)
-Message-ID: <984e04b8-3f61-f59f-1683-414a53e7eca4@sberdevices.ru>
-Date:   Tue, 14 Mar 2023 14:09:27 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Content-Language: en-US
-In-Reply-To: <1bfcb7fd-bce3-30cf-8a58-8baa57b7345c@sberdevices.ru>
-To:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
+        with ESMTP id S231207AbjCNLOT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 07:14:19 -0400
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2096.outbound.protection.outlook.com [40.107.102.96])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7F65410B0;
+        Tue, 14 Mar 2023 04:13:50 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EHneikn+pRqnX5So6+kiZpAGlNCEMWSIH1z+fO7Uf8gR5dGNTXZB85p9Hun/sq1ze1O0FNI1vhqmxeEvMjf2PWa3Ip/Ok/TwGmXkVd3Ej5ZU9T9iFBJ4xUHBeGLOrAA7FCDPEK3lNcQkKv1fFEVZXQDzXRTz/vK+rhyuOJi8Ztdlt8yGpeB1Uu/Vf9C0AkFbkD3y52MQvnSo67REwWpd4jMjcuittEyfgO8JFeOKi2bZFC/2vgvgGLDNwO27jKFjz099Zg7oVqRyN5DCGYS5j9uDr/++hvIjjI6QTf9CQD6bHUNEyM+e2fOo1Q8/Oq6M4sVe07LIDno3HNnpREbcjw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=psyujY4oXhJmo+FZ3GUdWtghcCVSkCTVqJ7dXHmqnU8=;
+ b=CWwpG7+EQh3iIPKmPfTvr+4mkd4iK+xkgMGl1qt5GQPviMeQ0mCgnzkPrhsYpziJl8SolT85HS4+ACMvCLJ+q0QdCS7W5qKA3BBheIGu6MB7ApBPdt6+/xt2BXJBb4DPZ0Q+9vwfMp2jKn9BIEK5w3R4a+bfZkUL1f9cOUVKI80mS8buzY3AkvCUNF3paZPsTkjTzckEK87QxRV0uPP/fXeJH1GYOq59Kyx93PmcVAdh1KL0v2Iq5v1mCCfJ3Ug31yQvxgowh78lslmLJcr5vop1H8Ku+GrBaWmE/1EbU033SY5BeeuR3THvtCwsv4PGTFwTQL9xXbfnPQPw5wHh2A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=psyujY4oXhJmo+FZ3GUdWtghcCVSkCTVqJ7dXHmqnU8=;
+ b=QpeoiuXfR4Yo+ESJAu108kQG1S1h0y1XPj2MrPkXu65B3kVgFAN+Zv8RzLZ2dt9SHnVD3HYQjPQG/PQxKDBwlvXYQtnS71oMlGP5QFOmWxYkP4YxzlVFQ4qU3N5WSjzc5oDudelJmxM3kFhDKZN8Gk82Asim/RrKf9JtjkveFww=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by DS7PR13MB4606.namprd13.prod.outlook.com (2603:10b6:5:3a5::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.24; Tue, 14 Mar
+ 2023 11:13:30 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.026; Tue, 14 Mar 2023
+ 11:13:29 +0000
+Date:   Tue, 14 Mar 2023 12:13:23 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Dan Carpenter <error27@gmail.com>,
+        Alexander Lobakin <aleksander.lobakin@intel.com>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>
-CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kernel@sberdevices.ru>, <oxffffaa@gmail.com>,
-        <avkrasnov@sberdevices.ru>
-From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
-Subject: [PATCH RESEND net v4 4/4] test/vsock: copy to user failure test
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.16.1.6]
-X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
- S-MS-EXCH01.sberdevices.ru (172.16.1.4)
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/03/14 06:01:00 #20942017
-X-KSMG-AntiVirus-Status: Clean, skipped
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, kernel@collabora.com,
+        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] qede: remove linux/version.h and linux/compiler.h
+Message-ID: <ZBBW055iKkvNyiy0@corigine.com>
+References: <20230303185351.2825900-1-usama.anjum@collabora.com>
+ <20230303155436.213ee2c0@kernel.org>
+ <df8a446a-e8a9-3b3d-fd0f-791f0d01a0c9@collabora.com>
+ <ZAdoivY94Y5dfOa4@corigine.com>
+ <1107bc10-9b14-98f4-3e47-f87188453ce7@collabora.com>
+ <8a90dca3-af66-5348-72b9-ac49610f22ce@intel.com>
+ <ee08333d-d39d-45c6-9e6e-6328855d3068@kili.mountain>
+ <20230313114538.74e6caca@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230313114538.74e6caca@kernel.org>
+X-ClientProxiedBy: AM0PR04CA0044.eurprd04.prod.outlook.com
+ (2603:10a6:208:1::21) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DS7PR13MB4606:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0bec6387-c811-4c8b-042b-08db247d23f2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: GdSq0l5t03eeK7CS8IpmCDLUmVHdn92SI6V0M4aH9kM1/7J7kwJYtbMaBsZrgrGoIG68Sc6lsUzAYscAS8Cxz/ApSPC3mTpNni8OfUyFgJkNSIfsNKKSxS9qz3KY24KOv1WPWfZyTNXZwRrbLGlm9lPevhhre823fyPUV2Ig8aSQsmIvE4sKAIZi3YXXMW6D1oB9p+DQ3QMqp59BC7fFT+2TpPmNI7Xr+T9cgutRU7Aac7q/DnKu3dnyrGN7KqySsGMR1Sit0sjE2k+B7PcbVR2ERNGh5sVe8HTdG+u9/ERYOuNol8npSCbymwNSVqXXtazQ4MFoVNhZPm5l/e/QphC26CvWcqRsfqqTbW4/kLZmUBY6jvyE0OA2QXI/L7VgIMH6ubLu8yKpVBi53ni/pKWt0fDP81eepbE/Gc1Hfsnsh69mpaFY9M7CcOnjxObLeAP6jZk9H4vduCFSxnFZjeJYabz9DqLOjDm/xAafQGIe5lAXQepfCJjH4dlt2nvn4uvWNkHWS0sAoQTlttWBdWcwjBPhUu6hdrPo4yEt7P/V0uiL5txApsIfW9KGIn2rjr6czPbOQ5kVrWBy9aYrNXfi2U4B+DRf/y032pgXqlNjBNFmtYPnZ87A7cDcDXOD0PnLHertWt/Wv0MH0v1TEg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(136003)(376002)(366004)(39840400004)(396003)(451199018)(2616005)(7416002)(186003)(44832011)(6506007)(6512007)(8936002)(6666004)(38100700002)(6486002)(5660300002)(66556008)(2906002)(8676002)(41300700001)(36756003)(478600001)(66476007)(4326008)(54906003)(86362001)(66946007)(316002)(6916009);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?yLA4x+1PPbLVOlFM5KOHWOlp/yfm6JSJ1k9KS3zFgDPWYu0UGdqOvNY0Znsv?=
+ =?us-ascii?Q?AiKYAuplIYpXZuKiMAlOUW7A8BVnFUK6QmQKeOaV1Xl148S+FH+2ZBegdTfX?=
+ =?us-ascii?Q?FFSaoFZozgF4ovXvILKhEOe66+ane/krDlewmuFQFYI6Fthx1BfpUZ4E6Qva?=
+ =?us-ascii?Q?w5aXDkZ1jSNouIn8Wz4SYqSeLumFW/h1f+Yd60sE2/O7g+LPRIWz5Z2VX98o?=
+ =?us-ascii?Q?4TvG7Yc0WjVCRMBSvHn8N3lzXNxslLVProOSMgRbeN9+dvQ9LPyj9777wbAU?=
+ =?us-ascii?Q?dcyfYolnFZPDJmOpCsKUriYneiCs0nPk3fmeV7C5SqtQSLKgwZHPC8XP2ew8?=
+ =?us-ascii?Q?CmCbQZwvsWz253T6WX94HT98X6xuIO2+ONEyVxi2z3CE35DxAsFmAxVqwWkS?=
+ =?us-ascii?Q?NB40igAO8lQyzm5G8Y7VUqypbtjI3/SaLpAGh3nr6IcbQDlIn8liqGJtosub?=
+ =?us-ascii?Q?mU11Zo0SqIdg7aGnV14bchR8ovWmtG0B/4Z8rwpknGqaCZWBX7UQtBvEo+fx?=
+ =?us-ascii?Q?GJa4SBgGq2E4k2o/TbXmg1RAQBj1oRbieEDCispyGQIqquIDvxATH2HI3aLS?=
+ =?us-ascii?Q?6kfpwT7EYAmmdg9vAhwauKKZ9ZFSx6KqUX+P0P4RwLABbfz5zq3e5xvCHg9G?=
+ =?us-ascii?Q?rt4NRUTdHWA4+UA9wy3THGQj8/NYUQSmFlbxnfSS4No1T5Bm7C2l/lZQ/POR?=
+ =?us-ascii?Q?+FLO9Lumk0PJ0Pm453vsDP5ILMvfAAEahKufw/hMbvsPTJCAiLXf1mBaB24y?=
+ =?us-ascii?Q?fI5WchNSOr1v8H92ZU+qSQLnjLzX7yTZmTCxr/RJAdwKGlxKUjYoOC4Jb6QQ?=
+ =?us-ascii?Q?yz45nTrUwl2keKDj5N6fkFG8nN1qnMezt3UuT6Fa24bxeKrHInDdEiN3/kOy?=
+ =?us-ascii?Q?/z3OVLjQsbk3iQxbJUO/gJbU22xwqfAjGrhlA6N2FyKWEJz6wg6KfQP2RPIp?=
+ =?us-ascii?Q?NlTVqPCV9FhaGtmkdUgmVd+DzzHkBVRpccdw3AwDDIeGy30INXAPI4YFOQ/Z?=
+ =?us-ascii?Q?GjC52a/JAhRmlOf+3ORPU70pyNwnCbVWaQOuHsrbMHCRW8sTe7t1X/NHph2F?=
+ =?us-ascii?Q?q9RiFs/feD/8Qy/7ppUc6DrDE4JK0cqA8SEHf7zL3EKFKSvIHZK8vfU+vWAb?=
+ =?us-ascii?Q?Fcg324JPbjswtmlp9FhFgisb3Lnao+CbxRBb2RBPLLoomSw9Pmgi18CzAi8d?=
+ =?us-ascii?Q?O3n3GuRl03LCT45hskYGGx87otMhpCxjcxcalLURycV8lYGKes1hNJkyJfDT?=
+ =?us-ascii?Q?wUKxgdWtQeAguYwuvEp6m14tfa5EWBlfZggkYQDg2YFIsn6r0xjpYLUhk4q0?=
+ =?us-ascii?Q?fUvXxfHYNTz+uujIcMNRcxH1ogY37p6K/1IEQATtecKsaRN3x1Nw/6HVms/G?=
+ =?us-ascii?Q?eQ+X/q35lkA5o5WGurIq9MuzEc4bFXi8PzAcvij+aIOdvXnwUAx0Ip9La4nw?=
+ =?us-ascii?Q?QFv5c8e1pzq7ZP3A6J1KMfGA11c5dU9u8Um0qgz47RkWKxTS88vUTCsgfk8u?=
+ =?us-ascii?Q?E4UPznSd+AtX4Rkher4P6lAqzz2UkWuOIoxWC9S4u/Fg5Qg7FolzDVvJzbtS?=
+ =?us-ascii?Q?cSj5SRxFZy1SubviJIwbeewlwEi4OZQsEe258Sq+anHnUtbhAdwRgazMeW+8?=
+ =?us-ascii?Q?7DX5or8CDIa7BltDqw+yOkIiL4+9jrUdgtRM6wku7G00JnTcsWF/an5FavKQ?=
+ =?us-ascii?Q?BuASJw=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0bec6387-c811-4c8b-042b-08db247d23f2
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Mar 2023 11:13:29.7663
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: MzJEOpeb5VR5AHZpWajI5VugSHdh+SOvHMx1psbyZkkaOjPNltIiBUUdJkB3q5NyOv9DK+FgI+aGZfAz+/m1BUZRIgVjsbmNo0VhP99Ps/8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR13MB4606
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds SOCK_STREAM and SOCK_SEQPACKET tests for invalid buffer case.
-It tries to read data to NULL buffer (data already presents in socket's
-queue), then uses valid buffer. For SOCK_STREAM second read must return
-data, because skbuff is not dropped, but for SOCK_SEQPACKET skbuff will
-be dropped by kernel, and 'recv()' will return EAGAIN.
+On Mon, Mar 13, 2023 at 11:45:38AM -0700, Jakub Kicinski wrote:
+> On Mon, 13 Mar 2023 11:46:57 +0300 Dan Carpenter wrote:
+> > This is only for networking.
+> > 
+> > It affect BPF too, I suppose, but I always tell everyone to just send
+> > BPF bug reports instead of patches.  I can keep track of linux-next, net
+> > and net-next.  No one can keep track of all @#$@#$@#$@# 300+ trees.
+> > 
+> > I really hate this networking requirement but I try really hard to get
+> > it right and still mess up half the time.
+> 
+> Don't worry about it too much, there needs to be a level of
+> understanding for cross-tree folks. This unfortunately may 
+> not be afforded to less known developers.. because we don't 
+> know them/that they are working cross-tree.
+> 
+> Reality check for me - this is really something that should
+> be handled by our process scripts, right? get_maintainer/
+> /checkpatch ? Or that's not a fair expectation.
 
-Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
----
- tools/testing/vsock/vsock_test.c | 118 +++++++++++++++++++++++++++++++
- 1 file changed, 118 insertions(+)
+I think that what we are seeing is friction introduced by our processes.
 
-diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
-index 67e9f9df3a8c..3de10dbb50f5 100644
---- a/tools/testing/vsock/vsock_test.c
-+++ b/tools/testing/vsock/vsock_test.c
-@@ -860,6 +860,114 @@ static void test_stream_poll_rcvlowat_client(const struct test_opts *opts)
- 	close(fd);
- }
- 
-+#define INV_BUF_TEST_DATA_LEN 512
-+
-+static void test_inv_buf_client(const struct test_opts *opts, bool stream)
-+{
-+	unsigned char data[INV_BUF_TEST_DATA_LEN] = {0};
-+	ssize_t ret;
-+	int fd;
-+
-+	if (stream)
-+		fd = vsock_stream_connect(opts->peer_cid, 1234);
-+	else
-+		fd = vsock_seqpacket_connect(opts->peer_cid, 1234);
-+
-+	if (fd < 0) {
-+		perror("connect");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	control_expectln("SENDDONE");
-+
-+	/* Use invalid buffer here. */
-+	ret = recv(fd, NULL, sizeof(data), 0);
-+	if (ret != -1) {
-+		fprintf(stderr, "expected recv(2) failure, got %zi\n", ret);
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	if (errno != ENOMEM) {
-+		fprintf(stderr, "unexpected recv(2) errno %d\n", errno);
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	ret = recv(fd, data, sizeof(data), MSG_DONTWAIT);
-+
-+	if (stream) {
-+		/* For SOCK_STREAM we must continue reading. */
-+		if (ret != sizeof(data)) {
-+			fprintf(stderr, "expected recv(2) success, got %zi\n", ret);
-+			exit(EXIT_FAILURE);
-+		}
-+		/* Don't check errno in case of success. */
-+	} else {
-+		/* For SOCK_SEQPACKET socket's queue must be empty. */
-+		if (ret != -1) {
-+			fprintf(stderr, "expected recv(2) failure, got %zi\n", ret);
-+			exit(EXIT_FAILURE);
-+		}
-+
-+		if (errno != EAGAIN) {
-+			fprintf(stderr, "unexpected recv(2) errno %d\n", errno);
-+			exit(EXIT_FAILURE);
-+		}
-+	}
-+
-+	control_writeln("DONE");
-+
-+	close(fd);
-+}
-+
-+static void test_inv_buf_server(const struct test_opts *opts, bool stream)
-+{
-+	unsigned char data[INV_BUF_TEST_DATA_LEN] = {0};
-+	ssize_t res;
-+	int fd;
-+
-+	if (stream)
-+		fd = vsock_stream_accept(VMADDR_CID_ANY, 1234, NULL);
-+	else
-+		fd = vsock_seqpacket_accept(VMADDR_CID_ANY, 1234, NULL);
-+
-+	if (fd < 0) {
-+		perror("accept");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	res = send(fd, data, sizeof(data), 0);
-+	if (res != sizeof(data)) {
-+		fprintf(stderr, "unexpected send(2) result %zi\n", res);
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	control_writeln("SENDDONE");
-+
-+	control_expectln("DONE");
-+
-+	close(fd);
-+}
-+
-+static void test_stream_inv_buf_client(const struct test_opts *opts)
-+{
-+	test_inv_buf_client(opts, true);
-+}
-+
-+static void test_stream_inv_buf_server(const struct test_opts *opts)
-+{
-+	test_inv_buf_server(opts, true);
-+}
-+
-+static void test_seqpacket_inv_buf_client(const struct test_opts *opts)
-+{
-+	test_inv_buf_client(opts, false);
-+}
-+
-+static void test_seqpacket_inv_buf_server(const struct test_opts *opts)
-+{
-+	test_inv_buf_server(opts, false);
-+}
-+
- static struct test_case test_cases[] = {
- 	{
- 		.name = "SOCK_STREAM connection reset",
-@@ -920,6 +1028,16 @@ static struct test_case test_cases[] = {
- 		.run_client = test_seqpacket_bigmsg_client,
- 		.run_server = test_seqpacket_bigmsg_server,
- 	},
-+	{
-+		.name = "SOCK_STREAM test invalid buffer",
-+		.run_client = test_stream_inv_buf_client,
-+		.run_server = test_stream_inv_buf_server,
-+	},
-+	{
-+		.name = "SOCK_SEQPACKET test invalid buffer",
-+		.run_client = test_seqpacket_inv_buf_client,
-+		.run_server = test_seqpacket_inv_buf_server,
-+	},
- 	{},
- };
- 
--- 
-2.25.1
+I'd say that for those who spend time contributing to net-next/net
+on a regular basis, the friction is not great. The process is learnt.
+And for the most part followed.
+
+But for others, developers more focused on other parts of the Kernel,
+or otherwise contributing to net-next/net infrequently, the friction
+seems real.
+
+I do think tooling can help.
+But perhaps we can also explore other ways to reduce friction:
+
+* Aligning processes with those of other parts of the Kernel
+* Streamlining processes
+* providing an alternate path for contributions of the nature
+  I described above.
+
+Just ideas, seeing as you asked.
