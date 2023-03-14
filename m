@@ -2,101 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 80A676B9D41
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 18:44:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 591986B9D44
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 18:45:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229999AbjCNRoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 13:44:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39732 "EHLO
+        id S230220AbjCNRpe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 13:45:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230252AbjCNRov (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 13:44:51 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE31BA2C31;
-        Tue, 14 Mar 2023 10:44:50 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 950711F8AE;
-        Tue, 14 Mar 2023 17:44:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1678815889; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cX2nEzpfYSvApKcpdljYLZR0H4aXH20MH0UnDHbGbhg=;
-        b=TbevLQsnHA7xu8Pu5DG/6wsyYN2/BdK/O7TsTtDRdyRjg/xuIqrIZnIR3ZcT8mQBAsqheO
-        7/PLbWmgL3JBn3qLlxzR8HeDbHJGLK0RgsJvMROuPIwYL0H7QDRqz5RmGMU5zj3XxDEogN
-        sIzeV7IFWkBn2/j6T8haL2zBBUNrEbI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1678815889;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cX2nEzpfYSvApKcpdljYLZR0H4aXH20MH0UnDHbGbhg=;
-        b=jyVXnO5vR/fy35nr3D7V05bEu2lD+FLO38hiQ5DKiMbZLKabD6QNZLm4+yg3DjWLcroj0o
-        8f0PRKa3FSZEnwAQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 7A5E913A1B;
-        Tue, 14 Mar 2023 17:44:49 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id j1UzHZGyEGQNEAAAMHmgww
-        (envelope-from <hare@suse.de>); Tue, 14 Mar 2023 17:44:49 +0000
-Message-ID: <f6b53945-bbc2-f6b2-7d70-4f11849af5ce@suse.de>
-Date:   Tue, 14 Mar 2023 18:44:49 +0100
+        with ESMTP id S229558AbjCNRpd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 13:45:33 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF08AA25F;
+        Tue, 14 Mar 2023 10:45:32 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1pc8i8-0005bV-03;
+        Tue, 14 Mar 2023 18:45:20 +0100
+Date:   Tue, 14 Mar 2023 17:45:13 +0000
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Alexander Couzens <lynxis@fe80.eu>
+Subject: Re: [PATCH net-next v13 11/16] net: dsa: mt7530: use external PCS
+ driver
+Message-ID: <ZBCyqdfaeF/q8oZr@makrotopia.org>
+References: <cover.1678357225.git.daniel@makrotopia.org>
+ <2ac2ee40d3b0e705461b50613fda6a7edfdbc4b3.1678357225.git.daniel@makrotopia.org>
+ <e99cc7d1-554d-5d4d-e69a-a38ded02bb08@arinc9.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [RFC PATCH 6/9] iscsi: check net namespace for all iscsi lookup
-Content-Language: en-US
-To:     Lee Duncan <leeman.duncan@gmail.com>, linux-scsi@vger.kernel.org,
-        open-iscsi@googlegroups.com, netdev@vger.kernel.org
-Cc:     Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>
-References: <cover.1675876731.git.lduncan@suse.com>
- <cd46fe01cb5710469ffc4a5282c601382360be7d.1675876735.git.lduncan@suse.com>
-From:   Hannes Reinecke <hare@suse.de>
-In-Reply-To: <cd46fe01cb5710469ffc4a5282c601382360be7d.1675876735.git.lduncan@suse.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <e99cc7d1-554d-5d4d-e69a-a38ded02bb08@arinc9.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/8/23 18:40, Lee Duncan wrote:
-> From: Lee Duncan <lduncan@suse.com>
+On Tue, Mar 14, 2023 at 08:16:35PM +0300, Arınç ÜNAL wrote:
+> On 9.03.2023 13:57, Daniel Golle wrote:
+> > [...]
+> > +static int mt7530_regmap_read(void *context, unsigned int reg, unsigned int *val)
+> > +{
+> > +	struct mt7530_priv *priv = context;
+> > +
+> > +	*val = mt7530_read(priv, reg);
+> > +	return 0;
+> > +};
+> > +
+> > +static int mt7530_regmap_write(void *context, unsigned int reg, unsigned int val)
+> > +{
+> > +	struct mt7530_priv *priv = context;
+> > +
+> > +	mt7530_write(priv, reg, val);
+> > +	return 0;
+> > +};
+> > +
+> > +static int mt7530_regmap_update_bits(void *context, unsigned int reg,
+> > +				     unsigned int mask, unsigned int val)
+> > +{
+> > +	struct mt7530_priv *priv = context;
+> > +
+> > +	mt7530_rmw(priv, reg, mask, val);
+> > +	return 0;
+> > +};
+> > +
+> > +static const struct regmap_bus mt7531_regmap_bus = {
+> > +	.reg_write = mt7530_regmap_write,
+> > +	.reg_read = mt7530_regmap_read,
+> > +	.reg_update_bits = mt7530_regmap_update_bits,
 > 
-> All internal lookups of iSCSI transport objects need to be filtered by
-> net namespace.
+> These new functions can be used for both switches, mt7530 and mt7531,
+> correct?
+
+In theory, yes, they could be used on all switch ICs supported by the
+mt7530.c driver. In practise they are used on MT7531 only because MT7530
+and MT7621 don't have any SGMII/SerDes ports, but only MT7531 does.
+
+
+> If so, I believe they are supposed to be called mt753x since
+> 88bdef8be9f6 ("net: dsa: mt7530: Extend device data ready for adding a new
+> hardware").
 > 
-> Signed-off-by: Chris Leech <cleech@redhat.com>
-> Signed-off-by: Lee Duncan <lduncan@suse.com>
-> ---
->   drivers/infiniband/ulp/iser/iscsi_iser.c |   5 +-
->   drivers/scsi/be2iscsi/be_iscsi.c         |   4 +-
->   drivers/scsi/bnx2i/bnx2i_iscsi.c         |   4 +-
->   drivers/scsi/cxgbi/libcxgbi.c            |   4 +-
->   drivers/scsi/qedi/qedi_iscsi.c           |   4 +-
->   drivers/scsi/qla4xxx/ql4_os.c            |   8 +-
->   drivers/scsi/scsi_transport_iscsi.c      | 202 ++++++++++++++---------
->   include/scsi/scsi_transport_iscsi.h      |   5 +-
->   8 files changed, 149 insertions(+), 87 deletions(-)
-> 
-Reviewed-by: Hannes Reinecke <hare@suse.de>
+> mt753x: functions that can be used for mt7530 and mt7531 switches.
+> mt7530: functions specific to mt7530 switch.
+> mt7531: functions specific to mt7531 switch.
 
-Cheers,
+Good catch, so mt7530_* is for sure not accurate. I used that naming
+due to existing function names mt7530_read, mt7530_write and mt7530_rmw.
 
-Hannes
+Given the situation I've explained above I think that mt753x_* would
+be the best and I will change that for v14.
+
+Thank you for reviewing!
 
 
+Daniel
