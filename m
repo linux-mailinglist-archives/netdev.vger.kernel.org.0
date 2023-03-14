@@ -2,219 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0781E6B8E37
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 10:11:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67F416B8E31
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 10:11:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230466AbjCNJLe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 05:11:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43202 "EHLO
+        id S230180AbjCNJKs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 05:10:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229816AbjCNJL1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 05:11:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38EBF62D85
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 02:10:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678785034;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=inTYRuBYdEyfaIIdpUFfmONa7poVEUBWalb1yUnL2VM=;
-        b=cFIi7/PC+bSU2S9GCElMqL7/x69SDW0KnJD1+ciyooj8QuXOv9/3jniwparF5anJFzRIVP
-        IPjugdfS7m5CgP1xnTMiSoUM9DrnxnCxSewxPc0Dqfayqo1w9zJ94KbL6h8GMDwq1xXiqO
-        I/EF8EfiKaD5BYvHhgHFOCg+2/+6rJM=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-29-9lRHYUIBNb-Tp8FX56cehg-1; Tue, 14 Mar 2023 05:10:33 -0400
-X-MC-Unique: 9lRHYUIBNb-Tp8FX56cehg-1
-Received: by mail-ed1-f72.google.com with SMTP id r9-20020a05640251c900b004d4257341c2so20904364edd.19
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 02:10:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678785031;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=inTYRuBYdEyfaIIdpUFfmONa7poVEUBWalb1yUnL2VM=;
-        b=fVEwuQ18RNJxqs9RNBK0BaDqzglcABWvqt2y536/GM8nvmls3BLe0I7HwJO4nfPeLU
-         mP8gTUR13scawYFXZoiOxQnsaXjq1h8Vzpj80JKfziDD3nkYowPl1yDNmD7f7mPt3dm+
-         wLxdaSMfdbura/w9MoIrr5HC+vV8E9qWmYrQ6a3T55hOy8mWi780SfXO7tR3GgYCQiYX
-         cDpuGgqy/ps+oC6pi36yKYjjMQoytthQusWmSF7xgCwuqGbRnucKRUMbAteMaT+bpSZ1
-         O9/PA3b/4PmxNDaZzzq28yGIYORc5emBO+e1knjRCG70+Zz+AFKpH7ZybHqjw86rd3VH
-         /QIA==
-X-Gm-Message-State: AO0yUKWV2SBHl16a5zVtzueP/sbwzl7oCc3Hzn5RMZoYegP0HC5Lf7+N
-        F9wDaETWrFh+nHM4oYpjRk1ICxqFGXtvXVTZ1tBWwSirl1ebxqlq6/AY8+VCreavtmfG14wmXBd
-        ARJWB6zivGxfq4/uQ
-X-Received: by 2002:a17:906:1c93:b0:87b:dac0:b23b with SMTP id g19-20020a1709061c9300b0087bdac0b23bmr1327861ejh.55.1678785031197;
-        Tue, 14 Mar 2023 02:10:31 -0700 (PDT)
-X-Google-Smtp-Source: AK7set9ca8MKg50CqdX2YBXH2dEYDlTe+JUpLw7Qppj9Xz64AY7ahYV20CH9ObIQMg77ERjtHm7/OQ==
-X-Received: by 2002:a17:906:1c93:b0:87b:dac0:b23b with SMTP id g19-20020a1709061c9300b0087bdac0b23bmr1327839ejh.55.1678785030910;
-        Tue, 14 Mar 2023 02:10:30 -0700 (PDT)
-Received: from redhat.com ([2a02:14f:1f7:4129:3ef9:ea05:f0ca:6b81])
-        by smtp.gmail.com with ESMTPSA id hp2-20020a1709073e0200b008b175c46867sm846004ejc.116.2023.03.14.02.10.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Mar 2023 02:10:30 -0700 (PDT)
-Date:   Tue, 14 Mar 2023 05:10:24 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Heng Qi <hengqi@linux.alibaba.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: Re: [PATCH net 1/2] virtio_net: fix page_to_skb() miss headroom
-Message-ID: <20230314051010-mutt-send-email-mst@kernel.org>
-References: <20230314083901.40521-1-xuanzhuo@linux.alibaba.com>
- <20230314083901.40521-2-xuanzhuo@linux.alibaba.com>
+        with ESMTP id S229695AbjCNJKr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 05:10:47 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47290900AA;
+        Tue, 14 Mar 2023 02:10:45 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id E27C46603009;
+        Tue, 14 Mar 2023 09:10:42 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1678785043;
+        bh=AzTZ2BxRqFcOVG5EJd3ZGhH//IxUcNMPjjCqWCgf6WE=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=i/P5Hv4fP2IZJuSCLEuiBPqWAz50uyoogFx4cq82uKIecGouuM3YtN5wDFsJfQOEH
+         SN4ut40lCy1r5JPWnhOoDcTahEcqOuXocLX4hLeIfwn/MZXmqV0S+oBLPnw5iRbSCP
+         ViY4HkuoWcpPN0zUkch5ZjfoSNDkNrPosJVtGHOdbxqLtOM1lXBJ8Qqyc4sblnRcd/
+         Ha0CrFITv1p0WLj09uTOS9W7Q0/ptNx2kSnmq570b6dvAjzOyeoqmRQCfJVaAZiiDA
+         SJOR10ZnNi6fKqwpj1hpLok8CPyT/m3p9dUs4Kc4eFxFh4SqwXE7NbDpx5zhtmG9qS
+         WzCTNwwiXULlA==
+Message-ID: <bf221312-ce85-8696-8b5a-f5b78206bd07@collabora.com>
+Date:   Tue, 14 Mar 2023 10:10:40 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230314083901.40521-2-xuanzhuo@linux.alibaba.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH v6 03/19] clk: mediatek: Add MT8188 topckgen clock support
+Content-Language: en-US
+To:     "Garmin.Chang" <Garmin.Chang@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>
+Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-clk@vger.kernel.org, netdev@vger.kernel.org
+References: <20230309135419.30159-1-Garmin.Chang@mediatek.com>
+ <20230309135419.30159-4-Garmin.Chang@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20230309135419.30159-4-Garmin.Chang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 14, 2023 at 04:39:00PM +0800, Xuan Zhuo wrote:
-> Because headroom is not passed to page_to_skb(), this causes the shinfo
-> exceeds the range. Then the frags of shinfo are changed by other process.
+Il 09/03/23 14:54, Garmin.Chang ha scritto:
+> Add MT8188 topckgen clock controller which provides muxes, dividers
+> to handle variety clock selection in other IP blocks.
 > 
-> [  157.724634] stack segment: 0000 [#1] PREEMPT SMP NOPTI
-> [  157.725358] CPU: 3 PID: 679 Comm: xdp_pass_user_f Tainted: G            E      6.2.0+ #150
-> [  157.726401] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/4
-> [  157.727820] RIP: 0010:skb_release_data+0x11b/0x180
-> [  157.728449] Code: 44 24 02 48 83 c3 01 39 d8 7e be 48 89 d8 48 c1 e0 04 41 80 7d 7e 00 49 8b 6c 04 30 79 0c 48 89 ef e8 89 b
-> [  157.730751] RSP: 0018:ffffc90000178b48 EFLAGS: 00010202
-> [  157.731383] RAX: 0000000000000010 RBX: 0000000000000001 RCX: 0000000000000000
-> [  157.732270] RDX: 0000000000000000 RSI: 0000000000000002 RDI: ffff888100dd0b00
-> [  157.733117] RBP: 5d5d76010f6e2408 R08: ffff888100dd0b2c R09: 0000000000000000
-> [  157.734013] R10: ffffffff82effd30 R11: 000000000000a14e R12: ffff88810981ffc0
-> [  157.734904] R13: ffff888100dd0b00 R14: 0000000000000002 R15: 0000000000002310
-> [  157.735793] FS:  00007f06121d9740(0000) GS:ffff88842fcc0000(0000) knlGS:0000000000000000
-> [  157.736794] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  157.737522] CR2: 00007ffd9a56c084 CR3: 0000000104bda001 CR4: 0000000000770ee0
-> [  157.738420] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [  157.739283] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> [  157.740146] PKRU: 55555554
-> [  157.740502] Call Trace:
-> [  157.740843]  <IRQ>
-> [  157.741117]  kfree_skb_reason+0x50/0x120
-> [  157.741613]  __udp4_lib_rcv+0x52b/0x5e0
-> [  157.742132]  ip_protocol_deliver_rcu+0xaf/0x190
-> [  157.742715]  ip_local_deliver_finish+0x77/0xa0
-> [  157.743280]  ip_sublist_rcv_finish+0x80/0x90
-> [  157.743834]  ip_list_rcv_finish.constprop.0+0x16f/0x190
-> [  157.744493]  ip_list_rcv+0x126/0x140
-> [  157.744952]  __netif_receive_skb_list_core+0x29b/0x2c0
-> [  157.745602]  __netif_receive_skb_list+0xed/0x160
-> [  157.746190]  ? udp4_gro_receive+0x275/0x350
-> [  157.746732]  netif_receive_skb_list_internal+0xf2/0x1b0
-> [  157.747398]  napi_gro_receive+0xd1/0x210
-> [  157.747911]  virtnet_receive+0x75/0x1c0
-> [  157.748422]  virtnet_poll+0x48/0x1b0
-> [  157.748878]  __napi_poll+0x29/0x1b0
-> [  157.749330]  net_rx_action+0x27a/0x340
-> [  157.749812]  __do_softirq+0xf3/0x2fb
-> [  157.750298]  do_softirq+0xa2/0xd0
-> [  157.750745]  </IRQ>
-> [  157.751563]  <TASK>
-> [  157.752329]  __local_bh_enable_ip+0x6d/0x80
-> [  157.753178]  virtnet_xdp_set+0x482/0x860
-> [  157.754159]  ? __pfx_virtnet_xdp+0x10/0x10
-> [  157.755129]  dev_xdp_install+0xa4/0xe0
-> [  157.756033]  dev_xdp_attach+0x20b/0x5e0
-> [  157.756933]  do_setlink+0x82e/0xc90
-> [  157.757777]  ? __nla_validate_parse+0x12b/0x1e0
-> [  157.758744]  rtnl_setlink+0xd8/0x170
-> [  157.759549]  ? mod_objcg_state+0xcb/0x320
-> [  157.760328]  ? security_capable+0x37/0x60
-> [  157.761209]  ? security_capable+0x37/0x60
-> [  157.762072]  rtnetlink_rcv_msg+0x145/0x3d0
-> [  157.762929]  ? ___slab_alloc+0x327/0x610
-> [  157.763754]  ? __alloc_skb+0x141/0x170
-> [  157.764533]  ? __pfx_rtnetlink_rcv_msg+0x10/0x10
-> [  157.765422]  netlink_rcv_skb+0x58/0x110
-> [  157.766229]  netlink_unicast+0x21f/0x330
-> [  157.766951]  netlink_sendmsg+0x240/0x4a0
-> [  157.767654]  sock_sendmsg+0x93/0xa0
-> [  157.768434]  ? sockfd_lookup_light+0x12/0x70
-> [  157.769245]  __sys_sendto+0xfe/0x170
-> [  157.770079]  ? handle_mm_fault+0xe9/0x2d0
-> [  157.770859]  ? preempt_count_add+0x51/0xa0
-> [  157.771645]  ? up_read+0x3c/0x80
-> [  157.772340]  ? do_user_addr_fault+0x1e9/0x710
-> [  157.773166]  ? kvm_read_and_reset_apf_flags+0x49/0x60
-> [  157.774087]  __x64_sys_sendto+0x29/0x30
-> [  157.774856]  do_syscall_64+0x3c/0x90
-> [  157.775518]  entry_SYSCALL_64_after_hwframe+0x72/0xdc
-> [  157.776382] RIP: 0033:0x7f06122def70
-> 
-> Fixes: 18117a842ab0 ("virtio-net: remove xdp related info from page_to_skb()")
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-
+> Signed-off-by: Garmin.Chang <Garmin.Chang@mediatek.com>
 > ---
->  drivers/net/virtio_net.c | 11 ++++++-----
->  1 file changed, 6 insertions(+), 5 deletions(-)
+>   drivers/clk/mediatek/Makefile              |    2 +-
+>   drivers/clk/mediatek/clk-mt8188-topckgen.c | 1347 ++++++++++++++++++++
+>   2 files changed, 1348 insertions(+), 1 deletion(-)
+>   create mode 100644 drivers/clk/mediatek/clk-mt8188-topckgen.c
 > 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 1a309cfb4976..8ecf7a341d54 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -446,7 +446,8 @@ static unsigned int mergeable_ctx_to_truesize(void *mrg_ctx)
->  static struct sk_buff *page_to_skb(struct virtnet_info *vi,
->  				   struct receive_queue *rq,
->  				   struct page *page, unsigned int offset,
-> -				   unsigned int len, unsigned int truesize)
-> +				   unsigned int len, unsigned int truesize,
-> +				   unsigned int headroom)
->  {
->  	struct sk_buff *skb;
->  	struct virtio_net_hdr_mrg_rxbuf *hdr;
-> @@ -464,11 +465,11 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
->  	else
->  		hdr_padded_len = sizeof(struct padded_vnet_hdr);
->  
-> -	buf = p;
-> +	buf = p - headroom;
->  	len -= hdr_len;
->  	offset += hdr_padded_len;
->  	p += hdr_padded_len;
-> -	tailroom = truesize - hdr_padded_len - len;
-> +	tailroom = truesize - headroom  - hdr_padded_len - len;
->  
->  	shinfo_size = SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
->  
-> @@ -1009,7 +1010,7 @@ static struct sk_buff *receive_big(struct net_device *dev,
->  {
->  	struct page *page = buf;
->  	struct sk_buff *skb =
-> -		page_to_skb(vi, rq, page, 0, len, PAGE_SIZE);
-> +		page_to_skb(vi, rq, page, 0, len, PAGE_SIZE, 0);
->  
->  	stats->bytes += len - vi->hdr_len;
->  	if (unlikely(!skb))
-> @@ -1332,7 +1333,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->  	rcu_read_unlock();
->  
->  skip_xdp:
-> -	head_skb = page_to_skb(vi, rq, page, offset, len, truesize);
-> +	head_skb = page_to_skb(vi, rq, page, offset, len, truesize, headroom);
->  	curr_skb = head_skb;
->  
->  	if (unlikely(!curr_skb))
-> -- 
-> 2.32.0.3.g01195cf9f
+> diff --git a/drivers/clk/mediatek/Makefile b/drivers/clk/mediatek/Makefile
+> index 1f822fcf6084..d845bf7308c3 100644
+> --- a/drivers/clk/mediatek/Makefile
+> +++ b/drivers/clk/mediatek/Makefile
+> @@ -91,7 +91,7 @@ obj-$(CONFIG_COMMON_CLK_MT8186) += clk-mt8186-mcu.o clk-mt8186-topckgen.o clk-mt
+>   				   clk-mt8186-mfg.o clk-mt8186-mm.o clk-mt8186-wpe.o \
+>   				   clk-mt8186-img.o clk-mt8186-vdec.o clk-mt8186-venc.o \
+>   				   clk-mt8186-cam.o clk-mt8186-mdp.o clk-mt8186-ipe.o
+> -obj-$(CONFIG_COMMON_CLK_MT8188) += clk-mt8188-apmixedsys.o
+> +obj-$(CONFIG_COMMON_CLK_MT8188) += clk-mt8188-apmixedsys.o clk-mt8188-topckgen.o
+>   obj-$(CONFIG_COMMON_CLK_MT8192) += clk-mt8192.o
+>   obj-$(CONFIG_COMMON_CLK_MT8192_AUDSYS) += clk-mt8192-aud.o
+>   obj-$(CONFIG_COMMON_CLK_MT8192_CAMSYS) += clk-mt8192-cam.o
+> diff --git a/drivers/clk/mediatek/clk-mt8188-topckgen.c b/drivers/clk/mediatek/clk-mt8188-topckgen.c
+> new file mode 100644
+> index 000000000000..b3f9577de081
+> --- /dev/null
+> +++ b/drivers/clk/mediatek/clk-mt8188-topckgen.c
+> @@ -0,0 +1,1347 @@
 
+..snip..
+
+> +
+> +static const struct of_device_id of_match_clk_mt8188_topck[] = {
+> +	{ .compatible = "mediatek,mt8188-topckgen", },
+
+	{ .compatible = "mediatek,mt8188-topckgen" },
+	{ /* sentinel */ }
+
+> +	{}
+> +};
+> +
+> +/* Register mux notifier for MFG mux */
+> +static int clk_mt8188_reg_mfg_mux_notifier(struct device *dev, struct clk *clk)
+> +{
+> +	struct mtk_mux_nb *mfg_mux_nb;
+> +
+> +	mfg_mux_nb = devm_kzalloc(dev, sizeof(*mfg_mux_nb), GFP_KERNEL);
+> +	if (!mfg_mux_nb)
+> +		return -ENOMEM;
+> +
+> +	mfg_mux_nb->ops = &clk_mux_ops;
+> +	mfg_mux_nb->bypass_index = 0; /* Bypass to TOP_MFG_CORE_TMP */
+> +
+> +	return devm_mtk_clk_mux_notifier_register(dev, clk, mfg_mux_nb);
+> +}
+> +
+> +static int clk_mt8188_topck_probe(struct platform_device *pdev)
+> +{
+> +	struct clk_hw_onecell_data *top_clk_data;
+> +	struct device_node *node = pdev->dev.of_node;
+> +	struct clk_hw *hw;
+> +	int r;
+> +	void __iomem *base;
+> +
+> +	top_clk_data = mtk_alloc_clk_data(CLK_TOP_NR_CLK);
+> +	if (!top_clk_data)
+> +		return -ENOMEM;
+> +
+> +	base = devm_platform_ioremap_resource(pdev, 0);
+> +	if (IS_ERR(base)) {
+> +		r = PTR_ERR(base);
+> +		goto free_top_data;
+> +	}
+> +
+> +	r = mtk_clk_register_fixed_clks(top_fixed_clks, ARRAY_SIZE(top_fixed_clks),
+> +					top_clk_data);
+> +	if (r)
+> +		goto free_top_data;
+> +
+> +	r = mtk_clk_register_factors(top_divs, ARRAY_SIZE(top_divs), top_clk_data);
+> +	if (r)
+> +		goto unregister_fixed_clks;
+> +
+> +	r = mtk_clk_register_muxes(&pdev->dev, top_mtk_muxes,
+> +				   ARRAY_SIZE(top_mtk_muxes), node,
+> +				   &mt8188_clk_lock, top_clk_data);
+> +	if (r)
+> +		goto unregister_factors;
+> +
+> +	hw = devm_clk_hw_register_mux(&pdev->dev, "mfg_ck_fast_ref", mfg_fast_ref_parents,
+> +				      ARRAY_SIZE(mfg_fast_ref_parents), CLK_SET_RATE_PARENT,
+> +				      (base + 0x250), 8, 1, 0, &mt8188_clk_lock);
+
+If you make this a mtk mux and put it in top_mtk_muxes, you can migrate topckgen to
+the simple_probe() mechanism, greatly reducing the size of this file.
+
+> +	if (IS_ERR(hw)) {
+> +		r = PTR_ERR(hw);
+> +		goto unregister_muxes;
+> +	}
+> +	top_clk_data->hws[CLK_TOP_MFG_CK_FAST_REF] = hw;
+> +
+> +	r = clk_mt8188_reg_mfg_mux_notifier(&pdev->dev,
+> +					    top_clk_data->hws[CLK_TOP_MFG_CK_FAST_REF]->clk);
+> +	if (r)
+> +		goto unregister_muxes;
+> +
+> +	r = mtk_clk_register_composites(&pdev->dev, top_adj_divs,
+> +					ARRAY_SIZE(top_adj_divs), base,
+> +					&mt8188_clk_lock, top_clk_data);
+> +	if (r)
+> +		goto unregister_muxes;
+> +
+> +	r = mtk_clk_register_gates(&pdev->dev, node, top_clks,
+> +				   ARRAY_SIZE(top_clks), top_clk_data);
+> +	if (r)
+> +		goto unregister_composite_divs;
+> +
+> +	r = of_clk_add_hw_provider(node, of_clk_hw_onecell_get, top_clk_data);
+> +	if (r)
+> +		goto unregister_gates;
+> +
+> +	platform_set_drvdata(pdev, top_clk_data);
+> +
+> +	return r;
+> +
+> +unregister_gates:
+> +	mtk_clk_unregister_gates(top_clks, ARRAY_SIZE(top_clks), top_clk_data);
+> +unregister_composite_divs:
+> +	mtk_clk_unregister_composites(top_adj_divs, ARRAY_SIZE(top_adj_divs), top_clk_data);
+> +unregister_muxes:
+> +	mtk_clk_unregister_muxes(top_mtk_muxes, ARRAY_SIZE(top_mtk_muxes), top_clk_data);
+> +unregister_factors:
+> +	mtk_clk_unregister_factors(top_divs, ARRAY_SIZE(top_divs), top_clk_data);
+> +unregister_fixed_clks:
+> +	mtk_clk_unregister_fixed_clks(top_fixed_clks, ARRAY_SIZE(top_fixed_clks), top_clk_data);
+> +free_top_data:
+> +	mtk_free_clk_data(top_clk_data);
+> +	return r;
+> +}
+> +
+> +static int clk_mt8188_topck_remove(struct platform_device *pdev)
+> +{
+> +	struct clk_hw_onecell_data *top_clk_data = platform_get_drvdata(pdev);
+> +	struct device_node *node = pdev->dev.of_node;
+> +
+> +	of_clk_del_provider(node);
+> +	mtk_clk_unregister_gates(top_clks, ARRAY_SIZE(top_clks), top_clk_data);
+> +	mtk_clk_unregister_composites(top_adj_divs, ARRAY_SIZE(top_adj_divs), top_clk_data);
+> +	mtk_clk_unregister_muxes(top_mtk_muxes, ARRAY_SIZE(top_mtk_muxes), top_clk_data);
+> +	mtk_clk_unregister_factors(top_divs, ARRAY_SIZE(top_divs), top_clk_data);
+> +	mtk_clk_unregister_fixed_clks(top_fixed_clks, ARRAY_SIZE(top_fixed_clks), top_clk_data);
+> +	mtk_free_clk_data(top_clk_data);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct platform_driver clk_mt8188_topck_drv = {
+> +	.probe = clk_mt8188_topck_probe,
+> +	.remove = clk_mt8188_topck_remove,
+> +	.driver = {
+> +		.name = "clk-mt8188-topck",
+> +		.of_match_table = of_match_clk_mt8188_topck,
+> +	},
+> +};
+> +builtin_platform_driver(clk_mt8188_topck_drv);
+
+module_platform_driver....
+MODULE_LICENSE....
