@@ -2,66 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 797F46B9FD3
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 20:34:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 152AD6B9FD4
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 20:35:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230034AbjCNTeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 15:34:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49116 "EHLO
+        id S230109AbjCNTfd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 15:35:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229588AbjCNTeF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 15:34:05 -0400
-Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00B812BEC
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 12:34:01 -0700 (PDT)
-Received: by mail-ot1-x32e.google.com with SMTP id f17-20020a9d7b51000000b00697349ab7e7so1575851oto.9
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 12:34:01 -0700 (PDT)
+        with ESMTP id S229588AbjCNTfc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 15:35:32 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C631FCC;
+        Tue, 14 Mar 2023 12:35:30 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id r29so7363397wra.13;
+        Tue, 14 Mar 2023 12:35:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112; t=1678822441;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=WOe7m4NU05+Z2u9NDEwoMmG7iBcZvQG5YsZ5QcZFJKw=;
-        b=wrFtihnklo2YA7omKLVq3xWfQDQGUuqlojH+uFkKshiBDl9W0XTO2pcis+JLBiYps+
-         7aw7UWFM5bIQ59dj2XBsvHKpdkGVXEqHDsYyrLkMid5dEnE8MddFWfewVb/OkyRBr6h0
-         7rEA8GNRvkZv6O3j8R42o+vl5wjYs2Ns7LUT+WpqPhzbIRKtPTNBqbaJCk+ArQ6g1h1H
-         jfb9uZmFumjSY4X7SBgFABOgXBp1H+1YNxzyonxmsbshlSeBUUxlDOuq1+fDsUqEo85u
-         q7dEKhQ6mKGtAXWODu1vlPe2VPO+2GWQ/+R60V4SVU+pn3rYp2aHJ5aqJfkVil6uwJMs
-         29Aw==
+        d=gmail.com; s=20210112; t=1678822529;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=zS1flcInkmMramIBRR4TAKEbNSAkwEp9UUvBUe9dmH4=;
+        b=ZqVfV6MCJk0DA1uVT2K2wlc9r/keCeXww9Xg1gEv/9GLp6Z+PYWAglfjuDqLzm+37f
+         7/f4FykzXifCkM6baIHYbAoNy4GAP8GybDyQNDhueld4bhztRf677U4iSrsCN9gOyHhn
+         vYLtTmbLqzP06wfiNdlTLK9X9f0OMsKSFNGQ/0yjDDQ6Ub0OTY9XY99mNsRyiGXh3Zqg
+         fZTsx7X45ZO2f2V4DU9H2eB/AWwL5zj+8cIe9T+heC/srRSvCo13lxDZnHFYNwkOMxuc
+         HCnAO+JbGDGK0Ae82ygRz9RKpvyFt44sfMENI5TcyYAFxBtPfWLsh16Y5f7GjF6QWb7E
+         +n9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678822441;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=WOe7m4NU05+Z2u9NDEwoMmG7iBcZvQG5YsZ5QcZFJKw=;
-        b=Q80I79TXwCCqN7yWmnbyJn/gyxFExP+45B/gX8n42iIa/ACsJfECF9yedXzoIxJ/vM
-         6HGtwcPjcIs0m2f6dJ6P1LYWH1ZE09WcGzBjJgeCxPdKrQsIbyOCiTkgmUsmmPDB2HkY
-         IvmMYd4L4YSdhSZYwo3Fnq6C49BtxXzIsLLwIMGc/icJ0TnCMBAUZmPl5GqtSyxaW8VQ
-         EOEI0BziJTxhEpzjwxxcfK+ZenxJzSEq47VDOVgIZbu2k/3yGD+5NSNsWvBT4zIPrvHX
-         9aHDeGRN+uB2L3pXQNpQOxQba74Y1C3zyfIgH3VYzZ+tyl5RUd3CAV3XlZSXLSPDNzXr
-         RtNw==
-X-Gm-Message-State: AO0yUKXfyPnYel7L47ygjThCgy5iuuSqzBO1kvO/zqp6orExEbjntqDo
-        U+G93YJZvzS/KR1SwSFPeniGP8AdFownZCxTIHk=
-X-Google-Smtp-Source: AK7set8H5Guy54AocLvDj7yS8tKFyNNeyd5LqSJ2W7/oVIhO31lG2A2aHHmbHHQZ/Yx4dR6XF9m5iw==
-X-Received: by 2002:a9d:729c:0:b0:693:cf97:c103 with SMTP id t28-20020a9d729c000000b00693cf97c103mr18041174otj.37.1678822440952;
-        Tue, 14 Mar 2023 12:34:00 -0700 (PDT)
-Received: from localhost.localdomain ([2804:14d:5c5e:4698:95f9:b8d9:4b9:5297])
-        by smtp.gmail.com with ESMTPSA id l10-20020a4a434a000000b00525240c6149sm1399231ooj.31.2023.03.14.12.33.57
+        d=1e100.net; s=20210112; t=1678822529;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=zS1flcInkmMramIBRR4TAKEbNSAkwEp9UUvBUe9dmH4=;
+        b=TwozVYNk53hsAydVqDzY1CL7ECbeXeabtcd51J9OCiSOM5cZUJjwnZW0R8G+AxLV5j
+         fiS6v7gG+lRZWwkNqX5j9Cukta7rHEvQ7WWlWzsVMo00+Px5PlCG3vJMzOY84J5CZvnU
+         yOhccmypxzOw6kZp4MZXEyNxNPz1ZmgmD97JM/ke7Jr7COSkNyPs06wSkWt6QK/XJyHx
+         40Jp/3FuushxPIa0ktvEmINGfWgksJfzLefnnHw8qYFvXn8elLAmhjy+P8SO9KrY8N77
+         WYiY7+ad8SNd7RXE02zglaGODt4gcR10CHQTVp8GWa4sjf2YcJUu6QCzyvkfaT/Cj59y
+         w4zg==
+X-Gm-Message-State: AO0yUKVvAXU5/3ZeXhxN/Pft7gi6+YekktQN+Aj5Kq+A9TPSpgJe18mO
+        qmIL2xynOBQNne94/68lDJE=
+X-Google-Smtp-Source: AK7set8RYPxrkYx7nyALJIHo7Vz9mp+d3ixpEB1o9lOAdHXeQTqfKv9SCLip263TawEJSTju/gduyg==
+X-Received: by 2002:a5d:68d1:0:b0:2ce:a7a7:b8b4 with SMTP id p17-20020a5d68d1000000b002cea7a7b8b4mr150996wrw.35.1678822529261;
+        Tue, 14 Mar 2023 12:35:29 -0700 (PDT)
+Received: from ?IPv6:2a02:168:6806:0:5862:40de:7045:5e1b? ([2a02:168:6806:0:5862:40de:7045:5e1b])
+        by smtp.gmail.com with ESMTPSA id f2-20020a0560001b0200b002c57384dfe0sm2846569wrz.113.2023.03.14.12.35.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Mar 2023 12:34:00 -0700 (PDT)
-From:   Pedro Tammela <pctammela@mojatatu.com>
-To:     netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, Pedro Tammela <pctammela@mojatatu.com>,
-        Hangbin Liu <haliu@redhat.com>
-Subject: [PATCH net-next] net/sched: act_api: use the correct TCA_ACT attributes in dump
-Date:   Tue, 14 Mar 2023 16:33:21 -0300
-Message-Id: <20230314193321.554475-1-pctammela@mojatatu.com>
-X-Mailer: git-send-email 2.34.1
+        Tue, 14 Mar 2023 12:35:29 -0700 (PDT)
+Message-ID: <ed91b3db532bfe7131635990acddd82d0a276640.camel@gmail.com>
+Subject: Re: [PATCH] net: dsa: mv88e6xxx: don't dispose of Global2 IRQ
+ mappings from mdiobus code
+From:   Klaus Kudielka <klaus.kudielka@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Date:   Tue, 14 Mar 2023 20:35:28 +0100
+In-Reply-To: <20230314182659.63686-2-klaus.kudielka@gmail.com>
+References: <20230314182659.63686-1-klaus.kudielka@gmail.com>
+         <20230314182659.63686-2-klaus.kudielka@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4-1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,47 +81,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-3 places in the act api code are using 'TCA_' definitions where they should be using
-'TCA_ACT_', which is confusing for the reader, although functionaly wise they are equivalent.
+This should have been [PATCH net-next v3 1/4] in the series
+"net: dsa: mv88e6xxx: accelerate C45 scan".
 
-Cc: Hangbin Liu <haliu@redhat.com>
-Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
----
- net/sched/act_api.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Lore *does* recognize it as part of the series, put patchwork doesn't.
+Sorry for the mistake, and please advise if I should resubmit a v4
+series.
 
-diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-index 34c508675041..612b40bf6b0f 100644
---- a/net/sched/act_api.c
-+++ b/net/sched/act_api.c
-@@ -453,7 +453,7 @@ static size_t tcf_action_shared_attrs_size(const struct tc_action *act)
- 		+ nla_total_size_64bit(sizeof(u64))
- 		/* TCA_STATS_QUEUE */
- 		+ nla_total_size_64bit(sizeof(struct gnet_stats_queue))
--		+ nla_total_size(0) /* TCA_OPTIONS nested */
-+		+ nla_total_size(0) /* TCA_ACT_OPTIONS nested */
- 		+ nla_total_size(sizeof(struct tcf_t)); /* TCA_GACT_TM */
- }
- 
-@@ -480,7 +480,7 @@ tcf_action_dump_terse(struct sk_buff *skb, struct tc_action *a, bool from_act)
- 	unsigned char *b = skb_tail_pointer(skb);
- 	struct tc_cookie *cookie;
- 
--	if (nla_put_string(skb, TCA_KIND, a->ops->kind))
-+	if (nla_put_string(skb, TCA_ACT_KIND, a->ops->kind))
- 		goto nla_put_failure;
- 	if (tcf_action_copy_stats(skb, a, 0))
- 		goto nla_put_failure;
-@@ -1189,7 +1189,7 @@ tcf_action_dump_1(struct sk_buff *skb, struct tc_action *a, int bind, int ref)
- 	if (nla_put_u32(skb, TCA_ACT_IN_HW_COUNT, a->in_hw_count))
- 		goto nla_put_failure;
- 
--	nest = nla_nest_start_noflag(skb, TCA_OPTIONS);
-+	nest = nla_nest_start_noflag(skb, TCA_ACT_OPTIONS);
- 	if (nest == NULL)
- 		goto nla_put_failure;
- 	err = tcf_action_dump_old(skb, a, bind, ref);
--- 
-2.34.1
-
+Klaus
