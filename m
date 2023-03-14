@@ -2,91 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1BA06B8B60
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 07:40:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DA406B8B94
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 07:58:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229932AbjCNGkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 02:40:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55244 "EHLO
+        id S230039AbjCNG6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 02:58:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229851AbjCNGkU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 02:40:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F1E951C8A;
-        Mon, 13 Mar 2023 23:40:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E76DE615CD;
-        Tue, 14 Mar 2023 06:40:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4F6DEC4339B;
-        Tue, 14 Mar 2023 06:40:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678776018;
-        bh=S/evt7zjetgiN2BMM4mSEN3WplNPDs/OsGnIu1y3LdU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Yrp74YoCrOdHxh2xAg9cyOF46rMdOl4fYJt5ANGwf+H7qTPeCkjLDl0RHTaWfbwfE
-         KmV5YGl8U6gutFh30slM6HmlXHnefJ5si8D4lOqTuhpNePxlDMKka4erSKZawlyZCY
-         bUcTp5UoDn5QdlFUaa9zk0CKTj4/tiEoeTz6lM+RAutIDCPmsIf2np2c5AAicAdcbR
-         7pIgPZTWtR9HxZK6nXoPB7gsQevhZPpahVuYAfgMvNl15IszfnxK6b8Cqo7kLbY0a8
-         9KuAnOF+3CzfHlV7M2lK3BsRLSRJcFAY+CchYwnOrI9w2Ho+CkxgrViCvDPqnPK+Pg
-         hlaD3jv0ME1wA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 317CEE66CBB;
-        Tue, 14 Mar 2023 06:40:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229468AbjCNG6n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 02:58:43 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 318175616C
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 23:58:42 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id ce7so9064083pfb.9
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 23:58:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678777121;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=6h3vj+sRxRiXdxfLFzJp8oSMU2miRQBhSNGDwjqvmhM=;
+        b=iEdO7X+mTxHUmrHGOINo0+5eQ0EXjv5fzXeS0DMLede/joNLcJO95AY0Byr5VvwVtM
+         dzyAHcqdoDcPf5daqEYTfGaeaHIqdRubuqQ+hfiB0EFUVCqko3b/bMAZFy2oeVsTSMzK
+         aTYkuc8CssOOJ/lOJf5OjxDgZBdutJcthImXTeNUt5MeT75XBsZoZrhuI0+JxJ67MjLK
+         R1E3NZOQJN6XQ2s1SBDIg2D416lYRx5R2uiGkEcrsMzO9GiYJ7VPVZpzuyOaCAHrZdEQ
+         CW1HqsiYAiSIx0kAdDSIFGnrm3+GVRufC4SIsyqspptD2UaGWT/wdFVdGpeyz5WD+JK7
+         Uxrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678777121;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=6h3vj+sRxRiXdxfLFzJp8oSMU2miRQBhSNGDwjqvmhM=;
+        b=noUs9/6EX7K2+glwccCmD9kIWLDm0RZ0gUXL50OpVvdFA53Yd7E1KShMNW9NvxfkEJ
+         z6/pv0yDIlw1pT+TiAj7CeDOb1+qIJboTDvKULcQVn3mir78m+aYQIfzlEN91OxwsMQt
+         XYiQjPtkoeb5Tr0gz/0uNHaAlbJV60REsZS78IoBiuSFzGF357nlNuB9IF2HvbDmFJAO
+         SbfhkaoKOccKNqMqcsqarcGWzc/q6NXmQKWhc0BDJwUeHNFmuYJQ9ylnfLfPOCbX65m2
+         6A8QXbf3vfc8XXCkWAOi8uB2DDfzsUGzohB1EYVkyjzSqs1iPK1PuJrAYUwi4UbzuFyr
+         9Yng==
+X-Gm-Message-State: AO0yUKUzpmPn1q15YEmho9CmaQkSomuBu/E3Cv7c4zhnp1+lmSUbMmu/
+        37s5eJ0skljKbbShFRFtfXvy/jCjUnOb8spT
+X-Google-Smtp-Source: AK7set/SAFluwUx1w2jKGZYNnxJQ+Nxizo4ROw4kTfcxkYaus45MThRHhOlAQLtNRyCE4fppAaKqOg==
+X-Received: by 2002:aa7:9607:0:b0:5e4:f700:f876 with SMTP id q7-20020aa79607000000b005e4f700f876mr31994107pfg.28.1678777121044;
+        Mon, 13 Mar 2023 23:58:41 -0700 (PDT)
+Received: from localhost.localdomain ([8.218.113.75])
+        by smtp.gmail.com with ESMTPSA id j20-20020a62b614000000b005dae7d1b61asm808291pff.154.2023.03.13.23.58.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Mar 2023 23:58:40 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Pedro Tammela <pctammela@mojatatu.com>,
+        Marcelo Leitner <mleitner@redhat.com>,
+        Phil Sutter <psutter@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH net 0/2] net/sched: fix parsing of TCA_EXT_WARN_MSG for tc action
+Date:   Tue, 14 Mar 2023 14:58:00 +0800
+Message-Id: <20230314065802.1532741-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next 0/3] bpf: Allow helpers access ptr_to_btf_id.
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167877601819.27484.6120031814046560581.git-patchwork-notify@kernel.org>
-Date:   Tue, 14 Mar 2023 06:40:18 +0000
-References: <20230313235845.61029-1-alexei.starovoitov@gmail.com>
-In-Reply-To: <20230313235845.61029-1-alexei.starovoitov@gmail.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     davem@davemloft.net, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@kernel.org, void@manifault.com, davemarchevsky@meta.com,
-        tj@kernel.org, memxor@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, kernel-team@fb.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+In my previous commit 0349b8779cc9 ("sched: add new attr TCA_EXT_WARN_MSG
+to report tc extact message") I didn't notice the tc action use different
+enum with filter. So we can't use TCA_EXT_WARN_MSG directly for tc action.
 
-This series was applied to bpf/bpf-next.git (master)
-by Martin KaFai Lau <martin.lau@kernel.org>:
+Let's rever the previous fix 923b2e30dc9c ("net/sched: act_api: move
+TCA_EXT_WARN_MSG to the correct hierarchy") and add a new
+TCA_ACT_EXT_WARN_MSG for tc action specifically.
 
-On Mon, 13 Mar 2023 16:58:42 -0700 you wrote:
-> From: Alexei Starovoitov <ast@kernel.org>
-> 
-> Allow code like:
-> bpf_strncmp(task->comm, 16, "foo");
-> 
-> Alexei Starovoitov (3):
->   bpf: Fix bpf_strncmp proto.
->   bpf: Allow helpers access trusted PTR_TO_BTF_ID.
->   selftests/bpf: Add various tests to check helper access into
->     ptr_to_btf_id.
-> 
-> [...]
+Here is the tdc test result:
 
-Here is the summary with links:
-  - [bpf-next,1/3] bpf: Fix bpf_strncmp proto.
-    https://git.kernel.org/bpf/bpf-next/c/c9267aa8b794
-  - [bpf-next,2/3] bpf: Allow helpers access trusted PTR_TO_BTF_ID.
-    https://git.kernel.org/bpf/bpf-next/c/3e30be4288b3
-  - [bpf-next,3/3] selftests/bpf: Add various tests to check helper access into ptr_to_btf_id.
-    https://git.kernel.org/bpf/bpf-next/c/f25fd6088216
+1..1119
+ok 1 d959 - Add cBPF action with valid bytecode
+ok 2 f84a - Add cBPF action with invalid bytecode
+ok 3 e939 - Add eBPF action with valid object-file
+ok 4 282d - Add eBPF action with invalid object-file
+ok 5 d819 - Replace cBPF bytecode and action control
+ok 6 6ae3 - Delete cBPF action
+ok 7 3e0d - List cBPF actions
+ok 8 55ce - Flush BPF actions
+ok 9 ccc3 - Add cBPF action with duplicate index
+ok 10 89c7 - Add cBPF action with invalid index
+[...]
+ok 1115 2348 - Show TBF class
+ok 1116 84a0 - Create TEQL with default setting
+ok 1117 7734 - Create TEQL with multiple device
+ok 1118 34a9 - Delete TEQL with valid handle
+ok 1119 6289 - Show TEQL stats
 
-You are awesome, thank you!
+Hangbin Liu (2):
+  Revert "net/sched: act_api: move TCA_EXT_WARN_MSG to the correct
+    hierarchy"
+  net/sched: act_api: add specific EXT_WARN_MSG for tc action
+
+ include/uapi/linux/rtnetlink.h | 1 +
+ net/sched/act_api.c            | 8 ++++----
+ 2 files changed, 5 insertions(+), 4 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.38.1
 
