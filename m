@@ -2,146 +2,246 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 720A06B9368
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 13:17:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 999B26B9356
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 13:17:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231934AbjCNMPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 08:15:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55046 "EHLO
+        id S231391AbjCNMPy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 08:15:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231936AbjCNMOu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 08:14:50 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B8B492BFA;
-        Tue, 14 Mar 2023 05:13:41 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32EC01Os030125;
-        Tue, 14 Mar 2023 12:13:02 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=NpbZpIXcEiB6KX21yJypQYyMIi/8WOWrHa9p5niq72s=;
- b=JTfmETCIN9yZ00k5BBD+1EV9ePih4F0tRF77tXaZwmKHEOrptbD2Idx3ip5xfQ+qC5Jj
- zf1caJvskEjjJhGXDs8JKXLxlnVU0Q8HfN0oiSRDOEukCrDMgV2ScAzs2e2W4GIZXwxI
- JWP5GhWFf+Sfp1kzZBhoBVHWDSxNWSw5FGkdkS/w//uDu38dK+evZIs/Q4C2DVevqvMY
- WLUEWpAnHc1N2zZQa3b9vs1RiYX1ILh3DB9DySoeJ0p3Wje/+pcZyIIRjyTLpooyYbT1
- Qp4oEMb4BiPRNf4eMvyUf8wQFFrme9Ju3xx4t3GiAfWc3WhVCO+mqpaV4vLgXFxBt9J1 xg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3pampuq6tj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Mar 2023 12:13:02 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32EBrksc012319;
-        Tue, 14 Mar 2023 12:13:01 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3pampuq6sh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Mar 2023 12:13:01 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 32DMh3Lc001838;
-        Tue, 14 Mar 2023 12:12:59 GMT
-Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
-        by ppma05fra.de.ibm.com (PPS) with ESMTPS id 3p8h96kscv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Mar 2023 12:12:59 +0000
-Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
-        by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 32ECCuJa28180848
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 14 Mar 2023 12:12:56 GMT
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 839512007C;
-        Tue, 14 Mar 2023 12:12:56 +0000 (GMT)
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id ED6262007A;
-        Tue, 14 Mar 2023 12:12:55 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTP;
-        Tue, 14 Mar 2023 12:12:55 +0000 (GMT)
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     Arnd Bergmann <arnd@arndb.de>, Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Jouni Malinen <j@w1.fi>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v3 37/38] wireless: add HAS_IOPORT dependencies
-Date:   Tue, 14 Mar 2023 13:12:15 +0100
-Message-Id: <20230314121216.413434-38-schnelle@linux.ibm.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20230314121216.413434-1-schnelle@linux.ibm.com>
-References: <20230314121216.413434-1-schnelle@linux.ibm.com>
+        with ESMTP id S231923AbjCNMOs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 08:14:48 -0400
+Received: from smtp-8fae.mail.infomaniak.ch (smtp-8fae.mail.infomaniak.ch [IPv6:2001:1600:4:17::8fae])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5552392BF6
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 05:13:38 -0700 (PDT)
+Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4PbXVj1CTtzMqHvX;
+        Tue, 14 Mar 2023 13:13:33 +0100 (CET)
+Received: from unknown by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4PbXVh3K5Cz2N3h;
+        Tue, 14 Mar 2023 13:13:32 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1678796013;
+        bh=eD541w/nhyfTCwhDfVxQm0+s7udeGjFnzuRYPvIsfSg=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=ePctzh6BpxGGkZoH0fmg1A9RzmKzL65iNL4QHzGN/2p3cONVQdysPhEmR/Lrx1szN
+         QgM6XTxSQMmaTikd0CdUgOBTRrT33VJMv/0mev23vChg4IEWpsmF47yAE8CO0qGwX+
+         syQR5qTiKuhTnvJMO3H+JDa8E3MGT65G5G4bOmnI=
+Message-ID: <59356a12-75cf-32d3-ea76-daafd0788af6@digikod.net>
+Date:   Tue, 14 Mar 2023 13:13:31 +0100
 MIME-Version: 1.0
+User-Agent: 
+Subject: Re: [PATCH v9 08/12] landlock: Add network rules and TCP hooks
+ support
+Content-Language: en-US
+To:     "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+        artem.kuzin@huawei.com
+References: <20230116085818.165539-1-konstantin.meskhidze@huawei.com>
+ <20230116085818.165539-9-konstantin.meskhidze@huawei.com>
+ <5198f456-91f5-5c65-76c2-45b82ccb05eb@digikod.net>
+ <7598f777-8458-0984-b058-2026d8163d3a@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+In-Reply-To: <7598f777-8458-0984-b058-2026d8163d3a@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: quXzx21nxib29bozcGJ-SNj6I_hm2fkT
-X-Proofpoint-GUID: iw3ZarVQfr8KU1Y5qun1Gw0t6IIDWNjz
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-14_04,2023-03-14_02,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- malwarescore=0 impostorscore=0 suspectscore=0 mlxscore=0 clxscore=1011
- priorityscore=1501 bulkscore=0 mlxlogscore=926 spamscore=0 adultscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2303140103
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Infomaniak-Routing: alpha
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
-not being declared. We thus need to add HAS_IOPORT as dependency for
-those drivers using them.
 
-Co-developed-by: Arnd Bergmann <arnd@kernel.org>
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
----
- drivers/net/wireless/atmel/Kconfig           | 2 +-
- drivers/net/wireless/intersil/hostap/Kconfig | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+On 13/03/2023 10:33, Konstantin Meskhidze (A) wrote:
+> 
+> 
+> 2/10/2023 8:39 PM, Mickaël Salaün пишет:
+>>
+>> On 16/01/2023 09:58, Konstantin Meskhidze wrote:
+>>> This commit adds network rules support in the ruleset management
+>>> helpers and the landlock_create_ruleset syscall.
+>>> Refactor user space API to support network actions. Add new network
+>>> access flags, network rule and network attributes. Increment Landlock
+>>> ABI version. Expand access_masks_t to u32 to be sure network access
+>>> rights can be stored. Implement socket_bind() and socket_connect()
+>>> LSM hooks, which enable to restrict TCP socket binding and connection
+>>> to specific ports.
+>>>
+>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>>> ---
+>>>
+>>> Changes since v8:
+>>> * Squashes commits.
+>>> * Refactors commit message.
+>>> * Changes UAPI port field to __be16.
+>>> * Changes logic of bind/connect hooks with AF_UNSPEC families.
+>>> * Adds address length checking.
+>>> * Minor fixes.
+>>>
+>>> Changes since v7:
+>>> * Squashes commits.
+>>> * Increments ABI version to 4.
+>>> * Refactors commit message.
+>>> * Minor fixes.
+>>>
+>>> Changes since v6:
+>>> * Renames landlock_set_net_access_mask() to landlock_add_net_access_mask()
+>>>     because it OR values.
+>>> * Makes landlock_add_net_access_mask() more resilient incorrect values.
+>>> * Refactors landlock_get_net_access_mask().
+>>> * Renames LANDLOCK_MASK_SHIFT_NET to LANDLOCK_SHIFT_ACCESS_NET and use
+>>>     LANDLOCK_NUM_ACCESS_FS as value.
+>>> * Updates access_masks_t to u32 to support network access actions.
+>>> * Refactors landlock internal functions to support network actions with
+>>>     landlock_key/key_type/id types.
+>>>
+>>> Changes since v5:
+>>> * Gets rid of partial revert from landlock_add_rule
+>>> syscall.
+>>> * Formats code with clang-format-14.
+>>>
+>>> Changes since v4:
+>>> * Refactors landlock_create_ruleset() - splits ruleset and
+>>> masks checks.
+>>> * Refactors landlock_create_ruleset() and landlock mask
+>>> setters/getters to support two rule types.
+>>> * Refactors landlock_add_rule syscall add_rule_path_beneath
+>>> function by factoring out get_ruleset_from_fd() and
+>>> landlock_put_ruleset().
+>>>
+>>> Changes since v3:
+>>> * Splits commit.
+>>> * Adds network rule support for internal landlock functions.
+>>> * Adds set_mask and get_mask for network.
+>>> * Adds rb_root root_net_port.
+>>
+>> [...]
+>>
+>>> +static int check_socket_access(const struct landlock_ruleset *const domain,
+>>> +			       struct sockaddr *address, __be16 port,
+>>> +			       access_mask_t access_request)
+>>> +{
+>>> +	bool allowed = false;
+>>> +	layer_mask_t layer_masks[LANDLOCK_NUM_ACCESS_NET] = {};
+>>> +	const struct landlock_rule *rule;
+>>> +	access_mask_t handled_access;
+>>> +	const struct landlock_id id = {
+>>> +		.key.data = port,
+>>> +		.type = LANDLOCK_KEY_NET_PORT,
+>>> +	};
+>>> +
+>>> +	if (WARN_ON_ONCE(!domain))
+>>> +		return 0;
+>>> +	if (WARN_ON_ONCE(domain->num_layers < 1))
+>>> +		return -EACCES;
+>>> +
+>>> +	switch (address->sa_family) {
+>>> +	case AF_UNSPEC:
+>>> +		/*
+>>> +		 * Connecting to an address with AF_UNSPEC dissolves the TCP
+>>> +		 * association, which have the same effect as closing the
+>>> +		 * connection while retaining the socket object (i.e., the file
+>>> +		 * descriptor).  As for dropping privileges, closing
+>>> +		 * connections is always allowed.
+>>> +		 */
+>>> +		if (access_request == LANDLOCK_ACCESS_NET_CONNECT_TCP)
+>>> +			return 0;
+>>> +
+>>> +		/*
+>>> +		 * For compatibility reason, accept AF_UNSPEC for bind
+>>> +		 * accesses (mapped to AF_INET) only if the address is
+>>> +		 * INADDR_ANY (cf. __inet_bind).  Checking the address is
+>>> +		 * required to not wrongfully return -EACCES instead of
+>>> +		 * -EAFNOSUPPORT.
+>>> +		 */
+>>> +		if (access_request == LANDLOCK_ACCESS_NET_BIND_TCP) {
+>>> +			const struct sockaddr_in *const sockaddr =
+>>> +				(struct sockaddr_in *)address;
+>>> +
+>>> +			if (sockaddr->sin_addr.s_addr != htonl(INADDR_ANY))
+>>> +				return -EAFNOSUPPORT;
+>>> +		}
+>>> +
+>>> +		fallthrough;
+>>> +	case AF_INET:
+>>> +#if IS_ENABLED(CONFIG_IPV6)
+>>> +	case AF_INET6:
+>>> +#endif
+>>> +		rule = landlock_find_rule(domain, id);
+>>> +		handled_access = landlock_init_layer_masks(
+>>> +			domain, access_request, &layer_masks,
+>>> +			LANDLOCK_KEY_NET_PORT);
+>>> +		allowed = landlock_unmask_layers(rule, handled_access,
+>>> +						 &layer_masks,
+>>> +						 ARRAY_SIZE(layer_masks));
+>>> +
+>>> +		fallthrough;
+>>
+>> You can remove this fallthrough.
+>>
+>>
+>>> +	}
+>>> +	return allowed ? 0 : -EACCES;
+>>> +}
+>>> +
+>>> +static u16 get_port(const struct sockaddr *const address)
+>>> +{
+>>> +	/* Gets port value in host byte order. */
+>>> +	switch (address->sa_family) {
+>>> +	case AF_UNSPEC:
+>>> +	case AF_INET: {
+>>> +		const struct sockaddr_in *const sockaddr =
+>>> +			(struct sockaddr_in *)address;
+>>> +		return sockaddr->sin_port;
+>>> +	}
+>>> +#if IS_ENABLED(CONFIG_IPV6)
+>>> +	case AF_INET6: {
+>>> +		const struct sockaddr_in6 *const sockaddr_ip6 =
+>>> +			(struct sockaddr_in6 *)address;
+>>> +		return sockaddr_ip6->sin6_port;
+>>> +	}
+>>> +#endif
+>>> +	}
+>>> +	WARN_ON_ONCE(1);
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static int hook_socket_bind(struct socket *sock, struct sockaddr *address,
+>>> +			    int addrlen)
+>>> +{
+>>> +	int ret;
+>>> +	const struct landlock_ruleset *const dom =
+>>> +		landlock_get_current_domain();
+>>
+>> landlock_get_current_domain() should only be called by a
+>> get_current_net_domain() wrapper that checks if the current domain
+>> handles network accesses. See get_current_fs_domain() in patch 2/12.
+> 
+>     Hi Mickaël.
+>     I have question:
+> 
+>     static access_mask_t
+> get_raw_handled_fs_accesses(const struct landlock_ruleset *const domain)
+> {
+> 	access_mask_t access_dom = 0;
+> 	size_t layer_level;
+> 
+> 	for (layer_level = 0; layer_level < domain->num_layers; layer_level++)
+> 		access_dom |=
+> 			landlock_get_raw_fs_access_mask(domain, layer_level);
+> 	return access_dom & LANDLOCK_MASK_ACCESS_FS;
+> }
+> 
+> landlock_get_raw_fs_access_mask() function is already mask by
+> LANDLOCK_MASK_ACCESS_FS. We could get rid of access_dom masking.
+> What do you think?
 
-diff --git a/drivers/net/wireless/atmel/Kconfig b/drivers/net/wireless/atmel/Kconfig
-index ca45a1021cf4..bafdd57b049a 100644
---- a/drivers/net/wireless/atmel/Kconfig
-+++ b/drivers/net/wireless/atmel/Kconfig
-@@ -14,7 +14,7 @@ if WLAN_VENDOR_ATMEL
- 
- config ATMEL
- 	tristate "Atmel at76c50x chipset  802.11b support"
--	depends on CFG80211 && (PCI || PCMCIA)
-+	depends on CFG80211 && (PCI || PCMCIA) && HAS_IOPORT
- 	select WIRELESS_EXT
- 	select WEXT_PRIV
- 	select FW_LOADER
-diff --git a/drivers/net/wireless/intersil/hostap/Kconfig b/drivers/net/wireless/intersil/hostap/Kconfig
-index c865d3156cea..2edff8efbcbb 100644
---- a/drivers/net/wireless/intersil/hostap/Kconfig
-+++ b/drivers/net/wireless/intersil/hostap/Kconfig
-@@ -56,7 +56,7 @@ config HOSTAP_FIRMWARE_NVRAM
- 
- config HOSTAP_PLX
- 	tristate "Host AP driver for Prism2/2.5/3 in PLX9052 PCI adaptors"
--	depends on PCI && HOSTAP
-+	depends on PCI && HOSTAP && HAS_IOPORT
- 	help
- 	Host AP driver's version for Prism2/2.5/3 PC Cards in PLX9052 based
- 	PCI adaptors.
--- 
-2.37.2
+Right, you can remove this extra mask.
 
+While reading the code again I found that it would be better to rename 
+ACCESS_FS_INITIALLY_DENIED to LANDLOCK_ACCESS_FS_INITIALLY_DENIED.
