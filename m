@@ -2,171 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D45B36B9980
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 16:36:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43D926B99C0
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 16:37:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231880AbjCNPgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 11:36:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44434 "EHLO
+        id S231723AbjCNPhL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 11:37:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231690AbjCNPfK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 11:35:10 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2112.outbound.protection.outlook.com [40.107.223.112])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 006AFA7A88;
-        Tue, 14 Mar 2023 08:34:33 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WhJuZQW2BGhv8CL/2tkuyKaPPhH1UltlN1//r4/QdL626+VE19ArroC7kH5gXQgHP4Mv57oxE7YgHRJuucCqstaFJjdP63VHNwaa62arvB0J7iDev8r2RmJR4PfilB6bKkf7ZqjIoE1/ZER+GjBHcykVIyO6J47rOKq0MV5tmgHM2WLMcf8ednBGJ4b0KpXPpXyuKZ9DSPV6bFZYWzIwxsZunWemkV8w6TPWEcG20B0GtdfSkC9WbiQAs0Eh0eyL6sm228VtXeu5qsXXS9R6WIisol9k6TeMaN7Cog6XzBn93tZSzqw+/IZFOgqiFMQygZD5ZJojbOrNz2RSA5mmkA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QFNsUTpSnm8yKzHPY+fp1Yf0tpPUua3q34AWIRnHe68=;
- b=l5dOEarKwAWmNZUiO9eF7NjmDryEXzf5P5UvnOYWFT2bTyG3hGcjJKm83DwZwGQmcwkfXqUzq1EonD2wXI6czwowZG5/1P/sQpcbaTE6xJkWG8Esnqi8P8z6gYhMrv9LeKntAu07bik2jUF0mZIsqzsYP8G+LDyNtPrhIBQWHbJsV+o8GCktKlwyWM+vBR5GGhoct2HR/Hev+nuUr5uBBQdCfv3bZxkmancyLeUKAgqDw3Xl/vAML2+yFMv8LxOl0AVIZe3Q/+CAK6PUIbPvvpDFtfNK+aAnnwDt/MTdyiUcnWG6ZJBQF1JU+hJsU3ahmAHnQ75vJMgm6hfDh2SlWw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=in-advantage.com; dmarc=pass action=none
- header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QFNsUTpSnm8yKzHPY+fp1Yf0tpPUua3q34AWIRnHe68=;
- b=aoJBkS7xAC+NVQ4Z3YJmrjBL/jjnqPzb3ceo4BGi4/wTR9KRdbKCiDi/lK24od1VPgZFo6D4eBmmMoSG5qvY29aEH6GiwgS24YbFAn2C9EPOWqD3JbNx2PIEahdn/Tw0xP7sAWILsGlQc+0Dtdan+8uW949EHHrWPSaLqic0fYI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by MW4PR10MB6395.namprd10.prod.outlook.com
- (2603:10b6:303:1ea::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.24; Tue, 14 Mar
- 2023 15:34:15 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::1897:6663:87ba:c8fa]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::1897:6663:87ba:c8fa%4]) with mapi id 15.20.6178.023; Tue, 14 Mar 2023
- 15:34:14 +0000
-Date:   Tue, 14 Mar 2023 08:34:10 -0700
-From:   Colin Foster <colin.foster@in-advantage.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-wpan@vger.kernel.org
-Subject: Re: [PATCH 05/12] net: dsa: ocelot: drop of_match_ptr for ID table
-Message-ID: <ZBCT8iB/vzOHrv3B@colin-ia-desktop>
-References: <20230311173303.262618-1-krzysztof.kozlowski@linaro.org>
- <20230311173303.262618-5-krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230311173303.262618-5-krzysztof.kozlowski@linaro.org>
-X-ClientProxiedBy: BYAPR11CA0100.namprd11.prod.outlook.com
- (2603:10b6:a03:f4::41) To MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37)
+        with ESMTP id S230365AbjCNPgm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 11:36:42 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DA67B1B37
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 08:35:29 -0700 (PDT)
+Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com [209.85.214.200])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id AE3B1445B5
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 15:34:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1678808098;
+        bh=67d6NdEVpeH9JN58ysK6VRVXeCXuf3MwOPI0MBEl86Q=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=gLak5t/IAJg7PxDvxXEEgNVlRdfQ/qM9jzOgbLs4HEznLKTokZGSUB5ynYf8W5+eJ
+         Ptd7TGq2gJVDfrBShqNAv4yHgOOmScqp4IxJlVRPl4lDDUIfp5mL20GIpze0uHPgnA
+         rjb0RSfbggzg/BLWN6mPmC0W+hKaUw/nZI01+Hwg/wrLsY0LuzFZ/m21D7EI20gtMY
+         Bw9pN/pc3sAUVeqIVM+XVTBMsF3CIM1Nfh7l+pDlzAtReGEpIQxf1CxoqwAknxDs82
+         2s4kTpwoFaBYgE+VvuGGvSaqO66sPomWQPxRGa6V0M+pPVWjwiMEMLYVrkfbjpZ0Bt
+         3ret8nCUhwRBA==
+Received: by mail-pl1-f200.google.com with SMTP id i6-20020a170902c94600b0019d16e4ac0bso8947028pla.5
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 08:34:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678808097;
+        h=message-id:date:content-transfer-encoding:content-id:mime-version
+         :comments:references:in-reply-to:subject:cc:to:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=67d6NdEVpeH9JN58ysK6VRVXeCXuf3MwOPI0MBEl86Q=;
+        b=dC8Rr0UoeqCdMLEinX+i79RA9v3Jz4IgKBrL+YEqaSUJBTaqRqjH2hdZArxO8WPmzk
+         MGd5PLnELzODpKmvxD4jvxbvV9y3cAJ/Fj/GEyrQiiI2cqn1KJ5nte44rpgz80JqI/bV
+         qAt8M9k0zCPohQOHqnNgLd//ehscaGBV/o/OlNN90gthPBdsBd3uKU2+J+F9y5ZTflLe
+         9u/3Kk+WZXjzueHyP1BaVmmj+MZ46Q/Cj2RDDIfDSHSTZ7a5c6OHWPH0FFsmOUZOHWO+
+         ZuOnh0SegkTX7J4R4smEzy1lgpd8npn9rUjp7wqGGnlux1TZTFhPC7J1sWcylcHFi1Cg
+         ghHg==
+X-Gm-Message-State: AO0yUKWOyLWG26kS1n7sAkEq00mAK4Bs6cgrcmXtV17NfQpDr4zWMXaI
+        GSmBjQab6Pa/5uQkOhMwnVeAVYFt4eyzRVTOIMtxyE7R5xPxgcIWiVQ7CFU4soBqr/xWDuPZWFv
+        BftT7Pzalg5cBylZsYZzgLWMt/1RvE4rI0g==
+X-Received: by 2002:a62:1785:0:b0:5a8:e3dc:4337 with SMTP id 127-20020a621785000000b005a8e3dc4337mr15521649pfx.16.1678808096872;
+        Tue, 14 Mar 2023 08:34:56 -0700 (PDT)
+X-Google-Smtp-Source: AK7set9Z+8uXbLeEdjHP1+rqmXergfD4y+XJlUu3kjcUiS0F9JILKNkfi/k+ODgk2KAvrv/ZMjzvIQ==
+X-Received: by 2002:a62:1785:0:b0:5a8:e3dc:4337 with SMTP id 127-20020a621785000000b005a8e3dc4337mr15521629pfx.16.1678808096566;
+        Tue, 14 Mar 2023 08:34:56 -0700 (PDT)
+Received: from famine.localdomain ([50.125.80.253])
+        by smtp.gmail.com with ESMTPSA id x52-20020a056a000bf400b005a8b4dcd21asm1851025pfu.15.2023.03.14.08.34.56
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 14 Mar 2023 08:34:56 -0700 (PDT)
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id A73F25FEAC; Tue, 14 Mar 2023 08:34:55 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id A1BCB9FA5F;
+        Tue, 14 Mar 2023 08:34:55 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+cc:     netdev@vger.kernel.org, monis@voltaire.com, syoshida@redhat.com,
+        andy@greyhouse.net, kuba@kernel.org, davem@davemloft.net,
+        pabeni@redhat.com, edumazet@google.com,
+        syzbot+9dfc3f3348729cc82277@syzkaller.appspotmail.com
+Subject: Re: [PATCH net v2 1/4] bonding: add bond_ether_setup helper
+In-reply-to: <20230314111426.1254998-2-razor@blackwall.org>
+References: <20230314111426.1254998-1-razor@blackwall.org> <20230314111426.1254998-2-razor@blackwall.org>
+Comments: In-reply-to Nikolay Aleksandrov <razor@blackwall.org>
+   message dated "Tue, 14 Mar 2023 13:14:23 +0200."
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MWHPR1001MB2351:EE_|MW4PR10MB6395:EE_
-X-MS-Office365-Filtering-Correlation-Id: 438cb48d-ffe4-46b0-a471-08db24a190e6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8sSijxcdflSZqi4NlrtXgBgI0LDf9YavIgYFuKv4sZakndck7EIMvhr+d7HXfKV5VFQ37dpkx/9VeC5eMQqyk42YdgPdpivj3nMBluh57KDtEMJ32/RIIqRSVDymaJQSEiHf2wlmzxQfkdVnLqSzkq2JKoVOYMT/S1jlEqRrUsK+A3Kg/m3/cwZbAOlXdxAl3xjVFIZNCHRjuZDQCeLJq5lIFL0gvZOSmXnM8hM+ryQgKNdbF5EypCdNeQDhDj4uqyr9U6Qvmh/y9AqDXVdxFOOevkmMqqWl983wKivDZbUBl5vdlCWYDeI80UxPdXG+CgLPMjY0hRcjJwgXhjHK533TDV05n8L2DDY3B2NoFHPganfPIy/QKxSyHwKeJr9uJYT04li7q//+rjzZ6fr6yIT4+P8xn6fAsfc692PHi796GFIO7JRgK4e5JQKQlwQNSPJe8NyFJlgTe90aE1rtkkTh+9jSZjTTU/sfLvmQa7cYwzfmksL3sKZSc4tuzRhmYd5aEySY/hyQExymWJimzCl21HBNpOnzFqddcuoRk9+0kaO1vfwCvXNTgo2QXyvJ9YlrsTUiKjOz3jhEJXlkRj71ZYDaA2Ai86UzbVMDL8QXrvReVsy9tx7pIzdmBoDJGGYyWg777ABfqWkJ3N15ZA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(7916004)(39840400004)(346002)(376002)(136003)(396003)(366004)(451199018)(6916009)(41300700001)(5660300002)(9686003)(4326008)(8936002)(186003)(7416002)(6512007)(26005)(6506007)(86362001)(33716001)(44832011)(2906002)(83380400001)(6486002)(8676002)(66476007)(6666004)(54906003)(316002)(66946007)(478600001)(66556008)(38100700002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?aURhNzFBZTZlTDZCWTlRRFlCM21IYjVlU1ZncENMVlVKQUZQUVZoaHk0TjdX?=
- =?utf-8?B?eFR6aEpwbEJzOUNacWxPWGVMMFFGUXEwaG15RmJmT0Mydllmc0pETzA2VWYw?=
- =?utf-8?B?ckRuVGc5aXY0a0NDQkFKVUx0cDA2NWdEbDEyQkJWME9hY2lIaEZ4a2s1cVVp?=
- =?utf-8?B?T2hoeWN5d0pLTjlOSFJYRnoyc0RibkNuVUF6c09pOVlJMm1iZytYK1ozVTQ0?=
- =?utf-8?B?ZEFRdnNKNjZVVHZoOGduTytxWDZGby9pM1FacWpYQ2FENTc4VzlsMXMrU2dW?=
- =?utf-8?B?YWZha1gwR2VYajVibUxiSVE2bVY2TWZRYkNQY3d4L3MwSVBxUldrOG4xbjZF?=
- =?utf-8?B?SDBzdlMrVzZKWUJrNGdrNVVhUTRrY3RmTmxzSFgzSm9Qc1dhbWdjTE5hemdR?=
- =?utf-8?B?SFVhb3YrTWptd0VqZ3VEYTY3NVdheUJPVm1IREw0TWl0Y1lwN2U2UG9yU3Fm?=
- =?utf-8?B?NUhZbVZhQkdqQVlJbkxFV1pWb1lueno4Y0dqQVlNL3dnVmtpVjRjWWFDL3Y1?=
- =?utf-8?B?cHc4MjhEUjh3dGdoYnA4ZEdZNlRjaS9HdHdpWjdlOGxXdWF1UGM3dUpYcFZa?=
- =?utf-8?B?T2FYRFEvQ3cwd0Fwcm5OOGdYclhhUHVmYm5GYjcxNEJic0ZnZVJJM2hpUGNB?=
- =?utf-8?B?ZC9hYUtiTE9idFN5K2xlUnoyemVXYmlXR0tlZ2Q1QjFRekh1Qm9LcnNFRjJi?=
- =?utf-8?B?TzJycENWOVZ4TVBPTlU2ckRpZmFJUWc4RVJoMEVKaDN3c2J2TGlaU2FNclNF?=
- =?utf-8?B?YTB2T2Z0a0VYbXdORS80Tk1WNXpoYjFyWXBkYzYycnVpZWZ0dVZHeExhdXJ4?=
- =?utf-8?B?dHdUdUF5Ukxla3F1emE3bkhqSERjSXYzUE1ibTI2Vlh6Uk53ZjdFTEhxYVFx?=
- =?utf-8?B?d2hFV1A5U1hrbzhiWFl4cHVXUGFCM2NCcEY5ZFdSaHVtdVAxVjNqR1FZQTVW?=
- =?utf-8?B?YXJPZjd0S2VFVm5kMXNoOS9mZ3h3OU9hS1lEcnY4cWRlUmFML2dHTWVPR09r?=
- =?utf-8?B?Z0NFeXAwaDVoMk9tVWxMZDErS1Z6QUJHS0c2Z21BVHJ5cjBZMjJmTzBJSlBW?=
- =?utf-8?B?aDFWOXhPeTRDZmZnYUlMMTF2RVdxdHZoQkpIY0lPTmJsenRZYjdraERxZVMr?=
- =?utf-8?B?L1hjZTJqWm9qeW9DWmg4N3B6ZHY1OEJ4K3pDYnNDN0oxb0xFVE1JNjhERW01?=
- =?utf-8?B?bGQ1YnhoQXhVSDIxNHVSUk43dnZmb01KVldYRHlDWVJ3L3N1RTZYRE80YkRE?=
- =?utf-8?B?TVoycHluaFF4NmZTNnIvMDJoc29BRHdHZFZ3UU16dlJmdUwraEFLNG54Nys3?=
- =?utf-8?B?NU84TmgxRkcvQkpXNnpqb1l1MVd1dys0eTVwVit6Sit3WGJueEJpa2RyVW5T?=
- =?utf-8?B?V1d6VUZETUhmTkFWZ1MvR3poKzRxTS9GVllQa2tKbzZ5Q1R6SitEVEtZa1o1?=
- =?utf-8?B?MEJnOHptMlB6dTNEQ3d4NWNzVXdzclJ4ekpseUhjdVpGbUxkNTdrcWlDWjJo?=
- =?utf-8?B?QVo5VitlOUxsQXdiNCtyMnNqK3QxdEZ4cng4ditndkxTVHFIbW9FZW9USEE1?=
- =?utf-8?B?enluaEhLdFhUZVBlUWVZY2kzSXdNLythYVFWdEJVd0o3Q2dqbGxOY3FMOXA2?=
- =?utf-8?B?dCtlVDNkY0hkWjhNQ2pGaDFRckNkNy9JMGphTjJQT0hVNzlVaFlNSmxEQ0xv?=
- =?utf-8?B?b2ZsVTI1elZiZzZhYU9DMG9lNmltNHZ1ckNUdE1GQWdZYXNsazJtS0k5ZDJh?=
- =?utf-8?B?R2hDcjJJKzlpTVQxWlNyTU5UZzB1RzZYMWJvYVhlRVduaWNvSTRJNDl3cFBp?=
- =?utf-8?B?bE1wNjJKbjBHZ3BLc2NEcUM4amt6K0ZVQ2phcVIyYzEzMzEzYmNVMUQrU3Yw?=
- =?utf-8?B?T0YwVzFKRE9jY0FwQmJrbE1sS2tneldrM0FmSHcwRERQdCtBSXVOTExzWUE1?=
- =?utf-8?B?Yk5Gc1NRN3R3MW1kVFFHb3QzU1VURHVGOHFKeUlNUnYwSzlUbHZoUTF2cURG?=
- =?utf-8?B?VVpNYnlSUjdvWW81dlQ2aEhBS09KRk94RzdvcHM4S3hTenlnWVdXZEY1Yy92?=
- =?utf-8?B?ME9ONnRSME1yNG1sdW93Z0ZLeUZuZm9EVUNXTHlSSDF4U0ZlbkdNQkNXNzlh?=
- =?utf-8?B?TkJ5RTYyL0hoSXlwSmJYc1d5eTB3VlNVRzd2WmJMd0M5RWtpTG5lQmtHbW9W?=
- =?utf-8?Q?Rp6Qqr5fmeWw3G53sJR80eI=3D?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 438cb48d-ffe4-46b0-a471-08db24a190e6
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Mar 2023 15:34:14.6019
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6947RnQSyD/E3WPnhHitkh/UcB8dDpL1pX/VM8zixYpyo8A8PBcx2Y1sBuvRgunXIzjLIauZ2c534C5MQ+MyYjLkQI50hGpCZ7BT1AcGYtA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR10MB6395
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <28496.1678808095.1@famine>
+Content-Transfer-Encoding: quoted-printable
+Date:   Tue, 14 Mar 2023 08:34:55 -0700
+Message-ID: <28497.1678808095@famine>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 11, 2023 at 06:32:56PM +0100, Krzysztof Kozlowski wrote:
-> The driver can match only via the DT table so the table should be always
-> used and the of_match_ptr does not have any sense (this also allows ACPI
-> matching via PRP0001, even though it might not be relevant here).
-> 
->   drivers/net/dsa/ocelot/ocelot_ext.c:143:34: error: ‘ocelot_ext_switch_of_match’ defined but not used [-Werror=unused-const-variable=]
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->  drivers/net/dsa/ocelot/ocelot_ext.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/dsa/ocelot/ocelot_ext.c b/drivers/net/dsa/ocelot/ocelot_ext.c
-> index 063150659816..228737a32080 100644
-> --- a/drivers/net/dsa/ocelot/ocelot_ext.c
-> +++ b/drivers/net/dsa/ocelot/ocelot_ext.c
-> @@ -149,7 +149,7 @@ MODULE_DEVICE_TABLE(of, ocelot_ext_switch_of_match);
->  static struct platform_driver ocelot_ext_switch_driver = {
->  	.driver = {
->  		.name = "ocelot-ext-switch",
-> -		.of_match_table = of_match_ptr(ocelot_ext_switch_of_match),
-> +		.of_match_table = ocelot_ext_switch_of_match,
->  	},
->  	.probe = ocelot_ext_probe,
->  	.remove = ocelot_ext_remove,
-> -- 
-> 2.34.1
-> 
+Nikolay Aleksandrov <razor@blackwall.org> wrote:
 
-Acked-by: Colin Foster <colin.foster@in-advantage.com>
+>Add bond_ether_setup helper which will be used in the following patches
+>to fix all ether_setup() calls in the bonding driver. It takes care of bo=
+th
+>IFF_MASTER and IFF_SLAVE flags, the former is always restored and the
+>latter only if it was set.
+>
+>Fixes: e36b9d16c6a6d ("bonding: clean muticast addresses when device chan=
+ges type")
+>Fixes: 7d5cd2ce5292 ("bonding: correctly handle bonding type change on en=
+slave failure")
+>Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
+>---
+> drivers/net/bonding/bond_main.c | 12 ++++++++++++
+> 1 file changed, 12 insertions(+)
+>
+>diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_m=
+ain.c
+>index 00646aa315c3..d41024ad2c18 100644
+>--- a/drivers/net/bonding/bond_main.c
+>+++ b/drivers/net/bonding/bond_main.c
+>@@ -1775,6 +1775,18 @@ void bond_lower_state_changed(struct slave *slave)
+> 		slave_err(bond_dev, slave_dev, "Error: %s\n", errmsg);	\
+> } while (0)
+> =
+
+>+/* ether_setup() resets bond_dev's flags so we always have to restore
+>+ * IFF_MASTER, and only restore IFF_SLAVE if it was set
+>+ */
+>+static void bond_ether_setup(struct net_device *bond_dev)
+>+{
+>+	unsigned int slave_flag =3D bond_dev->flags & IFF_SLAVE;
+>+
+>+	ether_setup(bond_dev);
+>+	bond_dev->flags |=3D IFF_MASTER | slave_flag;
+>+	bond_dev->priv_flags &=3D ~IFF_TX_SKB_SHARING;
+>+}
+
+	Is setting IFF_MASTER always correct here?  I note that patch #2
+is replacing code that does not set IFF_MASTER, whereas patch #3 is
+replacing code that does set IFF_MASTER.
+
+	Presuming that this is the desired behavior, perhaps mention
+explicitly in the commentary that bond_ether_setup() is only for use on
+a bond master device.  The nomenclature "bond_dev" does imply that, but
+it's not explicit.
+
+	Also, why is the call to ether_setup() from bond_setup() not
+also being converted to bond_ether_setup()?
+
+	-J
+
+>+
+> /* enslave device <slave> to bond device <master> */
+> int bond_enslave(struct net_device *bond_dev, struct net_device *slave_d=
+ev,
+> 		 struct netlink_ext_ack *extack)
+>-- =
+
+>2.39.2
+>
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
