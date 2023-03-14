@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEB526B9B27
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 17:19:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5A816B9B2A
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 17:19:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229722AbjCNQS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 12:18:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46092 "EHLO
+        id S231370AbjCNQTH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 12:19:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231448AbjCNQSE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 12:18:04 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B33C4B2555;
-        Tue, 14 Mar 2023 09:17:39 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id t15so14876087wrz.7;
-        Tue, 14 Mar 2023 09:17:39 -0700 (PDT)
+        with ESMTP id S231474AbjCNQSF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 12:18:05 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78674AD02C;
+        Tue, 14 Mar 2023 09:17:41 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id r18so14896217wrx.1;
+        Tue, 14 Mar 2023 09:17:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678810658;
+        d=gmail.com; s=20210112; t=1678810660;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4yEvSncVqO5CEElyQ6q0WPYP3z8pHrofnI3Ooo06uR0=;
-        b=K+mLMUl0yoH5CirM02UvggJLlSVXwFmixzghnFZQfwQxlZ4QvmI7bl9d/svg/6pmMp
-         aDULurfPwfxvXNqYpSlDfCQjFrO0nnzvnXcEDbw0SOX+3zQY1iHLYhUiaGhWhe234DEs
-         Md5SPcTHRbnoBNCKsDwEjWmDRiMppyPqKNGCllPkhUe2SPOgOu5GUBulS+qQ0SBiMuI3
-         H2d8Y0bvzw4rBcWkaZBNxzGrkjXJTqui1j6xiG2AxvupTtdTE5v3+D9fzMoJvPwAhSCo
-         Kkcf//mL9Lyc+oKVhfhrrc0YoNC5tqKFb8wNaz0XJYH4IE+LKXLfJWdTduA2rgY3V4hD
-         a/Pw==
+         :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=NdFLu8rYGgfYob/UUJ7xHBPYmBqXvfPClb24ZxTT2Ls=;
+        b=JpZqQwUTPJ6+0dPKdp8pkWBnmAkBQRmDmeBLG1R5hScuNBgurXqhg6f9CS9tJM6dcf
+         dbtEHCmoY7084ytJfNPyb3VNFwrqwO8JGzbzZVkaVTU+5K0KIL2W2KZi4oJhWaOKXyTV
+         nysBTo0B5Nniouc6/cdENQyg7XmeF5tHrfiwcNmr2D3HoskORuAVYQFSHAlYqpxD0I1A
+         mj1in4u/WLib6EWCjAjDkn/8WDPuTpggfA4YwQcGWCmrckfVXvh+oNp4fTzTfRO8AgLP
+         pTG5CRyGfZLAKACSx6iWnn8/UPyofP5yWu5Qt+h2bYJbwQb48UqqDwF5tuZH155Yr/Qg
+         8VBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678810658;
+        d=1e100.net; s=20210112; t=1678810660;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=4yEvSncVqO5CEElyQ6q0WPYP3z8pHrofnI3Ooo06uR0=;
-        b=STOUgshWYrfSzQAT6iCjef7OIntOY+QQaBkik/PlsM65Jq6einqG/IEd8YGLk6B/7N
-         Gcgq+WdnhZo06UZ6I0VsQ8i57lOrmsk5jFyyDGrJ9p7dnOF91wPqVV0aKQhug8LqK/i8
-         c+eEjdCR+sl7aizt1je17szzlgWApZ6n2a/jRPqDaIW62YvYynZy9oPFlIlcTaueTako
-         PIIugcWoQdCPsNi37FGzlHZEFkdHN8UUNkcY8OkDwz8LZro/OTNSgmfUJVWXokpKEC2W
-         Rcn8IJFhw9Hp9rKnSg2LyGrSKhEWz0GVRUKez9wFkUdAq7tbSAzQ600XE8oxZonxwmmv
-         2S/g==
-X-Gm-Message-State: AO0yUKV5lNSOeGl4rR1/cwVb2hMOCDcI/42kigaMv6eNtr9Zmom2wI7M
-        gtihjQEKpqQaMy4BlkxM61M=
-X-Google-Smtp-Source: AK7set+q1pki70n1ymc46lf0MXKuI84bGML7ZPXJbNEMqNYR9zZe3I9xajlWlLZS/BM5t0Kr88ZOXg==
-X-Received: by 2002:a05:6000:12c9:b0:2cc:4dad:e484 with SMTP id l9-20020a05600012c900b002cc4dade484mr24744498wrx.42.1678810658079;
-        Tue, 14 Mar 2023 09:17:38 -0700 (PDT)
+        bh=NdFLu8rYGgfYob/UUJ7xHBPYmBqXvfPClb24ZxTT2Ls=;
+        b=bHRBI0F+RBpzpZE82La0CNfqVBX22arAPE9thCx74GLnwH5MfYz2fzyFC8zQF14hEz
+         ZbmGBQHMSybaelZQFtxKA0Pe4WNz6bNyU9AFAdQqisMPdJf3VZjxApk0CoWb0ZauOopK
+         REf2c5sYRANOFHP0XzMhvpfrqa2PJYl2uOKtw6hcDDJEpKDSqkmhXH0jBUjLL5lbOODt
+         irW7m7cD5snsM8+2W3QHG+PIWooDp5A7TT27JxcseKrGUh2snsGk70LhIPVPk7P29640
+         asNTMBiP2bVtb66zMNq54vsCPLD3u8UbYFMREkBu1Sk6VVljM6lSEU0cPsL7nWd1Javi
+         tZDw==
+X-Gm-Message-State: AO0yUKVHKr7+VYoG2GVKQkQ5qRX4p13Azn1U8IHJhFi7E5Hy8vOsS7NO
+        BBZJeozOHUUVrtWvzIhy45A=
+X-Google-Smtp-Source: AK7set8Picyqs6bN985CzCJP1jG1yy0KAX7/1lzUL7SerOixkP84/5d9uY2xHWjsVb4VTm2ObkfR1g==
+X-Received: by 2002:a5d:48cb:0:b0:2cf:ea5d:f607 with SMTP id p11-20020a5d48cb000000b002cfea5df607mr1917592wrs.17.1678810659677;
+        Tue, 14 Mar 2023 09:17:39 -0700 (PDT)
 Received: from localhost.localdomain (93-34-89-197.ip49.fastwebnet.it. [93.34.89.197])
-        by smtp.googlemail.com with ESMTPSA id a16-20020a5d4570000000b002c5539171d1sm2426821wrc.41.2023.03.14.09.17.36
+        by smtp.googlemail.com with ESMTPSA id a16-20020a5d4570000000b002c5539171d1sm2426821wrc.41.2023.03.14.09.17.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Mar 2023 09:17:37 -0700 (PDT)
+        Tue, 14 Mar 2023 09:17:39 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -72,10 +72,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         linux-arm-kernel@lists.infradead.org,
         linux-arm-msm@vger.kernel.org, Lee Jones <lee@kernel.org>,
         linux-leds@vger.kernel.org
-Cc:     Jonathan McDowell <noodles@earth.li>
-Subject: [net-next PATCH v3 12/14] arm: qcom: dt: Add Switch LED for each port for rb3011
-Date:   Tue, 14 Mar 2023 11:15:14 +0100
-Message-Id: <20230314101516.20427-13-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v3 13/14] dt-bindings: net: phy: Document support for LEDs node
+Date:   Tue, 14 Mar 2023 11:15:15 +0100
+Message-Id: <20230314101516.20427-14-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230314101516.20427-1-ansuelsmth@gmail.com>
 References: <20230314101516.20427-1-ansuelsmth@gmail.com>
@@ -91,207 +90,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add Switch LED for each port for MikroTik RB3011UiAS-RM.
+Document support for LEDs node in phy and add an example for it.
+PHY LED will have to match led pattern and should be treated as a
+generic led.
 
-MikroTik RB3011UiAS-RM is a 10 port device with 2 qca8337 switch chips
-connected.
-
-It was discovered that in the hardware design all 3 Switch LED trace of
-the related port is connected to the same LED. This was discovered by
-setting to 'always on' the related led in the switch regs and noticing
-that all 3 LED for the specific port (for example for port 1) cause the
-connected LED for port 1 to turn on. As an extra test we tried enabling
-2 different LED for the port resulting in the LED turned off only if
-every led in the reg was off.
-
-Aside from this funny and strange hardware implementation, the device
-itself have one green LED for each port, resulting in 10 green LED one
-for each of the 10 supported port.
-
-Cc: Jonathan McDowell <noodles@earth.li>
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- arch/arm/boot/dts/qcom-ipq8064-rb3011.dts | 120 ++++++++++++++++++++++
- 1 file changed, 120 insertions(+)
+ .../devicetree/bindings/net/ethernet-phy.yaml | 31 +++++++++++++++++++
+ 1 file changed, 31 insertions(+)
 
-diff --git a/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts b/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts
-index 47a5d1849c72..472b5a2912a1 100644
---- a/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts
-+++ b/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts
-@@ -65,26 +65,86 @@ fixed-link {
- 				port@1 {
- 					reg = <1>;
- 					label = "sw1";
-+
-+					leds {
-+						#address-cells = <1>;
-+						#size-cells = <0>;
-+
-+						led@0 {
-+							reg = <0>;
-+							color = <LED_COLOR_ID_GREEN>;
-+							function = LED_FUNCTION_LAN;
-+							function-enumerator = <1>;
-+						};
-+					};
- 				};
+diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+index 1327b81f15a2..84e15cee27c7 100644
+--- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
++++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+@@ -197,6 +197,22 @@ properties:
+       PHY's that have configurable TX internal delays. If this property is
+       present then the PHY applies the TX delay.
  
- 				port@2 {
- 					reg = <2>;
- 					label = "sw2";
++  leds:
++    type: object
 +
-+					leds {
-+						#address-cells = <1>;
-+						#size-cells = <0>;
++    properties:
++      '#address-cells':
++        const: 1
 +
-+						led@0 {
-+							reg = <0>;
-+							color = <LED_COLOR_ID_GREEN>;
-+							function = LED_FUNCTION_LAN;
-+							function-enumerator = <2>;
-+						};
-+					};
- 				};
++      '#size-cells':
++        const: 0
++
++    patternProperties:
++      '^led(@[a-f0-9]+)?$':
++        $ref: /schemas/leds/common.yaml#
++
++    additionalProperties: false
++
+ required:
+   - reg
  
- 				port@3 {
- 					reg = <3>;
- 					label = "sw3";
-+
-+					leds {
-+						#address-cells = <1>;
-+						#size-cells = <0>;
-+
-+						led@0 {
-+							reg = <0>;
-+							color = <LED_COLOR_ID_GREEN>;
-+							function = LED_FUNCTION_LAN;
-+							function-enumerator = <3>;
-+						};
-+					};
- 				};
+@@ -204,6 +220,8 @@ additionalProperties: true
  
- 				port@4 {
- 					reg = <4>;
- 					label = "sw4";
+ examples:
+   - |
++    #include <dt-bindings/leds/common.h>
 +
-+					leds {
-+						#address-cells = <1>;
-+						#size-cells = <0>;
+     ethernet {
+         #address-cells = <1>;
+         #size-cells = <0>;
+@@ -219,5 +237,18 @@ examples:
+             reset-gpios = <&gpio1 4 1>;
+             reset-assert-us = <1000>;
+             reset-deassert-us = <2000>;
 +
-+						led@0 {
-+							reg = <0>;
-+							color = <LED_COLOR_ID_GREEN>;
-+							function = LED_FUNCTION_LAN;
-+							function-enumerator = <4>;
-+						};
-+					};
- 				};
- 
- 				port@5 {
- 					reg = <5>;
- 					label = "sw5";
++            leds {
++                #address-cells = <1>;
++                #size-cells = <0>;
 +
-+					leds {
-+						#address-cells = <1>;
-+						#size-cells = <0>;
-+
-+						led@0 {
-+							reg = <0>;
-+							color = <LED_COLOR_ID_GREEN>;
-+							function = LED_FUNCTION_LAN;
-+							function-enumerator = <5>;
-+						};
-+					};
- 				};
- 			};
- 		};
-@@ -130,26 +190,86 @@ fixed-link {
- 				port@1 {
- 					reg = <1>;
- 					label = "sw6";
-+
-+					leds {
-+						#address-cells = <1>;
-+						#size-cells = <0>;
-+
-+						led@0 {
-+							reg = <0>;
-+							color = <LED_COLOR_ID_GREEN>;
-+							function = LED_FUNCTION_LAN;
-+							function-enumerator = <6>;
-+						};
-+					};
- 				};
- 
- 				port@2 {
- 					reg = <2>;
- 					label = "sw7";
-+
-+					leds {
-+						#address-cells = <1>;
-+						#size-cells = <0>;
-+
-+						led@0 {
-+							reg = <0>;
-+							color = <LED_COLOR_ID_GREEN>;
-+							function = LED_FUNCTION_LAN;
-+							function-enumerator = <7>;
-+						};
-+					};
- 				};
- 
- 				port@3 {
- 					reg = <3>;
- 					label = "sw8";
-+
-+					leds {
-+						#address-cells = <1>;
-+						#size-cells = <0>;
-+
-+						led@0 {
-+							reg = <0>;
-+							color = <LED_COLOR_ID_GREEN>;
-+							function = LED_FUNCTION_LAN;
-+							function-enumerator = <8>;
-+						};
-+					};
- 				};
- 
- 				port@4 {
- 					reg = <4>;
- 					label = "sw9";
-+
-+					leds {
-+						#address-cells = <1>;
-+						#size-cells = <0>;
-+
-+						led@0 {
-+							reg = <0>;
-+							color = <LED_COLOR_ID_GREEN>;
-+							function = LED_FUNCTION_LAN;
-+							function-enumerator = <9>;
-+						};
-+					};
- 				};
- 
- 				port@5 {
- 					reg = <5>;
- 					label = "sw10";
-+
-+					leds {
-+						#address-cells = <1>;
-+						#size-cells = <0>;
-+
-+						led@0 {
-+							reg = <0>;
-+							color = <LED_COLOR_ID_GREEN>;
-+							function = LED_FUNCTION_LAN;
-+							function-enumerator = <10>;
-+						};
-+					};
- 				};
- 			};
- 		};
++                led@0 {
++                    reg = <0>;
++                    color = <LED_COLOR_ID_WHITE>;
++                    function = LED_FUNCTION_LAN;
++                    function-enumerator = <1>;
++                    default-state = "keep";
++                };
++            };
+         };
+     };
 -- 
 2.39.2
 
