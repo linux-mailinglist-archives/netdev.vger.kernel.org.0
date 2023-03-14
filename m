@@ -2,53 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DD586B9D4F
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 18:46:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E90166B9D4E
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 18:46:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230373AbjCNRq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 13:46:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41716 "EHLO
+        id S230208AbjCNRq1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 13:46:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230350AbjCNRqZ (ORCPT
+        with ESMTP id S229820AbjCNRqZ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 13:46:25 -0400
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E488ACE2F
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF5D7AD01D
         for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 10:46:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1678815976; x=1710351976;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Jv32DuHiKdVyamTKXcO/oJUMaAG3+3+JctJNWxvSMGE=;
-  b=QnYlxIjeB8NrBQ0Ic9W0i7RBBpbAg5CGcLhYnw8yY4RWbf6UxTJzxiTH
-   5wlDy5VUtlFqvLYvfo5Dl8P+OajnZcqfrxl3zpxr3g1a1Ccbs0u6MOI5a
-   6kz7yKoLjJ5PGKXC9NFvz/LsNZ09j854gyIw9O5MQUD6mybx2s+vvQEYs
-   8AMMOPMcQ4sXQYzqarpQXruKsqTVrxZ6sS/3vIhVYdMPpMXT2isCH4N+t
-   MT0xNHqLVDYVEflz1ahp7lKbl2ikuChh7mlH7wfzE4LD+V/X8iwI7le8O
-   2XMZLnoO2ODR84TBbh6CsyMCES3gxkl2hr+nqdcysidfS7xhq5VfBylml
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="317148707"
+  bh=ypcZhK+w4XMjkLLE0oFas/DEQTTHh6MnXuzo3lHU+gI=;
+  b=RvLXtCScJR/7k+UPNN/czuIDpqBXpWlzaTToAc53wDErxtSeKFsTSFqt
+   Lt8hvwTlJ2F5Q8TDlaCcs6ag7ycK/zh0kMmcbKNdOPKs+oBs9PaifQjuE
+   CrbmMS2kNF+QgJIpv8IYhVFz4v1wBydWyNZ12Nv42k9PV4zwtqujIDAqq
+   HjORuj+wVgxOyGml3OvQkmPTzZfaU27tFCpKA/hHIY7s++gLwW1aljGGp
+   sjnI5y0pXrk8VcSLfK+EOxQccyvWNQyqWHnSZcAlMRDluLuV+OAZdEhcn
+   VM8U7oZ2iqiWIPP19j5fDwVdlSiBclHZkwBO3Ud47sBUs38U5aIIIohIS
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="317148716"
 X-IronPort-AV: E=Sophos;i="5.98,260,1673942400"; 
-   d="scan'208";a="317148707"
+   d="scan'208";a="317148716"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
   by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2023 10:46:06 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="1008516919"
+X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="1008516925"
 X-IronPort-AV: E=Sophos;i="5.98,260,1673942400"; 
-   d="scan'208";a="1008516919"
+   d="scan'208";a="1008516925"
 Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
-  by fmsmga005.fm.intel.com with ESMTP; 14 Mar 2023 10:46:05 -0700
+  by fmsmga005.fm.intel.com with ESMTP; 14 Mar 2023 10:46:06 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, netdev@vger.kernel.org
-Cc:     Alexander Lobakin <aleksander.lobakin@intel.com>,
-        anthony.l.nguyen@intel.com,
-        Larysa Zaremba <larysa.zaremba@intel.com>,
+Cc:     Ahmed Zaki <ahmed.zaki@intel.com>, anthony.l.nguyen@intel.com,
         Michal Kubiak <michal.kubiak@intel.com>,
         Rafal Romanowski <rafal.romanowski@intel.com>
-Subject: [PATCH net 2/3] iavf: fix non-tunneled IPv6 UDP packet type and hashing
-Date:   Tue, 14 Mar 2023 10:44:22 -0700
-Message-Id: <20230314174423.1048526-3-anthony.l.nguyen@intel.com>
+Subject: [PATCH net 3/3] iavf: do not track VLAN 0 filters
+Date:   Tue, 14 Mar 2023 10:44:23 -0700
+Message-Id: <20230314174423.1048526-4-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20230314174423.1048526-1-anthony.l.nguyen@intel.com>
 References: <20230314174423.1048526-1-anthony.l.nguyen@intel.com>
@@ -64,42 +62,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Lobakin <aleksander.lobakin@intel.com>
+From: Ahmed Zaki <ahmed.zaki@intel.com>
 
-Currently, IAVF's decode_rx_desc_ptype() correctly reports payload type
-of L4 for IPv4 UDP packets and IPv{4,6} TCP, but only L3 for IPv6 UDP.
-Originally, i40e, ice and iavf were affected.
-Commit 73df8c9e3e3d ("i40e: Correct UDP packet header for non_tunnel-ipv6")
-fixed that in i40e, then
-commit 638a0c8c8861 ("ice: fix incorrect payload indicator on PTYPE")
-fixed that for ice.
-IPv6 UDP is L4 obviously. Fix it and make iavf report correct L4 hash
-type for such packets, so that the stack won't calculate it on CPU when
-needs it.
+When an interface with the maximum number of VLAN filters is brought up,
+a spurious error is logged:
 
-Fixes: 206812b5fccb ("i40e/i40evf: i40e implementation for skb_set_hash")
-Reviewed-by: Larysa Zaremba <larysa.zaremba@intel.com>
+    [257.483082] 8021q: adding VLAN 0 to HW filter on device enp0s3
+    [257.483094] iavf 0000:00:03.0 enp0s3: Max allowed VLAN filters 8. Remove existing VLANs or disable filtering via Ethtool if supported.
+
+The VF driver complains that it cannot add the VLAN 0 filter.
+
+On the other hand, the PF driver always adds VLAN 0 filter on VF
+initialization. The VF does not need to ask the PF for that filter at
+all.
+
+Fix the error by not tracking VLAN 0 filters altogether. With that, the
+check added by commit 0e710a3ffd0c ("iavf: Fix VF driver counting VLAN 0
+filters") in iavf_virtchnl.c is useless and might be confusing if left as
+it suggests that we track VLAN 0.
+
+Fixes: 0e710a3ffd0c ("iavf: Fix VF driver counting VLAN 0 filters")
+Signed-off-by: Ahmed Zaki <ahmed.zaki@intel.com>
 Reviewed-by: Michal Kubiak <michal.kubiak@intel.com>
-Signed-off-by: Alexander Lobakin <aleksander.lobakin@intel.com>
 Tested-by: Rafal Romanowski <rafal.romanowski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/iavf/iavf_common.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/intel/iavf/iavf_main.c     | 4 ++++
+ drivers/net/ethernet/intel/iavf/iavf_virtchnl.c | 2 --
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_common.c b/drivers/net/ethernet/intel/iavf/iavf_common.c
-index 16c490965b61..dd11dbbd5551 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_common.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_common.c
-@@ -661,7 +661,7 @@ struct iavf_rx_ptype_decoded iavf_ptype_lookup[BIT(8)] = {
- 	/* Non Tunneled IPv6 */
- 	IAVF_PTT(88, IP, IPV6, FRG, NONE, NONE, NOF, NONE, PAY3),
- 	IAVF_PTT(89, IP, IPV6, NOF, NONE, NONE, NOF, NONE, PAY3),
--	IAVF_PTT(90, IP, IPV6, NOF, NONE, NONE, NOF, UDP,  PAY3),
-+	IAVF_PTT(90, IP, IPV6, NOF, NONE, NONE, NOF, UDP,  PAY4),
- 	IAVF_PTT_UNUSED_ENTRY(91),
- 	IAVF_PTT(92, IP, IPV6, NOF, NONE, NONE, NOF, TCP,  PAY4),
- 	IAVF_PTT(93, IP, IPV6, NOF, NONE, NONE, NOF, SCTP, PAY4),
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index 3273aeb8fa67..eb8f944276ff 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -893,6 +893,10 @@ static int iavf_vlan_rx_add_vid(struct net_device *netdev,
+ {
+ 	struct iavf_adapter *adapter = netdev_priv(netdev);
+ 
++	/* Do not track VLAN 0 filter, always added by the PF on VF init */
++	if (!vid)
++		return 0;
++
+ 	if (!VLAN_FILTERING_ALLOWED(adapter))
+ 		return -EIO;
+ 
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
+index 6d23338604bb..4e17d006c52d 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
+@@ -2446,8 +2446,6 @@ void iavf_virtchnl_completion(struct iavf_adapter *adapter,
+ 		list_for_each_entry(f, &adapter->vlan_filter_list, list) {
+ 			if (f->is_new_vlan) {
+ 				f->is_new_vlan = false;
+-				if (!f->vlan.vid)
+-					continue;
+ 				if (f->vlan.tpid == ETH_P_8021Q)
+ 					set_bit(f->vlan.vid,
+ 						adapter->vsi.active_cvlans);
 -- 
 2.38.1
 
