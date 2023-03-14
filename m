@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B59BA6B9B06
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 17:18:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 659F16B9B0F
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 17:18:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231584AbjCNQS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 12:18:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45428 "EHLO
+        id S231631AbjCNQSp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 12:18:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231307AbjCNQR5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 12:17:57 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76274B420C;
-        Tue, 14 Mar 2023 09:17:31 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id l12so6601430wrm.10;
-        Tue, 14 Mar 2023 09:17:31 -0700 (PDT)
+        with ESMTP id S230523AbjCNQSA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 12:18:00 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5091CACE27;
+        Tue, 14 Mar 2023 09:17:36 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id o7so5496941wrg.5;
+        Tue, 14 Mar 2023 09:17:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678810649;
+        d=gmail.com; s=20210112; t=1678810651;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=bhHnF/S3YeXHYbPEZLJBWZo9IBQDiim5+f+K7WIjxP8=;
-        b=JmdJ4lQrygrnfTg1/V1GKTLeL8CWX8Zu6lbubK7rdIQjreE/Dp4eZbWLWBBKDvpwBX
-         VWOgQX1AtKZo+KLZnFxfED145ItnuxaPcqoM7q8VJoRIEtf7jjQQnyh1llyBNU0UJCr6
-         tsupwDMlWO0I6Fdb49e8USmNzomdLM4agoMtidMPr+DE/3uTCJkBDc8FzbR3GwFCwd4v
-         ytQYtjn1oBygv/ct7R1cF6F8ieM0E9ps/6BTaFHAds8i9lzkWf0tc58yY5XHOHbNXeGu
-         95FHR3+2tygioramplnAwDM1WVpOPv8a6GgGA6aRLTx1QrxJjzuFU/9+4mq37P3uaBQD
-         d6pA==
+        bh=cWl8tt6nddXYjDq6pzISEdAAK++EcnsjtXcgJ1R08pw=;
+        b=frwVXNK7BvlIsgBhXHgTowPejdqKimT7IaqvOMFSkJUyihwIEAbG769U0YDB1n5tHV
+         pec/8mkp9KDVjBeIV3t0gKysg05mTJAH909NCT/iAaq7IPpgnqrwpBt5I7qs21wb8EH7
+         gzjxvYCw3TjAQ4nkPe7eVGTVrF6QiIhwtQxST0iEs5mUFREItlaMbJdZe0p2bgzJtMuz
+         EwtfOCoGV+W4G72HUQURjnTwPJ6nyOoOtKOVFlVE6QcKtnEs0j+hPf3s+3VKxQr72Uyf
+         wCGULVk+bAGSH4kvAvSnka7/cmyLt422JuSJOKeSAeGk2XA6t6zaMfI7z7dDAzeFvEQ7
+         592Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678810649;
+        d=1e100.net; s=20210112; t=1678810651;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=bhHnF/S3YeXHYbPEZLJBWZo9IBQDiim5+f+K7WIjxP8=;
-        b=zOU4pxFhVqtnsdAAnt7pxxnxOzrmWbJLKTQfeu88FAvx19zL1ZXnuFqlQ7UgW+NpCc
-         UQ3jFolxogurWxVieHILYKItT7ruYBeOh3PfHZVv7bP4VqpR/Fu9+myq0yEZmmUInunz
-         +fsotQ6em1eG8e33OMDx80Heq9x3tip70UfIAbTb0znqY0m4tPA2gIoBOQUH9BXCIXqs
-         Db3LOyN57qQvE2GjPnGPt0piBqIe3qF4ro2yLzNYr+iITkKpH7JxK2JU2wsyxOrDBFhR
-         RiB+U6X92s6G5XVA/jgL9M2Kuk2mR07j31VTtFkfkO5vKiypuNpa2AblotyEsr6emrzn
-         qsaA==
-X-Gm-Message-State: AO0yUKWK10mgKd2tbcDcoQ+GR8vkVekKo58xz/ujavtKsQXNmh6rRp13
-        /PM/Io3kISby5dR5RJ9SOSs=
-X-Google-Smtp-Source: AK7set/zhnvNypY3pveKGvBnHu7zkwsj26l3S9De2/SXKdcyKgt2tp5zk6MN8QYDy40TWIet9eK4XA==
-X-Received: by 2002:a5d:6602:0:b0:2cf:e3c7:5975 with SMTP id n2-20020a5d6602000000b002cfe3c75975mr4936237wru.34.1678810649509;
-        Tue, 14 Mar 2023 09:17:29 -0700 (PDT)
+        bh=cWl8tt6nddXYjDq6pzISEdAAK++EcnsjtXcgJ1R08pw=;
+        b=D+53U0yhqNzef1GoW+MZ+H/gUt+i/ojgsuijtzUI9SvdKMd0E6AQgOw6JFcZQ595nn
+         YNwKbscU4Tk/lMF2EaxIMfGLZEaUBmhkSZjU2PFDIzGsBUXR+HeCNjJ3mcIqmHAJ4sZD
+         3UrFZ0y4gB3l05VkCF8Ke/rMbI34hGqG/oQGa6gx18mTzrKkzD3PzCxLeEC/h32h04Kh
+         KFjoDrAcNgQtK4gGkulxVimCklkiG7f964CRd6g/dBY32Wx3ePZis916JRp+oHhKg6Z8
+         IIDxk49+OcsmOa1MAu3pGgURUTkwxPo306UTH3Gjjb093kwEittnP56qAqT2ydF+TQDv
+         87xw==
+X-Gm-Message-State: AO0yUKVnITJbM3Z+DKHV9/hvuYK84dg7sJ3NKOmEck9BhS20x/rVmZrf
+        k6R19nWbqysd0ottesK34GP8YU1wTFI=
+X-Google-Smtp-Source: AK7set+mqaSObXHOfJkh5HjPCMjpisiRhXVRSJmoJGgR22VpkvTUnB4Yfjrf757TSQIHgdLwe4TCTg==
+X-Received: by 2002:a5d:4012:0:b0:2c5:532a:98c4 with SMTP id n18-20020a5d4012000000b002c5532a98c4mr10942379wrp.33.1678810650821;
+        Tue, 14 Mar 2023 09:17:30 -0700 (PDT)
 Received: from localhost.localdomain (93-34-89-197.ip49.fastwebnet.it. [93.34.89.197])
-        by smtp.googlemail.com with ESMTPSA id a16-20020a5d4570000000b002c5539171d1sm2426821wrc.41.2023.03.14.09.17.28
+        by smtp.googlemail.com with ESMTPSA id a16-20020a5d4570000000b002c5539171d1sm2426821wrc.41.2023.03.14.09.17.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Mar 2023 09:17:29 -0700 (PDT)
+        Tue, 14 Mar 2023 09:17:30 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -72,9 +72,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         linux-arm-kernel@lists.infradead.org,
         linux-arm-msm@vger.kernel.org, Lee Jones <lee@kernel.org>,
         linux-leds@vger.kernel.org
-Subject: [net-next PATCH v3 06/14] net: phy: marvell: Add software control of the LEDs
-Date:   Tue, 14 Mar 2023 11:15:08 +0100
-Message-Id: <20230314101516.20427-7-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v3 07/14] net: phy: phy_device: Call into the PHY driver to set LED blinking.
+Date:   Tue, 14 Mar 2023 11:15:09 +0100
+Message-Id: <20230314101516.20427-8-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230314101516.20427-1-ansuelsmth@gmail.com>
 References: <20230314101516.20427-1-ansuelsmth@gmail.com>
@@ -92,113 +92,71 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Andrew Lunn <andrew@lunn.ch>
 
-Add a brightness function, so the LEDs can be controlled from
-software using the standard Linux LED infrastructure.
+Linux LEDs can be requested to perform hardware accelerated
+blinking. Pass this to the PHY driver, if it implements the op.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 ---
- drivers/net/phy/marvell.c | 45 ++++++++++++++++++++++++++++++++++-----
- 1 file changed, 40 insertions(+), 5 deletions(-)
+ drivers/net/phy/phy_device.c | 18 ++++++++++++++++++
+ include/linux/phy.h          |  8 ++++++++
+ 2 files changed, 26 insertions(+)
 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index 0d706ee266af..e44a4a26346a 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -144,11 +144,13 @@
- /* WOL Event Interrupt Enable */
- #define MII_88E1318S_PHY_CSIER_WOL_EIE			BIT(7)
- 
--/* LED Timer Control Register */
--#define MII_88E1318S_PHY_LED_TCR			0x12
--#define MII_88E1318S_PHY_LED_TCR_FORCE_INT		BIT(15)
--#define MII_88E1318S_PHY_LED_TCR_INTn_ENABLE		BIT(7)
--#define MII_88E1318S_PHY_LED_TCR_INT_ACTIVE_LOW		BIT(11)
-+#define MII_88E1318S_PHY_LED_FUNC		0x10
-+#define MII_88E1318S_PHY_LED_FUNC_OFF		(0x8)
-+#define MII_88E1318S_PHY_LED_FUNC_ON		(0x9)
-+#define MII_88E1318S_PHY_LED_TCR		0x12
-+#define MII_88E1318S_PHY_LED_TCR_FORCE_INT	BIT(15)
-+#define MII_88E1318S_PHY_LED_TCR_INTn_ENABLE	BIT(7)
-+#define MII_88E1318S_PHY_LED_TCR_INT_ACTIVE_LOW	BIT(11)
- 
- /* Magic Packet MAC address registers */
- #define MII_88E1318S_PHY_MAGIC_PACKET_WORD2		0x17
-@@ -2832,6 +2834,34 @@ static int marvell_hwmon_probe(struct phy_device *phydev)
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index e4df4fcb6b05..ae8ec721353d 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -2981,6 +2981,22 @@ static int phy_led_set_brightness(struct led_classdev *led_cdev,
+ 	return err;
  }
- #endif
  
-+static int m88e1318_led_brightness_set(struct phy_device *phydev,
-+				       u32 index, enum led_brightness value)
++static int phy_led_blink_set(struct led_classdev *led_cdev,
++			     unsigned long *delay_on,
++			     unsigned long *delay_off)
 +{
-+	u16 reg;
++	struct phy_led *phyled = to_phy_led(led_cdev);
++	struct phy_device *phydev = phyled->phydev;
++	int err;
 +
-+	reg = phy_read_paged(phydev, MII_MARVELL_LED_PAGE,
-+			     MII_88E1318S_PHY_LED_FUNC);
-+	if (reg < 0)
-+		return reg;
++	mutex_lock(&phydev->lock);
++	err = phydev->drv->led_blink_set(phydev, phyled->index,
++					 delay_on, delay_off);
++	mutex_unlock(&phydev->lock);
 +
-+	switch (index) {
-+	case 0:
-+	case 1:
-+	case 2:
-+		reg &= ~(0xf << (4 * index));
-+		if (value == LED_OFF)
-+			reg |= MII_88E1318S_PHY_LED_FUNC_OFF << (4 * index);
-+		else
-+			reg |= MII_88E1318S_PHY_LED_FUNC_ON << (4 * index);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return phy_write_paged(phydev, MII_MARVELL_LED_PAGE,
-+			       MII_88E1318S_PHY_LED_FUNC, reg);
++	return err;
 +}
 +
- static int marvell_probe(struct phy_device *phydev)
+ static int of_phy_led(struct phy_device *phydev,
+ 		      struct device_node *led)
  {
- 	struct marvell_priv *priv;
-@@ -3081,6 +3111,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.get_sset_count = marvell_get_sset_count,
- 		.get_strings = marvell_get_strings,
- 		.get_stats = marvell_get_stats,
-+		.led_brightness_set = m88e1318_led_brightness_set,
- 	},
- 	{
- 		.phy_id = MARVELL_PHY_ID_88E1145,
-@@ -3187,6 +3218,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.cable_test_start = marvell_vct7_cable_test_start,
- 		.cable_test_tdr_start = marvell_vct5_cable_test_tdr_start,
- 		.cable_test_get_status = marvell_vct7_cable_test_get_status,
-+		.led_brightness_set = m88e1318_led_brightness_set,
- 	},
- 	{
- 		.phy_id = MARVELL_PHY_ID_88E1540,
-@@ -3213,6 +3245,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.cable_test_start = marvell_vct7_cable_test_start,
- 		.cable_test_tdr_start = marvell_vct5_cable_test_tdr_start,
- 		.cable_test_get_status = marvell_vct7_cable_test_get_status,
-+		.led_brightness_set = m88e1318_led_brightness_set,
- 	},
- 	{
- 		.phy_id = MARVELL_PHY_ID_88E1545,
-@@ -3239,6 +3272,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.cable_test_start = marvell_vct7_cable_test_start,
- 		.cable_test_tdr_start = marvell_vct5_cable_test_tdr_start,
- 		.cable_test_get_status = marvell_vct7_cable_test_get_status,
-+		.led_brightness_set = m88e1318_led_brightness_set,
- 	},
- 	{
- 		.phy_id = MARVELL_PHY_ID_88E3016,
-@@ -3380,6 +3414,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.get_stats = marvell_get_stats,
- 		.get_tunable = m88e1540_get_tunable,
- 		.set_tunable = m88e1540_set_tunable,
-+		.led_brightness_set = m88e1318_led_brightness_set,
- 	},
- };
+@@ -3004,6 +3020,8 @@ static int of_phy_led(struct phy_device *phydev,
  
+ 	if (phydev->drv->led_brightness_set)
+ 		cdev->brightness_set_blocking = phy_led_set_brightness;
++	if (phydev->drv->led_blink_set)
++		cdev->blink_set = phy_led_blink_set;
+ 	cdev->max_brightness = 1;
+ 	init_data.devicename = dev_name(&phydev->mdio.dev);
+ 	init_data.fwnode = of_fwnode_handle(led);
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 83d3ed7485e0..b1ac3c8a97e6 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -1072,6 +1072,14 @@ struct phy_driver {
+ 	 */
+ 	int (*led_brightness_set)(struct phy_device *dev,
+ 				  u32 index, enum led_brightness value);
++	/* Activate hardware accelerated blink, delays are in milliseconds
++	 * and if both are zero then a sensible default should be chosen.
++	 * The call should adjust the timings in that case and if it can't
++	 * match the values specified exactly.
++	 */
++	int (*led_blink_set)(struct phy_device *dev, u32 index,
++			     unsigned long *delay_on,
++			     unsigned long *delay_off);
+ };
+ #define to_phy_driver(d) container_of(to_mdio_common_driver(d),		\
+ 				      struct phy_driver, mdiodrv)
 -- 
 2.39.2
 
