@@ -2,156 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43D926B99C0
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 16:37:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67EDC6B99EB
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 16:38:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231723AbjCNPhL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 11:37:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43658 "EHLO
+        id S231277AbjCNPio (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 11:38:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230365AbjCNPgm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 11:36:42 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DA67B1B37
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 08:35:29 -0700 (PDT)
-Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com [209.85.214.200])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id AE3B1445B5
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 15:34:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1678808098;
-        bh=67d6NdEVpeH9JN58ysK6VRVXeCXuf3MwOPI0MBEl86Q=;
-        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
-         Content-Type:Date:Message-ID;
-        b=gLak5t/IAJg7PxDvxXEEgNVlRdfQ/qM9jzOgbLs4HEznLKTokZGSUB5ynYf8W5+eJ
-         Ptd7TGq2gJVDfrBShqNAv4yHgOOmScqp4IxJlVRPl4lDDUIfp5mL20GIpze0uHPgnA
-         rjb0RSfbggzg/BLWN6mPmC0W+hKaUw/nZI01+Hwg/wrLsY0LuzFZ/m21D7EI20gtMY
-         Bw9pN/pc3sAUVeqIVM+XVTBMsF3CIM1Nfh7l+pDlzAtReGEpIQxf1CxoqwAknxDs82
-         2s4kTpwoFaBYgE+VvuGGvSaqO66sPomWQPxRGa6V0M+pPVWjwiMEMLYVrkfbjpZ0Bt
-         3ret8nCUhwRBA==
-Received: by mail-pl1-f200.google.com with SMTP id i6-20020a170902c94600b0019d16e4ac0bso8947028pla.5
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 08:34:58 -0700 (PDT)
+        with ESMTP id S230300AbjCNPi2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 11:38:28 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5033A8E9B;
+        Tue, 14 Mar 2023 08:37:39 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id ek18so32546076edb.6;
+        Tue, 14 Mar 2023 08:37:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678808224;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=fH2THU53sotkebWz3onCTMHoVnM+8nCWx/+krcQxvjk=;
+        b=RsnpsCoFMPh1YTPijCu44lvveoc9nA1YR6pmXmE8hg8nPWksyfJ81uEIUyCB5sR7/n
+         KVsnqTNeDUz9t4MQZyGJ1YrtjN8RzqcYZFT3mVgQmvbiPEi78fIcJPbwiWnlNXN2kRS4
+         C8miA9SvGWcOWywf2Q3SKJeoMkq1TWZ+X5YzhvSfsgFdmsGpAPWo09vDOjED04DpOboy
+         AMwN6tRLgH0YNsvBstWejD90waW0PByraJSegCZpRBC2k6Qx1Tdaf39gou36Bgenljx3
+         Bd1y0vfiZXcTbzoj1SJepVRbB88+oAHemivdm+VkcOYhBmQ5/QlQFHyiz7jPyHGONLiz
+         8O2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678808097;
-        h=message-id:date:content-transfer-encoding:content-id:mime-version
-         :comments:references:in-reply-to:subject:cc:to:from
+        d=1e100.net; s=20210112; t=1678808224;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=67d6NdEVpeH9JN58ysK6VRVXeCXuf3MwOPI0MBEl86Q=;
-        b=dC8Rr0UoeqCdMLEinX+i79RA9v3Jz4IgKBrL+YEqaSUJBTaqRqjH2hdZArxO8WPmzk
-         MGd5PLnELzODpKmvxD4jvxbvV9y3cAJ/Fj/GEyrQiiI2cqn1KJ5nte44rpgz80JqI/bV
-         qAt8M9k0zCPohQOHqnNgLd//ehscaGBV/o/OlNN90gthPBdsBd3uKU2+J+F9y5ZTflLe
-         9u/3Kk+WZXjzueHyP1BaVmmj+MZ46Q/Cj2RDDIfDSHSTZ7a5c6OHWPH0FFsmOUZOHWO+
-         ZuOnh0SegkTX7J4R4smEzy1lgpd8npn9rUjp7wqGGnlux1TZTFhPC7J1sWcylcHFi1Cg
-         ghHg==
-X-Gm-Message-State: AO0yUKWOyLWG26kS1n7sAkEq00mAK4Bs6cgrcmXtV17NfQpDr4zWMXaI
-        GSmBjQab6Pa/5uQkOhMwnVeAVYFt4eyzRVTOIMtxyE7R5xPxgcIWiVQ7CFU4soBqr/xWDuPZWFv
-        BftT7Pzalg5cBylZsYZzgLWMt/1RvE4rI0g==
-X-Received: by 2002:a62:1785:0:b0:5a8:e3dc:4337 with SMTP id 127-20020a621785000000b005a8e3dc4337mr15521649pfx.16.1678808096872;
-        Tue, 14 Mar 2023 08:34:56 -0700 (PDT)
-X-Google-Smtp-Source: AK7set9Z+8uXbLeEdjHP1+rqmXergfD4y+XJlUu3kjcUiS0F9JILKNkfi/k+ODgk2KAvrv/ZMjzvIQ==
-X-Received: by 2002:a62:1785:0:b0:5a8:e3dc:4337 with SMTP id 127-20020a621785000000b005a8e3dc4337mr15521629pfx.16.1678808096566;
-        Tue, 14 Mar 2023 08:34:56 -0700 (PDT)
-Received: from famine.localdomain ([50.125.80.253])
-        by smtp.gmail.com with ESMTPSA id x52-20020a056a000bf400b005a8b4dcd21asm1851025pfu.15.2023.03.14.08.34.56
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 14 Mar 2023 08:34:56 -0700 (PDT)
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id A73F25FEAC; Tue, 14 Mar 2023 08:34:55 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id A1BCB9FA5F;
-        Tue, 14 Mar 2023 08:34:55 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Nikolay Aleksandrov <razor@blackwall.org>
-cc:     netdev@vger.kernel.org, monis@voltaire.com, syoshida@redhat.com,
-        andy@greyhouse.net, kuba@kernel.org, davem@davemloft.net,
-        pabeni@redhat.com, edumazet@google.com,
-        syzbot+9dfc3f3348729cc82277@syzkaller.appspotmail.com
-Subject: Re: [PATCH net v2 1/4] bonding: add bond_ether_setup helper
-In-reply-to: <20230314111426.1254998-2-razor@blackwall.org>
-References: <20230314111426.1254998-1-razor@blackwall.org> <20230314111426.1254998-2-razor@blackwall.org>
-Comments: In-reply-to Nikolay Aleksandrov <razor@blackwall.org>
-   message dated "Tue, 14 Mar 2023 13:14:23 +0200."
-X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
+        bh=fH2THU53sotkebWz3onCTMHoVnM+8nCWx/+krcQxvjk=;
+        b=2QLaMo4gwavvN8el72XDwwtw2AxTod7J56AnlOPm/TS0mUPahF4ATSHtHzfZS3p5T+
+         bnW643t7dkRiGI/t+BQtyBJvB/pHUvOk19J2+x9rj233LG92kLtn2qwbA4Ec4nFxx//C
+         4hjFfB2kbEWayuuwyO2gSyubbRlLK2euA7NJ4pc+DkiU3wJyEjWjvZo+oYI+IqU8p9E5
+         XR9abj7tUaNF6Xa5uIievXqqly/gClQIDmGRbrKIQnZTC4q/CdjgAQTCdmlsB7CN1ehB
+         NwyutAfovTRNJvoNVSf6wCQF2vo2gdRztR3yCYGNO7/MiylOV8l+GxmFtB92kJZckJBn
+         xeqw==
+X-Gm-Message-State: AO0yUKV58EilhR9TfDWBme25IHLXLYFbk6FX23R5L9SndbFBlX6DpvkE
+        2LZf1LFk563Urusosl40lOY=
+X-Google-Smtp-Source: AK7set8aeRn7CY+Pcz5X+2L8BiG05KWwa0mB1GI59XeSgqhgmxdNw9sXiLGj4qhNYOziVigGbUeEDA==
+X-Received: by 2002:a17:906:73c9:b0:8f0:ba09:4abe with SMTP id n9-20020a17090673c900b008f0ba094abemr14851280ejl.2.1678808223705;
+        Tue, 14 Mar 2023 08:37:03 -0700 (PDT)
+Received: from [192.168.10.15] ([37.252.81.68])
+        by smtp.gmail.com with ESMTPSA id ss10-20020a170907038a00b008e36f9b2308sm1328145ejb.43.2023.03.14.08.37.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Mar 2023 08:37:03 -0700 (PDT)
+Message-ID: <ff0a4ed4-9fde-7a9f-da39-d799dfb946f1@gmail.com>
+Date:   Tue, 14 Mar 2023 19:37:00 +0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <28496.1678808095.1@famine>
-Content-Transfer-Encoding: quoted-printable
-Date:   Tue, 14 Mar 2023 08:34:55 -0700
-Message-ID: <28497.1678808095@famine>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH] FS, NET: Fix KMSAN uninit-value in vfs_write
+Content-Language: en-US
+To:     Oliver Hartkopp <socketcan@hartkopp.net>, mkl@pengutronix.de,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, himadrispandya@gmail.com,
+        skhan@linuxfoundation.org,
+        syzbot+c9bfd85eca611ebf5db1@syzkaller.appspotmail.com
+References: <20230314120445.12407-1-ivan.orlov0322@gmail.com>
+ <0e7090c4-ca9b-156f-5922-fd7ddb55fee4@hartkopp.net>
+From:   Ivan Orlov <ivan.orlov0322@gmail.com>
+In-Reply-To: <0e7090c4-ca9b-156f-5922-fd7ddb55fee4@hartkopp.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Nikolay Aleksandrov <razor@blackwall.org> wrote:
+On 3/14/23 18:38, Oliver Hartkopp wrote:
+> Hello Ivan,
+> 
+> besides the fact that we would read some uninitialized value the outcome 
+> of the original implementation would have been an error and a 
+> termination of the copy process too. Maybe throwing a different error 
+> number.
+> 
+> But it is really interesting to see what KMSAN is able to detect these 
+> days! Many thanks for the finding and your effort to contribute this fix!
+> 
+> Best regards,
+> Oliver
+> 
+> 
+> On 14.03.23 13:04, Ivan Orlov wrote:
+>> Syzkaller reported the following issue:
+> 
+> (..)
+> 
+>>
+>> Reported-by: syzbot+c9bfd85eca611ebf5db1@syzkaller.appspotmail.com
+>> Link: 
+>> https://syzkaller.appspot.com/bug?id=47f897f8ad958bbde5790ebf389b5e7e0a345089
+>> Signed-off-by: Ivan Orlov <ivan.orlov0322@gmail.com>
+> 
+> Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
+> 
+> 
+>> ---
+>>   net/can/bcm.c | 16 ++++++++++------
+>>   1 file changed, 10 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/net/can/bcm.c b/net/can/bcm.c
+>> index 27706f6ace34..a962ec2b8ba5 100644
+>> --- a/net/can/bcm.c
+>> +++ b/net/can/bcm.c
+>> @@ -941,6 +941,8 @@ static int bcm_tx_setup(struct bcm_msg_head 
+>> *msg_head, struct msghdr *msg,
+>>               cf = op->frames + op->cfsiz * i;
+>>               err = memcpy_from_msg((u8 *)cf, msg, op->cfsiz);
+>> +            if (err < 0)
+>> +                goto free_op;
+>>               if (op->flags & CAN_FD_FRAME) {
+>>                   if (cf->len > 64)
+>> @@ -950,12 +952,8 @@ static int bcm_tx_setup(struct bcm_msg_head 
+>> *msg_head, struct msghdr *msg,
+>>                       err = -EINVAL;
+>>               }
+>> -            if (err < 0) {
+>> -                if (op->frames != &op->sframe)
+>> -                    kfree(op->frames);
+>> -                kfree(op);
+>> -                return err;
+>> -            }
+>> +            if (err < 0)
+>> +                goto free_op;
+>>               if (msg_head->flags & TX_CP_CAN_ID) {
+>>                   /* copy can_id into frame */
+>> @@ -1026,6 +1024,12 @@ static int bcm_tx_setup(struct bcm_msg_head 
+>> *msg_head, struct msghdr *msg,
+>>           bcm_tx_start_timer(op);
+>>       return msg_head->nframes * op->cfsiz + MHSIZ;
+>> +
+>> +free_op:
+>> +    if (op->frames != &op->sframe)
+>> +        kfree(op->frames);
+>> +    kfree(op);
+>> +    return err;
+>>   }
+>>   /*
 
->Add bond_ether_setup helper which will be used in the following patches
->to fix all ether_setup() calls in the bonding driver. It takes care of bo=
-th
->IFF_MASTER and IFF_SLAVE flags, the former is always restored and the
->latter only if it was set.
->
->Fixes: e36b9d16c6a6d ("bonding: clean muticast addresses when device chan=
-ges type")
->Fixes: 7d5cd2ce5292 ("bonding: correctly handle bonding type change on en=
-slave failure")
->Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
->---
-> drivers/net/bonding/bond_main.c | 12 ++++++++++++
-> 1 file changed, 12 insertions(+)
->
->diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_m=
-ain.c
->index 00646aa315c3..d41024ad2c18 100644
->--- a/drivers/net/bonding/bond_main.c
->+++ b/drivers/net/bonding/bond_main.c
->@@ -1775,6 +1775,18 @@ void bond_lower_state_changed(struct slave *slave)
-> 		slave_err(bond_dev, slave_dev, "Error: %s\n", errmsg);	\
-> } while (0)
-> =
-
->+/* ether_setup() resets bond_dev's flags so we always have to restore
->+ * IFF_MASTER, and only restore IFF_SLAVE if it was set
->+ */
->+static void bond_ether_setup(struct net_device *bond_dev)
->+{
->+	unsigned int slave_flag =3D bond_dev->flags & IFF_SLAVE;
->+
->+	ether_setup(bond_dev);
->+	bond_dev->flags |=3D IFF_MASTER | slave_flag;
->+	bond_dev->priv_flags &=3D ~IFF_TX_SKB_SHARING;
->+}
-
-	Is setting IFF_MASTER always correct here?  I note that patch #2
-is replacing code that does not set IFF_MASTER, whereas patch #3 is
-replacing code that does set IFF_MASTER.
-
-	Presuming that this is the desired behavior, perhaps mention
-explicitly in the commentary that bond_ether_setup() is only for use on
-a bond master device.  The nomenclature "bond_dev" does imply that, but
-it's not explicit.
-
-	Also, why is the call to ether_setup() from bond_setup() not
-also being converted to bond_ether_setup()?
-
-	-J
-
->+
-> /* enslave device <slave> to bond device <master> */
-> int bond_enslave(struct net_device *bond_dev, struct net_device *slave_d=
-ev,
-> 		 struct netlink_ext_ack *extack)
->-- =
-
->2.39.2
->
-
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+Thank you for the quick answer! I totally agree that this patch will not 
+change the behavior a lot. However, I think a little bit more error 
+processing will not be bad (considering this will not bring any 
+performance overhead). If someone in the future tries to use the "cf" 
+object right after "memcpy_from_msg" call without proper error 
+processing it will lead to a bug (which will be hard to trigger). Maybe 
+fixing it now to avoid possible future mistakes in the future makes sense?
