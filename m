@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 40BC76B9E3D
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 19:24:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 433096B9E3A
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 19:24:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230137AbjCNSYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 14:24:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54772 "EHLO
+        id S230100AbjCNSY2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 14:24:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229454AbjCNSY0 (ORCPT
+        with ESMTP id S229911AbjCNSY0 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 14:24:26 -0400
-Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2043.outbound.protection.outlook.com [40.107.105.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 723DC233C6;
-        Tue, 14 Mar 2023 11:24:25 -0700 (PDT)
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2062.outbound.protection.outlook.com [40.107.20.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F91793F0;
+        Tue, 14 Mar 2023 11:24:24 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OfKvcCfm/fUJhVU4LMZGz/tTXmwUztHahE1e13YpJGz2OdXQ5+ItZgx4kC1q4ymsCC1FLG+drBQcA3/oVSyBN4d9EGtjR1Nt7enPYfPehxRYkzN9FfvDTTI35LSTL3IQ1/i6tkr4/vqEM2ORtrImaAQlvq0d/dAwm89sjWewy4t6SLk7jUdb/wbgSRMOFZzZsytuGFENd/PIbYQd91YR4q8kuLDupWfL8CT8CpKtuLa2dgrMSaZd9XT46Zq0hbeXhwq7D1bjZ6GZ5Mv9k44Cp1Q+W26Ny4CaQ3H6t+MZa1bOHRbNe5pAlySvjMgh9Gi4ATd8Zu5LuQavIVMJ0D3aeQ==
+ b=KzfmewpgFHUqiHp70WDBIM7VhyZTEqPpoi7tA8TcXxqNdLspV4vp4yU0JIx4sW2uzng1fRE03F0ZpfJuzNBNImUtCsGlEi1s+VLVZA9LOqCjEIZatvUiEt7NHChGB47UWTymPfSaWRAr8aCBfbbyOF/0UT4b0OKi3gsnY+FRKkywMvIbhIYChILIbRUnK5qvGmKhMHTWCuA56UHcMDzrp7L9s+loAs/uq74qXVTOjEjv3OqtrNF56bcjtGhSRgT5xrOTqpNApse3FmsgWIUXiKldR8WiC+soqsyO6rvYf0v0+2p2OHC8P6PRM5n+WcxClnPwp8ZfD83QVBZ6EHaJmQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=eR7QpYWXBw/qReJPhtbzYNdvR3ntTr0TG5tipWAGQSo=;
- b=Q4vitrl1pbVf2L28R2zDV7EDW/4Fj3k3hhIlgdIZ+KJeTpEMv/ylUUfhJTf3XIucQefjcGZcq2uj+F6uDl14IU2pTCXHew3A/Ob3Dy2h6lRYKgv1kG3FQQNaBlJP5dL8U6GKeZUX0+K0b0qFi5rSJoitk/O+dIuQBmU9jAYQfhdOKdJqkK1ZLX3rXFqgs+0mTaEdIj57ubZmH5o4eQEY0bH4FuKrz20FOtrEHUCCB8vsOkx+eMrrROBE77XHeVRZjY8nqPe1izrOAmJGAgJjRvQm9DbMZ11hNQlqKriZKGamIVPVHgGjwy0HY+AhwQZzGCeo5/7Mk+WtfSThXF9ksA==
+ bh=Ji1AQ3axLN5PU8CX5sARaAzzFFdH02wUSgwLO60BNqM=;
+ b=aqBtgsUNm7mz8sX4xTyWcU5C4I8xD3QEbHAWYE4xFTnfi9eEcJKn79V8J0CS1M0SxI3UX/nQhQa19ksfmGKGZGrlFZYZ1Zzau2qZbhB7tNcjP32WEGvpCfU8RTrFHnsgRs+itNBHNNlp93MOb3snxASL7sO5hw5b0l/qZNWz+b/LdiSz4ik/o+19WJ+yfnXew6C/bCxcqBwMfkJ2mjdA7S0e9pCWI+cUHatXhT2G4ydJEqERjHvXjH1y0FC7MJjNxAHzQjoDl/uEZV2CBQ+JGFGdSCgo3uocl8TcDYing7iYNjmLI0wCJzwlnJWntTJTMpZFoxC/Yfz0wS82wH5Itw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eR7QpYWXBw/qReJPhtbzYNdvR3ntTr0TG5tipWAGQSo=;
- b=g3xHNudTDe5820bYynP3ncygBwSyDQRm8+C2r/WB+JtwoJoTOsUY5PdwypkTM5Q2MRhmtSQrXCP6wvkIctCwEGhC0CVUlp2uYiu+A1oUq9NCbdXIi5YXdShBWTBQSCPpmymd2kc6GAvs9HM98E62wxC5Ez64LgjBhETEsnhRFwo=
+ bh=Ji1AQ3axLN5PU8CX5sARaAzzFFdH02wUSgwLO60BNqM=;
+ b=gx4bQMrw6GhJx1qPX0D+icQJbzLruZ3zgAhNS6t+j5E4e0gS+uU46tCvceCeQZ+8xM1eRj2ll5MnG+YfAb/FVaCeKAPP55Zy7grFYl3z+/lVtMZS/n9drxi81Bm9S0wDh4M1ag1ANFilTNPC22H8tzRDsTQvJb3nxwUVmN52TC8=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
- by PAXPR04MB8253.eurprd04.prod.outlook.com (2603:10a6:102:1bf::7) with
+ by GV1PR04MB9104.eurprd04.prod.outlook.com (2603:10a6:150:23::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.26; Tue, 14 Mar
- 2023 18:24:20 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.27; Tue, 14 Mar
+ 2023 18:24:21 +0000
 Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
  ([fe80::29a3:120c:7d42:3ca8]) by AM0PR04MB6452.eurprd04.prod.outlook.com
  ([fe80::29a3:120c:7d42:3ca8%7]) with mapi id 15.20.6178.026; Tue, 14 Mar 2023
- 18:24:20 +0000
+ 18:24:21 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -50,9 +50,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH net 1/2] net: dsa: don't error out when drivers return ETH_DATA_LEN in .port_max_mtu()
-Date:   Tue, 14 Mar 2023 20:24:04 +0200
-Message-Id: <20230314182405.2449898-2-vladimir.oltean@nxp.com>
+Subject: [PATCH net 2/2] net: dsa: mv88e6xxx: fix max_mtu of 1492 on 6165, 6191, 6220, 6250, 6290
+Date:   Tue, 14 Mar 2023 20:24:05 +0200
+Message-Id: <20230314182405.2449898-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230314182405.2449898-1-vladimir.oltean@nxp.com>
 References: <20230314182405.2449898-1-vladimir.oltean@nxp.com>
@@ -62,53 +62,53 @@ X-ClientProxiedBy: AM4PR05CA0032.eurprd05.prod.outlook.com (2603:10a6:205::45)
  To AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|PAXPR04MB8253:EE_
-X-MS-Office365-Filtering-Correlation-Id: b737293a-4791-4465-ac9f-08db24b95403
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|GV1PR04MB9104:EE_
+X-MS-Office365-Filtering-Correlation-Id: e0c2b817-aa13-4c25-deb5-08db24b95499
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 1Wb3l3GovjT3EYb+13QrfX3QiRpRugvlIQ91yvTq9vvKoRY5QPa7pLuVxZquFCnN5wPMNUUdIsSmj3et9kQ0k9hWkl8Yeqt9LyQvMStll7Ht+vMlun/80A2O7whFcf3n3X6dMxTkRjQSIyPBDWcvQ9j/25Ic7sN5mhnG6npgxF4tdbL+FwN3MdWwLMVfQ4Z8jQTgEx7UiAZSWE4ZyESmbNwF0kTV9KWUoOjJv4ZRUSIE+ZaHjsGIpZ7Maz8eWK51YsfbvORwqKWm1KVO8XGH5E8OaWpx3JOWKtxnFUIgleZeVmNNU4hgcVJ1AcA9iRSmIfNJd60vatN1fuugtd3YbjHSD+hJhsaemlQkZ3ZzypIB5YnJyPYF1A5Ei7SPIeAqIkT2zLbQgTvJubLO3ZAg34t0UX5tOq+LOKS0yeoD4VqK3jma9HyDE8C5ZAqZKVTZeIfz45x5CNLW7QM2Xg9h34Osi+tZpLivQkqNfVF01ElXLeYlYFjzNrw99mfENP2sUK2kMVR4YKsCOpa8mYZVG8rhXW7gI+I/4ZR0kREpTINIKAa/6JEQmm0Af0+4qE6kuPFrek4BF9BK573s5Bfc9uuEwN/qQnulacgKAiqofkig+xoyM4pVTVTYdr8wwfwVO/V89BB32ub8jKTbm0ZXkRJexKLKdvEnKkZ8GJZJszFCZAVODgswkYtw6p8TNumhvvuHvnVpmGrcaWgCO5+g6GxQgb6BaVVF3VwFjKPDgRs=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(366004)(396003)(136003)(39860400002)(346002)(451199018)(38350700002)(66476007)(66556008)(66946007)(4326008)(6916009)(38100700002)(41300700001)(8936002)(316002)(54906003)(83380400001)(8676002)(478600001)(5660300002)(86362001)(7416002)(44832011)(6666004)(6486002)(36756003)(2616005)(6506007)(6512007)(186003)(2906002)(52116002)(26005)(1076003)(142923001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: yFo6opIEFk7fJjNsS7Z93abvTOsCHxMvmdWZFdE89wN1FXYvKp88jYgLAhfcBkPdLQFidugHRj73rtiHc2x5DE2ZVgBVbY1Kzepz7UveiOZZg2DKWuskFqsMoc959RhQFlCLBu/y4F++NxbjiRCJSe/PcfKd3vqNjgtLVz8TJXDU+4c5D4X6vT0rGIxUx0ffwcJbsznL4woqr2vdAIZD0lqTW6ekYFgm9UxCeCbGNJQCW0Vtcxffj0Nq72aYW991+S/BH/APBnoFkFKD+BebL6tSFxeXWu7HwUKp4qrq2vLnXusbf15Dgch53JHFbHx5fKgJZD1tUlCpexF2pOjv630PkWkEXc/q6MIGmdCNPeCt9w4wrAfYgg5FM6zlPGO3TXFI+tzdw0ai9yahrWkC9fmzq7FxVHLq5WIjuOgIHNofW6pRpCSCvkjdqleBbtFbb9aPbXXzDwojttBzotVuusrbT5cEztInEYSItTqrBzfYjaP8vd/0W71QuzmMtqbweSFvZ4QsGoLWaoOcSrhS4UX12DcPhP3sKPxHwvJigck6AVvzHibFp0TuB2qUkZ/OSGiepi8fNZgeT4Ha0l4kjXa9hCwMeOFqyKyKCd/JvRYw/MTNP8SH8zfyhahN2OTEAH3DPLeJVcv/d10EPngmCforzNR8A9R+HeZoUwlapW3KnqpbcZ8D/2A15TxSBKJBG7hdzShkITYnAO0BQj61tA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(39860400002)(376002)(366004)(396003)(346002)(451199018)(38100700002)(38350700002)(2906002)(86362001)(2616005)(52116002)(478600001)(6666004)(54906003)(6512007)(6506007)(1076003)(36756003)(316002)(4326008)(41300700001)(66556008)(8676002)(26005)(66946007)(6916009)(66476007)(7416002)(186003)(6486002)(8936002)(5660300002)(83380400001)(44832011);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LjD+HUzTuT8tCi2b/8XSpLEiS729O82dRu4bVbAQnGeb2y7GtyGI28ZW7YjL?=
- =?us-ascii?Q?eYXZZGopC8c8Z7R+5seKEpzywtCenPKKwBWD7eROUzPeDmVpeWXcdSLnVD3s?=
- =?us-ascii?Q?kQYm00rXZFuD+tJgvftKQkm/v3pgeglAb7mgZyrEgsonNmjSAdG2Z4N9p2KQ?=
- =?us-ascii?Q?rZ2uInAcqXBB8FOovAufnzRSGuR8xx/4GSRxjZ8HLODDwoqXi0zVCvJQigLc?=
- =?us-ascii?Q?a1AA8Z4xwjEUum+hcbIf8YA8J8/darf+a6QctuawzMe9fnCBmRTMmJOwfSMQ?=
- =?us-ascii?Q?1dsQ1pdZBcNtA8PeyySvNB3Fw3d7rFEE6PGrNpyVWUpbrlCdmoB/cGomUkcp?=
- =?us-ascii?Q?MwtxLWNHHimIedRRheJJ8i5yrAH4Mpa5Cl14jS25xOyoGUq/oi2fI6KQBkqp?=
- =?us-ascii?Q?+VltJqHnyGXrrjngkF5iaqZgNbW9U6PPPRNpUiOSYo8NM+JRC72REE2gXsgK?=
- =?us-ascii?Q?VpIbFqQfmbIPGK9Xea8QuRXd0rQAQuKIJPKoaaNyz4BQhWytP8jqkcmm7JK0?=
- =?us-ascii?Q?AkJY5y9zSM9JrT0lBItjKE+hFj9rwXxokn+t9AbG4at/04nWBf9d4Rn3m/ql?=
- =?us-ascii?Q?iai4K3jkwwU+LXmWII41jLa90hV8NmI1EZKTeU6pSFgvEeDgDlp9rK+mAjQQ?=
- =?us-ascii?Q?Zz9y+VRxNZxAYg1+BlnAb5pdyawmC9Qm1w9r+ON6DZk6emOW83k13xt3eoRu?=
- =?us-ascii?Q?kTplCYdgVZ1EGp1XfXcnxR99xYe/Z3MVTZH5l66PcP/hFoLe1Cr7n/EustgG?=
- =?us-ascii?Q?Eu0n4d5C8QiFyzjQwrScsInNWk0ffi8EMWzf1g0lfIsvxXMWzCCT8HQW0HqR?=
- =?us-ascii?Q?e1lGeVsvNGK3/oAKIVX9d4x2UP1dkrB8xK3thC41HL2br0L4yeH6DooEZ6zv?=
- =?us-ascii?Q?t3BC3blS31oQ5Vjr10SVNOg/MxutoJ78Aso/cxRB89ADbrynD3iH4yYikO5w?=
- =?us-ascii?Q?3MaClT9nWbT2VFdGmBji8ZODR0dHrvc8PhjEA/vtgOK9bzgZeHhF7ihxfkcb?=
- =?us-ascii?Q?wMooqRJcX/rKcesXHnWFqK3h5KqopeVkvg1qBS4m1CSa9h8Os+/mTHKSet7+?=
- =?us-ascii?Q?MO9dBYvXSQWwqebPbhYEjVvDEWjPqe5l9OvZRhzOZ7l/3+UwaTLaffxTQZHI?=
- =?us-ascii?Q?i3kNwf6Pzbm/oMd8Arpz6XIy2UxTMJOdzJZKNNPFWIh/2CJ9YnZRGzAAbUWD?=
- =?us-ascii?Q?C89SMUR5pEJlmTdHVST6R6ZnzMNkZ+4bXOyu60J45BOgbB1/27Lr4Ks3VJgM?=
- =?us-ascii?Q?Yb2TTXJZiRmWqzhV1+UAbGPy3MIuFOZehTdy6Jl0maYAqzkF4r4+gJcchLDB?=
- =?us-ascii?Q?jwl62lwBNnaUm/MglLiwpU6dQ8nLTPAG7N+n8jnu0ro3rX+OaVb/nny6JXgf?=
- =?us-ascii?Q?DwM9ceirExfrKy9GmmP8Tf1k/EqLFYIecYahXrCYBwiIJUNdesPXhmFDSOd8?=
- =?us-ascii?Q?NwA0iYMqWLrWrz6e+Kog5c/nY79asCO+ZMOf0U3E/W/D9z0ST37S21fq6ZSa?=
- =?us-ascii?Q?4DOO+H0p7pqJBd2/djdI5waccD2eumgHLO2uIN72SvCL7cNvREljf5CxsTSu?=
- =?us-ascii?Q?x/hR4AtZAZtTVEh4xHr0pi/2K3FH5bVNP7Fg65Xu67U60Mnn2maGX4XJymZ0?=
- =?us-ascii?Q?2A=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?xa434fnoAUR+ZWlcjGAfK72YiRb4l1GoUaLhzlHcVqs9DgcoN0gk/ychETdI?=
+ =?us-ascii?Q?aHu6WSGM/WXLVpeHoNVbbnoGL22+gSo4Pt+K2gG+dXuZ+JmJs7s6tbGiySxG?=
+ =?us-ascii?Q?WPjDUvFgq1zbRYvrHuEHA3pddlS8ml9sfRQEsw+1eAHWcygnpfcKhBy01pPO?=
+ =?us-ascii?Q?XUoVxrUQFE52gv67h8ZyJuro81jWrwVbKR0rZXwK4O1mRptW8x++lC9N/jMe?=
+ =?us-ascii?Q?lUej2PedFYByXVPzx7/okU5E1HqxonqfxKQ9NlAdrx+gar7/7UiUOhoJ9Npl?=
+ =?us-ascii?Q?2mv9cGguz7v9eAMwE3aOQBAh6NUdjT50yxggSq5X3o8oTTnXADdXr5EUfNhE?=
+ =?us-ascii?Q?avjxTVih0mEhTYdwWaxzVK1gyhSXGLvMp/OYZdwKpKvZGpKzVkbNfYCzeQje?=
+ =?us-ascii?Q?QW3U7I0fOMm91aEaQHj0W8Ehe1qVFet2e/Atg9fCFB9Ds2ef16OoQ5KbYc9u?=
+ =?us-ascii?Q?TVAxfppIB00a2GRX3iPfk3C6aw6OSpO/mfDiKUzU2PQUq1wBfKHamOtCvZsz?=
+ =?us-ascii?Q?bJNFOZ13GwJW89AfFYdI+IytfDkbba/26HpZqOMsvT6qDMZgURrzfpZqgGZf?=
+ =?us-ascii?Q?wRzEC5dPeW2f4c0wPFyDj4ytZWAfhBNcfKnOB+n+8QzNudf8shGvcC7erG4C?=
+ =?us-ascii?Q?gSYqU1Fpsi9tCqQ770ZI/odH8uIHk5ZyLU6ILjlPq5NZmpwe+6EXZQLc3KkW?=
+ =?us-ascii?Q?ORPUO4YlA/mDtCDTQJEvKoEm9X0snLOYPeufmmf2PLwAlW978VTpLg/1bZBL?=
+ =?us-ascii?Q?twH9PoLtQqbj9Y8QGRoaA/7KTXiJh4vLowHsDZRgw4h3vZloz7FGRoMyycSY?=
+ =?us-ascii?Q?SaTD58ZJ94Lef+Bga3cHX/asVwx6L5511uD83U6eL1WjkyHlWuS6LguAU7kD?=
+ =?us-ascii?Q?SCoSXlqD0UDN4nvTYEdI9wtN45VNADyZ7ILeMfhtCyXJOMYT6VuKqP5sV+bp?=
+ =?us-ascii?Q?+XoHD3GAcz+JTak1qzr9cq+1SrgOnRpIeLqZ/6AUW1JCUiWOgYhknE+YcBin?=
+ =?us-ascii?Q?TSMiGyTldmXfHOF+AWvhKChtA0kCoobmhE7hogJNulmso/HD3DfIM2aBqXfm?=
+ =?us-ascii?Q?yk3s3s+FdFF1CPexfd4efw/r4z7Tl49UTAApbVMG0MILYrr0Pv1vlEV0M5q1?=
+ =?us-ascii?Q?I73waLwzVkrNx+UDfvz14uda6i/orrHt08G4usJ472mecdJsMidXqI5g6BMD?=
+ =?us-ascii?Q?vLQhnnq6WePwYHSbYGMQBHch3wzdTLO0AABiif48f6jDxSGgcxvTYUI6ft12?=
+ =?us-ascii?Q?aI7TTa1fXe1cujixnfwrmXqu2LlbnUpR6BdbM3CAdjJqFSnhqMT4oN3I9zVz?=
+ =?us-ascii?Q?OdWuqlh6niBoibiOoabINHf94zuHKMczIyEnty67GRT4ohYOatOFTO07SLs8?=
+ =?us-ascii?Q?ZVSDM4Zsc+cyD99muEnSvuTEj0dyOgCAw9hbdVfsfcVHB+UjdbWyIFF3ptja?=
+ =?us-ascii?Q?vwm+SD1Hrzr6QIT5we0mSQneh8FiGoXilwek7SCNSpVlEVVEPKecixUdZfg3?=
+ =?us-ascii?Q?z5m16z8vhPL8xS7UEI9yd33m8p5n3DH7ZbC4N28I9ZIxG4aevc2XHgz+3Enf?=
+ =?us-ascii?Q?Ze3XUtIrIKJasovOJ6QvHctFwJeMAzWeen5Bq6MIBm3Ixxdem5WJ5yI2P/I5?=
+ =?us-ascii?Q?ag=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b737293a-4791-4465-ac9f-08db24b95403
+X-MS-Exchange-CrossTenant-Network-Message-Id: e0c2b817-aa13-4c25-deb5-08db24b95499
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Mar 2023 18:24:20.1852
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Mar 2023 18:24:21.1695
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2obLCxAF6xUzA3GJinQeGY6sZgY8anl4+OV17u2LqouSXBlvkvgmkygnQ8TkIeRvJkezr4J0R/ADoyZResHYHA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8253
+X-MS-Exchange-CrossTenant-UserPrincipalName: q5/85lvSJugXLTepHMHqSfSnXSKxlecHR8xb6QaixrxWR+1CXAlReDhlhYa5oAD+iLta8V4DdObbienSUvQ/bA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR04MB9104
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
@@ -119,71 +119,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, when dsa_slave_change_mtu() is called on a user port where
-dev->max_mtu is 1500 (as returned by ds->ops->port_max_mtu()), the code
-will stumble upon this check:
+There are 3 classes of switch families that the driver is aware of, as
+far as mv88e6xxx_change_mtu() is concerned:
 
-	if (new_master_mtu > mtu_limit)
-		return -ERANGE;
+- MTU configuration is available per port. Here, the
+  chip->info->ops->port_set_jumbo_size() method will be present.
 
-because new_master_mtu is adjusted for the tagger overhead but mtu_limit
-is not.
+- MTU configuration is global to the switch. Here, the
+  chip->info->ops->set_max_frame_size() method will be present.
 
-But it would be good if the logic went through, for example if the DSA
-master really depends on an MTU adjustment to accept DSA-tagged frames.
+- We don't know how to change the MTU. Here, none of the above methods
+  will be present.
 
-To make the code pass through the check, we need to adjust mtu_limit for
-the overhead as well, if the minimum restriction was caused by the DSA
-user port's MTU (dev->max_mtu). A DSA user port MTU and a DSA master MTU
-are always offset by the protocol overhead.
+Switch families MV88E6165, MV88E6191, MV88E6220, MV88E6250 and MV88E6290
+fall in category 3.
 
-Currently no drivers return 1500 .port_max_mtu(), but this is only
-temporary and a bug in itself - mv88e6xxx should have done that, but
-since commit b9c587fed61c ("dsa: mv88e6xxx: Include tagger overhead when
-setting MTU for DSA and CPU ports") it no longer does. This is a
-preparation for fixing that.
+The blamed commit has adjusted the MTU for all 3 categories by EDSA_HLEN
+(8 bytes), resulting in a new maximum MTU of 1492 being reported by the
+driver for these switches.
 
-Fixes: bfcb813203e6 ("net: dsa: configure the MTU for switch ports")
+I don't have the hardware to test, but I do have a MV88E6390 switch on
+which I can simulate this by commenting out its .port_set_jumbo_size
+definition from mv88e6390_ops. The result is this set of messages at
+probe time:
+
+mv88e6085 d0032004.mdio-mii:10: nonfatal error -34 setting MTU to 1500 on port 1
+mv88e6085 d0032004.mdio-mii:10: nonfatal error -34 setting MTU to 1500 on port 2
+mv88e6085 d0032004.mdio-mii:10: nonfatal error -34 setting MTU to 1500 on port 3
+mv88e6085 d0032004.mdio-mii:10: nonfatal error -34 setting MTU to 1500 on port 4
+mv88e6085 d0032004.mdio-mii:10: nonfatal error -34 setting MTU to 1500 on port 5
+mv88e6085 d0032004.mdio-mii:10: nonfatal error -34 setting MTU to 1500 on port 6
+mv88e6085 d0032004.mdio-mii:10: nonfatal error -34 setting MTU to 1500 on port 7
+mv88e6085 d0032004.mdio-mii:10: nonfatal error -34 setting MTU to 1500 on port 8
+
+It is highly implausible that there exist Ethernet switches which don't
+support the standard MTU of 1500 octets, and this is what the DSA
+framework says as well - the error comes from dsa_slave_create() ->
+dsa_slave_change_mtu(slave_dev, ETH_DATA_LEN).
+
+But the error messages are alarming, and it would be good to suppress
+them.
+
+As a consequence of this unlikeliness, we reimplement mv88e6xxx_get_max_mtu()
+and mv88e6xxx_change_mtu() on switches from the 3rd category as follows:
+the maximum supported MTU is 1500, and any request to set the MTU to a
+value larger than that fails in dev_validate_mtu().
+
+Fixes: b9c587fed61c ("dsa: mv88e6xxx: Include tagger overhead when setting MTU for DSA and CPU ports")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/dsa/slave.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 6957971c2db2..cac17183589f 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -1933,6 +1933,7 @@ int dsa_slave_change_mtu(struct net_device *dev, int new_mtu)
- 	int new_master_mtu;
- 	int old_master_mtu;
- 	int mtu_limit;
-+	int overhead;
- 	int cpu_mtu;
- 	int err;
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 0a5d6c7bb128..30383c4f8fd0 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -3549,7 +3549,7 @@ static int mv88e6xxx_get_max_mtu(struct dsa_switch *ds, int port)
+ 		return 10240 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
+ 	else if (chip->info->ops->set_max_frame_size)
+ 		return 1632 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
+-	return 1522 - VLAN_ETH_HLEN - EDSA_HLEN - ETH_FCS_LEN;
++	return ETH_DATA_LEN;
+ }
  
-@@ -1961,9 +1962,10 @@ int dsa_slave_change_mtu(struct net_device *dev, int new_mtu)
- 			largest_mtu = slave_mtu;
- 	}
+ static int mv88e6xxx_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
+@@ -3557,6 +3557,17 @@ static int mv88e6xxx_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
+ 	struct mv88e6xxx_chip *chip = ds->priv;
+ 	int ret = 0;
  
--	mtu_limit = min_t(int, master->max_mtu, dev->max_mtu);
-+	overhead = dsa_tag_protocol_overhead(cpu_dp->tag_ops);
-+	mtu_limit = min_t(int, master->max_mtu, dev->max_mtu + overhead);
- 	old_master_mtu = master->mtu;
--	new_master_mtu = largest_mtu + dsa_tag_protocol_overhead(cpu_dp->tag_ops);
-+	new_master_mtu = largest_mtu + overhead;
- 	if (new_master_mtu > mtu_limit)
- 		return -ERANGE;
++	/* For families where we don't know how to alter the MTU,
++	 * just accept any value up to ETH_DATA_LEN
++	 */
++	if (!chip->info->ops->port_set_jumbo_size &&
++	    !chip->info->ops->set_max_frame_size) {
++		if (new_mtu > ETH_DATA_LEN)
++			return -EINVAL;
++
++		return 0;
++	}
++
+ 	if (dsa_is_dsa_port(ds, port) || dsa_is_cpu_port(ds, port))
+ 		new_mtu += EDSA_HLEN;
  
-@@ -1998,8 +2000,7 @@ int dsa_slave_change_mtu(struct net_device *dev, int new_mtu)
+@@ -3565,9 +3576,6 @@ static int mv88e6xxx_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
+ 		ret = chip->info->ops->port_set_jumbo_size(chip, port, new_mtu);
+ 	else if (chip->info->ops->set_max_frame_size)
+ 		ret = chip->info->ops->set_max_frame_size(chip, new_mtu);
+-	else
+-		if (new_mtu > 1522)
+-			ret = -EINVAL;
+ 	mv88e6xxx_reg_unlock(chip);
  
- out_port_failed:
- 	if (new_master_mtu != old_master_mtu)
--		dsa_port_mtu_change(cpu_dp, old_master_mtu -
--				    dsa_tag_protocol_overhead(cpu_dp->tag_ops));
-+		dsa_port_mtu_change(cpu_dp, old_master_mtu - overhead);
- out_cpu_failed:
- 	if (new_master_mtu != old_master_mtu)
- 		dev_set_mtu(master, old_master_mtu);
+ 	return ret;
 -- 
 2.34.1
 
