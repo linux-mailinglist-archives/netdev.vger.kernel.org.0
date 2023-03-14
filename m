@@ -2,133 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12BFA6B9A33
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 16:46:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E5026B9A36
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 16:46:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230164AbjCNPqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 11:46:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39690 "EHLO
+        id S231484AbjCNPq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 11:46:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231437AbjCNPqe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 11:46:34 -0400
-Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D169569065
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 08:46:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1678808765; x=1710344765;
-  h=references:from:to:cc:date:in-reply-to:message-id:
-   mime-version:subject;
-  bh=b8m7nO0Bmp5ymxlCAIQHK+OML+5cZteC5meaEPmcKCM=;
-  b=kIqPMTdHgFVDKgVsAdVcVe/gH082b3rErxqTBm8XOqk6H/xAZPzyAMVH
-   G5nBkJmyziHdS+0N4t23zP62cX9TIEemlykBRj23aOwVZMHU7LgJx+NYP
-   Mu0RKdIeHjgSBTl0cuc87K+J5f9h28jmKRhYJA7JgAv7XtmnYPeo4o7HW
-   k=;
-X-IronPort-AV: E=Sophos;i="5.98,260,1673913600"; 
-   d="scan'208";a="1112552210"
-Subject: Re: [PATCH v4 net-next 1/5] ethtool: Add support for configuring
- tx_push_buf_len
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-ed19f671.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2023 15:45:40 +0000
-Received: from EX19D014EUA001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2b-m6i4x-ed19f671.us-west-2.amazon.com (Postfix) with ESMTPS id 31F79819CD;
-        Tue, 14 Mar 2023 15:45:40 +0000 (UTC)
-Received: from EX19D028EUB003.ant.amazon.com (10.252.61.31) by
- EX19D014EUA001.ant.amazon.com (10.252.50.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.24; Tue, 14 Mar 2023 15:45:39 +0000
-Received: from u570694869fb251.ant.amazon.com.amazon.com (10.85.143.174) by
- EX19D028EUB003.ant.amazon.com (10.252.61.31) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.24; Tue, 14 Mar 2023 15:45:30 +0000
-References: <20230309131319.2531008-1-shayagr@amazon.com>
- <20230309131319.2531008-2-shayagr@amazon.com>
- <316ee596-e184-8613-d136-cd2cb13a589f@nvidia.com>
- <20230309225326.2976d514@kernel.org>
- <d438ef12-86f8-7415-4690-3e378ac1048f@nvidia.com>
- <20230313120942.75599b8e@kernel.org>
-User-agent: mu4e 1.8.13; emacs 28.0.91
-From:   Shay Agroskin <shayagr@amazon.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Gal Pressman <gal@nvidia.com>, David Miller <davem@davemloft.net>,
-        <netdev@vger.kernel.org>, "Woodhouse, David" <dwmw@amazon.com>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        Saeed Bshara <saeedb@amazon.com>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        "Dagan, Noam" <ndagan@amazon.com>,
-        "Arinzon, David" <darinzon@amazon.com>,
-        "Itzko, Shahar" <itzko@amazon.com>,
-        "Abboud, Osama" <osamaabb@amazon.com>
-Date:   Tue, 14 Mar 2023 17:38:23 +0200
-In-Reply-To: <20230313120942.75599b8e@kernel.org>
-Message-ID: <pj41zlbkkv2v6z.fsf@u570694869fb251.ant.amazon.com>
+        with ESMTP id S231528AbjCNPqs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 11:46:48 -0400
+Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-db5eur01on061f.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe02::61f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 287A01A1;
+        Tue, 14 Mar 2023 08:46:18 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YfZ9VjDfc4BYaOmNfvM3jwVVA8bWjQRwSpMqrIpHFATlxkJeqSf1gPykBii4z1i1DLp70OArHoAJSktWOfAFm6IaF4CloMZwBXI2yHhoogMHj36rujv7W45pc+x//rxBcPm85gZpZDm3cIQZmfsQM458CRVIfoIitcZnsSAgRmb2pvEyREj95BffXc3DE/s+kLHDI1UOrt3GcJRLP+z15uSgedGdYdQjDoMPRcGNlZ7TbYHEhTZtCjuW0stGNqZjPb/Y4CN35lvy6Tvtr9d059+hREIuTdX5ZWJ+mKVkV02Su14JA8QrUiDyo6Xa6Qumnzd8BCJbpfncTLbhEB5REA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QSEVygR0e+cT7g/SI5Milnp6h8l6VBpcnJ+LDP6ZNxE=;
+ b=UY5xax05x65KMfHNbObpAyCbvRJJOPsrHEW+fYTgb1WpyyST3i9ANbt/h5OmxJWupBej8R+nqjCSxsgC6258G8tW3fkNxJC27bGXswZloXiRyTlDin938jXgh5sk2JGB2W+S4pcomOIl+SWlKNe6YwvdK5KiApyk6urD1lewwBMmw8JEVuDEEO9IapTCABNJIGu80iqTMK64pnjH7TlFRGTMBul48Gdclx68ceWF5uSvsxcKoBlNSFsihsRBdgnQSC88QqdXrCzin5neI41dUX6w+fnaDglxEnnh+5z5M9bd1nwiqB5TQtLbSOWdRMgmyYwTYDrTLPcUa5p6InVuRg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QSEVygR0e+cT7g/SI5Milnp6h8l6VBpcnJ+LDP6ZNxE=;
+ b=m9CCiomFds9YMa44zUy3vhBZSFIJ8ou3tfvNs8DOVFpsp129tx2eRFSQ5d0XZtc1PHYzjHyl0ui1ejQ3tG7uJvEDNuilEybPSd77P2NINOVCNdElW6xRMRcTZfDxBXdsnpeFQ6ygSxtGVuhtSvc388+07DWB8bfiqL9b+gUvvmc=
+Received: from AM9PR04MB8603.eurprd04.prod.outlook.com (2603:10a6:20b:43a::10)
+ by PA4PR04MB7744.eurprd04.prod.outlook.com (2603:10a6:102:c9::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.24; Tue, 14 Mar
+ 2023 15:40:34 +0000
+Received: from AM9PR04MB8603.eurprd04.prod.outlook.com
+ ([fe80::45d2:ce51:a1c4:8762]) by AM9PR04MB8603.eurprd04.prod.outlook.com
+ ([fe80::45d2:ce51:a1c4:8762%5]) with mapi id 15.20.6178.026; Tue, 14 Mar 2023
+ 15:40:34 +0000
+From:   Neeraj sanjay kale <neeraj.sanjaykale@nxp.com>
+To:     Simon Horman <simon.horman@corigine.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "marcel@holtmann.org" <marcel@holtmann.org>,
+        "johan.hedberg@gmail.com" <johan.hedberg@gmail.com>,
+        "luiz.dentz@gmail.com" <luiz.dentz@gmail.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "alok.a.tiwari@oracle.com" <alok.a.tiwari@oracle.com>,
+        "hdanton@sina.com" <hdanton@sina.com>,
+        "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Amitkumar Karwar <amitkumar.karwar@nxp.com>,
+        Rohit Fule <rohit.fule@nxp.com>,
+        Sherry Sun <sherry.sun@nxp.com>
+Subject: Re: [PATCH v10 3/3] Bluetooth: NXP: Add protocol support for NXP
+ Bluetooth chipsets
+Thread-Topic: [PATCH v10 3/3] Bluetooth: NXP: Add protocol support for NXP
+ Bluetooth chipsets
+Thread-Index: AQHZVotRGPsclWmNZ0GS/ELZRggMMQ==
+Date:   Tue, 14 Mar 2023 15:40:34 +0000
+Message-ID: <AM9PR04MB8603E3F3900DB13502CFCB8DE7BE9@AM9PR04MB8603.eurprd04.prod.outlook.com>
+References: <20230313144028.3156825-1-neeraj.sanjaykale@nxp.com>
+ <20230313144028.3156825-4-neeraj.sanjaykale@nxp.com>
+ <ZBBUYDhrnn/udT+Z@corigine.com>
+In-Reply-To: <ZBBUYDhrnn/udT+Z@corigine.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: AM9PR04MB8603:EE_|PA4PR04MB7744:EE_
+x-ms-office365-filtering-correlation-id: b61f96cc-4fac-4f27-7e01-08db24a2739a
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 6BGl5JB51HkFjgStFdEqtNTxmMjelXh6gOLTYWz59oOhDrxstORjVirg5v2bBixJKcoPEDPwrV98v5/DxfC0HoIy8/+oYaqLMGFqQl+/vzc+AOpiM3wXfRM8Cv6RB4aU0IK65MpRWYgUhkUCf8w6cMu/TBKjpnv7HJPyp/LKisPM6BZr7jLb1kSAOySYy8ks4KwcoNJAGPK1Gyo4RS0B5WKqbzmSF5SsayXQMscSjSpeXv1GTom1ThAxM1b7JS9l3OR7Hnt2vqt3oktoiIhbM0HPrjxbneXtan/CFwvvwN4+aHy4XCWT6a2HEFAwsR7GGTGR7xRwjyXA7EiSI3QbBP8sqBiLPQbYcFEcNjP4ZuKNR1ke1n3eAFjzDj6vhfRbmKl2UYma3kNgPxf3OiCr/SLSjo6A6FuEBCSI/h+pYT6+VRF/Fm9Nso0BaZWYoeQG0aS/NfBHatptbGM1fbZPI1bLpb1omkCBh1isUZZcxLjC3P/d8cHJb/7ehGWP/36sqPLqy1Wykpk52+ASPJERP4GRbRzw/2zit/gXIqsRkYfp6+XaQdVjHIVUDNyFthsNdNZNsKkSQyqH8HA7193O4Yv8WuMPTl1QKaIj/izTcKZC0Na4AutmkWEb9BI8Pr8DYMFQv5IQi/B+N69Rst32DU+iZarjm8Dt8z0gLPjdj1rRdz/LgeH5t/JzayQtBO2ORlNBWa9bYYajmw5rG/eRqA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8603.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(366004)(136003)(39860400002)(396003)(346002)(451199018)(6916009)(9686003)(4326008)(8936002)(5660300002)(52536014)(186003)(26005)(41300700001)(7416002)(6506007)(86362001)(33656002)(316002)(4744005)(2906002)(55236004)(83380400001)(66476007)(66556008)(64756008)(8676002)(66446008)(66946007)(7696005)(55016003)(71200400001)(54906003)(478600001)(38100700002)(38070700005)(76116006)(122000001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?M1FCaDFENVVrTGY5REFnNEE1djIrdWk1ZVpFa2c1V3NMNnQwbHhGZXF0ZGxp?=
+ =?utf-8?B?UzM1dGs0Q0R3L2RNM3RMc0RacE9WeDdhMVc5eGdaZ1pIZXlxVTJoRWZucmJZ?=
+ =?utf-8?B?My9jbTNDWUNaekowK1BsckNYVjI4SFQ3THUxY3hBcTVWTGxkejdOVkp0Q3J2?=
+ =?utf-8?B?WTlPY1d0aE4wSXVqK0FEWGFYSkpDRE1pOHR5TEdlZm5odzN6MWxWV1QrSzNF?=
+ =?utf-8?B?c09yWkxsd1JDNWVSS1lxTnNGS1RjVVVtUW1VVFpEQ2VMeWlXR3oremFNN0ly?=
+ =?utf-8?B?R0tYK2twSlVlVU5CalVHb3hkUWRJNnJtTkVYd3ErSGM1L1IxSE15R3FDN0tn?=
+ =?utf-8?B?eUJLVWNrQWdlcEFrMmFHS2h0aXJmU2U3MGNHM1M1V2swYWVzL1BxUjBLQjRa?=
+ =?utf-8?B?M2JMYm1CNWh1WU1QM1RpZythTW5OejNkTzFoUEpyWWxHZEZCV1lISXA3VzhC?=
+ =?utf-8?B?c3NxeEs1NjlieFhOZ0I3cFgzaWlrVFVGb1M5dDhlTDlKNUd1Z2NuSnlWSjVU?=
+ =?utf-8?B?MEN5cnFhNGc5WVdYdXI1UVZ4TXFSRmtlTmlUWHJ6MmtyVkxldGNoWXllMjRj?=
+ =?utf-8?B?UzVWd2I0UkJCY1piSGRZdTM3SWVHeEZlQ1JVbXVYUXBVeXNYbi9pM0IxeUx3?=
+ =?utf-8?B?ek5VVUdnRFVPNlNoZXJGQzNaa3JCZXhabTN2WG1oOW12UFRIS2FzdlB3WXNF?=
+ =?utf-8?B?c2xVNFZURFFmbE5aUlZ5OXhScWhhNERJZEFDa00vVmxqMWM1U0lwR0UyTDBs?=
+ =?utf-8?B?MWJ5YTBrMU02UlBicHhTVU5PdENsM05uQTIycGNic0FRMjdKS2lnSWFITE8w?=
+ =?utf-8?B?MCthL2NIcDdCVXF6ai9WN1RLbk5WTGRPeUpQcjJESEtvU1M5c0lFd2hYck5s?=
+ =?utf-8?B?ZXVLdGxETXJ2SUJpK3hocmlDMzkyaDVBMVFvdVBVSS9naTh4TGo3VGNnV1Jr?=
+ =?utf-8?B?Y3NlY2VYZVlKMnp2SnRlWHJ5NkhudUExckdUVVNuMHFxeUh2ck9DR0RXbmVy?=
+ =?utf-8?B?VlNwcTVSc0QxdEJJVlVzbnp1NnVCS0ExbmJtTXdmYWd2c3lWRlp0b3hZYzF3?=
+ =?utf-8?B?dFQyeG1EUlNPbU5DWmpydUNFZTY5TFFPYlRDb2tQdnNRdHVlV2NxSjVzZ3pu?=
+ =?utf-8?B?REM5bkFBVW1oNHlTYUdiT2Vsd1FuUGh6ci9VZnJoL0x0SEJtc0YxdzVtaVdU?=
+ =?utf-8?B?TWdLS3A4WTZ3VVY1cXJmT1FiaVVGVU01ZmRjMENRR1lEM1I4dDRpRG1jNzh1?=
+ =?utf-8?B?TDUweEEyd0RleW4zTjc0WjdKL3JYcmJFZ2pDNjVBU05YZFVsdEllbkhWc1NB?=
+ =?utf-8?B?YTViSVVIOHdBMVp3QWpEVWRNbXVSV0VJeGdyL1NCZDRlbG1rMGpBU2V5ZEly?=
+ =?utf-8?B?WHNtZ1VMQ3Jsd1FCT3lRMHJXWnhpc0FxMUhWc0t3RTlaSkhOekZYV3F6R1ZY?=
+ =?utf-8?B?WVdUdVFIejNQOGNwcUE5S1ZFYjlqdmNpbzI2dzRkaGpPTi9KVGUrY3VFampT?=
+ =?utf-8?B?QSt4WWJkV21QdEpZRUtzSVB2ODZXNzJhcUxTSkNueVEvdjB3L2xxcm8yL1NF?=
+ =?utf-8?B?d0Y5VVRycldoZ3QxeFBxckRyeno5bklkV1BxdTErb0o5MXVHVnVjejBtRFl0?=
+ =?utf-8?B?Y0g4YUo5NlduZ1p5YkUzQTN2WFVzUCtxWUlSUWpid05IWnFiNlJ6NWFIS3o3?=
+ =?utf-8?B?a1VmOWo1S0grSTNsdWZiVm1rM3Z5TkJ0ZmNqSjJYY0lkNm5Lajl6eEJWS0Vz?=
+ =?utf-8?B?cm9BbmZJU2tDRjAvTGpSWE13TEhNcE43TlNha1JxaEpjRjY1YythYkpUMVB4?=
+ =?utf-8?B?eW5zT0FDdXBLOVhmZ3JiVVNoZkdQeVVsdUJ6ZDhaOWV5Z25PdVc3MHo5ZjZs?=
+ =?utf-8?B?UERvMGZQbi9Ec0U2dEhqOXJwQjlxK2ZDZ0Z0TXVRUzgyY1VRTzhjSUlScTBn?=
+ =?utf-8?B?OStUMFRIWnozZ0Z5RUNTTTBlcjR3Snl0cjVGQUpRV09qMFJ4SFVhSWJxbVRw?=
+ =?utf-8?B?VjJEL3ZtV0l0RkVDeWtmMmd5K0ZlL0w2aEVhbk00eXFXK3BwK0FucUU3VXhN?=
+ =?utf-8?B?WUJFOFNuSEc2Qm90TGNsT3pPZFQyQVJ3azMrcEJibkQrTjlRYSt5aDZxd0p5?=
+ =?utf-8?B?KzVNVkg1OU1DUFRhbWtSOURkcWxFb0w0VUREUG4xajFUOC9QSUFUdXpHSEtr?=
+ =?utf-8?B?ZlE9PQ==?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
-X-Originating-IP: [10.85.143.174]
-X-ClientProxiedBy: EX19D039UWA004.ant.amazon.com (10.13.139.68) To
- EX19D028EUB003.ant.amazon.com (10.252.61.31)
-X-Spam-Status: No, score=-11.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8603.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b61f96cc-4fac-4f27-7e01-08db24a2739a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Mar 2023 15:40:34.5395
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Tqlnv9B+EGQAz/PMz5kpY3/gh0tLQStBaG1y9drDcKp2brDHJODhVjN4JKp1fMgBtT1zf0Al+DLbV/JJ7+VMmmo9FkvIrX/ImK3LvOuZM7g=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB7744
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,SPF_HELO_PASS,
+        T_SPF_PERMERROR,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-Jakub Kicinski <kuba@kernel.org> writes:
-
-> CAUTION: This email originated from outside of the 
-> organization. Do not click links or open attachments unless you 
-> can confirm the sender and know the content is safe.
->
->
->
-> On Sun, 12 Mar 2023 14:41:39 +0200 Gal Pressman wrote:
->> On 10/03/2023 8:53, Jakub Kicinski wrote:
->> > On Thu, 9 Mar 2023 19:15:43 +0200 Gal Pressman wrote:
->> >> I know Jakub prefers the new parameter, but the description 
->> >> of this
->> >> still sounds extremely similar to TX copybreak to me..
->> >> TX copybreak was traditionally used to copy packets to 
->> >> preallocated DMA
->> >> buffers, but this could be implemented as copying the packet 
->> >> to the
->> >> (preallocated) WQE's inline part. That usually means DMA 
->> >> memory, but
->> >> could also be device memory in this ENA LLQ case.
->> >>
->> >> Are we drawing a line that TX copybreak is the threshold for 
->> >> DMA memory
->> >> and tx_push_buf_len is the threshold for device memory?
->> >
->> > Pretty much, yes. Not an amazing distinction but since TX 
->> > copybreak can
->> > already mean two different things (inline or DMA buf) I'd err 
->> > on
->> > the side of not overloading it with another one.
->>
->> Can we document that please?
->
-> Shay, could you add a paragraph in the docs regarding copybreak 
-> in v5?
-
-Document that tx_copybreak defines the threshold below which the 
-packet is copied into a preallocated DMA'ed buffer and that 
-tx_push_buf defines the same but for device memory?
-Are we sure we want to make this distinction ? While the meaning 
-of both params can overlap in their current definition, the 
-motivation to use them is pretty different.
-A driver can implement both for different purposes (and still copy 
-both into the device).
-
-I'll modify the documentation in next version
+SGkgU2ltb24NCg0KVGhhbmsgeW91IGZvciByZXZpZXdpbmcgdGhlIHBhdGNoLiBJIGhhdmUgYSBj
+b21tZW50IGJlbG93Og0KDQo+IA0KPiA+ICtzZW5kX3NrYjoNCj4gPiArICAgICAvKiBQcmVwZW5k
+IHNrYiB3aXRoIGZyYW1lIHR5cGUgKi8NCj4gPiArICAgICBtZW1jcHkoc2tiX3B1c2goc2tiLCAx
+KSwgJmhjaV9za2JfcGt0X3R5cGUoc2tiKSwgMSk7DQo+ID4gKyAgICAgc2tiX3F1ZXVlX3RhaWwo
+Jm54cGRldi0+dHhxLCBza2IpOw0KPiA+ICsNCj4gPiArICAgICBidG54cHVhcnRfdHhfd2FrZXVw
+KG54cGRldik7DQo+ID4gK3JldDoNCj4gPiArICAgICByZXR1cm4gMDsNCj4gPiArDQo+ID4gK2Zy
+ZWVfc2tiOg0KPiA+ICsgICAgIGtmcmVlX3NrYihza2IpOw0KPiA+ICsgICAgIGdvdG8gcmV0Ow0K
+PiANCj4gbml0OiBJIHRoaW5rIGl0IHdvdWxkIGJlIG5pY2VyIHRvIHNpbXBseSByZXR1cm4gMCBo
+ZXJlLg0KPiAgICAgIEFuZCByZW1vdmUgdGhlIHJldCBsYWJlbCBlbnRpcmVseS4NCj4gDQo+ID4g
+K30NCj4gDQpXZSBuZWVkIHRvIHJldHVybiBmcm9tIHRoaXMgZnVuY3Rpb24gd2l0aG91dCBjbGVh
+cmluZyB0aGUgc2ticywgdW5sZXNzICJnb3RvIGZyZWVfc2tiIiBpcyBjYWxsZWQuDQpJZiBJIHJl
+bW92ZSB0aGUgcmV0IGxhYmVsIGFuZCByZXR1cm4gYWZ0ZXIga2ZyZWVfc2tiKCkgaXQgY2F1c2Vz
+IGEga2VybmVsIGNyYXNoLg0KS2VlcGluZyB0aGlzIGNoYW5nZSBhcyBpdCBpcy4NCg0KUGxlYXNl
+IGxldCBtZSBrbm93IGlmIHlvdSBoYXZlIGFueSBmdXJ0aGVyIHJldmlldyBjb21tZW50cyBvbiB0
+aGUgdjExIHBhdGNoLg0KDQpUaGFua3MsDQpOZWVyYWoNCg==
