@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 477326B8B9F
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 08:03:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F3E36B8BA2
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 08:03:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230094AbjCNHDH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 03:03:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58598 "EHLO
+        id S230238AbjCNHDT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 03:03:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229811AbjCNHDF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 03:03:05 -0400
+        with ESMTP id S229749AbjCNHDK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 03:03:10 -0400
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EF7E22102;
-        Tue, 14 Mar 2023 00:03:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80CFD9609F;
+        Tue, 14 Mar 2023 00:03:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678777383; x=1710313383;
+  t=1678777389; x=1710313389;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=+jXWOkuHIz7opU+/4fOqwtDaqYNzAOX5btGkyFBkb6Q=;
-  b=UTDPJff9j10QBP0fIL6mvJ5r2wNbpLxVl9V4cWNUItw8KPut9DuWqrp2
-   XxJB56+aY3+DAUn9SM7V1IpZf5/pN39q2R5gFBjfjc8IRVnrOGiihgQPw
-   ICQStGnUucMXkUVzm2DuVSmBOrdMgD/HJzzMBOFD7i1GS8E+jP8cvkGOA
-   ZGJk82b3DW9wByR7/zNRgvGCqTNFyMdCEDdMoAubqdbDjiptd7K6h1J+k
-   df0ZOzfci8O6aMRI8FaX+GkbsTi5jd8FCFTRp6U3oPFt5IYjR+WSgmaC0
-   RJ6fuDuCZaUuuDIUYjwy1D6Ph0x7Xgp2k9QTdiEn3r3hCpOIfXA9ijTko
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="334828457"
+  bh=1nWorsSGRWXWuiAoTapdH2MmuicEAxvXwC63iQcogCY=;
+  b=J3K/84qx90U5KN9gAwg9yl+fQd3m+cyTMIvzhfeSTttxEFPeU/zY3FK4
+   itFJxslZ0hlJnk58Gavx9ogGh00w39ocYlYju2p3goqya2Bqbpxt1HEjC
+   dpxL9rOO9ykMuzYrNyd9FMfmtl6wFhoe9WwNHEk4ijkDbj3Im4Arm7g52
+   aqWkZGgU2jAHmzOuTUC+ZzrdYmtYcXcNWb1+OXK0xn0dnppGfU33vE1wH
+   76MDYJf9XRcHdhwddWGbhdKemqRIm3Cni/00Feo7UgdznAqCX2KTlcScg
+   g2XWTq4cEd01iPFScnaStnZATKd2I50LSapGdl9jhe6OE2XpOckX1HaSj
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="334828512"
 X-IronPort-AV: E=Sophos;i="5.98,259,1673942400"; 
-   d="scan'208";a="334828457"
+   d="scan'208";a="334828512"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2023 00:02:42 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2023 00:02:48 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="656226744"
+X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="656226758"
 X-IronPort-AV: E=Sophos;i="5.98,259,1673942400"; 
-   d="scan'208";a="656226744"
+   d="scan'208";a="656226758"
 Received: from mike-ilbpg1.png.intel.com ([10.88.227.76])
-  by orsmga006.jf.intel.com with ESMTP; 14 Mar 2023 00:02:34 -0700
+  by orsmga006.jf.intel.com with ESMTP; 14 Mar 2023 00:02:39 -0700
 From:   Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
 To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
@@ -53,9 +53,9 @@ To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
 Cc:     Looi Hong Aun <hong.aun.looi@intel.com>,
         Voon Weifeng <weifeng.voon@intel.com>,
         Lai Peter Jun Ann <peter.jun.ann.lai@intel.com>
-Subject: [PATCH net v2 1/2] net: stmmac: fix PHY handle parsing
-Date:   Tue, 14 Mar 2023 15:02:07 +0800
-Message-Id: <20230314070208.3703963-2-michael.wei.hong.sit@intel.com>
+Subject: [PATCH net v2 2/2] net: stmmac: move fixed-link support fixup code
+Date:   Tue, 14 Mar 2023 15:02:08 +0800
+Message-Id: <20230314070208.3703963-3-michael.wei.hong.sit@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230314070208.3703963-1-michael.wei.hong.sit@intel.com>
 References: <20230314070208.3703963-1-michael.wei.hong.sit@intel.com>
@@ -71,50 +71,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-phylink_fwnode_phy_connect returns 0 when set to MLO_AN_INBAND.
-This causes the PHY handle parsing to skip and the PHY will not be attached
-to the MAC.
+xpcs_an_inband value is updated in the speed_mode_2500 function
+which turns on the xpcs_an_inband mode.
 
-Add additional check for PHY handle parsing when set to MLO_AN_INBAND.
+Moving the fixed-link fixup code to right before phylink setup to
+ensure no more fixup will affect the fixed-link mode configurations.
 
-Fixes: ab21cf920928 ("net: stmmac: make mdio register skips PHY scanning for fixed-link")
+Fixes: 72edaf39fc65 ("stmmac: intel: add phy-mode and fixed-link ACPI _DSD setting support")
 Signed-off-by: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
-Signed-off-by: Lai Peter Jun Ann <peter.jun.ann.lai@intel.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ .../net/ethernet/stmicro/stmmac/dwmac-intel.c    | 11 -----------
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c    | 16 ++++++++++++++++
+ 2 files changed, 16 insertions(+), 11 deletions(-)
 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+index 7deb1f817dac..d02db2b529b9 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+@@ -592,17 +592,6 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
+ 		plat->mdio_bus_data->xpcs_an_inband = true;
+ 	}
+ 
+-	/* For fixed-link setup, we clear xpcs_an_inband */
+-	if (fwnode) {
+-		struct fwnode_handle *fixed_node;
+-
+-		fixed_node = fwnode_get_named_child_node(fwnode, "fixed-link");
+-		if (fixed_node)
+-			plat->mdio_bus_data->xpcs_an_inband = false;
+-
+-		fwnode_handle_put(fixed_node);
+-	}
+-
+ 	/* Ensure mdio bus scan skips intel serdes and pcs-xpcs */
+ 	plat->mdio_bus_data->phy_mask = 1 << INTEL_MGBE_ADHOC_ADDR;
+ 	plat->mdio_bus_data->phy_mask |= 1 << INTEL_MGBE_XPCS_ADDR;
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 8f543c3ab5c5..398adcd68ee8 100644
+index 398adcd68ee8..6560aed95036 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1134,6 +1134,7 @@ static void stmmac_check_pcs_mode(struct stmmac_priv *priv)
- static int stmmac_init_phy(struct net_device *dev)
+@@ -7064,6 +7064,7 @@ int stmmac_dvr_probe(struct device *device,
+ 		     struct stmmac_resources *res)
  {
- 	struct stmmac_priv *priv = netdev_priv(dev);
-+	struct fwnode_handle *fixed_node;
- 	struct fwnode_handle *fwnode;
- 	int ret;
+ 	struct net_device *ndev = NULL;
++	struct fwnode_handle *fwnode;
+ 	struct stmmac_priv *priv;
+ 	u32 rxq;
+ 	int i, ret = 0;
+@@ -7306,6 +7307,21 @@ int stmmac_dvr_probe(struct device *device,
+ 			goto error_xpcs_setup;
+ 	}
  
-@@ -1141,13 +1142,16 @@ static int stmmac_init_phy(struct net_device *dev)
- 	if (!fwnode)
- 		fwnode = dev_fwnode(priv->device);
- 
--	if (fwnode)
++	/* For fixed-link setup, we clear xpcs_an_inband */
++	fwnode = of_fwnode_handle(priv->plat->phylink_node);
++	if (!fwnode)
++		fwnode = dev_fwnode(priv->device);
++
 +	if (fwnode) {
++		struct fwnode_handle *fixed_node;
++
 +		fixed_node = fwnode_get_named_child_node(fwnode, "fixed-link");
++		if (fixed_node)
++			priv->plat->mdio_bus_data->xpcs_an_inband = false;
++
 +		fwnode_handle_put(fixed_node);
- 		ret = phylink_fwnode_phy_connect(priv->phylink, fwnode, 0);
 +	}
- 
- 	/* Some DT bindings do not set-up the PHY handle. Let's try to
- 	 * manually parse it
- 	 */
--	if (!fwnode || ret) {
-+	if (!fwnode || ret || !fixed_node) {
- 		int addr = priv->plat->phy_addr;
- 		struct phy_device *phydev;
- 
++
+ 	ret = stmmac_phy_setup(priv);
+ 	if (ret) {
+ 		netdev_err(ndev, "failed to setup phy (%d)\n", ret);
 -- 
 2.34.1
 
