@@ -2,85 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C8FC6BA11A
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 22:02:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7609A6BA121
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 22:06:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229540AbjCNVB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 17:01:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34486 "EHLO
+        id S229978AbjCNVGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 17:06:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230035AbjCNVBN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 17:01:13 -0400
-Received: from sender4-op-o10.zoho.com (sender4-op-o10.zoho.com [136.143.188.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8856A305C4;
-        Tue, 14 Mar 2023 14:01:12 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1678827590; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=kpDDPDRhSHp/DrdqP6wSfVHIDQTg983v/pQBtxiUN1rM4m5sXuoL+Rc/G6TJsPiKj/M42tTSVSUUWC3INJFe3jpK/+CZgekS9JVjcKhA7h2w9agITvWj2BgxCbujb1CLNl9bZDfxaIizvHYoNMVdPqV/MU5AtK2O+Pjbt7JNNxI=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1678827590; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=dq3Zzhtvt0x5MEoRcRnMrw4bf9BbRLcVhg9nNb0HqcA=; 
-        b=afjnuVnFARu1wi7qOZ4cR1Scfg5iDnE1ozu5fsaYY/2InCFb9GqNqiNv04r14Q7o7sNBtWws5fWzbW4ffmI+lEjnYtwltRwV/SFEqi0490vSVdRBuqZgw69KpWJ0nQnhIBvhMcqKfoPm8lcGazudCOjKQMDOHCU13PM1LSzOulE=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1678827590;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=dq3Zzhtvt0x5MEoRcRnMrw4bf9BbRLcVhg9nNb0HqcA=;
-        b=Ylm9ClfyaO1efhNdC4GfE2cZmfEHGuWp+yl3+Yr1aLsHR9DNriUtl/x4oBE0DP8s
-        SROo6P8OkwvxpkSmTAcfSrY55zuzKMFUfhJdkyDY8xIc5/nX2kq4NJDRLciXvSgDEvq
-        RmIM/v1oTCuudJdZUQseSY+bhvptrWR0eZ372+mg=
-Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
-        with SMTPS id 1678827588900188.13596216997087; Tue, 14 Mar 2023 13:59:48 -0700 (PDT)
-Message-ID: <3e3e6a1e-61ba-a6e8-5503-258fb8e949bb@arinc9.com>
-Date:   Tue, 14 Mar 2023 23:59:40 +0300
+        with ESMTP id S229760AbjCNVGg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 17:06:36 -0400
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 400D343472
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 14:06:33 -0700 (PDT)
+Received: by mail-qv1-xf31.google.com with SMTP id ne1so13427935qvb.9
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 14:06:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1678827992;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=zeNB1KMktbKdte2S+8YaFoHdeVrmArJ/QSpeQ+IzHvI=;
+        b=vStZHalSBpSrjs1dz4MKVe8u9ZGY4fa5qVhmJJ4hp0YbIkwLmbqOAQP7LSxJqnPhXX
+         ph5yKvV2UMG6thgSpJTRDoPMWfJ23dx0GY0I/JKn7dgOtb3xshaisNBvBIm3mswA50rv
+         Hx9dr758uY1D0O6W4jRLeMfm7V4AJ7NcG0k7/EnxflfiAG1H71be9/jTMsmZI8p7+YI1
+         a9G3yn7K5AtbVI6nSV2eE+AcK+2Uo2LCZUFeNbn19s5v51/oV/1kLi3J9pXqMoACFykT
+         Oe4WAn6yIOc9V7p2PPMthjTYHAW9nqPUxf/+OLnmlOV9i4WwywsRaqiDjE3wJOSYmhP5
+         p6jA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678827992;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=zeNB1KMktbKdte2S+8YaFoHdeVrmArJ/QSpeQ+IzHvI=;
+        b=7XvBODxLmIvTDkQefRKTbU1UXMJOlL2fk1d5CDQGd8YVHGKlwgqs4QojI2py/U7Qzj
+         /6lM1dmVudgWkTqOrUYQ4SCR0xh+4pV5qFZXKFvEpgEboXcBNut/w/SMzSzjaeFkzw69
+         OVg3BVMoJdIpA5nieJU2CNtdAHGl7W/bgn21GMWCq59/wP9/IIYd7MUp5M2QPkUj+zTa
+         RkbKfpsK1shII6XalWPNjAPBnY4MAWc53j3kKOvzK5zjQ+koVTXUxxH8pAQlAm3XwFQ1
+         uFw/h/i137SccdHuJJACX446KUSXQu5KYXR1wVnXIFFKOjoY5WeZWEt5vS0jw0BsDwYY
+         pO7g==
+X-Gm-Message-State: AO0yUKUvyDQcZOXy+0BrGwCWncV3bqmuJnUrviDRgtIpP23/3NUSY2hv
+        tv/TF1lRWlJSWp5opT0tRkeb9Q==
+X-Google-Smtp-Source: AK7set9T4ospnPE72hHIectrswsBpVlkH/xN+vJpMdera9IowF0rZDhs29RWjz9lNHHW1mpOj4cfcg==
+X-Received: by 2002:a05:6214:4001:b0:570:ccb9:a4d0 with SMTP id kd1-20020a056214400100b00570ccb9a4d0mr18793766qvb.16.1678827992287;
+        Tue, 14 Mar 2023 14:06:32 -0700 (PDT)
+Received: from localhost.localdomain ([98.61.227.136])
+        by smtp.gmail.com with ESMTPSA id d78-20020a376851000000b0074571b64f0fsm2443156qkc.53.2023.03.14.14.06.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Mar 2023 14:06:31 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
+Cc:     andersson@kernel.org, konrad.dybcio@linaro.org, agross@kernel.org,
+        devicetree@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        elder@kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] dt-bindings: net: qcom,ipa: add SDX65 compatible
+Date:   Tue, 14 Mar 2023 16:06:28 -0500
+Message-Id: <20230314210628.1579816-1-elder@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH net-next v13 11/16] net: dsa: mt7530: use external PCS
- driver
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Daniel Golle <daniel@makrotopia.org>, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Alexander Couzens <lynxis@fe80.eu>
-References: <cover.1678357225.git.daniel@makrotopia.org>
- <2ac2ee40d3b0e705461b50613fda6a7edfdbc4b3.1678357225.git.daniel@makrotopia.org>
- <e99cc7d1-554d-5d4d-e69a-a38ded02bb08@arinc9.com>
- <ZBCyqdfaeF/q8oZr@makrotopia.org>
- <c07651cd-27b4-5ba4-8116-398522327d27@arinc9.com>
- <20230314195322.tsciinumrxtw64o5@skbuf>
-Content-Language: en-US
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <20230314195322.tsciinumrxtw64o5@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -88,23 +71,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/03/2023 22:53, Vladimir Oltean wrote:
-> On Tue, Mar 14, 2023 at 09:21:40PM +0300, Arınç ÜNAL wrote:
->> I was going to send a mail to netdev mailing list to ask for opinions
->> whether we should rename the mt7530 DSA driver to mt753x and rename these
->> functions you mentioned to mt753x so it's crystal clear what code is for
->> what hardware. Now that we glossed over it here, I guess I can ask it here
->> instead.
-> 
-> My 2 cents - make your first 100 useful commits on this driver, which at
-> the very least produce a change in the compiled output, and then go on a
-> renaming spree as much as you want.
+Add support for SDX65, which uses IPA v5.0.
 
-Look, I don't ask for renaming just for the sake of renaming things. I 
-see a benefit which would make things clearer.
+Signed-off-by: Alex Elder <elder@linaro.org>
+---
+ Documentation/devicetree/bindings/net/qcom,ipa.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-If you rather mean to, know the driver very well, by saying do 100 
-useful commits on the driver beforehand, that makes sense. But I think 
-I'm capable of managing this. I've got the time and energy.
+diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+index 4aeda379726fa..2d5e4ffb2f9ef 100644
+--- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
++++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+@@ -49,6 +49,7 @@ properties:
+       - qcom,sc7280-ipa
+       - qcom,sdm845-ipa
+       - qcom,sdx55-ipa
++      - qcom,sdx65-ipa
+       - qcom,sm6350-ipa
+       - qcom,sm8350-ipa
+ 
+-- 
+2.34.1
 
-Arınç
