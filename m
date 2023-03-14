@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43FD36B9D6F
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 18:50:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DCF86B9D74
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 18:50:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230479AbjCNRuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 13:50:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50000 "EHLO
+        id S229866AbjCNRuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 13:50:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229698AbjCNRt4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 13:49:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F4BB9F054
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 10:49:54 -0700 (PDT)
+        with ESMTP id S230426AbjCNRt6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 13:49:58 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6885EA7287
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 10:49:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 063B1B81ACB
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 17:49:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA226C433D2;
-        Tue, 14 Mar 2023 17:49:51 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 464E4CE1695
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 17:49:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67946C4339B;
+        Tue, 14 Mar 2023 17:49:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678816191;
-        bh=x6CV/3OdSvRFn/Xvzq9Jya0GwJV9HxqPxRl8VsWaBB0=;
+        s=k20201202; t=1678816192;
+        bh=OhCG+HoqPYpf382jXR9O8a+Pon3qXkWhaZMmPLQLyOc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hf8bXhMykd0DZGhMPc1WQPyTpvgIzWFjtU6DcxtCklQF9sgMTLidmvhqTfazQlvJe
-         jCfEtf1mZnfEVgO1/LNM077eEzhfQLe7T+dUZx47mZAw1teyblDDHZlFOB0TTkWVPt
-         gHBFW+Ej9MdVmsMlc8RJDjlDeGm8OF9WAMmtc5k1c/G4HH9GKxkOlDPNh5p6S8VwIX
-         p2EDHqIOwDmcxc+Adug5d4HLHTsOp163mJHWH7GyxxmITNMjyCD4vvW5kWk//FmC4F
-         2l08mmornZxR+oP9ht+K268Qgx1x4/rSc+nSu1pqnO3BqF/s53KxlkHw9GMlk359tC
-         j2fXALBmIBPSg==
+        b=p2HBHGeVHY12BWs2Gh6CgImXKFMTaKXHDYK0TFvbCPZkvidwniHo9tSO52c2igKzC
+         dQeN3R2LQxDtQ1NPMb2TBRonD+M6fbkXXI+tyocwlqxubIptp9pB1M8QOX8WKzZbki
+         q20A1UanJBz/kycyIx4/Q/Q3dR8dJ33e5TTSAT0pVHjf1SAdSL+m+kh+5T7pYroqIE
+         4CRkszD06z1UbOXFvicP0sBhPw7gfVCUvJM+zKrjNgUwPl9Vms0Ynzw4W0TZCIRnMx
+         Dlp7Bl7+6QkqAApAXHzvtafX6OEBvu0mUc/j388rRxuFGT1KtzF2faP0JJ4/J4/Gfg
+         SBW7BOxXRenvw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Maor Dickman <maord@nvidia.com>, Roi Dayan <roid@nvidia.com>
-Subject: [net 05/14] net/mlx5: E-switch, Fix wrong usage of source port rewrite in split rules
-Date:   Tue, 14 Mar 2023 10:49:31 -0700
-Message-Id: <20230314174940.62221-6-saeed@kernel.org>
+Subject: [net 06/14] net/mlx5: E-switch, Fix missing set of split_count when forward to ovs internal port
+Date:   Tue, 14 Mar 2023 10:49:32 -0700
+Message-Id: <20230314174940.62221-7-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230314174940.62221-1-saeed@kernel.org>
 References: <20230314174940.62221-1-saeed@kernel.org>
@@ -58,48 +58,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maor Dickman <maord@nvidia.com>
 
-In few cases, rules with mirror use case are split to two FTEs, one which
-do the mirror action and forward to second FTE which do the rest of the rule
-actions and the second redirect action.
-In case of mirror rules which do split and forward to ovs internal port or
-VF stack devices, source port rewrite should be used in the second FTE but
-it is wrongly also set in the first FTE which break the offload.
+Rules with mirror actions are split to two FTEs when the actions after the mirror
+action contains pedit, vlan push/pop or ct. Forward to ovs internal port adds
+implicit header rewrite (pedit) but missing trigger to do split.
 
-Fix this issue by removing the wrong check if source port rewrite is needed to
-be used on the first FTE of the split and instead return EOPNOTSUPP which will
-block offload of rules which mirror to ovs internal port or VF stack devices
-which isn't supported.
+Fix by setting split_count when forwarding to ovs internal port which
+will trigger split in mirror rules.
 
-Fixes: 10742efc20a4 ("net/mlx5e: VF tunnel TX traffic offloading")
-Fixes: a508728a4c8b ("net/mlx5e: VF tunnel RX traffic offloading")
+Fixes: 27484f7170ed ("net/mlx5e: Offload tc rules that redirect to ovs internal port")
 Signed-off-by: Maor Dickman <maord@nvidia.com>
 Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index d766a64b1823..22075943bb58 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -723,11 +723,11 @@ mlx5_eswitch_add_fwd_rule(struct mlx5_eswitch *esw,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 70b8d2dfa751..90944bf271ce 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -4304,6 +4304,7 @@ int mlx5e_set_fwd_to_int_port_actions(struct mlx5e_priv *priv,
  
- 	flow_act.action = MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
- 	for (i = 0; i < esw_attr->split_count; i++) {
--		if (esw_is_indir_table(esw, attr))
--			err = esw_setup_indir_table(dest, &flow_act, esw, attr, false, &i);
--		else if (esw_is_chain_src_port_rewrite(esw, esw_attr))
--			err = esw_setup_chain_src_port_rewrite(dest, &flow_act, esw, chains, attr,
--							       &i);
-+		if (esw_attr->dests[i].flags & MLX5_ESW_DEST_CHAIN_WITH_SRC_PORT_CHANGE)
-+			/* Source port rewrite (forward to ovs internal port or statck device) isn't
-+			 * supported in the rule of split action.
-+			 */
-+			err = -EOPNOTSUPP;
- 		else
- 			esw_setup_vport_dest(dest, &flow_act, esw, esw_attr, i, i, false);
+ 	esw_attr->dest_int_port = dest_int_port;
+ 	esw_attr->dests[out_index].flags |= MLX5_ESW_DEST_CHAIN_WITH_SRC_PORT_CHANGE;
++	esw_attr->split_count = out_index;
  
+ 	/* Forward to root fdb for matching against the new source vport */
+ 	attr->dest_chain = 0;
 -- 
 2.39.2
 
