@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 52B256B8701
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 01:36:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E254D6B8703
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 01:36:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230378AbjCNAgx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 20:36:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53034 "EHLO
+        id S229565AbjCNAg5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 20:36:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230195AbjCNAgh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 20:36:37 -0400
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E2F0856AD;
-        Mon, 13 Mar 2023 17:36:21 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id c1so1246346qtw.1;
-        Mon, 13 Mar 2023 17:36:20 -0700 (PDT)
+        with ESMTP id S230061AbjCNAgj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 20:36:39 -0400
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1085F86DEF;
+        Mon, 13 Mar 2023 17:36:22 -0700 (PDT)
+Received: by mail-qt1-x833.google.com with SMTP id h19so15181058qtk.7;
+        Mon, 13 Mar 2023 17:36:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678754180;
+        d=gmail.com; s=20210112; t=1678754181;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=hQ2E6fONpVmwnalpjCD7FfF7Bo09AwDHDCdSmBwilYo=;
-        b=bCzrUYHA9KSn5xjDlX5q+zvFdZ4zkN6ZwN9H/trCXQ+/NCkUjV2x9jtCx/u56A1G1z
-         TaANRTTQj6XyUGola/eJKrn+4M1FTOeYE46Je7UuTWp95Ml5o85mhTQL6GbXhENmUXjb
-         eFgyBYpU83sF8kPaduXtqgNCF/tYi9QYnFkCWuk8Wgn0W3E3sA6IwBhVr4VLdCMDJJKT
-         BkCx7adX58p6ImLMIsh+V7gcVGFxmq0eB9WvGm9FWUq0UlFXZr3HDnTw9zy43hNEr/X2
-         X0Tu78sC6JXWCv6tAWRYKuODSQ8fOm97uILZZQmw577Y9ntkHt24k++1KeqvKD2yokJm
-         F/dA==
+        bh=ifAgnTIVVjI/zij0ehRAnz6xciCu/2xrwUn/q1pKvlU=;
+        b=NDxf6hJ3AVdSQUsHwQrh0Xt0KIoYA47wpUW0Ef59sku2RasAB0Ui/4I9vBvFwmneUM
+         Q+dF2LcxXjTMxPUlVfeboA1tmeYv6jHdrdwal1pdIFvDRlTpy4VS/1qsLKQfzwZOtEY7
+         FPNfQUYoy/bYfcO/Wi4GIdutDvv81VgNYSSUjK3ReVG2FJ+6wSZbZFfRetPdS95xvGAD
+         BxBj1g9DbQhTiExCoKy1oD9ODus8pIYJDEt8vw4qnpll0tpHXmvfqhyvS7CntPNR6y/N
+         VpO9yb7cHm0LZFFuJTRV11pzJGcQyCGQu5ENXc+jR7OGx0pBHV7kF1/kIGT3yZTVRCBY
+         hfiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678754180;
+        d=1e100.net; s=20210112; t=1678754181;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=hQ2E6fONpVmwnalpjCD7FfF7Bo09AwDHDCdSmBwilYo=;
-        b=Ps+kbtAVNE6hJXdSLZ3Hn0tQDLkMUiIvy98WJScxSfSYDu2WCv7R9p1Jv7E/ZNSveI
-         watPy2B73LWSM6036IZJRBze7t7KK67d/XUYUgYfFdWN7F+2sq7rtXe/HFckTboBRRyk
-         RJH/tK2NaJjRbdNmtdU2Alb+XV/c1m0SU8P7tAMVQhQ9oAOFc3QHByDMNRG6wzWdPqOv
-         v93vp4xdk8A/sv9wEALi7ZGln1h8p3GgrBtBfrdZuFKcv2z14AncHIdsbYjR6WD0Le/R
-         3QXgBSFeemmQ3G0VCEssqxgTyNjyAtgCFi2u0ajSDLNykaVP04VZVjaFY+5olJmTbBV3
-         lkEQ==
-X-Gm-Message-State: AO0yUKV3gLM+X26TqRBYHoBqLPHHMlVWa0AT+mlj43bw/FEC6s4q3Qlq
-        wOJUfPF1VzLyrJkJyxlgkWc=
-X-Google-Smtp-Source: AK7set+UnEUT/H341lXDrviuCGtM2d+N+KLrxdEch/LIOQpTx1n5qnLiekpa2fy90O42UBABsLflig==
-X-Received: by 2002:ac8:7d95:0:b0:3bf:b0c6:4993 with SMTP id c21-20020ac87d95000000b003bfb0c64993mr63869759qtd.44.1678754180154;
-        Mon, 13 Mar 2023 17:36:20 -0700 (PDT)
+        bh=ifAgnTIVVjI/zij0ehRAnz6xciCu/2xrwUn/q1pKvlU=;
+        b=3cMVBrW2KsCaoVz4Bb7IGznaT7yDLzoBshTc5FSvdgJzbuM/FLM7ou0kcwtgrAXiFP
+         GFZbORcyQPeDrp9pethMBoOXZS7m6oOC2y8q9qZrM/15OwK3/HlFmzOlbZ/L26uA/EEi
+         kKRDPVz1DJEVqSezVt6SSQo2zEmULrwMfedW+j4Zj+mWfsQIIykmteWWslfjgEZwRQGJ
+         lZaXAgN/gYbGW2y4/1ZfBUuVFUH0HWpNiZFcBkr/6RLe2iiNpk5VRU64KI9qEI/DKPHZ
+         7xiMxSl/h7x2ph/xX/69+zZoo6KiqjjgepI+s+qR/sfNFL4J6qJ02/wHvDLkDR16JFB3
+         qIBA==
+X-Gm-Message-State: AO0yUKUMnesfjHXFOAAfDr0BEswjyJBw3Iibue2XPILlfps6qb89NWFQ
+        UvugkUTqOkoFyROz7qOq8k8=
+X-Google-Smtp-Source: AK7set8+4YtgqiaDEjKxSuIU6+0Msm8/z0E28j/+3mbT4pZnVJMnUlpN+D++YJUKzR3T31EcbmDUGw==
+X-Received: by 2002:ac8:5a07:0:b0:3bf:db86:e538 with SMTP id n7-20020ac85a07000000b003bfdb86e538mr58942713qta.68.1678754181154;
+        Mon, 13 Mar 2023 17:36:21 -0700 (PDT)
 Received: from localhost (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
-        by smtp.gmail.com with UTF8SMTPSA id j15-20020ac8404f000000b003b323387c1asm571161qtl.18.2023.03.13.17.36.19
+        by smtp.gmail.com with UTF8SMTPSA id c13-20020ac87dcd000000b003b835e7e283sm836320qte.44.2023.03.13.17.36.20
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Mar 2023 17:36:19 -0700 (PDT)
+        Mon, 13 Mar 2023 17:36:20 -0700 (PDT)
 From:   Sean Anderson <seanga2@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -56,9 +56,9 @@ To:     "David S . Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
 Cc:     Simon Horman <simon.horman@corigine.com>,
         linux-kernel@vger.kernel.org, Sean Anderson <seanga2@gmail.com>
-Subject: [PATCH net-next v3 4/9] net: sunhme: Alphabetize includes
-Date:   Mon, 13 Mar 2023 20:36:08 -0400
-Message-Id: <20230314003613.3874089-5-seanga2@gmail.com>
+Subject: [PATCH net-next v3 5/9] net: sunhme: Switch SBUS to devres
+Date:   Mon, 13 Mar 2023 20:36:09 -0400
+Message-Id: <20230314003613.3874089-6-seanga2@gmail.com>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20230314003613.3874089-1-seanga2@gmail.com>
 References: <20230314003613.3874089-1-seanga2@gmail.com>
@@ -74,99 +74,227 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alphabetize includes to make it clearer where to add new ones.
+The PCI half of this driver was converted in commit 914d9b2711dd ("sunhme:
+switch to devres"). Do the same for the SBUS half.
 
 Signed-off-by: Sean Anderson <seanga2@gmail.com>
 ---
 
-(no changes since v2)
+(no changes since v1)
 
-Changes in v2:
-- Make some more includes common
-
- drivers/net/ethernet/sun/sunhme.c | 59 ++++++++++++++-----------------
- 1 file changed, 27 insertions(+), 32 deletions(-)
+ drivers/net/ethernet/sun/sunhme.c | 118 +++++++++---------------------
+ 1 file changed, 35 insertions(+), 83 deletions(-)
 
 diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
-index 5e17b1cdf016..acdcae2cb49a 100644
+index acdcae2cb49a..3072578c334a 100644
 --- a/drivers/net/ethernet/sun/sunhme.c
 +++ b/drivers/net/ethernet/sun/sunhme.c
-@@ -14,48 +14,43 @@
-  *     argument : macaddr=0x00,0x10,0x20,0x30,0x40,0x50
-  */
+@@ -2313,29 +2313,28 @@ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
+ 	struct net_device *dev;
+ 	int i, qfe_slot = -1;
+ 	u8 addr[ETH_ALEN];
+-	int err = -ENODEV;
++	int err;
  
--#include <linux/module.h>
--#include <linux/kernel.h>
--#include <linux/types.h>
-+#include <asm/byteorder.h>
-+#include <asm/dma.h>
-+#include <asm/irq.h>
-+#include <linux/bitops.h>
-+#include <linux/crc32.h>
-+#include <linux/delay.h>
-+#include <linux/dma-mapping.h>
-+#include <linux/errno.h>
-+#include <linux/etherdevice.h>
-+#include <linux/ethtool.h>
- #include <linux/fcntl.h>
--#include <linux/interrupt.h>
--#include <linux/ioport.h>
- #include <linux/in.h>
--#include <linux/slab.h>
--#include <linux/string.h>
--#include <linux/delay.h>
- #include <linux/init.h>
--#include <linux/ethtool.h>
-+#include <linux/interrupt.h>
-+#include <linux/io.h>
-+#include <linux/ioport.h>
-+#include <linux/kernel.h>
- #include <linux/mii.h>
--#include <linux/crc32.h>
--#include <linux/random.h>
--#include <linux/errno.h>
--#include <linux/netdevice.h>
--#include <linux/etherdevice.h>
--#include <linux/skbuff.h>
- #include <linux/mm.h>
--#include <linux/bitops.h>
--#include <linux/dma-mapping.h>
+ 	sbus_dp = op->dev.parent->of_node;
+ 
+ 	/* We can match PCI devices too, do not accept those here. */
+ 	if (!of_node_name_eq(sbus_dp, "sbus") && !of_node_name_eq(sbus_dp, "sbi"))
+-		return err;
++		return -ENODEV;
+ 
+ 	if (is_qfe) {
+ 		qp = quattro_sbus_find(op);
+ 		if (qp == NULL)
+-			goto err_out;
++			return -ENODEV;
+ 		for (qfe_slot = 0; qfe_slot < 4; qfe_slot++)
+ 			if (qp->happy_meals[qfe_slot] == NULL)
+ 				break;
+ 		if (qfe_slot == 4)
+-			goto err_out;
++			return -ENODEV;
+ 	}
+ 
+-	err = -ENOMEM;
+-	dev = alloc_etherdev(sizeof(struct happy_meal));
++	dev = devm_alloc_etherdev(&op->dev, sizeof(struct happy_meal));
+ 	if (!dev)
+-		goto err_out;
++		return -ENOMEM;
+ 	SET_NETDEV_DEV(dev, &op->dev);
+ 
+ 	/* If user did not specify a MAC address specifically, use
+@@ -2369,46 +2368,45 @@ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
+ 
+ 	spin_lock_init(&hp->happy_lock);
+ 
+-	err = -ENODEV;
+ 	if (qp != NULL) {
+ 		hp->qfe_parent = qp;
+ 		hp->qfe_ent = qfe_slot;
+ 		qp->happy_meals[qfe_slot] = dev;
+ 	}
+ 
+-	hp->gregs = of_ioremap(&op->resource[0], 0,
+-			       GREG_REG_SIZE, "HME Global Regs");
+-	if (!hp->gregs) {
++	hp->gregs = devm_platform_ioremap_resource(op, 0);
++	if (IS_ERR(hp->gregs)) {
+ 		dev_err(&op->dev, "Cannot map global registers.\n");
+-		goto err_out_free_netdev;
++		err = PTR_ERR(hp->gregs);
++		goto err_out_clear_quattro;
+ 	}
+ 
+-	hp->etxregs = of_ioremap(&op->resource[1], 0,
+-				 ETX_REG_SIZE, "HME TX Regs");
+-	if (!hp->etxregs) {
++	hp->etxregs = devm_platform_ioremap_resource(op, 1);
++	if (IS_ERR(hp->etxregs)) {
+ 		dev_err(&op->dev, "Cannot map MAC TX registers.\n");
+-		goto err_out_iounmap;
++		err = PTR_ERR(hp->etxregs);
++		goto err_out_clear_quattro;
+ 	}
+ 
+-	hp->erxregs = of_ioremap(&op->resource[2], 0,
+-				 ERX_REG_SIZE, "HME RX Regs");
+-	if (!hp->erxregs) {
++	hp->erxregs = devm_platform_ioremap_resource(op, 2);
++	if (IS_ERR(hp->erxregs)) {
+ 		dev_err(&op->dev, "Cannot map MAC RX registers.\n");
+-		goto err_out_iounmap;
++		err = PTR_ERR(hp->erxregs);
++		goto err_out_clear_quattro;
+ 	}
+ 
+-	hp->bigmacregs = of_ioremap(&op->resource[3], 0,
+-				    BMAC_REG_SIZE, "HME BIGMAC Regs");
+-	if (!hp->bigmacregs) {
++	hp->bigmacregs = devm_platform_ioremap_resource(op, 3);
++	if (IS_ERR(hp->bigmacregs)) {
+ 		dev_err(&op->dev, "Cannot map BIGMAC registers.\n");
+-		goto err_out_iounmap;
++		err = PTR_ERR(hp->bigmacregs);
++		goto err_out_clear_quattro;
+ 	}
+ 
+-	hp->tcvregs = of_ioremap(&op->resource[4], 0,
+-				 TCVR_REG_SIZE, "HME Tranceiver Regs");
+-	if (!hp->tcvregs) {
++	hp->tcvregs = devm_platform_ioremap_resource(op, 4);
++	if (IS_ERR(hp->tcvregs)) {
+ 		dev_err(&op->dev, "Cannot map TCVR registers.\n");
+-		goto err_out_iounmap;
++		err = PTR_ERR(hp->tcvregs);
++		goto err_out_clear_quattro;
+ 	}
+ 
+ 	hp->hm_revision = of_getintprop_default(dp, "hm-rev", 0xff);
+@@ -2428,13 +2426,12 @@ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
+ 	hp->happy_bursts = of_getintprop_default(sbus_dp,
+ 						 "burst-sizes", 0x00);
+ 
+-	hp->happy_block = dma_alloc_coherent(hp->dma_dev,
+-					     PAGE_SIZE,
+-					     &hp->hblock_dvma,
+-					     GFP_ATOMIC);
+-	err = -ENOMEM;
+-	if (!hp->happy_block)
+-		goto err_out_iounmap;
++	hp->happy_block = dmam_alloc_coherent(&op->dev, PAGE_SIZE,
++					      &hp->hblock_dvma, GFP_KERNEL);
++	if (!hp->happy_block) {
++		err = -ENOMEM;
++		goto err_out_clear_quattro;
++	}
+ 
+ 	/* Force check of the link first time we are brought up. */
+ 	hp->linkcheck = 0;
+@@ -2472,10 +2469,10 @@ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
+ 	happy_meal_set_initial_advertisement(hp);
+ 	spin_unlock_irq(&hp->happy_lock);
+ 
+-	err = register_netdev(hp->dev);
++	err = devm_register_netdev(&op->dev, dev);
+ 	if (err) {
+ 		dev_err(&op->dev, "Cannot register net device, aborting.\n");
+-		goto err_out_free_coherent;
++		goto err_out_clear_quattro;
+ 	}
+ 
+ 	platform_set_drvdata(op, hp);
+@@ -2490,31 +2487,9 @@ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
+ 
+ 	return 0;
+ 
+-err_out_free_coherent:
+-	dma_free_coherent(hp->dma_dev,
+-			  PAGE_SIZE,
+-			  hp->happy_block,
+-			  hp->hblock_dvma);
 -
--#include <asm/io.h>
--#include <asm/dma.h>
--#include <asm/byteorder.h>
+-err_out_iounmap:
+-	if (hp->gregs)
+-		of_iounmap(&op->resource[0], hp->gregs, GREG_REG_SIZE);
+-	if (hp->etxregs)
+-		of_iounmap(&op->resource[1], hp->etxregs, ETX_REG_SIZE);
+-	if (hp->erxregs)
+-		of_iounmap(&op->resource[2], hp->erxregs, ERX_REG_SIZE);
+-	if (hp->bigmacregs)
+-		of_iounmap(&op->resource[3], hp->bigmacregs, BMAC_REG_SIZE);
+-	if (hp->tcvregs)
+-		of_iounmap(&op->resource[4], hp->tcvregs, TCVR_REG_SIZE);
 -
--#ifdef CONFIG_SPARC
--#include <linux/of.h>
-+#include <linux/module.h>
-+#include <linux/netdevice.h>
- #include <linux/of_device.h>
-+#include <linux/of.h>
-+#include <linux/pci.h>
-+#include <linux/random.h>
-+#include <linux/skbuff.h>
-+#include <linux/slab.h>
-+#include <linux/string.h>
-+#include <linux/types.h>
-+#include <linux/uaccess.h>
-+
-+#ifdef CONFIG_SPARC
-+#include <asm/auxio.h>
- #include <asm/idprom.h>
- #include <asm/openprom.h>
- #include <asm/oplib.h>
- #include <asm/prom.h>
--#include <asm/auxio.h>
--#endif
--#include <linux/uaccess.h>
++err_out_clear_quattro:
+ 	if (qp)
+ 		qp->happy_meals[qfe_slot] = NULL;
 -
--#include <asm/irq.h>
+-err_out_free_netdev:
+-	free_netdev(dev);
 -
--#ifdef CONFIG_PCI
--#include <linux/pci.h>
+-err_out:
+ 	return err;
+ }
  #endif
+@@ -2891,28 +2866,6 @@ static int hme_sbus_probe(struct platform_device *op)
+ 	return happy_meal_sbus_probe_one(op, is_qfe);
+ }
  
- #include "sunhme.h"
+-static int hme_sbus_remove(struct platform_device *op)
+-{
+-	struct happy_meal *hp = platform_get_drvdata(op);
+-	struct net_device *net_dev = hp->dev;
+-
+-	unregister_netdev(net_dev);
+-
+-	of_iounmap(&op->resource[0], hp->gregs, GREG_REG_SIZE);
+-	of_iounmap(&op->resource[1], hp->etxregs, ETX_REG_SIZE);
+-	of_iounmap(&op->resource[2], hp->erxregs, ERX_REG_SIZE);
+-	of_iounmap(&op->resource[3], hp->bigmacregs, BMAC_REG_SIZE);
+-	of_iounmap(&op->resource[4], hp->tcvregs, TCVR_REG_SIZE);
+-	dma_free_coherent(hp->dma_dev,
+-			  PAGE_SIZE,
+-			  hp->happy_block,
+-			  hp->hblock_dvma);
+-
+-	free_netdev(net_dev);
+-
+-	return 0;
+-}
+-
+ static const struct of_device_id hme_sbus_match[] = {
+ 	{
+ 		.name = "SUNW,hme",
+@@ -2936,7 +2889,6 @@ static struct platform_driver hme_sbus_driver = {
+ 		.of_match_table = hme_sbus_match,
+ 	},
+ 	.probe		= hme_sbus_probe,
+-	.remove		= hme_sbus_remove,
+ };
+ 
+ static int __init happy_meal_sbus_init(void)
 -- 
 2.37.1
 
