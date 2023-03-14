@@ -2,189 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 707ED6B9A75
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 16:57:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04C0F6B9A7D
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 17:01:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231201AbjCNP5a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 11:57:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35006 "EHLO
+        id S231352AbjCNQBG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 12:01:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230176AbjCNP53 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 11:57:29 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE8E28F70A;
-        Tue, 14 Mar 2023 08:57:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678809448; x=1710345448;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=mdSFqdWtrMdOJHI6ftYayg8Hob+j3FeXcPwydiXvBTs=;
-  b=dCQn+UMvZwFnVgy59dzNJHwtD26nTn3Jx12EG6Pl4AP9ATSM+i/pLnJt
-   VNa+8ybD4wpAIz9rJJU4CjfIu6CszivTyTlmdOhr8PzoBBni/yWtrSBft
-   q4zEbB5mo0R73/z1TLI6QKduyofMa2RPSGZojF6PcfLrm6kNzCEzVYo+T
-   VbFDp1zoQkgjuOerhcvXVVIdYnm60NPUvDW+5OMunemqQqike7QWJ1hRe
-   XG4DByr+mDxm3VDDczHxfcxrpVGGb2neLQ4iaDjzP+7QloapQyEwfQbeH
-   dIf/MCzD1bOYh+Dhzgn+bFdtiVRpdV9yH2Y01xvR6GcBKBT7G9ufnLFpx
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="334952215"
-X-IronPort-AV: E=Sophos;i="5.98,260,1673942400"; 
-   d="scan'208";a="334952215"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2023 08:57:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="711568571"
-X-IronPort-AV: E=Sophos;i="5.98,260,1673942400"; 
-   d="scan'208";a="711568571"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orsmga001.jf.intel.com with ESMTP; 14 Mar 2023 08:57:08 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Tue, 14 Mar 2023 08:57:08 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Tue, 14 Mar 2023 08:57:08 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21 via Frontend Transport; Tue, 14 Mar 2023 08:57:08 -0700
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.46) by
- edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.21; Tue, 14 Mar 2023 08:57:06 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ChITdzJtKPXDhxPaTHSML2DnBdMVGjUxlWw4H/H1DttOBoNL0xtxRVIgi6ZE53G5bHFxYgvrcWzmU8oLufpipx8LnrEWTQKU7J0xcJFkyYTqOrj3t7ioo5BxeLI9TqOm7QWqp7ccb08236AaIA37Cjyx83EIOjro3cqmnBJNk5GegYblNUdrOXsTXEy58wH2MN/rZY/Lcw0RwMmpJeD2/nehj74n67utGAfYS4N4ti5I049rx3+pffOURphj3o+XnZ7hcTSN+YskSZw47CuL4K931CxPuSU6GjZJyCgryvcB7B+NUQMoEMOUXmVB3oWnf5fTKyCqgfL3GoNfMAsiFQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nvtdUNwDy0/u2rX0AP97YpNERWnIJ3ZEro3b24+b//E=;
- b=W+GWgQsYApLCvQtKd/NAywpYkQGEw+lkU3lWIwlpSbqwLrvRFCCy7yGzBlx3lVLaDyQ+H+FCYzcjMMoBdtEqc/F2ZYQvd+t792IlCr56JDvj1nISIvstcwo686GBWsmFq8vUvYNjGGmYaCsbD/FBPmcl3aBe1sZLH9gBKIi1fgEiNqALj1tuktlUkzlSAiSGAuYqkt1WH8a0GOvJ+jHvD7ctSUtM2tFkTpzGSmWhYrAHAw5DhvW32WDfpbpjwzYP7lepiior76HBdmiYQJx+fsgDoN5JGiSpPBdUOjHF+DFlcc94PJChLx0fJtGZrK7Nx4ypFQKSXWeYZFDbvhFsTA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM6PR11MB2937.namprd11.prod.outlook.com (2603:10b6:5:62::13) by
- PH8PR11MB7144.namprd11.prod.outlook.com (2603:10b6:510:22c::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.26; Tue, 14 Mar
- 2023 15:57:04 +0000
-Received: from DM6PR11MB2937.namprd11.prod.outlook.com
- ([fe80::cece:5e80:b74f:9448]) by DM6PR11MB2937.namprd11.prod.outlook.com
- ([fe80::cece:5e80:b74f:9448%7]) with mapi id 15.20.6178.026; Tue, 14 Mar 2023
- 15:57:04 +0000
-Date:   Tue, 14 Mar 2023 16:56:53 +0100
-From:   Michal Kubiak <michal.kubiak@intel.com>
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
-CC:     <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
-        <kernel@pengutronix.de>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net 0/4] net: set 'mac_managed_pm' at probe time
-Message-ID: <ZBCZRYSOCBvG8O2u@localhost.localdomain>
-References: <20230314131443.46342-1-wsa+renesas@sang-engineering.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20230314131443.46342-1-wsa+renesas@sang-engineering.com>
-X-ClientProxiedBy: FR3P281CA0122.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:94::6) To DM6PR11MB2937.namprd11.prod.outlook.com
- (2603:10b6:5:62::13)
+        with ESMTP id S230115AbjCNQBF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 12:01:05 -0400
+Received: from domac.alu.hr (domac.alu.unizg.hr [161.53.235.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 210996B337;
+        Tue, 14 Mar 2023 09:01:02 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by domac.alu.hr (Postfix) with ESMTP id 14959604F7;
+        Tue, 14 Mar 2023 17:01:00 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+        t=1678809660; bh=JUO899XbhZktRUpiZFjSvUdGkb1mGeG/QXgEEoOoKZQ=;
+        h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
+        b=HJM5fAPnbgUKa1x6XjKtsr3EAf9v1VcDxjox2yK6fMzUTDd/iFD5/T8wFT4pwIEVg
+         tj3zBX77xi7RHHj81xGnc0b6YCPod+q6LtfxM+fZJAz3cSq0zl5zS9Kgm/Y/Hdm4Db
+         8Gf9YsRF3L+MKtwLdHi1sZL+KqiKoeXM9P4cAwfqSgEOr7xf/R5l4+K1S8bqZeAN8e
+         1duVpRZibyXnn88viBVkB/u8jAxAJrzCXlSkOAbHANgwpsAv6klAtwV2af8GBZgsOy
+         2tXSBANCNfSGHWVm23Mt6Kv0KUNPw+ULIlo1Ji+0DFiI0oWBfxJLmW1fbmOSIkvqKx
+         oWGR3Jl4ZobVA==
+X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
+Received: from domac.alu.hr ([127.0.0.1])
+        by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id xmo1QOXER_yU; Tue, 14 Mar 2023 17:00:55 +0100 (CET)
+Received: from [193.198.186.200] (pc-mtodorov.slava.alu.hr [193.198.186.200])
+        by domac.alu.hr (Postfix) with ESMTPSA id CF002604F0;
+        Tue, 14 Mar 2023 17:00:54 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+        t=1678809655; bh=JUO899XbhZktRUpiZFjSvUdGkb1mGeG/QXgEEoOoKZQ=;
+        h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
+        b=YAL5JRN/0c6yEFB6pUbT/oMihbQ87TghRuPrS3IUmB0z/Qxj91TqBppBWqGm8+5tq
+         KAu59Qy/fi4F/L1aF0iP5imt657ZN+Pu945g9uWQUe+72MiDiMYK4RZz65DaEfBqsZ
+         veWG5wLGz+9fHOmjOY2LpUdrch4xiKbW0F9rD8WkXOgIQOOJOVKFO3N+5T+cX4yE41
+         2npRLw8mJl5Zj5hBunT4XFvCnGtQuhwvc379ModVC4+EANoRE2XYdSnSKFaivA3cUa
+         LviEK+JktsLEdjijOHZS6ghyTaI3Nwo0X3w5VqzavDgFvGEvA8zTDortUBgTI+3OOX
+         CEeNj1X1gFhUw==
+Message-ID: <27769d34-521c-f0ef-b6c2-6bd452e4f9bf@alu.unizg.hr>
+Date:   Tue, 14 Mar 2023 17:00:47 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR11MB2937:EE_|PH8PR11MB7144:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6d5eb03b-ecf0-4333-0f95-08db24a4c17c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: CEjXzGiIu3ose+l2M1PrQzrn0EDNIPTQdXQ0bWW0DbiwBxgzCJ0ww+uR2GQGRdKIPS4w+B6YC7UDLnshSe7voYeGUXhzYsiUF0/7OZSMumJj7bW2smdBXvfoZQXOtt4LKjMqQuqajinwR9KKad8pygL/56qO/teQcNu1RyS+vdyAr4O4jbr45dzjdNUraveRcxZC9j/147E0aWZ1MCyZ6o2wa/RZ38xPQ91VbXCRQDSRrfDA0mvOJSCSXb8hldvlDH2meJM5koxb0a9VGlXJP/hmHBIYxLJymjj2/F0s/toKypuSvjdYcc2jGpp7iaIoFGkTyKFCqlQw6zqi0uYu0P7osiAmGkmAqzYoKBPNyNC3gAsgWKJWRAxLlKh7Hz2kTdzbcoNJOmP0+Cc2hQ7FV0Of1iUlc+QcOK5dogxhm+G5jAtQkWhauk3SIZIzBRE1X3089rK4pIKp7IS0wK/IKDy9ilTeyGC7qpsrMmYApOZl+sVtGEVI4Dh7SRmb4tTlFZqcsrASewbQvj9t+95kUR37oWwhj6Og2v6ucdloOBmGJouEAdljjomJQYAKO+No26mdBCvOqaw4QMqEWU3ggBFQx/3S9SgMUuS1Iy6v2pBApj1kfW2SnwpNgo3++bZxiMihzUcDHE2PZJZJSXCvGQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2937.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(346002)(396003)(136003)(39860400002)(366004)(376002)(451199018)(66899018)(2906002)(82960400001)(83380400001)(5660300002)(44832011)(66476007)(66946007)(41300700001)(8676002)(8936002)(4326008)(38100700002)(316002)(86362001)(478600001)(66556008)(186003)(9686003)(6506007)(6512007)(26005)(6486002)(6666004);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?z4O95wUWOFe4xhXwsl/R64EiDM1atpHoGatqg7GA6YXBR4ujx7R82qLpxpPd?=
- =?us-ascii?Q?tZe/N1/8TcQmcUEBkkrVildzlGJED604TPVNQM1UIcW6NhyLWv3UltXKgl53?=
- =?us-ascii?Q?aQSZNRgZ+67ot4lM6cd7u+S0pO3tnmHLTNGZLh2IsEJqKhjg1M38WHo0Mclv?=
- =?us-ascii?Q?eGOVTvU62UeDpp0MbErMhf+lxCxhvsJh/BkoncigNMgab4szKEqaLjQF8fOk?=
- =?us-ascii?Q?OtdNhTHNTELtAtGo4PPf9cipeFmYemiKbGaOQqsS5O8inXUMKAsVisXOsMF0?=
- =?us-ascii?Q?RmdfMOfXpItgyONn6nRoEtqXaEDgWMcJw8qir67D/DYXmnSooeKOIdwVYaMs?=
- =?us-ascii?Q?MQpAUKv8OEc+J8lO+DgFi+noe3MMI5ydnfedJ1jOjfmbKCHgT22ejOZ7+USA?=
- =?us-ascii?Q?ZzU2LV+/na6w9AuwPrbVCg/UDNEstROc6mZKXJRUGRa3trmpy5pjgIcFHWjy?=
- =?us-ascii?Q?O929YxbREEDiQERqPsiLbPMnnB8dApxzFiTD8sB/PVsL5+79a06gg0EzQEhC?=
- =?us-ascii?Q?fgCul93PeVesagyvEPLMSG4TTM9c8nG1XG4tTWB97Wo5rdNjBI7zHGLxdMH0?=
- =?us-ascii?Q?61pwp22kQZk5uy1xuw7ILp8DqwdQ1K87//LGphoN69A7QOxpvNfDDtqlyUk9?=
- =?us-ascii?Q?NePnyQ45z+vWkaQ6SldTBPsi592Z5fBBBPJ1aMbOF50XFr8zIIt2z3HFGlnO?=
- =?us-ascii?Q?z0+9oZjci1Bu+jWg0YG4Cv2EpFslXj9I5rY2V9n/zHGUsVuXLmKFQsm59rhv?=
- =?us-ascii?Q?1IXfv56OfrBfqboo5hiBRzHy74DMAh2nsf3aIJyBHNhFUmCjx8B72pRrbpzj?=
- =?us-ascii?Q?F5gPh66OQS5pokMQP17w10ygpGNKZ6T83pgKlGL9A5h0ltJqcpzJl/EKtAi8?=
- =?us-ascii?Q?XSSgSbHM9mWUsiJgd9FSc4iTgHuVVBg0pZ8hjlaWWegP2m02h4yxuJZhFlOl?=
- =?us-ascii?Q?cnG0gPwLLeaa836sDySgVi4h7aJF6+66bjgzZPuxUZ/IeMszT3FTHnUXZorh?=
- =?us-ascii?Q?TaUNZMaczhwO8U3Zd7tJ4WtgavHDlZxZbuxdB6160PG58QL3WNLbzzOavOsX?=
- =?us-ascii?Q?ta/xBDGROxVGYCySPpxqEQIxF7mAYclVW/WhPXqZG3FFa8h1pM9Hd5DLrjhz?=
- =?us-ascii?Q?OYMpReOZFWsndndAldGa2pkLyZb4xSUNJJZjok7mZ+0L8oGICajjF+Ms3Q2K?=
- =?us-ascii?Q?nepvnsgomz18AdzlGU+D/MQaO6pWknIVIQD+cKTvVcjd+/xTTdZEgqf+I5E1?=
- =?us-ascii?Q?esp7SB3Z1JM3GkwimQbsmHPFd7kcAxYXV4ECnyYwqeBZWy0l+XeeRh5YWdB6?=
- =?us-ascii?Q?VA+2qpYbHRsL09OCwaViOIZ7hNXzd2zM6+JK4MvG4tmLlsdDNhYNiGxUl/4u?=
- =?us-ascii?Q?af+pE2UmiNxs+EDWC4yIwXFGOgVGlAV6yC/0M+GsXlUqw4TBtmsAkdpif7wL?=
- =?us-ascii?Q?psdyv8ZRUfdL5TPIh5jl1/b7VDANgh1kgt6yg5h+otSV1uKRmmHcyVo6URpz?=
- =?us-ascii?Q?pTqVutViv54Jh+5GESg+XSzEXyySc8RVjJJbHO9LAPXJuquDpdPQvNjdxOZ2?=
- =?us-ascii?Q?57cBTZoY9MWCLTaKNhKAKNTS1O0LZQHPXhxIGJXe0GafbYlrCe+FM4G0rwzT?=
- =?us-ascii?Q?QQ=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6d5eb03b-ecf0-4333-0f95-08db24a4c17c
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB2937.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Mar 2023 15:57:04.4926
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YIUGvymTcdf7x0aZDpvOfdrUNOAzTSyLjkprcbMDbBiHcXS+hQACwm8nPefT9wVG3/arBLIcqupB9IDUmobgHQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB7144
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: BUG: selftest/net/tun: Hang in unregister_netdevice
+From:   Mirsad Todorovac <mirsad.todorovac@alu.unizg.hr>
+To:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-kernel@vger.kernel.org
+References: <a0734a6b-9491-b43a-6dff-4d3498faee2e@alu.unizg.hr>
+ <d7a64812-73db-feb2-e6d6-e1d8c09a6fed@alu.unizg.hr>
+Content-Language: en-US, hr
+In-Reply-To: <d7a64812-73db-feb2-e6d6-e1d8c09a6fed@alu.unizg.hr>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 14, 2023 at 02:14:38PM +0100, Wolfram Sang wrote:
-> When suspending/resuming an interface which was not up, we saw mdiobus
-> related PM handling despite 'mac_managed_pm' being set for RAVB/SH_ETH.
-> Heiner kindly suggested the fix to set this flag at probe time, not at
-> init/open time. I implemented his suggestion and it works fine on these
-> two Renesas drivers. These are patches 1+2.
+On 3/14/23 14:52, Mirsad Todorovac wrote:
+> On 3/14/23 12:45, Mirsad Todorovac wrote:
+>> Hi, all!
+>>
+>> After running tools/testing/selftests/net/tun, there seems to be some kind of hang
+>> in test "FAIL  tun.reattach_delete_close" or "FAIL  tun.reattach_close_delete".
+>>
+>> Two tests exit by timeout, but the processes left are unkillable, even with kill -9 PID:
+>>
+>> [root@pc-mtodorov linux_torvalds]# ps -ef | grep tun
+>> root        1140       1  0 12:16 ?        00:00:00 /bin/bash /usr/sbin/ksmtuned
+>> root        1333       1  0 12:16 ?        00:00:01 /usr/libexec/platform-python -Es /usr/sbin/tuned -l -P
+>> root        3930    2309  0 12:20 pts/1    00:00:00 tools/testing/selftests/net/tun
+>> root        3952    2309  0 12:21 pts/1    00:00:00 tools/testing/selftests/net/tun
+>> root        4056    3765  0 12:25 pts/1    00:00:00 grep --color=auto tun
+>> [root@pc-mtodorov linux_torvalds]# kill -9 3930 3952
+>> [root@pc-mtodorov linux_torvalds]# ps -ef | grep tun
+>> root        1140       1  0 12:16 ?        00:00:00 /bin/bash /usr/sbin/ksmtuned
+>> root        1333       1  0 12:16 ?        00:00:01 /usr/libexec/platform-python -Es /usr/sbin/tuned -l -P
+>> root        3930    2309  0 12:20 pts/1    00:00:00 tools/testing/selftests/net/tun
+>> root        3952    2309  0 12:21 pts/1    00:00:00 tools/testing/selftests/net/tun
+>> root        4060    3765  0 12:25 pts/1    00:00:00 grep --color=auto tun
+>> [root@pc-mtodorov linux_torvalds]#
+>>
+>> The kernel seems to be stuck in some loop, and filling the log with the
+>> following messages until reboot, where it is also waiting very long on the
+>> situation to timeout, which apparently never happens.
+>>
+>> Mar 14 11:54:09 pc-mtodorov kernel: unregister_netdevice: waiting for tap0 to become free. Usage count = 3
+>> Mar 14 11:54:19 pc-mtodorov kernel: unregister_netdevice: waiting for tap0 to become free. Usage count = 3
+>> Mar 14 11:54:29 pc-mtodorov kernel: unregister_netdevice: waiting for tap0 to become free. Usage count = 3
+>> Mar 14 11:54:40 pc-mtodorov kernel: unregister_netdevice: waiting for tap0 to become free. Usage count = 3
+>> Mar 14 11:54:50 pc-mtodorov kernel: unregister_netdevice: waiting for tap0 to become free. Usage count = 3
+>>
+>> The platform is kernel 6.3.0-rc2 on AlmaLinux 8.7 and a LENOVO_MT_10TX_BU_Lenovo_FM_V530S-07ICB
+>> (lshw output attached).
+>>
+>> The .config is here:
+>>
+>> https://domac.alu.hr/~mtodorov/linux/selftests/net-tun/config-6.3.0-rc2-mg-andy-devres-00006-gfc89d7fb499b
+>>
+>> Basically, it is a vanilla Torvalds tree kernel with MGLRU, KMEMLEAK, and CONFIG_DEBUG_KOBJECT enabled.
+>> And devres patch.
+>>
+>> Please find the strace of the net/tun run attached.
+>>
+>> I am available for additional diagnostics.
 > 
-> I then looked which other drivers could be affected by the same problem.
-> I could only identify two where I am quite sure. Because I don't have
-> any HW, I opted to at least add a FIXME and send this out as patches
-> 3+4. Ideally, they will never need to go upstream because the relevant
-> people will see their patch and do something like I did for patches 1+2.
+> Hi, again!
 > 
-> Looking forward to comments. Thanks and happy hacking!
+> I've been busy while waiting for reply, so I wondered how would a vanilla kernel
+> go through the test, considering that I've been testing a number of patches
+> lately.
 > 
+> I did a fresh git clone from repo and woa.
 > 
-> Wolfram Sang (4):
->   ravb: avoid PHY being resumed when interface is not up
->   sh_eth: avoid PHY being resumed when interface is not up
->   fec: add FIXME to move 'mac_managed_pm' to probe
->   smsc911x: add FIXME to move 'mac_managed_pm' to probe
+> Surprisingly, the test with CONFIG_DEBUG_KOBJECT turned off passes:
 > 
->  drivers/net/ethernet/freescale/fec_main.c |  1 +
->  drivers/net/ethernet/renesas/ravb_main.c  | 12 ++++++++++--
->  drivers/net/ethernet/renesas/sh_eth.c     | 12 ++++++++++--
->  drivers/net/ethernet/smsc/smsc911x.c      |  1 +
->  4 files changed, 22 insertions(+), 4 deletions(-)
+> [root@pc-mtodorov linux_torvalds]# tools/testing/selftests/net/tun
+> TAP version 13
+> 1..5
+> # Starting 5 tests from 1 test cases.
+> #  RUN           tun.delete_detach_close ...
+> #            OK  tun.delete_detach_close
+> ok 1 tun.delete_detach_close
+> #  RUN           tun.detach_delete_close ...
+> #            OK  tun.detach_delete_close
+> ok 2 tun.detach_delete_close
+> #  RUN           tun.detach_close_delete ...
+> #            OK  tun.detach_close_delete
+> ok 3 tun.detach_close_delete
+> #  RUN           tun.reattach_delete_close ...
+> #            OK  tun.reattach_delete_close
+> ok 4 tun.reattach_delete_close
+> #  RUN           tun.reattach_close_delete ...
+> #            OK  tun.reattach_close_delete
+> ok 5 tun.reattach_close_delete
+> # PASSED: 5 / 5 tests passed.
+> # Totals: pass:5 fail:0 xfail:0 xpass:0 skip:0 error:0
+> [root@pc-mtodorov linux_torvalds]#
 > 
-> -- 
-> 2.30.2
+> So, no hanging processes that cannot be killed now.
 > 
+> If you think it is worthy to explore the lockup that occurs when turning
+> CONFIG_DEBUG_KOBJECT=y, I will rebuild once again with these turned on,
+> to clear any doubts.
 
-Unfortunately, I wasn't able to check the series in terms of content, but
-I have no objections to the logic and coding style.
+Confirmed.
 
-For the series.
-Reviewed-by: Michal Kubiak <michal.kubiak@intel.com>
+With the sole difference of:
 
-Thanks,
-Michal
+[marvin@pc-mtodorov linux_torvalds]$ grep KOBJECT /boot/config-6.3.0-rc2-vanilla-00006-gfc89d7fb499b
+CONFIG_DEBUG_KOBJECT=y
+CONFIG_DEBUG_KOBJECT_RELEASE=y
+# CONFIG_SAMPLE_KOBJECT is not set
+[marvin@pc-mtodorov linux_torvalds]$
+
+we get again unkillable processes:
+
+[root@pc-mtodorov linux_torvalds]# ps -ef | grep tun
+root        1157       1  0 16:44 ?        00:00:00 /bin/bash /usr/sbin/ksmtuned
+root        1331       1  0 16:44 ?        00:00:01 /usr/libexec/platform-python -Es /usr/sbin/tuned -l -P
+root        3479    2315  0 16:45 pts/1    00:00:00 tools/testing/selftests/net/tun
+root        3512    2315  0 16:45 pts/1    00:00:00 tools/testing/selftests/net/tun
+root        4091    3364  0 16:49 pts/1    00:00:00 grep --color=auto tun
+[root@pc-mtodorov linux_torvalds]# kill -9 3479 3512
+[root@pc-mtodorov linux_torvalds]# ps -ef | grep tun
+root        1157       1  0 16:44 ?        00:00:00 /bin/bash /usr/sbin/ksmtuned
+root        1331       1  0 16:44 ?        00:00:01 /usr/libexec/platform-python -Es /usr/sbin/tuned -l -P
+root        3479    2315  0 16:45 pts/1    00:00:00 tools/testing/selftests/net/tun
+root        3512    2315  0 16:45 pts/1    00:00:00 tools/testing/selftests/net/tun
+root        4095    3364  0 16:50 pts/1    00:00:00 grep --color=auto tun
+[root@pc-mtodorov linux_torvalds]#
+
+Possibly the kernel /proc/cmdline is also important:
+
+[root@pc-mtodorov linux_torvalds]# cat /proc/cmdline
+BOOT_IMAGE=(hd0,gpt5)/vmlinuz-6.3.0-rc2-vanilla-00006-gfc89d7fb499b root=/dev/mapper/almalinux_desktop--mtodorov-root ro 
+crashkernel=auto resume=/dev/mapper/almalinux_desktop--mtodorov-swap rd.lvm.lv=almalinux_desktop-mtodorov/root 
+rd.lvm.lv=almalinux_desktop-mtodorov/swap loglevel=7 i915.alpha_support=1 debug devres.log=1
+[root@pc-mtodorov linux_torvalds]#
+
+After a while, kernel message start looping:
+
+  kernel:unregister_netdevice: waiting for tap0 to become free. Usage count = 3
+
+Message from syslogd@pc-mtodorov at Mar 14 16:57:15 ...
+  kernel:unregister_netdevice: waiting for tap0 to become free. Usage count = 3
+
+Message from syslogd@pc-mtodorov at Mar 14 16:57:24 ...
+  kernel:unregister_netdevice: waiting for tap0 to become free. Usage count = 3
+
+Message from syslogd@pc-mtodorov at Mar 14 16:57:26 ...
+  kernel:unregister_netdevice: waiting for tap0 to become free. Usage count = 3
+
+This hangs processes until very late stage of shutdown.
+
+I can confirm that CONFIG_DEBUG_{KOBJECT,KOBJECT_RELEASE}=y were the only changes
+to .config in between builds.
+
+Best regards,
+Mirsad
+
+-- 
+Mirsad Goran Todorovac
+Sistem inženjer
+Grafički fakultet | Akademija likovnih umjetnosti
+Sveučilište u Zagrebu
+
+System engineer
+Faculty of Graphic Arts | Academy of Fine Arts
+University of Zagreb, Republic of Croatia
