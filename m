@@ -2,157 +2,252 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A7026B982C
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 15:42:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 221B66B9823
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 15:38:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231458AbjCNOmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 10:42:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60274 "EHLO
+        id S231270AbjCNOik (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 10:38:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231324AbjCNOmE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 10:42:04 -0400
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2381AA8C65;
-        Tue, 14 Mar 2023 07:41:30 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1678804705; cv=none;
-    d=strato.com; s=strato-dkim-0002;
-    b=ttrxZjGFUYdB2ma/CRbwcMUssRV/XQ5lZoCGndMBs1mfZlWej768t/jSVEzMVT9eIF
-    ffDjbTvyFsi+6yjzyYhFbbF5INXAiCMFsEZzwTdSPkxCIxLvg0dxS5V/9St6nOJn/K8f
-    Ol4gzmRPLzQrRKAWYQ+MW/4nfrPJkR98GMBcmrEFXEIxJ1r5Tg9lU/LZm/N881LWsWN1
-    m6S7uXe7FkJ1ikAbC+QHOIAq1qcY5BRHrU3WQ+TfHnVbtFQYRFD10wejgTbXpqaGuzlZ
-    PA3nyZi61KwFssx7Bwq3iypMNa5Xwp5Ri7qWXSSDmJwWTDOHrJHshu+a1HVz8mqcRyAA
-    OAaA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1678804705;
-    s=strato-dkim-0002; d=strato.com;
-    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=yQaN/eP123ftd27BU/LoXLFK4aqVuDZYUDcnnwWlRwY=;
-    b=c6WrQmKpLKx355Ja2ds6cahMlx9m/JZETk4jmVGhUrdEDpBZZEvUehnAtTX1DAST03
-    SGyP4VHyn3GTJef0mMtNoICo8+lAA7XUC7Z6/ITKNml2gnHVqLGWW28FD3YwRN5AVOZH
-    SxUb7zysfTcWAJB/AtSzRHGAyN0G4KfjJEJJT3+lqQg2aVBAIvnpsyu5LSpOXNyMyu4Y
-    mkMtKS39jXRpxmDWiFfWvg9MQVTFCFWE6z8sXFijB+buiKEj0pXbxmgMbGSyFvttFQMO
-    wXCGNZnal9tPQKcC+CuBaxgzvSDz7Lry+NNDoqIuCFEzz0cAmzoJ12PvjbZGZ2RSL4Iz
-    7NVQ==
-ARC-Authentication-Results: i=1; strato.com;
-    arc=none;
-    dkim=none
-X-RZG-CLASS-ID: mo01
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1678804705;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=yQaN/eP123ftd27BU/LoXLFK4aqVuDZYUDcnnwWlRwY=;
-    b=l71DjzZZuqM4J3dOB83YKXuHSz/7ocgy1UTZ43VrzhXMFa5xYjiMHv91gepotTkm03
-    vs+/7MnIiqHlLaBqtcNSlAb93l7mXEi/3nsr2Dn1dA2anPJOndnBAETvJNg/RiLMiqjR
-    ld/tvZZGV1qb4Nd5CLsPLO6X4Ie9tteLHFxH+KveiCpdvD0FCF8tyDyl2U6xGBoBVOIh
-    3uCdTtn70SHxzdAXVVLbsflhCk6p/1I3oYHw+siD//iQzF7CSQZa6NYuNkh5QBtNTkPY
-    h5INyM2Ec5EHYa8pu2vkGZERuEp3TwQEbd4y0G1+hycFVa/8e+B0pj3GbxP3j/L1Z657
-    4W9w==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusl129OHEdFq0USEbDUQnQ=="
-Received: from [IPV6:2a00:6020:4a8e:5000::923]
-    by smtp.strato.de (RZmta 49.3.0 AUTH)
-    with ESMTPSA id c675b3z2EEcPefQ
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Tue, 14 Mar 2023 15:38:25 +0100 (CET)
-Message-ID: <0e7090c4-ca9b-156f-5922-fd7ddb55fee4@hartkopp.net>
-Date:   Tue, 14 Mar 2023 15:38:17 +0100
+        with ESMTP id S230224AbjCNOij (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 10:38:39 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63F1174320;
+        Tue, 14 Mar 2023 07:38:37 -0700 (PDT)
+Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Pbbj4140gz6J7Nf;
+        Tue, 14 Mar 2023 22:37:44 +0800 (CST)
+Received: from [10.123.123.126] (10.123.123.126) by
+ lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Tue, 14 Mar 2023 14:38:34 +0000
+Message-ID: <07c1c55a-e449-6884-8bbf-3a6aab8f0f72@huawei.com>
+Date:   Tue, 14 Mar 2023 17:38:33 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH] FS, NET: Fix KMSAN uninit-value in vfs_write
-To:     Ivan Orlov <ivan.orlov0322@gmail.com>, mkl@pengutronix.de,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, himadrispandya@gmail.com,
-        skhan@linuxfoundation.org,
-        syzbot+c9bfd85eca611ebf5db1@syzkaller.appspotmail.com
-References: <20230314120445.12407-1-ivan.orlov0322@gmail.com>
-Content-Language: en-US
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-In-Reply-To: <20230314120445.12407-1-ivan.orlov0322@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v9 08/12] landlock: Add network rules and TCP hooks
+ support
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+        <artem.kuzin@huawei.com>
+References: <20230116085818.165539-1-konstantin.meskhidze@huawei.com>
+ <20230116085818.165539-9-konstantin.meskhidze@huawei.com>
+ <5198f456-91f5-5c65-76c2-45b82ccb05eb@digikod.net>
+ <7598f777-8458-0984-b058-2026d8163d3a@huawei.com>
+ <59356a12-75cf-32d3-ea76-daafd0788af6@digikod.net>
+From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+In-Reply-To: <59356a12-75cf-32d3-ea76-daafd0788af6@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.123.123.126]
+X-ClientProxiedBy: lhrpeml100004.china.huawei.com (7.191.162.219) To
+ lhrpeml500004.china.huawei.com (7.191.163.9)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Ivan,
-
-besides the fact that we would read some uninitialized value the outcome 
-of the original implementation would have been an error and a 
-termination of the copy process too. Maybe throwing a different error 
-number.
-
-But it is really interesting to see what KMSAN is able to detect these 
-days! Many thanks for the finding and your effort to contribute this fix!
-
-Best regards,
-Oliver
 
 
-On 14.03.23 13:04, Ivan Orlov wrote:
-> Syzkaller reported the following issue:
-
-(..)
-
+3/14/2023 3:13 PM, Mickaël Salaün пишет:
 > 
-> Reported-by: syzbot+c9bfd85eca611ebf5db1@syzkaller.appspotmail.com
-> Link: https://syzkaller.appspot.com/bug?id=47f897f8ad958bbde5790ebf389b5e7e0a345089
-> Signed-off-by: Ivan Orlov <ivan.orlov0322@gmail.com>
-
-Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
-
-
-> ---
->   net/can/bcm.c | 16 ++++++++++------
->   1 file changed, 10 insertions(+), 6 deletions(-)
+> On 13/03/2023 10:33, Konstantin Meskhidze (A) wrote:
+>> 
+>> 
+>> 2/10/2023 8:39 PM, Mickaël Salaün пишет:
+>>>
+>>> On 16/01/2023 09:58, Konstantin Meskhidze wrote:
+>>>> This commit adds network rules support in the ruleset management
+>>>> helpers and the landlock_create_ruleset syscall.
+>>>> Refactor user space API to support network actions. Add new network
+>>>> access flags, network rule and network attributes. Increment Landlock
+>>>> ABI version. Expand access_masks_t to u32 to be sure network access
+>>>> rights can be stored. Implement socket_bind() and socket_connect()
+>>>> LSM hooks, which enable to restrict TCP socket binding and connection
+>>>> to specific ports.
+>>>>
+>>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>>>> ---
+>>>>
+>>>> Changes since v8:
+>>>> * Squashes commits.
+>>>> * Refactors commit message.
+>>>> * Changes UAPI port field to __be16.
+>>>> * Changes logic of bind/connect hooks with AF_UNSPEC families.
+>>>> * Adds address length checking.
+>>>> * Minor fixes.
+>>>>
+>>>> Changes since v7:
+>>>> * Squashes commits.
+>>>> * Increments ABI version to 4.
+>>>> * Refactors commit message.
+>>>> * Minor fixes.
+>>>>
+>>>> Changes since v6:
+>>>> * Renames landlock_set_net_access_mask() to landlock_add_net_access_mask()
+>>>>     because it OR values.
+>>>> * Makes landlock_add_net_access_mask() more resilient incorrect values.
+>>>> * Refactors landlock_get_net_access_mask().
+>>>> * Renames LANDLOCK_MASK_SHIFT_NET to LANDLOCK_SHIFT_ACCESS_NET and use
+>>>>     LANDLOCK_NUM_ACCESS_FS as value.
+>>>> * Updates access_masks_t to u32 to support network access actions.
+>>>> * Refactors landlock internal functions to support network actions with
+>>>>     landlock_key/key_type/id types.
+>>>>
+>>>> Changes since v5:
+>>>> * Gets rid of partial revert from landlock_add_rule
+>>>> syscall.
+>>>> * Formats code with clang-format-14.
+>>>>
+>>>> Changes since v4:
+>>>> * Refactors landlock_create_ruleset() - splits ruleset and
+>>>> masks checks.
+>>>> * Refactors landlock_create_ruleset() and landlock mask
+>>>> setters/getters to support two rule types.
+>>>> * Refactors landlock_add_rule syscall add_rule_path_beneath
+>>>> function by factoring out get_ruleset_from_fd() and
+>>>> landlock_put_ruleset().
+>>>>
+>>>> Changes since v3:
+>>>> * Splits commit.
+>>>> * Adds network rule support for internal landlock functions.
+>>>> * Adds set_mask and get_mask for network.
+>>>> * Adds rb_root root_net_port.
+>>>
+>>> [...]
+>>>
+>>>> +static int check_socket_access(const struct landlock_ruleset *const domain,
+>>>> +			       struct sockaddr *address, __be16 port,
+>>>> +			       access_mask_t access_request)
+>>>> +{
+>>>> +	bool allowed = false;
+>>>> +	layer_mask_t layer_masks[LANDLOCK_NUM_ACCESS_NET] = {};
+>>>> +	const struct landlock_rule *rule;
+>>>> +	access_mask_t handled_access;
+>>>> +	const struct landlock_id id = {
+>>>> +		.key.data = port,
+>>>> +		.type = LANDLOCK_KEY_NET_PORT,
+>>>> +	};
+>>>> +
+>>>> +	if (WARN_ON_ONCE(!domain))
+>>>> +		return 0;
+>>>> +	if (WARN_ON_ONCE(domain->num_layers < 1))
+>>>> +		return -EACCES;
+>>>> +
+>>>> +	switch (address->sa_family) {
+>>>> +	case AF_UNSPEC:
+>>>> +		/*
+>>>> +		 * Connecting to an address with AF_UNSPEC dissolves the TCP
+>>>> +		 * association, which have the same effect as closing the
+>>>> +		 * connection while retaining the socket object (i.e., the file
+>>>> +		 * descriptor).  As for dropping privileges, closing
+>>>> +		 * connections is always allowed.
+>>>> +		 */
+>>>> +		if (access_request == LANDLOCK_ACCESS_NET_CONNECT_TCP)
+>>>> +			return 0;
+>>>> +
+>>>> +		/*
+>>>> +		 * For compatibility reason, accept AF_UNSPEC for bind
+>>>> +		 * accesses (mapped to AF_INET) only if the address is
+>>>> +		 * INADDR_ANY (cf. __inet_bind).  Checking the address is
+>>>> +		 * required to not wrongfully return -EACCES instead of
+>>>> +		 * -EAFNOSUPPORT.
+>>>> +		 */
+>>>> +		if (access_request == LANDLOCK_ACCESS_NET_BIND_TCP) {
+>>>> +			const struct sockaddr_in *const sockaddr =
+>>>> +				(struct sockaddr_in *)address;
+>>>> +
+>>>> +			if (sockaddr->sin_addr.s_addr != htonl(INADDR_ANY))
+>>>> +				return -EAFNOSUPPORT;
+>>>> +		}
+>>>> +
+>>>> +		fallthrough;
+>>>> +	case AF_INET:
+>>>> +#if IS_ENABLED(CONFIG_IPV6)
+>>>> +	case AF_INET6:
+>>>> +#endif
+>>>> +		rule = landlock_find_rule(domain, id);
+>>>> +		handled_access = landlock_init_layer_masks(
+>>>> +			domain, access_request, &layer_masks,
+>>>> +			LANDLOCK_KEY_NET_PORT);
+>>>> +		allowed = landlock_unmask_layers(rule, handled_access,
+>>>> +						 &layer_masks,
+>>>> +						 ARRAY_SIZE(layer_masks));
+>>>> +
+>>>> +		fallthrough;
+>>>
+>>> You can remove this fallthrough.
+>>>
+>>>
+>>>> +	}
+>>>> +	return allowed ? 0 : -EACCES;
+>>>> +}
+>>>> +
+>>>> +static u16 get_port(const struct sockaddr *const address)
+>>>> +{
+>>>> +	/* Gets port value in host byte order. */
+>>>> +	switch (address->sa_family) {
+>>>> +	case AF_UNSPEC:
+>>>> +	case AF_INET: {
+>>>> +		const struct sockaddr_in *const sockaddr =
+>>>> +			(struct sockaddr_in *)address;
+>>>> +		return sockaddr->sin_port;
+>>>> +	}
+>>>> +#if IS_ENABLED(CONFIG_IPV6)
+>>>> +	case AF_INET6: {
+>>>> +		const struct sockaddr_in6 *const sockaddr_ip6 =
+>>>> +			(struct sockaddr_in6 *)address;
+>>>> +		return sockaddr_ip6->sin6_port;
+>>>> +	}
+>>>> +#endif
+>>>> +	}
+>>>> +	WARN_ON_ONCE(1);
+>>>> +	return 0;
+>>>> +}
+>>>> +
+>>>> +static int hook_socket_bind(struct socket *sock, struct sockaddr *address,
+>>>> +			    int addrlen)
+>>>> +{
+>>>> +	int ret;
+>>>> +	const struct landlock_ruleset *const dom =
+>>>> +		landlock_get_current_domain();
+>>>
+>>> landlock_get_current_domain() should only be called by a
+>>> get_current_net_domain() wrapper that checks if the current domain
+>>> handles network accesses. See get_current_fs_domain() in patch 2/12.
+>> 
+>>     Hi Mickaël.
+>>     I have question:
+>> 
+>>     static access_mask_t
+>> get_raw_handled_fs_accesses(const struct landlock_ruleset *const domain)
+>> {
+>> 	access_mask_t access_dom = 0;
+>> 	size_t layer_level;
+>> 
+>> 	for (layer_level = 0; layer_level < domain->num_layers; layer_level++)
+>> 		access_dom |=
+>> 			landlock_get_raw_fs_access_mask(domain, layer_level);
+>> 	return access_dom & LANDLOCK_MASK_ACCESS_FS;
+>> }
+>> 
+>> landlock_get_raw_fs_access_mask() function is already mask by
+>> LANDLOCK_MASK_ACCESS_FS. We could get rid of access_dom masking.
+>> What do you think?
 > 
-> diff --git a/net/can/bcm.c b/net/can/bcm.c
-> index 27706f6ace34..a962ec2b8ba5 100644
-> --- a/net/can/bcm.c
-> +++ b/net/can/bcm.c
-> @@ -941,6 +941,8 @@ static int bcm_tx_setup(struct bcm_msg_head *msg_head, struct msghdr *msg,
->   
->   			cf = op->frames + op->cfsiz * i;
->   			err = memcpy_from_msg((u8 *)cf, msg, op->cfsiz);
-> +			if (err < 0)
-> +				goto free_op;
->   
->   			if (op->flags & CAN_FD_FRAME) {
->   				if (cf->len > 64)
-> @@ -950,12 +952,8 @@ static int bcm_tx_setup(struct bcm_msg_head *msg_head, struct msghdr *msg,
->   					err = -EINVAL;
->   			}
->   
-> -			if (err < 0) {
-> -				if (op->frames != &op->sframe)
-> -					kfree(op->frames);
-> -				kfree(op);
-> -				return err;
-> -			}
-> +			if (err < 0)
-> +				goto free_op;
->   
->   			if (msg_head->flags & TX_CP_CAN_ID) {
->   				/* copy can_id into frame */
-> @@ -1026,6 +1024,12 @@ static int bcm_tx_setup(struct bcm_msg_head *msg_head, struct msghdr *msg,
->   		bcm_tx_start_timer(op);
->   
->   	return msg_head->nframes * op->cfsiz + MHSIZ;
-> +
-> +free_op:
-> +	if (op->frames != &op->sframe)
-> +		kfree(op->frames);
-> +	kfree(op);
-> +	return err;
->   }
->   
->   /*
+> Right, you can remove this extra mask.
+> 
+> While reading the code again I found that it would be better to rename
+> ACCESS_FS_INITIALLY_DENIED to LANDLOCK_ACCESS_FS_INITIALLY_DENIED.
+
+   Ok. Will be renamed..
+> .
