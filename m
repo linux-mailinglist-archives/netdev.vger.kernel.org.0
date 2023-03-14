@@ -2,173 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E0FC6B99F2
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 16:40:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDB406B99ED
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 16:39:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229960AbjCNPkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 11:40:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52856 "EHLO
+        id S230103AbjCNPjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 11:39:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229648AbjCNPjn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 11:39:43 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84168B1A56;
-        Tue, 14 Mar 2023 08:38:56 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id cy23so63600435edb.12;
-        Tue, 14 Mar 2023 08:38:56 -0700 (PDT)
+        with ESMTP id S230300AbjCNPix (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 11:38:53 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6AA5B06C3
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 08:38:14 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id o11-20020a05600c4fcb00b003eb33ea29a8so10471422wmq.1
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 08:38:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678808288;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=w3ZuYTnI2XHY7qD63HYvqwpI7hWCTPg4374W3++0NbA=;
-        b=L0jFXnD6fY2x71EQ6w5SQvZLc7ZP5CiMlLl4xc0rdvsqGB5tEvmmxbPeKgrGvU9/uH
-         Nkr8DxsNI+KjwtM8AoP4ciM3N+C1/kbI9m6KYG7YnpPwKZUm7gJKqSXhRtrLSlzfEVeu
-         33J5hjtg2BBUTdLptztUqdfOyNJJbUmsV6F4+Et6z1GDzCIXkwzv/hK5j0DY+8xwvOV9
-         KHM9aGLsq232L01gSCxnGG+sYkkNy58kZNbdF1qJVond/CQ4T+gHOOpYpzSHt+yXQIUb
-         7NfzEYCOLqPM5QvsgcszumEN93G/0WC1EguFNpjoJyQUFRHlew+g0jMj/bhvFpjN82Jc
-         XOCw==
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112; t=1678808256;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=7GlU5FlfqZLNdwifJAA0Utk/ibVxeSQBhLWgq8BgMWk=;
+        b=eoRVnkAEjY8iQPQ/R5+tNuPsk/3zgvCeY/mSziGETSQ/jSTFY/Jlx31u+GXkjQ8Yjb
+         H86PIMraR1om2E9GFppJGfEttRV0kuhZkCaEY46mvGd/95cWN+gnchmKMlaNEtDNQ9j6
+         Lpxv1JC1xeACAb36nSuGtWNNr79u6uGRNRxrHXQnvf+iPloJbv60d4qtpe/mXqLgqAgF
+         c7/gbqXt3YJTotJDbqw74J5eBYcwHN7YLwO6jzulslr9ZEaTmvB5W7fGhe8561oEo4zk
+         5eMXy7tEfF2gfa2D3AkJQakhK4GCYAJcgppkJ7TXg6RgK31daWzHzpghYbg4ZdipjFq6
+         ctUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678808288;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=w3ZuYTnI2XHY7qD63HYvqwpI7hWCTPg4374W3++0NbA=;
-        b=m4Gh0JPNwp0duQnv8ImKxkBcZMURksCtdfvMrbRtkn3O+R2mYJqMASrD5JRsxL2ks+
-         B24yQyD62d+agv+WZGYijCe6o6icls6OILI8Qj6b1lhuZsJc4QDPl0pOpXUN3Pq83Bop
-         J2Uxeu3H6T/O6YCNgQlc86s9nhekXQxeMlvfoOzX0L2c6/8NB6O/XFX41fjlYbzEeZLy
-         oRqA+bBEJ5Tu5kvr9gWB32i3t/X0R+25ktfd9US4fualbW4zL59g/KurXGIeJTyfRMC3
-         ficiX3XYxskgHuoQnZQlgRLlYFXr3Cz3ee8Wj6JIJOQ5FFPUUQUf3mJXENkLiAWH/vhA
-         5+UA==
-X-Gm-Message-State: AO0yUKVr5rpX63ays4C6r4pCv6ToAW/r3w8OEr84iuadm/w9HTrxtw/m
-        qLnYjlAXUedOztsyMjC7u/YwTxNSLk1iUileWc0=
-X-Google-Smtp-Source: AK7set/dZz+S30ElspvS+EcKXPdVdzDcBSO9QhvK39lm23VCHLr/Hpbu8dtl8+OAdMgr3AlVyBzh8Mhibzq+cHa5/VA=
-X-Received: by 2002:a17:906:8443:b0:922:26ae:c68c with SMTP id
- e3-20020a170906844300b0092226aec68cmr1630233ejy.5.1678808287719; Tue, 14 Mar
- 2023 08:38:07 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1678808256;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=7GlU5FlfqZLNdwifJAA0Utk/ibVxeSQBhLWgq8BgMWk=;
+        b=8QVMPa9wu4sZU/6mZoEprNo4iHAYFy7FzlgbpieKDLUASo92A/3Bt+5nhaRe/6rrMH
+         KP6T+9rUFPageyxEQHK/5acU/LUlT2MWr3Bk717AuNZMvq5vXXi7PyGv1GyPujeXlX+S
+         VL7zUKJq2jOLRfzsRkk9jT+NnHhugM4oxGPfZxeB0etK4A211/1Rr1oatqLXTEJBtxOP
+         anpIAI2YdMQARMUxgC1lwS++5gI6EA7nbyoYCNzvyQuPKNUzpGQhT9MlTUKSDl56VOXd
+         oZvLzqkolJTDJXeighdWlklmYSIKE1UZqBKhnVCF0Y7rjg+hGVCnqwPRpIkH8W96HGfL
+         fNvQ==
+X-Gm-Message-State: AO0yUKXpqEQDceaRnLvvxIkcm9bi1UZsKVsQF8Mi21lr4AnrOcoSk8O+
+        XnceScoopqMxXIqY9ljDMK9g0g==
+X-Google-Smtp-Source: AK7set9pdl0IaRIcAWLhepeq2yGqCuDlwxylkFe2FMrDc0V8oJh5WRpzh4LTG/oDIIelnDQ0gxiq+Q==
+X-Received: by 2002:a05:600c:468e:b0:3ea:f73e:9d8c with SMTP id p14-20020a05600c468e00b003eaf73e9d8cmr14756700wmo.16.1678808256522;
+        Tue, 14 Mar 2023 08:37:36 -0700 (PDT)
+Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
+        by smtp.gmail.com with ESMTPSA id t11-20020a7bc3cb000000b003eb3933ef10sm3086375wmj.46.2023.03.14.08.37.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Mar 2023 08:37:36 -0700 (PDT)
+Message-ID: <f94409d7-4864-43cc-35f7-90ae319f54da@blackwall.org>
+Date:   Tue, 14 Mar 2023 17:37:35 +0200
 MIME-Version: 1.0
-References: <20230314131427.85135-1-kerneljasonxing@gmail.com>
- <20230314131427.85135-2-kerneljasonxing@gmail.com> <CANn89iJzVjht5L1zxwCMTPXXoXdRMtRmzbL5UzHodhBJziCxYg@mail.gmail.com>
-In-Reply-To: <CANn89iJzVjht5L1zxwCMTPXXoXdRMtRmzbL5UzHodhBJziCxYg@mail.gmail.com>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Tue, 14 Mar 2023 23:37:31 +0800
-Message-ID: <CAL+tcoCitx8045qWr1E-yudvEkCndDMBJT+OtqqjbdEPv7EXhQ@mail.gmail.com>
-Subject: Re: [PATCH v3 net-next 1/2] net-sysfs: display two backlog queue len separately
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, stephen@networkplumber.org,
-        simon.horman@corigine.com, sinquersw@gmail.com,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jason Xing <kernelxing@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH net v2 1/4] bonding: add bond_ether_setup helper
+Content-Language: en-US
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     netdev@vger.kernel.org, monis@voltaire.com, syoshida@redhat.com,
+        andy@greyhouse.net, kuba@kernel.org, davem@davemloft.net,
+        pabeni@redhat.com, edumazet@google.com,
+        syzbot+9dfc3f3348729cc82277@syzkaller.appspotmail.com
+References: <20230314111426.1254998-1-razor@blackwall.org>
+ <20230314111426.1254998-2-razor@blackwall.org> <28497.1678808095@famine>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <28497.1678808095@famine>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,
+        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 14, 2023 at 11:15=E2=80=AFPM Eric Dumazet <edumazet@google.com>=
- wrote:
->
-> On Tue, Mar 14, 2023 at 6:14=E2=80=AFAM Jason Xing <kerneljasonxing@gmail=
-.com> wrote:
-> >
-> > From: Jason Xing <kernelxing@tencent.com>
-> >
-> > Sometimes we need to know which one of backlog queue can be exactly
-> > long enough to cause some latency when debugging this part is needed.
-> > Thus, we can then separate the display of both.
-> >
-> > Signed-off-by: Jason Xing <kernelxing@tencent.com>
-> > Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> > ---
-> > v3: drop the comment suggested by Simon
-> > Link: https://lore.kernel.org/lkml/20230314030532.9238-2-kerneljasonxin=
-g@gmail.com/
-> >
-> > v2: keep the total len of backlog queues untouched as Eric said
-> > Link: https://lore.kernel.org/lkml/20230311151756.83302-1-kerneljasonxi=
-ng@gmail.com/
-> > ---
-> >  net/core/net-procfs.c | 19 +++++++++++++++----
-> >  1 file changed, 15 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/net/core/net-procfs.c b/net/core/net-procfs.c
-> > index 1ec23bf8b05c..8056f39da8a1 100644
-> > --- a/net/core/net-procfs.c
-> > +++ b/net/core/net-procfs.c
-> > @@ -115,10 +115,19 @@ static int dev_seq_show(struct seq_file *seq, voi=
-d *v)
-> >         return 0;
-> >  }
-> >
-> > +static u32 softnet_input_pkt_queue_len(struct softnet_data *sd)
-> > +{
-> > +       return skb_queue_len_lockless(&sd->input_pkt_queue);
-> > +}
-> > +
-> > +static u32 softnet_process_queue_len(struct softnet_data *sd)
-> > +{
-> > +       return skb_queue_len_lockless(&sd->process_queue);
-> > +}
-> > +
-> >  static u32 softnet_backlog_len(struct softnet_data *sd)
-> >  {
-> > -       return skb_queue_len_lockless(&sd->input_pkt_queue) +
-> > -              skb_queue_len_lockless(&sd->process_queue);
-> > +       return softnet_input_pkt_queue_len(sd) + softnet_process_queue_=
-len(sd);
-> >  }
-> >
-> >  static struct softnet_data *softnet_get_online(loff_t *pos)
-> > @@ -169,12 +178,14 @@ static int softnet_seq_show(struct seq_file *seq,=
- void *v)
-> >          * mapping the data a specific CPU
-> >          */
-> >         seq_printf(seq,
-> > -                  "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %=
-08x %08x %08x\n",
-> > +                  "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %=
-08x %08x %08x "
-> > +                  "%08x %08x\n",
-> >                    sd->processed, sd->dropped, sd->time_squeeze, 0,
-> >                    0, 0, 0, 0, /* was fastroute */
-> >                    0,   /* was cpu_collision */
-> >                    sd->received_rps, flow_limit_count,
-> > -                  softnet_backlog_len(sd), (int)seq->index);
-> > +                  softnet_backlog_len(sd), (int)seq->index,
-> > +                  softnet_input_pkt_queue_len(sd), softnet_process_que=
-ue_len(sd));
-> >         return 0;
->
->
-[...]
-> It is customary to wait ~24 hours between each version, so that
-> everybody gets a chance to comment,
-> and to avoid polluting mailing lists with too many messages/day.
+On 14/03/2023 17:34, Jay Vosburgh wrote:
+> Nikolay Aleksandrov <razor@blackwall.org> wrote:
+> 
+>> Add bond_ether_setup helper which will be used in the following patches
+>> to fix all ether_setup() calls in the bonding driver. It takes care of both
+>> IFF_MASTER and IFF_SLAVE flags, the former is always restored and the
+>> latter only if it was set.
+>>
+>> Fixes: e36b9d16c6a6d ("bonding: clean muticast addresses when device changes type")
+>> Fixes: 7d5cd2ce5292 ("bonding: correctly handle bonding type change on enslave failure")
+>> Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
+>> ---
+>> drivers/net/bonding/bond_main.c | 12 ++++++++++++
+>> 1 file changed, 12 insertions(+)
+>>
+>> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+>> index 00646aa315c3..d41024ad2c18 100644
+>> --- a/drivers/net/bonding/bond_main.c
+>> +++ b/drivers/net/bonding/bond_main.c
+>> @@ -1775,6 +1775,18 @@ void bond_lower_state_changed(struct slave *slave)
+>> 		slave_err(bond_dev, slave_dev, "Error: %s\n", errmsg);	\
+>> } while (0)
+>>
+>> +/* ether_setup() resets bond_dev's flags so we always have to restore
+>> + * IFF_MASTER, and only restore IFF_SLAVE if it was set
+>> + */
+>> +static void bond_ether_setup(struct net_device *bond_dev)
+>> +{
+>> +	unsigned int slave_flag = bond_dev->flags & IFF_SLAVE;
+>> +
+>> +	ether_setup(bond_dev);
+>> +	bond_dev->flags |= IFF_MASTER | slave_flag;
+>> +	bond_dev->priv_flags &= ~IFF_TX_SKB_SHARING;
+>> +}
+> 
+> 	Is setting IFF_MASTER always correct here?  I note that patch #2
+> is replacing code that does not set IFF_MASTER, whereas patch #3 is
+> replacing code that does set IFF_MASTER.
+> 
+> 	Presuming that this is the desired behavior, perhaps mention
+> explicitly in the commentary that bond_ether_setup() is only for use on
+> a bond master device.  The nomenclature "bond_dev" does imply that, but
+> it's not explicit.
+> 
 
-Thanks for your reminder.
+Setting IFF_MASTER is always correct because we're talking about a bond master device.
+I.e. we're restoring the flags to a bond device itself. The bugs are different because
+previously I had fixed the error path (partly, missed the IFF_SLAVE), but I just noticed
+the normal enslave path while fixing the IFF_SLAVE one now. :)
+So yes, both paths need the same treatment for both flags.
 
->
-> (I see you are including lkml@, which seems unnecessary for this kind of =
-patch)
+> 	Also, why is the call to ether_setup() from bond_setup() not
+> also being converted to bond_ether_setup()?
 
-Yes, I alway do the get_maintainers.pl to check before I submit. So
-I'll remove the lkml@.
+That is more of a cleanup, the one there is correct because flags are set after that.
+In that case only IFF_MASTER is needed, IFF_SLAVE cannot be set. Once these are
+merged in net-next I'll send a followup to use it there, too.
 
->
-> Please address the feedback I gave for v2.
-
-Sure :)
+> 
+> 	-J
+> 
 
 Thanks,
-Jason
+ Nik
 
->
-> Thanks.
+>> +
+>> /* enslave device <slave> to bond device <master> */
+>> int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
+>> 		 struct netlink_ext_ack *extack)
+>> -- 
+>> 2.39.2
+>>
+> 
+> ---
+> 	-Jay Vosburgh, jay.vosburgh@canonical.com
+
