@@ -2,125 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E3B106B8E41
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 10:12:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46BC26B8E42
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 10:13:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229540AbjCNJMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 05:12:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44616 "EHLO
+        id S230457AbjCNJMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 05:12:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229950AbjCNJMk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 05:12:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65550984CB
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 02:11:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678785105;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=T7LMCjgV3148z08653yeBgRUZqj0U6BVbsGsCqJdIQw=;
-        b=iJg1a6wbTzSY37Tw1t/o1R3GxIGZo9QhcULAg+rZuTnkaZ7nNHCdZ1cdQTXVJ4u+CeCD64
-        68k6LQs43f91lJ/vhwrDETX6lvh9K2E/AH1bkc+Ft2g0Gsnw02DwCB6P8r/s+9N6W0uhAG
-        K2Z2LhN1UGfUtcpfmmu0gP4ZTkr78sk=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-3-XybK3PGbMMeEF-QJqT5cUA-1; Tue, 14 Mar 2023 05:11:43 -0400
-X-MC-Unique: XybK3PGbMMeEF-QJqT5cUA-1
-Received: by mail-ed1-f69.google.com with SMTP id m8-20020a056402430800b004cdaaa4f428so21058152edc.20
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 02:11:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678785099;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=T7LMCjgV3148z08653yeBgRUZqj0U6BVbsGsCqJdIQw=;
-        b=6O7JXMNscnEmmGLEgQTMYq+TRRZtWtRbhwBMDLP+KgZE/BepVTz2Ub91pARmV6YqVJ
-         w4lWlu+CKtVRstZ+d+G2KdkaXmubHCgCbC7joG/GuRgVrdc+ZAgev2b+48sMMhILPY4r
-         feBGdJi6xPxDflEgY/2JaJGBxujpBS9SWZdMSCR2CPHK7SP94yuswUPCUynVmLett9C8
-         YlengyiiQkItcye3BpZOejpJSjTwEdwNy8/YG6C4x1tGV4+PZJqRhQNMpGo3A5B134Fw
-         Vt9X0kYYYiZZveXRsPnBbK4TAMxnH5strtiM0GsTWpekobGmpifci7MxtXgDX+gkQ3Fz
-         49oA==
-X-Gm-Message-State: AO0yUKUmu3fDNBojJlKfK5kIfntbJAOt1CUIooJl4uPtFkDRgKL+/FC8
-        7h3u3AGF1cXwlgqWiJsJSjP2AhRQIxTLNQW8u1LMpB8dfjcrA4avkZkBHI9p8yNqbIPv/4UGXmO
-        tv+Ca1SVZvo/KECqZ
-X-Received: by 2002:a17:907:746:b0:92b:ae6c:23e7 with SMTP id xc6-20020a170907074600b0092bae6c23e7mr1868562ejb.56.1678785099433;
-        Tue, 14 Mar 2023 02:11:39 -0700 (PDT)
-X-Google-Smtp-Source: AK7set+bdi1ysk/4yWOK0bSSOg12ZBcLDKbIuHqp5BWiooRh0XX2E3g6+Wpi5yzgkrXZjiEs1t2Sbg==
-X-Received: by 2002:a17:907:746:b0:92b:ae6c:23e7 with SMTP id xc6-20020a170907074600b0092bae6c23e7mr1868546ejb.56.1678785099140;
-        Tue, 14 Mar 2023 02:11:39 -0700 (PDT)
-Received: from redhat.com ([2a02:14f:1f7:4129:3ef9:ea05:f0ca:6b81])
-        by smtp.gmail.com with ESMTPSA id hd31-20020a170907969f00b0092d58e24e11sm356116ejc.137.2023.03.14.02.11.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Mar 2023 02:11:38 -0700 (PDT)
-Date:   Tue, 14 Mar 2023 05:11:32 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Heng Qi <hengqi@linux.alibaba.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: Re: [PATCH net 2/2] virtio_net: free xdp shinfo frags when
- build_skb_from_xdp_buff() fails
-Message-ID: <20230314051049-mutt-send-email-mst@kernel.org>
-References: <20230314083901.40521-1-xuanzhuo@linux.alibaba.com>
- <20230314083901.40521-3-xuanzhuo@linux.alibaba.com>
+        with ESMTP id S229929AbjCNJMp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 05:12:45 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCEC762D85;
+        Tue, 14 Mar 2023 02:12:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=872ImSCZ3X8e4qu5m2YVUu1socM3dn7WUGYc6th1yyE=; b=oZCUQ6RZqX5bITahefVtYNcr9g
+        pBvHbwrbB93xvLWVpfEBQ/9/ATKvE+9ZzWGCLaq+R3csBz7L6IzaSKCPKqWlZI27R6dNZnA1OajzT
+        92FKFrUmfnkSPNsDbDyIMkg4/FGu4G0mWsMjf9VSJndeAnSRc1emweBpAE5My21NrNhP9qKo+nGyX
+        c2iumqGRHGIq0rlzEjBDK9wYSP5cTezwITtU7bsTWlj/Fl/TbKncSY0c1PNxjhhfBenmp9kx4m9rl
+        jb70mzceeP10ur8rXUMjlUTM6uRdai7RNURcIOSRwwAww/np9dkJg7LS+xGll9TvCpdXGhc8JxXTb
+        MdTTh5qw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34654)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pc0hy-0004kr-V5; Tue, 14 Mar 2023 09:12:38 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pc0hu-0000D2-D9; Tue, 14 Mar 2023 09:12:34 +0000
+Date:   Tue, 14 Mar 2023 09:12:34 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Frank Wunderlich <frank-w@public-files.de>
+Cc:     Daniel Golle <daniel@makrotopia.org>, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: Re: Re: Re: Re: [PATCH net-next v12 08/18] net: ethernet:
+ mtk_eth_soc: fix 1000Base-X and 2500Base-X modes
+Message-ID: <ZBA6gszARdJY26Mz@shell.armlinux.org.uk>
+References: <trinity-79e9f0b8-a267-4bf9-a3d4-1ec691eb5238-1678536337569@3c-app-gmx-bs24>
+ <ZAzd1A0SAKZK0hF5@shell.armlinux.org.uk>
+ <4B891976-C29E-4D98-B604-3AC4507D3661@public-files.de>
+ <ZAzk71mTxgV/pRxC@shell.armlinux.org.uk>
+ <trinity-8577978d-1c11-4f6d-ae11-aef37e8b78b0-1678624836722@3c-app-gmx-bap51>
+ <ZA4wlQ8P48aDhDly@shell.armlinux.org.uk>
+ <ZA8B/kI0fLx4gkQm@shell.armlinux.org.uk>
+ <trinity-93681801-f99c-40e2-9fbd-45888b3069aa-1678732740564@3c-app-gmx-bs66>
+ <ZA+qTyQ3n6YiURkQ@shell.armlinux.org.uk>
+ <trinity-e2c457f1-c897-45f1-907a-8ea3664b7512-1678783872771@3c-app-gmx-bap66>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230314083901.40521-3-xuanzhuo@linux.alibaba.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <trinity-e2c457f1-c897-45f1-907a-8ea3664b7512-1678783872771@3c-app-gmx-bap66>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 14, 2023 at 04:39:01PM +0800, Xuan Zhuo wrote:
-> build_skb_from_xdp_buff() may return NULL, on this
-> scene we need to free the frags of xdp shinfo.
-
-s/on this scene/in this case/
-
+On Tue, Mar 14, 2023 at 09:51:12AM +0100, Frank Wunderlich wrote:
+> Hi,
 > 
-> Fixes: fab89bafa95b ("virtio-net: support multi-buffer xdp")
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-
-> ---
->  drivers/net/virtio_net.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
+> at least the error-message is gone, and interface gets up when i call ethtoo to switch off autoneg.
 > 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 8ecf7a341d54..d36183be0481 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -1273,9 +1273,12 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->  
->  		switch (act) {
->  		case XDP_PASS:
-> +			head_skb = build_skb_from_xdp_buff(dev, vi, &xdp, xdp_frags_truesz);
-> +			if (!head_skb)
-> +				goto err_xdp_frags;
-> +
->  			if (unlikely(xdp_page != page))
->  				put_page(page);
-> -			head_skb = build_skb_from_xdp_buff(dev, vi, &xdp, xdp_frags_truesz);
->  			rcu_read_unlock();
->  			return head_skb;
->  		case XDP_TX:
-> -- 
-> 2.32.0.3.g01195cf9f
+> root@bpi-r3:~# dmesg | grep -i 'sfp\|eth1'
+> [    1.991838] sfp sfp-1: module OEM              SFP-2.5G-T       rev 1.0  sn SK2301110008     dc 230110  
+> [    2.001352] mtk_soc_eth 15100000.ethernet eth1: optical SFP: interfaces=[mac=2-4,21-22, sfp=22]
+> [    2.010059] mtk_soc_eth 15100000.ethernet eth1: optical SFP: chosen 2500base-x interface
+> [    2.018145] mtk_soc_eth 15100000.ethernet eth1: requesting link mode inband/2500base-x with support 00,00000000,00000000,0000e400
+> [   34.385814] mtk_soc_eth 15100000.ethernet eth1: configuring for inband/2500base-x link mode
+> [   34.394259] mtk_soc_eth 15100000.ethernet eth1: major config 2500base-x
+> [   34.400860] mtk_soc_eth 15100000.ethernet eth1: phylink_mac_config: mode=inband/2500base-x/Unknown/Unknown/none adv=00,00000000,00000000,0000e400 pause=04 link=0 an=1
 
+Looking good - apart from that pesky an=1 (which isn't used by the PCS
+driver, and I've been thinking of killing it off anyway.) Until such
+time that happens, we really ought to set that correctly, which means
+an extra bit is needed in phylink_sfp_set_config(). However, this
+should not affect anything.
+
+> root@bpi-r3:~# 
+> root@bpi-r3:~# ethtool -s eth1 autoneg off
+> root@bpi-r3:~# [  131.031902] mtk_soc_eth 15100000.ethernet eth1: Link is Up - 2.5Gbps/Full - flow control off
+> [  131.040366] IPv6: ADDRCONF(NETDEV_CHANGE): eth1: link becomes ready
+> 
+> full log here:
+> https://pastebin.com/yDC7PuM2
+> 
+> i see that an is still 1..maybe because of the fixed value here?
+> 
+> https://elixir.bootlin.com/linux/v6.3-rc1/source/drivers/net/phy/phylink.c#L3038
+
+Not sure what that line has to do with it - this is what the above
+points to:
+
+        phylink_sfp_set_config(pl, MLO_AN_INBAND, pl->sfp_support, &config);
+
+Anyway, the important thing is the Autoneg bit in the advertising mask
+is now zero, which is what we want. That should set the PCS to disable
+negotiation when in 2500baseX mode, the same as ethtool -s eth1 autoneg
+off.
+
+So I think the question becomes - what was the state that ethtool was
+reporting before asking ethtool to set autoneg off, and why does that
+make a difference.
+
+> and yes, module seems to do rate adaption (it is labeled with 100M/1G/2.5G), i tried it on a 1G-Port and link came up (with workaround patch from daniel),
+> traffic "works" but in tx-direction with massive retransmitts (i guess because pause-frames are ignored - pause was 00).
+
+We'll see about addressing that later once we've got the module working
+at 2.5G. However, thanks for the information.
+
+The patch below should result in ethtool reporting 2500baseT rather than
+2500baseX, and that an=1 should now be an=0. Please try it, and dump the
+ethtool eth1 before asking for autoneg to be manually disabled, and also
+report the kernel messages.
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
