@@ -2,169 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E3BA06B9C86
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 18:09:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F02396B9CA1
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 18:12:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230415AbjCNRJ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 13:09:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37364 "EHLO
+        id S231176AbjCNRMp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 13:12:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230388AbjCNRJ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 13:09:56 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE2A379B23;
-        Tue, 14 Mar 2023 10:09:50 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id m4so7922747lfj.2;
-        Tue, 14 Mar 2023 10:09:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678813789;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=A3mTGYj7JV/DxYx8PY7Jjtyf3i3A4TY4QKPyGUShY+4=;
-        b=Pt9FXMyV5qPTnBsN9S1/ue6ef/xHOAdmSIiLfyYu0b5z8FVXXS1yj4ZK1ucSROuPRG
-         jDyAlusKmNAaEVi6bK3kDVBpf6AGWU9T7G5LNXbgXRxebGCYrJidVsFdZ+6LCbkTcR59
-         xnKKxVKWv9z9kJBHtIXobR8p6nSXCU3GzZTqFQP7wexHJsPLFmx2tZSCK/GA+REeelbu
-         0SxCODAFMY88ynul6wJCGBHe7NI+t6qu825Iptsp1ZbKcS8A9M1zyNkc1e1A84ehOq4o
-         IdU+k74tQ+L39Bk+Fa/ESNr/YZwbgGVjHerqrj0/7/gdEYmlX3/IBoI1i1DggLgPpprn
-         f2+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678813789;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=A3mTGYj7JV/DxYx8PY7Jjtyf3i3A4TY4QKPyGUShY+4=;
-        b=Vvp24ywrq1Jzu5HWi+Zxpa77lH+K+uctTX9pfh88EylYZlXXqUBwkA2+U3/gxg0g1d
-         vhwBHMNfwLkyNFs0OVMv8sjesl/CnzF7IudTPzRqYMxo3skLdkgNfjjhA9A2vPeMkI3+
-         00RKxSwwHC/5qDrG8cCaYUwI4+Ia1DMNIARTR4wYNmiEDHP6IW9jWiUXUrafxpUmBWNV
-         j84K0jY8xDZssPtEFVfRZdGDGkO+OD8ryKC9fUSJBqsqOEKh8BkxCexv9WbrmA7n+TJy
-         sIwjLW56JnnEIgDZWYQhCK1ggRXmyBgUC+7iqLL/XHQ6HR7v53TUO/C40RZgVIqnqaVW
-         AtYg==
-X-Gm-Message-State: AO0yUKVlNdkNw1IcDaPcqQKc76RVVbCd73aLfDEsqyuE2O80TfIADrTU
-        VvdXt8QEQLoay4JG8YAjijc=
-X-Google-Smtp-Source: AK7set+uEt5IoqG9OS+mes6VV9AY4oMiyZ0VVvoQaK5iRVnuv11mr63pkW7lH+CP6HBvafiA2+RvoQ==
-X-Received: by 2002:ac2:5449:0:b0:4e7:b481:c1c3 with SMTP id d9-20020ac25449000000b004e7b481c1c3mr1072908lfn.20.1678813788840;
-        Tue, 14 Mar 2023 10:09:48 -0700 (PDT)
-Received: from mobilestation ([95.79.133.202])
-        by smtp.gmail.com with ESMTPSA id b7-20020a056512024700b004caf992bba9sm464219lfo.268.2023.03.14.10.09.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Mar 2023 10:09:48 -0700 (PDT)
-Date:   Tue, 14 Mar 2023 20:09:45 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Biao Huang <biao.huang@mediatek.com>, netdev@vger.kernel.org,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: Re: [PATCH net-next 01/16] dt-bindings: net: dwmac: Validate PBL for
- all IP-cores
-Message-ID: <20230314170945.6yow2i5z4jdubwgt@mobilestation>
-References: <20230313225103.30512-1-Sergey.Semin@baikalelectronics.ru>
- <20230313225103.30512-2-Sergey.Semin@baikalelectronics.ru>
- <167880254800.26004.7037306365469081272.robh@kernel.org>
- <20230314150657.ytgyegi7qlwao6px@mobilestation>
+        with ESMTP id S230201AbjCNRMi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 13:12:38 -0400
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65BD592F23;
+        Tue, 14 Mar 2023 10:12:34 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id 806FF32002D8;
+        Tue, 14 Mar 2023 13:12:30 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Tue, 14 Mar 2023 13:12:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:content-type:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm2; t=1678813950; x=1678900350; bh=lD84THYsqEBrd
+        kTK8693PxozPe7E1dZJ3/wYEhXCQVs=; b=S53bDOrd96WOVHHFk8WwRRyNR1Ihc
+        s9/oA11McHWye2Zt/sj6AnrUDRSeu3aH/fR9vYCfQJ0YfgB+AOqJ34svl4cWI8G7
+        1zfYjva83yGi5yuqFUH4bx3juWSZFnw9n3kufjTlBlahaF/lUHwZbrLneev7yWdc
+        47iu2mYl9iQKDPIw6Y3LiPTgUlZYb+O7c6hoaZazag7nep2yUiK6VDrrYfGxw+B+
+        3WTMFM7Ljcfhw6KnHgRSkuUulpSVqR8IPVPSSwGifFqyxXiCrGOZcU2fdVBCPnkn
+        1dErgTKTzC5+fetxzrcdI093/GGeypfE6U8oSBt4qnsNInRtAfVKgqNfA==
+X-ME-Sender: <xms:_aoQZPOYKuLzl3nrLYwH0HlbwvdDj-Kr2of3DDq3q96nM2MRz8IEvw>
+    <xme:_aoQZJ-Nh5M3iTqKF9nmIrDHVDwQBZd11UKHnBVEA1BS6ke8gLpJpE-8MqX7Rv6we
+    HdGBLXyZJiR_8w>
+X-ME-Received: <xmr:_aoQZOR-6AHCq3vaggBA1_rmwrmbDeUtGjsrZ3ebtv_L17llL8TTOzWvTILLyqX5b1Jec0zyzQFfeQesy23sKRLJazA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvddviedguddttdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecunecujfgurhepfffhvfevuffkfhggtggujgesth
+    dtredttddtvdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehi
+    ughoshgthhdrohhrgheqnecuggftrfgrthhtvghrnhepvddufeevkeehueegfedtvdevfe
+    fgudeifeduieefgfelkeehgeelgeejjeeggefhnecuvehluhhsthgvrhfuihiivgeptden
+    ucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:_aoQZDtLEqnHuCmGga4tAGEVQa6riF0mQOqBsWNW3L8o2uKGYJ1Azg>
+    <xmx:_aoQZHfOCC0teAU5QquKduJWy8zfgQQ15WHEaqxkEOhHxJWBoNV9oA>
+    <xmx:_aoQZP1u2R7GFEeozsQbeoFH632u4snehy90qYQIyUEVuB4HcJ36lA>
+    <xmx:_qoQZJu9-0JG8ClX3L4TpAUV_19y5QtHKRCakwCXVuihfaPL-_VU7w>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 14 Mar 2023 13:12:28 -0400 (EDT)
+Date:   Tue, 14 Mar 2023 19:12:24 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     gaoxingwang <gaoxingwang1@huawei.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, kuba@kernel.org,
+        pabeni@redhat.com, shuah@kernel.org, liaichun@huawei.com,
+        yanan@huawei.com
+Subject: Re: ipv4:the same route is added repeatedly
+Message-ID: <ZBCq+KXtxWXLPFNF@shredder>
+References: <20230314144159.2354729-1-gaoxingwang1@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230314150657.ytgyegi7qlwao6px@mobilestation>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230314144159.2354729-1-gaoxingwang1@huawei.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 14, 2023 at 06:07:01PM +0300, Serge Semin wrote:
-> On Tue, Mar 14, 2023 at 09:10:19AM -0500, Rob Herring wrote:
-> > 
-> > On Tue, 14 Mar 2023 01:50:48 +0300, Serge Semin wrote:
-> > > Indeed the maximum DMA burst length can be programmed not only for DW
-> > > xGMACs, Allwinner EMACs and Spear SoC GMAC, but in accordance with [1]
-> > > for Generic DW *MAC IP-cores. Moreover the STMMAC set of drivers parse
-> > > the property and then apply the configuration for all supported DW MAC
-> > > devices. All of that makes the property being available for all IP-cores
-> > > the bindings supports. Let's make sure the PBL-related properties are
-> > > validated for all of them by the common DW MAC DT schema.
-> > > 
-> > > [1] DesignWare Cores Ethernet MAC Universal Databook, Revision 3.73a,
-> > >     October 2013, p. 380.
-> > > 
-> > > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> > > Reviewed-by: Rob Herring <robh@kernel.org>
-> > > 
-> > > ---
-> > > 
-> > > Changelog v1:
-> > > - Use correct syntax of the JSON pointers, so the later would begin
-> > >   with a '/' after the '#'.
-> > > ---
-> > >  .../devicetree/bindings/net/snps,dwmac.yaml   | 77 +++++++------------
-> > >  1 file changed, 26 insertions(+), 51 deletions(-)
-> > > 
-> > 
-> > My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-> > on your patch (DT_CHECKER_FLAGS is new in v5.13):
-> > 
-> > yamllint warnings/errors:
-> > 
-> > dtschema/dtc warnings/errors:
-> > /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.example.dtb: ethernet@1101c000: snps,txpbl:0:0: 1 is not one of [2, 4, 8]
-> > 	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> > /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.example.dtb: ethernet@1101c000: snps,rxpbl:0:0: 1 is not one of [2, 4, 8]
-> > 	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> > /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.example.dtb: ethernet@1101c000: snps,txpbl:0:0: 1 is not one of [2, 4, 8]
-> > 	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
-> > /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.example.dtb: ethernet@1101c000: snps,rxpbl:0:0: 1 is not one of [2, 4, 8]
-> > 	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
-> > /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.example.dtb: ethernet@1101c000: Unevaluated properties are not allowed ('interrupt-names', 'interrupts', 'mac-address', 'phy-mode', 'reg', 'snps,reset-delays-us', 'snps,reset-gpio', 'snps,rxpbl', 'snps,txpbl' were unexpected)
-> > 	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+On Tue, Mar 14, 2023 at 10:41:59PM +0800, gaoxingwang wrote:
+> When i add default route in /etc/sysconfig/static-routes, and then restart network service, it appears to add two same default route:
+> [root@localhost ~]# ip r
+> default via 9.82.0.1 dev eth0 
+> default via 9.82.0.1 dev eth0 
 > 
-> Oops, on rebasing my work from older kernel I missed that the PBL
-> properties constraints have already been extended. I'll drop the next
-> patch in the series then and fix this one so the already defined
-> constraints would be preserved.
-
-BTW it's strange I didn't have that bug spotted during my
-dt_binding_check run...
-
--Serge(y)
-
+> The static-routes file contents are as follows:
+> any net 0.0.0.0 netmask 0.0.0.0 gw 110.1.62.1
 > 
-> -Serge(y)
-> 
-> > 
-> > doc reference errors (make refcheckdocs):
-> > 
-> > See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230313225103.30512-2-Sergey.Semin@baikalelectronics.ru
-> > 
-> > The base for the series is generally the latest rc1. A different dependency
-> > should be noted in *this* patch.
-> > 
-> > If you already ran 'make dt_binding_check' and didn't see the above
-> > error(s), then make sure 'yamllint' is installed and dt-schema is up to
-> > date:
-> > 
-> > pip3 install dtschema --upgrade
-> > 
-> > Please check and re-submit after running the above command yourself. Note
-> > that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-> > your schema. However, it must be unset to test all examples with your schema.
-> > 
+> This problem seems to be related to patch f96a3d7455(ipv4: Fix incorrect route flushing when source address is deleted). When I revert this patch, the problem gets fixed.
+> Is that a known issue?
+
+'fi->fib_tb_id' is initialized from 'cfg->fc_table' which is not
+initialized in the IOCTL path which I guess is what you are using given
+the syntax of the file. You can therefore end up having two identical
+routes that only differ in their FIB info due to its associated table
+ID.
+
+Can you try this fix [1]? Seems to be working for me. Tested using this
+reproducer [2].
+
+With f96a3d7455:
+
+ # ./ioctl_repro.sh
+ default via 192.0.2.2 dev dummy10
+ default via 192.0.2.2 dev dummy10
+
+With f96a3d7455 reverted:
+
+ # ./ioctl_repro.sh
+ SIOCADDRT: File exists
+ default via 192.0.2.2 dev dummy10
+
+With the fix:
+
+ # ./ioctl_repro.sh
+ SIOCADDRT: File exists
+ default via 192.0.2.2 dev dummy10
+
+Thanks
+
+[1]
+diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
+index b5736ef16ed2..390f4be7f7be 100644
+--- a/net/ipv4/fib_frontend.c
++++ b/net/ipv4/fib_frontend.c
+@@ -576,6 +576,9 @@ static int rtentry_to_fib_config(struct net *net, int cmd, struct rtentry *rt,
+ 			cfg->fc_scope = RT_SCOPE_UNIVERSE;
+ 	}
+ 
++	if (!cfg->fc_table)
++		cfg->fc_table = RT_TABLE_MAIN;
++
+ 	if (cmd == SIOCDELRT)
+ 		return 0;
+ 
+[2]
+#!/bin/bash
+
+ip link del dev dummy10 &> /dev/null
+ip link add name dummy10 up type dummy
+ip address add 192.0.2.1/24 dev dummy10
+
+ip route add default via 192.0.2.2
+route add default gw 192.0.2.2
+ip -4 r show default
