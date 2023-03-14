@@ -2,154 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CDB406B99ED
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 16:39:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12BFA6B9A33
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 16:46:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230103AbjCNPjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 11:39:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51436 "EHLO
+        id S230164AbjCNPqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 11:46:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230300AbjCNPix (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 11:38:53 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6AA5B06C3
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 08:38:14 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id o11-20020a05600c4fcb00b003eb33ea29a8so10471422wmq.1
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 08:38:14 -0700 (PDT)
+        with ESMTP id S231437AbjCNPqe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 11:46:34 -0400
+Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D169569065
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 08:46:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112; t=1678808256;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=7GlU5FlfqZLNdwifJAA0Utk/ibVxeSQBhLWgq8BgMWk=;
-        b=eoRVnkAEjY8iQPQ/R5+tNuPsk/3zgvCeY/mSziGETSQ/jSTFY/Jlx31u+GXkjQ8Yjb
-         H86PIMraR1om2E9GFppJGfEttRV0kuhZkCaEY46mvGd/95cWN+gnchmKMlaNEtDNQ9j6
-         Lpxv1JC1xeACAb36nSuGtWNNr79u6uGRNRxrHXQnvf+iPloJbv60d4qtpe/mXqLgqAgF
-         c7/gbqXt3YJTotJDbqw74J5eBYcwHN7YLwO6jzulslr9ZEaTmvB5W7fGhe8561oEo4zk
-         5eMXy7tEfF2gfa2D3AkJQakhK4GCYAJcgppkJ7TXg6RgK31daWzHzpghYbg4ZdipjFq6
-         ctUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678808256;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=7GlU5FlfqZLNdwifJAA0Utk/ibVxeSQBhLWgq8BgMWk=;
-        b=8QVMPa9wu4sZU/6mZoEprNo4iHAYFy7FzlgbpieKDLUASo92A/3Bt+5nhaRe/6rrMH
-         KP6T+9rUFPageyxEQHK/5acU/LUlT2MWr3Bk717AuNZMvq5vXXi7PyGv1GyPujeXlX+S
-         VL7zUKJq2jOLRfzsRkk9jT+NnHhugM4oxGPfZxeB0etK4A211/1Rr1oatqLXTEJBtxOP
-         anpIAI2YdMQARMUxgC1lwS++5gI6EA7nbyoYCNzvyQuPKNUzpGQhT9MlTUKSDl56VOXd
-         oZvLzqkolJTDJXeighdWlklmYSIKE1UZqBKhnVCF0Y7rjg+hGVCnqwPRpIkH8W96HGfL
-         fNvQ==
-X-Gm-Message-State: AO0yUKXpqEQDceaRnLvvxIkcm9bi1UZsKVsQF8Mi21lr4AnrOcoSk8O+
-        XnceScoopqMxXIqY9ljDMK9g0g==
-X-Google-Smtp-Source: AK7set9pdl0IaRIcAWLhepeq2yGqCuDlwxylkFe2FMrDc0V8oJh5WRpzh4LTG/oDIIelnDQ0gxiq+Q==
-X-Received: by 2002:a05:600c:468e:b0:3ea:f73e:9d8c with SMTP id p14-20020a05600c468e00b003eaf73e9d8cmr14756700wmo.16.1678808256522;
-        Tue, 14 Mar 2023 08:37:36 -0700 (PDT)
-Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
-        by smtp.gmail.com with ESMTPSA id t11-20020a7bc3cb000000b003eb3933ef10sm3086375wmj.46.2023.03.14.08.37.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Mar 2023 08:37:36 -0700 (PDT)
-Message-ID: <f94409d7-4864-43cc-35f7-90ae319f54da@blackwall.org>
-Date:   Tue, 14 Mar 2023 17:37:35 +0200
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1678808765; x=1710344765;
+  h=references:from:to:cc:date:in-reply-to:message-id:
+   mime-version:subject;
+  bh=b8m7nO0Bmp5ymxlCAIQHK+OML+5cZteC5meaEPmcKCM=;
+  b=kIqPMTdHgFVDKgVsAdVcVe/gH082b3rErxqTBm8XOqk6H/xAZPzyAMVH
+   G5nBkJmyziHdS+0N4t23zP62cX9TIEemlykBRj23aOwVZMHU7LgJx+NYP
+   Mu0RKdIeHjgSBTl0cuc87K+J5f9h28jmKRhYJA7JgAv7XtmnYPeo4o7HW
+   k=;
+X-IronPort-AV: E=Sophos;i="5.98,260,1673913600"; 
+   d="scan'208";a="1112552210"
+Subject: Re: [PATCH v4 net-next 1/5] ethtool: Add support for configuring
+ tx_push_buf_len
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-ed19f671.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2023 15:45:40 +0000
+Received: from EX19D014EUA001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2b-m6i4x-ed19f671.us-west-2.amazon.com (Postfix) with ESMTPS id 31F79819CD;
+        Tue, 14 Mar 2023 15:45:40 +0000 (UTC)
+Received: from EX19D028EUB003.ant.amazon.com (10.252.61.31) by
+ EX19D014EUA001.ant.amazon.com (10.252.50.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.24; Tue, 14 Mar 2023 15:45:39 +0000
+Received: from u570694869fb251.ant.amazon.com.amazon.com (10.85.143.174) by
+ EX19D028EUB003.ant.amazon.com (10.252.61.31) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.24; Tue, 14 Mar 2023 15:45:30 +0000
+References: <20230309131319.2531008-1-shayagr@amazon.com>
+ <20230309131319.2531008-2-shayagr@amazon.com>
+ <316ee596-e184-8613-d136-cd2cb13a589f@nvidia.com>
+ <20230309225326.2976d514@kernel.org>
+ <d438ef12-86f8-7415-4690-3e378ac1048f@nvidia.com>
+ <20230313120942.75599b8e@kernel.org>
+User-agent: mu4e 1.8.13; emacs 28.0.91
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Gal Pressman <gal@nvidia.com>, David Miller <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, "Woodhouse, David" <dwmw@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        Saeed Bshara <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Arinzon, David" <darinzon@amazon.com>,
+        "Itzko, Shahar" <itzko@amazon.com>,
+        "Abboud, Osama" <osamaabb@amazon.com>
+Date:   Tue, 14 Mar 2023 17:38:23 +0200
+In-Reply-To: <20230313120942.75599b8e@kernel.org>
+Message-ID: <pj41zlbkkv2v6z.fsf@u570694869fb251.ant.amazon.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH net v2 1/4] bonding: add bond_ether_setup helper
-Content-Language: en-US
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     netdev@vger.kernel.org, monis@voltaire.com, syoshida@redhat.com,
-        andy@greyhouse.net, kuba@kernel.org, davem@davemloft.net,
-        pabeni@redhat.com, edumazet@google.com,
-        syzbot+9dfc3f3348729cc82277@syzkaller.appspotmail.com
-References: <20230314111426.1254998-1-razor@blackwall.org>
- <20230314111426.1254998-2-razor@blackwall.org> <28497.1678808095@famine>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <28497.1678808095@famine>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,
-        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Type: text/plain; format=flowed
+X-Originating-IP: [10.85.143.174]
+X-ClientProxiedBy: EX19D039UWA004.ant.amazon.com (10.13.139.68) To
+ EX19D028EUB003.ant.amazon.com (10.252.61.31)
+X-Spam-Status: No, score=-11.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/03/2023 17:34, Jay Vosburgh wrote:
-> Nikolay Aleksandrov <razor@blackwall.org> wrote:
-> 
->> Add bond_ether_setup helper which will be used in the following patches
->> to fix all ether_setup() calls in the bonding driver. It takes care of both
->> IFF_MASTER and IFF_SLAVE flags, the former is always restored and the
->> latter only if it was set.
+
+Jakub Kicinski <kuba@kernel.org> writes:
+
+> CAUTION: This email originated from outside of the 
+> organization. Do not click links or open attachments unless you 
+> can confirm the sender and know the content is safe.
+>
+>
+>
+> On Sun, 12 Mar 2023 14:41:39 +0200 Gal Pressman wrote:
+>> On 10/03/2023 8:53, Jakub Kicinski wrote:
+>> > On Thu, 9 Mar 2023 19:15:43 +0200 Gal Pressman wrote:
+>> >> I know Jakub prefers the new parameter, but the description 
+>> >> of this
+>> >> still sounds extremely similar to TX copybreak to me..
+>> >> TX copybreak was traditionally used to copy packets to 
+>> >> preallocated DMA
+>> >> buffers, but this could be implemented as copying the packet 
+>> >> to the
+>> >> (preallocated) WQE's inline part. That usually means DMA 
+>> >> memory, but
+>> >> could also be device memory in this ENA LLQ case.
+>> >>
+>> >> Are we drawing a line that TX copybreak is the threshold for 
+>> >> DMA memory
+>> >> and tx_push_buf_len is the threshold for device memory?
+>> >
+>> > Pretty much, yes. Not an amazing distinction but since TX 
+>> > copybreak can
+>> > already mean two different things (inline or DMA buf) I'd err 
+>> > on
+>> > the side of not overloading it with another one.
 >>
->> Fixes: e36b9d16c6a6d ("bonding: clean muticast addresses when device changes type")
->> Fixes: 7d5cd2ce5292 ("bonding: correctly handle bonding type change on enslave failure")
->> Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
->> ---
->> drivers/net/bonding/bond_main.c | 12 ++++++++++++
->> 1 file changed, 12 insertions(+)
->>
->> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
->> index 00646aa315c3..d41024ad2c18 100644
->> --- a/drivers/net/bonding/bond_main.c
->> +++ b/drivers/net/bonding/bond_main.c
->> @@ -1775,6 +1775,18 @@ void bond_lower_state_changed(struct slave *slave)
->> 		slave_err(bond_dev, slave_dev, "Error: %s\n", errmsg);	\
->> } while (0)
->>
->> +/* ether_setup() resets bond_dev's flags so we always have to restore
->> + * IFF_MASTER, and only restore IFF_SLAVE if it was set
->> + */
->> +static void bond_ether_setup(struct net_device *bond_dev)
->> +{
->> +	unsigned int slave_flag = bond_dev->flags & IFF_SLAVE;
->> +
->> +	ether_setup(bond_dev);
->> +	bond_dev->flags |= IFF_MASTER | slave_flag;
->> +	bond_dev->priv_flags &= ~IFF_TX_SKB_SHARING;
->> +}
-> 
-> 	Is setting IFF_MASTER always correct here?  I note that patch #2
-> is replacing code that does not set IFF_MASTER, whereas patch #3 is
-> replacing code that does set IFF_MASTER.
-> 
-> 	Presuming that this is the desired behavior, perhaps mention
-> explicitly in the commentary that bond_ether_setup() is only for use on
-> a bond master device.  The nomenclature "bond_dev" does imply that, but
-> it's not explicit.
-> 
+>> Can we document that please?
+>
+> Shay, could you add a paragraph in the docs regarding copybreak 
+> in v5?
 
-Setting IFF_MASTER is always correct because we're talking about a bond master device.
-I.e. we're restoring the flags to a bond device itself. The bugs are different because
-previously I had fixed the error path (partly, missed the IFF_SLAVE), but I just noticed
-the normal enslave path while fixing the IFF_SLAVE one now. :)
-So yes, both paths need the same treatment for both flags.
+Document that tx_copybreak defines the threshold below which the 
+packet is copied into a preallocated DMA'ed buffer and that 
+tx_push_buf defines the same but for device memory?
+Are we sure we want to make this distinction ? While the meaning 
+of both params can overlap in their current definition, the 
+motivation to use them is pretty different.
+A driver can implement both for different purposes (and still copy 
+both into the device).
 
-> 	Also, why is the call to ether_setup() from bond_setup() not
-> also being converted to bond_ether_setup()?
-
-That is more of a cleanup, the one there is correct because flags are set after that.
-In that case only IFF_MASTER is needed, IFF_SLAVE cannot be set. Once these are
-merged in net-next I'll send a followup to use it there, too.
-
-> 
-> 	-J
-> 
-
-Thanks,
- Nik
-
->> +
->> /* enslave device <slave> to bond device <master> */
->> int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
->> 		 struct netlink_ext_ack *extack)
->> -- 
->> 2.39.2
->>
-> 
-> ---
-> 	-Jay Vosburgh, jay.vosburgh@canonical.com
-
+I'll modify the documentation in next version
