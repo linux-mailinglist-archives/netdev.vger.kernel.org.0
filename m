@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 610396B86F3
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 01:36:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C06076B86F6
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 01:36:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229869AbjCNAgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 20:36:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52550 "EHLO
+        id S230209AbjCNAgM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 20:36:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbjCNAgA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 20:36:00 -0400
+        with ESMTP id S229516AbjCNAgJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 20:36:09 -0400
 Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0940E65134;
-        Mon, 13 Mar 2023 17:35:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1770F81CF9;
+        Mon, 13 Mar 2023 17:36:06 -0700 (PDT)
 Received: from local
         by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
          (Exim 4.96)
         (envelope-from <daniel@makrotopia.org>)
-        id 1pbsdl-0005Ll-0T;
-        Tue, 14 Mar 2023 01:35:45 +0100
-Date:   Tue, 14 Mar 2023 00:34:05 +0000
+        id 1pbse4-0005Ly-1O;
+        Tue, 14 Mar 2023 01:36:04 +0100
+Date:   Tue, 14 Mar 2023 00:34:26 +0000
 From:   Daniel Golle <daniel@makrotopia.org>
 To:     devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -48,11 +48,14 @@ To:     devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
 Cc:     =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
         Frank Wunderlich <frank-w@public-files.de>,
         Alexander Couzens <lynxis@fe80.eu>
-Subject: [PATCH net 0/2] net: ethernet: mtk_eth_soc: minor SGMII fixes
-Message-ID: <cover.1678753669.git.daniel@makrotopia.org>
+Subject: [PATCH 1/2] net: ethernet: mtk_eth_soc: reset PCS state
+Message-ID: <c820a882db107db60ee2c0f31f633c4b629ec8e2.1678753669.git.daniel@makrotopia.org>
+References: <cover.1678753669.git.daniel@makrotopia.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <cover.1678753669.git.daniel@makrotopia.org>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -61,32 +64,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This small series brings two minor fixes for the SGMII unit found in
-MediaTek's router SoCs.
+Reset the internal PCS state machine when changing interface mode.
+This prevents confusing the state machine when changing interface
+modes, e.g. from SGMII to 2500Base-X or vice-versa.
 
-The first patch resets the PCS internal state machine on major
-configuration changes, just like it is also done in MediaTek's SDK.
+Fixes: 7e538372694b ("net: ethernet: mediatek: Re-add support SGMII")
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Tested-by: Bjørn Mork <bjorn@mork.no>
+Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+---
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h | 4 ++++
+ drivers/net/ethernet/mediatek/mtk_sgmii.c   | 4 ++++
+ 2 files changed, 8 insertions(+)
 
-The second patch makes sure we only write values and restart AN if
-actually needed, thus preventing unnesseray loss of an existing link
-in some cases.
-
-Both patches have previously been submitted as part of the series
-"net: ethernet: mtk_eth_soc: various enhancements" which grew a bit
-too big and it has correctly been criticized that some of the patches
-should rather go as fixes to net-next.
-
-This new series tries to address this.
-
-Daniel Golle (2):
-  net: ethernet: mtk_eth_soc: reset PCS state
-  net: ethernet: mtk_eth_soc: only write values if needed
-
- drivers/net/ethernet/mediatek/mtk_eth_soc.h |  4 +++
- drivers/net/ethernet/mediatek/mtk_sgmii.c   | 28 ++++++++++++---------
- 2 files changed, 20 insertions(+), 12 deletions(-)
-
-
-base-commit: 512dd354718b98c60d4ff6017ff8c9f66c10d03f
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+index b65de174c3d9..084a6badef6d 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+@@ -542,6 +542,10 @@
+ #define SGMII_SEND_AN_ERROR_EN		BIT(11)
+ #define SGMII_IF_MODE_MASK		GENMASK(5, 1)
+ 
++/* Register to reset SGMII design */
++#define SGMII_RESERVED_0	0x34
++#define SGMII_SW_RESET		BIT(0)
++
+ /* Register to set SGMII speed, ANA RG_ Control Signals III*/
+ #define SGMSYS_ANA_RG_CS3	0x2028
+ #define RG_PHY_SPEED_MASK	(BIT(2) | BIT(3))
+diff --git a/drivers/net/ethernet/mediatek/mtk_sgmii.c b/drivers/net/ethernet/mediatek/mtk_sgmii.c
+index bb00de1003ac..612f65bb0345 100644
+--- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
++++ b/drivers/net/ethernet/mediatek/mtk_sgmii.c
+@@ -88,6 +88,10 @@ static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
+ 		regmap_update_bits(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL,
+ 				   SGMII_PHYA_PWD, SGMII_PHYA_PWD);
+ 
++		/* Reset SGMII PCS state */
++		regmap_update_bits(mpcs->regmap, SGMII_RESERVED_0,
++				   SGMII_SW_RESET, SGMII_SW_RESET);
++
+ 		if (interface == PHY_INTERFACE_MODE_2500BASEX)
+ 			rgc3 = RG_PHY_SPEED_3_125G;
+ 		else
 -- 
 2.39.2
+
