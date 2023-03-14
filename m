@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B5A816B9B2A
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 17:19:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B87F86B9B1F
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 17:19:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231370AbjCNQTH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 12:19:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46138 "EHLO
+        id S230094AbjCNQS5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 12:18:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231474AbjCNQSF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 12:18:05 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78674AD02C;
-        Tue, 14 Mar 2023 09:17:41 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id r18so14896217wrx.1;
-        Tue, 14 Mar 2023 09:17:41 -0700 (PDT)
+        with ESMTP id S231162AbjCNQST (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 12:18:19 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC0ECB371D;
+        Tue, 14 Mar 2023 09:17:42 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id r29so6855425wra.13;
+        Tue, 14 Mar 2023 09:17:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678810660;
+        d=gmail.com; s=20210112; t=1678810661;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=NdFLu8rYGgfYob/UUJ7xHBPYmBqXvfPClb24ZxTT2Ls=;
-        b=JpZqQwUTPJ6+0dPKdp8pkWBnmAkBQRmDmeBLG1R5hScuNBgurXqhg6f9CS9tJM6dcf
-         dbtEHCmoY7084ytJfNPyb3VNFwrqwO8JGzbzZVkaVTU+5K0KIL2W2KZi4oJhWaOKXyTV
-         nysBTo0B5Nniouc6/cdENQyg7XmeF5tHrfiwcNmr2D3HoskORuAVYQFSHAlYqpxD0I1A
-         mj1in4u/WLib6EWCjAjDkn/8WDPuTpggfA4YwQcGWCmrckfVXvh+oNp4fTzTfRO8AgLP
-         pTG5CRyGfZLAKACSx6iWnn8/UPyofP5yWu5Qt+h2bYJbwQb48UqqDwF5tuZH155Yr/Qg
-         8VBA==
+        bh=hKTAoz/5c2gh8Y+1xcGszVL+VPGe5qIqtDhWxElzHg8=;
+        b=A5QGX8g9qQHcZkkrcXMDsdj7A9cZmBMtVmbBwkVTk60r6OctUe5QoRW20dNyop4WVQ
+         YtLS0ZcqTYuR1ABV7ZpJH3/Pdm8IgAfWdFzB/usawxLOF8dtCK0vHHBtjcdDQS1H+NnJ
+         LO/6QnazNKOsKlnOcMIp4O/P23DYUaV6Dk43savUOfuwIcmoRffjGEhxlhgr6hqmT0DQ
+         czXSPywGk5chD6etCr6asQ3uoITHJZo0Dv5mqdkE4eJgp4Y7n1kTInqlr2Ppisek9jAY
+         MNxO3rHz/oqxF7VPoeL0iWi//D5S49ti4Vewd7XA3Xq24ivCGCT6gTnczzNmYiv/ToCo
+         GW5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678810660;
+        d=1e100.net; s=20210112; t=1678810661;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=NdFLu8rYGgfYob/UUJ7xHBPYmBqXvfPClb24ZxTT2Ls=;
-        b=bHRBI0F+RBpzpZE82La0CNfqVBX22arAPE9thCx74GLnwH5MfYz2fzyFC8zQF14hEz
-         ZbmGBQHMSybaelZQFtxKA0Pe4WNz6bNyU9AFAdQqisMPdJf3VZjxApk0CoWb0ZauOopK
-         REf2c5sYRANOFHP0XzMhvpfrqa2PJYl2uOKtw6hcDDJEpKDSqkmhXH0jBUjLL5lbOODt
-         irW7m7cD5snsM8+2W3QHG+PIWooDp5A7TT27JxcseKrGUh2snsGk70LhIPVPk7P29640
-         asNTMBiP2bVtb66zMNq54vsCPLD3u8UbYFMREkBu1Sk6VVljM6lSEU0cPsL7nWd1Javi
-         tZDw==
-X-Gm-Message-State: AO0yUKVHKr7+VYoG2GVKQkQ5qRX4p13Azn1U8IHJhFi7E5Hy8vOsS7NO
-        BBZJeozOHUUVrtWvzIhy45A=
-X-Google-Smtp-Source: AK7set8Picyqs6bN985CzCJP1jG1yy0KAX7/1lzUL7SerOixkP84/5d9uY2xHWjsVb4VTm2ObkfR1g==
-X-Received: by 2002:a5d:48cb:0:b0:2cf:ea5d:f607 with SMTP id p11-20020a5d48cb000000b002cfea5df607mr1917592wrs.17.1678810659677;
-        Tue, 14 Mar 2023 09:17:39 -0700 (PDT)
+        bh=hKTAoz/5c2gh8Y+1xcGszVL+VPGe5qIqtDhWxElzHg8=;
+        b=ixn7F8YHpGDw0ZZWG0i2NlZ014c4rrlI8YOlaY3Ctndw6TFHkIQY1HxJo7FAUWvUpA
+         Sp1NVmCJ1TcsRVTUyIbJ/oXZ5R6WyXsYtf9x6lz/bccKY552CO/z2AStNAXR4PYKyS0A
+         JEBxDQTxpToX5/4XTf1GKFXz8/k43oKHDuDy/MNsawCIZVQH8UvncO6k+abkjWoavAib
+         VRQhJvFP/Ig0ZCeJ8Wb9VnhC8xNSyKNNTMpwfwAyYuW9SP/mMAWgEXiu8eIWU0bgwP9Z
+         TsorZCjjafKlRXaCiXJsAYDkXq7a3uhdSmWlo8pddDjYE82d1no/cJPOU4PqLfBLrH8H
+         fGsg==
+X-Gm-Message-State: AO0yUKWTuAwIvF5Q3nUxUtcxuJ0yXuTbkK5uwVZdK6WEOQ4ALQtJDlWm
+        Et5ezd1XTDw2OH8yPHcxLKs=
+X-Google-Smtp-Source: AK7set+ph3aBjOKKtAXH2OiXBAVPuXd2TznYURmQDMIGFuquVDB5MaS//G76s78xOLPrdTOUHvSofA==
+X-Received: by 2002:adf:fe49:0:b0:2cf:e645:aa60 with SMTP id m9-20020adffe49000000b002cfe645aa60mr3923843wrs.19.1678810661174;
+        Tue, 14 Mar 2023 09:17:41 -0700 (PDT)
 Received: from localhost.localdomain (93-34-89-197.ip49.fastwebnet.it. [93.34.89.197])
-        by smtp.googlemail.com with ESMTPSA id a16-20020a5d4570000000b002c5539171d1sm2426821wrc.41.2023.03.14.09.17.38
+        by smtp.googlemail.com with ESMTPSA id a16-20020a5d4570000000b002c5539171d1sm2426821wrc.41.2023.03.14.09.17.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Mar 2023 09:17:39 -0700 (PDT)
+        Tue, 14 Mar 2023 09:17:40 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -72,9 +72,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         linux-arm-kernel@lists.infradead.org,
         linux-arm-msm@vger.kernel.org, Lee Jones <lee@kernel.org>,
         linux-leds@vger.kernel.org
-Subject: [net-next PATCH v3 13/14] dt-bindings: net: phy: Document support for LEDs node
-Date:   Tue, 14 Mar 2023 11:15:15 +0100
-Message-Id: <20230314101516.20427-14-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v3 14/14] arm: mvebu: dt: Add PHY LED support for 370-rd WAN port
+Date:   Tue, 14 Mar 2023 11:15:16 +0100
+Message-Id: <20230314101516.20427-15-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230314101516.20427-1-ansuelsmth@gmail.com>
 References: <20230314101516.20427-1-ansuelsmth@gmail.com>
@@ -90,71 +90,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Document support for LEDs node in phy and add an example for it.
-PHY LED will have to match led pattern and should be treated as a
-generic led.
+From: Andrew Lunn <andrew@lunn.ch>
 
+The WAN port of the 370-RD has a Marvell PHY, with one LED on
+the front panel. List this LED in the device tree.
+
+Set the LED default state to "keep" to not change any blink rule
+set by default.
+
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- .../devicetree/bindings/net/ethernet-phy.yaml | 31 +++++++++++++++++++
- 1 file changed, 31 insertions(+)
+ arch/arm/boot/dts/armada-370-rd.dts | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-index 1327b81f15a2..84e15cee27c7 100644
---- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-+++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-@@ -197,6 +197,22 @@ properties:
-       PHY's that have configurable TX internal delays. If this property is
-       present then the PHY applies the TX delay.
+diff --git a/arch/arm/boot/dts/armada-370-rd.dts b/arch/arm/boot/dts/armada-370-rd.dts
+index be005c9f42ef..ccd4699b219f 100644
+--- a/arch/arm/boot/dts/armada-370-rd.dts
++++ b/arch/arm/boot/dts/armada-370-rd.dts
+@@ -20,6 +20,7 @@
+ /dts-v1/;
+ #include <dt-bindings/input/input.h>
+ #include <dt-bindings/interrupt-controller/irq.h>
++#include <dt-bindings/leds/common.h>
+ #include <dt-bindings/gpio/gpio.h>
+ #include "armada-370.dtsi"
  
-+  leds:
-+    type: object
+@@ -135,6 +136,19 @@ &mdio {
+ 	pinctrl-names = "default";
+ 	phy0: ethernet-phy@0 {
+ 		reg = <0>;
++		leds {
++			#address-cells = <1>;
++			#size-cells = <0>;
 +
-+    properties:
-+      '#address-cells':
-+        const: 1
-+
-+      '#size-cells':
-+        const: 0
-+
-+    patternProperties:
-+      '^led(@[a-f0-9]+)?$':
-+        $ref: /schemas/leds/common.yaml#
-+
-+    additionalProperties: false
-+
- required:
-   - reg
++			led@0 {
++				reg = <0>;
++				label = "WAN";
++				color = <LED_COLOR_ID_WHITE>;
++				function = LED_FUNCTION_LAN;
++				function-enumerator = <1>;
++				default-state = "keep";
++			};
++		};
+ 	};
  
-@@ -204,6 +220,8 @@ additionalProperties: true
- 
- examples:
-   - |
-+    #include <dt-bindings/leds/common.h>
-+
-     ethernet {
-         #address-cells = <1>;
-         #size-cells = <0>;
-@@ -219,5 +237,18 @@ examples:
-             reset-gpios = <&gpio1 4 1>;
-             reset-assert-us = <1000>;
-             reset-deassert-us = <2000>;
-+
-+            leds {
-+                #address-cells = <1>;
-+                #size-cells = <0>;
-+
-+                led@0 {
-+                    reg = <0>;
-+                    color = <LED_COLOR_ID_WHITE>;
-+                    function = LED_FUNCTION_LAN;
-+                    function-enumerator = <1>;
-+                    default-state = "keep";
-+                };
-+            };
-         };
-     };
+ 	switch: switch@10 {
 -- 
 2.39.2
 
