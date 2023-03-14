@@ -2,330 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EF4E6B8F62
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 11:11:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3783E6B8F57
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 11:10:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230297AbjCNKLL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 06:11:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56182 "EHLO
+        id S230119AbjCNKKp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 06:10:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230216AbjCNKKu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 06:10:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28EFD2FCF5
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 03:09:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678788587;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9jYvQus620O/ZBEANxNcFXMGajwl8xYYtAElNUjytiQ=;
-        b=F796QtXPHMZjKxfvy5HhtAaC8KWlXmJzG1Reqn5p4DSQvWGgnbYifvWaCvktuiWC/nZ6yi
-        5Mzxg6gb/svamBWEkkrHhgSxwdZYCMkpRZTpS1BztBjQ7ZjWjXhG331HgsDbXfWjw16fjw
-        XUrjzuRX25u5p98HOPEp5sUivQeKXdA=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-635-_BNopKlEP4qDAjfMYK26iQ-1; Tue, 14 Mar 2023 06:09:44 -0400
-X-MC-Unique: _BNopKlEP4qDAjfMYK26iQ-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8D4B41C04334;
-        Tue, 14 Mar 2023 10:09:43 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.39.192.146])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CBE96492B00;
-        Tue, 14 Mar 2023 10:09:41 +0000 (UTC)
-From:   =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
-To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
-        richardcochran@gmail.com
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
-        Yalin Li <yalli@redhat.com>
-Subject: [PATCH RESEND net-next v4 4/4] sfc: remove expired unicast PTP filters
-Date:   Tue, 14 Mar 2023 11:09:25 +0100
-Message-Id: <20230314100925.12040-5-ihuguet@redhat.com>
-In-Reply-To: <20230314100925.12040-1-ihuguet@redhat.com>
-References: <20230314100925.12040-1-ihuguet@redhat.com>
+        with ESMTP id S230012AbjCNKKh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 06:10:37 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6616199D53;
+        Tue, 14 Mar 2023 03:10:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=VQ33iZJmnaGPLs1JKyJHobUOGjRoWRzrCfXEf5N8Wt0=; b=PZcFPjanUJDU928agC8qijdUmR
+        qSng2Mtwp9Oy2jB626Q4/beZ4eFmgF5zs5aL3oTiNCMKpDGEM0VaPJKoHLU19mZ1gPxfKlOClVdSf
+        V1iFa7hnRvYCpguQ/tLf6OiIZLLk1sFLkYhr1Unt/5hyj9LIlWoyQycFXjaKNyAnbPJcKngv9QV+r
+        yt/uCe6Xan1qhoKXBhiyUZi2MHWuJb+aVjXf9MJTKYVM/Mo9WhK71Wk0fLdxk6stGVhGB02O/1fYo
+        /HIODuxEfnROsx2wOT4/iSm5F7Z9z8+k6wbVHhOR1J21J1ZCVdzmUVgwA2dxpMrGk2gR6cj7JoEpD
+        E+ptmNAw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:38744)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pc1bq-0004o6-Nh; Tue, 14 Mar 2023 10:10:22 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pc1bq-0000GN-3D; Tue, 14 Mar 2023 10:10:22 +0000
+Date:   Tue, 14 Mar 2023 10:10:22 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Frank Wunderlich <frank-w@public-files.de>
+Cc:     Daniel Golle <daniel@makrotopia.org>, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v12 08/18] net: ethernet: mtk_eth_soc: fix
+ 1000Base-X and 2500Base-X modes
+Message-ID: <ZBBIDqZaqdSfwu9g@shell.armlinux.org.uk>
+References: <4B891976-C29E-4D98-B604-3AC4507D3661@public-files.de>
+ <ZAzk71mTxgV/pRxC@shell.armlinux.org.uk>
+ <trinity-8577978d-1c11-4f6d-ae11-aef37e8b78b0-1678624836722@3c-app-gmx-bap51>
+ <ZA4wlQ8P48aDhDly@shell.armlinux.org.uk>
+ <ZA8B/kI0fLx4gkQm@shell.armlinux.org.uk>
+ <trinity-93681801-f99c-40e2-9fbd-45888b3069aa-1678732740564@3c-app-gmx-bs66>
+ <ZA+qTyQ3n6YiURkQ@shell.armlinux.org.uk>
+ <trinity-e2c457f1-c897-45f1-907a-8ea3664b7512-1678783872771@3c-app-gmx-bap66>
+ <ZBA6gszARdJY26Mz@shell.armlinux.org.uk>
+ <trinity-bc4bbf4e-812a-4682-ac8c-5178320467f5-1678788102813@3c-app-gmx-bap66>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <trinity-bc4bbf4e-812a-4682-ac8c-5178320467f5-1678788102813@3c-app-gmx-bap66>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Filters inserted to support unicast PTP mode might become unused after
-some time, so we need to remove them to avoid accumulating many of them.
+On Tue, Mar 14, 2023 at 11:01:42AM +0100, Frank Wunderlich wrote:
+> Hi
+> 
+> > Gesendet: Dienstag, 14. M�rz 2023 um 10:12 Uhr
+> > Von: "Russell King (Oracle)" <linux@armlinux.org.uk>
+> > On Tue, Mar 14, 2023 at 09:51:12AM +0100, Frank Wunderlich wrote:
+> > > Hi,
+> > > 
+> > > at least the error-message is gone, and interface gets up when i call ethtoo to switch off autoneg.
+> ...
+> > > [   34.400860] mtk_soc_eth 15100000.ethernet eth1: phylink_mac_config: mode=inband/2500base-x/Unknown/Unknown/none adv=00,00000000,00000000,0000e400 pause=04 link=0 an=1
+> > 
+> > Looking good - apart from that pesky an=1 (which isn't used by the PCS
+> > driver, and I've been thinking of killing it off anyway.) Until such
+> > time that happens, we really ought to set that correctly, which means
+> > an extra bit is needed in phylink_sfp_set_config(). However, this
+> > should not affect anything.
+> > 
+> > > root@bpi-r3:~# 
+> > > root@bpi-r3:~# ethtool -s eth1 autoneg off
+> > > root@bpi-r3:~# [  131.031902] mtk_soc_eth 15100000.ethernet eth1: Link is Up - 2.5Gbps/Full - flow control off
+> > > [  131.040366] IPv6: ADDRCONF(NETDEV_CHANGE): eth1: link becomes ready
+> > > 
+> > > full log here:
+> > > https://pastebin.com/yDC7PuM2
+> > > 
+> > > i see that an is still 1..maybe because of the fixed value here?
+> > > 
+> > > https://elixir.bootlin.com/linux/v6.3-rc1/source/drivers/net/phy/phylink.c#L3038
+> > 
+> > Not sure what that line has to do with it - this is what the above
+> > points to:
+> > 
+> >         phylink_sfp_set_config(pl, MLO_AN_INBAND, pl->sfp_support, &config);
+> 
+> MLO_AN_INBAND => may cause the an=1 and mode=inband if previously (?) disabled :)
 
-Actually, it would be a very unusual situation that many different
-addresses are used, normally only a small set of predefined
-addresses are tried. Anyway, some cleanup is necessary because
-maintaining old filters forever makes very little sense.
+For 802.3z modes, MLO_AN_INBAND with Autoneg clear in the advertising mode
+disables in-band negotiation. This is exactly how "ethtool -s ethX
+autoneg off" works.
 
-Reported-by: Yalin Li <yalli@redhat.com>
-Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
----
- drivers/net/ethernet/sfc/ptp.c | 83 ++++++++++++++++++++++++----------
- 1 file changed, 60 insertions(+), 23 deletions(-)
+> > The patch below should result in ethtool reporting 2500baseT rather than
+> > 2500baseX, and that an=1 should now be an=0. Please try it, and dump the
+> > ethtool eth1 before asking for autoneg to be manually disabled, and also
+> > report the kernel messages.
+> 
+> i see no Patch below ;)
 
-diff --git a/drivers/net/ethernet/sfc/ptp.c b/drivers/net/ethernet/sfc/ptp.c
-index 16686aa5bfb4..1447683dce31 100644
---- a/drivers/net/ethernet/sfc/ptp.c
-+++ b/drivers/net/ethernet/sfc/ptp.c
-@@ -75,6 +75,9 @@
- /* How long an unmatched event or packet can be held */
- #define PKT_EVENT_LIFETIME_MS		10
- 
-+/* How long unused unicast filters can be held */
-+#define UCAST_FILTER_EXPIRY_JIFFIES	msecs_to_jiffies(30000)
-+
- /* Offsets into PTP packet for identification.  These offsets are from the
-  * start of the IP header, not the MAC header.  Note that neither PTP V1 nor
-  * PTP V2 permit the use of IPV4 options.
-@@ -218,6 +221,7 @@ struct efx_ptp_timeset {
-  * @ether_type: Network protocol of the filter (ETHER_P_IP / ETHER_P_IPV6)
-  * @loc_port: UDP port of the filter (PTP_EVENT_PORT / PTP_GENERAL_PORT)
-  * @loc_host: IPv4/v6 address of the filter
-+ * @expiry: time when the filter expires, in jiffies
-  * @handle: Handle ID for the MCDI filters table
-  */
- struct efx_ptp_rxfilter {
-@@ -225,6 +229,7 @@ struct efx_ptp_rxfilter {
- 	__be16 ether_type;
- 	__be16 loc_port;
- 	__be32 loc_host[4];
-+	unsigned long expiry;
- 	int handle;
- };
- 
-@@ -1318,8 +1323,8 @@ static inline void efx_ptp_process_rx(struct efx_nic *efx, struct sk_buff *skb)
- 	local_bh_enable();
- }
- 
--static bool efx_ptp_filter_exists(struct list_head *ptp_list,
--				  struct efx_filter_spec *spec)
-+static struct efx_ptp_rxfilter *
-+efx_ptp_find_filter(struct list_head *ptp_list, struct efx_filter_spec *spec)
- {
- 	struct efx_ptp_rxfilter *rxfilter;
- 
-@@ -1327,10 +1332,19 @@ static bool efx_ptp_filter_exists(struct list_head *ptp_list,
- 		if (rxfilter->ether_type == spec->ether_type &&
- 		    rxfilter->loc_port == spec->loc_port &&
- 		    !memcmp(rxfilter->loc_host, spec->loc_host, sizeof(spec->loc_host)))
--			return true;
-+			return rxfilter;
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 1a2f074685fa..b8844dfcbf51 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -2898,6 +2898,10 @@ static void phylink_sfp_set_config(struct phylink *pl, u8 mode,
+ 		changed = true;
  	}
  
--	return false;
-+	return NULL;
++	if (pl->link_config.an_enabled != state->an_enabled)
++		changed = true;
++	pl->link_config.an_enabled = state->an_enabled;
++
+ 	if (pl->cur_link_an_mode != mode ||
+ 	    pl->link_config.interface != state->interface) {
+ 		pl->cur_link_an_mode = mode;
+@@ -3001,7 +3005,8 @@ static int phylink_sfp_config_optical(struct phylink *pl)
+ 	config.speed = SPEED_UNKNOWN;
+ 	config.duplex = DUPLEX_UNKNOWN;
+ 	config.pause = MLO_PAUSE_AN;
+-	config.an_enabled = true;
++	config.an_enabled = linkmode_test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
++					      support);
+ 
+ 	/* For all the interfaces that are supported, reduce the sfp_support
+ 	 * mask to only those link modes that can be supported.
+diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
+index daac293e8ede..1dd50f2ca05d 100644
+--- a/drivers/net/phy/sfp-bus.c
++++ b/drivers/net/phy/sfp-bus.c
+@@ -151,6 +151,10 @@ void sfp_parse_support(struct sfp_bus *bus, const struct sfp_eeprom_id *id,
+ 	unsigned int br_min, br_nom, br_max;
+ 	__ETHTOOL_DECLARE_LINK_MODE_MASK(modes) = { 0, };
+ 
++	phylink_set(modes, Autoneg);
++	phylink_set(modes, Pause);
++	phylink_set(modes, Asym_Pause);
++
+ 	/* Decode the bitrate information to MBd */
+ 	br_min = br_nom = br_max = 0;
+ 	if (id->base.br_nominal) {
+@@ -329,10 +333,6 @@ void sfp_parse_support(struct sfp_bus *bus, const struct sfp_eeprom_id *id,
+ 		bus->sfp_quirk->modes(id, modes, interfaces);
+ 
+ 	linkmode_or(support, support, modes);
+-
+-	phylink_set(support, Autoneg);
+-	phylink_set(support, Pause);
+-	phylink_set(support, Asym_Pause);
+ }
+ EXPORT_SYMBOL_GPL(sfp_parse_support);
+ 
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index 39e3095796d0..9c1fa0b1737f 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -360,6 +360,23 @@ static void sfp_quirk_2500basex(const struct sfp_eeprom_id *id,
+ 	__set_bit(PHY_INTERFACE_MODE_2500BASEX, interfaces);
+ }
+ 
++static void sfp_quirk_disable_autoneg(const struct sfp_eeprom_id *id,
++				      unsigned long *modes,
++				      unsigned long *interfaces)
++{
++	linkmode_clear_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, modes);
 +}
 +
-+static void efx_ptp_remove_one_filter(struct efx_nic *efx,
-+				      struct efx_ptp_rxfilter *rxfilter)
++static void sfp_quirk_oem_2_5g(const struct sfp_eeprom_id *id,
++			       unsigned long *modes,
++			       unsigned long *interfaces)
 +{
-+	efx_filter_remove_id_safe(efx, EFX_FILTER_PRI_REQUIRED,
-+				  rxfilter->handle);
-+	list_del(&rxfilter->list);
-+	kfree(rxfilter);
- }
- 
- static void efx_ptp_remove_filters(struct efx_nic *efx,
-@@ -1339,10 +1353,7 @@ static void efx_ptp_remove_filters(struct efx_nic *efx,
- 	struct efx_ptp_rxfilter *rxfilter, *tmp;
- 
- 	list_for_each_entry_safe(rxfilter, tmp, ptp_list, list) {
--		efx_filter_remove_id_safe(efx, EFX_FILTER_PRI_REQUIRED,
--					  rxfilter->handle);
--		list_del(&rxfilter->list);
--		kfree(rxfilter);
-+		efx_ptp_remove_one_filter(efx, rxfilter);
- 	}
- }
- 
-@@ -1358,13 +1369,17 @@ static void efx_ptp_init_filter(struct efx_nic *efx,
- 
- static int efx_ptp_insert_filter(struct efx_nic *efx,
- 				 struct list_head *ptp_list,
--				 struct efx_filter_spec *spec)
-+				 struct efx_filter_spec *spec,
-+				 unsigned long expiry)
- {
- 	struct efx_ptp_rxfilter *rxfilter;
- 	int rc;
- 
--	if (efx_ptp_filter_exists(ptp_list, spec))
-+	rxfilter = efx_ptp_find_filter(ptp_list, spec);
-+	if (rxfilter) {
-+		rxfilter->expiry = expiry;
- 		return 0;
-+	}
- 
- 	rxfilter = kzalloc(sizeof(*rxfilter), GFP_KERNEL);
- 	if (!rxfilter)
-@@ -1378,6 +1393,7 @@ static int efx_ptp_insert_filter(struct efx_nic *efx,
- 	rxfilter->ether_type = spec->ether_type;
- 	rxfilter->loc_port = spec->loc_port;
- 	memcpy(rxfilter->loc_host, spec->loc_host, sizeof(spec->loc_host));
-+	rxfilter->expiry = expiry;
- 	list_add(&rxfilter->list, ptp_list);
- 
- 	return 0;
-@@ -1389,28 +1405,31 @@ static int efx_ptp_insert_filter(struct efx_nic *efx,
- 
- static int efx_ptp_insert_ipv4_filter(struct efx_nic *efx,
- 				      struct list_head *ptp_list,
--				      __be32 addr, u16 port)
-+				      __be32 addr, u16 port,
-+				      unsigned long expiry)
- {
- 	struct efx_filter_spec spec;
- 
- 	efx_ptp_init_filter(efx, &spec);
- 	efx_filter_set_ipv4_local(&spec, IPPROTO_UDP, addr, htons(port));
--	return efx_ptp_insert_filter(efx, ptp_list, &spec);
-+	return efx_ptp_insert_filter(efx, ptp_list, &spec, expiry);
- }
- 
- static int efx_ptp_insert_ipv6_filter(struct efx_nic *efx,
- 				      struct list_head *ptp_list,
--				      struct in6_addr *addr, u16 port)
-+				      struct in6_addr *addr, u16 port,
-+				      unsigned long expiry)
- {
- 	struct efx_filter_spec spec;
- 
- 	efx_ptp_init_filter(efx, &spec);
- 	efx_filter_set_ipv6_local(&spec, IPPROTO_UDP, addr, htons(port));
--	return efx_ptp_insert_filter(efx, ptp_list, &spec);
-+	return efx_ptp_insert_filter(efx, ptp_list, &spec, expiry);
- }
- 
- static int efx_ptp_insert_eth_multicast_filter(struct efx_nic *efx)
- {
-+	struct efx_ptp_data *ptp = efx->ptp_data;
- 	const u8 addr[ETH_ALEN] = PTP_ADDR_ETHER;
- 	struct efx_filter_spec spec;
- 
-@@ -1418,7 +1437,7 @@ static int efx_ptp_insert_eth_multicast_filter(struct efx_nic *efx)
- 	efx_filter_set_eth_local(&spec, EFX_FILTER_VID_UNSPEC, addr);
- 	spec.match_flags |= EFX_FILTER_MATCH_ETHER_TYPE;
- 	spec.ether_type = htons(ETH_P_1588);
--	return efx_ptp_insert_filter(efx, &efx->ptp_data->rxfilters_mcast, &spec);
-+	return efx_ptp_insert_filter(efx, &ptp->rxfilters_mcast, &spec, 0);
- }
- 
- static int efx_ptp_insert_multicast_filters(struct efx_nic *efx)
-@@ -1433,12 +1452,14 @@ static int efx_ptp_insert_multicast_filters(struct efx_nic *efx)
- 	 * that there is no packet re-ordering.
- 	 */
- 	rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_mcast,
--					htonl(PTP_ADDR_IPV4), PTP_EVENT_PORT);
-+					htonl(PTP_ADDR_IPV4), PTP_EVENT_PORT,
-+					0);
- 	if (rc < 0)
- 		goto fail;
- 
- 	rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_mcast,
--					htonl(PTP_ADDR_IPV4), PTP_GENERAL_PORT);
-+					htonl(PTP_ADDR_IPV4), PTP_GENERAL_PORT,
-+					0);
- 	if (rc < 0)
- 		goto fail;
- 
-@@ -1449,12 +1470,12 @@ static int efx_ptp_insert_multicast_filters(struct efx_nic *efx)
- 		struct in6_addr ipv6_addr = {{PTP_ADDR_IPV6}};
- 
- 		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_mcast,
--						&ipv6_addr, PTP_EVENT_PORT);
-+						&ipv6_addr, PTP_EVENT_PORT, 0);
- 		if (rc < 0)
- 			goto fail;
- 
- 		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_mcast,
--						&ipv6_addr, PTP_GENERAL_PORT);
-+						&ipv6_addr, PTP_GENERAL_PORT, 0);
- 		if (rc < 0)
- 			goto fail;
- 
-@@ -1490,21 +1511,24 @@ static int efx_ptp_insert_unicast_filter(struct efx_nic *efx,
- 					 struct sk_buff *skb)
- {
- 	struct efx_ptp_data *ptp = efx->ptp_data;
-+	unsigned long expiry;
- 	int rc;
- 
- 	if (!efx_ptp_valid_unicast_event_pkt(skb))
- 		return -EINVAL;
- 
-+	expiry = jiffies + UCAST_FILTER_EXPIRY_JIFFIES;
-+
- 	if (skb->protocol == htons(ETH_P_IP)) {
- 		__be32 addr = ip_hdr(skb)->saddr;
- 
- 		rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_ucast,
--						addr, PTP_EVENT_PORT);
-+						addr, PTP_EVENT_PORT, expiry);
- 		if (rc < 0)
- 			goto fail;
- 
- 		rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_ucast,
--						addr, PTP_GENERAL_PORT);
-+						addr, PTP_GENERAL_PORT, expiry);
- 		if (rc < 0)
- 			goto fail;
- 	} else if (efx_ptp_use_mac_tx_timestamps(efx)) {
-@@ -1512,12 +1536,12 @@ static int efx_ptp_insert_unicast_filter(struct efx_nic *efx,
- 		struct in6_addr *addr = &ipv6_hdr(skb)->saddr;
- 
- 		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_ucast,
--						addr, PTP_EVENT_PORT);
-+						addr, PTP_EVENT_PORT, expiry);
- 		if (rc < 0)
- 			goto fail;
- 
- 		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_ucast,
--						addr, PTP_GENERAL_PORT);
-+						addr, PTP_GENERAL_PORT, expiry);
- 		if (rc < 0)
- 			goto fail;
- 	} else {
-@@ -1531,6 +1555,17 @@ static int efx_ptp_insert_unicast_filter(struct efx_nic *efx,
- 	return rc;
- }
- 
-+static void efx_ptp_drop_expired_unicast_filters(struct efx_nic *efx)
-+{
-+	struct efx_ptp_data *ptp = efx->ptp_data;
-+	struct efx_ptp_rxfilter *rxfilter, *tmp;
-+
-+	list_for_each_entry_safe(rxfilter, tmp, &ptp->rxfilters_ucast, list) {
-+		if (time_is_before_jiffies(rxfilter->expiry))
-+			efx_ptp_remove_one_filter(efx, rxfilter);
-+	}
++	/* Copper 2.5G SFP */
++	linkmode_set_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT, modes);
++	__set_bit(PHY_INTERFACE_MODE_2500BASEX, interfaces);
++	sfp_quirk_disable_autoneg(id, modes, interfaces);
 +}
 +
- static int efx_ptp_start(struct efx_nic *efx)
- {
- 	struct efx_ptp_data *ptp = efx->ptp_data;
-@@ -1631,6 +1666,8 @@ static void efx_ptp_worker(struct work_struct *work)
+ static void sfp_quirk_ubnt_uf_instant(const struct sfp_eeprom_id *id,
+ 				      unsigned long *modes,
+ 				      unsigned long *interfaces)
+@@ -401,6 +418,7 @@ static const struct sfp_quirk sfp_quirks[] = {
+ 	SFP_QUIRK_M("UBNT", "UF-INSTANT", sfp_quirk_ubnt_uf_instant),
  
- 	while ((skb = __skb_dequeue(&tempq)))
- 		efx_ptp_process_rx(efx, skb);
-+
-+	efx_ptp_drop_expired_unicast_filters(efx);
- }
- 
- static const struct ptp_clock_info efx_phc_clock_info = {
+ 	SFP_QUIRK_F("OEM", "SFP-10G-T", sfp_fixup_rollball_cc),
++	SFP_QUIRK_M("OEM", "SFP-2.5G-T", sfp_quirk_oem_2_5g),
+ 	SFP_QUIRK_F("OEM", "RTSFP-10", sfp_fixup_rollball_cc),
+ 	SFP_QUIRK_F("OEM", "RTSFP-10G", sfp_fixup_rollball_cc),
+ 	SFP_QUIRK_F("Turris", "RTSFP-10", sfp_fixup_rollball),
+
 -- 
-2.34.3
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
