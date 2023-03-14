@@ -2,133 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B1C256B92C2
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 13:12:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 276606B931B
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 13:15:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230199AbjCNMMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 08:12:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52272 "EHLO
+        id S230435AbjCNMPG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 08:15:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229845AbjCNMMY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 08:12:24 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64278584B3;
-        Tue, 14 Mar 2023 05:11:58 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id fd25so9578258pfb.1;
-        Tue, 14 Mar 2023 05:11:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678795918;
-        h=content-disposition:mime-version:message-id:subject:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=fLOiANFqOi3wCdM3FGbLFB9AhuDgThqUdwTy4yeXIF0=;
-        b=jhyQ3METWoCznCYzEZEf3dooJ/wr5dURSHCk2a/blSO/+4qFYrNBc94DTB1Aj8xO+u
-         6JqjjTFz+YH6HfWGY9ACeOPMJVguSlhAROm9Z1swZWZ1TJhl8ghwaSQGUKmvgxXt6KCA
-         93JE3Cg11EXN3fK1vJnYYpNd0vidJUZ3Cpd6Soh1S3ceO/SvbJAVkpn0WY1Wmo81hvaJ
-         mc61i9cfVtoxOYGgDgpDUYNEfE5JfdqNBQ9cSczTCTf4SB7QY561pTzgCCdcpwks8q2x
-         Cu+RdjKkTf5dlpDfZZ8tFjiW5zAMu6AdMa+ftMAHEb9bOnTYw/dVIwEhf7Boo/x2WPh6
-         S7YQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678795918;
-        h=content-disposition:mime-version:message-id:subject:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=fLOiANFqOi3wCdM3FGbLFB9AhuDgThqUdwTy4yeXIF0=;
-        b=LGwjT3+PR9MTBD3acFhW610JfYMHH01Kfia7o9rR55rJsTkv91rpcKjLTo7Aodq0Zz
-         H1zISfLqTVPtzVXEGigRK3ZzvyyMIcnMAYJXmM2OVSbmdGg+o+rdsEfTvCExRKd11+o3
-         Hjut7qiPgrmD818y2zNcWs1tbMqldPktJDHO+NOl8LXuvPVQOeLW5dLmwI/mt33TMl07
-         N3gfrkryUPGHwsuG1i5QQDmCraxfGKtOi8WRm0azWo95Fqx1i6MSpkpR2pGZ1sQDeuG+
-         Q+A87N6K5OwFIg3W5lS4fyRIl/o7VR9egfptPw/l4s4DfnxyfbvUEeFnBw0W9Jhbngz+
-         ZerQ==
-X-Gm-Message-State: AO0yUKUA2tSRn2OxdXhuxJPPU/8TIsb7Uo5eQeboc8pde4mTeU2JQu1O
-        0H+LAAe5gWh6Y4w07cxYXdPGiJexdcLgKQ==
-X-Google-Smtp-Source: AK7set9kndnwILN2cfyKlOfZpDCZ4z63OhVoikttIm/+N1sMW7D5K+2f2M2Gul6Wh+L4jKMyfLf5TA==
-X-Received: by 2002:aa7:9508:0:b0:5e0:3038:2300 with SMTP id b8-20020aa79508000000b005e030382300mr36080931pfp.20.1678795917706;
-        Tue, 14 Mar 2023 05:11:57 -0700 (PDT)
-Received: from sumitra.com ([59.89.170.99])
-        by smtp.gmail.com with ESMTPSA id r3-20020a654983000000b004f27761a9e7sm1440786pgs.12.2023.03.14.05.11.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Mar 2023 05:11:57 -0700 (PDT)
-Date:   Tue, 14 Mar 2023 05:11:52 -0700
-From:   Sumitra Sharma <sumitraartsy@gmail.com>
-To:     outreachy@lists.linux.dev, manishc@marvell.com,
-        GR-Linux-NIC-Dev@marvell.com, coiby.xu@gmail.com,
-        gregkh@linuxfoundation.org, netdev@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH v3] Staging: qlge: Fix indentation in conditional statement
-Message-ID: <20230314121152.GA38979@sumitra.com>
+        with ESMTP id S231414AbjCNMN5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 08:13:57 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 441F37C3E4;
+        Tue, 14 Mar 2023 05:13:04 -0700 (PDT)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32EBe1rT024111;
+        Tue, 14 Mar 2023 12:12:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=cw3Hnac9T5XMpvF57L4Nhob9BUYv7xSOWKE0S9ZBQyU=;
+ b=g1/lhnv3x0D2UiZOrDSXWAHrSpl/UYDuwEFluEhRkm2rT7DzpQdslRZ3J8Acd9XnFDPI
+ tbsAfNstIg6vsnIT2carK3i1jKPxkOgKSvA1IIf0hvPOyCoNxubNcJlVo1ZDbhzjCFyv
+ d0Ro+aDkhmPDJ+G/ZA3NH0pb7d1wNXnGkBPagZGQxtwioKyGtbtgd/gR+5fEGvY9vuYM
+ g+M3+nRPXdYQd/BTGXPfdHHrr6vC13jZtB0nRv4cyR77Vz1E+Skt5JwfvmEOHDd/Kcia
+ utGoZgVxMO9F2VstSXg5qruR4uKxTtyp9TgU9TC/so+d9HLMo47razZkmpa5HtaJT45b SQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3papbac5uv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 14 Mar 2023 12:12:41 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32EBak0a020629;
+        Tue, 14 Mar 2023 12:12:40 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3papbac5tm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 14 Mar 2023 12:12:40 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 32E6EFmO030078;
+        Tue, 14 Mar 2023 12:12:38 GMT
+Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
+        by ppma06ams.nl.ibm.com (PPS) with ESMTPS id 3p8gwfct6w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 14 Mar 2023 12:12:38 +0000
+Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
+        by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 32ECCZZX48693856
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 14 Mar 2023 12:12:36 GMT
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D2A742007B;
+        Tue, 14 Mar 2023 12:12:35 +0000 (GMT)
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 675642007C;
+        Tue, 14 Mar 2023 12:12:35 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTP;
+        Tue, 14 Mar 2023 12:12:35 +0000 (GMT)
+From:   Niklas Schnelle <schnelle@linux.ibm.com>
+To:     Arnd Bergmann <arnd@arndb.de>, Karsten Keil <isdn@linux-pingi.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
+        netdev@vger.kernel.org
+Subject: [PATCH v3 18/38] mISDN: add HAS_IOPORT dependencies
+Date:   Tue, 14 Mar 2023 13:11:56 +0100
+Message-Id: <20230314121216.413434-19-schnelle@linux.ibm.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20230314121216.413434-1-schnelle@linux.ibm.com>
+References: <20230314121216.413434-1-schnelle@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: d_Qa1fLaSceXZwK9dOPEGyutzMR1VVnQ
+X-Proofpoint-ORIG-GUID: fJIGx9H3LvvwLKvDh1FbFXE9E-OIdria
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-03-14_06,2023-03-14_02,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
+ impostorscore=0 malwarescore=0 bulkscore=0 spamscore=0 adultscore=0
+ clxscore=1011 mlxlogscore=844 phishscore=0 suspectscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2303140103
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add tabs/spaces in conditional statements in to fix the
-indentation.
+In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
+not being declared. We thus need to add HAS_IOPORT as dependency for
+those drivers using them. With that the !S390 dependency on ISDN can be
+removed as all drivers without HAS_IOPORT requirement now build.
 
-Signed-off-by: Sumitra Sharma <sumitraartsy@gmail.com>
-
+Co-developed-by: Arnd Bergmann <arnd@kernel.org>
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 ---
-v2: Fix indentation in conditional statement, noted by Dan Carpenter
- <error27@gmail.com>
-v3: Apply changes to fresh git tree
+ drivers/isdn/Kconfig                |  1 -
+ drivers/isdn/hardware/mISDN/Kconfig | 12 ++++++------
+ 2 files changed, 6 insertions(+), 7 deletions(-)
 
-
- drivers/staging/qlge/qlge_dbg.c | 35 +++++++++++++++------------------
- 1 file changed, 16 insertions(+), 19 deletions(-)
-
-diff --git a/drivers/staging/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
-index 66d28358342f..c7e865f515cf 100644
---- a/drivers/staging/qlge/qlge_dbg.c
-+++ b/drivers/staging/qlge/qlge_dbg.c
-@@ -351,26 +351,23 @@ static int qlge_get_xgmac_regs(struct qlge_adapter *qdev, u32 *buf,
- 		/* We're reading 400 xgmac registers, but we filter out
- 		 * several locations that are non-responsive to reads.
- 		 */
--		if ((i == 0x00000114) ||
--		    (i == 0x00000118) ||
--			(i == 0x0000013c) ||
--			(i == 0x00000140) ||
--			(i > 0x00000150 && i < 0x000001fc) ||
--			(i > 0x00000278 && i < 0x000002a0) ||
--			(i > 0x000002c0 && i < 0x000002cf) ||
--			(i > 0x000002dc && i < 0x000002f0) ||
--			(i > 0x000003c8 && i < 0x00000400) ||
--			(i > 0x00000400 && i < 0x00000410) ||
--			(i > 0x00000410 && i < 0x00000420) ||
--			(i > 0x00000420 && i < 0x00000430) ||
--			(i > 0x00000430 && i < 0x00000440) ||
--			(i > 0x00000440 && i < 0x00000450) ||
--			(i > 0x00000450 && i < 0x00000500) ||
--			(i > 0x0000054c && i < 0x00000568) ||
--			(i > 0x000005c8 && i < 0x00000600)) {
-+		if ((i == 0x00000114) || (i == 0x00000118) ||
-+		    (i == 0x0000013c) || (i == 0x00000140) ||
-+		    (i > 0x00000150 && i < 0x000001fc) ||
-+		    (i > 0x00000278 && i < 0x000002a0) ||
-+		    (i > 0x000002c0 && i < 0x000002cf) ||
-+		    (i > 0x000002dc && i < 0x000002f0) ||
-+		    (i > 0x000003c8 && i < 0x00000400) ||
-+		    (i > 0x00000400 && i < 0x00000410) ||
-+		    (i > 0x00000410 && i < 0x00000420) ||
-+		    (i > 0x00000420 && i < 0x00000430) ||
-+		    (i > 0x00000430 && i < 0x00000440) ||
-+		    (i > 0x00000440 && i < 0x00000450) ||
-+		    (i > 0x00000450 && i < 0x00000500) ||
-+		    (i > 0x0000054c && i < 0x00000568) ||
-+		    (i > 0x000005c8 && i < 0x00000600)) {
- 			if (other_function)
--				status =
--				qlge_read_other_func_xgmac_reg(qdev, i, buf);
-+				status = qlge_read_other_func_xgmac_reg(qdev, i, buf);
- 			else
- 				status = qlge_read_xgmac_reg(qdev, i, buf);
+diff --git a/drivers/isdn/Kconfig b/drivers/isdn/Kconfig
+index 2690e2c5a158..6fd1b3f84a29 100644
+--- a/drivers/isdn/Kconfig
++++ b/drivers/isdn/Kconfig
+@@ -6,7 +6,6 @@
+ menuconfig ISDN
+ 	bool "ISDN support"
+ 	depends on NET && NETDEVICES
+-	depends on !S390 && !UML
+ 	help
+ 	  ISDN ("Integrated Services Digital Network", called RNIS in France)
+ 	  is a fully digital telephone service that can be used for voice and
+diff --git a/drivers/isdn/hardware/mISDN/Kconfig b/drivers/isdn/hardware/mISDN/Kconfig
+index 078eeadf707a..a35bff8a93f5 100644
+--- a/drivers/isdn/hardware/mISDN/Kconfig
++++ b/drivers/isdn/hardware/mISDN/Kconfig
+@@ -14,7 +14,7 @@ config MISDN_HFCPCI
  
+ config MISDN_HFCMULTI
+ 	tristate "Support for HFC multiport cards (HFC-4S/8S/E1)"
+-	depends on PCI || CPM1
++	depends on (PCI || CPM1) && HAS_IOPORT
+ 	depends on MISDN
+ 	help
+ 	  Enable support for cards with Cologne Chip AG's HFC multiport
+@@ -43,7 +43,7 @@ config MISDN_HFCUSB
+ config MISDN_AVMFRITZ
+ 	tristate "Support for AVM FRITZ!CARD PCI"
+ 	depends on MISDN
+-	depends on PCI
++	depends on PCI && HAS_IOPORT
+ 	select MISDN_IPAC
+ 	help
+ 	  Enable support for AVMs FRITZ!CARD PCI cards
+@@ -51,7 +51,7 @@ config MISDN_AVMFRITZ
+ config MISDN_SPEEDFAX
+ 	tristate "Support for Sedlbauer Speedfax+"
+ 	depends on MISDN
+-	depends on PCI
++	depends on PCI && HAS_IOPORT
+ 	select MISDN_IPAC
+ 	select MISDN_ISAR
+ 	help
+@@ -60,7 +60,7 @@ config MISDN_SPEEDFAX
+ config MISDN_INFINEON
+ 	tristate "Support for cards with Infineon chipset"
+ 	depends on MISDN
+-	depends on PCI
++	depends on PCI && HAS_IOPORT
+ 	select MISDN_IPAC
+ 	help
+ 	  Enable support for cards with ISAC + HSCX, IPAC or IPAC-SX
+@@ -69,14 +69,14 @@ config MISDN_INFINEON
+ config MISDN_W6692
+ 	tristate "Support for cards with Winbond 6692"
+ 	depends on MISDN
+-	depends on PCI
++	depends on PCI && HAS_IOPORT
+ 	help
+ 	  Enable support for Winbond 6692 PCI chip based cards.
+ 
+ config MISDN_NETJET
+ 	tristate "Support for NETJet cards"
+ 	depends on MISDN
+-	depends on PCI
++	depends on PCI && HAS_IOPORT
+ 	depends on TTY
+ 	select MISDN_IPAC
+ 	select MISDN_HDLC
 -- 
-2.25.1
+2.37.2
 
