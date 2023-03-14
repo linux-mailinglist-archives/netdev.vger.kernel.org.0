@@ -2,169 +2,238 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E15D56B9769
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 15:12:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEACE6B97E3
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 15:25:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229664AbjCNOL7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 10:11:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57530 "EHLO
+        id S231493AbjCNOZa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 10:25:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230498AbjCNOLu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 10:11:50 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3862D77C87;
-        Tue, 14 Mar 2023 07:11:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=k1DEtHIhLxRnbG8lB4HWAB8Y4xPQZEX9Zid75ZjCTvk=; b=jpgpNy9fMP5h6PmZdKe/nnjsq0
-        IkWVUgi0+aJ/1NUjaaXKN2XuBV9+7Vs+s4INIgb1twXhPzG1sbM92I3hbywBel/zjbffM16qbhWsm
-        TsItyC5HwqtFhv2zyC2dzombosQ9YZsaGH528S6x4PRvAT0ywKiOIfEixy95orB4iFsdHTFcTjJfT
-        z3sdKOC1euDOhf2uP9WwirTwMcqTbrqbxOgN3MstLse26dIszHjCPeS/N7QmQTo4I2mqJIHGvPOLO
-        Nf/682DepH6jjWMPFFJuznI9I1Wx7Zo4vu0t4CowSuN10HwSgbDadC39GqQOi8PTusieTvqx/tCYW
-        yLrkcxmA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55970)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pc5Mv-0005Cq-4c; Tue, 14 Mar 2023 14:11:13 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pc5Mr-0000QN-SX; Tue, 14 Mar 2023 14:11:10 +0000
-Date:   Tue, 14 Mar 2023 14:11:09 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     Daniel Golle <daniel@makrotopia.org>, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: Re: [PATCH net-next v12 08/18] net: ethernet: mtk_eth_soc: fix
- 1000Base-X and 2500Base-X modes
-Message-ID: <ZBCAfUK+YkRq3wfK@shell.armlinux.org.uk>
-References: <trinity-8577978d-1c11-4f6d-ae11-aef37e8b78b0-1678624836722@3c-app-gmx-bap51>
- <ZA4wlQ8P48aDhDly@shell.armlinux.org.uk>
- <ZA8B/kI0fLx4gkQm@shell.armlinux.org.uk>
- <trinity-93681801-f99c-40e2-9fbd-45888b3069aa-1678732740564@3c-app-gmx-bs66>
- <ZA+qTyQ3n6YiURkQ@shell.armlinux.org.uk>
- <trinity-e2c457f1-c897-45f1-907a-8ea3664b7512-1678783872771@3c-app-gmx-bap66>
- <ZBA6gszARdJY26Mz@shell.armlinux.org.uk>
- <trinity-bc4bbf4e-812a-4682-ac8c-5178320467f5-1678788102813@3c-app-gmx-bap66>
- <ZBBIDqZaqdSfwu9g@shell.armlinux.org.uk>
- <trinity-99c1353c-98c3-4608-8079-9a818909e6c4-1678802351739@3c-app-gmx-bap50>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+        with ESMTP id S231219AbjCNOZS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 10:25:18 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1B98A883B
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 07:24:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678803891; x=1710339891;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=g0YvVRcIisNsOC5zJfpjLc9MNus2hy/RIy+0fNavEcM=;
+  b=Ey6XhBEAWssrquRe9F0sP5vKlDGod+URlwSMhOW4dDYt3ZTGi1iHJQYN
+   2yFwZN0znE1Xl1OouJUVP2ydYDqsdLOHBsByjN6El/BIh7LERl2PwaWhH
+   GLmBxWkfrjRqsMAZvXAR+x8wjU6AfgHm0oHNemUKAf6H2ryg2Lu2z0yn2
+   xEyU42NIOgnXcw4b3TARoUyauBhE2z6lUnk7ursM3qqLJq7TbG/aShge5
+   eY/uYCo0AUeP7ttuEehxjunUufTEmZn8xofZRyboZgQqI+kR0lcqNFx9g
+   WDkVYcbZeEmFLL+C4puup6aFRzNLz2PeowDH//58LuO1TpowZQoF+xJPb
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="338977735"
+X-IronPort-AV: E=Sophos;i="5.98,260,1673942400"; 
+   d="scan'208";a="338977735"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2023 07:24:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="789389277"
+X-IronPort-AV: E=Sophos;i="5.98,260,1673942400"; 
+   d="scan'208";a="789389277"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by fmsmga002.fm.intel.com with ESMTP; 14 Mar 2023 07:24:20 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Tue, 14 Mar 2023 07:24:19 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Tue, 14 Mar 2023 07:24:18 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21 via Frontend Transport; Tue, 14 Mar 2023 07:24:18 -0700
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.49) by
+ edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.21; Tue, 14 Mar 2023 07:24:18 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Nj0ujZXEuVuAmDLhO+7monLAPXG/ThzXXZuvJ2s6KsI/dMOLRL4EdaFmAxtE26Q0uYSrwfNntW8YYEje38E1h4I+frfPZjRcLX+g7T/69Bh/bv4rI9bdRhuIU7jUINzO1timG0ujhfaEcNCmRLqmnFyWwX0RZo4olx+MOnhQ+e0VMnID4eDmFeHJStzLrwhjBabcJiuuARiA+B9mVu08T0YnXJFGZwSiFBreSVsYSFuIn68uhZx2AwasHUSB6qRx95BnISWKLoR19vM1ngF34+Svqjr6O9nVm96gMkCuM6dX/5fVVXEdkxFIEH4dz7hIAG668YQ8IzkV8a+SkteO0g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=OxntSdddugCYnngABj6t/ARdJq90mmyKZ2HstCEsnB4=;
+ b=fzE6RJFrOdFqGnci/dY3BPUyrgt/vjXia3npVvsorCqxbEUyNlfxEVGHa35zoAbJZbSgavnH+MDp+affQUG9spgbqd9aSvbwfa13lESMZtiEwgxLHWr8UjqhiIRZTEL6k0vzav9VhOgclqzzeelW+swkd2k7oXDK0NdML1LTS7c44wjCsxVWrg2luhWSYTVG7vEuNXtrFVnbomOdj44XrxDHJXGnAfybs3/iyeQjC5RfN8ARXXUVvaozHaZusIXJIvVKPDPpB3VQt8r+8vVEBv2hVjniqBrTvg7X9CustgfCjUUwLcATI/zz0iNLrgZZKX/VPZ568aG7x62V8qeAYA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM6PR11MB2937.namprd11.prod.outlook.com (2603:10b6:5:62::13) by
+ SA3PR11MB8024.namprd11.prod.outlook.com (2603:10b6:806:300::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.24; Tue, 14 Mar
+ 2023 14:24:17 +0000
+Received: from DM6PR11MB2937.namprd11.prod.outlook.com
+ ([fe80::cece:5e80:b74f:9448]) by DM6PR11MB2937.namprd11.prod.outlook.com
+ ([fe80::cece:5e80:b74f:9448%7]) with mapi id 15.20.6178.026; Tue, 14 Mar 2023
+ 14:24:16 +0000
+Date:   Tue, 14 Mar 2023 15:24:04 +0100
+From:   Michal Kubiak <michal.kubiak@intel.com>
+To:     Stefan Assmann <sassmann@kpanic.de>
+CC:     <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>,
+        <anthony.l.nguyen@intel.com>, <patryk.piotrowski@intel.com>,
+        <slawomirx.laba@intel.com>
+Subject: Re: [PATCH net v2] iavf: fix hang on reboot with ice
+Message-ID: <ZBCDhCjim+d4TmMD@localhost.localdomain>
+References: <20230313160645.3332457-1-sassmann@kpanic.de>
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <trinity-99c1353c-98c3-4608-8079-9a818909e6c4-1678802351739@3c-app-gmx-bap50>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230313160645.3332457-1-sassmann@kpanic.de>
+X-ClientProxiedBy: LO4P123CA0449.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:1a9::22) To DM6PR11MB2937.namprd11.prod.outlook.com
+ (2603:10b6:5:62::13)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR11MB2937:EE_|SA3PR11MB8024:EE_
+X-MS-Office365-Filtering-Correlation-Id: 119466fe-3172-4dd0-1c8e-08db2497caa4
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: /1oxnmj4IS6H3dxobQl1EIrgPxjEeJdXb4sy8fjhjO2yUARzMcaI7cBa+QLV7KkKQUrbbMFfsNfHGZMw7BqpoF3BNXKlTcjMtZ5Qqv3hcgZ1wo9PaM7dZB/+PwPzbOyvkMOUQBWuSjuQ81UV6MHx8Br13OxdUbHObL0d41p573RnQ6Z6GfR8liVOo0yeb7wcy3JFcITI07eGa/QvNTRmceV3Wym+imAbqkuHnR6/HVjNAB5gdgq7rJKhdwv/uYlOwQ9EtwUtrYaDz8EHClvARHlMwcLREjlc+XXmLJd0kRopYJc7Yg0dLcDxjH/Nd5cPfiNuXHOVhmEFG50rZP+km6WPRn3SaFmxxxAZ99KPqYj8vCT7VtOmvhSfqENMyS7wC3061OSxKVIFOnKA7bal4xZbkUJQmPz/BBRfxT604npm18KIENO9hVB2WE4KWwcKWa8RsEZdhkRd7AdNRLPDmIQrKyMnNH8L0SRPFUv4j1UEb1MXS0CPjEyV5d0ucTxCouDXZ0qKWKiI5o1LcJkdjMX/jrJQZbsjfz+Z1QVjvSe5myO0lOrs59E4fVw3ALJLqP7pcdVRCaS0z6xIYC9FirULGT+DBmnbxevL0w/ASPKPDkU15eDNd/H+cqyboZB5RF3bZbHQkeqCGgb+6nZ4pbDVodgLieL0OJRHULoNfa6qcMHDQkVOABaB19iEysEM
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2937.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(136003)(346002)(366004)(39860400002)(376002)(396003)(451199018)(86362001)(38100700002)(82960400001)(8936002)(66476007)(66556008)(4326008)(8676002)(41300700001)(478600001)(6916009)(316002)(2906002)(5660300002)(44832011)(66946007)(83380400001)(6486002)(26005)(9686003)(107886003)(6666004)(6512007)(186003)(6506007)(67856001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TolaFS0lGxV8zGza1/tiH1dNjYwXy11tvo2EW3qUrHQY51SydUzVB2yWeuyQ?=
+ =?us-ascii?Q?NqLkxOqNIAksngWHsopFSI8J9ATN3u5e5p/Ex4FHI4tbYAp9NtWEoUjJ+AOT?=
+ =?us-ascii?Q?i1MjJo7NbN1cH+UwNIDCyxBkoer5jPFF3ouYxxveW2SNA6mOlwq73D6EmrXs?=
+ =?us-ascii?Q?MJmM1YxLNys20NxenyJXsErWAGtAw/MoVylbGHEmrTV1fXbBiH46qVH0DGkZ?=
+ =?us-ascii?Q?iRfAbMTcZrpP3L6PWDXAG43+BBFVpjtvXRgq/jdifahKTzhVI9xBOzMRpvwd?=
+ =?us-ascii?Q?L19Tk0gtK7DK0oXbqYc6yxUDo6HanFvG6fDl49M09WsswQ0mxOh+LUDfInrF?=
+ =?us-ascii?Q?Heq6FHeTYvlhPDgo+grdRzjX5V2xkdue5jLaVx2CPq6WjruFTVTfVnVK/VIW?=
+ =?us-ascii?Q?8B/t8gdl11WSrPSpX6mmbUWbgfKYQaT8RyT3NvZNezJpK/FB0F0xf8Ay+IJW?=
+ =?us-ascii?Q?GwPUonGP/ASubfGxX64zp6yYGv7yHBrFC4Aiw7asg72AdwsPr6LUNFfk0mUa?=
+ =?us-ascii?Q?GiB8jUu+ajLmadvEbJAXXIJY3JQQbHaTzHwP5a1xxog1Gp+KbpOXC2ViGZIO?=
+ =?us-ascii?Q?lNffx6+h3QD9GO1uT+wXFApWkg7rjRfb71gslDdtgOJX6O6ys3jViktfR6BD?=
+ =?us-ascii?Q?YAdRwpIuOhO9Fe1a1QrAHfi9uCmLUJLfSE9Pv9+q4NNs6UMd6DMXzeL8zKaZ?=
+ =?us-ascii?Q?WxfuJc/GzrxMs5IbCwQyrAlogyhBrdW4P2hvTOySxH5vhaSzZUddwvr/xoNS?=
+ =?us-ascii?Q?ugnWiFkdfUGOcgvAHWZEDppwkDiwXSe6V5VPb61+I/r2rALZWYF+ImCgnVDx?=
+ =?us-ascii?Q?Zg/864KahoXX7Ji/4RoeDWUDelLfEbHxVcDJr6r2SvFaZZhMWYXeosKL3ibZ?=
+ =?us-ascii?Q?9CFMtJUcF3IgynWv/N6mfxVesOgL9e2kwUXpN3mKuLABkDiKRBhC+7ushcsg?=
+ =?us-ascii?Q?t1b+R3cBXjc22WYGUss2OUFeus6ikQiMqARkm+K8ZTJh7B9CvS+DsTVJjHjc?=
+ =?us-ascii?Q?SMZ9Q60M+1vpTw9jFuB/cDwpv1NMONEEhL01+0jzPQXE+fDdIG28u+RfORwN?=
+ =?us-ascii?Q?UT8/2nDTglHo9xKeIfA7/kwd5NxFUoXfBv69sZ8IIjbDF3rRGmbeUFaGUteC?=
+ =?us-ascii?Q?NSGWLn3tRHzzo/itO4JyX8rzpTwO3RfL/zkpl3G+BdqbOiBg9OvEgWvyopJH?=
+ =?us-ascii?Q?/T02pqAnf6oFnpLZ764TiMUeueicgubiG5URLIHQP3XpS8O0U8Rh05xjCwpI?=
+ =?us-ascii?Q?ulGvYEwVZ68RlH+se3Xlzu8mUkPNIrRzync1/JXCc3fWVUFCdG5VMtBOQHJG?=
+ =?us-ascii?Q?zB0Wak3eJVuibOmUFWLaaWh37ieb304mFJovM8faPFZG5WwII9TW4al2m+kh?=
+ =?us-ascii?Q?feFlWo9RtQWAg/fuXseYsxNq0mLeiMurX7YvuVGzqaa7ngg07lK9FK/TaEZY?=
+ =?us-ascii?Q?kv6v9ckq07qAstd1UU+GJGYbBEABqi1QxuxNJPjnRPt778iGQvXPwav+N255?=
+ =?us-ascii?Q?/gSxOzd7TX38JABgAljiXQH5S9tnx8uMyGNKzCxIPfJoqwVrG/cOo6ILxtKZ?=
+ =?us-ascii?Q?rukBISHNUBe3uIyXMR5GvL6H6u7pVte0yTyAGzqjIAwrGqWU/cEP/tSyiWhB?=
+ =?us-ascii?Q?nA=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 119466fe-3172-4dd0-1c8e-08db2497caa4
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB2937.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Mar 2023 14:24:16.3971
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ERHZdUw8K/Lercbgn/kevGCCykle2SxI3Apzp3uqtqzarwcJJB+Y1rWjLcKw7cjUam6dgFI7x4A6fYNHpdkoVw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR11MB8024
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 14, 2023 at 02:59:11PM +0100, Frank Wunderlich wrote:
-> Hi
+On Mon, Mar 13, 2023 at 05:06:45PM +0100, Stefan Assmann wrote:
+> When a system with E810 with existing VFs gets rebooted the following
+> hang may be observed.
 > 
-> very good...do not need the manual autoneg with the last Patch :)
-
-Great news! Thanks for your patience.
-
-> > Gesendet: Dienstag, 14. März 2023 um 11:10 Uhr
-> > Von: "Russell King (Oracle)" <linux@armlinux.org.uk>
+>  Pid 1 is hung in iavf_remove(), part of a network driver:
+>  PID: 1        TASK: ffff965400e5a340  CPU: 24   COMMAND: "systemd-shutdow"
+>   #0 [ffffaad04005fa50] __schedule at ffffffff8b3239cb
+>   #1 [ffffaad04005fae8] schedule at ffffffff8b323e2d
+>   #2 [ffffaad04005fb00] schedule_hrtimeout_range_clock at ffffffff8b32cebc
+>   #3 [ffffaad04005fb80] usleep_range_state at ffffffff8b32c930
+>   #4 [ffffaad04005fbb0] iavf_remove at ffffffffc12b9b4c [iavf]
+>   #5 [ffffaad04005fbf0] pci_device_remove at ffffffff8add7513
+>   #6 [ffffaad04005fc10] device_release_driver_internal at ffffffff8af08baa
+>   #7 [ffffaad04005fc40] pci_stop_bus_device at ffffffff8adcc5fc
+>   #8 [ffffaad04005fc60] pci_stop_and_remove_bus_device at ffffffff8adcc81e
+>   #9 [ffffaad04005fc70] pci_iov_remove_virtfn at ffffffff8adf9429
+>  #10 [ffffaad04005fca8] sriov_disable at ffffffff8adf98e4
+>  #11 [ffffaad04005fcc8] ice_free_vfs at ffffffffc04bb2c8 [ice]
+>  #12 [ffffaad04005fd10] ice_remove at ffffffffc04778fe [ice]
+>  #13 [ffffaad04005fd38] ice_shutdown at ffffffffc0477946 [ice]
+>  #14 [ffffaad04005fd50] pci_device_shutdown at ffffffff8add58f1
+>  #15 [ffffaad04005fd70] device_shutdown at ffffffff8af05386
+>  #16 [ffffaad04005fd98] kernel_restart at ffffffff8a92a870
+>  #17 [ffffaad04005fda8] __do_sys_reboot at ffffffff8a92abd6
+>  #18 [ffffaad04005fee0] do_syscall_64 at ffffffff8b317159
+>  #19 [ffffaad04005ff08] __context_tracking_enter at ffffffff8b31b6fc
+>  #20 [ffffaad04005ff18] syscall_exit_to_user_mode at ffffffff8b31b50d
+>  #21 [ffffaad04005ff28] do_syscall_64 at ffffffff8b317169
+>  #22 [ffffaad04005ff50] entry_SYSCALL_64_after_hwframe at ffffffff8b40009b
+>      RIP: 00007f1baa5c13d7  RSP: 00007fffbcc55a98  RFLAGS: 00000202
+>      RAX: ffffffffffffffda  RBX: 0000000000000000  RCX: 00007f1baa5c13d7
+>      RDX: 0000000001234567  RSI: 0000000028121969  RDI: 00000000fee1dead
+>      RBP: 00007fffbcc55ca0   R8: 0000000000000000   R9: 00007fffbcc54e90
+>      R10: 00007fffbcc55050  R11: 0000000000000202  R12: 0000000000000005
+>      R13: 0000000000000000  R14: 00007fffbcc55af0  R15: 0000000000000000
+>      ORIG_RAX: 00000000000000a9  CS: 0033  SS: 002b
 > 
-> > For 802.3z modes, MLO_AN_INBAND with Autoneg clear in the advertising mode
-> > disables in-band negotiation. This is exactly how "ethtool -s ethX
-> > autoneg off" works.
+> During reboot all drivers PM shutdown callbacks are invoked.
+> In iavf_shutdown() the adapter state is changed to __IAVF_REMOVE.
+> In ice_shutdown() the call chain above is executed, which at some point
+> calls iavf_remove(). However iavf_remove() expects the VF to be in one
+> of the states __IAVF_RUNNING, __IAVF_DOWN or __IAVF_INIT_FAILED. If
+> that's not the case it sleeps forever.
+> So if iavf_shutdown() gets invoked before iavf_remove() the system will
+> hang indefinitely because the adapter is already in state __IAVF_REMOVE.
 > 
-> ok, this seems now correctly set.
+> Fix this by returning from iavf_remove() if the state is __IAVF_REMOVE,
+> as we already went through iavf_shutdown().
 > 
-> > > > The patch below should result in ethtool reporting 2500baseT rather than
-> > > > 2500baseX, and that an=1 should now be an=0. Please try it, and dump the
-> > > > ethtool eth1 before asking for autoneg to be manually disabled, and also
-> > > > report the kernel messages.
+> Fixes: 974578017fc1 ("iavf: Add waiting so the port is initialized in remove")
+> Fixes: a8417330f8a5 ("iavf: Fix race condition between iavf_shutdown and iavf_remove")
+> Reported-by: Marius Cornea <mcornea@redhat.com>
+> Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
+> ---
+> v2: return instead of breaking the while (1) loop
+>     This avoids going through remove code twice and is how things worked
+>     before a8417330f8a5.
+
+Good catch. Indeed there was such a logic before that patch.
+
+Thanks,
+Michal
+
+Reviewed-by: Michal Kubiak <michal.kubiak@intel.com>
+
 > 
-> root@bpi-r3:~# ip link set eth1 up
-> [   91.624075] mtk_soc_eth 15100000.ethernet eth1: configuring for inband/2500base-x link mode
-> [   91.632485] mtk_soc_eth 15100000.ethernet eth1: major config 2500base-x
-> [   91.639094] mtk_soc_eth 15100000.ethernet eth1: phylink_mac_config: mode=inband/2500base-x/Unknown/Unknown/none adv=00,00000000,00008000,00006400 pause=00 link=0 an=0
-> root@bpi-r3:~# [   95.808983] mtk_soc_eth 15100000.ethernet eth1: Link is Up - Unknown/Unknown - flow control off
-> [   95.817706] IPv6: ADDRCONF(NETDEV_CHANGE): eth1: link becomes ready
->
-> root@bpi-r3:~# ethtool eth1
-> Settings for eth1:
->         Supported ports: [ FIBRE ]
->         Supported link modes:   2500baseT/Full
->         Supported pause frame use: Symmetric Receive-only
->         Supports auto-negotiation: No
->         Supported FEC modes: Not reported
->         Advertised link modes:  2500baseT/Full
->         Advertised pause frame use: Symmetric Receive-only
->         Advertised auto-negotiation: No
->         Advertised FEC modes: Not reported
->         Speed: Unknown!
->         Duplex: Unknown! (255)
->         Auto-negotiation: off
->         Port: FIBRE
->         PHYAD: 0
->         Transceiver: internal
->         Current message level: 0x000000ff (255)
->                                drv probe link timer ifdown ifup rx_err tx_err
->         Link detected: yes 
+>  drivers/net/ethernet/intel/iavf/iavf_main.c | 5 +++++
+>  1 file changed, 5 insertions(+)
 > 
-> root@bpi-r3:~# dmesg | grep -i 'sfp\|eth1'
-> [    0.000000] Linux version 6.3.0-rc1-bpi-r3-sfp13 (frank@frank-G5) (aarch64-linux-gnu-gcc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0, GNU ld (GNU Binutils for Ubuntu) 2.38) #2 SMP Tue Mar 143
-> [    1.658048] sfp sfp-1: Host maximum power 1.0W
-> [    1.663128] sfp sfp-2: Host maximum power 1.0W
-> [    1.812401] mtk_soc_eth 15100000.ethernet eth1: mediatek frame engine at 0xffffffc00af80000, irq 123
-> [    2.001796] sfp sfp-1: module OEM              SFP-2.5G-T       rev 1.0  sn SK2301110008     dc 230110
-> [    2.011307] mtk_soc_eth 15100000.ethernet eth1: optical SFP: interfaces=[mac=2-4,21-22, sfp=22]
-> [    2.020000] mtk_soc_eth 15100000.ethernet eth1: optical SFP: chosen 2500base-x interface
-> [    2.028080] mtk_soc_eth 15100000.ethernet eth1: requesting link mode inband/2500base-x with support 00,00000000,00008000,00006400
-> [   91.624075] mtk_soc_eth 15100000.ethernet eth1: configuring for inband/2500base-x link mode
-> [   91.632485] mtk_soc_eth 15100000.ethernet eth1: major config 2500base-x
-> [   91.639094] mtk_soc_eth 15100000.ethernet eth1: phylink_mac_config: mode=inband/2500base-x/Unknown/Unknown/none adv=00,00000000,00008000,00006400 pause=00 link=0 an=0
-> [   95.808983] mtk_soc_eth 15100000.ethernet eth1: Link is Up - Unknown/Unknown - flow control off
-> [   95.817706] IPv6: ADDRCONF(NETDEV_CHANGE): eth1: link becomes ready
+> diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+> index 3273aeb8fa67..ce7071e9af15 100644
+> --- a/drivers/net/ethernet/intel/iavf/iavf_main.c
+> +++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+> @@ -5066,6 +5066,11 @@ static void iavf_remove(struct pci_dev *pdev)
+>  			mutex_unlock(&adapter->crit_lock);
+>  			break;
+>  		}
+> +		/* Simply return if we already went through iavf_shutdown */
+> +		if (adapter->state == __IAVF_REMOVE) {
+> +			mutex_unlock(&adapter->crit_lock);
+> +			return;
+> +		}
+>  
+>  		mutex_unlock(&adapter->crit_lock);
+>  		usleep_range(500, 1000);
+> -- 
+> 2.39.1
 > 
-> so you can see the link-up comes directly after the interface up
-> 
-> does the ethtool-output look like expected? i see speed/duplex is set as supported/advertised but not active
-> 
->         Supported link modes:   2500baseT/Full
->         Advertised link modes:  2500baseT/Full
-> vs.
->         Speed: Unknown!
->         Duplex: Unknown! (255) 
-
-Yes, and I think that's reasonable given that the PHY is inaccessible,
-and therefore we have no way to know what the PHY is actually doing.
-
-> imho ETHTOOL_LINK_MODE_2500baseT_Full_BIT sets only the supported which intersected with the advertised from the other side maximum should be taken as actual mode...so this part seems not correctly working at the moment.
-
-... except we don't know what "the other side" is doing because we
-need to read that from the PHY in the SFP.
-
-> the "Supported ports: [ FIBRE ]" is also misleading for copper sfp, but imho all SFP are shown like this.
-
-... unless they have a PHY we can access.
-
-> full log if needed:
-> https://pastebin.com/6yWe4Kyi
-> 
-> next step:
-> is it possible to have pause for rate adaption (handling rx pause frames correctly)?
-
-That's certainly the next issue to sort out. I'll send a patch when I've
-sorted that out.
-
-Thanks!
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
