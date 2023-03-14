@@ -2,198 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BEAE6B8AD5
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 06:54:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C01336B8AF8
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 07:13:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229910AbjCNFy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 01:54:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52232 "EHLO
+        id S230131AbjCNGN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 02:13:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229807AbjCNFy0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 01:54:26 -0400
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D72AD8C822
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 22:54:22 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id c19so15627523qtn.13
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 22:54:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1678773262;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=cZUrcOEwApRsFF25slrbmDsKbhdNNu2L1mi9TI+ryy4=;
-        b=F37hpRYBwdfYrlsTtUAUMX2Zy2J+8I1jy2liucRyNHGHvGvpXQujLUWrPdvwOixeKj
-         n8//XY94bBsm1R052ih5K9lLmB9ypIXKS+CUJVvrbPXgBX+wL/LuhJMFcMKRE+yzZrXG
-         B95elN27gPHUf6+7Clk0PUfaeWkUOY9USrO0A=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678773262;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=cZUrcOEwApRsFF25slrbmDsKbhdNNu2L1mi9TI+ryy4=;
-        b=FabDnJjwrn2pAiRCQP3sbOr4sZVxtSvritWozI8phwUebuvNnMJGKwdOpLxmoLT3iv
-         b9aMrwwbuOqGlEuhXQSf2Kj3ZmMnexWIWQn8UZMXPhTEze8YIWf5yXEjDNt7B/Ln+zu+
-         2q6jy7qeIGoyufqh/7ThBsE6JhVNtbybLtv4GxR+xjRdy3SjbhgLfQ+ZJo8AllHDRoi6
-         8DOby7gJQy+gB6pF/rdk+X9Fwtaq/UeIEDA0OMnEkVU+envz3O+GCJ1mExRP3vLM9Vrh
-         a+321QegQSZzOdebBSLLzp15OSfGCJxfOaGitDUs9Uz8XS5XHi/5WdgPkHWV7QjfW2wD
-         jMlQ==
-X-Gm-Message-State: AO0yUKXaHNW1Cguqhma8pwDM5G+tQuAtMAyXJIO+nc7gAzzkgbemVdYv
-        TnvU0383UO0SKJBqStduML4VVg==
-X-Google-Smtp-Source: AK7set+VW1LaqfbGQnmsAVb8xqkicmPSmc61vsG1pDwfj1w6d9w3InZKLxPAzpvXf0uzNCgNP9/9sw==
-X-Received: by 2002:a05:622a:46:b0:3b8:6a20:675e with SMTP id y6-20020a05622a004600b003b86a20675emr33906851qtw.29.1678773261970;
-        Mon, 13 Mar 2023 22:54:21 -0700 (PDT)
-Received: from grundler-glapstation.lan ([70.134.62.80])
-        by smtp.gmail.com with ESMTPSA id z9-20020ac86b89000000b003b9bb59543fsm1195290qts.61.2023.03.13.22.54.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Mar 2023 22:54:21 -0700 (PDT)
-From:   Grant Grundler <grundler@chromium.org>
-To:     Oleksij Rempel <linux@rempel-privat.de>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Lukas Wunner <lukas@wunner.de>
-Cc:     Eizan Miyamoto <eizan@chromium.org>,
+        with ESMTP id S230152AbjCNGNW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 02:13:22 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD4B1C3;
+        Mon, 13 Mar 2023 23:13:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678774400; x=1710310400;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=lYU9/lOsDjrGWnrNFnc3eD+bZCqLaCoXFbUAdhwVlmw=;
+  b=DgzQPJ/tlWNjob1Tq2lPzE7fj9cWi9ac0V3I4YM9UJPRh2Z3x9LFasa4
+   dqMbvUMzx8860mFrqM1LDP7mMa8lN1aIRweluvbad8V9H15AVnBGj5HwH
+   1j7PxKR4yIu5zTGLLtOIDm0XpxYHMZgpXHlPwmOpUoSKDMSA8tHLUTZvY
+   a/8s6F1EMvfJcO8frlGEUmzleG52UaX+IT80MfiSl+b9lBnhVywIsMSUE
+   RArN/G5hsocc5OP73pPKytbhoMfq8Ul8NvkFQPhjE3Bzi+aRpQOuDYx0S
+   gKVZ//b0sYawou+snZAqGO07nlJPzXukFFLgwjTjRW+85FOusY4ADk1MT
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="334818367"
+X-IronPort-AV: E=Sophos;i="5.98,259,1673942400"; 
+   d="scan'208";a="334818367"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2023 23:12:50 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="681296678"
+X-IronPort-AV: E=Sophos;i="5.98,259,1673942400"; 
+   d="scan'208";a="681296678"
+Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2023 23:12:44 -0700
+Date:   Tue, 14 Mar 2023 07:12:35 +0100
+From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+To:     Shradha Gupta <shradhagupta@linux.microsoft.com>
+Cc:     linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Grant Grundler <grundler@chromium.org>,
-        Anton Lundin <glance@acc.umu.se>
-Subject: [PATCHv4 net] net: asix: fix modprobe "sysfs: cannot create duplicate filename"
-Date:   Mon, 13 Mar 2023 22:54:10 -0700
-Message-Id: <20230314055410.3329480-1-grundler@chromium.org>
-X-Mailer: git-send-email 2.40.0.rc1.284.g88254d51c5-goog
+        Paolo Abeni <pabeni@redhat.com>,
+        Ajay Sharma <sharmaajay@microsoft.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Long Li <longli@microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>
+Subject: Re: [PATCH] net: mana: Add new MANA VF performance counters for
+ easier troubleshooting
+Message-ID: <ZBAQU2qJg6kcud50@localhost.localdomain>
+References: <1678771810-21050-1-git-send-email-shradhagupta@linux.microsoft.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1678771810-21050-1-git-send-email-shradhagupta@linux.microsoft.com>
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"modprobe asix ; rmmod asix ; modprobe asix" fails with:
-   sysfs: cannot create duplicate filename \
-   	'/devices/virtual/mdio_bus/usb-003:004'
+On Mon, Mar 13, 2023 at 10:30:10PM -0700, Shradha Gupta wrote:
+> Extended performance counter stats in 'ethtool -S <interface>' output
+> for MANA VF to facilitate troubleshooting.
+> 
+> Tested-on: Ubuntu22
+> Signed-off-by: Shradha Gupta <shradhagupta@linux.microsoft.com>
+> ---
+>  drivers/net/ethernet/microsoft/mana/mana_en.c | 67 ++++++++++++++++++-
+>  .../ethernet/microsoft/mana/mana_ethtool.c    | 52 +++++++++++++-
+>  include/net/mana/mana.h                       | 18 +++++
+>  3 files changed, 133 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
+> index 6120f2b6684f..9762bdda6df1 100644
+> --- a/drivers/net/ethernet/microsoft/mana/mana_en.c
+> +++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
+> @@ -156,6 +156,8 @@ netdev_tx_t mana_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+>  	struct mana_txq *txq;
+>  	struct mana_cq *cq;
+>  	int err, len;
+> +	u16 ihs;
+> +	int hopbyhop = 0;
+RCT
 
-Issue was originally reported by Anton Lundin on 2022-06-22 (link below).
+>  
+>  	if (unlikely(!apc->port_is_up))
+>  		goto tx_drop;
+> @@ -166,6 +168,7 @@ netdev_tx_t mana_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+>  	txq = &apc->tx_qp[txq_idx].txq;
+>  	gdma_sq = txq->gdma_sq;
+>  	cq = &apc->tx_qp[txq_idx].tx_cq;
+> +	tx_stats = &txq->stats;
+>  
+>  	pkg.tx_oob.s_oob.vcq_num = cq->gdma_id;
+>  	pkg.tx_oob.s_oob.vsq_frame = txq->vsq_frame;
+> @@ -179,10 +182,17 @@ netdev_tx_t mana_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+>  
+>  	pkg.tx_oob.s_oob.pkt_fmt = pkt_fmt;
+>  
+> -	if (pkt_fmt == MANA_SHORT_PKT_FMT)
+> +	if (pkt_fmt == MANA_SHORT_PKT_FMT) {
+>  		pkg.wqe_req.inline_oob_size = sizeof(struct mana_tx_short_oob);
+> -	else
+> +		u64_stats_update_begin(&tx_stats->syncp);
+> +		tx_stats->short_pkt_fmt++;
+> +		u64_stats_update_end(&tx_stats->syncp);
+> +	} else {
+>  		pkg.wqe_req.inline_oob_size = sizeof(struct mana_tx_oob);
+> +		u64_stats_update_begin(&tx_stats->syncp);
+> +		tx_stats->long_pkt_fmt++;
+> +		u64_stats_update_end(&tx_stats->syncp);
+> +	}
+>  
+>  	pkg.wqe_req.inline_oob_data = &pkg.tx_oob;
+>  	pkg.wqe_req.flags = 0;
+> @@ -232,9 +242,37 @@ netdev_tx_t mana_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+>  						 &ipv6_hdr(skb)->daddr, 0,
+>  						 IPPROTO_TCP, 0);
+>  		}
+> +
+> +		if (skb->encapsulation) {
+> +			ihs = skb_inner_tcp_all_headers(skb);
+> +			u64_stats_update_begin(&tx_stats->syncp);
+> +			tx_stats->tso_inner_packets++;
+> +			tx_stats->tso_inner_bytes += skb->len - ihs;
+> +			u64_stats_update_end(&tx_stats->syncp);
+> +		} else {
+hopbyhop can be defined here
 
-Chrome OS team hit the same issue in Feb, 2023 when trying to find
-work arounds for other issues with AX88172 devices.
+> +			if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_L4) {
+> +				ihs = skb_transport_offset(skb) + sizeof(struct udphdr);
+> +			} else {
+> +				ihs = skb_tcp_all_headers(skb);
+> +				if (ipv6_has_hopopt_jumbo(skb)) {
+> +					hopbyhop = sizeof(struct hop_jumbo_hdr);
+> +					ihs -= sizeof(struct hop_jumbo_hdr);
+> +				}
+Maybe I missed sth, but it looks like this part of code can be removed.
+hopbyhop is only used to calculate tso_bytes. Instead of substract
+hopbyhop from ihs, and calculate tso_bytes as len - ihs - hopbyhop, You
+can remove hopbyhop and calculate tso_bytes like len - ihs.
 
-The use of devm_mdiobus_register() with usbnet devices results in the
-MDIO data being associated with the USB device. When the asix driver
-is unloaded, the USB device continues to exist and the corresponding
-"mdiobus_unregister()" is NOT called until the USB device is unplugged
-or unauthorized. So the next "modprobe asix" will fail because the MDIO
-phy sysfs attributes still exist.
+> +			}
+> +
+> +			u64_stats_update_begin(&tx_stats->syncp);
+> +			tx_stats->tso_packets++;
+> +			tx_stats->tso_bytes += skb->len - ihs - hopbyhop;
+> +			u64_stats_update_end(&tx_stats->syncp);
+> +		}
+> +
+>  
+[...]
 
-The 'easy' (from a design PoV) fix is to use the non-devm variants of
-mdiobus_* functions and explicitly manage this use in the asix_bind
-and asix_unbind function calls. I've not explored trying to fix usbnet
-initialization so devm_* stuff will work.
+> @@ -1341,11 +1394,17 @@ static void mana_poll_rx_cq(struct mana_cq *cq)
+>  {
+>  	struct gdma_comp *comp = cq->gdma_comp_buf;
+>  	struct mana_rxq *rxq = cq->rxq;
+> +	struct net_device *ndev;
+> +	struct mana_port_context *apc;
+RCT
+>  	int comp_read, i;
+>  
+> +	ndev = rxq->ndev;
+> +	apc = netdev_priv(ndev);
+maybe:
+apc = netdev_priv(rxq->ndev);
+> +
+>  	comp_read = mana_gd_poll_cq(cq->gdma_cq, comp, CQE_POLLING_BUFFER);
+>  	WARN_ON_ONCE(comp_read > CQE_POLLING_BUFFER);
+>  
+> +	apc->eth_stats.rx_cqes = comp_read;
+>  	rxq->xdp_flush = false;
+>  
+>  	for (i = 0; i < comp_read; i++) {
+> @@ -1357,6 +1416,8 @@ static void mana_poll_rx_cq(struct mana_cq *cq)
+>  			return;
+>  
+>  		mana_process_rx_cqe(rxq, cq, &comp[i]);
+> +
+> +		apc->eth_stats.rx_cqes--;
+>  	}
+>  
+>  	if (rxq->xdp_flush)
+>  
+[...]
 
-Fixes: e532a096be0e5 ("net: usb: asix: ax88772: add phylib support")
-Reported-by: Anton Lundin <glance@acc.umu.se>
-Link: https://lore.kernel.org/netdev/20220623063649.GD23685@pengutronix.de/T/
-Tested-by: Eizan Miyamoto <eizan@chromium.org>
-Signed-off-by: Grant Grundler <grundler@chromium.org>
-
----
- drivers/net/usb/asix_devices.c | 33 ++++++++++++++++++++++++++++-----
- 1 file changed, 28 insertions(+), 5 deletions(-)
-
-V4: add mdio_unregister to ax88172_bind() error handling paths
-
-V3: rebase against netdev/net.git
-    remove "TEST" prefix in subject line
-    added Link: tag for Reported-by tag
-
-V2: moved mdiobus_get_phy() call back into ax88772_init_phy()
-   (Lukas Wunner is entirely correct this patch is much easier
-   to backport without this patch hunk.)
-   Added "Fixes:" tag per request from Florian Fainelli
-
-diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-index 743cbf5d662c..b758010bab36 100644
---- a/drivers/net/usb/asix_devices.c
-+++ b/drivers/net/usb/asix_devices.c
-@@ -666,8 +666,9 @@ static int asix_resume(struct usb_interface *intf)
- static int ax88772_init_mdio(struct usbnet *dev)
- {
- 	struct asix_common_private *priv = dev->driver_priv;
-+	int ret;
- 
--	priv->mdio = devm_mdiobus_alloc(&dev->udev->dev);
-+	priv->mdio = mdiobus_alloc();
- 	if (!priv->mdio)
- 		return -ENOMEM;
- 
-@@ -679,7 +680,20 @@ static int ax88772_init_mdio(struct usbnet *dev)
- 	snprintf(priv->mdio->id, MII_BUS_ID_SIZE, "usb-%03d:%03d",
- 		 dev->udev->bus->busnum, dev->udev->devnum);
- 
--	return devm_mdiobus_register(&dev->udev->dev, priv->mdio);
-+	ret = mdiobus_register(priv->mdio);
-+	if (ret) {
-+		netdev_err(dev->net, "Could not register MDIO bus (err %d)\n", ret);
-+		mdiobus_free(priv->mdio);
-+		priv->mdio = NULL;
-+	}
-+
-+	return ret;
-+}
-+
-+static void ax88772_mdio_unregister(struct asix_common_private *priv)
-+{
-+	mdiobus_unregister(priv->mdio);
-+	mdiobus_free(priv->mdio);
- }
- 
- static int ax88772_init_phy(struct usbnet *dev)
-@@ -690,6 +704,7 @@ static int ax88772_init_phy(struct usbnet *dev)
- 	priv->phydev = mdiobus_get_phy(priv->mdio, priv->phy_addr);
- 	if (!priv->phydev) {
- 		netdev_err(dev->net, "Could not find PHY\n");
-+		ax88772_mdio_unregister(priv);
- 		return -ENODEV;
- 	}
- 
-@@ -896,16 +911,23 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
- 
- 	ret = ax88772_init_mdio(dev);
- 	if (ret)
--		return ret;
-+		goto mdio_err;
- 
- 	ret = ax88772_phylink_setup(dev);
- 	if (ret)
--		return ret;
-+		goto phylink_err;
- 
- 	ret = ax88772_init_phy(dev);
- 	if (ret)
--		phylink_destroy(priv->phylink);
-+		goto initphy_err;
- 
-+	return 0;
-+
-+initphy_err:
-+	phylink_destroy(priv->phylink);
-+phylink_err:
-+	ax88772_mdio_unregister(priv);
-+mdio_err:
- 	return ret;
- }
- 
-@@ -926,6 +948,7 @@ static void ax88772_unbind(struct usbnet *dev, struct usb_interface *intf)
- 	phylink_disconnect_phy(priv->phylink);
- 	rtnl_unlock();
- 	phylink_destroy(priv->phylink);
-+	ax88772_mdio_unregister(priv);
- 	asix_rx_fixup_common_free(dev->driver_priv);
- }
- 
--- 
-2.40.0.rc1.284.g88254d51c5-goog
-
+> -- 
+> 2.37.2
+> 
