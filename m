@@ -2,81 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD5EC6B8753
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 02:00:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 403466B8768
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 02:07:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229962AbjCNBAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 21:00:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38930 "EHLO
+        id S230055AbjCNBHZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 21:07:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbjCNBAT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 21:00:19 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 954F51117E;
-        Mon, 13 Mar 2023 18:00:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=y6fsAeAZisUsOyM9bq21nKdUzGuVcfPdezi6Gdsvp+Y=; b=fOVzAogDt3T/HacpWZZ6HE1vWu
-        jAjiKi7RNHNnADZ8lpo5gJmnxCUdocuklB81QexvrEheh9C9O3Tv7bMksMRuVhBS1SjQLecD6H9he
-        VPPaJO1yKphC28NLSZq/F8ZCtC6fmdHe/tnCMbwxyRLNHU3LRsbko2PM/+uIwaD35TA0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pbt0t-007FMJ-0v; Tue, 14 Mar 2023 01:59:39 +0100
-Date:   Tue, 14 Mar 2023 01:59:39 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Andrew Halaney <ahalaney@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, agross@kernel.org,
-        andersson@kernel.org, konrad.dybcio@linaro.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, vkoul@kernel.org,
-        bhupesh.sharma@linaro.org, mturquette@baylibre.com,
-        sboyd@kernel.org, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        mcoquelin.stm32@gmail.com, richardcochran@gmail.com,
-        linux@armlinux.org.uk, veekhee@apple.com,
-        tee.min.tan@linux.intel.com, mohammad.athari.ismail@intel.com,
-        jonathanh@nvidia.com, ruppala@nvidia.com, bmasney@redhat.com,
-        andrey.konovalov@linaro.org, linux-arm-msm@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-clk@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, ncai@quicinc.com,
-        jsuraj@qti.qualcomm.com, hisunil@quicinc.com
-Subject: Re: [PATCH net-next 08/11] net: stmmac: Add EMAC3 variant of dwmac4
-Message-ID: <9dc9eb28-43a9-4eca-b6de-302ce27388bf@lunn.ch>
-References: <20230313165620.128463-1-ahalaney@redhat.com>
- <20230313165620.128463-9-ahalaney@redhat.com>
+        with ESMTP id S230087AbjCNBHP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 21:07:15 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03FCF867F4;
+        Mon, 13 Mar 2023 18:07:15 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id rj10so3229644pjb.4;
+        Mon, 13 Mar 2023 18:07:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678756034;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Ez3+RDUCElUZ3KRWgoEdBjByADecatFijFRc/79Sbd8=;
+        b=Lh3Lk9QByLiTuLo0GbHbPZVn42HpHmiteaozRT0nJMQQVGLbaVAi2eMobpNaTsVZe3
+         d9wnBoP9JMuU9GxWhdjPqoUSXxnDkgp/BeURM/0bK5kzz2NA2OqQbq93aj9eujgNhQUW
+         1zDyp9awqbn0JCUk8fJYBTK5ZcwHenLWgaBllHCJmC0kDIDoZ/xcQNgrxnqnqsFvRQZR
+         vc7/r3P2wxDJ3gnqoKuRFxc1PmAKb9BNDUYQXH68gUp+IMDncgLXQwh4wKgiQVGPTFwA
+         022sJAaKT615iNoluKulophjUd6ijME5tFgc2HF2Bki2c9IPHtMfZNqssHTigsX9EImW
+         G1zA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678756034;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Ez3+RDUCElUZ3KRWgoEdBjByADecatFijFRc/79Sbd8=;
+        b=wAAAGzdga146BigToXlgd5i8eD3cXUnQm9I6IYKdNjZ8ZD5wZayB5jiHEaUutoaXzN
+         zo+jolzEGn+knT++UYmFPA4VitualO2zPVDc5xAkOrMNA+qCvmq9nIYJZ5wifNglmD6H
+         yENGQYkeYB41IMwupvjEns665jj8/52ltm2KHV/oNcLaPFQvgRcRj2KJIn6fp3kzSQNk
+         gX+I4PzqM2p8UbNcPME2jnxE2GtS1ZNRsgC9baF3GX9oBzoP3ZdXnVF/ucI/ox0tABMM
+         JQTrkyHbg2g74DHZS0DpWGad83H06c/UFZS7HTFK5hkTrnQTlncO1B9GWeEPk/J1yXCx
+         b3uA==
+X-Gm-Message-State: AO0yUKWa5yoYb74TiNyECLBBxEKbFybL4b0jQTfnZQuqDzzWYFmJaCBA
+        mlJ5l2Z0/Oe5aR3UIHckV55VAm92bgifju8nlGc=
+X-Google-Smtp-Source: AK7set+7Dne9RAO1VX9WwTYRe18fqrlT8ElHytfewhbt2jQXXfmgBIYK+Qko1oopb9SOpdgJb45wrlveKEPYLdrfn38=
+X-Received: by 2002:a17:902:f985:b0:19f:2802:dabb with SMTP id
+ ky5-20020a170902f98500b0019f2802dabbmr3287260plb.12.1678756034505; Mon, 13
+ Mar 2023 18:07:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230313165620.128463-9-ahalaney@redhat.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+References: <20230313090002.3308025-1-zyytlz.wz@163.com> <ZA8rDCw+mJmyETEx@localhost.localdomain>
+ <20230313143054.538565ac@kernel.org>
+In-Reply-To: <20230313143054.538565ac@kernel.org>
+From:   Zheng Hacker <hackerzheng666@gmail.com>
+Date:   Tue, 14 Mar 2023 09:07:02 +0800
+Message-ID: <CAJedcCwXhrkfVOHz-+N=qZxP465JJ0wSJG37ppOAFNfDt0ABqQ@mail.gmail.com>
+Subject: Re: [PATCH net v2] 9p/xen : Fix use after free bug in
+ xen_9pfs_front_remove due to race condition
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Zheng Wang <zyytlz.wz@163.com>, ericvh@gmail.com,
+        lucho@ionkov.net, asmadeus@codewreck.org, linux_oss@crudebyte.com,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, 1395428693sheep@gmail.com,
+        alex000young@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-> index 21aaa2730ac8..9e3d8e1202bd 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-> @@ -281,9 +281,8 @@ static int stmmac_mdio_read_c22(struct mii_bus *bus, int phyaddr, int phyreg)
->  	value |= (phyreg << priv->hw->mii.reg_shift) & priv->hw->mii.reg_mask;
->  	value |= (priv->clk_csr << priv->hw->mii.clk_csr_shift)
->  		& priv->hw->mii.clk_csr_mask;
-> -	if (priv->plat->has_gmac4) {
-> +	if (priv->plat->has_gmac4 || priv->plat->has_emac3)
->  		value |= MII_GMAC4_READ;
-> -	}
+Jakub Kicinski <kuba@kernel.org> =E4=BA=8E2023=E5=B9=B43=E6=9C=8814=E6=97=
+=A5=E5=91=A8=E4=BA=8C 05:30=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On Mon, 13 Mar 2023 14:54:20 +0100 Michal Swiatkowski wrote:
+> > > @@ -274,12 +274,17 @@ static const struct xenbus_device_id xen_9pfs_f=
+ront_ids[] =3D {
+> > >  static void xen_9pfs_front_free(struct xen_9pfs_front_priv *priv)
+> > >  {
+> > >     int i, j;
+> > > +   struct xen_9pfs_dataring *ring =3D NULL;
+> > Move it before int i, j to have RCT.
+> >
+> > >
+> > >     write_lock(&xen_9pfs_lock);
+> > >     list_del(&priv->list);
+> > >     write_unlock(&xen_9pfs_lock);
+> > >
+> > >     for (i =3D 0; i < priv->num_rings; i++) {
+> > > +           /*cancel work*/
+> > It isn't needed I think, the function cancel_work_sync() tells everythi=
+ng
+> > here.
+>
+> Note that 9p is more storage than networking, so this patch is likely
+> to go via a different tree than us.
 
-Removing the {} is correct in terms of the coding style, but it should
-be done as part of a separate patch.
+Sorry I got confused.
 
-	Andrew
+Best regards,
+Zheng
