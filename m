@@ -2,79 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F40F6B8933
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 04:55:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EEAAF6B8938
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 04:57:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229694AbjCNDzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 23:55:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56378 "EHLO
+        id S229516AbjCND5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 23:57:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbjCNDzV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 23:55:21 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2294D85B34;
-        Mon, 13 Mar 2023 20:55:20 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id l9-20020a17090a3f0900b0023d32684e7fso252994pjc.1;
-        Mon, 13 Mar 2023 20:55:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678766119;
-        h=in-reply-to:references:from:subject:cc:to:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=aeTTeF4k6L6TeCG6AxuNq6iKssutHs1AnHKDTyw2eOg=;
-        b=kmqUPvJFIyYFtm8CsuPHNQuvi5LL2hocLSgnNPHcm82gN8J6h+E4pA7XPQExigVyFV
-         e+bUxkZEIj06E9qqXAvIyAtAsI1mLuHGegxm2GaxpMbp15uCaeMhhIqBdZO4IMjOwbT2
-         fyDWhloYN6OCvNYWoOACwTYhpfddwqr0GcKgnK9nTtY7Iws70/8cff4/vFuuCsp/rCDM
-         IiRQaDRHDaHeHfgc1VpZngYLo5IsO59GyAZBcFDf68qo/1kq4Mb2xx2ynBGSJ1lgzhhh
-         AbXEYdk0CbfSoW4Pz71k26yyN7mSJu4YM5I2EkwQvsZEncTkjLaOKG9AuJJnr6N7VslT
-         8r6g==
+        with ESMTP id S229757AbjCND5L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 23:57:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA4287D81
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 20:56:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1678766181;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gUTGoKigOjF7lnPsnySj5O1n6jQabFHTwPAHfAEzD+g=;
+        b=G8iyA6zoIJk+7D5kiOqcAOXMLDnjtAq4BXcw9WZ9uXof6vemeot4h2kwJesHIV14DPA0Kz
+        dt0HJ6craUDU9OE/CWcTnr3fpXkMEQEjM7GrDR/3hFlQVSQ/IiZ8g5hv9avISpaIgHugQ5
+        XlDkNpw7ngTjgzghzIERC78xXURFeh8=
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com
+ [209.85.161.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-241-vtl4UAXGPlmccjFQFWc6jw-1; Mon, 13 Mar 2023 23:56:20 -0400
+X-MC-Unique: vtl4UAXGPlmccjFQFWc6jw-1
+Received: by mail-oo1-f71.google.com with SMTP id y9-20020a4acb89000000b0051760012060so3947653ooq.16
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 20:56:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678766119;
-        h=in-reply-to:references:from:subject:cc:to:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=aeTTeF4k6L6TeCG6AxuNq6iKssutHs1AnHKDTyw2eOg=;
-        b=78xuPC91NXy1UdMRnY9CgwwxE3OYrVz/9GVsu1s7oAgutWqnQqYrz5lYFIa38CMVSk
-         7rRqQL8Y7ARgVifZlHtp8fl4PFWJILOVEdTFBpBX39H8sBY8eUdaesYik/ET3dby0mBp
-         v70Cr1et2iSbBSTDMOZ9DOoxcjJIDrc+xkpPH/6wvQr44iHgNsXXgKMu2pjenWDI8itI
-         xLI2Dwc6wB/UaoSsXWBdarHYWVmcDWe86qWEvZJ6qXbZHlKCJool9p/mYqhfp1RhTXpT
-         Eul6AgAIKk4aiRuwMeug3aloJ0q1OJFzsBQQ+lDKVaWvizH4X5SK27OSuoAR02Junwrd
-         0VkQ==
-X-Gm-Message-State: AO0yUKVrUGuueNOW+El0zOJN/Chfrha4rS6hzvcQSik4hBXEeAyjQfrp
-        PXmpKM8K3LrMxyGFuOwi9nDQkRW0VslB9w==
-X-Google-Smtp-Source: AK7set+AeAGXFZ9GPl1j3lG47UBBvdEMKPOZGNfMjas2YdNXSzmV4NnO91i12EL7BAXwESiNlGhBfw==
-X-Received: by 2002:a17:902:b189:b0:19f:22b9:1e7 with SMTP id s9-20020a170902b18900b0019f22b901e7mr8643295plr.53.1678766119528;
-        Mon, 13 Mar 2023 20:55:19 -0700 (PDT)
-Received: from localhost ([2406:7400:61:629c:58fb:a2bd:8b99:bfe0])
-        by smtp.gmail.com with ESMTPSA id ka8-20020a170903334800b0019c61616f82sm568233plb.230.2023.03.13.20.55.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Mar 2023 20:55:18 -0700 (PDT)
-Mime-Version: 1.0
+        d=1e100.net; s=20210112; t=1678766179;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=gUTGoKigOjF7lnPsnySj5O1n6jQabFHTwPAHfAEzD+g=;
+        b=mV9/k0yruHjbitG0fFSPUCgZuNcyHF9aKj8EXkLt8T8zfV19NZzNHcQjopGyzsKiUk
+         a9tHgv64wV8Lb8BFC3i7mu6WLehnQs7wGoPQAFGVDYuu5aGiUAhWDVht4A7A/JjxZew4
+         8dxdOTjaNosNjTUjx0D2iy/CykCmjnlmurY7DSStJx0gKHZiPcxOxAI0dw7s8PO0CORs
+         4c09mRH/EEYV/OgWjrsJHcneafAG8m/362SQR3VoV1AVJK9qCFIZVtHEo1Rhm42hOoDQ
+         OhZlfU2qgccasIeSzBOKM5XTIF5+LcVFrYz4nksQgsbUyrFzd1Jinciy6nfsHnnqT8M4
+         KTPQ==
+X-Gm-Message-State: AO0yUKXrTr2l9TFVnkHGGD5k+Jop0YM3PVirg5+M29rASo45G1EwhPyu
+        JY1wU2Mulb1OF0IkNOCqrj7M4/fCUrGSxPvLlt7gDdCJtkea9ayDO0U8d2xLmANKXBvoGHfMbqk
+        f0DXQlg4Z26Plqmi0yNmHitw75VLr3XXu
+X-Received: by 2002:a9d:1984:0:b0:696:46dd:bec7 with SMTP id k4-20020a9d1984000000b0069646ddbec7mr491240otk.2.1678766179429;
+        Mon, 13 Mar 2023 20:56:19 -0700 (PDT)
+X-Google-Smtp-Source: AK7set/8cD2YJCW/GyAom9yPG1fRPOW6omllIrRCSG8zrwMHOV27MDaBDu6YXAj5Pwq1SwhCEPZrqYs4Ze4SH/NyHBo=
+X-Received: by 2002:a9d:1984:0:b0:696:46dd:bec7 with SMTP id
+ k4-20020a9d1984000000b0069646ddbec7mr491235otk.2.1678766179150; Mon, 13 Mar
+ 2023 20:56:19 -0700 (PDT)
+MIME-Version: 1.0
+References: <20230302113421.174582-1-sgarzare@redhat.com> <20230302113421.174582-4-sgarzare@redhat.com>
+In-Reply-To: <20230302113421.174582-4-sgarzare@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Tue, 14 Mar 2023 11:56:08 +0800
+Message-ID: <CACGkMEs6cW7LdpCdWQnX4Pif2gGOu=f3bjNeYQ6MVcdQe=X--Q@mail.gmail.com>
+Subject: Re: [PATCH v2 3/8] vringh: replace kmap_atomic() with kmap_local_page()
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org,
+        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
+        eperezma@redhat.com, netdev@vger.kernel.org, stefanha@redhat.com,
+        linux-kernel@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date:   Tue, 14 Mar 2023 09:25:13 +0530
-Message-Id: <CR5SX5ZYV2QT.29541CYEU8F8B@skynet-linux>
-To:     "Kalle Valo" <kvalo@kernel.org>
-Cc:     <loic.poulain@linaro.org>, <wcn36xx@lists.infradead.org>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <~postmarketos/upstreaming@lists.sr.ht>,
-        <linux-kernel@vger.kernel.org>,
-        "Vladimir Lypak" <vladimir.lypak@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>
-Subject: Re: [PATCH 1/1] net: wireless: ath: wcn36xx: add support for
- pronto-v3
-From:   "Sireesh Kodali" <sireeshkodali1@gmail.com>
-X-Mailer: aerc 0.14.0
-References: <20230311150647.22935-1-sireeshkodali1@gmail.com>
- <20230311150647.22935-2-sireeshkodali1@gmail.com>
- <87y1o1xknd.fsf@kernel.org>
-In-Reply-To: <87y1o1xknd.fsf@kernel.org>
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,34 +77,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon Mar 13, 2023 at 11:22 AM IST, Kalle Valo wrote:
-> Sireesh Kodali <sireeshkodali1@gmail.com> writes:
+On Thu, Mar 2, 2023 at 7:34=E2=80=AFPM Stefano Garzarella <sgarzare@redhat.=
+com> wrote:
 >
-> > From: Vladimir Lypak <vladimir.lypak@gmail.com>
-> >
-> > Pronto v3 has a different DXE address than prior Pronto versions. This
-> > patch changes the macro to return the correct register address based on
-> > the pronto version.
-> >
-> > Signed-off-by: Vladimir Lypak <vladimir.lypak@gmail.com>
-> > Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
-> > ---
-> >  drivers/net/wireless/ath/wcn36xx/dxe.c     | 23 +++++++++++-----------
-> >  drivers/net/wireless/ath/wcn36xx/dxe.h     |  4 ++--
-> >  drivers/net/wireless/ath/wcn36xx/main.c    |  1 +
-> >  drivers/net/wireless/ath/wcn36xx/wcn36xx.h |  1 +
-> >  4 files changed, 16 insertions(+), 13 deletions(-)
->
-> The title should be:
->
-> wifi: wcn36xx: add support for pronto-v3
->
-> I can fix that, no need to resend because of this.
->
-> --=20
-> https://patchwork.kernel.org/project/linux-wireless/list/
->
-> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpa=
-tches
+> kmap_atomic() is deprecated in favor of kmap_local_page().
 
-Thank you, I'll keep this in mind when submitting future patches
+It's better to mention the commit or code that introduces this.
+
+>
+> With kmap_local_page() the mappings are per thread, CPU local, can take
+> page-faults, and can be called from any context (including interrupts).
+> Furthermore, the tasks can be preempted and, when they are scheduled to
+> run again, the kernel virtual addresses are restored and still valid.
+>
+> kmap_atomic() is implemented like a kmap_local_page() which also disables
+> page-faults and preemption (the latter only for !PREEMPT_RT kernels,
+> otherwise it only disables migration).
+>
+> The code within the mappings/un-mappings in getu16_iotlb() and
+> putu16_iotlb() don't depend on the above-mentioned side effects of
+> kmap_atomic(),
+
+Note we used to use spinlock to protect simulators (at least until
+patch 7, so we probably need to re-order the patches at least) so I
+think this is only valid when:
+
+The vringh IOTLB helpers are not used in atomic context (e.g spinlock,
+interrupts).
+
+If yes, should we document this? (Or should we introduce a boolean to
+say whether an IOTLB variant can be used in an atomic context)?
+
+Thanks
+
+> so that mere replacements of the old API with the new one
+> is all that is required (i.e., there is no need to explicitly add calls
+> to pagefault_disable() and/or preempt_disable()).
+>
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> ---
+>
+> Notes:
+>     v2:
+>     - added this patch since checkpatch.pl complained about deprecation
+>       of kmap_atomic() touched by next patch
+>
+>  drivers/vhost/vringh.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+> index a1e27da54481..0ba3ef809e48 100644
+> --- a/drivers/vhost/vringh.c
+> +++ b/drivers/vhost/vringh.c
+> @@ -1220,10 +1220,10 @@ static inline int getu16_iotlb(const struct vring=
+h *vrh,
+>         if (ret < 0)
+>                 return ret;
+>
+> -       kaddr =3D kmap_atomic(iov.bv_page);
+> +       kaddr =3D kmap_local_page(iov.bv_page);
+>         from =3D kaddr + iov.bv_offset;
+>         *val =3D vringh16_to_cpu(vrh, READ_ONCE(*(__virtio16 *)from));
+> -       kunmap_atomic(kaddr);
+> +       kunmap_local(kaddr);
+>
+>         return 0;
+>  }
+> @@ -1241,10 +1241,10 @@ static inline int putu16_iotlb(const struct vring=
+h *vrh,
+>         if (ret < 0)
+>                 return ret;
+>
+> -       kaddr =3D kmap_atomic(iov.bv_page);
+> +       kaddr =3D kmap_local_page(iov.bv_page);
+>         to =3D kaddr + iov.bv_offset;
+>         WRITE_ONCE(*(__virtio16 *)to, cpu_to_vringh16(vrh, val));
+> -       kunmap_atomic(kaddr);
+> +       kunmap_local(kaddr);
+>
+>         return 0;
+>  }
+> --
+> 2.39.2
+>
+
