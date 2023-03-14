@@ -2,74 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 964336B9A30
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 16:46:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD8146B9A3B
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 16:47:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231522AbjCNPqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 11:46:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39804 "EHLO
+        id S231461AbjCNPra (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 11:47:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231592AbjCNPp6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 11:45:58 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A8785290D
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 08:45:29 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id h17so763347wrt.8
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 08:45:29 -0700 (PDT)
+        with ESMTP id S231437AbjCNPrP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 11:47:15 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBDABB1A73
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 08:46:42 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id ek18so32663827edb.6
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 08:46:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112; t=1678808724;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Hlyp7nrREyg/a0hHUvwNjxDQM8a9Yo9MGnyhTjJAXJ4=;
-        b=noeaJDguqKfIh08cy+5zlHvWFslWScBjda+n6hdS13WrqLSjWFT3TFB5MnvHfB3mfn
-         6aaiXE6S5ZgLmqEXXQqXS/OF4AI9JWdrdUQtzsZtSqHJwSrq4orjPHqnZAoEveGi97H1
-         iFDVwXz7PzUQ2EI564GoRaReRoTS/DYHJX8T7YNSqfWEps1Q8mc0RGj2kFQlc5uxYvTW
-         hWq4g8jWVdr8YBJdRobqGcbG/1QDdPhq1ujcfJ9Zi329cLV0oYOjpW6Xr+QJf2Dx+ilt
-         6uI/BLW9kKbXyxN3H8oxjrjhAxVL56BL6hgYq4CV/WBA8ex7ScCLbnjJ2TBqeZpafa8t
-         YL1g==
+        d=linaro.org; s=google; t=1678808783;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=F24AUykmoujwlu8bPOT15t+HLTs3ektTBSdrQH1BgNE=;
+        b=ijHfhSTXyeSBzyOnBwOobVBn6aXLUp9QNdlEdC0nv5pfH35PxfBcLhGAdrG6iyqL4/
+         nMy6dZH4OGdGWCFXiLgM/hO1vEZQaWRdG/mygie3WM1BuznKD7cE/XfCZMv5w4dwx3UN
+         vOdHtSZNCmJBfV6BywNYkd8RSGtIqi0frUGpfC2RS+1aTnsHl3wxuf5vk0aPnDJxgBF3
+         t7Fm5XG9Z12OeB559JsPajSoGiOmrhrI8G9Wz/kP5+gJ4X2np7DgoHvJ/0LmjN8xTuDE
+         32ZorLaQCP9vWjwJ4ovLLJF5+2QwaOWU3zhLwNlfUp0t4b9YtT+YXUGu0cQ2602vtBtd
+         +9tQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678808724;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Hlyp7nrREyg/a0hHUvwNjxDQM8a9Yo9MGnyhTjJAXJ4=;
-        b=UzMt+vSUK/yS0uv3Qe3qn63eJadtfs/IBjHqBjOezm4hz70nvIpwFIOJFbkOxdiUvn
-         eVeGTsA0FrE964nL5wX9hSqSguoQKnnYH5VFbPS38A4gh8gBL8ajebbW+FZDryFjuJ0/
-         nSeDnI6Zr2yGVqtrJM0qOAkfQf7HwEGL54HwrOq+GPDvwmJf+xvhfZ0l54u5TKBUvo7L
-         +w8izkv5xC2O8uAvA1nDdjquiZE5KgvBrABqG6qUMkeh3KGuJD/wZPJyPP7jXbTl/6Q7
-         TLWcj2aE+W/0t9vUctRKj5a3NgC9MNZcfZx/QTwJJZMGW7zoKuLjnAXVXvJvzhm868oU
-         7O5Q==
-X-Gm-Message-State: AO0yUKUqmIwTllM1zx0dxQbDCq1tpq5lkGNojqfeR4vcfbjqpcdxmhCF
-        CSKAueVGJqGPxjy+ap4Messvtw==
-X-Google-Smtp-Source: AK7set9kOQSCt1nILgCoCuDKCZW+ZbwUmc5Jc2ebbeLxsp+0MErUKCOweY8716ROMkP894uRtiidSA==
-X-Received: by 2002:a5d:408e:0:b0:2c9:b9bf:e20c with SMTP id o14-20020a5d408e000000b002c9b9bfe20cmr11747197wrp.2.1678808723716;
-        Tue, 14 Mar 2023 08:45:23 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id m6-20020adff386000000b002c5493a17efsm2345919wro.25.2023.03.14.08.45.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Mar 2023 08:45:23 -0700 (PDT)
-Date:   Tue, 14 Mar 2023 16:45:22 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vadim Fedorenko <vadfed@meta.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vadim Fedorenko <vadim.fedorenko@linux.dev>, poros@redhat.com,
-        mschmidt@redhat.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        Milena Olech <milena.olech@intel.com>,
-        Michal Michalik <michal.michalik@intel.com>
-Subject: Re: [PATCH RFC v6 2/6] dpll: Add DPLL framework base functions
-Message-ID: <ZBCWkhRaUztjMapa@nanopsycho>
-References: <20230312022807.278528-1-vadfed@meta.com>
- <20230312022807.278528-3-vadfed@meta.com>
+        d=1e100.net; s=20210112; t=1678808783;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=F24AUykmoujwlu8bPOT15t+HLTs3ektTBSdrQH1BgNE=;
+        b=nibmQDB+C0mhXsJVxG0Lld41TijBwc/TsIKg2bodWUJVvlS9Qm+xC2Jy6qr5w+CYGW
+         TPnzFtNGxqo1a01/SdLMmVzL6FZTpRQhukiLSBwjr4EVXN6M43dVR0Ys73LvAtB18qKA
+         fEM5OjscBK+jRO9TWwuJVbb3iVIGoHo6lXMNNfPlj+ZytS1GpuZ77oe03hrKeEHJJFmM
+         kLJUaQ/zENGsb25TLmQNwGmcEn9qTLkjqBXwDHa9c/EC9uhLKdHBcycAiPttFAZ7b2UE
+         TwcxWtv7wjubL9c0UipYiKnD5RemkDPz0tyWjLVWLQfmMFJy9EJCLR7hrPlUlf+POJec
+         63hg==
+X-Gm-Message-State: AO0yUKU9Mf9x9c23ft31mqm1DqHGxxlBg3nJ8PCV/FTeIAQtqKKv6oaz
+        5sjPkmTG0qgxLJ0w8IzEp2DHXA==
+X-Google-Smtp-Source: AK7set/huwM8TSsgEcLmJAmj81UQJX00g4nQcBlm5bflAXgoDF1dcRvB6W3X97H7hFulTkAnNip3pQ==
+X-Received: by 2002:a17:906:12d8:b0:923:6558:84fb with SMTP id l24-20020a17090612d800b00923655884fbmr2667694ejb.3.1678808783068;
+        Tue, 14 Mar 2023 08:46:23 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:59be:4b3f:994b:e78c? ([2a02:810d:15c0:828:59be:4b3f:994b:e78c])
+        by smtp.gmail.com with ESMTPSA id r6-20020a17090638c600b00925d50190a3sm1298371ejd.80.2023.03.14.08.46.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Mar 2023 08:46:22 -0700 (PDT)
+Message-ID: <c2773010-2367-ba20-e0fa-2e060cb95128@linaro.org>
+Date:   Tue, 14 Mar 2023 16:46:21 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230312022807.278528-3-vadfed@meta.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH net-next V3] dt-bindings: net: ethernet-controller: Add
+ ptp-hardware-clock
+Content-Language: en-US
+To:     Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org, richardcochran@gmail.com
+Cc:     krzysztof.kozlowski+dt@linaro.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yangbo.lu@nxp.com, radhey.shyam.pandey@amd.com,
+        anirudha.sarangi@amd.com, harini.katakam@amd.com, git@amd.com
+References: <20230308054408.1353992-1-sarath.babu.naidu.gaddam@amd.com>
+ <20230308054408.1353992-2-sarath.babu.naidu.gaddam@amd.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230308054408.1353992-2-sarath.babu.naidu.gaddam@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,207 +80,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, Mar 12, 2023 at 03:28:03AM CET, vadfed@meta.com wrote:
-
-[...]
-
-
->diff --git a/MAINTAINERS b/MAINTAINERS
->index edd3d562beee..0222b19af545 100644
->--- a/MAINTAINERS
->+++ b/MAINTAINERS
->@@ -6289,6 +6289,15 @@ F:	Documentation/networking/device_drivers/ethernet/freescale/dpaa2/switch-drive
-> F:	drivers/net/ethernet/freescale/dpaa2/dpaa2-switch*
-> F:	drivers/net/ethernet/freescale/dpaa2/dpsw*
+On 08/03/2023 06:44, Sarath Babu Naidu Gaddam wrote:
+> There is currently no standard property to pass PTP device index
+> information to ethernet driver when they are independent.
 > 
->+DPLL CLOCK SUBSYSTEM
+> ptp-hardware-clock property will contain phandle to PTP clock node.
+> 
+> Its a generic (optional) property name to link to PTP phandle to
+> Ethernet node. Any future or current ethernet drivers that need
+> a reference to the PHC used on their system can simply use this
+> generic property name instead of using custom property
+> implementation in their device tree nodes."
+> 
+> Signed-off-by: Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>
+> Acked-by: Richard Cochran <richardcochran@gmail.com>
+> ---
+> 
+> Freescale driver currently has this implementation but it will be
+> good to agree on a generic (optional) property name to link to PTP
+> phandle to Ethernet node. In future or any current ethernet driver
+> wants to use this method of reading the PHC index,they can simply use
+> this generic name and point their own PTP clock node, instead of
+> creating separate property names in each ethernet driver DT node.
 
-Why "clock"? You don't mention "clock" anywhere else.
+Again, I would like to see an user of this. I asked about this last time
+and nothing was provided.
 
-[...]
+So basically you send the same thing hoping this time will be accepted...
 
-
->diff --git a/drivers/dpll/dpll_core.c b/drivers/dpll/dpll_core.c
->new file mode 100644
->index 000000000000..3fc151e16751
->--- /dev/null
->+++ b/drivers/dpll/dpll_core.c
->@@ -0,0 +1,835 @@
->+// SPDX-License-Identifier: GPL-2.0
->+/*
->+ *  dpll_core.c - Generic DPLL Management class support.
-
-Why "class" ?
-
-[...]
-
-
->+static int
->+dpll_msg_add_pin_freq(struct sk_buff *msg, const struct dpll_pin *pin,
->+		      struct netlink_ext_ack *extack, bool dump_any_freq)
->+{
->+	enum dpll_pin_freq_supp fs;
->+	struct dpll_pin_ref *ref;
->+	unsigned long i;
->+	u32 freq;
->+
->+	xa_for_each((struct xarray *)&pin->dpll_refs, i, ref) {
->+		if (ref && ref->ops && ref->dpll)
->+			break;
->+	}
->+	if (!ref || !ref->ops || !ref->dpll)
->+		return -ENODEV;
->+	if (!ref->ops->frequency_get)
->+		return -EOPNOTSUPP;
->+	if (ref->ops->frequency_get(pin, ref->dpll, &freq, extack))
->+		return -EFAULT;
->+	if (nla_put_u32(msg, DPLL_A_PIN_FREQUENCY, freq))
->+		return -EMSGSIZE;
->+	if (!dump_any_freq)
->+		return 0;
->+	for (fs = DPLL_PIN_FREQ_SUPP_UNSPEC + 1;
->+	     fs <= DPLL_PIN_FREQ_SUPP_MAX; fs++) {
->+		if (test_bit(fs, &pin->prop.freq_supported)) {
->+			if (nla_put_u32(msg, DPLL_A_PIN_FREQUENCY_SUPPORTED,
->+			    dpll_pin_freq_value[fs]))
-
-This is odd. As I suggested in the yaml patch, better to treat all
-supported frequencies the same, no matter if it is range or not. The you
-don't need this weird bitfield.
-
-You can have a macro to help driver to assemble array of supported
-frequencies and ranges.
-
-
->+				return -EMSGSIZE;
->+		}
->+	}
->+	if (pin->prop.any_freq_min && pin->prop.any_freq_max) {
->+		if (nla_put_u32(msg, DPLL_A_PIN_ANY_FREQUENCY_MIN,
->+				pin->prop.any_freq_min))
->+			return -EMSGSIZE;
->+		if (nla_put_u32(msg, DPLL_A_PIN_ANY_FREQUENCY_MAX,
->+				pin->prop.any_freq_max))
->+			return -EMSGSIZE;
->+	}
->+
->+	return 0;
->+}
->+
-
-[...]
+> 
+> axiethernet driver uses this method when PTP support is integrated.
+> 
+> Example:
+>     fman0: fman@1a00000 {
+>         ptp-hardware-clock = <&ptp_timer0>;
+>     }
+> 
+>     ptp_timer0: ptp-timer@1afe000 {
+>         compatible = "fsl,fman-ptp-timer";
+>         reg = <0x0 0x1afe000 0x0 0x1000>;
+>     }
+> 
+> DT information:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/arm64/boot/dts/freescale/qoriq-fman3-0.dtsi#n23
+> 
+> Freescale driver:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c#n407
+> 
+> Changes in V3:
+> 1) Updated commit description.
+> 2) Add Acked-by: Richard Cochran.
+> 
+> Changes in V2:
+> 1) Changed the ptimer-handle to ptp-hardware-clock based on
+>    Richard Cochran's comment.
+> 2) Updated commit description.
+> ---
+>  .../devicetree/bindings/net/ethernet-controller.yaml         | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> index 00be387984ac..a97ab25b07a5 100644
+> --- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> +++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> @@ -161,6 +161,11 @@ properties:
+>        - auto
+>        - in-band-status
+>  
+> +  ptp-hardware-clock:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description:
+> +      Specifies a reference to a node representing a IEEE1588 timer.
 
 
->+static int
->+dpll_cmd_pin_on_dpll_get(struct sk_buff *msg, struct dpll_pin *pin,
->+			 struct dpll_device *dpll,
->+			 struct netlink_ext_ack *extack)
->+{
->+	struct dpll_pin_ref *ref;
->+	int ret;
->+
->+	if (nla_put_u32(msg, DPLL_A_PIN_IDX, pin->dev_driver_id))
->+		return -EMSGSIZE;
->+	if (nla_put_string(msg, DPLL_A_PIN_DESCRIPTION, pin->prop.description))
->+		return -EMSGSIZE;
->+	if (nla_put_u8(msg, DPLL_A_PIN_TYPE, pin->prop.type))
->+		return -EMSGSIZE;
->+	if (nla_put_u32(msg, DPLL_A_PIN_DPLL_CAPS, pin->prop.capabilities))
->+		return -EMSGSIZE;
->+	ret = dpll_msg_add_pin_direction(msg, pin, extack);
->+	if (ret)
->+		return ret;
->+	ret = dpll_msg_add_pin_freq(msg, pin, extack, true);
->+	if (ret && ret != -EOPNOTSUPP)
->+		return ret;
->+	ref = dpll_xa_ref_dpll_find(&pin->dpll_refs, dpll);
->+	if (!ref)
+https://lore.kernel.org/all/cfbde0da-9939-e976-52c1-88577de7d4cb@linaro.org/
 
-How exactly this can happen? Looks to me like only in case of a bug.
-WARN_ON() perhaps (put directly into dpll_xa_ref_dpll_find()?
+This is a friendly reminder during the review process.
 
+It seems my previous comments were not fully addressed. Maybe my
+feedback got lost between the quotes, maybe you just forgot to apply it.
+Please go back to the previous discussion and either implement all
+requested changes or keep discussing them.
 
->+		return -EFAULT;
->+	ret = dpll_msg_add_pin_prio(msg, pin, ref, extack);
->+	if (ret && ret != -EOPNOTSUPP)
->+		return ret;
->+	ret = dpll_msg_add_pin_on_dpll_state(msg, pin, ref, extack);
->+	if (ret && ret != -EOPNOTSUPP)
->+		return ret;
->+	ret = dpll_msg_add_pin_parents(msg, pin, extack);
->+	if (ret)
->+		return ret;
->+	if (pin->rclk_dev_name)
+Thank you.
 
-Use && and single if
+Best regards,
+Krzysztof
 
-
->+		if (nla_put_string(msg, DPLL_A_PIN_RCLK_DEVICE,
->+				   pin->rclk_dev_name))
->+			return -EMSGSIZE;
->+
->+	return 0;
->+}
->+
-
-[...]
-
-
->+static int
->+dpll_pin_freq_set(struct dpll_pin *pin, struct nlattr *a,
->+		  struct netlink_ext_ack *extack)
->+{
->+	u32 freq = nla_get_u32(a);
->+	struct dpll_pin_ref *ref;
->+	unsigned long i;
->+	int ret;
->+
->+	if (!dpll_pin_is_freq_supported(pin, freq))
->+		return -EINVAL;
->+
->+	xa_for_each(&pin->dpll_refs, i, ref) {
->+		ret = ref->ops->frequency_set(pin, ref->dpll, freq, extack);
->+		if (ret)
->+			return -EFAULT;
-
-return what the op returns: ret
-
-
->+		dpll_pin_notify(ref->dpll, pin, DPLL_A_PIN_FREQUENCY);
->+	}
->+
->+	return 0;
->+}
->+
-
-[...]
-
-
->+static int
->+dpll_pin_direction_set(struct dpll_pin *pin, struct nlattr *a,
->+		       struct netlink_ext_ack *extack)
->+{
->+	enum dpll_pin_direction direction = nla_get_u8(a);
->+	struct dpll_pin_ref *ref;
->+	unsigned long i;
->+
->+	if (!(DPLL_PIN_CAPS_DIRECTION_CAN_CHANGE & pin->prop.capabilities))
->+		return -EOPNOTSUPP;
->+
->+	xa_for_each(&pin->dpll_refs, i, ref) {
->+		if (ref->ops->direction_set(pin, ref->dpll, direction, extack))
-
-ret = ..
-if (ret)
-	return ret;
-
-Please use this pattern in other ops call code as well.
-
-
->+			return -EFAULT;
->+		dpll_pin_notify(ref->dpll, pin, DPLL_A_PIN_DIRECTION);
->+	}
->+
->+	return 0;
-
-[...]
