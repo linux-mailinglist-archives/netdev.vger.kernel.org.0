@@ -2,171 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 26BE96B9A29
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 16:45:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A84BF6B9A2B
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 16:45:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231233AbjCNPpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 11:45:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35508 "EHLO
+        id S229854AbjCNPpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 11:45:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231259AbjCNPpc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 11:45:32 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 464D53B67B;
-        Tue, 14 Mar 2023 08:45:00 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id da10so63917383edb.3;
-        Tue, 14 Mar 2023 08:45:00 -0700 (PDT)
+        with ESMTP id S231437AbjCNPpi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 11:45:38 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9412B19F26
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 08:45:09 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id fd5so29913198edb.7
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 08:45:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678808698;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=eKXDqlgRlxDBpfBSUg+NALui/8xB4e6ou/BhNO7mLI4=;
-        b=IAzLxnAp6XszDIaOhMc3QPxTqF85nNzGKqy1tkwbOUs9FdXHZECjQhBSHD/wu/SMCO
-         XEGhPvZbIAK7G898j0na7C8AlqoqrOFXDjW7wbFe3aHu0+EecYHkrQuLeVQcoQz6JMos
-         JD4cCmgQTg0nVK/iRrKwFJfUPMhXlM/TXjNk5A7tWpSobltqv2xDJxUg/5H7xhQTLqAH
-         C3fBqWtfEHgUZvW5t3PJ0O48977uryrB1CN57tYG30Eg983bLlEZpZKUnMRePHn4i0qn
-         riZDYiVaA64QTH4kuawKv1uGH53tMe2peloWMAwl9C2EpPu6WMsjjNm9pqtOm0NR8sot
-         h/4Q==
+        d=linaro.org; s=google; t=1678808708;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=9SCxm8iOPdeAsY0TXKkmz+2L6YqtA1AyHrADOlfOy2M=;
+        b=MMo1OJO3T9Nigf+1XIH5iFNEn34rcy5D7wJEjCFOHC0ELhrtCGc1gCr5H0WcvRV2SV
+         4VIFJIorbtD+zIdzgVpvL2gxAIsYEpFrObnIPjET/KGvx8opBDVvaze248ARPx8WXynr
+         HjL/KAjUHXMop4VvxUAK08t0piegvCbRoQ//nwYHz4sXv9f2nxffibebOYMmU+yIwO5u
+         occqSWuo6Pks4aJ6YD+exboTAcqFw/BUnMe/nQwPMR3ka3GuA0kJYJf08aSNquzbPw7x
+         WNpbyfEFxUHpQXKQynNQJSHn6OHMsGPRHsrQ6AbXkx5iFA12MZAKm4HkbpdJXRrtSxVQ
+         cF1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678808698;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=eKXDqlgRlxDBpfBSUg+NALui/8xB4e6ou/BhNO7mLI4=;
-        b=KMxIbI1MTe0ofO45/EdC+N1B4BPvC54qNhlpxVO7Fj+VQ/MBuZSlDlOR59YxKFn17E
-         isAFOC/U7Pq3Tu96MXhnTBDjhsn7thuzvu859DkfZrnUrkspuAYNZ++AeQYeVVKzo1rN
-         oKpwVC773hhkRaLIDBkPIcvz2ZgYVEovRRYRb6ADzqiVRGcJ1Y2WGzxzsctlciBJLTx8
-         Y7v6XINtbehM73Xrr6c6IAxl9aIJivzrCJM1qzDRdUP1EMmG3Phd9jN62onzUo2Yx/3e
-         OVbBya0OBBqiyO+A/0LYyAmruZz48sANzsC6/9qKJTvR59ZLcqAf8dh1cUkpodbpnxcv
-         bKyQ==
-X-Gm-Message-State: AO0yUKVpfhQ0FHXVkc1IGp4O3jzSMKs5xRn8czekn9Sq7+zcFVlrz7Mr
-        98Lh2YWtkJE5OUSDk3+AOP1TOOXi2JDLRZZA5kY=
-X-Google-Smtp-Source: AK7set9q7zAwL8U3or4cXTpOyuJtTD98rXetlwgFWoer8FKPE8NTLIcMS9zdJoPbs8aex72ekWe7OJDq0ibIvIyYO6Q=
-X-Received: by 2002:a17:906:518:b0:8dd:70a:3a76 with SMTP id
- j24-20020a170906051800b008dd070a3a76mr1491582eja.11.1678808697803; Tue, 14
- Mar 2023 08:44:57 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1678808708;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=9SCxm8iOPdeAsY0TXKkmz+2L6YqtA1AyHrADOlfOy2M=;
+        b=e3pSY06Ov8noKhRvJSeukuWsmNjy1BzTbV4TuhHBUokVxUwA+fbmATei6KMndn6I99
+         3YCUIx30A9H5CILs9GSh421LZhaVvVeC+auZMdxK6MmEBwG0aJxVzgzmFvs5df1YiZQh
+         3V8URXyP1CtEaBX6Bq2M9SUIvIHqTXGIHPgtO21+CeA05wwv9UicMyaJ0ZX7ngBOOc0W
+         /RTCuPVN6eSeHrqmwG7c2dbdYsTs0xjs44ld0ancc0fbkMZlgsiwYP+TB1+iJ60qcJrN
+         Kf5frnzd6pQbOdaoI8q83OWuIm9nYnidwsvATqLfgMldc6QfFtT2ufOHy66F/3KBYeBJ
+         Oplg==
+X-Gm-Message-State: AO0yUKX+hUGQmdoJLatZXwq5N0LD6HClxyT8xmkRMtGIVM6H3Xnz24UY
+        8LjJNH3YxyAqvnicHdhXxo2/5Q==
+X-Google-Smtp-Source: AK7set8h0VXGHjuQQFT+Mle8JiJQKMLwlt57Og4xS6JoJpZR63ktbj9TcT7GX03JVYWtZRtR9FLqag==
+X-Received: by 2002:a17:907:1608:b0:92b:a511:c19e with SMTP id hb8-20020a170907160800b0092ba511c19emr3656998ejc.34.1678808707877;
+        Tue, 14 Mar 2023 08:45:07 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:59be:4b3f:994b:e78c? ([2a02:810d:15c0:828:59be:4b3f:994b:e78c])
+        by smtp.gmail.com with ESMTPSA id w23-20020a50d797000000b004fadc041e13sm1221690edi.42.2023.03.14.08.45.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Mar 2023 08:45:07 -0700 (PDT)
+Message-ID: <1ee7386b-f42d-a182-f42d-c1f628fb4dda@linaro.org>
+Date:   Tue, 14 Mar 2023 16:45:06 +0100
 MIME-Version: 1.0
-References: <20230314030532.9238-1-kerneljasonxing@gmail.com>
- <20230314030532.9238-2-kerneljasonxing@gmail.com> <CANn89iKP7GVxZ0HYcPQq5ryC+rtwyymZuHuvza_SoCOJeADzGw@mail.gmail.com>
-In-Reply-To: <CANn89iKP7GVxZ0HYcPQq5ryC+rtwyymZuHuvza_SoCOJeADzGw@mail.gmail.com>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Tue, 14 Mar 2023 23:44:21 +0800
-Message-ID: <CAL+tcoANe4FMSCvTH46ToPqMsEUSwwKMhdT+z_hR7hEE0FsL7g@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 1/2] net-sysfs: display two backlog queue len separately
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, stephen@networkplumber.org,
-        simon.horman@corigine.com, sinquersw@gmail.com,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jason Xing <kernelxing@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH net-next V3] dt-bindings: net: ethernet-controller: Add
+ ptp-hardware-clock
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        richardcochran@gmail.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yangbo.lu@nxp.com, radhey.shyam.pandey@amd.com,
+        anirudha.sarangi@amd.com, harini.katakam@amd.com, git@amd.com
+References: <20230308054408.1353992-1-sarath.babu.naidu.gaddam@amd.com>
+ <20230308054408.1353992-2-sarath.babu.naidu.gaddam@amd.com>
+ <20230313153532.2ed45ddf@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230313153532.2ed45ddf@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 14, 2023 at 10:59=E2=80=AFPM Eric Dumazet <edumazet@google.com>=
- wrote:
->
-> On Mon, Mar 13, 2023 at 8:06=E2=80=AFPM Jason Xing <kerneljasonxing@gmail=
-.com> wrote:
-> >
-> > From: Jason Xing <kernelxing@tencent.com>
-> >
-> > Sometimes we need to know which one of backlog queue can be exactly
-> > long enough to cause some latency when debugging this part is needed.
-> > Thus, we can then separate the display of both.
-> >
-> > Signed-off-by: Jason Xing <kernelxing@tencent.com>
-> > ---
-> > v2: keep the total len of backlog queues untouched as Eric said
-> > Link: https://lore.kernel.org/lkml/20230311151756.83302-1-kerneljasonxi=
-ng@gmail.com/
-> > ---
-> >  net/core/net-procfs.c | 20 ++++++++++++++++----
-> >  1 file changed, 16 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/net/core/net-procfs.c b/net/core/net-procfs.c
-> > index 1ec23bf8b05c..2809b663e78d 100644
-> > --- a/net/core/net-procfs.c
-> > +++ b/net/core/net-procfs.c
-> > @@ -115,10 +115,19 @@ static int dev_seq_show(struct seq_file *seq, voi=
-d *v)
-> >         return 0;
-> >  }
-> >
-> > +static u32 softnet_input_pkt_queue_len(struct softnet_data *sd)
-> > +{
-> > +       return skb_queue_len_lockless(&sd->input_pkt_queue);
-> > +}
-> > +
-> > +static u32 softnet_process_queue_len(struct softnet_data *sd)
-> > +{
-> > +       return skb_queue_len_lockless(&sd->process_queue);
-> > +}
-> > +
-> >  static u32 softnet_backlog_len(struct softnet_data *sd)
-> >  {
-> > -       return skb_queue_len_lockless(&sd->input_pkt_queue) +
-> > -              skb_queue_len_lockless(&sd->process_queue);
-> > +       return softnet_input_pkt_queue_len(sd) + softnet_process_queue_=
-len(sd);
->
-[...]
-> Reading these variables twice might lead to inconsistency that can
-> easily be avoided.
->
-> I would suggest you cache the values,
->
-> u32 len1 =3D softnet_input_pkt_queue_len(sd);
-> u32 len2 =3D softnet_process_queue_len(sd);
+On 13/03/2023 23:35, Jakub Kicinski wrote:
+> On Wed, 8 Mar 2023 11:14:08 +0530 Sarath Babu Naidu Gaddam wrote:
+>> There is currently no standard property to pass PTP device index
+>> information to ethernet driver when they are independent.
+>>
+>> ptp-hardware-clock property will contain phandle to PTP clock node.
+>>
+>> Its a generic (optional) property name to link to PTP phandle to
+>> Ethernet node. Any future or current ethernet drivers that need
+>> a reference to the PHC used on their system can simply use this
+>> generic property name instead of using custom property
+>> implementation in their device tree nodes."
+>>
+>> Signed-off-by: Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>
+>> Acked-by: Richard Cochran <richardcochran@gmail.com>
+> 
+> Rob, Krzysztof, any thoughts on this one?
+> Looks like the v2 discussion was a bit inconclusive.
 
-Agreed. Thank you, Eric. I should have realized that.
+Anyway this did not implement changes I requested, so NAK.
 
-Also, the 2/2 patch which is all about the time_/budget_squeeze should
-avoid such inconsistency, I think.
+Best regards,
+Krzysztof
 
-Jason
->
->
->
-> >  }
-> >
-> >  static struct softnet_data *softnet_get_online(loff_t *pos)
-> > @@ -169,12 +178,15 @@ static int softnet_seq_show(struct seq_file *seq,=
- void *v)
-> >          * mapping the data a specific CPU
-> >          */
-> >         seq_printf(seq,
-> > -                  "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %=
-08x %08x %08x\n",
-> > +                  "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %=
-08x %08x %08x "
-> > +                  "%08x %08x\n",
-> >                    sd->processed, sd->dropped, sd->time_squeeze, 0,
-> >                    0, 0, 0, 0, /* was fastroute */
-> >                    0,   /* was cpu_collision */
-> >                    sd->received_rps, flow_limit_count,
-> > -                  softnet_backlog_len(sd), (int)seq->index);
-> > +                  softnet_backlog_len(sd),     /* keep it untouched */
->                     len1 + len2.
->
-> > +                  (int)seq->index,
-> > +                  softnet_input_pkt_queue_len(sd), softnet_process_que=
-ue_len(sd));
->                len1,  len2);
->
-> >         return 0;
-> >  }
-> >
-> > --
-> > 2.37.3
-> >
