@@ -2,102 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0AFC6B9AE6
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 17:17:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 895BB6B9B38
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 17:22:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230406AbjCNQRR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 12:17:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44870 "EHLO
+        id S230043AbjCNQWG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 12:22:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230420AbjCNQRO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 12:17:14 -0400
-Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F35C7302F
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 09:16:58 -0700 (PDT)
-Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-53d277c1834so314139917b3.10
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 09:16:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1678810617;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5J/HDqKu4x54nv7V1xWs/DNuc3ZtDPtjPjGMkyb6YM0=;
-        b=A3/xG2qDXNRDu5xVjOGoUxKbZsMgz3AASithsT+fEOd5CCVyU30fI5J7WmOCQxIGes
-         JvILmA9THRagiO21Qxegke4/xLrQJqV+0bUhN1gX2YDsJF1ddh/DTkLN0IxjYap13oYX
-         /ODFQkN0MFaYM7r8aVsEEOn25+cgzuNyRqxB5HL/LJH4KK43bgnW3a9SR2CX7Q5JecBb
-         v57yf0wJ38nR/v0v7H/JAETJwcY1AxzkflZG2xTe8I2Z1q9W9j/SJ+XBcU/Z1xlO1Y9Y
-         pGz1f2g5Vn9ARgepbjEBL6GbkcH67Q1PRkszjF0maHXrztRx58MlEN8vWYvvR7FW1e/u
-         2kZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678810617;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=5J/HDqKu4x54nv7V1xWs/DNuc3ZtDPtjPjGMkyb6YM0=;
-        b=UhvqbGmiRwpbf6aCARVYoopXUnPCoRrsZYGeFTpd1bPlytj3kol/9k2jkmDVl8HZMU
-         2ND6Qzh08Bj8dMK6OSjJQ2UdA5+WGWgJBbVMvU0xxpUhbFnfe1p7L/c9owolqBQd7rHi
-         HIQnBnv24xn/cWBn0cKGgOgb1RyEfe97LqGSIjXrgKZuRE7l8kbv9YIvxxNZVaPXOJok
-         NXJ2/3kBYPkrsz13pdBJc21DCJ7WITRaWtZkxy9tDyI/BCfY2wlEzMQ6wB2LkfCJLTGb
-         6jv3P1H5QhCwDTOztFh9MbdZE77qPE0NRJsQLmRsHPdmld+JHktPEWu51P1DiVwBSdKX
-         VnmQ==
-X-Gm-Message-State: AO0yUKWkkPMFCIepyA+f9MvAWBQy8Ye7ZYXa0mpDPecyrkB9AkPTpjvx
-        7LWEvOTOx48OSdhKWTbCihBGWkApA4nKxHYO/71KuquQsrBzrCkj4/oKWw==
-X-Google-Smtp-Source: AK7set9WI2x9mfXYk3HVzdAmtZRKqahfF0S6wlzD7IIXlSZvosJpx/noS2+E7xVI99kBJ5eBZzHlMDobdGdKliZHMG4=
-X-Received: by 2002:a81:b245:0:b0:544:6828:3c09 with SMTP id
- q66-20020a81b245000000b0054468283c09mr1313187ywh.0.1678810616965; Tue, 14 Mar
- 2023 09:16:56 -0700 (PDT)
+        with ESMTP id S229974AbjCNQWD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 12:22:03 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 777B7D535;
+        Tue, 14 Mar 2023 09:21:16 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 3F4771F8B4;
+        Tue, 14 Mar 2023 16:20:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1678810811; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=YMm8wGU9lKPlT+0A0cGn5WagEyZwDalHzp2AUlTmDSc=;
+        b=apwyjtcp/EVS9dM6ody3LL2t8knoB8nIEkBvA1pxqiwOzz/rW7kYmGzKTPhl6qX+N60bfc
+        09kxa5qPRbE7T+TegyInkr0K+RoQXwJHbs8O7989KUl6LHWBfiqoYciRCyA0l76BK4A2TM
+        FlyoVXbV21z0S2oLgnsWPb6tlTHCnL8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1678810811;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=YMm8wGU9lKPlT+0A0cGn5WagEyZwDalHzp2AUlTmDSc=;
+        b=tsgGseOXY4Gd4cEIMivm3EcJCLye24yO236m81+SJPybZDJP79Q5z92hu2ZEUvoNIGPYM7
+        TOBcwBkuYF19m3BA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 25FBE13A26;
+        Tue, 14 Mar 2023 16:20:11 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id I35UCLueEGS9YAAAMHmgww
+        (envelope-from <hare@suse.de>); Tue, 14 Mar 2023 16:20:11 +0000
+Message-ID: <bc73fcf1-d679-ec43-8235-b6342f78c1ba@suse.de>
+Date:   Tue, 14 Mar 2023 17:20:10 +0100
 MIME-Version: 1.0
-References: <CAL87dS0sSsKQOcf22gcHuHu7PjG_j1uiOx-AfRKdT7rznVfJ6Q@mail.gmail.com>
- <20230310213804.26304-1-kuniyu@amazon.com> <CAL87dS3Brkkbi-j-_W3LYORWJ+VOXockpiBwNZQ84rWk+o8SXw@mail.gmail.com>
- <CANn89iK4+SoBG3QwvumauH+X8GOxWZyd8S7YC_bFC-3AW8H-aA@mail.gmail.com> <CAL87dS1ZCNaX6F+NGNm=RTFNJ0pE7zfceX2YCJc_N-K8cMPefQ@mail.gmail.com>
-In-Reply-To: <CAL87dS1ZCNaX6F+NGNm=RTFNJ0pE7zfceX2YCJc_N-K8cMPefQ@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 14 Mar 2023 09:16:46 -0700
-Message-ID: <CANn89iJiBbu_n8t4tweu_56-h0hY8CQHUDPHnsm6q0eUfMs8hw@mail.gmail.com>
-Subject: Re: [ISSUE]soft lockup in __inet_lookup_established() function which
- one sock exist in two hash buckets(tcp_hashinfo.ehash)
-To:     mingkun bian <bianmingkun@gmail.com>
-Cc:     Kuniyuki Iwashima <kuniyu@amazon.com>, kerneljasonxing@gmail.com,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        URIBL_BLOCKED,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [RFC 0/9] Make iscsid-kernel communications namespace-aware
+To:     Lee Duncan <leeman.duncan@gmail.com>, linux-scsi@vger.kernel.org,
+        open-iscsi@googlegroups.com, netdev@vger.kernel.org
+Cc:     Lee Duncan <lduncan@suse.com>
+References: <cover.1675876731.git.lduncan@suse.com>
+Content-Language: en-US
+From:   Hannes Reinecke <hare@suse.de>
+In-Reply-To: <cover.1675876731.git.lduncan@suse.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 14, 2023 at 9:03=E2=80=AFAM mingkun bian <bianmingkun@gmail.com=
-> wrote:
->
-> Hi,
->     I find a patch about tw sock, and we encountered a similar
-> problem(my problem maybe the same "sock reuse" issue).
->
-> https://patchwork.ozlabs.org/project/netdev/patch/20181220232856.1496-1-e=
-dumazet@google.com/
->
->     I have some doubts about this patch, why does a freed tw sock(I
-> think "sk refcnts is 0" indicate that the tw sock have deleted the
-> twsk timer) can fires twsk timer after a minute later?
->
-> 1. First something iterating over sockets finds already freed tw socket:
-> refcount_t: increment on 0; use-after-free.
-> WARNING: CPU: 2 PID: 2738 at lib/refcount.c:153 refcount_inc+0x26/0x30
->
-> 2. then a minute later twsk timer fires and hits two bad refcnts
-> for this freed socket:
-> refcount_t: decrement hit 0; leaking memory.
-> WARNING: CPU: 31 PID: 0 at lib/refcount.c:228 refcount_dec+0x2e/0x40
->
+On 2/8/23 18:40, Lee Duncan wrote:
+> From: Lee Duncan <lduncan@suse.com>
+> 
+> This is a request for comment on a set of patches that
+> modify the kernel iSCSI initiator communications so that
+> they are namespace-aware. The goal is to allow multiple
+> iSCSI daemon (iscsid) to run at once as long as they
+> are in separate namespaces, and so that iscsid can
+> run in containers.
+> 
+> Comments and suggestions are more than welcome. I do not
+> expect that this code is production-ready yet, and
+> networking isn't my strongest suit (yet).
+> 
+> These patches were originally posted in 2015 by Chris
+> Leech. There were some issues at the time about how
+> to handle namespaces going away. I hope to address
+> any issues raised with this patchset and then
+> to merge these changes upstream to address working
+> in working in containers.
+> 
+> My contribution thus far has been to update these patches
+> to work with the current upstream kernel.
+> 
+> Chris Leech/Lee Duncan (9):
+>    iscsi: create per-net iscsi netlink kernel sockets
+>    iscsi: associate endpoints with a host
+>    iscsi: sysfs filtering by network namespace
+>    iscsi: make all iSCSI netlink multicast namespace aware
+>    iscsi: set netns for iscsi_tcp hosts
+>    iscsi: check net namespace for all iscsi lookup
+>    iscsi: convert flashnode devices from bus to class
+>    iscsi: rename iscsi_bus_flash_* to iscsi_flash_*
+>    iscsi: filter flashnode sysfs by net namespace
+> 
+>   drivers/infiniband/ulp/iser/iscsi_iser.c |   7 +-
+>   drivers/scsi/be2iscsi/be_iscsi.c         |   6 +-
+>   drivers/scsi/bnx2i/bnx2i_iscsi.c         |   6 +-
+>   drivers/scsi/cxgbi/libcxgbi.c            |   6 +-
+>   drivers/scsi/iscsi_tcp.c                 |   7 +
+>   drivers/scsi/qedi/qedi_iscsi.c           |   6 +-
+>   drivers/scsi/qla4xxx/ql4_os.c            |  64 +--
+>   drivers/scsi/scsi_transport_iscsi.c      | 625 ++++++++++++++++-------
+>   include/scsi/scsi_transport_iscsi.h      |  63 ++-
+>   9 files changed, 537 insertions(+), 253 deletions(-)
+> 
+Awesome work!
 
-I would advise you to contact your vendor.
+Thanks for this!
 
-This list is for upstream/stable kernels only.
+Comments to follow on the individual patches.
 
-We do not want to investigate bugs that were fixed years ago.
+Cheers,
+
+Hannes
