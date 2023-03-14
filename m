@@ -2,74 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AEF006B8929
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 04:49:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F40F6B8933
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 04:55:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229674AbjCNDtg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Mar 2023 23:49:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48274 "EHLO
+        id S229694AbjCNDzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Mar 2023 23:55:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbjCNDte (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 23:49:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E40CE6042C
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 20:48:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678765726;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/ptwZll8h87dgHJIgfhW5kVetp/8YFoTfo6N7J2gOEM=;
-        b=fiPObVDvB1HVf/MpxmO3VIxVH6x99CgprdksVMm5QHXthGriIQY+7HUWsUcqhQpl4yv03a
-        9F4rDIg2J8ERaD/0BSD8+MgujtgPEEhlbLgOH7+I0ce20CkQYCN862FHNU0X8ON2lQ2pSZ
-        HoNNlsXuyVXXbOV1cZNULIyUBQW5rTU=
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
- [209.85.161.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-221-ZcUeYg0WMFO5dyeZgafj_Q-1; Mon, 13 Mar 2023 23:48:44 -0400
-X-MC-Unique: ZcUeYg0WMFO5dyeZgafj_Q-1
-Received: by mail-oo1-f70.google.com with SMTP id c9-20020a4a4f09000000b005178610a793so3966320oob.3
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 20:48:44 -0700 (PDT)
+        with ESMTP id S229473AbjCNDzV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Mar 2023 23:55:21 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2294D85B34;
+        Mon, 13 Mar 2023 20:55:20 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id l9-20020a17090a3f0900b0023d32684e7fso252994pjc.1;
+        Mon, 13 Mar 2023 20:55:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678766119;
+        h=in-reply-to:references:from:subject:cc:to:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=aeTTeF4k6L6TeCG6AxuNq6iKssutHs1AnHKDTyw2eOg=;
+        b=kmqUPvJFIyYFtm8CsuPHNQuvi5LL2hocLSgnNPHcm82gN8J6h+E4pA7XPQExigVyFV
+         e+bUxkZEIj06E9qqXAvIyAtAsI1mLuHGegxm2GaxpMbp15uCaeMhhIqBdZO4IMjOwbT2
+         fyDWhloYN6OCvNYWoOACwTYhpfddwqr0GcKgnK9nTtY7Iws70/8cff4/vFuuCsp/rCDM
+         IiRQaDRHDaHeHfgc1VpZngYLo5IsO59GyAZBcFDf68qo/1kq4Mb2xx2ynBGSJ1lgzhhh
+         AbXEYdk0CbfSoW4Pz71k26yyN7mSJu4YM5I2EkwQvsZEncTkjLaOKG9AuJJnr6N7VslT
+         8r6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678765724;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=/ptwZll8h87dgHJIgfhW5kVetp/8YFoTfo6N7J2gOEM=;
-        b=K7X7f3GMsQNwrgl+S9u1xIv1a1bIhMYcsGSAwRiDyNJga4BQE4jZfMFYnJ1w1rAEa9
-         kKilgnHdoUu0rnec5F3rQd9JXsxfqIU5dH7JiKWs/UEEmv2MXKz6lPH6NcH1fg2DAjb/
-         9wTTMBk4KF3V3GtDjaqv8dspvHiuvBT/mjhZZDFGMMcHlaxpUK74R3bmhPl8g30G1hOX
-         llvzI3NomTssARUDr1sqDvuhXr0L8L/g/zLtwVlBvmk8tAkBalgMDM8tiA59V2rS8xca
-         vAERXqx3VxfUUZTM/DiLSut2WpG+0mdtmTeD6eTczFd+SLrKvuuEvMRmSFQrvV68th1A
-         ohjg==
-X-Gm-Message-State: AO0yUKW+hwnqvhmQsX+iVOKyi3LsGWsHckpd+GP93RJw/9LlYqCXXYoN
-        TcFO0H9P/8Wvzwv+coqYFht8debPj3oBgsDUd6B2WwVqRUQnjhRw0Jvp4v1bqyM10R93Fz/FRmy
-        vmiZbpmDrXlB7IifwTenPb+y4ROLIaAOU
-X-Received: by 2002:a05:6870:1110:b0:17a:adbe:2ba4 with SMTP id 16-20020a056870111000b0017aadbe2ba4mr117865oaf.9.1678765724090;
-        Mon, 13 Mar 2023 20:48:44 -0700 (PDT)
-X-Google-Smtp-Source: AK7set8/3QKP0un3qOoea6zpjo8vUIQsfQbqXMn5cSBIhnA44wMHNQck4apXmRGrPe4GAOAB9DE3FgX6b6IEjtSp9QQ=
-X-Received: by 2002:a05:6870:1110:b0:17a:adbe:2ba4 with SMTP id
- 16-20020a056870111000b0017aadbe2ba4mr117853oaf.9.1678765723868; Mon, 13 Mar
- 2023 20:48:43 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230302113421.174582-1-sgarzare@redhat.com> <20230302113421.174582-3-sgarzare@redhat.com>
-In-Reply-To: <20230302113421.174582-3-sgarzare@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Tue, 14 Mar 2023 11:48:33 +0800
-Message-ID: <CACGkMEttgd82xOxV8WLdSFdfhRLZn68tSaV4APSDh8qXxf4OEw@mail.gmail.com>
-Subject: Re: [PATCH v2 2/8] vhost-vdpa: use bind_mm/unbind_mm device callbacks
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
-        eperezma@redhat.com, netdev@vger.kernel.org, stefanha@redhat.com,
-        linux-kernel@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        d=1e100.net; s=20210112; t=1678766119;
+        h=in-reply-to:references:from:subject:cc:to:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=aeTTeF4k6L6TeCG6AxuNq6iKssutHs1AnHKDTyw2eOg=;
+        b=78xuPC91NXy1UdMRnY9CgwwxE3OYrVz/9GVsu1s7oAgutWqnQqYrz5lYFIa38CMVSk
+         7rRqQL8Y7ARgVifZlHtp8fl4PFWJILOVEdTFBpBX39H8sBY8eUdaesYik/ET3dby0mBp
+         v70Cr1et2iSbBSTDMOZ9DOoxcjJIDrc+xkpPH/6wvQr44iHgNsXXgKMu2pjenWDI8itI
+         xLI2Dwc6wB/UaoSsXWBdarHYWVmcDWe86qWEvZJ6qXbZHlKCJool9p/mYqhfp1RhTXpT
+         Eul6AgAIKk4aiRuwMeug3aloJ0q1OJFzsBQQ+lDKVaWvizH4X5SK27OSuoAR02Junwrd
+         0VkQ==
+X-Gm-Message-State: AO0yUKVrUGuueNOW+El0zOJN/Chfrha4rS6hzvcQSik4hBXEeAyjQfrp
+        PXmpKM8K3LrMxyGFuOwi9nDQkRW0VslB9w==
+X-Google-Smtp-Source: AK7set+AeAGXFZ9GPl1j3lG47UBBvdEMKPOZGNfMjas2YdNXSzmV4NnO91i12EL7BAXwESiNlGhBfw==
+X-Received: by 2002:a17:902:b189:b0:19f:22b9:1e7 with SMTP id s9-20020a170902b18900b0019f22b901e7mr8643295plr.53.1678766119528;
+        Mon, 13 Mar 2023 20:55:19 -0700 (PDT)
+Received: from localhost ([2406:7400:61:629c:58fb:a2bd:8b99:bfe0])
+        by smtp.gmail.com with ESMTPSA id ka8-20020a170903334800b0019c61616f82sm568233plb.230.2023.03.13.20.55.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Mar 2023 20:55:18 -0700 (PDT)
+Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+Content-Type: text/plain; charset=UTF-8
+Date:   Tue, 14 Mar 2023 09:25:13 +0530
+Message-Id: <CR5SX5ZYV2QT.29541CYEU8F8B@skynet-linux>
+To:     "Kalle Valo" <kvalo@kernel.org>
+Cc:     <loic.poulain@linaro.org>, <wcn36xx@lists.infradead.org>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <~postmarketos/upstreaming@lists.sr.ht>,
+        <linux-kernel@vger.kernel.org>,
+        "Vladimir Lypak" <vladimir.lypak@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>
+Subject: Re: [PATCH 1/1] net: wireless: ath: wcn36xx: add support for
+ pronto-v3
+From:   "Sireesh Kodali" <sireeshkodali1@gmail.com>
+X-Mailer: aerc 0.14.0
+References: <20230311150647.22935-1-sireeshkodali1@gmail.com>
+ <20230311150647.22935-2-sireeshkodali1@gmail.com>
+ <87y1o1xknd.fsf@kernel.org>
+In-Reply-To: <87y1o1xknd.fsf@kernel.org>
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,94 +82,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 2, 2023 at 7:34=E2=80=AFPM Stefano Garzarella <sgarzare@redhat.=
-com> wrote:
+On Mon Mar 13, 2023 at 11:22 AM IST, Kalle Valo wrote:
+> Sireesh Kodali <sireeshkodali1@gmail.com> writes:
 >
-> When the user call VHOST_SET_OWNER ioctl and the vDPA device
-> has `use_va` set to true, let's call the bind_mm callback.
-> In this way we can bind the device to the user address space
-> and directly use the user VA.
+> > From: Vladimir Lypak <vladimir.lypak@gmail.com>
+> >
+> > Pronto v3 has a different DXE address than prior Pronto versions. This
+> > patch changes the macro to return the correct register address based on
+> > the pronto version.
+> >
+> > Signed-off-by: Vladimir Lypak <vladimir.lypak@gmail.com>
+> > Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
+> > ---
+> >  drivers/net/wireless/ath/wcn36xx/dxe.c     | 23 +++++++++++-----------
+> >  drivers/net/wireless/ath/wcn36xx/dxe.h     |  4 ++--
+> >  drivers/net/wireless/ath/wcn36xx/main.c    |  1 +
+> >  drivers/net/wireless/ath/wcn36xx/wcn36xx.h |  1 +
+> >  4 files changed, 16 insertions(+), 13 deletions(-)
 >
-> The unbind_mm callback is called during the release after
-> stopping the device.
+> The title should be:
 >
-> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> ---
+> wifi: wcn36xx: add support for pronto-v3
 >
-> Notes:
->     v2:
->     - call the new unbind_mm callback during the release [Jason]
->     - avoid to call bind_mm callback after the reset, since the device
->       is not detaching it now during the reset
+> I can fix that, no need to resend because of this.
 >
->  drivers/vhost/vdpa.c | 30 ++++++++++++++++++++++++++++++
->  1 file changed, 30 insertions(+)
+> --=20
+> https://patchwork.kernel.org/project/linux-wireless/list/
 >
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index dc12dbd5b43b..1ab89fccd825 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -219,6 +219,28 @@ static int vhost_vdpa_reset(struct vhost_vdpa *v)
->         return vdpa_reset(vdpa);
->  }
->
-> +static long vhost_vdpa_bind_mm(struct vhost_vdpa *v)
-> +{
-> +       struct vdpa_device *vdpa =3D v->vdpa;
-> +       const struct vdpa_config_ops *ops =3D vdpa->config;
-> +
-> +       if (!vdpa->use_va || !ops->bind_mm)
-> +               return 0;
-> +
-> +       return ops->bind_mm(vdpa, v->vdev.mm);
-> +}
-> +
-> +static void vhost_vdpa_unbind_mm(struct vhost_vdpa *v)
-> +{
-> +       struct vdpa_device *vdpa =3D v->vdpa;
-> +       const struct vdpa_config_ops *ops =3D vdpa->config;
-> +
-> +       if (!vdpa->use_va || !ops->unbind_mm)
-> +               return;
-> +
-> +       ops->unbind_mm(vdpa);
-> +}
-> +
->  static long vhost_vdpa_get_device_id(struct vhost_vdpa *v, u8 __user *ar=
-gp)
->  {
->         struct vdpa_device *vdpa =3D v->vdpa;
-> @@ -711,6 +733,13 @@ static long vhost_vdpa_unlocked_ioctl(struct file *f=
-ilep,
->                 break;
->         default:
->                 r =3D vhost_dev_ioctl(&v->vdev, cmd, argp);
-> +               if (!r && cmd =3D=3D VHOST_SET_OWNER) {
-> +                       r =3D vhost_vdpa_bind_mm(v);
-> +                       if (r) {
-> +                               vhost_dev_reset_owner(&v->vdev, NULL);
-> +                               break;
-> +                       }
-> +               }
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpa=
+tches
 
-Nit: is it better to have a new condition/switch branch instead of
-putting them under default? (as what vring_ioctl did).
-
-Thanks
-
->                 if (r =3D=3D -ENOIOCTLCMD)
->                         r =3D vhost_vdpa_vring_ioctl(v, cmd, argp);
->                 break;
-> @@ -1285,6 +1314,7 @@ static int vhost_vdpa_release(struct inode *inode, =
-struct file *filep)
->         vhost_vdpa_clean_irq(v);
->         vhost_vdpa_reset(v);
->         vhost_dev_stop(&v->vdev);
-> +       vhost_vdpa_unbind_mm(v);
->         vhost_vdpa_free_domain(v);
->         vhost_vdpa_config_put(v);
->         vhost_vdpa_cleanup(v);
-> --
-> 2.39.2
->
-
+Thank you, I'll keep this in mind when submitting future patches
