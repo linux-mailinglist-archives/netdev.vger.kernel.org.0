@@ -2,210 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 96C446B9B79
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 17:30:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA5DB6B9B77
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 17:29:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229698AbjCNQ37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 12:29:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44458 "EHLO
+        id S229494AbjCNQ36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 12:29:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230083AbjCNQ3g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 12:29:36 -0400
-Received: from andre.telenet-ops.be (andre.telenet-ops.be [IPv6:2a02:1800:120:4::f00:15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA771E1E1
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 09:29:31 -0700 (PDT)
-Received: from ramsan.of.borg ([84.195.187.55])
-        by andre.telenet-ops.be with bizsmtp
-        id YGVU2900C1C8whw01GVUy1; Tue, 14 Mar 2023 17:29:28 +0100
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtp (Exim 4.95)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1pc7W6-00CBb7-3J;
-        Tue, 14 Mar 2023 17:29:27 +0100
-Received: from geert by rox.of.borg with local (Exim 4.95)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1pc7Wh-00BzlG-FX;
-        Tue, 14 Mar 2023 17:29:27 +0100
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v3] can: rcar_canfd: Improve error messages
+        with ESMTP id S230117AbjCNQ3c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 12:29:32 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A61587686;
+        Tue, 14 Mar 2023 09:29:27 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 58F34219FF;
+        Tue, 14 Mar 2023 16:29:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1678811366; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AOXs8HMvcdU3nxYO1lc5nB+xUvOimCpEaWjS7uF8Y3g=;
+        b=1/QYBdJEBoPsOa4Ti/d2D4/xufy8a5g0DTHkUPP1hur6lLZfluwcjO09sLHfYBvdITnGo7
+        4aIVIB6GM+4H5FA783SOqL4fhCJBiRkuyZZTYzvdrSH6skWPRZpI8FYdKcbmKxuf+bd45x
+        IK4voxBzsk3BEkjkEfb8HxQD6EYRlk8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1678811366;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AOXs8HMvcdU3nxYO1lc5nB+xUvOimCpEaWjS7uF8Y3g=;
+        b=ufcTA+AXdJBXkhB3tCGTe8Z5uc0ZBHifUjCSQHHCE9KFSl3o70mjDXZdttEwFFtkYvBzHO
+        I1RaLUzaR75qPKDg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 379F113A26;
+        Tue, 14 Mar 2023 16:29:26 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id XPHjDOagEGRqZQAAMHmgww
+        (envelope-from <hare@suse.de>); Tue, 14 Mar 2023 16:29:26 +0000
+Message-ID: <82eb95ac-2dca-7a7a-116a-2771c4551bab@suse.de>
 Date:   Tue, 14 Mar 2023 17:29:25 +0100
-Message-Id: <70d430248415a3304573df4faec19f6a3135db28.1678811267.git.geert+renesas@glider.be>
-X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [RFC PATCH 5/9] iscsi: set netns for iscsi_tcp hosts
+Content-Language: en-US
+To:     Lee Duncan <leeman.duncan@gmail.com>, linux-scsi@vger.kernel.org,
+        open-iscsi@googlegroups.com, netdev@vger.kernel.org
+Cc:     Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>
+References: <cover.1675876731.git.lduncan@suse.com>
+ <566c527d12f6ed56eeb40952fef7431a0ccdc78f.1675876735.git.lduncan@suse.com>
+From:   Hannes Reinecke <hare@suse.de>
+In-Reply-To: <566c527d12f6ed56eeb40952fef7431a0ccdc78f.1675876735.git.lduncan@suse.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Improve printed error messages:
-  - Replace numerical error codes by mnemotechnic error codes, to
-    improve the user experience in case of errors,
-  - Drop parentheses around printed numbers, cfr.
-    Documentation/process/coding-style.rst,
-  - Drop printing of an error message in case of out-of-memory, as the
-    core memory allocation code already takes care of this.
+On 2/8/23 18:40, Lee Duncan wrote:
+> From: Lee Duncan <lduncan@suse.com>
+> 
+> This lets iscsi_tcp operate in multiple namespaces.  It uses current
+> during session creation to find the net namespace, but it might be
+> better to manage to pass it along from the iscsi netlink socket.
+> 
+And indeed, I'd rather use the namespace from the iscsi netlink socket.
+If you use the namespace from session creation you'd better hope that
+this function is not called from a workqueue ...
 
-Suggested-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
-v3:
-  - Add missing SoB,
 
-v2:
-  - This is v2 of "[PATCH] can: rcar_canfd: Print mnemotechnic error
-    codes".  I haven't added any tags given on v1, as half of the
-    printed message changed.
+> Signed-off-by: Chris Leech <cleech@redhat.com>
+> Signed-off-by: Lee Duncan <lduncan@suse.com>
+> ---
+>   drivers/scsi/iscsi_tcp.c            | 7 +++++++
+>   drivers/scsi/scsi_transport_iscsi.c | 7 ++++++-
+>   include/scsi/scsi_transport_iscsi.h | 1 +
+>   3 files changed, 14 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/scsi/iscsi_tcp.c b/drivers/scsi/iscsi_tcp.c
+> index 0454d94e8cf0..22e7a5c93627 100644
+> --- a/drivers/scsi/iscsi_tcp.c
+> +++ b/drivers/scsi/iscsi_tcp.c
+> @@ -1069,6 +1069,11 @@ static int iscsi_sw_tcp_slave_configure(struct scsi_device *sdev)
+>   	return 0;
+>   }
+>   
+> +static struct net *iscsi_sw_tcp_netns(struct Scsi_Host *shost)
+> +{
+> +	return current->nsproxy->net_ns;
+> +}
+> +
 
-This depends on "[PATCH v2] can: rcar_canfd: Add transceiver support"
-https://lore.kernel.org/r/e825b50a843ffe40e33f34e4d858c07c1b2ff259.1678280913.git.geert+renesas@glider.be
----
- drivers/net/can/rcar/rcar_canfd.c | 43 +++++++++++++++----------------
- 1 file changed, 21 insertions(+), 22 deletions(-)
+See above if you can't reference the namespace for the netlink socket here.
 
-diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
-index 6df9a259e5e4f92c..ecdb8ffe2f670c9b 100644
---- a/drivers/net/can/rcar/rcar_canfd.c
-+++ b/drivers/net/can/rcar/rcar_canfd.c
-@@ -1417,20 +1417,20 @@ static int rcar_canfd_open(struct net_device *ndev)
- 
- 	err = phy_power_on(priv->transceiver);
- 	if (err) {
--		netdev_err(ndev, "failed to power on PHY, error %d\n", err);
-+		netdev_err(ndev, "failed to power on PHY, %pe\n", ERR_PTR(err));
- 		return err;
- 	}
- 
- 	/* Peripheral clock is already enabled in probe */
- 	err = clk_prepare_enable(gpriv->can_clk);
- 	if (err) {
--		netdev_err(ndev, "failed to enable CAN clock, error %d\n", err);
-+		netdev_err(ndev, "failed to enable CAN clock, %pe\n", ERR_PTR(err));
- 		goto out_phy;
- 	}
- 
- 	err = open_candev(ndev);
- 	if (err) {
--		netdev_err(ndev, "open_candev() failed, error %d\n", err);
-+		netdev_err(ndev, "open_candev() failed, %pe\n", ERR_PTR(err));
- 		goto out_can_clock;
- 	}
- 
-@@ -1731,10 +1731,9 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
- 	int err = -ENODEV;
- 
- 	ndev = alloc_candev(sizeof(*priv), RCANFD_FIFO_DEPTH);
--	if (!ndev) {
--		dev_err(dev, "alloc_candev() failed\n");
-+	if (!ndev)
- 		return -ENOMEM;
--	}
-+
- 	priv = netdev_priv(ndev);
- 
- 	ndev->netdev_ops = &rcar_canfd_netdev_ops;
-@@ -1777,8 +1776,8 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
- 				       rcar_canfd_channel_err_interrupt, 0,
- 				       irq_name, priv);
- 		if (err) {
--			dev_err(dev, "devm_request_irq CH Err(%d) failed, error %d\n",
--				err_irq, err);
-+			dev_err(dev, "devm_request_irq CH Err %d failed, %pe\n",
-+				err_irq, ERR_PTR(err));
- 			goto fail;
- 		}
- 		irq_name = devm_kasprintf(dev, GFP_KERNEL, "canfd.ch%d_trx",
-@@ -1791,8 +1790,8 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
- 				       rcar_canfd_channel_tx_interrupt, 0,
- 				       irq_name, priv);
- 		if (err) {
--			dev_err(dev, "devm_request_irq Tx (%d) failed, error %d\n",
--				tx_irq, err);
-+			dev_err(dev, "devm_request_irq Tx %d failed, %pe\n",
-+				tx_irq, ERR_PTR(err));
- 			goto fail;
- 		}
- 	}
-@@ -1823,7 +1822,7 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
- 	gpriv->ch[priv->channel] = priv;
- 	err = register_candev(ndev);
- 	if (err) {
--		dev_err(dev, "register_candev() failed, error %d\n", err);
-+		dev_err(dev, "register_candev() failed, %pe\n", ERR_PTR(err));
- 		goto fail_candev;
- 	}
- 	dev_info(dev, "device registered (channel %u)\n", priv->channel);
-@@ -1967,16 +1966,16 @@ static int rcar_canfd_probe(struct platform_device *pdev)
- 				       rcar_canfd_channel_interrupt, 0,
- 				       "canfd.ch_int", gpriv);
- 		if (err) {
--			dev_err(dev, "devm_request_irq(%d) failed, error %d\n",
--				ch_irq, err);
-+			dev_err(dev, "devm_request_irq %d failed, %pe\n",
-+				ch_irq, ERR_PTR(err));
- 			goto fail_dev;
- 		}
- 
- 		err = devm_request_irq(dev, g_irq, rcar_canfd_global_interrupt,
- 				       0, "canfd.g_int", gpriv);
- 		if (err) {
--			dev_err(dev, "devm_request_irq(%d) failed, error %d\n",
--				g_irq, err);
-+			dev_err(dev, "devm_request_irq %d failed, %pe\n",
-+				g_irq, ERR_PTR(err));
- 			goto fail_dev;
- 		}
- 	} else {
-@@ -1985,8 +1984,8 @@ static int rcar_canfd_probe(struct platform_device *pdev)
- 				       "canfd.g_recc", gpriv);
- 
- 		if (err) {
--			dev_err(dev, "devm_request_irq(%d) failed, error %d\n",
--				g_recc_irq, err);
-+			dev_err(dev, "devm_request_irq %d failed, %pe\n",
-+				g_recc_irq, ERR_PTR(err));
- 			goto fail_dev;
- 		}
- 
-@@ -1994,8 +1993,8 @@ static int rcar_canfd_probe(struct platform_device *pdev)
- 				       rcar_canfd_global_err_interrupt, 0,
- 				       "canfd.g_err", gpriv);
- 		if (err) {
--			dev_err(dev, "devm_request_irq(%d) failed, error %d\n",
--				g_err_irq, err);
-+			dev_err(dev, "devm_request_irq %d failed, %pe\n",
-+				g_err_irq, ERR_PTR(err));
- 			goto fail_dev;
- 		}
- 	}
-@@ -2012,14 +2011,14 @@ static int rcar_canfd_probe(struct platform_device *pdev)
- 	/* Enable peripheral clock for register access */
- 	err = clk_prepare_enable(gpriv->clkp);
- 	if (err) {
--		dev_err(dev, "failed to enable peripheral clock, error %d\n",
--			err);
-+		dev_err(dev, "failed to enable peripheral clock, %pe\n",
-+			ERR_PTR(err));
- 		goto fail_reset;
- 	}
- 
- 	err = rcar_canfd_reset_controller(gpriv);
- 	if (err) {
--		dev_err(dev, "reset controller failed\n");
-+		dev_err(dev, "reset controller failed, %pe\n", ERR_PTR(err));
- 		goto fail_clk;
- 	}
- 
--- 
-2.34.1
+>   static struct scsi_host_template iscsi_sw_tcp_sht = {
+>   	.module			= THIS_MODULE,
+>   	.name			= "iSCSI Initiator over TCP/IP",
+> @@ -1124,6 +1129,8 @@ static struct iscsi_transport iscsi_sw_tcp_transport = {
+>   	.alloc_pdu		= iscsi_sw_tcp_pdu_alloc,
+>   	/* recovery */
+>   	.session_recovery_timedout = iscsi_session_recovery_timedout,
+> +	/* net namespace */
+> +	.get_netns		= iscsi_sw_tcp_netns,
+>   };
+>   
+>   static int __init iscsi_sw_tcp_init(void)
+> diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
+> index 230b43d34c5f..996a9abfa1f5 100644
+> --- a/drivers/scsi/scsi_transport_iscsi.c
+> +++ b/drivers/scsi/scsi_transport_iscsi.c
+> @@ -1600,10 +1600,15 @@ static int iscsi_setup_host(struct transport_container *tc, struct device *dev,
+>   {
+>   	struct Scsi_Host *shost = dev_to_shost(dev);
+>   	struct iscsi_cls_host *ihost = shost->shost_data;
+> +	struct iscsi_internal *priv = to_iscsi_internal(shost->transportt);
+> +	struct iscsi_transport *transport = priv->iscsi_transport;
+>   
+>   	memset(ihost, 0, sizeof(*ihost));
+>   	mutex_init(&ihost->mutex);
+> -	ihost->netns = &init_net;
+> +	if (transport->get_netns)
+> +		ihost->netns = transport->get_netns(shost);
+> +	else
+> +		ihost->netns = &init_net;
+>   
+>   	iscsi_bsg_host_add(shost, ihost);
+>   	/* ignore any bsg add error - we just can't do sgio */
+> diff --git a/include/scsi/scsi_transport_iscsi.h b/include/scsi/scsi_transport_iscsi.h
+> index af0c5a15f316..f8885d0c37d8 100644
+> --- a/include/scsi/scsi_transport_iscsi.h
+> +++ b/include/scsi/scsi_transport_iscsi.h
+> @@ -156,6 +156,7 @@ struct iscsi_transport {
+>   	int (*logout_flashnode_sid) (struct iscsi_cls_session *cls_sess);
+>   	int (*get_host_stats) (struct Scsi_Host *shost, char *buf, int len);
+>   	u8 (*check_protection)(struct iscsi_task *task, sector_t *sector);
+> +	struct net *(*get_netns)(struct Scsi_Host *shost);
+>   };
+>   
+>   /*
+
+Cheers,
+
+Hannes
 
