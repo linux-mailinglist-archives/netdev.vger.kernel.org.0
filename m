@@ -2,99 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 44E456B9D45
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 18:45:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D38436B9D49
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 18:45:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230297AbjCNRph (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 13:45:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40376 "EHLO
+        id S230309AbjCNRpx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 13:45:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229705AbjCNRpg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 13:45:36 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14747AA70F;
-        Tue, 14 Mar 2023 10:45:32 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        with ESMTP id S230426AbjCNRps (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 13:45:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BAB2B1B3C;
+        Tue, 14 Mar 2023 10:45:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id A72181F37E;
-        Tue, 14 Mar 2023 17:45:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1678815931; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9hInEgkm+AFEBSizkAKBzMZHSNbriKfmk/Sip+Qqpx4=;
-        b=Sqjig8Sov83YvviS6TgSDFW2oQn9DLANn0Dx06ifViij+WW14JokHSHfU5HV44+rDuYdFH
-        WlOBG3QJEAVFAPwfvPPvbCbV9D9hGxddGuf0Itd1cESuaUN7MsXwxwhZxYh3Ls379elJ7A
-        lpoqeHgcf8EuujMNgYrtwMi1zqKda98=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1678815931;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9hInEgkm+AFEBSizkAKBzMZHSNbriKfmk/Sip+Qqpx4=;
-        b=MTkeI4FjsATiWQ1UP2V7DmMKNHgloQAXfZ4NRAx1lv8WonDGE8SvJxqFQxPhGdI/SZrFyd
-        ceFQgZgEC6O6jQDw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 84B5013A1B;
-        Tue, 14 Mar 2023 17:45:31 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 5tWsH7uyEGR7EAAAMHmgww
-        (envelope-from <hare@suse.de>); Tue, 14 Mar 2023 17:45:31 +0000
-Message-ID: <81e3d1f1-26c4-0fd3-7c99-00de4d8d9f12@suse.de>
-Date:   Tue, 14 Mar 2023 18:45:31 +0100
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E901D61873;
+        Tue, 14 Mar 2023 17:45:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20A61C4339B;
+        Tue, 14 Mar 2023 17:45:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678815942;
+        bh=+3ZE6yZAH/YDpiyHhK95njQNBuzozufhyHjVe8cQxCE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JISf94gWFh9rfezWXFFnWHOHd3ahRMgjuwROV/TzIb4LJ2wQZwYxhg6ODEXBCHqeI
+         vBcJm8NiuGpsFtI+QDWwO7eDPJp5chF8hcR49q7+eqDiN36+m/NUOqiu9ZKzOFuKK/
+         98kqYnD1lL63PaRTRlcGCUsa076EzjLakBq9BAfUxF005s9f00zKDEVRfJhKNATj4B
+         P9we9BGjD27hSizkKa8e0pSt3PJxjAfS36Ympk/tx1Gm38R4nQt5mHUicVkwI6h9DD
+         RNgmdwT5drcIYfy2MvEpVCJsvaETXymhiMXPvRJi7KfOVF6fNRFanQceHUFUnP5gjz
+         S2mJXZXtrWhmA==
+Date:   Tue, 14 Mar 2023 17:45:37 +0000
+From:   Lee Jones <lee@kernel.org>
+To:     Tung Nguyen <tung.q.nguyen@dektech.com.au>, stable@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net
+Subject: [STABLE REQUEST] tipc: improve function tipc_wait_for_cond()
+Message-ID: <20230314174537.GA1642994@google.com>
+References: <20190219042048.23243-1-tung.q.nguyen@dektech.com.au>
+ <20190219042048.23243-2-tung.q.nguyen@dektech.com.au>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [RFC PATCH 7/9] iscsi: convert flashnode devices from bus to
- class
-Content-Language: en-US
-To:     Lee Duncan <leeman.duncan@gmail.com>, linux-scsi@vger.kernel.org,
-        open-iscsi@googlegroups.com, netdev@vger.kernel.org
-Cc:     Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>
-References: <cover.1675876731.git.lduncan@suse.com>
- <e4f5405384b984cff51acfc6d36f49f0dd924a3e.1675876735.git.lduncan@suse.com>
-From:   Hannes Reinecke <hare@suse.de>
-In-Reply-To: <e4f5405384b984cff51acfc6d36f49f0dd924a3e.1675876735.git.lduncan@suse.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190219042048.23243-2-tung.q.nguyen@dektech.com.au>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/8/23 18:40, Lee Duncan wrote:
-> From: Lee Duncan <lduncan@suse.com>
-> 
-> The flashnode session and connection devices should be filtered by net
-> namespace along with the iscsi_host, but we can't do that with a bus
-> device.  As these don't use any of the bus matching functionality, they
-> make more sense as a class device anyway.
-> 
-> Signed-off-by: Chris Leech <cleech@redhat.com>
-> Signed-off-by: Lee Duncan <lduncan@suse.com>
+Dear Stable,
+
+> Commit 844cf763fba6 ("tipc: make macro tipc_wait_for_cond() smp safe")
+> replaced finish_wait() with remove_wait_queue() but still used
+> prepare_to_wait(). This causes unnecessary conditional
+> checking  before adding to wait queue in prepare_to_wait().
+>
+> This commit replaces prepare_to_wait() with add_wait_queue()
+> as the pair function with remove_wait_queue().
+>
+> Acked-by: Ying Xue <ying.xue@windriver.com>
+> Acked-by: Jon Maloy <jon.maloy@ericsson.com>
+> Signed-off-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
 > ---
->   drivers/scsi/qla4xxx/ql4_os.c       |  2 +-
->   drivers/scsi/scsi_transport_iscsi.c | 36 ++++++++++++-----------------
->   include/scsi/scsi_transport_iscsi.h |  2 ++
->   3 files changed, 18 insertions(+), 22 deletions(-)
-> 
-Reviewed-by: Hannes Reinecke <hare@suse.de>
+>  net/tipc/socket.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/net/tipc/socket.c b/net/tipc/socket.c
+> index 1217c90a363b..81b87916a0eb 100644
+> --- a/net/tipc/socket.c
+> +++ b/net/tipc/socket.c
+> @@ -388,7 +388,7 @@ static int tipc_sk_sock_err(struct socket *sock, long *timeout)
+>  		rc_ = tipc_sk_sock_err((sock_), timeo_);		       \
+>  		if (rc_)						       \
+>  			break;						       \
+> -		prepare_to_wait(sk_sleep(sk_), &wait_, TASK_INTERRUPTIBLE);    \
+> +		add_wait_queue(sk_sleep(sk_), &wait_);                         \
+>  		release_sock(sk_);					       \
+>  		*(timeo_) = wait_woken(&wait_, TASK_INTERRUPTIBLE, *(timeo_)); \
+>  		sched_annotate_sleep();				               \
 
-Cheers,
+Could we have this ol' classic backported to v4.19 and v4.14 please?
 
-Hannes
-
-
+--
+Lee Jones [李琼斯]
