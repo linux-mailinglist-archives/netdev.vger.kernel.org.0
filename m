@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A02F6B8ABC
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 06:43:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 064C46B8AC1
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 06:43:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229624AbjCNFna (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 01:43:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35206 "EHLO
+        id S230346AbjCNFnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 01:43:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229723AbjCNFnQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 01:43:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1CA5567A2
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 22:42:58 -0700 (PDT)
+        with ESMTP id S230256AbjCNFnT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 01:43:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92D3C848DD
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 22:43:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5792B615E9
-        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 05:42:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6172C433D2;
-        Tue, 14 Mar 2023 05:42:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 13CF9B8189D
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 05:43:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6370C433EF;
+        Tue, 14 Mar 2023 05:42:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678772577;
-        bh=1DWFvG4YJzcY/X6dsBvMYiom0AvXRQy8+DSrTcywGpo=;
+        s=k20201202; t=1678772578;
+        bh=XZO4imjCX26wnbFxLVdSSxf7Dys5z8KsTMrfLInxPao=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d8FOWfgV3iH4Aq8Z3EVlvh9u7pE/gmBxBLchfl8X4KKTTZvPlBTanReLkD1S4Ocx1
-         YEHkGFMlE7UwN3wdpP4xmgSh0GbupKEvJovWZ/WDkhXqfOMdZsN35rCAV4o0ho3yMk
-         Gjsu+a9Sm5aXNykvi/DlYxJN++oiSfsC4edFNkSWC42xnTCRpVeQmOsm6UcgQ5KFyO
-         U87XuvsGP0CW6Etzk19wWZUDcBVzwj6QStEQ+XZPWBpibGQ+ZSyorM9bOiSA857DI1
-         4RM0QqmyqP3s4R9++lUH2kLXFfVJYuLwQZAyDtOmdNpTTRBKffCChr1Plx3HM9kgYL
-         GC8Acy59H/xfA==
+        b=eNnA8RzgrnGhkR7u9PsUlhwuwnppR5ZWjBxxYXO3wa4FRcgPNR+7MNOGTGlr1XR+K
+         WPeImZakhLhVZr+fjgQFB0NWE44nUoDUx809E+MfvF3NQ4H/AbdQSsfkchRRAwsjFh
+         Xrusqjxa+j4t5s8U649uIeKZws5M2Sa+ohw6qkIT07gD5UyprsiQAM/IKj4GNj4QiY
+         GTwwP1iyAW8P207YAz19lUivP8ap4t4VXfWSCGrcCVaaPsE5st8zLxO0QCWvCYJjzT
+         +R30hbVCW92Pq8wj7FhWu8Db4VpCSln04deeOKuAm/4zWpTXtshQojAOKwO5W5FzQK
+         Be8pKLblgQ0zg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Maor Dickman <maord@nvidia.com>, Roi Dayan <roid@nvidia.com>
-Subject: [net-next 14/15] net/mlx5e: Enable TC offload for ingress MACVLAN over bond
-Date:   Mon, 13 Mar 2023 22:42:33 -0700
-Message-Id: <20230314054234.267365-15-saeed@kernel.org>
+Subject: [net-next 15/15] net/mlx5e: Enable TC offload for egress MACVLAN over bond
+Date:   Mon, 13 Mar 2023 22:42:34 -0700
+Message-Id: <20230314054234.267365-16-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230314054234.267365-1-saeed@kernel.org>
 References: <20230314054234.267365-1-saeed@kernel.org>
@@ -58,41 +58,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maor Dickman <maord@nvidia.com>
 
-Support offloading of TC rules that filter ingress traffic from a MACVLAN
-device, which is attached to bond device.
+Support offloading of TC rules that mirror/redirect egress traffic to a
+MACVLAN device, which is attached to bond device which master mlx5 devices.
 
 Signed-off-by: Maor Dickman <maord@nvidia.com>
 Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-index b4af006dc494..19c4a83982ca 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-@@ -433,6 +433,7 @@ mlx5e_rep_check_indr_block_supported(struct mlx5e_rep_priv *rpriv,
- {
- 	struct mlx5e_priv *priv = netdev_priv(rpriv->netdev);
- 	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
-+	struct net_device *macvlan_real_dev;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred.c
+index 07cc65596f89..291193f7120d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred.c
+@@ -234,6 +234,9 @@ parse_mirred(struct mlx5e_tc_act_parse_state *parse_state,
+ 	if (mlx5_lag_mpesw_do_mirred(priv->mdev, out_dev, extack))
+ 		return -EOPNOTSUPP;
  
- 	if (f->binder_type != FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS &&
- 	    f->binder_type != FLOW_BLOCK_BINDER_TYPE_CLSACT_EGRESS)
-@@ -450,7 +451,11 @@ mlx5e_rep_check_indr_block_supported(struct mlx5e_rep_priv *rpriv,
- 			return false;
- 		}
- 
--		if (macvlan_dev_real_dev(netdev) == rpriv->netdev)
-+		macvlan_real_dev = macvlan_dev_real_dev(netdev);
++	if (netif_is_macvlan(out_dev))
++		out_dev = macvlan_dev_real_dev(out_dev);
 +
-+		if (macvlan_real_dev == rpriv->netdev)
-+			return true;
-+		if (netif_is_bond_master(macvlan_real_dev))
- 			return true;
+ 	out_dev = get_fdb_out_dev(uplink_dev, out_dev);
+ 	if (!out_dev)
+ 		return -ENODEV;
+@@ -250,9 +253,6 @@ parse_mirred(struct mlx5e_tc_act_parse_state *parse_state,
+ 			return err;
  	}
  
+-	if (netif_is_macvlan(out_dev))
+-		out_dev = macvlan_dev_real_dev(out_dev);
+-
+ 	err = verify_uplink_forwarding(priv, attr, out_dev, extack);
+ 	if (err)
+ 		return err;
 -- 
 2.39.2
 
