@@ -2,107 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1B7B6B9E59
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 19:28:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFDAB6B9EAE
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 19:36:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230318AbjCNS2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 14:28:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34782 "EHLO
+        id S230487AbjCNSf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 14:35:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230281AbjCNS2m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 14:28:42 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA824B4215;
-        Tue, 14 Mar 2023 11:28:13 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id fm20-20020a05600c0c1400b003ead37e6588so13812723wmb.5;
-        Tue, 14 Mar 2023 11:28:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678818490;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uCZkrMLZx8ZVMQLFuANkNwADh4tGUpOBmEXyzie1B/E=;
-        b=UarJ3AuQtgdT97POi2QL4jhEBe0WUGNTBL9LOFoKiy5WPNaL6vER6d6ibVrQIAmjlL
-         DDfARMnIDTGFvCAd3DqhXAe44PBm5frJHA1s0/zqr+zMAbeDcpXvibgSPlpM5/rZgKSR
-         iUIQKlOp3QIwPt0NS0vQ7szqSi5vvFkA6Uh53hal4F1lYAGBJ/QBvDwWoccPpAuIW2Vm
-         NC4/EjVYiVKw4RC43f9xGHFi8/wDFWL//QIW5JoVAJgnCndFqwaHEAHJFBn5CYlamf28
-         13IqIpbvm7Jmty7Yl8l2xmSjX4s1qpnQt2Zek9q1Rq4orLMVHqjHdXxkiYrRy7iH6Asx
-         wC1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678818490;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=uCZkrMLZx8ZVMQLFuANkNwADh4tGUpOBmEXyzie1B/E=;
-        b=YCSTzlN3x+wdVjSCfHWU8RO8bl0y8REJJl/+4cZW4Bjokj5TFk+h2/uT7bI63dNxHp
-         CcJlF5ykbHwI83w4LXLFfis9x9f254D7y9ylx1/v976L+xme/3kSYj8RJOmPZswqFCGx
-         SB70saJfdaOHC8gUPqudIeiEJfe0nJmYQCRC20wPffbcwwDN4iukj0un1A7j/WGfRzat
-         GP1VnAEBsEvjpuSixZwrHrJ6bogm+Rc0ujboB/7XNPkvlkhaZzFjskkAKy6qYe/gcyeK
-         dO4W4A+YRyFVOKs3RjIjaw6ahZSHlOkQpB6DuaA2pZlv288JwqpnEk1/dS1It+PY1qUl
-         p6Jg==
-X-Gm-Message-State: AO0yUKXxyH3YaLyGstSXJO33/wE/MCJeB+cpQJLCmt4gJL6zR2/hSdNu
-        VX0KwG389+8/2Lt3L3P9iRA=
-X-Google-Smtp-Source: AK7set+lUkWThuG1N23QJqHPUBSaOk5Y13PSBdLBj0pekiBWwf/CEnjZKJzslUlaJPscTptKfZRI5Q==
-X-Received: by 2002:a05:600c:3c89:b0:3eb:38e6:f659 with SMTP id bg9-20020a05600c3c8900b003eb38e6f659mr15820259wmb.15.1678818490700;
-        Tue, 14 Mar 2023 11:28:10 -0700 (PDT)
-Received: from mars.. ([2a02:168:6806:0:5862:40de:7045:5e1b])
-        by smtp.gmail.com with ESMTPSA id u7-20020a7bc047000000b003e206cc7237sm3443490wmc.24.2023.03.14.11.28.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Mar 2023 11:28:10 -0700 (PDT)
-From:   Klaus Kudielka <klaus.kudielka@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        with ESMTP id S231208AbjCNSft (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 14:35:49 -0400
+Received: from out-7.mta1.migadu.com (out-7.mta1.migadu.com [IPv6:2001:41d0:203:375::7])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE49EB53FD
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 11:35:22 -0700 (PDT)
+Message-ID: <a8c21051-b6e0-a9f6-2530-5b36cb27d613@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1678818847;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SwJKXnde6xuu4fjvLFS0gHLJtbHGUQQPIJjJop2D0PE=;
+        b=vZAwHHl6L4Mz/9TKuM58QxP5L3QjZHTMEyNXr0f8EB02xnYfyXfAipGHuU5vI45DGnIHU2
+        3wT9orvKHZERaniO189kiBB0y4o9mcregjQNpKt7TTr7TLfpiw6lOYwx29tiLzMQmnf2Sy
+        W9+9nPiNcNqqPKgDB7Q2NSE2gPdDIkg=
+Date:   Tue, 14 Mar 2023 11:34:01 -0700
+MIME-Version: 1.0
+Subject: Re: [PATCH v1 net 1/2] tcp: Fix bind() conflict check for dual-stack
+ wildcard address.
+Content-Language: en-US
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org,
+        Paul Holzinger <pholzing@redhat.com>,
+        Martin KaFai Lau <martin.lau@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Klaus Kudielka <klaus.kudielka@gmail.com>
-Subject: [PATCH net-next v3 4/4] net: dsa: mv88e6xxx: mask apparently non-existing phys during probing
-Date:   Tue, 14 Mar 2023 19:26:59 +0100
-Message-Id: <20230314182659.63686-5-klaus.kudielka@gmail.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230314182659.63686-1-klaus.kudielka@gmail.com>
-References: <20230314182659.63686-1-klaus.kudielka@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        David Ahern <dsahern@kernel.org>
+References: <20230312031904.4674-1-kuniyu@amazon.com>
+ <20230312031904.4674-2-kuniyu@amazon.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+In-Reply-To: <20230312031904.4674-2-kuniyu@amazon.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To avoid excessive mdio bus transactions during probing, mask all phy
-addresses that do not exist (there is a 1:1 mapping between switch port
-number and phy address).
+On 3/11/23 7:19 PM, Kuniyuki Iwashima wrote:
+> Paul Holzinger reported [0] that commit 5456262d2baa ("net: Fix
+> incorrect address comparison when searching for a bind2 bucket")
+> introduced a bind() regression.  Paul also gave a nice repro that
+> calls two types of bind() on the same port, both of which now
+> succeed, but the second call should fail:
+> 
+>    bind(fd1, ::, port) + bind(fd2, 127.0.0.1, port)
+> 
+> The cited commit added address family tests in three functions to
+> fix the uninit-value KMSAN report. [1]  However, the test added to
+> inet_bind2_bucket_match_addr_any() removed a necessary conflict
+> check; the dual-stack wildcard address no longer conflicts with
+> an IPv4 non-wildcard address.
+> 
+> If tb->family is AF_INET6 and sk->sk_family is AF_INET in
+> inet_bind2_bucket_match_addr_any(), we still need to check
+> if tb has the dual-stack wildcard address.
+> 
+> Note that the IPv4 wildcard address does not conflict with
+> IPv6 non-wildcard addresses.
+> 
+> [0]: https://lore.kernel.org/netdev/e21bf153-80b0-9ec0-15ba-e04a4ad42c34@redhat.com/
+> [1]: https://lore.kernel.org/netdev/CAG_fn=Ud3zSW7AZWXc+asfMhZVL5ETnvuY44Pmyv4NPv-ijN-A@mail.gmail.com/
+> 
+> Fixes: 5456262d2baa ("net: Fix incorrect address comparison when searching for a bind2 bucket")
+> Reported-by: Paul Holzinger <pholzing@redhat.com>
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-Suggested-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Klaus Kudielka <klaus.kudielka@gmail.com>
----
-v2: Patch is new
-v3: No change
+Thanks for the fix.
 
- drivers/net/dsa/mv88e6xxx/chip.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 29b0f3bb1c..c52798d9ce 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3797,6 +3797,7 @@ static int mv88e6xxx_mdio_register(struct mv88e6xxx_chip *chip,
- 	bus->read_c45 = mv88e6xxx_mdio_read_c45;
- 	bus->write_c45 = mv88e6xxx_mdio_write_c45;
- 	bus->parent = chip->dev;
-+	bus->phy_mask = GENMASK(31, mv88e6xxx_num_ports(chip));
- 
- 	if (!external) {
- 		err = mv88e6xxx_g2_irq_mdio_setup(chip, bus);
--- 
-2.39.2
+Reviewed-by: Martin KaFai Lau <martin.lau@kernel.org>
 
