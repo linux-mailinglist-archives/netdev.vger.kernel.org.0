@@ -2,296 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 531436B8A7C
-	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 06:37:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 060CD6B8AB5
+	for <lists+netdev@lfdr.de>; Tue, 14 Mar 2023 06:43:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229869AbjCNFhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 01:37:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51102 "EHLO
+        id S230232AbjCNFnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 01:43:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbjCNFhV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 01:37:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FFFA7BA08
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 22:36:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678772187;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CUNqowlHsOHTiRljuMolx/A+uVnVqERrix3vDx9FlvY=;
-        b=hqriddXLrPf/fO8qjIoVYYPdx9RrMeqBweeTh3vxyl5vM6XfX4asAGfYSiEXlB4bk1pZxU
-        c/YUdcfPOoJoUhc/xrM+Hu6yh+sZmOHXr1p+NnPiev2dGzrQLaOvafrRlLCXWo5qMaPsdn
-        LGYESD482bHNV+Uum21rOtE8fzAg4h8=
-Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com
- [209.85.210.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-199-oydlcIAPPwOhcP1ESLDZfg-1; Tue, 14 Mar 2023 01:36:26 -0400
-X-MC-Unique: oydlcIAPPwOhcP1ESLDZfg-1
-Received: by mail-ot1-f72.google.com with SMTP id p21-20020a9d6955000000b00696141d38e6so729461oto.8
-        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 22:36:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678772185;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=CUNqowlHsOHTiRljuMolx/A+uVnVqERrix3vDx9FlvY=;
-        b=XT17T9OiCsPTIAfIivSt6hz7Nj/TphD/pIjf8jY0mH/+bRKFXgtAAestA0q/0//wTI
-         xxFur37jAeAnKT4PtFyWG1DRkhn7HJox8FBjoQS8arQ2woPe/TNki97MKdvPosvlCHuf
-         SBwNZaEXPUZGNAZGwb9Q+RKkIUbGPOdfiWjmY7DfJXoZJELSTiUqIoIAKUZ1q6DkZFn8
-         mWTUzsNoI0KcTriDoR//54n7/Tb1oIjvmvWZt/wJVMGi6n7Gbx+14WS9+V0YM0gR4eIL
-         s2M9ejFYZjo94ICMcnrCMefIL395FfIbkJK0r4dyN4NVKHHuQAw21jY5ESSqPM4f43ds
-         T3dw==
-X-Gm-Message-State: AO0yUKUy6BDpo64rJGJ4RWUvwUE/1/Dfe7NNzNpeILVyWOZOACYuZTZ8
-        MxRyWrPjpf/gL8aX0AQfMcjIfEutR2HSoadZTFBQLga3HQSVLt19OORU9OSImqhdk9jWL6hRRkm
-        22EAqSEHTzNgEv+STkANi00yk3q/CwWRd
-X-Received: by 2002:a9d:60d0:0:b0:688:d1d6:2029 with SMTP id b16-20020a9d60d0000000b00688d1d62029mr12568431otk.2.1678772185640;
-        Mon, 13 Mar 2023 22:36:25 -0700 (PDT)
-X-Google-Smtp-Source: AK7set+kN4AtoVa9aWxyktypjoY9bQX/jqJh/j0S1GrS5sbNhOwjiFrtu8xIdNunTOUI244RxuH+n3UiLO9HYeAQIRc=
-X-Received: by 2002:a9d:60d0:0:b0:688:d1d6:2029 with SMTP id
- b16-20020a9d60d0000000b00688d1d62029mr12568426otk.2.1678772185358; Mon, 13
- Mar 2023 22:36:25 -0700 (PDT)
+        with ESMTP id S229657AbjCNFnJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 01:43:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49ACC91B7F
+        for <netdev@vger.kernel.org>; Mon, 13 Mar 2023 22:42:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE18BB81185
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 05:42:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63532C433D2;
+        Tue, 14 Mar 2023 05:42:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678772563;
+        bh=bEzyzFRKMQW/CQrtvFTn1C6MYfWbLG5s1uzblUW1TFM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=rRd3XYB7F6F/s7nbV1Mtp3kxO8+FJAPwB83MYhoLMlv38NYlTon8z5aj7C5Ld+Knv
+         TCmBUANo5Pz5lOi535//isOZYwmNIqPDuA6nhQfQZEbw0ZzVQpCl3DNt2a+mhP7a52
+         SGXfx1pXtkGySoflQEy1Vj3yqljWFkM6livwJetlMAXhnBHQYS4Lu5lc7ZBHKVNwEB
+         aOOamvTlpvWzx6pfPEu7sHBTeJbEM2RXa4rk2nL69yWM2F21uv0LdmAEUiWy5PAAJS
+         FU70PfLu6psm6VILzUsF43a1wfOhljsy9g0E5cTtjMkweszotFoDjbGBZAOGH0lrq7
+         HWyf98/cjXK1Q==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [pull request][net-next 00/15] mlx5 updates 2023-03-13
+Date:   Mon, 13 Mar 2023 22:42:19 -0700
+Message-Id: <20230314054234.267365-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-References: <20230302113421.174582-1-sgarzare@redhat.com> <20230302113421.174582-9-sgarzare@redhat.com>
-In-Reply-To: <20230302113421.174582-9-sgarzare@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Tue, 14 Mar 2023 13:36:13 +0800
-Message-ID: <CACGkMEt1hBcRdh0oQYCs4meRs0mvDu9X9o-zK4aS87hrN+QPxA@mail.gmail.com>
-Subject: Re: [PATCH v2 8/8] vdpa_sim: add support for user VA
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
-        eperezma@redhat.com, netdev@vger.kernel.org, stefanha@redhat.com,
-        linux-kernel@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 2, 2023 at 7:35=E2=80=AFPM Stefano Garzarella <sgarzare@redhat.=
-com> wrote:
->
-> The new "use_va" module parameter (default: false) is used in
-> vdpa_alloc_device() to inform the vDPA framework that the device
-> supports VA.
->
-> vringh is initialized to use VA only when "use_va" is true and the
-> user's mm has been bound. So, only when the bus supports user VA
-> (e.g. vhost-vdpa).
->
-> vdpasim_mm_work_fn work is used to attach the kthread to the user
-> address space when the .bind_mm callback is invoked, and to detach
-> it when the .unbind_mm callback is invoked.
->
-> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> ---
->
-> Notes:
->     v2:
->     - `use_va` set to true by default [Eugenio]
->     - supported the new unbind_mm callback [Jason]
->     - removed the unbind_mm call in vdpasim_do_reset() [Jason]
->     - avoided to release the lock while call kthread_flush_work() since w=
-e
->       are now using a mutex to protect the device state
->
->  drivers/vdpa/vdpa_sim/vdpa_sim.h |  1 +
->  drivers/vdpa/vdpa_sim/vdpa_sim.c | 98 +++++++++++++++++++++++++++++++-
->  2 files changed, 97 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.h b/drivers/vdpa/vdpa_sim/vdp=
-a_sim.h
-> index 4774292fba8c..3a42887d05d9 100644
-> --- a/drivers/vdpa/vdpa_sim/vdpa_sim.h
-> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.h
-> @@ -59,6 +59,7 @@ struct vdpasim {
->         struct vdpasim_virtqueue *vqs;
->         struct kthread_worker *worker;
->         struct kthread_work work;
-> +       struct mm_struct *mm_bound;
->         struct vdpasim_dev_attr dev_attr;
->         /* mutex to synchronize virtqueue state */
->         struct mutex mutex;
-> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdp=
-a_sim.c
-> index a28103a67ae7..eda26bc33df5 100644
-> --- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> @@ -35,10 +35,77 @@ module_param(max_iotlb_entries, int, 0444);
->  MODULE_PARM_DESC(max_iotlb_entries,
->                  "Maximum number of iotlb entries for each address space.=
- 0 means unlimited. (default: 2048)");
->
-> +static bool use_va =3D true;
-> +module_param(use_va, bool, 0444);
-> +MODULE_PARM_DESC(use_va, "Enable/disable the device's ability to use VA"=
-);
-> +
->  #define VDPASIM_QUEUE_ALIGN PAGE_SIZE
->  #define VDPASIM_QUEUE_MAX 256
->  #define VDPASIM_VENDOR_ID 0
->
-> +struct vdpasim_mm_work {
-> +       struct kthread_work work;
-> +       struct mm_struct *mm;
-> +       bool bind;
-> +       int ret;
-> +};
-> +
-> +static void vdpasim_mm_work_fn(struct kthread_work *work)
-> +{
-> +       struct vdpasim_mm_work *mm_work =3D
-> +               container_of(work, struct vdpasim_mm_work, work);
-> +
-> +       mm_work->ret =3D 0;
-> +
-> +       if (mm_work->bind) {
-> +               kthread_use_mm(mm_work->mm);
-> +               //TODO: should we attach the cgroup of the mm owner?
-> +       } else {
-> +               kthread_unuse_mm(mm_work->mm);
-> +       }
-> +}
-> +
-> +static void vdpasim_worker_queue_mm(struct vdpasim *vdpasim,
-> +                                   struct vdpasim_mm_work *mm_work)
-> +{
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-Nit: we need to tweak the name as it does flush besides queuing the work.
+This series adds misc updates.
+For more information please see tag log below.
 
-> +       struct kthread_work *work =3D &mm_work->work;
-> +
-> +       kthread_init_work(work, vdpasim_mm_work_fn);
-> +       kthread_queue_work(vdpasim->worker, work);
-> +
-> +       kthread_flush_work(work);
-> +}
-> +
-> +static int vdpasim_worker_bind_mm(struct vdpasim *vdpasim,
-> +                                 struct mm_struct *new_mm)
-> +{
-> +       struct vdpasim_mm_work mm_work;
-> +
-> +       mm_work.mm =3D new_mm;
-> +       mm_work.bind =3D true;
-> +
-> +       vdpasim_worker_queue_mm(vdpasim, &mm_work);
-> +
-> +       if (!mm_work.ret)
-> +               vdpasim->mm_bound =3D new_mm;
-> +
-> +       return mm_work.ret;
-> +}
-> +
-> +static void vdpasim_worker_unbind_mm(struct vdpasim *vdpasim)
-> +{
-> +       struct vdpasim_mm_work mm_work;
-> +
-> +       if (!vdpasim->mm_bound)
-> +               return;
-> +
-> +       mm_work.mm =3D vdpasim->mm_bound;
-> +       mm_work.bind =3D false;
+Please pull and let me know if there is any problem.
 
-Can we simply use mm_work.mm =3D NULL for unbinding?
+Thanks,
+Saeed.
 
-> +
-> +       vdpasim_worker_queue_mm(vdpasim, &mm_work);
-> +
-> +       vdpasim->mm_bound =3D NULL;
 
-And change the mm_bound in the worker?
+The following changes since commit bcc858689db5f2e5a8d4d6e8bc5bb9736cd80626:
 
-Thanks
+  net: Use of_property_present() for testing DT property presence (2023-03-13 17:07:52 -0700)
 
-> +}
->  static struct vdpasim *vdpa_to_sim(struct vdpa_device *vdpa)
->  {
->         return container_of(vdpa, struct vdpasim, vdpa);
-> @@ -59,8 +126,10 @@ static void vdpasim_queue_ready(struct vdpasim *vdpas=
-im, unsigned int idx)
->  {
->         struct vdpasim_virtqueue *vq =3D &vdpasim->vqs[idx];
->         uint16_t last_avail_idx =3D vq->vring.last_avail_idx;
-> +       bool va_enabled =3D use_va && vdpasim->mm_bound;
->
-> -       vringh_init_iotlb(&vq->vring, vdpasim->features, vq->num, true, f=
-alse,
-> +       vringh_init_iotlb(&vq->vring, vdpasim->features, vq->num, true,
-> +                         va_enabled,
->                           (struct vring_desc *)(uintptr_t)vq->desc_addr,
->                           (struct vring_avail *)
->                           (uintptr_t)vq->driver_addr,
-> @@ -151,7 +220,7 @@ struct vdpasim *vdpasim_create(struct vdpasim_dev_att=
-r *dev_attr,
->         vdpa =3D __vdpa_alloc_device(NULL, ops,
->                                    dev_attr->ngroups, dev_attr->nas,
->                                    dev_attr->alloc_size,
-> -                                  dev_attr->name, false);
-> +                                  dev_attr->name, use_va);
->         if (IS_ERR(vdpa)) {
->                 ret =3D PTR_ERR(vdpa);
->                 goto err_alloc;
-> @@ -571,6 +640,27 @@ static int vdpasim_set_map(struct vdpa_device *vdpa,=
- unsigned int asid,
->         return ret;
->  }
->
-> +static int vdpasim_bind_mm(struct vdpa_device *vdpa, struct mm_struct *m=
-m)
-> +{
-> +       struct vdpasim *vdpasim =3D vdpa_to_sim(vdpa);
-> +       int ret;
-> +
-> +       mutex_lock(&vdpasim->mutex);
-> +       ret =3D vdpasim_worker_bind_mm(vdpasim, mm);
-> +       mutex_unlock(&vdpasim->mutex);
-> +
-> +       return ret;
-> +}
-> +
-> +static void vdpasim_unbind_mm(struct vdpa_device *vdpa)
-> +{
-> +       struct vdpasim *vdpasim =3D vdpa_to_sim(vdpa);
-> +
-> +       mutex_lock(&vdpasim->mutex);
-> +       vdpasim_worker_unbind_mm(vdpasim);
-> +       mutex_unlock(&vdpasim->mutex);
-> +}
-> +
->  static int vdpasim_dma_map(struct vdpa_device *vdpa, unsigned int asid,
->                            u64 iova, u64 size,
->                            u64 pa, u32 perm, void *opaque)
-> @@ -667,6 +757,8 @@ static const struct vdpa_config_ops vdpasim_config_op=
-s =3D {
->         .set_group_asid         =3D vdpasim_set_group_asid,
->         .dma_map                =3D vdpasim_dma_map,
->         .dma_unmap              =3D vdpasim_dma_unmap,
-> +       .bind_mm                =3D vdpasim_bind_mm,
-> +       .unbind_mm              =3D vdpasim_unbind_mm,
->         .free                   =3D vdpasim_free,
->  };
->
-> @@ -701,6 +793,8 @@ static const struct vdpa_config_ops vdpasim_batch_con=
-fig_ops =3D {
->         .get_iova_range         =3D vdpasim_get_iova_range,
->         .set_group_asid         =3D vdpasim_set_group_asid,
->         .set_map                =3D vdpasim_set_map,
-> +       .bind_mm                =3D vdpasim_bind_mm,
-> +       .unbind_mm              =3D vdpasim_unbind_mm,
->         .free                   =3D vdpasim_free,
->  };
->
-> --
-> 2.39.2
->
+are available in the Git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2023-03-13
+
+for you to fetch changes up to 1a8bcf10679345c624c656e113796f14473db1e9:
+
+  net/mlx5e: Enable TC offload for egress MACVLAN over bond (2023-03-13 22:39:06 -0700)
+
+----------------------------------------------------------------
+mlx5-updates-2023-03-13
+
+1) Trivial cleanup patches
+2) By Sandipan Patra: Implement thermal zone to report NIC temperature
+3) Adham Faris, Improves devlink health diagnostics for netdev objects
+4) From Maor, Enable TC offload for egress and engress MACVLAN over bond
+5) From Gal, add devlink hairpin queues parameters to replace debugfs
+   as was discussed in [1]:
+[1] https://lore.kernel.org/all/20230111194608.7f15b9a1@kernel.org/
+
+----------------------------------------------------------------
+Adham Faris (4):
+      net/mlx5e: Rename RQ/SQ adaptive moderation state flag
+      net/mlx5e: Stringify RQ SW state in RQ devlink health diagnostics
+      net/mlx5e: Expose SQ SW state as part of SQ health diagnostics
+      net/mlx5e: Add XSK RQ state flag for RQ devlink health diagnostics
+
+Gal Pressman (3):
+      net/mlx5: Move needed PTYS functions to core layer
+      net/mlx5e: Add devlink hairpin queues parameters
+      net/mlx5e: Add more information to hairpin table dump
+
+Jiri Pirko (1):
+      net/mlx5: Add comment to mlx5_devlink_params_register()
+
+Maor Dickman (3):
+      net/mlx5e: TC, Extract indr setup block checks to function
+      net/mlx5e: Enable TC offload for ingress MACVLAN over bond
+      net/mlx5e: Enable TC offload for egress MACVLAN over bond
+
+Moshe Shemesh (2):
+      net/mlx5: remove redundant clear_bit
+      net/mlx5: Stop waiting for PCI up if teardown was triggered
+
+Rahul Rameshbabu (1):
+      net/mlx5e: Correct SKB room check to use all room in the fifo
+
+Sandipan Patra (1):
+      net/mlx5: Implement thermal zone
+
+ .../ethernet/mellanox/mlx5/devlink.rst             |  35 +++++
+ Documentation/networking/devlink/mlx5.rst          |  12 ++
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   1 +
+ drivers/net/ethernet/mellanox/mlx5/core/devlink.c  |  71 ++++++++++
+ drivers/net/ethernet/mellanox/mlx5/core/devlink.h  |   2 +
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |  17 ++-
+ .../net/ethernet/mellanox/mlx5/core/en/params.c    |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/port.c  | 157 +--------------------
+ drivers/net/ethernet/mellanox/mlx5/core/en/port.h  |  14 --
+ .../net/ethernet/mellanox/mlx5/core/en/rep/tc.c    |  63 ++++++---
+ .../ethernet/mellanox/mlx5/core/en/reporter_rx.c   |  50 ++++++-
+ .../ethernet/mellanox/mlx5/core/en/reporter_tx.c   |  46 ++++++
+ .../ethernet/mellanox/mlx5/core/en/tc/act/mirred.c |   6 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h  |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/setup.c |  10 +-
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |  12 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |   4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  58 ++++----
+ drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c  |   4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c  |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/health.c   |   4 +
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |   8 +-
+ drivers/net/ethernet/mellanox/mlx5/core/port.c     | 151 ++++++++++++++++++++
+ drivers/net/ethernet/mellanox/mlx5/core/thermal.c  | 108 ++++++++++++++
+ drivers/net/ethernet/mellanox/mlx5/core/thermal.h  |  20 +++
+ include/linux/mlx5/driver.h                        |   3 +
+ include/linux/mlx5/mlx5_ifc.h                      |  26 ++++
+ include/linux/mlx5/port.h                          |  16 +++
+ 28 files changed, 654 insertions(+), 250 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/thermal.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/thermal.h
