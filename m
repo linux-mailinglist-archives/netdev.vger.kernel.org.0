@@ -2,135 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C6316BB92F
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 17:11:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9912B6BB955
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 17:15:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232869AbjCOQLD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 12:11:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48818 "EHLO
+        id S231154AbjCOQPb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 12:15:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232845AbjCOQKn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 12:10:43 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2124.outbound.protection.outlook.com [40.107.223.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A1D51B30A;
-        Wed, 15 Mar 2023 09:10:07 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YbJMbp7I1E/aSqUJqF3ZIQWWDWBAxhpooNDxW0laOIfRNO3Y/BoHV86/gA9+0lebBx87yTEwDkjglxL6ba3RjNRxLqCY0gyy2iCpsc24hdNEXR/oBxVTWcOw81xlwe68kKL61vBV0gmXnhbYbKQK2ppwXBCPt/kzyqEeStfhp9Q/yfH+sUHcgrCcnRLCnFgC7YjDIXnL/RriYg7++qBqOxYgX9m5PCabQ/pma1VGRRn8DZuhcyPHiEAF0HDJDjqZToxYfhQBtQWH0Y+UzNebBn2SxFTSCwE7lzpj5HxPjjy97oUbcyppL2XLSBJSr7Her0jYhzfy08gZkLa8cfpIfQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VorMp1n37eNLkJ4G76x514tq1H98yjVSpwUmDi9VOxw=;
- b=BXd2G7XDxDcFw/rSpD+RNPJ3ciKJh56PLHSeTkRFa6b1s4/bnEwwHC1m999I26DBlR5ieHfpPVdI8nAX8gGyefztktx7oStCiRV+BKv/GKvwjbDKSPMxXc6IVJQbRvcT1C6GScU018JO8NtvxMRRrjnlbPGDKIxl85cpcfLrdDRbm0kb9LVdfbGLjx71+S9VAzpEt4rINm3UN3adpvl4rElPCq/YPWlrlsCCdaZ6z7QvZ9klCynvJMTZr+M9at7eSmRqcgHGAZ000XmOP6x+D//SUs8uVf7bC0J1GhoMs7gWxqF3FBBXTz3MKE3IRCmsyLanqvtlKRwyGupdBWA27g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S229751AbjCOQPG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 12:15:06 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0CB7241F4
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 09:14:18 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id y14so5148381wrq.4
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 09:14:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VorMp1n37eNLkJ4G76x514tq1H98yjVSpwUmDi9VOxw=;
- b=umHYg6WIE8N70sK2YCDi0s/bIcrFnd3WF+IKDZA3147IG7rXaGDXZPvU4MNH9y/ZKWNO4p99d+b7LIyUQ2uM1ZyowXmcCaNZQHxVdkTvBs1stzCLvGDPyvrIbkiMWka1cNddYZuy+XHqbHwmm4vHrPL8R12R5Thsn3Bt6LLY9b4=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BY5PR13MB3763.namprd13.prod.outlook.com (2603:10b6:a03:22a::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.29; Wed, 15 Mar
- 2023 16:09:58 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.030; Wed, 15 Mar 2023
- 16:09:58 +0000
-Date:   Wed, 15 Mar 2023 17:09:48 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+        d=gmail.com; s=20210112; t=1678896855;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=R4/UuPvh6kPc0vYE5U38acpKpWULJRtyaGBvdQCHFss=;
+        b=F3ezDqYqm7+L1Dq0pZyRGejGx5GA9IWWL6dUyNG98pOGb0olZOEO1fhILjYU7D1tA0
+         VA9PSidKhwl46wn8i4k+Xd3Cbs46KW2x4QZI2tjXL4QKMfzlMM2MZZ7Fqz9/c2C3ujQ3
+         jBEX1q8XX/rTf9YyCui6pbg4UeQWsKXSV2Fm8nYIquA8t7GK4kLXaG+C9ct3fuq7ixBz
+         Krcm1C9SroX9KodYD/iDNN7tsBPJi8qjawJ0yvtHWCbMMH1yWl9OKGeLfv16Tu3AkQh1
+         aSsAuMSLgV5sMIJCTCtD5qY3DCyVgHFf/S2y0BhyfXuu1hRzA1QDvH2c7rGegT2d5oqM
+         tN+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678896855;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=R4/UuPvh6kPc0vYE5U38acpKpWULJRtyaGBvdQCHFss=;
+        b=FqRjlx44NGSqwLUxV/00zq9FxYlQmJqqoRgO4j9YUjzz17sxqfUfXU4zcwA5C+k8iz
+         asAstHbQgOe+zoWp62GKiZ9IP7S/ZpxHfAv2d6KYquM1R9Sp9O5N72CbQ2vCveysp0wH
+         /tYnW/V2xOUqegfUF2bk0epB95FOEQQVymClfwK64JoqsnDQ8cOORWBm6Gl3sv3FPvjr
+         YolWwTsAcHOvxQ6g+N/JaQoHtkpmy7yHp6Xu4+MpMca3+Kpli3l/CZlzz91mMPoL9SSt
+         SVje2nLnpBij0bv5HquqsBoUtlM6h4t+OqJ44t/Axxbp2l/549cu0/rszNCn3owogrf8
+         EPYQ==
+X-Gm-Message-State: AO0yUKWky09JzpaTePRMzOBUYf6r3su5a7T2qfXpSRnUi2HGajkQUoW8
+        MiA/aW/W34wV3WnhUjC6wpE=
+X-Google-Smtp-Source: AK7set8Xi3dyzYhFBfvwyYpCoSxMGlVzHyPvyoR1ibL4E8KyStyQo03z7Q9GNZGbSOA68bv9vKf6Vg==
+X-Received: by 2002:a5d:595d:0:b0:2ce:a3c7:d2a4 with SMTP id e29-20020a5d595d000000b002cea3c7d2a4mr2378829wri.25.1678896855451;
+        Wed, 15 Mar 2023 09:14:15 -0700 (PDT)
+Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
+        by smtp.gmail.com with ESMTPSA id l10-20020a5d560a000000b002cfeffb442bsm3131145wrv.57.2023.03.15.09.14.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Mar 2023 09:14:15 -0700 (PDT)
+Subject: Re: [PATCH RESEND net-next v4 3/4] sfc: support unicast PTP
+To:     =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>,
+        habetsm.xilinx@gmail.com, richardcochran@gmail.com
 Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        alok.a.tiwari@oracle.com, hdanton@sina.com,
-        ilpo.jarvinen@linux.intel.com, leon@kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-serial@vger.kernel.org, amitkumar.karwar@nxp.com,
-        rohit.fule@nxp.com, sherry.sun@nxp.com
-Subject: Re: [PATCH v12 2/4] serdev: Add method to assert break signal over
- tty UART port
-Message-ID: <ZBHtzF7cCvKyRGrp@corigine.com>
-References: <20230315120327.958413-1-neeraj.sanjaykale@nxp.com>
- <20230315120327.958413-3-neeraj.sanjaykale@nxp.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230315120327.958413-3-neeraj.sanjaykale@nxp.com>
-X-ClientProxiedBy: AM3PR05CA0140.eurprd05.prod.outlook.com
- (2603:10a6:207:3::18) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        Yalin Li <yalli@redhat.com>
+References: <20230314100925.12040-1-ihuguet@redhat.com>
+ <20230314100925.12040-4-ihuguet@redhat.com>
+ <71e22d1e-336a-8e6a-9b36-708f07c632b2@gmail.com>
+ <698e750d-6e56-7fa3-99f4-e363c8fee90a@redhat.com>
+From:   Edward Cree <ecree.xilinx@gmail.com>
+Message-ID: <5c302a4b-3021-1f76-bab7-209672fb9e74@gmail.com>
+Date:   Wed, 15 Mar 2023 16:14:14 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BY5PR13MB3763:EE_
-X-MS-Office365-Filtering-Correlation-Id: d8c52d54-bd84-4315-b171-08db256fb975
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JHTO/P9Lq5Hjb45WJOZcHKEgtGiJlv7185DWscNzIBD/rIklYi1kheYhRM1QXHyrNiQcI82aZVxehT7zwfz+sJugRkgC+9B2Z4OfOM9hh7xQ7+F1iwUae6cXCmbtzvX/sSUPwD+TSVQHT1HBYRelkgBp1bz/LF4czRLfRTG3nxbWlyCHKg7PL+z1i61PQ0fKwZo0uCnLaZ95ZiSyk1me4RKmYYIQpMPy4ad8kWmMLV7prmHUqJ87az0M2Unzu2cs3iSgt8iW3VK6H2BWCuhnpzBc7sqWYAD7x+FA0y/rHpGnqegKKYW8IscNKB2KjbYy7OmI8XDhuu1S5gk0DM0+N3xP9TyquSOuF1+n07R2BOAvR2yl8ahZL81n9BROTmtUv6EHC3VY6EuwG3J/NhFVlhOpl+Azt/F4LobksrRv/nI71hpdUbQ8SoELS2ISB3Z1WuZ2J6yijE9m30TGIvbekkBmkWm0cNG2ya9FjLgXemutuKpTc1WsrfZCxZnhDZWILVFaYeBeGJZUkMaavsMCrLN1VIdK0G0VPa7xoLkjBxLGhz83938WLqHLYemIQ0JgO88HCG1DwXIpCbYhkNI7LoBttvcqVGHSJlYXMh0hA9GLrok8WBb5LBad31F6mpbDx7Iwo4XjFOVlOOczVCas/Mk5zmRuoGX36qSsW7RhZkA2cekSERf9on9noHjzK9iO
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(39830400003)(376002)(136003)(396003)(346002)(451199018)(36756003)(86362001)(38100700002)(2906002)(41300700001)(8936002)(7416002)(4744005)(5660300002)(4326008)(2616005)(6512007)(6506007)(186003)(316002)(66476007)(8676002)(6486002)(66946007)(6666004)(6916009)(478600001)(44832011)(66556008);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?u4Jmiors0x3TyqL+RXS33Bt+0yMVPdRtzWWVGYVRPBPgw0r3vNIUmU07FWnL?=
- =?us-ascii?Q?+iI7Y01qwf36/yCKA3LES9CGigvbrynsv9748zKCx/eZjgY9Er0TLZXqPqjD?=
- =?us-ascii?Q?sn/nuhCX9RFM1WY/Z2Ryvaon83HcYGmq7rcyBIAx3jpc32RGnCZfBI3cfNQ9?=
- =?us-ascii?Q?c+KmTmIpTniqSZ9JjHGB9PrHpSZ9TQmtOhrh22cTPLSZ52t0H4qfS/IHoUND?=
- =?us-ascii?Q?dJ9xRCD5VjaIVgf7t0wmZEfpimqbVzoJ84LT8JiBLoPelyGZ09K9klTjYZLR?=
- =?us-ascii?Q?tCKz3PbSHqlGudzLTSc2pxOHW43yLK2yIolHUGjG8IBuMx+kyzTIVUlxgqng?=
- =?us-ascii?Q?wNFZdZ2MMnTYVTBByZuZ4Ar/jDCgFmVziQvusA2dM+xg9RkR59sxlmHZSDaI?=
- =?us-ascii?Q?p7u92dav8ugN3xQFWXyh3bv+Mq9ROGSLDMwsv9l82xizhhiI0uzx9m9XxOiN?=
- =?us-ascii?Q?wj2D3Jq2kVQsoTLknSeQQM31by++PGS+9blkCc88EmyNTHHDKWR6hmxny5XQ?=
- =?us-ascii?Q?JfqaR+Fs74JpCWmOga7Q3jCaM6GmlKEEN3RYBooLeyjHpikSHUZQf2YwJtkE?=
- =?us-ascii?Q?frf2ORELBPaNGP12G+VK+ZJejD3HGjhLXTLjEgMixGQLrRO0GrJa5eRPUZB3?=
- =?us-ascii?Q?GZpyPjzD12zBfS9jraLtPQPFkc065I7giaBVNnFyWEX70hDFSoUA1JOVbSdT?=
- =?us-ascii?Q?LGX+LLQvo6oLJTbo6w8yYUPyOkY0kflTGY4otBmxCuV5mYwFygaYPJdv8oLY?=
- =?us-ascii?Q?rE9LH3dz/JIZRyGeydyAoa4lnMQUZtTqpCSSf0QzNoEpY12qoQznvriV6iNp?=
- =?us-ascii?Q?sbstecJzbTgE0Q5qEsobc8fZU7qZNneQwLHiv6QAojN5y+YTwiP0iVwHUwP1?=
- =?us-ascii?Q?CCQCUzUKDMEeOH4A8v2wvDkcMh8LZ90S/KbEQdo5iiyTw1lnODJhGjed1oUa?=
- =?us-ascii?Q?XDexk8Uq4hZen3bxI9UFeno53kGyA3Hsp4UejDLa7U0XbzAl3OtrihM09ynK?=
- =?us-ascii?Q?iMyE50SctDi7e/o5ueDiBUGN30xxePjCX5juVeOEexFUtOJuCTmGp8i+S7AL?=
- =?us-ascii?Q?gO+bIfmiEJqnE53WqaeN8UppRyaS269Rg+VCUHM8CO3PbW4yJ9p4cLbu0khx?=
- =?us-ascii?Q?r7+iZWcrQ5SvZw2b7Tp96n3uVSfFBglSOcLQ05TdYET3kR6BkL5q49RMFR9F?=
- =?us-ascii?Q?4YAg0Tp6LvPIJFbeSW48C4vf9QueN17VqrGi9PcQFVi5lJHnuo/MbGGzpkRH?=
- =?us-ascii?Q?LgeIwNlLwGam+qlYaDEh9Uj6Z19HOZEpQCiTENK8JolXaiiIF7ZJMRbWc5B/?=
- =?us-ascii?Q?IthJgAS/kJRHCOxx340pPGlewTWj1zu7xDcbWDp6pPofzY/bN9EO8xNhKv/C?=
- =?us-ascii?Q?LtuDaqLsTmwMcnON89KgQhd9pp6iy44bEAe9DvURwdkhMCmpKuXlkWNvmY53?=
- =?us-ascii?Q?JzDBLnZLtU66E/0O7KshDlvtDhn0fyIZpYmy7xDf0x09aJ2s6dQ5Bpt35bY9?=
- =?us-ascii?Q?ogmWoCHUCx0epS+ejhaYfxIpy/Zm7ws8WbTsyqOHfJsB0VXaPh9++mdfvluq?=
- =?us-ascii?Q?lFhJAfSEr9maMHOQmOFfxNSO5lMettLGhfsuMRsHexULpo35dW1a2DyD99iq?=
- =?us-ascii?Q?uLnGrpNs7mDpr2P+L7tzWmxhJ86Tb+mroaZN7KT7eygKhj0QPqQ/C7sTJx0b?=
- =?us-ascii?Q?LG9c+g=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d8c52d54-bd84-4315-b171-08db256fb975
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2023 16:09:58.7715
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XvJKLSqNUucQTi9/BB7ojU5bFjqvuvJguiV271QRaIdjZ0jWku752CHYsD/pCsFP0ULRP+Id8jrji6U3XZsg2VJozDPc1Un6qeUDj12RScI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR13MB3763
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <698e750d-6e56-7fa3-99f4-e363c8fee90a@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 15, 2023 at 05:33:24PM +0530, Neeraj Sanjay Kale wrote:
-> Adds serdev_device_break_ctl() and an implementation for ttyport.
-> This function simply calls the break_ctl in tty layer, which can
-> assert a break signal over UART-TX line, if the tty and the
-> underlying platform and UART peripheral supports this operation.
+On 15/03/2023 08:48, Íñigo Huguet wrote:
+> I've never used rhashlist, it would be a good learning exercise. How do you see if I submit that as an optimization in a future patch?
+
+Yep, that'd be fine.  (Hence the Ack.)
+
+>> Why does failing to insert one filter mean we need to remove *all*
+>>  the unicast filters we have?  (I'm not even sure it's necessary
+>>  to remove the new EVENT filter if the GENERAL filter fails.)
 > 
-> Signed-off-by: Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+> Well, my reasoning was that it shouldn't fail in a first place. If it does, it's something very weird. Instead of implementing more complex logic to try checking if the current state is valid or not, just remove all and try to install them again the next time. If it fails again, probably the system is not in a very good state.
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
-
+I don't think any complex logic is needed - any insertion that fails
+ will mean that there's no corresponding entry on the list, so next
+ time we call efx_ptp_filter_exists() it'll return false and we'll
+ go ahead and insert.  I.e. every state is 'valid' as long as the
+ rxfilters_ucast list matches what's actually in the hardware.
