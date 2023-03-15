@@ -2,74 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 505F66BB7C9
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 16:29:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96C296BB7CE
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 16:30:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232292AbjCOP3h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 11:29:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38964 "EHLO
+        id S231993AbjCOPaX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 11:30:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231669AbjCOP3g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 11:29:36 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DB2219F1D
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 08:29:34 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id v16so17738175wrn.0
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 08:29:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112; t=1678894172;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=XYhBeu/notvz82UgfkzH+YbK5CCJXB0MnLkpf5cNHAI=;
-        b=kRTHqzm153zu/Zc9NERe8ET2dWnkhROx09XiOifwd5oZvospmfGhysr6lgkUn1JFDn
-         OKTe/gvetQCDLDIePfi+W3lqVQUjhwlG9sYj9vX2lGl4M4O9IgXC66Iq9vJkTnN0daVu
-         OEmOT4sZkVH5whFbyf6o9UYCjHHTX7AeqahToseLy3ew/rQdWT2WtAdi3DUoNTjviJha
-         HUSZ+xeXwGN4MTDX5XRAnbijQw19nax8wTq8qyGQkrhBESKAgRgLuaog2UnPxqNMruat
-         FppK/AXaWfEStCKJlFEs2BuHGv+z5urycEjATQC0Zc5W+boeOQ5hHdFRFIbq1l/waU7k
-         bGrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678894172;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XYhBeu/notvz82UgfkzH+YbK5CCJXB0MnLkpf5cNHAI=;
-        b=Xrt+LAfkT/QtOUMPItU89VFXG0+taksyWVkHmgMAZMUVWjcTxVY5mo1KNkiMGBH96I
-         yMHSitppVPSv0vRGch6CTjZ9Ek80BP8LJn2GX9658V/7QRWWhferx8r3mksLfagow8qs
-         xE8sGNEwNU3t7Vp1VXUMmptWrvLI78MrO0MVI3Wtn5lcKqdtblXjDeyC0zyg9lo2/Zlk
-         8yTSfjg5WJAdKM9wcwwaKY1EJgzEIdMHhsKsAY8rSA6KDIEH2mlm1xeQJZLAyWT3+kdJ
-         mAgzYPZvmzEJRCkunj+btRW7npoSEVNCOH0OtPgwDz8k+6EP7Osi9CtcaVJdPHansAPg
-         jeMg==
-X-Gm-Message-State: AO0yUKXL//Vkt0/xLalPROIuOUdiu7Bu5m7mOTvRXilz4rmfgbglPT32
-        EcRxKTUmX0aR6pW25hKyGd02tA==
-X-Google-Smtp-Source: AK7set8qri9bTR6kXZCDIDLsIRR7ZhcP+VRrtZ/y7MfYtf3hUI4jwn6GWBEtEAhFV/gvCoQZxvPD1g==
-X-Received: by 2002:a5d:448c:0:b0:2d0:bba8:3901 with SMTP id j12-20020a5d448c000000b002d0bba83901mr1647969wrq.62.1678894172494;
-        Wed, 15 Mar 2023 08:29:32 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id z4-20020a5d6544000000b002c56013c07fsm4931457wrv.109.2023.03.15.08.29.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Mar 2023 08:29:31 -0700 (PDT)
-Date:   Wed, 15 Mar 2023 16:29:30 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vadim Fedorenko <vadfed@meta.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vadim Fedorenko <vadim.fedorenko@linux.dev>, poros@redhat.com,
-        mschmidt@redhat.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        Milena Olech <milena.olech@intel.com>,
-        Michal Michalik <michal.michalik@intel.com>
-Subject: Re: [PATCH RFC v6 2/6] dpll: Add DPLL framework base functions
-Message-ID: <ZBHkWiglP70VMm3B@nanopsycho>
-References: <20230312022807.278528-1-vadfed@meta.com>
- <20230312022807.278528-3-vadfed@meta.com>
+        with ESMTP id S230283AbjCOPaW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 11:30:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C76F1B2C0
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 08:30:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2639461DA7
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 15:30:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26952C433EF;
+        Wed, 15 Mar 2023 15:30:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678894220;
+        bh=3M8r3TM/8uc3G5L7HYjfAyHAm/KaW5odh9ZchirwAQY=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=hoRDj5pWxoDd++56TT0x/iZ6FdEkhBkHuflFp0MA5TkOU8Unvdwo8auWxLdxjiI1d
+         J3nwG+cUtMpfJHmaAtFE7eNnWRG/aYOizcIFAhbtvD0kwt7yOG1Vnnp20QUlBtibTg
+         XJRdm7Kdqmi4Jwkq3CiYAWr+AEO0wlCcXPVuYE8dXxiEqXp9YSNTOsnZWIr02P4Jeb
+         E5CTFLAhVcLCrEArcA38c+Xk2PGrRACybHsG/e/pKHnWmeIBu7+1THvo4Oe0Jt9ejo
+         8HUVV6ldsY9tYboz9wfF6cqALrnc0LpkNO/GO3/z1xkWDxEE4BsWGJykj/0zpjsxd9
+         y5rvvHnqSJdfw==
+Message-ID: <419ac17f-ac4f-25bc-62d1-ddf05562764a@kernel.org>
+Date:   Wed, 15 Mar 2023 09:30:19 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230312022807.278528-3-vadfed@meta.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.7.2
+Subject: Re: [PATCH net] ipv4: Fix incorrect table ID in IOCTL path
+To:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, mark.tomlinson@alliedtelesis.co.nz,
+        gaoxingwang1@huawei.com, mlxsw@nvidia.com
+References: <20230315124009.4015212-1-idosch@nvidia.com>
+Content-Language: en-US
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20230315124009.4015212-1-idosch@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,24 +57,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, Mar 12, 2023 at 03:28:03AM CET, vadfed@meta.com wrote:
+On 3/15/23 6:40 AM, Ido Schimmel wrote:
+> Commit f96a3d74554d ("ipv4: Fix incorrect route flushing when source
+> address is deleted") started to take the table ID field in the FIB info
+> structure into account when determining if two structures are identical
+> or not. This field is initialized using the 'fc_table' field in the
+> route configuration structure, which is not set when adding a route via
+> IOCTL.
+> 
+> The above can result in user space being able to install two identical
+> routes that only differ in the table ID field of their associated FIB
+> info.
+> 
+> Fix by initializing the table ID field in the route configuration
+> structure in the IOCTL path.
+> 
+> Before the fix:
+> 
+>  # ip route add default via 192.0.2.2
+>  # route add default gw 192.0.2.2
+>  # ip -4 r show default
+>  # default via 192.0.2.2 dev dummy10
+>  # default via 192.0.2.2 dev dummy10
+> 
+> After the fix:
+> 
+>  # ip route add default via 192.0.2.2
+>  # route add default gw 192.0.2.2
+>  SIOCADDRT: File exists
+>  # ip -4 r show default
+>  default via 192.0.2.2 dev dummy10
+> 
+> Audited the code paths to ensure there are no other paths that do not
+> properly initialize the route configuration structure when installing a
+> route.
+> 
+> Fixes: 5a56a0b3a45d ("net: Don't delete routes in different VRFs")
+> Fixes: f96a3d74554d ("ipv4: Fix incorrect route flushing when source address is deleted")
+> Reported-by: gaoxingwang <gaoxingwang1@huawei.com>
+> Link: https://lore.kernel.org/netdev/20230314144159.2354729-1-gaoxingwang1@huawei.com/
+> Tested-by: gaoxingwang <gaoxingwang1@huawei.com>
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> ---
+>  net/ipv4/fib_frontend.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
 
-[...]
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
->+struct dpll_device
->+*dpll_device_get(u64 clock_id, u32 dev_driver_id, struct module *module);
 
-[...]
-
->+struct dpll_pin
->+*dpll_pin_get(u64 clock_id, u32 dev_driver_id, struct module *module,
->+	      const struct dpll_pin_properties *pin_prop);
-
-Small tweak, please use the same trick as shown for example here:
-/* pci_register_driver() must be a macro so KBUILD_MODNAME can be expanded */
-#define pci_register_driver(driver)             \
-        __pci_register_driver(driver, THIS_MODULE, KBUILD_MODNAME)
-
-The driver calls header helper which fills up the "THIS_MODULE" for it.
-
-Thanks!
