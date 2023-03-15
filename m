@@ -2,118 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F28F86BADAB
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 11:29:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86B256BADEC
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 11:41:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231969AbjCOK3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 06:29:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51170 "EHLO
+        id S231856AbjCOKlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 06:41:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232363AbjCOK3u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 06:29:50 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on20703.outbound.protection.outlook.com [IPv6:2a01:111:f400:7d00::703])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B25066D2A
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 03:29:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Uon0/bTb2BrRWs7bw4e93Df0oY2SlkWHj4YGlcj1NTEv8z6x43fOUjllSaZd9zq1gWLz8Yz7jxojZBiMNK/wC8t7bjPrR56I+b61hcZa97DFstpMQIV08n8nYlegDikmcZqqXM8RclOSY/i0TT+SkWCbloOkRdAgOSYRoTiYXCqJgElaK7C3DxNTM6gjP9JWRtXcbJpFgB584ZsOpLMFJAvKo3JSb259MJQry2e3+yjwxxnr8DYXXd7KQxpAJ0igf/guo7g5SxTtGVoOm0RN0IYoZI6yo9bQiotxNScD6CGfhizcVdmgbCX+O4fKIjDE72wLHYiDK6XlT8Qv1TU1lQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1hfAl2+GTjlBbONzs4wruvqVdS8jyamY2th6+eCXzG8=;
- b=HBPTg5xQXZHGh63C5XzrRDjfafqwhM8QAGIZqaDfhdzXf1FssCuy7rvLZCeYiuu7h+4nB2EmXsNzq/VH1BZF/KtdUISBuibsuvKIRKLo8PiGWMvaOqzcddwqMuOMn7Uh4qPGrnFca/0VfnMoZNTDCSuoRkU4r7QWkx1up8+yl11tuZhehZ4bO25lsH0LD+j5Ih5Ke3mJmbLFU1W3s4e9t/VDCTmPXw1a22kc7Ox49Sv0yDC6b/bK9b264QPD0PdkvSrnu6q1fdDE/e1vXINZFW3Um3oZdw2x4cQHMwuTO4hplQ8LCiJsGjEAmFbms8T4HZFrG+n87bWXNut3CqQiXg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=voleatech.de; dmarc=pass action=none header.from=voleatech.de;
- dkim=pass header.d=voleatech.de; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=voleatech.de;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1hfAl2+GTjlBbONzs4wruvqVdS8jyamY2th6+eCXzG8=;
- b=K2Jf7URqqz08ivIIgihKitaHozN9fm9MHKinzujpkuVugIbVFCwAZDZbr5YYWxd8KlbY9UBwWMPqTUblFhCFQcoiJstjJd08S80sv9Mkn8rf3sXAmys8MSFS318ViUDNlQs514vAFneQvlR1azaDTVfQYgtKgusssLYJ8UjMdjg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=voleatech.de;
-Received: from AM9PR05MB8857.eurprd05.prod.outlook.com (2603:10a6:20b:438::20)
- by DU0PR05MB10311.eurprd05.prod.outlook.com (2603:10a6:10:441::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.24; Wed, 15 Mar
- 2023 10:29:41 +0000
-Received: from AM9PR05MB8857.eurprd05.prod.outlook.com
- ([fe80::3fdc:3007:ffee:3c4d]) by AM9PR05MB8857.eurprd05.prod.outlook.com
- ([fe80::3fdc:3007:ffee:3c4d%8]) with mapi id 15.20.6178.029; Wed, 15 Mar 2023
- 10:29:41 +0000
-Date:   Wed, 15 Mar 2023 11:29:38 +0100
-From:   Sven Auhagen <sven.auhagen@voleatech.de>
-To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
-Cc:     netdev@vger.kernel.org, mw@semihalf.com, linux@armlinux.org.uk,
-        kuba@kernel.org, davem@davemloft.net
-Subject: Re: [PATCH 1/3] net: mvpp2: classifier flow remove tagged
-Message-ID: <20230315102938.wxuvtvgmklkflbay@SvensMacbookPro.hq.voleatech.com>
-References: <20230311070948.k3jyklkkhnsvngrc@Svens-MacBookPro.local>
- <20230315083148.7c05b980@pc-7.home>
- <20230315075330.zklzcdt3sukc5jy2@SvensMacbookPro.hq.voleatech.com>
- <20230315111950.04deda46@pc-7.home>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230315111950.04deda46@pc-7.home>
-X-ClientProxiedBy: FR2P281CA0151.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:98::14) To AM9PR05MB8857.eurprd05.prod.outlook.com
- (2603:10a6:20b:438::20)
+        with ESMTP id S231983AbjCOKlf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 06:41:35 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B07459808
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 03:41:33 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id c8-20020a05600c0ac800b003ed2f97a63eso775121wmr.3
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 03:41:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112; t=1678876891;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=fQc3aK0PHt9rmJAAmXdXsneRAxNxZg6X2oIcvnsB4ag=;
+        b=CEi/i7aP31CARW73WsTU9g1Xtnix658fs2k9k87+qR+zWeZXb9vKZgrkmpeJ2QTtne
+         UED/7PXdiW9I1RJnQFe0lBrhhJZcJ+uczfXgwFupZItDyiZHG/PinC+GNmuHEKFNdShu
+         VGfr4y19XEdtWGs1NhdNbeqtHfVHlRWCZdZgsdcu+JKLt0+COXqHJDyOgTjDKLRPsoHI
+         VeTT3T6F2UzusxWjhAU9crsJPUwrTijggv/lA5yNaZDfqev+nCAT/uRolpw4SG4SlXuY
+         9P0dmdl6rrZPPjKf4KtwWahuzbejKoYeuu01g8KYkNTKmkOl0DCVpmnnKKvPEfM4P7A8
+         MWXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678876891;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fQc3aK0PHt9rmJAAmXdXsneRAxNxZg6X2oIcvnsB4ag=;
+        b=1u8kueAKAHrsWbpbBy4qX9Wm8DvVycOm6v/v82psAtL5w5wdS6vtu2MTIZFhb54N+Z
+         MI+oJvuc+WigMBWs2HCl9XVs9UTUB8mknn2cCDL81zjN/mvuyXTMucm3fbnytJugFaoy
+         7xHs53NQPLR4UYQuMhsGpszjl7KGaNo1KdGotCaOJgifa8ie6EfuOoehvelpBc+Lz0Hm
+         SmMytuvmORjyvVCP+rr1O+FKRukW7WVBT+0nlERYlIOSNoshRMqSiGDfC9Sbiqywj4e3
+         bvEWd+XnNQ502Rq29Khe5S8jSjUi0HuKPtcRITUQa7BNMpaWkd2kJa+h/SuRbhcqAuBV
+         F06g==
+X-Gm-Message-State: AO0yUKXIP1QSH3xUUSTXZsHzKYeLOQcnOMdCNUTUDzMW0vafncL/4S1H
+        BbsyI68w90SCA3ucBmVCbcVNDg==
+X-Google-Smtp-Source: AK7set8Mtk0LwWhyWB9/FpteoEVjLr4r+ag7RPu/JlMVnxgB+wBS0IqCE+l9iUpMhT1JTniLvkKJwg==
+X-Received: by 2002:a7b:ca41:0:b0:3ea:f75d:4626 with SMTP id m1-20020a7bca41000000b003eaf75d4626mr17114460wml.38.1678876891602;
+        Wed, 15 Mar 2023 03:41:31 -0700 (PDT)
+Received: from blmsp ([2001:4090:a247:8056:be7d:83e:a6a5:4659])
+        by smtp.gmail.com with ESMTPSA id 22-20020a05600c021600b003ecc64edf7esm1382047wmi.39.2023.03.15.03.41.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Mar 2023 03:41:31 -0700 (PDT)
+Date:   Wed, 15 Mar 2023 11:41:30 +0100
+From:   Markus Schneider-Pargmann <msp@baylibre.com>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 5/5] can: tcan4x5x: Add support for tcan4552/4553
+Message-ID: <20230315104130.qadwmybimn2rhkmx@blmsp>
+References: <20230314151201.2317134-1-msp@baylibre.com>
+ <20230314151201.2317134-6-msp@baylibre.com>
+ <ZBCfKhPZrIMqvmbO@corigine.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM9PR05MB8857:EE_|DU0PR05MB10311:EE_
-X-MS-Office365-Filtering-Correlation-Id: fb56483c-cabd-4601-38da-08db25402ff0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: v+PX40hq8VGWn9opeD/HQCkG7iZYMr+d0+4j3R+hn5p7dXO4rxQ7TS8dJ+9pFGrY8+N+HeObj29xKhQNQgrVniFuu3LgFvxTmuLKux8NWc04PbprwYOwCW4Oxm5qiDzpjctYXWFvoEfxggvZ4XTnUn7FTwTYBfnXBeOgW38XjiC6cwdX+7ztufK5g6bFnOoa7xGBoD4sgH8lUhtuR75HEpSGhPZg57EkTzmBUTWMQZ90SbD6STnG3Doth4VxI8EYS5MZ7CcXnqNKtRZRB7ZZeaMPKXyuE2M8SN+pTBXCB6WKsFFcWnv/1sXm0jPL1efXfaWmpciNmoZa+leEZWkTFPStzVUvJtzHFF0CC67k700jOQgevjZ2puLYjvtEOZgEGJl8Q9CiE96gf3nqP3YG710jVg1JrPYb/32rzypjSvCZ6en/FOTbOn9SV68zBoYLt19QqDZ7HcdchedrtVPGS7Bil7gYtcDyJdThIY4jlCjAnOGswh/uN7L7tbLikMtaCqXDyCJIGoVXO9gUypnnwRaqoSTebpWI6R8cmwKoQdUDKzoiQuyVuOCKTot7fKb8dvVhP5SV4QsqjgP7UxPmTKYtD40/FpzmDvCFSJt70JhR7VrVOWxTxcn0ILQEPCb7H0IHR82+L9JVr+SZ/GOzhA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR05MB8857.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(346002)(376002)(39840400004)(396003)(136003)(451199018)(3716004)(5660300002)(44832011)(2906002)(38100700002)(558084003)(86362001)(6666004)(9686003)(1076003)(26005)(6512007)(186003)(478600001)(6506007)(316002)(41300700001)(8936002)(6486002)(6916009)(66946007)(66556008)(66476007)(4326008)(8676002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PiEx2IOE8HzwV3kTG0VILtmVzqNo3quEGdVk7R3ydCBEBhgmNavGJZDaXcJG?=
- =?us-ascii?Q?aA0t/u7JmGxddCDx/g0L9BCq8gKeMeS2yIYI89xgfMceaoLUEB2N8ytKVCf6?=
- =?us-ascii?Q?q+xjrTxcPr9z15gvMOsobAe+m1WR9Mf0vc12N2siFn3ojYMza8PtiPPh5bJ8?=
- =?us-ascii?Q?Vl4RSuQjfpfF5luz9i9pdFD/K8MDr4P64B/5YXGJxjVhslhRiBtSG2DDOknz?=
- =?us-ascii?Q?vciFwniVrwUrZ4ukRX9hLkN7oylOnl/t2SihvzHWzquzLTBfe+/xsYiVYlS0?=
- =?us-ascii?Q?4xwWayGUJEcJt+DcEwxi5UyOe/ROoCatcD8qc93KMhE48CrcAO2k7GCDI9ig?=
- =?us-ascii?Q?utqpplbTMjenU9xkEbr+iTHWNnFqS9r6eFmbZUsi9TYvmYkPHmaQAap1fix1?=
- =?us-ascii?Q?/KcvrbUyZYemM+a6nD8OeJ36Jcg2LzDoqsepRzRDJdbES7NgS9LQCUMunTdM?=
- =?us-ascii?Q?zvQX3eZYLjEXhk7nMBsUcMs/J59jYQU7dzbRVaeIayQ/DbK6EMQQu1RTJjMw?=
- =?us-ascii?Q?z2wMVK8ufuehW27smfE5HEYivPJiwf7ZU6B4UfzcQABhcO9FKYMCkes0zZ+f?=
- =?us-ascii?Q?O1YD3Pn8tPEPRoB4pWyqKdrGMrzL1r/V3889Dkw/EAgnvTf2ZEJ59w7kW/f5?=
- =?us-ascii?Q?Vs0GVO4XsPF+0MEY4dmYNg0/5P/RWCQGbgh87CC9nQFhQsSLRu5DhSostL8O?=
- =?us-ascii?Q?qUk40ACTKGwGBxDPizx1whF7aJXiVT/o81DOOSaGY/xF/SwHt7DbEL52AO3M?=
- =?us-ascii?Q?22aIy7ZaRemZMjJCoa1fxRoJ4/LdWXbd13cahOaaJ7pYpOSQH+NfDgLKbKV+?=
- =?us-ascii?Q?/nbnXQw346EFBxcAnrrpqDkggpzuVBa4E/Efp+0l3lsxjE0f+tTyVEeWrzfI?=
- =?us-ascii?Q?g0uvxTk9MsOFdo+ggsNimVMnJAo4vFDHI+/R94AE8bhWlGoxzr5fc4aq0XG4?=
- =?us-ascii?Q?YDhZTYyvRTAJPOA1iRguzdounQiMWuvwPFa9TJ4GqS53r7wnAWgSa1saVHl7?=
- =?us-ascii?Q?nfi2EyljodG2C+sbUNT3SwQgphCjfHN02Q5GK0j75GLQurOpbuq4jEcUZ0yM?=
- =?us-ascii?Q?zjn87lLJ9mpK/MNPPBelVfuLeaOtzaRiMv7FYjmcwOihtQQkH4nLFeHAzEgO?=
- =?us-ascii?Q?+odockQsVX+dg/mQevUKMgR21MTIwsVtgLXZEI4VstkGMeIiMddtzEP1uprl?=
- =?us-ascii?Q?b8+mZ7trBQO8h39i0ynNQBwhR3H2tFx8zlGGD4TFg9dMrb+9NmwiFmUaWjNK?=
- =?us-ascii?Q?qs8JHja8egzFl8jFuhJl3JYA1ovcz9H0tMiaRpoOhhhfl7wM4GMXo2rg27/I?=
- =?us-ascii?Q?f3cFgtxX5s+UecV2l1RN0aUIVFmVqqadhRPVV/KwBHfdylLCySFUwL/w7qEJ?=
- =?us-ascii?Q?Y9+fIx5M/Q1AvF0VaFv78795zafn3oinmzKDWqRbFLwT3fhgTN1XHH7TZ82+?=
- =?us-ascii?Q?hy0j1LoclHPx5tt29y7N3XJK/nPZMi+EWe7K5AbcQTYEaQZZ0coKlzHKHwW4?=
- =?us-ascii?Q?nk5+xV7bLgQq0lSZr+4RodxPRpyy9MVuK1yNRO/7/z0tlpvA8ih434/VEITe?=
- =?us-ascii?Q?SGibbt5krcvWJHWEuZrhCQcfNi3Uff3NYb63yrZwV1W983xplAx26mp3YbgG?=
- =?us-ascii?Q?Iw=3D=3D?=
-X-OriginatorOrg: voleatech.de
-X-MS-Exchange-CrossTenant-Network-Message-Id: fb56483c-cabd-4601-38da-08db25402ff0
-X-MS-Exchange-CrossTenant-AuthSource: AM9PR05MB8857.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2023 10:29:41.6713
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: b82a99f6-7981-4a72-9534-4d35298f847b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UbMvyxLH1YD9Sv1sU/tIhltnf06kZ3z3Z2UIuo6i2zTSdotMrHCthnstR/N2h2ES9Z2TkMJW7qleVUCz56fkPkMp85Ns5MAah7Yoz7dGgPw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR05MB10311
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <ZBCfKhPZrIMqvmbO@corigine.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 15, 2023 at 11:19:50AM +0100, Maxime Chevallier wrote:
+Hi Simon,
+
+On Tue, Mar 14, 2023 at 05:22:02PM +0100, Simon Horman wrote:
+> On Tue, Mar 14, 2023 at 04:12:01PM +0100, Markus Schneider-Pargmann wrote:
+> > tcan4552 and tcan4553 do not have wake or state pins, so they are
+> > currently not compatible with the generic driver. The generic driver
+> > uses tcan4x5x_disable_state() and tcan4x5x_disable_wake() if the gpios
+> > are not defined. These functions use register bits that are not
+> > available in tcan4552/4553.
+> > 
+> > This patch adds support by introducing version information to reflect if
+> > the chip has wake and state pins. Also the version is now checked.
+> > 
+> > Signed-off-by: Markus Schneider-Pargmann
+> 
+> Hi Markus,
+> 
+> you forgot your email address in the signed-off-by line.
+
+Thank you, I am wondering how I managed to do that :D.
+
+> 
+> > ---
+> >  drivers/net/can/m_can/tcan4x5x-core.c | 113 ++++++++++++++++++++------
+> >  1 file changed, 89 insertions(+), 24 deletions(-)
+> > 
+> > diff --git a/drivers/net/can/m_can/tcan4x5x-core.c b/drivers/net/can/m_can/tcan4x5x-core.c
+> > index fb9375fa20ec..e7fa509dacc9 100644
+> > --- a/drivers/net/can/m_can/tcan4x5x-core.c
+> > +++ b/drivers/net/can/m_can/tcan4x5x-core.c
+> 
+> ...
+> 
+> > @@ -254,18 +262,53 @@ static int tcan4x5x_disable_state(struct m_can_classdev *cdev)
+> >  				  TCAN4X5X_DISABLE_INH_MSK, 0x01);
+> >  }
+> >  
+> > -static int tcan4x5x_get_gpios(struct m_can_classdev *cdev)
+> > +static int tcan4x5x_verify_version(
+> > +		struct tcan4x5x_priv *priv,
+> > +		const struct tcan4x5x_version_info *version_info)
+> 
+> nit:
+> 
+> static int
+> tcan4x5x_verify_version(struct tcan4x5x_priv *priv,                                                     const struct tcan4x5x_version_info *version_info)
+> 
+> or:
+> 
+> static int tcan4x5x_verify_version(struct tcan4x5x_priv *priv,                                                     const struct tcan4x5x_version_info *version_info)
+> 
+> Your could make the line shorter by renaming the 'version_info' parameter,
+> say to 'info'.
+
+Thanks, fixed. I would like to keep version_info as it is used like that
+everywhere else. I think/hope breaking the 80c here is fine.
+
+> 
+> ...
+> 
+> > @@ -394,21 +448,32 @@ static void tcan4x5x_can_remove(struct spi_device *spi)
+> >  	m_can_class_free_dev(priv->cdev.net);
+> >  }
+> >  
+> > +static const struct tcan4x5x_version_info tcan4x5x_generic = {
+> > +	.has_state_pin = true,
+> > +	.has_wake_pin = true,
+> > +};
+> > +
+> > +static const struct tcan4x5x_version_info tcan4x5x_tcan4552 = {
+> > +	.id2_register = 0x32353534, /* ASCII = 4552 */
+> > +};
+> > +
+> > +static const struct tcan4x5x_version_info tcan4x5x_tcan4553 = {
+> > +	.id2_register = 0x33353534, /* ASCII = 4553 */
+> > +};
+> > +
+> >  static const struct of_device_id tcan4x5x_of_match[] = {
+> > -	{
+> > -		.compatible = "ti,tcan4x5x",
+> > -	}, {
+> > -		/* sentinel */
+> > -	},
+> > +	{ .compatible = "ti,tcan4x5x", .data = &tcan4x5x_generic },
+> > +	{ .compatible = "ti,tcan4552", .data = &tcan4x5x_tcan4552 },
+> > +	{ .compatible = "ti,tcan4553", .data = &tcan4x5x_tcan4553 },
+> > +	{ /* sentinel */ }
+> >  };
+> >  MODULE_DEVICE_TABLE(of, tcan4x5x_of_match);
+> >  
+> >  static const struct spi_device_id tcan4x5x_id_table[] = {
+> > -	{
+> > -		.name = "tcan4x5x",
+> > -	}, {
+> > -		/* sentinel */
+> > -	},
+> > +	{ .name = "tcan4x5x", .driver_data = (unsigned long) &tcan4x5x_generic, },
+> > +	{ .name = "tcan4552", .driver_data = (unsigned long) &tcan4x5x_tcan4552, },
+> > +	{ .name = "tcan4553", .driver_data = (unsigned long) &tcan4x5x_tcan4553, },
+> 
+> nit: checkpatch tells me that no space is necessary after a cast.
+
+Fixed as well.
+
+Thanks for reviewing.
+
+Best,
+Markus
