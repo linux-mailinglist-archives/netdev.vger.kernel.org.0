@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 489036BBD59
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 20:36:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F8856BBD5C
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 20:36:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232875AbjCOTgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 15:36:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59998 "EHLO
+        id S232893AbjCOTgG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 15:36:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232779AbjCOTgB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 15:36:01 -0400
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B658B046
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 12:35:59 -0700 (PDT)
-Received: by mail-qt1-x82f.google.com with SMTP id l13so17498220qtv.3
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 12:35:59 -0700 (PDT)
+        with ESMTP id S232859AbjCOTgC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 15:36:02 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1E3989F38
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 12:36:00 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id c19so17415125qtn.13
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 12:36:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678908959;
+        d=linaro.org; s=google; t=1678908960;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=erRl2xavC/v8RCG0iGxQtKfxSfjcWRGZhzPnMxXYyms=;
-        b=syf2MHuNA5s5VBnyIDPYogKU3AXFQCUZgbXRKEzUafSRlVP/42EQWCyRl4OHJYHcFW
-         Wk+2eOgSe/kzjvo5bjj4D8CARFP7tVYdNo4v5xJFIBh8tz2QYXIAwMPmb9EwvnZi2ujU
-         5jwaQXIILl9/IZiuwUJA4deWfxjK1KZYhxFbheAxDvg4KAsbYVHO4XBgC4P4NU9F2Hve
-         xvPRTyU3SL1mtQEYCi1cRedp4hxxzEfDWTOQ/MbecgEX1z+yRSMCK/+mABl1uGiUluYJ
-         LKS45G3TKGpoq6cRabFFhn7my6UJamjGj4yfu/hwSS9m14XPDBfYIVNlfDTzCFeGVnbh
-         XVbg==
+        bh=UM6PqEpDoYuItRnCoM9ACC1yo8IO9qbwassRTpRpyUE=;
+        b=x64Vi1XlTqVBMESG/QoSugcbctTPG3L0iaMw3eAXEezzHsQT6myX/M05MGMEhXFgt6
+         dM6sojav9dd2uglGN2BTX3Lr5zq4T0KVhePWJWOal1i1MtG0TBkrN+x6ayLTaCallH2P
+         Atv96GM4sb+gsb5YIg/2Zu/7rRj5oDzieQRwSQNjZkOdFnNTEUPpAI++lPFt0yly/Ck0
+         KG89V7e1lktkRMSo2DOpIXZZhkd6CX058zbaHwJbXUSg3webymtZF9YaStO/pzw1nFT4
+         rNgJbzMPz6lyJ4IrvuwnGLbmsyCglkvurx5hEZthJEcy59sTQR7nLmj1qn8Tel8ZGBfy
+         RvGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678908959;
+        d=1e100.net; s=20210112; t=1678908960;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=erRl2xavC/v8RCG0iGxQtKfxSfjcWRGZhzPnMxXYyms=;
-        b=RyothlpPUo9r13i76RdapGUNHLirFyOiz9p+MdJIiFXEzTWzZL1+iLD9EsWArwXQM9
-         FS5quWza7PPrLIU3ZLHmuZQlfpXedIxW7BCUSvvR1pZdopEawYa1bECfAVsnC3Pw7anY
-         WZWmKvikhAmYv0vIgM5sNzfHUAQ/6V6a+5qSs/SrW5pbkTKwBt7cdoSkszbntgpGqLzf
-         A7HDgIn/skeplyQ7fELDWXgxaptQ2QDxvQX48iN41hGDskP9mhGzx7Is2HGp5BeqnxFU
-         JxdQMV2ED6n3oY58RmGuxkLgXn9MOgUJd4+9hnwJZ4PMSRHDk7yuiEq12t2Ba3yXzznt
-         wOdA==
-X-Gm-Message-State: AO0yUKX0AVowwx+CbNqSvnmOtHfYTVnYZktw/u6lp/AePgXAVrDZZgnG
-        W38NCNJK0oHQx8yisyxsDP+EcQ==
-X-Google-Smtp-Source: AK7set9dHEALzKOulqYYDBAhnymWtF4QNOfjv1Gy30FmFLGHtk9RA6oXYi2QQMTXY2e5Mu323NL4aw==
-X-Received: by 2002:a05:622a:34d:b0:3d0:7bdf:42c4 with SMTP id r13-20020a05622a034d00b003d07bdf42c4mr1586720qtw.59.1678908958994;
-        Wed, 15 Mar 2023 12:35:58 -0700 (PDT)
+        bh=UM6PqEpDoYuItRnCoM9ACC1yo8IO9qbwassRTpRpyUE=;
+        b=2vruPhh3ipxdG4hvHRI0ybfzXAZ6AAIJHziziV8b0q5fj/Jz/xEHUqVIJJbQ8OpY/m
+         4AiyVS56pOOekSEsLMKRw5CSbdqKtkN2Knrys0wYMgcIEf+eOdKk2ez2zD+XqAMZU2cH
+         cU6CtwQADZ0H8j5B8GoHaf1aAdVgg9xje9IEVL1PR01eO62CFu7g1GT2UbhxjzuTn6Cd
+         sZE1G7xwelBMLYepuDYFA5E6YFXKhIyWlU4GJvKTFmg4YbtbATzvYT7Gm+gCN7stoN69
+         ipPjlpBiHiXrRx25f2Et1x6z+sRzzWyz0UGANygsFqlUuWc3+BRedpiEmw5pfzOcD5X2
+         4U8g==
+X-Gm-Message-State: AO0yUKWTH1fA7u+csk1rPgZ7M90GMxeUnKh2dlPFqMj3/pXuYHcnuopj
+        SC4NvCveanHpREbo3I+OhgXXFw==
+X-Google-Smtp-Source: AK7set+V+XR6LUL/OKH/AUxnGqhmmizumRWjhbFW2SILS1IJRMAPhnNRyCH1P53MBYmBdFIrId725Q==
+X-Received: by 2002:ac8:7dd5:0:b0:3d2:90b1:d161 with SMTP id c21-20020ac87dd5000000b003d290b1d161mr1773437qte.48.1678908960330;
+        Wed, 15 Mar 2023 12:36:00 -0700 (PDT)
 Received: from localhost.localdomain ([98.61.227.136])
-        by smtp.gmail.com with ESMTPSA id q9-20020a05620a024900b0071eddd3bebbsm4369462qkn.81.2023.03.15.12.35.57
+        by smtp.gmail.com with ESMTPSA id q9-20020a05620a024900b0071eddd3bebbsm4369462qkn.81.2023.03.15.12.35.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Mar 2023 12:35:58 -0700 (PDT)
+        Wed, 15 Mar 2023 12:36:00 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com
@@ -58,9 +58,9 @@ Cc:     caleb.connolly@linaro.org, mka@chromium.org, evgreen@chromium.org,
         quic_subashab@quicinc.com, elder@kernel.org,
         netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net v2 1/4] net: ipa: reg: include <linux/bug.h>
-Date:   Wed, 15 Mar 2023 14:35:49 -0500
-Message-Id: <20230315193552.1646892-2-elder@linaro.org>
+Subject: [PATCH net v2 2/4] net: ipa: add two missing declarations
+Date:   Wed, 15 Mar 2023 14:35:50 -0500
+Message-Id: <20230315193552.1646892-3-elder@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230315193552.1646892-1-elder@linaro.org>
 References: <20230315193552.1646892-1-elder@linaro.org>
@@ -76,36 +76,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When "reg.h" got created, it included calls to WARN() and WARN_ON().
-Those macros are defined via <linux/bug.h>.  In addition, it uses
-is_power_of_2(), which is defined in <linux/log2.h>.  Include those
-files so IPA "reg.h" has access to all definitions it requires.
+When gsi_reg_init() got added, its declaration was added to
+"gsi_reg.h" without declaring the two struct pointer types it uses.
+Add these struct declarations to "gsi_reg.h".
 
-Meanwhile, <linux/bits.h> is included but nothing defined therein
-is required directly in "reg.h", so get rid of that.
-
-Fixes: 81772e444dbe ("net: ipa: start generalizing "ipa_reg"")
+Fixes: 3c506add35c7 ("net: ipa: introduce gsi_reg_init()")
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
 v2: Correct the "Fixes" commit hash.
 
- drivers/net/ipa/reg.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ipa/gsi_reg.h | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ipa/reg.h b/drivers/net/ipa/reg.h
-index 57b457f39b6e2..2ee07eebca677 100644
---- a/drivers/net/ipa/reg.h
-+++ b/drivers/net/ipa/reg.h
-@@ -6,7 +6,8 @@
- #define _REG_H_
+diff --git a/drivers/net/ipa/gsi_reg.h b/drivers/net/ipa/gsi_reg.h
+index f62f0a5c653d1..48fde65fa2e8a 100644
+--- a/drivers/net/ipa/gsi_reg.h
++++ b/drivers/net/ipa/gsi_reg.h
+@@ -10,6 +10,10 @@
  
- #include <linux/types.h>
--#include <linux/bits.h>
-+#include <linux/log2.h>
-+#include <linux/bug.h>
+ #include <linux/bits.h>
  
++struct platform_device;
++
++struct gsi;
++
  /**
-  * struct reg - A register descriptor
+  * DOC: GSI Registers
+  *
 -- 
 2.34.1
 
