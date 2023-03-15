@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0E4B6BA5FE
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 05:11:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C570A6BA601
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 05:11:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230445AbjCOELN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 00:11:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59090 "EHLO
+        id S231166AbjCOELQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 00:11:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230432AbjCOEK4 (ORCPT
+        with ESMTP id S230478AbjCOEK4 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 00:10:56 -0400
-Received: from out30-98.freemail.mail.aliyun.com (out30-98.freemail.mail.aliyun.com [115.124.30.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEC2E4B831;
-        Tue, 14 Mar 2023 21:10:50 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0Vdui0Pt_1678853447;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0Vdui0Pt_1678853447)
+Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEDF34B812;
+        Tue, 14 Mar 2023 21:10:51 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R701e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0Vdui0QM_1678853448;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0Vdui0QM_1678853448)
           by smtp.aliyun-inc.com;
-          Wed, 15 Mar 2023 12:10:47 +0800
+          Wed, 15 Mar 2023 12:10:49 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     netdev@vger.kernel.org
 Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
@@ -31,9 +31,9 @@ Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
         virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: [RFC net-next 4/8] virtio_net: separate the logic of freeing xdp shinfo
-Date:   Wed, 15 Mar 2023 12:10:38 +0800
-Message-Id: <20230315041042.88138-5-xuanzhuo@linux.alibaba.com>
+Subject: [RFC net-next 5/8] virtio_net: separate the logic of freeing the rest mergeable buf
+Date:   Wed, 15 Mar 2023 12:10:39 +0800
+Message-Id: <20230315041042.88138-6-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.32.0.3.g01195cf9f
 In-Reply-To: <20230315041042.88138-1-xuanzhuo@linux.alibaba.com>
 References: <20230315041042.88138-1-xuanzhuo@linux.alibaba.com>
@@ -50,69 +50,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch introduce a new function that releases the
-xdp shinfo. The subsequent patch will reuse this function.
+This patch introduce a new function that frees the rest mergeable buf.
+The subsequent patch will reuse this function.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 ---
- drivers/net/virtio_net.c | 27 ++++++++++++++++-----------
- 1 file changed, 16 insertions(+), 11 deletions(-)
+ drivers/net/virtio_net.c | 36 ++++++++++++++++++++++++------------
+ 1 file changed, 24 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 13c43b609465..cd6ee3060259 100644
+index cd6ee3060259..43ceb7497bad 100644
 --- a/drivers/net/virtio_net.c
 +++ b/drivers/net/virtio_net.c
-@@ -728,6 +728,21 @@ static int virtnet_xdp_xmit(struct net_device *dev,
- 	return ret;
+@@ -1006,6 +1006,28 @@ static struct sk_buff *receive_big(struct net_device *dev,
+ 	return NULL;
  }
  
-+static void put_xdp_frags(struct xdp_buff *xdp)
++static void mergeable_buf_free(struct receive_queue *rq, int num_buf,
++			       struct net_device *dev,
++			       struct virtnet_rq_stats *stats)
 +{
-+	struct skb_shared_info *shinfo;
-+	struct page *xdp_page;
-+	int i;
++	struct page *page;
++	void *buf;
++	int len;
 +
-+	if (xdp_buff_has_frags(xdp)) {
-+		shinfo = xdp_get_shared_info_from_buff(xdp);
-+		for (i = 0; i < shinfo->nr_frags; i++) {
-+			xdp_page = skb_frag_page(&shinfo->frags[i]);
-+			put_page(xdp_page);
++	while (num_buf-- > 1) {
++		buf = virtqueue_get_buf(rq->vq, &len);
++		if (unlikely(!buf)) {
++			pr_debug("%s: rx error: %d buffers missing\n",
++				 dev->name, num_buf);
++			dev->stats.rx_length_errors++;
++			break;
 +		}
++		stats->bytes += len;
++		page = virt_to_head_page(buf);
++		put_page(page);
 +	}
 +}
 +
- static int virtnet_xdp_handler(struct bpf_prog *xdp_prog, struct xdp_buff *xdp,
- 			       struct net_device *dev,
- 			       unsigned int *xdp_xmit,
-@@ -1242,12 +1257,9 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 	xdp_prog = rcu_dereference(rq->xdp_prog);
- 	if (xdp_prog) {
- 		unsigned int xdp_frags_truesz = 0;
--		struct skb_shared_info *shinfo;
--		struct page *xdp_page;
- 		struct xdp_buff xdp;
- 		void *data;
- 		u32 act;
--		int i;
- 
- 		data = mergeable_xdp_prepare(vi, rq, xdp_prog, ctx, &frame_sz, &num_buf, &page,
- 					     offset, &len, hdr);
-@@ -1278,14 +1290,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 			goto err_xdp_frags;
- 		}
- err_xdp_frags:
--		if (xdp_buff_has_frags(&xdp)) {
--			shinfo = xdp_get_shared_info_from_buff(&xdp);
--			for (i = 0; i < shinfo->nr_frags; i++) {
--				xdp_page = skb_frag_page(&shinfo->frags[i]);
--				put_page(xdp_page);
--			}
+ /* Why not use xdp_build_skb_from_frame() ?
+  * XDP core assumes that xdp frags are PAGE_SIZE in length, while in
+  * virtio-net there are 2 points that do not match its requirements:
+@@ -1366,18 +1388,8 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+ 	stats->xdp_drops++;
+ err_skb:
+ 	put_page(page);
+-	while (num_buf-- > 1) {
+-		buf = virtqueue_get_buf(rq->vq, &len);
+-		if (unlikely(!buf)) {
+-			pr_debug("%s: rx error: %d buffers missing\n",
+-				 dev->name, num_buf);
+-			dev->stats.rx_length_errors++;
+-			break;
 -		}
--
-+		put_xdp_frags(&xdp);
- 		goto err_xdp;
- 	}
- 	rcu_read_unlock();
+-		stats->bytes += len;
+-		page = virt_to_head_page(buf);
+-		put_page(page);
+-	}
++	mergeable_buf_free(rq, num_buf, dev, stats);
++
+ err_buf:
+ 	stats->drops++;
+ 	dev_kfree_skb(head_skb);
 -- 
 2.32.0.3.g01195cf9f
 
