@@ -2,186 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 86B256BADEC
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 11:41:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDA6F6BAE08
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 11:45:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231856AbjCOKlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 06:41:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37794 "EHLO
+        id S232517AbjCOKp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 06:45:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231983AbjCOKlf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 06:41:35 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B07459808
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 03:41:33 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id c8-20020a05600c0ac800b003ed2f97a63eso775121wmr.3
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 03:41:33 -0700 (PDT)
+        with ESMTP id S232591AbjCOKpG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 06:45:06 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94EF387D81
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 03:44:34 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id bi20so2323599wmb.2
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 03:44:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112; t=1678876891;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112; t=1678877072;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=fQc3aK0PHt9rmJAAmXdXsneRAxNxZg6X2oIcvnsB4ag=;
-        b=CEi/i7aP31CARW73WsTU9g1Xtnix658fs2k9k87+qR+zWeZXb9vKZgrkmpeJ2QTtne
-         UED/7PXdiW9I1RJnQFe0lBrhhJZcJ+uczfXgwFupZItDyiZHG/PinC+GNmuHEKFNdShu
-         VGfr4y19XEdtWGs1NhdNbeqtHfVHlRWCZdZgsdcu+JKLt0+COXqHJDyOgTjDKLRPsoHI
-         VeTT3T6F2UzusxWjhAU9crsJPUwrTijggv/lA5yNaZDfqev+nCAT/uRolpw4SG4SlXuY
-         9P0dmdl6rrZPPjKf4KtwWahuzbejKoYeuu01g8KYkNTKmkOl0DCVpmnnKKvPEfM4P7A8
-         MWXA==
+        bh=I5w307rWmgryop5gmMyN+pVKpaqhUM4imOkVri/jWj8=;
+        b=PpveHZTtHgwOpRpiv8XfWncVaUopLpJaLcCIRxWd+VSfAzE7Aj4c25z0jKYxNhvUJt
+         KGIeDfsFW9tgy7rPoiRutjMEOK9zY3OXxVRVo/dVDg9m8n1K4vnjhxCKLz5IgrPaVw4G
+         /9OZSgVPD8oFi5YkF8+evYaND9IXT2rPHy1lwDNcuc/RfVEVAcWMre7vy8zxr6KtL/DL
+         ovypciI9uf/3sdxK64MK0YAfuPBBvcA4ZvdlD9LAbtnjiV+1bewhf14GvmOmbd8YepVM
+         u7Cehm4B3p9cl7CuASSsOcThQGEZE5NEu25ZGVPdIUYxCzPaYi9wk6RA+l2vo3AWOG1O
+         o1ew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678876891;
+        d=1e100.net; s=20210112; t=1678877072;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=fQc3aK0PHt9rmJAAmXdXsneRAxNxZg6X2oIcvnsB4ag=;
-        b=1u8kueAKAHrsWbpbBy4qX9Wm8DvVycOm6v/v82psAtL5w5wdS6vtu2MTIZFhb54N+Z
-         MI+oJvuc+WigMBWs2HCl9XVs9UTUB8mknn2cCDL81zjN/mvuyXTMucm3fbnytJugFaoy
-         7xHs53NQPLR4UYQuMhsGpszjl7KGaNo1KdGotCaOJgifa8ie6EfuOoehvelpBc+Lz0Hm
-         SmMytuvmORjyvVCP+rr1O+FKRukW7WVBT+0nlERYlIOSNoshRMqSiGDfC9Sbiqywj4e3
-         bvEWd+XnNQ502Rq29Khe5S8jSjUi0HuKPtcRITUQa7BNMpaWkd2kJa+h/SuRbhcqAuBV
-         F06g==
-X-Gm-Message-State: AO0yUKXIP1QSH3xUUSTXZsHzKYeLOQcnOMdCNUTUDzMW0vafncL/4S1H
-        BbsyI68w90SCA3ucBmVCbcVNDg==
-X-Google-Smtp-Source: AK7set8Mtk0LwWhyWB9/FpteoEVjLr4r+ag7RPu/JlMVnxgB+wBS0IqCE+l9iUpMhT1JTniLvkKJwg==
-X-Received: by 2002:a7b:ca41:0:b0:3ea:f75d:4626 with SMTP id m1-20020a7bca41000000b003eaf75d4626mr17114460wml.38.1678876891602;
-        Wed, 15 Mar 2023 03:41:31 -0700 (PDT)
+        bh=I5w307rWmgryop5gmMyN+pVKpaqhUM4imOkVri/jWj8=;
+        b=6EwSHV6V9wGPo92azLjBC1Cbv/8T2AT96MH7YGt+XUgKw0htgBc8zXw0rD3xJbAuhu
+         kc+CPc+8S1eR7ulT3reBQeuWNz6DxEi5vIjzLy9D1qwvg4588jCWU72AbbWiEFpsQUm8
+         veJMKzDWzythkBPUrpjUIHadILfqGRFx9fCogjNxiD9GLuNc96aHnwVd38fLvitChsKN
+         jHQKhoIZDj/TEnqn3GBgFfHH5loAu+d5RbF3KtnY4x88R4ZzG52WUDaOfqdMZmafp57K
+         odFkwm50V8wQ4jdPC7OjFMtLZxo1vkcbNKvlYtct6W3w+GAlyFu0JeXYjdy0IIPHfN3T
+         369g==
+X-Gm-Message-State: AO0yUKULB3OgTD/YS+eCw17+//oZ3Evel+KlMZJ1r8VXTd4Ijp8ajLzI
+        JOMuP5EZg3LyYJHPdWCvPECGwA==
+X-Google-Smtp-Source: AK7set9AENzO58n901CYx+STwtwt9velomv9LpAyWxcfODReIXx5iAtinpK4tJEBKI+uOV38mW1ccw==
+X-Received: by 2002:a05:600c:4ecf:b0:3eb:29fe:70ec with SMTP id g15-20020a05600c4ecf00b003eb29fe70ecmr18972129wmq.27.1678877072523;
+        Wed, 15 Mar 2023 03:44:32 -0700 (PDT)
 Received: from blmsp ([2001:4090:a247:8056:be7d:83e:a6a5:4659])
-        by smtp.gmail.com with ESMTPSA id 22-20020a05600c021600b003ecc64edf7esm1382047wmi.39.2023.03.15.03.41.30
+        by smtp.gmail.com with ESMTPSA id m16-20020a05600c3b1000b003dc4a47605fsm1504944wms.8.2023.03.15.03.44.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Mar 2023 03:41:31 -0700 (PDT)
-Date:   Wed, 15 Mar 2023 11:41:30 +0100
+        Wed, 15 Mar 2023 03:44:32 -0700 (PDT)
+Date:   Wed, 15 Mar 2023 11:44:31 +0100
 From:   Markus Schneider-Pargmann <msp@baylibre.com>
-To:     Simon Horman <simon.horman@corigine.com>
+To:     Michal Kubiak <michal.kubiak@intel.com>
 Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
         Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
         Wolfgang Grandegger <wg@grandegger.com>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
+        Simon Horman <simon.horman@corigine.com>,
         linux-can@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5/5] can: tcan4x5x: Add support for tcan4552/4553
-Message-ID: <20230315104130.qadwmybimn2rhkmx@blmsp>
+Subject: Re: [PATCH 0/5] can: tcan4x5x: Introduce tcan4552/4553
+Message-ID: <20230315104431.xv7md4jcmpw4tkdr@blmsp>
 References: <20230314151201.2317134-1-msp@baylibre.com>
- <20230314151201.2317134-6-msp@baylibre.com>
- <ZBCfKhPZrIMqvmbO@corigine.com>
+ <ZBC8cw/yLiv9L9OM@localhost.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <ZBCfKhPZrIMqvmbO@corigine.com>
+In-Reply-To: <ZBC8cw/yLiv9L9OM@localhost.localdomain>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Simon,
+Hi Michal,
 
-On Tue, Mar 14, 2023 at 05:22:02PM +0100, Simon Horman wrote:
-> On Tue, Mar 14, 2023 at 04:12:01PM +0100, Markus Schneider-Pargmann wrote:
-> > tcan4552 and tcan4553 do not have wake or state pins, so they are
-> > currently not compatible with the generic driver. The generic driver
-> > uses tcan4x5x_disable_state() and tcan4x5x_disable_wake() if the gpios
-> > are not defined. These functions use register bits that are not
-> > available in tcan4552/4553.
+On Tue, Mar 14, 2023 at 07:26:59PM +0100, Michal Kubiak wrote:
+> On Tue, Mar 14, 2023 at 04:11:56PM +0100, Markus Schneider-Pargmann wrote:
+> > Hi Marc and everyone,
 > > 
-> > This patch adds support by introducing version information to reflect if
-> > the chip has wake and state pins. Also the version is now checked.
+> > This series introduces two new chips tcan-4552 and tcan-4553. The
+> > generic driver works in general but needs a few small changes. These are
+> > caused by the removal of wake and state pins.
 > > 
-> > Signed-off-by: Markus Schneider-Pargmann
-> 
-> Hi Markus,
-> 
-> you forgot your email address in the signed-off-by line.
-
-Thank you, I am wondering how I managed to do that :D.
-
-> 
-> > ---
-> >  drivers/net/can/m_can/tcan4x5x-core.c | 113 ++++++++++++++++++++------
-> >  1 file changed, 89 insertions(+), 24 deletions(-)
+> > I included two patches from the optimization series and will remove them
+> > from the optimization series. Hopefully it avoids conflicts and not
+> > polute the other series with tcan4552/4553 stuff.
 > > 
-> > diff --git a/drivers/net/can/m_can/tcan4x5x-core.c b/drivers/net/can/m_can/tcan4x5x-core.c
-> > index fb9375fa20ec..e7fa509dacc9 100644
-> > --- a/drivers/net/can/m_can/tcan4x5x-core.c
-> > +++ b/drivers/net/can/m_can/tcan4x5x-core.c
+> > Best,
+> > Markus
+> > 
+> > optimization series:
+> > https://lore.kernel.org/lkml/20221221152537.751564-1-msp@baylibre.com
+> > 
+> > Markus Schneider-Pargmann (5):
+> >   dt-bindings: can: tcan4x5x: Add tcan4552 and tcan4553 variants
+> >   can: tcan4x5x: Remove reserved register 0x814 from writable table
+> >   can: tcan4x5x: Check size of mram configuration
+> >   can: tcan4x5x: Rename ID registers to match datasheet
+> >   can: tcan4x5x: Add support for tcan4552/4553
+> > 
+> >  .../devicetree/bindings/net/can/tcan4x5x.txt  |  11 +-
+> >  drivers/net/can/m_can/m_can.c                 |  16 +++
+> >  drivers/net/can/m_can/m_can.h                 |   1 +
+> >  drivers/net/can/m_can/tcan4x5x-core.c         | 122 ++++++++++++++----
+> >  drivers/net/can/m_can/tcan4x5x-regmap.c       |   1 -
+> >  5 files changed, 121 insertions(+), 30 deletions(-)
+> >
 > 
-> ...
+> The logic and coding style looks OK to me, but CAN-specific stuff should
+> be reviewed by someone else.
+> Just one nitpick in the last patch.
 > 
-> > @@ -254,18 +262,53 @@ static int tcan4x5x_disable_state(struct m_can_classdev *cdev)
-> >  				  TCAN4X5X_DISABLE_INH_MSK, 0x01);
-> >  }
-> >  
-> > -static int tcan4x5x_get_gpios(struct m_can_classdev *cdev)
-> > +static int tcan4x5x_verify_version(
-> > +		struct tcan4x5x_priv *priv,
-> > +		const struct tcan4x5x_version_info *version_info)
+> Thanks,
+> Michal
 > 
-> nit:
-> 
-> static int
-> tcan4x5x_verify_version(struct tcan4x5x_priv *priv,                                                     const struct tcan4x5x_version_info *version_info)
-> 
-> or:
-> 
-> static int tcan4x5x_verify_version(struct tcan4x5x_priv *priv,                                                     const struct tcan4x5x_version_info *version_info)
-> 
-> Your could make the line shorter by renaming the 'version_info' parameter,
-> say to 'info'.
+> For entire series:
+> Reviewed-by: Michal Kubiak <michal.kubiak@intel.com>
 
-Thanks, fixed. I would like to keep version_info as it is used like that
-everywhere else. I think/hope breaking the 80c here is fine.
-
-> 
-> ...
-> 
-> > @@ -394,21 +448,32 @@ static void tcan4x5x_can_remove(struct spi_device *spi)
-> >  	m_can_class_free_dev(priv->cdev.net);
-> >  }
-> >  
-> > +static const struct tcan4x5x_version_info tcan4x5x_generic = {
-> > +	.has_state_pin = true,
-> > +	.has_wake_pin = true,
-> > +};
-> > +
-> > +static const struct tcan4x5x_version_info tcan4x5x_tcan4552 = {
-> > +	.id2_register = 0x32353534, /* ASCII = 4552 */
-> > +};
-> > +
-> > +static const struct tcan4x5x_version_info tcan4x5x_tcan4553 = {
-> > +	.id2_register = 0x33353534, /* ASCII = 4553 */
-> > +};
-> > +
-> >  static const struct of_device_id tcan4x5x_of_match[] = {
-> > -	{
-> > -		.compatible = "ti,tcan4x5x",
-> > -	}, {
-> > -		/* sentinel */
-> > -	},
-> > +	{ .compatible = "ti,tcan4x5x", .data = &tcan4x5x_generic },
-> > +	{ .compatible = "ti,tcan4552", .data = &tcan4x5x_tcan4552 },
-> > +	{ .compatible = "ti,tcan4553", .data = &tcan4x5x_tcan4553 },
-> > +	{ /* sentinel */ }
-> >  };
-> >  MODULE_DEVICE_TABLE(of, tcan4x5x_of_match);
-> >  
-> >  static const struct spi_device_id tcan4x5x_id_table[] = {
-> > -	{
-> > -		.name = "tcan4x5x",
-> > -	}, {
-> > -		/* sentinel */
-> > -	},
-> > +	{ .name = "tcan4x5x", .driver_data = (unsigned long) &tcan4x5x_generic, },
-> > +	{ .name = "tcan4552", .driver_data = (unsigned long) &tcan4x5x_tcan4552, },
-> > +	{ .name = "tcan4553", .driver_data = (unsigned long) &tcan4x5x_tcan4553, },
-> 
-> nit: checkpatch tells me that no space is necessary after a cast.
-
-Fixed as well.
-
-Thanks for reviewing.
+Thanks for your review, I fixed the nitpick.
 
 Best,
 Markus
