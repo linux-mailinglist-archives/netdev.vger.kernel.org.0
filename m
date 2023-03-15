@@ -2,172 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00AE86BAB6C
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 10:02:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED9F56BAB70
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 10:02:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230018AbjCOJCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 05:02:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45994 "EHLO
+        id S230366AbjCOJCd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 05:02:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231768AbjCOJCB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 05:02:01 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DE00212B3
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 02:01:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678870912; x=1710406912;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=46Fbyxsf2jpzvGJkTT2Pw1SLP742v50V79irgSWIBNo=;
-  b=j+JvKZVfcWZrPtbSI5XZkzRVhfRiOxlH2bIqfB0Mc3shzccSHXI/OSmP
-   tsruXJfa2Dpu80W+q0yJnuSg0yiprAEM/XJuyfSEZBoVkXDvzM8h0x7RF
-   4eaH1mdGvJBV3HTOjJ+ktyPwq6A699oF0wKvrwcxGM+RQbXDODOyR3W2J
-   DZPfXxA5TPP6I7szrAXT1veVdbFruzEPwDPq0ak5MdU+VBBw3NreE8sUp
-   roSb0AobkNAmbjTRPl1qhP25vzxYtxkRaZK8jEkomwuhzJEzLZvJ9mhJn
-   EzkJscwaNK/MUoJ0vFZIaoCq/xR13dIcE7DM7U7EYaMnE+BZCqZ0u3D8E
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="326010474"
-X-IronPort-AV: E=Sophos;i="5.98,262,1673942400"; 
-   d="scan'208";a="326010474"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2023 02:01:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="768422949"
-X-IronPort-AV: E=Sophos;i="5.98,262,1673942400"; 
-   d="scan'208";a="768422949"
-Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2023 02:01:50 -0700
-Date:   Wed, 15 Mar 2023 10:01:41 +0100
-From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-To:     edward.cree@amd.com
-Cc:     linux-net-drivers@amd.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com,
-        Edward Cree <ecree.xilinx@gmail.com>, netdev@vger.kernel.org,
-        habetsm.xilinx@gmail.com
-Subject: Re: [PATCH net-next 2/5] sfc: handle enc keys in
- efx_tc_flower_parse_match()
-Message-ID: <ZBGJdWyXZSlXwN96@localhost.localdomain>
-References: <cover.1678815095.git.ecree.xilinx@gmail.com>
- <962d11de229400416804173b2ab035d73493a6b4.1678815095.git.ecree.xilinx@gmail.com>
+        with ESMTP id S231938AbjCOJCE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 05:02:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 541D273ADF
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 02:01:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C068B81DAB
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 09:01:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40D67C4339B;
+        Wed, 15 Mar 2023 09:01:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678870916;
+        bh=1DhMS93JxiqZ9s26g7VBcskN8lkbQw7BiGV6SrMjpu4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Obq8wpNR2wB7fWIkCtDrlTjtXXaAwT54DSWosxK6UzqYoqx5fkVwXVDahEvw67WCV
+         128/I1GT6qs2ouvbE3vTm/6ltHnytBHgDAGxhoU2VXcBckfX1CZSzwqDoUp2HOxtEU
+         BhF2hxwHtMXwYXRBKhwCpODoFpef+vIyzknCTkjHzeTr72dYD8h9SqwTfQbV8dCpt8
+         LwkbEbziEgPU17uPQKaYL9KA6y6PENmJfzSaRH4Ve/q6rahefk+AhutzPBxtO7YkMs
+         a4mQzgZRbSeMmMeBcOWTH2zK5+ZKAkeImdyeV37zV8+SqzMY9dBr25IkjFPD5U20nq
+         BI25cmzXGZr4g==
+Date:   Wed, 15 Mar 2023 11:01:52 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 00/14][pull request] ice: refactor mailbox
+ overflow detection
+Message-ID: <20230315090152.GS36557@unreal>
+References: <20230313182123.483057-1-anthony.l.nguyen@intel.com>
+ <20230314135758.GK36557@unreal>
+ <c58fe076-3425-394f-b7da-c6df6ac45d98@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <962d11de229400416804173b2ab035d73493a6b4.1678815095.git.ecree.xilinx@gmail.com>
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <c58fe076-3425-394f-b7da-c6df6ac45d98@intel.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 14, 2023 at 05:35:22PM +0000, edward.cree@amd.com wrote:
-> From: Edward Cree <ecree.xilinx@gmail.com>
+On Tue, Mar 14, 2023 at 02:26:10PM -0700, Jacob Keller wrote:
 > 
-> Translate the fields from flow dissector into struct efx_tc_match.
-> In efx_tc_flower_replace(), reject filters that match on them, because
->  only 'foreign' filters (i.e. those for which the ingress dev is not
->  the sfc netdev or any of its representors, e.g. a tunnel netdev) can
->  use them.
 > 
-> Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
-> ---
->  drivers/net/ethernet/sfc/tc.c | 65 +++++++++++++++++++++++++++++++++++
->  1 file changed, 65 insertions(+)
+> On 3/14/2023 6:57 AM, Leon Romanovsky wrote:
+> > On Mon, Mar 13, 2023 at 11:21:09AM -0700, Tony Nguyen wrote:
+> >> Jake Keller says:
+> >>
+> >> The primary motivation of this series is to cleanup and refactor the mailbox
+> >> overflow detection logic such that it will work with Scalable IOV. In
+> >> addition a few other minor cleanups are done while I was working on the
+> >> code in the area.
+> >>
+> >> First, the mailbox overflow functions in ice_vf_mbx.c are refactored to
+> >> store the data per-VF as an embedded structure in struct ice_vf, rather than
+> >> stored separately as a fixed-size array which only works with Single Root
+> >> IOV. This reduces the overall memory footprint when only a handful of VFs
+> >> are used.
+> >>
+> >> The overflow detection functions are also cleaned up to reduce the need for
+> >> multiple separate calls to determine when to report a VF as potentially
+> >> malicious.
+> >>
+> >> Finally, the ice_is_malicious_vf function is cleaned up and moved into
+> >> ice_virtchnl.c since it is not Single Root IOV specific, and thus does not
+> >> belong in ice_sriov.c
+> >>
+> >> I could probably have done this in fewer patches, but I split pieces out to
+> >> hopefully aid in reviewing the overall sequence of changes. This does cause
+> >> some additional thrash as it results in intermediate versions of the
+> >> refactor, but I think its worth it for making each step easier to
+> >> understand.
+> >>
+> >> The following are changes since commit 95b744508d4d5135ae2a096ff3f0ee882bcc52b3:
+> >>   qede: remove linux/version.h and linux/compiler.h
+> >> and are available in the git repository at:
+> >>   git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
+> >>
+> >> Jacob Keller (14):
+> >>   ice: re-order ice_mbx_reset_snapshot function
+> >>   ice: convert ice_mbx_clear_malvf to void and use WARN
+> >>   ice: track malicious VFs in new ice_mbx_vf_info structure
+> >>   ice: move VF overflow message count into struct ice_mbx_vf_info
+> >>   ice: remove ice_mbx_deinit_snapshot
+> >>   ice: merge ice_mbx_report_malvf with ice_mbx_vf_state_handler
+> >>   ice: initialize mailbox snapshot earlier in PF init
+> >>   ice: declare ice_vc_process_vf_msg in ice_virtchnl.h
+> >>   ice: always report VF overflowing mailbox even without PF VSI
+> >>   ice: remove unnecessary &array[0] and just use array
+> >>   ice: pass mbxdata to ice_is_malicious_vf()
+> >>   ice: print message if ice_mbx_vf_state_handler returns an error
+> >>   ice: move ice_is_malicious_vf() to ice_virtchnl.c
+> >>   ice: call ice_is_malicious_vf() from ice_vc_process_vf_msg()
+> > 
+> > Everything looks legit except your anti-spamming logic which IMHO
+> > shouldn't happen in first place.
+> > 
 > 
-> diff --git a/drivers/net/ethernet/sfc/tc.c b/drivers/net/ethernet/sfc/tc.c
-> index 2b07bb2fd735..d683665a8d87 100644
-> --- a/drivers/net/ethernet/sfc/tc.c
-> +++ b/drivers/net/ethernet/sfc/tc.c
-> @@ -193,6 +193,11 @@ static int efx_tc_flower_parse_match(struct efx_nic *efx,
->  	      BIT(FLOW_DISSECTOR_KEY_IPV4_ADDRS) |
->  	      BIT(FLOW_DISSECTOR_KEY_IPV6_ADDRS) |
->  	      BIT(FLOW_DISSECTOR_KEY_PORTS) |
-> +	      BIT(FLOW_DISSECTOR_KEY_ENC_KEYID) |
-> +	      BIT(FLOW_DISSECTOR_KEY_ENC_IPV4_ADDRS) |
-> +	      BIT(FLOW_DISSECTOR_KEY_ENC_IPV6_ADDRS) |
-> +	      BIT(FLOW_DISSECTOR_KEY_ENC_PORTS) |
-> +	      BIT(FLOW_DISSECTOR_KEY_ENC_CONTROL) |
->  	      BIT(FLOW_DISSECTOR_KEY_TCP) |
->  	      BIT(FLOW_DISSECTOR_KEY_IP))) {
->  		NL_SET_ERR_MSG_FMT_MOD(extack, "Unsupported flower keys %#x",
-> @@ -280,6 +285,61 @@ static int efx_tc_flower_parse_match(struct efx_nic *efx,
->  	MAP_KEY_AND_MASK(PORTS, ports, src, l4_sport);
->  	MAP_KEY_AND_MASK(PORTS, ports, dst, l4_dport);
->  	MAP_KEY_AND_MASK(TCP, tcp, flags, tcp_flags);
-> +	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_CONTROL)) {
-> +		struct flow_match_control fm;
-> +
-> +		flow_rule_match_enc_control(rule, &fm);
-> +		if (fm.mask->flags) {
-> +			NL_SET_ERR_MSG_FMT_MOD(extack, "Unsupported match on enc_control.flags %#x",
-> +					       fm.mask->flags);
-> +			return -EOPNOTSUPP;
-> +		}
-> +		if (!IS_ALL_ONES(fm.mask->addr_type)) {
-> +			NL_SET_ERR_MSG_FMT_MOD(extack, "Unsupported enc addr_type mask %u (key %u)",
-> +					       fm.mask->addr_type,
-> +					       fm.key->addr_type);
-> +			return -EOPNOTSUPP;
-> +		}
-> +		switch (fm.key->addr_type) {
-> +		case FLOW_DISSECTOR_KEY_IPV4_ADDRS:
-> +			MAP_ENC_KEY_AND_MASK(IPV4_ADDRS, ipv4_addrs, enc_ipv4_addrs,
-> +					     src, enc_src_ip);
-> +			MAP_ENC_KEY_AND_MASK(IPV4_ADDRS, ipv4_addrs, enc_ipv4_addrs,
-> +					     dst, enc_dst_ip);
-> +			break;
-> +#ifdef CONFIG_IPV6
-> +		case FLOW_DISSECTOR_KEY_IPV6_ADDRS:
-> +			MAP_ENC_KEY_AND_MASK(IPV6_ADDRS, ipv6_addrs, enc_ipv6_addrs,
-> +					     src, enc_src_ip6);
-> +			MAP_ENC_KEY_AND_MASK(IPV6_ADDRS, ipv6_addrs, enc_ipv6_addrs,
-> +					     dst, enc_dst_ip6);
-> +			break;
-> +#endif
-> +		default:
-> +			NL_SET_ERR_MSG_FMT_MOD(extack,
-> +					       "Unsupported enc addr_type %u (supported are IPv4, IPv6)",
-> +					       fm.key->addr_type);
-> +			return -EOPNOTSUPP;
-> +		}
-> +#if !defined(EFX_USE_KCOMPAT) || defined(EFX_HAVE_FLOW_DISSECTOR_KEY_ENC_IP)
-Are these defines already in kernel, or You want to add it to kconfig?
-I can't find it in tree, aren't they some kind of OOT driver defines?
+> Without the checks there's no warning to the system administrator that a
+> VM may have been misconfigured or modified to spam messages. If this
+> occurs, the VM can overload the PF's mailbox queue and prevent other VFs
+> from using the queue normally, and thus performing a denial of service.
+> 
+> My understanding (I was not involved in the original implementation or
+> discussions) is that there is no hardware mechanism to prevent such
+> overflow in this device. This is an oversight in the design which was
+> not caught until it was too late to make such a change.
+> 
+> The original checks were added in 0891c89674e8 ("ice: warn about
+> potentially malicious VFs"), but it seems that commit message did not
+> provide much detail :(
 
-> +		MAP_ENC_KEY_AND_MASK(IP, ip, enc_ip, tos, enc_ip_tos);
-> +		MAP_ENC_KEY_AND_MASK(IP, ip, enc_ip, ttl, enc_ip_ttl);
-> +#endif
-> +		MAP_ENC_KEY_AND_MASK(PORTS, ports, enc_ports, src, enc_sport);
-> +		MAP_ENC_KEY_AND_MASK(PORTS, ports, enc_ports, dst, enc_dport);
-> +		MAP_ENC_KEY_AND_MASK(KEYID, enc_keyid, enc_keyid, keyid, enc_keyid);
-> +	} else if (dissector->used_keys &
-> +		   (BIT(FLOW_DISSECTOR_KEY_ENC_KEYID) |
-> +		    BIT(FLOW_DISSECTOR_KEY_ENC_IPV4_ADDRS) |
-> +		    BIT(FLOW_DISSECTOR_KEY_ENC_IPV6_ADDRS) |
-> +#if !defined(EFX_USE_KCOMPAT) || defined(EFX_HAVE_FLOW_DISSECTOR_KEY_ENC_IP)
-> +		    BIT(FLOW_DISSECTOR_KEY_ENC_IP) |
-> +#endif
-> +		    BIT(FLOW_DISSECTOR_KEY_ENC_PORTS))) {
-> +		NL_SET_ERR_MSG_FMT_MOD(extack, "Flower enc keys require enc_control (keys: %#x)",
-> +				       dissector->used_keys);
-> +		return -EOPNOTSUPP;
-> +	}
->  
->  	return 0;
->  }
-> @@ -373,6 +433,11 @@ static int efx_tc_flower_replace(struct efx_nic *efx,
->  	rc = efx_tc_flower_parse_match(efx, fr, &match, extack);
->  	if (rc)
->  		return rc;
-> +	if (efx_tc_match_is_encap(&match.mask)) {
-> +		NL_SET_ERR_MSG_MOD(extack, "Ingress enc_key matches not supported");
-> +		rc = -EOPNOTSUPP;
-> +		goto release;
-> +	}
->  
->  	if (tc->common.chain_index) {
->  		NL_SET_ERR_MSG_MOD(extack, "No support for nonzero chain_index");
+Thanks for the explanation.
+
+> 
+> -Jake
+> 
+> > Thanks,
+> > Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
