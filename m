@@ -2,226 +2,280 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 061566BBB18
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 18:42:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F4776BBB9E
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 19:02:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231686AbjCORmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 13:42:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51430 "EHLO
+        id S231348AbjCOSCD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 14:02:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229751AbjCORm3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 13:42:29 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C84359224C;
-        Wed, 15 Mar 2023 10:41:55 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32FHEKPb007673;
-        Wed, 15 Mar 2023 17:41:15 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=corp-2022-7-12;
- bh=e2FesA8HeGh4f4SA6PJuDQ4fC32m0QQ8CO7VOQyRWN8=;
- b=QFS2V7MdQhF5B61JEfLgyJGoZ8QHPmwpuOY2B3gWNOlyzcUL3Htri/RQI6P+omaixk7c
- BC6HaWqiP26Bxfve03jc/vZMear9CpxaUA28e6TQdVhCWW78crv20ORkvCm4rQGZo0gh
- 7zrbU2BiWEp3e1iwPspntg7NSdWMYlHC4r5KLPSBYd7hgfLPcOYbINSLB6Eg0G0LPEKV
- Vj1odf4SnyCjWc8VEKnbLhfrClo1YnaDOa8UATUngQcP4Q8qzDKIhqQQtzgSOvJsCoWU
- tkB1AoGYU5pe11fcTUMSJnuOz3Q5fEGQ+PlAjs3lulMH6E0kOjuyN/aIsEPpVP2APAJJ /w== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3pb2xpj1gh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 15 Mar 2023 17:41:15 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 32FHZsbD038347;
-        Wed, 15 Mar 2023 17:41:13 GMT
-Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2169.outbound.protection.outlook.com [104.47.58.169])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3pb2w8pa4j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 15 Mar 2023 17:41:13 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=anV9UpiLB1UJniebLEO9WxjipUhx/pZ2ibUMPRcvBKJankgMolFKyRN/n/IZ4BfvB/OxOTvSkm/0rbOpZqeeeCEbW2b2vY4qz3Aanq89CfztBxo0qSP+2qa8fdi68itwScxELJJqkfHMiGdU22saugqvr9hyRg/8IHi9ML5/4I2JyZ/Riq93UE/KANvBn5hnEtF+KmGR4zOrVLXl4eyM7x8KODDhwCUjef03qXbkiDY8UYJp8UUr+3xjdc9K8+ec4wsvsasqb0PrSIou+R3k+e7x+dU11yYqExNU8YGxDG2ZKVoIqCEGiArPobhf0dk0pQ+71He3xlYEls1beIAVag==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=e2FesA8HeGh4f4SA6PJuDQ4fC32m0QQ8CO7VOQyRWN8=;
- b=WxHMeSrBHWqUQ2yFZRg75VcWSjOx3Rbrjr6CA+EOBcgDM3N3iv5bPTwSEw8yA5NYNF0REm0Tim11331gaE01HdYXdZLibeNCpa8nvLhT8qes3xS92BpYoBQm42QyIboZrO8cfXx/kfZDu2P4YYtRl9Ko56IdY34VLT5mk3ZvxnXkTA2o4AzXKUkl0XNYmMsIDbfn+Xo2Z9HpetHLUGe1e60u7q+l73t6D8w1WCYEefh+We/vkoXUuAo0rTfUZbOd729mNHvu51o5UXweqTzguNndRo3dfsmR16IsYfeLE/BVQMOEwBoVPxclMysh5hLPGGV3DPAmzSzAlvkK7Mfqqw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=e2FesA8HeGh4f4SA6PJuDQ4fC32m0QQ8CO7VOQyRWN8=;
- b=n0LWn2w1F76Bnm/YVhxmExbL0vFhAOWlMyfmg4V1sLujChRF1jTE+Trx9e6THgFj8jvRsurfVhRbJPSy5KLFvTaItMHgKcA9X2DFBfxdTrcBr/p8mN7LbgbbVDx6f/N/sPVRTF2hR2pke/ngIzjzw9IucuO1wBHOKx7obsvBSRw=
-Received: from BY5PR10MB4129.namprd10.prod.outlook.com (2603:10b6:a03:210::21)
- by IA0PR10MB7135.namprd10.prod.outlook.com (2603:10b6:208:401::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.19; Wed, 15 Mar
- 2023 17:41:12 +0000
-Received: from BY5PR10MB4129.namprd10.prod.outlook.com
- ([fe80::311:f22:99b6:7db7]) by BY5PR10MB4129.namprd10.prod.outlook.com
- ([fe80::311:f22:99b6:7db7%3]) with mapi id 15.20.6178.026; Wed, 15 Mar 2023
- 17:41:11 +0000
-From:   Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "zbr@ioremap.net" <zbr@ioremap.net>,
-        "brauner@kernel.org" <brauner@kernel.org>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "socketcan@hartkopp.net" <socketcan@hartkopp.net>,
-        "petrm@nvidia.com" <petrm@nvidia.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
-Subject: Re: [PATCH v2 2/5] connector/cn_proc: Add filtering to fix some bugs
-Thread-Topic: [PATCH v2 2/5] connector/cn_proc: Add filtering to fix some bugs
-Thread-Index: AQHZVuR/gMApZDZt5kiq6XYKUuZ/aK77TNSAgADQDIA=
-Date:   Wed, 15 Mar 2023 17:41:11 +0000
-Message-ID: <FD3D56A4-EDD3-43CA-B12C-CAF736A3821E@oracle.com>
-References: <20230315021850.2788946-1-anjali.k.kulkarni@oracle.com>
- <20230315021850.2788946-3-anjali.k.kulkarni@oracle.com>
- <20230314221633.1e6c9bef@kernel.org>
-In-Reply-To: <20230314221633.1e6c9bef@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BY5PR10MB4129:EE_|IA0PR10MB7135:EE_
-x-ms-office365-filtering-correlation-id: 175fa94c-c9a3-4f7f-344f-08db257c77cb
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Zibe6ZtvSz0sI6S5E7Ook9PoL2jCm4XFGHdfepxP4wYJpN+2G4CUDYzXFnfNqPAoEzXe6iIKlRHjRVMlE6z0Xy/nNIR45bTTv92q5RtSCYFuZRjosrptcJkODFDc7SLuUL7qzbpPPI6VEJaLe600+KzrW/dagNTV5xkpDa3SHvYilzTjL2ANmPu147IVMbW0ESbT7Lsd0hB8GmvN0sl/WjiXHMQTxp9g/FpqK/l7nWxlUpploEifuGYxGW1LL/DG8ZOmGbhwWp6SoA4wXxEdT3q9LiAZ6jQsLtOMfft+yby5KQVkx+KBiMFrTRi5isqguXfvJkEpNZItNkWaR5L4yy+PCnZGKHpk4h7aea3TwyIJmeyhbebwwcZ3S0f/kahUGfkbdBI/XuEB0Cw9r8agMiQmpb32aJvJFJvIn9RsW73jZAzkpYV3ZrkGdRhlgk+tegViFdb+fNqVXVt2z1/zBlNQjhRmNoBjFC9CEPPbi7FCwy8/Lmo6jAUwU0h9SH8lqKVuNPiVcb4pskGzeXW0ikTN3BhWZAlFZTjRjVb9IgX2e81FgFTa5sQKE3AI3EXeKYNfrQJh5KOkpW782fBTwzYasul5enx6BA2XyGCQS+Uja9q+3kRZ1uR7YV4RKk6pk7yVvf42QcBOw+mbsFy/U5ZY35xS642Gby94lpZRlOvHFrbD6AXcrfeAViml3Kfnng3Zk7A4ZlCfBNwGKGXfToldQ7SaIYNvOU0qtMj582M=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR10MB4129.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(136003)(376002)(346002)(396003)(366004)(39860400002)(451199018)(53546011)(38070700005)(33656002)(36756003)(478600001)(86362001)(54906003)(71200400001)(2616005)(66946007)(66476007)(107886003)(8676002)(76116006)(64756008)(6506007)(186003)(91956017)(66556008)(6512007)(6486002)(316002)(7416002)(2906002)(6916009)(83380400001)(66446008)(38100700002)(4326008)(122000001)(8936002)(41300700001)(5660300002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Bp0xqm04IrEBTk5EZutr/3TeUwsgE05lEQX8WVObj61XZ2x73c5HWSpSZlh3?=
- =?us-ascii?Q?6NiBPR2pqWYHgbR9ex7jr4BiEWxQD41nB12L8US1tLJLrBnQw4Vcsszfl3+n?=
- =?us-ascii?Q?/2UZsVpCvpo2Xh1YBhh3jwlXxYQh0G/Ja7Txuwv0HPjjSZf110OQEPbnJGe4?=
- =?us-ascii?Q?4EkoCPyZcSwuJ+cAl8rsoCEBmU6DM0Jh+812LyfWUVWYCuP7ovtSJA7m49CL?=
- =?us-ascii?Q?yRE2n6OgvkxqiNz9MLmWqW3/R9cGWgILw27pO0yXIwLsvt+cyQpn2A5sp+yu?=
- =?us-ascii?Q?X4Yq0JRFXDOxw8l/iaeONTSF48A//Mp4GrKtmeYHmM/EOXB0qBMw8H0AUs+4?=
- =?us-ascii?Q?CCpXUaKhQZCc5wJPKyK4QFJxv1EtzZeTt3EP+GX+PZduQhxk96maXftj8Pc4?=
- =?us-ascii?Q?UnlyhXph3iACNTevp5ot66T5Fx2YBW9016/wEPWm208VTq+hqJgAnS7mYyge?=
- =?us-ascii?Q?sRUu4SPBWlgSHTwYsZTRqX2vpAj1AwtzGzNxakkBkjAmtjJJV7YJeEGskZ5h?=
- =?us-ascii?Q?sFelV73Zffvomys8gheZBHWOtqf8xlRTVhQFUXOC0kOY1/JbXCGmgMyz/SO7?=
- =?us-ascii?Q?jlcNI7JXtD5QCafLHwGaCBnLuqNxefrNbPGSl+McTDS4gJ37D1PaFY467uuo?=
- =?us-ascii?Q?O8HnBhehwFGlIiN9MQJZe8nptr+jUGKb315LObh47W6wk/BqcSSetkB77YWi?=
- =?us-ascii?Q?N6euK1EM3GGVkHr9CJqe2coxNss5O9gy7CS6Mf+NDuDU3BNVP47SgcwUa1KO?=
- =?us-ascii?Q?3JE+93ZVSthtJ+VhTBtQmQuHFHOt9RiZpKSNTR86DKy2KpdTcBUBZBvb2NHN?=
- =?us-ascii?Q?CVXXPDngTXYnUd6F5hnHyEA7UGEgmF05/CJlTpPLIhVKVqNIRyvauvKxu6Hk?=
- =?us-ascii?Q?dC+x4wQHm7Fh+knD1UpoFN7Y2FMtM72jsN7m15Y4OWofC2jcGUuj3Yj1RVU/?=
- =?us-ascii?Q?vKTsG+P8oPTseyFYFNcAV+PWYwRlsa3fpmmICuiYW8AhiCOnjG6gzEL74kje?=
- =?us-ascii?Q?Py0V/+ZEhUarZqGq0Tc7036mezL4FX3Q5NqFlYJK1rkAmxYR3paK1Pkr++qw?=
- =?us-ascii?Q?d7GgTiuyKvbngcO/gi+fl/6/Ma38+Sbe+cNbGmI4vRPbjQu0KWpq8Cp2RKkw?=
- =?us-ascii?Q?sNHIB157e43q/fc9/EoGgMs/iZfdGSCtZCEiD/Zk1lEGUdtJhVHPvIdvr3ns?=
- =?us-ascii?Q?emlTelVYvmwbAaDrnKNBYEv7FKwU8prwrQzcTyimvsM06qxlZxVJFM+kaI3G?=
- =?us-ascii?Q?TuFpGk/IJR/eC6XGtW3lhLjLqSXZBWtFljoWdPgD2Udt9QyOltVTcaWJyLAI?=
- =?us-ascii?Q?SOOTTFAy00ufRoV+SuIobIm4TnUW/qsxA1ZBWUyGarZaphgkFrzFdC+wD0hp?=
- =?us-ascii?Q?jPvPjKy+Ebi5jT3WCPPQtsDBD0Mp5dMbZaGFaCxxj7iUKVcaJNwCX2MZrvto?=
- =?us-ascii?Q?ShkdqTNULDHGC5OJQnTt+5u6mLSd/mJQ/ysHpEf82zGZvYcYm5DgWdznCagg?=
- =?us-ascii?Q?bEwsNvtsIgBxXF/cH+PCwQO5qhiF52BOayC8xhLU4Od7DUYFOHjvO3GvG0k+?=
- =?us-ascii?Q?HaxGeMC4d4yYNcbwCgzxyq9QSl1Kj2ZQ6K96AEz9UFTZC15qE4m8QUV2Xl7x?=
- =?us-ascii?Q?SMLVPG28mXB3zZQ91oHb8rRRuVSUx3jdECNsFOtL/SBF?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <AA416A0E355B004D91A0ACFC6D269DC5@namprd10.prod.outlook.com>
+        with ESMTP id S229941AbjCOSCC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 14:02:02 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6D35941B;
+        Wed, 15 Mar 2023 11:02:00 -0700 (PDT)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32FGsVao005253;
+        Wed, 15 Mar 2023 18:00:56 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=KKApXmimGXy7/MINZp0RPj2xdgPpbUWfkrvEb3j90Ng=;
+ b=sjirzqjU+VTGNUQJ0zHeBh88CUsz99qb8OyMVsZFCOpd6BcbSmPwtfZ76ccQ8RR1YmlE
+ EUMf+u4ZkJ114zKpVrTfkJv7KdbBLOi4FKq/nlbZ8D0tXfHvnlsExrl7BzeMDYeoeybP
+ gGJL6eUxZCnRr09zgzTiCLVr8NEDg/3CMXLVQ77iCPpszgR7a7SO4D1zWQb7xZPCjvuF
+ AhSFVGNnA+8r/z2tx6JUDn5cVGYTiTKuQWMcBQMTT1zeNqtqotIME22NnNFWenuF71yV
+ dG/KrvQI72TOyQkC1v0uAhitOUG07kgXzJGGizPvh14W8Lnf0MkZ3I+Tt1VYRWckLKkQ sQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3pbhy01pbh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 15 Mar 2023 18:00:56 +0000
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32FHUB9j020267;
+        Wed, 15 Mar 2023 18:00:55 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3pbhy01p9s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 15 Mar 2023 18:00:55 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 32FE4tA9032370;
+        Wed, 15 Mar 2023 18:00:51 GMT
+Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
+        by ppma04ams.nl.ibm.com (PPS) with ESMTPS id 3pb29u94c7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 15 Mar 2023 18:00:51 +0000
+Received: from smtpav06.fra02v.mail.ibm.com (smtpav06.fra02v.mail.ibm.com [10.20.54.105])
+        by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 32FI0nAw45417152
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 15 Mar 2023 18:00:49 GMT
+Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4DFEF20049;
+        Wed, 15 Mar 2023 18:00:49 +0000 (GMT)
+Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 22E5F2004B;
+        Wed, 15 Mar 2023 18:00:48 +0000 (GMT)
+Received: from [9.171.20.11] (unknown [9.171.20.11])
+        by smtpav06.fra02v.mail.ibm.com (Postfix) with ESMTP;
+        Wed, 15 Mar 2023 18:00:48 +0000 (GMT)
+Message-ID: <e07dd94022ad5731705891b9487cc9ed66328b94.camel@linux.ibm.com>
+Subject: Re: [PATCH bpf-next v3 0/4] xdp: recycle Page Pool backed skbs
+ built from XDP frames
+From:   Ilya Leoshkevich <iii@linux.ibm.com>
+To:     Alexander Lobakin <aleksander.lobakin@intel.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Larysa Zaremba <larysa.zaremba@intel.com>,
+        Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Song Liu <song@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Menglong Dong <imagedong@tencent.com>,
+        Mykola Lysenko <mykolal@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Date:   Wed, 15 Mar 2023 19:00:47 +0100
+In-Reply-To: <de59c0fca26400305ab34cc89e468e395b6256ac.camel@linux.ibm.com>
+References: <20230313215553.1045175-1-aleksander.lobakin@intel.com>
+         <ca1385b5-b3f8-73f3-276c-a2a08ec09aa0@intel.com>
+         <CAADnVQJDz3hBEJ7kohXJ4HUZWZdbRRamfJbrZ6KUaRubBKQmfA@mail.gmail.com>
+         <CAADnVQ+B_JOU+EpP=DKhbY9yXdN6GiRPnpTTXfEZ9sNkUeb-yQ@mail.gmail.com>
+         <5b360c35-1671-c0b8-78ca-517c7cd535ae@intel.com>
+         <2bda95d8-6238-f9ef-7dce-aa9320013a13@intel.com>
+         <de59c0fca26400305ab34cc89e468e395b6256ac.camel@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 MIME-Version: 1.0
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: =?us-ascii?Q?bDg4GQUdya0mLigbTdyyk2MZAaoOrdd6QOJ5b9ww468OjQvqWOP+FC4BARMF?=
- =?us-ascii?Q?E6ovpiaWP4D/K0LjCUgRL6+1hk2PLxjVE05Zb5yNtcHDrfid2lY2pWM/lJs8?=
- =?us-ascii?Q?6ZMgRr7iOiBW7zItaoFGPIozUpW3IE8NqJLxveVMI2Ecb/shjtqV0dNWQF9C?=
- =?us-ascii?Q?99Yo2HT6XJLOrbhD1VBpS9Z/cAKTz3YRvR9r1bpLuPYMpIe2OJZNHegWYAGs?=
- =?us-ascii?Q?KxJJutetJ3zbb4h7fos8iryXZtn9FpC+i6DrW5LEd8+8nDHTV2AlCuy8Eg/u?=
- =?us-ascii?Q?DXOi5P3Sif3t7B74m98UmpYwKqoSZIRERcgIX7Mue+WBcPKyFaEuEdOFACob?=
- =?us-ascii?Q?KrdEWzJJ7fTJU9AMwyPRsgE38Jxmq7udL3r6BqezMHxnw/SmVESOwutUl54y?=
- =?us-ascii?Q?nxbZc8WmRFRZ48u6qsB5EA4OZcW9ppkdY20CwbjjmAe/WAvPC4Rlpp+2CAGU?=
- =?us-ascii?Q?69GoaSEyFC7KiiUYRjCDOtjjxfiUHdKWJiXud0Mq9ningE+Ak5hcbzmYZqkp?=
- =?us-ascii?Q?ROacFnIXMpLYIXiHQhZNmIftC/jIOChz4FszXFKhNSOxVjlitcLdj9xfEsPc?=
- =?us-ascii?Q?Q72KtTRbdJu5AGXypUT84CNJ/W6qlwySbGZKHprdrH4B/vAeljJi/kAhskdN?=
- =?us-ascii?Q?m7bgSKXIEbTftDLGSq8CeoITs3LiUQL8We7jHu4x7jMv/V/5x7tphDEp7vdl?=
- =?us-ascii?Q?tFWlRE9+WGshs/TPs5xYcvSlvPTwOP/XeUBqbJwTBzPYSHKUtcDiU1jHWoea?=
- =?us-ascii?Q?TrSzhRA8f/CzNAIWQhoF82uyuKbzXPGX+/5TesbweXtLeSE9ogW4NHpmPp0f?=
- =?us-ascii?Q?ZL5SUOsjPFhanL66mKl7GbD/96cXpHbJLPh/Qr4lSxezNQ/y4eayEbk+RCtS?=
- =?us-ascii?Q?BenK57A/rPkFC2yav4tl2TihFbHQzfHI5CvVBk8b1+KYloc6HlMl1eYoSiQa?=
- =?us-ascii?Q?2Xx1S0CEr2ZC67mGX4aphUUX0orpdghZXf1XlRX0OBkQnSYmlAgOqPH3alOe?=
- =?us-ascii?Q?9dgQMPy1LWnPYfK3e8xeNsb7qFjRi1ip56bqE7UmjnJVyYmZgr3P8wpsH3h0?=
- =?us-ascii?Q?arbeg9rLLJjEsLa6YCo8xCF0bGI75A=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR10MB4129.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 175fa94c-c9a3-4f7f-344f-08db257c77cb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Mar 2023 17:41:11.8879
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: S6hL7SLVtkvxSX1BDqpXDZCDYWlpQity5Y9OkWaiJ6PAdL54Toas11Cj2TCjFfP8CyWRaC6kY8GZ08FteJl61TRJ0VOWuatgCaO25B3yX9w=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR10MB7135
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: IKouWAsNf1OlMdG1mAA7jI7vSzBDlCSR
+X-Proofpoint-ORIG-GUID: R-4AIjJXH0FgjPYjtyTtWFJWZgbeUlrB
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
  definitions=2023-03-15_09,2023-03-15_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 suspectscore=0 spamscore=0
- bulkscore=0 phishscore=0 malwarescore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2302240000
- definitions=main-2303150148
-X-Proofpoint-ORIG-GUID: DL6kdSvdfY4EJFe7KKj1iriI0m6dz75Q
-X-Proofpoint-GUID: DL6kdSvdfY4EJFe7KKj1iriI0m6dz75Q
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 clxscore=1015
+ suspectscore=0 priorityscore=1501 mlxlogscore=999 mlxscore=0
+ lowpriorityscore=0 spamscore=0 adultscore=0 impostorscore=0 phishscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2302240000 definitions=main-2303150147
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 2023-03-15 at 15:54 +0100, Ilya Leoshkevich wrote:
+> On Wed, 2023-03-15 at 11:54 +0100, Alexander Lobakin wrote:
+> > From: Alexander Lobakin <aleksander.lobakin@intel.com>
+> > Date: Wed, 15 Mar 2023 10:56:25 +0100
+> >=20
+> > > From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+> > > Date: Tue, 14 Mar 2023 16:54:25 -0700
+> > >=20
+> > > > On Tue, Mar 14, 2023 at 11:52=E2=80=AFAM Alexei Starovoitov
+> > > > <alexei.starovoitov@gmail.com> wrote:
+> > >=20
+> > > [...]
+> > >=20
+> > > > test_xdp_do_redirect:PASS:prog_run 0 nsec
+> > > > test_xdp_do_redirect:PASS:pkt_count_xdp 0 nsec
+> > > > test_xdp_do_redirect:PASS:pkt_count_zero 0 nsec
+> > > > test_xdp_do_redirect:FAIL:pkt_count_tc unexpected pkt_count_tc:
+> > > > actual
+> > > > 220 !=3D expected 9998
+> > > > test_max_pkt_size:PASS:prog_run_max_size 0 nsec
+> > > > test_max_pkt_size:PASS:prog_run_too_big 0 nsec
+> > > > close_netns:PASS:setns 0 nsec
+> > > > #289 xdp_do_redirect:FAIL
+> > > > Summary: 270/1674 PASSED, 30 SKIPPED, 1 FAILED
+> > > >=20
+> > > > Alex,
+> > > > could you please take a look at why it's happening?
+> > > >=20
+> > > > I suspect it's an endianness issue in:
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (*metadata !=3D 0x42)
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 return XDP_ABORTED;
+> > > > but your patch didn't change that,
+> > > > so I'm not sure why it worked before.
+> > >=20
+> > > Sure, lemme fix it real quick.
+> >=20
+> > Hi Ilya,
+> >=20
+> > Do you have s390 testing setups? Maybe you could take a look, since
+> > I
+> > don't have one and can't debug it? Doesn't seem to be Endianness
+> > issue.
+> > I mean, I have this (the below patch), but not sure it will fix
+> > anything -- IIRC eBPF arch always matches the host arch ._.
+> > I can't figure out from the code what does happen wrongly :s And it
+> > happens only on s390.
+> >=20
+> > Thanks,
+> > Olek
+> > ---
+> > diff --git
+> > a/tools/testing/selftests/bpf/prog_tests/xdp_do_redirect.c
+> > b/tools/testing/selftests/bpf/prog_tests/xdp_do_redirect.c
+> > index 662b6c6c5ed7..b21371668447 100644
+> > --- a/tools/testing/selftests/bpf/prog_tests/xdp_do_redirect.c
+> > +++ b/tools/testing/selftests/bpf/prog_tests/xdp_do_redirect.c
+> > @@ -107,7 +107,7 @@ void test_xdp_do_redirect(void)
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 .attach_point =3D BPF_TC_INGRESS);
+> > =C2=A0
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0memcpy(&data[sizeof(__u=
+32)], &pkt_udp, sizeof(pkt_udp));
+> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0*((__u32 *)data) =3D 0x42; /=
+* metadata test value */
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0*((__u32 *)data) =3D htonl(0=
+x42); /* metadata test value */
+> > =C2=A0
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0skel =3D test_xdp_do_re=
+direct__open();
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (!ASSERT_OK_PTR(skel=
+, "skel"))
+> > diff --git
+> > a/tools/testing/selftests/bpf/progs/test_xdp_do_redirect.c
+> > b/tools/testing/selftests/bpf/progs/test_xdp_do_redirect.c
+> > index cd2d4e3258b8..2475bc30ced2 100644
+> > --- a/tools/testing/selftests/bpf/progs/test_xdp_do_redirect.c
+> > +++ b/tools/testing/selftests/bpf/progs/test_xdp_do_redirect.c
+> > @@ -1,5 +1,6 @@
+> > =C2=A0// SPDX-License-Identifier: GPL-2.0
+> > =C2=A0#include <vmlinux.h>
+> > +#include <bpf/bpf_endian.h>
+> > =C2=A0#include <bpf/bpf_helpers.h>
+> > =C2=A0
+> > =C2=A0#define ETH_ALEN 6
+> > @@ -28,7 +29,7 @@ volatile int retcode =3D XDP_REDIRECT;
+> > =C2=A0SEC("xdp")
+> > =C2=A0int xdp_redirect(struct xdp_md *xdp)
+> > =C2=A0{
+> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0__u32 *metadata =3D (void *)=
+(long)xdp->data_meta;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0__be32 *metadata =3D (void *=
+)(long)xdp->data_meta;
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0void *data_end =3D (voi=
+d *)(long)xdp->data_end;
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0void *data =3D (void *)=
+(long)xdp->data;
+> > =C2=A0
+> > @@ -44,7 +45,7 @@ int xdp_redirect(struct xdp_md *xdp)
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (metadata + 1 > data=
+)
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0return XDP_ABORTED;
+> > =C2=A0
+> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (*metadata !=3D 0x42)
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (*metadata !=3D __bpf_hto=
+nl(0x42))
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0return XDP_ABORTED;
+> > =C2=A0
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (*payload =3D=3D MAR=
+K_XMIT)
+>=20
+> Okay, I'll take a look. Two quick observations for now:
+>=20
+> - Unfortunately the above patch does not help.
+>=20
+> - In dmesg I see:
+>=20
+> =C2=A0=C2=A0=C2=A0 Driver unsupported XDP return value 0 on prog xdp_redi=
+rect (id
+> 23)
+> =C2=A0=C2=A0=C2=A0 dev N/A, expect packet loss!
 
+I haven't identified the issue yet, but I have found a couple more
+things that might be helpful:
 
-> On Mar 14, 2023, at 10:16 PM, Jakub Kicinski <kuba@kernel.org> wrote:
->=20
-> On Tue, 14 Mar 2023 19:18:47 -0700 Anjali Kulkarni wrote:
->> diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
->> index 003c7e6ec9be..ad8ec18152cd 100644
->> --- a/net/netlink/af_netlink.c
->> +++ b/net/netlink/af_netlink.c
->> @@ -63,6 +63,7 @@
->> #include <linux/net_namespace.h>
->> #include <linux/nospec.h>
->> #include <linux/btf_ids.h>
->> +#include <linux/connector.h>
->=20
-> Not needed any more.
-Will remove
->=20
->> 	/* must not acquire netlink_table_lock in any way again before unbind
->> 	 * and notifying genetlink is done as otherwise it might deadlock
->> 	 */
->> -	if (nlk->netlink_unbind) {
->> +	if (nlk->netlink_unbind && nlk->groups) {
->=20
-> Why?
-Just an additional check, will remove
->=20
->> 		int i;
->> -
->> 		for (i =3D 0; i < nlk->ngroups; i++)
->> 			if (test_bit(i, nlk->groups))
->> 				nlk->netlink_unbind(sock_net(sk), i + 1);
->=20
-> Please separate the netlink core changes from the connector
-> changes.
-Will do in the next revision
->=20
-> Please slow down with new versions, we have 300 patches in the queue,
-> replying to one version just to notice you posted a new one is
-> frustrating. Give reviewers 24h to reply.
-Ok, sure!
+- In problematic cases metadata contains 0, so this is not an
+  endianness issue. data is still reasonable though. I'm trying to
+  understand what is causing this.
 
-Anjali
+- Applying the following diff:
 
+--- a/tools/testing/selftests/bpf/progs/test_xdp_do_redirect.c
++++ b/tools/testing/selftests/bpf/progs/test_xdp_do_redirect.c
+@@ -52,7 +52,7 @@ int xdp_redirect(struct xdp_md *xdp)
+=20
+        *payload =3D MARK_IN;
+=20
+-       if (bpf_xdp_adjust_meta(xdp, 4))
++       if (false && bpf_xdp_adjust_meta(xdp, 4))
+                return XDP_ABORTED;
+=20
+        if (retcode > XDP_PASS)
+
+causes a kernel panic even on x86_64:
+
+BUG: kernel NULL pointer dereference, address: 0000000000000d28      =20
+...
+Call Trace:           =20
+ <TASK>                                                              =20
+ build_skb_around+0x22/0xb0
+ __xdp_build_skb_from_frame+0x4e/0x130
+ bpf_test_run_xdp_live+0x65f/0x7c0
+ ? __pfx_xdp_test_run_init_page+0x10/0x10
+ bpf_prog_test_run_xdp+0x2ba/0x480
+ bpf_prog_test_run+0xeb/0x110
+ __sys_bpf+0x2b9/0x570
+ __x64_sys_bpf+0x1c/0x30
+ do_syscall_64+0x48/0xa0
+ entry_SYSCALL_64_after_hwframe+0x72/0xdc
+
+I haven't looked into this at all, but I believe this needs to be
+fixed - BPF should never cause kernel panics.
