@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3B026BA964
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 08:33:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E0E66BA965
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 08:33:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231789AbjCOHdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 03:33:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39350 "EHLO
+        id S231218AbjCOHdh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 03:33:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231621AbjCOHcn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 03:32:43 -0400
+        with ESMTP id S230455AbjCOHcw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 03:32:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15BC25C13F
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 00:30:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E3B5C9EF;
+        Wed, 15 Mar 2023 00:30:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A663161B16
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 07:30:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 011F4C4339B;
-        Wed, 15 Mar 2023 07:30:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB4E061B4E;
+        Wed, 15 Mar 2023 07:30:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0BCFEC433EF;
+        Wed, 15 Mar 2023 07:30:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1678865419;
-        bh=5nH41gQl+1CjEKH3+/CinyLd1iYTWkcfHPWHi5LhEfY=;
+        bh=7trHryZE8Pr0Aw/RTfmMPU+CiDo8HOU3nnti7DI27DU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=kWEGVA9UTtzEs4aDrbcdzSkMd2tHIAjRiI3Ime7kj/QeciAlCLRxviLMuUwR/9myR
-         SPbQczxZSnFHyMJn1+qIFmOcaJWMXKOjiVcWXb3gmKyjsNgRHQYnEZ/n5Qc9zn52aM
-         ++ZA+PizqmVz8pD00M8Y6Tm3Yu+gidPZhG5QQ6DaL0GsUrJxr+Zd3q+mFCRXXXD9pE
-         OCm/s8HZJcLNKWBiaS56G3KPTi4ov4drIdcy3RJ0DgRBrA7VIN861JJXleTpU/+dFw
-         K5NFki7gBdav9PYRgXBX7ZlTQNp/bj/33LZqlhPApNIV2gJP5N/d8BX8LNCkI4L5me
-         uoN1LJfH3YIeg==
+        b=Xkz3DBJCvl6ECf6fZquYzrkvxUkeBtM7rfTwOYDWhJYV9RN6c9EyUxbKb9vx9Afam
+         OtHmb4SzICi2dH/RyqB/Da/mA1kojaDs5o7FHR9ZRCb5kUG2uD0WeWhsZXKcyBukYi
+         J6Ylqb/JJ4aVGFa/ruVTba/dhSqElempBW6q+0whOZyaMlcvupNLzlKz2+hlUIK/kh
+         SVU87nxUsBXYDmGmik9tfg+5jV8Vfr75U4o3RBxlZUiehDMWGNTm33+fDIRYHmJeCA
+         3sJCiBnNp4H1Mow0t+wMwk+Ngepj0muTkJ681SblrET8rCFnDgzgkT3f1qVdPn6wKA
+         vVYRJQ6yG22mg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DBFB6C43161;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E45DAE52532;
         Wed, 15 Mar 2023 07:30:18 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v1 net 0/2] tcp: Fix bind() regression for dual-stack wildcard
- address.
+Subject: Re: [PATCH] nfc: st-nci: Fix use after free bug in ndlc_remove due to
+ race condition
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167886541889.32297.4810741018223268568.git-patchwork-notify@kernel.org>
+Message-Id: <167886541893.32297.9466042495115598646.git-patchwork-notify@kernel.org>
 Date:   Wed, 15 Mar 2023 07:30:18 +0000
-References: <20230312031904.4674-1-kuniyu@amazon.com>
-In-Reply-To: <20230312031904.4674-1-kuniyu@amazon.com>
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, dsahern@kernel.org, kuni1840@gmail.com,
-        netdev@vger.kernel.org
+References: <20230312160837.2040857-1-zyytlz.wz@163.com>
+In-Reply-To: <20230312160837.2040857-1-zyytlz.wz@163.com>
+To:     Zheng Wang <zyytlz.wz@163.com>
+Cc:     krzysztof.kozlowski@linaro.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, hackerzheng666@gmail.com,
+        1395428693sheep@gmail.com, alex000young@gmail.com
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -59,27 +59,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (main)
+This patch was applied to netdev/net.git (main)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Sat, 11 Mar 2023 19:19:02 -0800 you wrote:
-> The first patch fixes the regression reported in [0], and the second
-> patch adds a test for similar cases to catch future regression.
+On Mon, 13 Mar 2023 00:08:37 +0800 you wrote:
+> This bug influences both st_nci_i2c_remove and st_nci_spi_remove.
+> Take st_nci_i2c_remove as an example.
 > 
-> [0]: https://lore.kernel.org/netdev/e21bf153-80b0-9ec0-15ba-e04a4ad42c34@redhat.com/
+> In st_nci_i2c_probe, it called ndlc_probe and bound &ndlc->sm_work
+> with llt_ndlc_sm_work.
 > 
-> 
-> Kuniyuki Iwashima (2):
->   tcp: Fix bind() conflict check for dual-stack wildcard address.
->   selftest: Add test for bind() conflicts.
+> When it calls ndlc_recv or timeout handler, it will finally call
+> schedule_work to start the work.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v1,net,1/2] tcp: Fix bind() conflict check for dual-stack wildcard address.
-    https://git.kernel.org/netdev/net/c/d9ba99342855
-  - [v1,net,2/2] selftest: Add test for bind() conflicts.
-    https://git.kernel.org/netdev/net/c/13715acf8ab5
+  - nfc: st-nci: Fix use after free bug in ndlc_remove due to race condition
+    https://git.kernel.org/netdev/net/c/5000fe6c2782
 
 You are awesome, thank you!
 -- 
