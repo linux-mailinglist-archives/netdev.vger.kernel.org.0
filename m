@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D9A96BC045
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 23:58:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E1366BC047
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 23:59:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230393AbjCOW6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 18:58:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60082 "EHLO
+        id S232833AbjCOW7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 18:59:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbjCOW6x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 18:58:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D8A512BED
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 15:58:51 -0700 (PDT)
+        with ESMTP id S231820AbjCOW6z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 18:58:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B75C37F020
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 15:58:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A2B761EA8
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 22:58:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B5DBC4339C;
-        Wed, 15 Mar 2023 22:58:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7690EB81F96
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 22:58:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F381C433A0;
+        Wed, 15 Mar 2023 22:58:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678921130;
-        bh=mdETvqf2oL9oH+IfFZXIEosb/DcnJaIJ/GXWT2owDYU=;
+        s=k20201202; t=1678921131;
+        bh=c+HaQL51oJQvghVeleuw0yeB5QuswoB+7i0XylQ3c5w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HZWJqtRYSF7yflldkiZNpephskotBcAkVg4xKf0CP4Szq84YiNAxPDhA65R141M32
-         ifhEcW+irY3xfxVNMcLDvwllex0GTwt8/B/nsLcx6ZAlIKyKqXMhL8ytf82RCZW+1n
-         y8fLbYe/UuY6T+ca2V98BQQiuvS9f7SfMNBUEcSZWsxvleOiKLoIWib5lYwPCAKHy5
-         0xs0qJMrM1xjU8Q20/AuvvC9TIcYG5ymDvnzE6iW8ElyRWjeOB3u4ttC6DNDbBsD+Y
-         NvvwTnGXyX2z2PubZ/JX9f4D8f7Ks8TsWYJ+vMCX/npN36tOz403EausaWQMhSeAgq
-         kg943vI5xiM4A==
+        b=tB61nR6vHnp+Z+j/V+npqpmGPoRqjgcJHvh1RNWshh0S9rRij3Ryt2BUR7iSloCJ9
+         tVfH2A9GNrUXqElRpoT1l3IJdG5j4HOMII9vQrY6CiXTZSJ2ao9PlWN7Y4pxy+EG4X
+         2l2gn/2Kv5okm2bjeEFL6j9ffcd+0bv9EuEO2D+Sqh+4VZuhE8h8LCy7XxP3mWtC3I
+         bnXN101GLfQvcfACNYed5CCFLGkXu/d2bydgnQ2Sh5GLuxW30zIvxwf9ddcAEMUpd8
+         DIswnT+H/M/K45D9YavcYTIfaj5QU1STeCp1thaIBsoJSayKlQ8YtWw3FWBrR+6IMS
+         F6E/2YoUL5kCg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -38,11 +38,11 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
-        Emeel Hakim <ehakim@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>
-Subject: [net V2 01/14] net/mlx5e: Fix macsec ASO context alignment
-Date:   Wed, 15 Mar 2023 15:58:34 -0700
-Message-Id: <20230315225847.360083-2-saeed@kernel.org>
+        Parav Pandit <parav@nvidia.com>,
+        Daniel Jurgens <danielj@nvidia.com>
+Subject: [net V2 02/14] net/mlx5e: Don't cache tunnel offloads capability
+Date:   Wed, 15 Mar 2023 15:58:35 -0700
+Message-Id: <20230315225847.360083-3-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230315225847.360083-1-saeed@kernel.org>
 References: <20230315225847.360083-1-saeed@kernel.org>
@@ -57,37 +57,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Emeel Hakim <ehakim@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
 
-Currently mlx5e_macsec_umr struct does not satisfy hardware memory
-alignment requirement. Hence the result of querying advanced steering
-operation (ASO) is not copied to the memory region as expected.
+When mlx5e attaches again after device health recovery, the device
+capabilities might have changed by the eswitch manager.
 
-Fix by satisfying hardware memory alignment requirement and move
-context to be first field in struct for better readability.
+For example in one flow when ECPF changes the eswitch mode between
+legacy and switchdev, it updates the flow table tunnel capability.
 
-Fixes: 1f53da676439 ("net/mlx5e: Create advanced steering operation (ASO) object for MACsec")
-Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+The cached value is only used in one place, so just check the capability
+there instead.
+
+Fixes: 5bef709d76a2 ("net/mlx5: Enable host PF HCA after eswitch is initialized")
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+Signed-off-by: Daniel Jurgens <danielj@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en.h          | 1 -
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c     | 4 +---
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c      | 1 -
+ drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c | 1 -
+ 4 files changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-index 08d0929e8260..8af53178e40d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-@@ -89,8 +89,8 @@ struct mlx5e_macsec_rx_sc {
- };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+index 4276c6eb6820..4a19ef4a9811 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+@@ -313,7 +313,6 @@ struct mlx5e_params {
+ 		} channel;
+ 	} mqprio;
+ 	bool rx_cqe_compress_def;
+-	bool tunneled_offload_en;
+ 	struct dim_cq_moder rx_cq_moderation;
+ 	struct dim_cq_moder tx_cq_moderation;
+ 	struct mlx5e_packet_merge_param packet_merge;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 51b5f3cca504..56fc2aebb9ee 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -4979,8 +4979,6 @@ void mlx5e_build_nic_params(struct mlx5e_priv *priv, struct mlx5e_xsk *xsk, u16
+ 	/* TX inline */
+ 	mlx5_query_min_inline(mdev, &params->tx_min_inline_mode);
  
- struct mlx5e_macsec_umr {
-+	u8 __aligned(64) ctx[MLX5_ST_SZ_BYTES(macsec_aso)];
- 	dma_addr_t dma_addr;
--	u8 ctx[MLX5_ST_SZ_BYTES(macsec_aso)];
- 	u32 mkey;
- };
+-	params->tunneled_offload_en = mlx5_tunnel_inner_ft_supported(mdev);
+-
+ 	/* AF_XDP */
+ 	params->xsk = xsk;
  
+@@ -5285,7 +5283,7 @@ static int mlx5e_init_nic_rx(struct mlx5e_priv *priv)
+ 	}
+ 
+ 	features = MLX5E_RX_RES_FEATURE_PTP;
+-	if (priv->channels.params.tunneled_offload_en)
++	if (mlx5_tunnel_inner_ft_supported(mdev))
+ 		features |= MLX5E_RX_RES_FEATURE_INNER_FT;
+ 	err = mlx5e_rx_res_init(priv->rx_res, priv->mdev, features,
+ 				priv->max_nch, priv->drop_rq.rqn,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+index 43fd12fb87b8..8ff654b4e9e1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+@@ -755,7 +755,6 @@ static void mlx5e_build_rep_params(struct net_device *netdev)
+ 	mlx5e_set_rx_cq_mode_params(params, cq_period_mode);
+ 
+ 	params->mqprio.num_tc       = 1;
+-	params->tunneled_offload_en = false;
+ 	if (rep->vport != MLX5_VPORT_UPLINK)
+ 		params->vlan_strip_disable = true;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c
+index c2a4f86bc890..baa7ef812313 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c
+@@ -70,7 +70,6 @@ static void mlx5i_build_nic_params(struct mlx5_core_dev *mdev,
+ 
+ 	params->packet_merge.type = MLX5E_PACKET_MERGE_NONE;
+ 	params->hard_mtu = MLX5_IB_GRH_BYTES + MLX5_IPOIB_HARD_LEN;
+-	params->tunneled_offload_en = false;
+ 
+ 	/* CQE compression is not supported for IPoIB */
+ 	params->rx_cqe_compress_def = false;
 -- 
 2.39.2
 
