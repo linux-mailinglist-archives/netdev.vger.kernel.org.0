@@ -2,91 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 92FF46BC054
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 23:59:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEB2E6BC09F
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 00:04:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232932AbjCOW7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 18:59:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60754 "EHLO
+        id S231405AbjCOXE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 19:04:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232904AbjCOW7F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 18:59:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A069AA3B7C
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 15:59:02 -0700 (PDT)
+        with ESMTP id S229721AbjCOXE2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 19:04:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98220763F3
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 16:04:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40716B81F0D
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 22:59:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D09B9C4339C;
-        Wed, 15 Mar 2023 22:58:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C25561E91
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 23:04:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 480B1C433D2;
+        Wed, 15 Mar 2023 23:04:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678921139;
-        bh=Bd8Q5pVMvPKmAKc3xq4HHKfaGanAptQxR/jkHp5knMk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JSrp3srehCiPrjXXdHt2Ou9eVTOo5qVA12rgoV+SJkgzEBfM3en0olno9kibXWEPY
-         lPMi3XSm8NMTnwTBAI2OaHC1beEwl849+Pnhs+rceXmQbkWneleKEUDnf9FIpAFRCJ
-         XBUsJ3QWHyRO963mStbxMwwjnNbki5VOQ3OVx9SbyET8S/QoM1XQT5iVhoHLWaRDA+
-         cgXuNbMfzZhXusQDHeE4e34kGTH8GceJJ3T6jBvcvp/KOwf6/A7Qgw+6TkXH9D0pgA
-         Og8PJGW15Zajv1Dzf/04dMpd+kPNlZmv/CJA2J8P4j1qlsXhbeLeliGBHW0ruwfjTA
-         dhKmanbPpyHOg==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>,
-        Paul Blakey <paulb@nvidia.com>
-Subject: [net V2 14/14] net/mlx5e: TC, Remove error message log print
-Date:   Wed, 15 Mar 2023 15:58:47 -0700
-Message-Id: <20230315225847.360083-15-saeed@kernel.org>
+        s=k20201202; t=1678921466;
+        bh=ugXkUYeD0ajyC/z/U1Tbd+xw83jFVAkXur+3k7t8cAU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=c2YMEJpbic/KaYifTcguL7x28uKrAO/kPHNJOrY7XndhRxMV2GaFJcf5PWmCgpgpw
+         A41oxcMAaeLlyH21jKQhv5UQhztW6ZjL5ZHI0jteJZ8u36F57g43rEWBRxVI3Ia+U0
+         2SPYA/0y63gXYPewcHBEn3+WVNkBzTMEk++imwQaVvEfYHB/kUoPEhr4blhif/5HG8
+         Ae8gHaA/ikREBUXMr0Ya9yK+QNa4id+S8GXme+TWitjrK+NpMD9YzsZAHBWZdvotfY
+         rmGZ6jszboTpASO6nLkhkLe36cngjSXoQxthPu2Zi/wwgsQYdSeojojPrS3+8sKjFT
+         Uc+C+OWJQMhHw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        chuck.lever@oracle.com, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net 0/3] ynl: another license adjustment
+Date:   Wed, 15 Mar 2023 16:03:48 -0700
+Message-Id: <20230315230351.478320-1-kuba@kernel.org>
 X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230315225847.360083-1-saeed@kernel.org>
-References: <20230315225847.360083-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oz Shlomo <ozsh@nvidia.com>
+Hopefully the last adjustment to the licensing of the specs.
+I'm still the author so should be fine to do this.
 
-The cited commit attempts to update the hw stats when dumping tc actions.
-However, the driver may be called to update the stats of a police action
-that may not be in hardware. In such cases the driver will fail to lookup
-the police action object and will output an error message both to extack
-and dmesg. The dmesg error is confusing as it may not indicate an actual
-error.
+Jakub Kicinski (3):
+  tools: ynl: make definitions optional again
+  ynl: broaden the license even more
+  ynl: make the tooling check the license
 
-Remove the dmesg error.
+ Documentation/netlink/genetlink-c.yaml        |  2 +-
+ Documentation/netlink/genetlink-legacy.yaml   |  2 +-
+ Documentation/netlink/genetlink.yaml          |  2 +-
+ Documentation/netlink/specs/ethtool.yaml      |  2 +-
+ Documentation/netlink/specs/fou.yaml          |  2 +-
+ Documentation/netlink/specs/netdev.yaml       |  2 +-
+ Documentation/userspace-api/netlink/specs.rst |  3 ++-
+ include/uapi/linux/fou.h                      |  2 +-
+ include/uapi/linux/netdev.h                   |  2 +-
+ net/core/netdev-genl-gen.c                    |  2 +-
+ net/core/netdev-genl-gen.h                    |  2 +-
+ net/ipv4/fou_nl.c                             |  2 +-
+ net/ipv4/fou_nl.h                             |  2 +-
+ tools/include/uapi/linux/netdev.h             |  2 +-
+ tools/net/ynl/lib/nlspec.py                   | 11 ++++++++++-
+ tools/net/ynl/ynl-gen-c.py                    | 15 ++++++++-------
+ 16 files changed, 33 insertions(+), 22 deletions(-)
 
-Fixes: 2b68d659a704 ("net/mlx5e: TC, support per action stats")
-Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
-Reviewed-by: Paul Blakey <paulb@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/police.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/police.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/police.c
-index c4378afdec09..1bd1c94fb977 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/police.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/police.c
-@@ -178,7 +178,6 @@ tc_act_police_stats(struct mlx5e_priv *priv,
- 	meter = mlx5e_tc_meter_get(priv->mdev, &params);
- 	if (IS_ERR(meter)) {
- 		NL_SET_ERR_MSG_MOD(fl_act->extack, "Failed to get flow meter");
--		mlx5_core_err(priv->mdev, "Failed to get flow meter %d\n", params.index);
- 		return PTR_ERR(meter);
- 	}
- 
 -- 
 2.39.2
 
