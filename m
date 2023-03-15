@@ -2,93 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F2C26BB7EC
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 16:34:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 196D76BB7F1
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 16:35:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232406AbjCOPei (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 11:34:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45822 "EHLO
+        id S232340AbjCOPez (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 11:34:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232233AbjCOPeh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 11:34:37 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E3783433D
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 08:34:36 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id m35so3305095wms.4
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 08:34:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112; t=1678894474;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=iSn5kfdhykvLhyEuzFDrK08azEwQSSmZ1qquAFvnjIQ=;
-        b=BToH7Z3bKMbzK2RjYie+EhidShhg+xhjJZAE5+GlddA9dzbs0n1hStJfanyTI1tNUU
-         8E1aha0lNNN3OjR7fF0Nc/0gKastWb83+rZhAadJO1UCkOyQ9F0oMhQbLabowqy2pg8u
-         XEJoo3m4hk9F4wwPsYf2rgKizCMsCzYthDZW1cKkVyXuIFrXms8mWqKNhLHLcBrwoCB3
-         dOGWuiSQLGKOQhqryeEpVAWL2t/cpc6J7AnbuxyStvtNbCbDyxHrrGLlJh40OdBNEO+Z
-         fwQ4p2pCV2/u6guFFwurxcdXBRJGd+4gx3RM0/eHNNxjXt2KRUAtY6Yl/nN1yyVsK1F4
-         MBqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678894474;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=iSn5kfdhykvLhyEuzFDrK08azEwQSSmZ1qquAFvnjIQ=;
-        b=cVSY4MunozCVzuaJJ5H3EaTc1UDMBptn70kjEMVwgqDYTAGvq0Fq0pilHXVW3rwl2I
-         XG0H/tXoOxjwNdCzdItstRjFhl8u1x/UtsOwcw4deKn2RTggxwBVccdfRbOXZTylL2Ok
-         9bA/WkZuhAPQks6fMY9DNtivj+Y/UOFbkwy8MgIkj+1yJfFHfNFwDGjO9qyJH/zEcBNE
-         grp9aYk5VsESRJ53iDuza9ZdV4zQdgkeZQtoaF1qR/6MqG8EghSMDD18w1BrMKnj9Z5D
-         ui2HvQ0EzJ+uUq3dS2kn48qfMocj1P/ZpgghAFALig4bNg2TR3OVQL4E1qFlcImCjlQ9
-         1j8Q==
-X-Gm-Message-State: AO0yUKW0EvEq85FWWQhM4S6wChBxOBa3EtV18eKWocX/4KUFOZT0OZJ5
-        dE51G/B7meYr0nePh8ov+kx8dQ==
-X-Google-Smtp-Source: AK7set8Yoa8+IOiarZ3IfL/VWla0xR5U0UapuEedg4o2wA11yz28lAI5nnin9ac7ZaYZUjGvpdwgrg==
-X-Received: by 2002:a05:600c:3c9e:b0:3e1:f8af:8772 with SMTP id bg30-20020a05600c3c9e00b003e1f8af8772mr18006250wmb.9.1678894474641;
-        Wed, 15 Mar 2023 08:34:34 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id o23-20020a05600c511700b003ed29b332b8sm2643610wms.35.2023.03.15.08.34.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Mar 2023 08:34:33 -0700 (PDT)
-Date:   Wed, 15 Mar 2023 16:34:32 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vadim Fedorenko <vadfed@meta.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vadim Fedorenko <vadim.fedorenko@linux.dev>, poros@redhat.com,
-        mschmidt@redhat.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
-Subject: Re: [PATCH RFC v6 6/6] ptp_ocp: implement DPLL ops
-Message-ID: <ZBHliPPS+e5d5JQe@nanopsycho>
-References: <20230312022807.278528-1-vadfed@meta.com>
- <20230312022807.278528-7-vadfed@meta.com>
+        with ESMTP id S232782AbjCOPew (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 11:34:52 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 275BE367F3
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 08:34:50 -0700 (PDT)
+Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <a.fatoum@pengutronix.de>)
+        id 1pcT9G-0003vH-Kw; Wed, 15 Mar 2023 16:34:42 +0100
+Message-ID: <23ced57d-27d5-4faa-70bb-9732a357a3cc@pengutronix.de>
+Date:   Wed, 15 Mar 2023 16:34:38 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230312022807.278528-7-vadfed@meta.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.2
+From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
+Subject: Re: [PATCH net 1/2] net: dsa: realtek: fix out-of-bounds access
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20230315130917.3633491-1-a.fatoum@pengutronix.de>
+ <CACRpkdbowrfYZpNKA32S8GT=8x_h+ZW4gd2Kj6FZkP1SZmDEPw@mail.gmail.com>
+Content-Language: en-US
+In-Reply-To: <CACRpkdbowrfYZpNKA32S8GT=8x_h+ZW4gd2Kj6FZkP1SZmDEPw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
+X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, Mar 12, 2023 at 03:28:07AM CET, vadfed@meta.com wrote:
+Hi Linus,
 
-[...]
-
->@@ -4226,8 +4377,44 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+On 15.03.23 14:15, Linus Walleij wrote:
+> On Wed, Mar 15, 2023 at 2:09 PM Ahmad Fatoum <a.fatoum@pengutronix.de> wrote:
 > 
-> 	ptp_ocp_info(bp);
-> 	devlink_register(devlink);
->-	return 0;
+>> The probe function sets priv->chip_data to (void *)priv + sizeof(*priv)
+>> with the expectation that priv has enough trailing space.
+>>
+>> However, only realtek-smi actually allocated this chip_data space.
+>> Do likewise in realtek-mdio to fix out-of-bounds accesses.
+>>
+>> Fixes: aac94001067d ("net: dsa: realtek: add new mdio interface for drivers")
+>> Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
 > 
->+	clkid = pci_get_dsn(pdev);
->+	bp->dpll = dpll_device_get(clkid, 0, THIS_MODULE);
->+	if (!bp->dpll) {
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-You have to use IS_ERR() here. Same problem in ice.
+Thanks for the review.
+ 
+> That this worked for so long is kind of scary, and the reason why we run Kasan
+> over so much code, I don't know if Kasan would have found this one.
 
-[...]
+It still worked. I looked into it some more and for some reason, struct realtek_priv
+has a char buf[4096] member that's unused. I assume it caused kmalloc to return a 8K
+slab, where the out-of-bound writes didn't overwrite anything of value. That buffer
+ought to be removed, but that's for net-next.
+
+I just checked with KASAN and it does detect the OOB on ARM64. I first noticed the
+bug on barebox though, which has a near verbatim port of the Linux driver, but a
+TLSF allocator, which fits allocations more tightly, hence it crashes not long
+after driver probe unlike Linux.
+
+> Rewriting the whole world in Rust will fix this problem, but it will
+> take a while...
+
+^^'.
+
+Cheers,
+Ahmad
+
+
+
+> 
+> Yours,
+> Linus Walleij
+> 
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
