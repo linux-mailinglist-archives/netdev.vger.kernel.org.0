@@ -2,175 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A4D336BA7AF
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 07:20:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D2AA6BA7D0
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 07:30:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230461AbjCOGUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 02:20:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54526 "EHLO
+        id S230293AbjCOGar (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 02:30:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbjCOGUP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 02:20:15 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FA7332513;
-        Tue, 14 Mar 2023 23:19:45 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id a2so18979768plm.4;
-        Tue, 14 Mar 2023 23:19:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678861183;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=n/OrkxmmE5cofD38xOKyNzOSC79HG80Mp2FvP2njW1E=;
-        b=elz9SoI2z4hvoF0E7Fce9e9Uzt1L5mPVGUle0Z2GRL7GKHNdpR1WClOwsOMMfRcfLb
-         Qm5bEwBZiurpqERUtTouZz2S3a36VBgLLIOMkqSKnMrMJ3b9P+G5KxjBKceLJ4Jicv7s
-         aqU/qzrAvRBerY1tWopPtiFfLgq9YSrKIZfKiVjR5Lx0bKLX3MEmXpMvD8XJ47pRckMW
-         LQ4T6E2i+sa9iJtFuLcFtfp3fuBE6GvUMHObkgYqPmPRqdbcxD2vnMKd9k6PCWBCr9Xh
-         HbqSTBPM9NZhM8reWkzkGGo3SuKsntZM5rQSAyOjswwKoB2SvmOsohhR+Fbt2PA1h5Gk
-         Z/7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678861183;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=n/OrkxmmE5cofD38xOKyNzOSC79HG80Mp2FvP2njW1E=;
-        b=ybsT2yJobisenQJCb5wmp1SueOX4L3FAxesUPCUhyvvyu7HXhoPwXQO++NQ2Iy68Ek
-         5nZSbLEQMaxxMVgyjkxNBGDekhi5nRLfNqPBkxml07edSmVL5Mf00xEalrPolakZLUER
-         tKLv/MvnZPB8FXq4aokX3jglMGfpnMSVfwxzI/Ggjobwjvh+bryK5s0UjCmbOMTQhwZj
-         Ln7umszArmamlIm2yq/CFwhblIPMdQGVOgssS3qXkwUBhzzl4REegjQfnetQHkf+PonI
-         cjeJlxRQujdHZLQqD7kaj4LN1Ts+gjpJzgDiWKtJm4BjaoarlZsbRIL0ocgYP3el9+lP
-         xGcQ==
-X-Gm-Message-State: AO0yUKWVmbIWVlq7ogGT80cofI+RyjEypC0VPvUz+9nTp7U+sybx/UJo
-        csIWWVc48aQciRw+sFETqbU=
-X-Google-Smtp-Source: AK7set/LFAsj6/iIWE9gzOEUjb45Y4FkKnpHnR2Jt7wH+U+1xLYc1zBO5MBoiW9zydE2UyZR6mw5Sw==
-X-Received: by 2002:a17:90b:688:b0:23d:4229:f7d7 with SMTP id m8-20020a17090b068800b0023d4229f7d7mr3465450pjz.38.1678861182899;
-        Tue, 14 Mar 2023 23:19:42 -0700 (PDT)
-Received: from [192.168.99.21] (i114-182-247-24.s42.a013.ap.plala.or.jp. [114.182.247.24])
-        by smtp.googlemail.com with ESMTPSA id ko12-20020a17090307cc00b0019aaba5c90bsm2769732plb.84.2023.03.14.23.19.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Mar 2023 23:19:42 -0700 (PDT)
-Message-ID: <6926d4f1-18d3-98e0-ac8a-8478d4020dab@gmail.com>
-Date:   Wed, 15 Mar 2023 15:19:37 +0900
+        with ESMTP id S229542AbjCOGaq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 02:30:46 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A7186188E
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 23:30:44 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pcKe1-0005Ef-EG; Wed, 15 Mar 2023 07:29:53 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pcKds-004FBQ-1I; Wed, 15 Mar 2023 07:29:44 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pcKdr-0050hi-Ac; Wed, 15 Mar 2023 07:29:43 +0100
+Date:   Wed, 15 Mar 2023 07:29:39 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Clark Wang <xiaoning.wang@nxp.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Wolfram Sang <wsa@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        Wei Fang <wei.fang@nxp.com>, Mark Brown <broonie@kernel.org>,
+        kernel@pengutronix.de, netdev@vger.kernel.org,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Shenwei Wang <shenwei.wang@nxp.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        NXP Linux Team <linux-imx@nxp.com>
+Subject: Re: [PATCH net-next 4/9] net: fec: Convert to platform remove
+ callback returning void
+Message-ID: <20230315062939.a6co333ssuz564p2@pengutronix.de>
+References: <20230313103653.2753139-1-u.kleine-koenig@pengutronix.de>
+ <20230313103653.2753139-5-u.kleine-koenig@pengutronix.de>
+ <20230314221508.lhumfl3y3qrybqj2@pengutronix.de>
+ <20230314222821.0988983c@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH] veth: Fix use after free in XDP_REDIRECT
-To:     Shawn Bohrer <sbohrer@cloudflare.com>
-Cc:     toke@kernel.org, makita.toshiaki@lab.ntt.co.jp,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@cloudflare.com, lorenzo@kernel.org
-References: <ZBCSAsUBeNvTPj/s@JNXK7M3>
- <20230314153351.2201328-1-sbohrer@cloudflare.com>
-Content-Language: en-US
-From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
-In-Reply-To: <20230314153351.2201328-1-sbohrer@cloudflare.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="5li5uzprglwpgp5b"
+Content-Disposition: inline
+In-Reply-To: <20230314222821.0988983c@kernel.org>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023/03/15 0:33, Shawn Bohrer wrote:
-> 718a18a0c8a67f97781e40bdef7cdd055c430996 "veth: Rework veth_xdp_rcv_skb
-> in order to accept non-linear skb" introduced a bug where it tried to
-> use pskb_expand_head() if the headroom was less than
-> XDP_PACKET_HEADROOM.  This however uses kmalloc to expand the head,
-> which will later allow consume_skb() to free the skb while is it still
-> in use by AF_XDP.
-> 
-> Previously if the headroom was less than XDP_PACKET_HEADROOM we
-> continued on to allocate a new skb from pages so this restores that
-> behavior.
-> 
-> BUG: KASAN: use-after-free in __xsk_rcv+0x18d/0x2c0
-> Read of size 78 at addr ffff888976250154 by task napi/iconduit-g/148640
-> 
-> CPU: 5 PID: 148640 Comm: napi/iconduit-g Kdump: loaded Tainted: G           O       6.1.4-cloudflare-kasan-2023.1.2 #1
-> Hardware name: Quanta Computer Inc. QuantaPlex T41S-2U/S2S-MB, BIOS S2S_3B10.03 06/21/2018
-> Call Trace:
->    <TASK>
->    dump_stack_lvl+0x34/0x48
->    print_report+0x170/0x473
->    ? __xsk_rcv+0x18d/0x2c0
->    kasan_report+0xad/0x130
->    ? __xsk_rcv+0x18d/0x2c0
->    kasan_check_range+0x149/0x1a0
->    memcpy+0x20/0x60
->    __xsk_rcv+0x18d/0x2c0
->    __xsk_map_redirect+0x1f3/0x490
->    ? veth_xdp_rcv_skb+0x89c/0x1ba0 [veth]
->    xdp_do_redirect+0x5ca/0xd60
->    veth_xdp_rcv_skb+0x935/0x1ba0 [veth]
->    ? __netif_receive_skb_list_core+0x671/0x920
->    ? veth_xdp+0x670/0x670 [veth]
->    veth_xdp_rcv+0x304/0xa20 [veth]
->    ? do_xdp_generic+0x150/0x150
->    ? veth_xdp_rcv_one+0xde0/0xde0 [veth]
->    ? _raw_spin_lock_bh+0xe0/0xe0
->    ? newidle_balance+0x887/0xe30
->    ? __perf_event_task_sched_in+0xdb/0x800
->    veth_poll+0x139/0x571 [veth]
->    ? veth_xdp_rcv+0xa20/0xa20 [veth]
->    ? _raw_spin_unlock+0x39/0x70
->    ? finish_task_switch.isra.0+0x17e/0x7d0
->    ? __switch_to+0x5cf/0x1070
->    ? __schedule+0x95b/0x2640
->    ? io_schedule_timeout+0x160/0x160
->    __napi_poll+0xa1/0x440
->    napi_threaded_poll+0x3d1/0x460
->    ? __napi_poll+0x440/0x440
->    ? __kthread_parkme+0xc6/0x1f0
->    ? __napi_poll+0x440/0x440
->    kthread+0x2a2/0x340
->    ? kthread_complete_and_exit+0x20/0x20
->    ret_from_fork+0x22/0x30
->    </TASK>
-> 
-> Freed by task 148640:
->    kasan_save_stack+0x23/0x50
->    kasan_set_track+0x21/0x30
->    kasan_save_free_info+0x2a/0x40
->    ____kasan_slab_free+0x169/0x1d0
->    slab_free_freelist_hook+0xd2/0x190
->    __kmem_cache_free+0x1a1/0x2f0
->    skb_release_data+0x449/0x600
->    consume_skb+0x9f/0x1c0
->    veth_xdp_rcv_skb+0x89c/0x1ba0 [veth]
->    veth_xdp_rcv+0x304/0xa20 [veth]
->    veth_poll+0x139/0x571 [veth]
->    __napi_poll+0xa1/0x440
->    napi_threaded_poll+0x3d1/0x460
->    kthread+0x2a2/0x340
->    ret_from_fork+0x22/0x30
-> 
-> The buggy address belongs to the object at ffff888976250000
->    which belongs to the cache kmalloc-2k of size 2048
-> The buggy address is located 340 bytes inside of
->    2048-byte region [ffff888976250000, ffff888976250800)
-> 
-> The buggy address belongs to the physical page:
-> page:00000000ae18262a refcount:2 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x976250
-> head:00000000ae18262a order:3 compound_mapcount:0 compound_pincount:0
-> flags: 0x2ffff800010200(slab|head|node=0|zone=2|lastcpupid=0x1ffff)
-> raw: 002ffff800010200 0000000000000000 dead000000000122 ffff88810004cf00
-> raw: 0000000000000000 0000000080080008 00000002ffffffff 0000000000000000
-> page dumped because: kasan: bad access detected
-> 
-> Memory state around the buggy address:
->    ffff888976250000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->    ffff888976250080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->> ffff888976250100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->                                                    ^
->    ffff888976250180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->    ffff888976250200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> 
-> Fixes: 718a18a0c8a6 ("veth: Rework veth_xdp_rcv_skb in order to accept non-linear skb")
-> Signed-off-by: Shawn Bohrer <sbohrer@cloudflare.com>
 
-Acked-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
+--5li5uzprglwpgp5b
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hello Jakub,
+
+On Tue, Mar 14, 2023 at 10:28:21PM -0700, Jakub Kicinski wrote:
+> On Tue, 14 Mar 2023 23:15:08 +0100 Uwe Kleine-K=F6nig wrote:
+> > FTR: This patch depends on patch 2 of this series which has issues. So
+> > please drop this patch, too. Taking the other 7 patches should be fine
+> > (unless some more issues are discovered of course).
+>=20
+> Could you post a v2 with just the right patches in it?
+> Would be quicker for us to handle and we're drowning in patches ATM :(
+
+That approximately matches my plan. I didn't intend to resend the
+patches that were not criticised if you pick them up. I have still 2000+
+patches of this type in my queue and intend to care for the rejects when
+I'm through sending them all once. When I rebase then I can easily see
+which drivers need some more care. I expect that won't happen in the
+current development cycle.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--5li5uzprglwpgp5b
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmQRZc8ACgkQwfwUeK3K
+7Akibwf9Ep0w2iLTcvMlBzL9TFd3EPgd9oRYkNo31TD6v3d5jxePS0/cBxbI+tpM
+e8tHhhPV9LzYjw7T/2RRUy9RrzC1FZYUV67gQ+hGfnILwIv6AQHULUtVg8vmjbc2
+4iL/jP9di2xP1VVHT8iYStWpIbbpsNMEjXSPAWpGeORiFB7V/giAdf/6tTi3f38D
+aagrvw5Bay/LXlBcWpr6IgjWNv8ZyRonmfkaM8BrcXVmOlmPOu8WLlmhby2acWfK
+GKxLervHmc4Kh9RlAxOerL/2eZi8vdeE0wDQsRfAbLqWPSriPklFEG2G4grWB2e0
+ja0e8S2iocRY9V8agDhtCvCZno0YHg==
+=yfsy
+-----END PGP SIGNATURE-----
+
+--5li5uzprglwpgp5b--
