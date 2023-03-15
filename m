@@ -2,49 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A0956BA96C
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 08:36:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C9456BA983
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 08:40:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231784AbjCOHgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 03:36:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51426 "EHLO
+        id S231831AbjCOHkl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 03:40:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231562AbjCOHf5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 03:35:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1076A79B17;
-        Wed, 15 Mar 2023 00:32:49 -0700 (PDT)
+        with ESMTP id S232050AbjCOHkS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 03:40:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8907D5DCAD;
+        Wed, 15 Mar 2023 00:39:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9112AB81C9E;
-        Wed, 15 Mar 2023 07:32:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82A5FC433EF;
-        Wed, 15 Mar 2023 07:32:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 766BF61B4D;
+        Wed, 15 Mar 2023 07:34:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7204BC433EF;
+        Wed, 15 Mar 2023 07:34:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678865566;
-        bh=FwOyZQ0zbDowL3G8WaiPuXocNYQRCYn0YDUMD0eKhgo=;
+        s=k20201202; t=1678865681;
+        bh=7ktC4KDSsNddL7fAD3DLVDfKc9FhqOWXOu6nwsp2d0w=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=scta9WaoNLYt+EFqwehsVQhfZZe2nHiPWRcyiI+KQRpJ4HBnAjo/5vj/r5h053jnU
-         TCOHV/s1mUACZ8GkdEcXnuvIFG5j505sDfcffiq76anpyDYGRu+R4yBFB112ZcK93U
-         hYBxylp5iqMdFEZpUHfpiJN7TQTB71+mK2odusYtr7Eq1QNH+czc8U5bamTYA9Oduo
-         ypEq1Q2PzN4vhYvhE+ArW4cQBSZ8/NbL2h5/Ue6UC8d+B63fJxzX3r3EA5ZMcSIRSu
-         8HB27xp2vD6uTQdCcH86Rbcio/a7f7yRrrVgGZ9XJj7pfEWSMmzr8hMh98N+l9/9up
-         kLk36louRZ0Tw==
-Date:   Wed, 15 Mar 2023 00:32:44 -0700
+        b=SR+z+gJt69q4OX57aiLUqiPcD5bZbAgivQETse4CAyMiQZSnePAvfgJd4I1juLysu
+         rqdxlUhkp9AwgonmFVNHF20ooAZSukVYZp5NxITv3NCMPypgT2SUEcFsf06BTsAwbb
+         jMPObol89iEVg977CMNCWGHMtwA0iW7W26IiCqZ1Bd2vZmIXIbCaRKADlEoCrWlw9B
+         bLb9le1sWRoyhnJd8Ns81U8znb4MIeNwBoj8nHnIrhDh+PjFsHZUTbeRke9qD9RDmx
+         r1NrQN11Y9S2CvbIwSj0DwtWiVH0xgQ+t9+6/Dc26Dz8KcpUg5fPKZdSbGsLLBD0uk
+         vBB6bnd1HwnWQ==
+Date:   Wed, 15 Mar 2023 00:34:40 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Gavin Li <gavinl@nvidia.com>
-Cc:     <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
-        <roopa@nvidia.com>, <eng.alaamohamedsoliman.am@gmail.com>,
-        <bigeasy@linutronix.de>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <gavi@nvidia.com>,
-        <roid@nvidia.com>, <maord@nvidia.com>, <saeedm@nvidia.com>
-Subject: Re: [PATCH net-next v7 5/5] net/mlx5e: TC, Add support for VxLAN
- GBP encap/decap flows offload
-Message-ID: <20230315003244.52bb841d@kernel.org>
-In-Reply-To: <20230313075107.376898-6-gavinl@nvidia.com>
-References: <20230313075107.376898-1-gavinl@nvidia.com>
-        <20230313075107.376898-6-gavinl@nvidia.com>
+To:     Kai <KaiShen@linux.alibaba.com>
+Cc:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net-next v4] net/smc: Use percpu ref for wr tx reference
+Message-ID: <20230315003440.23674405@kernel.org>
+In-Reply-To: <20230313060425.115939-1-KaiShen@linux.alibaba.com>
+References: <20230313060425.115939-1-KaiShen@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -57,33 +53,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 13 Mar 2023 09:51:07 +0200 Gavin Li wrote:
-> +	if (memchr_inv(&enc_opts.mask->data, 0, sizeof(enc_opts.mask->data)) &&
-> +	    !MLX5_CAP_ESW_FT_FIELD_SUPPORT_2(priv->mdev, tunnel_header_0_1)) {
-> +		NL_SET_ERR_MSG_MOD(extack, "Matching on VxLAN GBP is not supported");
-> +		netdev_warn(priv->netdev, "Matching on VxLAN GBP is not supported\n");
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	if (enc_opts.key->dst_opt_type != TUNNEL_VXLAN_OPT) {
-> +		NL_SET_ERR_MSG_MOD(extack, "Wrong VxLAN option type: not GBP");
-> +		netdev_warn(priv->netdev, "Wrong VxLAN option type: not GBP\n");
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	if (enc_opts.key->len != sizeof(*gbp) ||
-> +	    enc_opts.mask->len != sizeof(*gbp_mask)) {
-> +		NL_SET_ERR_MSG_MOD(extack, "VxLAN GBP option/mask len is not 32 bits");
-> +		netdev_warn(priv->netdev, "VxLAN GBP option/mask len is not 32 bits\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	gbp = (u32 *)&enc_opts.key->data[0];
-> +	gbp_mask = (u32 *)&enc_opts.mask->data[0];
-> +
-> +	if (*gbp_mask & ~VXLAN_GBP_MASK) {
-> +		NL_SET_ERR_MSG_FMT_MOD(extack, "Wrong VxLAN GBP mask(0x%08X)\n", *gbp_mask);
-> +		netdev_warn(priv->netdev, "Wrong VxLAN GBP mask(0x%08X)\n", *gbp_mask);
-> +		return -EINVAL;
+On Mon, 13 Mar 2023 06:04:25 +0000 Kai wrote:
+> Signed-off-by: Kai <KaiShen@linux.alibaba.com>
 
-extack only please, there's no excuse to be using both any more
+Kai Shen ?
+
+> 
+
+You're missing a --- separator here, try to apply this patch with 
+git am :/
+
+> v1->v2:
+> - Modify patch prefix
+> 
+> v2->v3:
+> - Make wr_reg_refcnt a percpu one as well
+> - Init percpu ref with 0 flag instead of ALLOW_REINIT flag
+> 
+> v3->v4:
+> - Update performance data, this data may differ from previous data
+>   as I ran cases on other machines
+> ---
