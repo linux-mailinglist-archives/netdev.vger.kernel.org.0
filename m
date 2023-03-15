@@ -2,83 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 94CF36BA5EA
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 05:10:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B40236BA5F3
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 05:11:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230006AbjCOEKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 00:10:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58802 "EHLO
+        id S230513AbjCOEK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 00:10:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229631AbjCOEKd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 00:10:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BCD13E631;
-        Tue, 14 Mar 2023 21:10:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 32480B81BC1;
-        Wed, 15 Mar 2023 04:10:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0195C433D2;
-        Wed, 15 Mar 2023 04:10:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678853429;
-        bh=ntjkd5ecWuLKH9Sa/6T6Lz65wiAmBbJRc4QFXD440lA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nzJS2fTD3ItSldIrXvK1bybRMUC8QxOQMHHiviZkAM0QoS3MkXwMfRY6m7F6H37lj
-         N7UVRJK+ZYOibo9+MsVYRk9CWyrwnnevTlwZhdf/omL4y+6Zynz6xpfWf7ACnZi/SE
-         KWCCpsoh48g/AlJO7Mshs0OM0SNtZdEvoBGTVxkrlTPOMPq8w0tZ593Wi1Xe/U9yjF
-         CWKOWoIYq9H6kW3yRxaQryMf5bMj/MxldO+PZp9AESvh78iLd7woWv3mrOztle/GE8
-         kRwqCap6r0Hyb983hnUQIm8wYDEvE+lOwHM0vllCX+2J2j+BNaQmSym8EAbv9rsNuH
-         lTQWRJ0AtRr7w==
-Date:   Tue, 14 Mar 2023 21:10:28 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Zheng Hacker <hackerzheng666@gmail.com>
-Cc:     Zheng Wang <zyytlz.wz@163.com>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, 1395428693sheep@gmail.com,
-        alex000young@gmail.com
-Subject: Re: [PATCH net] net: ethernet: fix use after free bug in
- ns83820_remove_one due to race condition
-Message-ID: <20230314211028.6e9cbbcf@kernel.org>
-In-Reply-To: <CAJedcCxBn=GE_pQ4xzpnvUmMA6rDuwn_AiE7S7d1EqGF9cHkNw@mail.gmail.com>
-References: <20230309094231.3808770-1-zyytlz.wz@163.com>
-        <20230313162630.225f6a86@kernel.org>
-        <CAJedcCxBn=GE_pQ4xzpnvUmMA6rDuwn_AiE7S7d1EqGF9cHkNw@mail.gmail.com>
+        with ESMTP id S230472AbjCOEKx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 00:10:53 -0400
+Received: from out30-124.freemail.mail.aliyun.com (out30-124.freemail.mail.aliyun.com [115.124.30.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DABE048E2D;
+        Tue, 14 Mar 2023 21:10:46 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R811e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VduWS3-_1678853443;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VduWS3-_1678853443)
+          by smtp.aliyun-inc.com;
+          Wed, 15 Mar 2023 12:10:43 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     netdev@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+Subject: [RFC net-next 0/8] virtio_net: refactor xdp codes
+Date:   Wed, 15 Mar 2023 12:10:34 +0800
+Message-Id: <20230315041042.88138-1-xuanzhuo@linux.alibaba.com>
+X-Mailer: git-send-email 2.32.0.3.g01195cf9f
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Git-Hash: a046238c058f
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 14 Mar 2023 09:59:09 +0800 Zheng Hacker wrote:
-> Jakub Kicinski <kuba@kernel.org> =E4=BA=8E2023=E5=B9=B43=E6=9C=8814=E6=97=
-=A5=E5=91=A8=E4=BA=8C 07:26=E5=86=99=E9=81=93=EF=BC=9A
-> > On Thu,  9 Mar 2023 17:42:31 +0800 Zheng Wang wrote: =20
-> > > +     cancel_work_sync(&dev->tq_refill);
-> > >       ns83820_disable_interrupts(dev); /* paranoia */
-> > >
-> > >       unregister_netdev(ndev); =20
-> >
-> > Canceling the work before unregister can't work.
-> > Please take a closer look, the work to refill a ring should be
-> > canceled when the ring itself is dismantled. =20
->=20
-> Hi Jakub,
->=20
-> Thanks for your review! After seeing code again, I found when handling
-> IRQ request, it will finally call ns83820_irq->ns83820_do_isr->
-> ns83820_rx_kick->schedule_work to start work. So I think we should
-> move the code after free_irq. What do you think?
+Due to historical reasons, the implementation of XDP in virtio-net is relatively
+chaotic. For example, the processing of XDP actions has two copies of similar
+code. Such as page, xdp_page processing, etc.
 
-Sorry, we have over 300 patches which need reviews. I don't have=20
-the time to help you. Perhaps someone else will.
+The purpose of this patch set is to refactor these code. Reduce the difficulty
+of subsequent maintenance. Subsequent developers will not introduce new bugs
+because of some complex logical relationships.
 
-Please make sure you work on a single networking fix at a time.
-All the patches you posted had the same issues.
+In addition, the supporting to AF_XDP that I want to submit later will also need
+to reuse the logic of XDP, such as the processing of actions, I don't want to
+introduce a new similar code. In this way, I can reuse these codes in the
+future.
+
+This patches are developed on the top of another patch set[1]. I may have to
+wait to merge this. So this patch set is a RFC.
+
+Please review.
+
+Thanks.
+
+[1]. https://lore.kernel.org/netdev/20230315015223.89137-1-xuanzhuo@linux.alibaba.com/
+
+
+Xuan Zhuo (8):
+  virtio_net: mergeable xdp: put old page immediately
+  virtio_net: mergeable xdp: introduce mergeable_xdp_prepare
+  virtio_net: introduce virtnet_xdp_handler() to seprate the logic of
+    run xdp
+  virtio_net: separate the logic of freeing xdp shinfo
+  virtio_net: separate the logic of freeing the rest mergeable buf
+  virtio_net: auto release xdp shinfo
+  virtio_net: introduce receive_mergeable_xdp()
+  virtio_net: introduce receive_small_xdp()
+
+ drivers/net/virtio_net.c | 615 +++++++++++++++++++++++----------------
+ 1 file changed, 357 insertions(+), 258 deletions(-)
+
+--
+2.32.0.3.g01195cf9f
+
