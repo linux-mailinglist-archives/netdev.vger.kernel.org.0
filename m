@@ -2,140 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 983316BC199
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 00:40:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CB456BC1AC
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 00:45:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233060AbjCOXkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 19:40:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58216 "EHLO
+        id S232545AbjCOXpd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 19:45:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233732AbjCOXkU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 19:40:20 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F248AA701
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 16:38:34 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-5416698e889so277808087b3.2
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 16:38:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1678923445;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=dHrvVwIWp49Bk9eZeESJ106vHxBrFF69Ev6yIqFp/SA=;
-        b=XFvDVVC1r4aXGy/a07g3koptGVFUkmcmzXauDJ87lnwJjxWxfPXOHx1+faPktOEl+r
-         w7j0hs7OqD2n9yx3TaxYFgL6w/MF3Og+4TAJW6uzjVpa1ldtCXqDcbMqIaaM8B7WcdZb
-         OChIXg5Z1qnoNxT4mn+QHvIFbsUWBeOAra1S97rrOsm5G93M5qbV3q44/WIvXftEfsC4
-         tPmW3M+A6PS/NPLK5VvcF2I2ckYvyEgxNL2Kr+58GVe0Yu6ULsqIR/O5OzEKbUe0ozKD
-         g6kmDySbT2KYyZUBPxZB2PTz/L9kpNcanUSbnDZUm+yZQn2rWCqgkThvPukNjpF081G6
-         IV6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678923445;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=dHrvVwIWp49Bk9eZeESJ106vHxBrFF69Ev6yIqFp/SA=;
-        b=ul+FKdwZWg9EaeAmp9hcvuV7KIbhaDK8XDNimhos7WKiarfgqbp75xKKe+QXMXL1t9
-         ONFemrUxze4lDgbngyZ+3wM4bjLqsFiDbH3ihDOtBSmjeR5mXtnDAj2y3RXlZnEgfKDC
-         xjQcmGx2xepGsD1ZNmDngPjU+JzAuypwi3VhQ0fGI/X9YTEhvLhiguGpRzluzl07Divg
-         2jdyjtFare2Hwp5LQgRLfk/6DUZfy48mpgSA3AWYthqrvea9ijU2848JsAky7S/rb8ys
-         iAZBKbZ3ExK6zYQhhlV98WRGNrO8tqKP8cA7ASS8Q5vFZNl7Nzp1VAEhHwOUC0KY67AH
-         K7gg==
-X-Gm-Message-State: AO0yUKV8/B6CXudyL2mH0fs3jcoEi7+D1NBu7AtEq+ROFxa9k+3avFW+
-        Gz7GiTvGD5QnHvSu1g8XDxFBM/v47x893T69rLWzXg==
-X-Google-Smtp-Source: AK7set8TYWloaNpsAkkIgiZKGft8ylJN/JpBqTjMMunboHI/hJhYxELd6Cu5q22yTj0LG4C66sq+qreLYGLea8jWC1c=
-X-Received: by 2002:a81:ca4b:0:b0:52e:e095:d840 with SMTP id
- y11-20020a81ca4b000000b0052ee095d840mr1057155ywk.0.1678923445121; Wed, 15 Mar
- 2023 16:37:25 -0700 (PDT)
+        with ESMTP id S230280AbjCOXpc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 19:45:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93E41EC6E;
+        Wed, 15 Mar 2023 16:44:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 21718B81E91;
+        Wed, 15 Mar 2023 23:39:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 319D9C433EF;
+        Wed, 15 Mar 2023 23:39:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678923541;
+        bh=5GAPeyBfP2Zdf5EnCdjZvhZIA4Fi7REUqed3wUYdGag=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lAfGv8Zo9dEdKwK8GO98w31I1bipnQB1+sElvJonBBQomHPZOxKdpff+v27nTVD4Z
+         OKlDr5zrABM14vU+izk3Or4NIhGdg9yson/3x0qvQkTGAqlwjCg8do790xbpg8mTwV
+         vBOnKruGGlnZx4TEvD6ZyUGTOvM3VBIaNgsqOKoV2AW45wM9vh6br3TFkiJKazU8ET
+         tiEVQ4pdIVavG2OOY7YxGVzhY6/G/7O9J3kIBdMlML3RkMncRo3LRVrxW/y1jnoJnJ
+         aH2NUH3/XngjCV0BukNaKqexNFLjnenY+2XsCjTLnKK5AjLJlUudqduqsJhylZVHXg
+         nEilCQgqTYCdA==
+Date:   Wed, 15 Mar 2023 16:39:00 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        saeedm@nvidia.com, leon@kernel.org, shayagr@amazon.com,
+        akiyano@amazon.com, darinzon@amazon.com, sgoutham@marvell.com,
+        lorenzo.bianconi@redhat.com, toke@redhat.com, teknoraver@meta.com,
+        ttoukan.linux@gmail.com
+Subject: Re: [PATCH net v2 7/8] net/mlx5e: take into account device
+ reconfiguration for xdp_features flag
+Message-ID: <20230315163900.381dd25e@kernel.org>
+In-Reply-To: <16c37367670903e86f863cc8c481100dd4b3a323.1678364613.git.lorenzo@kernel.org>
+References: <cover.1678364612.git.lorenzo@kernel.org>
+        <16c37367670903e86f863cc8c481100dd4b3a323.1678364613.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-References: <20230315154245.3405750-1-edumazet@google.com> <20230315154245.3405750-2-edumazet@google.com>
- <20230315142841.3a2ac99a@kernel.org> <CANn89iLbOqjWVmgZKdGjbdsHw1EwO9d_w+dgKsyzLoq9pOsurQ@mail.gmail.com>
- <CAHk-=wiPUfe8aji5KojAhDKjWhJJU2F9kfzyL660=jRkY+Uzyg@mail.gmail.com>
-In-Reply-To: <CAHk-=wiPUfe8aji5KojAhDKjWhJJU2F9kfzyL660=jRkY+Uzyg@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 15 Mar 2023 16:37:14 -0700
-Message-ID: <CANn89iKA3E0CnXD=3EmP8-Ojav-tYEFeBaBu3B7CgzPaX6EC6A@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/8] inet: preserve const qualifier in inet_sk()
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        eric.dumazet@gmail.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 15, 2023 at 4:21=E2=80=AFPM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> On Wed, Mar 15, 2023 at 3:38=E2=80=AFPM Eric Dumazet <edumazet@google.com=
-> wrote:
-> >
-> > Maybe something like this?
->
-> Please no.
->
-> > +#define promote_to_type(ptr, oldtype, newtype)                 \
-> > +       _Generic(ptr,                                           \
-> > +                const oldtype *: ((const newtype *)(ptr)),     \
-> > +                oldtype *: ((newtype *)(ptr))                  \
-> > +       )
->
-> That's just a very ugly way to just do a cast. It's wrong.
->
-> > +#define inet_sk(sk) promote_to_type(sk, struct sock, struct inet_sock)
->
-> This is horrid.
->
-> Why isn't this just doing
->
->    #define inet_sk(ptr) container_of(ptr, struct inet_sock, sk)
->
-> which is different from a plain cast in that it actually checks that
-> "yes, struct inet_sock has a member called 'sk' that has the right
-> type, so now we can convert from that sk to the containing structure".
->
-> That's very different from just randomly casting a pointer to another
-> pointer, like the current inet_sk() does, and like that disgusting
-> promote_to_type() macro does.
->
-> We really strive for proper type safety in the kernel. And that very
-> much means *not* doing random casts.
->
-> At least that "inet_sk(sk)" version using generics didn't take random
-> pointer types. But I really don't see why you don't just use
-> "container_of()", which is actually type-safe, and would allow "struct
-> inet_sock" to contain the "struct sock" somewhere else than in the
-> first field.
->
-> Hmm? Am I missing something that is happening in linux-next?
+On Thu,  9 Mar 2023 13:25:31 +0100 Lorenzo Bianconi wrote:
+> Take into account LRO and GRO configuration setting device xdp_features
+> flag. Consider channel rq_wq_type enabling rx scatter-gatter support in
+> xdp_features flag and disable NETDEV_XDP_ACT_NDO_XMIT_SG since it is not
+> supported yet by the driver.
+> Moreover always enable NETDEV_XDP_ACT_NDO_XMIT as the ndo_xdp_xmit
+> callback does not require to load a dummy xdp program on the NIC.
+> 
+> Fixes: 66c0e13ad236 ("drivers: net: turn on XDP features")
+> Co-developed-by: Tariq Toukan <tariqt@nvidia.com>
+> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 
+This one hits ASSERT_RTNL(), I think. Don't we need something like:
 
-Yep. my goal was to have const awareness.
+diff --git a/net/core/xdp.c b/net/core/xdp.c
+index 87e654b7d06c..5722a1fc6e9e 100644
+--- a/net/core/xdp.c
++++ b/net/core/xdp.c
+@@ -781,6 +781,9 @@ void xdp_set_features_flag(struct net_device *dev, xdp_features_t val)
+                return;
+ 
+        dev->xdp_features = val;
++
++       if (dev->reg_state < NETREG_REGISTERED)
++               return;
+        call_netdevice_notifiers(NETDEV_XDP_FEAT_CHANGE, dev);
+ }
+ EXPORT_SYMBOL_GPL(xdp_set_features_flag);
 
-https://patchwork.kernel.org/project/netdevbpf/patch/20230315154245.3405750=
--2-edumazet@google.com/
-
-(and whole series in
-https://patchwork.kernel.org/project/netdevbpf/list/?series=3D730398&state=
-=3D*
-)
-
-This:
-
-#define inet_sk(ptr) container_of(ptr, struct inet_sock, sk)
-
-does not really cover what I wanted, does it ?
-
->
->                 Linus
+? The notifiers are not needed until the device is actually live.
