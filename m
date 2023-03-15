@@ -2,136 +2,303 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 791D56BA78F
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 07:14:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E99236BA7AC
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 07:19:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230176AbjCOGOo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 02:14:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47702 "EHLO
+        id S229648AbjCOGTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 02:19:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229571AbjCOGOm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 02:14:42 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E73025BCA1;
-        Tue, 14 Mar 2023 23:14:41 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id b20so11067639pfo.6;
-        Tue, 14 Mar 2023 23:14:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678860881;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0zrO+pcZdXTBSpsHTsNXDHYa0ybcj9wOqWg+hyVu3ao=;
-        b=i0o8rxmus2RNFC1A6PS/PYuv7rdtb6JC8doDd8PgFanoflCbv/oUNQE8n2N3TsS/Bz
-         ud4GSZaqE3ubs2h+eLeuYo+M6KwyfpK8IEZWELLeLSwmVcYucVHIyOig+xD+KFPZ/PAm
-         +q13PRroHaNOXkTj8m07PcAVKzFF2qaAFPwHh/dYdEtfm9tocZLveA2vW4rbGOuMfsO5
-         nrt8yPeWjBfbkz5Gulc0GMxpeguDw93I0PDBdR2j35Rk7h2Wpga9Xtr7lTBB5/wxQfqA
-         Rs/56jlE4X+DwojTihBJI/tIbj7Rp51SNTjIjdTbmIYVFKfHbDZCkY+X6f9Lnm38/0/e
-         Q1gg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678860881;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=0zrO+pcZdXTBSpsHTsNXDHYa0ybcj9wOqWg+hyVu3ao=;
-        b=5Nq50xYDLZ8IIC1wUm/mKh/2tgOfqKJfZeS0hedzZJgWlXHvEa4yYkXE7wx78gw09j
-         JRUmX3Ah4n7vCoh1p2hzPyqpCek0S8wgdeL4PwarqAgCLsvBEICt6CyxjPvOZliMaP/Y
-         1/z5EVQdG1IrHYbM/4j1zrSouiHE1X1kxHc6wDAbPIE+FGApphGBYbTw1u2LurDfxcA3
-         6nKBAGvq62ikyX3V5Mx6H7OOGfZFj7qxWbFiyfFu5IaxsLh4OMklqGisTGwJw8Sy7sy/
-         ziVfDJ4c09wnhJWOtsjTdOY4/+NOqb6Yd9MN/w5yIPG1VvOFMR38kCXuvTqODdMZ791t
-         9cVQ==
-X-Gm-Message-State: AO0yUKWO9zxxCB/nFU2L+FMjNny7H1GtQhtAhuFQ5o8a8WyrhSePPXNS
-        c8LI+OzrjgKZBgCUleOMj28=
-X-Google-Smtp-Source: AK7set9ZrPKQMflKE9FAcdRA6OMTf/PX2nTksgH3Pq9yhfjd3O7RYe9niQu9eNqYRtpJeYsbyxa5Gg==
-X-Received: by 2002:aa7:9f44:0:b0:622:85e2:fb93 with SMTP id h4-20020aa79f44000000b0062285e2fb93mr12236994pfr.15.1678860880727;
-        Tue, 14 Mar 2023 23:14:40 -0700 (PDT)
-Received: from localhost ([98.97.116.12])
-        by smtp.gmail.com with ESMTPSA id a17-20020a62e211000000b006247123adf1sm2711104pfi.143.2023.03.14.23.14.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Mar 2023 23:14:40 -0700 (PDT)
-Date:   Tue, 14 Mar 2023 23:14:38 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Message-ID: <6411624ee725f_4664d2087f@john.notmuch>
-In-Reply-To: <20230313041619.394914-1-xiyou.wangcong@gmail.com>
-References: <20230313041619.394914-1-xiyou.wangcong@gmail.com>
-Subject: RE: [Patch net-next v2] sock_map: dump socket map id via diag
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S231174AbjCOGTY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 02:19:24 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F8137702
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 23:19:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678861153; x=1710397153;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=JeUmr9oYJvT9XBliDIRDwZBLapj5rUyM7UuqqvYlZRw=;
+  b=bJfDTANCLjaUdelEjDlCrpVBQle4kOk+UaHDsBPeq5u6+9Sc3q4xb6bo
+   7untx9JeJe0lihwNpP49zN9LXMHwadIJ0SS+oSoKMMrkMFik+NJXZfnTy
+   J81+H9g0orqpiLuOwb+SJNycNYmu9JGBfLg+gpUtUZ17M9kQMo9sV1Q3f
+   l8P8xhXUNNbli5TzOX4nlMNPWMzUY31CRHER5c1tGUUBhEptizHFVx8Qz
+   n8eSW6197my+LMjnR1KmCfcNTHGL8f6Vk7SGY6c50/UhSa62uLsFmawSV
+   OegLYtb3RbBP+UoY4Xri5y335Hk9I2pqqZmIVm7HQ60yOs5CWPMP6/x/E
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="336311269"
+X-IronPort-AV: E=Sophos;i="5.98,262,1673942400"; 
+   d="scan'208";a="336311269"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2023 23:19:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="1008707255"
+X-IronPort-AV: E=Sophos;i="5.98,262,1673942400"; 
+   d="scan'208";a="1008707255"
+Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2023 23:19:09 -0700
+Date:   Wed, 15 Mar 2023 07:19:01 +0100
+From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+To:     edward.cree@amd.com
+Cc:     linux-net-drivers@amd.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com,
+        Edward Cree <ecree.xilinx@gmail.com>, netdev@vger.kernel.org,
+        habetsm.xilinx@gmail.com
+Subject: Re: [PATCH net-next 1/5] sfc: add notion of match on enc keys to MAE
+ machinery
+Message-ID: <ZBFjVV7ZfOz9u50M@localhost.localdomain>
+References: <cover.1678815095.git.ecree.xilinx@gmail.com>
+ <cc70de55f816fe885fcb73003a9822961d1c5dfd.1678815095.git.ecree.xilinx@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cc70de55f816fe885fcb73003a9822961d1c5dfd.1678815095.git.ecree.xilinx@gmail.com>
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
+On Tue, Mar 14, 2023 at 05:35:21PM +0000, edward.cree@amd.com wrote:
+> From: Edward Cree <ecree.xilinx@gmail.com>
 > 
-> Currently there is no way to know which sockmap a socket has been added
-> to from outside, especially for that a socket can be added to multiple
-> sockmap's. We could dump this via socket diag, as shown below.
+> Extend the MAE caps check to validate that the hardware supports used
+>  outer-header matches.
+> Extend efx_mae_populate_match_criteria() to fill in the outer rule ID
+>  and VNI match fields.
+> Nothing yet populates these match fields, nor creates outer rules.
 > 
-> Sample output:
-> 
->   # ./iproute2/misc/ss -tnaie --sockmap
->   ESTAB  0      344329     127.0.0.1:1234     127.0.0.1:40912 ino:21098 sk:5 cgroup:/user.slice/user-0.slice/session-c1.scope <-> sockmap: 1
-> 
->   # bpftool map
->   1: sockmap  flags 0x0
->   	key 4B  value 4B  max_entries 2  memlock 4096B
-> 	pids echo-sockmap(549)
->   4: array  name pid_iter.rodata  flags 0x480
-> 	key 4B  value 4B  max_entries 1  memlock 4096B
-> 	btf_id 10  frozen
-> 	pids bpftool(624)
-> 
-> In the future, we could dump other sockmap related stats too, hence I
-> make it a nested attribute.
-> 
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
 > ---
-> v2: rename enum's with more generic names
->     sock_map_idiag_dump -> sock_map_diag_dump()
->     make sock_map_diag_dump() return number of maps
+>  drivers/net/ethernet/sfc/mae.c | 104 ++++++++++++++++++++++++++++++++-
+>  drivers/net/ethernet/sfc/mae.h |   3 +
+>  drivers/net/ethernet/sfc/tc.h  |  24 ++++++++
+>  3 files changed, 129 insertions(+), 2 deletions(-)
 > 
->  include/linux/bpf.h            |  1 +
->  include/uapi/linux/inet_diag.h |  1 +
->  include/uapi/linux/sock_diag.h |  8 ++++++
->  include/uapi/linux/unix_diag.h |  1 +
->  net/core/sock_map.c            | 51 ++++++++++++++++++++++++++++++++++
->  net/ipv4/inet_diag.c           |  5 ++++
->  net/unix/diag.c                |  6 ++++
->  7 files changed, 73 insertions(+)
-> 
+> diff --git a/drivers/net/ethernet/sfc/mae.c b/drivers/net/ethernet/sfc/mae.c
+> index c53d354c1fb2..1a285facda34 100644
+> --- a/drivers/net/ethernet/sfc/mae.c
+> +++ b/drivers/net/ethernet/sfc/mae.c
+> @@ -254,13 +254,23 @@ static int efx_mae_get_rule_fields(struct efx_nic *efx, u32 cmd,
+>  	size_t outlen;
+>  	int rc, i;
+>  
+> +	/* AR and OR caps MCDIs have identical layout, so we are using the
+> +	 * same code for both.
+> +	 */
+> +	BUILD_BUG_ON(MC_CMD_MAE_GET_AR_CAPS_OUT_LEN(MAE_NUM_FIELDS) <
+> +		     MC_CMD_MAE_GET_OR_CAPS_OUT_LEN(MAE_NUM_FIELDS));
+>  	BUILD_BUG_ON(MC_CMD_MAE_GET_AR_CAPS_IN_LEN);
+> +	BUILD_BUG_ON(MC_CMD_MAE_GET_OR_CAPS_IN_LEN);
+>  
+>  	rc = efx_mcdi_rpc(efx, cmd, NULL, 0, outbuf, sizeof(outbuf), &outlen);
+>  	if (rc)
+>  		return rc;
+> +	BUILD_BUG_ON(MC_CMD_MAE_GET_AR_CAPS_OUT_COUNT_OFST !=
+> +		     MC_CMD_MAE_GET_OR_CAPS_OUT_COUNT_OFST);
+>  	count = MCDI_DWORD(outbuf, MAE_GET_AR_CAPS_OUT_COUNT);
+>  	memset(field_support, MAE_FIELD_UNSUPPORTED, MAE_NUM_FIELDS);
+> +	BUILD_BUG_ON(MC_CMD_MAE_GET_AR_CAPS_OUT_FIELD_FLAGS_OFST !=
+> +		     MC_CMD_MAE_GET_OR_CAPS_OUT_FIELD_FLAGS_OFST);
+>  	caps = _MCDI_DWORD(outbuf, MAE_GET_AR_CAPS_OUT_FIELD_FLAGS);
+>  	/* We're only interested in the support status enum, not any other
+>  	 * flags, so just extract that from each entry.
+> @@ -278,8 +288,12 @@ int efx_mae_get_caps(struct efx_nic *efx, struct mae_caps *caps)
+>  	rc = efx_mae_get_basic_caps(efx, caps);
+>  	if (rc)
+>  		return rc;
+> -	return efx_mae_get_rule_fields(efx, MC_CMD_MAE_GET_AR_CAPS,
+> -				       caps->action_rule_fields);
+> +	rc = efx_mae_get_rule_fields(efx, MC_CMD_MAE_GET_AR_CAPS,
+> +				     caps->action_rule_fields);
+> +	if (rc)
+> +		return rc;
+> +	return efx_mae_get_rule_fields(efx, MC_CMD_MAE_GET_OR_CAPS,
+> +				       caps->outer_rule_fields);
+>  }
+>  
+>  /* Bit twiddling:
+> @@ -432,11 +446,73 @@ int efx_mae_match_check_caps(struct efx_nic *efx,
+>  	    CHECK_BIT(IP_FIRST_FRAG, ip_firstfrag) ||
+>  	    CHECK(RECIRC_ID, recirc_id))
+>  		return rc;
+> +	/* Matches on outer fields are done in a separate hardware table,
+> +	 * the Outer Rule table.  Thus the Action Rule merely does an
+> +	 * exact match on Outer Rule ID if any outer field matches are
+> +	 * present.  The exception is the VNI/VSID (enc_keyid), which is
+> +	 * available to the Action Rule match iff the Outer Rule matched
+if I think :)
 
-[...]
-
-> +int sock_map_diag_dump(struct sock *sk, struct sk_buff *skb, int attrtype)
-> +{
-> +	struct sk_psock_link *link;
-> +	struct nlattr *nla, *attr;
-> +	int nr_links = 0, ret = 0;
-> +	struct sk_psock *psock;
-> +	u32 *ids;
-> +
-> +	rcu_read_lock();
-> +	psock = sk_psock_get(sk);
-> +	if (unlikely(!psock)) {
-
-wont this be the common case because we call this for any sk from
-inet_diag_msg_attrs_fill(sk, ...)? Probably drop the unlikely?
-
-> +		rcu_read_unlock();
-> +		return 0;
+> +	 * (and thus identified the encap protocol to use to extract it).
+> +	 */
+> +	if (efx_tc_match_is_encap(mask)) {
+> +		rc = efx_mae_match_check_cap_typ(
+> +				supported_fields[MAE_FIELD_OUTER_RULE_ID],
+> +				MASK_ONES);
+> +		if (rc) {
+> +			NL_SET_ERR_MSG_MOD(extack, "No support for encap rule ID matches");
+> +			return rc;
+> +		}
+> +		if (CHECK(ENC_VNET_ID, enc_keyid))
+> +			return rc;
+> +	} else if (mask->enc_keyid) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Match on enc_keyid requires other encap fields");
+> +		return -EINVAL;
 > +	}
+>  	return 0;
+>  }
+>  #undef CHECK_BIT
+>  #undef CHECK
+>  
+> +#define CHECK(_mcdi)	({						       \
+> +	rc = efx_mae_match_check_cap_typ(supported_fields[MAE_FIELD_ ## _mcdi],\
+> +					 MASK_ONES);			       \
+> +	if (rc)								       \
+> +		NL_SET_ERR_MSG_FMT_MOD(extack,				       \
+> +				       "No support for field %s", #_mcdi);     \
+> +	rc;								       \
+> +})
+Is there any reasone why macro is used instead of function? It is a
+little hard to read becasue it is modyfing rc value.
+
+> +/* Checks that the fields needed for encap-rule matches are supported by the
+> + * MAE.  All the fields are exact-match.
+> + */
+> +int efx_mae_check_encap_match_caps(struct efx_nic *efx, unsigned char ipv,
+> +				   struct netlink_ext_ack *extack)
+> +{
+> +	u8 *supported_fields = efx->tc->caps->outer_rule_fields;
+> +	int rc;
+> +
+> +	if (CHECK(ENC_ETHER_TYPE))
+> +		return rc;
+> +	switch (ipv) {
+> +	case 4:
+> +		if (CHECK(ENC_SRC_IP4) ||
+> +		    CHECK(ENC_DST_IP4))
+> +			return rc;
+> +		break;
+> +	case 6:
+> +		if (CHECK(ENC_SRC_IP6) ||
+> +		    CHECK(ENC_DST_IP6))
+> +			return rc;
+> +		break;
+> +	default: /* shouldn't happen */
+> +		EFX_WARN_ON_PARANOID(1);
+> +		break;
+> +	}
+> +	if (CHECK(ENC_L4_DPORT) ||
+> +	    CHECK(ENC_IP_PROTO))
+> +		return rc;
+> +	return 0;
+> +}
+> +#undef CHECK
+> +
+>  int efx_mae_allocate_counter(struct efx_nic *efx, struct efx_tc_counter *cnt)
+>  {
+>  	MCDI_DECLARE_BUF(outbuf, MC_CMD_MAE_COUNTER_ALLOC_OUT_LEN(1));
+> @@ -941,6 +1017,30 @@ static int efx_mae_populate_match_criteria(MCDI_DECLARE_STRUCT_PTR(match_crit),
+>  				match->value.tcp_flags);
+>  	MCDI_STRUCT_SET_WORD_BE(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_TCP_FLAGS_BE_MASK,
+>  				match->mask.tcp_flags);
+> +	/* enc-keys are handled indirectly, through encap_match ID */
+> +	if (match->encap) {
+> +		MCDI_STRUCT_SET_DWORD(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_OUTER_RULE_ID,
+> +				      match->encap->fw_id);
+> +		MCDI_STRUCT_SET_DWORD(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_OUTER_RULE_ID_MASK,
+> +				      (u32)-1);
+U32_MAX can't be used here?
+
+> +		/* enc_keyid (VNI/VSID) is not part of the encap_match */
+> +		MCDI_STRUCT_SET_DWORD_BE(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_ENC_VNET_ID_BE,
+> +					 match->value.enc_keyid);
+> +		MCDI_STRUCT_SET_DWORD_BE(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_ENC_VNET_ID_BE_MASK,
+> +					 match->mask.enc_keyid);
+> +	} else {
+> +		/* No enc-keys should appear in a rule without an encap_match */
+> +		if (WARN_ON_ONCE(match->mask.enc_src_ip) ||
+> +		    WARN_ON_ONCE(match->mask.enc_dst_ip) ||
+> +		    WARN_ON_ONCE(!ipv6_addr_any(&match->mask.enc_src_ip6)) ||
+> +		    WARN_ON_ONCE(!ipv6_addr_any(&match->mask.enc_dst_ip6)) ||
+> +		    WARN_ON_ONCE(match->mask.enc_ip_tos) ||
+> +		    WARN_ON_ONCE(match->mask.enc_ip_ttl) ||
+> +		    WARN_ON_ONCE(match->mask.enc_sport) ||
+> +		    WARN_ON_ONCE(match->mask.enc_dport) ||
+> +		    WARN_ON_ONCE(match->mask.enc_keyid))
+> +			return -EOPNOTSUPP;
+Can be written as else if {}
+
+Also, You define a similar function: efx_tc_match_is_encap(), I think it
+can be used here.
+
+> +	}
+>  	return 0;
+>  }
+>  
+> diff --git a/drivers/net/ethernet/sfc/mae.h b/drivers/net/ethernet/sfc/mae.h
+> index bec293a06733..a45d1791517f 100644
+> --- a/drivers/net/ethernet/sfc/mae.h
+> +++ b/drivers/net/ethernet/sfc/mae.h
+> @@ -72,6 +72,7 @@ struct mae_caps {
+>  	u32 match_field_count;
+>  	u32 action_prios;
+>  	u8 action_rule_fields[MAE_NUM_FIELDS];
+> +	u8 outer_rule_fields[MAE_NUM_FIELDS];
+>  };
+>  
+>  int efx_mae_get_caps(struct efx_nic *efx, struct mae_caps *caps);
+> @@ -79,6 +80,8 @@ int efx_mae_get_caps(struct efx_nic *efx, struct mae_caps *caps);
+>  int efx_mae_match_check_caps(struct efx_nic *efx,
+>  			     const struct efx_tc_match_fields *mask,
+>  			     struct netlink_ext_ack *extack);
+> +int efx_mae_check_encap_match_caps(struct efx_nic *efx, unsigned char ipv,
+> +				   struct netlink_ext_ack *extack);
+>  
+>  int efx_mae_allocate_counter(struct efx_nic *efx, struct efx_tc_counter *cnt);
+>  int efx_mae_free_counter(struct efx_nic *efx, struct efx_tc_counter *cnt);
+> diff --git a/drivers/net/ethernet/sfc/tc.h b/drivers/net/ethernet/sfc/tc.h
+> index 542853f60c2a..c1485679507c 100644
+> --- a/drivers/net/ethernet/sfc/tc.h
+> +++ b/drivers/net/ethernet/sfc/tc.h
+> @@ -48,11 +48,35 @@ struct efx_tc_match_fields {
+>  	/* L4 */
+>  	__be16 l4_sport, l4_dport; /* Ports (UDP, TCP) */
+>  	__be16 tcp_flags;
+> +	/* Encap.  The following are *outer* fields.  Note that there are no
+> +	 * outer eth (L2) fields; this is because TC doesn't have them.
+> +	 */
+> +	__be32 enc_src_ip, enc_dst_ip;
+> +	struct in6_addr enc_src_ip6, enc_dst_ip6;
+> +	u8 enc_ip_tos, enc_ip_ttl;
+> +	__be16 enc_sport, enc_dport;
+> +	__be32 enc_keyid; /* e.g. VNI, VSID */
+> +};
+> +
+> +static inline bool efx_tc_match_is_encap(const struct efx_tc_match_fields *mask)
+> +{
+> +	return mask->enc_src_ip || mask->enc_dst_ip ||
+> +	       !ipv6_addr_any(&mask->enc_src_ip6) ||
+> +	       !ipv6_addr_any(&mask->enc_dst_ip6) || mask->enc_ip_tos ||
+> +	       mask->enc_ip_ttl || mask->enc_sport || mask->enc_dport;
+> +}
+> +
+> +struct efx_tc_encap_match {
+> +	__be32 src_ip, dst_ip;
+> +	struct in6_addr src_ip6, dst_ip6;
+> +	__be16 udp_dport;
+What about source port? It isn't supported?
+
+> +	u32 fw_id; /* index of this entry in firmware encap match table */
+>  };
+>  
+>  struct efx_tc_match {
+>  	struct efx_tc_match_fields value;
+>  	struct efx_tc_match_fields mask;
+> +	struct efx_tc_encap_match *encap;
+>  };
+>  
+>  struct efx_tc_action_set_list {
