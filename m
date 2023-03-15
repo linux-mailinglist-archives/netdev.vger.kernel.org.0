@@ -2,28 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4986F6BB5D3
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 15:20:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2D0C6BB5DD
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 15:23:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232341AbjCOOUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 10:20:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39638 "EHLO
+        id S233093AbjCOOXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 10:23:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229941AbjCOOUv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 10:20:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C90956526;
-        Wed, 15 Mar 2023 07:20:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S233094AbjCOOW6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 10:22:58 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 873F67C95E;
+        Wed, 15 Mar 2023 07:22:57 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74AE261D7F;
-        Wed, 15 Mar 2023 14:20:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC94DC4339C;
-        Wed, 15 Mar 2023 14:20:45 +0000 (UTC)
-Date:   Wed, 15 Mar 2023 10:20:44 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Vlastimil Babka <vbabka@suse.cz>
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 2A4DF211DE;
+        Wed, 15 Mar 2023 14:22:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1678890176; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZXN3JSv2JuNO7QXPyMNGLcsuvXz4zccB7xCl9QvCXx0=;
+        b=a4OkV7YgDfYyvZJGSY0wfj0zvUGu55EzMc8yK/Q0mwAoFuHUyv9EOKd588uX0SEm1bAUKI
+        XLddUf1uTdVQIWPBvq6FImBmERKh4de/0fu8o3rgjewOTfF0kdlKQYo/WtiGahloJk1YCo
+        bWkbRNXnMnMj9kQMCPG92CmBPWloghc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1678890176;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZXN3JSv2JuNO7QXPyMNGLcsuvXz4zccB7xCl9QvCXx0=;
+        b=VEP1QR+K19ft2s5XsGNEZFSU2UdJgackjuPRKjrUHdAl9BAKPpvldY3LmIUYjU1wkjcQRh
+        Qr45ZukAmKT7UiCw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B492813A2F;
+        Wed, 15 Mar 2023 14:22:55 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id rxJnK7/UEWTFRgAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Wed, 15 Mar 2023 14:22:55 +0000
+Message-ID: <17007eb9-b831-aabb-78dc-95f4f4aada55@suse.cz>
+Date:   Wed, 15 Mar 2023 15:22:55 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH 0/7] remove SLOB and allow kfree() with kmem_cache_alloc()
+Content-Language: en-US
+To:     Steven Rostedt <rostedt@goodmis.org>
 Cc:     Mike Rapoport <mike.rapoport@gmail.com>,
         Christoph Lameter <cl@linux.com>,
         David Rientjes <rientjes@google.com>,
@@ -48,42 +80,46 @@ Cc:     Mike Rapoport <mike.rapoport@gmail.com>,
         Neeraj Upadhyay <quic_neeraju@quicinc.com>,
         Paolo Abeni <pabeni@redhat.com>,
         "Paul E. McKenney" <paulmck@kernel.org>
-Subject: Re: [PATCH 0/7] remove SLOB and allow kfree() with
- kmem_cache_alloc()
-Message-ID: <20230315102031.29585157@gandalf.local.home>
-In-Reply-To: <3018fb77-68d0-fb67-2595-7c58c6cf7a76@suse.cz>
 References: <20230310103210.22372-1-vbabka@suse.cz>
-        <ZA2gofYkXRcJ8cLA@kernel.org>
-        <20230313123147.6d28c47e@gandalf.local.home>
-        <3018fb77-68d0-fb67-2595-7c58c6cf7a76@suse.cz>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+ <ZA2gofYkXRcJ8cLA@kernel.org> <20230313123147.6d28c47e@gandalf.local.home>
+ <3018fb77-68d0-fb67-2595-7c58c6cf7a76@suse.cz>
+ <20230315102031.29585157@gandalf.local.home>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20230315102031.29585157@gandalf.local.home>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Mar 2023 14:53:14 +0100
-Vlastimil Babka <vbabka@suse.cz> wrote:
-
-> On 3/13/23 17:31, Steven Rostedt wrote:
-> > Just remove that comment. And you could even add:
-> > 
-> > Suggested-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-> > Fixes: e4c2ce82ca27 ("ring_buffer: allocate buffer page pointer")  
+On 3/15/23 15:20, Steven Rostedt wrote:
+> On Wed, 15 Mar 2023 14:53:14 +0100
+> Vlastimil Babka <vbabka@suse.cz> wrote:
 > 
-> Thanks for the analysis. Want to take the following patch to your tree or
-> should I make it part of the series?
+>> On 3/13/23 17:31, Steven Rostedt wrote:
+>> > Just remove that comment. And you could even add:
+>> > 
+>> > Suggested-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+>> > Fixes: e4c2ce82ca27 ("ring_buffer: allocate buffer page pointer")  
+>> 
+>> Thanks for the analysis. Want to take the following patch to your tree or
+>> should I make it part of the series?
+> 
+> I can take it if you send it as a proper patch and Cc
+> linux-trace-kernel@vger.kernel.org.
 
-I can take it if you send it as a proper patch and Cc
-linux-trace-kernel@vger.kernel.org.
+OK, will do.
 
-I'm guessing it's not required for stable.
+> I'm guessing it's not required for stable.
 
--- Steve
+No, but maybe AUTOSEL will pick it anyway as it has Fixes: but that's their
+problem ;)
+
+> -- Steve
+
