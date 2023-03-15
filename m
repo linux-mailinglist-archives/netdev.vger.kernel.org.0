@@ -2,131 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E0D66BB664
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 15:45:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEA1E6BB66A
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 15:46:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231806AbjCOOp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 10:45:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50130 "EHLO
+        id S232445AbjCOOqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 10:46:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230205AbjCOOpY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 10:45:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FF3B4D29B
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 07:44:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678891473;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=V9DO5/qhW6U1QCthKzhHp/6zXZOJTXt3N7Wz9ZLGVs8=;
-        b=WDttGvZ+BQpj1T8rdXxi6xkhQ+sbtgN1fp7bvJTXZBsU8cZv8vQ9CvSHHNjeg/FwrH4Wku
-        hPI0fqcC1c6VVWr7f4nn7qCKtF5GNBMnjLnVW8Q4WKeWNDwphbNxyAJjJdpoFvT1npEz0t
-        4O4Lp12MdAjBd981sYkFJQAP+Q3r3jE=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-645-GDNGh18UNNCL-6K7f3Jd8w-1; Wed, 15 Mar 2023 10:44:32 -0400
-X-MC-Unique: GDNGh18UNNCL-6K7f3Jd8w-1
-Received: by mail-qt1-f198.google.com with SMTP id c5-20020ac84e05000000b003d6a808a388so116939qtw.8
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 07:44:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678891468;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=V9DO5/qhW6U1QCthKzhHp/6zXZOJTXt3N7Wz9ZLGVs8=;
-        b=TRq3K4J35cFZ6fe5Qovy2AvFYKBxYzDLoByFaAHR/SM8HsSny1ddcrR+jt3yYo8qNF
-         rTx75gPRLC6DHcwHMfQsZ4OllXpbh4me7bITEk4BQnEthyvD25vWRFKffb7Ku+X1//eB
-         /wZB2RgOFIWArIWojvpAjmXfu2npdGsJPFiHRyy5MMuO+APBTvX7OBNXK0JH8YLa77uS
-         SDHTq2aeR61WtGAkjX17wjcoS5t1GSwC7N51YocdyZc7D1gZKK77dGoimVuXvmGmC8YX
-         tMdqoOk/IT7+e3lRpyyTPmkAl6ushYCk5fE7gCXvolxv7kaon5VqEywSM1cM2wBhsxlZ
-         N3tA==
-X-Gm-Message-State: AO0yUKWo8P186VZAhwVgqjR0Hw1amjbjpmd6J46t/QXW7pUMAKws8taG
-        H7Mza3E7Vc7PbJ3bB/D8ACe0GUf1OVmLCa+KHKBXs6AMxXu8W+rhw2hy9U6o3zptx5A34ozn4Ng
-        GXR2YswKVXZKBagSa
-X-Received: by 2002:a05:622a:1443:b0:3bf:d7f8:4f85 with SMTP id v3-20020a05622a144300b003bfd7f84f85mr250308qtx.12.1678891468406;
-        Wed, 15 Mar 2023 07:44:28 -0700 (PDT)
-X-Google-Smtp-Source: AK7set81sK96A7z7pEl6MJGG5bAQyWj2G3woDPKd14dVFfwYI2+6BEGTfADHJpbb+lpInVBEP8Arpw==
-X-Received: by 2002:a05:622a:1443:b0:3bf:d7f8:4f85 with SMTP id v3-20020a05622a144300b003bfd7f84f85mr250282qtx.12.1678891468141;
-        Wed, 15 Mar 2023 07:44:28 -0700 (PDT)
-Received: from [192.168.98.18] ([107.12.98.143])
-        by smtp.gmail.com with ESMTPSA id d9-20020ae9ef09000000b0073ba211e765sm3846432qkg.19.2023.03.15.07.44.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Mar 2023 07:44:27 -0700 (PDT)
-Message-ID: <0cfd57e7-2993-1bba-1918-022fe0e70930@redhat.com>
-Date:   Wed, 15 Mar 2023 10:44:26 -0400
+        with ESMTP id S232334AbjCOOql (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 10:46:41 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B57A38FBEA
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 07:46:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=RcLn+Lx31wzZJnZ/k4I59D1WZ4nRJxyNY/jYd2XJUQE=; b=A/3p1bkGjnN6bxTxKe5QVxE4FT
+        3AgQC/KPRxkdVU1f+nX9fSqN5PN9S9pKW8OHi/RcDPY8p7ygSbCrazcWE14XUuHHwGVUcP/1hrHMQ
+        Et/jAXOopIVQFP5zrNzinqk9wJEbQJf+djlrQ110VSwQZTKoMXk4O+NL6n4wdOn0xpcYVHsX1hL+j
+        r01dX52Nes44aGu/dfv4A7588+J7ca4X5bU7xS1EwWzGSmkn0XlCo1gp28Krv+xxglz8XXQ8VlH5y
+        9IvKtMM67b2jRSfUbtqN0gdXU7eCHZ41fJOhnTa8mvLz4E+ZZVZkSXc6lXs9dZETkp1Jpt+xm16z1
+        Hcqjh0Cg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33502)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pcSOa-0007MG-CN; Wed, 15 Mar 2023 14:46:28 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pcSOW-0001Tj-QZ; Wed, 15 Mar 2023 14:46:24 +0000
+Date:   Wed, 15 Mar 2023 14:46:24 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jonathan McDowell <noodles@earth.li>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH net-next 0/2] Minor fixes for pcs_get_state() implementations
+Message-ID: <ZBHaQDM+G/o/UW3i@shell.armlinux.org.uk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH net v3 0/3] bonding: properly restore flags when bond
- changes ether type
-To:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org
-Cc:     monis@voltaire.com, syoshida@redhat.com, j.vosburgh@gmail.com,
-        andy@greyhouse.net, kuba@kernel.org, davem@davemloft.net,
-        pabeni@redhat.com, edumazet@google.com,
-        syzbot+9dfc3f3348729cc82277@syzkaller.appspotmail.com,
-        michal.kubiak@intel.com
-References: <20230315111842.1589296-1-razor@blackwall.org>
-Content-Language: en-US
-From:   Jonathan Toppins <jtoppins@redhat.com>
-In-Reply-To: <20230315111842.1589296-1-razor@blackwall.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/15/23 07:18, Nikolay Aleksandrov wrote:
-> Hi,
-> A bug was reported by syzbot[1] that causes a warning and a myriad of
-> other potential issues if a bond, that is also a slave, fails to enslave a
-> non-eth device. While fixing that bug I found that we have the same
-> issues when such enslave passes and after that the bond changes back to
-> ARPHRD_ETHER (again due to ether_setup). This set fixes all issues by
-> extracting the ether_setup() sequence in a helper which does the right
-> thing about bond flags when it needs to change back to ARPHRD_ETHER. It
-> also adds selftests for these cases.
-> 
-> Patch 01 adds the new bond_ether_setup helper and fixes the issues when a
-> bond device changes its ether type due to successful enslave. Patch 02
-> fixes the issues when it changes its ether type due to an unsuccessful
-> enslave. Note we need two patches because the bugs were introduced by
-> different commits. Patch 03 adds the new selftests.
-> 
-> Due to the comment adjustment and squash, could you please review
-> patch 01 again? I've kept the other acks since there were no code
-> changes.
-> 
-> v3: squash the helper patch and the first fix, adjust the comment above
->      it to be explicit about the bond device, no code changes
-> v2: new set, all patches are new due to new approach of fixing these bugs
-> 
-> Thanks,
->   Nik
-> 
-> [1] https://syzkaller.appspot.com/bug?id=391c7b1f6522182899efba27d891f1743e8eb3ef
-> 
-> Nikolay Aleksandrov (3):
->    bonding: restore IFF_MASTER/SLAVE flags on bond enslave ether type
->      change
->    bonding: restore bond's IFF_SLAVE flag if a non-eth dev enslave fails
->    selftests: bonding: add tests for ether type changes
-> 
->   drivers/net/bonding/bond_main.c               | 23 +++--
->   .../selftests/drivers/net/bonding/Makefile    |  3 +-
->   .../net/bonding/bond-eth-type-change.sh       | 85 +++++++++++++++++++
->   3 files changed, 103 insertions(+), 8 deletions(-)
->   create mode 100755 tools/testing/selftests/drivers/net/bonding/bond-eth-type-change.sh
-> 
+Hi,
 
-    For the series.
-Acked-by: Jonathan Toppins <jtoppins@redhat.com>
+This series contains a number fixes for minor issues with some
+pcs_get_state() implementations, particualrly for the phylink
+state->an_enabled member. As they are minor, I'm suggesting we
+queue them in net-next as there is follow-on work for these, and
+there is no urgency for them to be in -rc.
 
+Just like phylib, state->advertising's Autoneg bit is a copy of
+state->an_enabled, and thus it is my intention to remove
+state->an_enabled from phylink to simplify things.
+
+This series gets rid of state->an_enabled assignments or
+reporting that should never have been there.
+
+ drivers/net/pcs/pcs-lynx.c |  4 ++--
+ drivers/net/pcs/pcs-xpcs.c | 13 ++-----------
+ 2 files changed, 4 insertions(+), 13 deletions(-)
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
