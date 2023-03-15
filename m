@@ -2,127 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE46B6BB8B4
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 16:56:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C3BE6BB8BF
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 16:57:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232097AbjCOP4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 11:56:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52058 "EHLO
+        id S232359AbjCOP5N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 11:57:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232358AbjCOP4V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 11:56:21 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2102.outbound.protection.outlook.com [40.107.220.102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 203B07EA29
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 08:55:31 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ONQupuq89J9fbgTrcebDWPbQBmmctRBs7GiE21F0Kabq+/mgX7LI/x63oJEbIQseGdKTCs8SlxZ6RRq31vzp31Vf+fBy9A+oTBRbHp6VqxOxDpuVw7iZXgXl+d+La9idq3uAuzEEvsBf0DtnYiopIs0yaNADHa3iICvZwvqPPl9EO381C+fSJlxCfNsisTAKjHbKXtV44H5M5NI+8NQsMF5+OpDpctXTSBKjyX3Q4iSAratqmb5xzpoxFsgDawTqyiBEF2F7sq5uzPIKu+bz6sOah4iBewW/kmluK9AYDp/4DvtTdzztXnJY5StogMcgyv0UZq+42bleFoGhvsuzBw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+1LPmlXZBjIWjOZVxVmYt7WhTAapMjk5a19sEAJi4BY=;
- b=D8h7uNJJKEAwLfPQqeqtHuM7w4tpjnt8cn+bvnbBFZE4y2tLE/mF/LJXU55Gq4g/Y6F4RJxtOzidkgWOxTTDd2/QP/t/t9cSwg8W0yP3XNXT28bUcq71y1NvDID2UKITPtKb1f6spLe5Oh1wwH9k0pDLITlXOQizWcfmC5UL9Q1jRgcOz0AAlvcudBKW8NQrz9LTcd55993R6oV3WPBZYhY6Dp0VLFSOfWKxpMg06AC012bQBaur67TukUQKXbe4wZi1poh8AxEhP7SSrmQNHyYw3Fk/u0kNHpSvK/RMkl1XeKsbPfMgXCb3qjX83lK+0Ef4xPRxaCe9+n6JMIsRCw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+1LPmlXZBjIWjOZVxVmYt7WhTAapMjk5a19sEAJi4BY=;
- b=eVUcvhjy344lprWdhL9i1SMZcPvpOCQ1XCaTHQkSvNYebQAp1U+vHqDte/IwdZEalMIUMDI72grKFcKITGDSOOFsqWZr7PhSTzs+GEAG9sak5MMjMoF7/TuNdFDvKsmoxPWKOvMgF9CFnGmn7WFyUEj00NUf3HPyF8JpKejWQps=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by SN4PR13MB5775.namprd13.prod.outlook.com (2603:10b6:806:217::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.26; Wed, 15 Mar
- 2023 15:54:06 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.030; Wed, 15 Mar 2023
- 15:54:06 +0000
-Date:   Wed, 15 Mar 2023 16:53:59 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Pedro Tammela <pctammela@mojatatu.com>
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-Subject: Re: [PATCH net-next v2 4/4] net/sched: act_pedit: rate limit
- datapath messages
-Message-ID: <ZBHqF7ZMs2YuksbO@corigine.com>
-References: <20230314202448.603841-1-pctammela@mojatatu.com>
- <20230314202448.603841-5-pctammela@mojatatu.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230314202448.603841-5-pctammela@mojatatu.com>
-X-ClientProxiedBy: AS4P195CA0009.EURP195.PROD.OUTLOOK.COM
- (2603:10a6:20b:5e2::17) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        with ESMTP id S231513AbjCOP4t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 11:56:49 -0400
+Received: from out-30.mta0.migadu.com (out-30.mta0.migadu.com [IPv6:2001:41d0:1004:224b::1e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB0984F50
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 08:56:19 -0700 (PDT)
+Message-ID: <7f95eede-888e-9e81-eedf-7664d91e2e16@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1678895768;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8KfvwxghdgZFeQU86X27BxIgB3vaKUY97DITgzT1gwI=;
+        b=su8nVaHOwcNLk7E4eyPIJe4W1x8pOLjgeYcyRb35kU5s3TP2XAeei9T75N0TjHhnp6JIEQ
+        JxOP2jtgQ+Zf1UK1ImMfsF6iXZSllx3JMtVBHB61ymEJa04gDA859BOVIVPDzDlebiXs8T
+        vXK6c0n3WeYqYiledYUVB/Z1gLbM4D0=
+Date:   Wed, 15 Mar 2023 15:56:05 +0000
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SN4PR13MB5775:EE_
-X-MS-Office365-Filtering-Correlation-Id: 636a0dc0-71c7-4424-3713-08db256d81a0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0Ftq9sCPDd+YoRDEM9eDSEqucU01piNtDOoGmVTWX5PDVnbwroUPTs9RixPyXhqvsLlLdHNqNuBgm3oivG+QcZEtMZA8XkW+g4iEMPEF1hhkeFgCR4M6yfnhEvWZgHFRX2+r3xSmRJLzc/q4vWzBN9ZEB5xbr/wPHg5qv58Wu4mhnmVrHh6vLnG9/acDJA4CyfuVGTAdexORj6jDKaZsDCUluDcbgpJMvGemRLrmtxTxq7Fvv03VfRk+g2BT8ftA2aL4Zl1+2qJ+ESzmjP18aHZFNE9WGNtUbZu7/2/FRKoOrb/e8T6XMHDeNI+oF90Un4xTtbpDYsX3tTaHv74PyUEEpQfT2G113iSRRUzRU4eEeD5zFUfVY8raCOgONja/qTJvjVu2snTB+uwLQC8l9li3MrcGia1D7Ks4ISk//ba6zRx59jaV1JXavGXFgPlWbVcYAl7FVki/aCH6+1cKXgQ9fhe2CRG+6XJCYenCoaZ1xACmxVz5l/F4zYChvlZ14VUt8IF77DxyHSHiLsCCcYgmzwRwB9RAcgHzT0NNCk8Gr0dVlMTRxNe2ZQNKXyIZyqLps+xGxZ9vF7ubQKBUb/LAiRGoml7V4sHPpjGHCeZDbhiOlytNxsrFvfd1ZWPavEnWkQoRSJmwk3N04uuZAh28Xwx62f4pG4Ah/Rk03YiC+lz3gMHvT36dWB6fRXLU
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39840400004)(136003)(376002)(346002)(366004)(396003)(451199018)(38100700002)(5660300002)(4744005)(8936002)(41300700001)(15650500001)(2906002)(44832011)(36756003)(86362001)(6916009)(478600001)(66556008)(6486002)(66946007)(8676002)(66476007)(6666004)(4326008)(6512007)(83380400001)(316002)(2616005)(186003)(6506007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UiRmlo04Hlhp8NE46tqjaegWZZYk2rNb+qT5qrxE8WpJNEi74r7c04D6p7vC?=
- =?us-ascii?Q?2za1W6xA/kvgq+sb844037z16MtG80sSMo5Z6jaNUJtvdGcnjRhcWDRYggwf?=
- =?us-ascii?Q?qw7I8qKQrazILmp3qO1c2cl29+52rr7lvHFg1ysdSZH8NK9rvNz+GpO5HiO5?=
- =?us-ascii?Q?AckoZn1Yjz3SZMOAh7gLeeTLoY07B2q3BgaNWKbHRmYiJzQZJvDmdlAV1dWf?=
- =?us-ascii?Q?6fVv6Ci/BmNTodIMC5F/29wKOp72ySvdfe8Cg6l1yEcd2RBDqc5ml7Hz/zQn?=
- =?us-ascii?Q?8wRdI3Kx4qStzuUlz2/XqAaO2Vyp87g/Ju4tai8jvC7MuEVc3fzhLq08NGOf?=
- =?us-ascii?Q?dqV/ZsT5HyhuyxBDuqaWwfitVncUiF64ASJkY3/iCcOw7zvgU+kBK701vox2?=
- =?us-ascii?Q?PpZOsHCPxO9NUp+4hucQPtBCBgu5hXSQjk5hVSJhE4X8kQsAnP57yVLIAS+A?=
- =?us-ascii?Q?8gwXoTLylk6NFZsOFBNN15hTme157ZVnlkWZ+zzT4GNzcObfQS9/qefSn9TE?=
- =?us-ascii?Q?DhP58gtHtzK+A6vbii5C/Fb5bOD2zrRQKEPT+953uHsTjr5YFRkVXP5pupc0?=
- =?us-ascii?Q?3q/mqeySAi/pjUsQ2LnSvcI+H1AVCuiantZmcsrXIolVzW/Xs3lT2r/00Ts3?=
- =?us-ascii?Q?9xyAXtg0yLrrB/6XnWnnhyCsx6SmvvtH6/kg2me2tYkLGJuhEh2kfO9hJQw6?=
- =?us-ascii?Q?crJ0omkUSjxD0tb/6YDtuEzKOYrIQx1v3thd8FeTJTchGO+4B7h06p1AlC3Z?=
- =?us-ascii?Q?3XpfXuER5XnBdJHfRk9wfo+CKxUKZiDroPcf4Prwqew/tdCByvyR273pjb8S?=
- =?us-ascii?Q?VnJCYx+oXFZQfZfyxBsRcsJHobxjmXP99mktwOQGB0iPouAwDcKMyoNcP8Pn?=
- =?us-ascii?Q?IoOnYq9yS0FgSW9kHm8aiK2eW4jZHHoQZWDsU0qqUwOcw8TJISsIg85BxjKK?=
- =?us-ascii?Q?91Qd6mAOK946Feu9oy4OE7tfvRXLYSY+AtE3SSanOZlV8BRR5yXNj8nUl/Ie?=
- =?us-ascii?Q?xeMydBwRD6Z9prh/cIkfsRHkptph+P8Bn2g6zJGSYtQk2BZ4dtRRpWv6qLeH?=
- =?us-ascii?Q?cLO9rOrdiCBy9eOl4G/VSj5A+tkt9AAQn672IRzURqPw5kJUueiRY0tfjjPA?=
- =?us-ascii?Q?1XRwiLOg0hXYcSQD/VwPtimSu/WWTV3Tp22bwi5dKuNJ7Bt/V96qrrVeLVfF?=
- =?us-ascii?Q?nx0IDWXxnPjxYmSOdmEV0xCgviam20KfRqI4zWo4eCVaO+mwITQ7ubG3Kmq2?=
- =?us-ascii?Q?WmYngym6eefjZm0+s/JUkrsCBJyN+nD4QuGaVMC03pDToDnz4T5FYVmcm4jB?=
- =?us-ascii?Q?WccuI9rnQRxXigWAqk695+ZbLuMgXCrQiohB82MucOyCoIk+YHbQwhrUbVk6?=
- =?us-ascii?Q?k1u0XfZ4Fi8XqLiCrwbTG/cUNlAAGbFeSePNh3qe89ZGL7Ukehm4sZYKFhyF?=
- =?us-ascii?Q?J6G6oHanCX6axHe38Yf2cytdfbAjNrkCJWeaI7G5f2hx+r6JMVnMCS5FoDYe?=
- =?us-ascii?Q?Hfdul+qe/A5ugaKt0wHIkAnDegTGv8tz2CO7D13SNUSD4sc5U7ZJzLdV+qvY?=
- =?us-ascii?Q?8EYtX2Ge0M3uXcorsRW21nUlrB+qibfFNuglMDlWLkNryBSHGcEwox0SnWZy?=
- =?us-ascii?Q?JJf5pGAuL8W1cuHkOLd5GCfQTHx3mqBBRTwI8F5RtbPeQCOCSFkZQAKCzoC/?=
- =?us-ascii?Q?DoXjzA=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 636a0dc0-71c7-4424-3713-08db256d81a0
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2023 15:54:06.3230
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qSQppEnOqmav4uDgEapmBaASzdCrLjgCnYF7eIxvu9w0GwJgOgmgnBvuGyLLcZWi2Mrfbo6Wr/6DZ08wOvY0qBJKcvRfZ3e++fxxHIi6OM8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN4PR13MB5775
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: ioctl SIOCSHWTSTAMP failed on a vlan interface within non-default
+ network namespace
+Content-Language: en-US
+To:     Yan Jiang <Yan.Jiang@viavisolutions.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <BYAPR18MB240835B708FA3A5B489656738DBF9@BYAPR18MB2408.namprd18.prod.outlook.com>
+ <7e78cd84-17ef-1830-4084-a360d991a619@linux.dev>
+ <BYAPR18MB2408F4FEDD31152C3C15D5648DBF9@BYAPR18MB2408.namprd18.prod.outlook.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Vadim Fedorenko <vadim.fedorenko@linux.dev>
+In-Reply-To: <BYAPR18MB2408F4FEDD31152C3C15D5648DBF9@BYAPR18MB2408.namprd18.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 14, 2023 at 05:24:48PM -0300, Pedro Tammela wrote:
-> Unbounded info messages in the pedit datapath can flood the printk ring buffer quite easily
-> depending on the action created. As these messages are informational, usually printing
-> some, not all, is enough to bring attention to the real issue.
+On 15/03/2023 15:17, Yan Jiang wrote:
+> HI Vadim,
 > 
-> Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
-> Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
+> Thank you for your reply. This explains why ioctl failed on vlan interface.
+> 
+> I am ignorant here, but in my example below both base interface and vlan 
+> interface are in same namespace,  and I feel that the defense you 
+> pointed to me is not protecting anything.
+> We can even take the default namespace as example: why we allow ioctl 
+> SIOCSHWTSTAMP to work on a VLAN interface in default namespace?
+> 
+> I think it is common to assign a sriov VF to a container. In this case, 
+> both base interface and VLAN interface created on top of the VF, are in 
+> same network namespace.
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+I've just proposed the patch to address the situation, hope it will find 
+some support :)
+
+> 
+> Possibly there are some situations that I am not aware. Hope to have 
+> your thoughts. Thank you!
+> 
+> 
+> ------------------------------------------------------------------------
+> *From:* Vadim Fedorenko <vadim.fedorenko@linux.dev>
+> *Sent:* Wednesday, March 15, 2023 10:38 PM
+> *To:* Yan Jiang <Yan.Jiang@viavisolutions.com>; davem@davemloft.net 
+> <davem@davemloft.net>; edumazet@google.com <edumazet@google.com>; 
+> kuba@kernel.org <kuba@kernel.org>; pabeni@redhat.com 
+> <pabeni@redhat.com>; richardcochran@gmail.com <richardcochran@gmail.com>
+> *Cc:* netdev@vger.kernel.org <netdev@vger.kernel.org>
+> *Subject:* Re: ioctl SIOCSHWTSTAMP failed on a vlan interface within 
+> non-default network namespace
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know 
+> and trust the sender.
+> 
+> 
+> On 15/03/2023 05:35, Yan Jiang wrote:
+>> Hi all,
+>>
+>> I'd like to report an issue, which I suspect it's related to kernel network namespace handling.
+>> It's my first report so please bear with me if I missed something. Feel free to ask for more information please.
+>>
+>> What's the issue:
+>> Ptp4l works perfectly on a VLAN interface in default network namespace. But it doesn't work if the VLAN interface is in non-default network namespace: ioctl(fd, SIOCSHWTSTAMP, &ifreq) failed due to error "Operation not supported".
+>> "ethtool -T" shows that the VLAN interface has all required capabilities. And ptp4l works fine on the base interface in that network namespace.
+> 
+> 
+> That was explicitly forbidden in
+> https://urldefense.com/v3/__https://lore.kernel.org/netdev/20190509065507.23991-1-liuhangbin@gmail.com/__;!!Niha4SQ!_NTn9qN2nCq-QapNeIln9DvJwmpQWK7Y4EJOdXjbOq6w7Bhh-ZQp-vJu8TPyI9QMigOIDPeN2IuZSJamNFZI4DAfQvMIWyjqEMj9$ <https://urldefense.com/v3/__https://lore.kernel.org/netdev/20190509065507.23991-1-liuhangbin@gmail.com/__;!!Niha4SQ!_NTn9qN2nCq-QapNeIln9DvJwmpQWK7Y4EJOdXjbOq6w7Bhh-ZQp-vJu8TPyI9QMigOIDPeN2IuZSJamNFZI4DAfQvMIWyjqEMj9$>
+> 
+> 
+>> How to reproduce this issue:
+>> # create a new network namespace for test purpose
+>> root@viavi-PowerEdge-R740:~# ip netns add mytest
+>>
+>> # move eno4 into the namespace
+>> root@viavi-PowerEdge-R740:~# ip link set eno4 netns mytest
+>>
+>> # add vlan interface and turn interfaces up
+>> root@viavi-PowerEdge-R740:~# ip netns exec mytest ifconfig eno4 up
+>> root@viavi-PowerEdge-R740:~# ip netns exec mytest ip link add link eno4 name eno4.4000 type vlan id 4000
+>> root@viavi-PowerEdge-R740:~# ip netns exec mytest ifconfig eno4.4000 up
+>>
+>> # ptp4l runs ok on eno4
+>> root@viavi-PowerEdge-R740:~# ip netns exec mytest ptp4l -2 -m -i eno4
+>> ptp4l[1670814.457]: selected /dev/ptp1 as PTP clock
+>> ptp4l[1670814.491]: port 1: INITIALIZING to LISTENING on INIT_COMPLETE
+>> ptp4l[1670814.492]: port 0: INITIALIZING to LISTENING on INIT_COMPLETE
+>>
+>> #ptp4l cannot run on eno4.4000
+>> root@viavi-PowerEdge-R740:~# ip netns exec mytest ptp4l -2 -m -i eno4.4000
+>> ptp4l[1670819.969]: selected /dev/ptp1 as PTP clock
+>> ptp4l[1670820.003]: driver rejected most general HWTSTAMP filter
+>> ptp4l[1670820.003]: ioctl SIOCSHWTSTAMP failed: Operation not supported
+>> ptp4l[1670820.039]: port 1: INITIALIZING to FAULTY on FAULT_DETECTED (FT_UNSPECIFIED)
+>> ptp4l[1670820.039]: port 0: INITIALIZING to LISTENING on INIT_COMPLETE
+>>
+>> #ethtool -T shows that eno4.4000 has same capability as eno4:
+>> root@viavi-PowerEdge-R740:~# ip netns exec mytest ethtool -T eno4.4000
+>> Time stamping parameters for eno4.4000:
+>> Capabilities:
+>>          hardware-transmit     (SOF_TIMESTAMPING_TX_HARDWARE)
+>>          software-transmit     (SOF_TIMESTAMPING_TX_SOFTWARE)
+>>          hardware-receive      (SOF_TIMESTAMPING_RX_HARDWARE)
+>>          software-receive      (SOF_TIMESTAMPING_RX_SOFTWARE)
+>>          software-system-clock (SOF_TIMESTAMPING_SOFTWARE)
+>>          hardware-raw-clock    (SOF_TIMESTAMPING_RAW_HARDWARE)
+>> PTP Hardware Clock: 1
+>> Hardware Transmit Timestamp Modes:
+>>          off                   (HWTSTAMP_TX_OFF)
+>>          on                    (HWTSTAMP_TX_ON)
+>> Hardware Receive Filter Modes:
+>>          none                  (HWTSTAMP_FILTER_NONE)
+>>          ptpv1-l4-event        (HWTSTAMP_FILTER_PTP_V1_L4_EVENT)
+>>          ptpv2-l4-event        (HWTSTAMP_FILTER_PTP_V2_L4_EVENT)
+>>          ptpv2-l2-event        (HWTSTAMP_FILTER_PTP_V2_L2_EVENT)
+>>
+>> #OS/kernel version
+>> root@viavi-PowerEdge-R740:~# uname -a
+>> Linux viavi-PowerEdge-R740 5.15.0-60-generic #66~20.04.1-Ubuntu SMP Wed Jan 25 09:41:30 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+>>
+>> #driver info:
+>> root@viavi-PowerEdge-R740:~# ip netns exec mytest ethtool -i eno4
+>> driver: tg3
+>> version: 5.15.0-60-generic
+>> firmware-version: FFV21.40.21 bc 5720-v1.39
+>> expansion-rom-version:
+>> bus-info: 0000:01:00.1
+>> supports-statistics: yes
+>> supports-test: yes
+>> supports-eeprom-access: yes
+>> supports-register-dump: yes
+>> supports-priv-flags: no
+>> root@viavi-PowerEdge-R740:~# ip netns exec mytest ethtool -i eno4.4000
+>> driver: 802.1Q VLAN Support
+>> version: 1.8
+>> firmware-version: N/A
+>> expansion-rom-version:
+>> bus-info:
+>> supports-statistics: no
+>> supports-test: no
+>> supports-eeprom-access: no
+>> supports-register-dump: no
+>> supports-priv-flags: no
+>>
+>> #(PS: can reproduce same issue with a Mellanox NIC, so I guess it's not caused by a specific NIC model)
+>>
+>> Could you kindly take a look at this and see if this is a kernel issue? This blocks linuxptp running in cloud environment, if VLAN is required.
+>> Hope to get feedback from you soon, thanks!
+>>
+>> /Yan
+> 
 
