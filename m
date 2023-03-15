@@ -2,97 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81E7C6BA895
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 08:03:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 798B46BA8AB
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 08:05:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231256AbjCOHDP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 03:03:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59210 "EHLO
+        id S231511AbjCOHFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 03:05:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230348AbjCOHDN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 03:03:13 -0400
-Received: from cstnet.cn (smtp81.cstnet.cn [159.226.251.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2961A26CF6;
-        Wed, 15 Mar 2023 00:03:09 -0700 (PDT)
-Received: from localhost.localdomain (unknown [124.16.138.125])
-        by APP-03 (Coremail) with SMTP id rQCowADX3gqdaRFkK73DDw--.42013S2;
-        Wed, 15 Mar 2023 14:45:50 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     simon.horman@corigine.com
-Cc:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-bluetooth@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: Re: Re: [PATCH] Bluetooth: 6LoWPAN: Add missing check for skb_clone
-Date:   Wed, 15 Mar 2023 14:45:48 +0800
-Message-Id: <20230315064548.48951-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S231623AbjCOHE6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 03:04:58 -0400
+Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [63.216.63.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA2B427D79;
+        Wed, 15 Mar 2023 00:04:54 -0700 (PDT)
+Received: from mse-fl2.zte.com.cn (unknown [10.5.228.133])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mxhk.zte.com.cn (FangMail) with ESMTPS id 4Pc1c45ym3z8RV7R;
+        Wed, 15 Mar 2023 15:04:52 +0800 (CST)
+Received: from szxlzmapp05.zte.com.cn ([10.5.230.85])
+        by mse-fl2.zte.com.cn with SMTP id 32F74e3W080872;
+        Wed, 15 Mar 2023 15:04:40 +0800 (+08)
+        (envelope-from wang.yi59@zte.com.cn)
+Received: from fox-cloudhost8.zte.com.cn (unknown [10.234.72.110])
+        by smtp (Zmail) with SMTP;
+        Wed, 15 Mar 2023 15:04:42 +0800
+X-Zmail-TransId: 3e8164116e08000-ffc3a
+From:   Yi Wang <wang.yi59@zte.com.cn>
+To:     peterz@infradead.org
+Cc:     mingo@redhat.com, acme@kernel.org, mark.rutland@arm.com,
+        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
+        namhyung@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        xue.zhihong@zte.com.cn, wang.yi59@zte.com.cn,
+        wang.liang82@zte.com.cn, "Liu.Xiaoyang" <liu.xiaoyang@zte.com.cn>
+Subject: [PATCH] perf: fix segmentation fault in perf_event__synthesize_one_bpf_prog
+Date:   Wed, 15 Mar 2023 14:58:18 +0800
+Message-Id: <20230315065818.31156-1-wang.yi59@zte.com.cn>
+X-Mailer: git-send-email 2.33.0.rc0.dirty
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: rQCowADX3gqdaRFkK73DDw--.42013S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7XrW5ZFW7KF15Wry3uF4Uurg_yoW8JF1Dpr
-        45GF98GF4kG3W7Cr1Iva1ruFy0vr1q9ry3Gr4v934fXr98Kr93CrW5K345Wr18CrZru340
-        yF4rW3ZxKF95CFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvK14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-        6F4UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Cr
-        1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
-        6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr
-        0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E
-        8cxan2IY04v7MxkIecxEwVAFwVW8AwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbV
-        WUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF
-        67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42
-        IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF
-        0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxh
-        VjvjDU0xZFpf9x0JU-J5rUUUUU=
-X-Originating-IP: [124.16.138.125]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain;
+        charset="UTF-8"
+X-MAIL: mse-fl2.zte.com.cn 32F74e3W080872
+X-Fangmail-Gw-Spam-Type: 0
+X-FangMail-Miltered: at cgslv5.04-192.168.250.137.novalocal with ID 64116E14.002 by FangMail milter!
+X-FangMail-Envelope: 1678863892/4Pc1c45ym3z8RV7R/64116E14.002/10.5.228.133/[10.5.228.133]/mse-fl2.zte.com.cn/<wang.yi59@zte.com.cn>
+X-Fangmail-Anti-Spam-Filtered: true
+X-Fangmail-MID-QID: 64116E14.002/4Pc1c45ym3z8RV7R
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 14, 2023 at 10:58:23PM +0800, Simon Horman wrote:
->On Mon, Mar 13, 2023 at 05:03:46PM +0800, Jiasheng Jiang wrote:
->> Add the check for the return value of skb_clone since it may return NULL
->> pointer and cause NULL pointer dereference in send_pkt.
->> 
->> Fixes: 18722c247023 ("Bluetooth: Enable 6LoWPAN support for BT LE devices")
->> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
->> ---
->>  net/bluetooth/6lowpan.c | 4 ++++
->>  1 file changed, 4 insertions(+)
->> 
->> diff --git a/net/bluetooth/6lowpan.c b/net/bluetooth/6lowpan.c
->> index 4eb1b3ced0d2..bf42a0b03e20 100644
->> --- a/net/bluetooth/6lowpan.c
->> +++ b/net/bluetooth/6lowpan.c
->> @@ -477,6 +477,10 @@ static int send_mcast_pkt(struct sk_buff *skb, struct net_device *netdev)
->>  			int ret;
->>  
->>  			local_skb = skb_clone(skb, GFP_ATOMIC);
->> +			if (!local_skb) {
->> +				rcu_read_unlock();
->> +				return -ENOMEM;
->> +			}
-> 
-> Further down in this loop an error is handled as follows,
-> I wonder if that pattern is appropriate here too.
-> 
-> 			ret = send_pkt(pentry->chan, local_skb, netdev);
-> 			if (ret < 0)
-> 				err = ret;
-> 
+From: "Liu.Xiaoyang" <liu.xiaoyang@zte.com.cn>
 
-I think it should be better to return error here in order to avoid the
-error being overwritten.
-I will submit a v2 to modify the error handling here.
+Description of problem:
+when /proc/sys/kernel/kptr_restrict set to 2 and there are bpf progs
+loaded on system, ptr prog_lens and prog_addrs maybe Null.
+then prog_addrs[i] and prog_lens[i] will case segmentation fault.
 
-Thanks,
-Jiang
+call trace：
+perf: Segmentation fault
+perf(sighandler_dump_stack+0x48)
+/lib64/libc.so.6(+0x37400)
+perf(perf_event__synthesize_bpf_events+0x23a)
+perf(+0x235b73)
+perf(cmd_record+0xc0d)
+perf(+0x2a8c5d)
+perf(main+0x69a)
 
+Signed-off-by: Liu.Xiaoyang <liu.xiaoyang@zte.com.cn>
+Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
+---
+ tools/perf/util/bpf-event.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/tools/perf/util/bpf-event.c b/tools/perf/util/bpf-event.c
+index cc7c1f9..7a6ea6d 100644
+--- a/tools/perf/util/bpf-event.c
++++ b/tools/perf/util/bpf-event.c
+@@ -307,6 +307,11 @@ static int perf_event__synthesize_one_bpf_prog(struct perf_session *session,
+ 		__u64 *prog_addrs = (__u64 *)(uintptr_t)(info->jited_ksyms);
+ 		int name_len;
+ 
++		if (!prog_lens || !prog_addrs) {
++			err = -1;
++			goto out;
++		}
++
+ 		*ksymbol_event = (struct perf_record_ksymbol) {
+ 			.header = {
+ 				.type = PERF_RECORD_KSYMBOL,
+-- 
+1.8.3.1
