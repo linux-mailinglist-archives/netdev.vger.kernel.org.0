@@ -2,158 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A4996BAB6E
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 10:02:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00AE86BAB6C
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 10:02:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231768AbjCOJCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 05:02:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45838 "EHLO
+        id S230018AbjCOJCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 05:02:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231716AbjCOJCB (ORCPT
+        with ESMTP id S231768AbjCOJCB (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 05:02:01 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 753B273AF6;
-        Wed, 15 Mar 2023 02:01:52 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id fd25so11272873pfb.1;
-        Wed, 15 Mar 2023 02:01:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678870912;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=edwNrUkG8Z1dURZMltw+SGhc2MepuRLhhGK+wNS8X9M=;
-        b=TwGV/nwTo3AMauBgkhh2TtKZO6uFMJopYrPuVM33BSLkCBFxxhG2OE3hvjKgRTulMf
-         0ThDJ4rTYrxPEYQLgYxf6K8JcF0GMBd8kP+Tmb8CugJYEvFm9+Wjz5hPVHMoklQ746J5
-         JCL/GNOd0saqdG2TYkdyYFYgdc1bScXe1oI1EPuNuWHmf5qEA+778LJJt+pEVf1wzKLd
-         fBFxc60OeNYCLK4Yi0G5ZkXa5feE0vJn2d7stuSgITw1UJy9QDg94D35RHvSaYu9x272
-         9vFY9sGKERRLo691UsAI/FVctyo/BzIa2Am931iLRjXkyqBSuRhhIFfwbPd5Tk06lDiT
-         z5OA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678870912;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=edwNrUkG8Z1dURZMltw+SGhc2MepuRLhhGK+wNS8X9M=;
-        b=wilCDSdQHnhtRpisKIf1eKoFCtfEP8KEyLyIBziEZfam+wgm38yTuwsfCtl0IzCXWs
-         XKPVRHCGJV8Swn8Kk1DJ4LD30sbtclQ+ceFzOSNYvXWtMGAIHRfHcxV9qDoS/fMMYObM
-         sT81rDQv4X5oNcJ6lYkC7d01KhSXXHFDTOmUfThAsvrUXgGP3kNeZ2dDJxtNAFnimOi0
-         8VgaJ/dWJbdaTHKmYbGQyokXhG4ftjRjIYwqa8vRTczUP5uQS3aVcFRKqRxNr+e9Kp92
-         PAZKzon9JH9qHCYjbAZNCSz0R6QP6+A6ODcAxWMSFFdLr2ID1k448O6TTaxYxMVLVdAT
-         Stng==
-X-Gm-Message-State: AO0yUKVZhp/YMkiJXRNdfysl6TaFvMGK8mW2SnEGU783qNxNYpotOQow
-        E+1jmLIa7Ibp2gTPFdm5hkrXQ0RnNEGRMb+p/3c=
-X-Google-Smtp-Source: AK7set8vtgeDhDK48IZ7Wz2S0KcvCOk/TZaGPh5G5qO7pV2iRCi75BDYPBeUAi7AQLFzoIN6WLjQQazbM9GnhAVdVlY=
-X-Received: by 2002:a63:9f09:0:b0:50b:18ac:fbea with SMTP id
- g9-20020a639f09000000b0050b18acfbeamr3345941pge.9.1678870911853; Wed, 15 Mar
- 2023 02:01:51 -0700 (PDT)
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DE00212B3
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 02:01:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678870912; x=1710406912;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=46Fbyxsf2jpzvGJkTT2Pw1SLP742v50V79irgSWIBNo=;
+  b=j+JvKZVfcWZrPtbSI5XZkzRVhfRiOxlH2bIqfB0Mc3shzccSHXI/OSmP
+   tsruXJfa2Dpu80W+q0yJnuSg0yiprAEM/XJuyfSEZBoVkXDvzM8h0x7RF
+   4eaH1mdGvJBV3HTOjJ+ktyPwq6A699oF0wKvrwcxGM+RQbXDODOyR3W2J
+   DZPfXxA5TPP6I7szrAXT1veVdbFruzEPwDPq0ak5MdU+VBBw3NreE8sUp
+   roSb0AobkNAmbjTRPl1qhP25vzxYtxkRaZK8jEkomwuhzJEzLZvJ9mhJn
+   EzkJscwaNK/MUoJ0vFZIaoCq/xR13dIcE7DM7U7EYaMnE+BZCqZ0u3D8E
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="326010474"
+X-IronPort-AV: E=Sophos;i="5.98,262,1673942400"; 
+   d="scan'208";a="326010474"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2023 02:01:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="768422949"
+X-IronPort-AV: E=Sophos;i="5.98,262,1673942400"; 
+   d="scan'208";a="768422949"
+Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2023 02:01:50 -0700
+Date:   Wed, 15 Mar 2023 10:01:41 +0100
+From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+To:     edward.cree@amd.com
+Cc:     linux-net-drivers@amd.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com,
+        Edward Cree <ecree.xilinx@gmail.com>, netdev@vger.kernel.org,
+        habetsm.xilinx@gmail.com
+Subject: Re: [PATCH net-next 2/5] sfc: handle enc keys in
+ efx_tc_flower_parse_match()
+Message-ID: <ZBGJdWyXZSlXwN96@localhost.localdomain>
+References: <cover.1678815095.git.ecree.xilinx@gmail.com>
+ <962d11de229400416804173b2ab035d73493a6b4.1678815095.git.ecree.xilinx@gmail.com>
 MIME-Version: 1.0
-References: <20230217100223.702330-1-zyytlz.wz@163.com> <CAJedcCxUNBWOpkcaN2aLbwNs_xvqi=LC8mhFWh-jWeh6q-cBCQ@mail.gmail.com>
- <ZBCNY8NoNkrA2nyN@corigine.com> <ZBCRRL8+EtTBH2tl@corigine.com>
-In-Reply-To: <ZBCRRL8+EtTBH2tl@corigine.com>
-From:   Zheng Hacker <hackerzheng666@gmail.com>
-Date:   Wed, 15 Mar 2023 17:01:40 +0800
-Message-ID: <CAJedcCxuaoB8gA5eEnmEdFcxnc4ObrMhvPzu0Ki0SumqrDLz7w@mail.gmail.com>
-Subject: Re: [PATCH v2] Bluetooth: hci_core: Fix poential Use-after-Free bug
- in hci_remove_adv_monitor
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     Zheng Wang <zyytlz.wz@163.com>, marcel@holtmann.org,
-        alex000young@gmail.com, johan.hedberg@gmail.com,
-        luiz.dentz@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, pmenzel@molgen.mpg.de
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <962d11de229400416804173b2ab035d73493a6b4.1678815095.git.ecree.xilinx@gmail.com>
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Simon Horman <simon.horman@corigine.com> =E4=BA=8E2023=E5=B9=B43=E6=9C=8814=
-=E6=97=A5=E5=91=A8=E4=BA=8C 23:22=E5=86=99=E9=81=93=EF=BC=9A
->
-> On Tue, Mar 14, 2023 at 04:06:11PM +0100, Simon Horman wrote:
-> > On Mon, Mar 13, 2023 at 05:55:35PM +0800, Zheng Hacker wrote:
-> > > friendly ping
-> > >
-> > > Zheng Wang <zyytlz.wz@163.com> =E4=BA=8E2023=E5=B9=B42=E6=9C=8817=E6=
-=97=A5=E5=91=A8=E4=BA=94 18:05=E5=86=99=E9=81=93=EF=BC=9A
-> > > >
-> > > > In hci_remove_adv_monitor, if it gets into HCI_ADV_MONITOR_EXT_MSFT=
- case,
-> > > > the function will free the monitor and print its handle after that.
-> > > > Fix it by removing the logging into msft_le_cancel_monitor_advertis=
-ement_cb
-> > > > before calling hci_free_adv_monitor.
-> > > >
-> > > > Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
-> > > > ---
-> > > > v2:
-> > > > - move the logging inside msft_remove_monitor suggested by Luiz
-> > > > ---
-> > > >  net/bluetooth/hci_core.c | 2 --
-> > > >  net/bluetooth/msft.c     | 2 ++
-> > > >  2 files changed, 2 insertions(+), 2 deletions(-)
-> > > >
-> > > > diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> > > > index b65c3aabcd53..69b82c2907ff 100644
-> > > > --- a/net/bluetooth/hci_core.c
-> > > > +++ b/net/bluetooth/hci_core.c
-> > > > @@ -1981,8 +1981,6 @@ static int hci_remove_adv_monitor(struct hci_=
-dev *hdev,
-> > > >
-> > > >         case HCI_ADV_MONITOR_EXT_MSFT:
-> > > >                 status =3D msft_remove_monitor(hdev, monitor);
-> > > > -               bt_dev_dbg(hdev, "%s remove monitor %d msft status =
-%d",
-> > > > -                          hdev->name, monitor->handle, status);
-> > > >                 break;
-> >
-> > I'm probably missing something obvious.
-> > But from my perspective a simpler fix would be to
-> > move the msft_remove_monitor() call to below the bt_dev_dbg() call.
->
-> The obvious thing I was missing is that was what was done in v1
-> but Luiz suggested moving the logging to
-> msft_le_cancel_monitor_advertisement_cb().
-> Sorry for the noise.
+On Tue, Mar 14, 2023 at 05:35:22PM +0000, edward.cree@amd.com wrote:
+> From: Edward Cree <ecree.xilinx@gmail.com>
+> 
+> Translate the fields from flow dissector into struct efx_tc_match.
+> In efx_tc_flower_replace(), reject filters that match on them, because
+>  only 'foreign' filters (i.e. those for which the ingress dev is not
+>  the sfc netdev or any of its representors, e.g. a tunnel netdev) can
+>  use them.
+> 
+> Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
+> ---
+>  drivers/net/ethernet/sfc/tc.c | 65 +++++++++++++++++++++++++++++++++++
+>  1 file changed, 65 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/sfc/tc.c b/drivers/net/ethernet/sfc/tc.c
+> index 2b07bb2fd735..d683665a8d87 100644
+> --- a/drivers/net/ethernet/sfc/tc.c
+> +++ b/drivers/net/ethernet/sfc/tc.c
+> @@ -193,6 +193,11 @@ static int efx_tc_flower_parse_match(struct efx_nic *efx,
+>  	      BIT(FLOW_DISSECTOR_KEY_IPV4_ADDRS) |
+>  	      BIT(FLOW_DISSECTOR_KEY_IPV6_ADDRS) |
+>  	      BIT(FLOW_DISSECTOR_KEY_PORTS) |
+> +	      BIT(FLOW_DISSECTOR_KEY_ENC_KEYID) |
+> +	      BIT(FLOW_DISSECTOR_KEY_ENC_IPV4_ADDRS) |
+> +	      BIT(FLOW_DISSECTOR_KEY_ENC_IPV6_ADDRS) |
+> +	      BIT(FLOW_DISSECTOR_KEY_ENC_PORTS) |
+> +	      BIT(FLOW_DISSECTOR_KEY_ENC_CONTROL) |
+>  	      BIT(FLOW_DISSECTOR_KEY_TCP) |
+>  	      BIT(FLOW_DISSECTOR_KEY_IP))) {
+>  		NL_SET_ERR_MSG_FMT_MOD(extack, "Unsupported flower keys %#x",
+> @@ -280,6 +285,61 @@ static int efx_tc_flower_parse_match(struct efx_nic *efx,
+>  	MAP_KEY_AND_MASK(PORTS, ports, src, l4_sport);
+>  	MAP_KEY_AND_MASK(PORTS, ports, dst, l4_dport);
+>  	MAP_KEY_AND_MASK(TCP, tcp, flags, tcp_flags);
+> +	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_CONTROL)) {
+> +		struct flow_match_control fm;
+> +
+> +		flow_rule_match_enc_control(rule, &fm);
+> +		if (fm.mask->flags) {
+> +			NL_SET_ERR_MSG_FMT_MOD(extack, "Unsupported match on enc_control.flags %#x",
+> +					       fm.mask->flags);
+> +			return -EOPNOTSUPP;
+> +		}
+> +		if (!IS_ALL_ONES(fm.mask->addr_type)) {
+> +			NL_SET_ERR_MSG_FMT_MOD(extack, "Unsupported enc addr_type mask %u (key %u)",
+> +					       fm.mask->addr_type,
+> +					       fm.key->addr_type);
+> +			return -EOPNOTSUPP;
+> +		}
+> +		switch (fm.key->addr_type) {
+> +		case FLOW_DISSECTOR_KEY_IPV4_ADDRS:
+> +			MAP_ENC_KEY_AND_MASK(IPV4_ADDRS, ipv4_addrs, enc_ipv4_addrs,
+> +					     src, enc_src_ip);
+> +			MAP_ENC_KEY_AND_MASK(IPV4_ADDRS, ipv4_addrs, enc_ipv4_addrs,
+> +					     dst, enc_dst_ip);
+> +			break;
+> +#ifdef CONFIG_IPV6
+> +		case FLOW_DISSECTOR_KEY_IPV6_ADDRS:
+> +			MAP_ENC_KEY_AND_MASK(IPV6_ADDRS, ipv6_addrs, enc_ipv6_addrs,
+> +					     src, enc_src_ip6);
+> +			MAP_ENC_KEY_AND_MASK(IPV6_ADDRS, ipv6_addrs, enc_ipv6_addrs,
+> +					     dst, enc_dst_ip6);
+> +			break;
+> +#endif
+> +		default:
+> +			NL_SET_ERR_MSG_FMT_MOD(extack,
+> +					       "Unsupported enc addr_type %u (supported are IPv4, IPv6)",
+> +					       fm.key->addr_type);
+> +			return -EOPNOTSUPP;
+> +		}
+> +#if !defined(EFX_USE_KCOMPAT) || defined(EFX_HAVE_FLOW_DISSECTOR_KEY_ENC_IP)
+Are these defines already in kernel, or You want to add it to kconfig?
+I can't find it in tree, aren't they some kind of OOT driver defines?
 
-Hi Simon,
-
-Thanks for your reply and detailed review :)
-
-Best regards,
-Zheng
-
->
-> Link: https://lore.kernel.org/all/CABBYNZL_gZ+kr_OEqjYgMmt+=3D91=3DjC88g3=
-10F-ScMC=3DkLh0xdw@mail.gmail.com/
->
-> >
-> > > >         }
-> > > >
-> > > > diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
-> > > > index bee6a4c656be..4b35f0ed1360 100644
-> > > > --- a/net/bluetooth/msft.c
-> > > > +++ b/net/bluetooth/msft.c
-> > > > @@ -286,6 +286,8 @@ static int msft_le_cancel_monitor_advertisement=
-_cb(struct hci_dev *hdev,
-> > > >                  * suspend. It will be re-monitored on resume.
-> > > >                  */
-> > > >                 if (!msft->suspending) {
-> > > > +                       bt_dev_dbg(hdev, "%s remove monitor %d stat=
-us %d", hdev->name,
-> > > > +                                  monitor->handle, status);
-> > > >                         hci_free_adv_monitor(hdev, monitor);
-> > > >
-> > > >                         /* Clear any monitored devices by this Adv =
-Monitor */
-> > > > --
-> > > > 2.25.1
-> > > >
-> > >
+> +		MAP_ENC_KEY_AND_MASK(IP, ip, enc_ip, tos, enc_ip_tos);
+> +		MAP_ENC_KEY_AND_MASK(IP, ip, enc_ip, ttl, enc_ip_ttl);
+> +#endif
+> +		MAP_ENC_KEY_AND_MASK(PORTS, ports, enc_ports, src, enc_sport);
+> +		MAP_ENC_KEY_AND_MASK(PORTS, ports, enc_ports, dst, enc_dport);
+> +		MAP_ENC_KEY_AND_MASK(KEYID, enc_keyid, enc_keyid, keyid, enc_keyid);
+> +	} else if (dissector->used_keys &
+> +		   (BIT(FLOW_DISSECTOR_KEY_ENC_KEYID) |
+> +		    BIT(FLOW_DISSECTOR_KEY_ENC_IPV4_ADDRS) |
+> +		    BIT(FLOW_DISSECTOR_KEY_ENC_IPV6_ADDRS) |
+> +#if !defined(EFX_USE_KCOMPAT) || defined(EFX_HAVE_FLOW_DISSECTOR_KEY_ENC_IP)
+> +		    BIT(FLOW_DISSECTOR_KEY_ENC_IP) |
+> +#endif
+> +		    BIT(FLOW_DISSECTOR_KEY_ENC_PORTS))) {
+> +		NL_SET_ERR_MSG_FMT_MOD(extack, "Flower enc keys require enc_control (keys: %#x)",
+> +				       dissector->used_keys);
+> +		return -EOPNOTSUPP;
+> +	}
+>  
+>  	return 0;
+>  }
+> @@ -373,6 +433,11 @@ static int efx_tc_flower_replace(struct efx_nic *efx,
+>  	rc = efx_tc_flower_parse_match(efx, fr, &match, extack);
+>  	if (rc)
+>  		return rc;
+> +	if (efx_tc_match_is_encap(&match.mask)) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Ingress enc_key matches not supported");
+> +		rc = -EOPNOTSUPP;
+> +		goto release;
+> +	}
+>  
+>  	if (tc->common.chain_index) {
+>  		NL_SET_ERR_MSG_MOD(extack, "No support for nonzero chain_index");
