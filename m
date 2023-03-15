@@ -2,124 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A2D0C6BB5DD
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 15:23:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44AE36BB665
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 15:45:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233093AbjCOOXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 10:23:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42682 "EHLO
+        id S232420AbjCOOph (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 10:45:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233094AbjCOOW6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 10:22:58 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 873F67C95E;
-        Wed, 15 Mar 2023 07:22:57 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        with ESMTP id S232428AbjCOOpe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 10:45:34 -0400
+X-Greylist: delayed 300 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 15 Mar 2023 07:45:26 PDT
+Received: from pb-smtp21.pobox.com (pb-smtp21.pobox.com [173.228.157.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C29167EA20;
+        Wed, 15 Mar 2023 07:45:26 -0700 (PDT)
+Received: from pb-smtp21.pobox.com (unknown [127.0.0.1])
+        by pb-smtp21.pobox.com (Postfix) with ESMTP id 384A91D921D;
+        Wed, 15 Mar 2023 10:38:06 -0400 (EDT)
+        (envelope-from nico@fluxnic.net)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=pobox.com; h=date:from
+        :to:cc:subject:in-reply-to:message-id:references:mime-version
+        :content-type; s=sasl; bh=8Ds3JLlU3ZJmZmiZUtD6R+cBbPOkpvU3DsMgfb
+        GlsxE=; b=STdy0djzpt9M+ifpcPtYKAY9lP0RddDLxgwwopGzN51qlZ91b6msJG
+        K+9atvhSo1ACXR6Xww21ywHUhq0HUCPzKlFNbH5dvhM6/b8Xl1IdE91GFN7UOfCL
+        t56gF2HUskyDJMOZf0ZfRs7c4CUnS1HGiqsuPz9pf9SaOZvQudnEc=
+Received: from pb-smtp21.sea.icgroup.com (unknown [127.0.0.1])
+        by pb-smtp21.pobox.com (Postfix) with ESMTP id 30FE81D921C;
+        Wed, 15 Mar 2023 10:38:06 -0400 (EDT)
+        (envelope-from nico@fluxnic.net)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=fluxnic.net;
+ h=date:from:to:cc:subject:in-reply-to:message-id:references:mime-version:content-type; s=2016-12.pbsmtp; bh=8Ds3JLlU3ZJmZmiZUtD6R+cBbPOkpvU3DsMgfbGlsxE=; b=MXktN4i/RMHxvZz5Rv608tCPS5wznBuQh7QgEypXw1REwmwmVBmIfoO75kbtXX/P4SwZIVxmgEtKJWo8nd3ZpqCPqOElgfi15FI86Kn+AQ+q8gIwh0xvYP/0mER9GJTQ+5vzUjMezfDbveJOUsLcbYpQhpWve81esQZ0TIiNPZE=
+Received: from yoda.home (unknown [96.21.170.108])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 2A4DF211DE;
-        Wed, 15 Mar 2023 14:22:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1678890176; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZXN3JSv2JuNO7QXPyMNGLcsuvXz4zccB7xCl9QvCXx0=;
-        b=a4OkV7YgDfYyvZJGSY0wfj0zvUGu55EzMc8yK/Q0mwAoFuHUyv9EOKd588uX0SEm1bAUKI
-        XLddUf1uTdVQIWPBvq6FImBmERKh4de/0fu8o3rgjewOTfF0kdlKQYo/WtiGahloJk1YCo
-        bWkbRNXnMnMj9kQMCPG92CmBPWloghc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1678890176;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZXN3JSv2JuNO7QXPyMNGLcsuvXz4zccB7xCl9QvCXx0=;
-        b=VEP1QR+K19ft2s5XsGNEZFSU2UdJgackjuPRKjrUHdAl9BAKPpvldY3LmIUYjU1wkjcQRh
-        Qr45ZukAmKT7UiCw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B492813A2F;
-        Wed, 15 Mar 2023 14:22:55 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id rxJnK7/UEWTFRgAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Wed, 15 Mar 2023 14:22:55 +0000
-Message-ID: <17007eb9-b831-aabb-78dc-95f4f4aada55@suse.cz>
-Date:   Wed, 15 Mar 2023 15:22:55 +0100
+        by pb-smtp21.pobox.com (Postfix) with ESMTPSA id 03A0C1D9217;
+        Wed, 15 Mar 2023 10:38:01 -0400 (EDT)
+        (envelope-from nico@fluxnic.net)
+Received: from xanadu.home (xanadu [192.168.2.2])
+        by yoda.home (Postfix) with ESMTPSA id 766006B15AE;
+        Wed, 15 Mar 2023 10:37:58 -0400 (EDT)
+Date:   Wed, 15 Mar 2023 10:37:58 -0400 (EDT)
+From:   Nicolas Pitre <nico@fluxnic.net>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+cc:     Richard Cochran <richardcochran@gmail.com>,
+        Tianfei Zhang <tianfei.zhang@intel.com>,
+        netdev@vger.kernel.org, linux-fpga@vger.kernel.org,
+        ilpo.jarvinen@linux.intel.com, russell.h.weight@intel.com,
+        matthew.gerlach@linux.intel.com,
+        pierre-louis.bossart@linux.intel.com, vinicius.gomes@intel.com,
+        Raghavendra Khadatare <raghavendrax.anand.khadatare@intel.com>
+Subject: Re: [PATCH v1] ptp: add ToD device driver for Intel FPGA cards
+In-Reply-To: <ZBHPTz8yH57N1g8J@smile.fi.intel.com>
+Message-ID: <73rqs90r-nn9o-s981-9557-q70no2435176@syhkavp.arg>
+References: <20230313030239.886816-1-tianfei.zhang@intel.com> <ZA9wUe33pMkhMu0e@hoboy.vegasvil.org> <ZBBQpwGhXK/YYGCB@smile.fi.intel.com> <ZBDPKA7968sWd0+P@hoboy.vegasvil.org> <ZBHPTz8yH57N1g8J@smile.fi.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH 0/7] remove SLOB and allow kfree() with kmem_cache_alloc()
-Content-Language: en-US
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Mike Rapoport <mike.rapoport@gmail.com>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        rcu@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, patches@lists.linux.dev,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>
-References: <20230310103210.22372-1-vbabka@suse.cz>
- <ZA2gofYkXRcJ8cLA@kernel.org> <20230313123147.6d28c47e@gandalf.local.home>
- <3018fb77-68d0-fb67-2595-7c58c6cf7a76@suse.cz>
- <20230315102031.29585157@gandalf.local.home>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20230315102031.29585157@gandalf.local.home>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+X-Pobox-Relay-ID: FC851F90-C33E-11ED-BF80-B31D44D1D7AA-78420484!pb-smtp21.pobox.com
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/15/23 15:20, Steven Rostedt wrote:
-> On Wed, 15 Mar 2023 14:53:14 +0100
-> Vlastimil Babka <vbabka@suse.cz> wrote:
+On Wed, 15 Mar 2023, Andy Shevchenko wrote:
+
+> +Cc: Nicolas
 > 
->> On 3/13/23 17:31, Steven Rostedt wrote:
->> > Just remove that comment. And you could even add:
->> > 
->> > Suggested-by: Steven Rostedt (Google) <rostedt@goodmis.org>
->> > Fixes: e4c2ce82ca27 ("ring_buffer: allocate buffer page pointer")  
->> 
->> Thanks for the analysis. Want to take the following patch to your tree or
->> should I make it part of the series?
+> On Tue, Mar 14, 2023 at 12:46:48PM -0700, Richard Cochran wrote:
+> > On Tue, Mar 14, 2023 at 12:47:03PM +0200, Andy Shevchenko wrote:
+> > > The semantics of the above is similar to gpiod_get_optional() and since NULL
+> > > is a valid return in such cases, the PTP has to handle this transparently to
+> > > the user. Otherwise it's badly designed API which has to be fixed.
+> > 
+> > Does it now?  Whatever.
+> > 
+> > > TL;DR: If I'm mistaken, I would like to know why.
+> > 
+> > git log.  git blame.
+> > 
+> > Get to know the tools of trade.
 > 
-> I can take it if you send it as a proper patch and Cc
-> linux-trace-kernel@vger.kernel.org.
+> So, the culprit seems the commit d1cbfd771ce8 ("ptp_clock: Allow for it
+> to be optional") which did it half way.
+> 
+> Now I would like to know why the good idea got bad implementation.
+> 
+> Nicolas?
 
-OK, will do.
+I'd be happy to help but as presented I simply don't know what you're 
+talking about. Please give me more context.
 
-> I'm guessing it's not required for stable.
 
-No, but maybe AUTOSEL will pick it anyway as it has Fixes: but that's their
-problem ;)
-
-> -- Steve
-
+Nicolas
