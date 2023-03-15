@@ -2,78 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD35E6BAA68
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 09:05:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 400336BAA78
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 09:10:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230455AbjCOIFo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 04:05:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51298 "EHLO
+        id S231534AbjCOIKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 04:10:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231691AbjCOIFj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 04:05:39 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F2BF19F06
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 01:05:36 -0700 (PDT)
-Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1pcM8Y-0000P3-BO; Wed, 15 Mar 2023 09:05:30 +0100
-Message-ID: <1f37c8d4-8a1d-bc06-5b65-9357a7766ad7@leemhuis.info>
-Date:   Wed, 15 Mar 2023 09:05:29 +0100
+        with ESMTP id S231354AbjCOIKX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 04:10:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E59B810EF;
+        Wed, 15 Mar 2023 01:10:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 87D53B81D48;
+        Wed, 15 Mar 2023 08:10:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1EF97C4339C;
+        Wed, 15 Mar 2023 08:10:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678867819;
+        bh=OBbchMB77kcbwa/kEFFAQFBIGw38CmUFDiLdASMYaVk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=E9ODLlL05y8I2Rc6fOxfwWE1IGjqrtpgG8WO+TNco8FjjxALeVYYjn8oHbO2zztwn
+         NBGUvwazi+OYiLT8eTm03MbGcYFyYGbvI3W5cb5Hm6/aBd5iSwSx27T86+zjEqOJLY
+         OzpEDO0Dwysjc4tR3Xyus3CkPGm1tCupQUrTkOX6VPFcWGTlxSgfEk+4R75ZZr+ato
+         9rhkbaPsP1OfJsBCCJY9erA65ZOXPrBcb9VxLc0DLoA9QHiRAfR5p+5fAp6c/LlERA
+         nq9Zh17EOz9jp2Jah13EhxRz+qgZM+FSZnDmAOgm046Q620l6HJUJmMBsNlQASinr0
+         CphgZCmH3pl5A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0097BC43161;
+        Wed, 15 Mar 2023 08:10:19 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v1 net 1/2] tcp: Fix bind() conflict check for dual-stack
- wildcard address.
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Linux regressions mailing list <regressions@lists.linux.dev>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@kernel.org>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org,
-        Paul Holzinger <pholzing@redhat.com>,
-        Martin KaFai Lau <martin.lau@kernel.org>
-References: <20230312031904.4674-1-kuniyu@amazon.com>
- <20230312031904.4674-2-kuniyu@amazon.com>
- <533d3c1a-db7e-6ff2-1fdf-fb8bbbb7a14c@leemhuis.info>
- <20230315002625.49bac132@kernel.org>
-Content-Language: en-US, de-DE
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <20230315002625.49bac132@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1678867537;712e79df;
-X-HE-SMSGID: 1pcM8Y-0000P3-BO
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] nfc: trf7970a: mark OF related data as maybe unused
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167886781899.24118.1945055950810799082.git-patchwork-notify@kernel.org>
+Date:   Wed, 15 Mar 2023 08:10:18 +0000
+References: <20230311111328.251219-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230311111328.251219-1-krzysztof.kozlowski@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     mgreer@animalcreek.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15.03.23 08:26, Jakub Kicinski wrote:
-> On Sun, 12 Mar 2023 12:42:48 +0100 Linux regression tracking (Thorsten
-> Leemhuis) wrote:
->> Link:
->> https://lore.kernel.org/netdev/CAG_fn=Ud3zSW7AZWXc+asfMhZVL5ETnvuY44Pmyv4NPv-ijN-A@mail.gmail.com/
->> [1]
->> Fixes: 5456262d2baa ("net: Fix incorrect address comparison when
->> searching for a bind2 bucket")
->> Reported-by: Paul Holzinger <pholzing@redhat.com>
->> Link:
->> https://lore.kernel.org/netdev/e21bf153-80b0-9ec0-15ba-e04a4ad42c34@redhat.com/
->> [0]
+Hello:
+
+This patch was applied to netdev/net-next.git (main)
+by David S. Miller <davem@davemloft.net>:
+
+On Sat, 11 Mar 2023 12:13:28 +0100 you wrote:
+> The driver can be compile tested with !CONFIG_OF making certain data
+> unused:
 > 
-> I tried to fix this manually when applying but:
->  - your email client wraps your replies
->  - please don't reply to patches with tags which will look to scripts
->    and patchwork like tags it should pull into the submission
->    (Reported-by in particular, here)
+>   drivers/nfc/trf7970a.c:2232:34: error: ‘trf7970a_of_match’ defined but not used [-Werror=unused-const-variable=]
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> 
+> [...]
 
-Sorry for the mixup and thx for letting me know, will simply quote my
-suggestion next time, that should avoid both problems.
+Here is the summary with links:
+  - nfc: trf7970a: mark OF related data as maybe unused
+    https://git.kernel.org/netdev/net-next/c/a52ed50a04de
 
-Ciao, Thorsten
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
