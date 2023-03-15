@@ -2,83 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 69AD76BAB40
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 09:55:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0209C6BAB51
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 09:59:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231638AbjCOIy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 04:54:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35288 "EHLO
+        id S231664AbjCOI7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 04:59:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231405AbjCOIyz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 04:54:55 -0400
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1894686A6;
-        Wed, 15 Mar 2023 01:54:55 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id 760FD5C03FC;
-        Wed, 15 Mar 2023 04:54:54 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Wed, 15 Mar 2023 04:54:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:content-type:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; t=1678870494; x=1678956894; bh=4VX8MaBaG82aU
-        ulFe42jvkdBJtSGGoHr0ACjMYCemvQ=; b=O/bVJoZEqiZXlMCmHGOboPptcloRp
-        QuHZ9DxOI5K74DKdEFwQ+s8SpcrvbYpTrJZcQ92+oUm3lKWV5iawS7RhTzX+nhyO
-        qNsMN6nXAorRa++tcgV+HSSjpRYOJJ+uTcLh01TFfP7+3cGtjk19wxVnmeHJYJAX
-        oNjXMJ4yry4ESO7HcjId/T0zYBXD7wiBYaU7UWg6IrL4UOosduR6Oq7ttLF4PtHG
-        j7SG57q5jSHDsPYLjTRbaGKPBVi1o3apFQlwADXmI+1hODtmeqwVSrPFSy5yq0WT
-        1UPoKMhm8ni1wTOhujDUiTsOeZscOQx2VxD1d9tDjSm0mK4hHp4h7OnBg==
-X-ME-Sender: <xms:3YcRZMvBdY8pBfITlE7E1Kk8II1RPahSvOIn99rsDvUxeoLG20RUjw>
-    <xme:3YcRZJcBWtqEBDXEuMppaqVkQTrcivjKeuhzfWvwD1L1l-9wTVbFn5VDn9bz1Xo2-
-    rBvNOvw_enMlYk>
-X-ME-Received: <xmr:3YcRZHyvVDbS_xnnW7Mkke7ib0yoY-Y6XCqz37WympUh7zp-_MC26hyYCEWfHPez7on3v_lbU9ZbD_YQfC-zmCLIAlc>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvddvjedguddvvdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecunecujfgurhepfffhvfevuffkfhggtggujgesth
-    dtredttddtvdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehi
-    ughoshgthhdrohhrgheqnecuggftrfgrthhtvghrnhepvddufeevkeehueegfedtvdevfe
-    fgudeifeduieefgfelkeehgeelgeejjeeggefhnecuvehluhhsthgvrhfuihiivgeptden
-    ucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:3YcRZPOL68oZGl_kAUcCO74BsIXY7UnSla7rG5F_MKhvIacJ4ih4Dw>
-    <xmx:3YcRZM-sTgBLtGG8qu4Voi0wmsO2ALNXiY2kU4n-_wYKCfB-4AONWA>
-    <xmx:3YcRZHUqfCIMxR532d2sXKQvXMHXSFCLMGH0FFCzawPhj9vl26rsng>
-    <xmx:3ocRZJMfs29CERH-PpxkuWKMD5-7ZXTPZ-S4RDvo6p9jwWqIIWqqKQ>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 15 Mar 2023 04:54:52 -0400 (EDT)
-Date:   Wed, 15 Mar 2023 10:54:49 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     gaoxingwang <gaoxingwang1@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, liaichun@huawei.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, shuah@kernel.org, yanan@huawei.com,
-        yoshfuji@linux-ipv6.org
-Subject: Re: ipv4:the same route is added repeatedly
-Message-ID: <ZBGH2RMEDGCxhctH@shredder>
-References: <ZBCq+KXtxWXLPFNF@shredder>
- <20230315074310.2957080-1-gaoxingwang1@huawei.com>
+        with ESMTP id S230499AbjCOI67 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 04:58:59 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 042BB11643;
+        Wed, 15 Mar 2023 01:58:58 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id d13so8017509pjh.0;
+        Wed, 15 Mar 2023 01:58:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678870737;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=SzFT6vXz/r8jWMQXpxUgn/3JgOYkhx75YYs+pVWVTvg=;
+        b=gywXm1X9g2Qs1seW2P+ZxUTEm0GNFlth36pkfO9dlOcIdt527Poa8YY8XXkNW425n7
+         5psjK8dPIKDgnWpFH0YJtwf7NaTib4JjbjfWBj+foEktf1w5IHaJr76XqzOb3qYYZGb8
+         6GSaUsilmDFvHEbGnQykNIgVTOPpoyFVrgH8758pDYFy5DnrJQgmdZLau+R2xfvzLtOu
+         ClKU4Gj7aSTGm29pxGaH2vu5fKkOlNFb2yeOhU+XExyumY5WlwIEzb4eMBkuuMhjhxaJ
+         9WmTkrMSG2yK+oALcvokBCs7s5kV76/LEVUJy/VF110HBC84AC3xAbDvMQ8qYChBSGQV
+         /vjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678870737;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=SzFT6vXz/r8jWMQXpxUgn/3JgOYkhx75YYs+pVWVTvg=;
+        b=eGwMbKY9R3rnt6Vip01fww1SQVzp5DY5LH1xsgPLFwInVq8juWtWCqJbV+N/elcp5W
+         3yCYvs2/0CNLfz513I3o4VSETDP7msWfsamCbBXOSCdGYDGeISMNqfa6zESGhBimjzSW
+         Flo9+F79AaNN7exDz11SBNqKnC8sq3ulLFI4XOoT9tG7qHeyl2lo2FgyPZeo05DvJO3w
+         qE+R8F2lmCQLsiwi5hW8mVrlngZYUWQW3XZNclBUijq5CJgvbGVaOC6UHjwQwlXM4m8U
+         36JsWzKZfyXbcmmHAZ/2kfnr0LricAuVdkIblZ/2g+Z8VhyCZYMoStBAnr6ZipfxOIwV
+         hJYw==
+X-Gm-Message-State: AO0yUKXgKZ54mbGjmL+gwgay93nf4LBcXjSxTM1Lgi0AXyujcBaocMRv
+        cJ/JG0jW5L66wFikOBbh111OeyHFf8quebNOuuE=
+X-Google-Smtp-Source: AK7set/FngVgFTHLEwnzsWZi0OUAb9EcDEH5/PXKKYukRLMBDgEleFvcHGMROiaADv9PZFUC8dkENDc2m0Qcm1efTU8=
+X-Received: by 2002:a17:903:130a:b0:1a0:52f1:8ea7 with SMTP id
+ iy10-20020a170903130a00b001a052f18ea7mr827414plb.12.1678870737462; Wed, 15
+ Mar 2023 01:58:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230315074310.2957080-1-gaoxingwang1@huawei.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_PASS,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20230309094231.3808770-1-zyytlz.wz@163.com> <20230313162630.225f6a86@kernel.org>
+ <CAJedcCxBn=GE_pQ4xzpnvUmMA6rDuwn_AiE7S7d1EqGF9cHkNw@mail.gmail.com> <20230314211028.6e9cbbcf@kernel.org>
+In-Reply-To: <20230314211028.6e9cbbcf@kernel.org>
+From:   Zheng Hacker <hackerzheng666@gmail.com>
+Date:   Wed, 15 Mar 2023 16:58:45 +0800
+Message-ID: <CAJedcCwuH7eus+bVBvyDJOriPVgSp1UPjvXXjb9szy7C5t5h-A@mail.gmail.com>
+Subject: Re: [PATCH net] net: ethernet: fix use after free bug in
+ ns83820_remove_one due to race condition
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Zheng Wang <zyytlz.wz@163.com>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, 1395428693sheep@gmail.com,
+        alex000young@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 15, 2023 at 03:43:10PM +0800, gaoxingwang wrote:
-> Thanks for you reply.This patch works for me.
+Jakub Kicinski <kuba@kernel.org> =E4=BA=8E2023=E5=B9=B43=E6=9C=8815=E6=97=
+=A5=E5=91=A8=E4=B8=89 12:10=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On Tue, 14 Mar 2023 09:59:09 +0800 Zheng Hacker wrote:
+> > Jakub Kicinski <kuba@kernel.org> =E4=BA=8E2023=E5=B9=B43=E6=9C=8814=E6=
+=97=A5=E5=91=A8=E4=BA=8C 07:26=E5=86=99=E9=81=93=EF=BC=9A
+> > > On Thu,  9 Mar 2023 17:42:31 +0800 Zheng Wang wrote:
+> > > > +     cancel_work_sync(&dev->tq_refill);
+> > > >       ns83820_disable_interrupts(dev); /* paranoia */
+> > > >
+> > > >       unregister_netdev(ndev);
+> > >
+> > > Canceling the work before unregister can't work.
+> > > Please take a closer look, the work to refill a ring should be
+> > > canceled when the ring itself is dismantled.
+> >
+> > Hi Jakub,
+> >
+> > Thanks for your review! After seeing code again, I found when handling
+> > IRQ request, it will finally call ns83820_irq->ns83820_do_isr->
+> > ns83820_rx_kick->schedule_work to start work. So I think we should
+> > move the code after free_irq. What do you think?
+>
+> Sorry, we have over 300 patches which need reviews. I don't have
+> the time to help you. Perhaps someone else will.
+>
 
-Thanks for testing.
+Hi Jakub,
 
-> Can you submit a patch? Hope the problem will be fixed as soon as possible. 
+Thanks for your precious and kind reminder. I'll think about it again
+and write the next version of patch.
 
-Yes, I will send a patch.
+> Please make sure you work on a single networking fix at a time.
+> All the patches you posted had the same issues.
+
+Yes, I'll keep that in mind.
+
+Best regards,
+Zheng
