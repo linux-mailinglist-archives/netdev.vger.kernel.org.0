@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DB656BB832
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 16:43:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EF486BB833
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 16:43:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232348AbjCOPnG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 11:43:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58216 "EHLO
+        id S232278AbjCOPnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 11:43:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232103AbjCOPnA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 11:43:00 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD45B7A928
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 08:42:56 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-536d63d17dbso205520837b3.22
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 08:42:56 -0700 (PDT)
+        with ESMTP id S232365AbjCOPnC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 11:43:02 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0DA8975A
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 08:42:58 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id m13-20020a25800d000000b00b3dfeba6814so9732758ybk.11
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 08:42:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1678894976;
+        d=google.com; s=20210112; t=1678894978;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=FIZYIEauPwwiaTeaz6iQAPztD5zSSpkzaJXr8Sk0BNI=;
-        b=rNRpkAGWv/tmql8p9E7CGU3wa4F5nSx8RF10EsG3J7RSkkd3A3O+QSv/jaFvUfbtv8
-         JYMEhLsy/g9SZnwPVBWPR4HxIb/xgskdp7uuhU05uQGuZoZEa8eHnYEwIoFA9M3i/LUt
-         Ix8ocWe1u1iDDeG84rA7P682r0gCJaXujIHr6MBgWbSem5SGoxMdfhtGo87bItiYdlZG
-         vbxEsmBh0iNhI9aghKayJgXMMnorXFz+W0Ix5UF37U0g+4jk8xAV1wDCdNQyfGDHDGjN
-         nGWUnY0n/iZNXalX9gNhfssK/S9qwlsn0+7twL6bfWQNXNCXdHBj0WSWhcE+OejjaABL
-         R2VA==
+        bh=dlkJqv0b0Jem9BwwJCn3175Kp26LnlRSt2mhLf1rgJw=;
+        b=L1OrWZzqWO4U8JLmwN7arX4Mls1srN+H90FWfXx6S6tefkuy0IKYOicZXMwhb+oEEI
+         JsIAOy4pNFtB660WWTael+2fiVwwjxlmNIb/E4ELk0hU3wt4ZXmP0Fx2NLBcgglt1N2b
+         ehkj0Wa/BZGOMJ9Vylj8XR9yCmmyXoLbTCpOaVUtA1yeUwvZFZQE0wIKIrhdzpwcRFRa
+         7ofE0nqSJXSW/mkUxyTWIEd7//12t3ij9ebOlK9RMLjgTlWFQlmmzVUTbN7AgmKqek4w
+         c+XUB7abMmS5er5bPP3jX8cAYL9Oxu1G/dx5w51vK2i2FHb6H/P0tMXHcxBHs7IuI46s
+         a1cg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678894976;
+        d=1e100.net; s=20210112; t=1678894978;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=FIZYIEauPwwiaTeaz6iQAPztD5zSSpkzaJXr8Sk0BNI=;
-        b=5si+XVORh3K+OG0Nu/yhf4RqP8rOLOIY2gMzvAkZGMxbo/EgtuEfnsgSNddLs0uxv7
-         a7TqvGTcv604Ne5mXHCl4z4Ey4kjyciIAn4DLFBDxPe11FryNCWNBid51QiGf0HN0IAi
-         /IHIx5SXTuyCipEvUoJNL1/5suSyJj5PUNYR/0nxbaW1mErtYw8w3hPK8bXOs9PHm9Bv
-         hO1zJ5u4/asf/msPDpe1S3nLER+DvEak9hsWqCcTuXYrt8j9FfsN54bySm7qxpNQubQr
-         uTyEuss9S8Lsjr5/uvip2OGyMsSGNo72Hqo+hCC+Lb1GKc5r8oQ5yD1vTrf7JMSssuMb
-         6gAQ==
-X-Gm-Message-State: AO0yUKUtOUxzEifYH+n8vLhWPQ86zq3QTGfxKpz9/maHOmgELdq0hK3H
-        kpDKdaXw4tuwgb2A5FzAdUk8BVLQ5CKmIg==
-X-Google-Smtp-Source: AK7set8ERm1PuXCVRKG19uU1hTvZMQaP9dOUy4OOhID7ZgVW0nfTGNCwAftqBUee604yya8VkgEAfamBKBaNQg==
+        bh=dlkJqv0b0Jem9BwwJCn3175Kp26LnlRSt2mhLf1rgJw=;
+        b=sJ9l7JlyJU5DBRU14pD3+nm0Tw+EtEqSzOlIfGRxqlepI12fyDfDymQxOke9TGdTK0
+         YAGjxyemACeup8bN9G/xWTxm7X12sgC5xOQKXEPy4LAusAMpkyOr2KFXGCZizl9EX2eL
+         enQwFVT/LFvLru0xqt7O7p7IPFIKDGUM59unsEFM5ZsMp2gymvJnTBRP1dAGMgr/0SOR
+         w4eh+fVgwQd0yvMtKdxblnoEqh2IehCwWNcJTDhdPWSZr8Adu7BOBnKyWYNxYKz/tmZ6
+         a8Kr3rwJIHmy2Q3lZYzZXMfSCODU3FFX7VCneL3hh/GD8uNMU+bf7Ulzr7MrvcmtSkgB
+         nmlw==
+X-Gm-Message-State: AO0yUKXr7Albx9pkUKwiM4WUduce7hI0WI4m/FC8EP0Ed58+zm+YrJ4L
+        xovYoYnEd7cZpXnPSULM1OM8CRMnXeHXCQ==
+X-Google-Smtp-Source: AK7set8IhlNqZeVsGMufz+PNOl3ycNCTKla8J9pZYbAw9AJD2w2TFf235W/238+Mq97PVLgFiL361mabfwEGMg==
 X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a05:6902:185:b0:9fe:1493:8b9 with SMTP id
- t5-20020a056902018500b009fe149308b9mr21646433ybh.8.1678894976153; Wed, 15 Mar
- 2023 08:42:56 -0700 (PDT)
-Date:   Wed, 15 Mar 2023 15:42:43 +0000
+ (user=edumazet job=sendgmr) by 2002:a81:4417:0:b0:541:6d4c:9276 with SMTP id
+ r23-20020a814417000000b005416d4c9276mr205995ywa.5.1678894977933; Wed, 15 Mar
+ 2023 08:42:57 -0700 (PDT)
+Date:   Wed, 15 Mar 2023 15:42:44 +0000
 In-Reply-To: <20230315154245.3405750-1-edumazet@google.com>
 Mime-Version: 1.0
 References: <20230315154245.3405750-1-edumazet@google.com>
 X-Mailer: git-send-email 2.40.0.rc1.284.g88254d51c5-goog
-Message-ID: <20230315154245.3405750-7-edumazet@google.com>
-Subject: [PATCH net-next 6/8] ipv6: raw: constify raw_v6_match() socket argument
+Message-ID: <20230315154245.3405750-8-edumazet@google.com>
+Subject: [PATCH net-next 7/8] ipv4: raw: constify raw_v4_match() socket argument
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -69,40 +69,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This clarifies raw_v6_match() intent.
+This clarifies raw_v4_match() intent.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- include/net/rawv6.h | 2 +-
- net/ipv6/raw.c      | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ include/net/raw.h | 2 +-
+ net/ipv4/raw.c    | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/rawv6.h b/include/net/rawv6.h
-index bc70909625f60dcd819f50a258841d20e5ba0c68..82810cbe37984437569186783f39f166e89cb9b8 100644
---- a/include/net/rawv6.h
-+++ b/include/net/rawv6.h
-@@ -6,7 +6,7 @@
- #include <net/raw.h>
+diff --git a/include/net/raw.h b/include/net/raw.h
+index 2c004c20ed996d1dbe07f2c8d25edd2ce03cca03..7ad15830cf38460f1fae3a187986d74faef6dd1d 100644
+--- a/include/net/raw.h
++++ b/include/net/raw.h
+@@ -22,7 +22,7 @@
+ extern struct proto raw_prot;
  
- extern struct raw_hashinfo raw_v6_hashinfo;
--bool raw_v6_match(struct net *net, struct sock *sk, unsigned short num,
-+bool raw_v6_match(struct net *net, const struct sock *sk, unsigned short num,
- 		  const struct in6_addr *loc_addr,
- 		  const struct in6_addr *rmt_addr, int dif, int sdif);
+ extern struct raw_hashinfo raw_v4_hashinfo;
+-bool raw_v4_match(struct net *net, struct sock *sk, unsigned short num,
++bool raw_v4_match(struct net *net, const struct sock *sk, unsigned short num,
+ 		  __be32 raddr, __be32 laddr, int dif, int sdif);
  
-diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
-index bac9ba747bdecf8df24acb6c980a822d8f237403..6ac2f2690c44c96e9ac4cb7368ee7abdbeaf4334 100644
---- a/net/ipv6/raw.c
-+++ b/net/ipv6/raw.c
-@@ -64,7 +64,7 @@
- struct raw_hashinfo raw_v6_hashinfo;
- EXPORT_SYMBOL_GPL(raw_v6_hashinfo);
+ int raw_abort(struct sock *sk, int err);
+diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
+index 94df935ee0c5a83a4b1393653b79ac6060b4f12a..3cf68695b40ddc0e79c8fbd62f317048cf5c88e3 100644
+--- a/net/ipv4/raw.c
++++ b/net/ipv4/raw.c
+@@ -116,10 +116,10 @@ void raw_unhash_sk(struct sock *sk)
+ }
+ EXPORT_SYMBOL_GPL(raw_unhash_sk);
  
--bool raw_v6_match(struct net *net, struct sock *sk, unsigned short num,
-+bool raw_v6_match(struct net *net, const struct sock *sk, unsigned short num,
- 		  const struct in6_addr *loc_addr,
- 		  const struct in6_addr *rmt_addr, int dif, int sdif)
+-bool raw_v4_match(struct net *net, struct sock *sk, unsigned short num,
++bool raw_v4_match(struct net *net, const struct sock *sk, unsigned short num,
+ 		  __be32 raddr, __be32 laddr, int dif, int sdif)
  {
+-	struct inet_sock *inet = inet_sk(sk);
++	const struct inet_sock *inet = inet_sk(sk);
+ 
+ 	if (net_eq(sock_net(sk), net) && inet->inet_num == num	&&
+ 	    !(inet->inet_daddr && inet->inet_daddr != raddr) 	&&
 -- 
 2.40.0.rc1.284.g88254d51c5-goog
 
