@@ -2,77 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 242C66BC0C8
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 00:22:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F9B76BC0D1
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 00:24:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232820AbjCOXWR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 19:22:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60586 "EHLO
+        id S232936AbjCOXYf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 19:24:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230134AbjCOXWR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 19:22:17 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE06A6178
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 16:21:38 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id x3so782121edb.10
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 16:21:38 -0700 (PDT)
+        with ESMTP id S231972AbjCOXYd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 19:24:33 -0400
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 897B3CA36;
+        Wed, 15 Mar 2023 16:24:31 -0700 (PDT)
+Received: by mail-qt1-x833.google.com with SMTP id n2so56018qtp.0;
+        Wed, 15 Mar 2023 16:24:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1678922497;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=viCtZ5VrT2siElZEzhIlbcycyn8GoP+HciTR67CK2cA=;
-        b=aQ+OMxqTGfUWYUhMYJzlOygwfBiAv8jaglD0OI+DZSN2CtajlUfn7l6Yj2zTkXcynQ
-         l6g1vjz2RBHSPZWJKGxnWoB9FKU+xSIChm1fdn5U3RmRdP+y/Js5I8ovkHwTuc7aC6SH
-         g6Fc4+dt1Xo1C++/kTyc9iJl4HdejNFa8DOMk=
+        d=gmail.com; s=20210112; t=1678922670;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=L+/XUg/IzalimXO/qn496/8CAVgsZbcEk4sHUDhLJEw=;
+        b=JQfM9tEUYpiKlNt4eoxk39sxVPrldWly2scJs6iZcmGuWluZ3KNzqK6DcE2aKB/r8T
+         wUuBZxZCNFwjXu9W9KBda1fkD8OqYF8TTGXsIl6WbTnr+sojsi+BfsgVprlpYR6OmA3u
+         rr0/ay5JpNgxTGyLZncCWCGpJ1/oCF0OD3PczZivbLnm8Y12PtDxcPoVlOJ899/kBXPw
+         yLaa5D0HL6CAaI47+rlIO/xAuyVAOXSCWAOz9ZQue2CbbaBwg678vJWUHdymWs9ywwrj
+         kJREgR81ZkST9+clb4ihWriPfZoZ2aDlxXN/zwZCis9J3FVaAUBT021Sz5fvP/MmxRSO
+         oLeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678922497;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=viCtZ5VrT2siElZEzhIlbcycyn8GoP+HciTR67CK2cA=;
-        b=GoWpvUo7AZkyVdt296xT6A/31vtUYnelCVbFpb3o/UwL8/LCP2bR3WoEu3riYbWYO6
-         27qEF14yKvvGI++sKGNZcgpvbAnFE0qQkO0bYJUNJc2tS0H7s5eLCOi0Tb42sf5H2PnF
-         ZVd+hhNVfR+FnEil/x0nO5SKRDol36GRDZNTBc8pONloCaTadM/pig6m5bpZjm3fk6XK
-         Tzfev/kUFg3VHHIIh2LGnAMekMmVdFowol2YjmQLEaT7TyAb1GJiWpoCg60vX1jHluTX
-         QjmzqNwIqSVYmfQ/Oe3c6MV4eOOLwaQnHjzhdkgOvqGiK2CCnnzirMxq395pKRzcOp16
-         Tv9g==
-X-Gm-Message-State: AO0yUKXlJydlwIokb/+ajSrVgIXcBKAAQ+yl7RksY3Ldy6434mmkL/6h
-        M+w12WTyh8XSypAOzTpCLslmq8iOdoM+UYSUli8HQA==
-X-Google-Smtp-Source: AK7set+z/g6+MGWJvHYkei51WmfQV6B83n4F4onLHgHVRocKBVgUMrGiF7RD2Jttw3nTD6+SmIRkvA==
-X-Received: by 2002:a17:906:9f0a:b0:92b:d4f6:7f4c with SMTP id fy10-20020a1709069f0a00b0092bd4f67f4cmr9366668ejc.2.1678922496798;
-        Wed, 15 Mar 2023 16:21:36 -0700 (PDT)
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com. [209.85.208.48])
-        by smtp.gmail.com with ESMTPSA id op1-20020a170906bce100b009222a7192b4sm3066913ejb.30.2023.03.15.16.21.35
-        for <netdev@vger.kernel.org>
+        d=1e100.net; s=20210112; t=1678922670;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=L+/XUg/IzalimXO/qn496/8CAVgsZbcEk4sHUDhLJEw=;
+        b=VgeRbpfIiKGRfpzTXtoC/MnoMgTv8VO0QVRN8Uia6crGlSEFdAq59ogKzmDwtjkg2A
+         l3RLKgrOJchHsZpPL2MmTQ/6H1AMslEGMP39SeruJuoSIOOGq4uZ73JljGxCOY7T9JOd
+         +cdFcpVA3Yl9e4eYevBB7GWs4lwyV5W9T3AMnFbjV26ujJOXbPRAqqg8gOLqD3h2b5+j
+         zFOavRnjBjEk7RIshXnUF7kuRWzcAxDe5MHyh1Soqj/dM6HMjI4TLD9bK9e5Lms2nHtY
+         m0xue94QXFD8581/V3XuulpJH41rzsOYAUeafdoLE6+GWK/lB2iGrJ81MhlUzFuyLokV
+         iShQ==
+X-Gm-Message-State: AO0yUKXUfcLcJn5cZEI7UOh+CadG4XjT82kYILCVLWZWTOtr6a5w5cnz
+        D+4ilDeH1UaydklmcD4rwjs=
+X-Google-Smtp-Source: AK7set8739KdPX3AaAIpO3+R9MHd61PnmKgIblrEnn5huSW3lCeTfORP2mzTfbVR0bgF/YHA4cCEAA==
+X-Received: by 2002:a05:622a:1348:b0:3bf:be20:544c with SMTP id w8-20020a05622a134800b003bfbe20544cmr3000547qtk.39.1678922670325;
+        Wed, 15 Mar 2023 16:24:30 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id c15-20020ac8660f000000b003b86b088755sm4673327qtp.15.2023.03.15.16.23.59
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Mar 2023 16:21:35 -0700 (PDT)
-Received: by mail-ed1-f48.google.com with SMTP id cn21so1061465edb.0
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 16:21:35 -0700 (PDT)
-X-Received: by 2002:a17:907:804:b0:8e5:411d:4d09 with SMTP id
- wv4-20020a170907080400b008e5411d4d09mr4284616ejb.15.1678922494976; Wed, 15
- Mar 2023 16:21:34 -0700 (PDT)
+        Wed, 15 Mar 2023 16:24:29 -0700 (PDT)
+Message-ID: <e18a490e-02cd-ae2a-37ac-e6731e149aa3@gmail.com>
+Date:   Wed, 15 Mar 2023 16:23:57 -0700
 MIME-Version: 1.0
-References: <20230315154245.3405750-1-edumazet@google.com> <20230315154245.3405750-2-edumazet@google.com>
- <20230315142841.3a2ac99a@kernel.org> <CANn89iLbOqjWVmgZKdGjbdsHw1EwO9d_w+dgKsyzLoq9pOsurQ@mail.gmail.com>
-In-Reply-To: <CANn89iLbOqjWVmgZKdGjbdsHw1EwO9d_w+dgKsyzLoq9pOsurQ@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 15 Mar 2023 16:21:17 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wiPUfe8aji5KojAhDKjWhJJU2F9kfzyL660=jRkY+Uzyg@mail.gmail.com>
-Message-ID: <CAHk-=wiPUfe8aji5KojAhDKjWhJJU2F9kfzyL660=jRkY+Uzyg@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/8] inet: preserve const qualifier in inet_sk()
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v2 net] net: dsa: microchip: fix RGMII delay configuration
+ on KSZ8765/KSZ8794/KSZ8795
+Content-Language: en-US
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        eric.dumazet@gmail.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Marek Vasut <marex@denx.de>, linux-kernel@vger.kernel.org
+References: <20230315231916.2998480-1-vladimir.oltean@nxp.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20230315231916.2998480-1-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,46 +83,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 15, 2023 at 3:38=E2=80=AFPM Eric Dumazet <edumazet@google.com> =
-wrote:
->
-> Maybe something like this?
+On 3/15/23 16:19, Vladimir Oltean wrote:
+> From: Marek Vasut <marex@denx.de>
+> 
+> The blamed commit has replaced a ksz_write8() call to address
+> REG_PORT_5_CTRL_6 (0x56) with a ksz_set_xmii() -> ksz_pwrite8() call to
+> regs[P_XMII_CTRL_1], which is also defined as 0x56 for ksz8795_regs[].
+> 
+> The trouble is that, when compared to ksz_write8(), ksz_pwrite8() also
+> adjusts the register offset with the port base address. So in reality,
+> ksz_pwrite8(offset=0x56) accesses register 0x56 + 0x50 = 0xa6, which in
+> this switch appears to be unmapped, and the RGMII delay configuration on
+> the CPU port does nothing.
+> 
+> So if the switch wasn't fine with the RGMII delay configuration done
+> through pin strapping and relied on Linux to apply a different one in
+> order to pass traffic, this is now broken.
+> 
+> Using the offset translation logic imposed by ksz_pwrite8(), the correct
+> value for regs[P_XMII_CTRL_1] should have been 0x6 on ksz8795_regs[], in
+> order to really end up accessing register 0x56.
+> 
+> Static code analysis shows that, despite there being multiple other
+> accesses to regs[P_XMII_CTRL_1] in this driver, the only code path that
+> is applicable to ksz8795_regs[] and ksz8_dev_ops is ksz_set_xmii().
+> Therefore, the problem is isolated to RGMII delays.
+> 
+> In its current form, ksz8795_regs[] contains the same value for
+> P_XMII_CTRL_0 and for P_XMII_CTRL_1, and this raises valid suspicions
+> that writes made by the driver to regs[P_XMII_CTRL_0] might overwrite
+> writes made to regs[P_XMII_CTRL_1] or vice versa.
+> 
+> Again, static analysis shows that the only accesses to P_XMII_CTRL_0
+> from the driver are made from code paths which are not reachable with
+> ksz8_dev_ops. So the accesses made by ksz_set_xmii() are safe for this
+> switch family.
+> 
+> [ vladimiroltean: rewrote commit message ]
+> 
+> Fixes: c476bede4b0f ("net: dsa: microchip: ksz8795: use common xmii function")
+> Signed-off-by: Marek Vasut <marex@denx.de>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Acked-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 
-Please no.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
 
-> +#define promote_to_type(ptr, oldtype, newtype)                 \
-> +       _Generic(ptr,                                           \
-> +                const oldtype *: ((const newtype *)(ptr)),     \
-> +                oldtype *: ((newtype *)(ptr))                  \
-> +       )
-
-That's just a very ugly way to just do a cast. It's wrong.
-
-> +#define inet_sk(sk) promote_to_type(sk, struct sock, struct inet_sock)
-
-This is horrid.
-
-Why isn't this just doing
-
-   #define inet_sk(ptr) container_of(ptr, struct inet_sock, sk)
-
-which is different from a plain cast in that it actually checks that
-"yes, struct inet_sock has a member called 'sk' that has the right
-type, so now we can convert from that sk to the containing structure".
-
-That's very different from just randomly casting a pointer to another
-pointer, like the current inet_sk() does, and like that disgusting
-promote_to_type() macro does.
-
-We really strive for proper type safety in the kernel. And that very
-much means *not* doing random casts.
-
-At least that "inet_sk(sk)" version using generics didn't take random
-pointer types. But I really don't see why you don't just use
-"container_of()", which is actually type-safe, and would allow "struct
-inet_sock" to contain the "struct sock" somewhere else than in the
-first field.
-
-Hmm? Am I missing something that is happening in linux-next?
-
-                Linus
