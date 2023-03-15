@@ -2,60 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 73D056BA88D
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 08:00:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81E7C6BA895
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 08:03:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231236AbjCOHAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 03:00:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57110 "EHLO
+        id S231256AbjCOHDP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 03:03:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230348AbjCOHAq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 03:00:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64E2130EB6
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 00:00:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC99E61B36
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 07:00:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14F64C4339C;
-        Wed, 15 Mar 2023 07:00:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678863644;
-        bh=+aevTxkIuFXyBbaZjNiaGznDnVzW8trKHj3MOO/ETHs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uIKB+ts6+h8Hb1S2yFLV1bBT4DMcHobZXaA9oUsbKt/Kn1X9D8b1PvDji1KHHz7BI
-         2N7rVJLN9v6ZeKDfrJxDudTmGQbR7pzesr5+OUIKZTgmjUSsKaYPlsp+kvRLCvOWIR
-         KtWowSD1EWJvwAPJt+IvLBR3L+wWGiwUH61dL0/sMiBQc3/YG6Bkn6CaYnbagq/fvs
-         OcI8n1wxAoKa+40/6xL1noprT5sO5V4Cy4wNePvRpqCnmyJ0VE2oik0nsgW6SGkdMo
-         MqVuK0xPStYrFXwUrBK9fYsIx24qxhliIN0JnFQK95FfCEMUfHA/Sw9O1hKG0vae4R
-         R+zOtOineSOnQ==
-Date:   Wed, 15 Mar 2023 00:00:43 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sven Auhagen <Sven.Auhagen@voleatech.de>
-Cc:     netdev@vger.kernel.org, mw@semihalf.com, linux@armlinux.org.uk,
-        davem@davemloft.net, maxime.chevallier@bootlin.com
-Subject: Re: [PATCH 3/3] net: mvpp2: parser fix PPPoE
-Message-ID: <20230315000043.05475d9b@kernel.org>
-In-Reply-To: <20230311071024.irbtnpzvihm37hna@Svens-MacBookPro.local>
-References: <20230311071024.irbtnpzvihm37hna@Svens-MacBookPro.local>
+        with ESMTP id S230348AbjCOHDN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 03:03:13 -0400
+Received: from cstnet.cn (smtp81.cstnet.cn [159.226.251.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2961A26CF6;
+        Wed, 15 Mar 2023 00:03:09 -0700 (PDT)
+Received: from localhost.localdomain (unknown [124.16.138.125])
+        by APP-03 (Coremail) with SMTP id rQCowADX3gqdaRFkK73DDw--.42013S2;
+        Wed, 15 Mar 2023 14:45:50 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     simon.horman@corigine.com
+Cc:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: Re: Re: [PATCH] Bluetooth: 6LoWPAN: Add missing check for skb_clone
+Date:   Wed, 15 Mar 2023 14:45:48 +0800
+Message-Id: <20230315064548.48951-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: rQCowADX3gqdaRFkK73DDw--.42013S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7XrW5ZFW7KF15Wry3uF4Uurg_yoW8JF1Dpr
+        45GF98GF4kG3W7Cr1Iva1ruFy0vr1q9ry3Gr4v934fXr98Kr93CrW5K345Wr18CrZru340
+        yF4rW3ZxKF95CFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvK14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Cr
+        1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
+        6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr
+        0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E
+        8cxan2IY04v7MxkIecxEwVAFwVW8AwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbV
+        WUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF
+        67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42
+        IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF
+        0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxh
+        VjvjDU0xZFpf9x0JU-J5rUUUUU=
+X-Originating-IP: [124.16.138.125]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 11 Mar 2023 08:10:24 +0100 Sven Auhagen wrote:
-> In PPPoE add all IPv4 header option length to the parser
-> and adjust the L3 and L4 offset accordingly.
-> Currently the L4 match does not work with PPPoE and
-> all packets are matched as L3 IP4 OPT.
+On Tue, Mar 14, 2023 at 10:58:23PM +0800, Simon Horman wrote:
+>On Mon, Mar 13, 2023 at 05:03:46PM +0800, Jiasheng Jiang wrote:
+>> Add the check for the return value of skb_clone since it may return NULL
+>> pointer and cause NULL pointer dereference in send_pkt.
+>> 
+>> Fixes: 18722c247023 ("Bluetooth: Enable 6LoWPAN support for BT LE devices")
+>> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+>> ---
+>>  net/bluetooth/6lowpan.c | 4 ++++
+>>  1 file changed, 4 insertions(+)
+>> 
+>> diff --git a/net/bluetooth/6lowpan.c b/net/bluetooth/6lowpan.c
+>> index 4eb1b3ced0d2..bf42a0b03e20 100644
+>> --- a/net/bluetooth/6lowpan.c
+>> +++ b/net/bluetooth/6lowpan.c
+>> @@ -477,6 +477,10 @@ static int send_mcast_pkt(struct sk_buff *skb, struct net_device *netdev)
+>>  			int ret;
+>>  
+>>  			local_skb = skb_clone(skb, GFP_ATOMIC);
+>> +			if (!local_skb) {
+>> +				rcu_read_unlock();
+>> +				return -ENOMEM;
+>> +			}
+> 
+> Further down in this loop an error is handled as follows,
+> I wonder if that pattern is appropriate here too.
+> 
+> 			ret = send_pkt(pentry->chan, local_skb, netdev);
+> 			if (ret < 0)
+> 				err = ret;
+> 
 
-Also needs a Fixes tag
+I think it should be better to return error here in order to avoid the
+error being overwritten.
+I will submit a v2 to modify the error handling here.
+
+Thanks,
+Jiang
+
