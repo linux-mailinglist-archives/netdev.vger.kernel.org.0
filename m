@@ -2,89 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFB2E6BA59A
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 04:29:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E7D66BA5CB
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 04:52:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230338AbjCOD25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Mar 2023 23:28:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39820 "EHLO
+        id S229506AbjCODwb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Mar 2023 23:52:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230282AbjCOD2w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 23:28:52 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 099EEB479;
-        Tue, 14 Mar 2023 20:28:49 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id h17so2079537wrt.8;
-        Tue, 14 Mar 2023 20:28:48 -0700 (PDT)
+        with ESMTP id S229487AbjCODw3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Mar 2023 23:52:29 -0400
+Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2E1125A7
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 20:52:26 -0700 (PDT)
+Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-17ac5ee3f9cso856834fac.12
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 20:52:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678850927;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=uH9GaHvYlPJjSoX0IYviP2OnmjHw1bfzeQs9XHSK3VM=;
-        b=RINQimBKgzmPrCNEqdXPn0gDuSOc4JqLKfQrSSD4Hi/t0sRiZ6L2vvPSeT3nEIjqF0
-         tbDX29vu3RlCUonOpxO6tpHLcjlTn29VGWQ7/0tJ7/DpTL9bTfZKZhsD6YVOCoGj0+Ru
-         0MWoMk8ahU/8pgzCiKmvQxgtFu7pF2kw9SavE4NbJZzPoqT/NWBKKmxVRM4iwt02Du7f
-         TmA6lui7YGsVhjhhGG/PzdeSfxNEO+deUDag4wXj0tw3aAiWSkDNwE1Y6tUPETTai7Sa
-         xdDL+1KYDPHcQi6kh1djWEiPEsfQz9b/8/fbdkpWPKHr/DyOG/mlpN/VuHogNll72Wqm
-         lEbQ==
+        d=gmail.com; s=20210112; t=1678852345;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=9IlRZaVdETODnIeJiH7tzFm53sIPKv5rZykUvVgbm0I=;
+        b=TBxmaqT0Nfmkb5YUrmrok20lzpcinvnn6Cq6ag3XEpgMYUV68G0k3saOvIjCELH2uS
+         GOU9E1IixVkEp/sxns/B2BMxTVZ9UeSfy843XJj1Y+dFBT/xapbFQhv+OwUaOceZshBA
+         xw3N9Tw41eSNYyany+3vxbAp637ddoMpm0Nn59ceF3qiXuN4j4tPilGfs2tB/WV7Nh5b
+         d/p4CuJzElyyEyLBHZySORw9c/1Oe2l4NwOl2QQee2M/gFk1m5jDAmU2kbrQ5fwFBHd3
+         z3egu9E6uhu6tDrngCRCXOEF/+gMxw9Ymfz5encqCecKY4fZ47DzS7+3lXPX6a/L8jHe
+         rDLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678850927;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uH9GaHvYlPJjSoX0IYviP2OnmjHw1bfzeQs9XHSK3VM=;
-        b=wYytWJ+mSOabF8V1IrQFd+j4aSRpNaeDYKA3FH4Pbi9HSgiaV1JuJJ7Lg4HJzRtRlq
-         1LcWt7TuMG7JzygGhp3R1rg0HiE5kHaZcoLFBYTEpMCZG7l5La+062fAXSaW46S/tftK
-         XcvG2ans4ilhNrjaVK/lizYvZcn9d5mdnxnHvHDRDkGZXhPY6nXUMVgWxW9WSJK+5EHz
-         djGbyWvG5iS2QNBqaIANcdXB6QuqMohnUK7VxIySKgigWPUj0h1G+Ov293q5ookTl0Q1
-         9eQfm3ps94bDAkuzcwhzUzYxYWYTHeHoU/XH1XVMpUcms2+yrJN3Krgrqf4/tSP8Fawo
-         wVnA==
-X-Gm-Message-State: AO0yUKWBWB7WvRe9BreMMa4hByDvPedtsii0iotVXQ8sdhYPRXB/au+n
-        a781Ja0NjAEcz81xPQY+ves=
-X-Google-Smtp-Source: AK7set8zVTAaU2IcCM2AMRczalXeWzQeAuVESTAFjkQ6ZVVK5LgYsCJx6WIZFrOP6tyWMBDmSikG8g==
-X-Received: by 2002:a5d:65cc:0:b0:2c8:c667:1bb4 with SMTP id e12-20020a5d65cc000000b002c8c6671bb4mr809782wrw.48.1678850927214;
-        Tue, 14 Mar 2023 20:28:47 -0700 (PDT)
-Received: from Ansuel-xps. (93-34-89-197.ip49.fastwebnet.it. [93.34.89.197])
-        by smtp.gmail.com with ESMTPSA id w17-20020adfd4d1000000b002c70ce264bfsm3412850wrk.76.2023.03.14.20.28.45
+        d=1e100.net; s=20210112; t=1678852345;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=9IlRZaVdETODnIeJiH7tzFm53sIPKv5rZykUvVgbm0I=;
+        b=Qwp6n7geq+pzbNc3hT/tj2H9r6w4tPEHiRE+7V0XLKTmXACCDVBbpzIFLJZgpBmZ2a
+         q1cmplJEoV6IRe3HsnFv46BouAUfZcGIRBMSB6tARWPUlgnQM69nvkpd7Sb5j2e2RFbY
+         HLqx+ooOCHf8E4yHkdXN4EHSxKNh024fFyVnvdWYhriTUwFcJ3zPZ9XJQw868VCMgXoB
+         +2hBuegM+mYfu5rxaFEDLdoyz+SwiP+jd2qApscDMTTVwMPkvsiOTgOqZ5zpUCv8K0MK
+         tsOaVU/kKoA1kFj1LDV+HW6HRiVbHvGHGsSeDu+DQMkXqublKafxj3L0UIIqBxCg16NP
+         poIg==
+X-Gm-Message-State: AO0yUKVS+UOiVrqjzQT1Qvb/l26i54aM5ZNtHY3gr+iPmsBPSR3Ftr5r
+        WQQ3jfNVdqSITVJ3zR5Lit8rT9ruiL32EA==
+X-Google-Smtp-Source: AK7set8vSLJbcV7DnzCR+YpQ8b816HZz71FE1hGY5Bc7hZaG8rcLhNVYdkxqMbGuY+6+y+5AEiOIZg==
+X-Received: by 2002:a05:6871:88:b0:177:8154:f7e3 with SMTP id u8-20020a056871008800b001778154f7e3mr11217590oaa.42.1678852345310;
+        Tue, 14 Mar 2023 20:52:25 -0700 (PDT)
+Received: from tresc054937.tre-sc.gov.br ([187.94.103.218])
+        by smtp.gmail.com with ESMTPSA id o14-20020a9d718e000000b0068bd5af9b82sm1913069otj.43.2023.03.14.20.52.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Mar 2023 20:28:46 -0700 (PDT)
-Message-ID: <64113b6e.df0a0220.5405c.6bb4@mx.google.com>
-X-Google-Original-Message-ID: <ZBE7bJmf1jLsq5cn@Ansuel-xps.>
-Date:   Wed, 15 Mar 2023 04:28:44 +0100
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, Lee Jones <lee@kernel.org>,
-        linux-leds@vger.kernel.org
-Subject: Re: [net-next PATCH v3 09/14] dt-bindings: net: dsa: dsa-port:
- Document support for LEDs node
-References: <20230314101516.20427-1-ansuelsmth@gmail.com>
- <20230314101516.20427-1-ansuelsmth@gmail.com>
- <20230314101516.20427-10-ansuelsmth@gmail.com>
- <20230314101516.20427-10-ansuelsmth@gmail.com>
- <20230315005000.co4in33amy3t3xbx@skbuf>
- <afd1f052-6bb6-4388-9620-1adb02e6d607@lunn.ch>
+        Tue, 14 Mar 2023 20:52:23 -0700 (PDT)
+From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     linus.walleij@linaro.org, alsi@bang-olufsen.dk, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        robh+dt@kernel.org, krzk+dt@kernel.org, arinc.unal@arinc9.com,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Alexander Duyck <alexanderduyck@fb.com>
+Subject: [PATCH net-next v5] net: dsa: realtek: rtl8365mb: add change_mtu
+Date:   Wed, 15 Mar 2023 00:49:22 -0300
+Message-Id: <20230315034921.30984-1-luizluca@gmail.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <afd1f052-6bb6-4388-9620-1adb02e6d607@lunn.ch>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -95,46 +73,158 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 15, 2023 at 02:58:23AM +0100, Andrew Lunn wrote:
-> On Wed, Mar 15, 2023 at 02:50:00AM +0200, Vladimir Oltean wrote:
-> > On Tue, Mar 14, 2023 at 11:15:11AM +0100, Christian Marangi wrote:
-> > > Document support for LEDs node in dsa port.
-> > > Switch may support different LEDs that can be configured for different
-> > > operation like blinking on traffic event or port link.
-> > > 
-> > > Also add some Documentation to describe the difference of these nodes
-> > > compared to PHY LEDs, since dsa-port LEDs are controllable by the switch
-> > > regs and the possible intergated PHY doesn't have control on them.
-> > > 
-> > > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > > ---
-> > >  .../devicetree/bindings/net/dsa/dsa-port.yaml | 21 +++++++++++++++++++
-> > >  1 file changed, 21 insertions(+)
-> > 
-> > Of all schemas, why did you choose dsa-port.yaml? Why not either something
-> > hardware specific (qca8k.yaml) or more generic (ethernet-controller.yaml)?
-> 
-> The binding should be generic. So qca8k.yaml is way to specific. The
-> Marvell switch should re-use it at some point.
-> 
-> Looking at the hierarchy, ethernet-controller.yaml would work since
-> dsa-port includes ethernet-switch-port, which includes
-> ethernet-controller.
-> 
-> These are MAC LEDs, and there is no reason why a standalone MAC in a
-> NIC could not implement such LEDs. So yes,
-> ethernet-controller.yaml.
-> 
-> Is there actually anything above ethernet-controller.yaml? This is
-> about a netdev really, so a wifi MAC, or even a CAN MAC could also use
-> the binding....
->
+The rtl8365mb was using a fixed MTU size of 1536, which was probably
+inspired by the rtl8366rb's initial frame size. However, unlike that
+family, the rtl8365mb family can specify the max frame size in bytes,
+rather than in fixed steps.
 
-Yes ideally when we manage to do all the things, ath10k would benefits
-from this since it does have leds that blink on tx/rx traffic and are
-specially controlled...
+DSA calls change_mtu for the CPU port once the max MTU value among the
+ports changes. As the max frame size is defined globally, the switch
+is configured only when the call affects the CPU port.
 
-Don't think there is something above ethernet-controller tho...
+The available specifications do not directly define the max supported
+frame size, but it mentions a 16k limit. This driver will use the 0x3FFF
+limit as it is used in the vendor API code. However, the switch sets the
+max frame size to 16368 bytes (0x3FF0) after it resets.
 
+change_mtu uses MTU size, or ethernet payload size, while the switch
+works with frame size. The frame size is calculated considering the
+ethernet header (14 bytes), a possible 802.1Q tag (4 bytes), the payload
+size (MTU), and the Ethernet FCS (4 bytes). The CPU tag (8 bytes) is
+consumed before the switch enforces the limit.
+
+During setup, the driver will use the default 1500-byte MTU of DSA to
+set the maximum frame size. The current sum will be
+VLAN_ETH_HLEN+1500+ETH_FCS_LEN, which results in 1522 bytes.  Although
+it is lower than the previous initial value of 1536 bytes, the driver
+will increase the frame size for a larger MTU. However, if something
+requires more space without increasing the MTU, such as QinQ, we would
+need to add the extra length to the rtl8365mb_port_change_mtu() formula.
+
+MTU was tested up to 2018 (with 802.1Q) as that is as far as mt7620
+(where rtl8367s is stacked) can go. The register was manually
+manipulated byte-by-byte to ensure the MTU to frame size conversion was
+correct. For frames without 802.1Q tag, the frame size limit will be 4
+bytes over the required size.
+
+There is a jumbo register, enabled by default at 6k frame size.
+However, the jumbo settings do not seem to limit nor expand the maximum
+tested MTU (2018), even when jumbo is disabled. More tests are needed
+with a device that can handle larger frames.
+
+Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+Reviewed-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+---
+ drivers/net/dsa/realtek/rtl8365mb.c | 40 ++++++++++++++++++++++++++---
+ 1 file changed, 36 insertions(+), 4 deletions(-)
+
+v4->v5 (commit message only):
+- rename packet size to frame size
+- added more info about the lower initial frame size
+
+v3->v4:
+- removed spurious newline after comment.
+
+v2->v3:
+- changed max frame size to 0x3FFF (used by vendor API)
+- added info about how frame size is calculated, some more description
+  about the tests performed and the 4 extra bytes when untagged frame is
+  used.
+
+v1->v2:
+- dropped jumbo code as it was not changing the behavior (up to 2k MTU)
+- fixed typos
+- fixed code alignment
+- renamed rtl8365mb_(change|max)_mtu to rtl8365mb_port_(change|max)_mtu
+
+
+diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
+index da31d8b839ac..41ea3b5a42b1 100644
+--- a/drivers/net/dsa/realtek/rtl8365mb.c
++++ b/drivers/net/dsa/realtek/rtl8365mb.c
+@@ -98,6 +98,7 @@
+ #include <linux/of_irq.h>
+ #include <linux/regmap.h>
+ #include <linux/if_bridge.h>
++#include <linux/if_vlan.h>
+ 
+ #include "realtek.h"
+ 
+@@ -267,6 +268,7 @@
+ /* Maximum packet length register */
+ #define RTL8365MB_CFG0_MAX_LEN_REG	0x088C
+ #define   RTL8365MB_CFG0_MAX_LEN_MASK	0x3FFF
++#define RTL8365MB_CFG0_MAX_LEN_MAX	0x3FFF
+ 
+ /* Port learning limit registers */
+ #define RTL8365MB_LUT_PORT_LEARN_LIMIT_BASE		0x0A20
+@@ -1135,6 +1137,35 @@ static void rtl8365mb_phylink_mac_link_up(struct dsa_switch *ds, int port,
+ 	}
+ }
+ 
++static int rtl8365mb_port_change_mtu(struct dsa_switch *ds, int port,
++				     int new_mtu)
++{
++	struct realtek_priv *priv = ds->priv;
++	int frame_size;
++
++	/* When a new MTU is set, DSA always sets the CPU port's MTU to the
++	 * largest MTU of the slave ports. Because the switch only has a global
++	 * RX length register, only allowing CPU port here is enough.
++	 */
++	if (!dsa_is_cpu_port(ds, port))
++		return 0;
++
++	frame_size = new_mtu + VLAN_ETH_HLEN + ETH_FCS_LEN;
++
++	dev_dbg(priv->dev, "changing mtu to %d (frame size: %d)\n",
++		new_mtu, frame_size);
++
++	return regmap_update_bits(priv->map, RTL8365MB_CFG0_MAX_LEN_REG,
++				  RTL8365MB_CFG0_MAX_LEN_MASK,
++				  FIELD_PREP(RTL8365MB_CFG0_MAX_LEN_MASK,
++					     frame_size));
++}
++
++static int rtl8365mb_port_max_mtu(struct dsa_switch *ds, int port)
++{
++	return RTL8365MB_CFG0_MAX_LEN_MAX - VLAN_ETH_HLEN - ETH_FCS_LEN;
++}
++
+ static void rtl8365mb_port_stp_state_set(struct dsa_switch *ds, int port,
+ 					 u8 state)
+ {
+@@ -1980,10 +2011,7 @@ static int rtl8365mb_setup(struct dsa_switch *ds)
+ 		p->index = i;
+ 	}
+ 
+-	/* Set maximum packet length to 1536 bytes */
+-	ret = regmap_update_bits(priv->map, RTL8365MB_CFG0_MAX_LEN_REG,
+-				 RTL8365MB_CFG0_MAX_LEN_MASK,
+-				 FIELD_PREP(RTL8365MB_CFG0_MAX_LEN_MASK, 1536));
++	ret = rtl8365mb_port_change_mtu(ds, cpu->trap_port, ETH_DATA_LEN);
+ 	if (ret)
+ 		goto out_teardown_irq;
+ 
+@@ -2103,6 +2131,8 @@ static const struct dsa_switch_ops rtl8365mb_switch_ops_smi = {
+ 	.get_eth_mac_stats = rtl8365mb_get_mac_stats,
+ 	.get_eth_ctrl_stats = rtl8365mb_get_ctrl_stats,
+ 	.get_stats64 = rtl8365mb_get_stats64,
++	.port_change_mtu = rtl8365mb_port_change_mtu,
++	.port_max_mtu = rtl8365mb_port_max_mtu,
+ };
+ 
+ static const struct dsa_switch_ops rtl8365mb_switch_ops_mdio = {
+@@ -2124,6 +2154,8 @@ static const struct dsa_switch_ops rtl8365mb_switch_ops_mdio = {
+ 	.get_eth_mac_stats = rtl8365mb_get_mac_stats,
+ 	.get_eth_ctrl_stats = rtl8365mb_get_ctrl_stats,
+ 	.get_stats64 = rtl8365mb_get_stats64,
++	.port_change_mtu = rtl8365mb_port_change_mtu,
++	.port_max_mtu = rtl8365mb_port_max_mtu,
+ };
+ 
+ static const struct realtek_ops rtl8365mb_ops = {
 -- 
-	Ansuel
+2.39.2
+
