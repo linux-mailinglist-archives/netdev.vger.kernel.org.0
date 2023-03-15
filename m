@@ -2,138 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F5E06BAF37
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 12:29:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEFCC6BAF73
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 12:44:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231488AbjCOL3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 07:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56370 "EHLO
+        id S231431AbjCOLn6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 07:43:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231431AbjCOL3V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 07:29:21 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2F0A29E00
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 04:29:18 -0700 (PDT)
-Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1pcPJc-0007nK-Ro; Wed, 15 Mar 2023 12:29:08 +0100
-Received: from pengutronix.de (unknown [IPv6:2a00:20:3059:9eeb:8134:2053:cf60:de3a])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 06E301939E5;
-        Wed, 15 Mar 2023 11:29:06 +0000 (UTC)
-Date:   Wed, 15 Mar 2023 12:29:05 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Markus Schneider-Pargmann <msp@baylibre.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
-        Simon Horman <simon.horman@corigine.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/5] dt-bindings: can: tcan4x5x: Add tcan4552 and
- tcan4553 variants
-Message-ID: <20230315112905.qutggrdnpsttbase@pengutronix.de>
-References: <20230314151201.2317134-1-msp@baylibre.com>
- <20230314151201.2317134-2-msp@baylibre.com>
- <680053bc-66fb-729f-ecdc-2f5fe511cecd@linaro.org>
- <20230315104914.qpwhnv6drjwau5jr@blmsp>
+        with ESMTP id S231236AbjCOLn5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 07:43:57 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9205421A09;
+        Wed, 15 Mar 2023 04:43:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678880636; x=1710416636;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=KST0rCAJhGL/COIU6hqmVN80y0QSSX7J/nA1+/5MpLE=;
+  b=JE4InaFEM9sCmkEeIHb1Hnp41ydvYW2UnyXPA0LNw97q+YR7zy955xgl
+   tT2AK0nA17VGJElrG1PYdq/zdrmKY30s/a7m5+UQ4CPR4eF1micMTv0Cr
+   fAbNeTeXyH/IQKDIduZQPqyAvf9P+3AUHf2Q9xFGl9fyD7gS3z15B+RYr
+   zCQk4afX78hOzS/fBtMM9aLMq8ySMkNBNCGsmGruS8hmrhC+aL9mxIZ0X
+   CB/ZqTTimEMHNL9sWvooWsVQvE+G5ek4NGZMBF0TULp9dzvYb8t460Af3
+   vtA9qfnVTthquipw/yXGDN8V3RjB/17LWRAOREighrUoVxsxRarDnRbL3
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="335164814"
+X-IronPort-AV: E=Sophos;i="5.98,262,1673942400"; 
+   d="scan'208";a="335164814"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2023 04:43:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="803253335"
+X-IronPort-AV: E=Sophos;i="5.98,262,1673942400"; 
+   d="scan'208";a="803253335"
+Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2023 04:43:51 -0700
+Date:   Wed, 15 Mar 2023 12:43:42 +0100
+From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+To:     Durai Manickam KR <durai.manickamkr@microchip.com>
+Cc:     Hari.PrasathGE@microchip.com,
+        balamanikandan.gunasundar@microchip.com,
+        manikandan.m@microchip.com, varshini.rajendran@microchip.com,
+        dharma.b@microchip.com, nayabbasha.sayed@microchip.com,
+        balakrishnan.s@microchip.com, claudiu.beznea@microchip.com,
+        cristian.birsan@microchip.com, nicolas.ferre@microchip.com,
+        davem@davemloft.net, linux-kernel@vger.kernel.org,
+        edumazet@google.com, kuba@kernel.org, richardcochran@gmail.com,
+        linux@armlinux.org.uk, palmer@dabbelt.com,
+        paul.walmsley@sifive.com, netdev@vger.kernel.org,
+        linux-riscv@lists.infradead.org, pabeni@redhat.com
+Subject: Re: [PATCH 0/2] Add PTP support for sama7g5
+Message-ID: <ZBGvbuue5e3vR8Fs@localhost.localdomain>
+References: <20230315095053.53969-1-durai.manickamkr@microchip.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="nomegujo7vfexmwg"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230315104914.qpwhnv6drjwau5jr@blmsp>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230315095053.53969-1-durai.manickamkr@microchip.com>
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Mar 15, 2023 at 03:20:51PM +0530, Durai Manickam KR wrote:
+> This patch series is intended to add PTP capability to the GEM and 
+> EMAC for sama7g5.
+> 
+> Durai Manickam KR (2):
+>   net: macb: Add PTP support to GEM for sama7g5
+>   net: macb: Add PTP support to EMAC for sama7g5
+> 
+>  drivers/net/ethernet/cadence/macb_main.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 
---nomegujo7vfexmwg
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Side question, doesn't it need any software implementation? Or it is
+already implemented, or it is only hw caps?
 
-On 15.03.2023 11:49:14, Markus Schneider-Pargmann wrote:
-> Hi Krzysztof,
->=20
-> On Tue, Mar 14, 2023 at 09:01:10PM +0100, Krzysztof Kozlowski wrote:
-> > On 14/03/2023 16:11, Markus Schneider-Pargmann wrote:
-> > > These two new chips do not have state or wake pins.
-> > >=20
-> > > Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> > > ---
-> > >  .../devicetree/bindings/net/can/tcan4x5x.txt          | 11 ++++++++-=
---
-> > >  1 file changed, 8 insertions(+), 3 deletions(-)
-> > >=20
-> > > diff --git a/Documentation/devicetree/bindings/net/can/tcan4x5x.txt b=
-/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
-> > > index e3501bfa22e9..38a2b5369b44 100644
-> > > --- a/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
-> > > +++ b/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
-> > > @@ -4,7 +4,10 @@ Texas Instruments TCAN4x5x CAN Controller
-> > >  This file provides device node information for the TCAN4x5x interfac=
-e contains.
-> > > =20
-> > >  Required properties:
-> > > -	- compatible: "ti,tcan4x5x"
-> > > +	- compatible:
-> > > +		"ti,tcan4x5x" or
-> > > +		"ti,tcan4552" or
-> > > +		"ti,tcan4553"
-> >=20
-> > Awesome, they nicely fit into wildcard... Would be useful to deprecate
-> > the wildcard at some point and switch to proper compatibles in such
-> > case, because now they became confusing.
-> >=20
-> > Anyway:
-> >=20
-> > Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->=20
-> Thank you. Indeed the old generic name could be replaced, unfortunately
-> I don't have a list of devices that this generic wildcard matches.
-
-The mcp251xfd driver supports "microchip,mcp2517fd",
-"microchip,mcp2518fd", "microchip,mcp251863", and "microchip,mcp251xfd".
-It always does auto detection and throws a warning if the found chip is
-not consistent with the firmware (DT, ACPI).
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---nomegujo7vfexmwg
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmQRq/8ACgkQvlAcSiqK
-BOhz7Af+Ijf/SfgPsTnfv7fBmVGkSnNMyFFNZrx4qRYBaKVOQLO/yM1cbTi9nvpB
-+8Jb+Dar80wua5kHmFcb/Uipad3/MF/JtA8TPKB1CAagvEWgw2MIAKyzTVGJzPxR
-sSIlDOINkWgmmhEvN0C+jNT51CgvO/6+0j4ZidDf3lwBgyofKAK6lSD+y5UupLYJ
-/eKt/oQFhlgDMVeatstmBGh0eMO2XV+T2Q5t/MVdqa/teoUrIfp3i98MPLpfB1uh
-nPXml9k3s5LDhFGnq31TrCBfcQ8n/S0QnphX+dyIKIuHBoa9YhbYgLXZrCQEm+fu
-HwpLvTBfsA9deh1Xx9r4avsdU5zz0Q==
-=AotW
------END PGP SIGNATURE-----
-
---nomegujo7vfexmwg--
+> -- 
+> 2.25.1
+> 
