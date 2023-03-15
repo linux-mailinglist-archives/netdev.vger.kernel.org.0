@@ -2,50 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE40C6BB64D
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 15:39:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2F096BB655
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 15:41:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231949AbjCOOjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 10:39:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40592 "EHLO
+        id S231976AbjCOOl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 10:41:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232109AbjCOOiw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 10:38:52 -0400
-Received: from out-60.mta1.migadu.com (out-60.mta1.migadu.com [IPv6:2001:41d0:203:375::3c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2CE926CDE
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 07:38:43 -0700 (PDT)
-Message-ID: <7e78cd84-17ef-1830-4084-a360d991a619@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1678891121;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kWIUAUJZgy7X7RN2OB4YX2fRz0oa6ia+akNcKgq97SU=;
-        b=CF/czAf+GirQ0QtHtGEgJn0XCuw3EDlu3WHJxVGTLcjsyQiAUtQgobJLPYWcbTjAcmfvwD
-        bhOfLk1istCGC11/SXhGmoKdLv5UOxxOZ6bdk1kzFCuq7rfSWxJHJ9ADks/e4QQK0Y3u8D
-        B13d0KH7AeTtR/k4d3+6tdMdCrwhP/s=
-Date:   Wed, 15 Mar 2023 14:38:37 +0000
+        with ESMTP id S230205AbjCOOl2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 10:41:28 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 298A36A48;
+        Wed, 15 Mar 2023 07:41:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=W2BBs960owSPDTyfR6THQhGliS/0eEum7n0/NRvPXVA=; b=VajmKnChbeV7YPUA20i4UIUZuv
+        bOKSBPXgLsNTHrxdnNSNVXrnTr0u15dgZ2kuVhUbc//dYIyG7d4FFG/J9kh/IoqTxER6vMLi9rQgX
+        o4Vp1Uf4VuQ4CXMQNbkJ2WNJdcAC6rbGaVpFvI9wNLZUm/Ms4DB3aAueQPsMw3JEzx14=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pcSJZ-007P84-NX; Wed, 15 Mar 2023 15:41:17 +0100
+Date:   Wed, 15 Mar 2023 15:41:17 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Klaus Kudielka <klaus.kudielka@gmail.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH] net: dsa: mv88e6xxx: don't dispose of Global2 IRQ
+ mappings from mdiobus code
+Message-ID: <e240e5d2-954d-435f-a36a-c6ef831fa197@lunn.ch>
+References: <20230314182659.63686-1-klaus.kudielka@gmail.com>
+ <20230314182659.63686-2-klaus.kudielka@gmail.com>
+ <ed91b3db532bfe7131635990acddd82d0a276640.camel@gmail.com>
+ <20230314200100.7r2pmj3pb4aew7gp@skbuf>
+ <e3ae62c36cfe49abc5371009ba6c29cddc2f2ebe.camel@gmail.com>
 MIME-Version: 1.0
-Subject: Re: ioctl SIOCSHWTSTAMP failed on a vlan interface within non-default
- network namespace
-Content-Language: en-US
-To:     Yan Jiang <Yan.Jiang@viavisolutions.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <BYAPR18MB240835B708FA3A5B489656738DBF9@BYAPR18MB2408.namprd18.prod.outlook.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Vadim Fedorenko <vadim.fedorenko@linux.dev>
-In-Reply-To: <BYAPR18MB240835B708FA3A5B489656738DBF9@BYAPR18MB2408.namprd18.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e3ae62c36cfe49abc5371009ba6c29cddc2f2ebe.camel@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,99 +58,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15/03/2023 05:35, Yan Jiang wrote:
-> Hi all,
+On Wed, Mar 15, 2023 at 07:07:57AM +0100, Klaus Kudielka wrote:
+> On Tue, 2023-03-14 at 22:01 +0200, Vladimir Oltean wrote:
+> > 
+> > I'm a bit puzzled as to how you managed to get just this one patch to
+> > have a different subject-prefix from the others?
 > 
-> I'd like to report an issue, which I suspect it's related to kernel network namespace handling.
-> It's my first report so please bear with me if I missed something. Feel free to ask for more information please.
+> A long story, don't laugh at me.
 > 
-> What's the issue:
-> Ptp4l works perfectly on a VLAN interface in default network namespace. But it doesn't work if the VLAN interface is in non-default network namespace: ioctl(fd, SIOCSHWTSTAMP, &ifreq) failed due to error "Operation not supported".
-> "ethtool -T" shows that the VLAN interface has all required capabilities. And ptp4l works fine on the base interface in that network namespace.
+> I imported your patch with "git am", but I imported the "mbox" of the
+> complete message. That was the start of the disaster.
 
+What i found useful is
 
-That was explicitly forbidden in
-https://lore.kernel.org/netdev/20190509065507.23991-1-liuhangbin@gmail.com/
+b4 am [msgid]
 
+It gives you an mbox file containing just patches, which should then
+cleanly git am.
 
-> How to reproduce this issue:
-> # create a new network namespace for test purpose
-> root@viavi-PowerEdge-R740:~# ip netns add mytest
-> 
-> # move eno4 into the namespace
-> root@viavi-PowerEdge-R740:~# ip link set eno4 netns mytest
-> 
-> # add vlan interface and turn interfaces up
-> root@viavi-PowerEdge-R740:~# ip netns exec mytest ifconfig eno4 up
-> root@viavi-PowerEdge-R740:~# ip netns exec mytest ip link add link eno4 name eno4.4000 type vlan id 4000
-> root@viavi-PowerEdge-R740:~# ip netns exec mytest ifconfig eno4.4000 up
-> 
-> # ptp4l runs ok on eno4
-> root@viavi-PowerEdge-R740:~# ip netns exec mytest ptp4l -2 -m -i eno4
-> ptp4l[1670814.457]: selected /dev/ptp1 as PTP clock
-> ptp4l[1670814.491]: port 1: INITIALIZING to LISTENING on INIT_COMPLETE
-> ptp4l[1670814.492]: port 0: INITIALIZING to LISTENING on INIT_COMPLETE
-> 
-> #ptp4l cannot run on eno4.4000
-> root@viavi-PowerEdge-R740:~# ip netns exec mytest ptp4l -2 -m -i eno4.4000
-> ptp4l[1670819.969]: selected /dev/ptp1 as PTP clock
-> ptp4l[1670820.003]: driver rejected most general HWTSTAMP filter
-> ptp4l[1670820.003]: ioctl SIOCSHWTSTAMP failed: Operation not supported
-> ptp4l[1670820.039]: port 1: INITIALIZING to FAULTY on FAULT_DETECTED (FT_UNSPECIFIED)
-> ptp4l[1670820.039]: port 0: INITIALIZING to LISTENING on INIT_COMPLETE
-> 
-> #ethtool -T shows that eno4.4000 has same capability as eno4:
-> root@viavi-PowerEdge-R740:~# ip netns exec mytest ethtool -T eno4.4000
-> Time stamping parameters for eno4.4000:
-> Capabilities:
->          hardware-transmit     (SOF_TIMESTAMPING_TX_HARDWARE)
->          software-transmit     (SOF_TIMESTAMPING_TX_SOFTWARE)
->          hardware-receive      (SOF_TIMESTAMPING_RX_HARDWARE)
->          software-receive      (SOF_TIMESTAMPING_RX_SOFTWARE)
->          software-system-clock (SOF_TIMESTAMPING_SOFTWARE)
->          hardware-raw-clock    (SOF_TIMESTAMPING_RAW_HARDWARE)
-> PTP Hardware Clock: 1
-> Hardware Transmit Timestamp Modes:
->          off                   (HWTSTAMP_TX_OFF)
->          on                    (HWTSTAMP_TX_ON)
-> Hardware Receive Filter Modes:
->          none                  (HWTSTAMP_FILTER_NONE)
->          ptpv1-l4-event        (HWTSTAMP_FILTER_PTP_V1_L4_EVENT)
->          ptpv2-l4-event        (HWTSTAMP_FILTER_PTP_V2_L4_EVENT)
->          ptpv2-l2-event        (HWTSTAMP_FILTER_PTP_V2_L2_EVENT)
-> 
-> #OS/kernel version
-> root@viavi-PowerEdge-R740:~# uname -a
-> Linux viavi-PowerEdge-R740 5.15.0-60-generic #66~20.04.1-Ubuntu SMP Wed Jan 25 09:41:30 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
-> 
-> #driver info:
-> root@viavi-PowerEdge-R740:~# ip netns exec mytest ethtool -i eno4
-> driver: tg3
-> version: 5.15.0-60-generic
-> firmware-version: FFV21.40.21 bc 5720-v1.39
-> expansion-rom-version:
-> bus-info: 0000:01:00.1
-> supports-statistics: yes
-> supports-test: yes
-> supports-eeprom-access: yes
-> supports-register-dump: yes
-> supports-priv-flags: no
-> root@viavi-PowerEdge-R740:~# ip netns exec mytest ethtool -i eno4.4000
-> driver: 802.1Q VLAN Support
-> version: 1.8
-> firmware-version: N/A
-> expansion-rom-version:
-> bus-info:
-> supports-statistics: no
-> supports-test: no
-> supports-eeprom-access: no
-> supports-register-dump: no
-> supports-priv-flags: no
-> 
-> #(PS: can reproduce same issue with a Mellanox NIC, so I guess it's not caused by a specific NIC model)
-> 
-> Could you kindly take a look at this and see if this is a kernel issue? This blocks linuxptp running in cloud environment, if VLAN is required.
-> Hope to get feedback from you soon, thanks!
-> 
-> /Yan
-
+	Andrew
