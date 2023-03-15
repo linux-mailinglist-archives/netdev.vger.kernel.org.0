@@ -2,49 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 483CF6BA70A
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 06:26:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BF8D6BA720
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 06:32:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231735AbjCOF0q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 01:26:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39664 "EHLO
+        id S231238AbjCOFc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 01:32:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231459AbjCOF01 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 01:26:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4377B1B2FD;
-        Tue, 14 Mar 2023 22:25:15 -0700 (PDT)
+        with ESMTP id S229818AbjCOFcx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 01:32:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 769052CC75;
+        Tue, 14 Mar 2023 22:32:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7FB1B81BFA;
-        Wed, 15 Mar 2023 05:16:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19369C4339C;
-        Wed, 15 Mar 2023 05:16:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5E7461AA3;
+        Wed, 15 Mar 2023 05:22:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 845ADC433EF;
+        Wed, 15 Mar 2023 05:22:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678857394;
-        bh=Bhf7zj25Ro7zhgY0ji25HnJhOcSay0ch2FcQZvqYmmI=;
+        s=k20201202; t=1678857766;
+        bh=Ho9vgqp2jyAVZx01d08QVZd9aMjXRu8aXf2qqWMyHgs=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KtEnVijbBHGKL9D6jjLyq/rn2fDGj//tM1kuf97hh6yAIgvsjb2Ey6O0q+CA8pwrA
-         /feO4+WkpJkdQCdYb94b6lxQaEJcSgBIop0dxFguAVePkpaes7fcD9WEKltEkMS86y
-         BHDp9BVdb3UJZbrw860qMJwc99zC2yICry68b7SlGRdp6dgSfQrqHgHijJJAa/hJ+6
-         FH/uQgEoHPrz6HFPI6EphsIm+IWD8h+FMVe9ZCBm+mI10ltYpuutPIsucDJ17lNY3p
-         cv5p+BEGmdHkvMyIxpxjsT7J99HqFkmqeGOGEmVYBXZppWCwAgRXWSvhxcCHyzhUi2
-         h1VjA+a3rtTlw==
-Date:   Tue, 14 Mar 2023 22:16:33 -0700
+        b=gfrqScDnSV2ajr9IDlCMnWcUlVQHuP91pjpKeNxRDwTGdOwpxeTJnBqI6FJDaIkU5
+         o8/WEUNdy8LQLBL65yVx2d9D7pZa+daLJlUWqMrweJG73zgQcrbJpxEnxzgHbHkttg
+         sNK/FSN/kLDomRmCDRm0qI0Vg6lsQYT6ojzMXOzGCa+DxbreIBMtY7K2lGY0ERPvpS
+         yYuwyo1Dk20SqB1Co+RFoIL5wpuFm81JEBx9OcfaTN0mTWt9Zx2+ThJIJMJLW0l0Ey
+         IC8gBqXtrqQ/xIERwXMCCNdkQQsC0ucHBwybZz4BkEjnHcychgzg/dIWTY42Dbf888
+         bW0a68bthbUmQ==
+Date:   Tue, 14 Mar 2023 22:22:44 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
-Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        zbr@ioremap.net, brauner@kernel.org, johannes@sipsolutions.net,
-        ecree.xilinx@gmail.com, leon@kernel.org, keescook@chromium.org,
-        socketcan@hartkopp.net, petrm@nvidia.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 2/5] connector/cn_proc: Add filtering to fix some
- bugs
-Message-ID: <20230314221633.1e6c9bef@kernel.org>
-In-Reply-To: <20230315021850.2788946-3-anjali.k.kulkarni@oracle.com>
-References: <20230315021850.2788946-1-anjali.k.kulkarni@oracle.com>
-        <20230315021850.2788946-3-anjali.k.kulkarni@oracle.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-wpan@vger.kernel.org
+Subject: Re: [PATCH 01/12] net: dsa: lantiq_gswip: mark OF related data as
+ maybe unused
+Message-ID: <20230314222244.4325bb3f@kernel.org>
+In-Reply-To: <20230312105729.bnxn4a6mf2gav7ym@skbuf>
+References: <20230311173303.262618-1-krzysztof.kozlowski@linaro.org>
+        <20230311181434.lycxr5h2f6xcmwdj@skbuf>
+        <d9b197c8-56fe-b59d-5fca-bc863ac1e7ed@linaro.org>
+        <20230312105729.bnxn4a6mf2gav7ym@skbuf>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -57,36 +72,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 14 Mar 2023 19:18:47 -0700 Anjali Kulkarni wrote:
-> diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-> index 003c7e6ec9be..ad8ec18152cd 100644
-> --- a/net/netlink/af_netlink.c
-> +++ b/net/netlink/af_netlink.c
-> @@ -63,6 +63,7 @@
->  #include <linux/net_namespace.h>
->  #include <linux/nospec.h>
->  #include <linux/btf_ids.h>
-> +#include <linux/connector.h>
+On Sun, 12 Mar 2023 12:57:29 +0200 Vladimir Oltean wrote:
+> > Sorry, I don't follow. I don't touch that wrappers, just fix errors
+> > related to OF device ID tables, although in few cases it is indeed
+> > related to of_match_node.  
+> 
+> I'm saying this because in lantiq_gswip.c, xway_gphy_match is accessed
+> through of_match_node(). If the shim definition for of_match_node() was
+> different, the variable wouldn't have been unused with CONFIG_OF=n.
+> I guess it's worth considering changing that wrapper instead of adding
+> the __maybe_unused.
 
-Not needed any more.
-
->  	/* must not acquire netlink_table_lock in any way again before unbind
->  	 * and notifying genetlink is done as otherwise it might deadlock
->  	 */
-> -	if (nlk->netlink_unbind) {
-> +	if (nlk->netlink_unbind && nlk->groups) {
-
-Why?
-
->  		int i;
-> -
->  		for (i = 0; i < nlk->ngroups; i++)
->  			if (test_bit(i, nlk->groups))
->  				nlk->netlink_unbind(sock_net(sk), i + 1);
-
-Please separate the netlink core changes from the connector
-changes.
-
-Please slow down with new versions, we have 300 patches in the queue,
-replying to one version just to notice you posted a new one is
-frustrating. Give reviewers 24h to reply.
+Hi Krzysztof, have you had a chance to check if using an empty static
+inline is enough to silence the compiler? Seems like it could save
+us quite some churn? Or do we want the of_match_node() decorations
+to go away in general?
