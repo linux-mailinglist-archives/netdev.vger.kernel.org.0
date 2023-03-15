@@ -2,108 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 196D76BB7F1
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 16:35:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90D026BB7F6
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 16:35:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232340AbjCOPez (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 11:34:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46148 "EHLO
+        id S232569AbjCOPfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 11:35:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232782AbjCOPew (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 11:34:52 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 275BE367F3
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 08:34:50 -0700 (PDT)
-Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1pcT9G-0003vH-Kw; Wed, 15 Mar 2023 16:34:42 +0100
-Message-ID: <23ced57d-27d5-4faa-70bb-9732a357a3cc@pengutronix.de>
-Date:   Wed, 15 Mar 2023 16:34:38 +0100
+        with ESMTP id S232830AbjCOPfW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 11:35:22 -0400
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 920CF38648;
+        Wed, 15 Mar 2023 08:35:21 -0700 (PDT)
+Received: by mail-qv1-xf2e.google.com with SMTP id mg14so1153578qvb.12;
+        Wed, 15 Mar 2023 08:35:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678894520;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=YcFqNcNOQFyK8M0Bg6u2CF1KIEClFjxJotNtkabpSfQ=;
+        b=NfT+tfWo4zYwBmLLayk/HYeliqkWhZoWyReFNr9whV1D5k4aDJ6poZn4PyuWXrSgFT
+         pATmqe9w5uy7G9Wzy/VNF4aEXvfvDILvMq4CF8ox+CMYtX0qhpLyya86cfr5lHw3mIhe
+         kj1EXeUipXhesJyrQzDuk9xLP8lKpMhucdCUrZlyYwMvcJmL67xhOItxm0qSYhplDASQ
+         m1R0HTYg3XqUKy9Q8YZERq2l8fuoYAtN4IcATAd068RKlPg+ivEh/jMoMloSMmvkrNM5
+         hwEiAV4PJjToeext8xyDmSnxca0jZconG+FbG67QLSbpCk9SCTfrIRePTCIVcdIIzCbp
+         rUzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678894520;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=YcFqNcNOQFyK8M0Bg6u2CF1KIEClFjxJotNtkabpSfQ=;
+        b=tAzBjabnm8BSgOQydJSZVUQ0tw28IuP1ciyLKkX2/P/hHyEEdFpqNTSUBacmOhsulf
+         GKW3Ritj3D+lq17Txgdat2T+lKeHTnObZxMm/KyMpP076FniJQsNm8EmVjKkIBHwfE2R
+         GsdLetwypSbMWNRHDsbO/z3tm2ExJj8+2P6JMDng3Y9iZEAOFViSw8lZlLIl/KdD9AVr
+         VB1ZE7kJ6+2chGJFRmjFqx42LI7F2vJFlO8edaM3OXk18WPUAMbmhw28uFPdfBzDBs1i
+         NPI9/fb2rdpwtLNigbESMXyH5CFIG/k1gvf+HlSEIFgcms0kodWaxGk9vKTxgdMIMtdS
+         5usA==
+X-Gm-Message-State: AO0yUKUlR3AHVbnBZstmYFVIQo+Bid3ru4SjYqhHPwkNG4OMwm1npjN7
+        F1mKPPp7zY3edc89M5BEYQ0=
+X-Google-Smtp-Source: AK7set9AF+gTWCSQ/CTM6RbI8c7LsuTudICO9uEFswpUE9N/v8w+JwXI9EPJXJkasKYBYD8m2EoOVQ==
+X-Received: by 2002:a05:6214:d89:b0:56e:ac97:85da with SMTP id e9-20020a0562140d8900b0056eac9785damr25868272qve.30.1678894520675;
+        Wed, 15 Mar 2023 08:35:20 -0700 (PDT)
+Received: from [192.168.1.201] (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
+        by smtp.gmail.com with ESMTPSA id t9-20020a37ea09000000b0074357fa9e15sm3925085qkj.42.2023.03.15.08.35.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Mar 2023 08:35:20 -0700 (PDT)
+Message-ID: <a5eea573-2418-d4dd-94b7-72bda4978666@gmail.com>
+Date:   Wed, 15 Mar 2023 11:35:19 -0400
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.2
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-Subject: Re: [PATCH net 1/2] net: dsa: realtek: fix out-of-bounds access
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net-next v3 1/9] net: sunhme: Just restart autonegotiation
+ if we can't bring the link up
+Content-Language: en-US
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <20230315130917.3633491-1-a.fatoum@pengutronix.de>
- <CACRpkdbowrfYZpNKA32S8GT=8x_h+ZW4gd2Kj6FZkP1SZmDEPw@mail.gmail.com>
-Content-Language: en-US
-In-Reply-To: <CACRpkdbowrfYZpNKA32S8GT=8x_h+ZW4gd2Kj6FZkP1SZmDEPw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20230314003613.3874089-1-seanga2@gmail.com>
+ <20230314003613.3874089-2-seanga2@gmail.com> <ZBF/wr8HUg49gWZK@corigine.com>
+From:   Sean Anderson <seanga2@gmail.com>
+In-Reply-To: <ZBF/wr8HUg49gWZK@corigine.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Linus,
-
-On 15.03.23 14:15, Linus Walleij wrote:
-> On Wed, Mar 15, 2023 at 2:09 PM Ahmad Fatoum <a.fatoum@pengutronix.de> wrote:
-> 
->> The probe function sets priv->chip_data to (void *)priv + sizeof(*priv)
->> with the expectation that priv has enough trailing space.
+On 3/15/23 04:20, Simon Horman wrote:
+> On Mon, Mar 13, 2023 at 08:36:05PM -0400, Sean Anderson wrote:
+>> If we've tried regular autonegotiation and forcing the link mode, just
+>> restart autonegotiation instead of reinitializing the whole NIC.
 >>
->> However, only realtek-smi actually allocated this chip_data space.
->> Do likewise in realtek-mdio to fix out-of-bounds accesses.
->>
->> Fixes: aac94001067d ("net: dsa: realtek: add new mdio interface for drivers")
->> Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+>> Signed-off-by: Sean Anderson <seanga2@gmail.com>
 > 
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-
-Thanks for the review.
- 
-> That this worked for so long is kind of scary, and the reason why we run Kasan
-> over so much code, I don't know if Kasan would have found this one.
-
-It still worked. I looked into it some more and for some reason, struct realtek_priv
-has a char buf[4096] member that's unused. I assume it caused kmalloc to return a 8K
-slab, where the out-of-bound writes didn't overwrite anything of value. That buffer
-ought to be removed, but that's for net-next.
-
-I just checked with KASAN and it does detect the OOB on ARM64. I first noticed the
-bug on barebox though, which has a near verbatim port of the Linux driver, but a
-TLSF allocator, which fits allocations more tightly, hence it crashes not long
-after driver probe unlike Linux.
-
-> Rewriting the whole world in Rust will fix this problem, but it will
-> take a while...
-
-^^'.
-
-Cheers,
-Ahmad
-
-
-
+> Hi Sean,
 > 
-> Yours,
-> Linus Walleij
+> This patch looks fine to me, as do patches 3 - 4, which is as far as I have
+> got with my review.
 > 
+> I do, however, have a general question regarding most of the patches in this
+> series: to what extent have they been tested on HW?
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+I have tested them with some PCI cards, mostly with the other end autonegotiating
+100M. This series doesn't really touch the phy state machines, so I think it is
+fine to just make sure the link comes up (and things work after bringing the
+interface down and up).
 
+> And my follow-up question is: to what extent should we consider removing
+> support for hardware that isn't being tested and therefore has/will likely
+> have become broken break at some point? Quattro, the subject of a latter
+> patch in this series, seems to be a case in point.
+
+Well, I ordered a quattro card (this hardware is quite cheap on ebay) so
+hopefully I can test that. The real question is whether there's anyone using this
+on sparc. I tried CCing some sparc users mailing lists in the cover letter, but no
+luck so far.
+
+--Sean
