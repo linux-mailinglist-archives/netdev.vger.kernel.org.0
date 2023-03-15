@@ -2,210 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B85C6BAF19
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 12:20:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D25826BAF31
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 12:26:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231608AbjCOLUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 07:20:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35746 "EHLO
+        id S231428AbjCOL03 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 07:26:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231613AbjCOLUb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 07:20:31 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD5615167
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 04:20:02 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id by8so19033957ljb.7
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 04:20:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112; t=1678879195;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=pXQWN74HCU9Dmrt/5yZK3bP0Ur89GICfyK+cwzWVwF8=;
-        b=E1o037GmRAccOukldze0HdzPNNRd6ihn7YdqYDuo/qN1+lA97J61MUf16FM8Ip6aKq
-         3CuGep0van2KhAmDhV1qKtY/eM1j3uh9UCT1HW8FPcM+pm13TNUgo4iKabt9N1lvhEBF
-         Obf6nERlIOzGILEnMasvCiWUQJahWxmBa9RPWy0M7jlTihaBsAZQhQl0Ks2TMJUKyaQG
-         GuW2B9VMO56FRn4mHPUo6G4vowVefgh54exv+JpRB47xMnMBLRYu4eF0L8RajBbRTZsx
-         jktKgohKVDuF6V86fnATuc21rbh62ZhgfE2UFibst0LqIOSzkGQo1Qk+NxJsQQEtORjS
-         1Zrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678879195;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=pXQWN74HCU9Dmrt/5yZK3bP0Ur89GICfyK+cwzWVwF8=;
-        b=tsGGounrga+SkkBrIkNRQATAPY1Avjf+AggKqRtXVlEBjto/LwhOorCeOyqfRpFEjS
-         25EBe77BtfnnFLVksI7bDONozHfkYwphUhywEPjBr+gF9R5Oscg1Vej5jnF8PJf8xmvm
-         npwHPLDvc3szubrtbeF2KQcbe4bgwvIFY2mpPU81P2bQANOA4BWB/GaT6thnFK/uP7ca
-         UhNIzV9RPyb8tQcRvwFOQZdR9v5bueoOs9Hfdi5pY4VTuQZeVpmUaHJAhX92Li3Xdpwh
-         OJ84NHrsVkzV9Tda+CaWLu4Ui0Natl/vpnJHyXwukimi8XJVZLPeY5A/2akRAWqcxvGd
-         FLRg==
-X-Gm-Message-State: AO0yUKV6xuVAfjLUO+OsBQk059ZHchQskTkax0598f3JO3AEi03w1OYq
-        42nLKlcxvZk49iDB0Uq4SM2uAXj2Rh2Gt9wjU/iOSA==
-X-Google-Smtp-Source: AK7set8eaSc9x48dtXYRgnmi6HzBAyzznIieMbC7BPupT7ItcPJHXElLQjREjGlorvxtbvD4Mew2pA==
-X-Received: by 2002:a2e:bea0:0:b0:295:9d9c:24aa with SMTP id a32-20020a2ebea0000000b002959d9c24aamr952107ljr.11.1678879195089;
-        Wed, 15 Mar 2023 04:19:55 -0700 (PDT)
-Received: from kofa.. ([78.128.78.220])
-        by smtp.gmail.com with ESMTPSA id 20-20020a2e1654000000b00295a8d1ecc7sm829218ljw.18.2023.03.15.04.19.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Mar 2023 04:19:54 -0700 (PDT)
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     netdev@vger.kernel.org
-Cc:     monis@voltaire.com, syoshida@redhat.com, j.vosburgh@gmail.com,
-        andy@greyhouse.net, kuba@kernel.org, davem@davemloft.net,
-        pabeni@redhat.com, edumazet@google.com,
-        syzbot+9dfc3f3348729cc82277@syzkaller.appspotmail.com,
-        michal.kubiak@intel.com, jtoppins@redhat.com,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Jay Vosburgh <jay.vosburgh@canonical.com>
-Subject: [PATCH net v3 3/3] selftests: bonding: add tests for ether type changes
-Date:   Wed, 15 Mar 2023 13:18:42 +0200
-Message-Id: <20230315111842.1589296-4-razor@blackwall.org>
-X-Mailer: git-send-email 2.39.1
-In-Reply-To: <20230315111842.1589296-1-razor@blackwall.org>
-References: <20230315111842.1589296-1-razor@blackwall.org>
+        with ESMTP id S230491AbjCOL0L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 07:26:11 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7113910412
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 04:25:45 -0700 (PDT)
+Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1pcPFq-0007N7-0Q; Wed, 15 Mar 2023 12:25:14 +0100
+Received: from pengutronix.de (unknown [IPv6:2a00:20:3059:9eeb:8134:2053:cf60:de3a])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 1289F1939D4;
+        Wed, 15 Mar 2023 11:25:09 +0000 (UTC)
+Date:   Wed, 15 Mar 2023 12:25:08 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Markus Schneider-Pargmann <msp@baylibre.com>,
+        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
+        Simon Horman <simon.horman@corigine.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/5] dt-bindings: can: tcan4x5x: Add tcan4552 and
+ tcan4553 variants
+Message-ID: <20230315112508.6q52rekhmk66uiwj@pengutronix.de>
+References: <20230314151201.2317134-1-msp@baylibre.com>
+ <20230314151201.2317134-2-msp@baylibre.com>
+ <680053bc-66fb-729f-ecdc-2f5fe511cecd@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="xsnxip2xjomqa2cp"
+Content-Disposition: inline
+In-Reply-To: <680053bc-66fb-729f-ecdc-2f5fe511cecd@linaro.org>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add new network selftests for the bonding device which exercise the ether
-type changing call paths. They also test for the recent syzbot bug[1] which
-causes a warning and results in wrong device flags (IFF_SLAVE missing).
-The test adds three bond devices and a nlmon device, enslaves one of the
-bond devices to the other and then uses the nlmon device for successful
-and unsuccesful enslaves both of which change the bond ether type. Thus
-we can test for both MASTER and SLAVE flags at the same time.
 
-If the flags are properly restored we get:
-TEST: Change ether type of an enslaved bond device with unsuccessful enslave   [ OK ]
-TEST: Change ether type of an enslaved bond device with successful enslave   [ OK ]
+--xsnxip2xjomqa2cp
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-[1] https://syzkaller.appspot.com/bug?id=391c7b1f6522182899efba27d891f1743e8eb3ef
+On 14.03.2023 21:01:10, Krzysztof Kozlowski wrote:
+> On 14/03/2023 16:11, Markus Schneider-Pargmann wrote:
+> > These two new chips do not have state or wake pins.
+> >=20
+> > Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> > ---
+> >  .../devicetree/bindings/net/can/tcan4x5x.txt          | 11 ++++++++---
+> >  1 file changed, 8 insertions(+), 3 deletions(-)
+> >=20
+> > diff --git a/Documentation/devicetree/bindings/net/can/tcan4x5x.txt b/D=
+ocumentation/devicetree/bindings/net/can/tcan4x5x.txt
+> > index e3501bfa22e9..38a2b5369b44 100644
+> > --- a/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
+> > +++ b/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
+> > @@ -4,7 +4,10 @@ Texas Instruments TCAN4x5x CAN Controller
+> >  This file provides device node information for the TCAN4x5x interface =
+contains.
+> > =20
+> >  Required properties:
+> > -	- compatible: "ti,tcan4x5x"
+> > +	- compatible:
+> > +		"ti,tcan4x5x" or
+> > +		"ti,tcan4552" or
+> > +		"ti,tcan4553"
+>=20
+> Awesome, they nicely fit into wildcard... Would be useful to deprecate
+> the wildcard at some point and switch to proper compatibles in such
+> case, because now they became confusing.
 
-Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
-Reviewed-by: Michal Kubiak <michal.kubiak@intel.com>
-Acked-by: Jonathan Toppins <jtoppins@redhat.com>
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
----
-v3: no changes
+I plead for DT stability!
 
- .../selftests/drivers/net/bonding/Makefile    |  3 +-
- .../net/bonding/bond-eth-type-change.sh       | 85 +++++++++++++++++++
- 2 files changed, 87 insertions(+), 1 deletion(-)
- create mode 100755 tools/testing/selftests/drivers/net/bonding/bond-eth-type-change.sh
+As I understand correctly, the exact version of the chip (4550, 4552, or
+4553) can be detected via the ID2 register.
 
-diff --git a/tools/testing/selftests/drivers/net/bonding/Makefile b/tools/testing/selftests/drivers/net/bonding/Makefile
-index 8e3b786a748f..a39bb2560d9b 100644
---- a/tools/testing/selftests/drivers/net/bonding/Makefile
-+++ b/tools/testing/selftests/drivers/net/bonding/Makefile
-@@ -8,7 +8,8 @@ TEST_PROGS := \
- 	dev_addr_lists.sh \
- 	mode-1-recovery-updelay.sh \
- 	mode-2-recovery-updelay.sh \
--	option_prio.sh
-+	option_prio.sh \
-+	bond-eth-type-change.sh
- 
- TEST_FILES := \
- 	lag_lib.sh \
-diff --git a/tools/testing/selftests/drivers/net/bonding/bond-eth-type-change.sh b/tools/testing/selftests/drivers/net/bonding/bond-eth-type-change.sh
-new file mode 100755
-index 000000000000..5cdd22048ba7
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/bonding/bond-eth-type-change.sh
-@@ -0,0 +1,85 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Test bond device ether type changing
-+#
-+
-+ALL_TESTS="
-+	bond_test_unsuccessful_enslave_type_change
-+	bond_test_successful_enslave_type_change
-+"
-+REQUIRE_MZ=no
-+NUM_NETIFS=0
-+lib_dir=$(dirname "$0")
-+source "$lib_dir"/net_forwarding_lib.sh
-+
-+bond_check_flags()
-+{
-+	local bonddev=$1
-+
-+	ip -d l sh dev "$bonddev" | grep -q "MASTER"
-+	check_err $? "MASTER flag is missing from the bond device"
-+
-+	ip -d l sh dev "$bonddev" | grep -q "SLAVE"
-+	check_err $? "SLAVE flag is missing from the bond device"
-+}
-+
-+# test enslaved bond dev type change from ARPHRD_ETHER and back
-+# this allows us to test both MASTER and SLAVE flags at once
-+bond_test_enslave_type_change()
-+{
-+	local test_success=$1
-+	local devbond0="test-bond0"
-+	local devbond1="test-bond1"
-+	local devbond2="test-bond2"
-+	local nonethdev="test-noneth0"
-+
-+	# create a non-ARPHRD_ETHER device for testing (e.g. nlmon type)
-+	ip link add name "$nonethdev" type nlmon
-+	check_err $? "could not create a non-ARPHRD_ETHER device (nlmon)"
-+	ip link add name "$devbond0" type bond
-+	if [ $test_success -eq 1 ]; then
-+		# we need devbond0 in active-backup mode to successfully enslave nonethdev
-+		ip link set dev "$devbond0" type bond mode active-backup
-+		check_err $? "could not change bond mode to active-backup"
-+	fi
-+	ip link add name "$devbond1" type bond
-+	ip link add name "$devbond2" type bond
-+	ip link set dev "$devbond0" master "$devbond1"
-+	check_err $? "could not enslave $devbond0 to $devbond1"
-+	# change bond type to non-ARPHRD_ETHER
-+	ip link set dev "$nonethdev" master "$devbond0" 1>/dev/null 2>/dev/null
-+	ip link set dev "$nonethdev" nomaster 1>/dev/null 2>/dev/null
-+	# restore ARPHRD_ETHER type by enslaving such device
-+	ip link set dev "$devbond2" master "$devbond0"
-+	check_err $? "could not enslave $devbond2 to $devbond0"
-+	ip link set dev "$devbond1" nomaster
-+
-+	bond_check_flags "$devbond0"
-+
-+	# clean up
-+	ip link del dev "$devbond0"
-+	ip link del dev "$devbond1"
-+	ip link del dev "$devbond2"
-+	ip link del dev "$nonethdev"
-+}
-+
-+bond_test_unsuccessful_enslave_type_change()
-+{
-+	RET=0
-+
-+	bond_test_enslave_type_change 0
-+	log_test "Change ether type of an enslaved bond device with unsuccessful enslave"
-+}
-+
-+bond_test_successful_enslave_type_change()
-+{
-+	RET=0
-+
-+	bond_test_enslave_type_change 1
-+	log_test "Change ether type of an enslaved bond device with successful enslave"
-+}
-+
-+tests_run
-+
-+exit "$EXIT_STATUS"
--- 
-2.39.1
+regards,
+Marc
 
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--xsnxip2xjomqa2cp
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmQRqxEACgkQvlAcSiqK
+BOghIQf/ZgV3avB8NtfGcBCaSkjb49+xElz9iVMO1MC38MLDBpE3gS6L153KLyDr
+Nti7xNBDeSBDVNLtiRVAsY8YHKktFGoY48Gd7jttdEQT/eZHH9Suw0qLonmzVQvm
+aHUTyNIVaQvP50l1E+SKRqprFfNRBtDT98NswxWCpPO9P+5xWUSrigH84sw+HRl1
+Vc5C14Au9rOXy2hhrbNpD13HIM/IBWy1y3L+0tjPx2xIF+Rre5+59iR9qUxmvb1g
+844EJUwgEEjbTP2jPztjgWAq+PReg9VuB3bv32lXBImsD0kCgFdKt0kqJ/AEWoqA
+eiYFt7TUQwb5g0rJJ0wZNIFffmKs3g==
+=csys
+-----END PGP SIGNATURE-----
+
+--xsnxip2xjomqa2cp--
