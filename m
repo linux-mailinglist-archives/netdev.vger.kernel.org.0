@@ -2,63 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 106236BA8B8
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 08:07:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5E036BA8BC
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 08:07:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229720AbjCOHHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 03:07:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36968 "EHLO
+        id S231142AbjCOHHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 03:07:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230091AbjCOHHK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 03:07:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B5C66D13
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 00:05:45 -0700 (PDT)
+        with ESMTP id S231532AbjCOHHT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 03:07:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAACD67807
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 00:05:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678863937;
+        s=mimecast20190719; t=1678863948;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=wtU3rInEYuF8KYF1vvIl8re+OkAcXBh1WE8QkRT/Oec=;
-        b=Ry5l5oeokAxLu0EcNkWGMa9QxGJmXTqDcxrbRqeq/oj8jbg4A96cP7VrC56vqBoQD6FtEL
-        k+FffltUCynR3ZqvidqwibKU4suj3UfSQFePBTy8/aArQiz6WWsOBsgbhS0Wip3JrgEP5J
-        kdH3tbNRfk2ZBy1ctDz/4owRcYVunfg=
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
- [209.85.161.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=GK7ilReN9bo1OsYk8ynoSHPpp2q3aS8NUzPtNEQ8lp4=;
+        b=IeyFyCQWsUaHtrbkjGiXx5O8gU9suj48uu2H8Fj8FRIlXo6TLzgFQwkqBGc5SF1O98rPPc
+        h+rv06mYNcs6pl5Q4LSi9hnyBlOXIoMwO/9P42+qepK5ab6livUrN9+0EnUQWEML2deh/A
+        AFCsfCid4RR0oNR5Bq79SlCyt3YS+D8=
+Received: from mail-oa1-f69.google.com (mail-oa1-f69.google.com
+ [209.85.160.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-225-BxUSrEl5O-iqpFAxfWVxgQ-1; Wed, 15 Mar 2023 03:05:36 -0400
-X-MC-Unique: BxUSrEl5O-iqpFAxfWVxgQ-1
-Received: by mail-oo1-f70.google.com with SMTP id m14-20020a4add0e000000b0052010e01597so4834621oou.5
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 00:05:36 -0700 (PDT)
+ us-mta-528-cMbP6cU3OA6GVIcbxfhAkQ-1; Wed, 15 Mar 2023 03:05:46 -0400
+X-MC-Unique: cMbP6cU3OA6GVIcbxfhAkQ-1
+Received: by mail-oa1-f69.google.com with SMTP id 586e51a60fabf-177c2fb86b7so4326556fac.20
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 00:05:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678863935;
+        d=1e100.net; s=20210112; t=1678863946;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=wtU3rInEYuF8KYF1vvIl8re+OkAcXBh1WE8QkRT/Oec=;
-        b=XzO98HieFyHcMQjfGqBQnA6e3L/OrAMECxIv3aawXN+R0V+d/knWnqeTflcaViAGeA
-         /PPkJ5/lHvPpM8mDbRscTLOLoD2CP9a7kr+FSN5s2cF9Iwd2aiaNNhxbkCx3uHpIO+ht
-         wyvz/zHFWfUVGWCf0q2Nm+aLLcrTq6KB15Nswv+9teS/LdUDrHxv7qRw2ElNNeGe4TT3
-         u/q145XGkGkugmveReTOTjHVQw5av6mbIel35qAznMI/Dey2pB8oGSWQo+qQlOzCoqEO
-         xwXgEE9mhkl+G7MZ7oNn0uSWBzGxTw4kiXVDVPvzS30ACgTQBOAM60Gc5orO4P+9FD3N
-         uDKQ==
-X-Gm-Message-State: AO0yUKVtgFMKNe88/naBO9GXok5PR9y2KcUaZQFrGOIXJnb17uaCWMJt
-        8zzVboJdtAvYnM0TPhiL7hqDBrvVMY9QaJPsF6O46ZTXpHDArY/jVZPAPDdHBS8YQOjk9/7yV7L
-        krVnJAVS7B2IifPORlPhL6zNqGvMwP65I
-X-Received: by 2002:a05:6870:1341:b0:177:ca1c:2ca8 with SMTP id 1-20020a056870134100b00177ca1c2ca8mr2983766oac.9.1678863935132;
-        Wed, 15 Mar 2023 00:05:35 -0700 (PDT)
-X-Google-Smtp-Source: AK7set8vDBJWX3Qf1j79WE91MJ7iJxU7vYD03PsIBEaB0LoKjJtRcBQcYPj82Fo5tN3mZXZCuDdjmkUdUZ50mMVxcNE=
-X-Received: by 2002:a05:6870:1341:b0:177:ca1c:2ca8 with SMTP id
- 1-20020a056870134100b00177ca1c2ca8mr2983751oac.9.1678863934685; Wed, 15 Mar
- 2023 00:05:34 -0700 (PDT)
+        bh=GK7ilReN9bo1OsYk8ynoSHPpp2q3aS8NUzPtNEQ8lp4=;
+        b=zoM1IsaVsXdL3Ik1iUX0FeyT+EQQG4cO0tWUYGMAWlBbe+riCQBW/utX3EJo+FFy87
+         oNOdbSerUV90ybcSA8bvq+5pkbf9nxiSLm/nygVMhIPouRizHpKhp6PA+jdvLJ9aE4uQ
+         ++Hvom0OtpZN1dONdMKOPjCFFnS2mHz4OiosZ9N522JFHd0QwlsbTAKIk3IbK7Q6QMTR
+         SFXp1d/repEuRU5TuGwmX8YdA/hWlq00NSh6IDk1cxwn3qpscVCefkX/fOGwpko6WIJN
+         mKCuskSp0Q32u0mMb919dBYvAqg2i4WwLJFDfcHjmVV778DKhOkafHyxCKhylMYVF1XG
+         rKag==
+X-Gm-Message-State: AO0yUKVhMqAWZUHvPzpXhMQzPdvqSygSmA0jWHOD/9uBMESzOOdp9/xJ
+        1VDQzIcYQ7uEsDUUuDUSawKhUOQgfSAlUzAkU68UkGo+aQbneeuPgm0jNhJNrxLNeYwC5QVlmts
+        1Gw5JbuP79NfjHFOQ0/6nf0rAc2PmP6JW
+X-Received: by 2002:a05:6871:2315:b0:177:c2fb:8cec with SMTP id sf21-20020a056871231500b00177c2fb8cecmr3695926oab.9.1678863946008;
+        Wed, 15 Mar 2023 00:05:46 -0700 (PDT)
+X-Google-Smtp-Source: AK7set8KcrM8dHG6jtPovHcgo7AZZgpEN+/caS9S8RyxwNkv4Yu3cybwCiwoENy0G0s2/va5dDJGuUWBkn5MNPJrwwM=
+X-Received: by 2002:a05:6871:2315:b0:177:c2fb:8cec with SMTP id
+ sf21-20020a056871231500b00177c2fb8cecmr3695918oab.9.1678863945730; Wed, 15
+ Mar 2023 00:05:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230309013046.23523-1-shannon.nelson@amd.com> <20230309013046.23523-4-shannon.nelson@amd.com>
-In-Reply-To: <20230309013046.23523-4-shannon.nelson@amd.com>
+References: <20230309013046.23523-1-shannon.nelson@amd.com> <20230309013046.23523-5-shannon.nelson@amd.com>
+In-Reply-To: <20230309013046.23523-5-shannon.nelson@amd.com>
 From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 15 Mar 2023 15:05:23 +0800
-Message-ID: <CACGkMEt5Jbsp=+st8aG_0kXD+OSSp+FX9vYE+gTkywp2ZN4LTw@mail.gmail.com>
-Subject: Re: [PATCH RFC v2 virtio 3/7] pds_vdpa: virtio bar setup for vdpa
+Date:   Wed, 15 Mar 2023 15:05:34 +0800
+Message-ID: <CACGkMEtcm+VeTUKw_DF=bHFpYRUyqOkhh+UEfc+ppUp5zuNVkw@mail.gmail.com>
+Subject: Re: [PATCH RFC v2 virtio 4/7] pds_vdpa: add vdpa config client commands
 To:     Shannon Nelson <shannon.nelson@amd.com>
 Cc:     mst@redhat.com, virtualization@lists.linux-foundation.org,
         brett.creeley@amd.com, davem@davemloft.net, netdev@vger.kernel.org,
@@ -78,472 +78,555 @@ X-Mailing-List: netdev@vger.kernel.org
 On Thu, Mar 9, 2023 at 9:31=E2=80=AFAM Shannon Nelson <shannon.nelson@amd.c=
 om> wrote:
 >
-> The PDS vDPA device has a virtio BAR for describing itself, and
-> the pds_vdpa driver needs to access it.  Here we copy liberally
-> from the existing drivers/virtio/virtio_pci_modern_dev.c as it
-> has what we need, but we need to modify it so that it can work
-> with our device id and so we can use our own DMA mask.
+> These are the adminq commands that will be needed for
+> setting up and using the vDPA device.
 
-By passing a pointer to a customized id probing routine to vp_modern_probe(=
-)?
+It's better to explain under which case the driver should use adminq,
+I see some functions overlap with common configuration capability.
+More below.
 
-Thanks
-
-
->
-> We suspect there is room for discussion here about making the
-> existing code a little more flexible, but we thought we'd at
-> least start the discussion here.
 >
 > Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
 > ---
->  drivers/vdpa/pds/Makefile     |   1 +
->  drivers/vdpa/pds/aux_drv.c    |  14 ++
->  drivers/vdpa/pds/aux_drv.h    |   1 +
->  drivers/vdpa/pds/debugfs.c    |   1 +
->  drivers/vdpa/pds/vdpa_dev.c   |   1 +
->  drivers/vdpa/pds/virtio_pci.c | 281 ++++++++++++++++++++++++++++++++++
->  drivers/vdpa/pds/virtio_pci.h |   8 +
->  7 files changed, 307 insertions(+)
->  create mode 100644 drivers/vdpa/pds/virtio_pci.c
->  create mode 100644 drivers/vdpa/pds/virtio_pci.h
+>  drivers/vdpa/pds/Makefile    |   1 +
+>  drivers/vdpa/pds/cmds.c      | 207 +++++++++++++++++++++++++++++++++++
+>  drivers/vdpa/pds/cmds.h      |  16 +++
+>  drivers/vdpa/pds/vdpa_dev.h  |  36 +++++-
+>  include/linux/pds/pds_vdpa.h | 175 +++++++++++++++++++++++++++++
+>  5 files changed, 434 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/vdpa/pds/cmds.c
+>  create mode 100644 drivers/vdpa/pds/cmds.h
 >
 > diff --git a/drivers/vdpa/pds/Makefile b/drivers/vdpa/pds/Makefile
-> index 13b50394ec64..ca2efa8c6eb5 100644
+> index ca2efa8c6eb5..7211eba3d942 100644
 > --- a/drivers/vdpa/pds/Makefile
 > +++ b/drivers/vdpa/pds/Makefile
 > @@ -4,6 +4,7 @@
 >  obj-$(CONFIG_PDS_VDPA) :=3D pds_vdpa.o
 >
 >  pds_vdpa-y :=3D aux_drv.o \
-> +             virtio_pci.o \
+> +             cmds.o \
+>               virtio_pci.o \
 >               vdpa_dev.o
 >
->  pds_vdpa-$(CONFIG_DEBUG_FS) +=3D debugfs.o
-> diff --git a/drivers/vdpa/pds/aux_drv.c b/drivers/vdpa/pds/aux_drv.c
-> index 63e40ae68211..28158d0d98a5 100644
-> --- a/drivers/vdpa/pds/aux_drv.c
-> +++ b/drivers/vdpa/pds/aux_drv.c
-> @@ -4,6 +4,7 @@
->  #include <linux/auxiliary_bus.h>
->  #include <linux/pci.h>
->  #include <linux/vdpa.h>
-> +#include <linux/virtio_pci_modern.h>
->
->  #include <linux/pds/pds_core.h>
->  #include <linux/pds/pds_auxbus.h>
-> @@ -12,6 +13,7 @@
->  #include "aux_drv.h"
->  #include "debugfs.h"
->  #include "vdpa_dev.h"
-> +#include "virtio_pci.h"
->
->  static const struct auxiliary_device_id pds_vdpa_id_table[] =3D {
->         { .name =3D PDS_VDPA_DEV_NAME, },
-> @@ -49,8 +51,19 @@ static int pds_vdpa_probe(struct auxiliary_device *aux=
-_dev,
->         if (err)
->                 goto err_aux_unreg;
->
-> +       /* Find the virtio configuration */
-> +       vdpa_aux->vd_mdev.pci_dev =3D padev->vf->pdev;
-> +       err =3D pds_vdpa_probe_virtio(&vdpa_aux->vd_mdev);
-> +       if (err) {
-> +               dev_err(dev, "Unable to probe for virtio configuration: %=
-pe\n",
-> +                       ERR_PTR(err));
-> +               goto err_free_mgmt_info;
-> +       }
-> +
->         return 0;
->
-> +err_free_mgmt_info:
-> +       pci_free_irq_vectors(padev->vf->pdev);
->  err_aux_unreg:
->         padev->ops->unregister_client(padev);
->  err_free_mem:
-> @@ -65,6 +78,7 @@ static void pds_vdpa_remove(struct auxiliary_device *au=
-x_dev)
->         struct pds_vdpa_aux *vdpa_aux =3D auxiliary_get_drvdata(aux_dev);
->         struct device *dev =3D &aux_dev->dev;
->
-> +       pds_vdpa_remove_virtio(&vdpa_aux->vd_mdev);
->         pci_free_irq_vectors(vdpa_aux->padev->vf->pdev);
->
->         vdpa_aux->padev->ops->unregister_client(vdpa_aux->padev);
-> diff --git a/drivers/vdpa/pds/aux_drv.h b/drivers/vdpa/pds/aux_drv.h
-> index 94ba7abcaa43..87ac3c01c476 100644
-> --- a/drivers/vdpa/pds/aux_drv.h
-> +++ b/drivers/vdpa/pds/aux_drv.h
-> @@ -16,6 +16,7 @@ struct pds_vdpa_aux {
->
->         int vf_id;
->         struct dentry *dentry;
-> +       struct virtio_pci_modern_device vd_mdev;
->
->         int nintrs;
->  };
-> diff --git a/drivers/vdpa/pds/debugfs.c b/drivers/vdpa/pds/debugfs.c
-> index 7b7e90fd6578..aa5e9677fe74 100644
-> --- a/drivers/vdpa/pds/debugfs.c
-> +++ b/drivers/vdpa/pds/debugfs.c
-> @@ -1,6 +1,7 @@
->  // SPDX-License-Identifier: GPL-2.0-only
->  /* Copyright(c) 2023 Advanced Micro Devices, Inc */
->
-> +#include <linux/virtio_pci_modern.h>
->  #include <linux/vdpa.h>
->
->  #include <linux/pds/pds_core.h>
-> diff --git a/drivers/vdpa/pds/vdpa_dev.c b/drivers/vdpa/pds/vdpa_dev.c
-> index bd840688503c..15d623297203 100644
-> --- a/drivers/vdpa/pds/vdpa_dev.c
-> +++ b/drivers/vdpa/pds/vdpa_dev.c
-> @@ -4,6 +4,7 @@
->  #include <linux/pci.h>
->  #include <linux/vdpa.h>
->  #include <uapi/linux/vdpa.h>
-> +#include <linux/virtio_pci_modern.h>
->
->  #include <linux/pds/pds_core.h>
->  #include <linux/pds/pds_adminq.h>
-> diff --git a/drivers/vdpa/pds/virtio_pci.c b/drivers/vdpa/pds/virtio_pci.=
-c
+> diff --git a/drivers/vdpa/pds/cmds.c b/drivers/vdpa/pds/cmds.c
 > new file mode 100644
-> index 000000000000..cb879619dac3
+> index 000000000000..45410739107c
 > --- /dev/null
-> +++ b/drivers/vdpa/pds/virtio_pci.c
-> @@ -0,0 +1,281 @@
-> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +++ b/drivers/vdpa/pds/cmds.c
+> @@ -0,0 +1,207 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/* Copyright(c) 2023 Advanced Micro Devices, Inc */
 > +
-> +/*
-> + * adapted from drivers/virtio/virtio_pci_modern_dev.c, v6.0-rc1
-> + */
-> +
+> +#include <linux/vdpa.h>
 > +#include <linux/virtio_pci_modern.h>
-> +#include <linux/pci.h>
 > +
-> +#include "virtio_pci.h"
+> +#include <linux/pds/pds_core_if.h>
+> +#include <linux/pds/pds_adminq.h>
+> +#include <linux/pds/pds_auxbus.h>
+> +#include <linux/pds/pds_vdpa.h>
 > +
-> +/*
-> + * pds_vdpa_map_capability - map a part of virtio pci capability
-> + * @mdev: the modern virtio-pci device
-> + * @off: offset of the capability
-> + * @minlen: minimal length of the capability
-> + * @align: align requirement
-> + * @start: start from the capability
-> + * @size: map size
-> + * @len: the length that is actually mapped
-> + * @pa: physical address of the capability
-> + *
-> + * Returns the io address of for the part of the capability
-> + */
-> +static void __iomem *
-> +pds_vdpa_map_capability(struct virtio_pci_modern_device *mdev, int off,
-> +                       size_t minlen, u32 align, u32 start, u32 size,
-> +                       size_t *len, resource_size_t *pa)
+> +#include "vdpa_dev.h"
+> +#include "aux_drv.h"
+> +#include "cmds.h"
+> +
+> +int pds_vdpa_init_hw(struct pds_vdpa_device *pdsv)
 > +{
-> +       struct pci_dev *dev =3D mdev->pci_dev;
-> +       u8 bar;
-> +       u32 offset, length;
-> +       void __iomem *p;
+> +       struct pds_auxiliary_dev *padev =3D pdsv->vdpa_aux->padev;
+> +       struct device *dev =3D &padev->aux_dev.dev;
+> +       struct pds_vdpa_init_cmd init_cmd =3D {
+> +               .opcode =3D PDS_VDPA_CMD_INIT,
+> +               .vdpa_index =3D pdsv->vdpa_index,
+> +               .vf_id =3D cpu_to_le16(pdsv->vdpa_aux->vf_id),
+> +               .len =3D cpu_to_le32(sizeof(struct virtio_net_config)),
+> +               .config_pa =3D 0,   /* we use the PCI space, not an alter=
+nate space */
+> +       };
+> +       struct pds_vdpa_comp init_comp =3D {0};
+> +       int err;
 > +
-> +       pci_read_config_byte(dev, off + offsetof(struct virtio_pci_cap,
-> +                                                bar),
-> +                            &bar);
-> +       pci_read_config_dword(dev, off + offsetof(struct virtio_pci_cap, =
-offset),
-> +                             &offset);
-> +       pci_read_config_dword(dev, off + offsetof(struct virtio_pci_cap, =
-length),
-> +                             &length);
-> +
-> +       /* Check if the BAR may have changed since we requested the regio=
-n. */
-> +       if (bar >=3D PCI_STD_NUM_BARS || !(mdev->modern_bars & (1 << bar)=
-)) {
-> +               dev_err(&dev->dev,
-> +                       "virtio_pci: bar unexpectedly changed to %u\n", b=
-ar);
-> +               return NULL;
-> +       }
-> +
-> +       if (length <=3D start) {
-> +               dev_err(&dev->dev,
-> +                       "virtio_pci: bad capability len %u (>%u expected)=
-\n",
-> +                       length, start);
-> +               return NULL;
-> +       }
-> +
-> +       if (length - start < minlen) {
-> +               dev_err(&dev->dev,
-> +                       "virtio_pci: bad capability len %u (>=3D%zu expec=
-ted)\n",
-> +                       length, minlen);
-> +               return NULL;
-> +       }
-> +
-> +       length -=3D start;
-> +
-> +       if (start + offset < offset) {
-> +               dev_err(&dev->dev,
-> +                       "virtio_pci: map wrap-around %u+%u\n",
-> +                       start, offset);
-> +               return NULL;
-> +       }
-> +
-> +       offset +=3D start;
-> +
-> +       if (offset & (align - 1)) {
-> +               dev_err(&dev->dev,
-> +                       "virtio_pci: offset %u not aligned to %u\n",
-> +                       offset, align);
-> +               return NULL;
-> +       }
-> +
-> +       if (length > size)
-> +               length =3D size;
-> +
-> +       if (len)
-> +               *len =3D length;
-> +
-> +       if (minlen + offset < minlen ||
-> +           minlen + offset > pci_resource_len(dev, bar)) {
-> +               dev_err(&dev->dev,
-> +                       "virtio_pci: map virtio %zu@%u out of range on ba=
-r %i length %lu\n",
-> +                       minlen, offset,
-> +                       bar, (unsigned long)pci_resource_len(dev, bar));
-> +               return NULL;
-> +       }
-> +
-> +       p =3D pci_iomap_range(dev, bar, offset, length);
-> +       if (!p)
-> +               dev_err(&dev->dev,
-> +                       "virtio_pci: unable to map virtio %u@%u on bar %i=
-\n",
-> +                       length, offset, bar);
-> +       else if (pa)
-> +               *pa =3D pci_resource_start(dev, bar) + offset;
-> +
-> +       return p;
-> +}
-> +
-> +/**
-> + * virtio_pci_find_capability - walk capabilities to find device info.
-> + * @dev: the pci device
-> + * @cfg_type: the VIRTIO_PCI_CAP_* value we seek
-> + * @ioresource_types: IORESOURCE_MEM and/or IORESOURCE_IO.
-> + * @bars: the bitmask of BARs
-> + *
-> + * Returns offset of the capability, or 0.
-> + */
-> +static inline int virtio_pci_find_capability(struct pci_dev *dev, u8 cfg=
-_type,
-> +                                            u32 ioresource_types, int *b=
-ars)
-> +{
-> +       int pos;
-> +
-> +       for (pos =3D pci_find_capability(dev, PCI_CAP_ID_VNDR);
-> +            pos > 0;
-> +            pos =3D pci_find_next_capability(dev, pos, PCI_CAP_ID_VNDR))=
- {
-> +               u8 type, bar;
-> +
-> +               pci_read_config_byte(dev, pos + offsetof(struct virtio_pc=
-i_cap,
-> +                                                        cfg_type),
-> +                                    &type);
-> +               pci_read_config_byte(dev, pos + offsetof(struct virtio_pc=
-i_cap,
-> +                                                        bar),
-> +                                    &bar);
-> +
-> +               /* Ignore structures with reserved BAR values */
-> +               if (bar >=3D PCI_STD_NUM_BARS)
-> +                       continue;
-> +
-> +               if (type =3D=3D cfg_type) {
-> +                       if (pci_resource_len(dev, bar) &&
-> +                           pci_resource_flags(dev, bar) & ioresource_typ=
-es) {
-> +                               *bars |=3D (1 << bar);
-> +                               return pos;
-> +                       }
-> +               }
-> +       }
-> +       return 0;
-> +}
-> +
-> +/*
-> + * pds_vdpa_probe_virtio: probe the modern virtio pci device, note that =
-the
-> + * caller is required to enable PCI device before calling this function.
-> + * @mdev: the modern virtio-pci device
-> + *
-> + * Return 0 on succeed otherwise fail
-> + */
-> +int pds_vdpa_probe_virtio(struct virtio_pci_modern_device *mdev)
-> +{
-> +       struct pci_dev *pci_dev =3D mdev->pci_dev;
-> +       int err, common, isr, notify, device;
-> +       u32 notify_length;
-> +       u32 notify_offset;
-> +
-> +       /* check for a common config: if not, use legacy mode (bar 0). */
-> +       common =3D virtio_pci_find_capability(pci_dev, VIRTIO_PCI_CAP_COM=
-MON_CFG,
-> +                                           IORESOURCE_IO | IORESOURCE_ME=
-M,
-> +                                           &mdev->modern_bars);
-> +       if (!common) {
-> +               dev_info(&pci_dev->dev,
-> +                        "virtio_pci: missing common config\n");
-> +               return -ENODEV;
-> +       }
-> +
-> +       /* If common is there, these should be too... */
-> +       isr =3D virtio_pci_find_capability(pci_dev, VIRTIO_PCI_CAP_ISR_CF=
-G,
-> +                                        IORESOURCE_IO | IORESOURCE_MEM,
-> +                                        &mdev->modern_bars);
-> +       notify =3D virtio_pci_find_capability(pci_dev, VIRTIO_PCI_CAP_NOT=
-IFY_CFG,
-> +                                           IORESOURCE_IO | IORESOURCE_ME=
-M,
-> +                                           &mdev->modern_bars);
-> +       if (!isr || !notify) {
-> +               dev_err(&pci_dev->dev,
-> +                       "virtio_pci: missing capabilities %i/%i/%i\n",
-> +                       common, isr, notify);
-> +               return -EINVAL;
-> +       }
-> +
-> +       /* Device capability is only mandatory for devices that have
-> +        * device-specific configuration.
-> +        */
-> +       device =3D virtio_pci_find_capability(pci_dev, VIRTIO_PCI_CAP_DEV=
-ICE_CFG,
-> +                                           IORESOURCE_IO | IORESOURCE_ME=
-M,
-> +                                           &mdev->modern_bars);
-> +
-> +       err =3D pci_request_selected_regions(pci_dev, mdev->modern_bars,
-> +                                          "virtio-pci-modern");
+> +       /* Initialize the vdpa/virtio device */
+> +       err =3D padev->ops->adminq_cmd(padev,
+> +                                    (union pds_core_adminq_cmd *)&init_c=
+md,
+> +                                    sizeof(init_cmd),
+> +                                    (union pds_core_adminq_comp *)&init_=
+comp,
+> +                                    0);
 > +       if (err)
-> +               return err;
+> +               dev_err(dev, "Failed to init hw, status %d: %pe\n",
+> +                       init_comp.status, ERR_PTR(err));
 > +
-> +       err =3D -EINVAL;
-> +       mdev->common =3D pds_vdpa_map_capability(mdev, common,
-> +                                              sizeof(struct virtio_pci_c=
-ommon_cfg),
-> +                                              4, 0,
-> +                                              sizeof(struct virtio_pci_c=
-ommon_cfg),
-> +                                              NULL, NULL);
-> +       if (!mdev->common)
-> +               goto err_map_common;
-> +       mdev->isr =3D pds_vdpa_map_capability(mdev, isr, sizeof(u8), 1,
-> +                                           0, 1, NULL, NULL);
-> +       if (!mdev->isr)
-> +               goto err_map_isr;
-> +
-> +       /* Read notify_off_multiplier from config space. */
-> +       pci_read_config_dword(pci_dev,
-> +                             notify + offsetof(struct virtio_pci_notify_=
-cap,
-> +                                               notify_off_multiplier),
-> +                             &mdev->notify_offset_multiplier);
-> +       /* Read notify length and offset from config space. */
-> +       pci_read_config_dword(pci_dev,
-> +                             notify + offsetof(struct virtio_pci_notify_=
-cap,
-> +                                               cap.length),
-> +                             &notify_length);
-> +
-> +       pci_read_config_dword(pci_dev,
-> +                             notify + offsetof(struct virtio_pci_notify_=
-cap,
-> +                                               cap.offset),
-> +                             &notify_offset);
-> +
-> +       /* We don't know how many VQs we'll map, ahead of the time.
-> +        * If notify length is small, map it all now.
-> +        * Otherwise, map each VQ individually later.
-> +        */
-> +       if ((u64)notify_length + (notify_offset % PAGE_SIZE) <=3D PAGE_SI=
-ZE) {
-> +               mdev->notify_base =3D pds_vdpa_map_capability(mdev, notif=
-y,
-> +                                                           2, 2,
-> +                                                           0, notify_len=
-gth,
-> +                                                           &mdev->notify=
-_len,
-> +                                                           &mdev->notify=
-_pa);
-> +               if (!mdev->notify_base)
-> +                       goto err_map_notify;
-> +       } else {
-> +               mdev->notify_map_cap =3D notify;
-> +       }
-> +
-> +       /* Again, we don't know how much we should map, but PAGE_SIZE
-> +        * is more than enough for all existing devices.
-> +        */
-> +       if (device) {
-> +               mdev->device =3D pds_vdpa_map_capability(mdev, device, 0,=
- 4,
-> +                                                      0, PAGE_SIZE,
-> +                                                      &mdev->device_len,
-> +                                                      NULL);
-> +               if (!mdev->device)
-> +                       goto err_map_device;
-> +       }
-> +
-> +       return 0;
-> +
-> +err_map_device:
-> +       if (mdev->notify_base)
-> +               pci_iounmap(pci_dev, mdev->notify_base);
-> +err_map_notify:
-> +       pci_iounmap(pci_dev, mdev->isr);
-> +err_map_isr:
-> +       pci_iounmap(pci_dev, mdev->common);
-> +err_map_common:
-> +       pci_release_selected_regions(pci_dev, mdev->modern_bars);
 > +       return err;
 > +}
 > +
-> +void pds_vdpa_remove_virtio(struct virtio_pci_modern_device *mdev)
+> +int pds_vdpa_cmd_reset(struct pds_vdpa_device *pdsv)
 > +{
-> +       struct pci_dev *pci_dev =3D mdev->pci_dev;
+
+This function is not used.
+
+And I wonder what's the difference between reset via adminq and reset
+via pds_vdpa_set_status(0) ?
+
+> +       struct pds_auxiliary_dev *padev =3D pdsv->vdpa_aux->padev;
+> +       struct device *dev =3D &padev->aux_dev.dev;
+> +       struct pds_vdpa_cmd cmd =3D {
+> +               .opcode =3D PDS_VDPA_CMD_RESET,
+> +               .vdpa_index =3D pdsv->vdpa_index,
+> +               .vf_id =3D cpu_to_le16(pdsv->vdpa_aux->vf_id),
+> +       };
+> +       struct pds_vdpa_comp comp =3D {0};
+> +       int err;
 > +
-> +       if (mdev->device)
-> +               pci_iounmap(pci_dev, mdev->device);
-> +       if (mdev->notify_base)
-> +               pci_iounmap(pci_dev, mdev->notify_base);
-> +       pci_iounmap(pci_dev, mdev->isr);
-> +       pci_iounmap(pci_dev, mdev->common);
-> +       pci_release_selected_regions(pci_dev, mdev->modern_bars);
+> +       err =3D padev->ops->adminq_cmd(padev,
+> +                                    (union pds_core_adminq_cmd *)&cmd,
+> +                                    sizeof(cmd),
+> +                                    (union pds_core_adminq_comp *)&comp,
+> +                                    0);
+> +       if (err)
+> +               dev_err(dev, "Failed to reset hw, status %d: %pe\n",
+> +                       comp.status, ERR_PTR(err));
+
+It might be better to use deb_dbg() here since it can be triggered by the g=
+uest.
+
+> +
+> +       return err;
 > +}
-> diff --git a/drivers/vdpa/pds/virtio_pci.h b/drivers/vdpa/pds/virtio_pci.=
-h
+> +
+> +int pds_vdpa_cmd_set_mac(struct pds_vdpa_device *pdsv, u8 *mac)
+> +{
+> +       struct pds_auxiliary_dev *padev =3D pdsv->vdpa_aux->padev;
+> +       struct device *dev =3D &padev->aux_dev.dev;
+> +       struct pds_vdpa_setattr_cmd cmd =3D {
+> +               .opcode =3D PDS_VDPA_CMD_SET_ATTR,
+> +               .vdpa_index =3D pdsv->vdpa_index,
+> +               .vf_id =3D cpu_to_le16(pdsv->vdpa_aux->vf_id),
+> +               .attr =3D PDS_VDPA_ATTR_MAC,
+> +       };
+> +       struct pds_vdpa_comp comp =3D {0};
+> +       int err;
+> +
+> +       ether_addr_copy(cmd.mac, mac);
+> +       err =3D padev->ops->adminq_cmd(padev,
+> +                                    (union pds_core_adminq_cmd *)&cmd,
+> +                                    sizeof(cmd),
+> +                                    (union pds_core_adminq_comp *)&comp,
+> +                                    0);
+> +       if (err)
+> +               dev_err(dev, "Failed to set mac address %pM, status %d: %=
+pe\n",
+> +                       mac, comp.status, ERR_PTR(err));
+> +
+> +       return err;
+> +}
+> +
+> +int pds_vdpa_cmd_set_max_vq_pairs(struct pds_vdpa_device *pdsv, u16 max_=
+vqp)
+> +{
+> +       struct pds_auxiliary_dev *padev =3D pdsv->vdpa_aux->padev;
+> +       struct device *dev =3D &padev->aux_dev.dev;
+> +       struct pds_vdpa_setattr_cmd cmd =3D {
+> +               .opcode =3D PDS_VDPA_CMD_SET_ATTR,
+> +               .vdpa_index =3D pdsv->vdpa_index,
+> +               .vf_id =3D cpu_to_le16(pdsv->vdpa_aux->vf_id),
+> +               .attr =3D PDS_VDPA_ATTR_MAX_VQ_PAIRS,
+> +               .max_vq_pairs =3D cpu_to_le16(max_vqp),
+> +       };
+> +       struct pds_vdpa_comp comp =3D {0};
+> +       int err;
+> +
+> +       err =3D padev->ops->adminq_cmd(padev,
+> +                                    (union pds_core_adminq_cmd *)&cmd,
+> +                                    sizeof(cmd),
+> +                                    (union pds_core_adminq_comp *)&comp,
+> +                                    0);
+> +       if (err)
+> +               dev_err(dev, "Failed to set max vq pairs %u, status %d: %=
+pe\n",
+> +                       max_vqp, comp.status, ERR_PTR(err));
+> +
+> +       return err;
+> +}
+> +
+> +int pds_vdpa_cmd_init_vq(struct pds_vdpa_device *pdsv, u16 qid,
+> +                        struct pds_vdpa_vq_info *vq_info)
+> +{
+> +       struct pds_auxiliary_dev *padev =3D pdsv->vdpa_aux->padev;
+> +       struct device *dev =3D &padev->aux_dev.dev;
+> +       struct pds_vdpa_vq_init_comp comp =3D {0};
+> +       struct pds_vdpa_vq_init_cmd cmd =3D {
+> +               .opcode =3D PDS_VDPA_CMD_VQ_INIT,
+> +               .vdpa_index =3D pdsv->vdpa_index,
+> +               .vf_id =3D cpu_to_le16(pdsv->vdpa_aux->vf_id),
+> +               .qid =3D cpu_to_le16(qid),
+> +               .len =3D cpu_to_le16(ilog2(vq_info->q_len)),
+> +               .desc_addr =3D cpu_to_le64(vq_info->desc_addr),
+> +               .avail_addr =3D cpu_to_le64(vq_info->avail_addr),
+> +               .used_addr =3D cpu_to_le64(vq_info->used_addr),
+> +               .intr_index =3D cpu_to_le16(qid),
+> +       };
+> +       int err;
+> +
+> +       dev_dbg(dev, "%s: qid %d len %d desc_addr %#llx avail_addr %#llx =
+used_addr %#llx\n",
+> +               __func__, qid, ilog2(vq_info->q_len),
+> +               vq_info->desc_addr, vq_info->avail_addr, vq_info->used_ad=
+dr);
+> +
+> +       err =3D padev->ops->adminq_cmd(padev,
+> +                                    (union pds_core_adminq_cmd *)&cmd,
+> +                                    sizeof(cmd),
+> +                                    (union pds_core_adminq_comp *)&comp,
+> +                                    0);
+
+We map common cfg in pds_vdpa_probe_virtio, any reason for using
+adminq here? (I guess it might be faster?)
+
+> +       if (err) {
+> +               dev_err(dev, "Failed to init vq %d, status %d: %pe\n",
+> +                       qid, comp.status, ERR_PTR(err));
+> +               return err;
+> +       }
+> +
+> +       vq_info->hw_qtype =3D comp.hw_qtype;
+
+What does hw_qtype mean?
+
+> +       vq_info->hw_qindex =3D le16_to_cpu(comp.hw_qindex);
+> +
+> +       return 0;
+> +}
+> +
+> +int pds_vdpa_cmd_reset_vq(struct pds_vdpa_device *pdsv, u16 qid)
+> +{
+> +       struct pds_auxiliary_dev *padev =3D pdsv->vdpa_aux->padev;
+> +       struct device *dev =3D &padev->aux_dev.dev;
+> +       struct pds_vdpa_vq_reset_cmd cmd =3D {
+> +               .opcode =3D PDS_VDPA_CMD_VQ_RESET,
+> +               .vdpa_index =3D pdsv->vdpa_index,
+> +               .vf_id =3D cpu_to_le16(pdsv->vdpa_aux->vf_id),
+> +               .qid =3D cpu_to_le16(qid),
+> +       };
+> +       struct pds_vdpa_comp comp =3D {0};
+> +       int err;
+> +
+> +       err =3D padev->ops->adminq_cmd(padev,
+> +                                    (union pds_core_adminq_cmd *)&cmd,
+> +                                    sizeof(cmd),
+> +                                    (union pds_core_adminq_comp *)&comp,
+> +                                    0);
+> +       if (err)
+> +               dev_err(dev, "Failed to reset vq %d, status %d: %pe\n",
+> +                       qid, comp.status, ERR_PTR(err));
+> +
+> +       return err;
+> +}
+> +
+> +int pds_vdpa_cmd_set_features(struct pds_vdpa_device *pdsv, u64 features=
+)
+> +{
+> +       struct pds_auxiliary_dev *padev =3D pdsv->vdpa_aux->padev;
+> +       struct device *dev =3D &padev->aux_dev.dev;
+> +       struct pds_vdpa_set_features_cmd cmd =3D {
+> +               .opcode =3D PDS_VDPA_CMD_SET_FEATURES,
+> +               .vdpa_index =3D pdsv->vdpa_index,
+> +               .vf_id =3D cpu_to_le16(pdsv->vdpa_aux->vf_id),
+> +               .features =3D cpu_to_le64(features),
+> +       };
+> +       struct pds_vdpa_comp comp =3D {0};
+> +       int err;
+> +
+> +       err =3D padev->ops->adminq_cmd(padev,
+> +                                    (union pds_core_adminq_cmd *)&cmd,
+> +                                    sizeof(cmd),
+> +                                    (union pds_core_adminq_comp *)&comp,
+> +                                    0);
+> +       if (err)
+> +               dev_err(dev, "Failed to set features %#llx, status %d: %p=
+e\n",
+> +                       features, comp.status, ERR_PTR(err));
+> +
+> +       return err;
+> +}
+> diff --git a/drivers/vdpa/pds/cmds.h b/drivers/vdpa/pds/cmds.h
 > new file mode 100644
-> index 000000000000..f017cfa1173c
+> index 000000000000..72e19f4efde6
 > --- /dev/null
-> +++ b/drivers/vdpa/pds/virtio_pci.h
-> @@ -0,0 +1,8 @@
+> +++ b/drivers/vdpa/pds/cmds.h
+> @@ -0,0 +1,16 @@
 > +/* SPDX-License-Identifier: GPL-2.0-only */
 > +/* Copyright(c) 2023 Advanced Micro Devices, Inc */
 > +
-> +#ifndef _PDS_VIRTIO_PCI_H_
-> +#define _PDS_VIRTIO_PCI_H_
-> +int pds_vdpa_probe_virtio(struct virtio_pci_modern_device *mdev);
-> +void pds_vdpa_remove_virtio(struct virtio_pci_modern_device *mdev);
-> +#endif /* _PDS_VIRTIO_PCI_H_ */
+> +#ifndef _VDPA_CMDS_H_
+> +#define _VDPA_CMDS_H_
+> +
+> +int pds_vdpa_init_hw(struct pds_vdpa_device *pdsv);
+> +
+> +int pds_vdpa_cmd_reset(struct pds_vdpa_device *pdsv);
+> +int pds_vdpa_cmd_set_mac(struct pds_vdpa_device *pdsv, u8 *mac);
+> +int pds_vdpa_cmd_set_max_vq_pairs(struct pds_vdpa_device *pdsv, u16 max_=
+vqp);
+> +int pds_vdpa_cmd_init_vq(struct pds_vdpa_device *pdsv, u16 qid,
+> +                        struct pds_vdpa_vq_info *vq_info);
+> +int pds_vdpa_cmd_reset_vq(struct pds_vdpa_device *pdsv, u16 qid);
+> +int pds_vdpa_cmd_set_features(struct pds_vdpa_device *pdsv, u64 features=
+);
+> +#endif /* _VDPA_CMDS_H_ */
+> diff --git a/drivers/vdpa/pds/vdpa_dev.h b/drivers/vdpa/pds/vdpa_dev.h
+> index 97fab833a0aa..33284ebe538c 100644
+> --- a/drivers/vdpa/pds/vdpa_dev.h
+> +++ b/drivers/vdpa/pds/vdpa_dev.h
+> @@ -4,11 +4,45 @@
+>  #ifndef _VDPA_DEV_H_
+>  #define _VDPA_DEV_H_
+>
+> -#define PDS_VDPA_MAX_QUEUES    65
+> +#include <linux/pci.h>
+> +#include <linux/vdpa.h>
+> +
+> +struct pds_vdpa_vq_info {
+> +       bool ready;
+> +       u64 desc_addr;
+> +       u64 avail_addr;
+> +       u64 used_addr;
+> +       u32 q_len;
+> +       u16 qid;
+> +       int irq;
+> +       char irq_name[32];
+> +
+> +       void __iomem *notify;
+> +       dma_addr_t notify_pa;
+> +
+> +       u64 doorbell;
+> +       u16 avail_idx;
+> +       u16 used_idx;
+> +
+> +       u8 hw_qtype;
+> +       u16 hw_qindex;
+>
+> +       struct vdpa_callback event_cb;
+> +       struct pds_vdpa_device *pdsv;
+> +};
+> +
+> +#define PDS_VDPA_MAX_QUEUES    65
+> +#define PDS_VDPA_MAX_QLEN      32768
+>  struct pds_vdpa_device {
+>         struct vdpa_device vdpa_dev;
+>         struct pds_vdpa_aux *vdpa_aux;
+> +
+> +       struct pds_vdpa_vq_info vqs[PDS_VDPA_MAX_QUEUES];
+> +       u64 req_features;               /* features requested by vdpa */
+> +       u64 actual_features;            /* features negotiated and in use=
+ */
+> +       u8 vdpa_index;                  /* rsvd for future subdevice use =
+*/
+> +       u8 num_vqs;                     /* num vqs in use */
+> +       struct vdpa_callback config_cb;
+>  };
+>
+>  int pds_vdpa_get_mgmt_info(struct pds_vdpa_aux *vdpa_aux);
+> diff --git a/include/linux/pds/pds_vdpa.h b/include/linux/pds/pds_vdpa.h
+> index 3f7c08551163..b6a4cb4d3c6b 100644
+> --- a/include/linux/pds/pds_vdpa.h
+> +++ b/include/linux/pds/pds_vdpa.h
+> @@ -101,4 +101,179 @@ struct pds_vdpa_ident_cmd {
+>         __le32 len;
+>         __le64 ident_pa;
+>  };
+> +
+> +/**
+> + * struct pds_vdpa_status_cmd - STATUS_UPDATE command
+> + * @opcode:    Opcode PDS_VDPA_CMD_STATUS_UPDATE
+> + * @vdpa_index: Index for vdpa subdevice
+> + * @vf_id:     VF id
+> + * @status:    new status bits
+> + */
+> +struct pds_vdpa_status_cmd {
+> +       u8     opcode;
+> +       u8     vdpa_index;
+> +       __le16 vf_id;
+> +       u8     status;
+> +};
+> +
+> +/**
+> + * enum pds_vdpa_attr - List of VDPA device attributes
+> + * @PDS_VDPA_ATTR_MAC:          MAC address
+> + * @PDS_VDPA_ATTR_MAX_VQ_PAIRS: Max virtqueue pairs
+> + */
+> +enum pds_vdpa_attr {
+> +       PDS_VDPA_ATTR_MAC          =3D 1,
+> +       PDS_VDPA_ATTR_MAX_VQ_PAIRS =3D 2,
+> +};
+> +
+> +/**
+> + * struct pds_vdpa_setattr_cmd - SET_ATTR command
+> + * @opcode:            Opcode PDS_VDPA_CMD_SET_ATTR
+> + * @vdpa_index:                Index for vdpa subdevice
+> + * @vf_id:             VF id
+> + * @attr:              attribute to be changed (enum pds_vdpa_attr)
+> + * @pad:               Word boundary padding
+> + * @mac:               new mac address to be assigned as vdpa device add=
+ress
+> + * @max_vq_pairs:      new limit of virtqueue pairs
+> + */
+> +struct pds_vdpa_setattr_cmd {
+> +       u8     opcode;
+> +       u8     vdpa_index;
+> +       __le16 vf_id;
+> +       u8     attr;
+> +       u8     pad[3];
+> +       union {
+> +               u8 mac[6];
+> +               __le16 max_vq_pairs;
+> +       } __packed;
+> +};
+> +
+> +/**
+> + * struct pds_vdpa_vq_init_cmd - queue init command
+> + * @opcode: Opcode PDS_VDPA_CMD_VQ_INIT
+> + * @vdpa_index:        Index for vdpa subdevice
+> + * @vf_id:     VF id
+> + * @qid:       Queue id (bit0 clear =3D rx, bit0 set =3D tx, qid=3DN is =
+ctrlq)
+> + * @len:       log(2) of max descriptor count
+> + * @desc_addr: DMA address of descriptor area
+> + * @avail_addr:        DMA address of available descriptors (aka driver =
+area)
+> + * @used_addr: DMA address of used descriptors (aka device area)
+> + * @intr_index:        interrupt index
+> + */
+> +struct pds_vdpa_vq_init_cmd {
+> +       u8     opcode;
+> +       u8     vdpa_index;
+> +       __le16 vf_id;
+> +       __le16 qid;
+> +       __le16 len;
+> +       __le64 desc_addr;
+> +       __le64 avail_addr;
+> +       __le64 used_addr;
+> +       __le16 intr_index;
+
+Just wonder in which case intr_index can be different from qid, in
+pds_vdpa_cmd_init_vq() we had:
+
+                .intr_index =3D cpu_to_le16(qid),
+
+Thanks
+
+
+> +};
+> +
+> +/**
+> + * struct pds_vdpa_vq_init_comp - queue init completion
+> + * @status:    Status of the command (enum pds_core_status_code)
+> + * @hw_qtype:  HW queue type, used in doorbell selection
+> + * @hw_qindex: HW queue index, used in doorbell selection
+> + * @rsvd:      Word boundary padding
+> + * @color:     Color bit
+> + */
+> +struct pds_vdpa_vq_init_comp {
+> +       u8     status;
+> +       u8     hw_qtype;
+> +       __le16 hw_qindex;
+> +       u8     rsvd[11];
+> +       u8     color;
+> +};
+> +
+> +/**
+> + * struct pds_vdpa_vq_reset_cmd - queue reset command
+> + * @opcode:    Opcode PDS_VDPA_CMD_VQ_RESET
+> + * @vdpa_index:        Index for vdpa subdevice
+> + * @vf_id:     VF id
+> + * @qid:       Queue id
+> + */
+> +struct pds_vdpa_vq_reset_cmd {
+> +       u8     opcode;
+> +       u8     vdpa_index;
+> +       __le16 vf_id;
+> +       __le16 qid;
+> +};
+> +
+> +/**
+> + * struct pds_vdpa_set_features_cmd - set hw features
+> + * @opcode: Opcode PDS_VDPA_CMD_SET_FEATURES
+> + * @vdpa_index:        Index for vdpa subdevice
+> + * @vf_id:     VF id
+> + * @rsvd:       Word boundary padding
+> + * @features:  Feature bit mask
+> + */
+> +struct pds_vdpa_set_features_cmd {
+> +       u8     opcode;
+> +       u8     vdpa_index;
+> +       __le16 vf_id;
+> +       __le32 rsvd;
+> +       __le64 features;
+> +};
+> +
+> +/**
+> + * struct pds_vdpa_vq_set_state_cmd - set vq state
+> + * @opcode:    Opcode PDS_VDPA_CMD_VQ_SET_STATE
+> + * @vdpa_index:        Index for vdpa subdevice
+> + * @vf_id:     VF id
+> + * @qid:       Queue id
+> + * @avail:     Device avail index.
+> + * @used:      Device used index.
+> + *
+> + * If the virtqueue uses packed descriptor format, then the avail and us=
+ed
+> + * index must have a wrap count.  The bits should be arranged like the u=
+pper
+> + * 16 bits in the device available notification data: 15 bit index, 1 bi=
+t wrap.
+> + */
+> +struct pds_vdpa_vq_set_state_cmd {
+> +       u8     opcode;
+> +       u8     vdpa_index;
+> +       __le16 vf_id;
+> +       __le16 qid;
+> +       __le16 avail;
+> +       __le16 used;
+> +};
+> +
+> +/**
+> + * struct pds_vdpa_vq_get_state_cmd - get vq state
+> + * @opcode:    Opcode PDS_VDPA_CMD_VQ_GET_STATE
+> + * @vdpa_index:        Index for vdpa subdevice
+> + * @vf_id:     VF id
+> + * @qid:       Queue id
+> + */
+> +struct pds_vdpa_vq_get_state_cmd {
+> +       u8     opcode;
+> +       u8     vdpa_index;
+> +       __le16 vf_id;
+> +       __le16 qid;
+> +};
+> +
+> +/**
+> + * struct pds_vdpa_vq_get_state_comp - get vq state completion
+> + * @status:    Status of the command (enum pds_core_status_code)
+> + * @rsvd0:      Word boundary padding
+> + * @avail:     Device avail index.
+> + * @used:      Device used index.
+> + * @rsvd:       Word boundary padding
+> + * @color:     Color bit
+> + *
+> + * If the virtqueue uses packed descriptor format, then the avail and us=
+ed
+> + * index will have a wrap count.  The bits will be arranged like the "ne=
+xt"
+> + * part of device available notification data: 15 bit index, 1 bit wrap.
+> + */
+> +struct pds_vdpa_vq_get_state_comp {
+> +       u8     status;
+> +       u8     rsvd0;
+> +       __le16 avail;
+> +       __le16 used;
+> +       u8     rsvd[9];
+> +       u8     color;
+> +};
+> +
+>  #endif /* _PDS_VDPA_IF_H_ */
 > --
 > 2.17.1
 >
