@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8ED226BAA7A
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 09:10:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6467B6BAA9D
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 09:20:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231760AbjCOIK0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 04:10:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56282 "EHLO
+        id S231346AbjCOIUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 04:20:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231228AbjCOIKX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 04:10:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9D721285D;
-        Wed, 15 Mar 2023 01:10:21 -0700 (PDT)
+        with ESMTP id S229629AbjCOIUU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 04:20:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24A1D1A64C;
+        Wed, 15 Mar 2023 01:20:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E477B81D4F;
-        Wed, 15 Mar 2023 08:10:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2C2CEC433A4;
-        Wed, 15 Mar 2023 08:10:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ACB5F61C03;
+        Wed, 15 Mar 2023 08:20:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1343EC433EF;
+        Wed, 15 Mar 2023 08:20:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678867819;
-        bh=YtL2KcIRGV+AqWho0Wwv22dmDqt+vS4Xxfr4UIuP9lY=;
+        s=k20201202; t=1678868418;
+        bh=JypeBE5SEgcdZLpEqXnwicW8PFwnoZF0s++ovdaqtLc=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Q470luVlRKXKD073apUF+XYHrk9nTb9dZoKDihDfTe7xxwdVMZFk9/IQoZFUJrKwL
-         zMGnKeuClbzrPmdsq8xbBBPS4VEg6MkpJgfvobmP2VPJqyjgLSLXD+kAlJI4fdmtxg
-         EXbU6Of1biTzM4aiTTzJkXx/2aWXo7zp/liNh+QLYkMEet+PrlWD60OCsaFzj16L7U
-         HlZB70Eabap0m/y7JMmYEJS89ZlwspWjFp7WyBQmNJtVmrAlPLNzHHbo4JDQ1ML7ev
-         60npLsSsnkBrWW/i7mRDUJ5VaofBViL1PDa3itTX9htqLrCOMkaXt/4EmpdMc1XRkX
-         5sl1Jw7QStjLA==
+        b=mIyF5sCmCkIgZ30NkeBSQvUqivgc2bzrVSXh912Op3CWY6y0ICn+6JzY66aMaQwbk
+         XZsboFWRxhHFQNIKPpCkb6VB0Xd4ad/TWj5KNYSsWO8nuXTVNYmU6HZn00grUUdXPi
+         MpnHl11YJlFTXTb/Q+mTYF3YjzdhIRAulPRp3zaOAjcW/Mrz2fcuTDlVChACfkORoG
+         ZbB8NT6Xz/Dl+wwKgcZxXW1lHPJWdYZbhDvLGRoQGwazfoVSFheStPvTSFoGiEZxmO
+         5eR/pNyCsBxfu5KDXSRLQk1Jmi9f3VhWq/S3x0zjIpeuJikr0W2hvm63cx/mdQ3G3K
+         XeEzEBrGdsdXA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0A0EFE61B6B;
-        Wed, 15 Mar 2023 08:10:19 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id ED410E66CBC;
+        Wed, 15 Mar 2023 08:20:17 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/2] net: dsa: microchip: tc-ets support 
+Subject: Re: [PATCH net 0/2] net/smc: Fixes 2023-03-01
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167886781903.24118.14755725548116156158.git-patchwork-notify@kernel.org>
-Date:   Wed, 15 Mar 2023 08:10:19 +0000
-References: <20230310090809.220764-1-o.rempel@pengutronix.de>
-In-Reply-To: <20230310090809.220764-1-o.rempel@pengutronix.de>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     davem@davemloft.net, andrew@lunn.ch, edumazet@google.com,
-        f.fainelli@gmail.com, kuba@kernel.org, pabeni@redhat.com,
-        olteanv@gmail.com, woojung.huh@microchip.com,
-        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+Message-Id: <167886841796.29094.5229369446837887446.git-patchwork-notify@kernel.org>
+Date:   Wed, 15 Mar 2023 08:20:17 +0000
+References: <20230313100829.13136-1-wenjia@linux.ibm.com>
+In-Reply-To: <20230313100829.13136-1-wenjia@linux.ibm.com>
+To:     Wenjia Zhang <wenjia@linux.ibm.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        hca@linux.ibm.com, kgraul@linux.ibm.com, wintera@linux.ibm.com,
+        jaka@linux.ibm.com, raspl@linux.ibm.com, tonylu@linux.alibaba.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,26 +59,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (main)
+This series was applied to netdev/net.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 10 Mar 2023 10:08:07 +0100 you wrote:
-> changes v3:
-> - add tc_ets_supported to match supported devices
-> - dynamically regenerated default TC to queue map.
-> - add Acked-by to the first patch
+On Mon, 13 Mar 2023 11:08:27 +0100 you wrote:
+> The 1st patch solves the problem that CLC message initialization was
+> not properly reversed in error handling path. And the 2nd one fixes
+> the possible deadlock triggered by cancel_delayed_work_sync().
 > 
-> changes v2:
-> - run egress limit configuration on all queue separately. Otherwise
->   configuration may not apply correctly.
+> Stefan Raspl (1):
+>   net/smc: Fix device de-init sequence
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v3,1/2] net: dsa: microchip: add ksz_setup_tc_mode() function
-    https://git.kernel.org/netdev/net-next/c/69444581d002
-  - [net-next,v3,2/2] net: dsa: microchip: add ETS Qdisc support for KSZ9477 series
-    https://git.kernel.org/netdev/net-next/c/c570f861fa05
+  - [net,1/2] net/smc: fix deadlock triggered by cancel_delayed_work_syn()
+    https://git.kernel.org/netdev/net/c/13085e1b5cab
+  - [net,2/2] net/smc: Fix device de-init sequence
+    https://git.kernel.org/netdev/net/c/9d876d3ef27f
 
 You are awesome, thank you!
 -- 
