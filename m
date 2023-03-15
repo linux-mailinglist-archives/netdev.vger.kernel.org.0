@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C7CB6BC052
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 23:59:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92FF46BC054
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 23:59:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232909AbjCOW7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 18:59:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60414 "EHLO
+        id S232932AbjCOW7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 18:59:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232884AbjCOW7B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 18:59:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC4759DE09
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 15:58:59 -0700 (PDT)
+        with ESMTP id S232904AbjCOW7F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 18:59:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A069AA3B7C
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 15:59:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B5CC161EA9
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 22:58:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CD1BC4339C;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40716B81F0D
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 22:59:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D09B9C4339C;
         Wed, 15 Mar 2023 22:58:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1678921139;
-        bh=QDZwZeC/hVIfHW6hUnvSHSN6t4xBNVfG+HH6glUzg0A=;
+        bh=Bd8Q5pVMvPKmAKc3xq4HHKfaGanAptQxR/jkHp5knMk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fkipm2Zj3CYM0r9bffyojccDqp3J7lMPvmiDAGfhYeUGLSG8wXa9z5I9UEXbrKvxq
-         /vm7KXDs36LQ/+RJYYASeqDCG71pywKrca3I6+DvsvQH5sIXk7pjDo7TIuhSQPyXnF
-         OWyORDOnXpkCxIDdjwKhpn8Vqv6fal8YL37rGf2CBCTmbHDadSt5QlWJsOFrdvJSM3
-         R4wmk68Fk6yU34sniot8OSTWwKIx/Ns3UPw02SSPhVHLR++/x/obT1/5/Kn5Cv2kwT
-         R4x7y1p0qUNqWgmb+u9tQnncmkr9PeNSCB4l5AaaeHBpNB5yGNINBJMvngSE6973Jz
-         epWNxq1YIj2EQ==
+        b=JSrp3srehCiPrjXXdHt2Ou9eVTOo5qVA12rgoV+SJkgzEBfM3en0olno9kibXWEPY
+         lPMi3XSm8NMTnwTBAI2OaHC1beEwl849+Pnhs+rceXmQbkWneleKEUDnf9FIpAFRCJ
+         XBUsJ3QWHyRO963mStbxMwwjnNbki5VOQ3OVx9SbyET8S/QoM1XQT5iVhoHLWaRDA+
+         cgXuNbMfzZhXusQDHeE4e34kGTH8GceJJ3T6jBvcvp/KOwf6/A7Qgw+6TkXH9D0pgA
+         Og8PJGW15Zajv1Dzf/04dMpd+kPNlZmv/CJA2J8P4j1qlsXhbeLeliGBHW0ruwfjTA
+         dhKmanbPpyHOg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>,
         Paul Blakey <paulb@nvidia.com>
-Subject: [net V2 13/14] net/mlx5e: TC, fix cloned flow attribute
-Date:   Wed, 15 Mar 2023 15:58:46 -0700
-Message-Id: <20230315225847.360083-14-saeed@kernel.org>
+Subject: [net V2 14/14] net/mlx5e: TC, Remove error message log print
+Date:   Wed, 15 Mar 2023 15:58:47 -0700
+Message-Id: <20230315225847.360083-15-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230315225847.360083-1-saeed@kernel.org>
 References: <20230315225847.360083-1-saeed@kernel.org>
@@ -58,31 +58,35 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Oz Shlomo <ozsh@nvidia.com>
 
-Currently the cloned flow attr resets the original tc action cookies
-count.
-Fix that by resetting the cloned flow attribute.
+The cited commit attempts to update the hw stats when dumping tc actions.
+However, the driver may be called to update the stats of a police action
+that may not be in hardware. In such cases the driver will fail to lookup
+the police action object and will output an error message both to extack
+and dmesg. The dmesg error is confusing as it may not indicate an actual
+error.
 
-Fixes: cca7eac13856 ("net/mlx5e: TC, store tc action cookies per attr")
+Remove the dmesg error.
+
+Fixes: 2b68d659a704 ("net/mlx5e: TC, support per action stats")
 Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
 Reviewed-by: Paul Blakey <paulb@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/police.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index d2e191ee0704..6bfed633343a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -3752,7 +3752,7 @@ mlx5e_clone_flow_attr_for_post_act(struct mlx5_flow_attr *attr,
- 	parse_attr->filter_dev = attr->parse_attr->filter_dev;
- 	attr2->action = 0;
- 	attr2->counter = NULL;
--	attr->tc_act_cookies_count = 0;
-+	attr2->tc_act_cookies_count = 0;
- 	attr2->flags = 0;
- 	attr2->parse_attr = parse_attr;
- 	attr2->dest_chain = 0;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/police.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/police.c
+index c4378afdec09..1bd1c94fb977 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/police.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/police.c
+@@ -178,7 +178,6 @@ tc_act_police_stats(struct mlx5e_priv *priv,
+ 	meter = mlx5e_tc_meter_get(priv->mdev, &params);
+ 	if (IS_ERR(meter)) {
+ 		NL_SET_ERR_MSG_MOD(fl_act->extack, "Failed to get flow meter");
+-		mlx5_core_err(priv->mdev, "Failed to get flow meter %d\n", params.index);
+ 		return PTR_ERR(meter);
+ 	}
+ 
 -- 
 2.39.2
 
