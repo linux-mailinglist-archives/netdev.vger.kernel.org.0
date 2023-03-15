@@ -2,75 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C9456BA983
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 08:40:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2036A6BA979
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 08:39:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231831AbjCOHkl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 03:40:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59140 "EHLO
+        id S231855AbjCOHj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 03:39:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232050AbjCOHkS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 03:40:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8907D5DCAD;
-        Wed, 15 Mar 2023 00:39:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        with ESMTP id S231278AbjCOHi4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 03:38:56 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D02F62597C
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 00:37:38 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 8162A21958;
+        Wed, 15 Mar 2023 07:37:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1678865857; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ju6K31RwQTxowS/99Qlvy5GW4bETwCzwYP1STl/ymhs=;
+        b=OyD6lvUPOL9j1mKd4bI3otCdSOz0NKBV4Co9Rg1TGXDgAzgzCWGyGgh5yeWwqXA9MupH0U
+        ceSHu1F+q3TwZXimghnKy5uJQawWIwbOy2Kfbv5dpZcEC5D8SXMEVR7g/KZxdHncZ3mGNG
+        joFNau44loLWx9FYxRjTGAlGcl1d1ZY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1678865857;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ju6K31RwQTxowS/99Qlvy5GW4bETwCzwYP1STl/ymhs=;
+        b=zlg3CD8yN+xzFrTN0CoblNNbHMgWN+nhjVmXZ+hsBL4OvmcyngtjCfOl9ioLJfAy9hKgTv
+        hgblQo1LPMuvzRCA==
+Received: from lion.mk-sys.cz (mkubecek.udp.ovpn2.prg.suse.de [10.100.200.14])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 766BF61B4D;
-        Wed, 15 Mar 2023 07:34:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7204BC433EF;
-        Wed, 15 Mar 2023 07:34:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678865681;
-        bh=7ktC4KDSsNddL7fAD3DLVDfKc9FhqOWXOu6nwsp2d0w=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SR+z+gJt69q4OX57aiLUqiPcD5bZbAgivQETse4CAyMiQZSnePAvfgJd4I1juLysu
-         rqdxlUhkp9AwgonmFVNHF20ooAZSukVYZp5NxITv3NCMPypgT2SUEcFsf06BTsAwbb
-         jMPObol89iEVg977CMNCWGHMtwA0iW7W26IiCqZ1Bd2vZmIXIbCaRKADlEoCrWlw9B
-         bLb9le1sWRoyhnJd8Ns81U8znb4MIeNwBoj8nHnIrhDh+PjFsHZUTbeRke9qD9RDmx
-         r1NrQN11Y9S2CvbIwSj0DwtWiVH0xgQ+t9+6/Dc26Dz8KcpUg5fPKZdSbGsLLBD0uk
-         vBB6bnd1HwnWQ==
-Date:   Wed, 15 Mar 2023 00:34:40 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Kai <KaiShen@linux.alibaba.com>
-Cc:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: Re: [PATCH net-next v4] net/smc: Use percpu ref for wr tx reference
-Message-ID: <20230315003440.23674405@kernel.org>
-In-Reply-To: <20230313060425.115939-1-KaiShen@linux.alibaba.com>
-References: <20230313060425.115939-1-KaiShen@linux.alibaba.com>
+        by relay2.suse.de (Postfix) with ESMTPS id 6771E2C141;
+        Wed, 15 Mar 2023 07:37:36 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id C057A60314; Wed, 15 Mar 2023 08:37:32 +0100 (CET)
+Date:   Wed, 15 Mar 2023 08:37:32 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "Mogilappagari, Sudheer" <sudheer.mogilappagari@intel.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+Subject: Re: [PATCH net-next] ethtool: add netlink support for rss set
+Message-ID: <20230315073732.jjcxv2ywkbw6vvuk@lion.mk-sys.cz>
+References: <20230309220544.177248-1-sudheer.mogilappagari@intel.com>
+ <20230309232126.7067af28@kernel.org>
+ <IA1PR11MB62665336B2FE611635CC61A3E4B99@IA1PR11MB6266.namprd11.prod.outlook.com>
+ <20230313155302.73ca491d@kernel.org>
+ <1710d769-4f11-22d7-938d-eda0133a2d62@gmail.com>
+ <IA1PR11MB62665C2D537234726DAF87D9E4BE9@IA1PR11MB6266.namprd11.prod.outlook.com>
+ <20230314212427.123be0ee@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230314212427.123be0ee@kernel.org>
+X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_SOFTFAIL,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 13 Mar 2023 06:04:25 +0000 Kai wrote:
-> Signed-off-by: Kai <KaiShen@linux.alibaba.com>
-
-Kai Shen ?
-
+On Tue, Mar 14, 2023 at 09:24:27PM -0700, Jakub Kicinski wrote:
+> On Tue, 14 Mar 2023 23:51:00 +0000 Mogilappagari, Sudheer wrote:
+> > How to get devname to be WILDCARD_DEVNAME ?
 > 
-
-You're missing a --- separator here, try to apply this patch with 
-git am :/
-
-> v1->v2:
-> - Modify patch prefix
+> Isn't it just \* ?
 > 
-> v2->v3:
-> - Make wr_reg_refcnt a percpu one as well
-> - Init percpu ref with 0 flag instead of ALLOW_REINIT flag
-> 
-> v3->v4:
-> - Update performance data, this data may differ from previous data
->   as I ran cases on other machines
-> ---
+> $ ethtool \*
+
+Yes, that's how it's supposed to work:
+
+------------------------------------------------------------------------
+mike@lion:~> /usr/sbin/ethtool -l '*'
+
+Channel parameters for eth0:
+Pre-set maximums:
+RX:             n/a
+TX:             n/a
+Other:          1
+Combined:       8
+Current hardware settings:
+RX:             n/a
+TX:             n/a
+Other:          1
+Combined:       8
+
+Channel parameters for eth1:
+Pre-set maximums:
+RX:             n/a
+TX:             n/a
+Other:          1
+Combined:       8
+Current hardware settings:
+RX:             n/a
+TX:             n/a
+Other:          1
+Combined:       8
+
+Channel parameters for eth2:
+Pre-set maximums:
+RX:             n/a
+TX:             n/a
+Other:          1
+Combined:       2
+Current hardware settings:
+RX:             n/a
+TX:             n/a
+Other:          1
+Combined:       2
+------------------------------------------------------------------------
+
+In some cases where the output for a single device can consist of
+many entries it may also make sense to iterate over something else.
+Listing flow rules might be an example.
+
+Michal
