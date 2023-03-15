@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 547C06BAFD2
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 13:04:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2F326BAFD8
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 13:04:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231848AbjCOMEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 08:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49982 "EHLO
+        id S231862AbjCOMEo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 08:04:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231713AbjCOMEU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 08:04:20 -0400
+        with ESMTP id S231673AbjCOMEe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 08:04:34 -0400
 Received: from EUR02-VI1-obe.outbound.protection.outlook.com (mail-vi1eur02on2071.outbound.protection.outlook.com [40.107.241.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EF4E17156;
-        Wed, 15 Mar 2023 05:04:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D22A62BEE0;
+        Wed, 15 Mar 2023 05:04:16 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SJfzLj1Dk4NkeuihVoahU+1EZCSKKghkeV/262tbONKEMENqHT95HDIlaBdfo9GL3JluVePbVTLc72eRuW5IxpOkRDeoC1E9//61MNe2uTxi2w2anXdNYBGufYqaS19wIIKhYCthfD2lTeOnTvv90BPRmIoR8Xih2VZTD5lVvCYcvEDPWapVkaPmVhaR/tN2Hz51+I0W2KN+yvgmv215DjiBI7HTM0JlV8v3EnSM5uUM7jFSMWhg7kskgD0f2k7Yi4g19XshHck2+bqSi6Mp7JO1u9BNFztloBFBGOiPZbN/yqzqKJKBIbFkjcdP0clPR49uFScb4D+aXGpd+Wkghw==
+ b=G3E08Viq4KESPXH+aBjdDDUwb/7uD72FPOOVoGkWFlIgXszPADaQYQoOUHYoCs4LS5oxu3AhUQYzWkzXoCH2sFZeETC71/rhvv8qegp3b3OupHtxFQ8nG5PiTFD0UoSTrc/3WZx5eU7D5bwDEBem2sDYOfbijrqc1iKnLDopl+Q6/bUDWu6Q8NWYtvxaKJHlD9I+oD0SqtVAE9rJLpaM1r3lcHg5zVHHdeLD1/J/XCUKnCQe21/bbqEIT3FKAQjejCGAVQvHZ75NEx+9iFmmA4LiBoHDpme+EY63vftdFUC+j3OYn8/RH905rjIwWlIz/xmM/PswenpkZo5PrSIEkA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9h6VVthgpah7G60qrDKCw7o0qLugUfnyM87b908ubwo=;
- b=Q++5/l0yJ1DPYdv4Mq6dalWAyJBdT1+EQvZDLQBunwFrFj2ykVRYCCefE/mbStI0MC1oD3iQBGfgLOFkcjrx2Ypmk8sniLI3iirHCMRb9wSRqS7OJeGvT/Hify9eDbk/BqUJHmPbFWSqNqeICj+OuYi8+x6S28r3C/7rGLc6yuk6xV8bPuvTk23dnNqGz4EbopP85CvSuPmHG4s5pyD3fbKufY1/Yz6GQ6hh6OUeI6yRkc+GwaR08tgFSTSDgZG2VuYXdCcAaRa+ZQLZM+JATiKH7P1DaUCF144NlZ5sL4TaEqkEyQed+m9T7gLficG3ron5HFfwC4Mg76DaVRzxmw==
+ bh=8nBPLnQZTmbjcXxRT01WcUGU4Offe4k8SEV+HxYAerM=;
+ b=WmaDi9HHl1Fwg3VEAnrs6Er6pNiX0FU0qPghNNbsONiWr5WuF70qu6iuB7pwmWvfXAm3Xc91bWieh0FGVKuDl3pP338brBxg81bttAZTUDn+uZ0U5Ny1eTnDxUL79qiSZ0COhipYGjDxQFIXhV2m2b61sEnUn+FTIaXYeopeywaz/5uX6CPpy3/YowRwrpeL7Sp2bD7xIZUIE0vrBgaSBdxtYOMxhqv3kxfFsEYg7WSJ4Bl75kDmMk/5U6qNWP+b/vqO/pfMjzsma4Lxtb7TLxbDGumzTzZjdpPS10pnYEkiXB73UlSFutFn+vJy/QHHPKHeflnFRpMDjYLJUAwlDg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9h6VVthgpah7G60qrDKCw7o0qLugUfnyM87b908ubwo=;
- b=HbdKD/JIRdehgE7o14hGzJod2IrLw/IZq/rh5iF9xPNTHURlp3STE22uVaih+kzLGdleaE/oQLKjVC1eQqfkXlI0UmT/KU9DLeIP4C1mdIaRIwDuuJT+A+Idv8BH/lCp75uTaF6DClmP76av9WetSowyG0DF5MEaomNAtrnEneY=
+ bh=8nBPLnQZTmbjcXxRT01WcUGU4Offe4k8SEV+HxYAerM=;
+ b=AVfic7gEmGfaXUlnT1ieGBSYUqyyDLEhTA12phZRbdpQyOll8K4tZ9tlyBJWglYfIDsjvgLRGqMzjSPnuk9IHSuAfkB+DjiIJFT6sufPYAdZ0DzThUHohkB5YO+A+8opLZzReGHCmqHefu12Lkut9M/DAZSc5QwYrr4V4rdq76E=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from AM9PR04MB8603.eurprd04.prod.outlook.com (2603:10a6:20b:43a::10)
  by DU2PR04MB8629.eurprd04.prod.outlook.com (2603:10a6:10:2dc::6) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.29; Wed, 15 Mar
- 2023 12:04:04 +0000
+ 2023 12:04:10 +0000
 Received: from AM9PR04MB8603.eurprd04.prod.outlook.com
  ([fe80::45d2:ce51:a1c4:8762]) by AM9PR04MB8603.eurprd04.prod.outlook.com
  ([fe80::45d2:ce51:a1c4:8762%7]) with mapi id 15.20.6178.029; Wed, 15 Mar 2023
- 12:04:04 +0000
+ 12:04:10 +0000
 From:   Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com, robh+dt@kernel.org,
@@ -52,9 +52,9 @@ Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
         linux-serial@vger.kernel.org, amitkumar.karwar@nxp.com,
         rohit.fule@nxp.com, sherry.sun@nxp.com, neeraj.sanjaykale@nxp.com
-Subject: [PATCH v12 1/4] serdev: Replace all instances of ENOTSUPP with EOPNOTSUPP
-Date:   Wed, 15 Mar 2023 17:33:23 +0530
-Message-Id: <20230315120327.958413-2-neeraj.sanjaykale@nxp.com>
+Subject: [PATCH v12 2/4] serdev: Add method to assert break signal over tty UART port
+Date:   Wed, 15 Mar 2023 17:33:24 +0530
+Message-Id: <20230315120327.958413-3-neeraj.sanjaykale@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230315120327.958413-1-neeraj.sanjaykale@nxp.com>
 References: <20230315120327.958413-1-neeraj.sanjaykale@nxp.com>
@@ -66,51 +66,51 @@ X-ClientProxiedBy: SG2PR02CA0096.apcprd02.prod.outlook.com
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AM9PR04MB8603:EE_|DU2PR04MB8629:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6b606c6b-6896-4e16-2532-08db254d5f02
+X-MS-Office365-Filtering-Correlation-Id: f431bd0c-1935-4355-f2b2-08db254d62c3
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9sl8Q+w4YkPWh1ZQw4XzGc5TLfRlOJAZaDrd+p1KVWCUrizpNPRZmq7vIGtZaxjH4eHGq1ojg4fT/YAETG6IjuenvR6Ta2y1Px7O6dejXlyhWGB6jN1pFtNdkI6txyqiNJB9zwL1fIOMKjPViw1lbhjfcrys5cZNuV2cq2QLvoqxpVPqlTvYsnZ6X1ZUjlF6lMw4n7H+p7w5y+WxA3yBe/dSN8JWy3pfVI1O2V/bDGdE+8JC2w7DrZ2FBrcHzxVgS0HcHnkUNq6DxxZK+WUG2ycaYy4H4DvLIwFMuiogvYOFbAvh5Uf8PL6oOjEFdVls7kCR485fr+ewbET7nUJGYSIGB0XfgdErdyskLLZ/XY4zcMUWZEoge1Va09EOcace2ZoSkdrTi0RPZ3bp76UzuOr6bd7nhOvZOciL2qOPbjxwQuP8nNX9XUS40/OkHvBwMC2U9+dPSskFzEx3O7Haf/8lYYSXCeVpTrlO3Ssioy1p4l4toJvwCSjLCmzboFDumnSjHhp0eqNyxQdXeIc8lshxW2SP64BqRypYkXucyw+j8QNOz3Nop41FedPnw5uaLrxjbNGIphW+p7/3rnn3r0CYGCLlARq05C/Nl/7frg5NZoIhdy/59hLApzZESZyg87meLPj+PoGfFfSgtkQVyb3CPz9wcEp/AZPxc7Y0fx/QWyCGdeTYLJ2iPm4r+5vKA4RPEDbBV8Byp5bxBYLm+V7HTW5XqiqrVwcP7Q3FSkA=
+X-Microsoft-Antispam-Message-Info: F6XzxAjn7YmXYZLptZwHCiFUt4hjL3bSR52bBLG55YoO6eOCxvNUYHHrUmkkhVZ4j7pQzb2tRQ8TXnu/BrJJZxVNXJzlXO8viEihWnhsmpU0dj0LgDgn3WV3Q0T22/Ef/w3gGPDKcBI4hPc5PaogvVGNyBbT76CerPcfdKj6m2doU6jsHJmQ2SpKcWpboVztbBJANf8JkFYOdZB9PhXBr718rhDnI9UuJzQGMCfujF3XTnYnm7Ych8ZycINb0M3lv4K6ZZm4Ni+6IEWi10lOzbdnOTyPY9z3k7XiB0f18Tt+LKSs6H84DLJYzexON9CgyZOt2Pg5EvEoqC+kWSyjo0kPlDcSmkHZgz/B6O4+fs6FOdPlj+h1mbtBgLZH4r42DsCxbuGsqvuNrQ7FoeCZARdNMW1mYIiWeHsoCNDz4xITHkccVON4QexXUaDi0oQwGcZ1hJ3iF8HYOoTRjgnEgL9sdacAoIzUu1AO8q5JRKYDzbe7I0ffv1o/LkfAPu6qT/dwo5MEeFg0FbjzN/egYbqOVzIEjRBwny1/gOI3yw/QuDwIgWUSOeaiQMSDzfaLtgS+0Wp2qELctQQC3EOolEoEHYE9AFAt047PKt8PVWKtGEk9JeAtTfDWGRhU909YKQ5M1FuvwLiwuDRJhz5iAOIgutMSJflUYxUpJ4uF/bxwiAck5wrorpdBNYNHdKgX/LJsm9ez4yYCxe7zZbPIZt2XuXq6Olyz3BBIkCvy5Kg=
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8603.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(396003)(366004)(39860400002)(136003)(346002)(451199018)(66946007)(41300700001)(38100700002)(2906002)(316002)(38350700002)(66476007)(66556008)(8676002)(4326008)(8936002)(478600001)(5660300002)(7416002)(186003)(52116002)(6486002)(921005)(36756003)(6666004)(6506007)(1076003)(2616005)(26005)(83380400001)(6512007)(86362001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fw0RFDsOfQ5kxKJyBHKVW6mJl/aAshaak1T4PekkN0o82uzA7nRA2SF/+kb7?=
- =?us-ascii?Q?IJnhb2EwnigD8LQyZwBkdAseu/GCjuFeWygwRmcoiljo+XST5TeTEWqlr4kB?=
- =?us-ascii?Q?oYvpt1yvCrv8/cG8pf+KXurB8hxYzghuvGkbFvePZfhtRyP5+efb8DxQP+fP?=
- =?us-ascii?Q?AjemsBB0SyNPDeXdiAInBwcTIV66roR3iLW7Sf4HhaVGLdzDbjpKUZd4K6HJ?=
- =?us-ascii?Q?bGAsQNptOVT2b0GzTSMkpLtIMEImqL5Wy5c7CFoZe0blZtI8O21Rmr/HzqEU?=
- =?us-ascii?Q?dY+Db/xe/K0bdKypovuD7ilqm8zNn4zxTCP0cujboU1Ah4I19deioJ8VHlMR?=
- =?us-ascii?Q?mkstlHLxTxZ7+5zHzImqXJ0IaSUkR3CLfL3AI/rDMyX2kzsfQHxTDtmdAYgx?=
- =?us-ascii?Q?TRaz4cL1kYqIwyrmDtmurfGBPRhnPqAn2Y8I37byKivADLH0CjNkXa4lkXoY?=
- =?us-ascii?Q?StT9R8ZJJZJyUyseDq9BjBjvgAW0weJbzfjTp1zqCRi7GbDd72CxVh+ym3iV?=
- =?us-ascii?Q?SGSyunD65bzXSRUnUsK36KjzufISFIjDGJg8AaIwjPi03bNgynSD/1vhBox5?=
- =?us-ascii?Q?njbfv4mp4whUpoLL1LhChYwbzVaM2xyjLTen8aIY4FMJxMiwTysCCfN8Hthp?=
- =?us-ascii?Q?422NH14zK/JTLhN7gjUPCkaYZIP2i8jZ2gAOU7BCJE5r4a/Tww1szj0hmYKE?=
- =?us-ascii?Q?0v1BNrofGM8ZEr2IkzKWvljvKfcko6FjTUa7/Q3gcAm+VsMhbzXF2Dut9fc3?=
- =?us-ascii?Q?9XjHpEHOnYjS8vrzYrNSN0JfH4Eg5MRTA+kJF195XUVCjaK5geGDGjkZNsb0?=
- =?us-ascii?Q?O9PgT1/jt7HNHGKW+qnQ3lqbaBO3qHL14atY6Ezjma9Im8SawyrfX7rsglon?=
- =?us-ascii?Q?F2hD+hfhQBUJuCfj5oV4HDyyKks/atKhgZ8Ux2DlfNKliddX3fhnqHxjjwtw?=
- =?us-ascii?Q?NngPoPJKH+byfzbbPXCYXQHpBTEftKMVx7WrZFOiGAlwI8DpUwLdKGpIlPWl?=
- =?us-ascii?Q?9AKUmQ5U6/VwKwgHbbz+ZLFLi1nlez56T9A1TIpcZ+uwQENo6Kp2t7ib493Y?=
- =?us-ascii?Q?9JqCSKumuu6p52zz+C5m7YW1K+yzgNUwUGB5WskH9s7J9lbKw6wYvX8VocHd?=
- =?us-ascii?Q?Cy0PeyrIYIHofH5iHR1Co8mULBF9BsjBSUNdEpMHsVsetDGmAfGfqQhrnvOv?=
- =?us-ascii?Q?AqyPN7BCoHcx8I2RU1pD2aLJDQauoAhkkdGelXRUlW/CqACdIVAsL2wcKLEn?=
- =?us-ascii?Q?fY6wJsVm0X7rucFiD2I6EHqzbmBs+A2KXG7/GPCtCAVekHlYm7+fdsJWQ78o?=
- =?us-ascii?Q?9ozBwOzAl+5NFPWbGFpRjBBLrFzUiDHtgoxLdNL0KJnY6IkjkB1qWfC7zEDl?=
- =?us-ascii?Q?DK9W/qBOXGqL1r/T72tTC7kmxp4YYdeHW0y+muAospql0s521BG6oMUKlwTr?=
- =?us-ascii?Q?e+h30iq3yv59PUQcfIH2FdONorkrjEH7HKoWY/u2212CkPoVl9vV7HusmaJ1?=
- =?us-ascii?Q?sNmWh4n3SCPTrT1kqaUuBVqOf10Qos1vDIecrvEjpJIzefmwhFGLeN/lHkeN?=
- =?us-ascii?Q?Zd3fGI3qbe+V03Ypy67RzGVrcLMbUUcTdTT6fmdkq/XZBT/NBKdYhG1VdbJp?=
- =?us-ascii?Q?GA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?mx6GWTq+71PFomIdccDE+xZ07URYDMQf9k9xpld0xgNm77NHM4cgUiiSy2cu?=
+ =?us-ascii?Q?ibXPcn3VulA7Pkh3mM77jcuHYRa0B6bWXzjLlbrEqViAPl3iHML76Ampf+FV?=
+ =?us-ascii?Q?3fIPaGqVsLvLEp7Xl53lKhtwgdpmh0rHxerKIy2qaoTyex/cSdxvwpP6nQob?=
+ =?us-ascii?Q?BokZwLYF03uyu9jzUGuCU2SoJP06wpU8GW6dSyeLku4u83HN+3Hpp73YdFlC?=
+ =?us-ascii?Q?l8uhAc6k3upBog9i+hEtbINnjlA8KPVRC6uJTVjSgSNfOYlU66C0EsiI6yol?=
+ =?us-ascii?Q?3snyPw5q0pkwFB6I7IxPJ0adjjTPHgnzE20xK3K9T7PzVIU4aSHHtOQuaPsl?=
+ =?us-ascii?Q?vD+QAzACJoyIEmZtVaiyvm88E/JNqyGZcqxqrbRRqodpgSp/TWg24qbO3UuO?=
+ =?us-ascii?Q?QG2UN5c/y7un0aDqsRJ1rEiBzeH4RnzH7UVD7/J2WbkyvutioHuxfaPY0H/l?=
+ =?us-ascii?Q?IWD/Egwwtr1Nad9FPa8DRXE127FKtubetN0F/v31YhqBFyNM0W5J+YIF76/y?=
+ =?us-ascii?Q?G7bKt+86WO7lj068J9kHmVCo0PF1J11hR9tVOsyo8Yf8s/6VAv+9i4ps+WH5?=
+ =?us-ascii?Q?U76a2bzt4Eh8UKCHywd8hzv9gw8bbPSB2WPNAknwRja0/vE3fWi0aGk/YpOm?=
+ =?us-ascii?Q?VObcTJ+QhmVpuUWzVOkpxBWY306oQfGMvrhhgHYEY2q12p39B1HQLPHGdCyP?=
+ =?us-ascii?Q?VoB4hVwg6Z0IkgfTeJwUonhtfYlw7kLpIxwUO/1+Ja0jIEwfOWZVEFF1d0vt?=
+ =?us-ascii?Q?8x8pdOiHatIsJwMMoQ9eyPzMX5knWKTFT7npuHN25g1SnuNEvIT3KBYdhSPH?=
+ =?us-ascii?Q?bKyomsK/ANTS3Jxvf+H11IZl9slBF4yQFh3WK/qjXwLKPWZmXHCi9PL7M9Tr?=
+ =?us-ascii?Q?1Ukr8SkKf3+RAh9U6we19Z8Rv5cITJA2QByF5Y/1nmaVy4kTWM/sauCeAB79?=
+ =?us-ascii?Q?JvZqEGtDx1O0/4Dk0RCFp42ro5oVrdbIHQDzo/vVC6NA09e7kHq4OkQgs+cU?=
+ =?us-ascii?Q?M8wKOx4KthOI+zRRoSUuonc9kROeNYfwIF0UFaViLOTaIznPq2/uCJ+7PrrY?=
+ =?us-ascii?Q?vD+0T7QcPYRvy0re1k0/GxRVb+lDHZgXXDv4GMURPETDtwfnXrC+0d4Y9f8t?=
+ =?us-ascii?Q?YXsHJVTpaGORMy3TsCjQ2WLeUDydeE1S/SCJOlHBONJ3Qsd39ThiiF951fMw?=
+ =?us-ascii?Q?gXfJKlgPguIBd4e/U9l8xas6+Vj7kGS/71ygglaY5wtC67IHAyDL0He26pH+?=
+ =?us-ascii?Q?dOR+PYXKmUqYDiwUBb7XD0o7v1KV7DAULDWm03kteDI3W3ZAZnPwtAqxNg84?=
+ =?us-ascii?Q?dl5P5Wu2/+vpjCVRqUtaOkyB5nPdx8WQfmpCyOKsI5EbcPrZFxeLB63gJJ9o?=
+ =?us-ascii?Q?Ld+aXFC3qnUQjSgOjDGAMBjT1tdecwT+yQHRy7TrD/fcl45wJJO7LyP77fLz?=
+ =?us-ascii?Q?TEi3I/IutfxZ6LE4pT8sAhdSSAtN2PJOrG64nLQ3qDdbxLka84rG8h2VpAJC?=
+ =?us-ascii?Q?8YCG6qMXsBj5Mm3cJ5nDh9RICjcBXyPcJzAO8+J3/KxJqJMjBnT+W8tJ0DAI?=
+ =?us-ascii?Q?AO1UuRQCHiHfy35mHmefahqP9zlfUfXjZBvDj6lK8wTUbgLsS43QocKyZPQH?=
+ =?us-ascii?Q?5Q=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6b606c6b-6896-4e16-2532-08db254d5f02
+X-MS-Exchange-CrossTenant-Network-Message-Id: f431bd0c-1935-4355-f2b2-08db254d62c3
 X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8603.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2023 12:04:04.1863
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2023 12:04:10.4962
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ATzy78OEBYXLJo+jlmw/08SgnQMPGboWB2CrmoWTUKBbgjGKvZxbpjrznkAzPM8bh/IX73zkaYLIiTMBzG1/dxa2gEB2ZgC5ieKmpinApNo=
+X-MS-Exchange-CrossTenant-UserPrincipalName: hiG1FLuaQYQ0VZ2nOALqnEyj2ajS0mYo7U/3T4fzsYeLxIHBKiyLOeVp4UD2glvP9Kiu8ZaXvjprA2F1LbNG8/9NU9CKC8ft1prtEYCyqhA=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB8629
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -122,90 +122,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This replaces all instances of ENOTSUPP with EOPNOTSUPP since ENOTSUPP
-is not a standard error code. This will help maintain consistency in
-error codes when new serdev API's are added.
+Adds serdev_device_break_ctl() and an implementation for ttyport.
+This function simply calls the break_ctl in tty layer, which can
+assert a break signal over UART-TX line, if the tty and the
+underlying platform and UART peripheral supports this operation.
 
 Signed-off-by: Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
 ---
-v11: Replace all instances of ENOTSUPP with EOPNOTSUPP. (Simon Horman)
+v3: Add details to the commit message. Replace ENOTSUPP with
+EOPNOTSUPP. (Greg KH, Leon Romanovsky)
+v9: Replace all instances of ENOTSUPP with EOPNOTSUPP.
+(Simon Horman)
+v11: Create a separate patch for replacing ENOTSUPP with
+EOPNOTSUPP. (Simon Horman)
 ---
- drivers/tty/serdev/core.c           | 6 +++---
- drivers/tty/serdev/serdev-ttyport.c | 4 ++--
- include/linux/serdev.h              | 4 ++--
- 3 files changed, 7 insertions(+), 7 deletions(-)
+ drivers/tty/serdev/core.c           | 11 +++++++++++
+ drivers/tty/serdev/serdev-ttyport.c | 12 ++++++++++++
+ include/linux/serdev.h              |  6 ++++++
+ 3 files changed, 29 insertions(+)
 
 diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index 0180e1e4e75d..d43aabd0cb76 100644
+index d43aabd0cb76..dc540e74c64d 100644
 --- a/drivers/tty/serdev/core.c
 +++ b/drivers/tty/serdev/core.c
-@@ -366,7 +366,7 @@ int serdev_device_set_parity(struct serdev_device *serdev,
- 	struct serdev_controller *ctrl = serdev->ctrl;
- 
- 	if (!ctrl || !ctrl->ops->set_parity)
--		return -ENOTSUPP;
-+		return -EOPNOTSUPP;
- 
- 	return ctrl->ops->set_parity(ctrl, parity);
+@@ -405,6 +405,17 @@ int serdev_device_set_tiocm(struct serdev_device *serdev, int set, int clear)
  }
-@@ -388,7 +388,7 @@ int serdev_device_get_tiocm(struct serdev_device *serdev)
- 	struct serdev_controller *ctrl = serdev->ctrl;
+ EXPORT_SYMBOL_GPL(serdev_device_set_tiocm);
  
- 	if (!ctrl || !ctrl->ops->get_tiocm)
--		return -ENOTSUPP;
++int serdev_device_break_ctl(struct serdev_device *serdev, int break_state)
++{
++	struct serdev_controller *ctrl = serdev->ctrl;
++
++	if (!ctrl || !ctrl->ops->break_ctl)
 +		return -EOPNOTSUPP;
- 
- 	return ctrl->ops->get_tiocm(ctrl);
- }
-@@ -399,7 +399,7 @@ int serdev_device_set_tiocm(struct serdev_device *serdev, int set, int clear)
- 	struct serdev_controller *ctrl = serdev->ctrl;
- 
- 	if (!ctrl || !ctrl->ops->set_tiocm)
--		return -ENOTSUPP;
-+		return -EOPNOTSUPP;
- 
- 	return ctrl->ops->set_tiocm(ctrl, set, clear);
- }
++
++	return ctrl->ops->break_ctl(ctrl, break_state);
++}
++EXPORT_SYMBOL_GPL(serdev_device_break_ctl);
++
+ static int serdev_drv_probe(struct device *dev)
+ {
+ 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
 diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
-index d367803e2044..f26ff82723f1 100644
+index f26ff82723f1..8033ef19669c 100644
 --- a/drivers/tty/serdev/serdev-ttyport.c
 +++ b/drivers/tty/serdev/serdev-ttyport.c
-@@ -231,7 +231,7 @@ static int ttyport_get_tiocm(struct serdev_controller *ctrl)
- 	struct tty_struct *tty = serport->tty;
- 
- 	if (!tty->ops->tiocmget)
--		return -ENOTSUPP;
-+		return -EOPNOTSUPP;
- 
- 	return tty->ops->tiocmget(tty);
- }
-@@ -242,7 +242,7 @@ static int ttyport_set_tiocm(struct serdev_controller *ctrl, unsigned int set, u
- 	struct tty_struct *tty = serport->tty;
- 
- 	if (!tty->ops->tiocmset)
--		return -ENOTSUPP;
-+		return -EOPNOTSUPP;
- 
+@@ -247,6 +247,17 @@ static int ttyport_set_tiocm(struct serdev_controller *ctrl, unsigned int set, u
  	return tty->ops->tiocmset(tty, set, clear);
  }
+ 
++static int ttyport_break_ctl(struct serdev_controller *ctrl, unsigned int break_state)
++{
++	struct serport *serport = serdev_controller_get_drvdata(ctrl);
++	struct tty_struct *tty = serport->tty;
++
++	if (!tty->ops->break_ctl)
++		return -EOPNOTSUPP;
++
++	return tty->ops->break_ctl(tty, break_state);
++}
++
+ static const struct serdev_controller_ops ctrl_ops = {
+ 	.write_buf = ttyport_write_buf,
+ 	.write_flush = ttyport_write_flush,
+@@ -259,6 +270,7 @@ static const struct serdev_controller_ops ctrl_ops = {
+ 	.wait_until_sent = ttyport_wait_until_sent,
+ 	.get_tiocm = ttyport_get_tiocm,
+ 	.set_tiocm = ttyport_set_tiocm,
++	.break_ctl = ttyport_break_ctl,
+ };
+ 
+ struct device *serdev_tty_port_register(struct tty_port *port,
 diff --git a/include/linux/serdev.h b/include/linux/serdev.h
-index 66f624fc618c..89b0a5af9be2 100644
+index 89b0a5af9be2..d123d7f43e85 100644
 --- a/include/linux/serdev.h
 +++ b/include/linux/serdev.h
-@@ -249,11 +249,11 @@ static inline int serdev_device_write_buf(struct serdev_device *serdev,
- static inline void serdev_device_wait_until_sent(struct serdev_device *sdev, long timeout) {}
- static inline int serdev_device_get_tiocm(struct serdev_device *serdev)
+@@ -92,6 +92,7 @@ struct serdev_controller_ops {
+ 	void (*wait_until_sent)(struct serdev_controller *, long);
+ 	int (*get_tiocm)(struct serdev_controller *);
+ 	int (*set_tiocm)(struct serdev_controller *, unsigned int, unsigned int);
++	int (*break_ctl)(struct serdev_controller *ctrl, unsigned int break_state);
+ };
+ 
+ /**
+@@ -202,6 +203,7 @@ int serdev_device_write_buf(struct serdev_device *, const unsigned char *, size_
+ void serdev_device_wait_until_sent(struct serdev_device *, long);
+ int serdev_device_get_tiocm(struct serdev_device *);
+ int serdev_device_set_tiocm(struct serdev_device *, int, int);
++int serdev_device_break_ctl(struct serdev_device *serdev, int break_state);
+ void serdev_device_write_wakeup(struct serdev_device *);
+ int serdev_device_write(struct serdev_device *, const unsigned char *, size_t, long);
+ void serdev_device_write_flush(struct serdev_device *);
+@@ -255,6 +257,10 @@ static inline int serdev_device_set_tiocm(struct serdev_device *serdev, int set,
  {
--	return -ENOTSUPP;
-+	return -EOPNOTSUPP;
+ 	return -EOPNOTSUPP;
  }
- static inline int serdev_device_set_tiocm(struct serdev_device *serdev, int set, int clear)
- {
--	return -ENOTSUPP;
++static inline int serdev_device_break_ctl(struct serdev_device *serdev, int break_state)
++{
 +	return -EOPNOTSUPP;
- }
++}
  static inline int serdev_device_write(struct serdev_device *sdev, const unsigned char *buf,
  				      size_t count, unsigned long timeout)
+ {
 -- 
 2.34.1
 
