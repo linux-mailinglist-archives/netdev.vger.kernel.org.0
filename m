@@ -2,60 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 439F16BC1B2
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 00:46:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD3CC6BC1B4
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 00:48:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232952AbjCOXqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 19:46:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47938 "EHLO
+        id S230421AbjCOXr6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 19:47:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233097AbjCOXqe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 19:46:34 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF68C19C44
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 16:46:05 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id r1so27544ybu.5
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 16:46:05 -0700 (PDT)
+        with ESMTP id S232196AbjCOXr5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 19:47:57 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2D621A06
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 16:47:21 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id eg48so905221edb.13
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 16:47:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1678923964;
+        d=linux-foundation.org; s=google; t=1678924039;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=GURfLkH9fjCPvPTlLdPo8C1lhWFs6sSXbaIseFlcfEY=;
-        b=qYti+SVdyPx4ELzRApWRlZA67qEntlxMl2eLVnQxxc6lJKsVMbqpgqgjgIh+GqpAwg
-         VDdoRjT4eNiqswwY5R7n7H9n77rgsMHCAM7O12xxRJASOJ4ZPAM72xm1UCGKHmSmtH7o
-         8THY2LLp4UWwGEEeJp8kXUq/TE15r4KsjSlaYUgZ3hu+Wbpncel3liJjoNG3eANR8Mga
-         3md26A0rgMXlipRZOUoIbk3DcoO2yJYKoQ4N4klWYaxRslpKB+Q2uKV8Y67cLnM/P96E
-         7HGDcEzPw3LOz3T6JLZHE4gZai1oz6sQdKC6fwsarcPM8ea+LMqzUPkvpeYKfRhDRJ5D
-         olrg==
+        bh=Jix/jt8/DqGVnmXzbJxKpTagGoN376osQS+d3UviJ2s=;
+        b=Qpl9rOW7nQa0Bgarl7S1MT9QLwbQtyDj4G3+9+QgMf65Pdml//zgB/HOIui7FFuhcJ
+         TUCE5XhTtSYTfRJnFdoPUpkdeY5Km1KtkrlR9B7oAr5REwKx6lmdp/L0JsrRbUQ5MFe5
+         h7kmmIoGsYmbm34jweDbZApnKVaHi1x0QK/Ww=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678923964;
+        d=1e100.net; s=20210112; t=1678924039;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=GURfLkH9fjCPvPTlLdPo8C1lhWFs6sSXbaIseFlcfEY=;
-        b=MQbGxRXL2EeG0Q8KzlX0IlIDyOhNsrKa0FxFTwXCEfXZypkSuT/wzcyWZzzOipRT5i
-         WJenFGmFZ6nCLxzap2TFDaDetc+8A9OpleELM0fYERfwGi0qzTtVZBCGNkjktZJ8TtZz
-         nrbRczii+7sMy18QUTYfR9GPEXPfqhFhfe2mv5TMNM/DL0dpOo3trgcCr2Mf85N7BC58
-         bkEIfjDMzAHVo7K67Hu1qOWq+tX7fU7W4WPwJVGExGZ+CPlrzXiFEmQOprZMVkX8pjxC
-         kludpH5pzwyWN/QdacrXP/I0pYCb73pSqn+dawcYRJkufbLnfzRnjUvIjxKgIgqlM+VY
-         aGKw==
-X-Gm-Message-State: AO0yUKXj8ZYsvTBWmm+95mcLx3wEMSIHZh3Mi500dL0tXXOfsLUcV5sO
-        G4X4+VzwA3mHBF/POVTjFyMV0Ut+s8Xo5ZjbEdy2cA==
-X-Google-Smtp-Source: AK7set/BQnt8HWVOer2oQ2mpfgBIJj1ZGFXyK8ebg7Klvv7FujqIUAqpAlULU4onVMAuAIOiZM7X78jxDr28aILn/rs=
-X-Received: by 2002:a05:6902:4f:b0:b38:461f:daeb with SMTP id
- m15-20020a056902004f00b00b38461fdaebmr7829457ybh.6.1678923963427; Wed, 15 Mar
- 2023 16:46:03 -0700 (PDT)
+        bh=Jix/jt8/DqGVnmXzbJxKpTagGoN376osQS+d3UviJ2s=;
+        b=tUg3aFwi0M3Sznb4ygnkya6aMyENgGPlIa3ReNzECy5frW5/oxjnwivoEeaNlRixav
+         HVnSyqq/FKU7nJMbeH1ZBobd0bRpr7hpuJtCQ7BiwpMl5nFKm8wPl4xPI+tA5CDOGMFy
+         qk4NaoxBMGa7U53MWg2gbf7jRarBd9P+xVa/OydPji5GpI7/hFa36w7E2M2GPwMmjmme
+         6CBEcPLIFt9yzPpvT+jTAa8EPYI+/pCNM64On2XG5zYwhFyqqTzKahv8NpiTB01pnMt2
+         ecOqP18E79U9qbtEmbrmGd3ekdk41UVtQKIxV8U9yI4c3u5c4ajnZ7NdzF8hY9RE66MX
+         cgPg==
+X-Gm-Message-State: AO0yUKWqZCd35VvYm22JxtQPucn0MSABGTxTWcbu2462O9F2DGOpjwTp
+        pOufYdWH5ruZuANLpM1TBQIsapLr6D9r3fpbLdGLCg==
+X-Google-Smtp-Source: AK7set+hElLOCxvZES0hWtlE+B4hsUFozlsZlEqPhjr0POVnYLnCK0dTZPfopLvXfEs4jPrJ9am6Zw==
+X-Received: by 2002:a17:906:1b09:b0:88e:e498:109b with SMTP id o9-20020a1709061b0900b0088ee498109bmr7887638ejg.5.1678924039161;
+        Wed, 15 Mar 2023 16:47:19 -0700 (PDT)
+Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com. [209.85.208.50])
+        by smtp.gmail.com with ESMTPSA id v10-20020a170906858a00b008d173604d72sm3122102ejx.174.2023.03.15.16.47.18
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Mar 2023 16:47:18 -0700 (PDT)
+Received: by mail-ed1-f50.google.com with SMTP id cy23so922247edb.12
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 16:47:18 -0700 (PDT)
+X-Received: by 2002:a17:906:1542:b0:8b1:28f6:8ab3 with SMTP id
+ c2-20020a170906154200b008b128f68ab3mr4147419ejd.15.1678924037912; Wed, 15 Mar
+ 2023 16:47:17 -0700 (PDT)
 MIME-Version: 1.0
 References: <20230315154245.3405750-1-edumazet@google.com> <20230315154245.3405750-2-edumazet@google.com>
  <20230315142841.3a2ac99a@kernel.org> <CANn89iLbOqjWVmgZKdGjbdsHw1EwO9d_w+dgKsyzLoq9pOsurQ@mail.gmail.com>
- <CAHk-=wiPUfe8aji5KojAhDKjWhJJU2F9kfzyL660=jRkY+Uzyg@mail.gmail.com> <CAHk-=wjgW-aFo3qLyssg+76-XkYbeMaH58FwW5Bd3-baqfXqrQ@mail.gmail.com>
-In-Reply-To: <CAHk-=wjgW-aFo3qLyssg+76-XkYbeMaH58FwW5Bd3-baqfXqrQ@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 15 Mar 2023 16:45:52 -0700
-Message-ID: <CANn89i+DLp2tDG7DT1bdYvL1o0UBsBzGBA3t4J2P+yn_QLJX2Q@mail.gmail.com>
+ <CAHk-=wiPUfe8aji5KojAhDKjWhJJU2F9kfzyL660=jRkY+Uzyg@mail.gmail.com> <CANn89iKA3E0CnXD=3EmP8-Ojav-tYEFeBaBu3B7CgzPaX6EC6A@mail.gmail.com>
+In-Reply-To: <CANn89iKA3E0CnXD=3EmP8-Ojav-tYEFeBaBu3B7CgzPaX6EC6A@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 15 Mar 2023 16:47:01 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgQm4CgRJmmRdNjUCsX+F+mKxeUE_Siikuz6q_FbEySxA@mail.gmail.com>
+Message-ID: <CAHk-=wgQm4CgRJmmRdNjUCsX+F+mKxeUE_Siikuz6q_FbEySxA@mail.gmail.com>
 Subject: Re: [PATCH net-next 1/8] inet: preserve const qualifier in inet_sk()
-To:     Linus Torvalds <torvalds@linux-foundation.org>
+To:     Eric Dumazet <edumazet@google.com>
 Cc:     Jakub Kicinski <kuba@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>,
@@ -64,10 +71,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,52 +81,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 15, 2023 at 4:40=E2=80=AFPM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
+On Wed, Mar 15, 2023 at 4:37=E2=80=AFPM Eric Dumazet <edumazet@google.com> =
+wrote:
 >
-> On Wed, Mar 15, 2023 at 4:21=E2=80=AFPM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
-> >
-> > But I really don't see why you don't just use
-> > "container_of()", which is actually type-safe, and would allow "struct
-> > inet_sock" to contain the "struct sock" somewhere else than in the
-> > first field.
+> Yep. my goal was to have const awareness.
 >
-> I guess that doesn't work, because of how sk_alloc() and friends are set =
-up.
+> This:
 >
-> But I do think the networking code should strive to avoid those
-> "randomly cast one socket type to another".
+> #define inet_sk(ptr) container_of(ptr, struct inet_sock, sk)
+>
+> does not really cover what I wanted, does it ?
 
-Note that my v1 proposed this thing:
+Ugh. You should use "container_of_const()" of course.
 
-#define inet_sk(sk) \
-+       _Generic(sk,                                           \
-+                const struct sock * : ((const struct inet_sock *)(sk)), \
-+                struct sock * : ((struct inet_sock *)(sk)) \
-+       )
+I *thought* we already fixed plain "container_of()" to do the right
+thing,, and got rid of "container_of_const()", but that was obviously
+in my dreams.
 
-
-Jakub feedback was to instead use a common helper, and CCed you on the
-discussion.
-I do not see yet how to do this 'without cast'
-
-Let me know if you are ok with the v1 approach.
-
->
-> For example, when you have a TCP socket, instead of casting from
-> "struct sock *" to "struct tcp_sock *" in tcp_sk(), and getting it all
-> wrong wrt const, I think you should do the same thing:
->
->   #define tcp_sock(ptr) container_of(ptr, struct tcp_sock,
-> inet_conn.icsk_inet.sk)
->
-> to really *show* that you know that "yes, struct tcp_sock contains a
-> 'sk' embedded three structures down!".
->
-> And no, I did not actually *test* that at all. But it should get
-> 'const' right (because container_of() gets const right these days),
-> _and_ it actually verifies that the type you claim has another type
-> embedded in it actually does so.
->
->                   Linus
+           Linus
