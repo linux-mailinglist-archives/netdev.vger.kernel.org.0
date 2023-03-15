@@ -2,110 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5097C6BB6BB
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 15:56:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A02496BB68D
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 15:52:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233327AbjCOO4z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 10:56:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35118 "EHLO
+        id S232783AbjCOOwG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 10:52:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232845AbjCOO4j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 10:56:39 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 070DA96F13;
-        Wed, 15 Mar 2023 07:56:01 -0700 (PDT)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32FEpKPr023684;
-        Wed, 15 Mar 2023 14:54:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=58TrP3aNvrGOpiETL1qz8zNKT9vu92fU3RIyyVJRLXY=;
- b=a6vrzVgwbyULk14LJ3bwwT/hcvdvtHUFHpxG3Htkos6ssOROGhhVNg0gCsOKnq5T+OOR
- FeRyVx2khf4UuqshH+Gr4rrHVaQkPsZEH0Q59vlsoe0NtKgENUZYx3TBBkv1weJ3VwxK
- GUawWjr9ploCGOOwbsO2eMQzfkstDKYpXjT5rXzJAzzA23qrnyzoDJlZdoJkT9KgesUw
- kbMQPuWYX2QIwA3HhQDNe4mXIEVnLGjBxJOGNhnVBK96bhCln4KB99OmbpSFaLNIi1TH
- V3BGgi4I93Cn0AHYhzda4n9yRzOREl6+9/eKkdNM73Nu3CMDPyMTIxLNzFQSRqCwFZ2S yA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3pbg59g2t5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 15 Mar 2023 14:54:14 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32FEphjs028072;
-        Wed, 15 Mar 2023 14:54:13 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3pbg59g2s0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 15 Mar 2023 14:54:13 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 32EN5toR001285;
-        Wed, 15 Mar 2023 14:54:11 GMT
-Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
-        by ppma05fra.de.ibm.com (PPS) with ESMTPS id 3pb29rrrxb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 15 Mar 2023 14:54:11 +0000
-Received: from smtpav07.fra02v.mail.ibm.com (smtpav07.fra02v.mail.ibm.com [10.20.54.106])
-        by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 32FEs8Uk26084046
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 15 Mar 2023 14:54:08 GMT
-Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 982B320043;
-        Wed, 15 Mar 2023 14:54:08 +0000 (GMT)
-Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9A92720040;
-        Wed, 15 Mar 2023 14:54:07 +0000 (GMT)
-Received: from [9.171.20.11] (unknown [9.171.20.11])
-        by smtpav07.fra02v.mail.ibm.com (Postfix) with ESMTP;
-        Wed, 15 Mar 2023 14:54:07 +0000 (GMT)
-Message-ID: <de59c0fca26400305ab34cc89e468e395b6256ac.camel@linux.ibm.com>
-Subject: Re: [PATCH bpf-next v3 0/4] xdp: recycle Page Pool backed skbs
- built from XDP frames
-From:   Ilya Leoshkevich <iii@linux.ibm.com>
-To:     Alexander Lobakin <aleksander.lobakin@intel.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Larysa Zaremba <larysa.zaremba@intel.com>,
-        Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Song Liu <song@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Menglong Dong <imagedong@tencent.com>,
-        Mykola Lysenko <mykolal@fb.com>,
+        with ESMTP id S232725AbjCOOwA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 10:52:00 -0400
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C1C457D1D;
+        Wed, 15 Mar 2023 07:51:46 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id E36BB20017;
+        Wed, 15 Mar 2023 14:51:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1678891905;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fZnT0k4cJKJ12/O+T0hqu1DAsCopKhvIX+KSpp9TDMw=;
+        b=WgVyYzIIMVuBl5hSzvQ+tl6Qsdf20HYyNRcUuMzLWbotXVcq319eG3xS4y8eXZJcfBx6tV
+        SKYzJ0MTDXB2DIcnXkq4OkS/9QWT96+KeUhN7nfHyETFWIIEnVqYOOQsSDTEDsSGk4cnJS
+        UTThI1DIXO0irADLtjIEdLi3vcDYuwTQr1V7EHckQoVnx4b7c7DaZ1D2u8VZuDXGhX9KLR
+        3wl92JWh+0ARBqbqoSafw4dQWDITF1pNZWdhv4LuCKLyL4MujFfqW05dvtdHZCpt3QGpjb
+        JYKXQBeQYgTEhGAUjLiS76/U+4nXX/Od5oVNpTixAzIoY0LbOArBGJtcUbuC9w==
+Date:   Wed, 15 Mar 2023 15:54:30 +0100
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Date:   Wed, 15 Mar 2023 15:54:07 +0100
-In-Reply-To: <2bda95d8-6238-f9ef-7dce-aa9320013a13@intel.com>
-References: <20230313215553.1045175-1-aleksander.lobakin@intel.com>
-         <ca1385b5-b3f8-73f3-276c-a2a08ec09aa0@intel.com>
-         <CAADnVQJDz3hBEJ7kohXJ4HUZWZdbRRamfJbrZ6KUaRubBKQmfA@mail.gmail.com>
-         <CAADnVQ+B_JOU+EpP=DKhbY9yXdN6GiRPnpTTXfEZ9sNkUeb-yQ@mail.gmail.com>
-         <5b360c35-1671-c0b8-78ca-517c7cd535ae@intel.com>
-         <2bda95d8-6238-f9ef-7dce-aa9320013a13@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Arun Ramadoss <Arun.Ramadoss@microchip.com>,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RESEND net-next v4 3/3] net: dsa: rzn1-a5psw: add vlan
+ support
+Message-ID: <20230315155430.5873cdb6@fixe.home>
+In-Reply-To: <20230314233454.3zcpzhobif475hl2@skbuf>
+References: <20230314163651.242259-1-clement.leger@bootlin.com>
+        <20230314163651.242259-1-clement.leger@bootlin.com>
+        <20230314163651.242259-4-clement.leger@bootlin.com>
+        <20230314163651.242259-4-clement.leger@bootlin.com>
+        <20230314233454.3zcpzhobif475hl2@skbuf>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.36; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: q37Mty4IIP7UbWi20qsQUB7PGogWAcDn
-X-Proofpoint-GUID: 3nShfeaeuJ9k6P2Y5RRuP26GIbwjqqtX
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-15_08,2023-03-15_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- adultscore=0 suspectscore=0 mlxscore=0 clxscore=1011 phishscore=0
- spamscore=0 malwarescore=0 impostorscore=0 bulkscore=0 priorityscore=1501
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2302240000 definitions=main-2303150122
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -113,120 +71,273 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2023-03-15 at 11:54 +0100, Alexander Lobakin wrote:
-> From: Alexander Lobakin <aleksander.lobakin@intel.com>
-> Date: Wed, 15 Mar 2023 10:56:25 +0100
->=20
-> > From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-> > Date: Tue, 14 Mar 2023 16:54:25 -0700
-> >=20
-> > > On Tue, Mar 14, 2023 at 11:52=E2=80=AFAM Alexei Starovoitov
-> > > <alexei.starovoitov@gmail.com> wrote:
-> >=20
-> > [...]
-> >=20
-> > > test_xdp_do_redirect:PASS:prog_run 0 nsec
-> > > test_xdp_do_redirect:PASS:pkt_count_xdp 0 nsec
-> > > test_xdp_do_redirect:PASS:pkt_count_zero 0 nsec
-> > > test_xdp_do_redirect:FAIL:pkt_count_tc unexpected pkt_count_tc:
-> > > actual
-> > > 220 !=3D expected 9998
-> > > test_max_pkt_size:PASS:prog_run_max_size 0 nsec
-> > > test_max_pkt_size:PASS:prog_run_too_big 0 nsec
-> > > close_netns:PASS:setns 0 nsec
-> > > #289 xdp_do_redirect:FAIL
-> > > Summary: 270/1674 PASSED, 30 SKIPPED, 1 FAILED
-> > >=20
-> > > Alex,
-> > > could you please take a look at why it's happening?
-> > >=20
-> > > I suspect it's an endianness issue in:
-> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (*metadata !=3D 0x42)
-> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0 return XDP_ABORTED;
-> > > but your patch didn't change that,
-> > > so I'm not sure why it worked before.
-> >=20
-> > Sure, lemme fix it real quick.
->=20
-> Hi Ilya,
->=20
-> Do you have s390 testing setups? Maybe you could take a look, since I
-> don't have one and can't debug it? Doesn't seem to be Endianness
-> issue.
-> I mean, I have this (the below patch), but not sure it will fix
-> anything -- IIRC eBPF arch always matches the host arch ._.
-> I can't figure out from the code what does happen wrongly :s And it
-> happens only on s390.
->=20
-> Thanks,
-> Olek
-> ---
-> diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_do_redirect.c
-> b/tools/testing/selftests/bpf/prog_tests/xdp_do_redirect.c
-> index 662b6c6c5ed7..b21371668447 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/xdp_do_redirect.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/xdp_do_redirect.c
-> @@ -107,7 +107,7 @@ void test_xdp_do_redirect(void)
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0 .attach_point =3D BPF_TC_INGRESS);
-> =C2=A0
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0memcpy(&data[sizeof(__u32=
-)], &pkt_udp, sizeof(pkt_udp));
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0*((__u32 *)data) =3D 0x42; /* =
-metadata test value */
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0*((__u32 *)data) =3D htonl(0x4=
-2); /* metadata test value */
-> =C2=A0
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0skel =3D test_xdp_do_redi=
-rect__open();
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (!ASSERT_OK_PTR(skel, =
-"skel"))
-> diff --git a/tools/testing/selftests/bpf/progs/test_xdp_do_redirect.c
-> b/tools/testing/selftests/bpf/progs/test_xdp_do_redirect.c
-> index cd2d4e3258b8..2475bc30ced2 100644
-> --- a/tools/testing/selftests/bpf/progs/test_xdp_do_redirect.c
-> +++ b/tools/testing/selftests/bpf/progs/test_xdp_do_redirect.c
-> @@ -1,5 +1,6 @@
-> =C2=A0// SPDX-License-Identifier: GPL-2.0
-> =C2=A0#include <vmlinux.h>
-> +#include <bpf/bpf_endian.h>
-> =C2=A0#include <bpf/bpf_helpers.h>
-> =C2=A0
-> =C2=A0#define ETH_ALEN 6
-> @@ -28,7 +29,7 @@ volatile int retcode =3D XDP_REDIRECT;
-> =C2=A0SEC("xdp")
-> =C2=A0int xdp_redirect(struct xdp_md *xdp)
-> =C2=A0{
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0__u32 *metadata =3D (void *)(l=
-ong)xdp->data_meta;
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0__be32 *metadata =3D (void *)(=
-long)xdp->data_meta;
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0void *data_end =3D (void =
-*)(long)xdp->data_end;
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0void *data =3D (void *)(l=
-ong)xdp->data;
-> =C2=A0
-> @@ -44,7 +45,7 @@ int xdp_redirect(struct xdp_md *xdp)
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (metadata + 1 > data)
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0return XDP_ABORTED;
-> =C2=A0
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (*metadata !=3D 0x42)
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (*metadata !=3D __bpf_htonl=
-(0x42))
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0return XDP_ABORTED;
-> =C2=A0
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (*payload =3D=3D MARK_=
-XMIT)
+Le Wed, 15 Mar 2023 01:34:54 +0200,
+Vladimir Oltean <olteanv@gmail.com> a =C3=A9crit :
 
-Okay, I'll take a look. Two quick observations for now:
+> On Tue, Mar 14, 2023 at 05:36:51PM +0100, Cl=C3=A9ment L=C3=A9ger wrote:
+> > Add support for vlan operation (add, del, filtering) on the RZN1
+> > driver. The a5psw switch supports up to 32 VLAN IDs with filtering,
+> > tagged/untagged VLANs and PVID for each ports.
+> >=20
+> > Signed-off-by: Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com>
+> > ---
+> >  drivers/net/dsa/rzn1_a5psw.c | 164 +++++++++++++++++++++++++++++++++++
+> >  drivers/net/dsa/rzn1_a5psw.h |   8 +-
+> >  2 files changed, 169 insertions(+), 3 deletions(-)
+> >=20
+> > diff --git a/drivers/net/dsa/rzn1_a5psw.c b/drivers/net/dsa/rzn1_a5psw.c
+> > index 5059b2814cdd..a9a42a8bc7e3 100644
+> > --- a/drivers/net/dsa/rzn1_a5psw.c
+> > +++ b/drivers/net/dsa/rzn1_a5psw.c
+> > @@ -583,6 +583,144 @@ static int a5psw_port_fdb_dump(struct dsa_switch =
+*ds, int port,
+> >  	return ret;
+> >  }
+> > =20
+> > +static int a5psw_port_vlan_filtering(struct dsa_switch *ds, int port,
+> > +				     bool vlan_filtering,
+> > +				     struct netlink_ext_ack *extack)
+> > +{
+> > +	u32 mask =3D BIT(port + A5PSW_VLAN_VERI_SHIFT) |
+> > +		   BIT(port + A5PSW_VLAN_DISC_SHIFT); =20
+>=20
+> I'm curious what the A5PSW_VLAN_VERI_SHIFT and A5PSW_VLAN_DISC_SHIFT
+> bits do. Also curious in general what does this hardware do w.r.t.
+> VLANs. There would be several things on the checklist:
+>=20
+> - can it drop a VLAN which isn't present in the port membership list?
+>   I guess this is what A5PSW_VLAN_DISC_SHIFT does.
 
-- Unfortunately the above patch does not help.
+Yes, A5PSW_VLAN_DISC_SHIFT stands for "discard" which means the packet
+is discarded if the port is not a member of the VLAN.
+A5PSW_VLAN_VERI_SHIFT is meant to enable VLAN lookup for packet
+flooding (instead of the default lookup).
 
-- In dmesg I see:
+>=20
+> - can it use VLAN information from the packet (with a fallback on the
+>   port PVID) to determine where to send, and where *not* to send the
+>   packet? How does this relate to the flooding registers? Is the flood
+>   mask restricted by the VLAN mask? Is there a default VLAN installed in
+>   the hardware tables, which is also the PVID of all ports, and all
+>   ports are members of it? Could you implement standalone/bridged port
+>   forwarding isolation based on VLANs, rather than the flimsy and most
+>   likely buggy implementation done based on flooding domains, from this
+>   patch set?
 
-    Driver unsupported XDP return value 0 on prog xdp_redirect (id 23)
-    dev N/A, expect packet loss!
+Yes, the VLAN membership is used for packet flooding. The flooding
+registers are used when the packets come has a src MAC that is not in
+the FDB. For more infiormation, see section 4.5.3.9, paragraph 3.c
+which describe the whole lookup process.
+
+Regarding your other question, by default, there is no default VLAN
+installed but indeed, I see what you mean, a default VLAN could be used
+to isolate each ports rather than setting the rule to forward only to
+root CPU port + disabling of flooding. I guess a unique VLAN ID per port
+should be used to isolate each of them and added to the root port to
+untag the input frames tagged with the PVID ?
+
+>=20
+> - is the FDB looked up per {MAC DA, VLAN ID} or just MAC DA? Looking at
+>   a5psw_port_fdb_add(), there's absolutely no sign of "vid" being used,
+>   so I guess it's Shared VLAN Learning. In that case, there's absolutely
+>   no hope to implement ds->fdb_isolation for this hardware. But at the
+>   *very* least, please disable address learning on standalone ports,
+>   *and* implement ds->ops->port_fast_age() so that ports quickly forget
+>   their learned MAC adddresses after leaving a bridge and become
+>   standalone again.
+
+Indeed, the lookup table does not contain the VLAN ID and thus it is
+unused. We talked about it in a previous review and you already
+mentionned that there is no hope to implement fdb_isolation. Ok for
+disabling learning on standalone ports, and indeed, by default, it's
+enabled. Regarding ds->ops->port_fast_age(), it is already implemented.
+
+>=20
+> - if the port PVID is indeed used to filter the flooding mask of
+>   untagged packets, then I speculate that when A5PSW_VLAN_VERI_SHIFT
+>   is set, the hardware searches for a VLAN tag in the packet, whereas if
+>   it's unset, all packets will be forwarded according just to the port
+>   PVID (A5PSW_SYSTEM_TAGINFO). That would be absolutely magnificent if
+>   true, but it also means that you need to be *a lot* more careful when
+>   programming this register. See the "Address databases" section from
+>   Documentation/networking/dsa/dsa.rst for an explanation of the
+>   asynchronous nature of .port_vlan_add() relative to .port_vlan_filterin=
+g().
+>   Also see the call paths of sja1105_commit_pvid() and mv88e6xxx_port_com=
+mit_pvid()
+>   for an example of how this should be managed correctly, and how the
+>   bridge PVID should be committed to hardware only when the port is
+>   currently VLAN-aware.
+
+The port PVID itself is not used to filter the flooding mask. But each
+time a PVID is set, the port must also be programmed as a membership of
+the PVID VLAN ID in the VLAN resolution table. So actually, the PVID is
+just here to tag (or not) the input packet, it does not take a role in
+packet forwading. This is entirely done by the VLAN resolution table
+content (VLAN_RES_TABLE register). Does this means I don't have to be
+extra careful when programming it ?
+
+>=20
+> > +	u32 val =3D vlan_filtering ? mask : 0;
+> > +	struct a5psw *a5psw =3D ds->priv;
+> > +
+> > +	a5psw_reg_rmw(a5psw, A5PSW_VLAN_VERIFY, mask, val);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int a5psw_port_vlan_del(struct dsa_switch *ds, int port,
+> > +			       const struct switchdev_obj_port_vlan *vlan)
+> > +{
+> > +	struct a5psw *a5psw =3D ds->priv;
+> > +	u16 vid =3D vlan->vid;
+> > +	int vlan_res_id;
+> > +
+> > +	dev_dbg(a5psw->dev, "Removing VLAN %d on port %d\n", vid, port);
+> > +
+> > +	vlan_res_id =3D a5psw_find_vlan_entry(a5psw, vid);
+> > +	if (vlan_res_id < 0)
+> > +		return -EINVAL;
+> > +
+> > +	a5psw_port_vlan_cfg(a5psw, vlan_res_id, port, false);
+> > +	a5psw_port_vlan_tagged_cfg(a5psw, vlan_res_id, port, false);
+> > +
+> > +	/* Disable PVID if the vid is matching the port one */ =20
+>=20
+> What does it mean to disable PVID?
+
+It means it disable the input tagging of packets with this PVID.
+Incoming packets will not be modified and passed as-is.
+
+>=20
+> > +	if (vid =3D=3D a5psw_reg_readl(a5psw, A5PSW_SYSTEM_TAGINFO(port)))
+> > +		a5psw_reg_rmw(a5psw, A5PSW_VLAN_IN_MODE_ENA, BIT(port), 0);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> >  static u64 a5psw_read_stat(struct a5psw *a5psw, u32 offset, int port)
+> >  {
+> >  	u32 reg_lo, reg_hi;
+> > @@ -700,6 +838,27 @@ static void a5psw_get_eth_ctrl_stats(struct dsa_sw=
+itch *ds, int port,
+> >  	ctrl_stats->MACControlFramesReceived =3D stat;
+> >  }
+> > =20
+> > +static void a5psw_vlan_setup(struct a5psw *a5psw, int port)
+> > +{
+> > +	u32 reg;
+> > +
+> > +	/* Enable TAG always mode for the port, this is actually controlled
+> > +	 * by VLAN_IN_MODE_ENA field which will be used for PVID insertion
+> > +	 */ =20
+>=20
+> What does the "tag always" mode do, and what are the alternatives?
+
+The name of the mode is probably missleading. When setting VLAN_IN_MODE
+with A5PSW_VLAN_IN_MODE_TAG_ALWAYS, the input packet will be tagged
+_only_ if VLAN_IN_MODE_ENA port bit is set. If this bit is not set for
+the port, packet will passthrough transparently. This bit is actually
+enabled in a5psw_port_vlan_add() when a PVID is set and unset when the
+PVID is removed. Maybe the comment above these lines was not clear
+enough.
+
+There are actually 3 modes (excerpt of the documentation):
+
+0) Single Tagging with Passthrough/VID Overwrite:
+Insert tag if untagged frame. Leave frame unmodified if tagged and VID
+> 0. If tagged with VID =3D 0 (priority tagged), then the VID will be
+overwritten with the VID from SYSTEM_TAGINFO and priority is kept.
+
+1) Single Tagging with Replace:
+If untagged, add the tag, if single tagged, overwrite the tag.
+
+2) Tag always:
+Insert a tag always. This results in a single tagged frame when an
+untagged is received, and a double tagged frame, when a single tagged
+frame is received (or triple tagged if double-tagged received etc.).
+
+This mode is then enforced (or not) using VLAN_IN_MODE. Input
+manipulation can be enabled per port with register VLAN_IN_MODE_ENA and
+its port individual mode is configured in register VLAN_IN_MODE.
+Moreover, the tag that will be inserted is stored in the
+SYSTEM_TAGINFO[port] register.
+>=20
+> > +	reg =3D A5PSW_VLAN_IN_MODE_TAG_ALWAYS;
+> > +	reg <<=3D A5PSW_VLAN_IN_MODE_PORT_SHIFT(port);
+> > +	a5psw_reg_rmw(a5psw, A5PSW_VLAN_IN_MODE,
+> > A5PSW_VLAN_IN_MODE_PORT(port),
+> > +		      reg);
+> > +
+> > +	/* Set transparent mode for output frame manipulation,
+> > this will depend
+> > +	 * on the VLAN_RES configuration mode
+> > +	 */ =20
+>=20
+> What does the "transparent" output mode do, and how does it compare to
+> the "dis", "strip" and "tag through" alternatives?
+
+Here is a description of the 4 modes (excerpt of the documentation):
+
+0) Disabled:
+No frame manipulation occurs, frame is output as-is.
+
+1) Strip mode:
+All the tags (single or double) are removed from frame before sending
+it.
+
+2) Tag through mode:
+Always removes first tag from frame only. In Tag Through mode, the
+inner Tag is passed through while the outer Tag is removed for a double
+Tagged frame. The following rules apply:
+  =E2=97=8F When a single tagged frame is received, strip the tag from the
+   frame.
+  =E2=97=8F When a double tagged frame is received, strip the outer tag fro=
+m the
+    frame
+
+3) VLAN domain mode / transparent mode:
+The first tag of a frame is removed (same as Mode 2) when the VLAN is
+defined as untagged for the port. The following rules apply:
+  =E2=97=8F If frame=E2=80=99s VLAN id is found in the VLAN table (see Sect=
+ion
+    4.5.3.9(3)(b), VLAN Domain Resolution / VLAN Table) and the port is
+    defined (in the table) as tagged for the VLAN, the frame is not
+    modified.
+  =E2=97=8F If frame=E2=80=99s VLAN id is found in the VLAN table and the p=
+ort is
+    defined as untagged for the VLAN, the first VLAN tag is removed from
+    the frame.
+  =E2=97=8F If frame=E2=80=99s VLAN id is not found in the VLAN table, the =
+frame is not
+    modified.
+
+This last mode allows for a fine grain control oveer tagged/untagged
+VLAN since each VLAN setup is in the VLAN table.
+
+>=20
+> > +	reg =3D A5PSW_VLAN_OUT_MODE_TRANSPARENT;
+> > +	reg <<=3D A5PSW_VLAN_OUT_MODE_PORT_SHIFT(port);
+> > +	a5psw_reg_rmw(a5psw, A5PSW_VLAN_OUT_MODE,
+> > +		      A5PSW_VLAN_OUT_MODE_PORT(port), reg);
+> > +} =20
+>=20
+> Sorry for asking all these questions, but VLAN configuration on a switch
+> such as to bring it in line with the bridge driver expectations is a
+> rather tricky thing, so I'd like to have as clear of a mental model of
+> this hardware as possible, if public documentation isn't available.
+
+No worries, that's your "job" to make sure drivers are in line with
+what is expected in DSA. The documentation is public and available at
+[1]. Section 4.5.3 is of interest for your understanding of the VLAN
+filtering support. Let's hope I answered most of your questions.
+
+
+[1]
+https://www.renesas.com/us/en/document/mah/rzn1d-group-rzn1s-group-rzn1l-gr=
+oup-users-manual-r-engine-and-ethernet-peripherals?r=3D1054561
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
