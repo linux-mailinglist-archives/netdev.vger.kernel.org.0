@@ -2,93 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EDB16BA9B8
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 08:47:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E99E6BA9F8
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 08:51:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229988AbjCOHrz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 03:47:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44944 "EHLO
+        id S231977AbjCOHvA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 03:51:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231784AbjCOHrp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 03:47:45 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1ACB168A6;
-        Wed, 15 Mar 2023 00:47:29 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id k25-20020a7bc419000000b003ed23114fa7so478100wmi.4;
-        Wed, 15 Mar 2023 00:47:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678866448;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=7jivhOMF2Dp5QIJkx8toAZguDtgmdufs2dThkF05/Cc=;
-        b=gYOesFjImuZKGkOWZLdnq694h6tVVEdT0BCh4sYKY/cIiA33hRhjo9bkgApd4kx1zz
-         yUt5KGZTRU8cbHrQumF8iKfMCnIKDU6OeN+JZ2bEjaSWaL1azxpzk3sWxxZ913t7DtsV
-         lVlnJ4bhehuTMkqXZiwggJFu3IoXooxwtDT3NhCHxrIGVCQv/+XVb6jzxBWfHtzabh+3
-         EbvROOmPNv3Y4ldf3YbaafAj3nsH6IMbBvdcWtnUBRUoyCq13ltxQVQnJ/ETGn51Y8cx
-         wvHQOaYL8jY2EoaJVzjpfldFlEwxdQrniQe37tUC2uf+7Wun4AIWAp22L+c4a2Cl2RbS
-         +s9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678866448;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7jivhOMF2Dp5QIJkx8toAZguDtgmdufs2dThkF05/Cc=;
-        b=JRtENLczSZCHjf6MRlGdYk2GBa5CRhSbIAk02V0V4y885tzEfc6qXsrjoAhjjpXQnY
-         RozACb19S4Vh22Vt8ef9T2o0hbORjKmXC1fdKc3Mgge+hhj78X7GMWdbXRPvZ5WYIAko
-         ho/vJBEykJdgl4nWysIYKF0R7Kghw5wkrgxe1enUkXRTUdEqh1cbYqE6sCJihHR1izoF
-         F2tdeOP0ylJrX84oTfic9AskpO9/WunAN3JFP8Zccx+zf9+82Mn+AETuP7xLQ3PHx92J
-         GAHD2TOvUZX6Sj6wu4WmAvMIDaQXj+HHhNFkVV1Kc/SeaZQACILdh/P1fOx7v+SvUj2z
-         Hv6Q==
-X-Gm-Message-State: AO0yUKW+CzP1nLUKYYUc6qQmkKjVcKn8XQBk6jQg3C43DlGYjsRBjQbz
-        8kCbZOIxa2azjaQX9f8Iy10=
-X-Google-Smtp-Source: AK7set8IdII9/ujkq6fv8gNRveyl1MOjV31vY9KaLeBL6Ky2dpNemQxB7223epsYE0anRCJQcS4yFA==
-X-Received: by 2002:a05:600c:198e:b0:3ea:4af0:3475 with SMTP id t14-20020a05600c198e00b003ea4af03475mr17299381wmq.1.1678866448152;
-        Wed, 15 Mar 2023 00:47:28 -0700 (PDT)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id t8-20020a05600c450800b003daf6e3bc2fsm4842127wmo.1.2023.03.15.00.47.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Mar 2023 00:47:26 -0700 (PDT)
-Date:   Wed, 15 Mar 2023 10:47:21 +0300
-From:   Dan Carpenter <error27@gmail.com>
-To:     Sumitra Sharma <sumitraartsy@gmail.com>
-Cc:     outreachy@lists.linux.dev, manishc@marvell.com,
-        GR-Linux-NIC-Dev@marvell.com, coiby.xu@gmail.com,
-        gregkh@linuxfoundation.org, netdev@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] Staging: qlge: Fix indentation in conditional
- statement
-Message-ID: <6e12c373-2bfd-48d8-b77d-17f710c094f7@kili.mountain>
-References: <20230314121152.GA38979@sumitra.com>
+        with ESMTP id S231909AbjCOHus (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 03:50:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17FD96C69A
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 00:50:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2786461BD1
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 07:50:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 81A0BC433D2;
+        Wed, 15 Mar 2023 07:50:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678866617;
+        bh=3c6utJhIKn5x4o2o2f7p+RLcxReuoK2Qm8x50XDZXaE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=nwXwYDjXQOdpRCNkbkcl1/oR0YOJPe8+5oEwWclxepA/QFZue2vhXnW9Bur0XB4Ne
+         Gmq/CMya53nt6f+oDQSStkRqNmffYeVCKT+E8Qsy6hM0rvf2gMsKtGQgDeHwtd378H
+         3T3mGJcD3h4RipreZXKB6b2OaiQ/XD6gRTryPAm+P/1p4ao8JmwDscS0b1QrSx0rci
+         alU/WN+nESpl7G10qBMXY1IMHaMc0x/ivc/64R6H6ssouLEl28teuTdr1t+z9uaz6l
+         lY2eCBXM6uJ93TrgBCUGakb1vX0LpIZgnEC38iKfTVMp7oldQ5VSFBCwghkd9Wcn9X
+         5L6y9dhjPng1g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6861EC43161;
+        Wed, 15 Mar 2023 07:50:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230314121152.GA38979@sumitra.com>
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2] mlxsw: spectrum: Fix incorrect parsing depth after
+ reload
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167886661742.11035.6913159500431646687.git-patchwork-notify@kernel.org>
+Date:   Wed, 15 Mar 2023 07:50:17 +0000
+References: <9c35e1b3e6c1d8f319a2449d14e2b86373f3b3ba.1678727526.git.petrm@nvidia.com>
+In-Reply-To: <9c35e1b3e6c1d8f319a2449d14e2b86373f3b3ba.1678727526.git.petrm@nvidia.com>
+To:     Petr Machata <petrm@nvidia.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org, amcohen@nvidia.com,
+        idosch@nvidia.com, mlxsw@nvidia.com, maksymy@nvidia.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 14, 2023 at 05:11:52AM -0700, Sumitra Sharma wrote:
-> Add tabs/spaces in conditional statements in to fix the
-> indentation.
-> 
-> Signed-off-by: Sumitra Sharma <sumitraartsy@gmail.com>
-> 
-> ---
-> v2: Fix indentation in conditional statement, noted by Dan Carpenter
->  <error27@gmail.com>
-> v3: Apply changes to fresh git tree
-> 
+Hello:
 
-Thanks!
+This patch was applied to netdev/net.git (main)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Reviewed-by: Dan Carpenter <error27@gmail.com>
+On Mon, 13 Mar 2023 18:21:24 +0100 you wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
+> 
+> Spectrum ASICs have a configurable limit on how deep into the packet
+> they parse. By default, the limit is 96 bytes.
+> 
+> There are several cases where this parsing depth is not enough and there
+> is a need to increase it. For example, timestamping of PTP packets and a
+> FIB multipath hash policy that requires hashing on inner fields. The
+> driver therefore maintains a reference count that reflects the number of
+> consumers that require an increased parsing depth.
+> 
+> [...]
 
-regards,
-dan carpenter
+Here is the summary with links:
+  - [net,v2] mlxsw: spectrum: Fix incorrect parsing depth after reload
+    https://git.kernel.org/netdev/net/c/35c356924fe3
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
