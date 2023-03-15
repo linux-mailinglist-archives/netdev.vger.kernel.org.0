@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33EAB6BAF17
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 12:20:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B85C6BAF19
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 12:20:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231351AbjCOLUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 07:20:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35324 "EHLO
+        id S231608AbjCOLUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 07:20:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231608AbjCOLUa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 07:20:30 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8925E126F6
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 04:20:01 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id g18so19069318ljl.3
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 04:20:01 -0700 (PDT)
+        with ESMTP id S231613AbjCOLUb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 07:20:31 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD5615167
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 04:20:02 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id by8so19033957ljb.7
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 04:20:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112; t=1678879194;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112; t=1678879195;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Zl34oYG3znfbvLDHOi9ImcSHryi5NmeZ5oI/0Eeeq44=;
-        b=DWl0gtbNir1rKsJry41Tbt6lFDWj7Yt76M4A7wK8riMQgcDaEHHcgxJCCrBf++nwZp
-         tYz7lXZfDA/F8mEG+nf1UxX4ENFuFQfZz+7lplBc7qId+VAGmvdE4NLV3sNIlOzVspSJ
-         fgBmT5PgQFF0Gge0Kofdux7I+y2amJkY93vgSGxgQA3Xzm3J1s5ABq3QR9eKxJ07rbxY
-         psdezz0KF3thEOsJ7WG5PkIYe/os8BZ6/ta2M3PGTmk20z+zmPLnBsqGxdtqagNi8qVf
-         e3AreYZ6MSXdiItunA+8n4yDm8XfgKDuiJopFbbUfLlpM3XKpBREixTzuABfNs2NEAHV
-         7f0g==
+        bh=pXQWN74HCU9Dmrt/5yZK3bP0Ur89GICfyK+cwzWVwF8=;
+        b=E1o037GmRAccOukldze0HdzPNNRd6ihn7YdqYDuo/qN1+lA97J61MUf16FM8Ip6aKq
+         3CuGep0van2KhAmDhV1qKtY/eM1j3uh9UCT1HW8FPcM+pm13TNUgo4iKabt9N1lvhEBF
+         Obf6nERlIOzGILEnMasvCiWUQJahWxmBa9RPWy0M7jlTihaBsAZQhQl0Ks2TMJUKyaQG
+         GuW2B9VMO56FRn4mHPUo6G4vowVefgh54exv+JpRB47xMnMBLRYu4eF0L8RajBbRTZsx
+         jktKgohKVDuF6V86fnATuc21rbh62ZhgfE2UFibst0LqIOSzkGQo1Qk+NxJsQQEtORjS
+         1Zrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678879194;
+        d=1e100.net; s=20210112; t=1678879195;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Zl34oYG3znfbvLDHOi9ImcSHryi5NmeZ5oI/0Eeeq44=;
-        b=tuiPAOM6157TUBbfGzppfQaByjUgtKEctzaJFXUVlwKcU0vRk8PkE6H2hu4XAoprAo
-         k89AIniF8BP20wkU7OxLKVeE6mttuL23Lw9wAk7Vxrn2JtP5PLIwNcIhgW7+OytQlsBb
-         g+UG+ks6sQ8oq7psG7zwjTBZFK7aAkqju1Wk6Gc1yBBnywrTeUYbBpEmjxlKF22JBZy9
-         l6AKNpFsIDmZzDmOxsvK0CoOVPa7+Nf9YLg9n+sGpVc0G6vYGHNJFCs5HDfeMWPC5Aff
-         VC9STgoc+RVCBsQ500wGzcIbK9/j0S355Zf6POQ1X1qbj1Ab5yVh46DdW9o+Jl2vvASH
-         goXQ==
-X-Gm-Message-State: AO0yUKXQupPspklrg+GZ34X+elQpdoBgCzbgclEvo3zI3D9dC8UYbOgd
-        bBbn0NWfC3a15zNtVj6hZJoBkau5xUgbh92mhqB9vw==
-X-Google-Smtp-Source: AK7set8b+vF7ywuIiKxEH70JioW6Pcr90KSB1zZxPlvBioIZVAwqANsSN7ZiD1Udc1Zo/PwlCUF3ww==
-X-Received: by 2002:a2e:be8b:0:b0:298:a89b:fb63 with SMTP id a11-20020a2ebe8b000000b00298a89bfb63mr922079ljr.50.1678879193797;
-        Wed, 15 Mar 2023 04:19:53 -0700 (PDT)
+        bh=pXQWN74HCU9Dmrt/5yZK3bP0Ur89GICfyK+cwzWVwF8=;
+        b=tsGGounrga+SkkBrIkNRQATAPY1Avjf+AggKqRtXVlEBjto/LwhOorCeOyqfRpFEjS
+         25EBe77BtfnnFLVksI7bDONozHfkYwphUhywEPjBr+gF9R5Oscg1Vej5jnF8PJf8xmvm
+         npwHPLDvc3szubrtbeF2KQcbe4bgwvIFY2mpPU81P2bQANOA4BWB/GaT6thnFK/uP7ca
+         UhNIzV9RPyb8tQcRvwFOQZdR9v5bueoOs9Hfdi5pY4VTuQZeVpmUaHJAhX92Li3Xdpwh
+         OJ84NHrsVkzV9Tda+CaWLu4Ui0Natl/vpnJHyXwukimi8XJVZLPeY5A/2akRAWqcxvGd
+         FLRg==
+X-Gm-Message-State: AO0yUKV6xuVAfjLUO+OsBQk059ZHchQskTkax0598f3JO3AEi03w1OYq
+        42nLKlcxvZk49iDB0Uq4SM2uAXj2Rh2Gt9wjU/iOSA==
+X-Google-Smtp-Source: AK7set8eaSc9x48dtXYRgnmi6HzBAyzznIieMbC7BPupT7ItcPJHXElLQjREjGlorvxtbvD4Mew2pA==
+X-Received: by 2002:a2e:bea0:0:b0:295:9d9c:24aa with SMTP id a32-20020a2ebea0000000b002959d9c24aamr952107ljr.11.1678879195089;
+        Wed, 15 Mar 2023 04:19:55 -0700 (PDT)
 Received: from kofa.. ([78.128.78.220])
-        by smtp.gmail.com with ESMTPSA id 20-20020a2e1654000000b00295a8d1ecc7sm829218ljw.18.2023.03.15.04.19.52
+        by smtp.gmail.com with ESMTPSA id 20-20020a2e1654000000b00295a8d1ecc7sm829218ljw.18.2023.03.15.04.19.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Mar 2023 04:19:53 -0700 (PDT)
+        Wed, 15 Mar 2023 04:19:54 -0700 (PDT)
 From:   Nikolay Aleksandrov <razor@blackwall.org>
 To:     netdev@vger.kernel.org
 Cc:     monis@voltaire.com, syoshida@redhat.com, j.vosburgh@gmail.com,
@@ -58,9 +58,9 @@ Cc:     monis@voltaire.com, syoshida@redhat.com, j.vosburgh@gmail.com,
         michal.kubiak@intel.com, jtoppins@redhat.com,
         Nikolay Aleksandrov <razor@blackwall.org>,
         Jay Vosburgh <jay.vosburgh@canonical.com>
-Subject: [PATCH net v3 2/3] bonding: restore bond's IFF_SLAVE flag if a non-eth dev enslave fails
-Date:   Wed, 15 Mar 2023 13:18:41 +0200
-Message-Id: <20230315111842.1589296-3-razor@blackwall.org>
+Subject: [PATCH net v3 3/3] selftests: bonding: add tests for ether type changes
+Date:   Wed, 15 Mar 2023 13:18:42 +0200
+Message-Id: <20230315111842.1589296-4-razor@blackwall.org>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230315111842.1589296-1-razor@blackwall.org>
 References: <20230315111842.1589296-1-razor@blackwall.org>
@@ -75,88 +75,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot reported a warning[1] where the bond device itself is a slave and
-we try to enslave a non-ethernet device as the first slave which fails
-but then in the error path when ether_setup() restores the bond device
-it also clears all flags. In my previous fix[2] I restored the
-IFF_MASTER flag, but I didn't consider the case that the bond device
-itself might also be a slave with IFF_SLAVE set, so we need to restore
-that flag as well. Use the bond_ether_setup helper which does the right
-thing and restores the bond's flags properly.
+Add new network selftests for the bonding device which exercise the ether
+type changing call paths. They also test for the recent syzbot bug[1] which
+causes a warning and results in wrong device flags (IFF_SLAVE missing).
+The test adds three bond devices and a nlmon device, enslaves one of the
+bond devices to the other and then uses the nlmon device for successful
+and unsuccesful enslaves both of which change the bond ether type. Thus
+we can test for both MASTER and SLAVE flags at the same time.
 
-Steps to reproduce using a nlmon dev:
- $ ip l add nlmon0 type nlmon
- $ ip l add bond1 type bond
- $ ip l add bond2 type bond
- $ ip l set bond1 master bond2
- $ ip l set dev nlmon0 master bond1
- $ ip -d l sh dev bond1
- 22: bond1: <BROADCAST,MULTICAST,MASTER> mtu 1500 qdisc noqueue master bond2 state DOWN mode DEFAULT group default qlen 1000
- (now bond1's IFF_SLAVE flag is gone and we'll hit a warning[3] if we
-  try to delete it)
+If the flags are properly restored we get:
+TEST: Change ether type of an enslaved bond device with unsuccessful enslave   [ OK ]
+TEST: Change ether type of an enslaved bond device with successful enslave   [ OK ]
 
 [1] https://syzkaller.appspot.com/bug?id=391c7b1f6522182899efba27d891f1743e8eb3ef
-[2] commit 7d5cd2ce5292 ("bonding: correctly handle bonding type change on enslave failure")
-[3] example warning:
- [   27.008664] bond1: (slave nlmon0): The slave device specified does not support setting the MAC address
- [   27.008692] bond1: (slave nlmon0): Error -95 calling set_mac_address
- [   32.464639] bond1 (unregistering): Released all slaves
- [   32.464685] ------------[ cut here ]------------
- [   32.464686] WARNING: CPU: 1 PID: 2004 at net/core/dev.c:10829 unregister_netdevice_many+0x72a/0x780
- [   32.464694] Modules linked in: br_netfilter bridge bonding virtio_net
- [   32.464699] CPU: 1 PID: 2004 Comm: ip Kdump: loaded Not tainted 5.18.0-rc3+ #47
- [   32.464703] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.1-2.fc37 04/01/2014
- [   32.464704] RIP: 0010:unregister_netdevice_many+0x72a/0x780
- [   32.464707] Code: 99 fd ff ff ba 90 1a 00 00 48 c7 c6 f4 02 66 96 48 c7 c7 20 4d 35 96 c6 05 fa c7 2b 02 01 e8 be 6f 4a 00 0f 0b e9 73 fd ff ff <0f> 0b e9 5f fd ff ff 80 3d e3 c7 2b 02 00 0f 85 3b fd ff ff ba 59
- [   32.464710] RSP: 0018:ffffa006422d7820 EFLAGS: 00010206
- [   32.464712] RAX: ffff8f6e077140a0 RBX: ffffa006422d7888 RCX: 0000000000000000
- [   32.464714] RDX: ffff8f6e12edbe58 RSI: 0000000000000296 RDI: ffffffff96d4a520
- [   32.464716] RBP: ffff8f6e07714000 R08: ffffffff96d63600 R09: ffffa006422d7728
- [   32.464717] R10: 0000000000000ec0 R11: ffffffff9698c988 R12: ffff8f6e12edb140
- [   32.464719] R13: dead000000000122 R14: dead000000000100 R15: ffff8f6e12edb140
- [   32.464723] FS:  00007f297c2f1740(0000) GS:ffff8f6e5d900000(0000) knlGS:0000000000000000
- [   32.464725] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- [   32.464726] CR2: 00007f297bf1c800 CR3: 00000000115e8000 CR4: 0000000000350ee0
- [   32.464730] Call Trace:
- [   32.464763]  <TASK>
- [   32.464767]  rtnl_dellink+0x13e/0x380
- [   32.464776]  ? cred_has_capability.isra.0+0x68/0x100
- [   32.464780]  ? __rtnl_unlock+0x33/0x60
- [   32.464783]  ? bpf_lsm_capset+0x10/0x10
- [   32.464786]  ? security_capable+0x36/0x50
- [   32.464790]  rtnetlink_rcv_msg+0x14e/0x3b0
- [   32.464792]  ? _copy_to_iter+0xb1/0x790
- [   32.464796]  ? post_alloc_hook+0xa0/0x160
- [   32.464799]  ? rtnl_calcit.isra.0+0x110/0x110
- [   32.464802]  netlink_rcv_skb+0x50/0xf0
- [   32.464806]  netlink_unicast+0x216/0x340
- [   32.464809]  netlink_sendmsg+0x23f/0x480
- [   32.464812]  sock_sendmsg+0x5e/0x60
- [   32.464815]  ____sys_sendmsg+0x22c/0x270
- [   32.464818]  ? import_iovec+0x17/0x20
- [   32.464821]  ? sendmsg_copy_msghdr+0x59/0x90
- [   32.464823]  ? do_set_pte+0xa0/0xe0
- [   32.464828]  ___sys_sendmsg+0x81/0xc0
- [   32.464832]  ? mod_objcg_state+0xc6/0x300
- [   32.464835]  ? refill_obj_stock+0xa9/0x160
- [   32.464838]  ? memcg_slab_free_hook+0x1a5/0x1f0
- [   32.464842]  __sys_sendmsg+0x49/0x80
- [   32.464847]  do_syscall_64+0x3b/0x90
- [   32.464851]  entry_SYSCALL_64_after_hwframe+0x44/0xae
- [   32.464865] RIP: 0033:0x7f297bf2e5e7
- [   32.464868] Code: 64 89 02 48 c7 c0 ff ff ff ff eb bb 0f 1f 80 00 00 00 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 89 54 24 1c 48 89 74 24 10
- [   32.464869] RSP: 002b:00007ffd96c824c8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
- [   32.464872] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f297bf2e5e7
- [   32.464874] RDX: 0000000000000000 RSI: 00007ffd96c82540 RDI: 0000000000000003
- [   32.464875] RBP: 00000000640f19de R08: 0000000000000001 R09: 000000000000007c
- [   32.464876] R10: 00007f297bffabe0 R11: 0000000000000246 R12: 0000000000000001
- [   32.464877] R13: 00007ffd96c82d20 R14: 00007ffd96c82610 R15: 000055bfe38a7020
- [   32.464881]  </TASK>
- [   32.464882] ---[ end trace 0000000000000000 ]---
 
-Fixes: 7d5cd2ce5292 ("bonding: correctly handle bonding type change on enslave failure")
-Reported-by: syzbot+9dfc3f3348729cc82277@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?id=391c7b1f6522182899efba27d891f1743e8eb3ef
 Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
 Reviewed-by: Michal Kubiak <michal.kubiak@intel.com>
 Acked-by: Jonathan Toppins <jtoppins@redhat.com>
@@ -164,24 +96,116 @@ Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
 ---
 v3: no changes
 
- drivers/net/bonding/bond_main.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ .../selftests/drivers/net/bonding/Makefile    |  3 +-
+ .../net/bonding/bond-eth-type-change.sh       | 85 +++++++++++++++++++
+ 2 files changed, 87 insertions(+), 1 deletion(-)
+ create mode 100755 tools/testing/selftests/drivers/net/bonding/bond-eth-type-change.sh
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 4bd911f9d3f9..236e5219c811 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -2300,9 +2300,7 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 			eth_hw_addr_random(bond_dev);
- 		if (bond_dev->type != ARPHRD_ETHER) {
- 			dev_close(bond_dev);
--			ether_setup(bond_dev);
--			bond_dev->flags |= IFF_MASTER;
--			bond_dev->priv_flags &= ~IFF_TX_SKB_SHARING;
-+			bond_ether_setup(bond_dev);
- 		}
- 	}
+diff --git a/tools/testing/selftests/drivers/net/bonding/Makefile b/tools/testing/selftests/drivers/net/bonding/Makefile
+index 8e3b786a748f..a39bb2560d9b 100644
+--- a/tools/testing/selftests/drivers/net/bonding/Makefile
++++ b/tools/testing/selftests/drivers/net/bonding/Makefile
+@@ -8,7 +8,8 @@ TEST_PROGS := \
+ 	dev_addr_lists.sh \
+ 	mode-1-recovery-updelay.sh \
+ 	mode-2-recovery-updelay.sh \
+-	option_prio.sh
++	option_prio.sh \
++	bond-eth-type-change.sh
  
+ TEST_FILES := \
+ 	lag_lib.sh \
+diff --git a/tools/testing/selftests/drivers/net/bonding/bond-eth-type-change.sh b/tools/testing/selftests/drivers/net/bonding/bond-eth-type-change.sh
+new file mode 100755
+index 000000000000..5cdd22048ba7
+--- /dev/null
++++ b/tools/testing/selftests/drivers/net/bonding/bond-eth-type-change.sh
+@@ -0,0 +1,85 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++#
++# Test bond device ether type changing
++#
++
++ALL_TESTS="
++	bond_test_unsuccessful_enslave_type_change
++	bond_test_successful_enslave_type_change
++"
++REQUIRE_MZ=no
++NUM_NETIFS=0
++lib_dir=$(dirname "$0")
++source "$lib_dir"/net_forwarding_lib.sh
++
++bond_check_flags()
++{
++	local bonddev=$1
++
++	ip -d l sh dev "$bonddev" | grep -q "MASTER"
++	check_err $? "MASTER flag is missing from the bond device"
++
++	ip -d l sh dev "$bonddev" | grep -q "SLAVE"
++	check_err $? "SLAVE flag is missing from the bond device"
++}
++
++# test enslaved bond dev type change from ARPHRD_ETHER and back
++# this allows us to test both MASTER and SLAVE flags at once
++bond_test_enslave_type_change()
++{
++	local test_success=$1
++	local devbond0="test-bond0"
++	local devbond1="test-bond1"
++	local devbond2="test-bond2"
++	local nonethdev="test-noneth0"
++
++	# create a non-ARPHRD_ETHER device for testing (e.g. nlmon type)
++	ip link add name "$nonethdev" type nlmon
++	check_err $? "could not create a non-ARPHRD_ETHER device (nlmon)"
++	ip link add name "$devbond0" type bond
++	if [ $test_success -eq 1 ]; then
++		# we need devbond0 in active-backup mode to successfully enslave nonethdev
++		ip link set dev "$devbond0" type bond mode active-backup
++		check_err $? "could not change bond mode to active-backup"
++	fi
++	ip link add name "$devbond1" type bond
++	ip link add name "$devbond2" type bond
++	ip link set dev "$devbond0" master "$devbond1"
++	check_err $? "could not enslave $devbond0 to $devbond1"
++	# change bond type to non-ARPHRD_ETHER
++	ip link set dev "$nonethdev" master "$devbond0" 1>/dev/null 2>/dev/null
++	ip link set dev "$nonethdev" nomaster 1>/dev/null 2>/dev/null
++	# restore ARPHRD_ETHER type by enslaving such device
++	ip link set dev "$devbond2" master "$devbond0"
++	check_err $? "could not enslave $devbond2 to $devbond0"
++	ip link set dev "$devbond1" nomaster
++
++	bond_check_flags "$devbond0"
++
++	# clean up
++	ip link del dev "$devbond0"
++	ip link del dev "$devbond1"
++	ip link del dev "$devbond2"
++	ip link del dev "$nonethdev"
++}
++
++bond_test_unsuccessful_enslave_type_change()
++{
++	RET=0
++
++	bond_test_enslave_type_change 0
++	log_test "Change ether type of an enslaved bond device with unsuccessful enslave"
++}
++
++bond_test_successful_enslave_type_change()
++{
++	RET=0
++
++	bond_test_enslave_type_change 1
++	log_test "Change ether type of an enslaved bond device with successful enslave"
++}
++
++tests_run
++
++exit "$EXIT_STATUS"
 -- 
 2.39.1
 
