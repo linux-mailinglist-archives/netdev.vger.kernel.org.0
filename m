@@ -2,103 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF38F6BAAA8
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 09:21:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A16546BAAAA
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 09:22:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231663AbjCOIVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 04:21:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43920 "EHLO
+        id S231590AbjCOIV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 04:21:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231648AbjCOIVu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 04:21:50 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E496970400
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 01:21:15 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id ay8so6700899wmb.1
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 01:21:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112; t=1678868472;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Rtm6sQNJXpum7sFOQBfR+eIOSroTTxeQA+JRRT6jQ0c=;
-        b=cBh5H7GiKhY6z4nGZE8c8SwVSPup5DJK8vSefOx0TEmZRC5kKyB5QUUEQQkBcfieOH
-         FO/HPRWUhRxL8XgIoXEbceJKelmgdHvNjadWTtrOv3iP/f13J1zmGSqquIap9f7BapBQ
-         HR2s6ZlgJomek5DvJ3g1DsqNdhKeTC1/Qj7vGQ6dcsCwjEKwc2kxAZRx87t05v/J03D8
-         ofWoD1eNHEr4M6uVfYjZJ5lIFE+j2IQtQO3qAHxe3c1a8bgKNEau04g8yGPFDzMbp5fU
-         D7y/HqHPuXhjzfKkcPzGLd5QtxxTbwbcn6L/w4wMOw4csa+j/7iRGg2vWrIT78eJhgPf
-         x2vA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678868472;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Rtm6sQNJXpum7sFOQBfR+eIOSroTTxeQA+JRRT6jQ0c=;
-        b=E3wvUam1J6vQsZBBpHCFl68Hwmm3gJkB6jaAfSKgNl8rakLru1ERMNJXI13WijCbqg
-         RN5n0OwwQ+8qnpccjGIcZZXJP7crxxj/vDsiHDsIqJ2/40mzUkYNCLtNqfW2Fvr0RC1L
-         T9zrUeyU/EKn2NPJ3+u4/bi83QaRqj5Na4ElFQRP6YQwUJZdHcO+FdQg9qNDiPiFSDdy
-         Nzoy70wKrkkTxSI6ELEadMkqd32TjKytxymQC7ENqMFnfh/XyeyfLrJyOcF9XhbWp0Ok
-         waSmrV9j1esUoXquvNRlCkH1v3yNU+LpVbd5TFGTeHNTc78T0tHkwGbrFlHmLtpfZY2a
-         UN9A==
-X-Gm-Message-State: AO0yUKXt/KXoYInov4eddrjg27qZOsdwo17GaPJVRG3fFYyP/nxiqaQ3
-        jucDsku+CnqgGVHl+Dibpf2n6Q==
-X-Google-Smtp-Source: AK7set/7rEMFfNjVmCu57H2PtFli+r5y94aPQC042w8NuVEpz/9WTvjnwKDRHj/lpTFoGpvQvVtThw==
-X-Received: by 2002:a05:600c:a46:b0:3ec:4621:680b with SMTP id c6-20020a05600c0a4600b003ec4621680bmr13218574wmq.14.1678868472314;
-        Wed, 15 Mar 2023 01:21:12 -0700 (PDT)
-Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
-        by smtp.gmail.com with ESMTPSA id u3-20020a5d5143000000b002c70c99db74sm3891612wrt.86.2023.03.15.01.21.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Mar 2023 01:21:12 -0700 (PDT)
-Message-ID: <1a8be3f2-4c58-e2f9-24eb-06830824e90c@blackwall.org>
-Date:   Wed, 15 Mar 2023 10:21:11 +0200
+        with ESMTP id S231648AbjCOIVz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 04:21:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF05673885
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 01:21:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A4DE61B77
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 08:21:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AF15C433EF;
+        Wed, 15 Mar 2023 08:21:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678868486;
+        bh=sTRwWeEs5btoevGiSnVNwwwGMz1QvOAL2wijWY95X1Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=C6tM1SnSCMX3Bqm42qQtAFWrGiO/M3YRkLw5Ajd1zgqdpoJOb+krXTtDgdkPSopze
+         sm5/Ha/yRw05bohsvyFEb2Tj6FyWjYmMXZ+sMEmMWyobd0xNF4EPoEMr5+s/MQqLHa
+         TPcb7kw+z4mPd397Qm28Dv5Z96ZWvudlWBjYONVRnul4rxfpMCIVzACNOYrjjQmBIY
+         7dB/RZIOR3XQivhxc4MEq8lbWhtlCk/Q9CMN5eVZiiJoQogC9wKeGMbyKfxjan4Kif
+         ocxljh0s3xZV8GOFNjC78wd2EmESnPYdjQpvZE3HSA5bqnhwf/tjH5yCqClpFYi29/
+         dUnS7caAbSR9A==
+Date:   Wed, 15 Mar 2023 10:21:22 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Shannon Nelson <shannon.nelson@amd.com>
+Cc:     brett.creeley@amd.com, davem@davemloft.net, netdev@vger.kernel.org,
+        kuba@kernel.org, drivers@pensando.io, jiri@resnulli.us
+Subject: Re: [PATCH RFC v4 net-next 11/13] pds_core: add the aux client API
+Message-ID: <20230315082122.GM36557@unreal>
+References: <20230308051310.12544-1-shannon.nelson@amd.com>
+ <20230308051310.12544-12-shannon.nelson@amd.com>
+ <20230314121452.GC36557@unreal>
+ <398bef7a-795b-d105-d8e5-57ef1c39049c@amd.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH net v2 1/4] bonding: add bond_ether_setup helper
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, monis@voltaire.com, syoshida@redhat.com,
-        j.vosburgh@gmail.com, andy@greyhouse.net, davem@davemloft.net,
-        pabeni@redhat.com, edumazet@google.com,
-        syzbot+9dfc3f3348729cc82277@syzkaller.appspotmail.com
-References: <20230314111426.1254998-1-razor@blackwall.org>
- <20230314111426.1254998-2-razor@blackwall.org>
- <20230315005557.10e7984f@kernel.org>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20230315005557.10e7984f@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,
-        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <398bef7a-795b-d105-d8e5-57ef1c39049c@amd.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15/03/2023 09:55, Jakub Kicinski wrote:
-> On Tue, 14 Mar 2023 13:14:23 +0200 Nikolay Aleksandrov wrote:
->> +/* ether_setup() resets bond_dev's flags so we always have to restore
->> + * IFF_MASTER, and only restore IFF_SLAVE if it was set
->> + */
->> +static void bond_ether_setup(struct net_device *bond_dev)
->> +{
->> +	unsigned int slave_flag = bond_dev->flags & IFF_SLAVE;
->> +
->> +	ether_setup(bond_dev);
->> +	bond_dev->flags |= IFF_MASTER | slave_flag;
->> +	bond_dev->priv_flags &= ~IFF_TX_SKB_SHARING;
->> +}
->> +
+On Tue, Mar 14, 2023 at 09:53:25AM -0700, Shannon Nelson wrote:
+> On 3/14/23 5:14 AM, Leon Romanovsky wrote:
+> > On Tue, Mar 07, 2023 at 09:13:08PM -0800, Shannon Nelson wrote:
+> > > Add the client API operations for registering, unregistering,
+> > > and running adminq commands.  We expect to add additional
+> > > operations for other clients, including requesting additional
+> > > private adminqs and IRQs, but don't have the need yet,
+> > > 
+> > > Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
+> > > ---
+> > >   drivers/net/ethernet/amd/pds_core/auxbus.c | 134 ++++++++++++++++++++-
+> > >   include/linux/pds/pds_auxbus.h             |  42 +++++++
+> > >   2 files changed, 174 insertions(+), 2 deletions(-)
+> > 
+> > <...>
+> > 
+> > > +static struct pds_core_ops pds_core_ops = {
+> > > +     .register_client = pds_client_register,
+> > > +     .unregister_client = pds_client_unregister,
+> > > +     .adminq_cmd = pds_client_adminq_cmd,
+> > > +};
+> > 
+> > <...>
+> > 
+> > > +/*
+> > > + *   ptrs to functions to be used by the client for core services
+> > > + */
+> > > +struct pds_core_ops {
+> > > +     /* .register() - register the client with the device
+> > > +      * padev:  ptr to the client device info
+> > > +      * Register the client with the core and with the DSC.  The core
+> > > +      * will fill in the client padrv->client_id for use in calls
+> > > +      * to the DSC AdminQ
+> > > +      */
+> > > +     int (*register_client)(struct pds_auxiliary_dev *padev);
+> > > +
+> > > +     /* .unregister() - disconnect the client from the device
+> > > +      * padev:  ptr to the client device info
+> > > +      * Disconnect the client from the core and with the DSC.
+> > > +      */
+> > > +     int (*unregister_client)(struct pds_auxiliary_dev *padev);
+> > > +
+> > > +     /* .adminq_cmd() - process an adminq request for the client
+> > > +      * padev:  ptr to the client device
+> > > +      * req:     ptr to buffer with request
+> > > +      * req_len: length of actual struct used for request
+> > > +      * resp:    ptr to buffer where answer is to be copied
+> > > +      * flags:   optional flags defined by enum pds_core_adminq_flags
+> > > +      *          and used for more flexible adminq behvior
+> > > +      *
+> > > +      * returns 0 on success, or
+> > > +      *         negative for error
+> > > +      * Client sends pointers to request and response buffers
+> > > +      * Core copies request data into pds_core_client_request_cmd
+> > > +      * Core sets other fields as needed
+> > > +      * Core posts to AdminQ
+> > > +      * Core copies completion data into response buffer
+> > > +      */
+> > > +     int (*adminq_cmd)(struct pds_auxiliary_dev *padev,
+> > > +                       union pds_core_adminq_cmd *req,
+> > > +                       size_t req_len,
+> > > +                       union pds_core_adminq_comp *resp,
+> > > +                       u64 flags);
+> > > +};
+> > 
+> > I don't expect to see any register/unregister AUX client code at all.
+> > 
+> > All clients are registered and unregistered through
+> > auxiliary_driver_register()/auxiliary_driver_unregister() calls and
+> > perform as standalone drivers.
+> > 
+> > Maybe client, register and unregister words means something else in this
+> > series..
 > 
-> We can't split this from patch 2, it's going to generate a warning
-> under normal build flags, people may have WERROR set these days..
+> Yeah, I'm not thrilled with the overlap in nomenclature either.  In this
+> case we're talking about the logic in the pds_vdpa module connecting to the
+> services needed in the device FW, and getting a client_id from the FW that
+> is used for tracking client context in the FW.  Maybe these names can change
+> to something like "fw_client_reg" and "fw_client_unreg" - would that make it
+> more clear?
 
-Oh well, that's unfortunate. I'll leave a note in patch 03 that it depends
-on the helper added in the other fix.
+I feel that such ops are not needed at all. Once you create aux devices
+(vdpa, eth, e.t.c), you would be able to connect only one driver with one
+such device. It means context is already known at that point. In addition,
+user controls if he/she wants aux specific devices by relevant devlink *_enable
+knob.
 
-Thanks,
- Nik
+Thanks
 
+> 
+> sln
+> 
+> 
+> > 
+> > Thanks
+> > 
+> > >   #endif /* _PDSC_AUXBUS_H_ */
+> > > --
+> > > 2.17.1
+> > > 
