@@ -2,149 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 742906BB6CE
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 15:59:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D128D6BB6C5
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 15:57:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233344AbjCOO7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 10:59:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46490 "EHLO
+        id S233295AbjCOO5x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 10:57:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232626AbjCOO7C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 10:59:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2FB859E47
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 07:57:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678892149;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KN2VfOdmy3iuUxxB9vdBrJH3zqGfCKYM7D6HphZuQAQ=;
-        b=WhxTh+D1bag9AxTOPBCwbDJPlAYmL7AA5eOk1QcZB+N5TKlqJESAwfS+k9iiWrJ5Wm67d/
-        /ioMu3TmmSTjDQI3l1RWMHBo4LQMghT1uIsyundI2ApkdPS2emj+flIq5L9XeWGuTnM6/K
-        YC6m+MU2w1s8KvkDoId6RoahNXvzGa4=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-237-s2rXS8j4PS2uotBuzXbgOg-1; Wed, 15 Mar 2023 10:55:48 -0400
-X-MC-Unique: s2rXS8j4PS2uotBuzXbgOg-1
-Received: by mail-ed1-f69.google.com with SMTP id es16-20020a056402381000b004fa3e04c882so18195820edb.10
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 07:55:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678892147;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=KN2VfOdmy3iuUxxB9vdBrJH3zqGfCKYM7D6HphZuQAQ=;
-        b=Cd7HNqn7mVBFeYXtjW/yFAD/Av2fsG/IOF00hWsKRq45rhlqCondjN6vUd812vkoTf
-         54EXx+Zie0Bssd8hCqscg+vYDM8qu9HqRVBb7YkDJJw/qcWfro62b1ClFQomsB+gN20k
-         A4MWxAARW7QPQ6CQRfFc3T8JnRtag/GZZrAxwZIeAxlVIi79DI2G4SOQkRijsbTrwAST
-         96XI1aetdy824IKigP59IegD3HPCtppVnEBJIQMb4dlZp4ZW1idjw9IwOxT7BpAi7mtf
-         prdQoIsvUiLtwF6lVZ4cxKuqGzUxtdWDrxQE+/2gC3nT0oO7dulwVJg3Wcwf9esZkda/
-         eH9A==
-X-Gm-Message-State: AO0yUKW6gP73bdPV5DZVcu89C2AqDmBpz14rJP+1BV06jgFm5ubqCqUA
-        7jjrQe8/077Cp+lMt3MmC7zqQLjdzSw/w+YBWkfZROP1s/idWSs1ALeS/JmUDe2/vEAUVoIQn60
-        bnZEJhHM2tcqMyBsx
-X-Received: by 2002:a17:906:3986:b0:91f:32f9:82f0 with SMTP id h6-20020a170906398600b0091f32f982f0mr6472697eje.29.1678892147617;
-        Wed, 15 Mar 2023 07:55:47 -0700 (PDT)
-X-Google-Smtp-Source: AK7set9c1+AtvFOAgCIHn6BjFo1rVzWT/trJ8pAA7XjvvZTEPWHgRlzyMfqEq18LBBKV860wFQSBDg==
-X-Received: by 2002:a17:906:3986:b0:91f:32f9:82f0 with SMTP id h6-20020a170906398600b0091f32f982f0mr6472677eje.29.1678892147344;
-        Wed, 15 Mar 2023 07:55:47 -0700 (PDT)
-Received: from [192.168.42.100] (nat-cgn9-185-107-15-52.static.kviknet.net. [185.107.15.52])
-        by smtp.gmail.com with ESMTPSA id z18-20020a17090655d200b008edc39530fbsm2598963ejp.219.2023.03.15.07.55.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Mar 2023 07:55:46 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <11e480dd-7969-7b58-440e-3207b98d0ac5@redhat.com>
-Date:   Wed, 15 Mar 2023 15:55:44 +0100
+        with ESMTP id S232339AbjCOO5f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 10:57:35 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2071e.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe5b::71e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E464C17;
+        Wed, 15 Mar 2023 07:57:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WwFy//QfivXLNRenISiwahwZPn3u1pXPSyghD/uy/c6/KFp5gkfDcifQQKh69Mg4u/f6VXIW6YKbeFMQiSpcWhiDc20vcZc24vOjaR89Xgn9+AHVO0tsniLoQ8WfKUIbJY2s6nLwRSjn4TlOuRhsnJ6jsWJBvRtz3DAnkw34ySqtDiXkEuGJarjEORta0Q20WtV8KPHDHzO2bF8Cq9Rsl7p0GNNUJcUskI5HtxjwFhlvXZgZlpodyVwk9lc3iMwcmjwl+YkSiYuQGCYzixbjHcjF440T8j54LLmsrLdbngSoPTNXZ+nGHrGWufh67WrRyMHRL8JwI5hHSjzhKZyxig==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KJy6t9fDVbIQTUqHywLZb+xqlfua5oz4KgaCNOPSDNc=;
+ b=dqsIwqN6Hl3iYw+DP/QDVxfegxCC7Prhy/gkF91dGqWPhnYZ6+S9l9XmcKelEn8YWlTFdxwsLop+4QOHcvWfogom8YL3RVoQpkMcBb8P+4trdcoK4DLlGa3m68glxTm3jK2ke+28F1V93wgc2He7+HQ29LaQu3ud9VuThWFSeuGktlYPuaSymeembm2Z0DkO2UmAPAkT9laQup9MZmbmpcCbVRAq4Yp6gibAJW5XuP6+ZlUC9ox5n4MaZBKOJGaFC0VL/loCRm98/uvWb4vN9PCaYIq46BvMMWQ4rCeFfqAyPiWgaX7EOB8TuZb1xjITeB2X1GQqRuivYqnFCltvxA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KJy6t9fDVbIQTUqHywLZb+xqlfua5oz4KgaCNOPSDNc=;
+ b=qYwz53W54idqSYEypKNYjXtD9GXGgTaE5ovwUTqf6nYlNlQHwd8IOu0FO1d1jWwSQIHNP7EoGvQ1wM5Hhdn6Px0vEK1yLkU5FSwaI+2xcBiwtdbCbgCWub3Rz08Kq18BU6yHawiRH9OR4W3Q708F0kykNHaBHxMuRIjTYJmgFuk=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by CH2PR13MB3621.namprd13.prod.outlook.com (2603:10b6:610:99::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.29; Wed, 15 Mar
+ 2023 14:56:09 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.030; Wed, 15 Mar 2023
+ 14:56:08 +0000
+Date:   Wed, 15 Mar 2023 15:56:01 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Alex Elder <elder@linaro.org>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        andersson@kernel.org, konrad.dybcio@linaro.org, agross@kernel.org,
+        devicetree@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        elder@kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] dt-bindings: net: qcom,ipa: add SDX65 compatible
+Message-ID: <ZBHcgYp4YRng/VP5@corigine.com>
+References: <20230314210628.1579816-1-elder@linaro.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230314210628.1579816-1-elder@linaro.org>
+X-ClientProxiedBy: AM3PR05CA0120.eurprd05.prod.outlook.com
+ (2603:10a6:207:2::22) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Cc:     brouer@redhat.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Larysa Zaremba <larysa.zaremba@intel.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Song Liu <song@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Menglong Dong <imagedong@tencent.com>,
-        Mykola Lysenko <mykolal@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Freysteinn Alfredsson <Freysteinn.Alfredsson@kau.se>
-Subject: Re: [PATCH bpf-next v3 3/4] xdp: recycle Page Pool backed skbs built
- from XDP frames
-Content-Language: en-US
-To:     Alexander Lobakin <aleksander.lobakin@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>
-References: <20230313215553.1045175-1-aleksander.lobakin@intel.com>
- <20230313215553.1045175-4-aleksander.lobakin@intel.com>
-In-Reply-To: <20230313215553.1045175-4-aleksander.lobakin@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CH2PR13MB3621:EE_
+X-MS-Office365-Filtering-Correlation-Id: bd7bf288-7f97-45b0-ad2d-08db256568ed
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: k0vF+I/zxoL1XU6dRuZmF8UOBFdITEaqjwvp/ufLwonbX78rVgfe1poAEJO6Uncm/N2WBeRT6X7l8oCsa+z+ynZSocyxqlQwvTY6uR7qpD2tQn9NhXLnap8pqPZ47zBPc13ttS3wm0n9A3j0u74TDON/iKh01HFWXQPBCOAzgS8jA5tzkb09Np9XML+IAISxTejsWaRISmf9rtXMVtkDiVZ5X5amRXycdFEn8DcLwBVjFFjvKTHQGZTo1ujCGan0nuw8WyLCa69vpSqqArY+2zNhZOcF6i9tdbHF2bFoedQ9b3libUzPd3RHrNDqC89mkJTOtiwL/1vNAOaqGAYxsDyAPZagGarS2UrK+6YOPjYNkHVnteqS42VDVgu2aLrMzqhDjqFcXugYyrFMYQw/jFTBCZvOcke4L1brX4S8kDSsvg8VFh+B0NlSMjVPtPcMQblbEP7Edu+yAXPCU6coAv9sHWMCHfiSsnUo9bavWWgs8++VIzmzxvcbK43kegrfmA04DPRuf6KyfKgNI2isWE96uecTZE/C7uKqsNlzVZeT5RUPMenFI34Vnr/yrbQG/xQB8v3JMARM23PGo5lystTFpRBsMyju6UxcVQnliE6e8vkOEgVo46amq39P3NdSvat5lbA5560Iw5M2wQ/Sj0u4ngnV8PNMbatYc/bTnR0jqbbbDMQNW7Wq8rRdF+Kv
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39840400004)(396003)(366004)(346002)(136003)(376002)(451199018)(44832011)(36756003)(7416002)(5660300002)(478600001)(6666004)(6486002)(6506007)(6512007)(2616005)(186003)(66556008)(8676002)(66946007)(41300700001)(6916009)(4326008)(8936002)(66476007)(558084003)(86362001)(316002)(38100700002)(2906002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ryl3yvgNDnPkx50kS6i+F/ngGWo2ztL0pEDuC0R/agkFltzp2Kz5NC3OXgRi?=
+ =?us-ascii?Q?RCfeLJnyoAvx1hmDZJ99EmnJ7oHVfwXWMdg8cXs9E1jEh2RRVbJZftRWBGSQ?=
+ =?us-ascii?Q?q6Gj7Ygva+umvp05aG8nncQf9Q+71qHfrKw0s2ci9uwuQt66fFG7iWLjXp9q?=
+ =?us-ascii?Q?p5J1SqTjbfj2dZy+xaFnfOTmHAU5UwVCCL7Jsnbcf94SDJH+jD1nQoATSXoH?=
+ =?us-ascii?Q?GNeV3JP8hXUZDR1ZL6Xba+315iFy/WDU116L7toNMuS0pCLYYt+UvQVxp5lL?=
+ =?us-ascii?Q?YobHU+MtUJ+yO4FlaUEkeBqyp3aUvl/9cw10iUQg29OcohJzzw9TonpdDqh7?=
+ =?us-ascii?Q?oq5ZXg64xW0CNmMNQih8zU/kiwn8TMhAFihSqp/TV++6b633JW7UvGvSW8Vb?=
+ =?us-ascii?Q?JLgHmo2VnzXtmVmRoBl1yaZlWg12QyZqn0wCaEUCNqpm76Pu8/V3Ntf6Z01m?=
+ =?us-ascii?Q?VuAI4wcISCjgSMNBUlXQaia/znBy60InCLtYZGu2xXSHyUzjPwkUeyGck9/F?=
+ =?us-ascii?Q?ULaqnWknHdSa70NSKPIsFoDSQT9mYvVQ3Xay0paCH2+CTptJFJ3UvUxInZLh?=
+ =?us-ascii?Q?3b7bGBNrrRdpJXPZ2ggdeMrzOCKhpTcdLU72pfKiJ1J9mESZg3lhzL6fBeoZ?=
+ =?us-ascii?Q?a8zWv4cxjqmiFGmqU9h0ICghLy1fFj4VFJqonxtyLkF8T/mQpCX6dQHQSVUQ?=
+ =?us-ascii?Q?dWvhudvAICEYttrg6iiZHb9CHhhPpYynMq41PKrKvqHB7aXAhOsH9FWyawLm?=
+ =?us-ascii?Q?C16jFOdbb5njr0gL+7xbksw6a8clVs8jb37993SieQT8FPT6w6FamvZJiUyx?=
+ =?us-ascii?Q?pxeGji3XAacm4QaKEJyXXyZVaxRnBVhM6TFr8ZgIK1Wlpw0ubgtL79GcCyac?=
+ =?us-ascii?Q?ysRLMFvAQ2UKiIboj3AY2MC9K1j7XYwZQoIm/7TX2kk1PLX+BNsmXostg5sN?=
+ =?us-ascii?Q?3q9J+5DV7zhsBfrBDX+sMNUMOGlAAUPSVB5Iak2rYB0G6Lb61/PhLwRyUp4m?=
+ =?us-ascii?Q?6CFiQNZfZIEdxl3BNg7l4X7bd3M97DdYbyUbwDODp4m1OVKOMIMlIeRtyVTm?=
+ =?us-ascii?Q?hF5PVJmUysafcYFXev4RUvaFhXzMbxHlpkQ5ssfxNekEEdSXQsXyiuXVtHwv?=
+ =?us-ascii?Q?Ri4vtYf6gHB36BJizzqgY6gTee+4eGfCs9aa0SX52uW+odBqFDaLMYsTlQnj?=
+ =?us-ascii?Q?J+E0cVr/EWhCxuZT52qi6nAQea1AAlZeC3UrmY7CaK9mMfVpSAhP0AnCLtii?=
+ =?us-ascii?Q?HFxi7tnqPz/3Bj5Q5vSwNWd5jgbExVwL2aq+luRpCpFxBj6CS/vCQJN9E2Is?=
+ =?us-ascii?Q?171Bs6YPYaMMrxyLv3Fg0TUrS6RBpV1zxaklBuheEFco/dGGskX8AYPAD3PN?=
+ =?us-ascii?Q?zMlAUgWB5xxsjFyJh0RqsB2HEH2Bbm+pmshUCZhk96OCUCsfcKlaPSMNmfTC?=
+ =?us-ascii?Q?cLWy8exJnsCmoMb9dk3Ws4lIbTaPwE07M7D1NepfVJ0SCD3LPa6IY3qMPm1G?=
+ =?us-ascii?Q?iYi4e0wbLxeA4u/D81skjMaR6CFOhVIQagPQebXr+IN8ifqm/XrUg1JuIZTI?=
+ =?us-ascii?Q?4VSih2xzqhwZCt/HsFR4rXY1CGJjf0KtEjtXB2ur6K7eLPg0DCax3PfOjmBy?=
+ =?us-ascii?Q?bvJTMTnO74yEVpEduk6zeCcu6AAR3qevOb7Ite3Izo0ymg0uTL5kH7sdBsyq?=
+ =?us-ascii?Q?9+FENQ=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bd7bf288-7f97-45b0-ad2d-08db256568ed
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2023 14:56:08.7888
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: T6j0x8X/K/xe803bPidbplJEWie2C6KsCVsYEcH/UlnCzs8URq0fnBVYZmdjqD528CfTdE+XbPo95hy4YJPjmBR05SbZUnhYGBCOevGys9c=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR13MB3621
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 13/03/2023 22.55, Alexander Lobakin wrote:
-> __xdp_build_skb_from_frame() state(d):
+On Tue, Mar 14, 2023 at 04:06:28PM -0500, Alex Elder wrote:
+> Add support for SDX65, which uses IPA v5.0.
 > 
-> /* Until page_pool get SKB return path, release DMA here */
-> 
-> Page Pool got skb pages recycling in April 2021, but missed this
-> function.
-> 
-> xdp_release_frame() is relevant only for Page Pool backed frames and it
-> detaches the page from the corresponding page_pool in order to make it
-> freeable via page_frag_free(). It can instead just mark the output skb
-> as eligible for recycling if the frame is backed by a pp. No change for
-> other memory model types (the same condition check as before).
-> cpumap redirect and veth on Page Pool drivers now become zero-alloc (or
-> almost).
-> 
-> Signed-off-by: Alexander Lobakin <aleksander.lobakin@intel.com>
-> ---
->   net/core/xdp.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/core/xdp.c b/net/core/xdp.c
-> index 8c92fc553317..a2237cfca8e9 100644
-> --- a/net/core/xdp.c
-> +++ b/net/core/xdp.c
-> @@ -658,8 +658,8 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
->   	 * - RX ring dev queue index	(skb_record_rx_queue)
->   	 */
->   
-> -	/* Until page_pool get SKB return path, release DMA here */
-> -	xdp_release_frame(xdpf);
-> +	if (xdpf->mem.type == MEM_TYPE_PAGE_POOL)
-> +		skb_mark_for_recycle(skb);
+> Signed-off-by: Alex Elder <elder@linaro.org>
 
-I hope this is safe ;-) ... Meaning hopefully drivers does the correct
-thing when XDP_REDIRECT'ing page_pool pages.
-
-Looking for drivers doing weird refcnt tricks and XDP_REDIRECT'ing, I
-noticed the driver aquantia/atlantic (in aq_get_rxpages_xdp), but I now
-see this is not using page_pool, so it should be affected by this (but I
-worry if atlantic driver have a potential race condition for its refcnt
-scheme).
-
->   
->   	/* Allow SKB to reuse area used by xdp_frame */
->   	xdp_scrub_frame(xdpf);
-
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
