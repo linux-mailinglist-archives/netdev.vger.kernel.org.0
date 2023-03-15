@@ -2,54 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED6EC6BAFC8
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 13:03:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93BFD6BAFED
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 13:08:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231465AbjCOMDw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 08:03:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48424 "EHLO
+        id S231608AbjCOMIX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 08:08:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229917AbjCOMDv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 08:03:51 -0400
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C186273F
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 05:03:48 -0700 (PDT)
-Received: by mail-il1-f199.google.com with SMTP id b3-20020a056e02048300b003230de63373so4327959ils.10
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 05:03:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678881827;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=hejewajGFjy6EBNb8zTRittD+AmYVJz2CBQOmsFa9is=;
-        b=dU/TjVWSkSlhPpyTQ8RzLTcuBixiFdq/JulyrLkyVw6sCG2yEJbwARmBog18lJVbsa
-         MG5ygRtRC+4pDfc4+cZXM7TfoV5vMGVw0Lb7xFjHgT3K31h/1i3PN5dtWKFGsrARVij2
-         kKLT5maR0uIBIqk9j+G0VTxgj/zLdVMGuheg65wHe+LE/ieHtG5c9CyvhGUTsUFNNvvt
-         qzWIVPtcbo3ucWL2YDqcG9BRmPrULeB/zVIdMrAkhhRbBeU65mM610b7KNTI7EqtISPE
-         azR1qynGnWw1x6NWbedbHZjZ469kasBa72fsg/XrZYjfjoy7ugK7BQCkdZdQl8Stw+3H
-         pJ/w==
-X-Gm-Message-State: AO0yUKXqvSDR930iUkKVVCFUZa6SxaOoLQ1Ylh0e/ell0lsTvASXhmao
-        gWMbumQTJoGjB6U5JqWtn6pT4v+zuftTxMW2xNDjG1ol99aM
-X-Google-Smtp-Source: AK7set9ra0yby39E21P5T7E7yeYm5bUxITnHHBHQiX/V7IlAKNpWZ2DJK5AGqJsPYGGOvXLbqd9rtRf13EFVJTPB1oTEtxArUzhg
+        with ESMTP id S229734AbjCOMIV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 08:08:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8331C2E0D8;
+        Wed, 15 Mar 2023 05:07:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 48A1361D42;
+        Wed, 15 Mar 2023 12:07:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CEC6C433D2;
+        Wed, 15 Mar 2023 12:07:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678882054;
+        bh=sgmMmhvI0/Dp036Wgs1Ke6kgrXhU8+5SUe5lgi+/8DQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=kOhvlL35CAXqoue/F//cqZTBdbupgess90uesi0SzcucA8PEEFs17WFmB23hpbz8t
+         aJ5LLChtZcDOZtUlOEgQJE6//7e42C5UovnJpJQ4PvO4F9n8qFUqes+2LBWfamj9lP
+         YzkxopUOMxJEOKnEEKcP+y/DjcMOdyQ912a9V6ML62WjjXvBEOH3zLj39bLzbiDY8y
+         v67ScRVM6LSQeIzsR9/PbgfOWfyCSIsEi5yulvbLg8uDA9w3A/HXOIvLr0VFBTbZQF
+         S+QwbJ9Esokxt58NExYSQF5zlnQHoGcKqzMODj9hsV+y63syqf5mabdpr9Xl8hWC3i
+         LKtecIye54+3A==
+Message-ID: <91481d4f-2005-7b33-d3be-df09b7d27ef6@kernel.org>
+Date:   Wed, 15 Mar 2023 14:07:28 +0200
 MIME-Version: 1.0
-X-Received: by 2002:a02:634e:0:b0:3ec:dc1f:12dd with SMTP id
- j75-20020a02634e000000b003ecdc1f12ddmr20130386jac.6.1678881827426; Wed, 15
- Mar 2023 05:03:47 -0700 (PDT)
-Date:   Wed, 15 Mar 2023 05:03:47 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f1985705f6ef2243@google.com>
-Subject: [syzbot] [bpf?] [net?] BUG: unable to handle kernel NULL pointer
- dereference in __build_skb_around
-From:   syzbot <syzbot+e1d1b65f7c32f2a86a9f@syzkaller.appspotmail.com>
-To:     aleksander.lobakin@intel.com, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com,
-        hawk@kernel.org, john.fastabend@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH v4 3/5] soc: ti: pruss: Add pruss_cfg_read()/update() API
+To:     MD Danish Anwar <danishanwar@ti.com>,
+        "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Nishanth Menon <nm@ti.com>
+Cc:     linux-remoteproc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, srk@ti.com, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20230313111127.1229187-1-danishanwar@ti.com>
+ <20230313111127.1229187-4-danishanwar@ti.com>
+Content-Language: en-US
+From:   Roger Quadros <rogerq@kernel.org>
+In-Reply-To: <20230313111127.1229187-4-danishanwar@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,136 +65,187 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Danish,
 
-syzbot found the following issue on:
+On 13/03/2023 13:11, MD Danish Anwar wrote:
+> From: Suman Anna <s-anna@ti.com>
+> 
+> Add two new generic API pruss_cfg_read() and pruss_cfg_update() to
+> the PRUSS platform driver to read and program respectively a register
+> within the PRUSS CFG sub-module represented by a syscon driver.
+> 
+> These APIs are internal to PRUSS driver. Various useful registers
+> and macros for certain register bit-fields and their values have also
+> been added.
+> 
+> Signed-off-by: Suman Anna <s-anna@ti.com>
+> Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+> Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+> Signed-off-by: MD Danish Anwar <danishanwar@ti.com>
+> ---
+>  drivers/soc/ti/pruss.c           | 39 ++++++++++++++
+>  include/linux/remoteproc/pruss.h | 87 ++++++++++++++++++++++++++++++++
+>  2 files changed, 126 insertions(+)
+> 
+> diff --git a/drivers/soc/ti/pruss.c b/drivers/soc/ti/pruss.c
+> index c8053c0d735f..26d8129b515c 100644
+> --- a/drivers/soc/ti/pruss.c
+> +++ b/drivers/soc/ti/pruss.c
+> @@ -164,6 +164,45 @@ int pruss_release_mem_region(struct pruss *pruss,
+>  }
+>  EXPORT_SYMBOL_GPL(pruss_release_mem_region);
+>  
+> +/**
+> + * pruss_cfg_read() - read a PRUSS CFG sub-module register
+> + * @pruss: the pruss instance handle
+> + * @reg: register offset within the CFG sub-module
+> + * @val: pointer to return the value in
+> + *
+> + * Reads a given register within the PRUSS CFG sub-module and
+> + * returns it through the passed-in @val pointer
+> + *
+> + * Return: 0 on success, or an error code otherwise
+> + */
+> +static int pruss_cfg_read(struct pruss *pruss, unsigned int reg, unsigned int *val)
+> +{
+> +	if (IS_ERR_OR_NULL(pruss))
+> +		return -EINVAL;
+> +
+> +	return regmap_read(pruss->cfg_regmap, reg, val);
+> +}
+> +
+> +/**
+> + * pruss_cfg_update() - configure a PRUSS CFG sub-module register
+> + * @pruss: the pruss instance handle
+> + * @reg: register offset within the CFG sub-module
+> + * @mask: bit mask to use for programming the @val
+> + * @val: value to write
+> + *
+> + * Programs a given register within the PRUSS CFG sub-module
+> + *
+> + * Return: 0 on success, or an error code otherwise
+> + */
+> +static int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
+> +			    unsigned int mask, unsigned int val)
+> +{
+> +	if (IS_ERR_OR_NULL(pruss))
+> +		return -EINVAL;
+> +
+> +	return regmap_update_bits(pruss->cfg_regmap, reg, mask, val);
+> +}
+> +
+>  static void pruss_of_free_clk_provider(void *data)
+>  {
+>  	struct device_node *clk_mux_np = data;
+> diff --git a/include/linux/remoteproc/pruss.h b/include/linux/remoteproc/pruss.h
+> index 33f930e0a0ce..12ef10b9fe9a 100644
+> --- a/include/linux/remoteproc/pruss.h
+> +++ b/include/linux/remoteproc/pruss.h
+> @@ -10,12 +10,99 @@
+>  #ifndef __LINUX_PRUSS_H
+>  #define __LINUX_PRUSS_H
+>  
+> +#include <linux/bits.h>
+>  #include <linux/device.h>
+>  #include <linux/err.h>
+>  #include <linux/types.h>
+>  
+>  #define PRU_RPROC_DRVNAME "pru-rproc"
+>  
+> +/*
+> + * PRU_ICSS_CFG registers
+> + * SYSCFG, ISRP, ISP, IESP, IECP, SCRP applicable on AMxxxx devices only
+> + */
+> +#define PRUSS_CFG_REVID		0x00
+> +#define PRUSS_CFG_SYSCFG	0x04
+> +#define PRUSS_CFG_GPCFG(x)	(0x08 + (x) * 4)
+> +#define PRUSS_CFG_CGR		0x10
+> +#define PRUSS_CFG_ISRP		0x14
+> +#define PRUSS_CFG_ISP		0x18
+> +#define PRUSS_CFG_IESP		0x1C
+> +#define PRUSS_CFG_IECP		0x20
+> +#define PRUSS_CFG_SCRP		0x24
+> +#define PRUSS_CFG_PMAO		0x28
+> +#define PRUSS_CFG_MII_RT	0x2C
+> +#define PRUSS_CFG_IEPCLK	0x30
+> +#define PRUSS_CFG_SPP		0x34
+> +#define PRUSS_CFG_PIN_MX	0x40
+> +
+> +/* PRUSS_GPCFG register bits */
+> +#define PRUSS_GPCFG_PRU_GPO_SH_SEL		BIT(25)
+> +
+> +#define PRUSS_GPCFG_PRU_DIV1_SHIFT		20
+> +#define PRUSS_GPCFG_PRU_DIV1_MASK		GENMASK(24, 20)
+> +
+> +#define PRUSS_GPCFG_PRU_DIV0_SHIFT		15
+> +#define PRUSS_GPCFG_PRU_DIV0_MASK		GENMASK(15, 19)
+> +
+> +#define PRUSS_GPCFG_PRU_GPO_MODE		BIT(14)
+> +#define PRUSS_GPCFG_PRU_GPO_MODE_DIRECT		0
+> +#define PRUSS_GPCFG_PRU_GPO_MODE_SERIAL		BIT(14)
+> +
+> +#define PRUSS_GPCFG_PRU_GPI_SB			BIT(13)
+> +
+> +#define PRUSS_GPCFG_PRU_GPI_DIV1_SHIFT		8
+> +#define PRUSS_GPCFG_PRU_GPI_DIV1_MASK		GENMASK(12, 8)
+> +
+> +#define PRUSS_GPCFG_PRU_GPI_DIV0_SHIFT		3
+> +#define PRUSS_GPCFG_PRU_GPI_DIV0_MASK		GENMASK(7, 3)
+> +
+> +#define PRUSS_GPCFG_PRU_GPI_CLK_MODE_POSITIVE	0
+> +#define PRUSS_GPCFG_PRU_GPI_CLK_MODE_NEGATIVE	BIT(2)
+> +#define PRUSS_GPCFG_PRU_GPI_CLK_MODE		BIT(2)
+> +
+> +#define PRUSS_GPCFG_PRU_GPI_MODE_MASK		GENMASK(1, 0)
+> +#define PRUSS_GPCFG_PRU_GPI_MODE_SHIFT		0
+> +
+> +#define PRUSS_GPCFG_PRU_MUX_SEL_SHIFT		26
+> +#define PRUSS_GPCFG_PRU_MUX_SEL_MASK		GENMASK(29, 26)
+> +
+> +/* PRUSS_MII_RT register bits */
+> +#define PRUSS_MII_RT_EVENT_EN			BIT(0)
+> +
+> +/* PRUSS_SPP register bits */
+> +#define PRUSS_SPP_XFER_SHIFT_EN			BIT(1)
+> +#define PRUSS_SPP_PRU1_PAD_HP_EN		BIT(0)
 
-HEAD commit:    3c2611bac08a selftests/bpf: Fix trace_virtqueue_add_sgs te..
-git tree:       bpf-next
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=1026d472c80000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=cab35c936731a347
-dashboard link: https://syzkaller.appspot.com/bug?extid=e1d1b65f7c32f2a86a9f
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15826bc6c80000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15cd12e2c80000
+Can we please move all the above definitions to private driver/soc/ti/pruss.h?
+You can also add pruss_cfg_read and pruss_cfg_update there.
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/36a32f4d222a/disk-3c2611ba.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/f5c0da04f143/vmlinux-3c2611ba.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/ae2ca9bce51a/bzImage-3c2611ba.xz
+> +
+> +/*
+> + * enum pruss_gp_mux_sel - PRUSS GPI/O Mux modes for the
+> + * PRUSS_GPCFG0/1 registers
+> + *
+> + * NOTE: The below defines are the most common values, but there
+> + * are some exceptions like on 66AK2G, where the RESERVED and MII2
+> + * values are interchanged. Also, this bit-field does not exist on
+> + * AM335x SoCs
+> + */
+> +enum pruss_gp_mux_sel {
+> +	PRUSS_GP_MUX_SEL_GP = 0,
+> +	PRUSS_GP_MUX_SEL_ENDAT,
+> +	PRUSS_GP_MUX_SEL_RESERVED,
+> +	PRUSS_GP_MUX_SEL_SD,
+> +	PRUSS_GP_MUX_SEL_MII2,
+> +	PRUSS_GP_MUX_SEL_MAX,
+> +};
+> +
+> +/*
+> + * enum pruss_gpi_mode - PRUSS GPI configuration modes, used
+> + *			 to program the PRUSS_GPCFG0/1 registers
+> + */
+> +enum pruss_gpi_mode {
+> +	PRUSS_GPI_MODE_DIRECT = 0,
+> +	PRUSS_GPI_MODE_PARALLEL,
+> +	PRUSS_GPI_MODE_28BIT_SHIFT,
+> +	PRUSS_GPI_MODE_MII,
+> +};
+> +
+>  /**
+>   * enum pruss_pru_id - PRU core identifiers
+>   * @PRUSS_PRU0: PRU Core 0.
 
-The issue was bisected to:
-
-commit 9c94bbf9a87b264294f42e6cc0f76d87854733ec
-Author: Alexander Lobakin <aleksander.lobakin@intel.com>
-Date:   Mon Mar 13 21:55:52 2023 +0000
-
-    xdp: recycle Page Pool backed skbs built from XDP frames
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11deec2ac80000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=13deec2ac80000
-console output: https://syzkaller.appspot.com/x/log.txt?x=15deec2ac80000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+e1d1b65f7c32f2a86a9f@syzkaller.appspotmail.com
-Fixes: 9c94bbf9a87b ("xdp: recycle Page Pool backed skbs built from XDP frames")
-
-BUG: kernel NULL pointer dereference, address: 0000000000000d28
-#PF: supervisor write access in kernel mode
-#PF: error_code(0x0002) - not-present page
-PGD 7b741067 P4D 7b741067 PUD 7c1ca067 PMD 0 
-Oops: 0002 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 5080 Comm: syz-executor371 Not tainted 6.2.0-syzkaller-13030-g3c2611bac08a #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/02/2023
-RIP: 0010:memset_erms+0xd/0x20 arch/x86/lib/memset_64.S:66
-Code: 01 48 0f af c6 f3 48 ab 89 d1 f3 aa 4c 89 c8 c3 66 66 2e 0f 1f 84 00 00 00 00 00 66 90 66 0f 1f 00 49 89 f9 40 88 f0 48 89 d1 <f3> aa 4c 89 c8 c3 66 66 2e 0f 1f 84 00 00 00 00 00 66 90 66 0f 1f
-RSP: 0018:ffffc90003baf730 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: ffff888028b94000 RCX: 0000000000000020
-RDX: 0000000000000020 RSI: 0000000000000000 RDI: 0000000000000d28
-RBP: 0000000000000001 R08: 0000000000000001 R09: 0000000000000d28
-R10: ffffed100517281c R11: 0000000000094001 R12: 0000000000000d48
-R13: 0000000000000d28 R14: 0000000000000f68 R15: 0000000000000100
-FS:  0000555555979300(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000d28 CR3: 0000000028e2d000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- __finalize_skb_around net/core/skbuff.c:321 [inline]
- __build_skb_around+0x232/0x3a0 net/core/skbuff.c:379
- build_skb_around+0x32/0x290 net/core/skbuff.c:444
- __xdp_build_skb_from_frame+0x121/0x760 net/core/xdp.c:622
- xdp_recv_frames net/bpf/test_run.c:248 [inline]
- xdp_test_run_batch net/bpf/test_run.c:334 [inline]
- bpf_test_run_xdp_live+0x1289/0x1930 net/bpf/test_run.c:362
- bpf_prog_test_run_xdp+0xa05/0x14e0 net/bpf/test_run.c:1418
- bpf_prog_test_run kernel/bpf/syscall.c:3675 [inline]
- __sys_bpf+0x1598/0x5100 kernel/bpf/syscall.c:5028
- __do_sys_bpf kernel/bpf/syscall.c:5114 [inline]
- __se_sys_bpf kernel/bpf/syscall.c:5112 [inline]
- __x64_sys_bpf+0x79/0xc0 kernel/bpf/syscall.c:5112
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f320b4efca9
-Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffd2c9924d8 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f320b4efca9
-RDX: 0000000000000048 RSI: 0000000020000080 RDI: 000000000000000a
-RBP: 00007f320b4b3e50 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f320b4b3ee0
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-Modules linked in:
-CR2: 0000000000000d28
----[ end trace 0000000000000000 ]---
-RIP: 0010:memset_erms+0xd/0x20 arch/x86/lib/memset_64.S:66
-Code: 01 48 0f af c6 f3 48 ab 89 d1 f3 aa 4c 89 c8 c3 66 66 2e 0f 1f 84 00 00 00 00 00 66 90 66 0f 1f 00 49 89 f9 40 88 f0 48 89 d1 <f3> aa 4c 89 c8 c3 66 66 2e 0f 1f 84 00 00 00 00 00 66 90 66 0f 1f
-RSP: 0018:ffffc90003baf730 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: ffff888028b94000 RCX: 0000000000000020
-RDX: 0000000000000020 RSI: 0000000000000000 RDI: 0000000000000d28
-RBP: 0000000000000001 R08: 0000000000000001 R09: 0000000000000d28
-R10: ffffed100517281c R11: 0000000000094001 R12: 0000000000000d48
-R13: 0000000000000d28 R14: 0000000000000f68 R15: 0000000000000100
-FS:  0000555555979300(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000d28 CR3: 0000000028e2d000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess), 1 bytes skipped:
-   0:	48 0f af c6          	imul   %rsi,%rax
-   4:	f3 48 ab             	rep stos %rax,%es:(%rdi)
-   7:	89 d1                	mov    %edx,%ecx
-   9:	f3 aa                	rep stos %al,%es:(%rdi)
-   b:	4c 89 c8             	mov    %r9,%rax
-   e:	c3                   	retq
-   f:	66 66 2e 0f 1f 84 00 	data16 nopw %cs:0x0(%rax,%rax,1)
-  16:	00 00 00 00
-  1a:	66 90                	xchg   %ax,%ax
-  1c:	66 0f 1f 00          	nopw   (%rax)
-  20:	49 89 f9             	mov    %rdi,%r9
-  23:	40 88 f0             	mov    %sil,%al
-  26:	48 89 d1             	mov    %rdx,%rcx
-* 29:	f3 aa                	rep stos %al,%es:(%rdi) <-- trapping instruction
-  2b:	4c 89 c8             	mov    %r9,%rax
-  2e:	c3                   	retq
-  2f:	66 66 2e 0f 1f 84 00 	data16 nopw %cs:0x0(%rax,%rax,1)
-  36:	00 00 00 00
-  3a:	66 90                	xchg   %ax,%ax
-  3c:	66                   	data16
-  3d:	0f                   	.byte 0xf
-  3e:	1f                   	(bad)
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+cheers,
+-roger
