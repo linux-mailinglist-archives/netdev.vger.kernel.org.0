@@ -2,82 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 612D86BB435
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 14:15:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E5116BB437
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 14:15:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231848AbjCONPV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 09:15:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35448 "EHLO
+        id S231859AbjCONPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 09:15:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232012AbjCONO6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 09:14:58 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36FDAA1892
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 06:14:31 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id eg48so16138132edb.13
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 06:14:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678886069;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ko8uIaVTtfK98OPtq0RbCtmBQ5zzSH/lzWDgsNNPcGE=;
-        b=kssdTtT8POAG8MVoPg4E3KHsJGK4vMa/mFMHgzOQKrLzka5xTyBd4krZ2yg6dBB3Jl
-         mIANJsj8iYfru04IwdD4CvNg7Ej8rUELE7sLJp4bnOjZnaZPdDjlGtEu+6A7ZiVMypgf
-         5jRcg+HDExItHNTgZ+3q0CmDdNoVjpupKMOgV7DaB/D6/rlyuR3jHynwZSW1MXh8d58h
-         biNcc98lJafN6jrub5MpB1uayIwcqpfeLhKS1xreOU+1nRjWp4l5DrrSYimArdUYwL6T
-         ZTGFOEgaqS7ls51CIc0Xic+SCpbOahiMqVCyzWUqRwDwEG9jnjpEF65T5m2Yn3ksiMPe
-         w8/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678886069;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ko8uIaVTtfK98OPtq0RbCtmBQ5zzSH/lzWDgsNNPcGE=;
-        b=o9OJvaYgDA40DKz750UDGBPS+t8AvhaJy/kSPAW20HXDcILj8szaTtdSiCczpGbAxc
-         YiPZuKWEFBMHP6WMBTvqJ9HFOf2ILUozV8Efa5QijzBfVUHw+bWn0e1LkN2rLANuEfHw
-         NW+bPYABDdJYFGdMPXvzI4uZlh8/oGeDniJUuxaq5Ro9fbZfFUQPZX6yYaPQS8WFd/h2
-         b/GhxXxx2LYyjMey3fF1mL3CyZ4nFFY23SE+1coABIGS5vCOfNkCD/V+QazbVZCK6Kve
-         JSABiMxFjuxdy2la2SnOQ+k79r2GmatWx8N42sNMcZh3gUnza7Dx5DZt9/AQZ2jEmFHo
-         3x3Q==
-X-Gm-Message-State: AO0yUKX5uJ4x+OC/rg+8lu7OfZDQ6nzvSbkzh1Rg0Ou1cAKelrJATaIo
-        tNWCWi8TA3SyrJK1vpnn7jVPRA==
-X-Google-Smtp-Source: AK7set/zo2nQvhu3yQ8tXP5JkC8OVGgJOgcta7DN6Bw6XOHhr8ldC9OwaIy35bcMX3a5DV02+BT8uA==
-X-Received: by 2002:a17:907:a582:b0:92f:3e2b:fbb7 with SMTP id vs2-20020a170907a58200b0092f3e2bfbb7mr1805219ejc.14.1678886069514;
-        Wed, 15 Mar 2023 06:14:29 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:940e:8615:37dc:c2bd? ([2a02:810d:15c0:828:940e:8615:37dc:c2bd])
-        by smtp.gmail.com with ESMTPSA id g12-20020a1709064e4c00b008df7d2e122dsm2511882ejw.45.2023.03.15.06.14.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Mar 2023 06:14:28 -0700 (PDT)
-Message-ID: <54aae3b8-ee85-c7eb-ecda-f574cb140675@linaro.org>
-Date:   Wed, 15 Mar 2023 14:14:27 +0100
+        with ESMTP id S231716AbjCONPS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 09:15:18 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7FFB65C61;
+        Wed, 15 Mar 2023 06:14:58 -0700 (PDT)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32FDBTCk030107;
+        Wed, 15 Mar 2023 13:14:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=LnGAxE/w1geMJYGLju7etwlhU3AppjVPV6TIYvG/Jvw=;
+ b=foHiFJpZ7jtLAD4t/gM7pQly5JEH2f9tmdPzfKA7zD9R+J42IxgZK7j8thtutRsAEQ92
+ D8dgD/yVfFbPcMgaxwPwtGSpPSP1XI2xSJSoIBp30lDVvbEU/2Tv0WE+qczesO0a5NL8
+ FsiIXTSNrMbCZq12oleePVzfjp5ccd2iyLJL+V2H5Te35sb42KRBtnbTWBGGOyPVuyQ3
+ 4iXYAK4urQrgTD0zR6tcAq13SUhaYjfj+JsR8KNKhqrsC42o+39mBkoKH4jUCWky38cV
+ KQJSil3iutLVBABwqZ3b6MW84o72F/rGPYl01M+8C5ps9gk/cPhNRwqouy+rIhMZtpyc Rw== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3pbepe83jx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 15 Mar 2023 13:14:52 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 32EN6cqr009954;
+        Wed, 15 Mar 2023 13:14:50 GMT
+Received: from smtprelay05.fra02v.mail.ibm.com ([9.218.2.225])
+        by ppma03ams.nl.ibm.com (PPS) with ESMTPS id 3pb29sgtak-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 15 Mar 2023 13:14:50 +0000
+Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
+        by smtprelay05.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 32FDEkKC19792392
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 15 Mar 2023 13:14:46 GMT
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 81AAE2004E;
+        Wed, 15 Mar 2023 13:14:46 +0000 (GMT)
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 70E132004B;
+        Wed, 15 Mar 2023 13:14:46 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTPS;
+        Wed, 15 Mar 2023 13:14:46 +0000 (GMT)
+Received: by tuxmaker.boeblingen.de.ibm.com (Postfix, from userid 55271)
+        id 322D2E035C; Wed, 15 Mar 2023 14:14:46 +0100 (CET)
+From:   Alexandra Winter <wintera@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>
+Subject: [PATCH net] net/iucv: Fix size of interrupt data
+Date:   Wed, 15 Mar 2023 14:14:35 +0100
+Message-Id: <20230315131435.4113889-1-wintera@linux.ibm.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH 1/5] dt-bindings: can: tcan4x5x: Add tcan4552 and tcan4553
- variants
-Content-Language: en-US
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Markus Schneider-Pargmann <msp@baylibre.com>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
-        Simon Horman <simon.horman@corigine.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230314151201.2317134-1-msp@baylibre.com>
- <20230314151201.2317134-2-msp@baylibre.com>
- <680053bc-66fb-729f-ecdc-2f5fe511cecd@linaro.org>
- <20230315112508.6q52rekhmk66uiwj@pengutronix.de>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230315112508.6q52rekhmk66uiwj@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: SfCACpnZn14uCFdePYoVqlRYRazYHGj2
+X-Proofpoint-ORIG-GUID: SfCACpnZn14uCFdePYoVqlRYRazYHGj2
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-03-15_06,2023-03-15_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 bulkscore=0
+ phishscore=0 priorityscore=1501 mlxscore=0 adultscore=0 clxscore=1011
+ spamscore=0 malwarescore=0 impostorscore=0 mlxlogscore=999
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2302240000 definitions=main-2303150111
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,42 +83,96 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15/03/2023 12:25, Marc Kleine-Budde wrote:
-> On 14.03.2023 21:01:10, Krzysztof Kozlowski wrote:
->> On 14/03/2023 16:11, Markus Schneider-Pargmann wrote:
->>> These two new chips do not have state or wake pins.
->>>
->>> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
->>> ---
->>>  .../devicetree/bindings/net/can/tcan4x5x.txt          | 11 ++++++++---
->>>  1 file changed, 8 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/Documentation/devicetree/bindings/net/can/tcan4x5x.txt b/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
->>> index e3501bfa22e9..38a2b5369b44 100644
->>> --- a/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
->>> +++ b/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
->>> @@ -4,7 +4,10 @@ Texas Instruments TCAN4x5x CAN Controller
->>>  This file provides device node information for the TCAN4x5x interface contains.
->>>  
->>>  Required properties:
->>> -	- compatible: "ti,tcan4x5x"
->>> +	- compatible:
->>> +		"ti,tcan4x5x" or
->>> +		"ti,tcan4552" or
->>> +		"ti,tcan4553"
->>
->> Awesome, they nicely fit into wildcard... Would be useful to deprecate
->> the wildcard at some point and switch to proper compatibles in such
->> case, because now they became confusing.
-> 
-> I plead for DT stability!
-> 
-> As I understand correctly, the exact version of the chip (4550, 4552, or
-> 4553) can be detected via the ID2 register.
+iucv_irq_data needs to be 4 bytes larger.
+These bytes are not used by the iucv module, but written by
+the z/VM hypervisor in case a CPU is deconfigured.
 
-So maybe there is no need for this patch at all? Or the new compatibles
-should be made compatible with generic fallback?
+Reported as:
+BUG dma-kmalloc-64 (Not tainted): kmalloc Redzone overwritten
+-----------------------------------------------------------------------------
+0x0000000000400564-0x0000000000400567 @offset=1380. First byte 0x80 instead of 0xcc
+Allocated in iucv_cpu_prepare+0x44/0xd0 age=167839 cpu=2 pid=1
+__kmem_cache_alloc_node+0x166/0x450
+kmalloc_node_trace+0x3a/0x70
+iucv_cpu_prepare+0x44/0xd0
+cpuhp_invoke_callback+0x156/0x2f0
+cpuhp_issue_call+0xf0/0x298
+__cpuhp_setup_state_cpuslocked+0x136/0x338
+__cpuhp_setup_state+0xf4/0x288
+iucv_init+0xf4/0x280
+do_one_initcall+0x78/0x390
+do_initcalls+0x11a/0x140
+kernel_init_freeable+0x25e/0x2a0
+kernel_init+0x2e/0x170
+__ret_from_fork+0x3c/0x58
+ret_from_fork+0xa/0x40
+Freed in iucv_init+0x92/0x280 age=167839 cpu=2 pid=1
+__kmem_cache_free+0x308/0x358
+iucv_init+0x92/0x280
+do_one_initcall+0x78/0x390
+do_initcalls+0x11a/0x140
+kernel_init_freeable+0x25e/0x2a0
+kernel_init+0x2e/0x170
+__ret_from_fork+0x3c/0x58
+ret_from_fork+0xa/0x40
+Slab 0x0000037200010000 objects=32 used=30 fp=0x0000000000400640 flags=0x1ffff00000010200(slab|head|node=0|zone=0|
+Object 0x0000000000400540 @offset=1344 fp=0x0000000000000000
+Redzone  0000000000400500: cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc  ................
+Redzone  0000000000400510: cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc  ................
+Redzone  0000000000400520: cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc  ................
+Redzone  0000000000400530: cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc  ................
+Object   0000000000400540: 00 01 00 03 00 00 00 00 00 00 00 00 00 00 00 00  ................
+Object   0000000000400550: f3 86 81 f2 f4 82 f8 82 f0 f0 f0 f0 f0 f0 f0 f2  ................
+Object   0000000000400560: 00 00 00 00 80 00 00 00 cc cc cc cc cc cc cc cc  ................
+Object   0000000000400570: cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc  ................
+Redzone  0000000000400580: cc cc cc cc cc cc cc cc                          ........
+Padding  00000000004005d4: 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a  ZZZZZZZZZZZZZZZZ
+Padding  00000000004005e4: 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a  ZZZZZZZZZZZZZZZZ
+Padding  00000000004005f4: 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a              ZZZZZZZZZZZZ
+CPU: 6 PID: 121030 Comm: 116-pai-crypto. Not tainted 6.3.0-20230221.rc0.git4.99b8246b2d71.300.fc37.s390x+debug #1
+Hardware name: IBM 3931 A01 704 (z/VM 7.3.0)
+Call Trace:
+[<000000032aa034ec>] dump_stack_lvl+0xac/0x100
+[<0000000329f5a6cc>] check_bytes_and_report+0x104/0x140
+[<0000000329f5aa78>] check_object+0x370/0x3c0
+[<0000000329f5ede6>] free_debug_processing+0x15e/0x348
+[<0000000329f5f06a>] free_to_partial_list+0x9a/0x2f0
+[<0000000329f5f4a4>] __slab_free+0x1e4/0x3a8
+[<0000000329f61768>] __kmem_cache_free+0x308/0x358
+[<000000032a91465c>] iucv_cpu_dead+0x6c/0x88
+[<0000000329c2fc66>] cpuhp_invoke_callback+0x156/0x2f0
+[<000000032aa062da>] _cpu_down.constprop.0+0x22a/0x5e0
+[<0000000329c3243e>] cpu_device_down+0x4e/0x78
+[<000000032a61dee0>] device_offline+0xc8/0x118
+[<000000032a61e048>] online_store+0x60/0xe0
+[<000000032a08b6b0>] kernfs_fop_write_iter+0x150/0x1e8
+[<0000000329fab65c>] vfs_write+0x174/0x360
+[<0000000329fab9fc>] ksys_write+0x74/0x100
+[<000000032aa03a5a>] __do_syscall+0x1da/0x208
+[<000000032aa177b2>] system_call+0x82/0xb0
+INFO: lockdep is turned off.
+FIX dma-kmalloc-64: Restoring kmalloc Redzone 0x0000000000400564-0x0000000000400567=0xcc
+FIX dma-kmalloc-64: Object at 0x0000000000400540 not freed
 
-Best regards,
-Krzysztof
+Fixes: 2356f4cb1911 ("[S390]: Rewrite of the IUCV base code, part 2")
+Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
+---
+ net/iucv/iucv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/iucv/iucv.c b/net/iucv/iucv.c
+index eb0295d90039..fc3fddeb6f36 100644
+--- a/net/iucv/iucv.c
++++ b/net/iucv/iucv.c
+@@ -83,7 +83,7 @@ struct iucv_irq_data {
+ 	u16 ippathid;
+ 	u8  ipflags1;
+ 	u8  iptype;
+-	u32 res2[8];
++	u32 res2[9];
+ };
+ 
+ struct iucv_irq_list {
+-- 
+2.37.2
 
