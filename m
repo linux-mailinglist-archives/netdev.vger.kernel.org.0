@@ -2,145 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A6AB6BA632
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 05:28:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 78B3A6BA645
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 05:37:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230456AbjCOE2L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 00:28:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51706 "EHLO
+        id S230508AbjCOEhy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 00:37:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229488AbjCOE2I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 00:28:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA8B1DBA0;
-        Tue, 14 Mar 2023 21:28:07 -0700 (PDT)
+        with ESMTP id S229705AbjCOEhw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 00:37:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A84C59E63
+        for <netdev@vger.kernel.org>; Tue, 14 Mar 2023 21:37:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E446461AE3;
-        Wed, 15 Mar 2023 04:28:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC318C433D2;
-        Wed, 15 Mar 2023 04:28:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1678854486;
-        bh=LAK7Ux218jJKDKVTmRf0R9iRAT4prcpZ1FxGOQoWDwg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Meg8cAsSQxJ7QxAuSZLPP3N2IuvTug41TVw+4NUkBgdNygxnFtsRmCtn/OOC6i1AA
-         tENroIg/6Yu2qFS7vMD2C7KdJMIUajdU65LKHg1rZNYqJVyf12remllOOELwcqkWwM
-         edNvhYYOcqd9SpbyhnoxGx2zG8UUj7Jiy0mqO640=
-Date:   Wed, 15 Mar 2023 05:28:03 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Bjorn Andersson <andersson@kernel.org>
-Cc:     Elliot Berman <quic_eberman@quicinc.com>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Amol Maheshwari <amahesh@qti.qualcomm.com>,
-        Arnd Bergmann <arnd@arndb.de>, Kalle Valo <kvalo@kernel.org>,
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 33FA661AC9
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 04:37:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 332ABC433EF;
+        Wed, 15 Mar 2023 04:37:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678855070;
+        bh=PbDrCEESpZPbr3O7600U95r39pZKHGXnaW/Ysy45g5U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=UcdPBCx1fMWb367cWKC1vO2SKTcGajgFTLQSqsTzrZ0oyyd5XN35it0ZLkSQZXEPF
+         ZpjFWfgkthnEd7rYdca7Ty+NT/gW4fCRsGweJ5CrKB8c962BRz4vXEmktyrWUmSbAb
+         ibuur1V3QxX5MMhEz0ORqJ7SRpKdKBi3et6JqFS6ykgqwJjWJ1DvLPMtYVnQJLN/h+
+         7XDhhloKtPQuFn3J8F6piQwdN1CSWDkLli4Ig3Egp/wY/9jnnm6Z2EXHeGuR7zpPh4
+         NFZvKtCTpRs6V5BjTOI7yu3VEygoPqSBAqJ5LQZjozpqlrtVd0AOUQnxC7UMvM6gwv
+         Ygp2GtXEenQGA==
+Date:   Tue, 14 Mar 2023 21:37:49 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     Petr Machata <petrm@nvidia.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Gokul krishna Krishnakumar <quic_gokukris@quicinc.com>,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-remoteproc@vger.kernel.org
-Subject: Re: [PATCH] firmware: qcom_scm: Use fixed width src vm bitmap
-Message-ID: <ZBFJU3Lp4+/EgSr5@kroah.com>
-References: <20230213181832.3489174-1-quic_eberman@quicinc.com>
- <20230213214417.mtcpeultvynyls6s@ripper>
- <Y+tNRPf0PGdShf5l@kroah.com>
- <20230214172325.lplxgbprhj3bzvr3@ripper>
- <bdda82f7-933d-443b-614a-6befad2899b5@quicinc.com>
- <2ae96b75-82f1-165a-e56d-7446c90bb7af@quicinc.com>
- <20230315041119.fp7npwa5bia5hck3@ripper>
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        David Ahern <dsahern@kernel.org>,
+        Shuah Khan <shuah@kernel.org>, mlxsw@nvidia.com,
+        Jacques de Laval <Jacques.De.Laval@westermo.com>
+Subject: Re: [PATCH net-next 0/5] net: Extend address label support
+Message-ID: <20230314213749.59b2aa43@kernel.org>
+In-Reply-To: <ZBCyKtdDBkkECB3I@shredder>
+References: <cover.1678448186.git.petrm@nvidia.com>
+        <20230310171257.0127e74c@kernel.org>
+        <87sfe8sniw.fsf@nvidia.com>
+        <20230313151028.78fdfec6@kernel.org>
+        <87a60fs2kp.fsf@nvidia.com>
+        <ZBCyKtdDBkkECB3I@shredder>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230315041119.fp7npwa5bia5hck3@ripper>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 14, 2023 at 09:11:19PM -0700, Bjorn Andersson wrote:
-> On Fri, Mar 03, 2023 at 01:09:08PM -0800, Elliot Berman wrote:
-> > 
-> > 
-> > On 2/14/2023 10:52 AM, Elliot Berman wrote:
-> > > 
-> > > 
-> > > On 2/14/2023 9:23 AM, Bjorn Andersson wrote:
-> > > > On Tue, Feb 14, 2023 at 09:58:44AM +0100, Greg Kroah-Hartman wrote:
-> > > > > On Mon, Feb 13, 2023 at 01:44:17PM -0800, Bjorn Andersson wrote:
-> > > > > > On Mon, Feb 13, 2023 at 10:18:29AM -0800, Elliot Berman wrote:
-> > > > > > > The maximum VMID for assign_mem is 63. Use a u64 to represent this
-> > > > > > > bitmap instead of architecture-dependent "unsigned int"
-> > > > > > > which varies in
-> > > > > > > size on 32-bit and 64-bit platforms.
-> > > > > > > 
-> > > > > > > Acked-by: Kalle Valo <kvalo@kernel.org> (ath10k)
-> > > > > > > Tested-by: Gokul krishna Krishnakumar <quic_gokukris@quicinc.com>
-> > > > > > > Signed-off-by: Elliot Berman <quic_eberman@quicinc.com>
-> > > > > > 
-> > > > > > Reviewed-by: Bjorn Andersson <andersson@kernel.org>
-> > > > > > 
-> > > > > > @Greg, would you mind taking this through your tree for v6.3, you
-> > > > > > already have a related change in fastrpc.c in your tree...
-> > > > > 
-> > > > > I tried, but it doesn't apply to my char-misc tree at all:
-> > > > > 
-> > > > > checking file drivers/firmware/qcom_scm.c
-> > > > > Hunk #1 succeeded at 898 (offset -7 lines).
-> > > > > Hunk #2 succeeded at 915 (offset -7 lines).
-> > > > > Hunk #3 succeeded at 930 (offset -7 lines).
-> > > > > checking file drivers/misc/fastrpc.c
-> > > > > checking file drivers/net/wireless/ath/ath10k/qmi.c
-> > > > > checking file drivers/remoteproc/qcom_q6v5_mss.c
-> > > > > Hunk #1 succeeded at 227 (offset -8 lines).
-> > > > > Hunk #2 succeeded at 404 (offset -10 lines).
-> > > > > Hunk #3 succeeded at 939 with fuzz 1 (offset -28 lines).
-> > > > > checking file drivers/remoteproc/qcom_q6v5_pas.c
-> > > > > Hunk #1 FAILED at 94.
-> > > > > 1 out of 1 hunk FAILED
-> > > > > checking file drivers/soc/qcom/rmtfs_mem.c
-> > > > > Hunk #1 succeeded at 30 (offset -1 lines).
-> > > > > can't find file to patch at input line 167
-> > > > > Perhaps you used the wrong -p or --strip option?
-> > > > > The text leading up to this was:
-> > > > > --------------------------
-> > > > > |diff --git a/include/linux/firmware/qcom/qcom_scm.h
-> > > > > b/include/linux/firmware/qcom/qcom_scm.h
-> > > > > |index 1e449a5d7f5c..250ea4efb7cb 100644
-> > > > > |--- a/include/linux/firmware/qcom/qcom_scm.h
-> > > > > |+++ b/include/linux/firmware/qcom/qcom_scm.h
-> > > > > --------------------------
-> > > > > 
-> > > > > What tree is this patch made against?
-> > > > > 
-> > > > 
-> > > > Sorry about that, I missed the previous changes in qcom_q6v5_pas in the
-> > > > remoteproc tree. Elliot said he based it on linux-next, so I expect that
-> > > > it will merge fine on top of -rc1, once that arrives.
-> > > > 
-> > > 
-> > > Yes, this patch applies on next-20230213. I guess there are enough
-> > > changes were coming from QCOM side (via Bjorn's qcom tree) as well as
-> > > the fastrpc change (via Greg's char-misc tree).
-> > > 
-> > > Let me know if I should do anything once -rc1 arrives. Happy to post
-> > > version on the -rc1 if it helps.
-> > > 
-> > 
-> > The patch now applies on tip of Linus's tree and on char-misc.
+On Tue, 14 Mar 2023 19:43:06 +0200 Ido Schimmel wrote:
+> On Tue, Mar 14, 2023 at 10:44:00AM +0100, Petr Machata wrote:
+> > Like with the labels, address replacement messages with an explicit
+> > IFA_PROTO are not bounced, they just neglect to actually change the
+> > protocol. But it makes no sense to me that someone would issue address
+> > replacement with an explicit proto set which differs from the current
+> > one, but would still rely on the fact that the proto doesn't change...  
 > 
-> Greg, I have a couple more patches in the scm driver in my inbox. Would
-> you be okay with me pulling this through the Qualcomm tree for v6.4?
+> Especially when replace does work with IPv6 addresses. Couple that with
+> the fact that it's a much newer attribute than the labels (added in
+> 5.18) and that it has no support in iproute2, FRR, libnl etc, the
+> chances of such a change breaking anyone are slim to none...
 
-Please do!
+Let's add Jacques, in case he knows something we don't know.
+
+Yes, that sounds fairly safe, we can risk it. Then again we may be
+putting different pieces of state into one field? There are holes 
+next to ifa_proto in most (all?) structures. It wouldn't cost 
+us too much to add a field for your exact use case, it seems.
+But no strong feelings, ifa_proto > 3 is a free-for-all, anyway.
