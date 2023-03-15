@@ -2,80 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3E206BAC36
-	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 10:31:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 381846BAC38
+	for <lists+netdev@lfdr.de>; Wed, 15 Mar 2023 10:32:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232035AbjCOJbh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 05:31:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37122 "EHLO
+        id S231470AbjCOJcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 05:32:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232064AbjCOJbZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 05:31:25 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC7DE7E798
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 02:31:18 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id bd34so11308764pfb.3
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 02:31:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678872678;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=SNpUMs+IhCxx+s9zvnv/ZRka5RkBhP1qXxszwmA8oUM=;
-        b=SPV2lki5ka2H1eWFB5HkclWR0XMvkGVgGUeLbX5Z4RypHrqdoTLmkKtbTnLw3mVVxp
-         xd65P3ZGeYCL0bWRJdidhQe13cVxVnMWd6ArsafkkFsnwsq3Hj+1J8r1ivtt6OCbMJFD
-         tyRWrwrZOqJneYGOxS3COQTD31s4eqmPlYF3xH2mtb3Cj6AP37zTYXLXmKMrRF6huqRk
-         agRYAS6q2rdyA9qcUQaqYiRfeC8Xl4KodRhjoBSqU0cYrErs6LPzIiHg4aDGVLNogA6k
-         26umvSRPu64ARqdF35FGU2q6QLRQvHehpBEEhZtrP34trNvY5bFrX4+ezxe2OUt/uYAp
-         FxDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678872678;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=SNpUMs+IhCxx+s9zvnv/ZRka5RkBhP1qXxszwmA8oUM=;
-        b=PCA31ac1zuAOInNoM6BjAKvZE8k/aVGHqUYCePa0zDiZtk74pphjKZveA5TlYK5BM3
-         G/4Lbi461UiG8v07vGxXjtM1zmm17PMePgavlopwBmxkzJiSxzo7X8WHn+SUBt/19JK7
-         B/aOJifNcL4ZhB4XtS1FM7TPQ2eyhjBcfsGSX1euaC1wZX0cypv4wYBrSYdZ/rs2N/Qb
-         adPu7+Tw/P6V3jJ5VaQfWn3oYevIH7TjbDC9yVF9LGaS+qisSt1612APVVVTa2fqW9VB
-         1++Bu4J0F0l5IXbqNx9/IUvtZDFsRi+A2IKrgQwMejioWjnIiUivA7PZQXiU7imnZfpq
-         vBkA==
-X-Gm-Message-State: AO0yUKV77reFxoGPWLj6WNeK4YyhjwxHad3ntJsOqJXs+4TFOlAHuj1i
-        juWsqInCT8WHtQpHHmh86Xs=
-X-Google-Smtp-Source: AK7set++FbN8xwpzZ9r1Emmny4totiFCeO4XufKVq3BvZP3B6ZAsaFEzFPFX0676cvrbOTg06+WP7g==
-X-Received: by 2002:aa7:9f96:0:b0:625:5e9e:17d5 with SMTP id z22-20020aa79f96000000b006255e9e17d5mr4151665pfr.9.1678872678122;
-        Wed, 15 Mar 2023 02:31:18 -0700 (PDT)
-Received: from Laptop-X1 ([43.228.180.230])
-        by smtp.gmail.com with ESMTPSA id 2-20020aa79142000000b00593e5a45ce7sm3166859pfi.173.2023.03.15.02.31.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Mar 2023 02:31:16 -0700 (PDT)
-Date:   Wed, 15 Mar 2023 17:31:11 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Pedro Tammela <pctammela@mojatatu.com>,
-        Marcelo Leitner <mleitner@redhat.com>,
-        Phil Sutter <psutter@redhat.com>
-Subject: Re: [PATCH iproute2 1/2] Revert "tc: m_action: fix parsing of
- TCA_EXT_WARN_MSG"
-Message-ID: <ZBGQXxhHmTL38tz7@Laptop-X1>
-References: <20230314065802.1532741-1-liuhangbin@gmail.com>
- <20230314070449.1533298-1-liuhangbin@gmail.com>
- <20230315004645.2420c581@kernel.org>
+        with ESMTP id S229769AbjCOJcU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 05:32:20 -0400
+Received: from sender3-op-o18.zoho.com (sender3-op-o18.zoho.com [136.143.184.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF5725848A;
+        Wed, 15 Mar 2023 02:32:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1678872686; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=VS6slRsiNB3iuAq/TPpmAvcle3whJ6va+Nlxvn+7egcRSyFG+YV4XxNKYTP1a/N8BrBRVqXxKxHvhWn1Vy0Bre5sSOd0iaU1bmxxQ7Kz7D3w6cP5dYAfwSTKIjg8yFUUu3CX8lTBaIF2YPN68Gk8whu6hiyAi7Pbg4MvBpkFWxI=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1678872686; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=UhDojsq94i9cLQDAfip+I7i9pPkgsjyfaMVNL/0rm3Q=; 
+        b=GzyVM+Ed3EYEovqtepcEmapZF/DKUEzv3isUTJAucwlMH4bVyLyV5P0mKV0cBZ1gOwNprbyxJYjR5syqGJiSigc0LPEEerj8Z3jsfn0bXVBR79orYQbn8LLWqtJyFjEEeAKAchYHCv6njHjkr6JzIwVE49OorKnnvcuf6rRHLP8=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1678872686;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=UhDojsq94i9cLQDAfip+I7i9pPkgsjyfaMVNL/0rm3Q=;
+        b=PY9xIXXxJOKZ5IdaNLPk1QsEZAWNNzu2m5GAv4fHYKF7XIsqd7UgptXD4fur+jhN
+        0vMEnmcb99KOSi2O7+2DAOJf75B3bBoPHJoMDkLtH7i/zc5LBZPmMvAUterEJuqI0zb
+        WyDFqnN3N9t4LmgNVW/Qowtkn2a0k5gzBYwQzFK0=
+Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
+        with SMTPS id 1678872684137451.17482730504366; Wed, 15 Mar 2023 02:31:24 -0700 (PDT)
+Message-ID: <c17c272b-d1cb-8f29-5559-fea1f29f2a37@arinc9.com>
+Date:   Wed, 15 Mar 2023 12:31:16 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230315004645.2420c581@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH net-next v13 11/16] net: dsa: mt7530: use external PCS
+ driver
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Daniel Golle <daniel@makrotopia.org>, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Alexander Couzens <lynxis@fe80.eu>
+References: <cover.1678357225.git.daniel@makrotopia.org>
+ <2ac2ee40d3b0e705461b50613fda6a7edfdbc4b3.1678357225.git.daniel@makrotopia.org>
+ <e99cc7d1-554d-5d4d-e69a-a38ded02bb08@arinc9.com>
+ <ZBCyqdfaeF/q8oZr@makrotopia.org>
+ <c07651cd-27b4-5ba4-8116-398522327d27@arinc9.com>
+ <20230314195322.tsciinumrxtw64o5@skbuf>
+ <3e3e6a1e-61ba-a6e8-5503-258fb8e949bb@arinc9.com>
+ <20230314223413.velxur7gi7snpdei@skbuf>
+Content-Language: en-US
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <20230314223413.velxur7gi7snpdei@skbuf>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,18 +90,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 15, 2023 at 12:46:45AM -0700, Jakub Kicinski wrote:
-> On Tue, 14 Mar 2023 15:04:49 +0800 Hangbin Liu wrote:
-> > This reverts commit 70b9ebae63ce7e6f9911bdfbcf47a6d18f24159a.
-> > 
-> > The TCA_EXT_WARN_MSG is not sit within the TCA_ACT_TAB hierarchy. It's
-> > belong to the TCA_MAX namespace. I will fix the issue in another patch.
-> > 
-> > Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+On 15.03.2023 01:34, Vladimir Oltean wrote:
+> On Tue, Mar 14, 2023 at 11:59:40PM +0300, Arınç ÜNAL wrote:
+>> Look, I don't ask for renaming just for the sake of renaming things. I see a
+>> benefit which would make things clearer.
+>>
+>> If you rather mean to, know the driver very well, by saying do 100 useful
+>> commits on the driver beforehand, that makes sense. But I think I'm capable
+>> of managing this. I've got the time and energy.
 > 
-> Double check the posting format if it's not just a slip up:
-> https://www.kernel.org/doc/html/next/process/maintainer-netdev.html#co-posting-changes-to-user-space-components
+> I'm absolutely sure that you're capable of renaming mt7530 to mt753x,
+> that's outside the question. That change can be made without even paying
+> too much attention to the code, which is exactly the problem. If the
+> proposal is to touch mt7530_read(), mt7530_write(), mt7530_rmw()
+> (which it seems to be), then that's pretty much the entire driver.
+> 
+> Sorry for being skeptical by default, but generally such refactoring is
+> done by people who have the commitment to stay around when shit hits the
+> fan. Think of it as minimizing the time wasted by others due to that
+> refactoring. That could be time spent by reviewers looking at the code
+> being changed while trying to identify latent bugs; could be time spent
+> by someone who fixes a bug that doesn't backport all the way to stable
+> kernels because it conflicts with the refactoring. Ideally, after a
+> large refactoring, you would be sufficiently active to find and fix bugs
+> before others do, and have an eye for problematic code. Respectfully,
+> you still need to prove all these things. It also helps a lot if you
+> build a working relationship with the driver maintainers, or if you gain
+> their trust and become a maintainer yourself. Otherwise, more work will
+> just fall on the shoulders of fallback maintainers who don't have the
+> hardware. If there is a self-sustaining development community and they
+> take care of everything, I really have zero problems with large
+> refactoring done even by newbies. But the mt7530 maintainers have gone
+> pretty silent as of late, and I, as a fallback maintainer with no
+> hardware, have had to send 2 bug fixes to the mt7530 and 1 to the
+> mtk_eth_soc driver in the past month, to address the reports. Give me a
+> reason not to refuse more potential work :)
 
-Thanks, I will take care of this in the future.
+Now, I can find bugs if it's something that would appear on a daily use 
+of the hardware, like those bugfixes you mentioned which I reported to 
+you. I'm not confident in fixing them myself (yet!) due to my very 
+slowly learning C but I'm willing to stick around for years to come so 
+who knows what happens in a few years. I already do keep an eye on a 
+very small problematic code at least.
 
-Hangbin
+I can be around as a maintainer to help backporting bugfixes that 
+wouldn't apply cleanly due to my refactoring. So I don't add more 
+workload to fallback maintainers like yourself. But that's all I can 
+promise to maintain for now, not because of availability but experience, 
+or rather the lack thereof.
+
+Arınç
