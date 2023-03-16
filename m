@@ -2,308 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BFB686BC23E
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 01:15:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9B766BC255
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 01:21:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230088AbjCPAPX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 20:15:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41124 "EHLO
+        id S230457AbjCPAVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 20:21:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbjCPAPW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 20:15:22 -0400
-Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E585141B6B;
-        Wed, 15 Mar 2023 17:15:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1678925721; x=1710461721;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=2oySJvO6i9+28hK9e7TgkInDJy9QN6sfEmwT+3wRJvY=;
-  b=mrkk76qxG5+S5l9AWTivjbEzLnW80fWep8hYCfmIbuWhRrjenln74qIQ
-   0IezG/NYMtrVPV1semvrG9Msy6PsAECjkuX4ZOqoH63Cqrr8PPhd5fIWX
-   JGT3lmQxPWOABF0FwB7V0ypyBW3meno308ykiSItH3TbIhVlvZzzGwV+6
-   A=;
-X-IronPort-AV: E=Sophos;i="5.98,262,1673913600"; 
-   d="scan'208";a="269902607"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-cadc3fbd.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2023 00:15:13 +0000
-Received: from EX19MTAUWC001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2b-m6i4x-cadc3fbd.us-west-2.amazon.com (Postfix) with ESMTPS id B878CA06B9;
-        Thu, 16 Mar 2023 00:15:10 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
+        with ESMTP id S229602AbjCPAVA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 20:21:00 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E24F99CBDF;
+        Wed, 15 Mar 2023 17:20:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678926058; x=1710462058;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=fQHi556Ba6aqQFUAQqm1ODNA4moHY+lWUUcs6rQDlyg=;
+  b=VNNMKtpST+aEZ+Tm9UmHaaAEj4tV3b1uExMoY13Jmsjj/HOaoyPHldcF
+   509uQY/L0RBiJrXRDbl2dkzaC5nRPRDlYjXQslmvCd0H9HHrDFvl9XCO8
+   +8ZtLO8h5WcOx4eUjs8As7y1XFv/KEFxDWyY8V4lsFH7pRyvd4RRVCdSl
+   q2gVxL2DjTTAX54iMG4I5j3SVsLWu+VAWVAW4T5YslFucrGGxQ+JDvNPd
+   Klg6j/SNYWsWp9tXfluLqEAQjaAzeh1yQz50yL+cJnIdvWC0J00/rgiTc
+   /b9btt01OJdejuEVSh+UtL2RE8+BGwXP8cHuHTuQ+069+/Qxls2Mribmh
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="424123316"
+X-IronPort-AV: E=Sophos;i="5.98,262,1673942400"; 
+   d="scan'208";a="424123316"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2023 17:20:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="790043786"
+X-IronPort-AV: E=Sophos;i="5.98,262,1673942400"; 
+   d="scan'208";a="790043786"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by fmsmga002.fm.intel.com with ESMTP; 15 Mar 2023 17:20:51 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Wed, 15 Mar 2023 17:20:49 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21 via Frontend Transport; Wed, 15 Mar 2023 17:20:49 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.48) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.25; Thu, 16 Mar 2023 00:14:50 +0000
-Received: from 88665a182662.ant.amazon.com (10.106.101.20) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.24; Thu, 16 Mar 2023 00:14:36 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <christopher.maness@gmail.com>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <imv4bel@gmail.com>,
-        <kuba@kernel.org>, <kuniyu@amazon.com>,
-        <linux-hams@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <pabeni@redhat.com>, <ralf@linux-mips.org>,
-        <syzbot+caa188bdfc1eeafeb418@syzkaller.appspotmail.com>,
-        <v4bel@theori.io>
-Subject: Re: KERNEL BUG LIKELY: Kernel Panic! MKISS related
-Date:   Wed, 15 Mar 2023 17:14:28 -0700
-Message-ID: <20230316001428.54359-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <CANnsUMFTYdXovM5gPC0PZ6gRDLnUPXyrnnhuZky5wbFjHf+NoA@mail.gmail.com>
-References: <CANnsUMFTYdXovM5gPC0PZ6gRDLnUPXyrnnhuZky5wbFjHf+NoA@mail.gmail.com>
+ 15.1.2507.21; Wed, 15 Mar 2023 17:20:49 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=od7/rpyOH4n41FOZ3F25cyP8GsGRN3fLMAPsxlcbIiropM0jnmD6sqGsbyzkQPWnhzfIHETwuVNFJCgRF2rKgoI4D0bAVp9hdjPSMDXUJSCJf0Rd1X4pzenJUawjDV3bkT1S3mWWdD4tnnGDCbIGQRSxLilD351DEI10BEvnaB44zsKo5ZMcCIu5hzQY6Wsufrgu0lNK++1AmB0+BDgYje5zIh3THFySZadoi+JWGRnUJMW++bYlq3pXjWHyzwp5fcdXimB0LNvWgG2yVnvCk35JJxLCVmreKjtvFwCDJSbGHaWVO5KPH+p7n9xLgyIgOcilTgDOkq4rjG7GnEFiJg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Winha0FX/qjP0KEnc5InAV8DwcXFXF3TVSw0HGRciSo=;
+ b=SkJYYd+jhYWNDpGRhtYyfukNyT2tGC62ZbEY44CV8z+9ZX//FTpmYaq8o+OB/V8H0sgdiaUNA6HgiXfz7lx2ZpTeZymEUKwSCiYBVRAeRUe12ZtJ0CcNWsBS84V/M9eNFquXSi8uTvydJ3MLm3jmpyn8mFP2p8RZdniHE7UKZvIPmImBBxZwwoFeJSbTnYw0FiEd2A0MZt2Xt2v6ZIlXOpifOKS4DfpwQK8UgC6B8VTvlDFRqw8seEywFL+PcjjIYsmTCTjefpaXC9Gz1kVhttI9lmcojtCaOjKbW5WRqItDBWL9r5QOzvc1NGj+pB6JTXGii+sN6ecboWEDr3jpsA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from SN6PR11MB3229.namprd11.prod.outlook.com (2603:10b6:805:ba::28)
+ by SA3PR11MB8074.namprd11.prod.outlook.com (2603:10b6:806:302::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.24; Thu, 16 Mar
+ 2023 00:20:47 +0000
+Received: from SN6PR11MB3229.namprd11.prod.outlook.com
+ ([fe80::cea8:722d:15ae:a6ed]) by SN6PR11MB3229.namprd11.prod.outlook.com
+ ([fe80::cea8:722d:15ae:a6ed%4]) with mapi id 15.20.6178.024; Thu, 16 Mar 2023
+ 00:20:47 +0000
+Message-ID: <71ee8b08-b1d4-cc42-62c6-4104849a8cf6@intel.com>
+Date:   Wed, 15 Mar 2023 17:20:38 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH net-next] docs: networking: document NAPI
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <edumazet@google.com>, <pabeni@redhat.com>,
+        <jesse.brandeburg@intel.com>, <corbet@lwn.net>,
+        <linux-doc@vger.kernel.org>
+References: <20230315223044.471002-1-kuba@kernel.org>
+ <e7640f5c-654c-d195-23de-f0ca476242f1@intel.com>
+ <20230315161706.2b4b83a9@kernel.org> <20230315161941.477c50ef@kernel.org>
+Content-Language: en-US
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+In-Reply-To: <20230315161941.477c50ef@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BY5PR17CA0034.namprd17.prod.outlook.com
+ (2603:10b6:a03:1b8::47) To SN6PR11MB3229.namprd11.prod.outlook.com
+ (2603:10b6:805:ba::28)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.106.101.20]
-X-ClientProxiedBy: EX19D038UWC001.ant.amazon.com (10.13.139.213) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN6PR11MB3229:EE_|SA3PR11MB8074:EE_
+X-MS-Office365-Filtering-Correlation-Id: 40b4426f-dd9a-40f8-50da-08db25b44a46
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Kt2yptJ8W82HRmtuR8U7R6rWMHNesEnkSDT95ph85h9Jk8OJXePkMawU8Gd1kC6PmIBgEc3u9vX2DMsxXXdxgEWeMIYGa5JVSkAYCEU7rJMlW2luXPV7Uns8o2EjOJtLw/7KHci6yOT4AdRYUNBQmaQObjwTinGl7N0g5LdPfFiZHPwA0U8xCf36rgr6M8CozVUuasVFawwm3FOw0XGgVdIW3k7VmEYFp2yHdoV9KjGoTXtjbC1GYn+UL0+WtZbx8C7DybtQHVm7HrKzVHYsDXYRmrse0Va4HpL7tkc/nLwRCKwY4FzbY7oK22Wk2gU1ha3qdITMkrh1xaYSIuUKnrewdSspJDVVS/2lMLuF04hDGkHuOug8U9p9wj/thJ0KauqLebSR4f0VGONYwsqTomRBGJmNafzZZHvBim7DKsStODslFuzAu3GrrYs5hZkpX0iZ5bRr9+tenmTYlVw9l5IH0JyfUoHgp82fWWBYZ8seCk6bWbfyI/Lcol7jEq8g9j6aLZSbUTqygXmBL6S7+f93po0eJDa9MFcEy1JnoSdEAnUYrJ9IQK4Nsfwz5tnOAihwkoov2l1cSxdrcOIHjrtapewvVcfalCrNly0hYPsx3Y0T3qNRl+pNr7A754pTuEgXCDy9dX2q3QNBs3ri01tUGVjr2jeEhtxNdzSkgWxKoe49mwQA1p5QUzbc1/EzDLpjY+P+Z9F3TeYgn84u/WqCC0LKrt3r1GFGsgb2kVo=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3229.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(136003)(39860400002)(376002)(396003)(346002)(366004)(451199018)(86362001)(66476007)(31696002)(36756003)(38100700002)(82960400001)(8936002)(4326008)(66556008)(6916009)(8676002)(478600001)(41300700001)(66946007)(53546011)(316002)(4744005)(2616005)(83380400001)(2906002)(6666004)(186003)(26005)(6512007)(6486002)(6506007)(5660300002)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NktCeGJMY1ZFOGRZRUU5em5JNUdGVVh5WEtOcDRzV3A0Z2MrdGdTMXg2eTVF?=
+ =?utf-8?B?V0dwSlIzc2twNmFUVU1hNXJOMlFMa2NWQVQ5dHpEZU5TRjdkMXNETnBKenpK?=
+ =?utf-8?B?MStXcWVFeVdsUmNmMFBSTk5tUEVsNFVHYXdrd241eUFWcEJGWnlRZWxWWkZO?=
+ =?utf-8?B?QUFzMGwzdzBaSlJOOWJKNU5jOWphamhYNHFqNTBVNmFYR2tHeXFqS3ZPbGRR?=
+ =?utf-8?B?UW5mR1BRMVcxYzFqclV4bEl3QUFPclEvU3Q5SXJ4WWRPK012Zk9OdlBDZVps?=
+ =?utf-8?B?VWhaQWlMMmJNRW5JSmprQTFDcHdPay9DVzNiVXZaWXM3TmRZTTczWlltS3Jk?=
+ =?utf-8?B?aVh4WEIzR0J1M005ZGdtS1BVUmpLanFFSUJSV0NQVit3RHFQUjI1bGZsK0V1?=
+ =?utf-8?B?ZGJ4Z0ZUNWRMZ3dxblhrYnJTRmJhMUkxQXlnRlJ1RkZhYzBGaTJzRE0rNHAx?=
+ =?utf-8?B?TDRINTRObEtlYWs3a2QxNUhYZ2VUNG4wdnpOT3ZJaGNKR1ZEZFRCT3JtbkJI?=
+ =?utf-8?B?YXBtbEZDenU4VmtxMmNVVDJhdWpWaGNTZmloZ0NmOHJwdEZpMEx5cVdKTkNL?=
+ =?utf-8?B?RGFFWmgzYUw1YU4yRU1NU1NsUkdWYjUwd2VxV2h1WlFXWXZ5ODlLQ2xOVXBt?=
+ =?utf-8?B?cHl1VHlkYlgyZHZFREM2Z3Q0Z2Y1TkVBa2R6Njd4WlFrZHRmTjlZYWlyNmd6?=
+ =?utf-8?B?QU1xNXVEV0hHMjUrMmFkZnMyeGkxM0I4WlBQNGhESWNjTnFodVQ5ZWRDeWRD?=
+ =?utf-8?B?OElTbkJQYW1yTEFDRVFuVUxYby9zZEkxSGV0Y1BiZndrakRMN1lyK1NmWU42?=
+ =?utf-8?B?ZkNnUDV1WUhTdXk1a0dDTVp2N0pYOUY2RmpjVlJWc2hXOUpyQzNTVFdQY0Ra?=
+ =?utf-8?B?YW1UbWVPTHVSRWplVmRiL1JiSWRMczd1YUNJZk1qUXhYSGpoQzB1cmxRbUp6?=
+ =?utf-8?B?d0UvWFFXZmpjRjgxTXRIU3ZxSWZMcjFtQSt6TEtwSXZ5YnBjbU5HVlk3cjNk?=
+ =?utf-8?B?NGM3RXJUcStOY1hNN1FBZjRoSzRoSjZTQjNRNnU4MjJOMzFvR3BHemx6cnZT?=
+ =?utf-8?B?Qm1Jc0N1djc2MEc5QWIydTNtdnkyS21XbDZWM2VFbXJJWGY2cWs1NDZ6VFBt?=
+ =?utf-8?B?cFZ4Y1BNOWlpanZWQVdKeXp4d3JnTmNRdnBUeTF2V2FjKzJWTEdlM2kva0Vp?=
+ =?utf-8?B?YXY0N1pYY3A1NnoxN0FpeUp0cmN6UjBMY3lwckdCZGQ3K1I3Zk1OL2dHcWRa?=
+ =?utf-8?B?empCUDN4WGl3VjJ4b1lOZENaNUQxbEJxT1VDeDJ3cmVmTTBJNC8rRTk0ZFox?=
+ =?utf-8?B?TVJKSFZETmdQUzBwRE15b0hISTJWeWIyUFdTazF2bUtveGFkWHZ2Z3dROWg5?=
+ =?utf-8?B?RTRHU3JHQndxc3h3aGViSkVJNmd2Q29vY056NHl5YmVGNUJJUlM4ZWxEVFhr?=
+ =?utf-8?B?WGtFMStoa29BNWZCNVlJQndnM3FOU0xUWDkxK1BVS09HYnlVL253S1BvL2hi?=
+ =?utf-8?B?L3BGR3B0bExjdi9aaktJL0ZKRXdxYVBzZVphaXcraHlCaktEbFY5NWFnenJL?=
+ =?utf-8?B?eFlDZzdqRThMWGUvdStCMUpKcXpucTM4OUIvdGtOTHJJWUxodktOYWd5QWM3?=
+ =?utf-8?B?UXRCaDRUTjRidmt5OW44MVRJQ3h5MGJjSlZqS1YxZDQ2WlAwOWZ1WVBiOGtH?=
+ =?utf-8?B?U083cWllNGxpTDdCYWNjU3drbzFxU0dJTjl4ZzdjbFB2QVQ5c2RKSlZBbWtm?=
+ =?utf-8?B?UHV3WGNmdnlPVmd4TmIwczVkRWdFaHJuS2ZSVG5OUnBqMUl4V1dka2F2OXdE?=
+ =?utf-8?B?VEhhNStycjhNQStJdnJTT292UUJDQ2VScE1ML1Y0enZqY1RCL3YyQlpwbjlx?=
+ =?utf-8?B?b1RNYUhkZUFMdFpTZTZLSFBUMUoxdng0cFFyZklOTzJ4bDBFZGZZVTBKeTND?=
+ =?utf-8?B?U0hNNGRPa2ZFZDMyUGtoK29VUzVuZmtuVWRKMk96bDZrMnNuVW5DcVBFSURO?=
+ =?utf-8?B?bGdlUXRYeitINHQxbzlQdVFPTWdjaW85RUl4bmF3bklTMFJIZ3R1MFliUG1z?=
+ =?utf-8?B?VER3OTNrK2ZEL21yYW9tQ3ExUndzR0orM0FqM05BbTBJcTU1c00zcklIQ0Mv?=
+ =?utf-8?B?dEZTTHd6b1RyOFRnN3h2SytYQXJBVXFxV085aGkrdCtobHRsRTZTSlpQa1FO?=
+ =?utf-8?B?Z0E9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 40b4426f-dd9a-40f8-50da-08db25b44a46
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3229.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2023 00:20:47.6020
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8hbPNLZ7euCFkXZoLl2NzEGbtE7U7uSzSwPdDKgjW91XrZ7J2fy8Ks693i8aEk0gFDcMe9rOjygbi0viO2jdZwyYFJWlJXcSDGeag1HgJ40=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR11MB8074
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 3/15/2023 4:19 PM, Jakub Kicinski wrote:
+> On Wed, 15 Mar 2023 16:17:06 -0700 Jakub Kicinski wrote:
+>> On Wed, 15 Mar 2023 16:12:42 -0700 Tony Nguyen wrote:
+>>>>    .../device_drivers/ethernet/intel/e100.rst    |   3 +-
+>>>>    .../device_drivers/ethernet/intel/i40e.rst    |   4 +-
+>>>>    .../device_drivers/ethernet/intel/ixgb.rst    |   4 +-
+>>>
+>>> ice has an entry as well; we recently updated the (more?) ancient link
+>>> to the ancient one :P
+>>
+>> Sweet Baby J. I'll fix that in v2, and there seems to be another
+>> link in CAN.. should have grepped harder :)
+> 
+> BTW are there any ixgb parts still in use. The driver doesn't seem
+> like much of a burden, but IIRC it was a bit of an oddball design
+> so maybe we can axe it?
 
-From:   Chris Maness <christopher.maness@gmail.com>
-Date:   Wed, 15 Mar 2023 09:54:03 -0700
-> I noticed this on two systems except I did not get the kernel dump
-> readout as X was running.   I thought it may have had to do with
-> VirtualBox, but then I am getting similar behavior on a real install.
-> I was lucky that I did not have X running and have nice output that I
-> OCR'd from a photo of the screen.
-> 
-> How to reproduce this:
-> 
-> Setup 3 pseudo tty's for loopback to FBB BBS
-> kissnetd -p 3 &
-> kissattach /dev/pts/1
-> kissparms -c 1 -p lb0
-> kissattach /dev/pts/2
-> kissparms -c 1 -p lb1
-> fbb configured with a real radio on /dev/ttyS0 for port 1
-> and the lb0 AX.25 kernel interface for port 2.
-> 
-> I leave the third pseudo tty for connecting JNOS to FBB over this
-> "loopback" net.
-> 
-> If I try to pass bulls (or if I remember correctly even connect from
-> JNOS) it locks cold.
-> 
-> Last night (where this screen shot kernel panic came from) was an
-> actual radio port where I was pushing bulls to a newly installed
-> instance of FBB on Arch Linux with the latest kernel 6.2.5.  I have
-> not had issues in slackware (and I was also running the latest stable
-> kernel as I am too lazy to keep patching the LTS kernel, but I have
-> not played as much there.  I think I may install slack on this box too
-> and see if I can get it to dump like this.  If you want the photo,
-> just email me directly as it looks like the OCR is not that good, but
-> I do not know how photos will go over here.
-> 
-> Here is the screen dump:
-> 
-> 11 fm KOolIP: 1 to NoTJ-1 ctI DISC: 1100216.0098271 BUG: kernel MULL
-> 
-> [106216.0109741 #PF supervisor read access in kernel mode
-> 
-> 1106216.0121001 APE: error codetox0000)
-> 
-> not present page
-> 
-> [106216.0132301 PCD 0 P4D 0
-> 
-> [106216.0143551 Dops: 0000 [#11 PREEMPT SMP PTI
-> 
-> [106216.0151781 CPU: 0 PID: 39178 Comm: xibbd Tainted: G
-> 
-> DE
-> 
-> 6.2.5-arch1-1 #1 Fel?0e9497e04500
-> 
-> [106216.0166331 Hardware name: Dell Inc. Optifiex 790/ONKUGV, BIOS A17
-> 03/14/2013
-> 
-> [106216.0177931 RIP: 0010 :ax25_addr_ax25dev+0x44/0xb0 [ax251
-> 
-> [106216.0189621 Code: c1 53 ed 9 b3 61 P9 48 86 14 40 16 01 00 48 85
-> db 74 41 41 bc 01 00 00 00 eb 08 48 Bb 16
-> 
-> 0 03 00 00 eB do fb M Tr 85 co 75 e1 48 Ba bb 90 00 00=C2=B0
-> 
-> [106216.0214491 RSP: 0018: Frffa52b0107bdeB EFLAGS: 00010286
-> 
-> [106216.022714] RAX: 0000000000000000 RBX: FIff9457c84126c0 RCX:
-> 0000000000000000
-> 
-> [106216.023976] RDX: 0000000000000001 RSI: ffffffffc1541100 RDI:
-> ffffa5260107be68
-> 
-> [106216.025229] RBP: ffFfa52b0107be68 ROB: 0000000000000009 R09:
-> 0000000000000000
-> 
-> [106216.0264951 R10: 0000000000000000 R11: 0000000000000000 R12:
-> 0000000000000001
-> 
-> [106216.0277661 R13: 0000000000000000 R14: 0000000000000000 R15:
-> 0000000000000000
-> 
-> [106216.029015] FS:
-> 
-> 00007/7421a26740 (0000) GS:ffff9458a9c00000 (0000) knIGS: 0000000000000000
-> 
-> [106216.0302591 CS:
-> 
-> 0010 DS: 0000 ES: 0000 CRO: 0000000080050033
-> 
-> [106216.031589] CR2: 0000000000000340 CR3: 000000008c804005 CR4:
-> 0000000000060650
-> 
-> [106216.0330441 Call Trace:
-> 
-> [106216.0337581 <TASK>
-> 
-> [106216.0344601 ax25_bind+0x1e2/0x210 [ax25
-> 0149579197c9004716ce47844d0cb0c56b9a4c841
-
-It seems to be a new null-deref ?
-
-I think at least this patch is not related to the issue and same
-for other patches from Hyunwoom.  All of these commits did not
-touch ax25.
-
-  611792920925 ("netrom: Fix use-after-free caused by accept on already connected socket")
-  f2b0b5210f67 ("net/x25: Fix to not accept on connected socket")
-  14caefcf9837 ("net/rose: Fix to not accept on connected socket")
-
-Thanks,
-Kuniyuki
-
-
-> 
-> [106216.0351811
-> 
-> _sys_bind+Oxe8/OxfO
-> 
-> [106216.0358931
-> 
-> _x64_sus_bind+0x18/0=C3=9720
-> 
-> [106216.0365951
-> 
-> [106216.037296]
-> 
-> do_suscal1_64+0x5f/0=C3=9790
-> 
-> ? syscall_exit_to_user_mode+0x1b/0=C3=9740
-> 
-> [106216.038000]
-> 
-> ? do_syscal1_64+0x6b/0x90 [106216.0386931
-> entry_SYSCALL_64_after_huframe+0x72/0xdc
-> 
-> [106216.039390] RIP: 0033:0x717421b3791b
-> 
-> [106216.0400931 Code: c3 66 0f 1 44 00 00 48 86 15 51 e4 0c 00 f7 d8
-> 64 89 02 b8 ff fr if ff eb be of 11 44 00 00. 13 of 1e fa b8 31 00 00
-> 00 of 05 <48> 34 01 1
-> 
-> 0 ff ff 73 01 c3 48 86 0d 25 e4 0c 00 f7 d8 64 89 01 48
-> 
-> [106216.041578] RSP: 0026:00007ffd15dab688 EFLAGS: 00000206 ORIG RAX:
-> 0000000000000031
-> 
-> [106216.0423321 RAX: fffffffffffffrda RBX: 00007ffd15dabac2 RCX: 000077421b=
-> 37916
-> 
-> [106216.043092] RDX: 0000000000000048 RSI: 00007ffd15dab700 RDI:
-> 0000000000000009
-> 
-> [106216.043853] RBP: 0000563ef2403900 ROB: 0000000000000004 R09:
-> 00000000ffffffff
-> 
-> [106216.0446231 R10: 00007rd15dab6c0 R11: 0000000000000206 R12: 00000000000=
-> 00009
-> 
-> [106216.045395] R13: 0000000000000048 R14: 0000563ef2403c00 R15:
-> 0000000000000010
-> 
-> [106216.0461671
-> 
-> </TASK>
-> 
-> [106216.0469201 Modules linked in: mkiss ax25 crc16 cp210x tun rperdma
-> rdma_cm iw_cm ib_cm ib_core ufat fat intel_rap _msr intel_rapl common
-> =C3=9786_pkg_temp_therma I intel powerc lamp coretemp kum_ intel kum
-> (rqbupass cret10dif pcimul cre32 pcimul polyual cimulni poluual
-> generic grizimul ghash cimulni intel crypta sha512 53s e3 snd Ida
-> _codec_hdmi snd hda_codec_-realtek snd _hda_codec generic rapl ledtrig
-> _audio mousedev snd hda_intel intel _cstate at24 snd_intel_dspefg
-> snd_intel_sdu acp i snd_hda_codec snd_hda_core snd_hudep snd_pem
-> mei_pxp 12c_1801 intel_uncore mei_hdep snd_timer iTCO_wt snd dedbas
-> intel_pc_bxt iTCO_uendor_support mei wat cf gBO211 rikill soundcore
-> pespr 12c _smblis mei me mel lpe_ich mac hid e1000e nfsd auth epcyss
-> nfs acl lockd grace sunrpe uboxnetfit (OF) Uboxmetadp(OF) uboxdru(OF=C2=BB
-> dm _mod loop fuse bpf_preload ip_tables x tables btrfs blakeZb
-> _generic xor raid_pq liberc32c usbhid cre32c _generic 1915 drm_buddy
-> intel_gtt crc32c_intel drm_di splay_helper sr_mod cdrom cec ttm video
-> uni
-> 
-> [106216.0526781 CRZ: 0000000000000340
-> 
-> [106216.053515] ---[ end trace 0000000000000000 1-
-> 
-> [106216.0543461 RIP: 0010 :ax25_ addr_ax25deu+0x44/Oxb0 Lax25]
-> 
-> [106216.055173] Code: c1 53 8 9 63 61 9 48 86 1d 40 16 01 00 48 85 ab
-> 74 4f 41 bc 01 00 00 00 eb 0B 48 8b 16 48 85 b 74 31 48 86 43 08 48.
-> 89 ef <48> 86 60
-> 
-> 0 03 00 00 e8 do fb fr ff 85 cO 75 e1 48 8d bb 90 00 00
-> 
-> [106216.056921] RSP: 0018:ffffa52b0107bded EFLAGS: 00010286
-> 
-> 1106216.0578041 RAX: 0000000000000000 RBX: fFff9457c84126c0 RCX:
-> 0000000000000000
-> 
-> [106216.058688] RDX: 0000000000000001 RSI: ffffffffc1541100 RDI: ffffa52010=
-> 7be68
-> 
-> [106216.059577] RBP: ffffa52b0107be68 ROB: 0000000000000009 R09:
-> 0000000000000000
-> 
-> [106216.060473] R10: 0000000000000000 R11: 0000000000000000 R12:
-> 0000000000000001
-> 
-> [106216.0613741 R13: 0000000000000000 R14: 0000000000000000 R15:
-> 0000000000000000
-> 
-> [106216.0622811 FS*
-> 
-> 0000757421a26740 (0000) GS:ffFf9458a9c00000(0000) knIGS:0000000000000000
-> 
-> [106216.063200] C8:
-> 
-> 0010 DS: 0000 ES: 0000 CRO: 0000000080050033
-> 
-> [106216.0641291 CR2: 0000000000000340 CR3: 000000008c804005 CR4: 0000000000=
-> 06060
-> 
-> [106216.0650721 Kernel panic - not syncing: Fatal exception in interrupt
-> 
-> [106216.0662201 Kernel Offset: 0x38e00000 from Oxffffffff81000000
-> (relocation range: Oxfffffff80000000-oxfrrrrrrrrrrrrr)
-> 
-> [106216.0672191
-> 
-> ---[ end Kernel panic
-> 
-> - not syncing: Fatal exception in interrupt ]-.
-> 
-> Regards,
-> Chris KQ6UP
+Let me ask around.
