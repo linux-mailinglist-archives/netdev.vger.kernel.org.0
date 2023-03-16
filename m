@@ -2,83 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 197C06BD3F8
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 16:38:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F31CE6BD459
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 16:51:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231616AbjCPPiG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 11:38:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45326 "EHLO
+        id S231486AbjCPPvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 11:51:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231817AbjCPPhn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 11:37:43 -0400
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B051CE192D
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 08:35:36 -0700 (PDT)
-Received: by mail-io1-xd36.google.com with SMTP id k17so972647iob.1
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 08:35:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1678980862;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jzBQqD5oNF8UUtseeo3BUimRkPmp5gb2nKVkX6vVqCg=;
-        b=GneqZmGdPLZAUXcKbyte5Cfqo+KwXTdsJl7LvrC8eZ7DKkns/Xf6bhZJtnD02tfjx6
-         bMuo6zjcY88sIL21sghgMcfZuVbEXs70NYfTzoob7lMPRXk1wUlZ3MOnLayEey4gFHMe
-         3KXwzpWxmjl0d/4hoRC9IpmhhjE++WIANUihjF+/pMjN8nho6bCUXo1G2TISftmYaqQU
-         fD6D4/bEMEqoitmBVZrIvvxjUETDkHfTrDQ+3SQWI0AqlK4ifkih5494saXa5fXIdXUr
-         NvaNERVCgYcJpnUsJgKGTrUWtnhLZjnzu3juhmbydyFcn5ywxWE06iM/nXGFb0sR7rK+
-         d/Eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678980862;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=jzBQqD5oNF8UUtseeo3BUimRkPmp5gb2nKVkX6vVqCg=;
-        b=6b0Dkx0Sx4qOeaEymXLfbjr5QNcfKhoDEwTuE5pNb5jfG689yfUN3igbDeiQMGtPGB
-         CZtbhOQAoR1ziAvvBiY8yHoXUHCIAcVxPcK9asGyvMza4lna6aX0/ffRDlUqzV4qpnKu
-         YRavJOfifdEvBQxSvM1/XkbBi2hOTxFoytuz2BSoHIju3Z2A30UOnei3iu017BCIO9HN
-         3GkArhvibICBpbE/n6MVm91mSkIagOzaNayEqW24tOctKKCSsdftbIRuEmMH7JgYqQu8
-         aDOzJxq9bxeOp+/fKKLZkXAzd00S2zl4XXZ+RaU0nN2dHyokx/H5jp5Ki4GReIU4kfF1
-         BW3Q==
-X-Gm-Message-State: AO0yUKX90SEtVDWKOZa8YDam9Cg/LbTqxbLusu+VtSA0PgEOyxVE9wN0
-        HTeYL/Sl43bDd9/n6Lffkg4x3IhvhnoKvQ5nzbB4yg==
-X-Google-Smtp-Source: AK7set/O/dWMabeSU2g/gwjZxrlhQo0Z1lUMrT7SrdR+nfEOA3lnViu93quaURgamvGHQUi1CQ2fTo3b6Pf6nT4TlLg=
-X-Received: by 2002:a6b:b793:0:b0:752:f038:6322 with SMTP id
- h141-20020a6bb793000000b00752f0386322mr3211558iof.0.1678980861792; Thu, 16
- Mar 2023 08:34:21 -0700 (PDT)
+        with ESMTP id S231136AbjCPPvX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 11:51:23 -0400
+X-Greylist: delayed 577 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 16 Mar 2023 08:51:16 PDT
+Received: from mail.nic.cz (mail.nic.cz [IPv6:2001:1488:800:400::400])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA47CC08
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 08:51:16 -0700 (PDT)
+Received: from dellmb (unknown [IPv6:2001:1488:fffe:6:8747:7254:5571:3010])
+        by mail.nic.cz (Postfix) with ESMTPSA id E53D11C1839;
+        Thu, 16 Mar 2023 16:40:58 +0100 (CET)
+Authentication-Results: mail.nic.cz;
+        auth=pass smtp.auth=marek.behun@nic.cz smtp.mailfrom=marek.behun@nic.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1678981259; bh=kncHHyauBJ7Qnxb/5pc9tGIcbEAi9O9+VEh7KujNAi4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From:Reply-To:
+         Subject:To:Cc;
+        b=IgGiY90w8bBJeZXlWlm+iLqc66oBE4yBtr2azMeNTdlvxP/sNy0bwaGj6yNCJMaq2
+         HFoSsQXhZy066ewpSKf7xLZg72AnVjOSZtojyZcMMrNYNxV+LSQsyFPJDHrK4SQas3
+         EiHncl4/FLUksw0aIsZS2DaTORTfTmYVXIWrid5g=
+Date:   Thu, 16 Mar 2023 16:40:58 +0100
+From:   Marek =?UTF-8?B?QmVow7pu?= <marek.behun@nic.cz>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Etienne Champetier <champetier.etienne@gmail.com>
+Cc:     Tobias Waldekranz <tobias@waldekranz.com>,
+        Linux Netdev List <netdev@vger.kernel.org>
+Subject: Re: mv88e6xxx / MV88E6176 + VLAN-aware unusable in 5.15.98 (ok in
+ 5.10.168) (resend)
+Message-ID: <20230316164058.4495cb40@dellmb>
+In-Reply-To: <20230315092340.oyclibi37q3fpsjq@skbuf>
+References: <cd306c78-14a6-bebb-e174-2917734b4799@gmail.com>
+        <20230313223049.sjlxagsmbpjwwyqj@skbuf>
+        <5b77c287-aad3-3bdb-8d7f-56d91ba1c282@gmail.com>
+        <20230315092340.oyclibi37q3fpsjq@skbuf>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.35; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20230316011014.992179-1-edumazet@google.com> <20230316011014.992179-2-edumazet@google.com>
- <641333d07c6b0_3333c72088e@willemb.c.googlers.com.notmuch>
-In-Reply-To: <641333d07c6b0_3333c72088e@willemb.c.googlers.com.notmuch>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 16 Mar 2023 08:34:10 -0700
-Message-ID: <CANn89iLWoJEp+GsBvHqDDB8sogpq78Rkare8c+msNqjwG1EWrA@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/9] net/packet: annotate accesses to po->xmit
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Willem de Bruijn <willemb@google.com>, eric.dumazet@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.103.7 at mail
+X-Virus-Status: Clean
+X-Rspamd-Server: mail
+X-Rspamd-Pre-Result: action=no action;
+        module=multimap;
+        Matched map: WHITELISTED_IP
+X-Rspamd-Queue-Id: E53D11C1839
+X-Spamd-Bar: /
+X-Spamd-Result: default: False [-0.10 / 20.00];
+        MIME_GOOD(-0.10)[text/plain];
+        ARC_NA(0.00)[];
+        FREEMAIL_TO(0.00)[nxp.com,gmail.com];
+        FROM_EQ_ENVFROM(0.00)[];
+        MIME_TRACE(0.00)[0:+];
+        TAGGED_RCPT(0.00)[];
+        FROM_HAS_DN(0.00)[];
+        FREEMAIL_ENVRCPT(0.00)[gmail.com];
+        WHITELISTED_IP(0.00)[2001:1488:fffe:6:8747:7254:5571:3010];
+        ASN(0.00)[asn:25192, ipnet:2001:1488::/32, country:CZ]
+X-Rspamd-Action: no action
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 16, 2023 at 8:20=E2=80=AFAM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
+On Wed, 15 Mar 2023 11:23:40 +0200
+Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
 
-> We could avoid the indirect function call with a branch on
-> packet_use_direct_xmit() and just store a bit?
->
+> On Tue, Mar 14, 2023 at 10:35:25PM -0400, Etienne Champetier wrote:
+> > OpenWrt doesn't support Turris Mox, but here is what is built for Omnia as
+> > far as I understand
+> > 
+> > - Linux 5.15.98: https://github.com/openwrt/openwrt/blob/0aedf916df364771be47ffda8ff3465250ecee77/include/kernel-5.15
+> > 
+> > - some generic patches (backport-5.15 / pending-5.15 / hack-5.15): https://github.com/openwrt/openwrt/tree/0aedf916df364771be47ffda8ff3465250ecee77/target/linux/generic
+> > 
+> > - some arch specific patches: https://github.com/openwrt/openwrt/tree/0aedf916df364771be47ffda8ff3465250ecee77/target/linux/mvebu/patches-5.15
+> > 
+> > (not 100% sure in what order they are applied)
+> > 
+> > - config is generated by taking config-5.15 in generic, mvebu and
+> > mvebu/cortexa9 and somehow merging them
+> > 
+> > The wifi code (mac80211 / ath10k) uses kernel backports, so it's actually
+> > 6.1-rc8 based https://github.com/openwrt/openwrt/blob/0aedf916df364771be47ffda8ff3465250ecee77/package/kernel/mac80211/Makefile  
+> 
+> Yo, that's quite the patch count.
+> 
+> Would you mind putting for me all the patches that apply for your Omnia
+> build to a git branch that you share here? It's impossible to find the
+> needle in the haystack like this.
 
+Or maybe Etienne can try to reproduce the issue with upstream kernel?
+Building upstream kernel for Omnia and using it with OpenWRT / TurrisOS
+does work, I am doing it all the time. Just take /proc/config.gz, put
+it into .config of upstream Linux source, and then in make menuconfig
+enable wifi drivers (since OpenWRT uses backports). You will get a
+zImage which you can just replace in /boot. The modules you should put
+in /lib/modules/KERNELRELEASE (all *.ko files directly in this
+directory, without the directory structure created by make
+modules_install). Basically
 
-Sure, I can add this in a separate patch, unless you want to implement
-this idea.
+  On omnia:
+    zcat /proc/config.gz
+  and copy the output to linux/.config
+  In linux/
+    ARCH=arm CROSS_COMPILE=arm-none-eabi- make menuconfig
+  enable wifi drivers in menuconfig and then
+    ARCH=arm CROSS_COMPILE=arm-none-eabi- KERNELRELEASE=6.3-rc2 \
+      make zImage
+  copy arch/arm/boot/zImage to omnia /boot
+    ARCH=arm CROSS_COMPILE=arm-none-eabi- KERNELRELEASE=6.3-rc2 \
+      make modules
+    ARCH=arm CROSS_COMPILE=arm-none-eabi- KERNELRELEASE=6.3-rc2 \
+      make modules_install INSTALL_MOD_PATH=MODS
+    mkdir MODS_FOR_OPENWRT
+    find MODS -name '*.ko' -exec mv {} MODS_FOR_OPENWRT \;
+    rm -rf MODS
+  and copy the *.ko files from directory MODS_FOR_OPENWRT to omnia,
+  directory /lib/modules/6.3-rc2
+
+Marek
