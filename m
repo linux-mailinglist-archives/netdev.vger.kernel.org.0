@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D0A796BD72C
+	by mail.lfdr.de (Postfix) with ESMTP id 2EAD56BD72A
 	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 18:33:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229798AbjCPRdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 13:33:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53252 "EHLO
+        id S229870AbjCPRdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 13:33:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229849AbjCPRdm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 13:33:42 -0400
+        with ESMTP id S229844AbjCPRdn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 13:33:43 -0400
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 637812B616
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6382EB5FDB
         for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 10:33:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1678988018; x=1710524018;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=/MuLzcFLelKwER3S1N9nPYlDPli31ficAz2LGpYP364=;
-  b=SiUWldzKghZeN5PYnX7RBzjS2xs8L88wfPNNQlU0R7vpSMpq6QJMnpbi
-   6+jrAAL/dhUODywj3obWYRmPss0c2c8cp8tqeD0oy+7IVRnU7NIWFg3co
-   GeAIWf6qQekXhq5bkY0JbSANYnmRyZx54zM8MLgqBG35bGO0rCtRhmZoQ
-   lJqeU6kQx0J+iYkz/QEhANFYtqoLws7Yb7ApcCSROzdADThc0RhK9ObYQ
-   BUTNRkxKvb8QwYluLg1wDCefhcM1ArgSl0EPj+UDiql88k/RWnzHwDR/B
-   nzG8Zs9NabJ4kDQHmdL7Dlk8phwo+s9T8J+m7Yd6mgGpdeSon6mGbDwFw
+  bh=8xevIRTYWQZFD8RwPeoV/PYM36SpXmhAyIwOOsRvMYo=;
+  b=l/BOMH2sboo10s5plTJdFmn9jrut/GeAEOLy9Y/SayZehRo4ONMP9kxb
+   0dMEIv8o4+KLoPcy1xsrzI0Apd0Xq1h9MCdim8DNjaX2AJn2HxDBRkcgu
+   Fe5iR+6U9HJTTeqUHQJqtAsRwlxsJPipsyRSpglNIkz2O82PoVIyNF50x
+   c5askITtWIBJqsxMTTLp8hx3R0LJl2yhlg2KPgTG7sDSfTe6PnkvfOCRU
+   +/ji35Z46usuDM4meOJcXEIXXR4S72RJnAokhmsEIJauIsyQn4RVN9s4W
+   JXl6fMKiXJ4j8ZZNLEAnc7spTZtPKoayCjfQadS2DeYKNQbqQmtsHnM96
    Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10651"; a="402948302"
+X-IronPort-AV: E=McAfee;i="6600,9927,10651"; a="402948310"
 X-IronPort-AV: E=Sophos;i="5.98,265,1673942400"; 
-   d="scan'208";a="402948302"
+   d="scan'208";a="402948310"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
   by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2023 10:33:20 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10651"; a="679982482"
+X-IronPort-AV: E=McAfee;i="6600,9927,10651"; a="679982485"
 X-IronPort-AV: E=Sophos;i="5.98,265,1673942400"; 
-   d="scan'208";a="679982482"
+   d="scan'208";a="679982485"
 Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
   by orsmga002.jf.intel.com with ESMTP; 16 Mar 2023 10:33:20 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, netdev@vger.kernel.org
-Cc:     Akihiko Odaki <akihiko.odaki@daynix.com>,
-        anthony.l.nguyen@intel.com, agraf@suse.de,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Marek Szlosek <marek.szlosek@intel.com>
-Subject: [PATCH net 4/5] igbvf: Regard vf reset nack as success
-Date:   Thu, 16 Mar 2023 10:31:43 -0700
-Message-Id: <20230316173144.2003469-5-anthony.l.nguyen@intel.com>
+Cc:     AKASHI Takahiro <takahiro.akashi@linaro.org>,
+        anthony.l.nguyen@intel.com, sasha.neftin@intel.com,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Naama Meir <naamax.meir@linux.intel.com>
+Subject: [PATCH net 5/5] igc: fix the validation logic for taprio's gate list
+Date:   Thu, 16 Mar 2023 10:31:44 -0700
+Message-Id: <20230316173144.2003469-6-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20230316173144.2003469-1-anthony.l.nguyen@intel.com>
 References: <20230316173144.2003469-1-anthony.l.nguyen@intel.com>
@@ -63,57 +64,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Akihiko Odaki <akihiko.odaki@daynix.com>
+From: AKASHI Takahiro <takahiro.akashi@linaro.org>
 
-vf reset nack actually represents the reset operation itself is
-performed but no address is assigned. Therefore, e1000_reset_hw_vf
-should fill the "perm_addr" with the zero address and return success on
-such an occasion. This prevents its callers in netdev.c from saying PF
-still resetting, and instead allows them to correctly report that no
-address is assigned.
+The check introduced in the commit a5fd39464a40 ("igc: Lift TAPRIO schedule
+restriction") can detect a false positive error in some corner case.
+For instance,
+    tc qdisc replace ... taprio num_tc 4
+	...
+	sched-entry S 0x01 100000	# slot#1
+	sched-entry S 0x03 100000	# slot#2
+	sched-entry S 0x04 100000	# slot#3
+	sched-entry S 0x08 200000	# slot#4
+	flags 0x02			# hardware offload
 
-Fixes: 6ddbc4cf1f4d ("igb: Indicate failure on vf reset for empty mac address")
-Signed-off-by: Akihiko Odaki <akihiko.odaki@daynix.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Tested-by: Marek Szlosek <marek.szlosek@intel.com>
+Here the queue#0 (the first queue) is on at the slot#1 and #2,
+and off at the slot#3 and #4. Under the current logic, when the slot#4
+is examined, validate_schedule() returns *false* since the enablement
+count for the queue#0 is two and it is already off at the previous slot
+(i.e. #3). But this definition is truely correct.
+
+Let's fix the logic to enforce a strict validation for consecutively-opened
+slots.
+
+Fixes: a5fd39464a40 ("igc: Lift TAPRIO schedule restriction")
+Signed-off-by: AKASHI Takahiro <takahiro.akashi@linaro.org>
+Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
+Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Tested-by: Naama Meir <naamax.meir@linux.intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/igbvf/vf.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/igc/igc_main.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igbvf/vf.c b/drivers/net/ethernet/intel/igbvf/vf.c
-index b8ba3f94c363..a47a2e3e548c 100644
---- a/drivers/net/ethernet/intel/igbvf/vf.c
-+++ b/drivers/net/ethernet/intel/igbvf/vf.c
-@@ -1,6 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0
- /* Copyright(c) 2009 - 2018 Intel Corporation. */
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index 2928a6c73692..25fc6c65209b 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -6010,18 +6010,18 @@ static bool validate_schedule(struct igc_adapter *adapter,
+ 		if (e->command != TC_TAPRIO_CMD_SET_GATES)
+ 			return false;
  
-+#include <linux/etherdevice.h>
-+
- #include "vf.h"
+-		for (i = 0; i < adapter->num_tx_queues; i++) {
+-			if (e->gate_mask & BIT(i))
++		for (i = 0; i < adapter->num_tx_queues; i++)
++			if (e->gate_mask & BIT(i)) {
+ 				queue_uses[i]++;
  
- static s32 e1000_check_for_link_vf(struct e1000_hw *hw);
-@@ -131,11 +133,16 @@ static s32 e1000_reset_hw_vf(struct e1000_hw *hw)
- 		/* set our "perm_addr" based on info provided by PF */
- 		ret_val = mbx->ops.read_posted(hw, msgbuf, 3);
- 		if (!ret_val) {
--			if (msgbuf[0] == (E1000_VF_RESET |
--					  E1000_VT_MSGTYPE_ACK))
-+			switch (msgbuf[0]) {
-+			case E1000_VF_RESET | E1000_VT_MSGTYPE_ACK:
- 				memcpy(hw->mac.perm_addr, addr, ETH_ALEN);
--			else
-+				break;
-+			case E1000_VF_RESET | E1000_VT_MSGTYPE_NACK:
-+				eth_zero_addr(hw->mac.perm_addr);
-+				break;
-+			default:
- 				ret_val = -E1000_ERR_MAC_INIT;
+-			/* There are limitations: A single queue cannot be
+-			 * opened and closed multiple times per cycle unless the
+-			 * gate stays open. Check for it.
+-			 */
+-			if (queue_uses[i] > 1 &&
+-			    !(prev->gate_mask & BIT(i)))
+-				return false;
+-		}
++				/* There are limitations: A single queue cannot
++				 * be opened and closed multiple times per cycle
++				 * unless the gate stays open. Check for it.
++				 */
++				if (queue_uses[i] > 1 &&
++				    !(prev->gate_mask & BIT(i)))
++					return false;
 +			}
- 		}
  	}
  
+ 	return true;
 -- 
 2.38.1
 
