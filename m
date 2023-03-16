@@ -2,121 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A462E6BC985
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 09:43:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF5AC6BCA28
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 09:57:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230410AbjCPInk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 04:43:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60194 "EHLO
+        id S229838AbjCPI52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 04:57:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230384AbjCPIni (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 04:43:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67D4E4D2AA
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 01:42:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678956175;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZNIt6/EC2fPTtrcmtD4NvPKR+xt/u6QnYqo+DbsIIYU=;
-        b=eSAELSJOcz1Kt89EymhhhmK0us+MyT8vh2Dr2tQiWdrQEyFkKSGS8adxwZuoSLKxvtfTo8
-        KXXjqeOvy9UUaGoyfPtUaeqMRjBg1HFypib3KtdgmBeEiLb9NL8BaMIF0je2YmHO9qMQly
-        JFgAlXvLRwhSZFzdYYV2HiZAcklxezo=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-671-M0lW5s8jMFCjjU_qgkcYnQ-1; Thu, 16 Mar 2023 04:42:53 -0400
-X-MC-Unique: M0lW5s8jMFCjjU_qgkcYnQ-1
-Received: by mail-wm1-f70.google.com with SMTP id o42-20020a05600c512a00b003ed26fa6ebdso336523wms.7
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 01:42:53 -0700 (PDT)
+        with ESMTP id S229784AbjCPI5M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 04:57:12 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 663C013DE1
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 01:55:54 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id c8-20020a05600c0ac800b003ed2f97a63eso2640241wmr.3
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 01:55:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112; t=1678956939;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=eLCjSCBDqMq/ciVVpyfzYuWBjZ8nlT4qHwYgluMAIAM=;
+        b=GuW8V60Zy8eSbpYheOlmqkZlOIriPSrSI/NlE9pBhqmlXl4T74wFhwxbwk7mgyyISH
+         pATgvo7UZcUEh8H06PgZ2m0vCdckNPgmVcflZukpW8Caqy85FFrrVVbxiWDa3JTgM4ih
+         bNDx/GjZTU0D4WEWtKteeeI0UWPWIEcr+qAaGDUhUC1Y0e7CFyC8haS4mj0OFTGd7dGw
+         RlWXZcsgufL8I5puKi6E/txz6MjNjd/AUonJCSc57uPZIGCfRxTLyzHKyAu7+GAkeFap
+         Tykjmu4DAHRtf6uoY5e2PVJsMGn+1k6Dl9AuAmnPBbLa8zksAe82B1OW5gi8FKjHZhGd
+         rBdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678956172;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
+        d=1e100.net; s=20210112; t=1678956939;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZNIt6/EC2fPTtrcmtD4NvPKR+xt/u6QnYqo+DbsIIYU=;
-        b=6CgQRoDh+9NtlqtUqdj+2Dj0Z835VVcquw5BGTiHJ98RuGsmPXh+blabHPNYydsh8Q
-         W0+oY8KfAiUMRlsk1CU+dHUXdaGE+BOS5Y1m+4I+pbf/qGibBFp0BpwtwJlTH5FZJPsX
-         fQQO1VD28OjSn/mTowVt5d9GkKhYaBsg16m3l8J4lesTWl3Xq/ZSWOEAZcwVtsvmMYEp
-         rLep1I5+syjubP8pHx+sA6AHo1zC42qfgDdOK1waXLbb/Ww2ZKHYpQYcvBXZKbQhd5pS
-         UJ2vIkFE5danQfjqAUrdOOHlp/qqFuUemj4gFwwCInuXOh/ivXVYfvzQKKIiMIozHZdk
-         4ecA==
-X-Gm-Message-State: AO0yUKVJvEkRUCsxEze5pGw7mU8bgUrS0h0WFkjp5ElBbz4WPN3ErcK2
-        j8fSCmReKarA3St68r5OU+yZzcW9AuSw552Oc0iZPC7EGMHD09PGOAFU0NWGJMJWiUvldJX3oZ6
-        BcnMCWuswD/BP/XAc
-X-Received: by 2002:a05:600c:450b:b0:3eb:2de9:8aed with SMTP id t11-20020a05600c450b00b003eb2de98aedmr19691725wmo.41.1678956172846;
-        Thu, 16 Mar 2023 01:42:52 -0700 (PDT)
-X-Google-Smtp-Source: AK7set+StsW8ItLxY7viETFKNcN8XIJEpkb0A6sN2+0X6h0DH3Cm81PlzHGjafdM1NdabSKvBVlFOQ==
-X-Received: by 2002:a05:600c:450b:b0:3eb:2de9:8aed with SMTP id t11-20020a05600c450b00b003eb2de98aedmr19691708wmo.41.1678956172618;
-        Thu, 16 Mar 2023 01:42:52 -0700 (PDT)
-Received: from sgarzare-redhat (host-82-57-51-170.retail.telecomitalia.it. [82.57.51.170])
-        by smtp.gmail.com with ESMTPSA id o13-20020a5d4a8d000000b002c5534db60bsm6673269wrq.71.2023.03.16.01.42.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Mar 2023 01:42:51 -0700 (PDT)
-Date:   Thu, 16 Mar 2023 09:42:48 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
-        eperezma@redhat.com, netdev@vger.kernel.org, stefanha@redhat.com,
-        linux-kernel@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org
-Subject: Re: [PATCH v2 7/8] vdpa_sim: replace the spinlock with a mutex to
- protect the state
-Message-ID: <20230316084248.woh6dksgpu2ycn64@sgarzare-redhat>
-References: <20230302113421.174582-1-sgarzare@redhat.com>
- <20230302113421.174582-8-sgarzare@redhat.com>
- <CACGkMEuCUBQeg0gLUjBXff=zMf-=qJqhMpdeUvTDk55Gz6tAVA@mail.gmail.com>
- <CACGkMEv=MkGUUP_xv9V5q+gneLm41yKqJXoWp4cYLK8Cf95oUw@mail.gmail.com>
+        bh=eLCjSCBDqMq/ciVVpyfzYuWBjZ8nlT4qHwYgluMAIAM=;
+        b=KJ0SEV+s1czy6amAsDVJhbf8JJNqah0tLaExtLk+m4f25nTLxkaSgf2d+TWIZJqGRo
+         D53+iESYOKgvTtKqOPI4tjp20Y3Coyp+v9T/0FF+WxmP1uHiMmff0aXKzKuBsc1LnGWq
+         fQz/SfpHOrZ3AKIX3kZJwikBxGvbkmoNazSY8VZq+e2IFFn5PoSU4tIcvSxbvFUIDzVH
+         79dEXNI1yquBha6nnRus6cXiPWg1/Ftv+5UwCITRDULFQ5Qtn/babRsHwKDjuiMwnx4t
+         5HFAu81v/apIB27wco8Y4xSkEyyz3W3Dijr3O5IlL/gqJ4zn6sT6W6EDdvDBr4nfvtit
+         3kpw==
+X-Gm-Message-State: AO0yUKWUUoMOm2jWFMI3EURjxdvqxPPAjDygrJ/+s+INIPWK4ouhNSe2
+        h4JT7Wxl6y+CAS+H9QupfpLtBQ==
+X-Google-Smtp-Source: AK7set+ohwPDh/6S1iVW3YxhaxNH2kKYgV1Sr9OgkFgYxfzoB3bUa7c4n6d+XCZ77q1YfXYqgatW2w==
+X-Received: by 2002:a05:600c:a39b:b0:3ed:2311:4fb9 with SMTP id hn27-20020a05600ca39b00b003ed23114fb9mr7652951wmb.1.1678956939319;
+        Thu, 16 Mar 2023 01:55:39 -0700 (PDT)
+Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
+        by smtp.gmail.com with ESMTPSA id v7-20020a05600c214700b003eaf666cbe0sm4291540wml.27.2023.03.16.01.55.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Mar 2023 01:55:39 -0700 (PDT)
+Message-ID: <4e6c9f88-d241-1e5f-78c2-cf4f592750b9@blackwall.org>
+Date:   Thu, 16 Mar 2023 10:55:38 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CACGkMEv=MkGUUP_xv9V5q+gneLm41yKqJXoWp4cYLK8Cf95oUw@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH net-next v2 09/11] vxlan: Add MDB data path support
+Content-Language: en-US
+To:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, roopa@nvidia.com, petrm@nvidia.com,
+        mlxsw@nvidia.com
+References: <20230315131155.4071175-1-idosch@nvidia.com>
+ <20230315131155.4071175-10-idosch@nvidia.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20230315131155.4071175-10-idosch@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,
+        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 14, 2023 at 01:31:25PM +0800, Jason Wang wrote:
->On Tue, Mar 14, 2023 at 1:29 PM Jason Wang <jasowang@redhat.com> wrote:
->>
->> On Thu, Mar 2, 2023 at 7:35 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
->> >
->> > The spinlock we use to protect the state of the simulator is sometimes
->> > held for a long time (for example, when devices handle requests).
->> >
->> > This also prevents us from calling functions that might sleep (such as
->> > kthread_flush_work() in the next patch), and thus having to release
->> > and retake the lock.
->> >
->> > For these reasons, let's replace the spinlock with a mutex that gives
->> > us more flexibility.
->> >
->> > Suggested-by: Jason Wang <jasowang@redhat.com>
->> > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
->>
->> Acked-by: Jason Wang <jasowang@redhat.com>
->>
->> Thanks
->
->Btw, though it looks fine but we'd better double confirm virtio_vdpa works well.
+On 15/03/2023 15:11, Ido Schimmel wrote:
+> Integrate MDB support into the Tx path of the VXLAN driver, allowing it
+> to selectively forward IP multicast traffic according to the matched MDB
+> entry.
+> 
+> If MDB entries are configured (i.e., 'VXLAN_F_MDB' is set) and the
+> packet is an IP multicast packet, perform up to three different lookups
+> according to the following priority:
+> 
+> 1. For an (S, G) entry, using {Source VNI, Source IP, Destination IP}.
+> 2. For a (*, G) entry, using {Source VNI, Destination IP}.
+> 3. For the catchall MDB entry (0.0.0.0 or ::), using the source VNI.
+> 
+> The catchall MDB entry is similar to the catchall FDB entry
+> (00:00:00:00:00:00) that is currently used to transmit BUM (broadcast,
+> unknown unicast and multicast) traffic. However, unlike the catchall FDB
+> entry, this entry is only used to transmit unregistered IP multicast
+> traffic that is not link-local. Therefore, when configured, the catchall
+> FDB entry will only transmit BULL (broadcast, unknown unicast,
+> link-local multicast) traffic.
+> 
+> The catchall MDB entry is useful in deployments where inter-subnet
+> multicast forwarding is used and not all the VTEPs in a tenant domain
+> are members in all the broadcast domains. In such deployments it is
+> advantageous to transmit BULL (broadcast, unknown unicast and link-local
+> multicast) and unregistered IP multicast traffic on different tunnels.
+> If the same tunnel was used, a VTEP only interested in IP multicast
+> traffic would also pull all the BULL traffic and drop it as it is not a
+> member in the originating broadcast domain [1].
+> 
+> If the packet did not match an MDB entry (or if the packet is not an IP
+> multicast packet), return it to the Tx path, allowing it to be forwarded
+> according to the FDB.
+> 
+> If the packet did match an MDB entry, forward it to the associated
+> remote VTEPs. However, if the entry is a (*, G) entry and the associated
+> remote is in INCLUDE mode, then skip over it as the source IP is not in
+> its source list (otherwise the packet would have matched on an (S, G)
+> entry). Similarly, if the associated remote is marked as BLOCKED (can
+> only be set on (S, G) entries), then skip over it as well as the remote
+> is in EXCLUDE mode and the source IP is in its source list.
+> 
+> [1] https://datatracker.ietf.org/doc/html/draft-ietf-bess-evpn-irb-mcast#section-2.6
+> 
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> ---
+> 
+> Notes:
+>     v2:
+>     * Use htons() in 'case' instead of ntohs() in 'switch'.
+> 
+>  drivers/net/vxlan/vxlan_core.c    |  15 ++++
+>  drivers/net/vxlan/vxlan_mdb.c     | 114 ++++++++++++++++++++++++++++++
+>  drivers/net/vxlan/vxlan_private.h |   6 ++
+>  3 files changed, 135 insertions(+)
+> 
 
-I tested it, but I will do it more carefully to make sure everything
-is okay.
+Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
 
->
->(I think so since there's transport that might sleep).
-
-I see.
-
-Thanks,
-Stefano
 
