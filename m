@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A5676BD3F4
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 16:37:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93EAC6BD3EE
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 16:36:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231688AbjCPPhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 11:37:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45284 "EHLO
+        id S231593AbjCPPgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 11:36:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231683AbjCPPhE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 11:37:04 -0400
-Received: from mail-yw1-f202.google.com (mail-yw1-f202.google.com [209.85.128.202])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9D8B9759
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 08:34:44 -0700 (PDT)
-Received: by mail-yw1-f202.google.com with SMTP id 00721157ae682-544781e30easo19108807b3.1
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 08:34:44 -0700 (PDT)
+        with ESMTP id S230446AbjCPPgP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 11:36:15 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D62AE2531
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 08:33:45 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id l84-20020a252557000000b00b61b96282a4so319671ybl.0
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 08:33:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1678980734;
+        d=google.com; s=20210112; t=1678980736;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=OsCMtllsV7F8O6hrof2lMj6Iq6sUWmbGkir1umoA/5M=;
-        b=n497xDjosRrHGITf+UWM6+NNdk75c08+ULnrn8CgZive06Ejtyfv8pvm1wnYRLy5mg
-         xulpMZ/kUI+A4Gtsd5koByg2l9ebo6N3pF+WZnnCP6xFcJ+PiTMcS+A1zdAOvGb1GGRR
-         tUjdUGpDv/D+B645Zz7pXdgp35/9P4kcl7fCDib0xRq06M6VU/Fjvhrg50+BcTUcaNX4
-         FomqCUU9EPmIgVeWuNO7v9aAtxRIZN57eTqqXeLHSU3Ye0SzcEC9YsQqbpGsMTnSc7tV
-         cwFvvmP8O+S8AU7Dn/B7k5A8jHYdHKYq/V7bDGBMNdUV6pxtUwkC3diw8pGzrfJa0vAX
-         TPDg==
+        bh=UmOgXO+nSySCaj0+E/a6d02vxdvrD/cEi4HC5nbovbc=;
+        b=ninT8o4fRLjVKivC7eOHJVa+HPT/ba1QqDK7t7wB3vJ9/UihCw9v8er2CHJIxiB9Yv
+         wb3WeSqvKZl5nu6lnR1jcoenxt9JaqzyQ0/X+seTfrc0aTtnT28jhZJRHtMMNAqmWjVP
+         yKUOUIhJamsKtaN5Acr/NIf60rmI1F+JNeWeVy4xd/iCYjodHerEtK+fT18Sqp2s6bbb
+         QIsiI9K/Lse2tEz6xkeqANgjUUIvTsxmfz4wY42nzAM4pziZPbYkG0vid969jC8PzCMp
+         zXbT5i20Xgq965BSR471bAx6Ipi8NncuwlKihK6ERv67SpsYLSylgimJocp9/GkMnuWN
+         LF4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678980734;
+        d=1e100.net; s=20210112; t=1678980736;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=OsCMtllsV7F8O6hrof2lMj6Iq6sUWmbGkir1umoA/5M=;
-        b=qMp16RNtq+xpro0uoPSuclYTKTW98QVbnfv4iUkAd55aRmwrpJn6e+v3Z/RAe75hZ6
-         ixURnYRjjlcItBZiS+zW5jyu755WwG6zFsASnZxiQ2sS0sOvxhyjn9K85dfcrbIGJ6qJ
-         alIwhz56mdNm9dXHqN7kLIEEn7ZFYjN414Wr21jomd0CXd0/wQ+xeSJ6HVEHBJez59jT
-         im482joh607ial25/tX4XtC5MPQi4k+WWNUMVIyQKkzGUE7RSUT1nbGyqKknvEOYsL1Z
-         59VPy4K0LJ+LJQ4LKirhk8Wky9PAlGBu0/n9JmkFoMGDu/SiAooSBmrC6NmID4mJ6Qhc
-         3txw==
-X-Gm-Message-State: AO0yUKVjtVmXw3IcWbmyebYs+q0Ly3ZaZK8jdLWUsmyk/k7BXFn/QJjN
-        y7G2MInphdg5YX7E/NxP02mKlkI5mHEOsg==
-X-Google-Smtp-Source: AK7set/4kk5/sgEGURGNoYx3QprLMikb2VTMd51yuT9EPkziIX/hUQz4Eqmuc0izBIag/tL+LNGVlSGrETY25g==
+        bh=UmOgXO+nSySCaj0+E/a6d02vxdvrD/cEi4HC5nbovbc=;
+        b=h3rTd5i1ULx7e1KPwDpSdqcYZCwoK4pc2TLFkJOIXIBi+aBjciEMjnUNnnbchGqcO3
+         Tsqq4XFar7SkVU7ltwydeX3qN20nOj2+0BPfu7MjR6+N5DA0jlTnk8ENmICtcyXbZN55
+         poULGwOrxQNYlBUHlI5Po+lK4b+T9JytMZWGucQjY6oqx8ueGKI741sUeNFB92hmNN0u
+         7NO1SqiHmESPJC8M9iacpyc4f4m8TughAdJNwuICslf0m07XB61LiQDVobUy8wqbMqwO
+         hg9cN9Bpok/ssDtfhwPYCAWOh1BGgxBvQlpwtJby0wsx1/RrMoBnBzImBh0J2qVLBHXi
+         9sqg==
+X-Gm-Message-State: AO0yUKU4M5JyiJB1Ozzbo70lGgPwve5dq0yTA/uWcqEi3yV6XfGKZGuW
+        MP1RHVN1p/V8SQIXe2+BhQHAgT41j8ks7g==
+X-Google-Smtp-Source: AK7set/BhMGmmiqkb4+PgaqXmHJ7/VOPM1/jxQC41En9+tk50S75dCHeuAWpVFdGGqkpvFZrCDtmeR5wOuUCJA==
 X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a05:6902:1105:b0:b4f:c5a5:f224 with SMTP
- id o5-20020a056902110500b00b4fc5a5f224mr3564175ybu.8.1678980734327; Thu, 16
- Mar 2023 08:32:14 -0700 (PDT)
-Date:   Thu, 16 Mar 2023 15:32:00 +0000
+ (user=edumazet job=sendgmr) by 2002:a81:b284:0:b0:533:99bb:c296 with SMTP id
+ q126-20020a81b284000000b0053399bbc296mr2408893ywh.5.1678980735897; Thu, 16
+ Mar 2023 08:32:15 -0700 (PDT)
+Date:   Thu, 16 Mar 2023 15:32:01 +0000
 In-Reply-To: <20230316153202.1354692-1-edumazet@google.com>
 Mime-Version: 1.0
 References: <20230316153202.1354692-1-edumazet@google.com>
 X-Mailer: git-send-email 2.40.0.rc2.332.ga46443480c-goog
-Message-ID: <20230316153202.1354692-7-edumazet@google.com>
-Subject: [PATCH v2 net-next 6/8] ipv6: raw: constify raw_v6_match() socket argument
+Message-ID: <20230316153202.1354692-8-edumazet@google.com>
+Subject: [PATCH v2 net-next 7/8] ipv4: raw: constify raw_v4_match() socket argument
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -62,49 +62,53 @@ Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This clarifies raw_v6_match() intent.
+This clarifies raw_v4_match() intent.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 Reviewed-by: Simon Horman <simon.horman@corigine.com>
 ---
- include/net/rawv6.h | 2 +-
- net/ipv6/raw.c      | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ include/net/raw.h | 2 +-
+ net/ipv4/raw.c    | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/rawv6.h b/include/net/rawv6.h
-index bc70909625f60dcd819f50a258841d20e5ba0c68..82810cbe37984437569186783f39f166e89cb9b8 100644
---- a/include/net/rawv6.h
-+++ b/include/net/rawv6.h
-@@ -6,7 +6,7 @@
- #include <net/raw.h>
+diff --git a/include/net/raw.h b/include/net/raw.h
+index 2c004c20ed996d1dbe07f2c8d25edd2ce03cca03..7ad15830cf38460f1fae3a187986d74faef6dd1d 100644
+--- a/include/net/raw.h
++++ b/include/net/raw.h
+@@ -22,7 +22,7 @@
+ extern struct proto raw_prot;
  
- extern struct raw_hashinfo raw_v6_hashinfo;
--bool raw_v6_match(struct net *net, struct sock *sk, unsigned short num,
-+bool raw_v6_match(struct net *net, const struct sock *sk, unsigned short num,
- 		  const struct in6_addr *loc_addr,
- 		  const struct in6_addr *rmt_addr, int dif, int sdif);
+ extern struct raw_hashinfo raw_v4_hashinfo;
+-bool raw_v4_match(struct net *net, struct sock *sk, unsigned short num,
++bool raw_v4_match(struct net *net, const struct sock *sk, unsigned short num,
+ 		  __be32 raddr, __be32 laddr, int dif, int sdif);
  
-diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
-index bac9ba747bdecf8df24acb6c980a822d8f237403..6ac2f2690c44c96e9ac4cb7368ee7abdbeaf4334 100644
---- a/net/ipv6/raw.c
-+++ b/net/ipv6/raw.c
-@@ -64,7 +64,7 @@
- struct raw_hashinfo raw_v6_hashinfo;
- EXPORT_SYMBOL_GPL(raw_v6_hashinfo);
+ int raw_abort(struct sock *sk, int err);
+diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
+index 94df935ee0c5a83a4b1393653b79ac6060b4f12a..3cf68695b40ddc0e79c8fbd62f317048cf5c88e3 100644
+--- a/net/ipv4/raw.c
++++ b/net/ipv4/raw.c
+@@ -116,10 +116,10 @@ void raw_unhash_sk(struct sock *sk)
+ }
+ EXPORT_SYMBOL_GPL(raw_unhash_sk);
  
--bool raw_v6_match(struct net *net, struct sock *sk, unsigned short num,
-+bool raw_v6_match(struct net *net, const struct sock *sk, unsigned short num,
- 		  const struct in6_addr *loc_addr,
- 		  const struct in6_addr *rmt_addr, int dif, int sdif)
+-bool raw_v4_match(struct net *net, struct sock *sk, unsigned short num,
++bool raw_v4_match(struct net *net, const struct sock *sk, unsigned short num,
+ 		  __be32 raddr, __be32 laddr, int dif, int sdif)
  {
+-	struct inet_sock *inet = inet_sk(sk);
++	const struct inet_sock *inet = inet_sk(sk);
+ 
+ 	if (net_eq(sock_net(sk), net) && inet->inet_num == num	&&
+ 	    !(inet->inet_daddr && inet->inet_daddr != raddr) 	&&
 -- 
 2.40.0.rc2.332.ga46443480c-goog
 
