@@ -2,209 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 274F56BC90C
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 09:26:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F29C6BC8C9
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 09:19:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229842AbjCPI0k convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 16 Mar 2023 04:26:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60562 "EHLO
+        id S230082AbjCPITX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 04:19:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbjCPI0i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 04:26:38 -0400
-Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBC5EB4F49;
-        Thu, 16 Mar 2023 01:26:13 -0700 (PDT)
-Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
-        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
-        by ex01.ufhost.com (Postfix) with ESMTP id 8944824E231;
-        Thu, 16 Mar 2023 16:15:09 +0800 (CST)
-Received: from EXMBX162.cuchost.com (172.16.6.72) by EXMBX166.cuchost.com
- (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Thu, 16 Mar
- 2023 16:15:09 +0800
-Received: from [192.168.120.42] (171.223.208.138) by EXMBX162.cuchost.com
- (172.16.6.72) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Thu, 16 Mar
- 2023 16:15:08 +0800
-Message-ID: <d2bb7fa5-206f-2059-bde0-b65e1acc44de@starfivetech.com>
-Date:   Thu, 16 Mar 2023 16:15:06 +0800
+        with ESMTP id S230063AbjCPITU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 04:19:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 218C3907BE
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 01:18:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1678954652;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7tgpDQ21wRopkfuNLBenzw1X+XTk1gkyJI+wV3gp8bc=;
+        b=hrbhj64KQXg2rgJ0FTrLKHCbjYUH8dVkn0JMFYSJ5a3/V7fQ9fJVAnh4c/6JLD6s8YjhP8
+        EfByJO00EF1r1WdzdUAAoH1lQpeDTK5WOpPBhES8/hl3ppum5KdDwEBxNZpFjxFXCdZve6
+        5d0P0lc+TvJ1q1nmha44X+m59UGY8ts=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-647-vFsbJYZjMfqddjT86Xjgsw-1; Thu, 16 Mar 2023 04:17:31 -0400
+X-MC-Unique: vFsbJYZjMfqddjT86Xjgsw-1
+Received: by mail-wm1-f71.google.com with SMTP id j13-20020a05600c190d00b003ed26189f44so2256450wmq.8
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 01:17:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678954650;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=7tgpDQ21wRopkfuNLBenzw1X+XTk1gkyJI+wV3gp8bc=;
+        b=vFlln5SjlVOiHCwtQVhwn1pmiCg//amAAHQYOJz61uUQpVwfHXBhRTArPfBHflpqOe
+         q1nU9Vd0eUBeZpw0jaT3piWLRjYRGZtMIwsZ9Q5srQKDquk6llOIOB5datr4MpTsHw2p
+         VAEOvdGZsdbo4wt8cJRj8ggT1Z3JEPlXuUetDUCBnPR/OzCt4TW1IuN0KMIP9oaAfIJL
+         mAj1Rwv5ruWl3xdDUwvUB7UTpttNgm7/RIc49+kD/WGBevRRrkmhHOsaPAKberfv3BRW
+         X9qnHpfl2QsZKsAu0T280iH/zF6Bnn87M0sAzdJ4xri/B+bNE1ME3kATQOqrNTkxvfvZ
+         ReKQ==
+X-Gm-Message-State: AO0yUKXFrR8FzcdO7xnZ4s8k/N57W2KGMTEO/oub2aVb1au5Axtgrp+X
+        oWYCjVOHXu97z//e+FpREoTHKoIYMQeCXQfuGyqT086ntDR+2EPMFpi0MZ1SQFO/7AFPB1bDJK6
+        OrkLcgW7rWF/2PZwpBHVJE6Ag
+X-Received: by 2002:a05:600c:3c8f:b0:3ea:bc08:b63e with SMTP id bg15-20020a05600c3c8f00b003eabc08b63emr21673830wmb.2.1678954650291;
+        Thu, 16 Mar 2023 01:17:30 -0700 (PDT)
+X-Google-Smtp-Source: AK7set8yAXCmTlyMF4pVppmWMDqyhk0GT12h+rEm72RHUQ1OCYbXiPEGJgmkVgwCqUMwdNOtrDJ3tw==
+X-Received: by 2002:a05:600c:3c8f:b0:3ea:bc08:b63e with SMTP id bg15-20020a05600c3c8f00b003eabc08b63emr21673814wmb.2.1678954650016;
+        Thu, 16 Mar 2023 01:17:30 -0700 (PDT)
+Received: from sgarzare-redhat (host-82-57-51-170.retail.telecomitalia.it. [82.57.51.170])
+        by smtp.gmail.com with ESMTPSA id l26-20020a05600c2cda00b003dd1bd0b915sm4353875wmc.22.2023.03.16.01.17.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Mar 2023 01:17:29 -0700 (PDT)
+Date:   Thu, 16 Mar 2023 09:17:25 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org,
+        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
+        eperezma@redhat.com, netdev@vger.kernel.org, stefanha@redhat.com,
+        linux-kernel@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org
+Subject: Re: [PATCH v2 1/8] vdpa: add bind_mm/unbind_mm callbacks
+Message-ID: <20230316081725.2gwfgptm3lkoptwt@sgarzare-redhat>
+References: <20230302113421.174582-1-sgarzare@redhat.com>
+ <20230302113421.174582-2-sgarzare@redhat.com>
+ <CACGkMEv24Zw-OUbBBSne21pF7=4XCZ6JGj7Y_cC7cMFYTjbF1Q@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v7 4/6] dt-bindings: net: Add support StarFive dwmac
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Yanhong Wang <yanhong.wang@starfivetech.com>,
-        Tommaso Merciai <tomm.merciai@gmail.com>
-References: <20230316043714.24279-1-samin.guo@starfivetech.com>
- <20230316043714.24279-5-samin.guo@starfivetech.com>
- <cfeec762-de75-f90f-7ba1-6c0bd8b70dff@linaro.org>
- <93a3b4bb-35a4-da7c-6816-21225b42f79b@starfivetech.com>
- <9038dba0-6f72-44a1-9f57-1c08b03b9c31@linaro.org>
-From:   Guo Samin <samin.guo@starfivetech.com>
-In-Reply-To: <9038dba0-6f72-44a1-9f57-1c08b03b9c31@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Originating-IP: [171.223.208.138]
-X-ClientProxiedBy: EXCAS061.cuchost.com (172.16.6.21) To EXMBX162.cuchost.com
- (172.16.6.72)
-X-YovoleRuleAgent: yovoleflag
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CACGkMEv24Zw-OUbBBSne21pF7=4XCZ6JGj7Y_cC7cMFYTjbF1Q@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-Re: [PATCH v7 4/6] dt-bindings: net: Add support StarFive dwmac
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-to: Guo Samin <samin.guo@starfivetech.com>, linux-riscv@lists.infradead.org, netdev@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-data: 2023/3/16
-
-> On 16/03/2023 09:02, Guo Samin wrote:
+On Tue, Mar 14, 2023 at 11:39:42AM +0800, Jason Wang wrote:
+>On Thu, Mar 2, 2023 at 7:34 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
 >>
+>> These new optional callbacks is used to bind/unbind the device to
+>> a specific address space so the vDPA framework can use VA when
+>> these callbacks are implemented.
 >>
->> -------- 原始信息 --------
->> 主题: Re: [PATCH v7 4/6] dt-bindings: net: Add support StarFive dwmac
->> From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->> 收件人: Samin Guo <samin.guo@starfivetech.com>, linux-riscv@lists.infradead.org, netdev@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
->> 日期: 2023/3/16
->>
->>> On 16/03/2023 05:37, Samin Guo wrote:
->>>> From: Yanhong Wang <yanhong.wang@starfivetech.com>
->>>>
->>>> Add documentation to describe StarFive dwmac driver(GMAC).
->>>>
->>> Thank you for your patch. There is something to discuss/improve.
->>>
->>>> Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
->>>> Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
->>>> Tested-by: Tommaso Merciai <tomm.merciai@gmail.com>
->>>> ---
->>>>  .../devicetree/bindings/net/snps,dwmac.yaml   |   1 +
->>>>  .../bindings/net/starfive,jh7110-dwmac.yaml   | 130 ++++++++++++++++++
->>>>  MAINTAINERS                                   |   6 +
->>>>  3 files changed, 137 insertions(+)
->>>>  create mode 100644 Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
->>>> index e4519cf722ab..245f7d713261 100644
->>>> --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
->>>> +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
->>>> @@ -91,6 +91,7 @@ properties:
->>>>          - snps,dwmac-5.20
->>>>          - snps,dwxgmac
->>>>          - snps,dwxgmac-2.10
->>>> +        - starfive,jh7110-dwmac
->>>>  
->>>>    reg:
->>>>      minItems: 1
->>>> diff --git a/Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml b/Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml
->>>> new file mode 100644
->>>> index 000000000000..b59e6bd8201f
->>>> --- /dev/null
->>>> +++ b/Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml
->>>> @@ -0,0 +1,130 @@
->>>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->>>> +# Copyright (C) 2022 StarFive Technology Co., Ltd.
->>>> +%YAML 1.2
->>>> +---
->>>> +$id: http://devicetree.org/schemas/net/starfive,jh7110-dwmac.yaml#
->>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>>> +
->>>> +title: StarFive JH7110 DWMAC glue layer
->>>> +
->>>> +maintainers:
->>>> +  - Emil Renner Berthing <kernel@esmil.dk>
->>>> +  - Samin Guo <samin.guo@starfivetech.com>
->>>> +
->>>> +select:
->>>> +  properties:
->>>> +    compatible:
->>>> +      contains:
->>>> +        enum:
->>>> +          - starfive,jh7110-dwmac
->>>> +  required:
->>>> +    - compatible
->>>> +
->>>> +properties:
->>>> +  compatible:
->>>> +    items:
->>>> +      - enum:
->>>> +          - starfive,jh7110-dwmac
->>>> +      - const: snps,dwmac-5.20
->>>> +
->>>
->>> reg:
->>>   maxItems: 1
->>
->>>
->>>> +  clocks:
->>>> +    items:
->>>> +      - description: GMAC main clock
->>>> +      - description: GMAC AHB clock
->>>> +      - description: PTP clock
->>>> +      - description: TX clock
->>>> +      - description: GTX clock
->>>> +
->>>> +  clock-names:
->>>> +    items:
->>>> +      - const: stmmaceth
->>>> +      - const: pclk
->>>> +      - const: ptp_ref
->>>> +      - const: tx
->>>> +      - const: gtx
->>>> +
->>>
->>> interrupts: ???
->>>
->>
->> Hi Krzysztof, 
->>
->> snps,dwmac.yaml has defined the reg/interrupt/interrupt-names nodes,
->> and the JH7110 SoC is also applicable.
->> Maybe just add reg/interrupt/interrupt-names to the required ?
-> 
-> You need to constrain them.
+>> Suggested-by: Jason Wang <jasowang@redhat.com>
+>> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+>> ---
+>
+>One thing that came into my mind is that after this commit:
+>
+>commit 5ce995f313ce56c0c62425c3ddc37c5c50fc33db
+>Author: Jason Wang <jasowang@redhat.com>
+>Date:   Fri May 29 16:02:59 2020 +0800
+>
+>    vhost: use mmgrab() instead of mmget() for non worker device
+>
+>    For the device that doesn't use vhost worker and use_mm(), mmget() is
+>    too heavy weight and it may brings troubles for implementing mmap()
+>    support for vDPA device.
+>
+>We don't hold the address space after this commit, so the userspace
+>mapping could be invalid if the owner exits?
 
+Thanks for mentioning it, I'll take a look at it!
 
-I see. I will add reg constraints in the next version, thanks.
+In case maybe I should do a mmget (or get_task_mm) in vhost-vdpa before
+calling the callback, or in the parent driver inside the callback, but
+it seems duplicating code.
 
-I have one more question, the interrupts/interrup-names of JH7110 SoC's gmac are exactly the same as snps,dwmac.yaml,
-do these also need to be constrained?
+Thanks,
+Stefano
 
-
-Best regards,
-Samin
-> 
+>
+>Thanks
+>
 >>
+>> Notes:
+>>     v2:
+>>     - removed `struct task_struct *owner` param (unused for now, maybe
+>>       useful to support cgroups) [Jason]
+>>     - add unbind_mm callback [Jason]
 >>
->>   required:
->>     - compatible
->> +   - reg
->>     - clocks
->>     - clock-names
->> +   - interrupts
->> +   - interrupt-names
->>     - resets
->>     - reset-names
-> Best regards,
-> Krzysztof
-> 
-
+>>  include/linux/vdpa.h | 10 ++++++++++
+>>  1 file changed, 10 insertions(+)
+>>
+>> diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
+>> index 43f59ef10cc9..369c21394284 100644
+>> --- a/include/linux/vdpa.h
+>> +++ b/include/linux/vdpa.h
+>> @@ -290,6 +290,14 @@ struct vdpa_map_file {
+>>   *                             @vdev: vdpa device
+>>   *                             @idx: virtqueue index
+>>   *                             Returns pointer to structure device or error (NULL)
+>> + * @bind_mm:                   Bind the device to a specific address space
+>> + *                             so the vDPA framework can use VA when this
+>> + *                             callback is implemented. (optional)
+>> + *                             @vdev: vdpa device
+>> + *                             @mm: address space to bind
+>> + * @unbind_mm:                 Unbind the device from the address space
+>> + *                             bound using the bind_mm callback. (optional)
+>> + *                             @vdev: vdpa device
+>>   * @free:                      Free resources that belongs to vDPA (optional)
+>>   *                             @vdev: vdpa device
+>>   */
+>> @@ -351,6 +359,8 @@ struct vdpa_config_ops {
+>>         int (*set_group_asid)(struct vdpa_device *vdev, unsigned int group,
+>>                               unsigned int asid);
+>>         struct device *(*get_vq_dma_dev)(struct vdpa_device *vdev, u16 idx);
+>> +       int (*bind_mm)(struct vdpa_device *vdev, struct mm_struct *mm);
+>> +       void (*unbind_mm)(struct vdpa_device *vdev);
+>>
+>>         /* Free device resources */
+>>         void (*free)(struct vdpa_device *vdev);
+>> --
+>> 2.39.2
+>>
+>
 
