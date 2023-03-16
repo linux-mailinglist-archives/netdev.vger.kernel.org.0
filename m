@@ -2,57 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D5506BC323
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 02:10:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1799C6BC324
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 02:10:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229624AbjCPBKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 21:10:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50252 "EHLO
+        id S229698AbjCPBKs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 21:10:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbjCPBKe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 21:10:34 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886CD4E5F4
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 18:10:32 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id m6-20020a056902118600b00aeb1e3dbd1bso200714ybu.9
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 18:10:32 -0700 (PDT)
+        with ESMTP id S229617AbjCPBKi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 21:10:38 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3912926C32
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 18:10:34 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id o130-20020a257388000000b00b3a7d06fd2eso171346ybc.22
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 18:10:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1678929032;
+        d=google.com; s=20210112; t=1678929033;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ppTWSXKFU7okTzqMt+UN0ijfWGNv2g2Yi+XNRICjYL0=;
-        b=a5T+oJIqcuwjxtUYxoT/S0lFhEszuhQ6bphzQcIA5yg3HIlwHRhBbOWdFO4pjYPdvu
-         39DnKZ37YreW1+maqrCcxQ4IUaH+jXaDmb7Pbf5WpmW0hv5vMKDX+ABfwEaU4RN5TJCo
-         6C5J+0LATraLc4UnurPzVWvNuWqJ1pei9CgrlUcqfJ1ieq6TiCm1Zua8evj4ay/4aZ0H
-         EXKmf/aCWCvRYyuhbfX3NAidziTuVDJZXHnV0pqmqu9kSgRrx1Cp69SqF4kuBmf4XFMf
-         VVKbzPXRiDH1BeYh0eqQVTkiu5Inw7Ly0gEG9VQvFtV8cSI0k8bVsN2ZrzW3W/8nfyq+
-         SpzQ==
+        bh=k711e50qQkGPLXQp2eEaxBU61C2DaCcRl1dngoXQeYs=;
+        b=QOAAHK8oE4FHULjoxSrdvBVjEXCot9bkNlpmSP52VN+skUJwFntMAQK2tuV5/xPUXU
+         94Xy1wz5W0bC8s5ECzSuoQunt20TBvxjewZCT7x3IlrtzMzM7V75bOJrpRkVn9kBC/6e
+         cvgRm+Dv1jl5N6LJUfFRbveP0tTzZbwOodwMx9hAcctlk9Pobp8aTpB1Un7MWjBJORHr
+         GC41FEb82RN4bhDEzbuHqfysUXdaAZ75Kj0khibr5PzeXViM41avg3/7F66NDRm1HX0i
+         lKnGgxXj3dh//DOVc7WgVmr5X8XfLEdccnHJ0RHTYtQes2TJ5pY0YKi/soT0Bo3ZW2jH
+         5Zmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678929032;
+        d=1e100.net; s=20210112; t=1678929033;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ppTWSXKFU7okTzqMt+UN0ijfWGNv2g2Yi+XNRICjYL0=;
-        b=CDseJ98cdOPx1hEvesFRQotfI0XZ2XGfyPMbBsjxmvf4Ti0vv0Wa3ztHFZSjCxGa7/
-         D01Z9hKJpZhM9qQ210LQ7C0VuA4wuFQx1ZLm10o7EBJ+v2RUf6jP2Q7Yr6YaNJ7kGV0N
-         xmw2NNBPxZdri4iwKCCwLVgnBp3THk6sZyg/nnM/C0BfEWwfFMi+Rjjz1QJJH9UGLEea
-         esEJsy3IOVL0hXzovz9MuDuiu0y0O8R5AnlTSfPIBvs2QGNbofKLwFddhi57y10OtXK2
-         IcuZ1bS/WDP3nKpjFule8iifS3jY3tULUki9+eWNm750dIducJvqj1gmW2tT+UJShD2m
-         bC3g==
-X-Gm-Message-State: AO0yUKWtyK8bKG1GOvr+yRkWiQNeyFD+aU95iap9AgCD+qnJUXxIupAO
-        r+XdB7UAXIUihRLgEUkAB1w5fsuo97jUXA==
-X-Google-Smtp-Source: AK7set89IiCDs8o1sAmaUhXw86L2AMjvAaiRH/rnIN2eC0XBWm8Stikc9OxAAPPne6JJ6rDiGk38Xkv66QdxGw==
+        bh=k711e50qQkGPLXQp2eEaxBU61C2DaCcRl1dngoXQeYs=;
+        b=1pfaHeSJfC7vrAg2FD45nPIDCRK1c7h6u0nUaWCzGFcNLCosKyCBFwmfXzx4TGfbZw
+         drjeuiRfSz03QbWQ1WvO23EYb5KtifJuTya05l7fSAITPkRyRKnLRR8OZAPeiOkJM7/H
+         H9NORsgEPzHi/FvoI1C/FHsZpttbcsee2wQ6e50C+1aa/BMDz/4PjLeA3+4r1mx0Lk6u
+         N7B4bSh5i8URKnLmPhWdXS+YHCtNHUlFH4H9JrD0jsqd0RbzNsfgcUgj2j5lm+RNSXwv
+         W+79VP4EEkYAcIqgntYGlwfcNTMyeY1aQCvs+o/Fxi6R3n+lmHJAxJpkVaKKl7tjhpsO
+         J53g==
+X-Gm-Message-State: AO0yUKWRvXh8+QqwROJIeR+dP9nbFgyehDZAgCPwuQ9H6frqqjeuNEJX
+        t3K+8GRNWbyaIhhD78ooO9mw0ljR5Vo8DQ==
+X-Google-Smtp-Source: AK7set8oBkRzC1ikc5Tv6sCQR+knE4ilSuBbu8iac4KGLh2Xra9gzC1ILQMjZADmvfyFQyA8vfrt12V0gQkGnQ==
 X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a81:ac5f:0:b0:541:6961:8457 with SMTP id
- z31-20020a81ac5f000000b0054169618457mr1164766ywj.2.1678929031906; Wed, 15 Mar
- 2023 18:10:31 -0700 (PDT)
-Date:   Thu, 16 Mar 2023 01:10:12 +0000
+ (user=edumazet job=sendgmr) by 2002:a5b:24a:0:b0:997:c919:4484 with SMTP id
+ g10-20020a5b024a000000b00997c9194484mr17337365ybp.6.1678929033410; Wed, 15
+ Mar 2023 18:10:33 -0700 (PDT)
+Date:   Thu, 16 Mar 2023 01:10:13 +0000
 In-Reply-To: <20230316011014.992179-1-edumazet@google.com>
 Mime-Version: 1.0
 References: <20230316011014.992179-1-edumazet@google.com>
 X-Mailer: git-send-email 2.40.0.rc2.332.ga46443480c-goog
-Message-ID: <20230316011014.992179-8-edumazet@google.com>
-Subject: [PATCH net-next 7/9] net/packet: convert po->has_vnet_hdr to an
- atomic flag
+Message-ID: <20230316011014.992179-9-edumazet@google.com>
+Subject: [PATCH net-next 8/9] net/packet: convert po->running to an atomic flag
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -70,131 +69,139 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-po->has_vnet_hdr can be read locklessly.
+Instead of consuming 32 bits for po->running, use
+one available bit in po->flags.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/packet/af_packet.c | 19 ++++++++++---------
+ net/packet/af_packet.c | 20 ++++++++++----------
  net/packet/diag.c      |  2 +-
  net/packet/internal.h  |  2 +-
- 3 files changed, 12 insertions(+), 11 deletions(-)
+ 3 files changed, 12 insertions(+), 12 deletions(-)
 
 diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index 119063c8a1c590b715fa570354f561bfa7df5301..5a6b05e17ca214e1faeac201e647e0d34686c89a 100644
+index 5a6b05e17ca214e1faeac201e647e0d34686c89a..ec446452bbe8d1b140b551006a3b2c9e5bace787 100644
 --- a/net/packet/af_packet.c
 +++ b/net/packet/af_packet.c
-@@ -2309,7 +2309,7 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
- 		netoff = TPACKET_ALIGN(po->tp_hdrlen +
- 				       (maclen < 16 ? 16 : maclen)) +
- 				       po->tp_reserve;
--		if (po->has_vnet_hdr) {
-+		if (packet_sock_flag(po, PACKET_SOCK_HAS_VNET_HDR)) {
- 			netoff += sizeof(struct virtio_net_hdr);
- 			do_vnet = true;
+@@ -340,14 +340,14 @@ static void __register_prot_hook(struct sock *sk)
+ {
+ 	struct packet_sock *po = pkt_sk(sk);
+ 
+-	if (!po->running) {
++	if (!packet_sock_flag(po, PACKET_SOCK_RUNNING)) {
+ 		if (po->fanout)
+ 			__fanout_link(sk, po);
+ 		else
+ 			dev_add_pack(&po->prot_hook);
+ 
+ 		sock_hold(sk);
+-		po->running = 1;
++		packet_sock_flag_set(po, PACKET_SOCK_RUNNING, 1);
+ 	}
+ }
+ 
+@@ -369,7 +369,7 @@ static void __unregister_prot_hook(struct sock *sk, bool sync)
+ 
+ 	lockdep_assert_held_once(&po->bind_lock);
+ 
+-	po->running = 0;
++	packet_sock_flag_set(po, PACKET_SOCK_RUNNING, 0);
+ 
+ 	if (po->fanout)
+ 		__fanout_unlink(sk, po);
+@@ -389,7 +389,7 @@ static void unregister_prot_hook(struct sock *sk, bool sync)
+ {
+ 	struct packet_sock *po = pkt_sk(sk);
+ 
+-	if (po->running)
++	if (packet_sock_flag(po, PACKET_SOCK_RUNNING))
+ 		__unregister_prot_hook(sk, sync);
+ }
+ 
+@@ -1782,7 +1782,7 @@ static int fanout_add(struct sock *sk, struct fanout_args *args)
+ 	err = -EINVAL;
+ 
+ 	spin_lock(&po->bind_lock);
+-	if (po->running &&
++	if (packet_sock_flag(po, PACKET_SOCK_RUNNING) &&
+ 	    match->type == type &&
+ 	    match->prot_hook.type == po->prot_hook.type &&
+ 	    match->prot_hook.dev == po->prot_hook.dev) {
+@@ -3222,7 +3222,7 @@ static int packet_do_bind(struct sock *sk, const char *name, int ifindex,
+ 
+ 	if (need_rehook) {
+ 		dev_hold(dev);
+-		if (po->running) {
++		if (packet_sock_flag(po, PACKET_SOCK_RUNNING)) {
+ 			rcu_read_unlock();
+ 			/* prevents packet_notifier() from calling
+ 			 * register_prot_hook()
+@@ -3235,7 +3235,7 @@ static int packet_do_bind(struct sock *sk, const char *name, int ifindex,
+ 								 dev->ifindex);
  		}
-@@ -2780,7 +2780,8 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
- 	size_max = po->tx_ring.frame_size
- 		- (po->tp_hdrlen - sizeof(struct sockaddr_ll));
  
--	if ((size_max > dev->mtu + reserve + VLAN_HLEN) && !po->has_vnet_hdr)
-+	if ((size_max > dev->mtu + reserve + VLAN_HLEN) &&
-+	    !packet_sock_flag(po, PACKET_SOCK_HAS_VNET_HDR))
- 		size_max = dev->mtu + reserve + VLAN_HLEN;
+-		BUG_ON(po->running);
++		BUG_ON(packet_sock_flag(po, PACKET_SOCK_RUNNING));
+ 		WRITE_ONCE(po->num, proto);
+ 		po->prot_hook.type = proto;
  
- 	reinit_completion(&po->skb_completion);
-@@ -2809,7 +2810,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
- 		status = TP_STATUS_SEND_REQUEST;
- 		hlen = LL_RESERVED_SPACE(dev);
- 		tlen = dev->needed_tailroom;
--		if (po->has_vnet_hdr) {
-+		if (packet_sock_flag(po, PACKET_SOCK_HAS_VNET_HDR)) {
- 			vnet_hdr = data;
- 			data += sizeof(*vnet_hdr);
- 			tp_len -= sizeof(*vnet_hdr);
-@@ -2837,7 +2838,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
- 					  addr, hlen, copylen, &sockc);
- 		if (likely(tp_len >= 0) &&
- 		    tp_len > dev->mtu + reserve &&
--		    !po->has_vnet_hdr &&
-+		    !packet_sock_flag(po, PACKET_SOCK_HAS_VNET_HDR) &&
- 		    !packet_extra_vlan_len_allowed(dev, skb))
- 			tp_len = -EMSGSIZE;
+@@ -4159,7 +4159,7 @@ static int packet_notifier(struct notifier_block *this,
+ 		case NETDEV_DOWN:
+ 			if (dev->ifindex == po->ifindex) {
+ 				spin_lock(&po->bind_lock);
+-				if (po->running) {
++				if (packet_sock_flag(po, PACKET_SOCK_RUNNING)) {
+ 					__unregister_prot_hook(sk, false);
+ 					sk->sk_err = ENETDOWN;
+ 					if (!sock_flag(sk, SOCK_DEAD))
+@@ -4470,7 +4470,7 @@ static int packet_set_ring(struct sock *sk, union tpacket_req_u *req_u,
  
-@@ -2856,7 +2857,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
- 			}
- 		}
- 
--		if (po->has_vnet_hdr) {
-+		if (packet_sock_flag(po, PACKET_SOCK_HAS_VNET_HDR)) {
- 			if (virtio_net_hdr_to_skb(skb, vnet_hdr, vio_le())) {
- 				tp_len = -EINVAL;
- 				goto tpacket_error;
-@@ -2991,7 +2992,7 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
- 
- 	if (sock->type == SOCK_RAW)
- 		reserve = dev->hard_header_len;
--	if (po->has_vnet_hdr) {
-+	if (packet_sock_flag(po, PACKET_SOCK_HAS_VNET_HDR)) {
- 		err = packet_snd_vnet_parse(msg, &len, &vnet_hdr);
- 		if (err)
- 			goto out_unlock;
-@@ -3451,7 +3452,7 @@ static int packet_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 
- 	packet_rcv_try_clear_pressure(pkt_sk(sk));
- 
--	if (pkt_sk(sk)->has_vnet_hdr) {
-+	if (packet_sock_flag(pkt_sk(sk), PACKET_SOCK_HAS_VNET_HDR)) {
- 		err = packet_rcv_vnet(msg, skb, &len);
- 		if (err)
- 			goto out_free;
-@@ -3931,7 +3932,7 @@ packet_setsockopt(struct socket *sock, int level, int optname, sockptr_t optval,
- 		if (po->rx_ring.pg_vec || po->tx_ring.pg_vec) {
- 			ret = -EBUSY;
- 		} else {
--			po->has_vnet_hdr = !!val;
-+			packet_sock_flag_set(po, PACKET_SOCK_HAS_VNET_HDR, val);
- 			ret = 0;
- 		}
- 		release_sock(sk);
-@@ -4065,7 +4066,7 @@ static int packet_getsockopt(struct socket *sock, int level, int optname,
- 		val = packet_sock_flag(po, PACKET_SOCK_ORIGDEV);
- 		break;
- 	case PACKET_VNET_HDR:
--		val = po->has_vnet_hdr;
-+		val = packet_sock_flag(po, PACKET_SOCK_HAS_VNET_HDR);
- 		break;
- 	case PACKET_VERSION:
- 		val = po->tp_version;
+ 	/* Detach socket from network */
+ 	spin_lock(&po->bind_lock);
+-	was_running = po->running;
++	was_running = packet_sock_flag(po, PACKET_SOCK_RUNNING);
+ 	num = po->num;
+ 	if (was_running) {
+ 		WRITE_ONCE(po->num, 0);
+@@ -4681,7 +4681,7 @@ static int packet_seq_show(struct seq_file *seq, void *v)
+ 			   s->sk_type,
+ 			   ntohs(READ_ONCE(po->num)),
+ 			   READ_ONCE(po->ifindex),
+-			   po->running,
++			   packet_sock_flag(po, PACKET_SOCK_RUNNING),
+ 			   atomic_read(&s->sk_rmem_alloc),
+ 			   from_kuid_munged(seq_user_ns(seq), sock_i_uid(s)),
+ 			   sock_i_ino(s));
 diff --git a/net/packet/diag.c b/net/packet/diag.c
-index 8bb4ce6a8e6171fef43988fe83b0adc8100fe866..56240aaf032b25fdbbaf2ed6421cdbcc3669d1ec 100644
+index 56240aaf032b25fdbbaf2ed6421cdbcc3669d1ec..de4ced5cf3e8c5798530ab3bfbe162cc3913b318 100644
 --- a/net/packet/diag.c
 +++ b/net/packet/diag.c
-@@ -27,7 +27,7 @@ static int pdiag_put_info(const struct packet_sock *po, struct sk_buff *nlskb)
+@@ -21,7 +21,7 @@ static int pdiag_put_info(const struct packet_sock *po, struct sk_buff *nlskb)
+ 	pinfo.pdi_tstamp = READ_ONCE(po->tp_tstamp);
+ 
+ 	pinfo.pdi_flags = 0;
+-	if (po->running)
++	if (packet_sock_flag(po, PACKET_SOCK_RUNNING))
+ 		pinfo.pdi_flags |= PDI_RUNNING;
+ 	if (packet_sock_flag(po, PACKET_SOCK_AUXDATA))
  		pinfo.pdi_flags |= PDI_AUXDATA;
- 	if (packet_sock_flag(po, PACKET_SOCK_ORIGDEV))
- 		pinfo.pdi_flags |= PDI_ORIGDEV;
--	if (po->has_vnet_hdr)
-+	if (packet_sock_flag(po, PACKET_SOCK_HAS_VNET_HDR))
- 		pinfo.pdi_flags |= PDI_VNETHDR;
- 	if (packet_sock_flag(po, PACKET_SOCK_TP_LOSS))
- 		pinfo.pdi_flags |= PDI_LOSS;
 diff --git a/net/packet/internal.h b/net/packet/internal.h
-index 9d406a92ede8e917089943b39a0fe97b064599f3..2521176807f4f8ba430c5a94c7c50a0372b1a92a 100644
+index 2521176807f4f8ba430c5a94c7c50a0372b1a92a..58f042c631723118b4b2115142b37b828a4d9e9f 100644
 --- a/net/packet/internal.h
 +++ b/net/packet/internal.h
-@@ -118,7 +118,6 @@ struct packet_sock {
+@@ -117,7 +117,6 @@ struct packet_sock {
+ 	spinlock_t		bind_lock;
  	struct mutex		pg_vec_lock;
  	unsigned long		flags;
- 	unsigned int		running;	/* bind_lock must be held */
--	unsigned int		has_vnet_hdr:1; /* writer must hold sock lock */
+-	unsigned int		running;	/* bind_lock must be held */
  	int			pressure;
  	int			ifindex;	/* bound device		*/
  	__be16			num;
 @@ -146,6 +145,7 @@ enum packet_sock_flags {
- 	PACKET_SOCK_AUXDATA,
  	PACKET_SOCK_TX_HAS_OFF,
  	PACKET_SOCK_TP_LOSS,
-+	PACKET_SOCK_HAS_VNET_HDR,
+ 	PACKET_SOCK_HAS_VNET_HDR,
++	PACKET_SOCK_RUNNING,
  };
  
  static inline void packet_sock_flag_set(struct packet_sock *po,
