@@ -2,56 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 23A586BD77F
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 18:50:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5FD96BD77B
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 18:50:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230230AbjCPRu3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 13:50:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54088 "EHLO
+        id S230245AbjCPRu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 13:50:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230234AbjCPRuZ (ORCPT
+        with ESMTP id S230235AbjCPRuZ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 13:50:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2C95DCA40;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C59F978;
         Thu, 16 Mar 2023 10:50:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C865B822F0;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 86AA4B822EF;
         Thu, 16 Mar 2023 17:50:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0EC62C4339B;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1EE9CC433EF;
         Thu, 16 Mar 2023 17:50:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1678989020;
-        bh=IJDYG+9CxMOoa0OhQpSvem/aupmEe+hwiEbqjI121r0=;
+        bh=itpBSwNfPKlmIjx0UnOwPWQ3oN8irZn0RWBKyljXEM0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=hxAJ+P55+9YksBnbEHsTRNP3zNvY/3vyJvSJ7oQ7Yu/qpJNrUzqOR63UZw6majpi9
-         9ADeBqRNUofbadwieVSkbfJI/XrhFnHhjH89BryZBfhT+AUa1V8RWSm7iaNnhdeUmJ
-         DM4+MHWCQjf5+xjjYQ0zFFRsIVphHoMeTcpWHJG07xvpsAymJV3yFoNeaGXAHKdgq6
-         Z9S9SRSGMpQ8cN2ORkYfvG6MmI8OPkCP4oPolwq5g8T9XzhHFm0U5xchI2OeZSdA8d
-         vAgIOb+K4hQcHgc35Yr9U1y1peG3G3g7SqhGKlbv1zBtNHSoImDFUmdUU791KIM5Db
-         XfkgVWuET8/CA==
+        b=Ey3iZvjUiD2wWsmuQnMKXhRql9vkaZ7mQtdPhXcsRFYHAGTO5nO49YXmQbSK+wbMP
+         Dp+BN8Mnlmmp3Tb/EYC2UiPoMx+XeKM0K7s32VXWwHzVvOZBpwuL63WwVzkVNiU1JC
+         pEbv7QaUAXHaa3vmbMY/YhakTY8hnWRtvv3qfLYaUOk9pQXBJ2DIJI2h49PMW4LMb7
+         EfJv0FLXk2U/RFYIQ1B7pSqApNMVwuUmGI26S62p5z2H1CR6yFsT0uuouX/iy8GfnQ
+         wA1GtUYn3EnWPgABWwNjMgIU4XMQv7ZSnYPPr6QGhPO6bPqELnNkL18sncqwbBP3uo
+         qchHLOwGS50iw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DFD12E66CBF;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EFF62E447D3;
         Thu, 16 Mar 2023 17:50:19 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2 0/2] virtio_net: fix two bugs related to XDP
+Subject: Re: [PATCH net 0/2] Fix MTU reporting for Marvell DSA switches where we
+ can't change it
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167898901991.2133.10546001323200249698.git-patchwork-notify@kernel.org>
+Message-Id: <167898901996.2133.17007453063913182709.git-patchwork-notify@kernel.org>
 Date:   Thu, 16 Mar 2023 17:50:19 +0000
-References: <20230315015223.89137-1-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <20230315015223.89137-1-xuanzhuo@linux.alibaba.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org, mst@redhat.com, jasowang@redhat.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com,
-        hengqi@linux.alibaba.com,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+References: <20230314182405.2449898-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20230314182405.2449898-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        murali.policharla@broadcom.com, lukma@denx.de,
+        linux@armlinux.org.uk, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -64,23 +63,23 @@ Hello:
 This series was applied to netdev/net.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Wed, 15 Mar 2023 09:52:21 +0800 you wrote:
-> This patch set fixes two bugs related to XDP.
-> These two patch is not associated.
+On Tue, 14 Mar 2023 20:24:03 +0200 you wrote:
+> As explained in patch 2, the driver doesn't know how to change the MTU
+> on MV88E6165, MV88E6191, MV88E6220, MV88E6250 and MV88E6290, and there
+> is a regression where it actually reports an MTU value below the
+> Ethernet standard (1500).
 > 
-> v2:
->     1. add unlikely()
-> 
-> v1:
->     1. fix the grammer error
+> Fixing that shows another issue where DSA is unprepared to be told that
+> a switch supports an MTU of only 1500, and still errors out. That is
+> addressed by patch 1.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,v2,1/2] virtio_net: fix page_to_skb() miss headroom
-    https://git.kernel.org/netdev/net/c/fa0f1ba7c823
-  - [net,v2,2/2] virtio_net: free xdp shinfo frags when build_skb_from_xdp_buff() fails
-    https://git.kernel.org/netdev/net/c/1a3bd6eabae3
+  - [net,1/2] net: dsa: don't error out when drivers return ETH_DATA_LEN in .port_max_mtu()
+    https://git.kernel.org/netdev/net/c/636e8adf7878
+  - [net,2/2] net: dsa: mv88e6xxx: fix max_mtu of 1492 on 6165, 6191, 6220, 6250, 6290
+    https://git.kernel.org/netdev/net/c/7e9517375a14
 
 You are awesome, thank you!
 -- 
