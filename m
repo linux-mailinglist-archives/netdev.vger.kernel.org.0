@@ -2,70 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E4A76BD1B3
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 15:04:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B3FE6BD221
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 15:15:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230332AbjCPOE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 10:04:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47310 "EHLO
+        id S231278AbjCPOPe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 10:15:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229790AbjCPOE2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 10:04:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51A06D58A5;
-        Thu, 16 Mar 2023 07:04:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D010562049;
-        Thu, 16 Mar 2023 14:04:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C54C1C433EF;
-        Thu, 16 Mar 2023 14:04:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678975466;
-        bh=kJmHylHeN4UosIlx6ChZnOhb4IMAHk/G5b+TZLD9LMg=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=CE1LQCVTEp8WgUdx0EGkfx5nA/bkdABD63djaUC5jMaq02dIt+meGqAerCBu4aEQg
-         Gdl3725FG6vjnDiQ/oLfxpXK0KLTGgMKW2JzQzJiWgUtq0nNJIVENKaJ8p582tNQyF
-         0P/J7/cqUxc8fc0voott8DN/9Ma0WG2/EonRbs07C1Cq2MDEN70TgVYhhq0SOrPTKU
-         BsPUC9iayp1G9cK+qijDXZvq/dGdem2lUibbhnUTyBzzimiKqwq9n9gJEbJpDv+Qhe
-         sGjoNgZj07OO/VLHFmhAY6lIeuTyWpAVxE4M4jblpdo6/APg9NO5lB2wJ6SVZuvvbz
-         hJvP0B7xm/Vlw==
-Message-ID: <455440f4-7f2b-366e-53ec-700c3bb98534@kernel.org>
-Date:   Thu, 16 Mar 2023 16:04:19 +0200
+        with ESMTP id S231489AbjCPOPS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 10:15:18 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74021A18A7;
+        Thu, 16 Mar 2023 07:14:22 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id x36so1839255ljq.7;
+        Thu, 16 Mar 2023 07:14:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678976056;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=XFgru5gPc+aHNBW3vlG+3dqxpYhuOK2D750z3nKQHv0=;
+        b=M3ZV2p0n9KQQDzhTmvrnt3gFPi3l8OBk914LMDfpT97OS60zwtV/NxeT/P6NwjJeHW
+         SnsJQSmuBGYhWfiguR+TY+KZ4JdrbBNPAf8VNhYR3iRFavcZ7CCM2EYjOmVkUt+p/4GW
+         KGwzA7hs+79F1pb1RUkbI6hmR4gcb4DFN1pi08tq3b+OYTqubEp81g86dRK7mPNFXuhf
+         2qMQKrj3mmhVuybAuUhxflGUalmDNEyyeja+WpHX5aUGGsjJr5sk5f7ETVSWBSXaEyi8
+         zUh8eap4Bw1LGcSfh7LFXF7RdcMvsqm9/1R0thhHwPwIUnFmyxSNrcSiZfNahzCA+bfy
+         a+Sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678976056;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=XFgru5gPc+aHNBW3vlG+3dqxpYhuOK2D750z3nKQHv0=;
+        b=5i/0dh+q8IoXaZ5A6Wfwpbw9p893dPS1a8PBGVPHwHaZJV37C9b6ISNzFS4R5VDvDN
+         usrLWEaxXKwsago3gQe16jUo/0hleMxSVG8qCjNWKK8X5R7HX7ChyT9CxMA3TO4T3Euc
+         /Fx3MmRy5U0DokcwYUyxAIZ0TpjCUCgQLBWQPW72jwC6M1lGphg5Z4sBZaB3TeOWZ9gc
+         Ej16dBAq/GTExVtHDRC2YcAQH8U4PYJr7oCtf8kinwT16jZYuowzfJI1aoRFnEOIhWYJ
+         df4gE/S8Sr4GPxanHamy2RaP4VItTVtv+d8+7GGz+gmSYgL7n9xwihfXp3Js3OndArAm
+         lIHw==
+X-Gm-Message-State: AO0yUKU4KrMaQMmltWteniga1tTggnWK16/rqo/i+E0eits0dfVncIMT
+        N9UHmKChAZsWUrLco4aCuf9mAQ44IwY9CrzP
+X-Google-Smtp-Source: AK7set/K58nMRzeH33F8w1ezsZYcCPvJadMxvHARkv0N/NBuqD2vhfVwZKmLJsPBtyYqG5weUVg7Og==
+X-Received: by 2002:a2e:90da:0:b0:298:ad8e:e65 with SMTP id o26-20020a2e90da000000b00298ad8e0e65mr2048949ljg.21.1678976055904;
+        Thu, 16 Mar 2023 07:14:15 -0700 (PDT)
+Received: from [192.168.1.95] (host-176-36-0-241.b024.la.net.ua. [176.36.0.241])
+        by smtp.gmail.com with ESMTPSA id s2-20020a05651c048200b00298798f7e38sm1265560ljc.77.2023.03.16.07.14.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Mar 2023 07:14:14 -0700 (PDT)
+Message-ID: <e3a68d87c4f7589ab19fe6ddf6b0341404108386.camel@gmail.com>
+Subject: Re: [PATCH bpf-next 1/2] bpf: Allow ld_imm64 instruction to point
+ to kfunc.
+From:   Eduard Zingerman <eddyz87@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        davem@davemloft.net
+Cc:     daniel@iogearbox.net, andrii@kernel.org, martin.lau@kernel.org,
+        void@manifault.com, davemarchevsky@meta.com, tj@kernel.org,
+        memxor@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com
+Date:   Thu, 16 Mar 2023 16:14:11 +0200
+In-Reply-To: <20230315223607.50803-2-alexei.starovoitov@gmail.com>
+References: <20230315223607.50803-1-alexei.starovoitov@gmail.com>
+         <20230315223607.50803-2-alexei.starovoitov@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4-0ubuntu1 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [EXTERNAL] Re: [PATCH v4 4/5] soc: ti: pruss: Add helper
- functions to set GPI mode, MII_RT_event and XFR
-Content-Language: en-US
-To:     Md Danish Anwar <a0501179@ti.com>,
-        MD Danish Anwar <danishanwar@ti.com>,
-        "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Nishanth Menon <nm@ti.com>
-Cc:     linux-remoteproc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, srk@ti.com, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20230313111127.1229187-1-danishanwar@ti.com>
- <20230313111127.1229187-5-danishanwar@ti.com>
- <d168e7dd-42a0-b728-5c4c-e97209c13871@kernel.org>
- <b1409f34-86b5-14e8-f352-5032aa57ca46@ti.com>
- <60e73395-f670-6eaa-0eb7-389553320a71@kernel.org>
- <20718115-7606-a77b-7e4d-511ca9c1d798@ti.com>
- <e49b9a78-5e35-209e-7ecc-2333478b98b0@kernel.org>
- <468f85ad-e4b0-54e1-a5b9-4692ae8a1445@ti.com>
-From:   Roger Quadros <rogerq@kernel.org>
-In-Reply-To: <468f85ad-e4b0-54e1-a5b9-4692ae8a1445@ti.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,208 +77,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 2023-03-15 at 15:36 -0700, Alexei Starovoitov wrote:
+> From: Alexei Starovoitov <ast@kernel.org>
+>=20
+> Allow ld_imm64 insn with BPF_PSEUDO_BTF_ID to hold the address of kfunc.
+> PTR_MEM is already recognized for NULL-ness by is_branch_taken(),
+> so unresolved kfuncs will be seen as zero.
+> This allows BPF programs to detect at load time whether kfunc is present
+> in the kernel with bpf_kfunc_exists() macro.
+>=20
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> ---
+>  kernel/bpf/verifier.c       | 7 +++++--
+>  tools/lib/bpf/bpf_helpers.h | 3 +++
+>  2 files changed, 8 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 60793f793ca6..4e49d34d8cd6 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -15955,8 +15955,8 @@ static int check_pseudo_btf_id(struct bpf_verifie=
+r_env *env,
+>  		goto err_put;
+>  	}
+> =20
+> -	if (!btf_type_is_var(t)) {
+> -		verbose(env, "pseudo btf_id %d in ldimm64 isn't KIND_VAR.\n", id);
+> +	if (!btf_type_is_var(t) && !btf_type_is_func(t)) {
+> +		verbose(env, "pseudo btf_id %d in ldimm64 isn't KIND_VAR or KIND_FUNC\=
+n", id);
+>  		err =3D -EINVAL;
+>  		goto err_put;
+>  	}
+> @@ -15990,6 +15990,9 @@ static int check_pseudo_btf_id(struct bpf_verifie=
+r_env *env,
+>  		aux->btf_var.reg_type =3D PTR_TO_BTF_ID | MEM_PERCPU;
+>  		aux->btf_var.btf =3D btf;
+>  		aux->btf_var.btf_id =3D type;
+> +	} else if (!btf_type_is_func(t)) {
+> +		aux->btf_var.reg_type =3D PTR_TO_MEM | MEM_RDONLY;
+> +		aux->btf_var.mem_size =3D 0;
 
-Hi,
+This if statement has the following conditions in master:
 
-On 16/03/2023 15:11, Md Danish Anwar wrote:
-> 
-> 
-> On 16/03/23 17:49, Roger Quadros wrote:
->>
->>
->> On 16/03/2023 13:44, Md Danish Anwar wrote:
->>>
->>> On 16/03/23 17:06, Roger Quadros wrote:
->>>> Hi,
->>>>
->>>> On 16/03/2023 13:05, Md Danish Anwar wrote:
->>>>> Hi Roger,
->>>>>
->>>>> On 15/03/23 17:52, Roger Quadros wrote:
->>>>>>
->>>>>>
->>>>>> On 13/03/2023 13:11, MD Danish Anwar wrote:
->>>>>>> From: Suman Anna <s-anna@ti.com>
->>>>>>>
->>>>>>> The PRUSS CFG module is represented as a syscon node and is currently
->>>>>>> managed by the PRUSS platform driver. Add easy accessor functions to set
->>>>>>> GPI mode, MII_RT event enable/disable and XFR (XIN XOUT) enable/disable
->>>>>>> to enable the PRUSS Ethernet usecase. These functions reuse the generic
->>>>>>> pruss_cfg_update() API function.
->>>>>>>
->>>>>>> Signed-off-by: Suman Anna <s-anna@ti.com>
->>>>>>> Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
->>>>>>> Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
->>>>>>> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
->>>>>>> Signed-off-by: MD Danish Anwar <danishanwar@ti.com>
->>>>>>> ---
->>>>>>>  drivers/soc/ti/pruss.c           | 60 ++++++++++++++++++++++++++++++++
->>>>>>>  include/linux/remoteproc/pruss.h | 22 ++++++++++++
->>>>>>>  2 files changed, 82 insertions(+)
->>>>>>>
->>>>>>> diff --git a/drivers/soc/ti/pruss.c b/drivers/soc/ti/pruss.c
->>>>>>> index 26d8129b515c..2f04b7922ddb 100644
->>>>>>> --- a/drivers/soc/ti/pruss.c
->>>>>>> +++ b/drivers/soc/ti/pruss.c
->>>>>>> @@ -203,6 +203,66 @@ static int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
->>>>>>>  	return regmap_update_bits(pruss->cfg_regmap, reg, mask, val);
->>>>>>>  }
->>>>>>>  
->>>>>>> +/**
->>>>>>> + * pruss_cfg_gpimode() - set the GPI mode of the PRU
->>>>>>> + * @pruss: the pruss instance handle
->>>>>>> + * @pru_id: id of the PRU core within the PRUSS
->>>>>>> + * @mode: GPI mode to set
->>>>>>> + *
->>>>>>> + * Sets the GPI mode for a given PRU by programming the
->>>>>>> + * corresponding PRUSS_CFG_GPCFGx register
->>>>>>> + *
->>>>>>> + * Return: 0 on success, or an error code otherwise
->>>>>>> + */
->>>>>>> +int pruss_cfg_gpimode(struct pruss *pruss, enum pruss_pru_id pru_id,
->>>>>>> +		      enum pruss_gpi_mode mode)
->>>>>>> +{
->>>>>>> +	if (pru_id < 0 || pru_id >= PRUSS_NUM_PRUS)
->>>>>>> +		return -EINVAL;
->>>>>>> +
->>>>>>> +	if (mode < 0 || mode > PRUSS_GPI_MODE_MAX)
->>>>>>> +		return -EINVAL;
->>>>>>> +
->>>>>>> +	return pruss_cfg_update(pruss, PRUSS_CFG_GPCFG(pru_id),
->>>>>>> +				PRUSS_GPCFG_PRU_GPI_MODE_MASK,
->>>>>>> +				mode << PRUSS_GPCFG_PRU_GPI_MODE_SHIFT);
->>>>>>> +}
->>>>>>> +EXPORT_SYMBOL_GPL(pruss_cfg_gpimode);
->>>>>>> +
->>>>>>> +/**
->>>>>>> + * pruss_cfg_miirt_enable() - Enable/disable MII RT Events
->>>>>>> + * @pruss: the pruss instance
->>>>>>> + * @enable: enable/disable
->>>>>>> + *
->>>>>>> + * Enable/disable the MII RT Events for the PRUSS.
->>>>>>> + *
->>>>>>> + * Return: 0 on success, or an error code otherwise
->>>>>>> + */
->>>>>>> +int pruss_cfg_miirt_enable(struct pruss *pruss, bool enable)
->>>>>>> +{
->>>>>>> +	u32 set = enable ? PRUSS_MII_RT_EVENT_EN : 0;
->>>>>>> +
->>>>>>> +	return pruss_cfg_update(pruss, PRUSS_CFG_MII_RT,
->>>>>>> +				PRUSS_MII_RT_EVENT_EN, set);
->>>>>>> +}
->>>>>>> +EXPORT_SYMBOL_GPL(pruss_cfg_miirt_enable);
->>>>>>> +
->>>>>>> +/**
->>>>>>> + * pruss_cfg_xfr_enable() - Enable/disable XIN XOUT shift functionality
->>>>>>> + * @pruss: the pruss instance
->>>>>>> + * @enable: enable/disable
->>>>>>> + * @mask: Mask for PRU / RTU
->>>>>>
->>>>>> You should not expect the user to provide the mask but only
->>>>>> the core type e.g. 
->>>>>>
->>>>>> enum pru_type {
->>>>>>         PRU_TYPE_PRU = 0,
->>>>>>         PRU_TYPE_RTU,
->>>>>>         PRU_TYPE_TX_PRU,
->>>>>>         PRU_TYPE_MAX,
->>>>>> };
->>>>>>
->>>>>> Then you figure out the mask in the function.
->>>>>> Also check for invalid pru_type and return error if so.
->>>>>>
->>>>>
->>>>> Sure Roger, I will create a enum and take it as parameter in API. Based on
->>>>> these enum I will calculate mask and do XFR shifting inside the API
->>>>> pruss_cfg_xfr_enable().
->>>>>
->>>>> There are two registers for XFR shift.
->>>>>
->>>>> #define PRUSS_SPP_XFER_SHIFT_EN                 BIT(1)
->>>>> #define PRUSS_SPP_RTU_XFR_SHIFT_EN              BIT(3)
->>>>>
->>>>> For PRU XFR shifting, the mask should be PRUSS_SPP_XFER_SHIFT_EN,
->>>>> for RTU shifting mask should be PRUSS_SPP_RTU_XFR_SHIFT_EN and for PRU and RTU
->>>>> shifting mask should be (PRUSS_SPP_XFER_SHIFT_EN | PRUSS_SPP_RTU_XFR_SHIFT_EN)
->>>>>
->>>>> So the enum would be something like this.
->>>>>
->>>>> /**
->>>>>  * enum xfr_shift_type - XFR shift type
->>>>>  * @XFR_SHIFT_PRU: Enables XFR shift for PRU
->>>>>  * @XFR_SHIFT_RTU: Enables XFR shift for RTU
->>>>>  * @XFR_SHIFT_PRU_RTU: Enables XFR shift for both PRU and RTU
->>>>
->>>> This is not required. User can call the API twice. once for PRU and once for RTU.
->>>>
->>>>>  * @XFR_SHIFT_MAX: Total number of XFR shift types available.
->>>>>  *
->>>>>  */
->>>>>
->>>>> enum xfr_shift_type {
->>>>>         XFR_SHIFT_PRU = 0,
->>>>>         XFR_SHIFT_RTU,
->>>>>         XFR_SHIFT_PRU_RTU,
->>>>>         XFR_SHIFT_MAX,
->>>>> };
->>>>
->>>> Why do you need this new enum definition?
->>>> We already have pru_type defined somewhere. You can move it to a public header
->>>> if not there yet.
->>>>
->>>> enum pru_type {
->>>>          PRU_TYPE_PRU = 0,
->>>>          PRU_TYPE_RTU,
->>>>          PRU_TYPE_TX_PRU,
->>>>          PRU_TYPE_MAX,
->>>> };
->>>>
->>>
->>> This enum is present in drivers/remoteproc/pru_rproc.c file. But the problem
->>> with this enum is that in [1] we need to enable XFR shift for both PRU and RTU
->>> for which the mask will be OR of PRUSS_SPP_XFER_SHIFT_EN (mask for PRU) and
->>> PRUSS_SPP_RTU_XFR_SHIFT_EN (mask of RTU).
->>
->> Is there any limitation that you have to enable both simultaneously?
->> The driver can first do enable for PRU and then later for RTU.
->>
->> As you will do a read modify write, the previous enable state of register
->> shouldn't be affected.
->>
->>>
->>> Now this enum doesn't have a field for both PRU and RTU. Also we don't need
->>> need the XFR shift for PRU_TYPE_TX_PRU as only two XFR shift register bits are
->>> defined.
->>
->> That is OK. You can return error if not RTU or PRU.
->>
->>>
->>> That is why I thought of introducing new enum.
->>>
->>> [1] drivers/net/ethernet/ti/icssg_config.c
->>>
->>> /* enable XFR shift for PRU and RTU */
->>> 	mask = PRUSS_SPP_XFER_SHIFT_EN | PRUSS_SPP_RTU_XFR_SHIFT_EN;
->>
->> Driver can do like so
->>
->> 	pruss_cfg_xfr_enable(pruss, PRU_TYPE_PRU, true);
->> 	pruss_cfg_xfr_enable(pruss, PRU_TYPE_RTU, true);
->>
->> The second call should not disable the PRU XFR as you will do a
->> read-modify-write only affecting the RTU bit.
-> 
-> Sure, then I will use the existing enum pru_type.
-> 
-> The enum pru_type is currently in drivers/remoteproc/pruss.c I will move this
-> enum definition from there to include/linux/remoteproc/pruss.h
+	if (percpu) {
+    	// ...
+	} else if (!btf_type_is_struct(t)) {
+    	// ...
+	} else {
+    	// ...
+	}
 
-There are 2 public pruss.h files.
-	include/linux/remoteproc/pruss.h
-and
-	include/linux/pruss_driver.h
+Conditions `!btf_type_is_func()` and `!btf_type_is_struct()` are
+not mutually exclusive, thus adding `if (!btf_type_is_func())`
+would match certain conditions that were previously matched by struct
+case, wouldn't it? E.g. if type is `BTF_KIND_INT`?
 
-Why is that and when to use what?
+Although, I was not able to trigger it, as it seems that pahole only
+encodes per-cpu vars in BTF.
 
-cheers,
--roger
+>  	} else if (!btf_type_is_struct(t)) {
+>  		const struct btf_type *ret;
+>  		const char *tname;
+> diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
+> index 7d12d3e620cc..43abe4c29409 100644
+> --- a/tools/lib/bpf/bpf_helpers.h
+> +++ b/tools/lib/bpf/bpf_helpers.h
+> @@ -177,6 +177,9 @@ enum libbpf_tristate {
+>  #define __kptr_untrusted __attribute__((btf_type_tag("kptr_untrusted")))
+>  #define __kptr __attribute__((btf_type_tag("kptr")))
+> =20
+> +/* pass function pointer through asm otherwise compiler assumes that any=
+ function !=3D 0 */
+> +#define bpf_kfunc_exists(fn) ({ void *__p =3D fn; asm ("" : "+r"(__p)); =
+__p; })
+> +
+>  #ifndef ___bpf_concat
+>  #define ___bpf_concat(a, b) a ## b
+>  #endif
+
