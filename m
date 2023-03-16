@@ -2,114 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DBC76BCC20
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 11:11:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E98DE6BCC30
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 11:12:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230036AbjCPKLt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 06:11:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33168 "EHLO
+        id S230371AbjCPKMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 06:12:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229991AbjCPKLq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 06:11:46 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0A5AB9513
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 03:11:44 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id y75-20020a25dc4e000000b00b4211cf2298so1357200ybe.5
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 03:11:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1678961504;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=DtSR8peTag+7FVObqwQG2UIK8AgoJoOOD5xOkww8fUg=;
-        b=Vqx1tPXZl7slipqjTj/RBU03HLDX+Kopxph+y1OCZLR+YOkoC9zMefkuqZfeoeoDi4
-         53pmTJmQKGEuof4fKjFvCwPBTfr7Bxd+NMNd6+//qDGXx7ZFPdj5lCNxadH3EI6asJpG
-         XpV66FfgOfNkrw//e6MPe8i+rt4ZU1o2rTTo+xa15oFO4V8alx/A8VY45iIniW+HoFWI
-         iJGcewU4inPIZWjZmJLBIInzScDWnXN/ACjC0c5biu4gwF8W7YbVIMFgXclrmynV+mQw
-         //62v7IwELmwLpPvCEDz7asq3imk9B+3F8QA6QMCPDBlDTrEl2IKQEZL9ZMZnQpwaYsU
-         CyAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678961504;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=DtSR8peTag+7FVObqwQG2UIK8AgoJoOOD5xOkww8fUg=;
-        b=3cAyTQdnhNk2tBdGLGBXFEEstDOs7jdJSjC1uv/aFIW8U0OP5vuicX7WfDIVBSohY5
-         sTETuloV98GcbnlU3tDLU29vG73zRcH0kVakzUAt6oZ3XQnlGVePit1hVCoV0AuctBZE
-         KUcKPXA4IhSQ1NfWSDjND8Ka6Jc06XVYAHoXKBBsfHeUDszwT4UMV44BHbh7U6sce14y
-         3XxYM0YaReyAGHzCRxW/quqIJzbMNJ+ZJIwWHYJiJ2RlQ7SyGOD0DS/cW11CCsZ+n8tf
-         6beP7j5ZD2qZiLFJeDq95K8h3lFpKnJevUh/oNxiDpg/IUk8IUJEAn3qis3bRwIuRygL
-         RfBg==
-X-Gm-Message-State: AO0yUKXgynFSE7DxMcK3zHf6ApW8Ns1uDLQgsYrqW0vsbPI2WMFSadZk
-        +V1uPcas7nH7+rTGEnLwfSdxvkXY0lbn4ezXaA==
-X-Google-Smtp-Source: AK7set+9Pv9ZTtKhvmWS/BG19Gkw6tJBJ4CR76H3uLrPj1yEY91L+ij06g5L1Yx+fy81h4n033fRdaJ4UZbF1eS/vg==
-X-Received: from howardchung-p920.tpe.corp.google.com ([2401:fa00:1:17:5470:81fd:9c7f:513a])
- (user=howardchung job=sendgmr) by 2002:a25:9f0e:0:b0:b3b:fb47:8534 with SMTP
- id n14-20020a259f0e000000b00b3bfb478534mr7994759ybq.5.1678961503826; Thu, 16
- Mar 2023 03:11:43 -0700 (PDT)
-Date:   Thu, 16 Mar 2023 18:11:38 +0800
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.40.0.rc2.332.ga46443480c-goog
-Message-ID: <20230316181112.v3.1.I9113bb4f444afc2c5cb19d1e96569e01ddbd8939@changeid>
-Subject: [PATCH v3] Bluetooth: mgmt: Fix MGMT add advmon with RSSI command
-From:   Howard Chung <howardchung@google.com>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org
-Cc:     chromeos-bluetooth-upstreaming@chromium.org,
-        Howard Chung <howardchung@google.com>,
-        Archie Pusaka <apusaka@chromium.org>,
-        Brian Gix <brian.gix@intel.com>,
+        with ESMTP id S230326AbjCPKMc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 06:12:32 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79572BCBBB;
+        Thu, 16 Mar 2023 03:12:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678961534; x=1710497534;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=1ch8yAEoqDaUdQ3sRi+e/B4vAYC/6RjGdOIhFQNejgo=;
+  b=BpNEsMIJzAI7WzLL3bKzFpaMLvPDYwFK4WIzvfqLEnWyrF1zqg1fw0W1
+   9IDv0u7I55oO4eEEnvFoq5RepEbf+OhyOxZnfQuGGXiYWWGyDEj+4V+ln
+   /vrUUk4EArT9YYOMkOK8c9Lfw80LCBb1Q0S+YHNCm9xIFnbsK9LFpLe6D
+   PhMGbKVywO5RqAcJUWRQLEHZrSjEIYWwetBOgAz552O7xXLq8ybI7S84O
+   gZ1774jzLDFFXz2u1TC76McY2IJ5SBtnwuoOBrdoRmfR8rxsXpDXxzGnt
+   VJusVPOLwyjnTTHqVASzpAdaCLITdCGOS0pzlw9PYhKyXEyIMmcyxpuYC
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="337965227"
+X-IronPort-AV: E=Sophos;i="5.98,265,1673942400"; 
+   d="scan'208";a="337965227"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2023 03:12:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="748797466"
+X-IronPort-AV: E=Sophos;i="5.98,265,1673942400"; 
+   d="scan'208";a="748797466"
+Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2023 03:12:11 -0700
+Date:   Thu, 16 Mar 2023 11:12:04 +0100
+From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+To:     Daniil Tatianin <d-tatianin@yandex-team.ru>
+Cc:     Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Yuval Mintz <Yuval.Mintz@qlogic.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] qed/qed_sriov: avoid a possible NULL deref in
+ configure_min_tx_rate
+Message-ID: <ZBLrb6C1mEjgAGHr@localhost.localdomain>
+References: <20230315194809.579756-1-d-tatianin@yandex-team.ru>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230315194809.579756-1-d-tatianin@yandex-team.ru>
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The MGMT command: MGMT_OP_ADD_ADV_PATTERNS_MONITOR_RSSI uses variable
-length argument. This causes host not able to register advmon with rssi.
+On Wed, Mar 15, 2023 at 10:48:09PM +0300, Daniil Tatianin wrote:
+> We have to make sure that the info returned by qed_iov_get_vf_info is
+> valid before using it.
+> 
+> Found by Linux Verification Center (linuxtesting.org) with the SVACE
+> static analysis tool.
+> 
+> Fixes: 733def6a04bf ("qed*: IOV link control")
+> Signed-off-by: Daniil Tatianin <d-tatianin@yandex-team.ru>
+> ---
+>  drivers/net/ethernet/qlogic/qed/qed_sriov.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/qlogic/qed/qed_sriov.c b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
+> index 2bf18748581d..cd43f1b23eb1 100644
+> --- a/drivers/net/ethernet/qlogic/qed/qed_sriov.c
+> +++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
+> @@ -4404,6 +4404,9 @@ qed_iov_configure_min_tx_rate(struct qed_dev *cdev, int vfid, u32 rate)
+>  	}
+>  
+>  	vf = qed_iov_get_vf_info(QED_LEADING_HWFN(cdev), (u16)vfid, true);
+> +	if (!vf)
+> +		return -EINVAL;
+> +
+>  	vport_id = vf->vport_id;
+>  
+>  	return qed_configure_vport_wfq(cdev, vport_id, rate);
+> -- 
+> 2.25.1
+> 
 
-This patch has been locally tested by adding monitor with rssi via
-btmgmt on a kernel 6.1 machine.
+There is also potential NULL pointer dereference in:
+qed_iov_handle_trust_change()
+Should be:
+if (!vf || !vf->vf->vport_instance)
 
-Reviewed-by: Archie Pusaka <apusaka@chromium.org>
-Fixes: b338d91703fa ("Bluetooth: Implement support for Mesh")
-Signed-off-by: Howard Chung <howardchung@google.com>
----
+I think it can be a part of this fix.
 
-Changes in v3:
-- Moved commit-notes to commit message
-- Fixed a typo
-
-Changes in v2:
-- Fixed git user name
-- Included commit notes for the test step.
-
- net/bluetooth/mgmt.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index 39589f864ea7..249dc6777fb4 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -9357,7 +9357,8 @@ static const struct hci_mgmt_handler mgmt_handlers[] = {
- 	{ add_ext_adv_data,        MGMT_ADD_EXT_ADV_DATA_SIZE,
- 						HCI_MGMT_VAR_LEN },
- 	{ add_adv_patterns_monitor_rssi,
--				   MGMT_ADD_ADV_PATTERNS_MONITOR_RSSI_SIZE },
-+				   MGMT_ADD_ADV_PATTERNS_MONITOR_RSSI_SIZE,
-+						HCI_MGMT_VAR_LEN },
- 	{ set_mesh,                MGMT_SET_MESH_RECEIVER_SIZE,
- 						HCI_MGMT_VAR_LEN },
- 	{ mesh_features,           MGMT_MESH_READ_FEATURES_SIZE },
--- 
-2.40.0.rc2.332.ga46443480c-goog
-
+Thanks,
+Michal
