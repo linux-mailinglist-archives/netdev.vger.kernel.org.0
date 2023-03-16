@@ -2,81 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 972216BCBDA
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 11:03:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CF816BCBF2
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 11:05:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229532AbjCPKDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 06:03:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46376 "EHLO
+        id S230129AbjCPKF1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 06:05:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbjCPKDC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 06:03:02 -0400
-Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7E626C32;
-        Thu, 16 Mar 2023 03:03:00 -0700 (PDT)
-Received: from [192.168.0.2] (ip5f5aede0.dynamic.kabel-deutschland.de [95.90.237.224])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 83D1861CC40F9;
-        Thu, 16 Mar 2023 11:02:58 +0100 (CET)
-Message-ID: <4b7a52d4-8d89-76ea-62bc-3dfc5072a116@molgen.mpg.de>
-Date:   Thu, 16 Mar 2023 11:02:58 +0100
+        with ESMTP id S229727AbjCPKFZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 06:05:25 -0400
+X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 16 Mar 2023 03:05:15 PDT
+Received: from alln-iport-6.cisco.com (alln-iport-6.cisco.com [173.37.142.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 486A835A3
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 03:05:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=cisco.com; i=@cisco.com; l=1480; q=dns/txt; s=iport;
+  t=1678961115; x=1680170715;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=OVXQaSJYs4YrFkVhAm2aBqtWlRGSeNBSoPr3E/J8Wu8=;
+  b=bF+XYp2jp1wjUT+Musc8vFgW9WnNWNzix4eC0hKOgIksw8dbpbzLCwNR
+   gedfvKiSln7lqJFIrDYulRqJYPAk8mIQSwgXnWj1dhv17II4S1lmoy+bx
+   7pLDa//5gB8KPIjC1dzH/FTgOoUC6TQaV0KvbiuncOZa+MvdkTSJwZXr0
+   c=;
+X-IronPort-AV: E=Sophos;i="5.98,265,1673913600"; 
+   d="scan'208";a="80946565"
+Received: from alln-core-4.cisco.com ([173.36.13.137])
+  by alln-iport-6.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 16 Mar 2023 10:04:09 +0000
+Received: from sjc-ads-7158.cisco.com (sjc-ads-7158.cisco.com [10.30.217.233])
+        by alln-core-4.cisco.com (8.15.2/8.15.2) with ESMTPS id 32GA45lM002360
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Thu, 16 Mar 2023 10:04:08 GMT
+Received: by sjc-ads-7158.cisco.com (Postfix, from userid 1776881)
+        id C1D32CBEFAB; Thu, 16 Mar 2023 03:04:04 -0700 (PDT)
+From:   Bartosz Wawrzyniak <bwawrzyn@cisco.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, nicolas.ferre@microchip.com,
+        claudiu.beznea@microchip.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xe-linux-external@cisco.com, danielwa@cisco.com, olicht@cisco.com,
+        mawierzb@cisco.com, Bartosz Wawrzyniak <bwawrzyn@cisco.com>
+Subject: [PATCH] net: macb: Set MDIO clock divisor for pclk higher than 160MHz
+Date:   Thu, 16 Mar 2023 10:03:39 +0000
+Message-Id: <20230316100339.1302212-1-bwawrzyn@cisco.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v2] Bluetooth: mgmt: Fix MGMT add advmon with RSSI command
-Content-Language: en-US
-To:     Howard Chung <howardchung@google.com>
-Cc:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
-        chromeos-bluetooth-upstreaming@chromium.org,
-        Archie Pusaka <apusaka@chromium.org>,
-        Brian Gix <brian.gix@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20230316175301.v2.1.I9113bb4f444afc2c5cb19d1e96569e01ddbd8939@changeid>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <20230316175301.v2.1.I9113bb4f444afc2c5cb19d1e96569e01ddbd8939@changeid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Auto-Response-Suppress: DR, OOF, AutoReply
+X-Outbound-SMTP-Client: 10.30.217.233, sjc-ads-7158.cisco.com
+X-Outbound-Node: alln-core-4.cisco.com
+X-Spam-Status: No, score=-11.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIMWL_WL_MED,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        USER_IN_DEF_DKIM_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Yun-hao,
+Currently macb sets clock divisor for pclk up to 160 MHz.
+Function gem_mdc_clk_div was updated to enable divisor
+for higher values of pclk.
 
+Signed-off-by: Bartosz Wawrzyniak <bwawrzyn@cisco.com>
+---
+ drivers/net/ethernet/cadence/macb.h      | 2 ++
+ drivers/net/ethernet/cadence/macb_main.c | 6 +++++-
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
-Am 16.03.23 um 10:53 schrieb Howard Chung:
-> The MGMT command: MGMT_OP_ADD_ADV_PATTERNS_MONITOR_RSSI uses variable
-> length argumenent. This patch adds right the field.
+diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
+index 14dfec4db8f9..c1fc91c97cee 100644
+--- a/drivers/net/ethernet/cadence/macb.h
++++ b/drivers/net/ethernet/cadence/macb.h
+@@ -692,6 +692,8 @@
+ #define GEM_CLK_DIV48				3
+ #define GEM_CLK_DIV64				4
+ #define GEM_CLK_DIV96				5
++#define GEM_CLK_DIV128				6
++#define GEM_CLK_DIV224				7
+ 
+ /* Constants for MAN register */
+ #define MACB_MAN_C22_SOF			1
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 6e141a8bbf43..8708af6d25ed 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -2641,8 +2641,12 @@ static u32 gem_mdc_clk_div(struct macb *bp)
+ 		config = GEM_BF(CLK, GEM_CLK_DIV48);
+ 	else if (pclk_hz <= 160000000)
+ 		config = GEM_BF(CLK, GEM_CLK_DIV64);
+-	else
++	else if (pclk_hz <= 240000000)
+ 		config = GEM_BF(CLK, GEM_CLK_DIV96);
++	else if (pclk_hz <= 320000000)
++		config = GEM_BF(CLK, GEM_CLK_DIV128);
++	else
++		config = GEM_BF(CLK, GEM_CLK_DIV224);
+ 
+ 	return config;
+ }
+-- 
+2.33.0
 
-There is still the typo in argument.
-
-> Reviewed-by: Archie Pusaka <apusaka@chromium.org>
-> Fixes: b338d91703fa ("Bluetooth: Implement support for Mesh")
-> Signed-off-by: Howard Chung <howardchung@google.com>
-> ---
-> Hi upstream maintainers,
-> Host is not able to register advmon with rssi due to the bug.
-> This patch has been locally tested by adding monitor with rssi via
-> btmgmt on a kernel 6.1 machine.
-
-I would add that information to the commit message.
-
-[…]
-
-
-Kind regards,
-
-Paul
