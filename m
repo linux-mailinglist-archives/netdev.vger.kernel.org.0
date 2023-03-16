@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E31506BD4D6
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 17:13:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30A2A6BD4D9
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 17:14:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230027AbjCPQNm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 12:13:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58586 "EHLO
+        id S230152AbjCPQOE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 12:14:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230074AbjCPQNf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 12:13:35 -0400
+        with ESMTP id S230146AbjCPQNj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 12:13:39 -0400
 Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2043.outbound.protection.outlook.com [40.107.105.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C829193E9;
-        Thu, 16 Mar 2023 09:13:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3785D5156;
+        Thu, 16 Mar 2023 09:13:24 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kqM1tGdNICHJcAKGRNDPTWc0xvKYVSeqmGehrR1j+J1Oo5Ie01+52lWe91E5M6LsN0vJNPfLKHBYGwxebxz0aHY5Or0JUDjUcSCKItCwntzFnSjZVj7HnVYTstkZYqBJtFn4IRArkaPh/czb0IX2C6noGs1h0OZCdxw3dcIwD+EekT6H2vWR6044EPq3jh1YpEaLbZ9SI5vcFiBwHZYVpHyOE5UShe2CAVia+wOBBTbWiPYYSPPnNUpVeNrEMbrTTHfArsZnUaaJiwjchpKhfptU1bZCu1thWSVpw8t+zg8f2q7q2STXx7Vb9oqmmS7MOKZrzUNWsCs6XfJ4ibuSuw==
+ b=llu8J2tz7pTgkluYq7yPD2v8wf89byVUAUMtsGC8G0eqLJjevOFZaOGEuj2rG7KpD0MByhQVTsyoPMBGLflLkYK0vg6k/QgzwCWfXden7J6OHTcit6+R7r5+IHKGvkZwS0oYz68MlBPvolr3yiD7olC5ejG6u1SnTek6DGzY3ZBQ2ahGsYhMoQEL8uzGw+VyApnYbOx/vT9z1YyLxW2YnnSAiy8c53m3HQg0Bb47QpoccBHxeP1vNJaUqddJC0Jd3r81pwEsClvKswGY50WTyERppulpK6lQi081PEiZzhbeUhd4dnbaQdVjVpjWzMkGW1xoeqWfCxRv/VFUnwh+AA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=X7ea6CfsGQ/OH7qvt1ki+x2Pw6IMRsM8YUgJV8WsPcs=;
- b=ahg5WaFiqPMYaYiXR+LmW4HwqqfHij2bDECq+mqwZhGE6xmo8jumiiUOgGUhmxIZs8BRXD/8rMs6JERfYuBzfgkJLJ7Fpk0Nu4QzrY4rSX+uRmIBFk/TYfazN0ohpMzjJ7j1S8NMqC+65F9VtSEtyRznEutfy5LvAVgjkCknpPTr+I0/H1STjH02CqWNSsdlDRj8UC1qXzvEVIKoJh0ELU73qSrZ6tA40VKQG2zvUUmUyeE+0nLPHWh2BqHhABYQKswGxcfY7/W0n3lUOqxE4UquojRZw0E231GOiO8gUyWYimcC4uXhKl0oob5RJUCCZv6Dzs/Kg6Zxa+lmrYTdUA==
+ bh=Xt5bhDjpXQPCZ2eBjXwCkM9QdeQ8yMdKtr9qsQqOA9M=;
+ b=i7SaBDZHltP4SuELnmzGxi8VVvevSYMsvv+LCD31j8Mwva+qRAothacRGXJeD0Cco5A5E6oNHJzxGkUu3kuV5E2EPM9BJIsH8CtRcukl+w/7YniIWkT++RWPPYID5vVChCQAasiH6SVkYvP+CQsw2fBbl3f3AN53NikSAZUt1y+rqd941tNoJMaRBfny1LF7AvDXJAkXOS3Y5uCgmqO5nKuxASqLv+s/RuZgBnRZSy3iLD3fodohaKmYhB7mHKHAS/0F6DV8h0qkXw8ZqGrVwWS+A/6rZQZaoOk9fXvPYlK6Xvz3VV1gXfrcvyTRBPZyRYf3MCklOze7RWjNjtDxZQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=X7ea6CfsGQ/OH7qvt1ki+x2Pw6IMRsM8YUgJV8WsPcs=;
- b=Y6EwGFy1v3zHta4Wrs+PiwyRRkE/YSgxU4RWLJDxtXpcrwM8F/zu41WMAShMCCgaEWbiPoKdHkleqFmG8nV0D9CJyWtdbnfeulvpcgZdS998nMrgG26DMhOoZ+20Zi0ujlWUzJ0A/57xIQCXHNRaHjQejzMiQC7cGhneecQJ3xA=
+ bh=Xt5bhDjpXQPCZ2eBjXwCkM9QdeQ8yMdKtr9qsQqOA9M=;
+ b=NUD+X1MB9iDveT2DrYDxxqunmy/yqOIIoEmzbpgWJM+CiqNARvqIbBvDjXDUTplp95T8yAyFTTmHIZ76IenXYTZKafHzNGtnfFNDJalAyNHoePcTf8rwpOFzLcPN8g+hK6gIv2ZwEWS9uUq4DK/1nTONHc94ZeOLi4exaYaM/p0=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
  by AS8PR04MB7861.eurprd04.prod.outlook.com (2603:10a6:20b:2a9::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.30; Thu, 16 Mar
- 2023 16:13:12 +0000
+ 2023 16:13:13 +0000
 Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
  ([fe80::29a3:120c:7d42:3ca8]) by AM0PR04MB6452.eurprd04.prod.outlook.com
  ([fe80::29a3:120c:7d42:3ca8%7]) with mapi id 15.20.6178.031; Thu, 16 Mar 2023
- 16:13:12 +0000
+ 16:13:13 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -54,9 +54,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Marek Vasut <marex@denx.de>,
         Oleksij Rempel <linux@rempel-privat.de>,
         linux-kernel@vger.kernel.org
-Subject: [RFC/RFT PATCH net-next 3/4] net: dsa: microchip: allow setting xMII port speed/duplex on KSZ8765/KSZ8794/KSZ8795
-Date:   Thu, 16 Mar 2023 18:12:49 +0200
-Message-Id: <20230316161250.3286055-4-vladimir.oltean@nxp.com>
+Subject: [RFC/RFT PATCH net-next 4/4] net: dsa: microchip: remove unused dev->dev_ops->phylink_mac_config()
+Date:   Thu, 16 Mar 2023 18:12:50 +0200
+Message-Id: <20230316161250.3286055-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230316161250.3286055-1-vladimir.oltean@nxp.com>
 References: <20230316161250.3286055-1-vladimir.oltean@nxp.com>
@@ -68,51 +68,51 @@ X-ClientProxiedBy: AM3PR05CA0088.eurprd05.prod.outlook.com
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|AS8PR04MB7861:EE_
-X-MS-Office365-Filtering-Correlation-Id: ca862501-7e73-4fbf-4e30-08db26395718
+X-MS-Office365-Filtering-Correlation-Id: 5f49b10f-d3bb-443b-ce61-08db263957bc
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 12vWWdCxqDuQMGID0tXEUuP2eOzk01Ty6zGRCdId68LFIRVfk3TIdYGtzckPKQsAu8foNIVJ2saMYc+sHDeE/w+kREL2edKUDYLxQZhy7W+hPhtMQXtCkuMj1aYa6rW8UC8NIL/V0BJe+a3YGMR2phzoOxC6/xsnXgRTZcgrlHLCq6kGARouz8yQRAM9VRU6gPANLtkhmGzOiaE9rJKKMmP/nzBwFL5ueBwugW7aA+uFMN8l9C8P5GFewLUHZdCVA6j7jCSRec4cQtBz4tUP/p8O5kJDkTkMi3bF/0Ai1q5kJhICNEXRzdHqHgV0u2xatnb8c+ne4Be9SA/OCfx04ZIGcoSr7yAzNi8+t5GLwqs7U5XI+rJuWEfgaVZ3dsGHYUtF0s0uvn/0CWaPUmfwLuab/Nq3U+1+rJUYYTM2oTmbQllIrqKmzLa9G0t5QBzSh/3Ydj+EEKJjDmW11xRxEahkxlDvPrH8/DDflST4JOyapihCLTpj3tQT3pfDwoegrt//PPw0IsEfV9owCv+W6Ze0v3mUikyssVanMJ+I1CW9FvCDv0BXwb91/GdRW1gM8HzIGbdnz4JzziYz8lpcOgLCW9cQOqy4WUJeZSM8C9nhiijPh9pO2NGJRZo37usoq3D4D6JbrdFxyGy71V7XV8J+HuVXQExA1BiWcNWXa5G3pJtmeQBkkQCYUcsAjukqZAhITVLtobpLonsAZsKgdA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(346002)(39860400002)(366004)(396003)(136003)(451199018)(36756003)(86362001)(38350700002)(38100700002)(2906002)(5660300002)(41300700001)(8936002)(44832011)(7416002)(4326008)(6512007)(66476007)(1076003)(6506007)(26005)(186003)(2616005)(6666004)(83380400001)(316002)(54906003)(6916009)(8676002)(66946007)(6486002)(966005)(52116002)(478600001)(66556008)(309714004);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: lvnbyk8wy6U0gqIOw34yMF1p0iWLBe6C91B02yDtNeS5cKGzRJ2Filodpd6FQYDT2dh62kh6AprquA/nT6P+ghbWzWmqvfw7pytz87AmPTbJS0oxmylEPIOzvdTtVpI7UbmcdnzFGknefr2ZUUXwMYXFRzE/D1CoSlsOi2GFCP4U8uqBkrPGwx+r7vRU3LxJwvCWKh7BSY+/mE+kJWgoLhcDE8Nh4egq+pLXs66NjRwSD/Zde3AwL9eKTC+mxgVGbxNfCZM1pj6yByE3EgQ8IvwJMCBKCNDXRbTKBoT6FGwK4N1MVdJww63tRqcgRiOSKn1Ih1VngBVFyCI1Qr1tRZ6dUdtY56ykA/Wp7P7QcHEkS3GAGfjlx66rifzSCSSnaQXDp6m4aP2D4HI1zTz68Khn4bsDQATJOBrl3vbFZlfS2GPQnYNCURzpsE9IR2v/9+KmJJ2OJhzD385CDhQSn5/R6+27f6ZUPE1fnnGAHc0qNqFKBjqXyCoa1ZwEzVOgxw67GpJadYoAT/nLDItUEv3IHGgU2TxNdcXxYq9xZdfVlmcT12HmGnmwOS17MN7tY/p7zMCx6SCUpffK5Eo037CwqbRyv5yhvIgE+39VyVhY86DMlECPo3nmvGJCTarDhVzhY0lLigk0h0QxBAKQ/j7aOwnOSehb+3AfYnIkK9SwuEUMK6jxRHOi+iP0zZ90dx3Pi0IU0tmh2dBQ6sxJRg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(346002)(39860400002)(366004)(396003)(136003)(451199018)(36756003)(86362001)(38350700002)(38100700002)(2906002)(5660300002)(41300700001)(8936002)(44832011)(7416002)(4326008)(6512007)(66476007)(1076003)(6506007)(26005)(186003)(2616005)(6666004)(83380400001)(316002)(54906003)(6916009)(8676002)(66946007)(6486002)(52116002)(478600001)(66556008);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?WRuuwQnUHoAAydh8zfJE81rEA5Z0mutCr+wn0gCr0AePKmPESCJQ8ThWgv+z?=
- =?us-ascii?Q?eOeuUGmvmOFmEk5eKyOwXtcRifABx0eFWAr9ADSkLhDl5SzyEgxLjEOEXIgo?=
- =?us-ascii?Q?GuXJuySGCYBI13v6CKaIXQRDCBPVNDbbjrb1U9RPRjovYckIvW8E8gJyLziY?=
- =?us-ascii?Q?offrSpl1urj6HWMmgxEYL/4FGRMXU5f9mQajp8+r5ZZfbUr7gnNB+FVqX/Re?=
- =?us-ascii?Q?mqvxKz8iKain9VkhqJF9w5R8VTNXgfErSlQibAjRPfHk9Ayfj1oZNC1qracd?=
- =?us-ascii?Q?KLUQ9w3Hrv4KgQWiQBF8y0WWH1vUkt45zZKjfmnkYscL4IFvSFrdSP6R5FqS?=
- =?us-ascii?Q?rY5Gt5yN3M/hmvfv0JsDMNT1dmx+GnGZ4HUVO1tcE3+C6SuAMYYW0Ug0fN3i?=
- =?us-ascii?Q?eCVEooxkkW1mxZrrbxc3lqLeZWQMzge5+H6RTl4KOT3b4t7aKcm5DuTTzPjc?=
- =?us-ascii?Q?ttPkj1dDXYBgZc6I+o7NaQZ9ISx1fFiSkxM8KXgc9zhir35qeSHIzncXNVZ6?=
- =?us-ascii?Q?oCpUK978suI3R2ijCOIXXEpRJeXWM1LDIQOOzlQo1+TWC+J67Y7Wm8q2MStq?=
- =?us-ascii?Q?LOT8tEIsM3kjnWijko8NaEJlFjPGjjel/XxJyAj6T9jXmKMhQf6mSJ1B4gwa?=
- =?us-ascii?Q?39K2sHG6oSMzKYXJW7DMfyZpKA2sUnNUsw+ZnyF37/Rx7eRHZkXKkY4eGRpj?=
- =?us-ascii?Q?hxS0W2t3vcb2eZzJXqR6QmCxwCJpUMDvNX/k6F0EWvW/DX+lGqurxK0E4Ir4?=
- =?us-ascii?Q?49OLuWx2UZ+kyanX7dHjPQdKTk5y3hysK+vkA8QT6rugnSz4BO7/yCVjwqW1?=
- =?us-ascii?Q?XzZ7c/Z1hoUu0vWwnFfmgAkur1mwcGV0YwCRKAKk9AQo35II8cauM65q/D7w?=
- =?us-ascii?Q?Vg8TkTiu6CmLb7yXHWpT6fYBUr/+33Q5s25pSk7S/UClOU4SdHohk4aPLfN0?=
- =?us-ascii?Q?R/XDlbrqSx2di+dYsffyMO+v/T5c+7OBZTu0OHzcboPK13nweuu7in/q5g2t?=
- =?us-ascii?Q?aNMYHSO0R8EY2v5ZxTSR6/T4UQOHS5B3Aa9EMVb0DYk9aIbhzRMrIYDzAPiG?=
- =?us-ascii?Q?sHw/gDk4XyQOHWA2zex+0u3ukOWGwagW7MTgovv/dtz5ogeEb9qn+qqWRsIT?=
- =?us-ascii?Q?snPDdDVwG13dg8jSNZaX+48zM6sRK9+Lx+QkaQYKmOyX4l+hSDRYfa+SZmex?=
- =?us-ascii?Q?PLtc0+OI9cVd7p2wycipEAPulo0t9+szSoUcE1SFuohB7zZgKFyC/es/giOf?=
- =?us-ascii?Q?LFBnm4JxaGgpCK4RBmKoT24JFRjAPgu7bqfYDRx+O4pXmL/uRRv581aT6/gq?=
- =?us-ascii?Q?5BVtapqnHMVV/h8Pa/Q4h+XKh3e70aloMQQRn36utRKxzyGt6K+hvzn6EVJW?=
- =?us-ascii?Q?7FTRz9mPFEQ9WmEmvNw9GR3RkAutGopZyWkExhWs2I5jc0W0hyLDk94218F6?=
- =?us-ascii?Q?vZ6SXiiMgoksQt/DyR3t/Jj9qBNGxVYLah45cwAAHcJR2kLBNxPhBTdK6BxD?=
- =?us-ascii?Q?Jold3NSvgqd/FuIvxRImO/SkfVPLF4I/Y60/hhpLqtVC3JNIbjrveR7Q9Pj5?=
- =?us-ascii?Q?WaLAso1ouXjuDDs8YZCuaKqIn/9bWOHsh4N77DLHafJ+ix/NqlksuEh7nDCy?=
- =?us-ascii?Q?yQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ATR4oZk6fD+6PhcFkF8ux6UJtn1n94tgPxFV9NFmzJk/UIDHwMi4VzBhzMNQ?=
+ =?us-ascii?Q?f0iaS4Xe0vmIthvsouvxWpem75q/z00U9ASafFQAwmA8yf6sKBFZ+5LzZ/Vx?=
+ =?us-ascii?Q?2Ot2KKWb54nhUyDm0luuKJanRAXjTMxIAKs0uhhOM2ECjy60E/VpUmAUOK2T?=
+ =?us-ascii?Q?p133cheLyT7b6LdGncQPok5DuDt4p3QWr/rHP3CIgQrZWoY5ZliZiPKZPLVR?=
+ =?us-ascii?Q?XpO1u8WZQqhDCuROx037/mBRz3EAoYHA4sOfoBeRfUOS0DoEPqW/9m/vd+ua?=
+ =?us-ascii?Q?ftzTwychwF1kFnx2SdcK+A1biTrGLlctZdjZu2ZhdlRCm+bglnuExFooiEqO?=
+ =?us-ascii?Q?1ruYTCLoj0J+szRZ3smA1pfuKw7b8QGj3W6bZnWUbLxT5p/9RKfw1UGj40N/?=
+ =?us-ascii?Q?Qgg9u48t2QxQO74SrWGqnyGsvVj7/Fezs6xHQ50HKaQqwIvss6VWmaR7lIkv?=
+ =?us-ascii?Q?QCGDdEstVvOlUNM6hU36MbAfcfVLj5GQqtKjKQpTKCioV8CkudTomRLiCPVu?=
+ =?us-ascii?Q?ExrFVULfbk1uRJT9UD8coWGskmn9sisz6l50DxdV/c3kgI9ymnR1kmuQlIqh?=
+ =?us-ascii?Q?VlF/T1VfmVOZByvO41t76gK8fK3Mb0xD5fvWyFUbQ6clktWplDpuCBm4c1ee?=
+ =?us-ascii?Q?FQ4VJCeQVsS/rOjaOF+w314jt0Ob/O4lhdYmnldBHdAG5vgDzp0Vko//3cBz?=
+ =?us-ascii?Q?y+A2M0q/vJj1lduDVVf3GfYn1F93cWIavebUvat5Zl7FT31PXbAzXM7hvp05?=
+ =?us-ascii?Q?wkk4rtkeSvrlJKoslB3NQDt6XkbdBKChIc2GlHxld7WuUUCyNMC+af17Vh8r?=
+ =?us-ascii?Q?sxF7pdMViw198sYWgc6rkG7oXsCXwYZJ6zP/9NMph/dDZrKyvAaTYld/JYwC?=
+ =?us-ascii?Q?9uIP1CsXqdIqKnD/6Kd4j4Rt64Zmzma2+SyqGpEqlrzPrjTxx1aUCLVZPrHk?=
+ =?us-ascii?Q?TqGdctNjEyadeE08HmNgD+FdKiAam1dsPhb0mgYOUhvVM6GpyeXiKhfw6Eo3?=
+ =?us-ascii?Q?e8FeDW9hiGfS5As37pSF345trVMCJ9vlfMnSGuTIHAcd0KCJtJ5/PPZgnp/E?=
+ =?us-ascii?Q?dmFYXDLdvpz6NJ98ZIUjebTKxzDs3ExVWAE20lj5lm6Z1bFnvjfjxRbS8Z5s?=
+ =?us-ascii?Q?4vrkRvTuzcYO0aExwcPpt7cz1KrfrTr75/rd/NnOO69Q3AnhCIVrpvZGYW8p?=
+ =?us-ascii?Q?oQXMWTYobpG7+umMykVEv6lXHOcmiCZbQbyY1sBwBIqC1CPjBlIcVyskroVI?=
+ =?us-ascii?Q?WKVGeXacKndf5jZK4EcohJz+uC7TkfnsCCnUd5mjed/9ZK34M8HM6VlvkZ1k?=
+ =?us-ascii?Q?XOJz28guFxEnnjpu+eT3dnrETddzJpjvocAsNOvadcwZGPJ6YOyRSvM787Y1?=
+ =?us-ascii?Q?1Sy5IB+C/Z99FbRkbui2mGzXEq2MraNcekO+ItbGQ8zzNjj63YuwugzHSdCs?=
+ =?us-ascii?Q?e6AXc6d2g4FOAGBmC5Ix1TVkGUymqJacEMnkpzpYCHj852u008bp3Z4hSbsV?=
+ =?us-ascii?Q?Js5qbLThr3F/LMW01BdCQz56SOGjKyJZIO9QLeX5K/EF3r1yxlR17Yr+1aBU?=
+ =?us-ascii?Q?U4g/2P+7EHQu2v+2oNwkmJfYH0Waji7PFQ9ZERGNareBW0tAHjgm1cHRbwgl?=
+ =?us-ascii?Q?JA=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ca862501-7e73-4fbf-4e30-08db26395718
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5f49b10f-d3bb-443b-ce61-08db263957bc
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2023 16:13:12.0977
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2023 16:13:13.5039
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: mVFZmwciQ4o2JXmrtDcdS5Oy7eKxprNKb13c5fMmO6Frm2ItxaGIjVtd20xANVswRyk8Y4MzBNJDjmUmO/4BLw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: M4QhIrUYIBErMVLtGK4r1PzZ6ENYy+mrWZGyExfR4/ziOZhnhshX7ju29zcXe6DCAeiJCbtqVmEH3VEUqeunpA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7861
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -124,159 +124,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Prior to commit c476bede4b0f ("net: dsa: microchip: ksz8795: use common
-xmii function"), the logic from ksz8795_cpu_interface_select() used to
-modify the following fields in REG_PORT_5_CTRL_6, based on the phy-mode
-of the CPU port:
-- PORT_INTERFACE_TYPE (now P_MII_SEL_M)
-- PORT_GMII_1GPS_MODE (now P_GMII_1GBIT_M)
-- PORT_RGMII_ID_IN_ENABLE (now P_RGMII_ID_IG_ENABLE)
-- PORT_RGMII_ID_OUT_ENABLE (now P_RGMII_ID_EG_ENABLE)
-
-That logic was replaced to a call with ksz_set_xmii(), which only
-touches 3 of those 4 fields. It does not touch PORT_GMII_1GPS_MODE
-(now P_GMII_1GBIT_M, or RF_GMII_1GBIT, in its reg_fields form).
-That is handled by ksz_set_gbit(), which should have been called as
-well, for code-wise identical behavior.
-
-The driver has always written to PORT_GMII_1GPS_MODE to enable RGMII
-ports at their maximum speed, since the initial commit e66f840c08a2
-("net: dsa: ksz: Add Microchip KSZ8795 DSA driver"). Searching in the
-KSZ8975 documentation, I see that the Is_1Gbps field (what the driver
-calls P_GMII_1GBIT_M) is set to 1 by default, unless pin strapping via
-LED1_0 sets it to zero, case in which the RGMII speed is either 10 or
-100 Mbps - controlled via P_MII_100MBIT.
-
-I can only imagine this being a problem if there are boards where the
-pin strapping is wrong (asking for 100Mbps when the link was capable of
-gigabit), and the initial version of the driver was overwriting that.
-That may or may not be plausible. For example, this commit does indicate
-a (different, but still) incorrect pin strapping setting which does need
-to be fixed up by the Linux driver:
-https://patchwork.kernel.org/project/netdevbpf/patch/20230315231916.2998480-1-vladimir.oltean@nxp.com/
-
-In any case, it makes sense for Linux to configure the switch to match
-the device tree description, and that means calling the missing
-ksz_port_set_xmii_speed().
-
-The current position of the ksz_port_set_xmii_speed() call is from the
-ksz9477_phylink_mac_link_up() handler, but this is called for all
-dev_ops except for ksz8_dev_ops.
-
-Studyint ksz9477_phylink_mac_link_up() a bit, its contents seems to be
-more than useful, since it also calls ksz_duplex_flowctrl() and that is
-also something that KSZ8765 supports but doesn't call. It seems to be
-desirable to move the entirety of ksz9477_phylink_mac_link_up() into the
-common ksz_phylink_mac_link_up(), and remove the family-specific
-handling.
-
-The KSZ8830 switch is a bit special. It uses ksz8_dev_ops() (so it has
-skipped phylink_mac_link_up() so far), but it uses the ksz8863_regs[],
-which don't have P_GMII_1GBIT_M defined. This makes sense, since the
-KSZ8830 switch comes either in RMII or MII variants, both of which are
-fixed speeds (100Mbps). So we still need to skip phylink_mac_link_up()
-completely for these, and the test for ksz_is_ksz88x3(), which is also
-present in ksz_phylink_mac_config(), achieves that.
+The history is that Arun first added a phylink_mac_config()
+implementation for lan937x_dev_ops in commit a0cb1aa43825 ("net: dsa:
+microchip: lan937x: add phylink_mac_config support"), then in commit
+f3d890f5f90e ("net: dsa: microchip: add support for phylink mac
+config"), that implementation became common for all switches, but the
+dev_ops->phylink_mac_config() function pointer remained there, even
+though there is no switch-specific handling anymore.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/microchip/ksz_common.c | 38 ++++++--------------------
- drivers/net/dsa/microchip/ksz_common.h |  5 ----
- 2 files changed, 9 insertions(+), 34 deletions(-)
+ drivers/net/dsa/microchip/ksz_common.c | 3 ---
+ drivers/net/dsa/microchip/ksz_common.h | 3 ---
+ 2 files changed, 6 deletions(-)
 
 diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 5bcbea8d9151..9bc26c5da254 100644
+index 9bc26c5da254..421e1212b210 100644
 --- a/drivers/net/dsa/microchip/ksz_common.c
 +++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -216,13 +216,6 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
- 	.change_mtu = ksz8_change_mtu,
- };
+@@ -2894,9 +2894,6 @@ static void ksz_phylink_mac_config(struct dsa_switch *ds, int port,
  
--static void ksz9477_phylink_mac_link_up(struct ksz_device *dev, int port,
--					unsigned int mode,
--					phy_interface_t interface,
--					struct phy_device *phydev, int speed,
--					int duplex, bool tx_pause,
--					bool rx_pause);
+ 	ksz_set_xmii(dev, port, state->interface);
+ 
+-	if (dev->dev_ops->phylink_mac_config)
+-		dev->dev_ops->phylink_mac_config(dev, port, mode, state);
 -
- static const struct ksz_dev_ops ksz9477_dev_ops = {
- 	.setup = ksz9477_setup,
- 	.get_port_addr = ksz9477_get_port_addr,
-@@ -249,7 +242,6 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
- 	.mdb_add = ksz9477_mdb_add,
- 	.mdb_del = ksz9477_mdb_del,
- 	.change_mtu = ksz9477_change_mtu,
--	.phylink_mac_link_up = ksz9477_phylink_mac_link_up,
- 	.config_cpu_port = ksz9477_config_cpu_port,
- 	.tc_cbs_set_cinc = ksz9477_tc_cbs_set_cinc,
- 	.enable_stp_addr = ksz9477_enable_stp_addr,
-@@ -286,7 +278,6 @@ static const struct ksz_dev_ops lan937x_dev_ops = {
- 	.mdb_add = ksz9477_mdb_add,
- 	.mdb_del = ksz9477_mdb_del,
- 	.change_mtu = lan937x_change_mtu,
--	.phylink_mac_link_up = ksz9477_phylink_mac_link_up,
- 	.config_cpu_port = lan937x_config_cpu_port,
- 	.tc_cbs_set_cinc = lan937x_tc_cbs_set_cinc,
- 	.enable_stp_addr = ksz9477_enable_stp_addr,
-@@ -2983,15 +2974,18 @@ static void ksz_duplex_flowctrl(struct ksz_device *dev, int port, int duplex,
- 		ksz_regfields_write(dev, port, RF_MII_RX_FLOW_CTRL, !!rx_pause);
+ 	if (dev->dev_ops->setup_rgmii_delay)
+ 		dev->dev_ops->setup_rgmii_delay(dev, port);
  }
- 
--static void ksz9477_phylink_mac_link_up(struct ksz_device *dev, int port,
--					unsigned int mode,
--					phy_interface_t interface,
--					struct phy_device *phydev, int speed,
--					int duplex, bool tx_pause,
--					bool rx_pause)
-+static void ksz_phylink_mac_link_up(struct dsa_switch *ds, int port,
-+				    unsigned int mode,
-+				    phy_interface_t interface,
-+				    struct phy_device *phydev, int speed,
-+				    int duplex, bool tx_pause, bool rx_pause)
- {
-+	struct ksz_device *dev = ds->priv;
- 	struct ksz_port *p;
- 
-+	if (ksz_is_ksz88x3(dev))
-+		return;
-+
- 	p = &dev->ports[port];
- 
- 	/* Internal PHYs */
-@@ -3005,20 +2999,6 @@ static void ksz9477_phylink_mac_link_up(struct ksz_device *dev, int port,
- 	ksz_duplex_flowctrl(dev, port, duplex, tx_pause, rx_pause);
- }
- 
--static void ksz_phylink_mac_link_up(struct dsa_switch *ds, int port,
--				    unsigned int mode,
--				    phy_interface_t interface,
--				    struct phy_device *phydev, int speed,
--				    int duplex, bool tx_pause, bool rx_pause)
--{
--	struct ksz_device *dev = ds->priv;
--
--	if (dev->dev_ops->phylink_mac_link_up)
--		dev->dev_ops->phylink_mac_link_up(dev, port, mode, interface,
--						  phydev, speed, duplex,
--						  tx_pause, rx_pause);
--}
--
- static int ksz_switch_detect(struct ksz_device *dev)
- {
- 	u8 id1, id2, id4;
 diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index a92ebf5417b4..760e5f21faa1 100644
+index 760e5f21faa1..618154f3c894 100644
 --- a/drivers/net/dsa/microchip/ksz_common.h
 +++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -381,11 +381,6 @@ struct ksz_dev_ops {
- 	void (*phylink_mac_config)(struct ksz_device *dev, int port,
- 				   unsigned int mode,
- 				   const struct phylink_link_state *state);
--	void (*phylink_mac_link_up)(struct ksz_device *dev, int port,
--				    unsigned int mode,
--				    phy_interface_t interface,
--				    struct phy_device *phydev, int speed,
--				    int duplex, bool tx_pause, bool rx_pause);
+@@ -378,9 +378,6 @@ struct ksz_dev_ops {
+ 	int (*change_mtu)(struct ksz_device *dev, int port, int mtu);
+ 	void (*freeze_mib)(struct ksz_device *dev, int port, bool freeze);
+ 	void (*port_init_cnt)(struct ksz_device *dev, int port);
+-	void (*phylink_mac_config)(struct ksz_device *dev, int port,
+-				   unsigned int mode,
+-				   const struct phylink_link_state *state);
  	void (*setup_rgmii_delay)(struct ksz_device *dev, int port);
  	int (*tc_cbs_set_cinc)(struct ksz_device *dev, int port, u32 val);
  	void (*config_cpu_port)(struct dsa_switch *ds);
