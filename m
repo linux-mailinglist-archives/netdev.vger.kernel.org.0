@@ -2,120 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E18896BD614
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 17:43:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A82856BD628
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 17:45:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230388AbjCPQm6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 12:42:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33352 "EHLO
+        id S230500AbjCPQph (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 12:45:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbjCPQm5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 12:42:57 -0400
-Received: from proxima.lasnet.de (proxima.lasnet.de [78.47.171.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F445AE110;
-        Thu, 16 Mar 2023 09:42:24 -0700 (PDT)
-Received: from [192.168.2.51] (p5dd0da05.dip0.t-ipconnect.de [93.208.218.5])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id F18ECC03A4;
-        Thu, 16 Mar 2023 17:41:26 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1678984887;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dIoqtcJzu1esglgGJt69EUsY55OJna6FV1+aLxNNeak=;
-        b=Xbu11MtOA2RdwHy+5MUfW9qGDt+SjZDSB33nJ6y+zrFImNjUePKW2bWShVABm1CCT0Z39U
-        9fJVPfyMO0Fl9XlyC9iqyhlOeQNdPbY/pQlfriiwNJii/hMTEKmn0SF/75dCHSCf+gXuSq
-        LARKRPNMjQ18KUDfsUrvHY9EFpjbvq1ixMTxQE50ouvQg5BIFuGeY8iwxPsMhtve67ZqGo
-        Lt/ErkpkLWFJet3kfdvhbO6m34Qw0ASkH1hltKR7lPSraydiu+c/+8KU0zZzOxzAXW0O0G
-        cXrAMzT0uYWCKZcwhkHL0r3wmeNzs1T6uF8G8J1W77JQM57F1nUZN1KE6QQATQ==
-Message-ID: <996f0981-98f4-5077-12b6-bb093bbd28be@datenfreihafen.org>
-Date:   Thu, 16 Mar 2023 17:41:26 +0100
+        with ESMTP id S229690AbjCPQpg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 12:45:36 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B772364F;
+        Thu, 16 Mar 2023 09:45:23 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id o12so10052429edb.9;
+        Thu, 16 Mar 2023 09:45:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678985121;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=qk1KsGWLQztfODkdNA5CzyfHGVNa/z2WXDSLe6Kroh4=;
+        b=TPl+6VW4i1BEntBSGrmHQhuPkLML1xqbQGeMJKTVjspAc7xPiOba9iZZ6L1U/Io5Ww
+         WuBvjosXRcdiEPrST6aNoi7cK0u42OAGRO1n60HNQRKZwtIfRoNULJIMSBWBqjaj7imW
+         uzPjbsZr9+Sb941AuVsWSLHmrkY7a4L+uiQ+xfYKXtmQ7PkZ8fgFo6EC7APH0jWWxsuM
+         vR4+aZ/XJX+5sdpBmwZ+K7rmSzxMtRcMiL+5dNbGzyp9Ksh1nRqiPlRRTfWUbU3NKgO2
+         DZQef3frrc2GxXCeDZDJNRMTT6moJcZ7YKo1WRQEZ2l/FMn6zsITqqFb94Q5M/FgS0ro
+         BAbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678985121;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=qk1KsGWLQztfODkdNA5CzyfHGVNa/z2WXDSLe6Kroh4=;
+        b=E4mxZUa2H83ZR60xleeQKqBAw8zuigk95f3U5un1LJHogB7Eu3fLdwvS4buhLhT5rR
+         +W2tVYPdKlGj9f9LY7dzKJ0uckFgZwDJrbgUGbausb0nf53p5lGCNsND8pWRNCmKVesk
+         JEDlTTkof1aWwv2r0CjfruxoANAZyAP6V0TcRPmyyBtisY6fD84HgXhQcFcIlwsrGSil
+         Jh/pbfwWNriGyV1cy0kDdlOXv3NP7VHJFJ+I7ZcO45U1sX38u9tpSo2ySKr05DJjWaPS
+         bHr6xC30v+Q7nj0wdQwKPtw3Q8Vny+9dLX/PEAlx4GPepmJLhbXKAvJU9pPSAsmloWuf
+         x2wA==
+X-Gm-Message-State: AO0yUKV+zU8WsJ9P/gs+rsdFM8poPmUBMWAJwvndGlBdVu3aW34+ZPas
+        HT+994VUydRdI/3Zo+BeLDZDdSmjD/j5tzsQUiQ=
+X-Google-Smtp-Source: AK7set+n8BZhzkGD4ZyVPUj5SbSUpkrn7DsakOw8BaQfdZ36BLko2RCh5UwkfeOmpLxAd4+nOFvx4rrGkMvcRySKxx4=
+X-Received: by 2002:a17:907:36e:b0:877:747d:4a85 with SMTP id
+ rs14-20020a170907036e00b00877747d4a85mr5740162ejb.3.1678985121420; Thu, 16
+ Mar 2023 09:45:21 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v2 12/14] mac802154: Rename kfree_rcu() to
- kvfree_rcu_mightsleep()
-Content-Language: en-US
-To:     "Joel Fernandes (Google)" <joel@joelfernandes.org>,
-        Alexander Aring <alex.aring@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Girault <david.girault@qorvo.com>
-Cc:     "Paul E . McKenney" <paulmck@kernel.org>,
-        Alexander Aring <aahringo@redhat.com>,
-        linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230315181902.4177819-1-joel@joelfernandes.org>
- <20230315181902.4177819-12-joel@joelfernandes.org>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <20230315181902.4177819-12-joel@joelfernandes.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230315223607.50803-1-alexei.starovoitov@gmail.com>
+ <20230315223607.50803-2-alexei.starovoitov@gmail.com> <e3a68d87c4f7589ab19fe6ddf6b0341404108386.camel@gmail.com>
+In-Reply-To: <e3a68d87c4f7589ab19fe6ddf6b0341404108386.camel@gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 16 Mar 2023 09:45:10 -0700
+Message-ID: <CAADnVQL62Qr0ChNgOcs0o-pJ+x9HKx8R-TY321XaGqY=TSL2jQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/2] bpf: Allow ld_imm64 instruction to point to kfunc.
+To:     Eduard Zingerman <eddyz87@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@kernel.org>,
+        David Vernet <void@manifault.com>,
+        Dave Marchevsky <davemarchevsky@meta.com>,
+        Tejun Heo <tj@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
+On Thu, Mar 16, 2023 at 7:14=E2=80=AFAM Eduard Zingerman <eddyz87@gmail.com=
+> wrote:
+>
+> On Wed, 2023-03-15 at 15:36 -0700, Alexei Starovoitov wrote:
+> > From: Alexei Starovoitov <ast@kernel.org>
+> >
+> > Allow ld_imm64 insn with BPF_PSEUDO_BTF_ID to hold the address of kfunc=
+.
+> > PTR_MEM is already recognized for NULL-ness by is_branch_taken(),
+> > so unresolved kfuncs will be seen as zero.
+> > This allows BPF programs to detect at load time whether kfunc is presen=
+t
+> > in the kernel with bpf_kfunc_exists() macro.
+> >
+> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> > ---
+> >  kernel/bpf/verifier.c       | 7 +++++--
+> >  tools/lib/bpf/bpf_helpers.h | 3 +++
+> >  2 files changed, 8 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > index 60793f793ca6..4e49d34d8cd6 100644
+> > --- a/kernel/bpf/verifier.c
+> > +++ b/kernel/bpf/verifier.c
+> > @@ -15955,8 +15955,8 @@ static int check_pseudo_btf_id(struct bpf_verif=
+ier_env *env,
+> >               goto err_put;
+> >       }
+> >
+> > -     if (!btf_type_is_var(t)) {
+> > -             verbose(env, "pseudo btf_id %d in ldimm64 isn't KIND_VAR.=
+\n", id);
+> > +     if (!btf_type_is_var(t) && !btf_type_is_func(t)) {
+> > +             verbose(env, "pseudo btf_id %d in ldimm64 isn't KIND_VAR =
+or KIND_FUNC\n", id);
+> >               err =3D -EINVAL;
+> >               goto err_put;
+> >       }
+> > @@ -15990,6 +15990,9 @@ static int check_pseudo_btf_id(struct bpf_verif=
+ier_env *env,
+> >               aux->btf_var.reg_type =3D PTR_TO_BTF_ID | MEM_PERCPU;
+> >               aux->btf_var.btf =3D btf;
+> >               aux->btf_var.btf_id =3D type;
+> > +     } else if (!btf_type_is_func(t)) {
+> > +             aux->btf_var.reg_type =3D PTR_TO_MEM | MEM_RDONLY;
+> > +             aux->btf_var.mem_size =3D 0;
+>
+> This if statement has the following conditions in master:
+>
+>         if (percpu) {
+>         // ...
+>         } else if (!btf_type_is_struct(t)) {
+>         // ...
+>         } else {
+>         // ...
+>         }
+>
+> Conditions `!btf_type_is_func()` and `!btf_type_is_struct()` are
+> not mutually exclusive, thus adding `if (!btf_type_is_func())`
+> would match certain conditions that were previously matched by struct
+> case, wouldn't it? E.g. if type is `BTF_KIND_INT`?
 
-On 15.03.23 19:18, Joel Fernandes (Google) wrote:
-> The k[v]free_rcu() macro's single-argument form is deprecated.
-> Therefore switch to the new k[v]free_rcu_mightsleep() variant. The goal
-> is to avoid accidental use of the single-argument forms, which can
-> introduce functionality bugs in atomic contexts and latency bugs in
-> non-atomic contexts.
-> 
-> The callers are holding a mutex so the context allows blocking. Hence
-> using the API with a single argument will be fine, but use its new name.
-> 
-> There is no functionality change with this patch.
-> 
-> Fixes: 57588c71177f ("mac802154: Handle passive scanning")
-> Reviewed-by: Paul E. McKenney <paulmck@kernel.org>
-> Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
-> ---
->   net/mac802154/scan.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/mac802154/scan.c b/net/mac802154/scan.c
-> index 9b0933a185eb..5c191bedd72c 100644
-> --- a/net/mac802154/scan.c
-> +++ b/net/mac802154/scan.c
-> @@ -52,7 +52,7 @@ static int mac802154_scan_cleanup_locked(struct ieee802154_local *local,
->   	request = rcu_replace_pointer(local->scan_req, NULL, 1);
->   	if (!request)
->   		return 0;
-> -	kfree_rcu(request);
-> +	kvfree_rcu_mightsleep(request);
->   
->   	/* Advertize first, while we know the devices cannot be removed */
->   	if (aborted)
-> @@ -403,7 +403,7 @@ int mac802154_stop_beacons_locked(struct ieee802154_local *local,
->   	request = rcu_replace_pointer(local->beacon_req, NULL, 1);
->   	if (!request)
->   		return 0;
-> -	kfree_rcu(request);
-> +	kvfree_rcu_mightsleep(request);
->   
->   	nl802154_beaconing_done(wpan_dev);
->   
+ohh. good catch!
 
-I just saw that there is a v2 of this patch. My ACK still stands as for v1.
+> Although, I was not able to trigger it, as it seems that pahole only
+> encodes per-cpu vars in BTF.
 
+right. that's why we don't have selftests for this code
+that could have caught my braino.
 
-Acked-by: Stefan Schmidt <stefan@datenfreihafen.org>
-
-regards
-Stefan Schmidt
+There were patches to add vars to vmlinux btf, but it didn't materialize ye=
+t.
