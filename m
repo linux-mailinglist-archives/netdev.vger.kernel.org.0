@@ -2,110 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DA216BCCCB
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 11:30:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB1AF6BCCC9
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 11:30:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230313AbjCPKaL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 06:30:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35686 "EHLO
+        id S230137AbjCPKaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 06:30:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231352AbjCPKaF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 06:30:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CA605F23A
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 03:29:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678962558;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eHniKnjuIv8qJtG69clFog5rWe2dmSl9LERE5gvQS/o=;
-        b=fS8CAYzywBUTuTFiMlCfcuVHsxM5DBNHwFBqW0Qyr/7AiFjyzYCeaeLAL3R0T38z+suqQb
-        uPYH4LWrxiuxPRFncB2W7F0Wh7bmFjd6CdSC252qYCaVcj414ScmB14LmFi1cgkJEBFJZL
-        unUcFOcjDIC5WbAW5z2X1aov2AlrEQo=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-157-l6yvL3e8PbqdSbbvEt4TmQ-1; Thu, 16 Mar 2023 06:29:17 -0400
-X-MC-Unique: l6yvL3e8PbqdSbbvEt4TmQ-1
-Received: by mail-ed1-f72.google.com with SMTP id dn8-20020a05640222e800b004bd35dd76a9so2396868edb.13
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 03:29:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678962556;
-        h=content-transfer-encoding:mime-version:message-id:date:references
-         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=eHniKnjuIv8qJtG69clFog5rWe2dmSl9LERE5gvQS/o=;
-        b=XaFVRiJ0T2NwZGwdVdHk/wuZHJk9eck/lazTbR21glL4Q0N3RCKxuoYWZROUT7X0Ty
-         1ZenOB/ttR6lBAGFbbu0UQ7hfKIK0JRxJZ815CLzbHFydmU9jMuaI/SaslKzYjLJ8UrW
-         YPT+liVPww+Vbz8YBx1N42b+jZmaQ61xx1OTalmJNoKBMbsamlkzp6LL2vUG70L4eIhd
-         NdOcsWV1IZcnk5kyQrt9uXlo7knNivAdLFBXhf71MNK9v9VVnLYYN15nha27lYdEBgB4
-         a8FyMLsMjVa9dcsH7OKzRR0nfVuLIAHjLDuuKYWwZv8JyzBrLj02ayWSXOEyiN34WIzI
-         ylxA==
-X-Gm-Message-State: AO0yUKWq8xCUGra9MTpqe7YrFV9UIAeu3mJlzvDLmvXnSsvBltbnatYU
-        D5shUwB23v6AORZzdaYEUtAgGDPLq/CZ4/z89jhbQ/TAloTaJXjmKPIKXkZWapey5yoWzx6x/FS
-        cCzwHoatv0jJfLWA6
-X-Received: by 2002:a17:907:6746:b0:8a6:5720:9101 with SMTP id qm6-20020a170907674600b008a657209101mr9777674ejc.4.1678962556175;
-        Thu, 16 Mar 2023 03:29:16 -0700 (PDT)
-X-Google-Smtp-Source: AK7set+p6KWsDNnL9oBNL06Xru8BESWZajHVii0bIqIgJpn+AMSww8L7ff12HCderIUOI06gkYWMEg==
-X-Received: by 2002:a17:907:6746:b0:8a6:5720:9101 with SMTP id qm6-20020a170907674600b008a657209101mr9777652ejc.4.1678962555841;
-        Thu, 16 Mar 2023 03:29:15 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id lx20-20020a170906af1400b00930c6c01c9esm355771ejb.143.2023.03.16.03.29.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Mar 2023 03:29:15 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 5D3FC9E2F84; Thu, 16 Mar 2023 11:29:14 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, corbet@lwn.net,
-        linux-doc@vger.kernel.org
-Subject: Re: [PATCH net-next] docs: networking: document NAPI
-In-Reply-To: <20230315223044.471002-1-kuba@kernel.org>
-References: <20230315223044.471002-1-kuba@kernel.org>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 16 Mar 2023 11:29:14 +0100
-Message-ID: <87o7ot9eh1.fsf@toke.dk>
+        with ESMTP id S231310AbjCPK37 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 06:29:59 -0400
+X-Greylist: delayed 52879 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 16 Mar 2023 03:29:49 PDT
+Received: from forwardcorp1b.mail.yandex.net (forwardcorp1b.mail.yandex.net [IPv6:2a02:6b8:c02:900:1:45:d181:df01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CE911CBF9;
+        Thu, 16 Mar 2023 03:29:48 -0700 (PDT)
+Received: from mail-nwsmtp-smtp-corp-main-44.iva.yp-c.yandex.net (mail-nwsmtp-smtp-corp-main-44.iva.yp-c.yandex.net [IPv6:2a02:6b8:c0c:5398:0:640:443b:0])
+        by forwardcorp1b.mail.yandex.net (Yandex) with ESMTP id 70F355FC9C;
+        Thu, 16 Mar 2023 13:29:46 +0300 (MSK)
+Received: from d-tatianin-nix.yandex-team.ru (unknown [2a02:6b8:b081:b53b::1:d])
+        by mail-nwsmtp-smtp-corp-main-44.iva.yp-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id OTh0TA0hxGk0-rpgz28XH;
+        Thu, 16 Mar 2023 13:29:45 +0300
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
+        t=1678962585; bh=YSsSTmCAl0Avq9yZ876wK9u88LT7FmPh5ldlvefTzBc=;
+        h=Message-Id:Date:Cc:Subject:To:From;
+        b=SitDX3BapP0GEm3WMcsc5ae2KZijq5YVjSHC3jr7IiJvDD8AIs97Gq65BFB/UYgLf
+         fQpciIUezgZAd0f6fmUF9m/CHYkN3arRUDmGRXlWOOivMXCK7w0Ty0tLi+kR3yBTC8
+         RxiFlYchyYAVsF/NeqhVt/A0oOhOpX3alWd1Dngw=
+Authentication-Results: mail-nwsmtp-smtp-corp-main-44.iva.yp-c.yandex.net; dkim=pass header.i=@yandex-team.ru
+From:   Daniil Tatianin <d-tatianin@yandex-team.ru>
+To:     Ariel Elior <aelior@marvell.com>
+Cc:     Daniil Tatianin <d-tatianin@yandex-team.ru>,
+        Manish Chopra <manishc@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Yuval Mintz <Yuval.Mintz@qlogic.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] qed/qed_sriov: guard against NULL derefs from qed_iov_get_vf_info
+Date:   Thu, 16 Mar 2023 13:29:21 +0300
+Message-Id: <20230316102921.609266-1-d-tatianin@yandex-team.ru>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> writes:
+We have to make sure that the info returned by the helper is valid
+before using it.
 
-> Add basic documentation about NAPI. We can stop linking to the ancient
-> doc on the LF wiki.
->
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Found by Linux Verification Center (linuxtesting.org) with the SVACE
+static analysis tool.
 
-Looks good, just one nit:
+Fixes: f990c82c385b ("qed*: Add support for ndo_set_vf_trust")
+Fixes: 733def6a04bf ("qed*: IOV link control")
+Signed-off-by: Daniil Tatianin <d-tatianin@yandex-team.ru>
+---
+Changes since v1:
+- Add a vf check to qed_iov_handle_trust_change as well
+---
+ drivers/net/ethernet/qlogic/qed/qed_sriov.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-[...]
-
-> +Threaded NAPI
-> +-------------
-> +
-> +Use dedicated kernel threads rather than software IRQ context for NAPI
-> +processing. The configuration is per netdevice and will affect all
-> +NAPI instances of that device. Each NAPI instance will spawn a separate
-> +thread (called ``napi/${ifc-name}-${napi-id}``).
-
-This section starts a bit abruptly. Maybe start it with "Threaded NAPI
-is an operating mode that uses dedicated..." or something along those
-lines?
-
-Other than that:
-
-Reviewed-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_sriov.c b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
+index 2bf18748581d..fa167b1aa019 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_sriov.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
+@@ -4404,6 +4404,9 @@ qed_iov_configure_min_tx_rate(struct qed_dev *cdev, int vfid, u32 rate)
+ 	}
+ 
+ 	vf = qed_iov_get_vf_info(QED_LEADING_HWFN(cdev), (u16)vfid, true);
++	if (!vf)
++		return -EINVAL;
++
+ 	vport_id = vf->vport_id;
+ 
+ 	return qed_configure_vport_wfq(cdev, vport_id, rate);
+@@ -5152,7 +5155,7 @@ static void qed_iov_handle_trust_change(struct qed_hwfn *hwfn)
+ 
+ 		/* Validate that the VF has a configured vport */
+ 		vf = qed_iov_get_vf_info(hwfn, i, true);
+-		if (!vf->vport_instance)
++		if (!vf || !vf->vport_instance)
+ 			continue;
+ 
+ 		memset(&params, 0, sizeof(params));
+-- 
+2.25.1
 
