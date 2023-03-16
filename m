@@ -2,79 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 329E06BD0F2
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 14:36:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 880316BD0FB
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 14:39:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230365AbjCPNgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 09:36:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60018 "EHLO
+        id S230205AbjCPNjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 09:39:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbjCPNgH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 09:36:07 -0400
-Received: from hust.edu.cn (mail.hust.edu.cn [202.114.0.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C127A8EA37;
-        Thu, 16 Mar 2023 06:36:01 -0700 (PDT)
-Received: from localhost.localdomain ([172.16.0.254])
-        (user=dzm91@hust.edu.cn mech=LOGIN bits=0)
-        by mx1.hust.edu.cn  with ESMTP id 32GDZEVW013709-32GDZEVb013709
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Thu, 16 Mar 2023 21:35:22 +0800
-From:   Dongliang Mu <dzm91@hust.edu.cn>
-To:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229669AbjCPNjk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 09:39:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68FBBB9528;
+        Thu, 16 Mar 2023 06:39:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 26E81B82147;
+        Thu, 16 Mar 2023 13:39:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0669C433D2;
+        Thu, 16 Mar 2023 13:39:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678973976;
+        bh=sfBb0BwnrI83qHlxp6xUA/pGLholRdVIF2fJbDUvthw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=I3vzTE8r3bhNXg3OHpOLanHnyAyakHTUEmwROaXp9MMC25xFREuf7ZYWtec1enCFO
+         gGnCLG8mwErTI6NDqyyyCqqLwN8nhsBcxBTj71uVh1XvXcnc/xUjucqWFmqZKu9p2R
+         nZcR1LxxeAYwgfmzS6eDTg1Qw5DBQa6YPciyO0go5ol2Ox1O+XebyhgWlJgrV3WOnS
+         gdMpT7OnC6yd/6tf8WV/RoqWpkM00ZaCCDfoviZdUrqWwXlHS1mrTk+XQJqJcnnt+z
+         H77Fx1E5SS6koX/fzJ069TkjgOpehKarQUkjGwTkbwsxTl9nPLiVq6mWFQJxnEfO88
+         CXoa9JTDilPkw==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Dongliang Mu <dzm91@hust.edu.cn>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] wifi: ray_cs: add sanity check on local->sram/rmem/amem
-Date:   Thu, 16 Mar 2023 21:32:36 +0800
-Message-Id: <20230316133236.556198-3-dzm91@hust.edu.cn>
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Patrisious Haddad <phaddad@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH rdma-next v1 0/3] Handle FW failures to destroy QP/RQ objects
+Date:   Thu, 16 Mar 2023 15:39:25 +0200
+Message-Id: <cover.1678973858.git.leon@kernel.org>
 X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230316133236.556198-1-dzm91@hust.edu.cn>
-References: <20230316133236.556198-1-dzm91@hust.edu.cn>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-FEAS-AUTH-USER: dzm91@hust.edu.cn
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ray_config uses ray_release as its unified error handling function.
-However, it does not know if local->sram/rmem/amem succeeds or not.
+From: Leon Romanovsky <leonro@nvidia.com>
 
-Fix this by adding sanity check on local->sram/rmem/amem in the
-ray_relase.
+Changelog:
+v1: 
+ * Dropped EQ changes
+v0: https://lore.kernel.org/all/cover.1649139915.git.leonro@nvidia.com
+-----------------------------------------------------------------------
 
-Signed-off-by: Dongliang Mu <dzm91@hust.edu.cn>
----
- drivers/net/wireless/ray_cs.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+Hi,
 
-diff --git a/drivers/net/wireless/ray_cs.c b/drivers/net/wireless/ray_cs.c
-index ce7911137014..808b37352f39 100644
---- a/drivers/net/wireless/ray_cs.c
-+++ b/drivers/net/wireless/ray_cs.c
-@@ -732,9 +732,12 @@ static void ray_release(struct pcmcia_device *link)
- 
- 	del_timer_sync(&local->timer);
- 
--	iounmap(local->sram);
--	iounmap(local->rmem);
--	iounmap(local->amem);
-+	if (local->sram)
-+		iounmap(local->sram);
-+	if (local->rmem)
-+		iounmap(local->rmem);
-+	if (local->amem)
-+		iounmap(local->amem);
- 	pcmcia_disable_device(link);
- 
- 	dev_dbg(&link->dev, "ray_release ending\n");
+This series from Patrisious extends mlx5 driver to convey FW failures
+back to the upper layers and allow retry to delete these hardware
+resources.
+
+Thanks
+
+Patrisious Haddad (3):
+  net/mlx5: Nullify qp->dbg pointer post destruction
+  RDMA/mlx5: Handling dct common resource destruction upon firmware
+    failure
+  RDMA/mlx5: Return the firmware result upon destroying QP/RQ
+
+ drivers/infiniband/hw/mlx5/qpc.c                  | 13 +++++++------
+ drivers/net/ethernet/mellanox/mlx5/core/debugfs.c |  6 +++---
+ 2 files changed, 10 insertions(+), 9 deletions(-)
+
 -- 
 2.39.2
 
