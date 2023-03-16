@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B61526BC4CB
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 04:38:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CB116BC4CC
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 04:38:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229636AbjCPDi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 23:38:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57540 "EHLO
+        id S229664AbjCPDif (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 23:38:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229631AbjCPDi1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 23:38:27 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AE4E67004
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 20:38:25 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id a2so387747plm.4
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 20:38:25 -0700 (PDT)
+        with ESMTP id S229648AbjCPDid (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 23:38:33 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6536231E
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 20:38:30 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id j3-20020a17090adc8300b0023d09aea4a6so3990434pjv.5
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 20:38:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678937904;
+        d=gmail.com; s=20210112; t=1678937909;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=zw+8WyoA7Q9L8lkiC93t2YOeIl7ECdg3SRa0159aYqM=;
-        b=IRsPdypc+yNvBQOzl+wDTOMQJmp1BaefLuPmr1+XtToyMPDKlJ31XR7Rkf2Qvm50LI
-         dwbXSubY+N9Vc+8CUSzIn37ApS8VGEwpeJhAYj6ht8bzHcKmFmgvZOx3a0TVl/3d0lXV
-         SY9aCXUr+6QN1tuI4Xz9+FFUBhhMj3ivwgdKgY0tnNcs0o7BA9EtQZjFgpNxK+i0Hz4u
-         URZCYLLP/zp7RiqAZjzHbxF/7FpmwRfrmcc/E+udS2sPGJPJy9p7SyEabMFR/nYzvR0z
-         DOqfFHaEGXBee7jMAVbZG0TuOn/dyDn5wH2xkVUGMJACPKII+0WdvJFOTYX3x3hzfwTO
-         Z8Pw==
+        bh=ZMiueAnQpy5LMepXCxRm56tvqfR5E+OiRXBDtmO6zrQ=;
+        b=DvyX/5sSjEEfISkfT2u7PKAoZ4XDvdmwufVijgVfzPdmH/M2CtUuSQUaCHGrr+iwRw
+         QznK0921cnb23oSXOAe26PKi2EeMZfkQYf65Iz2+wzwZe7lqu3uV0lISO0i2fpVk31Hh
+         KOHCEBwoK2Zqmkqm2dMfLC+GSKBDIqN6q9o33yKQRh+H63riX6VnyiUFikRpj2zc6m6v
+         8rzvZyU1k7IjrRPN0fXJ5+tuOQ4xDnhMjXW/tDg/In0HW9Wzf3fOw1Ykx6G7XW0uQUFe
+         E6fsPL1HeGjpvi3gqrJsxN7881yE4BnJhRUCFGteLIIAIr3hQzobsRajVdodD0Is+Bt7
+         qW+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678937904;
+        d=1e100.net; s=20210112; t=1678937909;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=zw+8WyoA7Q9L8lkiC93t2YOeIl7ECdg3SRa0159aYqM=;
-        b=EcqMP4iTevdh8i2wYHz34lRFu7be9McsbWggofUHmLAtkyvcoHuh7pX9s1ojo8vB1Q
-         tb7b0w/ETp22w5ZK7obtVlZBTmX6vpqrMt5W1uoaelMejyEVWo5bmwirwq9Jgk0z28z5
-         JxDvnLXrBjJmj3u9Czxui0yDS/TskMK6IIQvCu6ECUIWJbBAAVPhJKUycfSPTTJbX88Q
-         fsjOdagvhxr/M5vMxzZcL8ApYrMFAxVJWp9cANFNMhg6QaKcVBgWbhZF2K/pMc4Q11+4
-         MyvVs5GGxgGa9G/XdYp6BcY8kawdQp8+5NAVjJLmIfnKj/S+RwfmSSjLs9bxsTLHoiY3
-         J2Aw==
-X-Gm-Message-State: AO0yUKVtGgBd1KS8fJXKJMGrbKhbP5R+VBda410Ztb3+9CTIesjGZcN7
-        FVYlv810rdW5LcuFZAmSXIcu4TkaPDgYejtz
-X-Google-Smtp-Source: AK7set+9GiU9n3a/HA5B2Tpbp7pS5DTUidhKkly+bRdvYr9oFEF46sKmEVGOIqokpTtLphL0QRNpsg==
-X-Received: by 2002:a05:6a20:8e06:b0:d6:8c70:85ce with SMTP id y6-20020a056a208e0600b000d68c7085cemr2307372pzj.54.1678937903924;
-        Wed, 15 Mar 2023 20:38:23 -0700 (PDT)
+        bh=ZMiueAnQpy5LMepXCxRm56tvqfR5E+OiRXBDtmO6zrQ=;
+        b=GVhwq5WRDsEgsIWuFJcEsZjOEhTOTmFCMV3GwwKQ4bUam/Lr6oAD1kQ1IWHdAxobYn
+         n+O9rS+DDmc/+hHsOWSgaM52ugf8KWqE3t6hbLKPcj5sYSMh2nVpwihlpvuq1P+rTUiw
+         mT2bBg2yvXcWopgWF9nDBGuEC3TC2Su0NOwb73RCXa86Fg804AaJTiGthhOhpF7QJQfJ
+         R8+dx9d+MpAujhNSwr6OJbP7dbIt/1lVLYoAH0ySy/CP1i5gvANWKkb7TGB/xKcYtVG7
+         YeN3RlB8MkNLCZacDfWJLwUmNwmJH3PPIcJfZ5EDgsBJcuoML8q3IBW6Ka8Ag0Qtw6+g
+         9bzQ==
+X-Gm-Message-State: AO0yUKUIS1i6c0cD+vWRu9OCNLfRSyJDFxn1AVHbnjwHhK2UmVegkZqn
+        fJlGJ4VNrcscj1Ko8nWi4TtCpUPVypiucMnc
+X-Google-Smtp-Source: AK7set9OKAkrwYzMiEsNRXwioIPGzNzlrvhWB3FaVZy9RLUvqcJsVQX/Ugxr3rjKFNGbPNU+gzr2/g==
+X-Received: by 2002:a05:6a20:734e:b0:cc:9010:9ed with SMTP id v14-20020a056a20734e00b000cc901009edmr2676544pzc.31.1678937909144;
+        Wed, 15 Mar 2023 20:38:29 -0700 (PDT)
 Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id u23-20020aa78497000000b005a8b4dcd213sm4250009pfn.78.2023.03.15.20.38.18
+        by smtp.gmail.com with ESMTPSA id u23-20020aa78497000000b005a8b4dcd213sm4250009pfn.78.2023.03.15.20.38.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Mar 2023 20:38:23 -0700 (PDT)
+        Wed, 15 Mar 2023 20:38:28 -0700 (PDT)
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
@@ -65,9 +65,9 @@ Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
         Marcelo Leitner <mleitner@redhat.com>,
         Phil Sutter <psutter@redhat.com>,
         Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv2 net 1/2] Revert "net/sched: act_api: move TCA_EXT_WARN_MSG to the correct hierarchy"
-Date:   Thu, 16 Mar 2023 11:37:52 +0800
-Message-Id: <20230316033753.2320557-2-liuhangbin@gmail.com>
+Subject: [PATCHv2 net 2/2] net/sched: act_api: add specific EXT_WARN_MSG for tc action
+Date:   Thu, 16 Mar 2023 11:37:53 +0800
+Message-Id: <20230316033753.2320557-3-liuhangbin@gmail.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20230316033753.2320557-1-liuhangbin@gmail.com>
 References: <20230316033753.2320557-1-liuhangbin@gmail.com>
@@ -83,33 +83,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 923b2e30dc9cd05931da0f64e2e23d040865c035.
+In my previous commit 0349b8779cc9 ("sched: add new attr TCA_EXT_WARN_MSG
+to report tc extact message") I didn't notice the tc action use different
+enum with filter. So we can't use TCA_EXT_WARN_MSG directly for tc action.
+Let's add a TCA_ROOT_EXT_WARN_MSG for tc action specifically and put this
+param before going to the TCA_ACT_TAB nest.
 
-This is not a correct fix as TCA_EXT_WARN_MSG is not a hierarchy to
-TCA_ACT_TAB. I didn't notice the TC actions use different enum when adding
-TCA_EXT_WARN_MSG. To fix the difference I will add a new WARN enum in
-TCA_ROOT_MAX as Jamal suggested.
-
+Fixes: 0349b8779cc9 ("sched: add new attr TCA_EXT_WARN_MSG to report tc extact message")
 Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
- net/sched/act_api.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+v2: rename TCA_ACT_EXT_WARN_MSG to TCA_ROOT_EXT_WARN_MSG
+---
+ include/uapi/linux/rtnetlink.h | 1 +
+ net/sched/act_api.c            | 8 ++++----
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
+diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
+index 25a0af57dd5e..51c13cf9c5ae 100644
+--- a/include/uapi/linux/rtnetlink.h
++++ b/include/uapi/linux/rtnetlink.h
+@@ -789,6 +789,7 @@ enum {
+ 	TCA_ROOT_FLAGS,
+ 	TCA_ROOT_COUNT,
+ 	TCA_ROOT_TIME_DELTA, /* in msecs */
++	TCA_ROOT_EXT_WARN_MSG,
+ 	__TCA_ROOT_MAX,
+ #define	TCA_ROOT_MAX (__TCA_ROOT_MAX - 1)
+ };
 diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-index 34c508675041..fce522886099 100644
+index fce522886099..296fc1afedd8 100644
 --- a/net/sched/act_api.c
 +++ b/net/sched/act_api.c
-@@ -1596,12 +1596,12 @@ static int tca_get_fill(struct sk_buff *skb, struct tc_action *actions[],
- 	if (tcf_action_dump(skb, actions, bind, ref, false) < 0)
- 		goto out_nlmsg_trim;
+@@ -1589,6 +1589,10 @@ static int tca_get_fill(struct sk_buff *skb, struct tc_action *actions[],
+ 	t->tca__pad1 = 0;
+ 	t->tca__pad2 = 0;
  
-+	nla_nest_end(skb, nest);
++	if (extack && extack->_msg &&
++	    nla_put_string(skb, TCA_ROOT_EXT_WARN_MSG, extack->_msg))
++		goto out_nlmsg_trim;
 +
- 	if (extack && extack->_msg &&
- 	    nla_put_string(skb, TCA_EXT_WARN_MSG, extack->_msg))
+ 	nest = nla_nest_start_noflag(skb, TCA_ACT_TAB);
+ 	if (!nest)
  		goto out_nlmsg_trim;
+@@ -1598,10 +1602,6 @@ static int tca_get_fill(struct sk_buff *skb, struct tc_action *actions[],
  
--	nla_nest_end(skb, nest);
+ 	nla_nest_end(skb, nest);
+ 
+-	if (extack && extack->_msg &&
+-	    nla_put_string(skb, TCA_EXT_WARN_MSG, extack->_msg))
+-		goto out_nlmsg_trim;
 -
  	nlh->nlmsg_len = skb_tail_pointer(skb) - b;
  
