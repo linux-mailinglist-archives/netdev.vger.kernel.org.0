@@ -2,203 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ECBD6BC3DC
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 03:37:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A3B56BC3E2
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 03:39:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229726AbjCPChq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 22:37:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33108 "EHLO
+        id S229539AbjCPCja (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 22:39:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbjCPChp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 22:37:45 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E28FA7A96
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 19:37:44 -0700 (PDT)
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32G1mfLG026260
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 19:37:43 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=s2048-2021-q4;
- bh=Gnps8V1BFss1aNGWOStveVPW9JmoN/bLZz1eRN6EUrs=;
- b=MTSF3mlPn2lM3OcnCoHufqWhsgHgyVuu8GDiPjIODZEuZflPQNVa8KZYRIl4q7Ywg4Dn
- JeBhgo8Eg6sIk640k35qjettLOxIbKYLIto7dMMk1xf+zXc9VCOEvnJX5ie+T4ee4E6+
- fSolIOY6UkA2W4P+lzM0LZ5HaWB3QdxJAUZMuxdCX1YifYmWN2/UKJL+HHgK1YS0E9VJ
- eCwagI6yjZN95fYW0cNzATnSbrYcxCdCqR+7i5ozP340LJPnUuawuBN8RIkAxPOpVivB
- pJ+zUrg+gxI5rwEDVMJ/jaPL35Rgq7ViNMkmtihNsbCnj55OdIHYvYL8R0mOWD+NJruX wQ== 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3pbpw6120r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 19:37:43 -0700
-Received: from twshared24004.14.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.17; Wed, 15 Mar 2023 19:37:42 -0700
-Received: by devbig931.frc1.facebook.com (Postfix, from userid 460691)
-        id 4CA557700226; Wed, 15 Mar 2023 19:37:35 -0700 (PDT)
-From:   Kui-Feng Lee <kuifeng@meta.com>
-To:     <bpf@vger.kernel.org>, <ast@kernel.org>, <martin.lau@linux.dev>,
-        <song@kernel.org>, <kernel-team@meta.com>, <andrii@kernel.org>,
-        <sdf@google.com>
-CC:     Kui-Feng Lee <kuifeng@meta.com>, <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Subject: [PATCH bpf-next v7 2/8] net: Update an existing TCP congestion control algorithm.
-Date:   Wed, 15 Mar 2023 19:36:35 -0700
-Message-ID: <20230316023641.2092778-3-kuifeng@meta.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230316023641.2092778-1-kuifeng@meta.com>
-References: <20230316023641.2092778-1-kuifeng@meta.com>
+        with ESMTP id S229436AbjCPCj3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 22:39:29 -0400
+Received: from cstnet.cn (smtp80.cstnet.cn [159.226.251.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 77E4F29E08;
+        Wed, 15 Mar 2023 19:39:26 -0700 (PDT)
+Received: from localhost.localdomain (unknown [124.16.138.125])
+        by APP-01 (Coremail) with SMTP id qwCowABnbs5QgRJkx3ygEA--.6946S2;
+        Thu, 16 Mar 2023 10:39:12 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     sgoutham@marvell.com, gakula@marvell.com, sbhatta@marvell.com,
+        hkelam@marvell.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, richardcochran@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH] octeontx2-vf: Add missing free for alloc_percpu
+Date:   Thu, 16 Mar 2023 10:39:11 +0800
+Message-Id: <20230316023911.3615-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-GUID: QZZPrn5rz1E0oEPs81Vu5bwHlf-rwRhj
-X-Proofpoint-ORIG-GUID: QZZPrn5rz1E0oEPs81Vu5bwHlf-rwRhj
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-16_02,2023-03-15_01,2023-02-09_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: qwCowABnbs5QgRJkx3ygEA--.6946S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxJr4rZF43WFy5trWDZF4Utwb_yoW8XrWrpa
+        1xZFy7Ar45XFsxGwnrAFZ5GFWfGayjy3y8Kw1Ykw4avw4ftFyrZFyqkr48Cw18JrWkW3Zx
+        ta4Yv393WFn5J3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvE14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr
+        1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
+        7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r
+        1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02
+        628vn2kIc2xKxwCY02Avz4vE14v_Gr1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7
+        v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF
+        1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIx
+        AIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI
+        42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWI
+        evJa73UjIFyTuYvjfUO_MaUUUUU
+X-Originating-IP: [124.16.138.125]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This feature lets you immediately transition to another congestion
-control algorithm or implementation with the same name.  Once a name
-is updated, new connections will apply this new algorithm.
+Add the free_percpu for the allocated "vf->hw.lmt_info" in order to avoid
+memory leak, same as the "pf->hw.lmt_info" in
+`drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c`.
 
-The purpose is to update a customized algorithm implemented in BPF
-struct_ops with a new version on the flight.  The following is an
-example of using the userspace API implemented in later BPF patches.
-
-   link =3D bpf_map__attach_struct_ops(skel->maps.ca_update_1);
-   .......
-   err =3D bpf_link__update_map(link, skel->maps.ca_update_2);
-
-We first load and register an algorithm implemented in BPF struct_ops,
-then swap it out with a new one using the same name. After that, newly
-created connections will apply the updated algorithm, while older ones
-retain the previous version already applied.
-
-This patch also takes this chance to refactor the ca validation into
-the new tcp_validate_congestion_control() function.
-
-Cc: netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>
-Signed-off-by: Kui-Feng Lee <kuifeng@meta.com>
+Fixes: 5c0512072f65 ("octeontx2-pf: cn10k: Use runtime allocated LMTLINE region")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 ---
- include/net/tcp.h   |  3 +++
- net/ipv4/tcp_cong.c | 60 +++++++++++++++++++++++++++++++++++++++------
- 2 files changed, 56 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index db9f828e9d1e..2abb755e6a3a 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -1117,6 +1117,9 @@ struct tcp_congestion_ops {
-=20
- int tcp_register_congestion_control(struct tcp_congestion_ops *type);
- void tcp_unregister_congestion_control(struct tcp_congestion_ops *type);
-+int tcp_update_congestion_control(struct tcp_congestion_ops *type,
-+				  struct tcp_congestion_ops *old_type);
-+int tcp_validate_congestion_control(struct tcp_congestion_ops *ca);
-=20
- void tcp_assign_congestion_control(struct sock *sk);
- void tcp_init_congestion_control(struct sock *sk);
-diff --git a/net/ipv4/tcp_cong.c b/net/ipv4/tcp_cong.c
-index db8b4b488c31..c90791ae8389 100644
---- a/net/ipv4/tcp_cong.c
-+++ b/net/ipv4/tcp_cong.c
-@@ -75,14 +75,8 @@ struct tcp_congestion_ops *tcp_ca_find_key(u32 key)
- 	return NULL;
- }
-=20
--/*
-- * Attach new congestion control algorithm to the list
-- * of available options.
-- */
--int tcp_register_congestion_control(struct tcp_congestion_ops *ca)
-+int tcp_validate_congestion_control(struct tcp_congestion_ops *ca)
- {
--	int ret =3D 0;
--
- 	/* all algorithms must implement these */
- 	if (!ca->ssthresh || !ca->undo_cwnd ||
- 	    !(ca->cong_avoid || ca->cong_control)) {
-@@ -90,6 +84,20 @@ int tcp_register_congestion_control(struct tcp_congest=
-ion_ops *ca)
- 		return -EINVAL;
- 	}
-=20
-+	return 0;
-+}
-+
-+/* Attach new congestion control algorithm to the list
-+ * of available options.
-+ */
-+int tcp_register_congestion_control(struct tcp_congestion_ops *ca)
-+{
-+	int ret;
-+
-+	ret =3D tcp_validate_congestion_control(ca);
-+	if (ret)
-+		return ret;
-+
- 	ca->key =3D jhash(ca->name, sizeof(ca->name), strlen(ca->name));
-=20
- 	spin_lock(&tcp_cong_list_lock);
-@@ -130,6 +138,44 @@ void tcp_unregister_congestion_control(struct tcp_co=
-ngestion_ops *ca)
- }
- EXPORT_SYMBOL_GPL(tcp_unregister_congestion_control);
-=20
-+/* Replace a registered old ca with a new one.
-+ *
-+ * The new ca must have the same name as the old one, that has been
-+ * registered.
-+ */
-+int tcp_update_congestion_control(struct tcp_congestion_ops *ca, struct =
-tcp_congestion_ops *old_ca)
-+{
-+	struct tcp_congestion_ops *existing;
-+	int ret;
-+
-+	ret =3D tcp_validate_congestion_control(ca);
-+	if (ret)
-+		return ret;
-+
-+	ca->key =3D jhash(ca->name, sizeof(ca->name), strlen(ca->name));
-+
-+	spin_lock(&tcp_cong_list_lock);
-+	existing =3D tcp_ca_find_key(old_ca->key);
-+	if (ca->key =3D=3D TCP_CA_UNSPEC || !existing || strcmp(existing->name,=
- ca->name)) {
-+		pr_notice("%s not registered or non-unique key\n",
-+			  ca->name);
-+		ret =3D -EINVAL;
-+	} else if (existing !=3D old_ca) {
-+		pr_notice("invalid old congestion control algorithm to replace\n");
-+		ret =3D -EINVAL;
-+	} else {
-+		/* Add the new one before removing the old one to keep
-+		 * one implementation available all the time.
-+		 */
-+		list_add_tail_rcu(&ca->list, &tcp_cong_list);
-+		list_del_rcu(&existing->list);
-+		pr_debug("%s updated\n", ca->name);
-+	}
-+	spin_unlock(&tcp_cong_list_lock);
-+
-+	return ret;
-+}
-+
- u32 tcp_ca_get_key_by_name(struct net *net, const char *name, bool *ecn_=
-ca)
- {
- 	const struct tcp_congestion_ops *ca;
---=20
-2.34.1
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+index 7f8ffbf79cf7..9db2e2d218bb 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+@@ -709,6 +709,8 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ err_ptp_destroy:
+ 	otx2_ptp_destroy(vf);
+ err_detach_rsrc:
++	if (vf->hw.lmt_info)
++		free_percpu(vf->hw.lmt_info);
+ 	if (test_bit(CN10K_LMTST, &vf->hw.cap_flag))
+ 		qmem_free(vf->dev, vf->dync_lmt);
+ 	otx2_detach_resources(&vf->mbox);
+@@ -762,6 +764,8 @@ static void otx2vf_remove(struct pci_dev *pdev)
+ 	otx2_shutdown_tc(vf);
+ 	otx2vf_disable_mbox_intr(vf);
+ 	otx2_detach_resources(&vf->mbox);
++	if (vf->hw.lmt_info)
++		free_percpu(vf->hw.lmt_info);
+ 	if (test_bit(CN10K_LMTST, &vf->hw.cap_flag))
+ 		qmem_free(vf->dev, vf->dync_lmt);
+ 	otx2vf_vfaf_mbox_destroy(vf);
+-- 
+2.25.1
 
