@@ -2,153 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54F3D6BDA24
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 21:28:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F26CF6BDA2F
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 21:33:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230093AbjCPU24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 16:28:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33790 "EHLO
+        id S230187AbjCPUde (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 16:33:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229659AbjCPU2y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 16:28:54 -0400
-Received: from domac.alu.hr (domac.alu.unizg.hr [IPv6:2001:b68:2:2800::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B13F20555;
-        Thu, 16 Mar 2023 13:28:53 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by domac.alu.hr (Postfix) with ESMTP id DE37B60501;
-        Thu, 16 Mar 2023 21:28:49 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
-        t=1678998529; bh=ahEFVVhdg+LtRwVQf0dgtf/npUuwtlKdwtIwDCR5Vk4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=piIgxmLo2kvU5rj8gYAND6x2kY5XGbtyqGmDHTM5GtgNw+x8raHemruZDKJzDIOnW
-         UEBThEyq7YGgz2KDYVD54xzkga6jCsOW1+bfJkFIMzAyjQ0kxuJSeKppU3YP49/QfZ
-         S32juUZbrGfPcbsoz/94G9l4eayG+Nt5ckqPr0AqPDheytq/P/GlfT5AFQF1oiLCDN
-         PlsvIXML8gcLEK6bPxHJjs/tmumvD5yTKCAojzpNUYC4imZNCykbLLzJRyZxNse3hN
-         oC3cQeZLt+98jWxdyiKgn0TnOafGbaBrGvCRiru8z64jvXdNPTqa4b8Zwkkwgo7lsz
-         u/Pex60FJShWA==
-X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
-Received: from domac.alu.hr ([127.0.0.1])
-        by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id vZz56q_HW_Mx; Thu, 16 Mar 2023 21:28:47 +0100 (CET)
-Received: from [192.168.1.4] (unknown [77.237.109.125])
-        by domac.alu.hr (Postfix) with ESMTPSA id 1FAC1604FE;
-        Thu, 16 Mar 2023 21:28:47 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
-        t=1678998527; bh=ahEFVVhdg+LtRwVQf0dgtf/npUuwtlKdwtIwDCR5Vk4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Vh2RaTiy/ONE5mWyhcOgcEwqN0X0ftYO4JO192uRSIufRzw+Fv0BQlezVh/Iv0r+7
-         noEbpJCdfiwPELB8dCoOY5Z/v6mdiZO42/pzKLYeEL8KgoqWoqXU/jgvyREkEp6gel
-         AYwfz2nVT2N8pncqG6LFpkNfU1N3l+09gj3VnsOYVVKcy44r5Ym04hsoqV18wFZIBf
-         Jq7Xi19lQiQBcixslRY5NevCyryC1jjJeW/w5WuR9o1u1GCpQ6QwLsk1t4I5+GT2e1
-         mRm2am6qT6e2VZH7cM7UvwgADUVUnPVsWKkQq83JZ9tx3vtGiTfPajBbzkQaV0XF4s
-         N1LA/ijV2SJuA==
-Message-ID: <5260feaa-1b0d-b398-b648-b10263145751@alu.unizg.hr>
-Date:   Thu, 16 Mar 2023 21:28:46 +0100
+        with ESMTP id S230083AbjCPUdc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 16:33:32 -0400
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61C581BCE;
+        Thu, 16 Mar 2023 13:33:31 -0700 (PDT)
+Received: by mail-qv1-xf33.google.com with SMTP id x8so2080781qvr.9;
+        Thu, 16 Mar 2023 13:33:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678998810;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=rM0EAkK+6/Z7xETwhsA2NYPRZsQ9EnkWbH0Y0cmhj50=;
+        b=OQ/yAxQERJtglA2+oDVP5HgxwZiVdnUZAgC+ys7kij/zZB/h9lnq/YQMu7PfXkE2EX
+         LHubJRFtweOJV6Nqkbj96XtRbuebQrj0qpw/HIBc/0+r4SBZilqUR9mPXTtY1fnuABSl
+         7nD+VFhznjVEJydC9JRX8xJ/9d3HGEO7MyR1t7hVa6MeEVbwrRpWb4jIlRL7MFArAk5I
+         QqfgRnoejWjeY4mAaYIhkF6C4vKa0fd5Th/9PxFzHrftuuUjgZv5GGidxNA5g7zjb18p
+         dP2+XKP7Wq1p2EnT1uPLFEgFx0oRcraVtxQW/sLbBepPV8AwlLpx+pcrCt/KihjdKCgh
+         WtMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678998810;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=rM0EAkK+6/Z7xETwhsA2NYPRZsQ9EnkWbH0Y0cmhj50=;
+        b=mpt67nn2lFS7stamUw00bBTVnxbIA1ZIsPz3RXPpeXpwCDtipshJ43NnSE3pVP2H9l
+         fThNF/uy3cBQ+69NJ8pd6LybfPHVOClScSEeQl0xQ274UKtsiRK3QBNz0/La1j8ZyNk8
+         3Nz2BeNFCk5KcU8fNPnILrNpBrx6eKW1MzUopJe0lKy44bxxehnOh8Hvccpzc0JcmA/T
+         lmFtJActv3Jpmi4m8m2nKqqKBI4jV9y/MtnWJZ9O4R1LKoB2JaTmqjVQgLn95BwZ2+XJ
+         AwwMwDFQjTif9xaVOdg3OF5aToVn/4snS2tYa8Cikdj8rKAVkNn7OrXWiudzBfvPrN1v
+         81rA==
+X-Gm-Message-State: AO0yUKUPzY8HM0mbgTgcyDuUa8BntMBCs/+gvb9WYyggu2HfFu9zbm/n
+        tn68bKOP+OitOlEKAep+ASPqumfkQiw=
+X-Google-Smtp-Source: AK7set/q0VZYyLLg+NnyxMmqB8F03eFq6ljiqK/LUe98yJurxina7rciWpouU0yVLt7CxCJrithvJA==
+X-Received: by 2002:ad4:5fce:0:b0:579:5dbc:ab8b with SMTP id jq14-20020ad45fce000000b005795dbcab8bmr34418941qvb.52.1678998809801;
+        Thu, 16 Mar 2023 13:33:29 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id m124-20020a375882000000b0073b8745fd39sm213514qkb.110.2023.03.16.13.33.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Mar 2023 13:33:29 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net] net: phy: Ensure state transitions are processed from phy_stop()
+Date:   Thu, 16 Mar 2023 13:33:24 -0700
+Message-Id: <20230316203325.2026217-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: BUG: selftest/net/tun: Hang in unregister_netdevice
-To:     Eric Dumazet <edumazet@google.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, shuah@kernel.org
-References: <910f9616-fdcc-51bd-786d-8ecc9f4b5179@alu.unizg.hr>
- <20230315205639.38461-1-kuniyu@amazon.com>
- <CANn89iJDRG_CFWUz1GOSEi4YagCynZ-zhjq4POjbpyjkv9aawg@mail.gmail.com>
-Content-Language: en-US, hr
-From:   Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
-In-Reply-To: <CANn89iJDRG_CFWUz1GOSEi4YagCynZ-zhjq4POjbpyjkv9aawg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15. 03. 2023. 21:59, Eric Dumazet wrote:
-> On Wed, Mar 15, 2023 at 1:57 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
->>
->> However, we don't assume the delay and also the failure in
->> tun_set_real_num_queues().
->>
->> In this case, we have to re-initialise the queues without
->> touching kobjects.
->>
->> Eric,
->> Are you working on this?
->> If not, let me try fixing this :)
-> 
-> I am not working on this, please go ahead, thanks !
+In the phy_disconnect() -> phy_stop() path, we will be forcibly setting
+the PHY state machine to PHY_HALTED. This invalidates the old_state !=
+phydev->state condition in phy_state_machine() such that we will neither
+display the state change for debugging, nor will we invoke the
+link_change_notify() callback.
 
-Hi,
+Factor the code by introducing phy_process_state_change(), and ensure
+that we process the state change from phy_stop() as well.
 
-It's me again. I just have new findings.
+Fixes: 5c5f626bcace ("net: phy: improve handling link_change_notify callback")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/net/phy/phy.c | 23 ++++++++++++++++-------
+ 1 file changed, 16 insertions(+), 7 deletions(-)
 
-[root@pc-mtodorov linux_torvalds]# grep -E '(KOBJECT|TRACKER)' /boot/config-6.3.0-rc2-00006-gfc89d7fb499b 
-CONFIG_REF_TRACKER=y
-CONFIG_NET_DEV_REFCNT_TRACKER=y
-CONFIG_NET_NS_REFCNT_TRACKER=y
-CONFIG_DEBUG_KOBJECT=y
-# CONFIG_DEBUG_KOBJECT_RELEASE is not set
-# CONFIG_SAMPLE_KOBJECT is not set
-# CONFIG_TEST_REF_TRACKER is not set
-[root@pc-mtodorov linux_torvalds]# uname -rms
-Linux 6.3.0-rc2-00006-gfc89d7fb499b x86_64
-[root@pc-mtodorov linux_torvalds]# grep -E '(KOBJECT|TRACKER)' /boot/config-6.3.0-rc2-00006-gfc89d7fb499b 
-CONFIG_REF_TRACKER=y
-CONFIG_NET_DEV_REFCNT_TRACKER=y
-CONFIG_NET_NS_REFCNT_TRACKER=y
-CONFIG_DEBUG_KOBJECT=y
-# CONFIG_DEBUG_KOBJECT_RELEASE is not set
-# CONFIG_SAMPLE_KOBJECT is not set
-# CONFIG_TEST_REF_TRACKER is not set
-[root@pc-mtodorov linux_torvalds]# tools/testing/selftests/net/tun
-TAP version 13
-1..5
-# Starting 5 tests from 1 test cases.
-#  RUN           tun.delete_detach_close ...
-#            OK  tun.delete_detach_close
-ok 1 tun.delete_detach_close
-#  RUN           tun.detach_delete_close ...
-#            OK  tun.detach_delete_close
-ok 2 tun.detach_delete_close
-#  RUN           tun.detach_close_delete ...
-#            OK  tun.detach_close_delete
-ok 3 tun.detach_close_delete
-#  RUN           tun.reattach_delete_close ...
-#            OK  tun.reattach_delete_close
-ok 4 tun.reattach_delete_close
-#  RUN           tun.reattach_close_delete ...
-#            OK  tun.reattach_close_delete
-ok 5 tun.reattach_close_delete
-# PASSED: 5 / 5 tests passed.
-# Totals: pass:5 fail:0 xfail:0 xpass:0 skip:0 error:0
-[root@pc-mtodorov linux_torvalds]# 
-
-My interpretation if you allow it is that the bug search can be narrowed to the code
-that depends on CONFIG_DEBUG_KOBJECT_RELEASE=y.
-
-Best regards,
-Mirsad
-
-
-CONFIG_DEBUG_KOBJECT=y alone doesn't seem to be sufficient to trigger the reference leak.
-
-Hope this helps narrow down the search.
-
--- 
-Mirsad Goran Todorovac
-Sistem inženjer
-Grafički fakultet | Akademija likovnih umjetnosti
-Sveučilište u Zagrebu
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index b33e55a7364e..99a07eb54c44 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -57,6 +57,18 @@ static const char *phy_state_to_str(enum phy_state st)
+ 	return NULL;
+ }
  
-System engineer
-Faculty of Graphic Arts | Academy of Fine Arts
-University of Zagreb, Republic of Croatia
-The European Union
++static void phy_process_state_change(struct phy_device *phydev,
++				     enum phy_state old_state)
++{
++	if (old_state != phydev->state) {
++		phydev_dbg(phydev, "PHY state change %s -> %s\n",
++			   phy_state_to_str(old_state),
++			   phy_state_to_str(phydev->state));
++		if (phydev->drv && phydev->drv->link_change_notify)
++			phydev->drv->link_change_notify(phydev);
++	}
++}
++
+ static void phy_link_up(struct phy_device *phydev)
+ {
+ 	phydev->phy_link_change(phydev, true);
+@@ -1301,6 +1313,7 @@ EXPORT_SYMBOL(phy_free_interrupt);
+ void phy_stop(struct phy_device *phydev)
+ {
+ 	struct net_device *dev = phydev->attached_dev;
++	enum phy_state old_state;
+ 
+ 	if (!phy_is_started(phydev) && phydev->state != PHY_DOWN) {
+ 		WARN(1, "called from state %s\n",
+@@ -1309,6 +1322,7 @@ void phy_stop(struct phy_device *phydev)
+ 	}
+ 
+ 	mutex_lock(&phydev->lock);
++	old_state = phydev->state;
+ 
+ 	if (phydev->state == PHY_CABLETEST) {
+ 		phy_abort_cable_test(phydev);
+@@ -1319,6 +1333,7 @@ void phy_stop(struct phy_device *phydev)
+ 		sfp_upstream_stop(phydev->sfp_bus);
+ 
+ 	phydev->state = PHY_HALTED;
++	phy_process_state_change(phydev, old_state);
+ 
+ 	mutex_unlock(&phydev->lock);
+ 
+@@ -1436,13 +1451,7 @@ void phy_state_machine(struct work_struct *work)
+ 	if (err < 0)
+ 		phy_error(phydev);
+ 
+-	if (old_state != phydev->state) {
+-		phydev_dbg(phydev, "PHY state change %s -> %s\n",
+-			   phy_state_to_str(old_state),
+-			   phy_state_to_str(phydev->state));
+-		if (phydev->drv && phydev->drv->link_change_notify)
+-			phydev->drv->link_change_notify(phydev);
+-	}
++	phy_process_state_change(phydev, old_state);
+ 
+ 	/* Only re-schedule a PHY state machine change if we are polling the
+ 	 * PHY, if PHY_MAC_INTERRUPT is set, then we will be moving
+-- 
+2.34.1
 
