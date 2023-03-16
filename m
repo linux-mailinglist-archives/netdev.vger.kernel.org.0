@@ -2,132 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F31CE6BD459
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 16:51:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 848226BD468
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 16:55:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231486AbjCPPvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 11:51:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50280 "EHLO
+        id S230060AbjCPPy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 11:54:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231136AbjCPPvX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 11:51:23 -0400
-X-Greylist: delayed 577 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 16 Mar 2023 08:51:16 PDT
-Received: from mail.nic.cz (mail.nic.cz [IPv6:2001:1488:800:400::400])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA47CC08
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 08:51:16 -0700 (PDT)
-Received: from dellmb (unknown [IPv6:2001:1488:fffe:6:8747:7254:5571:3010])
-        by mail.nic.cz (Postfix) with ESMTPSA id E53D11C1839;
-        Thu, 16 Mar 2023 16:40:58 +0100 (CET)
-Authentication-Results: mail.nic.cz;
-        auth=pass smtp.auth=marek.behun@nic.cz smtp.mailfrom=marek.behun@nic.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1678981259; bh=kncHHyauBJ7Qnxb/5pc9tGIcbEAi9O9+VEh7KujNAi4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From:Reply-To:
-         Subject:To:Cc;
-        b=IgGiY90w8bBJeZXlWlm+iLqc66oBE4yBtr2azMeNTdlvxP/sNy0bwaGj6yNCJMaq2
-         HFoSsQXhZy066ewpSKf7xLZg72AnVjOSZtojyZcMMrNYNxV+LSQsyFPJDHrK4SQas3
-         EiHncl4/FLUksw0aIsZS2DaTORTfTmYVXIWrid5g=
-Date:   Thu, 16 Mar 2023 16:40:58 +0100
-From:   Marek =?UTF-8?B?QmVow7pu?= <marek.behun@nic.cz>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Etienne Champetier <champetier.etienne@gmail.com>
-Cc:     Tobias Waldekranz <tobias@waldekranz.com>,
-        Linux Netdev List <netdev@vger.kernel.org>
-Subject: Re: mv88e6xxx / MV88E6176 + VLAN-aware unusable in 5.15.98 (ok in
- 5.10.168) (resend)
-Message-ID: <20230316164058.4495cb40@dellmb>
-In-Reply-To: <20230315092340.oyclibi37q3fpsjq@skbuf>
-References: <cd306c78-14a6-bebb-e174-2917734b4799@gmail.com>
-        <20230313223049.sjlxagsmbpjwwyqj@skbuf>
-        <5b77c287-aad3-3bdb-8d7f-56d91ba1c282@gmail.com>
-        <20230315092340.oyclibi37q3fpsjq@skbuf>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.35; x86_64-pc-linux-gnu)
+        with ESMTP id S229541AbjCPPy5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 11:54:57 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B44840E3
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 08:54:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678982096; x=1710518096;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=y0qb4cvEOv8flplDdHm0wHFe5NkH8mJ1D26m/29QTq4=;
+  b=HrChGttD4DrO8Tgav8Lcz6pByiZLafVAHbYxIRqgABXwXIhLPwyMVnAW
+   TtCBDaBeP+4k8VYTjfwjrZqDM0J0Ho1V8cFYquAA/XxguEuC5WhPNoEkS
+   l2zabbyhIXstl1O81FxiYR53IKdZgZhNHE2AU8f3DMu1Ausb1Dhi6BrCW
+   6eY/u+aguFEWTzYi7a/hh25nTb4BqMmYmHso9bISbRHIat4gPyvHZd39F
+   oH67QU1AVdwyo8sLjEiXYuKtnx1ySpbaJR8aQdNbzXP9xRaKOyqsnKXOn
+   tPt4oriaxVmTX4CCug+w5gSnHowKcVMvbJ76LjKURPuAScD8tDAQJLEze
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10651"; a="340406417"
+X-IronPort-AV: E=Sophos;i="5.98,265,1673942400"; 
+   d="scan'208";a="340406417"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2023 08:54:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10651"; a="769010286"
+X-IronPort-AV: E=Sophos;i="5.98,265,1673942400"; 
+   d="scan'208";a="769010286"
+Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
+  by FMSMGA003.fm.intel.com with ESMTP; 16 Mar 2023 08:54:55 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, netdev@vger.kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, leonro@nvidia.com
+Subject: [PATCH net v2 0/3][pull request] Intel Wired LAN Driver Updates 2023-03-16 (iavf)
+Date:   Thu, 16 Mar 2023 08:53:13 -0700
+Message-Id: <20230316155316.1554931-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.103.7 at mail
-X-Virus-Status: Clean
-X-Rspamd-Server: mail
-X-Rspamd-Pre-Result: action=no action;
-        module=multimap;
-        Matched map: WHITELISTED_IP
-X-Rspamd-Queue-Id: E53D11C1839
-X-Spamd-Bar: /
-X-Spamd-Result: default: False [-0.10 / 20.00];
-        MIME_GOOD(-0.10)[text/plain];
-        ARC_NA(0.00)[];
-        FREEMAIL_TO(0.00)[nxp.com,gmail.com];
-        FROM_EQ_ENVFROM(0.00)[];
-        MIME_TRACE(0.00)[0:+];
-        TAGGED_RCPT(0.00)[];
-        FROM_HAS_DN(0.00)[];
-        FREEMAIL_ENVRCPT(0.00)[gmail.com];
-        WHITELISTED_IP(0.00)[2001:1488:fffe:6:8747:7254:5571:3010];
-        ASN(0.00)[asn:25192, ipnet:2001:1488::/32, country:CZ]
-X-Rspamd-Action: no action
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Mar 2023 11:23:40 +0200
-Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+This series contains updates to iavf driver only.
 
-> On Tue, Mar 14, 2023 at 10:35:25PM -0400, Etienne Champetier wrote:
-> > OpenWrt doesn't support Turris Mox, but here is what is built for Omnia as
-> > far as I understand
-> > 
-> > - Linux 5.15.98: https://github.com/openwrt/openwrt/blob/0aedf916df364771be47ffda8ff3465250ecee77/include/kernel-5.15
-> > 
-> > - some generic patches (backport-5.15 / pending-5.15 / hack-5.15): https://github.com/openwrt/openwrt/tree/0aedf916df364771be47ffda8ff3465250ecee77/target/linux/generic
-> > 
-> > - some arch specific patches: https://github.com/openwrt/openwrt/tree/0aedf916df364771be47ffda8ff3465250ecee77/target/linux/mvebu/patches-5.15
-> > 
-> > (not 100% sure in what order they are applied)
-> > 
-> > - config is generated by taking config-5.15 in generic, mvebu and
-> > mvebu/cortexa9 and somehow merging them
-> > 
-> > The wifi code (mac80211 / ath10k) uses kernel backports, so it's actually
-> > 6.1-rc8 based https://github.com/openwrt/openwrt/blob/0aedf916df364771be47ffda8ff3465250ecee77/package/kernel/mac80211/Makefile  
-> 
-> Yo, that's quite the patch count.
-> 
-> Would you mind putting for me all the patches that apply for your Omnia
-> build to a git branch that you share here? It's impossible to find the
-> needle in the haystack like this.
+Alex fixes incorrect check against Rx hash feature and corrects payload
+value for IPv6 UDP packet.
 
-Or maybe Etienne can try to reproduce the issue with upstream kernel?
-Building upstream kernel for Omnia and using it with OpenWRT / TurrisOS
-does work, I am doing it all the time. Just take /proc/config.gz, put
-it into .config of upstream Linux source, and then in make menuconfig
-enable wifi drivers (since OpenWRT uses backports). You will get a
-zImage which you can just replace in /boot. The modules you should put
-in /lib/modules/KERNELRELEASE (all *.ko files directly in this
-directory, without the directory structure created by make
-modules_install). Basically
+Ahmed removes bookkeeping of VLAN 0 filter as it always exists and can
+cause a false max filter error message.
+---
+v2:
+- Add VLAN 0 check to iavf_vlan_rx_kill_vid()
 
-  On omnia:
-    zcat /proc/config.gz
-  and copy the output to linux/.config
-  In linux/
-    ARCH=arm CROSS_COMPILE=arm-none-eabi- make menuconfig
-  enable wifi drivers in menuconfig and then
-    ARCH=arm CROSS_COMPILE=arm-none-eabi- KERNELRELEASE=6.3-rc2 \
-      make zImage
-  copy arch/arm/boot/zImage to omnia /boot
-    ARCH=arm CROSS_COMPILE=arm-none-eabi- KERNELRELEASE=6.3-rc2 \
-      make modules
-    ARCH=arm CROSS_COMPILE=arm-none-eabi- KERNELRELEASE=6.3-rc2 \
-      make modules_install INSTALL_MOD_PATH=MODS
-    mkdir MODS_FOR_OPENWRT
-    find MODS -name '*.ko' -exec mv {} MODS_FOR_OPENWRT \;
-    rm -rf MODS
-  and copy the *.ko files from directory MODS_FOR_OPENWRT to omnia,
-  directory /lib/modules/6.3-rc2
+v1: https://lore.kernel.org/netdev/20230314174423.1048526-1-anthony.l.nguyen@intel.com/
 
-Marek
+The following are changes since commit cd356010ce4c69ac7e1a40586112df24d22c6a4b:
+  net: phy: mscc: fix deadlock in phy_ethtool_{get,set}_wol()
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 40GbE
+
+Ahmed Zaki (1):
+  iavf: do not track VLAN 0 filters
+
+Alexander Lobakin (2):
+  iavf: fix inverted Rx hash condition leading to disabled hash
+  iavf: fix non-tunneled IPv6 UDP packet type and hashing
+
+ drivers/net/ethernet/intel/iavf/iavf_common.c   | 2 +-
+ drivers/net/ethernet/intel/iavf/iavf_main.c     | 8 ++++++++
+ drivers/net/ethernet/intel/iavf/iavf_txrx.c     | 2 +-
+ drivers/net/ethernet/intel/iavf/iavf_virtchnl.c | 2 --
+ 4 files changed, 10 insertions(+), 4 deletions(-)
+
+-- 
+2.38.1
+
