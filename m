@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 195D06BD25A
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 15:28:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CDD36BD25E
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 15:28:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231229AbjCPO2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 10:28:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59740 "EHLO
+        id S231231AbjCPO23 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 10:28:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231230AbjCPO17 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 10:27:59 -0400
-Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4F0759E64
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 07:27:56 -0700 (PDT)
+        with ESMTP id S231197AbjCPO20 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 10:28:26 -0400
+Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60FA3A24C
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 07:28:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1678976877; x=1710512877;
+  t=1678976895; x=1710512895;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=l/gcAS9+aNv0lMufW2fLJ9CN6qZT5O4Mapdvp99fXks=;
-  b=Ah1D5pUN/esHDHxuZOD+26EgdEGxwqtufOQssyMLav16Znk/Niyrktsq
-   cs81D5hS/jywM895fZmiffwYv28wzT396wsRqZE993TyuituVrCfng089
-   /+E7ksWKPubUxVL6VmeSWGFdwIs2zasDOiTNd8MlOjUHb39UB18E8Ry0A
-   k=;
+  bh=aZA11mLu1BhVIx0Q3LU1hUZMEAC0g9qIFQflORaV3W4=;
+  b=n0YU0lrtHydXdhBZeYLvtsIJQX0XbDhGjdlfIlAx5qw/JF6X251sioMK
+   snK2naB7TleFPEaa7bQsMCmVd5u1t3AXIV7SkfngqHLmRyr/zUP9+jbmO
+   0tnz9b19zdyZWXgsNqBzyBOquxr2qPaco3HcNrTQOfzxDDlEx+7n2vb1m
+   o=;
 X-IronPort-AV: E=Sophos;i="5.98,265,1673913600"; 
-   d="scan'208";a="303800363"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-f253a3a3.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2023 14:27:53 +0000
-Received: from EX19D016EUA002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2b-m6i4x-f253a3a3.us-west-2.amazon.com (Postfix) with ESMTPS id CAEBF83797;
-        Thu, 16 Mar 2023 14:27:51 +0000 (UTC)
+   d="scan'208";a="307928846"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-245b69b1.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2023 14:28:06 +0000
+Received: from EX19D013EUA003.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1e-m6i4x-245b69b1.us-east-1.amazon.com (Postfix) with ESMTPS id 41251340137;
+        Thu, 16 Mar 2023 14:28:04 +0000 (UTC)
 Received: from EX19D028EUB003.ant.amazon.com (10.252.61.31) by
- EX19D016EUA002.ant.amazon.com (10.252.50.57) with Microsoft SMTP Server
+ EX19D013EUA003.ant.amazon.com (10.252.50.72) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.24; Thu, 16 Mar 2023 14:27:50 +0000
+ 15.2.1118.24; Thu, 16 Mar 2023 14:28:04 +0000
 Received: from u570694869fb251.ant.amazon.com (10.85.143.176) by
  EX19D028EUB003.ant.amazon.com (10.252.61.31) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.24; Thu, 16 Mar 2023 14:27:42 +0000
+ 15.2.1118.24; Thu, 16 Mar 2023 14:27:56 +0000
 From:   Shay Agroskin <shayagr@amazon.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
@@ -58,9 +58,9 @@ CC:     Shay Agroskin <shayagr@amazon.com>,
         "Arinzon, David" <darinzon@amazon.com>,
         "Itzko, Shahar" <itzko@amazon.com>,
         "Abboud, Osama" <osamaabb@amazon.com>
-Subject: [PATCH v5 net-next 1/6] ethtool: Add support for configuring tx_push_buf_len
-Date:   Thu, 16 Mar 2023 16:27:01 +0200
-Message-ID: <20230316142706.4046263-2-shayagr@amazon.com>
+Subject: [PATCH v5 net-next 2/6] net: ena: Make few cosmetic preparations to support large LLQ
+Date:   Thu, 16 Mar 2023 16:27:02 +0200
+Message-ID: <20230316142706.4046263-3-shayagr@amazon.com>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20230316142706.4046263-1-shayagr@amazon.com>
 References: <20230316142706.4046263-1-shayagr@amazon.com>
@@ -72,298 +72,191 @@ X-ClientProxiedBy: EX19D042UWA003.ant.amazon.com (10.13.139.44) To
  EX19D028EUB003.ant.amazon.com (10.252.61.31)
 X-Spam-Status: No, score=-11.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This attribute, which is part of ethtool's ring param configuration
-allows the user to specify the maximum number of the packet's payload
-that can be written directly to the device.
+Move ena_calc_io_queue_size() implementation closer to the file's
+beginning so that it can be later called from ena_device_init()
+function without adding a function declaration.
 
-Example usage:
-    # ethtool -G [interface] tx-push-buf-len [number of bytes]
+Also add an empty line at some spots to separate logical blocks in
+funcitons.
 
-Co-developed-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Shay Agroskin <shayagr@amazon.com>
 ---
- Documentation/netlink/specs/ethtool.yaml     |  8 ++++
- Documentation/networking/ethtool-netlink.rst | 47 +++++++++++++-------
- include/linux/ethtool.h                      | 14 ++++--
- include/uapi/linux/ethtool_netlink.h         |  2 +
- net/ethtool/netlink.h                        |  2 +-
- net/ethtool/rings.c                          | 33 +++++++++++++-
- 6 files changed, 83 insertions(+), 23 deletions(-)
+ drivers/net/ethernet/amazon/ena/ena_netdev.c | 133 ++++++++++---------
+ 1 file changed, 67 insertions(+), 66 deletions(-)
 
-diff --git a/Documentation/netlink/specs/ethtool.yaml b/Documentation/netlink/specs/ethtool.yaml
-index 18ecb7d90cbe..ea9b0cc10fdf 100644
---- a/Documentation/netlink/specs/ethtool.yaml
-+++ b/Documentation/netlink/specs/ethtool.yaml
-@@ -165,6 +165,12 @@ attribute-sets:
-       -
-         name: rx-push
-         type: u8
-+      -
-+        name: tx-push-buf-len
-+        type: u32
-+      -
-+        name: tx-push-buf-len-max
-+        type: u32
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index d3999db7c6a2..372e33831323 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -3364,6 +3364,71 @@ static const struct net_device_ops ena_netdev_ops = {
+ 	.ndo_xdp_xmit		= ena_xdp_xmit,
+ };
  
-   -
-     name: mm-stat
-@@ -311,6 +317,8 @@ operations:
-             - cqe-size
-             - tx-push
-             - rx-push
-+            - tx-push-buf-len
-+            - tx-push-buf-len-max
-       dump: *ring-get-op
-     -
-       name: rings-set
-diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
-index e1bc6186d7ea..cd0973d4ba01 100644
---- a/Documentation/networking/ethtool-netlink.rst
-+++ b/Documentation/networking/ethtool-netlink.rst
-@@ -860,22 +860,24 @@ Request contents:
- 
- Kernel response contents:
- 
--  ====================================  ======  ===========================
--  ``ETHTOOL_A_RINGS_HEADER``            nested  reply header
--  ``ETHTOOL_A_RINGS_RX_MAX``            u32     max size of RX ring
--  ``ETHTOOL_A_RINGS_RX_MINI_MAX``       u32     max size of RX mini ring
--  ``ETHTOOL_A_RINGS_RX_JUMBO_MAX``      u32     max size of RX jumbo ring
--  ``ETHTOOL_A_RINGS_TX_MAX``            u32     max size of TX ring
--  ``ETHTOOL_A_RINGS_RX``                u32     size of RX ring
--  ``ETHTOOL_A_RINGS_RX_MINI``           u32     size of RX mini ring
--  ``ETHTOOL_A_RINGS_RX_JUMBO``          u32     size of RX jumbo ring
--  ``ETHTOOL_A_RINGS_TX``                u32     size of TX ring
--  ``ETHTOOL_A_RINGS_RX_BUF_LEN``        u32     size of buffers on the ring
--  ``ETHTOOL_A_RINGS_TCP_DATA_SPLIT``    u8      TCP header / data split
--  ``ETHTOOL_A_RINGS_CQE_SIZE``          u32     Size of TX/RX CQE
--  ``ETHTOOL_A_RINGS_TX_PUSH``           u8      flag of TX Push mode
--  ``ETHTOOL_A_RINGS_RX_PUSH``           u8      flag of RX Push mode
--  ====================================  ======  ===========================
-+  =======================================   ======  ===========================
-+  ``ETHTOOL_A_RINGS_HEADER``                nested  reply header
-+  ``ETHTOOL_A_RINGS_RX_MAX``                u32     max size of RX ring
-+  ``ETHTOOL_A_RINGS_RX_MINI_MAX``           u32     max size of RX mini ring
-+  ``ETHTOOL_A_RINGS_RX_JUMBO_MAX``          u32     max size of RX jumbo ring
-+  ``ETHTOOL_A_RINGS_TX_MAX``                u32     max size of TX ring
-+  ``ETHTOOL_A_RINGS_RX``                    u32     size of RX ring
-+  ``ETHTOOL_A_RINGS_RX_MINI``               u32     size of RX mini ring
-+  ``ETHTOOL_A_RINGS_RX_JUMBO``              u32     size of RX jumbo ring
-+  ``ETHTOOL_A_RINGS_TX``                    u32     size of TX ring
-+  ``ETHTOOL_A_RINGS_RX_BUF_LEN``            u32     size of buffers on the ring
-+  ``ETHTOOL_A_RINGS_TCP_DATA_SPLIT``        u8      TCP header / data split
-+  ``ETHTOOL_A_RINGS_CQE_SIZE``              u32     Size of TX/RX CQE
-+  ``ETHTOOL_A_RINGS_TX_PUSH``               u8      flag of TX Push mode
-+  ``ETHTOOL_A_RINGS_RX_PUSH``               u8      flag of RX Push mode
-+  ``ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN``       u32     size of TX push buffer
-+  ``ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN_MAX``   u32     max size of TX push buffer
-+  =======================================   ======  ===========================
- 
- ``ETHTOOL_A_RINGS_TCP_DATA_SPLIT`` indicates whether the device is usable with
- page-flipping TCP zero-copy receive (``getsockopt(TCP_ZEROCOPY_RECEIVE)``).
-@@ -891,6 +893,18 @@ through MMIO writes, thus reducing the latency. However, enabling this feature
- may increase the CPU cost. Drivers may enforce additional per-packet
- eligibility checks (e.g. on packet size).
- 
-+``ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN`` specifies the maximum number of bytes of a
-+transmitted packet a driver can push directly to the underlying device
-+('push' mode). Pushing some of the payload bytes to the device has the
-+advantages of reducing latency for small packets by avoiding DMA mapping (same
-+as ``ETHTOOL_A_RINGS_TX_PUSH`` parameter) as well as allowing the underlying
-+device to process packet headers ahead of fetching its payload.
-+This can help the device to make fast actions based on the packet's headers.
-+This is similar to the "tx-copybreak" parameter, which copies the packet to a
-+preallocated DMA memory area instead of mapping new memory. However,
-+tx-push-buff parameter copies the packet directly to the device to allow the
-+device to take faster actions on the packet.
++static void ena_calc_io_queue_size(struct ena_adapter *adapter,
++				   struct ena_com_dev_get_features_ctx *get_feat_ctx)
++{
++	struct ena_admin_feature_llq_desc *llq = &get_feat_ctx->llq;
++	struct ena_com_dev *ena_dev = adapter->ena_dev;
++	u32 tx_queue_size = ENA_DEFAULT_RING_SIZE;
++	u32 rx_queue_size = ENA_DEFAULT_RING_SIZE;
++	u32 max_tx_queue_size;
++	u32 max_rx_queue_size;
 +
- RINGS_SET
- =========
- 
-@@ -908,6 +922,7 @@ Request contents:
-   ``ETHTOOL_A_RINGS_CQE_SIZE``          u32     Size of TX/RX CQE
-   ``ETHTOOL_A_RINGS_TX_PUSH``           u8      flag of TX Push mode
-   ``ETHTOOL_A_RINGS_RX_PUSH``           u8      flag of RX Push mode
-+  ``ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN``   u32     size of TX push buffer
-   ====================================  ======  ===========================
- 
- Kernel checks that requested ring sizes do not exceed limits reported by
-diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-index 2792185dda22..798d35890118 100644
---- a/include/linux/ethtool.h
-+++ b/include/linux/ethtool.h
-@@ -75,6 +75,8 @@ enum {
-  * @tx_push: The flag of tx push mode
-  * @rx_push: The flag of rx push mode
-  * @cqe_size: Size of TX/RX completion queue event
-+ * @tx_push_buf_len: Size of TX push buffer
-+ * @tx_push_buf_max_len: Maximum allowed size of TX push buffer
-  */
- struct kernel_ethtool_ringparam {
- 	u32	rx_buf_len;
-@@ -82,6 +84,8 @@ struct kernel_ethtool_ringparam {
- 	u8	tx_push;
- 	u8	rx_push;
- 	u32	cqe_size;
-+	u32	tx_push_buf_len;
-+	u32	tx_push_buf_max_len;
- };
- 
- /**
-@@ -90,12 +94,14 @@ struct kernel_ethtool_ringparam {
-  * @ETHTOOL_RING_USE_CQE_SIZE: capture for setting cqe_size
-  * @ETHTOOL_RING_USE_TX_PUSH: capture for setting tx_push
-  * @ETHTOOL_RING_USE_RX_PUSH: capture for setting rx_push
-+ * @ETHTOOL_RING_USE_TX_PUSH_BUF_LEN: capture for setting tx_push_buf_len
-  */
- enum ethtool_supported_ring_param {
--	ETHTOOL_RING_USE_RX_BUF_LEN = BIT(0),
--	ETHTOOL_RING_USE_CQE_SIZE   = BIT(1),
--	ETHTOOL_RING_USE_TX_PUSH    = BIT(2),
--	ETHTOOL_RING_USE_RX_PUSH    = BIT(3),
-+	ETHTOOL_RING_USE_RX_BUF_LEN		= BIT(0),
-+	ETHTOOL_RING_USE_CQE_SIZE		= BIT(1),
-+	ETHTOOL_RING_USE_TX_PUSH		= BIT(2),
-+	ETHTOOL_RING_USE_RX_PUSH		= BIT(3),
-+	ETHTOOL_RING_USE_TX_PUSH_BUF_LEN	= BIT(4),
- };
- 
- #define __ETH_RSS_HASH_BIT(bit)	((u32)1 << (bit))
-diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
-index d39ce21381c5..1ebf8d455f07 100644
---- a/include/uapi/linux/ethtool_netlink.h
-+++ b/include/uapi/linux/ethtool_netlink.h
-@@ -357,6 +357,8 @@ enum {
- 	ETHTOOL_A_RINGS_CQE_SIZE,			/* u32 */
- 	ETHTOOL_A_RINGS_TX_PUSH,			/* u8 */
- 	ETHTOOL_A_RINGS_RX_PUSH,			/* u8 */
-+	ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN,		/* u32 */
-+	ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN_MAX,		/* u32 */
- 
- 	/* add new constants above here */
- 	__ETHTOOL_A_RINGS_CNT,
-diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
-index f7b189ed96b2..79424b34b553 100644
---- a/net/ethtool/netlink.h
-+++ b/net/ethtool/netlink.h
-@@ -413,7 +413,7 @@ extern const struct nla_policy ethnl_features_set_policy[ETHTOOL_A_FEATURES_WANT
- extern const struct nla_policy ethnl_privflags_get_policy[ETHTOOL_A_PRIVFLAGS_HEADER + 1];
- extern const struct nla_policy ethnl_privflags_set_policy[ETHTOOL_A_PRIVFLAGS_FLAGS + 1];
- extern const struct nla_policy ethnl_rings_get_policy[ETHTOOL_A_RINGS_HEADER + 1];
--extern const struct nla_policy ethnl_rings_set_policy[ETHTOOL_A_RINGS_RX_PUSH + 1];
-+extern const struct nla_policy ethnl_rings_set_policy[ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN_MAX + 1];
- extern const struct nla_policy ethnl_channels_get_policy[ETHTOOL_A_CHANNELS_HEADER + 1];
- extern const struct nla_policy ethnl_channels_set_policy[ETHTOOL_A_CHANNELS_COMBINED_COUNT + 1];
- extern const struct nla_policy ethnl_coalesce_get_policy[ETHTOOL_A_COALESCE_HEADER + 1];
-diff --git a/net/ethtool/rings.c b/net/ethtool/rings.c
-index f358cd57d094..574a6f2e57af 100644
---- a/net/ethtool/rings.c
-+++ b/net/ethtool/rings.c
-@@ -11,6 +11,7 @@ struct rings_reply_data {
- 	struct ethnl_reply_data		base;
- 	struct ethtool_ringparam	ringparam;
- 	struct kernel_ethtool_ringparam	kernel_ringparam;
-+	u32				supported_ring_params;
- };
- 
- #define RINGS_REPDATA(__reply_base) \
-@@ -32,6 +33,8 @@ static int rings_prepare_data(const struct ethnl_req_info *req_base,
- 
- 	if (!dev->ethtool_ops->get_ringparam)
- 		return -EOPNOTSUPP;
++	if (ena_dev->supported_features & BIT(ENA_ADMIN_MAX_QUEUES_EXT)) {
++		struct ena_admin_queue_ext_feature_fields *max_queue_ext =
++			&get_feat_ctx->max_queue_ext.max_queue_ext;
++		max_rx_queue_size = min_t(u32, max_queue_ext->max_rx_cq_depth,
++					  max_queue_ext->max_rx_sq_depth);
++		max_tx_queue_size = max_queue_ext->max_tx_cq_depth;
 +
-+	data->supported_ring_params = dev->ethtool_ops->supported_ring_params;
- 	ret = ethnl_ops_begin(dev);
- 	if (ret < 0)
- 		return ret;
-@@ -57,7 +60,9 @@ static int rings_reply_size(const struct ethnl_req_info *req_base,
- 	       nla_total_size(sizeof(u8))  +	/* _RINGS_TCP_DATA_SPLIT */
- 	       nla_total_size(sizeof(u32)  +	/* _RINGS_CQE_SIZE */
- 	       nla_total_size(sizeof(u8))  +	/* _RINGS_TX_PUSH */
--	       nla_total_size(sizeof(u8)));	/* _RINGS_RX_PUSH */
-+	       nla_total_size(sizeof(u8))) +	/* _RINGS_RX_PUSH */
-+	       nla_total_size(sizeof(u32)) +	/* _RINGS_TX_PUSH_BUF_LEN */
-+	       nla_total_size(sizeof(u32));	/* _RINGS_TX_PUSH_BUF_LEN_MAX */
- }
- 
- static int rings_fill_reply(struct sk_buff *skb,
-@@ -67,6 +72,7 @@ static int rings_fill_reply(struct sk_buff *skb,
- 	const struct rings_reply_data *data = RINGS_REPDATA(reply_base);
- 	const struct kernel_ethtool_ringparam *kr = &data->kernel_ringparam;
- 	const struct ethtool_ringparam *ringparam = &data->ringparam;
-+	u32 supported_ring_params = data->supported_ring_params;
- 
- 	WARN_ON(kr->tcp_data_split > ETHTOOL_TCP_DATA_SPLIT_ENABLED);
- 
-@@ -98,7 +104,12 @@ static int rings_fill_reply(struct sk_buff *skb,
- 	    (kr->cqe_size &&
- 	     (nla_put_u32(skb, ETHTOOL_A_RINGS_CQE_SIZE, kr->cqe_size))) ||
- 	    nla_put_u8(skb, ETHTOOL_A_RINGS_TX_PUSH, !!kr->tx_push) ||
--	    nla_put_u8(skb, ETHTOOL_A_RINGS_RX_PUSH, !!kr->rx_push))
-+	    nla_put_u8(skb, ETHTOOL_A_RINGS_RX_PUSH, !!kr->rx_push) ||
-+	    ((supported_ring_params & ETHTOOL_RING_USE_TX_PUSH_BUF_LEN) &&
-+	     (nla_put_u32(skb, ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN_MAX,
-+			  kr->tx_push_buf_max_len) ||
-+	      nla_put_u32(skb, ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN,
-+			  kr->tx_push_buf_len))))
- 		return -EMSGSIZE;
- 
- 	return 0;
-@@ -117,6 +128,7 @@ const struct nla_policy ethnl_rings_set_policy[] = {
- 	[ETHTOOL_A_RINGS_CQE_SIZE]		= NLA_POLICY_MIN(NLA_U32, 1),
- 	[ETHTOOL_A_RINGS_TX_PUSH]		= NLA_POLICY_MAX(NLA_U8, 1),
- 	[ETHTOOL_A_RINGS_RX_PUSH]		= NLA_POLICY_MAX(NLA_U8, 1),
-+	[ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN]	= { .type = NLA_U32 },
- };
- 
- static int
-@@ -158,6 +170,14 @@ ethnl_set_rings_validate(struct ethnl_req_info *req_info,
- 		return -EOPNOTSUPP;
- 	}
- 
-+	if (tb[ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN] &&
-+	    !(ops->supported_ring_params & ETHTOOL_RING_USE_TX_PUSH_BUF_LEN)) {
-+		NL_SET_ERR_MSG_ATTR(info->extack,
-+				    tb[ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN],
-+				    "setting tx push buf len is not supported");
-+		return -EOPNOTSUPP;
++		if (ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV)
++			max_tx_queue_size = min_t(u32, max_tx_queue_size,
++						  llq->max_llq_depth);
++		else
++			max_tx_queue_size = min_t(u32, max_tx_queue_size,
++						  max_queue_ext->max_tx_sq_depth);
++
++		adapter->max_tx_sgl_size = min_t(u16, ENA_PKT_MAX_BUFS,
++						 max_queue_ext->max_per_packet_tx_descs);
++		adapter->max_rx_sgl_size = min_t(u16, ENA_PKT_MAX_BUFS,
++						 max_queue_ext->max_per_packet_rx_descs);
++	} else {
++		struct ena_admin_queue_feature_desc *max_queues =
++			&get_feat_ctx->max_queues;
++		max_rx_queue_size = min_t(u32, max_queues->max_cq_depth,
++					  max_queues->max_sq_depth);
++		max_tx_queue_size = max_queues->max_cq_depth;
++
++		if (ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV)
++			max_tx_queue_size = min_t(u32, max_tx_queue_size,
++						  llq->max_llq_depth);
++		else
++			max_tx_queue_size = min_t(u32, max_tx_queue_size,
++						  max_queues->max_sq_depth);
++
++		adapter->max_tx_sgl_size = min_t(u16, ENA_PKT_MAX_BUFS,
++						 max_queues->max_packet_tx_descs);
++		adapter->max_rx_sgl_size = min_t(u16, ENA_PKT_MAX_BUFS,
++						 max_queues->max_packet_rx_descs);
 +	}
 +
- 	return ops->get_ringparam && ops->set_ringparam ? 1 : -EOPNOTSUPP;
++	max_tx_queue_size = rounddown_pow_of_two(max_tx_queue_size);
++	max_rx_queue_size = rounddown_pow_of_two(max_rx_queue_size);
++
++	tx_queue_size = clamp_val(tx_queue_size, ENA_MIN_RING_SIZE,
++				  max_tx_queue_size);
++	rx_queue_size = clamp_val(rx_queue_size, ENA_MIN_RING_SIZE,
++				  max_rx_queue_size);
++
++	tx_queue_size = rounddown_pow_of_two(tx_queue_size);
++	rx_queue_size = rounddown_pow_of_two(rx_queue_size);
++
++	adapter->max_tx_ring_size  = max_tx_queue_size;
++	adapter->max_rx_ring_size = max_rx_queue_size;
++	adapter->requested_tx_ring_size = tx_queue_size;
++	adapter->requested_rx_ring_size = rx_queue_size;
++}
++
+ static int ena_device_validate_params(struct ena_adapter *adapter,
+ 				      struct ena_com_dev_get_features_ctx *get_feat_ctx)
+ {
+@@ -4164,72 +4229,6 @@ static void ena_release_bars(struct ena_com_dev *ena_dev, struct pci_dev *pdev)
+ 	pci_release_selected_regions(pdev, release_bars);
  }
  
-@@ -189,6 +209,8 @@ ethnl_set_rings(struct ethnl_req_info *req_info, struct genl_info *info)
- 			tb[ETHTOOL_A_RINGS_TX_PUSH], &mod);
- 	ethnl_update_u8(&kernel_ringparam.rx_push,
- 			tb[ETHTOOL_A_RINGS_RX_PUSH], &mod);
-+	ethnl_update_u32(&kernel_ringparam.tx_push_buf_len,
-+			 tb[ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN], &mod);
- 	if (!mod)
- 		return 0;
- 
-@@ -209,6 +231,13 @@ ethnl_set_rings(struct ethnl_req_info *req_info, struct genl_info *info)
- 		return -EINVAL;
+-
+-static void ena_calc_io_queue_size(struct ena_adapter *adapter,
+-				   struct ena_com_dev_get_features_ctx *get_feat_ctx)
+-{
+-	struct ena_admin_feature_llq_desc *llq = &get_feat_ctx->llq;
+-	struct ena_com_dev *ena_dev = adapter->ena_dev;
+-	u32 tx_queue_size = ENA_DEFAULT_RING_SIZE;
+-	u32 rx_queue_size = ENA_DEFAULT_RING_SIZE;
+-	u32 max_tx_queue_size;
+-	u32 max_rx_queue_size;
+-
+-	if (ena_dev->supported_features & BIT(ENA_ADMIN_MAX_QUEUES_EXT)) {
+-		struct ena_admin_queue_ext_feature_fields *max_queue_ext =
+-			&get_feat_ctx->max_queue_ext.max_queue_ext;
+-		max_rx_queue_size = min_t(u32, max_queue_ext->max_rx_cq_depth,
+-					  max_queue_ext->max_rx_sq_depth);
+-		max_tx_queue_size = max_queue_ext->max_tx_cq_depth;
+-
+-		if (ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV)
+-			max_tx_queue_size = min_t(u32, max_tx_queue_size,
+-						  llq->max_llq_depth);
+-		else
+-			max_tx_queue_size = min_t(u32, max_tx_queue_size,
+-						  max_queue_ext->max_tx_sq_depth);
+-
+-		adapter->max_tx_sgl_size = min_t(u16, ENA_PKT_MAX_BUFS,
+-						 max_queue_ext->max_per_packet_tx_descs);
+-		adapter->max_rx_sgl_size = min_t(u16, ENA_PKT_MAX_BUFS,
+-						 max_queue_ext->max_per_packet_rx_descs);
+-	} else {
+-		struct ena_admin_queue_feature_desc *max_queues =
+-			&get_feat_ctx->max_queues;
+-		max_rx_queue_size = min_t(u32, max_queues->max_cq_depth,
+-					  max_queues->max_sq_depth);
+-		max_tx_queue_size = max_queues->max_cq_depth;
+-
+-		if (ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV)
+-			max_tx_queue_size = min_t(u32, max_tx_queue_size,
+-						  llq->max_llq_depth);
+-		else
+-			max_tx_queue_size = min_t(u32, max_tx_queue_size,
+-						  max_queues->max_sq_depth);
+-
+-		adapter->max_tx_sgl_size = min_t(u16, ENA_PKT_MAX_BUFS,
+-						 max_queues->max_packet_tx_descs);
+-		adapter->max_rx_sgl_size = min_t(u16, ENA_PKT_MAX_BUFS,
+-						 max_queues->max_packet_rx_descs);
+-	}
+-
+-	max_tx_queue_size = rounddown_pow_of_two(max_tx_queue_size);
+-	max_rx_queue_size = rounddown_pow_of_two(max_rx_queue_size);
+-
+-	tx_queue_size = clamp_val(tx_queue_size, ENA_MIN_RING_SIZE,
+-				  max_tx_queue_size);
+-	rx_queue_size = clamp_val(rx_queue_size, ENA_MIN_RING_SIZE,
+-				  max_rx_queue_size);
+-
+-	tx_queue_size = rounddown_pow_of_two(tx_queue_size);
+-	rx_queue_size = rounddown_pow_of_two(rx_queue_size);
+-
+-	adapter->max_tx_ring_size  = max_tx_queue_size;
+-	adapter->max_rx_ring_size = max_rx_queue_size;
+-	adapter->requested_tx_ring_size = tx_queue_size;
+-	adapter->requested_rx_ring_size = rx_queue_size;
+-}
+-
+ /* ena_probe - Device Initialization Routine
+  * @pdev: PCI device information struct
+  * @ent: entry in ena_pci_tbl
+@@ -4366,6 +4365,7 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 			"Failed to query interrupt moderation feature\n");
+ 		goto err_device_destroy;
  	}
- 
-+	if (kernel_ringparam.tx_push_buf_len > kernel_ringparam.tx_push_buf_max_len) {
-+		NL_SET_ERR_MSG_ATTR(info->extack, tb[ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN],
-+				    "Requested TX push buffer exceeds maximum");
 +
-+		return -EINVAL;
-+	}
+ 	ena_init_io_rings(adapter,
+ 			  0,
+ 			  adapter->xdp_num_queues +
+@@ -4486,6 +4486,7 @@ static void __ena_shutoff(struct pci_dev *pdev, bool shutdown)
+ 	rtnl_lock(); /* lock released inside the below if-else block */
+ 	adapter->reset_reason = ENA_REGS_RESET_SHUTDOWN;
+ 	ena_destroy_device(adapter, true);
 +
- 	ret = dev->ethtool_ops->set_ringparam(dev, &ringparam,
- 					      &kernel_ringparam, info->extack);
- 	return ret < 0 ? ret : 1;
+ 	if (shutdown) {
+ 		netif_device_detach(netdev);
+ 		dev_close(netdev);
 -- 
 2.25.1
 
