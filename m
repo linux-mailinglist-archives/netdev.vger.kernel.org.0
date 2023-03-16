@@ -2,152 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 551A36BCA6F
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 10:11:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D1946BCA75
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 10:12:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230039AbjCPJLD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 05:11:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50550 "EHLO
+        id S229897AbjCPJMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 05:12:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230356AbjCPJLA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 05:11:00 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2098.outbound.protection.outlook.com [40.107.243.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E37A3756F;
-        Thu, 16 Mar 2023 02:10:52 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DeVYc785PPk4PvFyR4rvcbcfRMnC7sk12EW7MAl4ymgE3tMpk5QTrWMVPuGKJ8kU1LEF02Ya/2VAlfSR6rDWfcHlNtJEJne4o4/8KQoLf1jdeq6Kv1M90gjhjSnswoim8etpzfh1RudK3/SzT7xgCr7pGKKBgahiA4NYj4xwoGFJfG8I1bymYjTmE5ZPfwpiL7l7vBpyYOtRtFmm6k3dYl4J7CV4zIekSG76G9gszjfd5YatJTCHhJpe3Lg+HrHb3htJtnT+Ll8hWgqB5nk+gx23zAgjDFNzhDONfTA96ywWplcq1s4/e7OuiJcHtZs8Ad+XSdwLncGliajE1kFDIQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kLbg6ZXRUF4hoK/07iphLTFz/0GR76O5ePsZPKv/gNw=;
- b=XHM6JtZB5xhP6etFaBeywWOR0mHIHTH+fDv6SaTcAgS/5EnCtbK6FlWgSvDm0Y11pu0qpkBrP9UKKv/YWcHxRW38ENnQ67sEu5CdiNfw8aAICYUK7F/yzhHYsZcsB8nb5UV4zyowDrrpKZAGFbGmbdH8PsImhKSPcOa/t3AjT7LUiFqix0Tu9BM3LY63lX9V5d2y3ND+468yp88CogNnyph8iS+igT/CtTwSxXrreBUt9r+xCKtFFSlYm6L6zPiMtCk7CneVGsHcYCVs6cPdeHJxYPAg9vNWezP4+pD34V34o/eqIGWf0kcTkZ2sPenHZqskBUY3T05PyRgr7BzQAQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kLbg6ZXRUF4hoK/07iphLTFz/0GR76O5ePsZPKv/gNw=;
- b=qLOUNhbtSRrUF64b9+iD6VIUnwYcKuJA8IWcxN/BbSA57ugV6VqGXdunqUPcC2RXjF7NGUXNgQqYMyAZo660gA7qCG+4fX2CDQ/NRPSmyyHTvSUw9SAyKMhjgTP7rrGBXB3vwIchdq20BTctkLef60ZuGjwuvgf9TomcM2x6hPM=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by DM8PR13MB5112.namprd13.prod.outlook.com (2603:10b6:8:11::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.31; Thu, 16 Mar
- 2023 09:10:50 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.033; Thu, 16 Mar 2023
- 09:10:50 +0000
-Date:   Thu, 16 Mar 2023 10:10:44 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Markus Schneider-Pargmann <msp@baylibre.com>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 03/16] can: m_can: Remove double interrupt enable
-Message-ID: <ZBLdFDMf+2YoRK6H@corigine.com>
-References: <20230315110546.2518305-1-msp@baylibre.com>
- <20230315110546.2518305-4-msp@baylibre.com>
- <ZBLc03OYJLLhHLNj@corigine.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZBLc03OYJLLhHLNj@corigine.com>
-X-ClientProxiedBy: AM0PR02CA0123.eurprd02.prod.outlook.com
- (2603:10a6:20b:28c::20) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        with ESMTP id S229542AbjCPJMp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 05:12:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4092D170E
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 02:11:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1678957908;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3eMeY9yQN+W3p1vHqt8vyruDxKEouKBf8XoW+xN+7GI=;
+        b=WTapVjnBtsf4iDkaOoK6qqtuhXhhxpgvaZXnVs/FKHfqq6gsge4yBK44zDUyr/rh7rOoOX
+        TH5oOCQCZlG+cGJf6Rr1n+xiACwcsZuxfNiNq2FQVzyuLBWdGwQXqYNnIlGq9rT5ualJbQ
+        EJ9Qs1ChdDUUJuNXZNUF+hFgwxbxeq8=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-412-wcIOqPNlNUmL-4oDClUVaw-1; Thu, 16 Mar 2023 05:11:47 -0400
+X-MC-Unique: wcIOqPNlNUmL-4oDClUVaw-1
+Received: by mail-wr1-f70.google.com with SMTP id b14-20020a05600003ce00b002cfefd8e637so139072wrg.15
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 02:11:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678957906;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=3eMeY9yQN+W3p1vHqt8vyruDxKEouKBf8XoW+xN+7GI=;
+        b=p+ds4gk8zx33EVqoYv2R108nGZ4d67Y/RHslbAZwO8yAATWxtbAQ76GraqpuLXEDpI
+         aFF+E0NPFojFRXruHtPjBfdP8lR/bIdBVcyhl7Yj+TvZbtOnqRt2uuRay/LxdjxcKb/0
+         7m+Bd3hSdiPsi52pYJezXtH5jP2EKEMlQrCk/E9DdJA79y4f6p7ivDsuLYGQ7t4/R/Zl
+         LJ0t3ISfAA96rVQmpSx/bq5pvMGJSDD3XLrZ5s4V5QcF7TMkD+9SHcy4u1WXj7h5oNm9
+         r941hlpGOo2NZdECActgmpDuUxO8QfbMWt1PLA0MfHUXZmMVj0lTCNADYpP2xMf2DGRo
+         payA==
+X-Gm-Message-State: AO0yUKWO1jOT96xLriRidid1JSbZpabEvcpX67V4z9fHwI9tkp//4pcY
+        J5zhHdgvZWFsmnIlVPNgBmhdP/2K09jnTQpJGFZmoPRX2O6XW9R+lYmI/Ojq8c8t/1v+M6YIvM5
+        rGo1UXKvA957nyOzF
+X-Received: by 2002:adf:ffc4:0:b0:2ce:fd37:9392 with SMTP id x4-20020adfffc4000000b002cefd379392mr4100474wrs.45.1678957905879;
+        Thu, 16 Mar 2023 02:11:45 -0700 (PDT)
+X-Google-Smtp-Source: AK7set+X9DfQli3Fz2uLdFc+Z4TbWmOca2fwWfEubcClbX5Pl3I1a8rJk+NQbGboz0DJZWf/m4UJLQ==
+X-Received: by 2002:adf:ffc4:0:b0:2ce:fd37:9392 with SMTP id x4-20020adfffc4000000b002cefd379392mr4100461wrs.45.1678957905562;
+        Thu, 16 Mar 2023 02:11:45 -0700 (PDT)
+Received: from sgarzare-redhat (host-82-57-51-170.retail.telecomitalia.it. [82.57.51.170])
+        by smtp.gmail.com with ESMTPSA id c10-20020adfed8a000000b002cf8220cc75sm6685830wro.24.2023.03.16.02.11.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Mar 2023 02:11:45 -0700 (PDT)
+Date:   Thu, 16 Mar 2023 10:11:42 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org,
+        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
+        eperezma@redhat.com, netdev@vger.kernel.org, stefanha@redhat.com,
+        linux-kernel@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org
+Subject: Re: [PATCH v2 8/8] vdpa_sim: add support for user VA
+Message-ID: <20230316091142.p2ogqf3q2fsyha3l@sgarzare-redhat>
+References: <20230302113421.174582-1-sgarzare@redhat.com>
+ <20230302113421.174582-9-sgarzare@redhat.com>
+ <CACGkMEt1hBcRdh0oQYCs4meRs0mvDu9X9o-zK4aS87hrN+QPxA@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM8PR13MB5112:EE_
-X-MS-Office365-Filtering-Correlation-Id: d4beed0b-4ff0-470b-d5cd-08db25fe5673
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WdJQXklSRrdfgLZ86BloPytET+idJQ/GLitoz9dMXbhE8LQkgzQeP23sOxDkXNiTGsb9aa92Y8mYT93lM57/JQTjBPoDhPqvyE55F/CGQsETXwfSAdMkkEGu6tp/R43dwN/cZ72/HbiodpnhFEVbP3ZUwM63zRTw5IfmErNlWzWxQrMXqmi99V6P48oJE9rIUMDYmjUWkD44KFGokaIq+B8yadqvinI8dZDMHCHuZf65gaZPDKocgTl8LHxcECfu/i5tHSZaq8JGyNudRARM8796Vp4v3rYE+rkfW7J3/ZZbYvS2ZymDOyZC1L6rTYmAp5gh5uY4IlpdhRsZAzGfqUIsGMXIBslKRSMcOaajDiS94GxLZHgorbiPWKkY6n+UVsQ6MAu179z/TrzkMKkjN1FELQbZTM0nHxgFosbP70B/S7J4lrE2/uctD1Q2TIYJ7Md3ef4HFRooVrdTEFsHnd4zWShUHWY0cOtv9RLdvZ3QRXESg+pYNijzjYnJ33oFKh1bHtWn9yXy1r9jSmbVBMLaAt3P1qXNtuEO4C8GYYtB464RRD7r9B+cLvzYON67ewni/D/Ec7nPV+Qiior5cLatqDr/uykmmuyITlNJEhzfC2sD4bZqKvyQ3np76gIo2c+c547KYaSADMJlMcDp1KUREwxyEPo4G7AAs/ChVk8uAywDZQyF+/72ALXidNwr
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(39840400004)(366004)(396003)(376002)(136003)(451199018)(41300700001)(5660300002)(2906002)(44832011)(36756003)(38100700002)(86362001)(8936002)(478600001)(66476007)(66946007)(8676002)(6916009)(66556008)(6486002)(6666004)(54906003)(4326008)(2616005)(83380400001)(316002)(186003)(6512007)(6506007)(67856001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0wgDLgV6cg3kO71bkSKw21rQPRdwROz1ls0mRD7oMEUv4MAL/dle7OsPF+9T?=
- =?us-ascii?Q?+ajajWMqk3rmUgdababm0kxniuvByiELremaCTVp61M/6OgCq6NzD5cKtpXp?=
- =?us-ascii?Q?+uE2ZIJqlbzA8Dm6avJtFFbNfuxiEYdR0fIIycvCVpvv+o+7LUr2v8cDzUXz?=
- =?us-ascii?Q?++OAOBtXHoETw0qRc5C6n4ia/SIhEeY0di7G+LAlFm+LnXP3/98yLy2DqiR9?=
- =?us-ascii?Q?T3yJIMNKGDIW5lb7dYox+U8szSegih22dqnEEjk53WDYPCRnLlYFvIJ/ZGWj?=
- =?us-ascii?Q?hZ8tzM56wqRtILrzGOzj4CfAjf9hN/AfX2b3hqYgb+ozhmBoUQK28MuNpiO+?=
- =?us-ascii?Q?ZccKAtSjEUMs3D9HGEgZlF+DUVB4tZ14B+0kAo+bEpc9oUOZtSHaO1qof+QN?=
- =?us-ascii?Q?1kdCvLpM972Q8SR/mViiOxUVU0aknY8LXbcEppDbEcKdbqVyc5IbMOrRm6QE?=
- =?us-ascii?Q?BFIcke6XLXhh58YrCzqAtAzbfN6y0mLjP/zj44k+QfjsIEhTr5GSB0vSYfqw?=
- =?us-ascii?Q?Vl6M/HoP1PTSyfNgPFNSCYzrTQvt3N+elfndJuBltXd6ygdX434kfD/ax762?=
- =?us-ascii?Q?36Duhvkh2iojuY/F4gm/fftcYdga5iFOfRlD329ttzswpCd1bk8SSAZc0MJZ?=
- =?us-ascii?Q?53LnA9hV3+sVtvxo2FRCQ74QwumTQ0GMmD2kXNZeKpZ4fid7ddLKpyR02O7z?=
- =?us-ascii?Q?A0YD8nXAgShxrInBcjnFJx2lXnMJgRKhswrYNZj+dMDnt7EuFrQ+0vmH2RGk?=
- =?us-ascii?Q?JZOMhimcTXnQsAWNFWgCxuSexevZvqYR8QYXZMWmkETeFXEKORu4doyUWpBf?=
- =?us-ascii?Q?ptPReHdjPAYmzG9lI/KLf8UkxSx5FB1Pyl5+TfzabLJaSSSqG/8OjmXSzhaK?=
- =?us-ascii?Q?cgFkq0yDBj8jkF/Bj/NJZhIFcb9NSST9rfiusmIm+ZLmBK68iCvmwdohan7A?=
- =?us-ascii?Q?vL+jLpw0pZRHie7F9F6fFYUjJRcdDPD6OI04DGy+ZfA43CqoG+mv3LnAPjZY?=
- =?us-ascii?Q?nibfl/1/ErGZrNFjPxe5jqfy5wm/th/JkY4913c6NHkg/y6+IWGg1HEjyvd4?=
- =?us-ascii?Q?XMZfCwLYu4wx4JCjoth7G7cqpVIxzpK40ag9peaTMVLv4EvbSBR+cH12O3QO?=
- =?us-ascii?Q?uLDOEMUgCdf698cSRDcuB4ohDG9zuvn0knR0u15ctlUkzPj4hN02Cr1NvULU?=
- =?us-ascii?Q?kYh4VSJMSJZdKWLzveZsP6VV7tzGjox+83/KH4IQH4Qz1P9ld3Zt2s25ykIh?=
- =?us-ascii?Q?urkchm64dCF+npQsYuKWqxLcAjCGv2/njVx6gb4F3peLsXv/ZKu23miXij7W?=
- =?us-ascii?Q?UclRD6YEPJ6lWRvF2TqPpBQTipHi86xDWIKUuKhQBdn/wMzPvmsVYEU1ub2T?=
- =?us-ascii?Q?iGJYAA9FDima2MKDdX+fwwG691pZCS0+G0wW1B6/hNgTNk60WQCRQHFz75TJ?=
- =?us-ascii?Q?7eTJsIL61SHtFrdtjxZ/rOb4mA2te90k2rVOYk7gmK1t+nVvy9RMjgu239fu?=
- =?us-ascii?Q?LHAwcp6s2HmO4bCKr/n3v4yiQELPqnma2/ldAzj501pmDlVs6rQjT4n219ie?=
- =?us-ascii?Q?Y9OJMHt9nawqQBzwUS8Ox/1NpaK1tZ9lkb055hIyPWZx8OiQRMUt1vIbw5jk?=
- =?us-ascii?Q?EvQG8pb6rkox9AcmbJLhFYJp6bY1PUl73Hd5BedNdVuk/cGCoEf0SSSjzFGZ?=
- =?us-ascii?Q?e6y8ow=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d4beed0b-4ff0-470b-d5cd-08db25fe5673
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2023 09:10:50.6659
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XNQxhWCXONvxhm9Ig8oR6JAJx9oUCz9vwgBsfnqSbrWtjzb8T0+Q4Osq2v9ulP3/C3rY2zMlFJYkiIQdyyjf53/C/OAe9CVRQNlCFJBrKbE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR13MB5112
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CACGkMEt1hBcRdh0oQYCs4meRs0mvDu9X9o-zK4aS87hrN+QPxA@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 16, 2023 at 10:09:45AM +0100, Simon Horman wrote:
-> On Wed, Mar 15, 2023 at 12:05:33PM +0100, Markus Schneider-Pargmann wrote:
-> > Interrupts are enabled a few lines further down as well. Remove this
-> > second call to enable all interrupts.
-> 
-> nit: maybe 'duplicate' reads better than 'second', as this call comes first.
+On Tue, Mar 14, 2023 at 01:36:13PM +0800, Jason Wang wrote:
+>On Thu, Mar 2, 2023 at 7:35 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
+>>
+>> The new "use_va" module parameter (default: false) is used in
+>> vdpa_alloc_device() to inform the vDPA framework that the device
+>> supports VA.
+>>
+>> vringh is initialized to use VA only when "use_va" is true and the
+>> user's mm has been bound. So, only when the bus supports user VA
+>> (e.g. vhost-vdpa).
+>>
+>> vdpasim_mm_work_fn work is used to attach the kthread to the user
+>> address space when the .bind_mm callback is invoked, and to detach
+>> it when the .unbind_mm callback is invoked.
+>>
+>> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+>> ---
+>>
+>> Notes:
+>>     v2:
+>>     - `use_va` set to true by default [Eugenio]
+>>     - supported the new unbind_mm callback [Jason]
+>>     - removed the unbind_mm call in vdpasim_do_reset() [Jason]
+>>     - avoided to release the lock while call kthread_flush_work() since we
+>>       are now using a mutex to protect the device state
+>>
+>>  drivers/vdpa/vdpa_sim/vdpa_sim.h |  1 +
+>>  drivers/vdpa/vdpa_sim/vdpa_sim.c | 98 +++++++++++++++++++++++++++++++-
+>>  2 files changed, 97 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.h b/drivers/vdpa/vdpa_sim/vdpa_sim.h
+>> index 4774292fba8c..3a42887d05d9 100644
+>> --- a/drivers/vdpa/vdpa_sim/vdpa_sim.h
+>> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.h
+>> @@ -59,6 +59,7 @@ struct vdpasim {
+>>         struct vdpasim_virtqueue *vqs;
+>>         struct kthread_worker *worker;
+>>         struct kthread_work work;
+>> +       struct mm_struct *mm_bound;
+>>         struct vdpasim_dev_attr dev_attr;
+>>         /* mutex to synchronize virtqueue state */
+>>         struct mutex mutex;
+>> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+>> index a28103a67ae7..eda26bc33df5 100644
+>> --- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
+>> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+>> @@ -35,10 +35,77 @@ module_param(max_iotlb_entries, int, 0444);
+>>  MODULE_PARM_DESC(max_iotlb_entries,
+>>                  "Maximum number of iotlb entries for each address space. 0 means unlimited. (default: 2048)");
+>>
+>> +static bool use_va = true;
+>> +module_param(use_va, bool, 0444);
+>> +MODULE_PARM_DESC(use_va, "Enable/disable the device's ability to use VA");
+>> +
+>>  #define VDPASIM_QUEUE_ALIGN PAGE_SIZE
+>>  #define VDPASIM_QUEUE_MAX 256
+>>  #define VDPASIM_VENDOR_ID 0
+>>
+>> +struct vdpasim_mm_work {
+>> +       struct kthread_work work;
+>> +       struct mm_struct *mm;
+>> +       bool bind;
+>> +       int ret;
+>> +};
+>> +
+>> +static void vdpasim_mm_work_fn(struct kthread_work *work)
+>> +{
+>> +       struct vdpasim_mm_work *mm_work =
+>> +               container_of(work, struct vdpasim_mm_work, work);
+>> +
+>> +       mm_work->ret = 0;
+>> +
+>> +       if (mm_work->bind) {
+>> +               kthread_use_mm(mm_work->mm);
+>> +               //TODO: should we attach the cgroup of the mm owner?
+>> +       } else {
+>> +               kthread_unuse_mm(mm_work->mm);
+>> +       }
+>> +}
+>> +
+>> +static void vdpasim_worker_queue_mm(struct vdpasim *vdpasim,
+>> +                                   struct vdpasim_mm_work *mm_work)
+>> +{
+>
+>Nit: we need to tweak the name as it does flush besides queuing the work.
 
-I didn't mean to imply this should block progress.
+Yep, or split in 2 functions.
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+>
+>> +       struct kthread_work *work = &mm_work->work;
+>> +
+>> +       kthread_init_work(work, vdpasim_mm_work_fn);
+>> +       kthread_queue_work(vdpasim->worker, work);
+>> +
+>> +       kthread_flush_work(work);
+>> +}
+>> +
+>> +static int vdpasim_worker_bind_mm(struct vdpasim *vdpasim,
+>> +                                 struct mm_struct *new_mm)
+>> +{
+>> +       struct vdpasim_mm_work mm_work;
+>> +
+>> +       mm_work.mm = new_mm;
+>> +       mm_work.bind = true;
+>> +
+>> +       vdpasim_worker_queue_mm(vdpasim, &mm_work);
+>> +
+>> +       if (!mm_work.ret)
+>> +               vdpasim->mm_bound = new_mm;
+>> +
+>> +       return mm_work.ret;
+>> +}
+>> +
+>> +static void vdpasim_worker_unbind_mm(struct vdpasim *vdpasim)
+>> +{
+>> +       struct vdpasim_mm_work mm_work;
+>> +
+>> +       if (!vdpasim->mm_bound)
+>> +               return;
+>> +
+>> +       mm_work.mm = vdpasim->mm_bound;
+>> +       mm_work.bind = false;
+>
+>Can we simply use mm_work.mm = NULL for unbinding?
+>
+>> +
+>> +       vdpasim_worker_queue_mm(vdpasim, &mm_work);
+>> +
+>> +       vdpasim->mm_bound = NULL;
+>
+>And change the mm_bound in the worker?
 
-> 
-> > Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> > ---
-> >  drivers/net/can/m_can/m_can.c | 1 -
-> >  1 file changed, 1 deletion(-)
-> > 
-> > diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-> > index 8eb327ae3bdf..5274d9642566 100644
-> > --- a/drivers/net/can/m_can/m_can.c
-> > +++ b/drivers/net/can/m_can/m_can.c
-> > @@ -1364,7 +1364,6 @@ static int m_can_chip_config(struct net_device *dev)
-> >  	m_can_write(cdev, M_CAN_TEST, test);
-> >  
-> >  	/* Enable interrupts */
-> > -	m_can_write(cdev, M_CAN_IR, IR_ALL_INT);
-> >  	if (!(cdev->can.ctrlmode & CAN_CTRLMODE_BERR_REPORTING))
-> >  		if (cdev->version == 30)
-> >  			m_can_write(cdev, M_CAN_IE, IR_ALL_INT &
-> > -- 
-> > 2.39.2
-> > 
+Yep, I need to put `vdpasim` in struct vdpasim_mm_work.
+
+I'll do in the next version.
+
+Thanks,
+Stefano
+
