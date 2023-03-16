@@ -2,53 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DEAA46BC531
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 05:20:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 809B56BC533
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 05:24:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229542AbjCPEUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 00:20:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47692 "EHLO
+        id S229608AbjCPEYd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 00:24:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229464AbjCPEUV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 00:20:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A2801A954;
-        Wed, 15 Mar 2023 21:20:20 -0700 (PDT)
+        with ESMTP id S229464AbjCPEYc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 00:24:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC7092885F;
+        Wed, 15 Mar 2023 21:24:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CC80BB81FBB;
-        Thu, 16 Mar 2023 04:20:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 65926C4339B;
-        Thu, 16 Mar 2023 04:20:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48F69B81FAC;
+        Thu, 16 Mar 2023 04:24:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 837AAC433D2;
+        Thu, 16 Mar 2023 04:24:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678940417;
-        bh=2Ue7eCK1RHPG30/1sgFeein0aQgNO7hDTPq9R4C+FME=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Y8u/ZxWWpb97QEyx+XiNGHJFAqHm8K4N0zC/amQ78P3C3X+Lcab9DaWTcexkMW8ZN
-         w5ojBt9hDuxnsCnZyVwGM7xDNwkXQSyc7RkdaLEPRcBtQCmtguq/5Hn7BHEke5iYC7
-         U0x3yWUBAUVU60RxTFEXQzhWXVQtxmGy+464xmiDIaQrU8whvjFLgc1DyJPf+bucBG
-         ClpUX87X8cyq1m13gpkJWycNrjzDdq+mKQZtPDJ/jpDg15Zm6xZschzOrr5/INkRs9
-         MO6mBrNevLo3nErsFV/IB9c72eLZEjAhDLJoFlsYr0QMpQzwB0IkC8yImLohhSMe9X
-         hCEm+FS0moXSw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5072BE66CBF;
-        Thu, 16 Mar 2023 04:20:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1678940666;
+        bh=SWftvtwBMsqpnfifYayDxLhuAFeXbIUC+wC8JVy38CY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Qs+lc8s1KTjOTNMQTCSq/sy8Con6uLlgGhbA40D9ik0Cw/h8eXu7VnL/4C85FrmYk
+         peLXqsZmQwGzqFov6Ujj+MZtiO5vNlam6Y2SOJKSWKpG+rJ+3DKZTZfV9uU1n7u0FV
+         IkX3SBO6vHpmRmJFoxGiHS1pdsaYJI9gW+5G89apgsDGkiT66HNtPOtuSHAZoWbyhf
+         diYGG+AXkhT7buSRJaFnriIQZbbf84zKl3CAWdZP7v09OReze50d0O6Uw0UMSlU/Za
+         9Ko4A+EU/JmcVuU2QUP4g46RQnYBOKycoQhHaWKANtsbiC4DjvrvsWrMVHumKSmzNA
+         hJZOR+xVIVHOA==
+Date:   Wed, 15 Mar 2023 21:24:25 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Szymon Heidrich <szymon.heidrich@gmail.com>
+Cc:     steve.glendinning@shawell.net, UNGLinuxDriver@microchip.com,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: usb: smsc95xx: Limit packet length to skb->len
+Message-ID: <20230315212425.12cb48ca@kernel.org>
+In-Reply-To: <20230313220124.52437-1-szymon.heidrich@gmail.com>
+References: <20230313220124.52437-1-szymon.heidrich@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] veth: Fix use after free in XDP_REDIRECT
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167894041732.26311.6593717674885265121.git-patchwork-notify@kernel.org>
-Date:   Thu, 16 Mar 2023 04:20:17 +0000
-References: <20230314153351.2201328-1-sbohrer@cloudflare.com>
-In-Reply-To: <20230314153351.2201328-1-sbohrer@cloudflare.com>
-To:     Shawn Bohrer <sbohrer@cloudflare.com>
-Cc:     toshiaki.makita1@gmail.com, toke@kernel.org,
-        makita.toshiaki@lab.ntt.co.jp, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, kernel-team@cloudflare.com, lorenzo@kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,28 +54,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Mon, 13 Mar 2023 23:01:24 +0100 Szymon Heidrich wrote:
+> Packet length retrieved from skb data may be larger than
 
-This patch was applied to netdev/net.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
+nit: s/skb data/descriptor/ may be better in terms of terminology
 
-On Tue, 14 Mar 2023 10:33:51 -0500 you wrote:
-> 718a18a0c8a67f97781e40bdef7cdd055c430996 "veth: Rework veth_xdp_rcv_skb
-> in order to accept non-linear skb" introduced a bug where it tried to
-> use pskb_expand_head() if the headroom was less than
-> XDP_PACKET_HEADROOM.  This however uses kmalloc to expand the head,
-> which will later allow consume_skb() to free the skb while is it still
-> in use by AF_XDP.
+> the actual socket buffer length (up to 1526 bytes). In such
+
+nit: the "up to 1526 bytes" is a bit confusing, I'd remove it.
+
+> case the cloned skb passed up the network stack will leak
+> kernel memory contents.
+
+
+
+> Fixes: 2f7ca802bdae ("net: Add SMSC LAN9500 USB2.0 10/100 ethernet adapter driver")
+> Signed-off-by: Szymon Heidrich <szymon.heidrich@gmail.com>
+> ---
+>  drivers/net/usb/smsc95xx.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> [...]
+> diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+> index 32d2c60d3..ba766bdb2 100644
+> --- a/drivers/net/usb/smsc95xx.c
+> +++ b/drivers/net/usb/smsc95xx.c
+> @@ -1851,7 +1851,8 @@ static int smsc95xx_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
+>  			}
+>  		} else {
+>  			/* ETH_FRAME_LEN + 4(CRC) + 2(COE) + 4(Vlan) */
+> -			if (unlikely(size > (ETH_FRAME_LEN + 12))) {
+> +			if (unlikely(size > (ETH_FRAME_LEN + 12) ||
+> +				     size > skb->len)) {
 
-Here is the summary with links:
-  - veth: Fix use after free in XDP_REDIRECT
-    https://git.kernel.org/netdev/net/c/7c10131803e4
+We need this check on both sides of the big if {} statement.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+In case the error bit is set and we drop the packet we still
+end up in skb_pull() which if size > skb->len will panic the
+kernel.
 
+So let's do this check right after size and align are calculated?
+The patch for smsc75xx has sadly already been applied so you'll
+need to prepare a fix to the fix :(
+
+>  				netif_dbg(dev, rx_err, dev->net,
+>  					  "size err header=0x%08x\n", header);
+>  				return 0;
 
