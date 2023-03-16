@@ -2,135 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BFEDD6BD86C
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 19:57:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CC2E6BD876
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 20:00:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229842AbjCPS5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 14:57:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33598 "EHLO
+        id S229707AbjCPTAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 15:00:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229934AbjCPS5T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 14:57:19 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5335DCF53
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 11:57:11 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id x13so11609448edd.1
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 11:57:11 -0700 (PDT)
+        with ESMTP id S229523AbjCPTAw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 15:00:52 -0400
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FE4834F5B;
+        Thu, 16 Mar 2023 12:00:51 -0700 (PDT)
+Received: by mail-qv1-xf31.google.com with SMTP id jl13so1904279qvb.10;
+        Thu, 16 Mar 2023 12:00:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kali.org; s=google; t=1678993030;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
+        d=gmail.com; s=20210112; t=1678993250;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ISoDwGmCZfIt1++Qrq4EaM3UW6i2EJ00oUlk42ZAa4k=;
-        b=V34nuHzb1E1n6ArHtHa/MyOWRtt1PmPMxzBmbNZ70ayTY98fyYvgyrBPtlxZTjt10O
-         lcuHVx7snGom/yUxsRx5nKqnb/yl03a4EWJTrGqyjjo68Aqsy/DQRWfmH0L322qjXkGZ
-         YjDrMlA56pufnTtXHbENe3k35Br34XL7XIt6c+nHVpCgUU+HYpwxYx0CnXzmoW4cVZew
-         oKJl3xnnxfcomJvZQc3MUZDsx7bqVXIanxILdL7nKWbL6VJfpIGqwQRmRtHzNy+ayTDD
-         NehCB+jT9oMLIKdvSeqa2/tp5E0ZbFN4UP3ZoIzXLCtYfzk8Cs2RRd3Pi3Fcz52Be0Ry
-         JcpA==
+        bh=N8gdgFdzn2VZfw/BOlLO7/M7CDem1fHQVxoPtn1UlLE=;
+        b=jBdn34TgfBJzkLpA7N96EBsZA3inde37taBEDqzQap+c/HgIara6ivAxhZmdI9s07W
+         Z0rUyrKfVMfVi9gzZQpswhHl+uk8/VEc6lwHTpcRq1fVt2XB/r+AMXEg9MAx6xfWgxdW
+         5p1YsPr8MsQYP1lyLACo08vn8VbZAOCOCGp5YU6QYwiTNDylua4ZmPdS/3qf17tOylF6
+         sEyiiF5OTkHg5fkgNNZkeDAnjuNHJFwiQpDbNl5r7U9YKlMF4TkUJVsWSRIYg0dWRGJ1
+         kdL+7ufedElax5aZhj27uHt4gVHmq8wlff0i+R9yOgASnqCYQ2C3OoltbEIXxIDOzthV
+         oeBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678993030;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ISoDwGmCZfIt1++Qrq4EaM3UW6i2EJ00oUlk42ZAa4k=;
-        b=oABYgkBDJEWmjNeXB80FMmPqkTt+MOHLkdGLhskUvPEjJHWIBYwaFjH9ABWySow9V1
-         wAvacPUpqDVQZ804OdelJc9JvKQhpfytE+u8XNA0PJVz6vfJhUej1NviSx/8yTbLV+MW
-         R1KNphj74G7EtRXH7AE+zaJ8Poe+en6Sq1Bk1in31mVPMyMySjGSyLqSx9BqvUGXOcgo
-         NRX3krjSWxh6Y0om3d9e2nmCb2u/sLGOlmx9HuL/aeDXC0aZUUUhgBZHvD1Mc6xet9Mx
-         VKJ1HFD7psymFnZGe5sCwnX9ZLwdaboWRxqZbPUudqviv3L0hy1ma2CobHiNhnMfs2vQ
-         RMtQ==
-X-Gm-Message-State: AO0yUKXVYcZOYk/aXtISi1eKoyjXYhhx7UKyXico7tYUKgWUVOzhATXr
-        YAGH6a1ScFlF09oUkKCjIwo5JmhRFC73xjWl+z2c+w==
-X-Google-Smtp-Source: AK7set8R6MPvl1jYDipFYGi3DvPwtseUsQ8EVHZ1VfSLTTmEQjtyKWaAM4IDrmaaOglEDFXN0af7mz8G306mXMeEY84=
-X-Received: by 2002:a50:f683:0:b0:4fc:473d:3308 with SMTP id
- d3-20020a50f683000000b004fc473d3308mr360427edn.8.1678993030292; Thu, 16 Mar
- 2023 11:57:10 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230316034759.73489-1-steev@kali.org> <20230316034759.73489-3-steev@kali.org>
- <f7be8db9-0bdd-644d-c7a0-4321041c5028@molgen.mpg.de>
-In-Reply-To: <f7be8db9-0bdd-644d-c7a0-4321041c5028@molgen.mpg.de>
-From:   Steev Klimaszewski <steev@kali.org>
-Date:   Thu, 16 Mar 2023 13:56:59 -0500
-Message-ID: <CAKXuJqiPKJ_Jus2gwA94gQAb-7-PBAZL4CSaFcxpx3+UXBYS-A@mail.gmail.com>
-Subject: Re: [PATCH v6 2/4] Bluetooth: hci_qca: Add support for QTI Bluetooth
- chip wcn6855
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        d=1e100.net; s=20210112; t=1678993250;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=N8gdgFdzn2VZfw/BOlLO7/M7CDem1fHQVxoPtn1UlLE=;
+        b=MW+xWCAbNulm24vnrXZj34nKPsQuhyrLYOlWacX41n0c5pucVJr9CHD3gkJ4jxzEWK
+         djNVcwWKTucihtM5j+3pxbChBT6H9YoTvoIGgdmEV+RDDBBG4OzELWg4prXVe2RMTUFy
+         97/PWPoMT6AoyBzD9XqvgdLc+ocX6DMob9ZCP7ZSZ9OZn34tBJkqVvBH7lizmD6uAajd
+         HjyS7PU3HvSyTRsZKcma7/PV4Hv4oM0vANdidj/itGGiTwQ1z2wF9HFy2EYwBmUxE/jV
+         wZMivuL8clhKwN6priv5TVWjAIs39c7x1JON0tmWJ1sex7bhWL6WLtdomS2Qk0PILloi
+         jjcg==
+X-Gm-Message-State: AO0yUKXvEFdufuHJ/S2ZHAWvPFcJ35rutgzNyfB5/MTCgrPkbJ3m/S3X
+        1PPqOUOM2fcxUuihn4MCqFmZXwypBTo=
+X-Google-Smtp-Source: AK7set9HVg6/x3f+ic5yQ+uP2gWUBHqmvBXFAjkjzROHUiUGIBghCoAnWktz2gfaZsbhbTJuHb+/XQ==
+X-Received: by 2002:a05:6214:d88:b0:5a3:cbc6:8145 with SMTP id e8-20020a0562140d8800b005a3cbc68145mr27795909qve.19.1678993249518;
+        Thu, 16 Mar 2023 12:00:49 -0700 (PDT)
+Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
+        by smtp.gmail.com with ESMTPSA id c18-20020a05620a269200b007343fceee5fsm136266qkp.8.2023.03.16.12.00.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Mar 2023 12:00:47 -0700 (PDT)
+Date:   Thu, 16 Mar 2023 15:00:46 -0400
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     David Howells <dhowells@redhat.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     dhowells@redhat.com, Matthew Wilcox <willy@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        Mark Pearson <markpearson@lenovo.com>,
-        Tim Jiang <quic_tjiang@quicinc.com>,
-        Johan Hovold <johan@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Message-ID: <6413675eedcfa_33bc9d208e9@willemb.c.googlers.com.notmuch>
+In-Reply-To: <811534.1678992280@warthog.procyon.org.uk>
+References: <641361cd8d704_33b0cc20823@willemb.c.googlers.com.notmuch>
+ <20230316152618.711970-1-dhowells@redhat.com>
+ <20230316152618.711970-4-dhowells@redhat.com>
+ <811534.1678992280@warthog.procyon.org.uk>
+Subject: Re: [RFC PATCH 03/28] tcp: Support MSG_SPLICE_PAGES
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 16, 2023 at 4:58=E2=80=AFAM Paul Menzel <pmenzel@molgen.mpg.de>=
- wrote:
->
-> Dear Steev,
->
->
-> Thank you for your patch. Some nits.
->
-> Am 16.03.23 um 04:47 schrieb Steev Klimaszewski:
-> > Added regulators,GPIOs and changes required to power on/off wcn6855.
->
-> Please add a space after the comma.
->
-Good catch, sorry about that, will do in v7!
+David Howells wrote:
+> Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
+> 
+> > The commit message mentions MSG_SPLICE_PAGES as an internal flag.
+> > 
+> > It can be passed from userspace. The code anticipates that and checks
+> > preconditions.
+> 
+> Should I add a separate field in the in-kernel msghdr struct for such internal
+> flags?  That would also avoid putting an internal flag in the same space as
+> the uapi flags.
 
-> > Added support for firmware download for wcn6855.
->
-> You might want to use imperative mood (Add =E2=80=A6).
->
-Bah, I'd seen others mention this, and still did it in mine :/
+That would work, if no cost to common paths that don't need it.
 
-> How did you test this? What firmware files did you use?
->
-> Maybe mention, that the assumption is, that it=E2=80=99s identical to WCN=
-6750?
->
-Are you wanting the firmware used in the commit message?  I think I've
-seen similar in e.g. ath11k patches like:
+A not very pretty alternative would be to add an an extra arg to each
+sendmsg handler that is used only when called from sendpage.
 
-"Tested-on: WCN6750 hw1.0 AHB WLAN.MSL.1.0.1-00887-QCAMSLSWPLZ-1"
+There are a few other internal MSG_.. flags, such as
+MSG_SENDPAGE_NOPOLICY. Those are all limited to sendpage, and ignored
+in sendmsg, I think. Which would explain why it was clearly safe to
+add them.
 
-something like that?  The firmware itself is already in
-linux-firmware.  I figured it wasn't imperative to the patch and it's
-in the cover letter but I can definitely throw it in the commit
-message!
-
-
-> > Signed-off-by: Steev Klimaszewski <steev@kali.org>
-> > Reviewed-by: Bjorn Andersson <andersson@kernel.org>
-> > Tested-by: Bjorn Andersson <andersson@kernel.org>
-> > ---
->
-> [=E2=80=A6]
->
->
-> Kind regards,
->
-> Paul
