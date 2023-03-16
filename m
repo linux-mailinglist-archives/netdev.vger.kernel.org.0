@@ -2,71 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C747B6BCC61
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 11:19:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7AED6BCC70
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 11:20:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230232AbjCPKTD convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 16 Mar 2023 06:19:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45666 "EHLO
+        id S230313AbjCPKUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 06:20:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230200AbjCPKS5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 06:18:57 -0400
-Received: from fd01.gateway.ufhost.com (fd01.gateway.ufhost.com [61.152.239.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 172C8BCB9C;
-        Thu, 16 Mar 2023 03:18:49 -0700 (PDT)
-Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
-        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
-        by fd01.gateway.ufhost.com (Postfix) with ESMTP id D3AC224E3AD;
-        Thu, 16 Mar 2023 18:18:47 +0800 (CST)
-Received: from EXMBX162.cuchost.com (172.16.6.72) by EXMBX166.cuchost.com
- (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Thu, 16 Mar
- 2023 18:18:47 +0800
-Received: from [192.168.120.42] (171.223.208.138) by EXMBX162.cuchost.com
- (172.16.6.72) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Thu, 16 Mar
- 2023 18:18:46 +0800
-Message-ID: <ed8dbe90-ee1d-405a-5aa6-cbc16a0057ac@starfivetech.com>
-Date:   Thu, 16 Mar 2023 18:18:44 +0800
+        with ESMTP id S230227AbjCPKUf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 06:20:35 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DC0ABCFE3;
+        Thu, 16 Mar 2023 03:20:26 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id o12so5382508edb.9;
+        Thu, 16 Mar 2023 03:20:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678962024;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=jGioppgO0MzFmAHm40uh73Adm2rQQtc87u2aiQkh8H4=;
+        b=drd9Ugkav0IjqQXXwvmyIm2esAE32wSSlIYWjYhNCjnOZ0ItBJY/DRlbWWu1/R32eC
+         2BNgYkWAkkHMmQnQ6B8JXwWMpdENk2RZEkHohKsbOuA01kwDUuoREQZasK0Pv+URvqEa
+         iMWEVXXvSxFk/a24tIk7lN9vGZ+1zywUwf9SzRM+nJe1f0PGbliX0FxR5P1Oc/2VouVH
+         P/0dXNpIjz6gpoAsrv/b5e50J8P5Jd30/avK5u057TAIshZKJr+JOItDfL6W8mMKD1Hd
+         gZqO7Sg6x1plAuIcgg+MrSS6HB1tBd+7JtbMyhrS4/JgoqCNbjk5ofNeEIOa727P/2/B
+         2G1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678962024;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=jGioppgO0MzFmAHm40uh73Adm2rQQtc87u2aiQkh8H4=;
+        b=BHA6vcFeCyU1IXUSSs85pZAPfUYW1asZThsuFxPILIxhC3fpCSQvB1R6+b3Nlyfef6
+         fpwNxuTjI1jdM6hfhZzoWLM12FVpgj9++zHCxb3jeIiv0nfC6H//f/QtnvqZTXLYz7lx
+         gLWIFH4kmZm/j0G4cxVcVmjWfxeJ6KtrxvpeVXUWfzKsRRxzGvyq0gOHRNz1TkcYGt2q
+         x+zfE8PzeRGcaWTHjhyefcVlylyi92X/TiHCWlncnGFRnIEHwklKhs9bNk6kJH+X5GNL
+         Yok4oBc3gamLx5HaJGwj+7qTy7Rtyt2dFMhuYZ7k6CzZ/T6uRDIqpiJXSUIIKHPi0/Yi
+         ewvQ==
+X-Gm-Message-State: AO0yUKV3oTISqROPDSVsS6Qrs4gWxgKmihXzmHpu2Rh9XrrGVmOrbLBe
+        zD/2P/kfD3N2WOnTQYEfMRU=
+X-Google-Smtp-Source: AK7set83zGBfwIIdGj2u78Yejl5npnGcUU/3kxOM7rghdNvDRp2QU42QsMvnhCzxg1hMxtxs3MXC1w==
+X-Received: by 2002:a17:906:9be4:b0:930:eb8e:b1c9 with SMTP id de36-20020a1709069be400b00930eb8eb1c9mr560320ejc.24.1678962023979;
+        Thu, 16 Mar 2023 03:20:23 -0700 (PDT)
+Received: from localhost.localdomain (077222238142.warszawa.vectranet.pl. [77.222.238.142])
+        by smtp.googlemail.com with ESMTPSA id qh2-20020a170906eca200b008e2dfc6382asm3648118ejb.125.2023.03.16.03.20.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Mar 2023 03:20:23 -0700 (PDT)
+From:   Szymon Heidrich <szymon.heidrich@gmail.com>
+To:     kuba@kernel.org, steve.glendinning@shawell.net,
+        UNGLinuxDriver@microchip.com, davem@davemloft.net,
+        edumazet@google.com
+Cc:     pabeni@redhat.com, szymon.heidrich@gmail.com,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] net: usb: smsc95xx: Limit packet length to skb->len
+Date:   Thu, 16 Mar 2023 11:19:54 +0100
+Message-Id: <20230316101954.75836-1-szymon.heidrich@gmail.com>
+X-Mailer: git-send-email 2.40.0
+In-Reply-To: <20230315212425.12cb48ca@kernel.org>
+References: <20230315212425.12cb48ca@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v7 4/6] dt-bindings: net: Add support StarFive dwmac
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Yanhong Wang <yanhong.wang@starfivetech.com>,
-        Tommaso Merciai <tomm.merciai@gmail.com>
-References: <20230316043714.24279-1-samin.guo@starfivetech.com>
- <20230316043714.24279-5-samin.guo@starfivetech.com>
- <cfeec762-de75-f90f-7ba1-6c0bd8b70dff@linaro.org>
- <93a3b4bb-35a4-da7c-6816-21225b42f79b@starfivetech.com>
- <9038dba0-6f72-44a1-9f57-1c08b03b9c31@linaro.org>
- <d2bb7fa5-206f-2059-bde0-b65e1acc44de@starfivetech.com>
- <c716e535-7426-56da-ca6f-51c7d7d69bb3@linaro.org>
- <b7766151-cf21-a5b4-e0ef-7b070e9e5c33@starfivetech.com>
- <d2eda9a8-f532-d7f0-7ef3-b3b8e1a0a79f@linaro.org>
-From:   Guo Samin <samin.guo@starfivetech.com>
-In-Reply-To: <d2eda9a8-f532-d7f0-7ef3-b3b8e1a0a79f@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Originating-IP: [171.223.208.138]
-X-ClientProxiedBy: EXCAS066.cuchost.com (172.16.6.26) To EXMBX162.cuchost.com
- (172.16.6.72)
-X-YovoleRuleAgent: yovoleflag
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,105 +74,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Packet length retrieved from descriptor may be larger than
+the actual socket buffer length. In such case the cloned
+skb passed up the network stack will leak kernel memory contents.
 
+Fixes: 2f7ca802bdae ("net: Add SMSC LAN9500 USB2.0 10/100 ethernet adapter driver")
+Signed-off-by: Szymon Heidrich <szymon.heidrich@gmail.com>
+---
+V1 -> V2: Move packet length check to prevent kernel panic in skb_pull
 
--------- 原始信息 --------
-Re: [PATCH v7 4/6] dt-bindings: net: Add support StarFive dwmac
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-to : Guo Samin <samin.guo@starfivetech.com>, linux-riscv@lists.infradead.org, netdev@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-data: 2023/3/16
+ drivers/net/usb/smsc95xx.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-> On 16/03/2023 09:28, Guo Samin wrote:
->>
->>
->> -------- 原始信息 --------
->> 主题: Re: [PATCH v7 4/6] dt-bindings: net: Add support StarFive dwmac
->> From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->> 收件人: Guo Samin <samin.guo@starfivetech.com>, linux-riscv@lists.infradead.org, netdev@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
->> 日期: 2023/3/16
->>
->>> On 16/03/2023 09:15, Guo Samin wrote:
->>>>>>> interrupts: ???
->>>>>>>
->>>>>>
->>>>>> Hi Krzysztof, 
->>>>>>
->>>>>> snps,dwmac.yaml has defined the reg/interrupt/interrupt-names nodes,
->>>>>> and the JH7110 SoC is also applicable.
->>>>>> Maybe just add reg/interrupt/interrupt-names to the required ?
->>>>>
->>>>> You need to constrain them.
->>>>
->>>>
->>>> I see. I will add reg constraints in the next version, thanks.
->>>>
->>>> I have one more question, the interrupts/interrup-names of JH7110 SoC's gmac are exactly the same as snps,dwmac.yaml,
->>>> do these also need to be constrained?
->>>
->>> The interrupts on common binding are variable, so you need to constrain
->>> them - you have fixed number of them, right?
->>>
->>> Best regards,
->>> Krzysztof
->>>
->>
->> Yes, JH7110 fixed is 3 pcs. Thanks, I will constrain them.
-> 
-> Then just minItems: 3, maxItems: 3 here should be enough
-> 
-> Best regards,
-> Krzysztof
-> 
-
-Hi Krzysztof,
-
-Thank you for the suggestion. 
-I'll change it like this in the next version, is right?
-
-
-$ git diff
---- a/Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml
-+++ b/Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml
-@@ -27,6 +27,9 @@ properties:
-           - starfive,jh7110-dwmac
-       - const: snps,dwmac-5.20
+diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+index 32d2c60d3..563ecd27b 100644
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -1833,6 +1833,12 @@ static int smsc95xx_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
+ 		size = (u16)((header & RX_STS_FL_) >> 16);
+ 		align_count = (4 - ((size + NET_IP_ALIGN) % 4)) % 4;
  
-+  reg:
-+    maxItems: 1
++		if (unlikely(size > skb->len)) {
++			netif_dbg(dev, rx_err, dev->net,
++				  "size err header=0x%08x\n", header);
++			return 0;
++		}
 +
-   clocks:
-     items:
-       - description: GMAC main clock
-@@ -43,6 +46,14 @@ properties:
-       - const: tx
-       - const: gtx
- 
-+  interrupts:
-+    minItems: 3
-+    maxItems: 3
-+
-+  interrupt-names:
-+    minItems: 3
-+    maxItems: 3
-+
-   resets:
-     items:
-       - description: MAC Reset signal.
-@@ -77,8 +88,11 @@ unevaluatedProperties: false
- 
- required:
-   - compatible
-+  - reg
-   - clocks
-   - clock-names
-+  - interrupts
-+  - interrupt-names
-   - resets
-   - reset-names
+ 		if (unlikely(header & RX_STS_ES_)) {
+ 			netif_dbg(dev, rx_err, dev->net,
+ 				  "Error header=0x%08x\n", header);
+-- 
+2.40.0
 
-
-
-
-
-Best regards,
-Samin
