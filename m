@@ -2,131 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C36776BC920
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 09:31:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E79BA6BC934
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 09:32:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229949AbjCPIbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 04:31:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42238 "EHLO
+        id S229692AbjCPIcc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 04:32:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229697AbjCPIbQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 04:31:16 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2082.outbound.protection.outlook.com [40.107.243.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA58FE381;
-        Thu, 16 Mar 2023 01:30:59 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GG2D+wa1jTKsvTwY0Kj1zPB51gjsuHx4AjtVQXH/xSn38ukzF81ybwI564swswUiu+zK2nLsZRm91eKXBORaZYVfEwx8RXFyuCmEcJpiGq6rV58cdjVhlDTDLPQGn7/ljWhecgu19oWum8QYzuyVpFditUIpGBJS+kf4D8PRt2hakC4gI1JvosmJrJUvmikNxx4jf1RuSeA0S1ENJ2jw6gP1t12Y1Jh9nnnlQ8h9BsTS4akGn2BvdIUcrcofmFYgX3b1lyby7VJ5bNSvJt4fYLiXMccTSTEiOyeOkF0sq43C+XPpbs+bkUnL38r/edXdBWHEdRDmBN0i83i3SzsBjA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Nm+4cAl9fMY65eit/A7yIyWP/zKW5gko2ljpIWb6AXA=;
- b=TN+40f632435tWXtADacB9v21aWEt3osHTBCqwqcY0DRX15TwPY8lK8XJdT5E8TlhxSHHfXbzJt56PV9EYr3py6VZ7x8HHXQgynHk2rII7X1TUCVhCxQ8GUhdb2hrvUtnIF70e9qtiG30+bGG3cmHzrtc6THYaW59i9pWBiLQ8ycxwcKnZvNXcyH/tbAIWRK/O9qTno+qR704J3rW1kyUglMQlsetQoLdQ4fucE41Wv/NriCi+Lu9k/JLjZsV3ly/FU2GomCo5f57UC9zgT28q1t9Z91Y2OW0DJVW0L9iRghspKtd8EqvxYjiF3JtDVOPfrQDZVzA2m/eVOUHEenSA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=microchip.com smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Nm+4cAl9fMY65eit/A7yIyWP/zKW5gko2ljpIWb6AXA=;
- b=uK2hFv/Zf8wKDdzmZRQ67MUQ9EgbSNwQ/JfJLr20bDB88iDSgR5GUW72ezootjdSpFW41PzKO9mwfiy+AUC0qFmbfpxXnCmp/TGe16B0FcDmjX3b1KRRH96fO4ZZq0u1u6RlW9eVs4Bh9flHWmDJdA6RFM40bdoE1AVeaASdveI=
-Received: from CY8PR12CA0001.namprd12.prod.outlook.com (2603:10b6:930:4e::24)
- by SN7PR12MB7855.namprd12.prod.outlook.com (2603:10b6:806:343::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.31; Thu, 16 Mar
- 2023 08:30:55 +0000
-Received: from CY4PEPF0000B8ED.namprd05.prod.outlook.com
- (2603:10b6:930:4e:cafe::2) by CY8PR12CA0001.outlook.office365.com
- (2603:10b6:930:4e::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.30 via Frontend
- Transport; Thu, 16 Mar 2023 08:30:55 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CY4PEPF0000B8ED.mail.protection.outlook.com (10.167.241.9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6222.7 via Frontend Transport; Thu, 16 Mar 2023 08:30:55 +0000
-Received: from SATLEXMB07.amd.com (10.181.41.45) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 16 Mar
- 2023 03:30:54 -0500
-Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB07.amd.com
- (10.181.41.45) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 16 Mar
- 2023 01:30:54 -0700
-Received: from xhdharinik40.xilinx.com (10.180.168.240) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.34 via Frontend
- Transport; Thu, 16 Mar 2023 03:30:51 -0500
-From:   Harini Katakam <harini.katakam@amd.com>
-To:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
-        <claudiu.beznea@microchip.com>, <kuba@kernel.org>,
-        <edumazet@google.com>, <pabeni@redhat.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <michal.simek@amd.com>, <harinikatakamlinux@gmail.com>,
-        <harini.katakam@amd.com>
-Subject: [PATCH net-next] net: macb: Increase halt timeout to accommodate 10Mbps link
-Date:   Thu, 16 Mar 2023 14:00:50 +0530
-Message-ID: <20230316083050.2108-1-harini.katakam@amd.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S229664AbjCPIca (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 04:32:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A285D8B9
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 01:31:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1678955488;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=X/1UEGyWZZrbvStEgLaSVShuWDRxe0yPRa+3kY6NxaI=;
+        b=IYJprkW1OtGCrEF2tI/Z48yXTIZTz1RV8Ys1KgziE+F6Spy8wYk5KyvU/G00TEf+LSxOi6
+        EoDiEYpSUsvIZji2VjKObgxeUmt9QR+Q1/ZPsz8OW5VoMTSCT0uTuP0Yg9mLypM4BGZWSR
+        urjd+943k1XIGiGc1s8dDiFSomMDxc4=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-604-vbBx4kBwMn-NzNk1A44IPQ-1; Thu, 16 Mar 2023 04:31:27 -0400
+X-MC-Unique: vbBx4kBwMn-NzNk1A44IPQ-1
+Received: by mail-wr1-f70.google.com with SMTP id 7-20020a5d47a7000000b002be0eb97f4fso119541wrb.8
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 01:31:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678955486;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=X/1UEGyWZZrbvStEgLaSVShuWDRxe0yPRa+3kY6NxaI=;
+        b=iVELUvDAQAMjcnfPXcFW3+3wwmvYZW7HOb3hR2ECWQbITiHCdV0eUAQ6/PtBNUICiv
+         t2iJnh0m1SV1iqTqQFy40C7IjhjQJvLj9rrwHQ9lZbPgMyUsbHxQ/YY/UfL1uSGUVtLU
+         4Gft+qikf7kOxoEiOS7rl13feAzEXrk80WkLhwKc1eAxOP3QwwIV4kinIU7ewUUXRPeJ
+         +npbsljCHlcMFOf9Nkacz04i7OXEou4I9AOXvDzVv+kznkYur1xF7pUSCAR+4rXip3cF
+         u6Lh4OFtWbeHkD2rxCO/hkHrrLJKAqE5WuqaG5MtFw63jIom6jndDY7U52IzuOMDvvRi
+         qyaA==
+X-Gm-Message-State: AO0yUKUUkHwi5wX75erZdNu4sFCgFCiRmiJYFK+oBxTUCMwso8DHiIyV
+        rCwqc1eM4qnvMP+/2nHpNfSN5VNIZk5poYeX6R4+H7+Lr07fTCCe+3f3XN3WXUVqJv9yh86LbMG
+        9OdJGSBw5Z8qYpc2D
+X-Received: by 2002:a5d:5955:0:b0:2cf:e29f:d7f5 with SMTP id e21-20020a5d5955000000b002cfe29fd7f5mr3576303wri.25.1678955486052;
+        Thu, 16 Mar 2023 01:31:26 -0700 (PDT)
+X-Google-Smtp-Source: AK7set8XgT/fkEa6oyHpuwgit2NX40Fpv+7C8AxfojZlS6SqwfkBRFQgzp3vx+Buq6H4mrLWafU74w==
+X-Received: by 2002:a5d:5955:0:b0:2cf:e29f:d7f5 with SMTP id e21-20020a5d5955000000b002cfe29fd7f5mr3576292wri.25.1678955485799;
+        Thu, 16 Mar 2023 01:31:25 -0700 (PDT)
+Received: from sgarzare-redhat (host-82-57-51-170.retail.telecomitalia.it. [82.57.51.170])
+        by smtp.gmail.com with ESMTPSA id c10-20020adffb0a000000b002d1bfe3269esm1518738wrr.59.2023.03.16.01.31.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Mar 2023 01:31:25 -0700 (PDT)
+Date:   Thu, 16 Mar 2023 09:31:22 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org,
+        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
+        eperezma@redhat.com, netdev@vger.kernel.org, stefanha@redhat.com,
+        linux-kernel@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org
+Subject: Re: [PATCH v2 2/8] vhost-vdpa: use bind_mm/unbind_mm device callbacks
+Message-ID: <20230316083122.hliiktgsymrfpozy@sgarzare-redhat>
+References: <20230302113421.174582-1-sgarzare@redhat.com>
+ <20230302113421.174582-3-sgarzare@redhat.com>
+ <CACGkMEttgd82xOxV8WLdSFdfhRLZn68tSaV4APSDh8qXxf4OEw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000B8ED:EE_|SN7PR12MB7855:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7f3004da-abee-4ebc-77fb-08db25f8c2fd
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: c3RgXAoB2sHY+5AFDXj6n+KuFfy+DRsdGB5MbAN8Wnqy2yOsV+ljflChlxxuEoQTIuFdg8+ATvKT/s5hRsd1tbMt1Z3reB7LzRdfLEIlwBbjGQGXuO8567QQtIOanPuoK3QKOwJXmoLPRH8PAHNCzM8h5bjE2X99zvT7K5hjddRHoEi//fpByRh0WNqa8inQ6FSGIlIuhqY58Zaq+qUocOw4fR8gkLTYxWrO/6JmRq2IcXVIEgGQ3NXkXi94FPfs1G8dmGQcYhKm/Bu7wU45JxZyYQZv0vdfOfV4Y9V+/ORRBCbviYFN0eWPqKXk4Uk2KSI/guLzJYBcD7cY3X2d7EnDKvi+B42lw/neRM3rAiXnjf90mNTMUGv0GYyBGgl2DzQ/lEJRb0Ca2+hq+9TDTbtc1pqnGysEHDbL3mxNlS/iNGwCbJlC3DiHyjvHDiXmrDIDSxpyFDFpd5mcMes+MBzqz3Wd1G6YiEUTx8vLMtUqQXbOVaQz9QCcn9J5vUDrSz63sM9o/nhnAPs17n23ztboUVfwCzCO0/eY44U9ypGCUtHFyUR949xeA72wu09UEcdM6EQJX0R7YQMymD2B+xxhj6hcehytx0AyFcnt+vsbPncZoAG2fWnvE4eJLQR1q7BS7Bp7XA4xtiFW4B94xlDJGK+UOXmSkN7ip6zr6ZkVJYFyEwnKxj2lhYZ926iwJ0y/QkUo9jN69HmTvvco/xgaj9QwS8iiMjO/MYKrbL4=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(376002)(346002)(396003)(136003)(451199018)(46966006)(40470700004)(36840700001)(83380400001)(336012)(82310400005)(2616005)(426003)(44832011)(47076005)(186003)(36860700001)(5660300002)(70206006)(8676002)(70586007)(4744005)(41300700001)(81166007)(2906002)(40460700003)(82740400003)(36756003)(1076003)(26005)(8936002)(478600001)(54906003)(4326008)(356005)(86362001)(40480700001)(110136005)(316002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2023 08:30:55.5628
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7f3004da-abee-4ebc-77fb-08db25f8c2fd
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CY4PEPF0000B8ED.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7855
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CACGkMEttgd82xOxV8WLdSFdfhRLZn68tSaV4APSDh8qXxf4OEw@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Harini Katakam <harini.katakam@xilinx.com>
+On Tue, Mar 14, 2023 at 11:48:33AM +0800, Jason Wang wrote:
+>On Thu, Mar 2, 2023 at 7:34 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
+>>
+>> When the user call VHOST_SET_OWNER ioctl and the vDPA device
+>> has `use_va` set to true, let's call the bind_mm callback.
+>> In this way we can bind the device to the user address space
+>> and directly use the user VA.
+>>
+>> The unbind_mm callback is called during the release after
+>> stopping the device.
+>>
+>> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+>> ---
+>>
+>> Notes:
+>>     v2:
+>>     - call the new unbind_mm callback during the release [Jason]
+>>     - avoid to call bind_mm callback after the reset, since the device
+>>       is not detaching it now during the reset
+>>
+>>  drivers/vhost/vdpa.c | 30 ++++++++++++++++++++++++++++++
+>>  1 file changed, 30 insertions(+)
+>>
+>> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+>> index dc12dbd5b43b..1ab89fccd825 100644
+>> --- a/drivers/vhost/vdpa.c
+>> +++ b/drivers/vhost/vdpa.c
+>> @@ -219,6 +219,28 @@ static int vhost_vdpa_reset(struct vhost_vdpa *v)
+>>         return vdpa_reset(vdpa);
+>>  }
+>>
+>> +static long vhost_vdpa_bind_mm(struct vhost_vdpa *v)
+>> +{
+>> +       struct vdpa_device *vdpa = v->vdpa;
+>> +       const struct vdpa_config_ops *ops = vdpa->config;
+>> +
+>> +       if (!vdpa->use_va || !ops->bind_mm)
+>> +               return 0;
+>> +
+>> +       return ops->bind_mm(vdpa, v->vdev.mm);
+>> +}
+>> +
+>> +static void vhost_vdpa_unbind_mm(struct vhost_vdpa *v)
+>> +{
+>> +       struct vdpa_device *vdpa = v->vdpa;
+>> +       const struct vdpa_config_ops *ops = vdpa->config;
+>> +
+>> +       if (!vdpa->use_va || !ops->unbind_mm)
+>> +               return;
+>> +
+>> +       ops->unbind_mm(vdpa);
+>> +}
+>> +
+>>  static long vhost_vdpa_get_device_id(struct vhost_vdpa *v, u8 __user *argp)
+>>  {
+>>         struct vdpa_device *vdpa = v->vdpa;
+>> @@ -711,6 +733,13 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
+>>                 break;
+>>         default:
+>>                 r = vhost_dev_ioctl(&v->vdev, cmd, argp);
+>> +               if (!r && cmd == VHOST_SET_OWNER) {
+>> +                       r = vhost_vdpa_bind_mm(v);
+>> +                       if (r) {
+>> +                               vhost_dev_reset_owner(&v->vdev, NULL);
+>> +                               break;
+>> +                       }
+>> +               }
+>
+>Nit: is it better to have a new condition/switch branch instead of
+>putting them under default? (as what vring_ioctl did).
 
-Increase halt timeout to accommodate for 16K SRAM at 10Mbps rounded.
+Yep, I agree!
 
-Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
----
- drivers/net/ethernet/cadence/macb_main.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+I'll change it.
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 51c9fd6f68a4..96fd2aa9ee90 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -94,8 +94,7 @@ struct sifive_fu540_macb_mgmt {
- /* Graceful stop timeouts in us. We should allow up to
-  * 1 frame time (10 Mbits/s, full-duplex, ignoring collisions)
-  */
--#define MACB_HALT_TIMEOUT	1230
--
-+#define MACB_HALT_TIMEOUT	14000
- #define MACB_PM_TIMEOUT  100 /* ms */
- 
- #define MACB_MDIO_TIMEOUT	1000000 /* in usecs */
--- 
-2.17.1
+Thanks,
+Stefano
 
