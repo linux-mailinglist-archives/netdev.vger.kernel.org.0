@@ -2,84 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DC946BC707
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 08:27:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B28BF6BC747
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 08:34:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229896AbjCPH1y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 03:27:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35368 "EHLO
+        id S229760AbjCPHeI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 03:34:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbjCPH1x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 03:27:53 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7891020A34
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 00:27:51 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id eg48so3719195edb.13
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 00:27:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678951670;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=XK209g2VbExh/TqurSdOwtwH2IufznodX/JmW/3KLmc=;
-        b=HChaTJc3kHVEAb6hVQADOZpU05dX3YjTZxKyDvkpBFOo1Oe4dPjb+DMmdM14GNyeIS
-         6JRluNCuzmDmCmE7bSlEA4J4RTmi6HSugb5kpT65Jb6FjFTJbSApl6cd9zx1arvIHTEg
-         ShmjqyCKMqbOtfPgiVNOwlu2VFKGo4XaHnzNET0qVG3WeZLajFMbDEu8N7NGGUYwqNcD
-         7HD0yqK4Hsuo9OLS2JxWg10s4JB7f/263Amjs5sIJTlaeHT4bv94CS9612bSWAE/rT2/
-         kIXdmlmM8eC5JUa4B9+S7APiUC45tc3cTaBPdglv1N+IfqoaZFW7fqo8fzADdN52nLE3
-         8yCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678951670;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=XK209g2VbExh/TqurSdOwtwH2IufznodX/JmW/3KLmc=;
-        b=nWfJgUyMThzBSqqEB9QYWnDHMptjekZE04JeE0DvHkk63VPluA/qoz4X4R93VM9fRd
-         D3IbQrkfTDNXxNw90vjOYgpmQcmADpn99vP9tpUBVjxv7eEdmSwmMqjNhBwPhFP6lnI6
-         4z74eo0qm0M4F5B3QeJoj6tu4zVjWAeV9vEvHw2oSoofhbZyOxqoiO0LiMcML215IYXW
-         gSp70CzNSW39f229m+36OSt3uOJm+BNVWE0/SLPehQPw/0ULIlbc44GmS6OLactO+kKT
-         lCkgUGg+VNcNrIUfszlDj7dH3k6Synd7R8slnitsqBYVHQT+Lt+pQllo0oQzK1QELRmw
-         hkiw==
-X-Gm-Message-State: AO0yUKWW4jCVQR4l16k0ZGTYhWnJva9auJZKoqTJkvLycFCuF2PLeMxd
-        E0Ey6Rd+tQzPKowdtec9IEfycQ==
-X-Google-Smtp-Source: AK7set/Dr0fYdr41RCJNO5h+athWj3NTIYT68gO1NkqweUmCPxsQgXs+rJYrxMRigcX9FdXMNWx5XA==
-X-Received: by 2002:a17:907:e93:b0:92f:22b1:57f9 with SMTP id ho19-20020a1709070e9300b0092f22b157f9mr5914949ejc.2.1678951669987;
-        Thu, 16 Mar 2023 00:27:49 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:9827:5f65:8269:a95f? ([2a02:810d:15c0:828:9827:5f65:8269:a95f])
-        by smtp.gmail.com with ESMTPSA id si2-20020a170906cec200b008e68d2c11d8sm3458672ejb.218.2023.03.16.00.27.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Mar 2023 00:27:49 -0700 (PDT)
-Message-ID: <cfeec762-de75-f90f-7ba1-6c0bd8b70dff@linaro.org>
-Date:   Thu, 16 Mar 2023 08:27:48 +0100
+        with ESMTP id S229747AbjCPHeH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 03:34:07 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B99E85B28;
+        Thu, 16 Mar 2023 00:33:24 -0700 (PDT)
+Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1pci69-0003AG-P4; Thu, 16 Mar 2023 08:32:29 +0100
+Message-ID: <c5e18ae6-52c5-0d95-b6c1-a1b59508cb79@leemhuis.info>
+Date:   Thu, 16 Mar 2023 08:32:29 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.8.0
-Subject: Re: [PATCH v7 4/6] dt-bindings: net: Add support StarFive dwmac
-Content-Language: en-US
-To:     Samin Guo <samin.guo@starfivetech.com>,
-        linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
+Content-Language: en-US, de-DE
+From:   "Linux regression tracking (Thorsten Leemhuis)" 
+        <regressions@leemhuis.info>
+To:     Shane Parslow <shaneparslow808@gmail.com>
+Cc:     Martin <mwolf@adiumentum.com>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Yanhong Wang <yanhong.wang@starfivetech.com>,
-        Tommaso Merciai <tomm.merciai@gmail.com>
-References: <20230316043714.24279-1-samin.guo@starfivetech.com>
- <20230316043714.24279-5-samin.guo@starfivetech.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230316043714.24279-5-samin.guo@starfivetech.com>
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux kernel regressions list <regressions@lists.linux.dev>
+Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>
+Subject: [regression] Bug 217200 - after upgrading to Kernel 6.2 WWAN Intel
+ XMM7560 LTE module is not working anymore
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1678952004;f0c194bf;
+X-HE-SMSGID: 1pci69-0003AG-P4
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -87,126 +51,133 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 16/03/2023 05:37, Samin Guo wrote:
-> From: Yanhong Wang <yanhong.wang@starfivetech.com>
+Hi, Thorsten here, the Linux kernel's regression tracker.
+
+I noticed a regression report in bugzilla.kernel.org. Shane Parslow,
+apparently it's caused by a change of yours.
+
+As many (most?) kernel developer don't keep an eye on bugzilla, I
+decided to forward it by mail. Quoting from
+https://bugzilla.kernel.org/show_bug.cgi?id=217200 :
+
+>  Martin 2023-03-15 08:26:13 UTC
 > 
-> Add documentation to describe StarFive dwmac driver(GMAC).
+> after upgrading to Kernel 6.2.x 
+> 01:00.0 Wireless controller [0d40]: Intel Corporation XMM7560 LTE Advanced Pro Modem (rev 01) 
+> is not working anymore.
 > 
-Thank you for your patch. There is something to discuss/improve.
-
-> Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
-> Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
-> Tested-by: Tommaso Merciai <tomm.merciai@gmail.com>
-> ---
->  .../devicetree/bindings/net/snps,dwmac.yaml   |   1 +
->  .../bindings/net/starfive,jh7110-dwmac.yaml   | 130 ++++++++++++++++++
->  MAINTAINERS                                   |   6 +
->  3 files changed, 137 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml
+> I am getting errors like:
 > 
-> diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> index e4519cf722ab..245f7d713261 100644
-> --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> @@ -91,6 +91,7 @@ properties:
->          - snps,dwmac-5.20
->          - snps,dwxgmac
->          - snps,dwxgmac-2.10
-> +        - starfive,jh7110-dwmac
->  
->    reg:
->      minItems: 1
-> diff --git a/Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml b/Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml
-> new file mode 100644
-> index 000000000000..b59e6bd8201f
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml
-> @@ -0,0 +1,130 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +# Copyright (C) 2022 StarFive Technology Co., Ltd.
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/starfive,jh7110-dwmac.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: StarFive JH7110 DWMAC glue layer
-> +
-> +maintainers:
-> +  - Emil Renner Berthing <kernel@esmil.dk>
-> +  - Samin Guo <samin.guo@starfivetech.com>
-> +
-> +select:
-> +  properties:
-> +    compatible:
-> +      contains:
-> +        enum:
-> +          - starfive,jh7110-dwmac
-> +  required:
-> +    - compatible
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - enum:
-> +          - starfive,jh7110-dwmac
-> +      - const: snps,dwmac-5.20
-> +
+> [   44.973374] iosm 0000:01:00.0: ch[1]: confused phase 2
+> [   45.973650] iosm 0000:01:00.0: ch[1]: confused phase 2
+> [   46.972517] iosm 0000:01:00.0: ch[1]: confused phase 2
+> [   47.973038] iosm 0000:01:00.0: ch[1]: confused phase 2
+> [   48.973154] iosm 0000:01:00.0: ch[1]: confused phase 3
+> ...
+> [  174.984861] iosm 0000:01:00.0: PORT open refused, phase A-CD_READY
+> [  174.985767] iosm 0000:01:00.0: ch[6]: confused phase 3
+> [  184.996879] iosm 0000:01:00.0: PORT open refused, phase A-CD_READY
+> [  344.482600] iosm 0000:01:00.0: msg timeout
+> [  344.986684] iosm 0000:01:00.0: msg timeout
+> ...
+> [  287.032750] iosm 0000:01:00.0: ch[6]:invalid channel state 2,expected 1
+> [  288.032786] iosm 0000:01:00.0: ch[6]:invalid channel state 2,expected 1
+> [  298.042818] iosm 0000:01:00.0: ch[6]:invalid channel state 2,expected 1
+> [  337.034256] iosm 0000:01:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x000d address=0x0 flags=0x0000]
+> [  337.536467] iosm 0000:01:00.0: msg timeout
+> [  338.040709] iosm 0000:01:00.0: msg timeout
+> 
+> with Kernel 6.1.18 it is working flawlessly.
+> 
+> The problem still occurs with the latest development release 6.3.-rc2.
+> 
+> I filed a bug report with more info on the redhat bugzilla:
+> 
+> https://bugzilla.redhat.com/show_bug.cgi?id=2175487
+> 
+> Here a bit more about my System:
+> 
+> System:
+>   Host: HP845G9 Kernel: 6.2.6-200.fc37.x86_64 arch: x86_64 bits: 64
+>     Desktop: GNOME v: 43.3 Distro: Fedora release 37 (Thirty Seven)
+> Machine:
+>   Type: Laptop System: HP product: HP EliteBook 845 14 inch G9 Notebook PC
+>     v: N/A serial: <superuser required>
+>   Mobo: HP model: 8990 v: KBC Version 09.49.00 serial: <superuser required>
+>     UEFI: HP v: U82 Ver. 01.04.01 date: 01/12/2023
+> CPU:
+>   Info: 8-core model: AMD Ryzen 7 6800U with Radeon Graphics bits: 64
+>     type: MT MCP cache: L2: 4 MiB
+>   Speed (MHz): avg: 872 min/max: 400/4768 cores: 1: 400 2: 1186 3: 1155
+>     4: 1186 5: 1217 6: 400 7: 1676 8: 400 9: 400 10: 400 11: 400 12: 400
+>     13: 1353 14: 400 15: 400 16: 2588
+> 
+> [tag] [reply] [−]
+> Private
+> Comment 1 Martin 2023-03-15 22:02:46 UTC
+> 
+> after a bisection I found the breaking commit here:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?h=v6.2&id=d08b0f8f46e45a274fc8c9a5bc92cb9da70d9887
+> 
+> d08b0f8f46e45a274fc8c9a5bc92cb9da70d9887 is the first bad commit
+> commit d08b0f8f46e45a274fc8c9a5bc92cb9da70d9887
+> Author: Shane Parslow <shaneparslow808@gmail.com>
+> Date:   Sat Oct 29 02:03:56 2022 -0700
+> 
+>     net: wwan: iosm: add rpc interface for xmm modems
+>     
+>     Add a new iosm wwan port that connects to the modem rpc interface. This
+>     interface provides a configuration channel, and in the case of the 7360, is
+>     the only way to configure the modem (as it does not support mbim).
+>     
+>     The new interface is compatible with existing software, such as
+>     open_xdatachannel.py from the xmm7360-pci project [1].
+>     
+>     [1] https://github.com/xmm7360/xmm7360-pci
+>     
+>     Signed-off-by: Shane Parslow <shaneparslow808@gmail.com>
+>     Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
+>     Signed-off-by: David S. Miller <davem@davemloft.net>
+> 
+>  drivers/net/wwan/iosm/iosm_ipc_chnl_cfg.c | 2 +-
+>  drivers/net/wwan/wwan_core.c              | 4 ++++
+>  include/linux/wwan.h                      | 2 ++
+>  3 files changed, 7 insertions(+), 1 deletion(-)
+> 
+> This commit aims for a different XMM modem (7360) other than the one I use (7560).
+> 
 
-reg:
-  maxItems: 1
+
+See the ticket for more details.
 
 
-> +  clocks:
-> +    items:
-> +      - description: GMAC main clock
-> +      - description: GMAC AHB clock
-> +      - description: PTP clock
-> +      - description: TX clock
-> +      - description: GTX clock
-> +
-> +  clock-names:
-> +    items:
-> +      - const: stmmaceth
-> +      - const: pclk
-> +      - const: ptp_ref
-> +      - const: tx
-> +      - const: gtx
-> +
+[TLDR for the rest of this mail: I'm adding this report to the list of
+tracked Linux kernel regressions; the text you find below is based on a
+few templates paragraphs you might have encountered already in similar
+form.]
 
-interrupts: ???
+BTW, let me use this mail to also add the report to the list of tracked
+regressions to ensure it's doesn't fall through the cracks:
 
-> +  resets:
-> +    items:
-> +      - description: MAC Reset signal.
-> +      - description: AHB Reset signal.
-> +
-> +  reset-names:
-> +    items:
-> +      - const: stmmaceth
-> +      - const: ahb
-> +
-> +  starfive,tx-use-rgmii-clk:
-> +    description:
-> +      Tx clock is provided by external rgmii clock.
-> +    type: boolean
-> +
-> +  starfive,syscon:
-> +    $ref: /schemas/types.yaml#/definitions/phandle-array
-> +    items:
-> +      - items:
-> +          - description: phandle to syscon that configures phy mode
-> +          - description: Offset of phy mode selection
-> +          - description: Shift of phy mode selection
-> +    description:
-> +      A phandle to syscon with two arguments that configure phy mode.
-> +      The argument one is the offset of phy mode selection, the
-> +      argument two is the shift of phy mode selection.
-> +
-> +allOf:
-> +  - $ref: snps,dwmac.yaml#
-> +
-> +unevaluatedProperties: false
-> +
-Best regards,
-Krzysztof
+#regzbot introduced: d08b0f8f46e45a2
+https://bugzilla.kernel.org/show_bug.cgi?id=217200
+#regzbot title: net: wwan: Intel XMM7560 LTE module stopped working
+#regzbot ignore-activity
 
+This isn't a regression? This issue or a fix for it are already
+discussed somewhere else? It was fixed already? You want to clarify when
+the regression started to happen? Or point out I got the title or
+something else totally wrong? Then just reply and tell me -- ideally
+while also telling regzbot about it, as explained by the page listed in
+the footer of this mail.
+
+Developers: When fixing the issue, remember to add 'Link:' tags pointing
+to the report (e.g. the buzgzilla ticket and maybe this mail as well, if
+this thread sees some discussion). See page linked in footer for details.
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+--
+Everything you wanna know about Linux kernel regression tracking:
+https://linux-regtracking.leemhuis.info/about/#tldr
+If I did something stupid, please tell me, as explained on that page.
