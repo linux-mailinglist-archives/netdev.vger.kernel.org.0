@@ -2,122 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 124406BC4B0
+	by mail.lfdr.de (Postfix) with ESMTP id 5FBCA6BC4B1
 	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 04:27:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229794AbjCPD1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 23:27:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39762 "EHLO
+        id S229793AbjCPD11 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 23:27:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229743AbjCPD0k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 23:26:40 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on20618.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e88::618])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 792AEA90A7
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 20:25:13 -0700 (PDT)
+        with ESMTP id S229755AbjCPD0l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 23:26:41 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2087.outbound.protection.outlook.com [40.107.93.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6848721A3E
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 20:25:19 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=F0BnK5erMAHiTOo35Cuilo/LuiWTH9FQoKoXkFCSbvtIUQv3LAHt0kF0qKFMW5NHUaY9B4BKxXB8oLpiY7tjwVk/G++i2Gt+btoiPYElkLuSbyQbcGSLYRGEiS902hV49kvpfmGghbNcsVFt/Dek0ifrodS0NhiJS1zf60AADuGy3hphatZ9wWYeksZH4xlDu6nt+0n0yHxwc77lZOnXtfeRSnfkpNw+hKfy187zTHfdpxemyYWYIKyArpNyGitstYvDtFvV7p3TQmAXBpRKbO6dDW7M1j3SlglP9/RlKuzoV9CXDyahlRDFRPIHLpdVWBja46dUIb2q3cj3km3iGw==
+ b=meKmWelPoeJw1hcnjs282md58HEFBKUJCqy0uq7rTXTsreDeorHnjMHwAvgm7AHc/HlmwOAoIEwjX9IunNeyzjopiKpQrnBQQzWkiBv1bOjfBSPvM6oMvv2QBf3dXnM9Sh+oRoIWEoYrHFa8Htv+9i6PZpPlRtW++vCnK7+IjmFcNDcqVmKysopqPmQ4YYAVvTE8bN8U2ue618lw9SZZqHaJZ64QkC/0sb4GRU/+xg9GnGoS1HKNDKnN1vxa8m1WdlZ/oKbeBz312g5mGnfBlYhAbvYxVzOJ5aCDQS5KEQf0UJafDrEPfZQdCXuOIz/I2OEILK/COxMI7Sovaw9aDQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1zBn/36TSvS/XC+u79olWbHCED3YVns09tcw6HBSX5o=;
- b=QJrBG4fIDP2l1FCu9gmr8EfGZt6ir9a20O2csknDtskPJ40+ePOto5NBJt70lbZDQ+c4eQYyy8YTOf/3Bw9E5CQU0sB/e8pNCRxpnLc1Y6xtzDx7OMbATiYGV2NyN4wRV7/SGu9HrOJOZvH5ZZAp8mC3ElxNdDppQLSuZH1rY2desz3u7R2Dxy+K2CtqyebIdxGycnzu8C44ESbSSh2OPHSGu0EdSASKi1MiW6bLqWmGhDrHmacUPa48ol+AUd25eMRDP3L+2Q5JG8XyRoWo5jPSQ1Y9nMYaALFi2Em1V/NWly0k2fPyHNk690FU6pFfmcRzdMX2Nc4Tw39IEVt1HQ==
+ bh=hYnY56TBZz1bsIaunHoG1uZaI/eWWsgaTB/HRI297pM=;
+ b=Qtr0vGWdTjr1P46kVVHwQv4c80iVS6/6d9IjDU43tlC21P/VWv38IAguaZ+KHpLWJipOzb5C15307HfzTNx0I7lgnxf2iHzY3ngQ5b1D4t9g8tskgQpX09ekfgsaxgcuyHaEhlck5Z0Ptjc0OQHle7AQw2oBYpW9MrG13UMQVO289BqZ1CjYqkTu9t/6tL0iD+W+A2/jz6QStEefHNwzgXGeqkQLKv5xNdXz/MCI3dyBBES9LSQOpP09oqOvGE5msGhgl8tkrlxCyrmMGeP7tMScpvPCuPMcym7af4Hvso2hHdCI/wNAGk7yuTeZ7+1/NUKLDyaeBeF84fIA60ctVA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1zBn/36TSvS/XC+u79olWbHCED3YVns09tcw6HBSX5o=;
- b=RxkVmqkHn06wbPXGP5Kj99vO25MXE6stUjEAg4qy/44wGRBUYqMWMOLwYGyN+FmfaHO0ZozCtN2lxViEPzO/dJJXEhHViw0RlTarAlh5zYRca85HSNH3Ey+YdjfwBuErxVPiyhh/U8gyKmLfgY/8cwTINuOVJs2e3wV12q55IIg=
+ bh=hYnY56TBZz1bsIaunHoG1uZaI/eWWsgaTB/HRI297pM=;
+ b=RqI5V4mdJdEEv2UkXpd6clWBNjOhPtfnGUP/HkSc/QI1vNcPJ43WQ23LhW/01or0ua7Xbv2+1qOXUJRw8NWTBxT6tF4fNnyTHIAzbC992pkntMG2K90VZ8gTlTPPWAIOi3fV3UPHykiGTn10UmWaIL5zvCly53dNd8HRqs2T0JM=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=amd.com;
 Received: from DS0PR12MB6583.namprd12.prod.outlook.com (2603:10b6:8:d1::12) by
  CY8PR12MB8215.namprd12.prod.outlook.com (2603:10b6:930:77::10) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6178.29; Thu, 16 Mar 2023 03:25:08 +0000
+ 15.20.6178.29; Thu, 16 Mar 2023 03:25:17 +0000
 Received: from DS0PR12MB6583.namprd12.prod.outlook.com
  ([fe80::f6fc:b028:b0da:afab]) by DS0PR12MB6583.namprd12.prod.outlook.com
  ([fe80::f6fc:b028:b0da:afab%8]) with mapi id 15.20.6178.024; Thu, 16 Mar 2023
- 03:25:08 +0000
-Message-ID: <ad9ab1f3-43ff-a73d-0a62-50565aa5196f@amd.com>
-Date:   Wed, 15 Mar 2023 20:25:05 -0700
+ 03:25:16 +0000
+Message-ID: <cde38f74-66da-7eb0-c933-d4848bd17bc1@amd.com>
+Date:   Wed, 15 Mar 2023 20:25:13 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
  Gecko/20100101 Thunderbird/102.8.0
-Subject: Re: [PATCH RFC v2 virtio 2/7] pds_vdpa: get vdpa management info
+Subject: Re: [PATCH RFC v2 virtio 4/7] pds_vdpa: add vdpa config client
+ commands
 Content-Language: en-US
 To:     Jason Wang <jasowang@redhat.com>
 Cc:     mst@redhat.com, virtualization@lists.linux-foundation.org,
         brett.creeley@amd.com, davem@davemloft.net, netdev@vger.kernel.org,
         kuba@kernel.org, drivers@pensando.io
 References: <20230309013046.23523-1-shannon.nelson@amd.com>
- <20230309013046.23523-3-shannon.nelson@amd.com>
- <CACGkMEumJLysw4Grd19fVF-LuUb+r201XWMaeCkT=kDqN41ZTg@mail.gmail.com>
+ <20230309013046.23523-5-shannon.nelson@amd.com>
+ <CACGkMEtcm+VeTUKw_DF=bHFpYRUyqOkhh+UEfc+ppUp5zuNVkw@mail.gmail.com>
 From:   Shannon Nelson <shannon.nelson@amd.com>
-In-Reply-To: <CACGkMEumJLysw4Grd19fVF-LuUb+r201XWMaeCkT=kDqN41ZTg@mail.gmail.com>
+In-Reply-To: <CACGkMEtcm+VeTUKw_DF=bHFpYRUyqOkhh+UEfc+ppUp5zuNVkw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: BYAPR06CA0064.namprd06.prod.outlook.com
- (2603:10b6:a03:14b::41) To DS0PR12MB6583.namprd12.prod.outlook.com
+X-ClientProxiedBy: BYAPR06CA0056.namprd06.prod.outlook.com
+ (2603:10b6:a03:14b::33) To DS0PR12MB6583.namprd12.prod.outlook.com
  (2603:10b6:8:d1::12)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: DS0PR12MB6583:EE_|CY8PR12MB8215:EE_
-X-MS-Office365-Filtering-Correlation-Id: dedc056b-68cb-44e0-dbd7-08db25ce0b33
+X-MS-Office365-Filtering-Correlation-Id: b272c936-9aab-4530-abc4-08db25ce1023
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 6EDB0LX4Tx4AhT45GJTCIXxzx5vLRQMt4Xgm+ip/gs6f5v9hBEiurjBEVOKAHOPeqObbAkvfW4HEsP/LFV85uCO1BKZ+3QbPZaqXxLWxt8F1FTFmxtls52J5OHF2QCFiRgubJhH12qndIeSyCccfm8Vx2O+XiYrpuG4pfwk+vqasdTWAEjyhva+fwL2hWFJep8uwXoSwxVD8iCIHsejhurigG0C4pew2ThUvtBvFA1lFz/1aBCBJMKwUWTnubbANChgbAoY44Lb7dv0skBrWchPXuzPl3TpwsUnUit2gdHD1WsSSQ3GzLyBnOb05Rl/Khuw4Votfnx9aR7KdAaIr7TxTjaIVZDPeUhjlZEQp5Bmeflgb+0CRZUBdlbEFzgglLuT0kLPaFjzauox/VKft8kJQiUaocWM/JR63KTmP1mSYfTqVfM1BGu27zhcwD0bdiKKtOzW/VHirgwhsLj8DqXqtRX7gezHhPc2OyXuDGD6gX0s6EfDyUK+AEUpEa66oGW6HVQKYUSak+KzP93EgbCT4tVd8fY81yvgT8C5zCh+1b/mjX28DDOHMDy4FmTXUpVqp5zI/dFyiFvFSXr1l0zFuzDvqZxfdOv054NVhv2oYAVBMNsERDO/FVCbePQsI80x4IKswLCOcjbGfaujBnqLjFfMxoTJQukKLVYVg0wFuDgQGYTGdg3Nb1kA7NKiRiMwtQEAsU39zODBJJFZfM358EL4h0BRg9HGydyB3opk=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR12MB6583.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(346002)(396003)(39860400002)(376002)(136003)(451199018)(2616005)(26005)(478600001)(6486002)(53546011)(36756003)(186003)(6512007)(6666004)(316002)(6506007)(38100700002)(5660300002)(86362001)(41300700001)(31696002)(8936002)(31686004)(44832011)(83380400001)(2906002)(66476007)(66946007)(66556008)(4326008)(6916009)(8676002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 86rcZjVZiGaz0ync1tyTVy4+ayDS/ieRLM98W1GJBrPid3OLv1FRW/S1eP1XVfGnxYPIA/Z3O3B1a9J6ekNUWFjJvBsXH33He8O1fsmNPoEZ/XwSReO7LXtWL+RF3pIovds3RedoRVrraIINtm8CsjaNPkIC0cOcufSXWVmChQjemarAFYW7S7/ZI8vvG+IP87EjdquCV0lr5XPb5WE61WbR+KlCqEQSJqmNVcl3/hXr0pi2v7FxhNs2hxdlYcQwjJRBTVdVdpGNhtptqkArTNjjQNIqMkcIBDk7z8Nmyy0TqfS3vQKrjzIKXJLwk/pdjkv7UKk5ZMOuaO0bxS8TbGTpb0+oGPwPVsjeiiVDs2niBMATW42jVMysksb1rjZ/CCg1/7Dqgw+JASqJinIJOx2z7nrJ5jXp7DQXEvMeukPCPWVtAyqFcBRyzrTGPvLPt84JQMgWtsNc9jejP7RVObeKytcrsnUYu1OtdGMOQp9uQd7RmC2IptYUPwusVnGcic4tWs6Ph8JwezQLcUVw+VQKhEGS9cQsxlXKm5HN50r6lSB5iPM49wc2g6o2F/lps+IfSvaKYdjCsCMPGVwDLILR5q+qoLxEyN3jSNABMyraXtcEZs/rXFdqh7IVMo8wAyNuNFdaAWZ0Y3TppN9KlK5dozNXLmCQ3AWybJSWSMq96MYEvUQBG9mt4+d1y/jZQaXa0NAAs7v1+eMi1JxXYVnpGV1YrcSAZJWDeM11DxQ=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR12MB6583.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(346002)(396003)(39860400002)(376002)(136003)(451199018)(2616005)(26005)(478600001)(6486002)(53546011)(36756003)(186003)(6512007)(6666004)(316002)(6506007)(30864003)(38100700002)(5660300002)(86362001)(41300700001)(31696002)(8936002)(31686004)(44832011)(83380400001)(66899018)(2906002)(66476007)(66946007)(66556008)(4326008)(6916009)(8676002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dDNqZTlyUmVVRzNhS0R5RUdadDhPVmdkdWVQUU53Z2tySDhZbkNya3lVOXZV?=
- =?utf-8?B?V1VKVXRjd21QSlRHQ2hZeEZkTnlweE9PRWZNbGRDT0ErSjBGcFo0ODBRT3Aw?=
- =?utf-8?B?RXMzVWxNMXVMakdld053K1ZzMXBtMmJEQjdQWmgzdEZyMFFLdGpsQlA2dXlv?=
- =?utf-8?B?Qkl3ZDhkdDNxZmdVVG5vU0pXc2dwS3l3UHFvQ2Jnd0xKazg3djRWeUR6YTZx?=
- =?utf-8?B?WURveEtCUGhzZ3BSQTRaVFE5WWtOMkdzdmhvT1NGR3d6ZERCdGJ6cTByTzhl?=
- =?utf-8?B?eis3L3FqeUFKbTN0MHJTYnZiNnZCQlJ0Vk16WW1MR0RFUW9ORE9pR0lxQWdL?=
- =?utf-8?B?NVdxYlNpWlpDVng2amNNc3ZjWElTNUZZNGw1RmExck9sZ1lXUVZ1SVE4TzJj?=
- =?utf-8?B?OXdYZnN4c214bXE0bHNNa1JjeVNDbXZnVU9CUFN6b2tLbndqbVE1bk05cWJx?=
- =?utf-8?B?bG41YkxBRlVWdDBFWEhEMUlkUWorTlFXYllaREVqK1BrbkpPcWlpZGdRYUor?=
- =?utf-8?B?R0Myc0dwNXB0MjlwSU1HUE5rYmtyREFINXAwTjlQLzVBUmxaVXhVMi9xd1lE?=
- =?utf-8?B?Uk54YmpadDc1N0lOSVdTVXJTYXJIa0dPNkdTcGY1WGMrSzRuRWttMnFLUlVR?=
- =?utf-8?B?YzNwZkNYTVliNklVUy80a2xkMjFwM3duMEF3Q1NPd3g3bG9kQ1JmUjh4M2Vs?=
- =?utf-8?B?TXVKaUlrNHU2MFFLV0dnd0g2NXZYQnZZdVhheDJPYVFpenFHK3VNRDE0MFc2?=
- =?utf-8?B?Mm5KVGJEemExRklvZlh3RWVxcGV6THdEY2RDOWEwQkNJa1N5SzFWcWVYa0Fo?=
- =?utf-8?B?TW5VQnlYY2M4Nzlwano0SmFHV05SVTFzbkRycTZubk04eGRqbFBjYWdRSnIx?=
- =?utf-8?B?c1N2dHpUODBjYXQ4b3NoUTQ5SnpQbDE1NWpqZW8wMW1HUkh1a2p3OEs0V2RD?=
- =?utf-8?B?MkdxY0l4VGFhSDU1Rit1ZlY5NGliUmFsSXYrZ2pqYWpwVXBNWmt5U0RUVk1M?=
- =?utf-8?B?ZmVNaXFqd0NuT1B0TjkzKzI4NVNKWk5PajdOZC9KdlAxN0RTSzlIWnJVaTRw?=
- =?utf-8?B?SDZYSDY4RXFhQ3pRQkRrRWs3QWpPTUdPenBGaExCb3NqRVIxS2Z3cVArMXE2?=
- =?utf-8?B?SU1aNHBsYkQ4cVFmeW5yN29nSitzdlV6Q081ZTdtSDl3MHNCZzBFNUcwbk5h?=
- =?utf-8?B?Sll1cEFNbXVRWnV3MytqdjF4Z0ZLUHJBYUttQnRpZFVIWll4amtrWmdnREZM?=
- =?utf-8?B?RmpmVWpLbjVzYXBlanRLcVl3UFBwL2hPT2cvQ3JlWVovNmlCdHJkMzB1eGhw?=
- =?utf-8?B?YUNLczNoK2ZIa3RJbCtsbmpuV3FZblhSMUNMMVp3MzBVdUhaTXB0NmhWL1c5?=
- =?utf-8?B?bUpaZUhUTnBpWUZtelV4clNlRmFqdDFiQ2Erc2VNNmxiVjNuODBkTnRaVGp0?=
- =?utf-8?B?WmRaM0JydHBvd09qajhZWlJJVHMxWko1UmZOS3hTQmREdHpLdWdiRFNhUVpM?=
- =?utf-8?B?QXVZZlJMRFdnZEUyTEU3TmRZNXZONVdnejhKUURmVHdKMGpXaXg0NU1kcGov?=
- =?utf-8?B?VU5WdERwdzNRRTdaVE0vRnZFZERzMWo1YjBYSnFQYVR0cTBxSlNYQitaUGVZ?=
- =?utf-8?B?U0ZrenQ1b3NXR3ROU0N4RTIzVC92T244RjFZbGV2Nm16ZUdrVGhhc1JwVW5s?=
- =?utf-8?B?TFhGM1dNcjZiV0xrcHU5aFNOb04rNm1NYUJTRUE4WTJSRmFqblVMQXEyQnRJ?=
- =?utf-8?B?ci82UHVFSWxoUzV4K2ZmcU9Mem92T05VRkJuU0hjcnU0dUNkSVY4ZzdKQUl2?=
- =?utf-8?B?RVBzOHV6bFlsazVyU1k3RFBDcHVOdkc4MFFhT21ObzdwNy8rN0FSOTYxS01B?=
- =?utf-8?B?bCsxT1pzMU5KZEsvUXdSSTh6R3FRek1GdUJ2SERTUFJsQUJFME9tU2JnalJP?=
- =?utf-8?B?dkI2dHcrZW1zQXE2cTM0Q1cvelRQWDZBQVdMRjZWSnhXc1J4RklyOXRNeGdv?=
- =?utf-8?B?Q2N1a2RkdXIyRUl4YU5lUHNGUW0ySStWbEJqK0UxaC9kTE8wS3dibUR1a1hj?=
- =?utf-8?B?WHg3bDJiRkM5dTN6a2puTkRWUmgxbWEzQ0RzenlXYXQvN3FYbDBtaVcwZGR6?=
- =?utf-8?Q?/eS64Ak8yiJnmugS0fMWndCLH?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cWhvbEtMRmhSeFVsMGVJNCtFc29uOTZHUEtXb2hYUVY1RWUrSEVQV0s0NUMz?=
+ =?utf-8?B?dDFOdXc0Z0JoeWRRNTdIVmJwczVMTUFQMVJ0U1FBT3FUa25OZWVxQkRJdDFl?=
+ =?utf-8?B?TEZzeWJ6bHk0VG1uNkc3MDNpUkRFSGRrNmRobUR6Z0lhTDZZaUpISEQ5SzIr?=
+ =?utf-8?B?RG9sNWRzbGkwRmJtWFBuNUx5ZmNZM3BHLzVKMlR3US9hN3VDV3dPTHE2cWlp?=
+ =?utf-8?B?OW8xeUR1MmgvRUtvaytJWnUwQ3cyWEFOT0Q3MHY3Z2ViVDBMOTFPZnBOQjAv?=
+ =?utf-8?B?M1lYRmwvODRaZU5qaXpKWER6S3dIcmF6WFpiOFdhaVJJalFQblVGUVhhUkkx?=
+ =?utf-8?B?YUtzQ2Q5L04rK1M5bGlpMlBWZnhaQlo5RlR5L1htaFd4UGN4Zk1ERGlEQUxv?=
+ =?utf-8?B?cXIvTzRLNTBIYXpEdEl6Q1ArenlhQVBLTlllMEFMYTN6Uzc4VmRhbHR2dWRz?=
+ =?utf-8?B?aThINGtEY2FKTnNTTlFYd1BmdERvd0pRcUVDbUxCSk5DTmJkak1HSGZlQWdM?=
+ =?utf-8?B?UTdYS1VTZTdlcjRtKzMxQU9ERktwVDg3Zy9zU1NSUEhOWTU2YzlxdHk5NTFz?=
+ =?utf-8?B?QlR2dFJxckxFQXVNRUdUZXNWNmgwUElpYUNqOGt1NEsyQTYzNmZIa251T2Ex?=
+ =?utf-8?B?RzdTLzVWYXlkdXQ0TVpZM3MwdFBEbzRpd2FlK1ZOWGZPQlU4UDRaeDY5NnB1?=
+ =?utf-8?B?aDFrWXlER1QvWENaK3RYNUFlWFg2ckpodUFUc1M1bVYzamU0eEMzU0RJbVJ1?=
+ =?utf-8?B?N3VPam5CT3JQYS9JNjJ4b1NCVktOcStNd1psTm1rUkdlVTNxemZBWVBEZmFi?=
+ =?utf-8?B?bzA1ZHVWMDJMamZBMkl6RFpwTGxQazkzc0xqS1ViS1EvQy9EQ2hVczJ5S24z?=
+ =?utf-8?B?aEJtaEJ1ZXJWSU96OGxqSXNPK2VQN0tvd01abEdtN3E4dXVHWWh4dmtxeDJr?=
+ =?utf-8?B?SElPYjJPM1cwR0pHZ2lHckNyaWUyWTRiemRLUlY4LzJVWkQrRjNMWEFERjRh?=
+ =?utf-8?B?YndTdTQ4alBmbkt0UkRxb3NnMVZWM00yQkcrRnlSa2lMamxpc1BVTW1IQU54?=
+ =?utf-8?B?NWJWWGw0TzNMOFRCaFpzZEo4QWpocUNkNHF1MjRXamp4K2tadHFkcE9VYzIy?=
+ =?utf-8?B?cWo2Z010REtCZWp3RkFadVA2eDBwY3NyQjRRQmxQK25SYkJZMEx2OGtCVERp?=
+ =?utf-8?B?MmVaYUNXbFRnY0o5RTVuS3V2OU02Y0lYYmVrY21DOThkNWdCK1hueGp2enRX?=
+ =?utf-8?B?YWhWN1RYQjd1NGhYMEoxbkd1STE3MCswRFpGM2lMNGxxMS80NWFSY0ZPTksw?=
+ =?utf-8?B?c2tHbmp3a1N6Q016NjIrNkpuZmNSa2d1Y3NWSHQyWlRhVWpoZXFtSVlka3hv?=
+ =?utf-8?B?c0dSQ0ZjYUZYMVpic3g2bFU0cWhLNTlpSG12eEJCekRqRFpDQ1NuTUxLdExw?=
+ =?utf-8?B?WVlLVW85QlJvS1hxN05nbkF6UEpWTTlWSCtnQkhvUm5hVW5sc0lzQ0JlRUNT?=
+ =?utf-8?B?cVRDL3U2MzV0RkttTXFvV1l0N2hlbFM4UXBvK1J5YlBUNFF0SDk5VkQycVBp?=
+ =?utf-8?B?dDZYV21Kd2xrUEk4U2pqaHVxV2F6ZkhiQ3FFMmhRTDZ6bXJ4dm1YRnZBQVcw?=
+ =?utf-8?B?aGlCRDhFWDRVRHI3aGVCaHdXMjRYR3BIR200MWJIWWJyQzE1MmtuVnE3TVlQ?=
+ =?utf-8?B?eXM4eHU1a0dWdCt3MUFPaWpUbENqTkZvS0lUdE1ZUkxMWTM1ZlVwU1lKTEFP?=
+ =?utf-8?B?L2FNWFRtdWVaTHB4ekRlYVg0WWgrY2VDeGVPNGFoODFQVTBVb0tIU20xb1dX?=
+ =?utf-8?B?UC9SaUJxN1diSGVBTUFuNkF4dkc1M3Ryem1rZVVDVlZrT0h1UElBTUtFUUV3?=
+ =?utf-8?B?OG9HbjVzVHJhUTBBQ24zK3NhejdHaElUKzYvMDNYbzhGSTR3RFpqUmNmUTkx?=
+ =?utf-8?B?TE5GcHBrdkJkNWpsMHFNaExHK0pKMjk2WWp6eVlLMzV6aDZvRy9OOXZsd0Zi?=
+ =?utf-8?B?V3dHSEFQeUxaZEdsSk94ekVYR093aDdRZ3pzcHRTNHc4UDNwQTNFVnh1YUtq?=
+ =?utf-8?B?TjJPdXBYN2QxSG0vRHMyK3RDR0dxOS9vNXNoZ3pORHBwdEFzWG9GM0ZNRlJI?=
+ =?utf-8?Q?dyz4CH6hSZtO9FP+5emkd6rgv?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dedc056b-68cb-44e0-dbd7-08db25ce0b33
+X-MS-Exchange-CrossTenant-Network-Message-Id: b272c936-9aab-4530-abc4-08db25ce1023
 X-MS-Exchange-CrossTenant-AuthSource: DS0PR12MB6583.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2023 03:25:08.5901
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2023 03:25:16.8571
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uHflFIKSPR3lCfRaE4dnKTVgSHwaCr7dhFovJMkDguqROMdlVaRW8qloK3qHm/kT+KAlj9IQ9gw0WILVOn3jbw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: +F5vhOOsIZDgcanyaq0y4P/1n70AEsoGX387ek/CHlLpOSfKQvws/1tgudXGC/9e2qTNBSjCWTCBg5nlpb9fXg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB8215
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,NICE_REPLY_A,
-        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -127,209 +129,565 @@ X-Mailing-List: netdev@vger.kernel.org
 On 3/15/23 12:05 AM, Jason Wang wrote:
 > On Thu, Mar 9, 2023 at 9:31 AM Shannon Nelson <shannon.nelson@amd.com> wrote:
 >>
->> Find the vDPA management information from the DSC in order to
->> advertise it to the vdpa subsystem.
+>> These are the adminq commands that will be needed for
+>> setting up and using the vDPA device.
+> 
+> It's better to explain under which case the driver should use adminq,
+> I see some functions overlap with common configuration capability.
+> More below.
+
+Yes, I agree this needs to be more clearly stated.  The overlap is 
+because the original FW didn't have the virtio device as well modeled 
+and we had to go through adminq calls to get things done.  Now that we 
+have a reasonable virtio emulation and can use the virtio_net_config, we 
+have a lot less need for the adminq calls.
+
+
+> 
 >>
 >> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
 >> ---
->>   drivers/vdpa/pds/Makefile    |   3 +-
->>   drivers/vdpa/pds/aux_drv.c   |  13 ++++
->>   drivers/vdpa/pds/aux_drv.h   |   7 +++
->>   drivers/vdpa/pds/debugfs.c   |   3 +
->>   drivers/vdpa/pds/vdpa_dev.c  | 113 +++++++++++++++++++++++++++++++++++
->>   drivers/vdpa/pds/vdpa_dev.h  |  15 +++++
->>   include/linux/pds/pds_vdpa.h |  92 ++++++++++++++++++++++++++++
->>   7 files changed, 245 insertions(+), 1 deletion(-)
->>   create mode 100644 drivers/vdpa/pds/vdpa_dev.c
->>   create mode 100644 drivers/vdpa/pds/vdpa_dev.h
+>>   drivers/vdpa/pds/Makefile    |   1 +
+>>   drivers/vdpa/pds/cmds.c      | 207 +++++++++++++++++++++++++++++++++++
+>>   drivers/vdpa/pds/cmds.h      |  16 +++
+>>   drivers/vdpa/pds/vdpa_dev.h  |  36 +++++-
+>>   include/linux/pds/pds_vdpa.h | 175 +++++++++++++++++++++++++++++
+>>   5 files changed, 434 insertions(+), 1 deletion(-)
+>>   create mode 100644 drivers/vdpa/pds/cmds.c
+>>   create mode 100644 drivers/vdpa/pds/cmds.h
 >>
 >> diff --git a/drivers/vdpa/pds/Makefile b/drivers/vdpa/pds/Makefile
->> index a9cd2f450ae1..13b50394ec64 100644
+>> index ca2efa8c6eb5..7211eba3d942 100644
 >> --- a/drivers/vdpa/pds/Makefile
 >> +++ b/drivers/vdpa/pds/Makefile
->> @@ -3,6 +3,7 @@
->>
+>> @@ -4,6 +4,7 @@
 >>   obj-$(CONFIG_PDS_VDPA) := pds_vdpa.o
 >>
->> -pds_vdpa-y := aux_drv.o
->> +pds_vdpa-y := aux_drv.o \
->> +             vdpa_dev.o
+>>   pds_vdpa-y := aux_drv.o \
+>> +             cmds.o \
+>>                virtio_pci.o \
+>>                vdpa_dev.o
 >>
->>   pds_vdpa-$(CONFIG_DEBUG_FS) += debugfs.o
->> diff --git a/drivers/vdpa/pds/aux_drv.c b/drivers/vdpa/pds/aux_drv.c
->> index b3f36170253c..63e40ae68211 100644
->> --- a/drivers/vdpa/pds/aux_drv.c
->> +++ b/drivers/vdpa/pds/aux_drv.c
->> @@ -2,6 +2,8 @@
->>   /* Copyright(c) 2023 Advanced Micro Devices, Inc */
->>
->>   #include <linux/auxiliary_bus.h>
->> +#include <linux/pci.h>
->> +#include <linux/vdpa.h>
->>
->>   #include <linux/pds/pds_core.h>
->>   #include <linux/pds/pds_auxbus.h>
->> @@ -9,6 +11,7 @@
->>
->>   #include "aux_drv.h"
->>   #include "debugfs.h"
->> +#include "vdpa_dev.h"
->>
->>   static const struct auxiliary_device_id pds_vdpa_id_table[] = {
->>          { .name = PDS_VDPA_DEV_NAME, },
->> @@ -30,6 +33,7 @@ static int pds_vdpa_probe(struct auxiliary_device *aux_dev,
->>                  return -ENOMEM;
->>
->>          vdpa_aux->padev = padev;
->> +       vdpa_aux->vf_id = pci_iov_vf_id(padev->vf->pdev);
->>          auxiliary_set_drvdata(aux_dev, vdpa_aux);
->>
->>          /* Register our PDS client with the pds_core */
->> @@ -40,8 +44,15 @@ static int pds_vdpa_probe(struct auxiliary_device *aux_dev,
->>                  goto err_free_mem;
->>          }
->>
->> +       /* Get device ident info and set up the vdpa_mgmt_dev */
->> +       err = pds_vdpa_get_mgmt_info(vdpa_aux);
->> +       if (err)
->> +               goto err_aux_unreg;
->> +
->>          return 0;
->>
->> +err_aux_unreg:
->> +       padev->ops->unregister_client(padev);
->>   err_free_mem:
->>          kfree(vdpa_aux);
->>          auxiliary_set_drvdata(aux_dev, NULL);
->> @@ -54,6 +65,8 @@ static void pds_vdpa_remove(struct auxiliary_device *aux_dev)
->>          struct pds_vdpa_aux *vdpa_aux = auxiliary_get_drvdata(aux_dev);
->>          struct device *dev = &aux_dev->dev;
->>
->> +       pci_free_irq_vectors(vdpa_aux->padev->vf->pdev);
->> +
->>          vdpa_aux->padev->ops->unregister_client(vdpa_aux->padev);
->>
->>          kfree(vdpa_aux);
->> diff --git a/drivers/vdpa/pds/aux_drv.h b/drivers/vdpa/pds/aux_drv.h
->> index 14e465944dfd..94ba7abcaa43 100644
->> --- a/drivers/vdpa/pds/aux_drv.h
->> +++ b/drivers/vdpa/pds/aux_drv.h
->> @@ -10,6 +10,13 @@
->>   struct pds_vdpa_aux {
->>          struct pds_auxiliary_dev *padev;
->>
->> +       struct vdpa_mgmt_dev vdpa_mdev;
->> +
->> +       struct pds_vdpa_ident ident;
->> +
->> +       int vf_id;
->>          struct dentry *dentry;
->> +
->> +       int nintrs;
->>   };
->>   #endif /* _AUX_DRV_H_ */
->> diff --git a/drivers/vdpa/pds/debugfs.c b/drivers/vdpa/pds/debugfs.c
->> index 3c163dc7b66f..7b7e90fd6578 100644
->> --- a/drivers/vdpa/pds/debugfs.c
->> +++ b/drivers/vdpa/pds/debugfs.c
->> @@ -1,7 +1,10 @@
->>   // SPDX-License-Identifier: GPL-2.0-only
->>   /* Copyright(c) 2023 Advanced Micro Devices, Inc */
->>
->> +#include <linux/vdpa.h>
->> +
->>   #include <linux/pds/pds_core.h>
->> +#include <linux/pds/pds_vdpa.h>
->>   #include <linux/pds/pds_auxbus.h>
->>
->>   #include "aux_drv.h"
->> diff --git a/drivers/vdpa/pds/vdpa_dev.c b/drivers/vdpa/pds/vdpa_dev.c
+>> diff --git a/drivers/vdpa/pds/cmds.c b/drivers/vdpa/pds/cmds.c
 >> new file mode 100644
->> index 000000000000..bd840688503c
+>> index 000000000000..45410739107c
 >> --- /dev/null
->> +++ b/drivers/vdpa/pds/vdpa_dev.c
->> @@ -0,0 +1,113 @@
+>> +++ b/drivers/vdpa/pds/cmds.c
+>> @@ -0,0 +1,207 @@
 >> +// SPDX-License-Identifier: GPL-2.0-only
 >> +/* Copyright(c) 2023 Advanced Micro Devices, Inc */
 >> +
->> +#include <linux/pci.h>
 >> +#include <linux/vdpa.h>
->> +#include <uapi/linux/vdpa.h>
+>> +#include <linux/virtio_pci_modern.h>
 >> +
->> +#include <linux/pds/pds_core.h>
+>> +#include <linux/pds/pds_core_if.h>
 >> +#include <linux/pds/pds_adminq.h>
 >> +#include <linux/pds/pds_auxbus.h>
 >> +#include <linux/pds/pds_vdpa.h>
 >> +
 >> +#include "vdpa_dev.h"
 >> +#include "aux_drv.h"
+>> +#include "cmds.h"
 >> +
->> +static struct virtio_device_id pds_vdpa_id_table[] = {
->> +       {VIRTIO_ID_NET, VIRTIO_DEV_ANY_ID},
->> +       {0},
->> +};
->> +
->> +static int pds_vdpa_dev_add(struct vdpa_mgmt_dev *mdev, const char *name,
->> +                           const struct vdpa_dev_set_config *add_config)
+>> +int pds_vdpa_init_hw(struct pds_vdpa_device *pdsv)
 >> +{
->> +       return -EOPNOTSUPP;
->> +}
->> +
->> +static void pds_vdpa_dev_del(struct vdpa_mgmt_dev *mdev,
->> +                            struct vdpa_device *vdpa_dev)
->> +{
->> +}
->> +
->> +static const struct vdpa_mgmtdev_ops pds_vdpa_mgmt_dev_ops = {
->> +       .dev_add = pds_vdpa_dev_add,
->> +       .dev_del = pds_vdpa_dev_del
->> +};
->> +
->> +int pds_vdpa_get_mgmt_info(struct pds_vdpa_aux *vdpa_aux)
->> +{
->> +       struct pds_vdpa_ident_cmd ident_cmd = {
->> +               .opcode = PDS_VDPA_CMD_IDENT,
->> +               .vf_id = cpu_to_le16(vdpa_aux->vf_id),
+>> +       struct pds_auxiliary_dev *padev = pdsv->vdpa_aux->padev;
+>> +       struct device *dev = &padev->aux_dev.dev;
+>> +       struct pds_vdpa_init_cmd init_cmd = {
+>> +               .opcode = PDS_VDPA_CMD_INIT,
+>> +               .vdpa_index = pdsv->vdpa_index,
+>> +               .vf_id = cpu_to_le16(pdsv->vdpa_aux->vf_id),
+>> +               .len = cpu_to_le32(sizeof(struct virtio_net_config)),
+>> +               .config_pa = 0,   /* we use the PCI space, not an alternate space */
 >> +       };
->> +       struct pds_vdpa_comp ident_comp = {0};
->> +       struct vdpa_mgmt_dev *mgmt;
->> +       struct device *pf_dev;
->> +       struct pci_dev *pdev;
->> +       dma_addr_t ident_pa;
->> +       struct device *dev;
->> +       u16 max_vqs;
+>> +       struct pds_vdpa_comp init_comp = {0};
 >> +       int err;
 >> +
->> +       dev = &vdpa_aux->padev->aux_dev.dev;
->> +       pdev = vdpa_aux->padev->vf->pdev;
->> +       mgmt = &vdpa_aux->vdpa_mdev;
+>> +       /* Initialize the vdpa/virtio device */
+>> +       err = padev->ops->adminq_cmd(padev,
+>> +                                    (union pds_core_adminq_cmd *)&init_cmd,
+>> +                                    sizeof(init_cmd),
+>> +                                    (union pds_core_adminq_comp *)&init_comp,
+>> +                                    0);
+>> +       if (err)
+>> +               dev_err(dev, "Failed to init hw, status %d: %pe\n",
+>> +                       init_comp.status, ERR_PTR(err));
 >> +
->> +       /* Get resource info through the PF's adminq.  It is a block of info,
->> +        * so we need to map some memory for PF to make available to the
->> +        * firmware for writing the data.
->> +        */
+>> +       return err;
+>> +}
+>> +
+>> +int pds_vdpa_cmd_reset(struct pds_vdpa_device *pdsv)
+>> +{
 > 
-> It looks to me pds_vdpa_ident is not very large:
+> This function is not used.
 > 
-> struct pds_vdpa_ident {
->          __le64 hw_features;
->          __le16 max_vqs;
->          __le16 max_qlen;
->          __le16 min_qlen;
-> };
-> 
-> Any reason it is not packed into some type of the comp structure of adminq?
+> And I wonder what's the difference between reset via adminq and reset
+> via pds_vdpa_set_status(0) ?
 
-Unfortunately, the completion structs are limited to 16 bytes, with 4 up 
-front and 1 at the end already spoken for.  I suppose we could shrink 
-max_vqs to a single byte and squeeze this into the comp, but then we'd 
-have no ability to add to it if needed.  I'd rather leave it as it is 
-for now.
+Ideally no difference.
+
+
+> 
+>> +       struct pds_auxiliary_dev *padev = pdsv->vdpa_aux->padev;
+>> +       struct device *dev = &padev->aux_dev.dev;
+>> +       struct pds_vdpa_cmd cmd = {
+>> +               .opcode = PDS_VDPA_CMD_RESET,
+>> +               .vdpa_index = pdsv->vdpa_index,
+>> +               .vf_id = cpu_to_le16(pdsv->vdpa_aux->vf_id),
+>> +       };
+>> +       struct pds_vdpa_comp comp = {0};
+>> +       int err;
+>> +
+>> +       err = padev->ops->adminq_cmd(padev,
+>> +                                    (union pds_core_adminq_cmd *)&cmd,
+>> +                                    sizeof(cmd),
+>> +                                    (union pds_core_adminq_comp *)&comp,
+>> +                                    0);
+>> +       if (err)
+>> +               dev_err(dev, "Failed to reset hw, status %d: %pe\n",
+>> +                       comp.status, ERR_PTR(err));
+> 
+> It might be better to use deb_dbg() here since it can be triggered by the guest.
+
+Sure.
+
+> 
+>> +
+>> +       return err;
+>> +}
+>> +
+>> +int pds_vdpa_cmd_set_mac(struct pds_vdpa_device *pdsv, u8 *mac)
+>> +{
+>> +       struct pds_auxiliary_dev *padev = pdsv->vdpa_aux->padev;
+>> +       struct device *dev = &padev->aux_dev.dev;
+>> +       struct pds_vdpa_setattr_cmd cmd = {
+>> +               .opcode = PDS_VDPA_CMD_SET_ATTR,
+>> +               .vdpa_index = pdsv->vdpa_index,
+>> +               .vf_id = cpu_to_le16(pdsv->vdpa_aux->vf_id),
+>> +               .attr = PDS_VDPA_ATTR_MAC,
+>> +       };
+>> +       struct pds_vdpa_comp comp = {0};
+>> +       int err;
+>> +
+>> +       ether_addr_copy(cmd.mac, mac);
+>> +       err = padev->ops->adminq_cmd(padev,
+>> +                                    (union pds_core_adminq_cmd *)&cmd,
+>> +                                    sizeof(cmd),
+>> +                                    (union pds_core_adminq_comp *)&comp,
+>> +                                    0);
+>> +       if (err)
+>> +               dev_err(dev, "Failed to set mac address %pM, status %d: %pe\n",
+>> +                       mac, comp.status, ERR_PTR(err));
+>> +
+>> +       return err;
+>> +}
+>> +
+>> +int pds_vdpa_cmd_set_max_vq_pairs(struct pds_vdpa_device *pdsv, u16 max_vqp)
+>> +{
+>> +       struct pds_auxiliary_dev *padev = pdsv->vdpa_aux->padev;
+>> +       struct device *dev = &padev->aux_dev.dev;
+>> +       struct pds_vdpa_setattr_cmd cmd = {
+>> +               .opcode = PDS_VDPA_CMD_SET_ATTR,
+>> +               .vdpa_index = pdsv->vdpa_index,
+>> +               .vf_id = cpu_to_le16(pdsv->vdpa_aux->vf_id),
+>> +               .attr = PDS_VDPA_ATTR_MAX_VQ_PAIRS,
+>> +               .max_vq_pairs = cpu_to_le16(max_vqp),
+>> +       };
+>> +       struct pds_vdpa_comp comp = {0};
+>> +       int err;
+>> +
+>> +       err = padev->ops->adminq_cmd(padev,
+>> +                                    (union pds_core_adminq_cmd *)&cmd,
+>> +                                    sizeof(cmd),
+>> +                                    (union pds_core_adminq_comp *)&comp,
+>> +                                    0);
+>> +       if (err)
+>> +               dev_err(dev, "Failed to set max vq pairs %u, status %d: %pe\n",
+>> +                       max_vqp, comp.status, ERR_PTR(err));
+>> +
+>> +       return err;
+>> +}
+>> +
+>> +int pds_vdpa_cmd_init_vq(struct pds_vdpa_device *pdsv, u16 qid,
+>> +                        struct pds_vdpa_vq_info *vq_info)
+>> +{
+>> +       struct pds_auxiliary_dev *padev = pdsv->vdpa_aux->padev;
+>> +       struct device *dev = &padev->aux_dev.dev;
+>> +       struct pds_vdpa_vq_init_comp comp = {0};
+>> +       struct pds_vdpa_vq_init_cmd cmd = {
+>> +               .opcode = PDS_VDPA_CMD_VQ_INIT,
+>> +               .vdpa_index = pdsv->vdpa_index,
+>> +               .vf_id = cpu_to_le16(pdsv->vdpa_aux->vf_id),
+>> +               .qid = cpu_to_le16(qid),
+>> +               .len = cpu_to_le16(ilog2(vq_info->q_len)),
+>> +               .desc_addr = cpu_to_le64(vq_info->desc_addr),
+>> +               .avail_addr = cpu_to_le64(vq_info->avail_addr),
+>> +               .used_addr = cpu_to_le64(vq_info->used_addr),
+>> +               .intr_index = cpu_to_le16(qid),
+>> +       };
+>> +       int err;
+>> +
+>> +       dev_dbg(dev, "%s: qid %d len %d desc_addr %#llx avail_addr %#llx used_addr %#llx\n",
+>> +               __func__, qid, ilog2(vq_info->q_len),
+>> +               vq_info->desc_addr, vq_info->avail_addr, vq_info->used_addr);
+>> +
+>> +       err = padev->ops->adminq_cmd(padev,
+>> +                                    (union pds_core_adminq_cmd *)&cmd,
+>> +                                    sizeof(cmd),
+>> +                                    (union pds_core_adminq_comp *)&comp,
+>> +                                    0);
+> 
+> We map common cfg in pds_vdpa_probe_virtio, any reason for using
+> adminq here? (I guess it might be faster?)
+
+It's just easier to hand the values to the FW in a single package and 
+let it sort things out as it needs, and it will complain with a handy 
+error code if necessary.
+
+> 
+>> +       if (err) {
+>> +               dev_err(dev, "Failed to init vq %d, status %d: %pe\n",
+>> +                       qid, comp.status, ERR_PTR(err));
+>> +               return err;
+>> +       }
+>> +
+>> +       vq_info->hw_qtype = comp.hw_qtype;
+> 
+> What does hw_qtype mean?
+
+Hmmm... this and hw_qindex are hardware specific values that I don't 
+thinkg we need any longer.  I'll pull them out.
+
+> 
+>> +       vq_info->hw_qindex = le16_to_cpu(comp.hw_qindex);
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +int pds_vdpa_cmd_reset_vq(struct pds_vdpa_device *pdsv, u16 qid)
+>> +{
+>> +       struct pds_auxiliary_dev *padev = pdsv->vdpa_aux->padev;
+>> +       struct device *dev = &padev->aux_dev.dev;
+>> +       struct pds_vdpa_vq_reset_cmd cmd = {
+>> +               .opcode = PDS_VDPA_CMD_VQ_RESET,
+>> +               .vdpa_index = pdsv->vdpa_index,
+>> +               .vf_id = cpu_to_le16(pdsv->vdpa_aux->vf_id),
+>> +               .qid = cpu_to_le16(qid),
+>> +       };
+>> +       struct pds_vdpa_comp comp = {0};
+>> +       int err;
+>> +
+>> +       err = padev->ops->adminq_cmd(padev,
+>> +                                    (union pds_core_adminq_cmd *)&cmd,
+>> +                                    sizeof(cmd),
+>> +                                    (union pds_core_adminq_comp *)&comp,
+>> +                                    0);
+>> +       if (err)
+>> +               dev_err(dev, "Failed to reset vq %d, status %d: %pe\n",
+>> +                       qid, comp.status, ERR_PTR(err));
+>> +
+>> +       return err;
+>> +}
+>> +
+>> +int pds_vdpa_cmd_set_features(struct pds_vdpa_device *pdsv, u64 features)
+>> +{
+>> +       struct pds_auxiliary_dev *padev = pdsv->vdpa_aux->padev;
+>> +       struct device *dev = &padev->aux_dev.dev;
+>> +       struct pds_vdpa_set_features_cmd cmd = {
+>> +               .opcode = PDS_VDPA_CMD_SET_FEATURES,
+>> +               .vdpa_index = pdsv->vdpa_index,
+>> +               .vf_id = cpu_to_le16(pdsv->vdpa_aux->vf_id),
+>> +               .features = cpu_to_le64(features),
+>> +       };
+>> +       struct pds_vdpa_comp comp = {0};
+>> +       int err;
+>> +
+>> +       err = padev->ops->adminq_cmd(padev,
+>> +                                    (union pds_core_adminq_cmd *)&cmd,
+>> +                                    sizeof(cmd),
+>> +                                    (union pds_core_adminq_comp *)&comp,
+>> +                                    0);
+>> +       if (err)
+>> +               dev_err(dev, "Failed to set features %#llx, status %d: %pe\n",
+>> +                       features, comp.status, ERR_PTR(err));
+>> +
+>> +       return err;
+>> +}
+>> diff --git a/drivers/vdpa/pds/cmds.h b/drivers/vdpa/pds/cmds.h
+>> new file mode 100644
+>> index 000000000000..72e19f4efde6
+>> --- /dev/null
+>> +++ b/drivers/vdpa/pds/cmds.h
+>> @@ -0,0 +1,16 @@
+>> +/* SPDX-License-Identifier: GPL-2.0-only */
+>> +/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+>> +
+>> +#ifndef _VDPA_CMDS_H_
+>> +#define _VDPA_CMDS_H_
+>> +
+>> +int pds_vdpa_init_hw(struct pds_vdpa_device *pdsv);
+>> +
+>> +int pds_vdpa_cmd_reset(struct pds_vdpa_device *pdsv);
+>> +int pds_vdpa_cmd_set_mac(struct pds_vdpa_device *pdsv, u8 *mac);
+>> +int pds_vdpa_cmd_set_max_vq_pairs(struct pds_vdpa_device *pdsv, u16 max_vqp);
+>> +int pds_vdpa_cmd_init_vq(struct pds_vdpa_device *pdsv, u16 qid,
+>> +                        struct pds_vdpa_vq_info *vq_info);
+>> +int pds_vdpa_cmd_reset_vq(struct pds_vdpa_device *pdsv, u16 qid);
+>> +int pds_vdpa_cmd_set_features(struct pds_vdpa_device *pdsv, u64 features);
+>> +#endif /* _VDPA_CMDS_H_ */
+>> diff --git a/drivers/vdpa/pds/vdpa_dev.h b/drivers/vdpa/pds/vdpa_dev.h
+>> index 97fab833a0aa..33284ebe538c 100644
+>> --- a/drivers/vdpa/pds/vdpa_dev.h
+>> +++ b/drivers/vdpa/pds/vdpa_dev.h
+>> @@ -4,11 +4,45 @@
+>>   #ifndef _VDPA_DEV_H_
+>>   #define _VDPA_DEV_H_
+>>
+>> -#define PDS_VDPA_MAX_QUEUES    65
+>> +#include <linux/pci.h>
+>> +#include <linux/vdpa.h>
+>> +
+>> +struct pds_vdpa_vq_info {
+>> +       bool ready;
+>> +       u64 desc_addr;
+>> +       u64 avail_addr;
+>> +       u64 used_addr;
+>> +       u32 q_len;
+>> +       u16 qid;
+>> +       int irq;
+>> +       char irq_name[32];
+>> +
+>> +       void __iomem *notify;
+>> +       dma_addr_t notify_pa;
+>> +
+>> +       u64 doorbell;
+>> +       u16 avail_idx;
+>> +       u16 used_idx;
+>> +
+>> +       u8 hw_qtype;
+>> +       u16 hw_qindex;
+>>
+>> +       struct vdpa_callback event_cb;
+>> +       struct pds_vdpa_device *pdsv;
+>> +};
+>> +
+>> +#define PDS_VDPA_MAX_QUEUES    65
+>> +#define PDS_VDPA_MAX_QLEN      32768
+>>   struct pds_vdpa_device {
+>>          struct vdpa_device vdpa_dev;
+>>          struct pds_vdpa_aux *vdpa_aux;
+>> +
+>> +       struct pds_vdpa_vq_info vqs[PDS_VDPA_MAX_QUEUES];
+>> +       u64 req_features;               /* features requested by vdpa */
+>> +       u64 actual_features;            /* features negotiated and in use */
+>> +       u8 vdpa_index;                  /* rsvd for future subdevice use */
+>> +       u8 num_vqs;                     /* num vqs in use */
+>> +       struct vdpa_callback config_cb;
+>>   };
+>>
+>>   int pds_vdpa_get_mgmt_info(struct pds_vdpa_aux *vdpa_aux);
+>> diff --git a/include/linux/pds/pds_vdpa.h b/include/linux/pds/pds_vdpa.h
+>> index 3f7c08551163..b6a4cb4d3c6b 100644
+>> --- a/include/linux/pds/pds_vdpa.h
+>> +++ b/include/linux/pds/pds_vdpa.h
+>> @@ -101,4 +101,179 @@ struct pds_vdpa_ident_cmd {
+>>          __le32 len;
+>>          __le64 ident_pa;
+>>   };
+>> +
+>> +/**
+>> + * struct pds_vdpa_status_cmd - STATUS_UPDATE command
+>> + * @opcode:    Opcode PDS_VDPA_CMD_STATUS_UPDATE
+>> + * @vdpa_index: Index for vdpa subdevice
+>> + * @vf_id:     VF id
+>> + * @status:    new status bits
+>> + */
+>> +struct pds_vdpa_status_cmd {
+>> +       u8     opcode;
+>> +       u8     vdpa_index;
+>> +       __le16 vf_id;
+>> +       u8     status;
+>> +};
+>> +
+>> +/**
+>> + * enum pds_vdpa_attr - List of VDPA device attributes
+>> + * @PDS_VDPA_ATTR_MAC:          MAC address
+>> + * @PDS_VDPA_ATTR_MAX_VQ_PAIRS: Max virtqueue pairs
+>> + */
+>> +enum pds_vdpa_attr {
+>> +       PDS_VDPA_ATTR_MAC          = 1,
+>> +       PDS_VDPA_ATTR_MAX_VQ_PAIRS = 2,
+>> +};
+>> +
+>> +/**
+>> + * struct pds_vdpa_setattr_cmd - SET_ATTR command
+>> + * @opcode:            Opcode PDS_VDPA_CMD_SET_ATTR
+>> + * @vdpa_index:                Index for vdpa subdevice
+>> + * @vf_id:             VF id
+>> + * @attr:              attribute to be changed (enum pds_vdpa_attr)
+>> + * @pad:               Word boundary padding
+>> + * @mac:               new mac address to be assigned as vdpa device address
+>> + * @max_vq_pairs:      new limit of virtqueue pairs
+>> + */
+>> +struct pds_vdpa_setattr_cmd {
+>> +       u8     opcode;
+>> +       u8     vdpa_index;
+>> +       __le16 vf_id;
+>> +       u8     attr;
+>> +       u8     pad[3];
+>> +       union {
+>> +               u8 mac[6];
+>> +               __le16 max_vq_pairs;
+>> +       } __packed;
+>> +};
+>> +
+>> +/**
+>> + * struct pds_vdpa_vq_init_cmd - queue init command
+>> + * @opcode: Opcode PDS_VDPA_CMD_VQ_INIT
+>> + * @vdpa_index:        Index for vdpa subdevice
+>> + * @vf_id:     VF id
+>> + * @qid:       Queue id (bit0 clear = rx, bit0 set = tx, qid=N is ctrlq)
+>> + * @len:       log(2) of max descriptor count
+>> + * @desc_addr: DMA address of descriptor area
+>> + * @avail_addr:        DMA address of available descriptors (aka driver area)
+>> + * @used_addr: DMA address of used descriptors (aka device area)
+>> + * @intr_index:        interrupt index
+>> + */
+>> +struct pds_vdpa_vq_init_cmd {
+>> +       u8     opcode;
+>> +       u8     vdpa_index;
+>> +       __le16 vf_id;
+>> +       __le16 qid;
+>> +       __le16 len;
+>> +       __le64 desc_addr;
+>> +       __le64 avail_addr;
+>> +       __le64 used_addr;
+>> +       __le16 intr_index;
+> 
+> Just wonder in which case intr_index can be different from qid, in
+> pds_vdpa_cmd_init_vq() we had:
+> 
+>                  .intr_index = cpu_to_le16(qid),
+
+Yes, it normally is going to be the same.  The FW allows us to specify 
+it separate from the qid in order to allow flexibility in setting up 
+interrupts when we want to experiment with it.  For now we just plug in 
+the number.
 
 sln
 
 > 
-> Others look good.
-> 
 > Thanks
+> 
+> 
+>> +};
+>> +
+>> +/**
+>> + * struct pds_vdpa_vq_init_comp - queue init completion
+>> + * @status:    Status of the command (enum pds_core_status_code)
+>> + * @hw_qtype:  HW queue type, used in doorbell selection
+>> + * @hw_qindex: HW queue index, used in doorbell selection
+>> + * @rsvd:      Word boundary padding
+>> + * @color:     Color bit
+>> + */
+>> +struct pds_vdpa_vq_init_comp {
+>> +       u8     status;
+>> +       u8     hw_qtype;
+>> +       __le16 hw_qindex;
+>> +       u8     rsvd[11];
+>> +       u8     color;
+>> +};
+>> +
+>> +/**
+>> + * struct pds_vdpa_vq_reset_cmd - queue reset command
+>> + * @opcode:    Opcode PDS_VDPA_CMD_VQ_RESET
+>> + * @vdpa_index:        Index for vdpa subdevice
+>> + * @vf_id:     VF id
+>> + * @qid:       Queue id
+>> + */
+>> +struct pds_vdpa_vq_reset_cmd {
+>> +       u8     opcode;
+>> +       u8     vdpa_index;
+>> +       __le16 vf_id;
+>> +       __le16 qid;
+>> +};
+>> +
+>> +/**
+>> + * struct pds_vdpa_set_features_cmd - set hw features
+>> + * @opcode: Opcode PDS_VDPA_CMD_SET_FEATURES
+>> + * @vdpa_index:        Index for vdpa subdevice
+>> + * @vf_id:     VF id
+>> + * @rsvd:       Word boundary padding
+>> + * @features:  Feature bit mask
+>> + */
+>> +struct pds_vdpa_set_features_cmd {
+>> +       u8     opcode;
+>> +       u8     vdpa_index;
+>> +       __le16 vf_id;
+>> +       __le32 rsvd;
+>> +       __le64 features;
+>> +};
+>> +
+>> +/**
+>> + * struct pds_vdpa_vq_set_state_cmd - set vq state
+>> + * @opcode:    Opcode PDS_VDPA_CMD_VQ_SET_STATE
+>> + * @vdpa_index:        Index for vdpa subdevice
+>> + * @vf_id:     VF id
+>> + * @qid:       Queue id
+>> + * @avail:     Device avail index.
+>> + * @used:      Device used index.
+>> + *
+>> + * If the virtqueue uses packed descriptor format, then the avail and used
+>> + * index must have a wrap count.  The bits should be arranged like the upper
+>> + * 16 bits in the device available notification data: 15 bit index, 1 bit wrap.
+>> + */
+>> +struct pds_vdpa_vq_set_state_cmd {
+>> +       u8     opcode;
+>> +       u8     vdpa_index;
+>> +       __le16 vf_id;
+>> +       __le16 qid;
+>> +       __le16 avail;
+>> +       __le16 used;
+>> +};
+>> +
+>> +/**
+>> + * struct pds_vdpa_vq_get_state_cmd - get vq state
+>> + * @opcode:    Opcode PDS_VDPA_CMD_VQ_GET_STATE
+>> + * @vdpa_index:        Index for vdpa subdevice
+>> + * @vf_id:     VF id
+>> + * @qid:       Queue id
+>> + */
+>> +struct pds_vdpa_vq_get_state_cmd {
+>> +       u8     opcode;
+>> +       u8     vdpa_index;
+>> +       __le16 vf_id;
+>> +       __le16 qid;
+>> +};
+>> +
+>> +/**
+>> + * struct pds_vdpa_vq_get_state_comp - get vq state completion
+>> + * @status:    Status of the command (enum pds_core_status_code)
+>> + * @rsvd0:      Word boundary padding
+>> + * @avail:     Device avail index.
+>> + * @used:      Device used index.
+>> + * @rsvd:       Word boundary padding
+>> + * @color:     Color bit
+>> + *
+>> + * If the virtqueue uses packed descriptor format, then the avail and used
+>> + * index will have a wrap count.  The bits will be arranged like the "next"
+>> + * part of device available notification data: 15 bit index, 1 bit wrap.
+>> + */
+>> +struct pds_vdpa_vq_get_state_comp {
+>> +       u8     status;
+>> +       u8     rsvd0;
+>> +       __le16 avail;
+>> +       __le16 used;
+>> +       u8     rsvd[9];
+>> +       u8     color;
+>> +};
+>> +
+>>   #endif /* _PDS_VDPA_IF_H_ */
+>> --
+>> 2.17.1
+>>
 > 
