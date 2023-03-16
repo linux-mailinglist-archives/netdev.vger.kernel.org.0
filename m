@@ -2,91 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 345A86BC7F7
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 08:58:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 695E96BC815
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 09:02:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230297AbjCPH6e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 03:58:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32878 "EHLO
+        id S230321AbjCPICO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 04:02:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229717AbjCPH6d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 03:58:33 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36E49136C7
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 00:58:13 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id z21so4127224edb.4
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 00:58:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678953492;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ulFb/DYLA52m+dsDozOaz91f1oeP6qPYcrJj3qnGhBY=;
-        b=fUEGIxxtRkWzFEhAT/+kr6Kn04ygSL1OuFvhmYCy4YBNSSiJ2qWP0q/NkyiPu3UuQs
-         b6mNdHaNdCR/FnO/aet54cHqh9Vd6eV6oc7podiVui3Us7Zrluqn+tHzDFkMMoQkMqKs
-         aDq80FtSi1Fq1kvAQodHUmHuf9FUmZjkoo8q4K0b0SVo1jRBJ6/Rz7udiQN/QSMxtCIz
-         rPin4y9vUC2gE5efCZRLbfNMYMN7VUWnXwyI2IbRjbnU0hZgWRYAByLvkbnypGyod/Nx
-         tYEuii6Ts2YA1TTZWMTx1feqgImlAfhG2MJFcWAYtis2Nqx0IIKsvNnu90rclVebtqNT
-         s35A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678953492;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ulFb/DYLA52m+dsDozOaz91f1oeP6qPYcrJj3qnGhBY=;
-        b=FTq1gc7E2tRjmA6bzO2Qyxs2UbVJhTU0BWvaRwgqf+ztef9ikub6eYZG2XymDCkrAR
-         27kPpzLyiet7laHCFjunrnOXvFWUAf+u4Za2IqKQjWs5XkDCHvn6cLAWWeXwMA9gkcHa
-         GTkUlbNEGv4fGol0OnupNoaqFXRw5kkwQmaJbuh7wRsEK1i94xg6M5lbvxK/gVQMs9z3
-         IHoREMBP/jBOMVHgvIkQlwYgW02EY3Z8mfkEuSuQN/6xSIiKAhxZMaFDENCfJJkMTq5y
-         8ND7w0sLeMvL6OzrtOJ3/T0nayTi5G6t5c2OTkHCsiVG7smKD+4r94Vlco+GxjXZnO33
-         1ESg==
-X-Gm-Message-State: AO0yUKWzycwQQO2Hfkhmu7HocNZZtE8gEtoVkCKMRY6FSMtvfTTP9iOn
-        ryDpBaZYuRVgEVNOcfS+D1a3TA==
-X-Google-Smtp-Source: AK7set/smxfxpR9RQmrpknDR72xvmSPWaoLuoz1rzftWFJy6oCRtwnAAhkFuf6aLXLHwGS57XXXF8A==
-X-Received: by 2002:a17:906:5f90:b0:92b:f019:a9ef with SMTP id a16-20020a1709065f9000b0092bf019a9efmr9542124eju.31.1678953491903;
-        Thu, 16 Mar 2023 00:58:11 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:9827:5f65:8269:a95f? ([2a02:810d:15c0:828:9827:5f65:8269:a95f])
-        by smtp.gmail.com with ESMTPSA id le20-20020a170906ae1400b00921c608b737sm3478981ejb.126.2023.03.16.00.58.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Mar 2023 00:58:11 -0700 (PDT)
-Message-ID: <988ca4d1-d421-84e5-f9e5-80b77a992467@linaro.org>
-Date:   Thu, 16 Mar 2023 08:58:10 +0100
+        with ESMTP id S230322AbjCPICJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 04:02:09 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6E1354C8F;
+        Thu, 16 Mar 2023 01:02:00 -0700 (PDT)
+Received: from maxwell.fritz.box ([109.42.114.157]) by
+ mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1N5VXu-1qZOzS1ix8-016vCE; Thu, 16 Mar 2023 09:00:48 +0100
+From:   Jochen Henneberg <jh@henneberg-systemdesign.com>
+To:     netdev@vger.kernel.org
+Cc:     Jochen Henneberg <jh@henneberg-systemdesign.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net V2 0/2] net: stmmac: Premature loop termination check was ignored
+Date:   Thu, 16 Mar 2023 08:59:38 +0100
+Message-Id: <20230316075940.695583-1-jh@henneberg-systemdesign.com>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230314123759.132521-1-jh@henneberg-systemdesign.com>
+References: 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH net-next] dt-bindings: net: qcom,ipa: add SDX65 compatible
-Content-Language: en-US
-To:     Alex Elder <elder@linaro.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     andersson@kernel.org, konrad.dybcio@linaro.org, agross@kernel.org,
-        devicetree@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20230314210628.1579816-1-elder@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230314210628.1579816-1-elder@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:MF+CTOsuaUq00JRKYZHVnsChLb87wgi4uQ1NbzyyNpJIXRd8oR5
+ W4ykBIg0Us5rgmf3C88AvJGFzY9e+D57+Muxbny4/4lOA9pbdfO5pBjBUS0iZsgTHfr1xxa
+ vmPbcloq4rtlnFdDspnr2Fi4ReAvnQz+VoN8wpBVhmTesVvd8xPjyBga/xKDXzGiYtxymLg
+ Hz52hJjfworWMxsM6lXCg==
+UI-OutboundReport: notjunk:1;M01:P0:LIoPf2/TAMs=;QhWFGVa7tyxykKcxVcjlZU+BKF5
+ vMT3NkA0jzP5P3RSpMMkPS8EMvKA6XdEyS7Tkktzuy7QZKP4p1vMYCgSgI0w9wVrCF0UonIoh
+ 5NY+ssi7US/JeldnU15MfQxTsqeZ9daTF3qpmCiCNoKeogTlupK0lFuXzPaCTQ/9EH8CrpGlf
+ bXb+oyzUSUHtN6HKn+jaq6857IalkzXBLl5izpyxCYP6YBtR9KQDfpfkZzKp26pPaBFv6PAfj
+ 8ho4vqYOIyQsL7+5uskISN5ASCrHm0mCGsFT2uw/FwEPzfx/djOupNC7+c1I9BcL21KBkk3g3
+ fQZBFKHnfp36vCPUrV9voYEDFcRgOcWyZi72szFR8n+gF5ejb22z60w+n0k7RSLjv3FicU7Ah
+ V5nXW9OK51OW8p60ODhXkTQkZgqQxWKoyG8Hxf9z4402qEL13QROPZQzUtUrNe134Hepggwad
+ B7izy25PSjIBDhp9iCaBTokYuHwLKPimF2x9nmWwXJB3RvHnV+TQtcQDtf3rPJiu1TluSIHvG
+ DoY2WREu2848EqBILmSIbKoIapyfnchC8okgVLSO6UDi2e7H4WV97M8cXBYBl9USVw9VV5ZJe
+ 5dudodI/nlN87VoLwou1SVpypHp5Me+HTcd94RFufT2RgodBFNRqgHTTmp6MMaInGfYwK9w9O
+ fxDQe4JTllrua943bYeBHl+r4l0ZSJTSvF4bBPqc4g==
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/03/2023 22:06, Alex Elder wrote:
-> Add support for SDX65, which uses IPA v5.0.
-> 
-> Signed-off-by: Alex Elder <elder@linaro.org>
-> ---
->  Documentation/devicetree/bindings/net/qcom,ipa.yaml | 1 +
+As proposed in [1] here is are the fixes as a patch series that do the
+premature end-of-loop check within the goto loop.
 
+The commit messages now tell us which rx path has been fixed.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Jochen Henneberg (2):
+  net: stmmac: Premature loop termination check was ignored on rx
+  net: stmmac: Premature loop termination check was ignored on ZC rx
 
-Best regards,
-Krzysztof
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+[1] https://lore.kernel.org/all/Y%2FdiTAg2iUopr%2FOy@corigine.com
+-- 
+2.39.2
 
