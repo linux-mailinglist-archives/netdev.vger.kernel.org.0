@@ -2,130 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BADA6BDA3D
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 21:34:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48DDD6BDA4C
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 21:40:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230373AbjCPUen (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 16:34:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41674 "EHLO
+        id S230018AbjCPUko (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 16:40:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229985AbjCPUeh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 16:34:37 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1532A25E;
-        Thu, 16 Mar 2023 13:34:29 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id eh3so12470385edb.11;
-        Thu, 16 Mar 2023 13:34:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678998868;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AQGw4rmImHopv/OtWPakYC5hznOSVQLQps2bkjQMLxY=;
-        b=M4As80V5GmS+0/rX5iSuN5ZUK/V9bl+3vO1ySZaWw4JIVlyzbWpIZXeKOnMyTE3mjz
-         f0BI1u/cuPSZRF/kAtzpmP9+UIXqMEbXCu31IpLnL9N3nxD5hcwAKOJpFcYySNPlqdyX
-         3PjkOX+3WEfzRL9IFdZqUd7K+0IOA6D7nA1U/Sf9QARQBpeeekW5nWvLv03BxZElSoJa
-         Gb3d5UMNiovs5c5VufwtgBCJ55B2YTT8ntGwiWDJThhiPfGVvAYw0ZZy7M49hJ/JPD6C
-         H9rmxt9rImNfiMFjGGW4yLdpOx1f5X/8qT4YvIsDxCAkqGkeY1uFR/5qgywanpH8KJWC
-         y0eQ==
+        with ESMTP id S229581AbjCPUkm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 16:40:42 -0400
+Received: from mail-il1-f171.google.com (mail-il1-f171.google.com [209.85.166.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4528DD58BF;
+        Thu, 16 Mar 2023 13:40:41 -0700 (PDT)
+Received: by mail-il1-f171.google.com with SMTP id h5so1677734ile.13;
+        Thu, 16 Mar 2023 13:40:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678998868;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=AQGw4rmImHopv/OtWPakYC5hznOSVQLQps2bkjQMLxY=;
-        b=7l1TOrPvVPaHlrk5l8/v1HruGk/L22DEVZ3ELhckiNWMLzYG9OG/YnYJV6SEHGjM3C
-         BrceGrEBgAXsVclF1n/FppTrxALw34pnveil7Y2o/yiiSiUOMaSzphR2/LIMOYa402KX
-         loqBP5uVBcdH4Xfw5tr+Ctq+6pkcOGw9LbxT0wYO5DZCdoY+jeODWsYaYPWjCqkgC0Ve
-         RGVeodXvrHYfqt9VfE+rOiF3rI/vm9qb4mauYwLRToUvtvRnn5vSf2lSOLvomeZRBwya
-         oNhPEtRhKPOkd6ZpFBDjIyniaEX6qgSKNmcgC9ByvX89kW5SuQqKSfkpJ6ff16xRK0ss
-         Stew==
-X-Gm-Message-State: AO0yUKVya5uZ0OyVsXC7654HPQbNmBaqtKqJvfFsQIuvZYTKQAS844gM
-        UoFMukIg+kVeOiyEE/ei8NXZbvNqrFb8S54hyLw=
-X-Google-Smtp-Source: AK7set8aI6iGyNwk5Eczi8w4DESz0HedhKVVb82+qgKGfYbh8V24F5c7oo1E5oRZCBFS6oA9MIYI4Jy4DA+BqRvia+s=
-X-Received: by 2002:a17:907:c28:b0:922:26ae:c68c with SMTP id
- ga40-20020a1709070c2800b0092226aec68cmr385268ejc.5.1678998867959; Thu, 16 Mar
- 2023 13:34:27 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1678999240;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=D2MOq1ae2jmvldoEjIFleYkdU8muYIA0Owxizbdn6tU=;
+        b=4rTp/gOpoCl3PFWORQnZ2F9WObJJ9Ft6PdpNi212uI24YmJl5EPz0u8YlpLTaCTfsk
+         v9baAN/HoNmKslRHimc2jenMJDr1RGCVnUsOXkjmR5tfRLZ3av23a/U7/T/WySRsnf5U
+         IzXG5S5UjNRqs0Min7YzdtXx+5KAD0cV4FFJgrXemOuNSFTpZ9EL++LPIwxnsXXGhRC3
+         S2QQzQuqsqzw9/pTTMHNJYACR/cmomfhqn6MfzsH4jIG5dIzmqErKhmHdo7kR0RywAdL
+         bIXfix6catMWXKICn2TTEKFyI2Q3O5RHXfFD8q4RVIjXvEre9xZ8a5l/xqxRQcTYjjNh
+         9Qfg==
+X-Gm-Message-State: AO0yUKUF23QucrG0EqPJN7ZummLuE7qOV8fbm4Te7Y6u5s92m+mH/NHI
+        OE01LxLlTlLKUk/vtxuByQ==
+X-Google-Smtp-Source: AK7set9VGmL4NQP8ptL/AQeYRXFeHQSoAkCWC9EhuNamHjr8AzWdzLTX5M2cZtySvCE9EkSC6peA6w==
+X-Received: by 2002:a92:d090:0:b0:317:99d0:8ad1 with SMTP id h16-20020a92d090000000b0031799d08ad1mr8619161ilh.21.1678999239994;
+        Thu, 16 Mar 2023 13:40:39 -0700 (PDT)
+Received: from robh_at_kernel.org ([64.188.179.249])
+        by smtp.gmail.com with ESMTPSA id m21-20020a0566380dd500b003eac69029e5sm81952jaj.79.2023.03.16.13.40.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Mar 2023 13:40:39 -0700 (PDT)
+Received: (nullmailer pid 3845579 invoked by uid 1000);
+        Thu, 16 Mar 2023 20:40:37 -0000
+Date:   Thu, 16 Mar 2023 15:40:37 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Serge Semin <fancer.lancer@gmail.com>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Biao Huang <biao.huang@mediatek.com>, netdev@vger.kernel.org,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Subject: Re: [PATCH net-next 01/16] dt-bindings: net: dwmac: Validate PBL for
+ all IP-cores
+Message-ID: <20230316204037.GA3844212-robh@kernel.org>
+References: <20230313225103.30512-1-Sergey.Semin@baikalelectronics.ru>
+ <20230313225103.30512-2-Sergey.Semin@baikalelectronics.ru>
+ <167880254800.26004.7037306365469081272.robh@kernel.org>
+ <20230314150657.ytgyegi7qlwao6px@mobilestation>
+ <20230314170945.6yow2i5z4jdubwgt@mobilestation>
 MIME-Version: 1.0
-References: <20230315223607.50803-1-alexei.starovoitov@gmail.com> <20230315223607.50803-3-alexei.starovoitov@gmail.com>
-In-Reply-To: <20230315223607.50803-3-alexei.starovoitov@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 16 Mar 2023 13:34:12 -0700
-Message-ID: <CAEf4BzbrDu_GWWURnf4U=ji_8r6Cnqp-y8ye89xYuV4rTwzz9A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/2] selftests/bpf: Add test for bpf_kfunc_exists().
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     davem@davemloft.net, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@kernel.org, void@manifault.com, davemarchevsky@meta.com,
-        tj@kernel.org, memxor@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, kernel-team@fb.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230314170945.6yow2i5z4jdubwgt@mobilestation>
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 15, 2023 at 3:36=E2=80=AFPM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> From: Alexei Starovoitov <ast@kernel.org>
->
-> Add load and run time test for bpf_kfunc_exists() and check that the veri=
-fier
-> performs dead code elimination for non-existing kfunc.
->
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> ---
+On Tue, Mar 14, 2023 at 08:09:45PM +0300, Serge Semin wrote:
+> On Tue, Mar 14, 2023 at 06:07:01PM +0300, Serge Semin wrote:
+> > On Tue, Mar 14, 2023 at 09:10:19AM -0500, Rob Herring wrote:
+> > > 
+> > > On Tue, 14 Mar 2023 01:50:48 +0300, Serge Semin wrote:
+> > > > Indeed the maximum DMA burst length can be programmed not only for DW
+> > > > xGMACs, Allwinner EMACs and Spear SoC GMAC, but in accordance with [1]
+> > > > for Generic DW *MAC IP-cores. Moreover the STMMAC set of drivers parse
+> > > > the property and then apply the configuration for all supported DW MAC
+> > > > devices. All of that makes the property being available for all IP-cores
+> > > > the bindings supports. Let's make sure the PBL-related properties are
+> > > > validated for all of them by the common DW MAC DT schema.
+> > > > 
+> > > > [1] DesignWare Cores Ethernet MAC Universal Databook, Revision 3.73a,
+> > > >     October 2013, p. 380.
+> > > > 
+> > > > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> > > > Reviewed-by: Rob Herring <robh@kernel.org>
+> > > > 
+> > > > ---
+> > > > 
+> > > > Changelog v1:
+> > > > - Use correct syntax of the JSON pointers, so the later would begin
+> > > >   with a '/' after the '#'.
+> > > > ---
+> > > >  .../devicetree/bindings/net/snps,dwmac.yaml   | 77 +++++++------------
+> > > >  1 file changed, 26 insertions(+), 51 deletions(-)
+> > > > 
+> > > 
+> > > My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+> > > on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> > > 
+> > > yamllint warnings/errors:
+> > > 
+> > > dtschema/dtc warnings/errors:
+> > > /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.example.dtb: ethernet@1101c000: snps,txpbl:0:0: 1 is not one of [2, 4, 8]
+> > > 	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > > /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.example.dtb: ethernet@1101c000: snps,rxpbl:0:0: 1 is not one of [2, 4, 8]
+> > > 	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > > /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.example.dtb: ethernet@1101c000: snps,txpbl:0:0: 1 is not one of [2, 4, 8]
+> > > 	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+> > > /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.example.dtb: ethernet@1101c000: snps,rxpbl:0:0: 1 is not one of [2, 4, 8]
+> > > 	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+> > > /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.example.dtb: ethernet@1101c000: Unevaluated properties are not allowed ('interrupt-names', 'interrupts', 'mac-address', 'phy-mode', 'reg', 'snps,reset-delays-us', 'snps,reset-gpio', 'snps,rxpbl', 'snps,txpbl' were unexpected)
+> > > 	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+> > 
+> > Oops, on rebasing my work from older kernel I missed that the PBL
+> > properties constraints have already been extended. I'll drop the next
+> > patch in the series then and fix this one so the already defined
+> > constraints would be preserved.
+> 
+> BTW it's strange I didn't have that bug spotted during my
+> dt_binding_check run...
 
-we have prog_tests/ksyms_btf.c and progs/test_ksyms_weak.c which do
-these kind of tests for variable ksyms, let's just add kfunc ksyms
-there (user-space part has also checking that captured pointer value
-is correct and stuff like that, we probably want that for kfuncs as
-well)
-
-
->  .../selftests/bpf/progs/task_kfunc_success.c       | 14 +++++++++++++-
->  1 file changed, 13 insertions(+), 1 deletion(-)
->
-> diff --git a/tools/testing/selftests/bpf/progs/task_kfunc_success.c b/too=
-ls/testing/selftests/bpf/progs/task_kfunc_success.c
-> index 4f61596b0242..c0a7774e0c79 100644
-> --- a/tools/testing/selftests/bpf/progs/task_kfunc_success.c
-> +++ b/tools/testing/selftests/bpf/progs/task_kfunc_success.c
-> @@ -17,6 +17,8 @@ int err, pid;
->   *         TP_PROTO(struct task_struct *p, u64 clone_flags)
->   */
->
-> +void invalid_kfunc(void) __ksym __weak;
-> +
->  static bool is_test_kfunc_task(void)
->  {
->         int cur_pid =3D bpf_get_current_pid_tgid() >> 32;
-> @@ -26,7 +28,17 @@ static bool is_test_kfunc_task(void)
->
->  static int test_acquire_release(struct task_struct *task)
->  {
-> -       struct task_struct *acquired;
-> +       struct task_struct *acquired =3D NULL;
-> +
-> +       if (!bpf_kfunc_exists(bpf_task_acquire)) {
-> +               err =3D 3;
-> +               return 0;
-> +       }
-> +       if (bpf_kfunc_exists(invalid_kfunc)) {
-> +               /* the verifier's dead code elimination should remove thi=
-s */
-> +               err =3D 4;
-> +               asm volatile ("goto -1"); /* for (;;); */
-> +       }
->
->         acquired =3D bpf_task_acquire(task);
->         bpf_task_release(acquired);
-> --
-> 2.34.1
->
+Perhaps because you set DT_SCHEMA_FILES?
