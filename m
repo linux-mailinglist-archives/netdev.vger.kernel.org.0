@@ -2,87 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DEE866BD853
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 19:45:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 884FC6BD85B
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 19:52:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229476AbjCPSpk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 14:45:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48786 "EHLO
+        id S229793AbjCPSwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 14:52:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229707AbjCPSpj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 14:45:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23F0560D63
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 11:44:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678992288;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mZpXKWeE+ttIgzO7MrSI+Oq4TURhTIi2/VMu0ugGVs8=;
-        b=e2+ghALHePxLI3Feqb2O6PPRi0SdsJ7BfQ3Mgw5vlMFIX9A6MQyMiONcjibq0KtUf6lpve
-        0sBycIs70yEaaGUqgEyEnhnEIxCiG5mtOOFGYYIB8vYLoNHNbKyPCu00XzLS6EMcb/JHTg
-        yO+YE3t2qXiAHFT9kO4HwfI9QvIG7YI=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-184-SgRyy2TwP2mCQ3FVWsQylw-1; Thu, 16 Mar 2023 14:44:44 -0400
-X-MC-Unique: SgRyy2TwP2mCQ3FVWsQylw-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S229539AbjCPSwl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 14:52:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F059728E59;
+        Thu, 16 Mar 2023 11:52:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 722B83815EF1;
-        Thu, 16 Mar 2023 18:44:43 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9BBAB40D1C7;
-        Thu, 16 Mar 2023 18:44:41 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <641361cd8d704_33b0cc20823@willemb.c.googlers.com.notmuch>
-References: <641361cd8d704_33b0cc20823@willemb.c.googlers.com.notmuch> <20230316152618.711970-1-dhowells@redhat.com> <20230316152618.711970-4-dhowells@redhat.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     dhowells@redhat.com, Matthew Wilcox <willy@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [RFC PATCH 03/28] tcp: Support MSG_SPLICE_PAGES
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9ECE6B822BC;
+        Thu, 16 Mar 2023 18:52:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECD8AC433EF;
+        Thu, 16 Mar 2023 18:52:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678992757;
+        bh=59kceHKTQ9pP2wUCJX8jKFzLo8hYVTu7itr7dC78eII=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=PGUIcaZp6+rvtdA+AXlsWzUw+mepWVcL6mXTXRgW0sgMF6pYGsV9aGt95mIYsEPPn
+         mzR0GYlsSB8sEZ3LLO5iUqDWrNzh5Nt6HAgUhzT7o6VTkakqrGjq7kTr2cH10BBHCr
+         OCo5l8B4olKfIqW8YTjTcNro8TfwpLnUErrl6QLzMDzn1LuMaECLpL/frKH3ydjtov
+         98a0yAp+TFpFg+L3Qe+M5G46OTDt6AqowmZer9SfOghnhOB35do/BwnWONyOswUr/6
+         /H2Im6x3rgFHDG+u7QfFUyhJiTRD9aUvzjRAv5JfnwbNRHk1pIg+XRHf/yJRir8/BP
+         iv0OYqCiOSLXg==
+Date:   Thu, 16 Mar 2023 11:52:34 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andrew Halaney <ahalaney@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, agross@kernel.org,
+        andersson@kernel.org, konrad.dybcio@linaro.org,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        vkoul@kernel.org, bhupesh.sharma@linaro.org,
+        mturquette@baylibre.com, sboyd@kernel.org, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        mcoquelin.stm32@gmail.com, richardcochran@gmail.com,
+        linux@armlinux.org.uk, veekhee@apple.com,
+        tee.min.tan@linux.intel.com, mohammad.athari.ismail@intel.com,
+        jonathanh@nvidia.com, ruppala@nvidia.com, bmasney@redhat.com,
+        andrey.konovalov@linaro.org, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, ncai@quicinc.com,
+        jsuraj@qti.qualcomm.com, hisunil@quicinc.com
+Subject: Re: [PATCH net-next 08/11] net: stmmac: Add EMAC3 variant of dwmac4
+Message-ID: <20230316115234.393bca5d@kernel.org>
+In-Reply-To: <20230316183609.a3ymuku2cmhpyrpc@halaney-x13s>
+References: <20230313165620.128463-1-ahalaney@redhat.com>
+        <20230313165620.128463-9-ahalaney@redhat.com>
+        <20230313173904.3d611e83@kernel.org>
+        <20230316183609.a3ymuku2cmhpyrpc@halaney-x13s>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <811533.1678992280.1@warthog.procyon.org.uk>
-Date:   Thu, 16 Mar 2023 18:44:40 +0000
-Message-ID: <811534.1678992280@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.10
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
-
-> The commit message mentions MSG_SPLICE_PAGES as an internal flag.
+On Thu, 16 Mar 2023 13:36:09 -0500 Andrew Halaney wrote:
+> static void emac3_config_cbs(struct mac_device_info *hw, u32 send_slope,
+> 				    u32 idle_slope, u32 high_credit,
+> 				    u32 low_credit, u32 queue)
 > 
-> It can be passed from userspace. The code anticipates that and checks
-> preconditions.
+> I agree, that's quite gnarly to read. the emac3_config_cbs is the
+> callback, so it's already at 6 arguments, so there's nothing I can
+> trim there. I could create some struct for readability, populate that,
+> then call the do_config_cbs() func with it from emac3_config_cbs.
+> Is that the sort of thing you want to see?
 
-Should I add a separate field in the in-kernel msghdr struct for such internal
-flags?  That would also avoid putting an internal flag in the same space as
-the uapi flags.
+Yes, a structure is much better, because it can be initialized member
+by member,
 
-David
+struct bla my_bla = { .this = 1, .that = 2, .and = 3, another = 4, };
 
+That's much easier to read. A poor man's version of Python's keyword
+arguments, if you will.
