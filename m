@@ -2,145 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67B9B6BD4C3
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 17:12:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 682216BD4CC
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 17:13:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229691AbjCPQMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 12:12:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57044 "EHLO
+        id S229929AbjCPQNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 12:13:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229834AbjCPQMh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 12:12:37 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAD70C88BC
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 09:12:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=AGO8WPIaopQ9Vyx7ceqtVJ2EGsPrpJzBALdP3gGoF+Y=; b=11oDZIPoVt8gMQ1kCMmnOXQRhz
-        DU47X6ccclhR6Fu2QMKA12fELu4DxqfaocDD7mvlIhfcidV7tYTEMJaIr0oLbaZmzS5xlk5Mdf3rF
-        FOsWrPYiMBKvnBa3QikUpqqc5JO4RUKQAH8BDadn9n+YFx0obUt646oncd1KIdhZnnlEDR3unYz5C
-        6M+D8gObo5OmI5iaY2mu78pcRCmI4+EN6z9NPoO90gnwJOQpn+F/S6MctEgNsYvPsiwFaCerZ8Khb
-        HqJ+pKRfpcS3AHkvK2qEp3EQgv6CN2gKxRy32clXSnAlFBDB0zc5VFr7+KVtCmGvmQquATU3lnjZg
-        FoVmtdTg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58776)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pcqDE-0000tY-8W; Thu, 16 Mar 2023 16:12:20 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pcqDA-0002YE-8L; Thu, 16 Mar 2023 16:12:16 +0000
-Date:   Thu, 16 Mar 2023 16:12:16 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Steen Hegelund <steen.hegelund@microchip.com>
+        with ESMTP id S229958AbjCPQNN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 12:13:13 -0400
+Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2043.outbound.protection.outlook.com [40.107.105.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B867BAB884;
+        Thu, 16 Mar 2023 09:13:10 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gQK6zHCBeUgFF4IcrG2rafGpCHbwpBCCXvgKosboKWU4/jMFGyjyEcHJu/IDKgB8BKDnBY2f2ua89grNSu8VjT4/tscW6vqoYHr+fO13cbZum7318JNQwxgbCtjTBL4KAU7vktglHIIPSHMrprCwdRxdiSjUeiK7UyFhHksPCeSQT/t2RvYswJOsS3wz1tTf4r8FLhRq77vLd5JAbPR6EJL9onDUdqnfx/nlChnl5pFgW1gsA5OlzhuzxW6rxLU7c3Aw9RXjDvRQac19R3NbaE6Polo6lZBfnDPWUe5rjmT3E58jdrrtLPSK2qBqFrIOZSUfKvuMiS3zjsEU73qPww==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=z5Suh3iWp9L2kA3GuOfF3zdvX8Cn4JiUI5Ut7h7fmSw=;
+ b=khKBtHzEPtIYxHMovXFcHdkAp1c5vNQu94/a0owdIkmeD46qWq2xy0qn9w1WVI7rNJ6YhoEOo8vzA/f03Xz7Zy4np7BFPHhzQ/R4ivE8KNPaop919tAzYK68SNj8K3XZxdxl8Gk6d5vaYHdt70PcgHE93h7xNrP4umWCv1i4pMSyaZk8+5zNDykIfp2lDJHXS+aPlhbT/HBB1yvdI0QkBoQ7MbpHVIoFJu2FT1jtLbydOP0vy1YdQMdpYbFV1Z3if3LWRBwKpkvOsR7mdO57yYxLguzzwQ1rJvVLf7PN7UpVG2aeC5bxfhZfhzotdFVWBdVfk7lYnmDQY/+LmYmloQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=z5Suh3iWp9L2kA3GuOfF3zdvX8Cn4JiUI5Ut7h7fmSw=;
+ b=SjAYp3EMVJk+7NGqyebkca+p1Vbp2ya+kn8Rtw770dyPKrH3uiS6kn/G8jjG2bQexaHiEXPtjIA0uWr+6svJn1vHir70JcC7R3eUAkcuC7wvcj+H8VHFJzD4H1FILAlire1SxfBTvp/J3kChh6wM8JLw6bH7X+XcwePddQzB4G0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
+ by AS8PR04MB7861.eurprd04.prod.outlook.com (2603:10a6:20b:2a9::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.30; Thu, 16 Mar
+ 2023 16:13:08 +0000
+Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
+ ([fe80::29a3:120c:7d42:3ca8]) by AM0PR04MB6452.eurprd04.prod.outlook.com
+ ([fe80::29a3:120c:7d42:3ca8%7]) with mapi id 15.20.6178.031; Thu, 16 Mar 2023
+ 16:13:08 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Jonathan McDowell <noodles@earth.li>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 1/2] net: pcs: xpcs: remove double-read of link
- state when using AN
-Message-ID: <ZBM/4H/BKZpjghB/@shell.armlinux.org.uk>
-References: <ZBHaQDM+G/o/UW3i@shell.armlinux.org.uk>
- <E1pcSOp-00DiAo-Su@rmk-PC.armlinux.org.uk>
- <918d1908c2771f4941c191b73c495e20d89a6a99.camel@microchip.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Marek Vasut <marex@denx.de>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        linux-kernel@vger.kernel.org
+Subject: [RFC/RFT PATCH net-next 0/4] KSZ DSA driver: xMII speed adjustment and partial reg_fields conversion
+Date:   Thu, 16 Mar 2023 18:12:46 +0200
+Message-Id: <20230316161250.3286055-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AM3PR05CA0088.eurprd05.prod.outlook.com
+ (2603:10a6:207:1::14) To AM0PR04MB6452.eurprd04.prod.outlook.com
+ (2603:10a6:208:16d::21)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <918d1908c2771f4941c191b73c495e20d89a6a99.camel@microchip.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|AS8PR04MB7861:EE_
+X-MS-Office365-Filtering-Correlation-Id: 374f949a-2d9d-4d55-ac12-08db263954c6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 7dGJ2c8vu7DpjNhk8r4JD4Ra3/38IDcG16s01wX4rs8Jvrdw79N6B0D9Lo/2tErCmaNfOEO/ksPi+EneMvvwJRaEfndw5VDwh8mvD/mLsrft2TgzE5BLhFkJza5xp+ttobUTHi2c/2JpZi23YmHFThVTXuFkQixDrSTCt7UB1QoBHpvahaV3fm+HbInoBJvQRciaCtWiBTteC3FEfRh2nuSfRGnMkqbBERhoSnxD4ER8dNSmaQhcNkK00zKy89u7siKeEp9nJ5wBbgQDgtRtsZQzBQi2a0vXqaRq1CwI7wr3noU5XabAW3vyXvciG3LbgSaOoWHTHgBXeGWYQFIs5DchgXpxcX/zz0sKDZwmuVqS3AKG9rm8GmSGIbLKd9ej/Tq8jvaIfix01BU/Mp0hrQLx/hqkE4pHyqVwTh5jepSGfb5H0EKA9PoZFWmMiy+QhWSHXfDqkBtTxAON8WAG/6HGfz8Pvl2npkapncmflC87zppKpcBAlgukpR9+eRYKWFsoIWKyXrGBfAtbfM64e3qg5xd4IFa4k/JNkGXo9ZNxIorCQiQXnD+/hEHct0oxKBqIeyJ71oz7Hpc7+c/O+5UWsDr63S6wLTVrsIHMDiwhWMvlX0KcZdUUkwNFmSRw6+vFUVGubEovfUGBd9VSEa97xBBYkpcoDWoSyTQn/a8waY4cVlocjh7jePGlXKZd/PP8eRFT3MnUgCD5xaOD2HZe1F1hgqKq6QjTKXdq3bA=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(346002)(39860400002)(366004)(396003)(136003)(451199018)(36756003)(86362001)(38350700002)(38100700002)(2906002)(5660300002)(41300700001)(8936002)(44832011)(7416002)(4326008)(6512007)(66476007)(1076003)(6506007)(26005)(186003)(2616005)(6666004)(83380400001)(316002)(54906003)(6916009)(8676002)(66946007)(6486002)(966005)(52116002)(478600001)(66556008)(66899018);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?coVAqSKaXw0K8aLmWxw7tZ1b4W2ynFNKVY4m/UvqWbdeFkkydDBLQbCaUzJU?=
+ =?us-ascii?Q?XPRx826kAwFINsR4ukYCnMjJ0omALzOi143sNOZu/ZUyHmAs2k9kbljvlCdI?=
+ =?us-ascii?Q?pqbLgehd80g30sQraDdDVnjBT2XcUgM240GnLrp+7LTUtxVvaQYe5SgCZIHe?=
+ =?us-ascii?Q?3NJhfe5Q3ik+sG+K2bF05qqWKpsWCC7350SbmO2SNw7pxhoxqQtxdDVKf+Hi?=
+ =?us-ascii?Q?otGPTiotefHDWjbRwpQehp9angJ2R543hGyjYWrBtvEoDUlIFfpIyMfSd6iO?=
+ =?us-ascii?Q?7oxL6lQQueEHnwbS4L2xrVA5X51ElKF0oTfv/fukQJ7a6Jr91lsXxN//9UiK?=
+ =?us-ascii?Q?5xiR4OU7aYYfmzQD+5N7V/WIdZVRHn5uYPfol8QEsfvsuo74warMeN4oOrHm?=
+ =?us-ascii?Q?eqv3J4gdCRYOGA5MI99OqggO4tBzVdKz8aGfftLZxLW2u3bKiVTKLrIGT9WJ?=
+ =?us-ascii?Q?XoKxbxUu9uLU3LMyy/xGg8VbmnRPm+/i/WHgmunmUHacmtFCdFyzyW4OpZYL?=
+ =?us-ascii?Q?PuIB5GfqpOP3naSa7eAmzbp+HLONPukaZEF8gLQihB7Ibe8Pg+6eOUAZR0Jq?=
+ =?us-ascii?Q?TtPNN1vNZG+ZkPBt5m+3RtHTKYqhuYiuk6WMnkdO9Ij/YaXbKR+cOhRxfQR1?=
+ =?us-ascii?Q?ppDEDWdjtnoCUqc2oacpX4MstEL0DKYSGh0CYlVkpGVsbjVA/2xYqlusx5m1?=
+ =?us-ascii?Q?ed9HuVjxMKbzQjiGhBJVJ1DWNumj/eUmLU4McaDWk7Tf8cJJxczxTTaPe67q?=
+ =?us-ascii?Q?FftqEG4fUc+U+su3DhqUGg/Co7Xp1QomxLxCV7Gf2jCsb6Qqf7+GqSsanJUA?=
+ =?us-ascii?Q?dvc5G8CVXQBUrFIGpAL1s7ej/5nwSUk1a3Ztm2Ff+2R6lZ+keCJ334OhlKvU?=
+ =?us-ascii?Q?QoT8qkVumU1uuMQ21fT7bzpgrcjjTVys3wi2jO8aRRM2W3Pr+zRHgXAUegiI?=
+ =?us-ascii?Q?7REUlHKZSVfFjjrUJyhf15m4jmz9CZoKXDUKL4iXbcZ6ywxzPTWU1Dles+M0?=
+ =?us-ascii?Q?SPNJI2fCbzhLDTQpao+U+m8vE0sWv7uyi0w69uz//qOFhzNdQKlW/8hl+sB4?=
+ =?us-ascii?Q?/MZKCAvEcwQGl+povFvIH+pxbH1FD349Sf9ZS4Z5F3GXVQtiLDZ7wppl44hs?=
+ =?us-ascii?Q?GqrZ5dYywnwEnoB2gqUt0gZwVZb/Xsd1hl1GEgmkCkURibt1Y4jZYgw8uEc/?=
+ =?us-ascii?Q?2tcdPlwzyFruomPXzKRFuOUliZENI5NLWiJ7kIFV94W5AFtocgW7tTFPdkfw?=
+ =?us-ascii?Q?w/8wFhlFCNb11btJ2mXK/BqQSU/rLJnDJbue4hh1A8E98VHj+oQtvIRoy7I+?=
+ =?us-ascii?Q?1gX1NCq/zHBaJWIR41ZgaMiDks0Il+2lixH5quFq+PLT/0XMcDEzxF5K3v6q?=
+ =?us-ascii?Q?DRe3Ka3bP7r4SndbnZWRhu/+Kffg3Vw9i1hx7SY9xrbR5zZn7mNaOPPbAptf?=
+ =?us-ascii?Q?lseRhhwqcvnK5k85H0WbwshL0Zs/qVGrfZPwkjAq5f9xdciKWtec8LtmyFyw?=
+ =?us-ascii?Q?xeONUTbRysxwpoCZgotMW+0lF3ThUnRpMPi3ZUbQyNpCn/9Vd8/Z8AbfjqvG?=
+ =?us-ascii?Q?X89/vJghJ//f7GhTx/nE1BgtSCOdPYUggYoutcTN0YZhv44M6W+ekleREQqP?=
+ =?us-ascii?Q?ow=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 374f949a-2d9d-4d55-ac12-08db263954c6
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2023 16:13:08.2698
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: BLmLZ+xySVI0ecUkm4EIHl8l2DsBkiKCF6VA6rKunSztz464YGtENmXf9fVrNl3GBAwoIYmG4gt+uIYTHg/79g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7861
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 16, 2023 at 10:44:48AM +0100, Steen Hegelund wrote:
-> Hi Russell,
-> 
-> 
-> On Wed, 2023-03-15 at 14:46 +0000, Russell King (Oracle) wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > 
-> > Phylink does not want the current state of the link when reading the
-> > PCS link state - it wants the latched state. Don't double-read the
-> > MII status register. Phylink will re-read as necessary to capture
-> > transient link-down events as of dbae3388ea9c ("net: phylink: Force
-> > retrigger in case of latched link-fail indicator").
-> > 
-> > The above referenced commit is a dependency for this change, and thus
-> > this change should not be backported to any kernel that does not
-> > contain the above referenced commit.
-> > 
-> > Fixes: fcb26bd2b6ca ("net: phy: Add Synopsys DesignWare XPCS MDIO module")
-> > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> > ---
-> >  drivers/net/pcs/pcs-xpcs.c | 13 ++-----------
-> >  1 file changed, 2 insertions(+), 11 deletions(-)
-> > 
-> > diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
-> > index bc428a816719..04a685353041 100644
-> > --- a/drivers/net/pcs/pcs-xpcs.c
-> > +++ b/drivers/net/pcs/pcs-xpcs.c
-> > @@ -321,7 +321,7 @@ static int xpcs_read_fault_c73(struct dw_xpcs *xpcs,
-> >         return 0;
-> >  }
-> > 
-> > -static int xpcs_read_link_c73(struct dw_xpcs *xpcs, bool an)
-> > +static int xpcs_read_link_c73(struct dw_xpcs *xpcs)
-> >  {
-> >         bool link = true;
-> >         int ret;
-> > @@ -333,15 +333,6 @@ static int xpcs_read_link_c73(struct dw_xpcs *xpcs, bool an)
-> >         if (!(ret & MDIO_STAT1_LSTATUS))
-> >                 link = false;
-> > 
-> > -       if (an) {
-> > -               ret = xpcs_read(xpcs, MDIO_MMD_AN, MDIO_STAT1);
-> > -               if (ret < 0)
-> > -                       return ret;
-> > -
-> > -               if (!(ret & MDIO_STAT1_LSTATUS))
-> > -                       link = false;
-> > -       }
-> > -
-> >         return link;
-> >  }
-> > 
-> > @@ -935,7 +926,7 @@ static int xpcs_get_state_c73(struct dw_xpcs *xpcs,
-> >         int ret;
-> > 
-> >         /* Link needs to be read first ... */
-> > -       state->link = xpcs_read_link_c73(xpcs, state->an_enabled) > 0 ? 1 : 0;
-> > +       state->link = xpcs_read_link_c73(xpcs) > 0 ? 1 : 0;
-> 
-> Couldn't you just say:
-> 
-> 	state->link = xpcs_read_link_c73(xpcs) > 0;
-> 
-> That should be a boolean, right?
+Hi,
 
-That would be another change to the code - and consider how such a
-change would fit in this series given its description and also this
-patch.
+Yesterday I picked up this patch and resubmitted it:
+https://patchwork.kernel.org/project/netdevbpf/patch/20230222031738.189025-1-marex@denx.de/
+here:
+https://patchwork.kernel.org/project/netdevbpf/patch/20230315231916.2998480-1-vladimir.oltean@nxp.com/
 
-IMHO such a change should be a separate patch - and there's plenty
-of scope for cleanups like the one you suggest in this driver.
+and today I'm trying to address the rest of the points brought up in
+that conversation, namely:
 
-Thanks.
+- commit c476bede4b0f ("net: dsa: microchip: ksz8795: use common xmii
+  function") stopped adjusting the xMII port speed on KSZ8795, does it
+  still work? No idea. Patch 3/4 deals with that.
+
+- Mapping P_XMII_CTRL_0 and P_XMII_CTRL_1 to the same value on KSZ8795
+  raised some eyebrows, and some reading shows that it is also partially
+  incorrect (see patch 2/4). This is also where I propose to convert to
+  reg_fields.
+
+As it turns out, patch 2/4 is a dependency for patch 3/4, even if 3/4
+may be a fix.
+
+Patch 1/4 is a dependency of 2/4.
+
+Patch 4/4 is something I also noticed during review. I left it at the
+end so that it won't conflict with something that could reasonably be
+submitted as a bug fix.
+
+ABSOLUTELY NO TESTING WAS DONE. I don't have the hardware.
+
+THIS BREAKS EVERYTHING EXCEPT FOR KSZ8795. Any testers should test on
+that if possible (due to both patches 2/4, and 3/4).
+
+Vladimir Oltean (4):
+  net: dsa: microchip: add an enum for regmap widths
+  net: dsa: microchip: partial conversion to regfields API for KSZ8795
+    (WIP)
+  net: dsa: microchip: allow setting xMII port speed/duplex on
+    KSZ8765/KSZ8794/KSZ8795
+  net: dsa: microchip: remove unused dev->dev_ops->phylink_mac_config()
+
+ drivers/net/dsa/microchip/ksz8795.c      |  45 ++--
+ drivers/net/dsa/microchip/ksz8863_smi.c  |  11 +-
+ drivers/net/dsa/microchip/ksz9477.c      |  24 +--
+ drivers/net/dsa/microchip/ksz9477_i2c.c  |  11 +-
+ drivers/net/dsa/microchip/ksz_common.c   | 256 +++++++++++++----------
+ drivers/net/dsa/microchip/ksz_common.h   | 110 +++++++---
+ drivers/net/dsa/microchip/ksz_spi.c      |   6 +-
+ drivers/net/dsa/microchip/lan937x_main.c |   8 +-
+ 8 files changed, 299 insertions(+), 172 deletions(-)
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.34.1
+
