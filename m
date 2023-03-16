@@ -2,106 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3A516BDA54
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 21:42:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD17E6BDA63
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 21:50:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230018AbjCPUmu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 16:42:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50588 "EHLO
+        id S230271AbjCPUut (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 16:50:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229701AbjCPUmt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 16:42:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 134BE54CA6
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 13:42:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 987DB62119
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 20:42:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C540C433EF;
-        Thu, 16 Mar 2023 20:42:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678999367;
-        bh=HbCsG1WKD67HGxHFuvKNU5vOtQI8QVeO0Qcs8mj+3YU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YELGZrTwJhhnCkDRPTDZmHHcy5Yt5U4K5FU1vw8oJgQDngc6jeiPeWx3KC1mCA7hD
-         VEvh3hUu5wCnkC4aI1n5qp0/eupiDq1S6vri4BYSWKySDL1xbLuaHPagpWTgURIzMB
-         NJBuDq3kAaBmbUiVUw07qvtVmi1FbuhHzhhh5Oas4Fd0J3N3Q5Loi2jIPz+zdErK9/
-         7TCtRVeNpElRaR5WYRCmK/kb2+orz317Q5rePZqr63t8bbZNuR/aLnpUjUtCxt5JgI
-         dwIa8uPd05d4jwTxbrjgcgpmXcju3tjY2EvQvKxKsub/YuTKhdf6sXtLkEDvKWZgAT
-         M28p+MeQtpumA==
-Date:   Thu, 16 Mar 2023 13:42:44 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Gal Pressman <gal@nvidia.com>
-Cc:     Shay Agroskin <shayagr@amazon.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        "Woodhouse, David" <dwmw@amazon.com>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        Saeed Bshara <saeedb@amazon.com>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        "Dagan, Noam" <ndagan@amazon.com>,
-        "Arinzon, David" <darinzon@amazon.com>,
-        "Itzko, Shahar" <itzko@amazon.com>,
-        "Abboud, Osama" <osamaabb@amazon.com>
-Subject: Re: [PATCH v4 net-next 1/5] ethtool: Add support for configuring
- tx_push_buf_len
-Message-ID: <20230316134244.56727793@kernel.org>
-In-Reply-To: <30cb3990-80ce-ca07-6d73-cdc00d0ad7b8@nvidia.com>
-References: <20230309131319.2531008-1-shayagr@amazon.com>
-        <20230309131319.2531008-2-shayagr@amazon.com>
-        <316ee596-e184-8613-d136-cd2cb13a589f@nvidia.com>
-        <20230309225326.2976d514@kernel.org>
-        <d438ef12-86f8-7415-4690-3e378ac1048f@nvidia.com>
-        <20230313120942.75599b8e@kernel.org>
-        <pj41zlbkkv2v6z.fsf@u570694869fb251.ant.amazon.com>
-        <30cb3990-80ce-ca07-6d73-cdc00d0ad7b8@nvidia.com>
+        with ESMTP id S229588AbjCPUus (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 16:50:48 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E03137607C;
+        Thu, 16 Mar 2023 13:50:46 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id x17so3997666lfu.5;
+        Thu, 16 Mar 2023 13:50:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678999845;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Tm+CR5BUEZPIc6XrcLK40BWz/iwrOweB0rbSxedxb6c=;
+        b=DgFpRDyQ6ojzdXRizZH6TFtk+GAyYW0lqAuQCMMBbGoDuLzPT0H77cdP1mV9opDXwB
+         6xKWAd7Th/DWIIx4BFYiTDX0yCcjvUuaDmHtHV+YakvBj2YSV2LiGMfn8b3JdMZeXRLD
+         P/mQlgYRFi1Zz5icl6QD8T8iuq6vSd8Ig7g1qBh/N63rahkv78/GhY+ItG9FWuqTAwQC
+         6+j4mlgSlfPfztlufjqnWDckg6tKHnvUbVDktywcTfMyrxo5QjgRuyw8kI3bEaK/pqbX
+         jMycNKQaHSAlbAIGyVOpgkjvcNByY775FhUI1LpaKp26skX+4dGlPqP0ASIPZ20i6lFv
+         PypA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678999845;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Tm+CR5BUEZPIc6XrcLK40BWz/iwrOweB0rbSxedxb6c=;
+        b=u8DGPALKPoF3yA4kTJNrUh4SCG0opSRYls61FdCI4AvBr8xpW159oy7letyyerMqea
+         jz//PkejOC3pdA+oN39nmgqIHxtY3YJp47pDZOiXkn6Mz3ftMl37WiIK/PQDSMaR381+
+         w3O8V8earyKH03+8FX0IRrYuwWKkgIloHs+R/PJuUwPdtkXhdQWMfugNF+oNxwKfl/uU
+         P6RVZ8JN9ncSjBkYefxKUxrck3TFx2g7EAJiXm0voatnRlwiHdJKvkh/Lpm5iJKEWql3
+         GefXI89WUg/TYXgGHg/7S4WnIWWOY9cghi+LFhKlHZVHy5S3geO7aVXncuWDyiWiVSUo
+         Gx1g==
+X-Gm-Message-State: AO0yUKVbiyAK/NqsD69S/0PJjUbLxVIPGYFBe7p5qpURqL5cnQMVrNpX
+        dGOGwznIBkSeodoJqgtJE+8=
+X-Google-Smtp-Source: AK7set93Hh4wAnzsV+brV3vssp16g1107+6Kt8j0R3UNFEyry4cAodJdQraD2u1FFr5AcThx4B+/YQ==
+X-Received: by 2002:a05:6512:33c7:b0:4dc:790c:9100 with SMTP id d7-20020a05651233c700b004dc790c9100mr280464lfg.12.1678999845018;
+        Thu, 16 Mar 2023 13:50:45 -0700 (PDT)
+Received: from mobilestation ([95.79.133.202])
+        by smtp.gmail.com with ESMTPSA id 8-20020ac25688000000b004d863fa8681sm36473lfr.173.2023.03.16.13.50.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Mar 2023 13:50:44 -0700 (PDT)
+Date:   Thu, 16 Mar 2023 23:50:41 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Biao Huang <biao.huang@mediatek.com>, netdev@vger.kernel.org,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Subject: Re: [PATCH net-next 01/16] dt-bindings: net: dwmac: Validate PBL for
+ all IP-cores
+Message-ID: <20230316205041.vr6nrfbrrbwetng7@mobilestation>
+References: <20230313225103.30512-1-Sergey.Semin@baikalelectronics.ru>
+ <20230313225103.30512-2-Sergey.Semin@baikalelectronics.ru>
+ <167880254800.26004.7037306365469081272.robh@kernel.org>
+ <20230314150657.ytgyegi7qlwao6px@mobilestation>
+ <20230314170945.6yow2i5z4jdubwgt@mobilestation>
+ <20230316204037.GA3844212-robh@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230316204037.GA3844212-robh@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Mar 2023 13:57:26 +0200 Gal Pressman wrote:
-> On 14/03/2023 17:38, Shay Agroskin wrote:
-> >> Shay, could you add a paragraph in the docs regarding copybreak in v5?  
+On Thu, Mar 16, 2023 at 03:40:37PM -0500, Rob Herring wrote:
+> On Tue, Mar 14, 2023 at 08:09:45PM +0300, Serge Semin wrote:
+> > On Tue, Mar 14, 2023 at 06:07:01PM +0300, Serge Semin wrote:
+> > > On Tue, Mar 14, 2023 at 09:10:19AM -0500, Rob Herring wrote:
+> > > > 
+> > > > On Tue, 14 Mar 2023 01:50:48 +0300, Serge Semin wrote:
+> > > > > Indeed the maximum DMA burst length can be programmed not only for DW
+> > > > > xGMACs, Allwinner EMACs and Spear SoC GMAC, but in accordance with [1]
+> > > > > for Generic DW *MAC IP-cores. Moreover the STMMAC set of drivers parse
+> > > > > the property and then apply the configuration for all supported DW MAC
+> > > > > devices. All of that makes the property being available for all IP-cores
+> > > > > the bindings supports. Let's make sure the PBL-related properties are
+> > > > > validated for all of them by the common DW MAC DT schema.
+> > > > > 
+> > > > > [1] DesignWare Cores Ethernet MAC Universal Databook, Revision 3.73a,
+> > > > >     October 2013, p. 380.
+> > > > > 
+> > > > > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> > > > > Reviewed-by: Rob Herring <robh@kernel.org>
+> > > > > 
+> > > > > ---
+> > > > > 
+> > > > > Changelog v1:
+> > > > > - Use correct syntax of the JSON pointers, so the later would begin
+> > > > >   with a '/' after the '#'.
+> > > > > ---
+> > > > >  .../devicetree/bindings/net/snps,dwmac.yaml   | 77 +++++++------------
+> > > > >  1 file changed, 26 insertions(+), 51 deletions(-)
+> > > > > 
+> > > > 
+> > > > My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+> > > > on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> > > > 
+> > > > yamllint warnings/errors:
+> > > > 
+> > > > dtschema/dtc warnings/errors:
+> > > > /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.example.dtb: ethernet@1101c000: snps,txpbl:0:0: 1 is not one of [2, 4, 8]
+> > > > 	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > > > /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.example.dtb: ethernet@1101c000: snps,rxpbl:0:0: 1 is not one of [2, 4, 8]
+> > > > 	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > > > /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.example.dtb: ethernet@1101c000: snps,txpbl:0:0: 1 is not one of [2, 4, 8]
+> > > > 	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+> > > > /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.example.dtb: ethernet@1101c000: snps,rxpbl:0:0: 1 is not one of [2, 4, 8]
+> > > > 	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+> > > > /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.example.dtb: ethernet@1101c000: Unevaluated properties are not allowed ('interrupt-names', 'interrupts', 'mac-address', 'phy-mode', 'reg', 'snps,reset-delays-us', 'snps,reset-gpio', 'snps,rxpbl', 'snps,txpbl' were unexpected)
+> > > > 	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+> > > 
+> > > Oops, on rebasing my work from older kernel I missed that the PBL
+> > > properties constraints have already been extended. I'll drop the next
+> > > patch in the series then and fix this one so the already defined
+> > > constraints would be preserved.
 > > 
-> > Document that tx_copybreak defines the threshold below which the packet
-> > is copied into a preallocated DMA'ed buffer and that tx_push_buf defines
-> > the same but for device memory?
-> > Are we sure we want to make this distinction ? While the meaning of both
-> > params can overlap in their current definition, the motivation to use
-> > them is pretty different.
-> > A driver can implement both for different purposes (and still copy both
-> > into the device).  
+> > BTW it's strange I didn't have that bug spotted during my
+> > dt_binding_check run...
 > 
-> I don't understand what it means to implement both.
 
-If skb head is large you can copy part into the iomem, part into 
-a pre-mapped space.
+> Perhaps because you set DT_SCHEMA_FILES?
 
-> It's confusing because both parameters result in skipping the DMA map
-> operation, but their usage motivation is different?
-> What are we instructing our customers? Use copybreak when your iommu is
-> slow, but when should they use this new parameter?
+Can't remember now. I might have missed that in the long log as well.
+Anyway I'll test it out one more time before fixing.
+Thanks for your response.
 
-Your customers? Is mlx5 going to implement the iomem based push which
-needs explicit slot size control?
+-Serge(y)
 
-> IMO, a reasonable way to use both would be to only account for the
-> tx_push_buf_len when tx_push is enabled, otherwise use copybreak.
-
-I thought Shay already agreed. Let's get the v5 out.
