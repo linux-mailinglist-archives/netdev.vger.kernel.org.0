@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9602D6BD3EF
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 16:36:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F0BE6BD3F5
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 16:37:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231820AbjCPPgl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 11:36:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45144 "EHLO
+        id S231620AbjCPPhl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 11:37:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231634AbjCPPgR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 11:36:17 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B5E1E2512
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 08:33:51 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id e20-20020a25d314000000b00b33355abd3dso2203452ybf.14
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 08:33:51 -0700 (PDT)
+        with ESMTP id S231587AbjCPPhP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 11:37:15 -0400
+Received: from mail-yb1-f201.google.com (mail-yb1-f201.google.com [209.85.219.201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694D0BD4C7
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 08:35:06 -0700 (PDT)
+Received: by mail-yb1-f201.google.com with SMTP id j125-20020a25d283000000b008f257b16d71so2195855ybg.15
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 08:35:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1678980731;
+        d=google.com; s=20210112; t=1678980732;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=AIfE2HKr49ytMSaGl0Yiq5WDILcsXgC/2cRVrFMjsUw=;
-        b=gQOWswxHszA2NFwOApK1Z+JNqPbnRMbhzwzH9/V3l3B76JTV8VnzV6zTGgMyO4iGH1
-         OWHvDExZgVhPx81bvHvHNlbxX8YdtOlLq82WCHhP8ft0xp5hHPaD7GUWh2k5LXQjYL2F
-         kmDYREKN6ZwZXYKPV3h5Y+kNhQvyeLsAZWDAqpLG+psX+SLxnv44Dw3ML9rGQHxM5Snd
-         U2fok+iKs8wUJTvmz50rCWD6mOytWygjv1kkW6FU+P4Sm1qjJXOVrbPYUySpjQNpMciE
-         Y2xrb5VeiU7BcBD/ZyZCBP5i9q6kpUg/ESk5gkocvuSQSdz2w6BeToLLAPlluzGR+4zc
-         M9EQ==
+        bh=HteXYOXcXimDaI1L+NcIoxiVb7PNOf4hx6ZWPdNaGDk=;
+        b=ndfQ9wYr+JQ9fiL420GbCh0jE5jaqWli1f6dtNAv30wfDNI+2DdyNsPRyYbq8Kw/TT
+         YqIhJrf84+ZpQpn8l1tAWLqp8yNAkLOkeP2tSIzHfF5ZlMBpUvNqg313eq2aL969JhAE
+         XluxxSmlY5G7WCtN7buwwDH2sMndyN7cFOYNi3XeNXV+2ot4geea7qUuBbC1IO4sxfTm
+         zDlv3DK3UcRA30en5d8e4klS6pJVv5NirmSW9+h6OfBF46iw3YAjubjdwKiJCSOm50JL
+         fpimv0pgFJKwLnhi2/EXKLKADjFRKVEOxYqcmZWHW2Hsr8Tm0SMe28rwZTWcjAOpSJLK
+         A+Cw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678980731;
+        d=1e100.net; s=20210112; t=1678980732;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=AIfE2HKr49ytMSaGl0Yiq5WDILcsXgC/2cRVrFMjsUw=;
-        b=LkuHjGz0RWAFyCwuW2csfph8dOFR0ztoiGzbmIRDy5D8zpwPLMzo3ccNSrKbwJBIBv
-         2pzCUCHO349YImHYrbAg7aZLQ7f9Mqc0vq43dAWUVXYz2p5Lc7V2qPqsbK/LJOBmJRns
-         fDi9n2cfOKEVj98eGnb7Q0abh+aDrcmJF1cLWCvpBufQSSTX33UJi0aKFuLWIg6r1JcC
-         yPax5BWmwmq+zP43DsHouzYG1cfO8i0YjzvUc1FCOiKyEPnsafdErdz6F0DYQ2FwmWoj
-         ZvTUAmXT2YPl4HtWbcJbm9fVaBy8WveK6YTCry+khSyv07rr7Ztm/3TuzDvxc8Rx7+1u
-         7kfA==
-X-Gm-Message-State: AO0yUKVwYZ7+Fw3MWSv+R0b+jDELHaHfa6lVPko0xy5e0TA8CRuzH64E
-        762lAHi+on2YFJdNvUjyW4CnmEeDpG98MQ==
-X-Google-Smtp-Source: AK7set/2JjMMYHCvqwAuMsykfvjZg1zUnobCfnyyv6oviKsbbGDZR/SHPh/pVKxDkYMqE39Va3agJfbjbv5h/Q==
+        bh=HteXYOXcXimDaI1L+NcIoxiVb7PNOf4hx6ZWPdNaGDk=;
+        b=z6a7obopj5RCgzQ4d78473kIj8mY2Ge+El58vr6GZ8ix/lhb7XDp2GrpH4fplnqTHK
+         y1D623ILkIALi9bK9M21Wgd9HsXm5MK9rbWPQxvCtuw0q++x4iIOjG2dXTjbZ3mSKnl3
+         ErRnAzZMBh4m1pc3ppJ1BZAU6/4JtKSr7ZG7ZCkaIExDnuFP7HAlAHRHvXJ3PbXrYTW4
+         GMT0h+io85ZeEj/sFc7XyqdF2d+5hiIRerWixHhIvBDJTSkcvOQYbanB7S40xzVgScgj
+         BW+y0ZtojIicRO2gNhkJuZFhqcxbTU+RRBegIPCcPGcV9dN5SgC6/iMiVA0m7IROK6lA
+         fCDA==
+X-Gm-Message-State: AO0yUKX25v0vYV1V6sE8sVh0JPGyFm2G5T3x+luZY5GMylGnuCLDDIHE
+        e3nse87UI78NY+IJk6AyX84sgBRNYJjn9Q==
+X-Google-Smtp-Source: AK7set8FaNt/Vr9Kb5K3Io7WmKNQLKWGjPGA3G2RNXyQuWZr5yH3KoEbbj8drGG+V7cfmKZhZYxXp72BwzkcLQ==
 X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a5b:6c8:0:b0:b36:32f8:852d with SMTP id
- r8-20020a5b06c8000000b00b3632f8852dmr6933767ybq.4.1678980730838; Thu, 16 Mar
- 2023 08:32:10 -0700 (PDT)
-Date:   Thu, 16 Mar 2023 15:31:58 +0000
+ (user=edumazet job=sendgmr) by 2002:a05:6902:18ce:b0:b4d:ee98:4ff7 with SMTP
+ id ck14-20020a05690218ce00b00b4dee984ff7mr4485421ybb.2.1678980732650; Thu, 16
+ Mar 2023 08:32:12 -0700 (PDT)
+Date:   Thu, 16 Mar 2023 15:31:59 +0000
 In-Reply-To: <20230316153202.1354692-1-edumazet@google.com>
 Mime-Version: 1.0
 References: <20230316153202.1354692-1-edumazet@google.com>
 X-Mailer: git-send-email 2.40.0.rc2.332.ga46443480c-goog
-Message-ID: <20230316153202.1354692-5-edumazet@google.com>
-Subject: [PATCH v2 net-next 4/8] ipv6: constify inet6_mc_check()
+Message-ID: <20230316153202.1354692-6-edumazet@google.com>
+Subject: [PATCH v2 net-next 5/8] udp6: constify __udp_v6_is_mcast_sock()
+ socket argument
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -62,57 +63,41 @@ Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-inet6_mc_check() is essentially a read-only function.
+This clarifies __udp_v6_is_mcast_sock() intent.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 Reviewed-by: Simon Horman <simon.horman@corigine.com>
 ---
- include/net/addrconf.h | 2 +-
- net/ipv6/mcast.c       | 8 ++++----
- 2 files changed, 5 insertions(+), 5 deletions(-)
+ net/ipv6/udp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/addrconf.h b/include/net/addrconf.h
-index c04f359655b86feed2b4b42cc69b90c63088238a..82da55101b5a30b2a5512d964429d2c5f73d03fd 100644
---- a/include/net/addrconf.h
-+++ b/include/net/addrconf.h
-@@ -223,7 +223,7 @@ int ipv6_sock_mc_drop(struct sock *sk, int ifindex,
- 		      const struct in6_addr *addr);
- void __ipv6_sock_mc_close(struct sock *sk);
- void ipv6_sock_mc_close(struct sock *sk);
--bool inet6_mc_check(struct sock *sk, const struct in6_addr *mc_addr,
-+bool inet6_mc_check(const struct sock *sk, const struct in6_addr *mc_addr,
- 		    const struct in6_addr *src_addr);
- 
- int ipv6_dev_mc_inc(struct net_device *dev, const struct in6_addr *addr);
-diff --git a/net/ipv6/mcast.c b/net/ipv6/mcast.c
-index 1c02160cf7a4c54f0d8687b8368e5f6151ab0bce..714cdc9e2b8edfb925a061a722c38b37b1c6088e 100644
---- a/net/ipv6/mcast.c
-+++ b/net/ipv6/mcast.c
-@@ -627,12 +627,12 @@ int ip6_mc_msfget(struct sock *sk, struct group_filter *gsf,
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index ab4ae886235ac9557219c901c5041adfa8b026ef..d350e57c479299e732bd3595c1964acddde2d876 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -805,12 +805,12 @@ static int udpv6_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
  	return 0;
  }
  
--bool inet6_mc_check(struct sock *sk, const struct in6_addr *mc_addr,
-+bool inet6_mc_check(const struct sock *sk, const struct in6_addr *mc_addr,
- 		    const struct in6_addr *src_addr)
+-static bool __udp_v6_is_mcast_sock(struct net *net, struct sock *sk,
++static bool __udp_v6_is_mcast_sock(struct net *net, const struct sock *sk,
+ 				   __be16 loc_port, const struct in6_addr *loc_addr,
+ 				   __be16 rmt_port, const struct in6_addr *rmt_addr,
+ 				   int dif, int sdif, unsigned short hnum)
  {
--	struct ipv6_pinfo *np = inet6_sk(sk);
--	struct ipv6_mc_socklist *mc;
--	struct ip6_sf_socklist *psl;
-+	const struct ipv6_pinfo *np = inet6_sk(sk);
-+	const struct ipv6_mc_socklist *mc;
-+	const struct ip6_sf_socklist *psl;
- 	bool rv = true;
+-	struct inet_sock *inet = inet_sk(sk);
++	const struct inet_sock *inet = inet_sk(sk);
  
- 	rcu_read_lock();
+ 	if (!net_eq(sock_net(sk), net))
+ 		return false;
 -- 
 2.40.0.rc2.332.ga46443480c-goog
 
