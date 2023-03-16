@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA9A06BC811
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 09:01:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C52146BC813
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 09:01:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230141AbjCPIBt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 04:01:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38136 "EHLO
+        id S230312AbjCPIBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 04:01:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229978AbjCPIBs (ORCPT
+        with ESMTP id S229902AbjCPIBs (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 04:01:48 -0400
 Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D6E3CE3E;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A90EC3B853;
         Thu, 16 Mar 2023 01:01:42 -0700 (PDT)
 Received: from maxwell.fritz.box ([109.42.114.157]) by
  mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MmDZI-1qKbvm25dg-00iGnY; Thu, 16 Mar 2023 09:00:50 +0100
+ 1MqbI0-1qGED61Gd6-00meWG; Thu, 16 Mar 2023 09:00:52 +0100
 From:   Jochen Henneberg <jh@henneberg-systemdesign.com>
 To:     netdev@vger.kernel.org
 Cc:     Jochen Henneberg <jh@henneberg-systemdesign.com>,
@@ -31,29 +31,29 @@ Cc:     Jochen Henneberg <jh@henneberg-systemdesign.com>,
         Ong Boon Leong <boon.leong.ong@intel.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net V2 1/2] net: stmmac: Premature loop termination check was ignored on rx
-Date:   Thu, 16 Mar 2023 08:59:39 +0100
-Message-Id: <20230316075940.695583-2-jh@henneberg-systemdesign.com>
+Subject: [PATCH net V2 2/2] net: stmmac: Premature loop termination check was ignored on ZC rx
+Date:   Thu, 16 Mar 2023 08:59:40 +0100
+Message-Id: <20230316075940.695583-3-jh@henneberg-systemdesign.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230316075940.695583-1-jh@henneberg-systemdesign.com>
 References: <20230316075940.695583-1-jh@henneberg-systemdesign.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:dJfqpxbCayMr14ZFZm6NMfVkugOqNjZ2iAm1ZLyeMPYoZbW08Lt
- ezIrj1cTZrWHpr2CpztcBtZE2fTekHb3T9QhUeri4Wt8WKnySAuUg4bIcGA3OYMwjl5TL64
- 0QebK9E1A+ExosRjclv3CIPLbXK9+nhooxmIW8ybunk1oqJsgFGRQK1GAzfyaMRLRAFm8yL
- vCzKHUO8P58D1wHOkkP5A==
-UI-OutboundReport: notjunk:1;M01:P0:JxekeCwxMts=;mYRg07aZUIGOTMgzcF6FhusRbxy
- M5FCszaB2xtyZ6GAMnGLSMOt6OAJxjyt8IDhkBft2C1qNrtLO8JiNNCi+1I37J95xipWG67AR
- YVhdkVd8yZKeP1vGW/rS0AuFg0C+K5hv8077Oj5f0tJFE/7e+J4v78fP0lFlRitsDBCaES3UB
- azH72JkUGe8QPes6XT5PcyAtPl+HqjQmjAnm0ziePShDWyTnR+45nxGbebNI0RQJMzm/aszPb
- OqkxkIPp6l5bTGdlketCVg3cb2WL+cwsqnNk1nppzulJY+y64dqohoHkR3jcwT6MYRI/3ui2y
- cJzbqIT99TPi0IzTSD5SyGXaGyznCPZ2Ed6yNY9szyiBowHVYE/fhwVCGQxU5bdlIstrZAT7y
- yNXYRC3BMIYvJH11MhM5Mnu4pePCxDhP7/jE4btJRDHSi2CZ7fwj1A5+AHtCDoOP6FCMLbA+e
- nL5mIU+Qzh29/wXJzzsO3xszYy1UcoKyPHvUSh7DA87aB9iTG95h8u52PW/ERA4A/X3F1TRoU
- lIuVzjibAk+f12wXUdWaYNAw3NTVcK7Oq2tgEzMDcQ8Cvq3w04PANYHRjFMKrZYrZ3vqykYyS
- n4HQdHo/CS2ogo8C5rCvwI7pOvcDyRZKXV1VQXL3RuoD89OTJUDcmGBIh7/diwb7LiUp9ctaU
- lKt0aFx3mBJkkegvRrwxgpb6/5T5L18D6canc0/qjA==
+X-Provags-ID: V03:K1:mqMzrAtMQmUMQjWx51L0PSHKPyASH1/pEP3wcHN2eEBqi8Q745U
+ dgnh3N/rVmxXjU3Kov4wy1nZQCU97qDoSFMciWFBjRg6VkCPfWd9pgSNmsV6lDUKn1COfnv
+ 93Gv3vqS/qwd2NcZCVHnCNle88/BG2ojDCQib3nNuyS9BIhUL5EPkZOpkjCRLwkakQi1R/C
+ 9k7cARiszzI+CJuxOmcmw==
+UI-OutboundReport: notjunk:1;M01:P0:ybRtu81gIRA=;V2R8iM2fSpQWWWvzF7mFI0zI+yK
+ AaF3EvGmlLkuwcS8HVBO50+PQR7jc+Xn/fOmg6zduiAj1hMOlDBgTdVk7JZXioy27aV7trG5l
+ o9c49RXatLazS5v2+oE15DQivVxklcmFov3N/MX+MTDkUFrgPR8Il5AlgIr5Cyt7+1uby3q3T
+ jcS0Orzz+zUdTeSpcDirdU9NfB+97riiiGi5cchHjrommOkve3Q+16rMRIz+2w9EAf2keFkqY
+ BoswUNwmbhcxkH+ZCRqt02sbO+2PBCJbNd09ZcxLOwlLSCwGS1Il06Cd25pHbF2NQEtBFzo4h
+ NvKG9nQTKexV09UeutHA8iCq4Pi86JqjMdcsfxTTJ6lNMAyBfiFClMGsbowYqCTweJFt0Wve4
+ DMIxU0lO6d3hji1C2ZKllwFm/d9TQBjDNeSW4Jd94oPut/74Wni2F79tOLLTKODmNXLIFiito
+ W+0nWGgRzYCnW5FofIvHWMpC0t6KjR9LJb/Uun9WJWTL8OL4JrYlHEc7x9EniFXA7fgx0Ibwe
+ pGwzy78aFPbLLLiD/HyEcDTBQ94RBQqCw2Y1KH5hJcdQ/92tHbci/FryOdDileRTjzYLjjakt
+ fbWQUJ2vwfJnEEN283jS3pcv7Ws42AcraqJAENQBGo8I3ZZpn/TELx4A8mhp0LhAif2yJd3Ii
+ RlnFTPzEHNh1F886moIdXs3QF0lm0UDaGtvYx7dmgo+0hPqwN7GENHXIfmm/+TE=
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
@@ -67,17 +67,17 @@ The premature loop termination check makes sense only in case of the
 jump to read_again where the count may have been updated. But
 read_again did not include the check.
 
-Fixes: ec222003bd94 ("net: stmmac: Prepare to add Split Header support")
+Fixes: bba2556efad6 ("net: stmmac: Enable RX via AF_XDP zero-copy")
 Signed-off-by: Jochen Henneberg <jh@henneberg-systemdesign.com>
 ---
  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index e4902a7bb61e..ea51c7c93101 100644
+index ea51c7c93101..4886668a54c5 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -5221,10 +5221,10 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
+@@ -5031,10 +5031,10 @@ static int stmmac_rx_zc(struct stmmac_priv *priv, int limit, u32 queue)
  			len = 0;
  		}
  
@@ -87,8 +87,8 @@ index e4902a7bb61e..ea51c7c93101 100644
  
 -read_again:
  		buf1_len = 0;
- 		buf2_len = 0;
  		entry = next_entry;
+ 		buf = &rx_q->buf_pool[entry];
 -- 
 2.39.2
 
