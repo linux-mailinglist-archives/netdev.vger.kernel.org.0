@@ -2,68 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B87F06BCB46
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 10:45:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D6CB6BCB4D
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 10:45:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229688AbjCPJo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 05:44:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45258 "EHLO
+        id S229489AbjCPJpt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 05:45:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229827AbjCPJo5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 05:44:57 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C311F132E6
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 02:44:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1678959892; x=1710495892;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=iiUKp2JxkU5DkzMmojIAJhchHw+PKDPxQbBmVeuKVdY=;
-  b=hcWaRx5kmZL46aCk1yXUff1SzSK6KH0NyoIygodZZc8AmDkK/rGaUhBA
-   2lywTjD3OhOqWUrkepV7otu+zmLTci0xxbTbhiiNJ6lHpMR+zKe+V104p
-   O1Qj/FUXg8pEXBWPvtgbaXOxQXGAMfrpJIXPOJmiWScLx4dFMxSy0l5Id
-   mq3ww+HYxFTdozs3IG156n57rEvEpBDb8blJbiuNIXEYmjaN9FCFy0acN
-   1yCNIDv25zNtS5CAocfawNIlD0PeqCcEyf2lQrn17FP7Z+Ad6EJdgdLeB
-   b06vXxP7alL8LEzqCMfV79PeJdu0jqORBG80p76daF0iBj0P4wTO67LLT
-   g==;
-X-IronPort-AV: E=Sophos;i="5.98,265,1673938800"; 
-   d="scan'208";a="216582306"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Mar 2023 02:44:51 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Thu, 16 Mar 2023 02:44:51 -0700
-Received: from den-her-m31857h.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.21 via Frontend Transport; Thu, 16 Mar 2023 02:44:49 -0700
-Message-ID: <918d1908c2771f4941c191b73c495e20d89a6a99.camel@microchip.com>
-Subject: Re: [PATCH net-next 1/2] net: pcs: xpcs: remove double-read of link
- state when using AN
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Jonathan McDowell <noodles@earth.li>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-CC:     Heiner Kallweit <hkallweit1@gmail.com>,
+        with ESMTP id S229669AbjCPJpr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 05:45:47 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34CA0132C1
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 02:45:40 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id v196so1101410ybe.9
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 02:45:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112; t=1678959939;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=PL0tQXf5SFCsGKBMuc8bU2oCMePhl+bBRd8wAwAZ5XA=;
+        b=T7Vq9U2jhaMBYnMKzxU9JoOzqhwzpnMHSsuYU6GCzR2pYojcaXm4aQnvmJlZ7Lgaa7
+         9/flfJLCKQfoljq8U51RaA98EhAiwk3HvBavEcZtZ88XEYQcu6c/EhZ2vj/7qvKtLBj6
+         2UxKroOaUiXJPHYrevbDz1VZGOZrP2Gu10nR/XQu8eJOd31H1VVmWfyzGKUy+Ms8z5zK
+         /+QhRFnkG1M12Xg8p3PLziv3A+NMagngJmU0Ro+dV3zjM5/nwDYREC4+1riJ9cpSYR2s
+         7ZBGx3u1fBRFumvMjXTG/37QkD519fYrm7d2uXzIxDOJAU2n9YYwidpzcYerhyFYIrB4
+         BL6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678959939;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=PL0tQXf5SFCsGKBMuc8bU2oCMePhl+bBRd8wAwAZ5XA=;
+        b=urRTj1GEpPdJKQYbAh1vhumqFfHit4ha2zordqTPnpSiA6xw6LKqIrkTPyeQQdhGQN
+         P+aqYuWs4I7bg3T4JOK6LBkvnuZ30FLv20b/VrQIS0qHl4jG6qPez/kcvZveu7nkX6gR
+         Ci9xpbFWrbFzHkfgI4e4ZHmCBhakWWXaF7Fgep8HIsNPye4uTBu3rKU7olaJvYXUGdw3
+         uXA/JTwa7MNb1Lx53C2HgkytkanDvb2QXE2LVqtHcYgPIF4RGoB/+J15BHlKRJ1eZRQO
+         CduZ1q3McVEnJf5ONkOLRBblS+0zDJooccl3Th3HoarHMvaaiWaTxI0nobeaWV96Tma1
+         fzUA==
+X-Gm-Message-State: AO0yUKWkM2fBs6Q1FSjq+7AS9plevyU4PtXD19XnhvuDMV8qp7W6YjaS
+        +l0r5SwRkUl0EqUI4Upk3hLYA0vYmXwg9bXmPchzag==
+X-Google-Smtp-Source: AK7set80xJrXTllzuta4NMY7WbV3u2cfRrAAofd5p2sAz+McWIdxP+QTUmfMy9XFmL3j0ednaHAlcofioNvLvyH/Vig=
+X-Received: by 2002:a05:6902:208:b0:acd:7374:f154 with SMTP id
+ j8-20020a056902020800b00acd7374f154mr28011335ybs.7.1678959939479; Thu, 16 Mar
+ 2023 02:45:39 -0700 (PDT)
+MIME-Version: 1.0
+References: <20230316033753.2320557-1-liuhangbin@gmail.com> <ZBKTPrBONJwvm+rP@Laptop-X1>
+In-Reply-To: <ZBKTPrBONJwvm+rP@Laptop-X1>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Date:   Thu, 16 Mar 2023 05:45:28 -0400
+Message-ID: <CAM0EoMkytZ26ZafxKBG3-EpXow_nWyrxye18Prr8JQ-VTVovpg@mail.gmail.com>
+Subject: Re: [PATCHv2 net 0/2] net/sched: fix parsing of TCA_EXT_WARN_MSG for
+ tc action
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>
-Date:   Thu, 16 Mar 2023 10:44:48 +0100
-In-Reply-To: <E1pcSOp-00DiAo-Su@rmk-PC.armlinux.org.uk>
-References: <ZBHaQDM+G/o/UW3i@shell.armlinux.org.uk>
-         <E1pcSOp-00DiAo-Su@rmk-PC.armlinux.org.uk>
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Pedro Tammela <pctammela@mojatatu.com>,
+        Marcelo Leitner <mleitner@redhat.com>,
+        Phil Sutter <psutter@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5-0ubuntu1 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,77 +78,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Russell,
+On Wed, Mar 15, 2023 at 11:55=E2=80=AFPM Hangbin Liu <liuhangbin@gmail.com>=
+ wrote:
+>
+> On Thu, Mar 16, 2023 at 11:37:51AM +0800, Hangbin Liu wrote:
+> > In my previous commit 0349b8779cc9 ("sched: add new attr TCA_EXT_WARN_M=
+SG
+> > to report tc extact message") I didn't notice the tc action use differe=
+nt
+> > enum with filter. So we can't use TCA_EXT_WARN_MSG directly for tc acti=
+on.
+> >
+> > Let's rever the previous fix 923b2e30dc9c ("net/sched: act_api: move
+> > TCA_EXT_WARN_MSG to the correct hierarchy") and add a new
+> > TCA_ROOT_EXT_WARN_MSG for tc action specifically.
+>
+> Sigh. Sorry I sent the mail too quick and forgot to add
+>
+> Reported-and-tested-by: Davide Caratti <dcaratti@redhat.com>
 
+For next time: instead of saying in the commit message "suggested by
+foo" specify it using "suggested-by: foo" semantics.
 
-On Wed, 2023-03-15 at 14:46 +0000, Russell King (Oracle) wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> Phylink does not want the current state of the link when reading the
-> PCS link state - it wants the latched state. Don't double-read the
-> MII status register. Phylink will re-read as necessary to capture
-> transient link-down events as of dbae3388ea9c ("net: phylink: Force
-> retrigger in case of latched link-fail indicator").
-> 
-> The above referenced commit is a dependency for this change, and thus
-> this change should not be backported to any kernel that does not
-> contain the above referenced commit.
-> 
-> Fixes: fcb26bd2b6ca ("net: phy: Add Synopsys DesignWare XPCS MDIO module")
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> ---
->  drivers/net/pcs/pcs-xpcs.c | 13 ++-----------
->  1 file changed, 2 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
-> index bc428a816719..04a685353041 100644
-> --- a/drivers/net/pcs/pcs-xpcs.c
-> +++ b/drivers/net/pcs/pcs-xpcs.c
-> @@ -321,7 +321,7 @@ static int xpcs_read_fault_c73(struct dw_xpcs *xpcs,
->         return 0;
->  }
-> 
-> -static int xpcs_read_link_c73(struct dw_xpcs *xpcs, bool an)
-> +static int xpcs_read_link_c73(struct dw_xpcs *xpcs)
->  {
->         bool link = true;
->         int ret;
-> @@ -333,15 +333,6 @@ static int xpcs_read_link_c73(struct dw_xpcs *xpcs, bool an)
->         if (!(ret & MDIO_STAT1_LSTATUS))
->                 link = false;
-> 
-> -       if (an) {
-> -               ret = xpcs_read(xpcs, MDIO_MMD_AN, MDIO_STAT1);
-> -               if (ret < 0)
-> -                       return ret;
-> -
-> -               if (!(ret & MDIO_STAT1_LSTATUS))
-> -                       link = false;
-> -       }
-> -
->         return link;
->  }
-> 
-> @@ -935,7 +926,7 @@ static int xpcs_get_state_c73(struct dw_xpcs *xpcs,
->         int ret;
-> 
->         /* Link needs to be read first ... */
-> -       state->link = xpcs_read_link_c73(xpcs, state->an_enabled) > 0 ? 1 : 0;
-> +       state->link = xpcs_read_link_c73(xpcs) > 0 ? 1 : 0;
-
-Couldn't you just say:
-
-	state->link = xpcs_read_link_c73(xpcs) > 0;
-
-That should be a boolean, right?
-
-> 
->         /* ... and then we check the faults. */
->         ret = xpcs_read_fault_c73(xpcs, state);
-> --
-> 2.30.2
-> 
-
-BR
-Steen
-
+cheers,
+jamal
