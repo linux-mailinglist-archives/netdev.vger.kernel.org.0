@@ -2,158 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C5676BC852
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 09:10:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D7CB6BC84C
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 09:09:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230458AbjCPIKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 04:10:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54088 "EHLO
+        id S230384AbjCPIJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 04:09:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230429AbjCPIKZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 04:10:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0CC2A8C6D
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 01:09:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678954185;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ANBi6moGFCcHvuEVtc5exSmPpTznsGEIvNhn1pGPofU=;
-        b=KkVJcdL69RX/xNmrVrqxaCqkc24XmNCtVW6FFXdnz3lUIGOSl/ST4L5BF0CJB0V5BTMDen
-        lC84yk0D60BPbmHKPh85Dg8b/pYzmgeCsjuLl9JD1hnDfeUytOM/2cEyv0z4yr3CkVk81s
-        otwD70Z6g5BMZX9dy9KJBbw/tndUVbI=
-Received: from mail-yb1-f198.google.com (mail-yb1-f198.google.com
- [209.85.219.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-104-i_0j9h6GNRmjDTNeLpghjA-1; Thu, 16 Mar 2023 04:09:41 -0400
-X-MC-Unique: i_0j9h6GNRmjDTNeLpghjA-1
-Received: by mail-yb1-f198.google.com with SMTP id n203-20020a25dad4000000b0091231592671so1115799ybf.1
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 01:09:41 -0700 (PDT)
+        with ESMTP id S230184AbjCPIJn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 04:09:43 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 412ED7C965
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 01:09:40 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id ek18so4193383edb.6
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 01:09:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1678954179;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=qsSpi02AtRNWSprHN4Cl76ayMyVQlvN90GOQNuiLzbY=;
+        b=iOdoB48DSlJTxzYGvDakUwMgdpYpWIUL4nfKitoVvMKmpNSyhwjFVq5uG8uzBnOUTW
+         x/rivZ/fOZlHihUW0EUlamLr9+U3JqiPhma3II2aEWX2H2cN7KeBfxWXgOitFL3S3jca
+         duHj69oaASj2MjNwQZd1rqfDb0suikr7FoD5Rc5SckWkmQMaf3gOUAH8b2ejtUmFp3Lb
+         aWFIeNUEtYqYQzPS2/LdlPFDEjFTr34eqfTcbB6ICYL3fwBAQbhXVRairVx5zmKMFpss
+         i7boP9CRkkaiO7mbTly7kJanoyzHwc5jtEGZbGklG1O0kvBZlUg+GVImBpiIFZgSS2tz
+         fjwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678954181;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ANBi6moGFCcHvuEVtc5exSmPpTznsGEIvNhn1pGPofU=;
-        b=MVgs6POk/Tebx2oLXm+cbqQxOCCqoCKMs5qQrpGNKDDQHqDPERF/yhYRQrCt7MUshB
-         GYvFlHrA5CPfu8BiAuqwdYQi23r8cocEnmA6oOlw5IJfyLqozBst8aXTdmdQzaAEzOdg
-         4tlcsXw0WEyPFGFzsEJOBejzv2VF3Ev8dPkVm/6LD1JqUEjQUZWKbbf0w1YxZS0WdXA9
-         I1/CbS3YlLvpp3robuQslfHjIgWFHvBKD48BVdJYR8AMlYgAtrSQgEJa4jITNi9yKx1B
-         bdJ0SPS+PWniORC9rHrXYcCmZfBoigTyz59iyAcQn6o5s3XbvF2q/Hc1IB4KZ+wlsymF
-         AXYw==
-X-Gm-Message-State: AO0yUKVkQav1IZOwo8cBcXxbicfFT7FZMehGD4b9HIaTMlWw8e+WL7Hz
-        QIVSIaDHn/TOpRlmYEWSeQtMW5Ddm5O4kwiGRlkkMelicIeak3c8JqTun2asaSQKIEbcikvvVTn
-        V0PRVV2xox9ewfY+bVILeteSo5e3RJJOY
-X-Received: by 2002:a81:ad26:0:b0:544:a67b:8be0 with SMTP id l38-20020a81ad26000000b00544a67b8be0mr481696ywh.3.1678954181316;
-        Thu, 16 Mar 2023 01:09:41 -0700 (PDT)
-X-Google-Smtp-Source: AK7set9AvRTqOxXewC6b1IQRkPJ8SS1rw3/pZRF3qWDjUZCuLuTU6cRWfxgoColGfBP0bqfJ0oACLTw3fPECEJ22bt4=
-X-Received: by 2002:a81:ad26:0:b0:544:a67b:8be0 with SMTP id
- l38-20020a81ad26000000b00544a67b8be0mr481683ywh.3.1678954181027; Thu, 16 Mar
- 2023 01:09:41 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1678954179;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=qsSpi02AtRNWSprHN4Cl76ayMyVQlvN90GOQNuiLzbY=;
+        b=kRv34DxRGOCxYl1/KUujMBp+aHgWWPgf9/BNjHb6BHdfR78w5AQK5WW7gxuAbVNubE
+         3GbrWtZbkkMN8smrfjnyym5dFaZ0uxEY5eZDqu9C1UrmJDKK82+qcpkZ6JZ6TK7orxJu
+         MPu87lZx9kFcGAkrpERfhm+uipBm1R/XfY5LYsaU/mA9FdSP2UTQUtNhMNLL4vkS7HbK
+         mgWEjweVi6YDzGrCPMMMwIl/Sg91XEgsNInVF5Ig8Iut3/0WKCAxLZpE/Sfa5dJQSZ9U
+         LXEfyCJpFM5hMUUqpBa1n0E8+zbbc7cjGkd+sXGaaAWoyhIxdZchzO50OXaWAD4a94pZ
+         WB4g==
+X-Gm-Message-State: AO0yUKUxA2Y9Mpa7dyoV9u1zWVCmJYNW7yBuijKRM5lrcj5r2hlDQNLD
+        tzjVrEA2a5m/9JGQUb7tD5vIuQ==
+X-Google-Smtp-Source: AK7set9qRwS9KK6hBBohaRF3L5B2ru2zJVrTS4WbmbGRiLcPQJ7BzlvfGx8yi9xnXwYWSRhxP+9xSg==
+X-Received: by 2002:a17:907:c22:b0:930:1178:2220 with SMTP id ga34-20020a1709070c2200b0093011782220mr2685504ejc.40.1678954178709;
+        Thu, 16 Mar 2023 01:09:38 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:9827:5f65:8269:a95f? ([2a02:810d:15c0:828:9827:5f65:8269:a95f])
+        by smtp.gmail.com with ESMTPSA id td10-20020a1709078c8a00b009256a5c3b2dsm3559556ejc.90.2023.03.16.01.09.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Mar 2023 01:09:38 -0700 (PDT)
+Message-ID: <faf70823-f87b-ba50-ac72-3552de1cc7e3@linaro.org>
+Date:   Thu, 16 Mar 2023 09:09:37 +0100
 MIME-Version: 1.0
-References: <20230302113421.174582-1-sgarzare@redhat.com> <20230302113421.174582-4-sgarzare@redhat.com>
- <CACGkMEs6cW7LdpCdWQnX4Pif2gGOu=f3bjNeYQ6MVcdQe=X--Q@mail.gmail.com> <1980067.5pFmK94fv0@suse>
-In-Reply-To: <1980067.5pFmK94fv0@suse>
-From:   Stefano Garzarella <sgarzare@redhat.com>
-Date:   Thu, 16 Mar 2023 09:09:29 +0100
-Message-ID: <CAGxU2F4k-UHxHxpLcsvKvJdvcXfb3WpV+wU=8ZpnJwMNkx0rdA@mail.gmail.com>
-Subject: Re: [PATCH v2 3/8] vringh: replace kmap_atomic() with kmap_local_page()
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
-        eperezma@redhat.com, netdev@vger.kernel.org, stefanha@redhat.com,
-        linux-kernel@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH net-next 14/16] dt-bindings: net: dwmac: Use flag
+ definition instead of booleans
+Content-Language: en-US
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Biao Huang <biao.huang@mediatek.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20230313225103.30512-1-Sergey.Semin@baikalelectronics.ru>
+ <20230313225103.30512-15-Sergey.Semin@baikalelectronics.ru>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230313225103.30512-15-Sergey.Semin@baikalelectronics.ru>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 15, 2023 at 10:12=E2=80=AFPM Fabio M. De Francesco
-<fmdefrancesco@gmail.com> wrote:
->
-> On marted=C3=AC 14 marzo 2023 04:56:08 CET Jason Wang wrote:
-> > On Thu, Mar 2, 2023 at 7:34=E2=80=AFPM Stefano Garzarella <sgarzare@red=
-hat.com>
-> wrote:
-> > > kmap_atomic() is deprecated in favor of kmap_local_page().
-> >
-> > It's better to mention the commit or code that introduces this.
-> >
-> > > With kmap_local_page() the mappings are per thread, CPU local, can ta=
-ke
-> > > page-faults, and can be called from any context (including interrupts=
-).
-> > > Furthermore, the tasks can be preempted and, when they are scheduled =
-to
-> > > run again, the kernel virtual addresses are restored and still valid.
-> > >
-> > > kmap_atomic() is implemented like a kmap_local_page() which also disa=
-bles
-> > > page-faults and preemption (the latter only for !PREEMPT_RT kernels,
-> > > otherwise it only disables migration).
-> > >
-> > > The code within the mappings/un-mappings in getu16_iotlb() and
-> > > putu16_iotlb() don't depend on the above-mentioned side effects of
-> > > kmap_atomic(),
-> >
-> > Note we used to use spinlock to protect simulators (at least until
-> > patch 7, so we probably need to re-order the patches at least) so I
-> > think this is only valid when:
-> >
-> > The vringh IOTLB helpers are not used in atomic context (e.g spinlock,
-> > interrupts).
->
-> I'm probably missing some context but it looks that you are saying that
-> kmap_local_page() is not suited for any use in atomic context (you are
-> mentioning spinlocks).
->
-> The commit message (that I know pretty well since it's the exact copy, wo=
-rd by
-> word, of my boiler plate commits)
+On 13/03/2023 23:51, Serge Semin wrote:
+> Currently some of the boolean properties defined in the DT-schema are
+> marked to have the basic boolean type meanwhile the rest referencing the
+> /schemas/types.yaml#/definitions/flag schema. For the sake of unification
+> let's convert the first group to referencing the pre-defined flag schema.
+> Thus bindings will look a bit more coherent and the DT-bindings
+> maintainers will have a better control over the booleans defined in the
+> schema (if ever needed).
+> 
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> ---
+>  .../devicetree/bindings/net/snps,dwmac.yaml   | 45 ++++++++++++-------
+>  1 file changed, 30 insertions(+), 15 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> index 69be39d55403..a863b5860566 100644
+> --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> @@ -120,11 +120,13 @@ properties:
+>          maximum: 12
+>  
+>        snps,rx-sched-sp:
+> -        type: boolean
+> +        $ref: /schemas/types.yaml#/definitions/flag
+>          description: Strict priority
 
-I hope it's not a problem for you, should I mention it somehow?
+If ever touching this, it should be other way -> boolean.
 
-I searched for the last commits that made a similar change and found
-yours that explained it perfectly ;-)
-
-Do I need to rephrase?
-
-> explains that kmap_local_page() is perfectly
-> usable in atomic context (including interrupts).
->
-> I don't know this code, however I am not able to see why these vringh IOT=
-LB
-> helpers cannot work if used under spinlocks. Can you please elaborate a l=
-ittle
-> more?
->
-> > If yes, should we document this? (Or should we introduce a boolean to
-> > say whether an IOTLB variant can be used in an atomic context)?
->
-> Again, you'll have no problems from the use of kmap_local_page() and so y=
-ou
-> don't need any boolean to tell whether or not the code is running in atom=
-ic
-> context.
->
-> Please take a look at the Highmem documentation which has been recently
-> reworked and extended by me: https://docs.kernel.org/mm/highmem.html
->
-> Anyway, I have been ATK 12 or 13 hours in a row. So I'm probably missing =
-the
-> whole picture.
-
-Thanks for your useful info!
-Stefano
+Best regards,
+Krzysztof
 
