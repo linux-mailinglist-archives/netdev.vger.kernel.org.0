@@ -2,74 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B69A76BC64E
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 07:49:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63A086BC664
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 07:57:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229464AbjCPGtv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 02:49:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38210 "EHLO
+        id S229829AbjCPG5p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 02:57:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbjCPGto (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 02:49:44 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 555004E5ED;
-        Wed, 15 Mar 2023 23:49:43 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id x3so3481567edb.10;
-        Wed, 15 Mar 2023 23:49:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678949381;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=NobcGFjFqRwtEdv6+swHPVneynH/FVlXOlQI5RE6hRs=;
-        b=BiKPjQ7E3suXHFkCVj7KMC4WC1lsQ1DXAnEqXXgL6ae6/w7GNLN1G90DXcBYANYVe2
-         OjhNN0HtOVhNUoqia5C6ml4JQKEsIMYVMXfW+vVemZbcAIk/2jEjGyI88S9OaipaN1eD
-         8D+NoFr3Sbj3FvC3tqQ/XeOGYt04lMcVC2sB5+8tQ+cI9LZoQshUPuaiBEcQ5dXik2Wq
-         7ffya8zzW7cfYaj+/yB+kX4x652CSm0Hie+AEkIExfNDDein0M99Qh6arZEKbqSzPsG3
-         F4exh75E64oIkYf1787pzTAtrhSPrk/FjormmT9nPu+Q3gzWATc4k5BaZEs5nSIe0KIj
-         u9dw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678949381;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=NobcGFjFqRwtEdv6+swHPVneynH/FVlXOlQI5RE6hRs=;
-        b=7Lpx8npNSdN9L/eR5ZSUeW6uJx8CmjoV3pl4redCooSVlmhkwuRcE7KS54mqyPIRpJ
-         M/CIwSikteXB3JmZdusqGAfSrpPgqdTl9Z2YmXrAz+nIIinS3cAHY+HJX8Bn9YMPxaUa
-         Gg1YB/+kLgUveUCIGGEvDL8+/+LSTstcy0HFDXKbbMvmAGlRcw5XXeG48xDcuaH81suU
-         9xigIfnhheVCzXhcAP1UaRVg3n/cSTAbSbmKE4gUc5PWlF8FuWX/935MPn4hNG0tKSzs
-         lM3eAmoUKKdItFfnx0dzkTB6gzFhir6nDk4+woIZ5AA2WrIxj4j5O2b6QquL5vMHgcc2
-         DK3Q==
-X-Gm-Message-State: AO0yUKXJWnz7ait3RWUCyIiQ5TTaR2iTrP7sv/YarHLC24eNKQHRrS0S
-        JFJX8WQvNHk7OOoNkztD8ss=
-X-Google-Smtp-Source: AK7set/J9BodG25oa0qgrhp5hsw5qnwrJkUXfeWalep4xc33qBAinWsauY9LbMdCfVRiaC+jeMnYEQ==
-X-Received: by 2002:a17:906:d79c:b0:87b:d3f3:dcf3 with SMTP id pj28-20020a170906d79c00b0087bd3f3dcf3mr9008494ejb.35.1678949381339;
-        Wed, 15 Mar 2023 23:49:41 -0700 (PDT)
-Received: from [192.168.0.106] ([77.126.33.94])
-        by smtp.gmail.com with ESMTPSA id kq13-20020a170906abcd00b008ec43ae626csm3389712ejb.167.2023.03.15.23.49.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Mar 2023 23:49:40 -0700 (PDT)
-Message-ID: <ebe10b79-34c2-4e85-2cf7-b7491266748e@gmail.com>
-Date:   Thu, 16 Mar 2023 08:49:38 +0200
-MIME-Version: 1.0
+        with ESMTP id S229546AbjCPG5o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 02:57:44 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2083.outbound.protection.outlook.com [40.107.220.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9C3DA5697;
+        Wed, 15 Mar 2023 23:57:42 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Q3DCwYU/45sOefQKsmOq/7Hs3ragFNg9JnXRv+WqV9MqSxykFJUpxfuNuN3j3OqJTtmEphrHI/7OiGOZGpR/Hg//AhBvsNf95rnkZNYD3XGlveNZtsDABe+rh9/fClKCeXyJ+jm1P/spRlp/eaYgkvhbxhV3h0UnVw096wv1faIb9po7klzSHxMRmMJxJhhFV56H7p/XxIAOW13D3CJblD5sgI9DGk6oDOV85t1oSnrgB/6HkggKokBo8Sis3JMx6iYhDub2Pt8zVglXtHkGa1beCFh44hwakEwsyq1ulGKJeQQRVrmdQwTLoQemAdLQpNP8giFjNmnuXLUbEZGTbQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XRpvFC7R383CYtgpbYWWGET4NWQGH1tdoije+HFkujg=;
+ b=Yq+HxKt0klhg/MvX1KVqMNckKJKX5csBHzFSdEYIjaF1Eq145xmBjbkzqWNeaMb4HY91FXYMubxNcdbro595vzIpaDGrC2CrKfMy09kpZmSiCBdefwm2ANVyNEKgGg64uu7RlXOXPIiha2PrkdW2xVcxQdOoHP+m8fdccCcFJHJMGICgx0lBwkibwARTPNVk4BPj1NoEHkJiM1PFDifc+CjjM3WvIiF5SMbULE+PhnVotSILEwG0g+fd3BPrW76fFkwS1/Vy/L2DMyEVWkKI+dN3TJCTW8VFr3CxCBj5F0U+YbXyEuw3mpv98H5kHbfEykUoUA10l2VxjV4yPEgk7A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XRpvFC7R383CYtgpbYWWGET4NWQGH1tdoije+HFkujg=;
+ b=MHqCIlMDt0V/4CsUvm5Ji9dMw1gM+f2gSl9Xim1ZxMUedY301d7+XGqaq38/P2tfLVqjMu6N84kb50KxeCqpaae1UP6AdaLxiohJWjxxnK78kDUXTru2XZlmFiMfDZP+uKqNlM13bk2BZBRYZm2pUrlpXrCVlUkbNAVbONobMVGjhfKn7GyrjdDYzSZ9LnMSXP/jKzd/2thmSFQ6rvNdlmIysH4xGlgsgoQ+dlQSQPWIolB4QCM2gzpBaVaDyPmFsQSqR+lmhJ2V86CNyDDnw7BCJtRBthDB/qs9TEh198LotJCH2iUjOKhMY9OFZymbQDu4cT+klBETf5ikWQN1yQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3835.namprd12.prod.outlook.com (2603:10b6:5:1c7::12)
+ by IA1PR12MB7493.namprd12.prod.outlook.com (2603:10b6:208:41b::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.31; Thu, 16 Mar
+ 2023 06:57:40 +0000
+Received: from DM6PR12MB3835.namprd12.prod.outlook.com
+ ([fe80::8fe9:8ea2:52f4:9978]) by DM6PR12MB3835.namprd12.prod.outlook.com
+ ([fe80::8fe9:8ea2:52f4:9978%7]) with mapi id 15.20.6178.026; Thu, 16 Mar 2023
+ 06:57:40 +0000
+Message-ID: <b68c6baa-62ec-901a-76f9-0baef7daa3f5@nvidia.com>
+Date:   Thu, 16 Mar 2023 14:57:26 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.8.0
-Subject: Re: [PATCH net] net: xdp: don't call notifiers during driver init
+Subject: Re: [PATCH net-next v7 5/5] net/mlx5e: TC, Add support for VxLAN GBP
+ encap/decap flows offload
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        roopa@nvidia.com, eng.alaamohamedsoliman.am@gmail.com,
+        bigeasy@linutronix.de, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, gavi@nvidia.com, roid@nvidia.com,
+        maord@nvidia.com, saeedm@nvidia.com
+References: <20230313075107.376898-1-gavinl@nvidia.com>
+ <20230313075107.376898-6-gavinl@nvidia.com>
+ <20230315003244.52bb841d@kernel.org>
 Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, lorenzo@kernel.org, tariqt@nvidia.com,
-        bpf@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>
-References: <20230316002903.492497-1-kuba@kernel.org>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <20230316002903.492497-1-kuba@kernel.org>
+From:   Gavin Li <gavinl@nvidia.com>
+In-Reply-To: <20230315003244.52bb841d@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-ClientProxiedBy: SI2PR02CA0041.apcprd02.prod.outlook.com
+ (2603:1096:4:196::20) To DM6PR12MB3835.namprd12.prod.outlook.com
+ (2603:10b6:5:1c7::12)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3835:EE_|IA1PR12MB7493:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8f65a28c-1e6f-4e2a-5abc-08db25ebbb61
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: GiTvEc/SL/I0POZVZCd/mbv8JgwuTrVceEy5YaxGUwfXT6iEPrBHGu7O1V2ZOBLG5LmopIOirf6DTcpGirsLHzcks+dDI2ihKTTPFXyIMvTfuXiNAFTl11c/pVmEkzj3YYtfMVxrV/6DYQSy5NMgvNW++X8QOOYvuIB0+E9P2O/0jx3LdxeqCJq2nsWeDCHTtaoBG2qlGiMekx51mf8P5IW94p/jGhZmNSIzgm/pB6rDY6s6nVtuz4/WnXUEKL5cxyZSHR/EuQ6j8j9bvFJDn3URyIf583YBFH2d1uD1KJqmRc11UkyD5iqIpSSmPl0sq/m4UpaJICiHn1+D3gd0fMjbMYAaDT4VzREVjXu6iJI9lLAjzzSDy/QswUd3A6q06cRkDykVSojATM4Y6/ocN3Eww2pHHI1FY6YYINlA9Y84ReX8RLwZKUdUUzTH0qeuWfzVM2aWdGeRBY/DMgkYXppNQHIpVJ0ePxbaxNjY5xxYYwmes7oWRClXn5A4vlVMiz/U96oKihkVzZ0U+4vh/Jp//p7q6Xyg0iB9Gvz5rTxGD0iIfsnZw1xKk9xFEh/1k6t5GM4M4Ft5iLiJ3jIcS62wbO4cGqgl6lEY2ba2E1swsiUjhUEc3K/Mh0uta0PO1sBQRm9HeVN4xlmmxelIOCG1xvsWeEkjat/ARBX1oY9oAr39abytAd3YJEIr7Q4AZzt+eXTC8NzXu/It31AQWOsECBnXNu3sI1/XD0KTQsM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3835.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(346002)(396003)(39860400002)(376002)(366004)(451199018)(31686004)(36756003)(41300700001)(5660300002)(8936002)(2906002)(31696002)(38100700002)(86362001)(478600001)(6486002)(66556008)(66476007)(6916009)(8676002)(66946007)(4326008)(6666004)(107886003)(2616005)(316002)(186003)(6512007)(6506007)(26005)(53546011)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SldiOUk5ODZ5Ukd2VlpPSVVaZEFaWGpXS09qYlVBZ0Fzem8xSTVhL3RVODFU?=
+ =?utf-8?B?WERTQnJObnRkeDNRaE4yQjFnV3YwV3dnVlBPcERUdDBXNGNXd1lOd2k4UWx5?=
+ =?utf-8?B?bXJoRUFmMDI3RC9LRG1tR01nejBtNS9TWGZzNlRvRENWWHIyMGVpTDZNUXc5?=
+ =?utf-8?B?YXIwMjd2TjJhUC9McUl0VmxsNjQ5UEkxQkIvQXRQYjVualdKYW1XNVFIbExD?=
+ =?utf-8?B?aVYrSytqM0V5cmJBZlVrMEgrbXNaZmI5eDBWMEZXaSsrK2toS3pXU3JFR0tv?=
+ =?utf-8?B?a1I1TXB3U1hMVC81YlVHSXErSFg5UGd3SzRVRVJsR1NhWjNHakZ1TDJrTDYv?=
+ =?utf-8?B?TDE4V1czdytBa0tjNnB6amYwbkZqMWZxL2RmRVdjWGpmVWRYaEx4aU5hOGNY?=
+ =?utf-8?B?YVZqdkdwTFFTSGIrem0yWW9Vc2ovR0JIZEh6Wmt5czFGbkEwbnRMOStkM1F6?=
+ =?utf-8?B?RGF3ZG5VU2lBeDNXTGwvWVhGdzJDT3E4a3BqRUpIMGVqa0tuUWhWV3FqcVN5?=
+ =?utf-8?B?TlhnR09rclBaR1BqSW11Qk1LZklYWEcreTJ5eGdGdU1KakhwUUtLMHB2UnZT?=
+ =?utf-8?B?dEMwbzJCcG5kMEZXNTVhdHVCUlduOUVOOFNsUWlDQWtFc3RFREtDcVFTQ1ZX?=
+ =?utf-8?B?bmlrSDh4RXFNRTgwTkJSZnBOSjgxOW9FWmVQQ1hHSXhXenM2YmJMMHNIUm9l?=
+ =?utf-8?B?MlFZZ2kyTFJsKzVnTytGQklBRmczQmpBbU9wU25rRlVIM2trbUZ6ejlTOTdJ?=
+ =?utf-8?B?RCtKbDJpRVFaUytoelo0ZWE0cFBGRWFraHFHR0dmVVhGTXJ1cnBZeHAwQlM4?=
+ =?utf-8?B?NXVoMnBrSzRyYjZyMURyNUxYK1ZUZHFYeGc5bmtqNXpBNzVvN3lST2ltS1VO?=
+ =?utf-8?B?TzJkd204elRXcGpaRHZNU2FsbFZud0JrOXR6Mko4QTR1NzhwZGdXc0Q3dE9E?=
+ =?utf-8?B?dHNrUkZpYWdUYTl5dVdBd3JpUWpZOFdaTkkzYTFHaTZxYis5V21FN1dva1h4?=
+ =?utf-8?B?SEJmRmVWNFZ2aUNyanpCRTU5Y2lucHYyQ3Z3RDA4U3lCS2VKN2U0VVJHZlRS?=
+ =?utf-8?B?eGU3WDJrZjE4bFNyOWNZLzhNZC9aWVAwTzZrd2JlUUVyY0hvUDZIaGFRcnBk?=
+ =?utf-8?B?dW8zYWZkUkU2cjFJdU9CVVI4dmp3ZzFlYldZbGZERWw5N3JVcWxwZ2lQT3hR?=
+ =?utf-8?B?aklGWCswWnRVZHlzV3lnZlkvc3BGd3Zvbnd2TWdrUFh1bU04RFloNGxubER4?=
+ =?utf-8?B?Qit6K2YwZkQyZEErbjRwL3Yrc0RTM2lvSVJ1L0JkenZaTm9OODhzYmJUSlZU?=
+ =?utf-8?B?OWd0Y2E3RjIxNitZZnBOdVYwaElEa1BYOXYvODNpVVBqSEU3bExYQ0VHNjAr?=
+ =?utf-8?B?dzZOV0tCUXVQb2FISTBFUmtjSE0wZjNRSHN1Nm8vUlRlaUxBaEliS0VmU1RL?=
+ =?utf-8?B?UTNuYk4vMkdOYi94Smcvdi9ZVDhDc1BNZ1lNRmhoVXJLOWhsbVVkZFFsRzBt?=
+ =?utf-8?B?ajk4V1l4aWtDV2hHazRSU2s1WDJiUlBIc3dqdW93eUNzOWs2cVo3aCsvVDN4?=
+ =?utf-8?B?Y3dZTm03YmUzWTVNZW41cEQ2Z01SWGpWK0dDVUEwcEU0cGFVTTRTSFBINXgz?=
+ =?utf-8?B?U2VET3lwRHU4N01uQ3BkMlNyMzUwanBOZFBIRldCSWxIUXRFdE9PSEJrUEtZ?=
+ =?utf-8?B?OEt1UDVud2s0OHRyYUJuNDNWZkwrTjFhckZSOXgwVDhtTG5xenNSRG5JNmZU?=
+ =?utf-8?B?N2JUSGN6TVRHeGxYMkxIYW9Eb1ZNOHZ3NlF2cEh5czJFNEJVdGZabHRpcW1a?=
+ =?utf-8?B?OE1ORWpYT3dENFVROGs1MW5BMjNCcVJMNUlQUE9HYWhwMHEvc2lXaUUzZ1Av?=
+ =?utf-8?B?aWRiR01BejhwZjgwWDYvTkVHVXBhTU1abGEzTDlhalZxREphWXRiWGU3QVhz?=
+ =?utf-8?B?RHltNXZyU094KzQxNklnV003WERYU0VoUHc5VnhrQTJkSSt6d2x4aWJ4QTVh?=
+ =?utf-8?B?RFBRVmJSOHVhRjY5MTVFU1BmbGpFVit0Yzh3REtnTDBLUytVRFRVckViOHlO?=
+ =?utf-8?B?cC84UjBxdmw3a3BsQ2RFbXRkckVOaHdtM3RaZUJ2MVdwY3J3R2UvZllEMjE5?=
+ =?utf-8?Q?ZA+p721CyX+BdpkvOTa/gSySb?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8f65a28c-1e6f-4e2a-5abc-08db25ebbb61
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3835.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2023 06:57:39.8537
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2ec7Q6Zu73pfZzpD6anIAH8PFsKyl3o2bQy/RZpEvFAJ95jS+Nwo+z6vghiwcEUNnUAiEfnlE+2A1ZhQRtSJBA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB7493
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -77,50 +131,37 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-
-On 16/03/2023 2:29, Jakub Kicinski wrote:
-> Drivers will commonly perform feature setting during init, if they use
-> the xdp_set_features_flag() helper they'll likely run into an ASSERT_RTNL()
-> inside call_netdevice_notifiers_info().
-> 
-> Don't call the notifier until the device is actually registered.
-> Nothing should be tracking the device until its registered.
-> 
-> Fixes: 4d5ab0ad964d ("net/mlx5e: take into account device reconfiguration for xdp_features flag")
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> CC: ast@kernel.org
-> CC: daniel@iogearbox.net
-> CC: hawk@kernel.org
-> CC: john.fastabend@gmail.com
-> CC: lorenzo@kernel.org
-> CC: tariqt@nvidia.com
-> CC: bpf@vger.kernel.org
-> ---
->   net/core/xdp.c | 3 +++
->   1 file changed, 3 insertions(+)
-> 
-> diff --git a/net/core/xdp.c b/net/core/xdp.c
-> index 87e654b7d06c..5722a1fc6e9e 100644
-> --- a/net/core/xdp.c
-> +++ b/net/core/xdp.c
-> @@ -781,6 +781,9 @@ void xdp_set_features_flag(struct net_device *dev, xdp_features_t val)
->   		return;
->   
->   	dev->xdp_features = val;
-> +
-> +	if (dev->reg_state < NETREG_REGISTERED)
-> +		return;
-
-I maybe need to dig deeper, but, it looks strange to still 
-call_netdevice_notifiers in cases > NETREG_REGISTERED.
-
-Isn't it problematic to call it with NETREG_UNREGISTERED ?
-
-For comparison, netif_set_real_num_tx_queues has this ASSERT_RTNL() only 
-under dev->reg_state == NETREG_REGISTERED || dev->reg_state == 
-NETREG_UNREGISTERING.
-
->   	call_netdevice_notifiers(NETDEV_XDP_FEAT_CHANGE, dev);
->   }
->   EXPORT_SYMBOL_GPL(xdp_set_features_flag);
+On 3/15/2023 3:32 PM, Jakub Kicinski wrote:
+> External email: Use caution opening links or attachments
+>
+>
+> On Mon, 13 Mar 2023 09:51:07 +0200 Gavin Li wrote:
+>> +     if (memchr_inv(&enc_opts.mask->data, 0, sizeof(enc_opts.mask->data)) &&
+>> +         !MLX5_CAP_ESW_FT_FIELD_SUPPORT_2(priv->mdev, tunnel_header_0_1)) {
+>> +             NL_SET_ERR_MSG_MOD(extack, "Matching on VxLAN GBP is not supported");
+>> +             netdev_warn(priv->netdev, "Matching on VxLAN GBP is not supported\n");
+>> +             return -EOPNOTSUPP;
+>> +     }
+>> +
+>> +     if (enc_opts.key->dst_opt_type != TUNNEL_VXLAN_OPT) {
+>> +             NL_SET_ERR_MSG_MOD(extack, "Wrong VxLAN option type: not GBP");
+>> +             netdev_warn(priv->netdev, "Wrong VxLAN option type: not GBP\n");
+>> +             return -EOPNOTSUPP;
+>> +     }
+>> +
+>> +     if (enc_opts.key->len != sizeof(*gbp) ||
+>> +         enc_opts.mask->len != sizeof(*gbp_mask)) {
+>> +             NL_SET_ERR_MSG_MOD(extack, "VxLAN GBP option/mask len is not 32 bits");
+>> +             netdev_warn(priv->netdev, "VxLAN GBP option/mask len is not 32 bits\n");
+>> +             return -EINVAL;
+>> +     }
+>> +
+>> +     gbp = (u32 *)&enc_opts.key->data[0];
+>> +     gbp_mask = (u32 *)&enc_opts.mask->data[0];
+>> +
+>> +     if (*gbp_mask & ~VXLAN_GBP_MASK) {
+>> +             NL_SET_ERR_MSG_FMT_MOD(extack, "Wrong VxLAN GBP mask(0x%08X)\n", *gbp_mask);
+>> +             netdev_warn(priv->netdev, "Wrong VxLAN GBP mask(0x%08X)\n", *gbp_mask);
+>> +             return -EINVAL;
+> extack only please, there's no excuse to be using both any more
+ACK
