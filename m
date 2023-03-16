@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E8B26BD2B5
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 15:51:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76BC16BD2B8
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 15:51:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230356AbjCPOvr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 10:51:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33614 "EHLO
+        id S231314AbjCPOvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 10:51:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230403AbjCPOvp (ORCPT
+        with ESMTP id S231174AbjCPOvp (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 10:51:45 -0400
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 715F4AA24D
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 07:51:43 -0700 (PDT)
-Received: by mail-qt1-x830.google.com with SMTP id c18so1956546qte.5
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 07:51:43 -0700 (PDT)
+Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 833D9ACB8B
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 07:51:44 -0700 (PDT)
+Received: by mail-qv1-xf30.google.com with SMTP id m6so1411600qvq.0
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 07:51:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678978302;
+        d=linaro.org; s=google; t=1678978303;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=gCPQuLjvLejF5Bs9SISYbcocVLoSdH1EFnC28LHWJfA=;
-        b=IuQIGEw66a482p1YniFxZvunqJqPMKdI3zvhvlAXGvUX0rYqCYHraV7TlilLeJteEd
-         sRe2nwI+wbzGHGZj06Hymz2Du8IRlsU31IGLTtgA3q1rfSfK6ZgQt2eoI0VMz4E5OTDW
-         KHBz1ms0jtfF1ax2r+vV+DE4bgvG+vU8XKJT39OdjnaKhlPSpZlBhDna6AH3/7UhEZAD
-         R7AYtM7H9NzY+j0AX0uVEeIE0KaXhAfd7FFekpQctiYBS214Oicq6TiRU7TTNCmQZ6IH
-         00snNUNm1t5acXSpGthanuHoSMLHO3RXzm0n0mMDf79a4+TKKrIfpPj0whDG2pY/Rf08
-         6eQw==
+        bh=PKqWcLfcs3UmhMvL5K01K9FuLeIx9ZVjwoD0JyqWTuo=;
+        b=DNNVsRdstp9GXxAlTzZMwPKZHrhjXBxXrr41KyXv4TaGZT2jG+NcsGXMPSCVa2Vn7h
+         42JQDHB5hHosaVozlRoRXNGAaC7JcNdX45C623KL2WDwO4s+iE8yb/8I9nI2BHPaWYgZ
+         ZbJS6MGBAUwEtYavojtBFoPnYcGKRO5vw7HtLHmko8Y6Cm2fviTDjpLp6kitG0dbF3Yj
+         NzsEtq78ubo1utWJ3RU0QB/Syf/pQeTdFPE7nEtH6AhzaAcjUehwa55jFaNKnTxfXJhI
+         ygVttIHqnynljMGWOF6Ry23rS8xFdh+qO2oEvXKfKtBQhWl7Hmbr34Yk68EITfCfAQMT
+         hAsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678978302;
+        d=1e100.net; s=20210112; t=1678978303;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=gCPQuLjvLejF5Bs9SISYbcocVLoSdH1EFnC28LHWJfA=;
-        b=j0Y788QEvq+Fq30IZXknfIAVVIzP/5XeFqrxEtfaxjjpCNBKq1fHDvo9jVJ+VYJl2F
-         V6JJ09zGgYj1JgAYCPhUwqmo/dr/Tv+p0p+hA/2/GuOKh6fNed/96d3QlDeH5iXCNqNN
-         +NTsbLt48RWBFjpYKnjumO3ZA7cvtj9zRPodH/8V/2awX30wdsBj6HBX/t1bFBvpMPTP
-         gLARsk3xf0GIJMQWyyepvFRVRjuKBzzDdMPseT7f7TNkMHbFO/JNjwIFtG5mI2kj2EWW
-         hIQQ1RmQ+UyAWfgH2hlluesSnSrktzaGE9O5qRNSPVjvQtlIogsnd0kOrxKqswmBnuiq
-         LcvQ==
-X-Gm-Message-State: AO0yUKVGG8gWIwF89O7YOcX5sdJgcfM6tGqZD+AxE0ETbAnZsrMsT7kB
-        /AtnYeADYZLO2hEz7vL1L5pa/g==
-X-Google-Smtp-Source: AK7set88m4FG8rPtIvz1v9Fu9IFGHjZ9TuiNU4Bs9nFGYtCQsOf32cxMsCgjrmcB9UIcXaEWUZm4pA==
-X-Received: by 2002:a05:622a:1653:b0:3ba:1d8d:f6d0 with SMTP id y19-20020a05622a165300b003ba1d8df6d0mr6177955qtj.23.1678978301805;
-        Thu, 16 Mar 2023 07:51:41 -0700 (PDT)
+        bh=PKqWcLfcs3UmhMvL5K01K9FuLeIx9ZVjwoD0JyqWTuo=;
+        b=7lkjMlXhbkSjUk281IyJctdfekZQKBnDf0rzEOla+iM5YB5muujmtdUa9xusKthlXB
+         tvflsOvskKgOpI/ymXFFAjKMu0o57HH3564aE88eicXyMjJr/VHqTVOeHDHI4OyNgUm2
+         ZIEVxW9d3PM1TkMY2VTCvXJ8EsmSbPAlR0MzBZ9g0/9QJQV+hMYcl8dLY6zUkS47B48x
+         0O+n7VrlETgy/SAVJ0IohggzucFqv54Z66DXFOCCv+4yQ2E2uPMwHgn7utHsWqQH9Rza
+         KmOHe1EDuGaRnI5iI2Q6Ds207OpODQ+/p3GpdUKUsn4AdxRgTfW5RpSmGDBkVvaxBynB
+         FWTQ==
+X-Gm-Message-State: AO0yUKVvtL5MBAxmMqaisnn++/f7kN5EgB3YesuUEdELAbwKIQVBPDzj
+        2ArnI9YoWGY/iejsTu6x2+N2OQ==
+X-Google-Smtp-Source: AK7set9ennyVepKlBZYOOwCBNDuA2JSfxamJtSEn8L4rLCJ5oK6uxISaeI6s+YWNUNU3Rpdlud1iiA==
+X-Received: by 2002:a05:6214:23cd:b0:56b:fb58:c350 with SMTP id hr13-20020a05621423cd00b0056bfb58c350mr25263549qvb.26.1678978303262;
+        Thu, 16 Mar 2023 07:51:43 -0700 (PDT)
 Received: from localhost.localdomain ([98.61.227.136])
-        by smtp.gmail.com with ESMTPSA id n129-20020a37bd87000000b007456b2759efsm2844070qkf.28.2023.03.16.07.51.40
+        by smtp.gmail.com with ESMTPSA id n129-20020a37bd87000000b007456b2759efsm2844070qkf.28.2023.03.16.07.51.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Mar 2023 07:51:41 -0700 (PDT)
+        Thu, 16 Mar 2023 07:51:42 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com
@@ -58,9 +58,9 @@ Cc:     caleb.connolly@linaro.org, mka@chromium.org, evgreen@chromium.org,
         quic_subashab@quicinc.com, elder@kernel.org,
         netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net v3 1/4] net: ipa: reg: include <linux/bug.h>
-Date:   Thu, 16 Mar 2023 09:51:33 -0500
-Message-Id: <20230316145136.1795469-2-elder@linaro.org>
+Subject: [PATCH net v3 2/4] net: ipa: add two missing declarations
+Date:   Thu, 16 Mar 2023 09:51:34 -0500
+Message-Id: <20230316145136.1795469-3-elder@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230316145136.1795469-1-elder@linaro.org>
 References: <20230316145136.1795469-1-elder@linaro.org>
@@ -75,34 +75,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When "reg.h" got created, it included calls to WARN() and WARN_ON().
-Those macros are defined via <linux/bug.h>.  In addition, it uses
-is_power_of_2(), which is defined in <linux/log2.h>.  Include those
-files so IPA "reg.h" has access to all definitions it requires.
+When gsi_reg_init() got added, its declaration was added to
+"gsi_reg.h" without declaring the two struct pointer types it uses.
+Add these struct declarations to "gsi_reg.h".
 
-Meanwhile, <linux/bits.h> is included but nothing defined therein
-is required directly in "reg.h", so get rid of that.
-
-Fixes: 81772e444dbe ("net: ipa: start generalizing "ipa_reg"")
+Fixes: 3c506add35c7 ("net: ipa: introduce gsi_reg_init()")
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/reg.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ipa/gsi_reg.h | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ipa/reg.h b/drivers/net/ipa/reg.h
-index 57b457f39b6e2..2ee07eebca677 100644
---- a/drivers/net/ipa/reg.h
-+++ b/drivers/net/ipa/reg.h
-@@ -6,7 +6,8 @@
- #define _REG_H_
+diff --git a/drivers/net/ipa/gsi_reg.h b/drivers/net/ipa/gsi_reg.h
+index f62f0a5c653d1..48fde65fa2e8a 100644
+--- a/drivers/net/ipa/gsi_reg.h
++++ b/drivers/net/ipa/gsi_reg.h
+@@ -10,6 +10,10 @@
  
- #include <linux/types.h>
--#include <linux/bits.h>
-+#include <linux/log2.h>
-+#include <linux/bug.h>
+ #include <linux/bits.h>
  
++struct platform_device;
++
++struct gsi;
++
  /**
-  * struct reg - A register descriptor
+  * DOC: GSI Registers
+  *
 -- 
 2.34.1
 
