@@ -2,47 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB9E16BC555
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 05:40:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3EA06BC556
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 05:41:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229459AbjCPEkq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 00:40:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40672 "EHLO
+        id S229621AbjCPElB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 00:41:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229454AbjCPEko (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 00:40:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29E3226867
-        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 21:40:15 -0700 (PDT)
+        with ESMTP id S229436AbjCPEk7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 00:40:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80DCB1CBE2;
+        Wed, 15 Mar 2023 21:40:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1C70B81FCA
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 04:40:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 473E3C433D2;
-        Thu, 16 Mar 2023 04:40:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A92661EFB;
+        Thu, 16 Mar 2023 04:40:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B2169C433EF;
+        Thu, 16 Mar 2023 04:40:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678941609;
-        bh=q+narCCi14LhlmB/S3z7Dij5voQxhVUUoncr8Q5mbS4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qBZitroLvxgi7/TK0sUZ/xzfnpZq9l7YUubzeLc3YrK6OjaVXYsiqaobc6CDgMpaC
-         JllJQQmohygHDGkJDklVvCoE7U2KYBchA3inhjrwuhbxCQXN77YeiTfkx0jncpAFMb
-         M7TVS7PA9o1vj8i+FoGpRZkCVBKASTmSzo8e6Q+GUh29pJcZqGseWIi0OFCYXEldUM
-         1zV7eqVNDRDh06fK7aB9dyE2QPBSJSonY2YHiEcgWhmqKTNkAXMjVvUH15FupeIh4o
-         vr7xuaruA6iaTCzG6ZX6Io9D3QYAR1NZjw+kme9BbEWSSMpeP40HhynHtLxOGRwOFX
-         dmjp/jm8OmReQ==
-Date:   Wed, 15 Mar 2023 21:40:08 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Michal Michalik <michal.michalik@intel.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        edumazet@google.com, arkadiusz.kubalewski@intel.com
-Subject: Re: [PATCH net] tools: ynl: add the Python requirements.txt file
-Message-ID: <20230315214008.2536a1b4@kernel.org>
-In-Reply-To: <20230314160758.23719-1-michal.michalik@intel.com>
-References: <20230314160758.23719-1-michal.michalik@intel.com>
+        s=k20201202; t=1678941617;
+        bh=D+k+ZFHEAw7xSJH2jLtU1BquXfnEXsP15ln59Y7vWYw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Lh5UxjIJUaSEz/bqe/+HHsaO/hNQTqpIht3+l18z0bKwP/ZloWQX8omRAqrIfmkol
+         Pg7bdSlQw7J2yY01r/p6FXlUV2TbVaEyy2u1cgMR+G/KsJLKECezUjW8PAPM12h8YE
+         Bo36Vssv7On7pjYv+JzgCll7UasAqdlcgzH25mdcWipnBOwCUiiaLb9ojhZQ166PZH
+         w9skD/LD1+X1+v6aMSijYujMV1EEL1c/Y5i3U5iEGenBbssvoReQRd5obsDrmHlE51
+         5wNI7MqhToNwRMK3L/XQzUtc/nF3f3OpG0YIQa9emGgR6Y/3KslfYWoMnRS/Dy48UG
+         TgxbydySeaKZQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9358AE66CBF;
+        Thu, 16 Mar 2023 04:40:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: phy: mscc: fix deadlock in
+ phy_ethtool_{get,set}_wol()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167894161760.2389.13225258059136604829.git-patchwork-notify@kernel.org>
+Date:   Thu, 16 Mar 2023 04:40:17 +0000
+References: <20230314153025.2372970-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20230314153025.2372970-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -52,51 +57,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 14 Mar 2023 17:07:58 +0100 Michal Michalik wrote:
-> It is a good practice to state explicitely which are the required Python
-> packages needed in a particular project to run it. The most commonly
-> used way is to store them in the `requirements.txt` file*.
-> 
-> *URL: https://pip.pypa.io/en/stable/reference/requirements-file-format/
-> 
-> Currently user needs to figure out himself that Python needs `PyYAML`
-> and `jsonschema` (and theirs requirements) packages to use the tool.
-> Add the `requirements.txt` for user convenience.
-> 
-> How to use it:
-> 1) (optional) Create and activate empty virtual environment:
->   python3.X -m venv venv3X
->   source ./venv3X/bin/activate
-> 2) Install all the required packages:
->   pip install -r requirements.txt
->     or
->   python -m pip install -r requirements.txt
-> 3) Run the script!
-> 
-> The `requirements.txt` file was tested for:
-> * Python 3.6
-> * Python 3.8
-> * Python 3.10
+Hello:
 
-Is this very useful? IDK much about python, I'm trying to use only
-packages which are commonly installed on Linux systems. jsonschema
-is an exception, so I've added the --no-schema option to cli.py to
-avoid it.
+This patch was applied to netdev/net.git (main)
+by Jakub Kicinski <kuba@kernel.org>:
 
-> diff --git a/tools/net/ynl/requirements.txt b/tools/net/ynl/requirements.txt
-> new file mode 100644
-> index 0000000..2ad25d9
-> --- /dev/null
-> +++ b/tools/net/ynl/requirements.txt
-> @@ -0,0 +1,7 @@
-> +attrs==22.2.0
-> +importlib-metadata==4.8.3
-> +jsonschema==4.0.0
-> +pyrsistent==0.18.0
-> +PyYAML==6.0
-> +typing-extensions==4.1.1
-> +zipp==3.6.0
+On Tue, 14 Mar 2023 17:30:25 +0200 you wrote:
+> Since the blamed commit, phy_ethtool_get_wol() and phy_ethtool_set_wol()
+> acquire phydev->lock, but the mscc phy driver implementations,
+> vsc85xx_wol_get() and vsc85xx_wol_set(), acquire the same lock as well,
+> resulting in a deadlock.
+> 
+> $ ip link set swp3 down
+> ============================================
+> WARNING: possible recursive locking detected
+> mscc_felix 0000:00:00.5 swp3: Link is Down
+> 
+> [...]
 
-Why the == signs? Do we care about the version of any of these?
-Also, there's a lot more stuff here than I thought I'm using.
-What's zipp and why typing? Did I type something and forgot? :S
+Here is the summary with links:
+  - [net] net: phy: mscc: fix deadlock in phy_ethtool_{get,set}_wol()
+    https://git.kernel.org/netdev/net/c/cd356010ce4c
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
