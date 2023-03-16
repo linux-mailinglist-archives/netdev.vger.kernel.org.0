@@ -2,61 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 82C326BCB28
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 10:39:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 939CA6BCB32
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 10:41:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231181AbjCPJjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 05:39:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36992 "EHLO
+        id S231192AbjCPJlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 05:41:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230282AbjCPJjW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 05:39:22 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95E5E1114F
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 02:39:20 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id r1so1096203ybu.5
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 02:39:20 -0700 (PDT)
+        with ESMTP id S231181AbjCPJlK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 05:41:10 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AA632B9F1
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 02:41:04 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id n125so1094136ybg.7
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 02:41:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112; t=1678959560;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112; t=1678959663;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=CcW4g6xSRtuNDpEyutZJ0TfZEqtg4oweNQUtUkk4w6A=;
-        b=SuY3HoePNjvwdMYcrZoR+4ASuw2tjTDYFdGKWj+GsjUMWDO6MuuCl6S1A3KulGmhVl
-         K7M2dVnXZQYshy7dqgZnbKcA9CcimCKb6qF+C5eNnfDQy4bI6YMgwVmIvSt8b/UBNrOw
-         qoQF2Ba0YcGIuv/NJRvqOSRgJki2k05mXqMiu24OO/6i0QMpR/jhPmbsKXZT+mKq1VC5
-         x0qxahNQOvhdcIQ78M1D4h7wBBb0rsGWleaDrybyv7s9n7Inq+VPzeLudQmWYfAxKxb0
-         Jxbji0FOfXS9hUe+dxkvrNZaAs7TC/swhK5Wcw7cd00iOyVUxmLGVO+T3jk+mmhVdCWQ
-         MdxA==
+        bh=hQtCXBZaIMf8ugkDZeSvcU5gsvHtSe18+cbSeHsMKZo=;
+        b=s+lwn+NP7xizub/BQy01eZ3gzh6HmKccm9G2Kife88f/IeJ/Wz9x4K5O+bDBiOd19g
+         O/AbOpLA1B5/jSWfEeroUOEDFhVnimfMB9CXtGYGUnAIBS4nlPniKo9Fnktfp3kNsRRv
+         685rcHeTnkKjpXxG4/WM2joINF7VDK8SB+VDKNdFGjGEGJ+uYxDFzrjov8WB4WvKRHiA
+         JRELesHJTVXxwRj3E7jhz0rIaraAUaXi8EqSLzqQ8953Znvz4IM+Ly7aGcnIiGG75Uv+
+         j93s/AKLQLycoUwRC+ur/069lwiWdCnoTuB0JeIFyimGF6ZSusD6+PimXyvE4qV8S6K9
+         uqxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678959560;
+        d=1e100.net; s=20210112; t=1678959663;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=CcW4g6xSRtuNDpEyutZJ0TfZEqtg4oweNQUtUkk4w6A=;
-        b=5cBsHo8mYXL7mIDnuMPX3kE2XZ/Dzai2Jows3d/D1HhlEzLOHIdfJP8iVws6aQi/Qo
-         7gg5OoSGujljj06FX/Jm/lj0RY3oMwQGvKzs9GmDVmJ3EudzD2sTS6Nq0fve7rPFd8+z
-         7kqL165IgK+SJRGyBUjtVTqsZJWFdjBqu/7bLkBT3mj2MYq8gy00eUrH4gd1KDUhHn6S
-         kiJ8/qUL2LNRAJfMr9OGPJ4X4icc6cbMNexrQBykeIpEosGgpO63Jju4cShgEHc4jvU3
-         ndjFR9hTDeYKbB+eLskBWUmR8H8CLazVVPGxbytpBN87WhhLQQonmxol/bB21w4gQ+xB
-         VE2w==
-X-Gm-Message-State: AO0yUKX2xXEOchqePhwjFJwqMPVcktoaIOxBd1RiXmxM8PjO7gNob8TM
-        pK1G2QWCiE9b5E4WvbddScA3aKwe454uX6+YoMKNSKLbRyU+/Zke
-X-Google-Smtp-Source: AK7set+TnqeFR4lq2NIkvw5arlxlx6LhNvEndsx1hZzkmxeCeLp/o7WoZ4anlr1QDQ1fqcK8qg5IIKNxkCX9q6fZQYk=
-X-Received: by 2002:a05:6902:188c:b0:b50:77a7:ccb with SMTP id
- cj12-20020a056902188c00b00b5077a70ccbmr3676418ybb.2.1678959559833; Thu, 16
- Mar 2023 02:39:19 -0700 (PDT)
+        bh=hQtCXBZaIMf8ugkDZeSvcU5gsvHtSe18+cbSeHsMKZo=;
+        b=1h0iZOJxEsM7zelroa6p+JNkUPEJfCKVysxg47/Ex/aK5tDQEiIkIjSNdNKHjB/QVI
+         nS0AdKnWf+7t8voO4sC6RvqExl2fa311PxuGeFZ/1sylV1u1/G5a/vbjeuKVgLoCqt17
+         KIHU2AAo74X0om0IkpNOD0LlZ1jhqfexEAZsftJDgexZpDagfK7DT8hK7I0WT52FmLAn
+         cwsjZENwLBD5IkYWGVMy/EE4otgcqGw2gf/FjyL7qUZowtlRohWN+j7sYuhQL9yH8xC1
+         WK9pYV8a6B26ITwpTdJyhlQfR3e4s4qLo6jLbqqYFIeTdSlBo/WG/nX1/Kpxmj6Djwcz
+         RrCA==
+X-Gm-Message-State: AO0yUKXfMfMY6oonIVWZS0DQN/Fb6LKaDEdXVIXOuf8ACsw1pkqLZU8y
+        gkWoYB2kXFi0IhVau4jJLQkCOW0l9ERPmwO/KYnrNA==
+X-Google-Smtp-Source: AK7set/whDi08nldGHa0JAJWi/pyKtjehoDBEzWbcjIfisiPzJHWN2wkucBmJNUiWKP2BLf9FYatIqZEAX0jJnXra34=
+X-Received: by 2002:a05:6902:208:b0:acd:7374:f154 with SMTP id
+ j8-20020a056902020800b00acd7374f154mr28005351ybs.7.1678959663367; Thu, 16 Mar
+ 2023 02:41:03 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230314065802.1532741-1-liuhangbin@gmail.com>
- <20230314065802.1532741-3-liuhangbin@gmail.com> <CAM0EoM=mcejihaG5KthJyXqjPiPiTWvhgLFNqZCthE8VJ23Q9w@mail.gmail.com>
- <ZBGUJt+fJ61yRKUB@Laptop-X1> <CAM0EoM=pNop+h9Eo_cc=vwS6iY7-f=rJK-G9g+SSJJupnZVy8g@mail.gmail.com>
- <ZBKOFpG80d3vU++j@Laptop-X1>
-In-Reply-To: <ZBKOFpG80d3vU++j@Laptop-X1>
+References: <20230316033753.2320557-1-liuhangbin@gmail.com> <20230316033753.2320557-2-liuhangbin@gmail.com>
+In-Reply-To: <20230316033753.2320557-2-liuhangbin@gmail.com>
 From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Thu, 16 Mar 2023 05:39:08 -0400
-Message-ID: <CAM0EoMkFvU0Pm7x7tnby3RFdMH7QMZDEJ9A_w70wCp2sZG0RNQ@mail.gmail.com>
-Subject: Re: [PATCH net 2/2] net/sched: act_api: add specific EXT_WARN_MSG for
- tc action
+Date:   Thu, 16 Mar 2023 05:40:52 -0400
+Message-ID: <CAM0EoMmxDT3gVQ7J61rRcg9ObdQtNWUk7ZM1gEZCTx79m=7wzA@mail.gmail.com>
+Subject: Re: [PATCHv2 net 1/2] Revert "net/sched: act_api: move
+ TCA_EXT_WARN_MSG to the correct hierarchy"
 To:     Hangbin Liu <liuhangbin@gmail.com>
 Cc:     netdev@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>,
@@ -81,59 +78,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 15, 2023 at 11:33=E2=80=AFPM Hangbin Liu <liuhangbin@gmail.com>=
+On Wed, Mar 15, 2023 at 11:38=E2=80=AFPM Hangbin Liu <liuhangbin@gmail.com>=
  wrote:
 >
-> On Wed, Mar 15, 2023 at 02:49:43PM -0400, Jamal Hadi Salim wrote:
-> > On Wed, Mar 15, 2023 at 5:47=E2=80=AFAM Hangbin Liu <liuhangbin@gmail.c=
-om> wrote:
-> > >
-> > > On Tue, Mar 14, 2023 at 06:35:29PM -0400, Jamal Hadi Salim wrote:
-> > > > Sorry, only thing i should have mentioned earlier - not clear from =
-here:
-> > > > Do you get two ext warns now in the same netlink message? One for t=
-he
-> > > > action and one for the cls?
-> > > > Something to check:
-> > > > on terminal1 > tc monitor
-> > > > on terminal2 > run a command which will get the offload to fail and
-> > > > see what response you get
-> > > >
-> > > > My concern is you may be getting two warnings in one message.
-> > >
-> > > From the result we only got 1 warning message.
-> > >
-> > > # tc qdisc add dev enp4s0f0np0 ingress
-> > > # tc filter add dev enp4s0f0np0 ingress flower verbose ct_state +trk+=
-new action drop
-> > > Warning: mlx5_core: matching on ct_state +new isn't supported.
-> > >
-> > > # tc monitor
-> > > qdisc ingress ffff: dev enp4s0f0np0 parent ffff:fff1 ----------------
-> > > added chain dev enp4s0f0np0 parent ffff: chain 0
-> > > added filter dev enp4s0f0np0 ingress protocol all pref 49152 flower c=
-hain 0 handle 0x1
-> > >   ct_state +trk+new
-> > >   not_in_hw
-> > >         action order 1: gact action drop
-> > >          random type none pass val 0
-> > >          index 1 ref 1 bind 1
-> > >
-> > > mlx5_core: matching on ct_state +new isn't supported
-> > > ^C
-> >
-> > Thanks for checking. I was worried from the quick glance that you will
-> > end up calling the action code with extack from cls and that the
-> > warning will be duplicated.
+> This reverts commit 923b2e30dc9cd05931da0f64e2e23d040865c035.
 >
-> The action info should be filled via dump function, which will not call
-> tca_get_fill(). So I think it should be safe. Please correct me if I miss=
-ed
-> anything.
+> This is not a correct fix as TCA_EXT_WARN_MSG is not a hierarchy to
+> TCA_ACT_TAB. I didn't notice the TC actions use different enum when addin=
+g
+> TCA_EXT_WARN_MSG. To fix the difference I will add a new WARN enum in
+> TCA_ROOT_MAX as Jamal suggested.
+>
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> ---
+>  net/sched/act_api.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/sched/act_api.c b/net/sched/act_api.c
+> index 34c508675041..fce522886099 100644
+> --- a/net/sched/act_api.c
+> +++ b/net/sched/act_api.c
+> @@ -1596,12 +1596,12 @@ static int tca_get_fill(struct sk_buff *skb, stru=
+ct tc_action *actions[],
+>         if (tcf_action_dump(skb, actions, bind, ref, false) < 0)
+>                 goto out_nlmsg_trim;
+>
+> +       nla_nest_end(skb, nest);
+> +
+>         if (extack && extack->_msg &&
+>             nla_put_string(skb, TCA_EXT_WARN_MSG, extack->_msg))
+>                 goto out_nlmsg_trim;
+>
+> -       nla_nest_end(skb, nest);
+> -
+>         nlh->nlmsg_len =3D skb_tail_pointer(skb) - b;
+>
+>         return skb->len;
 
-
-Right - for a similar scenario, it will only be called when you
-offload an action independent of the filter.
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
 
 cheers,
 jamal
+
+> 2.38.1
+>
