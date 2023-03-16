@@ -2,107 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0C506BC4BB
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 04:30:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE5B46BC4C4
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 04:33:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229966AbjCPDai (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Mar 2023 23:30:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46564 "EHLO
+        id S229552AbjCPDdz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Mar 2023 23:33:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229707AbjCPDaE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 23:30:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA3BD12BEA;
-        Wed, 15 Mar 2023 20:28:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D61561EFC;
-        Thu, 16 Mar 2023 03:28:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15F79C433EF;
-        Thu, 16 Mar 2023 03:28:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678937322;
-        bh=oPPbw/PBxWk4Q1egWNZu46IiHqVVJx0VcMlY4jCe0r0=;
-        h=From:Date:Subject:To:Cc:From;
-        b=dK5puxNuRC2Gzse9fmdtPqVr8NzvsDuYp6512mAIgwsKgwKmeOxp7CJB2R9+9Ou9G
-         uDEds2QwFKgzfWUV+9kK5cPn2wVl2uFcB1kjc3V4Q2/qI5JSqh/kNSN8clftqpKSMu
-         eTnrKC33xE+p45afNDUgrWvi57bhk02jzPq3DIsCps2AIN3yzT7MQjbQvCb1b2i48O
-         BSKXIRGO8L3iiE2L82s4bMKiN0VGGMC89mp0vN6vefzjHwE5zspvVSe0vCVAaqMLoX
-         n2zeCs3phymkgJR/NQtTT1Q3TPjCdPOar7oEiAnd5YuKZJB8m1XhbcVF2JFhPmLOIO
-         QVvcqHXfGOAww==
-From:   Nathan Chancellor <nathan@kernel.org>
-Date:   Wed, 15 Mar 2023 20:28:29 -0700
-Subject: [PATCH next] wifi: iwlwifi: Avoid disabling GCC specific flag with
- clang
+        with ESMTP id S229482AbjCPDdy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Mar 2023 23:33:54 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D2ED4203
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 20:33:51 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id d10so173442pgt.12
+        for <netdev@vger.kernel.org>; Wed, 15 Mar 2023 20:33:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678937631;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=StoSm2PbNeb8BVs9Lv1qEfjb9yKvLNQpYWngik2WhfI=;
+        b=jg9Ki6+cctittrlV38yIj32zdJRuf4AUyfLuRskheYxC/2dC6PWgWmEsByfkuwjBYf
+         2MfEH9A6MNN8E5mddJe+Oaqp34f9r/8ERqSIQmQ9ioClJkOJyh1dD4G/w6ts3JnPq24y
+         iR2zBaGNn8pIEVnMlJMI4aDKJoo9mqHL/LGTWbajPBBfYErmETVQjYZIQj9yQ1My6nlC
+         0OtBmz210XiD8vEBzdsx7+1tkEUN7OTM1rArbLP2+BWUdVmxBdUaHWVrXGnjtMDkiQps
+         LaIMPuUBmhkU4aEjN5XEWhC/dqBkWDZ150BKg2j65aVPyoF7FUPs5oEgfPfwQGTn0Yly
+         Js/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678937631;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=StoSm2PbNeb8BVs9Lv1qEfjb9yKvLNQpYWngik2WhfI=;
+        b=rpaIwqhDVtD71EIQv+JhMvPWzU49U16JNUmc5q+EhkfzEyPiKtOF9vbvpwX9zLuhg8
+         VkLQU114hfzZPTPNvmydg65ezfmne59wl3naltP8E1+p+TsZGKUt+CX64F6vrHuVUPJp
+         Ov21DpTwwFXuUne+qy5SNluPv8LS4K/qIe8bQdNtGbXY25Qi/L159z+4wxTCKNPL0xxx
+         fVgWP0DniHlbsPgnowNjp7lmYnzWm5bf6NNKUy8PMJAU5F1dA5eX+rqw28r6g8Cevr0A
+         3asu3VA9fUVT0emu15Qn7FKJsFovhYAZGC4yNJIWiXFSjXP/dBkBaP/f9qjboTmD7Zli
+         S+kQ==
+X-Gm-Message-State: AO0yUKXe37NzV2+v9uylG5eKiQ7rvOu+w8f6wCCp5DOXYs/m5kcJwOwr
+        rggUqzm7R5JbE+XuvADXnmo=
+X-Google-Smtp-Source: AK7set9lCrLAKJ74ECWy2Wt6TQeTNyIopvsIrq8JuNFTufHsCpViiTEAyN1dHKOOVQAZsSRbmGcTLA==
+X-Received: by 2002:a05:6a00:4b:b0:5a8:c3ec:e24e with SMTP id i11-20020a056a00004b00b005a8c3ece24emr1642536pfk.4.1678937630819;
+        Wed, 15 Mar 2023 20:33:50 -0700 (PDT)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id h11-20020a62b40b000000b0062505afff9fsm4226444pfn.126.2023.03.15.20.33.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Mar 2023 20:33:50 -0700 (PDT)
+Date:   Thu, 16 Mar 2023 11:33:42 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     netdev@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Pedro Tammela <pctammela@mojatatu.com>,
+        Marcelo Leitner <mleitner@redhat.com>,
+        Phil Sutter <psutter@redhat.com>
+Subject: Re: [PATCH net 2/2] net/sched: act_api: add specific EXT_WARN_MSG
+ for tc action
+Message-ID: <ZBKOFpG80d3vU++j@Laptop-X1>
+References: <20230314065802.1532741-1-liuhangbin@gmail.com>
+ <20230314065802.1532741-3-liuhangbin@gmail.com>
+ <CAM0EoM=mcejihaG5KthJyXqjPiPiTWvhgLFNqZCthE8VJ23Q9w@mail.gmail.com>
+ <ZBGUJt+fJ61yRKUB@Laptop-X1>
+ <CAM0EoM=pNop+h9Eo_cc=vwS6iY7-f=rJK-G9g+SSJJupnZVy8g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20230315-iwlwifi-fix-pragma-v1-1-ad23f92c4739@kernel.org>
-X-B4-Tracking: v=1; b=H4sIANyMEmQC/x3N0QqDMAyF4VeRXC/Q2jmKrzJ2kbqoAe0kkSmI7
- 766y5/DxznAWIUN2uoA5a+YfHIJf6ugGykPjPIuDbWrgwu+QdmmTXrBXnZclIaZMKX7I7jGR44
- RCkxkjEkpd+NFZ7KV9RoW5cL+b0/IvK/wOs8f9BH5yoMAAAA=
-To:     johannes.berg@intel.com, gregory.greenman@intel.com
-Cc:     kvalo@kernel.org, nathan@kernel.org, ndesaulniers@google.com,
-        trix@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, patches@lists.linux.dev
-X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1454; i=nathan@kernel.org;
- h=from:subject:message-id; bh=oPPbw/PBxWk4Q1egWNZu46IiHqVVJx0VcMlY4jCe0r0=;
- b=owGbwMvMwCEmm602sfCA1DTG02pJDClCPS9PBIRVTCzMT7V6Mm3FHN+FF6zv37l7/IPU+Z4uA
- etNSxhSO0pZGMQ4GGTFFFmqH6seNzScc5bxxqlJMHNYmUCGMHBxCsBE5r5iZDg5LzOr07ladcb9
- mv9Lr/qGtUinP1rvWV/ktijzIaenaQIjw36LA09lr220P9kmfLDULGrDya/MM9ia7k55fSzX+1a
- 4LgsA
-X-Developer-Key: i=nathan@kernel.org; a=openpgp;
- fpr=2437CB76E544CB6AB3D9DFD399739260CB6CB716
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAM0EoM=pNop+h9Eo_cc=vwS6iY7-f=rJK-G9g+SSJJupnZVy8g@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clang errors:
+On Wed, Mar 15, 2023 at 02:49:43PM -0400, Jamal Hadi Salim wrote:
+> On Wed, Mar 15, 2023 at 5:47 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
+> >
+> > On Tue, Mar 14, 2023 at 06:35:29PM -0400, Jamal Hadi Salim wrote:
+> > > Sorry, only thing i should have mentioned earlier - not clear from here:
+> > > Do you get two ext warns now in the same netlink message? One for the
+> > > action and one for the cls?
+> > > Something to check:
+> > > on terminal1 > tc monitor
+> > > on terminal2 > run a command which will get the offload to fail and
+> > > see what response you get
+> > >
+> > > My concern is you may be getting two warnings in one message.
+> >
+> > From the result we only got 1 warning message.
+> >
+> > # tc qdisc add dev enp4s0f0np0 ingress
+> > # tc filter add dev enp4s0f0np0 ingress flower verbose ct_state +trk+new action drop
+> > Warning: mlx5_core: matching on ct_state +new isn't supported.
+> >
+> > # tc monitor
+> > qdisc ingress ffff: dev enp4s0f0np0 parent ffff:fff1 ----------------
+> > added chain dev enp4s0f0np0 parent ffff: chain 0
+> > added filter dev enp4s0f0np0 ingress protocol all pref 49152 flower chain 0 handle 0x1
+> >   ct_state +trk+new
+> >   not_in_hw
+> >         action order 1: gact action drop
+> >          random type none pass val 0
+> >          index 1 ref 1 bind 1
+> >
+> > mlx5_core: matching on ct_state +new isn't supported
+> > ^C
+> 
+> Thanks for checking. I was worried from the quick glance that you will
+> end up calling the action code with extack from cls and that the
+> warning will be duplicated.
 
-  drivers/net/wireless/intel/iwlwifi/iwl-devtrace.c:15:32: error: unknown warning group '-Wsuggest-attribute=format', ignored [-Werror,-Wunknown-warning-option]
-  #pragma GCC diagnostic ignored "-Wsuggest-attribute=format"
-                                 ^
-  1 error generated.
+The action info should be filled via dump function, which will not call
+tca_get_fill(). So I think it should be safe. Please correct me if I missed
+anything.
 
-The warning being disabled by this pragma is GCC specific. Guard its use
-with CONFIG_CC_IS_GCC so that it is not used with clang to clear up the
-error.
-
-Fixes: 4eca8cbf7ba8 ("wifi: iwlwifi: suppress printf warnings in tracing")
-Link: https://github.com/ClangBuiltLinux/linux/issues/1818
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
----
- drivers/net/wireless/intel/iwlwifi/iwl-devtrace.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-devtrace.c b/drivers/net/wireless/intel/iwlwifi/iwl-devtrace.c
-index c190ec5effa1..e46639b097f4 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-devtrace.c
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-devtrace.c
-@@ -12,7 +12,9 @@
- #include "iwl-trans.h"
- 
- #define CREATE_TRACE_POINTS
-+#ifdef CONFIG_CC_IS_GCC
- #pragma GCC diagnostic ignored "-Wsuggest-attribute=format"
-+#endif
- #include "iwl-devtrace.h"
- 
- EXPORT_TRACEPOINT_SYMBOL(iwlwifi_dev_ucode_event);
-
----
-base-commit: 4eca8cbf7ba83c3291b5841905ce64584036b1ff
-change-id: 20230315-iwlwifi-fix-pragma-bb4630518e88
-
-Best regards,
--- 
-Nathan Chancellor <nathan@kernel.org>
-
+Thanks
+Hangbin
