@@ -2,157 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B3FE6BD221
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 15:15:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 535D36BD258
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 15:27:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231278AbjCPOPe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 10:15:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36094 "EHLO
+        id S231208AbjCPO1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 10:27:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231489AbjCPOPS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 10:15:18 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74021A18A7;
-        Thu, 16 Mar 2023 07:14:22 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id x36so1839255ljq.7;
-        Thu, 16 Mar 2023 07:14:22 -0700 (PDT)
+        with ESMTP id S230446AbjCPO1u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 10:27:50 -0400
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45986BE5CA
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 07:27:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678976056;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=XFgru5gPc+aHNBW3vlG+3dqxpYhuOK2D750z3nKQHv0=;
-        b=M3ZV2p0n9KQQDzhTmvrnt3gFPi3l8OBk914LMDfpT97OS60zwtV/NxeT/P6NwjJeHW
-         SnsJQSmuBGYhWfiguR+TY+KZ4JdrbBNPAf8VNhYR3iRFavcZ7CCM2EYjOmVkUt+p/4GW
-         KGwzA7hs+79F1pb1RUkbI6hmR4gcb4DFN1pi08tq3b+OYTqubEp81g86dRK7mPNFXuhf
-         2qMQKrj3mmhVuybAuUhxflGUalmDNEyyeja+WpHX5aUGGsjJr5sk5f7ETVSWBSXaEyi8
-         zUh8eap4Bw1LGcSfh7LFXF7RdcMvsqm9/1R0thhHwPwIUnFmyxSNrcSiZfNahzCA+bfy
-         a+Sw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678976056;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=XFgru5gPc+aHNBW3vlG+3dqxpYhuOK2D750z3nKQHv0=;
-        b=5i/0dh+q8IoXaZ5A6Wfwpbw9p893dPS1a8PBGVPHwHaZJV37C9b6ISNzFS4R5VDvDN
-         usrLWEaxXKwsago3gQe16jUo/0hleMxSVG8qCjNWKK8X5R7HX7ChyT9CxMA3TO4T3Euc
-         /Fx3MmRy5U0DokcwYUyxAIZ0TpjCUCgQLBWQPW72jwC6M1lGphg5Z4sBZaB3TeOWZ9gc
-         Ej16dBAq/GTExVtHDRC2YcAQH8U4PYJr7oCtf8kinwT16jZYuowzfJI1aoRFnEOIhWYJ
-         df4gE/S8Sr4GPxanHamy2RaP4VItTVtv+d8+7GGz+gmSYgL7n9xwihfXp3Js3OndArAm
-         lIHw==
-X-Gm-Message-State: AO0yUKU4KrMaQMmltWteniga1tTggnWK16/rqo/i+E0eits0dfVncIMT
-        N9UHmKChAZsWUrLco4aCuf9mAQ44IwY9CrzP
-X-Google-Smtp-Source: AK7set/K58nMRzeH33F8w1ezsZYcCPvJadMxvHARkv0N/NBuqD2vhfVwZKmLJsPBtyYqG5weUVg7Og==
-X-Received: by 2002:a2e:90da:0:b0:298:ad8e:e65 with SMTP id o26-20020a2e90da000000b00298ad8e0e65mr2048949ljg.21.1678976055904;
-        Thu, 16 Mar 2023 07:14:15 -0700 (PDT)
-Received: from [192.168.1.95] (host-176-36-0-241.b024.la.net.ua. [176.36.0.241])
-        by smtp.gmail.com with ESMTPSA id s2-20020a05651c048200b00298798f7e38sm1265560ljc.77.2023.03.16.07.14.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Mar 2023 07:14:14 -0700 (PDT)
-Message-ID: <e3a68d87c4f7589ab19fe6ddf6b0341404108386.camel@gmail.com>
-Subject: Re: [PATCH bpf-next 1/2] bpf: Allow ld_imm64 instruction to point
- to kfunc.
-From:   Eduard Zingerman <eddyz87@gmail.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        davem@davemloft.net
-Cc:     daniel@iogearbox.net, andrii@kernel.org, martin.lau@kernel.org,
-        void@manifault.com, davemarchevsky@meta.com, tj@kernel.org,
-        memxor@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@fb.com
-Date:   Thu, 16 Mar 2023 16:14:11 +0200
-In-Reply-To: <20230315223607.50803-2-alexei.starovoitov@gmail.com>
-References: <20230315223607.50803-1-alexei.starovoitov@gmail.com>
-         <20230315223607.50803-2-alexei.starovoitov@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4-0ubuntu1 
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1678976869; x=1710512869;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Uz8xY4s8GgretQ0mpNIZ/d4fcKhyNiOsBecYYTaPk0U=;
+  b=sgnY3RsOKhu5oQSvy9JLDJo0ZAfqpqX5rZQ5QXrggfzqBrZoKNC2xpvz
+   4XrFJFRJqTuissrv1SrNyerchS7+jIYHSZ03+onue9xqLT9w/DM2hVK6a
+   Hp9Q5ParT6Me4IHHOsR8sejgxC1ZUhuNR2CEVhu6HL/PXEuDbI41QYbY8
+   4=;
+X-IronPort-AV: E=Sophos;i="5.98,265,1673913600"; 
+   d="scan'208";a="194090735"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-3e1fab07.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2023 14:27:41 +0000
+Received: from EX19D017EUA001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1e-m6i4x-3e1fab07.us-east-1.amazon.com (Postfix) with ESMTPS id 3D36180BEB;
+        Thu, 16 Mar 2023 14:27:38 +0000 (UTC)
+Received: from EX19D028EUB003.ant.amazon.com (10.252.61.31) by
+ EX19D017EUA001.ant.amazon.com (10.252.50.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.24; Thu, 16 Mar 2023 14:27:37 +0000
+Received: from u570694869fb251.ant.amazon.com (10.85.143.176) by
+ EX19D028EUB003.ant.amazon.com (10.252.61.31) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.24; Thu, 16 Mar 2023 14:27:30 +0000
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
+CC:     Shay Agroskin <shayagr@amazon.com>,
+        "Woodhouse, David" <dwmw@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        Saeed Bshara <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Arinzon, David" <darinzon@amazon.com>,
+        "Itzko, Shahar" <itzko@amazon.com>,
+        "Abboud, Osama" <osamaabb@amazon.com>
+Subject: [PATCH v5 net-next 0/6] Add tx push buf len param to ethtool
+Date:   Thu, 16 Mar 2023 16:27:00 +0200
+Message-ID: <20230316142706.4046263-1-shayagr@amazon.com>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.85.143.176]
+X-ClientProxiedBy: EX19D042UWA003.ant.amazon.com (10.13.139.44) To
+ EX19D028EUB003.ant.amazon.com (10.252.61.31)
+X-Spam-Status: No, score=-11.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2023-03-15 at 15:36 -0700, Alexei Starovoitov wrote:
-> From: Alexei Starovoitov <ast@kernel.org>
->=20
-> Allow ld_imm64 insn with BPF_PSEUDO_BTF_ID to hold the address of kfunc.
-> PTR_MEM is already recognized for NULL-ness by is_branch_taken(),
-> so unresolved kfuncs will be seen as zero.
-> This allows BPF programs to detect at load time whether kfunc is present
-> in the kernel with bpf_kfunc_exists() macro.
->=20
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> ---
->  kernel/bpf/verifier.c       | 7 +++++--
->  tools/lib/bpf/bpf_helpers.h | 3 +++
->  2 files changed, 8 insertions(+), 2 deletions(-)
->=20
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 60793f793ca6..4e49d34d8cd6 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -15955,8 +15955,8 @@ static int check_pseudo_btf_id(struct bpf_verifie=
-r_env *env,
->  		goto err_put;
->  	}
-> =20
-> -	if (!btf_type_is_var(t)) {
-> -		verbose(env, "pseudo btf_id %d in ldimm64 isn't KIND_VAR.\n", id);
-> +	if (!btf_type_is_var(t) && !btf_type_is_func(t)) {
-> +		verbose(env, "pseudo btf_id %d in ldimm64 isn't KIND_VAR or KIND_FUNC\=
-n", id);
->  		err =3D -EINVAL;
->  		goto err_put;
->  	}
-> @@ -15990,6 +15990,9 @@ static int check_pseudo_btf_id(struct bpf_verifie=
-r_env *env,
->  		aux->btf_var.reg_type =3D PTR_TO_BTF_ID | MEM_PERCPU;
->  		aux->btf_var.btf =3D btf;
->  		aux->btf_var.btf_id =3D type;
-> +	} else if (!btf_type_is_func(t)) {
-> +		aux->btf_var.reg_type =3D PTR_TO_MEM | MEM_RDONLY;
-> +		aux->btf_var.mem_size =3D 0;
+Changed since v4:
+- Added advertisement for tx-push-mode in ENA driver
+- Modified the documentation to make the distinction from
+  tx-copybreak clearer
 
-This if statement has the following conditions in master:
+Changes since v3:
+- Removed RFC tag and added a Jakub's signoff on one of the first patch
 
-	if (percpu) {
-    	// ...
-	} else if (!btf_type_is_struct(t)) {
-    	// ...
-	} else {
-    	// ...
-	}
+Changes since v2:
+- Added a check that the driver advertises support for TX push buffer
+  instead of defaulting the response to 0.
+- Moved cosmetic changes to their own commits
+- Removed usage of gotos which goes against Linux coding style
+- Make ENA driver reject an attempt to configure TX push buffer when
+  it's not supported (no LLQ is used)
 
-Conditions `!btf_type_is_func()` and `!btf_type_is_struct()` are
-not mutually exclusive, thus adding `if (!btf_type_is_func())`
-would match certain conditions that were previously matched by struct
-case, wouldn't it? E.g. if type is `BTF_KIND_INT`?
+Changes since v1:
+- Added the new ethtool param to generic netlink specs
+- Dropped dynamic advertisement of tx push buff support in ENA.
+  The driver will advertise it for all platforms
 
-Although, I was not able to trigger it, as it seems that pahole only
-encodes per-cpu vars in BTF.
+This patchset adds a new sub-configuration to ethtool get/set queue
+params (ethtool -g) called 'tx-push-buf-len'.
 
->  	} else if (!btf_type_is_struct(t)) {
->  		const struct btf_type *ret;
->  		const char *tname;
-> diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
-> index 7d12d3e620cc..43abe4c29409 100644
-> --- a/tools/lib/bpf/bpf_helpers.h
-> +++ b/tools/lib/bpf/bpf_helpers.h
-> @@ -177,6 +177,9 @@ enum libbpf_tristate {
->  #define __kptr_untrusted __attribute__((btf_type_tag("kptr_untrusted")))
->  #define __kptr __attribute__((btf_type_tag("kptr")))
-> =20
-> +/* pass function pointer through asm otherwise compiler assumes that any=
- function !=3D 0 */
-> +#define bpf_kfunc_exists(fn) ({ void *__p =3D fn; asm ("" : "+r"(__p)); =
-__p; })
-> +
->  #ifndef ___bpf_concat
->  #define ___bpf_concat(a, b) a ## b
->  #endif
+This configuration specifies the maximum number of bytes of a
+transmitted packet a driver can push directly to the underlying
+device ('push' mode). The motivation for pushing some of the bytes to
+the device has the advantages of
+
+- Allowing a smart device to take fast actions based on the packet's
+  header
+- Reducing latency for small packets that can be copied completely into
+  the device
+
+This new param is practically similar to tx-copybreak value that can be
+set using ethtool's tunable but conceptually serves a different purpose.
+While tx-copybreak is used to reduce the overhead of DMA mapping and
+makes no sense to use if less than the whole segment gets copied,
+tx-push-buf-len allows to improve performance by analyzing the packet's
+data (usually headers) before performing the DMA operation.
+
+The configuration can be queried and set using the commands:
+
+    $ ethtool -g [interface]
+
+    # ethtool -G [interface] tx-push-buf-len [number of bytes]
+
+This patchset also adds support for the new configuration in ENA driver
+for which this parameter ensures efficient resources management on the
+device side.
+
+David Arinzon (1):
+  net: ena: Add an option to configure large LLQ headers
+
+Shay Agroskin (5):
+  ethtool: Add support for configuring tx_push_buf_len
+  net: ena: Make few cosmetic preparations to support large LLQ
+  net: ena: Recalculate TX state variables every device reset
+  net: ena: Add support to changing tx_push_buf_len
+  net: ena: Advertise TX push support
+
+ Documentation/netlink/specs/ethtool.yaml      |   8 +
+ Documentation/networking/ethtool-netlink.rst  |  47 ++--
+ drivers/net/ethernet/amazon/ena/ena_eth_com.h |   4 +
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c |  66 ++++-
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  | 259 +++++++++++-------
+ drivers/net/ethernet/amazon/ena/ena_netdev.h  |  15 +-
+ include/linux/ethtool.h                       |  14 +-
+ include/uapi/linux/ethtool_netlink.h          |   2 +
+ net/ethtool/netlink.h                         |   2 +-
+ net/ethtool/rings.c                           |  33 ++-
+ 10 files changed, 326 insertions(+), 124 deletions(-)
+
+-- 
+2.25.1
 
