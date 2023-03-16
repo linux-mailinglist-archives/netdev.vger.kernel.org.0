@@ -2,103 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31A106BD711
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 18:29:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A18E56BD70D
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 18:29:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229918AbjCPR3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 13:29:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44474 "EHLO
+        id S229865AbjCPR3B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 13:29:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229902AbjCPR3G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 13:29:06 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB3CC1D929;
-        Thu, 16 Mar 2023 10:29:03 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id y14so2246984wrq.4;
-        Thu, 16 Mar 2023 10:29:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678987742;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=n/Cr1XNCJNfBa+dPDtalOZXIIV6S3ucGcQ6qFqXXuSc=;
-        b=Ka0GgVg9azCPEBkuB0FcSt9tMYqZVblZJl1uT4KWVRAEgVcgqi44vSYpvlzc3TfFMI
-         Ulqrk15TYN022WhQxI63v/NQum/s+yKg2G7wZYj2wHxsGAaoaLtFw8lsjoqTx8NZjsXO
-         OIlTQqkyvDBE4t4FkO9w47A9Q2ruNzohH7Mng3Kraup/9Wyb3PGdybj/sC9/Pvnw6aPz
-         4Ep0ufMhgNjCk8X2buy346Tcow1zyQVQeGAZrxQzPbWcwa5rFbWGv6iD4wYbHKYm/DZV
-         ah4lc+p0anRvAsNDlqj9fa+VY96nD4X/R7q5M3u7jTEL5YPvrOH5a8y5P5c92mWXiI7i
-         RABA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678987742;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=n/Cr1XNCJNfBa+dPDtalOZXIIV6S3ucGcQ6qFqXXuSc=;
-        b=RnTP/w7AloNUBWmU5C26i+lQQMLIbND8o8gY/M87Dw22DuDdCIQQxRQypN9pzW4fmS
-         VfNg/kh5Hydzm2bSw7AXMtT0hrbTfBZr2sB6BEKlojw3txmRVCoDGvlZLhTCRtPYGECX
-         WqK1d37sgZ+bBEtjsPfCoVxdLpMCAjxlzLTCnwIclXsHLJg6Tsup33wu6kCFaQz1GYi1
-         hDlc0KC9TZBXr0+3kzzXVyp0X3P30TlAamlojgoi44oa8246DcMBMtsbhiRPLUsdcIfs
-         k+UDK2IemrCvgh5hfN3tX/DtwzoOxPjmB2FZjdxi7+6+c/abS5IYjQ8I1b30JOzDZeMs
-         E6nA==
-X-Gm-Message-State: AO0yUKXFx+XUMUlLCdoCi82z77K5Ax1VNa78esJmOz5Jv6sQIYmKTgvD
-        VrU+Kl3YdJgxxLbxpm1e8RI=
-X-Google-Smtp-Source: AK7set8fFjLrpZ1Ll4TW9iTex7qD+OJccAtDrfibvtBWYkVr0jRxWbwBsrVExeDl051bEIdDmJrszQ==
-X-Received: by 2002:a5d:61c7:0:b0:2ce:a697:75c7 with SMTP id q7-20020a5d61c7000000b002cea69775c7mr4660631wrv.33.1678987742168;
-        Thu, 16 Mar 2023 10:29:02 -0700 (PDT)
-Received: from atlantis.lan (255.red-79-146-124.dynamicip.rima-tde.net. [79.146.124.255])
-        by smtp.gmail.com with ESMTPSA id n7-20020a5d4847000000b002c5d3f0f737sm7719124wrs.30.2023.03.16.10.29.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Mar 2023 10:29:01 -0700 (PDT)
-From:   =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
-        <noltari@gmail.com>
-To:     f.fainelli@gmail.com, jonas.gorski@gmail.com, andrew@lunn.ch,
-        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
-        <noltari@gmail.com>
-Subject: [PATCH v2] net: dsa: b53: mmap: fix device tree support
-Date:   Thu, 16 Mar 2023 18:28:07 +0100
-Message-Id: <20230316172807.460146-1-noltari@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230310121059.4498-1-noltari@gmail.com>
-References: <20230310121059.4498-1-noltari@gmail.com>
+        with ESMTP id S229494AbjCPR3A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 13:29:00 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DA913A9D;
+        Thu, 16 Mar 2023 10:28:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=SEN+HKxo7EQ3q5D6tuhe44Eox24eDP+iTTu9PwnX/OM=; b=r+edEyVdE8CHzECGKqBOw2z/6K
+        pmwPgko9E9SA73wK+2z4oOZWpCopkXUaE5ym0bys0jdwzPDo6kraGswMtU87rc/adnU9rk/zyFN/h
+        5ICv8yRV71KH4jem5zFLwoESEv41E4dclTYq5L4qs/1EegQkOxHIyoRxw8HKBGcgeTN2ARXr8oz23
+        0eYYj2EHDmhrqCz2dDGjCTGHKBsgzqCO0FDLUtedrD3mnegEZybLCRJuWXhKOqJJYh8u7uwUY+xxc
+        xbrG0pH/tRc2U9v4mUJrLqa22NZ6uIr5MTBVRFYhWDGL2gA/WyyAEVT1H6yFIrBPnlo06u+othVO6
+        OaUm+ZdA==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1pcrP8-00F226-M0; Thu, 16 Mar 2023 17:28:42 +0000
+Date:   Thu, 16 Mar 2023 17:28:42 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     David Howells <dhowells@redhat.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Tom Talpey <tom@talpey.com>, linux-rdma@vger.kernel.org
+Subject: Re: [RFC PATCH 02/28] Add a special allocator for staging netfs
+ protocol to MSG_SPLICE_PAGES
+Message-ID: <ZBNRysLdgZsfVaSj@casper.infradead.org>
+References: <20230316152618.711970-1-dhowells@redhat.com>
+ <20230316152618.711970-3-dhowells@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230316152618.711970-3-dhowells@redhat.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CPU port should also be enabled in order to get a working switch.
+On Thu, Mar 16, 2023 at 03:25:52PM +0000, David Howells wrote:
+> If a network protocol sendmsg() sees MSG_SPLICE_DATA, it expects that the
+> iterator is of ITER_BVEC type and that all the pages can have refs taken on
+> them with get_page() and discarded with put_page().  Bits of network
+> filesystem protocol data, however, are typically contained in slab memory
+> for which the cleanup method is kfree(), not put_page(), so this doesn't
+> work.
+> 
+> Provide a simple allocator, zcopy_alloc(), that allocates a page at a time
+> per-cpu and sequentially breaks off pieces and hands them out with a ref as
+> it's asked for them.  The caller disposes of the memory it was given by
+> calling put_page().  When a page is all parcelled out, it is abandoned by
+> the allocator and another page is obtained.  The page will get cleaned up
+> when the last skbuff fragment is destroyed.
 
-Fixes: a5538a777b73 ("net: dsa: b53: mmap: Add device tree support")
-Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
----
- v2: switch to B53_N_PORTS
-
- drivers/net/dsa/b53/b53_mmap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/dsa/b53/b53_mmap.c b/drivers/net/dsa/b53/b53_mmap.c
-index e968322dfbf0..70887e0aece3 100644
---- a/drivers/net/dsa/b53/b53_mmap.c
-+++ b/drivers/net/dsa/b53/b53_mmap.c
-@@ -263,7 +263,7 @@ static int b53_mmap_probe_of(struct platform_device *pdev,
- 		if (of_property_read_u32(of_port, "reg", &reg))
- 			continue;
- 
--		if (reg < B53_CPU_PORT)
-+		if (reg < B53_N_PORTS)
- 			pdata->enabled_ports |= BIT(reg);
- 	}
- 
--- 
-2.30.2
-
+This feels a _lot_ like the page_frag allocator.  Can the two be
+unified?
