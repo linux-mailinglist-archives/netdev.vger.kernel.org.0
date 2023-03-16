@@ -2,137 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46ADC6BD263
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 15:29:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9A1A6BD271
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 15:34:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231195AbjCPO3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 10:29:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33996 "EHLO
+        id S230043AbjCPOej (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 10:34:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230325AbjCPO3P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 10:29:15 -0400
-Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE8523135
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 07:29:12 -0700 (PDT)
+        with ESMTP id S229829AbjCPOei (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 10:34:38 -0400
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27DA7222C8
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 07:34:36 -0700 (PDT)
+Received: by mail-il1-x12b.google.com with SMTP id h5so1076263ile.13
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 07:34:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1678976953; x=1710512953;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=s2zbeddJORHVIvGR4Ctr557cSv9e0gE/xuv6hBDouL4=;
-  b=loUXG0px8PGkzBHNbD8KRiUWltw5Ahq6l7C7WNvDAk5ccesJPoWW//IN
-   dKCrZETRCSoUi6sLUhfbdldiJ/wke+Vt2rwsy1MYNc9S6a9N3EoJTbRXy
-   mYH6a4/Knnq6vlGMxlVlg7ZqcsJTWTDPoIOLDmsvjz29CDPD19kqbkVjk
-   E=;
-X-IronPort-AV: E=Sophos;i="5.98,265,1673913600"; 
-   d="scan'208";a="319199566"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1d-m6i4x-d8e96288.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2023 14:29:12 +0000
-Received: from EX19D001EUA001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1d-m6i4x-d8e96288.us-east-1.amazon.com (Postfix) with ESMTPS id 79B5980F9C;
-        Thu, 16 Mar 2023 14:29:10 +0000 (UTC)
-Received: from EX19D028EUB003.ant.amazon.com (10.252.61.31) by
- EX19D001EUA001.ant.amazon.com (10.252.50.59) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.24; Thu, 16 Mar 2023 14:29:09 +0000
-Received: from u570694869fb251.ant.amazon.com (10.85.143.176) by
- EX19D028EUB003.ant.amazon.com (10.252.61.31) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.24; Thu, 16 Mar 2023 14:29:01 +0000
-From:   Shay Agroskin <shayagr@amazon.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
-CC:     Shay Agroskin <shayagr@amazon.com>,
-        "Woodhouse, David" <dwmw@amazon.com>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        Saeed Bshara <saeedb@amazon.com>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        "Dagan, Noam" <ndagan@amazon.com>,
-        "Arinzon, David" <darinzon@amazon.com>,
-        "Itzko, Shahar" <itzko@amazon.com>,
-        "Abboud, Osama" <osamaabb@amazon.com>
-Subject: [PATCH v5 net-next 6/6] net: ena: Advertise TX push support
-Date:   Thu, 16 Mar 2023 16:27:06 +0200
-Message-ID: <20230316142706.4046263-7-shayagr@amazon.com>
-X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20230316142706.4046263-1-shayagr@amazon.com>
-References: <20230316142706.4046263-1-shayagr@amazon.com>
+        d=google.com; s=20210112; t=1678977275;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ZAXWkVDijxnw2BDTwVeUZ4B+Od1pD8xCW/YRafFMsJU=;
+        b=nafsOBQrgAeDjmhzAa3RWIu67XeXwovRzAk7PkcUeHJpxz0XJLAeW8a4UDtlKpmPN1
+         EhtqVsoWOZqA58hPAgG1StYx/Mbn08riarzBIp88ANPXhvicUjD+o2fWY08SIdYUMqOL
+         vuEbd7H8piGSI5use8wYvfrSH/Ns9vHXjyNCNXRU7V4yAA49Py1LHxXptbFNKs93Kplk
+         UOhWYxfwzdbfMZUv5l44N3wOq86YD4U34gldlV9MEk7RQE+QSh0ptNidpz7SUJx+ivpw
+         7nxx3IpCs0tsaiZ8u6pDWrUDSApZsMpC2fYsM0U8bMNWSAEZ0jnSQBDYTp4slosNHJOV
+         WQvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678977275;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ZAXWkVDijxnw2BDTwVeUZ4B+Od1pD8xCW/YRafFMsJU=;
+        b=t5XdtjxqJEmAJQaghYekd8+jeFdiWyJWgS2/F68Lm2MGPBFvW0SjBWt7v8tkbnXHpr
+         JaZXciGm9lTk0rQJyxSXtiCQPychdYOLNUw03ylfhmYWqCwUs0AWjrl/5jC53qnaTaGt
+         hPEf0Pvy9ZCuBvrQGhB/TDA8lOoPWj0j88iBN0OOhzmQf589gG9GX9NBaJFlMlTPNeQP
+         eWFilXB3FQoDJbLHnIct21lBm3sie/jtMUtvuZIEI2xBfOYix66/gTH6ccSk7tyHb49p
+         5Lyqzdj4kGbMnfPnb8Ydg0P+7JeNt/YYyLHKwOxsGJhV+pDNAlUt564AIlSYZC3G3Fw1
+         m7/w==
+X-Gm-Message-State: AO0yUKWjJmOR14Xbv3ECiC3bbB3Cp9GU5iOa5EkY8AWd2lQ1WrCmiJvv
+        ZtAK+ittPNRkvo+EDORsS21xqG0YCvphuIBel5X2jfhsIOv9T/IdLmBixg==
+X-Google-Smtp-Source: AK7set+ZRIT9jTyEnUmdriZuyK50X2UU90r0LFKB4vGV21A7kWzGKFjMUSV742r7pSxpfK3az2/G+z57mnfWfLNZTMk=
+X-Received: by 2002:a92:c542:0:b0:314:b2cd:b265 with SMTP id
+ a2-20020a92c542000000b00314b2cdb265mr5097853ilj.1.1678977275331; Thu, 16 Mar
+ 2023 07:34:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.85.143.176]
-X-ClientProxiedBy: EX19D040UWB001.ant.amazon.com (10.13.138.82) To
- EX19D028EUB003.ant.amazon.com (10.252.61.31)
-X-Spam-Status: No, score=-11.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20230316131526.283569-1-aleksandr.mikhalitsyn@canonical.com> <20230316131526.283569-2-aleksandr.mikhalitsyn@canonical.com>
+In-Reply-To: <20230316131526.283569-2-aleksandr.mikhalitsyn@canonical.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 16 Mar 2023 07:34:24 -0700
+Message-ID: <CANn89i+s7TG4jqC1qanboKff=-DRmDjB-vEkoLKbEDwv195ytg@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/3] scm: add SO_PASSPIDFD and SCM_PIDFD
+To:     Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
+Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Kees Cook <keescook@chromium.org>,
+        Christian Brauner <brauner@kernel.org>,
+        linux-arch@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-LLQ is auto enabled by the device and disabling it isn't supported on
-new ENA generations while on old ones causes sub-optimal performance.
+On Thu, Mar 16, 2023 at 6:16=E2=80=AFAM Alexander Mikhalitsyn
+<aleksandr.mikhalitsyn@canonical.com> wrote:
+>
+> Implement SCM_PIDFD, a new type of CMSG type analogical to SCM_CREDENTIAL=
+S,
+> but it contains pidfd instead of plain pid, which allows programmers not
+> to care about PID reuse problem.
 
-This patch adds advertisement of push-mode when LLQ mode is used, but
-rejects an attempt to modify it.
+Hi Alexander
 
-Signed-off-by: Shay Agroskin <shayagr@amazon.com>
----
- drivers/net/ethernet/amazon/ena/ena_ethtool.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+This would add yet another conditional in af_unix fast path.
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-index f71ca72d641b..fc8fb037a686 100644
---- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-@@ -479,12 +479,14 @@ static void ena_get_ringparam(struct net_device *netdev,
- 	if (adapter->ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV) {
- 		bool large_llq_supported = adapter->large_llq_header_supported;
- 
-+		kernel_ring->tx_push = true;
- 		kernel_ring->tx_push_buf_len = adapter->ena_dev->tx_max_header_size;
- 		if (large_llq_supported)
- 			kernel_ring->tx_push_buf_max_len = ENA_LLQ_LARGE_HEADER;
- 		else
- 			kernel_ring->tx_push_buf_max_len = ENA_LLQ_HEADER;
- 	} else {
-+		kernel_ring->tx_push = false;
- 		kernel_ring->tx_push_buf_max_len = 0;
- 		kernel_ring->tx_push_buf_len = 0;
- 	}
-@@ -516,6 +518,12 @@ static int ena_set_ringparam(struct net_device *netdev,
- 	/* This value is ignored if LLQ is not supported */
- 	new_tx_push_buf_len = adapter->ena_dev->tx_max_header_size;
- 
-+	if ((adapter->ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV) !=
-+	    kernel_ring->tx_push) {
-+		NL_SET_ERR_MSG_MOD(extack, "Push mode state cannot be modified");
-+		return -EINVAL;
-+	}
-+
- 	/* Validate that the push buffer is supported on the underlying device */
- 	if (kernel_ring->tx_push_buf_len) {
- 		enum ena_admin_placement_policy_type placement;
-@@ -948,7 +956,8 @@ static int ena_set_tunable(struct net_device *netdev,
- static const struct ethtool_ops ena_ethtool_ops = {
- 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
- 				     ETHTOOL_COALESCE_USE_ADAPTIVE_RX,
--	.supported_ring_params	= ETHTOOL_RING_USE_TX_PUSH_BUF_LEN,
-+	.supported_ring_params	= ETHTOOL_RING_USE_TX_PUSH_BUF_LEN |
-+				  ETHTOOL_RING_USE_TX_PUSH,
- 	.get_link_ksettings	= ena_get_link_ksettings,
- 	.get_drvinfo		= ena_get_drvinfo,
- 	.get_msglevel		= ena_get_msglevel,
--- 
-2.25.1
+It seems that we already can use pidfd_open() (since linux-5.3), and
+pass the resulting fd in af_unix SCM_RIGHTS message ?
 
+If you think this is not suitable, it should at least be mentioned in
+the changelog.
+
+Thanks.
