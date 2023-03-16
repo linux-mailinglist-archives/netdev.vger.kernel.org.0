@@ -2,162 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1AB26BDCF1
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 00:33:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E57F6BDD32
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 00:50:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229806AbjCPXdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 19:33:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54404 "EHLO
+        id S229567AbjCPXu4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 19:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229648AbjCPXdb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 19:33:31 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB08AB6914;
-        Thu, 16 Mar 2023 16:33:29 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id lr16-20020a17090b4b9000b0023f187954acso3217640pjb.2;
-        Thu, 16 Mar 2023 16:33:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679009609;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=aOe0JtBICGgd0kHSmPmJseRqJi3KmhURQwliZoYk24Q=;
-        b=StCFPNTqrsFsKhuQ6IBo+ORNHveCFU0dkHDNam1hij53PajDKUqyUXE+FgSiCffTlE
-         EqKPQCVvc6zMytr5/bHD7EyrKO8VRSeGaKvymkxEI0zMZZbMY8lXHwMGHWWEBdIBvA+g
-         xthesPI+97Oqegs5JAgXmrntPXXi3L4aeBNIwvX+bcmeQy4DZ9LDckMU04uCBU0EHmoo
-         z+htJuy2ztY7qKjKph7PVUSgQyJIcBzdMjP04hNHE6IM8LM6meEMN37p6dM3TKBb0tMG
-         +N9fprIeTJS33hFRUPoZLNIB2cFhN8tqb9kQCa27bSygYVYD1mCYpEtx88EBDFPvVVpS
-         zt0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679009609;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=aOe0JtBICGgd0kHSmPmJseRqJi3KmhURQwliZoYk24Q=;
-        b=7UgQ02TfirlaV3cIWwRVRuJel+GNK8tng62R1D7Bmn7ZYdgvblC6tEkUhFH+TMzEKu
-         gHYJXi9oUTcH+pLtwJUwt5sObLdrPDBLZl+V9dUtr1Yw2T2C+pZhMvPEloG6D9JL8kA4
-         60YX6KinWwBHQOxiW3xPvTlgDJ0zcpu3F5/+XcfOh0DnRLtZOwKi1hVNDyQ8XKrT9VuA
-         eq4EV4kIC5xiZhfS+vBs8EhU5lmyZzJ6mOvwH65bsAOthgqnCBI/pJ5x04acJZWEFnjI
-         939wbdUoL8Xgo1XWqs0tjtY06xsaZnVP+5RRMex0pmRI9ErGZVAjZUmEJIDb8Z8/T+VO
-         lFqw==
-X-Gm-Message-State: AO0yUKUxJRudIH9IDvHBQmoFy7mPF1ZCBGrLB4I63mBh3dtOJr08YXcB
-        epNN1qTNZWWUEs0oeCdzQLLaklSgjYc=
-X-Google-Smtp-Source: AK7set85jjbcM461pGN9xA7RPC6Xk/0ACV0RwV5AcbXKt2AAsUAQMkVyDWdUZvCdRkOo6Ft3fxBzyw==
-X-Received: by 2002:a17:903:1c1:b0:1a0:42c0:b2af with SMTP id e1-20020a17090301c100b001a042c0b2afmr6533788plh.33.1679009608667;
-        Thu, 16 Mar 2023 16:33:28 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id j1-20020a170903024100b0019f3cc3fc99sm260900plh.16.2023.03.16.16.33.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Mar 2023 16:33:28 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Maxime Bizon <mbizon@freebox.fr>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229436AbjCPXuz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 19:50:55 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B672D56;
+        Thu, 16 Mar 2023 16:50:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679010652; x=1710546652;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=HYh2yjwxxolCh/KcrNvRu0dI0MlLh3G+ulItT32xy3w=;
+  b=R4e5UE61YVWrdYSwnNseilpRPqHF417yOaewHZ8XHKOHLWPunGU9+Jdf
+   r06AfBFAD9z+feER2dphpR3nj47+wQoGxett4QYrMPXIaQ7akABtlhS6U
+   9erL9xFPz2bWTyRa7ExzUb2S1T8mQ2H4MVoctRgBr3q4npwfx6eewi/A8
+   2ORYMJUxs7gOVwWYJKplSQT2zVHJoMfnnkHwHJZW4KRej9QezHM0mKSvx
+   zQ6omlSfN7B9bh+kX+R/JY6vivXOX4/+5hbrpPWe0CD33WtDgM3xCxLov
+   C95cX+qnUGulnSjcNzgxkUIwQfOSbWl46OIvVFamGmO0zrBDvImTufyUA
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10651"; a="317795084"
+X-IronPort-AV: E=Sophos;i="5.98,267,1673942400"; 
+   d="scan'208";a="317795084"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2023 16:50:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10651"; a="657367445"
+X-IronPort-AV: E=Sophos;i="5.98,267,1673942400"; 
+   d="scan'208";a="657367445"
+Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 16 Mar 2023 16:50:47 -0700
+Received: from kbuild by b613635ddfff with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pcxMs-0008ta-26;
+        Thu, 16 Mar 2023 23:50:46 +0000
+Date:   Fri, 17 Mar 2023 07:50:01 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>,
+        davem@davemloft.net
+Cc:     oe-kbuild-all@lists.linux.dev, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        Grant Likely <grant.likely@arm.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        linux-kernel@vger.kernel.org (open list),
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE)
-Subject: [PATCH v2 2/2] net: mdio: fix owner field for mdio buses registered using ACPI
-Date:   Thu, 16 Mar 2023 16:33:17 -0700
-Message-Id: <20230316233317.2169394-3-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230316233317.2169394-1-f.fainelli@gmail.com>
-References: <20230316233317.2169394-1-f.fainelli@gmail.com>
+        Leon Romanovsky <leon@kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Kees Cook <keescook@chromium.org>,
+        Christian Brauner <brauner@kernel.org>,
+        linux-arch@vger.kernel.org
+Subject: Re: [PATCH net-next 1/3] scm: add SO_PASSPIDFD and SCM_PIDFD
+Message-ID: <202303170733.ZQbJFE5x-lkp@intel.com>
+References: <20230316131526.283569-2-aleksandr.mikhalitsyn@canonical.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230316131526.283569-2-aleksandr.mikhalitsyn@canonical.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bus ownership is wrong when using acpi_mdiobus_register() to register an
-mdio bus. That function is not inline, so when it calls
-mdiobus_register() the wrong THIS_MODULE value is captured.
+Hi Alexander,
 
-CC: Maxime Bizon <mbizon@freebox.fr>
-Fixes: 803ca24d2f92 ("net: mdio: Add ACPI support code for mdio")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/mdio/acpi_mdio.c | 10 ++++++----
- include/linux/acpi_mdio.h    |  9 ++++++++-
- 2 files changed, 14 insertions(+), 5 deletions(-)
+Thank you for the patch! Yet something to improve:
 
-diff --git a/drivers/net/mdio/acpi_mdio.c b/drivers/net/mdio/acpi_mdio.c
-index d77c987fda9c..4630dde01974 100644
---- a/drivers/net/mdio/acpi_mdio.c
-+++ b/drivers/net/mdio/acpi_mdio.c
-@@ -18,16 +18,18 @@ MODULE_AUTHOR("Calvin Johnson <calvin.johnson@oss.nxp.com>");
- MODULE_LICENSE("GPL");
- 
- /**
-- * acpi_mdiobus_register - Register mii_bus and create PHYs from the ACPI ASL.
-+ * __acpi_mdiobus_register - Register mii_bus and create PHYs from the ACPI ASL.
-  * @mdio: pointer to mii_bus structure
-  * @fwnode: pointer to fwnode of MDIO bus. This fwnode is expected to represent
-+ * @owner: module owning this @mdio object.
-  * an ACPI device object corresponding to the MDIO bus and its children are
-  * expected to correspond to the PHY devices on that bus.
-  *
-  * This function registers the mii_bus structure and registers a phy_device
-  * for each child node of @fwnode.
-  */
--int acpi_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode)
-+int __acpi_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode,
-+			    struct module *owner)
- {
- 	struct fwnode_handle *child;
- 	u32 addr;
-@@ -35,7 +37,7 @@ int acpi_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode)
- 
- 	/* Mask out all PHYs from auto probing. */
- 	mdio->phy_mask = GENMASK(31, 0);
--	ret = mdiobus_register(mdio);
-+	ret = __mdiobus_register(mdio, owner);
- 	if (ret)
- 		return ret;
- 
-@@ -55,4 +57,4 @@ int acpi_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode)
- 	}
- 	return 0;
- }
--EXPORT_SYMBOL(acpi_mdiobus_register);
-+EXPORT_SYMBOL(__acpi_mdiobus_register);
-diff --git a/include/linux/acpi_mdio.h b/include/linux/acpi_mdio.h
-index 0a24ab7cb66f..8e2eefa9fbc0 100644
---- a/include/linux/acpi_mdio.h
-+++ b/include/linux/acpi_mdio.h
-@@ -9,7 +9,14 @@
- #include <linux/phy.h>
- 
- #if IS_ENABLED(CONFIG_ACPI_MDIO)
--int acpi_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode);
-+int __acpi_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode,
-+			    struct module *owner);
-+
-+static inline int
-+acpi_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *handle)
-+{
-+	return __acpi_mdiobus_register(mdio, handle, THIS_MODULE);
-+}
- #else /* CONFIG_ACPI_MDIO */
- static inline int
- acpi_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode)
+[auto build test ERROR on net-next/main]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Alexander-Mikhalitsyn/scm-add-SO_PASSPIDFD-and-SCM_PIDFD/20230316-214315
+patch link:    https://lore.kernel.org/r/20230316131526.283569-2-aleksandr.mikhalitsyn%40canonical.com
+patch subject: [PATCH net-next 1/3] scm: add SO_PASSPIDFD and SCM_PIDFD
+config: s390-buildonly-randconfig-r002-20230312 (https://download.01.org/0day-ci/archive/20230317/202303170733.ZQbJFE5x-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/41687b4ae0dcef1fdffd656e533f9f35214043d0
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Alexander-Mikhalitsyn/scm-add-SO_PASSPIDFD-and-SCM_PIDFD/20230316-214315
+        git checkout 41687b4ae0dcef1fdffd656e533f9f35214043d0
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=s390 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202303170733.ZQbJFE5x-lkp@intel.com/
+
+All errors (new ones prefixed by >>, old ones prefixed by <<):
+
+ERROR: modpost: "devm_platform_ioremap_resource" [drivers/dma/idma64.ko] undefined!
+>> ERROR: modpost: "pidfd_create" [net/unix/unix.ko] undefined!
+
 -- 
-2.34.1
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
