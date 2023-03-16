@@ -2,81 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C8306BCC27
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 11:12:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DBC76BCC20
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 11:11:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230296AbjCPKMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 06:12:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32824 "EHLO
+        id S230036AbjCPKLt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 06:11:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229560AbjCPKMA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 06:12:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC1A2B5FEB
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 03:11:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678961480;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eBYYYx6ebaSPMy4LYead5i1f9hXn4823DINswCsrSc8=;
-        b=Pqh4h9jblfSfE5EYOlcoggGCvmODNMhQLkCh3rV48bO9eCCX9BNNZYoOgIQceK6kTZxV+s
-        NlC8nIAQsAJ2uxCtccq3wpTWo3n0tZ2KCGhETArvkvBUCnX9ydZnADZYbZG8nx2uSoHSwz
-        MZggBcObaMWby6C/9RlV/sxHKlecQEc=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-60-DSeWHm7yPwK0YdFg1ZULjA-1; Thu, 16 Mar 2023 06:11:19 -0400
-X-MC-Unique: DSeWHm7yPwK0YdFg1ZULjA-1
-Received: by mail-wr1-f71.google.com with SMTP id y11-20020a056000168b00b002ce179d1b90so173234wrd.23
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 03:11:19 -0700 (PDT)
+        with ESMTP id S229991AbjCPKLq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 06:11:46 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0A5AB9513
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 03:11:44 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id y75-20020a25dc4e000000b00b4211cf2298so1357200ybe.5
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 03:11:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1678961504;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=DtSR8peTag+7FVObqwQG2UIK8AgoJoOOD5xOkww8fUg=;
+        b=Vqx1tPXZl7slipqjTj/RBU03HLDX+Kopxph+y1OCZLR+YOkoC9zMefkuqZfeoeoDi4
+         53pmTJmQKGEuof4fKjFvCwPBTfr7Bxd+NMNd6+//qDGXx7ZFPdj5lCNxadH3EI6asJpG
+         XpV66FfgOfNkrw//e6MPe8i+rt4ZU1o2rTTo+xa15oFO4V8alx/A8VY45iIniW+HoFWI
+         iJGcewU4inPIZWjZmJLBIInzScDWnXN/ACjC0c5biu4gwF8W7YbVIMFgXclrmynV+mQw
+         //62v7IwELmwLpPvCEDz7asq3imk9B+3F8QA6QMCPDBlDTrEl2IKQEZL9ZMZnQpwaYsU
+         CyAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678961478;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=eBYYYx6ebaSPMy4LYead5i1f9hXn4823DINswCsrSc8=;
-        b=ie9bi09wLT+BBuzAJrf/TUvheKjV6csqFwaAxNcQexTaVmFvqLrtSF2hRaYrkmbdH8
-         OBs6yzxGHbSnB6FwPZZxd/z+4la3d0CBYcUPylaLAgiyvGfkII6G/Kz9zOaO3glMw06e
-         YmZ7/f2wvDeO8/RMxXl3oMSeotqncOgbOSKXtzAOsSY6RoOXuKt2zQUjDrbIZzuX3MsJ
-         CizAM5LIM5jyMbqVgxXoGBVRX/pFBIkTVOvJ8TJ4DIGyrXA3bmnqV4FTEkYQs2Uz2jom
-         NoLy7RAwC7GLYlJzevBrQTvDXPNf2SstMTs1YW3r+x5WTblrOssCDU7c7STGgcfB575i
-         sZ7A==
-X-Gm-Message-State: AO0yUKVdw0t2woh37zdCeGwB/65c52+HQ+APF7wuK4gA87RBKUd8wwxT
-        Fco+3+nzeh+xCYPuAjYGXWj6xPce3rdUctq38y/R61MPrFP+uGAG3S6FuPQ+aUTmPG/qCZK+Obx
-        dWQoB1p6QPazMxP3S
-X-Received: by 2002:a05:600c:35cd:b0:3e9:f4c2:b604 with SMTP id r13-20020a05600c35cd00b003e9f4c2b604mr22373473wmq.24.1678961478530;
-        Thu, 16 Mar 2023 03:11:18 -0700 (PDT)
-X-Google-Smtp-Source: AK7set/Lu433zhP9PilHomJbmSQWYVXOQWWKmTm0C09FAmF8pzNNFzHUbJzlyQH+yr7BXNl3vtwXzw==
-X-Received: by 2002:a05:600c:35cd:b0:3e9:f4c2:b604 with SMTP id r13-20020a05600c35cd00b003e9f4c2b604mr22373453wmq.24.1678961478236;
-        Thu, 16 Mar 2023 03:11:18 -0700 (PDT)
-Received: from sgarzare-redhat (host-82-57-51-170.retail.telecomitalia.it. [82.57.51.170])
-        by smtp.gmail.com with ESMTPSA id o23-20020a05600c511700b003ed29b332b8sm5045142wms.35.2023.03.16.03.11.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Mar 2023 03:11:17 -0700 (PDT)
-Date:   Thu, 16 Mar 2023 11:11:15 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
-        eperezma@redhat.com, netdev@vger.kernel.org, stefanha@redhat.com,
-        linux-kernel@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org
-Subject: Re: [PATCH v2 2/8] vhost-vdpa: use bind_mm/unbind_mm device callbacks
-Message-ID: <CAGxU2F6Pa9Dar0MVvW=qUh0k30pdtbrSy_5u2NuREd8u-id=MA@mail.gmail.com>
-References: <20230302113421.174582-1-sgarzare@redhat.com>
- <20230302113421.174582-3-sgarzare@redhat.com>
- <CACGkMEttgd82xOxV8WLdSFdfhRLZn68tSaV4APSDh8qXxf4OEw@mail.gmail.com>
- <20230316083122.hliiktgsymrfpozy@sgarzare-redhat>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230316083122.hliiktgsymrfpozy@sgarzare-redhat>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        d=1e100.net; s=20210112; t=1678961504;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=DtSR8peTag+7FVObqwQG2UIK8AgoJoOOD5xOkww8fUg=;
+        b=3cAyTQdnhNk2tBdGLGBXFEEstDOs7jdJSjC1uv/aFIW8U0OP5vuicX7WfDIVBSohY5
+         sTETuloV98GcbnlU3tDLU29vG73zRcH0kVakzUAt6oZ3XQnlGVePit1hVCoV0AuctBZE
+         KUcKPXA4IhSQ1NfWSDjND8Ka6Jc06XVYAHoXKBBsfHeUDszwT4UMV44BHbh7U6sce14y
+         3XxYM0YaReyAGHzCRxW/quqIJzbMNJ+ZJIwWHYJiJ2RlQ7SyGOD0DS/cW11CCsZ+n8tf
+         6beP7j5ZD2qZiLFJeDq95K8h3lFpKnJevUh/oNxiDpg/IUk8IUJEAn3qis3bRwIuRygL
+         RfBg==
+X-Gm-Message-State: AO0yUKXgynFSE7DxMcK3zHf6ApW8Ns1uDLQgsYrqW0vsbPI2WMFSadZk
+        +V1uPcas7nH7+rTGEnLwfSdxvkXY0lbn4ezXaA==
+X-Google-Smtp-Source: AK7set+9Pv9ZTtKhvmWS/BG19Gkw6tJBJ4CR76H3uLrPj1yEY91L+ij06g5L1Yx+fy81h4n033fRdaJ4UZbF1eS/vg==
+X-Received: from howardchung-p920.tpe.corp.google.com ([2401:fa00:1:17:5470:81fd:9c7f:513a])
+ (user=howardchung job=sendgmr) by 2002:a25:9f0e:0:b0:b3b:fb47:8534 with SMTP
+ id n14-20020a259f0e000000b00b3bfb478534mr7994759ybq.5.1678961503826; Thu, 16
+ Mar 2023 03:11:43 -0700 (PDT)
+Date:   Thu, 16 Mar 2023 18:11:38 +0800
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.40.0.rc2.332.ga46443480c-goog
+Message-ID: <20230316181112.v3.1.I9113bb4f444afc2c5cb19d1e96569e01ddbd8939@changeid>
+Subject: [PATCH v3] Bluetooth: mgmt: Fix MGMT add advmon with RSSI command
+From:   Howard Chung <howardchung@google.com>
+To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org
+Cc:     chromeos-bluetooth-upstreaming@chromium.org,
+        Howard Chung <howardchung@google.com>,
+        Archie Pusaka <apusaka@chromium.org>,
+        Brian Gix <brian.gix@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -84,118 +74,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 16, 2023 at 9:31 AM Stefano Garzarella <sgarzare@redhat.com> wrote:
->
-> On Tue, Mar 14, 2023 at 11:48:33AM +0800, Jason Wang wrote:
-> >On Thu, Mar 2, 2023 at 7:34 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
-> >>
-> >> When the user call VHOST_SET_OWNER ioctl and the vDPA device
-> >> has `use_va` set to true, let's call the bind_mm callback.
-> >> In this way we can bind the device to the user address space
-> >> and directly use the user VA.
-> >>
-> >> The unbind_mm callback is called during the release after
-> >> stopping the device.
-> >>
-> >> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> >> ---
-> >>
-> >> Notes:
-> >>     v2:
-> >>     - call the new unbind_mm callback during the release [Jason]
-> >>     - avoid to call bind_mm callback after the reset, since the device
-> >>       is not detaching it now during the reset
-> >>
-> >>  drivers/vhost/vdpa.c | 30 ++++++++++++++++++++++++++++++
-> >>  1 file changed, 30 insertions(+)
-> >>
-> >> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> >> index dc12dbd5b43b..1ab89fccd825 100644
-> >> --- a/drivers/vhost/vdpa.c
-> >> +++ b/drivers/vhost/vdpa.c
-> >> @@ -219,6 +219,28 @@ static int vhost_vdpa_reset(struct vhost_vdpa *v)
-> >>         return vdpa_reset(vdpa);
-> >>  }
-> >>
-> >> +static long vhost_vdpa_bind_mm(struct vhost_vdpa *v)
-> >> +{
-> >> +       struct vdpa_device *vdpa = v->vdpa;
-> >> +       const struct vdpa_config_ops *ops = vdpa->config;
-> >> +
-> >> +       if (!vdpa->use_va || !ops->bind_mm)
-> >> +               return 0;
-> >> +
-> >> +       return ops->bind_mm(vdpa, v->vdev.mm);
-> >> +}
-> >> +
-> >> +static void vhost_vdpa_unbind_mm(struct vhost_vdpa *v)
-> >> +{
-> >> +       struct vdpa_device *vdpa = v->vdpa;
-> >> +       const struct vdpa_config_ops *ops = vdpa->config;
-> >> +
-> >> +       if (!vdpa->use_va || !ops->unbind_mm)
-> >> +               return;
-> >> +
-> >> +       ops->unbind_mm(vdpa);
-> >> +}
-> >> +
-> >>  static long vhost_vdpa_get_device_id(struct vhost_vdpa *v, u8 __user *argp)
-> >>  {
-> >>         struct vdpa_device *vdpa = v->vdpa;
-> >> @@ -711,6 +733,13 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
-> >>                 break;
-> >>         default:
-> >>                 r = vhost_dev_ioctl(&v->vdev, cmd, argp);
-> >> +               if (!r && cmd == VHOST_SET_OWNER) {
-> >> +                       r = vhost_vdpa_bind_mm(v);
-> >> +                       if (r) {
-> >> +                               vhost_dev_reset_owner(&v->vdev, NULL);
-> >> +                               break;
-> >> +                       }
-> >> +               }
-> >
-> >Nit: is it better to have a new condition/switch branch instead of
-> >putting them under default? (as what vring_ioctl did).
->
-> Yep, I agree!
->
-> I'll change it.
+The MGMT command: MGMT_OP_ADD_ADV_PATTERNS_MONITOR_RSSI uses variable
+length argument. This causes host not able to register advmon with rssi.
 
-Or maybe I can simply add `case VHOST_SET_OWNER` on this switch and call
-vhost_dev_set_owner() and vhost_vdpa_bind_mm(), I mean something like
-this:
+This patch has been locally tested by adding monitor with rssi via
+btmgmt on a kernel 6.1 machine.
 
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index 331d4a718bf6..20250c3418b2 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -731,15 +731,16 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
-        case VHOST_VDPA_RESUME:
-                r = vhost_vdpa_resume(v);
-                break;
-+       case VHOST_SET_OWNER:
-+               r = vhost_dev_set_owner(d);
-+               if (r)
-+                       break;
-+               r = vhost_vdpa_bind_mm(v);
-+               if (r)
-+                       vhost_dev_reset_owner(d, NULL);
-+               break;
-        default:
-                r = vhost_dev_ioctl(&v->vdev, cmd, argp);
--               if (!r && cmd == VHOST_SET_OWNER) {
--                       r = vhost_vdpa_bind_mm(v);
--                       if (r) {
--                               vhost_dev_reset_owner(&v->vdev, NULL);
--                               break;
--                       }
--               }
-                if (r == -ENOIOCTLCMD)
-                        r = vhost_vdpa_vring_ioctl(v, cmd, argp);
-                break;
+Reviewed-by: Archie Pusaka <apusaka@chromium.org>
+Fixes: b338d91703fa ("Bluetooth: Implement support for Mesh")
+Signed-off-by: Howard Chung <howardchung@google.com>
+---
 
-WDYT?
+Changes in v3:
+- Moved commit-notes to commit message
+- Fixed a typo
 
-Thanks,
-Stefano
+Changes in v2:
+- Fixed git user name
+- Included commit notes for the test step.
+
+ net/bluetooth/mgmt.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index 39589f864ea7..249dc6777fb4 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -9357,7 +9357,8 @@ static const struct hci_mgmt_handler mgmt_handlers[] = {
+ 	{ add_ext_adv_data,        MGMT_ADD_EXT_ADV_DATA_SIZE,
+ 						HCI_MGMT_VAR_LEN },
+ 	{ add_adv_patterns_monitor_rssi,
+-				   MGMT_ADD_ADV_PATTERNS_MONITOR_RSSI_SIZE },
++				   MGMT_ADD_ADV_PATTERNS_MONITOR_RSSI_SIZE,
++						HCI_MGMT_VAR_LEN },
+ 	{ set_mesh,                MGMT_SET_MESH_RECEIVER_SIZE,
+ 						HCI_MGMT_VAR_LEN },
+ 	{ mesh_features,           MGMT_MESH_READ_FEATURES_SIZE },
+-- 
+2.40.0.rc2.332.ga46443480c-goog
 
