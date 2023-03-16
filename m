@@ -2,121 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 30A2A6BD4D9
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 17:14:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 860306BD506
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 17:17:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230152AbjCPQOE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 12:14:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59198 "EHLO
+        id S230094AbjCPQRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 12:17:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230146AbjCPQNj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 12:13:39 -0400
-Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2043.outbound.protection.outlook.com [40.107.105.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3785D5156;
-        Thu, 16 Mar 2023 09:13:24 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=llu8J2tz7pTgkluYq7yPD2v8wf89byVUAUMtsGC8G0eqLJjevOFZaOGEuj2rG7KpD0MByhQVTsyoPMBGLflLkYK0vg6k/QgzwCWfXden7J6OHTcit6+R7r5+IHKGvkZwS0oYz68MlBPvolr3yiD7olC5ejG6u1SnTek6DGzY3ZBQ2ahGsYhMoQEL8uzGw+VyApnYbOx/vT9z1YyLxW2YnnSAiy8c53m3HQg0Bb47QpoccBHxeP1vNJaUqddJC0Jd3r81pwEsClvKswGY50WTyERppulpK6lQi081PEiZzhbeUhd4dnbaQdVjVpjWzMkGW1xoeqWfCxRv/VFUnwh+AA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Xt5bhDjpXQPCZ2eBjXwCkM9QdeQ8yMdKtr9qsQqOA9M=;
- b=i7SaBDZHltP4SuELnmzGxi8VVvevSYMsvv+LCD31j8Mwva+qRAothacRGXJeD0Cco5A5E6oNHJzxGkUu3kuV5E2EPM9BJIsH8CtRcukl+w/7YniIWkT++RWPPYID5vVChCQAasiH6SVkYvP+CQsw2fBbl3f3AN53NikSAZUt1y+rqd941tNoJMaRBfny1LF7AvDXJAkXOS3Y5uCgmqO5nKuxASqLv+s/RuZgBnRZSy3iLD3fodohaKmYhB7mHKHAS/0F6DV8h0qkXw8ZqGrVwWS+A/6rZQZaoOk9fXvPYlK6Xvz3VV1gXfrcvyTRBPZyRYf3MCklOze7RWjNjtDxZQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Xt5bhDjpXQPCZ2eBjXwCkM9QdeQ8yMdKtr9qsQqOA9M=;
- b=NUD+X1MB9iDveT2DrYDxxqunmy/yqOIIoEmzbpgWJM+CiqNARvqIbBvDjXDUTplp95T8yAyFTTmHIZ76IenXYTZKafHzNGtnfFNDJalAyNHoePcTf8rwpOFzLcPN8g+hK6gIv2ZwEWS9uUq4DK/1nTONHc94ZeOLi4exaYaM/p0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
- by AS8PR04MB7861.eurprd04.prod.outlook.com (2603:10a6:20b:2a9::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.30; Thu, 16 Mar
- 2023 16:13:13 +0000
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::29a3:120c:7d42:3ca8]) by AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::29a3:120c:7d42:3ca8%7]) with mapi id 15.20.6178.031; Thu, 16 Mar 2023
- 16:13:13 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Marek Vasut <marex@denx.de>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        linux-kernel@vger.kernel.org
-Subject: [RFC/RFT PATCH net-next 4/4] net: dsa: microchip: remove unused dev->dev_ops->phylink_mac_config()
-Date:   Thu, 16 Mar 2023 18:12:50 +0200
-Message-Id: <20230316161250.3286055-5-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230316161250.3286055-1-vladimir.oltean@nxp.com>
-References: <20230316161250.3286055-1-vladimir.oltean@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM3PR05CA0088.eurprd05.prod.outlook.com
- (2603:10a6:207:1::14) To AM0PR04MB6452.eurprd04.prod.outlook.com
- (2603:10a6:208:16d::21)
+        with ESMTP id S229952AbjCPQRX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 12:17:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 379ECA2C1F
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 09:15:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1678983331;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=mlukPFgMuUiNDYUja4zCoHJNdHul/iInVFC/mNyQV8Q=;
+        b=WeIDxR7eS8wn2u9RAe3uYDIPjTN3fa4/3TeEbrgNYTSA4OJ8lRDo/CcY0j4qAa3S/r8Fqy
+        gBe/su+wJTNYG82KbEpOSbu1QSG6q6LdQAXuO10fQiRi8H76X/6IMfuPWcTWQZ0gwTSPb/
+        c2KGZl4aWeseV6gwMI8XUeq9odNrW3E=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-263-bgB-8JGpNBC_vRhFeoWsjQ-1; Thu, 16 Mar 2023 12:15:30 -0400
+X-MC-Unique: bgB-8JGpNBC_vRhFeoWsjQ-1
+Received: by mail-qv1-f71.google.com with SMTP id j13-20020a0cc34d000000b005a37f812e48so1312635qvi.12
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 09:15:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678983329;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mlukPFgMuUiNDYUja4zCoHJNdHul/iInVFC/mNyQV8Q=;
+        b=s/IEOc9CIitO1zPMbWvJ2qbhQQQyK5EQp9jFJ6Hm5r7DAEVQt7l+lIYB6ZkMnDe3ch
+         9pxGMxhmj1o9NCgwobMcFbfb+9eZPY/biZQ5HHb9Qgkgj0e8O1Y9El6V0sAKYINtjUxN
+         IoPU03QfESEKA8fuZ2vE+qbTthhNQwbFy34RuDMrrOB23A/qnR2ZVReipEb1tJgNm/+q
+         kAWHVnc+TAiUgvz72smpLN3Bs+l+b0n9ZYOQrEsgK39Bn3VWLCdipd/RzxaFpL6AjjEv
+         7YVP3Qo+FeS7zGNEL3wS5yX0/Ujr4OLV4wSfA86GP0L0S5UkA7NPXaRmkXTrPaBGjHqv
+         uIFw==
+X-Gm-Message-State: AO0yUKU5D7R0WXyONQVFNFHJhbB+weYJUnUd6W4ucAnY049C4KHZ3VMJ
+        qfg+uHg1+chZsE7Z6FUbuVRMKpdYMt1DZV6AL0/R14zUsrKTK2hFlVyax71WSH2bjCcjmifE8fA
+        w2pW7Qph5ce/TRdH7
+X-Received: by 2002:a05:6214:2428:b0:574:8ef8:89d2 with SMTP id gy8-20020a056214242800b005748ef889d2mr39824762qvb.38.1678983329414;
+        Thu, 16 Mar 2023 09:15:29 -0700 (PDT)
+X-Google-Smtp-Source: AK7set+of7na8F1dFKLndAwQGwakPmWiDEiDVwrlTO9yupX5AyjFyMqZe903mbwQxlEn+ZQoYaB20w==
+X-Received: by 2002:a05:6214:2428:b0:574:8ef8:89d2 with SMTP id gy8-20020a056214242800b005748ef889d2mr39824676qvb.38.1678983329027;
+        Thu, 16 Mar 2023 09:15:29 -0700 (PDT)
+Received: from halaney-x13s (104-53-165-62.lightspeed.stlsmo.sbcglobal.net. [104.53.165.62])
+        by smtp.gmail.com with ESMTPSA id q16-20020a05620a025000b00745df9edd7csm4841721qkn.91.2023.03.16.09.15.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Mar 2023 09:15:28 -0700 (PDT)
+Date:   Thu, 16 Mar 2023 11:15:25 -0500
+From:   Andrew Halaney <ahalaney@redhat.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, agross@kernel.org,
+        andersson@kernel.org, konrad.dybcio@linaro.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, vkoul@kernel.org,
+        bhupesh.sharma@linaro.org, mturquette@baylibre.com,
+        sboyd@kernel.org, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        mcoquelin.stm32@gmail.com, richardcochran@gmail.com,
+        linux@armlinux.org.uk, veekhee@apple.com,
+        tee.min.tan@linux.intel.com, mohammad.athari.ismail@intel.com,
+        jonathanh@nvidia.com, ruppala@nvidia.com, bmasney@redhat.com,
+        andrey.konovalov@linaro.org, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, ncai@quicinc.com,
+        jsuraj@qti.qualcomm.com, hisunil@quicinc.com
+Subject: Re: [PATCH net-next 01/11] dt-bindings: net: snps,dwmac: Update
+ interrupt-names
+Message-ID: <20230316161525.fwzfyj3fhekfwafd@halaney-x13s>
+References: <20230313165620.128463-1-ahalaney@redhat.com>
+ <20230313165620.128463-2-ahalaney@redhat.com>
+ <d4831176-c6f1-5a9b-3086-23d82f1f05a6@linaro.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|AS8PR04MB7861:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5f49b10f-d3bb-443b-ce61-08db263957bc
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lvnbyk8wy6U0gqIOw34yMF1p0iWLBe6C91B02yDtNeS5cKGzRJ2Filodpd6FQYDT2dh62kh6AprquA/nT6P+ghbWzWmqvfw7pytz87AmPTbJS0oxmylEPIOzvdTtVpI7UbmcdnzFGknefr2ZUUXwMYXFRzE/D1CoSlsOi2GFCP4U8uqBkrPGwx+r7vRU3LxJwvCWKh7BSY+/mE+kJWgoLhcDE8Nh4egq+pLXs66NjRwSD/Zde3AwL9eKTC+mxgVGbxNfCZM1pj6yByE3EgQ8IvwJMCBKCNDXRbTKBoT6FGwK4N1MVdJww63tRqcgRiOSKn1Ih1VngBVFyCI1Qr1tRZ6dUdtY56ykA/Wp7P7QcHEkS3GAGfjlx66rifzSCSSnaQXDp6m4aP2D4HI1zTz68Khn4bsDQATJOBrl3vbFZlfS2GPQnYNCURzpsE9IR2v/9+KmJJ2OJhzD385CDhQSn5/R6+27f6ZUPE1fnnGAHc0qNqFKBjqXyCoa1ZwEzVOgxw67GpJadYoAT/nLDItUEv3IHGgU2TxNdcXxYq9xZdfVlmcT12HmGnmwOS17MN7tY/p7zMCx6SCUpffK5Eo037CwqbRyv5yhvIgE+39VyVhY86DMlECPo3nmvGJCTarDhVzhY0lLigk0h0QxBAKQ/j7aOwnOSehb+3AfYnIkK9SwuEUMK6jxRHOi+iP0zZ90dx3Pi0IU0tmh2dBQ6sxJRg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(346002)(39860400002)(366004)(396003)(136003)(451199018)(36756003)(86362001)(38350700002)(38100700002)(2906002)(5660300002)(41300700001)(8936002)(44832011)(7416002)(4326008)(6512007)(66476007)(1076003)(6506007)(26005)(186003)(2616005)(6666004)(83380400001)(316002)(54906003)(6916009)(8676002)(66946007)(6486002)(52116002)(478600001)(66556008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ATR4oZk6fD+6PhcFkF8ux6UJtn1n94tgPxFV9NFmzJk/UIDHwMi4VzBhzMNQ?=
- =?us-ascii?Q?f0iaS4Xe0vmIthvsouvxWpem75q/z00U9ASafFQAwmA8yf6sKBFZ+5LzZ/Vx?=
- =?us-ascii?Q?2Ot2KKWb54nhUyDm0luuKJanRAXjTMxIAKs0uhhOM2ECjy60E/VpUmAUOK2T?=
- =?us-ascii?Q?p133cheLyT7b6LdGncQPok5DuDt4p3QWr/rHP3CIgQrZWoY5ZliZiPKZPLVR?=
- =?us-ascii?Q?XpO1u8WZQqhDCuROx037/mBRz3EAoYHA4sOfoBeRfUOS0DoEPqW/9m/vd+ua?=
- =?us-ascii?Q?ftzTwychwF1kFnx2SdcK+A1biTrGLlctZdjZu2ZhdlRCm+bglnuExFooiEqO?=
- =?us-ascii?Q?1ruYTCLoj0J+szRZ3smA1pfuKw7b8QGj3W6bZnWUbLxT5p/9RKfw1UGj40N/?=
- =?us-ascii?Q?Qgg9u48t2QxQO74SrWGqnyGsvVj7/Fezs6xHQ50HKaQqwIvss6VWmaR7lIkv?=
- =?us-ascii?Q?QCGDdEstVvOlUNM6hU36MbAfcfVLj5GQqtKjKQpTKCioV8CkudTomRLiCPVu?=
- =?us-ascii?Q?ExrFVULfbk1uRJT9UD8coWGskmn9sisz6l50DxdV/c3kgI9ymnR1kmuQlIqh?=
- =?us-ascii?Q?VlF/T1VfmVOZByvO41t76gK8fK3Mb0xD5fvWyFUbQ6clktWplDpuCBm4c1ee?=
- =?us-ascii?Q?FQ4VJCeQVsS/rOjaOF+w314jt0Ob/O4lhdYmnldBHdAG5vgDzp0Vko//3cBz?=
- =?us-ascii?Q?y+A2M0q/vJj1lduDVVf3GfYn1F93cWIavebUvat5Zl7FT31PXbAzXM7hvp05?=
- =?us-ascii?Q?wkk4rtkeSvrlJKoslB3NQDt6XkbdBKChIc2GlHxld7WuUUCyNMC+af17Vh8r?=
- =?us-ascii?Q?sxF7pdMViw198sYWgc6rkG7oXsCXwYZJ6zP/9NMph/dDZrKyvAaTYld/JYwC?=
- =?us-ascii?Q?9uIP1CsXqdIqKnD/6Kd4j4Rt64Zmzma2+SyqGpEqlrzPrjTxx1aUCLVZPrHk?=
- =?us-ascii?Q?TqGdctNjEyadeE08HmNgD+FdKiAam1dsPhb0mgYOUhvVM6GpyeXiKhfw6Eo3?=
- =?us-ascii?Q?e8FeDW9hiGfS5As37pSF345trVMCJ9vlfMnSGuTIHAcd0KCJtJ5/PPZgnp/E?=
- =?us-ascii?Q?dmFYXDLdvpz6NJ98ZIUjebTKxzDs3ExVWAE20lj5lm6Z1bFnvjfjxRbS8Z5s?=
- =?us-ascii?Q?4vrkRvTuzcYO0aExwcPpt7cz1KrfrTr75/rd/NnOO69Q3AnhCIVrpvZGYW8p?=
- =?us-ascii?Q?oQXMWTYobpG7+umMykVEv6lXHOcmiCZbQbyY1sBwBIqC1CPjBlIcVyskroVI?=
- =?us-ascii?Q?WKVGeXacKndf5jZK4EcohJz+uC7TkfnsCCnUd5mjed/9ZK34M8HM6VlvkZ1k?=
- =?us-ascii?Q?XOJz28guFxEnnjpu+eT3dnrETddzJpjvocAsNOvadcwZGPJ6YOyRSvM787Y1?=
- =?us-ascii?Q?1Sy5IB+C/Z99FbRkbui2mGzXEq2MraNcekO+ItbGQ8zzNjj63YuwugzHSdCs?=
- =?us-ascii?Q?e6AXc6d2g4FOAGBmC5Ix1TVkGUymqJacEMnkpzpYCHj852u008bp3Z4hSbsV?=
- =?us-ascii?Q?Js5qbLThr3F/LMW01BdCQz56SOGjKyJZIO9QLeX5K/EF3r1yxlR17Yr+1aBU?=
- =?us-ascii?Q?U4g/2P+7EHQu2v+2oNwkmJfYH0Waji7PFQ9ZERGNareBW0tAHjgm1cHRbwgl?=
- =?us-ascii?Q?JA=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5f49b10f-d3bb-443b-ce61-08db263957bc
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2023 16:13:13.5039
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: M4QhIrUYIBErMVLtGK4r1PzZ6ENYy+mrWZGyExfR4/ziOZhnhshX7ju29zcXe6DCAeiJCbtqVmEH3VEUqeunpA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7861
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d4831176-c6f1-5a9b-3086-23d82f1f05a6@linaro.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -124,48 +95,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The history is that Arun first added a phylink_mac_config()
-implementation for lan937x_dev_ops in commit a0cb1aa43825 ("net: dsa:
-microchip: lan937x: add phylink_mac_config support"), then in commit
-f3d890f5f90e ("net: dsa: microchip: add support for phylink mac
-config"), that implementation became common for all switches, but the
-dev_ops->phylink_mac_config() function pointer remained there, even
-though there is no switch-specific handling anymore.
+On Thu, Mar 16, 2023 at 08:13:24AM +0100, Krzysztof Kozlowski wrote:
+> On 13/03/2023 17:56, Andrew Halaney wrote:
+> > From: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+> >
+> > As commit fc191af1bb0d ("net: stmmac: platform: Fix misleading
+> > interrupt error msg") noted, not every stmmac based platform
+> > makes use of the 'eth_wake_irq' or 'eth_lpi' interrupts.
+> >
+> > So, update the 'interrupt-names' inside 'snps,dwmac' YAML
+> > bindings to reflect the same.
+> >
+> > Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> > Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+> > Signed-off-by: Andrew Halaney <ahalaney@redhat.com>
+> > ---
+> >
+> > I picked this up from:
+> >		https://lore.kernel.org/netdev/20220929060405.2445745-2-bhupesh.sharma@linaro.org/
+> > No changes other than collecting the Acked-by.
+> >
+> >  Documentation/devicetree/bindings/net/snps,dwmac.yaml | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > index 16b7d2904696..52ce14a4bea7 100644
+> > --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > @@ -105,8 +105,8 @@ properties:
+> >      minItems: 1
+> >      items:
+> >        - const: macirq
+> > -      - const: eth_wake_irq
+> > -      - const: eth_lpi
+> > +      - enum: [eth_wake_irq, eth_lpi]
+> > +      - enum: [eth_wake_irq, eth_lpi]
+>
+> I acked it before but this is not correct. This should be:
+> +      - enum: [eth_wake_irq, eth_lpi]
+> +      - enum: eth_lpi
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/dsa/microchip/ksz_common.c | 3 ---
- drivers/net/dsa/microchip/ksz_common.h | 3 ---
- 2 files changed, 6 deletions(-)
+Would
++      - enum: [eth_wake_irq, eth_lpi]
++      - const: eth_lpi
+be more appropriate? With the suggested change above I get the following
+error, but with the above things seem to work as I expect:
 
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 9bc26c5da254..421e1212b210 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -2894,9 +2894,6 @@ static void ksz_phylink_mac_config(struct dsa_switch *ds, int port,
- 
- 	ksz_set_xmii(dev, port, state->interface);
- 
--	if (dev->dev_ops->phylink_mac_config)
--		dev->dev_ops->phylink_mac_config(dev, port, mode, state);
--
- 	if (dev->dev_ops->setup_rgmii_delay)
- 		dev->dev_ops->setup_rgmii_delay(dev, port);
- }
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 760e5f21faa1..618154f3c894 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -378,9 +378,6 @@ struct ksz_dev_ops {
- 	int (*change_mtu)(struct ksz_device *dev, int port, int mtu);
- 	void (*freeze_mib)(struct ksz_device *dev, int port, bool freeze);
- 	void (*port_init_cnt)(struct ksz_device *dev, int port);
--	void (*phylink_mac_config)(struct ksz_device *dev, int port,
--				   unsigned int mode,
--				   const struct phylink_link_state *state);
- 	void (*setup_rgmii_delay)(struct ksz_device *dev, int port);
- 	int (*tc_cbs_set_cinc)(struct ksz_device *dev, int port, u32 val);
- 	void (*config_cpu_port)(struct dsa_switch *ds);
--- 
-2.34.1
+    (dtschema) ahalaney@halaney-x13s ~/git/redhat/stmmac (git)-[stmmac|rebase-i] % git diff HEAD~
+    diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+    index 16b7d2904696..ca199a17f83d 100644
+    --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+    +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+    @@ -105,8 +105,8 @@ properties:
+         minItems: 1
+         items:
+           - const: macirq
+    -      - const: eth_wake_irq
+    -      - const: eth_lpi
+    +      - enum: [eth_wake_irq, eth_lpi]
+    +      - enum: eth_lpi
+
+       clocks:
+         minItems: 1
+    (dtschema) ahalaney@halaney-x13s ~/git/redhat/stmmac (git)-[stmmac|rebase-i] % make dt_binding_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/net/snps,dwmac.yaml
+      DTEX    Documentation/devicetree/bindings/net/snps,dwmac.example.dts
+      LINT    Documentation/devicetree/bindings
+      CHKDT   Documentation/devicetree/bindings/processed-schema.json
+    /home/ahalaney/git/redhat/stmmac/Documentation/devicetree/bindings/net/snps,dwmac.yaml: properties:interrupt-names:items: 'anyOf' conditional failed, one must be fixed:
+        [{'const': 'macirq'}, {'enum': ['eth_wake_irq', 'eth_lpi']}, {'enum': 'eth_lpi'}] is not of type 'object', 'boolean'
+        'eth_lpi' is not of type 'array'
+        from schema $id: http://json-schema.org/draft-07/schema#
+    /home/ahalaney/git/redhat/stmmac/Documentation/devicetree/bindings/net/snps,dwmac.yaml: properties:interrupt-names:items: 'oneOf' conditional failed, one must be fixed:
+        [{'const': 'macirq'}, {'enum': ['eth_wake_irq', 'eth_lpi']}, {'enum': 'eth_lpi'}] is not of type 'object'
+        'eth_lpi' is not of type 'array'
+        from schema $id: http://devicetree.org/meta-schemas/keywords.yaml#
+    /home/ahalaney/git/redhat/stmmac/Documentation/devicetree/bindings/net/snps,dwmac.yaml: properties:interrupt-names:items: 'oneOf' conditional failed, one must be fixed:
+        [{'const': 'macirq'}, {'enum': ['eth_wake_irq', 'eth_lpi']}, {'enum': 'eth_lpi'}] is not of type 'object'
+        'eth_lpi' is not of type 'array'
+        from schema $id: http://devicetree.org/meta-schemas/string-array.yaml#
+      SCHEMA  Documentation/devicetree/bindings/processed-schema.json
+    /home/ahalaney/git/redhat/stmmac/Documentation/devicetree/bindings/net/snps,dwmac.yaml: ignoring, error in schema: properties: interrupt-names: items
+      DTC_CHK Documentation/devicetree/bindings/net/snps,dwmac.example.dtb
+
+Thanks,
+Andrew
 
