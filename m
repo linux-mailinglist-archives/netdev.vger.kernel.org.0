@@ -2,75 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D6CB6BCB4D
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 10:45:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDBD36BCB4E
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 10:45:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229489AbjCPJpt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 05:45:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46466 "EHLO
+        id S229678AbjCPJpu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 05:45:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229669AbjCPJpr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 05:45:47 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34CA0132C1
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 02:45:40 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id v196so1101410ybe.9
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 02:45:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112; t=1678959939;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=PL0tQXf5SFCsGKBMuc8bU2oCMePhl+bBRd8wAwAZ5XA=;
-        b=T7Vq9U2jhaMBYnMKzxU9JoOzqhwzpnMHSsuYU6GCzR2pYojcaXm4aQnvmJlZ7Lgaa7
-         9/flfJLCKQfoljq8U51RaA98EhAiwk3HvBavEcZtZ88XEYQcu6c/EhZ2vj/7qvKtLBj6
-         2UxKroOaUiXJPHYrevbDz1VZGOZrP2Gu10nR/XQu8eJOd31H1VVmWfyzGKUy+Ms8z5zK
-         /+QhRFnkG1M12Xg8p3PLziv3A+NMagngJmU0Ro+dV3zjM5/nwDYREC4+1riJ9cpSYR2s
-         7ZBGx3u1fBRFumvMjXTG/37QkD519fYrm7d2uXzIxDOJAU2n9YYwidpzcYerhyFYIrB4
-         BL6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678959939;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=PL0tQXf5SFCsGKBMuc8bU2oCMePhl+bBRd8wAwAZ5XA=;
-        b=urRTj1GEpPdJKQYbAh1vhumqFfHit4ha2zordqTPnpSiA6xw6LKqIrkTPyeQQdhGQN
-         P+aqYuWs4I7bg3T4JOK6LBkvnuZ30FLv20b/VrQIS0qHl4jG6qPez/kcvZveu7nkX6gR
-         Ci9xpbFWrbFzHkfgI4e4ZHmCBhakWWXaF7Fgep8HIsNPye4uTBu3rKU7olaJvYXUGdw3
-         uXA/JTwa7MNb1Lx53C2HgkytkanDvb2QXE2LVqtHcYgPIF4RGoB/+J15BHlKRJ1eZRQO
-         CduZ1q3McVEnJf5ONkOLRBblS+0zDJooccl3Th3HoarHMvaaiWaTxI0nobeaWV96Tma1
-         fzUA==
-X-Gm-Message-State: AO0yUKWkM2fBs6Q1FSjq+7AS9plevyU4PtXD19XnhvuDMV8qp7W6YjaS
-        +l0r5SwRkUl0EqUI4Upk3hLYA0vYmXwg9bXmPchzag==
-X-Google-Smtp-Source: AK7set80xJrXTllzuta4NMY7WbV3u2cfRrAAofd5p2sAz+McWIdxP+QTUmfMy9XFmL3j0ednaHAlcofioNvLvyH/Vig=
-X-Received: by 2002:a05:6902:208:b0:acd:7374:f154 with SMTP id
- j8-20020a056902020800b00acd7374f154mr28011335ybs.7.1678959939479; Thu, 16 Mar
- 2023 02:45:39 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230316033753.2320557-1-liuhangbin@gmail.com> <ZBKTPrBONJwvm+rP@Laptop-X1>
-In-Reply-To: <ZBKTPrBONJwvm+rP@Laptop-X1>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Thu, 16 Mar 2023 05:45:28 -0400
-Message-ID: <CAM0EoMkytZ26ZafxKBG3-EpXow_nWyrxye18Prr8JQ-VTVovpg@mail.gmail.com>
-Subject: Re: [PATCHv2 net 0/2] net/sched: fix parsing of TCA_EXT_WARN_MSG for
- tc action
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
+        with ESMTP id S229802AbjCPJps (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 05:45:48 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B40C1353B
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 02:45:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1678959946; x=1710495946;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=93jy34U5TuZc1a5Uypf44JZDiKCAWI+BdGILjHBTsKI=;
+  b=NdvmRTZ8VoIPu/+o8R4vHvrIxRslQPyZLWsY+Gpp3uKCFi8SdsoYhhm1
+   NueeJepkIzbcxGSDiKgXHhoTitl0dOfjlaA1NCiUBvmg+9vmZlyf929ED
+   l81glz9aXPVen096/6Rl+l+tqr/TV9IwXhcHEesg43wf4jxSIfyDKeg57
+   eERQOX7w1ZeWBFe05KTiW+tb0TxTJHcGspbYkQ/hnwz6RsrSZ7bZQ4Ii7
+   2ner5NKkjv4lGQ85yNsM4VOT8uFVKVUggQ8tF8Jk1vyMld5PJstVcTj4/
+   pcgw1017F5Y145zmsf8gPKvU5t5ScQ3OKMPW0Et2RXmhb6HbNcxYfYemp
+   A==;
+X-IronPort-AV: E=Sophos;i="5.98,265,1673938800"; 
+   d="scan'208";a="205709981"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Mar 2023 02:45:45 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Thu, 16 Mar 2023 02:45:44 -0700
+Received: from den-her-m31857h.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.21 via Frontend Transport; Thu, 16 Mar 2023 02:45:41 -0700
+Message-ID: <27ba7f8d0d1694b792a917bf5d9d9d8e9047686a.camel@microchip.com>
+Subject: Re: [PATCH net-next 2/2] net: pcs: lynx: don't print an_enabled in
+ pcs_get_state()
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jonathan McDowell <noodles@earth.li>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+CC:     Heiner Kallweit <hkallweit1@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Pedro Tammela <pctammela@mojatatu.com>,
-        Marcelo Leitner <mleitner@redhat.com>,
-        Phil Sutter <psutter@redhat.com>
+        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>
+Date:   Thu, 16 Mar 2023 10:45:40 +0100
+In-Reply-To: <E1pcSOv-00DiAu-2D@rmk-PC.armlinux.org.uk>
+References: <ZBHaQDM+G/o/UW3i@shell.armlinux.org.uk>
+         <E1pcSOv-00DiAu-2D@rmk-PC.armlinux.org.uk>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+User-Agent: Evolution 3.36.5-0ubuntu1 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,27 +71,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 15, 2023 at 11:55=E2=80=AFPM Hangbin Liu <liuhangbin@gmail.com>=
- wrote:
->
-> On Thu, Mar 16, 2023 at 11:37:51AM +0800, Hangbin Liu wrote:
-> > In my previous commit 0349b8779cc9 ("sched: add new attr TCA_EXT_WARN_M=
-SG
-> > to report tc extact message") I didn't notice the tc action use differe=
-nt
-> > enum with filter. So we can't use TCA_EXT_WARN_MSG directly for tc acti=
-on.
-> >
-> > Let's rever the previous fix 923b2e30dc9c ("net/sched: act_api: move
-> > TCA_EXT_WARN_MSG to the correct hierarchy") and add a new
-> > TCA_ROOT_EXT_WARN_MSG for tc action specifically.
->
-> Sigh. Sorry I sent the mail too quick and forgot to add
->
-> Reported-and-tested-by: Davide Caratti <dcaratti@redhat.com>
+Hi Russell,
 
-For next time: instead of saying in the commit message "suggested by
-foo" specify it using "suggested-by: foo" semantics.
+On Wed, 2023-03-15 at 14:46 +0000, Russell King (Oracle) wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> an_enabled will be going away, and in any case, pcs_get_state() should
+> not be updating this member. Remove the print.
+> 
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> ---
+>  drivers/net/pcs/pcs-lynx.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/pcs/pcs-lynx.c b/drivers/net/pcs/pcs-lynx.c
+> index 3903f3baba2b..622c3de3f3a8 100644
+> --- a/drivers/net/pcs/pcs-lynx.c
+> +++ b/drivers/net/pcs/pcs-lynx.c
+> @@ -112,11 +112,11 @@ static void lynx_pcs_get_state(struct phylink_pcs *pcs,
+>         }
+> 
+>         dev_dbg(&lynx->mdio->dev,
+> -               "mode=%s/%s/%s link=%u an_enabled=%u an_complete=%u\n",
+> +               "mode=%s/%s/%s link=%u an_complete=%u\n",
+>                 phy_modes(state->interface),
+>                 phy_speed_to_str(state->speed),
+>                 phy_duplex_to_str(state->duplex),
+> -               state->link, state->an_enabled, state->an_complete);
+> +               state->link, state->an_complete);
+>  }
+> 
+>  static int lynx_pcs_config_giga(struct mdio_device *pcs, unsigned int mode,
+> --
+> 2.30.2
+> 
 
-cheers,
-jamal
+Reviewed-by: Steen Hegelund <Steen.Hegelund@microchip.com>
+
+BR
+Steen
+
