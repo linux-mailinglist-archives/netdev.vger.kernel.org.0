@@ -2,158 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 972926BCC13
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 11:09:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C8306BCC27
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 11:12:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230080AbjCPKJH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 06:09:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58528 "EHLO
+        id S230296AbjCPKMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 06:12:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229926AbjCPKJF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 06:09:05 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2115.outbound.protection.outlook.com [40.107.92.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A1072B4;
-        Thu, 16 Mar 2023 03:08:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XqSt2ThYvd04wqsetoTptghodDnoe93NTQNGMrBwSFTkYV9ggn9tT4Sv1E3qZ4VQXtaYlCE4Dj1WnyYxPknAIK4Y42Q2+WpoBCPEke0Q77JK0ba0u75io7NxYTV66mrUXFpNaJ/NWFXSW70YKB8fRqp8VW3juAZ+E4gv/yuRAkIy4svl/HKyOCfzcmGisPKVxbWEJ86uU8lZhmCkcYXfEsKQAvx3wksWGIjvuBbifHucc2D7FRHXSZ3fTXh/U+1Rs6NYgsq/d42zGQvh2msyFWxgimcu6i3AsLV/sjLhiZlB7gQ29Zd0FQRSckcdnJm37YebE9lZfQXemOTmNsFRBg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BY59rcoXkppz9yB8X517EVdmw6hBCUiwlntA6yYNJBI=;
- b=QcNNMCOqQaGGV2XQWY5Zrl2nIFS5tX6PAlCvfVPuapMwbrVJodfFxnYqCPyFKp3zkmZNEuC4ZKNVMNpMpPlo0TXPc8YDMbLwzyAcFFTo1DnhHVr2nBKF/Ddz5gqKBc5zdAIbK+VtUc6UBXDmv5x9p1I9h7PA9ZaykKlcUoXMQJkF3u8uY7SZRoPMSnHdrc6zxaTr+ZUKY6unPoWansO5xq0JCUmr+OKfXCT+2X/r7OCY6fAGWY8YS7jAVbY5R+VEQL/ziKTE0rV9S7zVpyMHkoAHK/Bq+SGsSbDkWMRK3aF6Nmdp19Vqv0fz/uB/jSTTTU5auqkFnJBWdTFAGZEd1g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BY59rcoXkppz9yB8X517EVdmw6hBCUiwlntA6yYNJBI=;
- b=S08IPBmWBvRdxwXzoZReQMS+Jr19nEL5LMbs8g2GjlG+3kp9J9rbXUCKengNX94k3aWFiNyuWe+LBWhxecWk6fuZQ+P9K2ym650aKaZCUCzuCfdZyjATBBIJ2Ztihh/YXbaae/QI00gGcQs56r4SEKDQL9SsnjUG/ndd6pjvZrA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by SN7PR13MB6279.namprd13.prod.outlook.com (2603:10b6:806:2e8::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.24; Thu, 16 Mar
- 2023 10:08:46 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.033; Thu, 16 Mar 2023
- 10:08:46 +0000
-Date:   Thu, 16 Mar 2023 11:08:39 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Markus Schneider-Pargmann <msp@baylibre.com>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 11/16] can: m_can: Cache tx putidx
-Message-ID: <ZBLqp5rV48l1I+E+@corigine.com>
-References: <20230315110546.2518305-1-msp@baylibre.com>
- <20230315110546.2518305-12-msp@baylibre.com>
- <ZBLndFdGKYApfBv4@corigine.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZBLndFdGKYApfBv4@corigine.com>
-X-ClientProxiedBy: AM0PR02CA0123.eurprd02.prod.outlook.com
- (2603:10a6:20b:28c::20) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        with ESMTP id S229560AbjCPKMA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 06:12:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC1A2B5FEB
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 03:11:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1678961480;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eBYYYx6ebaSPMy4LYead5i1f9hXn4823DINswCsrSc8=;
+        b=Pqh4h9jblfSfE5EYOlcoggGCvmODNMhQLkCh3rV48bO9eCCX9BNNZYoOgIQceK6kTZxV+s
+        NlC8nIAQsAJ2uxCtccq3wpTWo3n0tZ2KCGhETArvkvBUCnX9ydZnADZYbZG8nx2uSoHSwz
+        MZggBcObaMWby6C/9RlV/sxHKlecQEc=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-60-DSeWHm7yPwK0YdFg1ZULjA-1; Thu, 16 Mar 2023 06:11:19 -0400
+X-MC-Unique: DSeWHm7yPwK0YdFg1ZULjA-1
+Received: by mail-wr1-f71.google.com with SMTP id y11-20020a056000168b00b002ce179d1b90so173234wrd.23
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 03:11:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678961478;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=eBYYYx6ebaSPMy4LYead5i1f9hXn4823DINswCsrSc8=;
+        b=ie9bi09wLT+BBuzAJrf/TUvheKjV6csqFwaAxNcQexTaVmFvqLrtSF2hRaYrkmbdH8
+         OBs6yzxGHbSnB6FwPZZxd/z+4la3d0CBYcUPylaLAgiyvGfkII6G/Kz9zOaO3glMw06e
+         YmZ7/f2wvDeO8/RMxXl3oMSeotqncOgbOSKXtzAOsSY6RoOXuKt2zQUjDrbIZzuX3MsJ
+         CizAM5LIM5jyMbqVgxXoGBVRX/pFBIkTVOvJ8TJ4DIGyrXA3bmnqV4FTEkYQs2Uz2jom
+         NoLy7RAwC7GLYlJzevBrQTvDXPNf2SstMTs1YW3r+x5WTblrOssCDU7c7STGgcfB575i
+         sZ7A==
+X-Gm-Message-State: AO0yUKVdw0t2woh37zdCeGwB/65c52+HQ+APF7wuK4gA87RBKUd8wwxT
+        Fco+3+nzeh+xCYPuAjYGXWj6xPce3rdUctq38y/R61MPrFP+uGAG3S6FuPQ+aUTmPG/qCZK+Obx
+        dWQoB1p6QPazMxP3S
+X-Received: by 2002:a05:600c:35cd:b0:3e9:f4c2:b604 with SMTP id r13-20020a05600c35cd00b003e9f4c2b604mr22373473wmq.24.1678961478530;
+        Thu, 16 Mar 2023 03:11:18 -0700 (PDT)
+X-Google-Smtp-Source: AK7set/Lu433zhP9PilHomJbmSQWYVXOQWWKmTm0C09FAmF8pzNNFzHUbJzlyQH+yr7BXNl3vtwXzw==
+X-Received: by 2002:a05:600c:35cd:b0:3e9:f4c2:b604 with SMTP id r13-20020a05600c35cd00b003e9f4c2b604mr22373453wmq.24.1678961478236;
+        Thu, 16 Mar 2023 03:11:18 -0700 (PDT)
+Received: from sgarzare-redhat (host-82-57-51-170.retail.telecomitalia.it. [82.57.51.170])
+        by smtp.gmail.com with ESMTPSA id o23-20020a05600c511700b003ed29b332b8sm5045142wms.35.2023.03.16.03.11.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Mar 2023 03:11:17 -0700 (PDT)
+Date:   Thu, 16 Mar 2023 11:11:15 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org,
+        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
+        eperezma@redhat.com, netdev@vger.kernel.org, stefanha@redhat.com,
+        linux-kernel@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org
+Subject: Re: [PATCH v2 2/8] vhost-vdpa: use bind_mm/unbind_mm device callbacks
+Message-ID: <CAGxU2F6Pa9Dar0MVvW=qUh0k30pdtbrSy_5u2NuREd8u-id=MA@mail.gmail.com>
+References: <20230302113421.174582-1-sgarzare@redhat.com>
+ <20230302113421.174582-3-sgarzare@redhat.com>
+ <CACGkMEttgd82xOxV8WLdSFdfhRLZn68tSaV4APSDh8qXxf4OEw@mail.gmail.com>
+ <20230316083122.hliiktgsymrfpozy@sgarzare-redhat>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SN7PR13MB6279:EE_
-X-MS-Office365-Filtering-Correlation-Id: 97c35db6-a17f-4593-feb1-08db26066dfb
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cmMLQcMEjYkWn3qez+WdT4xfUjkPo46wwPuZAIy5Oq+Wk1185IcMDZ7msFe6elCVs/Dgszv3E+NByz082wVW0kglSqAHKjLaWbKbAtUKQy8Z/2nBCBowc9xdDToUtSc9Vnn5nBb35HabaFbJSaWTtAVul2QHa97eIogsTmYeJis5PldoZvOcKtfvwc0uMZ41hr0tTkEB4p9k3TzGpzR/IA7I1WNnBacflKeZnXFRo+V8SzIa0/KoJ+fxrjBwVDwS9kALGvRdl81eKP2rtbiOeG4K9mKjG0qwlqSg3YsiZfg/GE9/6O9fR+WtcV0DMYQucSsPeS+2ggpRfl9Un8VVRhhNIuBrvM4FMUaIqAwBJCYTxR8yDB5vX9SvtP3pc5UvuBPQprAzL5CI7ImpSLZnrn/eMWUjtUphjMRColEp1FHtoQBLO15oYKBmFJvw88Y0CzA1LGECQCsSynNGIjGM2XVOH+pemNNQu61Kkc3Q8GB3f51JSXgy3+/UJTFvPWtMA8xem5Jss/A+mQwbyLS3mhQQHVa0//Ac1K+0vCMe2KuiTmypfTf8BsgUijTeTRyUr0WgUXCoWaoU8p5TdGWs4gYvkcbT/QP9+tHGSwdK5sWTWxACf3OpX0cgBupv3cBpzMLhH1ftF7m6qndmFQiPtA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(396003)(346002)(366004)(39840400004)(136003)(451199018)(54906003)(316002)(478600001)(38100700002)(86362001)(2616005)(6666004)(186003)(6506007)(6512007)(6486002)(36756003)(5660300002)(6916009)(66946007)(8676002)(66476007)(66556008)(44832011)(41300700001)(8936002)(2906002)(4326008);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VUlg7fDUUOIxWRYZSUwpYhxrKw6RtLd0OHkntQabWjMwNPmaIs3R1tCOjlDh?=
- =?us-ascii?Q?Dwcx4BIMTqy1KugkBgPsvzDC42YJufVkFFN2pNX5uiQOP8CzkionBAYYdIxY?=
- =?us-ascii?Q?DDMPVUPS337uFCqvQwV2ZvgXq7IMHofqlqb0VfZMG3UBQmY/CH4ZQ0/qoILA?=
- =?us-ascii?Q?PZTkYX0BXkLmNVPuTis7jpJB+A+EXuf9No0zaQ/ZSgaTdlvx2SZC7cYn56PX?=
- =?us-ascii?Q?kvc6/fEMYFLO/kcUbQWhAyegdH/wnLJITU+YZWrfjNNzLkKJ77009dD9uOMS?=
- =?us-ascii?Q?fc7gm9cvC0pEywZDuKL/jRHeBS8qQVTkuBzB64LrkZxVdqV4tAcLt7pQv4MT?=
- =?us-ascii?Q?1qzxZiW0QLpads6Zd0+QHwiCWYs0m/KIGydzvxJMSzYI1q27u9cYqSEmfIao?=
- =?us-ascii?Q?2TVkOgJynGVY1SEvum/QB/hMURMed/j/6s6QnuELSz/M/sy8IU7HM4zGskNP?=
- =?us-ascii?Q?W7vqHV7IwD6/ZniMFwNJEen3IJvp4+vsLJH9kNrGBoW0fRwZjWc0/zPtqCnt?=
- =?us-ascii?Q?PtsoAOxYyDkj1O3qYx3RXgezHQyZnPFZiep8VGkG0fs/XKMbARmJdimufVzT?=
- =?us-ascii?Q?gp+LI/KnCRgdrBZy6uo4UCDcEdQIBKfxb2m8btvcjCtUB56J7qnO8wKpbuwV?=
- =?us-ascii?Q?T4i9ni7pIFs6B2CIcPIQGMYViu7Za1+XOCx1youfonr3MVv8tX9foVezoRYJ?=
- =?us-ascii?Q?03mKFKM+MzwF70jNu8Aj7o2F7HYJgWUMGQX1DKrMIe9w333uzIlw6QaBCw1/?=
- =?us-ascii?Q?EwN3+u7M0EZ5sOJ1Ehhbufz7a+pMZqxhHbAGqlrN1hszBdhH3FZSlrj9ENN1?=
- =?us-ascii?Q?yY01jeZjIoeK8bTOswNjcBJp1z6XigdZXNxF3FNPe+TVIshYo4qI6ycZ3VV3?=
- =?us-ascii?Q?m94KMx4ovx4XRVVlFG8AbeS1zdJf/Y3afjekxmKDe3+4FVY/MCeyZkcSAeMS?=
- =?us-ascii?Q?rlDbWEtnZTuy0gCLq2P96c5zhk1nCcNCqRz6Xeh7WgV89a0q3FgMd1TCsrI3?=
- =?us-ascii?Q?eOSwZU84FOIUk5v/uZVNspz6ocYfQD7Y9E8YOlMZj7xfghiJeWmDGbwEy5vp?=
- =?us-ascii?Q?GAhYg87VRd2PLTEVFiBX70R1m4Ri21xwoIJNpSS6+mYMnx38NlwlATN6EPhX?=
- =?us-ascii?Q?4odLGY3NrYUKP19WkvqFCvP21bcZeeiPSlQEzhBSHLVNYhYBhJsdnwJkQekR?=
- =?us-ascii?Q?PUtzuWLWLXLQnJ+OE8nqq10/aBe6fTIWtOwWowZ4ZnwHDKQrRkdVFop1M94i?=
- =?us-ascii?Q?s/aL09Vdzqbj6qOiYRV+9iWyjPluPcrRlil3EE3OoTQDrw2spz1kJ5n4kOY6?=
- =?us-ascii?Q?PJykw6Av2P7aWbyWdVXt4Al0yAYB6l2c+YxJqi9fsm2kMLZgK8TypuXuDLox?=
- =?us-ascii?Q?zY97JqCnmxS7bdIde+0zqCOLSnn6bFDFC7qXuCO6hDG6mpTHDETiJyRv4Cj/?=
- =?us-ascii?Q?pIzdU6uLck4F6wRMDLGfAXvHVRkbXmZ6Z5Hn5rP4ZtL5iocS9tHaBPdGlYMS?=
- =?us-ascii?Q?LfT4k1KjQB+E4+QOC4bTpiOxDLE80Tdi7/BKOFPJLcLnQe7Rx3iRlLEqIBGP?=
- =?us-ascii?Q?uaCyD6w+x8tFWgia3Jzj2pmmjnEks3c8SHc+jr5UDbQgaAm90PFHPeR86eYT?=
- =?us-ascii?Q?MHJ0HK1J/ZKafhIQokYEJz20ZINqdq+x3l1YtOFz75AFMgMiiXHkHGZysBjI?=
- =?us-ascii?Q?OG2iLg=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 97c35db6-a17f-4593-feb1-08db26066dfb
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2023 10:08:46.2447
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KVgGga/l0KpDFiuhfUp5hVjHdaMlWS28qBodTN6ex8XqZmswifOwpEq5O6VY/N4vGt/a7DaHlL2CYofvGq2SGOBR0aPUDKABdUQ4HYen1QM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR13MB6279
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230316083122.hliiktgsymrfpozy@sgarzare-redhat>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 16, 2023 at 10:55:00AM +0100, Simon Horman wrote:
-> On Wed, Mar 15, 2023 at 12:05:41PM +0100, Markus Schneider-Pargmann wrote:
-> > m_can_tx_handler is the only place where data is written to the tx fifo.
-> > We can calculate the putidx in the driver code here to avoid the
-> > dependency on the txfqs register.
-> > 
-> > Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+On Thu, Mar 16, 2023 at 9:31 AM Stefano Garzarella <sgarzare@redhat.com> wrote:
+>
+> On Tue, Mar 14, 2023 at 11:48:33AM +0800, Jason Wang wrote:
+> >On Thu, Mar 2, 2023 at 7:34 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
+> >>
+> >> When the user call VHOST_SET_OWNER ioctl and the vDPA device
+> >> has `use_va` set to true, let's call the bind_mm callback.
+> >> In this way we can bind the device to the user address space
+> >> and directly use the user VA.
+> >>
+> >> The unbind_mm callback is called during the release after
+> >> stopping the device.
+> >>
+> >> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> >> ---
+> >>
+> >> Notes:
+> >>     v2:
+> >>     - call the new unbind_mm callback during the release [Jason]
+> >>     - avoid to call bind_mm callback after the reset, since the device
+> >>       is not detaching it now during the reset
+> >>
+> >>  drivers/vhost/vdpa.c | 30 ++++++++++++++++++++++++++++++
+> >>  1 file changed, 30 insertions(+)
+> >>
+> >> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> >> index dc12dbd5b43b..1ab89fccd825 100644
+> >> --- a/drivers/vhost/vdpa.c
+> >> +++ b/drivers/vhost/vdpa.c
+> >> @@ -219,6 +219,28 @@ static int vhost_vdpa_reset(struct vhost_vdpa *v)
+> >>         return vdpa_reset(vdpa);
+> >>  }
+> >>
+> >> +static long vhost_vdpa_bind_mm(struct vhost_vdpa *v)
+> >> +{
+> >> +       struct vdpa_device *vdpa = v->vdpa;
+> >> +       const struct vdpa_config_ops *ops = vdpa->config;
+> >> +
+> >> +       if (!vdpa->use_va || !ops->bind_mm)
+> >> +               return 0;
+> >> +
+> >> +       return ops->bind_mm(vdpa, v->vdev.mm);
+> >> +}
+> >> +
+> >> +static void vhost_vdpa_unbind_mm(struct vhost_vdpa *v)
+> >> +{
+> >> +       struct vdpa_device *vdpa = v->vdpa;
+> >> +       const struct vdpa_config_ops *ops = vdpa->config;
+> >> +
+> >> +       if (!vdpa->use_va || !ops->unbind_mm)
+> >> +               return;
+> >> +
+> >> +       ops->unbind_mm(vdpa);
+> >> +}
+> >> +
+> >>  static long vhost_vdpa_get_device_id(struct vhost_vdpa *v, u8 __user *argp)
+> >>  {
+> >>         struct vdpa_device *vdpa = v->vdpa;
+> >> @@ -711,6 +733,13 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
+> >>                 break;
+> >>         default:
+> >>                 r = vhost_dev_ioctl(&v->vdev, cmd, argp);
+> >> +               if (!r && cmd == VHOST_SET_OWNER) {
+> >> +                       r = vhost_vdpa_bind_mm(v);
+> >> +                       if (r) {
+> >> +                               vhost_dev_reset_owner(&v->vdev, NULL);
+> >> +                               break;
+> >> +                       }
+> >> +               }
+> >
+> >Nit: is it better to have a new condition/switch branch instead of
+> >putting them under default? (as what vring_ioctl did).
+>
+> Yep, I agree!
+>
+> I'll change it.
 
-Nit in my previous email (which I hit send on a little too soon)
-not withstanding,
+Or maybe I can simply add `case VHOST_SET_OWNER` on this switch and call
+vhost_dev_set_owner() and vhost_vdpa_bind_mm(), I mean something like
+this:
 
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index 331d4a718bf6..20250c3418b2 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -731,15 +731,16 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
+        case VHOST_VDPA_RESUME:
+                r = vhost_vdpa_resume(v);
+                break;
++       case VHOST_SET_OWNER:
++               r = vhost_dev_set_owner(d);
++               if (r)
++                       break;
++               r = vhost_vdpa_bind_mm(v);
++               if (r)
++                       vhost_dev_reset_owner(d, NULL);
++               break;
+        default:
+                r = vhost_dev_ioctl(&v->vdev, cmd, argp);
+-               if (!r && cmd == VHOST_SET_OWNER) {
+-                       r = vhost_vdpa_bind_mm(v);
+-                       if (r) {
+-                               vhost_dev_reset_owner(&v->vdev, NULL);
+-                               break;
+-                       }
+-               }
+                if (r == -ENOIOCTLCMD)
+                        r = vhost_vdpa_vring_ioctl(v, cmd, argp);
+                break;
 
-FWIIW, I am taking a pause in my review now.
+WDYT?
 
-...
+Thanks,
+Stefano
 
-> > diff --git a/drivers/net/can/m_can/m_can.h b/drivers/net/can/m_can/m_can.h
-> > index d0c21eddb6ec..548ae908ac4e 100644
-> > --- a/drivers/net/can/m_can/m_can.h
-> > +++ b/drivers/net/can/m_can/m_can.h
-> > @@ -102,6 +102,9 @@ struct m_can_classdev {
-> >  	u32 tx_max_coalesced_frames_irq;
-> >  	u32 tx_coalesce_usecs_irq;
-> >  
-> > +	// Store this internally to avoid fetch delays on peripheral chips
-> > +	int tx_fifo_putidx;
-> 
-> nit: it might be slightly nicer to do a pass over the code
->      and make putidx unsigned - assuming it is an unsigned value.
-> 
-> > +
-> >  	struct mram_cfg mcfg[MRAM_CFG_NUM];
-> >  };
-> >  
-> > -- 
-> > 2.39.2
-> > 
