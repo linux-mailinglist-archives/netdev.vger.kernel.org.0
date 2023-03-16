@@ -2,156 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F26CF6BDA2F
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 21:33:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 647A46BDA35
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 21:34:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230187AbjCPUde (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 16:33:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38446 "EHLO
+        id S229639AbjCPUeb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 16:34:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230083AbjCPUdc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 16:33:32 -0400
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61C581BCE;
-        Thu, 16 Mar 2023 13:33:31 -0700 (PDT)
-Received: by mail-qv1-xf33.google.com with SMTP id x8so2080781qvr.9;
-        Thu, 16 Mar 2023 13:33:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678998810;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=rM0EAkK+6/Z7xETwhsA2NYPRZsQ9EnkWbH0Y0cmhj50=;
-        b=OQ/yAxQERJtglA2+oDVP5HgxwZiVdnUZAgC+ys7kij/zZB/h9lnq/YQMu7PfXkE2EX
-         LHubJRFtweOJV6Nqkbj96XtRbuebQrj0qpw/HIBc/0+r4SBZilqUR9mPXTtY1fnuABSl
-         7nD+VFhznjVEJydC9JRX8xJ/9d3HGEO7MyR1t7hVa6MeEVbwrRpWb4jIlRL7MFArAk5I
-         QqfgRnoejWjeY4mAaYIhkF6C4vKa0fd5Th/9PxFzHrftuuUjgZv5GGidxNA5g7zjb18p
-         dP2+XKP7Wq1p2EnT1uPLFEgFx0oRcraVtxQW/sLbBepPV8AwlLpx+pcrCt/KihjdKCgh
-         WtMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678998810;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=rM0EAkK+6/Z7xETwhsA2NYPRZsQ9EnkWbH0Y0cmhj50=;
-        b=mpt67nn2lFS7stamUw00bBTVnxbIA1ZIsPz3RXPpeXpwCDtipshJ43NnSE3pVP2H9l
-         fThNF/uy3cBQ+69NJ8pd6LybfPHVOClScSEeQl0xQ274UKtsiRK3QBNz0/La1j8ZyNk8
-         3Nz2BeNFCk5KcU8fNPnILrNpBrx6eKW1MzUopJe0lKy44bxxehnOh8Hvccpzc0JcmA/T
-         lmFtJActv3Jpmi4m8m2nKqqKBI4jV9y/MtnWJZ9O4R1LKoB2JaTmqjVQgLn95BwZ2+XJ
-         AwwMwDFQjTif9xaVOdg3OF5aToVn/4snS2tYa8Cikdj8rKAVkNn7OrXWiudzBfvPrN1v
-         81rA==
-X-Gm-Message-State: AO0yUKUPzY8HM0mbgTgcyDuUa8BntMBCs/+gvb9WYyggu2HfFu9zbm/n
-        tn68bKOP+OitOlEKAep+ASPqumfkQiw=
-X-Google-Smtp-Source: AK7set/q0VZYyLLg+NnyxMmqB8F03eFq6ljiqK/LUe98yJurxina7rciWpouU0yVLt7CxCJrithvJA==
-X-Received: by 2002:ad4:5fce:0:b0:579:5dbc:ab8b with SMTP id jq14-20020ad45fce000000b005795dbcab8bmr34418941qvb.52.1678998809801;
-        Thu, 16 Mar 2023 13:33:29 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id m124-20020a375882000000b0073b8745fd39sm213514qkb.110.2023.03.16.13.33.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Mar 2023 13:33:29 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        with ESMTP id S230034AbjCPUe2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 16:34:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0CA1664FF;
+        Thu, 16 Mar 2023 13:34:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 660AFB82347;
+        Thu, 16 Mar 2023 20:34:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A51BCC433EF;
+        Thu, 16 Mar 2023 20:34:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678998847;
+        bh=3HDGUZpqzbEBwq+2GtcDBA71Xism/0YDULlYa+8Vpbc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=bzC5bIoe4kaqeRVqwT/kgoQFguSjxpeDwiWvJtssU1XJUH88YNeCZqBNemsonbtmU
+         JwDM8hagKEVO+OM2jzf+BX1HtaR9QXgUqvVpo5sW493EEBb3Fzu2aV2VPlC/9nW7G9
+         7CQPtOf+H6eVUL/NkhAhj8xSu5YJn1icaISgo0gq47p55TKK0Lhl0tswX7qHLQfl1I
+         r9selD/kBvWbik6u3zeOsJ9q8Ij6/UXq20702ymy7ke8nMQW81G7Naw/NB9J369cRd
+         v+Kpt2gFzRtVRCNI7QfoHstCvWUDijwNjH8wqaMlwxDB4+XEbyWolYSWiAyShxacsL
+         2B4sULX/iN8Sg==
+Date:   Thu, 16 Mar 2023 13:34:05 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ronak Doshi <doshir@vmware.com>
+Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        Pv-drivers <Pv-drivers@vmware.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net] net: phy: Ensure state transitions are processed from phy_stop()
-Date:   Thu, 16 Mar 2023 13:33:24 -0700
-Message-Id: <20230316203325.2026217-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Guolin Yang <gyang@vmware.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] vmxnet3: use gro callback when UPT is enabled
+Message-ID: <20230316133405.0ffbea6a@kernel.org>
+In-Reply-To: <4FC80D64-DACB-4223-A345-BCE71125C342@vmware.com>
+References: <20230308222504.25675-1-doshir@vmware.com>
+        <e3768ae9-6a2b-3b5e-9381-21407f96dd63@huawei.com>
+        <4DF8ED21-92C2-404F-9766-691AEA5C4E8B@vmware.com>
+        <252026f5-f979-2c8d-90d9-7ba396d495c8@huawei.com>
+        <0389636C-F179-48E1-89D2-48DE0B34FD30@vmware.com>
+        <2e2ae42b-4f10-048e-4828-5cb6dd8558f5@huawei.com>
+        <3EF78217-44AA-44F6-99DC-86FF1CC03A94@vmware.com>
+        <207a0919-1a5a-dee6-1877-ee0b27fc744a@huawei.com>
+        <AA320ADE-E149-4C0D-80D5-338B19AD31A2@vmware.com>
+        <77c30632-849f-8b7b-42ef-be8b32981c15@huawei.com>
+        <1743CDA0-8F35-4F60-9D22-A17788B90F9B@vmware.com>
+        <20230315211329.1c7b3566@kernel.org>
+        <4FC80D64-DACB-4223-A345-BCE71125C342@vmware.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the phy_disconnect() -> phy_stop() path, we will be forcibly setting
-the PHY state machine to PHY_HALTED. This invalidates the old_state !=
-phydev->state condition in phy_state_machine() such that we will neither
-display the state change for debugging, nor will we invoke the
-link_change_notify() callback.
+On Thu, 16 Mar 2023 05:21:42 +0000 Ronak Doshi wrote:
+> Below are some sample test numbers collected by our perf team. 
+>                           Test                                    socket & msg size                          base               using only gro
+> 1VM    14vcpu UDP stream receive        256K 256 bytes (packets/sec)    217.01 Kps    187.98 Kps         -13.37%
+> 16VM  2vcpu   TCP stream send Thpt     8K     256 bytes (Gbps)                18.00 Gbps    17.02 Gbps         -5.44%
+> 1VM    14vcpu ResponseTimeMean Receive (in micro secs)                      163 us             170 us                -4.29%
 
-Factor the code by introducing phy_process_state_change(), and ensure
-that we process the state change from phy_stop() as well.
-
-Fixes: 5c5f626bcace ("net: phy: improve handling link_change_notify callback")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/phy/phy.c | 23 ++++++++++++++++-------
- 1 file changed, 16 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index b33e55a7364e..99a07eb54c44 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -57,6 +57,18 @@ static const char *phy_state_to_str(enum phy_state st)
- 	return NULL;
- }
- 
-+static void phy_process_state_change(struct phy_device *phydev,
-+				     enum phy_state old_state)
-+{
-+	if (old_state != phydev->state) {
-+		phydev_dbg(phydev, "PHY state change %s -> %s\n",
-+			   phy_state_to_str(old_state),
-+			   phy_state_to_str(phydev->state));
-+		if (phydev->drv && phydev->drv->link_change_notify)
-+			phydev->drv->link_change_notify(phydev);
-+	}
-+}
-+
- static void phy_link_up(struct phy_device *phydev)
- {
- 	phydev->phy_link_change(phydev, true);
-@@ -1301,6 +1313,7 @@ EXPORT_SYMBOL(phy_free_interrupt);
- void phy_stop(struct phy_device *phydev)
- {
- 	struct net_device *dev = phydev->attached_dev;
-+	enum phy_state old_state;
- 
- 	if (!phy_is_started(phydev) && phydev->state != PHY_DOWN) {
- 		WARN(1, "called from state %s\n",
-@@ -1309,6 +1322,7 @@ void phy_stop(struct phy_device *phydev)
- 	}
- 
- 	mutex_lock(&phydev->lock);
-+	old_state = phydev->state;
- 
- 	if (phydev->state == PHY_CABLETEST) {
- 		phy_abort_cable_test(phydev);
-@@ -1319,6 +1333,7 @@ void phy_stop(struct phy_device *phydev)
- 		sfp_upstream_stop(phydev->sfp_bus);
- 
- 	phydev->state = PHY_HALTED;
-+	phy_process_state_change(phydev, old_state);
- 
- 	mutex_unlock(&phydev->lock);
- 
-@@ -1436,13 +1451,7 @@ void phy_state_machine(struct work_struct *work)
- 	if (err < 0)
- 		phy_error(phydev);
- 
--	if (old_state != phydev->state) {
--		phydev_dbg(phydev, "PHY state change %s -> %s\n",
--			   phy_state_to_str(old_state),
--			   phy_state_to_str(phydev->state));
--		if (phydev->drv && phydev->drv->link_change_notify)
--			phydev->drv->link_change_notify(phydev);
--	}
-+	phy_process_state_change(phydev, old_state);
- 
- 	/* Only re-schedule a PHY state machine change if we are polling the
- 	 * PHY, if PHY_MAC_INTERRUPT is set, then we will be moving
--- 
-2.34.1
-
+A bit more than I suspected, thanks for the data.
