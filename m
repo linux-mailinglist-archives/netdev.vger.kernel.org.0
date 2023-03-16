@@ -2,97 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D76BC6BDCC9
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 00:18:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36E8F6BDCC7
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 00:18:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230284AbjCPXSU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 19:18:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34514 "EHLO
+        id S229978AbjCPXSR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 19:18:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229842AbjCPXSQ (ORCPT
+        with ESMTP id S229832AbjCPXSQ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 19:18:16 -0400
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A0938615E;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28B4F7A9C;
         Thu, 16 Mar 2023 16:18:15 -0700 (PDT)
-Received: by mail-qt1-x82e.google.com with SMTP id h19so3668103qtn.1;
-        Thu, 16 Mar 2023 16:18:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679008694;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=hizf1rKt9yqJi/dPDTO6w3mkjCS9486AALEnSxm1ai4=;
-        b=IMOuEpxDsSBgvV8mrJdwgxOaUK9UYcOo4fAkHn5O/PUvR2GcJBXTQiUVA5JBrKxTDg
-         SN4f7GEnuLJ7GL4unBLHdWzCrKLaySs00RXkX0dFKMYjOFmKf6Txg95SwCEacZeUNOwc
-         rHYT54FhG1RTaGDpmTAo61UN4TafoiENmw9WNn9O2JlWIPIMnLlOIMjtFEBExqQYQl/t
-         FtfVOIz5mG6lz8s89uCmp2RedrsiiPVppQTs9T5Dp4bQ+USHQSFAhAwvyx0GDcuNoaC3
-         GgsgsatfDn3EEwqvIcQHlZ51KSo/az7KH+kXuJ8IdtdCuhsnK99gdVx76S5F9Eu6dfrM
-         r1fg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679008694;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=hizf1rKt9yqJi/dPDTO6w3mkjCS9486AALEnSxm1ai4=;
-        b=Ta82Kono8Goh9Ujnh9pBhMo9wvB6Ng8Wq8Dv1FUDGiGiH2vc+A67zp4YETUQaROuvl
-         82TmGMyJi/HoMQWEKL0kIiuyEBSmd9c03HNW2g2x+byfGl+QAJJLhVuSOn5eUL7n2qne
-         fqNsaQ5a/zE9I7hBBnbAJk8o0yC2Bd492cuL58oC9FJjiaCNCBLvhPaqwzXqOBYHJM/e
-         8cqg4jPJA48EK44VpeKPOmg73r6biYxCQ1TnrHZ+Ctyy+IS0K+ZObgC8dP8TDqzGv0iN
-         o5bCvO39EB35oJ0RjG00gapmX0/mvoI1KO2trRGb7EQVJwsACDqj4YpXPWnDEwUpteP1
-         Oqew==
-X-Gm-Message-State: AO0yUKXqoGQppPBMLlqeaKWQ7EUE/6qiQNr0vmuYhhW0WyzYyEV2BLhm
-        sm7hkJqxwUamM3IZq2RuxuY=
-X-Google-Smtp-Source: AK7set/sS4Fb9KPNSK/wEhFU3sxhZEekJKHlG2yB63AmLevYMFDErYt3Kr4B5PISzdiEw3ZDsRC0Qw==
-X-Received: by 2002:a05:622a:170c:b0:3b9:bc8c:c212 with SMTP id h12-20020a05622a170c00b003b9bc8cc212mr2080410qtk.29.1679008694696;
-        Thu, 16 Mar 2023 16:18:14 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id 13-20020a37080d000000b007456efa7f73sm472676qki.85.2023.03.16.16.18.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Mar 2023 16:18:14 -0700 (PDT)
-Message-ID: <c123bda1-650d-0982-9e38-368de51664fa@gmail.com>
-Date:   Thu, 16 Mar 2023 16:18:08 -0700
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C11626215C;
+        Thu, 16 Mar 2023 23:18:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE9C1C433D2;
+        Thu, 16 Mar 2023 23:18:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679008694;
+        bh=OYxBo4djlS61XYzgafFcijG0gwXMYYjumjcr57f8sII=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rWb1M0TbcYdWvys6U7qm+pWzcbxM7BHmg+3uLg8AfqIyld4olOVBoV7jkl+r81Jqj
+         f+RYlS2hnjRsQhaxz9CTN25s8fDp/fsMetItOKM8tj+8I64oI3bgs+2g/8CpvLHz+V
+         i2QtxX2WI2LbSernJmYN7v8czmwcu+VELH30cD2EWMDSt/cjjLxP45bEUVDsqO/mDC
+         pW7SpbAbEmFGp9EuTGd4JfmBm1fU7ZDOWfsyPg6pBOfMYFUwqgP4vtvlG7jrH97Xej
+         IlUUblIFivZyHGgsbp2ciNDZtBzbljRkS8veHt81beTxQIGhLQQ5NZykN4zVwtay8L
+         rvOAS06RYJB+Q==
+Date:   Thu, 16 Mar 2023 16:18:11 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andrew Halaney <ahalaney@redhat.com>, linux-kernel@vger.kernel.org,
+        agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        vkoul@kernel.org, bhupesh.sharma@linaro.org,
+        mturquette@baylibre.com, sboyd@kernel.org, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        mcoquelin.stm32@gmail.com, richardcochran@gmail.com,
+        veekhee@apple.com, tee.min.tan@linux.intel.com,
+        mohammad.athari.ismail@intel.com, jonathanh@nvidia.com,
+        ruppala@nvidia.com, bmasney@redhat.com,
+        andrey.konovalov@linaro.org, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, ncai@quicinc.com,
+        jsuraj@qti.qualcomm.com, hisunil@quicinc.com
+Subject: Re: [PATCH net-next 08/11] net: stmmac: Add EMAC3 variant of dwmac4
+Message-ID: <20230316161811.64d14cb3@kernel.org>
+In-Reply-To: <ZBOfuSBifFO7O/xQ@shell.armlinux.org.uk>
+References: <20230313165620.128463-1-ahalaney@redhat.com>
+        <20230313165620.128463-9-ahalaney@redhat.com>
+        <20230313173904.3d611e83@kernel.org>
+        <20230316183609.a3ymuku2cmhpyrpc@halaney-x13s>
+        <20230316115234.393bca5d@kernel.org>
+        <ZBOfuSBifFO7O/xQ@shell.armlinux.org.uk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH net-next] docs: networking: document NAPI
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, corbet@lwn.net,
-        linux-doc@vger.kernel.org
-References: <20230315223044.471002-1-kuba@kernel.org>
- <20230315155202.2bba7e20@hermes.local> <20230315161142.48de9d98@kernel.org>
- <7ddfa9e1-c7a2-7a62-a2ba-eb2c93a3a2fa@gmail.com>
- <20230316160757.52ea01b0@kernel.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20230316160757.52ea01b0@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/16/23 16:07, Jakub Kicinski wrote:
-> On Thu, 16 Mar 2023 15:59:49 -0700 Florian Fainelli wrote:
->> True, though I would put a word in or two about level vs. edge triggered
->> anyway, if nothing else, explain essentially what Stephen just provided
->> ought to be a good starting point for driver writers to consider the
->> possible issue.
+On Thu, 16 Mar 2023 23:01:13 +0000 Russell King (Oracle) wrote:
+> What I would say is be careful with that - make sure "struct bla" is
+> specific to the interface being called and not generic.
 > 
-> It's not a blocker for something close to the current document
-> going in, tho, right? More of a future extension (possibly done
-> by someone else...) ?
+> I had that mistake with struct phylink_state... and there is an
+> endless stream of people who don't seem to bother reading the
+> documentation, who blindly access whatever members of that they
+> damn well please because it suits them, even when either they
+> shouldn't be writing to them, or when phylink doesn't guarantee
+> their contents, they read them.
 
-Works for me, Stephen should have plenty of time to come up with an 
-addendum ;)
--- 
-Florian
+Right, gotta take it case by case. I really like structs for
+const capabilities of the driver / device, which need to be
+communicated to the core.
 
+> As a result, I'm now of the opinion that using a struct to pass
+> arguments is in principle a bad idea.
+> 
+> There's other reasons why it's a bad idea. Many ABIs are capable of
+> passing arguments to functions via processor registers. As soon as
+> one uses a struct, they typically end up being written to memory.
+> Not only does that potentially cause cache line churn, it also
+> means that there could be more slow memory accesses that have to be
+> made at some point, potentially making other accesses slow.
+> 
+> So, all in all, I'm really not a fan of the struct approach for
+> all the reasons above.
+
+Also true, one has to be careful on the fast paths. There are cases
+where similar set of arguments is passed multiple functions down.
+Making the code hard to follow and extend. But you're right, structs
+will be slower for the most part.
+
+For stmmac I figured it can only help. The driver is touched my very
+many people, it has layers and confusions...
