@@ -2,264 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CE6B6BD093
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 14:17:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40D706BD08D
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 14:16:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230123AbjCPNRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 09:17:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58726 "EHLO
+        id S230075AbjCPNQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 09:16:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230088AbjCPNRO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 09:17:14 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40850C2D85;
-        Thu, 16 Mar 2023 06:16:59 -0700 (PDT)
-Received: from maxwell.localdomain ([213.61.141.186]) by
- mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MT7ip-1q5m9U3jBf-00UeqB; Thu, 16 Mar 2023 14:15:24 +0100
-From:   Jochen Henneberg <jh@henneberg-systemdesign.com>
-To:     netdev@vger.kernel.org
-Cc:     Jochen Henneberg <jh@henneberg-systemdesign.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S230004AbjCPNQt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 09:16:49 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6895DC889B
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 06:16:39 -0700 (PDT)
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 9133444607
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 13:16:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1678972597;
+        bh=OzH+kQ+KVGzBIH/pA2jTiU3WpLAj2IMHPWH8AuUv3go=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=OUvRHVLXIjE4xqXZsn5rEGVNqRfRiJJ2rhr0RHXnMPlmwF18WiufS1eOymypR77im
+         0F1riRZIJAgfCDTROKrXujvQ+l9078u7+cUleHxmRRSn+vVYSohQ2anGUJ6ytCUtTk
+         7bzhu8/szTyTTs5XqI9pqvUnQIE055BrxY/zCOzDzi1Y7dncZxrD8SqD8Q5n9hTOh5
+         v1flvvnkGqjab0mDYBA7vksw6Ecrpinrjc6tUkRUQEBsTGoDkA+Rpa4Wv9/bgg8m2u
+         FCndEnFXDDIJVA4gLEp46GLpHSwjQqp82Ma21KENWbPZLqFHpgpqoDa8Kec0AlvBsG
+         YL3+OOiimj7Aw==
+Received: by mail-ed1-f70.google.com with SMTP id e18-20020a056402191200b004fa702d64b3so3024066edz.23
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 06:16:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678972597;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=OzH+kQ+KVGzBIH/pA2jTiU3WpLAj2IMHPWH8AuUv3go=;
+        b=vQrRKgP3DnXd6zEZPrUjPlwklXhEiTav0oCC0LcpMGAEO1I6urE5ieTjYn93KC+qm1
+         bU6aUEedTvs7AMFqT8mRv9nM+lL7uAtiYEf2NJtXmRXCt0bg3B7js/pw9P9DgOyjoRAj
+         n/nc7lCjguDh6IUGz8VREGcdAgnp0ozcfn3tSn2kEFzMWm/gT/BY2DNQ8ltEz7lGAIRf
+         0D0HREEH0564CFCrKqBDJXBMHmRggS3a4rAI5rp8CPOovfW1OKes8WjrACXVJEF7Ox29
+         JD2/SYytahvzWjUeeXcr4Ag+d838Qs9MuNUhNRLcVVW2NMTuL0DVGiJNOPT4SHO60etS
+         nNKw==
+X-Gm-Message-State: AO0yUKVBzL6re9gCai07pbLF51q6ikci5rkPWlMINeDFAKjEc/Vt5JDH
+        kBldm5m69Id4tn2xD49yNfFnj36vyR0qMIZ6QRRLTVnyxXw0EbtJ6o+UWkdonnvdpXn4AobnUhH
+        2OC7mX+mXD+of5MNtliVxYANc1ur9nSznMw==
+X-Received: by 2002:a17:907:6d83:b0:8b1:76b8:904f with SMTP id sb3-20020a1709076d8300b008b176b8904fmr6724103ejc.34.1678972596961;
+        Thu, 16 Mar 2023 06:16:36 -0700 (PDT)
+X-Google-Smtp-Source: AK7set+7uNMTvJX9EGnInS/Y73P/nh1qiMWsw4fTJJwLjOfVlos9Jk0EwBh69Kb5P6fZkQ2hrQu/tg==
+X-Received: by 2002:a17:907:6d83:b0:8b1:76b8:904f with SMTP id sb3-20020a1709076d8300b008b176b8904fmr6724085ejc.34.1678972596736;
+        Thu, 16 Mar 2023 06:16:36 -0700 (PDT)
+Received: from amikhalitsyn.. ([2a02:8109:bd40:1414:5e7c:880e:420d:8cc7])
+        by smtp.gmail.com with ESMTPSA id d20-20020a50cd54000000b004fd1ee3f723sm3812336edj.67.2023.03.16.06.16.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Mar 2023 06:16:36 -0700 (PDT)
+From:   Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
+To:     davem@davemloft.net
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Wong Vee Khee <veekhee@apple.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Revanth Kumar Uppala <ruppala@nvidia.com>,
-        Andrey Konovalov <andrey.konovalov@linaro.org>,
-        Tan Tee Min <tee.min.tan@linux.intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH net V2] net: stmmac: Fix for mismatched host/device DMA address width
-Date:   Thu, 16 Mar 2023 14:15:03 +0100
-Message-Id: <20230316131503.738933-1-jh@henneberg-systemdesign.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230316095306.721255-1-jh@henneberg-systemdesign.com>
-References: <20230316095306.721255-1-jh@henneberg-systemdesign.com>
+        Leon Romanovsky <leon@kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Kees Cook <keescook@chromium.org>,
+        Christian Brauner <brauner@kernel.org>
+Subject: [PATCH net-next 0/3] Add SCM_PIDFD and SO_PEERPIDFD
+Date:   Thu, 16 Mar 2023 14:15:23 +0100
+Message-Id: <20230316131526.283569-1-aleksandr.mikhalitsyn@canonical.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:bfLeLJD9lJ3G3iT5iYg7UEsU81bVboCAdkEgfok56g7FNBxUgCq
- LNgriGZGnkbYpSN3KWkzpEvU7GSOnbMFpLmKOCO0dQlJ6nZ3SEAWl2vPzYr7b1PCKE9xX7A
- aPk4aLnMk+J7XvkK6quh9VuPhDfM7FPOfbpeXDOzde1tKmTBHkEwx7dDHdiTnMCJo5DNtU5
- GvEy4RijTXnk/8jpaUPKw==
-UI-OutboundReport: notjunk:1;M01:P0:IsJsY91fw44=;Sez0sKu91tpF1iMfVXGvU+Bl/CE
- swTEhlRDPsrBdyqVk/cIuntzl1S4uGGV7oI3rfn8x3tkSbY2JSa6tDr6AXOBq+V420HYSv0pU
- GGgAVL8cBWSKuEF6IdLPH1+35DvXBzA0uZEukMJX5dwAsrXWchvZEqxSxqiGGr1gcLaYdJBrX
- hU9/wJ0jQ/lGSH9P+IViv0xIIld7dtJcBY51vbEY0v+yf8HePgpYvWnsKaJ1q9198tm4UbG3m
- 4WUMgKzmeB4ZuMX+74A3tzn1kqWQFtge/epSAfJhsMhF42IY5F15lVPZ4RDwFTFjurOsUVXW9
- vJbs//H6kVZ1kWEHNXPS61/75VMSKuMDS2c1bpOWrWQ1OusiRwF7mjqYPkjrKWZLIVTlWouIe
- yIH2oGUxvEBA7jat6GxL9aHv5y3Y9hWjWbeh2sgTm7EWWQlmNlt8hJ+FrM66oEGMOCpeagMJc
- 587m1GDGXJcubTbM0Z1s/F0BckvEg1VbGwvFlEdkbMzzi/Clgj4SlEFlq781kMMgcpqbMF80r
- eNDNta59fIKIF6e+brSFukkbXUMaaUehIwuPCeWExGX3LrEY6DyS+j1K83KPLVCKx2Y5HKM3o
- 7HOxMzY4ADS+kX5FYJj4uNvdfAeleajn07wI2TQCqVo5FyZKXIk5mm+zgGzn8HgewF2LKGwE6
- /NLSDb6cdeuDIciBT4qQB/+n0TgB0Gtcn7EnDKNcgw==
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently DMA address width is either read from a RO device register
-or force set from the platform data. This breaks DMA when the host DMA
-address width is <=32it but the device is >32bit.
+1. Implement SCM_PIDFD, a new type of CMSG type analogical to SCM_CREDENTIALS,
+but it contains pidfd instead of plain pid, which allows programmers not
+to care about PID reuse problem.
 
-Right now the driver may decide to use a 2nd DMA descriptor for
-another buffer (happens in case of TSO xmit) assuming that 32bit
-addressing is used due to platform configuration but the device will
-still use both descriptor addresses as one address.
+2. Add SO_PEERPIDFD which allows to get pidfd of peer socket holder pidfd.
+This thing is direct analog of SO_PEERCRED which allows to get plain PID.
 
-This can be observed with the Intel EHL platform driver that sets
-32bit for addr64 but the MAC reports 40bit. The TX queue gets stuck in
-case of TCP with iptables NAT configuration on TSO packets.
+3. Add SCM_PIDFD / SO_PEERPIDFD kselftest
 
-The logic should be like this: Whatever we do on the host side (memory
-allocation GFP flags) should happen with the host DMA width, whenever
-we decide how to set addresses on the device registers we must use the
-device DMA address width.
+Idea comes from UAPI kernel group:
+https://uapi-group.org/kernel-features/
 
-This patch renames the platform address width field from addr64 (term
-used in device datasheet) to host_addr and uses this value exclusively
-for host side operations while all chip operations consider the device
-DMA width as read from the device register.
+Big thanks to Christian Brauner and Lennart Poettering for productive
+discussions about this.
 
-Fixes: 7cfc4486e7ea ("stmmac: intel: Configure EHL PSE0 GbE and PSE1 GbE to 32 bits DMA addressing")
-Signed-off-by: Jochen Henneberg <jh@henneberg-systemdesign.com>
----
-V2: Fixes from checkpatch.pl for commit message
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Leon Romanovsky <leon@kernel.org>
+Cc: David Ahern <dsahern@kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Christian Brauner <brauner@kernel.org>
 
- drivers/net/ethernet/stmicro/stmmac/common.h  |  1 +
- .../net/ethernet/stmicro/stmmac/dwmac-imx.c   |  2 +-
- .../net/ethernet/stmicro/stmmac/dwmac-intel.c |  4 +--
- .../ethernet/stmicro/stmmac/dwmac-mediatek.c  |  2 +-
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 30 ++++++++++---------
- include/linux/stmmac.h                        |  2 +-
- 6 files changed, 22 insertions(+), 19 deletions(-)
+Alexander Mikhalitsyn (3):
+  scm: add SO_PASSPIDFD and SCM_PIDFD
+  net: core: add getsockopt SO_PEERPIDFD
+  selftests: net: add SCM_PIDFD / SO_PEERPIDFD test
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-index 6b5d96bced47..55a728b1b708 100644
---- a/drivers/net/ethernet/stmicro/stmmac/common.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/common.h
-@@ -418,6 +418,7 @@ struct dma_features {
- 	unsigned int frpbs;
- 	unsigned int frpes;
- 	unsigned int addr64;
-+	unsigned int host_addr;
- 	unsigned int rssen;
- 	unsigned int vlhash;
- 	unsigned int sphen;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
-index ac8580f501e2..bc06c517df9c 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
-@@ -289,7 +289,7 @@ static int imx_dwmac_probe(struct platform_device *pdev)
- 		goto err_parse_dt;
- 	}
- 
--	plat_dat->addr64 = dwmac->ops->addr_width;
-+	plat_dat->host_addr = dwmac->ops->addr_width;
- 	plat_dat->init = imx_dwmac_init;
- 	plat_dat->exit = imx_dwmac_exit;
- 	plat_dat->clks_config = imx_dwmac_clks_config;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 7deb1f817dac..193c3a842500 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -684,7 +684,7 @@ static int ehl_pse0_common_data(struct pci_dev *pdev,
- 
- 	intel_priv->is_pse = true;
- 	plat->bus_id = 2;
--	plat->addr64 = 32;
-+	plat->host_dma_addr = 32;
- 
- 	plat->clk_ptp_rate = 200000000;
- 
-@@ -725,7 +725,7 @@ static int ehl_pse1_common_data(struct pci_dev *pdev,
- 
- 	intel_priv->is_pse = true;
- 	plat->bus_id = 3;
--	plat->addr64 = 32;
-+	plat->host_dma_addr = 32;
- 
- 	plat->clk_ptp_rate = 200000000;
- 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-index 2f7d8e4561d9..968c8172c5bd 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-@@ -591,7 +591,7 @@ static int mediatek_dwmac_common_data(struct platform_device *pdev,
- 	plat->use_phy_wol = priv_plat->mac_wol ? 0 : 1;
- 	plat->riwt_off = 1;
- 	plat->maxmtu = ETH_DATA_LEN;
--	plat->addr64 = priv_plat->variant->dma_bit_mask;
-+	plat->host_dma_addr = priv_plat->variant->dma_bit_mask;
- 	plat->bsp_priv = priv_plat;
- 	plat->init = mediatek_dwmac_init;
- 	plat->clks_config = mediatek_dwmac_clks_config;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 4886668a54c5..9f9cad178360 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1430,7 +1430,7 @@ static int stmmac_init_rx_buffers(struct stmmac_priv *priv,
- 	struct stmmac_rx_buffer *buf = &rx_q->buf_pool[i];
- 	gfp_t gfp = (GFP_ATOMIC | __GFP_NOWARN);
- 
--	if (priv->dma_cap.addr64 <= 32)
-+	if (priv->dma_cap.host_addr <= 32)
- 		gfp |= GFP_DMA32;
- 
- 	if (!buf->page) {
-@@ -4586,7 +4586,7 @@ static inline void stmmac_rx_refill(struct stmmac_priv *priv, u32 queue)
- 	unsigned int entry = rx_q->dirty_rx;
- 	gfp_t gfp = (GFP_ATOMIC | __GFP_NOWARN);
- 
--	if (priv->dma_cap.addr64 <= 32)
-+	if (priv->dma_cap.host_addr <= 32)
- 		gfp |= GFP_DMA32;
- 
- 	while (dirty-- > 0) {
-@@ -6204,7 +6204,7 @@ static int stmmac_dma_cap_show(struct seq_file *seq, void *v)
- 	seq_printf(seq, "\tFlexible RX Parser: %s\n",
- 		   priv->dma_cap.frpsel ? "Y" : "N");
- 	seq_printf(seq, "\tEnhanced Addressing: %d\n",
--		   priv->dma_cap.addr64);
-+		   priv->dma_cap.host_addr);
- 	seq_printf(seq, "\tReceive Side Scaling: %s\n",
- 		   priv->dma_cap.rssen ? "Y" : "N");
- 	seq_printf(seq, "\tVLAN Hash Filtering: %s\n",
-@@ -7177,20 +7177,22 @@ int stmmac_dvr_probe(struct device *device,
- 		dev_info(priv->device, "SPH feature enabled\n");
- 	}
- 
--	/* The current IP register MAC_HW_Feature1[ADDR64] only define
--	 * 32/40/64 bit width, but some SOC support others like i.MX8MP
--	 * support 34 bits but it map to 40 bits width in MAC_HW_Feature1[ADDR64].
--	 * So overwrite dma_cap.addr64 according to HW real design.
-+	/* Ideally our host DMA address width is the same as for the
-+	 * device. However, it may differ and then we have to use our
-+	 * host DMA width for allocation and the device DMA width for
-+	 * register handling.
- 	 */
--	if (priv->plat->addr64)
--		priv->dma_cap.addr64 = priv->plat->addr64;
-+	if (priv->plat->host_dma_addr)
-+		priv->dma_cap.host_addr = priv->plat->host_dma_addr;
-+	else
-+		priv->dma_cap.host_addr = priv->dma_cap.addr64;
- 
--	if (priv->dma_cap.addr64) {
-+	if (priv->dma_cap.host_addr) {
- 		ret = dma_set_mask_and_coherent(device,
--				DMA_BIT_MASK(priv->dma_cap.addr64));
-+				DMA_BIT_MASK(priv->dma_cap.host_addr));
- 		if (!ret) {
--			dev_info(priv->device, "Using %d bits DMA width\n",
--				 priv->dma_cap.addr64);
-+			dev_info(priv->device, "Using %d/%d bits DMA host/device width\n",
-+				 priv->dma_cap.host_addr, priv->dma_cap.addr64);
- 
- 			/*
- 			 * If more than 32 bits can be addressed, make sure to
-@@ -7205,7 +7207,7 @@ int stmmac_dvr_probe(struct device *device,
- 				goto error_hw_init;
- 			}
- 
--			priv->dma_cap.addr64 = 32;
-+			priv->dma_cap.host_addr = 32;
- 		}
- 	}
- 
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index a152678b82b7..1cc4d61d6155 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -215,7 +215,7 @@ struct plat_stmmacenet_data {
- 	int unicast_filter_entries;
- 	int tx_fifo_size;
- 	int rx_fifo_size;
--	u32 addr64;
-+	u32 host_dma_addr;
- 	u32 rx_queues_to_use;
- 	u32 tx_queues_to_use;
- 	u8 rx_sched_algorithm;
+ arch/alpha/include/uapi/asm/socket.h          |   3 +
+ arch/mips/include/uapi/asm/socket.h           |   3 +
+ arch/parisc/include/uapi/asm/socket.h         |   3 +
+ arch/sparc/include/uapi/asm/socket.h          |   3 +
+ include/linux/net.h                           |   1 +
+ include/linux/socket.h                        |   1 +
+ include/net/scm.h                             |  16 +-
+ include/uapi/asm-generic/socket.h             |   3 +
+ net/core/sock.c                               |  35 ++
+ net/mptcp/sockopt.c                           |   1 +
+ net/unix/af_unix.c                            |  18 +-
+ tools/include/uapi/asm-generic/socket.h       |   3 +
+ tools/testing/selftests/net/.gitignore        |   1 +
+ tools/testing/selftests/net/af_unix/Makefile  |   3 +-
+ .../testing/selftests/net/af_unix/scm_pidfd.c | 336 ++++++++++++++++++
+ 15 files changed, 423 insertions(+), 7 deletions(-)
+ create mode 100644 tools/testing/selftests/net/af_unix/scm_pidfd.c
+
 -- 
-2.39.2
+2.34.1
 
