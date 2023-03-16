@@ -2,62 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0FB16BCAFF
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 10:35:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82C326BCB28
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 10:39:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230414AbjCPJf2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 05:35:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59696 "EHLO
+        id S231181AbjCPJjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 05:39:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229589AbjCPJf1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 05:35:27 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BDC81D91D;
-        Thu, 16 Mar 2023 02:35:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1678959316; x=1710495316;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=XSdA/tzh1oA+YHWvUYbB+BNJN185VFEmxlVBOOTiIQ8=;
-  b=bb5E/vlBV4BqlEg6Uv+/ZcpZbxu83O+Sm2E3j9dpcGVzWdyFiq1ZOq2G
-   pZXeXXIqCiHXWWVZPwtk0QUUNl96eB9MC9EdM3H3+tWaYJ9mAHqbc5Fne
-   sA305qESv1eQKTnxFGPofC6gRzLKFJ+l5fvitXO7NKnBQBeh0FBgv9Qdv
-   rIa3ywXgZtkDeRefHC1Pn6elIvx5jXh4xi07K1c0dbQMqN3JQkSDTEddd
-   +2Qn3TSUae+oRzs8Snc1ANA0wVmTKbIcQQpfk3qbUawx62g36v/kBFrYt
-   X1dgkwK8B/M8huJOl966XuuCqUUIsMu6QRPRa9eIeSBEKhb3BFLzBvb4G
-   g==;
-X-IronPort-AV: E=Sophos;i="5.98,265,1673938800"; 
-   d="scan'208";a="142345028"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Mar 2023 02:35:14 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Thu, 16 Mar 2023 02:35:14 -0700
-Received: from den-her-m31857h.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.21 via Frontend Transport; Thu, 16 Mar 2023 02:35:12 -0700
-Message-ID: <261a7bca8f0f1f78e85d79a7be27cd809c956464.camel@microchip.com>
-Subject: Re: [PATCH net] hsr: ratelimit only when errors are printed
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Matthieu Baerts <matthieu.baerts@tessares.net>,
-        <mptcp@lists.linux.dev>, "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S230282AbjCPJjW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 05:39:22 -0400
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95E5E1114F
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 02:39:20 -0700 (PDT)
+Received: by mail-yb1-xb34.google.com with SMTP id r1so1096203ybu.5
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 02:39:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112; t=1678959560;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=CcW4g6xSRtuNDpEyutZJ0TfZEqtg4oweNQUtUkk4w6A=;
+        b=SuY3HoePNjvwdMYcrZoR+4ASuw2tjTDYFdGKWj+GsjUMWDO6MuuCl6S1A3KulGmhVl
+         K7M2dVnXZQYshy7dqgZnbKcA9CcimCKb6qF+C5eNnfDQy4bI6YMgwVmIvSt8b/UBNrOw
+         qoQF2Ba0YcGIuv/NJRvqOSRgJki2k05mXqMiu24OO/6i0QMpR/jhPmbsKXZT+mKq1VC5
+         x0qxahNQOvhdcIQ78M1D4h7wBBb0rsGWleaDrybyv7s9n7Inq+VPzeLudQmWYfAxKxb0
+         Jxbji0FOfXS9hUe+dxkvrNZaAs7TC/swhK5Wcw7cd00iOyVUxmLGVO+T3jk+mmhVdCWQ
+         MdxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678959560;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=CcW4g6xSRtuNDpEyutZJ0TfZEqtg4oweNQUtUkk4w6A=;
+        b=5cBsHo8mYXL7mIDnuMPX3kE2XZ/Dzai2Jows3d/D1HhlEzLOHIdfJP8iVws6aQi/Qo
+         7gg5OoSGujljj06FX/Jm/lj0RY3oMwQGvKzs9GmDVmJ3EudzD2sTS6Nq0fve7rPFd8+z
+         7kqL165IgK+SJRGyBUjtVTqsZJWFdjBqu/7bLkBT3mj2MYq8gy00eUrH4gd1KDUhHn6S
+         kiJ8/qUL2LNRAJfMr9OGPJ4X4icc6cbMNexrQBykeIpEosGgpO63Jju4cShgEHc4jvU3
+         ndjFR9hTDeYKbB+eLskBWUmR8H8CLazVVPGxbytpBN87WhhLQQonmxol/bB21w4gQ+xB
+         VE2w==
+X-Gm-Message-State: AO0yUKX2xXEOchqePhwjFJwqMPVcktoaIOxBd1RiXmxM8PjO7gNob8TM
+        pK1G2QWCiE9b5E4WvbddScA3aKwe454uX6+YoMKNSKLbRyU+/Zke
+X-Google-Smtp-Source: AK7set+TnqeFR4lq2NIkvw5arlxlx6LhNvEndsx1hZzkmxeCeLp/o7WoZ4anlr1QDQ1fqcK8qg5IIKNxkCX9q6fZQYk=
+X-Received: by 2002:a05:6902:188c:b0:b50:77a7:ccb with SMTP id
+ cj12-20020a056902188c00b00b5077a70ccbmr3676418ybb.2.1678959559833; Thu, 16
+ Mar 2023 02:39:19 -0700 (PDT)
+MIME-Version: 1.0
+References: <20230314065802.1532741-1-liuhangbin@gmail.com>
+ <20230314065802.1532741-3-liuhangbin@gmail.com> <CAM0EoM=mcejihaG5KthJyXqjPiPiTWvhgLFNqZCthE8VJ23Q9w@mail.gmail.com>
+ <ZBGUJt+fJ61yRKUB@Laptop-X1> <CAM0EoM=pNop+h9Eo_cc=vwS6iY7-f=rJK-G9g+SSJJupnZVy8g@mail.gmail.com>
+ <ZBKOFpG80d3vU++j@Laptop-X1>
+In-Reply-To: <ZBKOFpG80d3vU++j@Laptop-X1>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Date:   Thu, 16 Mar 2023 05:39:08 -0400
+Message-ID: <CAM0EoMkFvU0Pm7x7tnby3RFdMH7QMZDEJ9A_w70wCp2sZG0RNQ@mail.gmail.com>
+Subject: Re: [PATCH net 2/2] net/sched: act_api: add specific EXT_WARN_MSG for
+ tc action
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Kristian Overskeid <koverskeid@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Date:   Thu, 16 Mar 2023 10:35:11 +0100
-In-Reply-To: <20230315-net-20230315-hsr_framereg-ratelimit-v1-1-61d2ef176d11@tessares.net>
-References: <20230315-net-20230315-hsr_framereg-ratelimit-v1-1-61d2ef176d11@tessares.net>
+        David Ahern <dsahern@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Pedro Tammela <pctammela@mojatatu.com>,
+        Marcelo Leitner <mleitner@redhat.com>,
+        Phil Sutter <psutter@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5-0ubuntu1 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,63 +81,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mattieu,
+On Wed, Mar 15, 2023 at 11:33=E2=80=AFPM Hangbin Liu <liuhangbin@gmail.com>=
+ wrote:
+>
+> On Wed, Mar 15, 2023 at 02:49:43PM -0400, Jamal Hadi Salim wrote:
+> > On Wed, Mar 15, 2023 at 5:47=E2=80=AFAM Hangbin Liu <liuhangbin@gmail.c=
+om> wrote:
+> > >
+> > > On Tue, Mar 14, 2023 at 06:35:29PM -0400, Jamal Hadi Salim wrote:
+> > > > Sorry, only thing i should have mentioned earlier - not clear from =
+here:
+> > > > Do you get two ext warns now in the same netlink message? One for t=
+he
+> > > > action and one for the cls?
+> > > > Something to check:
+> > > > on terminal1 > tc monitor
+> > > > on terminal2 > run a command which will get the offload to fail and
+> > > > see what response you get
+> > > >
+> > > > My concern is you may be getting two warnings in one message.
+> > >
+> > > From the result we only got 1 warning message.
+> > >
+> > > # tc qdisc add dev enp4s0f0np0 ingress
+> > > # tc filter add dev enp4s0f0np0 ingress flower verbose ct_state +trk+=
+new action drop
+> > > Warning: mlx5_core: matching on ct_state +new isn't supported.
+> > >
+> > > # tc monitor
+> > > qdisc ingress ffff: dev enp4s0f0np0 parent ffff:fff1 ----------------
+> > > added chain dev enp4s0f0np0 parent ffff: chain 0
+> > > added filter dev enp4s0f0np0 ingress protocol all pref 49152 flower c=
+hain 0 handle 0x1
+> > >   ct_state +trk+new
+> > >   not_in_hw
+> > >         action order 1: gact action drop
+> > >          random type none pass val 0
+> > >          index 1 ref 1 bind 1
+> > >
+> > > mlx5_core: matching on ct_state +new isn't supported
+> > > ^C
+> >
+> > Thanks for checking. I was worried from the quick glance that you will
+> > end up calling the action code with extack from cls and that the
+> > warning will be duplicated.
+>
+> The action info should be filled via dump function, which will not call
+> tca_get_fill(). So I think it should be safe. Please correct me if I miss=
+ed
+> anything.
 
-Looks good to me.
 
-Reviewed-by: Steen Hegelund <Steen.Hegelund@microchip.com>
+Right - for a similar scenario, it will only be called when you
+offload an action independent of the filter.
 
-On Wed, 2023-03-15 at 21:25 +0100, Matthieu Baerts wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> Recently, when automatically merging -net and net-next in MPTCP devel
-> tree, our CI reported [1] a conflict in hsr, the same as the one
-> reported by Stephen in netdev [2].
-> 
-> When looking at the conflict, I noticed it is in fact the v1 [3] that
-> has been applied in -net and the v2 [4] in net-next. Maybe the v1 was
-> applied by accident.
-> 
-> As mentioned by Jakub Kicinski [5], the new condition makes more sense
-> before the net_ratelimit(), not to update net_ratelimit's state which is
-> unnecessary if we're not going to print either way.
-> 
-> Here, this modification applies the v2 but in -net.
-> 
-> Link: https://github.com/multipath-tcp/mptcp_net-next/actions/runs/4423171069 [1]
-> Link: https://lore.kernel.org/netdev/20230315100914.53fc1760@canb.auug.org.au/ [2]
-> Link: https://lore.kernel.org/netdev/20230307133229.127442-1-koverskeid@gmail.com/ [3]
-> Link: https://lore.kernel.org/netdev/20230309092302.179586-1-koverskeid@gmail.com/ [4]
-> Link: https://lore.kernel.org/netdev/20230308232001.2fb62013@kernel.org/ [5]
-> Fixes: 28e8cabe80f3 ("net: hsr: Don't log netdev_err message on unknown prp dst node")
-> Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-> ---
->  net/hsr/hsr_framereg.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
-> index 865eda39d601..b77f1189d19d 100644
-> --- a/net/hsr/hsr_framereg.c
-> +++ b/net/hsr/hsr_framereg.c
-> @@ -415,7 +415,7 @@ void hsr_addr_subst_dest(struct hsr_node *node_src, struct sk_buff *skb,
->         node_dst = find_node_by_addr_A(&port->hsr->node_db,
->                                        eth_hdr(skb)->h_dest);
->         if (!node_dst) {
-> -               if (net_ratelimit() && port->hsr->prot_version != PRP_V1)
-> +               if (port->hsr->prot_version != PRP_V1 && net_ratelimit())
->                         netdev_err(skb->dev, "%s: Unknown node\n", __func__);
->                 return;
->         }
-> 
-> ---
-> base-commit: 75014826d0826d175aa9e36cd8e118793263e3f4
-> change-id: 20230315-net-20230315-hsr_framereg-ratelimit-3c8ff6e43511
-> 
-> Best regards,
-> --
-> Matthieu Baerts <matthieu.baerts@tessares.net>
-> 
-
-BR
-Steen
-
+cheers,
+jamal
