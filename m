@@ -2,56 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A1DC6BC850
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 09:10:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2268E6BC85E
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 09:11:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230406AbjCPIKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 04:10:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55086 "EHLO
+        id S230326AbjCPILn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 04:11:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229729AbjCPIKQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 04:10:16 -0400
+        with ESMTP id S230434AbjCPILl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 04:11:41 -0400
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16CE337710;
-        Thu, 16 Mar 2023 01:10:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45ADDB32AE;
+        Thu, 16 Mar 2023 01:11:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678954215; x=1710490215;
+  t=1678954294; x=1710490294;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=K9DMyKLnUq3+dJoYUSZeV9EfB5sCY/E9PdCn3oo45/c=;
-  b=HEsLWxmd78FOdFJES6iWXDvyDSwlWSM7oLO0ivRyTUsgEVoaUveKKsau
-   G3C2wknMS3swg1NqWiV/synE/STFVM5deix4dfiYu1Bx5Jeb6yMueGHAB
-   qWsWdVYsIAb+yMQZaUsIQHjPv4J7hvqmk8wMVYQZgk6ARmPPgYkSCN8Bl
-   aqQ0qChR+u0Ls4gA8/nAgmDBEKmT/JL4KYd5+en4Ac349JmB3sm6l2TFr
-   bKxCdwF1Jdw7PXTH3KA6tlfjtYhD3OShp/VZoLsfKAWhRhDV8Nm+lT1ws
-   I8VIRI66tHlrl8HNrnrA2D83EYsQinYhA923F66aMJSd74BpaKUd68TZA
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="337938652"
+  bh=UnhAQcLSLLvahXWQtCKusDvdHbGvBLPZzpcwE/TiQZI=;
+  b=TpPiv4Na5+p89vTJwr01OyzR+gB9fR5ggFV+DYRzrwdSjTR0OdQzT4fG
+   5+5N9co3/Bw6IQ5TC5J4ld9ZNIKkGr/kdMZkCsHoca8frRvg78Qx/THuL
+   2eYewaIk1nhFjdc5jv29UXOTuqDsDAkPA/KxciDep/UivvNFkASmB6gEv
+   bhx9Jw6jP9f4MlUEHMOKrqZ8EoTkd0WBdZrz+2PUHntqtzf7F1WSCqON8
+   EwyaMm/jyZ1tA/WfN+Vgt9CItGJVWZjqszC4zD2VD5AvrQE7YBq6hVtzy
+   wFXIlVtyp9gEB92nZmX1xvnjTCRmT+CY2DWVZTSKIUGEZzV+krGyTJnca
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="337938968"
 X-IronPort-AV: E=Sophos;i="5.98,265,1673942400"; 
-   d="scan'208";a="337938652"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2023 01:10:14 -0700
+   d="scan'208";a="337938968"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2023 01:11:33 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="925668258"
+X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="673051764"
 X-IronPort-AV: E=Sophos;i="5.98,265,1673942400"; 
-   d="scan'208";a="925668258"
+   d="scan'208";a="673051764"
 Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2023 01:10:12 -0700
-Date:   Thu, 16 Mar 2023 09:10:04 +0100
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2023 01:11:31 -0700
+Date:   Thu, 16 Mar 2023 09:11:23 +0100
 From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     sgoutham@marvell.com, gakula@marvell.com, sbhatta@marvell.com,
-        hkelam@marvell.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, richardcochran@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] octeontx2-vf: Add missing free for alloc_percpu
-Message-ID: <ZBLO3FSC4IhoBzl1@localhost.localdomain>
-References: <20230316023911.3615-1-jiasheng@iscas.ac.cn>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next v6 1/1] net: dsa: hellcreek: Get rid of custom
+ led_init_default_state_get()
+Message-ID: <ZBLPK0loejiHEoe5@localhost.localdomain>
+References: <20230314181824.56881-1-andriy.shevchenko@linux.intel.com>
+ <ZBFeUazA9X9mmWiJ@localhost.localdomain>
+ <ZBHFOlwoLYn3xz2L@smile.fi.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230316023911.3615-1-jiasheng@iscas.ac.cn>
+In-Reply-To: <ZBHFOlwoLYn3xz2L@smile.fi.intel.com>
 X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
@@ -61,46 +69,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 16, 2023 at 10:39:11AM +0800, Jiasheng Jiang wrote:
-> Add the free_percpu for the allocated "vf->hw.lmt_info" in order to avoid
-> memory leak, same as the "pf->hw.lmt_info" in
-> `drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c`.
+On Wed, Mar 15, 2023 at 03:16:42PM +0200, Andy Shevchenko wrote:
+> On Wed, Mar 15, 2023 at 06:57:37AM +0100, Michal Swiatkowski wrote:
+> > On Tue, Mar 14, 2023 at 08:18:24PM +0200, Andy Shevchenko wrote:
+> > > LED core provides a helper to parse default state from firmware node.
+> > > Use it instead of custom implementation.
 > 
-> Fixes: 5c0512072f65 ("octeontx2-pf: cn10k: Use runtime allocated LMTLINE region")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> ---
->  drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c | 4 ++++
->  1 file changed, 4 insertions(+)
+> ...
 > 
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-> index 7f8ffbf79cf7..9db2e2d218bb 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-> @@ -709,6 +709,8 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->  err_ptp_destroy:
->  	otx2_ptp_destroy(vf);
->  err_detach_rsrc:
-> +	if (vf->hw.lmt_info)
-> +		free_percpu(vf->hw.lmt_info);
->  	if (test_bit(CN10K_LMTST, &vf->hw.cap_flag))
->  		qmem_free(vf->dev, vf->dync_lmt);
-I wonder if it wouldn't be more error prune when You create a function
-to unroll cn10k_lmtst_init() like cn10k_lmtst_deinit(). These two if can
-be there, maybe also sth else is missing.
+> > You have to fix implict declaration of the led_init_default_state_get().
+> 
+> Seems like users have to choose between 'select NEW_LEDS' and
+> 'depends on NEW_LEDS' in the Kconfig.
+> 
+> > I wonder if the code duplication here can be avoided:
+> 
+> Whether or not this is out of the scope of this patch.
+> Feel free to submit one :-)
+> 
+> ...
+>
 
-Otherwise it is fine
+Reasonable ;)
 Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 
->  	otx2_detach_resources(&vf->mbox);
-> @@ -762,6 +764,8 @@ static void otx2vf_remove(struct pci_dev *pdev)
->  	otx2_shutdown_tc(vf);
->  	otx2vf_disable_mbox_intr(vf);
->  	otx2_detach_resources(&vf->mbox);
-> +	if (vf->hw.lmt_info)
-> +		free_percpu(vf->hw.lmt_info);
->  	if (test_bit(CN10K_LMTST, &vf->hw.cap_flag))
->  		qmem_free(vf->dev, vf->dync_lmt);
->  	otx2vf_vfaf_mbox_destroy(vf);
+> > Only suggestion, patch looks good.
+> 
+> Thank you!
+> 
 > -- 
-> 2.25.1
+> With Best Regards,
+> Andy Shevchenko
+> 
 > 
