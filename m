@@ -2,157 +2,256 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C21BA6BCE59
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 12:36:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F4A06BCE6C
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 12:37:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230223AbjCPLgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 07:36:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55860 "EHLO
+        id S230234AbjCPLhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 07:37:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230164AbjCPLgO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 07:36:14 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 254ED2884E
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 04:36:01 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id x3so6248091edb.10
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 04:36:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678966559;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=DqDI/M1Af8/sNqbCpEB0H1SmBWIzYviu82ZtF7Bi/bY=;
-        b=rRiEU5oazgQw0R1aSrCBttAqFSEJbGCKYqagvYeE7JYF//DJybGNz6QSbv2vA07802
-         dlLfQ+Yulm4Iqsuz0cMhG7nEGJfRGeZqyJVaah9azQkwJm1F46Ci4e1AgEY8zzju++/g
-         cEqoPpZjBM7kZVe2+ZcrvrjK6G1JXhVTodHZjT1QIGOE2dIBKG9C5jGGQzviDkwWfDQN
-         C/sdbca1RYlv1W6tQHtImGRS3uNb4EZrh9ITaYedh8GcRQs9VXcnn4NnAAY76T8sdI8F
-         wHLDEHsJcnRzHbhyrcGYBykxBR3sGVENScBstgDamWjuJOIk5QttOiqcWZQMSclPr9PO
-         XkUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678966559;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=DqDI/M1Af8/sNqbCpEB0H1SmBWIzYviu82ZtF7Bi/bY=;
-        b=hMMcjwNXqVIT4RUFkjl/3zFb5xx7XjyS1ffaiEAF2MLm8xDf+pn7TBMm84lL47v6+h
-         mNXAFdQCl8kzeIJW0tGgy5iNQmK+F+gnnyrxwzUYtEXLb0FKWPfWJyjQ8qszMJ6zWnRA
-         3YrBh7LkDWMwrH61ERfUPbDhI846tqioO/o77coa3oiSlLqz/zqD+2Vhogc25R0MQeZ4
-         zYj9fEIUdeAUWvBayimmjZS0pdR+2Pgpg4BoPur4Ts2tOxAHlUcXSWlWOhF9+5CegiAg
-         /9ATwmh0AHJEl82WIJbByrQ3YhVuzyWbL3/WPJNSbKTS/YQqj4WUrxdJjaGlx5HZxjOO
-         aHUQ==
-X-Gm-Message-State: AO0yUKWU3Z1VCZmtoBbgRTx3NmgVM0/jAG46+/GODKLHL75GsuAWUHWP
-        ZMLWWBSYM5reVXQRSC1Z6KXwvg==
-X-Google-Smtp-Source: AK7set8sYZiwje7c5FUEwR9UZNt5fMGvnqOF2tI01ccg9IOBFjG/kdx4xLMiQvZ3K+XFDGc8yi4+vg==
-X-Received: by 2002:aa7:c94e:0:b0:4fb:5089:6e01 with SMTP id h14-20020aa7c94e000000b004fb50896e01mr6438016edt.6.1678966559627;
-        Thu, 16 Mar 2023 04:35:59 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:9827:5f65:8269:a95f? ([2a02:810d:15c0:828:9827:5f65:8269:a95f])
-        by smtp.gmail.com with ESMTPSA id g24-20020a50d0d8000000b004fd29e87535sm3714492edf.14.2023.03.16.04.35.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Mar 2023 04:35:59 -0700 (PDT)
-Message-ID: <2751a83d-d3ff-8dbf-4fa3-dedc40d23d45@linaro.org>
-Date:   Thu, 16 Mar 2023 12:35:58 +0100
+        with ESMTP id S229729AbjCPLhT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 07:37:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB988C6426;
+        Thu, 16 Mar 2023 04:36:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0ABE7B82129;
+        Thu, 16 Mar 2023 11:36:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01E91C433EF;
+        Thu, 16 Mar 2023 11:36:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678966613;
+        bh=O9HMPyWgeiI0jJRwpx01XQshSoPMJEGZDfmKLwzW+UI=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=ZGcLDh0kp6YPPYl7JeOcz+d7GmBqXMYfTc8DIRfh4TnMDR0KR2VbAIXuPPhh0PsQC
+         7+9unTxXk+9S1TZ6uCkIV3kmtvaxajNlU7mhDLYPFarETP068RjpmUfWmZ0sR6YCib
+         fKJ8bG3/kvegAZAr3jEWawIuQlHgx8NI7wJ2omNRsno4pNblUXoTr+MaXejUqt8WO4
+         P/vMUl+YA+W3kvi4C1oxC1tOLvGe580mE3Q5FxU6pRqCywsxSeIAMzaC122BVWram4
+         cjwQ6se4WJ1r5CzsdXrfMCGK/PU3Xk9JrbFbSHhZjQV7N+6ZNHGUOaCOa/Zd3JJnul
+         LvL3cXAQLN8fA==
+Message-ID: <60e73395-f670-6eaa-0eb7-389553320a71@kernel.org>
+Date:   Thu, 16 Mar 2023 13:36:47 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH v7 4/6] dt-bindings: net: Add support StarFive dwmac
+ Thunderbird/102.8.0
+Subject: Re: [EXTERNAL] Re: [PATCH v4 4/5] soc: ti: pruss: Add helper
+ functions to set GPI mode, MII_RT_event and XFR
 Content-Language: en-US
-To:     Guo Samin <samin.guo@starfivetech.com>,
-        linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Yanhong Wang <yanhong.wang@starfivetech.com>,
-        Tommaso Merciai <tomm.merciai@gmail.com>
-References: <20230316043714.24279-1-samin.guo@starfivetech.com>
- <20230316043714.24279-5-samin.guo@starfivetech.com>
- <cfeec762-de75-f90f-7ba1-6c0bd8b70dff@linaro.org>
- <93a3b4bb-35a4-da7c-6816-21225b42f79b@starfivetech.com>
- <9038dba0-6f72-44a1-9f57-1c08b03b9c31@linaro.org>
- <d2bb7fa5-206f-2059-bde0-b65e1acc44de@starfivetech.com>
- <c716e535-7426-56da-ca6f-51c7d7d69bb3@linaro.org>
- <b7766151-cf21-a5b4-e0ef-7b070e9e5c33@starfivetech.com>
- <d2eda9a8-f532-d7f0-7ef3-b3b8e1a0a79f@linaro.org>
- <ed8dbe90-ee1d-405a-5aa6-cbc16a0057ac@starfivetech.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <ed8dbe90-ee1d-405a-5aa6-cbc16a0057ac@starfivetech.com>
+To:     Md Danish Anwar <a0501179@ti.com>,
+        MD Danish Anwar <danishanwar@ti.com>,
+        "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Nishanth Menon <nm@ti.com>
+Cc:     linux-remoteproc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, srk@ti.com, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20230313111127.1229187-1-danishanwar@ti.com>
+ <20230313111127.1229187-5-danishanwar@ti.com>
+ <d168e7dd-42a0-b728-5c4c-e97209c13871@kernel.org>
+ <b1409f34-86b5-14e8-f352-5032aa57ca46@ti.com>
+From:   Roger Quadros <rogerq@kernel.org>
+In-Reply-To: <b1409f34-86b5-14e8-f352-5032aa57ca46@ti.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 16/03/2023 11:18, Guo Samin wrote:
-> 
-> 
-> -------- 原始信息 --------
-> Re: [PATCH v7 4/6] dt-bindings: net: Add support StarFive dwmac
-> From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> to : Guo Samin <samin.guo@starfivetech.com>, linux-riscv@lists.infradead.org, netdev@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-> data: 2023/3/16
-> 
->> On 16/03/2023 09:28, Guo Samin wrote:
->>>
->>>
->>> -------- 原始信息 --------
->>> 主题: Re: [PATCH v7 4/6] dt-bindings: net: Add support StarFive dwmac
->>> From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->>> 收件人: Guo Samin <samin.guo@starfivetech.com>, linux-riscv@lists.infradead.org, netdev@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
->>> 日期: 2023/3/16
->>>
->>>> On 16/03/2023 09:15, Guo Samin wrote:
->>>>>>>> interrupts: ???
->>>>>>>>
->>>>>>>
->>>>>>> Hi Krzysztof, 
->>>>>>>
->>>>>>> snps,dwmac.yaml has defined the reg/interrupt/interrupt-names nodes,
->>>>>>> and the JH7110 SoC is also applicable.
->>>>>>> Maybe just add reg/interrupt/interrupt-names to the required ?
->>>>>>
->>>>>> You need to constrain them.
->>>>>
->>>>>
->>>>> I see. I will add reg constraints in the next version, thanks.
->>>>>
->>>>> I have one more question, the interrupts/interrup-names of JH7110 SoC's gmac are exactly the same as snps,dwmac.yaml,
->>>>> do these also need to be constrained?
->>>>
->>>> The interrupts on common binding are variable, so you need to constrain
->>>> them - you have fixed number of them, right?
->>>>
->>>> Best regards,
->>>> Krzysztof
->>>>
->>>
->>> Yes, JH7110 fixed is 3 pcs. Thanks, I will constrain them.
->>
->> Then just minItems: 3, maxItems: 3 here should be enough
->>
->> Best regards,
->> Krzysztof
->>
-> 
-> Hi Krzysztof,
-> 
-> Thank you for the suggestion. 
-> I'll change it like this in the next version, is right?
+Hi,
 
-Yes, looks good for me.
+On 16/03/2023 13:05, Md Danish Anwar wrote:
+> Hi Roger,
+> 
+> On 15/03/23 17:52, Roger Quadros wrote:
+>>
+>>
+>> On 13/03/2023 13:11, MD Danish Anwar wrote:
+>>> From: Suman Anna <s-anna@ti.com>
+>>>
+>>> The PRUSS CFG module is represented as a syscon node and is currently
+>>> managed by the PRUSS platform driver. Add easy accessor functions to set
+>>> GPI mode, MII_RT event enable/disable and XFR (XIN XOUT) enable/disable
+>>> to enable the PRUSS Ethernet usecase. These functions reuse the generic
+>>> pruss_cfg_update() API function.
+>>>
+>>> Signed-off-by: Suman Anna <s-anna@ti.com>
+>>> Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+>>> Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+>>> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+>>> Signed-off-by: MD Danish Anwar <danishanwar@ti.com>
+>>> ---
+>>>  drivers/soc/ti/pruss.c           | 60 ++++++++++++++++++++++++++++++++
+>>>  include/linux/remoteproc/pruss.h | 22 ++++++++++++
+>>>  2 files changed, 82 insertions(+)
+>>>
+>>> diff --git a/drivers/soc/ti/pruss.c b/drivers/soc/ti/pruss.c
+>>> index 26d8129b515c..2f04b7922ddb 100644
+>>> --- a/drivers/soc/ti/pruss.c
+>>> +++ b/drivers/soc/ti/pruss.c
+>>> @@ -203,6 +203,66 @@ static int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
+>>>  	return regmap_update_bits(pruss->cfg_regmap, reg, mask, val);
+>>>  }
+>>>  
+>>> +/**
+>>> + * pruss_cfg_gpimode() - set the GPI mode of the PRU
+>>> + * @pruss: the pruss instance handle
+>>> + * @pru_id: id of the PRU core within the PRUSS
+>>> + * @mode: GPI mode to set
+>>> + *
+>>> + * Sets the GPI mode for a given PRU by programming the
+>>> + * corresponding PRUSS_CFG_GPCFGx register
+>>> + *
+>>> + * Return: 0 on success, or an error code otherwise
+>>> + */
+>>> +int pruss_cfg_gpimode(struct pruss *pruss, enum pruss_pru_id pru_id,
+>>> +		      enum pruss_gpi_mode mode)
+>>> +{
+>>> +	if (pru_id < 0 || pru_id >= PRUSS_NUM_PRUS)
+>>> +		return -EINVAL;
+>>> +
+>>> +	if (mode < 0 || mode > PRUSS_GPI_MODE_MAX)
+>>> +		return -EINVAL;
+>>> +
+>>> +	return pruss_cfg_update(pruss, PRUSS_CFG_GPCFG(pru_id),
+>>> +				PRUSS_GPCFG_PRU_GPI_MODE_MASK,
+>>> +				mode << PRUSS_GPCFG_PRU_GPI_MODE_SHIFT);
+>>> +}
+>>> +EXPORT_SYMBOL_GPL(pruss_cfg_gpimode);
+>>> +
+>>> +/**
+>>> + * pruss_cfg_miirt_enable() - Enable/disable MII RT Events
+>>> + * @pruss: the pruss instance
+>>> + * @enable: enable/disable
+>>> + *
+>>> + * Enable/disable the MII RT Events for the PRUSS.
+>>> + *
+>>> + * Return: 0 on success, or an error code otherwise
+>>> + */
+>>> +int pruss_cfg_miirt_enable(struct pruss *pruss, bool enable)
+>>> +{
+>>> +	u32 set = enable ? PRUSS_MII_RT_EVENT_EN : 0;
+>>> +
+>>> +	return pruss_cfg_update(pruss, PRUSS_CFG_MII_RT,
+>>> +				PRUSS_MII_RT_EVENT_EN, set);
+>>> +}
+>>> +EXPORT_SYMBOL_GPL(pruss_cfg_miirt_enable);
+>>> +
+>>> +/**
+>>> + * pruss_cfg_xfr_enable() - Enable/disable XIN XOUT shift functionality
+>>> + * @pruss: the pruss instance
+>>> + * @enable: enable/disable
+>>> + * @mask: Mask for PRU / RTU
+>>
+>> You should not expect the user to provide the mask but only
+>> the core type e.g. 
+>>
+>> enum pru_type {
+>>         PRU_TYPE_PRU = 0,
+>>         PRU_TYPE_RTU,
+>>         PRU_TYPE_TX_PRU,
+>>         PRU_TYPE_MAX,
+>> };
+>>
+>> Then you figure out the mask in the function.
+>> Also check for invalid pru_type and return error if so.
+>>
+> 
+> Sure Roger, I will create a enum and take it as parameter in API. Based on
+> these enum I will calculate mask and do XFR shifting inside the API
+> pruss_cfg_xfr_enable().
+> 
+> There are two registers for XFR shift.
+> 
+> #define PRUSS_SPP_XFER_SHIFT_EN                 BIT(1)
+> #define PRUSS_SPP_RTU_XFR_SHIFT_EN              BIT(3)
+> 
+> For PRU XFR shifting, the mask should be PRUSS_SPP_XFER_SHIFT_EN,
+> for RTU shifting mask should be PRUSS_SPP_RTU_XFR_SHIFT_EN and for PRU and RTU
+> shifting mask should be (PRUSS_SPP_XFER_SHIFT_EN | PRUSS_SPP_RTU_XFR_SHIFT_EN)
+> 
+> So the enum would be something like this.
+> 
+> /**
+>  * enum xfr_shift_type - XFR shift type
+>  * @XFR_SHIFT_PRU: Enables XFR shift for PRU
+>  * @XFR_SHIFT_RTU: Enables XFR shift for RTU
+>  * @XFR_SHIFT_PRU_RTU: Enables XFR shift for both PRU and RTU
 
-Best regards,
-Krzysztof
+This is not required. User can call the API twice. once for PRU and once for RTU.
 
+>  * @XFR_SHIFT_MAX: Total number of XFR shift types available.
+>  *
+>  */
+> 
+> enum xfr_shift_type {
+>         XFR_SHIFT_PRU = 0,
+>         XFR_SHIFT_RTU,
+>         XFR_SHIFT_PRU_RTU,
+>         XFR_SHIFT_MAX,
+> };
+
+Why do you need this new enum definition?
+We already have pru_type defined somewhere. You can move it to a public header
+if not there yet.
+
+enum pru_type {
+         PRU_TYPE_PRU = 0,
+         PRU_TYPE_RTU,
+         PRU_TYPE_TX_PRU,
+         PRU_TYPE_MAX,
+};
+
+
+> 
+> In pruss_cfg_xfr_enable() API, I will use switch case, and for first three
+> enums, I will calculate the mask.
+> 
+> If input is anything other than first three, I will retun -EINVAL. This will
+> serve as check for valid xfr_shift_type.
+> 
+> The API will look like this.
+> 
+> int pruss_cfg_xfr_enable(struct pruss *pruss, enum xfr_shift_type xfr_type,
+> 			 bool enable);
+> {
+> 	u32 mask;
+> 
+> 	switch (xfr_type) {
+> 	case XFR_SHIFT_PRU:
+> 		mask = PRUSS_SPP_XFER_SHIFT_EN;
+> 		break;
+> 	case XFR_SHIFT_RTU:
+> 		mask = PRUSS_SPP_RTU_XFR_SHIFT_EN;
+> 		break;
+> 	case XFR_SHIFT_PRU_RTU:
+> 		mask = PRUSS_SPP_XFER_SHIFT_EN | PRUSS_SPP_RTU_XFR_SHIFT_EN;
+> 		break;
+> 	default:
+> 		return -EINVAL;
+> 	}
+> 
+> 	u32 set = enable ? mask : 0;
+> 
+> 	return pruss_cfg_update(pruss, PRUSS_CFG_SPP, mask, set);
+> }
+> 
+> This entire change I will keep as part of this patch only.
+> 
+> Please let me know if this looks OK to you.
+> 
+> 
+
+cheers,
+-roger
