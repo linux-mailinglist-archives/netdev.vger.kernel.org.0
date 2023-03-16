@@ -2,80 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D1946BCA75
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 10:12:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B023F6BCA7F
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 10:13:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229897AbjCPJMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 05:12:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51798 "EHLO
+        id S229716AbjCPJNx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 05:13:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbjCPJMp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 05:12:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4092D170E
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 02:11:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678957908;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3eMeY9yQN+W3p1vHqt8vyruDxKEouKBf8XoW+xN+7GI=;
-        b=WTapVjnBtsf4iDkaOoK6qqtuhXhhxpgvaZXnVs/FKHfqq6gsge4yBK44zDUyr/rh7rOoOX
-        TH5oOCQCZlG+cGJf6Rr1n+xiACwcsZuxfNiNq2FQVzyuLBWdGwQXqYNnIlGq9rT5ualJbQ
-        EJ9Qs1ChdDUUJuNXZNUF+hFgwxbxeq8=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-412-wcIOqPNlNUmL-4oDClUVaw-1; Thu, 16 Mar 2023 05:11:47 -0400
-X-MC-Unique: wcIOqPNlNUmL-4oDClUVaw-1
-Received: by mail-wr1-f70.google.com with SMTP id b14-20020a05600003ce00b002cfefd8e637so139072wrg.15
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 02:11:46 -0700 (PDT)
+        with ESMTP id S229691AbjCPJNu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 05:13:50 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C29915C97;
+        Thu, 16 Mar 2023 02:13:46 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id ip21-20020a05600ca69500b003ed56690948so594027wmb.1;
+        Thu, 16 Mar 2023 02:13:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678958025;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=y1wI6KS7nZ+BAxbXQwcHv8OCqNHv/ZA1CoTUOG0kaOw=;
+        b=pH4DZPsV8fHwNHtlkoRtDhH+rGhAebSra2S6AS12iNP1CQphcOBdgRjZi5aQVnf2AN
+         l9BRE52FccC7urQrvE81fDDpg6RHDnr5eSdedgxc9digmPGOO/m9ZSHTaUMwZ4E9qsZf
+         9UJWtypK3/M0Xb/TJTq6JO777BZ0wV+dFMZbWcilV6IjWgqkDtQ5NEbVdCvDU0itsxTB
+         l8PO6evxixNThrGVRpAKrZ2FTdH04fUZ2VZoK3m7m+GUDRd11NG4zDeQuhuPdFVY0Up/
+         q/t/5Okm7Uj0+Wg2XOawXe3LXY6sdoNSQa632zAKMSqNANd/eW7aDO8P5fZJ8Nh8rph3
+         bMlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678957906;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=3eMeY9yQN+W3p1vHqt8vyruDxKEouKBf8XoW+xN+7GI=;
-        b=p+ds4gk8zx33EVqoYv2R108nGZ4d67Y/RHslbAZwO8yAATWxtbAQ76GraqpuLXEDpI
-         aFF+E0NPFojFRXruHtPjBfdP8lR/bIdBVcyhl7Yj+TvZbtOnqRt2uuRay/LxdjxcKb/0
-         7m+Bd3hSdiPsi52pYJezXtH5jP2EKEMlQrCk/E9DdJA79y4f6p7ivDsuLYGQ7t4/R/Zl
-         LJ0t3ISfAA96rVQmpSx/bq5pvMGJSDD3XLrZ5s4V5QcF7TMkD+9SHcy4u1WXj7h5oNm9
-         r941hlpGOo2NZdECActgmpDuUxO8QfbMWt1PLA0MfHUXZmMVj0lTCNADYpP2xMf2DGRo
-         payA==
-X-Gm-Message-State: AO0yUKWO1jOT96xLriRidid1JSbZpabEvcpX67V4z9fHwI9tkp//4pcY
-        J5zhHdgvZWFsmnIlVPNgBmhdP/2K09jnTQpJGFZmoPRX2O6XW9R+lYmI/Ojq8c8t/1v+M6YIvM5
-        rGo1UXKvA957nyOzF
-X-Received: by 2002:adf:ffc4:0:b0:2ce:fd37:9392 with SMTP id x4-20020adfffc4000000b002cefd379392mr4100474wrs.45.1678957905879;
-        Thu, 16 Mar 2023 02:11:45 -0700 (PDT)
-X-Google-Smtp-Source: AK7set+X9DfQli3Fz2uLdFc+Z4TbWmOca2fwWfEubcClbX5Pl3I1a8rJk+NQbGboz0DJZWf/m4UJLQ==
-X-Received: by 2002:adf:ffc4:0:b0:2ce:fd37:9392 with SMTP id x4-20020adfffc4000000b002cefd379392mr4100461wrs.45.1678957905562;
-        Thu, 16 Mar 2023 02:11:45 -0700 (PDT)
-Received: from sgarzare-redhat (host-82-57-51-170.retail.telecomitalia.it. [82.57.51.170])
-        by smtp.gmail.com with ESMTPSA id c10-20020adfed8a000000b002cf8220cc75sm6685830wro.24.2023.03.16.02.11.44
+        d=1e100.net; s=20210112; t=1678958025;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=y1wI6KS7nZ+BAxbXQwcHv8OCqNHv/ZA1CoTUOG0kaOw=;
+        b=sCayG2c/RFnLcH3+JqHcAUuguzGliCnLOpjcgj0tcEGZL5Uloniwr+d+67gAh/HYke
+         JS1X6Pg8rLa4edpkjDvq2jDwBtdbln3HDIA0pwiQmhBdjHpulb6UbJPtXOxAoyxr0C10
+         xLJIIvMyHdSI+Qm2PjS6z/Inf5hHw/sjjcmoWOyJ7vypMwal/06vejKq/2oKOwMPcJH1
+         M4faZX/5DId7/MmLOFYSIHp8OEpjKvkE0WcZxsGkWcGvGeuLbaFOi3xuuGXxFcGfyOEI
+         XP799cDQ5uFWSLttXJMa1m/Xl7C+AlKWH2OngPD1ikm11OpcZjcvlBItPivTwkiJVJ+N
+         bmVg==
+X-Gm-Message-State: AO0yUKVLtlVUt4a6cZqxjhNfhyt+XUxwRaOK1m6cATAFoa5RwAx+ND+7
+        mWuLoTa/j21Wda5BIlJtA4SP2hn+LJ2ntA==
+X-Google-Smtp-Source: AK7set/omKQgo/seetBthv72Tur5fOCcDJfwpwJcU+3LcqDf1smJKiGVEp1Nh48clT48qmi0/MIViQ==
+X-Received: by 2002:a05:600c:19cf:b0:3eb:2da4:f304 with SMTP id u15-20020a05600c19cf00b003eb2da4f304mr19305219wmq.17.1678958024569;
+        Thu, 16 Mar 2023 02:13:44 -0700 (PDT)
+Received: from suse.localnet (host-79-35-102-94.retail.telecomitalia.it. [79.35.102.94])
+        by smtp.gmail.com with ESMTPSA id i26-20020a1c541a000000b003ed246f76a2sm4609903wmb.1.2023.03.16.02.13.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Mar 2023 02:11:45 -0700 (PDT)
-Date:   Thu, 16 Mar 2023 10:11:42 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
+        Thu, 16 Mar 2023 02:13:44 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
 Cc:     virtualization@lists.linux-foundation.org,
         Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
         eperezma@redhat.com, netdev@vger.kernel.org, stefanha@redhat.com,
-        linux-kernel@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org
-Subject: Re: [PATCH v2 8/8] vdpa_sim: add support for user VA
-Message-ID: <20230316091142.p2ogqf3q2fsyha3l@sgarzare-redhat>
+        linux-kernel@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org,
+        Stefano Garzarella <sgarzare@redhat.com>
+Subject: Re: [PATCH v2 3/8] vringh: replace kmap_atomic() with kmap_local_page()
+Date:   Thu, 16 Mar 2023 10:13:39 +0100
+Message-ID: <5675662.DvuYhMxLoT@suse>
+In-Reply-To: <20230302113421.174582-4-sgarzare@redhat.com>
 References: <20230302113421.174582-1-sgarzare@redhat.com>
- <20230302113421.174582-9-sgarzare@redhat.com>
- <CACGkMEt1hBcRdh0oQYCs4meRs0mvDu9X9o-zK4aS87hrN+QPxA@mail.gmail.com>
+ <20230302113421.174582-4-sgarzare@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CACGkMEt1hBcRdh0oQYCs4meRs0mvDu9X9o-zK4aS87hrN+QPxA@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,142 +76,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 14, 2023 at 01:36:13PM +0800, Jason Wang wrote:
->On Thu, Mar 2, 2023 at 7:35 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
->>
->> The new "use_va" module parameter (default: false) is used in
->> vdpa_alloc_device() to inform the vDPA framework that the device
->> supports VA.
->>
->> vringh is initialized to use VA only when "use_va" is true and the
->> user's mm has been bound. So, only when the bus supports user VA
->> (e.g. vhost-vdpa).
->>
->> vdpasim_mm_work_fn work is used to attach the kthread to the user
->> address space when the .bind_mm callback is invoked, and to detach
->> it when the .unbind_mm callback is invoked.
->>
->> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
->> ---
->>
->> Notes:
->>     v2:
->>     - `use_va` set to true by default [Eugenio]
->>     - supported the new unbind_mm callback [Jason]
->>     - removed the unbind_mm call in vdpasim_do_reset() [Jason]
->>     - avoided to release the lock while call kthread_flush_work() since we
->>       are now using a mutex to protect the device state
->>
->>  drivers/vdpa/vdpa_sim/vdpa_sim.h |  1 +
->>  drivers/vdpa/vdpa_sim/vdpa_sim.c | 98 +++++++++++++++++++++++++++++++-
->>  2 files changed, 97 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.h b/drivers/vdpa/vdpa_sim/vdpa_sim.h
->> index 4774292fba8c..3a42887d05d9 100644
->> --- a/drivers/vdpa/vdpa_sim/vdpa_sim.h
->> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.h
->> @@ -59,6 +59,7 @@ struct vdpasim {
->>         struct vdpasim_virtqueue *vqs;
->>         struct kthread_worker *worker;
->>         struct kthread_work work;
->> +       struct mm_struct *mm_bound;
->>         struct vdpasim_dev_attr dev_attr;
->>         /* mutex to synchronize virtqueue state */
->>         struct mutex mutex;
->> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
->> index a28103a67ae7..eda26bc33df5 100644
->> --- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
->> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
->> @@ -35,10 +35,77 @@ module_param(max_iotlb_entries, int, 0444);
->>  MODULE_PARM_DESC(max_iotlb_entries,
->>                  "Maximum number of iotlb entries for each address space. 0 means unlimited. (default: 2048)");
->>
->> +static bool use_va = true;
->> +module_param(use_va, bool, 0444);
->> +MODULE_PARM_DESC(use_va, "Enable/disable the device's ability to use VA");
->> +
->>  #define VDPASIM_QUEUE_ALIGN PAGE_SIZE
->>  #define VDPASIM_QUEUE_MAX 256
->>  #define VDPASIM_VENDOR_ID 0
->>
->> +struct vdpasim_mm_work {
->> +       struct kthread_work work;
->> +       struct mm_struct *mm;
->> +       bool bind;
->> +       int ret;
->> +};
->> +
->> +static void vdpasim_mm_work_fn(struct kthread_work *work)
->> +{
->> +       struct vdpasim_mm_work *mm_work =
->> +               container_of(work, struct vdpasim_mm_work, work);
->> +
->> +       mm_work->ret = 0;
->> +
->> +       if (mm_work->bind) {
->> +               kthread_use_mm(mm_work->mm);
->> +               //TODO: should we attach the cgroup of the mm owner?
->> +       } else {
->> +               kthread_unuse_mm(mm_work->mm);
->> +       }
->> +}
->> +
->> +static void vdpasim_worker_queue_mm(struct vdpasim *vdpasim,
->> +                                   struct vdpasim_mm_work *mm_work)
->> +{
->
->Nit: we need to tweak the name as it does flush besides queuing the work.
+On gioved=EC 2 marzo 2023 12:34:16 CET Stefano Garzarella wrote:
+> kmap_atomic() is deprecated in favor of kmap_local_page().
+>=20
+> With kmap_local_page() the mappings are per thread, CPU local, can take
+> page-faults, and can be called from any context (including interrupts).
+> Furthermore, the tasks can be preempted and, when they are scheduled to
+> run again, the kernel virtual addresses are restored and still valid.
+>=20
+> kmap_atomic() is implemented like a kmap_local_page() which also disables
+> page-faults and preemption (the latter only for !PREEMPT_RT kernels,
+> otherwise it only disables migration).
+>=20
+> The code within the mappings/un-mappings in getu16_iotlb() and
+> putu16_iotlb() don't depend on the above-mentioned side effects of
+> kmap_atomic(), so that mere replacements of the old API with the new one
+> is all that is required (i.e., there is no need to explicitly add calls
+> to pagefault_disable() and/or preempt_disable()).
 
-Yep, or split in 2 functions.
+It seems that my commit message is quite clear and complete and therefore h=
+as=20
+already been reused by others who have somehow given me credit.=20
 
->
->> +       struct kthread_work *work = &mm_work->work;
->> +
->> +       kthread_init_work(work, vdpasim_mm_work_fn);
->> +       kthread_queue_work(vdpasim->worker, work);
->> +
->> +       kthread_flush_work(work);
->> +}
->> +
->> +static int vdpasim_worker_bind_mm(struct vdpasim *vdpasim,
->> +                                 struct mm_struct *new_mm)
->> +{
->> +       struct vdpasim_mm_work mm_work;
->> +
->> +       mm_work.mm = new_mm;
->> +       mm_work.bind = true;
->> +
->> +       vdpasim_worker_queue_mm(vdpasim, &mm_work);
->> +
->> +       if (!mm_work.ret)
->> +               vdpasim->mm_bound = new_mm;
->> +
->> +       return mm_work.ret;
->> +}
->> +
->> +static void vdpasim_worker_unbind_mm(struct vdpasim *vdpasim)
->> +{
->> +       struct vdpasim_mm_work mm_work;
->> +
->> +       if (!vdpasim->mm_bound)
->> +               return;
->> +
->> +       mm_work.mm = vdpasim->mm_bound;
->> +       mm_work.bind = false;
->
->Can we simply use mm_work.mm = NULL for unbinding?
->
->> +
->> +       vdpasim_worker_queue_mm(vdpasim, &mm_work);
->> +
->> +       vdpasim->mm_bound = NULL;
->
->And change the mm_bound in the worker?
-
-Yep, I need to put `vdpasim` in struct vdpasim_mm_work.
-
-I'll do in the next version.
+I would really appreciate it being mentioned here that you are reusing a=20
+"boiler plate" commit message of my own making and Cc me :-)
 
 Thanks,
-Stefano
+
+=46abio
+
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> ---
+>=20
+> Notes:
+>     v2:
+>     - added this patch since checkpatch.pl complained about deprecation
+>       of kmap_atomic() touched by next patch
+>=20
+>  drivers/vhost/vringh.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+> index a1e27da54481..0ba3ef809e48 100644
+> --- a/drivers/vhost/vringh.c
+> +++ b/drivers/vhost/vringh.c
+> @@ -1220,10 +1220,10 @@ static inline int getu16_iotlb(const struct vringh
+> *vrh, if (ret < 0)
+>  		return ret;
+>=20
+> -	kaddr =3D kmap_atomic(iov.bv_page);
+> +	kaddr =3D kmap_local_page(iov.bv_page);
+>  	from =3D kaddr + iov.bv_offset;
+>  	*val =3D vringh16_to_cpu(vrh, READ_ONCE(*(__virtio16 *)from));
+> -	kunmap_atomic(kaddr);
+> +	kunmap_local(kaddr);
+>=20
+>  	return 0;
+>  }
+> @@ -1241,10 +1241,10 @@ static inline int putu16_iotlb(const struct vringh
+> *vrh, if (ret < 0)
+>  		return ret;
+>=20
+> -	kaddr =3D kmap_atomic(iov.bv_page);
+> +	kaddr =3D kmap_local_page(iov.bv_page);
+>  	to =3D kaddr + iov.bv_offset;
+>  	WRITE_ONCE(*(__virtio16 *)to, cpu_to_vringh16(vrh, val));
+> -	kunmap_atomic(kaddr);
+> +	kunmap_local(kaddr);
+>=20
+>  	return 0;
+>  }
+> --
+> 2.39.2
+
+
+
 
