@@ -2,154 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B557C6BD9E9
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 21:11:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54F3D6BDA24
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 21:28:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230297AbjCPULH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 16:11:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39240 "EHLO
+        id S230093AbjCPU24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 16:28:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230134AbjCPULC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 16:11:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA419DDF16
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 13:10:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678997410;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=S/vpb1xIhX2vQ4kvOXzbDy79AECXzJiS3LlCu83SQPk=;
-        b=XwrgE2d60pQh6EIczn9Bnjhe0gACfrJ1HrVgRpZpf+Wv3oQbAi2jvN2CV6lPW6L9hzeT3U
-        1SxjezQkpZCJG5HgSYQg9ymVxDclLOP+T5P/y9Iay9JTvGC/C0YyekS631MqCUC+Z5OkSz
-        OKy7yPfAko3OJ31ZTTVH9oHSUIYZuOQ=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-275-NyTRPcB2OpKdgQi9n7X5qA-1; Thu, 16 Mar 2023 16:10:08 -0400
-X-MC-Unique: NyTRPcB2OpKdgQi9n7X5qA-1
-Received: by mail-ed1-f71.google.com with SMTP id r19-20020a50aad3000000b005002e950cd3so4634369edc.11
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 13:10:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678997405;
-        h=content-transfer-encoding:mime-version:message-id:date:references
-         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=S/vpb1xIhX2vQ4kvOXzbDy79AECXzJiS3LlCu83SQPk=;
-        b=2EoD1R+IWqrJCoFtUtuBtbPbAgl6IXe0mwUnmDf2TmetjSBuXHVVEDmeiEvj+a7GKo
-         hCVtyqD37V/QHk4+VBwxB6Nvp1WqCnr2wNhdrT1hqzGglI9LzZwsjJGj/X9WkKDDFQSM
-         N0d/PfFQTWnmrgTIMWCvszPtLFiiM98ya2YvBDisbPSeiYIrHXMDiCq+gz0FjsaHP+nI
-         hsGNY6bTMmiE4laAgL8qsMZLhKJSUNLe4XQ5pjP3Tp1sxx+qd6ZYLNP7qgR+HMHbY6LK
-         YHasfR/IPkZ3eEqgOVkqfkPggEhVm0rCoaGtTR135TD5TxVS0J+/LQSTnLWupWZxa3o1
-         2Y7A==
-X-Gm-Message-State: AO0yUKXakBBa/NwYSQn8ksXeezu7QkEc9ulDShj1xb38ET+ychA5M0Nk
-        krrZHDLPMHQMazGs2h4wzse4f0wdRdMIzAAug4bKwuu/sQaxePnGBYGbFwB7B0Uck45dDoNSil3
-        4jY/Ie6cjjYeX3hMZ
-X-Received: by 2002:aa7:d38e:0:b0:4a3:43c1:8430 with SMTP id x14-20020aa7d38e000000b004a343c18430mr639561edq.4.1678997404832;
-        Thu, 16 Mar 2023 13:10:04 -0700 (PDT)
-X-Google-Smtp-Source: AK7set/KstoAnY5wxPAVV6js2FmqK22PG2bWRxtvBjMEP5kEuMnnvnnbw/ckF/EqlkBmUW/RWKO0lQ==
-X-Received: by 2002:aa7:d38e:0:b0:4a3:43c1:8430 with SMTP id x14-20020aa7d38e000000b004a343c18430mr639493edq.4.1678997403848;
-        Thu, 16 Mar 2023 13:10:03 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id q28-20020a50aa9c000000b004fb556e905fsm203845edc.49.2023.03.16.13.10.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Mar 2023 13:10:03 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 7E9919E30A4; Thu, 16 Mar 2023 21:10:02 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexander Lobakin <aleksander.lobakin@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>
-Cc:     Alexander Lobakin <aleksander.lobakin@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Larysa Zaremba <larysa.zaremba@intel.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Song Liu <song@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next 2/2] selftests/bpf: fix "metadata marker"
- getting overwritten by the netstack
-In-Reply-To: <20230316175051.922550-3-aleksander.lobakin@intel.com>
-References: <20230316175051.922550-1-aleksander.lobakin@intel.com>
- <20230316175051.922550-3-aleksander.lobakin@intel.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 16 Mar 2023 21:10:02 +0100
-Message-ID: <875yb0a25h.fsf@toke.dk>
+        with ESMTP id S229659AbjCPU2y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 16:28:54 -0400
+Received: from domac.alu.hr (domac.alu.unizg.hr [IPv6:2001:b68:2:2800::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B13F20555;
+        Thu, 16 Mar 2023 13:28:53 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by domac.alu.hr (Postfix) with ESMTP id DE37B60501;
+        Thu, 16 Mar 2023 21:28:49 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+        t=1678998529; bh=ahEFVVhdg+LtRwVQf0dgtf/npUuwtlKdwtIwDCR5Vk4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=piIgxmLo2kvU5rj8gYAND6x2kY5XGbtyqGmDHTM5GtgNw+x8raHemruZDKJzDIOnW
+         UEBThEyq7YGgz2KDYVD54xzkga6jCsOW1+bfJkFIMzAyjQ0kxuJSeKppU3YP49/QfZ
+         S32juUZbrGfPcbsoz/94G9l4eayG+Nt5ckqPr0AqPDheytq/P/GlfT5AFQF1oiLCDN
+         PlsvIXML8gcLEK6bPxHJjs/tmumvD5yTKCAojzpNUYC4imZNCykbLLzJRyZxNse3hN
+         oC3cQeZLt+98jWxdyiKgn0TnOafGbaBrGvCRiru8z64jvXdNPTqa4b8Zwkkwgo7lsz
+         u/Pex60FJShWA==
+X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
+Received: from domac.alu.hr ([127.0.0.1])
+        by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id vZz56q_HW_Mx; Thu, 16 Mar 2023 21:28:47 +0100 (CET)
+Received: from [192.168.1.4] (unknown [77.237.109.125])
+        by domac.alu.hr (Postfix) with ESMTPSA id 1FAC1604FE;
+        Thu, 16 Mar 2023 21:28:47 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+        t=1678998527; bh=ahEFVVhdg+LtRwVQf0dgtf/npUuwtlKdwtIwDCR5Vk4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Vh2RaTiy/ONE5mWyhcOgcEwqN0X0ftYO4JO192uRSIufRzw+Fv0BQlezVh/Iv0r+7
+         noEbpJCdfiwPELB8dCoOY5Z/v6mdiZO42/pzKLYeEL8KgoqWoqXU/jgvyREkEp6gel
+         AYwfz2nVT2N8pncqG6LFpkNfU1N3l+09gj3VnsOYVVKcy44r5Ym04hsoqV18wFZIBf
+         Jq7Xi19lQiQBcixslRY5NevCyryC1jjJeW/w5WuR9o1u1GCpQ6QwLsk1t4I5+GT2e1
+         mRm2am6qT6e2VZH7cM7UvwgADUVUnPVsWKkQq83JZ9tx3vtGiTfPajBbzkQaV0XF4s
+         N1LA/ijV2SJuA==
+Message-ID: <5260feaa-1b0d-b398-b648-b10263145751@alu.unizg.hr>
+Date:   Thu, 16 Mar 2023 21:28:46 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: BUG: selftest/net/tun: Hang in unregister_netdevice
+To:     Eric Dumazet <edumazet@google.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, shuah@kernel.org
+References: <910f9616-fdcc-51bd-786d-8ecc9f4b5179@alu.unizg.hr>
+ <20230315205639.38461-1-kuniyu@amazon.com>
+ <CANn89iJDRG_CFWUz1GOSEi4YagCynZ-zhjq4POjbpyjkv9aawg@mail.gmail.com>
+Content-Language: en-US, hr
+From:   Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
+In-Reply-To: <CANn89iJDRG_CFWUz1GOSEi4YagCynZ-zhjq4POjbpyjkv9aawg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexander Lobakin <aleksander.lobakin@intel.com> writes:
+On 15. 03. 2023. 21:59, Eric Dumazet wrote:
+> On Wed, Mar 15, 2023 at 1:57 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+>>
+>> However, we don't assume the delay and also the failure in
+>> tun_set_real_num_queues().
+>>
+>> In this case, we have to re-initialise the queues without
+>> touching kobjects.
+>>
+>> Eric,
+>> Are you working on this?
+>> If not, let me try fixing this :)
+> 
+> I am not working on this, please go ahead, thanks !
 
-> Alexei noticed xdp_do_redirect test on BPF CI started failing on
-> BE systems after skb PP recycling was enabled:
->
-> test_xdp_do_redirect:PASS:prog_run 0 nsec
-> test_xdp_do_redirect:PASS:pkt_count_xdp 0 nsec
-> test_xdp_do_redirect:PASS:pkt_count_zero 0 nsec
-> test_xdp_do_redirect:FAIL:pkt_count_tc unexpected pkt_count_tc: actual
-> 220 !=3D expected 9998
-> test_max_pkt_size:PASS:prog_run_max_size 0 nsec
-> test_max_pkt_size:PASS:prog_run_too_big 0 nsec
-> close_netns:PASS:setns 0 nsec
->  #289 xdp_do_redirect:FAIL
-> Summary: 270/1674 PASSED, 30 SKIPPED, 1 FAILED
->
-> and it doesn't happen on LE systems.
-> Ilya then hunted it down to:
->
->  #0  0x0000000000aaeee6 in neigh_hh_output (hh=3D0x83258df0,
-> skb=3D0x88142200) at linux/include/net/neighbour.h:503
->  #1  0x0000000000ab2cda in neigh_output (skip_cache=3Dfalse,
-> skb=3D0x88142200, n=3D<optimized out>) at linux/include/net/neighbour.h:5=
-44
->  #2  ip6_finish_output2 (net=3Dnet@entry=3D0x88edba00, sk=3Dsk@entry=3D0x=
-0,
-> skb=3Dskb@entry=3D0x88142200) at linux/net/ipv6/ip6_output.c:134
->  #3  0x0000000000ab4cbc in __ip6_finish_output (skb=3D0x88142200, sk=3D0x=
-0,
-> net=3D0x88edba00) at linux/net/ipv6/ip6_output.c:195
->  #4  ip6_finish_output (net=3D0x88edba00, sk=3D0x0, skb=3D0x88142200) at
-> linux/net/ipv6/ip6_output.c:206
->
-> xdp_do_redirect test places a u32 marker (0x42) right before the Ethernet
-> header to check it then in the XDP program and return %XDP_ABORTED if it's
-> not there. Neigh xmit code likes to round up hard header length to speed
-> up copying the header, so it overwrites two bytes in front of the Eth
-> header. On LE systems, 0x42 is one byte at `data - 4`, while on BE it's
-> `data - 1`, what explains why it happens only there.
-> It didn't happen previously due to that %XDP_PASS meant the page will be
-> discarded and replaced by a new one, but now it can be recycled as well,
-> while bpf_test_run code doesn't reinitialize the content of recycled
-> pages. This mark is limited to this particular test and its setup though,
-> so there's no need to predict 1000 different possible cases. Just move
-> it 4 bytes to the left, still keeping it 32 bit to match on more
-> bytes.
+Hi,
 
-Wow, this must have been annoying to track down - nice work :)
+It's me again. I just have new findings.
 
-> Fixes: 9c94bbf9a87b ("xdp: recycle Page Pool backed skbs built from XDP f=
-rames")
-> Reported-by: Alexei Starovoitov <ast@kernel.org>
-> Link: https://lore.kernel.org/bpf/CAADnVQ+B_JOU+EpP=3DDKhbY9yXdN6GiRPnpTT=
-XfEZ9sNkUeb-yQ@mail.gmail.com
-> Reported-by: Ilya Leoshkevich <iii@linux.ibm.com> # + debugging
-> Link: https://lore.kernel.org/bpf/8341c1d9f935f410438e79d3bd8a9cc50aefe10=
-5.camel@linux.ibm.com
-> Signed-off-by: Alexander Lobakin <aleksander.lobakin@intel.com>
+[root@pc-mtodorov linux_torvalds]# grep -E '(KOBJECT|TRACKER)' /boot/config-6.3.0-rc2-00006-gfc89d7fb499b 
+CONFIG_REF_TRACKER=y
+CONFIG_NET_DEV_REFCNT_TRACKER=y
+CONFIG_NET_NS_REFCNT_TRACKER=y
+CONFIG_DEBUG_KOBJECT=y
+# CONFIG_DEBUG_KOBJECT_RELEASE is not set
+# CONFIG_SAMPLE_KOBJECT is not set
+# CONFIG_TEST_REF_TRACKER is not set
+[root@pc-mtodorov linux_torvalds]# uname -rms
+Linux 6.3.0-rc2-00006-gfc89d7fb499b x86_64
+[root@pc-mtodorov linux_torvalds]# grep -E '(KOBJECT|TRACKER)' /boot/config-6.3.0-rc2-00006-gfc89d7fb499b 
+CONFIG_REF_TRACKER=y
+CONFIG_NET_DEV_REFCNT_TRACKER=y
+CONFIG_NET_NS_REFCNT_TRACKER=y
+CONFIG_DEBUG_KOBJECT=y
+# CONFIG_DEBUG_KOBJECT_RELEASE is not set
+# CONFIG_SAMPLE_KOBJECT is not set
+# CONFIG_TEST_REF_TRACKER is not set
+[root@pc-mtodorov linux_torvalds]# tools/testing/selftests/net/tun
+TAP version 13
+1..5
+# Starting 5 tests from 1 test cases.
+#  RUN           tun.delete_detach_close ...
+#            OK  tun.delete_detach_close
+ok 1 tun.delete_detach_close
+#  RUN           tun.detach_delete_close ...
+#            OK  tun.detach_delete_close
+ok 2 tun.detach_delete_close
+#  RUN           tun.detach_close_delete ...
+#            OK  tun.detach_close_delete
+ok 3 tun.detach_close_delete
+#  RUN           tun.reattach_delete_close ...
+#            OK  tun.reattach_delete_close
+ok 4 tun.reattach_delete_close
+#  RUN           tun.reattach_close_delete ...
+#            OK  tun.reattach_close_delete
+ok 5 tun.reattach_close_delete
+# PASSED: 5 / 5 tests passed.
+# Totals: pass:5 fail:0 xfail:0 xpass:0 skip:0 error:0
+[root@pc-mtodorov linux_torvalds]# 
 
-Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+My interpretation if you allow it is that the bug search can be narrowed to the code
+that depends on CONFIG_DEBUG_KOBJECT_RELEASE=y.
+
+Best regards,
+Mirsad
+
+
+CONFIG_DEBUG_KOBJECT=y alone doesn't seem to be sufficient to trigger the reference leak.
+
+Hope this helps narrow down the search.
+
+-- 
+Mirsad Goran Todorovac
+Sistem inženjer
+Grafički fakultet | Akademija likovnih umjetnosti
+Sveučilište u Zagrebu
+ 
+System engineer
+Faculty of Graphic Arts | Academy of Fine Arts
+University of Zagreb, Republic of Croatia
+The European Union
 
