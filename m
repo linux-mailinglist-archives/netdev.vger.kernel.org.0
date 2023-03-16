@@ -2,77 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1C2A6BD950
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 20:35:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 315266BD9A7
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 20:58:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229838AbjCPTfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 15:35:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38366 "EHLO
+        id S229887AbjCPT6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 15:58:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229544AbjCPTfC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 15:35:02 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0CF2279A0;
-        Thu, 16 Mar 2023 12:35:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=H5gbxQ3xd9jnXCka4iAvxyrdV7F1pbgn4IZ9nwpLThc=; b=SSMFuvk+7Tmje9kOGRleZrf2RY
-        cbjywDRcDk7Vm07fPXljq9wAhYmBBa0RcCE3NCiayt1FKGV1X3oINhjVc6Ue3EbuHmxthyapprx1P
-        JCXXjH6trsVr0oPKQhDr4YKOlk034ScjyRTR3UpQ7ylBqS5TEJKWHi1LPrvHKdBUZxvY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pctN7-007XNJ-6V; Thu, 16 Mar 2023 20:34:45 +0100
-Date:   Thu, 16 Mar 2023 20:34:45 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Bartosz Wawrzyniak <bwawrzyn@cisco.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, nicolas.ferre@microchip.com,
-        claudiu.beznea@microchip.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, xe-linux-external@cisco.com,
-        danielwa@cisco.com, olicht@cisco.com, mawierzb@cisco.com
-Subject: Re: [PATCH] net: macb: Set MDIO clock divisor for pclk higher than
- 160MHz
-Message-ID: <7f3d0f2c-8bf9-41aa-8a7f-79407753df3b@lunn.ch>
-References: <20230316100339.1302212-1-bwawrzyn@cisco.com>
+        with ESMTP id S229890AbjCPT57 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 15:57:59 -0400
+Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B55FDBDD24;
+        Thu, 16 Mar 2023 12:57:14 -0700 (PDT)
+Received: from [192.168.1.103] (178.176.73.23) by msexch01.omp.ru
+ (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Thu, 16 Mar
+ 2023 22:56:12 +0300
+Subject: Re: [PATCH net v2 1/2] ravb: avoid PHY being resumed when interface
+ is not up
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        <netdev@vger.kernel.org>
+CC:     <linux-renesas-soc@vger.kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Michal Kubiak <michal.kubiak@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        <linux-kernel@vger.kernel.org>
+References: <20230315074115.3008-1-wsa+renesas@sang-engineering.com>
+ <20230315074115.3008-2-wsa+renesas@sang-engineering.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <f4f46db5-459a-5479-7fda-7d59517e34a5@omp.ru>
+Date:   Thu, 16 Mar 2023 22:56:11 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230316100339.1302212-1-bwawrzyn@cisco.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230315074115.3008-2-wsa+renesas@sang-engineering.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [178.176.73.23]
+X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
+ (10.188.4.12)
+X-KSE-ServerInfo: msexch01.omp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.59, Database issued on: 03/16/2023 19:42:29
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 59
+X-KSE-AntiSpam-Info: Lua profiles 176151 [Mar 16 2023]
+X-KSE-AntiSpam-Info: Version: 5.9.59.0
+X-KSE-AntiSpam-Info: Envelope from: s.shtylyov@omp.ru
+X-KSE-AntiSpam-Info: LuaCore: 507 507 08d345461d9bcca7095738422a5279ab257bb65a
+X-KSE-AntiSpam-Info: {rep_avail}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: {relay has no DNS name}
+X-KSE-AntiSpam-Info: {SMTP from is not routable}
+X-KSE-AntiSpam-Info: {Found in DNSBL: 178.176.73.23 in (user)
+ dbl.spamhaus.org}
+X-KSE-AntiSpam-Info: 178.176.73.23:7.1.2;omp.ru:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2
+X-KSE-AntiSpam-Info: ApMailHostAddress: 178.176.73.23
+X-KSE-AntiSpam-Info: {DNS response errors}
+X-KSE-AntiSpam-Info: Rate: 59
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dmarc=temperror header.from=omp.ru;spf=temperror
+ smtp.mailfrom=omp.ru;dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 03/16/2023 19:46:00
+X-KSE-AttachmentFiltering-Interceptor-Info: protection disabled
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 3/16/2023 2:00:00 PM
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 16, 2023 at 10:03:39AM +0000, Bartosz Wawrzyniak wrote:
-> Currently macb sets clock divisor for pclk up to 160 MHz.
-> Function gem_mdc_clk_div was updated to enable divisor
-> for higher values of pclk.
-> 
-> Signed-off-by: Bartosz Wawrzyniak <bwawrzyn@cisco.com>
-> ---
->  drivers/net/ethernet/cadence/macb.h      | 2 ++
->  drivers/net/ethernet/cadence/macb_main.c | 6 +++++-
->  2 files changed, 7 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
-> index 14dfec4db8f9..c1fc91c97cee 100644
-> --- a/drivers/net/ethernet/cadence/macb.h
-> +++ b/drivers/net/ethernet/cadence/macb.h
-> @@ -692,6 +692,8 @@
->  #define GEM_CLK_DIV48				3
->  #define GEM_CLK_DIV64				4
->  #define GEM_CLK_DIV96				5
-> +#define GEM_CLK_DIV128				6
-> +#define GEM_CLK_DIV224				7
+On 3/15/23 10:41 AM, Wolfram Sang wrote:
 
-Do these divisors exist for all variants? I'm just wondering why these
-are being added now, rather than back in 2011-03-09.
+> RAVB doesn't need mdiobus suspend/resume, that's why it sets
+> 'mac_managed_pm'. However, setting it needs to be moved from init to
+> probe, so mdiobus PM functions will really never be called (e.g. when
+> the interface is not up yet during suspend/resume).
+> 
+> Fixes: 4924c0cdce75 ("net: ravb: Fix PHY state warning splat during system resume")
+> Suggested-by: Heiner Kallweit <hkallweit1@gmail.com>
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-   Andrew
+[...]
+
+Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+
+MBR, Sergey
