@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D3A56BD3CE
-	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 16:30:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 251F16BD3C4
+	for <lists+netdev@lfdr.de>; Thu, 16 Mar 2023 16:30:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231708AbjCPPaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 11:30:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33318 "EHLO
+        id S231540AbjCPPag (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 11:30:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231764AbjCPPaK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 11:30:10 -0400
+        with ESMTP id S231449AbjCPP32 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 11:29:28 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA0BCB0BAF
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 08:27:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63422DFB7A
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 08:27:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1678980457;
+        s=mimecast20190719; t=1678980452;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=14pAi6JHwU3C53h/ZQrPmmNB396J3kzB8Cmz3sg/vjY=;
-        b=KkGB8Kun1f7XldWy1TObInYwkXKlfO9UNdV8/Nog8OdEIMAU5fOWZTctWt5qCf5kj/E8VP
-        xriZsVP7rJpS5SA7OgoXuhy58lAkJGlzhnWlAoz9Ew/NH/mX1UpEH3bqnbZk7pa+nk/eqn
-        nwYVQkSQIIT8D6u8ADBYUFDmcnF6AHg=
+        bh=92bJ6Ynf1CSTwRAMP7lCPtKM1kI8JBpDgRb6Ls1sSMY=;
+        b=T0560YF+UveLKxyIQx6ZoR8+u2KbXX6nJFjTC5hjHOz+cSSMCuSj4NAPRca4lgCrGFvgOY
+        a5IlhQiCB/0Aed3TQL2WKKrNXo6k9MZyAW77v+B0xLHNLqx5CmWnWpMmza8FxDQXdGGKmy
+        oRdN18ieOdADNNnOI62KEaUJGuRjw54=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-319-pD9jpABAOzyxINJMnpA1QQ-1; Thu, 16 Mar 2023 11:27:27 -0400
-X-MC-Unique: pD9jpABAOzyxINJMnpA1QQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+ us-mta-135-Uky157iCM7O_1XjnKbwmzg-1; Thu, 16 Mar 2023 11:27:30 -0400
+X-MC-Unique: Uky157iCM7O_1XjnKbwmzg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 72108185A790;
-        Thu, 16 Mar 2023 15:27:26 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2D062185A791;
+        Thu, 16 Mar 2023 15:27:29 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5A34D2027040;
-        Thu, 16 Mar 2023 15:27:24 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 150B540B3ED6;
+        Thu, 16 Mar 2023 15:27:26 +0000 (UTC)
 From:   David Howells <dhowells@redhat.com>
 To:     Matthew Wilcox <willy@infradead.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -51,19 +51,19 @@ Cc:     David Howells <dhowells@redhat.com>,
         Linus Torvalds <torvalds@linux-foundation.org>,
         netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Xiubo Li <xiubli@redhat.com>, ceph-devel@vger.kernel.org
-Subject: [RFC PATCH 24/28] ceph: Use sendmsg(MSG_SPLICE_PAGES) rather than sendpage()
-Date:   Thu, 16 Mar 2023 15:26:14 +0000
-Message-Id: <20230316152618.711970-25-dhowells@redhat.com>
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com
+Subject: [RFC PATCH 25/28] rds: Use sendmsg(MSG_SPLICE_PAGES) rather than sendpage
+Date:   Thu, 16 Mar 2023 15:26:15 +0000
+Message-Id: <20230316152618.711970-26-dhowells@redhat.com>
 In-Reply-To: <20230316152618.711970-1-dhowells@redhat.com>
 References: <20230316152618.711970-1-dhowells@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,140 +71,154 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use sendmsg() and MSG_SPLICE_PAGES rather than sendpage in ceph when
-transmitting data.  For the moment, this can only transmit one page at a
-time because of the architecture of net/ceph/, but if
-write_partial_message_data() can be given a bvec[] at a time by the
-iteration code, this would allow pages to be sent in a batch.
+When transmitting data, call down into TCP using a single sendmsg with
+MSG_SPLICE_PAGES to indicate that content should be spliced rather than
+performing several sendmsg and sendpage calls to transmit header and data
+pages.
+
+To make this work, the data is assembled in a bio_vec array and attached to
+a BVEC-type iterator.  The header are copied into memory acquired from
+zcopy_alloc() which just breaks a page up into small pieces that can be
+freed with put_page().
 
 Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Ilya Dryomov <idryomov@gmail.com>
-cc: Xiubo Li <xiubli@redhat.com>
-cc: Jeff Layton <jlayton@kernel.org>
+cc: Santosh Shilimkar <santosh.shilimkar@oracle.com>
 cc: "David S. Miller" <davem@davemloft.net>
 cc: Eric Dumazet <edumazet@google.com>
 cc: Jakub Kicinski <kuba@kernel.org>
 cc: Paolo Abeni <pabeni@redhat.com>
 cc: Jens Axboe <axboe@kernel.dk>
 cc: Matthew Wilcox <willy@infradead.org>
-cc: ceph-devel@vger.kernel.org
+cc: linux-rdma@vger.kernel.org
+cc: rds-devel@oss.oracle.com
 cc: netdev@vger.kernel.org
 ---
- net/ceph/messenger_v2.c | 89 +++++++++--------------------------------
- 1 file changed, 18 insertions(+), 71 deletions(-)
+ net/rds/tcp_send.c | 80 ++++++++++++++++++++--------------------------
+ 1 file changed, 35 insertions(+), 45 deletions(-)
 
-diff --git a/net/ceph/messenger_v2.c b/net/ceph/messenger_v2.c
-index 301a991dc6a6..1637a0c21126 100644
---- a/net/ceph/messenger_v2.c
-+++ b/net/ceph/messenger_v2.c
-@@ -117,91 +117,38 @@ static int ceph_tcp_recv(struct ceph_connection *con)
- 	return ret;
+diff --git a/net/rds/tcp_send.c b/net/rds/tcp_send.c
+index 8c4d1d6e9249..0d6eb85a930d 100644
+--- a/net/rds/tcp_send.c
++++ b/net/rds/tcp_send.c
+@@ -32,6 +32,7 @@
+  */
+ #include <linux/kernel.h>
+ #include <linux/in.h>
++#include <linux/zcopy_alloc.h>
+ #include <net/tcp.h>
+ 
+ #include "rds_single_path.h"
+@@ -52,29 +53,24 @@ void rds_tcp_xmit_path_complete(struct rds_conn_path *cp)
+ 	tcp_sock_set_cork(tc->t_sock->sk, false);
  }
  
--static int do_sendmsg(struct socket *sock, struct iov_iter *it)
+-/* the core send_sem serializes this with other xmit and shutdown */
+-static int rds_tcp_sendmsg(struct socket *sock, void *data, unsigned int len)
 -{
--	struct msghdr msg = { .msg_flags = CEPH_MSG_FLAGS };
--	int ret;
+-	struct kvec vec = {
+-		.iov_base = data,
+-		.iov_len = len,
+-	};
+-	struct msghdr msg = {
+-		.msg_flags = MSG_DONTWAIT | MSG_NOSIGNAL,
+-	};
 -
--	msg.msg_iter = *it;
--	while (iov_iter_count(it)) {
--		ret = sock_sendmsg(sock, &msg);
--		if (ret <= 0) {
--			if (ret == -EAGAIN)
--				ret = 0;
--			return ret;
--		}
--
--		iov_iter_advance(it, ret);
--	}
--
--	WARN_ON(msg_data_left(&msg));
--	return 1;
+-	return kernel_sendmsg(sock, &msg, &vec, 1, vec.iov_len);
 -}
 -
--static int do_try_sendpage(struct socket *sock, struct iov_iter *it)
--{
--	struct msghdr msg = { .msg_flags = CEPH_MSG_FLAGS };
--	struct bio_vec bv;
--	int ret;
--
--	if (WARN_ON(!iov_iter_is_bvec(it)))
--		return -EINVAL;
--
--	while (iov_iter_count(it)) {
--		/* iov_iter_iovec() for ITER_BVEC */
--		bvec_set_page(&bv, it->bvec->bv_page,
--			      min(iov_iter_count(it),
--				  it->bvec->bv_len - it->iov_offset),
--			      it->bvec->bv_offset + it->iov_offset);
--
--		/*
--		 * sendpage cannot properly handle pages with
--		 * page_count == 0, we need to fall back to sendmsg if
--		 * that's the case.
--		 *
--		 * Same goes for slab pages: skb_can_coalesce() allows
--		 * coalescing neighboring slab objects into a single frag
--		 * which triggers one of hardened usercopy checks.
--		 */
--		if (sendpage_ok(bv.bv_page)) {
--			ret = sock->ops->sendpage(sock, bv.bv_page,
--						  bv.bv_offset, bv.bv_len,
--						  CEPH_MSG_FLAGS);
--		} else {
--			iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bv, 1, bv.bv_len);
--			ret = sock_sendmsg(sock, &msg);
--		}
--		if (ret <= 0) {
--			if (ret == -EAGAIN)
--				ret = 0;
--			return ret;
--		}
--
--		iov_iter_advance(it, ret);
--	}
--
--	return 1;
--}
--
- /*
-  * Write as much as possible.  The socket is expected to be corked,
-  * so we don't bother with MSG_MORE/MSG_SENDPAGE_NOTLAST here.
-  *
-  * Return:
-- *   1 - done, nothing (else) to write
-+ *  >0 - done, nothing (else) to write
-  *   0 - socket is full, need to wait
-  *  <0 - error
-  */
- static int ceph_tcp_send(struct ceph_connection *con)
+ /* the core send_sem serializes this with other xmit and shutdown */
+ int rds_tcp_xmit(struct rds_connection *conn, struct rds_message *rm,
+ 		 unsigned int hdr_off, unsigned int sg, unsigned int off)
  {
+ 	struct rds_conn_path *cp = rm->m_inc.i_conn_path;
+ 	struct rds_tcp_connection *tc = cp->cp_transport_data;
 +	struct msghdr msg = {
-+		.msg_iter	= con->v2.out_iter,
-+		.msg_flags	= CEPH_MSG_FLAGS,
++		.msg_flags = MSG_SPLICE_PAGES | MSG_DONTWAIT | MSG_NOSIGNAL,
 +	};
- 	int ret;
++	struct bio_vec *bvec;
++	unsigned int i, size = 0, ix = 0;
++	bool free_hdr = false;
+ 	int done = 0;
+-	int ret = 0;
+-	int more;
++	int ret = -ENOMEM;
++
++	bvec = kmalloc_array(1 + sg, sizeof(struct bio_vec), GFP_KERNEL);
++	if (!bvec)
++		goto out;
  
-+	if (WARN_ON(!iov_iter_is_bvec(&con->v2.out_iter)))
-+		return -EINVAL;
+ 	if (hdr_off == 0) {
+ 		/*
+@@ -101,41 +97,30 @@ int rds_tcp_xmit(struct rds_connection *conn, struct rds_message *rm,
+ 		/* see rds_tcp_write_space() */
+ 		set_bit(SOCK_NOSPACE, &tc->t_sock->sk->sk_socket->flags);
+ 
+-		ret = rds_tcp_sendmsg(tc->t_sock,
+-				      (void *)&rm->m_inc.i_hdr + hdr_off,
+-				      sizeof(rm->m_inc.i_hdr) - hdr_off);
++		ret = zcopy_memdup(sizeof(rm->m_inc.i_hdr) - hdr_off,
++				   (void *)&rm->m_inc.i_hdr + hdr_off,
++				   &bvec[ix], GFP_KERNEL);
+ 		if (ret < 0)
+ 			goto out;
+-		done += ret;
+-		if (hdr_off + done != sizeof(struct rds_header))
+-			goto out;
++		free_hdr = true;
++		size += bvec[ix].bv_len;
++		ix++;
+ 	}
+ 
+-	more = rm->data.op_nents > 1 ? (MSG_MORE | MSG_SENDPAGE_NOTLAST) : 0;
+-	while (sg < rm->data.op_nents) {
+-		int flags = MSG_DONTWAIT | MSG_NOSIGNAL | more;
+-
+-		ret = tc->t_sock->ops->sendpage(tc->t_sock,
+-						sg_page(&rm->data.op_sg[sg]),
+-						rm->data.op_sg[sg].offset + off,
+-						rm->data.op_sg[sg].length - off,
+-						flags);
+-		rdsdebug("tcp sendpage %p:%u:%u ret %d\n", (void *)sg_page(&rm->data.op_sg[sg]),
+-			 rm->data.op_sg[sg].offset + off, rm->data.op_sg[sg].length - off,
+-			 ret);
+-		if (ret <= 0)
+-			break;
+-
+-		off += ret;
+-		done += ret;
+-		if (off == rm->data.op_sg[sg].length) {
+-			off = 0;
+-			sg++;
+-		}
+-		if (sg == rm->data.op_nents - 1)
+-			more = 0;
++	for (i = sg; i < rm->data.op_nents; i++) {
++		bvec_set_page(&bvec[ix],
++			      sg_page(&rm->data.op_sg[i]),
++			      rm->data.op_sg[i].length - off,
++			      rm->data.op_sg[i].offset + off);
++		off = 0;
++		size += bvec[ix].bv_len;
++		ix++;
+ 	}
+ 
++	iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, bvec, ix, size);
++	ret = sock_sendmsg(tc->t_sock, &msg);
++	rdsdebug("tcp sendmsg-splice %u,%u ret %d\n", ix, size, ret);
 +
-+	if (con->v2.out_iter_sendpage)
-+		msg.msg_flags |= MSG_SPLICE_PAGES;
-+
- 	dout("%s con %p have %zu try_sendpage %d\n", __func__, con,
- 	     iov_iter_count(&con->v2.out_iter), con->v2.out_iter_sendpage);
--	if (con->v2.out_iter_sendpage)
--		ret = do_try_sendpage(con->sock, &con->v2.out_iter);
--	else
--		ret = do_sendmsg(con->sock, &con->v2.out_iter);
-+
-+	ret = sock_sendmsg(con->sock, &msg);
-+	if (ret > 0)
-+		iov_iter_advance(&con->v2.out_iter, ret);
-+	else if (ret == -EAGAIN)
-+		ret = 0;
-+
- 	dout("%s con %p ret %d left %zu\n", __func__, con, ret,
- 	     iov_iter_count(&con->v2.out_iter));
- 	return ret;
+ out:
+ 	if (ret <= 0) {
+ 		/* write_space will hit after EAGAIN, all else fatal */
+@@ -158,6 +143,11 @@ int rds_tcp_xmit(struct rds_connection *conn, struct rds_message *rm,
+ 	}
+ 	if (done == 0)
+ 		done = ret;
++	if (bvec) {
++		if (free_hdr)
++			put_page(bvec[0].bv_page);
++		kfree(bvec);
++	}
+ 	return done;
+ }
+ 
 
