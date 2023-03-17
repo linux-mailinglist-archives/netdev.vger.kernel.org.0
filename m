@@ -2,77 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 21D156BF1E6
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 20:50:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2149A6BF219
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 21:06:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229601AbjCQTu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 15:50:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36334 "EHLO
+        id S229488AbjCQUGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 16:06:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229494AbjCQTuZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 15:50:25 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 878E530B09;
-        Fri, 17 Mar 2023 12:50:23 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id e194so6973354ybf.1;
-        Fri, 17 Mar 2023 12:50:23 -0700 (PDT)
+        with ESMTP id S229950AbjCQUGE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 16:06:04 -0400
+Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0DD2C9C94
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 13:06:00 -0700 (PDT)
+Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-17aeb49429eso6587350fac.6
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 13:06:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679082622;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=b3CQ8WGc4w2GVbQ+AHog+uRw/SumpjFjDyqWJL60hI0=;
-        b=paYhQ9HyuGNRZhcX+W+4wkvn49Zl73wDxF4NFJxzuc1lFNhTty3Zzjl6En/7ixGVcJ
-         DRevvNT0lj+toUBebDZYr87DPb4a/y4d82jfNLOrBrl6cPnv7zfpXiJ/VvhEsCw6Pj5L
-         O0Nd0MhGXYztpw/BnZUkpdmg/DXvpyTQNNYZRuyDS9hR1kO3SNpYRTX7QUcjqhMXw2Kf
-         a6cxw9oC9shZs8YqTn3m+AU1i34IdXxRBvQv0xEsIzG1ec+7z30Nsgmd4Hl8amvp8Hae
-         xO20DAhReNI3KkuZ9kBqlSg4gdGPXcu4msryUzBC8G7nZrmdmYMt/K597LuScKXoDv+i
-         wSFQ==
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112; t=1679083559;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=mUa8r2T4GjEcVXNKxTZoelOg1vCQoZfOI92HN/7lmeI=;
+        b=6S2Bd7fC0ufdE6cKCeQaCecEJ1vgWLkTpr0aeTfB7OWY7A1yPwsrLGPwLTk23Xaz/n
+         9r5lMcetNoUP5pePKSwmhahKtFaNkBP+36lV9FmI4lMObvEBmPmhKO9OqyNt2KD+8Whf
+         Z8RRJogBIoJbfPCO0OuyN9UCmzaas12rSC4dJ0Q4JPJqbv3sKwmm+Rya0p+MtI00zGhV
+         oeon5aB41/9tmy6vIO1hb3DRYixqFPzG78R6/t6gjJlwdxDv7SLiTZmCmi55CyU2a9Eg
+         hfWzYl5iVKnXDwcV20NSuSLq2KxoEeWAUCMeqXKN0JVhoBjIUzlJTx4qohEdXSaoAtxB
+         WBYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679082622;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=1e100.net; s=20210112; t=1679083559;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=b3CQ8WGc4w2GVbQ+AHog+uRw/SumpjFjDyqWJL60hI0=;
-        b=27uhgJ0TyisLdxgHqjR11XwvZbGS5uGHrLBg4ara29FaxDqc3NjuSO3mS21JVJYjRu
-         9y2kDprYNplkQtwiKu/jkOy7a06MO+WmgSn0sTgSZ8IQx76em06b1FoEneMrb/TH77Co
-         ogacSi4Qj7czc3uTstZDKaEuIgYxYoQjoDvJYL31ZHTekPpYnB1yfX+JLEBLyz+pjCW9
-         lpXGwsm5BwAbnLjWRHS+XTwKtYL7UPyv4ZAjQdvFOr3IklB0Mb4yj9kv/spvLXlAgN5q
-         pGpHe07LJSw0UBpnaW6rx4nsEs1Qtr73bEPvX9tZbOoCgDNHaHAy57+4QJdfRfdEcbmq
-         IHTg==
-X-Gm-Message-State: AO0yUKU/rFYH8da+da4nf0JyhVKHx4TH6/aBaaPS6Hh2WPjBhbwEn1NU
-        Hp5KPVCtyb4+3wLXE1EhCG8WlBtHqHXhpiKa2g==
-X-Google-Smtp-Source: AK7set8TKJGwscidXv9PDMw39S7PyU+VEVKzDYJObGO75JeJd57fC94Asa1qL2/ZU+c85KzeRGGrt/90is3aHzUu/3w=
-X-Received: by 2002:a5b:611:0:b0:b67:f07:d180 with SMTP id d17-20020a5b0611000000b00b670f07d180mr235414ybq.5.1679082622364;
- Fri, 17 Mar 2023 12:50:22 -0700 (PDT)
+        bh=mUa8r2T4GjEcVXNKxTZoelOg1vCQoZfOI92HN/7lmeI=;
+        b=0EvtgeWlLM6vK2KXqcKxGY55ldQuqyca8MeJIPGxl+SeqjiSg08Fwk4z/qA0rWuYty
+         lNgh3718Fmgq0F4kOxXfaLIkFqy+i2wA7hcrEDOy/Jvng/f7q7q0dWR0bICsXeFAtfOF
+         BhuCnmN503RhrttzvwcQTv4eud80K4pGcIQ9jARvK6zEPW9VB2oAHXbD4nUCvHC5KYjE
+         3oD6x/Lg1WgGTwpVtHJ1D8aieYQ1lufD1G3xWYw4ZBv/GKBjXIupHqONjUUAeQ7AYDGY
+         TVAlghbue6YzhIaFZZw2Ys+jhfTbxobKvdn0EojILbfrsl9hx5e/FaafK7UKZzo6+E/j
+         K3Rg==
+X-Gm-Message-State: AO0yUKXi/fd6GBDq+g+/9lPUoZaSV3d9gjoivUrGcfop2CJtQHqRc4aT
+        hcP5pRCkQ63Vc1kM/sp9Ff8atiVhXtPdWeGHclQ=
+X-Google-Smtp-Source: AK7set8X4E8THFevvztf6iApRSeMHKwtgxXaBYFY+t/K0ITPyrDeDQZBkBeniI+ehI5abyeC7PRKIQ==
+X-Received: by 2002:a05:6870:5705:b0:177:dfdb:63 with SMTP id k5-20020a056870570500b00177dfdb0063mr528703oap.44.1679083559727;
+        Fri, 17 Mar 2023 13:05:59 -0700 (PDT)
+Received: from localhost.localdomain ([2804:14d:5c5e:4698:10c1:4b9b:b369:bda2])
+        by smtp.gmail.com with ESMTPSA id z8-20020a056830128800b00698a88cfad1sm1304209otp.68.2023.03.17.13.05.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Mar 2023 13:05:59 -0700 (PDT)
+From:   Pedro Tammela <pctammela@mojatatu.com>
+To:     netdev@vger.kernel.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, simon.horman@corigine.com,
+        Pedro Tammela <pctammela@mojatatu.com>
+Subject: [PATCH net-next v3 0/4] net/sched: act_pedit: minor improvements
+Date:   Fri, 17 Mar 2023 16:51:31 -0300
+Message-Id: <20230317195135.1142050-1-pctammela@mojatatu.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20230123090555.21415-1-git@qrsnap.io>
-In-Reply-To: <20230123090555.21415-1-git@qrsnap.io>
-From:   Nick Morrow <morrownr@gmail.com>
-Date:   Fri, 17 Mar 2023 14:49:56 -0500
-Message-ID: <CAFktD2eFdaCAdE=zxVx05QYWPRcr5StompKr+ehn7piYpQHjzA@mail.gmail.com>
-Subject: Re: [PATCH] Added Netgear AXE3000 (A8000) usb_device_id to mt7921u_device_table[]
-To:     Reese Russell <git@qrsnap.io>
-Cc:     Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Shayne Chen <shayne.chen@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Deren Wu <deren.wu@mediatek.com>,
-        YN Chen <YN.Chen@mediatek.com>,
-        Ben Greear <greearb@candelatech.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,53 +69,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Issue: Though the Netgear AXE3000 (A8000) is based on the mt7921
-> chipset because of the unique USB VID:PID combination this device
-> does not initialize/register. Thus making it not plug and play.
->
-> Fix: Adds support for the Netgear AXE3000 (A8000) based on the Mediatek
-> mt7921au chipset. The method of action is adding the USD VID/PID
-> pair to the mt7921u_device_table[] array.
->
-> Notes: A retail sample of the Netgear AXE3000 (A8000) yeilds the following
-> from lsusb D 0846:9060 NetGear, Inc. Wireless_Device. This pair
-> 0846:9060 VID:PID has been reported by other users on Github.
->
-> Signed-off-by: Reese Russell <git@qrsnap.io>
-> ---
->  drivers/net/wireless/mediatek/mt76/mt7921/usb.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/usb.c b/drivers/net/wireless/mediatek/mt76/mt7921/usb.c
-> index 5321d20dcdcb..62e9728588f8 100644
-> --- a/drivers/net/wireless/mediatek/mt76/mt7921/usb.c
-> +++ b/drivers/net/wireless/mediatek/mt76/mt7921/usb.c
-> @@ -15,6 +15,8 @@
->  static const struct usb_device_id mt7921u_device_table[] = {
->         { USB_DEVICE_AND_INTERFACE_INFO(0x0e8d, 0x7961, 0xff, 0xff, 0xff),
->                 .driver_info = (kernel_ulong_t)MT7921_FIRMWARE_WM },
-> +       { USB_DEVICE_AND_INTERFACE_INFO(0x0846, 0x9060, 0xff, 0xff, 0xff),
-> +               .driver_info = (kernel_ulong_t)MT7921_FIRMWARE_WM },
->         { },
->  };
->
-> --
-> 2.37.2
+This series aims to improve the code and usability of act_pedit for
+netlink users.
 
+Patch 1 improves error reporting for extended keys parsing with extack.
+While at it, do a minor refactor on error handling.
 
-I can confirm this VID/PID needs to go into 6.1 LTS and the current
-testing version of the kernel as I am getting an increasing amount of
-traffic from users that have purchased the Netgear A8000.
+Patch 2 checks the static offsets a priori on create/update. Currently,
+this is done at the datapath for both static and runtime offsets.
 
-My site is github.com/morrownr/USB-WiFi
+Patch 3 removes a check from the datapath which is redundant since the
+netlink parsing validates the key types.
 
-Helping Linux users with USB WiFi is what we do.
+Patch 4 changes the 'pr_info()' calls in the datapath to rate limited
+versions.
 
-The OP could have added a comment to the patch showing the adapter
-that is causing this patch to be submitted. Maybe he can submit a v2
-that can be expedited?
+v2->v3: Propagate nl_parse errors in patch 1 like the original version.
+v1->v2: Added patch 3 to the series as discussed with Simon.
 
-Guidance?
+Pedro Tammela (4):
+  net/sched: act_pedit: use extack in 'ex' parsing errors
+  net/sched: act_pedit: check static offsets a priori
+  net/sched: act_pedit: remove extra check for key type
+  net/sched: act_pedit: rate limit datapath messages
 
-Nick
-github.com/morrownr/USB-WiFi
+ net/sched/act_pedit.c | 75 ++++++++++++++++++-------------------------
+ 1 file changed, 32 insertions(+), 43 deletions(-)
+
+-- 
+2.34.1
+
