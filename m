@@ -2,87 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 417B26BDEEA
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 03:34:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8885C6BDEEF
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 03:39:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230093AbjCQCe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 22:34:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42100 "EHLO
+        id S229539AbjCQCjB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 22:39:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230091AbjCQCeL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 22:34:11 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8EF48A4E;
-        Thu, 16 Mar 2023 19:33:42 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id w11so1410295wmo.2;
-        Thu, 16 Mar 2023 19:33:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679020418;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=oy4rJp/0zV8uQx96aqdFOna+cm21IPd+B8/oErRDE1c=;
-        b=DiYT5S/jOvNwe4CzhjdiIkvIKBggeGR7CexVNd4rd/sjT5lAPS1XWF1W+7fLOFMLc9
-         +M+nVvH/VqGoT3HRVUevSaiDK++YKjOvPsz8umYJfLqED/NO2vBkV/scUd1luER6cra4
-         MU9TLGEoBzC2egkV45V3/dkoR/6reCXuIEI/4Onu6ISM86v2ODghCyVpzQR3QShPKWAL
-         9jZ7MIgNa9bnV7GstyBvBvcr169haI0sCUfFl73RZ7foJuE+TayH+Tf6hYDaMGLkB/kS
-         fhVvp3xBGubVX6uhvop1IHbnljGIKuh1xuXwPSH1/oNVSjdbVXXZJzhlDpDrUqMIbqpC
-         kXqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679020418;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=oy4rJp/0zV8uQx96aqdFOna+cm21IPd+B8/oErRDE1c=;
-        b=rPGCMwC5lEyATn2XIj9TYWwccH0ijOOKbKu505DFQ/yntSXE6LIM+EsgjTXDIXWnox
-         9cLKLknfWu6BSGE2ITyTfOhv9M70nO/2ZvtwMRzfH9vIMtt3xV+KEZYpVQRw7MusGQMM
-         ssK3BE95Wo+oBu6l6dEdmH4FBvVpGcLlC9scX4+3XFLpHY9qRL2QjNqdXI2rG6ZSRox2
-         Y0iW5oBHh17kNGyYokI3ow/r8/awDBnZEXsXuvVGT8/VlxGPqNO2PwngLQkxwgpoAnvK
-         kZ/h+gPd4Kotz6NPaetljhabqCjm8XnFJ5HFWGkGVy6KVlkGr88N5SJxgiI7kPzRp2Rv
-         3btQ==
-X-Gm-Message-State: AO0yUKXldj1G0urmL+gT+amy9DmOIpf1b1/2Er6nlJS/QRdIop5mG1Vd
-        81TqJpwJiEqY863/WopY24o=
-X-Google-Smtp-Source: AK7set/vLpvKe0YMV6V4xFFxWeIDZxral5oel3M8ZEVRVHfcThgwCE2w0hq0lN0ZZ/FAMivfH7aOVw==
-X-Received: by 2002:a1c:7215:0:b0:3ed:5d41:f9a7 with SMTP id n21-20020a1c7215000000b003ed5d41f9a7mr3675091wmc.2.1679020418287;
-        Thu, 16 Mar 2023 19:33:38 -0700 (PDT)
-Received: from localhost.localdomain (93-34-89-197.ip49.fastwebnet.it. [93.34.89.197])
-        by smtp.googlemail.com with ESMTPSA id z15-20020a5d44cf000000b002ce9f0e4a8fsm782313wrr.84.2023.03.16.19.33.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Mar 2023 19:33:38 -0700 (PDT)
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        with ESMTP id S229638AbjCQCi7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 22:38:59 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A38F7D80;
+        Thu, 16 Mar 2023 19:38:25 -0700 (PDT)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Pd7W350VjznXGh;
+        Fri, 17 Mar 2023 10:34:23 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Fri, 17 Mar
+ 2023 10:37:23 +0800
+Subject: Re: [PATCH net] vmxnet3: use gro callback when UPT is enabled
+To:     Jakub Kicinski <kuba@kernel.org>, Ronak Doshi <doshir@vmware.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        Pv-drivers <Pv-drivers@vmware.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, Lee Jones <lee@kernel.org>,
-        linux-leds@vger.kernel.org
-Subject: [net-next PATCH v4 14/14] arm: mvebu: dt: Add PHY LED support for 370-rd WAN port
-Date:   Fri, 17 Mar 2023 03:31:25 +0100
-Message-Id: <20230317023125.486-15-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230317023125.486-1-ansuelsmth@gmail.com>
-References: <20230317023125.486-1-ansuelsmth@gmail.com>
+        Guolin Yang <gyang@vmware.com>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20230308222504.25675-1-doshir@vmware.com>
+ <e3768ae9-6a2b-3b5e-9381-21407f96dd63@huawei.com>
+ <4DF8ED21-92C2-404F-9766-691AEA5C4E8B@vmware.com>
+ <252026f5-f979-2c8d-90d9-7ba396d495c8@huawei.com>
+ <0389636C-F179-48E1-89D2-48DE0B34FD30@vmware.com>
+ <2e2ae42b-4f10-048e-4828-5cb6dd8558f5@huawei.com>
+ <3EF78217-44AA-44F6-99DC-86FF1CC03A94@vmware.com>
+ <207a0919-1a5a-dee6-1877-ee0b27fc744a@huawei.com>
+ <AA320ADE-E149-4C0D-80D5-338B19AD31A2@vmware.com>
+ <77c30632-849f-8b7b-42ef-be8b32981c15@huawei.com>
+ <1743CDA0-8F35-4F60-9D22-A17788B90F9B@vmware.com>
+ <20230315211329.1c7b3566@kernel.org>
+ <4FC80D64-DACB-4223-A345-BCE71125C342@vmware.com>
+ <20230316133405.0ffbea6a@kernel.org>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <06e4a534-d15d-4b17-b548-4927d42152e1@huawei.com>
+Date:   Fri, 17 Mar 2023 10:37:22 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+In-Reply-To: <20230316133405.0ffbea6a@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -90,49 +68,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrew Lunn <andrew@lunn.ch>
+On 2023/3/17 4:34, Jakub Kicinski wrote:
+> On Thu, 16 Mar 2023 05:21:42 +0000 Ronak Doshi wrote:
+>> Below are some sample test numbers collected by our perf team. 
+>>                           Test                                    socket & msg size                          base               using only gro
+>> 1VM    14vcpu UDP stream receive        256K 256 bytes (packets/sec)    217.01 Kps    187.98 Kps         -13.37%
+>> 16VM  2vcpu   TCP stream send Thpt     8K     256 bytes (Gbps)                18.00 Gbps    17.02 Gbps         -5.44%
+>> 1VM    14vcpu ResponseTimeMean Receive (in micro secs)                      163 us             170 us                -4.29%
+> 
+> A bit more than I suspected, thanks for the data.
 
-The WAN port of the 370-RD has a Marvell PHY, with one LED on
-the front panel. List this LED in the device tree.
+Maybe we do some investigation to find out why the performace lost is more than
+suspected first.
 
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
----
- arch/arm/boot/dts/armada-370-rd.dts | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+For example if LRO'ed skb is added in gro_list->list, and then new LRO'ed skb from
+the same flow only go through the whole GSO processing only to find out we have to
+flush out the old LRO'ed in the gro_list->list, and add new LRO'ed skb in gro_list->list
+again?
 
-diff --git a/arch/arm/boot/dts/armada-370-rd.dts b/arch/arm/boot/dts/armada-370-rd.dts
-index be005c9f42ef..15b36aa34ef4 100644
---- a/arch/arm/boot/dts/armada-370-rd.dts
-+++ b/arch/arm/boot/dts/armada-370-rd.dts
-@@ -20,6 +20,7 @@
- /dts-v1/;
- #include <dt-bindings/input/input.h>
- #include <dt-bindings/interrupt-controller/irq.h>
-+#include <dt-bindings/leds/common.h>
- #include <dt-bindings/gpio/gpio.h>
- #include "armada-370.dtsi"
- 
-@@ -135,6 +136,19 @@ &mdio {
- 	pinctrl-names = "default";
- 	phy0: ethernet-phy@0 {
- 		reg = <0>;
-+		leds {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			led@0 {
-+				reg = <0>;
-+				label = "WAN";
-+				color = <LED_COLOR_ID_WHITE>;
-+				function = LED_FUNCTION_LAN;
-+				function-enumerator = <1>;
-+				linux,default-trigger = "netdev";
-+			};
-+		};
- 	};
- 
- 	switch: switch@10 {
--- 
-2.39.2
 
+> .
+> 
