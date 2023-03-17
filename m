@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 53A2B6BE858
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 12:37:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C79C6BE849
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 12:37:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230152AbjCQLgl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 07:36:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54472 "EHLO
+        id S230135AbjCQLgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 07:36:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230136AbjCQLgh (ORCPT
+        with ESMTP id S230088AbjCQLgh (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 07:36:37 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A54D3AF2B3;
-        Fri, 17 Mar 2023 04:35:50 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id m2so4123532wrh.6;
-        Fri, 17 Mar 2023 04:35:50 -0700 (PDT)
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2214855527;
+        Fri, 17 Mar 2023 04:35:51 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id l15-20020a05600c4f0f00b003ed58a9a15eso3087572wmq.5;
+        Fri, 17 Mar 2023 04:35:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679052906;
+        d=gmail.com; s=20210112; t=1679052907;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=T7SQ9kaOy/S8FPUlJEhgskNXuG1oAfv0f3g7BLxvENA=;
-        b=bFQmSZEDWdDZhF9L2URNpiIIe/JoGgban6C6b10czszEnLI2jBVncRYn2Hd5aDkP6a
-         s4QA+muJ6Be9yNItjMB/6xBXsgzvatlITdPTjsQ3HKWAN+5vMNUoHvqbBfU1kkWbJZHj
-         usLXl4cEp37U4m0QeCGfxrK/E4Wgy/BCvp6KmO0udQm1WiI5zIFDs1QjF3LocLavrfQI
-         jj0utg/0E6N6wb9urLUZwSSS74vUK6QDbb6U7dgU8/cWMWmqjDYct/vQjUFubSostF2s
-         AzvdAkAP5Gt8DmyZO1l7mUYWmEi2PhoJ2syc6GRWu22MFo8cTMiQ/i2xha1LfLjUEM10
-         DBhQ==
+        bh=bCxFJ8Y9JBKeW1Td/agI2Q/Ve+uYhi8G9xxdLPJEMjg=;
+        b=h/zfKni90XIgqMPwBl6tlyLyYaXLr30bRH38kh4DE5+KjDvYDDd9z8jGN9Iugkonx4
+         kN0nFxveKcjTwj2qDkAQ5iWvU75LNIFEAlqu75YLi/Ccu0wFBy3MCzt8Jfb8P4vrSzLh
+         kEGKkcBK4n6HDtJcIt8Sgbz38iNFBcjzZDCa6Vi18VPINiIvn769xFeCTRMnHh3sprR8
+         gCrwbb/KoCW/XxR1PLSWFry1x3gt2p/Omy+KHLqJitUl7Q4JjvmiEpmUfA/PmeMV5wR+
+         dszXyK7Kcs8xplUO92P1txGx8P+LPC3vV24h7ppKU5vHnDQ662dGn3T0NLwzQ8SkiYJj
+         q8hw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679052906;
+        d=1e100.net; s=20210112; t=1679052907;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=T7SQ9kaOy/S8FPUlJEhgskNXuG1oAfv0f3g7BLxvENA=;
-        b=L4m7MgSsoOK9KsCfUIhm162HFC58a11EvTXe7JwMgqQIIsZKD4L+RuH2wAzf2ombhD
-         xL3i5Nw59nR/PZer59BYQyMinJbIOWk/MxuYNefjXPCmuxPcCtchMHDB6t5GMmLmk949
-         Q9booQua6i4HTdVLj99Fxmuic6nGRhTfuTvt6g87guq21XsD+WPQ/BGhuuvugUzh5z9w
-         PNoG4g6F0deWAFOKuhyoKIWQj1Wlt4F62qHw7UD2wWNRKV6K7RJLD85+75HnX4UUdiE7
-         oZYL+kEX1EVTPmaib0L0Y4AQkHgIF3IjiKMvjoc1H3v2GAu7eEx0JknXsVXHsrEs8NB1
-         ARgA==
-X-Gm-Message-State: AO0yUKWz1IASPpmXYzjuiUoVq6aww06JBTnJ+YooTtjIGRVt6kw8bhHw
-        BMKFPvhovX8G83oG+5q7aLA=
-X-Google-Smtp-Source: AK7set8ugol2R2dd4CTPf6kAsYMLUvAGMbKSL+WadpTOi4RnD23/YxghLWiXhTjIhH4hEESaqwXLTA==
-X-Received: by 2002:a5d:674c:0:b0:2ce:aace:5b27 with SMTP id l12-20020a5d674c000000b002ceaace5b27mr6407172wrw.11.1679052905561;
-        Fri, 17 Mar 2023 04:35:05 -0700 (PDT)
+        bh=bCxFJ8Y9JBKeW1Td/agI2Q/Ve+uYhi8G9xxdLPJEMjg=;
+        b=1JEgGjo0J3h4YXgNUxgxX/jDa3Oa55m+4dpWgQeeGm0DBX8ko80rur8YdQCZqgvhPo
+         x6gUNCLRwDey2aSq9KiMQ8ABrl4XSxOhy/y32natiHnIc6WCgUQ3McOwZkmb2aFQU60O
+         qyyZKHFKwfcUgIAI9+WYa3S6dAKf5Dcn50YGyBR9jlh+VtCCqmAAw6PoJkqqsrUiH82M
+         5NsbXdPkACiXeF9CxgqwN6UxNWGua7K6yYtTQgWj5LKu4AQAMr8g/wH3qc8/ICqftubV
+         RmlDcdu+srLPmbSjVpjINZM2ET66SFTCOm3WiOtKWxY7A2TRFh1t9bJt/bWM3GrupCLr
+         coYg==
+X-Gm-Message-State: AO0yUKXbr8juUhXJ3YtDcNt5wWhvElIvVUiwquD0juBpVCk0Btls7eQ4
+        Q+WK+Tk1vVPtGoAupX2v8mI=
+X-Google-Smtp-Source: AK7set8DxyHZm9v+MD+/YcaTjLSpi9wlz3K/gKCpO3qNxX8SzOLHNk4IKToeXXM5eB/3J2quMNBuUw==
+X-Received: by 2002:a05:600c:524a:b0:3ed:3e72:3580 with SMTP id fc10-20020a05600c524a00b003ed3e723580mr6584306wmb.26.1679052906946;
+        Fri, 17 Mar 2023 04:35:06 -0700 (PDT)
 Received: from atlantis.lan (255.red-79-146-124.dynamicip.rima-tde.net. [79.146.124.255])
-        by smtp.gmail.com with ESMTPSA id p17-20020adfcc91000000b002c71dd1109fsm1763505wrj.47.2023.03.17.04.35.04
+        by smtp.gmail.com with ESMTPSA id p17-20020adfcc91000000b002c71dd1109fsm1763505wrj.47.2023.03.17.04.35.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Mar 2023 04:35:05 -0700 (PDT)
+        Fri, 17 Mar 2023 04:35:06 -0700 (PDT)
 From:   =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
         <noltari@gmail.com>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
@@ -60,9 +60,9 @@ To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
         <noltari@gmail.com>
-Subject: [PATCH 1/3] dt-bindings: net: move bcm6368-mdio-mux bindings to b53
-Date:   Fri, 17 Mar 2023 12:34:25 +0100
-Message-Id: <20230317113427.302162-2-noltari@gmail.com>
+Subject: [PATCH 2/3] net: dsa: b53: mmap: register MDIO Mux bus controller
+Date:   Fri, 17 Mar 2023 12:34:26 +0100
+Message-Id: <20230317113427.302162-3-noltari@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230317113427.302162-1-noltari@gmail.com>
 References: <20230317113427.302162-1-noltari@gmail.com>
@@ -71,7 +71,7 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -86,222 +86,183 @@ cause a race condition which will hang the device.
 
 Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
 ---
- .../bindings/net/brcm,bcm6368-mdio-mux.yaml   |  52 -------
- .../devicetree/bindings/net/dsa/brcm,b53.yaml | 131 ++++++++++++++++++
- 2 files changed, 131 insertions(+), 52 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/net/brcm,bcm6368-mdio-mux.yaml
+ drivers/net/dsa/b53/Kconfig    |   1 +
+ drivers/net/dsa/b53/b53_mmap.c | 127 ++++++++++++++++++++++++++++++++-
+ 2 files changed, 127 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/net/brcm,bcm6368-mdio-mux.yaml b/Documentation/devicetree/bindings/net/brcm,bcm6368-mdio-mux.yaml
-deleted file mode 100644
-index 9ef28c2a0afc..000000000000
---- a/Documentation/devicetree/bindings/net/brcm,bcm6368-mdio-mux.yaml
-+++ /dev/null
-@@ -1,52 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
--%YAML 1.2
-----
--$id: http://devicetree.org/schemas/net/brcm,bcm6368-mdio-mux.yaml#
--$schema: http://devicetree.org/meta-schemas/core.yaml#
--
--title: Broadcom BCM6368 MDIO bus multiplexer
--
--maintainers:
--  - Álvaro Fernández Rojas <noltari@gmail.com>
--
--description:
--  This MDIO bus multiplexer defines buses that could be internal as well as
--  external to SoCs. When child bus is selected, one needs to select these two
--  properties as well to generate desired MDIO transaction on appropriate bus.
--
--allOf:
--  - $ref: mdio-mux.yaml#
--
--properties:
--  compatible:
--    const: brcm,bcm6368-mdio-mux
--
--  reg:
--    maxItems: 1
--
--required:
--  - compatible
--  - reg
--
--unevaluatedProperties: false
--
--examples:
--  - |
--    mdio0: mdio@10e000b0 {
--      #address-cells = <1>;
--      #size-cells = <0>;
--      compatible = "brcm,bcm6368-mdio-mux";
--      reg = <0x10e000b0 0x6>;
--
--      mdio_int: mdio@0 {
--        #address-cells = <1>;
--        #size-cells = <0>;
--        reg = <0>;
--      };
--
--      mdio_ext: mdio@1 {
--        #address-cells = <1>;
--        #size-cells = <0>;
--        reg = <1>;
--      };
--    };
-diff --git a/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml b/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
-index 5bef4128d175..b1a894899306 100644
---- a/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
-+++ b/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
-@@ -61,6 +61,17 @@ properties:
-               - brcm,bcm6368-switch
-           - const: brcm,bcm63xx-switch
+diff --git a/drivers/net/dsa/b53/Kconfig b/drivers/net/dsa/b53/Kconfig
+index ebaa4a80d544..04450ee1ba82 100644
+--- a/drivers/net/dsa/b53/Kconfig
++++ b/drivers/net/dsa/b53/Kconfig
+@@ -26,6 +26,7 @@ config B53_MDIO_DRIVER
+ config B53_MMAP_DRIVER
+ 	tristate "B53 MMAP connected switch driver"
+ 	depends on B53 && HAS_IOMEM
++	select MDIO_BUS_MUX
+ 	default BCM63XX || BMIPS_GENERIC
+ 	help
+ 	  Select to enable support for memory-mapped switches like the BCM63XX
+diff --git a/drivers/net/dsa/b53/b53_mmap.c b/drivers/net/dsa/b53/b53_mmap.c
+index e968322dfbf0..44becbb12bb5 100644
+--- a/drivers/net/dsa/b53/b53_mmap.c
++++ b/drivers/net/dsa/b53/b53_mmap.c
+@@ -18,15 +18,31 @@
  
-+  big-endian:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description:
-+      Set this flag for switches with big endian registers.
-+
-+  mdio-mux:
-+    $ref: /schemas/net/mdio-mux.yaml
-+    description:
-+      MDIO bus multiplexer defines buses that could be internal as well as
-+      external to SoCs.
-+
- required:
-   - compatible
-   - reg
-@@ -131,6 +142,22 @@ allOf:
-         reg:
-           maxItems: 1
+ #include <linux/bits.h>
+ #include <linux/kernel.h>
++#include <linux/mdio-mux.h>
+ #include <linux/module.h>
+ #include <linux/io.h>
++#include <linux/of_mdio.h>
+ #include <linux/platform_device.h>
+ #include <linux/platform_data/b53.h>
  
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - brcm,bcm3384-switch
-+              - brcm,bcm6328-switch
-+              - brcm,bcm6368-switch
-+    then:
-+      properties:
-+        reg:
-+          minItems: 1
-+          maxItems: 1
-+      required:
-+        - mdio-mux
-+
- unevaluatedProperties: false
+ #include "b53_priv.h"
  
- examples:
-@@ -262,3 +289,107 @@ examples:
-             };
-         };
-     };
-+  - |
-+    switch0: switch@10f00000 {
-+      compatible = "brcm,bcm6368-switch", "brcm,bcm63xx-switch";
-+      reg = <0x10f00000 0x8000>;
-+      big-endian;
++#define REG_MDIOC		0xb0
++#define  REG_MDIOC_EXT_MASK	BIT(16)
++#define  REG_MDIOC_REG_SHIFT	20
++#define  REG_MDIOC_PHYID_SHIFT	25
++#define  REG_MDIOC_RD_MASK	BIT(30)
++#define  REG_MDIOC_WR_MASK	BIT(31)
 +
-+      dsa,member = <0 0>;
++#define REG_MDIOD		0xb4
 +
-+      mdio-mux {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
+ struct b53_mmap_priv {
+ 	void __iomem *regs;
 +
-+        mdio@0 {
-+          #address-cells = <1>;
-+          #size-cells = <0>;
-+          reg = <0>;
-+        };
++	/* Internal MDIO Mux bus */
++	struct mii_bus *mbus;
++	int ext_phy;
++	void *mux_handle;
+ };
+ 
+ static int b53_mmap_read8(struct b53_device *dev, u8 page, u8 reg, u8 *val)
+@@ -229,6 +245,111 @@ static const struct b53_io_ops b53_mmap_ops = {
+ 	.write64 = b53_mmap_write64,
+ };
+ 
++static int b53_mmap_mdiomux_read(struct mii_bus *bus, int phy_id, int loc)
++{
++	struct b53_device *dev = bus->priv;
++	struct b53_mmap_priv *priv = dev->priv;
++	uint32_t reg;
++	uint16_t val;
 +
-+        mdio@1 {
-+          #address-cells = <1>;
-+          #size-cells = <0>;
-+          reg = <1>;
++	b53_mmap_write32(dev, 0, REG_MDIOC, 0);
 +
-+          switch@1e {
-+            compatible = "brcm,bcm53125";
-+            reg = <30>;
++	reg = REG_MDIOC_RD_MASK |
++	      (phy_id << REG_MDIOC_PHYID_SHIFT) |
++	      (loc << REG_MDIOC_REG_SHIFT);
++	if (priv->ext_phy)
++		reg |= REG_MDIOC_EXT_MASK;
 +
-+            dsa,member = <1 0>;
++	b53_mmap_write32(dev, 0, REG_MDIOC, reg);
++	udelay(50);
++	b53_mmap_read16(dev, 0, REG_MDIOD, &val);
 +
-+            ports {
-+              #address-cells = <1>;
-+              #size-cells = <0>;
++	return (int) val;
++}
 +
-+              port@0 {
-+                reg = <0>;
-+                label = "lan1";
-+              };
++static int b53_mmap_mdiomux_write(struct mii_bus *bus, int phy_id, int loc,
++				  uint16_t val)
++{
++	struct b53_device *dev = bus->priv;
++	struct b53_mmap_priv *priv = dev->priv;
++	uint32_t reg;
 +
-+              port@1 {
-+                reg = <1>;
-+                label = "lan2";
-+              };
++	b53_mmap_write32(dev, 0, REG_MDIOC, 0);
 +
-+              port@2 {
-+                reg = <2>;
-+                label = "lan3";
-+              };
++	reg = REG_MDIOC_WR_MASK |
++	      (phy_id << REG_MDIOC_PHYID_SHIFT) |
++	      (loc << REG_MDIOC_REG_SHIFT);
++	if (priv->ext_phy)
++		reg |= REG_MDIOC_EXT_MASK;
++	reg |= val;
 +
-+              port@3 {
-+                reg = <3>;
-+                label = "lan4";
-+              };
++	b53_mmap_write32(dev, 0, REG_MDIOC, reg);
++	udelay(50);
 +
-+              port@4 {
-+                reg = <4>;
-+                label = "wan";
-+              };
++	return 0;
++}
 +
-+              port@8 {
-+                reg = <8>;
-+                label = "cpu";
++static int b53_mmap_mdiomux_switch_fn(int current_child, int desired_child,
++				      void *data)
++{
++	struct b53_device *dev = data;
++	struct b53_mmap_priv *priv = dev->priv;
 +
-+                phy-mode = "rgmii";
-+                ethernet = <&switch0port4>;
++	priv->ext_phy = desired_child;
 +
-+                fixed-link {
-+                  speed = <1000>;
-+                  full-duplex;
-+                };
-+              };
-+            };
-+          };
-+        };
-+      };
++	return 0;
++}
 +
-+      ports {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
++static int b53_mmap_mdiomux_init(struct b53_device *priv)
++{
++	struct b53_mmap_priv *mpriv = priv->priv;
++	struct device *dev = priv->dev;
++	struct device_node *np = dev->of_node;
++	struct device_node *mnp;
++	struct mii_bus *mbus;
++	int ret;
 +
-+        switch0port4: port@4 {
-+          reg = <4>;
-+          label = "extsw";
++	mnp = of_get_child_by_name(np, "mdio-mux");
++	if (!mnp)
++		return 0;
 +
-+          phy-mode = "rgmii";
++	mbus = devm_mdiobus_alloc(dev);
++	if (!mbus) {
++		of_node_put(mnp);
++		return -ENOMEM;
++	}
 +
-+          fixed-link {
-+            speed = <1000>;
-+            full-duplex;
-+          };
-+        };
++	mbus->priv = priv;
++	mbus->name = np->full_name;
++	snprintf(mbus->id, MII_BUS_ID_SIZE, "%pOF", np);
++	mbus->parent = dev;
++	mbus->read = b53_mmap_mdiomux_read;
++	mbus->write = b53_mmap_mdiomux_write;
++	mbus->phy_mask = 0x3f;
 +
-+        port@8 {
-+          reg = <8>;
++	ret = devm_of_mdiobus_register(dev, mbus, mnp);
++	if (ret) {
++		of_node_put(mnp);
++		dev_err(dev, "MDIO mux registration failed\n");
++		return ret;
++	}
 +
-+          phy-mode = "internal";
-+          ethernet = <&ethernet>;
++	ret = mdio_mux_init(dev, mnp, b53_mmap_mdiomux_switch_fn,
++			    &mpriv->mux_handle, priv, mbus);
++	of_node_put(mnp);
++	if (ret) {
++		mdiobus_unregister(mbus);
++		dev_err(dev, "MDIO mux initialization failed\n");
++		return ret;
++	}
 +
-+          fixed-link {
-+            speed = <1000>;
-+            full-duplex;
-+          };
-+        };
-+      };
-+    };
++	dev_info(dev, "MDIO mux bus init\n");
++
++	mpriv->mbus = mbus;
++
++	return 0;
++}
++
+ static int b53_mmap_probe_of(struct platform_device *pdev,
+ 			     struct b53_platform_data **ppdata)
+ {
+@@ -306,7 +427,11 @@ static int b53_mmap_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, dev);
+ 
+-	return b53_switch_register(dev);
++	ret = b53_switch_register(dev);
++	if (ret)
++		return ret;
++
++	return b53_mmap_mdiomux_init(dev);
+ }
+ 
+ static int b53_mmap_remove(struct platform_device *pdev)
 -- 
 2.30.2
 
