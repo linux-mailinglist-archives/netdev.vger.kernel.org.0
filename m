@@ -2,73 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 55DFD6BE8BB
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 12:58:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B0006BE8C8
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 13:06:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230211AbjCQL6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 07:58:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38732 "EHLO
+        id S229923AbjCQMG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 08:06:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230190AbjCQL6w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 07:58:52 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D92FB79D0;
-        Fri, 17 Mar 2023 04:58:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679054321; x=1710590321;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=sJw6ZvTiSBeJWWkSp+yJ3m9JmAmsP740tHkQ6iSYsCo=;
-  b=ax4GZPevmFzbqPRF61nsCF5GHyyxAIT/uozgdfutBf3JN9oSqDZQAgKW
-   0v8Uhz3alm5XiYBuqPU1VmTcutCAL8OiloYL1H8X0MLzL/oPd7yfAOsMs
-   M+oT2qBH++2jeOf+qFEyuM/l5mEZvB2//ggfjTfsWTAJCRPQMA5/gdN0L
-   0FLjwxNuf9uAvAR7i0qHuAiuUarQWZ6pWuoHYp+faU9QOKMe5Ep9MGSuJ
-   umiN9t8XPY+QKsmlwp3ccf9cS6zgCrgZZ0PTbwnrd+2GVvZgsYd98P34u
-   /HAmKCc/vYUpxev3zOwct6b46toWGHMqhHFoEx/daz+L3+23awu7ZAkSH
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10651"; a="340605715"
-X-IronPort-AV: E=Sophos;i="5.98,268,1673942400"; 
-   d="scan'208";a="340605715"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2023 04:58:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10651"; a="823648396"
-X-IronPort-AV: E=Sophos;i="5.98,268,1673942400"; 
-   d="scan'208";a="823648396"
-Received: from ahajda-mobl.ger.corp.intel.com (HELO [10.213.22.107]) ([10.213.22.107])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2023 04:58:36 -0700
-Message-ID: <96586b9d-499b-930c-9d0b-edb2c1087fc9@intel.com>
-Date:   Fri, 17 Mar 2023 12:58:34 +0100
+        with ESMTP id S229494AbjCQMG4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 08:06:56 -0400
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A6C8618D;
+        Fri, 17 Mar 2023 05:06:55 -0700 (PDT)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-54195ef155aso89529227b3.9;
+        Fri, 17 Mar 2023 05:06:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679054815;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8bccudwjWFdn0cAhrMBEmTFGFFpcmKU2pFnJ0oUGJTE=;
+        b=FOWEtV5IyzFZGAVAClxPx0L1hTrVN52vcBg6EgqXlAe6ltcHCMd8vJBu+kJT+xWrv5
+         ASKba3BbrghDbZWd2HUVr7gOoKc4bES739sfI10X7V1/MxDTPywNxbOJHdgC7fC2+jv+
+         gHrdpcTX4Y7B0kD1QnWQHKPphaCa5YuukZ+MVdcVz69i2gnAXtKAic+Twfl8Aycl0uoV
+         C7amQnaPuWE1Je7cdf8e7k66T2NT7KI6Ao2jcDMIbIUZ/FSiHl7S2x4p1x/vh/rItAoK
+         6xw0Bact4JJL+xTkZOnFUhwBq5ItnraODROtXi75sNJOHf7IIfkGdo2IgVGTd+sPjhn7
+         YooQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679054815;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=8bccudwjWFdn0cAhrMBEmTFGFFpcmKU2pFnJ0oUGJTE=;
+        b=B4eAsaFZtmkfm/hGW1ukpq31yD7PBqW7WR2Hnd9MFxy9pxNiXUwp6IPNoMhsKq9S3z
+         cCxHV8I+NvdV4Ag3b2YRw+gfWRQ+fa13XtE85+uHsT+lHSHd3FpMRe0TyITMa2/uvjvS
+         V/nmDYWbA7LFFomLLlR+lyXaP9DjAeyVTYGcpQHY6Sxcd686Y91hYdsr5s/A9u3sVYiU
+         SyBMzEt+2pUdZZRU3Olmo4vXIMuZUzA2MN1GDfUbYP7uvhdwBeUkrWdBL3YTAAhk11Ko
+         QGocuXZG4XBIYiix8aHkYhGQt6lERlKbv8WXEPGgW16N4XtCuxBatORAfO3cIv2oz7pU
+         v4GA==
+X-Gm-Message-State: AO0yUKXWANfEwpXSFi0OAVxLOP+h90vF4bRewU1Wvyqtcg3/kDONEHGO
+        p/XHb1GVQx7GX+2ytrglnQOr0zbdHY+Vx2W0tI4=
+X-Google-Smtp-Source: AK7set+NxKoYSaf3j+38d1PSQKY8glPC4ERwMS/onUoKCSK2/P9pmCXcq8q79v8tat5fJ5JRNcJL8hYtVj+3ZlKAejE=
+X-Received: by 2002:a81:ed06:0:b0:540:e6c5:5118 with SMTP id
+ k6-20020a81ed06000000b00540e6c55118mr4711051ywm.2.1679054814642; Fri, 17 Mar
+ 2023 05:06:54 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.9.0
-Subject: Re: [Intel-gfx] [PATCH v4 00/10] drm/i915: use ref_tracker library
- for tracking wakerefs
-Content-Language: en-US
-To:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     netdev@vger.kernel.org, intel-gfx@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Eric Dumazet <edumazet@google.com>,
-        Chris Wilson <chris.p.wilson@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dmitry Vyukov <dvyukov@google.com>
-References: <20230224-track_gt-v4-0-464e8ab4c9ab@intel.com>
-From:   Andrzej Hajda <andrzej.hajda@intel.com>
-Organization: Intel Technology Poland sp. z o.o. - ul. Slowackiego 173, 80-298
- Gdansk - KRS 101882 - NIP 957-07-52-316
-In-Reply-To: <20230224-track_gt-v4-0-464e8ab4c9ab@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham
+References: <20230317113427.302162-1-noltari@gmail.com> <20230317113427.302162-3-noltari@gmail.com>
+ <20230317115115.s32r52rz3svuj4ed@skbuf>
+In-Reply-To: <20230317115115.s32r52rz3svuj4ed@skbuf>
+From:   =?UTF-8?B?w4FsdmFybyBGZXJuw6FuZGV6IFJvamFz?= <noltari@gmail.com>
+Date:   Fri, 17 Mar 2023 13:06:43 +0100
+Message-ID: <CAKR-sGe3xHkN-1+aLn0ixnskctPK4GTzfXu8O_dkFhHyY1nTeg@mail.gmail.com>
+Subject: Re: [PATCH 2/3] net: dsa: b53: mmap: register MDIO Mux bus controller
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, f.fainelli@gmail.com,
+        jonas.gorski@gmail.com, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,94 +73,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+Hi Vladimir,
 
-Gently ping on the series.
+El vie, 17 mar 2023 a las 12:51, Vladimir Oltean (<olteanv@gmail.com>) escr=
+ibi=C3=B3:
+>
+> On Fri, Mar 17, 2023 at 12:34:26PM +0100, =C3=81lvaro Fern=C3=A1ndez Roja=
+s wrote:
+> > b53 MMAP devices have a MDIO Mux bus controller that must be registered=
+ after
+> > properly initializing the switch. If the MDIO Mux controller is registe=
+red
+> > from a separate driver and the device has an external switch present, i=
+t will
+> > cause a race condition which will hang the device.
+>
+> Could you describe the race in more details? Why does it hang the device?
 
-Regards
-Andrzej
+I didn't perform a full analysis on the problem, but what I think is
+going on is that both b53 switches are probed and both of them fail
+due to the ethernet device not being probed yet.
+At some point, the internal switch is reset and not fully configured
+and the external switch is probed again, but since the internal switch
+isn't ready, the MDIO accesses for the external switch fail due to the
+internal switch not being ready and this hangs the device because the
+access to the external switch is done through the same registers from
+the internal switch.
 
-On 06.03.2023 17:31, Andrzej Hajda wrote:
-> This is revived patchset improving ref_tracker library and converting
-> i915 internal tracker to ref_tracker.
-> The old thread ended without consensus about small kernel allocations,
-> which are performed under spinlock.
-> I have tried to solve the problem by splitting the calls, but it results
-> in complicated API, so I went back to original solution.
-> If there are better solutions I am glad to discuss them.
-> Meanwhile I send original patchset with addressed remaining comments.
-> 
-> To: Jani Nikula <jani.nikula@linux.intel.com>
-> To: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-> To: Rodrigo Vivi <rodrigo.vivi@intel.com>
-> To: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-> To: David Airlie <airlied@gmail.com>
-> To: Daniel Vetter <daniel@ffwll.ch>
-> Cc: linux-kernel@vger.kernel.org
-> Cc: intel-gfx@lists.freedesktop.org
-> Cc: dri-devel@lists.freedesktop.org
-> Cc: Chris Wilson <chris@chris-wilson.co.uk>
-> Cc: netdev@vger.kernel.org
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Dmitry Vyukov <dvyukov@google.com>
-> Signed-off-by: Andrzej Hajda <andrzej.hajda@intel.com>
-> 
-> ---
-> Changes in v4:
-> - split "Separate wakeref tracking" to smaller parts
-> - fixed typos,
-> - Link to v1-v3: https://patchwork.freedesktop.org/series/100327/
-> 
-> ---
-> Andrzej Hajda (7):
->        lib/ref_tracker: add unlocked leak print helper
->        lib/ref_tracker: __ref_tracker_dir_print improve printing
->        lib/ref_tracker: add printing to memory buffer
->        lib/ref_tracker: remove warnings in case of allocation failure
->        drm/i915: Separate wakeref tracking types from rpm
->        drm/i915: Correct type of wakeref variable
->        drm/i915: replace Intel internal tracker with kernel core ref_tracker
-> 
-> Chris Wilson (3):
->        drm/i915: Separate wakeref tracking
->        drm/i915: Track leaked gt->wakerefs
->        drm/i915/gt: Hold a wakeref for the active VM
-> 
->   drivers/gpu/drm/i915/Kconfig.debug                 |  19 ++
->   drivers/gpu/drm/i915/Makefile                      |   1 +
->   drivers/gpu/drm/i915/display/intel_display_power.c |   2 +-
->   drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c     |   7 +-
->   .../drm/i915/gem/selftests/i915_gem_coherency.c    |  10 +-
->   drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c |  14 +-
->   drivers/gpu/drm/i915/gt/intel_breadcrumbs.c        |  13 +-
->   drivers/gpu/drm/i915/gt/intel_breadcrumbs_types.h  |   3 +-
->   drivers/gpu/drm/i915/gt/intel_context.h            |  15 +-
->   drivers/gpu/drm/i915/gt/intel_context_types.h      |   2 +
->   drivers/gpu/drm/i915/gt/intel_engine_pm.c          |  10 +-
->   drivers/gpu/drm/i915/gt/intel_engine_types.h       |   2 +
->   .../gpu/drm/i915/gt/intel_execlists_submission.c   |   2 +-
->   drivers/gpu/drm/i915/gt/intel_gt_pm.c              |  12 +-
->   drivers/gpu/drm/i915/gt/intel_gt_pm.h              |  38 +++-
->   drivers/gpu/drm/i915/gt/intel_gt_pm_debugfs.c      |   4 +-
->   drivers/gpu/drm/i915/gt/selftest_engine_cs.c       |  20 +-
->   drivers/gpu/drm/i915/gt/selftest_gt_pm.c           |   5 +-
->   drivers/gpu/drm/i915/gt/selftest_reset.c           |  10 +-
->   drivers/gpu/drm/i915/gt/selftest_rps.c             |  17 +-
->   drivers/gpu/drm/i915/gt/selftest_slpc.c            |   5 +-
->   drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c  |  11 +-
->   drivers/gpu/drm/i915/i915_driver.c                 |   2 +-
->   drivers/gpu/drm/i915/i915_pmu.c                    |  16 +-
->   drivers/gpu/drm/i915/intel_runtime_pm.c            | 221 ++-------------------
->   drivers/gpu/drm/i915/intel_runtime_pm.h            |  11 +-
->   drivers/gpu/drm/i915/intel_wakeref.c               |   7 +-
->   drivers/gpu/drm/i915/intel_wakeref.h               | 112 ++++++++++-
->   include/linux/ref_tracker.h                        |  31 ++-
->   lib/ref_tracker.c                                  | 179 ++++++++++++++---
->   30 files changed, 469 insertions(+), 332 deletions(-)
-> ---
-> base-commit: 1ddc2effff762c6a109af52f3c39534c7115aebe
-> change-id: 20230224-track_gt-1b3da8bdacd7
-> 
-> Best regards,
+But maybe Florian or Jonas can give some more details about the issue...
 
+--
+=C3=81lvaro
