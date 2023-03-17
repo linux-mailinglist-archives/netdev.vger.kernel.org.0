@@ -2,67 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBCAB6BF3BC
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 22:22:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 699316BF489
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 22:46:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229844AbjCQVV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 17:21:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55042 "EHLO
+        id S229765AbjCQVpl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 17:45:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229733AbjCQVV6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 17:21:58 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B71C795B
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 14:21:51 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id i6-20020a170902c94600b0019d16e4ac0bso3298430pla.5
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 14:21:51 -0700 (PDT)
+        with ESMTP id S231494AbjCQVpT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 17:45:19 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A74CDE3;
+        Fri, 17 Mar 2023 14:44:34 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id o6-20020a17090a9f8600b0023f32869993so6655293pjp.1;
+        Fri, 17 Mar 2023 14:44:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1679088110;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=PzsBZNbSc5Cbu7o6c4aa6/HqL8bVQjVwQw8nR/BqY10=;
-        b=M3pyj4WXzRt5UOa9AGraYYh1SMXzBIrCA12O1wU1pGc3u4z8qivxajOailzHPT20mJ
-         bB42c+Ws9X1LLYsiqQD6IZe1BJSIllAIVbN2utQOdT9d1jyqlBDpt99ebpcOKI5zDZpt
-         rUqxrV6frBBIY7ISv1P4cvRqIrH3xvBCAiQVFgLxcC9muYMA8LOuBs3AlEIU9lIYtD8y
-         kXg8mlfbVKAibTjQ5fdhWcU0ocFMf4zVJhI4nde1oGlTuxESqEml0JFrPQjL5fDA/2s8
-         1+ghb9aXrSg8QzQjteR7mPTcQWf4tIH184yf43wOd077i9g8I+P8btQ11XZFGpKU8aIe
-         EQBw==
+        d=gmail.com; s=20210112; t=1679089371;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cFBF3aoCDzJCKnQzjtj3KAbX/g9gllas0cPUtC2AElQ=;
+        b=LMrEWqiv3C7gLXyADrhik9HFsIhYpPv/LYsy1fmqAP9hZ51xxbCqwYCzZHKYx1oZh/
+         AwA3fQnJ2w7Xz87OhMGbX/2RYdJEr4ynkfpk0t63yI9I46p8N5eZf7WTlr9mO8kxsrQu
+         OPEP388AnRxhXkmbF579aYpdv4ZM/3xwZgEWGHydrLfWiX4v1ImV5TL95ovFnCItveXu
+         fCzqtY+Tm1ZMhPWNWs1tiGuIQEf3N4nbLieKuB6MBGNRy7Wpefl67pH26abf20JAyll+
+         USIRLQw7k+8fSFjZ0fwxhcE85QUUPA701EQyEzfnnHsfiCxpwXsSNH/fDOH5zi6rqwaA
+         Xz2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679088110;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=PzsBZNbSc5Cbu7o6c4aa6/HqL8bVQjVwQw8nR/BqY10=;
-        b=smVaJcPYpPszNXVo1MaGkPVz5H5bz8yxb/4FyXJjwsbx1PQuzuABYLaEm+U4GKiqaq
-         KSYszAdTChHwYCKbAKXYO7rLg3fKbxhjsSNaoa/C4lGxbMRZieSQMXGeJPBQp4l9czO8
-         t6+AAM8s2+osk2lZxud46I6sEay9QU1YtJA5sawmB8StNWPgdvye0x1kNJORm5R/dL6C
-         RENoy5igh34BSFhn1+6teu4XX2wnvkx+53Tps+5zdAgcwkJmXKb47CqTJI18YJqhuxI+
-         xbgXdJOwHOx1mOVUJCzPznBEK9oR5Y97Show6mjfqj6jzMOYIWvgGauESTqg5qtla6N6
-         RRbg==
-X-Gm-Message-State: AO0yUKWFuR74l8acZhTqPkuTDJTeW6P8JTZAHfzgmu/2mPyk3dyw94T/
-        tjucAyDcw+NanU9SuQEPPyimQog=
-X-Google-Smtp-Source: AK7set9tu9oc1RUjxgzKPCg+fE9JjxddXFmRXUmD2tbjQ8Qh5j337E8HODQsf2FImw0oHf/u/g7DsGE=
-X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a17:903:2585:b0:19f:28f4:1db with SMTP id
- jb5-20020a170903258500b0019f28f401dbmr3468766plb.8.1679088110486; Fri, 17 Mar
- 2023 14:21:50 -0700 (PDT)
-Date:   Fri, 17 Mar 2023 14:21:48 -0700
-In-Reply-To: <167906359575.2706833.545256364239637451.stgit@firesoul>
-Mime-Version: 1.0
-References: <167906343576.2706833.17489167761084071890.stgit@firesoul> <167906359575.2706833.545256364239637451.stgit@firesoul>
-Message-ID: <ZBTZ7J9B6yXNJO1m@google.com>
-Subject: Re: [PATCH bpf-next V1 1/7] xdp: bpf_xdp_metadata use EOPNOTSUPP for
- no driver support
-From:   Stanislav Fomichev <sdf@google.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, martin.lau@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, alexandr.lobakin@intel.com,
-        larysa.zaremba@intel.com, xdp-hints@xdp-project.net,
-        anthony.l.nguyen@intel.com, yoong.siang.song@intel.com,
-        boon.leong.ong@intel.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
+        d=1e100.net; s=20210112; t=1679089371;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=cFBF3aoCDzJCKnQzjtj3KAbX/g9gllas0cPUtC2AElQ=;
+        b=IAOe5+6OSomfaPAnygCvffjZ/RHsRxxTyEU2Cogfq0joWLsE2m6QeMYvcWcRDipSuZ
+         YvaOQEH2+cYgOAxIQ5h0G2pKreYbm2E4Ni9HqZafMq0aA98cH0JX8OwfqpFkLuLCmhOs
+         Ewr1Be+ZJaRlGXFErvY0WzDcAoG+0YLyuPtNQM9UQMBk4UyRVP3KH7u9cXphmT8VEfRR
+         qlek4wn5Rjj5cqpPrdXlg3aNyFkvBo3nYNNQaK4rEBrBU9AtxAwd5LuJ+w+rkbBw17k3
+         qUnjQ7+cieQUub/Qa/h9hXdyMNsrm9Yb3COEBIqMoU6HXwdlvQJX8W23vozzLn5YArjL
+         G0bg==
+X-Gm-Message-State: AO0yUKX8vA4Y7tM8oaNqgOmAsT0/si3yHohnUp3nnC0OjqQ/lcF82VNv
+        TJXm915jZx5pwHalUDuEWWI=
+X-Google-Smtp-Source: AK7set99q623mA3d1B75yMKUz/qCoVth/TvmSwr2Q9soYaexsMOXl5Zb3TtEgkz566iV6nIXTOF0Dw==
+X-Received: by 2002:a17:902:dccb:b0:1a1:b440:3773 with SMTP id t11-20020a170902dccb00b001a1b4403773mr491133pll.27.1679089371242;
+        Fri, 17 Mar 2023 14:42:51 -0700 (PDT)
+Received: from smtpclient.apple ([2601:1c0:4d7f:138e::3])
+        by smtp.gmail.com with ESMTPSA id w15-20020a170902a70f00b0019a8468cbe7sm1963126plq.224.2023.03.17.14.42.50
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 17 Mar 2023 14:42:50 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.400.51.1.1\))
+Subject: Re: [RFC PATCH 2/9] iscsi: associate endpoints with a host
+From:   Lee Duncan <leeman.duncan@gmail.com>
+In-Reply-To: <a9f8cc4f-5d60-be5e-d294-c4a9baa16ec4@suse.de>
+Date:   Fri, 17 Mar 2023 14:42:40 -0700
+Cc:     linux-scsi@vger.kernel.org,
+        open-iscsi <open-iscsi@googlegroups.com>, netdev@vger.kernel.org,
+        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <C3D117B2-4FAE-44AB-851B-67C5C98B73CF@gmail.com>
+References: <cover.1675876731.git.lduncan@suse.com>
+ <154c7602b3cc59f8af44439249ea5e5eb75f92d3.1675876734.git.lduncan@suse.com>
+ <a9f8cc4f-5d60-be5e-d294-c4a9baa16ec4@suse.de>
+To:     Hannes Reinecke <hare@suse.de>
+X-Mailer: Apple Mail (2.3731.400.51.1.1)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,165 +76,147 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03/17, Jesper Dangaard Brouer wrote:
-> When driver doesn't implement a bpf_xdp_metadata kfunc the fallback
-> implementation returns EOPNOTSUPP, which indicate device driver doesn't
-> implement this kfunc.
+On Mar 14, 2023, at 9:23 AM, Hannes Reinecke <hare@suse.de> wrote:
+>=20
+> On 2/8/23 18:40, Lee Duncan wrote:
+>> From: Lee Duncan <lduncan@suse.com>
+>> Right now the iscsi_endpoint is only linked to a connection once that
+>> connection has been established.  For net namespace filtering of the
+>> sysfs objects, associate an endpoint with the host that it was
+>> allocated for when it is created.
+>> Signed-off-by: Chris Leech <cleech@redhat.com>
+>> Signed-off-by: Lee Duncan <lduncan@suse.com>
+>> ---
+>>  drivers/infiniband/ulp/iser/iscsi_iser.c | 2 +-
+>>  drivers/scsi/be2iscsi/be_iscsi.c         | 2 +-
+>>  drivers/scsi/bnx2i/bnx2i_iscsi.c         | 2 +-
+>>  drivers/scsi/cxgbi/libcxgbi.c            | 2 +-
+>>  drivers/scsi/qedi/qedi_iscsi.c           | 2 +-
+>>  drivers/scsi/qla4xxx/ql4_os.c            | 2 +-
+>>  drivers/scsi/scsi_transport_iscsi.c      | 3 ++-
+>>  include/scsi/scsi_transport_iscsi.h      | 6 +++++-
+>>  8 files changed, 13 insertions(+), 8 deletions(-)
+>> diff --git a/drivers/infiniband/ulp/iser/iscsi_iser.c =
+b/drivers/infiniband/ulp/iser/iscsi_iser.c
+>> index 620ae5b2d80d..d38c909b462f 100644
+>> --- a/drivers/infiniband/ulp/iser/iscsi_iser.c
+>> +++ b/drivers/infiniband/ulp/iser/iscsi_iser.c
+>> @@ -802,7 +802,7 @@ static struct iscsi_endpoint =
+*iscsi_iser_ep_connect(struct Scsi_Host *shost,
+>>  	struct iser_conn *iser_conn;
+>>  	struct iscsi_endpoint *ep;
+>>  -	ep =3D iscsi_create_endpoint(0);
+>> +	ep =3D iscsi_create_endpoint(shost, 0);
+>>  	if (!ep)
+>>  		return ERR_PTR(-ENOMEM);
+>>  diff --git a/drivers/scsi/be2iscsi/be_iscsi.c =
+b/drivers/scsi/be2iscsi/be_iscsi.c
+>> index 8aeaddc93b16..c893d193f5ef 100644
+>> --- a/drivers/scsi/be2iscsi/be_iscsi.c
+>> +++ b/drivers/scsi/be2iscsi/be_iscsi.c
+>> @@ -1168,7 +1168,7 @@ beiscsi_ep_connect(struct Scsi_Host *shost, =
+struct sockaddr *dst_addr,
+>>  		return ERR_PTR(ret);
+>>  	}
+>>  -	ep =3D iscsi_create_endpoint(sizeof(struct beiscsi_endpoint));
+>> +	ep =3D iscsi_create_endpoint(shost, sizeof(struct =
+beiscsi_endpoint));
+>>  	if (!ep) {
+>>  		ret =3D -ENOMEM;
+>>  		return ERR_PTR(ret);
+>> diff --git a/drivers/scsi/bnx2i/bnx2i_iscsi.c =
+b/drivers/scsi/bnx2i/bnx2i_iscsi.c
+>> index a3c800e04a2e..ac63e93e07c6 100644
+>> --- a/drivers/scsi/bnx2i/bnx2i_iscsi.c
+>> +++ b/drivers/scsi/bnx2i/bnx2i_iscsi.c
+>> @@ -384,7 +384,7 @@ static struct iscsi_endpoint =
+*bnx2i_alloc_ep(struct bnx2i_hba *hba)
+>>  	struct bnx2i_endpoint *bnx2i_ep;
+>>  	u32 ec_div;
+>>  -	ep =3D iscsi_create_endpoint(sizeof(*bnx2i_ep));
+>> +	ep =3D iscsi_create_endpoint(hba->shost, sizeof(*bnx2i_ep));
+>>  	if (!ep) {
+>>  		printk(KERN_ERR "bnx2i: Could not allocate ep\n");
+>>  		return NULL;
+>> diff --git a/drivers/scsi/cxgbi/libcxgbi.c =
+b/drivers/scsi/cxgbi/libcxgbi.c
+>> index af281e271f88..94edf8e1fb0c 100644
+>> --- a/drivers/scsi/cxgbi/libcxgbi.c
+>> +++ b/drivers/scsi/cxgbi/libcxgbi.c
+>> @@ -2926,7 +2926,7 @@ struct iscsi_endpoint *cxgbi_ep_connect(struct =
+Scsi_Host *shost,
+>>  		goto release_conn;
+>>  	}
+>>  -	ep =3D iscsi_create_endpoint(sizeof(*cep));
+>> +	ep =3D iscsi_create_endpoint(shost, sizeof(*cep));
+>>  	if (!ep) {
+>>  		err =3D -ENOMEM;
+>>  		pr_info("iscsi alloc ep, OOM.\n");
+>> diff --git a/drivers/scsi/qedi/qedi_iscsi.c =
+b/drivers/scsi/qedi/qedi_iscsi.c
+>> index 31ec429104e2..4baf1dbb8e92 100644
+>> --- a/drivers/scsi/qedi/qedi_iscsi.c
+>> +++ b/drivers/scsi/qedi/qedi_iscsi.c
+>> @@ -931,7 +931,7 @@ qedi_ep_connect(struct Scsi_Host *shost, struct =
+sockaddr *dst_addr,
+>>  		return ERR_PTR(-ENXIO);
+>>  	}
+>>  -	ep =3D iscsi_create_endpoint(sizeof(struct qedi_endpoint));
+>> +	ep =3D iscsi_create_endpoint(shost, sizeof(struct =
+qedi_endpoint));
+>>  	if (!ep) {
+>>  		QEDI_ERR(&qedi->dbg_ctx, "endpoint create fail\n");
+>>  		ret =3D -ENOMEM;
+>> diff --git a/drivers/scsi/qla4xxx/ql4_os.c =
+b/drivers/scsi/qla4xxx/ql4_os.c
+>> index 005502125b27..acebf9c92c04 100644
+>> --- a/drivers/scsi/qla4xxx/ql4_os.c
+>> +++ b/drivers/scsi/qla4xxx/ql4_os.c
+>> @@ -1717,7 +1717,7 @@ qla4xxx_ep_connect(struct Scsi_Host *shost, =
+struct sockaddr *dst_addr,
+>>  	}
+>>    	ha =3D iscsi_host_priv(shost);
+>> -	ep =3D iscsi_create_endpoint(sizeof(struct qla_endpoint));
+>> +	ep =3D iscsi_create_endpoint(shost, sizeof(struct =
+qla_endpoint));
+>>  	if (!ep) {
+>>  		ret =3D -ENOMEM;
+>>  		return ERR_PTR(ret);
+>> diff --git a/drivers/scsi/scsi_transport_iscsi.c =
+b/drivers/scsi/scsi_transport_iscsi.c
+>> index be69cea9c6f8..86bafdb862a5 100644
+>> --- a/drivers/scsi/scsi_transport_iscsi.c
+>> +++ b/drivers/scsi/scsi_transport_iscsi.c
+>> @@ -204,7 +204,7 @@ static struct attribute_group =
+iscsi_endpoint_group =3D {
+>>  };
+>>    struct iscsi_endpoint *
+>> -iscsi_create_endpoint(int dd_size)
+>> +iscsi_create_endpoint(struct Scsi_Host *shost, int dd_size)
+>>  {
+>>  	struct iscsi_endpoint *ep;
+>>  	int err, id;
+>> @@ -230,6 +230,7 @@ iscsi_create_endpoint(int dd_size)
+>>    	ep->id =3D id;
+>>  	ep->dev.class =3D &iscsi_endpoint_class;
+>> +	ep->dev.parent =3D &shost->shost_gendev;
+>>  	dev_set_name(&ep->dev, "ep-%d", id);
+>>  	err =3D device_register(&ep->dev);
+>>          if (err)
+>=20
+> Umm... doesn't this change the sysfs layout?
+> IE won't the endpoint node be moved under the Scsi_Host directory?
+>=20
+> But even if it does: do we care?
+>=20
+>=20
+> Cheers,
+>=20
+> Hannes
+>=20
 
-> Currently many drivers also return EOPNOTSUPP when the hint isn't
-> available, which is inconsistent from an API point of view. Instead
-> change drivers to return ENODATA in these cases.
+No, it=E2=80=99s still /sys/class/iscsi_endpoint, since the dev.class =
+hasn=E2=80=99t changed.
 
-> There can be natural cases why a driver doesn't provide any hardware
-> info for a specific hint, even on a frame to frame basis (e.g. PTP).
-> Lets keep these cases as separate return codes.
-
-> When describing the return values, adjust the function kernel-doc layout
-> to get proper rendering for the return values.
-
-> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-
-I don't remember whether the previous discussion ended in something?
-IIRC Martin was preferring to use xdp-features for this instead?
-
-Personally I'm fine with having this convention, but I'm not sure how well
-we'll be able to enforce them. (In general, I'm not a fan of userspace
-changing it's behavior based on errno. If it's mostly for
-debugging/development - seems ok)
-
-> ---
->   Documentation/networking/xdp-rx-metadata.rst     |    7 +++++--
->   drivers/net/ethernet/mellanox/mlx4/en_rx.c       |    4 ++--
->   drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c |    4 ++--
->   drivers/net/veth.c                               |    4 ++--
->   net/core/xdp.c                                   |   10 ++++++++--
->   5 files changed, 19 insertions(+), 10 deletions(-)
-
-> diff --git a/Documentation/networking/xdp-rx-metadata.rst  
-> b/Documentation/networking/xdp-rx-metadata.rst
-> index aac63fc2d08b..25ce72af81c2 100644
-> --- a/Documentation/networking/xdp-rx-metadata.rst
-> +++ b/Documentation/networking/xdp-rx-metadata.rst
-> @@ -23,10 +23,13 @@ metadata is supported, this set will grow:
->   An XDP program can use these kfuncs to read the metadata into stack
->   variables for its own consumption. Or, to pass the metadata on to other
->   consumers, an XDP program can store it into the metadata area carried
-> -ahead of the packet.
-> +ahead of the packet. Not all packets will necessary have the requested
-> +metadata available in which case the driver returns ``-ENODATA``.
-
->   Not all kfuncs have to be implemented by the device driver; when not
-> -implemented, the default ones that return ``-EOPNOTSUPP`` will be used.
-> +implemented, the default ones that return ``-EOPNOTSUPP`` will be used
-> +to indicate the device driver have not implemented this kfunc.
-> +
-
->   Within an XDP frame, the metadata layout (accessed via ``xdp_buff``) is
->   as follows::
-> diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c  
-> b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-> index 0869d4fff17b..4b5e459b6d49 100644
-> --- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-> +++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-> @@ -674,7 +674,7 @@ int mlx4_en_xdp_rx_timestamp(const struct xdp_md  
-> *ctx, u64 *timestamp)
->   	struct mlx4_en_xdp_buff *_ctx = (void *)ctx;
-
->   	if (unlikely(_ctx->ring->hwtstamp_rx_filter != HWTSTAMP_FILTER_ALL))
-> -		return -EOPNOTSUPP;
-> +		return -ENODATA;
-
->   	*timestamp = mlx4_en_get_hwtstamp(_ctx->mdev,
->   					  mlx4_en_get_cqe_ts(_ctx->cqe));
-> @@ -686,7 +686,7 @@ int mlx4_en_xdp_rx_hash(const struct xdp_md *ctx, u32  
-> *hash)
->   	struct mlx4_en_xdp_buff *_ctx = (void *)ctx;
-
->   	if (unlikely(!(_ctx->dev->features & NETIF_F_RXHASH)))
-> -		return -EOPNOTSUPP;
-> +		return -ENODATA;
-
->   	*hash = be32_to_cpu(_ctx->cqe->immed_rss_invalid);
->   	return 0;
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c  
-> b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-> index bcd6370de440..c5dae48b7932 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-> @@ -162,7 +162,7 @@ static int mlx5e_xdp_rx_timestamp(const struct xdp_md  
-> *ctx, u64 *timestamp)
->   	const struct mlx5e_xdp_buff *_ctx = (void *)ctx;
-
->   	if (unlikely(!mlx5e_rx_hw_stamp(_ctx->rq->tstamp)))
-> -		return -EOPNOTSUPP;
-> +		return -ENODATA;
-
->   	*timestamp =  mlx5e_cqe_ts_to_ns(_ctx->rq->ptp_cyc2time,
->   					 _ctx->rq->clock, get_cqe_ts(_ctx->cqe));
-> @@ -174,7 +174,7 @@ static int mlx5e_xdp_rx_hash(const struct xdp_md  
-> *ctx, u32 *hash)
->   	const struct mlx5e_xdp_buff *_ctx = (void *)ctx;
-
->   	if (unlikely(!(_ctx->xdp.rxq->dev->features & NETIF_F_RXHASH)))
-> -		return -EOPNOTSUPP;
-> +		return -ENODATA;
-
->   	*hash = be32_to_cpu(_ctx->cqe->rss_hash_result);
->   	return 0;
-> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> index 1bb54de7124d..046461ee42ea 100644
-> --- a/drivers/net/veth.c
-> +++ b/drivers/net/veth.c
-> @@ -1610,7 +1610,7 @@ static int veth_xdp_rx_timestamp(const struct  
-> xdp_md *ctx, u64 *timestamp)
->   	struct veth_xdp_buff *_ctx = (void *)ctx;
-
->   	if (!_ctx->skb)
-> -		return -EOPNOTSUPP;
-> +		return -ENODATA;
-
->   	*timestamp = skb_hwtstamps(_ctx->skb)->hwtstamp;
->   	return 0;
-> @@ -1621,7 +1621,7 @@ static int veth_xdp_rx_hash(const struct xdp_md  
-> *ctx, u32 *hash)
->   	struct veth_xdp_buff *_ctx = (void *)ctx;
-
->   	if (!_ctx->skb)
-> -		return -EOPNOTSUPP;
-> +		return -ENODATA;
-
->   	*hash = skb_get_hash(_ctx->skb);
->   	return 0;
-> diff --git a/net/core/xdp.c b/net/core/xdp.c
-> index 8d3ad315f18d..7133017bcd74 100644
-> --- a/net/core/xdp.c
-> +++ b/net/core/xdp.c
-> @@ -705,7 +705,10 @@ __diag_ignore_all("-Wmissing-prototypes",
->    * @ctx: XDP context pointer.
->    * @timestamp: Return value pointer.
->    *
-> - * Returns 0 on success or ``-errno`` on error.
-> + * Return:
-> + * * Returns 0 on success or ``-errno`` on error.
-> + * * ``-EOPNOTSUPP`` : means device driver does not implement kfunc
-> + * * ``-ENODATA``    : means no RX-timestamp available for this frame
->    */
->   __bpf_kfunc int bpf_xdp_metadata_rx_timestamp(const struct xdp_md *ctx,  
-> u64 *timestamp)
->   {
-> @@ -717,7 +720,10 @@ __bpf_kfunc int bpf_xdp_metadata_rx_timestamp(const  
-> struct xdp_md *ctx, u64 *tim
->    * @ctx: XDP context pointer.
->    * @hash: Return value pointer.
->    *
-> - * Returns 0 on success or ``-errno`` on error.
-> + * Return:
-> + * * Returns 0 on success or ``-errno`` on error.
-> + * * ``-EOPNOTSUPP`` : means device driver doesn't implement kfunc
-> + * * ``-ENODATA``    : means no RX-hash available for this frame
->    */
->   __bpf_kfunc int bpf_xdp_metadata_rx_hash(const struct xdp_md *ctx, u32  
-> *hash)
->   {
-
-
+=E2=80=94=20
+Lee=
