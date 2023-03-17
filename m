@@ -2,75 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C7556BE41E
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 09:44:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3B806BE2C0
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 09:11:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231717AbjCQIor (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 04:44:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43492 "EHLO
+        id S231304AbjCQILR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 04:11:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230290AbjCQIoO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 04:44:14 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07F5E10FD;
-        Fri, 17 Mar 2023 01:43:12 -0700 (PDT)
-Received: from maxwell.fritz.box ([109.42.112.148]) by
- mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MqJyX-1qHd1p0FYx-00nSMH; Fri, 17 Mar 2023 09:08:54 +0100
-From:   Jochen Henneberg <jh@henneberg-systemdesign.com>
-To:     netdev@vger.kernel.org
-Cc:     Jochen Henneberg <jh@henneberg-systemdesign.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S231363AbjCQILG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 04:11:06 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD8E9C48BC;
+        Fri, 17 Mar 2023 01:10:38 -0700 (PDT)
+X-UUID: 258ba47ec49b11ed91027fb02e0f1d65-20230317
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Type:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=wPNZGq9769g/pZ0c8S3aTcBp9/DvHhBujsNsv2apsPk=;
+        b=tL6hIKqfHIsamWZu+NwEcsUAph3Hiw7epn2vw5yeKxPGXQnSxQNU612rn/0ulDEZNWd6piIdEPdOD7/4KUw+2mh3eP4owybFnBj2hxmGRIJkhQWzzUCf5g5rdH0J24s/rp+h7T/WF5R1ixLBJY5LTXSzIkB9kvDLnnZ/Kj+p9Uo=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.21,REQID:254263ff-7603-438e-8f60-23978b4e797e,IP:0,U
+        RL:0,TC:0,Content:-25,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Release_Ham,ACTI
+        ON:release,TS:70
+X-CID-INFO: VERSION:1.1.21,REQID:254263ff-7603-438e-8f60-23978b4e797e,IP:0,URL
+        :0,TC:0,Content:-25,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Spam_GS981B3D,ACTI
+        ON:quarantine,TS:70
+X-CID-META: VersionHash:83295aa,CLOUDID:f7ac1af6-ddba-41c3-91d9-10eeade8eac7,B
+        ulkID:2303171610170RKENYNS,BulkQuantity:0,Recheck:0,SF:38|29|28|17|19|48,T
+        C:nil,Content:0,EDM:-3,IP:nil,URL:11|1,File:nil,Bulk:nil,QS:nil,BEC:nil,CO
+        L:0,OSI:0,OSA:0,AV:0
+X-CID-BVR: 0,NGT
+X-CID-BAS: 0,NGT,0,_
+X-UUID: 258ba47ec49b11ed91027fb02e0f1d65-20230317
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <yanchao.yang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 732450788; Fri, 17 Mar 2023 16:10:14 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.25; Fri, 17 Mar 2023 16:10:13 +0800
+Received: from mcddlt001.gcn.mediatek.inc (10.19.240.15) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.1118.25 via Frontend Transport; Fri, 17 Mar 2023 16:10:11 +0800
+From:   Yanchao Yang <yanchao.yang@mediatek.com>
+To:     Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Wong Vee Khee <veekhee@apple.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Revanth Kumar Uppala <ruppala@nvidia.com>,
-        Andrey Konovalov <andrey.konovalov@linaro.org>,
-        Tan Tee Min <tee.min.tan@linux.intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH net V3] net: stmmac: Fix for mismatched host/device DMA address width
-Date:   Fri, 17 Mar 2023 09:08:17 +0100
-Message-Id: <20230317080817.980517-1-jh@henneberg-systemdesign.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230316131503.738933-1-jh@henneberg-systemdesign.com>
-References: <20230316131503.738933-1-jh@henneberg-systemdesign.com>
+        netdev ML <netdev@vger.kernel.org>,
+        kernel ML <linux-kernel@vger.kernel.org>
+CC:     Intel experts <linuxwwan@intel.com>,
+        Chetan <m.chetan.kumar@intel.com>,
+        MTK ML <linux-mediatek@lists.infradead.org>,
+        Liang Lu <liang.lu@mediatek.com>,
+        Haijun Liu <haijun.liu@mediatek.com>,
+        Hua Yang <hua.yang@mediatek.com>,
+        Ting Wang <ting.wang@mediatek.com>,
+        Felix Chen <felix.chen@mediatek.com>,
+        Mingliang Xu <mingliang.xu@mediatek.com>,
+        Min Dong <min.dong@mediatek.com>,
+        Aiden Wang <aiden.wang@mediatek.com>,
+        Guohao Zhang <guohao.zhang@mediatek.com>,
+        Chris Feng <chris.feng@mediatek.com>,
+        Yanchao Yang <yanchao.yang@mediatek.com>,
+        Lambert Wang <lambert.wang@mediatek.com>,
+        Mingchuang Qiao <mingchuang.qiao@mediatek.com>,
+        Xiayu Zhang <xiayu.zhang@mediatek.com>,
+        Haozhe Chang <haozhe.chang@mediatek.com>
+Subject: [PATCH net-next v4 00/10] net: wwan: tmi: PCIe driver for MediaTek M.2 modem
+Date:   Fri, 17 Mar 2023 16:09:32 +0800
+Message-ID: <20230317080942.183514-1-yanchao.yang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:zIoJpuAIc2RaYROb4REHRNji9yJMLQlQjzljv3ooHaPKIC/d54Y
- RR+ndVgaV88jbIlJBPswakBKe/07hUsAPKiwA8zpbX7O8BjYcJzOyLTOQVdK2bBc4WFBKsr
- P77wWSoe4p1fVVN4fOmPFOZ/n6isNz7PlghlsEH0ArqviK12vzz//drOyn4lzWLfJtWkozF
- LIqmZsfN65duEv2a+8IqQ==
-UI-OutboundReport: notjunk:1;M01:P0:fPwTIYTih6A=;nFFeNs+I2qnCv9BZyVVWP9gDH7y
- 9CjCqpSNFXp4oMLb7guvVQYOpOnTy7Xbz5n9r/TnvaT/dj2e80D5SHZphQuL0PylhJwazoR9V
- mKoOsw7H3aeDUOiCIiWObxwEhPewdIQ8cIsQlllTMFOw+crP5IBzCjE9z3CnPR6/p74LPo2Or
- Vnhd7/gbRTJ7KpMCkvltiqHbD6PhFN+UPbfyiBmKDsKUIDaeac/l0JWvUKo+E3o5fz0Ork+Ve
- GcIbbk9MGYNoa3g51VvRr+hT00kHBthwIvGFNi9+rIfXeXuCjnVWq5lVHxBEfYh6N0EfABfBS
- QfyY7uJcHLKIfCazB4IPQycQV1IMvnIG+m8Y/Hzt7i+YYwBaEcT7p4/craDJb8yAmnpBuFDnJ
- N+PNh3iswe/qBqd/vRP7QPZkO1QIQxXEyYs5HhELYPxtBx2q6Y7xRYA2vCdhYxpiACDNIlcfe
- zl3WTFeHdm70Sn3IW51tmsxqEDxGbKvslJOtNT/mzijqgaFrDJeJOT2kZYJdDFJkB5aV4fSPe
- STKclY2wbkva4GI0dAVhQRa6Wj/tsFZImYSvgDqLCRm47AHoHeCgRVelJImlFyAy7z5TFGIUi
- enAuD3LCrbDqtucjJ3nwYrgUtmr0KKpjstRR+9cvcvoFk1iG+uNBbLaI/1LbD5mfouSSL2WHw
- eip0/2fC7tBsy9wWsufXmJ2s7SZ6ipl8JAnY5qdn7Q==
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham
+Content-Type: text/plain
+X-MTK:  N
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,189 +88,154 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently DMA address width is either read from a RO device register
-or force set from the platform data. This breaks DMA when the host DMA
-address width is <=32it but the device is >32bit.
+TMI(T-series Modem Interface) is the PCIe host device driver for MediaTek's
+modem. The driver uses the WWAN framework infrastructure to create the
+following control ports and network interfaces for data transactions.
+* /dev/wwan0at0 - Interface that supports AT commands.
+* /dev/wwan0mbim0 - Interface conforming to the MBIM protocol.
+* wwan0-X - Primary network interface for IP traffic.
 
-Right now the driver may decide to use a 2nd DMA descriptor for
-another buffer (happens in case of TSO xmit) assuming that 32bit
-addressing is used due to platform configuration but the device will
-still use both descriptor addresses as one address.
+The main blocks in the TMI driver are:
+* HW layer - Abstracts the hardware bus operations for the device, and
+   provides generic interfaces for the transaction layer to get the device's
+   information and control the device's behavior. It includes:
 
-This can be observed with the Intel EHL platform driver that sets
-32bit for addr64 but the MAC reports 40bit. The TX queue gets stuck in
-case of TCP with iptables NAT configuration on TSO packets.
+   * PCIe - Implements probe, removal and interrupt handling.
+   * MHCCIF (Modem Host Cross-Core Interface) - Provides interrupt channels
+     for bidirectional event notification such as handshake and port enumeration.
 
-The logic should be like this: Whatever we do on the host side (memory
-allocation GFP flags) should happen with the host DMA width, whenever
-we decide how to set addresses on the device registers we must use the
-device DMA address width.
+* Transaction layer - Implements data transactions for the control plane
+   and the data plane. It includes:
 
-This patch renames the platform address width field from addr64 (term
-used in device datasheet) to host_addr and uses this value exclusively
-for host side operations while all chip operations consider the device
-DMA width as read from the device register.
+   * DPMAIF (Data Plane Modem AP Interface) - Controls the hardware that
+     provides uplink and downlink queues for the data path. The data exchange
+     takes place using circular buffers to share data buffer addresses and
+     metadata to describe the packets.
+   * CLDMA (Cross Layer DMA) - Manages the hardware used by the port layer
+     to send control messages to the device using MediaTek's CCCI (Cross-Core
+     Communication Interface) protocol.
+   * TX Services - Dispatch packets from the port layer to the device.
+   * RX Services - Dispatch packets to the port layer when receiving packets
+     from the device.
 
-Fixes: 7cfc4486e7ea ("stmmac: intel: Configure EHL PSE0 GbE and PSE1 GbE to 32 bits DMA addressing")
-Signed-off-by: Jochen Henneberg <jh@henneberg-systemdesign.com>
----
-V2: Fixes from checkpatch.pl for commit message
-V3: Rename private data and platform data fields to host_dma_width
+* Port layer - Provides control plane and data plane interfaces to userspace.
+   It includes:
 
- drivers/net/ethernet/stmicro/stmmac/common.h  |  1 +
- .../net/ethernet/stmicro/stmmac/dwmac-imx.c   |  2 +-
- .../net/ethernet/stmicro/stmmac/dwmac-intel.c |  4 +--
- .../ethernet/stmicro/stmmac/dwmac-mediatek.c  |  2 +-
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 30 ++++++++++---------
- include/linux/stmmac.h                        |  2 +-
- 6 files changed, 22 insertions(+), 19 deletions(-)
+   * Control Plane - Provides device node interfaces for controlling data
+     transactions.
+   * Data Plane - Provides network link interfaces wwanX (0, 1, 2...) for IP
+     data transactions.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-index 6b5d96bced47..ec9c130276d8 100644
---- a/drivers/net/ethernet/stmicro/stmmac/common.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/common.h
-@@ -418,6 +418,7 @@ struct dma_features {
- 	unsigned int frpbs;
- 	unsigned int frpes;
- 	unsigned int addr64;
-+	unsigned int host_dma_width;
- 	unsigned int rssen;
- 	unsigned int vlhash;
- 	unsigned int sphen;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
-index ac8580f501e2..890846e764bd 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
-@@ -289,7 +289,7 @@ static int imx_dwmac_probe(struct platform_device *pdev)
- 		goto err_parse_dt;
- 	}
- 
--	plat_dat->addr64 = dwmac->ops->addr_width;
-+	plat_dat->host_dma_width = dwmac->ops->addr_width;
- 	plat_dat->init = imx_dwmac_init;
- 	plat_dat->exit = imx_dwmac_exit;
- 	plat_dat->clks_config = imx_dwmac_clks_config;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 7deb1f817dac..13aa919633b4 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -684,7 +684,7 @@ static int ehl_pse0_common_data(struct pci_dev *pdev,
- 
- 	intel_priv->is_pse = true;
- 	plat->bus_id = 2;
--	plat->addr64 = 32;
-+	plat->host_dma_width = 32;
- 
- 	plat->clk_ptp_rate = 200000000;
- 
-@@ -725,7 +725,7 @@ static int ehl_pse1_common_data(struct pci_dev *pdev,
- 
- 	intel_priv->is_pse = true;
- 	plat->bus_id = 3;
--	plat->addr64 = 32;
-+	plat->host_dma_width = 32;
- 
- 	plat->clk_ptp_rate = 200000000;
- 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-index 2f7d8e4561d9..9ae31e3dc821 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-@@ -591,7 +591,7 @@ static int mediatek_dwmac_common_data(struct platform_device *pdev,
- 	plat->use_phy_wol = priv_plat->mac_wol ? 0 : 1;
- 	plat->riwt_off = 1;
- 	plat->maxmtu = ETH_DATA_LEN;
--	plat->addr64 = priv_plat->variant->dma_bit_mask;
-+	plat->host_dma_width = priv_plat->variant->dma_bit_mask;
- 	plat->bsp_priv = priv_plat;
- 	plat->init = mediatek_dwmac_init;
- 	plat->clks_config = mediatek_dwmac_clks_config;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 4886668a54c5..f2a98418ac23 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1430,7 +1430,7 @@ static int stmmac_init_rx_buffers(struct stmmac_priv *priv,
- 	struct stmmac_rx_buffer *buf = &rx_q->buf_pool[i];
- 	gfp_t gfp = (GFP_ATOMIC | __GFP_NOWARN);
- 
--	if (priv->dma_cap.addr64 <= 32)
-+	if (priv->dma_cap.host_dma_width <= 32)
- 		gfp |= GFP_DMA32;
- 
- 	if (!buf->page) {
-@@ -4586,7 +4586,7 @@ static inline void stmmac_rx_refill(struct stmmac_priv *priv, u32 queue)
- 	unsigned int entry = rx_q->dirty_rx;
- 	gfp_t gfp = (GFP_ATOMIC | __GFP_NOWARN);
- 
--	if (priv->dma_cap.addr64 <= 32)
-+	if (priv->dma_cap.host_dma_width <= 32)
- 		gfp |= GFP_DMA32;
- 
- 	while (dirty-- > 0) {
-@@ -6204,7 +6204,7 @@ static int stmmac_dma_cap_show(struct seq_file *seq, void *v)
- 	seq_printf(seq, "\tFlexible RX Parser: %s\n",
- 		   priv->dma_cap.frpsel ? "Y" : "N");
- 	seq_printf(seq, "\tEnhanced Addressing: %d\n",
--		   priv->dma_cap.addr64);
-+		   priv->dma_cap.host_dma_width);
- 	seq_printf(seq, "\tReceive Side Scaling: %s\n",
- 		   priv->dma_cap.rssen ? "Y" : "N");
- 	seq_printf(seq, "\tVLAN Hash Filtering: %s\n",
-@@ -7177,20 +7177,22 @@ int stmmac_dvr_probe(struct device *device,
- 		dev_info(priv->device, "SPH feature enabled\n");
- 	}
- 
--	/* The current IP register MAC_HW_Feature1[ADDR64] only define
--	 * 32/40/64 bit width, but some SOC support others like i.MX8MP
--	 * support 34 bits but it map to 40 bits width in MAC_HW_Feature1[ADDR64].
--	 * So overwrite dma_cap.addr64 according to HW real design.
-+	/* Ideally our host DMA address width is the same as for the
-+	 * device. However, it may differ and then we have to use our
-+	 * host DMA width for allocation and the device DMA width for
-+	 * register handling.
- 	 */
--	if (priv->plat->addr64)
--		priv->dma_cap.addr64 = priv->plat->addr64;
-+	if (priv->plat->host_dma_width)
-+		priv->dma_cap.host_dma_width = priv->plat->host_dma_width;
-+	else
-+		priv->dma_cap.host_dma_width = priv->dma_cap.addr64;
- 
--	if (priv->dma_cap.addr64) {
-+	if (priv->dma_cap.host_dma_width) {
- 		ret = dma_set_mask_and_coherent(device,
--				DMA_BIT_MASK(priv->dma_cap.addr64));
-+				DMA_BIT_MASK(priv->dma_cap.host_dma_width));
- 		if (!ret) {
--			dev_info(priv->device, "Using %d bits DMA width\n",
--				 priv->dma_cap.addr64);
-+			dev_info(priv->device, "Using %d/%d bits DMA host/device width\n",
-+				 priv->dma_cap.host_dma_width, priv->dma_cap.addr64);
- 
- 			/*
- 			 * If more than 32 bits can be addressed, make sure to
-@@ -7205,7 +7207,7 @@ int stmmac_dvr_probe(struct device *device,
- 				goto error_hw_init;
- 			}
- 
--			priv->dma_cap.addr64 = 32;
-+			priv->dma_cap.host_dma_width = 32;
- 		}
- 	}
- 
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index a152678b82b7..a2414c187483 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -215,7 +215,7 @@ struct plat_stmmacenet_data {
- 	int unicast_filter_entries;
- 	int tx_fifo_size;
- 	int rx_fifo_size;
--	u32 addr64;
-+	u32 host_dma_width;
- 	u32 rx_queues_to_use;
- 	u32 tx_queues_to_use;
- 	u8 rx_sched_algorithm;
+* Core logic - Contains the core logic to keep the device working.
+   It includes:
+
+   * FSM (Finite State Machine) - Monitors the state of the device, and
+     notifies each module when the state changes.
+
+The compilation of the TMI driver is enabled by the CONFIG_MTK_TMI config
+option which depends on CONFIG_WWAN.
+
+List of contributors:
+Min Dong <min.dong@mediatek.com>
+Ting Wang <ting.wang@mediatek.com>
+Hua Yang <hua.yang@mediatek.com>
+Mingliang Xu <mingliang.xu@mediatek.com>
+Felix Chen <felix.chen@mediatek.com>
+Aiden Wang <aiden.wang@mediatek.com>
+Guohao Zhang <guohao.zhang@mediatek.com>
+Chris Feng <chris.feng@mediatek.com>
+Yanchao Yang <yanchao.yang@mediatek.com>
+Michael Cai <michael.cai@mediatek.com>
+Lambert Wang <lambert.wang@mediatek.com>
+Mingchuang Qiao <mingchuang.qiao@mediatek.com>
+Xiayu Zhang <xiayu.zhang@mediatek.com>
+Haozhe Chang <haozhe.chang@mediatek.com>
+
+V4:
+- Refine the naming of labels paired with goto statements.
+- Avoid defensive programming, and remove some redundant input parameter checks.
+- Remove include path declaration from the module Makefile.
+
+V3:
+- Remove exception handling and power management modules, and reduce data plane's features, etc.
+
+V2:
+- Remove wrapper function, use kernel interfaces instead, ex, dma_map_single, dma_pool_zalloc, ...
+- Refine comments to meet kerneldoc format specification.
+- Use interfaces in bitfield.h to perform bitmask related operations.
+- Remove unused functions from patch-1.
+- Remove patch2 (net: wwan: tmi: Add buffer management).
+
+Yanchao Yang (10):
+  net: wwan: tmi: Add PCIe core
+  net: wwan: tmi: Add control plane transaction layer
+  net: wwan: tmi: Add control DMA interface
+  net: wwan: tmi: Add control port
+  net: wwan: tmi: Add FSM thread
+  net: wwan: tmi: Add AT & MBIM WWAN ports
+  net: wwan: tmi: Introduce data plane hardware interface
+  net: wwan: tmi: Add data plane transaction layer
+  net: wwan: tmi: Introduce WWAN interface
+  net: wwan: tmi: Add maintainers and documentation
+
+ .../networking/device_drivers/wwan/index.rst  |    1 +
+ .../networking/device_drivers/wwan/tmi.rst    |   48 +
+ MAINTAINERS                                   |   11 +
+ drivers/net/wwan/Kconfig                      |   14 +
+ drivers/net/wwan/Makefile                     |    1 +
+ drivers/net/wwan/mediatek/Makefile            |   18 +
+ drivers/net/wwan/mediatek/mtk_cldma.c         |  280 ++
+ drivers/net/wwan/mediatek/mtk_cldma.h         |  160 +
+ drivers/net/wwan/mediatek/mtk_common.h        |   30 +
+ drivers/net/wwan/mediatek/mtk_ctrl_plane.c    |  418 +++
+ drivers/net/wwan/mediatek/mtk_ctrl_plane.h    |  111 +
+ drivers/net/wwan/mediatek/mtk_data_plane.h    |  101 +
+ drivers/net/wwan/mediatek/mtk_dev.c           |   50 +
+ drivers/net/wwan/mediatek/mtk_dev.h           |  217 ++
+ drivers/net/wwan/mediatek/mtk_dpmaif.c        | 2864 +++++++++++++++++
+ drivers/net/wwan/mediatek/mtk_dpmaif_drv.h    |  201 ++
+ drivers/net/wwan/mediatek/mtk_fsm.c           |  844 +++++
+ drivers/net/wwan/mediatek/mtk_fsm.h           |  145 +
+ drivers/net/wwan/mediatek/mtk_port.c          | 1066 ++++++
+ drivers/net/wwan/mediatek/mtk_port.h          |  231 ++
+ drivers/net/wwan/mediatek/mtk_port_io.c       |  547 ++++
+ drivers/net/wwan/mediatek/mtk_port_io.h       |   45 +
+ drivers/net/wwan/mediatek/mtk_wwan.c          |  511 +++
+ .../wwan/mediatek/pcie/mtk_cldma_drv_t800.c   |  930 ++++++
+ .../wwan/mediatek/pcie/mtk_cldma_drv_t800.h   |   22 +
+ .../wwan/mediatek/pcie/mtk_dpmaif_drv_t800.c  | 1545 +++++++++
+ .../wwan/mediatek/pcie/mtk_dpmaif_reg_t800.h  |  319 ++
+ drivers/net/wwan/mediatek/pcie/mtk_pci.c      |  982 ++++++
+ drivers/net/wwan/mediatek/pcie/mtk_pci.h      |  144 +
+ drivers/net/wwan/mediatek/pcie/mtk_reg.h      |   80 +
+ 30 files changed, 11936 insertions(+)
+ create mode 100644 Documentation/networking/device_drivers/wwan/tmi.rst
+ create mode 100644 drivers/net/wwan/mediatek/Makefile
+ create mode 100644 drivers/net/wwan/mediatek/mtk_cldma.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_cldma.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_common.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_ctrl_plane.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_ctrl_plane.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_data_plane.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_dev.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_dev.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_dpmaif.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_dpmaif_drv.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_fsm.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_fsm.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_port.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_port.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_port_io.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_port_io.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_wwan.c
+ create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_cldma_drv_t800.c
+ create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_cldma_drv_t800.h
+ create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_dpmaif_drv_t800.c
+ create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_dpmaif_reg_t800.h
+ create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_pci.c
+ create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_pci.h
+ create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_reg.h
+
 -- 
-2.39.2
+2.32.0
 
