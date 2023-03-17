@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D69546BE4C0
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 10:02:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C87A6BE4C1
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 10:02:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231856AbjCQJCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 05:02:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50226 "EHLO
+        id S231876AbjCQJCu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 05:02:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231907AbjCQJCR (ORCPT
+        with ESMTP id S231847AbjCQJCR (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 05:02:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51233E41D5
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 02:00:33 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FE54E2502
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 02:00:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DA92362235
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 09:00:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2EBADC4339B;
+        by ams.source.kernel.org (Postfix) with ESMTPS id B2CD1B8254B
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 09:00:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 51EABC433A8;
         Fri, 17 Mar 2023 09:00:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1679043622;
-        bh=p2NYx1+oTKiyxLVa+cbiAIuoCNm/6GjuMgMptKR701w=;
+        bh=/HMkuJctVa7XmtHZRkGylKUjtwfT9LgFfgxf2tIOdS8=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rfJ9acd46HuFl/5o+7SWYU9f9NBWJQKY41xkD4U2XcKDCIHCQJ/yYp/nqJEbgXb8U
-         D6GZ/4iZfXO0o3jK+Q+pSSVLlG9K5mk0CtaEifv1TXO++O16NFwZnlbWCU8MoPmU9U
-         lmpt/wx5oYpsT2ry4bA8Jp8ZVIS9beMKWaEPg0bAJSG/iF5wWn0USl8kQmohhDyeID
-         CEFHAvugrwug13GJDmWbv/O2vWOThfM9pPMN5ceHqEYuK6lLHQ3yoKUBNzNkz9j+9r
-         nRGbqq+rIB+k/ZJU+xTRnhiV4zVD8OewoM6cq0Qp2M73h9Z52x4rtGhslCwrgwfZeV
-         nSrN+Qc/nYCRg==
+        b=sUUuW9v7v0OpEe6ud4u4u5sJ8VVn9ilIANZ9JEILMMx5QFWY+Y7PBvJKxFISjLbR3
+         MnS08PECGsah/mia3MRZEpF6j4DCGNhWxusAhF+9UrE4wi9qjO5/UmNs6RDA1K6TH4
+         WFpDqK+sGsel2b49x5+uFRL7jjMT8/DAe2eSaC60b6kMBpvOTewKuMFuBhT904ui9+
+         CsWeVHSLqvgOkVcFzrUfDCeRSd9FNRoPmWurp27lq2cFYjPHA6pfdimJbor2MYZ9/O
+         4gSlt2Zi5vU9ZTGi0zx0VJA+Dra9CcE+PppQbxV5XzyQGd2NeC4wHBP5YKT/7Zh5LR
+         DPJYvxYnzZXWw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 12C56E21EE9;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 24BCDE2A03B;
         Fri, 17 Mar 2023 09:00:22 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net-next 0/8] inet: better const qualifier awareness
+Subject: Re: [PATCH net-next] netlink-specs: add partial specification for devlink
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167904362207.30854.15986606551068422676.git-patchwork-notify@kernel.org>
+Message-Id: <167904362214.30854.11422213573003561692.git-patchwork-notify@kernel.org>
 Date:   Fri, 17 Mar 2023 09:00:22 +0000
-References: <20230316153202.1354692-1-edumazet@google.com>
-In-Reply-To: <20230316153202.1354692-1-edumazet@google.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, dsahern@kernel.org,
-        simon.horman@corigine.com, eric.dumazet@gmail.com
+References: <20230316044913.528600-1-kuba@kernel.org>
+In-Reply-To: <20230316044913.528600-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, jiri@resnulli.us
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -58,37 +58,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (main)
+This patch was applied to netdev/net-next.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Thu, 16 Mar 2023 15:31:54 +0000 you wrote:
-> inet_sk() can be changed to propagate const qualifier,
-> thanks to container_of_const()
+On Wed, 15 Mar 2023 21:49:13 -0700 you wrote:
+> Devlink is quite complex but put in the very basics so we can
+> incrementally fill in the commands as needed.
 > 
-> Following patches in this series add more const qualifiers.
+> $ ./tools/net/ynl/cli.py --spec Documentation/netlink/specs/devlink.yaml \
+>     --dump get
 > 
-> Other helpers like tcp_sk(), udp_sk(), raw_sk(), ... will be handled
-> in following series.
+> [{'bus-name': 'netdevsim',
+>   'dev-name': 'netdevsim1',
+>   'dev-stats': {'reload-stats': {'reload-action-info': {'reload-action': 1,
+>                                                         'reload-action-stats': {'reload-stats-entry': [{'reload-stats-limit': 0,
+>                                                                                                         'reload-stats-value': 0}]}}},
+>                 'remote-reload-stats': {'reload-action-info': {'reload-action': 2,
+>                                                                'reload-action-stats': {'reload-stats-entry': [{'reload-stats-limit': 0,
+>                                                                                                                'reload-stats-value': 0},
+>                                                                                                               {'reload-stats-limit': 1,
+>                                                                                                                'reload-stats-value': 0}]}}}},
+>   'reload-failed': 0}]
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2,net-next,1/8] inet: preserve const qualifier in inet_sk()
-    https://git.kernel.org/netdev/net-next/c/abc17a11ed29
-  - [v2,net-next,2/8] ipv4: constify ip_mc_sf_allow() socket argument
-    https://git.kernel.org/netdev/net-next/c/33e972bdf0b0
-  - [v2,net-next,3/8] udp: constify __udp_is_mcast_sock() socket argument
-    https://git.kernel.org/netdev/net-next/c/a0a989d30075
-  - [v2,net-next,4/8] ipv6: constify inet6_mc_check()
-    https://git.kernel.org/netdev/net-next/c/66eb554c6449
-  - [v2,net-next,5/8] udp6: constify __udp_v6_is_mcast_sock() socket argument
-    https://git.kernel.org/netdev/net-next/c/dc3731bad8e1
-  - [v2,net-next,6/8] ipv6: raw: constify raw_v6_match() socket argument
-    https://git.kernel.org/netdev/net-next/c/db6af4fdb150
-  - [v2,net-next,7/8] ipv4: raw: constify raw_v4_match() socket argument
-    https://git.kernel.org/netdev/net-next/c/0a8c2568209e
-  - [v2,net-next,8/8] inet_diag: constify raw_lookup() socket argument
-    https://git.kernel.org/netdev/net-next/c/736c8b52c8ad
+  - [net-next] netlink-specs: add partial specification for devlink
+    https://git.kernel.org/netdev/net-next/c/74bf6477c18b
 
 You are awesome, thank you!
 -- 
