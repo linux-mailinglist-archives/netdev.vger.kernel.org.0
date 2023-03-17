@@ -2,154 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD1DD6BF106
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 19:50:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 483926BF122
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 19:54:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229811AbjCQSu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 14:50:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34968 "EHLO
+        id S229938AbjCQSyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 14:54:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229616AbjCQSu0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 14:50:26 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF8624FAAE;
-        Fri, 17 Mar 2023 11:50:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679079025; x=1710615025;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=OUt4CKM8wJQytWoETPIyiJLoo43dtdvKj2aQBqgMhD8=;
-  b=X1FrjPTVAMwSMMNsgpfBY7Y+r1YDhAROLwLcqozNkESsVPxMms2U6w/M
-   4UrKb7HBTROCHd90V/OOyRlw/J7jT7ZefyZRL+ZD51LOVcPh3/h5pHRzg
-   dBm1Sp0Nxh60GXBo+09EvBOEV88puPdYgcYl9GSfwZ050/91UwL+rswd0
-   q+BPN/uM1dOlbPwYResjbvvD1NY8yk3aFFn85BGKJJq20MNu5bn+Jk9kB
-   6skvA3BV0/HDyreTfGAId2Qi+WNFPRiCdciUjqfdfzAame+suyuNOUPVW
-   A9tt33l/lafirUye8SCIKjf1j0uLziCa7uZqO7wvlAXm//4hzQRuKep00
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10652"; a="326699945"
-X-IronPort-AV: E=Sophos;i="5.98,268,1673942400"; 
-   d="scan'208";a="326699945"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2023 11:50:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10652"; a="854543000"
-X-IronPort-AV: E=Sophos;i="5.98,268,1673942400"; 
-   d="scan'208";a="854543000"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orsmga005.jf.intel.com with ESMTP; 17 Mar 2023 11:50:25 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Fri, 17 Mar 2023 11:50:24 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21 via Frontend Transport; Fri, 17 Mar 2023 11:50:24 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.109)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.21; Fri, 17 Mar 2023 11:50:22 -0700
+        with ESMTP id S229488AbjCQSyn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 14:54:43 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2135.outbound.protection.outlook.com [40.107.92.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2821B1CAF9;
+        Fri, 17 Mar 2023 11:54:32 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nBMpFvAS2P+nqZ5ZBRFVuDhefoH8nfIdqv1pD0msp6J/2Sc9X8EKp32Kt6CHavGBFVeCTS8iPCPHeZqa9taEfBGigTQUzfuI//3sms25HCp0cr46PiBUQCxxiIe7MYu5aoYYnIaRHf/psAURPsX8JmdkFQHXOikNm2HRLqdlezAK/c4cIrSo0ohOGU0ROHRVgY/WjKD3qUrSDTmqdMXCu/uNE7thWStPCtRP0o6qrOq8mWKpoGQsryVakFQa9qzwkQLIsBd6/lFZa9CTRZMm7rVJ17E5WwgCfaUNg7Bb+ShDJGCvyMy29L3dNhB7a2CjVc3bn9KmT8io9XttaIT8Pw==
+ b=YZpI+PZ+kGLZA5cPnpdufhRc86xEfe/NayCVg/X6QUiPHH8fd0R+uctxSix7TQD6yS/yr5TcHzwRLZ+Ti36m4rR5/pFkMinH9Nke6y3RXLY/abWDb0xVS1WmyFBTIrMDeN7x9pwKa1w7GZFL8w7zwkqDEP30gT+wfZJFKvhoYNCk6wFIzOqeMLgS6m8FXld7LvxNAK1uUVwAS3h07HZgvrLglkTnEYnpi2vWYzqCy0HbQUt3odd2brTEMG7oFHlriM6SAOY8ltmQvCW2O5Q6ozwjrKN3NepI350H9wyEihX/OAwoEY7ZHw5MUArAsMMgbEPeeOM5144cKdL0DV7SKg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rlKQrP0CVXCCZ38xHfkvu8CVKniCEIWOPbAChW/eSbA=;
- b=MVwUubsO2eJtFEnJufCUItKOG6kEPdDAMHKnj2MiuBfel/96xjGpTqWdkV8+X43pBZudrn54GQNtSYVKiSJ9dWs9+kagaqNWJHQLFiC92s9tKfkDZd7Zq7CR20Vy50DErcUJMFncMB1WLU9bKNVxMmGBBG4JITKg+SW4kK6gNLMu0T9IskCppM+bxJtBqO+fnLB9orDI0w8XdfH83irQXLfICRWGrZSmIU+2ekMWFokszak04/6mAePW6m4bFwSo5Oddl5G+frmnbMru2cGBRnDHJWn+Cynt9y7dlovssAazeBJTUd96q3CaFGkF7l+MM8tEJwfoTzsvHJy+HkorxA==
+ bh=X8zeH/y4ttbTMEXpDeS5xb035LqDhtV0Zh2f5BHOuyk=;
+ b=c81x9Zalusb524JVab60CJ2cp7GsuM5rKAeK9w1fe5LrJ+fC5Hnd0GXb80AqbS1uT48H742KOObaMY7pVMoSji6DqRE7L6n879h/BFr3hrU4fOL+OPLZz0jQx379XOXvJ3jJRnA93P/xfsdERhWQisDcyeHLsZePkA/nhPIgYueTPFRMkB5Nd2f7sb6ESbWNpSniVYG7KWut9Stz54E3B4XA6St0zeWga0np1uAykKaHBXkjnXBZXKROt4Line/ti2dOC9C5BvKe3JBrdHWZcf4+OC1waE+h1O/MEmwRt5SxlCu6RYjZOuK68JxkuFa8o0WE/8CtNKWIfcndyXzwyA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from DM6PR11MB4657.namprd11.prod.outlook.com (2603:10b6:5:2a6::7) by
- MW4PR11MB6667.namprd11.prod.outlook.com (2603:10b6:303:1ea::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.35; Fri, 17 Mar
- 2023 18:50:19 +0000
-Received: from DM6PR11MB4657.namprd11.prod.outlook.com
- ([fe80::95e8:dde5:9afe:9946]) by DM6PR11MB4657.namprd11.prod.outlook.com
- ([fe80::95e8:dde5:9afe:9946%9]) with mapi id 15.20.6178.029; Fri, 17 Mar 2023
- 18:50:19 +0000
-From:   "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
-To:     Jiri Pirko <jiri@resnulli.us>, Vadim Fedorenko <vadfed@meta.com>
-CC:     Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vadim Fedorenko <vadim.fedorenko@linux.dev>,
-        poros <poros@redhat.com>, mschmidt <mschmidt@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
-        "Michalik, Michal" <michal.michalik@intel.com>
-Subject: RE: [PATCH RFC v6 1/6] dpll: spec: Add Netlink spec in YAML
-Thread-Topic: [PATCH RFC v6 1/6] dpll: spec: Add Netlink spec in YAML
-Thread-Index: AQHZVIpWqQ/E3o2ZU0SoOV6Pk96rvK7/OPaAgAAebjA=
-Date:   Fri, 17 Mar 2023 18:50:19 +0000
-Message-ID: <DM6PR11MB4657757B44F3AC7AD79C43A49BBD9@DM6PR11MB4657.namprd11.prod.outlook.com>
-References: <20230312022807.278528-1-vadfed@meta.com>
- <20230312022807.278528-2-vadfed@meta.com> <ZBSbE+8p/u9hl0JI@nanopsycho>
-In-Reply-To: <ZBSbE+8p/u9hl0JI@nanopsycho>
-Accept-Language: pl-PL, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DM6PR11MB4657:EE_|MW4PR11MB6667:EE_
-x-ms-office365-filtering-correlation-id: 780a9278-9e37-437a-6cf8-08db271874ce
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: LyNoEoF6i+srbycL2b4UwhmK6C/N2vyFkJqUzRiVLYPOVu9vueQpCOSj8gba3Zkb9hmj1vLXk5JOCZzTKZuMlWNJ4fCMT4nsuaVCX3dSGovTZ0WxJJzaEV3zTU54BcHtIydl63txnra7cRXF4UpbiWJRwTJxpnY2ohC8O3bljY4aPw5Pb5eTddF2SzS2PskgQmEukcEDNBwx71C9+8/h8Z3kekZ0URoLI/YVdVt/SNinM/VSVS4PrBGkKaqLycHiYDZjVefGAQLak0HzR2NGnOUI3EGPVcOC77MRStaQmRzgODSnGlQLU8UEb38aK6aoHNkTFWzMXz+HiAzSUNoBGCuGoNsbdbJHyjSzUs1dHi7DLypNnyBmhXpBa0otzb6N7LsDmNdBUdBqAgVjQjaAmwr/S4ChjzvX0hIACZFJgpTOy3LoOnowymYBZvI7hq8B3osm7tzAZU+GelKbFWEGazUMGNtkuCBW63J1il8FcxGFgAgoFxLJDWLBp5FhyilcUjGHYE17FJYw08YUSG3ScFBknSKKearhhK5zYQ8fXPAy75pUE2y3Il+5wnIx/WTR7eP5NqzVPBrExdal0IkDp/tnTPM+rNnUqbphIfbV/7Nh4GN8ji522sw987zc4zGiLvjzeLAczPEoFv7mEdqIo7jRgN626b1DvRu1Nt/RuRRR4Ms46uTqpmsjIY0FXaBXad20KYRmOl0hFf821hpvKA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(376002)(346002)(366004)(396003)(39860400002)(136003)(451199018)(52536014)(8936002)(41300700001)(2906002)(122000001)(38100700002)(76116006)(66946007)(4326008)(66476007)(316002)(7416002)(66446008)(5660300002)(64756008)(8676002)(110136005)(54906003)(66556008)(6506007)(9686003)(26005)(38070700005)(107886003)(83380400001)(55016003)(82960400001)(186003)(86362001)(33656002)(7696005)(478600001)(71200400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?b1bXOQuIHcpXWtZ3KPLI4Xk6+Xa7EkIgcYPb6plRmKlT0gd2LuH+f4BPPMGf?=
- =?us-ascii?Q?BBa1hyUw3lTWEEsqx5sIPLJmN/+iB2BMI1IXKnOgrsPNud9VPdSMwdld9lsw?=
- =?us-ascii?Q?oum88RU5vU/pZBJNeJ7PU9udP6pAiwjcKxOR55J1Bgke6IzLyTOxoLvBbhC7?=
- =?us-ascii?Q?ZkFqqVVak8A4tAFG27ghP5GT37W96aJgGVGj0eYGXxwdS+iQxjyEGsBKgcfe?=
- =?us-ascii?Q?85xZ0UDUXglusCgy/5OE//e/ySKkh+nrdNyRXOLVsJ12YpwtAV4NC5tIcEnb?=
- =?us-ascii?Q?JwZfPrXdIjPw8P52EcGuHdc973R22J6CABsjcObF4xPo17R1JsuMxVKpgg4U?=
- =?us-ascii?Q?il2iCZPR8PgPquLs9nFIubG+wAfnrWElE1vb3LtFloe0jqenRaY37Vjror4Q?=
- =?us-ascii?Q?g2P0zisNBoAslQYD5jGs4EwDac1tufEp5axTgLYgpszlAqsDpeRF8jFtRYXE?=
- =?us-ascii?Q?dKVvdRV4zuELtrk77O6wX5T2Th02bLKWoZSu9MViaJM8PpkCdj8QPRbvwN4O?=
- =?us-ascii?Q?9898BJO31p189CEANH25ZXekkxU8HwOpXtJChsGQjTNMHf50yocIDU9s6ZSP?=
- =?us-ascii?Q?vv6M2HSUWyeTi66HmmnjNozsNJlxilzPboJ6I0nOYgA6pjcTpwqDcTkuY7+/?=
- =?us-ascii?Q?8b3gQi8kfWT84Zy46UxMMcA1nVd3wQcGBV8OD/vC/u3e/qStL1Ew68O98CN6?=
- =?us-ascii?Q?8KxpyyrrpZenNpVVhgKVcool/BI010bAFd0sTtPzVXyzPnYP55ZCwSs7AXED?=
- =?us-ascii?Q?GTfZ8duHwVREOuQi2CUfk9gc0u/r6wR8DH3/xgvHO+WNp9Ye+m1/vFln4nRd?=
- =?us-ascii?Q?ah+Nrkz8j+KvelKwKBCBgF7oPm0TuwvoQUDlmGMQisWXHzPVq5qdmkI+K6jp?=
- =?us-ascii?Q?IgBZOcW40M5gqo7s3aCaPAcIIiLviI5Y2+0EgjHdWlYEzd4HZxvf35HBiSIw?=
- =?us-ascii?Q?IpfmLMWHdhkz5eryYDKjkCli0fp6TbAPEw+aTme6XWAnaWujRqL7EXTub9XF?=
- =?us-ascii?Q?AFLZB47PVOZA0v51GkGS+iZtRnABT/HWss8WFQCJGioV5xm+136LAAkMMHML?=
- =?us-ascii?Q?F5E96zZ/Njgj+WTxiwZk0MSJsX49d2py33pfw2WojyHqA12HWH/UdbQprvgM?=
- =?us-ascii?Q?ujZaWFYa75KwcYJIHWOBWnUUC7A+PKpvZrlqHBrFg/a4fbimJ+e1V+FfLr4W?=
- =?us-ascii?Q?J7QwrF7bMRcYeWY7yN77+j5f8CUAsdmhCBMgx2zDuYCPUpbzxCRqYj//hWUi?=
- =?us-ascii?Q?OGfgi49wknV6DeNOE90/RK5BAWiJ5ngpdfwae0R98IT0n5lmbvO0ElKCdI2O?=
- =?us-ascii?Q?LdtZjfCbo5/TdNu9goZhLn5NvsRii083T+I2W44tBxC34seV2NGhqJgD7qcz?=
- =?us-ascii?Q?rulIgz8Kghcg3iX9WWWoJa/g3b4syDMI6TN0QVdZ7CMoaU/cbcx3Th1aE90z?=
- =?us-ascii?Q?KvoRaCwMgzsJqjgTSL4/dbn+Gkxn3r64iH5Zrs9SI3j64R6oVGtLY252AChj?=
- =?us-ascii?Q?jRtL2lc1bvUruZMolIFwqb5QHFy98xrYIkfmKa4Xc5OI7nOh+rka3kJpq1ag?=
- =?us-ascii?Q?7a8eXDkOq9x1SVRor1S4yZjwmDvXge0vEGlT9u/cAcBa8TL779yjij02cPfK?=
- =?us-ascii?Q?Ew=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=X8zeH/y4ttbTMEXpDeS5xb035LqDhtV0Zh2f5BHOuyk=;
+ b=G8F7DrAnU0gm3iYwaCu/LE5gSjFajHXMc7oFoYoYQpfBLI637Fr6X0OwOJKyiDDJAvIa2T73mKUXofHdD0DagdSiMGfbJIEDcwujxDeJ6s4x4jkqsrIq/kFBU8+CpBJzo/z33eENXrdzij/9oe6hIiVYImWIM0K9nYqoHRCsxjY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by IA1PR10MB7336.namprd10.prod.outlook.com
+ (2603:10b6:208:3ff::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.24; Fri, 17 Mar
+ 2023 18:54:29 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::1897:6663:87ba:c8fa]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::1897:6663:87ba:c8fa%4]) with mapi id 15.20.6178.035; Fri, 17 Mar 2023
+ 18:54:28 +0000
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     linux-phy@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Kishon Vijay Abraham I <kishon@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Lee Jones <lee@kernel.org>
+Subject: [PATCH v2 net-next 0/9] add support for ocelot external ports
+Date:   Fri, 17 Mar 2023 11:54:06 -0700
+Message-Id: <20230317185415.2000564-1-colin.foster@in-advantage.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BY5PR16CA0025.namprd16.prod.outlook.com
+ (2603:10b6:a03:1a0::38) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWHPR1001MB2351:EE_|IA1PR10MB7336:EE_
+X-MS-Office365-Filtering-Correlation-Id: 44660ca9-850d-4096-f075-08db2719090c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: e7FVGngxAxzpRQWWhiPf9NEASGUOgdyU4SLuQ0U6brJXE/P7FXhYn2DQlK6+koh0Xx+65CxwsqUqWzsXsx2EWSq5sfgjjTPFQ7l9jbhQLY88V8NMPU+dcdhLu7+Gc7jWjuvraxx6IpCR/IfXTwdT2gJTATfbuXdlP/hjyFEj+2cqW/EonXxRrd00HDHXg5YKqL2CrNz4uOwQoB2JYSlBEPj51JilYjf4e90v8UKOdJB6N8q7HS9tA3oLr+Z9TJaSq6mw3ggdTT5qa3HQ4JlsUFNbbNYin2LtqgQ9J1pN5QB1mmWKWj2PE7ooNNenYBbbGPqy6tYTd7KRQFLkiTVlGMzgSskuNKSyLnd2JvDiACp9m+tkkgqUmSaqrjcxYwJLBLFpvwW6ZCMvPEVxvm2yZ8o3jWmi5c8VNos3eLO/zC/jqfBQexQxwiz3laQEp/tEpvMsJdfp4QlUE4HlMGvxzuNFwWTjb1KBXQvYNOD3QjVvOGbEXeoTTSNyWFDMSDuDPHE8VFNwCL3M2HO0Bk/sLqyvHlO/XDbMtho2PrysasYwkLIVd2/nfvtRtoBiL/NGJMReXHqASUn5Zf0f1NaWpl4oMTr8WkEjqxZHC4lh/po4lnL6CZSKytShfpNlaKFHtOLBhRrLUJvDJS5I6oEw0vndoIQp8zwIWQuxSFhAqagI07yfdS/x7YvpXSiJBAYi
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(39840400004)(136003)(396003)(376002)(366004)(346002)(451199018)(36756003)(38350700002)(86362001)(38100700002)(44832011)(5660300002)(6486002)(7416002)(8676002)(66476007)(54906003)(8936002)(4326008)(316002)(478600001)(66556008)(83380400001)(66946007)(2616005)(6512007)(966005)(6506007)(1076003)(41300700001)(186003)(66899018)(6666004)(26005)(2906002)(52116002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?pJ9QPsMFZ3zTSYG+bGM1NLwaiF1XeRPhPI6R2XpH1npB3/KXhLvC+aWBct8N?=
+ =?us-ascii?Q?a8BmQ7Vp8JaQG/ll0voWcbnlpF+M4s7LaBnRPmLAEKNlZMlsf1OmL3mvgu4t?=
+ =?us-ascii?Q?HVFjZNgbDc/aN7b26SucibovX+F1xo7B5MambKwqFJmaUA95AZbOBwObPmBY?=
+ =?us-ascii?Q?UifdN9/CSA0dS+pDGR9Fwxdd3iS1nLcZ9nYr7P4cY5zu0bo/PDShJwH5usge?=
+ =?us-ascii?Q?+xwZSL3LJ5ymJy1GTFeFDfjqLpvRF4lNs2XrISgTv//ZhkcjgWsIOyC32LF0?=
+ =?us-ascii?Q?EgWxlE8j2PmTGGYszGUMdWVPBx2g6Tm3M66fKeLCWhkxmeUOaRhg44QL/pDm?=
+ =?us-ascii?Q?Zsm5oVmVLSa1Ox3QiJZtCEOlzop10SSP71UqgFX4uptEgBKQHWYpis3IMmEz?=
+ =?us-ascii?Q?I3Vikx31PzO+VQSWye4zfEkYrQ6JHR/Q7ops6CgfBfdNItaEOoGkwJ6zEuSr?=
+ =?us-ascii?Q?DYf6rDKFQwlOVMwt0lAfV1Veqg+ly3Y5AEWrSvrsaimLxywYTghQ+dwRfspi?=
+ =?us-ascii?Q?lbd4fACKXWb2p9NnMIlJc9ryn5nAdCIt8Qm0HLUb/Hr94gXirrPMaYUmBfzO?=
+ =?us-ascii?Q?910Yo52nxNDNEzFivps37OEsVLfqLkE5JcIGISjKRpDC409DoC8zYLNe10gD?=
+ =?us-ascii?Q?CK/tcHsmn2LbAWri4EH9/Q2RKPwipqFHamH62LsV7u1c8utn8Qykz4kF+Txx?=
+ =?us-ascii?Q?Hdirg3JQE8KDyYBPaCqzUjRYKZOLHhe+dyQqshjGrzPJI5GcAvLSoRYRzeHU?=
+ =?us-ascii?Q?xyUf4NlHbjC3pJfZQMcXoipR79qlMzNhfXTdCF59CxKfQHB62KITfjPCD7cU?=
+ =?us-ascii?Q?jZHsHPylQk4jiuY8cUfYnx2rR07v81lydt83CcmkScc5CjN15aafdV9RaIC+?=
+ =?us-ascii?Q?WCsTYnSb7G00qSWyH66KafcuVnVHOCErI9ztHbVqmgr50KqC1InHjRMvGIBO?=
+ =?us-ascii?Q?g6k7hM9DwFsqGz0YCURmKQwNBZUzT+yR01RPYXAimB+Q92L5h48otdPtisfa?=
+ =?us-ascii?Q?avZD0zMdBo7uuAMdoU9McEKVvCemPXNYhjfaV/0ftdU1W3kfDqFRjEAtjfN/?=
+ =?us-ascii?Q?+PrYU0Q7EV1o6BoPdNW36y+K9OnV4RcvDMos1J49qm7rDJ4z3uBdqbzTareB?=
+ =?us-ascii?Q?JG3S+7JWm7iOxa7mKFqIpAegs1oUbBTZ1Ija9OW7mOhNUkUgLzlu4xlA26ps?=
+ =?us-ascii?Q?8PUlmhXI0tIox4Lr67w4+JLSd8tYlzxKxWQNyELSDm/DyxgYLwWoYuUEY5Lx?=
+ =?us-ascii?Q?v8SdYGKZEkNSvugQTxahFBb4n9uX/nWlYsBSDksNKaLq2AAqPkRK1osa8Vds?=
+ =?us-ascii?Q?KZ5nhohI6t3eTh43XR/rUpWD4uuuoae6owdZMeERdlVEIoCLBi7K2g5W2aOD?=
+ =?us-ascii?Q?V8EdZU/hS1tRAQ7RmGIIrwxasiNcyfzqZCZaunqkR++bDzU19jitxQ5k+3uk?=
+ =?us-ascii?Q?M+CXiHi5nWAuKEp78mYkqnfwro0ZwolddVyRURT5/2z2e/1h414YGOq325TA?=
+ =?us-ascii?Q?vffYBBnVi/8+G8gs1DdHjaN6+SrdrlnbBTOIzU2pXzK8B8rm2JNEj77ctoK1?=
+ =?us-ascii?Q?tvIog6C7p2YhTaKS+2oIrH2yybuifbVVZOZ59/ig/+P3qczE0l3whZvVd73X?=
+ =?us-ascii?Q?bNRuZubQA0UG1ay8CwibDyQ=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 44660ca9-850d-4096-f075-08db2719090c
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB4657.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 780a9278-9e37-437a-6cf8-08db271874ce
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Mar 2023 18:50:19.5128
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2023 18:54:28.5534
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: zSsLi3WpxWLQ8ztm2F9TBRnYxOVWrZv6JvwrDFNBPN7hoMNwBvigVhEURKF2m2w2PGG1tnk9mMH2geUlW6BPEbXy/3ZMRDZVDlTuwQE4Vgo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB6667
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5Ky1YGVixASFZ1nFCZVwCdQ1XdLqOyugYWJNfU0DET56PvmRM0Ud3y+qpWfQhU2PO/fZ6rbdHEzvEwUMJSmLDUpvEjw1Ziqnu7V1X83wIOU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR10MB7336
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
         URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -157,47 +122,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->From: Jiri Pirko <jiri@resnulli.us>
->Sent: Friday, March 17, 2023 5:54 PM
->
->Sun, Mar 12, 2023 at 03:28:02AM CET, vadfed@meta.com wrote:
->>From: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
->>
->
->[...]
->
->
->>+      name: device-get
->>+      doc: |
->>+        Get list of DPLL devices (dump) or attributes of a single dpll
->>device
->>+      attribute-set: dpll
->>+      flags: [ admin-perm ]
->>+
->
->[...]
->
->
->>+    -
->>+      name: pin-get
->>+      doc: |
->>+        Get list of pins and its attributes.
->>+        - dump request without any attributes given - list all the pins
->>in the system
->>+        - dump request with target dpll - list all the pins registered
->>with a given dpll device
->>+        - do request with target dpll and target pin - single pin
->>attributes
->>+      attribute-set: dpll
->>+      flags: [ admin-perm ]
->
->Any particular reason to have admin cap required for get operations?
->If not, please remove.
+This is the start of part 3 of what is hopefully a 3-part series to add
+Ethernet switching support to Ocelot chips.
 
-Yes, security reasons, we don't want regular users to spam-query the driver
-ops. Also explained in docs:
-All netlink commands require ``GENL_ADMIN_PERM``. This is to prevent
-any spamming/D.o.S. from unauthorized userspace applications.
+Part 1 of the series (A New Chip) added general support for Ocelot chips
+that were controlled externally via SPI.
+https://lore.kernel.org/all/20220815005553.1450359-1-colin.foster@in-advantage.com/
 
-Thank you,
-Arkadiusz
+Part 2 of the series (The Ethernet Strikes Back) added DSA Ethernet
+support for ports 0-3, which are the four copper ports that are internal
+to the chip.
+https://lore.kernel.org/all/20230127193559.1001051-1-colin.foster@in-advantage.com/
+
+Part 3 will, at a minimum, add support for ports 4-7, which are
+configured to use QSGMII to an external phy (Return Of The QSGMII). With
+any luck, and some guidance, support for SGMII, SFPs, etc. will also be
+part of this series.
+
+
+V1 was submitted as an RFC - and that was rightly so. I suspected I
+wasn't doing something right, and that was certainly the case. V2 is
+much cleaner, so hopefully upgrading it to PATCH status is welcomed.
+
+Thanks to Russell and Vladimir for correcting my course from V1.
+
+
+In V1 I included a device tree snippet. I won't repeat that here, but
+I will include a boot log snippet, in case it is of use:
+
+[    3.212660] pinctrl-ocelot ocelot-pinctrl.0.auto: DMA mask not set
+[    3.222153] pinctrl-ocelot ocelot-pinctrl.0.auto: driver registered
+[    3.232112] pinctrl-microchip-sgpio ocelot-sgpio.1.auto: DMA mask not set
+[    3.251195] mscc-miim ocelot-miim0.2.auto: DMA mask not set
+[    3.778295] mscc-miim ocelot-miim1.3.auto: DMA mask not set
+[    3.816668] mscc,ocelot-serdes ocelot-serdes.4.auto: DMA mask not set
+[    3.831564] ocelot-ext-switch ocelot-ext-switch.5.auto: DMA mask not set
+[    5.058979] ocelot-ext-switch ocelot-ext-switch.5.auto: PHY [ocelot-miim0.2.auto-mii:00] driver [Generic PHY] (irq=POLL)
+[    5.070626] ocelot-ext-switch ocelot-ext-switch.5.auto: configuring for phy/internal link mode
+[    5.088558] ocelot-ext-switch ocelot-ext-switch.5.auto swp1 (uninitialized): PHY [ocelot-miim0.2.auto-mii:01] driver [Generic PHY] (irq=POLL)
+[    5.108095] ocelot-ext-switch ocelot-ext-switch.5.auto swp2 (uninitialized): PHY [ocelot-miim0.2.auto-mii:02] driver [Generic PHY] (irq=POLL)
+[    5.127379] ocelot-ext-switch ocelot-ext-switch.5.auto swp3 (uninitialized): PHY [ocelot-miim0.2.auto-mii:03] driver [Generic PHY] (irq=POLL)
+[    5.938382] ocelot-ext-switch ocelot-ext-switch.5.auto swp4 (uninitialized): PHY [ocelot-miim1.3.auto-mii:04] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+[    6.118399] ocelot-ext-switch ocelot-ext-switch.5.auto swp5 (uninitialized): PHY [ocelot-miim1.3.auto-mii:05] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+[    6.268432] ocelot-ext-switch ocelot-ext-switch.5.auto swp6 (uninitialized): PHY [ocelot-miim1.3.auto-mii:06] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+[    6.448413] ocelot-ext-switch ocelot-ext-switch.5.auto swp7 (uninitialized): PHY [ocelot-miim1.3.auto-mii:07] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+[    6.467007] cpsw-switch 4a100000.switch eth0: entered promiscuous mode
+[    6.473676] DSA: tree 0 setup
+
+
+
+v1 -> v2
+    * Remove complex and incorrect device tree parsing logic
+    * Add and utilize felix->info->phylink_mac_config() and
+      felix->info->configure_serdes().
+
+
+Colin Foster (9):
+  phy: phy-ocelot-serdes: add ability to be used in a non-syscon
+    configuration
+  mfd: ocelot: add ocelot-serdes capability
+  net: mscc: ocelot: expose ocelot_pll5_init routine
+  net: mscc: ocelot: expose generic phylink_mac_config routine
+  net: mscc: ocelot: expose serdes configuration function
+  net: dsa: felix: attempt to initialize internal hsio plls
+  net: dsa: felix: allow configurable phylink_mac_config
+  net: dsa: felix: allow serdes configuration for dsa ports
+  net: dsa: ocelot: add support for external phys
+
+ drivers/mfd/ocelot-core.c                  | 13 +++
+ drivers/net/dsa/ocelot/felix.c             | 19 +++++
+ drivers/net/dsa/ocelot/felix.h             |  7 ++
+ drivers/net/dsa/ocelot/ocelot_ext.c        | 16 ++--
+ drivers/net/ethernet/mscc/ocelot.c         | 97 ++++++++++++++++++++++
+ drivers/net/ethernet/mscc/ocelot_net.c     | 50 ++---------
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c | 30 -------
+ drivers/phy/mscc/phy-ocelot-serdes.c       |  9 ++
+ include/soc/mscc/ocelot.h                  |  9 ++
+ 9 files changed, 169 insertions(+), 81 deletions(-)
+
+-- 
+2.25.1
+
