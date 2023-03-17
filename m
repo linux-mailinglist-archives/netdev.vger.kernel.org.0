@@ -2,131 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D8506BF044
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 18:59:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E70996BF045
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 18:59:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229746AbjCQR7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 13:59:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47856 "EHLO
+        id S230305AbjCQR7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 13:59:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229747AbjCQR7L (ORCPT
+        with ESMTP id S229924AbjCQR7L (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 13:59:11 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42B582942A
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 10:59:09 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id 5b1f17b1804b1-3ed5cf9a455so56725e9.1
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 10:59:09 -0700 (PDT)
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DA4420A02
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 10:59:06 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id w9so23601551edc.3
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 10:59:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1679075948;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YjvTte7bz790I4DeoccGypf45T5SSdILVtKRKvCiFOI=;
-        b=EiNd16NuxHMFHB8ctHAXApT18HqEP/MdXDPr2xnMxoD1lwuNdMZhlZjzYNoP5JAhye
-         jPCSCKpLbjXQq5dSNifqsuUuHUYIP2o8tyNXn9Xj6a9Hm30Fm5nITDHlOfbB5y9djsSU
-         n24l0ALbmhr/8jlrXM9LAcnxiVwzIOs0hRiCs=
+        d=tessares.net; s=google; t=1679075945;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=CURlZjlwXFBYnr22NG5seE+9tLCX5eL5DZHpPYvttPk=;
+        b=qmd/CN745cn4LhYQ0lO3SPLXta/uEBfAThJzBEAkvsTEC/C34wzUXzWWUv+9dsm/zr
+         q9x2rvwcf3i5UNSPeN2y9fLIj5gYH7vFYZS1W/6/srnbeli5xE2qKoykOOyKPTp8RdeP
+         CPgHX03iN8JwjbB6jQOrm3urlHiwOZe/LviSJQu/pRN0iS49rgxTM+crr0pVRn3JX3Zk
+         /ktK8GX4O0GjpF0YIRNDg5dUNBFCZHwz74AXHEDh04gO+aHAhaWaM+1Yu3fHMqORkMD3
+         Q4bJBdy4CRe1CkthMTtX08AsZQKATwFJck0WVYNpxRsw4AowMfBGKcEYEc7NdZ+vrfqd
+         l6yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679075948;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=YjvTte7bz790I4DeoccGypf45T5SSdILVtKRKvCiFOI=;
-        b=mM4UX4EptitoT/lgLzogbAHMB/CQSKDJOFRgbcYI3IBGka6yKlyU7ZybuK9TpkrkAw
-         mj5A4w/OcELJnZOZCfUv5RyRWQYz2wjzp9m8XwUgRmnrEQYBNnTAC9ZgKoOtsh3ukOLS
-         UBZdJ6nj+zxFW6mL67n1TlHjJ1pEtIeSWxGNskEDVVLgJl5BsuSIDbnYahhfcMJrRqXO
-         n2gLryTx5zeICptejFrR89mVjyMPDKGYRrGiRGKcRKpwmG0EsWv3awWgKIEaNfHbUuqk
-         f4DqAf5iagF3VACieSV2pCj+8/w95Lr1GXPrOJJCPIvU2W6uMRCiz31Z0h+p6wVGDevD
-         TXAQ==
-X-Gm-Message-State: AO0yUKWHsfBGH2t43OH5ZfCbs8d7R0j92uxCk6wd/mnjmCyX1EK2afgv
-        oSFcu+Lb+vwq7BQbgCjEr4YZVWvXDE6nVlNT2ZzKEw==
-X-Google-Smtp-Source: AK7set9e34KRiIz2HRwC5yN5XBvua7H4JERtmCm0RF+b7/ldiI4eo4W76D8K0TRd0iAc0fFvvaZyKu5z80jjulMa5QU=
-X-Received: by 2002:a05:600c:3589:b0:3e2:1a5e:b13c with SMTP id
- p9-20020a05600c358900b003e21a5eb13cmr961wmq.2.1679075947629; Fri, 17 Mar 2023
- 10:59:07 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1679075945;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=CURlZjlwXFBYnr22NG5seE+9tLCX5eL5DZHpPYvttPk=;
+        b=csTGhUD9hThy1/hKTpuFBGU3f8Kc0eHAt9k4dcSwz92w6ToSyMQjXlOwhivSJvnppX
+         SDqBwg765CQ+Rbt2hobBRKaDE7kLRrjGEvTHvMzC4cjOWSCoS+jHXFqE40pvibwMd2O+
+         Un4wU8qTIBO1TaCHxH8gXupAq1Ohl66PdNE9SDAd1lqYMoNFQf3B+0NjPgQQ5dbLZlPc
+         jjQZiM8ZXwwFlFDy+JpBbdrIfU5PONzRb2+NGYX5lAHf81V2iC+VvZT+ML3n5if8O2sc
+         voxsvJI22BA4M6jHMD6Vmbbm+lJfbWfIPmrvfNpXFehBITYIWDPFX1aUPrM8loChT60d
+         ALug==
+X-Gm-Message-State: AO0yUKU5vKdPstQjS6DV4IRV9ur+h92s7lMya4R8v+HGQ/622Q6aZdWn
+        Hc6KwBwchMZ3A3XSYExAX7EFb+toud3UAKdeU4s=
+X-Google-Smtp-Source: AK7set9OAo5PzMdo/PUAVySCz6yI6OKUJS97VHyaHKf5oJmmwavA29dc1XCBRfhMw1OvbJT5TF2n5Q==
+X-Received: by 2002:a05:6402:2143:b0:4fd:29a1:6a58 with SMTP id bq3-20020a056402214300b004fd29a16a58mr4077018edb.19.1679075944990;
+        Fri, 17 Mar 2023 10:59:04 -0700 (PDT)
+Received: from [10.44.2.5] ([81.246.10.41])
+        by smtp.gmail.com with ESMTPSA id q30-20020a50aa9e000000b004fadc041e13sm1382394edc.42.2023.03.17.10.59.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Mar 2023 10:59:04 -0700 (PDT)
+Message-ID: <618e9ca8-29fd-abf2-9f0b-eca253b6d2f4@tessares.net>
+Date:   Fri, 17 Mar 2023 18:59:04 +0100
 MIME-Version: 1.0
-References: <20230314055410.3329480-1-grundler@chromium.org> <20230315220822.6d8cf7ed@kernel.org>
-In-Reply-To: <20230315220822.6d8cf7ed@kernel.org>
-From:   Grant Grundler <grundler@chromium.org>
-Date:   Fri, 17 Mar 2023 10:58:55 -0700
-Message-ID: <CANEJEGv0fSa9ZqArTDJcSwUpjKrOS=502Uz6C6LRh3gptfTs9g@mail.gmail.com>
-Subject: Re: [PATCHv4 net] net: asix: fix modprobe "sysfs: cannot create
- duplicate filename"
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Grant Grundler <grundler@chromium.org>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Eizan Miyamoto <eizan@chromium.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Anton Lundin <glance@acc.umu.se>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-9.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-        USER_IN_DEF_SPF_WL autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH net-next 09/10] mptcp: preserve const qualifier in
+ mptcp_sk()
+Content-Language: en-GB
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        David Ahern <dsahern@kernel.org>,
+        Simon Horman <simon.horman@corigine.com>,
+        Willem de Bruijn <willemb@google.com>,
+        eric.dumazet@gmail.com, MPTCP Upstream <mptcp@lists.linux.dev>
+References: <20230317155539.2552954-1-edumazet@google.com>
+ <20230317155539.2552954-10-edumazet@google.com>
+ <b9b3e7a2-788b-13ca-91a6-3017c8afbbf4@tessares.net>
+ <CANn89i+xOmDmD2=1EQF0U5F5+GQb_HfAWmQD=1FP+6L=qK-E5w@mail.gmail.com>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+In-Reply-To: <CANn89i+xOmDmD2=1EQF0U5F5+GQb_HfAWmQD=1FP+6L=qK-E5w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 15, 2023 at 10:08=E2=80=AFPM Jakub Kicinski <kuba@kernel.org> w=
-rote:
->
-> On Mon, 13 Mar 2023 22:54:10 -0700 Grant Grundler wrote:
-> > @@ -690,6 +704,7 @@ static int ax88772_init_phy(struct usbnet *dev)
-> >       priv->phydev =3D mdiobus_get_phy(priv->mdio, priv->phy_addr);
-> >       if (!priv->phydev) {
-> >               netdev_err(dev->net, "Could not find PHY\n");
-> > +             ax88772_mdio_unregister(priv);
->
-> this line needs to go now..
->
-> >               return -ENODEV;
->
-> .. since if we return error here ..
->
-> >       }
-> >
-> > @@ -896,16 +911,23 @@ static int ax88772_bind(struct usbnet *dev, struc=
-t usb_interface *intf)
-> >
-> >       ret =3D ax88772_init_mdio(dev);
-> >       if (ret)
-> > -             return ret;
-> > +             goto mdio_err;
-> >
-> >       ret =3D ax88772_phylink_setup(dev);
-> >       if (ret)
-> > -             return ret;
-> > +             goto phylink_err;
-> >
-> >       ret =3D ax88772_init_phy(dev);
->
-> .. it will pop out here ..
->
-> >       if (ret)
-> > -             phylink_destroy(priv->phylink);
-> > +             goto initphy_err;
-> >
-> > +     return 0;
-> > +
-> > +initphy_err:
-> > +     phylink_destroy(priv->phylink);
-> > +phylink_err:
-> > +     ax88772_mdio_unregister(priv);
->
-> .. and then call ax88772_mdio_unregister() a second time.
+Hi Eric,
 
-Doh! Yes - good catch. Let me fix that.
+Thank you for your quick reply!
 
-cheers,
-grant
+On 17/03/2023 18:47, Eric Dumazet wrote:
+> On Fri, Mar 17, 2023 at 10:32 AM Matthieu Baerts
+> <matthieu.baerts@tessares.net> wrote:
+>> On 17/03/2023 16:55, Eric Dumazet wrote:
+>>
+>> (...)
+>>
+>>> diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+>>> index 61fd8eabfca2028680e04558b4baca9f48bbaaaa..4ed8ffffb1ca473179217e640a23bc268742628d 100644
+>>> --- a/net/mptcp/protocol.h
+>>> +++ b/net/mptcp/protocol.h
+>>
+>> (...)
+>>
+>>> @@ -381,7 +378,7 @@ static inline struct mptcp_data_frag *mptcp_pending_tail(const struct sock *sk)
+>>>       return list_last_entry(&msk->rtx_queue, struct mptcp_data_frag, list);
+>>>  }
+>>>
+>>> -static inline struct mptcp_data_frag *mptcp_rtx_head(const struct sock *sk)
+>>> +static inline struct mptcp_data_frag *mptcp_rtx_head(struct sock *sk)
+>>
+>> It was not clear to me why you had to remove the "const" qualifier here
+>> and not just have to add one when assigning the msk just below. But then
+>> I looked at what was behind the list_first_entry_or_null() macro used in
+>> this function and understood what was the issue.
+>>
+>>
+>> My naive approach would be to modify this macro but I guess we don't
+>> want to go down that road, right?
+>>
+>> -------------------- 8< --------------------
+>> diff --git a/include/linux/list.h b/include/linux/list.h
+>> index f10344dbad4d..cd770766f451 100644
+>> --- a/include/linux/list.h
+>> +++ b/include/linux/list.h
+>> @@ -550,7 +550,7 @@ static inline void list_splice_tail_init(struct
+>> list_head *list,
+>>   * Note that if the list is empty, it returns NULL.
+>>   */
+>>  #define list_first_entry_or_null(ptr, type, member) ({ \
+>> -       struct list_head *head__ = (ptr); \
+>> +       const struct list_head *head__ = (ptr); \
+>>         struct list_head *pos__ = READ_ONCE(head__->next); \
+>>         pos__ != head__ ? list_entry(pos__, type, member) : NULL; \
+>>  })
+>> -------------------- 8< --------------------
+> 
+> This could work, but it is a bit awkward.
+> 
+> mptcp_rtx_head() is used  in a context where we are changing the
+> socket, not during a readonly lookup ?
 
->
-> > +mdio_err:
-> >       return ret;
-> >  }
+Indeed, you are right. It is currently only used in a context where we
+are changing the socket.
+
+I can see cases where a new packets scheduler might just need to check
+if the rtx queue is empty but then we should probably add a new helper
+using list_empty() instead.
+
+So yes, no need to change anything!
+
+Cheers,
+Matt
+-- 
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
