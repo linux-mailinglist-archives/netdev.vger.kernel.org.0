@@ -2,116 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A44296BF093
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 19:19:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D4E46BF09A
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 19:21:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229902AbjCQSTw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 14:19:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51246 "EHLO
+        id S230233AbjCQSV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 14:21:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229799AbjCQSTv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 14:19:51 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E2A149BB
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 11:19:48 -0700 (PDT)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32HHglek025514
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 18:19:48 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=MlrMBQb6ukN17nr3p+qt3m6kxT5ob1CF8Z7V5yhyXr4=;
- b=Zg3eGCKLCgy1vyCy/yFvtaNl0gaxT2VARmLB46QDWdPU0fHAJRUy6bC3EJ5dGtE7tMY3
- MUdt35Dgyhx28Sf/MUzpO4Q3yThfGu5zRJTGrtHNtNvIbXrYA8DLtXHiLFcQktHqlr8A
- pH3QAQiN9hc6/aDaeVvwwv+Uu6phLZt5wbRzayqt8TaMr078OclLwnRSBYEHNpptI/vd
- EmGkWTi1W+W8if8W2290eM7fIpra8qeMjpOEdhqkl7j+dCCKyqag1I9oa9FOtL3tNjDx
- TZE5mn/9Wg66PJ6cIMYIKFK97vBWbrG4yT+Z4PotAk3EkWm6fUQRl3n9Q8x4qTzAmt3U UQ== 
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3pcvukrtg7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 18:19:48 +0000
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-        by ppma03wdc.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 32HH9REb031014
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 18:19:47 GMT
-Received: from smtprelay01.wdc07v.mail.ibm.com ([9.208.129.119])
-        by ppma03wdc.us.ibm.com (PPS) with ESMTPS id 3pbs919wch-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 18:19:47 +0000
-Received: from smtpav01.dal12v.mail.ibm.com (smtpav01.dal12v.mail.ibm.com [10.241.53.100])
-        by smtprelay01.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 32HIJj9O30474880
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 17 Mar 2023 18:19:45 GMT
-Received: from smtpav01.dal12v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 10C4858057;
-        Fri, 17 Mar 2023 18:19:45 +0000 (GMT)
-Received: from smtpav01.dal12v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9FDFA58059;
-        Fri, 17 Mar 2023 18:19:44 +0000 (GMT)
-Received: from li-8d37cfcc-31b9-11b2-a85c-83226d7135c9.ibm.com.com (unknown [9.65.227.169])
-        by smtpav01.dal12v.mail.ibm.com (Postfix) with ESMTP;
-        Fri, 17 Mar 2023 18:19:44 +0000 (GMT)
-From:   Nick Child <nnac123@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     Nick Child <nnac123@linux.ibm.com>
-Subject: [PATCH net 2/2] netdev: Enforce index cap in netdev_get_tx_queue
-Date:   Fri, 17 Mar 2023 13:19:41 -0500
-Message-Id: <20230317181941.86151-2-nnac123@linux.ibm.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20230317181941.86151-1-nnac123@linux.ibm.com>
-References: <20230317181941.86151-1-nnac123@linux.ibm.com>
+        with ESMTP id S229799AbjCQSV0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 14:21:26 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B75260415
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 11:21:24 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id fd5so23721838edb.7
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 11:21:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679077283;
+        h=content-transfer-encoding:in-reply-to:subject:cc:from
+         :content-language:references:to:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=5GEf9DhgwNVevW1FesQHPvOROalPqWpYAagy6INTOMk=;
+        b=qePKp7YE1wwKbufkkEDAaHsMXl3FeL+aZHLcq4TqUT8C3SlmsNeijiJJj47Dt0wXy2
+         lF5LOqD5+DyvOroh2gHfVNgnf70d5G04kxRwc5fCLqBb1CT4F9aLeRByp6jsQudHQzms
+         p5VNYmwgQQHk+KEtanmYhoXW1eixNGRkoSb99qJ2gSqR2+c5OaUAo7UXWyhNDwP4v5fC
+         TJkBVlR+bxMybDOmFlPhJ1Oa6FAMDV3PSoGFiDj3l+Ss3dcnnM8fmM4DKUL1HG+hM0fw
+         W3dDl92PI2sSGdBVH/gBOwcovt7W8O2QwftgMgoEmw0vHZMthapgSIS8waaWx9pWg3qc
+         HTBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679077283;
+        h=content-transfer-encoding:in-reply-to:subject:cc:from
+         :content-language:references:to:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=5GEf9DhgwNVevW1FesQHPvOROalPqWpYAagy6INTOMk=;
+        b=DXGWjTGni7aSX1NYqlYFzq4DEWbTH8JXNNsj0AogPto0bgk0G4zcea9tS9ZVMM9D2l
+         HDXPmBN969JgMdKB2TTe2oQMxKVAvdf2LrIQfFSs1RZvbtaFDCt4bFvWQlHzw/peyfir
+         B/9YDyVTKbWqREi5eUPlKc+X4ektJbRIq9rEdogmuLC00YV0u1s46gX1ZTZU8GbOeVAj
+         hjYfc7yIqCvlTI6c3TR0v8gNRNN8PPrQRdL6UweN8KHnz+X2INbW5MhGUgCZU0Yfp12V
+         uEO0JgTjYE3cIZLlTaEDZTehBvaImtOALJMCld2RwEWqP/l3wCod1g6a4ahstN3vUJrk
+         3s8g==
+X-Gm-Message-State: AO0yUKXkd5OOVvTXJsgyPz7vqoAfHwPD39oEGLh+k9GDbZuNobdYS9Ob
+        fh6PiUmPbv7uvfkI7SibJDE=
+X-Google-Smtp-Source: AK7set/iCvtv975Vhdt5MxalFKHlzb/EaG3JyTt3kJkVufffjsmXm8jaGIFpoDq8pKvGUDtCBXSXaA==
+X-Received: by 2002:a17:906:3fcf:b0:92d:6078:3878 with SMTP id k15-20020a1709063fcf00b0092d60783878mr371919ejj.33.1679077282852;
+        Fri, 17 Mar 2023 11:21:22 -0700 (PDT)
+Received: from ?IPV6:2a01:c23:c5b8:6200:464:40e3:4e4f:fcaf? (dynamic-2a01-0c23-c5b8-6200-0464-40e3-4e4f-fcaf.c23.pool.telefonica.de. [2a01:c23:c5b8:6200:464:40e3:4e4f:fcaf])
+        by smtp.googlemail.com with ESMTPSA id g12-20020a170906198c00b00930c7b642d0sm1228078ejd.166.2023.03.17.11.21.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Mar 2023 11:21:22 -0700 (PDT)
+Message-ID: <3e904a01-7ea8-705c-bf7a-05059729cebf@gmail.com>
+Date:   Fri, 17 Mar 2023 19:21:20 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: EnqfYJILqcwZVLFNtWSf3WSnKMWsfGXR
-X-Proofpoint-ORIG-GUID: EnqfYJILqcwZVLFNtWSf3WSnKMWsfGXR
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-17_14,2023-03-16_02,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 impostorscore=0
- spamscore=0 suspectscore=0 phishscore=0 mlxlogscore=999 lowpriorityscore=0
- priorityscore=1501 mlxscore=0 clxscore=1011 bulkscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2303150002
- definitions=main-2303170122
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+To:     arturo.buzarra@digi.com
+References: <20230317121646.19616-1-arturo.buzarra@digi.com>
+Content-Language: en-US
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>
+Subject: Re: [PATCH] net: phy: return EPROBE_DEFER if PHY is not accessible
+In-Reply-To: <20230317121646.19616-1-arturo.buzarra@digi.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When requesting a TX queue at a given index, prevent out-of-bounds
-referencing by ensuring that the index is within the allocated number
-of queues.
+On 17.03.2023 13:16, arturo.buzarra@digi.com wrote:
+> From: Arturo Buzarra <arturo.buzarra@digi.com>
+> 
+> A PHY driver can dynamically determine the devices features, but in some
+> circunstances, the PHY is not yet ready and the read capabilities does not fail
+> but returns an undefined value, so incorrect capabilities are assumed and the
+> initialization process fails. This commit postpones the PHY probe to ensure the
+> PHY is accessible.
+> 
+To complement what has been said by Florian and Andrew:
 
-If there is an out-of-bounds reference then inform the user and return
-a reference to the first tx queue instead.
+"under some circumstances" is too vague in general. List potential such
+circumstances and best what happened exactly in your case.
 
-Fixes: e8a0464cc950 ("netdev: Allocate multiple queues for TX.")
-Signed-off-by: Nick Child <nnac123@linux.ibm.com>
----
- include/linux/netdevice.h | 7 +++++++
- 1 file changed, 7 insertions(+)
+When genphy_read_abilities() is called the PHY has been accessed already,
+reading the PHY ID. 
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 23b0d7eaaadd..fe88b1a7393d 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -2482,6 +2482,13 @@ static inline
- struct netdev_queue *netdev_get_tx_queue(const struct net_device *dev,
- 					 unsigned int index)
- {
-+	if (unlikely(index >= dev->num_tx_queues)) {
-+		net_warn_ratelimited("%s selects TX queue %d, but number of TX queues is %d\n",
-+				     dev->name, index,
-+				     dev->num_tx_queues);
-+		return &dev->_tx[0];
-+	}
-+
- 	return &dev->_tx[index];
- }
- 
--- 
-2.31.1
+So best start with some details about your use case, which MAC, which PHY, etc.
+
+> Signed-off-by: Arturo Buzarra <arturo.buzarra@digi.com>
+> ---
+>  drivers/net/phy/phy_device.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> index 1785f1cead97..f8c31e741936 100644
+> --- a/drivers/net/phy/phy_device.c
+> +++ b/drivers/net/phy/phy_device.c
+> @@ -2628,10 +2628,14 @@ int genphy_read_abilities(struct phy_device *phydev)
+>  			       phydev->supported);
+>  
+>  	val = phy_read(phydev, MII_BMSR);
+>  	if (val < 0)
+>  		return val;
+> +	if (val == 0x0000 || val == 0xffff) {
+> +		phydev_err(phydev, "PHY is not accessible\n");
+> +		return -EPROBE_DEFER;
+> +	}
+>  
+>  	linkmode_mod_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, phydev->supported,
+>  			 val & BMSR_ANEGCAPABLE);
+>  
+>  	linkmode_mod_bit(ETHTOOL_LINK_MODE_100baseT_Full_BIT, phydev->supported,
 
