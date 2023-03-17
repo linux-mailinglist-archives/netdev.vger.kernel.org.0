@@ -2,122 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4291B6BE5D7
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 10:46:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7F7E6BE5E3
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 10:50:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229890AbjCQJqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 05:46:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38314 "EHLO
+        id S229995AbjCQJux (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 05:50:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbjCQJqi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 05:46:38 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2057.outbound.protection.outlook.com [40.107.22.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD0AA23316;
-        Fri, 17 Mar 2023 02:46:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VtWn1V1UdBaDpjgDOV79v4kulqO+mq2JTIwoJWWcdEGvD9cnp7Ac+rxgvfM27eJx6qXEfPA+b/tohIzWsHyIiKpf/Uh57cmsTLQSfd0eMMtZpfdcsC4SDG6cdEp4YVM/bZ2rM+vjuw9K1wdS8Z2cZ5mt3eJqelqSTT7ZLU0peYpnf1A45RVdSpJt83qrNouoUjAMlPtIA9mLZsMy3NVTn+8+bQUCPAO6C83O5DPHd0Oj85FgS6sdHt4fCRImXsOtQBfDRBWxdVfEydF+9ZX+oJQjp79mNx6t03g0A+b6mx6EYDR/kyRv/uSe7B1ynAjUeTFFQYW0St+a7hTdI/b1Ig==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GTpzvUR7j6CVaBrDFnesLmgzAoK76eyDAYPw34z/yus=;
- b=Ay8saWsG/mKLEdqltMDx+8mKrQ2K82LBKkm9tsQEb2okxrBSJ8wp/omsEBv9/w9FWAagv3WPM1oBKK0qI3NgCcHaejNN/8E8YyvBczYZONmDeiDDt6F3HOkxlx9YVKlKRoZRbwI2JDRtWjwdNccApLUklRyJBa0gOlDiI4OppTMg6470BjpJQTBNielGcsTz1uZYbLqaxQexLTiGBxtD0YXyGi4KGIU253MTQKr2IamvBVU+UAvQFZ3u3YnP8/0+lUDm0BIXoyXSgt5j2N6VUvvlr+tbxVmehiroE0riyR8yMdPqmFPGdXHLn/4lsjFSNhU/CggdfHdNJA52IUE+7g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GTpzvUR7j6CVaBrDFnesLmgzAoK76eyDAYPw34z/yus=;
- b=qS/dR2VQjLyBwCQlRSzTzeJTg4pCqHUPzIONfqvMt+FBnMxGj5x1kxzrjL9+/DOJU9ks/dSsbZCnDrzxbwO9C9J6CQVwJAV+qgMOPH1dLSyBABrytYutqwttExQ2L44ppUdQWzbV6Zuh20XgnhUb0FDvbZtolEPIMjXKEQ4JtUM=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from DB8PR04MB6459.eurprd04.prod.outlook.com (2603:10a6:10:103::19)
- by PAWPR04MB9816.eurprd04.prod.outlook.com (2603:10a6:102:390::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.31; Fri, 17 Mar
- 2023 09:46:33 +0000
-Received: from DB8PR04MB6459.eurprd04.prod.outlook.com
- ([fe80::e555:cc9e:b278:15d9]) by DB8PR04MB6459.eurprd04.prod.outlook.com
- ([fe80::e555:cc9e:b278:15d9%7]) with mapi id 15.20.6178.031; Fri, 17 Mar 2023
- 09:46:33 +0000
-Date:   Fri, 17 Mar 2023 11:46:29 +0200
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Marek Vasut <marex@denx.de>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC/RFT PATCH net-next 2/4] net: dsa: microchip: partial
- conversion to regfields API for KSZ8795 (WIP)
-Message-ID: <20230317094629.nryf6qkuxp4nisul@skbuf>
-References: <20230316161250.3286055-1-vladimir.oltean@nxp.com>
- <20230316161250.3286055-3-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230316161250.3286055-3-vladimir.oltean@nxp.com>
-X-ClientProxiedBy: VI1PR0902CA0055.eurprd09.prod.outlook.com
- (2603:10a6:802:1::44) To DB8PR04MB6459.eurprd04.prod.outlook.com
- (2603:10a6:10:103::19)
+        with ESMTP id S229929AbjCQJuw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 05:50:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D955A1AC
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 02:50:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679046605;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cIjz5dsv/dg9VYh+9CXThg5ObzG/xNMA+jvhP6AWg7g=;
+        b=fKLmhtPaiL6qYHWvUSl6QJ0F+pK8hKdJW/NAwOGJWL7WVnGhu6YXEeG7i0F0uGkL/Af4Mq
+        +d/fFDshNA+vW+1OwVHRgWESwf8turKiVRldGrZK1UKmnrUgwe8k5gBHyywMtalItQe45t
+        HnEGslhMxbt/bDZS5pYMGLCOh9ka/KE=
+Received: from mail-yb1-f197.google.com (mail-yb1-f197.google.com
+ [209.85.219.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-22-tUdUxpEfM4e5R_6TdWjZ3Q-1; Fri, 17 Mar 2023 05:50:04 -0400
+X-MC-Unique: tUdUxpEfM4e5R_6TdWjZ3Q-1
+Received: by mail-yb1-f197.google.com with SMTP id m13-20020a25800d000000b00b3dfeba6814so4734320ybk.11
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 02:50:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679046603;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=cIjz5dsv/dg9VYh+9CXThg5ObzG/xNMA+jvhP6AWg7g=;
+        b=06VU7z78xkaLkCG7GuEOtIPUmPLPhQO5xA50jnCdgyBHq6jC9k9Gcv6lWto/u4xnU+
+         RBF7iANT3kCCoi8ZzCi+rcblqx+LHW6hgrNkEeXqrDHC0/9MPftoZ48ziZSLFOE11/tX
+         6/7R5xD6Du15JbyZvpF3qyXCxeU69PQeb3kSoI+rF1U3cfY8ChO51LxhfWRT2HT1UOG/
+         PeyJmLv29pohNpUDJXPILF0jxQ7K9C9FU1SC1FasEzuRNhZWXKZ4vEi1ohGJqAnyT/Hb
+         MYcV3+rpLkA8rkjf8Chay4S2VsQLA9X2eF0wvu43/7kAtMtY/BKs2LwqREuUfDpsJ3CI
+         uEiA==
+X-Gm-Message-State: AO0yUKVRz1mfZrt7Wy/oUjWjoPfq3fr9UAXSTHaxgXw0nTtuhJi1GvWa
+        S08qV8LLu4qT8ao3s/Wt3dO7m4MZiQKrA3L/9XSQfPPkpRudWIIt64VvtGC7V05dM7TL8joNye2
+        scHbgFUx0jWx+lVv6agVyOt4cWzeNEBIx3IIIts2SiIc=
+X-Received: by 2002:a81:af63:0:b0:52e:d380:ab14 with SMTP id x35-20020a81af63000000b0052ed380ab14mr2783814ywj.3.1679046603430;
+        Fri, 17 Mar 2023 02:50:03 -0700 (PDT)
+X-Google-Smtp-Source: AK7set/g7TjoXhX9YrJrHBG0q5oaOfbqdr1UHnhY/7B2j60EyqRZ6PSrTZ/nlJcE85yupZ7mvozduX8LpHbbRgU/Dgo=
+X-Received: by 2002:a81:af63:0:b0:52e:d380:ab14 with SMTP id
+ x35-20020a81af63000000b0052ed380ab14mr2783803ywj.3.1679046603134; Fri, 17 Mar
+ 2023 02:50:03 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DB8PR04MB6459:EE_|PAWPR04MB9816:EE_
-X-MS-Office365-Filtering-Correlation-Id: dbbbe443-d792-406a-b1a5-08db26cc7df4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tgEuQmGkWSj3K5o6mseeZhZZ5/Xbjaoxrd+fCuTs9v9xlujNQu3ZE7k44iPnCyz1GiF/wcFdjxuY/VIl0kHDmHkuSbUdOfVt7d0Uxwrqzfc0yNHbm4f4kopkAmVzK78LWkM4QEpIBptHvx+4r4uxDqB4dx4MIsEKdaSqBW8a+gBZkJGW5c6p5J4AYwWqqPapzGga61i058hfIhKVRg8IZS8zX+3AZRhPrDoy+eNdY/ctBIad8HSWZSKOFLWvhSe9A6JpyHS/sc75n5P+kxFEjW8YQpBs0bBae9VhRiNO55jSQpBGtroydLAqwDAwWYVxZbzDKhMQg+Hk9E03OACIkIZ4Nr8MeKO3yKgsRHaQLHOiT3lw+HVhEIaal0KN8WVPLxUPFxBTjv2jz9R0416T5KBTbxmdU0zZ9SnLSTwnttR2Xlwurcy33D5W2c+qTREQRhG9blkAN5YKkg6zJr0+uGlOdaTiCX80IPGg5ifD2ATeiIKESKcNu3QvSUWRN1rBMRMYMTLX/Wf44Eac/+iMaZiLU2wkrqB5Sn4EmzeSsSnY6+paciOWAuTHm451y1I56p/P3FC6xKxYoDJIgCaEVvZRUo7omrZtU2+neVegmKSxa+ERbC2wBXZmmb3JSngOhWaRPuSHafDdasuR49Ah6yJIq/hYafz6e8iHLNBDDo3kLLIAnS1CU1bN06F5S/FeZGlpxZolInqM/SBjqsfViiDH5jz8aMAZf2RnYFrQx2YtaR2IxJsLX4C+zFlWT0o8
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6459.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(7916004)(4636009)(136003)(366004)(39860400002)(346002)(376002)(396003)(451199018)(41300700001)(1076003)(6512007)(6506007)(26005)(38100700002)(6666004)(66946007)(66476007)(66556008)(4326008)(6916009)(8676002)(7416002)(2906002)(186003)(8936002)(9686003)(44832011)(83380400001)(316002)(478600001)(86362001)(6486002)(5660300002)(33716001)(966005)(54906003)(473944003)(414714003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?j5HnXOD+VA6ksI4mWcQy1Ap0fpERM/KmlxhTogk0lFaN4IOZ5a8ffm89aHDg?=
- =?us-ascii?Q?DKUsvVvSBNbeVZkbytbbHRBscw+BFdmCNSsrqNcHwH5zXy9wlNnkMF4+7bs7?=
- =?us-ascii?Q?euyPs5sJl6QOKQ7+M2F9Ou3jNCK4kse6zKPuYVlKIj+LXq/3IQUJHNnPxOIj?=
- =?us-ascii?Q?mYrNuHiMOkAXWShXo6tszS8o8idEoFbtowCiueB5YtfyDPP4LQnKlsRNyHbA?=
- =?us-ascii?Q?noOWi+8zmZAxEwX6gZjue0SxE3XOA755aVhjxNlXX5idTK2NDvcoJ1wXGZRG?=
- =?us-ascii?Q?PsMzKuWpvxw5uwRrfRi9xlkRbBIr6rbep9CGUIMT41ecD/VB5ECM3WcjwSjM?=
- =?us-ascii?Q?Vxo+rlUjLkIcWIxm1ml5jyAZSPDx7CjYEHmHsOOXsNHds4a4m2BHtRpmNY2m?=
- =?us-ascii?Q?K5qXiqHxWazXby8KhV2LoD3EnU9gxhwqNqopn0NCVYjga1cKdXUFzL8x7C4R?=
- =?us-ascii?Q?mSWCSNGTjEtC9PRyji8UzMunyjaUfNf/lhUMJjakU0hdX70l1jtMbypNc52F?=
- =?us-ascii?Q?jsrOJCLp9ebSaCyrHt2QaxA0Vqj8xayk4TfdPfrV1z1gYlOdQ77zJj0+4Esn?=
- =?us-ascii?Q?Vwxh0itOn/9hFJ231Bj3in0SqzJeXjDu9y02WeoFx8HOwJcHwzrATuHmOB7t?=
- =?us-ascii?Q?6S28jsDSpkG19k01Sj68s7tWJlTSKVXs4Y0GYhJxqOgRuTZUCTAxRwIWZb6F?=
- =?us-ascii?Q?uxXsDUQFRofDev/gXGKr4Gf12gsM83X02QfhAIGbK4pR1+Z6CJVA/a2fgDqH?=
- =?us-ascii?Q?1mYnzZsYVMgRYkZDyLYYVL6aIIundH69mw6g5T0IFn1b2U5IxV9kpgg3XDoB?=
- =?us-ascii?Q?oBxABCxMzOnQjcFPWyTW5MdhymcHXpPqidpTHm2kCk6aJ8UVVZLJjm862Gjv?=
- =?us-ascii?Q?HHlvmIrsElWEiVM/gMhSv8/2UcbFNXpln17gkWakdfxIBhFfm2M8t1ZM3AO6?=
- =?us-ascii?Q?vdiBWa4Q31f3rt74UprBUgt67Qn9YH8Z5Kwo4nf90BsezANiko8KraPyJVMx?=
- =?us-ascii?Q?CroNJdGyG8cOywswmQPK3912jbE1q4aTjBfp6wIIL1cSeyQoCCypHfyB6b3I?=
- =?us-ascii?Q?zRwd0vWkt6bICBJ+dfPp+txyttqRTQhBd4fFRk4GgEQ+mchgbQTT0z7LtZ3q?=
- =?us-ascii?Q?hLku+JI+iAeyK0yj+L/dZ7dcFDMFDn4sygNtCBVCcVS9iDALFDBGBdB5iNYw?=
- =?us-ascii?Q?5oJiS39zmqytMHOTIULLDiqbdvNx2KR09GFA4cpve/oJ1lA1to4ana08RZxV?=
- =?us-ascii?Q?p05CV16JwK3aXPonHlegzfGZtcKr+8sxpJ2Fn65ynIEj5XKfdTOwMuedRxij?=
- =?us-ascii?Q?A83GoHevhXaR5QrchToTSyT/xm2yIoHRP71iJNA2DeiaM6Gf+2WoKOvMz3gw?=
- =?us-ascii?Q?+SIQrpSOD/kD3byWrAnIob2ldmvAaN+VkRe5FZXF9T+oK7uT2xtpHoHioeJo?=
- =?us-ascii?Q?jw30SuYHRpFqDxWyZxNSHdBPNcEB33CPHqr/tbxJYlvI13LqRqpzh/PCjPOV?=
- =?us-ascii?Q?KQjEO1sSvbZ3Ho5V0hH9p97F40AugvDsL9jaRLm8Sj1TVnVVqBOvArkIB+et?=
- =?us-ascii?Q?WmTIkAaTKvriU+eepcObZZYVJzORsNmXxb+8tJj4DdoQGLgNWpj1Upvl+Uzw?=
- =?us-ascii?Q?zg=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dbbbe443-d792-406a-b1a5-08db26cc7df4
-X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6459.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2023 09:46:33.3772
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eWQvw8GcXL1yCHNLt3y4e1PNLWgQ5ed/hMfLSa7WHk+Tm1HTzb8RqCM7xgDFE2ocHO6y10zsY4M/v0eJ5jihTQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR04MB9816
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
+References: <20230302113421.174582-1-sgarzare@redhat.com> <20230302113421.174582-5-sgarzare@redhat.com>
+ <CAJaqyWdeEzKnYuX-c348vVg0PpUH4y-e1dSLhRvYem=MEDKE=Q@mail.gmail.com> <CAGxU2F7GZxMwLNsAebaPx61MoePYYmFS1q66An-EDhq4u+a9ng@mail.gmail.com>
+In-Reply-To: <CAGxU2F7GZxMwLNsAebaPx61MoePYYmFS1q66An-EDhq4u+a9ng@mail.gmail.com>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Fri, 17 Mar 2023 10:49:27 +0100
+Message-ID: <CAJaqyWcAfyANeShsdV55vVkK=sHxGNVef7E7jj-CqTL7SbqhCg@mail.gmail.com>
+Subject: Re: [PATCH v2 4/8] vringh: support VA with iotlb
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
+        netdev@vger.kernel.org, stefanha@redhat.com,
+        linux-kernel@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -125,126 +79,306 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 16, 2023 at 06:12:48PM +0200, Vladimir Oltean wrote:
-> During review, Russell King has pointed out that the current way in
-> which the KSZ common driver performs register access is error-prone.
-> 
-> Based on the KSZ9477 software model where we have the XMII Port Control
-> 0 Register (at offset 0xN300) and XMII Port Control 1 Register
-> (at offset 0xN301), this driver also holds P_XMII_CTRL_0 and P_XMII_CTRL_1.
-> 
-> However, on some switches, fields accessed through P_XMII_CTRL_0 (for
-> example P_MII_100MBIT_M or P_MII_DUPLEX_M) and fields accessed through
-> P_XMII_CTRL_1 (for example P_MII_SEL_M) may end up accessing the same
-> hardware register. Or at least, that was certainly the impression after
-> commit
-> https://patchwork.kernel.org/project/netdevbpf/patch/20230315231916.2998480-1-vladimir.oltean@nxp.com/
-> (sorry, can't reference the sha1sum of an unmerged commit), because for
-> ksz8795_regs[], P_XMII_CTRL_0 and P_XMII_CTRL_1 now have the same value.
-> 
-> But the reality is far more interesting. Opening a KSZ8795 datasheet, I
-> see that out of the register fields accessed via P_XMII_CTRL_0:
-> - what the driver names P_MII_SEL_M *is* actually "GMII/MII Mode Select"
->   (bit 2) of the Port 5 Interface Control 6, address 0x56 (all good here)
-> - what the driver names P_MII_100MBIT_M is actually "Switch SW5-MII/RMII
->   Speed" (bit 4) of the Global Control 4 register, address 0x06.
-> 
-> That is a huge problem, because the driver cannot access this register
-> for KSZ8795 in its current form, even if that register exists. This
-> creates an even stronger motivation to try to do something to normalize
-> the way in which this driver abstracts away register field movement from
-> one switch family to another.
-> 
-> As I had proposed in that thread, reg_fields from regmap propose to
-> solve exactly this problem. This patch contains a COMPLETELY UNTESTED
-> rework of the driver, so that accesses done through the following
-> registers (for demonstration purposes):
-> - REG_IND_BYTE - a global register
-> - REG_IND_CTRL_0 - another global register
-> - P_LOCAL_CTRL - a port register
-> - P_FORCE_CTRL - another port register
-> - P_XMII_CTRL_0 and P_XMII_CTRL_1 - either port register, or global
->   registers, depending on which manual you read!
-> 
-> are converted to the regfields API.
-> 
-> !! WARNING !! I only attempted to add a ksz_reg_fields structure for
-> KSZ8795. The other switch families will currently crash!
-> 
-> For easier partial migration, I have renamed the "REG_" or "P_" prefixes
-> of the enum ksz_regs values into a common "RF_" (for reg field) prefix
-> for a new enum type: ksz_rf. Eventually, enum ksz_regs, as well as the
-> masks, should disappear completely, being replaced by reg fields.
-> 
-> Link: https://lore.kernel.org/netdev/Y%2FYPfxg8Ackb8zmW@shell.armlinux.org.uk/
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
-> diff --git a/drivers/net/dsa/microchip/ksz8863_smi.c b/drivers/net/dsa/microchip/ksz8863_smi.c
-> index 5871f27451cb..f9d22a444146 100644
-> --- a/drivers/net/dsa/microchip/ksz8863_smi.c
-> +++ b/drivers/net/dsa/microchip/ksz8863_smi.c
-> @@ -136,11 +136,16 @@ static const struct regmap_config ksz8863_regmap_config[] = {
->  
->  static int ksz8863_smi_probe(struct mdio_device *mdiodev)
+On Thu, Mar 16, 2023 at 5:07=E2=80=AFPM Stefano Garzarella <sgarzare@redhat=
+.com> wrote:
+>
+> On Fri, Mar 3, 2023 at 3:39=E2=80=AFPM Eugenio Perez Martin <eperezma@red=
+hat.com> wrote:
+> >
+> > On Thu, Mar 2, 2023 at 12:35 PM Stefano Garzarella <sgarzare@redhat.com=
+> wrote:
+> > >
+> > > vDPA supports the possibility to use user VA in the iotlb messages.
+> > > So, let's add support for user VA in vringh to use it in the vDPA
+> > > simulators.
+> > >
+> > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> > > ---
+> > >
+> > > Notes:
+> > >     v2:
+> > >     - replace kmap_atomic() with kmap_local_page() [see previous patc=
+h]
+> > >     - fix cast warnings when build with W=3D1 C=3D1
+> > >
+> > >  include/linux/vringh.h            |   5 +-
+> > >  drivers/vdpa/mlx5/net/mlx5_vnet.c |   2 +-
+> > >  drivers/vdpa/vdpa_sim/vdpa_sim.c  |   4 +-
+> > >  drivers/vhost/vringh.c            | 247 ++++++++++++++++++++++++----=
+--
+> > >  4 files changed, 205 insertions(+), 53 deletions(-)
+> > >
+>
+> [...]
+>
+> >
+> > It seems to me iotlb_translate_va and iotlb_translate_pa are very
+> > similar, their only difference is that the argument is that iov is
+> > iovec instead of bio_vec. And how to fill it, obviously.
+> >
+> > It would be great to merge both functions, only differing with a
+> > conditional on vrh->use_va, or generics, or similar. Or, if following
+> > the style of the rest of vringh code, to provide a callback to fill
+> > iovec (although I like conditional more).
+> >
+> > However I cannot think of an easy way to perform that without long
+> > macros or type erasure.
+>
+> Thank you for pushing me :-)
+> I finally managed to avoid code duplication (partial patch attached,
+> but not yet fully tested).
+>
+> @Jason: with this refactoring I removed copy_to_va/copy_to_pa, so I
+> also avoided getu16_iotlb_va/pa.
+>
+> I will send the full patch in v3, but I would like to get your opinion
+> first ;-)
+>
+>
+>
+> diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+> index 0ba3ef809e48..71dd67700e36 100644
+> --- a/drivers/vhost/vringh.c
+> +++ b/drivers/vhost/vringh.c
+> @@ -1096,8 +1096,7 @@ EXPORT_SYMBOL(vringh_need_notify_kern);
+>
+>  static int iotlb_translate(const struct vringh *vrh,
+>                            u64 addr, u64 len, u64 *translated,
+> -                          struct bio_vec iov[],
+> -                          int iov_size, u32 perm)
+> +                          void *iov, int iov_size, bool iovec, u32 perm)
+
+I think this is an improvement, but we're doing type erasure here. I
+don't think it is a big deal since the function is not exported, it's
+pretty contained in this file, so I'd ack this version too. I'm just
+throwing ideas here:
+
+a) typedef the union {iovec, bio_vec} and use that type in the parameter.
+
+As a drawback, that union feels out of place in this file. Is this the
+only place where it is needed? I don't see other similar uses in the
+kernel.
+
+b) To convert from iov to bio_iov at return
+The drawback is the extra processing if the compiler is not smart
+enough to inline it. I prefer the previous one but I didn't want to
+omit it, just in case.
+
+Thanks!
+
 >  {
-> +	const struct ksz_chip_data *chip;
->  	struct regmap_config rc;
->  	struct ksz_device *dev;
->  	int ret;
->  	int i;
->  
-> +	chip = device_get_match_data(ddev);
-
-s/ddev/&mdiodev->dev/
-
-> +	if (!chip)
-> +		return -EINVAL;
+>         struct vhost_iotlb_map *map;
+>         struct vhost_iotlb *iotlb =3D vrh->iotlb;
+> @@ -1107,7 +1106,7 @@ static int iotlb_translate(const struct vringh *vrh=
+,
+>         spin_lock(vrh->iotlb_lock);
+>
+>         while (len > s) {
+> -               u64 size, pa, pfn;
+> +               u64 size;
+>
+>                 if (unlikely(ret >=3D iov_size)) {
+>                         ret =3D -ENOBUFS;
+> @@ -1124,10 +1123,22 @@ static int iotlb_translate(const struct vringh *v=
+rh,
+>                 }
+>
+>                 size =3D map->size - addr + map->start;
+> -               pa =3D map->addr + addr - map->start;
+> -               pfn =3D pa >> PAGE_SHIFT;
+> -               bvec_set_page(&iov[ret], pfn_to_page(pfn), min(len - s, s=
+ize),
+> -                             pa & (PAGE_SIZE - 1));
+> +               if (iovec) {
+> +                       struct iovec *iovec =3D iov;
 > +
->  	dev = ksz_switch_alloc(&mdiodev->dev, mdiodev);
->  	if (!dev)
->  		return -ENOMEM;
-> @@ -159,6 +164,10 @@ static int ksz8863_smi_probe(struct mdio_device *mdiodev)
->  		}
->  	}
->  
-> +	ret = ksz_regfields_init(dev, chip);
-> +	if (ret)
-> +		return ret;
+> +                       iovec[ret].iov_len =3D min(len - s, size);
+> +                       iovec[ret].iov_base =3D (void __user *)(unsigned =
+long)
+> +                                             (map->addr + addr - map->st=
+art);
+> +               } else {
+> +                       u64 pa =3D map->addr + addr - map->start;
+> +                       u64 pfn =3D pa >> PAGE_SHIFT;
+> +                       struct bio_vec *bvec =3D iov;
 > +
->  	if (mdiodev->dev.platform_data)
->  		dev->pdata = mdiodev->dev.platform_data;
->  
-> diff --git a/drivers/net/dsa/microchip/ksz9477_i2c.c b/drivers/net/dsa/microchip/ksz9477_i2c.c
-> index 497be833f707..2cbd76aed974 100644
-> --- a/drivers/net/dsa/microchip/ksz9477_i2c.c
-> +++ b/drivers/net/dsa/microchip/ksz9477_i2c.c
-> @@ -16,10 +16,15 @@ KSZ_REGMAP_TABLE(ksz9477, not_used, 16, 0, 0);
->  
->  static int ksz9477_i2c_probe(struct i2c_client *i2c)
+> +                       bvec_set_page(&bvec[ret], pfn_to_page(pfn),
+> +                                     min(len - s, size),
+> +                                     pa & (PAGE_SIZE - 1));
+> +               }
+> +
+>                 s +=3D size;
+>                 addr +=3D size;
+>                 ++ret;
+> @@ -1141,26 +1152,38 @@ static int iotlb_translate(const struct vringh *v=
+rh,
+>         return ret;
+>  }
+>
+> +#define IOTLB_IOV_SIZE 16
+> +
+>  static inline int copy_from_iotlb(const struct vringh *vrh, void *dst,
+>                                   void *src, size_t len)
 >  {
-> +	const struct ksz_chip_data *chip;
->  	struct regmap_config rc;
->  	struct ksz_device *dev;
->  	int i, ret;
->  
-> +	chip = device_get_match_data(ddev);
-
-s/ddev/&i2c->dev/
-
-> +	if (!chip)
-> +		return -EINVAL;
+>         u64 total_translated =3D 0;
+>
+>         while (total_translated < len) {
+> -               struct bio_vec iov[16];
+> +               union {
+> +                       struct iovec iovec[IOTLB_IOV_SIZE];
+> +                       struct bio_vec bvec[IOTLB_IOV_SIZE];
+> +               } iov;
+>                 struct iov_iter iter;
+>                 u64 translated;
+>                 int ret;
+>
+>                 ret =3D iotlb_translate(vrh, (u64)(uintptr_t)src,
+>                                       len - total_translated, &translated=
+,
+> -                                     iov, ARRAY_SIZE(iov), VHOST_MAP_RO)=
+;
+> +                                     &iov, IOTLB_IOV_SIZE, vrh->use_va,
+> +                                     VHOST_MAP_RO);
+>                 if (ret =3D=3D -ENOBUFS)
+> -                       ret =3D ARRAY_SIZE(iov);
+> +                       ret =3D IOTLB_IOV_SIZE;
+>                 else if (ret < 0)
+>                         return ret;
+>
+> -               iov_iter_bvec(&iter, ITER_SOURCE, iov, ret, translated);
+> +               if (vrh->use_va) {
+> +                       iov_iter_init(&iter, ITER_SOURCE, iov.iovec, ret,
+> +                                     translated);
+> +               } else {
+> +                       iov_iter_bvec(&iter, ITER_SOURCE, iov.bvec, ret,
+> +                                     translated);
+> +               }
+>
+>                 ret =3D copy_from_iter(dst, translated, &iter);
+>                 if (ret < 0)
+> @@ -1180,20 +1203,30 @@ static inline int copy_to_iotlb(const struct vrin=
+gh *vrh, void *dst,
+>         u64 total_translated =3D 0;
+>
+>         while (total_translated < len) {
+> -               struct bio_vec iov[16];
+> +               union {
+> +                       struct iovec iovec[IOTLB_IOV_SIZE];
+> +                       struct bio_vec bvec[IOTLB_IOV_SIZE];
+> +               } iov;
+>                 struct iov_iter iter;
+>                 u64 translated;
+>                 int ret;
+>
+>                 ret =3D iotlb_translate(vrh, (u64)(uintptr_t)dst,
+>                                       len - total_translated, &translated=
+,
+> -                                     iov, ARRAY_SIZE(iov), VHOST_MAP_WO)=
+;
+> +                                     &iov, IOTLB_IOV_SIZE, vrh->use_va,
+> +                                     VHOST_MAP_WO);
+>                 if (ret =3D=3D -ENOBUFS)
+> -                       ret =3D ARRAY_SIZE(iov);
+> +                       ret =3D IOTLB_IOV_SIZE;
+>                 else if (ret < 0)
+>                         return ret;
+>
+> -               iov_iter_bvec(&iter, ITER_DEST, iov, ret, translated);
+> +               if (vrh->use_va) {
+> +                       iov_iter_init(&iter, ITER_DEST, iov.iovec, ret,
+> +                                     translated);
+> +               } else {
+> +                       iov_iter_bvec(&iter, ITER_DEST, iov.bvec, ret,
+> +                                     translated);
+> +               }
+>
+>                 ret =3D copy_to_iter(src, translated, &iter);
+>                 if (ret < 0)
+> @@ -1210,20 +1243,32 @@ static inline int copy_to_iotlb(const struct vrin=
+gh *vrh, void *dst,
+>  static inline int getu16_iotlb(const struct vringh *vrh,
+>                                u16 *val, const __virtio16 *p)
+>  {
+> -       struct bio_vec iov;
+> -       void *kaddr, *from;
+> +       union {
+> +               struct iovec iovec;
+> +               struct bio_vec bvec;
+> +       } iov;
+> +       __virtio16 tmp;
+>         int ret;
+>
+>         /* Atomic read is needed for getu16 */
+> -       ret =3D iotlb_translate(vrh, (u64)(uintptr_t)p, sizeof(*p), NULL,
+> -                             &iov, 1, VHOST_MAP_RO);
+> +       ret =3D iotlb_translate(vrh, (u64)(uintptr_t)p, sizeof(*p),
+> +                             NULL, &iov, 1, vrh->use_va, VHOST_MAP_RO);
+>         if (ret < 0)
+>                 return ret;
+>
+> -       kaddr =3D kmap_local_page(iov.bv_page);
+> -       from =3D kaddr + iov.bv_offset;
+> -       *val =3D vringh16_to_cpu(vrh, READ_ONCE(*(__virtio16 *)from));
+> -       kunmap_local(kaddr);
+> +       if (vrh->use_va) {
+> +               ret =3D __get_user(tmp, (__virtio16 __user *)iov.iovec.io=
+v_base);
+> +               if (ret)
+> +                       return ret;
+> +       } else {
+> +               void *kaddr =3D kmap_local_page(iov.bvec.bv_page);
+> +               void *from =3D kaddr + iov.bvec.bv_offset;
 > +
->  	dev = ksz_switch_alloc(&i2c->dev, i2c);
->  	if (!dev)
->  		return -ENOMEM;
-> @@ -35,6 +40,10 @@ static int ksz9477_i2c_probe(struct i2c_client *i2c)
->  		}
->  	}
->  
-> +	ret = ksz_regfields_init(dev, chip);
-> +	if (ret)
-> +		return ret;
+> +               tmp =3D READ_ONCE(*(__virtio16 *)from);
+> +               kunmap_local(kaddr);
+> +       }
 > +
->  	if (i2c->dev.platform_data)
->  		dev->pdata = i2c->dev.platform_data;
->  
+> +       *val =3D vringh16_to_cpu(vrh, tmp);
+>
+>         return 0;
+>  }
+> @@ -1231,20 +1276,32 @@ static inline int getu16_iotlb(const struct vring=
+h *vrh,
+>  static inline int putu16_iotlb(const struct vringh *vrh,
+>                                __virtio16 *p, u16 val)
+>  {
+> -       struct bio_vec iov;
+> -       void *kaddr, *to;
+> +       union {
+> +               struct iovec iovec;
+> +               struct bio_vec bvec;
+> +       } iov;
+> +       __virtio16 tmp;
+>         int ret;
+>
+>         /* Atomic write is needed for putu16 */
+> -       ret =3D iotlb_translate(vrh, (u64)(uintptr_t)p, sizeof(*p), NULL,
+> -                             &iov, 1, VHOST_MAP_WO);
+> +       ret =3D iotlb_translate(vrh, (u64)(uintptr_t)p, sizeof(*p),
+> +                             NULL, &iov, 1, vrh->use_va, VHOST_MAP_RO);
+>         if (ret < 0)
+>                 return ret;
+>
+> -       kaddr =3D kmap_local_page(iov.bv_page);
+> -       to =3D kaddr + iov.bv_offset;
+> -       WRITE_ONCE(*(__virtio16 *)to, cpu_to_vringh16(vrh, val));
+> -       kunmap_local(kaddr);
+> +       tmp =3D cpu_to_vringh16(vrh, val);
+> +
+> +       if (vrh->use_va) {
+> +               ret =3D __put_user(tmp, (__virtio16 __user *)iov.iovec.io=
+v_base);
+> +               if (ret)
+> +                       return ret;
+> +       } else {
+> +               void *kaddr =3D kmap_local_page(iov.bvec.bv_page);
+> +               void *to =3D kaddr + iov.bvec.bv_offset;
+> +
+> +               WRITE_ONCE(*(__virtio16 *)to, tmp);
+> +               kunmap_local(kaddr);
+> +       }
+>
+>         return 0;
+>  }
+>
+
