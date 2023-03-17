@@ -2,68 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 414306BDE9B
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 03:27:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF6706BDEA3
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 03:33:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229588AbjCQC1w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 22:27:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35088 "EHLO
+        id S229659AbjCQCd0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 22:33:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbjCQC1u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 22:27:50 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AE6057D05;
-        Thu, 16 Mar 2023 19:27:49 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id er8so3367010edb.0;
-        Thu, 16 Mar 2023 19:27:49 -0700 (PDT)
+        with ESMTP id S229488AbjCQCdY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 22:33:24 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12EEA2E82F;
+        Thu, 16 Mar 2023 19:33:22 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id r18so3199700wrx.1;
+        Thu, 16 Mar 2023 19:33:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679020067;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=kkvhtLRyj3BAbvkoDEbMjYCXIZuq7CtMnGSynMvalKU=;
-        b=WPRaiuMTPMr3eEAMQyt6P2lRnteV++AAhaLm4Na7nGIzRSviZMUTe50i5Txkd7MVdp
-         bvZMhbnxNhhJDDqa1tRo8g/iI+xLC/TO4onjjxHJ1W5JWjKK7pWVG9Gj6PzCIQswOOVV
-         NdR3sAn4IbPZa84oUGxljsd2tKgD20xoWrqkfWrZ5zxq0UMC18dlC467NkKdJUcuBKGh
-         sVgZrgAMjeTv8+wjpA5hvO6KWafPUFyx0sTAynHDBR4XhRsGzW3cAiR82u4U6vEaZuUD
-         pz/w1qv1ESCdLCAbNyCUMmOGWfXp2K1K3ZECvR16oMWLJ8GSVBo/P7ubXpF3gmcHY5PQ
-         fEYA==
+        d=gmail.com; s=20210112; t=1679020400;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:from:to:cc:subject:date:message-id:reply-to;
+        bh=SBufsd7TJN3UMnpjEy1Egh/dFft22er/s7/ID3KVYPo=;
+        b=byEmfTSENjKFFC9uwnfGZlTY9UFaKr3FJKtC5xKcc5WTV1N+/bVfSR13w5C7JxsUDW
+         EHbHd0lpuBuQwl6w9eepnG1RJVIoTqM6jJqjX/TMKYvdITSh9aagGX1pAc0QdCosSwpD
+         Cr4FtyjPSKgnjSZVAIznm8DAehWqDUaRlVBTAY3BoPbKrTxVNs1rYFVBPXHEkbX7H/a1
+         mP9kSAJ+GYk5UbBTDP2AMe5/8fTvmyaYQnYEqLm4ocUK7GNpYVZzk2dv4mf6ToRNpmey
+         witomqFivJFN2wmfc8j8PCq5PAKFZaSW2R51gcWVoBz9UCsa6FtcQLH9oUUA8B5t8O5k
+         sOPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679020067;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=kkvhtLRyj3BAbvkoDEbMjYCXIZuq7CtMnGSynMvalKU=;
-        b=0izS4r3AFrHqmkE+Qy+nn81v5uqV9l7C273DuFOPcUloKqjvnyZuX8mXo9XKkNcr37
-         1EIeqiqNv5wcEr+eHOVkh+2ACjhPSYMPhDNV7Sc2hCbkR4f11jcogwzw4NSlUZ3OPdUT
-         fcXCCsFdw9DRk9OZ/vIun2scrx65DLcjLuS4us98dstYbKRSljzqSXGFWcrU7BUK4IRG
-         aLZEs7JvoY44/FPvNDywEbyaQRMg7P0SHNNSw8lriCZnIwdDsOUyvnkzuUoKj1lzF19d
-         ge1fInOHSVPeoQaAetWQ16tGtT1UmzVhANKeBkuadGYKHze+jriuoy6lRmroqdnfRMiI
-         9nIQ==
-X-Gm-Message-State: AO0yUKX+lptefbhmPgxVSnMBEsprFRnkIWkbXXHU2bR5OP8+myM9uzMA
-        46hxojUOHE47jNRxI24FOwukS5wjvRrHUnloAPk=
-X-Google-Smtp-Source: AK7set+lNfSiCxCZdcJM+0m9dhr3FSuq+wzE7Zk8rKWtUElWalIXslzpCrDYYg2452mzl/QdEkWR+4EX1Pi4D4fBnfs=
-X-Received: by 2002:a05:6402:4497:b0:4bf:5981:e5a9 with SMTP id
- er23-20020a056402449700b004bf5981e5a9mr960092edb.3.1679020067514; Thu, 16 Mar
- 2023 19:27:47 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1679020400;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=SBufsd7TJN3UMnpjEy1Egh/dFft22er/s7/ID3KVYPo=;
+        b=yCHdGvJSxZJnzlWe7NOsq533VbHClHIUw4gGT3Chsxp2QZfIVpv63w7H0EHLvq/uui
+         mSkfZyhFFRIsoiOWRb3F3azgsVzGHUkIKYIxlRU7dJYUxFb7xAN/BTboxf3GQR5Zy38N
+         ZMdpwbpWL5htMAxZyuE3ZM/C6QFUq8X/DPJn4XnMhZyPlNqrqXAvHcf+0qbgb9M0tL1l
+         igmcKQ0lTOhRDc3bRM0KWaRNdqGS7uiQPCVPxFYuin3cQm23Toy9crwHaXNTdBs6P9XS
+         6yoFIO1PkqVMqqZwVcroVM/6v0Id1j5j3/TWRM20By0c7GCZeGEmJgBlpKz/cmNoFKT8
+         ThsQ==
+X-Gm-Message-State: AO0yUKXzsY3PpGqTTH+/9wqZ35DWm8j5hG1YhEVuD75Pk9qaPVMKg/By
+        ZQyKbKhzLuS2iqNYy+Mmw7ePD3HmSf8=
+X-Google-Smtp-Source: AK7set81mRaNdHd1iJzkewnqPyIV7y8Tk9nfpEIfIQFfGbqJ1l6OMKIsl55+jYbv3tdZS4Sz3a4Bwg==
+X-Received: by 2002:adf:f0d0:0:b0:2cf:ea5d:f60a with SMTP id x16-20020adff0d0000000b002cfea5df60amr6634361wro.3.1679020399948;
+        Thu, 16 Mar 2023 19:33:19 -0700 (PDT)
+Received: from localhost.localdomain (93-34-89-197.ip49.fastwebnet.it. [93.34.89.197])
+        by smtp.googlemail.com with ESMTPSA id z15-20020a5d44cf000000b002ce9f0e4a8fsm782313wrr.84.2023.03.16.19.33.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Mar 2023 19:33:19 -0700 (PDT)
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, Lee Jones <lee@kernel.org>,
+        linux-leds@vger.kernel.org
+Subject: [net-next PATCH v4 00/14] net: Add basic LED support for switch/phy
+Date:   Fri, 17 Mar 2023 03:31:11 +0100
+Message-Id: <20230317023125.486-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-References: <20230315092041.35482-1-kerneljasonxing@gmail.com>
- <20230315092041.35482-3-kerneljasonxing@gmail.com> <20230316172020.5af40fe8@kernel.org>
-In-Reply-To: <20230316172020.5af40fe8@kernel.org>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Fri, 17 Mar 2023 10:27:11 +0800
-Message-ID: <CAL+tcoDNvMUenwNEH2QByEY7cS1qycTSw1TLFSnNKt4Q0dCJUw@mail.gmail.com>
-Subject: Re: [PATCH v4 net-next 2/2] net: introduce budget_squeeze to help us
- tune rx behavior
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     jbrouer@redhat.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com,
-        stephen@networkplumber.org, simon.horman@corigine.com,
-        sinquersw@gmail.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Jason Xing <kernelxing@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -74,71 +86,106 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 17, 2023 at 8:20=E2=80=AFAM Jakub Kicinski <kuba@kernel.org> wr=
-ote:
->
-> On Wed, 15 Mar 2023 17:20:41 +0800 Jason Xing wrote:
-> > In our production environment, there're hundreds of machines hitting th=
-e
-> > old time_squeeze limit often from which we cannot tell what exactly cau=
-ses
-> > such issues. Hitting limits aranged from 400 to 2000 times per second,
-> > Especially, when users are running on the guest OS with veth policy
-> > configured, it is relatively easier to hit the limit. After several tri=
-es
-> > without this patch, I found it is only real time_squeeze not including
-> > budget_squeeze that hinders the receive process.
->
-[...]
-> That is the common case, and can be understood from the napi trace
+This is a continue of [1]. It was decided to take a more gradual
+approach to implement LEDs support for switch and phy starting with
+basic support and then implementing the hw control part when we have all
+the prereq done.
 
-Thanks for your reply. It is commonly happening every day on many servers.
+This series implements only the brightness_set() and blink_set() ops.
+An example of switch implementation is done with qca8k.
 
-> point and probing the kernel with bpftrace. We should only add
+For PHY a more generic approach is used with implementing the LED
+support in PHY core and with the user (in this case marvell) adding all
+the required functions.
 
-We probably can deduce (or guess) which one causes the latency because
-trace_napi_poll() only counts the budget consumed per poll.
+Currently we set the default-state as "keep" to not change the default
+configuration of the declared LEDs since almost every switch have a
+default configuration.
 
-Besides, tracing napi poll is totally ok with the testbed but not ok
-with those servers with heavy load which bpftrace related tools
-capturing the data from the hot path may cause some bad impact,
-especially with special cards equipped, say, 100G nic card. Resorting
-to legacy file softnet_stat is relatively feasible based on my limited
-knowledge.
+[1] https://lore.kernel.org/lkml/20230216013230.22978-1-ansuelsmth@gmail.com/
 
-Paolo also added backlog queues into this file in 2020 (see commit:
-7d58e6555870d). I believe that after this patch, there are few or no
-more new data that is needed to print for the next few years.
+Changes in new series v4:
+- Changes in Andrew patch:
+  - net: phy: Add a binding for PHY LEDs:
+    - Rename phy_led: led_list to list
+    - Rename phy_device: led_list to leds
+    - Remove phy_leds_remove() since devm_ should do what is needed
+    - Fixup documentation for struct phy_led
+    - Fail probe on LED errors
+  - net: phy: phy_device: Call into the PHY driver to set LED brightness
+    - Moved phy_led::phydev from previous patch to here since it is first
+      used here.
+  - net: phy: marvell: Implement led_blink_set() 
+    - Use int instead of unsigned
+  - net: phy: marvell: Add software control of the LEDs
+    - Use int instead of unsigned
+- Add depends on LED_CLASS for qca8k Kconfig
+- Fix Makefile for qca8k as suggested
+- Move qca8k_setup_led_ctrl to separate header
+- Move Documentation from dsa-port to ethernet-controller
+- Drop trailing . from Andrew patch fro consistency
+Changes in new series v3:
+- Move QCA8K_LEDS Kconfig option from tristate to bool
+- Use new helper led_init_default_state_get for default-state in qca8k
+- Drop cled_qca8k_brightness_get() as there isn't a good way to describe
+  the mode the led is currently in
+- Rework qca8k_led_brightness_get() to return true only when LED is set
+  to always ON
+Changes in new series v2:
+- Add LEDs node for rb3011
+- Fix rb3011 switch node unevaluated properties while running 
+  make dtbs_check
+- Fix a copypaste error in qca8k-leds.c for port 4 required shift
+- Drop phy-handle usage for qca8k and use qca8k_port_to_phy()
+- Add review tag from Andrew
+- Add Christian Marangi SOB in each Andrew patch
+- Add extra description for dsa-port stressing that PHY have no access
+  and LED are controlled by the related MAC
+- Add missing additionalProperties for dsa-port.yaml and ethernet-phy.yaml
 
-> uAPI for statistics which must be maintained contiguously. For
+Changes from the old v8 series:
+- Drop linux,default-trigger set to netdev.
+- Dropped every hw control related patch and implement only
+  blink_set and brightness_set
+- Add default-state to "keep" for each LED node example
 
-In this patch, I didn't touch the old data as suggested in the
-previous emails and only separated the old way of counting
-@time_squeeze into two parts (time_squeeze and budget_squeeze). Using
-budget_squeeze can help us profile the server and tune it more
-usefully.
+Andrew Lunn (6):
+  net: phy: Add a binding for PHY LEDs
+  net: phy: phy_device: Call into the PHY driver to set LED brightness
+  net: phy: marvell: Add software control of the LEDs
+  net: phy: phy_device: Call into the PHY driver to set LED blinking
+  net: phy: marvell: Implement led_blink_set()
+  arm: mvebu: dt: Add PHY LED support for 370-rd WAN port
 
-> investigations tracing will always be orders of magnitude more
-> powerful :(
+Christian Marangi (8):
+  net: dsa: qca8k: move qca8k_port_to_phy() to header
+  net: dsa: qca8k: add LEDs basic support
+  net: dsa: qca8k: add LEDs blink_set() support
+  dt-bindings: net: ethernet-controller: Document support for LEDs node
+  dt-bindings: net: dsa: qca8k: add LEDs definition example
+  arm: qcom: dt: Drop unevaluated properties in switch nodes for rb3011
+  arm: qcom: dt: Add Switch LED for each port for rb3011
+  dt-bindings: net: phy: Document support for LEDs node
 
+ .../devicetree/bindings/net/dsa/qca8k.yaml    |  24 ++
+ .../bindings/net/ethernet-controller.yaml     |  21 ++
+ .../devicetree/bindings/net/ethernet-phy.yaml |  31 +++
+ arch/arm/boot/dts/armada-370-rd.dts           |  14 ++
+ arch/arm/boot/dts/qcom-ipq8064-rb3011.dts     | 124 +++++++++-
+ drivers/net/dsa/qca/Kconfig                   |   8 +
+ drivers/net/dsa/qca/Makefile                  |   3 +
+ drivers/net/dsa/qca/qca8k-8xxx.c              |  20 +-
+ drivers/net/dsa/qca/qca8k-leds.c              | 230 ++++++++++++++++++
+ drivers/net/dsa/qca/qca8k.h                   |  73 ++++++
+ drivers/net/dsa/qca/qca8k_leds.h              |  16 ++
+ drivers/net/phy/Kconfig                       |   1 +
+ drivers/net/phy/marvell.c                     |  81 +++++-
+ drivers/net/phy/phy_device.c                  | 102 ++++++++
+ include/linux/phy.h                           |  35 +++
+ 15 files changed, 759 insertions(+), 24 deletions(-)
+ create mode 100644 drivers/net/dsa/qca/qca8k-leds.c
+ create mode 100644 drivers/net/dsa/qca/qca8k_leds.h
 
->
-> On the time squeeze BTW, have you found out what the problem was?
-> In workloads I've seen the time problems are often because of noise
-> in how jiffies are accounted (cgroup code disables interrupts
-> for long periods of time, for example, making jiffies increment
-> by 2, 3 or 4 rather than by 1).
+-- 
+2.39.2
 
-Yes ! The issue of jiffies increment troubles those servers more often
-than not. For a small group of servers, budget limit is also a
-problem. Sometimes we might treat guest OS differently.
-
-Thanks,
-Jason
-
->
-> > So when we encounter some related performance issue and then get lost o=
-n
-> > how to tune the budget limit and time limit in net_rx_action() function=
-,
-> > we can separately counting both of them to avoid the confusion.
