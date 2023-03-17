@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41E3A6BE008
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 05:12:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA9A76BE01C
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 05:20:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230035AbjCQEMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 00:12:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56844 "EHLO
+        id S230125AbjCQEUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 00:20:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229812AbjCQEML (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 00:12:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DA5219F16;
-        Thu, 16 Mar 2023 21:12:09 -0700 (PDT)
+        with ESMTP id S229539AbjCQEUU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 00:20:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95F44609B;
+        Thu, 16 Mar 2023 21:20:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 984E3B82405;
-        Fri, 17 Mar 2023 04:12:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10AF1C433D2;
-        Fri, 17 Mar 2023 04:12:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B32F62196;
+        Fri, 17 Mar 2023 04:20:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AF32DC433D2;
+        Fri, 17 Mar 2023 04:20:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679026327;
-        bh=v2zEYx2quVdWHyE4m+BHJg7VxqG48NX5bk+PdK53SKc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rTSWDI3mfJKKGhHTdkEc6wbjHhJWQdrojAI6fGLlVIBxOwZuxZ88Bxq+ezuuv4ggK
-         Jg5tehC3W8eVEAqeXLgCOXp1J/eO7kRKt0t2vDtAhkqWRH9cu4Pn6LmbqL9vCdRQD2
-         Qx0J7xash3y8rRx6b1VF0MeshXqX1QyAZW1r289UtrJyebpkQMToi5Ttkh5DOKWvTN
-         y45+dK5DkApDUS3C4V+ZgBnQHmCeoIrTFPWKFnStlKUKVXGgRHKPSgfc00rfK+uW49
-         y6GZ/2XtlgkGAPurMnSvWPAknf2A81DbYqqUdwe+bGcpKw5MBA/EoUhCp2+fnwju3j
-         bHBIBlrOcKNmQ==
-Date:   Thu, 16 Mar 2023 21:12:06 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Matthieu Baerts <matthieu.baerts@tessares.net>
-Cc:     mptcp@lists.linux.dev, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kristian Overskeid <koverskeid@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] hsr: ratelimit only when errors are printed
-Message-ID: <20230316211206.1c01b585@kernel.org>
-In-Reply-To: <20230315-net-20230315-hsr_framereg-ratelimit-v1-1-61d2ef176d11@tessares.net>
-References: <20230315-net-20230315-hsr_framereg-ratelimit-v1-1-61d2ef176d11@tessares.net>
+        s=k20201202; t=1679026817;
+        bh=L5Aa2P6KyX+9n5Ovj/1x5PvpJjrFrMKcg47rBO5Kej4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Om+X9BipnVQqWCF0v1qKiqpieJ/pdB/D/fgnxwmPICMgwiqYFHUfay90r2jMqv2b7
+         bcN3iwNBVkS7XEY+ARUgzuUuZeA68NhNbCHWiA3iy4kymWnyAAm8g57LRdk0pNYAMb
+         oteUJp0y5kBO9JlpZ1wNJUADawz7ghjB5hiowjoLLGa/sNj+3YvGaA9vlosWaCkRs+
+         vYU0EExIgY+hCoVaPDZH4eSCbEfremo8yQqU+iPeM+LveLw3U/mNqPdrTbjVBYYuVe
+         D7cNJIsNin5kEdk7+viGwvP/BJV5+jK4r0RT8VOT0E4BNoxsp5OWNwzQC2jTiUYiHs
+         6SRg6Bya6hJ8g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 87DA9E21EE8;
+        Fri, 17 Mar 2023 04:20:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] hsr: ratelimit only when errors are printed
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167902681755.31268.12287293857205816634.git-patchwork-notify@kernel.org>
+Date:   Fri, 17 Mar 2023 04:20:17 +0000
+References: <20230315-net-20230315-hsr_framereg-ratelimit-v1-1-61d2ef176d11@tessares.net>
+In-Reply-To: <20230315-net-20230315-hsr_framereg-ratelimit-v1-1-61d2ef176d11@tessares.net>
+To:     Matthieu Baerts <matthieu.baerts@tessares.net>
+Cc:     mptcp@lists.linux.dev, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, koverskeid@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,7 +56,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Mar 2023 21:25:17 +0100 Matthieu Baerts wrote:
+Hello:
+
+This patch was applied to netdev/net.git (main)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Wed, 15 Mar 2023 21:25:17 +0100 you wrote:
 > Recently, when automatically merging -net and net-next in MPTCP devel
 > tree, our CI reported [1] a conflict in hsr, the same as the one
 > reported by Stephen in netdev [2].
@@ -63,6 +69,16 @@ On Wed, 15 Mar 2023 21:25:17 +0100 Matthieu Baerts wrote:
 > When looking at the conflict, I noticed it is in fact the v1 [3] that
 > has been applied in -net and the v2 [4] in net-next. Maybe the v1 was
 > applied by accident.
+> 
+> [...]
 
-Ah, thank you! I didn't even notice that the version which went into 
-net was v1 :S
+Here is the summary with links:
+  - [net] hsr: ratelimit only when errors are printed
+    https://git.kernel.org/netdev/net/c/1b0120e4db0b
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
