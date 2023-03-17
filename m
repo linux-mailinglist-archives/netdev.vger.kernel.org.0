@@ -2,385 +2,239 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C1B36BEA43
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 14:38:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 619C96BEA4B
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 14:40:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230450AbjCQNiz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 09:38:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34024 "EHLO
+        id S230270AbjCQNkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 09:40:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230395AbjCQNit (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 09:38:49 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92CD7D5A74;
-        Fri, 17 Mar 2023 06:38:38 -0700 (PDT)
+        with ESMTP id S229923AbjCQNkP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 09:40:15 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D48BD5157;
+        Fri, 17 Mar 2023 06:40:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679060318; x=1710596318;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=kCCJlhrr43K4jpYXLUlpw34aeInYihAH0F2YosQ5DtM=;
-  b=FSORd2Yyr9yua1K8etiDKzGDVrW7Df8wcC8GOyxd2XK37CNwhHNZDFI3
-   xO6pXhtJrhbxWXq3V5dH3k4ISxg5ws/LUpmFXDd6FWCgCatowOgJBBDmm
-   It7PD1jVw9FT3F9KnZWfBVxpp5+C1J7ZDI+ySf/XTSATZg0W6CsUsoUqY
-   SNOOy7sqHP9fLubR0tUxmJiT5Urew9q2vFaFdsBU/QqCv+q61fs1kf+7k
-   wVSxSTDQ7TVmlMWErwRrp9BKthwFOVSCs58vP5hpi01jxjWEs08V1vQJz
-   QpYfaN2MmjAClP3C3ueMvWpMrjsh4CfuJAWFcFIipb9LzH/0D8fhmDDGx
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10652"; a="336960711"
+  t=1679060403; x=1710596403;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=KqF7akDK+KD+cioS3XfcRUmi7K/DiWzPN2fUCoR6O/o=;
+  b=C6n+2LUk0DCORK+vwTilXcYfxpLYh5Z7/WnlvgED2EEskVEcdLZazH8S
+   ZTr/78SUoGTXQlhzR9hdrPX8l1zwQahYq+PUEh/msgawA+i7lZuEglvJ5
+   ImRXL9vnWFJ0SfAqQJHI8dKkToAt2VszAaOULsUKqP1E2TmFkaGIpgaSX
+   Ux2eq/y87bCAyXO752dWfmP+elfZuSxGlEc9RfJNI1DWKjX3FKF4VdSpp
+   Nl8+nRJOAOoqbwxqUDibqqMZu5UmkvTp9warLt+J1UU58dxB5wXWHHwxP
+   3WFdoTJDSinQHPUkHn1d4/uTW6JCyTWorJ+a5JmBWq2TxDhwwVNHXWIoq
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10652"; a="326621034"
 X-IronPort-AV: E=Sophos;i="5.98,268,1673942400"; 
-   d="scan'208";a="336960711"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2023 06:38:37 -0700
+   d="scan'208";a="326621034"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2023 06:40:01 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10652"; a="749257068"
+X-IronPort-AV: E=McAfee;i="6600,9927,10652"; a="712754160"
 X-IronPort-AV: E=Sophos;i="5.98,268,1673942400"; 
-   d="scan'208";a="749257068"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmsmga004.fm.intel.com with ESMTP; 17 Mar 2023 06:38:37 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+   d="scan'208";a="712754160"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by orsmga001.jf.intel.com with ESMTP; 17 Mar 2023 06:40:01 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Fri, 17 Mar 2023 06:38:36 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ 15.1.2507.21; Fri, 17 Mar 2023 06:40:01 -0700
+Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
+ ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21 via Frontend Transport; Fri, 17 Mar 2023 06:38:36 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.168)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ 15.1.2507.21; Fri, 17 Mar 2023 06:40:00 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21 via Frontend Transport; Fri, 17 Mar 2023 06:40:00 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.105)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.21; Fri, 17 Mar 2023 06:38:34 -0700
+ 15.1.2507.21; Fri, 17 Mar 2023 06:39:58 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YUS131jzodbRwlfunKCX8OqZCCRI9ZTzm//GXpZYckZy+bCvx3lL8GSYJWv2IijkvZBiOIEpKjI3Tf3sYcEIYlJeH9PFDG2876l9S6KNscNwzM1KCwutrVE/Eq2v0YwYI8PzEQ7gms0QfhY92lWHkOsy0x8sMcoCKS8p/VymiYqO7TyzGzqJX4xtLLYRPOUR6qDFPp0v+2wwPoCs6RFZ307M7qGIcUn9OjRRe+BRvwNBm1Dye+DwfiJRbx2aXWsrHs5JbETm4kRk2AY13Mt754D+MeSkozp21mCWqALtogwx+Lhq8kHUsVM+wB2EiynPoTx3QM/7k9wiwgQhwpUpDw==
+ b=VpScC+EF03/QYDtyFaMTYCCXmAKQ3tBeL1t7P3zb/oWMgkyXZMDEdAFWG43DheBL4i826lEoGyQ61I4SvlzRNNFQOz2bgt0CCxzTVFSSCE0fJw43/0AeFKokwQme5B5ngc41B3nDSoYyxe93A08mlC/eJ1xjv663sHGHfARSUh4/YDbWObxBF4UMvyfnWLN9AckEAT4sZ0b1DT0lhsFXllUVXgs6ONUeDyKTtennMQYPrbcb+BgDP7Ag3JFngmLJR89N1ihsXRbgr2EWwUrhS4SHrEr/CbwP3wUxFndKIrTzKi4bgPD+9hJM5xqo2lMTC9JKdOnCZNbBc2P47V+tiw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WNmhP0vvJNy8TSBlmLBWYkD+3pCPIQT1ll6Qd6LiSJA=;
- b=RoKZz60fpYqhahxTqKhCg7KiMp7Wu8l6b8TXgJ7dNL0EubzuU6YnOexlCI7tCR+a5LC1+QM6eZvL4bU+uVtLmNZqNwZwyz90BzIlRE1UfjCPZJdvmN1uVeFOAnF54z9StWI7q+H3K1SEgL3LBjTUgth3LER2GJdjoNtA1k0PgQhGWD1Sh6I0QaDJtzW3FAX50WPSlNanbaquwirvG7+rzchS8SenL16/jodq+TwKUYgaHXzu8Po5stzW7Qd5AvMw04IzzPur7+22fzM242ayQY6coMlYMifCcPQoG+MBMOqeJ0nsFl2Q1KS4BqOq3CxFUH/aB4SkcwWbC0z4UNrZyQ==
+ bh=lCq5wFLFynTN/q+s+aXni1XNzmJ22kDUB+BdhXkulVU=;
+ b=oILIQp8TXoH2Qk36NaalpFgBWd7i14qWWTLgSoY5jqz7bwtwca47NkTfLwwV6VwGLExafzeC39my2X5Not9vMngFi8DnV124sDJXyqcYBfizvtc240yi/n83ceV7+u/OcRg5I9B7HKk9t/IK5+VotqsnfeT+RJJgGvUpuc2Xb7Y64rXRYqxLs8wRoZFR0JHVbU5aUOWBb+4je3h1F5hKsIt/x0dDa6KW39PawAH4oRPjz00jwL7fkBiGlcPzMQSPHoLj360FF3jLxKcdZg6JAP+8jT2U8cpFKDiS07bu+NhPxit0jJ0pS2oTV3zJCGQlOilqqlfqe9dMAd5CuGc3PA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM6PR11MB2937.namprd11.prod.outlook.com (2603:10b6:5:62::13) by
- CY8PR11MB7688.namprd11.prod.outlook.com (2603:10b6:930:75::20) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6178.35; Fri, 17 Mar 2023 13:38:33 +0000
-Received: from DM6PR11MB2937.namprd11.prod.outlook.com
- ([fe80::cece:5e80:b74f:9448]) by DM6PR11MB2937.namprd11.prod.outlook.com
- ([fe80::cece:5e80:b74f:9448%7]) with mapi id 15.20.6178.035; Fri, 17 Mar 2023
- 13:38:33 +0000
-Date:   Fri, 17 Mar 2023 14:38:15 +0100
-From:   Michal Kubiak <michal.kubiak@intel.com>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        "Bjorn Andersson" <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        John Crispin <john@phrozen.org>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-arm-msm@vger.kernel.org>, "Lee Jones" <lee@kernel.org>,
-        <linux-leds@vger.kernel.org>
-Subject: Re: [net-next PATCH v4 04/14] net: phy: Add a binding for PHY LEDs
-Message-ID: <ZBRtRw8pg0mcRxbZ@localhost.localdomain>
-References: <20230317023125.486-1-ansuelsmth@gmail.com>
- <20230317023125.486-5-ansuelsmth@gmail.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20230317023125.486-5-ansuelsmth@gmail.com>
-X-ClientProxiedBy: FR3P281CA0106.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a3::16) To DM6PR11MB2937.namprd11.prod.outlook.com
- (2603:10b6:5:62::13)
+Received: from DM6PR11MB3625.namprd11.prod.outlook.com (2603:10b6:5:13a::21)
+ by BL1PR11MB5978.namprd11.prod.outlook.com (2603:10b6:208:385::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.24; Fri, 17 Mar
+ 2023 13:39:57 +0000
+Received: from DM6PR11MB3625.namprd11.prod.outlook.com
+ ([fe80::7911:de29:ded:224]) by DM6PR11MB3625.namprd11.prod.outlook.com
+ ([fe80::7911:de29:ded:224%5]) with mapi id 15.20.6178.035; Fri, 17 Mar 2023
+ 13:39:56 +0000
+Message-ID: <cdf1ae24-eebb-a9f8-65d3-01876334a33c@intel.com>
+Date:   Fri, 17 Mar 2023 14:38:44 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH bpf-next 2/2] selftests/bpf: fix "metadata marker" getting
+ overwritten by the netstack
+Content-Language: en-US
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Larysa Zaremba <larysa.zaremba@intel.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Song Liu <song@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20230316175051.922550-1-aleksander.lobakin@intel.com>
+ <20230316175051.922550-3-aleksander.lobakin@intel.com>
+ <875yb0a25h.fsf@toke.dk>
+From:   Alexander Lobakin <aleksander.lobakin@intel.com>
+In-Reply-To: <875yb0a25h.fsf@toke.dk>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: LO2P265CA0171.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:a::15) To DM6PR11MB3625.namprd11.prod.outlook.com
+ (2603:10b6:5:13a::21)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR11MB2937:EE_|CY8PR11MB7688:EE_
-X-MS-Office365-Filtering-Correlation-Id: c286ddab-e63f-440d-35ef-08db26ece6a6
+X-MS-TrafficTypeDiagnostic: DM6PR11MB3625:EE_|BL1PR11MB5978:EE_
+X-MS-Office365-Filtering-Correlation-Id: 687543ee-a94c-4804-0044-08db26ed189c
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9smkM5kuCvnO/5wqGwKvkUYC9V1xdyFciLM7CAcajGz7iOqfDVkA5EjoKlz7rjZclxu72Qk3punbDRN1SCBTuaZpOLXKbCMapIPIlK2F/7w1G3ij9R2K+he92mfncToB813M8Ps2q6CluNGBu2ZowV838OESENV0Lcf6WTlo+4HAJfGC+V2N15N+FWiQn0sqNgMpuq0xKnRh72MIZf4MjWUSgKusA2antI7ZxYYQ3lH6ICItOQ8dO2ri2Z44OuOVklKZpIIm4FrJU3LdAuE42D0nF7yZIib4J0My/5bPQ9+CrJuOoyQdkjmd9oGH4J+fZL4ixBoy7VSVe+XIBOBHFRvIH4fVhwRozjeMW3hQ1wXYzfkqnVJvgbWiBb0ETGReZ/NQDzx2lzO1H05ezHKO0m9imowL/l6gKujkTEWBkEaEfpjIJiLz78sQ3hrHzG76ePdmIBI1okVitTpDOSTWn4bYgiPIrIyOFg1OPoQupSl3uM+1hlJTGvHIQ469h+batRclFhyjjVm7VYL+lz2T8owP9Z58GV7Rtl+CFojyXqoClv2wGI8eQYcER0xFYrrS8cxEaO26dmiKhDRrwAFdtW2aKS8Whx3/ll/atEPPnVxJSMdJfz+WRV8VUhR7R9waTSd5xCGZDxYtDLUp7D3kKA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2937.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(396003)(366004)(136003)(39860400002)(376002)(346002)(451199018)(186003)(6486002)(83380400001)(6666004)(478600001)(316002)(66556008)(66476007)(66946007)(8676002)(6506007)(9686003)(6512007)(26005)(54906003)(4326008)(41300700001)(6916009)(8936002)(44832011)(7416002)(5660300002)(38100700002)(82960400001)(2906002)(86362001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: iFL2KMya/pnFmAdL3tb09t3PIQPQUItrRke9J/4wvRzH8+XCYl43WWxkBsJeXuy6++/2xnvtErnAThEXPzS4/3gdUCuSH4xSySBJsZTeVwmKhcalDZdWyVwyfo+V8Jiay/EnGMmj20sWBzQX1V8rcxHjfPvtE+/bDyExpcYoX8n8J8bpmOYD9iVKLBjg0HXpEUOAyC3v+KCvO3sUe3HOKbOAsSwUDplzpu7wfenNgFWdBR4F67Ypkn3MovsO1hiYrPYHfCLa2C71PfRe/KOJAu6rBBFfQyO3JVm2jVDOmk4GX6YxR/sIA8FLDf78zlVZiiDlpehVZ4YDYiDdXCSIUesIYY9UmPW39N9bO5wzsKNmAjY1nPM2Yp+gPYMZY+SNy2ACPO7pNqLV3zMrII7aA40xjOCfTRUUFb4rpz7j29+JMluYk1yn2jjCsLaWBlPl+JPR1cCSiG4RSSuFmtCgVC1chCTRPvt6/QvEQCGS85W+qfEjB/mmnjXw0d25nu5V38q6T0z0FdFLb0UydxFwkvhq6XjidkmxM59brUtLHIY+sVrEbjBnfwC+B986uI7A9FxwQk0amQUyzZ/xyGg6OePisRuhB3NbjXMZptmRw5rU4Rwichuu0b+8V23pGxIm1BHzJ2s5c+hx/kCgcgVgfv2DwGO8iF2RaPeLJFeWBf8cB/aKVJSTlaFpIgvNiBZmW6rzBn7y/thWGppxkTbbLm9dHfnVnh2pJan+x316z7Xm17uo5cdoBd7lqEpnoccIA0D8RGhD1cQXFs7ei2WYfg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3625.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(376002)(396003)(346002)(136003)(366004)(39860400002)(451199018)(82960400001)(186003)(6512007)(6506007)(26005)(41300700001)(31686004)(38100700002)(66476007)(6666004)(8676002)(66946007)(8936002)(7416002)(4326008)(5660300002)(66556008)(83380400001)(6916009)(966005)(2616005)(6486002)(316002)(66574015)(54906003)(31696002)(36756003)(86362001)(2906002)(478600001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?bQUdXi6h4o0X3ykP3GkhH+UU9Dnhkw6mwaxFYEv9rC5xEldNrPwZeLgtDunB?=
- =?us-ascii?Q?Ld8WzJg6CXK1RLneBvKSQygM2s7fosSShWOwyKwH8ZkHA6uw6nmxwJP+THhx?=
- =?us-ascii?Q?157Wfbyfbhfv6QKQ+MwJm5ofFQBiAkYwfyoPcFKwYOfFpoCdW5evHpN/7oy2?=
- =?us-ascii?Q?awZ5AmapbFf2tCZjObTJJvm7E2iXzoMPgsGRgfBcF0ubcePg4c2eFwgCFdqm?=
- =?us-ascii?Q?zNP5KkAuu7MqI2sEdr9IUyp7uD7gvPqRGvAgqr5fzTkBn+5/kDrbYvkv1X2A?=
- =?us-ascii?Q?BQpdHhRonHl2zRc4sE2NHKbt2eN/cZc5IprWp7+vUBE8n2hUHR3Mo+8nQ8cT?=
- =?us-ascii?Q?u7c4C3mQxDaod7Zgw+czOl8AkzwXw2ieYOpCy2g7K/HgN1QQAYdDkdz54/4I?=
- =?us-ascii?Q?6TXlsvu77Q9+IIbbqWrisQCIDVF2rmPwXc90DYZwgsxgEXLwfGIu6J2UzlgY?=
- =?us-ascii?Q?U84OgyIAP35NZPraAO6HTSm+kHXFwMdL23UsT+wtC4KPFnUUZobHEInkb6Ib?=
- =?us-ascii?Q?wi8z8zvZhbtNpbHi5EG4+f2h6Npm09yzk68WcZ4DawVOEjb966/9uoYI5uJz?=
- =?us-ascii?Q?+4P6GJcxRmpOmpg44n82hNAIjz+hMN0Oq+WU8iun1/4oPmD+LMV80DzRhS0P?=
- =?us-ascii?Q?38r7LylFiPr9fFAwg6BFw6HUk1p+y9yuYWHgC/6Eif6LDrBvi6JCMBew6zoY?=
- =?us-ascii?Q?tUxL8B9hHeNHz4LvDcEUCN7AkF7fqb/+MhonOtdVFdhkFntsWiLkGYfKCQBl?=
- =?us-ascii?Q?E8ohu+ANFVJwY1QswXD1CD7N4UaQC1oOjVey215e+pQMe4J+R02Nc+EyQJW3?=
- =?us-ascii?Q?e+EMKYbf7iQBHwAHykHqoGD0b1S/ZgyAYbhC5dMpVbs2OxewlygO6H8Fc/f2?=
- =?us-ascii?Q?/spq17MSz/q7141i/ZQiQWJpJmxjkhPZdw22koX2l20fwxX+L7uxu7voxf04?=
- =?us-ascii?Q?DB2rdI1/xJew+pNuPv8TrhbHRNm0R1a6xgftC1ivkVY6fB8Q5VpT3JE1UoIF?=
- =?us-ascii?Q?B0ZVdRUomhX25tglaL3w3Yr+r/iB/7ZaDUT4ygpV46dRPN5/oU7nL7RYwupi?=
- =?us-ascii?Q?wf94FLCIW7D5i43c51uIJGd7aumn1MfYLwzqYQ5RiiFmw/qJz+1PUqggYtxa?=
- =?us-ascii?Q?mHgRLVjbAyMkJRJL+jcOu6pWrGNGXC9Px177MWYnT2cLUfQuuq9iyjVsLR7A?=
- =?us-ascii?Q?asnHYhwcIuxSN0M1SVCKO5FZeqrWjG1YZ8saiHCPVS/83b8clovEArg2Q4qH?=
- =?us-ascii?Q?unqY5TLKX/u9G7zE2o2iYtd/b9p2LNeXsLDNIHsbazHfc8QsN2/vtRQajtQ+?=
- =?us-ascii?Q?V7J1aM9Qo9EofyIMbWGpr5/edfibmK2ECD5EEjSm909qUlsW3WpoMozTzr+I?=
- =?us-ascii?Q?fghpm9HF4MDVwhu+LlQQtn4jlDlF6fkfMJ7nGtR318gTK/WoVSQyaoNap0Ue?=
- =?us-ascii?Q?BK3kxWh6nW+lHjQA7/eRwCW8ga7/+GIgb9WAYmSyMl7PyX0z29Ssfnf8+PaX?=
- =?us-ascii?Q?zdeUSK6rOldSem5WCzcKgoNTPVZcfZ0Of4ZvP6oSk0sJDlkbGSzR0EM3bqv9?=
- =?us-ascii?Q?Vj7IWKDcqWCDTh6Z0CWoURX47wWW3PWPZPRC8+LjaIZ1UPlzc65f6f0zV2pP?=
- =?us-ascii?Q?bA=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: c286ddab-e63f-440d-35ef-08db26ece6a6
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB2937.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SUNNcTcyZjFMc0RNbG96RXRXdmhaNndjTXFPQis0NGIweEZjeXJVOG9BOGxS?=
+ =?utf-8?B?eVprNXdlMzRlbkFucDhRTGkrOTF0a1RXOWdZVko3VFA0UDl4Q3o2c3d0M1lu?=
+ =?utf-8?B?bHJRY0hlMm1wd2VkYmFsRWwrMDBYNVdZNjJNYTZmYmtjWUJWOGJERzQwQVlV?=
+ =?utf-8?B?RG5iVnhzRzZVSjRBSFBmTGh4K1RJeFFGV01BaTFESVJBRDROMG96REhxVVJ0?=
+ =?utf-8?B?OXovMS9ac29QSllSdWF6WUZ3L0dQWmNJZnprQ3pCWGtDL2lCWlZ1YWVEYjVq?=
+ =?utf-8?B?QldMV3J6N0RnenZ2K3pvNktaUFl1SFJTSmxhSXY4VC9CSU15U1l1TkxOdWtS?=
+ =?utf-8?B?MDdkWDNkRzcvdjRwOEE1RFRkbitxOUFOcTVvRS9iaGxkNkl4MWRNdVZtNGd6?=
+ =?utf-8?B?dkQ2cG1EaHVMMTRPY0VGa1FzcXdEK3pLMFI4TmpjVFRjT1dUTTVtNzRmdGRI?=
+ =?utf-8?B?dC92bGhOWThLRVdGdnJWVE05ZmxiUTZxak5sckpLT3k2MUdUOWg5aWZrTzND?=
+ =?utf-8?B?ZFM2RGdpeUlaK3ZiOHVKSDl6c3RxNXdYYnVhcWNEWUpZck1ucEUvSHAzUWNQ?=
+ =?utf-8?B?Z0kreVJvdm94WDJoUGF5ck1EeVljOW5rSm9DZ0x1azFFOENTdlNqSFlYKzEv?=
+ =?utf-8?B?eUlvUkQxQ0M5Q25pTnM2NG0zWmN3N0J6THZjclFFNFZGQWhTSUtCMTRaWEZW?=
+ =?utf-8?B?STJSUVJPUUs5MytMdXFJb2RoWVpNTllKZXZOTE5jZ21KeFhpSUJORTB2Q09X?=
+ =?utf-8?B?Vzd5WXNMMHlkWXN3NEthRE14SVIrVkVNTms4dVNBL3F3UUNxQ3FUN3EyVmpk?=
+ =?utf-8?B?Y3d4cVdKUGt4Uk9ZYmV4UkpUVmVZT0h6WUZVSTZPckJTUU5DNTlSUG1rV1dV?=
+ =?utf-8?B?QXh4TEJkQ2hmaUJDeklOTkY3eVUzZlN5d1lmTjc2eFA0dEVpMUF4Rm1BMmlH?=
+ =?utf-8?B?QmhBOCs0cmFicVkrY1JvV1FrNENXWVNHM1VIaHFQeFpoaDB1ZmVrRXlsbFRz?=
+ =?utf-8?B?MnhzcmVUOTMra2JPRUJZMTcxV1IrejZWS1VsajhGNzR4RE1zMEh6MDZWcEhC?=
+ =?utf-8?B?aEZEbXMydXdPV3VVbXFGbDV4RU1WK0o4aWtmVjlRdjlXZFZ1NnFtM1FrRjBv?=
+ =?utf-8?B?VCtNUmNPWlNkOEpmNCtwa1B2TW1ZTnB2eGtScVNGWEJkM242b2RvSkhjQ294?=
+ =?utf-8?B?SnlEeTJGemc1MDBuZjJlZVk5bndtQ01RMk0vN3FDVmVnSVQ5ckNlQlVWdUhE?=
+ =?utf-8?B?N3hEWnhqOFRxNFJZaHJRTE42ekZhN0tCY2RoV0t6OUlwT1JqTFN0ZnJmY3Zl?=
+ =?utf-8?B?TXgxSEtoYTFDejhEZ2t6U1JNa1MvaXRrM2czK0tES3MyZFU0MHNRVDJlaWdS?=
+ =?utf-8?B?WWNuOFA1YVF0SFRiUHpZb2Q3K0JMaDNiUHdqeXNUbVUxWmtPSi9vSDRtZG5L?=
+ =?utf-8?B?aXpYd1ZmZzE4VU9Ebk41ZDFMZFM4QlBxR0NxaUduOEZ2VWNVNFB5OE9NVTBW?=
+ =?utf-8?B?U0hzSDJPKytpV3NEV0VWdzJHK3I4cFJWQUpwTTF2dVYwbzZaWFpUa1paT05z?=
+ =?utf-8?B?UU1Relc0ZFBlZVZFalVySnBROFlOazR0MVh4VFhnTFE5NmNFa0ppbjFkYWht?=
+ =?utf-8?B?Vkk1RVVXWnhRcXlxaHhUenNoUytDcDlFT2lWL3VDOGIwcnFGQmdkV2JaV2lV?=
+ =?utf-8?B?V0VJem9uYUczMHpFclZkRHl2aXhVVU1rNDFKelVibVVtYy9lQkI4a1Q0dDc5?=
+ =?utf-8?B?U25pVHRjTCtYYURTS2JjNDFkakZqTSs0djl2UW1rNHc1cGloNFFPMVlHWVRo?=
+ =?utf-8?B?SmJPOUd1bTRCQk9HOW9MUzZMZVVwczVNOWhVQkhrbHJjbFE0YTVaTEtnQWRE?=
+ =?utf-8?B?Qi9hTzd3R0srclkxMkdlc3BrRExCQnVtWFk0VHhjekF6ZlYxeHlKSDNzWEor?=
+ =?utf-8?B?ZzE4WURKTEkrT0NtRDBMRlY0S29HMEVVMlNrRXRGOTlXSDVQeVdkZXhYSGdU?=
+ =?utf-8?B?R3NyZkVOai91RkhuVGpMc3BGN2R3OGpTeitNUUNNQkFRNUwwTWhBM2JMZWk1?=
+ =?utf-8?B?U3NjVDZFM0VLTGZWZGhnbHdneGpGNFpDeHd0c1ZFUEVSemtlNkNoNWwzcDJJ?=
+ =?utf-8?B?Tkd4aFlpQTN4RnYzbTFhYXFnWXJQWUEzTVByamU4Q1h0VittNlJCdUFwV05H?=
+ =?utf-8?Q?rxLwuQoJF0EWNNP58T3Ug2g=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 687543ee-a94c-4804-0044-08db26ed189c
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3625.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2023 13:38:33.0284
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2023 13:39:56.8319
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sXJwerMiIcPlTLQQeWbDyEtJ57YNuVHLXRgIffOHyYw8DX1j04zq2/XC1T9FHgTjQSlvroLT0CNZgjWGXVYTYw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR11MB7688
+X-MS-Exchange-CrossTenant-UserPrincipalName: UyR9MzZPW/eYZmS4vaNxpkzgTDvh+gA/4TMDbUAnO/4Ac3EzHtAfZliXDAg/lrnsCJeIcnDIATLFI7IEFYYkuH+ha26wgb83mS1CiPAmZIM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5978
 X-OriginatorOrg: intel.com
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 17, 2023 at 03:31:15AM +0100, Christian Marangi wrote:
-> From: Andrew Lunn <andrew@lunn.ch>
+From: Toke Høiland-Jørgensen <toke@redhat.com>
+Date: Thu, 16 Mar 2023 21:10:02 +0100
+
+> Alexander Lobakin <aleksander.lobakin@intel.com> writes:
 > 
-> Define common binding parsing for all PHY drivers with LEDs using
-> phylib. Parse the DT as part of the phy_probe and add LEDs to the
-> linux LED class infrastructure. For the moment, provide a dummy
-> brightness function, which will later be replaced with a call into the
-> PHY driver.
->
-
-Hi Andrew,
-
-Personally, I see no good reason to provide a dummy implementation
-of "phy_led_set_brightness", especially if you implement it in the next
-patch. You only use that function only the function pointer in
-"led_classdev". I think you can just skip it in this patch.
-
-Please find the rest of my comments inline.
-
-Thanks,
-Michal
-
-
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> ---
->  drivers/net/phy/Kconfig      |  1 +
->  drivers/net/phy/phy_device.c | 75 ++++++++++++++++++++++++++++++++++++
->  include/linux/phy.h          | 16 ++++++++
->  3 files changed, 92 insertions(+)
+>> Alexei noticed xdp_do_redirect test on BPF CI started failing on
+>> BE systems after skb PP recycling was enabled:
+>>
+>> test_xdp_do_redirect:PASS:prog_run 0 nsec
+>> test_xdp_do_redirect:PASS:pkt_count_xdp 0 nsec
+>> test_xdp_do_redirect:PASS:pkt_count_zero 0 nsec
+>> test_xdp_do_redirect:FAIL:pkt_count_tc unexpected pkt_count_tc: actual
+>> 220 != expected 9998
+>> test_max_pkt_size:PASS:prog_run_max_size 0 nsec
+>> test_max_pkt_size:PASS:prog_run_too_big 0 nsec
+>> close_netns:PASS:setns 0 nsec
+>>  #289 xdp_do_redirect:FAIL
+>> Summary: 270/1674 PASSED, 30 SKIPPED, 1 FAILED
+>>
+>> and it doesn't happen on LE systems.
+>> Ilya then hunted it down to:
+>>
+>>  #0  0x0000000000aaeee6 in neigh_hh_output (hh=0x83258df0,
+>> skb=0x88142200) at linux/include/net/neighbour.h:503
+>>  #1  0x0000000000ab2cda in neigh_output (skip_cache=false,
+>> skb=0x88142200, n=<optimized out>) at linux/include/net/neighbour.h:544
+>>  #2  ip6_finish_output2 (net=net@entry=0x88edba00, sk=sk@entry=0x0,
+>> skb=skb@entry=0x88142200) at linux/net/ipv6/ip6_output.c:134
+>>  #3  0x0000000000ab4cbc in __ip6_finish_output (skb=0x88142200, sk=0x0,
+>> net=0x88edba00) at linux/net/ipv6/ip6_output.c:195
+>>  #4  ip6_finish_output (net=0x88edba00, sk=0x0, skb=0x88142200) at
+>> linux/net/ipv6/ip6_output.c:206
+>>
+>> xdp_do_redirect test places a u32 marker (0x42) right before the Ethernet
+>> header to check it then in the XDP program and return %XDP_ABORTED if it's
+>> not there. Neigh xmit code likes to round up hard header length to speed
+>> up copying the header, so it overwrites two bytes in front of the Eth
+>> header. On LE systems, 0x42 is one byte at `data - 4`, while on BE it's
+>> `data - 1`, what explains why it happens only there.
+>> It didn't happen previously due to that %XDP_PASS meant the page will be
+>> discarded and replaced by a new one, but now it can be recycled as well,
+>> while bpf_test_run code doesn't reinitialize the content of recycled
+>> pages. This mark is limited to this particular test and its setup though,
+>> so there's no need to predict 1000 different possible cases. Just move
+>> it 4 bytes to the left, still keeping it 32 bit to match on more
+>> bytes.
 > 
-> diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-> index f5df2edc94a5..666efa6b1c8e 100644
-> --- a/drivers/net/phy/Kconfig
-> +++ b/drivers/net/phy/Kconfig
-> @@ -16,6 +16,7 @@ config PHYLINK
->  menuconfig PHYLIB
->  	tristate "PHY Device support and infrastructure"
->  	depends on NETDEVICES
-> +	depends on LEDS_CLASS
->  	select MDIO_DEVICE
->  	select MDIO_DEVRES
->  	help
-> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-> index 9ba8f973f26f..ee800f93c8c3 100644
-> --- a/drivers/net/phy/phy_device.c
-> +++ b/drivers/net/phy/phy_device.c
-> @@ -19,10 +19,12 @@
->  #include <linux/interrupt.h>
->  #include <linux/io.h>
->  #include <linux/kernel.h>
-> +#include <linux/list.h>
->  #include <linux/mdio.h>
->  #include <linux/mii.h>
->  #include <linux/mm.h>
->  #include <linux/module.h>
-> +#include <linux/of.h>
->  #include <linux/netdevice.h>
->  #include <linux/phy.h>
->  #include <linux/phy_led_triggers.h>
-> @@ -658,6 +660,7 @@ struct phy_device *phy_device_create(struct mii_bus *bus, int addr, u32 phy_id,
->  	device_initialize(&mdiodev->dev);
->  
->  	dev->state = PHY_DOWN;
-> +	INIT_LIST_HEAD(&dev->leds);
->  
->  	mutex_init(&dev->lock);
->  	INIT_DELAYED_WORK(&dev->state_queue, phy_state_machine);
-> @@ -2964,6 +2967,73 @@ static bool phy_drv_supports_irq(struct phy_driver *phydrv)
->  	return phydrv->config_intr && phydrv->handle_interrupt;
->  }
->  
-> +/* Dummy implementation until calls into PHY driver are added */
-> +static int phy_led_set_brightness(struct led_classdev *led_cdev,
-> +				  enum led_brightness value)
-> +{
-> +	return 0;
-> +}
+> Wow, this must have been annoying to track down - nice work :)
 
-It can be removed from this patch.
+I just blinked my eyes once and Ilya already came back with the detailed
+stacktrace, so it's almost entirely his work <O
 
-> +
-> +static int of_phy_led(struct phy_device *phydev,
-> +		      struct device_node *led)
-> +{
-> +	struct device *dev = &phydev->mdio.dev;
-> +	struct led_init_data init_data = {};
-> +	struct led_classdev *cdev;
-> +	struct phy_led *phyled;
-> +	int err;
-> +
-> +	phyled = devm_kzalloc(dev, sizeof(*phyled), GFP_KERNEL);
-> +	if (!phyled)
-> +		return -ENOMEM;
-> +
-> +	cdev = &phyled->led_cdev;
-> +
-> +	err = of_property_read_u32(led, "reg", &phyled->index);
-> +	if (err)
-> +		return err;
-
-Memory leak. 'phyled' is not freed in case of error.
-
-> +
-> +	cdev->brightness_set_blocking = phy_led_set_brightness;
-
-Please move this initialization to the patch where you are actually
-implementing this callback.
-
-> +	cdev->max_brightness = 1;
-> +	init_data.devicename = dev_name(&phydev->mdio.dev);
-> +	init_data.fwnode = of_fwnode_handle(led);
-> +
-> +	err = devm_led_classdev_register_ext(dev, cdev, &init_data);
-> +	if (err)
-> +		return err;
-
-Another memory leak.
-
-> +
-> +	list_add(&phyled->list, &phydev->leds);
-
-Where do you free the memory allocated for phy_led structure?
-
-> +
-> +	return 0;
-> +}
-> +
-> +static int of_phy_leds(struct phy_device *phydev)
-> +{
-> +	struct device_node *node = phydev->mdio.dev.of_node;
-> +	struct device_node *leds, *led;
-> +	int err;
-> +
-> +	if (!IS_ENABLED(CONFIG_OF_MDIO))
-> +		return 0;
-> +
-> +	if (!node)
-> +		return 0;
-> +
-> +	leds = of_get_child_by_name(node, "leds");
-> +	if (!leds)
-> +		return 0;
-> +
-> +	for_each_available_child_of_node(leds, led) {
-> +		err = of_phy_led(phydev, led);
-> +		if (err) {
-> +			of_node_put(led);
-> +			return err;
-> +		}
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  /**
->   * fwnode_mdio_find_device - Given a fwnode, find the mdio_device
->   * @fwnode: pointer to the mdio_device's fwnode
-> @@ -3142,6 +3212,11 @@ static int phy_probe(struct device *dev)
->  	/* Set the state to READY by default */
->  	phydev->state = PHY_READY;
->  
-> +	/* Get the LEDs from the device tree, and instantiate standard
-> +	 * LEDs for them.
-> +	 */
-> +	err = of_phy_leds(phydev);
-> +
->  out:
->  	/* Assert the reset signal */
->  	if (err)
-> diff --git a/include/linux/phy.h b/include/linux/phy.h
-> index fbeba4fee8d4..88a77ff60be9 100644
-> --- a/include/linux/phy.h
-> +++ b/include/linux/phy.h
-> @@ -14,6 +14,7 @@
->  #include <linux/compiler.h>
->  #include <linux/spinlock.h>
->  #include <linux/ethtool.h>
-> +#include <linux/leds.h>
->  #include <linux/linkmode.h>
->  #include <linux/netlink.h>
->  #include <linux/mdio.h>
-> @@ -595,6 +596,7 @@ struct macsec_ops;
->   * @phy_num_led_triggers: Number of triggers in @phy_led_triggers
->   * @led_link_trigger: LED trigger for link up/down
->   * @last_triggered: last LED trigger for link speed
-> + * @leds: list of PHY LED structures
->   * @master_slave_set: User requested master/slave configuration
->   * @master_slave_get: Current master/slave advertisement
->   * @master_slave_state: Current master/slave configuration
-> @@ -690,6 +692,7 @@ struct phy_device {
->  
->  	struct phy_led_trigger *led_link_trigger;
->  #endif
-> +	struct list_head leds;
->  
->  	/*
->  	 * Interrupt number for this PHY
-> @@ -825,6 +828,19 @@ struct phy_plca_status {
->  	bool pst;
->  };
->  
-> +/**
-> + * struct phy_led: An LED driven by the PHY
-> + *
-> + * @list: List of LEDs
-> + * @led_cdev: Standard LED class structure
-> + * @index: Number of the LED
-> + */
-> +struct phy_led {
-> +	struct list_head list;
-> +	struct led_classdev led_cdev;
-> +	u32 index;
-> +};
-> +
->  /**
->   * struct phy_driver - Driver structure for a particular PHY type
->   *
-> -- 
-> 2.39.2
 > 
+>> Fixes: 9c94bbf9a87b ("xdp: recycle Page Pool backed skbs built from XDP frames")
+>> Reported-by: Alexei Starovoitov <ast@kernel.org>
+>> Link: https://lore.kernel.org/bpf/CAADnVQ+B_JOU+EpP=DKhbY9yXdN6GiRPnpTTXfEZ9sNkUeb-yQ@mail.gmail.com
+>> Reported-by: Ilya Leoshkevich <iii@linux.ibm.com> # + debugging
+>> Link: https://lore.kernel.org/bpf/8341c1d9f935f410438e79d3bd8a9cc50aefe105.camel@linux.ibm.com
+>> Signed-off-by: Alexander Lobakin <aleksander.lobakin@intel.com>
+> 
+> Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> 
+
+Thanks! That was quick :D
+
+Olek
