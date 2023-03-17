@@ -2,129 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B3076BEF0F
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 18:03:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92AB26BEF26
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 18:06:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229902AbjCQRDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 13:03:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41454 "EHLO
+        id S229590AbjCQRGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 13:06:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229533AbjCQRDe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 13:03:34 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2104.outbound.protection.outlook.com [40.107.94.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE6E22A9B3
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 10:03:31 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Zi/ODCh8ai9BiGXElwqcCxxz7nSpnoeFp9++/OD5egGDOBSEL+G3UPhoAA4f6wiLmb2dSmWGFlY/gSNpKxBqYWpPwWtivUcLpKmkeFB4ZQIquUvyy4NgbjKmGQTiB/Mghh/kScEGqD2n8spF8dV+Na3+lBD5ZZalJ79fqrV6LdEvQvHvLx0gq3NZmtTMBpMvv8IEaBCAMPtqMuLJOpQNm6ERmkGGveDx/Wc1m01zvDfLRCyJEnEZvm/MxxtIhh9C1Fm4jYb6ArjQHTfzlSvuT3yjMMkh9t4Z1Ogs+kYgZSfhnsL9jgbPLJLz1v9lAeg82KivIoAKHtu8A36DEs8LsA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SdNljN0aTpCV9pBbOMwHn6scp1Si5R/MvzVcYtZU1m8=;
- b=n0X6IGHSaySaAD5Uf1WnrrBcYGTe25b587sneYAt2jtKSPIadTsJmkAesbbYmj0regJ93uYRM1CUDMjbd0byfiVuihzOuCxjEBO17ijOC2srZjvtaF18uNCtCTzP8HaatdbjErn2A0Jy7YWtcKUMGUaeQZCTIhUnsz6dvJNJAkIqH8JMXepE5t7FrUjq2bJD1pwerUt5n6MbYKOj9ke5isszOMEa6pECQF6UvTqGyZZeAr/MpBBqm0osZgnxq0jMG/IYmc7F84ivkCRBp4r4r3ONFwBSrEi7Lt/I3tWEvJTQjYW9s/xRJiX3iAEIS6+lIAqENfIiQTMeZThXZ2DlkQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S230015AbjCQRFp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 13:05:45 -0400
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66ABD3BC4A
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 10:05:23 -0700 (PDT)
+Received: by mail-qt1-x82d.google.com with SMTP id fy17so3736131qtb.2
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 10:05:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SdNljN0aTpCV9pBbOMwHn6scp1Si5R/MvzVcYtZU1m8=;
- b=GygBNf+WGv4BaIuwo8/ZT7ReoCsPdNJ7JLibRi//r2amIasnaMv5txlweSA+8fsPecxvHsAVIKFlY159gesjiPF/X30sTyRj0xL85Aroh1tGCfJ1aAn9DexVw8+IVaMHdqebt2AaLWvGRBjVR9qbhiwSp1KSbrl2WPbMaNZY/Ro=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by CH2PR13MB3879.namprd13.prod.outlook.com (2603:10b6:610:90::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.35; Fri, 17 Mar
- 2023 17:03:26 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%3]) with mapi id 15.20.6178.035; Fri, 17 Mar 2023
- 17:03:26 +0000
-Date:   Fri, 17 Mar 2023 18:03:20 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        David Ahern <dsahern@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        eric.dumazet@gmail.com
-Subject: Re: [PATCH net-next 08/10] x25: preserve const qualifier in
- [a]x25_sk()
-Message-ID: <ZBSdWGDgLbFBLg5Y@corigine.com>
-References: <20230317155539.2552954-1-edumazet@google.com>
- <20230317155539.2552954-9-edumazet@google.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230317155539.2552954-9-edumazet@google.com>
-X-ClientProxiedBy: AM0PR01CA0162.eurprd01.prod.exchangelabs.com
- (2603:10a6:208:aa::31) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=gmail.com; s=20210112; t=1679072722;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Ou1R36eX7BF+ROXUMXejBOAQ8ixZVHxgeBHVkoCC9W4=;
+        b=og3kT2uhpfbnPK9iqyrbbd0AWJqNAUhmr83qndDd1wH7oms2nxlla+7/Lc7Ci0y5/W
+         JSN87ewU7M8H3Q9dTgsl5ng01WOJfNlVLrsMZPiGyllahMRtApazS/q4FKuEH7cHd+om
+         pYEwvmiv/uBhWC6hGk+w2rXhIsS/fWeLCA37d0TIhAiKfE9fuDMiseX2lvnKRom0H+tN
+         t1jY1BjDXTY7Vsst38aHIePXzDm1bUqN4K6HUgZO8I0mlD4wR9DwScGUPsSQ87cln//d
+         jDMUDxrmQWAZ2Gd//fgNwg3Gz7EisrzAz0DEmpU9SmRGtyAAFoU+F4eQZBvdkS3iPmG5
+         W6kQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679072722;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Ou1R36eX7BF+ROXUMXejBOAQ8ixZVHxgeBHVkoCC9W4=;
+        b=3w+rMNDvGCeK3W7xCE3vF3RtqPH+nWPJE18z7uOlHNosjc1/SDQPLeXuBmESM83lsm
+         EDh+p3VVOKj3P8db+YStRwEVBN1reiiHiAe+tt2+NXDqIbOZK2wobsWYcI5jA8d4pZko
+         vY0xmSAMMTFM5JDd6+IbYnV/amB0ymJzbbSwBgHYwXUN8PfTjYaeWeLSEn9KkSeiFRpN
+         TPBliDsnXKyqb4IvEdRWdvQBeql8OWe0dAS1LPT4oa9U1TB2ypAV1Jcqsq9pI1aqNZ7+
+         MYpg4wJsAK+/OtGIabowjHk5OtuYsUHh05KYkNqvewqWOxd5V9BYGwtDDAL+i2maU0ZT
+         lJig==
+X-Gm-Message-State: AO0yUKV5CciFtZATeSV1/1tNLN/JlZGMRUrRbxm7ozr6qXbVjEP2durp
+        eQWjSr3qwmq5SQ2O/V8h5W8=
+X-Google-Smtp-Source: AK7set9oxppV74ngcy7QcfsWnnDosQvbOENxPc3mIslqBtP2cmqDZXMiWw8JT6l1N8Jbt4zwzcylTA==
+X-Received: by 2002:ac8:5e0c:0:b0:3d2:a192:3d93 with SMTP id h12-20020ac85e0c000000b003d2a1923d93mr14180909qtx.8.1679072722531;
+        Fri, 17 Mar 2023 10:05:22 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id 188-20020a3704c5000000b00745ca1c0eb6sm2041828qke.2.2023.03.17.10.05.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Mar 2023 10:05:21 -0700 (PDT)
+Message-ID: <a1dc47d6-fe07-2b13-ae53-ec6ea949333a@gmail.com>
+Date:   Fri, 17 Mar 2023 10:05:14 -0700
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CH2PR13MB3879:EE_
-X-MS-Office365-Filtering-Correlation-Id: 64b5b127-c2fb-4e02-996c-08db27098658
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9LeUSe83F3zs/WbFxyYLE2iVAD2SAcRTn9iYajQuKeO5MvkW76J1+OfYTQKDxNgwTZvKQe7JFj0TzjxvXgcG7rB9V781dhluSJXcO9pDVya0zCagnYKW8JcdurRaOyIOoRKcO+wwDLyZkrwTBi/QOBwx43vpXbu1pe+u5RcigZesx/kDDcXaoYLd3NfGPr7gWqQsbI3p+5aJKQStz0PF5swq6Pnj3rS15sq/ngMB+gIAZYOaum6Ty6PMXdgcMMiMGHhSVDBAHfECKa8oqC07wdIQjR/HxlGH8CKenAeYz0m+fgM/TzEZrFHlw3TNJLsfIZpvAiIUx7jC2Z8Ya7uZ5NvbRCKP3oXe8h9aEM5ZpPvBHptKdpS/zoa4AQa4cVcXPJRUDsoieUjI6ewvuGeyWv9otBa15qcD06YyenZFBOgGDYEToRFLu46GskKSTtoO312yjoGLqVaFZAK8unkMETCLaxKcDUnSwpukJuMnFCcb7h7OgYWHiosAdV1effhW3C45ey9+CkSdUkKiZXmkV8IS2aFu6Trj9gGWJNdQa69GXUv0fa7gtJ/qPuyFkze1TO//6G9GAVadXy7wQ3uoOAOkAJTUioL+1WQrNF8sAzk8oXNtB5IB/zTgLvLL4L+ZZGVobs0dYESY0NzD6Dm4z0zV5j8RBTcb//+UThF7AHD6bl6BigrIl1LI3i0giluH
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(346002)(39840400004)(136003)(376002)(366004)(451199018)(4326008)(6486002)(478600001)(6506007)(6512007)(54906003)(66946007)(186003)(316002)(2616005)(6666004)(66476007)(6916009)(66556008)(8676002)(5660300002)(8936002)(44832011)(41300700001)(38100700002)(2906002)(86362001)(36756003)(558084003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?a4nJtmoChXsT+7hnWGRn2+N7Sd2Xepv+MysLMcgrPNb2GI+XvbJ60yofTUjE?=
- =?us-ascii?Q?+w39NqN4Udojngq6xAOEyMAtdstg/q6uLvDE5hQqak4c8cFj9fwILpr1ZQY4?=
- =?us-ascii?Q?D4hFxxpPCgEH1nAhe8PmeuKBkyBlX3ekWgV9VG3vr98UlwBJg1G++rVlyg9f?=
- =?us-ascii?Q?xQI4nDQTcK2Ij4CPCYanNPDWw9DR+MXlneQ3gsc4xiQ4PF9MKO7INmGJ/B8L?=
- =?us-ascii?Q?g2UbH1i1aa1p39VwBDAtOGmL7N6BQGtlu8WFYar58qXHQJmr/tqRw8LJV3t8?=
- =?us-ascii?Q?bw3SN6To07uNpXDVHH+vFC8XNA1SC/Px9P2GA9Xmd7HAcBRHclLNxIF/Ngy6?=
- =?us-ascii?Q?22DOsfx7xWQfTClroB8KF0NiIQ8XkZpsxP7DxMJRL90UDY2ulS3GGhodvZJW?=
- =?us-ascii?Q?iJmTWlSt8HQS365UpdmgneZlP3caNXtS2EmwkElBFVe5GXd+lKml8/vZcOVa?=
- =?us-ascii?Q?CMIh7zXQ+eTec6gzyswwl/ZfWvXGstKhRDa4yOkC+a3DGmkoH+0Yb+tEt3Ha?=
- =?us-ascii?Q?UOeJ84200OBoBjCGNE66gQEhvCX7g8yBQzizXYAKsA1+q8dHKgHXwSD5lQFG?=
- =?us-ascii?Q?Ndx1yB44bmSwFoMJ0LnR15GBnj6SDTl2OkZfYe4LW/tpHnWHK5IM7lcTVr+V?=
- =?us-ascii?Q?kCh1JDYsWYqxUvOu5lWgejgZDBLk9Hr0WKAAslQFpobUHHOUMR0rcDGW/3Os?=
- =?us-ascii?Q?3zn+UchOBXG9fdFE6rp8mZMdQRcE76PMTg3b9bYc8xYimc2wu/G1w8gcgpU6?=
- =?us-ascii?Q?kqfRHxN6NIIv+9zbe1XmbE5HnOvA8NojexkiYa7xcgyu9ji+7h4Bx8Tvi3Md?=
- =?us-ascii?Q?L6jArDWvQM06qPbVwuHR/cHw6HB6jMvCroStWg1jlqxtHDd0uR46e1UAMCS4?=
- =?us-ascii?Q?V9gA7vR8TPG4Y5qJjPTBRoe7iO0RuiWUia88tRO/PQPQQTTjcwB7lV8ZqtKi?=
- =?us-ascii?Q?XYBesdGXQQ+UYL7Y9d1pCzI0VTmeAi7XyrQVtJ5Qmaq7GSleYMyCfod/5ran?=
- =?us-ascii?Q?8ZCfE8QzG8M7ji/s1okFlUDmXZT+gUkVhKWfAVOBIHXL7yd2y3LVuOC23jIv?=
- =?us-ascii?Q?VQFQSeU6Cspv/OSsFZ7i0fEsh/mI0/eE4nNdeQq4R3T7inWXeTT/EglLNWT4?=
- =?us-ascii?Q?Ne/dg2td8TYiHLG5PoWQx7/RxHwxFa34TkZW0fmY91xxvs8gFUbWhrPv2sgd?=
- =?us-ascii?Q?rINzp1urTS8eYuB5Rk0hnD0ErGdQgy3YMhMH5MLyZr7wDTu+aLIL4b3ICpPP?=
- =?us-ascii?Q?CPFWp5GaV/iSNOJ8VAh1BpLC2UVlxDlctACcj1PNNjOus5qE/QZtSHLpIEhk?=
- =?us-ascii?Q?lf4iu2y4FCByWky4tnJicG2uXfKXneBi2P9g3pShL8647aEQCotfWe6A+67T?=
- =?us-ascii?Q?g8zlpY140ojcJcJybowE0rFSO5FsFe8e9qwZO8qclPrvBEVFcW1PZ0OZgYh7?=
- =?us-ascii?Q?sg7rCUoa3MJMMnXlHC59vyf31Gd1GYlmLrqQ24RfQ6bEfGQr6WTns6/pZ0W5?=
- =?us-ascii?Q?elibb6LMXYs9T9vZ+mN6wQSo7FgvnOHxPvRWuGOVbDYXExnEyFvVbAubjsZ+?=
- =?us-ascii?Q?BdBH/5Fz7eNHeUZSoQKpcDGMtn8o6xOx8HLTum/LubZmjlekXEwCBvLx8Kr6?=
- =?us-ascii?Q?U1kggS9KJOSIha2dcUzXj9Ya41vd9ualOJOgw6pCh2VjETykHq0yFxXj77XH?=
- =?us-ascii?Q?5cdUYQ=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 64b5b127-c2fb-4e02-996c-08db27098658
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2023 17:03:26.6761
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7sXeRxrWg+7+4pQeGuC/WBWMNqjofipeSL6i5MxYZCSTE6kaT052h4pnZjTGUd4sd5ykKGYGKyaNgKfn5RQFlAJt6mF/Iq9omgTaiAoBUv0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR13MB3879
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH] net: phy: return EPROBE_DEFER if PHY is not accessible
+Content-Language: en-US
+To:     arturo.buzarra@digi.com, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>
+References: <20230317121646.19616-1-arturo.buzarra@digi.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20230317121646.19616-1-arturo.buzarra@digi.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 17, 2023 at 03:55:37PM +0000, Eric Dumazet wrote:
-> We can change [a]x25_sk() to propagate their argument const qualifier,
-> thanks to container_of_const().
-> 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
++Andrew, Heiner, Vladimir and Russell,
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+(please always copy the maintainers of the piece of code you are modifying).
+
+On 3/17/23 05:16, arturo.buzarra@digi.com wrote:
+> From: Arturo Buzarra <arturo.buzarra@digi.com>
+> 
+> A PHY driver can dynamically determine the devices features, but in some
+> circunstances, the PHY is not yet ready and the read capabilities does not fail
+> but returns an undefined value, so incorrect capabilities are assumed and the
+> initialization process fails. This commit postpones the PHY probe to ensure the
+> PHY is accessible.
+
+We need more specifics here, what type of PHY device are you seeing this 
+with? Keying off all 0s or all 1s is problematic because while it could 
+signal that the PHY is not ready in your particular case, it could also 
+mean that you have an electrical issue whereby the MDIO data line is 
+pulled down, respectively high too hard. In that case, we would rather 
+error out earlier than later, because no amount of probe deferral will 
+solve that.
+
+If your PHY requires "some time" before it can be ready you have a 
+number of ways to achieve that:
+
+- implement phy_driver::probe which may load firmware, initialize 
+internal state, etc.
+
+- implement a phy_driver::get_features
+
+Using deferred reads until MII_BMSR contains what you want is unlikely 
+to be the recommended way by your vendor to ensure the PHY is ready. 
+There has got to be some sort of vendor specific register that can be 
+polled to indicate readiness.
+
+
+> 
+> Signed-off-by: Arturo Buzarra <arturo.buzarra@digi.com>
+> ---
+>   drivers/net/phy/phy_device.c | 4 ++++
+>   1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> index 1785f1cead97..f8c31e741936 100644
+> --- a/drivers/net/phy/phy_device.c
+> +++ b/drivers/net/phy/phy_device.c
+> @@ -2628,10 +2628,14 @@ int genphy_read_abilities(struct phy_device *phydev)
+>   			       phydev->supported);
+>   
+>   	val = phy_read(phydev, MII_BMSR);
+>   	if (val < 0)
+>   		return val;
+> +	if (val == 0x0000 || val == 0xffff) {
+> +		phydev_err(phydev, "PHY is not accessible\n");
+> +		return -EPROBE_DEFER;
+> +	}
+
+
+
+>   
+>   	linkmode_mod_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, phydev->supported,
+>   			 val & BMSR_ANEGCAPABLE);
+>   
+>   	linkmode_mod_bit(ETHTOOL_LINK_MODE_100baseT_Full_BIT, phydev->supported,
+
+-- 
+Florian
 
