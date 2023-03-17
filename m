@@ -2,151 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BD5F6BF3A6
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 22:13:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D83FB6BF3B1
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 22:16:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229680AbjCQVN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 17:13:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44104 "EHLO
+        id S230028AbjCQVQ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 17:16:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229987AbjCQVN0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 17:13:26 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9CC160D41
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 14:13:18 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id l14-20020a170902f68e00b001a1a9a1d326so1384472plg.9
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 14:13:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1679087598;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=QrCUL/IGk54+SRxEDAGZ4cJXeb0snqO4bHPhQ/dVI4Q=;
-        b=PU8vs4E5e6ghVuGp8NM4vO9YnC+Tj+QscxvmGFXINdIujpv1l/0Z3SL08tlzAU4heT
-         uSSQUgQ2x1Mp1ykqsLRfhZBO9aShvD6pqe3R3vRjLUmcorcH5RDbwcwjcKjEiTAcbGen
-         MImT7AscwjCF5Uw82RPwLkhtJESF2axcTlr8BUIbiIaVJ7Xb6yoNPzHKS6X3vq06x+N2
-         sipleHRi/4Vckclg3UVU4tP0JFPSLhjjoMRkWyWoZqjizHz9gm/JedLC1mTLljhI1NIK
-         KGYvPVaV0kymAmX756tlvW2AkxN2SbpLE1C6jZeuAaGeC0T8BU+cK6BP9kCVe+TrnlnS
-         BJWQ==
+        with ESMTP id S229734AbjCQVQ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 17:16:27 -0400
+Received: from mail-il1-f175.google.com (mail-il1-f175.google.com [209.85.166.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD1469CFB;
+        Fri, 17 Mar 2023 14:16:26 -0700 (PDT)
+Received: by mail-il1-f175.google.com with SMTP id i19so3409878ila.10;
+        Fri, 17 Mar 2023 14:16:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679087598;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=QrCUL/IGk54+SRxEDAGZ4cJXeb0snqO4bHPhQ/dVI4Q=;
-        b=bx23ohKaWMozrHl/UwJBB3QqkSctZE8ltZ/Byv5TUlDfiYjraoy5gLppL6dGV0TBYU
-         ad/ZudBvDbDPMSVLeqZVHBOQk30Gi0IV5iVOzX1nQj6X1hGWjO4gzrezm64xHvcuhI/p
-         2oUeeOC+0zcZTan3OVLaorjkCA0wr/ewJb+e7CFTHZCZa2Hs2Bkvefuod0in6waM58JN
-         Rz49I40cwck5Snyf+OtCzVFaCNgEqQnzfLhKVyCs+nUeNZN2hsOoHQ5JGVCe/SIayvXI
-         xrG0p9oGf2cFm2Bf+V53v3xjKw5DL7QlV4qh2akb5Xi2GJVlmtccXCA0qRhWMdNmxQyK
-         1Oig==
-X-Gm-Message-State: AO0yUKW+kZVF1KLqBIB9F8+e7IGFO812Li8Siq0BvtTHOfkkREIaEDVc
-        RVDDAkxCXMOZzplf0RF4k7zfmww=
-X-Google-Smtp-Source: AK7set9AAuLyGkvi/Qt66TYj53e5MBcSr8TF1vXUUvJ2uwZNcWye632kPx7liFKfwrSQNZWTjg3Jl18=
-X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a17:902:a3c7:b0:1a0:51f6:a252 with SMTP id
- q7-20020a170902a3c700b001a051f6a252mr3537782plb.3.1679087598192; Fri, 17 Mar
- 2023 14:13:18 -0700 (PDT)
-Date:   Fri, 17 Mar 2023 14:13:16 -0700
-In-Reply-To: <167906361094.2706833.8381428662566265476.stgit@firesoul>
-Mime-Version: 1.0
-References: <167906343576.2706833.17489167761084071890.stgit@firesoul> <167906361094.2706833.8381428662566265476.stgit@firesoul>
-Message-ID: <ZBTX7CBzNk9SaWgx@google.com>
-Subject: Re: [PATCH bpf-next V1 4/7] selftests/bpf: xdp_hw_metadata RX hash
- return code info
-From:   Stanislav Fomichev <sdf@google.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, martin.lau@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, alexandr.lobakin@intel.com,
-        larysa.zaremba@intel.com, xdp-hints@xdp-project.net,
-        anthony.l.nguyen@intel.com, yoong.siang.song@intel.com,
-        boon.leong.ong@intel.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        d=1e100.net; s=20210112; t=1679087785;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=E8EReBm37JWyJO8L1kIPOgKUl1U5FCQclLtDZ/qXfAs=;
+        b=T9OD8EDmmspN5qP6O0f9aqn23exd9IXa16FNFPu9CWKpEB6ZJdDN2SZYeKENQQG5Ef
+         fWY9t1SLe/M/Z9CZAAnsfuUSOSp7Oqquo7QN8gsMKC1U1BPWnun6YWISwZMWrRAyAoPW
+         mTW3MBSi6+9pZFblEhNr39Q672Uq9tn9FiIx1+XK1kbXENjlVrDX7WV1UcC0TilOPZF8
+         qqOrikKJnz8uyFGtl9f74h5ZcphO5DVL6kc6u4PcK6Yd4Q9/J+a5x98oqimeXLEeX23p
+         ubUZ6cloyeRehh8OJ9jKEWSTMsR4XvQkX8VSejJH11HjBrZp9cOzv9cA85blkSoMBB8N
+         N8gw==
+X-Gm-Message-State: AO0yUKWiwyBiUE9fqyYObhX5SfGwCBqeLxjAVE9YReg2bSWzqA07UcoL
+        bqLPWKVPzdczxfVfYTLtksl5rKLPBA==
+X-Google-Smtp-Source: AK7set+44jDdZQnQ5gK5eSj07BZtp0lA+8sBDtriRGbUAZiENzi39wMOmMGgf61Ip66/ii32uJBABg==
+X-Received: by 2002:a92:cc08:0:b0:317:99b9:3d1c with SMTP id s8-20020a92cc08000000b0031799b93d1cmr12777ilp.26.1679087785257;
+        Fri, 17 Mar 2023 14:16:25 -0700 (PDT)
+Received: from robh_at_kernel.org ([64.188.179.249])
+        by smtp.gmail.com with ESMTPSA id c7-20020a929407000000b003232362a4c2sm879970ili.8.2023.03.17.14.16.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Mar 2023 14:16:23 -0700 (PDT)
+Received: (nullmailer pid 2819364 invoked by uid 1000);
+        Fri, 17 Mar 2023 21:16:21 -0000
+Date:   Fri, 17 Mar 2023 16:16:21 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Christian Lamparter <chunkeey@googlemail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        linux-gpio@vger.kernel.org, linux-omap@vger.kernel.org,
+        Tony Lindgren <tony@atomide.com>,
+        Aaro Koskinen <aaro.koskinen@iki.fi>,
+        Felipe Balbi <balbi@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        =?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] p54spi: convert to devicetree
+Message-ID: <20230317211621.GA2814846-robh@kernel.org>
+References: <20230314163201.955689-1-arnd@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230314163201.955689-1-arnd@kernel.org>
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03/17, Jesper Dangaard Brouer wrote:
-> When driver developers add XDP-hints kfuncs for RX hash it is
-> practical to print the return code in bpf_printk trace pipe log.
-
-> Print hash value as a hex value, both AF_XDP userspace and bpf_prog,
-> as this makes it easier to spot poor quality hashes.
-
-> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-
-Acked-by: Stanislav Fomichev <sdf@google.com>
-
-(with a small suggestion below, maybe can do separately?)
-
+On Tue, Mar 14, 2023 at 05:30:56PM +0100, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> The Prism54 SPI driver hardcodes GPIO numbers and expects users to
+> pass them as module parameters, apparently a relic from its life as a
+> staging driver. This works because there is only one user, the Nokia
+> N8x0 tablet.
+> 
+> Convert this to the gpio descriptor interface and move the gpio
+> line information into devicetree to improve this and simplify the
+> code at the same time.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 > ---
->   .../testing/selftests/bpf/progs/xdp_hw_metadata.c  |    9 ++++++---
->   tools/testing/selftests/bpf/xdp_hw_metadata.c      |    5 ++++-
->   2 files changed, 10 insertions(+), 4 deletions(-)
+> As I don't have an N8x0, this is completely untested.
+> 
+> I listed the driver authors (Johannes and Christian) as the maintainers
+> of the binding document, but I don't know if they actually have this
+> hardware. It might be better to list someone who is actually using it.
+> 
+> Among the various chip identifications, I wasn't sure which one to
+> use for the compatible string and the name of the binding document.
+> I picked st,stlc4560 as that was cited as the version in the N800
+> on multiple websites.
+> ---
+>  .../bindings/net/wireless/st,stlc45xx.yaml    | 64 +++++++++++++++++
+>  MAINTAINERS                                   |  1 +
+>  arch/arm/boot/dts/omap2.dtsi                  |  4 ++
+>  arch/arm/boot/dts/omap2420-n8x0-common.dtsi   | 12 ++++
+>  arch/arm/mach-omap2/board-n8x0.c              | 18 -----
+>  drivers/net/wireless/intersil/p54/p54spi.c    | 69 +++++++------------
+>  drivers/net/wireless/intersil/p54/p54spi.h    |  3 +
+>  7 files changed, 109 insertions(+), 62 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/wireless/st,stlc45xx.yaml
 
-> diff --git a/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c  
-> b/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c
-> index f2a3b70a9882..f2278ca2ad03 100644
-> --- a/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c
-> +++ b/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c
-> @@ -76,10 +76,13 @@ int rx(struct xdp_md *ctx)
->   	} else
->   		meta->rx_timestamp = 0; /* Used by AF_XDP as not avail signal */
+Binding looks fine, but I assume you'll split this into at least 3 
+patches?
 
-> -	if (!bpf_xdp_metadata_rx_hash(ctx, &meta->rx_hash))
-> -		bpf_printk("populated rx_hash with %u", meta->rx_hash);
-> -	else
-> +	ret = bpf_xdp_metadata_rx_hash(ctx, &meta->rx_hash);
-> +	if (ret >= 0) {
-> +		bpf_printk("populated rx_hash with 0x%08X", meta->rx_hash);
-> +	} else {
-> +		bpf_printk("rx_hash not-avail errno:%d", ret);
->   		meta->rx_hash = 0; /* Used by AF_XDP as not avail signal */
-> +	}
-
->   	return bpf_redirect_map(&xsk, ctx->rx_queue_index, XDP_PASS);
->   }
-> diff --git a/tools/testing/selftests/bpf/xdp_hw_metadata.c  
-> b/tools/testing/selftests/bpf/xdp_hw_metadata.c
-> index 400bfe19abfe..f3ec07ccdc95 100644
-> --- a/tools/testing/selftests/bpf/xdp_hw_metadata.c
-> +++ b/tools/testing/selftests/bpf/xdp_hw_metadata.c
-> @@ -3,6 +3,9 @@
->   /* Reference program for verifying XDP metadata on real HW. Functional  
-> test
->    * only, doesn't test the performance.
->    *
-
-[..]
-
-> + * BPF-prog bpf_printk info outout can be access via
-> + * /sys/kernel/debug/tracing/trace_pipe
-
-Maybe we should just dump the contents of
-/sys/kernel/debug/tracing/trace for every poll cycle?
-
-We can also maybe enable tracing in this program transparently?
-I usually forget 'echo 1 >
-/sys/kernel/debug/tracing/events/bpf_trace/bpf_trace_printk/enable'
-myself :-)
-
-> + *
->    * RX:
->    * - UDP 9091 packets are diverted into AF_XDP
->    * - Metadata verified:
-> @@ -156,7 +159,7 @@ static void verify_xdp_metadata(void *data, clockid_t  
-> clock_id)
-
->   	meta = data - sizeof(*meta);
-
-> -	printf("rx_hash: %u\n", meta->rx_hash);
-> +	printf("rx_hash: 0x%08X\n", meta->rx_hash);
->   	printf("rx_timestamp:  %llu (sec:%0.4f)\n", meta->rx_timestamp,
->   	       (double)meta->rx_timestamp / NANOSEC_PER_SEC);
->   	if (meta->rx_timestamp) {
-
-
+Rob
