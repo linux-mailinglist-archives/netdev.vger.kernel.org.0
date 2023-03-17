@@ -2,110 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 297C16BE8F5
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 13:13:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D66FC6BE924
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 13:26:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230027AbjCQMNB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 08:13:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57584 "EHLO
+        id S229780AbjCQM0N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 08:26:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229987AbjCQMM7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 08:12:59 -0400
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75AEFC640C
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 05:12:53 -0700 (PDT)
-Received: by mail-io1-xd34.google.com with SMTP id o12so2169980iow.6
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 05:12:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1679055172;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=S5Vp2FQz3U7WFWsDAYjqG8dCQgOoYs/lPkS0Jc/IT4w=;
-        b=Y5ML+SVSSgcvQd7eELE3PQH/ldXK7qV3KPnhogyfvcaP33wuONQz//Pn+43/l8s5zc
-         UKNa/DTLf13Ilc8Zc+rslQovTwVLiaLceUp5GevdD1mYJKynLTXxX6EVURJe1g0mjL3p
-         QDW8npCPPeUzzUM6nzF7mBju8Uy9lonkSVphC5kUoU4VwUJalCq1ABsknab0Tn3BNuiT
-         gcOT+z+FqEkwllVngjNefBZmmMqNr6r4Qn+oB5OdviV0jg8PNpPkXkl6qSg7hDpQgH9x
-         abHYFzinPrX59dn3km7o3lUeicG9qZ1wgYJehSVv2Fw1X7kv/2GTrmnbZz3NnE9C7SPY
-         UC/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679055172;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=S5Vp2FQz3U7WFWsDAYjqG8dCQgOoYs/lPkS0Jc/IT4w=;
-        b=g36/Mc0c33hZjaNUyN4A4PwyL1uEF+oPyAO+69Byr1FYM+d3rddO6jRd8AztEmu/Pr
-         7cx/fUTwLOTRsBVaENmuofP13tkPJA+VriujlLGZ5pQJ2+VvvyZ6R7OwihwAQ1J4ZA8E
-         sFaf7g046UgKIquPJ9fgvGBuU1XlUQn/t+i9vJhlLCXx68O3ihTYURu2sOMTcaAFcU4H
-         Su/DbAyT1tYvv9ieT/3ml+pT5P9FKbiVbSi+aNehHRYG7SYW23KWsO5xNGoJqB8O7uTh
-         5rA05F5Po0ubPtCTVBf2RYWoWvr4S+GQl9wS7SKseVTiU9+CtqY8EoiEBOhtZ40gqfiu
-         Cb0Q==
-X-Gm-Message-State: AO0yUKWrG4k5slZUKA3WQdn4UXm22javzLrx2uN+003z5DTNgF0EE/ru
-        UwehcsJZOnMKefVS7tq4RzNYDw==
-X-Google-Smtp-Source: AK7set/teWbNAyM8vn7O11kjIlscOMkZFWggClL+Q8IlWUkkzmd+PZU/1yj9Hy6iAhKO8EYtkeDTCw==
-X-Received: by 2002:a6b:d102:0:b0:74c:91c3:3837 with SMTP id l2-20020a6bd102000000b0074c91c33837mr1362477iob.18.1679055172627;
-        Fri, 17 Mar 2023 05:12:52 -0700 (PDT)
-Received: from [172.22.22.4] ([98.61.227.136])
-        by smtp.googlemail.com with ESMTPSA id j195-20020a0263cc000000b00406328003a5sm640137jac.86.2023.03.17.05.12.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Mar 2023 05:12:52 -0700 (PDT)
-Message-ID: <b657a2a7-ddf4-d42f-02a9-16f297e9ef07@linaro.org>
-Date:   Fri, 17 Mar 2023 07:12:50 -0500
+        with ESMTP id S229554AbjCQM0M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 08:26:12 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A2B65849E;
+        Fri, 17 Mar 2023 05:26:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679055971; x=1710591971;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=wwb7QQUYDZ1MGwyahU1bpHx/tV/A7KWGOzAqHD9NCzs=;
+  b=LId+y+ItMz0FtogdpnbZyjVxY03kS2FGrv3UEKqm1hYFRtWeN2bhfp7Y
+   Te7+31Zk41v0lpCSmHFDwrvj24kjfzDZpMLd6N7ZzT0wCxt6A30oOSqFh
+   Pv5ejTB3jLDlC5RKJZXA1YJ5dNR5Jhuod/zlXjmKbXkfzPKKJihxLRQES
+   117y2ZKD0S4uJC/Z86FotFzb6o7k1EZRqL/PD5552PeE3uJZRzJeWf1M5
+   +xj9bkpR8iUIVvSbC3gudtqjZRv8B+ltXRJXAZblAjO5oSHlYpc6SOVfW
+   0qO9d8ubeypWXr8QpHyMLxJrWQdaoVn9D9Mjg9m2/J0wu5VKxual70Rvh
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10651"; a="336948022"
+X-IronPort-AV: E=Sophos;i="5.98,268,1673942400"; 
+   d="scan'208";a="336948022"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2023 05:26:10 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10651"; a="749242431"
+X-IronPort-AV: E=Sophos;i="5.98,268,1673942400"; 
+   d="scan'208";a="749242431"
+Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2023 05:26:07 -0700
+Date:   Fri, 17 Mar 2023 13:26:00 +0100
+From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+To:     =?iso-8859-1?Q?=C1lvaro_Fern=E1ndez?= Rojas <noltari@gmail.com>
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, jonas.gorski@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: dsa: tag_brcm: legacy: fix daisy-chained switches
+Message-ID: <ZBRcWLngOPY51qPc@localhost.localdomain>
+References: <20230317120815.321871-1-noltari@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH v2] dt-bindings: net: qcom,ipa: add SDX65 compatible
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, Alex Elder <elder@linaro.org>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        andersson@kernel.org, konrad.dybcio@linaro.org, agross@kernel.org,
-        devicetree@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, elder@kernel.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Simon Horman <simon.horman@corigine.com>
-References: <20230315194305.1647311-1-elder@linaro.org>
- <20230316171010.7c51c93c@kernel.org>
-From:   Alex Elder <elder@linaro.org>
-In-Reply-To: <20230316171010.7c51c93c@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230317120815.321871-1-noltari@gmail.com>
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/16/23 7:10 PM, Jakub Kicinski wrote:
-> On Wed, 15 Mar 2023 14:43:05 -0500 Alex Elder wrote:
->> Add support for SDX65, which uses IPA v5.0.
->>
->> Reviewed-by: Simon Horman <simon.horman@corigine.com>
->> Signed-off-by: Alex Elder <elder@linaro.org>
->> ---
->> v2: Add review tag; base on linux-next/master; drop "net-next" in subject
->>
->> It is my intention to have this patch be taken via the Qualcomm
->> repository (not net-next).
+On Fri, Mar 17, 2023 at 01:08:15PM +0100, Álvaro Fernández Rojas wrote:
+> When BCM63xx internal switches are connected to switches with a 4-byte
+> Broadcom tag, it does not identify the packet as VLAN tagged, so it adds one
+> based on its PVID (which is likely 0).
+> Right now, the packet is received by the BCM63xx internal switch and the 6-byte
+> tag is properly processed. The next step would to decode the corresponding
+> 4-byte tag. However, the internal switch adds an invalid VLAN tag after the
+> 6-byte tag and the 4-byte tag handling fails.
+> In order to fix this we need to remove the invalid VLAN tag after the 6-byte
+> tag before passing it to the 4-byte tag decoding.
 > 
-> That's a bit unusual, no strong feelings but why is that?
-> Bindings usually go with the code, ipa is a networking thing, right?
+> Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+> ---
+>  net/dsa/tag_brcm.c | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/dsa/tag_brcm.c b/net/dsa/tag_brcm.c
+> index 10239daa5745..cacdafb41200 100644
+> --- a/net/dsa/tag_brcm.c
+> +++ b/net/dsa/tag_brcm.c
+> @@ -7,6 +7,7 @@
+>  
+>  #include <linux/dsa/brcm.h>
+>  #include <linux/etherdevice.h>
+> +#include <linux/if_vlan.h>
+>  #include <linux/list.h>
+>  #include <linux/slab.h>
+>  
+> @@ -252,6 +253,7 @@ static struct sk_buff *brcm_leg_tag_xmit(struct sk_buff *skb,
+>  static struct sk_buff *brcm_leg_tag_rcv(struct sk_buff *skb,
+>  					struct net_device *dev)
+>  {
+> +	int len = BRCM_LEG_TAG_LEN;
+>  	int source_port;
+>  	u8 *brcm_tag;
+>  
+> @@ -266,12 +268,16 @@ static struct sk_buff *brcm_leg_tag_rcv(struct sk_buff *skb,
+>  	if (!skb->dev)
+>  		return NULL;
+>  
+> +	/* VLAN tag is added by BCM63xx internal switch */
+> +	if (netdev_uses_dsa(skb->dev))
+> +		len += VLAN_HLEN;
+> +
+>  	/* Remove Broadcom tag and update checksum */
+> -	skb_pull_rcsum(skb, BRCM_LEG_TAG_LEN);
+> +	skb_pull_rcsum(skb, len);
+>  
+>  	dsa_default_offload_fwd_mark(skb);
+>  
+> -	dsa_strip_etype_header(skb, BRCM_LEG_TAG_LEN);
+> +	dsa_strip_etype_header(skb, len);
+>  
+>  	return skb;
+>  }
+LGTM, but You can add fixes tag.
+Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 
-I'm sorry, yes, there is no reason the bindings update
-should be taken through the Qualcomm tree.
-
-This is a trivial patch.  This version (2) is based on
-linux-next/master but it can be cleanly cherry-picked
-onto net-next/master.
-
-Please accept this patch via net-next, and if you want
-me to send an updated version, please say so.
-
-I'm very sorry for the confusion here.  For some reason
-this has been a rough week with little patches for me.
-
-					-Alex
+> -- 
+> 2.30.2
+> 
