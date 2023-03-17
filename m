@@ -2,72 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 699316BF489
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 22:46:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A487A6BF491
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 22:48:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229765AbjCQVpl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 17:45:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41216 "EHLO
+        id S229679AbjCQVsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 17:48:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231494AbjCQVpT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 17:45:19 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A74CDE3;
-        Fri, 17 Mar 2023 14:44:34 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id o6-20020a17090a9f8600b0023f32869993so6655293pjp.1;
-        Fri, 17 Mar 2023 14:44:34 -0700 (PDT)
+        with ESMTP id S229945AbjCQVsZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 17:48:25 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D11E338B52;
+        Fri, 17 Mar 2023 14:47:41 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id iw3so6704056plb.6;
+        Fri, 17 Mar 2023 14:47:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679089371;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cFBF3aoCDzJCKnQzjtj3KAbX/g9gllas0cPUtC2AElQ=;
-        b=LMrEWqiv3C7gLXyADrhik9HFsIhYpPv/LYsy1fmqAP9hZ51xxbCqwYCzZHKYx1oZh/
-         AwA3fQnJ2w7Xz87OhMGbX/2RYdJEr4ynkfpk0t63yI9I46p8N5eZf7WTlr9mO8kxsrQu
-         OPEP388AnRxhXkmbF579aYpdv4ZM/3xwZgEWGHydrLfWiX4v1ImV5TL95ovFnCItveXu
-         fCzqtY+Tm1ZMhPWNWs1tiGuIQEf3N4nbLieKuB6MBGNRy7Wpefl67pH26abf20JAyll+
-         USIRLQw7k+8fSFjZ0fwxhcE85QUUPA701EQyEzfnnHsfiCxpwXsSNH/fDOH5zi6rqwaA
-         Xz2w==
+        d=gmail.com; s=20210112; t=1679089597;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=F/BU/W8lH7cT5BJ1G0LSjqLvqmzeVi/1nXNmiJsFiQw=;
+        b=ExxFDNebIPcEMGNRBSRPuF6/2/qWbWZJp1w8uIcEMu6itos3/DoG6V2t2qQitkGNcC
+         TlkWMaEPUq6RXcWEi6b8hXSDjA7xT5lG05PuUuL3O994K9yblZvEZMyPZ9hICKJ/8wrf
+         KWXxm/ou2sBcRLtUY/9XnJ2DAka3AR1JTOuGdNTUrgPN1Qld0mR/UUWpMTQ0ReAFj26d
+         Y/5zjEaRTMvuVhEzpS9wllw7Wdwy8FAzEUVOEoQLaIrjA5ZS9pkC38J0kNb3mGEzlxsH
+         UMGT0CE/odXvvgEc/eds5NTukVWUxysBa6/c2d9T814AQ/zxzj3JtoBgaeCXkMvz15Qe
+         Gz7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679089371;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=cFBF3aoCDzJCKnQzjtj3KAbX/g9gllas0cPUtC2AElQ=;
-        b=IAOe5+6OSomfaPAnygCvffjZ/RHsRxxTyEU2Cogfq0joWLsE2m6QeMYvcWcRDipSuZ
-         YvaOQEH2+cYgOAxIQ5h0G2pKreYbm2E4Ni9HqZafMq0aA98cH0JX8OwfqpFkLuLCmhOs
-         Ewr1Be+ZJaRlGXFErvY0WzDcAoG+0YLyuPtNQM9UQMBk4UyRVP3KH7u9cXphmT8VEfRR
-         qlek4wn5Rjj5cqpPrdXlg3aNyFkvBo3nYNNQaK4rEBrBU9AtxAwd5LuJ+w+rkbBw17k3
-         qUnjQ7+cieQUub/Qa/h9hXdyMNsrm9Yb3COEBIqMoU6HXwdlvQJX8W23vozzLn5YArjL
-         G0bg==
-X-Gm-Message-State: AO0yUKX8vA4Y7tM8oaNqgOmAsT0/si3yHohnUp3nnC0OjqQ/lcF82VNv
-        TJXm915jZx5pwHalUDuEWWI=
-X-Google-Smtp-Source: AK7set99q623mA3d1B75yMKUz/qCoVth/TvmSwr2Q9soYaexsMOXl5Zb3TtEgkz566iV6nIXTOF0Dw==
-X-Received: by 2002:a17:902:dccb:b0:1a1:b440:3773 with SMTP id t11-20020a170902dccb00b001a1b4403773mr491133pll.27.1679089371242;
-        Fri, 17 Mar 2023 14:42:51 -0700 (PDT)
-Received: from smtpclient.apple ([2601:1c0:4d7f:138e::3])
-        by smtp.gmail.com with ESMTPSA id w15-20020a170902a70f00b0019a8468cbe7sm1963126plq.224.2023.03.17.14.42.50
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 17 Mar 2023 14:42:50 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.400.51.1.1\))
-Subject: Re: [RFC PATCH 2/9] iscsi: associate endpoints with a host
-From:   Lee Duncan <leeman.duncan@gmail.com>
-In-Reply-To: <a9f8cc4f-5d60-be5e-d294-c4a9baa16ec4@suse.de>
-Date:   Fri, 17 Mar 2023 14:42:40 -0700
-Cc:     linux-scsi@vger.kernel.org,
-        open-iscsi <open-iscsi@googlegroups.com>, netdev@vger.kernel.org,
-        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <C3D117B2-4FAE-44AB-851B-67C5C98B73CF@gmail.com>
-References: <cover.1675876731.git.lduncan@suse.com>
- <154c7602b3cc59f8af44439249ea5e5eb75f92d3.1675876734.git.lduncan@suse.com>
- <a9f8cc4f-5d60-be5e-d294-c4a9baa16ec4@suse.de>
-To:     Hannes Reinecke <hare@suse.de>
-X-Mailer: Apple Mail (2.3731.400.51.1.1)
+        d=1e100.net; s=20210112; t=1679089597;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=F/BU/W8lH7cT5BJ1G0LSjqLvqmzeVi/1nXNmiJsFiQw=;
+        b=FNZH888kDMB2T40KfqaAAA/GqTmFJHXiRshuLe0Wz1YBmL2vKEHuF8wBaIVNmCmFZR
+         8vtwe7TD4NyxelFcpumBYb3qd/OX4CAJ3YMx5J+v3OoPbrpiD5gXTA0NlJVvun0MrMgv
+         P1PJCj42DfsZJd0PiNM5jX3BN5VmzTYLGjOC+IN8A5X/a1ifR0O8rcV7lVXC37cOZemA
+         jS/TTntzUnbgE1rexmeKXI+MZXNX5y8dJlgN/sa2lqDz8ghuEFB+D9bMob+xotl+zjVs
+         h80QHAwYh5epmgujp1YVd7RMrZRgS3gbjCDK8yBaeVCDScj0J92W0uKNS+SA2oSQPbyT
+         gPxA==
+X-Gm-Message-State: AO0yUKWzYP/Hb4hw5/mjsfr7yRcpjXKcBtH7RxtcJPFbYA03mQE39hmg
+        x2sTcxVZrxvcYQwGWYPjLTY=
+X-Google-Smtp-Source: AK7set8MILLIaeW6Xq+4Uh9meXyQ6MxrFX0iBrKJ+UOvhYnz/ZiAugZ228Jnyxkz7FwexRr40QX5UA==
+X-Received: by 2002:a17:902:cecd:b0:19e:9f97:f427 with SMTP id d13-20020a170902cecd00b0019e9f97f427mr10457478plg.10.1679089597455;
+        Fri, 17 Mar 2023 14:46:37 -0700 (PDT)
+Received: from ?IPV6:2620:10d:c085:21e8::1380? ([2620:10d:c090:400::5:87c3])
+        by smtp.gmail.com with ESMTPSA id a10-20020a170902b58a00b00198b01b412csm1958472pls.303.2023.03.17.14.46.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Mar 2023 14:46:36 -0700 (PDT)
+Message-ID: <8a268c26-ea57-89ec-9fea-72ec5b8e12e2@gmail.com>
+Date:   Fri, 17 Mar 2023 14:46:34 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH bpf-next v7 2/8] net: Update an existing TCP congestion
+ control algorithm.
+Content-Language: en-US, en-ZW
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <martin.lau@linux.dev>
+Cc:     netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Kui-Feng Lee <kuifeng@meta.com>, bpf@vger.kernel.org,
+        ast@kernel.org, song@kernel.org, kernel-team@meta.com,
+        andrii@kernel.org, sdf@google.com
+References: <20230316023641.2092778-1-kuifeng@meta.com>
+ <20230316023641.2092778-3-kuifeng@meta.com>
+ <f72b77c3-15ac-3de3-5bce-c263564c1487@iogearbox.net>
+ <ee8cab13-9018-5f62-0415-16409ee1610b@linux.dev>
+ <b8b54ef5-8a24-5886-8f4e-8856dbaa9c34@iogearbox.net>
+From:   Kui-Feng Lee <sinquersw@gmail.com>
+In-Reply-To: <b8b54ef5-8a24-5886-8f4e-8856dbaa9c34@iogearbox.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -76,147 +82,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mar 14, 2023, at 9:23 AM, Hannes Reinecke <hare@suse.de> wrote:
->=20
-> On 2/8/23 18:40, Lee Duncan wrote:
->> From: Lee Duncan <lduncan@suse.com>
->> Right now the iscsi_endpoint is only linked to a connection once that
->> connection has been established.  For net namespace filtering of the
->> sysfs objects, associate an endpoint with the host that it was
->> allocated for when it is created.
->> Signed-off-by: Chris Leech <cleech@redhat.com>
->> Signed-off-by: Lee Duncan <lduncan@suse.com>
->> ---
->>  drivers/infiniband/ulp/iser/iscsi_iser.c | 2 +-
->>  drivers/scsi/be2iscsi/be_iscsi.c         | 2 +-
->>  drivers/scsi/bnx2i/bnx2i_iscsi.c         | 2 +-
->>  drivers/scsi/cxgbi/libcxgbi.c            | 2 +-
->>  drivers/scsi/qedi/qedi_iscsi.c           | 2 +-
->>  drivers/scsi/qla4xxx/ql4_os.c            | 2 +-
->>  drivers/scsi/scsi_transport_iscsi.c      | 3 ++-
->>  include/scsi/scsi_transport_iscsi.h      | 6 +++++-
->>  8 files changed, 13 insertions(+), 8 deletions(-)
->> diff --git a/drivers/infiniband/ulp/iser/iscsi_iser.c =
-b/drivers/infiniband/ulp/iser/iscsi_iser.c
->> index 620ae5b2d80d..d38c909b462f 100644
->> --- a/drivers/infiniband/ulp/iser/iscsi_iser.c
->> +++ b/drivers/infiniband/ulp/iser/iscsi_iser.c
->> @@ -802,7 +802,7 @@ static struct iscsi_endpoint =
-*iscsi_iser_ep_connect(struct Scsi_Host *shost,
->>  	struct iser_conn *iser_conn;
->>  	struct iscsi_endpoint *ep;
->>  -	ep =3D iscsi_create_endpoint(0);
->> +	ep =3D iscsi_create_endpoint(shost, 0);
->>  	if (!ep)
->>  		return ERR_PTR(-ENOMEM);
->>  diff --git a/drivers/scsi/be2iscsi/be_iscsi.c =
-b/drivers/scsi/be2iscsi/be_iscsi.c
->> index 8aeaddc93b16..c893d193f5ef 100644
->> --- a/drivers/scsi/be2iscsi/be_iscsi.c
->> +++ b/drivers/scsi/be2iscsi/be_iscsi.c
->> @@ -1168,7 +1168,7 @@ beiscsi_ep_connect(struct Scsi_Host *shost, =
-struct sockaddr *dst_addr,
->>  		return ERR_PTR(ret);
->>  	}
->>  -	ep =3D iscsi_create_endpoint(sizeof(struct beiscsi_endpoint));
->> +	ep =3D iscsi_create_endpoint(shost, sizeof(struct =
-beiscsi_endpoint));
->>  	if (!ep) {
->>  		ret =3D -ENOMEM;
->>  		return ERR_PTR(ret);
->> diff --git a/drivers/scsi/bnx2i/bnx2i_iscsi.c =
-b/drivers/scsi/bnx2i/bnx2i_iscsi.c
->> index a3c800e04a2e..ac63e93e07c6 100644
->> --- a/drivers/scsi/bnx2i/bnx2i_iscsi.c
->> +++ b/drivers/scsi/bnx2i/bnx2i_iscsi.c
->> @@ -384,7 +384,7 @@ static struct iscsi_endpoint =
-*bnx2i_alloc_ep(struct bnx2i_hba *hba)
->>  	struct bnx2i_endpoint *bnx2i_ep;
->>  	u32 ec_div;
->>  -	ep =3D iscsi_create_endpoint(sizeof(*bnx2i_ep));
->> +	ep =3D iscsi_create_endpoint(hba->shost, sizeof(*bnx2i_ep));
->>  	if (!ep) {
->>  		printk(KERN_ERR "bnx2i: Could not allocate ep\n");
->>  		return NULL;
->> diff --git a/drivers/scsi/cxgbi/libcxgbi.c =
-b/drivers/scsi/cxgbi/libcxgbi.c
->> index af281e271f88..94edf8e1fb0c 100644
->> --- a/drivers/scsi/cxgbi/libcxgbi.c
->> +++ b/drivers/scsi/cxgbi/libcxgbi.c
->> @@ -2926,7 +2926,7 @@ struct iscsi_endpoint *cxgbi_ep_connect(struct =
-Scsi_Host *shost,
->>  		goto release_conn;
->>  	}
->>  -	ep =3D iscsi_create_endpoint(sizeof(*cep));
->> +	ep =3D iscsi_create_endpoint(shost, sizeof(*cep));
->>  	if (!ep) {
->>  		err =3D -ENOMEM;
->>  		pr_info("iscsi alloc ep, OOM.\n");
->> diff --git a/drivers/scsi/qedi/qedi_iscsi.c =
-b/drivers/scsi/qedi/qedi_iscsi.c
->> index 31ec429104e2..4baf1dbb8e92 100644
->> --- a/drivers/scsi/qedi/qedi_iscsi.c
->> +++ b/drivers/scsi/qedi/qedi_iscsi.c
->> @@ -931,7 +931,7 @@ qedi_ep_connect(struct Scsi_Host *shost, struct =
-sockaddr *dst_addr,
->>  		return ERR_PTR(-ENXIO);
->>  	}
->>  -	ep =3D iscsi_create_endpoint(sizeof(struct qedi_endpoint));
->> +	ep =3D iscsi_create_endpoint(shost, sizeof(struct =
-qedi_endpoint));
->>  	if (!ep) {
->>  		QEDI_ERR(&qedi->dbg_ctx, "endpoint create fail\n");
->>  		ret =3D -ENOMEM;
->> diff --git a/drivers/scsi/qla4xxx/ql4_os.c =
-b/drivers/scsi/qla4xxx/ql4_os.c
->> index 005502125b27..acebf9c92c04 100644
->> --- a/drivers/scsi/qla4xxx/ql4_os.c
->> +++ b/drivers/scsi/qla4xxx/ql4_os.c
->> @@ -1717,7 +1717,7 @@ qla4xxx_ep_connect(struct Scsi_Host *shost, =
-struct sockaddr *dst_addr,
->>  	}
->>    	ha =3D iscsi_host_priv(shost);
->> -	ep =3D iscsi_create_endpoint(sizeof(struct qla_endpoint));
->> +	ep =3D iscsi_create_endpoint(shost, sizeof(struct =
-qla_endpoint));
->>  	if (!ep) {
->>  		ret =3D -ENOMEM;
->>  		return ERR_PTR(ret);
->> diff --git a/drivers/scsi/scsi_transport_iscsi.c =
-b/drivers/scsi/scsi_transport_iscsi.c
->> index be69cea9c6f8..86bafdb862a5 100644
->> --- a/drivers/scsi/scsi_transport_iscsi.c
->> +++ b/drivers/scsi/scsi_transport_iscsi.c
->> @@ -204,7 +204,7 @@ static struct attribute_group =
-iscsi_endpoint_group =3D {
->>  };
->>    struct iscsi_endpoint *
->> -iscsi_create_endpoint(int dd_size)
->> +iscsi_create_endpoint(struct Scsi_Host *shost, int dd_size)
->>  {
->>  	struct iscsi_endpoint *ep;
->>  	int err, id;
->> @@ -230,6 +230,7 @@ iscsi_create_endpoint(int dd_size)
->>    	ep->id =3D id;
->>  	ep->dev.class =3D &iscsi_endpoint_class;
->> +	ep->dev.parent =3D &shost->shost_gendev;
->>  	dev_set_name(&ep->dev, "ep-%d", id);
->>  	err =3D device_register(&ep->dev);
->>          if (err)
->=20
-> Umm... doesn't this change the sysfs layout?
-> IE won't the endpoint node be moved under the Scsi_Host directory?
->=20
-> But even if it does: do we care?
->=20
->=20
-> Cheers,
->=20
-> Hannes
->=20
 
-No, it=E2=80=99s still /sys/class/iscsi_endpoint, since the dev.class =
-hasn=E2=80=99t changed.
 
-=E2=80=94=20
-Lee=
+On 3/17/23 10:23, Daniel Borkmann wrote:
+> On 3/17/23 6:18 PM, Martin KaFai Lau wrote:
+>> On 3/17/23 8:23 AM, Daniel Borkmann wrote:
+>>>  From the function itself what is not clear whether
+>>> callers that replace an existing one should do the synchronize_rcu() 
+>>> themselves or if this should
+>>> be part of tcp_update_congestion_control?
+>>
+>> bpf_struct_ops_map_free (in patch 1) also does synchronize_rcu() for 
+>> another reason (bpf_setsockopt), so the caller (bpf_struct_ops) is 
+>> doing it. From looking at tcp_unregister_congestion_control(), make 
+>> sense that it is more correct to have another synchronize_rcu() also 
+>> in tcp_update_congestion_control in case there will be other non 
+>> bpf_struct_ops caller doing update in the future.
+> 
+> Agree, I was looking at 'bpf: Update the struct_ops of a bpf_link', and 
+> essentially as-is
+> it was implicit via map free. +1, tcp_update_congestion_control() would 
+> be more obvious and
+> better for other/non-BPF users.
+
+It makes sense to me.
+I will refactor functions as well.
+
+> 
+> Thanks,
+> Daniel
