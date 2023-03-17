@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 716966BED69
+	by mail.lfdr.de (Postfix) with ESMTP id C68216BED6A
 	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 16:56:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231410AbjCQPz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 11:55:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46858 "EHLO
+        id S231372AbjCQP4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 11:56:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230032AbjCQPzz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 11:55:55 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFCC5C9CBC
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 08:55:43 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-541942bfdccso50453077b3.14
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 08:55:43 -0700 (PDT)
+        with ESMTP id S231384AbjCQPz4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 11:55:56 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B72AD515F
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 08:55:45 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-54352648c1eso49931207b3.9
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 08:55:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1679068543;
+        d=google.com; s=20210112; t=1679068544;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=6G/Xgo8U64xN3ThBIepQD9BAz9X3LlolLcLN5HTC6G4=;
-        b=ge8w77CkVQzg0qczlSgV76Z+G7JO+pwnIauucsdK078wgOtBNR8dieEZIHehpO45Eo
-         fMxUrbGk1R/8+WBXOi20pEYJDlh+mer926H95Ny04rryuTdFX7j/autuyzzkyXZ2HGLV
-         C4XOTYe68dFLYevkdd199Ur8e+3AZff7ATQdy9nt37S0l1zTTPH9tZg8GYNgYdOoDOhm
-         AUx40pyanddDd0jx8tDJDYVHPTWIwqx9HGGV0JtUq/ULxCsvyqXj+hjbiD04Fevx/fYB
-         /JkN9LhhF768tpBeLEiX3WwT4UYOnNUrOoGaBc7sI1Dzyx60Q6c1Rdp4xSuVzBpLfs85
-         u3JA==
+        bh=7WDb4WFB6ufGyo+7uDzqFEl2Sw8/skYpQIfnfoJl7vU=;
+        b=Ap60NmqglDibcNInqR8M4GTr8wvM5sBfadl22E77ddVz5kg1e+akyPkf/txn/8Q667
+         An1LN7kaScjimWcdiVqlDs0ALyuqk5pFLVMTDdRKwXY+jiPvyaCyINYkG1JbtxHm0yn8
+         zd3+70W0I4fAopZTp4d2WWfjgjjye18Ou5yf51eD4cyhCm/6LxSL/IeZlH0Ca0QOS0HH
+         2FCj1NU97Mv37yZPu4uzDsyfYJQNxbKBCG1Kv89dJg9qA3iEiKBTvfIS6Gpzzvt6PKCI
+         oLU0KEF9ncwvjC1mmouBvJpYhDohxSct4ylOxPbz37/oMY464gVpMTy6Qn8ffr8x1/nW
+         y87g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679068543;
+        d=1e100.net; s=20210112; t=1679068544;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=6G/Xgo8U64xN3ThBIepQD9BAz9X3LlolLcLN5HTC6G4=;
-        b=G66ehJ1G+Vtng6G8vWACjSTMAjQmLJO1L4vee0pQqmhKf2C8wKNT0d6WicdxXjqRBJ
-         z1YzowsiAoKNW8mTatnEH9cLfJrUKWR1t7xEWGHBsCiCZ7SDaBIVDt3DybMZQCY2xPf1
-         sH7iKv/6UXMzFfYRqpSi6olguHnpcoutc1TGhvpI8WGcYTxuBEwL74WACqm2FQ1powg7
-         8e0hLBNC3osZrKty4gXHB5TZENua/rL71r8yxkwph/SabU9m5E0M7q0YW/YllQiy68db
-         hrQsGkpNf14STj1qGutrFiBrZoYs+QkLMAtbvpb964JwpLzCGN1s2M0sZJvZtWTo9ddz
-         JBoQ==
-X-Gm-Message-State: AO0yUKVTZAkIW2zXpoJSNsWz1zKgmxz5YJSdXOqgGvTYq1Vlyb9IFG4t
-        n7npSD6UJeOZG+h2xgeLIh2f0hjXJtlpqA==
-X-Google-Smtp-Source: AK7set94s7H0gmEP81qhp20UKcCfNQikXF9nsDKETjwM3DKXpJVrqxpbKA9ET1Ic4qHZsxs+9O/lJcrVM99H1Q==
+        bh=7WDb4WFB6ufGyo+7uDzqFEl2Sw8/skYpQIfnfoJl7vU=;
+        b=fyC52CHHV2W/1W1XVzkn3mVs/1UgeDbS8xItFgZp/EQEF02UQ3nfn//jXQAUn0njPA
+         JNw3o/FdYYExzE+0jVpr/Z9QhsUhmddF5V9ZHwMmC6UXXiJk04Vrlu1rbGamNM6p4T7N
+         Bt+cz98ibfZt5e4lfqmOs8elyDxZRacXX8I6wB34xyodfPp7M7uPNoBaz/3r9hd2tW81
+         stVtsqHlQyHhHgOmvCdGMIeSYDFSpsRnW2urEhMIz+yW6bWLxbkFqQG6hRr7km70snaq
+         YQmjG++1Gb/Ml4qk4o1yF/5xoZxKTUTmZrOSojo/hebBOqJ8JEiLw0AlCYkEq/ggI4RU
+         ysNQ==
+X-Gm-Message-State: AO0yUKVlWcFt2tupoRqulnqG39P6HCf/YWWnyFg7WlMkqvsoK7lGFe++
+        swmJbcDVc1dQLI8V4MErf94ICWpS2PzxhQ==
+X-Google-Smtp-Source: AK7set+a8okPYk/5x9Fjk1/H8Udc9H1/k/TRYtAVhRkipEjnw6aGYcHD0QVXHBKitAE56Myjx7WhFVCNrrnFJA==
 X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a05:6902:183:b0:9fe:195a:ce0d with SMTP
- id t3-20020a056902018300b009fe195ace0dmr9919ybh.10.1679068542915; Fri, 17 Mar
- 2023 08:55:42 -0700 (PDT)
-Date:   Fri, 17 Mar 2023 15:55:30 +0000
+ (user=edumazet job=sendgmr) by 2002:a05:6902:4d4:b0:9f1:6c48:f95f with SMTP
+ id v20-20020a05690204d400b009f16c48f95fmr52456ybs.5.1679068544522; Fri, 17
+ Mar 2023 08:55:44 -0700 (PDT)
+Date:   Fri, 17 Mar 2023 15:55:31 +0000
 In-Reply-To: <20230317155539.2552954-1-edumazet@google.com>
 Mime-Version: 1.0
 References: <20230317155539.2552954-1-edumazet@google.com>
 X-Mailer: git-send-email 2.40.0.rc2.332.ga46443480c-goog
-Message-ID: <20230317155539.2552954-2-edumazet@google.com>
-Subject: [PATCH net-next 01/10] udp: preserve const qualifier in udp_sk()
+Message-ID: <20230317155539.2552954-3-edumazet@google.com>
+Subject: [PATCH net-next 02/10] af_packet: preserve const qualifier in pkt_sk()
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -72,7 +72,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We can change udp_sk() to propagate const qualifier of its argument,
+We can change pkt_sk() to propagate const qualifier of its argument,
 thanks to container_of_const()
 
 This should avoid some potential errors caused by accidental
@@ -81,25 +81,25 @@ This should avoid some potential errors caused by accidental
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 Cc: Willem de Bruijn <willemb@google.com>
 ---
- include/linux/udp.h | 5 +----
+ net/packet/internal.h | 5 +----
  1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/include/linux/udp.h b/include/linux/udp.h
-index a2892e151644ec347ad52d426400678e4a53b359..43c1fb2d2c21afc01abdf20e4b9c03f04932c19b 100644
---- a/include/linux/udp.h
-+++ b/include/linux/udp.h
-@@ -97,10 +97,7 @@ struct udp_sock {
+diff --git a/net/packet/internal.h b/net/packet/internal.h
+index 680703dbce5e04fc26d0fdeab1c1c911b71a8729..e793e99646f1c60f61a8dc5e765f8f544de83972 100644
+--- a/net/packet/internal.h
++++ b/net/packet/internal.h
+@@ -133,10 +133,7 @@ struct packet_sock {
+ 	atomic_t		tp_drops ____cacheline_aligned_in_smp;
+ };
  
- #define UDP_MAX_SEGMENTS	(1 << 6UL)
- 
--static inline struct udp_sock *udp_sk(const struct sock *sk)
+-static inline struct packet_sock *pkt_sk(struct sock *sk)
 -{
--	return (struct udp_sock *)sk;
+-	return (struct packet_sock *)sk;
 -}
-+#define udp_sk(ptr) container_of_const(ptr, struct udp_sock, inet.sk)
++#define pkt_sk(ptr) container_of_const(ptr, struct packet_sock, sk)
  
- static inline void udp_set_no_check6_tx(struct sock *sk, bool val)
- {
+ enum packet_sock_flags {
+ 	PACKET_SOCK_ORIGDEV,
 -- 
 2.40.0.rc2.332.ga46443480c-goog
 
