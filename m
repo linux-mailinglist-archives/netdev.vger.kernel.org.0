@@ -2,60 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CF916BECE4
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 16:29:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 762B86BECF1
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 16:30:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230357AbjCQP3C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 11:29:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60810 "EHLO
+        id S231200AbjCQPa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 11:30:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230177AbjCQP27 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 11:28:59 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F4B19AA38;
-        Fri, 17 Mar 2023 08:28:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1679066935; x=1710602935;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=PhgPMRlzJGtfWwjQyD+11Koj0Sg2pM5m2q9ird249rU=;
-  b=VIvfjEw69n9lAc69Tk3VZWBfRbSDRHVC9GeLWsBhA7mvG46wo7yuFsVo
-   1/vshHMDplaBRfb4m2js4zkT680Gl9oEtKJSfZayxWLp65jAuz7oUo4Jf
-   hx02+wKqUd6bjTjlcmccJ9OdMYDJhs3uhBe4y1TSBNuwvcy7PF6ng54Cx
-   f4B/jS/jkwzdQvLE+r1tpgsVswJ1ucxm/PFhS9tYuDE1t0wCMTSHXtY2V
-   ODCmPANbKvqHL0kjB+/voMz+Bjv7lnqpicaLVNroA6ye+g7Swj+M7bfjV
-   Jw3A7yFWv4pqsroLs5SFUUFkAYzGsOmhr8iHcSOaynuQR9Qc8X0kQvltL
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.98,268,1673938800"; 
-   d="scan'208";a="205973694"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Mar 2023 08:28:54 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Fri, 17 Mar 2023 08:28:49 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.21 via Frontend Transport; Fri, 17 Mar 2023 08:28:47 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <richardcochran@gmail.com>,
-        <UNGLinuxDriver@microchip.com>, <david.laight@aculab.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v2 2/2] net: lan966x: Stop using packing library
-Date:   Fri, 17 Mar 2023 16:27:13 +0100
-Message-ID: <20230317152713.4141614-3-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.38.0
-In-Reply-To: <20230317152713.4141614-1-horatiu.vultur@microchip.com>
-References: <20230317152713.4141614-1-horatiu.vultur@microchip.com>
+        with ESMTP id S231144AbjCQPaQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 11:30:16 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 523FE9AFFC;
+        Fri, 17 Mar 2023 08:30:09 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id ce7so3332553pfb.9;
+        Fri, 17 Mar 2023 08:30:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679067009;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ikL8pf0qWdeF+ZcYar80Mo2WrWWeMp1sI3VO/0rkppQ=;
+        b=YgeRen+2rkm5XNEj+eG0hmzSlGmzjP1XwikH46gZ7AtZZZbRJoegLSRK34MP8QJOcs
+         gQUr4GqI3l7degc0UN61Yybifo9RYs5Y8UZg8Fol96QB6SkcFl2BvBDdVIHWO43ylj4T
+         QRQtNDAZD5TOTUtkuImmmTXK9vzniOswdqHIVoTKMoeCypKkspE73RfL3bNez1w+sNLt
+         QqcRF3wgVVKfNb6tDJAOFx04gCZ+sZv1OIEt6ArvncXTaVh3IgAr8tOxZ7j2ivDI3Mgl
+         xZ2MCfPwbC5Cg49HXXf2QQZJYBqbS+C9jaoSmODaB+KSXc/9r4WRthWZiAgxWzgW/XrH
+         tVqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679067009;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ikL8pf0qWdeF+ZcYar80Mo2WrWWeMp1sI3VO/0rkppQ=;
+        b=Xybo40Ck0kL0PP2ozD6abYTZF2M1+XUVzqu1B03HRfpnCPElT6oqFMI75Y1ecc26sU
+         h7e4ZJGebkZwgirzyOcqRLcynF7hO6luCj16JWcqFBtsy1ZiotJONON0gB/4YSOwfNXg
+         O2NETDyLUkPWvrKq4xfVBrtcRCcfJObpCm2M29iUSWSwTWyOOlCOoioV4a/Q1SmhDhof
+         i+1kBIeX8iEW4a50A73yxOpl1HdCmdMAZr4viQZUf5OXs712A2gma6xi/ceu5c2Q8Mg+
+         A37w7fm/jCZ6bggGXdeAnKrlQtYl/C1fOkJZxwekKZhHYjwXaLNw0g1EECSajleA1/0g
+         4svQ==
+X-Gm-Message-State: AO0yUKWFT82eNsWcDgEsyeG84pyW5hpPBsnc6V8aggjOdN+mOjdbLDiP
+        VEpYHRAOa9NQdAuqjeFgfxvvaw9iCnlT/1na1Lk=
+X-Google-Smtp-Source: AK7set8x1paacse0JRs1YZkmbzZozCuO14qbPAhGmT/bbws/Hsv0pREy29Sz8cyPv87Saa0ofd6sHlnXayvLPuTuuyg=
+X-Received: by 2002:a05:6a00:2da2:b0:622:b78d:f393 with SMTP id
+ fb34-20020a056a002da200b00622b78df393mr3539592pfb.2.1679067008762; Fri, 17
+ Mar 2023 08:30:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
+References: <20230317143042.291260-1-mmyangfl@gmail.com> <d5ec2ec2-65a0-6ad3-a0a3-cad57d7f6616@gmail.com>
+In-Reply-To: <d5ec2ec2-65a0-6ad3-a0a3-cad57d7f6616@gmail.com>
+From:   Yangfl <mmyangfl@gmail.com>
+Date:   Fri, 17 Mar 2023 23:29:32 +0800
+Message-ID: <CAAXyoMNhG_4vYxxrHHHLHoSseCRGuEJPhRCOKXVv_LFrFXnyRw@mail.gmail.com>
+Subject: Re: [PATCH] net: phy: hisi-festa: Add support for HiSilicon Festa PHYs
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,172 +72,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a frame is injected from CPU, it is required to create an IFH(Inter
-frame header) which sits in front of the frame that is transmitted.
-This IFH, contains different fields like destination port, to bypass the
-analyzer, priotity, etc. Lan966x it is using packing library to set and
-get the fields of this IFH. But this seems to be an expensive
-operations.
-If this is changed with a simpler implementation, the RX will be
-improved with ~5Mbit while on the TX is a much bigger improvement as it
-is required to set more fields. Below are the numbers for TX.
+Heiner Kallweit <hkallweit1@gmail.com> =E4=BA=8E2023=E5=B9=B43=E6=9C=8817=
+=E6=97=A5=E5=91=A8=E4=BA=94 22:59=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On 17.03.2023 15:30, David Yang wrote:
+> > HiSilicon Festa PHYs were used on some HiSilicon SoCs. This patch injec=
+ts
+> > firmwares found on vendor kernels.
+> >
+> What's the status of adding the firmware files to linux-firmware?
+> I don't see any related patch in the linux-firmware mailing list archive.
+>
+> Any info on purpose of firmware? Does the PHY work normally also
+> w/o firmware? Or is the firmware required?
 
-Before:
-[  5]   0.00-10.02  sec   439 MBytes   367 Mbits/sec    0 sender
+I don't know if this patch is feasible; if yes, I will post files to
+linux-firmware.
 
-After:
-[  5]   0.00-10.00  sec   578 MBytes   485 Mbits/sec    0 sender
-
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- .../net/ethernet/microchip/lan966x/Kconfig    |  1 -
- .../ethernet/microchip/lan966x/lan966x_main.c | 74 +++++++++++++------
- 2 files changed, 50 insertions(+), 25 deletions(-)
-
-diff --git a/drivers/net/ethernet/microchip/lan966x/Kconfig b/drivers/net/ethernet/microchip/lan966x/Kconfig
-index 8bcd60f17d6d3..571e6d4da1e9d 100644
---- a/drivers/net/ethernet/microchip/lan966x/Kconfig
-+++ b/drivers/net/ethernet/microchip/lan966x/Kconfig
-@@ -6,7 +6,6 @@ config LAN966X_SWITCH
- 	depends on NET_SWITCHDEV
- 	depends on BRIDGE || BRIDGE=n
- 	select PHYLINK
--	select PACKING
- 	select PAGE_POOL
- 	select VCAP
- 	help
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index 4584a78c6ecbd..9be6462f1cc56 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -7,7 +7,6 @@
- #include <linux/ip.h>
- #include <linux/of_platform.h>
- #include <linux/of_net.h>
--#include <linux/packing.h>
- #include <linux/phy/phy.h>
- #include <linux/reset.h>
- #include <net/addrconf.h>
-@@ -305,46 +304,57 @@ static int lan966x_port_ifh_xmit(struct sk_buff *skb,
- 	return NETDEV_TX_BUSY;
- }
- 
-+static void lan966x_ifh_set(u8 *ifh, size_t val, size_t pos, size_t length)
-+{
-+	int i = 0;
-+
-+	do {
-+		u8 p = IFH_LEN_BYTES - (pos + i) / 8 - 1;
-+		u8 v = val >> i & 0xff;
-+
-+		/* There is no need to check for limits of the array, as these
-+		 * will never be written
-+		 */
-+		ifh[p] |= v << ((pos + i) % 8);
-+		ifh[p - 1] |= v >> (8 - (pos + i) % 8);
-+
-+		i += 8;
-+	} while (i < length);
-+}
-+
- void lan966x_ifh_set_bypass(void *ifh, u64 bypass)
- {
--	packing(ifh, &bypass, IFH_POS_BYPASS + IFH_WID_BYPASS - 1,
--		IFH_POS_BYPASS, IFH_LEN * 4, PACK, 0);
-+	lan966x_ifh_set(ifh, bypass, IFH_POS_BYPASS, IFH_WID_BYPASS);
- }
- 
--void lan966x_ifh_set_port(void *ifh, u64 bypass)
-+void lan966x_ifh_set_port(void *ifh, u64 port)
- {
--	packing(ifh, &bypass, IFH_POS_DSTS + IFH_WID_DSTS - 1,
--		IFH_POS_DSTS, IFH_LEN * 4, PACK, 0);
-+	lan966x_ifh_set(ifh, port, IFH_POS_DSTS, IFH_WID_DSTS);
- }
- 
--static void lan966x_ifh_set_qos_class(void *ifh, u64 bypass)
-+static void lan966x_ifh_set_qos_class(void *ifh, u64 qos)
- {
--	packing(ifh, &bypass, IFH_POS_QOS_CLASS + IFH_WID_QOS_CLASS - 1,
--		IFH_POS_QOS_CLASS, IFH_LEN * 4, PACK, 0);
-+	lan966x_ifh_set(ifh, qos, IFH_POS_QOS_CLASS, IFH_WID_QOS_CLASS);
- }
- 
--static void lan966x_ifh_set_ipv(void *ifh, u64 bypass)
-+static void lan966x_ifh_set_ipv(void *ifh, u64 ipv)
- {
--	packing(ifh, &bypass, IFH_POS_IPV + IFH_WID_IPV - 1,
--		IFH_POS_IPV, IFH_LEN * 4, PACK, 0);
-+	lan966x_ifh_set(ifh, ipv, IFH_POS_IPV, IFH_WID_IPV);
- }
- 
- static void lan966x_ifh_set_vid(void *ifh, u64 vid)
- {
--	packing(ifh, &vid, IFH_POS_TCI + IFH_WID_TCI - 1,
--		IFH_POS_TCI, IFH_LEN * 4, PACK, 0);
-+	lan966x_ifh_set(ifh, vid, IFH_POS_TCI, IFH_WID_TCI);
- }
- 
- static void lan966x_ifh_set_rew_op(void *ifh, u64 rew_op)
- {
--	packing(ifh, &rew_op, IFH_POS_REW_CMD + IFH_WID_REW_CMD - 1,
--		IFH_POS_REW_CMD, IFH_LEN * 4, PACK, 0);
-+	lan966x_ifh_set(ifh, rew_op, IFH_POS_REW_CMD, IFH_WID_REW_CMD);
- }
- 
- static void lan966x_ifh_set_timestamp(void *ifh, u64 timestamp)
- {
--	packing(ifh, &timestamp, IFH_POS_TIMESTAMP + IFH_WID_TIMESTAMP - 1,
--		IFH_POS_TIMESTAMP, IFH_LEN * 4, PACK, 0);
-+	lan966x_ifh_set(ifh, timestamp, IFH_POS_TIMESTAMP, IFH_WID_TIMESTAMP);
- }
- 
- static netdev_tx_t lan966x_port_xmit(struct sk_buff *skb,
-@@ -582,22 +592,38 @@ static int lan966x_rx_frame_word(struct lan966x *lan966x, u8 grp, u32 *rval)
- 	}
- }
- 
-+static u64 lan966x_ifh_get(u8 *ifh, size_t pos, size_t length)
-+{
-+	u64 val = 0;
-+	u8 v;
-+
-+	for (int i = 0; i < length ; i++) {
-+		int j = pos + i;
-+		int k = j % 8;
-+
-+		if (i == 0 || k == 0)
-+			v = ifh[IFH_LEN_BYTES - (j / 8) - 1];
-+
-+		if (v & (1 << k))
-+			val |= (1 << i);
-+	}
-+
-+	return val;
-+}
-+
- void lan966x_ifh_get_src_port(void *ifh, u64 *src_port)
- {
--	packing(ifh, src_port, IFH_POS_SRCPORT + IFH_WID_SRCPORT - 1,
--		IFH_POS_SRCPORT, IFH_LEN * 4, UNPACK, 0);
-+	*src_port = lan966x_ifh_get(ifh, IFH_POS_SRCPORT, IFH_WID_SRCPORT);
- }
- 
- static void lan966x_ifh_get_len(void *ifh, u64 *len)
- {
--	packing(ifh, len, IFH_POS_LEN + IFH_WID_LEN - 1,
--		IFH_POS_LEN, IFH_LEN * 4, UNPACK, 0);
-+	*len = lan966x_ifh_get(ifh, IFH_POS_LEN, IFH_WID_LEN);
- }
- 
- void lan966x_ifh_get_timestamp(void *ifh, u64 *timestamp)
- {
--	packing(ifh, timestamp, IFH_POS_TIMESTAMP + IFH_WID_TIMESTAMP - 1,
--		IFH_POS_TIMESTAMP, IFH_LEN * 4, UNPACK, 0);
-+	*timestamp = lan966x_ifh_get(ifh, IFH_POS_TIMESTAMP, IFH_WID_TIMESTAMP);
- }
- 
- static irqreturn_t lan966x_xtr_irq_handler(int irq, void *args)
--- 
-2.38.0
-
+The firmware is optional; vendor kernel source simply said "improve
+performance".
