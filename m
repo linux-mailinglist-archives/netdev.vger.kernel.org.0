@@ -2,75 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E7096BEF98
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 18:24:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E56FB6BEFB3
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 18:30:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230028AbjCQRYQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 13:24:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49592 "EHLO
+        id S230123AbjCQRaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 13:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229928AbjCQRYP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 13:24:15 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 163B435EC0
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 10:24:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=raonv0aDRKMeNG+9Z4xa3VtDroLCx3ONeZFuGHG3aO4=; b=O8rxrAuETWNmvBj/G+syfhZkan
-        UY818OoFzjqkhu6MXG9mMWKvchA3lN0NWZu/v/xw2XgDRBOtyghsxGKMQnEbqXYrBdGtpd/5DTnka
-        Y9g02zIcwRn1zbVHuCrx5M8d6xD54WOPP6lXnH8pwA/Pqbdfc7XiSF/EZRSfRwwfzZvA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pdDoH-007dUT-5I; Fri, 17 Mar 2023 18:24:09 +0100
-Date:   Fri, 17 Mar 2023 18:24:09 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     arturo.buzarra@digi.com
-Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH] net: phy: return EPROBE_DEFER if PHY is not accessible
-Message-ID: <245d1cc7-9059-4a94-992f-ad37108df366@lunn.ch>
-References: <20230317121646.19616-1-arturo.buzarra@digi.com>
+        with ESMTP id S229913AbjCQRaV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 13:30:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 266CA2ED6F;
+        Fri, 17 Mar 2023 10:30:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DFFCEB82641;
+        Fri, 17 Mar 2023 17:30:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77C30C433EF;
+        Fri, 17 Mar 2023 17:30:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679074217;
+        bh=l/oo++nd5/THbGDXNgQewvPeaT962pxyBBxTkzCqAOQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=FLwyozEt5oRVYycYB4oitlmYDsjagBORL5pRLaZ+bE5FH9+YFohf9QIrr+NEL4vRW
+         fBYfzRBidm6cu/rRAVgBEpfz3NUEMy7Re+jIo8lGvZoZQmAiDnR1oE81bk3iid78GW
+         2ZWT0Gxb13uckPWDFazaxHbeOwfcbyzPuiJh9PycqmOEnc4Nqxl2BHANRUS8tMMOkw
+         Y1G9W9LTxsIcjoDGqkV2L7HNkv5NRnS6aAIhyZqmziiGjK+91im20MFRQtWT140Tc+
+         3A9gj10k7B6YBpizqgs63JdlIfXk8+BRTTaMKYTBH8vtw3UtjlMoC1MDKH7uhXfIcr
+         NZMSsbxKvgppA==
+Date:   Fri, 17 Mar 2023 11:30:47 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Christian Lamparter <chunkeey@googlemail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] carl9170: Fix multiple -Warray-bounds warnings
+Message-ID: <ZBSjx236+BTiRByf@work>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20230317121646.19616-1-arturo.buzarra@digi.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 17, 2023 at 01:16:46PM +0100, arturo.buzarra@digi.com wrote:
-> From: Arturo Buzarra <arturo.buzarra@digi.com>
-> 
-> A PHY driver can dynamically determine the devices features, but in some
-> circunstances, the PHY is not yet ready and the read capabilities does not fail
-> but returns an undefined value, so incorrect capabilities are assumed and the
-> initialization process fails. This commit postpones the PHY probe to ensure the
-> PHY is accessible.
+GCC (and Clang)[1] does not like having a partially allocated object,
+since it cannot reason about it for bounds checking. Instead, fully
+allocate struct carl9170_cmd.
 
-In additional to Florians comments i have a few questions.
+Fix the following warnings Seen under GCC 13:
+drivers/net/wireless/ath/carl9170/cmd.c:125:30: warning: array subscript ‘struct carl9170_cmd[0]’ is partly outside array bounds of ‘unsigned char[4]’ [-Warray-bounds=]
+drivers/net/wireless/ath/carl9170/cmd.c:126:30: warning: array subscript ‘struct carl9170_cmd[0]’ is partly outside array bounds of ‘unsigned char[4]’ [-Warray-bounds=]
+drivers/net/wireless/ath/carl9170/cmd.c:125:30: warning: array subscript ‘struct carl9170_cmd[0]’ is partly outside array bounds of ‘unsigned char[20]’ [-Warray-bounds=]
+drivers/net/wireless/ath/carl9170/cmd.c:126:30: warning: array subscript ‘struct carl9170_cmd[0]’ is partly outside array bounds of ‘unsigned char[20]’ [-Warray-bounds=]
+drivers/net/wireless/ath/carl9170/cmd.c:161:12: warning: array subscript ‘struct carl9170_cmd[0]’ is partly outside array bounds of ‘unsigned char[20]’ [-Warray-bounds=]
+drivers/net/wireless/ath/carl9170/cmd.c:162:12: warning: array subscript ‘struct carl9170_cmd[0]’ is partly outside array bounds of ‘unsigned char[20]’ [-Warray-bounds=]
+drivers/net/wireless/ath/carl9170/cmd.c:163:12: warning: array subscript ‘struct carl9170_cmd[0]’ is partly outside array bounds of ‘unsigned char[20]’ [-Warray-bounds=]
+drivers/net/wireless/ath/carl9170/cmd.c:164:12: warning: array subscript ‘struct carl9170_cmd[0]’ is partly outside array bounds of ‘unsigned char[20]’ [-Warray-bounds=]
+drivers/net/wireless/ath/carl9170/cmd.c:125:30: warning: array subscript ‘struct carl9170_cmd[0]’ is partly outside array bounds of ‘unsigned char[8]’ [-Warray-bounds=]
+drivers/net/wireless/ath/carl9170/cmd.c:126:30: warning: array subscript ‘struct carl9170_cmd[0]’ is partly outside array bounds of ‘unsigned char[8]’ [-Warray-bounds=]
+drivers/net/wireless/ath/carl9170/cmd.c:220:12: warning: array subscript ‘struct carl9170_cmd[0]’ is partly outside array bounds of ‘unsigned char[8]’ [-Warray-bounds=]
 
-Are you resetting the device via a GPIO? Turning a regulator off/one
-etc?
+Link: https://github.com/KSPP/linux/issues/268
+Link: godbolt.org/z/KP97sxh3T [1]
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/net/wireless/ath/carl9170/cmd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Is there anything in the data sheet about how long you need to wait
-before accessing the device after power on, HW reset, or software
-reset etc?
+diff --git a/drivers/net/wireless/ath/carl9170/cmd.c b/drivers/net/wireless/ath/carl9170/cmd.c
+index f2b4f537e4c1..b8ed193c0195 100644
+--- a/drivers/net/wireless/ath/carl9170/cmd.c
++++ b/drivers/net/wireless/ath/carl9170/cmd.c
+@@ -120,7 +120,7 @@ struct carl9170_cmd *carl9170_cmd_buf(struct ar9170 *ar,
+ {
+ 	struct carl9170_cmd *tmp;
+ 
+-	tmp = kzalloc(sizeof(struct carl9170_cmd_head) + len, GFP_ATOMIC);
++	tmp = kzalloc(sizeof(*tmp), GFP_ATOMIC);
+ 	if (tmp) {
+ 		tmp->hdr.cmd = cmd;
+ 		tmp->hdr.len = len;
+-- 
+2.34.1
 
-Does the device reliably enumerate on the bus, i.e. reading registers
-2 and 3 to get its ID?
-
-If the PHY is broken, by some yet to be determined definition of
-broken, we try to limit the workaround to as narrow as possible. So it
-should not be in the core probe code. It should be in the PHY specific
-driver, and ideally for only its ID, not the whole vendors family of
-PHYs.
-
-  Andrew
