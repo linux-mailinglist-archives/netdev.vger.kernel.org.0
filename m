@@ -2,88 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D6A26BEABC
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 15:09:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71DAF6BEABF
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 15:10:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230307AbjCQOJR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 10:09:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48798 "EHLO
+        id S231196AbjCQOKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 10:10:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229971AbjCQOJQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 10:09:16 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73839AF68D;
-        Fri, 17 Mar 2023 07:09:14 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id v16so4575337wrn.0;
-        Fri, 17 Mar 2023 07:09:14 -0700 (PDT)
+        with ESMTP id S231157AbjCQOKE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 10:10:04 -0400
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B583612CF7
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 07:10:01 -0700 (PDT)
+Received: by mail-qt1-x833.google.com with SMTP id n2so5695470qtp.0
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 07:10:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679062153;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:subject:cc:to:from:date:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=4cUCHnqI0AfBz7a3GUqT80VORgI3VfkloynuB2ZGZu0=;
-        b=EN1Ss5BBviaWKyN2iiPCA1G5rxgzBrkndGVa31XHU6NkfbITRgv0arw/VjyDahrvGS
-         s236GuMvfBLK+DaP0g01LgyUbrtAULb8C6ddbBwwdzbM70Ei98BQh7abhu3rVCzW0TpB
-         YiG0/X2b0hROkMyc8C5e8eMP/2wDpm8bEGVMKlOI2y/BAz4VRQldd5onU8KhXKD9aZal
-         7PMWnT6rTjJsSjIIM9+OKf6HVa8RrDkP/SVRyTiIv3IDiSSgcA08e+z9FRQesdEoswzu
-         mgLEtNPdhNEzkw4vpbk4BJUOVqa+GnjrGNyu47owdc1ucgu3QN+D/eMeAIy4Opj347eF
-         UjKg==
+        d=gmail.com; s=20210112; t=1679062201;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3LaY7l5oaeABDYKyl6QYFTtEJWOZEXvI3J/Zz61gycg=;
+        b=kQiYMc/q0Bgi3HQ/X40A2/46Z6aqi/RnERkznjFr+i8TK0KO3vvH79N9cAtw7LlFH1
+         /CSemX0f/57qoOyghH/G9xtRQLleLSlgaK3h3ylsHmcPOS20uSUX7ZZDD0rN4PnyGQcy
+         OYGSNi/ZUAl5rlwXHLzy66WevdF1HYG6YiuUx9u/1WNd5vzrJ88JFXcXmUsO/w7HRPCP
+         XvpJ09HRa01FHvahIgzxVLiBoxOhBkBELSqx/sDARAsT9H4OJFJ3gpoRcRr1p4XciEBl
+         4vZzKCCKdYEIH0yG/ZunobLk+9lnTL+ugZKvWcLKpcvEXHwCSl6McjMV00zGkzzUS+Og
+         kuCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679062153;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:subject:cc:to:from:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=4cUCHnqI0AfBz7a3GUqT80VORgI3VfkloynuB2ZGZu0=;
-        b=lyqeyeyng45a3RRRl6yHZN+uOVq+VCmBTyRo9zogl3qLoyq/u/pE4p9IDaqWLb1IrJ
-         q4ta1g0kg8ez8LhlWy7CgE6qeHj8Sr7cOsSMHv+lCjCFUwNEedAkdD9tm6mwzxQ25o/v
-         y16g+iWeXcMTl9//vm2mTM3c97oar0+Dr+/LKQsd0z5j4AkH/1pqVk2YJt7mAsc6Uq4p
-         GoB+H60kXx+ZlZkVMQqftVnAMWAmqdAG2fgs47LFXzaQdQ4oZGZlci7zDhe3iUxPl4FY
-         ZQWf1kSTc5bcukHRiTQhbzTPSyIgUOpQshHRHZIdwPHW23IL1NeY6Dfa+F5Y0edJ157t
-         TGVw==
-X-Gm-Message-State: AO0yUKW8cHj0Z9Nyd9XbdxJUyxp+VMPhyGfF9UWg5mlYhIjs2V9b+23w
-        7pZJAZar9KAlMm8SUHCnh2k=
-X-Google-Smtp-Source: AK7set8ZSvwh8C861MbmcI8zrheicg6wTcJWJ3VwxxFhvYzCdZUnVxz3BSHRZNrwiFZ2hxPOhXIojw==
-X-Received: by 2002:adf:fb0d:0:b0:2ce:a758:d6fb with SMTP id c13-20020adffb0d000000b002cea758d6fbmr2601899wrr.1.1679062152605;
-        Fri, 17 Mar 2023 07:09:12 -0700 (PDT)
-Received: from Ansuel-xps. (93-34-89-197.ip49.fastwebnet.it. [93.34.89.197])
-        by smtp.gmail.com with ESMTPSA id h6-20020adfe986000000b002d09cba6beasm2064775wrm.72.2023.03.17.07.09.11
+        d=1e100.net; s=20210112; t=1679062201;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=3LaY7l5oaeABDYKyl6QYFTtEJWOZEXvI3J/Zz61gycg=;
+        b=beYrbyrgiri+nr6F5olwGTbA+k9708DNaMt/gh4Q4YrD+jKscQI9LyBrw2RHjqQf65
+         i3gsuwp82aywHmqYAvnTItHgQJa6GMlfF+eDmtrCG1y0/r1qDWcxKG3C/5NqsLBqYeZ5
+         wc4p6pwY9cG4G4VdZxKxz+vBRB/uavzJgmVKKBXwsdF9Xoi33f0oJdBTXbIUfyHfxYAf
+         lE5ppGmfaysOXGf8q0cbTqYZDtutp+8QZcAfuy7UgSPBKhFZ10ceWlot634l0Ol0rm3V
+         Yvwg5qyLdE5qmfBIonaRy5483FgwZ4kl3feqtEGDa02Kuh6QXz6EQFbM2y6Us7MUZbE/
+         +8Kw==
+X-Gm-Message-State: AO0yUKXdLBB/AY2A5KYS+GbojamDTDiZOlA9G7Df8jQluLED3b1MrASs
+        au7Cmr1M+C11FEq6T28CGjo=
+X-Google-Smtp-Source: AK7set82oFC4mKVHBWKdOIbk659/4WpBFYOqhmBnGl0ftda0/QgCnoyJPAv5L5y0HZoFhABXJ4kicQ==
+X-Received: by 2002:a05:622a:1443:b0:3bf:d7f8:4f85 with SMTP id v3-20020a05622a144300b003bfd7f84f85mr12459691qtx.12.1679062200778;
+        Fri, 17 Mar 2023 07:10:00 -0700 (PDT)
+Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
+        by smtp.gmail.com with ESMTPSA id e10-20020ac8670a000000b003ba2a15f93dsm1556437qtp.26.2023.03.17.07.10.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Mar 2023 07:09:12 -0700 (PDT)
-Message-ID: <64147488.df0a0220.5d091.cce2@mx.google.com>
-X-Google-Original-Message-ID: <ZBR0hQ/AH2M8A9t9@Ansuel-xps.>
-Date:   Fri, 17 Mar 2023 15:09:09 +0100
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Rob Herring <robh+dt@kernel.org>,
-        devicetree@vger.kernel.org, Lee Jones <lee@kernel.org>,
-        linux-leds@vger.kernel.org, pavel@ucw.cz,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org
-Subject: Re: [net-next PATCH v4 10/14] dt-bindings: net: dsa: qca8k: add LEDs
- definition example
-References: <20230317023125.486-1-ansuelsmth@gmail.com>
- <20230317023125.486-11-ansuelsmth@gmail.com>
- <20230317091410.58787646@dellmb>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230317091410.58787646@dellmb>
+        Fri, 17 Mar 2023 07:10:00 -0700 (PDT)
+Date:   Fri, 17 Mar 2023 10:09:59 -0400
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     =?UTF-8?B?5rKI5a6J55CqKOWHm+eOpSk=?= <amy.saq@antgroup.com>,
+        netdev@vger.kernel.org
+Cc:     willemdebruijn.kernel@gmail.com, mst@redhat.com,
+        davem@davemloft.net, jasowang@redhat.com,
+        =?UTF-8?B?6LCI6Ym06ZSL?= <henry.tjf@antgroup.com>,
+        =?UTF-8?B?5rKI5a6J55CqKOWHm+eOpSk=?= <amy.saq@antgroup.com>
+Message-ID: <641474b7cf005_36045220894@willemb.c.googlers.com.notmuch>
+In-Reply-To: <20230317074304.275598-1-amy.saq@antgroup.com>
+References: <20230317074304.275598-1-amy.saq@antgroup.com>
+Subject: RE: [PATCH v5] net/packet: support mergeable feature of virtio
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -94,154 +75,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 17, 2023 at 09:14:10AM +0100, Marek Behún wrote:
-> Hello Christian, also Rob Herring, Andrew Lunn and Pavel Machek,
-> 
-> On Fri, 17 Mar 2023 03:31:21 +0100
-> Christian Marangi <ansuelsmth@gmail.com> wrote:
-> 
-> > Add LEDs definition example for qca8k Switch Family to describe how they
-> > should be defined for a correct usage.
-> > 
-> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > ---
-> >  .../devicetree/bindings/net/dsa/qca8k.yaml    | 24 +++++++++++++++++++
-> >  1 file changed, 24 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
-> > index 389892592aac..2e9c14af0223 100644
-> > --- a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
-> > +++ b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
-> > @@ -18,6 +18,8 @@ description:
-> >    PHY it is connected to. In this config, an internal mdio-bus is registered and
-> >    the MDIO master is used for communication. Mixed external and internal
-> >    mdio-bus configurations are not supported by the hardware.
-> > +  Each phy has at least 3 LEDs connected and can be declared
-> > +  using the standard LEDs structure.
-> >  
-> >  properties:
-> >    compatible:
-> > @@ -117,6 +119,7 @@ unevaluatedProperties: false
-> >  examples:
-> >    - |
-> >      #include <dt-bindings/gpio/gpio.h>
-> > +    #include <dt-bindings/leds/common.h>
-> >  
-> >      mdio {
-> >          #address-cells = <1>;
-> > @@ -226,6 +229,27 @@ examples:
-> >                      label = "lan1";
-> >                      phy-mode = "internal";
-> >                      phy-handle = <&internal_phy_port1>;
-> > +
-> > +                    leds {
-> > +                        #address-cells = <1>;
-> > +                        #size-cells = <0>;
-> > +
-> > +                        led@0 {
-> > +                            reg = <0>;
-> > +                            color = <LED_COLOR_ID_WHITE>;
-> > +                            function = LED_FUNCTION_LAN;
-> > +                            function-enumerator = <1>;
-> > +                            default-state = "keep";
-> > +                        };
-> > +
-> > +                        led@1 {
-> > +                            reg = <1>;
-> > +                            color = <LED_COLOR_ID_AMBER>;
-> > +                            function = LED_FUNCTION_LAN;
-> > +                            function-enumerator = <1>;
-> > +                            default-state = "keep";
-> > +                        };
-> > +                    };
-> >                  };
-> 
-> I have nothing against this, but I would like to point out the
-> existence of the trigger-sources DT property, and I would like to
-> discuss how this property should be used by the LED subsystem to choose
-> default behaviour of a LED.
-> 
-> Consider that we want to specify in device-tree that a PHY LED (or any
-> other LED) should blink on network activity of the network device
-> connected to this PHY (let's say the attached network device is eth0).
-> (Why would we want to specify this in devicetree? Because currently the
->  drivers either keep the behaviour from boot or change it to something
->  specific that is not configurable.)
-> 
-> We could specify in DT something like:
->   eth0: ethernet-controller {
->     ...
->   }
-> 
->   ethernet-phy {
->     leds {
->       led@0 {
->         reg = <0>;
->         color = <LED_COLOR_ID_GREEN>;
->         trigger-sources = <&eth0>;
->         function = LED_FUNCTION_ ?????? ;
->       }
->     }
->   }
-> 
-> The above example specifies that the LED has a trigger source (eth0),
-> but we still need to specify the trigger itself (for example that
-> the LED should blink on activity, or the different kinds of link). In my
-> opinion, this should be specified by the function property, but this
-> property is currently used in other way: it is filled in with something
-> like "wan" or "lan" or "wlan", an information which, IMO,
-> should instead come from the devicename part of the LED, not the
-> function part.
-> 
-> Recall that the LED names are of the form
->   devicename:color:function
-> where the devicename part is supposed to be something like mmc0 or
-> sda1. With LEDs that are associated with network devices I think the
-> corresponding name should be the name of the network device (like eth0),
-> but there is the problem of network namespaces and also that network
-> devices can be renamed :(.
-> 
-> So one option how to specify the behaviour of the LED to blink on
-> activity would be to set
->   function = LED_FUNCTION_ACTIVITY;
-> but this would conflict with how currently some devicetrees use "lan",
-> "wlan" or "wan" as the function (which is IMO incorrect, as I said
-> above).
-> 
-> Another option would be to ignore the function and instead use
-> additional argument in the trigger-source property, something like
->   trigger-sources = <&eth0 TRIGGER_SOURCE_ACTIVITY>;
-> 
-> I would like to start a discussion on this and hear about your opinions,
-> because I think that the trigger-sources and function properties were
-> proposed in good faith, but currently the implementation and usage is a
-> mess.
-> 
+=E6=B2=88=E5=AE=89=E7=90=AA(=E5=87=9B=E7=8E=A5) wrote:
+> From: Jianfeng Tan <henry.tjf@antgroup.com>
+> =
 
-I think we should continue and make this discussion when we start
-implementing the hw contro for these LEDs to configure them in DT.
+> Packet sockets, like tap, can be used as the backend for kernel vhost.
+> In packet sockets, virtio net header size is currently hardcoded to be
+> the size of struct virtio_net_hdr, which is 10 bytes; however, it is no=
+t
+> always the case: some virtio features, such as mrg_rxbuf, need virtio
+> net header to be 12-byte long.
+> =
 
-Currently we are implementing very basic support so everything will be
-in sw.
+> Mergeable buffers, as a virtio feature, is worthy of supporting: packet=
+s
+> that are larger than one-mbuf size will be dropped in vhost worker's
+> handle_rx if mrg_rxbuf feature is not used, but large packets
+> cannot be avoided and increasing mbuf's size is not economical.
+> =
 
-Anyway just to give some ideas. Yes it sound a good idea to use the
-trigger-sources binding. My idea would be that trigger needs to have
-specific support for them. 
-If this in mind netdev can be configured in DT and setup hw control to
-offload blink with the required interface passed.
+> With this virtio feature enabled by virtio-user, packet sockets with
+> hardcoded 10-byte virtio net header will parse mac head incorrectly in
+> packet_snd by taking the last two bytes of virtio net header as part of=
 
-The current implementation still didn't include a way to configure the
-blink in DT as the series are already a bit big... (currently we have 3:
-- This series that already grow from 10 patch to 14
-- A cleanup series for netdev trigger that is already 7 patch
-- hw control that is another big boy with 12 patch
-)
+> mac header.
+> This incorrect mac header parsing will cause packet to be dropped due t=
+o
+> invalid ether head checking in later under-layer device packet receivin=
+g.
+> =
 
-So our idea was to first implement the minor things and then polish and
-improve it. (to make it easier to review)
+> By adding extra field vnet_hdr_sz with utilizing holes in struct
+> packet_sock to record currently used virtio net header size and support=
+ing
+> extra sockopt PACKET_VNET_HDR_SZ to set specified vnet_hdr_sz, packet
+> sockets can know the exact length of virtio net header that virtio user=
 
-But agree with you that it would be a nice idea to have a correct and
-good implementation for trigger-sources.
+> gives.
+> In packet_snd, tpacket_snd and packet_recvmsg, instead of using
+> hardcoded virtio net header size, it can get the exact vnet_hdr_sz from=
 
--- 
-	Ansuel
+> corresponding packet_sock, and parse mac header correctly based on this=
+
+> information to avoid the packets being mistakenly dropped.
+> =
+
+> Signed-off-by: Jianfeng Tan <henry.tjf@antgroup.com>
+> Co-developed-by: Anqi Shen <amy.saq@antgroup.com>
+> Signed-off-by: Anqi Shen <amy.saq@antgroup.com>
+
+Another patch set was just merged that this will have merge conflicts
+with. Please respin.
+
+https://lore.kernel.org/netdev/20230316011014.992179-4-edumazet@google.co=
+m/T/
