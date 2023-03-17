@@ -2,105 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59E756BF000
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 18:42:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2423B6BF019
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 18:47:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230326AbjCQRm4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 13:42:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49396 "EHLO
+        id S230398AbjCQRrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 13:47:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230301AbjCQRmx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 13:42:53 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83FA731BDF;
-        Fri, 17 Mar 2023 10:42:50 -0700 (PDT)
-Received: from jupiter.universe (dyndsl-091-248-191-142.ewe-ip-backbone.de [91.248.191.142])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: sre)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id DD3F666030C6;
-        Fri, 17 Mar 2023 17:42:48 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1679074969;
-        bh=jAfwTMiBYZ9JmHPeHDLPoQkj/I4GmFopx/XoUWYNTok=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aZyaalmUWg7i9X+DtwzcwFjLyI3BOe6Ifqh+n79qvr+/W5lAs7oEM8ODadZNy7EgB
-         N+6LPcQphz2d0IDDpLTWywduBD9NvGCRyjJL5tcf1cTYAuwm7bIb3ed9HU47rpT14O
-         0bdAMovcGI+hjsve/iRCFV94a8XCX2opYT670ExgmZsoqZnLz5/co3+TJuMZbKPtF7
-         WAuoWgmEDNW6tqMg2i3otXjdYp8feIxyxaJQ34buEGvPNlz7vs6UleOz7fm76EjGer
-         ccKs5uC2nggghK/GQayLmezOUm3h2hoRNIDK98yzVXecFe8DI+ZGKQFkjmpsvYgCfz
-         DXurHO2WqmNNw==
-Received: by jupiter.universe (Postfix, from userid 1000)
-        id 433334807E3; Fri, 17 Mar 2023 18:42:46 +0100 (CET)
-From:   Sebastian Reichel <sebastian.reichel@collabora.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        kernel@collabora.com
-Subject: [PATCHv1 2/2] net: ethernet: stmmac: dwmac-rk: fix optional phy regulator handling
-Date:   Fri, 17 Mar 2023 18:42:43 +0100
-Message-Id: <20230317174243.61500-3-sebastian.reichel@collabora.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230317174243.61500-1-sebastian.reichel@collabora.com>
-References: <20230317174243.61500-1-sebastian.reichel@collabora.com>
+        with ESMTP id S230419AbjCQRrY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 13:47:24 -0400
+Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A50E1C4E9C
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 10:47:20 -0700 (PDT)
+Received: by mail-il1-x129.google.com with SMTP id bp11so3144346ilb.3
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 10:47:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1679075239;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=93R1RrX9I3twrt6aZ9BIfES4YHf18kk5Xpf+bgkTsFA=;
+        b=PD2qfnUU+81DGZ/Rvuz7qAyKjlQLcMvc05j/hoDjoEwA5eiuB0I1CbqP7XBheMmXke
+         g5dra7fqS9CghgxlYmNg2qYY2brMqznNLefc6ZOqGnLT6MPAiGHkNQ6gx+PrhMGdnVXM
+         skpscbwOFb1soXAcNdPBSttVtIpeHuSZSVYvpKCe36FhLxeHbLLCEjx7Ovj5M80ojbI2
+         qWn3hLvatynKRnmwdmyN8Y+O0IF8G97clik6e2tlJsAgtwyWLY2vEbcgkl26NDTOlwic
+         sCXyED2OoJlrkuuQIWybn77SwfQeWxZxjZsMdDQhY8XbD7aiy+QPjQfT0dyrw30DICXK
+         y4HQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679075239;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=93R1RrX9I3twrt6aZ9BIfES4YHf18kk5Xpf+bgkTsFA=;
+        b=jyhi1qmpkhzjotVKGrnciMjaswo9Lx3LGrcJqGMKVE0/RGtQVa64kwqZmZs8lxksst
+         9o117Mh0g5qhcC1WR70xx17eH6Ryqavs/lNbwjLweiSI50xXE4AcotfvqumR2BABwTVA
+         W6k8E+oUnD0hkKClveKO1HOAAmySUiMk2nl6Trs3G23MkjB/rtRN3Wf24bTdmv98+QBb
+         3PBu+hT+exBjP9xXdAYgs/NcR9sDoMpnThuEV5M3Pt81zYueMEdHiBs+NBJCYWWzxwwx
+         mHdU0nn2N8HU2WWCwX6QdPxJXxaPR3W6tS13AeNIct1RgxkNRm9y6mXpZvtzrXgInURD
+         C3+g==
+X-Gm-Message-State: AO0yUKVA8IpsIpXRjsUJWB5Wub9GhCyBiD/sKIl09O0EUqdeGVR6dQJc
+        1jyoZRvneT8a5meERvtHUiFDLOZvVUNH/HUyxJAmlw==
+X-Google-Smtp-Source: AK7set/Jf6pm6FDlnwo8nSk++N9Z/WXrdCRhRo1Z1cj7Y9sWFycQiIrzO9PAtL4vAzyIXcVhNzhnbH2clf7P5qUrcek=
+X-Received: by 2002:a92:7b04:0:b0:310:a24c:4231 with SMTP id
+ w4-20020a927b04000000b00310a24c4231mr130240ilc.6.1679075239439; Fri, 17 Mar
+ 2023 10:47:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+References: <20230317155539.2552954-1-edumazet@google.com> <20230317155539.2552954-10-edumazet@google.com>
+ <b9b3e7a2-788b-13ca-91a6-3017c8afbbf4@tessares.net>
+In-Reply-To: <b9b3e7a2-788b-13ca-91a6-3017c8afbbf4@tessares.net>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 17 Mar 2023 10:47:08 -0700
+Message-ID: <CANn89i+xOmDmD2=1EQF0U5F5+GQb_HfAWmQD=1FP+6L=qK-E5w@mail.gmail.com>
+Subject: Re: [PATCH net-next 09/10] mptcp: preserve const qualifier in mptcp_sk()
+To:     Matthieu Baerts <matthieu.baerts@tessares.net>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        David Ahern <dsahern@kernel.org>,
+        Simon Horman <simon.horman@corigine.com>,
+        Willem de Bruijn <willemb@google.com>,
+        eric.dumazet@gmail.com, MPTCP Upstream <mptcp@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The usual devm_regulator_get() call already handles "optional"
-regulators by returning a valid dummy and printing a warning
-that the dummy regulator should be described properly. This
-code open coded the same behaviour, but masked any errors that
-are not -EPROBE_DEFER and is quite noisy.
+On Fri, Mar 17, 2023 at 10:32=E2=80=AFAM Matthieu Baerts
+<matthieu.baerts@tessares.net> wrote:
+>
+> Hi Eric,
+>
+> On 17/03/2023 16:55, Eric Dumazet wrote:
+> > We can change mptcp_sk() to propagate its argument const qualifier,
+> > thanks to container_of_const().
+> >
+> > We need to change few things to avoid build errors:
+> >
+> > mptcp_set_datafin_timeout() and mptcp_rtx_head() have to accept
+> > non-const sk pointers.
+> >
+> > @msk local variable in mptcp_pending_tail() must be const.
+> >
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > Cc: Matthieu Baerts <matthieu.baerts@tessares.net>
+>
+> Good idea!
+>
+> Thank you for this patch and for having Cced me.
+>
+> It looks good to me. I just have one question below if you don't mind.
+>
+> (...)
+>
+> > diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+> > index 61fd8eabfca2028680e04558b4baca9f48bbaaaa..4ed8ffffb1ca473179217e6=
+40a23bc268742628d 100644
+> > --- a/net/mptcp/protocol.h
+> > +++ b/net/mptcp/protocol.h
+>
+> (...)
+>
+> > @@ -381,7 +378,7 @@ static inline struct mptcp_data_frag *mptcp_pending=
+_tail(const struct sock *sk)
+> >       return list_last_entry(&msk->rtx_queue, struct mptcp_data_frag, l=
+ist);
+> >  }
+> >
+> > -static inline struct mptcp_data_frag *mptcp_rtx_head(const struct sock=
+ *sk)
+> > +static inline struct mptcp_data_frag *mptcp_rtx_head(struct sock *sk)
+>
+> It was not clear to me why you had to remove the "const" qualifier here
+> and not just have to add one when assigning the msk just below. But then
+> I looked at what was behind the list_first_entry_or_null() macro used in
+> this function and understood what was the issue.
+>
+>
+> My naive approach would be to modify this macro but I guess we don't
+> want to go down that road, right?
+>
+> -------------------- 8< --------------------
+> diff --git a/include/linux/list.h b/include/linux/list.h
+> index f10344dbad4d..cd770766f451 100644
+> --- a/include/linux/list.h
+> +++ b/include/linux/list.h
+> @@ -550,7 +550,7 @@ static inline void list_splice_tail_init(struct
+> list_head *list,
+>   * Note that if the list is empty, it returns NULL.
+>   */
+>  #define list_first_entry_or_null(ptr, type, member) ({ \
+> -       struct list_head *head__ =3D (ptr); \
+> +       const struct list_head *head__ =3D (ptr); \
+>         struct list_head *pos__ =3D READ_ONCE(head__->next); \
+>         pos__ !=3D head__ ? list_entry(pos__, type, member) : NULL; \
+>  })
+> -------------------- 8< --------------------
 
-This change effectively unmasks and propagates regulators errors
-not involving -ENODEV, downgrades the error print to warning level
-if no regulator is specified and captures the probe defer message
-for /sys/kernel/debug/devices_deferred.
+This could work, but it is a bit awkward.
 
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
----
- drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+mptcp_rtx_head() is used  in a context where we are changing the
+socket, not during a readonly lookup ?
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-index 126812cd17e6..01de0174fa18 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-@@ -1680,14 +1680,11 @@ static struct rk_priv_data *rk_gmac_setup(struct platform_device *pdev,
- 		}
- 	}
- 
--	bsp_priv->regulator = devm_regulator_get_optional(dev, "phy");
-+	bsp_priv->regulator = devm_regulator_get(dev, "phy");
- 	if (IS_ERR(bsp_priv->regulator)) {
--		if (PTR_ERR(bsp_priv->regulator) == -EPROBE_DEFER) {
--			dev_err(dev, "phy regulator is not available yet, deferred probing\n");
--			return ERR_PTR(-EPROBE_DEFER);
--		}
--		dev_err(dev, "no regulator found\n");
--		bsp_priv->regulator = NULL;
-+		ret = PTR_ERR(bsp_priv->regulator);
-+		dev_err_probe(dev, ret, "failed to get phy regulator\n");
-+		return ERR_PTR(ret);
- 	}
- 
- 	ret = of_property_read_string(dev->of_node, "clock_in_out", &strings);
--- 
-2.39.2
+>
+>
+> It looks safe to me to do that but I would not trust myself on a Friday
+> evening :)
+> (I'm sure I'm missing something, I'm sorry if it is completely wrong)
+>
+> Anyway if we cannot modify list_first_entry_or_null() one way or
+> another, I'm fine with your modification!
+>
+> Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+>
 
+Thanks !
