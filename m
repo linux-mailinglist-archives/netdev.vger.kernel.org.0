@@ -2,63 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C1436BE47E
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 09:56:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD7386BE4B8
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 10:02:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231365AbjCQI4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 04:56:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38742 "EHLO
+        id S231878AbjCQJCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 05:02:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231339AbjCQI4m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 04:56:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2E0D69CF2;
-        Fri, 17 Mar 2023 01:56:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EBFB862233;
-        Fri, 17 Mar 2023 08:56:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16927C433D2;
-        Fri, 17 Mar 2023 08:56:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679043368;
-        bh=slpiaAEjXiTq1hkVY9j8a9HW24x6Azyc16xU5RO6KWs=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=DMAqwki8MOihwuNweDUAzPF6FMgssCtOcAeccrigmtelNe0g+LdJRLX8uXqrlEQcE
-         eTR9VInTe4pXTF32ygqzEEDiPuJZA13bxKKAeWA/Px9Z2BkeedsjUmGFK82KNRB3oh
-         CO0siH7jD+SQ6R8gRdRYYRb7hQGEJT29610+EZIi8/3FEIlV3CHv6+a/Yqa1EXpQPc
-         tST++7pP2OMT4PWz52KW7JWp+kfaZYU99R21TAAvDlMVKNOcc5iAOPhODpfKkR7/y/
-         11mOmXuCbZRvHfcbKc68NUeBRpFUWyyGdmJvk0i7cF5HBXnxI1aYkU5imjfxwkbTwO
-         fojVBkNNfSHEg==
-Message-ID: <3f26b194-287c-074d-8e78-572875f9a734@kernel.org>
-Date:   Fri, 17 Mar 2023 10:56:02 +0200
+        with ESMTP id S231873AbjCQJBj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 05:01:39 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E57EF5F6C5
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 02:00:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1679043616; x=1710579616;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=Bjj+/Bat4zbDauUwClBvI0c6p8g4k1wYXE/0ELyZFRI=;
+  b=OGVljE8CXeTBogpKE4QAKeYYuUbqkOH5MLBqNHZQJsBNlhANc2tAF3xM
+   76Wl4vDj3L97u2ll0XfFYIKTF2r7WeWIj+Sy0w5GV/DiiVkeOBFHM1yP3
+   4NqhSKCt5gmUXY5mx3jZZkxE5R6gisEVnPB9VtvoW+jVc/BeQoK74D+KL
+   vrIdbJfeuBwl9XR3GC4LpPYDd1fXZqr/FU0CGiqM2iPNDkEbHMUlEL181
+   SDVKeO4yaF2To5vZPe079OcAGmBY6SXFYsqJKTHHsJ1J6ZIKoIunAzAJt
+   OUkSPxj5q7s+KnYsbAt8ydtjByNqoAaoRxTyPwPWzhPzB2EHdupiNReYO
+   g==;
+X-IronPort-AV: E=Sophos;i="5.98,268,1673938800"; 
+   d="scan'208";a="205181102"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Mar 2023 01:59:46 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Fri, 17 Mar 2023 01:59:45 -0700
+Received: from den-dk-m31857.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.21 via Frontend Transport; Fri, 17 Mar 2023 01:59:43 -0700
+Message-ID: <0f7be52d197fee7f643217341b057185b7e9f9d1.camel@microchip.com>
+Subject: Re: [PATCH net-next 1/2] net: pcs: xpcs: remove double-read of link
+ state when using AN
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+CC:     Andrew Lunn <andrew@lunn.ch>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jonathan McDowell <noodles@earth.li>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>, <netdev@vger.kernel.org>
+Date:   Fri, 17 Mar 2023 09:59:42 +0100
+In-Reply-To: <ZBM/4H/BKZpjghB/@shell.armlinux.org.uk>
+References: <ZBHaQDM+G/o/UW3i@shell.armlinux.org.uk>
+         <E1pcSOp-00DiAo-Su@rmk-PC.armlinux.org.uk>
+         <918d1908c2771f4941c191b73c495e20d89a6a99.camel@microchip.com>
+         <ZBM/4H/BKZpjghB/@shell.armlinux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v4 2/5] soc: ti: pruss: Add
- pruss_{request,release}_mem_region() API
-Content-Language: en-US
-To:     MD Danish Anwar <danishanwar@ti.com>,
-        "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Nishanth Menon <nm@ti.com>
-Cc:     linux-remoteproc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, srk@ti.com, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20230313111127.1229187-1-danishanwar@ti.com>
- <20230313111127.1229187-3-danishanwar@ti.com>
-From:   Roger Quadros <rogerq@kernel.org>
-In-Reply-To: <20230313111127.1229187-3-danishanwar@ti.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,254 +73,116 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew & Danish,
+Hi Russell,
+
+On Thu, 2023-03-16 at 16:12 +0000, Russell King (Oracle) wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know th=
+e
+> content is safe
+>=20
+> On Thu, Mar 16, 2023 at 10:44:48AM +0100, Steen Hegelund wrote:
+> > Hi Russell,
+> >=20
+> >=20
+> > On Wed, 2023-03-15 at 14:46 +0000, Russell King (Oracle) wrote:
+> > > EXTERNAL EMAIL: Do not click links or open attachments unless you kno=
+w the
+> > > content is safe
+> > >=20
+> > > Phylink does not want the current state of the link when reading the
+> > > PCS link state - it wants the latched state. Don't double-read the
+> > > MII status register. Phylink will re-read as necessary to capture
+> > > transient link-down events as of dbae3388ea9c ("net: phylink: Force
+> > > retrigger in case of latched link-fail indicator").
+> > >=20
+> > > The above referenced commit is a dependency for this change, and thus
+> > > this change should not be backported to any kernel that does not
+> > > contain the above referenced commit.
+> > >=20
+> > > Fixes: fcb26bd2b6ca ("net: phy: Add Synopsys DesignWare XPCS MDIO mod=
+ule")
+> > > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> > > ---
+> > > =C2=A0drivers/net/pcs/pcs-xpcs.c | 13 ++-----------
+> > > =C2=A01 file changed, 2 insertions(+), 11 deletions(-)
+> > >=20
+> > > diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
+> > > index bc428a816719..04a685353041 100644
+> > > --- a/drivers/net/pcs/pcs-xpcs.c
+> > > +++ b/drivers/net/pcs/pcs-xpcs.c
+> > > @@ -321,7 +321,7 @@ static int xpcs_read_fault_c73(struct dw_xpcs *xp=
+cs,
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return 0;
+> > > =C2=A0}
+> > >=20
+> > > -static int xpcs_read_link_c73(struct dw_xpcs *xpcs, bool an)
+> > > +static int xpcs_read_link_c73(struct dw_xpcs *xpcs)
+> > > =C2=A0{
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bool link =3D true;
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 int ret;
+> > > @@ -333,15 +333,6 @@ static int xpcs_read_link_c73(struct dw_xpcs *xp=
+cs,
+> > > bool an)
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (!(ret & MDIO_STAT1_LST=
+ATUS))
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 link =3D false;
+> > >=20
+> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (an) {
+> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 ret =3D xpcs_read(xpcs, MDIO_MMD_AN, MDIO_STAT1);
+> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 if (ret < 0)
+> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return r=
+et;
+> > > -
+> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 if (!(ret & MDIO_STAT1_LSTATUS))
+> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 link =3D=
+ false;
+> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
+> > > -
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return link;
+> > > =C2=A0}
+> > >=20
+> > > @@ -935,7 +926,7 @@ static int xpcs_get_state_c73(struct dw_xpcs *xpc=
+s,
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 int ret;
+> > >=20
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Link needs to be read f=
+irst ... */
+> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 state->link =3D xpcs_read_link_=
+c73(xpcs, state->an_enabled) > 0 ? 1
+> > > : 0;
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 state->link =3D xpcs_read_link_=
+c73(xpcs) > 0 ? 1 : 0;
+> >=20
+> > Couldn't you just say:
+> >=20
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 state->link =3D xpcs_read_link_c73(xpcs)=
+ > 0;
+> >=20
+> > That should be a boolean, right?
+>=20
+> That would be another change to the code - and consider how such a
+> change would fit in this series given its description and also this
+> patch.
+>=20
+> IMHO such a change should be a separate patch - and there's plenty
+> of scope for cleanups like the one you suggest in this driver.
+>=20
+> Thanks.
+
+OK - got that!
 
 
-On 13/03/2023 13:11, MD Danish Anwar wrote:
-> From: "Andrew F. Davis" <afd@ti.com>
-> 
-> Add two new API - pruss_request_mem_region() & pruss_release_mem_region(),
-> to the PRUSS platform driver to allow client drivers to acquire and release
-> the common memory resources present within a PRU-ICSS subsystem. This
-> allows the client drivers to directly manipulate the respective memories,
-> as per their design contract with the associated firmware.
-> 
-> Co-developed-by: Suman Anna <s-anna@ti.com>
-> Signed-off-by: Suman Anna <s-anna@ti.com>
-> Signed-off-by: Andrew F. Davis <afd@ti.com>
-> Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
-> Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
-> Signed-off-by: MD Danish Anwar <danishanwar@ti.com>
-> Reviewed-by: Roger Quadros <rogerq@kernel.org>
-> ---
->  drivers/soc/ti/pruss.c           | 77 ++++++++++++++++++++++++++++++++
->  include/linux/pruss_driver.h     | 27 +++--------
->  include/linux/remoteproc/pruss.h | 39 ++++++++++++++++
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
 
+Reviewed-by: Steen Hegelund <Steen.Hegelund@microchip.com>
 
-We have these 2 header files and I think anything that deals with
-'struct pruss' should go in include/linux/pruss_driver.h
-
-Anything that deals with pru_rproc (i.e. struct rproc) should go in
-include/linux/remoteproc/pruss.h
-
-Do you agree?
-
->  3 files changed, 121 insertions(+), 22 deletions(-)
-> 
-> diff --git a/drivers/soc/ti/pruss.c b/drivers/soc/ti/pruss.c
-> index a169aa1ed044..c8053c0d735f 100644
-> --- a/drivers/soc/ti/pruss.c
-> +++ b/drivers/soc/ti/pruss.c
-> @@ -88,6 +88,82 @@ void pruss_put(struct pruss *pruss)
->  }
->  EXPORT_SYMBOL_GPL(pruss_put);
->  
-> +/**
-> + * pruss_request_mem_region() - request a memory resource
-> + * @pruss: the pruss instance
-> + * @mem_id: the memory resource id
-> + * @region: pointer to memory region structure to be filled in
-> + *
-> + * This function allows a client driver to request a memory resource,
-> + * and if successful, will let the client driver own the particular
-> + * memory region until released using the pruss_release_mem_region()
-> + * API.
-> + *
-> + * Return: 0 if requested memory region is available (in such case pointer to
-> + * memory region is returned via @region), an error otherwise
-> + */
-> +int pruss_request_mem_region(struct pruss *pruss, enum pruss_mem mem_id,
-> +			     struct pruss_mem_region *region)
-> +{
-> +	if (!pruss || !region || mem_id >= PRUSS_MEM_MAX)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&pruss->lock);
-> +
-> +	if (pruss->mem_in_use[mem_id]) {
-> +		mutex_unlock(&pruss->lock);
-> +		return -EBUSY;
-> +	}
-> +
-> +	*region = pruss->mem_regions[mem_id];
-> +	pruss->mem_in_use[mem_id] = region;
-> +
-> +	mutex_unlock(&pruss->lock);
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(pruss_request_mem_region);
-> +
-> +/**
-> + * pruss_release_mem_region() - release a memory resource
-> + * @pruss: the pruss instance
-> + * @region: the memory region to release
-> + *
-> + * This function is the complimentary function to
-> + * pruss_request_mem_region(), and allows the client drivers to
-> + * release back a memory resource.
-> + *
-> + * Return: 0 on success, an error code otherwise
-> + */
-> +int pruss_release_mem_region(struct pruss *pruss,
-> +			     struct pruss_mem_region *region)
-> +{
-> +	int id;
-> +
-> +	if (!pruss || !region)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&pruss->lock);
-> +
-> +	/* find out the memory region being released */
-> +	for (id = 0; id < PRUSS_MEM_MAX; id++) {
-> +		if (pruss->mem_in_use[id] == region)
-> +			break;
-> +	}
-> +
-> +	if (id == PRUSS_MEM_MAX) {
-> +		mutex_unlock(&pruss->lock);
-> +		return -EINVAL;
-> +	}
-> +
-> +	pruss->mem_in_use[id] = NULL;
-> +
-> +	mutex_unlock(&pruss->lock);
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(pruss_release_mem_region);
-> +
->  static void pruss_of_free_clk_provider(void *data)
->  {
->  	struct device_node *clk_mux_np = data;
-> @@ -290,6 +366,7 @@ static int pruss_probe(struct platform_device *pdev)
->  		return -ENOMEM;
->  
->  	pruss->dev = dev;
-> +	mutex_init(&pruss->lock);
->  
->  	child = of_get_child_by_name(np, "memories");
->  	if (!child) {
-> diff --git a/include/linux/pruss_driver.h b/include/linux/pruss_driver.h
-> index 86242fb5a64a..22b4b37d2536 100644
-> --- a/include/linux/pruss_driver.h
-> +++ b/include/linux/pruss_driver.h
-> @@ -9,37 +9,18 @@
->  #ifndef _PRUSS_DRIVER_H_
->  #define _PRUSS_DRIVER_H_
->  
-> +#include <linux/mutex.h>
->  #include <linux/remoteproc/pruss.h>
->  #include <linux/types.h>
->  
-> -/*
-> - * enum pruss_mem - PRUSS memory range identifiers
-> - */
-> -enum pruss_mem {
-> -	PRUSS_MEM_DRAM0 = 0,
-> -	PRUSS_MEM_DRAM1,
-> -	PRUSS_MEM_SHRD_RAM2,
-> -	PRUSS_MEM_MAX,
-> -};
-> -
-> -/**
-> - * struct pruss_mem_region - PRUSS memory region structure
-> - * @va: kernel virtual address of the PRUSS memory region
-> - * @pa: physical (bus) address of the PRUSS memory region
-> - * @size: size of the PRUSS memory region
-> - */
-> -struct pruss_mem_region {
-> -	void __iomem *va;
-> -	phys_addr_t pa;
-> -	size_t size;
-> -};
-> -
->  /**
->   * struct pruss - PRUSS parent structure
->   * @dev: pruss device pointer
->   * @cfg_base: base iomap for CFG region
->   * @cfg_regmap: regmap for config region
->   * @mem_regions: data for each of the PRUSS memory regions
-> + * @mem_in_use: to indicate if memory resource is in use
-> + * @lock: mutex to serialize access to resources
->   * @core_clk_mux: clk handle for PRUSS CORE_CLK_MUX
->   * @iep_clk_mux: clk handle for PRUSS IEP_CLK_MUX
->   */
-> @@ -48,6 +29,8 @@ struct pruss {
->  	void __iomem *cfg_base;
->  	struct regmap *cfg_regmap;
->  	struct pruss_mem_region mem_regions[PRUSS_MEM_MAX];
-> +	struct pruss_mem_region *mem_in_use[PRUSS_MEM_MAX];
-> +	struct mutex lock; /* PRU resource lock */
->  	struct clk *core_clk_mux;
->  	struct clk *iep_clk_mux;
->  };
-> diff --git a/include/linux/remoteproc/pruss.h b/include/linux/remoteproc/pruss.h
-> index 93a98cac7829..33f930e0a0ce 100644
-> --- a/include/linux/remoteproc/pruss.h
-> +++ b/include/linux/remoteproc/pruss.h
-> @@ -44,6 +44,28 @@ enum pru_ctable_idx {
->  	PRU_C31,
->  };
->  
-> +/*
-> + * enum pruss_mem - PRUSS memory range identifiers
-> + */
-> +enum pruss_mem {
-> +	PRUSS_MEM_DRAM0 = 0,
-> +	PRUSS_MEM_DRAM1,
-> +	PRUSS_MEM_SHRD_RAM2,
-> +	PRUSS_MEM_MAX,
-> +};
-> +
-> +/**
-> + * struct pruss_mem_region - PRUSS memory region structure
-> + * @va: kernel virtual address of the PRUSS memory region
-> + * @pa: physical (bus) address of the PRUSS memory region
-> + * @size: size of the PRUSS memory region
-> + */
-> +struct pruss_mem_region {
-> +	void __iomem *va;
-> +	phys_addr_t pa;
-> +	size_t size;
-> +};
-> +
->  struct device_node;
->  struct rproc;
->  struct pruss;
-> @@ -52,6 +74,10 @@ struct pruss;
->  
->  struct pruss *pruss_get(struct rproc *rproc);
->  void pruss_put(struct pruss *pruss);
-> +int pruss_request_mem_region(struct pruss *pruss, enum pruss_mem mem_id,
-> +			     struct pruss_mem_region *region);
-> +int pruss_release_mem_region(struct pruss *pruss,
-> +			     struct pruss_mem_region *region);
->  
->  #else
->  
-> @@ -62,6 +88,19 @@ static inline struct pruss *pruss_get(struct rproc *rproc)
->  
->  static inline void pruss_put(struct pruss *pruss) { }
->  
-> +static inline int pruss_request_mem_region(struct pruss *pruss,
-> +					   enum pruss_mem mem_id,
-> +					   struct pruss_mem_region *region)
-> +{
-> +	return -EOPNOTSUPP;
-> +}
-> +
-> +static inline int pruss_release_mem_region(struct pruss *pruss,
-> +					   struct pruss_mem_region *region)
-> +{
-> +	return -EOPNOTSUPP;
-> +}
-> +
->  #endif /* CONFIG_TI_PRUSS */
->  
->  #if IS_ENABLED(CONFIG_PRU_REMOTEPROC)
-
-cheers,
--roger
+BR
+Steen
