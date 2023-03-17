@@ -2,108 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D16966BE2DE
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 09:16:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3C306BE2EB
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 09:19:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229911AbjCQIQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 04:16:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45922 "EHLO
+        id S229820AbjCQITi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 04:19:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229705AbjCQIQt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 04:16:49 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A045D589D;
-        Fri, 17 Mar 2023 01:16:06 -0700 (PDT)
+        with ESMTP id S229769AbjCQITh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 04:19:37 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D266623664;
+        Fri, 17 Mar 2023 01:19:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1679040965; x=1710576965;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679041144; x=1710577144;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=MR+zLVYqEPfrh4L6Pcplh28QfUyeDUxyPOPQ6xA0fPc=;
-  b=mewEzZ6QrkP2WR564l4cf4w0Xfhw3c+Ad++xsAKDOJxma2RTqUzknald
-   Y4fiH2/+t/oQ2udEuMuaKPZu7ljStuVq9lNtFa6Bn6XWSOxHvmZuakVsT
-   GjOA6S55V2n0yMJUhXr6Oqk9CDwB/bj75B4RRSjmM2oK5Zrg2asukQXc2
-   jQnT/Iba+wv4tizKAnoixNVwQBVHgwvDyrk2rle/8KnlUe1BglG50nKt3
-   eQ7Yfe5CA10QKmOFaJAj14uiXgiy0p6zK9/tXDQYog97wDjwCAu14qciV
-   ZoCmSTN5j6wN/FdSuyij21Y0cTydLltAYU1RRVUenzQVI0BRYV7r4yUiD
+  bh=/omHGfZ5dOYrjoSumS2lKvLRuYatBfJZeL4MVZdQvsM=;
+  b=ar5vgMHcIDoTV7R5bM7psD3sH0G2OJjZRHRjktk8t2fJOUQwj4Op2boQ
+   K6j4ZsC9OHVZdfwCDytjAHzF1zAVhjNzqnCPJPGrzeUlSJbeFEaJZGja/
+   PTEKZevJDwnzFtbIhzbBeW01bV8lgUeCLBrmyyD/+ujNSDi7zy+PV9YSZ
+   gbkk+U0QxWzRmuvXyMFEmTuxiUV7UlPiiJ859yQ19Vp0kNasx69DjuBKQ
+   sZYhmWhz97pCQpUVcwzWJ0ntwCf88PWCdoIIQOlNETH/10NynAOx3kboe
+   t1fWjD25YveXwpjA/8lTinZwbEkg0q1D4UrbpBHd4dhuT1lvpAXiwjgPv
    A==;
-X-IronPort-AV: E=Sophos;i="5.98,268,1673938800"; 
-   d="scan'208";a="216751985"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Mar 2023 01:15:14 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Fri, 17 Mar 2023 01:15:13 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
- Transport; Fri, 17 Mar 2023 01:15:13 -0700
-Date:   Fri, 17 Mar 2023 09:15:13 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Kang Chen <void0red@gmail.com>
-CC:     <borisp@nvidia.com>, <john.fastabend@gmail.com>, <kuba@kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
-        <dirk.vandermerwe@netronome.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net/tls: refine the branch condition in tls_dev_event
-Message-ID: <20230317081513.ktllct3rqaisummm@soft-dev3-1>
-References: <20230317071636.1028488-1-void0red@gmail.com>
+X-IronPort-AV: E=McAfee;i="6600,9927,10651"; a="322058149"
+X-IronPort-AV: E=Sophos;i="5.98,268,1673942400"; 
+   d="scan'208";a="322058149"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2023 01:18:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10651"; a="804031943"
+X-IronPort-AV: E=Sophos;i="5.98,268,1673942400"; 
+   d="scan'208";a="804031943"
+Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2023 01:18:15 -0700
+Date:   Fri, 17 Mar 2023 09:18:06 +0100
+From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     kuba@kernel.org, sgoutham@marvell.com, gakula@marvell.com,
+        sbhatta@marvell.com, hkelam@marvell.com, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, richardcochran@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] octeontx2-vf: Add missing free for alloc_percpu
+Message-ID: <ZBQiPmhuH7aNJo5p@localhost.localdomain>
+References: <20230317064337.18198-1-jiasheng@iscas.ac.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230317071636.1028488-1-void0red@gmail.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230317064337.18198-1-jiasheng@iscas.ac.cn>
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 03/17/2023 15:16, Kang Chen wrote:
-
+On Fri, Mar 17, 2023 at 02:43:37PM +0800, Jiasheng Jiang wrote:
+> Add the free_percpu for the allocated "vf->hw.lmt_info" in order to avoid
+> memory leak, same as the "pf->hw.lmt_info" in
+> `drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c`.
+> 
+> Fixes: 5c0512072f65 ("octeontx2-pf: cn10k: Use runtime allocated LMTLINE region")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+> Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+> Acked-by: Geethasowjanya Akula <gakula@marvell.com>
+> ---
+> Changelog:
+> 
+> v1 -> v2:
+> 
+> 1. Remove the if () checks.
 Hi,
 
-> 
-> dev->tlsdev_ops may be null and cause null pointer dereference later.
+Did You change that because of my comments? I am not sure it is correct.
+I meant moving these two ifs to new function, because they are called
+two times. It will be easier to do changes in the future.
 
-In the subject of your patch, you should specify which tree is this
-patch targeting. When you create the patch you can use:
-git format-patch ... --subject-prefix "PATCH net" ...
+void cn10k_lmtst_deinit(struct otx2_nic *pfvf)
+{
+	if (vf->hw.lmt_info)
+		free_percpu(vf->hw.lmt_info);
+	if (test_bit(CN10K_LMTST, &vf->hw.cap_flag))
+		qmem_free(vf->dev, vf->dync_lmt);
+}
 
-> 
-> Fixes: eeb2efaf36c7 ("net/tls: generalize the resync callback")
-> Signed-off-by: Kang Chen <void0red@gmail.com>
+Thanks,
+Michal
+
 > ---
->  net/tls/tls_device.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+>  drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-> index a7cc4f9faac2..f30a8fe373c2 100644
-> --- a/net/tls/tls_device.c
-> +++ b/net/tls/tls_device.c
-> @@ -1449,7 +1449,8 @@ static int tls_dev_event(struct notifier_block *this, unsigned long event,
->                 if (netif_is_bond_master(dev))
->                         return NOTIFY_DONE;
->                 if ((dev->features & NETIF_F_HW_TLS_RX) &&
-> -                   !dev->tlsdev_ops->tls_dev_resync)
-> +                  (!dev->tlsdev_ops || (dev->tlsdev_ops &&
-> +                   !dev->tlsdev_ops->tls_dev_resync)))
-
-This can be simply written like:
-(!dev->tlvdev_ops || !dev->tlvdev_ops->tls_dev_resync)
-
-On the second condition you know already that dev->tlvdev_ops is not
-NULL.
-
->                         return NOTIFY_BAD;
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+> index 7f8ffbf79cf7..ab126f8706c7 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+> @@ -709,6 +709,7 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>  err_ptp_destroy:
+>  	otx2_ptp_destroy(vf);
+>  err_detach_rsrc:
+> +	free_percpu(vf->hw.lmt_info);
+>  	if (test_bit(CN10K_LMTST, &vf->hw.cap_flag))
+>  		qmem_free(vf->dev, vf->dync_lmt);
+>  	otx2_detach_resources(&vf->mbox);
+> @@ -762,6 +763,7 @@ static void otx2vf_remove(struct pci_dev *pdev)
+>  	otx2_shutdown_tc(vf);
+>  	otx2vf_disable_mbox_intr(vf);
+>  	otx2_detach_resources(&vf->mbox);
+> +	free_percpu(vf->hw.lmt_info);
+>  	if (test_bit(CN10K_LMTST, &vf->hw.cap_flag))
+>  		qmem_free(vf->dev, vf->dync_lmt);
+>  	otx2vf_vfaf_mbox_destroy(vf);
+> -- 
+> 2.25.1
 > 
->                 if  (dev->tlsdev_ops &&
-> --
-> 2.34.1
-> 
-
--- 
-/Horatiu
