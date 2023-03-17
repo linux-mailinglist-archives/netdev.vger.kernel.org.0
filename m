@@ -2,127 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 09C246BE4C4
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 10:03:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D4936BE4FA
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 10:10:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231920AbjCQJDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 05:03:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50744 "EHLO
+        id S229962AbjCQJKJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 05:10:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231929AbjCQJDV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 05:03:21 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D6849749D;
-        Fri, 17 Mar 2023 02:01:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679043693; x=1710579693;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=unQNSA3lrBtSH9iO4Nk11Mene7Oo6ams4jIxJtPFxBk=;
-  b=k91dNV7Jdl9wQNx4kbnUebOyLy17Cx5p5Na7iqqe14vzy1wS+BT0epFv
-   vmJr2CPxPKKQAjndSNC83LdYDXY9+W2LTpjvL0BFC+zn+OjlZ/+79ZAUw
-   nwIYIYi+N8VwgMUGtK2C8Ay9XY3/vSIhb18glcKwaCgFKleu+DTFGn5ia
-   Dwhrth9VuRE0WZIbZ4t15UDOTjJC5RbiHZGPAEq5Iq3v4dfNg1+a/gGfr
-   XCGip6XYa8tFu4GXTgjbvj5jKuA1YKEXoP5Ufd6ma6TShUHHnfq6R+lo9
-   1XGUkm/ehD71OuC4fpW4+o84JyZNeYiOtVv9nzI0/wvWTt0o+VBr95bIV
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10651"; a="318612745"
-X-IronPort-AV: E=Sophos;i="5.98,268,1673942400"; 
-   d="scan'208";a="318612745"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2023 02:00:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10651"; a="673486823"
-X-IronPort-AV: E=Sophos;i="5.98,268,1673942400"; 
-   d="scan'208";a="673486823"
-Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2023 02:00:37 -0700
-Date:   Fri, 17 Mar 2023 10:00:28 +0100
-From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     kuba@kernel.org, sgoutham@marvell.com, gakula@marvell.com,
-        sbhatta@marvell.com, hkelam@marvell.com, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, richardcochran@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] octeontx2-vf: Add missing free for alloc_percpu
-Message-ID: <ZBQsIrtlGNuJEZCM@localhost.localdomain>
-References: <20230317064337.18198-1-jiasheng@iscas.ac.cn>
- <ZBQiPmhuH7aNJo5p@localhost.localdomain>
+        with ESMTP id S231610AbjCQJJy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 05:09:54 -0400
+Received: from mail.lokoho.com (mail.lokoho.com [217.61.105.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 472429EDF
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 02:09:50 -0700 (PDT)
+Received: by mail.lokoho.com (Postfix, from userid 1001)
+        id 850738A072; Fri, 17 Mar 2023 09:06:58 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=lokoho.com; s=mail;
+        t=1679044108; bh=Z0N5VlX9/JlryGOL5I747Le9USomZJCRNNGRT3LbbKc=;
+        h=Date:From:To:Subject:From;
+        b=dYmkQDvOUy5A1IaSfJK3GCKpfoSwTD3hqE7JQOxJWiwtHfdEwG1QNrWbe7KvwknIW
+         Wpp7t4t7HtOyi9olygYqc84OQlI79oHh76MJMrAz4AxT6RJqbWnsgiGJVft07xg7JT
+         o76hzzoaR+b5saOhvfnR0ceAdOKfmBGzEkkG/SFkaoVEYItZiI1LhNqBXzJCEViyOB
+         pk1qS8HZozDPHQUG42bs3xaZEhGYCuWYzpegZtH76fZCrPZV1dXwIwz93Uja64S5is
+         zNNau4jUp7WEo3aP/0S6oBBuRzZdTG42DbQDkyYsvchKKKtHpVX7qXrJU1S1ZwuXKQ
+         7RUqshGI2f2lw==
+Received: by mail.lokoho.com for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 09:05:42 GMT
+Message-ID: <20230317074501-0.1.4o.1ih9g.0.sf819asrd9@lokoho.com>
+Date:   Fri, 17 Mar 2023 09:05:42 GMT
+From:   "Adam Charachuta" <adam.charachuta@lokoho.com>
+To:     <netdev@vger.kernel.org>
+Subject: =?UTF-8?Q?S=C5=82owa_kluczowe_do_wypozycjonowania?=
+X-Mailer: mail.lokoho.com
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZBQiPmhuH7aNJo5p@localhost.localdomain>
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 17, 2023 at 09:18:06AM +0100, Michal Swiatkowski wrote:
-> On Fri, Mar 17, 2023 at 02:43:37PM +0800, Jiasheng Jiang wrote:
-> > Add the free_percpu for the allocated "vf->hw.lmt_info" in order to avoid
-> > memory leak, same as the "pf->hw.lmt_info" in
-> > `drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c`.
-> > 
-> > Fixes: 5c0512072f65 ("octeontx2-pf: cn10k: Use runtime allocated LMTLINE region")
-> > Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> > Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-> > Acked-by: Geethasowjanya Akula <gakula@marvell.com>
-> > ---
-> > Changelog:
-> > 
-> > v1 -> v2:
-> > 
-> > 1. Remove the if () checks.
-> Hi,
-> 
-> Did You change that because of my comments? I am not sure it is correct.
-> I meant moving these two ifs to new function, because they are called
-> two times. It will be easier to do changes in the future.
-> 
-> void cn10k_lmtst_deinit(struct otx2_nic *pfvf)
-> {
-> 	if (vf->hw.lmt_info)
-> 		free_percpu(vf->hw.lmt_info);
-> 	if (test_bit(CN10K_LMTST, &vf->hw.cap_flag))
-> 		qmem_free(vf->dev, vf->dync_lmt);
-> }
-> 
-> Thanks,
-> Michal
-> 
+Dzie=C5=84 dobry,
 
-Sorry, ignore, I just saw a message that free_percpu handle NULL
-correctly.
+zapozna=C5=82em si=C4=99 z Pa=C5=84stwa ofert=C4=85 i z przyjemno=C5=9Bci=
+=C4=85 przyznaj=C4=99, =C5=BCe przyci=C4=85ga uwag=C4=99 i zach=C4=99ca d=
+o dalszych rozm=C3=B3w.=20
 
-> > ---
-> >  drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> > 
-> > diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-> > index 7f8ffbf79cf7..ab126f8706c7 100644
-> > --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-> > +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-> > @@ -709,6 +709,7 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-> >  err_ptp_destroy:
-> >  	otx2_ptp_destroy(vf);
-> >  err_detach_rsrc:
-> > +	free_percpu(vf->hw.lmt_info);
-> >  	if (test_bit(CN10K_LMTST, &vf->hw.cap_flag))
-> >  		qmem_free(vf->dev, vf->dync_lmt);
-> >  	otx2_detach_resources(&vf->mbox);
-> > @@ -762,6 +763,7 @@ static void otx2vf_remove(struct pci_dev *pdev)
-> >  	otx2_shutdown_tc(vf);
-> >  	otx2vf_disable_mbox_intr(vf);
-> >  	otx2_detach_resources(&vf->mbox);
-> > +	free_percpu(vf->hw.lmt_info);
-> >  	if (test_bit(CN10K_LMTST, &vf->hw.cap_flag))
-> >  		qmem_free(vf->dev, vf->dync_lmt);
-> >  	otx2vf_vfaf_mbox_destroy(vf);
-> > -- 
-> > 2.25.1
-> > 
+Pomy=C5=9Bla=C5=82em, =C5=BCe mo=C5=BCe m=C3=B3g=C5=82bym mie=C4=87 sw=C3=
+=B3j wk=C5=82ad w Pa=C5=84stwa rozw=C3=B3j i pom=C3=B3c dotrze=C4=87 z t=C4=
+=85 ofert=C4=85 do wi=C4=99kszego grona odbiorc=C3=B3w. Pozycjonuj=C4=99 =
+strony www, dzi=C4=99ki czemu generuj=C4=85 =C5=9Bwietny ruch w sieci.
+
+Mo=C5=BCemy porozmawia=C4=87 w najbli=C5=BCszym czasie?
+
+
+Pozdrawiam
+Adam Charachuta
