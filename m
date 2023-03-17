@@ -2,121 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3C306BE2EB
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 09:19:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 058386BE398
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 09:32:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229820AbjCQITi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 04:19:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51320 "EHLO
+        id S231305AbjCQIcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 04:32:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229769AbjCQITh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 04:19:37 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D266623664;
-        Fri, 17 Mar 2023 01:19:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679041144; x=1710577144;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=/omHGfZ5dOYrjoSumS2lKvLRuYatBfJZeL4MVZdQvsM=;
-  b=ar5vgMHcIDoTV7R5bM7psD3sH0G2OJjZRHRjktk8t2fJOUQwj4Op2boQ
-   K6j4ZsC9OHVZdfwCDytjAHzF1zAVhjNzqnCPJPGrzeUlSJbeFEaJZGja/
-   PTEKZevJDwnzFtbIhzbBeW01bV8lgUeCLBrmyyD/+ujNSDi7zy+PV9YSZ
-   gbkk+U0QxWzRmuvXyMFEmTuxiUV7UlPiiJ859yQ19Vp0kNasx69DjuBKQ
-   sZYhmWhz97pCQpUVcwzWJ0ntwCf88PWCdoIIQOlNETH/10NynAOx3kboe
-   t1fWjD25YveXwpjA/8lTinZwbEkg0q1D4UrbpBHd4dhuT1lvpAXiwjgPv
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10651"; a="322058149"
-X-IronPort-AV: E=Sophos;i="5.98,268,1673942400"; 
-   d="scan'208";a="322058149"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2023 01:18:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10651"; a="804031943"
-X-IronPort-AV: E=Sophos;i="5.98,268,1673942400"; 
-   d="scan'208";a="804031943"
-Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2023 01:18:15 -0700
-Date:   Fri, 17 Mar 2023 09:18:06 +0100
-From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     kuba@kernel.org, sgoutham@marvell.com, gakula@marvell.com,
-        sbhatta@marvell.com, hkelam@marvell.com, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, richardcochran@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] octeontx2-vf: Add missing free for alloc_percpu
-Message-ID: <ZBQiPmhuH7aNJo5p@localhost.localdomain>
-References: <20230317064337.18198-1-jiasheng@iscas.ac.cn>
+        with ESMTP id S231277AbjCQIcb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 04:32:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50B0924BF8
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 01:31:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D50C6222A
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 08:30:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8F7E2C4339B;
+        Fri, 17 Mar 2023 08:30:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679041821;
+        bh=cbl/8kY59m0VJBtiWs1fFUFoxkXKmWi7XtVc3FRjM5Q=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Dg5vl+q4w0KSsLyQ7H3KLJ0yT3HK/NFNZwrnJx22uO521jyy/7WkWgPIQdV+cBdsW
+         nSgpbbvZfM1mDIk5EBvZaZSv2WWAkEozhpbEPzNQS+Ptg1QaoPf6A6FJHc7L2+MlrR
+         wL0lGgin3YRvWQNJG++d/1wumutsR7m9BQJKhKWHHL31pmwTD97Wir9b4llW2GLGZd
+         w0FCiZ8Z15+lP29U+TYh1SICxAaIJJXvr/AOL1IKkfbeM8HDTqrYls8nClFp1jZiVM
+         wfZy/hrmJzJD4glvwC7SMm9KK723R3TT1jAZDNsQ1PH0yHrYXCs/7FLyhUyExs7RLJ
+         yEwe2dfVTsm5Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 736D7E21EE9;
+        Fri, 17 Mar 2023 08:30:21 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230317064337.18198-1-jiasheng@iscas.ac.cn>
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v2 00/11] vxlan: Add MDB support
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167904182146.13932.7277544520750366068.git-patchwork-notify@kernel.org>
+Date:   Fri, 17 Mar 2023 08:30:21 +0000
+References: <20230315131155.4071175-1-idosch@nvidia.com>
+In-Reply-To: <20230315131155.4071175-1-idosch@nvidia.com>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, roopa@nvidia.com, razor@blackwall.org,
+        petrm@nvidia.com, mlxsw@nvidia.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 17, 2023 at 02:43:37PM +0800, Jiasheng Jiang wrote:
-> Add the free_percpu for the allocated "vf->hw.lmt_info" in order to avoid
-> memory leak, same as the "pf->hw.lmt_info" in
-> `drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c`.
-> 
-> Fixes: 5c0512072f65 ("octeontx2-pf: cn10k: Use runtime allocated LMTLINE region")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-> Acked-by: Geethasowjanya Akula <gakula@marvell.com>
-> ---
-> Changelog:
-> 
-> v1 -> v2:
-> 
-> 1. Remove the if () checks.
-Hi,
+Hello:
 
-Did You change that because of my comments? I am not sure it is correct.
-I meant moving these two ifs to new function, because they are called
-two times. It will be easier to do changes in the future.
+This series was applied to netdev/net-next.git (main)
+by David S. Miller <davem@davemloft.net>:
 
-void cn10k_lmtst_deinit(struct otx2_nic *pfvf)
-{
-	if (vf->hw.lmt_info)
-		free_percpu(vf->hw.lmt_info);
-	if (test_bit(CN10K_LMTST, &vf->hw.cap_flag))
-		qmem_free(vf->dev, vf->dync_lmt);
-}
-
-Thanks,
-Michal
-
-> ---
->  drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c | 2 ++
->  1 file changed, 2 insertions(+)
+On Wed, 15 Mar 2023 15:11:44 +0200 you wrote:
+> tl;dr
+> =====
 > 
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-> index 7f8ffbf79cf7..ab126f8706c7 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-> @@ -709,6 +709,7 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->  err_ptp_destroy:
->  	otx2_ptp_destroy(vf);
->  err_detach_rsrc:
-> +	free_percpu(vf->hw.lmt_info);
->  	if (test_bit(CN10K_LMTST, &vf->hw.cap_flag))
->  		qmem_free(vf->dev, vf->dync_lmt);
->  	otx2_detach_resources(&vf->mbox);
-> @@ -762,6 +763,7 @@ static void otx2vf_remove(struct pci_dev *pdev)
->  	otx2_shutdown_tc(vf);
->  	otx2vf_disable_mbox_intr(vf);
->  	otx2_detach_resources(&vf->mbox);
-> +	free_percpu(vf->hw.lmt_info);
->  	if (test_bit(CN10K_LMTST, &vf->hw.cap_flag))
->  		qmem_free(vf->dev, vf->dync_lmt);
->  	otx2vf_vfaf_mbox_destroy(vf);
-> -- 
-> 2.25.1
+> This patchset implements MDB support in the VXLAN driver, allowing it to
+> selectively forward IP multicast traffic to VTEPs with interested
+> receivers instead of flooding it to all the VTEPs as BUM. The motivating
+> use case is intra and inter subnet multicast forwarding using EVPN
+> [1][2], which means that MDB entries are only installed by the user
+> space control plane and no snooping is implemented, thereby avoiding a
+> lot of unnecessary complexity in the kernel.
 > 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v2,01/11] net: Add MDB net device operations
+    https://git.kernel.org/netdev/net-next/c/8c44fa12c8fa
+  - [net-next,v2,02/11] bridge: mcast: Implement MDB net device operations
+    https://git.kernel.org/netdev/net-next/c/c009de1061b5
+  - [net-next,v2,03/11] rtnetlink: bridge: mcast: Move MDB handlers out of bridge driver
+    https://git.kernel.org/netdev/net-next/c/cc7f5022f810
+  - [net-next,v2,04/11] rtnetlink: bridge: mcast: Relax group address validation in common code
+    https://git.kernel.org/netdev/net-next/c/da654c80a0eb
+  - [net-next,v2,05/11] vxlan: Move address helpers to private headers
+    https://git.kernel.org/netdev/net-next/c/f307c8bf37a3
+  - [net-next,v2,06/11] vxlan: Expose vxlan_xmit_one()
+    https://git.kernel.org/netdev/net-next/c/6ab271aaad25
+  - [net-next,v2,07/11] vxlan: mdb: Add MDB control path support
+    https://git.kernel.org/netdev/net-next/c/a3a48de5eade
+  - [net-next,v2,08/11] vxlan: mdb: Add an internal flag to indicate MDB usage
+    https://git.kernel.org/netdev/net-next/c/bc6c6b013ffe
+  - [net-next,v2,09/11] vxlan: Add MDB data path support
+    https://git.kernel.org/netdev/net-next/c/0f83e69f44bf
+  - [net-next,v2,10/11] vxlan: Enable MDB support
+    https://git.kernel.org/netdev/net-next/c/08f876a7d79e
+  - [net-next,v2,11/11] selftests: net: Add VXLAN MDB test
+    https://git.kernel.org/netdev/net-next/c/62199e3f1658
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
