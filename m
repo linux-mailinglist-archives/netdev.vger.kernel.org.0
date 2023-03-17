@@ -2,369 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E3AE6BDF19
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 03:54:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 035146BDF88
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 04:22:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229790AbjCQCyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 22:54:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44150 "EHLO
+        id S229556AbjCQDW3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 23:22:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229581AbjCQCyp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 22:54:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DFCB8C5AA
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 19:54:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679021640;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pluPJppzyDIalsAhWTuVYAgpoH+EOIPdAql9Fm4Aly4=;
-        b=H43zQUOda5nBYzv35rZtyy1dnFpk41nvmtKjgk/evjMS2yrsf9BDYk00yB5+C1MSkV0rWc
-        0CHmQm+xQMIBllkLPpRiO+r6NXmv6lKsP/n2iQ81rpd3WkxaCwbhMSerj5wWRrsQNMsshB
-        BUZd+xye5DY/CF5ud6TX2cLVHvDty3w=
-Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com
- [209.85.210.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-395-p3kM1xi1OpiWvdvg9QdsHA-1; Thu, 16 Mar 2023 22:53:59 -0400
-X-MC-Unique: p3kM1xi1OpiWvdvg9QdsHA-1
-Received: by mail-ot1-f72.google.com with SMTP id e1-20020a05683013c100b0069a4bd47d92so1641626otq.22
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 19:53:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679021638;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=pluPJppzyDIalsAhWTuVYAgpoH+EOIPdAql9Fm4Aly4=;
-        b=revMh1m6c8xbf9DGsrSL1upWZjFZ2DMwms8CGZufgQwgO8eeoAO1rTw5uHpadFRrCj
-         5KkcUkiVmHViJhQkbuYBz6sWXF6NueJ88bbR/GUL9b2tuBVWBwjZfsR+DWaGz4acsp5f
-         gDV8kHFxgM8NzioRpzR48MCCwkU6dVBrfLxUMiedua7+UPWPnk7JP/RIz6D4JV4p93Q/
-         cR+J86/B7VQkKs1gVWmJjgk+gYSVWr8ITpg4ZjrLYAEqg1p8uE93ewF7aa5qpwxHq+5x
-         wYMSqXg7XZ5BLypedOk57xNYwn/hsHzvnoSDYM0qCAFsjwZYYl9zYPLPKSglid+79GvY
-         xyOA==
-X-Gm-Message-State: AO0yUKXudHra3/6TxvT+t3kQwB0fupEmfFhEkyNeDhZ3ERWVJFqb6oQJ
-        ihyj0SPmoHZURgBJ5K7UtZ4+JYOQXdXJFa1tpSLsqcS5qsAmZvKbc/BIDDu/T5T7jbfRBJeql8J
-        BZiUjxtuKT+hdtEpscWdfKIDANlL8qTLg
-X-Received: by 2002:aca:1c16:0:b0:384:4e2d:81ea with SMTP id c22-20020aca1c16000000b003844e2d81eamr2776115oic.9.1679021638295;
-        Thu, 16 Mar 2023 19:53:58 -0700 (PDT)
-X-Google-Smtp-Source: AK7set+849Y/hFmNDYNF8806XrLyc9rDXov7KzdFCtBv3JEm0nLxl0tEOAUOsVLOVSlupFcT+oPluS67vy9TZ2zVgXw=
-X-Received: by 2002:aca:1c16:0:b0:384:4e2d:81ea with SMTP id
- c22-20020aca1c16000000b003844e2d81eamr2776113oic.9.1679021638009; Thu, 16 Mar
- 2023 19:53:58 -0700 (PDT)
+        with ESMTP id S229616AbjCQDWD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 23:22:03 -0400
+Received: from out30-112.freemail.mail.aliyun.com (out30-112.freemail.mail.aliyun.com [115.124.30.112])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9FD45982C;
+        Thu, 16 Mar 2023 20:21:36 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R551e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=kaishen@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0Ve1APCB_1679023293;
+Received: from localhost(mailfrom:KaiShen@linux.alibaba.com fp:SMTPD_---0Ve1APCB_1679023293)
+          by smtp.aliyun-inc.com;
+          Fri, 17 Mar 2023 11:21:34 +0800
+From:   Kai Shen <KaiShen@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
+        kuba@kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: [PATCH net-next v5] net/smc: Use percpu ref for wr tx reference
+Date:   Fri, 17 Mar 2023 03:21:32 +0000
+Message-Id: <20230317032132.85206-1-KaiShen@linux.alibaba.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20230302113421.174582-1-sgarzare@redhat.com> <20230302113421.174582-5-sgarzare@redhat.com>
- <CAJaqyWdeEzKnYuX-c348vVg0PpUH4y-e1dSLhRvYem=MEDKE=Q@mail.gmail.com> <CAGxU2F7GZxMwLNsAebaPx61MoePYYmFS1q66An-EDhq4u+a9ng@mail.gmail.com>
-In-Reply-To: <CAGxU2F7GZxMwLNsAebaPx61MoePYYmFS1q66An-EDhq4u+a9ng@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Fri, 17 Mar 2023 10:53:46 +0800
-Message-ID: <CACGkMEtjO+Y2WFGkiVGOmdaydhiUjqXwW_XCqXQOYJfoH=tzUg@mail.gmail.com>
-Subject: Re: [PATCH v2 4/8] vringh: support VA with iotlb
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     Eugenio Perez Martin <eperezma@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
-        netdev@vger.kernel.org, stefanha@redhat.com,
-        linux-kernel@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 17, 2023 at 12:07=E2=80=AFAM Stefano Garzarella <sgarzare@redha=
-t.com> wrote:
->
-> On Fri, Mar 3, 2023 at 3:39=E2=80=AFPM Eugenio Perez Martin <eperezma@red=
-hat.com> wrote:
-> >
-> > On Thu, Mar 2, 2023 at 12:35 PM Stefano Garzarella <sgarzare@redhat.com=
-> wrote:
-> > >
-> > > vDPA supports the possibility to use user VA in the iotlb messages.
-> > > So, let's add support for user VA in vringh to use it in the vDPA
-> > > simulators.
-> > >
-> > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> > > ---
-> > >
-> > > Notes:
-> > >     v2:
-> > >     - replace kmap_atomic() with kmap_local_page() [see previous patc=
-h]
-> > >     - fix cast warnings when build with W=3D1 C=3D1
-> > >
-> > >  include/linux/vringh.h            |   5 +-
-> > >  drivers/vdpa/mlx5/net/mlx5_vnet.c |   2 +-
-> > >  drivers/vdpa/vdpa_sim/vdpa_sim.c  |   4 +-
-> > >  drivers/vhost/vringh.c            | 247 ++++++++++++++++++++++++----=
---
-> > >  4 files changed, 205 insertions(+), 53 deletions(-)
-> > >
->
-> [...]
->
-> >
-> > It seems to me iotlb_translate_va and iotlb_translate_pa are very
-> > similar, their only difference is that the argument is that iov is
-> > iovec instead of bio_vec. And how to fill it, obviously.
-> >
-> > It would be great to merge both functions, only differing with a
-> > conditional on vrh->use_va, or generics, or similar. Or, if following
-> > the style of the rest of vringh code, to provide a callback to fill
-> > iovec (although I like conditional more).
-> >
-> > However I cannot think of an easy way to perform that without long
-> > macros or type erasure.
->
-> Thank you for pushing me :-)
-> I finally managed to avoid code duplication (partial patch attached,
-> but not yet fully tested).
->
-> @Jason: with this refactoring I removed copy_to_va/copy_to_pa, so I
-> also avoided getu16_iotlb_va/pa.
->
-> I will send the full patch in v3, but I would like to get your opinion
-> first ;-)
+The refcount wr_tx_refcnt may cause cache thrashing problems among
+cores and we can use percpu ref to mitigate this issue here. We
+gain some performance improvement with percpu ref here on our
+customized smc-r verion. Applying cache alignment may also mitigate
+this problem but it seem more reasonable to use percpu ref here.
+We can also replace wr_reg_refcnt with one percpu reference like
+wr_tx_refcnt.
 
-Fine with me.
+redis-benchmark on smc-r with atomic wr_tx_refcnt:
+SET: 525707.06 requests per second, p50=0.087 msec
+GET: 554877.38 requests per second, p50=0.087 msec
 
-Thanks
+redis-benchmark on the percpu_ref version:
+SET: 540482.06 requests per second, p50=0.087 msec
+GET: 570711.12 requests per second, p50=0.079 msec
 
->
->
->
-> diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
-> index 0ba3ef809e48..71dd67700e36 100644
-> --- a/drivers/vhost/vringh.c
-> +++ b/drivers/vhost/vringh.c
-> @@ -1096,8 +1096,7 @@ EXPORT_SYMBOL(vringh_need_notify_kern);
->
->  static int iotlb_translate(const struct vringh *vrh,
->                            u64 addr, u64 len, u64 *translated,
-> -                          struct bio_vec iov[],
-> -                          int iov_size, u32 perm)
-> +                          void *iov, int iov_size, bool iovec, u32 perm)
->  {
->         struct vhost_iotlb_map *map;
->         struct vhost_iotlb *iotlb =3D vrh->iotlb;
-> @@ -1107,7 +1106,7 @@ static int iotlb_translate(const struct vringh *vrh=
-,
->         spin_lock(vrh->iotlb_lock);
->
->         while (len > s) {
-> -               u64 size, pa, pfn;
-> +               u64 size;
->
->                 if (unlikely(ret >=3D iov_size)) {
->                         ret =3D -ENOBUFS;
-> @@ -1124,10 +1123,22 @@ static int iotlb_translate(const struct vringh *v=
-rh,
->                 }
->
->                 size =3D map->size - addr + map->start;
-> -               pa =3D map->addr + addr - map->start;
-> -               pfn =3D pa >> PAGE_SHIFT;
-> -               bvec_set_page(&iov[ret], pfn_to_page(pfn), min(len - s, s=
-ize),
-> -                             pa & (PAGE_SIZE - 1));
-> +               if (iovec) {
-> +                       struct iovec *iovec =3D iov;
-> +
-> +                       iovec[ret].iov_len =3D min(len - s, size);
-> +                       iovec[ret].iov_base =3D (void __user *)(unsigned =
-long)
-> +                                             (map->addr + addr - map->st=
-art);
-> +               } else {
-> +                       u64 pa =3D map->addr + addr - map->start;
-> +                       u64 pfn =3D pa >> PAGE_SHIFT;
-> +                       struct bio_vec *bvec =3D iov;
-> +
-> +                       bvec_set_page(&bvec[ret], pfn_to_page(pfn),
-> +                                     min(len - s, size),
-> +                                     pa & (PAGE_SIZE - 1));
-> +               }
-> +
->                 s +=3D size;
->                 addr +=3D size;
->                 ++ret;
-> @@ -1141,26 +1152,38 @@ static int iotlb_translate(const struct vringh *v=
-rh,
->         return ret;
->  }
->
-> +#define IOTLB_IOV_SIZE 16
-> +
->  static inline int copy_from_iotlb(const struct vringh *vrh, void *dst,
->                                   void *src, size_t len)
->  {
->         u64 total_translated =3D 0;
->
->         while (total_translated < len) {
-> -               struct bio_vec iov[16];
-> +               union {
-> +                       struct iovec iovec[IOTLB_IOV_SIZE];
-> +                       struct bio_vec bvec[IOTLB_IOV_SIZE];
-> +               } iov;
->                 struct iov_iter iter;
->                 u64 translated;
->                 int ret;
->
->                 ret =3D iotlb_translate(vrh, (u64)(uintptr_t)src,
->                                       len - total_translated, &translated=
-,
-> -                                     iov, ARRAY_SIZE(iov), VHOST_MAP_RO)=
-;
-> +                                     &iov, IOTLB_IOV_SIZE, vrh->use_va,
-> +                                     VHOST_MAP_RO);
->                 if (ret =3D=3D -ENOBUFS)
-> -                       ret =3D ARRAY_SIZE(iov);
-> +                       ret =3D IOTLB_IOV_SIZE;
->                 else if (ret < 0)
->                         return ret;
->
-> -               iov_iter_bvec(&iter, ITER_SOURCE, iov, ret, translated);
-> +               if (vrh->use_va) {
-> +                       iov_iter_init(&iter, ITER_SOURCE, iov.iovec, ret,
-> +                                     translated);
-> +               } else {
-> +                       iov_iter_bvec(&iter, ITER_SOURCE, iov.bvec, ret,
-> +                                     translated);
-> +               }
->
->                 ret =3D copy_from_iter(dst, translated, &iter);
->                 if (ret < 0)
-> @@ -1180,20 +1203,30 @@ static inline int copy_to_iotlb(const struct vrin=
-gh *vrh, void *dst,
->         u64 total_translated =3D 0;
->
->         while (total_translated < len) {
-> -               struct bio_vec iov[16];
-> +               union {
-> +                       struct iovec iovec[IOTLB_IOV_SIZE];
-> +                       struct bio_vec bvec[IOTLB_IOV_SIZE];
-> +               } iov;
->                 struct iov_iter iter;
->                 u64 translated;
->                 int ret;
->
->                 ret =3D iotlb_translate(vrh, (u64)(uintptr_t)dst,
->                                       len - total_translated, &translated=
-,
-> -                                     iov, ARRAY_SIZE(iov), VHOST_MAP_WO)=
-;
-> +                                     &iov, IOTLB_IOV_SIZE, vrh->use_va,
-> +                                     VHOST_MAP_WO);
->                 if (ret =3D=3D -ENOBUFS)
-> -                       ret =3D ARRAY_SIZE(iov);
-> +                       ret =3D IOTLB_IOV_SIZE;
->                 else if (ret < 0)
->                         return ret;
->
-> -               iov_iter_bvec(&iter, ITER_DEST, iov, ret, translated);
-> +               if (vrh->use_va) {
-> +                       iov_iter_init(&iter, ITER_DEST, iov.iovec, ret,
-> +                                     translated);
-> +               } else {
-> +                       iov_iter_bvec(&iter, ITER_DEST, iov.bvec, ret,
-> +                                     translated);
-> +               }
->
->                 ret =3D copy_to_iter(src, translated, &iter);
->                 if (ret < 0)
-> @@ -1210,20 +1243,32 @@ static inline int copy_to_iotlb(const struct vrin=
-gh *vrh, void *dst,
->  static inline int getu16_iotlb(const struct vringh *vrh,
->                                u16 *val, const __virtio16 *p)
->  {
-> -       struct bio_vec iov;
-> -       void *kaddr, *from;
-> +       union {
-> +               struct iovec iovec;
-> +               struct bio_vec bvec;
-> +       } iov;
-> +       __virtio16 tmp;
->         int ret;
->
->         /* Atomic read is needed for getu16 */
-> -       ret =3D iotlb_translate(vrh, (u64)(uintptr_t)p, sizeof(*p), NULL,
-> -                             &iov, 1, VHOST_MAP_RO);
-> +       ret =3D iotlb_translate(vrh, (u64)(uintptr_t)p, sizeof(*p),
-> +                             NULL, &iov, 1, vrh->use_va, VHOST_MAP_RO);
->         if (ret < 0)
->                 return ret;
->
-> -       kaddr =3D kmap_local_page(iov.bv_page);
-> -       from =3D kaddr + iov.bv_offset;
-> -       *val =3D vringh16_to_cpu(vrh, READ_ONCE(*(__virtio16 *)from));
-> -       kunmap_local(kaddr);
-> +       if (vrh->use_va) {
-> +               ret =3D __get_user(tmp, (__virtio16 __user *)iov.iovec.io=
-v_base);
-> +               if (ret)
-> +                       return ret;
-> +       } else {
-> +               void *kaddr =3D kmap_local_page(iov.bvec.bv_page);
-> +               void *from =3D kaddr + iov.bvec.bv_offset;
-> +
-> +               tmp =3D READ_ONCE(*(__virtio16 *)from);
-> +               kunmap_local(kaddr);
-> +       }
-> +
-> +       *val =3D vringh16_to_cpu(vrh, tmp);
->
->         return 0;
->  }
-> @@ -1231,20 +1276,32 @@ static inline int getu16_iotlb(const struct vring=
-h *vrh,
->  static inline int putu16_iotlb(const struct vringh *vrh,
->                                __virtio16 *p, u16 val)
->  {
-> -       struct bio_vec iov;
-> -       void *kaddr, *to;
-> +       union {
-> +               struct iovec iovec;
-> +               struct bio_vec bvec;
-> +       } iov;
-> +       __virtio16 tmp;
->         int ret;
->
->         /* Atomic write is needed for putu16 */
-> -       ret =3D iotlb_translate(vrh, (u64)(uintptr_t)p, sizeof(*p), NULL,
-> -                             &iov, 1, VHOST_MAP_WO);
-> +       ret =3D iotlb_translate(vrh, (u64)(uintptr_t)p, sizeof(*p),
-> +                             NULL, &iov, 1, vrh->use_va, VHOST_MAP_RO);
->         if (ret < 0)
->                 return ret;
->
-> -       kaddr =3D kmap_local_page(iov.bv_page);
-> -       to =3D kaddr + iov.bv_offset;
-> -       WRITE_ONCE(*(__virtio16 *)to, cpu_to_vringh16(vrh, val));
-> -       kunmap_local(kaddr);
-> +       tmp =3D cpu_to_vringh16(vrh, val);
-> +
-> +       if (vrh->use_va) {
-> +               ret =3D __put_user(tmp, (__virtio16 __user *)iov.iovec.io=
-v_base);
-> +               if (ret)
-> +                       return ret;
-> +       } else {
-> +               void *kaddr =3D kmap_local_page(iov.bvec.bv_page);
-> +               void *to =3D kaddr + iov.bvec.bv_offset;
-> +
-> +               WRITE_ONCE(*(__virtio16 *)to, tmp);
-> +               kunmap_local(kaddr);
-> +       }
->
->         return 0;
->  }
->
+Cases are like "redis-benchmark -h x.x.x.x -q -t set,get -P 1 -n
+5000000 -c 50 -d 10 --threads 4".
+
+Signed-off-by: Kai Shen <KaiShen@linux.alibaba.com>
+---
+v1->v2:
+- Modify patch prefix
+
+v2->v3:
+- Make wr_reg_refcnt a percpu one as well
+- Init percpu ref with 0 flag instead of ALLOW_REINIT flag
+
+v3->v4:
+- Update performance data, this data may differ from previous data
+  as I ran cases on other machines
+
+v4->v5:
+- Fix patch format
+---
+ net/smc/smc_core.h | 10 ++++++++--
+ net/smc/smc_wr.c   | 35 ++++++++++++++++++++++++++++-------
+ net/smc/smc_wr.h   |  5 ++---
+ 3 files changed, 38 insertions(+), 12 deletions(-)
+
+diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
+index 08b457c2d294..1645fba0d2d3 100644
+--- a/net/smc/smc_core.h
++++ b/net/smc/smc_core.h
+@@ -106,7 +106,10 @@ struct smc_link {
+ 	unsigned long		*wr_tx_mask;	/* bit mask of used indexes */
+ 	u32			wr_tx_cnt;	/* number of WR send buffers */
+ 	wait_queue_head_t	wr_tx_wait;	/* wait for free WR send buf */
+-	atomic_t		wr_tx_refcnt;	/* tx refs to link */
++	struct {
++		struct percpu_ref	wr_tx_refs;
++	} ____cacheline_aligned_in_smp;
++	struct completion	tx_ref_comp;
+ 
+ 	struct smc_wr_buf	*wr_rx_bufs;	/* WR recv payload buffers */
+ 	struct ib_recv_wr	*wr_rx_ibs;	/* WR recv meta data */
+@@ -122,7 +125,10 @@ struct smc_link {
+ 
+ 	struct ib_reg_wr	wr_reg;		/* WR register memory region */
+ 	wait_queue_head_t	wr_reg_wait;	/* wait for wr_reg result */
+-	atomic_t		wr_reg_refcnt;	/* reg refs to link */
++	struct {
++		struct percpu_ref	wr_reg_refs;
++	} ____cacheline_aligned_in_smp;
++	struct completion	reg_ref_comp;
+ 	enum smc_wr_reg_state	wr_reg_state;	/* state of wr_reg request */
+ 
+ 	u8			gid[SMC_GID_SIZE];/* gid matching used vlan id*/
+diff --git a/net/smc/smc_wr.c b/net/smc/smc_wr.c
+index b0678a417e09..0021065a600a 100644
+--- a/net/smc/smc_wr.c
++++ b/net/smc/smc_wr.c
+@@ -377,12 +377,11 @@ int smc_wr_reg_send(struct smc_link *link, struct ib_mr *mr)
+ 	if (rc)
+ 		return rc;
+ 
+-	atomic_inc(&link->wr_reg_refcnt);
++	percpu_ref_get(&link->wr_reg_refs);
+ 	rc = wait_event_interruptible_timeout(link->wr_reg_wait,
+ 					      (link->wr_reg_state != POSTED),
+ 					      SMC_WR_REG_MR_WAIT_TIME);
+-	if (atomic_dec_and_test(&link->wr_reg_refcnt))
+-		wake_up_all(&link->wr_reg_wait);
++	percpu_ref_put(&link->wr_reg_refs);
+ 	if (!rc) {
+ 		/* timeout - terminate link */
+ 		smcr_link_down_cond_sched(link);
+@@ -647,8 +646,10 @@ void smc_wr_free_link(struct smc_link *lnk)
+ 	smc_wr_wakeup_tx_wait(lnk);
+ 
+ 	smc_wr_tx_wait_no_pending_sends(lnk);
+-	wait_event(lnk->wr_reg_wait, (!atomic_read(&lnk->wr_reg_refcnt)));
+-	wait_event(lnk->wr_tx_wait, (!atomic_read(&lnk->wr_tx_refcnt)));
++	percpu_ref_kill(&lnk->wr_reg_refs);
++	wait_for_completion(&lnk->reg_ref_comp);
++	percpu_ref_kill(&lnk->wr_tx_refs);
++	wait_for_completion(&lnk->tx_ref_comp);
+ 
+ 	if (lnk->wr_rx_dma_addr) {
+ 		ib_dma_unmap_single(ibdev, lnk->wr_rx_dma_addr,
+@@ -847,6 +848,20 @@ void smc_wr_add_dev(struct smc_ib_device *smcibdev)
+ 	tasklet_setup(&smcibdev->send_tasklet, smc_wr_tx_tasklet_fn);
+ }
+ 
++static void smcr_wr_tx_refs_free(struct percpu_ref *ref)
++{
++	struct smc_link *lnk = container_of(ref, struct smc_link, wr_tx_refs);
++
++	complete(&lnk->tx_ref_comp);
++}
++
++static void smcr_wr_reg_refs_free(struct percpu_ref *ref)
++{
++	struct smc_link *lnk = container_of(ref, struct smc_link, wr_reg_refs);
++
++	complete(&lnk->reg_ref_comp);
++}
++
+ int smc_wr_create_link(struct smc_link *lnk)
+ {
+ 	struct ib_device *ibdev = lnk->smcibdev->ibdev;
+@@ -890,9 +905,15 @@ int smc_wr_create_link(struct smc_link *lnk)
+ 	smc_wr_init_sge(lnk);
+ 	bitmap_zero(lnk->wr_tx_mask, SMC_WR_BUF_CNT);
+ 	init_waitqueue_head(&lnk->wr_tx_wait);
+-	atomic_set(&lnk->wr_tx_refcnt, 0);
++	rc = percpu_ref_init(&lnk->wr_tx_refs, smcr_wr_tx_refs_free, 0, GFP_KERNEL);
++	if (rc)
++		goto dma_unmap;
++	init_completion(&lnk->tx_ref_comp);
+ 	init_waitqueue_head(&lnk->wr_reg_wait);
+-	atomic_set(&lnk->wr_reg_refcnt, 0);
++	rc = percpu_ref_init(&lnk->wr_reg_refs, smcr_wr_reg_refs_free, 0, GFP_KERNEL);
++	if (rc)
++		goto dma_unmap;
++	init_completion(&lnk->reg_ref_comp);
+ 	init_waitqueue_head(&lnk->wr_rx_empty_wait);
+ 	return rc;
+ 
+diff --git a/net/smc/smc_wr.h b/net/smc/smc_wr.h
+index 45e9b894d3f8..f3008dda222a 100644
+--- a/net/smc/smc_wr.h
++++ b/net/smc/smc_wr.h
+@@ -63,14 +63,13 @@ static inline bool smc_wr_tx_link_hold(struct smc_link *link)
+ {
+ 	if (!smc_link_sendable(link))
+ 		return false;
+-	atomic_inc(&link->wr_tx_refcnt);
++	percpu_ref_get(&link->wr_tx_refs);
+ 	return true;
+ }
+ 
+ static inline void smc_wr_tx_link_put(struct smc_link *link)
+ {
+-	if (atomic_dec_and_test(&link->wr_tx_refcnt))
+-		wake_up_all(&link->wr_tx_wait);
++	percpu_ref_put(&link->wr_tx_refs);
+ }
+ 
+ static inline void smc_wr_drain_cq(struct smc_link *lnk)
+-- 
+2.31.1
 
