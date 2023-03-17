@@ -2,59 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B7C56BEF30
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 18:07:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B914B6BEF35
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 18:08:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229875AbjCQRHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 13:07:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48048 "EHLO
+        id S230110AbjCQRIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 13:08:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229770AbjCQRHY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 13:07:24 -0400
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB52F41B49;
-        Fri, 17 Mar 2023 10:07:15 -0700 (PDT)
-Received: by mail-qt1-x833.google.com with SMTP id hf2so2173117qtb.3;
-        Fri, 17 Mar 2023 10:07:15 -0700 (PDT)
+        with ESMTP id S230288AbjCQRIE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 13:08:04 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DCEC4C6F2;
+        Fri, 17 Mar 2023 10:07:42 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id x1so6308266qtr.7;
+        Fri, 17 Mar 2023 10:07:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679072835;
+        d=gmail.com; s=20210112; t=1679072862;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=HHDNFKlzPKm41Vj542DcCAfkJZWlbNsqPKCvtIP8vJ4=;
-        b=XjNWNomLsD2H+hnsrt5OWjhdG31CzbIN0yVEilGX3mkm+IIp7lZdlxR9lj2NPpcX4c
-         64CsyX5wEtZfKM1sv22Y81RJqvBhbcupdafg1QFFA3aB9pRMSXys1Vgvv0oUKPhllIjz
-         HQ7cJUJJI/kcOPM5sDWaaMiSebxW+PEkmuLv9TlfSKnpeBiGdLZayZfbFRf9xsHXZNb7
-         UKetT6df3G7KZ6Gs7RCb541dXc4LHHFOeV32GscHrU2HBab7yNTYSjKwgMB57XpY0Ra+
-         aE8ln2KwzUE7Bz8V5k88EbofuPaL7h6ZR8rTvQ+K7arOrDhQ8yVgrV3aOsHDwHaBadn7
-         IaFQ==
+        bh=GjRggQHjLlkcfZIKZDKtvqvna8vnRMDyqBk8XgqiML8=;
+        b=U/mVHrA5p/nrWc5duQw8keuQkFr61FBKnfpqdX3BiLL7Kh3EVOc/QjL+6cHxSpsU5i
+         2HYfFgRzN1h9G/+kXb7iaOI675xKW5r+68uQuK3/v54wPDzyjlD7W4m5qoqPsBtNxREB
+         5CEm3cRG+/25Q6VPnI+kwzp7YENidbDX2tX3zW3SihDTv0+ZMOZ3ppLGv7jgIeliHXbV
+         EMJeSqxp29Ksj8gqtWscH4seTqPl/5lMe/10SCOpPCIdrhJr1tXKJi+iFsHjAFIcc7IP
+         bBGZZqmi80DEEBrhFvWsU6XktZuROKtNA7h/XmkLP+Ioql7JWSt/4tW8ZpHjASW6nZ60
+         4dZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679072835;
+        d=1e100.net; s=20210112; t=1679072862;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=HHDNFKlzPKm41Vj542DcCAfkJZWlbNsqPKCvtIP8vJ4=;
-        b=emjQlMIyFivfGH/Mm/F9lxTlaY0vBadK43mc825r/CLn/KuvODD+jdZ3F+iN36kNfM
-         Efj6dFAQ8iqahYBItHqbtKdypp7K+dLswT9VTdwX8jXfvCBM1AhCVG3rTkby/ZnK/lmp
-         fUqDq1P1NVju8XbUvLWinY5RxTHT30SeTCPVSCJZ1fBH8SkyvEIMGyhSKYwRo6LsCFrW
-         TrIQxaZlE7/e4T2QMh6Pse3XakpZAXDPI2cp3R3Fca7PrknjjSgmJwe9F+dDf3pZsv7I
-         loG47WkKJw/aoAqETkRsvrbjbjC8DAwZkGjHu8bm8bSMk+r9Zqyjj5VHt1r2oykNbDIy
-         dbYA==
-X-Gm-Message-State: AO0yUKVYnFBLYn+uTgGjcCccC4sVeRznHQ/jYcL6vtJGwxzUwF5XVPPU
-        mYDZ7MxsWlx2yyzv2irngPA=
-X-Google-Smtp-Source: AK7set+ALfIh/Qn/7aX9J4jJME9Ko4n3WhqcxYipxutkc6Af4Rz57L5Lp69vhBU70yCWkTxjwS3xfw==
-X-Received: by 2002:ac8:574e:0:b0:3bf:c69c:e31c with SMTP id 14-20020ac8574e000000b003bfc69ce31cmr14573624qtx.13.1679072835535;
-        Fri, 17 Mar 2023 10:07:15 -0700 (PDT)
+        bh=GjRggQHjLlkcfZIKZDKtvqvna8vnRMDyqBk8XgqiML8=;
+        b=1LqMoMDApYjifRJyDRHQumbihGYESCPE2/oOR1N7fsxSXMUA5uF0W4ZVeZakBtu3fh
+         FQCiIMDqzGjNWV2t8rXxRxlYQL3mwQb/ZELpt6I3HDok1kfDgZ66C0Z4ipc+egUEHzlH
+         J2ocC9v0PpfaLHgQGKhKL26kGfE7SxwBl3yqho8eTObmU6bGYnHmeIKQm3PDZQelGLdl
+         /0bPDFZFlBOo+/QsYMig5KoSxNc+9iVgzWVwBJzUhyWVfK86H82k/JGHPTYAA+vQ79zH
+         SITBqAAaAOkN5dYgt2NTxb/xg8HSLZi3vZzlKbYcQauZJEBzkHHPnjBcF+JQ1sTHyyRw
+         G0CQ==
+X-Gm-Message-State: AO0yUKV9hBgBZXKdfdpA72LEDSdP6LQucO5MEBXwUibE81CfhfAModPH
+        wyT8cS3KKNzcGnUWmkrNYF0=
+X-Google-Smtp-Source: AK7set8CQcKDz2bV83IoY1aVKhzUnh8T8KzFpa4QGAG5H+rgQeLv1Y3IDYVfkDVh6+a6TRq47pt9EQ==
+X-Received: by 2002:a05:622a:15d0:b0:3b8:385f:d72e with SMTP id d16-20020a05622a15d000b003b8385fd72emr14627251qty.48.1679072861797;
+        Fri, 17 Mar 2023 10:07:41 -0700 (PDT)
 Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id i16-20020ac871d0000000b003d9a69b4876sm1817388qtp.11.2023.03.17.10.07.09
+        by smtp.googlemail.com with ESMTPSA id 132-20020a37058a000000b00745a78b0b3asm1952931qkf.130.2023.03.17.10.07.37
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Mar 2023 10:07:14 -0700 (PDT)
-Message-ID: <9b000248-172a-057c-e2b4-be93d2551dce@gmail.com>
-Date:   Fri, 17 Mar 2023 10:07:07 -0700
+        Fri, 17 Mar 2023 10:07:41 -0700 (PDT)
+Message-ID: <7a8ac248-f6db-4bca-e909-10d52e079244@gmail.com>
+Date:   Fri, 17 Mar 2023 10:07:34 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
-Subject: Re: [PATCH net-next v4 2/4] net: dsa: mv88e6xxx: re-order functions
+Subject: Re: [PATCH net-next v4 3/4] net: dsa: mv88e6xxx: move call to
+ mv88e6xxx_mdios_register()
 Content-Language: en-US
 To:     Klaus Kudielka <klaus.kudielka@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>
@@ -66,9 +67,9 @@ Cc:     Vladimir Oltean <olteanv@gmail.com>,
         Richard Cochran <richardcochran@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20230315163846.3114-1-klaus.kudielka@gmail.com>
- <20230315163846.3114-3-klaus.kudielka@gmail.com>
+ <20230315163846.3114-4-klaus.kudielka@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20230315163846.3114-3-klaus.kudielka@gmail.com>
+In-Reply-To: <20230315163846.3114-4-klaus.kudielka@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -82,10 +83,15 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 3/15/23 09:38, Klaus Kudielka wrote:
-> Move mv88e6xxx_setup() below mv88e6xxx_mdios_register(), so that we are
-> able to call the latter one from here. Do the same thing for the
-> inverse functions.
+> Call the rather expensive mv88e6xxx_mdios_register() at the beginning of
+> mv88e6xxx_setup(). This avoids the double call via mv88e6xxx_probe()
+> during boot.
 > 
+> For symmetry, call mv88e6xxx_mdios_unregister() at the end of
+> mv88e6xxx_teardown().
+> 
+> Link: https://lore.kernel.org/lkml/449bde236c08d5ab5e54abd73b645d8b29955894.camel@gmail.com/
+> Suggested-by: Andrew Lunn <andrew@lunn.ch>
 > Signed-off-by: Klaus Kudielka <klaus.kudielka@gmail.com>
 > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
