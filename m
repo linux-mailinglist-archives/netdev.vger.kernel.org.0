@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 299C96BF21B
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 21:06:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D8656BF21C
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 21:06:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229928AbjCQUGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 16:06:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58558 "EHLO
+        id S229647AbjCQUGL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 16:06:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229985AbjCQUGG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 16:06:06 -0400
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B44664391F
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 13:06:03 -0700 (PDT)
-Received: by mail-ot1-x331.google.com with SMTP id f17-20020a9d7b51000000b00697349ab7e7so3486431oto.9
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 13:06:03 -0700 (PDT)
+        with ESMTP id S229881AbjCQUGJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 16:06:09 -0400
+Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE044200
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 13:06:06 -0700 (PDT)
+Received: by mail-ot1-x32f.google.com with SMTP id v2-20020a056830090200b0069c6952f4d3so3484072ott.7
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 13:06:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112; t=1679083562;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112; t=1679083565;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=g/bAeGvHYteqcW3oSY0dYVvGX85jsfFt01QzXBIzUag=;
-        b=S+ylxZskVJXI5ljAwy9tfrqJU+wh9jBkuQ2HsoA51rpK2M7NQsy5Mu3EEWVdn4OsH1
-         7gjskw2GAlv0TZyURYxrMfMIzv9RMVcM9YEwlDMebNB1ZNsFAZJtgjrj86A/ZkcszYdB
-         H3NxJXkbYxcv29Bs/2TeapWZk3Tlrshzb8/1IhJwqVb+d19/norIoEqD8E7wfGQf826S
-         1QWmRPSXlxiBGtaDePrOHO+N+7QGs5DZGAtlj6g3O7dj1CQD4afQp1BDzddmF9YiEM2t
-         5YBCovZ1UJm8BLx1YfdL86zJMmioekliIN/ZegpHQ9LCjowhaXWf7eeK/szAug/mCW+Q
-         EmJA==
+        bh=mEbNWEQ2Tzjo+v75NSlVPWQEh095dnAAZdqY3OtxuKI=;
+        b=HfkclB5RVvS174IfroSPMpH4SAObSGDdNjQrTrAiHbLhcTPxKdZGzNHnDmIoo7vpAe
+         UyuRwbRMLdQIw202Q4uwVDewY7iAkCrlHAzBsqwmaNh58oQ7LuStoqdjnM5lsOvVZtbk
+         wA6mcx6EgVBsZO1hXxahPmRJXF27lj+9SciY7/3mZ2YAvPKW6236DV8GCn+Ugk7cohWb
+         2iC9Z4aZfQGjNYgWa8Nr1xUTNfJSz94OgH4D/94Er1CXxzwPiNAx0L04tuzBfCLvS+zF
+         +TqOFNYaPMd2TIF3rYClZnN01GUvf+DQOX/EDtQxgQqUCo4ZpcKrsMZ1AvWa+3JUJuTS
+         00mw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679083562;
+        d=1e100.net; s=20210112; t=1679083565;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=g/bAeGvHYteqcW3oSY0dYVvGX85jsfFt01QzXBIzUag=;
-        b=mW3KuunmpOPDXfyruCqqxUU2Xo2SeHtRXcN+0WLzczmHiXZjz5GloX9z1f34GeXwr2
-         IMEq+JUKROdPVM+wqioBiJ/7e3tad1qQJC6Iyo6bCUxNmaFWH5Aq/kgUv6LhTN1R77vX
-         s0EqgAkkWzKMdDqhehjaM9AfTbGC3JY3Obi4AitOdGYEgI1jXlZ5yT/GHRemTbAvgX8/
-         M+UN8R2W4sU1ZpWRkVyn/987cRHfvNiV5TUxMR+VkJKGZ4UNsaaCP6TQ9PIQXyzlWfs2
-         FCVkCIQy7HrK8B+GshSocquI72VjoV1GwJ/ebAeVsAcZb6eeYhw/UO4D7Qxn8E4sBT3s
-         Z8YA==
-X-Gm-Message-State: AO0yUKXcPsaLrjaw+KzqqOSUhhfZw5TpfkX9CQpnN8gxth9gRXywaeI1
-        Nnzc/Nz8nOxWFU7aCSPsaD1StKPs/MCwTIje4Tc=
-X-Google-Smtp-Source: AK7set9UwrRn7Z9gADtr0MzQer92+WiegOquKjuiWBnc8dz/ylK6RL5M9NoVB5TyXN+6c+32GyH6gg==
-X-Received: by 2002:a05:6830:99:b0:699:7244:a372 with SMTP id a25-20020a056830009900b006997244a372mr378012oto.28.1679083562671;
-        Fri, 17 Mar 2023 13:06:02 -0700 (PDT)
+        bh=mEbNWEQ2Tzjo+v75NSlVPWQEh095dnAAZdqY3OtxuKI=;
+        b=0L8rVpqUT7Rp0qnSCPK2GdQt+d7yyWxdbsHEhj8ivXhfDxk9ntzILdNhkmlyokFevw
+         omiN/9uK0gcOFBH8FGN11QFGCWLLT0ZDqXQs9IzP8jof8NKc6lAP/w2hP9kpKqW7nOaE
+         SP0rlR9QbhQL35BL7xua8P2DdpN0BLmrhAaSvY3F6CirQLlvXS+hN95cP5ZKk7/EaGLV
+         mk9U2fm65KGFNKqHkXvpL4uXtt3uCOlt1bPdd6df9JWyfw55k5z0xUx1yIM65SJJhtD4
+         OPdE4bxkwujco88hHv5ynXyPMyLKE8lBMbKrkMbaBFDLfJuoK9ZC6Zteq7TULl3XESlR
+         I9qg==
+X-Gm-Message-State: AO0yUKWLd+mrsaWEwuD2FS9kubMvxzB/DY9kKMLJUWHdHbbigWEMCwrc
+        yfUpqKPAbenHJgwSCbut6pAIcF9EhgeTwzonvYE=
+X-Google-Smtp-Source: AK7set/iynELw4sRhOrI/YpXzihg2YXYszD0KaEY5GfNNd5uM51tReFuUItjHzhoroZw7XfLTFyb/Q==
+X-Received: by 2002:a05:6830:104e:b0:694:7da5:d04e with SMTP id b14-20020a056830104e00b006947da5d04emr403876otp.19.1679083565598;
+        Fri, 17 Mar 2023 13:06:05 -0700 (PDT)
 Received: from localhost.localdomain ([2804:14d:5c5e:4698:10c1:4b9b:b369:bda2])
-        by smtp.gmail.com with ESMTPSA id z8-20020a056830128800b00698a88cfad1sm1304209otp.68.2023.03.17.13.05.59
+        by smtp.gmail.com with ESMTPSA id z8-20020a056830128800b00698a88cfad1sm1304209otp.68.2023.03.17.13.06.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Mar 2023 13:06:02 -0700 (PDT)
+        Fri, 17 Mar 2023 13:06:05 -0700 (PDT)
 From:   Pedro Tammela <pctammela@mojatatu.com>
 To:     netdev@vger.kernel.org
 Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
         davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com, simon.horman@corigine.com,
         Pedro Tammela <pctammela@mojatatu.com>
-Subject: [PATCH net-next v3 1/4] net/sched: act_pedit: use extack in 'ex' parsing errors
-Date:   Fri, 17 Mar 2023 16:51:32 -0300
-Message-Id: <20230317195135.1142050-2-pctammela@mojatatu.com>
+Subject: [PATCH net-next v3 2/4] net/sched: act_pedit: check static offsets a priori
+Date:   Fri, 17 Mar 2023 16:51:33 -0300
+Message-Id: <20230317195135.1142050-3-pctammela@mojatatu.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230317195135.1142050-1-pctammela@mojatatu.com>
 References: <20230317195135.1142050-1-pctammela@mojatatu.com>
@@ -72,88 +72,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We have extack available when parsing 'ex' keys, so pass it to
-tcf_pedit_keys_ex_parse and add more detailed error messages.
-While at it, remove redundant code from the 'err_out' label code path.
+Static key offsets should always be on 32 bit boundaries. Validate them on
+create/update time for static offsets and move the datapath validation
+for runtime offsets only.
+
+iproute2 already errors out if a given offset and data size cannot be packed
+to a 32 bit boundary. This change will make sure users which create/update pedit
+instances directly via netlink also error out, instead of finding out
+when packets are traversing.
 
 Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
 ---
- net/sched/act_pedit.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ net/sched/act_pedit.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
 diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
-index 4559a1507ea5..cd3cbe397e87 100644
+index cd3cbe397e87..d780acb44d06 100644
 --- a/net/sched/act_pedit.c
 +++ b/net/sched/act_pedit.c
-@@ -35,7 +35,7 @@ static const struct nla_policy pedit_key_ex_policy[TCA_PEDIT_KEY_EX_MAX + 1] = {
- };
+@@ -249,6 +249,12 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
+ 	for (i = 0; i < nparms->tcfp_nkeys; ++i) {
+ 		u32 cur = nparms->tcfp_keys[i].off;
  
- static struct tcf_pedit_key_ex *tcf_pedit_keys_ex_parse(struct nlattr *nla,
--							u8 n)
-+							u8 n, struct netlink_ext_ack *extack)
- {
- 	struct tcf_pedit_key_ex *keys_ex;
- 	struct tcf_pedit_key_ex *k;
-@@ -56,25 +56,25 @@ static struct tcf_pedit_key_ex *tcf_pedit_keys_ex_parse(struct nlattr *nla,
- 		struct nlattr *tb[TCA_PEDIT_KEY_EX_MAX + 1];
- 
- 		if (!n) {
--			err = -EINVAL;
-+			NL_SET_ERR_MSG_MOD(extack, "Can't parse more extended keys than requested");
- 			goto err_out;
- 		}
++		if (cur % 4) {
++			NL_SET_ERR_MSG_MOD(extack, "Pedit offsets must be on 32bit boundaries");
++			ret = -EINVAL;
++			goto put_chain;
++		}
 +
- 		n--;
+ 		/* sanitize the shift value for any later use */
+ 		nparms->tcfp_keys[i].shift = min_t(size_t,
+ 						   BITS_PER_TYPE(int) - 1,
+@@ -407,12 +413,12 @@ TC_INDIRECT_SCOPE int tcf_pedit_act(struct sk_buff *skb,
+ 					       sizeof(_d), &_d);
+ 			if (!d)
+ 				goto bad;
+-			offset += (*d & tkey->offmask) >> tkey->shift;
+-		}
  
- 		if (nla_type(ka) != TCA_PEDIT_KEY_EX) {
--			err = -EINVAL;
-+			NL_SET_ERR_MSG_MOD(extack, "Unknown attribute, expected extended key");
- 			goto err_out;
+-		if (offset % 4) {
+-			pr_info("tc action pedit offset must be on 32 bit boundaries\n");
+-			goto bad;
++			offset += (*d & tkey->offmask) >> tkey->shift;
++			if (offset % 4) {
++				pr_info("tc action pedit offset must be on 32 bit boundaries\n");
++				goto bad;
++			}
  		}
  
--		err = nla_parse_nested_deprecated(tb, TCA_PEDIT_KEY_EX_MAX,
--						  ka, pedit_key_ex_policy,
--						  NULL);
-+		err = nla_parse_nested_deprecated(tb, TCA_PEDIT_KEY_EX_MAX, ka,
-+						  pedit_key_ex_policy, extack);
- 		if (err)
- 			goto err_out;
- 
- 		if (!tb[TCA_PEDIT_KEY_EX_HTYPE] ||
- 		    !tb[TCA_PEDIT_KEY_EX_CMD]) {
--			err = -EINVAL;
-+			NL_SET_ERR_MSG_MOD(extack, "Extended Pedit missing required attributes");
- 			goto err_out;
- 		}
- 
-@@ -83,7 +83,7 @@ static struct tcf_pedit_key_ex *tcf_pedit_keys_ex_parse(struct nlattr *nla,
- 
- 		if (k->htype > TCA_PEDIT_HDR_TYPE_MAX ||
- 		    k->cmd > TCA_PEDIT_CMD_MAX) {
--			err = -EINVAL;
-+			NL_SET_ERR_MSG_MOD(extack, "Extended Pedit key is malformed");
- 			goto err_out;
- 		}
- 
-@@ -91,7 +91,7 @@ static struct tcf_pedit_key_ex *tcf_pedit_keys_ex_parse(struct nlattr *nla,
- 	}
- 
- 	if (n) {
--		err = -EINVAL;
-+		NL_SET_ERR_MSG_MOD(extack, "Not enough extended keys to parse");
- 		goto err_out;
- 	}
- 
-@@ -222,7 +222,7 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
- 	}
- 
- 	nparms->tcfp_keys_ex =
--		tcf_pedit_keys_ex_parse(tb[TCA_PEDIT_KEYS_EX], parm->nkeys);
-+		tcf_pedit_keys_ex_parse(tb[TCA_PEDIT_KEYS_EX], parm->nkeys, extack);
- 	if (IS_ERR(nparms->tcfp_keys_ex)) {
- 		ret = PTR_ERR(nparms->tcfp_keys_ex);
- 		goto out_free;
+ 		if (!offset_valid(skb, hoffset + offset)) {
 -- 
 2.34.1
 
