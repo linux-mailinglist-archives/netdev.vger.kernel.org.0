@@ -2,60 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E8DE56BE425
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 09:45:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 078C96BE1CE
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 08:16:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230130AbjCQIp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 04:45:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36240 "EHLO
+        id S230015AbjCQHQp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 03:16:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231664AbjCQIoq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 04:44:46 -0400
-Received: from mail.academia-cj.ro (mail.academia-cj.ro [188.213.48.91])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 61D0C1ADEF;
-        Fri, 17 Mar 2023 01:43:41 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.academia-cj.ro (Postfix) with ESMTP id 6453D69020F;
-        Fri, 17 Mar 2023 07:22:33 +0200 (EET)
-Received: from mail.academia-cj.ro ([127.0.0.1])
-        by localhost (mail.academia-cj.ro [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id nx-DPR7XghWj; Fri, 17 Mar 2023 07:22:33 +0200 (EET)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.academia-cj.ro (Postfix) with ESMTP id 2E7AA6BC71C;
-        Fri, 17 Mar 2023 07:22:33 +0200 (EET)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.academia-cj.ro 2E7AA6BC71C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=academia-cj.ro;
-        s=93010AC8-7C69-11ED-80B1-80F20A9C3584; t=1679030553;
-        bh=xYGm9m/GNOtni3QRCnrpgD9tYUQy/QedRbsUDmgL2JA=;
-        h=MIME-Version:To:From:Date:Message-Id;
-        b=l/n1Ob5darsyDHkz9TsdyYLiexPnKfyaJPd+/B3UJXeIA45wzcEFD8GeHcrXWno/j
-         MhEtxlnHdLjh1fczBFWD4NIz7pEBj/g7VBxCXdfbooDpP9PSUY03NJRZPiGp02fhn4
-         YXJHkRfhRtHCutL5w/JIxu12CMREuM3jk7clrjQ+/43rCEjgt6i0VSpD2jb9OacDSr
-         pgI6Fhsc3Nsvc9Itqipq1FPNYVQmxtIGhZu5PpmbEh06FHvi95Mw50s8L/3fTZC++N
-         8xqea6RKLojhMQGxhK+MN3K1T2B5tolNyE+p9UXA1HHTboDvSShUnFSBqe4ZBVCibN
-         0TIHZjr4xq2ug==
-X-Virus-Scanned: amavisd-new at mail.academia-cj.ro
-Received: from mail.academia-cj.ro ([127.0.0.1])
-        by localhost (mail.academia-cj.ro [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id J0VhcRDyMDMl; Fri, 17 Mar 2023 07:22:33 +0200 (EET)
-Received: from [10.120.22.42] (unknown [185.246.210.15])
-        by mail.academia-cj.ro (Postfix) with ESMTPSA id ECE8769BF80;
-        Fri, 17 Mar 2023 07:22:28 +0200 (EET)
-Content-Type: text/plain; charset="iso-8859-1"
+        with ESMTP id S229488AbjCQHQo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 03:16:44 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B0D10CD;
+        Fri, 17 Mar 2023 00:16:43 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id u3-20020a17090a450300b00239db6d7d47so4253933pjg.4;
+        Fri, 17 Mar 2023 00:16:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679037403;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=twdLlgB3/E3HSbMTtDor1opxwUKFLrWwvnMciQmwMZw=;
+        b=PSnreZneZ+daXFmxmBfyRM8oFppTxIPoLSkAQVJXO425Ams0XucJ29tF4NZ2pCr/DZ
+         W4t6jB+urog/fxeD+uVczo/pSQiCUKz6n1Cturd5fMhf3oduhppStGOfySmai9oqRGrR
+         xHf+UQWdqH+aY+eh7Zk1O+kCfW2dN7usRAWCwzDOVYt6ahI04FWI/bf+dJdfsx5Kz5KP
+         0BKi8vkdVscgdYPYxPUE+BoL/J1vFwTH6ixaHRwrNcWZ27CAOUersTjxffeZoqWac6ms
+         Lw3Ua6KYPfDs32wxC0pEEOEKxh6udbW2viYzE5uCVmmzp3cj2iepEkyrlX35ERHtd1GZ
+         ALEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679037403;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=twdLlgB3/E3HSbMTtDor1opxwUKFLrWwvnMciQmwMZw=;
+        b=qvbdDKr74dcNie3W0DlrQTzSyRH1s24cEAgh/QHTRSPYVdlXkTbKvFuza7iFJeeQu4
+         938Gi/riImMeViZBr8PuKoap8juKZpHyLs7xg/5SpYpRdUsyePn1GZlKH+didtywd1hL
+         R9mnmlGk7C51muGh0xPgTRRRgj3rvGYGN7wRVh3J6YzpHPxlgu5WOwieFdiK/8KCKQHE
+         39SOEvob9xRWLK/IUDbaA7VmmYT1QeOnRiEvcvlMbLZJmlsO6rPssFKrnx/JoVHB0FiS
+         NhQYG6z7nyPnbONT0MXZxl1bft6ehjeu9pT02ALYiUMNgDwrMpZETTlhKLFutLts2nPI
+         R7sg==
+X-Gm-Message-State: AO0yUKXgsoYxyztGkE+Rr1tqg95AebrgHXJjyoKW2zCDm4DG/mlAPnXt
+        qjLRID30qsA/SfLZXqznSYE=
+X-Google-Smtp-Source: AK7set/zUnAVf6iz7d2V6pdox3/jQlIdrwRizEbq0p1299dimTSDl4ZFN+7EKJbuB4kNVGBHh3qtXg==
+X-Received: by 2002:a17:902:dac9:b0:19e:82d5:634c with SMTP id q9-20020a170902dac900b0019e82d5634cmr8183720plx.53.1679037402633;
+        Fri, 17 Mar 2023 00:16:42 -0700 (PDT)
+Received: from passwd123-ThinkStation-P920.. ([222.20.94.23])
+        by smtp.gmail.com with ESMTPSA id w4-20020a1709029a8400b0019a773419a6sm832498plp.170.2023.03.17.00.16.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Mar 2023 00:16:42 -0700 (PDT)
+From:   Kang Chen <void0red@gmail.com>
+To:     borisp@nvidia.com
+Cc:     john.fastabend@gmail.com, kuba@kernel.org, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com,
+        dirk.vandermerwe@netronome.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Kang Chen <void0red@gmail.com>
+Subject: [PATCH] net/tls: refine the branch condition in tls_dev_event
+Date:   Fri, 17 Mar 2023 15:16:36 +0800
+Message-Id: <20230317071636.1028488-1-void0red@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Description: Mail message body
-Subject: Hello Sunshine, How are you?
-To:     Recipients <marion@academia-cj.ro>
-From:   "Marion" <marion@academia-cj.ro>
-Date:   Fri, 17 Mar 2023 06:22:22 +0100
-Reply-To: marion.K08@bahnhof.se
-X-Antivirus: Avast (VPS 230316-10, 3/16/2023), Outbound message
-X-Antivirus-Status: Clean
-Message-Id: <20230317052228.ECE8769BF80@mail.academia-cj.ro>
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,33 +70,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I am sorry to bother you and intrude your privacy. I am single,
- lonely and in need of a caring, loving and romantic companion.
+dev->tlsdev_ops may be null and cause null pointer dereference later.
 
-I am a secret admirer and would like to explore the opportunity to 
-learn more about each other. I know it is strange to contact you 
-this way and I hope you can forgive me. I am a shy person and 
-this is the only way I know I could get your attention. I just want 
-to know what you think and my intention is not to offend you.
-I hope we can be friends if that is what you want, although I wish 
-to be more than just a friend. I know you have a few questions to 
-ask and I hope I can satisfy some of your curiousity with a few 
-answers.
+Fixes: eeb2efaf36c7 ("net/tls: generalize the resync callback")
+Signed-off-by: Kang Chen <void0red@gmail.com>
+---
+ net/tls/tls_device.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-I believe in the saying that 'to the world you are just one person, 
-but to someone special you are the world'. All I want is love, 
-romantic care and attention from a special companion which I am
-hoping would be you.
-
-I hope this message will be the beginning of a long term 
-communication between us, simply send a reply to this message, it 
-will make me happy.
-
-
-Hugs and kisses,
-
-Marion.
-
+diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+index a7cc4f9faac2..f30a8fe373c2 100644
+--- a/net/tls/tls_device.c
++++ b/net/tls/tls_device.c
+@@ -1449,7 +1449,8 @@ static int tls_dev_event(struct notifier_block *this, unsigned long event,
+ 		if (netif_is_bond_master(dev))
+ 			return NOTIFY_DONE;
+ 		if ((dev->features & NETIF_F_HW_TLS_RX) &&
+-		    !dev->tlsdev_ops->tls_dev_resync)
++		   (!dev->tlsdev_ops || (dev->tlsdev_ops &&
++		    !dev->tlsdev_ops->tls_dev_resync)))
+ 			return NOTIFY_BAD;
+ 
+ 		if  (dev->tlsdev_ops &&
 -- 
-This email has been checked for viruses by Avast antivirus software.
-www.avast.com
+2.34.1
+
