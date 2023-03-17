@@ -2,114 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B7F46BE9FF
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 14:22:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24D0C6BEA25
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 14:35:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229896AbjCQNWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 09:22:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39274 "EHLO
+        id S230313AbjCQNfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 09:35:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbjCQNWI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 09:22:08 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D54AE4DBF0
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 06:22:06 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pdA1i-0004H6-9G; Fri, 17 Mar 2023 14:21:46 +0100
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pdA1c-0007xo-KL; Fri, 17 Mar 2023 14:21:40 +0100
-Date:   Fri, 17 Mar 2023 14:21:40 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S230301AbjCQNfC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 09:35:02 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2255932CF6;
+        Fri, 17 Mar 2023 06:35:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=sMgPoyPPbmthFsOo4pbmCIyEwyFeSHdtD951iyErX4c=; b=N+Y1sHinP4QOoLsO2qOFjgGPGD
+        jRqmx45xn4xtEWFjeN/F1sNKAbV2b8yySim0h7I3sEDVUc40Afz25wbdGX3CpsTO0jPXXKMGa0AFO
+        P6/YbERXaivsDWH5iiN3L0afOlZAfYU3tYqA6Zntm6CSMgDRnsY4+Ov+7Ej5lr41Owww=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pdAE7-007c37-QO; Fri, 17 Mar 2023 14:34:35 +0100
+Date:   Fri, 17 Mar 2023 14:34:35 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michal Kubiak <michal.kubiak@intel.com>
+Cc:     Christian Marangi <ansuelsmth@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
-        Marek Vasut <marex@denx.de>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>,
-        Ben Hutchings <ben.hutchings@mind.be>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC/RFT PATCH net-next 2/4] net: dsa: microchip: partial
- conversion to regfields API for KSZ8795 (WIP)
-Message-ID: <20230317132140.GB15269@pengutronix.de>
-References: <20230316161250.3286055-1-vladimir.oltean@nxp.com>
- <20230316161250.3286055-3-vladimir.oltean@nxp.com>
- <20230317094629.nryf6qkuxp4nisul@skbuf>
- <20230317114646.GA15269@pengutronix.de>
- <20230317125022.ujbnwf2k5uvhyx53@skbuf>
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, Lee Jones <lee@kernel.org>,
+        linux-leds@vger.kernel.org
+Subject: Re: [net-next PATCH v4 02/14] net: dsa: qca8k: add LEDs basic support
+Message-ID: <1c84a42a-2691-4ee9-bbe3-dc8e65fc31b1@lunn.ch>
+References: <20230317023125.486-1-ansuelsmth@gmail.com>
+ <20230317023125.486-3-ansuelsmth@gmail.com>
+ <ZBRN563Zw9Z28aET@localhost.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230317125022.ujbnwf2k5uvhyx53@skbuf>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <ZBRN563Zw9Z28aET@localhost.localdomain>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 17, 2023 at 02:50:22PM +0200, Vladimir Oltean wrote:
-> On Fri, Mar 17, 2023 at 12:46:46PM +0100, Oleksij Rempel wrote:
-> > There reason is that ksz8795_regfields[] is assigned only to KSZ8795.
-> > KSZ8794, KSZ8765 and KSZ8830 (KSZ8863/KSZ8873) do not have needed regfields.
-> > 
-> > Please note, ksz8795_regfields[] is not compatible with KSZ8830 (KSZ8863/KSZ8873)
-> > series.
-> 
-> Right... well, it's kind of in the title and in the commit description:
-> 
-> | !! WARNING !! I only attempted to add a ksz_reg_fields structure for
-> | KSZ8795. The other switch families will currently crash!
-> 
-> If the only device you can test on is KSZ8873, that isn't going to help
-> me very much at the moment, because it doesn't have an xMII port, but
-> rather, either MII or RMII depending on part number. AFAIU, ksz_is_ksz88x3()
-> returns true for your device, and this means that neither phylink_mac_link_up()
-> nor phylink_mac_config() do nothing for your device. Also, above all,
-> ksz8863_regs[] does not have either P_XMII_CTRL_0 nor P_XMII_CTRL_1
-> defined, which are some of the registers I had converted to reg_fields,
-> in order to see whether it's possible to access a global register via a
-> port regfield call.
-> 
-> I'm going to let this patch set simmer for a few more days. If no one
-> volunteers to test on a KSZ8795, IMO the exercise is slightly pointless,
-> as that's where the problems were, and more and more blind reasoning
-> about what could be a problem isn't going to get us very far. I'd rather
-> not spend more time on this problem at this stage. I've copied some more
-> people who contributed patches to this switch family in the past few
-> years, in the hope that maybe someone can help.
-> 
-> For context, the cover letter is here:
-> https://patchwork.kernel.org/project/netdevbpf/cover/20230316161250.3286055-1-vladimir.oltean@nxp.com/
+> (I guess the LED configuration i only makes sense for non-CPU ports? It
+> seems you want to configure up to 15 LEDs in total for 5 ports).
 
-If you'll give up, may be i'll be able to take it over.
+Hi Michal
 
-Thanks!
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+In the general case, there is no reason that i can think that stops
+the CPU port having LEDs. For many switch designs, there is no
+specific CPU port, any can be used. And all ports are likely to have
+an LED controller.
+
+What becomes tricky with Linux is offloading blinking to CPU ports.
+There is no netdev to represent it, hence no netdev based software
+blinking. And without software blinking, you have nothing to offload
+to hardware. But you could still use the LEDs for other things.
+
+Having said all that, i don't think i have ever seen a box with LEDs
+for the CPU port.
+
+    Andrew
