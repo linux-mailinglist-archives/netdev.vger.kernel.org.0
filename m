@@ -2,71 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A9236BECFB
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 16:32:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F4B96BED12
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 16:34:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231203AbjCQPcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 11:32:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34438 "EHLO
+        id S231297AbjCQPd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 11:33:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230272AbjCQPb6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 11:31:58 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C6FC6153C;
-        Fri, 17 Mar 2023 08:31:47 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id h8so21894195ede.8;
-        Fri, 17 Mar 2023 08:31:47 -0700 (PDT)
+        with ESMTP id S229794AbjCQPd4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 11:33:56 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A88F5C6DAA;
+        Fri, 17 Mar 2023 08:33:24 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id x3so21876417edb.10;
+        Fri, 17 Mar 2023 08:33:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679067105;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=9TJgCv8uP/EGpF2zbM75KEFfZndGIlcsO1G99GNTrFg=;
-        b=N8YspkOGuGBWotBx1iEZRMkbVJQ0Z53MqKLhuLb36m1w6OVkbz5H7+Cr9JX2FbvDri
-         nQsHAvqF1mVaLHNtCrgbM46i2ntim9l3xY8YIyNKTVvzW0Wrjtbj767g30pWehS21EGC
-         S0atQ7xQe188aYbBfZ4yXHyFpmy7fsYvFX557BzQyjW6PlnkTZUbTn0YODaU8XCnRDjC
-         dRHXyphdWjxdD5KgX+hymgCeZRZ2+BebzepK+SvsTuYro/jsCyvXPsQtTWsPbRsmYnVS
-         7080EckHKdzh9XAdfARMPJu28aiesiTtkrE4Q6NFaNndbv4hLw0ZSPakYcSlYo0es1/S
-         NB9w==
+        d=gmail.com; s=20210112; t=1679067203;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=27qzIXnG5Q0jlHks1WKj+gQu5XLTMem69qV8hoKqr4o=;
+        b=Q3Qs7w86vWTu0qFSZmy7ISmo7+EQIE7FBiOa9alFZ4lDoKdZCggHwEW462NmlunnA5
+         J4dY0zcttWSNQBOaytcF8OkvjdWEiiLjPPU7ObttshBG11d0n6s+l76xKLNJIDRvNh5+
+         1XQFJ7+PZfD+/2EQ+1gGwAue6GUjScfHUclSkZqCOCa7gyGjuuKmKna/msNLfC/iuwWQ
+         US2GKy3wm3jRXIWDEhdWCNz0MtJ8qod7dyL2OHkwrLnIh2jAt0eSg6V8vzxxVcnZZxc9
+         RRHKCThHgUTN0PT4rgKp6GFl/0J01BJibJz74j8tbulqCwW9RFD23p1yRjkmLfNSWOQV
+         x2EQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679067105;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9TJgCv8uP/EGpF2zbM75KEFfZndGIlcsO1G99GNTrFg=;
-        b=Dar9R/vmNqSmo/xzkoghYj9f0N8MV2b7WLPKTtGwJTwwMsyWpkJYeLOOJNCIXrpnU8
-         hqIWgtQnOQ6asae3Lkag/Klt+Apg13wB0rAQlUVKj0rRPAlk4mjbfRaPTXCh3i1RlYyr
-         6EuFOE/f0aSNa5iJw6a6OuCKX+4wO48GOW1lFUkhHebCt7q3K+RkPdaBaNquryCWdNv0
-         1TmG6UPG9WrOAOWtm+BKYD97hDFzme/Vx3rx1q+5y7qJam5YEO2110/cQvmvrFjyeZp+
-         RlgHVK0FmdSqFNuGa3X3z6JTyDE+cDDI3oL5y9qCvpVmFKECT6J+YU7R0glwy8+4B6+/
-         E0xA==
-X-Gm-Message-State: AO0yUKV31ZpILbVwh7Or0G0hhKz5IB2iP49urE+AzZpjit/dCHycPsh+
-        qv0GCADrBJ8fQIt+cKFIPufsKURCkqakCA==
-X-Google-Smtp-Source: AK7set8312plZYVf9gUlPrTfNwF2d+gY1xO+5BwIieTao4fYIv9QYzvOZBHUyc9hiO6q9DrHkYO/aA==
-X-Received: by 2002:a17:906:3fd2:b0:885:a62c:5a5c with SMTP id k18-20020a1709063fd200b00885a62c5a5cmr13308948ejj.46.1679067105515;
-        Fri, 17 Mar 2023 08:31:45 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id e23-20020a50d4d7000000b004bf28bfc9absm1219939edj.11.2023.03.17.08.31.44
+        d=1e100.net; s=20210112; t=1679067203;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=27qzIXnG5Q0jlHks1WKj+gQu5XLTMem69qV8hoKqr4o=;
+        b=lKq3DGmeJxDn5TVHO1Vf/qgq2UhJ/p2VRyDZ+U8Sy5QQaPXiDBnYF+8l1CbuQKImnr
+         0frZbXSoxQCMdrcnOZDmsxeK6/XWwnYoB6VCTEEk4cFCIcvqAsCIrHli/Ud6c48hX0K+
+         kX5FgCEo05M7Es/3WAwbtFj6YGAhmge5AnARXI87A9+9SdZa+7spRGN45jKaqEryY3kd
+         CAg6BZV7K1Q06WcZPxkPViSDRu38/jGutig3XWiFrMXRMoDTeKKIBhBqtxEIuSwZndAP
+         Q80nkGV/ubTaeoq7WZI81l5exQyuhc8JdH070a4cRGV1UciOmLVWJP8OEF2cJbHcMjp5
+         GWfA==
+X-Gm-Message-State: AO0yUKVIsVUTHLmLb29DlBhjkW/FXDzmN74rKVYPNwz0fGsaVLIrwwzC
+        a333YDxbApmxwbJMoqfU3kc=
+X-Google-Smtp-Source: AK7set+vuy4s6wk17ZUKz4gBWr6CjZTRLrcpNGZj9AnMZ0q96JjcBRbiZUCXF352NzJbQKu4Ff9+AA==
+X-Received: by 2002:a17:906:a0e:b0:91e:acf4:b009 with SMTP id w14-20020a1709060a0e00b0091eacf4b009mr15142786ejf.22.1679067202968;
+        Fri, 17 Mar 2023 08:33:22 -0700 (PDT)
+Received: from localhost.localdomain (077222238142.warszawa.vectranet.pl. [77.222.238.142])
+        by smtp.googlemail.com with ESMTPSA id b7-20020a1709064d4700b0092be5f60dd5sm1081845ejv.150.2023.03.17.08.33.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Mar 2023 08:31:45 -0700 (PDT)
-Date:   Fri, 17 Mar 2023 17:31:43 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Klaus Kudielka <klaus.kudielka@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v4 2/4] net: dsa: mv88e6xxx: re-order functions
-Message-ID: <20230317153143.njzbfildvvibhkjr@skbuf>
-References: <20230315163846.3114-1-klaus.kudielka@gmail.com>
- <20230315163846.3114-3-klaus.kudielka@gmail.com>
+        Fri, 17 Mar 2023 08:33:20 -0700 (PDT)
+From:   Szymon Heidrich <szymon.heidrich@gmail.com>
+To:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        kuba@kernel.org, davem@davemloft.net, edumazet@google.com
+Cc:     pabeni@redhat.com, szymon.heidrich@gmail.com,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: usb: lan78xx: Limit packet length to skb->len
+Date:   Fri, 17 Mar 2023 16:32:17 +0100
+Message-Id: <20230317153217.90145-1-szymon.heidrich@gmail.com>
+X-Mailer: git-send-email 2.40.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230315163846.3114-3-klaus.kudielka@gmail.com>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -77,13 +70,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 15, 2023 at 05:38:44PM +0100, Klaus Kudielka wrote:
-> Move mv88e6xxx_setup() below mv88e6xxx_mdios_register(), so that we are
-> able to call the latter one from here. Do the same thing for the
-> inverse functions.
-> 
-> Signed-off-by: Klaus Kudielka <klaus.kudielka@gmail.com>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> ---
+Packet length retrieved from descriptor may be larger than
+the actual socket buffer length. In such case the cloned
+skb passed up the network stack will leak kernel memory contents.
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Additionally prevent integer underflow when size is less than
+ETH_FCS_LEN.
+
+Fixes: 55d7de9de6c3 ("Microchip's LAN7800 family USB 2/3 to 10/100/1000 Ethernet device driver")
+Signed-off-by: Szymon Heidrich <szymon.heidrich@gmail.com>
+---
+ drivers/net/usb/lan78xx.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index 068488890..e7d27be84 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -3579,10 +3579,24 @@ static int lan78xx_rx(struct lan78xx_net *dev, struct sk_buff *skb,
+ 		size = (rx_cmd_a & RX_CMD_A_LEN_MASK_);
+ 		align_count = (4 - ((size + RXW_PADDING) % 4)) % 4;
+ 
++		if (unlikely(size > skb->len)) {
++			netif_dbg(dev, rx_err, dev->net,
++				  "size err rx_cmd_a=0x%08x\n",
++				  rx_cmd_a);
++			return 0;
++		}
++
+ 		if (unlikely(rx_cmd_a & RX_CMD_A_RED_)) {
+ 			netif_dbg(dev, rx_err, dev->net,
+ 				  "Error rx_cmd_a=0x%08x", rx_cmd_a);
+ 		} else {
++			if (unlikely(size < ETH_FCS_LEN)) {
++				netif_dbg(dev, rx_err, dev->net,
++					  "size err rx_cmd_a=0x%08x\n",
++					  rx_cmd_a);
++				return 0;
++			}
++
+ 			u32 frame_len = size - ETH_FCS_LEN;
+ 			struct sk_buff *skb2;
+ 
+-- 
+2.40.0
+
