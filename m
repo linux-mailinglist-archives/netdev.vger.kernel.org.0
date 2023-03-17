@@ -2,215 +2,327 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 052D46BEBD9
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 15:55:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 755346BEC02
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 15:59:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231328AbjCQOzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 10:55:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36740 "EHLO
+        id S231351AbjCQO7n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 10:59:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230196AbjCQOzC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 10:55:02 -0400
-Received: from frasgout11.his.huawei.com (frasgout11.his.huawei.com [14.137.139.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F6C6559C1;
-        Fri, 17 Mar 2023 07:54:53 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.18.147.228])
-        by frasgout11.his.huawei.com (SkyGuard) with ESMTP id 4PdRl72Zggz9xqck;
-        Fri, 17 Mar 2023 22:45:55 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.204.63.22])
-        by APP2 (Coremail) with SMTP id GxC2BwBnOWDafhRkaQemAQ--.41316S7;
-        Fri, 17 Mar 2023 15:54:29 +0100 (CET)
-From:   Roberto Sassu <roberto.sassu@huaweicloud.com>
-To:     corbet@lwn.net, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
-        sdf@google.com, haoluo@google.com, jolsa@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, dsahern@kernel.org, shuah@kernel.org,
-        brauner@kernel.org
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, ebiederm@xmission.com,
-        mcgrof@kernel.org, Roberto Sassu <roberto.sassu@huawei.com>
-Subject: [PATCH 5/5] doc: Add documentation for the User Mode Driver management library
-Date:   Fri, 17 Mar 2023 15:52:40 +0100
-Message-Id: <20230317145240.363908-6-roberto.sassu@huaweicloud.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230317145240.363908-1-roberto.sassu@huaweicloud.com>
-References: <20230317145240.363908-1-roberto.sassu@huaweicloud.com>
+        with ESMTP id S229634AbjCQO7m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 10:59:42 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CDA3C97CF;
+        Fri, 17 Mar 2023 07:59:40 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id y4so21577452edo.2;
+        Fri, 17 Mar 2023 07:59:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679065179;
+        h=content-transfer-encoding:in-reply-to:subject:from:content-language
+         :references:cc:to:user-agent:mime-version:date:message-id:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=YuW3M3knT9QpaEiynjTjamW8kmrzZ3OjR3+nQKcgn/I=;
+        b=R7YKkgTyPKt+jfQSFkavns4SPgE9xK3gHFGBPvhYiBeL1axPsQXQQGWr0HpFGUG+HQ
+         +09/Luef90V7tD0CSoyUDKHqYixRq6Lcc6uOl9T6lUXxbYDjBSVy8myCVpPuyLGyBbFH
+         XvTMJaB/cy0US4Bt6yOXQjCw5FB6zcwVFPGlHqerWELmfIb0FVyP/AGXgJHyOpjinLdB
+         F3ZxprTv4DKS62GH9JB7PlnpezcNyqihDxl5Wt+cI4H4g/syAr4yu0k0AdgnkvD+WKYl
+         8qrQkePRzF+LyFzyaz8wGp3j+jkJdYLJVXNM3sfPNnZ18fDaOozUuIvqUNX12kgnK5XE
+         P1xg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679065179;
+        h=content-transfer-encoding:in-reply-to:subject:from:content-language
+         :references:cc:to:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=YuW3M3knT9QpaEiynjTjamW8kmrzZ3OjR3+nQKcgn/I=;
+        b=yF6e+sF/0QobV8TLOAq0cHFNeVgHlw8OtX+i2DmiA2kDyqm+IQOFt4CKssUS7y+P92
+         ggSt6e9tgPjKQU6txH8vYrOS/WvQp4qrzVjI4MIIkgwy6tJ7Ji31Uc48pvsMs23En0cp
+         5lTvmDMcLt2MH5VOMVpazdOzYu0Y6SBiHJbf0kflpwQTWxUmEG0AGaFTleMq1mldv7UR
+         dovlbp5ml+xiPwPjUfaeRzEkAomI/3RAzL/kcf/g3MS8iXb+/OFditBh/7A6Hx3Uw2ET
+         HxmoZmvPj9kPAymWUERQxZFVE3990juJTzFscMTgJQHUCBg6vA+5vnyCJanCzgbdmM2t
+         8gxA==
+X-Gm-Message-State: AO0yUKXMRwuRoNUqsctj7Ox7zJxMKOYW56HZKbJSD+j+YDiX2u/MWcmu
+        EmSLNZgEHZtzWNSzf9bHA5s=
+X-Google-Smtp-Source: AK7set8fvPFLPCsi014GJVC70mu+7rxZdaKD1pXdGCxbhrco3AtDD7MVl+C2bd1T2QI5zvHGsX2hoQ==
+X-Received: by 2002:a17:906:612:b0:8b1:3483:e3d5 with SMTP id s18-20020a170906061200b008b13483e3d5mr13564946ejb.48.1679065178983;
+        Fri, 17 Mar 2023 07:59:38 -0700 (PDT)
+Received: from ?IPV6:2a01:c23:c5b8:6200:f0f7:420b:6fc2:5ad8? (dynamic-2a01-0c23-c5b8-6200-f0f7-420b-6fc2-5ad8.c23.pool.telefonica.de. [2a01:c23:c5b8:6200:f0f7:420b:6fc2:5ad8])
+        by smtp.googlemail.com with ESMTPSA id n3-20020a170906088300b009327ed171f2sm334954eje.129.2023.03.17.07.59.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Mar 2023 07:59:38 -0700 (PDT)
+Message-ID: <d5ec2ec2-65a0-6ad3-a0a3-cad57d7f6616@gmail.com>
+Date:   Fri, 17 Mar 2023 15:59:37 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GxC2BwBnOWDafhRkaQemAQ--.41316S7
-X-Coremail-Antispam: 1UD129KBjvJXoW3Gw4Utr4kKFWrKrWrGw18AFb_yoW7AFW8pF
-        Z3JrWft3WkJryavr1fJw17uryrZas7Ja15GFn3Kw1rZwn8Zrn0yr1Ut3WFqFyUGryFyrW5
-        tr15Jr1UCw1DAr7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUPlb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
-        6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUAV
-        Cq3wA2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0
-        rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWUCVW8JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267
-        AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E
-        14v26r4UJVWxJr1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrV
-        C2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE
-        7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACI402YVCY1x02628vn2kIc2xKxwCY1x0262
-        kKe7AKxVW8ZVWrXwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s02
-        6c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_GF
-        v_WrylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUCVW8JwCI42IY6xIIjxv20xvE
-        c7CjxVAFwI0_Gr1j6F4UJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aV
-        AFwI0_Gr0_Cr1lIxAIcVC2z280aVCY1x0267AKxVW8Jr0_Cr1UYxBIdaVFxhVjvjDU0xZF
-        pf9x07jIPfQUUUUU=
-X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/1tbiAQATBF1jj4qqgQAAsG
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+To:     David Yang <mmyangfl@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20230317143042.291260-1-mmyangfl@gmail.com>
+Content-Language: en-US
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH] net: phy: hisi-festa: Add support for HiSilicon Festa
+ PHYs
+In-Reply-To: <20230317143042.291260-1-mmyangfl@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roberto Sassu <roberto.sassu@huawei.com>
+On 17.03.2023 15:30, David Yang wrote:
+> HiSilicon Festa PHYs were used on some HiSilicon SoCs. This patch injects
+> firmwares found on vendor kernels.
+> 
+What's the status of adding the firmware files to linux-firmware?
+I don't see any related patch in the linux-firmware mailing list archive.
 
-Add a documentation, to explain the motivation behind the new component, to
-describe the software architecture, the API and an example used for
-testing.
+Any info on purpose of firmware? Does the PHY work normally also
+w/o firmware? Or is the firmware required?
 
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
----
- Documentation/driver-api/index.rst    |  1 +
- Documentation/driver-api/umd_mgmt.rst | 99 +++++++++++++++++++++++++++
- MAINTAINERS                           |  1 +
- 3 files changed, 101 insertions(+)
- create mode 100644 Documentation/driver-api/umd_mgmt.rst
+> Signed-off-by: David Yang <mmyangfl@gmail.com>
+> ---
+>  drivers/net/phy/Kconfig      |   5 ++
+>  drivers/net/phy/Makefile     |   1 +
+>  drivers/net/phy/hisi-festa.c | 169 +++++++++++++++++++++++++++++++++++
+>  3 files changed, 175 insertions(+)
+>  create mode 100644 drivers/net/phy/hisi-festa.c
+> 
+> diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+> index 54874555c..e7551e9b3 100644
+> --- a/drivers/net/phy/Kconfig
+> +++ b/drivers/net/phy/Kconfig
+> @@ -177,6 +177,11 @@ config DAVICOM_PHY
+>  	help
+>  	  Currently supports dm9161e and dm9131
+>  
+> +config HISI_FESTA_PHY
+> +	tristate "HiSilicon Festa PHYs"
+> +	help
+> +	  Supports the HiSilicon Festa PHYs.
+> +
+>  config ICPLUS_PHY
+>  	tristate "ICPlus PHYs"
+>  	help
+> diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+> index b5138066b..2c5aded6b 100644
+> --- a/drivers/net/phy/Makefile
+> +++ b/drivers/net/phy/Makefile
+> @@ -60,6 +60,7 @@ obj-$(CONFIG_DP83869_PHY)	+= dp83869.o
+>  obj-$(CONFIG_DP83TC811_PHY)	+= dp83tc811.o
+>  obj-$(CONFIG_DP83TD510_PHY)	+= dp83td510.o
+>  obj-$(CONFIG_FIXED_PHY)		+= fixed_phy.o
+> +obj-$(CONFIG_HISI_FESTA_PHY)	+= hisi-festa.o
+>  obj-$(CONFIG_ICPLUS_PHY)	+= icplus.o
+>  obj-$(CONFIG_INTEL_XWAY_PHY)	+= intel-xway.o
+>  obj-$(CONFIG_LSI_ET1011C_PHY)	+= et1011c.o
+> diff --git a/drivers/net/phy/hisi-festa.c b/drivers/net/phy/hisi-festa.c
+> new file mode 100644
+> index 000000000..ab54ed3ca
+> --- /dev/null
+> +++ b/drivers/net/phy/hisi-festa.c
+> @@ -0,0 +1,169 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+> +/*
+> + * Driver for HiSilicon Festa PHYs
+> + *
+> + * This module does nothing than firmware injection. If you don't use firmware,
+> + * simply blacklist this module.
 
-diff --git a/Documentation/driver-api/index.rst b/Documentation/driver-api/index.rst
-index ff9aa1afdc6..ad42cd968dc 100644
---- a/Documentation/driver-api/index.rst
-+++ b/Documentation/driver-api/index.rst
-@@ -113,6 +113,7 @@ available subsections can be seen below.
-    xillybus
-    zorro
-    hte/index
-+   umd_mgmt
- 
- .. only::  subproject and html
- 
-diff --git a/Documentation/driver-api/umd_mgmt.rst b/Documentation/driver-api/umd_mgmt.rst
-new file mode 100644
-index 00000000000..7dbb50b3643
---- /dev/null
-+++ b/Documentation/driver-api/umd_mgmt.rst
-@@ -0,0 +1,99 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+===================================
-+User Mode Driver Management Library
-+===================================
-+
-+:Author: Roberto Sassu, Huawei Technologies Duesseldorf GmbH
-+:Date:   2023-03-16
-+
-+Introduction
-+============
-+
-+The idea of moving code away from the kernel and running it in user space
-+is not new. For example, the User Space I/O driver model allows developers
-+to implement most of the driver logic in user space, and keep only a small
-+part in a kernel module, for example to handle interrupts.
-+
-+The User Mode Driver (UMD) is a more specialized solution, primarily used
-+by bpfilter, consisting of a user space process running from code embedded
-+in a kernel module, communicating only through a pipe with the kernel.
-+
-+The kernel makes a request, possibly originated by the user of the system,
-+and sends it to the user space process. The latter handles the kernel
-+request, and sends the response back to the kernel. Finally, the kernel
-+eventually forwards the result to the user.
-+
-+This usage model is particularly interesting for security. The kernel can
-+offload to user space workloads that could introduce possible threats, for
-+example parsing unknown and possibly malicious data. While the kernel
-+already does that, it is important to limit to the minimum the chances of
-+an attacker to exploit a vulnerability in the kernel code.
-+
-+If a user space process becomes corrupted, it can still send malicious data
-+to the kernel, but it won't be able to directly corrupt the kernel memory.
-+In addition, if the communication protocol between the user space process
-+and the kernel is simple enough, malicious data can be effectively
-+sanitized.
-+
-+The purpose of this library is simply to facilitate developers to create
-+UMDs and to help them customize the UMDs to their needs.
-+
-+
-+
-+Architecture
-+============
-+
-+The architecture of the UMD library is as follows:
-+
-+::
-+
-+ +-----------+                    +---------------+
-+ |    UMD    | 2. request module  |   UMD Loader  |
-+ |  Manager  |------------------->| (kmod +       |
-+ |           |------+             |  user binary) |
-+ +-----------+      |             +---------------+
-+       ^            |                    |                     kernel space
-+ --------------------------------------------------------------------------
-+       |            | 4. send/           v 3. fork/execve/pipe   user space
-+       |            |    receive  +-------------+
-+ 1. user request    +------------>| UMD Handler |
-+                                  | (exec user  |
-+                                  |  binary)    |
-+                                  +-------------+
-+
-+The `UMD Manager` is the frontend interface to any user or
-+kernel-originated request. It invokes the `UMD Loader` to start the
-+`UMD Handler`, and communicates with the latter to satisfy the request.
-+
-+The `UMD Loader` is merely responsible to extract the `user binary` from
-+the kernel module, copy it to a tmpfs filesystem, fork the current process,
-+start the `UMD Handler`, and create a pipe for the communication between
-+the `UMD Manager` and the `UMD Handler`.
-+
-+The `UMD Handler` reads requests from the `UMD Manager`, processes them
-+internally, and sends the response to it.
-+
-+
-+API
-+===
-+
-+.. kernel-doc:: include/linux/usermode_driver_mgmt.h
-+
-+.. kernel-doc:: kernel/usermode_driver_mgmt.c
-+
-+
-+Example
-+=======
-+
-+An example of usage of the UMD management library can be found in
-+tools/testing/selftests/umd_mgmt/sample_umd.
-+
-+sample_mgr.c implements the `UMD Manager`, sample_loader.c implements the
-+`UMD Loader` and, finally, sample_handler.c implements the `UMD Handler`.
-+
-+The `UMD Manager` exposes /sys/kernel/security/sample_umd and accepts a
-+number between 0-128K intended as an offset in the response buffer, at
-+which the `UMD Handler` sets the byte to 1. The `UMD Manager` verifies
-+that. If the byte is not set to 1, the `UMD Manager` rejects the write, so
-+that the failure can be reported by the test.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index a0cd161843e..4b9d251259d 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -11249,6 +11249,7 @@ KERNEL USERMODE DRIVER MANAGEMENT
- M:	Roberto Sassu <roberto.sassu@huawei.com>
- L:	linux-kernel@vger.kernel.org
- S:	Maintained
-+F:	Documentation/driver-api/umd_mgmt.rst
- F:	include/linux/usermode_driver_mgmt.h
- F:	kernel/usermode_driver_mgmt.c
- F:	tools/testing/selftests/umd_mgmt/*
--- 
-2.25.1
+That's not an appropriate hint. Relevant is the answer to the question
+whether firmware is required.
+
+> + *
+> + * Copyright (c) 2023 David Yang
+> + */
+> +#include <linux/errno.h>
+> +#include <linux/firmware.h>
+> +#include <linux/init.h>
+> +#include <linux/mii.h>
+> +#include <linux/module.h>
+> +#include <linux/phy.h>
+> +
+> +#define PHY_ID_HISILICON_FESTAV200	0x20669813
+> +#define PHY_ID_HISILICON_FESTAV220	0x20669823
+> +#define PHY_ID_HISILICON_FESTAV300	0x20669833
+> +#define PHY_ID_HISILICON_FESTAV320	0x20669843
+> +#define PHY_ID_HISILICON_FESTAV330	0x20669853
+> +#define PHY_ID_HISILICON_FESTAV331	0x20669863
+> +
+> +#define MII_EXPMD	0x1d	/* Expanded memory data */
+> +#define MII_EXPMA	0x1e	/* Expanded memory address */
+> +
+> +/* bus->mdio_lock should be locked when using this function */
+> +static inline int hisi_festa_read_expanded(struct phy_device *phydev, u16 addr)
+
+No inline keyword please, let the compiler decide.
+
+> +{
+> +	__phy_write(phydev, MII_EXPMA, addr);
+> +	return __phy_read(phydev, MII_EXPMD);
+> +}
+> +
+> +/* bus->mdio_lock should be locked when using this function */
+> +static inline int hisi_festa_write_expanded(struct phy_device *phydev, u16 addr, u8 val)
+
+Why return type int and not void?
+
+> +{
+> +	__phy_write(phydev, MII_EXPMA, addr);
+> +	__phy_write(phydev, MII_EXPMD, val);
+> +	return 0;
+> +}
+> +
+> +/* bus->mdio_lock should be locked when using this function */
+> +static inline int hisi_festa_write_expanded_mem(struct phy_device *phydev, u16 addr,
+> +						const u8 *data, int len)
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < len; i++)
+> +		hisi_festa_write_expanded(phydev, addr + i, data[i]);
+> +	return 0;
+> +}
+> +
+> +static int hisi_festa_write_fw(struct phy_device *phydev, const struct firmware *fw)
+> +{
+> +	static const u8 prologue[] = {0xbd, 0x34, 0x00, 0x39};
+> +	int ret;
+> +
+> +	phy_lock_mdio_bus(phydev);
+> +
+> +	ret = __phy_set_bits(phydev, MII_BMCR, BMCR_PDOWN);
+
+Why power down the PHY?
+
+> +	if (ret) {
+> +		phydev_err(phydev, "cannot suspend device\n");
+> +		goto out;
+> +	}
+> +
+> +	hisi_festa_write_expanded_mem(phydev, 0x33f9, prologue, sizeof(prologue));
+> +	/* mask jump instruction */
+> +	hisi_festa_write_expanded(phydev, 0x3400, 0x39);
+> +	hisi_festa_write_expanded_mem(phydev, 0x3401, fw->data + 1, fw->size - 1);
+> +	/* now release firmware */
+> +	hisi_festa_write_expanded(phydev, 0x3400, fw->data[0]);
+> +	hisi_festa_write_expanded(phydev, 0x33f8, 0x01);
+> +
+> +	ret = __phy_clear_bits(phydev, MII_BMCR, BMCR_PDOWN);
+
+Or do a soft reset here?
+
+> +
+> +out:
+> +	phy_unlock_mdio_bus(phydev);
+> +	return ret;
+> +}
+> +
+> +static int hisi_festa_patch_fw(struct phy_device *phydev)
+> +{
+> +	int ret;
+> +	char fw_name[64];
+> +	const struct firmware *fw;
+> +
+
+reverse x-mas tree
+
+> +	snprintf(fw_name, sizeof(fw_name), "hisilicon/festa.%08x.ucode", phydev->phy_id);
+> +
+> +	ret = request_firmware(&fw, fw_name, &phydev->mdio.dev);
+
+Any option to detect whether firmware is loaded already?
+
+> +	if (ret) {
+> +		/* err message already printed by request_firmware */
+> +		return -EAGAIN;
+> +	}
+> +
+> +	if (fw->data[0] != 0x01 || fw->data[1] != 0xcc) {
+> +		phydev_err(phydev, "%s does not look like valid firmware; refused to load\n",
+> +			   fw_name);
+> +		ret = -EINVAL;
+> +		goto out;
+> +	}
+> +
+> +	ret = hisi_festa_write_fw(phydev, fw);
+> +	if (ret) {
+> +		phydev_err(phydev, "download firmware %s failed\n", fw_name);
+> +		goto out;
+> +	}
+> +
+> +	phydev_info(phydev, "using firmware %s\n", fw_name);
+> +
+> +out:
+> +	release_firmware(fw);
+> +	return ret;
+> +}
+> +
+> +static int hisi_festa_config_init(struct phy_device *phydev)
+> +{
+> +	hisi_festa_patch_fw(phydev);
+> +	/* ok, use programmed firmware */
+> +	return 0;
+> +}
+> +
+> +static struct phy_driver hisi_festa_driver[] = {
+> +	{
+> +		PHY_ID_MATCH_MODEL(PHY_ID_HISILICON_FESTAV200),
+> +		.name        = "HiSilicon Festa v200/v210",
+> +		.config_init = hisi_festa_config_init,
+
+How about callbacks like suspend/resume?
+
+> +	},
+> +	{
+> +		PHY_ID_MATCH_MODEL(PHY_ID_HISILICON_FESTAV220),
+> +		.name        = "HiSilicon Festa v220",
+> +		.config_init = hisi_festa_config_init,
+> +	},
+> +	{
+> +		PHY_ID_MATCH_MODEL(PHY_ID_HISILICON_FESTAV300),
+> +		.name        = "HiSilicon Festa v300",
+> +		.config_init = hisi_festa_config_init,
+> +	},
+> +	{
+> +		PHY_ID_MATCH_MODEL(PHY_ID_HISILICON_FESTAV320),
+> +		.name        = "HiSilicon Festa v320",
+> +		.config_init = hisi_festa_config_init,
+> +	},
+> +	{
+> +		PHY_ID_MATCH_MODEL(PHY_ID_HISILICON_FESTAV330),
+> +		.name        = "HiSilicon Festa v330",
+> +		.config_init = hisi_festa_config_init,
+> +	},
+> +	{
+> +		PHY_ID_MATCH_MODEL(PHY_ID_HISILICON_FESTAV331),
+> +		.name        = "HiSilicon Festa v331",
+> +		.config_init = hisi_festa_config_init,
+> +	},
+> +};
+> +
+> +module_phy_driver(hisi_festa_driver);
+> +
+> +static struct mdio_device_id __maybe_unused hisi_festa_tbl[] = {
+> +	{ PHY_ID_MATCH_MODEL(PHY_ID_HISILICON_FESTAV200) },
+> +	{ PHY_ID_MATCH_MODEL(PHY_ID_HISILICON_FESTAV220) },
+> +	{ PHY_ID_MATCH_MODEL(PHY_ID_HISILICON_FESTAV300) },
+> +	{ PHY_ID_MATCH_MODEL(PHY_ID_HISILICON_FESTAV320) },
+> +	{ PHY_ID_MATCH_MODEL(PHY_ID_HISILICON_FESTAV330) },
+> +	{ PHY_ID_MATCH_MODEL(PHY_ID_HISILICON_FESTAV331) },
+> +	{ }
+> +};
+> +
+> +MODULE_DEVICE_TABLE(mdio, hisi_festa_tbl);
+> +MODULE_DESCRIPTION("HiSilicon Festa PHY driver");
+> +MODULE_LICENSE("Dual MIT/GPL");
 
