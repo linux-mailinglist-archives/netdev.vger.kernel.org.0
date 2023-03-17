@@ -2,73 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C871D6BEEEB
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 17:53:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E6316BEEEF
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 17:55:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229769AbjCQQxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 12:53:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57470 "EHLO
+        id S229881AbjCQQzJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 12:55:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229809AbjCQQxr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 12:53:47 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 077B336FEB
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 09:53:43 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id v25so1576090wra.12
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 09:53:42 -0700 (PDT)
+        with ESMTP id S229488AbjCQQzI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 12:55:08 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3234044A4;
+        Fri, 17 Mar 2023 09:55:07 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id om3-20020a17090b3a8300b0023efab0e3bfso9647230pjb.3;
+        Fri, 17 Mar 2023 09:55:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112; t=1679072021;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=KJIzqRDlIl5u/pNsNO+CkEW5Nyckm1onTwJJM1lb0r8=;
-        b=6kSjS2QkIjCrWzBaEUeLZw68U8S19D9GtBrF/6R/LWzmSbVfAc/JHsxDReb9//IroS
-         FK9sPCSmTASM/OZ1LXFILcbLADtPp0YZx430/wFv75VuKN2HxeXj/cB7wJtBRshFT2wu
-         tfb0wi60dWTxRIlEhN/xHxfQUKoZv+d7SrcWpOclVGuwnqsPukLlFYGz7NJqPkh8Kxpt
-         ifYwioMT/t2j1J7sB5V/I8CXT5nlpUX4Dk5bXnCUkgJX2y3c0WMfHSu+OTvNdybNjp/G
-         OiXGIvsazDKF/sQ18V2Zv56Dsh2FEWtN9mW6Z/VGoG9/cvQnaiERyh6wlawGN0+p2Ei5
-         e9aQ==
+        d=gmail.com; s=20210112; t=1679072106;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=AQBpav1FYobf3FdN98BFiGZMbqLp2dtSePWz+wd/wDU=;
+        b=DItLMS1d3mWz/5TcrtphrYofycA1jCPq6/0jEmwewNozlTUqCH3XAvDPhZjpEF/kXB
+         JXPaxpP8d+YlQGdzVB/AKSPX0R0XRVCRD5320YS/BEQKRaRgfbQKidC+ftfFjl1D5o0X
+         hKf6n0hd3nsuF6x48cRS9bochchQKNBCzuT6N7zflTzo9uiT2SqpO/5ZI2MBCHuAHY0K
+         7pSTK4rDOZJ594FNjrOoIr6xfznzGIcu6crcfeYDEJPK46whZYEx7Apn8KzInWx+kfTf
+         wuYth7ifK51zVJaA7pxHFgkUB3lOI+i6x+wk7qj/oZfXnOpjg26HNcYlqRFyiMB3nNEx
+         XmoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679072021;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=KJIzqRDlIl5u/pNsNO+CkEW5Nyckm1onTwJJM1lb0r8=;
-        b=Cn8HoKWktsfrwgqoTl38JN7r7xd6ASeFVcUYVplYtnQ/UrkEy1+BK2e/zIHGKyayTg
-         XaB2hERDmXFPvjzlOgFRufvkY16tghOUqLyM5yhT3XqkmodNc/hWOpnlsvNf0Wg37li/
-         wppTNhJJTZOkYHHaNxvgAXRzanYO6aZWj9IPXXA13bvY6nk7giwh1iDxZ5vghSvyCtR9
-         aNDTAJwwUpmKo+03yo2ZXxB6N/eo1/D/H/nnDRk12gRAVKkZQWbX4ePRBj7GC9JRG4ib
-         YjLJxw6sQhXfUWscpCbittCd/q1I1bctw/mQgI5KwqoQVNkN1sIXSTVB+AUC2QiXAj70
-         qx4A==
-X-Gm-Message-State: AO0yUKWCfTL9hTCVGuyaCmPaga2PCBB4wE9Wv6jkek2eyf190DBkDEmK
-        t4QfuROvFgOGl1/rBoYlX/eizQRgjJBOBVl4LsU=
-X-Google-Smtp-Source: AK7set8pHjCt/e8bd28Q05BYNst8oP4BR1BhOm9Du0zyjX/0NuEZ5lD0gvmfBxWXSsHHdYWk6b/DVA==
-X-Received: by 2002:adf:e743:0:b0:2ce:ae55:340a with SMTP id c3-20020adfe743000000b002ceae55340amr7217485wrn.48.1679072021420;
-        Fri, 17 Mar 2023 09:53:41 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id c8-20020adfe708000000b002cde626cd96sm2351673wrm.65.2023.03.17.09.53.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Mar 2023 09:53:40 -0700 (PDT)
-Date:   Fri, 17 Mar 2023 17:53:39 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vadim Fedorenko <vadfed@meta.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vadim Fedorenko <vadim.fedorenko@linux.dev>, poros@redhat.com,
-        mschmidt@redhat.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        Michal Michalik <michal.michalik@intel.com>
-Subject: Re: [PATCH RFC v6 1/6] dpll: spec: Add Netlink spec in YAML
-Message-ID: <ZBSbE+8p/u9hl0JI@nanopsycho>
-References: <20230312022807.278528-1-vadfed@meta.com>
- <20230312022807.278528-2-vadfed@meta.com>
+        d=1e100.net; s=20210112; t=1679072106;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=AQBpav1FYobf3FdN98BFiGZMbqLp2dtSePWz+wd/wDU=;
+        b=DwrVDRlBYZVXlKlej46ujTtrPqazHHe1SNGCPLDbB6pUnsQ6Z7GQe9J7IuFlMRLWoN
+         2sHpSqTXGp4ia9s6prVB0JtpV70gRuWL8jey07m94VqFk1X5jUJaE9e6AA2nHSjGzgk6
+         nE1VRi7Om/mhDigx27n77mt5DwdxtaxXM0GgIgyTrSxVK0s3zMNVfiYjJluXSwlmL4ds
+         L80LPKlahejcB+FUMbeMl84/+VdFTMWXA8WJMhHw9ZJWybzofaNbGx7iGau7zptLCVoY
+         2GpYkOlWq5EmJfwJ7nHt9EAhV2+UAzA0Y7T3uc+85FxQ5IpuTGqSScC3VaDGbq6AQNEP
+         cong==
+X-Gm-Message-State: AO0yUKXqLNncohtIFybrBYaXoGpQRo0YL6II8sMZFhSG2vu1pCVjbB5M
+        CPw2XMNb/IiM7A4rKCBL1+8=
+X-Google-Smtp-Source: AK7set/wdNYlcSaXja9Wy9Rv5RxF6uNAeWSUfwiDKTYXBDQh0ik9TYkps4sAmgW0dU0OHT/i1OYWsQ==
+X-Received: by 2002:a05:6a21:99a6:b0:d6:532:6671 with SMTP id ve38-20020a056a2199a600b000d605326671mr3791392pzb.14.1679072106382;
+        Fri, 17 Mar 2023 09:55:06 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id a3-20020a637f03000000b005034a46fbf7sm1703624pgd.28.2023.03.17.09.55.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Mar 2023 09:55:05 -0700 (PDT)
+Message-ID: <9f771318-5a59-ac31-a333-e2ad9947679f@gmail.com>
+Date:   Fri, 17 Mar 2023 09:54:59 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230312022807.278528-2-vadfed@meta.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH] net: dsa: tag_brcm: legacy: fix daisy-chained switches
+Content-Language: en-US
+To:     Jonas Gorski <jonas.gorski@gmail.com>, Andrew Lunn <andrew@lunn.ch>
+Cc:     =?UTF-8?Q?=c3=81lvaro_Fern=c3=a1ndez_Rojas?= <noltari@gmail.com>,
+        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20230317120815.321871-1-noltari@gmail.com>
+ <00783066-a99c-4bab-ae60-514f4bce687b@lunn.ch>
+ <CAOiHx==TiSZKE4AP3PZ9Ah4zuAsrfpOTvRADWpT2kMS9UVRH9Q@mail.gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <CAOiHx==TiSZKE4AP3PZ9Ah4zuAsrfpOTvRADWpT2kMS9UVRH9Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,33 +78,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, Mar 12, 2023 at 03:28:02AM CET, vadfed@meta.com wrote:
->From: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
->
+On 3/17/23 09:49, Jonas Gorski wrote:
+> On Fri, 17 Mar 2023 at 17:32, Andrew Lunn <andrew@lunn.ch> wrote:
+>>
+>> On Fri, Mar 17, 2023 at 01:08:15PM +0100, Álvaro Fernández Rojas wrote:
+>>> When BCM63xx internal switches are connected to switches with a 4-byte
+>>> Broadcom tag, it does not identify the packet as VLAN tagged, so it adds one
+>>> based on its PVID (which is likely 0).
+>>> Right now, the packet is received by the BCM63xx internal switch and the 6-byte
+>>> tag is properly processed. The next step would to decode the corresponding
+>>> 4-byte tag. However, the internal switch adds an invalid VLAN tag after the
+>>> 6-byte tag and the 4-byte tag handling fails.
+>>> In order to fix this we need to remove the invalid VLAN tag after the 6-byte
+>>> tag before passing it to the 4-byte tag decoding.
+>>
+>> Is there an errata for this invalid VLAN tag? Or is the driver simply
+>> missing some configuration for it to produce a valid VLAN tag?
+>>
+>> The description does not convince me you are fixing the correct
+>> problem.
+> 
+> This isn't a bug per se, it's just the interaction of a packet going
+> through two tagging CPU ports.
+> 
+> My understanding of the behaviour is:
+> 
+> 1. The external switch inserts a 4-byte Broadcom header before the
+> VLAN tag, and sends it to the internal switch.
+> 2. The internal switch looks at the EtherType, finds it is not a VLAN
+> EtherType, so assumes it is untagged, and adds a VLAN tag based on the
+> configured PVID (which 0 in the default case).
+> 3. The internal switch inserts a legacy 6-byte Broadcom header before
+> the VLAN tag when forwarding to its CPU port.
+> 
+> The internal switch does not know how to handle the (non-legacy)
+> Broadcom tag, so it does not know that there is a VLAN tag after it.
+> 
+> The internal switch enforces VLAN tags on its CPU port when it is in
+> VLAN enabled mode, regardless what the VLAN table's untag bit says.
+> 
+> The result is a bogus VID 0 and priority 0 tag between the two
+> Broadcom Headers. The VID would likely change based on the PVID of the
+> port of the external switch.
 
-[...]
-
-
->+      name: device-get
->+      doc: |
->+        Get list of DPLL devices (dump) or attributes of a single dpll device
->+      attribute-set: dpll
->+      flags: [ admin-perm ]
->+
-
-[...]
-
-
->+    -
->+      name: pin-get
->+      doc: |
->+        Get list of pins and its attributes.
->+        - dump request without any attributes given - list all the pins in the system
->+        - dump request with target dpll - list all the pins registered with a given dpll device
->+        - do request with target dpll and target pin - single pin attributes
->+      attribute-set: dpll
->+      flags: [ admin-perm ]
-
-Any particular reason to have admin cap required for get operations?
-If not, please remove.
+My understanding matches yours, at the very least, we should only strip 
+off the VLAN tag == 0, in case we are stacked onto a 4-bytes Broadcom 
+tag speaking switch, otherwise it seems to me we are stripping of VLAN 
+tags a bait too greedily.
+-- 
+Florian
 
