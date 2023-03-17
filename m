@@ -2,25 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BC6E6BED09
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 16:33:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C61B46BED0F
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 16:33:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231237AbjCQPdT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 11:33:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39562 "EHLO
+        id S231280AbjCQPdg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 11:33:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229767AbjCQPdR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 11:33:17 -0400
-X-Greylist: delayed 1190 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 17 Mar 2023 08:32:44 PDT
-Received: from frasgout13.his.huawei.com (frasgout13.his.huawei.com [14.137.139.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D09CAD00A;
-        Fri, 17 Mar 2023 08:32:43 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.18.147.227])
-        by frasgout13.his.huawei.com (SkyGuard) with ESMTP id 4PdRkT0yYYz9xFGZ;
-        Fri, 17 Mar 2023 22:45:21 +0800 (CST)
+        with ESMTP id S230212AbjCQPde (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 11:33:34 -0400
+Received: from frasgout12.his.huawei.com (frasgout12.his.huawei.com [14.137.139.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 594C0C3CEB;
+        Fri, 17 Mar 2023 08:33:04 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.18.147.228])
+        by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4PdRkC08qjz9xGYt;
+        Fri, 17 Mar 2023 22:45:07 +0800 (CST)
 Received: from huaweicloud.com (unknown [10.204.63.22])
-        by APP2 (Coremail) with SMTP id GxC2BwBnOWDafhRkaQemAQ--.41316S4;
-        Fri, 17 Mar 2023 15:53:53 +0100 (CET)
+        by APP2 (Coremail) with SMTP id GxC2BwBnOWDafhRkaQemAQ--.41316S6;
+        Fri, 17 Mar 2023 15:54:17 +0100 (CET)
 From:   Roberto Sassu <roberto.sassu@huaweicloud.com>
 To:     corbet@lwn.net, ast@kernel.org, daniel@iogearbox.net,
         andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
@@ -33,36 +32,36 @@ Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         bpf@vger.kernel.org, netdev@vger.kernel.org,
         linux-kselftest@vger.kernel.org, ebiederm@xmission.com,
         mcgrof@kernel.org, Roberto Sassu <roberto.sassu@huawei.com>
-Subject: [PATCH 2/5] usermode_driver_mgmt: Introduce management of user mode drivers
-Date:   Fri, 17 Mar 2023 15:52:37 +0100
-Message-Id: <20230317145240.363908-3-roberto.sassu@huaweicloud.com>
+Subject: [PATCH 4/5] selftests/umd_mgmt: Add selftests for UMD management library
+Date:   Fri, 17 Mar 2023 15:52:39 +0100
+Message-Id: <20230317145240.363908-5-roberto.sassu@huaweicloud.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230317145240.363908-1-roberto.sassu@huaweicloud.com>
 References: <20230317145240.363908-1-roberto.sassu@huaweicloud.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GxC2BwBnOWDafhRkaQemAQ--.41316S4
-X-Coremail-Antispam: 1UD129KBjvJXoWxKFy5KF4rWr18AFW7ur4rZrb_yoWfJFyUpF
-        WUJry5uws5J34UZ3Z3G3yUuayfZw4kZF1YgFZ3Ww4Svwn2qr1jqr17t3W5uryxKr95GF12
-        yrZ09Fn8Crs8WrJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUPab4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
-        6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUXw
-        A2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxS
-        w2x7M28EF7xvwVC0I7IYx2IY67AKxVWUJVWUCwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxV
-        WxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_
-        Gr1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ew
-        Av7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY
-        6r1j6r4UM4x0Y48IcxkI7VAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7MxkF7I0En4kS14
-        v26r4a6rW5MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8C
-        rVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVW8ZVWrXw
-        CIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x02
-        67AKxVWxJVW8Jr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r
-        1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr1j6F4UJbIYCTnIWIevJa73UjIFyTuYvjxU
-        IID7DUUUU
-X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/1tbiAgATBF1jj4asxgADsL
+X-CM-TRANSID: GxC2BwBnOWDafhRkaQemAQ--.41316S6
+X-Coremail-Antispam: 1UD129KBjvAXoWfXr17tr4rXF4UGw1kAFyUAwb_yoW8JFyfuo
+        ZxGrs8Wr409347Aw13Wr4xJrWxW393KF17JF1rW3yrJF9rAayYkryUCw13Zr4Svr4rZa40
+        vF1qva1xJayrXr1kn29KB7ZKAUJUUUU8529EdanIXcx71UUUUU7v73VFW2AGmfu7bjvjm3
+        AaLaJ3UjIYCTnIWjp_UUUOo7kC6x804xWl14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK
+        8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_JF
+        0E3s1l82xGYIkIc2x26xkF7I0E14v26ryj6s0DM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vE
+        j48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7CjxV
+        AFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26r4j6F4UM28EF7xvwVC2z280aVCY1x02
+        67AKxVW8Jr0_Cr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F4
+        0Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC
+        6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1lc7CjxV
+        Aaw2AFwI0_GFv_Wryl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2Iq
+        xVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r
+        4a6rW5MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY
+        6xkF7I0E14v26r4UJVWxJr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2js
+        IE14v26r4j6F4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr1j6F4UJbIYCTnIWIevJa73UjIF
+        yTuYvjxUI-eODUUUU
+X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/1tbiAgATBF1jj4asxgAFsN
 X-CFilter-Loop: Reflected
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -71,273 +70,460 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Roberto Sassu <roberto.sassu@huawei.com>
 
-Reuse the bpfilter code, with some adjustments to make the code more
-generic, and usable for other user mode drivers.
+Introduce a simple UMD driver using the management library, for testing
+purposes.
 
-:: struct umd_mgmt <=== struct bpfilter_umh_ops ::
-Replace the start method with post_start, to allow for some customization
-of the start procedure. All start procedures have in common the call to
-fork_usermode_driver().
+UMD Manager: sample_mgr.c
+UMD Loader: sample_loader.c
+UMD Handler: sample_handler.c
 
-Remove the sockopt method, as it is use case-specific. Instead, use one of
-the following two alternatives: generate the message from the manager of
-the driver (e.g. sockopt), by exporting the message format definition; or,
-define a new structure embedding the umd_mgmt and the custom method, which
-can be registered from the kernel module through the post_start method.
-
-Add kmod and kmod_loaded. Kmod is name of the kernel module that
-umd_mgmt_send_recv() (from bpfilter_mbox_request()) attempts to load if
-kmod_loaded is false (the driver is not yet started). Kmod_loaded is added
-to replace the sockopt method test, and ensure that the driver is ready for
-use.
-
-:: start_umh() <=== start_umh() ::
-Remove the connection test, and call the post_start method in umd_mgmt, if
-set, which could point to that test.
-
-:: shutdown_umh() <=== shutdown_umh() ::
-Same code.
-
-:: umd_mgmt_send_recv() <=== bpfilter_mbox_request() ::
-Replace the bpfilter_mbox_request() parameters with the parameters of
-umd_send_recv(), except for the first which is a umd_mgmt structure instead
-of umd_info. Also, call umd_send_recv() instead of the sockopt method, and
-shutdown the driver if there is an error.
-
-:: umd_mgmt_load() <=== load_umh() ::
-Same code except for the registration of the start and sockopt methods,
-replaced with setting kmod_loaded to true (not depending on CONFIG_INET),
-as mentioned in the explanation of umd_mgmt.
-
-:: umd_mgmt_unload() <=== fini_umh() ::
-Same code except for the deregistration of the start and sockopt methods,
-replaced with setting kmod_loaded to false (not depending on CONFIG_INET).
+The UMD Manager exposes /sys/kernel/security/sample_umd and accepts an
+offset between 0-128K. It invokes the UMD Loader to start the UMD Handler
+and passes to the latter the offset at which it sets the byte of the
+response buffer to 1. The UMD Manager verifies that and returns the number
+of bytes written on success, a negative value on failure.
 
 Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
 ---
- MAINTAINERS                          |   7 ++
- include/linux/usermode_driver_mgmt.h |  35 +++++++
- kernel/Makefile                      |   2 +-
- kernel/usermode_driver_mgmt.c        | 137 +++++++++++++++++++++++++++
- 4 files changed, 180 insertions(+), 1 deletion(-)
- create mode 100644 include/linux/usermode_driver_mgmt.h
- create mode 100644 kernel/usermode_driver_mgmt.c
+ MAINTAINERS                                   |   1 +
+ tools/testing/selftests/Makefile              |   1 +
+ tools/testing/selftests/umd_mgmt/.gitignore   |   1 +
+ tools/testing/selftests/umd_mgmt/Makefile     |  14 ++
+ tools/testing/selftests/umd_mgmt/config       |   1 +
+ .../selftests/umd_mgmt/sample_umd/Makefile    |  22 ++++
+ .../selftests/umd_mgmt/sample_umd/msgfmt.h    |  13 ++
+ .../umd_mgmt/sample_umd/sample_binary_blob.S  |   7 +
+ .../umd_mgmt/sample_umd/sample_handler.c      |  81 ++++++++++++
+ .../umd_mgmt/sample_umd/sample_loader.c       |  28 ++++
+ .../umd_mgmt/sample_umd/sample_mgr.c          | 124 ++++++++++++++++++
+ tools/testing/selftests/umd_mgmt/umd_mgmt.sh  |  40 ++++++
+ 12 files changed, 333 insertions(+)
+ create mode 100644 tools/testing/selftests/umd_mgmt/.gitignore
+ create mode 100644 tools/testing/selftests/umd_mgmt/Makefile
+ create mode 100644 tools/testing/selftests/umd_mgmt/config
+ create mode 100644 tools/testing/selftests/umd_mgmt/sample_umd/Makefile
+ create mode 100644 tools/testing/selftests/umd_mgmt/sample_umd/msgfmt.h
+ create mode 100644 tools/testing/selftests/umd_mgmt/sample_umd/sample_binary_blob.S
+ create mode 100644 tools/testing/selftests/umd_mgmt/sample_umd/sample_handler.c
+ create mode 100644 tools/testing/selftests/umd_mgmt/sample_umd/sample_loader.c
+ create mode 100644 tools/testing/selftests/umd_mgmt/sample_umd/sample_mgr.c
+ create mode 100755 tools/testing/selftests/umd_mgmt/umd_mgmt.sh
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index a3b14ec3383..7b27435fd20 100644
+index 7b27435fd20..a0cd161843e 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -11245,6 +11245,13 @@ S:	Maintained
- F:	include/linux/umh.h
- F:	kernel/umh.c
+@@ -11251,6 +11251,7 @@ L:	linux-kernel@vger.kernel.org
+ S:	Maintained
+ F:	include/linux/usermode_driver_mgmt.h
+ F:	kernel/usermode_driver_mgmt.c
++F:	tools/testing/selftests/umd_mgmt/*
  
-+KERNEL USERMODE DRIVER MANAGEMENT
-+M:	Roberto Sassu <roberto.sassu@huawei.com>
-+L:	linux-kernel@vger.kernel.org
-+S:	Maintained
-+F:	include/linux/usermode_driver_mgmt.h
-+F:	kernel/usermode_driver_mgmt.c
-+
  KERNEL VIRTUAL MACHINE (KVM)
  M:	Paolo Bonzini <pbonzini@redhat.com>
- L:	kvm@vger.kernel.org
-diff --git a/include/linux/usermode_driver_mgmt.h b/include/linux/usermode_driver_mgmt.h
+diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
+index 13a6837a0c6..84202d5b4fb 100644
+--- a/tools/testing/selftests/Makefile
++++ b/tools/testing/selftests/Makefile
+@@ -84,6 +84,7 @@ TARGETS += timers
+ endif
+ TARGETS += tmpfs
+ TARGETS += tpm2
++TARGETS += umd_mgmt
+ TARGETS += user
+ TARGETS += vDSO
+ TARGETS += mm
+diff --git a/tools/testing/selftests/umd_mgmt/.gitignore b/tools/testing/selftests/umd_mgmt/.gitignore
 new file mode 100644
-index 00000000000..3f9fc783a09
+index 00000000000..215c17d13e9
 --- /dev/null
-+++ b/include/linux/usermode_driver_mgmt.h
-@@ -0,0 +1,35 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (C) 2023 Huawei Technologies Duesseldorf GmbH
-+ *
-+ * User mode driver management API.
-+ */
-+#ifndef __LINUX_USERMODE_DRIVER_MGMT_H__
-+#define __LINUX_USERMODE_DRIVER_MGMT_H__
++++ b/tools/testing/selftests/umd_mgmt/.gitignore
+@@ -0,0 +1 @@
++/sample_umd/sample_umh
+diff --git a/tools/testing/selftests/umd_mgmt/Makefile b/tools/testing/selftests/umd_mgmt/Makefile
+new file mode 100644
+index 00000000000..f1d47eec04e
+--- /dev/null
++++ b/tools/testing/selftests/umd_mgmt/Makefile
+@@ -0,0 +1,14 @@
++# SPDX-License-Identifier: GPL-2.0
++TEST_GEN_PROGS_EXTENDED = sample_umd.ko
 +
-+#include <linux/usermode_driver.h>
++$(OUTPUT)/%.ko: $(wildcard sample_umd/Makefile sample_umd/*.[ch])
++	$(call msg,MOD,,$@)
++	$(Q)$(MAKE) -C sample_umd install
 +
-+/**
-+ * struct umd_mgmt - user mode driver management structure
-+ * @info: user mode driver information
-+ * @lock: lock to serialize requests to the UMD Handler
-+ * @post_start: function with additional operations after UMD Handler is started
-+ * @kmod: kernel module acting as UMD Loader, to start the UMD Handler
-+ * @kmod_loaded: whether @kmod is loaded or not
-+ *
-+ * Information necessary to manage the UMD during its lifecycle.
-+ */
-+struct umd_mgmt {
-+	struct umd_info info;
-+	struct mutex lock;
-+	int (*post_start)(struct umd_mgmt *mgmt);
-+	const char *kmod;
-+	bool kmod_loaded;
++OVERRIDE_TARGETS := 1
++override define CLEAN
++	$(call msg,CLEAN)
++	$(Q)$(MAKE) -C sample_umd clean
++endef
++
++include ../lib.mk
+diff --git a/tools/testing/selftests/umd_mgmt/config b/tools/testing/selftests/umd_mgmt/config
+new file mode 100644
+index 00000000000..71a078a3ac0
+--- /dev/null
++++ b/tools/testing/selftests/umd_mgmt/config
+@@ -0,0 +1 @@
++CONFIG_BPFILTER=y
+diff --git a/tools/testing/selftests/umd_mgmt/sample_umd/Makefile b/tools/testing/selftests/umd_mgmt/sample_umd/Makefile
+new file mode 100644
+index 00000000000..6d950e05f3d
+--- /dev/null
++++ b/tools/testing/selftests/umd_mgmt/sample_umd/Makefile
+@@ -0,0 +1,22 @@
++KDIR ?= ../../../../..
++
++userprogs := sample_umh
++sample_umh-objs := sample_handler.o
++userccflags += -I $(srctree)
++
++$(obj)/sample_binary_blob.o: $(obj)/sample_umh
++
++MODULES = sample_loader_kmod.ko sample_mgr.ko
++
++obj-m += sample_loader_kmod.o sample_mgr.o
++
++sample_loader_kmod-objs = sample_loader.o sample_binary_blob.o
++
++all:
++	+$(Q)$(MAKE) -C $(KDIR) M=$$PWD modules
++
++clean:
++	+$(Q)$(MAKE) -C $(KDIR) M=$$PWD clean
++
++install: all
++	+$(Q)$(MAKE) -C $(KDIR) M=$$PWD modules_install
+diff --git a/tools/testing/selftests/umd_mgmt/sample_umd/msgfmt.h b/tools/testing/selftests/umd_mgmt/sample_umd/msgfmt.h
+new file mode 100644
+index 00000000000..34a62d72cde
+--- /dev/null
++++ b/tools/testing/selftests/umd_mgmt/sample_umd/msgfmt.h
+@@ -0,0 +1,13 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _SAMPLE_UMH_MSGFMT_H
++#define _SAMPLE_UMH_MSGFMT_H
++
++struct sample_request {
++	uint32_t offset;
 +};
 +
-+int umd_mgmt_send_recv(struct umd_mgmt *mgmt, void *in, size_t in_len,
-+		       void *out, size_t out_len);
-+int umd_mgmt_load(struct umd_mgmt *mgmt, char *start, char *end);
-+void umd_mgmt_unload(struct umd_mgmt *mgmt);
++struct sample_reply {
++	uint8_t data[128 * 1024];
++};
 +
-+#endif /* __LINUX_USERMODE_DRIVER_MGMT_H__ */
-diff --git a/kernel/Makefile b/kernel/Makefile
-index 10ef068f598..ee47f7c2023 100644
---- a/kernel/Makefile
-+++ b/kernel/Makefile
-@@ -12,7 +12,7 @@ obj-y     = fork.o exec_domain.o panic.o \
- 	    notifier.o ksysfs.o cred.o reboot.o \
- 	    async.o range.o smpboot.o ucount.o regset.o
- 
--obj-$(CONFIG_USERMODE_DRIVER) += usermode_driver.o
-+obj-$(CONFIG_USERMODE_DRIVER) += usermode_driver.o usermode_driver_mgmt.o
- obj-$(CONFIG_MODULES) += kmod.o
- obj-$(CONFIG_MULTIUSER) += groups.o
- 
-diff --git a/kernel/usermode_driver_mgmt.c b/kernel/usermode_driver_mgmt.c
++#endif
+diff --git a/tools/testing/selftests/umd_mgmt/sample_umd/sample_binary_blob.S b/tools/testing/selftests/umd_mgmt/sample_umd/sample_binary_blob.S
 new file mode 100644
-index 00000000000..4fb06b37f62
+index 00000000000..3687dd13973
 --- /dev/null
-+++ b/kernel/usermode_driver_mgmt.c
-@@ -0,0 +1,137 @@
-+// SPDX-License-Identifier: GPL-2.0-only
++++ b/tools/testing/selftests/umd_mgmt/sample_umd/sample_binary_blob.S
+@@ -0,0 +1,7 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++	.section .init.rodata, "a"
++	.global sample_umh_start
++sample_umh_start:
++	.incbin "tools/testing/selftests/umd_mgmt/sample_umd/sample_umh"
++	.global sample_umh_end
++sample_umh_end:
+diff --git a/tools/testing/selftests/umd_mgmt/sample_umd/sample_handler.c b/tools/testing/selftests/umd_mgmt/sample_umd/sample_handler.c
+new file mode 100644
+index 00000000000..94ea6d99bbc
+--- /dev/null
++++ b/tools/testing/selftests/umd_mgmt/sample_umd/sample_handler.c
+@@ -0,0 +1,81 @@
++// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2023 Huawei Technologies Duesseldorf GmbH
 + *
-+ * User mode driver management library.
++ * Author: Roberto Sassu <roberto.sassu@huawei.com>
++ *
++ * Implement the UMD Handler.
 + */
-+#include <linux/kmod.h>
-+#include <linux/fs.h>
++#include <unistd.h>
++#include <malloc.h>
++#include <stdint.h>
++
++#include "msgfmt.h"
++
++FILE *debug_f;
++
++static void loop(void)
++{
++	struct sample_request *req = NULL;
++	struct sample_reply *reply = NULL;
++
++	req = calloc(1, sizeof(*req));
++	if (!req)
++		return;
++
++	reply = calloc(1, sizeof(*reply));
++	if (!reply)
++		goto out;
++
++	while (1) {
++		int n, len, offset;
++
++		offset = 0;
++		len = sizeof(*req);
++
++		while (len) {
++			n = read(0, ((void *)req) + offset, len);
++			if (n <= 0) {
++				fprintf(debug_f, "invalid request %d\n", n);
++				goto out;
++			}
++
++			len -= n;
++			offset += n;
++		}
++
++		if (req->offset < sizeof(reply->data))
++			reply->data[req->offset] = 1;
++
++		offset = 0;
++		len = sizeof(*reply);
++
++		while (len) {
++			n = write(1, ((void *)reply) + offset, len);
++			if (n <= 0) {
++				fprintf(debug_f, "reply failed %d\n", n);
++				goto out;
++			}
++
++			len -= n;
++			offset += n;
++		}
++
++		if (req->offset < sizeof(reply->data))
++			reply->data[req->offset] = 0;
++	}
++out:
++	free(req);
++	free(reply);
++}
++
++int main(void)
++{
++	debug_f = fopen("/dev/kmsg", "w");
++	setvbuf(debug_f, 0, _IOLBF, 0);
++	fprintf(debug_f, "<5>Started sample_umh\n");
++	loop();
++	fclose(debug_f);
++
++	return 0;
++}
+diff --git a/tools/testing/selftests/umd_mgmt/sample_umd/sample_loader.c b/tools/testing/selftests/umd_mgmt/sample_umd/sample_loader.c
+new file mode 100644
+index 00000000000..36c0e69e3f7
+--- /dev/null
++++ b/tools/testing/selftests/umd_mgmt/sample_umd/sample_loader.c
+@@ -0,0 +1,28 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2023 Huawei Technologies Duesseldorf GmbH
++ *
++ * Author: Roberto Sassu <roberto.sassu@huawei.com>
++ *
++ * Implement the UMD Loader (credits: bpfilter).
++ */
++#include <linux/module.h>
 +#include <linux/usermode_driver_mgmt.h>
 +
-+static void shutdown_umh(struct umd_mgmt *mgmt)
-+{
-+	struct umd_info *info = &mgmt->info;
-+	struct pid *tgid = info->tgid;
++extern char sample_umh_start;
++extern char sample_umh_end;
++extern struct umd_mgmt sample_mgmt_ops;
 +
-+	if (tgid) {
-+		kill_pid(tgid, SIGKILL, 1);
-+		wait_event(tgid->wait_pidfd, thread_group_exited(tgid));
-+		umd_cleanup_helper(info);
-+	}
++static int __init load_umh(void)
++{
++	return umd_mgmt_load(&sample_mgmt_ops, &sample_umh_start,
++			     &sample_umh_end);
 +}
 +
-+static int start_umh(struct umd_mgmt *mgmt)
++static void __exit fini_umh(void)
 +{
-+	int err;
-+
-+	/* fork usermode process */
-+	err = fork_usermode_driver(&mgmt->info);
-+	if (err)
-+		return err;
-+	pr_info("Loaded %s pid %d\n", mgmt->info.driver_name,
-+		pid_nr(mgmt->info.tgid));
-+
-+	if (mgmt->post_start) {
-+		err = mgmt->post_start(mgmt);
-+		if (err)
-+			shutdown_umh(mgmt);
-+	}
-+
-+	return err;
++	umd_mgmt_unload(&sample_mgmt_ops);
 +}
-+
-+/**
-+ * umd_mgmt_send_recv - Communicate with the UMD Handler and start it.
-+ * @mgmt: user mode driver management structure
-+ * @in: request message
-+ * @in_len: size of @in
-+ * @out: reply message
-+ * @out_len: size of @out
++module_init(load_umh);
++module_exit(fini_umh);
++MODULE_LICENSE("GPL");
+diff --git a/tools/testing/selftests/umd_mgmt/sample_umd/sample_mgr.c b/tools/testing/selftests/umd_mgmt/sample_umd/sample_mgr.c
+new file mode 100644
+index 00000000000..75c572f9849
+--- /dev/null
++++ b/tools/testing/selftests/umd_mgmt/sample_umd/sample_mgr.c
+@@ -0,0 +1,124 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2023 Huawei Technologies Duesseldorf GmbH
 + *
-+ * Send a message to the UMD Handler through the created pipe and read the
-+ * reply. If the UMD Handler is not available, invoke the UMD Loader to
-+ * instantiate it. If the UMD Handler exited, restart it.
++ * Author: Roberto Sassu <roberto.sassu@huawei.com>
 + *
-+ * Return: Zero on success, a negative value otherwise.
++ * Implement the UMD Manager.
 + */
-+int umd_mgmt_send_recv(struct umd_mgmt *mgmt, void *in, size_t in_len,
-+		       void *out, size_t out_len)
++#include <linux/module.h>
++#include <linux/security.h>
++#include <linux/seq_file.h>
++#include <linux/usermode_driver_mgmt.h>
++
++#include "msgfmt.h"
++
++struct umd_mgmt sample_mgmt_ops;
++EXPORT_SYMBOL_GPL(sample_mgmt_ops);
++
++struct dentry *sample_umd_dentry;
++
++static int sample_write_common(u32 offset, bool test)
 +{
-+	int err;
++	struct sample_request *req;
++	struct sample_reply *reply;
++	int ret;
 +
-+	mutex_lock(&mgmt->lock);
-+	if (!mgmt->kmod_loaded) {
-+		mutex_unlock(&mgmt->lock);
-+		request_module(mgmt->kmod);
-+		mutex_lock(&mgmt->lock);
-+
-+		if (!mgmt->kmod_loaded) {
-+			err = -ENOPROTOOPT;
-+			goto out;
-+		}
++	req = kzalloc(sizeof(*req), GFP_KERNEL);
++	if (!req) {
++		ret = -ENOMEM;
++		goto out;
 +	}
-+	if (mgmt->info.tgid &&
-+	    thread_group_exited(mgmt->info.tgid))
-+		umd_cleanup_helper(&mgmt->info);
 +
-+	if (!mgmt->info.tgid) {
-+		err = start_umh(mgmt);
-+		if (err)
-+			goto out;
++	reply = kzalloc(sizeof(*reply), GFP_KERNEL);
++	if (!reply) {
++		ret = -ENOMEM;
++		goto out;
 +	}
-+	err = umd_send_recv(&mgmt->info, in, in_len, out, out_len);
-+	if (err)
-+		shutdown_umh(mgmt);
++
++	req->offset = offset;
++
++	if (test)
++		/* Lock is already taken. */
++		ret = umd_send_recv(&sample_mgmt_ops.info, req, sizeof(*req),
++				    reply, sizeof(*reply));
++	else
++		ret = umd_mgmt_send_recv(&sample_mgmt_ops, req, sizeof(*req),
++					 reply, sizeof(*reply));
++	if (ret < 0)
++		goto out;
++
++	if (reply->data[req->offset] != 1) {
++		ret = -EINVAL;
++		goto out;
++	}
 +out:
-+	mutex_unlock(&mgmt->lock);
-+	return err;
-+}
-+EXPORT_SYMBOL_GPL(umd_mgmt_send_recv);
++	kfree(req);
++	kfree(reply);
 +
-+/**
-+ * umd_mgmt_load - Load and start the UMD Handler.
-+ * @mgmt: user mode driver management structure
-+ * @start: start address of the binary blob of the UMD Handler
-+ * @end: end address of the binary blob of the UMD Handler
-+ *
-+ * Copy the UMD Handler binary from the specified location to a private tmpfs
-+ * filesystem. Then, start the UMD Handler.
-+ *
-+ * Return: Zero on success, a negative value otherwise.
-+ */
-+int umd_mgmt_load(struct umd_mgmt *mgmt, char *start, char *end)
++	return ret;
++}
++
++static ssize_t sample_umd_write(struct file *file, const char __user *buf,
++				size_t datalen, loff_t *ppos)
 +{
-+	int err;
++	char offset_str[8];
++	u32 offset;
++	int ret;
 +
-+	err = umd_load_blob(&mgmt->info, start, end - start);
-+	if (err)
-+		return err;
++	if (datalen >= sizeof(offset_str))
++		return -EINVAL;
 +
-+	mutex_lock(&mgmt->lock);
-+	err = start_umh(mgmt);
-+	if (!err)
-+		mgmt->kmod_loaded = true;
-+	mutex_unlock(&mgmt->lock);
-+	if (err)
-+		umd_unload_blob(&mgmt->info);
-+	return err;
++	ret = copy_from_user(offset_str, buf, datalen);
++	if (ret < 0)
++		return ret;
++
++	offset_str[datalen] = '\0';
++
++	ret = kstrtou32(offset_str, 10, &offset);
++	if (ret < 0)
++		return ret;
++
++	if (offset >= sizeof(((struct sample_reply *)0)->data))
++		return -EINVAL;
++
++	ret = sample_write_common(offset, false);
++	if (ret < 0)
++		return ret;
++
++	return datalen;
 +}
-+EXPORT_SYMBOL_GPL(umd_mgmt_load);
 +
-+/**
-+ * umd_mgmt_unload - Terminate and unload the UMD Handler.
-+ * @mgmt: user mode driver management structure
-+ *
-+ * Terminate the UMD Handler, and cleanup the private tmpfs filesystem with the
-+ * UMD Handler binary.
-+ */
-+void umd_mgmt_unload(struct umd_mgmt *mgmt)
++static const struct file_operations sample_umd_file_ops = {
++	.write = sample_umd_write,
++};
++
++static int sample_post_start_umh(struct umd_mgmt *mgmt)
 +{
-+	mutex_lock(&mgmt->lock);
-+	shutdown_umh(mgmt);
-+	mgmt->kmod_loaded = false;
-+	mutex_unlock(&mgmt->lock);
-+
-+	umd_unload_blob(&mgmt->info);
++	return sample_write_common(0, true);
 +}
-+EXPORT_SYMBOL_GPL(umd_mgmt_unload);
++
++static int __init load_umh(void)
++{
++	mutex_init(&sample_mgmt_ops.lock);
++	sample_mgmt_ops.info.tgid = NULL;
++	sample_mgmt_ops.info.driver_name = "sample_umh";
++	sample_mgmt_ops.post_start = sample_post_start_umh;
++	sample_mgmt_ops.kmod = "sample_loader_kmod";
++	sample_mgmt_ops.kmod_loaded = false;
++
++	sample_umd_dentry = securityfs_create_file("sample_umd", 0200, NULL,
++						   NULL, &sample_umd_file_ops);
++	if (IS_ERR(sample_umd_dentry))
++		return PTR_ERR(sample_umd_dentry);
++
++	return 0;
++}
++
++static void __exit fini_umh(void)
++{
++	securityfs_remove(sample_umd_dentry);
++}
++module_init(load_umh);
++module_exit(fini_umh);
++MODULE_LICENSE("GPL");
+diff --git a/tools/testing/selftests/umd_mgmt/umd_mgmt.sh b/tools/testing/selftests/umd_mgmt/umd_mgmt.sh
+new file mode 100755
+index 00000000000..9b90d737fec
+--- /dev/null
++++ b/tools/testing/selftests/umd_mgmt/umd_mgmt.sh
+@@ -0,0 +1,40 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0-only
++#
++# Copyright (C) 2023 Huawei Technologies Duesseldorf GmbH
++#
++# Author: Roberto Sassu <roberto.sassu@huawei.com>
++#
++# Script to test the UMD management library.
++
++# Kselftest framework defines: ksft_pass=0, ksft_fail=1, ksft_skip=4
++ksft_pass=0
++ksft_fail=1
++ksft_skip=4
++
++if ! /sbin/modprobe -q sample_mgr; then
++	echo "umd_mgmt: module sample_mgr is not found [SKIP]"
++	exit $ksft_skip
++fi
++
++if [ ! -f /sys/kernel/security/sample_umd ]; then
++	echo "umd_mgmt: kernel interface is not found [SKIP]"
++	exit $ksft_skip
++fi
++
++i=0
++
++while [ $i -lt 500 ]; do
++	if ! echo $(( RANDOM % 128 * 1024 )) > /sys/kernel/security/sample_umd; then
++		echo "umd_mgmt: test failed"
++		exit $ksft_fail
++	fi
++
++	if [ $(( i % 50 )) -eq 0 ]; then
++		rmmod sample_loader_kmod
++	fi
++
++	(( i++ ))
++done
++
++exit $ksft_pass
 -- 
 2.25.1
 
