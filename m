@@ -2,105 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 555FF6BEFED
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 18:40:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4138E6BEFE4
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 18:39:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230252AbjCQRkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 13:40:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43872 "EHLO
+        id S231192AbjCQRj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 13:39:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231226AbjCQRjl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 13:39:41 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0E0EC5AE9
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 10:39:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=iHnR6VsoXLRrgo7RdT0e2Sj6OaG0kttlCIL24iJ+R/E=; b=f57Rqgoj74FE0JtuFHgjAPzlUC
-        YkZquQYr1QP8+06LtLlZgr8Muz+A/OqU0kSmuZAAwyNcbcPFlxP+QJULHWbXjmLWLIV0rT2xExFz3
-        1OnuzugNDXfryvu/f+H79S0rVBW6053hsmkGT620nYfTY3Jr/RVIrKICS8Umy0G8biNGvaw8flKT7
-        KTupK78KTRZGXMD0eBLhLWDMpE+OEoBnZQAwMlubLi2trR2nWfuwmt2tWD3MMEKFFSHI0TGp6brUl
-        eHmvfC/zgCjdespr5BxCPchEp03MrJ8wEv3fcUzOflYSWlXr51TucXysEQRTR25r7uVoKbHmrYULY
-        dBwMN6EQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34204)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pdE2i-0003A5-F5; Fri, 17 Mar 2023 17:39:04 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pdE2d-0003dP-5d; Fri, 17 Mar 2023 17:38:59 +0000
-Date:   Fri, 17 Mar 2023 17:38:59 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Shenwei Wang <shenwei.wang@nxp.com>,
+        with ESMTP id S230252AbjCQRjL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 13:39:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679B733CC4;
+        Fri, 17 Mar 2023 10:39:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F05CF60B35;
+        Fri, 17 Mar 2023 17:39:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16824C4339C;
+        Fri, 17 Mar 2023 17:39:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679074747;
+        bh=d2dbiKmY5zdyizSPGR6FY41MGap7MSDENVLqaS/yv7A=;
+        h=Date:From:To:Cc:Subject:From;
+        b=Tnoc0wbFnYcI8PTEOW4setBX+PUqyFAClZo4S/KpN5fAdd461DOke0bIfLY0H+lwR
+         8H/6AEX3fYWWAK+91sB1j6HCKJASKKYDcuHDqdVLvUqtNPYVhFumLcp2NHNavfL0Jx
+         KlRKScg4cCHoEc/82rgagqqyssu/zEZZ3pdBrwL2jmhuVjmorl30IgeIa2KLjKFviR
+         t7p8SkMLSaX4G2tGhWwJ5+IeaMghtFZUqn3lM93+oibAaqBOkCHXKz9I1ebnnAKRgX
+         qUzJaRKSRfKqkFC7q3i7dnj6Aa7ZoPukq052Fv+wr9krAlWcDQP+M75Fnrm7dvHeYm
+         XUPM4vTcqr9Vg==
+Date:   Fri, 17 Mar 2023 11:39:36 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Christian Lamparter <chunkeey@googlemail.com>,
+        Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev
-Subject: Re: [PATCH 1/1] net: stmmac: start PHY early in __stmmac_open
-Message-ID: <ZBSlsyv+qcd30hBg@shell.armlinux.org.uk>
-References: <20230316205449.1659395-1-shenwei.wang@nxp.com>
- <ZBOQecR6q5Xgr75F@shell.armlinux.org.uk>
- <f348ece4-90ef-4368-893a-73de37410fd2@lunn.ch>
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] wifi: carl9170: Replace fake flex-array with
+ flexible-array member
+Message-ID: <ZBSl2M+aGIO1fnuG@work>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <f348ece4-90ef-4368-893a-73de37410fd2@lunn.ch>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 17, 2023 at 06:34:13PM +0100, Andrew Lunn wrote:
-> > NAK. A patch similar to this has already been sent.
-> > 
-> > The problem with just moving this is that phylink can call the
-> > mac_link_up() method *before* phylink_start() has returned - and as
-> > this driver has not completed the setup, it doesn't expect the link
-> > to come up at that point.
-> > 
-> > There are several issues with this driver wanting the PHY clock early,
-> > and there have been two people working on addressing this previously,
-> > proposing two different changes to phylink.
-> > 
-> > I sent them away to talk to each other and come back with a unified
-> > solution. Shock horror, they never came back.
-> > 
-> > Now we seem to be starting again from the beginning.
-> > 
-> > stmmac folk really need to get a handle on this so reviewers are not
-> > having to NAK similar patches time and time again, resulting in the
-> > problem not being solved.
-> 
-> And just adding to that, Developers should also get into the habit of
-> searching to see if somebody has already tried and failed to solve the
-> problem.
-> 
-> “Those Who Do Not Learn History Are Doomed To Repeat It.”
-> 
-> Try avoiding wasting everybody's times by learning a bit of history.
+Zero-length arrays as fake flexible arrays are deprecated and we are
+moving towards adopting C99 flexible-array members instead.
 
-+1,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000!
+Address the following warnings found with GCC-13 and
+-fstrict-flex-arrays=3 enabled:
+drivers/net/wireless/ath/carl9170/tx.c:702:61: warning: array subscript i is outside array bounds of ‘const struct _carl9170_tx_status[0]’ [-Warray-bounds=]
+drivers/net/wireless/ath/carl9170/tx.c:701:65: warning: array subscript i is outside array bounds of ‘const struct _carl9170_tx_status[0]’ [-Warray-bounds=]
 
-(Yes, factorial too! :) )
+This helps with the ongoing efforts to tighten the FORTIFY_SOURCE
+routines on memcpy() and help us make progress towards globally
+enabling -fstrict-flex-arrays=3 [1].
 
+Link: https://github.com/KSPP/linux/issues/21
+Link: https://github.com/KSPP/linux/issues/267
+Link: https://gcc.gnu.org/pipermail/gcc-patches/2022-October/602902.html [1]
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/net/wireless/ath/carl9170/fwcmd.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/carl9170/fwcmd.h b/drivers/net/wireless/ath/carl9170/fwcmd.h
+index ff4b3b50250c..e5bcc364f088 100644
+--- a/drivers/net/wireless/ath/carl9170/fwcmd.h
++++ b/drivers/net/wireless/ath/carl9170/fwcmd.h
+@@ -320,9 +320,9 @@ struct carl9170_rsp {
+ 		struct carl9170_u32_list	rreg_res;
+ 		struct carl9170_u32_list	echo;
+ #ifdef __CARL9170FW__
+-		struct carl9170_tx_status	tx_status[0];
++		DECLARE_FLEX_ARRAY(struct carl9170_tx_status, tx_status);
+ #endif /* __CARL9170FW__ */
+-		struct _carl9170_tx_status	_tx_status[0];
++		DECLARE_FLEX_ARRAY(struct _carl9170_tx_status, _tx_status);
+ 		struct carl9170_gpio		gpio;
+ 		struct carl9170_tsf_rsp		tsf;
+ 		struct carl9170_psm		psm;
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.34.1
+
