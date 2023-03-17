@@ -2,258 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D77FB6BECCE
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 16:24:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 634426BECE0
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 16:28:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229907AbjCQPYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 11:24:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54446 "EHLO
+        id S230078AbjCQP2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 11:28:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230284AbjCQPXz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 11:23:55 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CEAD4ECA;
-        Fri, 17 Mar 2023 08:23:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=alwacGIsYUkAEyXPWeQ4Vcq46Ox3tubR5cPVZUbOrno=; b=hY2cOctRb2VFQOGXVpUOq1ce46
-        ZxoUS7JdciaXQXEFeoxFjDZXS/r6mLOdEZKLuW+2mMyXJ+32GMa93P3iukKSMory3UEX7m/LWgxav
-        +7Lt05pE2vsSjm0LaNVx0pMdKTczMC0LJArS/45RVsyJkGy1a12L22gqwsT1GafsY5t1HNkotZASZ
-        dgzrY87cNO/fvUQNIOAlSO8Ck+uQrjW6y87Kd/FRzWW57DkjanpvFo6c/IrWioAOS3v3IakfNSFQu
-        kOPArRPUwUv68+c/h/BML3lJPxAWTUQhCFRS/vMGlGMFJ2sfowi+GaWpCtmRxBct0UV4OwhWY0vTR
-        PZxeKpJA==;
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1pdBvp-000IIF-IF; Fri, 17 Mar 2023 16:23:49 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1pdBvp-000N4L-6y; Fri, 17 Mar 2023 16:23:49 +0100
-Subject: Re: [PATCH bpf-next v7 2/8] net: Update an existing TCP congestion
- control algorithm.
-To:     Kui-Feng Lee <kuifeng@meta.com>, bpf@vger.kernel.org,
-        ast@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        kernel-team@meta.com, andrii@kernel.org, sdf@google.com
-Cc:     netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>
-References: <20230316023641.2092778-1-kuifeng@meta.com>
- <20230316023641.2092778-3-kuifeng@meta.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <f72b77c3-15ac-3de3-5bce-c263564c1487@iogearbox.net>
-Date:   Fri, 17 Mar 2023 16:23:48 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S229669AbjCQP2s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 11:28:48 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C284F59D4;
+        Fri, 17 Mar 2023 08:28:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1679066926; x=1710602926;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=xh8khnO5LMKQzWW2OXEJ2k8r3FN0sYjxZDroAWhyYSo=;
+  b=2DQ16jHKewhBhZe0cHsJnSdumb9+05c7gR//CsWKYkZqlFY/8UrZeTnW
+   OU+TtzzSD3f2vO671yAWYVNKo5Sibl6j59NSIHpDZK5hNen5sHWyCnx+H
+   Rk0CmF7ROKHrDtSURr4imx+slCNkh20KcuiwH5NFLYPFMy6lp7MQydHFO
+   fnUZWmy5Acv/Hikz+A0kiUXHPDunYB0dksWcd8APbEKk9oFWIvYYD+w4U
+   apWf2WX1nlO0IiNjZJOdL8ct/9aue6BrO+wV4m32HjTZIJArDgcjgmP16
+   Qz1XuGLS99vXdp0WE5l8v68dzx+MbPr2fc2QYWi/63XcbSSdItXa7NQSq
+   w==;
+X-IronPort-AV: E=Sophos;i="5.98,268,1673938800"; 
+   d="scan'208";a="205234261"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Mar 2023 08:28:46 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Fri, 17 Mar 2023 08:28:45 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2507.21 via Frontend Transport; Fri, 17 Mar 2023 08:28:43 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <richardcochran@gmail.com>,
+        <UNGLinuxDriver@microchip.com>, <david.laight@aculab.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v2 0/2] net: lan966x: Improve TX/RX of frames from/to CPU
+Date:   Fri, 17 Mar 2023 16:27:11 +0100
+Message-ID: <20230317152713.4141614-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.38.0
 MIME-Version: 1.0
-In-Reply-To: <20230316023641.2092778-3-kuifeng@meta.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.8/26846/Fri Mar 17 08:22:57 2023)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/16/23 3:36 AM, Kui-Feng Lee wrote:
-> This feature lets you immediately transition to another congestion
-> control algorithm or implementation with the same name.  Once a name
-> is updated, new connections will apply this new algorithm.
-> 
-> The purpose is to update a customized algorithm implemented in BPF
-> struct_ops with a new version on the flight.  The following is an
-> example of using the userspace API implemented in later BPF patches.
-> 
->     link = bpf_map__attach_struct_ops(skel->maps.ca_update_1);
->     .......
->     err = bpf_link__update_map(link, skel->maps.ca_update_2);
-> 
-> We first load and register an algorithm implemented in BPF struct_ops,
-> then swap it out with a new one using the same name. After that, newly
-> created connections will apply the updated algorithm, while older ones
-> retain the previous version already applied.
-> 
-> This patch also takes this chance to refactor the ca validation into
-> the new tcp_validate_congestion_control() function.
-> 
-> Cc: netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>
-> Signed-off-by: Kui-Feng Lee <kuifeng@meta.com>
-> ---
->   include/net/tcp.h   |  3 +++
->   net/ipv4/tcp_cong.c | 60 +++++++++++++++++++++++++++++++++++++++------
->   2 files changed, 56 insertions(+), 7 deletions(-)
-> 
-> diff --git a/include/net/tcp.h b/include/net/tcp.h
-> index db9f828e9d1e..2abb755e6a3a 100644
-> --- a/include/net/tcp.h
-> +++ b/include/net/tcp.h
-> @@ -1117,6 +1117,9 @@ struct tcp_congestion_ops {
->   
->   int tcp_register_congestion_control(struct tcp_congestion_ops *type);
->   void tcp_unregister_congestion_control(struct tcp_congestion_ops *type);
-> +int tcp_update_congestion_control(struct tcp_congestion_ops *type,
-> +				  struct tcp_congestion_ops *old_type);
-> +int tcp_validate_congestion_control(struct tcp_congestion_ops *ca);
->   
->   void tcp_assign_congestion_control(struct sock *sk);
->   void tcp_init_congestion_control(struct sock *sk);
-> diff --git a/net/ipv4/tcp_cong.c b/net/ipv4/tcp_cong.c
-> index db8b4b488c31..c90791ae8389 100644
-> --- a/net/ipv4/tcp_cong.c
-> +++ b/net/ipv4/tcp_cong.c
-> @@ -75,14 +75,8 @@ struct tcp_congestion_ops *tcp_ca_find_key(u32 key)
->   	return NULL;
->   }
->   
-> -/*
-> - * Attach new congestion control algorithm to the list
-> - * of available options.
-> - */
-> -int tcp_register_congestion_control(struct tcp_congestion_ops *ca)
-> +int tcp_validate_congestion_control(struct tcp_congestion_ops *ca)
->   {
-> -	int ret = 0;
-> -
->   	/* all algorithms must implement these */
->   	if (!ca->ssthresh || !ca->undo_cwnd ||
->   	    !(ca->cong_avoid || ca->cong_control)) {
-> @@ -90,6 +84,20 @@ int tcp_register_congestion_control(struct tcp_congestion_ops *ca)
->   		return -EINVAL;
->   	}
->   
-> +	return 0;
-> +}
-> +
-> +/* Attach new congestion control algorithm to the list
-> + * of available options.
-> + */
-> +int tcp_register_congestion_control(struct tcp_congestion_ops *ca)
-> +{
-> +	int ret;
-> +
-> +	ret = tcp_validate_congestion_control(ca);
-> +	if (ret)
-> +		return ret;
-> +
->   	ca->key = jhash(ca->name, sizeof(ca->name), strlen(ca->name));
->   
->   	spin_lock(&tcp_cong_list_lock);
-> @@ -130,6 +138,44 @@ void tcp_unregister_congestion_control(struct tcp_congestion_ops *ca)
->   }
->   EXPORT_SYMBOL_GPL(tcp_unregister_congestion_control);
->   
-> +/* Replace a registered old ca with a new one.
-> + *
-> + * The new ca must have the same name as the old one, that has been
-> + * registered.
-> + */
-> +int tcp_update_congestion_control(struct tcp_congestion_ops *ca, struct tcp_congestion_ops *old_ca)
-> +{
-> +	struct tcp_congestion_ops *existing;
-> +	int ret;
-> +
-> +	ret = tcp_validate_congestion_control(ca);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ca->key = jhash(ca->name, sizeof(ca->name), strlen(ca->name));
-> +
-> +	spin_lock(&tcp_cong_list_lock);
-> +	existing = tcp_ca_find_key(old_ca->key);
-> +	if (ca->key == TCP_CA_UNSPEC || !existing || strcmp(existing->name, ca->name)) {
-> +		pr_notice("%s not registered or non-unique key\n",
-> +			  ca->name);
-> +		ret = -EINVAL;
-> +	} else if (existing != old_ca) {
-> +		pr_notice("invalid old congestion control algorithm to replace\n");
-> +		ret = -EINVAL;
-> +	} else {
-> +		/* Add the new one before removing the old one to keep
-> +		 * one implementation available all the time.
-> +		 */
-> +		list_add_tail_rcu(&ca->list, &tcp_cong_list);
-> +		list_del_rcu(&existing->list);
-> +		pr_debug("%s updated\n", ca->name);
-> +	}
-> +	spin_unlock(&tcp_cong_list_lock);
-> +
-> +	return ret;
-> +}
+The first patch of this series improves the RX side. As it seems to be
+an expensive operation to read the RX timestamp for every frame, then
+read it only if it is required. This will give an improvement of ~70mbit
+on the RX side.
+The second patch stops using the packing library. This improves mostly
+the TX side as this library is used to set diffent bits in the IFH. If
+this library is replaced with a more simple/shorter implementation,
+this gives an improvement of more than 100mbit on TX side.
+All the measurements were done using iperf3.
 
-Was wondering if we could have tcp_register_congestion_control and tcp_update_congestion_control
-could be refactored for reuse. Maybe like below. From the function itself what is not clear whether
-callers that replace an existing one should do the synchronize_rcu() themselves or if this should
-be part of tcp_update_congestion_control?
+v1->v2:
+- update lan966x_ifh_set to set the bytes and not each bit individually
 
-int tcp_check_congestion_control(struct tcp_congestion_ops *ca)
-{
-	/* All algorithms must implement these. */
-	if (!ca->ssthresh || !ca->undo_cwnd ||
-	    !(ca->cong_avoid || ca->cong_control)) {
-		pr_err("%s does not implement required ops\n", ca->name);
-		return -EINVAL;
-	}
-	if (ca->key == TCP_CA_UNSPEC)
-		ca->key = jhash(ca->name, sizeof(ca->name), strlen(ca->name));
-	if (ca->key == TCP_CA_UNSPEC) {
-		pr_notice("%s results in zero key\n", ca->name);
-		return -EEXIST;
-	}
-	return 0;
-}
+Horatiu Vultur (2):
+  net: lan966x: Don't read RX timestamp if not needed
+  net: lan966x: Stop using packing library
 
-/* Attach new congestion control algorithm to the list of available
-  * options or replace an existing one if old is non-NULL.
-  */
-int tcp_update_congestion_control(struct tcp_congestion_ops *new,
-				  struct tcp_congestion_ops *old)
-{
-	struct tcp_congestion_ops *found;
-	int ret;
+ .../net/ethernet/microchip/lan966x/Kconfig    |  1 -
+ .../ethernet/microchip/lan966x/lan966x_fdma.c |  2 +-
+ .../ethernet/microchip/lan966x/lan966x_main.c | 76 +++++++++++++------
+ .../ethernet/microchip/lan966x/lan966x_main.h |  5 +-
+ .../ethernet/microchip/lan966x/lan966x_ptp.c  | 20 ++---
+ 5 files changed, 65 insertions(+), 39 deletions(-)
 
-	ret = tcp_check_congestion_control(new);
-	if (ret)
-		return ret;
-	if (old &&
-	    (old->key != new->key ||
-	     strcmp(old->name, new->name))) {
-		pr_notice("%s & %s have non-matching congestion control names\n",
-			  old->name, new->name);
-		return -EINVAL;
-	}
-	spin_lock(&tcp_cong_list_lock);
-	found = tcp_ca_find_key(new->key);
-	if (old) {
-		if (found == old) {
-			list_add_tail_rcu(&new->list, &tcp_cong_list);
-			list_del_rcu(&old->list);
-		} else {
-			pr_notice("%s not registered\n", old->name);
-			ret = -EINVAL;
-		}
-	} else {
-		if (found) {
-			pr_notice("%s already registered\n", new->name);
-			ret = -EEXIST;
-		} else {
-			list_add_tail_rcu(&new->list, &tcp_cong_list);
-		}
-	}
-	spin_unlock(&tcp_cong_list_lock);
-	return ret;
-}
+-- 
+2.38.0
 
-int tcp_register_congestion_control(struct tcp_congestion_ops *ca)
-{
-	return tcp_update_congestion_control(ca, NULL);
-}
-EXPORT_SYMBOL_GPL(tcp_register_congestion_control);
