@@ -2,152 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA2806BF28F
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 21:30:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 884EC6BF291
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 21:30:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229770AbjCQUar (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 16:30:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36696 "EHLO
+        id S229844AbjCQUav (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 16:30:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229999AbjCQUaq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 16:30:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B5ABC9CAB;
-        Fri, 17 Mar 2023 13:30:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18DB0616C1;
-        Fri, 17 Mar 2023 20:29:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47C2DC433EF;
-        Fri, 17 Mar 2023 20:29:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679084963;
-        bh=9we5fWO8cVkhd7UCyIsMxQQuZI93G3p6+v2TY2SerNM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=HIDL2SEC7HCM/VPvRg2iEAvLYHl8r9S57w+6l2+Qcbp4ediC1ZvDTKCeeHIAvWrdZ
-         3xOtZVXqaQUeX5KVs0CoGH4+ZsfN3xk1FTV0rHK8XL7B+etX+iWIh8/6b1lrrG1nn1
-         +Fs166iYeBAO+RNT8FqGmIfxw92G0qUXl29SDQ/0NzJ407InA9RmadJtgbATmFZTVc
-         Kr0WwWZu4wuBi88jieuAsRNV54ab1SlufA6QSs8VQ0ltd8Oqg9AxIbUaasJ2rvvYxa
-         K2g6oDSmPOFFj762kPA4/E1lyb5UVPbPJneAk6Dw3pYzgAlc9iDWBsgVT92zj8F62W
-         yuZtp0WyzFTRQ==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     torvalds@linux-foundation.org
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, pabeni@redhat.com
-Subject: [PULL v2] Networking for v6.3-rc3
-Date:   Fri, 17 Mar 2023 13:29:22 -0700
-Message-Id: <20230317202922.2240017-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.39.2
+        with ESMTP id S229665AbjCQUat (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 16:30:49 -0400
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC36F3B641
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 13:30:15 -0700 (PDT)
+Received: by mail-ot1-x329.google.com with SMTP id f17-20020a9d7b51000000b00697349ab7e7so3520268oto.9
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 13:30:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112; t=1679084999;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=TSnXgkqDQaSk25uqOjvfuycMfRWL/vNC8sOZdDRBA9s=;
+        b=0uOXPoTsPILyT9u0V6iIoPEdzgOFLGg0ICXKqPmlUZQxJwNo4kPlJjG5t+v9GEePtT
+         zWj14Ko8qpBij7AGJtfSbBnS8dqECMRo2bvskR0ZLbDYpU306kphg7CudHlpesfcbMR6
+         cXjdKrrtjQW6pfNEwSkDEzwZpcETX+wRtST63bbxU1Vwlw11KOYJkep/8xqpGYgEBPVk
+         KWivdIDkO9YNPfqT2Y3ySYf4m6PjTuXfdOANUGylV9H13I73dgt/4ZiRA/FOPcIZH7ld
+         FGqXYV2LDKnHu8n3/Y8Bk2fuW7/cY3kdTcXP6BX7K3+9ME2kfCLLHZMyNwunV/akZPtA
+         pgJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679084999;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=TSnXgkqDQaSk25uqOjvfuycMfRWL/vNC8sOZdDRBA9s=;
+        b=ue+yfmmWCrtW2Cn8dUS3ROQwdVKEvQrxRAlnEhDSBR4gKKvMNeQBPH2svrWG4LdXrI
+         SHum7UOwmD6eu+k3OACI+5u/2e0LT8AvuQ/5LK7ZJFm5vsy2n6HwEpjgc4dtmiyYHRJ0
+         yKVyITQLacIRiz1rsnxCiKKb99dn2ceU0HPkJx09WkkFz0SRaXI6yRgV0lceG7STSeev
+         bTQ4pgUmqbwgV2zS0VEcnwMZCckPlNVgtJjH7E3L0FiIjLe9vzmmyaT1F2tqWTxPo0kb
+         MWtGrUgQjQE/RTR9A403YS0iTvRF+YqJhSkmLzhAB6HbHO9UqBqcyIF7+XMVMPOCOe5Q
+         /J4g==
+X-Gm-Message-State: AO0yUKWAnWZeoXMxPawgLTjgNKEQfb3BqoQxuNHjgPIkbs19BbNDXPYQ
+        vhIDgaz7wSFq8HW8L5aIVek5ZHBd7bus4zny7o4=
+X-Google-Smtp-Source: AK7set/LAfQ9bVKUeYCGTf4fz++msyupbWVT6HE41uUQHb7lsyl+dJ7229g1uJnHmdwnzyayCxeqcg==
+X-Received: by 2002:a05:6830:12cc:b0:693:d927:645e with SMTP id a12-20020a05683012cc00b00693d927645emr477110otq.6.1679084999422;
+        Fri, 17 Mar 2023 13:29:59 -0700 (PDT)
+Received: from ?IPV6:2804:14d:5c5e:4698:10c1:4b9b:b369:bda2? ([2804:14d:5c5e:4698:10c1:4b9b:b369:bda2])
+        by smtp.gmail.com with ESMTPSA id j25-20020a9d7f19000000b006864c8043e0sm1330848otq.61.2023.03.17.13.29.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Mar 2023 13:29:59 -0700 (PDT)
+Message-ID: <6f09e5c0-9bee-3f98-bdc4-abd9adade9c2@mojatatu.com>
+Date:   Fri, 17 Mar 2023 17:29:55 -0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH net-next v3 1/4] net/sched: act_pedit: use extack in 'ex'
+ parsing errors
+Content-Language: en-US
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+References: <20230317195135.1142050-1-pctammela@mojatatu.com>
+ <20230317195135.1142050-2-pctammela@mojatatu.com>
+ <ZBTMj7DCCTQaEOCi@corigine.com>
+From:   Pedro Tammela <pctammela@mojatatu.com>
+In-Reply-To: <ZBTMj7DCCTQaEOCi@corigine.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Linus!
+On 17/03/2023 17:24, Simon Horman wrote:
+> Hi Pedro,
+> 
+> On Fri, Mar 17, 2023 at 04:51:32PM -0300, Pedro Tammela wrote:
+>> We have extack available when parsing 'ex' keys, so pass it to
+>> tcf_pedit_keys_ex_parse and add more detailed error messages.
+> 
+> This part looks good.
+> 
+>> While at it, remove redundant code from the 'err_out' label code path.
+> 
+> But I think it would be better to do one thing at a time.
+> 
+>>
+>> Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
+>> Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
+>> ---
+>>   net/sched/act_pedit.c | 20 ++++++++++----------
+>>   1 file changed, 10 insertions(+), 10 deletions(-)
+>>
+>> diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
+>> index 4559a1507ea5..cd3cbe397e87 100644
+>> --- a/net/sched/act_pedit.c
+>> +++ b/net/sched/act_pedit.c
+>> @@ -35,7 +35,7 @@ static const struct nla_policy pedit_key_ex_policy[TCA_PEDIT_KEY_EX_MAX + 1] = {
+>>   };
+>>   
+>>   static struct tcf_pedit_key_ex *tcf_pedit_keys_ex_parse(struct nlattr *nla,
+>> -							u8 n)
+>> +							u8 n, struct netlink_ext_ack *extack)
+>>   {
+>>   	struct tcf_pedit_key_ex *keys_ex;
+>>   	struct tcf_pedit_key_ex *k;
+>> @@ -56,25 +56,25 @@ static struct tcf_pedit_key_ex *tcf_pedit_keys_ex_parse(struct nlattr *nla,
+>>   		struct nlattr *tb[TCA_PEDIT_KEY_EX_MAX + 1];
+>>   
+>>   		if (!n) {
+>> -			err = -EINVAL;
+>> +			NL_SET_ERR_MSG_MOD(extack, "Can't parse more extended keys than requested");
+>>   			goto err_out;
+>>   		}
+>> +
+>>   		n--;
+>>   
+>>   		if (nla_type(ka) != TCA_PEDIT_KEY_EX) {
+>> -			err = -EINVAL;
+>> +			NL_SET_ERR_MSG_MOD(extack, "Unknown attribute, expected extended key");
+>>   			goto err_out;
+>>   		}
+> 
+> perhaps I'm missing something terribly obvious but what I see is that
+> this code sits in a loop and the initial value of err is -EINVAL.
+> `
+>>   
+>> -		err = nla_parse_nested_deprecated(tb, TCA_PEDIT_KEY_EX_MAX,
+>> -						  ka, pedit_key_ex_policy,
+>> -						  NULL);
+>> +		err = nla_parse_nested_deprecated(tb, TCA_PEDIT_KEY_EX_MAX, ka,
+>> +						  pedit_key_ex_policy, extack);
+>>   		if (err)
+>>   			goto err_out;
+> 
+> If nla_parse_nested_deprecated() succeeds then, here, err == 0
+> 
+>>   
+>>   		if (!tb[TCA_PEDIT_KEY_EX_HTYPE] ||
+>>   		    !tb[TCA_PEDIT_KEY_EX_CMD]) {
+>> -			err = -EINVAL;
+>> +			NL_SET_ERR_MSG_MOD(extack, "Extended Pedit missing required attributes");
+>>   			goto err_out;
+> 
+> If, f.e.,  this fails the code will now branch to err_out with err == 0.
+> Which will return ERR_PTR(err);
+> 
 
-Here we go again..
+Correct, I sent this change too fast and should have been more thorough.
+I will try to be more careful in the future.
+Thanks again!
 
-A little more changes than usual, but it's pretty normal for us
-that the rc3/rc4 PRs are oversized as people start testing in
-earnest. Possibly an extra boost from people deploying the 6.1 LTS
-but that's more of an unscientific hunch.
-
-The following changes since commit f5e305e63b035a1782a666a6535765f80bb2dca3:
-
-  Merge branch 'bonding-fixes' (2023-03-17 07:56:41 +0000)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.3-rc3
-
-for you to fetch changes up to f5e305e63b035a1782a666a6535765f80bb2dca3:
-
-  Merge branch 'bonding-fixes' (2023-03-17 07:56:41 +0000)
-
-----------------------------------------------------------------
-Including fixes from netfilter, wifi and ipsec.
-
-Current release - regressions:
-
- - phy: mscc: fix deadlock in phy_ethtool_{get,set}_wol()
-
- - virtio: vsock: don't use skbuff state to account credit
-
- - virtio: vsock: don't drop skbuff on copy failure
-
- - virtio_net: fix page_to_skb() miscalculating the memory size
-
-Current release - new code bugs:
-
- - eth: correct xdp_features after device reconfig
-
- - wifi: nl80211: fix the puncturing bitmap policy
-
- - net/mlx5e: flower:
-   - fix raw counter initialization
-   - fix missing error code
-   - fix cloned flow attribute
-
- - ipa:
-   - fix some register validity checks
-   - fix a surprising number of bad offsets
-   - kill FILT_ROUT_CACHE_CFG IPA register
-
-Previous releases - regressions:
-
- - tcp: fix bind() conflict check for dual-stack wildcard address
-
- - veth: fix use after free in XDP_REDIRECT when skb headroom is small
-
- - ipv4: fix incorrect table ID in IOCTL path
-
- - ipvlan: make skb->skb_iif track skb->dev for l3s mode
-
- - mptcp:
-  - fix possible deadlock in subflow_error_report
-  - fix UaFs when destroying unaccepted and listening sockets
-
- - dsa: mv88e6xxx: fix max_mtu of 1492 on 6165, 6191, 6220, 6250, 6290
-
-Previous releases - always broken:
-
- - tcp: tcp_make_synack() can be called from process context,
-   don't assume preemption is disabled when updating stats
-
- - netfilter: correct length for loading protocol registers
-
- - virtio_net: add checking sq is full inside xdp xmit
-
- - bonding: restore IFF_MASTER/SLAVE flags on bond enslave
-   Ethertype change
-
- - phy: nxp-c45-tja11xx: fix MII_BASIC_CONFIG_REV bit number
-
- - eth: i40e: fix crash during reboot when adapter is in recovery mode
-
- - eth: ice: avoid deadlock on rtnl lock when auxiliary device
-   plug/unplug meets bonding
-
- - dsa: mt7530:
-   - remove now incorrect comment regarding port 5
-   - set PLL frequency and trgmii only when trgmii is used
-
- - eth: mtk_eth_soc: reset PCS state when changing interface types
-
-Misc:
-
- - ynl: another license adjustment
-
- - move the TCA_EXT_WARN_MSG attribute for tc action
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-
-----------------------------------------------------------------
