@@ -2,72 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E6416BE3A8
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 09:33:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB6B76BE3BE
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 09:35:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231629AbjCQIdn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 04:33:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41384 "EHLO
+        id S230092AbjCQIfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 04:35:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231552AbjCQIdT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 04:33:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61D93DFB43;
-        Fri, 17 Mar 2023 01:32:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A206BB824F6;
-        Fri, 17 Mar 2023 08:32:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F06C8C433D2;
-        Fri, 17 Mar 2023 08:31:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679041919;
-        bh=oomZDnVxdHZtUJnlVWXEtuwr3xT++1ZZD4/CrL6Q6KA=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=oZHAbvzuggGsV0kFkw//uH222iU6B2cdqfqqS+WMOBSAcPPZ36sGeR6ZWQlBe5V5/
-         xl53mRL8CXa4lKX89H74MVRR9BjfRDJtyYG/+/PL25S8TSBvJyPEMBleVfkNdCZt4U
-         7WcHsxKsMVkZokb42IE2Jfg1uM7+9/PFPN6V1mDeOcB5PRS8A43l1ETq53+1phO3ZG
-         7dFzutQO3OEq4gbTBoSjGIDsAgjDqwdN++zZ4fE8RlGRbKo+hEQM2tVOBLKgld7biN
-         OkAD9y39ug72oyhRCzeCg8lf2mnXmAAI52tvlcrlffTnCfuTuw6MUYlTDYmxenVx2s
-         LCn2hfN6fFrCg==
-Message-ID: <d8776be3-75a2-02fd-3702-79169675e4f6@kernel.org>
-Date:   Fri, 17 Mar 2023 10:31:52 +0200
+        with ESMTP id S231755AbjCQIe5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 04:34:57 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 341A3E20D1;
+        Fri, 17 Mar 2023 01:33:54 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id d13so4405720pjh.0;
+        Fri, 17 Mar 2023 01:33:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679042025;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=EVQRC1/6jsM6rnT7EHgyJF3q/qUoPSo4wdjRlPKVijI=;
+        b=H8U7DCRusRVf7mDVicyvVaWgb35QLUNbKpdcxfOkPnzTgKNg8dCk2VBvkIS1/o+Sru
+         ExtSgiZ+CGdzpsTIdPaem1sBjitSxIBjjRNxyWqiTwdfoz1jBUBPvVqaSjIBn1bqGvAO
+         CfG/7rt0pEt0nHj5NdKSquc0FSNlORHgHH8ZjYlW/CfB4KZonCrQnT3uNP7VdWW3TClI
+         9pKLu1OWnSQvYBpfzQ97s5FSkdt0lSKq8FfBKWrS6p2C3D4tVi6Cf+w5bTGnvCqwSXU9
+         EmYb8ezivAwkQcpmMlqBdceEiFnD5I41NcL19UqSxitlGC2kQFZpOMhk4+EVKtqmtCkx
+         WZaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679042025;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=EVQRC1/6jsM6rnT7EHgyJF3q/qUoPSo4wdjRlPKVijI=;
+        b=mKwUteRV2RJScus87R+0nYiBW4a/hMqV85KlTWSK6q/T9R9GSOb6urLFLIMo8GrPq9
+         2uJRUXVq1U4wICUxwyUs2l/l1W6+S/chbgsyft2zvuR7liHHouY9fMgAXlVn2AV8ZnSk
+         /ALSIF6NvfHT5WpmSo+2t/ZFl2jms/eWrD7fR75RVECcN6UIRi8yqY4lpx2+c0+QnDm3
+         cpq4d+at6zsz5aO0xD3Fd7KT1GJCCdwqM4ive6qztGSNJa4GWDjR7/WdeqwVHM3ugNtQ
+         xtGBTLssmbWXC6ky04Qq4qPbkKYozP6acqEcfWNcdut33Pt+UINi0aftRLy0kxBqHpzZ
+         nkUQ==
+X-Gm-Message-State: AO0yUKVSARzkv3Vsr6SyytLe6BVbYoTKk5BW9sVfUYChRW/C6I0PRQo4
+        2Lxa4CfAS/i+1820A1MUS9c=
+X-Google-Smtp-Source: AK7set/dBtfvilETTNoTPYDJ1y0e04eNUZhZDMhz2vsNXn+fEMnANY4Ulsq6/hXjHeeD57ttXRUcew==
+X-Received: by 2002:a17:902:db0f:b0:1a1:8edc:c5f8 with SMTP id m15-20020a170902db0f00b001a18edcc5f8mr7363787plx.56.1679042025281;
+        Fri, 17 Mar 2023 01:33:45 -0700 (PDT)
+Received: from passwd123-ThinkStation-P920.. ([222.20.94.23])
+        by smtp.gmail.com with ESMTPSA id g1-20020a170902868100b0019a593e45f1sm972287plo.261.2023.03.17.01.33.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Mar 2023 01:33:44 -0700 (PDT)
+From:   Kang Chen <void0red@gmail.com>
+To:     horatiu.vultur@microchip.com
+Cc:     borisp@nvidia.com, davem@davemloft.net,
+        dirk.vandermerwe@netronome.com, edumazet@google.com,
+        john.fastabend@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, void0red@gmail.com
+Subject: [PATCH net v2] net/tls: refine the branch condition in tls_dev_event
+Date:   Fri, 17 Mar 2023 16:33:38 +0800
+Message-Id: <20230317083338.1085194-1-void0red@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230317081513.ktllct3rqaisummm@soft-dev3-1>
+References: <20230317081513.ktllct3rqaisummm@soft-dev3-1>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [EXTERNAL] Re: [EXTERNAL] Re: [PATCH v4 4/5] soc: ti: pruss: Add
- helper functions to set GPI mode, MII_RT_event and XFR
-Content-Language: en-US
-To:     Md Danish Anwar <a0501179@ti.com>,
-        MD Danish Anwar <danishanwar@ti.com>,
-        "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Nishanth Menon <nm@ti.com>
-Cc:     linux-remoteproc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, srk@ti.com, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20230313111127.1229187-1-danishanwar@ti.com>
- <20230313111127.1229187-5-danishanwar@ti.com>
- <d168e7dd-42a0-b728-5c4c-e97209c13871@kernel.org>
- <b1409f34-86b5-14e8-f352-5032aa57ca46@ti.com>
- <60e73395-f670-6eaa-0eb7-389553320a71@kernel.org>
- <20718115-7606-a77b-7e4d-511ca9c1d798@ti.com>
- <e49b9a78-5e35-209e-7ecc-2333478b98b0@kernel.org>
- <468f85ad-e4b0-54e1-a5b9-4692ae8a1445@ti.com>
- <455440f4-7f2b-366e-53ec-700c3bb98534@kernel.org>
- <22b8860c-12bd-384d-41af-93f1dde9a0fd@ti.com>
-From:   Roger Quadros <rogerq@kernel.org>
-In-Reply-To: <22b8860c-12bd-384d-41af-93f1dde9a0fd@ti.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,64 +74,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+dev->tlsdev_ops may be null and cause null pointer dereference later.
 
+Fixes: eeb2efaf36c7 ("net/tls: generalize the resync callback")
+Signed-off-by: Kang Chen <void0red@gmail.com>
+---
+v2 -> v1: simplify the condition
 
-On 17/03/2023 07:02, Md Danish Anwar wrote:
-> 
-> 
-> On 16/03/23 19:34, Roger Quadros wrote:
->>
->> Hi,
->>
->> On 16/03/2023 15:11, Md Danish Anwar wrote:
->>>
->>>
->>> On 16/03/23 17:49, Roger Quadros wrote:
->>>>
->>>>
->>>> On 16/03/2023 13:44, Md Danish Anwar wrote:
->>>>>
->>>>> On 16/03/23 17:06, Roger Quadros wrote:
->>>>>> Hi,
->>>>>>
->>>>>> On 16/03/2023 13:05, Md Danish Anwar wrote:
->>>>>>> Hi Roger,
->>>>>>>
->>>>>>> On 15/03/23 17:52, Roger Quadros wrote:
->>>>>>>>
->>>>>>>>
->>>>>>>> On 13/03/2023 13:11, MD Danish Anwar wrote:
->>>>>>>>> From: Suman Anna <s-anna@ti.com>
->>
-> 
-> [..]
-> 
->>> Sure, then I will use the existing enum pru_type.
->>>
->>> The enum pru_type is currently in drivers/remoteproc/pruss.c I will move this
->>> enum definition from there to include/linux/remoteproc/pruss.h
->>
->> There are 2 public pruss.h files.
->> 	include/linux/remoteproc/pruss.h
->> and
->> 	include/linux/pruss_driver.h
->>
->> Why is that and when to use what?
->>
-> 
-> The include/linux/remoteproc/pruss.h file was introduced in series [1] as a
-> public header file for PRU_RPROC driver (drivers/remoteproc/pru_rproc.c)
-> 
-> The second header file include/linux/pruss_driver.h was introduced much earlier
-> as part of [2] , "soc: ti: pruss: Add a platform driver for PRUSS in TI SoCs".
-> 
-> As far as I can see, seems like pruss_driver.h was added as a public header
-> file for PRUSS platform driver (drivers/soc/ti/pruss.c)
-> 
-> [1] https://lore.kernel.org/all/20230106121046.886863-1-danishanwar@ti.com/
-> [2] https://lore.kernel.org/all/1542886753-17625-7-git-send-email-rogerq@ti.com/
+ net/tls/tls_device.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Thanks. "include/linux/remoteproc/pruss.h" seems appropriate for enum pru_type.
+diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+index a7cc4f9faac2..45b07162d062 100644
+--- a/net/tls/tls_device.c
++++ b/net/tls/tls_device.c
+@@ -1449,7 +1449,8 @@ static int tls_dev_event(struct notifier_block *this, unsigned long event,
+ 		if (netif_is_bond_master(dev))
+ 			return NOTIFY_DONE;
+ 		if ((dev->features & NETIF_F_HW_TLS_RX) &&
+-		    !dev->tlsdev_ops->tls_dev_resync)
++		   (!dev->tlsdev_ops ||
++		    !dev->tlsdev_ops->tls_dev_resync))
+ 			return NOTIFY_BAD;
+ 
+ 		if  (dev->tlsdev_ops &&
+-- 
+2.34.1
 
-cheers,
--roger
