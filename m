@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63FA56BEDF9
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 17:22:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EEED66BEDFF
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 17:23:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229886AbjCQQWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 12:22:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33076 "EHLO
+        id S229648AbjCQQXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 12:23:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229621AbjCQQWC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 12:22:02 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC81A6782A
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 09:22:01 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id ay8so3716492wmb.1
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 09:22:01 -0700 (PDT)
+        with ESMTP id S229480AbjCQQXh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 12:23:37 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF80831BD7
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 09:23:36 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id p4so4956270wre.11
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 09:23:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112; t=1679070120;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112; t=1679070215;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=WK9yNSRVMlEjJBHOwhJwHBFPa8SNWqT9uE9ABk62B2U=;
-        b=DG/fto1x98uQ7dSsGetIjYJWDexNDd5i4LfyYi7NUiz/WSFew62SHnWLIBzbeuVYJA
-         PTxVBfS1gAOEUEiymezfy1LtBiNhWQOav3DpLy6ja3+l8BNlAJtDisQteOWEKOL/033d
-         El5MmsPw4Of/YpfYhjCD52HU4YVV/Emc57hGz11Lkmwe/ttLSF5IYTlqkxYby+p5A7KE
-         J6ZMSBeAVQSMC+5CH+jugzxU9DC9Bm01if+a2T2Rn72sjm/AuCE3jjzMpOqSWC74SJk9
-         hHuE3ZUuCkm548uyPlOxaNNc+RMfCf+DkSFe2q/m5SSxooUZIDIxjXz6U8W6uJFmICCL
-         txOw==
+        bh=CFTtTxvvW2TaL2/uZrd+qk+RLkOl91PVBRCzxuQjGWw=;
+        b=GIhWGXJ5Knl0XVgoVWulLks9QMvK/u2eiLSx1DqrMfzZSv0/XPh4Zbat9/9WMfU7p0
+         hW62ixZTKAg6wjaip8CLuMklarycB/B9sFdNhU9X3qw80il/YVHrnKimzpEeXeKDoQrm
+         6YPgo8zYPkPObSphfQ/wCp72s+jrS6Q+bDo6jko+dK7JuEmukwHOi3TWXmmsmvkKiU+C
+         2oDZkqQaJIG5TxX6kycQDH8i7ZYtTwoPNpBJVWHwBrv1nRnVsIwvx9Hfq4TCEG4ilL0r
+         NCOkxPbi/axlNMzYVJx0O5b783LrGpIAtfQFdNenXDYcq4xeO/9kLzEvYct06uA12Sd1
+         CRYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679070120;
+        d=1e100.net; s=20210112; t=1679070215;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=WK9yNSRVMlEjJBHOwhJwHBFPa8SNWqT9uE9ABk62B2U=;
-        b=13tJnPrZh3hL587boZuUMWt6hLv3RCbjaMMmEHk45vkGCfhc/ExnylVHXmAsWtl4yv
-         kDl0SxY96Rvq6x4HXsDLdmtdOPGhGiSfg0GGFl0EwGS5/E9jYYsYHnEVyk0D93xe2kBP
-         BeHkamu7u79eTKgY3j+KblpP/LbHdXM0VC2zdDYpPUjAyxkzeXik3q5emNhF14192hOG
-         Wynqb8vXPya+K6g8GxAKqB3ZKLxZuyOOHltQfVQSiAGsntwdaG6ArpZYrDVMrQ4xDsdW
-         nGCn+13IPMgJ1RDZsY2YaZKFOuBi25QFZjF1uT4Y4M7D0lD4XeARYIEMUtSrdq6hbQ4Y
-         ooIw==
-X-Gm-Message-State: AO0yUKWBWWZqgj8Y8qNiJ4Q/h6VG4Aelc83pZui3x1xjVFIBxd3ZV+Zf
-        Ks8D5LKNj9Hs/rmkEXv81IFelg==
-X-Google-Smtp-Source: AK7set8HoNwwA1+/Xl56688DC6BYt9rhtjCtl5fanZOEjjmCrJBpY85I6piUWRSAGVEqRLFCTdji7w==
-X-Received: by 2002:a05:600c:1546:b0:3ed:22f2:554c with SMTP id f6-20020a05600c154600b003ed22f2554cmr18431844wmg.29.1679070120483;
-        Fri, 17 Mar 2023 09:22:00 -0700 (PDT)
+        bh=CFTtTxvvW2TaL2/uZrd+qk+RLkOl91PVBRCzxuQjGWw=;
+        b=ZiVHqUEp9/UuPHEe3vSyyTwcTFJDiEkrKMiGfaYfIiq+nt7j8fIAZk10GNd8PAEmEF
+         Ab/+IxZdYG67IB6nmKM1/qW9v5+iq/g6dUzsfHNUmVnh3iSz/yOBZrMCpYs00HFV5Clu
+         OGQiilHVMqn0VK7nEQQuh5JR25y/7PrBmapuNmBbzrojKvQVuOr4WS7DgpaXp2eI2LZc
+         qOgvet8uY4otLu62gyViewX5p+jKZqMHWulZsUJLOLquCNLfvlp1PsVuLFVoKw6N1RQA
+         fo96153jfo9egi+yMpQh87Y6IVT+Iv2IfHicB8lfyP7ZIwVST0LAxho+i0CS1C18HIv2
+         5NqQ==
+X-Gm-Message-State: AO0yUKUhR95qsgEv02ItpRxZAD/Aq1jtYfl2IVoh5CQRtzJu+0tY9J/a
+        guFVFxn0CzpKBqyf2LDxyqnw192eU2JCuT3JUK0=
+X-Google-Smtp-Source: AK7set82AOZ21B+YPX2qFt9bjaX9ZLa16gktIkU6CDKG/dnIuXtZidLv7gQyW/PJP7iAUaN9/opdaA==
+X-Received: by 2002:a5d:4908:0:b0:2cf:edf0:f8c with SMTP id x8-20020a5d4908000000b002cfedf00f8cmr6987957wrq.29.1679070215487;
+        Fri, 17 Mar 2023 09:23:35 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id q8-20020a1cf308000000b003ed4f6c6234sm2408743wmq.23.2023.03.17.09.21.59
+        by smtp.gmail.com with ESMTPSA id k16-20020a5d6d50000000b002cff0e213ddsm2330005wri.14.2023.03.17.09.23.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Mar 2023 09:21:59 -0700 (PDT)
-Date:   Fri, 17 Mar 2023 17:21:58 +0100
+        Fri, 17 Mar 2023 09:23:34 -0700 (PDT)
+Date:   Fri, 17 Mar 2023 17:23:33 +0100
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     Vadim Fedorenko <vadfed@meta.com>
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -58,63 +58,33 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Vadim Fedorenko <vadim.fedorenko@linux.dev>, poros@redhat.com,
         mschmidt@redhat.com, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        Milena Olech <milena.olech@intel.com>,
         Michal Michalik <michal.michalik@intel.com>
-Subject: Re: [PATCH RFC v6 2/6] dpll: Add DPLL framework base functions
-Message-ID: <ZBSTpoN6BOn5264a@nanopsycho>
+Subject: Re: [PATCH RFC v6 1/6] dpll: spec: Add Netlink spec in YAML
+Message-ID: <ZBSUBWUwC0FLlS/D@nanopsycho>
 References: <20230312022807.278528-1-vadfed@meta.com>
- <20230312022807.278528-3-vadfed@meta.com>
+ <20230312022807.278528-2-vadfed@meta.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230312022807.278528-3-vadfed@meta.com>
+In-Reply-To: <20230312022807.278528-2-vadfed@meta.com>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, Mar 12, 2023 at 03:28:03AM CET, vadfed@meta.com wrote:
+Sun, Mar 12, 2023 at 03:28:02AM CET, vadfed@meta.com wrote:
+>From: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
 
 [...]
 
+>+/* Ops table for dpll */
+>+static const struct genl_split_ops dpll_nl_ops[6] = {
 
->+int dpll_nl_device_get_dumpit(struct sk_buff *skb, struct netlink_callback *cb)
->+{
->+	struct nlattr *hdr, *nest;
->+	struct dpll_device *dpll;
->+	unsigned long i;
->+	int ret;
->+
->+	hdr = genlmsg_put(skb, NETLINK_CB(cb->skb).portid, cb->nlh->nlmsg_seq,
->+			  &dpll_nl_family, 0, DPLL_CMD_DEVICE_GET);
->+	if (!hdr)
->+		return -EMSGSIZE;
->+
->+	xa_for_each_marked(&dpll_device_xa, i, dpll, DPLL_REGISTERED) {
->+		nest = nla_nest_start(skb, DPLL_A_DEVICE);
->+		ret = dpll_msg_add_dev_handle(skb, dpll);
->+		if (ret) {
->+			nla_nest_cancel(skb, nest);
->+			break;
->+		}
-
-Please fillup the attrs for the object. The format should be exactly the
-same as for doit.
-
-
->+		nla_nest_end(skb, nest);
->+	}
->+	if (ret)
->+		genlmsg_cancel(skb, hdr);
->+	else
->+		genlmsg_end(skb, hdr);
->+
->+	return ret;
->+}
->+
+It's odd to see 6 here. Should by just []
+But it's an issue of Jakub's generator.
 
 [...]
