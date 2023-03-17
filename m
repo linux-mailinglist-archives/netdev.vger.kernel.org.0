@@ -2,67 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 078C96BE1CE
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 08:16:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29A026BE1F6
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 08:35:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230015AbjCQHQp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 03:16:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43006 "EHLO
+        id S229602AbjCQHfr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 03:35:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229488AbjCQHQo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 03:16:44 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B0D10CD;
-        Fri, 17 Mar 2023 00:16:43 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id u3-20020a17090a450300b00239db6d7d47so4253933pjg.4;
-        Fri, 17 Mar 2023 00:16:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679037403;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=twdLlgB3/E3HSbMTtDor1opxwUKFLrWwvnMciQmwMZw=;
-        b=PSnreZneZ+daXFmxmBfyRM8oFppTxIPoLSkAQVJXO425Ams0XucJ29tF4NZ2pCr/DZ
-         W4t6jB+urog/fxeD+uVczo/pSQiCUKz6n1Cturd5fMhf3oduhppStGOfySmai9oqRGrR
-         xHf+UQWdqH+aY+eh7Zk1O+kCfW2dN7usRAWCwzDOVYt6ahI04FWI/bf+dJdfsx5Kz5KP
-         0BKi8vkdVscgdYPYxPUE+BoL/J1vFwTH6ixaHRwrNcWZ27CAOUersTjxffeZoqWac6ms
-         Lw3Ua6KYPfDs32wxC0pEEOEKxh6udbW2viYzE5uCVmmzp3cj2iepEkyrlX35ERHtd1GZ
-         ALEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679037403;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=twdLlgB3/E3HSbMTtDor1opxwUKFLrWwvnMciQmwMZw=;
-        b=qvbdDKr74dcNie3W0DlrQTzSyRH1s24cEAgh/QHTRSPYVdlXkTbKvFuza7iFJeeQu4
-         938Gi/riImMeViZBr8PuKoap8juKZpHyLs7xg/5SpYpRdUsyePn1GZlKH+didtywd1hL
-         R9mnmlGk7C51muGh0xPgTRRRgj3rvGYGN7wRVh3J6YzpHPxlgu5WOwieFdiK/8KCKQHE
-         39SOEvob9xRWLK/IUDbaA7VmmYT1QeOnRiEvcvlMbLZJmlsO6rPssFKrnx/JoVHB0FiS
-         NhQYG6z7nyPnbONT0MXZxl1bft6ehjeu9pT02ALYiUMNgDwrMpZETTlhKLFutLts2nPI
-         R7sg==
-X-Gm-Message-State: AO0yUKXgsoYxyztGkE+Rr1tqg95AebrgHXJjyoKW2zCDm4DG/mlAPnXt
-        qjLRID30qsA/SfLZXqznSYE=
-X-Google-Smtp-Source: AK7set/zUnAVf6iz7d2V6pdox3/jQlIdrwRizEbq0p1299dimTSDl4ZFN+7EKJbuB4kNVGBHh3qtXg==
-X-Received: by 2002:a17:902:dac9:b0:19e:82d5:634c with SMTP id q9-20020a170902dac900b0019e82d5634cmr8183720plx.53.1679037402633;
-        Fri, 17 Mar 2023 00:16:42 -0700 (PDT)
-Received: from passwd123-ThinkStation-P920.. ([222.20.94.23])
-        by smtp.gmail.com with ESMTPSA id w4-20020a1709029a8400b0019a773419a6sm832498plp.170.2023.03.17.00.16.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Mar 2023 00:16:42 -0700 (PDT)
-From:   Kang Chen <void0red@gmail.com>
-To:     borisp@nvidia.com
-Cc:     john.fastabend@gmail.com, kuba@kernel.org, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com,
-        dirk.vandermerwe@netronome.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Kang Chen <void0red@gmail.com>
-Subject: [PATCH] net/tls: refine the branch condition in tls_dev_event
-Date:   Fri, 17 Mar 2023 15:16:36 +0800
-Message-Id: <20230317071636.1028488-1-void0red@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229488AbjCQHfp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 03:35:45 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03E3876A8;
+        Fri, 17 Mar 2023 00:35:43 -0700 (PDT)
+Received: from maxwell ([109.42.112.148]) by mrelayeu.kundenserver.de
+ (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis) id
+ 1MJn8J-1pxDxV14DR-00K6xA; Fri, 17 Mar 2023 08:28:28 +0100
+References: <20230316095306.721255-1-jh@henneberg-systemdesign.com>
+ <20230316131503.738933-1-jh@henneberg-systemdesign.com>
+ <ZBOhy02DFBlnIQR1@shell.armlinux.org.uk>
+User-agent: mu4e 1.8.14; emacs 28.2
+From:   Jochen Henneberg <jh@henneberg-systemdesign.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Wong Vee Khee <veekhee@apple.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Revanth Kumar Uppala <ruppala@nvidia.com>,
+        Andrey Konovalov <andrey.konovalov@linaro.org>,
+        Tan Tee Min <tee.min.tan@linux.intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH net V2] net: stmmac: Fix for mismatched host/device DMA
+ address width
+Date:   Fri, 17 Mar 2023 08:22:57 +0100
+In-reply-to: <ZBOhy02DFBlnIQR1@shell.armlinux.org.uk>
+Message-ID: <87edpng7l9.fsf@henneberg-systemdesign.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain
+X-Provags-ID: V03:K1:5QIZD/zEoIlUl4J9g1YiRKLAvKnLDmfGku0rnPpP1GG1pOn9VFa
+ gZ65HdQ0A+BnO6uOKrPi9+upVoPI97O/Vt5RPMeh+n9Yp7gDzxgJXLzIgNfbJoN0W+UT0+V
+ g5vHPFtmWyMvG1ZqxHCzKb496+Q1ZfunoHrMGb8GRQla4ubIUed752mK8Q1uWvwhX6HNpJE
+ Oo6tRW5cs3XaDQHjb2gzw==
+UI-OutboundReport: notjunk:1;M01:P0:iO4irr/xORg=;fdACBsCyznXGQO24QIlMEjR+Ivb
+ 5M7ptgNSWPS3sCgBghotj4WccMMxp3AobAhwIPOJK82PtVl2AhAAy+9jHus5Hp1gK0mXJaHeT
+ DAun+frkSqGnY4IpDOFezrIiJ5Z2vc25McOdt1/ez6MEgIUELG2PYgCdQITnqlS2ugZkI6AR0
+ w7kno3PtcD6xT7sIz/yf1sNxQ2wFBL9SRugSWGMqhGErlM09TFUaEBRKBcukKXKK3Ajjinfex
+ Daej7OhcHLiV7yqcBRZjJkK8X6ZiOIZw3772QxWfWFx4XhuhjtPRtxYwb0yIwYkV+sGjXVn5y
+ 5g2eavxAoD4kH4ablQPpLjeW35v80Syfx5hJzvnviOl4zIB+fwvFBCvmRNwQ7CP7n5/QZlNO/
+ /sKrR+yaJ1P4yVakQj2l5zuvS/TOGL4ewa+CeCu2Nwn+b0x6VQSrrHckWIk19UV7Z65bTmnI6
+ F9USa3Lp9CFymBTd53BJkj9HS4ftdneptcqqcBv1CIpvReUyINx6xo2QddxI7TP4rB8GJdFzY
+ gNHuYxVxPMamnpaeUGNsOJDhaWkVSu1apUYgvOSLMmNnXUDoZ1R1IZ5UYJXKfnqjPAHY5G+QL
+ UCyEQ4A1qeWWUEYTAg28xbIQFLCulxBuGimQHfCOt8iFQslglKr/254S3jCBoffiyu4VGxyAt
+ e/OZkfN/LZPvu2Yq2aCWOSIrpzf7Ipb7TskrVH30TQ==
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,28 +81,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-dev->tlsdev_ops may be null and cause null pointer dereference later.
 
-Fixes: eeb2efaf36c7 ("net/tls: generalize the resync callback")
-Signed-off-by: Kang Chen <void0red@gmail.com>
----
- net/tls/tls_device.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+"Russell King (Oracle)" <linux@armlinux.org.uk> writes:
 
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index a7cc4f9faac2..f30a8fe373c2 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -1449,7 +1449,8 @@ static int tls_dev_event(struct notifier_block *this, unsigned long event,
- 		if (netif_is_bond_master(dev))
- 			return NOTIFY_DONE;
- 		if ((dev->features & NETIF_F_HW_TLS_RX) &&
--		    !dev->tlsdev_ops->tls_dev_resync)
-+		   (!dev->tlsdev_ops || (dev->tlsdev_ops &&
-+		    !dev->tlsdev_ops->tls_dev_resync)))
- 			return NOTIFY_BAD;
- 
- 		if  (dev->tlsdev_ops &&
--- 
-2.34.1
+> On Thu, Mar 16, 2023 at 02:15:03PM +0100, Jochen Henneberg wrote:
+>> Currently DMA address width is either read from a RO device register
+>> or force set from the platform data. This breaks DMA when the host DMA
+>> address width is <=32it but the device is >32bit.
+>> 
+>> Right now the driver may decide to use a 2nd DMA descriptor for
+>> another buffer (happens in case of TSO xmit) assuming that 32bit
+>> addressing is used due to platform configuration but the device will
+>> still use both descriptor addresses as one address.
+>> 
+>> This can be observed with the Intel EHL platform driver that sets
+>> 32bit for addr64 but the MAC reports 40bit. The TX queue gets stuck in
+>> case of TCP with iptables NAT configuration on TSO packets.
+>> 
+>> The logic should be like this: Whatever we do on the host side (memory
+>> allocation GFP flags) should happen with the host DMA width, whenever
+>> we decide how to set addresses on the device registers we must use the
+>> device DMA address width.
+>> 
+>> This patch renames the platform address width field from addr64 (term
+>> used in device datasheet) to host_addr and uses this value exclusively
+>> for host side operations while all chip operations consider the device
+>> DMA width as read from the device register.
+>> 
+>> Fixes: 7cfc4486e7ea ("stmmac: intel: Configure EHL PSE0 GbE and PSE1 GbE to 32 bits DMA addressing")
+>> Signed-off-by: Jochen Henneberg <jh@henneberg-systemdesign.com>
+>> ---
+>> V2: Fixes from checkpatch.pl for commit message
+>> 
+>>  drivers/net/ethernet/stmicro/stmmac/common.h  |  1 +
+>>  .../net/ethernet/stmicro/stmmac/dwmac-imx.c   |  2 +-
+>>  .../net/ethernet/stmicro/stmmac/dwmac-intel.c |  4 +--
+>>  .../ethernet/stmicro/stmmac/dwmac-mediatek.c  |  2 +-
+>>  .../net/ethernet/stmicro/stmmac/stmmac_main.c | 30 ++++++++++---------
+>>  include/linux/stmmac.h                        |  2 +-
+>>  6 files changed, 22 insertions(+), 19 deletions(-)
+>> 
+>> diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
+>> index 6b5d96bced47..55a728b1b708 100644
+>> --- a/drivers/net/ethernet/stmicro/stmmac/common.h
+>> +++ b/drivers/net/ethernet/stmicro/stmmac/common.h
+>> @@ -418,6 +418,7 @@ struct dma_features {
+>>  	unsigned int frpbs;
+>>  	unsigned int frpes;
+>>  	unsigned int addr64;
+>> +	unsigned int host_addr;
+>
+> Obvious question: is host_addr an address? From the above description it
+> sounds like this is more of a host address width indicator.
+>
+> Maybe call these "dev_addr_width" and "host_addr_width" so it's clear
+> what each of these are?
 
+You are right. I chose the name because the original field was called
+addr64 which follows the naming from the chip specification. I will
+switch to host_dma_width which makes it more clear that it's a DMA
+address width. For both the platform field as well as the driver's
+private data.
