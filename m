@@ -2,64 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4286F6BF213
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 21:04:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDD066BF21A
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 21:06:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229601AbjCQUEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 16:04:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56038 "EHLO
+        id S229733AbjCQUGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 16:06:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229562AbjCQUEq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 16:04:46 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 958F1C9261;
-        Fri, 17 Mar 2023 13:04:44 -0700 (PDT)
-Received: from mercury (unknown [185.254.75.29])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: sre)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 2AA4466030C4;
-        Fri, 17 Mar 2023 20:04:43 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1679083483;
-        bh=6VkdQ9psqUaKshJfhzoZVQyKORhNMnzeUFqYVonN1oo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=G/CLwaYQvRYH+vRxBZiG0wGq8tTkOyyEf0jhqhQ4j/AW/iqqLGeubsG4RqH+jhDmJ
-         IYgOqfXHnGEZVVunRa3vxHjoZipj985oYG1EttIcVW+GkzzLLZYd48wOLB1gFtdBRc
-         9f2dzRuBWChnLFLBurr3hUDmxy/4/ozvzipwO5wqnOmdoywwKsbndmSHDYMZKYKqGt
-         NXbQvhrSLFa6JK6GmieBUfe8VwS2Y3mIeVz9sdDY2voUSktzr8n28thv0jWS+BGMWe
-         8mwOF0vkViYqDHunAu4Pd8IEO2IGzwptElilILPK79WLmZKrvyrp2w/5ahoJrX4MyS
-         mTu1dpG5W05rg==
-Received: by mercury (Postfix, from userid 1000)
-        id C41AF10620FB; Fri, 17 Mar 2023 21:04:40 +0100 (CET)
-Date:   Fri, 17 Mar 2023 21:04:40 +0100
-From:   Sebastian Reichel <sebastian.reichel@collabora.com>
-To:     Piotr Raczynski <piotr.raczynski@intel.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com
-Subject: Re: [PATCHv1 1/2] net: ethernet: stmmac: dwmac-rk: fix optional
- clock handling
-Message-ID: <20230317200440.vfy2y5ynuuig2peu@mercury.elektranox.org>
-References: <20230317174243.61500-1-sebastian.reichel@collabora.com>
- <20230317174243.61500-2-sebastian.reichel@collabora.com>
- <ZBSwX+eBsE02A3Xz@nimitz>
+        with ESMTP id S229951AbjCQUGF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 16:06:05 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB6F7C9268
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 13:06:02 -0700 (PDT)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32HIfrlK011181;
+        Fri, 17 Mar 2023 20:05:56 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=0e4LV/bUi6fTi4zYRyZo/Ul9W9PbkTK4Y9yIQnYDJ64=;
+ b=F5wRcdO1Po9Lrm+NbIf7HIaPmVwvDfiVgDDFFEozJaWyJZcypNeLROvbThzRRFk+zSMe
+ pRUvgKu/jbuyyKiTmj7+/yjDHRsiqtaTUHgoOftyet4SpxnP6M5zDthn66d8bEs5HisV
+ P+VL4njgOdA95CmsiFwzHQJAW/pOyH8M8GrfO7O8za8ElVSE2PVEYcNaZfomXBMM5uYt
+ 0HijTujWTutQi9vDfo3x67Xrfy8D3Y33vOe2xVEdey+rO/bKDxEXlDBWfyL8mys1bURX
+ ZsQeD45teGHcB9qh6ouEgq5S7562jn/13l/OF4VCKqLHoMyAgWFtg+NlqHbD2QxlNHk9 6A== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3pcwq4hpr0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 17 Mar 2023 20:05:56 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32HJpfni009767;
+        Fri, 17 Mar 2023 20:05:55 GMT
+Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3pcwq4hpq8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 17 Mar 2023 20:05:55 +0000
+Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
+        by ppma04wdc.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 32HH6IuT002877;
+        Fri, 17 Mar 2023 20:05:54 GMT
+Received: from smtprelay06.dal12v.mail.ibm.com ([9.208.130.100])
+        by ppma04wdc.us.ibm.com (PPS) with ESMTPS id 3pbs53accs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 17 Mar 2023 20:05:54 +0000
+Received: from smtpav01.dal12v.mail.ibm.com (smtpav01.dal12v.mail.ibm.com [10.241.53.100])
+        by smtprelay06.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 32HK5rDD42991974
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 17 Mar 2023 20:05:53 GMT
+Received: from smtpav01.dal12v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 69A1658061;
+        Fri, 17 Mar 2023 20:05:53 +0000 (GMT)
+Received: from smtpav01.dal12v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8D9965805D;
+        Fri, 17 Mar 2023 20:05:51 +0000 (GMT)
+Received: from [9.211.72.37] (unknown [9.211.72.37])
+        by smtpav01.dal12v.mail.ibm.com (Postfix) with ESMTP;
+        Fri, 17 Mar 2023 20:05:51 +0000 (GMT)
+Message-ID: <13f4d846-f2bf-4800-d9ca-4174b586de4b@linux.ibm.com>
+Date:   Fri, 17 Mar 2023 21:05:50 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="mpto7wro7k5znqiy"
-Content-Disposition: inline
-In-Reply-To: <ZBSwX+eBsE02A3Xz@nimitz>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.8.0
+Subject: Re: [PATCH net-next 07/10] smc: preserve const qualifier in smc_sk()
+To:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
+        Simon Horman <simon.horman@corigine.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        eric.dumazet@gmail.com, Karsten Graul <kgraul@linux.ibm.com>,
+        Jan Karcher <jaka@linux.ibm.com>
+References: <20230317155539.2552954-1-edumazet@google.com>
+ <20230317155539.2552954-8-edumazet@google.com>
+From:   Wenjia Zhang <wenjia@linux.ibm.com>
+In-Reply-To: <20230317155539.2552954-8-edumazet@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: jz8cx81UHoTXq5xTZFo083E7kIwPxlro
+X-Proofpoint-ORIG-GUID: FDAg9T0wq6KPtdRvOLlKmXzYmV8IYB-N
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-03-17_17,2023-03-16_02,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
+ lowpriorityscore=0 impostorscore=0 spamscore=0 mlxscore=0 malwarescore=0
+ adultscore=0 clxscore=1011 priorityscore=1501 suspectscore=0 phishscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2303150002 definitions=main-2303170141
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -67,152 +100,35 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---mpto7wro7k5znqiy
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-Hi,
+On 17.03.23 16:55, Eric Dumazet wrote:
+> We can change smc_sk() to propagate its argument const qualifier,
+> thanks to container_of_const().
+> 
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Karsten Graul <kgraul@linux.ibm.com>
+> Cc: Wenjia Zhang <wenjia@linux.ibm.com>
+> Cc: Jan Karcher <jaka@linux.ibm.com>
 
-On Fri, Mar 17, 2023 at 07:24:31PM +0100, Piotr Raczynski wrote:
-> On Fri, Mar 17, 2023 at 06:42:42PM +0100, Sebastian Reichel wrote:
-> > Right now any clock errors are printed and otherwise ignored.
-> > This has multiple disadvantages:
-> >=20
-> > 1. it prints errors for clocks that do not exist (e.g. rk3588
-> >    reports errors for "mac_clk_rx", "mac_clk_tx" and "clk_mac_speed")
-> >=20
-> > 2. it does not handle errors like -EPROBE_DEFER correctly
-> >=20
-> > This series fixes it by switching to devm_clk_get_optional(),
-> > so that missing clocks are not considered an error and then
-> > passing on any other errors using dev_err_probe().
-> >=20
->=20
-> Fixes tag would help here.
+Reviewed-by: Wenjia Zhang <wenjia@linux.ibm.com>
 
-Fixes: 7ad269ea1a2b7 ("GMAC: add driver for Rockchip RK3288 SoCs integrated=
- GMAC")
-
-That commit is from 2014-12-29. I only noticed the dev_err()
-messages on RK3588, so going via -next without backporting should be fine.
-
-Please tell me if I should resend with the Fixes tag.
-
--- Sebastian
-
-> Piotr
-> > Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-> > ---
-> >  .../net/ethernet/stmicro/stmmac/dwmac-rk.c    | 47 ++++++++++---------
-> >  1 file changed, 24 insertions(+), 23 deletions(-)
-> >=20
-> > diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c b/drivers/n=
-et/ethernet/stmicro/stmmac/dwmac-rk.c
-> > index 4b8fd11563e4..126812cd17e6 100644
-> > --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-> > +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-> > @@ -1479,49 +1479,50 @@ static int rk_gmac_clk_init(struct plat_stmmace=
-net_data *plat)
-> > =20
-> >  	bsp_priv->clk_enabled =3D false;
-> > =20
-> > -	bsp_priv->mac_clk_rx =3D devm_clk_get(dev, "mac_clk_rx");
-> > +	bsp_priv->mac_clk_rx =3D devm_clk_get_optional(dev, "mac_clk_rx");
-> >  	if (IS_ERR(bsp_priv->mac_clk_rx))
-> > -		dev_err(dev, "cannot get clock %s\n",
-> > -			"mac_clk_rx");
-> > +		return dev_err_probe(dev, PTR_ERR(bsp_priv->mac_clk_rx),
-> > +				"cannot get clock %s\n", "mac_clk_rx");
-> > =20
-> > -	bsp_priv->mac_clk_tx =3D devm_clk_get(dev, "mac_clk_tx");
-> > +	bsp_priv->mac_clk_tx =3D devm_clk_get_optional(dev, "mac_clk_tx");
-> >  	if (IS_ERR(bsp_priv->mac_clk_tx))
-> > -		dev_err(dev, "cannot get clock %s\n",
-> > -			"mac_clk_tx");
-> > +		return dev_err_probe(dev, PTR_ERR(bsp_priv->mac_clk_tx),
-> > +				"cannot get clock %s\n", "mac_clk_tx");
-> > =20
-> > -	bsp_priv->aclk_mac =3D devm_clk_get(dev, "aclk_mac");
-> > +	bsp_priv->aclk_mac =3D devm_clk_get_optional(dev, "aclk_mac");
-> >  	if (IS_ERR(bsp_priv->aclk_mac))
-> > -		dev_err(dev, "cannot get clock %s\n",
-> > -			"aclk_mac");
-> > +		return dev_err_probe(dev, PTR_ERR(bsp_priv->aclk_mac),
-> > +				"cannot get clock %s\n", "aclk_mac");
-> > =20
-> > -	bsp_priv->pclk_mac =3D devm_clk_get(dev, "pclk_mac");
-> > +	bsp_priv->pclk_mac =3D devm_clk_get_optional(dev, "pclk_mac");
-> >  	if (IS_ERR(bsp_priv->pclk_mac))
-> > -		dev_err(dev, "cannot get clock %s\n",
-> > -			"pclk_mac");
-> > +		return dev_err_probe(dev, PTR_ERR(bsp_priv->pclk_mac),
-> > +				"cannot get clock %s\n", "pclk_mac");
-> > =20
-> > -	bsp_priv->clk_mac =3D devm_clk_get(dev, "stmmaceth");
-> > +	bsp_priv->clk_mac =3D devm_clk_get_optional(dev, "stmmaceth");
-> >  	if (IS_ERR(bsp_priv->clk_mac))
-> > -		dev_err(dev, "cannot get clock %s\n",
-> > -			"stmmaceth");
-> > +		return dev_err_probe(dev, PTR_ERR(bsp_priv->clk_mac),
-> > +				"cannot get clock %s\n", "stmmaceth");
-> > =20
-> >  	if (bsp_priv->phy_iface =3D=3D PHY_INTERFACE_MODE_RMII) {
-> > -		bsp_priv->clk_mac_ref =3D devm_clk_get(dev, "clk_mac_ref");
-> > +		bsp_priv->clk_mac_ref =3D devm_clk_get_optional(dev, "clk_mac_ref");
-> >  		if (IS_ERR(bsp_priv->clk_mac_ref))
-> > -			dev_err(dev, "cannot get clock %s\n",
-> > -				"clk_mac_ref");
-> > +			return dev_err_probe(dev, PTR_ERR(bsp_priv->clk_mac_ref),
-> > +					"cannot get clock %s\n", "clk_mac_ref");
-> > =20
-> >  		if (!bsp_priv->clock_input) {
-> >  			bsp_priv->clk_mac_refout =3D
-> > -				devm_clk_get(dev, "clk_mac_refout");
-> > +				devm_clk_get_optional(dev, "clk_mac_refout");
-> >  			if (IS_ERR(bsp_priv->clk_mac_refout))
-> > -				dev_err(dev, "cannot get clock %s\n",
-> > -					"clk_mac_refout");
-> > +				return dev_err_probe(dev, PTR_ERR(bsp_priv->clk_mac_refout),
-> > +						"cannot get clock %s\n", "clk_mac_refout");
-> >  		}
-> >  	}
-> > =20
-> > -	bsp_priv->clk_mac_speed =3D devm_clk_get(dev, "clk_mac_speed");
-> > +	bsp_priv->clk_mac_speed =3D devm_clk_get_optional(dev, "clk_mac_speed=
-");
-> >  	if (IS_ERR(bsp_priv->clk_mac_speed))
-> > -		dev_err(dev, "cannot get clock %s\n", "clk_mac_speed");
-> > +		return dev_err_probe(dev, PTR_ERR(bsp_priv->clk_mac_speed),
-> > +				"cannot get clock %s\n", "clk_mac_speed");
-> > =20
-> >  	if (bsp_priv->clock_input) {
-> >  		dev_info(dev, "clock input from PHY\n");
-> > --=20
-> > 2.39.2
-> >=20
->=20
-> --=20
-> To unsubscribe, send mail to kernel-unsubscribe@lists.collabora.co.uk.
-
---mpto7wro7k5znqiy
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmQUx9UACgkQ2O7X88g7
-+prqRw/8Ctg9+w0APsrUuwOaK7iZRmPegyPuRJbtX0HwN2xzMO/PoLln7K0shhoj
-iOaEbyyelqJBRjQXXf6GVrOPVfOW52/MOk0CZoYRsBNJCTdJYUJfweGTQUb9sp67
-rzmJ4Q44/hDNVLnNGJdC/WlJnqdmVwCpzw+vO2yn6TqFOKBgu/gHF5FjPPC9+cGm
-130I0Xx77VAeWaw6nkkVokYzjMYfPyv4InWtZqWjb9yTUTKqGljz+xwaWtOqdmx2
-ZXQ15m/nq7COzGkuoU0WiyNtH7JOoCjE+neAMh0iw6xeUZ4iPuAd7DT5TWnHuyLg
-E/QiNQTKWvtGEvODEBvB1gyYz27x2NM6B4j9heVQGl6v6SFBcRqz+F8uOW5zfQLA
-Zr6Fgq7wyKd4LngIG+T1Ng2cZCGuPARZIQFj/FICYki85//nZ7ztDwLEetzZ1x5E
-P+uIbdo0AtzI5HmyGug4B9xAZv8+Q//NG49ZPrTGAyMD2yihpC+5/gTi/4+tJ4Rf
-jcWao/BLcKbyI3x07AqPXxu7xniRogugm7KdgMaibyvxTTLMsrr5z2amU56wJZqG
-qXpA/HRdLvkxbWDlkArTmFnWSmhwsgHXXMx7WaFJaNQiB7jQWA2VuararLsvA0vA
-znh9GxIuZPAsYacRSgWNhSozMoDsq80ea6RchqzW0NI9WoRgLts=
-=lhD9
------END PGP SIGNATURE-----
-
---mpto7wro7k5znqiy--
+> ---
+>   net/smc/smc.h | 5 +----
+>   1 file changed, 1 insertion(+), 4 deletions(-)
+> 
+> diff --git a/net/smc/smc.h b/net/smc/smc.h
+> index 5ed765ea0c731a7f0095cd6a99a0e42d227eaca9..2eeea4cdc7187eed2a3b12888d8f647382f6f2ac 100644
+> --- a/net/smc/smc.h
+> +++ b/net/smc/smc.h
+> @@ -283,10 +283,7 @@ struct smc_sock {				/* smc sock container */
+>   						 * */
+>   };
+>   
+> -static inline struct smc_sock *smc_sk(const struct sock *sk)
+> -{
+> -	return (struct smc_sock *)sk;
+> -}
+> +#define smc_sk(ptr) container_of_const(ptr, struct smc_sock, sk)
+>   
+>   static inline void smc_init_saved_callbacks(struct smc_sock *smc)
+>   {
