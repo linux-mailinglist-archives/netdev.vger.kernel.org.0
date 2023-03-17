@@ -2,65 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B5306BDFB3
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 04:37:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B97836BDFB5
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 04:39:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229590AbjCQDhd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Mar 2023 23:37:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43624 "EHLO
+        id S229599AbjCQDjL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Mar 2023 23:39:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229476AbjCQDhb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 23:37:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D003523328
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 20:36:42 -0700 (PDT)
+        with ESMTP id S229476AbjCQDjH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Mar 2023 23:39:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD333A877
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 20:38:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679024202;
+        s=mimecast20190719; t=1679024299;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=kq7BvkG6r8mc5f/+Ki2Y2nBhbeMzRIKO9qsutt2z3SM=;
-        b=b20ymZHWIABhKOJeYFmcWWRZEmWcS9bE+lIRypWQ6lQO99ePtSInEmgNugBha2jqCqt7do
-        DmoYbKpWHHKnzyzvF2THItrB73JLk2q+Potuu8GVP0HJLmVZKQrZY38YuXN1rVOF/hLhNg
-        vzJ5utWBtMb5CsDJIGZjSoHrMxoO/c0=
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
- [209.85.167.199]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=UFVsLqk+r1ZOPzZI3ydTPicHIm2HZPqwfTT7+IgUJZ8=;
+        b=cmQxAqBRIlMxZEw5HOyaN1uV0Tq35/NBHGXlLmy5iGX4pmsjMNXUN/ifYwSHhIQSW/ZkWE
+        xM9Aw5Z5Hk+7ER4/yjEe4XmcIDJvOhvs+WyGrHnB8ie0kEZHXD/+hz8sbLZWlGflV6MptF
+        mHKClL+1p7uwRAyFwmm+CNLgXfVOTB0=
+Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com
+ [209.85.160.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-654-LjB6BbhUNeamtG1euvqr9w-1; Thu, 16 Mar 2023 23:36:40 -0400
-X-MC-Unique: LjB6BbhUNeamtG1euvqr9w-1
-Received: by mail-oi1-f199.google.com with SMTP id bf30-20020a056808191e00b003843744eaecso1770848oib.0
-        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 20:36:40 -0700 (PDT)
+ us-mta-609-q0sCF4OQMBCePvYMK0BSCg-1; Thu, 16 Mar 2023 23:37:32 -0400
+X-MC-Unique: q0sCF4OQMBCePvYMK0BSCg-1
+Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-172ace24d4dso2244584fac.18
+        for <netdev@vger.kernel.org>; Thu, 16 Mar 2023 20:37:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679024200;
+        d=1e100.net; s=20210112; t=1679024252;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=kq7BvkG6r8mc5f/+Ki2Y2nBhbeMzRIKO9qsutt2z3SM=;
-        b=kWn/CBO4H/PMKJQRuhuI6AR3yeeRxP4nVxd1VXRdcSsyuiIDrbQszZtRTdD5+dWg73
-         KliNqvBpP2G4fs/IJ4CWD6Pc2n+h+Ovf93niaE0v4DaJjvcs2NjfGZ2bv6u5RJ6XbwAf
-         0NDhWTQc5NifvI0kQbMoaSl1P691IOcAfcR5ZfZeGdWGAJOEDUdH1s3k4dGJtyLt/6T+
-         NlF0vqUQO+Nj0bCXKQ7dbu+LbcmAfc9Bfdxf/kglYN95CJc5aIsg9xebCjM01Y5rcKJ/
-         0JULD9gV++1+atyOXGLbpvZbkIDdZK3eDxvcBXtCCN7IgI7VOg1nby52OmTy87o8wWA6
-         HxCw==
-X-Gm-Message-State: AO0yUKW9RgbqvmDYicgm8XiMr7wwHBtm2nNsj48dW2elVq41RomjXGqs
-        7CZTfcpVjUPBxzTKTrWpc0rIEyUcj1+RrX5Mcwi8yYnxuYimGBgTpHTlVwCYvRRFf2bLsRMMRyc
-        y0b9bPLX5bwntbYPkAoXx1bj1BQ1eWsDa
-X-Received: by 2002:a54:470c:0:b0:383:fef9:6cac with SMTP id k12-20020a54470c000000b00383fef96cacmr2871250oik.9.1679024200058;
-        Thu, 16 Mar 2023 20:36:40 -0700 (PDT)
-X-Google-Smtp-Source: AK7set+T6KPM6IMRqEx8BDN7YTTwmjdxGsCZRqnpMabFawh1Uhlesv2xEI0Lnd7ukW16F+PlFKNRCdgdDI0dwHM7/E0=
-X-Received: by 2002:a54:470c:0:b0:383:fef9:6cac with SMTP id
- k12-20020a54470c000000b00383fef96cacmr2871242oik.9.1679024199853; Thu, 16 Mar
- 2023 20:36:39 -0700 (PDT)
+        bh=UFVsLqk+r1ZOPzZI3ydTPicHIm2HZPqwfTT7+IgUJZ8=;
+        b=bPswXoi8rLr0pRCHxp4bffZKFFrQJKHE3mfbAJKMgN4CsfZnk5iwVVnSme55U1hwL0
+         gXZnFVtyezFrstUfMFBfE6/IIZAc8JMHzw90yd0fR96jJhhbZuJxVWy2ZOHqR6lrpZeV
+         kIsqA0mAyWFaxSENaebRJbEz3/rUDW+nhxtxlKRsDsRrYet/pZAaXEsDVIKaVgGgYIuK
+         D/TXDI+ZJmiLKPYwLTxxnxl4TAONyFILnusDWzVOH9jnOAvcys/Hyankls1DCalXMDjK
+         MuJlSeRVSsrmfERPqNF3MoiiH8/cj+/Nlae7lcx37W/kqgfoO+Ei6EHeYZ033trYq6Ej
+         n40Q==
+X-Gm-Message-State: AO0yUKW02NJLSTX/Vy7TkiEZf3zNFnRjRED6Kp/QNE82ef0bGXFGGyQQ
+        lQWiuL8ARWqmo5gbD+sUsM5Y5YO2aSoU8JZ3e0E8uj6Jfa/BrDxByz7oyIeJCjKkKRwvaNzjIRn
+        M7g+7yKdQGvqNdo1DIA/Ph5Znw3pQigjM
+X-Received: by 2002:a54:4481:0:b0:384:c4a:1b49 with SMTP id v1-20020a544481000000b003840c4a1b49mr2529113oiv.9.1679024251928;
+        Thu, 16 Mar 2023 20:37:31 -0700 (PDT)
+X-Google-Smtp-Source: AK7set/gDvTy3qEnd0t9C0+ygLrhOCbBGSbZavev4c65WFF89C8eZYwKpwwVJnu0eV7eOlDLHKc/783vwv9c3TKTqDg=
+X-Received: by 2002:a54:4481:0:b0:384:c4a:1b49 with SMTP id
+ v1-20020a544481000000b003840c4a1b49mr2529105oiv.9.1679024251767; Thu, 16 Mar
+ 2023 20:37:31 -0700 (PDT)
 MIME-Version: 1.0
 References: <20230309013046.23523-1-shannon.nelson@amd.com>
- <20230309013046.23523-5-shannon.nelson@amd.com> <CACGkMEtcm+VeTUKw_DF=bHFpYRUyqOkhh+UEfc+ppUp5zuNVkw@mail.gmail.com>
- <cde38f74-66da-7eb0-c933-d4848bd17bc1@amd.com>
-In-Reply-To: <cde38f74-66da-7eb0-c933-d4848bd17bc1@amd.com>
+ <20230309013046.23523-4-shannon.nelson@amd.com> <CACGkMEt5Jbsp=+st8aG_0kXD+OSSp+FX9vYE+gTkywp2ZN4LTw@mail.gmail.com>
+ <ee3dd0c5-5e44-634d-7ab7-7a4c9c1cd4f7@amd.com>
+In-Reply-To: <ee3dd0c5-5e44-634d-7ab7-7a4c9c1cd4f7@amd.com>
 From:   Jason Wang <jasowang@redhat.com>
-Date:   Fri, 17 Mar 2023 11:36:28 +0800
-Message-ID: <CACGkMEvm03ANeDKMQbVcoFzcgrHLEUXXXaar1JwYBG91J_THEQ@mail.gmail.com>
-Subject: Re: [PATCH RFC v2 virtio 4/7] pds_vdpa: add vdpa config client commands
+Date:   Fri, 17 Mar 2023 11:37:20 +0800
+Message-ID: <CACGkMEsK0YknKS8CWkToJSo3_jY837zyQsaFjOE8h7jOdWMASQ@mail.gmail.com>
+Subject: Re: [PATCH RFC v2 virtio 3/7] pds_vdpa: virtio bar setup for vdpa
 To:     Shannon Nelson <shannon.nelson@amd.com>
 Cc:     mst@redhat.com, virtualization@lists.linux-foundation.org,
         brett.creeley@amd.com, davem@davemloft.net, netdev@vger.kernel.org,
@@ -84,27 +84,36 @@ On Thu, Mar 16, 2023 at 11:25=E2=80=AFAM Shannon Nelson <shannon.nelson@amd=
 > > On Thu, Mar 9, 2023 at 9:31=E2=80=AFAM Shannon Nelson <shannon.nelson@a=
 md.com> wrote:
 > >>
-> >> These are the adminq commands that will be needed for
-> >> setting up and using the vDPA device.
+> >> The PDS vDPA device has a virtio BAR for describing itself, and
+> >> the pds_vdpa driver needs to access it.  Here we copy liberally
+> >> from the existing drivers/virtio/virtio_pci_modern_dev.c as it
+> >> has what we need, but we need to modify it so that it can work
+> >> with our device id and so we can use our own DMA mask.
 > >
-> > It's better to explain under which case the driver should use adminq,
-> > I see some functions overlap with common configuration capability.
-> > More below.
+> > By passing a pointer to a customized id probing routine to vp_modern_pr=
+obe()?
 >
-> Yes, I agree this needs to be more clearly stated.  The overlap is
-> because the original FW didn't have the virtio device as well modeled
-> and we had to go through adminq calls to get things done.
+> The only real differences are that we needed to cut out the device id
+> checks to use our vDPA VF device id, and remove
+> dma_set_mask_and_coherent() because we need a different DMA_BIT_MASK().
+>
+> Maybe a function pointer to something that can validate the device id,
+> and a bitmask for setting DMA mapping; if they are 0/NULL, use the
+> default device id check and DMA mask.
+>
+> Adding them as extra arguments to the function call seems a bit messy,
+> maybe add them to the struct virtio_pci_modern_device and the caller can
+> set them as overrides if needed?
+>
+> struct virtio_pci_modern_device {
+>
+>         ...
+>
+>         int (*device_id_check_override(struct pci_dev *pdev));
+>         u64 dma_mask_override;
+> }
 
-Does this mean the device could be actually probed by a virtio-pci driver?
-
->  Now that we
-> have a reasonable virtio emulation and can use the virtio_net_config, we
-> have a lot less need for the adminq calls.
-
-Please add those in the changelog. Btw, adminq should be more flexible
-since it's easier to extend for new features. If there's no plan to
-model a virtio-pci driver we can even avoid mapping PCI capabilities
-which may simplify the codes.
+Looks fine.
 
 Thanks
 
